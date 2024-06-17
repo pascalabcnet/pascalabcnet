@@ -1,6 +1,7 @@
 ﻿using PascalABCCompiler.SyntaxTree;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 
 
 namespace SyntaxVisitors.Async
@@ -43,6 +44,7 @@ namespace SyntaxVisitors.Async
             VarsHelper = new VarsHelper();
 
         }
+
         public int NewAwaiterCounter = 1;
         public string NewAwaiter()
         {
@@ -242,10 +244,35 @@ namespace SyntaxVisitors.Async
                    
                    
                 }
+                if (procedure_code.list[i] is labeled_statement)
+                {
+                    var lb = procedure_code.list[i] as labeled_statement;
+                    var if_node = lb.to_statement as if_node;
+                    OperationsVisitor.HasAwait = false;
+                    OperationsVisitor.Accept(if_node);
+                    if (OperationsVisitor.HasAwait == true)
+                    {
+                        temp_list.Add(procedure_code.list[i]);
+                        await_counter++;
+                        flag = false;
+                    }
+
+                }
 
                 if (procedure_code.list[i] is var_statement)
                 {
                     var pp = procedure_code.list[i] as var_statement;
+                    if (pp.var_def.inital_value is bin_expr)
+                    {
+                        OperationsVisitor.HasAwait = false;
+                        OperationsVisitor.Accept(pp.var_def);
+                        //if (OperationsVisitor.HasAwait == true)
+                        //{
+                        //    //temp_list.Add(procedure_code.list[i]);
+                        //    await_counter++;
+                        //    flag = false;
+                        //}
+                    }
                     if (pp.var_def.inital_value is await_node)
                     {
                         var a = pp.var_def.inital_value as await_node;
@@ -254,12 +281,20 @@ namespace SyntaxVisitors.Async
                         {
                             var mmc = new method_call();
                             mmc.source_context = v.source_context;
+                            //if (a.ex is method_call)
+                            //    mmc.dereferencing_value = new dot_node(new dot_node(a.ex as method_call, new ident("GetAwaiter", v.source_context)),
+                            //        new ident("GetResult"), v.source_context);
+                            //else
+                            //    mmc.dereferencing_value = new dot_node(new dot_node(new ident(a.ex.ToString(), v.source_context),
+                            //        new ident("GetAwaiter"), v.source_context), new ident("GetResult"), v.source_context);
+
                             if (a.ex is method_call)
-                                mmc.dereferencing_value = new dot_node(new dot_node(a.ex as method_call, new ident("GetAwaiter", v.source_context)),
-                                    new ident("GetResult"), v.source_context);
+                                mmc.dereferencing_value = GenGetResult(new dot_node(a.ex as method_call, 
+                                    new ident("GetAwaiter", v.source_context)), v);
                             else
-                                mmc.dereferencing_value = new dot_node(new dot_node(new ident(a.ex.ToString(), v.source_context),
-                                    new ident("GetAwaiter"), v.source_context), new ident("GetResult"), v.source_context);
+                                mmc.dereferencing_value = GenGetResult(new dot_node(new ident(a.ex.ToString(), v.source_context),
+                                     new ident("GetAwaiter", v.source_context)), v);
+
 
                             var ass = new assign(v, mmc, Operators.Assignment, v.source_context);
                             ass.first_assignment_defines_type = true;
@@ -308,6 +343,21 @@ namespace SyntaxVisitors.Async
                         VarsHelper.VarsList.Add(pp);
                         continue;
                     }
+                }
+                if (procedure_code.list[i] is assign)
+                {
+                    var a = procedure_code.list[i] as assign;
+
+                    OperationsVisitor.HasAwait = false;
+                    OperationsVisitor.Accept(a);
+                    if (OperationsVisitor.HasAwait == true)
+                    {
+                        temp_list.Add(procedure_code.list[i]);
+                        await_counter++;
+                        flag = false;
+                    }
+
+
                 }
 
                 if (procedure_code.list[i] is assign && b)
@@ -504,9 +554,9 @@ namespace SyntaxVisitors.Async
                 mc2 = new method_call();
                 mc2.source_context = ts.source_context;
 
-                mc2.dereferencing_value = new dot_node(new ident(awaiter + (lbnum - 1).ToString(), ts.source_context),
-                    new ident("GetResult"), ts.source_context);
-
+                //mc2.dereferencing_value = new dot_node(new ident(awaiter + (lbnum - 1).ToString(), ts.source_context),
+                //    new ident("GetResult"), ts.source_context);
+                mc2.dereferencing_value = GenGetResult(new ident(awaiter + (lbnum - 1).ToString(), ts.source_context),ts);
 
                 ts.stmt_list.Add(new procedure_call(mc2, ts.source_context), ts.source_context);
                 var tt = code_list.list[lbnum - 1] as statement_list;
@@ -591,11 +641,12 @@ namespace SyntaxVisitors.Async
             // Когда await закончились и пора выводить результат
             mc2 = new method_call();
             mc2.source_context = ts.source_context;
-            mc2.dereferencing_value = new dot_node(new ident(awaiter + lbnum.ToString(), ts.source_context),
-                new ident("GetResult"), ts.source_context);
+            //mc2.dereferencing_value = new dot_node(new ident(awaiter + lbnum.ToString(), ts.source_context),
+            //    new ident("GetResult"), ts.source_context);
 
+            mc2.dereferencing_value = GenGetResult(new ident(awaiter + lbnum.ToString(), ts.source_context), ts);
 
-            ts.stmt_list.Add(new procedure_call(mc2, ts.source_context), ts.source_context);
+           ts.stmt_list.Add(new procedure_call(mc2, ts.source_context), ts.source_context);
             var tt2 = code_list.list.Last() as statement_list;
             var fg2 = true;
             foreach (var stat in tt2.list)
@@ -718,6 +769,15 @@ namespace SyntaxVisitors.Async
 
             }
 
+        }
+        // Генерируем GetResult, заменяя GetResult на GenGetResult
+        public static dot_node GenGetResult(syntax_tree_node stn, syntax_tree_node ts)
+        {
+            if (stn is ident)
+            {
+                return new dot_node(stn as ident, new ident("GetResult"), ts.source_context);
+            }
+            return new dot_node(stn as dot_node,new ident("GetResult"), ts.source_context);
         }
 
         // Объявляем локальные переменные полями класса StateMachine
