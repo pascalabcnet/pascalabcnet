@@ -13758,7 +13758,7 @@ end;
 /// Преобразует многострочную строку в массив строк
 function ToLines(Self: string): array of string; extensionmethod;
 begin
-  Result := Self.Split(|NewLine|, System.StringSplitOptions.RemoveEmptyEntries);
+  Result := Self.Split(|NewLine|, System.StringSplitOptions.None);
 end;
 
 procedure PassSpaces(var s: string; var from: integer); 
