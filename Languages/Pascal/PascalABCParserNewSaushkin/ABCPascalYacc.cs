@@ -1,9 +1,11 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
+
 // Machine:  LAPTOP-TE3HP881
 // DateTime: 17.06.2024 10:51:33
 // UserName: miks
+
 // Input file <ABCPascal.y>
 
 // options: no-lines gplex
