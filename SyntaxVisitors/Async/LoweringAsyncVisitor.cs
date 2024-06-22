@@ -298,7 +298,7 @@ namespace SyntaxVisitors.Async
             var breakLabeledStatement = new labeled_statement(gotoBreak.label);
 
 
-            ReplaceStatement(rn, SeqStatements(gotoContinue, continueLabeledStatement, breakLabeledStatement));
+            ReplaceStatementUsingParent(rn, SeqStatements(gotoContinue, continueLabeledStatement, breakLabeledStatement));
 
             // в declarations ближайшего блока добавить описание labels
             block bl = listNodes.FindLast(x => x is block) as block;
@@ -332,7 +332,7 @@ namespace SyntaxVisitors.Async
             var lb2 = new labeled_statement(gotoContinue.label, if0); // continue
             var lb1 = new labeled_statement(gotoBreak.label); // break
 
-            ReplaceStatement(wn, SeqStatements(lb2, wn.statements, gotoContinue, lb1));
+            ReplaceStatementUsingParent(wn, SeqStatements(lb2, wn.statements, gotoContinue, lb1));
 
             // в declarations ближайшего блока добавить описание labels
             block bl = listNodes.FindLast(x => x is block) as block;
@@ -419,7 +419,7 @@ namespace SyntaxVisitors.Async
 
             var lbInc = new labeled_statement(gotoContinue.label, Inc);
 
-            ReplaceStatement(fn, SeqStatements(ass1, if0, lb1, fn.statements, if1, lbInc, gotoStart, lb2));
+            ReplaceStatementUsingParent(fn, SeqStatements(ass1, if0, lb1, fn.statements, if1, lbInc, gotoStart, lb2));
 
             /*var if0 = new if_node((fn.cycle_type == for_cycle_type.to) ?
                 bin_expr.Greater(fn.loop_variable, fn.finish_value) :
