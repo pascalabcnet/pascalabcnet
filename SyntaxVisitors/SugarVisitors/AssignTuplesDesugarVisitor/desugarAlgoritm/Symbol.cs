@@ -8,7 +8,7 @@ namespace AssignTupleDesugarAlgorithm
     {
         public enum Type
         {
-            VAR_PARAM, FROM_OUTER_SCOPE, INDEXER, DOT_NODE, LOCAL, EXPR, POINTER
+            VAR_PARAM, FROM_OUTER_SCOPE, INDEXER, DOT_NODE, LOCAL, EXPR, POINTER, CONST_EXPR
         }
         public string name;
         public string last_name;
@@ -65,6 +65,10 @@ namespace AssignTupleDesugarAlgorithm
             else if (node is get_address || node is roof_dereference)
             {
                 type = Type.POINTER;
+            }
+            else if(node is const_node)
+            {
+                type = Type.CONST_EXPR;
             }
             else
             {
