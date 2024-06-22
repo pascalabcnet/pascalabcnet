@@ -13758,7 +13758,18 @@ end;
 /// Преобразует многострочную строку в массив строк
 function ToLines(Self: string): array of string; extensionmethod;
 begin
-  Result := Self.Split(|NewLine|, System.StringSplitOptions.None);
+  Result := Self.Split(|
+    #13#10, // CR+LF: Win
+    #10, // LF: Linux
+    #13 // CR: Mac
+    // https://en.m.wikipedia.org/wiki/Newline#Unicode
+    // But standard .Net things like System.IO.StringReader don't support these, so for now - commented out
+//    #11, // Vertical Tab
+//    #12, // Form feed
+//    char($85), // Next Line
+//    char($2028), // Line Separator
+//    char($2029), // Paragraph SeparatorS
+  |, System.StringSplitOptions.None);
 end;
 
 procedure PassSpaces(var s: string; var from: integer); 
