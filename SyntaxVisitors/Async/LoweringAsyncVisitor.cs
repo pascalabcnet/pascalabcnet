@@ -252,7 +252,7 @@ namespace SyntaxVisitors.Async
             {
                 var if0 = new if_node(un_expr.Not(ifn.condition), gtAfter);
                 //Replace(ifn, SeqStatements(gotoStartIfCondition, ifn.then_body, lbAfter));
-                ReplaceStatement(ifn, SeqStatements(if0, ifn.then_body, lbAfter));
+                ReplaceStatementUsingParent(ifn, SeqStatements(if0, ifn.then_body, lbAfter));
 
                 // в declarations ближайшего блока добавить описание labels
                 block bl = listNodes.FindLast(x => x is block) as block;
@@ -267,7 +267,7 @@ namespace SyntaxVisitors.Async
 
                 var if0 = new if_node(un_expr.Not(ifn.condition), gtAlt);
 
-                ReplaceStatement(ifn, SeqStatements(if0, ifn.then_body, gtAfter, lbAlt, lbAfter));
+                ReplaceStatementUsingParent(ifn, SeqStatements(if0, ifn.then_body, gtAfter, lbAlt, lbAfter));
 
                 // в declarations ближайшего блока добавить описание labels
                 block bl = listNodes.FindLast(x => x is block) as block;
