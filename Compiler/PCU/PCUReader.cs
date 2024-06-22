@@ -1335,7 +1335,7 @@ namespace PascalABCCompiler.PCU
                 	loc = ReadDebugInfo();
                 	type_node elem_type = GetTypeReference();
                 	int rank = br.ReadInt32();
-                	return type_constructor.instance.create_unsized_array(elem_type, null, rank, loc);
+                	return type_constructor.instance.create_unsized_array(elem_type, rank, loc);
                 case 6:
                     return GetTemplateInstance();
                 case 7:
