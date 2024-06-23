@@ -3021,7 +3021,10 @@ namespace PascalABCCompiler.PCU
 			bw.Write(GetMemberOffset(_event.remove_method));
 			if (CanWriteObject(_event.raise_method))
 			bw.Write(GetMemberOffset(_event.raise_method));
-			bw.Write(GetMemberOffset(_event.field));
+            if (!_event.cont_type.IsInterface)
+                bw.Write(GetMemberOffset(_event.field));
+            else
+                bw.Write(0);
 			bw.Write(offset);
 			bw.Write((byte)_event.field_access_level);
 			bw.Write((byte)_event.polymorphic_state);
