@@ -1850,7 +1850,7 @@ namespace PascalABCCompiler.PCU
             int field_off = br.ReadInt32();
             class_field cf = null;
             if (field_off > 0)
-                cf = GetClassField(br.ReadInt32());
+                cf = GetClassField(field_off);
             common_type_node cont = (common_type_node)GetTypeReference(br.ReadInt32());
             if (name==null)
                 name = GetStringInClass(cont, name_ref);
