@@ -79,13 +79,10 @@ namespace PascalABCCompiler.TreeConverter
 				SystemLibrary.SystemLibrary.init_reference_type(ctn);
 				return ctn;
 			}
-			// Not compiled type - then common type
-			var comm_element_type = (common_type_node)element_type;
-			var cmn = comm_element_type.comprehensive_namespace;
 
 			common_type_node comtn = new common_type_node(SystemLibrary.SystemLibrary.array_base_type,
 			                                              StringConstants.get_array_type_name(element_type.name,rank), SemanticTree.type_access_level.tal_public,
-			                                              cmn, convertion_data_and_alghoritms.symbol_table.CreateClassScope(cmn?.scope, SystemLibrary.SystemLibrary.array_base_type.Scope), loc);
+			                                              null, convertion_data_and_alghoritms.symbol_table.CreateClassScope(null, SystemLibrary.SystemLibrary.array_base_type.Scope), loc);
 			comtn.internal_type_special_kind = SemanticTree.type_special_kind.array_kind;
 			comtn.is_class = true;
 			comtn.add_internal_interface(aii);
