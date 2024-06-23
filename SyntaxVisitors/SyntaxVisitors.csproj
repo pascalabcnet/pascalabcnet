@@ -69,7 +69,6 @@
     <Compile Include="BaseVisitors\SmallHelperVisitors.cs" />
     <Compile Include="ChangeWhileVisitor.cs" />
     <Compile Include="CheckingVisitors\UnnamedRecordsCheckErrorsVisitor.cs" />
-    <Compile Include="LightSymInfoVisitors\LightScopeHelperClasses.cs" />
     <Compile Include="PatternsVisitors\ExtendedIsDesugaringVisitor.cs" />
     <Compile Include="PatternsVisitors\PatternsDesugaringVisitor.cs" />
     <Compile Include="PatternsVisitors\ReplaceNamesInIsVarVisitor.cs" />
