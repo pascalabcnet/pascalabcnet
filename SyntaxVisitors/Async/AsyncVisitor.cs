@@ -49,12 +49,19 @@ namespace SyntaxVisitors
             if (pd.proc_header is function_header)
             {
                 var ph = pd.proc_header as function_header;
-                FunctionSet.Add(ph.name.meth_name.name);
+                if (ph.name != null)
+                {
+                    FunctionSet.Add(ph.name.meth_name.name);
+                }
             }
             else
             {
                 var ph = pd.proc_header;
-                ProcedureSet.Add(ph.name.meth_name.name);
+                if (ph.name != null)
+                {
+                    ProcedureSet.Add(ph.name.meth_name.name);
+
+                }
             }
             // Собираем все асинхронные методы в proc_def_List
             if (pd.proc_header.IsAsync)
@@ -167,6 +174,7 @@ namespace SyntaxVisitors
                 foreach (var item in pm.program_block.program_code.list)
                 {
                     b.program_code.list.Add(item);
+                    item.Parent = b.program_code;
                 }
                 p.proc_body = b;
                 pm.program_block.program_code.list.Clear();
