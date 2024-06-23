@@ -93,6 +93,21 @@ namespace AssignTupleDesugarAlgorithm
             List<Edge> assign_first = new List<Edge>();
             List<Edge> assign_last = new List<Edge>();
 
+            var moved_first = new List<Edge>();
+            var moved_last = new LinkedList<Edge>();
+            var movedAssigns = new HashSet<int>();
+
+
+            void moveAssign(int i, bool toFirst)
+            {
+                Edge assign = new Edge(new SymbolNode(right[i]), new SymbolNode(left[i]));
+                if (toFirst)
+                    moved_first.Add(assign);
+                else
+                    moved_last.AddFirst(assign);
+                movedAssigns.Add(i);
+            }
+
             void addTemp(int i, bool toFirst)
             {
                 if(toFirst)
@@ -129,6 +144,7 @@ namespace AssignTupleDesugarAlgorithm
             {
                 if (right[i].type == Symbol.Type.EXPR || right[i].type == Symbol.Type.VAR_PARAM)
                 {
+                    
                     addTemp(i, true);
                 }
                 if (left[i].type == Symbol.Type.VAR_PARAM)
@@ -183,21 +199,15 @@ namespace AssignTupleDesugarAlgorithm
             var graphs = new List<SynonymsGraph>();
             graphs.AddRange(nameToGraph.Values);
             graphs.Add(indexerGraph);
-            var moved_first = new List<Edge>();
-            var moved_last = new LinkedList<Edge>();
-            var movedAssigns = new HashSet<int>();
 
-
-            void moveAssign(int i, bool toFirst )
+            //Handle const
+            for (int i = 0; i < left.Count; i++)
             {
-                Edge assign = new Edge(new SymbolNode(right[i]), new SymbolNode(left[i]));
-                if (toFirst)
-                    moved_first.Add(assign);
-                else
-                    moved_last.AddFirst(assign);
-                movedAssigns.Add(i);
+                if (right[i].type == Symbol.Type.CONST_EXPR)
+                {
+                    moveAssign(i, false);
+                }
             }
-
             void resolveGraph(SynonymsGraph sGraph)
             {
           
