@@ -188,6 +188,8 @@ end;
 procedure CompileAllUnits;
 begin
   var comp := new Compiler();
+  // Не пропускать ошибки сохранения PCU, в тесте создания PCU
+  comp.InternalDebug.SkipPCUErrors := false;
   var files := Directory.GetFiles(TestSuiteDir + PathSeparator + 'units', '*.pas');
   var dir := TestSuiteDir + PathSeparator + 'units' + PathSeparator;
   for var i := 0 to files.Length - 1 do
