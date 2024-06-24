@@ -1847,7 +1847,10 @@ namespace PascalABCCompiler.PCU
             common_method_node raise_meth = null;
             if (CanReadObject())
             raise_meth = GetClassMethod(br.ReadInt32());
-            class_field cf = GetClassField(br.ReadInt32());
+            int field_off = br.ReadInt32();
+            class_field cf = null;
+            if (field_off > 0)
+                cf = GetClassField(field_off);
             common_type_node cont = (common_type_node)GetTypeReference(br.ReadInt32());
             if (name==null)
                 name = GetStringInClass(cont, name_ref);
