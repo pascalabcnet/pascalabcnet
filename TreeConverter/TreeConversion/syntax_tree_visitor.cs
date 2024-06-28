@@ -18633,8 +18633,27 @@ namespace PascalABCCompiler.TreeConverter
                 else
                 {
                     // для "tn is compiled_generic_instance_type_node" необходимо восстановить стёртые типы
-                    var ind = orig.instance_params.FindIndex(item => item.name == foundElementType.Name);
-                    elem_type = tn.instance_params[ind];
+                    var temp = foundElementType.GetGenericArguments();
+
+                    if (foundElementType.IsGenericParameter)
+                    {
+                        var ind = orig.instance_params.FindIndex(item => item.name == foundElementType.Name);
+                        elem_type = tn.instance_params[ind];
+                    }
+                    else
+                    {
+                        var declaredTypes = foundElementType
+                            .GetGenericArguments()
+                            .Select(item=> item.Name)
+                            .ToArray();
+
+                        var actualTypes = tn.instance_params
+                            .Where((item, i) => declaredTypes.Contains(orig.instance_params[i].name))
+                            .ToList();
+
+                        elem_type = compiled_type_node.get_type_node( foundElementType.GetGenericTypeDefinition() );
+                        elem_type = elem_type.get_instance(actualTypes);
+					}
                 }
 
 				return true;
