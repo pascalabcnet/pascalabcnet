@@ -18675,7 +18675,8 @@ namespace PascalABCCompiler.TreeConverter
                 if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.typed_file) // еще может быть множество set of T - 22.02.16 SSM
                 {
                     elem_type = tn.element_type;
-                    return true;
+                    sys_coll_ienum = true;
+					return true;
                 }
 
                 foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces) // Ищем интерфейс IEnumerable<T> и возвращаем T в качестве elem_type
