@@ -18483,7 +18483,7 @@ namespace PascalABCCompiler.TreeConverter
             return false;
         }
 
-        private bool IsIEnumInterface(Type t)
+        private bool IsIEnumerableInterface(Type t)
 		{
             var IEnumType = typeof(IEnumerable);
 			var IEnumTypedType = typeof(IEnumerable<>);
@@ -18496,18 +18496,31 @@ namespace PascalABCCompiler.TreeConverter
             return isIEnumType || isIEnumTypedType;
 		}
 
+        public bool IsIEnumeratorInterface(Type t)
+        {
+			var IEnumType = typeof(IEnumerator);
+			var IEnumTypedType = typeof(IEnumerator<>);
+
+			var isIEnumType = (t == IEnumType);
+			var isIEnumTypedType = t.IsGenericType
+				&& (t.GetGenericTypeDefinition() == IEnumTypedType
+			);
+
+			return isIEnumType || isIEnumTypedType;
+		}
+
         public Type FindIEnumerableInterfaceInCompiledType(Type compiledType)
         {
 			var IEnumType = typeof(IEnumerable);
 			var IEnumTypedType = typeof(IEnumerable<>);
 
 			// если тип является интерфейсом IEnumerable или IEnumerable<T> то берём его
-			if (IsIEnumInterface(compiledType))
+			if (IsIEnumerableInterface(compiledType))
                 return compiledType;
 
             // иначе ищем подходящие интерфейсы в иерархии
             var filterdInterfaces = compiledType.FindInterfaces(
-                (item, _) => IsIEnumInterface(item),
+                (item, _) => IsIEnumerableInterface(item),
                 null
             );
 
@@ -18527,7 +18540,10 @@ namespace PascalABCCompiler.TreeConverter
 			}
 
             // для класса/записи необходимо учитывать явные реализации GetEnumerator
-            var methods = compiledType.GetMethods().Where(item => item.Name == "GetEnumerator").ToArray();
+            var methods = compiledType.GetMethods().Where(item => 
+                item.Name == "GetEnumerator"
+                && IsIEnumeratorInterface(item.ReturnType)
+            ).ToArray();
 
             switch (methods.Length)
             {
