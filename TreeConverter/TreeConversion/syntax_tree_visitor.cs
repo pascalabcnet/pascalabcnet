@@ -18542,6 +18542,7 @@ namespace PascalABCCompiler.TreeConverter
             // для класса/записи необходимо учитывать явные реализации GetEnumerator
             var methods = compiledType.GetMethods().Where(item => 
                 item.Name == "GetEnumerator"
+                && item.GetParameters().Length == 0
                 && IsIEnumeratorInterface(item.ReturnType)
             ).ToArray();
 
