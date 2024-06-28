@@ -18675,7 +18675,10 @@ namespace PascalABCCompiler.TreeConverter
                 if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.typed_file) // еще может быть множество set of T - 22.02.16 SSM
                 {
                     elem_type = tn.element_type;
-                    sys_coll_ienum = true;
+
+                    if (tn.type_special_kind == type_special_kind.set_type)
+                        sys_coll_ienum = true;
+
 					return true;
                 }
 
