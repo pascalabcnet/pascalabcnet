@@ -11610,14 +11610,9 @@ namespace PascalABCCompiler.NETGenerator
 
             if (is_generic)
             {
-                if (value.ElementType.node_kind == node_kind.compiled)
+                if (helper.IsConstructedGenericType(elementType))
                 {
-                    enumer_mi = TypeFactory.IEnumerableGenericType.MakeGenericType(elementType).GetMethod("GetEnumerator");
-					return_type = enumer_mi.ReturnType;
-				}
-                else
-                {
-					enumer_mi = TypeBuilder.GetMethod(
+                    enumer_mi = TypeBuilder.GetMethod(
                         TypeFactory.IEnumerableGenericType.MakeGenericType(elementType),
                         TypeFactory.IEnumerableGenericType.GetMethod("GetEnumerator")
                     );
@@ -11625,6 +11620,11 @@ namespace PascalABCCompiler.NETGenerator
                     return_type = enumer_mi.ReturnType
                         .GetGenericTypeDefinition()
                         .MakeGenericType(elementType);
+                }
+                else
+                {
+					enumer_mi = TypeFactory.IEnumerableGenericType.MakeGenericType(elementType).GetMethod("GetEnumerator");
+					return_type = enumer_mi.ReturnType;
 				}
 			}
             else
