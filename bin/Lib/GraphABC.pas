@@ -8,7 +8,6 @@ unit GraphABC;
 {$apptype windows} 
 {$reference '%GAC%\System.Windows.Forms.dll'}
 {$reference '%GAC%\System.Drawing.dll'}
-{$gendoc true}
 
 interface
 

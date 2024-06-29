@@ -4707,9 +4707,12 @@ namespace PascalABCCompiler.NETGenerator
         {
             ICommonTypeNode ctn = init_value.type as ICommonTypeNode;
             IExpressionNode[] FieldValues = init_value.FieldValues;
-            ICommonClassFieldNode[] Fields = ctn.fields;
+            List<ICommonClassFieldNode> Fields = new List<ICommonClassFieldNode>();
+            foreach (var field in ctn.fields)
+                if (field.polymorphic_state != polymorphic_state.ps_static)
+                    Fields.Add(field);
 
-            for (int i = 0; i < Fields.Length; i++)
+            for (int i = 0; i < Fields.Count; i++)
             {
                 FldInfo field = helper.GetField(Fields[i]);
                 if (FieldValues[i] is IArrayInitializer)
@@ -4750,9 +4753,12 @@ namespace PascalABCCompiler.NETGenerator
         {
             ICommonTypeNode ctn = init_value.type as ICommonTypeNode;
             IConstantNode[] FieldValues = init_value.FieldValues;
-            ICommonClassFieldNode[] Fields = ctn.fields;
+            List<ICommonClassFieldNode> Fields = new List<ICommonClassFieldNode>();
+            foreach (var field in ctn.fields)
+                if (field.polymorphic_state != polymorphic_state.ps_static)
+                    Fields.Add(field);
 
-            for (int i = 0; i < Fields.Length; i++)
+            for (int i = 0; i < Fields.Count; i++)
             {
                 FldInfo field = helper.GetField(Fields[i]);
                 if (FieldValues[i] is IArrayConstantNode)

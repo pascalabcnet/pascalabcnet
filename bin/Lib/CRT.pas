@@ -7,7 +7,6 @@
 unit CRT;
 
 {$apptype console}
-{$gendoc true}
 
 interface
 

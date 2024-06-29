@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 //Здесь описана реализация generic-типов
 //Файлом владеет ssyy.
@@ -508,7 +508,7 @@ namespace PascalABCCompiler.TreeRealization
                 type_node elem_tp = determine_type(ii.element_type, param_types, method_param_types, generic_param_types);
                 if (elem_tp != ii.element_type)
                 {
-                    return SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.type_constructor.create_unsized_array(elem_tp, null, ii.rank, null);
+                    return SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.type_constructor.create_unsized_array(elem_tp, ii.rank, null);
                 }
                 return tn;
             }
@@ -555,7 +555,7 @@ namespace PascalABCCompiler.TreeRealization
                     type_node elem_tp = determine_type(comm_type.element_type, param_types, method_param_types, generic_param_types);
                     if (elem_tp != comm_type.element_type)
                     {
-                        return SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.type_constructor.create_unsized_array(elem_tp, null, 1, comm_type.loc);
+                        return SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.type_constructor.create_unsized_array(elem_tp, 1, comm_type.loc);
                     }
                     return tn;
                 }

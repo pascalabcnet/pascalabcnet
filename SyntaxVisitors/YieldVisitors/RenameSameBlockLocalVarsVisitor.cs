@@ -113,13 +113,16 @@ namespace SyntaxVisitors
                 return;
             }
 
+            var newNameCache = new Dictionary<string, string>();
+
             var newLocalNames = var_def.vars.idents.Select(id => 
                 {
                     var low = id.name.ToLower();
 
                     var newName = this.CreateNewVariableName(low);
                     //BlockNamesStack[CurrentLevel].Add(low, newName);
-                    BlockNamesStack[CurrentLevel][low] = newName;
+                    //BlockNamesStack[CurrentLevel][low] = newName;
+                    newNameCache[low] = newName;
                     return new ident(newName, id.source_context);
                 });
 
@@ -130,6 +133,8 @@ namespace SyntaxVisitors
             Replace(var_def, newVS);
             listNodes[listNodes.Count - 1] = newVS; //SSM 8.11.18
             ProcessNode(newVS.inital_value); // SSM 10.06.2020 #2103
+            foreach (var key in newNameCache.Keys)
+                BlockNamesStack[CurrentLevel][key] = newNameCache[key];
             //base.visit(newVS); // SSM 10.06.2020 - зачем обходить всё?
         }
 

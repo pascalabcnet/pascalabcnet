@@ -1126,8 +1126,11 @@ begin
   FillRectangle(0,0,1280,1024);
   Pen.RoundCap := True;
   
-  LoadIni(settings);
-  MainForm.Invoke(SetWindowBounds, new System.Drawing.Rectangle(settings.Left,settings.Top,settings.Width,settings.Height));
+  try
+    LoadIni(settings);
+    MainForm.Invoke(SetWindowBounds, new System.Drawing.Rectangle(settings.Left,settings.Top,settings.Width,settings.Height));
+  except
+  end;  
   
   //var (sw,sh) := ScreenSize;
   MainForm.Invoke(InitControls);
