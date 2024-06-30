@@ -3237,9 +3237,9 @@ namespace PascalABCCompiler.PCU
             statement_node body = CreateStatement();
             type_node elementType = null;
             if (CanReadObject())
-				elementType = GetTypeReference();
+                elementType = GetTypeReference();
 
-			bool isGeneric = br.ReadBoolean();
+            bool isGeneric = br.ReadBoolean();
             return new foreach_node(vdn, expr, body, elementType, isGeneric, null);
         }
 
