@@ -18496,7 +18496,7 @@ namespace PascalABCCompiler.TreeConverter
             return isIEnumType || isIEnumTypedType;
 		}
 
-        public bool IsIEnumeratorInterface(Type t)
+        private bool IsIEnumeratorInterface(Type t)
         {
 			var IEnumType = typeof(IEnumerator);
 			var IEnumTypedType = typeof(IEnumerator<>);
@@ -18509,7 +18509,7 @@ namespace PascalABCCompiler.TreeConverter
 			return isIEnumType || isIEnumTypedType;
 		}
 
-        public Type FindIEnumerableInterfaceInCompiledType(Type compiledType)
+        private Type FindIEnumerableInterfaceInCompiledType(Type compiledType)
         {
 			var IEnumType = typeof(IEnumerable);
 			var IEnumTypedType = typeof(IEnumerable<>);
@@ -18519,12 +18519,12 @@ namespace PascalABCCompiler.TreeConverter
                 return compiledType;
 
             // иначе ищем подходящие интерфейсы в иерархии
-            var filterdInterfaces = compiledType.FindInterfaces(
+            var filteredInterfaces = compiledType.FindInterfaces(
                 (item, _) => IsIEnumerableInterface(item),
                 null
             );
 
-            var genericInterfaceCount = filterdInterfaces.Count(item => item.IsGenericType);
+            var genericInterfaceCount = filteredInterfaces.Count(item => item.IsGenericType);
 
             if (compiledType.IsInterface)
             {
@@ -18534,7 +18534,7 @@ namespace PascalABCCompiler.TreeConverter
                     return null;
 
 				if (genericInterfaceCount == 1)
-					return filterdInterfaces.First(item => item.IsGenericType);
+					return filteredInterfaces.First(item => item.IsGenericType);
 				else
 					return IEnumType;
 			}
@@ -18556,7 +18556,7 @@ namespace PascalABCCompiler.TreeConverter
 					// тип реализует и IEnumerable и IEnumerable<T> явно
 					// выбираем IEnumerable<T>
 					if (genericInterfaceCount == 1)
-                        return filterdInterfaces.First(item => item.IsGenericType);
+                        return filteredInterfaces.First(item => item.IsGenericType);
 					// явно реализует IEnumerable
 					else
 						return IEnumType;
@@ -18576,6 +18576,108 @@ namespace PascalABCCompiler.TreeConverter
 					return null;
 			}
 		}
+
+		private bool IsIEnumerableInterface(ITypeNode t)
+        {
+            compiled_type_node orig;
+
+            if (t is compiled_type_node)
+                orig = t as compiled_type_node;
+            else if (t is compiled_generic_instance_type_node)
+                orig = (t as compiled_generic_instance_type_node).original_generic as compiled_type_node;
+            else
+                return false;
+
+            return IsIEnumerableInterface(orig.compiled_type);
+		}
+
+        private List<ITypeNode> CollectInterfacesFromTypeNode(type_node node)
+        {
+            var result = new List<ITypeNode>();
+            result.AddRange(node.ImplementingInterfaces);
+
+            if (node.base_type != null)
+            {
+                var interfInBase = CollectInterfacesFromTypeNode(node.base_type);
+                result.AddRange(interfInBase);
+            }
+
+            return result;
+        }
+
+        private bool IsIEnumeratorInterface(type_node t)
+        {
+            compiled_type_node orig;
+
+            if (t is compiled_type_node)
+                orig = t as compiled_type_node;
+            else if (t is compiled_generic_instance_type_node)
+                orig = (t as compiled_generic_instance_type_node).original_generic as compiled_type_node;
+            else
+                return false;
+
+            return IsIEnumeratorInterface(orig.compiled_type);
+        }
+
+		private type_node FindIEnumerableInterfaceInTypeNode(type_node node)
+        {
+            var IEnumType = compiled_type_node.get_type_node( typeof(IEnumerable) );
+            var IEnumTypedType = compiled_type_node.get_type_node( typeof(IEnumerable<>) );
+
+            var filteredInterfaces = CollectInterfacesFromTypeNode(node)
+                .Where(item => IsIEnumerableInterface(item))
+                .Select( item => (type_node)item )
+                .ToArray();
+            
+            var genericInterfaceCount = filteredInterfaces.Count(item => item.is_generic_type_instance);
+
+            if (node.IsInterface)
+            {
+                 if (genericInterfaceCount > 1)
+                    return null;
+                
+                if (genericInterfaceCount == 1)
+                    return filteredInterfaces.First(item => item.is_generic_type_instance);
+                else
+                    return IEnumType;
+            }
+
+            if (!(node is common_type_node))
+                throw null;
+
+            var commonType = (common_type_node)node;
+
+			var methods = commonType.methods.Where(item =>
+                item.name.Equals("GetEnumerator", StringComparison.OrdinalIgnoreCase)
+                && item.parameters.Count == 0
+                && IsIEnumeratorInterface(item.return_value_type)
+            ).ToArray();
+
+            switch (methods.Length)
+            {
+                case 0:
+                    // тип реализует явно несколько IEnumerable<T>
+                    // невозможно выбрать. требуется явное приведение
+                    if (genericInterfaceCount > 1)
+                        return null;
+					// тип реализует и IEnumerable и IEnumerable<T> явно
+					// выбираем IEnumerable<T>
+					if (genericInterfaceCount == 1)
+                        return filteredInterfaces.First(item => item.is_generic_type_instance);
+					// явно реализует IEnumerable
+					else
+						return IEnumType;
+                case 1:
+                    var method = methods[0];
+
+                    if (!method.return_value_type.is_generic_type_instance)
+                        return IEnumType;
+                    else
+                        return IEnumTypedType.get_instance(method.return_value_type.instance_params);
+				default:
+                    return null;
+			}
+        }
 
 		public bool FindIEnumerableElementType(type_node tn, ref type_node elem_type, out bool sys_coll_ienum)
         {
@@ -18659,71 +18761,99 @@ namespace PascalABCCompiler.TreeConverter
 
 				return true;
             }
-            else // если мы самостоятельно определяем этот тип - можно реализовать в PascalABC.NET только IEnumerable. // Сейчас уже можно!!!!!
+            else 
+            // если мы самостоятельно определяем этот тип - можно реализовать в PascalABC.NET только IEnumerable. // Сейчас уже можно!!!!!
             // Попытка реализовать IEnumerable<T> натыкается на необходимость определять GetEnumerator, возвращающий IEnumerator и IEnumerator<T>
             {
-				var IEnstring = "System.Collections.IEnumerable";
-				compiled_type_node ctn = compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(IEnstring));
-
-				if (tn == null || tn is null_type_node || tn.ImplementingInterfaces == null)
-                {
-                    if (tn != null && tn.base_type != null)
-                        return FindIEnumerableElementType(tn.base_type, ref elem_type, out sys_coll_ienum);
-                    return false;
-                }
-
-                if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.typed_file) // еще может быть множество set of T - 22.02.16 SSM
+                // массивы и set of T
+                if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.typed_file)
                 {
                     elem_type = tn.element_type;
 
-                    if (tn.type_special_kind == type_special_kind.set_type)
+                    if ((tn as common_type_node).rank != 1)
                         sys_coll_ienum = true;
 
 					return true;
                 }
 
-                foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces) // Ищем интерфейс IEnumerable<T> и возвращаем T в качестве elem_type
-                {
-                    if (itn is compiled_generic_instance_type_node)
-                    {
-                        var itnc = (itn as compiled_generic_instance_type_node);
-                        var tt = (itnc.original_generic as compiled_type_node).compiled_type;
-                        if (tt == typeof(System.Collections.Generic.IEnumerable<>))
-                        {
-                            elem_type = itnc.generic_parameters[0] as common_type_node;
-                            return true;
-                        }
-                    }
-                }
+                var desiredInterface = FindIEnumerableInterfaceInTypeNode(tn);
 
-                foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces) // если не нашли - ищем интерфейс IEnumerable и возвращаем object в качестве elem_type
+                if (desiredInterface == null)
+                    return false;
+
+                if (!desiredInterface.is_generic_type_instance)
                 {
-                    if (itn is compiled_type_node) // Именно этот кусок отвечает за IEnumerable<integer> и мы его закомментировали
-                    {
-                        var itnc = (itn as compiled_type_node).compiled_type; /* SSM раскомментировал 15.05.2020 - пришла пора*/
-                        if (itnc.IsGenericType)
-                        {
-                            var my = itnc.GetGenericTypeDefinition();// = typeof(System.Collections.Generic.IEnumerable<>)
-                            if (my == typeof(System.Collections.Generic.IEnumerable<>))
-                            {
-                                var aarg1 = itnc.GetGenericArguments().First();
-                                elem_type = compiled_type_node.get_type_node(aarg1);
-                                return true;
-                            }
-                        }
-                        else /* end SSM раскомментировал 15.05.2020 - пришла пора*/
-                        if (itn == ctn)
-                        {
-                            elem_type = SystemLibrary.SystemLibrary.object_type;
-                            sys_coll_ienum = true;
-                            return true;
-                        }
-                    }
+                    elem_type = SystemLibrary.SystemLibrary.object_type;
+                    sys_coll_ienum = true;
                 }
+                else
+                    elem_type = desiredInterface.instance_params[0];
+
+                return true;
+
+
+				//var IEnstring = "System.Collections.IEnumerable";
+				//compiled_type_node ctn = compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(IEnstring));
+
+				//if (tn == null || tn is null_type_node || tn.ImplementingInterfaces == null)
+    //            {
+    //                if (tn != null && tn.base_type != null)
+    //                    return FindIEnumerableElementType(tn.base_type, ref elem_type, out sys_coll_ienum);
+    //                return false;
+    //            }
+
+    //            if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.typed_file) // еще может быть множество set of T - 22.02.16 SSM
+    //            {
+    //                elem_type = tn.element_type;
+
+    //                if (tn.type_special_kind == type_special_kind.set_type)
+    //                    sys_coll_ienum = true;
+
+				//	return true;
+    //            }
+
+    //            foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces) // Ищем интерфейс IEnumerable<T> и возвращаем T в качестве elem_type
+    //            {
+    //                if (itn is compiled_generic_instance_type_node)
+    //                {
+    //                    var itnc = (itn as compiled_generic_instance_type_node);
+    //                    var tt = (itnc.original_generic as compiled_type_node).compiled_type;
+    //                    if (tt == typeof(System.Collections.Generic.IEnumerable<>))
+    //                    {
+    //                        elem_type = itnc.generic_parameters[0] as common_type_node;
+    //                        return true;
+    //                    }
+    //                }
+    //            }
+
+    //            foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces) // если не нашли - ищем интерфейс IEnumerable и возвращаем object в качестве elem_type
+    //            {
+    //                if (itn is compiled_type_node) // Именно этот кусок отвечает за IEnumerable<integer> и мы его закомментировали
+    //                {
+    //                    var itnc = (itn as compiled_type_node).compiled_type; /* SSM раскомментировал 15.05.2020 - пришла пора*/
+    //                    if (itnc.IsGenericType)
+    //                    {
+    //                        var my = itnc.GetGenericTypeDefinition();// = typeof(System.Collections.Generic.IEnumerable<>)
+    //                        if (my == typeof(System.Collections.Generic.IEnumerable<>))
+    //                        {
+    //                            var aarg1 = itnc.GetGenericArguments().First();
+    //                            elem_type = compiled_type_node.get_type_node(aarg1);
+    //                            return true;
+    //                        }
+    //                    }
+    //                    else /* end SSM раскомментировал 15.05.2020 - пришла пора*/
+    //                    if (itn == ctn)
+    //                    {
+    //                        elem_type = SystemLibrary.SystemLibrary.object_type;
+    //                        sys_coll_ienum = true;
+    //                        return true;
+    //                    }
+    //                }
+    //            }
             }
-            if (tn != null && tn.base_type != null)
-                return FindIEnumerableElementType(tn.base_type, ref elem_type, out sys_coll_ienum);
-            return false;
+            //if (tn != null && tn.base_type != null)
+            //    return FindIEnumerableElementType(tn.base_type, ref elem_type, out sys_coll_ienum);
+            //return false;
         }
 
         private int GenIdNum = 0;
