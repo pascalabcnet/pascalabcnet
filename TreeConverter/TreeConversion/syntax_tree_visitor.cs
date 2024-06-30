@@ -18577,7 +18577,7 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        private bool IsIEnumerableInterface(ITypeNode t)
+        private bool IsIEnumerableInterface(type_node t)
         {
             compiled_type_node orig;
 
@@ -18594,7 +18594,7 @@ namespace PascalABCCompiler.TreeConverter
         /// <summary>
         /// Собирает интерфейсы, реализованные типом и его предками
         /// </summary>
-        private List<ITypeNode> CollectInterfacesFromTypeNode(type_node node)
+        private List<type_node> CollectInterfacesFromTypeNode(type_node node)
         {
             var result = new List<ITypeNode>();
             result.AddRange(node.ImplementingInterfaces);
@@ -18605,7 +18605,7 @@ namespace PascalABCCompiler.TreeConverter
                 result.AddRange(interfInBase);
             }
 
-            return result;
+            return result.Cast<type_node>().ToList();
         }
 
         private bool IsIEnumeratorInterface(type_node t)
@@ -18629,7 +18629,6 @@ namespace PascalABCCompiler.TreeConverter
 
             var filteredInterfaces = CollectInterfacesFromTypeNode(node)
                 .Where(item => IsIEnumerableInterface(item))
-                .Cast<type_node>()
                 .ToArray();
             
             var genericInterfaceCount = filteredInterfaces.Count(item => item.is_generic_type_instance);

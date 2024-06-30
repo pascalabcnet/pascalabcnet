@@ -2351,15 +2351,15 @@ namespace PascalABCCompiler.SemanticTree
             get;
         }
 
-		ITypeNode ElementType
-		{
-			get;
-		}
+        ITypeNode ElementType
+        {
+            get;
+        }
 
-		bool IsGeneric
-		{
-			get;
-		}
+        bool IsGeneric
+        {
+            get;
+        }
     }
 
     public interface ILockStatement : IStatementNode, ILocated
