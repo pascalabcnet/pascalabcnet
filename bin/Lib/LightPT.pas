@@ -169,7 +169,10 @@ procedure CheckInput(a: array of System.Type);
 procedure CheckOutput(params arr: array of object);
 /// Проверить значения при выводе. Сообщения ColoredMessage гасить. Нужно для повторных вызовов CheckOutput
 procedure CheckOutputSilent(params arr: array of object);
-
+/// Проверить значения при выводе
+procedure CheckOutput(a: ObjectList);
+/// Проверить значения при выводе. Сообщения ColoredMessage гасить. Нужно для повторных вызовов CheckOutput
+procedure CheckOutputSilent(a: ObjectList);
 
 /// Проверить, что данные не вводились
 procedure CheckInputIsEmpty;
@@ -943,7 +946,8 @@ begin
 end; 
 
 /// надо ли пополнять список ввода в функциях, используемых для ввода
-function NeedAddDataToInputList: boolean := IsLightPT and ((TestMode = tmNone) or (TestMode = tmAutoTest));
+function NeedAddDataToInputList: boolean 
+  := IsLightPT and ((TestMode = tmNone) or (TestMode = tmAutoTest));
 
 /// Полный путь к папке auth-файла
 function FindAuthDat: string;
@@ -1720,6 +1724,11 @@ end;
 /// Возвращает случайное целое в диапазоне от a до b
 function Random(a, b: integer): integer;
 begin
+  // Есть три состояния:
+  // 1. Вызов в основной программе (первый запуск) - TestMode = tmNone
+  // 2. Вызов в основной программе (последующие запуски) - TestMode = tmTest
+  // 3. Вызов в функции GenerateTestData - TestMode = tmGenTest - тогда срабатывает обычная ArrRandomInteger
+  //    как и в случае 1.  
   if TestMode = tmTest then
     Result := InputList.ReadTestDataInt // считать следующее данное из заполненного в GenTestMode InputList
   else Result := PABCSystem.Random(a, b);
@@ -1885,17 +1894,13 @@ begin
   // Есть три состояния:
   // 1. Вызов в основной программе (первый запуск) - TestMode = tmNone
   // 2. Вызов в основной программе (последующие запуски) - TestMode = tmTest
-  // 3. Вызов в функции GenerateTestData - TestMode = tmGenTest - это только в состоянии TestMode = True
-  {if GenTest then
-  begin
-    Result := PABCSystem.ArrRandomInteger(n, a, b); // приходится вызывать дважды!
-    exit;
-  end;}
+  // 3. Вызов в функции GenerateTestData - TestMode = tmGenTest - тогда срабатывает обычная ArrRandomInteger
+  //    как и в случае 1.  
   if TestMode = tmTest then
     Result := InputList.ReadTestDataIntArr(n)
   else Result := PABCSystem.ArrRandomInteger(n, a, b); 
   
-  if NeedAddDataToInputList then // IsLightPT and (TestMode = tmNone)
+  if NeedAddDataToInputList then // IsLightPT and ((TestMode = tmNone) or (TestMode = tmAutoTest))
   for var i:=0 to n-1 do
     InputList.Add(Result[i]);
 end;
@@ -2139,23 +2144,42 @@ begin
   CreateNewLineBeforeMessage := False;
 end;
 
-procedure CheckOutputHelper(i0: integer; params arr: array of object);
-  procedure OutputTestResult;
+function FlattenElement(x: object): List<object>;
+begin
+  var res := new List<object>;
+  if x is IEnumerable<object> (var xen) then
+    foreach var ob in xen do
+      res.AddRange(FlattenElement(ob))
+  else if x is System.Collections.IEnumerable (var xx) then
   begin
-    ColoredMessage($'Основной запуск верный',MsgColorGray);
-    ColoredMessage($'Ошибочное решение на тесте:',MsgColorOrange);
-    ColoredMessage($'Тестовые данные      : {InputList.JoinToString}',MsgColorGray);
-    ColoredMessage($'Полученный результат : {OutputList.JoinToString}',MsgColorGray);
-    if i0 = 0 then
-      ColoredMessage($'Правильный результат : {arr.JoinToString}',MsgColorGray)
-    else ColoredMessage($'Правильный результат : {(OutputList[:i0]+arr).JoinToString}',MsgColorGray)
-  end;
+    var en := xx.GetEnumerator;
+    while en.MoveNext do
+      res.Add(en.Current)
+  end    
+  else res.Add(x);
+  Result := res;  
+end;
 
+procedure OutputTestResult(i0: integer; arr: array of object);
+begin
+  ColoredMessage($'Основной запуск верный',MsgColorGray);
+  ColoredMessage($'Ошибочное решение на тесте:',MsgColorOrange);
+  ColoredMessage($'Тестовые данные      : {InputList.JoinToString}',MsgColorGray);
+  ColoredMessage($'Полученный результат : {OutputList.JoinToString}',MsgColorGray);
+  if i0 = 0 then
+    ColoredMessage($'Правильный результат : {arr.JoinToString}',MsgColorGray)
+  else ColoredMessage($'Правильный результат : {(OutputList[:i0]+arr).JoinToString}',MsgColorGray)
+end;
+
+procedure CheckOutputHelper(i0: integer; params arr: array of object);
 begin
   if (TaskResult = InitialTask) and CancelMessagesIfInitial
      or (TaskResult = BadInitialTask) then
     exit;
-
+  
+  // SSM 28.06.24 - вытягиваем в линию выходные данные
+  arr := arr.SelectMany(x -> FlattenElement(x)).ToArray;
+  
   // Если мы попали сюда, то OutputList.Count >= InitialOutputList.Count
   var mn := Min(arr.Length, OutputList.Count - i0);
   
@@ -2167,7 +2191,7 @@ begin
     then 
     begin
       if TestNumber > 0 then
-        OutputTestResult
+        OutputTestResult(i0,arr)
       else
       begin
         if i > InitialOutputList.Count then
@@ -2181,7 +2205,7 @@ begin
       if i >= InitialOutputList.Count then // ? Если первое данное неправильное - всё равно попадаем сюда!!!
       begin
         if TestNumber > 0 then
-          OutputTestResult
+          OutputTestResult(i0,arr)
         else
         begin
           if i > InitialOutputList.Count then
@@ -2199,7 +2223,7 @@ begin
   if arr.Length <> OutputList.Count - i0 then
   begin  
     if TestNumber > 0 then
-      OutputTestResult
+      OutputTestResult(i0,arr)
     else
     if OutputList.Count > 0 then begin
       if arr.Length > OutputList.Count - i0 then // выведено меньше чем надо
@@ -2218,12 +2242,16 @@ begin
   CheckOutputHelper(0,arr);
 end;
 
+procedure CheckOutput(a: ObjectList) := CheckOutputSeq(a);
+
 procedure CheckOutputSilent(params arr: array of object);
 begin
   Silent := True;
   CheckOutput(arr);
   Silent := False;
 end;
+
+procedure CheckOutputSilent(a: ObjectList) := CheckOutputSeqSilent(a);
 
 procedure CheckOutputAfterInitial(params arr: array of object);
 begin
@@ -2311,7 +2339,7 @@ type
   IntAr2 = array [,] of integer;
   RealAr2 = array [,] of real;
   
-function FlattenElement(x: object): List<object>; 
+{function FlattenElement(x: object): List<object>; 
 begin
   var lst := new List<object>;
   if x is IntAr (var iarr) then
@@ -2328,7 +2356,7 @@ begin
     lst.AddRange(lrarr.Select(x -> object(x)))
   else lst.Add(x);
   Result := lst;
-end;
+end;}
 
 procedure FlattenOutput;
 begin
@@ -2634,6 +2662,7 @@ begin
     TName := ConvertTaskName(TaskName);
     TestMode := tmNone;
     TestNumber := 0;
+    FlattenOutput; // SSM 28.06.24 
     CheckTask(TName); // может выдавать сообщения, предваряющие неверное решение, в CheckOutput. 
     if {not IsPT and not IsRobot and not IsDrawMan and} (TestCount > 0) then // То это LightPT - т.к. только в LightPT TestCount м.б. > 0
     begin
@@ -2660,6 +2689,7 @@ begin
           //InputList := InputList; 
           //OutputList := OutputList; 
           
+          FlattenOutput; // SSM 28.06.24 - и перед каждым тестом
           CheckTask(TName);
           if TaskResult = BadSolution then
             break; // хоть один тест неудачный - выходим!
