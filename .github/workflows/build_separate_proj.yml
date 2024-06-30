@@ -1,0 +1,56 @@
+﻿name: Build all C# projects separately
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  
+  release:
+    types:
+      - created
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prepare_matrix:
+    runs-on: windows-2019
+    outputs:
+      projects: ${{ steps.set_outputs.outputs.projects }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Get all.csproj files
+        id: set_outputs
+        run: |
+        
+          $projects = Get-ChildItem -Recurse '*.csproj' | ForEach-Object { $_.FullName }
+          $json = $projects | ConvertTo-Json -Compress
+          Write-Host $json
+          echo "::set-output name=projects::$json"
+  
+  build-and-test:
+    runs-on: windows-2019
+    needs: prepare_matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.prepare_matrix.outputs.projects) }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run tests for each project
+        run: |
+        
+          $project = "${{ matrix.project }}"
+          .\Studio.bat $project
+          
+          $pname = [IO.Path]::GetFileNameWithoutExtension($project)
+          if ($pname -eq 'PABCNETCclear') {
+            '##' | Set-Content 'a.pas'
+            &".\bin\$pname.exe" .\a.pas
+          }
