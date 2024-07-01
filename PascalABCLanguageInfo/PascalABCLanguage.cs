@@ -10,10 +10,10 @@ using PascalABCCompiler.TreeConverter;
 
 namespace Languages.Pascal
 {
-    public class PascalLanguage : BaseLanguage
+    public class PascalABCLanguage : BaseLanguage
     {
 
-        public PascalLanguage() : base(
+        public PascalABCLanguage() : base(
             name: StringConstants.pascalLanguageName,
             version: "1.2",
             copyright: "Copyright © 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich",

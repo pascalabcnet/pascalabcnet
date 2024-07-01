@@ -109,7 +109,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Parsers", "Parsers", "{E952
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCSaushkinParser", "Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj", "{0ED020FF-D28E-4791-BBDD-B8B9BA714096}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalLanguage", "PascalABCLanguageInfo\PascalLanguage.csproj", "{BD902586-E0D5-407A-904A-32249B8B709E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCLanguageInfo", "PascalABCLanguageInfo\PascalABCLanguageInfo.csproj", "{BD902586-E0D5-407A-904A-32249B8B709E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxTreeConverters", "SyntaxTreeConverters\SyntaxTreeConverters.csproj", "{F10A5330-DCF4-4533-877C-7B1B1BE23884}"
 EndProject
