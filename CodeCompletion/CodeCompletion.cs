@@ -46,7 +46,6 @@ namespace CodeCompletion
         public static Dictionary<string, InterfaceUnitScope> pabcNamespaces = new Dictionary<string, InterfaceUnitScope>();
          	
         public static string currentLanguageISO;
-        static string doctagsParserExtension = ".pasdt" + StringConstants.hideParserExtensionPostfixChar;
 		//public static PascalABCCompiler.Parsers.IParser currentParser;
 		static string cur_ext = ".pas";
         private static IParser currentParser;
@@ -64,7 +63,7 @@ namespace CodeCompletion
 
 		private static string get_doctagsParserExtension(string ext)
 		{
-			return ext + "dt" + StringConstants.hideParserExtensionPostfixChar;
+			return ext + "dt";
 		}
 		
 		public static IParser CurrentParser
