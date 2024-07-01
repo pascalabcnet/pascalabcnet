@@ -48,7 +48,7 @@ STATETEXT_FINDREFERNCES_RESULT{0}=Найдено {0} ссылок
 STATETEXT_NOTFOUND=Ничего не найдено
 
 SUPPORTED_LANGUAGES=Подключены входные языки:
-LANGUAGE_LOADED{0}{1}=Загружен языковой пакет {0} ({1})
+LANGUAGE_LOADED{0}=Загружен языковой пакет {0}
 LANGUAGE_LOAD_ERROR{0}=Ошибка загрузки языкового пакета {0}
 PARSER_CONNECTED{0}=Подключен парсер {0}
 
