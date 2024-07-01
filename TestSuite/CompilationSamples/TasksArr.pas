@@ -6,14 +6,14 @@ var AllTaskNames: array of string;
 
 procedure CheckTaskT(name: string);
 begin
-  FlattenOutput; // Во всех задачах на массивы
-  ClearOutputListFromSpaces; // Это чтобы a.Print работал. По идее, надо писать всегда. Яне знаю задач, где пробелы в ответе
+  //FlattenOutput; // Это теперь делается автоматически до вызова CheckTask
+  ClearOutputListFromSpaces; // Это чтобы a.Print работал. По идее, надо писать всегда. Я не знаю задач, где пробелы в ответе
 
   case name of
   'Arr1','Arr2': begin 
      FilterOnlyNumbersAndBools;
-     CheckData(InitialOutput := |cInt|*5); 
-     CheckOutputSeq(|cInt|*10);
+     CheckData(InitialOutput := cInt*5);
+     CheckOutputSeq(|cInt|*10); // Это еще и типы проверяет. Бывает, что только типы и надо проверить
      // Надо проверить, что Output[9] - целое ненулевое
      if OutputList.Count<10 then // чтобы не получить исключение
        exit;
@@ -71,7 +71,7 @@ begin
      CheckData(|cInt|*n, |cInt|*(n+1), |cInt|*n);
      
      var a := IntArr(n);
-     var p := integer(a.Product);
+     var p := integer(a.Product); // потому что ученик будет вычислять в вещественной переменной
      CheckOutputAfterInitial(p)
   end;
   'Arr_Sum3': begin 
@@ -259,7 +259,7 @@ begin
      var ind2 := arr.IndexOf(2);
      var ind5 := arr.IndexOf(5);
      Swap(arr[ind2],arr[ind5]);
-     CheckOutputAfterInitialSeq(arr);
+     CheckOutputAfterInitial(arr);
   end;
   'Arr_Index4': begin 
      FilterOnlyNumbersAndBools;
@@ -348,33 +348,33 @@ begin
     FilterOnlyNumbersAndBools;
     CheckData(Input := nil);
     
-    CheckOutputSeq(ArrFill(10,1));
+    CheckOutput(ArrFill(10,1));
   end;
   'Arr_Fill2': begin 
     FilterOnlyNumbersAndBools;
     CheckData(Input := nil);
     
-    CheckOutputSeq(ArrFill(10,1));
+    CheckOutput(ArrFill(10,1));
   end;
   'Заполнение1','ЗаполнениеЛямбда1': begin 
      FilterOnlyNumbersAndBools;
      CheckData(Input := Empty);
-     CheckOutputSeq(ArrGen(10,i->i*i));
+     CheckOutput(ArrGen(10,i->i*i));
   end;
   'Заполнение2','ЗаполнениеЛямбда2': begin 
      FilterOnlyNumbersAndBools;
      CheckData(Input := Empty);
-     CheckOutputSeq(ArrGen(10,1,i->i+2));
+     CheckOutput(ArrGen(10,1,i->i+2));
   end;
   'ЗаполнениеПоПред1','ЗаполнениеПоПред2': begin 
      FilterOnlyNumbersAndBools;
      CheckData(Input := Empty);
-     CheckOutputSeq(ArrGen(10,5,i->i+5));
+     CheckOutput(ArrGen(10,5,i->i+5));
   end;
   'ЗаполнениеГеом1','ЗаполнениеГеом2': begin 
      FilterOnlyNumbersAndBools;
      CheckData(Input := Empty);
-     CheckOutputSeq(ArrGen(10,1,i->i*2));
+     CheckOutput(ArrGen(10,1,i->i*2));
   end;
   'ЗаполнениеСумма1': begin 
      FilterOnlyNumbersAndBools;
@@ -398,7 +398,7 @@ begin
      foreach var i in a.Indices do
        if i.IsOdd then
          a[i] := 0;
-     CheckOutputAfterInitialSeq(a);  
+     CheckOutputAfterInitial(a);  
   end;
 
   'Arr_Reverse1','Arr_Reverse2': begin 

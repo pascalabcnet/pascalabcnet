@@ -5016,7 +5016,9 @@ function operator**(x: BigInteger; y: integer): BigInteger; extensionmethod := P
 //------------------------------------------------------------------------------
 //          Операции для BigInteger
 //------------------------------------------------------------------------------
-function BigInteger.operator/(p: BigInteger; q: real) := real(p)/q;
+function operator/(p: BigInteger; q: real); extensionmethod := real(p)/q;
+
+// function operator/(p: BigInteger; q: integer); extensionmethod := real(p)/q;
 
 function BigInteger.operator/(q: real; p: BigInteger) := q/real(p);
 
@@ -5050,7 +5052,7 @@ procedure BigInteger.operator*=(var p: BigInteger; q: BigInteger) := p := p * q;
 
 procedure BigInteger.operator-=(var p: BigInteger; q: BigInteger) := p := p - q;
 
-function BigInteger.operator div(p: BigInteger; q: integer) := BigInteger.Divide(p,q);
+//function BigInteger.operator div(p: BigInteger; q: integer) := BigInteger.Divide(p,q);
 
 function BigInteger.operator mod(p: BigInteger; q: integer) := BigInteger.Remainder(p,q);
 
@@ -5215,7 +5217,34 @@ begin
     raise new System.ArgumentException('step = 0');
   if (step > 0) and (b < a) or (step < 0) and (b > a) then
     exit;
-  var n := Round(Abs(b - a) / step);
+  if a = b then 
+  begin
+    yield a;
+    exit;
+  end;
+  // SSM 30/06/24
+  // Шкалируем [a,b] к отрезку [0,1]
+  var stepScaled := decimal(step) / (decimal(a) - decimal(b));
+  if stepScaled < 0 then
+    stepScaled := -stepScaled;
+  // Находим n - количество частей (левая точка последней части может не входить)
+  var n := decimal.ToInt32(decimal.Round(1/stepScaled));
+  //Println('-->',stepScaled,n);
+  // Возможны 3 ситуации:
+  // 1) - stepScaled * n < 1 - 1e-14 - тогда надо делать n+1 шаг
+  // 2) - stepScaled * n и диапазоне [1 - 1e-14, 1 + 1e-14] - тогда надо делать n+1 шаг и последнюю точку примагничивать к b
+  // 3) - stepScaled * n > 1 + 1e-14 - тогда надо делать n шагов
+  // Сделаем n шагов, а потом решим, делать ли последний шаг
+  for var i:=0 to n-1 do
+    yield a + i * step; // нельзя просто прибавлять step - при больших a,b они просто не будут меняться
+  var delta := decimal(1e-14); // относительная погрешность относительно 1 
+  if (stepScaled * n >= 1 - delta) and (stepScaled * n <= 1 + delta) then
+    yield b // вернуть ровно b - то, ради чего всё затевалось
+  else if stepScaled * n < 1 - delta then
+    yield a + n * step; // что ж, step задан неверно и мы "не долетаем" до b
+  // Если "перелетаем" b, то ничего и не возвращаем на конце
+  // Старый алгоритм
+  {var n := Round(Abs(b - a) / step);
   var delta := n / Abs(b - a) * 1e-14;
   var bplus := b + delta;
   var bminus := b - delta;
@@ -5238,7 +5267,7 @@ begin
     end;
     if a > bminus then
       yield b;
-  end
+  end}
 end;
 
 function ArrRandom(n: integer; a: integer; b: integer): array of integer;

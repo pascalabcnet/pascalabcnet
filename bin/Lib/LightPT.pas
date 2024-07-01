@@ -523,7 +523,7 @@ procedure GenerateTests<T1,T2,T3>(params a: array of (T1,T2,T3));
 {=========================================================}
 {               Фильтрация выходного списка               }
 {=========================================================}
-/// Преобразование строк, являющихся целыми, в целые в OutputList
+/// Преобразование строк и символов, являющихся числами, в числа в OutputList
 procedure ConvertStringsToNumbersInOutputList;
 /// Если в OutputList массивы, вытянуть их в единый список
 procedure FlattenOutput;
@@ -1399,6 +1399,13 @@ begin
     else if s.TryToReal(rval) then
       Result := rval
   end
+  else if ob is char then
+  begin
+    var s := ''+char(ob);
+    var ival: integer;
+    if s.TryToInteger(ival) then
+      Result := ival
+  end
 end;
 
 procedure ConvertStringsToNumbersInOutputList;
@@ -2147,7 +2154,9 @@ end;
 function FlattenElement(x: object): List<object>;
 begin
   var res := new List<object>;
-  if x is IEnumerable<object> (var xen) then
+  if x is string then
+    res.Add(x)
+  else if x is IEnumerable<object> (var xen) then
     foreach var ob in xen do
       res.AddRange(FlattenElement(ob))
   else if x is System.Collections.IEnumerable (var xx) then
