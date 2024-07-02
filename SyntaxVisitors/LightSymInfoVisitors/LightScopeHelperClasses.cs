@@ -22,7 +22,7 @@ namespace PascalABCCompiler.SyntaxTree
         recordname, interfacename, template_param, type_alias, const_var, property };
 
     [Flags]
-    public enum SymbolAttributes { class_attr = 1, varparam_attr = 2, private_attr = 4};
+    public enum SymbolAttributes { class_attr = 1, varparam_attr = 2, private_attr = 4 };
 
     public class SymInfoSyntax
     {
@@ -51,6 +51,19 @@ namespace PascalABCCompiler.SyntaxTree
         {
             Attr |= attr;
         }
+    }
+
+    public class BindResult {
+
+        public SymInfoSyntax symInfo;
+        public List<ScopeSyntax> path;
+
+        public BindResult(SymInfoSyntax s, List<ScopeSyntax> p)
+        {
+            symInfo = s;
+            path = p;
+        }
+
     }
 
     public abstract class ScopeSyntax

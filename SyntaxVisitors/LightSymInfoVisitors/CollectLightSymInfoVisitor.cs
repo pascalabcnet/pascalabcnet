@@ -38,6 +38,20 @@ namespace PascalABCCompiler.SyntaxTree
             AddSymbols(vd.vars.list, SymKind.var, vd.vars_type, attr);
             base.visit(vd);
         }
+
+        public override void visit(assign_var_tuple node)
+        {
+            AddSymbols(node.idents.idents, SymKind.var);
+            base.visit(node);
+        }
+
+        public override void visit(var_tuple_def_statement node)
+        {
+            var attr = node.var_attr == definition_attribute.Static ? SymbolAttributes.class_attr : 0;
+            AddSymbols(node.vars.list, SymKind.var, node.vars_type, attr);
+            base.visit(node);
+        }
+
         public override void visit(formal_parameters fp)
         {
             foreach (var pg in fp.params_list)
