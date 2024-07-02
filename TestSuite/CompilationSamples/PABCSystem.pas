@@ -5016,9 +5016,7 @@ function operator**(x: BigInteger; y: integer): BigInteger; extensionmethod := P
 //------------------------------------------------------------------------------
 //          Операции для BigInteger
 //------------------------------------------------------------------------------
-function operator/(p: BigInteger; q: real); extensionmethod := real(p)/q;
-
-// function operator/(p: BigInteger; q: integer); extensionmethod := real(p)/q;
+function BigInteger.operator/(p: BigInteger; q: real) := real(p)/q;
 
 function BigInteger.operator/(q: real; p: BigInteger) := q/real(p);
 
@@ -5052,7 +5050,7 @@ procedure BigInteger.operator*=(var p: BigInteger; q: BigInteger) := p := p * q;
 
 procedure BigInteger.operator-=(var p: BigInteger; q: BigInteger) := p := p - q;
 
-//function BigInteger.operator div(p: BigInteger; q: integer) := BigInteger.Divide(p,q);
+function BigInteger.operator div(p: BigInteger; q: integer) := BigInteger.Divide(p,q);
 
 function BigInteger.operator mod(p: BigInteger; q: integer) := BigInteger.Remainder(p,q);
 

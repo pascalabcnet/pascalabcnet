@@ -337,7 +337,14 @@ begin
     FilterOnlyNumbersAndBools;
     var N := Int(0);
     CheckData(Input := |cInt|*(N+1));
-    GenerateTests(10,tInt(1,10)*n); 
+
+    TestCount := 5;
+    GenerateTestData := tnum -> begin
+      var N := Random(5, 10);
+      var a := ArrRandomInteger(N,1,10);
+      InputList.AddTestData(|N|+a);
+    end;
+
     var s := 0;
     for var i:=1 to N do
       if Int(i).IsEven then
