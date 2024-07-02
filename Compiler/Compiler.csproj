@@ -163,7 +163,7 @@
     </ProjectReference>
     <ProjectReference Include="..\PascalABCLanguageInfo\PascalABCLanguageInfo.csproj">
       <Name>PascalABCLanguageInfo</Name>
-      <Project>{BD902586-E0D5-407A-904A-32249B8B709E}</Project>
+      <Project>{bd902586-e0d5-407a-904a-32249b8b709e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj">
