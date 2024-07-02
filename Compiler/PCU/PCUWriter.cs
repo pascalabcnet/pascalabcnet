@@ -3558,6 +3558,9 @@ namespace PascalABCCompiler.PCU
             bw.Write(GetMemberOffset(fn.ident));
             VisitExpression(fn.in_what);
             VisitStatement(fn.what_do);
+            if (CanWriteObject(fn.element_type))
+                WriteTypeReference(fn.element_type);
+            bw.Write(fn.is_generic);
         }
 
         private void VisitLock(lock_statement node)

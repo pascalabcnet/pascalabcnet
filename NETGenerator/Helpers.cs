@@ -866,58 +866,6 @@ namespace PascalABCCompiler.NETGenerator {
             return null;
         }
 
-        public MethodInfo GetEnumeratorMethod(Type t, out Type[] generic_args)
-        {
-            generic_args = null;
-            Type generic_def = null;
-            if (t.IsGenericType && !t.IsGenericTypeDefinition)
-                generic_def = t.GetGenericTypeDefinition();
-            else
-                generic_def = t;
-            if (generic_def.IsArray && generic_def.GetElementType().IsGenericParameter)
-            {
-                return TypeFactory.IEnumerableGenericType.GetMethod("GetEnumerator");
-            }
-            if (generic_def.IsArray)
-            {
-                if (IsConstructedGenericType(generic_def.GetElementType()))
-                    return TypeBuilder.GetMethod(TypeFactory.IEnumerableGenericType.MakeGenericType(generic_def.GetElementType()), TypeFactory.IEnumerableGenericType.GetMethod("GetEnumerator"));
-                else
-                    return TypeFactory.IEnumerableGenericType.MakeGenericType(generic_def.GetElementType()).GetMethod("GetEnumerator");
-            }
-            else if (generic_def.IsGenericParameter)
-            {
-                return TypeFactory.IEnumerableType.GetMethod("GetEnumerator", Type.EmptyTypes);
-            }
-            foreach (Type interf in generic_def.GetInterfaces())
-            {
-                if (interf.IsGenericType && interf.GetGenericTypeDefinition() == TypeFactory.IEnumerableGenericType)
-                {
-                    MethodInfo mi = interf.GetGenericTypeDefinition().GetMethod("GetEnumerator");
-                    if (generic_def != t)
-                    {
-                        if (t.GetGenericArguments().Length != interf.GetGenericTypeDefinition().GetGenericArguments().Length)
-                            return null;
-                        Type gt = interf.GetGenericTypeDefinition().MakeGenericType(t.GetGenericArguments());
-                        if (IsConstructedGenericType(gt))
-                            return TypeBuilder.GetMethod(gt, mi);
-                        else
-                            return interf.GetGenericTypeDefinition().MakeGenericType(t.GetGenericArguments()).GetMethod("GetEnumerator");
-                    }
-                    else if (IsConstructedGenericType(interf))
-                    {
-                        //return TypeBuilder.GetMethod(TypeFactory.IEnumerableGenericType.MakeGenericType(interf.GetGenericArguments()), TypeFactory.IEnumerableGenericType.GetMethod("GetEnumerator"));
-                        //return TypeFactory.IEnumerableType.GetMethod("GetEnumerator", Type.EmptyTypes);
-                        generic_args = interf.GetGenericArguments();
-                        return TypeBuilder.GetMethod(interf, mi);
-                    }
-                    else
-                        return interf.GetMethod("GetEnumerator");
-                }
-            }
-            return TypeFactory.IEnumerableType.GetMethod("GetEnumerator", Type.EmptyTypes);
-        }
-
 		public void SetAsProcessing(ICommonTypeNode type)
         {
             processing_types[type] = true;
