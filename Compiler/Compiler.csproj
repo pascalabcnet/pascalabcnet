@@ -161,16 +161,6 @@
       <Project>{1C9C945A-586D-42A2-A06B-65D84FA7FF78}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
-    <ProjectReference Include="..\PascalABCLanguageInfo\PascalABCLanguageInfo.csproj">
-      <Name>PascalABCLanguageInfo</Name>
-      <Project>{bd902586-e0d5-407a-904a-32249b8b709e}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj">
-      <Name>PascalABCSaushkinParser</Name>
-      <Project>{1443F539-DCC7-4491-B4FD-B716C739DB3C}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compiler.cs" />
