@@ -14795,6 +14795,14 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(get_location(_typed_parametres.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
                 }
+                if (tn is compiled_type_node && (tn as compiled_type_node).rank > 1)
+                {
+                    AddError(get_location(_typed_parametres.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
+                }
+                if (tn is common_type_node && (tn as common_type_node).rank > 1)
+                {
+                    AddError(get_location(_typed_parametres.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
+                }
             }
             com_par.type = tn;
             foreach (SyntaxTree.ident id in _typed_parametres.idents.idents)
