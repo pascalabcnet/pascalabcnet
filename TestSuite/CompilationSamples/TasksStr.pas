@@ -8,19 +8,18 @@ var AllTaskNames: array of string;
 
 procedure CheckTaskT(name: string);
 begin
-  FlattenOutput; 
   ClearOutputListFromSpaces; 
 
   case name of
   'Char1': begin 
     CheckData(Input := Empty);
     var a := Arr(word(48), word(100), word(68), word(1102), word(8594));
-    CheckOutputSeq(a);
+    CheckOutput(a);
   end;
   'Char2': begin 
     CheckData(Input := Empty);
     var a := Arr(Chr(169), Chr(931), Chr(960), Chr(1105), Chr(8551), Chr(8734), Chr(8776), Chr(8986), Chr(9327), Chr(9775), Chr(9917), Chr(10054));
-    CheckOutputSeq(a);
+    CheckOutput(a);
   end;
   'CharTable': begin 
     CheckData(Input := Empty);
@@ -29,23 +28,23 @@ begin
     begin  
       Obj.Add(i); obj.Add(Chr(i));
     end;  
-    CheckOutputSeq(obj);
+    CheckOutput(obj);
   end;
   'CharPredSucc': begin 
     CheckData(Input := |cChar|);
     GenerateTests('b','c','2','y');
-    var c := LightPT.Chr(0);
+    var c := LightPT.Chr(0); // Нельзя вызывать Chr - это ошибка!!!
     CheckOutput(Pred(c),Succ(c));
   end;
   'CharIs': begin 
     CheckData(Input := |cChar|);
     GenerateTests('b','X','2','ю');
     var c := LightPT.Chr(0);
-    CheckOutputSeq(Arr(c.IsLetter, c.IsDigit, c.IsLower, c.IsUpper));
+    CheckOutput(c.IsLetter, c.IsDigit, c.IsLower, c.IsUpper);
   end;
   'CharRange1': begin 
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr('0'..'9')+Arr('a'..'z')+Arr('а'..'я'));
+    CheckOutput('0'..'9', 'a'..'z', 'а'..'я');
   end;
   'CharRange2': begin 
     CheckData(Input := |cChar|);
@@ -77,7 +76,7 @@ begin
   end;
   'Strings1': begin 
     CheckData(Input := Empty);
-    CheckOutputSeq('трос'.ToCharArray);
+    CheckOutput('трос'.ToCharArray);
   end;
   'Strings2': begin 
     CheckData(Input := Empty);
@@ -85,17 +84,18 @@ begin
   end;
   'Strings2a': begin 
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr('грозы','осы','ложки','кошки'));
+    OutputList := OutputList;
+    CheckOutput('грозы','осы','ложки','кошки');
   end;
   'Strings3': begin 
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr('миг', 'мир', 'пир', 'пар'));
+    CheckOutput('миг', 'мир', 'пир', 'пар');
   end;
   'Strings4': begin 
     CheckData(Input := Empty);
     var hs := HSet('кошка','мышка','комик','комок','ножка','ножик','коржик','камыш');
     var hs1 := OutputListAsStrings.ToHashSet;
-    if (hs*hs1).Count >= 5 then
+    if (hs*hs1).Count >= 5 then // Это классная суперидея. Мы не просто сравниваем с решением один в один, а мы используем сложное сравнение
       TaskResult := Solved
     else begin
       TaskResult := PartialSolution;
@@ -104,25 +104,22 @@ begin
   end;
   'Strings5': begin 
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr('********************', '010101010101010101010101010101'));
+    CheckOutput('********************', '010101010101010101010101010101');
   end;
   'Strings6': begin 
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr('кросс', 'атолл', 'Гримм', 'быстрее'));
+    CheckOutput('кросс', 'атолл', 'Гримм', 'быстрее');
   end;
   'String13': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     CheckOutput(9);
   end;
   'String15': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := |cStr|);
     var s := Str(0);
     CheckOutput(s.Count(c -> c.IsLetter and c.IsLower));
   end;
   'String16': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := |cStr|);
     GenerateTests('HeLLo','привет','ИНФОРМАТИКА');
     var s := Str(0);
@@ -130,7 +127,7 @@ begin
   end;
   'StrCode': begin 
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr('рсйгжу', 'сткдзф', 'тулеих'));
+    CheckOutput('рсйгжу', 'сткдзф', 'тулеих');
   end;
   'StrDeCode': begin 
     CheckData(Input := Empty);
@@ -154,115 +151,95 @@ begin
     CheckOutput(14,15);
   end;
   'StrCountOf': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     CheckOutput(3,5,2);
   end;
   'StrCreate1': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     CheckOutput('abcdefghijklmnopqrstuvwxyz');
   end;
   'StrCreate2': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     CheckOutput('каждый охотник желает знать где сидит фазан');
   end;
   'StrWhere1': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr('каждый охотник желает знать где сидит фазан','буря мглою небо кроет вихри снежные крутя'));
+    CheckOutput('каждый охотник желает знать где сидит фазан','буря мглою небо кроет вихри снежные крутя');
   end;
   'StrWhere2': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr('1223113221113','12112571191460'));
+    CheckOutput('1223113221113','12112571191460');
   end;
   'StrSelect1': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr('вфсѐ!ндмпя!ожвп!лспжу!гйцсй!тожзоьж!лсфуѐ'));
+    CheckOutput('вфсѐ!ндмпя!ожвп!лспжу!гйцсй!тожзоьж!лсфуѐ');
   end;
   'StrSelect2': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     var a := Arr(1082,1072,1078,1076,1099,1081,32,1086,1093,1086,1090,1085,1080,1082,32,1078,1077,1083,1072,1077,1090,32,1079,1085,1072,1090,1100,32,1075,1076,1077,32,1089,1080,1076,1080,1090,32,1092,1072,1079,1072,1085 );
     var a1 := a.Select(x->word(x));
-    CheckOutputSeq(a1);
+    CheckOutput(a1);
   end;
   'StrMinMax': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr('а','ё'));
+    CheckOutput('а','ё');
   end;
   'StrWhereSelect': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     CheckOutput(23);
   end;
   'StrAllAny1': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     CheckOutput(True,False);
   end;
   'StrAllAny2': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     CheckOutput(True,False);
   end;
   'StrEachCount1': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     var res := 'The grass is always greener on the other side of the fence'.EachCount;
     var ob := new ObjectList;
     foreach var x in res.ToArray do
       ob.Add(x);
-    CheckOutputSeq(ob);
+    CheckOutput(ob);
   end;
   'StrEachCount2': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     var res := 'L1o24st tim437364e is nev567e9r fo089874u89nd041342 ag8432ai6897'.EachCount;
     var ob := new ObjectList;
     foreach var x in res.ToArray do
       if x.Key.IsDigit then
         ob.Add(x);
-    CheckOutputSeq(ob);
+    CheckOutput(ob);
   end;
   'StrOrder1': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     CheckOutput(' adefgilmnorstuv');
   end;
   'StrOrder2': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     CheckOutput('0','1','3','5','8');
   end;
   'ToWords1': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     CheckOutput('головой жак звонарь как однажды сломал фонарь');
   end;
   'ToWords2': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     CheckOutput('как жак сломал фонарь однажды звонарь головой');
   end;
   'ToWordsWhere1': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     CheckOutput('косой кривоногий косой косой косой косой');
   end;
   'Pos1': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr(2,9));
+    CheckOutput(2,9);
   end;
   'Pos2': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr(7));
+    CheckOutput(7);
   end;
   'Delete1': begin 
     CheckData(Input := Empty);
@@ -302,7 +279,7 @@ begin
   end;
   'StrSlice1': begin 
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr('Pascal','ABC','NET'));
+    CheckOutput('Pascal','ABC','NET');
   end;
   'StrSlice2': begin 
     CheckData(Input := Empty);
@@ -310,7 +287,7 @@ begin
   end;
   'StrSlice4': begin 
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr('mydocument', 'docx', 'picture', 'jpg'));
+    CheckOutput('mydocument', 'docx', 'picture', 'jpg');
   end;
   'Str_Number0': begin 
     CheckData(Input := Empty);
@@ -318,23 +295,19 @@ begin
   end;
   'Str_Number03': begin 
     CheckData(Input := Empty);
-    ClearOutputListFromSpaces;
     CheckOutput(386);
   end;
   'Str_Number04': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := |cInt|);
     GenerateTests(2,34,567,67890);
     var n := Int(0);
     CheckOutput(n.ToString.Select(s->s.ToDigit).Sum);
   end;
   'Str_Number05': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     CheckOutput(31.6666666666667,27.0,42.0);
   end;
   'Str_Number06': begin 
-    ClearOutputListFromSpaces;
     CheckData(Input := Empty);
     CheckOutput(420);
   end;

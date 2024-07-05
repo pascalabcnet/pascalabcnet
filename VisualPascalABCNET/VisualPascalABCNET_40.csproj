@@ -850,6 +850,11 @@
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
     </ProjectReference>
+    <ProjectReference Include="..\pabcnetc\PABCNETC.csproj">
+      <Name>PABCNETC</Name>
+      <Project>{2aef58a1-2bcf-4c4b-ab03-f44bbb2628e6}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

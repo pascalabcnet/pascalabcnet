@@ -322,7 +322,7 @@ namespace VisualPascalABC
         /// </summary>
         private void OnLanguageLoaded(Languages.Facade.ILanguage language)
         {
-            string languageConnectedMessage = string.Format(VECStringResources.Get("LANGUAGE_LOADED{0}{1}"), language.Name, Path.GetFileName(language.GetType().Assembly.Location));
+            string languageConnectedMessage = string.Format(VECStringResources.Get("LANGUAGE_LOADED{0}"), language.Name);
             languageConnectedMessage += Environment.NewLine;
             AddTextToCompilerMessages(languageConnectedMessage);
         }

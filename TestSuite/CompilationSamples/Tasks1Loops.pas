@@ -10,7 +10,7 @@ begin
 
   case name of
   'LoopErr2': begin
-    TaskResult := ErrFix;
+    TaskResult := ErrFix; // Это задача на исправление ошибок. Откомпилировалась 1 раз - и внеслась в базу
     if OutputString.ToString = '*' then 
       ColoredMessage('Сотри ; после do!',MsgColorGray);
     if OutputString.ToString = '*'*50 then 
@@ -24,48 +24,43 @@ begin
       ColoredMessage('Молодец! Если в цикле - несколько действий, окайми их операторными скобками begin-end',MsgColorGray);
   end;
   'Loop_Arithm1': begin
-    ClearOutputListFromSpaces; 
     var n := 10; 
     CheckData(InitialOutput := |cInt|*n);
-    CheckOutputAfterInitialSeq(ArrGen(n,1,i->i+2));
+    CheckOutputAfterInitial(ArrGen(n,1,i->i+2));
   end;
   'Loop_Arithm2': begin 
-    ClearOutputListFromSpaces; 
     CheckData(Input := Empty);
     var sq := ObjectList.New.AddArithm(10,19,-2).AddArithm(9,1.1,0.1);
-    CheckOutputSeq(sq);
+    CheckOutput(sq);
   end;
   'For1': begin
-    ClearOutputListFromSpaces;
     CheckData(Empty);
     TaskResult := InitialTask;
     ColoredMessage('Что лучше в данном случае: цикл loop или цикл for?',msgColorGray);
   end;
   'For1a': begin
-    ClearOutputListFromSpaces; 
     var n := 10; 
     CheckData(InitialOutput := |cInt|*n);
-    var sq := ObjectList.New.AddArithm(10,2,2).AddArithm(10,2,2);
-    CheckOutputSeq(sq);
+    var sq := ObjectList.New.AddArithm(n,2,2).AddArithm(n,2,2);
+    CheckOutput(sq);
   end;
   'For1b': begin
-    ClearOutputListFromSpaces; 
     var n := 10; 
     CheckData(InitialOutput := |cInt|*n);
-    var sq := ObjectList.New.AddArithm(10,1,2).AddArithm(10,1,2);
-    CheckOutputSeq(sq);
+    var sq := ObjectList.New.AddArithm(n,1,2).AddArithm(n,1,2);
+    CheckOutput(sq);
   end;
   'For1b_step': begin
     ClearOutputListFromSpaces; 
     CheckData(Empty);
     var sq := ObjectList.New.AddArithm(10,2,2).AddArithm(10,1,2);
-    CheckOutputSeq(sq);
+    CheckOutput(sq);
   end;
   'For1c': begin
     ClearOutputListFromSpaces; 
     CheckData(Empty);
     var sq := ObjectList.New.AddArithm(11,15,-1);
-    CheckOutputSeq(sq);
+    CheckOutput(sq);
   end;
   'For1d': begin
     ClearOutputListFromSpaces; 
@@ -77,13 +72,13 @@ begin
     ClearOutputListFromSpaces; 
     CheckData(Empty);
     var sq := ObjectList.New.AddArithm(10,5,5).AddArithm(7,40,-4);
-    CheckOutputSeq(sq);
+    CheckOutput(sq);
   end;
   'For1f': begin
     ClearOutputListFromSpaces; 
     CheckData(Empty);
     var sq := ObjectList.New.AddArithm(9,1.9,-0.1).AddArithm(9,1.9,-0.1);
-    CheckOutputSeq(sq);
+    CheckOutput(sq);
   end;
   'ForErr1': begin
     TaskResult := ErrFix; // Задание на исправление ошибок
@@ -121,35 +116,30 @@ begin
   'Tabl1': begin
     CheckData(InitialOutput := |cInt|*20);
     var sq := (1..10).SelectMany(x -> |x,x*x,x*x*x|);
-    CheckOutputSeq(sq);
+    CheckOutput(sq);
   end;
   'Tabl2': begin
     CheckData(Empty);
     var sq := (1..10).SelectMany(x -> |object(x),object(sqrt(x))|); // приводим к object поскольку типы разные
-    CheckOutputSeq(sq);
+    CheckOutput(sq);
   end;
   'Tabl4': begin
     CheckData(Empty);
     var sq := PartitionPoints(1.1,1.9,8).SelectMany(x -> |x,x*x|);
-    CheckOutputSeq(sq);
+    CheckOutput(sq);
   end;
   'Sum1': begin
+    FilterOnlyNumbers;
     // Частичные решения не проработаны. Они крайне редки конечно
     TaskResult := PartialSolution; // Решение состоит в последовательном решении нескольких родственных задач
-    FilterOnlyNumbers;
-    //CheckInitialOutputValues(55);
-    if (OutputList.Count = 1) and OutIsInt(0) then
-    begin
-      var a := OutInt(0);
-      if a=4905 then
-        ColoredMessage('Отлично! Теперь найдите сумму квадратов всех двузначных чисел', MsgColorGray)
-      else if a=328065 then
-        TaskResult := Solved;
-    end;
+    if CompareValuesWithOutput(4905) then // CompareValuesWithOutput используется именно для частичного решения
+      ColoredMessage('Отлично! Теперь найдите сумму квадратов всех двузначных чисел', MsgColorGray)
+    else if CompareValuesWithOutput(328065) then
+      TaskResult := Solved;
   end;
   'Sum1a': begin
     FilterOnlyNumbers;
-    CheckData(Input := |cInt|*2);
+    CheckData(Input := cInt*2);
     var (a,b) := (Int(0),Int(1));
     TestCount := 10;
     GenerateTestData := tnum -> begin
@@ -177,6 +167,8 @@ begin
   'Prod1': begin
     TaskResult := PartialSolution;
     FilterOnlyNumbers;
+    // CompareValuesWithOutput - более низкоуровневая чем CheckOutput 
+    // Она просто сравнивает значения с выводом и возвращает True/False
     if CompareValuesWithOutput(3*3*3*3*3*3*3) then
       ColoredMessage('Вычислите 4 в степени 6', MsgColorGray)
     else if CompareValuesWithOutput(4*4*4*4*4*4) then
@@ -200,7 +192,7 @@ begin
     FilterOnlyNumbers;
     CheckData(InitialOutput := |cInt|*11);
     var sq := ObjectList.New.AddGeom(15,1,3);
-    CheckOutputAfterInitialSeq(sq);
+    CheckOutputAfterInitial(sq);
   end;
   'Geom2': begin
     FilterOnlyNumbers;
@@ -209,7 +201,7 @@ begin
     sq.Add(integer.MaxValue);
     if OutputList.Count = 11 then
       ColoredMessage('Выведите integer.MaxValue - самое большое целое типа integer',MsgColorMagenta);
-    CheckOutputSeqNew(sq);
+    CheckOutput(sq);
   end;
   'Geom3': begin
     FilterOnlyNumbers;
@@ -218,13 +210,13 @@ begin
     sq.Add(real.MaxValue);
     if OutputList.Count = 20 then
       ColoredMessage('Выведите real.MaxValue - самое большое целое типа real',MsgColorMagenta);
-    CheckOutputSeqNew(sq);
+    CheckOutput(sq);
   end;
   'Geom4': begin
     FilterOnlyNumbers;
     CheckData(Empty);
     var sq := ObjectList.New.AddGeom(8,1.0,0.999);
-    CheckOutputSeq(sq);
+    CheckOutput(sq);
   end;
   'Loop_If_1': begin 
     FilterOnlyNumbersAndBools;
@@ -233,7 +225,7 @@ begin
     GenerateTests(10,tInt(1,100)*n);
     
     var a := IntArr(n);
-    CheckOutputSeq(a.Where(x->x.IsEven));  
+    CheckOutput(a.Where(x->x.IsEven));  
   end;
   'Loop_If_2': begin 
     var n := 10;
@@ -253,7 +245,7 @@ begin
     for var i:=0 to n-1 do
       if Int(i) in 10..99 then
         lst.Add(Int(i));
-    CheckOutputSeq(lst);  
+    CheckOutput(lst);  
   end;
   'Loop_If_2a': begin 
     var n := 10;
@@ -263,7 +255,7 @@ begin
     for var i:=0 to n-1 do
       if Int(i).Divs(3) and Int(i).NotDivs(5) then
         lst.Add(Int(i));
-    CheckOutputSeq(lst);  
+    CheckOutput(lst);  
   end;
   'Loop_If_3': begin 
     FilterOnlyNumbersAndBools;
@@ -274,7 +266,7 @@ begin
     for var i:=1 to n do
       if i.IsEven then
         lst.Add(Int(i-1));
-    CheckOutputSeq(lst);  
+    CheckOutput(lst);  
   end;
   'Loop_If_4': begin 
     FilterOnlyNumbersAndBools;
@@ -285,7 +277,7 @@ begin
     for var i:=0 to n-1 do
       if Int(i).IsEven then
         lst.Add(i+1);
-    CheckOutputSeq(lst);  
+    CheckOutput(lst);  
   end;
   'Loop_If_5_Count': begin 
     var n := 10;
@@ -312,8 +304,8 @@ begin
     FilterOnlyNumbersAndBools;
     var n := 10;
     CheckData(Input := |cInt|*n);
-    var c := 0;
     GenerateTests(10,tInt(1,10)*n); 
+    var c := 0;
     for var i:=0 to n-1 do
       if Int(i) not in 2..5 then
         c += 1;
@@ -345,7 +337,14 @@ begin
     FilterOnlyNumbersAndBools;
     var N := Int(0);
     CheckData(Input := |cInt|*(N+1));
-    GenerateTests(10,tInt(1,10)*n); 
+
+    TestCount := 5;
+    GenerateTestData := tnum -> begin
+      var N := Random(5, 10);
+      var a := ArrRandomInteger(N,1,10);
+      InputList.AddTestData(|N|+a);
+    end;
+
     var s := 0;
     for var i:=1 to N do
       if Int(i).IsEven then
@@ -362,7 +361,7 @@ begin
     FilterOnlyNumbers;
     CheckData(InitialOutput := |cInt|*18); 
     
-    CheckOutputSeq(Arr(1..9)*3);
+    CheckOutput(Arr(1..9)*3);
   end;
   'Wh2': begin 
     FilterOnlyNumbers;
@@ -372,7 +371,7 @@ begin
   'Wh3': begin 
     FilterOnlyNumbers;
     CheckData(Empty);
-    CheckOutputSeq(ArrGen(45,99,x->x-2));
+    CheckOutput(ArrGen(45,99,x->x-2));
   end;
   'Дюймы1': begin 
     FilterOnlyNumbers;
@@ -392,7 +391,6 @@ begin
   end;
   'Дюймы4': begin 
     FilterOnlyNumbers;
-    CheckData(Input := cRe * 2);
     CheckData(Input := cRe * 2);
     CheckOutput(Re(0) - Trunc(Re(0)/Re(1)));
   end;
@@ -414,7 +412,7 @@ begin
   'Умножение1': begin 
     FilterOnlyNumbers;
     CheckData(Empty);
-    CheckOutputSeq(ArrGen(14,1,x->x*2));
+    CheckOutput(ArrGen(14,1,x->x*2));
   end;
   'Умножение2': begin 
     FilterOnlyNumbers;
@@ -424,11 +422,11 @@ begin
   'Деление1': begin 
     FilterOnlyNumbers;
     CheckData(Empty);
-    CheckOutputSeq(ArrGen(6,26.5,x->x/2));
+    CheckOutput(ArrGen(6,26.5,x->x/2));
   end;
   'Деление2': begin 
     FilterOnlyNumbers;
-    CheckInitialOutputSeq(Arr(cInt)*0);
+    CheckData(Empty);
     CheckOutput(7);
   end;
   'Digits': begin 
@@ -439,7 +437,7 @@ begin
   'Bank_ForLeaders': begin 
     FilterOnlyNumbers;
     CheckData(Empty);
-    CheckOutputSeq(ArrGen(9,109000.0,x->x*1.09));
+    CheckOutput(ArrGen(9,109000.0,x->x*1.09));
   end;
   'Digits1': begin 
     FilterOnlyNumbers;
@@ -492,7 +490,7 @@ begin
       L.Add(x mod 2);
       x := x div 2;
     end;
-    CheckOutputSeq(L.ToArray);
+    CheckOutput(L);
   end;
   'BinNumSystem2': begin
     FilterOnlyNumbers;
@@ -518,23 +516,24 @@ begin
   end;
   'Min1': begin 
     CheckData(InitialInput := |cRe|*2);
-    Generatetests(10,tRe(1,100)*2);
+    GenerateTests(10,tRe(1,100)*2);
     CheckOutput(Min(Re(0),Re(1)),Max(Re(0),Re(1)));
   end;
   'Min2': begin 
     CheckData(InitialInput := |cRe|*2);
-    Generatetests(10,tRe(1,100)*2);
+    GenerateTests(10,tRe(1,100)*2);
     CheckOutput(Min(Re(0),Re(1)));
   end;
   'Min3': begin 
     CheckData(InitialInput := |cRe|*3);
-    Generatetests(10,tRe(1,100)*3);
+    GenerateTests(10,tRe(1,100)*3);
     CheckOutput(Min(Re(0),Re(1),Re(2)));
   end;
   'SeriesMin2': begin 
     var n := 10;
     CheckData(Input := |cInt|*n);
     GenerateTests(10,tInt(1,100)*n);
+    // Лучше var a := IntArr(n)
     CheckOutput(InputListAsIntegers.Max - InputListAsIntegers.Min)
   end;
   'Break1': begin 
@@ -615,9 +614,9 @@ begin
       if x < 5 then
         c += 1;
     until False;
-    TestCount := 10;
+    TestCount := 10; // Это немного неудобно - надо не забыть присвоить!
     GenerateTestData := tnum -> begin
-      var n := Random(7,12);
+      var n := Random(7,12); // Разобраться, как работает в Test mode
       var a := ArrRandomInteger(n,1,10);
       a[^1] := 0;
       InputList.AddTestData(a);
@@ -635,6 +634,7 @@ begin
       c += x;
     until False;
     TestCount := 10;
+    //CheckData(Input := |cInt|*i); 
     GenerateTestData := tnum -> begin
       var n := Random(7,12);
       var a := ArrRandomInteger(n,1,10);
@@ -667,6 +667,7 @@ begin
     CheckOutputString((9*'*'+#13#10) * 5);
   end;
   'сс2': begin 
+    // Уже можно использовать многострочную строку! Но лень переписывать. Работает.
     CheckOutputString(9*'1'+#13#10 + 9*'2'+#13#10 + 9*'3'+#13#10 + 9*'4'+#13#10 + 9*'5'+#13#10)
   end;
   'сс3': begin 
@@ -762,7 +763,6 @@ begin
     CheckOutputString(sb.ToString);  
   end;
   'Combinations': begin 
-    ClearOutputListFromSpaces;
     CheckData(Empty);
     var lst := ObjectList.New;
     for var c := 'a' to 'z' do
@@ -771,7 +771,7 @@ begin
       lst.Add(c);
       lst.Add(i);
     end;
-    CheckOutputSeq(lst);
+    CheckOutput(lst);
   end;
   'Primes': begin 
     FilterOnlyNumbersAndBools;
@@ -789,12 +789,12 @@ begin
       if IsPrime then
         lst.Add(n);
     end;  
-    CheckOutputSeq(lst);
+    CheckOutput(lst);
   end;
   'Счастливые билеты': begin 
     FilterOnlyNumbersAndBools;
     CheckData(Empty);
-    CheckOutputNew(55252);
+    CheckOutput(55252);
   end;
   '1_ПрямоугольныеТреугольники': begin 
     FilterOnlyNumbers;
@@ -805,11 +805,11 @@ begin
     for var c:=1 to 20 do
       if (a*a + b*b = c*c) and (a<b) then
         lst.AddRange(|a,b,c|);
-    CheckOutputSeq(lst);  
+    CheckOutput(lst);  
   end;
   '2_Перебор вариантов': begin 
     CheckData(Empty);
-    CheckOutputSeq(Arr(4,6,12,3)); 
+    CheckOutput(4,6,12,3); 
   end;
   'ДесятичныеЧисла': begin 
     FilterOnlyNumbers;
@@ -823,7 +823,7 @@ begin
       if (d1 + d2 + d3).Divs(3) and (d1<d2) and (d2<d3) then
         lst.Add(a);
     end;
-    CheckOutputSeq(lst);
+    CheckOutput(lst);
   end;
   'ДвоичныеЧисла': begin 
     FilterOnlyNumbers;
@@ -836,7 +836,7 @@ begin
       var a := d1*4 + d2*2 + d3;
       Lst.AddRange(|d1,d2,d3,a|);
     end;
-    CheckOutputSeq(lst);
+    CheckOutput(lst);
   end;  
   
   end;

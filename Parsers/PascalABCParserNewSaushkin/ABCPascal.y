@@ -2761,8 +2761,6 @@ unlabelled_stmt
 		{ $$ = $1; }
     | proc_call
 		{ $$ = $1; }
-	| tkAwait expr_l1
-    	{ $$ = new await_node_statement(new await_node($2,@$),@$); }
     | goto_stmt
 		{ $$ = $1; }
     | compound_stmt
@@ -4158,8 +4156,6 @@ factor
 			$$ = new nil_const();  
 			$$.source_context = @$;
 		}
-	| tkAwait factor
-		{ $$ = new await_node($2 as expression, @$); } 
     | literal_or_number
 		{ $$ = $1; }
     | default_expr
