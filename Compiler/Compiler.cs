@@ -1923,7 +1923,7 @@ namespace PascalABCCompiler
             }
         }
 
-        private void SetOutputPlatformOption(NETGenerator.CompilerOptions compilerOptions, Dictionary<string, List<TreeRealization.compiler_directive>> compilerDirectives)
+        private void SetOutputPlatformOption(NETGenerator.CompilerOptions netCompilerOptions, Dictionary<string, List<TreeRealization.compiler_directive>> compilerDirectives)
         {
             List<compiler_directive> compilerDirectivesList = new List<compiler_directive>();
             if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_platformtarget, out compilerDirectivesList))
@@ -1932,35 +1932,35 @@ namespace PascalABCCompiler
                 switch (platformName)
                 {
                     case "x86":
-                        compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x86;
+                        netCompilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x86;
                         break;
                     case "x64":
-                        compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x64;
+                        netCompilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x64;
                         break;
                     case "anycpu":
-                        compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.AnyCPU;
+                        netCompilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.AnyCPU;
                         break;
                     case "dotnet5win":
-                        compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnet5win;
+                        netCompilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnet5win;
                         break;
                     case "dotnet5linux":
-                        compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnet5linux;
+                        netCompilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnet5linux;
                         break;
                     case "dotnet5macos":
-                        compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnet5macos;
+                        netCompilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnet5macos;
                         break;
                     case "native":
                         if (Environment.OSVersion.Platform == PlatformID.Unix)
                         {
-                            compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnetlinuxnative;
+                            netCompilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnetlinuxnative;
                         }
                         else if (Environment.OSVersion.Platform == PlatformID.MacOSX)
                         {
-                            compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnetmacosnative;
+                            netCompilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnetmacosnative;
                         }
                         else
                         {
-                            compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnetwinnative;
+                            netCompilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.dotnetwinnative;
                         }
                         break;
                     default:
@@ -1968,50 +1968,50 @@ namespace PascalABCCompiler
                         break;
                 }
                 if (CompilerOptions.Only32Bit)
-                    compilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x86;
+                    netCompilerOptions.platformtarget = NETGenerator.CompilerOptions.PlatformTarget.x86;
             }
             if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_targetframework, out compilerDirectivesList))
             {
-                compilerOptions.TargetFramework = compilerDirectivesList[0].directive;
+                netCompilerOptions.TargetFramework = compilerDirectivesList[0].directive;
                 if (!(new string[] { "net40", "net403", "net45", "net451", "net452", "net46", "net461", "net462", "net47", "net471", "net472", "net48", "net481" })
-                    .Contains(compilerOptions.TargetFramework))
+                    .Contains(netCompilerOptions.TargetFramework))
                 {
-                    ErrorsList.Add(new UnsupportedTargetFramework(compilerOptions.TargetFramework, compilerDirectivesList[0].location));
+                    ErrorsList.Add(new UnsupportedTargetFramework(netCompilerOptions.TargetFramework, compilerDirectivesList[0].location));
                 }
             }
         }
 
-        private void FillCompilerOptionsFromCompilerDirectives(NETGenerator.CompilerOptions compilerOptions, Dictionary<string, List<TreeRealization.compiler_directive>> compilerDirectives)
+        private void FillNetCompilerOptionsFromCompilerDirectives(NETGenerator.CompilerOptions netCompilerOptions, Dictionary<string, List<TreeRealization.compiler_directive>> compilerDirectives)
         {
             List<compiler_directive> compilerDirectivesList;
             
             if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_product_string, out compilerDirectivesList))
             {
-                compilerOptions.Product = compilerDirectivesList[0].directive;
+                netCompilerOptions.Product = compilerDirectivesList[0].directive;
             }
             if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_version_string, out compilerDirectivesList))
             {
-                compilerOptions.ProductVersion = compilerDirectivesList[0].directive;
+                netCompilerOptions.ProductVersion = compilerDirectivesList[0].directive;
             }
             if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_company_string, out compilerDirectivesList))
             {
-                compilerOptions.Company = compilerDirectivesList[0].directive;
+                netCompilerOptions.Company = compilerDirectivesList[0].directive;
             }
             if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_trademark_string, out compilerDirectivesList))
             {
-                compilerOptions.TradeMark = compilerDirectivesList[0].directive;
+                netCompilerOptions.TradeMark = compilerDirectivesList[0].directive;
             }
             if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_copyright_string, out compilerDirectivesList))
             {
-                compilerOptions.Copyright = compilerDirectivesList[0].directive;
+                netCompilerOptions.Copyright = compilerDirectivesList[0].directive;
             }
             if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_title_string, out compilerDirectivesList))
             {
-                compilerOptions.Title = compilerDirectivesList[0].directive;
+                netCompilerOptions.Title = compilerDirectivesList[0].directive;
             }
             if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_description_string, out compilerDirectivesList))
             {
-                compilerOptions.Description = compilerDirectivesList[0].directive;
+                netCompilerOptions.Description = compilerDirectivesList[0].directive;
             }
             if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_main_resource_string, out compilerDirectivesList))
             {
@@ -2028,40 +2028,40 @@ namespace PascalABCCompiler
                 TryThrowInvalidPath(compilerDirectivesList[0].directive, compilerDirectivesList[0].location);
                 // Тут не обязательно нормализовывать путь
                 // И если он слишком длинный - File.Exists вернёт false
-                compilerOptions.MainResourceFileName = Path.Combine(Path.GetDirectoryName(compilerDirectivesList[0].source_file), compilerDirectivesList[0].directive);
-                if (!File.Exists(compilerOptions.MainResourceFileName))
+                netCompilerOptions.MainResourceFileName = Path.Combine(Path.GetDirectoryName(compilerDirectivesList[0].source_file), compilerDirectivesList[0].directive);
+                if (!File.Exists(netCompilerOptions.MainResourceFileName))
                     ErrorsList.Add(new ResourceFileNotFound(compilerDirectivesList[0].directive, compilerDirectivesList[0].location));
             }
 
         }
 
-        private void FillCompilerOptionsFromProject(NETGenerator.CompilerOptions compilerOptions)
+        private void FillNetCompilerOptionsFromProject(NETGenerator.CompilerOptions netCompilerOptions)
         {
             if (project != null)
             {
                 if (!(project.major_version == 0 && project.minor_version == 0 && project.build_version == 0 && project.revision_version == 0))
-                    compilerOptions.ProductVersion = project.major_version + "." + project.minor_version + "." + project.build_version + "." + project.revision_version;
+                    netCompilerOptions.ProductVersion = project.major_version + "." + project.minor_version + "." + project.build_version + "." + project.revision_version;
 
                 if (!string.IsNullOrEmpty(project.product))
-                    compilerOptions.Product = project.product;
+                    netCompilerOptions.Product = project.product;
 
                 if (!string.IsNullOrEmpty(project.company))
-                    compilerOptions.Company = project.company;
+                    netCompilerOptions.Company = project.company;
 
                 if (!string.IsNullOrEmpty(project.trademark))
-                    compilerOptions.TradeMark = project.trademark;
+                    netCompilerOptions.TradeMark = project.trademark;
 
                 if (!string.IsNullOrEmpty(project.copyright))
-                    compilerOptions.Copyright = project.copyright;
+                    netCompilerOptions.Copyright = project.copyright;
 
                 if (!string.IsNullOrEmpty(project.title))
-                    compilerOptions.Title = project.title;
+                    netCompilerOptions.Title = project.title;
 
                 if (!string.IsNullOrEmpty(project.description))
-                    compilerOptions.Description = project.description;
+                    netCompilerOptions.Description = project.description;
 
                 if (project.ProjectType == ProjectType.WindowsApp)
-                    compilerOptions.target = NETGenerator.TargetType.WinExe;
+                    netCompilerOptions.target = NETGenerator.TargetType.WinExe;
 
                 // при использовании учесть удаление res_file из этой функции при кодогенерации  EVA
                 // CreateRCFile(compilerOptions);
@@ -2131,25 +2131,25 @@ namespace PascalABCCompiler
             }
         }*/
 
-        private void SetTargetTypeOption(NETGenerator.CompilerOptions compilerOptions)
+        private void SetTargetTypeOption(NETGenerator.CompilerOptions netCompilerOptions)
         {
-            compilerOptions.ForRunningWithEnvironment = CompilerOptions.RunWithEnvironment;
+            netCompilerOptions.ForRunningWithEnvironment = CompilerOptions.RunWithEnvironment;
 
             // тип выходного файла
-            if (compilerOptions.target == NETGenerator.TargetType.Exe) // если еще не установлен согласно проекту
+            if (netCompilerOptions.target == NETGenerator.TargetType.Exe) // если еще не установлен согласно проекту
             {
                 switch (CompilerOptions.OutputFileType)
                 {
-                    case CompilerOptions.OutputType.ClassLibrary: compilerOptions.target = NETGenerator.TargetType.Dll; break;
-                    case CompilerOptions.OutputType.ConsoleApplicaton: compilerOptions.target = NETGenerator.TargetType.Exe; break;
-                    case CompilerOptions.OutputType.WindowsApplication: compilerOptions.target = NETGenerator.TargetType.WinExe; break;
+                    case CompilerOptions.OutputType.ClassLibrary: netCompilerOptions.target = NETGenerator.TargetType.Dll; break;
+                    case CompilerOptions.OutputType.ConsoleApplicaton: netCompilerOptions.target = NETGenerator.TargetType.Exe; break;
+                    case CompilerOptions.OutputType.WindowsApplication: netCompilerOptions.target = NETGenerator.TargetType.WinExe; break;
                 }
             }
 
             // Debug / Release
-            compilerOptions.dbg_attrs = CompilerOptions.Debug ? NETGenerator.DebugAttributes.Debug : NETGenerator.DebugAttributes.Release;
+            netCompilerOptions.dbg_attrs = CompilerOptions.Debug ? NETGenerator.DebugAttributes.Debug : NETGenerator.DebugAttributes.Release;
             if (CompilerOptions.ForDebugging)
-                compilerOptions.dbg_attrs = NETGenerator.DebugAttributes.ForDebugging;
+                netCompilerOptions.dbg_attrs = NETGenerator.DebugAttributes.ForDebugging;
         }
 
         public string Compile()
@@ -2191,8 +2191,7 @@ namespace PascalABCCompiler
                 // Закрытие чтения и записи .pcu файлов
                 ClosePCUReadersAndWriters();
 
-                // TODO: разобраться зачем нужны локальные compilerOptions
-                PrebuildMainSemanticTreeActions(out var compilerOptions, out var resourceFiles);
+                PrebuildMainSemanticTreeActions(out var netCompilerOptions, out var resourceFiles);
 
                 #region GENERATING CODE
                 if (ErrorsList.Count == 0)
@@ -2200,7 +2199,7 @@ namespace PascalABCCompiler
 
                     //TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter. | Отложено на потом  EVA
                     // получние полного семантического дерева, включающего все зависимости
-                    program_node semanticTree = ConstructMainSemanticTree(compilerOptions); 
+                    program_node semanticTree = ConstructMainSemanticTree(netCompilerOptions); 
 
                     if (firstCompilationUnit.SyntaxTree is SyntaxTree.unit_module && CompilerOptions.OutputFileType != CompilerOptions.OutputType.ClassLibrary)
                     {
@@ -2211,9 +2210,9 @@ namespace PascalABCCompiler
                     else if (CompilerOptions.GenerateCode)
                     {
                         if (CompilerOptions.UseDllForSystemUnits)
-                            compilerOptions.RtlPABCSystemType = NetHelper.NetHelper.FindRtlType("PABCSystem.PABCSystem");
+                            netCompilerOptions.RtlPABCSystemType = NetHelper.NetHelper.FindRtlType("PABCSystem.PABCSystem");
 
-                        GenerateILCode(semanticTree, compilerOptions, resourceFiles);
+                        GenerateILCode(semanticTree, netCompilerOptions, resourceFiles);
                     }
                 }
                 #endregion
@@ -2276,10 +2275,10 @@ namespace PascalABCCompiler
         /// <summary>
         /// Сохраняет документацию для модулей;
         /// Выясняет тип выходного файла, целевой фреймворк, платформу;
-        /// Заполняет опции компиляции согласно директивам и/или информации из проекта;
+        /// Заполняет опции .NET компиляции согласно директивам и/или информации из проекта;
         /// Находит ресурсные файлы из директив
         /// </summary>
-        private void PrebuildMainSemanticTreeActions(out NETGenerator.CompilerOptions compilerOptions, out List<string> resourceFiles)
+        private void PrebuildMainSemanticTreeActions(out NETGenerator.CompilerOptions netCompilerOptions, out List<string> resourceFiles)
         {
             if (CompilerOptions.SaveDocumentation)
             {
@@ -2294,22 +2293,22 @@ namespace PascalABCCompiler
             // перемещаем PABCSystem в начало списка
             // MoveSystemUnitForwardInUnitsTopologicallySortedList();
 
-            compilerOptions = new NETGenerator.CompilerOptions();
+            netCompilerOptions = new NETGenerator.CompilerOptions();
 
             // выяснение TargetFramework и целевой платформы
-            SetOutputPlatformOption(compilerOptions, compilerDirectives);
+            SetOutputPlatformOption(netCompilerOptions, compilerDirectives);
 
             // заполнение опций компилятора из директив
-            FillCompilerOptionsFromCompilerDirectives(compilerOptions, compilerDirectives);
+            FillNetCompilerOptionsFromCompilerDirectives(netCompilerOptions, compilerDirectives);
 
             // получние путей к файлам ресурсов из директив
             resourceFiles = GetResourceFilesFromCompilerDirectives(compilerDirectives);
 
             // заполнение опций компилятора из заголовка проекта
-            FillCompilerOptionsFromProject(compilerOptions);
+            FillNetCompilerOptionsFromProject(netCompilerOptions);
 
             // Устанавливает опции компилятора, связанные с типом выходного файла
-            SetTargetTypeOption(compilerOptions);
+            SetTargetTypeOption(netCompilerOptions);
         }
 
         private program_node ConstructMainSemanticTree(NETGenerator.CompilerOptions compilerOptions)
@@ -2578,7 +2577,7 @@ namespace PascalABCCompiler
                 ClosePCUWriters();
         }
 
-        void WaitCallback_ClosePCUWriters(object state)
+        private void WaitCallback_ClosePCUWriters(object state)
         {
             ClosePCUWriters();
         }
