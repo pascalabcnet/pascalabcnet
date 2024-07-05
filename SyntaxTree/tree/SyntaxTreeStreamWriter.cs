@@ -7181,6 +7181,48 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(await_node _await_node)
+		{
+			bw.Write((Int16)262);
+			write_await_node(_await_node);
+		}
+
+		public void write_await_node(await_node _await_node)
+		{
+			write_expression(_await_node);
+			if (_await_node.ex == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_await_node.ex.visit(this);
+			}
+		}
+
+
+		public void visit(await_node_statement _await_node_statement)
+		{
+			bw.Write((Int16)263);
+			write_await_node_statement(_await_node_statement);
+		}
+
+		public void write_await_node_statement(await_node_statement _await_node_statement)
+		{
+			write_statement(_await_node_statement);
+			if (_await_node_statement.aw == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_await_node_statement.aw.visit(this);
+			}
+		}
+
 	}
 
 

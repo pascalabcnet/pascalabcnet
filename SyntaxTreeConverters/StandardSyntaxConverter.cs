@@ -81,6 +81,8 @@ namespace Languages.Pascal.Frontend.Converters
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
 
+            AsyncVisitor.New.ProcessNode(root);
+
             CacheFunctionVisitor.New.ProcessNode(root);
 
             // При наличии файла lightpt.dat подключает модули LightPT и Tasks
@@ -99,7 +101,7 @@ namespace Languages.Pascal.Frontend.Converters
             {
                 root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz1.txt"));
             }
-            catch(Exception e)
+            catch(System.Exception e)
             {
 
                 System.IO.File.AppendAllText(@"d:\\zzz1.txt",e.Message);

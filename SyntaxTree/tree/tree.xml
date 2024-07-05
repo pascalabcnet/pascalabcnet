@@ -3368,6 +3368,26 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="await_node" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="ex" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="await_node_statement" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="aw" SyntaxType="await_node" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3414,6 +3434,7 @@
       <HelpData Key=".aloneparam" Value="" />
       <HelpData Key=".attr" Value="" />
       <HelpData Key=".attributes" Value="" />
+      <HelpData Key=".aw" Value="" />
       <HelpData Key=".body" Value="" />
       <HelpData Key=".cconst" Value="Значение константы." />
       <HelpData Key=".char_num" Value="Номер символа." />
@@ -3572,6 +3593,10 @@
       <HelpData Key="attribute_list.attributes" Value="" />
       <HelpData Key="attribute_list.void Add(simple_attribute_list sal, SourceContext sc)" Value="" />
       <HelpData Key="attribute_list.w" Value="" />
+      <HelpData Key="await_node" Value="" />
+      <HelpData Key="await_node.ex" Value="" />
+      <HelpData Key="await_node_statement" Value="" />
+      <HelpData Key="await_node_statement.aw" Value="" />
       <HelpData Key="bigint_const" Value="" />
       <HelpData Key="bigint_const.val" Value="" />
       <HelpData Key="bin_expr" Value="Бинарное выражение" />
