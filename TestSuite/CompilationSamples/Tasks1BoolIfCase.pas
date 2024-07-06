@@ -10,7 +10,6 @@ begin
 
   case name of
   'Types1': begin 
-    FilterOnlyNumbers;
     CheckData(Empty);
     CheckOutput(cInt,cRe,cStr);
   end;
@@ -50,8 +49,8 @@ begin
   end;
   'If1Пароль': begin 
     CheckData(InitialInput := |cInt|);
-    //if int(0)=777 then
-      CheckOutput('Пароль правильный');
+    //if int(0)=777 then // и без этого работает. Тёмное дело...
+      CheckOutput('Пароль правильный'); // Когда по одной ветке ничего не выводится, это сложная ситуация. Это не проконтролируешь
   end;
   'If2Пароль': begin 
     CheckData(Input := |cInt|);
@@ -87,7 +86,9 @@ begin
     else CheckOutput(Int(0),'Нечетное');
   end;
   'If5ЛогинПарольAnd': begin 
-    CancelMessagesIfInitial := False;
+    CancelMessagesIfInitial := False; // Это важнейший флаг. 
+    // Обычно если запускается программа с Initial вводом-выводом, то подсказки не выводятся
+    // А здесь выводятся - ученика сразу настраивают, что ему надо вывести
     CheckData(InitialInput := |cStr,cInt|);
     TestCount := 10;
     GenerateTestData := tnum -> begin
@@ -95,7 +96,7 @@ begin
       var p := Arr(777,666,555).RandomElement;
       if tnum = 5 then
         (a,p) := ('Angel',777);
-      InputList.AddTestData(|object(a),object(p)|);
+      InputList.AddTestData(|object(a),object(p)|); // Приведение к object - это приём, позволяющий записывать в тестовые данные разные типы
     end;
     if (Str(0) = 'Angel') and (Int(1) = 777) then
       CheckOutput('Вход разрешен')
@@ -197,7 +198,7 @@ begin
   end;
   'Minmax_2': begin 
     CheckData(InitialOutput := |cInt|);
-    CheckOutputSeq(Arr(3,5,3,5,6,6));
+    CheckOutput(3,5,3,5,6,6);
   end;
   'ВложенныеIf2': begin 
     CheckData(Input := |cStr,cInt|);
@@ -258,7 +259,7 @@ begin
     case Str(0) of
       'черное' : CheckOutput('белое');
       'высокий': begin
-        CheckOutputSilent('низкий');
+        CheckOutputSilent('низкий'); // о это прикольно. Это когда возможны несколько решений. Вначале проверяем одно, потом другое
         if TaskResult = TaskStatus.BadSolution then
           CheckOutput('невысокий');
       end;  
@@ -299,7 +300,7 @@ begin
     var (d,m) := (Int(0),Int(1));
     //GenerateTests(список кортежей)
     //GenerateTests(список значений)
-    GenerateTests((1,1),(23,2),(8,3),(1,5),(9,5),(12,6),(4,11),(12,12),(7,13));
+    GenerateTests((1,1),(12,12),(23,2),(8,3),(1,5),(9,5),(12,6),(4,11),(7,13));
     if (d,m) = (1,1) then
       CheckOutput('Новый год')
     else if (d,m) = (23,2) then
@@ -314,11 +315,11 @@ begin
       CheckOutput('День России')
     else if (d,m) = (4,11) then
       CheckOutput('День народного единства')
-    else CheckOutput('');
+    //else CheckOutput('');
   end;
   'IfXSituations2': begin 
     CheckData(Input := |cInt|);
-    GenerateTests(-2,-1,0,1,2);
+    GenerateTests(2,3,4,5,6);
     if Int(0) < 3 then
       CheckOutput('x меньше 3')
     else if Int(0) in 3..5 then

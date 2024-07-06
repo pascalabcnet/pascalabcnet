@@ -14795,6 +14795,14 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(get_location(_typed_parametres.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
                 }
+                if (tn is compiled_type_node && (tn as compiled_type_node).rank > 1)
+                {
+                    AddError(get_location(_typed_parametres.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
+                }
+                if (tn is common_type_node && (tn as common_type_node).rank > 1)
+                {
+                    AddError(get_location(_typed_parametres.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
+                }
             }
             com_par.type = tn;
             foreach (SyntaxTree.ident id in _typed_parametres.idents.idents)
@@ -14951,8 +14959,7 @@ namespace PascalABCCompiler.TreeConverter
             	//AddError(new VoidNotValid(get_location(_array_type.elemets_types)));
                 check_for_type_allowed(et,get_location(_array_type.elements_type));
                 check_using_static_class(et, get_location(_array_type.elements_type));
-                ret = convertion_data_and_alghoritms.type_constructor.create_unsized_array(et,
-                    context.converted_namespace, rank, get_location(_array_type));
+                ret = convertion_data_and_alghoritms.type_constructor.create_unsized_array(et, rank, get_location(_array_type));
                 return_value(ret);
                 return;
             }
@@ -17237,7 +17244,7 @@ namespace PascalABCCompiler.TreeConverter
             if (tn is undefined_type || tn is null_type_node)
             {
                 if (tn is ArrayConstType)
-                    return convertion_data_and_alghoritms.type_constructor.create_unsized_array((tn as ArrayConstType).element_type, context.converted_namespace, 1, loc);
+                    return convertion_data_and_alghoritms.type_constructor.create_unsized_array(((ArrayConstType)tn).element_type, 1, loc);
                 AddError(loc, "CAN_NOT_DEDUCE_TYPE_{0}", tn.name);
             }
             return tn;
@@ -19645,7 +19652,7 @@ namespace PascalABCCompiler.TreeConverter
                 //if (exprs.Count == 1)
                 {
                     //new typename[size]
-                    type_node atn = convertion_data_and_alghoritms.type_constructor.create_unsized_array(tn, context.converted_namespace, exprs.Count, loc);
+                    type_node atn = convertion_data_and_alghoritms.type_constructor.create_unsized_array(tn, exprs.Count, loc);
                     //тип элементов
                     typeof_operator to = new typeof_operator(tn, loc);
                     List<expression_node> lst = new List<expression_node>();

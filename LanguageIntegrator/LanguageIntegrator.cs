@@ -89,7 +89,7 @@ namespace Languages.Integration
 
             DirectoryInfo directory = new DirectoryInfo(directoryName);
 
-            FileInfo[] dllFiles = directory.GetFiles("*Language.dll");
+            FileInfo[] dllFiles = directory.GetFiles("*LanguageInfo.dll");
 
             foreach (FileInfo languageFile in dllFiles)
             {
