@@ -21632,6 +21632,28 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
+            else if (ex.sugared_expr is SyntaxTree.await_node aw) 
+            {
+                var sem_type = convert_strong(aw.ex);
+                var typ = sem_type.type;
+                if (typ is compiled_type_node ctn && 
+                    (ctn.compiled_type == typeof(System.Threading.Tasks.Task) ||
+                    (ctn.compiled_type.IsGenericType &&
+                     ctn.compiled_type.GetGenericTypeDefinition() == typeof(System.Threading.Tasks.Task<>))
+                    )
+                   )
+                {
+
+                }
+                else
+                {
+                    AddError(get_location(aw.ex), "EXPRESSION_IN_AWAIT_MUST_HAVE_TASK_TYPE");
+                }
+                    //if (sem_type.IsPointer)
+                    //{
+                    //  AddError(sem_type.location, "FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_POINTERS_AS_PARAMETERS");
+                    //}
+            }
             else
             {
                 AddError(get_location(ex), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", ex.sugared_expr.GetType().Name);

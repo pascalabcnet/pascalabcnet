@@ -54,3 +54,4 @@ SLICES_MULTI_DIMENSIONAL_ARRAY_EXPECTED=Многмерные срезы дост
 NUMBER_OF_SLICES_IN_MULTIDIMENSIONAL_ARRAY_SHOULD_BE_EQUAL_TO_ARRAY_RANK=Количество срезов или индексов многомерного массива должно совпадать с количеством размерностей этого массива
 FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_DELEGATES_AS_PARAMETERS=Функции, помеченные атрибутом [Cache], не должны содержать параметры-делегаты
 FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_POINTERS_AS_PARAMETERS=Функции, помеченные атрибутом [Cache], не должны содержать параметры-указатели
+EXPRESSION_IN_AWAIT_MUST_HAVE_TASK_TYPE=Выражение в await должно иметь тип Task или Task<>

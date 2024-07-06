@@ -53,3 +53,4 @@ SLICES_MULTI_DIMENSIONAL_ARRAY_EXPECTED=Multidimensional slices are allowed for 
 NUMBER_OF_SLICES_IN_MULTIDIMENSIONAL_ARRAY_SHOULD_BE_EQUAL_TO_ARRAY_RANK=Number of slices in multidimensional array should be equal to the array rank
 FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_DELEGATES_AS_PARAMETERS=Functions with [Cache] attribute should not have delegate parameters
 FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_POINTERS_AS_PARAMETERS=Functions with [Cache] attribute should not have pointer parameters
+EXPRESSION_IN_AWAIT_MUST_HAVE_TASK_TYPE=Expression in await must have Task or Task<> type
