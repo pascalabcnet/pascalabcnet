@@ -19,10 +19,11 @@ defaults:
 
 jobs:
   build:
+
     name: Prepare and build on Windows Server 2016 VM
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v2
 
     - name: Install dependencies into Virtual Environment...
       run: _RegisterHelixNUnit.bat
@@ -41,20 +42,3 @@ jobs:
     #  with:
     #    name: All_distros
     #    path: Release
-
-  build-PABCNETCclear-separate:
-    name: Build PABCNETCclear project without invoking full rebuild
-    runs-on: windows-2019
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Build and run PABCNETCclear project
-        shell: pwsh
-        run: |
-        
-          $project = 'PABCNETCclear'
-          .\Studio.bat "pabcnetc_clear\$project.csproj"
-          
-          '##' | Set-Content 'a.pas'
-          &".\bin\$project.exe" .\a.pas
