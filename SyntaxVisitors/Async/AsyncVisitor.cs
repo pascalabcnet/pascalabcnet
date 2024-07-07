@@ -132,8 +132,8 @@ namespace SyntaxVisitors
         public override void visit(await_node a)
         {
             // сразу обернуть в sugared_addressed_value
-            var sug = new sugared_expression(a, a.ex, a.ex.source_context);
-            ReplaceUsingParent(a, sug);
+            //var sug = new sugared_expression(a, a.ex, a.ex.source_context);
+            //ReplaceUsingParent(a, sug);
             AwaiterCounter++;
             if (IsFirstAwait)
             {
