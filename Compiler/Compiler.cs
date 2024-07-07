@@ -3007,12 +3007,12 @@ namespace PascalABCCompiler
             return files;
         }
 
-        private void SemanticCheckNoIncludeDirectivesInPascalUnit(CompilationUnit compilationUnit)
+        private void SemanticCheckNoIncludeNamespaceDirectivesInUnit(CompilationUnit currentUnit)
         {
-            if (compilationUnit.SyntaxTree is SyntaxTree.unit_module unitModule && HasIncludeNamespaceDirective(compilationUnit)
+            if (currentUnit.SyntaxTree is SyntaxTree.unit_module unitModule && HasIncludeNamespaceDirective(currentUnit)
                 && unitModule.unit_name.HeaderKeyword != SyntaxTree.UnitHeaderKeyword.Library)
             {
-                throw new IncludeNamespaceInUnitError(currentCompilationUnit.SyntaxTree.file_name, currentCompilationUnit.SyntaxTree.source_context);
+                throw new IncludeNamespaceInUnitError(currentUnit.SyntaxTree.file_name, currentUnit.SyntaxTree.source_context);
             }
         }
 
@@ -3766,7 +3766,7 @@ namespace PascalABCCompiler
             SemanticCheckCurrentUnitMustBePascalUnit(unitFileName, currentUnit, isDll);
 
             // ошибка директива include в паскалевском юните
-            SemanticCheckNoIncludeDirectivesInPascalUnit(currentUnit);
+            SemanticCheckNoIncludeNamespaceDirectivesInUnit(currentUnit);
             #endregion
 
             if (isDll)
