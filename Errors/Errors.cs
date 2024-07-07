@@ -106,6 +106,7 @@ namespace PascalABCCompiler.Errors
 
     public class CompilerWarning : LocatedError
     {
+        public CompilerWarning() { }
 
         public CompilerWarning(string Message, string fileName)
             : base(Message)
