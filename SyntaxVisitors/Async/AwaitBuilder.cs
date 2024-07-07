@@ -350,7 +350,7 @@ namespace SyntaxVisitors.Async
                             if (pp.var_def.vars_type.ToString().Contains("Task"))
                             {
                                 pp.var_def.inital_value = new default_operator(new named_type_reference
-                                    (new ident(pp.var_def.vars_type.ToString())));
+                                    (pp.var_def.vars_type.ToString()));
                                 pp.var_def.vars_type = null;
                                 foreach (var item in pp.var_def.vars.list)
                                 {
