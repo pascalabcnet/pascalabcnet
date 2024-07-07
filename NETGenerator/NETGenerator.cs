@@ -3885,7 +3885,11 @@ namespace PascalABCCompiler.NETGenerator
                 if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && (helper.IsConstructedGenericType(ti.tp) || ti.tp.IsGenericType || !ti.tp.IsEnum))
                     if (!(ti.tp is EnumBuilder))
                         il.Emit(OpCodes.Ldelema, ti.tp);
-
+                if (_arr_type.is_nullable_type && exprs[i] is INullConstantNode)
+                {
+                    il.Emit(OpCodes.Initobj, helper.GetTypeReference(_arr_type).tp);
+                    continue;
+                }
                 this.il = il;
                 exprs[i].visit(this);
                 bool box = EmitBox(exprs[i], arr_type.GetElementType());
@@ -4548,81 +4552,83 @@ namespace PascalABCCompiler.NETGenerator
             }
             else
                 if (ElementValues.Length > 0 && (ElementValues[0] is IRecordConstantNode || ElementValues[0] is IRecordInitializer))
+            {
+                TypeInfo ti = helper.GetTypeReference(ElementValues[0].type);
+                LocalBuilder llb = il.DeclareLocal(ti.tp.MakePointerType());
+                for (int i = 0; i < ElementValues.Length; i++)
                 {
-                    TypeInfo ti = helper.GetTypeReference(ElementValues[0].type);
-                    LocalBuilder llb = il.DeclareLocal(ti.tp.MakePointerType());
-                    for (int i = 0; i < ElementValues.Length; i++)
-                    {
-                        il.Emit(OpCodes.Ldloc, lb);
-                        PushIntConst(il, i);
-                        il.Emit(OpCodes.Ldelema, ti.tp);
-                        il.Emit(OpCodes.Stloc, llb);
-                        if (ElementValues[i] is IRecordConstantNode)
-                            GenerateRecordInitCode(il, llb, ElementValues[i] as IRecordConstantNode);
-                        else GenerateRecordInitCode(il, llb, ElementValues[i] as IRecordInitializer, true);
-                    }
+                    il.Emit(OpCodes.Ldloc, lb);
+                    PushIntConst(il, i);
+                    il.Emit(OpCodes.Ldelema, ti.tp);
+                    il.Emit(OpCodes.Stloc, llb);
+                    if (ElementValues[i] is IRecordConstantNode)
+                        GenerateRecordInitCode(il, llb, ElementValues[i] as IRecordConstantNode);
+                    else GenerateRecordInitCode(il, llb, ElementValues[i] as IRecordInitializer, true);
                 }
-                else
-                    for (int i = 0; i < ElementValues.Length; i++)
+            }
+            else
+                for (int i = 0; i < ElementValues.Length; i++)
+                {
+                    il.Emit(OpCodes.Ldloc, lb);
+                    PushIntConst(il, i);
+                    ILGenerator ilb = this.il;
+                    TypeInfo ti = helper.GetTypeReference(ElementValues[i].type);
+
+                    if (ti != null && ti.is_set)
                     {
+                        this.il = il;
+                        IConstantNode cn1 = null;
+                        IConstantNode cn2 = null;
+                        if (ArrayType != null && ArrayType.element_type.element_type is ICommonTypeNode)
+                        {
+                            cn1 = (ArrayType.element_type.element_type as ICommonTypeNode).lower_value;
+                            cn2 = (ArrayType.element_type.element_type as ICommonTypeNode).upper_value;
+                        }
+                        if (cn1 != null && cn2 != null)
+                        {
+                            cn1.visit(this);
+                            il.Emit(OpCodes.Box, helper.GetTypeReference(cn1.type).tp);
+                            cn2.visit(this);
+                            il.Emit(OpCodes.Box, helper.GetTypeReference(cn2.type).tp);
+                        }
+                        else
+                        {
+                            il.Emit(OpCodes.Ldnull);
+                            il.Emit(OpCodes.Ldnull);
+                        }
+                        il.Emit(OpCodes.Newobj, ti.def_cnstr);
+                        il.Emit(OpCodes.Stelem_Ref);
                         il.Emit(OpCodes.Ldloc, lb);
                         PushIntConst(il, i);
-                        ILGenerator ilb = this.il;
-                        TypeInfo ti = helper.GetTypeReference(ElementValues[i].type);
-
-                        if (ti != null && ti.is_set)
-                        {
-                            this.il = il;
-                            IConstantNode cn1 = null;
-                            IConstantNode cn2 = null;
-                            if (ArrayType != null && ArrayType.element_type.element_type is ICommonTypeNode)
-                            {
-                                cn1 = (ArrayType.element_type.element_type as ICommonTypeNode).lower_value;
-                                cn2 = (ArrayType.element_type.element_type as ICommonTypeNode).upper_value;
-                            }
-                            if (cn1 != null && cn2 != null)
-                            {
-                                cn1.visit(this);
-                                il.Emit(OpCodes.Box, helper.GetTypeReference(cn1.type).tp);
-                                cn2.visit(this);
-                                il.Emit(OpCodes.Box, helper.GetTypeReference(cn2.type).tp);
-                            }
-                            else
-                            {
-                                il.Emit(OpCodes.Ldnull);
-                                il.Emit(OpCodes.Ldnull);
-                            }
-                            il.Emit(OpCodes.Newobj, ti.def_cnstr);
-                            il.Emit(OpCodes.Stelem_Ref);
-                            il.Emit(OpCodes.Ldloc, lb);
-                            PushIntConst(il, i);
-                            this.il = ilb;
-                        }
-                        
-                        if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && lb.LocalType.GetElementType().IsValueType && (helper.IsConstructedGenericType(ti.tp) || ti.tp.IsGenericType || !ti.tp.IsEnum))
-                        {
-                            if (!(ti.tp is EnumBuilder))
-                                il.Emit(OpCodes.Ldelema, ti.tp);
-                        }
-                        else
-                            if (ti != null && ti.assign_meth != null && lb.LocalType.GetElementType() != TypeFactory.ObjectType)
-                                il.Emit(OpCodes.Ldelem_Ref);
-                       
-                        this.il = il;
-                        ElementValues[i].visit(this);
-                        if (ti != null && ti.assign_meth != null && lb.LocalType.GetElementType() != TypeFactory.ObjectType)
-                        {
-                            il.Emit(OpCodes.Call, ti.assign_meth);
-                            this.il = ilb;
-                            continue;
-                        }
-                        bool box = EmitBox(ElementValues[i], lb.LocalType.GetElementType());
                         this.il = ilb;
-                        if (ti != null && !box)
-                            NETGeneratorTools.PushStelem(il, ti.tp);
-                        else
-                            il.Emit(OpCodes.Stelem_Ref);
                     }
+
+                    if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && lb.LocalType.GetElementType().IsValueType && (helper.IsConstructedGenericType(ti.tp) || ti.tp.IsGenericType || !ti.tp.IsEnum))
+                    {
+                        if (!(ti.tp is EnumBuilder))
+                            il.Emit(OpCodes.Ldelema, ti.tp);
+                        
+                    }
+                    else
+                        if (ti != null && ti.assign_meth != null && lb.LocalType.GetElementType() != TypeFactory.ObjectType)
+                        il.Emit(OpCodes.Ldelem_Ref);
+                   
+                    this.il = il;
+                    
+                    ElementValues[i].visit(this);
+                    if (ti != null && ti.assign_meth != null && lb.LocalType.GetElementType() != TypeFactory.ObjectType)
+                    {
+                        il.Emit(OpCodes.Call, ti.assign_meth);
+                        this.il = ilb;
+                        continue;
+                    }
+                    bool box = EmitBox(ElementValues[i], lb.LocalType.GetElementType());
+                    this.il = ilb;
+                    if (ti != null && !box)
+                        NETGeneratorTools.PushStelem(il, ti.tp);
+                    else
+                        il.Emit(OpCodes.Stelem_Ref);
+                }
         }
 
         private void GenerateArrayInitCode(ILGenerator il, LocalBuilder lb, IArrayConstantNode InitalValue)
