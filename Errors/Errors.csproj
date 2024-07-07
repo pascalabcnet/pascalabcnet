@@ -62,8 +62,9 @@
     <Compile Include="..\Configuration\GlobalAssemblyInfo.cs">
       <Link>Config\globalassemblyinfo.cs</Link>
     </Compile>
+    <Compile Include="CompilerThrownErrors.cs" />
     <Compile Include="Config\AssemblyInfo.cs" />
-    <Compile Include="Errors.cs" />
+    <Compile Include="BaseErrors.cs" />
     <Compile Include="SourceLocation.cs" />
   </ItemGroup>
   <ItemGroup>
