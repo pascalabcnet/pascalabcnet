@@ -162,261 +162,6 @@ using Languages.Facade;
 
 namespace PascalABCCompiler
 {
-    public class CompilerCompilationError : LocatedError
-    {
-        public CompilerCompilationError(string message)
-            : base(message)
-        {
-        }
-        public CompilerCompilationError(string message, string FileName)
-            : base(message, FileName)
-        {
-        }
-        public override string ToString()
-        {
-            return Message;
-        }
-    }
-
-    public class ReadPCUError : CompilerCompilationError
-    {
-        public ReadPCUError(string FileName)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_READ_PCU{0}_ERROR"), FileName))
-        {
-        }
-    }
-
-    public class NamespaceCannotHaveInSection : CompilerCompilationError
-    {
-        public NamespaceCannotHaveInSection(SyntaxTree.SourceContext sc)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_NAMESPACE_CANNOT_HAVE_IN_SECTION")))
-        {
-            this.source_context = sc;
-        }
-    }
-
-    public class ProgramModuleExpected : CompilerCompilationError
-    {
-        public ProgramModuleExpected(string FileName, SyntaxTree.SourceContext sc)
-            : base(StringResources.Get("COMPILATIONERROR_PROGRAM_MODULE_EXPECTED"), FileName)
-        {
-            this.source_context = sc;
-        }
-    }
-
-    public class UnitModuleExpected : CompilerCompilationError
-    {
-        public UnitModuleExpected(string FileName, SyntaxTree.SourceContext sc)
-            : base(StringResources.Get("COMPILATIONERROR_UNIT_MODULE_EXPECTED"), FileName)
-        {
-            this.source_context = sc;
-        }
-    }
-
-    public class AppTypeDllIsAllowedOnlyForLibraries : CompilerCompilationError
-    {
-        public AppTypeDllIsAllowedOnlyForLibraries(string FileName, SyntaxTree.SourceContext sc)
-            : base(StringResources.Get("COMPILATIONERROR_APPTYPE_DLL_IS_ALLOWED_ONLY_FOR_LIBRARIES"), FileName)
-        {
-            this.source_context = sc;
-        }
-    }
-
-    public class UnitModuleExpectedLibraryFound : CompilerCompilationError
-    {
-        public UnitModuleExpectedLibraryFound(string FileName, SyntaxTree.SourceContext sc)
-            : base(StringResources.Get("COMPILATIONERROR_UNIT_MODULE_EXPECTED_LIBRARY_FOUND"), FileName)
-        {
-            this.source_context = sc;
-        }
-    }
-
-    public class AssemblyNotFound : CompilerCompilationError
-    {
-        public string AssemblyFileName;
-        public AssemblyNotFound(string FileName, string AssemblyFileName, SyntaxTree.SourceContext sc)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_ASSEMBLY_{0}_NOT_FOUND"), AssemblyFileName), FileName)
-        {
-            this.AssemblyFileName = AssemblyFileName;
-            this.source_context = sc;
-        }
-
-    }
-
-    public class AssemblyReadingError : CompilerCompilationError
-    {
-        public string AssemblyFileName;
-        public AssemblyReadingError(string FileName, string AssemblyFileName, SyntaxTree.SourceContext sc)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_ASSEMBLY_{0}_READING_ERROR"), AssemblyFileName), FileName)
-        {
-            this.AssemblyFileName = AssemblyFileName;
-            this.source_context = sc;
-        }
-    }
-
-    public class InvalidAssemblyPathError : CompilerCompilationError
-    {
-        public InvalidAssemblyPathError(string FileName, SyntaxTree.SourceContext sc)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_INVALID_ASSEMBLY_PATH")), FileName)
-        {
-            this.source_context = sc;
-        }
-    }
-
-    public class InvalidPathError : CompilerCompilationError
-    {
-        public InvalidPathError(SyntaxTree.SourceContext sc)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_INVALID_PATH")))
-        {
-            this.source_context = sc;
-            this.fileName = sc.FileName;
-        }
-    }
-
-    public class ResourceFileNotFound : CompilerCompilationError
-    {
-        public ResourceFileNotFound(string ResFileName, TreeRealization.location sl)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_RESOURCEFILE_{0}_NOT_FOUND"), ResFileName), sl.doc.file_name)
-        {
-            this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
-        }
-    }
-
-    public class IncludeNamespaceInUnitError : CompilerCompilationError
-    {
-        public IncludeNamespaceInUnitError(string FileName, SyntaxTree.SourceContext sc)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_INCLUDE_NAMESPACE_IN_UNIT")), FileName)
-        {
-            this.source_context = sc;
-        }
-    }
-
-    public class NamespaceModuleExpected : CompilerCompilationError
-    {
-        public NamespaceModuleExpected(SyntaxTree.SourceContext sc)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_NAMESPACE_MODULE_EXPECTED")))
-        {
-            this.source_context = sc;
-        }
-    }
-
-    public class MainResourceNotAllowed : CompilerCompilationError
-    {
-        public MainResourceNotAllowed(TreeRealization.location sl)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_MAINRESOURCE_NOT_ALLOWED")), sl.doc.file_name)
-        {
-            this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
-        }
-
-    }
-
-    public class DuplicateUsesUnit : CompilerCompilationError
-    {
-        public string UnitName;
-        public DuplicateUsesUnit(string FileName, string UnitName, SyntaxTree.SourceContext sc)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_DUPLICATE_USES_UNIT{0}"), UnitName), FileName)
-        {
-            this.UnitName = UnitName;
-            this.source_context = sc;
-        }
-    }
-    public class DuplicateDirective : CompilerCompilationError
-    {
-        public string DirectiveName;
-        public DuplicateDirective(string FileName, string DirectiveName, SyntaxTree.SourceContext sc)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_DUPLICATE_DIRECTIVE{0}"), DirectiveName), FileName)
-        {
-            this.DirectiveName = DirectiveName;
-            this.source_context = sc;
-        }
-    }
-
-    public class NamespacesCanBeCompiledOnlyInProjects : CompilerCompilationError
-    {
-        public NamespacesCanBeCompiledOnlyInProjects(SyntaxTree.SourceContext sc)
-            : base(StringResources.Get("COMPILATIONERROR_NAMESPACE_CAN_BE_COMPILED_ONLY_IN_PROJECTS"))
-        {
-            this.source_context = sc;
-        }
-    }
-
-    public class UnitNotFound : CompilerCompilationError
-    {
-        public string UnitName;
-        public UnitNotFound(string FileName, string UnitName, SyntaxTree.SourceContext sc)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_UNIT_{0}_NOT_FOUND"), UnitName), FileName)
-        {
-            this.UnitName = UnitName;
-            this.source_context = sc;
-        }
-    }
-
-    public class UsesInWrongName : CompilerCompilationError
-    {
-        public string UnitName1;
-        public string UnitName2;
-        public UsesInWrongName(string FileName, string UnitName1, string UnitName2, SyntaxTree.SourceContext sc)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_USES_IN_WRONG_NAME"), UnitName1, UnitName2), FileName)
-        {
-            this.UnitName1 = UnitName1;
-            this.UnitName2 = UnitName2;
-            this.source_context = sc;
-        }
-    }
-
-    public class SourceFileNotFound : CompilerCompilationError
-    {
-        public SourceFileNotFound(string FileName)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_SOURCE_FILE_{0}_NOT_FOUND"), FileName))
-        {
-        }
-    }
-
-    public class UnauthorizedAccessToFile : CompilerCompilationError
-    {
-        public UnauthorizedAccessToFile(string FileName)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_NO_ACCESS_TO_FILE{0}"), FileName))
-        {
-        }
-    }
-    public class CycleUnitReference : CompilerCompilationError
-    {
-        public SyntaxTree.unit_or_namespace SyntaxUsesUnit;
-        public CycleUnitReference(string FileName, SyntaxTree.unit_or_namespace SyntaxUsesUnit)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_CYCLIC_UNIT_REFERENCE_WITH_UNIT_{0}"), SyntaxTree.Utils.IdentListToString(SyntaxUsesUnit.name.idents, ".")), FileName)
-        {
-            this.SyntaxUsesUnit = SyntaxUsesUnit;
-            this.source_context = SyntaxUsesUnit.source_context;
-        }
-    }
-
-    public class UnsupportedTargetFramework : CompilerCompilationError
-    {
-        public UnsupportedTargetFramework(string FrameworkName, location sl)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_UNSUPPORTED_TARGETFRAMEWORK_{0}"), FrameworkName))
-        {
-            this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
-        }
-    }
-
-    public class UnsupportedTargetPlatform : CompilerCompilationError
-    {
-        public UnsupportedTargetPlatform(string platformName, location loc)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_UNSUPPORTED_TARGET_PLATFORM{0}"), platformName))
-        {
-            sourceLocation = new SourceLocation(loc.doc.file_name, loc.begin_line_num, loc.begin_column_num, loc.end_line_num, loc.end_column_num);
-        }
-    }
-
-    public class UnsupportedOutputFileType : CompilerCompilationError
-    {
-        public UnsupportedOutputFileType(string outputFileType, location loc)
-            : base(string.Format(StringResources.Get("COMPILATIONERROR_UNSUPPORTED_OUTPUT_FILE_TYPE{0}"), outputFileType))
-        {
-            sourceLocation = new SourceLocation(loc.doc.file_name, loc.begin_line_num, loc.begin_column_num, loc.end_line_num, loc.end_column_num);
-        }
-    }
-
     public enum UnitState { BeginCompilation, InterfaceCompiled, Compiled }
 
     public class CompilationUnit
@@ -2023,14 +1768,14 @@ namespace PascalABCCompiler
                     compilerDirectives.ContainsKey(StringConstants.compiler_directive_description_string) ||
                     compilerDirectives.ContainsKey(StringConstants.compiler_directive_copyright_string))
                 {
-                    ErrorsList.Add(new MainResourceNotAllowed(compilerDirectivesList[0].location));
+                    ErrorsList.Add(new MainResourceNotAllowed(compilerDirectivesList[0].location.doc.file_name, compilerDirectivesList[0].location));
                 }
                 TryThrowInvalidPath(compilerDirectivesList[0].directive, compilerDirectivesList[0].location);
                 // Тут не обязательно нормализовывать путь
                 // И если он слишком длинный - File.Exists вернёт false
                 netCompilerOptions.MainResourceFileName = Path.Combine(Path.GetDirectoryName(compilerDirectivesList[0].source_file), compilerDirectivesList[0].directive);
                 if (!File.Exists(netCompilerOptions.MainResourceFileName))
-                    ErrorsList.Add(new ResourceFileNotFound(compilerDirectivesList[0].directive, compilerDirectivesList[0].location));
+                    ErrorsList.Add(new ResourceFileNotFound(compilerDirectivesList[0].location.doc.file_name, compilerDirectivesList[0].directive, compilerDirectivesList[0].location));
             }
 
         }
@@ -2515,7 +2260,7 @@ namespace PascalABCCompiler
                     if (File.Exists(resourceFileName))
                         ResourceFiles.Add(resourceFileName);
                     else
-                        ErrorsList.Add(new ResourceFileNotFound(cd.directive, cd.location));
+                        ErrorsList.Add(new ResourceFileNotFound(cd.location.doc.file_name, cd.directive, cd.location));
 
                 }
             }

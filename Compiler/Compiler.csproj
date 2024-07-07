@@ -173,9 +173,6 @@
     <Compile Include="RemoteCompiler.cs" />
     <Compile Include="SemanticTreeConverters\ISemanticTreeConverter.cs" />
     <Compile Include="SemanticTreeConverters\SemanticTreeConvertersController.cs" />
-    <Compile Include="Errors.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="PCU\PCUFileFormatVersion.cs" />
     <Compile Include="PCU\PCUWriter.cs" />
     <Compile Include="PCU\PCUReader.cs" />
