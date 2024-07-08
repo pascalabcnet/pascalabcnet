@@ -958,6 +958,11 @@
       <Project>{a9ab4282-83b4-41a7-86c3-e5bf6a45e7e2}</Project>
       <Name>SyntaxVisitors</Name>
     </ProjectReference>
+    <ProjectReference Include="..\pabcnetc\PABCNETC.csproj">
+      <Name>PABCNETC</Name>
+      <Project>{2aef58a1-2bcf-4c4b-ab03-f44bbb2628e6}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

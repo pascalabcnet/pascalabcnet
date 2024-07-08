@@ -1536,12 +1536,37 @@ namespace PascalABCCompiler.NetHelper
 
             //TODO: проанализировать и изменить алгоритмы, использующие поиск.
             //List<SymbolInfo> si_list = new List<SymbolInfo>();
+            if (tmp_name == "/" && mis.Count > 1)
+            {
+                List<MemberInfo> tmp_mis = new List<MemberInfo>();
+                bool has_fdiv_ext = false;
+                foreach (MemberInfo mi in mis)
+                {
+                    if (mi.Name == "/")
+                    {
+                        tmp_mis.Add(mi);
+                        has_fdiv_ext = true;
+                        break;
+                    }
+                }
+                
+                foreach (MemberInfo mi in mis)
+                {
+                    if (mi.Name != "/" && !(has_fdiv_ext && mi.Name == "div"))
+                    {
+                        tmp_mis.Add(mi);
+                    }
+                }
+                mis = tmp_mis;
+            }
             foreach (MemberInfo mi in mis)
             {
                 if (mi.DeclaringType != null && PABCSystemType != null && mi.DeclaringType.Assembly == PABCSystemType.Assembly && !UsePABCRtl)
                     continue;
                 if (is_visible(mi))
                 {
+                    //if (tmp_name == "/" && (mi.Name == "op_Division" || mi.Name == "div") && mi.DeclaringType.FullName == "System.Numerics.BigInteger")
+                    //    continue;
                     SymbolInfo temp = null;
                     switch (mi.MemberType)
                     {

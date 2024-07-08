@@ -2903,9 +2903,9 @@ namespace PascalABCCompiler
             try
             {
                 var FullFileName = Path.Combine(curr_path, FileName);
-                if (System.IO.File.Exists(FullFileName))
+                if (File.Exists(FullFileName))
                 {
-                    var NewFileName = Path.Combine(CompilerOptions.OutputDirectory, Path.GetFileName(FullFileName));
+                    var NewFileName = Path.GetFullPath(Path.Combine(CompilerOptions.OutputDirectory, Path.GetFileName(FullFileName)));
                     if (FullFileName != NewFileName)
                     {
                         if (overwrite)

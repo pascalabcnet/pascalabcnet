@@ -14,7 +14,7 @@ begin
     CheckOutput(3,32); 
   end;
   'Var_2': begin 
-    CheckData(InitialOutput := |cInt|*2);
+    CheckData(InitialOutput := cInt*2);
     CheckOutput(3,4,20,45);
   end;
   'Var_4': begin 
@@ -34,7 +34,7 @@ begin
   end;
   'Calculations2': begin 
     CheckData(InitialOutput := |cInt,cInt,cStr,cInt|);
-    CheckOutput(35,65,cStr,35+65,cStr,35*65);
+    CheckOutput(35,65,cStr,35+65,cStr,35*65); // Это круто - можно перемежать типы и значения!
   end;
   'Calculations3': begin 
     CheckData(InitialOutput := |cStr,cInt,cInt,cInt|);
@@ -61,7 +61,7 @@ begin
     TestCount := 10;
     GenerateTests(10, tRe(1,10,digits := 0)*2);
     CheckOutputSilent(S,P); // Все сообщения ColoredMessage гасятся
-    if TaskResult <> Solved then
+    if TaskResult <> Solved then // Это прикольный способ - проверить, что вывел то, но не в том порядке!
       CheckOutput(P,S);
   end;
   'Task1': begin
@@ -107,7 +107,7 @@ begin
     begin
       FilterOnlyNumbers;
       CheckData(InitialOutput := |cInt, cInt|);
-      CheckOutputSeq(Arr(1..9));  
+      CheckOutput(Arr(1..9));  
     end;
   'AssignAdd2':
     begin
@@ -167,13 +167,13 @@ begin
     begin
       FilterOnlyNumbers;
       CheckData(Input := Empty);
-      // Просто поясняющее сообщение
+      // Просто поясняющее сообщение. Ничего не проверяется
       ColoredMessage('Abs - функция, убирающая знак числа. В математике известна как модуль числа', MsgColorGray);
     end; 
   'Abs_2_AB':
     begin
       FilterOnlyNumbers;
-      CheckData(InitialOutput := |cInt| * 6); 
+      CheckData(InitialOutput := cInt * 6); 
       CheckOutput(5,3,2,-1,5,6,7,4,3,9,18,9);
     end; 
   'SwapProc1':
@@ -209,7 +209,7 @@ begin
       CheckData(Input := Empty);
       if OutputList.Count = 6 then
       begin
-        if CompareValues(OutputList[0],37) then
+        if CompareValues(OutputList[0],37) then // Здесь используется CompareValues, а не CompareWithOutput т к логика сложнее
           ColoredMessage('Измените значение a на 123', MsgColorGray)
         else if CompareValues(OutputList[0],123) then
           ColoredMessage('Верно. Проверьте еще значение a = 12345', MsgColorGray)

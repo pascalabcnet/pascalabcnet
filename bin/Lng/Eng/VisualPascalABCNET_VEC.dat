@@ -48,7 +48,7 @@ STATETEXT_FINDREFERNCES_RESULT{0}={0} matches found
 STATETEXT_NOTFOUND=0 matches found
 
 SUPPORTED_LANGUAGES=Supported languages:
-LANGUAGE_LOADED{0}{1}=Loaded {0} language ({1})
+LANGUAGE_LOADED{0}{1}=Loaded {0} language
 LANGUAGE_LOAD_ERROR{0}={0} language loading error
 PARSER_CONNECTED{0}=Connected parser {0}
 
