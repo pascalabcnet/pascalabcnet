@@ -8,25 +8,6 @@ namespace PascalABCCompiler.Errors
 {
 
     /// <summary>
-    /// Внутренняя ошибка компилятора (нештатная)
-    /// </summary>
-    public class CompilerInternalError : Error
-    {
-        public Exception exception = null;
-        public string Module;
-        public CompilerInternalError(string module, Exception exc)
-            : base(exc.ToString())
-        {
-            Module = module;
-            exception = exc;
-        }
-        public override string ToString()
-        {
-            return string.Format(StringResources.Get("COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}"), Module, Message + ' ' + exception.ToString());
-        }
-    }
-
-    /// <summary>
     /// Базовый класс для ошибок, бросаемых компилятором
     /// </summary>
     public class CompilerThrownError : LocatedError

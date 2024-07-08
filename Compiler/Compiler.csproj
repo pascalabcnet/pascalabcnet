@@ -164,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compiler.cs" />
+    <Compile Include="Errors.cs" />
     <Compile Include="Config\AssemblyInfo.cs" />
     <Compile Include="ConsoleCompilerCommands.cs" />
     <Compile Include="DocXml.cs" />
