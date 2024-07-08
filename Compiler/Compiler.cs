@@ -3781,6 +3781,7 @@ namespace PascalABCCompiler
 
             CheckErrorsAndThrowTheFirstOne();
 
+            // местоположение этой строчки важно, потому что проверяется UnitTable.Count > 0 выше  EVA
             UnitTable[UnitId] = currentUnit;
 
             // здесь добавляем стандартные модули в секцию uses интерфейса
@@ -3905,7 +3906,7 @@ namespace PascalABCCompiler
         /// </summary>
         private bool CurrentUnitIsNotMainProgram()
         {
-            return currentCompilationUnit != firstCompilationUnit;
+            return UnitTable.Count > 0;
         }
 
 
