@@ -111,6 +111,8 @@ namespace PascalABCCompiler.TreeConverter
         {
             //convertion_data_and_alghoritms.__i = 0;
             Initialize(initializationData);
+
+            this.docs = initializationData.docs;
             //comp_units=UsedUnits;
             //visit(SyntaxUnit
             //SyntaxTreeToSemanticTreeConverter.interface_using_list = namespaces;
@@ -121,6 +123,9 @@ namespace PascalABCCompiler.TreeConverter
         public void InitializeForCompilingImplementation(InitializationDataForCompilingImplementation initializationData)
         {
             Initialize(initializationData);
+
+            if (this.docs != null)
+                this.docs = initializationData.docs;
 
             using_list.AddRange(initializationData.interfaceNamespaces);
             interface_using_list.AddRange(initializationData.interfaceNamespaces);
@@ -150,8 +155,6 @@ namespace PascalABCCompiler.TreeConverter
 
             SymbolTable.CaseSensitive = SemanticRulesConstants.SymbolTableCaseSensitive;
 
-            if (docs != null)
-                this.docs = initializationData.docs;
             this.debug = initializationData.debug;
             this.debugging = initializationData.debugging;
             this.for_intellisense = initializationData.forIntellisense;
@@ -12208,6 +12211,8 @@ namespace PascalABCCompiler.TreeConverter
                 context.check_name_free(name, loc);
                 is_direct_type_decl = true;
                 type_node tn = convert_strong(_type_declaration.type_def);
+                if (_type_declaration.type_def is enum_type_definition)
+                    context.check_name_free(name, loc);
                 assign_doc_info(tn,_type_declaration);
                 is_direct_type_decl = false;
                 if (_type_declaration.type_def is SyntaxTree.named_type_reference||
@@ -14790,6 +14795,14 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(get_location(_typed_parametres.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
                 }
+                if (tn is compiled_type_node && (tn as compiled_type_node).rank > 1)
+                {
+                    AddError(get_location(_typed_parametres.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
+                }
+                if (tn is common_type_node && (tn as common_type_node).rank > 1)
+                {
+                    AddError(get_location(_typed_parametres.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
+                }
             }
             com_par.type = tn;
             foreach (SyntaxTree.ident id in _typed_parametres.idents.idents)
@@ -14946,8 +14959,7 @@ namespace PascalABCCompiler.TreeConverter
             	//AddError(new VoidNotValid(get_location(_array_type.elemets_types)));
                 check_for_type_allowed(et,get_location(_array_type.elements_type));
                 check_using_static_class(et, get_location(_array_type.elements_type));
-                ret = convertion_data_and_alghoritms.type_constructor.create_unsized_array(et,
-                    context.converted_namespace, rank, get_location(_array_type));
+                ret = convertion_data_and_alghoritms.type_constructor.create_unsized_array(et, rank, get_location(_array_type));
                 return_value(ret);
                 return;
             }
@@ -15592,13 +15604,14 @@ namespace PascalABCCompiler.TreeConverter
         private record_initializer ConvertRecordInitializer(common_type_node ctn, record_initializer constant)
         {
         	location loc = constant.location;
+            var non_static_fields = ctn.fields.Where(x => !x.IsStatic).ToArray();
             if (!ctn.is_value_type)
                 AddError(loc, "RECORD_CONST_NOT_ALLOWED_{0}", ctn.name);
-            if (ctn.fields.Count != constant.record_const_definition_list.Count)
+            if (non_static_fields.Length != constant.record_const_definition_list.Count)
                 AddError(loc, "INVALID_RECORD_CONST_FIELD_COUNT");
             constant.type = ctn;
             constant.field_values.Clear();
-            for (int i = 0; i < ctn.fields.Count; i++)
+            for (int i = 0; i < non_static_fields.Length; i++)
             {
                 class_field cf = ctn.fields[i];
                 if (cf.name.ToLower() != constant.record_const_definition_list[i].name.name.ToLower())
@@ -17231,7 +17244,7 @@ namespace PascalABCCompiler.TreeConverter
             if (tn is undefined_type || tn is null_type_node)
             {
                 if (tn is ArrayConstType)
-                    return convertion_data_and_alghoritms.type_constructor.create_unsized_array((tn as ArrayConstType).element_type, context.converted_namespace, 1, loc);
+                    return convertion_data_and_alghoritms.type_constructor.create_unsized_array(((ArrayConstType)tn).element_type, 1, loc);
                 AddError(loc, "CAN_NOT_DEDUCE_TYPE_{0}", tn.name);
             }
             return tn;
@@ -19639,7 +19652,7 @@ namespace PascalABCCompiler.TreeConverter
                 //if (exprs.Count == 1)
                 {
                     //new typename[size]
-                    type_node atn = convertion_data_and_alghoritms.type_constructor.create_unsized_array(tn, context.converted_namespace, exprs.Count, loc);
+                    type_node atn = convertion_data_and_alghoritms.type_constructor.create_unsized_array(tn, exprs.Count, loc);
                     //тип элементов
                     typeof_operator to = new typeof_operator(tn, loc);
                     List<expression_node> lst = new List<expression_node>();

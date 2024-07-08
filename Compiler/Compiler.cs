@@ -2742,16 +2742,19 @@ namespace PascalABCCompiler
 
             if (!PCUFileNamesDictionary.TryGetValue(cacheKey, out var fileNameWithPriority))
             {
-                if (FindFileWithExtensionInDirs(fileName, out _, currentPath) is string resultFileName1)
+                if (Path.GetExtension(fileName) != CompilerOptions.CompiledUnitExtension)
+                    fileNameWithPriority = null;
+
+                else if (FindFileWithExtensionInDirs(fileName, out _, currentPath) is string resultFileName1)
                     fileNameWithPriority = Tuple.Create(resultFileName1, 1);
-                else if (FindFileWithExtensionInDirs(Path.GetFileName(fileName), out _, CompilerOptions.OutputDirectory) is string resultFileName2)
+                else if (CompilerOptions.OutputDirectory != CompilerOptions.SourceFileDirectory && FindFileWithExtensionInDirs(Path.GetFileName(fileName), out _, CompilerOptions.OutputDirectory) is string resultFileName2)
                     fileNameWithPriority = Tuple.Create(resultFileName2, 2);
                 else if (FindFileWithExtensionInDirs(fileName, out var dirIndex, CompilerOptions.SearchDirectories.ToArray()) is string resultFileName3)
                     fileNameWithPriority = Tuple.Create(resultFileName3, 3 + dirIndex);
                 else
                     fileNameWithPriority = null;
 
-                PCUFileNamesDictionary[cacheKey] = fileNameWithPriority;
+				PCUFileNamesDictionary[cacheKey] = fileNameWithPriority;
             }
 
             folderPriority = fileNameWithPriority?.Item2 ?? 0;
@@ -2763,8 +2766,9 @@ namespace PascalABCCompiler
             var cacheKey = Tuple.Create(fileName.ToLower(), currentPath?.ToLower());
 
             if (!SourceFileNamesDictionary.TryGetValue(cacheKey, out var fileNameWithPriority))
-            {
-                if (FindSourceFileNameInDirs(fileName, out _, currentPath) is string resultFileName1)
+			{
+
+				if (FindSourceFileNameInDirs(fileName, out _, currentPath) is string resultFileName1)
                     fileNameWithPriority = Tuple.Create(resultFileName1, 1);
                 else if (FindSourceFileNameInDirs(fileName, out var dirIndex, CompilerOptions.SearchDirectories.ToArray()) is string resultFileName2)
                     fileNameWithPriority = Tuple.Create(resultFileName2, 3 + dirIndex);
@@ -2932,9 +2936,9 @@ namespace PascalABCCompiler
             try
             {
                 var FullFileName = Path.Combine(curr_path, FileName);
-                if (System.IO.File.Exists(FullFileName))
+                if (File.Exists(FullFileName))
                 {
-                    var NewFileName = Path.Combine(CompilerOptions.OutputDirectory, Path.GetFileName(FullFileName));
+                    var NewFileName = Path.GetFullPath(Path.Combine(CompilerOptions.OutputDirectory, Path.GetFileName(FullFileName)));
                     if (FullFileName != NewFileName)
                     {
                         if (overwrite)
@@ -3395,8 +3399,18 @@ namespace PascalABCCompiler
             // It's not always possible to solve by re-ordering the references, since there are cases of
             // mutually-dependent assemblies (i.e. dependency loops) in the wild.
             foreach (var reference in referenceDirectives)
-                PreloadReference(reference);
-
+            {
+                try
+                {
+                    PreloadReference(reference);
+                }
+                catch (FileLoadException ex)
+                {
+                    throw new CommonCompilerError(ex.Message, compilationUnit.SyntaxTree.file_name, reference.location.begin_line_num, reference.location.end_line_num);
+                }
+            }
+                
+                
             foreach (var reference in referenceDirectives)
                 CompileReference(dlls, reference);
 

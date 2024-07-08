@@ -50,7 +50,7 @@
 **/StringConstants.dll
 **/ParserTools.dll
 **/PascalABCParser.dll
-**/PascalLanguage.dll
+**/PascalABCLanguageInfo.dll
 **/PluginsSupport.dll
 **/PluginsSupportLinux.dll
 **/Properties.Resources.Designer.cs.dll

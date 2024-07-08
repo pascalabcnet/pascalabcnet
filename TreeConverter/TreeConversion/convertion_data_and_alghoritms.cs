@@ -2270,15 +2270,42 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         else if ((fm = find_eq_method_in_list(fn, set_of_possible_functions)) != null)
                         {
+                            // fn и fm могут быть также common_method_node
+                            // SSM 31/05/24 - добавляю в условия common_method_node. 
+                            // Это ошибка проектирования - много одинаковых свойств есть в compiled_function_node и common_method_node
+                              // но они не наследуются от единого предка. В результате весь этот ужас надо повторять везде по проекту. 
+                              // Это надо перепроектировать!!!
+                            polymorphic_state fn_ps = polymorphic_state.ps_common;
+                            polymorphic_state fm_ps = polymorphic_state.ps_common;
+                            if (fn is compiled_function_node)
+                                fn_ps = (fn as compiled_function_node).polymorphic_state;
+                            else if (fn is common_method_node)
+                                fn_ps = (fn as common_method_node).polymorphic_state;
+                            if (fm is compiled_function_node)
+                                fm_ps = (fm as compiled_function_node).polymorphic_state;
+                            else if (fm is common_method_node)
+                                fm_ps = (fm as common_method_node).polymorphic_state;
+
+                            ITypeNode fn_ct = null;
+                            ITypeNode fm_ct = null;
+                            if (fn is compiled_function_node)
+                                fn_ct = (fn as compiled_function_node).comperehensive_type;
+                            else if (fn is common_method_node)
+                                fn_ct = (fn as common_method_node).comperehensive_type;
+                            if (fm is compiled_function_node)
+                                fm_ct = (fm as compiled_function_node).comperehensive_type;
+                            else if (fm is common_method_node)
+                                fm_ct = (fm as common_method_node).comperehensive_type;
+
                             // SSM 29/04/24 - небольшой рефакторинг для большей понятности
-                            if (fn is compiled_function_node cfnfn && fm is compiled_function_node cfnfm && (cfnfn.polymorphic_state == polymorphic_state.ps_static || cfnfm.polymorphic_state == polymorphic_state.ps_static))
+                            if (fn_ps == polymorphic_state.ps_static || fm_ps == polymorphic_state.ps_static)
                             {
 
                             }
                             // SSM 29/04/24 - добавил такое же условие что и в предыдущей ветке 
-                            else if (fn is compiled_function_node cfnfn1 && fm is compiled_function_node cfnfm1
-                                && ! (cfnfn1.comperehensive_type.IsInterface || cfnfm1.comperehensive_type.IsInterface)// для интерфейсов обрабатывается ниже
-                                && cfnfn1.comperehensive_type != cfnfm1.comperehensive_type)
+                            else if (fn_ct != null && fm_ct != null 
+                                && ! (fn_ct.IsInterface || fm_ct.IsInterface)// для интерфейсов обрабатывается ниже
+                                && fn_ct != fm_ct)
                             {
                                 // пропускается такая же функция, но из предка!
                             }

@@ -7,8 +7,6 @@ unit PABCSystem;
 
 {$zerobasedstrings off}
 
-{$gendoc true}
-
 // Default Application type
 {$apptype console}
 
@@ -1432,24 +1430,26 @@ function ParamStr(i: integer): string;
 /// Возвращает текущий каталог
 function GetDir: string;
 /// Меняет текущий каталог
-procedure ChDir(s: string);
+procedure ChDir(dirName: string);
 /// Создает каталог
-procedure MkDir(s: string);
+procedure MkDir(dirName: string);
 /// Удаляет каталог
-procedure RmDir(s: string);
+procedure RmDir(dirName: string);
 
 /// Создает каталог. Возвращает True, если каталог успешно создан
-function CreateDir(s: string): boolean;
+function CreateDir(dirName: string): boolean;
 /// Удаляет файл. Если файл не может быть удален, то возвращает False
-function DeleteFile(fname: string): boolean;
+function DeleteFile(fileName: string): boolean;
 /// Возвращает текущий каталог
 function GetCurrentDir: string;
 /// Удаляет каталог. Возвращает True, если каталог успешно удален
-function RemoveDir(s: string): boolean;
+function RemoveDir(dirName: string): boolean;
 /// Переименовывает файл fileName, давая ему новое имя newfileName. Возвращает True, если файл успешно переименован
 function RenameFile(fileName, newfileName: string): boolean;
+/// Переименовывает каталог dirName, давая ему новое имя newDirName. Возвращает True, если каталог успешно переименован
+function RenameDirectory(dirName, newDirName: string): boolean;
 /// Устанавливает текущий каталог. Возвращает True, если каталог успешно удален
-function SetCurrentDir(s: string): boolean;
+function SetCurrentDir(dirName: string): boolean;
 
 /// Изменяет расширение файла с именем fileName на newExt
 function ChangeFileNameExtension(fileName, newExt: string): string;
@@ -1464,9 +1464,9 @@ procedure Assert(cond: boolean; sourceFile: string := ''; line: integer := 0);
 procedure Assert(cond: boolean; message: string; sourceFile: string := ''; line: integer := 0);
 
 /// Возвращает свободное место в байтах на диске с именем diskname
-function DiskFree(diskname: string): int64;
+function DiskFree(diskName: string): int64;
 /// Возвращает размер в байтах на диске с именем diskname
-function DiskSize(diskname: string): int64;
+function DiskSize(diskName: string): int64;
 /// Возвращает свободное место в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.
 function DiskFree(disk: integer): int64;
 /// Возвращает размер в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.
@@ -5215,7 +5215,34 @@ begin
     raise new System.ArgumentException('step = 0');
   if (step > 0) and (b < a) or (step < 0) and (b > a) then
     exit;
-  var n := Round(Abs(b - a) / step);
+  if a = b then 
+  begin
+    yield a;
+    exit;
+  end;
+  // SSM 30/06/24
+  // Шкалируем [a,b] к отрезку [0,1]
+  var stepScaled := decimal(step) / (decimal(a) - decimal(b));
+  if stepScaled < 0 then
+    stepScaled := -stepScaled;
+  // Находим n - количество частей (левая точка последней части может не входить)
+  var n := decimal.ToInt32(decimal.Round(1/stepScaled));
+  //Println('-->',stepScaled,n);
+  // Возможны 3 ситуации:
+  // 1) - stepScaled * n < 1 - 1e-14 - тогда надо делать n+1 шаг
+  // 2) - stepScaled * n и диапазоне [1 - 1e-14, 1 + 1e-14] - тогда надо делать n+1 шаг и последнюю точку примагничивать к b
+  // 3) - stepScaled * n > 1 + 1e-14 - тогда надо делать n шагов
+  // Сделаем n шагов, а потом решим, делать ли последний шаг
+  for var i:=0 to n-1 do
+    yield a + i * step; // нельзя просто прибавлять step - при больших a,b они просто не будут меняться
+  var delta := decimal(1e-14); // относительная погрешность относительно 1 
+  if (stepScaled * n >= 1 - delta) and (stepScaled * n <= 1 + delta) then
+    yield b // вернуть ровно b - то, ради чего всё затевалось
+  else if stepScaled * n < 1 - delta then
+    yield a + n * step; // что ж, step задан неверно и мы "не долетаем" до b
+  // Если "перелетаем" b, то ничего и не возвращаем на конце
+  // Старый алгоритм
+  {var n := Round(Abs(b - a) / step);
   var delta := n / Abs(b - a) * 1e-14;
   var bplus := b + delta;
   var bminus := b - delta;
@@ -5238,7 +5265,7 @@ begin
     end;
     if a > bminus then
       yield b;
-  end
+  end}
 end;
 
 function ArrRandom(n: integer; a: integer; b: integer): array of integer;
@@ -8461,41 +8488,41 @@ begin
   Result := Environment.CurrentDirectory;
 end;
 
-procedure ChDir(s: string);
+procedure ChDir(dirName: string);
 begin
-  Environment.CurrentDirectory := s;
+  Environment.CurrentDirectory := dirName;
 end;
 
-procedure MkDir(s: string);
+procedure MkDir(dirName: string);
 begin
-  Directory.CreateDirectory(s);
+  Directory.CreateDirectory(dirName);
 end;
 
-procedure RmDir(s: string);
+procedure RmDir(dirName: string);
 begin
-  Directory.Delete(s);
+  Directory.Delete(dirName);
 end;
 
-function CreateDir(s: string): boolean;
+function CreateDir(dirName: string): boolean;
 begin
   try
     Result := True;
-    Directory.CreateDirectory(s);
+    Directory.CreateDirectory(dirName);
   except
     Result := False;
   end;
 end;
 
-function DeleteFile(fname: string): boolean;
+function DeleteFile(fileName: string): boolean;
 begin
-  if not &File.Exists(fname) then
+  if not &File.Exists(fileName) then
   begin
     Result := False;
     exit
   end;
   try
     Result := True;
-    &File.Delete(fname);
+    &File.Delete(fileName);
   except
     Result := False;
   end;
@@ -8506,11 +8533,11 @@ begin
   Result := Environment.CurrentDirectory;
 end;
 
-function RemoveDir(s: string): boolean;
+function RemoveDir(dirName: string): boolean;
 begin
   try
     Result := True;
-    Directory.Delete(s);
+    Directory.Delete(dirName);
   except
     Result := False;
   end;
@@ -8526,11 +8553,21 @@ begin
   end;
 end;
 
-function SetCurrentDir(s: string): boolean;
+function RenameDirectory(dirName, newDirName: string): boolean;
 begin
   try
     Result := True;
-    Environment.CurrentDirectory := s;
+    Directory.Move(dirName, newDirName);
+  except
+    Result := False;
+  end;
+end;
+
+function SetCurrentDir(dirName: string): boolean;
+begin
+  try
+    Result := True;
+    Environment.CurrentDirectory := dirName;
   except
     Result := False;
   end;
@@ -8598,7 +8635,7 @@ begin
     System.Diagnostics.Contracts.Contract.Assert(cond,'Файл '+sourceFile+', строка '+line.ToString() + ': ' + message)
 end;
 
-function DiskFree(diskname: string): int64;
+function DiskFree(diskName: string): int64;
 begin
   try
     var d := new System.IO.DriveInfo(diskname);
@@ -8608,7 +8645,7 @@ begin
   end;
 end;
 
-function DiskSize(diskname: string): int64;
+function DiskSize(diskName: string): int64;
 begin
   try
     var d := new System.IO.DriveInfo(diskname);
@@ -13743,6 +13780,23 @@ end;
 function ToWords(Self: string; delims: string := ' '): array of string; extensionmethod;
 begin
   Result := Self.Split(delims.ToCharArray, System.StringSplitOptions.RemoveEmptyEntries);
+end;
+
+/// Преобразует многострочную строку в массив строк
+function ToLines(Self: string): array of string; extensionmethod;
+begin
+  Result := Self.Split(|
+    #13#10, // CR+LF: Win
+    #10, // LF: Linux
+    #13 // CR: Mac
+    // https://en.m.wikipedia.org/wiki/Newline#Unicode
+    // But standard .Net things like System.IO.StringReader don't support these, so for now - commented out
+//    #11, // Vertical Tab
+//    #12, // Form feed
+//    char($85), // Next Line
+//    char($2028), // Line Separator
+//    char($2029), // Paragraph SeparatorS
+  |, System.StringSplitOptions.None);
 end;
 
 procedure PassSpaces(var s: string; var from: integer); 

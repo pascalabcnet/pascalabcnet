@@ -3373,8 +3373,6 @@ expr_l1_for_lambda
 expr_dq
 	: relop_expr
 		{ $$ = $1; }
-	| tkAwait relop_expr
-		{ $$ = $2; }
 	| expr_dq tkDoubleQuestion relop_expr
 		{ $$ = new double_question_node($1 as expression, $3 as expression, @$);}
 	;
