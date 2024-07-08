@@ -3763,7 +3763,7 @@ namespace PascalABCCompiler
             SemanticCheckDLLDirectiveOnlyForLibraries(currentUnit.SyntaxTree, isDll, dllDirective);
 
             // ошибка - компилируем вторую основную программу или вторую dll вместо юнита
-            SemanticCheckCurrentUnitMustBePascalUnit(unitFileName, currentUnit, isDll);
+            SemanticCheckCurrentUnitMustBeUnitModule(unitFileName, currentUnit, isDll);
 
             // ошибка директива include в паскалевском юните
             SemanticCheckNoIncludeNamespaceDirectivesInUnit(currentUnit);
@@ -3817,7 +3817,7 @@ namespace PascalABCCompiler
 
         // Синтактико-семантическая ошибка - проверка, что compilationUnit является модулем,
         // а не основной программой и не dll EVA
-        private void SemanticCheckCurrentUnitMustBePascalUnit(string UnitFileName, CompilationUnit currentUnit, bool isDll)
+        private void SemanticCheckCurrentUnitMustBeUnitModule(string UnitFileName, CompilationUnit currentUnit, bool isDll)
         {
             if (UnitTable.Count > 0) // если это не главный модуль (программа в unittable всегда идет первой)
             {

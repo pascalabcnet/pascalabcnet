@@ -45,6 +45,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается в случае невозможности чтения pcu
+    /// </summary>
     public class ReadPCUError : CompilerThrownError
     {
         public ReadPCUError(string FileName)
@@ -53,6 +56,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается в случае использования uses in в пространстве имен
+    /// </summary>
     public class NamespaceCannotHaveInSection : CompilerThrownError
     {
         public NamespaceCannotHaveInSection(SyntaxTree.SourceContext sc)
@@ -62,6 +68,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается, если встречена не основная программа (там где она должна быть)
+    /// </summary>
     public class ProgramModuleExpected : CompilerThrownError
     {
         public ProgramModuleExpected(string FileName, SyntaxTree.SourceContext sc)
@@ -71,6 +80,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается, если встречен не модуль (там где он должна быть)
+    /// </summary>
     public class UnitModuleExpected : CompilerThrownError
     {
         public UnitModuleExpected(string FileName, SyntaxTree.SourceContext sc)
@@ -80,6 +92,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается при обнаружении директивы {$apptype dll} не в библиотеке
+    /// </summary>
     public class AppTypeDllIsAllowedOnlyForLibraries : CompilerThrownError
     {
         public AppTypeDllIsAllowedOnlyForLibraries(string FileName, SyntaxTree.SourceContext sc)
@@ -89,6 +104,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается при компиляции библиотеки не первой
+    /// </summary>
     public class UnitModuleExpectedLibraryFound : CompilerThrownError
     {
         public UnitModuleExpectedLibraryFound(string FileName, SyntaxTree.SourceContext sc)
@@ -98,6 +116,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается, если файл сборки не найден
+    /// </summary>
     public class AssemblyNotFound : CompilerThrownError
     {
         public string AssemblyFileName;
@@ -110,6 +131,9 @@ namespace PascalABCCompiler.Errors
 
     }
 
+    /// <summary>
+    /// Бросается при невозможности чтения сборки
+    /// </summary>
     public class AssemblyReadingError : CompilerThrownError
     {
         public string AssemblyFileName;
@@ -121,6 +145,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается при попытке обработки неправильного пути к сборке
+    /// </summary>
     public class InvalidAssemblyPathError : CompilerThrownError
     {
         public InvalidAssemblyPathError(string FileName, SyntaxTree.SourceContext sc)
@@ -130,6 +157,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается при попытке обработки неправильного пути к файлу
+    /// </summary>
     public class InvalidPathError : CompilerThrownError
     {
         public InvalidPathError(SyntaxTree.SourceContext sc)
@@ -140,6 +170,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается при неудаче в нахождении файла ресурсов
+    /// </summary>
     public class ResourceFileNotFound : CompilerThrownError
     {
         public ResourceFileNotFound(string fileName, string ResFileName, SourceContext sc)
@@ -149,6 +182,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается при подключении явного пространства имен в модуле
+    /// </summary>
     public class IncludeNamespaceInUnitError : CompilerThrownError
     {
         public IncludeNamespaceInUnitError(string FileName, SourceContext sc)
@@ -158,6 +194,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается, если встречено не явное пространство имен
+    /// </summary>
     public class NamespaceModuleExpected : CompilerThrownError
     {
         public NamespaceModuleExpected(SourceContext sc)
@@ -167,6 +206,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается в случае некорректного использования директивы {$mainresource ...}
+    /// </summary>
     public class MainResourceNotAllowed : CompilerThrownError
     {
         public MainResourceNotAllowed(string fileName, SourceContext sc)
@@ -177,6 +219,9 @@ namespace PascalABCCompiler.Errors
 
     }
 
+    /// <summary>
+    /// Бросается при нахождении дубликатов в секции uses
+    /// </summary>
     public class DuplicateUsesUnit : CompilerThrownError
     {
         public string UnitName;
@@ -187,6 +232,10 @@ namespace PascalABCCompiler.Errors
             this.source_context = sc;
         }
     }
+
+    /// <summary>
+    /// Бросается при нахождении дубликатов директив, не поддерживающих многократное использование в рамках некоторого контекста
+    /// </summary>
     public class DuplicateDirective : CompilerThrownError
     {
         public string DirectiveName;
@@ -198,6 +247,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Legacy, бросается, если unitModule.unitName.HeaderKeyword == SyntaxTree.UnitHeaderKeyword.Namespace
+    /// </summary>
     public class NamespacesCanBeCompiledOnlyInProjects : CompilerThrownError
     {
         public NamespacesCanBeCompiledOnlyInProjects(SyntaxTree.SourceContext sc)
@@ -207,6 +259,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается, если модуль (unit) не найден по некоторому пути
+    /// </summary>
     public class UnitNotFound : CompilerThrownError
     {
         public string UnitName;
@@ -218,6 +273,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается при некорректном пути в uses in
+    /// </summary>
     public class UsesInWrongName : CompilerThrownError
     {
         public string UnitName1;
@@ -231,6 +289,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается при невозможности найти исходник по некотрому пути
+    /// </summary>
     public class SourceFileNotFound : CompilerThrownError
     {
         public SourceFileNotFound(string FileName)
@@ -239,6 +300,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается при попытке файловой операции с недостаточными правами
+    /// </summary>
     public class UnauthorizedAccessToFile : CompilerThrownError
     {
         public UnauthorizedAccessToFile(string FileName)
@@ -246,6 +310,10 @@ namespace PascalABCCompiler.Errors
         {
         }
     }
+
+    /// <summary>
+    /// Бросается в случае обнаружения циклической зависимости модулей
+    /// </summary>
     public class CycleUnitReference : CompilerThrownError
     {
         public CycleUnitReference(string FileName, SyntaxTree.unit_or_namespace SyntaxUsesUnit)
@@ -255,6 +323,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается, если пользователь указывает неподдерживаемый целевой framework
+    /// </summary>
     public class UnsupportedTargetFramework : CompilerThrownError
     {
         public UnsupportedTargetFramework(string FrameworkName, SourceContext sc)
@@ -264,6 +335,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается, если пользователь указывает неподдерживаемую целевую платформу
+    /// </summary>
     public class UnsupportedTargetPlatform : CompilerThrownError
     {
         public UnsupportedTargetPlatform(string platformName, SourceContext sc)
@@ -273,6 +347,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается, если пользователь указывает неподдерживаемый тип выходного файла (например, в директиве {$apptype ...})
+    /// </summary>
     public class UnsupportedOutputFileType : CompilerThrownError
     {
         public UnsupportedOutputFileType(string outputFileType, SourceContext sc)
@@ -282,6 +359,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Бросается при отсутствии некоторого файла по некоторому пути
+    /// </summary>
     public class FileNotFound : CompilerThrownError
     {
         public FileNotFound(string fileName, SourceContext sc)

@@ -7,6 +7,9 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace PascalABCCompiler.Errors
 {
+    /// <summary>
+    /// Базовый класс для всех ошибок проекта
+    /// </summary>
     public class Error : Exception
     {
         public Error(string Message)
@@ -27,6 +30,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Базовый класс для ошибки, содержащей информацию о позиции кода, вызвавшего ее
+    /// </summary>
     public class LocatedError : Error
     {
         protected SourceContext source_context = null;
@@ -90,6 +96,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Обобщенный тип ошибки для случаев не требущих детального описания в Message
+    /// </summary>
     public class CommonCompilerError : LocatedError
     {
         public CommonCompilerError(string mes, string fileName, int line, int col) : base(mes, fileName)
@@ -103,6 +112,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Базовый класс для предупреждения
+    /// </summary>
     public class CompilerWarning : LocatedError
     {
         public CompilerWarning() { }
@@ -122,6 +134,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Обобщенный тип предупреждения
+    /// </summary>
     public class CommonWarning : CompilerWarning
     {
         string _mes;
@@ -142,6 +157,9 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>
+    /// Базовый класс для синтаксической ошибки
+    /// </summary>
     public class SyntaxError : LocatedError
     {
         public syntax_tree_node bad_node;
@@ -190,13 +208,6 @@ namespace PascalABCCompiler.Errors
             return Path.GetFileName(FileName) + pos + ": Синтаксическая ошибка :  " + Message + snode;
         }
 
-        public override SourceContext SourceContext
-        {
-            get
-            {
-                return source_context;
-            }
-        }
         public override SourceLocation SourceLocation
         {
             get
@@ -211,6 +222,9 @@ namespace PascalABCCompiler.Errors
 
     }
 
+    /// <summary>
+    /// Базовый класс для семантической ошибки
+    /// </summary>
     public class SemanticError : LocatedError
     {
         public SemanticError(string Message, string fileName)
@@ -258,6 +272,9 @@ namespace PascalABCCompiler.Errors
 
     }
 
+    /// <summary>
+    /// Базовый класс для NotSupportedError из TreeConverter | возможно, излишний  EVA
+    /// </summary>
     public class SemanticNonSupportedError : SemanticError
     {
         public SemanticNonSupportedError(string fileName)
