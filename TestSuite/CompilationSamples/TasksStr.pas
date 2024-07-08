@@ -44,7 +44,7 @@ begin
   end;
   'CharRange1': begin 
     CheckData(Input := Empty);
-    CheckOutput('0'..'9', 'a'..'z', 'а'..'я');
+    CheckOutput('0'..'9', 'a'..'z', 'А'..'Я');
   end;
   'CharRange2': begin 
     CheckData(Input := |cChar|);
@@ -283,7 +283,7 @@ begin
   end;
   'StrSlice2': begin 
     CheckData(Input := Empty);
-    CheckOutputSeq(Arr('клад зарыт на юго западе', 'зашифрованное сообщение'));
+    CheckOutput('клад зарыт на юго западе', 'зашифрованное сообщение');
   end;
   'StrSlice4': begin 
     CheckData(Input := Empty);
@@ -292,6 +292,14 @@ begin
   'Str_Number0': begin 
     CheckData(Input := Empty);
     CheckOutput('оценка1', 'балл2', 'окно3');
+  end;
+  'Str_Number01': begin 
+    CheckData(Input := Empty);
+    CheckOutput('25', '476', '2296');
+  end;
+  'Str_Number02': begin 
+    CheckData(Input := Empty);
+    CheckOutput(25,476,3.1415,2.8);
   end;
   'Str_Number03': begin 
     CheckData(Input := Empty);
@@ -326,6 +334,6 @@ initialization
   'Pos1','Pos2','Delete1','Delete2','Delete3','Insert1','Insert2',
   'StrChange1','StrChange2','StrBorder0','StrBorder1',
   'StrSlice1','StrSlice2','StrSlice4',
-  'Str_Number0','Str_Number03','Str_Number04','Str_Number05','Str_Number06' );
+  'Str_Number0','Str_Number01','Str_Number02','Str_Number03','Str_Number04','Str_Number05','Str_Number06' );
 finalization
 end.

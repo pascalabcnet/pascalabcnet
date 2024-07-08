@@ -387,7 +387,11 @@ begin
      CheckData(Input := Empty);
      CheckOutput(ArrGen(10,1,i->i*2).Sum);
   end;
-  
+  'ЗаполнениеСумма3_add': begin 
+     CheckData(Input := |cInt|*1);
+     var n := Int;
+     CheckOutput(ArrGen(n,i -> (i+1)*(i+1)).Sum);
+    end;
   // 'Arr_Transf1' 'Arr_Transf1a' 'Arr_Transf2' 'Arr_Transf3' 'Arr_Transf4' 'Arr_Transf5' 'Arr_Transf7' 'Arr_Transf8' 'Arr_Transf9'- задачник
   'Arr_Transf6': begin 
      FilterOnlyNumbersAndBools;

@@ -193,20 +193,21 @@ function ToObjArray(a: sequence of boolean): array of object;
 {        Основные процедуры для проверки правильности ввода-вывода        }
 {=========================================================================}
 
-// Самые часто используемые: CheckInput, CheckOutput, CheckOutputSeq
+// Самые часто используемые: CheckOutput
+// CheckInput заменено на CheckData
 
-/// Проверить типы вводимых данных
+/// Проверить типы вводимых данных. Пользуйтесь CheckData(Input := cInt * 2)
 procedure CheckInput(a: array of System.Type);
-/// Проверить значения при выводе
+/// Проверить значения при выводе. Основной способ проверки
 procedure CheckOutput(params arr: array of object);
 /// Проверить значения при выводе. Сообщения ColoredMessage гасить. Нужно для повторных вызовов CheckOutput
 procedure CheckOutputSilent(params arr: array of object);
-/// Проверить значения при выводе
+/// Проверить значения при выводе. Основной способ проверки
 procedure CheckOutput(a: ObjectList);
 /// Проверить значения при выводе. Сообщения ColoredMessage гасить. Нужно для повторных вызовов CheckOutput
 procedure CheckOutputSilent(a: ObjectList);
 
-/// Проверить, что данные не вводились
+/// Проверить, что данные не вводились. Пользуйтесь CheckData(Empty)
 procedure CheckInputIsEmpty;
 
 /// Проверить, что помимо начального ввода других данных не вводилось
@@ -253,8 +254,10 @@ procedure CheckOutputSeqSilent(a: sequence of boolean);
 procedure CheckOutputSeqSilent(a: sequence of object);
 /// Проверить последовательность значений при выводе. Не выводить сообщения ColoredMessages
 procedure CheckOutputSeqSilent(a: sequence of word);
+
 /// Проверить последовательность значений при выводе. Не выводить сообщения ColoredMessages
 procedure CheckOutputSeqSilent(a: ObjectList);
+
 
 /// Проверить вывод в виде строки
 procedure CheckOutputString(str: string);
@@ -270,17 +273,6 @@ function CompareArrValues(a,lst: array of object): boolean;
 
 /// Сравнить значения с выводом
 function CompareValuesWithOutput(params a: array of object): boolean;
-
-// Для совместимости
-procedure CheckOutputNew(params arr: array of object);
-procedure CheckOutputSeqNew(a: sequence of integer);
-procedure CheckOutputSeqNew(a: sequence of real);
-procedure CheckOutputSeqNew(a: sequence of string);
-procedure CheckOutputSeqNew(a: sequence of char);
-procedure CheckOutputSeqNew(a: sequence of boolean);
-procedure CheckOutputSeqNew(a: sequence of object);
-procedure CheckOutputSeqNew(a: sequence of word);
-procedure CheckOutputSeqNew(a: ObjectList);
 
 {============================================================================================}
 {   Подпрограммы для проверки начального ввода-вывода, представленного в заготовке задания   }
@@ -559,7 +551,7 @@ procedure GenerateTests<T1,T2,T3>(params a: array of (T1,T2,T3));
 procedure ConvertStringsToNumbersInOutputList;
 /// Если в OutputList массивы, вытянуть их в единый список
 procedure FlattenOutput;
-/// Очистить выходной список от пробелов
+/// Очистить выходной список от пробелов, возникающих в методах расширения типа a.Print. Очень редко очищать не надо при решении задач на символы с пробелами
 procedure ClearOutputListFromSpaces;
 /// Отфильтровать в выходном списке только числа
 procedure FilterOnlyNumbers;
@@ -2220,11 +2212,14 @@ procedure CheckOutputAfterInitialSeqSilent(seq: sequence of char); begin Silent 
 procedure CheckOutputAfterInitialSeqSilent(seq: sequence of object); begin Silent := True; CheckOutputAfterInitialSeq(seq); Silent := False; end;
 procedure CheckOutputAfterInitialSeqSilent(seq: ObjectList); begin Silent := True; CheckOutputAfterInitialSeq(seq); Silent := False; end;
 
+var OutputListIsClearedFromSpaces := False;
 
 procedure ClearOutputListFromSpaces;
 begin
+  if OutputListIsClearedFromSpaces then exit;
   OutputList := OutputList.Where(s -> (not (s is string)) or ((s as string) <> ' ')).ToList;
   OutputList := OutputList.Where(s -> (not (s is char)) or ((char(s)) <> ' ')).ToList;
+  OutputListIsClearedFromSpaces := True;
 end;
 
 procedure FilterOnlyNumbers;

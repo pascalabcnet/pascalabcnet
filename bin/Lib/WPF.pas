@@ -17,12 +17,12 @@ uses System.Windows.Markup;
 type
   TControl = Control;
 
-  Panel = Panel;
-  Grid = Grid;
+  Panel = System.Windows.Controls.Panel;
+  Grid = System.Windows.Controls.Grid;
   Canvas = System.Windows.Controls.Canvas;
-  StackPanel = StackPanel;
-  DockPanel = DockPanel;
-  WrapPanel = WrapPanel;
+  StackPanel = System.Windows.Controls.StackPanel;
+  DockPanel = System.Windows.Controls.DockPanel;
+  WrapPanel = System.Windows.Controls.WrapPanel;
 
   TPanel = Panel;
   TGrid = Grid;
@@ -39,7 +39,7 @@ type
   TextBox = TextBox;
   Slider = Slider;
   ComboBox = ComboBox;
-  TextBlock = TextBlock;
+  TextBlock = System.Windows.Controls.TextBlock;
   Border = System.Windows.Controls.Border;
   Rectangle = Rectangle;
 
@@ -111,6 +111,8 @@ function EmptyColor: Color := ARGB(0,0,0,0);
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
 
+function MainPanel: Panel := MainWindow.Content as Panel;
+
 function CreateDrawing := Drawing.Create;
 
 function operator implicit(n: integer): Thickness; extensionmethod;
@@ -147,7 +149,6 @@ function operator implicit(name: string): FontFamily; extensionmethod;
 begin
   Result := new FontFamily(name);
 end;
-
 
 procedure SetPosition(Self: Control; Left,Top: real); extensionmethod;
 begin
@@ -494,8 +495,7 @@ initialization
   MainWindow.Left := w/2;
   MainWindow.Top := h/2;
   
-  var gr := new Grid;
-  MainWindow.Content := gr;
+  MainWindow.Content := new WrapPanel;
   CurrentParent := MainWindow;
 finalization
   Application.Run(MainWindow);
