@@ -52,6 +52,14 @@
     <Compile Include="LightSymInfoVisitors\CollectLightSymInfoVisitor.cs" />
     <Compile Include="LightSymInfoVisitors\LightScopeCreator.cs" />
     <Compile Include="LightSymInfoVisitors\LightScopeHelperClasses.cs" />
+    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\desugarAlgoritm\Assign.cs" />
+    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\desugarAlgoritm\AssignGraph.cs" />
+    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\desugarAlgoritm\Cycle.cs" />
+    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\desugarAlgoritm\Edge.cs" />
+    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\desugarAlgoritm\GraphUtils.cs" />
+    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\desugarAlgoritm\Symbol.cs" />
+    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\desugarAlgoritm\SymbolNode.cs" />
+    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\NewAssignTuplesDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\CacheFunctionVisitor.cs" />
     <Compile Include="SugarVisitors\LetExprVisitor.cs" />
     <Compile Include="SugarVisitors\TestAssignIsDefVisitor.cs" />
@@ -65,7 +73,7 @@
     <Compile Include="PatternsVisitors\PatternsDesugaringVisitor.cs" />
     <Compile Include="PatternsVisitors\ReplaceNamesInIsVarVisitor.cs" />
     <Compile Include="PatternsVisitors\SingleDeconstructChecker.cs" />
-    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor.cs" />
+    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\AssignTuplesDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\DoubleQuestionDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\IndexVisitor.cs" />
     <Compile Include="SugarVisitors\LoopDesugarVisitor.cs" />

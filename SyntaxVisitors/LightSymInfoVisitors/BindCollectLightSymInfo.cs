@@ -1,4 +1,5 @@
-﻿
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace PascalABCCompiler.SyntaxTree
 {
@@ -12,22 +13,23 @@ namespace PascalABCCompiler.SyntaxTree
         {
             Current = Root;
             visit(root);
+            Current = null;
         }
 
-        public SymInfoSyntax bind(ident node)
+        public BindResult bind(ident node)
         {
-            ///Console.WriteLine("searching " + node.ToString());
+         
+            Current = null;
             syntax_tree_node cur_node = node;
+            var path = new Queue<ScopeSyntax>();
             while (cur_node != null)
             {
-               // Console.WriteLine("cur_node: " + cur_node.ToString());
 
                 if (AbstractScopeCreator.IsScopeCreator(cur_node))
                 {
 
-                    //Console.WriteLine("checking scope" + cur_node.ToString())
                     var cur_scope = scopeCreator.GetScope(cur_node);
-                    //Console.WriteLine(cur_scope.ToString() + ": " + cur_scope.Symbols.Count);
+                    path.Enqueue(cur_scope);
                     var prev_scope = Current;
                     
                     if (prev_scope != null)
@@ -36,11 +38,10 @@ namespace PascalABCCompiler.SyntaxTree
                     Current = cur_scope;
                     if (cur_scope.Parent == null && !(Current is GlobalScopeSyntax))
                     {
-                        //Console.WriteLine("visiting " + cur_node.ToString());
                         cur_node.visit(this);
                     }
                     var res = Current.bind(node);
-                    if (res != null) return res;
+                    if (res != null) return new BindResult(res, path.ToList());
                 }
                 cur_node = cur_node.Parent;
             }
