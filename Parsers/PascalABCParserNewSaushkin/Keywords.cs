@@ -16,7 +16,7 @@ namespace Languages.Pascal.Frontend.Core
             
         public PascalABCKeywords() : base()
         {
-            KeywordsToTokens = new Dictionary<string, int>(StringComparer.CurrentCultureIgnoreCase)
+            KeywordsToTokens = new Dictionary<string, int>
             {
                 ["or"] = (int)Tokens.tkOr,
                 ["xor"] = (int)Tokens.tkXor,
@@ -120,7 +120,7 @@ namespace Languages.Pascal.Frontend.Core
                 ["async"] = (int)Tokens.tkAsync,
                 ["await"] = (int)Tokens.tkAwait
             }
-            .ToDictionary(kv => ConvertKeyword(kv.Key), kv => kv.Value);
+            .ToDictionary(kv => ConvertKeyword(kv.Key), kv => kv.Value, StringComparer.CurrentCultureIgnoreCase);
         }
 
         protected override int GetIdToken() => (int)Tokens.tkIdentifier;
