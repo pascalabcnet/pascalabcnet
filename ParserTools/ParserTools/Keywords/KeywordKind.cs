@@ -1,8 +1,5 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PascalABCCompiler.Parsers
 {
@@ -57,7 +54,8 @@ namespace PascalABCCompiler.Parsers
         CommonKeyword,
         CommonExpressionKeyword
     }
-    public class Keyword
+
+    /*public class Keyword
     {
         string _name;
         KeywordKind _kind = KeywordKind.None;
@@ -88,5 +86,5 @@ namespace PascalABCCompiler.Parsers
         {
             return Name;
         } 
-    }
+    }*/
 }

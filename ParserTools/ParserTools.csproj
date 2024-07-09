@@ -73,8 +73,9 @@
     <Compile Include="ParserTools\CommentBinder.cs" />
     <Compile Include="ParserTools\DefaultLanguageInformation.cs" />
     <Compile Include="ParserTools\Errors.cs" />
-    <Compile Include="ParserTools\KeyWord.cs" />
+    <Compile Include="ParserTools\Keywords\BaseKeywords.cs" />
     <Compile Include="ParserTools\ILanguageInformation.cs" />
+    <Compile Include="ParserTools\Keywords\KeywordKind.cs" />
     <Compile Include="ParserTools\ParserTools.cs" />
     <Compile Include="ParserTools\ShiftReduceParserCode.cs" />
     <Compile Include="ParserTools\SourceContextMap.cs" />

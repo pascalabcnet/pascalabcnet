@@ -1,5 +1,6 @@
 %{
     public PascalParserTools parserTools;
+    private PascalABCKeywords keywords = new PascalABCKeywords();
     Stack<BufferContext> buffStack = new Stack<BufferContext>();
     Stack<string> fNameStack = new Stack<string>();
 	Stack<bool> IfDefInElseBranch = new Stack<bool>();
@@ -276,7 +277,7 @@ UNICODEARROW \x890
 
 [&]?[!]?{ID}  { 
   string cur_yytext = yytext;
-  int res = Keywords.KeywordOrIDToken(cur_yytext);
+  int res = keywords.KeywordOrIDToken(cur_yytext);
   currentLexLocation = CurrentLexLocation;
   if (res == (int)Tokens.tkIdentifier)
   {
@@ -619,4 +620,4 @@ UNICODEARROW \x890
             }
     }
 
-// Статический класс, определяющий ключевые слова языка, находится в файле Keywords.cs
+// Класс, определяющий ключевые слова языка, находится в файле Keywords.cs
