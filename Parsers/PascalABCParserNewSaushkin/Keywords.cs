@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +16,7 @@ namespace Languages.Pascal.Frontend.Core
             
         public PascalABCKeywords() : base()
         {
-            KeywordsToTokens = new Dictionary<string, int>
+            KeywordsToTokens = new Dictionary<string, int>(StringComparer.CurrentCultureIgnoreCase)
             {
                 ["or"] = (int)Tokens.tkOr,
                 ["xor"] = (int)Tokens.tkXor,
