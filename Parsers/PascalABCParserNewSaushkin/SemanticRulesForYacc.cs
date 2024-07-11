@@ -403,7 +403,7 @@ namespace Languages.Pascal.Frontend.Core
             parserTools.warnings = new List<CompilerWarning>();
             parserTools.currentFileName = System.IO.Path.GetFullPath(this.parserTools.currentFileName);
             parserTools.buildTreeForFormatterStrings = true;
-            Scanner scanner = new Scanner();
+            Scanner scanner = new Scanner(this.parserTools.ParserRef.Keywords);
             scanner.SetSource("<<expression>>"+Text, 0);
             scanner.parserTools = parserTools;// передали parserTools в объект сканера
             GPPGParser parser = new GPPGParser(scanner);

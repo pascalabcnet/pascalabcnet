@@ -30,7 +30,7 @@ namespace PascalABCCompiler.Parsers
             }
         }
 
-        protected BaseKeywords Keywords { get; set; }
+        public BaseKeywords Keywords { get; protected set; }
 
         /// <summary>
         /// Возвращеает синтаксическое дерево модуля
