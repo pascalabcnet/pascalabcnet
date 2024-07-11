@@ -78,6 +78,7 @@ namespace Languages.Pascal.Frontend.Wrapping
         public PascalABCNewLanguageParser()
         {
             InitializeValidDirectives();
+            Keywords = new PascalABCKeywords();
         }
         
         public override void Reset()
@@ -156,7 +157,7 @@ namespace Languages.Pascal.Frontend.Wrapping
             parserTools.currentFileName = Path.GetFullPath(fileName);
 
 
-            Scanner scanner = new Scanner();
+            Scanner scanner = new Scanner(Keywords);
             scanner.SetSource(Text, 0);
             scanner.parserTools = parserTools; // передали parserTools в объект сканера
             if (definesList != null)
