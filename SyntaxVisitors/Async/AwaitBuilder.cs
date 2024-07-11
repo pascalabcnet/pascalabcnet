@@ -50,10 +50,6 @@ namespace SyntaxVisitors.Async
         {
             return "@aw@_" + NewAwaiterCounter++;
         }
-        public string NewTempTask()
-        {
-            return "@tt@_" + TempTaskCounter++;
-        }
         // для каждого await добавляем awaiter
         public void AddAwaiter(bool IsFirstTime, expression ex, int c)
         {
@@ -64,7 +60,6 @@ namespace SyntaxVisitors.Async
             var tdef = tdecl.types_decl[0];
             var cd = tdef.type_def as class_definition;
             var bd = cd.body;
-            var tn = NewTempTask();
             var vds = new var_def_statement(new ident(a_name, bd.source_context), new named_type_reference(new ident("string", bd.source_context)), bd.source_context);
             var class_name = proc_def.proc_header.name.class_name;
             if (IsFirstTime)
@@ -82,7 +77,7 @@ namespace SyntaxVisitors.Async
             else
             {
                 var cm2 = bd.class_def_blocks[0];
-                cm2.members.Add(vds);
+                cm2.Add(vds);
             }
         }
         // Меняем тип AsyncBuilder
@@ -350,7 +345,7 @@ namespace SyntaxVisitors.Async
                             if (pp.var_def.vars_type.ToString().Contains("Task"))
                             {
                                 pp.var_def.inital_value = new default_operator(new named_type_reference
-                                    (new ident(pp.var_def.vars_type.ToString())));
+                                    (pp.var_def.vars_type.ToString()));
                                 pp.var_def.vars_type = null;
                                 foreach (var item in pp.var_def.vars.list)
                                 {
@@ -449,6 +444,7 @@ namespace SyntaxVisitors.Async
                 new ident("SetResult", ts.source_context)),
                 new expression_list(new ident("@aw_res", ts.source_context), ts.source_context), ts.source_context), ts.source_context);
                 bl.program_code.list[2] = r_pc;
+                r_pc.Parent = bl.program_code;
             }
 
             ////// if (state == 1)
@@ -576,6 +572,7 @@ namespace SyntaxVisitors.Async
                         if (asstat.from.ToString().Contains("GetResult"))
                         {
                             asstat.from = mc2;
+                            mc2.Parent = asstat;
 
                         }
 
@@ -648,6 +645,7 @@ namespace SyntaxVisitors.Async
                     if (asstat.from.ToString().Contains("GetResult"))
                     {
                         asstat.from = mc2;
+                        mc2.Parent = asstat;
 
                     }
                 }
@@ -782,8 +780,9 @@ namespace SyntaxVisitors.Async
                 foreach (var w in vt.var_def.vars.list)
                 {
                     vd.vars.Add(w, w.source_context);
+
                 }
-                cm.members.Add(vd);
+                cm.Add(vd);
             }
             foreach (var v in VarsHelper.VarsList)
             {
@@ -797,10 +796,10 @@ namespace SyntaxVisitors.Async
                     vv.source_context = v.source_context;
                     vv.var_def = new var_def_statement(v.var_def.vars,
                         new named_type_reference(new ident("string", v.source_context), v.source_context), v.source_context);
-                    cm.members.Add(vv.var_def);
+                    cm.Add(vv.var_def);
                     continue;
                 }
-                cm.members.Add(v.var_def);
+                cm.Add(v.var_def);
             }
         }
 
