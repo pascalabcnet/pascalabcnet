@@ -157,7 +157,9 @@ namespace SyntaxVisitors.Async
 			ph2.source_context = defs.source_context;
 
             cm2.members[2] = ph;
+			ph.Parent = cm2;
 			cm2.members[3] = ph2;
+            ph2.Parent = cm2;
 
             var pd1 = Decls.list[1] as procedure_definition;
 			pd1.proc_header.name.class_name = name;
@@ -385,6 +387,11 @@ namespace SyntaxVisitors.Async
 			if (defsCount > 0) 
 			{
                 block.defs = temp_def;
+				if (temp_def != null)
+				foreach (var dl in temp_def.list)
+				{
+					dl.Parent = block.defs;
+				}
             }
             var stl = new statement_list((pd.proc_body as block).program_code, st, a, parsList, a2);
 
@@ -408,6 +415,13 @@ namespace SyntaxVisitors.Async
 			pd.proc_body = new block(stl);
 			var tt = pd.proc_body as block;
 			tt.defs = block.defs;
+			if (block.defs != null)
+			{
+                foreach (var item in block.defs.list)
+                {
+                    item.Parent = tt.defs;
+                }
+            }
 
 
 

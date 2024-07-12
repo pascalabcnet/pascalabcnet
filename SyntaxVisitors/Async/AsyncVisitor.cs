@@ -85,6 +85,7 @@ namespace SyntaxVisitors
 
                         await.aw.ex = mc;
                         b.program_code.list.Add(await);
+                        await.Parent = b.program_code;
                     }
                 }
                 proc_def = pd;
@@ -190,7 +191,9 @@ namespace SyntaxVisitors
                 var pc = new procedure_call(new dot_node(new dot_node(new ident("@aw_main", d.source_context),
                     new ident("GetAwaiter")), new ident("GetResult"), d.source_context), d.source_context);
                 pm.program_block.program_code.list.Add(vst);
+                vst.Parent = pm.program_block.program_code;
                 pm.program_block.program_code.list.Add(pc);
+                pc.Parent = pm.program_block.program_code;
 
             }
         }
