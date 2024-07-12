@@ -1,6 +1,7 @@
 ﻿uses WPF;
 
 begin
+  MainWindow.FontSize := 16;
   MainWindow.Title := 'Свойства шрифта';
   var dpanel := CreateDockPanel(Margin := 10).AsMainContent;
   var toppanel := Panels.StackPanel(Horizontal := True, Margin := 0);

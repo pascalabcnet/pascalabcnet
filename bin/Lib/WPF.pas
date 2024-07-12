@@ -17,55 +17,61 @@ uses System.Windows.Markup;
 type
   TControl = Control;
 
-  Panel = System.Windows.Controls.Panel;
+  Panel = System.Windows.Controls.Panel; // Это для других модулей
   Grid = System.Windows.Controls.Grid;
   Canvas = System.Windows.Controls.Canvas;
   StackPanel = System.Windows.Controls.StackPanel;
   DockPanel = System.Windows.Controls.DockPanel;
   WrapPanel = System.Windows.Controls.WrapPanel;
-
-  TPanel = Panel;
-  TGrid = Grid;
-  TStackPanel = StackPanel;
-  TDockPanel = DockPanel;
-  TCanvas = Canvas;
+  //TPanel = Panel;                        // Это для себя
+  //TGrid = Grid;
+  //TCanvas = Canvas;
+  //TStackPanel = StackPanel;
+  //TDockPanel = DockPanel;
+  //TWrapPanel = WrapPanel;
   
   // Типы элементов управления
-  Button = Button;
-  TButton = Button;
-  &Label = &Label;
-  TLabel = &Label;
-  CheckBox = CheckBox;
-  TextBox = TextBox;
-  Slider = Slider;
-  ComboBox = ComboBox;
+  Button = System.Windows.Controls.Button;
+  &Label = System.Windows.Controls.Label;
   TextBlock = System.Windows.Controls.TextBlock;
+  TextBox = System.Windows.Controls.TextBox;
+  CheckBox = System.Windows.Controls.CheckBox;
+  Slider = System.Windows.Controls.Slider;
+  ComboBox = System.Windows.Controls.ComboBox;
   Border = System.Windows.Controls.Border;
-  Rectangle = Rectangle;
+  Rectangle = System.Windows.Shapes.Rectangle;
+  RadioButton = System.Windows.Controls.RadioButton;
+  //TButton = Button;
+  TLabel = &Label;
+  //TTextBlock = TextBlock;
+  //TTextBox = TextBox;
+  //TCheckBox = CheckBox;
+  //TSlider = Slider;
+  //TComboBox = ComboBox;
 
   DrawingVisual = DrawingVisual;
   
   Thickness = System.Windows.Thickness;
-  TThickness = Thickness;
+  //TThickness = Thickness;
   FontStyle = FontStyle;
   FontStyles = FontStyles;
   GridLength = GridLength;
   GridUnitType = GridUnitType;
   Brushes = Brushes;
-  Brush = Brush;
+  Brush = System.Windows.Media.Brush;
   Pen = Pen;
   Point = Point;
   Colors = Colors;
   SolidColorBrush = SolidColorBrush;
   Orientation = Orientation;
-  TOrientation = Orientation;
-  VerticalAlignment = VerticalAlignment;
-  HorizontalAlignment = HorizontalAlignment;
+  //TOrientation = Orientation;
+  VerticalAlignment = System.Windows.VerticalAlignment;
+  HorizontalAlignment = System.Windows.HorizontalAlignment;
   HA = HorizontalAlignment;
   VA = VerticalAlignment;
   Dock = Dock;
   Color = Color;
-  TColor = Color;
+  //TColor = Color;
   TickPlacement = TickPlacement;
   Binding = Binding;
   PropertyPath = PropertyPath;
@@ -165,14 +171,14 @@ begin
   Grid.SetColumn(c,col);
 end;
 
-function AddToCell<T>(Self: T; gr: TGrid; row,col: integer): T; extensionmethod; where T: FrameworkElement;
+function AddToCell<T>(Self: T; gr: Grid; row,col: integer): T; extensionmethod; where T: FrameworkElement;
 begin
   Result := Self;
   if gr<>nil then
     gr.Add(Result,row,col);
 end;
   
-function AddTo<T>(Self: T; gr: TPanel): T; extensionmethod; where T: FrameworkElement;
+function AddTo<T>(Self: T; gr: Panel): T; extensionmethod; where T: FrameworkElement;
 begin
   Result := Self;
   if gr<>nil then
@@ -196,7 +202,7 @@ var CurrentPen := GPen(Colors.Black,1);
 var CurrentBrush := GBrush(Colors.White);
 
 // Декораторы 
-function &With(Self: TGrid; ShowGridLines: boolean := True): TGrid; extensionmethod;
+function &With(Self: Grid; ShowGridLines: boolean := True): Grid; extensionmethod;
 begin
   Self.ShowGridLines := ShowGridLines;
   Result := Self;
@@ -214,7 +220,7 @@ begin
 end;  
 
 function &With<T>(Self: T; Background: Brush := nil; 
-  Color: TColor := Colors.White): T; extensionmethod; where T: Panel;
+  Color: Color := Colors.White): T; extensionmethod; where T: Panel;
 begin
   if Background <> nil then
     Self.Background := Background
@@ -276,31 +282,33 @@ begin
     Self.Children.Add(c);
 end;
 
-function ControlsList(params cc: array of Control) := Lst(cc);
-
-function ControlsList(cc: sequence of Control) := Lst(cc);
-
-procedure Panel.AddControls(controls: sequence of Control; 
-  Width: real := real.NaN; Height: real := real.NaN; Padding: Thickness := -1; Margin: Thickness := -1;
-  FontSize: real := real.NaN);
+procedure Panel.AddElements(elements: sequence of FrameworkElement; 
+  Width: real := real.NaN; Height: real := real.NaN; 
+  Padding: Thickness := -1; Margin: Thickness := -1);
 begin
-  foreach var b in controls do
+  foreach var b in elements do
   begin  
     if Margin <> -1 then
       b.Margin := Margin;
     if Padding <> -1 then
-      b.Padding := Padding;
+    begin
+      var prop := b.GetType.GetProperty('Padding');
+      if prop <> nil then
+        prop.SetValue(b,Padding);
+    end;    
     if not real.IsNaN(Width) then
       b.Width := Width;
     if not real.IsNaN(Height) then
       b.Height := Height;
-    if not real.IsNaN(FontSize) then
-      b.FontSize := FontSize;
     Self.Add(b);
   end;  
 end;
 
-function Text(Self: TButton): string; extensionmethod := Self.Content as string;
+function Elements(params cc: array of FrameworkElement) := Lst(cc);
+
+function Elements(cc: sequence of FrameworkElement) := Lst(cc);
+
+function Text(Self: Button): string; extensionmethod := Self.Content as string;
 function Text(Self: &Label): string; extensionmethod := Self.Content as string;
 function Text(Self: CheckBox): string; extensionmethod := Self.Content as string;
 
@@ -312,12 +320,14 @@ begin
 end;
 
 function Init(Self: FrameworkElement; Width: real := real.NaN; Height: real := real.NaN; 
-  Margin: Thickness := 0): FrameworkElement; extensionmethod;
+  Margin: Thickness := -1): FrameworkElement; extensionmethod;
 begin
-  Self.Width := Width;
+  if not real.IsNaN(Width) then
+    Self.Width := Width;
   if not real.IsNaN(Height) then
     Self.Height := Height;
-  Self.Margin := Margin;
+  if Margin <> -1 then
+    Self.Margin := Margin;
   Result := Self;
 end;
 
@@ -335,64 +345,75 @@ begin
   Result := ParseXaml(s);
 end;
 
-// Функции создания элементов управления
+//-----------------------------------------------------------------------//
+//                 Функции создания элементов управления
+//-----------------------------------------------------------------------//
 
-function CreateButton(Text: string; Width: real := real.NaN; Height: real := real.NaN;
-  Margin: Thickness := 0; Padding: Thickness := 0): Button;
+function CreateElement<T>(Width: real := real.NaN; Height: real := real.NaN; Margin: Thickness := -1): T;
+  where T: FrameworkElement, constructor;
 begin
-  Result := Button.Create;
+  Result := new T;
   Result.Init(Width,Height,Margin);
-  Result.Content := Text;
-  Result.Padding := Padding;
 end;
 
+/// Элемент управления Кнопка. Основное событие - Click
+function CreateButton(Text: string; Width: real := real.NaN; Height: real := real.NaN;
+  Margin: Thickness := -1; Padding: Thickness := -1): Button;
+begin
+  Result := CreateElement&<Button>(Width,Height,Margin);
+  Result.Content := Text;
+  if Padding <> -1 then
+    Result.Padding := Padding;
+end;
+
+// Создает массив элементов управления Кнопка
 function CreateButtons(Texts: array of string; Width: real := real.NaN; Height: real := real.NaN;
-  Margin: Thickness := 0; Padding: Thickness := 0): array of Button;
+  Margin: Thickness := -1; Padding: Thickness := -1): array of Button;
 begin
   Result := new Button[Texts.Length];
   for var i:=0 to Result.Length - 1 do
     Result[i] := CreateButton(Texts[i], Width, Height, Margin, Padding);
 end;
 
+/// Элемент управления для редактирования текста 
 function CreateTextBox(Text: string; Width: real := real.NaN; Height: real := real.NaN;
-  Margin: Thickness := 0): TextBox;
+  Margin: Thickness := -1): TextBox;
 begin
-  Result := TextBox.Create;
-  Result.Init(Width,Height,Margin);
+  Result := CreateElement&<TextBox>(Width,Height,Margin);
   Result.Text := Text;
 end;
 
-function CreateLabel(Text: string; Width: real := real.NaN; Height: real := real.NaN;
-  Margin: Thickness := 0): &Label;
+/// Элемент управления для отображения текста
+function CreateTextBlock(Text: string := ''; Width: real := real.NaN; Height: real := real.NaN;
+  Margin: Thickness := -1): TextBlock;
 begin
-  Result := &Label.Create;
-  Result.Init(Width,Height,Margin);
+  Result := CreateElement&<TextBlock>(Width,Height,Margin);
+  Result.Text := Text;
+end;
+
+/// Текстовая подпись для элемента управления
+function CreateLabel(Text: string; Width: real := real.NaN; Height: real := real.NaN;
+  Margin: Thickness := -1): &Label;
+begin
+  Result := CreateElement&<&Label>(Width,Height,Margin);
   Result.Content := Text;
 end;
 
-function CreateTextBlock(Text: string := ''; Width: real := real.NaN; Height: real := real.NaN;
-  Margin: Thickness := 0): TextBlock;
-begin
-  Result := TextBlock.Create;
-  Result.Init(Width,Height,Margin);
-  Result.Text := Text;
-end;
-
+/// Элемент управления Флажок
 function CreateCheckBox(Text: string; Width: real := real.NaN; Height: real := real.NaN;
-  Margin: Thickness := 0; IsChecked: boolean := False): CheckBox;
+  Margin: Thickness := -1; IsChecked: boolean := False): CheckBox;
 begin
-  Result := CheckBox.Create;
-  Result.Init(Width,Height,Margin);
+  Result := CreateElement&<CheckBox>(Width,Height,Margin);
   Result.Content := Text;
   Result.IsChecked := IsChecked;
 end;
 
+/// Элемент управления Слайдер
 function CreateSlider(Min: real := 0; Max: real := 10; Step: real := 1; TickFrequency: real := 1; 
-  Width: real := real.NaN; Height: real := real.NaN; Margin: Thickness := 0;
+  Width: real := real.NaN; Height: real := real.NaN; Margin: Thickness := -1;
   Value: real := real.NaN): Slider;
 begin
-  Result := Slider.Create;
-  Result.Init(Width,Height,Margin);
+  Result := CreateElement&<Slider>(Width,Height,Margin);
   Result.Minimum := Min;
   Result.Maximum := Max;
   Result.SmallChange := Step;
@@ -403,19 +424,64 @@ begin
     Result.Value := Value
 end;
 
-//-- Создание панелей
-
+/// Элемент управления для выбора с раскрывающимся списком
 function CreateComboBox(Items: array of string := nil; Width: real := real.NaN; Height: real := real.NaN;
-  Margin: Thickness := 0): ComboBox;
+  Margin: Thickness := -1): ComboBox;
 begin
-  Result := ComboBox.Create;
-  Result.Init(Width,Height,Margin);
+  Result := CreateElement&<ComboBox>(Width,Height,Margin);
   if items <> nil then
     foreach var item in items do
       Result.Items.Add(item);
   Result.SelectedIndex := 0;
 end;
 
+/// Элемент Прямоугольник
+function CreateRectangle(Width: real := real.NaN; Height: real := real.NaN; Margin: Thickness := -1): Rectangle;
+begin
+  Result := CreateElement&<Rectangle>(Width,Height,Margin);
+end;
+
+/// Отображает границу и фон вокруг дочернего элемента. Основное свойство - Child 
+function CreateBorder(Width: real := real.NaN; Height: real := real.NaN; 
+  Margin: Thickness := -1; Background: Brush := nil; BorderBrush: Brush := nil;
+  BorderThickness: Thickness := -1; Child: UIElement := nil): Border;
+begin
+  Result := CreateElement&<Border>(Width,Height,Margin);
+  if Background<>nil then
+    Result.Background := Background;
+  if BorderBrush<>nil then
+    Result.BorderBrush := BorderBrush;
+  if BorderThickness<>-1 then
+  Result.BorderThickness := BorderThickness;
+  if Child <> nil then
+    Result.Child := Child;
+end;
+
+/// Элемент управления Радиокнопка. Радиокнопки могут быть сгруппированы по GroupName. Основное событие - Checked
+function CreateRadioButton(Width: real := real.NaN; Height: real := real.NaN; Margin: Thickness := -1;
+  Text: string := ''; GroupName: string := nil; IsChecked: boolean := False): RadioButton;
+begin
+  Result := CreateElement&<Radiobutton>(Width,Height,Margin);
+  Result.Content := Text;
+  if GroupName<>nil then
+    Result.GroupName := GroupName;
+  Result.IsChecked := IsChecked;
+end;
+
+// Создает массив элементов управления Радиокнопка
+function CreateRadioButtons(Texts: array of string; Width: real := real.NaN; Height: real := real.NaN;
+  Margin: Thickness := -1; GroupName: string := nil): array of WPF.RadioButton;
+begin
+  Result := new WPF.RadioButton[Texts.Length];
+  for var i:=0 to Result.Length - 1 do
+    Result[i] := CreateRadioButton(Width, Height, Margin, Texts[i], GroupName);
+end;
+
+//-----------------------------------------------------------------------//
+//                        Функции создания панелей
+//-----------------------------------------------------------------------//
+
+/// Панель, состоящая из строк и столбцов переменного размера
 function CreateGrid(rows: integer := 1; cols: integer := 1; ColumnWidths: array of real := nil; 
   RowHeights: array of real := nil): Grid;
 begin
@@ -434,55 +500,104 @@ begin
   Result := gr;
 end;
 
-function CreateDockPanel(Margin: Thickness := 0): DockPanel;
+/// Панель, в которой можно пристыковывать элементы управления к краям, используя DockPanel.SetDock 
+function CreateDockPanel(Margin: Thickness := -1): DockPanel;
 begin
   Result := new DockPanel;
-  Result.Margin := Margin;
+  if Margin <> -1 then
+    Result.Margin := Margin;
 end;
 
-function CreateCanvas(Margin: Thickness := 0): Canvas;
+/// Определяет область, в которой можно располагать элементы управления с помощью координат
+function CreateCanvas(Margin: Thickness := -1): Canvas;
 begin
   Result := new Canvas;
-  Result.Margin := Margin;
+  if Margin <> -1 then
+    Result.Margin := Margin;
 end;
 
+/// Панель, располагающая элементы управления вертикально или горизонтально  
 function CreateStackPanel(Width: real := real.NaN; Height: real := real.NaN;
-  Margin: Thickness := 0; Horizontal: boolean := False): StackPanel;
+  Margin: Thickness := -1; Horizontal: boolean := False; 
+  HAlign: HorizontalAlignment := HA.Left; VAlign: VerticalAlignment := VA.Top): StackPanel;
 begin
   Result := new StackPanel;
   Result.Init(Width,Height,Margin);
   if Horizontal then
     Result.Orientation := Orientation.Horizontal;
-end;
-
-function CreateRectangle(Width: real := real.NaN; Height: real := real.NaN;
-  Margin: Thickness := 0): Rectangle;
-begin
-  Result := new Rectangle;
-  Result.Init(Width,Height,Margin);
+  Result.HorizontalAlignment := HAlign;
+  Result.VerticalAlignment := VAlign;
 end;
 
 type
   ///!#
   Controls = static class
-    static function Button(Text: string; Left: real := real.NaN; Top: real := real.NaN; 
-      Width: real := real.NaN; Height: real := real.NaN; Margin: Thickness := 0;
-      Padding: Thickness := 0): TButton
-        := WPF.CreateButton(Text,Width,Height,Margin,Padding);
-    static function Drawing: WPF.Drawing
-      := CreateDrawing;
-    static function DrawingVisual: WPF.DrawingVisual
-      := new WPF.DrawingVisual;
+  public  
+    /// Элемент управления Кнопка. Основное событие - Click
+    static function Button(Text: string; Width: real := real.NaN; Height: real := real.NaN; 
+      Margin: Thickness := -1; Padding: Thickness := -1): WPF.Button := WPF.CreateButton(Text,Width,Height,Margin,Padding);
+    /// Создает массив элементов управления Кнопка
+    static function Buttons(Texts: array of string; Width: real := real.NaN; Height: real := real.NaN;
+      Margin: Thickness := -1; Padding: Thickness := -1): array of WPF.Button
+      := WPF.CreateButtons(Texts,Width,Height,Margin,Padding);
+    /// Элемент управления для редактирования текста 
+    static function TextBox(Text: string; Width: real := real.NaN; Height: real := real.NaN;
+      Margin: Thickness := -1): WPF.TextBox := WPF.CreateTextBox(Text, Width, Height, Margin);
+    /// Элемент управления для редактирования текста    
+    static function TextBlock(Text: string := ''; Width: real := real.NaN; Height: real := real.NaN;
+      Margin: Thickness := -1) := WPF.CreateTextBlock(Text, Width, Height, Margin);
+    /// Текстовая подпись для элемента управления
+    static function &Label(Text: string; Width: real := real.NaN; Height: real := real.NaN;
+      Margin: Thickness := -1): WPF.Label := WPF.CreateLabel(Text, Width, Height, Margin);
+    /// Элемент управления Флажок
+    static function CheckBox(Text: string; Width: real := real.NaN; Height: real := real.NaN;
+      Margin: Thickness := -1; IsChecked: boolean := False): WPF.CheckBox 
+      := WPF.CreateCheckBox(Text, Width, Height, Margin, IsChecked);
+    /// Элемент управления Слайдер
+    static function Slider(Min: real := 0; Max: real := 10; Step: real := 1; TickFrequency: real := 1; 
+      Width: real := real.NaN; Height: real := real.NaN; Margin: Thickness := -1; Value: real := real.NaN): WPF.Slider
+      := WPF.CreateSlider(Min, Max, Step, TickFrequency, Width, Height, Margin, Value);
+    /// Элемент управления для выбора с раскрывающимся списком
+    static function ComboBox(Items: array of string := nil; Width: real := real.NaN; Height: real := real.NaN;
+      Margin: Thickness := -1): WPF.ComboBox := CreateComboBox(Items, Width, Height, Margin);
+    /// Элемент Прямоугольник
+    static function Rectangle(Width: real := real.NaN; Height: real := real.NaN; 
+      Margin: Thickness := -1): WPF.Rectangle
+      := CreateRectangle(Width, Height, Margin);
+    /// Отображает границу и фон вокруг дочернего элемента. Основное свойство - Child 
+    static function Border(Width: real := real.NaN; Height: real := real.NaN; 
+      Margin: Thickness := -1; Background: Brush := nil;
+      BorderBrush: Brush := nil; BorderThickness: Thickness := -1; Child: UIElement := nil): WPF.Border
+      := CreateBorder(Width,Height,Margin,Background,BorderBrush,BorderThickness,Child);
+    /// Элемент управления Радиокнопка. Радиокнопки могут быть сгруппированы по GroupName. Основное событие - Checked
+    static function RadioButton(Width: real := real.NaN; Height: real := real.NaN; Margin: Thickness := -1;
+      Text: string := ''; GroupName: string := nil; IsChecked: boolean := False): WPF.RadioButton 
+      := CreateRadioButton(Width,Height,Margin,Text,GroupName,IsChecked);
+    // Создает массив элементов управления Радиокнопка
+    static function RadioButtons(Texts: array of string; Width: real := real.NaN; Height: real := real.NaN;
+      Margin: Thickness := -1; GroupName: string := nil): array of WPF.RadioButton 
+      := CreateRadioButtons(Texts, Width, Height, Margin, GroupName);
+      
+    static function Drawing: WPF.Drawing := CreateDrawing;
+    /// Визуальный объект для отрисовки
+    static function DrawingVisual: WPF.DrawingVisual := new WPF.DrawingVisual;
   end;
+  
   Panels = static class
-    static function Grid(rows: integer := 1; cols: integer := 1; ColumnWidths: array of real := nil; RowHeights: array of real := nil): TGrid 
+    /// Панель, состоящая из строк и столбцов переменного размера
+    static function Grid(rows: integer := 1; cols: integer := 1; ColumnWidths: array of real := nil; RowHeights: array of real := nil): WPF.Grid 
       := CreateGrid(rows,cols,ColumnWidths,RowHeights);
+    /// Панель, располагающая элементы управления вертикально или горизонтально  
     static function StackPanel(Width: real := real.NaN; Height: real := real.NaN; 
-      Margin: Thickness := 0; Horizontal: boolean := False): TStackPanel
-        := CreateStackPanel(Width,Height,Margin,Horizontal);
-    static function DockPanel(Margin: Thickness := 0): TDockPanel := CreateDockPanel(Margin);
+      Margin: Thickness := -1; Horizontal: boolean := False; 
+      HAlign: HorizontalAlignment := HA.Left; VAlign: VerticalAlignment := VA.Top): WPF.StackPanel
+      := CreateStackPanel(Width,Height,Margin,Horizontal,HAlign,VAlign);
+    /// Панель, в которой можно пристыковывать элементы управления к краям, используя DockPanel.SetDock 
+    static function DockPanel(Margin: Thickness := -1): WPF.DockPanel := CreateDockPanel(Margin);
+    /// Определяет область, в которой можно располагать элементы управления с помощью координат
+    static function Canvas(Margin: Thickness := -1): WPF.Canvas := CreateCanvas(Margin);
   end;
-
+  
 initialization
   MainWindow := new Window;
   
@@ -495,7 +610,7 @@ initialization
   MainWindow.Left := w/2;
   MainWindow.Top := h/2;
   
-  MainWindow.Content := new WrapPanel;
+  MainWindow.Content := new Grid; // как в стандартном WPF-приложении
   CurrentParent := MainWindow;
 finalization
   Application.Run(MainWindow);
