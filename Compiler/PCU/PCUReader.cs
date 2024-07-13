@@ -223,7 +223,7 @@ namespace PascalABCCompiler.PCU
         {
 
             var FullUnitName = comp.FindPCUFileName(UnitName, dir, out _);
-            if (FullUnitName == null) throw new FileNotFound(UnitName, null);
+            if (FullUnitName == null) throw new Errors.FileNotFound(UnitName, null);
 
             return FullUnitName;
         }

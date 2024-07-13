@@ -16,19 +16,8 @@ namespace Languages.Pascal.Frontend.Documentation
 
         public PascalDocTagsLanguageParser()
         {
-            filesExtensions = new string[1];
-            filesExtensions[0] = ".pasdt" + StringConstants.hideParserExtensionPostfixChar;
             sectionNames.Add("summary");
             sectionNames.Add("returns");
-        }
-
-        string[] filesExtensions;
-        public string[] FilesExtensions
-        {
-            get
-            {
-                return filesExtensions;
-            }
         }
 
         documentation_comment_section parse_section(string text)

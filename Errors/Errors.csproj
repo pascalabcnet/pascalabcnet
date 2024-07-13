@@ -63,13 +63,17 @@
       <Link>Config\globalassemblyinfo.cs</Link>
     </Compile>
     <Compile Include="Config\AssemblyInfo.cs" />
-    <Compile Include="Errors.cs" />
+    <Compile Include="BaseErrors.cs" />
     <Compile Include="SourceLocation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Localization\Localization.csproj">
       <Project>{2DE2842F-0912-4251-BC0F-480854C44A13}</Project>
       <Name>Localization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SemanticTree\SemanticTree.csproj">
+      <Project>{613e0dda-aa8a-437c-ac45-507b47429ff9}</Project>
+      <Name>SemanticTree</Name>
     </ProjectReference>
     <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
       <Project>{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}</Project>

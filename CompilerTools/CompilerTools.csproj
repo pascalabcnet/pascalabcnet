@@ -61,7 +61,6 @@
   <ItemGroup>
     <Compile Include="Conf\AssemblyInfo.cs" />
     <Compile Include="CRC32.cs" />
-    <Compile Include="Errors\Errors.cs" />
     <Compile Include="Errors\ErrorsStrategy.cs" />
     <Compile Include="EventedStreamReaderList.cs" />
     <Compile Include="Tools.cs" />
