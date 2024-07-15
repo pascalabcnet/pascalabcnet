@@ -55897,6 +55897,196 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class to_expr : expression
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public to_expr()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public to_expr(expression _key,expression _value)
+		{
+			this._key=_key;
+			this._value=_value;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public to_expr(expression _key,expression _value,SourceContext sc)
+		{
+			this._key=_key;
+			this._value=_value;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected expression _key;
+		protected expression _value;
+
+		///<summary>
+		///
+		///</summary>
+		public expression key
+		{
+			get
+			{
+				return _key;
+			}
+			set
+			{
+				_key=value;
+				if (_key != null)
+					_key.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public expression value
+		{
+			get
+			{
+				return _value;
+			}
+			set
+			{
+				_value=value;
+				if (_value != null)
+					_value.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			to_expr copy = new to_expr();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (key != null)
+			{
+				copy.key = (expression)key.Clone();
+				copy.key.Parent = copy;
+			}
+			if (value != null)
+			{
+				copy.value = (expression)value.Clone();
+				copy.value.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new to_expr TypedClone()
+		{
+			return Clone() as to_expr;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (key != null)
+				key.Parent = this;
+			if (value != null)
+				value.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			key?.FillParentsInAllChilds();
+			value?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return key;
+					case 1:
+						return value;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						key = (expression)value;
+						break;
+					case 1:
+						value = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 

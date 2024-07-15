@@ -3522,6 +3522,12 @@ namespace CodeFormatters
             add_space_before = true;
             visit_node(lvex.ex);
         }
+        public override void visit(to_expr to_ex)
+        {
+            visit_node(to_ex.key);
+            sb.Append(" ");
+            visit_node(to_ex.value);
+        }
         #endregion
     }
 

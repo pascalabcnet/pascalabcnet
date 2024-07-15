@@ -61,6 +61,7 @@
     <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\desugarAlgoritm\SymbolNode.cs" />
     <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\NewAssignTuplesDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\CacheFunctionVisitor.cs" />
+    <Compile Include="SugarVisitors\ToExprVisitor.cs" />
     <Compile Include="SugarVisitors\LetExprVisitor.cs" />
     <Compile Include="SugarVisitors\TestAssignIsDefVisitor.cs" />
     <Compile Include="SugarVisitors\UnpackLambdaParametersVisitor.cs" />

@@ -3327,6 +3327,8 @@ expr
 		{ $$ = $1; }
     | format_expr
 		{ $$ = $1; }
+    | expr tkTo expr_l1 
+		{ $$ = new to_expr($1, $3, @$); }
     ;
 
 expr_l1

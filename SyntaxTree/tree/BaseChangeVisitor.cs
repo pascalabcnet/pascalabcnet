@@ -32,7 +32,6 @@ namespace PascalABCCompiler.SyntaxTree
             upper.ReplaceDescendant(from, to);
         }
 
-
         public void ReplaceStatement(statement from, statement to)
         {
             to.Parent = from.Parent;

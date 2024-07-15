@@ -3368,6 +3368,17 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="to_expr" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="key" SyntaxType="expression" />
+        <SyntaxField Name="value" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3445,6 +3456,7 @@
       <HelpData Key=".initial_value" Value="ссылка на addrvalue, которой интциализируется идентификатор" />
       <HelpData Key=".inverted" Value="" />
       <HelpData Key=".item_expression" Value="" />
+      <HelpData Key=".key" Value="" />
       <HelpData Key=".left" Value="" />
       <HelpData Key=".lists" Value="" />
       <HelpData Key=".listunitsections" Value="" />
@@ -4669,6 +4681,9 @@
       <HelpData Key="template_type_reference." Value="" />
       <HelpData Key="template_type_reference.name" Value="" />
       <HelpData Key="template_type_reference.params_list" Value="" />
+      <HelpData Key="to_expr" Value="" />
+      <HelpData Key="to_expr.key" Value="" />
+      <HelpData Key="to_expr.value" Value="" />
       <HelpData Key="token_info" Value="" />
       <HelpData Key="token_info." Value="" />
       <HelpData Key="token_info.override string ToString()" Value="" />

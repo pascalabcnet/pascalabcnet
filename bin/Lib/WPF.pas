@@ -477,6 +477,12 @@ begin
     Result[i] := CreateRadioButton(Width, Height, Margin, Texts[i], GroupName);
 end;
 
+function Bordered(Self: UIElement; BorderThickness: Thickness := -1; BorderBrush: Brush := nil; Margin: 
+  Thickness := -1): WPF.Border; extensionmethod;
+begin
+  Result := CreateBorder(BorderBrush := BorderBrush, BorderThickness := BorderThickness, Margin := Margin, Child := Self);
+end;
+  
 //-----------------------------------------------------------------------//
 //                        Функции создания панелей
 //-----------------------------------------------------------------------//

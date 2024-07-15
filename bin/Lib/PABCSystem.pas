@@ -2483,10 +2483,16 @@ function SSetStr(params a: array of string): SortedSet<string>;
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
 /// Возвращает словарь пар элементов (ключ, значение)
 function Dict<TKey, TVal>(params pairs: array of (TKey, TVal)): Dictionary<TKey, TVal>;
-/// Возвращает словарь пар элементов (ключ, значение), построенный на значениях последовательности
+/// Возвращает словарь пар элементов (ключ, значение), построенный по последовательности пар
+function Dict<TKey, TVal>(pairs: sequence of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
+/// Возвращает словарь пар элементов (ключ, значение), построенный по последовательности пар
 function Dict<TKey, TVal>(pairs: sequence of (TKey, TVal)): Dictionary<TKey, TVal>;
+/// Возвращает словарь пар элементов (ключ, значение), построенный по последовательностям ключей и значений
+function Dict<TKey, TVal>(keys: sequence of TKey; values: sequence of TVal): Dictionary<TKey, TVal>; 
 /// Возвращает пару элементов (ключ, значение)
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
+/// Возвращает пару элементов (ключ, значение)
+function Pair<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 /// Возвращает словарь пар элементов (строка, строка)
 function DictStr(params pairs: array of (string, string)): Dictionary<string, string>;
 /// Возвращает словарь пар элементов (строка, целое)
@@ -5710,13 +5716,21 @@ begin
     Result.Add(pairs[i][0], pairs[i][1]);
 end;
 
-function Dict<TKey, TVal>(pairs: sequence of (TKey, TVal)): Dictionary<TKey, TVal> 
-  := Dict(pairs.ToArray); // внутренняя ошибка компилятора
+function Dict<TKey, TVal>(pairs: sequence of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal> 
+  := Dict(pairs.ToArray); 
 
-function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
-begin
-  Result := new KeyValuePair<TKey, TVal>(key, value);
-end;
+function Dict<TKey, TVal>(pairs: sequence of (TKey, TVal)): Dictionary<TKey, TVal> 
+  := Dict(pairs.ToArray); 
+  
+function Dict<TKey, TVal>(keys: sequence of TKey; values: sequence of TVal): Dictionary<TKey, TVal> 
+  := Dict(keys.Zip(values, (k,v) -> KV(k,v)));
+  
+  
+function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>
+  := new KeyValuePair<TKey, TVal>(key, value);
+
+function Pair<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>
+  := new KeyValuePair<TKey, TVal>(key, value);
 
 function DictStr(params pairs: array of (string, string)): Dictionary<string, string>
   := Dict&<string, string>(pairs);
@@ -14125,11 +14139,57 @@ begin
   Result := Self.GroupBy(x->x).ToDictionary(g -> g.Key, g -> proj(g.Key));
 end;
 
-/// Операция удаления из словаря пары с указанным значением ключа
+/// Обновляет данные в словаре данными из другого словаря
+procedure Update<TKey, TVal>(Self: Dictionary<TKey, TVal>; update: Dictionary<TKey, TVal>); extensionmethod;
+begin
+  foreach var kv in update do
+    Self[kv.Key] := kv.Value;
+end;
+
+/// Обновляет данные в словаре данными из другого словаря
+procedure operator+=<TKey, TVal>(Self: Dictionary<TKey, TVal>; update: Dictionary<TKey, TVal>); extensionmethod;
+begin
+  foreach var kv in update do
+    Self[kv.Key] := kv.Value;
+end;
+
+/// Объединяет данные в двух словарях. Если в обоих имеются одинаковые ключи, то с ключом связывается значение из второго словаря
+function operator+<TKey, TVal>(Self: Dictionary<TKey, TVal>; dict: Dictionary<TKey, TVal>): Dictionary<TKey, TVal>; extensionmethod;
+begin
+  var d := PABCSystem.Dict(Self);
+  d += dict;
+  Result := d;
+end;
+
+/// Удаляет из словаря пары с указанным значением ключа
 procedure operator-=<Key,Value>(Self: IDictionary<Key,Value>; k: Key); extensionmethod;
 begin
   Self.Remove(k);
 end;
+
+/// Удаляет из словаря пары с указанными значениями ключа
+procedure operator-=<Key,Value>(Self: IDictionary<Key,Value>; keys: sequence of Key); extensionmethod;
+begin
+  foreach var k in keys do
+    Self.Remove(k);
+end;
+
+/// Возвращает словарь, в котором из исходного словаря удален элемент с данным ключом
+function operator-<TKey, TVal>(Self: Dictionary<TKey, TVal>; key: TKey): Dictionary<TKey, TVal>; extensionmethod;
+begin
+  var d := Dict(Self);
+  d -= key;
+  Result := d;
+end;
+
+/// Возвращает словарь, в котором из исходного словаря удалены все элементы с ключами, задаваемыми вторым операндом
+function operator-<TKey, TVal>(Self: Dictionary<TKey, TVal>; keys: sequence of TKey): Dictionary<TKey, TVal>; extensionmethod;
+begin
+  var d := Dict(Self);
+  d -= keys;
+  Result := d;
+end;
+
 
 // --------------------------------------------
 //>>      Методы расширения типа Tuple # Extension methods for Tuple

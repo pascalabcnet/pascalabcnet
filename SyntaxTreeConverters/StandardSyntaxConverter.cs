@@ -87,6 +87,8 @@ namespace Languages.Pascal.Frontend.Converters
 
             CacheFunctionVisitor.New.ProcessNode(root);
 
+            ToExprVisitor.New.ProcessNode(root);
+
             // При наличии файла lightpt.dat подключает модули LightPT и Tasks
             root = TeacherControlConverter.New.Convert(root);
 
