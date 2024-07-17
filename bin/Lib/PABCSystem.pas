@@ -14467,7 +14467,14 @@ function operator><T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1
 ///--
 function operator>=<T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1, T2, T3, T4,T5,T6,T7)); extensionmethod := CompareToTup5(Self, v) >= 0;
 
-
+{
+///--
+function operator implicit<T>(a: array of T): set of T; extensionmethod; 
+begin
+  foreach var x in a do
+    Include(Result,x);
+end;
+}
 
 {// Определяет, есть ли указанный элемент в массиве
  function Contains<T>(self: array of T; x: T): boolean; extensionmethod;
