@@ -409,6 +409,12 @@ used_unit_name
         { 
 			$$ = new unit_or_namespace($1 as ident_list,@$); 
 		}
+    | tkStringLiteral
+        { 
+        	if ($1 is char_const _cc)
+        		$1 = new string_const(_cc.cconst.ToString());
+			$$ = new uses_unit_in(null, $1 as string_const, @$);
+        }
     | ident_or_keyword_pointseparator_list tkIn tkStringLiteral
         { 
         	if ($3 is char_const _cc)
