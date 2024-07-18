@@ -154,7 +154,6 @@ namespace Languages.Pascal.Frontend.Wrapping
                 buildTreeForFormatter, false,
                 Path.GetFullPath(fileName), CompilerDirectives); // контекст сканера и парсера
 
-
             Scanner scanner = new Scanner(Text, parserTools, Keywords, definesList);
 
             GPPGParser parser = new GPPGParser(scanner, parserTools);

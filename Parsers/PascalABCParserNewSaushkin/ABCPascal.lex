@@ -1,6 +1,6 @@
 %{
   public PascalParserTools parserTools;
-  public PascalABCCompiler.Parsers.BaseKeywords keywords;
+  public PascalABCKeywords keywords;
   public List<string> Defines = new List<string>();
   private Stack<BufferContext> buffStack = new Stack<BufferContext>();
   private Stack<string> fNameStack = new Stack<string>();
@@ -14,7 +14,7 @@
   public Scanner(string text, PascalParserTools parserTools, PascalABCCompiler.Parsers.BaseKeywords keywords, List<string> defines = null) 
   {
     this.parserTools = parserTools;
-    this.keywords = keywords;
+    this.keywords = keywords as PascalABCKeywords;
     if (defines != null)
       this.Defines.AddRange(defines);
     SetSource(text, 0);
