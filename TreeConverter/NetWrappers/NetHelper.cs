@@ -1148,6 +1148,15 @@ namespace PascalABCCompiler.NetHelper
                             {
                                 return fn;
                             }
+                            if (
+                                fn.parameters[0].type.type_special_kind == type_special_kind.array_kind
+                                  && fn.parameters[0].type.element_type.is_generic_parameter
+                                  && fn.parameters.Count == 1
+                                  && (fn.return_value_type == to || fn.return_value_type.original_generic == to)
+                               )
+                            {
+                                return fn;
+                            }
                         }
                     }
             }
