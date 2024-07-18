@@ -1,10 +1,10 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-G8V08V4
-// DateTime: 15.07.2024 13:28:05
-// UserName: ?????????
-// Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
+// Machine:  DESKTOP-V3E9T2U
+// DateTime: 18.07.2024 10:48:58
+// UserName: alex
+// Input file <ABCPascal.y>
 
 // options: no-lines gplex
 
@@ -58,16 +58,19 @@ public abstract class ScanBase : AbstractScanner<PascalABCCompiler.ParserTools.U
 
 public partial class GPPGParser: ShiftReduceParser<PascalABCCompiler.ParserTools.Union, LexLocation>
 {
-  // Verbatim content from D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
+  // Verbatim content from ABCPascal.y
 // Э�?и об�?явления добавля�?�?ся в класс GPPGParser, п�?едс�?авля�?�?ий собой па�?се�?, гене�?и�?�?ем�?й сис�?емой gppg
     public syntax_tree_node root; // �?о�?невой �?зел син�?акси�?еского де�?ева 
 
-    public int maxErrors = 10;
-    public PascalParserTools parserTools;
-	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
+    // private int maxErrors = 10;
+    private PascalParserTools parserTools;
+	private ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
-    public GPPGParser(AbstractScanner<PascalABCCompiler.ParserTools.Union, LexLocation> scanner) : base(scanner) { }
-  // End verbatim content from D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
+    public GPPGParser(AbstractScanner<PascalABCCompiler.ParserTools.Union, LexLocation> scanner, PascalParserTools parserTools) : base(scanner) 
+	{ 
+		this.parserTools = parserTools;
+	}
+  // End verbatim content from ABCPascal.y
 
 #pragma warning disable 649
   private static Dictionary<int, string> aliasses;

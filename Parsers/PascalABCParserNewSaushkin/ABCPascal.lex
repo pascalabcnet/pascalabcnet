@@ -1,18 +1,24 @@
 %{
   public PascalParserTools parserTools;
-  private PascalABCCompiler.Parsers.BaseKeywords keywords;
+  public PascalABCCompiler.Parsers.BaseKeywords keywords;
+  public List<string> Defines = new List<string>();
   private Stack<BufferContext> buffStack = new Stack<BufferContext>();
   private Stack<string> fNameStack = new Stack<string>();
 	private Stack<bool> IfDefInElseBranch = new Stack<bool>();
 	private Stack<string> IfDefVar = new Stack<string>();
-	public List<string> Defines = new List<string>();
 	private int IfExclude;
-	private string Pars;
 	private LexLocation currentLexLocation;
 	private bool HiddenIdents = false;
 	private bool ExprMode = false;
 
-  public Scanner(PascalABCCompiler.Parsers.BaseKeywords keywords) { this.keywords = keywords; }
+  public Scanner(string text, PascalParserTools parserTools, PascalABCCompiler.Parsers.BaseKeywords keywords, List<string> defines = null) 
+  {
+    this.parserTools = parserTools;
+    this.keywords = keywords;
+    if (defines != null)
+      this.Defines.AddRange(defines);
+    SetSource(text, 0);
+  }
 %}
 
 %namespace Languages.Pascal.Frontend.Core
