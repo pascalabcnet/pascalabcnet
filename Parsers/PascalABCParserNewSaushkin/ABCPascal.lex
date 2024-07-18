@@ -14,7 +14,7 @@
   public Scanner(string text, PascalParserTools parserTools, PascalABCCompiler.Parsers.BaseKeywords keywords, List<string> defines = null) 
   {
     this.parserTools = parserTools;
-    this.keywords = keywords as PascalABCKeywords;
+    this.keywords = (PascalABCKeywords)keywords;
     if (defines != null)
       this.Defines.AddRange(defines);
     SetSource(text, 0);
