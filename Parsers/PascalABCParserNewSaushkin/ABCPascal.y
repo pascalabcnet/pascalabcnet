@@ -986,7 +986,7 @@ const_factor
 
 const_set
     : tkSquareOpen elem_list tkSquareClose 
-        { 
+        {
 			$$ = new pascal_set_constant($2 as expression_list, @$); 
 		}
     | tkVertParen elem_list tkVertParen     

@@ -519,9 +519,7 @@ type
     function ToString: string; override;
     class function operator implicit<T>(s: TypedSet): HashSet<T>;
     class function operator implicit<T>(s: HashSet<T>): TypedSet;
-    class function operator implicit<T>(s: array of T): TypedSet;
     class function InitBy<T>(s: sequence of T): TypedSet;
-    //class function operator implicit<T>(a: array of T): TypedSet;
     function Count: integer := ht.Count;
     procedure Print(delim: string := ' ');
     procedure Println(delim: string := ' ');
@@ -3537,21 +3535,10 @@ begin
 end;
 
 ///--
-class function TypedSet.operator implicit<T>(s: array of T): TypedSet;
+{class function TypedSet.operator implicit<T>(s: array of T): TypedSet;
 begin
   var ts := new TypedSet();
   foreach key: T in s do
-  begin
-    ts.ht[key] := key;  
-  end;
-  Result := ts; 
-end;
-
-///--
-{class function TypedSet.operator implicit<T>(a: array of T): TypedSet;
-begin
-  var ts := new TypedSet();
-  foreach key: T in a do
   begin
     ts.ht[key] := key;  
   end;
