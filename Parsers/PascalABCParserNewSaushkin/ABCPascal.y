@@ -4,6 +4,7 @@
 
 %{
 // Эти объявления добавляются в класс GPPGParser, представляющий собой парсер, генерируемый системой gppg
+
     public syntax_tree_node root; // Корневой узел синтаксического дерева 
 
     public int maxErrors = 10;
@@ -987,7 +988,16 @@ const_factor
 const_set
     : tkSquareOpen elem_list tkSquareClose 
         {
-			$$ = new pascal_set_constant($2 as expression_list, @$); 
+            // Если elem_list пуст или содержит диапазон, то это множество, иначе массив. С PascalABC.NET 3.10  
+            /*var is_set = false;
+            var el = $2 as expression_list;
+            if (el == null || el.Count == 0)
+              is_set = true;
+            else if (el.expressions.Count(x => x is diapason_expr_new) > 0)
+                is_set = true;
+            if (is_set)*/    
+				$$ = new pascal_set_constant($2 as expression_list, @$);
+			//else $$ = new array_const_new($2 as expression_list, @$); 				
 		}
     | tkVertParen elem_list tkVertParen     
         { 
@@ -4164,7 +4174,16 @@ factor
 		{ $$ = $1; }
     | tkSquareOpen elem_list tkSquareClose     
         { 
-			$$ = new pascal_set_constant($2 as expression_list, @$);  
+            // Если elem_list пуст или содержит диапазон, то это множество, иначе массив. С PascalABC.NET 3.10  
+            /*var is_set = false;
+            var el = $2 as expression_list;
+            if (el == null || el.Count == 0)
+              is_set = true;
+            else if (el.expressions.Count(x => x is diapason_expr_new) > 0)
+                is_set = true;
+            if (is_set)*/    
+				$$ = new pascal_set_constant($2 as expression_list, @$);
+			//else $$ = new array_const_new($2 as expression_list, @$); 				
 		}
     | tkNot factor              
         { 
