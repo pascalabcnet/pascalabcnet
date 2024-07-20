@@ -520,7 +520,6 @@ type
     class function operator implicit<T>(s: TypedSet): HashSet<T>;
     class function operator implicit<T>(s: HashSet<T>): TypedSet;
     class function InitBy<T>(s: sequence of T): TypedSet;
-    //class function operator implicit<T>(a: array of T): TypedSet;
     function Count: integer := ht.Count;
     procedure Print(delim: string := ' ');
     procedure Println(delim: string := ' ');
@@ -3503,6 +3502,16 @@ begin
     Result := string.Format(System.Globalization.NumberFormatInfo.InvariantInfo, '{0}', new object[](obj))
 end;
 
+class function TypedSet.InitBy<T>(s: sequence of T): TypedSet;
+begin
+  var ts := new TypedSet();
+  foreach key: T in s do
+  begin
+    ts.ht[key] := key;  
+  end;
+  Result := ts; 
+end;
+
 ///--
 class function TypedSet.operator implicit<T>(s: TypedSet): HashSet<T>;
 begin
@@ -3512,16 +3521,6 @@ begin
     hs.Add(T(key));  
   end;
   Result := hs; 
-end;
-
-class function TypedSet.InitBy<T>(s: sequence of T): TypedSet;
-begin
-  var ts := new TypedSet();
-  foreach key: T in s do
-  begin
-    ts.ht[key] := key;  
-  end;
-  Result := ts; 
 end;
 
 ///--
@@ -3536,10 +3535,10 @@ begin
 end;
 
 ///--
-{class function TypedSet.operator implicit<T>(a: array of T): TypedSet;
+{class function TypedSet.operator implicit<T>(s: array of T): TypedSet;
 begin
   var ts := new TypedSet();
-  foreach key: T in a do
+  foreach key: T in s do
   begin
     ts.ht[key] := key;  
   end;

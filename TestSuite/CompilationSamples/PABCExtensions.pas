@@ -409,6 +409,36 @@ begin
     Result += x;
 end;}
 
+/// Функция создания множества set по указанным значениям
+function SetOf<T>(params a: array of T): set of T;
+begin
+  Result := TypedSet.InitBy(a);
+end;
+
+///--
+function operator implicit(a: array of integer): set of integer; extensionmethod := TypedSet.InitBy(a);
+///--
+function operator implicit(a: array of real): set of real; extensionmethod := TypedSet.InitBy(a);
+///--
+function operator implicit(a: array of string): set of string; extensionmethod := TypedSet.InitBy(a);
+///--
+function operator implicit(a: array of char): set of char; extensionmethod := TypedSet.InitBy(a);
+///--
+function operator implicit(a: array of shortint): set of shortint; extensionmethod := TypedSet.InitBy(a);
+///--
+function operator implicit(a: array of int64): set of int64; extensionmethod := TypedSet.InitBy(a);
+///--
+function operator implicit(a: array of byte): set of byte; extensionmethod := TypedSet.InitBy(a);
+///--
+function operator implicit(a: array of word): set of word; extensionmethod := TypedSet.InitBy(a);
+///--
+function operator implicit(a: array of longword): set of longword; extensionmethod := TypedSet.InitBy(a);
+///--
+function operator implicit(a: array of BigInteger): set of BigInteger; extensionmethod := TypedSet.InitBy(a);
+///--
+function operator implicit(a: array of decimal): set of decimal; extensionmethod := TypedSet.InitBy(a);
+///--
+function operator implicit(a: array of single): set of single; extensionmethod := TypedSet.InitBy(a);
 
 //------------------------------------------------------------------------------
 //          Операции для procedure

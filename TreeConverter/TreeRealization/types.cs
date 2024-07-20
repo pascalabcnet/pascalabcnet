@@ -3869,7 +3869,12 @@ namespace PascalABCCompiler.TreeRealization
                     _implicit_convertions_to.Add(ctn, fn);
                 else if (fn == null && this.type_special_kind == SemanticTree.type_special_kind.array_kind && this.base_type.Scope != null)
                 {
-                    fn = NetHelper.NetHelper.get_implicit_conversion(this.base_type as compiled_type_node, this.base_type as compiled_type_node, ctn, this.base_type.Scope as NetHelper.NetTypeScope);
+                    var ttn = ctn;
+                    if (cctn != null && cctn.is_generic_type_instance)
+                        ttn = compiled_type_node.get_type_node(cctn.compiled_type.GetGenericTypeDefinition());
+
+                    fn = NetHelper.NetHelper.get_implicit_conversion(this.base_type as compiled_type_node, 
+                        this.base_type as compiled_type_node, ttn, this.base_type.Scope as NetHelper.NetTypeScope);
                     if (fn != null)
                     {
                         List<type_node> instance_params = new List<type_node>();
