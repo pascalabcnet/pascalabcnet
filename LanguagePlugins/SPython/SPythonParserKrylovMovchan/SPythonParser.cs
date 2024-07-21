@@ -74,6 +74,11 @@ namespace SPythonParser
     {
         //private SPythonGPPGParserHelper localparserhelper;
 
+        public SPythonLanguageParser()
+        {
+            Keywords = new SPythonKeywords();
+        }
+
         public override void Reset()
         {
             CompilerDirectives = new List<compiler_directive>();
@@ -116,32 +121,20 @@ namespace SPythonParser
             Console.SetError(sw);
 #endif
 #endif
-            SPythonParserTools parsertools = new SPythonParserTools(this); // контекст сканера и парсера
-            parsertools.errors = Errors;
-            parsertools.warnings = Warnings;
-            parsertools.compilerDirectives = CompilerDirectives;
-            parsertools.CurrentFileName = Path.GetFullPath(fileName);
+            SPythonParserTools parserTools = new SPythonParserTools(Errors, Warnings, ValidDirectives, buildTreeForFormatter, false,
+                Path.GetFullPath(fileName), CompilerDirectives); // контекст сканера и парсера
 
 
             IndentArranger ia = new IndentArranger();
             ia.ProcessSourceText(ref Text);
 
-            var scanner = new Scanner();
-            scanner.SetSource(Text, 0);
-            scanner.parsertools = parsertools;// передали parsertools в объект сканера
-            if (definesList != null)
-                scanner.Defines.AddRange(definesList);
+            var scanner = new Scanner(Text, parserTools, Keywords, definesList);
 
-            SPythonGPPGParser parser = new SPythonGPPGParser(scanner);
-            parsertools.build_tree_for_formatter = buildTreeForFormatter;
-
-            parser.is_unit_to_be_parsed = CheckIfParsingUnit.Invoke();
-
-            parser.parsertools = parsertools; // передали parsertools в объект парсера
+            SPythonGPPGParser parser = new SPythonGPPGParser(scanner, parserTools, CheckIfParsingUnit.Invoke());
 
             if (!parser.Parse())
                 if (Errors.Count == 0)
-                    parsertools.AddErrorFromResource("UNEXPECTED_SYNTAX_ERROR", null);
+                    parserTools.AddErrorFromResource("UNEXPECTED_SYNTAX_ERROR", null);
 #if DEBUG
 #if _ERR
             sw.Close();

@@ -76,7 +76,7 @@
 **/PascalABCNETLinux.exe.config
 **/UniversalParserHelper.dll
 
-**/SPythonLanguage.dll
+**/SPythonLanguageInfo.dll
 **/SPythonLanguageParser.dll
 **/SPythonStandardTreeConverter.dll
 **/SPythonSyntaxTreeVisitor.dll

@@ -2,10 +2,9 @@
    	public syntax_tree_node root;
 	public List<Error> errors;
     // public string current_file_name;
-    public int max_errors = 10;
-	public SPythonParserTools parsertools;
+    // public int max_errors = 10;
+	public SPythonParserTools parserTools;
     public List<compiler_directive> CompilerDirectives;
-   	public SPythonGPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 
 	private SymbolTable symbolTable = new SymbolTable();
@@ -16,6 +15,13 @@
 	private bool isVariableToBeAssigned = false;
 
 	public bool is_unit_to_be_parsed = false;
+
+	public SPythonGPPGParser(AbstractScanner<ValueType, LexLocation> scanner, SPythonParserTools parserTools,
+	bool isUnitToBeParsed) : base(scanner) 
+	{ 
+		this.parserTools = parserTools;
+		this.is_unit_to_be_parsed = isUnitToBeParsed;
+	}
 %}
 
 %using PascalABCCompiler.SyntaxTree;
@@ -110,7 +116,7 @@ program
 				var initialization_part = new initfinal_part(null, $2 as statement_list, null, null, null, @$);
 
 				root = $$ = new unit_module(
-					new unit_name(new ident(Path.GetFileNameWithoutExtension(parsertools.CurrentFileName)),
+					new unit_name(new ident(Path.GetFileNameWithoutExtension(parserTools.CurrentFileName)),
 					UnitHeaderKeyword.Unit, @$), interface_part, null,
 					initialization_part.initialization_sect,
 					initialization_part.finalization_sect, null, @$);
@@ -126,7 +132,7 @@ import_clause
 		}
 	| import_clause import_clause_one
 		{
-   			if (parsertools.build_tree_for_formatter)
+   			if (parserTools.build_tree_for_formatter)
    			{
 	        	if ($1 == null)
                 {
@@ -234,7 +240,7 @@ global_stmt
 			foreach (var id in ($2 as ident_list).idents) {
 				// имя параметра совпадает с именем глобальной переменной
 				if (symbolTable.Contains(id.name)) {
-					parsertools.AddErrorFromResource("GLOBAL_VAR_{0}_SIM_PARAMETER", @$, id.name);
+					parserTools.AddErrorFromResource("GLOBAL_VAR_{0}_SIM_PARAMETER", @$, id.name);
 					$$ = null;
 				}
 				// всё отлично!
@@ -287,7 +293,7 @@ assign_stmt
 					// объявление глобальной переменной
 					if (symbolTable.OuterScope == null) {
 						if (globalVariables.Contains(id.name)) {
-							parsertools.AddErrorFromResource("This variable is declared before", @$);
+							parserTools.AddErrorFromResource("This variable is declared before", @$);
 						}
 						else {
 							var ass = new assign(id as addressed_value, $4, $3.type, @$);
@@ -326,7 +332,7 @@ assign_stmt
 	| variable assign_type expr
 		{
 			if (!($1 is addressed_value))
-        		parsertools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO",@$);
+        		parserTools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO",@$);
 			$$ = new assign($1 as addressed_value, $3, $2.type, @$);
 		}
 	;
@@ -392,7 +398,7 @@ expr
 		{
 			// Проверка на то что пытаемся считать не инициализированную переменную
 			//if (!symbolTable.Contains($1.name) && !globalVariables.Contains($1.name))
-					//parsertools.AddErrorFromResource("USING_VARIABLE_{0}_BEFORE_ASSIGNMENT", @$, $1.name);
+					//parserTools.AddErrorFromResource("USING_VARIABLE_{0}_BEFORE_ASSIGNMENT", @$, $1.name);
 
 			$$ = $1;
 		}
@@ -681,7 +687,7 @@ proc_func_call
 						args.Add(expr);
 						args.source_context = new SourceContext(args.source_context, expr.source_context);
 					}
-					else parsertools.AddErrorFromResource("Arg after Kvarg", @$);
+					else parserTools.AddErrorFromResource("Arg after Kvarg", @$);
 				}
 
 				if (kvargs.expressions.Count() == 0)
@@ -824,7 +830,7 @@ optional_semicolon
                 var err_stn = progBlock;
 			    if ((progBlock is block) && (progBlock as block).program_code != null && (progBlock as block).program_code.subnodes != null && (progBlock as block).program_code.subnodes.Count > 0)
                     err_stn = (progBlock as block).program_code.subnodes[(progBlock as block).program_code.subnodes.Count - 1];
-                //parsertools.errors.Add(new SPythonUnexpectedToken(parsertools.CurrentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
+                //parserTools.errors.Add(new SPythonUnexpectedToken(parserTools.CurrentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
             }
             return progModule;
         }

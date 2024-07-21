@@ -17,39 +17,49 @@ STRINGNUM (\'([^\'\n\\]|\\.)*\')|(\"([^\"\n\\]|\\.)*\")
 ID {Alpha}{AlphaDigit}*
 
 %{
-  public SPythonParserTools parsertools;
+  private SPythonKeywords keywords;
+  public SPythonParserTools parserTools;
   public List<string> Defines = new List<string>();
   LexLocation currentLexLocation;
+
+  public Scanner(string text, SPythonParserTools parserTools, PascalABCCompiler.Parsers.BaseKeywords keywords, List<string> defines = null) 
+  {
+    this.parserTools = parserTools;
+    this.keywords = (SPythonKeywords)keywords;
+    if (defines != null)
+      this.Defines.AddRange(defines);
+    SetSource(text, 0);
+  }
 %}
 
 %%
 
 {INTNUM} {
   currentLexLocation = CurrentLexLocation;
-  yylval.ex = parsertools.create_int_const(yytext,currentLexLocation);
+  yylval.ex = parserTools.create_int_const(yytext,currentLexLocation);
   return (int)Tokens.INTNUM;
 }
 
 {REALNUM} {
   currentLexLocation = CurrentLexLocation;
-  yylval.ex = parsertools.create_double_const(yytext,currentLexLocation);
+  yylval.ex = parserTools.create_double_const(yytext,currentLexLocation);
   return (int)Tokens.REALNUM;
 }
 
 {STRINGNUM} {
   currentLexLocation = CurrentLexLocation;
-  yylval.stn = parsertools.create_string_const(yytext,currentLexLocation);
+  yylval.stn = parserTools.create_string_const(yytext,currentLexLocation);
   return (int)Tokens.STRINGNUM;
 }
 
 {ID}  {
   string cur_yytext = yytext;
-  int res = Keywords.KeywordOrIDToken(cur_yytext);
+  int res = keywords.KeywordOrIDToken(cur_yytext);
   currentLexLocation = CurrentLexLocation;
   switch (res)
   {
     case (int)Tokens.ID:
-      yylval.id = parsertools.create_ident(cur_yytext,currentLexLocation);
+      yylval.id = parserTools.create_ident(cur_yytext,currentLexLocation);
       break;
     case (int)Tokens.AND:
       yylval.op = new op_type_node(Operators.LogicalAND);
@@ -102,12 +112,12 @@ ID {Alpha}{AlphaDigit}*
 ")"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.RPAR; }
 
 "##" {
-  parsertools.AddErrorFromResource("WRONG_INDENT", new LexLocation(CurrentLexLocation.StartLine + 1, 0, CurrentLexLocation.StartLine + 1, 0));
+  parserTools.AddErrorFromResource("WRONG_INDENT", new LexLocation(CurrentLexLocation.StartLine + 1, 0, CurrentLexLocation.StartLine + 1, 0));
 	return (int)Tokens.EOF;
 }
 
 [^ \r\n] {
-  parsertools.AddErrorFromResource("UNEXPECTED_TOKEN_{0}", CurrentLexLocation, yytext);
+  parserTools.AddErrorFromResource("UNEXPECTED_TOKEN_{0}", CurrentLexLocation, yytext);
 	return (int)Tokens.EOF;
 }
 
@@ -120,13 +130,13 @@ ID {Alpha}{AlphaDigit}*
 public LexLocation CurrentLexLocation
 {
   get {
-    return new LexLocation(tokLin, tokCol, tokELin, tokECol, parsertools.CurrentFileName);
+    return new LexLocation(tokLin, tokCol, tokELin, tokECol, parserTools.CurrentFileName);
 	}
 }
 
 public override void yyerror(string format, params object[] args)
 {
-	string errorMsg = parsertools.CreateErrorString(yytext, args);
-	parsertools.AddError(errorMsg,CurrentLexLocation);
+	string errorMsg = parserTools.CreateErrorString(yytext, args);
+	parserTools.AddError(errorMsg,CurrentLexLocation);
 }
 

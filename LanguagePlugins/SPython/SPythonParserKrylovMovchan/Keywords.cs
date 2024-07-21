@@ -1,85 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using SPythonParserYacc;
 
 namespace SPythonParser
 {
-    // Статический класс, определяющий ключевые слова языка
-    public static class Keywords
+
+    public class SPythonKeywords : PascalABCCompiler.Parsers.BaseKeywords
     {
-        private static Dictionary<string, int> keywords = new Dictionary<string, int>(StringComparer.CurrentCultureIgnoreCase);
+        protected override Dictionary<string, int> KeywordsToTokens { get; set; }
 
-        public static Dictionary<string, string> keymap = new Dictionary<string, string>();
+        protected override string FileName => "keywordsmap.spy";
 
-        public static string fname = "keywordsmap.vbl";
-        public static void ReloadKeyMap()
+        public SPythonKeywords() : base()
         {
-            try
+            KeywordsToTokens = new Dictionary<string, int>
             {
-                if (keymap != null)
-                {
-                    keymap.Clear();
-                    keymap = null;
-                }
-                var fn = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName), fname);
-                if (System.IO.File.Exists(fn))
-                    keymap = System.IO.File.ReadLines(fn, Encoding.Unicode).Select(s => s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)).ToDictionary(w => w[0], w => w[1]);
+                ["if"] = (int)Tokens.IF,
+                ["elif"] = (int)Tokens.ELIF,
+                ["else"] = (int)Tokens.ELSE,
+                ["while"] = (int)Tokens.WHILE,
+                ["for"] = (int)Tokens.FOR,
+                ["in"] = (int)Tokens.IN,
+                ["def"] = (int)Tokens.DEF,
+                ["return"] = (int)Tokens.RETURN,
+                ["break"] = (int)Tokens.BREAK,
+                ["continue"] = (int)Tokens.CONTINUE,
+                ["and"] = (int)Tokens.AND,
+                ["or"] = (int)Tokens.OR,
+                ["not"] = (int)Tokens.NOT,
+                ["import"] = (int)Tokens.IMPORT,
+                ["from"] = (int)Tokens.FROM,
+                ["global"] = (int)Tokens.GLOBAL,
+                ["True"] = (int)Tokens.TRUE,
+                ["False"] = (int)Tokens.FALSE
             }
-            catch (Exception e)  // погасить любые исключения
-            {
-                //var w = e.Message;
-            }
-        }
-        public static string Convert(string s)
-        {
-            if (keymap == null || keymap.Count() == 0)
-                return s;
-            else if (!keymap.ContainsKey(s))
-                return s;
-            else return keymap[s];
+            .ToDictionary(kv => ConvertKeyword(kv.Key), kv => kv.Value);
         }
 
-        public static void KeywordsAdd()
-        {
-            if (keymap == null || keymap.Count() == 0)
-                ReloadKeyMap();
-            keywords.Clear();
-            keywords.Add(Convert("if"), (int)Tokens.IF);
-            keywords.Add(Convert("elif"), (int)Tokens.ELIF);
-            keywords.Add(Convert("else"), (int)Tokens.ELSE);
-            keywords.Add(Convert("while"), (int)Tokens.WHILE);
-            keywords.Add(Convert("for"), (int)Tokens.FOR);
-            keywords.Add(Convert("in"), (int)Tokens.IN);
-            keywords.Add(Convert("def"), (int)Tokens.DEF);
-            keywords.Add(Convert("return"), (int)Tokens.RETURN);
-            keywords.Add(Convert("break"), (int)Tokens.BREAK);
-            keywords.Add(Convert("continue"), (int)Tokens.CONTINUE);
-            keywords.Add(Convert("and"), (int)Tokens.AND);
-            keywords.Add(Convert("or"), (int)Tokens.OR);
-            keywords.Add(Convert("not"), (int)Tokens.NOT);
-            keywords.Add(Convert("import"), (int)Tokens.IMPORT);
-            keywords.Add(Convert("from"), (int)Tokens.FROM);
-            keywords.Add(Convert("global"), (int)Tokens.GLOBAL);
-            keywords.Add(Convert("True"), (int)Tokens.TRUE);
-            keywords.Add(Convert("False"), (int)Tokens.FALSE);
-        }
-
-        static Keywords()
-        {
-            KeywordsAdd();
-        }
-
-        public static int KeywordOrIDToken(string s)
-        {
-            //s = s.ToUpper();
-            int keyword = 0;
-            if (keywords.TryGetValue(s, out keyword))
-                return keyword;
-            else
-                return (int)Tokens.ID;
-        }
+        protected override int GetIdToken() => (int)Tokens.ID;
     }
 
 }

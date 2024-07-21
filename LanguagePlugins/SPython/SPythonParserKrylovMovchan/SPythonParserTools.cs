@@ -6,6 +6,8 @@ using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Parsers;
 using System.Text;
+using PascalABCCompiler.Errors;
+using PascalABCCompiler.ParserTools.Directives;
 
 namespace SPythonParser
 {
@@ -62,52 +64,59 @@ namespace SPythonParser
         public List<var_def_statement> pascalABC_var_statements;
         public List<type_declaration> pascalABC_type_declarations;
 
-        public static Dictionary<string, string> tokenNames;
-        static SPythonParserTools()
+        public override Dictionary<string, string> TokenNum { get; protected set; }
+        
+        private void InitializeTokenNum()
         {
-            tokenNames = new Dictionary<string, string>();
-            tokenNames["STATEMENT"] = StringResources.Get("STMT");
-            tokenNames["EXPRESSION"] = StringResources.Get("EXPR");
-            tokenNames["EOF"] = StringResources.Get("EOF1");
-            tokenNames["ID"] = StringResources.Get("IDENTIFIER");
-            tokenNames["INTNUM"] = StringResources.Get("INTNUM");
-            tokenNames["REALNUM"] = StringResources.Get("REALNUM");
-            tokenNames["STRINGNUM"] = StringResources.Get("STRINGNUM");
-            //tokenNames["tkStringLiteral"] = StringResources.Get("TKSTRINGLITERAL");
-            tokenNames["ASSIGN"] = "=";
-            tokenNames["COLON"] = "':'";
-            tokenNames["DOT"] = "'.'";
-            tokenNames["LPAR"] = "'('";
-            tokenNames["RPAR"] = "')'";
-            tokenNames[";"] = StringResources.Get("EOL");
-            tokenNames["SEMICOLON"] = StringResources.Get("EOL");
-            tokenNames["#{"] = StringResources.Get("#{");
-            tokenNames["INDENT"] = StringResources.Get("#{");
-            tokenNames["#}"] = StringResources.Get("#}");
-            tokenNames["UNINDENT"] = StringResources.Get("#}");
-            tokenNames["LBRACKET"] = "'['";
-            tokenNames["RBRACKET"] = "']'";
-            tokenNames["tkQuestion"] = "'?'";
-            tokenNames["COMMA"] = "','";
-            tokenNames["PERCENTAGE"] = "'%'";
-            tokenNames["DIVIDE"] = "'/'";
-            tokenNames["MINUS"] = "'-'";
-            tokenNames["PLUS"] = "'+'";
-            tokenNames["SLASHSLASH"] = "'//'";
-            tokenNames["STAR"] = "'*'";
-            tokenNames["EQUAL"] = "'=='";
-            tokenNames["NOTEQUAL"] = "'!='";
-            tokenNames["GREATER"] = "'>'";
-            tokenNames["GREATEREQUAL"] = "'>='";
-            tokenNames["LESS"] = "'<'";
-            tokenNames["LESSEQUAL"] = "'<='";
-            tokenNames["ARROW"] = "'->'";
+            TokenNum = new Dictionary<string, string>();
+            TokenNum["STATEMENT"] = StringResources.Get("STMT");
+            TokenNum["EXPRESSION"] = StringResources.Get("EXPR");
+            TokenNum["EOF"] = StringResources.Get("EOF1");
+            TokenNum["ID"] = StringResources.Get("IDENTIFIER");
+            TokenNum["INTNUM"] = StringResources.Get("INTNUM");
+            TokenNum["REALNUM"] = StringResources.Get("REALNUM");
+            TokenNum["STRINGNUM"] = StringResources.Get("STRINGNUM");
+            //TokenNum["tkStringLiteral"] = StringResources.Get("TKSTRINGLITERAL");
+            TokenNum["ASSIGN"] = "=";
+            TokenNum["COLON"] = "':'";
+            TokenNum["DOT"] = "'.'";
+            TokenNum["LPAR"] = "'('";
+            TokenNum["RPAR"] = "')'";
+            TokenNum[";"] = StringResources.Get("EOL");
+            TokenNum["SEMICOLON"] = StringResources.Get("EOL");
+            TokenNum["#{"] = StringResources.Get("#{");
+            TokenNum["INDENT"] = StringResources.Get("#{");
+            TokenNum["#}"] = StringResources.Get("#}");
+            TokenNum["UNINDENT"] = StringResources.Get("#}");
+            TokenNum["LBRACKET"] = "'['";
+            TokenNum["RBRACKET"] = "']'";
+            TokenNum["tkQuestion"] = "'?'";
+            TokenNum["COMMA"] = "','";
+            TokenNum["PERCENTAGE"] = "'%'";
+            TokenNum["DIVIDE"] = "'/'";
+            TokenNum["MINUS"] = "'-'";
+            TokenNum["PLUS"] = "'+'";
+            TokenNum["SLASHSLASH"] = "'//'";
+            TokenNum["STAR"] = "'*'";
+            TokenNum["EQUAL"] = "'=='";
+            TokenNum["NOTEQUAL"] = "'!='";
+            TokenNum["GREATER"] = "'>'";
+            TokenNum["GREATEREQUAL"] = "'>='";
+            TokenNum["LESS"] = "'<'";
+            TokenNum["LESSEQUAL"] = "'<='";
+            TokenNum["ARROW"] = "'->'";
         }
-        public SPythonParserTools(IParser parserRef) : base(parserRef)
+
+        public SPythonParserTools(List<Error> errors, List<CompilerWarning> warnings,
+            Dictionary<string, DirectiveInfo> validDirectives, bool buildTreeForFormatter = false, bool buildTreeForFormatterStrings = false,
+            string currentFileName = null, List<compiler_directive> compilerDirectives = null) 
+            : base(errors, warnings, validDirectives, buildTreeForFormatter, buildTreeForFormatterStrings, currentFileName, compilerDirectives)
         {
             NodesStack = new System.Collections.Stack();
             pascalABC_var_statements = new List<var_def_statement>();
             pascalABC_type_declarations = new List<type_declaration>();
+
+            InitializeTokenNum();
         }
 
         public int TokenPriority(string tok)

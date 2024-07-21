@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-G8V08V4
-// DateTime: 28.05.2024 15:42:30
-// UserName: ?????????
+// Machine:  DESKTOP-V3E9T2U
+// DateTime: 21.07.2024 14:35:58
+// UserName: alex
 // Input file <SPythonParser.y>
 
 // options: no-lines gplex
@@ -59,10 +59,9 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
    	public syntax_tree_node root;
 	public List<Error> errors;
     // public string current_file_name;
-    public int max_errors = 10;
-	public SPythonParserTools parsertools;
+    // public int max_errors = 10;
+	public SPythonParserTools parserTools;
     public List<compiler_directive> CompilerDirectives;
-   	public SPythonGPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 
 	private SymbolTable symbolTable = new SymbolTable();
@@ -73,6 +72,13 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 	private bool isVariableToBeAssigned = false;
 
 	public bool is_unit_to_be_parsed = false;
+
+	public SPythonGPPGParser(AbstractScanner<ValueType, LexLocation> scanner, SPythonParserTools parserTools,
+	bool isUnitToBeParsed) : base(scanner) 
+	{ 
+		this.parserTools = parserTools;
+		this.is_unit_to_be_parsed = isUnitToBeParsed;
+	}
   // End verbatim content from SPythonParser.y
 
 #pragma warning disable 649
@@ -432,7 +438,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 				var initialization_part = new initfinal_part(null, ValueStack[ValueStack.Depth-2].stn as statement_list, null, null, null, CurrentLocationSpan);
 
 				root = CurrentSemanticValue.stn = new unit_module(
-					new unit_name(new ident(Path.GetFileNameWithoutExtension(parsertools.CurrentFileName)),
+					new unit_name(new ident(Path.GetFileNameWithoutExtension(parserTools.CurrentFileName)),
 					UnitHeaderKeyword.Unit, CurrentLocationSpan), interface_part, null,
 					initialization_part.initialization_sect,
 					initialization_part.finalization_sect, null, CurrentLocationSpan);
@@ -447,7 +453,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 4: // import_clause -> import_clause, import_clause_one
 {
-   			if (parsertools.build_tree_for_formatter)
+   			if (parserTools.build_tree_for_formatter)
    			{
 	        	if (ValueStack[ValueStack.Depth-2].stn == null)
                 {
@@ -550,7 +556,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 			foreach (var id in (ValueStack[ValueStack.Depth-1].stn as ident_list).idents) {
 				// имя па�?аме�?�?а совпадае�? с именем глобал�?ной пе�?еменной
 				if (symbolTable.Contains(id.name)) {
-					parsertools.AddErrorFromResource("GLOBAL_VAR_{0}_SIM_PARAMETER", CurrentLocationSpan, id.name);
+					parserTools.AddErrorFromResource("GLOBAL_VAR_{0}_SIM_PARAMETER", CurrentLocationSpan, id.name);
 					CurrentSemanticValue.stn = null;
 				}
 				// вс�? о�?ли�?но!
@@ -597,7 +603,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 					// об�?явление глобал�?ной пе�?еменной
 					if (symbolTable.OuterScope == null) {
 						if (globalVariables.Contains(id.name)) {
-							parsertools.AddErrorFromResource("This variable is declared before", CurrentLocationSpan);
+							parserTools.AddErrorFromResource("This variable is declared before", CurrentLocationSpan);
 						}
 						else {
 							var ass = new assign(id as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
@@ -637,7 +643,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
       case 29: // assign_stmt -> variable, assign_type, expr
 {
 			if (!(ValueStack[ValueStack.Depth-3].ex is addressed_value))
-        		parsertools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO",CurrentLocationSpan);
+        		parserTools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO",CurrentLocationSpan);
 			CurrentSemanticValue.stn = new assign(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
 		}
         break;
@@ -720,7 +726,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 {
 			// �?�?ове�?ка на �?о �?�?о п�?�?аемся с�?и�?а�?�? не ини�?иализи�?ованн�?�? пе�?еменн�?�?
 			//if (!symbolTable.Contains($1.name) && !globalVariables.Contains($1.name))
-					//parsertools.AddErrorFromResource("USING_VARIABLE_{0}_BEFORE_ASSIGNMENT", @$, $1.name);
+					//parserTools.AddErrorFromResource("USING_VARIABLE_{0}_BEFORE_ASSIGNMENT", @$, $1.name);
 
 			CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].id;
 		}
@@ -977,7 +983,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 						args.Add(expr);
 						args.source_context = new SourceContext(args.source_context, expr.source_context);
 					}
-					else parsertools.AddErrorFromResource("Arg after Kvarg", CurrentLocationSpan);
+					else parserTools.AddErrorFromResource("Arg after Kvarg", CurrentLocationSpan);
 				}
 
 				if (kvargs.expressions.Count() == 0)
@@ -1117,7 +1123,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
                 var err_stn = progBlock;
 			    if ((progBlock is block) && (progBlock as block).program_code != null && (progBlock as block).program_code.subnodes != null && (progBlock as block).program_code.subnodes.Count > 0)
                     err_stn = (progBlock as block).program_code.subnodes[(progBlock as block).program_code.subnodes.Count - 1];
-                //parsertools.errors.Add(new SPythonUnexpectedToken(parsertools.CurrentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
+                //parserTools.errors.Add(new SPythonUnexpectedToken(parserTools.CurrentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
             }
             return progModule;
         }
