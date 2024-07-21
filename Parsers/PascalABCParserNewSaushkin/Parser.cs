@@ -150,22 +150,13 @@ namespace Languages.Pascal.Frontend.Wrapping
 #endif
 #endif
 
-            PascalParserTools parserTools = new PascalParserTools(this); // контекст сканера и парсера
-            parserTools.errors = Errors;
-            parserTools.warnings = Warnings;
-            parserTools.compilerDirectives = CompilerDirectives;
-            parserTools.currentFileName = Path.GetFullPath(fileName);
+            PascalParserTools parserTools = new PascalParserTools(Errors, Warnings, ValidDirectives, 
+                buildTreeForFormatter, false,
+                Path.GetFullPath(fileName), CompilerDirectives); // контекст сканера и парсера
 
+            Scanner scanner = new Scanner(Text, parserTools, Keywords, definesList);
 
-            Scanner scanner = new Scanner(Keywords);
-            scanner.SetSource(Text, 0);
-            scanner.parserTools = parserTools; // передали parserTools в объект сканера
-            if (definesList != null)
-                scanner.Defines.AddRange(definesList);
-
-            GPPGParser parser = new GPPGParser(scanner);
-            parserTools.buildTreeForFormatter = buildTreeForFormatter;
-            parser.parserTools = parserTools; // передали parserTools в объект парсера
+            GPPGParser parser = new GPPGParser(scanner, parserTools);
 
             if (!parser.Parse())
                 if (Errors.Count == 0)

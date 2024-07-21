@@ -63,11 +63,14 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCCompiler.ParserTools
 
     public syntax_tree_node root; // �?о�?невой �?зел син�?акси�?еского де�?ева 
 
-    public int maxErrors = 10;
-    public PascalParserTools parserTools;
-	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
+    // private int maxErrors = 10;
+    private PascalParserTools parserTools;
+	private ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
-    public GPPGParser(AbstractScanner<PascalABCCompiler.ParserTools.Union, LexLocation> scanner) : base(scanner) { }
+    public GPPGParser(AbstractScanner<PascalABCCompiler.ParserTools.Union, LexLocation> scanner, PascalParserTools parserTools) : base(scanner) 
+	{ 
+		this.parserTools = parserTools;
+	}
   // End verbatim content from ABCPascal.y
 
 #pragma warning disable 649
