@@ -2,6 +2,7 @@
 
 begin
   MainWindow.Title := 'Rectangle свойства';
+  MainWindow.FontSize := 14;
   MainWindow.WindowStartupLocation := WindowStartupLocation.CenterScreen;
   var mainpanel := CreateDockPanel(Margin := 5).AsMainContent;
   var leftpanel := CreateStackPanel(Margin := 0, Width := 150)
@@ -26,6 +27,6 @@ begin
   end; 
   radiusslider.Value := 10;
 
-  widthslider.SetBinding(Slider.ValueProperty, rect,'Width');
-  heightslider.SetBinding(Slider.ValueProperty, rect,'Height');
+  widthslider.SetBinding(Slider.ValueProperty, rect, 'Width');
+  heightslider.SetBinding(Slider.ValueProperty, rect, 'Height');
 end.

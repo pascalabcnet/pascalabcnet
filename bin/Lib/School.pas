@@ -1,4 +1,4 @@
-﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (24.03.2024)
+﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (18.07.2024)
 unit School;
 
 interface
@@ -213,7 +213,16 @@ function Primes(m, n: integer): List<integer>;
 function FirstPrimes(k: integer): List<integer>;
 
 /// Количество простых делителей числа n
+/// Для n < 2 возвращается 0.
+/// Для простых чисел возвращается 1.
+/// Для составных чисел при n >= 4 возвращается количество уникальных простых делителей.
 function PrimeDivisorsCount(n: integer): integer;
+
+/// Количество простых факторов числа n
+/// Для n < 2 возвращается 0.
+/// Для простых чисел возвращается 1.
+/// Для составных чисел при n >= 4 возвращается количество простых делителей.
+function PrimeFactorsCount(n: integer): integer;
 
 /// Возвращает целочисленный список расширенного представления
 /// десятичного числа n по основанию base.
@@ -828,25 +837,66 @@ begin
 end;
 
 /// Количество простых делителей числа n
+/// Для n < 2 возвращается 0.
+/// Для простых чисел возвращается 1.
+/// Для составных чисел при n >= 4 возвращается количество уникальных простых делителей.
 function PrimeDivisorsCount(n: integer): integer;
 begin
   Result := 0;
-  foreach var prime in LPrimes do
+  if n < 2 then Exit;
+  var (i, prime, DivIsPrime) := (0, LPrimes[0], True);
+  while Sqr(prime) <= n do
   begin
-    while (Sqr(prime) <= n) and (n >= prime) do  
-      if n mod prime = 0 then
-      begin
-        Result += 1;
-        n := n div prime;
-      end
-      else break;
-    if n < prime then break
-  end;  
-  Result += 1
+    if n mod prime = 0 then
+    begin
+      Inc(Result);
+      DivIsPrime := False;
+      repeat
+        n := n div prime
+      until n mod prime <> 0
+    end;
+    Inc(i);
+    prime := LPrimes[i];
+  end;
+  if DivIsPrime then Result := 1
+  else if n > 1 then Result += 1
 end;
 
-/// Количество простых делителей числа
+/// Количество простых делителей числа n
+/// Для n < 2 возвращается 0.
+/// Для простых чисел возвращается 1.
+/// Для составных чисел при n >= 4 возвращается количество уникальных простых делителей.
 function PrimeDivisorsCount(Self: integer): integer; extensionmethod := PrimeDivisorsCount(Self);
+
+/// Количество простых факторов числа n
+/// Для n < 2 возвращается 0.
+/// Для простых чисел возвращается 1.
+/// Для составных чисел при n >= 4 возвращается количество простых делителей.
+function PrimeFactorsCount(n: integer): integer;
+begin
+  Result := 0;
+  if n < 2 then Exit;
+  var (i, prime, DivIsPrime) := (0, LPrimes[0], True);
+  while Sqr(prime) <= n do
+  begin
+    while n mod prime = 0 do
+    begin
+      Inc(Result);
+      DivIsPrime := False;
+      n := n div prime
+    end;
+    Inc(i);
+    prime := LPrimes[i];
+  end;
+  if DivIsPrime then Result := 1
+  else if n > 1 then Result += 1
+end;
+
+/// Количество простых факторов числа n
+/// Для n < 2 возвращается 0.
+/// Для простых чисел возвращается 1.
+/// Для составных чисел при n >= 4 возвращается количество простых делителей.
+function PrimeFactorsCount(Self: integer): integer; extensionmethod := PrimeFactorsCount(Self);
 
 {$endregion}
 

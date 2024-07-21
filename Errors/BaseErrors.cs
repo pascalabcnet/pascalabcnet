@@ -1,14 +1,18 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.IO;
 using PascalABCCompiler.SyntaxTree;
 
 namespace PascalABCCompiler.Errors
 {
-	public class Error:Exception
-	{
-		public Error(string Message)
+    /// <summary>
+    /// Базовый класс для всех ошибок проекта
+    /// </summary>
+    public class Error : Exception
+    {
+        public Error(string Message)
             : base(Message)
         {
         }
@@ -24,9 +28,13 @@ namespace PascalABCCompiler.Errors
         public Error()
         {
         }
-	}
-    public class LocatedError:Error
-	{
+    }
+
+    /// <summary>
+    /// Базовый класс для ошибки, содержащей информацию о позиции кода, вызвавшего ее
+    /// </summary>
+    public class LocatedError : Error
+    {
         protected SourceContext source_context = null;
         protected SourceLocation sourceLocation = null;
         public string fileName = null;
@@ -55,14 +63,14 @@ namespace PascalABCCompiler.Errors
                 fn = Path.GetFileName(file_name);
             return string.Format(StringResources.Get("PARSER_ERRORS_COMPILATION_ERROR{0}{1}{2}"), fn, pos, Message);
              */
-            return (new CompilerInternalError("Errors.ToString",new Exception(string.Format("Не переопеределена {0}.ToString",this.GetType())))).ToString();
+            return (new CompilerInternalError("Errors.ToString", new Exception(string.Format("Не переопеределена {0}.ToString", this.GetType())))).ToString();
         }
 
         public virtual SourceLocation SourceLocation
         {
             get
             {
-                if(sourceLocation!=null)
+                if (sourceLocation != null)
                     return sourceLocation;
                 if (SourceContext != null)
                     return new SourceLocation(FileName, SourceContext.begin_position.line_num, SourceContext.begin_position.column_num, SourceContext.end_position.line_num, SourceContext.end_position.column_num);
@@ -86,35 +94,57 @@ namespace PascalABCCompiler.Errors
                 return fileName;
             }
         }
-	}
-	
-    public class CommonCompilerError : Errors.LocatedError
+    }
+
+    /// <summary>
+    /// Внутренняя ошибка компилятора (нештатная)
+    /// </summary>
+    public class CompilerInternalError : Error
     {
-    	public CommonCompilerError(string mes, string fileName, int line, int col):base(mes,fileName)
-    	{
-    		this.sourceLocation = new SourceLocation(fileName,line,col,line,col);
-    		this.source_context = new SyntaxTree.SourceContext(line,col,line,col);
-    	}
+        public Exception exception = null;
+        public string Module;
+        public CompilerInternalError(string module, Exception exc)
+            : base(exc.ToString())
+        {
+            Module = module;
+            exception = exc;
+        }
         public override string ToString()
         {
-            return string.Format("{0} ({1},{2}): {3}", Path.GetFileName(sourceLocation.FileName), sourceLocation.BeginPosition.Line, sourceLocation.BeginPosition.Column,this.Message);
+            return string.Format(StringResources.Get("COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}"), Module, Message + ' ' + exception.ToString());
         }
     }
-    
-    public class CompilerWarning : Errors.LocatedError
+
+    /// <summary>
+    /// Обобщенный тип ошибки для случаев не требущих детального описания в Message
+    /// </summary>
+    public class CommonCompilerError : LocatedError
     {
-    	public CompilerWarning()
-    	{
-    		
-    	}
-    	
-    	public CompilerWarning(string Message, string fileName)
+        public CommonCompilerError(string mes, string fileName, int line, int col) : base(mes, fileName)
+        {
+            this.sourceLocation = new SourceLocation(fileName, line, col, line, col);
+            this.source_context = new SyntaxTree.SourceContext(line, col, line, col);
+        }
+        public override string ToString()
+        {
+            return string.Format("{0} ({1},{2}): {3}", Path.GetFileName(sourceLocation.FileName), sourceLocation.BeginPosition.Line, sourceLocation.BeginPosition.Column, this.Message);
+        }
+    }
+
+    /// <summary>
+    /// Базовый класс для предупреждения
+    /// </summary>
+    public class CompilerWarning : LocatedError
+    {
+        public CompilerWarning() { }
+
+        public CompilerWarning(string Message, string fileName)
             : base(Message)
         {
             this.fileName = fileName;
         }
-    	
-    	public override string Message
+
+        public override string Message
         {
             get
             {
@@ -122,19 +152,22 @@ namespace PascalABCCompiler.Errors
             }
         }
     }
-	
+
+    /// <summary>
+    /// Обобщенный тип предупреждения
+    /// </summary>
     public class CommonWarning : CompilerWarning
     {
-    	string _mes;
-    	
-    	public CommonWarning(string mes, string fileName, int line, int col):base(mes,fileName)
-    	{
-    		this.sourceLocation = new SourceLocation(fileName,line,col,line,col);
-    		this.source_context = new SyntaxTree.SourceContext(line,col,line,col);
-    		_mes = mes;
-    	}
-    	
-		public override string Message
+        string _mes;
+
+        public CommonWarning(string mes, string fileName, int line, int col) : base(mes, fileName)
+        {
+            this.sourceLocation = new SourceLocation(fileName, line, col, line, col);
+            this.source_context = new SyntaxTree.SourceContext(line, col, line, col);
+            _mes = mes;
+        }
+
+        public override string Message
         {
             get
             {
@@ -142,7 +175,10 @@ namespace PascalABCCompiler.Errors
             }
         }
     }
-    
+
+    /// <summary>
+    /// Базовый класс для синтаксической ошибки
+    /// </summary>
     public class SyntaxError : LocatedError
     {
         public syntax_tree_node bad_node;
@@ -165,9 +201,9 @@ namespace PascalABCCompiler.Errors
                         if (source_context.FileName != null)
                             base.fileName = source_context.FileName;
                         break;
-                    }                        
+                    }
                 } while (bn != null);
-                    
+
             }
             bad_node = _bad_node;
         }
@@ -178,7 +214,7 @@ namespace PascalABCCompiler.Errors
 
         public override string ToString()
         {
-            string snode="";
+            string snode = "";
             /*if (bad_node == null)
                 snode = " (bad_node==null)";
             else
@@ -191,13 +227,6 @@ namespace PascalABCCompiler.Errors
             return Path.GetFileName(FileName) + pos + ": Синтаксическая ошибка :  " + Message + snode;
         }
 
-        public override SourceContext SourceContext
-        {
-            get
-            {
-                return source_context;
-            }
-        }
         public override SourceLocation SourceLocation
         {
             get
@@ -205,27 +234,72 @@ namespace PascalABCCompiler.Errors
                 if (source_context == null)
                     return null;
                 return new SourceLocation(fileName,
-                    source_context.begin_position.line_num,source_context.begin_position.column_num,
+                    source_context.begin_position.line_num, source_context.begin_position.column_num,
                     source_context.end_position.line_num, source_context.end_position.column_num);
             }
         }
 
     }
 
-    public class CompilerInternalError : Error
+    /// <summary>
+    /// Базовый класс для семантической ошибки
+    /// </summary>
+    public class SemanticError : LocatedError
     {
-        public Exception exception = null;
-        public string Module;
-        public CompilerInternalError(string module, Exception exc)
-            : base(exc.ToString())
+        public SemanticError(string Message, string fileName)
+            : base(Message, fileName)
         {
-            Module = module;
-            exception = exc;
+            this.fileName = fileName;
+        }
+
+        public virtual SemanticTree.ILocation Location
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public SemanticError()
+        {
         }
         public override string ToString()
         {
-            return String.Format(StringResources.Get("COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}"), Module, Message+' '+ exception.ToString());
+            return String.Format(StringResources.Get("COMPILATIONERROR_UNDEFINED_SEMANTIC_ERROR{0}"), this.GetType().ToString());
         }
+        public override SourceLocation SourceLocation
+        {
+            get
+            {
+                if (sourceLocation != null)
+                    return sourceLocation;
+                if (Location != null)
+                {
+                    return new SourceLocation(Location.document.file_name,
+                        Location.begin_line_num, Location.begin_column_num, Location.end_line_num, Location.end_column_num);
+                }
+                return null;
+            }
+        }
+        public override string Message
+        {
+            get
+            {
+                return (this.ToString());
+            }
+        }
+
     }
 
+    /// <summary>
+    /// Базовый класс для NotSupportedError из TreeConverter | возможно, излишний  EVA
+    /// </summary>
+    public class SemanticNonSupportedError : SemanticError
+    {
+        public SemanticNonSupportedError(string fileName)
+            : base("", fileName)
+        {
+        }
+
+    }
 }

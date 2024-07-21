@@ -40,7 +40,7 @@ type Main = class
     panel2.HorizontalAlignment := HA.Right;
     
     bb := CreateButtons(|$'+',$'-',$'*',$'/'|); 
-    panel2.AddButtons(bb, Width := 35, Margin := |10,0|, Padding := 5);
+    panel2.AddElements(bb, Width := 35, Margin := |10,0|, Padding := 5);
 
     for var i:=0 to bb.Length-1 do
       bb[i].Click += ButtonClick;

@@ -4,13 +4,17 @@
 
 %{
 // Эти объявления добавляются в класс GPPGParser, представляющий собой парсер, генерируемый системой gppg
+
     public syntax_tree_node root; // Корневой узел синтаксического дерева 
 
-    public int maxErrors = 10;
-    public PascalParserTools parserTools;
-	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
+    // private int maxErrors = 10;
+    private PascalParserTools parserTools;
+	private ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
-    public GPPGParser(AbstractScanner<PascalABCCompiler.ParserTools.Union, LexLocation> scanner) : base(scanner) { }
+    public GPPGParser(AbstractScanner<PascalABCCompiler.ParserTools.Union, LexLocation> scanner, PascalParserTools parserTools) : base(scanner) 
+	{ 
+		this.parserTools = parserTools;
+	}
 %} 
 
 %output=ABCPascalYacc.cs 
@@ -986,8 +990,17 @@ const_factor
 
 const_set
     : tkSquareOpen elem_list tkSquareClose 
-        { 
-			$$ = new pascal_set_constant($2 as expression_list, @$); 
+        {
+            // Если elem_list пуст или содержит диапазон, то это множество, иначе массив. С PascalABC.NET 3.10  
+            /*var is_set = false;
+            var el = $2 as expression_list;
+            if (el == null || el.Count == 0)
+              is_set = true;
+            else if (el.expressions.Count(x => x is diapason_expr_new) > 0)
+                is_set = true;
+            if (is_set)*/    
+				$$ = new pascal_set_constant($2 as expression_list, @$);
+			//else $$ = new array_const_new($2 as expression_list, @$); 				
 		}
     | tkVertParen elem_list tkVertParen     
         { 
@@ -3327,6 +3340,8 @@ expr
 		{ $$ = $1; }
     | format_expr
 		{ $$ = $1; }
+    | expr tkTo expr_l1 
+		{ $$ = new to_expr($1, $3, @$); }
     ;
 
 expr_l1
@@ -4162,7 +4177,16 @@ factor
 		{ $$ = $1; }
     | tkSquareOpen elem_list tkSquareClose     
         { 
-			$$ = new pascal_set_constant($2 as expression_list, @$);  
+            // Если elem_list пуст или содержит диапазон, то это множество, иначе массив. С PascalABC.NET 3.10  
+            /*var is_set = false;
+            var el = $2 as expression_list;
+            if (el == null || el.Count == 0)
+              is_set = true;
+            else if (el.expressions.Count(x => x is diapason_expr_new) > 0)
+                is_set = true;
+            if (is_set)*/    
+				$$ = new pascal_set_constant($2 as expression_list, @$);
+			//else $$ = new array_const_new($2 as expression_list, @$); 				
 		}
     | tkNot factor              
         { 

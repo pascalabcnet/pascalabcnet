@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using PascalABCCompiler.SemanticTree;
 
 using PascalABCCompiler.TreeRealization;
-using PascalABCCompiler.TreeConverter;
 
 namespace PascalABCCompiler.TreeConverter
 {

@@ -34,6 +34,11 @@ namespace PascalABCCompiler.Parsers
         	get;
         }
 
+        /// <summary>
+        /// Класс, отвечащий за хранение и обработку ключевых слов языка
+        /// </summary>
+        BaseKeywords Keywords { get; }
+
         compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, List<string> DefinesList = null);
 
         compilation_unit GetCompilationUnitForFormatter(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings);

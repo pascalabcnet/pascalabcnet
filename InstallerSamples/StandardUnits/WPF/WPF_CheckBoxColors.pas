@@ -9,11 +9,11 @@ begin
 end;
 
 type Main = class
-  mainpanel: StackPanel;
+  MainPanel: StackPanel;
   cbr,cbg,cbb: CheckBox;
   constructor;
   begin
-    mainpanel := Panels.StackPanel(Margin := 10, Horizontal := True)
+    MainPanel := Panels.StackPanel(Margin := 10, Horizontal := True)
       .With(Background := Brushes.LightBlue).AsMainContent;
     cbr := CreateCheckBox('Красный', Margin := 5);
     cbg := CreateCheckBox('Зеленый', Margin := 5, IsChecked := True);

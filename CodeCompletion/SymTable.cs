@@ -4947,6 +4947,9 @@ namespace CodeCompletion
                         UnitDocCache.AddDescribeToComplete(ss);
                 }
             }
+            // SSM 10/07/24 добавил это чтобы не показывались статические члены базового класса
+            if (this.documentation != null && this.documentation.Contains("!#") && baseScope is CompiledScope)
+                return lst.ToArray();
 
             if (baseScope != null && keyword != PascalABCCompiler.Parsers.KeywordKind.Constructor && keyword != PascalABCCompiler.Parsers.KeywordKind.Destructor)
                 lst.AddRange(baseScope.GetNames(ev, keyword, true));

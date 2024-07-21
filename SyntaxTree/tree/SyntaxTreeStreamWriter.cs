@@ -7181,6 +7181,36 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(to_expr _to_expr)
+		{
+			bw.Write((Int16)262);
+			write_to_expr(_to_expr);
+		}
+
+		public void write_to_expr(to_expr _to_expr)
+		{
+			write_expression(_to_expr);
+			if (_to_expr.key == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_to_expr.key.visit(this);
+			}
+			if (_to_expr.value == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_to_expr.value.visit(this);
+			}
+		}
+
 	}
 
 

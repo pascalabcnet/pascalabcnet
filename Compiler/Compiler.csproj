@@ -164,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compiler.cs" />
+    <Compile Include="Errors.cs" />
     <Compile Include="Config\AssemblyInfo.cs" />
     <Compile Include="ConsoleCompilerCommands.cs" />
     <Compile Include="DocXml.cs" />
@@ -173,9 +174,6 @@
     <Compile Include="RemoteCompiler.cs" />
     <Compile Include="SemanticTreeConverters\ISemanticTreeConverter.cs" />
     <Compile Include="SemanticTreeConverters\SemanticTreeConvertersController.cs" />
-    <Compile Include="Errors.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="PCU\PCUFileFormatVersion.cs" />
     <Compile Include="PCU\PCUWriter.cs" />
     <Compile Include="PCU\PCUReader.cs" />

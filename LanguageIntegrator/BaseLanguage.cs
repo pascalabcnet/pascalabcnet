@@ -14,6 +14,9 @@ namespace Languages.Facade
     public abstract class BaseLanguage : ILanguage
     {
 
+        /// <summary>
+        /// Все параметры должны быть не null (и не пустым массивом), кроме IDocParser в случае, если он не требуется
+        /// </summary>
         public BaseLanguage(string name, string version, string copyright, IParser parser, IDocParser docParser,
             List<ISyntaxTreeConverter> syntaxTreeConverters, syntax_tree_visitor syntaxTreeToSemanticTreeConverter,
             string[] filesExtensions, bool caseSensitive, string[] systemUnitNames)

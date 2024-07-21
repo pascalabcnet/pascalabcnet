@@ -544,6 +544,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new ref_var_def_statement();
 				case 261:
 					return new let_var_expr();
+				case 262:
+					return new to_expr();
 			}
 			return null;
 		}
@@ -4567,6 +4569,19 @@ namespace PascalABCCompiler.SyntaxTree
 			read_expression(_let_var_expr);
 			_let_var_expr.id = _read_node() as ident;
 			_let_var_expr.ex = _read_node() as expression;
+		}
+
+
+		public void visit(to_expr _to_expr)
+		{
+			read_to_expr(_to_expr);
+		}
+
+		public void read_to_expr(to_expr _to_expr)
+		{
+			read_expression(_to_expr);
+			_to_expr.key = _read_node() as expression;
+			_to_expr.value = _read_node() as expression;
 		}
 
 	}
