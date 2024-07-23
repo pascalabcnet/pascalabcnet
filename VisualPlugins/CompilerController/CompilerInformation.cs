@@ -52,7 +52,7 @@ namespace VisualPascalABCPlugins
                 NoSavePCU.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate;
                 NoSemantic.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.SemanticAnalysis;
                 NoCodeGeneration.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.CodeGeneration;
-                NoAddStandartUnits.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.AddStandartUnits;
+                NoAddStandartUnits.Checked = VisualEnvironmentCompiler.Compiler.CompilerOptions.DisableStandardUnits;
                 NoSkipPCUErrors.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.SkipPCUErrors;
                 NoSkipInternalErrorsIfSyntaxTreeIsCorrupt.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.SkipInternalErrorsIfSyntaxTreeIsCorrupt;
                 NoIncludeDebugInfoInPCU.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.IncludeDebugInfoInPCU;
@@ -121,7 +121,7 @@ namespace VisualPascalABCPlugins
 
         private void NoAddStandartUnits_CheckedChanged(object sender, EventArgs e)
         {
-            VisualEnvironmentCompiler.Compiler.InternalDebug.AddStandartUnits = !NoAddStandartUnits.Checked;
+            VisualEnvironmentCompiler.Compiler.CompilerOptions.DisableStandardUnits = NoAddStandartUnits.Checked;
         }
 
         private void OnRebuld_CheckedChanged(object sender, EventArgs e)

@@ -86,6 +86,18 @@ namespace PascalABCCompiler.Errors
     }
 
     /// <summary>
+    /// Бросается при обраружении директивы {$DisableStandardUnits} в модуле
+    /// </summary>
+    public class DisableStandardUnitsDirectiveDisallowedInUnits : CompilerThrownError
+    {
+        public DisableStandardUnitsDirectiveDisallowedInUnits(string FileName, SyntaxTree.SourceContext sc)
+            : base(StringResources.Get("COMPILATIONERROR_DISABLE_STANDARD_UNITS_DIRECTIVE_DISALLOWED_IN_UNITS"), FileName)
+        {
+            this.source_context = sc;
+        }
+    }
+
+    /// <summary>
     /// Бросается при компиляции библиотеки не первой
     /// </summary>
     public class UnitModuleExpectedLibraryFound : CompilerThrownError

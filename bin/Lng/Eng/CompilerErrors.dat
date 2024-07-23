@@ -18,6 +18,7 @@ FILE_{0}_NOT_FOUND=File '{0}' not found
 NAMESPACE_CAN_BE_COMPILED_ONLY_IN_PROJECTS=Files with namespaces can be compiled only inside projects
 NAMESPACE_CANNOT_HAVE_IN_SECTION=Namespace cannot have 'in' section
 APPTYPE_DLL_IS_ALLOWED_ONLY_FOR_LIBRARIES=Parameter 'dll' in 'apptype' directive is allowed only for libraries
+DISABLE_STANDARD_UNITS_DIRECTIVE_DISALLOWED_IN_UNITS=Directive 'DisableStandardUnits' is allowed only for main program or library
 USES_IN_WRONG_NAME=Unit name in uses-in ({0}) must be same as file name ({1})
 UNSUPPORTED_TARGETFRAMEWORK_{0}=TargetFramework '{0}' is not supported
 UNSUPPORTED_TARGET_PLATFORM{0}=Platform '{0}' is not supported

@@ -276,6 +276,7 @@ namespace PascalABCCompiler
         public bool ForIntellisense = false;
         public bool Rebuild = false;
         public bool Optimise = false;
+        public bool DisableStandardUnits = false;
         public bool SavePCUInThreadPull = false;
         public bool RunWithEnvironment = false;
         public string CompiledUnitExtension = StringConstants.pascalCompiledUnitExtension;
@@ -488,7 +489,6 @@ namespace PascalABCCompiler
         public bool CodeGeneration = true;
         public bool SemanticAnalysis = true;
         public bool PCUGenerate = true;
-        public bool AddStandartUnits = true;
         public bool SkipPCUErrors = true;
         public bool IncludeDebugInfoInPCU = true;
         public bool AlwaysGenerateXMLDoc = false;
@@ -3316,7 +3316,7 @@ namespace PascalABCCompiler
             {
                 foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compiler_directives)
                 {
-                    if (string.Equals(directive.Name.text, "apptype", StringComparison.CurrentCultureIgnoreCase)
+                    if (string.Equals(directive.Name.text, StringConstants.compiler_directive_apptype, StringComparison.CurrentCultureIgnoreCase)
                                         && string.Equals(directive.Directive.text, "dll", StringComparison.CurrentCultureIgnoreCase))
                     {
                         dllDirective = directive;
@@ -3767,6 +3767,8 @@ namespace PascalABCCompiler
 
             // ошибка директива include в паскалевском юните
             SemanticCheckNoIncludeNamespaceDirectivesInUnit(currentUnit);
+
+            HandleDisableStandardUnitsDirective(currentUnit.SyntaxTree, isDll);
             #endregion
 
             if (isDll)
@@ -3785,9 +3787,7 @@ namespace PascalABCCompiler
             UnitTable[UnitId] = currentUnit;
 
             // здесь добавляем стандартные модули в секцию uses интерфейса
-#if DEBUG
-            if (InternalDebug.AddStandartUnits)
-#endif
+            if (!CompilerOptions.DisableStandardUnits)
                 AddStandardUnitsToInterfaceUsesSection(currentUnit);
 
             currentUnit.possibleNamespaces.Clear();
@@ -3855,6 +3855,29 @@ namespace PascalABCCompiler
                     ErrorsList.Add(new AppTypeDllIsAllowedOnlyForLibraries(unitSyntaxTree.file_name, dllDirective.source_context));
                 }
             }
+        }
+
+        /// <summary>
+        /// Обработка директивы DisableStandardUnits, если она указана в модуле, то ошибка
+        /// </summary>
+        /// 
+        private void HandleDisableStandardUnitsDirective(SyntaxTree.compilation_unit unitSyntaxTree, bool isDll)
+        {
+            var foundDirective = unitSyntaxTree.compiler_directives.Find(directive => 
+                directive.Name.text.Equals(StringConstants.compiler_directive_disable_standard_units, StringComparison.CurrentCultureIgnoreCase));
+            
+            if (foundDirective != null)
+            {
+                if (isDll || unitSyntaxTree is SyntaxTree.program_module)
+                {
+                    CompilerOptions.DisableStandardUnits = true;
+                }
+                else
+                {
+                    ErrorsList.Add(new DisableStandardUnitsDirectiveDisallowedInUnits(unitSyntaxTree.file_name, foundDirective.source_context));
+                }
+            }
+            
         }
 
         private SyntaxTree.compilation_unit ConstructSyntaxTree(string unitFileName, CompilationUnit currentUnit, string sourceText)
