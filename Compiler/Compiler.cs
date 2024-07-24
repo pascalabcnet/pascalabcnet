@@ -3780,11 +3780,15 @@ namespace PascalABCCompiler
         /// </summary>
         private void InitializeCompilerOptionsRelatedToStandardUnits(SyntaxTree.compilation_unit unitSyntaxTree)
         {
-            var disableStandardUnitsDirective = unitSyntaxTree.compiler_directives.Find(directive =>
+            // проверяем только для основной программы или dll
+            if (UnitTable.Count == 0)
+            {
+                var disableStandardUnitsDirective = unitSyntaxTree.compiler_directives.Find(directive =>
                             directive.Name.text.Equals(StringConstants.compiler_directive_disable_standard_units, StringComparison.CurrentCultureIgnoreCase));
 
-            if (disableStandardUnitsDirective != null)
-                CompilerOptions.DisableStandardUnits = true;
+                if (disableStandardUnitsDirective != null)
+                    CompilerOptions.DisableStandardUnits = true;
+            }
 
             if (unitSyntaxTree is SyntaxTree.unit_module)
                 CompilerOptions.UseDllForSystemUnits = false;
@@ -3805,7 +3809,7 @@ namespace PascalABCCompiler
             // ошибка директива include в паскалевском юните
             SemanticCheckNoIncludeNamespaceDirectivesInUnit(currentUnit);
 
-            SemanticCheckDisableStandardUnitsDirectiveInUnit(currentUnit.SyntaxTree, isDll);
+            SemanticCheckDisableStandardUnitsDirectiveInUnit(currentUnit.SyntaxTree);
 
             CheckErrorsAndThrowTheFirstOne();
         }
@@ -3878,16 +3882,19 @@ namespace PascalABCCompiler
         /// Ошибка указания директивы DisableStandardUnits в модуле
         /// </summary>
         /// 
-        private void SemanticCheckDisableStandardUnitsDirectiveInUnit(SyntaxTree.compilation_unit unitSyntaxTree, bool isDll)
+        private void SemanticCheckDisableStandardUnitsDirectiveInUnit(SyntaxTree.compilation_unit unitSyntaxTree)
         {
-            var foundDirective = unitSyntaxTree.compiler_directives.Find(directive =>
+            // проверяем для модулей
+            if (UnitTable.Count > 0)
+            {
+                var foundDirective = unitSyntaxTree.compiler_directives.Find(directive =>
                             directive.Name.text.Equals(StringConstants.compiler_directive_disable_standard_units, StringComparison.CurrentCultureIgnoreCase));
 
-            if (foundDirective != null && !isDll && unitSyntaxTree is SyntaxTree.unit_module)
-            {
-                ErrorsList.Add(new DisableStandardUnitsDirectiveDisallowedInUnits(unitSyntaxTree.file_name, foundDirective.source_context));
+                if (foundDirective != null)
+                {
+                    ErrorsList.Add(new DisableStandardUnitsDirectiveDisallowedInUnits(unitSyntaxTree.file_name, foundDirective.source_context));
+                }
             }
-
         }
 
         private SyntaxTree.compilation_unit ConstructSyntaxTree(string unitFileName, CompilationUnit currentUnit, string sourceText)
