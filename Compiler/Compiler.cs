@@ -3796,6 +3796,11 @@ namespace PascalABCCompiler
 
         private void AddStandardNetNamespacesToInterfaceUsesSection(CompilationUnit currentUnit)
         {
+            string currentModuleName = Path.GetFileNameWithoutExtension(currentUnit.SyntaxTree.file_name);
+
+            if (CompilerOptions.StandardModules[currentUnit.Language.Name].Select(module => module.name).Contains(currentModuleName, StringComparer.CurrentCultureIgnoreCase))
+                return;
+
             List<SyntaxTree.unit_or_namespace> usesList = GetInterfaceUsesSection(currentUnit.SyntaxTree);
 
             IEnumerable<string> namespacesToAdd = StringConstants.standardNetNamespaces.Except(usesList.Select(unit => SyntaxTree.Utils.IdentListToString(unit.name.idents, ".")), StringComparer.CurrentCultureIgnoreCase);
