@@ -3800,7 +3800,7 @@ namespace PascalABCCompiler
 
             IEnumerable<string> namespacesToAdd = StringConstants.standardNetNamespaces.Except(usesList.Select(unit => SyntaxTree.Utils.IdentListToString(unit.name.idents, ".")), StringComparer.CurrentCultureIgnoreCase);
 
-            usesList.AddRange(namespacesToAdd.Select(namespaceName =>
+            usesList.InsertRange(0, namespacesToAdd.Select(namespaceName =>
                   new SyntaxTree.unit_or_namespace(new SyntaxTree.ident_list(
                     namespaceName.Split('.').Select(identName => new SyntaxTree.ident(identName)).ToArray()))));
             
