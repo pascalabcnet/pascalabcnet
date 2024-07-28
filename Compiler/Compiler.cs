@@ -3768,7 +3768,6 @@ namespace PascalABCCompiler
             // ошибка директива include в паскалевском юните
             SemanticCheckNoIncludeNamespaceDirectivesInUnit(currentUnit);
             #endregion
-
             if (isDll)
                 CompilerOptions.OutputFileType = CompilerOptions.OutputType.ClassLibrary; // есть также в конце Compile
 
@@ -3799,7 +3798,7 @@ namespace PascalABCCompiler
         {
             List<SyntaxTree.unit_or_namespace> usesList = GetInterfaceUsesSection(currentUnit.SyntaxTree);
 
-            IEnumerable<string> namespacesToAdd = StringConstants.standardNetNamespaces.Except(usesList.Select(unit => string.Join(".", unit.name.idents)));
+            IEnumerable<string> namespacesToAdd = StringConstants.standardNetNamespaces.Except(usesList.Select(unit => SyntaxTree.Utils.IdentListToString(unit.name.idents, ".")), StringComparer.CurrentCultureIgnoreCase);
 
             usesList.AddRange(namespacesToAdd.Select(namespaceName =>
                   new SyntaxTree.unit_or_namespace(new SyntaxTree.ident_list(
