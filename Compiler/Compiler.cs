@@ -276,7 +276,7 @@ namespace PascalABCCompiler
         public bool ForIntellisense = false;
         public bool Rebuild = false;
         public bool Optimise = false;
-        public bool DisableStandardUnits = false;
+        public bool DisableStandardUnits = false; // true устанавливается соответствующей директивой
         public bool SavePCUInThreadPull = false;
         public bool RunWithEnvironment = false;
         public string CompiledUnitExtension = StringConstants.pascalCompiledUnitExtension;
@@ -969,6 +969,9 @@ namespace PascalABCCompiler
             UnitsToCompileDelayedList.Clear();
             DLLCache.Clear();
             project = null;
+
+            // обнуляем здесь, чтобы значение не сохранялось между запусками  EVA
+            CompilerOptions.DisableStandardUnits = false;
         }
 
         void CheckErrorsAndThrowTheFirstOne()
@@ -3049,8 +3052,14 @@ namespace PascalABCCompiler
                 directives = (compilationUnit.SemanticTree as common_unit_node).compiler_directives;
             else
                 directives = GetDirectivesAsSemanticNodes(compilationUnit.SyntaxTree.compiler_directives, compilationUnit.SyntaxTree.file_name);
+            
+            DisablePABCRtlIfUsingDotnet5(directives);
 
-            AddReferencesToSystemUnits(compilationUnit, directives);
+            if (CompilerOptions.UseDllForSystemUnits)
+            {
+                directives.Add(new compiler_directive("reference", "%GAC%\\PABCRtl.dll", null, "."));
+                AddReferencesToNetSystemLibraries(compilationUnit, directives);
+            }
 
             var referenceDirectives = new List<compiler_directive>();
             foreach (compiler_directive directive in directives)
@@ -3090,15 +3099,15 @@ namespace PascalABCCompiler
                     throw new CommonCompilerError(ex.Message, compilationUnit.SyntaxTree.file_name, reference.location.begin_line_num, reference.location.end_line_num);
                 }
             }
-                
-                
+
+
             foreach (var reference in referenceDirectives)
                 CompileReference(dlls, reference);
 
             return dlls;
         }
 
-        private void AddReferencesToSystemUnits(CompilationUnit compilationUnit, List<compiler_directive> directives)
+        private void DisablePABCRtlIfUsingDotnet5(List<compiler_directive> directives)
         {
             foreach (compiler_directive cd in directives)
             {
@@ -3108,31 +3117,42 @@ namespace PascalABCCompiler
                     CompilerOptions.UseDllForSystemUnits = false;
                 }
             }
-            if (CompilerOptions.UseDllForSystemUnits)
+        }
+
+        /// <summary>
+        /// Добавляет ссылки на стандартные системные dll .NET - версия с директивами уровня семантики
+        /// </summary>
+        /// <param name="compilationUnit"></param>
+        /// <param name="directives"></param>
+        private void AddReferencesToNetSystemLibraries(CompilationUnit compilationUnit, List<TreeRealization.compiler_directive> directives)
+        {
+            directives.AddRange(StringConstants.netSystemLibraries.Select(dll => new compiler_directive("reference", $"%GAC%\\{dll}", null, ".")));
+
+            if (compilationUnit.SyntaxTree is SyntaxTree.program_module program && program.used_units != null)
             {
-                directives.Add(new compiler_directive("reference", "%GAC%\\PABCRtl.dll", null, "."));
-                directives.Add(new compiler_directive("reference", "%GAC%\\mscorlib.dll", null, "."));
-                directives.Add(new compiler_directive("reference", "%GAC%\\System.dll", null, "."));
-                directives.Add(new compiler_directive("reference", "%GAC%\\System.Core.dll", null, "."));
-                directives.Add(new compiler_directive("reference", "%GAC%\\System.Numerics.dll", null, "."));
-                directives.Add(new compiler_directive("reference", "%GAC%\\System.Windows.Forms.dll", null, "."));
-                directives.Add(new compiler_directive("reference", "%GAC%\\System.Drawing.dll", null, "."));
-
-                if (compilationUnit.SyntaxTree is SyntaxTree.program_module && (compilationUnit.SyntaxTree as SyntaxTree.program_module).used_units != null)
+                var graph3DUnit = program.used_units.units.FirstOrDefault(u => u.name.ToString() == "Graph3D");
+                if (graph3DUnit != null)
                 {
-                    foreach (SyntaxTree.unit_or_namespace usedUnit in (compilationUnit.SyntaxTree as SyntaxTree.program_module).used_units.units)
-                    {
-                        if (usedUnit.name.ToString() == "Graph3D")
-                        {
-                            directives.Add(new compiler_directive("reference", "%GAC%\\PresentationFramework.dll", null, "."));
-                            directives.Add(new compiler_directive("reference", "%GAC%\\WindowsBase.dll", null, "."));
-                            directives.Add(new compiler_directive("reference", "%GAC%\\PresentationCore.dll", null, "."));
-                            directives.Add(new compiler_directive("reference", "%GAC%\\HelixToolkit.Wpf.dll", null, "."));
-                            directives.Add(new compiler_directive("reference", "%GAC%\\HelixToolkit.dll", null, "."));
+                    directives.AddRange(StringConstants.graph3DDependencies.Select(dll => new compiler_directive("reference", $"%GAC%\\{dll}", null, ".")));
+                }
+            }
+        }
 
-                            break;
-                        }
-                    }
+        /// <summary>
+        /// Добавляет ссылки на стандартные системные dll .NET - версия с директивами уровня синтаксиса
+        /// </summary>
+        /// <param name="compilationUnit"></param>
+        /// <param name="directives"></param>
+        private void AddReferencesToNetSystemLibraries(CompilationUnit compilationUnit, List<SyntaxTree.compiler_directive> directives)
+        {
+            directives.AddRange(StringConstants.netSystemLibraries.Select(dll => new SyntaxTree.compiler_directive(new SyntaxTree.token_info("reference"), new SyntaxTree.token_info($"%GAC%\\{dll}"))));
+
+            if (compilationUnit.SyntaxTree is SyntaxTree.program_module program && program.used_units != null)
+            {
+                var graph3DUnit = program.used_units.units.FirstOrDefault(u => u.name.ToString() == "Graph3D");
+                if (graph3DUnit != null)
+                {
+                    directives.AddRange(StringConstants.graph3DDependencies.Select(dll => new SyntaxTree.compiler_directive(new SyntaxTree.token_info("reference"), new SyntaxTree.token_info($"%GAC%\\{dll}"))));
                 }
             }
         }
@@ -3748,6 +3768,10 @@ namespace PascalABCCompiler
             // здесь добавляем стандартные модули в секцию uses интерфейса
             if (!CompilerOptions.DisableStandardUnits)
                 AddStandardUnitsToInterfaceUsesSection(currentUnit);
+            else
+            {
+                 AddReferencesToNetSystemLibraries(currentUnit, currentUnit.SyntaxTree.compiler_directives);
+            }
         }
 
 
@@ -3879,12 +3903,12 @@ namespace PascalABCCompiler
         }
 
         /// <summary>
-        /// Ошибка указания директивы DisableStandardUnits в модуле
+        /// Ошибка указания директивы DisableStandardUnits в подключенном модулей
         /// </summary>
         /// 
         private void SemanticCheckDisableStandardUnitsDirectiveInUnit(SyntaxTree.compilation_unit unitSyntaxTree)
         {
-            // проверяем для модулей
+            // проверяем для используемых модулей
             if (UnitTable.Count > 0)
             {
                 var foundDirective = unitSyntaxTree.compiler_directives.Find(directive =>
@@ -3892,7 +3916,7 @@ namespace PascalABCCompiler
 
                 if (foundDirective != null)
                 {
-                    ErrorsList.Add(new DisableStandardUnitsDirectiveDisallowedInUnits(unitSyntaxTree.file_name, foundDirective.source_context));
+                    ErrorsList.Add(new DisableStandardUnitsDirectiveDisallowedInUsedUnits(unitSyntaxTree.file_name, foundDirective.source_context));
                 }
             }
         }

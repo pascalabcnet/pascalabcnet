@@ -373,6 +373,10 @@ namespace PascalABCCompiler
         public const string pascalLanguageDllName = "PascalLanguage.dll";
         #endregion
 
+        public static readonly string[] netSystemLibraries = new[] { "mscorlib.dll", "System.dll", "System.Core.dll", "System.Numerics.dll", "System.Windows.Forms.dll", "System.Drawing.dll" };
+
+        public static readonly string[] graph3DDependencies = new[] { "PresentationFramework.dll", "WindowsBase.dll", "PresentationCore.dll", "HelixToolkit.Wpf.dll", "HelixToolkit.dll" };
+
         public static string get_array_type_name(string type_name, int rank)
         {
             if (rank == 1)
