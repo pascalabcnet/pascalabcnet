@@ -372,6 +372,8 @@ namespace PascalABCCompiler
         public const string pascalLanguageDllName = "PascalLanguage.dll";
         #endregion
 
+        public static readonly string[] standardNetNamespaces = new[] { "System", "System.Collections.Generic", "System.IO", "System.Text", "System.Linq" };
+
         public static string get_array_type_name(string type_name, int rank)
         {
             if (rank == 1)

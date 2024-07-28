@@ -3790,7 +3790,21 @@ namespace PascalABCCompiler
 #endif
                 AddStandardUnitsToInterfaceUsesSection(currentUnit);
 
+            AddStandardNetNamespacesToInterfaceUsesSection(currentUnit);
+
             currentUnit.possibleNamespaces.Clear();
+        }
+
+        private void AddStandardNetNamespacesToInterfaceUsesSection(CompilationUnit currentUnit)
+        {
+            List<SyntaxTree.unit_or_namespace> usesList = GetInterfaceUsesSection(currentUnit.SyntaxTree);
+
+            IEnumerable<string> namespacesToAdd = StringConstants.standardNetNamespaces.Except(usesList.Select(unit => string.Join(".", unit.name.idents)));
+
+            usesList.AddRange(namespacesToAdd.Select(namespaceName =>
+                  new SyntaxTree.unit_or_namespace(new SyntaxTree.ident_list(
+                    namespaceName.Split('.').Select(identName => new SyntaxTree.ident(identName)).ToArray()))));
+            
         }
 
         private SyntaxTree.compilation_unit ConvertSyntaxTree(SyntaxTree.compilation_unit syntaxTree, List<ISyntaxTreeConverter> converters)
