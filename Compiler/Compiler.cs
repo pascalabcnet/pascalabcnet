@@ -660,7 +660,7 @@ namespace PascalABCCompiler
         public List<CompilationUnit> UnitsTopologicallySortedList = new List<CompilationUnit>();
 
         private List<string> StandardModules = new List<string>();
-        public CompilerOptions CompilerOptions { get; set; } = new CompilerOptions();
+        public CompilerOptions CompilerOptions { get; set; }
 
         private Dictionary<string, CompilationUnit> DLLCache = new Dictionary<string, CompilationUnit>();
 
@@ -800,6 +800,9 @@ namespace PascalABCCompiler
             
             supportedSourceFiles = comp.SupportedSourceFiles;
             supportedProjectFiles = comp.SupportedProjectFiles;
+
+            // 29.07.2024  EVA
+            CompilerOptions = new CompilerOptions();
         }
 
         public Compiler(SourceFilesProviderDelegate SourceFilesProvider, ChangeCompilerStateEventDelegate ChangeCompilerState)
@@ -825,6 +828,9 @@ namespace PascalABCCompiler
             errorsList.Clear();
             Warnings.Clear();
             InternalDebug = new CompilerInternalDebug();
+
+            // 29.07.2024  EVA
+            CompilerOptions = new CompilerOptions();
 
             SaveUnitCheckInParsers();
 
