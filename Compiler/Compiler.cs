@@ -3126,14 +3126,22 @@ namespace PascalABCCompiler
         /// <param name="directives"></param>
         private void AddReferencesToNetSystemLibraries(CompilationUnit compilationUnit, List<TreeRealization.compiler_directive> directives)
         {
-            directives.AddRange(StringConstants.netSystemLibraries.Select(dll => new compiler_directive("reference", $"%GAC%\\{dll}", null, ".")));
+            IEnumerable<string> librariesToAdd = StringConstants.netSystemLibraries.Select(dll => $"%GAC%\\{dll}")
+                .Except(directives.Where(directive => directive.name.Equals("reference", StringComparison.CurrentCultureIgnoreCase))
+                .Select(directive => directive.directive), StringComparer.CurrentCultureIgnoreCase);
+
+            directives.AddRange(librariesToAdd.Select(dll => new compiler_directive("reference", dll, null, ".")));
 
             if (compilationUnit.SyntaxTree is SyntaxTree.program_module program && program.used_units != null)
             {
                 var graph3DUnit = program.used_units.units.FirstOrDefault(u => u.name.ToString() == "Graph3D");
                 if (graph3DUnit != null)
                 {
-                    directives.AddRange(StringConstants.graph3DDependencies.Select(dll => new compiler_directive("reference", $"%GAC%\\{dll}", null, ".")));
+                    IEnumerable<string> graphLibrariesToAdd = StringConstants.graph3DDependencies.Select(dll => $"%GAC%\\{dll}")
+                        .Except(directives.Where(directive => directive.name.Equals("reference", StringComparison.CurrentCultureIgnoreCase))
+                        .Select(directive => directive.directive), StringComparer.CurrentCultureIgnoreCase);
+
+                    directives.AddRange(graphLibrariesToAdd.Select(dll => new compiler_directive("reference", dll, null, ".")));
                 }
             }
         }
@@ -3145,14 +3153,22 @@ namespace PascalABCCompiler
         /// <param name="directives"></param>
         private void AddReferencesToNetSystemLibraries(CompilationUnit compilationUnit, List<SyntaxTree.compiler_directive> directives)
         {
-            directives.AddRange(StringConstants.netSystemLibraries.Select(dll => new SyntaxTree.compiler_directive(new SyntaxTree.token_info("reference"), new SyntaxTree.token_info($"%GAC%\\{dll}"))));
+            IEnumerable<string> librariesToAdd = StringConstants.netSystemLibraries.Select(dll => $"%GAC%\\{dll}")
+                .Except(directives.Where(directive => directive.Name.text.Equals("reference", StringComparison.CurrentCultureIgnoreCase))
+                .Select(directive => directive.Directive.text), StringComparer.CurrentCultureIgnoreCase);
+
+            directives.AddRange(librariesToAdd.Select(dll => new SyntaxTree.compiler_directive(new SyntaxTree.token_info("reference"), new SyntaxTree.token_info(dll))));
 
             if (compilationUnit.SyntaxTree is SyntaxTree.program_module program && program.used_units != null)
             {
                 var graph3DUnit = program.used_units.units.FirstOrDefault(u => u.name.ToString() == "Graph3D");
                 if (graph3DUnit != null)
                 {
-                    directives.AddRange(StringConstants.graph3DDependencies.Select(dll => new SyntaxTree.compiler_directive(new SyntaxTree.token_info("reference"), new SyntaxTree.token_info($"%GAC%\\{dll}"))));
+                    IEnumerable<string> graphLibrariesToAdd = StringConstants.graph3DDependencies.Select(dll => $"%GAC%\\{dll}")
+                        .Except(directives.Where(directive => directive.Name.text.Equals("reference", StringComparison.CurrentCultureIgnoreCase))
+                        .Select(directive => directive.Directive.text), StringComparer.CurrentCultureIgnoreCase);
+
+                    directives.AddRange(graphLibrariesToAdd.Select(dll => new SyntaxTree.compiler_directive(new SyntaxTree.token_info("reference"), new SyntaxTree.token_info(dll))));
                 }
             }
         }
