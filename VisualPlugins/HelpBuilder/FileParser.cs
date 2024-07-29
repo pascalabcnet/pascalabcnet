@@ -41,10 +41,10 @@ namespace VisualPascalABCPlugins
 		public bool Parse(string FileName)
 		{
 			Name = Path.GetFileNameWithoutExtension(FileName);
-			bool tmp_code_gen = VisualEnvironmentCompiler.StandartCompiler.InternalDebug.CodeGeneration;
-            bool tmp_save_pcu = VisualEnvironmentCompiler.StandartCompiler.InternalDebug.PCUGenerate;
-			VisualEnvironmentCompiler.StandartCompiler.InternalDebug.CodeGeneration = false;
-            VisualEnvironmentCompiler.StandartCompiler.InternalDebug.PCUGenerate = false;
+			bool tmp_code_gen = VisualEnvironmentCompiler.StandartCompiler.CompilerOptions.GenerateCode;
+            bool tmp_save_pcu = VisualEnvironmentCompiler.StandartCompiler.CompilerOptions.SavePCU;
+			VisualEnvironmentCompiler.StandartCompiler.CompilerOptions.GenerateCode = false;
+            VisualEnvironmentCompiler.StandartCompiler.CompilerOptions.SavePCU = false;
             VisualEnvironmentCompiler.StandartCompiler.InternalDebug.AlwaysGenerateXMLDoc = true;
             PascalABCCompiler.CompilerType ct = VisualEnvironmentCompiler.DefaultCompilerType;
             VisualEnvironmentCompiler.DefaultCompilerType = PascalABCCompiler.CompilerType.Standart;
@@ -58,8 +58,8 @@ namespace VisualPascalABCPlugins
             	throw;
             }
             VisualEnvironmentCompiler.DefaultCompilerType = ct;
-            VisualEnvironmentCompiler.StandartCompiler.InternalDebug.CodeGeneration = tmp_code_gen;
-            VisualEnvironmentCompiler.StandartCompiler.InternalDebug.PCUGenerate = tmp_save_pcu;
+            VisualEnvironmentCompiler.StandartCompiler.CompilerOptions.GenerateCode = tmp_code_gen;
+            VisualEnvironmentCompiler.StandartCompiler.CompilerOptions.SavePCU = tmp_save_pcu;
             VisualEnvironmentCompiler.StandartCompiler.InternalDebug.AlwaysGenerateXMLDoc = false;
             if (tree != null)
             {

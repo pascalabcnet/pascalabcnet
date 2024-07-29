@@ -378,7 +378,7 @@ namespace PascalABCCompiler
             sendCommand(ConsoleCompilerConstants.CompilerOptionsDebug, compilerOptions.Debug);
             sendCommand(ConsoleCompilerConstants.CompilerOptionsRebuild, compilerOptions.Rebuild);
             sendCommand(ConsoleCompilerConstants.CompilerOptionsOutputType, (int)compilerOptions.OutputFileType);
-            sendCommand(ConsoleCompilerConstants.InternalDebugSavePCU, InternalDebug.PCUGenerate);
+            sendCommand(ConsoleCompilerConstants.CompilerOptionsSavePCU, CompilerOptions.SavePCU);
             sendCommand(ConsoleCompilerConstants.CompilerOptionsForDebugging, CompilerOptions.ForDebugging);
             sendCommand(ConsoleCompilerConstants.CompilerOptionsRunWithEnvironment, CompilerOptions.RunWithEnvironment);
             sendCommand(ConsoleCompilerConstants.IDELocale, Encoding.UTF8.GetString(Encoding.Unicode.GetBytes(StringResourcesLanguage.CurrentLanguageName)));

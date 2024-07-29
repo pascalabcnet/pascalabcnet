@@ -67,9 +67,9 @@ namespace VisualPascalABC
             CompilerOptions1.Locale = PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO;
             CompilerOptions1.UseDllForSystemUnits = false;
             CompilerOptions1.RunWithEnvironment = RunWithEnvironment;
-            bool savePCU = Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate;
+            bool savePCU = Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SavePCU;
             if (Path.GetDirectoryName(CompilerOptions1.SourceFileName).ToLower() == ((string)WorkbenchStorage.StandartDirectories[Constants.LibSourceDirectoryIdent]).ToLower())
-                Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = false;
+                Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SavePCU = false;
 
             if (RuntimeServicesModule != null)
             {
@@ -77,7 +77,7 @@ namespace VisualPascalABC
             }
 
             string ofn = Workbench.VisualEnvironmentCompiler.Compile(CompilerOptions1);
-            Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = savePCU;
+            Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SavePCU = savePCU;
 
             if (RuntimeServicesModule != null)
             {
@@ -127,13 +127,13 @@ namespace VisualPascalABC
             ErrorsList.Clear();
 
             //CompilerOptions1.SavePCUInThreadPull = true;
-            bool savePCU = Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate;
+            bool savePCU = Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SavePCU;
             if (Path.GetDirectoryName(FileName).ToLower() == ((string)WorkbenchStorage.StandartDirectories[Constants.LibSourceDirectoryIdent]).ToLower())
-                Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = false;
+                Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SavePCU = false;
 
             string ofn = Workbench.VisualEnvironmentCompiler.Compile(CompilerOptions1);
 
-            Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = savePCU;
+            Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SavePCU = savePCU;
 
             if (RuntimeServicesModule != null)
             {
@@ -181,7 +181,7 @@ namespace VisualPascalABC
             ErrorsList.Clear();
 
             //CompilerOptions1.SavePCUInThreadPull = true;
-            __savePCU = Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate;
+            __savePCU = Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SavePCU;
             //if (Path.GetDirectoryName(file_name).ToLower() == ((string)StandartDirectories[Constants.LibSourceDirectoryIdent]).ToLower())
             //    VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = false;
 
@@ -219,9 +219,9 @@ namespace VisualPascalABC
             ErrorsList.Clear();
 
             //CompilerOptions1.SavePCUInThreadPull = true;
-            __savePCU = Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate;
+            __savePCU = Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SavePCU;
             if (Path.GetDirectoryName(FileName).ToLower() == ((string)WorkbenchStorage.StandartDirectories[Constants.LibSourceDirectoryIdent]).ToLower())
-                Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = false;
+                Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SavePCU = false;
 
             Workbench.VisualEnvironmentCompiler.Compiler.OnChangeCompilerState += CompilationOnChangeCompilerState;
 
@@ -303,7 +303,7 @@ namespace VisualPascalABC
             switch (State)
             {
                 case PascalABCCompiler.CompilerState.CompilationFinished:
-                    Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = __savePCU;
+                    Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SavePCU = __savePCU;
 
                     if (__RuntimeServicesModule != null)
                     {

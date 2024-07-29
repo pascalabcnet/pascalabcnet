@@ -46,12 +46,12 @@ namespace VisualPascalABCPlugins
         public void ExecuteBuild()
         {
             MyCompilation = true;
-            VisualEnvironmentCompiler.StandartCompiler.InternalDebug.CodeGeneration = false;
+            VisualEnvironmentCompiler.StandartCompiler.CompilerOptions.GenerateCode = false;
             PascalABCCompiler.CompilerType ct = VisualEnvironmentCompiler.DefaultCompilerType;
             VisualEnvironmentCompiler.DefaultCompilerType = PascalABCCompiler.CompilerType.Standart;
             VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.Build, null);
             VisualEnvironmentCompiler.DefaultCompilerType = ct;
-            VisualEnvironmentCompiler.StandartCompiler.InternalDebug.CodeGeneration = true;
+            VisualEnvironmentCompiler.StandartCompiler.CompilerOptions.GenerateCode = true;
         }
 
         public void ExecuteOptions()

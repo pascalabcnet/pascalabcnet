@@ -49,9 +49,9 @@ namespace VisualPascalABCPlugins
                 text += string.Format(" [{0}ms]", (int)(DateTime.Now - dt).TotalMilliseconds);
                 if (sender == VisualEnvironmentCompiler.RemoteCompiler)
                     text += string.Format(Environment.NewLine+"WorkingSet {0}", VisualEnvironmentCompiler.RemoteCompiler.RemoteCompilerWorkingSet/1024/1024);
-                NoSavePCU.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate;
+                NoSavePCU.Checked = !VisualEnvironmentCompiler.Compiler.CompilerOptions.SavePCU;
                 NoSemantic.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.SemanticAnalysis;
-                NoCodeGeneration.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.CodeGeneration;
+                NoCodeGeneration.Checked = !VisualEnvironmentCompiler.Compiler.CompilerOptions.GenerateCode;
                 NoAddStandartUnits.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.AddStandartUnits;
                 NoSkipPCUErrors.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.SkipPCUErrors;
                 NoSkipInternalErrorsIfSyntaxTreeIsCorrupt.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.SkipInternalErrorsIfSyntaxTreeIsCorrupt;
@@ -111,12 +111,12 @@ namespace VisualPascalABCPlugins
 
         private void NoSavePCU_CheckedChanged(object sender, EventArgs e)
         {
-            VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = !NoSavePCU.Checked;
+            VisualEnvironmentCompiler.Compiler.CompilerOptions.SavePCU = !NoSavePCU.Checked;
         }
 
         private void NoCodeGeneration_CheckedChanged(object sender, EventArgs e)
         {
-            VisualEnvironmentCompiler.Compiler.InternalDebug.CodeGeneration = !NoCodeGeneration.Checked;
+            VisualEnvironmentCompiler.Compiler.CompilerOptions.GenerateCode = !NoCodeGeneration.Checked;
         }
 
         private void NoAddStandartUnits_CheckedChanged(object sender, EventArgs e)
