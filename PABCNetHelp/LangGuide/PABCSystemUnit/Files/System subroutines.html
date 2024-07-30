@@ -27,6 +27,7 @@
 <param name="Keyword" value="PascalABCVersion">
 <param name="Keyword" value="PointerToString">
 <param name="Keyword" value="RemoveDir">
+<param name="Keyword" value="RenameDirectory">
 <param name="Keyword" value="RenameFile">
 <param name="Keyword" value="RmDir">
 <param name="Keyword" value="SetCurrentDir">
@@ -41,17 +42,17 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит в специальном окне диагностическое сообщение и стек вызовов подпрограмм если условие не выполняется</td></tr>
 <tr><td><code><b>function</b> ChangeFileNameExtension(fileName, newExt: string): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет расширение файла с именем fileName на newExt</td></tr>
-<tr><td><code><b>procedure</b> ChDir(s: string);</code>
+<tr><td><code><b>procedure</b> ChDir(dirName: string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет текущий каталог</td></tr>
-<tr><td><code><b>function</b> CreateDir(s: string): boolean;</code>
+<tr><td><code><b>function</b> CreateDir(dirName: string): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает каталог. Возвращает True, если каталог успешно создан</td></tr>
-<tr><td><code><b>function</b> DeleteFile(fname: string): boolean;</code>
+<tr><td><code><b>function</b> DeleteFile(fileName: string): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет файл. Если файл не может быть удален, то возвращает False</td></tr>
-<tr><td><code><b>function</b> DiskFree(diskname: string): int64;</code>
+<tr><td><code><b>function</b> DiskFree(diskName: string): int64;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает свободное место в байтах на диске с именем diskname</td></tr>
 <tr><td><code><b>function</b> DiskFree(disk: integer): int64;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает свободное место в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.</td></tr>
-<tr><td><code><b>function</b> DiskSize(diskname: string): int64;</code>
+<tr><td><code><b>function</b> DiskSize(diskName: string): int64;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает размер в байтах на диске с именем diskname</td></tr>
 <tr><td><code><b>function</b> DiskSize(disk: integer): int64;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает размер в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.</td></tr>
@@ -89,7 +90,7 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество миллисекунд с момента начала работы программы</td></tr>
 <tr><td><code><b>function</b> MillisecondsDelta: integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество миллисекунд с момента последнего вызова Milliseconds или MillisecondsDelta или начала программы</td></tr>
-<tr><td><code><b>procedure</b> MkDir(s: string);</code>
+<tr><td><code><b>procedure</b> MkDir(dirName: string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает каталог</td></tr>
 <tr><td><code><b>procedure</b> New&lt;T&gt;(<b>var</b> p: ^T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выделяет динамическую память размера sizeof(T) и возвращает в переменной p указатель на нее. Тип T должен быть размерным</td></tr>
@@ -101,27 +102,21 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает версию PascalABC.NET</td></tr>
 <tr><td><code><b>function</b> PointerToString(p: pointer): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует указатель к строковому представлению</td></tr>
-<tr><td><code><b>function</b> RemoveDir(s: string): boolean;</code>
+<tr><td><code><b>function</b> RemoveDir(dirName: string): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет каталог. Возвращает True, если каталог успешно удален</td></tr>
+<tr><td><code><b>function</b> RenameDirectory(dirName, newDirName: string): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переименовывает каталог dirName, давая ему новое имя newDirName. Возвращает True, если каталог успешно переименован</td></tr>
 <tr><td><code><b>function</b> RenameFile(fileName, newfileName: string): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переименовывает файл fileName, давая ему новое имя newfileName. Возвращает True, если файл успешно переименован</td></tr>
-<tr><td><code><b>procedure</b> RmDir(s: string);</code>
+<tr><td><code><b>procedure</b> RmDir(dirName: string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет каталог</td></tr>
-<tr><td><code><b>function</b> SetCurrentDir(s: string): boolean;</code>
+<tr><td><code><b>function</b> SetCurrentDir(dirName: string): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущий каталог. Возвращает True, если каталог успешно удален</td></tr>
 <tr><td><code><b>procedure</b> Sleep(ms: integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Делает паузу на ms миллисекунд</td></tr>
-<tr><td><code><b>function</b> TypeName(o: object): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает имя типа объекта</td></tr>
-<tr><td><code><b>procedure</b> TypeName(o: object; res: StringBuilder);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает в res имя типа объекта</td></tr>
-<tr><td><code><b>procedure</b> TypeName(o: object; res: TextWriter);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает в res имя типа объекта</td></tr>
+<tr><td><code><b>function</b> TypeName(obj: object): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку с именем типа объекта</td></tr>
 <tr><td><code><b>function</b> TypeToTypeName(t: System.Type): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Для типа System.Type возвращает имя типа объекта</td></tr>
-<tr><td><code><b>procedure</b> TypeToTypeName(t: System.Type; res: StringBuilder);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Для типа System.Type записывает в res имя типа объекта</td></tr>
-<tr><td><code><b>procedure</b> TypeToTypeName(t: System.Type; res: TextWriter);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Для типа System.Type записывает в res имя типа объекта</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку с именем данного типа</td></tr>
 </table>
 </body></HTML>

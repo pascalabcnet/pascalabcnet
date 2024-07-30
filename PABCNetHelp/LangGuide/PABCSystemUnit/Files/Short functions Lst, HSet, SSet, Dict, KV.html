@@ -11,6 +11,7 @@
 <param name="Keyword" value="Lst">
 <param name="Keyword" value="LstInt">
 <param name="Keyword" value="LstStr">
+<param name="Keyword" value="Pair">
 <param name="Keyword" value="SSet">
 <param name="Keyword" value="SSetInt">
 <param name="Keyword" value="SSetStr"></object>
@@ -20,8 +21,12 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов (ключ, значение)</td></tr>
 <tr><td><code><b>function</b> Dict&lt;TKey, TVal&gt;(<b>params</b> pairs: <b>array</b>  <b>of</b> (TKey, TVal)): Dictionary&lt;TKey, TVal&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов (ключ, значение)</td></tr>
+<tr><td><code><b>function</b> Dict&lt;TKey, TVal&gt;(pairs: <b>sequence </b>  <b>of</b> KeyValuePair&lt;TKey, TVal&gt;): Dictionary&lt;TKey, TVal&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов (ключ, значение), построенный по последовательности пар</td></tr>
 <tr><td><code><b>function</b> Dict&lt;TKey, TVal&gt;(pairs: <b>sequence </b>  <b>of</b> (TKey, TVal)): Dictionary&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов (ключ, значение), построенный на значениях последовательности</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов (ключ, значение), построенный по последовательности пар</td></tr>
+<tr><td><code><b>function</b> Dict&lt;TKey, TVal&gt;(keys: <b>sequence </b>  <b>of</b> TKey; values: <b>sequence </b>  <b>of</b> TVal): Dictionary&lt;TKey, TVal&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов (ключ, значение), построенный по последовательностям ключей и значений</td></tr>
 <tr><td><code><b>function</b> DictInt(<b>params</b> pairs: <b>array</b>  <b>of</b> (integer, integer)): Dictionary&lt;integer, integer&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов (целое, целое)</td></tr>
 <tr><td><code><b>function</b> DictStr(<b>params</b> pairs: <b>array</b>  <b>of</b> (string, string)): Dictionary&lt;string, string&gt;;</code>
@@ -58,6 +63,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает список, заполненный указанными целыми значениями</td></tr>
 <tr><td><code><b>function</b> LstStr(<b>params</b> a: <b>array</b>  <b>of</b> string): List&lt;string&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает список, заполненный указанными целыми значениями</td></tr>
+<tr><td><code><b>function</b> Pair&lt;TKey, TVal&gt;(key: TKey; value: TVal): KeyValuePair&lt;TKey, TVal&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает пару элементов (ключ, значение)</td></tr>
 <tr><td><code><b>function</b> SSet&lt;T&gt;(<b>params</b> a: <b>array</b>  <b>of</b> T): SortedSet&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество на базе бинарного дерева поиска, заполненное указанными значениями</td></tr>
 <tr><td><code><b>function</b> SSet&lt;T&gt;(a: <b>sequence </b>  <b>of</b> T): SortedSet&lt;T&gt;;</code>
