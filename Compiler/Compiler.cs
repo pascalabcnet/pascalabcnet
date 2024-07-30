@@ -493,7 +493,6 @@ namespace PascalABCCompiler
         public bool SkipInternalErrorsIfSyntaxTreeIsCorrupt = true;
         public bool UseStandarParserForIntellisense = true;
         public bool RunOnMono = false;
-        public List<string> DocumentedUnits = new List<string>();
 
 #if DEBUG
         public bool DebugVersion
@@ -3984,9 +3983,6 @@ namespace PascalABCCompiler
             
             if (unitSyntaxTree == null)
                 return false;
-            
-            if (unitSyntaxTree.file_name != null && internalDebug.DocumentedUnits.Contains(unitSyntaxTree.file_name.ToLower()))
-                return true;
             
             foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compiler_directives)
             {
