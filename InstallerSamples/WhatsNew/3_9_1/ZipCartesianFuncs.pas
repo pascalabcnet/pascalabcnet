@@ -8,4 +8,7 @@
   Cartesian(1..4,3..5,(x,y) -> x*y).Println;
   Cartesian(1..2,4..5,6..7).Println;
   Cartesian(1..2,4..5,6..7,(x,y,z) -> x*y*z).Println;
+  
+  foreach var (a,b) in Cartesian(1..2,3..5) do
+    Print($'{a}+{b}')
 end.

@@ -1,4 +1,4 @@
-﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (18.07.2024)
+﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (31.07.2024)
 unit School;
 
 interface
@@ -202,6 +202,9 @@ function НОДНОК(a, b: int64): (int64, int64);
 
 /// Разложение числа на простые множители
 function Factorize(n: integer): List<integer>;
+
+/// возвращает True, если число n простое и False в противном случае
+function IsPrime(n: integer): boolean;
 
 /// Простые числа на интервале [2;n] 
 function Primes(n: integer): List<integer>;
@@ -705,6 +708,47 @@ Factorize(Self);
 
 {$region Primes}
 
+// Внутреняя процедура для заполнения LPrimes
+// Решето Эратосфена
+procedure PrimesInternal;
+begin
+  LPrimes := new List<integer>;
+  var Sieve := new boolean[ubPrimeDivs + 1];
+  for var i := 2 to ubPrimeDivs do
+    if not Sieve[i] then
+    begin
+      LPrimes.Add(i);
+      var k := i;
+      while k <= ubPrimeDivs - i do
+      begin
+        k += i;
+        Sieve[k] := True
+      end
+    end
+end;
+
+/// возвращает True, если число n простое и False в противном случае
+function IsPrime(n: integer): boolean;
+begin
+  if n < 2 then
+    Result := False
+  else
+  begin
+    Result := True;
+    foreach var prime in LPrimes do
+      if Sqr(prime) > n then
+        break
+      else if n mod prime = 0 then
+      begin
+        Result := False;
+        break
+      end
+  end
+end;
+
+/// возвращает True, если число простое и False в противном случае
+function IsPrime(Self: integer): boolean; extensionmethod := IsPrime(Self);
+
 /// Простые числа на интервале [2;n]
 function Primes(n: integer): List<integer>;
 // Решето Эратосфена
@@ -730,44 +774,6 @@ begin
   for var i := 2 to n do
     if not Sieve[i - 1] then
       Result.Add(i)
-end;
-
-// Внутреняя процедура для заполнения LPrimes
-// Решето Эратосфена
-procedure PrimesInternal;
-begin
-  LPrimes := new List<integer>;
-  var Sieve := new boolean[ubPrimeDivs + 1];
-  for var i := 2 to ubPrimeDivs do
-    if not Sieve[i] then
-    begin
-      LPrimes.Add(i);
-      var k := i;
-      while k <= ubPrimeDivs - i do
-      begin
-        k += i;
-        Sieve[k] := True
-      end
-    end
-end;
-
-/// возвращает True, если число простое и False в противном случае
-function IsPrime(Self: integer): boolean; extensionmethod;
-begin
-  if Self < 2 then
-    Result := False
-  else
-  begin
-    Result := True;
-    foreach var prime in LPrimes do
-      if Sqr(prime) > Self then
-        break
-      else if Self mod prime = 0 then
-      begin
-        Result := False;
-        break
-      end
-  end
 end;
 
 /// Простые числа на интервале [m;n] 
