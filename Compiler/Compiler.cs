@@ -3768,7 +3768,6 @@ namespace PascalABCCompiler
             // ошибка директива include в паскалевском юните
             SemanticCheckNoIncludeNamespaceDirectivesInUnit(currentUnit);
             #endregion
-
             if (isDll)
                 CompilerOptions.OutputFileType = CompilerOptions.OutputType.ClassLibrary; // есть также в конце Compile
 
@@ -3790,7 +3789,26 @@ namespace PascalABCCompiler
 #endif
                 AddStandardUnitsToInterfaceUsesSection(currentUnit);
 
+            AddStandardNetNamespacesToInterfaceUsesSection(currentUnit);
+
             currentUnit.possibleNamespaces.Clear();
+        }
+
+        private void AddStandardNetNamespacesToInterfaceUsesSection(CompilationUnit currentUnit)
+        {
+            string currentModuleName = Path.GetFileNameWithoutExtension(currentUnit.SyntaxTree.file_name);
+
+            if (CompilerOptions.StandardModules[currentUnit.Language.Name].Select(module => module.name).Contains(currentModuleName, StringComparer.CurrentCultureIgnoreCase))
+                return;
+
+            List<SyntaxTree.unit_or_namespace> usesList = GetInterfaceUsesSection(currentUnit.SyntaxTree);
+
+            IEnumerable<string> namespacesToAdd = StringConstants.standardNetNamespaces.Except(usesList.Select(unit => SyntaxTree.Utils.IdentListToString(unit.name.idents, ".")), StringComparer.CurrentCultureIgnoreCase);
+
+            usesList.InsertRange(0, namespacesToAdd.Select(namespaceName =>
+                  new SyntaxTree.unit_or_namespace(new SyntaxTree.ident_list(
+                    namespaceName.Split('.').Select(identName => new SyntaxTree.ident(identName)).ToArray()))));
+            
         }
 
         private SyntaxTree.compilation_unit ConvertSyntaxTree(SyntaxTree.compilation_unit syntaxTree, List<ISyntaxTreeConverter> converters)
