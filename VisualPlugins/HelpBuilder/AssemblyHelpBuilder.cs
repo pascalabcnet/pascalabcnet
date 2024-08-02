@@ -123,7 +123,6 @@ namespace VisualPascalABCPlugins
             }
             catch
             {
-                vec.StandartCompiler.InternalDebug.DocumentedUnits.Clear();
                 throw;
             }
 		}

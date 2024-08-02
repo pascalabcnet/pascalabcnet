@@ -36,8 +36,6 @@ namespace VisualPascalABCPlugins
             {
                 //CompilerConsole.Clear();
                 dt = DateTime.Now;
-                if (OnRebuld.Checked)
-                    VisualEnvironmentCompiler.Compiler.CompilerOptions.Rebuild = true;
             }
             text = State.ToString();
             if (FileName != null)
@@ -57,7 +55,7 @@ namespace VisualPascalABCPlugins
                 NoSkipInternalErrorsIfSyntaxTreeIsCorrupt.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.SkipInternalErrorsIfSyntaxTreeIsCorrupt;
                 NoIncludeDebugInfoInPCU.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.IncludeDebugInfoInPCU;
                 cbUseStandarParserForInellisense.Checked = VisualEnvironmentCompiler.Compiler.InternalDebug.UseStandarParserForIntellisense;
-                //OnRebuld.Checked = VisualEnvironmentCompiler.Compiler.CompilerOptions.Rebuild;
+                OnRebuld.Checked = VisualEnvironmentCompiler.Compiler.CompilerOptions.Rebuild;
             }
             text += Environment.NewLine;
             if (sender.CompilerType == PascalABCCompiler.CompilerType.Remote)

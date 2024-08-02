@@ -495,7 +495,6 @@ namespace PascalABCCompiler
         public bool SkipInternalErrorsIfSyntaxTreeIsCorrupt = true;
         public bool UseStandarParserForIntellisense = true;
         public bool RunOnMono = false;
-        public List<string> DocumentedUnits = new List<string>();
 
 #if DEBUG
         public bool DebugVersion
@@ -662,7 +661,7 @@ namespace PascalABCCompiler
         public List<CompilationUnit> UnitsTopologicallySortedList = new List<CompilationUnit>();
 
         private List<string> StandardModules = new List<string>();
-        public CompilerOptions CompilerOptions { get; set; } = new CompilerOptions();
+        public CompilerOptions CompilerOptions { get; set; }
 
         private Dictionary<string, CompilationUnit> DLLCache = new Dictionary<string, CompilationUnit>();
 
@@ -802,6 +801,9 @@ namespace PascalABCCompiler
             
             supportedSourceFiles = comp.SupportedSourceFiles;
             supportedProjectFiles = comp.SupportedProjectFiles;
+
+            // 29.07.2024  EVA
+            CompilerOptions = new CompilerOptions();
         }
 
         public Compiler(SourceFilesProviderDelegate SourceFilesProvider, ChangeCompilerStateEventDelegate ChangeCompilerState)
@@ -827,6 +829,9 @@ namespace PascalABCCompiler
             errorsList.Clear();
             Warnings.Clear();
             InternalDebug = new CompilerInternalDebug();
+
+            // 29.07.2024  EVA
+            CompilerOptions = new CompilerOptions();
 
             SaveUnitCheckInParsers();
 
@@ -3986,9 +3991,6 @@ namespace PascalABCCompiler
             
             if (unitSyntaxTree == null)
                 return false;
-            
-            if (unitSyntaxTree.file_name != null && internalDebug.DocumentedUnits.Contains(unitSyntaxTree.file_name.ToLower()))
-                return true;
             
             foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compiler_directives)
             {
