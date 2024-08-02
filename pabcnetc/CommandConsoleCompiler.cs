@@ -260,8 +260,8 @@ namespace PascalABCCompiler
                 case ConsoleCompilerConstants.CommandGCCollect:
                     GC.Collect();
                     break;
-                case ConsoleCompilerConstants.CompilerOptionsSavePCU:
-                    compiler.CompilerOptions.SavePCU = Convert.ToBoolean(arg);
+                case ConsoleCompilerConstants.InternalDebugSavePCU:
+                    compiler.InternalDebug.PCUGenerate = Convert.ToBoolean(arg);
                     break;
                 case ConsoleCompilerConstants.WorkingSet:
                     sendWorkingSet();

@@ -485,7 +485,9 @@ namespace PascalABCCompiler
     [Serializable()]
     public class CompilerInternalDebug
     {
+        public bool CodeGeneration = true;
         public bool SemanticAnalysis = true;
+        public bool PCUGenerate = true;
         public bool AddStandartUnits = true;
         public bool SkipPCUErrors = true;
         public bool IncludeDebugInfoInPCU = true;
@@ -1959,9 +1961,8 @@ namespace PascalABCCompiler
                     {
                         if (CompilerOptions.UseDllForSystemUnits)
                             netCompilerOptions.RtlPABCSystemType = NetHelper.NetHelper.FindRtlType("PABCSystem.PABCSystem");
-                        
-                        if (CompilerOptions.OutputFileType != CompilerOptions.OutputType.SemanticTree)
-                            GenerateILCode(semanticTree, netCompilerOptions, resourceFiles);
+
+                        GenerateILCode(semanticTree, netCompilerOptions, resourceFiles);
                     }
                 }
                 #endregion
@@ -2202,19 +2203,26 @@ namespace PascalABCCompiler
 
         private void GenerateILCode(program_node programNode, NETGenerator.CompilerOptions compilerOptions, List<string> resourceFiles)
         {
-            // генерация файла .pdb для дебага
-            DebugOutputFileCreationUsingPDB();
 
-            OnChangeCompilerState(this, CompilerState.CodeGeneration, CompilerOptions.OutputFileName); // состояние генерации кода
+            if (CompilerOptions.OutputFileType != CompilerOptions.OutputType.SemanticTree)
+#if DEBUG
+                if (InternalDebug.CodeGeneration)
+#endif
+                {
+                    // генерация файла .pdb для дебага
+                    DebugOutputFileCreationUsingPDB();
 
-            // трансляция в IL-код | В semanticTree находится ЕДИНСТВЕННОЕ семантическое дерево, содержащее программу и все семантические модули
-            CodeGeneratorsController.GenerateILCodeAndSaveAssembly(programNode, CompilerOptions.OutputFileName,
-                CompilerOptions.SourceFileName, compilerOptions, CompilerOptions.StandardDirectories,
-                resourceFiles?.ToArray());
+                    OnChangeCompilerState(this, CompilerState.CodeGeneration, CompilerOptions.OutputFileName); // состояние генерации кода
 
-            CodeGeneratorsController.EmitAssemblyRedirects(
-                assemblyResolveScope,
-                CompilerOptions.OutputFileName);
+                    // трансляция в IL-код | В semanticTree находится ЕДИНСТВЕННОЕ семантическое дерево, содержащее программу и все семантические модули
+                    CodeGeneratorsController.GenerateILCodeAndSaveAssembly(programNode, CompilerOptions.OutputFileName,
+                        CompilerOptions.SourceFileName, compilerOptions, CompilerOptions.StandardDirectories,
+                        resourceFiles?.ToArray());
+
+                    CodeGeneratorsController.EmitAssemblyRedirects(
+                        assemblyResolveScope,
+                        CompilerOptions.OutputFileName);
+                }
         }
 
         private void DebugOutputFileCreationUsingPDB()
@@ -4030,21 +4038,24 @@ namespace PascalABCCompiler
             PCUWriter writer = null;
             try
             {
-                if (CompilerOptions.SavePCU)
-                    if ((Unit.SemanticTree as TreeRealization.common_unit_node).namespaces.Count > 1 &&
-                        Unit.SyntaxTree != null &&
-                        Unit.State == UnitState.Compiled)
-                    {
-                        writer = new PCUWriter(this, pr_ChangeState);
-
-                        bool dbginfo = true;/*CompilerOptions.Debug*/
 #if DEBUG
-                        dbginfo = InternalDebug.IncludeDebugInfoInPCU;
+                if (InternalDebug.PCUGenerate)
+#endif
+                    if (CompilerOptions.SavePCU)
+                        if ((Unit.SemanticTree as TreeRealization.common_unit_node).namespaces.Count > 1 &&
+                            Unit.SyntaxTree != null &&
+                            Unit.State == UnitState.Compiled)
+                        {
+                            writer = new PCUWriter(this, pr_ChangeState);
+
+                            bool dbginfo = true;/*CompilerOptions.Debug*/
+#if DEBUG
+                            dbginfo = InternalDebug.IncludeDebugInfoInPCU;
 #endif
 
-                        writer.SaveSemanticTree(Unit, Path.ChangeExtension(Unit.UnitFileName, CompilerOptions.CompiledUnitExtension), dbginfo);
+                            writer.SaveSemanticTree(Unit, Path.ChangeExtension(Unit.UnitFileName, CompilerOptions.CompiledUnitExtension), dbginfo);
 
-                    }
+                        }
             }
             catch (Exception err)
             {

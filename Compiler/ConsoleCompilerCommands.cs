@@ -37,7 +37,7 @@ namespace PascalABCCompiler
         public const int CompilerOptionsOutputDirectory = 213;
         public const int CompilerOptionsRebuild= 214;
         public const int CompilerOptionsFileName = 215;
-        public const int CompilerOptionsSavePCU = 216;
+        public const int InternalDebugSavePCU = 216;
         public const int WorkingSet = 217;
         public const int CompilerOptionsStandartModule = 218;
         public const int CompilerOptionsClearStandartModules = 219;
