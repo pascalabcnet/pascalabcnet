@@ -122,6 +122,7 @@ namespace Languages.Pascal.Frontend.Wrapping
                 [StringConstants.compiler_directive_include] = new DirectiveInfo(quotesAreSpecialSymbols: true),
                 [StringConstants.compiler_directive_targetframework] = new DirectiveInfo(),
                 [StringConstants.compiler_directive_hidden_idents] = NoParamsDirectiveInfo(),
+                [StringConstants.compiler_directive_disable_standard_units] = NoParamsDirectiveInfo(),
                 [StringConstants.compiler_directive_version_string] = new DirectiveInfo(IsValidVersionCheck()),
                 [StringConstants.compiler_directive_product_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
                 [StringConstants.compiler_directive_company_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
