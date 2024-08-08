@@ -641,8 +641,8 @@ namespace TreeConverter.LambdaExpressions.Closure
             type_node elemType = null;
             if (inWhat.type == null)
                 inWhat = tmp;
-            bool bb; // здесь bb не нужно. Оно нужно в foreach
-            _visitor.FindIEnumerableElementType(/*_foreach_stmt, */inWhat.type, ref elemType, out bb);
+            bool sys_coll_ienum;
+            _visitor.FindIEnumerableElementType(/*_foreach_stmt, */inWhat.type, ref elemType, out sys_coll_ienum);
 
             if (_foreach_stmt.type_name == null)
             {
@@ -676,7 +676,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             if (!(vdn.type is compiled_generic_instance_type_node))
                 _visitor.convertion_data_and_alghoritms.check_convert_type_with_inheritance(vdn.type, elemType, _visitor.get_location(_foreach_stmt.identifier));
 
-            var fn = new foreach_node(vdn, inWhat, null, _visitor.get_location(_foreach_stmt));
+            var fn = new foreach_node(vdn, inWhat, null, elemType, !sys_coll_ienum, _visitor.get_location(_foreach_stmt));
             _visitor.context.enter_in_cycle(fn);
             _visitor.context.loop_var_stack.Push(vdn);
 

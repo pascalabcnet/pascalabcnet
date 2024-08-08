@@ -1754,12 +1754,23 @@ namespace PascalABCCompiler.TreeRealization
         private var_definition_node _ident;
         private expression_node _in_what;
         private statement_node _what_do;
+        private type_node _element_type;
+        private bool _is_generic;
 		
-        public foreach_node(var_definition_node _ident, expression_node _in_what, statement_node _what_do, location loc):base(loc)
+        public foreach_node(
+            var_definition_node _ident,
+            expression_node _in_what,
+            statement_node _what_do,
+            type_node _element_type,
+            bool _is_generic,
+            location loc
+        ):base(loc)
         {
             this._ident = _ident;
             this._in_what = _in_what;
             this._what_do = _what_do;
+            this._element_type = _element_type;
+            this._is_generic = _is_generic;
         }
 
         public var_definition_node ident
@@ -1798,6 +1809,18 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
+        public type_node element_type
+        {
+            get { return _element_type; }
+            set { _element_type = value; }
+        }
+
+        public bool is_generic
+        {
+            get { return _is_generic; }
+            set { _is_generic = value; }
+        }
+
         public SemanticTree.IStatementNode Body
         {
             get
@@ -1821,6 +1844,17 @@ namespace PascalABCCompiler.TreeRealization
                 return _ident;
             }
         }
+
+        public SemanticTree.ITypeNode ElementType
+        {
+            get { return _element_type; }
+        }
+
+        public bool IsGeneric
+        {
+            get { return _is_generic; }
+        }
+
         /// <summary>
         /// Тип узла.
         /// </summary>

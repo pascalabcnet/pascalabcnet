@@ -36,7 +36,9 @@ namespace PascalABCCompiler.TreeConverter
 
             expression_node foreachCollection;
             var_definition_node foreachVariable;
-            ForeachCheckAndConvert(_foreach_stmt, out foreachCollection, out foreachVariable);
+            type_node elementType;
+            bool isGeneric;
+            ForeachCheckAndConvert(_foreach_stmt, out foreachCollection, out foreachVariable, out elementType, out isGeneric);
 
             definition_node dnind = null;
             var_definition_node vdn = null;
@@ -54,7 +56,14 @@ namespace PascalABCCompiler.TreeConverter
             statements_list sl = new statements_list(get_location(_foreach_stmt.stmt));
             convertion_data_and_alghoritms.statement_list_stack_push(sl);
 
-            foreach_node foreachNode = new foreach_node(foreachVariable, foreachCollection, null, get_location(_foreach_stmt));
+            foreach_node foreachNode = new foreach_node(
+                foreachVariable,
+                foreachCollection,
+                null,
+                elementType,
+                isGeneric,
+                get_location(_foreach_stmt)
+            );
 
             context.enter_in_cycle(foreachNode);
             context.loop_var_stack.Push(foreachVariable);
@@ -115,8 +124,13 @@ namespace PascalABCCompiler.TreeConverter
         }
 
 
-        private void ForeachCheckAndConvert(foreach_stmt _foreach_stmt, out expression_node foreachCollection,
-            out var_definition_node foreachVariable)
+        private void ForeachCheckAndConvert(
+            foreach_stmt _foreach_stmt,
+            out expression_node foreachCollection,
+            out var_definition_node foreachVariable,
+            out type_node elementType,
+            out bool isGenereic
+        )
         {
             var lambdaSearcher = new LambdaSearcher(_foreach_stmt.in_what);
             if (lambdaSearcher.CheckIfContainsLambdas())
@@ -134,6 +148,9 @@ namespace PascalABCCompiler.TreeConverter
             type_node elem_type = null;
             if (!FindIEnumerableElementType(foreachCollection.type, ref elem_type, out sys_coll_ienum))
                 AddError(foreachCollection.location, "CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}", foreachCollection.type.name);
+
+            elementType = elem_type;
+            isGenereic = !sys_coll_ienum;
 
             var vars = _foreach_stmt.ext as ident_list;
             if (vars != null)

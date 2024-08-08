@@ -11601,40 +11601,46 @@ namespace PascalABCCompiler.NETGenerator
         public override void visit(IForeachNode value)
         {
             VarInfo vi = helper.GetVariable(value.VarIdent);
-            //Type interf = helper.GetTypeReference(value.InWhatExpr.type).tp;
-            Type var_tp = helper.GetTypeReference(value.VarIdent.type).tp;
-            //(ssyy) 12.04.2008 Поиск IEnumerable не нужен! Это дело семантики!
             Type in_what_type = helper.GetTypeReference(value.InWhatExpr.type).tp;
-            Type return_type = null;
-            bool is_generic = false;
-            Type[] generic_args = null;
-            MethodInfo enumer_mi = null; //typeof(System.Collections.IEnumerable).GetMethod("GetEnumerator", Type.EmptyTypes);
-            if (/*var_tp.IsValueType &&*/ !var_tp.IsGenericParameter && !(in_what_type.IsArray && in_what_type.GetArrayRank() > 1))
+
+            Type return_type;
+            MethodInfo enumer_mi;
+
+            Type elementType = helper.GetTypeReference(value.ElementType).tp;
+
+            bool is_generic = value.IsGeneric;
+
+            if (is_generic)
             {
-                enumer_mi = helper.GetEnumeratorMethod(in_what_type, out generic_args);
-                if (enumer_mi == null)
+                // если элемент перечисления объявлен в коде
+                // или типоаргумент элемента перечисления объявлен в коде
+                // например IEnumerable<MyType>, array of MyType
+                if (helper.IsConstructedGenericType(elementType))
                 {
-                    enumer_mi = typeof(System.Collections.IEnumerable).GetMethod("GetEnumerator", Type.EmptyTypes);
-                    return_type = enumer_mi.ReturnType;
+                    enumer_mi = TypeBuilder.GetMethod(
+                        TypeFactory.IEnumerableGenericType.MakeGenericType(elementType),
+                        TypeFactory.IEnumerableGenericType.GetMethod("GetEnumerator")
+                    );
+
+                    // IEnumerator<elementType>
+                    return_type = enumer_mi.ReturnType
+                        .GetGenericTypeDefinition()
+                        .MakeGenericType(elementType);
                 }
+                // для полностью скомпилированных типов TypeBuilder не требуется
+                // IEnumerable<integer>, array of string
                 else
                 {
-                    is_generic = enumer_mi.ReturnType.IsGenericType;
+                    enumer_mi = TypeFactory.IEnumerableGenericType.MakeGenericType(elementType).GetMethod("GetEnumerator");
                     return_type = enumer_mi.ReturnType;
-                    if (in_what_type.IsGenericType && return_type.IsGenericType && !return_type.IsGenericTypeDefinition)
-                        return_type = return_type.GetGenericTypeDefinition().MakeGenericType(in_what_type.GetGenericArguments());
-                    else if (in_what_type.IsArray && return_type.IsGenericType && !return_type.IsGenericTypeDefinition)
-                        return_type = return_type.GetGenericTypeDefinition().MakeGenericType(in_what_type.GetElementType());
-                    else if (generic_args != null)
-                        return_type = return_type.GetGenericTypeDefinition().MakeGenericType(generic_args);
                 }
-                
             }
             else
             {
-                enumer_mi = typeof(System.Collections.IEnumerable).GetMethod("GetEnumerator", Type.EmptyTypes);
+                enumer_mi = TypeFactory.IEnumerableType.GetMethod("GetEnumerator");
                 return_type = enumer_mi.ReturnType;
             }
+
             LocalBuilder lb = il.DeclareLocal(return_type);
             if (save_debug_info) lb.SetLocalSymInfo("$enumer$" + uid++);
 
