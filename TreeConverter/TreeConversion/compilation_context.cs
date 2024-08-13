@@ -2052,8 +2052,11 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.greq_name,tctn,SemanticTree.basic_function_type.enumgreq,SystemLibrary.SystemLibrary.bool_type);
             SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.sm_name,tctn,SemanticTree.basic_function_type.enumsm,SystemLibrary.SystemLibrary.bool_type);
             SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.smeq_name,tctn,SemanticTree.basic_function_type.enumsmeq,SystemLibrary.SystemLibrary.bool_type);
-            
-			SystemLibrary.SystemLibrary.make_generated_type_conversion(tctn,SystemLibrary.SystemLibrary.byte_type,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.itob,false);
+            SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.or_name, tctn, SemanticTree.basic_function_type.enumsor, tctn);
+            SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.and_name, tctn, SemanticTree.basic_function_type.enumsand, tctn);
+            SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.xor_name, tctn, SemanticTree.basic_function_type.enumsxor, tctn);
+
+            SystemLibrary.SystemLibrary.make_generated_type_conversion(tctn,SystemLibrary.SystemLibrary.byte_type,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.itob,false);
             SystemLibrary.SystemLibrary.make_generated_type_conversion(tctn,SystemLibrary.SystemLibrary.sbyte_type,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.itosb,false);
             SystemLibrary.SystemLibrary.make_generated_type_conversion(tctn,SystemLibrary.SystemLibrary.short_type,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.itos,false);
             SystemLibrary.SystemLibrary.make_generated_type_conversion(tctn,SystemLibrary.SystemLibrary.ushort_type,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.itous,false);

@@ -2683,12 +2683,18 @@ namespace PascalABCCompiler.SystemLibrary
             int_const_node left = parameters[0] as int_const_node;
             if (left == null)
             {
-                return null;
+                if (parameters[0] is enum_const_node ecn)
+                    left = new int_const_node(ecn.constant_value, ecn.location);
+                else
+                    return null;
             }
             int_const_node right = parameters[1] as int_const_node;
             if (right == null)
             {
-                return null;
+                if (parameters[1] is enum_const_node ecn)
+                    right = new int_const_node(ecn.constant_value, ecn.location);
+                else
+                    return null;
             }
             return (make_int_const(((left.constant_value) | (right.constant_value)), call_location));
         }

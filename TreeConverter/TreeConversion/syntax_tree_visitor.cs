@@ -1180,7 +1180,12 @@ namespace PascalABCCompiler.TreeConverter
                 left_type = SystemLibrary.SystemLibrary.integer_type;
                 left.type = left_type;
             }
-                
+
+            if (right_type == null && right is enum_const_node)
+            {
+                right_type = SystemLibrary.SystemLibrary.integer_type;
+                right.type = right_type;
+            }
 
             if (left_type.semantic_node_type == semantic_node_type.delegated_method)
             {
@@ -3655,7 +3660,11 @@ namespace PascalABCCompiler.TreeConverter
                 cdn.const_value = new enum_const_node(num++, null, get_location(id));
                 else
                 {
-                	constant_node cn = convert_strong_to_constant_node(en.value,SystemLibrary.SystemLibrary.integer_type);
+                	constant_node cn = convert_strong_to_constant_node(en.value, SystemLibrary.SystemLibrary.integer_type);
+                    if (cn is basic_function_call_as_constant bfcc && bfcc.method_call.function_node.compile_time_executor != null)
+                    {
+                        cn = convert_strong_to_constant_node(bfcc.method_call.function_node.compile_time_executor(bfcc.location, bfcc.method_call.parameters.ToArray()), SystemLibrary.SystemLibrary.integer_type);
+                    }
                 	check_for_strong_constant(cn,get_location(en.value));
                 	cdn.const_value = new enum_const_node((cn as int_const_node).constant_value,null,get_location(id));
                 }
@@ -3663,6 +3672,12 @@ namespace PascalABCCompiler.TreeConverter
             }
             common_type_node ctn = context.create_enum_type(null, get_location(_enum_type_definition)); //_enum_type_definition.values
             num = 0;
+            foreach (constant_definition_node cdn in cnsts)
+            {
+                cdn.const_value.type = ctn;
+            }
+
+            int i = 0;
             foreach (SyntaxTree.enumerator en in _enum_type_definition.enumerators.enumerators)
             {
                 SyntaxTree.ident id = (en.name as named_type_reference).FirstIdent;
@@ -3671,14 +3686,12 @@ namespace PascalABCCompiler.TreeConverter
                 cdn.const_value = new enum_const_node(num++, null, get_location(id));
                 else
                 {
-                	constant_node cn = convert_strong_to_constant_node(en.value,SystemLibrary.SystemLibrary.integer_type);
-                	check_for_strong_constant(cn,get_location(en.value));
-                	cdn.const_value = new enum_const_node((cn as int_const_node).constant_value,null,get_location(id));
+                    cdn.const_value = cnsts[i].const_value;
                 }
                 cdn.const_value.type = ctn;
+                i++;
             }
-            foreach (constant_definition_node cdn in cnsts)
-                cdn.const_value.type = ctn;
+
             internal_interface ii = SystemLibrary.SystemLibrary.integer_type.get_internal_interface(internal_interface_kind.ordinal_interface);
             ordinal_type_interface oti_old = (ordinal_type_interface)ii;
             enum_const_node lower_value = new enum_const_node(0, ctn, ctn.loc);
@@ -3688,6 +3701,7 @@ namespace PascalABCCompiler.TreeConverter
                 oti_old.lower_eq_method, oti_old.greater_eq_method, oti_old.lower_method, oti_old.greater_method, lower_value, upper_value, oti_old.value_to_int, oti_old.ordinal_type_to_int);
 
             ctn.add_internal_interface(oti_new);
+
             //foreach (constant_definition_node cdn in cnsts)
             //  cdn.const_value.type = ctn;
             //context.leave_block();

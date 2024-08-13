@@ -9850,6 +9850,10 @@ namespace PascalABCCompiler.NETGenerator
                 case basic_function_type.ior: il.Emit(OpCodes.Or); break;
                 case basic_function_type.ixor: il.Emit(OpCodes.Xor); break;
 
+                case basic_function_type.enumsand: il.Emit(OpCodes.And); break;
+                case basic_function_type.enumsor: il.Emit(OpCodes.Or); break;
+                case basic_function_type.enumsxor: il.Emit(OpCodes.Xor); break;
+
                 case basic_function_type.land: il.Emit(OpCodes.And); break;
                 case basic_function_type.lor: il.Emit(OpCodes.Or); break;
                 case basic_function_type.lxor: il.Emit(OpCodes.Xor); break;
