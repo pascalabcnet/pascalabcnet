@@ -15,7 +15,7 @@ type
   end;
 
 var 
-  CurrentPen := ColorPen(Colors.Black,1);
+  CurrentPen := ColorPen(Colors.Black,1.4);
 
 {$region Класс координатной сетки FS}
 
