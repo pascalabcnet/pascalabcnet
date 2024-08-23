@@ -1,4 +1,4 @@
-﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (01.08.2024)
+﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (05.08.2024)
 unit School;
 
 interface
@@ -167,10 +167,13 @@ function Dec(str: string; base: integer): int64;
 /// Перевод из системы по основанию base [2..36] в десятичную
 function DecBig(str: string; base: integer): BigInteger;
 
-/// Перевод BigInteger в систему счисления по основанию base (2..36)
+/// Перевод десятичного int64 в систему счисления по основанию base (2..36)
+function ToBase(number: int64; base: integer): string;
+
+/// Перевод десятичного BigInteger в систему счисления по основанию base (2..36)
 function ToBase(number: BigInteger; base: integer): string;
 
-/// Перевод десятичного числа в систему счисления по основанию base (2..36)
+/// Перевод десятичного string в систему счисления по основанию base (2..36)
 function ToBase(str: string; base: integer): string;
 
 /// Возвращает кортеж из минимума и максимума последовательности
@@ -468,13 +471,13 @@ function Dec(str: string; base: integer): int64;
 begin
   if not (base in 2..36) then
     raise new School_InvalidBase
-    ($'ToDecimal: Недопустимое основание {base}');
+    ($'Dec: Недопустимое основание {base}');
   str := str.ToUpper;
   var invalid_chars := 
     str.Except(valid_chars[:base + 1]).JoinToString;
   if invalid_chars.Length > 0 then
     raise new School_BadCharInString
-    ($'ToDecimal: Недопустимые символы "{invalid_chars}"');
+    ($'Dec: Недопустимые символы "{invalid_chars}"');
   var rank_weight := 1bi;
   var res := 0bi;
   foreach var char in str.Reverse do
@@ -490,13 +493,13 @@ function DecBig(str: string; base: integer): BigInteger;
 begin
   if not (base in 2..36) then
     raise new School_InvalidBase
-    ($'ToDecimal: Недопустимое основание {base}');
+    ($'DecBig: Недопустимое основание {base}');
   str := str.ToUpper;
   var invalid_chars := 
     str.Except(valid_chars[:base + 1]).JoinToString;
   if invalid_chars.Length > 0 then
     raise new School_BadCharInString
-    ($'ToDecimal: Недопустимые символы "{invalid_chars}"');
+    ($'DecBig: Недопустимые символы "{invalid_chars}"');
   var rank_weight := 1bi;
   Result := 0bi;
   foreach var char in str.Reverse do
@@ -511,12 +514,31 @@ end;
 
 {$region ToBase}
 
-/// Перевод BigInteger в систему счисления по основанию base (2..36)
+/// Перевод десятичного int64 в систему счисления по основанию base (2..36)
+function ToBase(number: int64; base: integer): string;
+begin
+  if not (base in 2..36) then
+    raise new School_InvalidBase
+    ($'ToBase: Недопустимое основание {base}');
+  var sb := new System.Text.StringBuilder('');
+  while number > 0 do 
+  begin
+    sb.Insert(0, valid_chars[number mod base + 1]);
+    number := number div base
+  end;
+  Result := if sb.Length = 0 then '0'
+    else sb.ToString
+end;
+
+/// Перевод десятичного int64 в систему счисления по основанию base (2..36)
+function ToBase(Self: int64; base: integer): string; extensionmethod := ToBase(Self, base);
+
+/// Перевод десятичного BigInteger в систему счисления по основанию base (2..36)
 function ToBase(number: BigInteger; base: integer): string;
 begin
   if not (base in 2..36) then
     raise new School_InvalidBase
-    ($'ToDecimal: Недопустимое основание {base}');
+    ($'ToBase: Недопустимое основание {base}');
   var sb := new System.Text.StringBuilder('');
   while number > 0 do 
   begin
@@ -527,24 +549,22 @@ begin
     else sb.ToString
 end;
 
-/// Перевод BigInteger в систему счисления по основанию base (2..36)
-function ToBase(Self: BigInteger; base: integer): string; extensionmethod :=
-ToBase(Self, base);
+/// Перевод десятичного BigInteger в систему счисления по основанию base (2..36)
+function ToBase(Self: BigInteger; base: integer): string; extensionmethod := ToBase(Self, base);
 
-/// Перевод десятичного числа в систему счисления по основанию base (2..36)
+/// Перевод десятичного string в систему счисления по основанию base (2..36)
 function ToBase(str: string; base: integer): string;
 begin
   if not (base in 2..36) then
     raise new School_InvalidBase
-    ($'ToDecimal: Недопустимое основание {base}');
+    ($'ToBase: Недопустимое основание {base}');
   var number: BigInteger;
   if BigInteger.TryParse(str, number) then
     Result := ToBase(number, base)
 end;
 
-/// Перевод десятичного числа в систему счисления по основанию base (2..36)
-function ToBase(Self: string; base: integer): string; extensionmethod :=
-ToBase(Self, base);
+/// Перевод десятичного string в систему счисления по основанию base (2..36)
+function ToBase(Self: string; base: integer): string; extensionmethod := ToBase(Self, base);
 
 {$endregion}
 

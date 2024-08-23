@@ -2501,6 +2501,9 @@ function HSet(a: CharRange): HashSet<char>;
 function HSetInt(params a: array of integer): HashSet<integer>;
 /// Возвращает множество на базе хеш таблицы, заполненное строковыми значениями
 function HSetStr(params a: array of string): HashSet<string>;
+/// Возвращает множество, заполненное указанными значениями
+function SetOf<T>(params a: array of T): HashSet<T>;
+
 
 /// Возвращает множество на базе бинарного дерева поиска, заполненное указанными значениями 
 function SSet<T>(params a: array of T): SortedSet<T>;
@@ -5846,6 +5849,8 @@ function SSetStr(params a: array of string): SortedSet<string> := new SortedSet<
 function HSet(a: IntRange): HashSet<integer> := new HashSet<integer>(a);
 
 function HSet(a: CharRange): HashSet<char> := new HashSet<char>(a);
+
+function SetOf<T>(params a: array of T): HashSet<T> := new HashSet<T>(a);
 
 
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
