@@ -264,6 +264,9 @@ type
   
   /// Указывает, что поле сериализуемого класса не должно быть сериализовано
   NonSerialized = System.NonSerializedAttribute;
+  
+  /// Сведения для форматирования числовых значений
+  NumberFormatInfo = System.Globalization.NumberFormatInfo;
 
   /// Представляет тип короткой строки фиксированной длины 255 символов
   ShortString = string[255];
@@ -1510,6 +1513,10 @@ function TypeToTypeName(t: System.Type): string;
 
 /// Возвращает строку с именем типа объекта
 function TypeName(obj: object): string;
+
+/// Настройки форматирования числовых значений
+function NumberFormat: NumberFormatInfo;
+
 
 ///-procedure New<T>(var p: ^T); 
 /// Выделяет динамическую память размера sizeof(T) и возвращает в переменной p указатель на нее. Тип T должен быть размерным 
@@ -2948,9 +2955,9 @@ implementation
 
 var
   rnd: System.Random;
-  nfi: System.Globalization.NumberFormatInfo;
+  nfi: NumberFormatInfo;
   StartTime: DateTime;// Для Milliseconds
-
+  
 const
   WRITELN_IN_BINARYFILE_ERROR_MESSAGE = 'Операция Writeln не применима к бинарным файлам!!Writeln is not applicable to binary files';
   InternalNullBasedArrayName = 'NullBasedArray';
@@ -4754,6 +4761,8 @@ begin
   _ObjectToStringHelper(obj, res);
   Result := res.ToString;
 end;
+
+function NumberFormat: NumberFormatInfo := nfi;
 
 //------------------------------------------------------------------------------
 //          Операции для array of T
@@ -13998,7 +14007,7 @@ end;
 /// Преобразует строку в массив вещественных
 function ToReals(Self: string): array of real; extensionmethod;
 begin
-  Result := Self.ToWords().ConvertAll(s -> StrToFloat(s));
+  Result := Self.ToWords(' '#9#10#13).ConvertAll(s -> StrToFloat(s));
 end;
 
 /// Возвращает инверсию строки
@@ -14114,6 +14123,12 @@ begin
     end;
   end;
   Result := L.Select(i -> i - 1)
+end;
+
+/// Возвращает случайный символ строки
+function RandomElement(Self: string): char; extensionmethod;
+begin
+  Result := Self[Random(Self.Length)+1];  
 end;
 
 ///-- 
