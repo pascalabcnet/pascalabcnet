@@ -264,6 +264,9 @@ type
   
   /// Указывает, что поле сериализуемого класса не должно быть сериализовано
   NonSerialized = System.NonSerializedAttribute;
+  
+  /// Сведения для форматирования числовых значений
+  NumberFormatInfo = System.Globalization.NumberFormatInfo;
 
   /// Представляет тип короткой строки фиксированной длины 255 символов
   ShortString = string[255];
@@ -1511,6 +1514,17 @@ function TypeToTypeName(t: System.Type): string;
 /// Возвращает строку с именем типа объекта
 function TypeName(obj: object): string;
 
+/// Создаёт настройки форматирования числовых значений
+function NumberFormat(DecimalSeparator: string := '.'; GroupSeparator: string := ',')
+  : NumberFormatInfo;
+
+/// Устанавливает разделитель между целой и дробной частью в вещественных значениях
+procedure SetDecimalSeparator(sep: string);
+
+/// Устанавливает параметры числового формата
+procedure SetNumberFormat(DecimalSeparator: string := '.'; GroupSeparator: string := ',');
+
+
 ///-procedure New<T>(var p: ^T); 
 /// Выделяет динамическую память размера sizeof(T) и возвращает в переменной p указатель на нее. Тип T должен быть размерным 
 //procedure New<T>(var p: ^T); 
@@ -1977,7 +1991,15 @@ function StrToInt64(s: string): int64;
 /// Преобразует строковое представление вещественного числа к числовому значению
 function StrToFloat(s: string): real;
 /// Преобразует строковое представление вещественного числа к числовому значению
+function StrToFloat(s: string; nfi: NumberFormatInfo): real;
+/// Преобразует строковое представление вещественного числа к числовому значению
+function StrToFloat(s: string; DecimalSeparator: string): real;
+/// Преобразует строковое представление вещественного числа к числовому значению
 function StrToReal(s: string): real;
+/// Преобразует строковое представление вещественного числа к числовому значению
+function StrToReal(s: string; nfi: NumberFormatInfo): real;
+/// Преобразует строковое представление вещественного числа к числовому значению
+function StrToReal(s: string; DecimalSeparator: string): real;
 /// Преобразует строковое представление s целого числа к числовому значению и записывает его в value. 
 ///При невозможности преобразования возвращается False
 function TryStrToInt(s: string; var value: integer): boolean;
@@ -2040,6 +2062,8 @@ function IntToStr(a: integer): string;
 function IntToStr(a: int64): string;
 /// Преобразует вещественное число к строковому представлению
 function FloatToStr(a: real): string;
+/// Преобразует вещественное число к строковому представлению
+function FloatToStr(a: real; nfi: NumberFormatInfo): string;
 
 /// Возвращает отформатированную строку, построенную по форматной строке и списку форматируемых параметров 
 function Format(formatstring: string; params pars: array of object): string;
@@ -2948,9 +2972,9 @@ implementation
 
 var
   rnd: System.Random;
-  nfi: System.Globalization.NumberFormatInfo;
+  nfi: NumberFormatInfo;
   StartTime: DateTime;// Для Milliseconds
-
+  
 const
   WRITELN_IN_BINARYFILE_ERROR_MESSAGE = 'Операция Writeln не применима к бинарным файлам!!Writeln is not applicable to binary files';
   InternalNullBasedArrayName = 'NullBasedArray';
@@ -4754,6 +4778,26 @@ begin
   _ObjectToStringHelper(obj, res);
   Result := res.ToString;
 end;
+
+function NumberFormat(DecimalSeparator: string; GroupSeparator: string): NumberFormatInfo;
+begin
+  var nfi := new NumberFormatInfo;
+  nfi.NumberDecimalSeparator := DecimalSeparator;
+  nfi.NumberGroupSeparator := GroupSeparator;
+  Result := nfi
+end;
+
+procedure SetDecimalSeparator(sep: string);
+begin
+  nfi.NumberDecimalSeparator := sep;
+end;
+
+procedure SetNumberFormat(DecimalSeparator: string; GroupSeparator: string);
+begin
+  nfi.NumberDecimalSeparator := DecimalSeparator;
+  nfi.NumberGroupSeparator := GroupSeparator
+end;
+
 
 //------------------------------------------------------------------------------
 //          Операции для array of T
@@ -10041,8 +10085,13 @@ begin
 end;
 
 function StrToInt64(s: string) := Convert.ToInt64(s); 
-function StrToReal(s: string) := Convert.ToDouble(s, nfi);
+function StrToReal(s: string; nfi: NumberFormatInfo) := Convert.ToDouble(s, nfi);
+function StrToReal(s: string) := StrToReal(s, nfi);
+function StrToReal(s: string; DecimalSeparator: string): real := StrToReal(s, NumberFormat(DecimalSeparator));
+
+function StrToFloat(s: string; nfi: NumberFormatInfo) := StrToReal(s, nfi);
 function StrToFloat(s: string) := StrToReal(s);
+function StrToFloat(s: string; DecimalSeparator: string): real := StrToReal(s, DecimalSeparator);
 
 function TryStrToInt64(s: string; var value: int64) := int64.TryParse(s, value);
 function TryStrToReal(s: string; var value: real) := real.TryParse(s,System.Globalization.NumberStyles.Float,new System.Globalization.NumberFormatInfo,value);
@@ -10213,10 +10262,10 @@ begin
   Result := a.ToString;
 end;
 
-function FloatToStr(a: real): string;
-begin
-  Result := a.ToString(nfi);
-end;
+function FloatToStr(a: real; nfi: NumberFormatInfo): string := a.ToString(nfi);
+
+function FloatToStr(a: real): string := FloatToStr(a, nfi);
+
 
 function Format(formatstring: string; params pars: array of object): string;
 begin
@@ -13894,6 +13943,13 @@ function ToBigInteger(Self: string): BigInteger; extensionmethod := BigInteger.P
 /// Преобразует строку в вещественное
 function ToReal(Self: string): real; extensionmethod := real.Parse(Self, nfi);
 
+/// Преобразует строку в вещественное
+function ToReal(Self: string; nfi: NumberFormatInfo): real; extensionmethod := real.Parse(Self, nfi);
+
+/// Преобразует строку в вещественное
+function ToReal(Self: string; DecimalSeparator: string): real; extensionmethod 
+  := Self.ToReal(NumberFormat(DecimalSeparator));
+
 /// Преобразует строку в целое и записывает его в value. 
 ///При невозможности преобразования возвращается False
 function TryToInteger(Self: string; var value: integer): boolean; extensionmethod := TryStrToInt(Self,value);
@@ -13998,8 +14054,22 @@ end;
 /// Преобразует строку в массив вещественных
 function ToReals(Self: string): array of real; extensionmethod;
 begin
-  Result := Self.ToWords().ConvertAll(s -> StrToFloat(s));
+  Result := Self.ToWords(' '#9#10#13).ConvertAll(s -> StrToFloat(s));
 end;
+
+/// Преобразует строку в массив вещественных
+function ToReals(Self: string; nfi: NumberFormatInfo): array of real; extensionmethod;
+begin
+  Result := Self.ToWords(' '#9#10#13).ConvertAll(s -> StrToFloat(s,nfi));
+end;
+
+/// Преобразует строку в массив вещественных
+function ToReals(Self: string; DecimalSeparator: string): array of real; extensionmethod;
+begin
+  var nfi := NumberFormat(DecimalSeparator);
+  Result := Self.ToWords(' '#9#10#13).ConvertAll(s -> StrToFloat(s,nfi));
+end;
+
 
 /// Возвращает инверсию строки
 function Inverse(Self: string): string; extensionmethod;
@@ -14114,6 +14184,12 @@ begin
     end;
   end;
   Result := L.Select(i -> i - 1)
+end;
+
+/// Возвращает случайный символ строки
+function RandomElement(Self: string): char; extensionmethod;
+begin
+  Result := Self[Random(Self.Length)+1];  
 end;
 
 ///-- 

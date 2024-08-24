@@ -50,10 +50,22 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разбивает последовательность на серии длины size</td></tr>
 <tr><td><code><b>function</b> Batch&lt;T, Res&gt;(Self: <b>sequence </b>  <b>of</b> T; size: integer; proj: Func&lt;IEnumerable&lt;T&gt;, Res&gt;): <b>sequence </b>  <b>of</b> Res;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разбивает последовательность на серии длины size и применяет проекцию к каждой серии</td></tr>
+<tr><td><code><b>function</b> Cartesian&lt;T, T1, TRes&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; func: (T,T1)-&gt;TRes): <b>sequence </b>  <b>of</b> TRes;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей, проектируя каждую пару на значение</td></tr>
+<tr><td><code><b>function</b> Cartesian&lt;T, T1, T2, TRes&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; func: (T,T1,T2)-&gt;TRes): <b>sequence </b>  <b>of</b> TRes;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей, проектируя каждую тройку на значение</td></tr>
+<tr><td><code><b>function</b> Cartesian&lt;T, T1, T2, T3, TRes&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3; func: (T,T1,T2,T3)-&gt;TRes): <b>sequence </b>  <b>of</b> TRes;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей, проектируя каждую четвёрку на значение</td></tr>
+<tr><td><code><b>function</b> Cartesian&lt;T, T1, T2, T3, T4, TRes&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3; e: <b>sequence </b>  <b>of</b> T4; func: (T,T1,T2,T3,T4)-&gt;TRes): <b>sequence </b>  <b>of</b> TRes;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей, проектируя каждую пятёрку на значение</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей в виде последовательности пар</td></tr>
-<tr><td><code><b>function</b> Cartesian&lt;T, T1, T2&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; func: (T,T1)-&gt;T2): <b>sequence </b>  <b>of</b> T2;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей, проектируя каждую пару на значение</td></tr>
+<tr><td><code><b>function</b> Cartesian&lt;T, T1, T2&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2): <b>sequence </b>  <b>of</b> (T, T1, T2);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей в виде последовательности троек</td></tr>
+<tr><td><code><b>function</b> Cartesian&lt;T, T1, T2, T3&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3): <b>sequence </b>  <b>of</b> (T, T1, T2, T3);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей в виде последовательности четвёрок</td></tr>
+<tr><td><code><b>function</b> Cartesian&lt;T, T1, T2, T3, T4&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3; e: <b>sequence </b>  <b>of</b> T4): <b>sequence </b>  <b>of</b> (T, T1, T2, T3, T4);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей в виде последовательности пятёрок</td></tr>
 <tr><td><code><b>function</b> CountOf&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; x: T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество элементов, равных указанному значению</td></tr>
 <tr><td><code><b>function</b> Flatten&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
@@ -188,11 +200,19 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разъединяет последовательность четырехэлементных кортежей на четыре последовательности. Реализуется многопроходным алгоритмом</td></tr>
 <tr><td><code><b>function</b> WriteLines(Self: <b>sequence </b>  <b>of</b> string; fname: string): <b>sequence </b>  <b>of</b> string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит последовательность строк в файл</td></tr>
-<tr><td><code><b>function</b> Zip&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
+<tr><td><code><b>function</b> Zip&lt;T, T1, T2, TRes&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; func: (T,T1,T2) -&gt; TRes): <b>sequence </b>  <b>of</b> TRes;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов</td></tr>
+<tr><td><code><b>function</b> Zip&lt;T, T1, T2, T3, TRes&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3; func: (T,T1,T2,T3) -&gt; TRes): <b>sequence </b>  <b>of</b> TRes;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов</td></tr>
+<tr><td><code><b>function</b> Zip&lt;T, T1, T2, T3, T4, TRes&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3; e: <b>sequence </b>  <b>of</b> T4; func: (T,T1,T2,T3,T4) -&gt; TRes): <b>sequence </b>  <b>of</b> TRes;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов</td></tr>
+<tr><td><code><b>function</b> Zip&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности в последовательность двухэлементных кортежей</td></tr>
-<tr><td><code><b>function</b> Zip&lt;T, T1, T2&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1; b: <b>sequence </b>  <b>of</b> T2): <b>sequence </b>  <b>of</b> (T, T1, T2);</code>
+<tr><td><code><b>function</b> Zip&lt;T, T1, T2&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2): <b>sequence </b>  <b>of</b> (T, T1, T2);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет три последовательности в последовательность трехэлементных кортежей</td></tr>
-<tr><td><code><b>function</b> Zip&lt;T, T1, T2, T3&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1; b: <b>sequence </b>  <b>of</b> T2; c: <b>sequence </b>  <b>of</b> T3): <b>sequence </b>  <b>of</b> (T, T1, T2, T3);</code>
+<tr><td><code><b>function</b> Zip&lt;T, T1, T2, T3&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3): <b>sequence </b>  <b>of</b> (T, T1, T2, T3);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет четыре последовательности в последовательность четырехэлементных кортежей</td></tr>
+<tr><td><code><b>function</b> Zip&lt;T, T1, T2, T3, T4&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3; e: <b>sequence </b>  <b>of</b> T4): <b>sequence </b>  <b>of</b> (T, T1, T2, T3, T4);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет четыре последовательности в последовательность четырехэлементных кортежей</td></tr>
 <tr><td><code><b>function</b> ZipTuple&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности в последовательность двухэлементных кортежей</td></tr>

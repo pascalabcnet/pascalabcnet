@@ -22,6 +22,7 @@
 <param name="Keyword" value="MillisecondsDelta">
 <param name="Keyword" value="MkDir">
 <param name="Keyword" value="New">
+<param name="Keyword" value="NumberFormat">
 <param name="Keyword" value="ParamCount">
 <param name="Keyword" value="ParamStr">
 <param name="Keyword" value="PascalABCVersion">
@@ -31,6 +32,8 @@
 <param name="Keyword" value="RenameFile">
 <param name="Keyword" value="RmDir">
 <param name="Keyword" value="SetCurrentDir">
+<param name="Keyword" value="SetDecimalSeparator">
+<param name="Keyword" value="SetNumberFormat">
 <param name="Keyword" value="Sleep">
 <param name="Keyword" value="TypeName">
 <param name="Keyword" value="TypeToTypeName"></object>
@@ -94,6 +97,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает каталог</td></tr>
 <tr><td><code><b>procedure</b> New&lt;T&gt;(<b>var</b> p: ^T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выделяет динамическую память размера sizeof(T) и возвращает в переменной p указатель на нее. Тип T должен быть размерным</td></tr>
+<tr><td><code><b>function</b> NumberFormat(DecimalSeparator: string := '.'; GroupSeparator: string := ',');</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создаёт настройки форматирования числовых значений</td></tr>
 <tr><td><code><b>function</b> ParamCount: integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество параметров командной строки</td></tr>
 <tr><td><code><b>function</b> ParamStr(i: integer): string;</code>
@@ -112,6 +117,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет каталог</td></tr>
 <tr><td><code><b>function</b> SetCurrentDir(dirName: string): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущий каталог. Возвращает True, если каталог успешно удален</td></tr>
+<tr><td><code><b>procedure</b> SetDecimalSeparator(sep: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает разделитель между целой и дробной частью в вещественных значениях</td></tr>
+<tr><td><code><b>procedure</b> SetNumberFormat(DecimalSeparator: string := '.'; GroupSeparator: string := ',');</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает параметры числового формата</td></tr>
 <tr><td><code><b>procedure</b> Sleep(ms: integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Делает паузу на ms миллисекунд</td></tr>
 <tr><td><code><b>function</b> TypeName(obj: object): string;</code>

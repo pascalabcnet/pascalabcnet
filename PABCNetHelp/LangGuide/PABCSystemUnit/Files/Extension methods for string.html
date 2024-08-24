@@ -10,6 +10,7 @@
 <param name="Keyword" value="Matches">
 <param name="Keyword" value="MatchValue">
 <param name="Keyword" value="MatchValues">
+<param name="Keyword" value="RandomElement">
 <param name="Keyword" value="ReadInteger">
 <param name="Keyword" value="ReadReal">
 <param name="Keyword" value="ReadWord">
@@ -51,6 +52,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;»щет в указанной строке первое вхождение регул€рного выражени€ и возвращает его в виде строки</td></tr>
 <tr><td><code><b>function</b> MatchValues(Self: string; reg: string; options: RegexOptions := RegexOptions.None): <b>sequence </b>  <b>of</b> string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;»щет в указанной строке все вхождени€ регул€рного выражени€ и возвращает их в виде последовательности строк</td></tr>
+<tr><td><code><b>function</b> RandomElement(Self: string): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает случайный символ строки</td></tr>
 <tr><td><code><b>function</b> ReadInteger(Self: string; <b>var</b> from: integer): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;—читывает целое из строки начина€ с позиции from и устанавливает from за считанным значением</td></tr>
 <tr><td><code><b>function</b> ReadReal(Self: string; <b>var</b> from: integer): real;</code>
@@ -85,9 +88,17 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует многострочную строку в массив строк</td></tr>
 <tr><td><code><b>function</b> ToReal(Self: string): real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в вещественное</td></tr>
+<tr><td><code><b>function</b> ToReal(Self: string; nfi: NumberFormatInfo): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в вещественное</td></tr>
+<tr><td><code><b>function</b> ToReal(Self: string; DecimalSeparator: string): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в вещественное</td></tr>
 <tr><td><code><b>function</b> ToReal(Self: string; defaultvalue: real): real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в вещественноеѕри невозможности преобразовани€ возвращаетс€ defaultvalue</td></tr>
 <tr><td><code><b>function</b> ToReals(Self: string): <b>array</b>  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в массив вещественных</td></tr>
+<tr><td><code><b>function</b> ToReals(Self: string; nfi: NumberFormatInfo): <b>array</b>  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в массив вещественных</td></tr>
+<tr><td><code><b>function</b> ToReals(Self: string; DecimalSeparator: string := '.'): <b>array</b>  <b>of</b> real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в массив вещественных</td></tr>
 <tr><td><code><b>function</b> ToWords(Self: string; <b>params</b> delim: <b>array</b>  <b>of</b> char): <b>array</b>  <b>of</b> string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в массив слов</td></tr>
