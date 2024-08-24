@@ -7,19 +7,26 @@ uses System.Threading.Tasks;
 
 type 
   Colors = GraphWPF.Colors;
-  CommandType = (ForwComm,TurnComm,CircleComm,UpComm,DownComm,ToPointComm,SetColorComm,SetWidthComm);
+  CommandType = (ForwComm,TurnComm,CircleComm,PointComm,PointsComm,UpComm,DownComm,ToPointComm,SetColorComm,SetWidthComm);
   Command = record
     typ: CommandType;
     r,da,x,y: real;
+    points: array of Point;
     color: GColor;
   end;
 
 var 
   CurrentPen := ColorPen(Colors.Black,1.4);
+  Palette: array of Color := Arr(Colors.Green, Colors.Blue, Colors.Red, Colors.Orange, 
+    Colors.Magenta, Colors.LightGreen, Colors.LightBlue, Colors.Coral, Colors.Gray, Colors.LightGray);
+  PaletteIndex := 0;
+  
+function Pnt(x,y: real): Point := GraphWPF.Pnt(x,y);
 
 {$region Класс координатной сетки FS}
 
 var MinLen := 25;
+var PointRadius := 2.0;
 
 // Сделаем в логических координатах fso.LineToReal, fso.MoveToReal, fso.CircleReal
 type
@@ -87,7 +94,7 @@ type
       var th := TextHeightP('0'); // высота текста
       // tw - ширина текста - максимум по всем числам
       var RY0 := GetRY0; // самое маленькое логическое значение по y. Соответствует нижней части экрана
-      var tw := RY0.Step(YTicks).TakeWhile(ry -> ry <= max)
+      var tw := RY0.Step(YTicks).TakeWhile(ry -> ry <= max + origin.y)
         .Select(y -> TextWidthP(y.Round(YTicksPrecision).ToString)).DefaultIfEmpty.Max;
       if tw = 0 then
         tw := TextWidthP('0');  
@@ -230,6 +237,22 @@ type
       GraphWPF.Circle(Pen.X,Pen.Y,Scale * r,c);
       Pen.Width := w;
     end;
+
+    procedure PointRealColor(x,y: real; c: Color) := FastDraw(dc ->
+    begin
+      var p := RealToScreen(Pnt(x,y));
+      dc.DrawEllipse(ColorBrush(c),nil,p,PointRadius,PointRadius);
+    end);
+
+    procedure PointsRealColor(points: array of Point; c: Color) := FastDraw(dc ->
+    begin
+      var cc := ColorBrush(c);
+      foreach var p in points do
+      begin  
+        var pp := RealToScreen(p);
+        dc.DrawEllipse(cc,nil,pp,PointRadius,PointRadius);
+      end;  
+    end);
   end;
   
 {$endregion}  
@@ -295,6 +318,21 @@ function CircleC(r: real; c: GColor): Command;
 begin
   Result.typ := CircleComm;
   Result.r := r;
+  Result.color := c;
+end;
+
+function PointC(x,y: real; c: GColor): Command;
+begin
+  Result.typ := PointComm;
+  Result.x := x;
+  Result.y := y;
+  Result.color := c;
+end;
+
+function PointsC(points: array of Point; c: GColor): Command;
+begin
+  Result.typ := PointsComm;
+  Result.points := points;
   Result.color := c;
 end;
 
@@ -385,6 +423,7 @@ begin
   fso.MoveToReal(tp.X,tp.Y);
 end;
 
+/// Рисует окружность указанного радиуса
 procedure Circle(r: real);
 begin
   fso.CircleReal(r);
@@ -397,6 +436,45 @@ begin
   fso.CircleRealColor(r,color);
   AddCommand(CircleC(r,color));
 end;  
+
+/// Рисует точку заданным цветом
+procedure DrawPoint(x,y: real; color: GColor := Colors.Black);
+begin
+  fso.PointRealColor(x,y,color);
+  AddCommand(PointC(x,y,color));
+end;  
+
+/// Рисует точки заданным цветом
+procedure DrawPoints(points: array of Point; color: GColor);
+begin
+  fso.PointsRealColor(points,color);
+  AddCommand(PointsC(points,color));
+end;  
+
+/// Рисует точки следующим цветом в палитре цветов
+procedure DrawPoints(points: array of Point);
+begin
+  var color := Palette[PaletteIndex];
+  PaletteIndex += 1;
+  if PaletteIndex >= Palette.Length then
+    PaletteIndex := 0;
+  DrawPoints(points,color);
+end;  
+
+/// Рисует точки заданным цветом
+procedure DrawPoints(xx,yy: array of real; color: GColor);
+begin
+  var points := Zip(xx,yy,(x,y) -> Pnt(x,y)).ToArray;
+  DrawPoints(points,color);
+end;  
+
+/// Рисует точки следующим цветом в палитре цветов
+procedure DrawPoints(xx,yy: array of real);
+begin
+  var points := Zip(xx,yy,(x,y) -> Pnt(x,y)).ToArray;
+  DrawPoints(points);
+end;  
+
 
 /// Устанавливает ширину линии 
 procedure SetWidth(w: real);
@@ -461,6 +539,21 @@ begin
   dc.DrawEllipse(ColorBrush(color),ColorPen(Pen.Color,1),fso.RealToScreen(tp),r * Scale,r * Scale);
 end;  
 
+procedure PointPlay(dc: DrawingContext; x,y: real; color: GColor);
+begin
+  dc.DrawEllipse(ColorBrush(color),nil,fso.RealToScreen(Pnt(x,y)),PointRadius,PointRadius);
+end;  
+
+procedure PointsPlay(dc: DrawingContext; points: array of Point; color: GColor);
+begin
+  var cc := ColorBrush(color);
+  foreach var p in points do
+  begin  
+    var pp := fso.RealToScreen(p);
+    dc.DrawEllipse(cc,nil,pp,PointRadius,PointRadius);
+  end;  
+end;  
+
 procedure SetWidthPlay(r: real);
 begin
   CurrentPen := ColorPen(Pen.Color,r);
@@ -490,6 +583,8 @@ begin
     DownComm:    DownPlay;
     ToPointComm: ToPointPlay(command.x,command.y);
     CircleComm:  CirclePlay(dc,command.r,command.color);
+    PointComm:   PointPlay(dc,command.x,command.y,command.color);
+    PointsComm:   PointsPlay(dc,command.points,command.color);
     SetWidthComm:  SetWidthPlay(command.r);
     SetColorComm:  SetColorPlay(command.color);
       end;
