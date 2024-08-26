@@ -10984,6 +10984,12 @@ begin
   Result := new HashSet<T>(Self);
 end;
 
+/// Возвращает множество по данной последовательности
+function ToSet<T>(Self: sequence of T): HashSet<T>; extensionmethod;
+begin
+  Result := new HashSet<T>(Self);
+end;
+
 /// Возвращает множество SortedSet по данной последовательности
 function ToSortedSet<T>(Self: sequence of T): SortedSet<T>; extensionmethod;
 begin
