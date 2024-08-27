@@ -274,11 +274,9 @@ namespace VisualPascalABCPlugins
                     CompilationProgress(string.Format(PascalABCCompiler.StringResources.Get(HelpBuilder_VisualPascalABCPlugin.StringsPrefix + "PARSING_{0}"), Path.GetFileName(s)));
                     if (!parser.Parse(s))
                     {
-                        vec.StandartCompiler.InternalDebug.DocumentedUnits.Clear();
                         return null;
                     }
                 }
-                vec.StandartCompiler.InternalDebug.DocumentedUnits.Clear();
                 if (!Directory.Exists(output_dir))
                     Directory.CreateDirectory(output_dir);
                 copy_files();
@@ -319,7 +317,6 @@ namespace VisualPascalABCPlugins
             }
             catch
             {
-                vec.StandartCompiler.InternalDebug.DocumentedUnits.Clear();
                 throw;
             }
 		}

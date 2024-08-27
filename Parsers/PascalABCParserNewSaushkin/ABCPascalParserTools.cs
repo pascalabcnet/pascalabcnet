@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using System.Linq;
 using PascalABCCompiler.ParserTools;
-using PascalABCCompiler.Parsers;
-using PascalABCCompiler;
+using PascalABCCompiler.Errors;
+using PascalABCCompiler.ParserTools.Directives;
 
 namespace Languages.Pascal.Frontend.Core
 {
@@ -20,54 +20,62 @@ namespace Languages.Pascal.Frontend.Core
         public List<var_def_statement> pascalABCVarStatements;
         public List<type_declaration> pascalABCTypeDeclarations;
 
-        static PascalParserTools()
+        public override Dictionary<string, string> TokenNum { get; protected set; }
+
+        private void InitializeTokenNum()
         {
-            tokenNum = new Dictionary<string, string>();
+            TokenNum = new Dictionary<string, string>()
+            {
+                ["tkStatement"] = StringResources.Get("OPERATOR"),
+                ["tkExpression"] = StringResources.Get("EXPR"),
+                ["EOF"] = StringResources.Get("EOF1"),
+                ["tkIdentifier"] = StringResources.Get("TKIDENTIFIER"),
+                ["tkStringLiteral"] = StringResources.Get("TKSTRINGLITERAL"),
+                ["tkAmpersend"] = "'",
+                ["tkColon"] = "':'",
+                ["tkDotDot"] = "'..'",
+                ["tkPoint"] = "'.'",
+                ["tkRoundOpen"] = "'('",
+                ["tkRoundClose"] = "')'",
+                ["tkSemiColon"] = "','",
+                ["tkSquareOpen"] = "'['",
+                ["tkSquareClose"] = "']'",
+                ["tkQuestion"] = "'?'",
 
-            tokenNum["tkStatement"] = StringResources.Get("OPERATOR");
-            tokenNum["tkExpression"] = StringResources.Get("EXPR");
-            tokenNum["EOF"] = StringResources.Get("EOF1");
-            tokenNum["tkIdentifier"] = StringResources.Get("TKIDENTIFIER");
-            tokenNum["tkStringLiteral"] = StringResources.Get("TKSTRINGLITERAL");
-            tokenNum["tkAmpersend"] = "'";
-            tokenNum["tkColon"] = "':'";
-            tokenNum["tkDotDot"] = "'..'";
-            tokenNum["tkPoint"] = "'.'";
-            tokenNum["tkRoundOpen"] = "'('";
-            tokenNum["tkRoundClose"] = "')'";
-            tokenNum["tkSemiColon"] = "';'";
-            tokenNum["tkSquareOpen"] = "'['";
-            tokenNum["tkSquareClose"] = "']'";
-            tokenNum["tkQuestion"] = "'?'";
-
-            tokenNum["tkComma"] = "','";
-            tokenNum["tkAssign"] = "':='";
-            tokenNum["tkPlusEqual"] = "'+='";
-            tokenNum["tkMinusEqual"] = "'-='";
-            tokenNum["tkMultEqual"] = "'*='";
-            tokenNum["tkDivEqual"] = "'/='";
-            tokenNum["tkMinus"] = "'-'";
-            tokenNum["tkPlus"] = "'+'";
-            tokenNum["tkSlash"] = "'//'";
-            tokenNum["tkStar"] = "'*'";
-            tokenNum["tkEqual"] = "'='";
-            tokenNum["tkGreater"] = "'>'";
-            tokenNum["tkGreaterEqual"] = "'>='";
-            tokenNum["tkLower"] = "'<'";
-            tokenNum["tkLowerEqual"] = "'<='";
-            tokenNum["tkNotEqual"] = "'<>'";
-            tokenNum["tkArrow"] = "'->'";
-            tokenNum["tkAddressOf"] = "'@'";
-            tokenNum["tkDeref"] = "'^'";
-            tokenNum["tkStarStar"] = "'**'";
+                ["tkComma"] = "','",
+                ["tkAssign"] = "':='",
+                ["tkPlusEqual"] = "'+='",
+                ["tkMinusEqual"] = "'-='",
+                ["tkMultEqual"] = "'*='",
+                ["tkDivEqual"] = "'/='",
+                ["tkMinus"] = "'-'",
+                ["tkPlus"] = "'+'",
+                ["tkSlash"] = "'//'",
+                ["tkStar"] = "'*'",
+                ["tkEqual"] = "'='",
+                ["tkGreater"] = "'>'",
+                ["tkGreaterEqual"] = "'>='",
+                ["tkLower"] = "'<'",
+                ["tkLowerEqual"] = "'<='",
+                ["tkNotEqual"] = "'<>'",
+                ["tkArrow"] = "'->'",
+                ["tkAddressOf"] = "'@'",
+                ["tkDeref"] = "'^'",
+                ["tkStarStar"] = "'**'"
+            };
         }
 
-        public PascalParserTools(IParser parserRef) : base(parserRef)
+        public PascalParserTools(List<Error> errors, List<CompilerWarning> warnings,
+            Dictionary<string, DirectiveInfo> validDirectives, bool buildTreeForFormatter = false, bool buildTreeForFormatterStrings = false,
+            string currentFileName = null, List<compiler_directive> compilerDirectives = null) 
+            : base(errors, warnings, validDirectives, buildTreeForFormatter, buildTreeForFormatterStrings, currentFileName, compilerDirectives)
         {
             NodesStack = new System.Collections.Stack();
             pascalABCLambdaDefinitions = new List<function_lambda_definition>();
             pascalABCVarStatements = new List<var_def_statement>();
             pascalABCTypeDeclarations = new List<type_declaration>();
+
+            InitializeTokenNum();
         }
 
         protected override string ExtractDirectiveTextWithoutSpecialSymbols(string directive)

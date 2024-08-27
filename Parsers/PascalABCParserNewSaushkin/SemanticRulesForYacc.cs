@@ -396,27 +396,25 @@ namespace Languages.Pascal.Frontend.Core
 			return lcl;
         }
         
-        public expression ParseExpression(string Text, int line, int col)
+        /// <summary>
+        /// Создает вторую версию парсера с целью применения части грамматики, связанной с нетерминалом expr. 
+        /// </summary>
+        public expression ParseExpression(string Text)
         {
-            PascalParserTools parserTools = new PascalParserTools(this.parserTools.ParserRef); // контекст сканера и парсера
-            parserTools.errors = new List<Error>();
-            parserTools.warnings = new List<CompilerWarning>();
-            parserTools.currentFileName = System.IO.Path.GetFullPath(this.parserTools.currentFileName);
-            parserTools.buildTreeForFormatterStrings = true;
-            Scanner scanner = new Scanner(this.parserTools.ParserRef.Keywords);
-            scanner.SetSource("<<expression>>"+Text, 0);
-            scanner.parserTools = parserTools;// передали parserTools в объект сканера
-            GPPGParser parser = new GPPGParser(scanner);
-            parserTools.buildTreeForFormatter = false;
-            parser.lambdaHelper = this.lambdaHelper;
-            parser.parserTools = parserTools;
+            PascalParserTools parserTools = new PascalParserTools(new List<Error>(), new List<CompilerWarning>(), 
+                this.parserTools.ValidDirectives, false, true, this.parserTools.currentFileName); // контекст сканера и парсера
+            
+            Scanner scanner = new Scanner("<<expression>>" + Text, parserTools, ((Scanner)this.scanner).keywords);
+            
+            GPPGParser parser = new GPPGParser(scanner, parserTools);
+            parser.lambdaHelper = lambdaHelper;
+            
             if (!parser.Parse())
                 if (parserTools.errors.Count == 0)
                     parserTools.AddError("Неопознанная синтаксическая ошибка!", null);
-            foreach (Error err in parserTools.errors)
-            {
-                this.parserTools.errors.Add(err);
-            }
+
+            this.parserTools.errors.AddRange(parserTools.errors);
+            
             return parser.root as expression;
         }
 
@@ -510,7 +508,10 @@ namespace Languages.Pascal.Frontend.Core
                 for (int i = 0; i < vars.Count; i++)
                 {
                     string s = vars[i];
-                    var expr = ParseExpression(new string('\n', str.source_context.begin_position.line_num - 1) + new string(' ', str.source_context.begin_position.column_num + var_offsets[i] + 2) + s, str.source_context.begin_position.line_num, str.source_context.begin_position.column_num + var_offsets[i] + 2);
+
+                    // Применяем здесь еще одну версию парсера вследствие ручной реализации разбора интерполированной строки
+                    var expr = ParseExpression(new string('\n', str.source_context.begin_position.line_num - 1) + new string(' ', str.source_context.begin_position.column_num + var_offsets[i] + 2) + s); //, str.source_context.begin_position.line_num, str.source_context.begin_position.column_num + var_offsets[i] + 2);
+                    
                     if (expr == null)
                     {
                         var err = parserTools.errors[0] as LocatedError;

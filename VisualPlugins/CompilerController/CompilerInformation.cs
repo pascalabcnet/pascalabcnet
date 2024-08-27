@@ -36,8 +36,6 @@ namespace VisualPascalABCPlugins
             {
                 //CompilerConsole.Clear();
                 dt = DateTime.Now;
-                if (OnRebuld.Checked)
-                    VisualEnvironmentCompiler.Compiler.CompilerOptions.Rebuild = true;
             }
             text = State.ToString();
             if (FileName != null)
@@ -52,12 +50,12 @@ namespace VisualPascalABCPlugins
                 NoSavePCU.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate;
                 NoSemantic.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.SemanticAnalysis;
                 NoCodeGeneration.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.CodeGeneration;
-                NoAddStandartUnits.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.AddStandartUnits;
+                NoAddStandartUnits.Checked = VisualEnvironmentCompiler.Compiler.CompilerOptions.DisableStandardUnits;
                 NoSkipPCUErrors.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.SkipPCUErrors;
                 NoSkipInternalErrorsIfSyntaxTreeIsCorrupt.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.SkipInternalErrorsIfSyntaxTreeIsCorrupt;
                 NoIncludeDebugInfoInPCU.Checked = !VisualEnvironmentCompiler.Compiler.InternalDebug.IncludeDebugInfoInPCU;
                 cbUseStandarParserForInellisense.Checked = VisualEnvironmentCompiler.Compiler.InternalDebug.UseStandarParserForIntellisense;
-                //OnRebuld.Checked = VisualEnvironmentCompiler.Compiler.CompilerOptions.Rebuild;
+                OnRebuld.Checked = VisualEnvironmentCompiler.Compiler.CompilerOptions.Rebuild;
             }
             text += Environment.NewLine;
             if (sender.CompilerType == PascalABCCompiler.CompilerType.Remote)
@@ -121,7 +119,7 @@ namespace VisualPascalABCPlugins
 
         private void NoAddStandartUnits_CheckedChanged(object sender, EventArgs e)
         {
-            VisualEnvironmentCompiler.Compiler.InternalDebug.AddStandartUnits = !NoAddStandartUnits.Checked;
+            VisualEnvironmentCompiler.Compiler.CompilerOptions.DisableStandardUnits = NoAddStandartUnits.Checked;
         }
 
         private void OnRebuld_CheckedChanged(object sender, EventArgs e)

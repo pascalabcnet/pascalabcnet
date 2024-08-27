@@ -52,6 +52,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет из строки s count символов с позиции index</td></tr>
 <tr><td><code><b>function</b> FloatToStr(a: real): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует вещественное число к строковому представлению</td></tr>
+<tr><td><code><b>function</b> FloatToStr(a: real; nfi: NumberFormatInfo): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует вещественное число к строковому представлению</td></tr>
 <tr><td><code><b>function</b> Format(formatstring: string; <b>params</b> pars: <b>array</b>  <b>of</b> object): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отформатированную строку, построенную по форматной строке и списку форматируемых параметров</td></tr>
 <tr><td><code><b>procedure</b> Insert(subs: string; <b>var</b> s: string; index: integer);</code>
@@ -100,11 +102,19 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку, состоящую из count символов ch</td></tr>
 <tr><td><code><b>function</b> StrToFloat(s: string): real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление вещественного числа к числовому значению</td></tr>
+<tr><td><code><b>function</b> StrToFloat(s: string; nfi: NumberFormatInfo): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление вещественного числа к числовому значению</td></tr>
+<tr><td><code><b>function</b> StrToFloat(s: string; DecimalSeparator: string): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление вещественного числа к числовому значению</td></tr>
 <tr><td><code><b>function</b> StrToInt(s: string): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление целого числа к числовому значению</td></tr>
 <tr><td><code><b>function</b> StrToInt64(s: string): int64;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление целого числа к числовому значению</td></tr>
 <tr><td><code><b>function</b> StrToReal(s: string): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление вещественного числа к числовому значению</td></tr>
+<tr><td><code><b>function</b> StrToReal(s: string; nfi: NumberFormatInfo): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление вещественного числа к числовому значению</td></tr>
+<tr><td><code><b>function</b> StrToReal(s: string; DecimalSeparator: string): real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление вещественного числа к числовому значению</td></tr>
 <tr><td><code><b>function</b> Trim(s: string): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку с удаленными начальными и конечными пробелами</td></tr>

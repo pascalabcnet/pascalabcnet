@@ -1,10 +1,10 @@
-// (see accompanying GPPGcopyright.rtf)
+﻿// (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 15.07.2024 13:28:05
+// DateTime: 19.07.2024 12:42:47
 // UserName: ?????????
-// Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
+// Input file <ABCPascal.y>
 
 // options: no-lines gplex
 
@@ -60,13 +60,17 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCCompiler.ParserTools
 {
   // Verbatim content from ABCPascal.y
 // Э�?и об�?явления добавля�?�?ся в класс GPPGParser, п�?едс�?авля�?�?ий собой па�?се�?, гене�?и�?�?ем�?й сис�?емой gppg
+
     public syntax_tree_node root; // �?о�?невой �?зел син�?акси�?еского де�?ева 
 
-    public int maxErrors = 10;
-    public PascalParserTools parserTools;
-	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
+    // private int maxErrors = 10;
+    private PascalParserTools parserTools;
+	private ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
-    public GPPGParser(AbstractScanner<PascalABCCompiler.ParserTools.Union, LexLocation> scanner) : base(scanner) { }
+    public GPPGParser(AbstractScanner<PascalABCCompiler.ParserTools.Union, LexLocation> scanner, PascalParserTools parserTools) : base(scanner) 
+	{ 
+		this.parserTools = parserTools;
+	}
   // End verbatim content from ABCPascal.y
 
 #pragma warning disable 649
@@ -3670,8 +3674,17 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCCompiler.ParserTools
 { CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
         break;
       case 165: // const_set -> tkSquareOpen, elem_list, tkSquareClose
-{ 
-			CurrentSemanticValue.ex = new pascal_set_constant(ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan); 
+{
+            // �?сли elem_list п�?с�? или соде�?жи�? диапазон, �?о э�?о множес�?во, ина�?е массив. С PascalABC.NET 3.10  
+            /*var is_set = false;
+            var el = $2 as expression_list;
+            if (el == null || el.Count == 0)
+              is_set = true;
+            else if (el.expressions.Count(x => x is diapason_expr_new) > 0)
+                is_set = true;
+            if (is_set)*/    
+				CurrentSemanticValue.ex = new pascal_set_constant(ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);
+			//else $$ = new array_const_new($2 as expression_list, @$); 				
 		}
         break;
       case 166: // const_set -> tkVertParen, elem_list, tkVertParen
@@ -6685,7 +6698,16 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCCompiler.ParserTools
         break;
       case 766: // factor -> tkSquareOpen, elem_list, tkSquareClose
 { 
-			CurrentSemanticValue.ex = new pascal_set_constant(ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);  
+            // �?сли elem_list п�?с�? или соде�?жи�? диапазон, �?о э�?о множес�?во, ина�?е массив. С PascalABC.NET 3.10  
+            /*var is_set = false;
+            var el = $2 as expression_list;
+            if (el == null || el.Count == 0)
+              is_set = true;
+            else if (el.expressions.Count(x => x is diapason_expr_new) > 0)
+                is_set = true;
+            if (is_set)*/    
+				CurrentSemanticValue.ex = new pascal_set_constant(ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);
+			//else $$ = new array_const_new($2 as expression_list, @$); 				
 		}
         break;
       case 767: // factor -> tkNot, factor

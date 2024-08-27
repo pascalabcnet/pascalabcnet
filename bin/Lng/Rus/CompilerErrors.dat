@@ -18,6 +18,7 @@ NAMESPACE_CAN_BE_COMPILED_ONLY_IN_PROJECTS=Компиляция файлов с 
 FILE_{0}_NOT_FOUND=Файл '{0}' не найден
 NAMESPACE_CANNOT_HAVE_IN_SECTION=Для пространства имен не может указываться секция in
 APPTYPE_DLL_IS_ALLOWED_ONLY_FOR_LIBRARIES=Параметр 'dll' директивы 'apptype' разрешается только для библиотек
+DISABLE_STANDARD_UNITS_DIRECTIVE_DISALLOWED_IN_USED_UNITS=Указание директивы 'DisableStandardUnits' в подключенных модулях не разрешается
 USES_IN_WRONG_NAME=Имя модуля в uses-in ({0}) должно совпадать с именем файла ({1})
 UNSUPPORTED_TARGETFRAMEWORK_{0}=TargetFramework '{0}' не поддерживается
 UNSUPPORTED_TARGET_PLATFORM{0}=Платформа '{0}' не поддерживается

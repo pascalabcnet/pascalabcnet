@@ -2459,6 +2459,21 @@ namespace PascalABCCompiler.TreeRealization
                             {
                                 fn = fn.get_instance(ctn.instance_params, true, null);
                             }
+                            else if (ctn.type_special_kind == SemanticTree.type_special_kind.array_kind) 
+                            // надо ещё проверить rank - а его просто проверить только у compiled_type_node - как у common_type_node - не знаю
+                            {
+                                var rank = 1;
+                                if (ctn is compiled_type_node comptn)
+                                    rank = comptn.rank;
+                                else if (ctn is compiled_type_node commtn)
+                                    rank = commtn.rank;
+                                if (rank == 1)
+                                {
+                                    List<type_node> instance_params = new List<type_node>();
+                                    instance_params.Add(ctn.element_type);
+                                    fn = fn.get_instance(instance_params, false, null);
+                                }
+                            }
                             else if (fn.get_generic_params_list() != null && fn.get_generic_params_list().Count > 0)
                             {
                                 if (ctn.IsPointer)

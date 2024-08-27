@@ -317,7 +317,7 @@ namespace PascalABCCompiler.TreeRealization
             {
                 sl.statements.AddElementFirst(units[0].IsConsoleApplicationVariableAssignExpr);
             }
-            else if (SystemLibrary.SystemLibInitializer.ConfigVariable.sym_info is compiled_variable_definition && units[0].IsConsoleApplicationVariableValue.constant_value)
+            else if (SystemLibrary.SystemLibInitializer.ConfigVariable?.sym_info is compiled_variable_definition && units[0].IsConsoleApplicationVariableValue.constant_value)
             {
                 bool is_console = true;
                 

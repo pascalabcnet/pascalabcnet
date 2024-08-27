@@ -264,6 +264,9 @@ type
   
   /// Указывает, что поле сериализуемого класса не должно быть сериализовано
   NonSerialized = System.NonSerializedAttribute;
+  
+  /// Сведения для форматирования числовых значений
+  NumberFormatInfo = System.Globalization.NumberFormatInfo;
 
   /// Представляет тип короткой строки фиксированной длины 255 символов
   ShortString = string[255];
@@ -519,9 +522,7 @@ type
     function ToString: string; override;
     class function operator implicit<T>(s: TypedSet): HashSet<T>;
     class function operator implicit<T>(s: HashSet<T>): TypedSet;
-    class function operator implicit<T>(s: array of T): TypedSet;
     class function InitBy<T>(s: sequence of T): TypedSet;
-    //class function operator implicit<T>(a: array of T): TypedSet;
     function Count: integer := ht.Count;
     procedure Print(delim: string := ' ');
     procedure Println(delim: string := ' ');
@@ -1513,6 +1514,17 @@ function TypeToTypeName(t: System.Type): string;
 /// Возвращает строку с именем типа объекта
 function TypeName(obj: object): string;
 
+/// Создаёт настройки форматирования числовых значений
+function NumberFormat(DecimalSeparator: string := '.'; GroupSeparator: string := ',')
+  : NumberFormatInfo;
+
+/// Устанавливает разделитель между целой и дробной частью в вещественных значениях
+procedure SetDecimalSeparator(sep: string);
+
+/// Устанавливает параметры числового формата
+procedure SetNumberFormat(DecimalSeparator: string := '.'; GroupSeparator: string := ',');
+
+
 ///-procedure New<T>(var p: ^T); 
 /// Выделяет динамическую память размера sizeof(T) и возвращает в переменной p указатель на нее. Тип T должен быть размерным 
 //procedure New<T>(var p: ^T); 
@@ -1979,7 +1991,15 @@ function StrToInt64(s: string): int64;
 /// Преобразует строковое представление вещественного числа к числовому значению
 function StrToFloat(s: string): real;
 /// Преобразует строковое представление вещественного числа к числовому значению
+function StrToFloat(s: string; nfi: NumberFormatInfo): real;
+/// Преобразует строковое представление вещественного числа к числовому значению
+function StrToFloat(s: string; DecimalSeparator: string): real;
+/// Преобразует строковое представление вещественного числа к числовому значению
 function StrToReal(s: string): real;
+/// Преобразует строковое представление вещественного числа к числовому значению
+function StrToReal(s: string; nfi: NumberFormatInfo): real;
+/// Преобразует строковое представление вещественного числа к числовому значению
+function StrToReal(s: string; DecimalSeparator: string): real;
 /// Преобразует строковое представление s целого числа к числовому значению и записывает его в value. 
 ///При невозможности преобразования возвращается False
 function TryStrToInt(s: string; var value: integer): boolean;
@@ -2042,6 +2062,8 @@ function IntToStr(a: integer): string;
 function IntToStr(a: int64): string;
 /// Преобразует вещественное число к строковому представлению
 function FloatToStr(a: real): string;
+/// Преобразует вещественное число к строковому представлению
+function FloatToStr(a: real; nfi: NumberFormatInfo): string;
 
 /// Возвращает отформатированную строку, построенную по форматной строке и списку форматируемых параметров 
 function Format(formatstring: string; params pars: array of object): string;
@@ -2280,6 +2302,40 @@ function SeqWhile<T>(first, second: T; next: (T,T) ->T; pred: T->boolean): seque
 function SeqFill<T>(count: integer; x: T): sequence of T;
 /// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом first и функцией next
 function Iterate<T>(first: T; next: T->T): sequence of T;
+/// Объединяет две последовательности в последовательность двухэлементных кортежей
+function Zip<T, T1>(a: sequence of T; b: sequence of T1): sequence of (T, T1);
+/// Объединяет три последовательности в последовательность трехэлементных кортежей
+function Zip<T, T1, T2>(a: sequence of T; b: sequence of T1; c: sequence of T2): sequence of (T, T1, T2); 
+/// Объединяет четыре последовательности в последовательность четырехэлементных кортежей
+function Zip<T, T1, T2, T3>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3): sequence of (T, T1, T2, T3); 
+/// Объединяет пять последовательностей в последовательность пятиэлементных кортежей
+function Zip<T, T1, T2, T3, T4>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; e: sequence of T4): sequence of (T, T1, T2, T3, T4); 
+/// Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов
+function Zip<T, T1, TRes>(a: sequence of T; b: sequence of T1; fun: (T,T1) -> TRes): sequence of TRes;
+/// Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов
+function Zip<T, T1, T2, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; fun: (T,T1,T2) -> TRes): sequence of TRes;
+/// Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов
+function Zip<T, T1, T2, T3, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; fun: (T,T1,T2,T3) -> TRes): sequence of TRes;
+/// Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов
+function Zip<T, T1, T2, T3, T4, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; e: sequence of T4; fun: (T,T1,T2,T3,T4) -> TRes): sequence of TRes;
+
+/// Возвращает декартово произведение последовательностей, проектируя каждую пару на значение
+function Cartesian<T, T1, TRes>(a: sequence of T; b: sequence of T1; func: (T,T1)->TRes): sequence of TRes;
+/// Возвращает декартово произведение последовательностей, проектируя каждую тройку на значение
+function Cartesian<T, T1, T2, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; func: (T,T1,T2)->TRes): sequence of TRes;
+/// Возвращает декартово произведение последовательностей, проектируя каждую четвёрку на значение
+function Cartesian<T, T1, T2, T3, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; func: (T,T1,T2,T3)->TRes): sequence of TRes;
+/// Возвращает декартово произведение последовательностей, проектируя каждую пятёрку на значение
+function Cartesian<T, T1, T2, T3, T4, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; e: sequence of T4; func: (T,T1,T2,T3,T4)->TRes): sequence of TRes;
+/// Возвращает декартово произведение последовательностей в виде последовательности пар
+function Cartesian<T, T1>(a: sequence of T; b: sequence of T1): sequence of (T, T1);
+/// Возвращает декартово произведение последовательностей в виде последовательности троек
+function Cartesian<T, T1, T2>(a: sequence of T; b: sequence of T1; c: sequence of T2): sequence of (T, T1, T2);
+/// Возвращает декартово произведение последовательностей в виде последовательности четвёрок
+function Cartesian<T, T1, T2, T3>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3): sequence of (T, T1, T2, T3);
+/// Возвращает декартово произведение последовательностей в виде последовательности пятёрок
+function Cartesian<T, T1, T2, T3, T4>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; e: sequence of T4): sequence of (T, T1, T2, T3, T4);
+
 
 /// Возвращает последовательность из n целых, введенных с клавиатуры
 function ReadSeqInteger(n: integer): sequence of integer;
@@ -2469,6 +2525,9 @@ function HSet(a: CharRange): HashSet<char>;
 function HSetInt(params a: array of integer): HashSet<integer>;
 /// Возвращает множество на базе хеш таблицы, заполненное строковыми значениями
 function HSetStr(params a: array of string): HashSet<string>;
+/// Возвращает множество, заполненное указанными значениями
+function SetOf<T>(params a: array of T): HashSet<T>;
+
 
 /// Возвращает множество на базе бинарного дерева поиска, заполненное указанными значениями 
 function SSet<T>(params a: array of T): SortedSet<T>;
@@ -2913,9 +2972,9 @@ implementation
 
 var
   rnd: System.Random;
-  nfi: System.Globalization.NumberFormatInfo;
+  nfi: NumberFormatInfo;
   StartTime: DateTime;// Для Milliseconds
-
+  
 const
   WRITELN_IN_BINARYFILE_ERROR_MESSAGE = 'Операция Writeln не применима к бинарным файлам!!Writeln is not applicable to binary files';
   InternalNullBasedArrayName = 'NullBasedArray';
@@ -3537,21 +3596,10 @@ begin
 end;
 
 ///--
-class function TypedSet.operator implicit<T>(s: array of T): TypedSet;
+{class function TypedSet.operator implicit<T>(s: array of T): TypedSet;
 begin
   var ts := new TypedSet();
   foreach key: T in s do
-  begin
-    ts.ht[key] := key;  
-  end;
-  Result := ts; 
-end;
-
-///--
-{class function TypedSet.operator implicit<T>(a: array of T): TypedSet;
-begin
-  var ts := new TypedSet();
-  foreach key: T in a do
   begin
     ts.ht[key] := key;  
   end;
@@ -4731,6 +4779,26 @@ begin
   Result := res.ToString;
 end;
 
+function NumberFormat(DecimalSeparator: string; GroupSeparator: string): NumberFormatInfo;
+begin
+  var nfi := new NumberFormatInfo;
+  nfi.NumberDecimalSeparator := DecimalSeparator;
+  nfi.NumberGroupSeparator := GroupSeparator;
+  Result := nfi
+end;
+
+procedure SetDecimalSeparator(sep: string);
+begin
+  nfi.NumberDecimalSeparator := sep;
+end;
+
+procedure SetNumberFormat(DecimalSeparator: string; GroupSeparator: string);
+begin
+  nfi.NumberDecimalSeparator := DecimalSeparator;
+  nfi.NumberGroupSeparator := GroupSeparator
+end;
+
+
 //------------------------------------------------------------------------------
 //          Операции для array of T
 //------------------------------------------------------------------------------
@@ -5385,6 +5453,119 @@ begin
   end;
 end;
 
+/// Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов
+function Zip<T, T1, TRes>(a: sequence of T; b: sequence of T1; fun: (T,T1) -> TRes): sequence of TRes;
+begin
+  var aen := a.GetEnumerator;
+  var ben := b.GetEnumerator;
+  while aen.MoveNext and ben.MoveNext do
+    yield fun(aen.Current,ben.Current)
+end;
+
+/// Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов
+function Zip<T, T1, T2, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; fun: (T,T1,T2) -> TRes): sequence of TRes;
+begin
+  var aen := a.GetEnumerator;
+  var ben := b.GetEnumerator;
+  var cen := c.GetEnumerator;
+  while aen.MoveNext and ben.MoveNext and cen.MoveNext do
+    yield fun(aen.Current,ben.Current,cen.Current)
+end;
+
+/// Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов
+function Zip<T, T1, T2, T3, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; fun: (T,T1,T2,T3) -> TRes): sequence of TRes;
+begin
+  var aen := a.GetEnumerator;
+  var ben := b.GetEnumerator;
+  var cen := c.GetEnumerator;
+  var den := d.GetEnumerator;
+  while aen.MoveNext and ben.MoveNext and cen.MoveNext and den.MoveNext do
+    yield fun(aen.Current,ben.Current,cen.Current,den.Current)
+end;
+
+/// Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов
+function Zip<T, T1, T2, T3, T4, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; e: sequence of T4; fun: (T,T1,T2,T3,T4) -> TRes): sequence of TRes;
+begin
+  var aen := a.GetEnumerator;
+  var ben := b.GetEnumerator;
+  var cen := c.GetEnumerator;
+  var den := d.GetEnumerator;
+  var een := e.GetEnumerator;
+  while aen.MoveNext and ben.MoveNext and cen.MoveNext and den.MoveNext and een.MoveNext do
+    yield fun(aen.Current,ben.Current,cen.Current,den.Current,een.Current)
+end;
+
+/// Объединяет две последовательности в последовательность двухэлементных кортежей
+function Zip<T, T1>(a: sequence of T; b: sequence of T1): sequence of (T, T1)
+  := Zip(a,b,(ax,bx) -> (ax,bx));
+
+/// Объединяет три последовательности в последовательность трехэлементных кортежей
+function Zip<T, T1, T2>(a: sequence of T; b: sequence of T1; c: sequence of T2): sequence of (T, T1, T2)
+  := Zip(a,b,c,(ax,bx,cx) -> (ax,bx,cx));
+
+/// Объединяет четыре последовательности в последовательность четырехэлементных кортежей
+function Zip<T, T1, T2, T3>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3): sequence of (T, T1, T2, T3)
+  := Zip(a,b,c,d,(ax,bx,cx,dx) -> (ax,bx,cx,dx));
+
+/// Объединяет пять последовательностей в последовательность пятиэлементных кортежей
+function Zip<T, T1, T2, T3, T4>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; e: sequence of T4): sequence of (T, T1, T2, T3, T4)
+  := Zip(a,b,c,d,e,(ax,bx,cx,dx,ex) -> (ax,bx,cx,dx,ex));
+  
+/// Возвращает декартово произведение последовательностей, проектируя каждую пару на значение
+function Cartesian<T, T1, TRes>(a: sequence of T; b: sequence of T1; func: (T,T1)->TRes): sequence of TRes;
+begin
+  foreach var xa in a do
+  foreach var xb in b do
+    yield func(xa, xb)
+end;
+
+/// Возвращает декартово произведение последовательностей, проектируя каждую тройку на значение
+function Cartesian<T, T1, T2, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; func: (T,T1,T2)->TRes): sequence of TRes;
+begin
+  foreach var xa in a do
+  foreach var xb in b do
+  foreach var xc in c do
+    yield func(xa, xb, xc)
+end;
+
+/// Возвращает декартово произведение последовательностей, проектируя каждую четвёрку на значение
+function Cartesian<T, T1, T2, T3, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; func: (T,T1,T2,T3)->TRes): sequence of TRes;
+begin
+  foreach var xa in a do
+  foreach var xb in b do
+  foreach var xc in c do
+  foreach var xd in d do
+    yield func(xa, xb, xc, xd)
+end;
+
+/// Возвращает декартово произведение последовательностей, проектируя каждую пятёрку на значение
+function Cartesian<T, T1, T2, T3, T4, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; e: sequence of T4; func: (T,T1,T2,T3,T4)->TRes): sequence of TRes;
+begin
+  foreach var xa in a do
+  foreach var xb in b do
+  foreach var xc in c do
+  foreach var xd in d do
+  foreach var xe in e do
+    yield func(xa, xb, xc, xd, xe)
+end;
+
+/// Возвращает декартово произведение последовательностей в виде последовательности пар
+function Cartesian<T, T1>(a: sequence of T; b: sequence of T1): sequence of (T, T1)
+  := Cartesian(a,b,(xa,xb) -> (xa,xb));
+
+/// Возвращает декартово произведение последовательностей в виде последовательности троек
+function Cartesian<T, T1, T2>(a: sequence of T; b: sequence of T1; c: sequence of T2): sequence of (T, T1, T2)
+  := Cartesian(a,b,c,(xa,xb,xc) -> (xa,xb,xc));
+
+/// Возвращает декартово произведение последовательностей в виде последовательности четвёрок
+function Cartesian<T, T1, T2, T3>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3): sequence of (T, T1, T2, T3)
+  := Cartesian(a,b,c,d,(xa,xb,xc,xd) -> (xa,xb,xc,xd));
+
+/// Возвращает декартово произведение последовательностей в виде последовательности пятёрок
+function Cartesian<T, T1, T2, T3, T4>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; e: sequence of T4): sequence of (T, T1, T2, T3, T4)
+  := Cartesian(a,b,c,d,e,(xa,xb,xc,xd,xe) -> (xa,xb,xc,xd,xe));
+
+
 function SeqGen<T>(count: integer; first: T; next: T->T): sequence of T;
 begin
   if count < 1 then
@@ -5712,6 +5893,8 @@ function SSetStr(params a: array of string): SortedSet<string> := new SortedSet<
 function HSet(a: IntRange): HashSet<integer> := new HashSet<integer>(a);
 
 function HSet(a: CharRange): HashSet<char> := new HashSet<char>(a);
+
+function SetOf<T>(params a: array of T): HashSet<T> := new HashSet<T>(a);
 
 
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
@@ -9902,8 +10085,13 @@ begin
 end;
 
 function StrToInt64(s: string) := Convert.ToInt64(s); 
-function StrToReal(s: string) := Convert.ToDouble(s, nfi);
+function StrToReal(s: string; nfi: NumberFormatInfo) := Convert.ToDouble(s, nfi);
+function StrToReal(s: string) := StrToReal(s, nfi);
+function StrToReal(s: string; DecimalSeparator: string): real := StrToReal(s, NumberFormat(DecimalSeparator));
+
+function StrToFloat(s: string; nfi: NumberFormatInfo) := StrToReal(s, nfi);
 function StrToFloat(s: string) := StrToReal(s);
+function StrToFloat(s: string; DecimalSeparator: string): real := StrToReal(s, DecimalSeparator);
 
 function TryStrToInt64(s: string; var value: int64) := int64.TryParse(s, value);
 function TryStrToReal(s: string; var value: real) := real.TryParse(s,System.Globalization.NumberStyles.Float,new System.Globalization.NumberFormatInfo,value);
@@ -10074,10 +10262,10 @@ begin
   Result := a.ToString;
 end;
 
-function FloatToStr(a: real): string;
-begin
-  Result := a.ToString(nfi);
-end;
+function FloatToStr(a: real; nfi: NumberFormatInfo): string := a.ToString(nfi);
+
+function FloatToStr(a: real): string := FloatToStr(a, nfi);
+
 
 function Format(formatstring: string; params pars: array of object): string;
 begin
@@ -10713,7 +10901,7 @@ begin
   end;
 end;
 
-/// Возвращает сумму элементов последовательности, спроектированных на числовое значение - пока не работает для Lst(1,2,3)
+// Возвращает сумму элементов последовательности, спроектированных на числовое значение - пока не работает для Lst(1,2,3)
 {function Sum<T>(Self: sequence of T; f: T->BigInteger): BigInteger; extensionmethod;
 begin
   Result := 0;
@@ -10810,6 +10998,7 @@ end;
 
 // Дополнения февраль 2016: MinBy, MaxBy, TakeLast, Slice, Cartesian, SplitAt, 
 //   Partition, ZipTuple, UnZipTuple, Interleave, Numerate, Tabulate, Pairwise, Batch 
+// Дополнения 2024: Zip - синоним ZipTuple
 
 /// Возвращает первый элемент последовательности с минимальным значением ключа
 function MinBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensionmethod;
@@ -10925,28 +11114,6 @@ begin
   Result := Self.Reverse.Skip(count).Reverse;
 end;
 
-/// Возвращает декартово произведение последовательностей в виде последовательности пар
-function Cartesian<T, T1>(Self: sequence of T; b: sequence of T1): sequence of (T, T1); extensionmethod;
-begin
-  if b = nil then
-    raise new System.ArgumentNullException('b');
-  
-  foreach var x in Self do
-    foreach var y in b do
-      yield (x, y)
-end;
-
-/// Возвращает декартово произведение последовательностей, проектируя каждую пару на значение
-function Cartesian<T, T1, T2>(Self: sequence of T; b: sequence of T1; func: (T,T1)->T2): sequence of T2; extensionmethod;
-begin
-  if b = nil then
-    raise new System.ArgumentNullException('b');
-  
-  foreach var x in Self do
-    foreach var y in b do
-      yield func(x, y)
-end;
-
 /// Разбивает последовательность на две в позиции ind. Реализуется двухпроходным алгоритмом
 function SplitAt<T>(Self: sequence of T; ind: integer): (sequence of T, sequence of T); extensionmethod;
 begin
@@ -10969,65 +11136,86 @@ begin
   Result := (Self.Where(cond), Self.Where((x, i) -> not cond(x, i)));
 end;
 
-/// Объединяет две последовательности в последовательность двухэлементных кортежей
-function ZipTuple<T, T1>(Self: sequence of T; a: sequence of T1): sequence of (T, T1); extensionmethod;
-begin
-  if a = nil then
-    raise new System.ArgumentNullException('a');
-  Result := Self.Zip(a, (x, y) -> (x, y));
-end;
 
-/// Объединяет три последовательности в последовательность трехэлементных кортежей
-function ZipTuple<T, T1, T2>(Self: sequence of T; a: sequence of T1; b: sequence of T2): sequence of (T, T1, T2); extensionmethod;
-begin
-  if a = nil then
-    raise new System.ArgumentNullException('a');
-  if b = nil then
-    raise new System.ArgumentNullException('b');
-  Result := Self.Zip(a, (x, y) -> (x, y)).Zip(b, (p, z) -> (p[0], p[1], z));
-end;
+/// Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов
+function Zip<T, T1, T2, TRes>(Self: sequence of T; b: sequence of T1; c: sequence of T2; func: (T,T1,T2) -> TRes): sequence of TRes; extensionmethod
+  := Zip(Self,b,c,func);
 
-/// Объединяет четыре последовательности в последовательность четырехэлементных кортежей
-function ZipTuple<T, T1, T2, T3>(Self: sequence of T; a: sequence of T1; b: sequence of T2; c: sequence of T3): sequence of (T, T1, T2, T3); extensionmethod;
-begin
-  if a = nil then
-    raise new System.ArgumentNullException('a');
-  if b = nil then
-    raise new System.ArgumentNullException('b');
-  if c = nil then
-    raise new System.ArgumentNullException('c');
-  Result := Self.Zip(a, (x, y)-> (x, y)).Zip(b, (p, z) -> (p[0], p[1], z)).Zip(c, (p, z) -> (p[0], p[1], p[2], z));
-end;
+/// Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов
+function Zip<T, T1, T2, T3, TRes>(Self: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; func: (T,T1,T2,T3) -> TRes): sequence of TRes; extensionmethod
+  := Zip(Self,b,c,d,func);
+
+/// Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов
+function Zip<T, T1, T2, T3, T4, TRes>(Self: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; e: sequence of T4; func: (T,T1,T2,T3,T4) -> TRes): sequence of TRes; extensionmethod
+  := Zip(Self,b,c,d,e,func);
+
 
 /// Объединяет две последовательности в последовательность двухэлементных кортежей
-function Zip<T, T1>(Self: sequence of T; a: sequence of T1): sequence of (T, T1); extensionmethod;
-begin
-  if a = nil then
-    raise new System.ArgumentNullException('a');
-  Result := Self.Zip(a, (x, y) -> (x, y));
-end;
+function Zip<T, T1>(Self: sequence of T; b: sequence of T1): sequence of (T, T1); extensionmethod
+  := Zip(Self,b);
 
 /// Объединяет три последовательности в последовательность трехэлементных кортежей
-function Zip<T, T1, T2>(Self: sequence of T; a: sequence of T1; b: sequence of T2): sequence of (T, T1, T2); extensionmethod;
-begin
-  if a = nil then
-    raise new System.ArgumentNullException('a');
-  if b = nil then
-    raise new System.ArgumentNullException('b');
-  Result := Self.Zip(a, (x, y) -> (x, y)).Zip(b, (p, z) -> (p[0], p[1], z));
-end;
+function Zip<T, T1, T2>(Self: sequence of T; b: sequence of T1; c: sequence of T2): sequence of (T, T1, T2); extensionmethod
+  := Zip(Self,b,c);
 
 /// Объединяет четыре последовательности в последовательность четырехэлементных кортежей
-function Zip<T, T1, T2, T3>(Self: sequence of T; a: sequence of T1; b: sequence of T2; c: sequence of T3): sequence of (T, T1, T2, T3); extensionmethod;
-begin
-  if a = nil then
-    raise new System.ArgumentNullException('a');
-  if b = nil then
-    raise new System.ArgumentNullException('b');
-  if c = nil then
-    raise new System.ArgumentNullException('c');
-  Result := Self.Zip(a, (x, y) -> (x, y)).Zip(b, (p, z) -> (p[0], p[1], z)).Zip(c, (p, z) -> (p[0], p[1], p[2], z));
-end;
+function Zip<T, T1, T2, T3>(Self: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3): sequence of (T, T1, T2, T3); extensionmethod
+  := Zip(Self,b,c,d);
+
+/// Объединяет четыре последовательности в последовательность четырехэлементных кортежей
+function Zip<T, T1, T2, T3, T4>(Self: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; e: sequence of T4): sequence of (T, T1, T2, T3, T4); extensionmethod
+  := Zip(Self,b,c,d,e);
+  
+
+/// Возвращает декартово произведение последовательностей, проектируя каждую пару на значение
+function Cartesian<T, T1, TRes>(Self: sequence of T; b: sequence of T1; func: (T,T1)->TRes): sequence of TRes; extensionmethod
+  := Cartesian(Self,b,func);
+
+/// Возвращает декартово произведение последовательностей, проектируя каждую тройку на значение
+function Cartesian<T, T1, T2, TRes>(Self: sequence of T; b: sequence of T1; c: sequence of T2; func: (T,T1,T2)->TRes): sequence of TRes; extensionmethod
+  := Cartesian(Self,b,c,func);
+
+/// Возвращает декартово произведение последовательностей, проектируя каждую четвёрку на значение
+function Cartesian<T, T1, T2, T3, TRes>(Self: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; func: (T,T1,T2,T3)->TRes): sequence of TRes; extensionmethod
+  := Cartesian(Self,b,c,d,func);
+
+/// Возвращает декартово произведение последовательностей, проектируя каждую пятёрку на значение
+function Cartesian<T, T1, T2, T3, T4, TRes>(Self: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; e: sequence of T4; func: (T,T1,T2,T3,T4)->TRes): sequence of TRes; extensionmethod
+  := Cartesian(Self,b,c,d,e,func);
+
+
+/// Возвращает декартово произведение последовательностей в виде последовательности пар
+function Cartesian<T, T1>(Self: sequence of T; b: sequence of T1): sequence of (T, T1); extensionmethod
+  := Cartesian(Self,b);
+  
+/// Возвращает декартово произведение последовательностей в виде последовательности троек
+function Cartesian<T, T1, T2>(Self: sequence of T; b: sequence of T1; c: sequence of T2): sequence of (T, T1, T2); extensionmethod
+  := Cartesian(Self,b,c);
+
+/// Возвращает декартово произведение последовательностей в виде последовательности четвёрок
+function Cartesian<T, T1, T2, T3>(Self: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3): sequence of (T, T1, T2, T3); extensionmethod
+  := Cartesian(Self,b,c,d);
+
+/// Возвращает декартово произведение последовательностей в виде последовательности пятёрок
+function Cartesian<T, T1, T2, T3, T4>(Self: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; e: sequence of T4): sequence of (T, T1, T2, T3, T4); extensionmethod
+  := Cartesian(Self,b,c,d,e);
+  
+
+
+
+
+/// Объединяет две последовательности в последовательность двухэлементных кортежей
+function ZipTuple<T, T1>(Self: sequence of T; a: sequence of T1): sequence of (T, T1); extensionmethod
+  := Self.Zip(a);
+  
+/// Объединяет три последовательности в последовательность трехэлементных кортежей
+function ZipTuple<T, T1, T2>(Self: sequence of T; a: sequence of T1; b: sequence of T2): sequence of (T, T1, T2); extensionmethod
+  := Self.Zip(a,b);
+
+/// Объединяет четыре последовательности в последовательность четырехэлементных кортежей
+function ZipTuple<T, T1, T2, T3>(Self: sequence of T; a: sequence of T1; b: sequence of T2; c: sequence of T3): sequence of (T, T1, T2, T3); extensionmethod
+  := Self.Zip(a,b,c);
+  
 
 /// Разъединяет последовательность двухэлементных кортежей на две последовательности. Реализуется двухпроходным алгоритмом
 function UnZipTuple<T, T1>(Self: sequence of (T, T1)): (sequence of T, sequence of T1); extensionmethod;
@@ -13755,6 +13943,13 @@ function ToBigInteger(Self: string): BigInteger; extensionmethod := BigInteger.P
 /// Преобразует строку в вещественное
 function ToReal(Self: string): real; extensionmethod := real.Parse(Self, nfi);
 
+/// Преобразует строку в вещественное
+function ToReal(Self: string; nfi: NumberFormatInfo): real; extensionmethod := real.Parse(Self, nfi);
+
+/// Преобразует строку в вещественное
+function ToReal(Self: string; DecimalSeparator: string): real; extensionmethod 
+  := Self.ToReal(NumberFormat(DecimalSeparator));
+
 /// Преобразует строку в целое и записывает его в value. 
 ///При невозможности преобразования возвращается False
 function TryToInteger(Self: string; var value: integer): boolean; extensionmethod := TryStrToInt(Self,value);
@@ -13859,8 +14054,22 @@ end;
 /// Преобразует строку в массив вещественных
 function ToReals(Self: string): array of real; extensionmethod;
 begin
-  Result := Self.ToWords().ConvertAll(s -> StrToFloat(s));
+  Result := Self.ToWords(' '#9#10#13).ConvertAll(s -> StrToFloat(s));
 end;
+
+/// Преобразует строку в массив вещественных
+function ToReals(Self: string; nfi: NumberFormatInfo): array of real; extensionmethod;
+begin
+  Result := Self.ToWords(' '#9#10#13).ConvertAll(s -> StrToFloat(s,nfi));
+end;
+
+/// Преобразует строку в массив вещественных
+function ToReals(Self: string; DecimalSeparator: string): array of real; extensionmethod;
+begin
+  var nfi := NumberFormat(DecimalSeparator);
+  Result := Self.ToWords(' '#9#10#13).ConvertAll(s -> StrToFloat(s,nfi));
+end;
+
 
 /// Возвращает инверсию строки
 function Inverse(Self: string): string; extensionmethod;
@@ -13975,6 +14184,12 @@ begin
     end;
   end;
   Result := L.Select(i -> i - 1)
+end;
+
+/// Возвращает случайный символ строки
+function RandomElement(Self: string): char; extensionmethod;
+begin
+  Result := Self[Random(Self.Length)+1];  
 end;
 
 ///-- 
