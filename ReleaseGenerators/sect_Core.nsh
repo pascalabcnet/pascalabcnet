@@ -166,6 +166,7 @@
     File ..\bin\Lib\HelixToolkit.dll
     File ..\bin\Lib\nunit.framework.dll 
     File ..\bin\Lib\InteractiveDataDisplay.WPF.dll 
+    File ..\bin\Lib\MathNet.Numerics.dll
     
     File ..\bin\Lib\turtle.png
 
@@ -258,6 +259,7 @@
     ${AddFile} "HelixToolkit.dll"
     ${AddFile} "nunit.framework.dll"
     ${AddFile} "InteractiveDataDisplay.WPF.dll"
+    ${AddFile} "MathNet.Numerics.dll"
     
     ${AddFile} "PABCRtl.pdb"
 
@@ -275,6 +277,8 @@
     Push "Lib\nunit.framework.dll"
     Call NGEN
     Push "Lib\InteractiveDataDisplay.WPF.dll"
+    Call NGEN
+    Push "Lib\MathNet.Numerics.dll"
     Call NGEN
     
     
