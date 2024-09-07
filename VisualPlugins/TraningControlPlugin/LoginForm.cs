@@ -240,9 +240,10 @@ namespace DBAccessPluginNamespace
 
         public void SetRating(string rating)
         {
-            var ss = rating.Split('|');
+            /*var ss = rating.Split('|');
             labelRating.Text = $"Рейтинг: {ss[0]} баллов";
-            labelDetails.Text = ss[1];
+            labelDetails.Text = ss[1];*/
+            labelRating.Text = $"Рейтинг: {rating} баллов";
         }
         public void ChangeControlsAfterLogin(string login)
         {
@@ -260,12 +261,12 @@ namespace DBAccessPluginNamespace
                 usersNamesBox.Enabled = false;
                 Authorized = true;
                 Plugin.toolStripButton.ToolTipText = "Авторизация выполнена: " + login;
-                Plugin.toolStripButton.Image = PluginImageAuthorized.Image;
-                Plugin.menuItem.Image = PluginImageAuthorized.Image;
                 this.Icon = VisualPascalABCPlugins.Properties.Resources.IconAuthorized;
                 closeButton.Focus();
                 panelUnAuthorized.SendToBack();
                 labelUserName.Text = login;
+                Plugin.toolStripButton.Image = PluginImageAuthorized.Image;
+                Plugin.menuItem.Image = PluginImageAuthorized.Image;
                 //labelRating.Text = "Рейтинг: ";
             }
             catch (Exception e)
