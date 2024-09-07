@@ -401,5 +401,15 @@ namespace DBAccessPluginNamespace
             Close();
             passwordBox.Text = "";
         }
+
+        private void labelRating_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            this.labelRating.LinkVisited = true;
+            if (string.IsNullOrEmpty(SiteProvider.Group))
+                return;
+            var group = SiteProvider.Group.Replace(' ', '+');
+
+            System.Diagnostics.Process.Start("https://air.mmcs.sfedu.ru/pascalabc/index.php?groupName=" + group);
+        }
     }
 }

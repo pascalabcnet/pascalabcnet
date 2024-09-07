@@ -197,9 +197,15 @@ namespace DBAccessPluginNamespace
                 {
                     case "FIO" :  FullFIO = pair[1]; break;
                     case "ShortFIO": ShortFIO = pair[1]; break;
-                    case "type" : {
+                    case "type":
+                        {
                             if (pair[1] == "prepod") UserType = UserTypeEnum.Teacher;
                             else if (pair[1] == "student") UserType = UserTypeEnum.Student;
+                            break;
+                        }
+                    case "group":
+                        {
+                            Group = pair[1];
                             break;
                         }
                 }
