@@ -1,0 +1,15 @@
+﻿a = 1
+b = 4
+
+def f():
+    global a, b
+    a = 2
+    b = 3
+    print(a, b)
+
+f()
+print(a, b)
+
+# 2 3
+# 2 3
+# should it work ?

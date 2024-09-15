@@ -1,0 +1,14 @@
+﻿a = 1
+
+def f():
+    if False:
+        global a
+    a = 2
+    print(a)
+
+f()
+print(a)
+
+# 2
+# 2
+# should it work ?
