@@ -546,6 +546,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new let_var_expr();
 				case 262:
 					return new to_expr();
+				case 263:
+					return new global_statement();
 			}
 			return null;
 		}
@@ -4582,6 +4584,18 @@ namespace PascalABCCompiler.SyntaxTree
 			read_expression(_to_expr);
 			_to_expr.key = _read_node() as expression;
 			_to_expr.value = _read_node() as expression;
+		}
+
+
+		public void visit(global_statement _global_statement)
+		{
+			read_global_statement(_global_statement);
+		}
+
+		public void read_global_statement(global_statement _global_statement)
+		{
+			read_statement(_global_statement);
+			_global_statement.idents = _read_node() as ident_list;
 		}
 
 	}

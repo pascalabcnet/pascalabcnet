@@ -3379,6 +3379,16 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="global_statement" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="idents" SyntaxType="ident_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3447,6 +3457,7 @@
       <HelpData Key=".has_deref" Value="" />
       <HelpData Key=".i" Value="" />
       <HelpData Key=".id" Value="" />
+      <HelpData Key=".idents" Value="" />
       <HelpData Key=".if_false" Value="" />
       <HelpData Key=".if_true" Value="" />
       <HelpData Key=".il" Value="" />
@@ -3998,6 +4009,8 @@
       <HelpData Key="function_lambda_definition.visit_for_type_inference" Value="" />
       <HelpData Key="get_address" Value="" />
       <HelpData Key="get_address.address_of" Value="" />
+      <HelpData Key="global_statement" Value="" />
+      <HelpData Key="global_statement.idents" Value="" />
       <HelpData Key="goto_statement" Value="" />
       <HelpData Key="goto_statement.goto_statement(string name)" Value="" />
       <HelpData Key="goto_statement.goto_statement(string name, SourceContext sc)" Value="" />

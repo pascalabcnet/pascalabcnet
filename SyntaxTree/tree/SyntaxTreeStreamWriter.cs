@@ -7211,6 +7211,27 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(global_statement _global_statement)
+		{
+			bw.Write((Int16)263);
+			write_global_statement(_global_statement);
+		}
+
+		public void write_global_statement(global_statement _global_statement)
+		{
+			write_statement(_global_statement);
+			if (_global_statement.idents == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_global_statement.idents.visit(this);
+			}
+		}
+
 	}
 
 

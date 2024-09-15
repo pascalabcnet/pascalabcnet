@@ -1322,6 +1322,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_to_expr);
 		}
+
+		public virtual void visit(global_statement _global_statement)
+		{
+			DefaultVisit(_global_statement);
+		}
 	}
 
 
