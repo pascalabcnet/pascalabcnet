@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SPythonGlobalStatementVisitor.cs" />
     <Compile Include="SPythonRetainUsedGlobalVariablesVisitor.cs" />
     <Compile Include="StandardSyntaxTreeConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

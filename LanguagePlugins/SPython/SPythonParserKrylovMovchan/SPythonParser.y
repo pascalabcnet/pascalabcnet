@@ -237,19 +237,20 @@ stmt
 global_stmt
 	: GLOBAL dotted_ident_list
 		{
-			foreach (var id in ($2 as ident_list).idents) {
+			/*foreach (var id in ($2 as ident_list).idents) {
 				// имя параметра совпадает с именем глобальной переменной
-				if (symbolTable.Contains(id.name)) {
+				/*if (symbolTable.Contains(id.name)) {
 					parserTools.AddErrorFromResource("GLOBAL_VAR_{0}_SIM_PARAMETER", @$, id.name);
 					$$ = null;
 				}
 				// всё отлично!
 				else {
-					symbolTable.Add(id.name);
 					$$ = new empty_statement();
 					$$.source_context = null;
-				}
-			}
+					symbolTable.Add(id.name);
+				//}
+			}*/
+			$$ = new global_statement($2 as ident_list);
 		}
 	;
 
@@ -288,7 +289,7 @@ assign_stmt
 		{
 			if ($1 is ident id) {
 				// объявление
-				if ($2 != null || (!symbolTable.Contains(id.name) && (isInsideFunction || !globalVariables.Contains(id.name)))) {
+				if (!isInsideFunction && ($2 != null || (!symbolTable.Contains(id.name) && (isInsideFunction || !globalVariables.Contains(id.name))))) {
 
 					// объявление глобальной переменной
 					if (symbolTable.OuterScope == null) {

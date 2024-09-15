@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-V3E9T2U
-// DateTime: 21.07.2024 14:35:58
-// UserName: alex
+// Machine:  DESKTOP-56159VE
+// DateTime: 15.09.2024 12:47:24
+// UserName: ????
 // Input file <SPythonParser.y>
 
 // options: no-lines gplex
@@ -553,19 +553,20 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 22: // global_stmt -> GLOBAL, dotted_ident_list
 {
-			foreach (var id in (ValueStack[ValueStack.Depth-1].stn as ident_list).idents) {
+			/*foreach (var id in ($2 as ident_list).idents) {
 				// имя па�?аме�?�?а совпадае�? с именем глобал�?ной пе�?еменной
-				if (symbolTable.Contains(id.name)) {
-					parserTools.AddErrorFromResource("GLOBAL_VAR_{0}_SIM_PARAMETER", CurrentLocationSpan, id.name);
-					CurrentSemanticValue.stn = null;
+				/*if (symbolTable.Contains(id.name)) {
+					parserTools.AddErrorFromResource("GLOBAL_VAR_{0}_SIM_PARAMETER", @$, id.name);
+					$$ = null;
 				}
 				// вс�? о�?ли�?но!
 				else {
+					$$ = new empty_statement();
+					$$.source_context = null;
 					symbolTable.Add(id.name);
-					CurrentSemanticValue.stn = new empty_statement();
-					CurrentSemanticValue.stn.source_context = null;
-				}
-			}
+				//}
+			}*/
+			CurrentSemanticValue.stn = new global_statement(ValueStack[ValueStack.Depth-1].stn as ident_list);
 		}
         break;
       case 23: // ident -> ID
@@ -598,7 +599,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 {
 			if (ValueStack[ValueStack.Depth-4].ex is ident id) {
 				// об�?явление
-				if (ValueStack[ValueStack.Depth-3].td != null || (!symbolTable.Contains(id.name) && (isInsideFunction || !globalVariables.Contains(id.name)))) {
+				if (!isInsideFunction && (ValueStack[ValueStack.Depth-3].td != null || (!symbolTable.Contains(id.name) && (isInsideFunction || !globalVariables.Contains(id.name))))) {
 
 					// об�?явление глобал�?ной пе�?еменной
 					if (symbolTable.OuterScope == null) {

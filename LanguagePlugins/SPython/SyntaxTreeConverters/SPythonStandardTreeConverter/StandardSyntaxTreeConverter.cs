@@ -9,6 +9,9 @@ namespace Languages.SPython.Frontend.Converters
 
         protected override syntax_tree_node ApplyConcreteConversions(syntax_tree_node root)
         {
+            var sgsv = new SPythonGlobalStatementVisitor();
+            sgsv.ProcessNode(root);
+
             var sfvugv = new SPythonRetainUsedGlobalVariablesVisitor();
             sfvugv.ProcessNode(root);
 
