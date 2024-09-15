@@ -276,6 +276,7 @@ namespace PascalABCCompiler
         public bool ForIntellisense = false;
         public bool Rebuild = false;
         public bool Optimise = false;
+        public bool DisableStandardUnits = false; // true устанавливается соответствующей директивой
         public bool SavePCUInThreadPull = false;
         public bool RunWithEnvironment = false;
         public string CompiledUnitExtension = StringConstants.pascalCompiledUnitExtension;
@@ -488,14 +489,12 @@ namespace PascalABCCompiler
         public bool CodeGeneration = true;
         public bool SemanticAnalysis = true;
         public bool PCUGenerate = true;
-        public bool AddStandartUnits = true;
         public bool SkipPCUErrors = true;
         public bool IncludeDebugInfoInPCU = true;
         public bool AlwaysGenerateXMLDoc = false;
         public bool SkipInternalErrorsIfSyntaxTreeIsCorrupt = true;
         public bool UseStandarParserForIntellisense = true;
         public bool RunOnMono = false;
-        public List<string> DocumentedUnits = new List<string>();
 
 #if DEBUG
         public bool DebugVersion
@@ -662,7 +661,7 @@ namespace PascalABCCompiler
         public List<CompilationUnit> UnitsTopologicallySortedList = new List<CompilationUnit>();
 
         private List<string> StandardModules = new List<string>();
-        public CompilerOptions CompilerOptions { get; set; } = new CompilerOptions();
+        public CompilerOptions CompilerOptions { get; set; }
 
         private Dictionary<string, CompilationUnit> DLLCache = new Dictionary<string, CompilationUnit>();
 
@@ -802,6 +801,9 @@ namespace PascalABCCompiler
 
             supportedSourceFiles = comp.SupportedSourceFiles;
             supportedProjectFiles = comp.SupportedProjectFiles;
+
+            // 29.07.2024  EVA
+            CompilerOptions = new CompilerOptions();
         }
 
         public Compiler(SourceFilesProviderDelegate SourceFilesProvider, ChangeCompilerStateEventDelegate ChangeCompilerState)
@@ -827,6 +829,9 @@ namespace PascalABCCompiler
             errorsList.Clear();
             Warnings.Clear();
             InternalDebug = new CompilerInternalDebug();
+
+            // 29.07.2024  EVA
+            CompilerOptions = new CompilerOptions();
 
             SaveUnitCheckInParsers();
 
@@ -969,6 +974,9 @@ namespace PascalABCCompiler
             UnitsToCompileDelayedList.Clear();
             DLLCache.Clear();
             project = null;
+
+            // обнуляем здесь, чтобы значение не сохранялось между запусками  EVA
+            CompilerOptions.DisableStandardUnits = false;
         }
 
         void CheckErrorsAndThrowTheFirstOne()
@@ -3049,8 +3057,14 @@ namespace PascalABCCompiler
                 directives = (compilationUnit.SemanticTree as common_unit_node).compiler_directives;
             else
                 directives = GetDirectivesAsSemanticNodes(compilationUnit.SyntaxTree.compiler_directives, compilationUnit.SyntaxTree.file_name);
+            
+            DisablePABCRtlIfUsingDotnet5(directives);
 
-            AddReferencesToSystemUnits(compilationUnit, directives);
+            if (CompilerOptions.UseDllForSystemUnits)
+            {
+                directives.Add(new compiler_directive("reference", "%GAC%\\PABCRtl.dll", null, "."));
+                AddReferencesToNetSystemLibraries(compilationUnit, directives);
+            }
 
             var referenceDirectives = new List<compiler_directive>();
             foreach (compiler_directive directive in directives)
@@ -3098,7 +3112,7 @@ namespace PascalABCCompiler
             return dlls;
         }
 
-        private void AddReferencesToSystemUnits(CompilationUnit compilationUnit, List<compiler_directive> directives)
+        private void DisablePABCRtlIfUsingDotnet5(List<compiler_directive> directives)
         {
             foreach (compiler_directive cd in directives)
             {
@@ -3108,31 +3122,58 @@ namespace PascalABCCompiler
                     CompilerOptions.UseDllForSystemUnits = false;
                 }
             }
-            if (CompilerOptions.UseDllForSystemUnits)
+        }
+
+        /// <summary>
+        /// Добавляет ссылки на стандартные системные dll .NET - версия с директивами уровня семантики
+        /// </summary>
+        /// <param name="compilationUnit"></param>
+        /// <param name="directives"></param>
+        private void AddReferencesToNetSystemLibraries(CompilationUnit compilationUnit, List<TreeRealization.compiler_directive> directives)
+        {
+            IEnumerable<string> librariesToAdd = StringConstants.netSystemLibraries.Select(dll => $"%GAC%\\{dll}")
+                .Except(directives.Where(directive => directive.name.Equals("reference", StringComparison.CurrentCultureIgnoreCase))
+                .Select(directive => directive.directive), StringComparer.CurrentCultureIgnoreCase);
+
+            directives.AddRange(librariesToAdd.Select(dll => new compiler_directive("reference", dll, null, ".")));
+
+            if (compilationUnit.SyntaxTree is SyntaxTree.program_module program && program.used_units != null)
             {
-                directives.Add(new compiler_directive("reference", "%GAC%\\PABCRtl.dll", null, "."));
-                directives.Add(new compiler_directive("reference", "%GAC%\\mscorlib.dll", null, "."));
-                directives.Add(new compiler_directive("reference", "%GAC%\\System.dll", null, "."));
-                directives.Add(new compiler_directive("reference", "%GAC%\\System.Core.dll", null, "."));
-                directives.Add(new compiler_directive("reference", "%GAC%\\System.Numerics.dll", null, "."));
-                directives.Add(new compiler_directive("reference", "%GAC%\\System.Windows.Forms.dll", null, "."));
-                directives.Add(new compiler_directive("reference", "%GAC%\\System.Drawing.dll", null, "."));
-
-                if (compilationUnit.SyntaxTree is SyntaxTree.program_module && (compilationUnit.SyntaxTree as SyntaxTree.program_module).used_units != null)
+                var graph3DUnit = program.used_units.units.FirstOrDefault(u => u.name.ToString() == "Graph3D");
+                if (graph3DUnit != null)
                 {
-                    foreach (SyntaxTree.unit_or_namespace usedUnit in (compilationUnit.SyntaxTree as SyntaxTree.program_module).used_units.units)
-                    {
-                        if (usedUnit.name.ToString() == "Graph3D")
-                        {
-                            directives.Add(new compiler_directive("reference", "%GAC%\\PresentationFramework.dll", null, "."));
-                            directives.Add(new compiler_directive("reference", "%GAC%\\WindowsBase.dll", null, "."));
-                            directives.Add(new compiler_directive("reference", "%GAC%\\PresentationCore.dll", null, "."));
-                            directives.Add(new compiler_directive("reference", "%GAC%\\HelixToolkit.Wpf.dll", null, "."));
-                            directives.Add(new compiler_directive("reference", "%GAC%\\HelixToolkit.dll", null, "."));
+                    IEnumerable<string> graphLibrariesToAdd = StringConstants.graph3DDependencies.Select(dll => $"%GAC%\\{dll}")
+                        .Except(directives.Where(directive => directive.name.Equals("reference", StringComparison.CurrentCultureIgnoreCase))
+                        .Select(directive => directive.directive), StringComparer.CurrentCultureIgnoreCase);
 
-                            break;
-                        }
-                    }
+                    directives.AddRange(graphLibrariesToAdd.Select(dll => new compiler_directive("reference", dll, null, ".")));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Добавляет ссылки на стандартные системные dll .NET - версия с директивами уровня синтаксиса
+        /// </summary>
+        /// <param name="compilationUnit"></param>
+        /// <param name="directives"></param>
+        private void AddReferencesToNetSystemLibraries(CompilationUnit compilationUnit, List<SyntaxTree.compiler_directive> directives)
+        {
+            IEnumerable<string> librariesToAdd = StringConstants.netSystemLibraries.Select(dll => $"%GAC%\\{dll}")
+                .Except(directives.Where(directive => directive.Name.text.Equals("reference", StringComparison.CurrentCultureIgnoreCase))
+                .Select(directive => directive.Directive.text), StringComparer.CurrentCultureIgnoreCase);
+
+            directives.AddRange(librariesToAdd.Select(dll => new SyntaxTree.compiler_directive(new SyntaxTree.token_info("reference"), new SyntaxTree.token_info(dll))));
+
+            if (compilationUnit.SyntaxTree is SyntaxTree.program_module program && program.used_units != null)
+            {
+                var graph3DUnit = program.used_units.units.FirstOrDefault(u => u.name.ToString() == "Graph3D");
+                if (graph3DUnit != null)
+                {
+                    IEnumerable<string> graphLibrariesToAdd = StringConstants.graph3DDependencies.Select(dll => $"%GAC%\\{dll}")
+                        .Except(directives.Where(directive => directive.Name.text.Equals("reference", StringComparison.CurrentCultureIgnoreCase))
+                        .Select(directive => directive.Directive.text), StringComparer.CurrentCultureIgnoreCase);
+
+                    directives.AddRange(graphLibrariesToAdd.Select(dll => new SyntaxTree.compiler_directive(new SyntaxTree.token_info("reference"), new SyntaxTree.token_info(dll))));
                 }
             }
         }
@@ -3312,16 +3353,13 @@ namespace PascalABCCompiler
         /// </summary>
         public static bool IsDll(SyntaxTree.compilation_unit unitSyntaxTree, out SyntaxTree.compiler_directive dllDirective)
         {
-            if (unitSyntaxTree != null)
+            foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compiler_directives)
             {
-                foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compiler_directives)
+                if (string.Equals(directive.Name.text, StringConstants.compiler_directive_apptype, StringComparison.CurrentCultureIgnoreCase)
+                                    && string.Equals(directive.Directive.text, "dll", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    if (string.Equals(directive.Name.text, "apptype", StringComparison.CurrentCultureIgnoreCase)
-                                        && string.Equals(directive.Directive.text, "dll", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        dllDirective = directive;
-                        return true;
-                    }
+                    dllDirective = directive;
+                    return true;
                 }
             }
 
@@ -3377,7 +3415,7 @@ namespace PascalABCCompiler
                     return currentUnit;
 
                 // нет pcu и модуль не откомпилирован => новый модуль   EVA
-                InitializeNewUnit(unitFileName, unitId, ref currentUnit, ref docs);
+                InitializeNewUnit(unitFileName, unitId, ref currentUnit, out docs);
             }
 
             // формирование списков зависимостей текущего модуля (uses list, dll, пространства имен)
@@ -3725,7 +3763,7 @@ namespace PascalABCCompiler
         /// генерация синтаксического дерева,
         /// обработка синтаксических ошибок
         /// </summary>
-        private void InitializeNewUnit(string unitFileName, string UnitId, ref CompilationUnit currentUnit, ref Dictionary<SyntaxTree.syntax_tree_node, string> docs)
+        private void InitializeNewUnit(string unitFileName, string UnitId, ref CompilationUnit currentUnit, out Dictionary<SyntaxTree.syntax_tree_node, string> docs)
         {
             currentUnit = new CompilationUnit();
             if (firstCompilationUnit == null)
@@ -3736,28 +3774,76 @@ namespace PascalABCCompiler
             // запоминание языка
             currentUnit.Language = LanguageProvider.SelectLanguageByExtension(unitFileName);
 
-            OnChangeCompilerState(this, CompilerState.BeginCompileFile, unitFileName); // начало компиляции модуля
+            currentUnit.CaseSensitive = currentUnit.Language.CaseSensitive;
+            
+            // получение итогового синтаксического дерева после сахарных преобразований
+            ConstructSyntaxTreeAndRunSugarConversions(unitFileName, currentUnit, out docs);
 
-            #region SYNTAX TREE CONSTRUCTING
+            InitializeCompilerOptionsRelatedToStandardUnits(currentUnit.SyntaxTree);
+
+            RunSemanticChecks(unitFileName, currentUnit);
+
+            // местоположение этой строчки важно, потому что проверяется UnitTable.Count > 0 выше  EVA
+            UnitTable[UnitId] = currentUnit;
+
+            // здесь добавляем стандартные модули в секцию uses интерфейса
+            if (!CompilerOptions.DisableStandardUnits)
+                AddStandardUnitsToInterfaceUsesSection(currentUnit);
+            else
+            {
+                 AddReferencesToNetSystemLibraries(currentUnit, currentUnit.SyntaxTree.compiler_directives);
+            }
+        }
+
+
+        /// <summary>
+        /// Строит синтаксическое дерево, бросает первую из найденных ошибок (если они есть) и запускает сахарные преобразования
+        /// </summary>
+        private void ConstructSyntaxTreeAndRunSugarConversions(string unitFileName, CompilationUnit currentUnit, out Dictionary<SyntaxTree.syntax_tree_node, string> docs)
+        {
+            OnChangeCompilerState(this, CompilerState.BeginCompileFile, unitFileName); // начало компиляции модуля
+            
             // получение синтаксического дерева
             string sourceText = GetSourceCode(unitFileName, currentUnit);
 
             currentUnit.SyntaxTree = ConstructSyntaxTree(unitFileName, currentUnit, sourceText);
-            #endregion
 
-            if (currentUnit.SyntaxTree is SyntaxTree.unit_module)
-                CompilerOptions.UseDllForSystemUnits = false;
+            // сопоставление нодам ошибок     EVA
+            MatchSyntaxErrorsToBadNodes(currentUnit);
 
-            if (errorsList.Count == 0) // SSM 2/05/16 - для преобразования синтаксических деревьев извне (синтаксический сахар)
-            {
-                currentUnit.SyntaxTree = ConvertSyntaxTree(currentUnit.SyntaxTree, currentUnit.Language.SyntaxTreeConverters);
-            }
+            CheckErrorsAndThrowTheFirstOne();
+
+            // SSM 2/05/16 - для преобразования синтаксических деревьев извне (синтаксический сахар)
+            currentUnit.SyntaxTree = ConvertSyntaxTree(currentUnit.SyntaxTree, currentUnit.Language.SyntaxTreeConverters);
 
             // генерация документации к узлам синтаксического дерева EVA
             docs = GenUnitDocumentation(currentUnit, sourceText);
+        }
 
-            #region SEMANTIC CHECKS : DIRECTIVES AND OUTPUT FILE TYPE
+        /// <summary>
+        /// Устанавливает значения опций DisableStandardUnits и UseDllForSystemUnits
+        /// </summary>
+        private void InitializeCompilerOptionsRelatedToStandardUnits(SyntaxTree.compilation_unit unitSyntaxTree)
+        {
+            // проверяем только для основной программы или dll
+            if (UnitTable.Count == 0)
+            {
+                var disableStandardUnitsDirective = unitSyntaxTree.compiler_directives.Find(directive =>
+                            directive.Name.text.Equals(StringConstants.compiler_directive_disable_standard_units, StringComparison.CurrentCultureIgnoreCase));
 
+                if (disableStandardUnitsDirective != null)
+                    CompilerOptions.DisableStandardUnits = true;
+            }
+
+            if (unitSyntaxTree is SyntaxTree.unit_module)
+                CompilerOptions.UseDllForSystemUnits = false;
+        }
+
+        /// <summary>
+        /// Семантические проверки по директивам и по типу файла
+        /// </summary>
+        private void RunSemanticChecks(string unitFileName, CompilationUnit currentUnit)
+        {
             // SSM 21/05/20 Проверка, что мы не записали apptype dll в небиблиотеку
             bool isDll = IsDll(currentUnit.SyntaxTree, out var dllDirective);
             SemanticCheckDLLDirectiveOnlyForLibraries(currentUnit.SyntaxTree, isDll, dllDirective);
@@ -3767,30 +3853,10 @@ namespace PascalABCCompiler
 
             // ошибка директива include в паскалевском юните
             SemanticCheckNoIncludeNamespaceDirectivesInUnit(currentUnit);
-            #endregion
 
-            if (isDll)
-                CompilerOptions.OutputFileType = CompilerOptions.OutputType.ClassLibrary; // есть также в конце Compile
-
-            currentUnit.CaseSensitive = currentUnit.Language.CaseSensitive;
-
-            // currentUnit.SyntaxUnitName = currentUnitNode;
-
-            // сопоставление нодам ошибок     EVA
-            MatchErrorsToBadNodes(currentUnit);
+            SemanticCheckDisableStandardUnitsDirectiveInUnit(currentUnit.SyntaxTree);
 
             CheckErrorsAndThrowTheFirstOne();
-
-            // местоположение этой строчки важно, потому что проверяется UnitTable.Count > 0 выше  EVA
-            UnitTable[UnitId] = currentUnit;
-
-            // здесь добавляем стандартные модули в секцию uses интерфейса
-#if DEBUG
-            if (InternalDebug.AddStandartUnits)
-#endif
-                AddStandardUnitsToInterfaceUsesSection(currentUnit);
-
-            currentUnit.possibleNamespaces.Clear();
         }
 
         private SyntaxTree.compilation_unit ConvertSyntaxTree(SyntaxTree.compilation_unit syntaxTree, List<ISyntaxTreeConverter> converters)
@@ -3828,7 +3894,7 @@ namespace PascalABCCompiler
             }
         }
 
-        private void MatchErrorsToBadNodes(CompilationUnit currentUnit)
+        private void MatchSyntaxErrorsToBadNodes(CompilationUnit currentUnit)
         {
             if (errorsList.Count > 0)
             {
@@ -3846,13 +3912,32 @@ namespace PascalABCCompiler
         private void SemanticCheckDLLDirectiveOnlyForLibraries(SyntaxTree.compilation_unit unitSyntaxTree, bool isDll, SyntaxTree.compiler_directive dllDirective)
         {
             // Если Library и apptype dll не указано, то никакой ошибки нет  EVA
-            if (unitSyntaxTree != null && isDll)
+            if (isDll)
             {
                 if (!(unitSyntaxTree is SyntaxTree.unit_module) ||
                             (unitSyntaxTree is SyntaxTree.unit_module unitNode && unitNode.unit_name.HeaderKeyword != SyntaxTree.UnitHeaderKeyword.Library))
                 {
                     // если в директивах появилось {$apptype dll}, но это не Library
                     ErrorsList.Add(new AppTypeDllIsAllowedOnlyForLibraries(unitSyntaxTree.file_name, dllDirective.source_context));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Ошибка указания директивы DisableStandardUnits в подключенном модулей
+        /// </summary>
+        /// 
+        private void SemanticCheckDisableStandardUnitsDirectiveInUnit(SyntaxTree.compilation_unit unitSyntaxTree)
+        {
+            // проверяем для используемых модулей
+            if (UnitTable.Count > 0)
+            {
+                var foundDirective = unitSyntaxTree.compiler_directives.Find(directive =>
+                            directive.Name.text.Equals(StringConstants.compiler_directive_disable_standard_units, StringComparison.CurrentCultureIgnoreCase));
+
+                if (foundDirective != null)
+                {
+                    ErrorsList.Add(new DisableStandardUnitsDirectiveDisallowedInUsedUnits(unitSyntaxTree.file_name, foundDirective.source_context));
                 }
             }
         }
@@ -3914,7 +3999,7 @@ namespace PascalABCCompiler
         {
             Dictionary<SyntaxTree.syntax_tree_node, string> docs = null;
 
-            if (errorsList.Count == 0 && IsDocumentationNeeded(currentUnit.SyntaxTree))
+            if (IsDocumentationNeeded(currentUnit.SyntaxTree))
             {
                 if (SourceText != null)
                 {
@@ -3986,10 +4071,7 @@ namespace PascalABCCompiler
 
             if (unitSyntaxTree == null)
                 return false;
-
-            if (unitSyntaxTree.file_name != null && internalDebug.DocumentedUnits.Contains(unitSyntaxTree.file_name.ToLower()))
-                return true;
-
+			
             foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compiler_directives)
             {
                 if (string.Equals(directive.Name.text, "gendoc", StringComparison.CurrentCultureIgnoreCase)

@@ -197,9 +197,15 @@ namespace DBAccessPluginNamespace
                 {
                     case "FIO" :  FullFIO = pair[1]; break;
                     case "ShortFIO": ShortFIO = pair[1]; break;
-                    case "type" : {
+                    case "type":
+                        {
                             if (pair[1] == "prepod") UserType = UserTypeEnum.Teacher;
                             else if (pair[1] == "student") UserType = UserTypeEnum.Student;
+                            break;
+                        }
+                    case "group":
+                        {
+                            Group = pair[1];
                             break;
                         }
                 }
@@ -233,6 +239,7 @@ namespace DBAccessPluginNamespace
             var ControlTasksSolved = 0;
             var HomeworkTasksSolved = 0;
             var AdditionalTasksSolved = 0;
+            var totalRating = 0;
             try 
             { 
                 foreach (var s in pieces)
@@ -241,7 +248,7 @@ namespace DBAccessPluginNamespace
                     var pair = s.Split(':');
                     switch (pair[0])
                     {
-                        case "ClassTasks":
+                        /*case "ClassTasks":
                             ClassTasksSolved = int.Parse(pair[2]); 
                             break;
                         case "ControlTasks":
@@ -252,13 +259,17 @@ namespace DBAccessPluginNamespace
                             break;
                         case "AdditionalTasks":
                             AdditionalTasksSolved = int.Parse(pair[2]);
+                            break;*/
+                        case "Total":
+                            totalRating = int.Parse(pair[1]);
                             break;
                     }
                 }
                 // великая формула !!!
-                var Rating = ClassTasksSolved * 1 + ControlTasksSolved * 5 + HomeworkTasksSolved * 3 + AdditionalTasksSolved * 2;
-                var Details = $" (Осн: {ClassTasksSolved}×1, Доп: {AdditionalTasksSolved}×2, ДЗ: {HomeworkTasksSolved}×3, КР: {ControlTasksSolved}×5)";
-                res = Rating.ToString() + '|' + Details;
+                //var Rating = ClassTasksSolved * 1 + ControlTasksSolved * 5 + HomeworkTasksSolved * 3 + AdditionalTasksSolved * 2;
+                var Rating = totalRating;
+                //var Details = $" (Осн: {ClassTasksSolved}×1, Доп: {AdditionalTasksSolved}×2, ДЗ: {HomeworkTasksSolved}×3, КР: {ControlTasksSolved}×5)";
+                res = Rating.ToString(); // + '|' + Details;
             }
             catch (Exception e)
             {

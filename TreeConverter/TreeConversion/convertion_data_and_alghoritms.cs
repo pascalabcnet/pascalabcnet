@@ -3285,7 +3285,8 @@ namespace PascalABCCompiler.TreeConverter
                     ret_type = types[i];
                 else if (tc == type_compare.non_comparable_type)
                 {
-                    AddError(lst[i].location, "UNCOMPARABLE_TYPES_IN_ARRAY_CONST");
+                    if (!can_convert_type(types[i], ret_type))
+                        AddError(lst[i].location, "UNCOMPARABLE_TYPES_IN_ARRAY_CONST");
                 }
 
             }

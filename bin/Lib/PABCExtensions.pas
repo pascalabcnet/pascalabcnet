@@ -409,12 +409,6 @@ begin
     Result += x;
 end;}
 
-/// Функция создания множества set по указанным значениям
-function SetOf<T>(params a: array of T): set of T;
-begin
-  Result := TypedSet.InitBy(a);
-end;
-
 ///--
 function operator implicit(a: array of integer): set of integer; extensionmethod := TypedSet.InitBy(a);
 ///--

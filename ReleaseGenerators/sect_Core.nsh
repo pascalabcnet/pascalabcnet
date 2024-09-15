@@ -5,7 +5,6 @@
     File "..\bin\Compiler.dll"
     File "..\bin\CompilerTools.dll"
     File "..\bin\Errors.dll"
-	File "..\bin\GPPG.dll"
     File "..\bin\Localization.dll"
     File "..\bin\NETGenerator.dll"
     File "..\bin\LanguageIntegrator.dll"
@@ -52,12 +51,11 @@
         File "..\bin\PascalABCNET.exe.config"
         ${AddFile} "PascalABCNET.exe.config"
     ${EndIf}
-
-
+    
+    
     ;dobavljaem fajly v uninst.log
     ${AddFile} "Compiler.dll"
     ${AddFile} "CompilerTools.dll"
-	${AddFile} "GPPG.dll"
     ${AddFile} "Errors.dll"
     ${AddFile} "Localization.dll"
     ${AddFile} "NETGenerator.dll"
@@ -75,7 +73,6 @@
     ${AddFile} "Mono.Cecil.dll"
     ${AddFile} "TeacherControlPlugin.dll"
     ${AddFile} "LambdaAnySynToSemConverter.dll"
-	${AddFile} "UniversalParserHelper.dll"
     ${AddFile} "License.txt"
     ${AddFile} "copyright.txt"
     ${AddFile} "pabcnetc.exe.config"
@@ -84,7 +81,7 @@
     Delete "$INSTDIR\Lib\*.pas"
     SetOutPath "$INSTDIR\Lib"
     ;File ..\bin\Lib\*.pcu; eto ploho nuzhno kazhdyj pcu raspisyvat
-
+    
     File ..\bin\Lib\__RedirectIOMode.pcu
     File ..\bin\Lib\__RunMode.pcu
     File ..\bin\Lib\ABCButtons.pcu
@@ -167,9 +164,10 @@
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
     File ..\bin\Lib\HelixToolkit.dll
-    File ..\bin\Lib\nunit.framework.dll
-    File ..\bin\Lib\InteractiveDataDisplay.WPF.dll
-
+    File ..\bin\Lib\nunit.framework.dll 
+    File ..\bin\Lib\InteractiveDataDisplay.WPF.dll 
+    File ..\bin\Lib\MathNet.Numerics.dll
+    
     File ..\bin\Lib\turtle.png
 
     ${AddFile} "__RedirectIOMode.pcu"
@@ -261,7 +259,8 @@
     ${AddFile} "HelixToolkit.dll"
     ${AddFile} "nunit.framework.dll"
     ${AddFile} "InteractiveDataDisplay.WPF.dll"
-
+    ${AddFile} "MathNet.Numerics.dll"
+    
     ${AddFile} "PABCRtl.pdb"
 
     SetOutPath "$INSTDIR\Doc"
@@ -279,8 +278,10 @@
     Call NGEN
     Push "Lib\InteractiveDataDisplay.WPF.dll"
     Call NGEN
-
-
+    Push "Lib\MathNet.Numerics.dll"
+    Call NGEN
+    
+    
     SetOutPath "$INSTDIR\LibSource"
     File ..\bin\Lib\__RedirectIOMode.pas
     File ..\bin\Lib\__RunMode.pas
@@ -358,7 +359,7 @@
 
     File ..\bin\Lib\__RedirectIOMode.vb
     File ..\bin\Lib\VBSystem.vb
-
+    
     ;dobavljaem fajly v uninst.log
     ${AddFile} "__RedirectIOMode.pas"
     ${AddFile} "__RunMode.pas"
@@ -436,12 +437,12 @@
 
     ${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
-
+    
     CreateDirectory "$SMPROGRAMS\PascalABC.NET"
     Push "OptimizerConversion.dll"
     Call NGEN
     Push "SyntaxVisitors.dll"
     Call NGEN
-
+    
 ;    SetOutPath "$INSTDIR\Output"
 SectionEnd

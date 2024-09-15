@@ -43,9 +43,9 @@
             this.PluginImageAuthorized = new System.Windows.Forms.PictureBox();
             this.panelUnAuthorized = new System.Windows.Forms.Panel();
             this.panelAuthorized = new System.Windows.Forms.Panel();
-            this.labelRating = new System.Windows.Forms.Label();
-            this.labelUserName = new System.Windows.Forms.Label();
+            this.labelRating = new System.Windows.Forms.LinkLabel();
             this.labelDetails = new System.Windows.Forms.Label();
+            this.labelUserName = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.userImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PluginImage)).BeginInit();
@@ -204,15 +204,7 @@
             this.labelRating.Size = new System.Drawing.Size(398, 26);
             this.labelRating.TabIndex = 12;
             this.labelRating.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // labelUserName
-            // 
-            this.labelUserName.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelUserName.Location = new System.Drawing.Point(0, 14);
-            this.labelUserName.Name = "labelUserName";
-            this.labelUserName.Size = new System.Drawing.Size(419, 26);
-            this.labelUserName.TabIndex = 11;
-            this.labelUserName.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.labelRating.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.labelRating_LinkClicked);
             // 
             // labelDetails
             // 
@@ -222,6 +214,15 @@
             this.labelDetails.Size = new System.Drawing.Size(398, 26);
             this.labelDetails.TabIndex = 13;
             this.labelDetails.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelUserName
+            // 
+            this.labelUserName.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelUserName.Location = new System.Drawing.Point(0, 14);
+            this.labelUserName.Name = "labelUserName";
+            this.labelUserName.Size = new System.Drawing.Size(419, 26);
+            this.labelUserName.TabIndex = 11;
+            this.labelUserName.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // LoginForm
             // 
@@ -269,7 +270,7 @@
         private System.Windows.Forms.Panel panelUnAuthorized;
         private System.Windows.Forms.Label labelUserName;
         private System.Windows.Forms.Panel panelAuthorized;
-        private System.Windows.Forms.Label labelRating;
+        private System.Windows.Forms.LinkLabel labelRating;
         private System.Windows.Forms.Label labelDetails;
     }
 }

@@ -3238,7 +3238,12 @@ namespace PascalABCCompiler.PCU
             var_definition_node vdn = GetLocalOrNamespaceVariableByOffset(br.ReadInt32());
             expression_node expr = CreateExpression();
             statement_node body = CreateStatement();
-            return new foreach_node(vdn, expr, body, null);
+            type_node elementType = null;
+            if (CanReadObject())
+                elementType = GetTypeReference();
+
+            bool isGeneric = br.ReadBoolean();
+            return new foreach_node(vdn, expr, body, elementType, isGeneric, null);
         }
 
         private statement_node CreateLock()
