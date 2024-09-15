@@ -46,6 +46,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Errors\Errors.csproj">
+      <Project>{44A01F9E-DCE7-470C-AAE5-C3DE0CCBEE3B}</Project>
+      <Name>Errors</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\SyntaxTree\SyntaxTree.csproj">
       <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
       <Name>SyntaxTree</Name>

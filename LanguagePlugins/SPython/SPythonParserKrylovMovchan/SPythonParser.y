@@ -250,7 +250,7 @@ global_stmt
 					symbolTable.Add(id.name);
 				//}
 			}*/
-			$$ = new global_statement($2 as ident_list);
+			$$ = new global_statement($2 as ident_list, @$);
 		}
 	;
 

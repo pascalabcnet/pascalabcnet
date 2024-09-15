@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using PascalABCCompiler.SyntaxTree;
+using SyntaxVisitors;
 
 namespace Languages.SPython.Frontend.Converters
 {
@@ -9,14 +11,13 @@ namespace Languages.SPython.Frontend.Converters
         HashSet<string> FunctionLocalVariables;
         HashSet<string> FunctionParameters;
         private bool IsInFunctionBody { get; set; }
-        private bool IsInProgramCode { get; set; }
+        List<global_statement> globalStatements = new List<global_statement>();
 
         public SPythonGlobalStatementVisitor() {
             FunctionGlobalVariables = new HashSet<string>();
             FunctionLocalVariables = new HashSet<string>();
             FunctionParameters = new HashSet<string>();
             IsInFunctionBody = false;
-            IsInProgramCode = false;
         }
 
         // нужны методы из BaseChangeVisitor, но порядок обхода из WalkingVisitorNew
@@ -32,11 +33,6 @@ namespace Languages.SPython.Frontend.Converters
             {
                 IsInFunctionBody = true;
             }
-            if (stn is statement_list _statement_list)
-            {
-                if (!IsInFunctionBody)
-                    IsInProgramCode = true;
-            }
 
             base.Enter(stn);
         }
@@ -50,6 +46,14 @@ namespace Languages.SPython.Frontend.Converters
                 FunctionLocalVariables.Clear();
                 FunctionParameters.Clear();
             }
+            if (stn is statement_list stm_lst)
+            {
+                for (var i = globalStatements.Count - 1; i >= 0; --i)
+                {
+                    stm_lst.Remove(globalStatements[i]);
+                    globalStatements.RemoveAt(globalStatements.Count - 1);
+                }
+            }
 
             base.Exit(stn);
         }
@@ -57,8 +61,15 @@ namespace Languages.SPython.Frontend.Converters
         public override void visit(global_statement _global_statement)
         {
             foreach (ident _ident in _global_statement.idents.idents)
-                FunctionGlobalVariables.Add(_ident.name);
-            DeleteInStatementList(_global_statement);
+                if (FunctionLocalVariables.Contains(_ident.name))
+                    throw new SyntaxVisitorError("Variable local declaration before global statement", 
+                        _global_statement.source_context);
+                else if (FunctionParameters.Contains(_ident.name))
+                    throw new SyntaxVisitorError("Variable declared global has the same name as function parameter", 
+                        _global_statement.source_context);
+                else FunctionGlobalVariables.Add(_ident.name);
+            globalStatements.Add(_global_statement);
+            //DeleteInStatementList(_global_statement);
         }
 
         public override void visit(typed_parameters _typed_parameters)
