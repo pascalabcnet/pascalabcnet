@@ -2,7 +2,7 @@
 
 NAME_CANNOT_HAVE_GENERIC_PARAMETERS_{0}=Name {0} can not have generic parameters
 AUTO_CLASS_MUST_NOT_HAVE_POINTERS=Auto class can not have fields of pointer type
-AUTO_CLASS_MUST_NOT_HAVE_PARENTS=Auto class can not have parents
+AUTO_CLASS_MUST_NOT_HAVE_PARENTS_WITH_FIELDS=Auto class can not have parents with fields
 AUTO_CLASS_MUST_NOT_HAVE_UNNAMED_ENUMS=Auto class can not have fields with unnamed enums type
 AUTO_CLASS_MUST_NOT_HAVE_EVENTS=Auto class can not have events
 AUTO_CLASS_MUST_NOT_HAVE_PROPERTIES=Auto class can not have properties

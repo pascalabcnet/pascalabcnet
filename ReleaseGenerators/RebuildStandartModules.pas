@@ -7,7 +7,7 @@ uses
    GraphABCHelper,  
    GraphWPFBase,
    Graph3D,
-   GraphWPF, Turtle, TurtleWPF,
+   GraphWPF, Coords, Turtle, TurtleWPF,
    WPFObjects,
    NumLibABC,
    IniFile, PointerTools, PointRect, 

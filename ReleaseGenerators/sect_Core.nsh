@@ -144,6 +144,7 @@
     File ..\bin\Lib\School.pcu
     File ..\bin\Lib\SF.pcu
     File ..\bin\Lib\Turtle.pcu
+    File ..\bin\Lib\Coords.pcu
     File ..\bin\Lib\TurtleWPF.pcu
     File ..\bin\Lib\LightPT.pcu
     File ..\bin\Lib\Tasks.pcu
@@ -234,6 +235,7 @@
     ${AddFile} "School.pcu"
     ${AddFile} "SF.pcu"
     ${AddFile} "Turtle.pcu"
+    ${AddFile} "Coords.pcu"
     ${AddFile} "TurtleWPF.pcu"
     ${AddFile} "LightPT.pcu"
     ${AddFile} "Tasks.pcu"
@@ -347,6 +349,7 @@
     File ..\bin\Lib\School.pas
     File ..\bin\Lib\SF.pas
     File ..\bin\Lib\Turtle.pas
+    File ..\bin\Lib\Coords.pas
     File ..\bin\Lib\TurtleWPF.pas
     File ..\bin\Lib\LightPT.pas
     File ..\bin\Lib\Tasks.pas
@@ -424,6 +427,7 @@
     ${AddFile} "School.pas"
     ${AddFile} "SF.pas"
     ${AddFile} "Turtle.pas"
+    ${AddFile} "Coords.pas"
     ${AddFile} "TurtleWPF.pas"
     ${AddFile} "LightPT.pas"
     ${AddFile} "Tasks.pas"

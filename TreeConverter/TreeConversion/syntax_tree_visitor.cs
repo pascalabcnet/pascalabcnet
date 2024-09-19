@@ -4013,8 +4013,15 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 var ff = convert_strong(c);
                                 if (!ff.IsInterface)
-                                    AddError(new AutoClassMustNotHaveParents(get_location(_class_definition)));
-
+                                {
+                                    if (ff is common_type_node ctn)
+                                    {
+                                        // разрешить также наследовать автоклассы от классов без полей
+                                        if (ctn.fields.Count == 0) 
+                                            continue;
+                                    }
+                                    AddError(new AutoClassMustNotHaveParentsWithFields(get_location(_class_definition)));
+                                }
                             }
 
                             List<SyntaxTree.ident> names = new List<SyntaxTree.ident>();
