@@ -306,6 +306,14 @@ begin
   dc.DrawRectangle(cb,cp,Rect(p.x,p.y,w,h));
 end;
 
+procedure LinePlay(dc: DrawingContext; x,y,x1,y1: real; c: Color; width: real);
+begin
+  var cp := ColorPen(c,Width);
+  var p := fso.RealToScreen(Pnt(x,y));
+  var p1 := fso.RealToScreen(Pnt(x1,y1));
+  dc.DrawLine(cp,p,p1);
+end;
+
 procedure CorrectXYForTextHelper(var p: Point; w,h: real; Align: Alignment);
 begin
   case Align of
@@ -383,6 +391,13 @@ type
   public  
     procedure Play(dc: DrawingContext); override := RectanglePlay(dc,x,y,w,h,c,borderc);
   end;
+  LineC = auto class(Command)
+    x,y,x1,y1: real;
+    c: Color;
+    width: real;
+  public  
+    procedure Play(dc: DrawingContext); override := LinePlay(dc,x,y,x1,y1,c,width);
+  end;
   TextC = auto class(Command)
     x,y: real;
     text: string;
@@ -443,6 +458,10 @@ procedure DrawPoint(x,y: real; Color: GColor := Colors.Black; PointRadius: real 
 /// Рисует прямоугольник
 procedure DrawRectangle(x,y,w,h: real; color: GColor := Colors.White; borderColor: GColor := Colors.Black)
   := RectangleC.Create(x,y,w,h,color,borderColor).AddToListAndPlay;
+
+/// Рисует отрезок
+procedure DrawLine(x,y,x1,y1: real; Color: GColor := Colors.Black; Width: real := 1)
+  := LineC.Create(x,y,x1,y1,color,width).AddToListAndPlay;
 
 /// Рисует прямоугольник без границы
 procedure FillRectangle(x,y,w,h: real; color: GColor := Colors.White)

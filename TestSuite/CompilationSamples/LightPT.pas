@@ -2808,9 +2808,10 @@ begin
               raise e.InnerException;
           end;
           //InputList := InputList; 
-          //OutputList := OutputList; 
+          OutputList := OutputList; 
           
           FlattenOutput; // SSM 28.06.24 - и перед каждым тестом
+          OutputListIsClearedFromSpaces := False;
           CheckTask(TName);
           if TaskResult = BadSolution then
             break; // хоть один тест неудачный - выходим!
