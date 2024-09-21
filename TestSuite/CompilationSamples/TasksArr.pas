@@ -109,13 +109,13 @@ begin
      var cnt4 := a.CountOf(4);
      var cnt5 := a.CountOf(5);
      
-     var lst := ObjectList.New; // Можно без списка. Наверное, думал выводить что то еще
-     case cnt4.CompareTo(cnt5) of
-    1: lst.Add('четвёрок больше');
-    0: lst.Add('одинаково');
-    -1: lst.Add('пятёрок больше');
-     end;
-     CheckOutputAfterInitial(lst);
+   var ans: string := '';
+   case cnt4.CompareTo(cnt5) of
+  1: ans := 'четвёрок больше';
+  0: ans := 'одинаково';
+ -1: ans := 'пятёрок больше';
+   end;
+   CheckOutputAfterInitial(ans);
   end;
   'Arr_Replace1': begin 
      FilterOnlyNumbersAndBools;
