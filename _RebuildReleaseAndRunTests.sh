@@ -16,6 +16,9 @@ mono --aot bin/ParserTools.dll
 mono --aot bin/CompilerTools.dll
 mono --aot bin/OptimizerConversion.dll
 mono --aot bin/Errors.dll
+mono --aot bin/LanguageIntegrator.dll
+mono --aot bin/StringConstants.dll
+mono --aot bin/PascalABCLanguageInfo.dll
 export MONO_IOMAP=all
 cd ReleaseGenerators
 mono ../bin/pabcnetc.exe RebuildStandartModulesMono.pas  /rebuild
