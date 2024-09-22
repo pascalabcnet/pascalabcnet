@@ -2930,7 +2930,8 @@ namespace PascalABCCompiler.TreeConverter
 #if DEBUG
                         //System.IO.File.AppendAllText("aa.txt", context._cmn.functions[context._cmn.functions.Count - 1].name+"\n");
 #endif
-                        context._cmn.functions.remove_at(context._cmn.functions.Count - 1);
+                        context._cmn.functions[context._cmn.functions.Count - 1].function_code = new statements_list(null);
+                        //context._cmn.functions.remove_at(context._cmn.functions.Count - 1);
 
                     }
 
