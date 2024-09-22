@@ -655,7 +655,12 @@ namespace PascalABCCompiler.TreeConverter
 
             //TODO: А если наследование?
             possible_type_convertions pct = type_table.get_convertions(en.type,to);
-
+            if (pct.first == null && pct.second == null && en.type is delegated_methods && to.IsDelegate)
+            {
+                pct = type_table.get_convertions(to, en.type);
+                if (pct.first != null)
+                    return en;
+            }
 			if (pct.second!=null)
 			{
                 if (pct.second.to == null && en is typed_expression && !to.IsDelegate)
