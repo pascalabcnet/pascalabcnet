@@ -635,6 +635,12 @@ type
     Redraw; 
   end;
   
+  static procedure KeyPress(c: char);
+  begin
+    if c.ToLower = 's' then
+      Window.SaveToClipboard;
+  end;
+  
   static procedure Resize;
   begin
     Redraw;
@@ -647,8 +653,9 @@ initialization
   Window.Title := 'Система координат';
 finalization  
   Redraw;
-  OnMouseWheel := Handlers.MouseWheel;
-  OnMouseDown := Handlers.MouseDown;
-  OnMouseMove := Handlers.MouseMove;
-  OnResize := Handlers.Resize;
+  OnMouseWheel += Handlers.MouseWheel;
+  OnMouseDown += Handlers.MouseDown;
+  OnMouseMove += Handlers.MouseMove;
+  OnResize += Handlers.Resize;
+  OnKeyPress += Handlers.KeyPress;
 end.
