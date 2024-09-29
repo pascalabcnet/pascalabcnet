@@ -548,6 +548,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new to_expr();
 				case 263:
 					return new global_statement();
+				case 264:
+					return new list_generator();
 			}
 			return null;
 		}
@@ -4596,6 +4598,21 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_statement(_global_statement);
 			_global_statement.idents = _read_node() as ident_list;
+		}
+
+
+		public void visit(list_generator _list_generator)
+		{
+			read_list_generator(_list_generator);
+		}
+
+		public void read_list_generator(list_generator _list_generator)
+		{
+			read_expression(_list_generator);
+			_list_generator._expr = _read_node() as expression;
+			_list_generator._ident = _read_node() as ident;
+			_list_generator._range = _read_node() as expression;
+			_list_generator._condition = _read_node() as expression;
 		}
 
 	}

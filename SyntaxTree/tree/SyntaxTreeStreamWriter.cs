@@ -7232,6 +7232,54 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(list_generator _list_generator)
+		{
+			bw.Write((Int16)264);
+			write_list_generator(_list_generator);
+		}
+
+		public void write_list_generator(list_generator _list_generator)
+		{
+			write_expression(_list_generator);
+			if (_list_generator._expr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_list_generator._expr.visit(this);
+			}
+			if (_list_generator._ident == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_list_generator._ident.visit(this);
+			}
+			if (_list_generator._range == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_list_generator._range.visit(this);
+			}
+			if (_list_generator._condition == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_list_generator._condition.visit(this);
+			}
+		}
+
 	}
 
 

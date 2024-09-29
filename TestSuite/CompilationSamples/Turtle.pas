@@ -8,13 +8,16 @@ uses System.Threading.Tasks;
 type 
   Colors = GraphWPF.Colors;
   CommandType = (ForwComm,TurnComm,CircleComm,PointComm,PointsComm,UpComm,DownComm,ToPointComm,SetColorComm,SetWidthComm);
-  Command = record
+  ICommand = interface
+    procedure Play(dc: DrawingContext);
+  end;
+{  Command = record
     typ: CommandType;
     r,da,x,y: real;
     points: array of Point;
     color: GColor;
   end;
-
+}
 var 
   CurrentPen := ColorPen(Colors.Black,1.4);
   Palette: array of Color := Arr(Colors.Green, Colors.Blue, Colors.Red, Colors.Orange, 
@@ -269,7 +272,7 @@ var
   dr := False; // Опущен хвост Черепахи или нет
   
 // Команды для "проигрывания" при перерисовке (изменении масштаба и сдвиге)
-  Commands := new List<Command>;
+  Commands := new List<ICommand>;
 
 // Система координат  
 var fso: FS;
@@ -285,71 +288,164 @@ var tsk: System.Threading.Tasks.Task := nil; // Задача для перери
 
 {$region Функции создания команд для "проигрывания"}
 
-function ForwC(r: real): Command;
+{type
+  Command = record
+    typ: CommandType;
+    r,da,x,y: real;
+    points: array of Point;
+    color: GColor;
+  end;}
+  
+{$region Команды Черепахи при "проигрывании"}
+
+// Сделаем свои команды ForwPlay, TurnPlay, CirclePlay и т.д.
+
+/// Продвигает Черепаху вперёд на расстояние r
+procedure ForwPlay(dc: DrawingContext; r: real);
 begin
-  Result.typ := ForwComm;
-  Result.r := r;
+  tp += r * Vect(Cos(DegToRad(angle)),Sin(DegToRad(angle)));
+  if dr then 
+    dc.DrawLine(CurrentPen,Pnt(Pen.X,Pen.Y),fso.RealToScreen(tp));
+  fso.MoveToReal(tp.X,tp.Y)
 end;
 
-function TurnC(da: real): Command;
+procedure TurnPlay(da: real);
 begin
-  Result.typ := TurnComm;
-  Result.da := da;
+  angle -= da;
 end;
 
-function UpC: Command;
+procedure DownPlay;
 begin
-  Result.typ := UpComm;
+  dr := True;
+end;  
+
+procedure UpPlay;
+begin
+  dr := False;
+end;  
+
+procedure ToPointPlay(x,y: real);
+begin
+  tp := Pnt(x,y);
+  fso.MoveToReal(tp.X,tp.Y);
 end;
 
-function DownC: Command;
+procedure CirclePlay(dc: DrawingContext; r: real; color: GColor);
 begin
-  Result.typ := DownComm;
-end;
+  dc.DrawEllipse(ColorBrush(color),ColorPen(Pen.Color,1),fso.RealToScreen(tp),r * Scale,r * Scale);
+end;  
 
-function ToPointC(x,y: real): Command;
+procedure PointPlay(dc: DrawingContext; x,y: real; color: GColor);
 begin
-  Result.typ := ToPointComm;
-  Result.x := x;
-  Result.y := y;
-end;
+  dc.DrawEllipse(ColorBrush(color),nil,fso.RealToScreen(Pnt(x,y)),PointRadius,PointRadius);
+end;  
 
-function CircleC(r: real; c: GColor): Command;
+procedure PointsPlay(dc: DrawingContext; points: array of Point; color: GColor);
 begin
-  Result.typ := CircleComm;
-  Result.r := r;
-  Result.color := c;
-end;
+  var cc := ColorBrush(color);
+  foreach var p in points do
+  begin  
+    var pp := fso.RealToScreen(p);
+    dc.DrawEllipse(cc,nil,pp,PointRadius,PointRadius);
+  end;  
+end;  
 
-function PointC(x,y: real; c: GColor): Command;
+procedure SetWidthPlay(r: real);
 begin
-  Result.typ := PointComm;
-  Result.x := x;
-  Result.y := y;
-  Result.color := c;
-end;
+  CurrentPen := ColorPen(Pen.Color,r);
+end;  
 
-function PointsC(points: array of Point; c: GColor): Command;
+procedure SetColorPlay(c: GColor);
 begin
-  Result.typ := PointsComm;
-  Result.points := points;
-  Result.color := c;
-end;
+  CurrentPen := ColorPen(c,Pen.Width);
+end;  
 
-function SetWidthC(r: real): Command;
-begin
-  Result.typ := SetWidthComm;
-  Result.r := r;
-end;
+{$endregion}
+  
+type
+  ForwC = auto class(ICommand)
+    r: real;
+  public  
+    procedure Play(dc: DrawingContext);
+    begin
+      ForwPlay(dc,r);
+    end;
+  end;
+  TurnC = auto class(ICommand)
+    da: real;
+  public  
+    procedure Play(dc: DrawingContext);
+    begin
+      TurnPlay(da)
+    end;
+  end;
+  UpC = auto class(ICommand)
+  public  
+    procedure Play(dc: DrawingContext);
+    begin
+      UpPlay
+    end;
+  end;
+  DownC = auto class(ICommand)
+  public  
+    procedure Play(dc: DrawingContext);
+    begin
+      DownPlay
+    end;
+  end;
+  ToPointC = auto class(ICommand)
+    x,y: real;
+  public  
+    procedure Play(dc: DrawingContext);
+    begin
+      ToPointPlay(x,y);
+    end;
+  end;
+  CircleC = auto class(ICommand)
+    r: real;
+    c: Color;
+  public  
+    procedure Play(dc: DrawingContext);
+    begin
+      CirclePlay(dc,r,c);
+    end;
+  end;
+  PointC = auto class(ICommand)
+    x,y: real;
+    c: Color;
+  public  
+    procedure Play(dc: DrawingContext);
+    begin
+      PointPlay(dc,x,y,c);
+    end;
+  end;
+  PointsC = auto class(ICommand)
+    points: array of Point;
+    c: Color;
+  public  
+    procedure Play(dc: DrawingContext);
+    begin
+      PointsPlay(dc,points,c);
+    end;
+  end;
+  SetWidthC = auto class(ICommand)
+    w: real;
+  public  
+    procedure Play(dc: DrawingContext);
+    begin
+      SetWidthPlay(w);
+    end;
+  end;
+  SetColorC = auto class(ICommand)
+    c: Color;
+  public  
+    procedure Play(dc: DrawingContext);
+    begin
+      SetColorPlay(c);
+    end;
+  end;
 
-function SetColorC(c: GColor): Command;
-begin
-  Result.typ := SetColorComm;
-  Result.color := c;
-end;
-
-
-procedure AddCommand(c: Command);
+procedure AddCommand(c: ICommand);
 begin
   Commands.Add(c);
 end;
@@ -366,7 +462,7 @@ function Window := GraphWPF.Window;
 /// Продвигает Черепаху вперёд на расстояние r
 procedure Forw(r: real);
 begin
-  AddCommand(ForwC(r));
+  AddCommand(new ForwC(r));
   tp += r * Vect(Cos(DegToRad(angle)),Sin(DegToRad(angle)));
   var p1 := Pnt(Pen.X,Pen.Y);
   var p2 := fso.RealToScreen(tp);
@@ -390,7 +486,7 @@ procedure Back(r: real) := Forw(-r);
 procedure Turn(da: real);
 begin
   angle -= da;
-  AddCommand(TurnC(da));
+  AddCommand(new TurnC(da));
 end;
 
 /// Поворачивает Черепаху на угол da по часовой стрелке
@@ -402,23 +498,21 @@ procedure TurnLeft(da: real) := Turn(-da);
 /// Опускает хвост Черепахи
 procedure Down;
 begin
-  AddCommand(DownC);
+  AddCommand(new DownC);
   dr := True;
 end;  
 
 /// Поднимает хвост Черепахи
 procedure Up;
 begin
-  AddCommand(UpC);
+  AddCommand(new UpC);
   dr := False;
 end;  
-
-procedure ToPointPlay(x,y: real); forward;
 
 /// Перемещает Черепаху в точку (x,y)
 procedure ToPoint(x,y: real);
 begin
-  AddCommand(ToPointC(x,y));
+  AddCommand(new ToPointC(x,y));
   tp := Pnt(x,y);
   fso.MoveToReal(tp.X,tp.Y);
 end;
@@ -427,28 +521,28 @@ end;
 procedure Circle(r: real);
 begin
   fso.CircleReal(r);
-  AddCommand(CircleC(r,Colors.White));
+  AddCommand(new CircleC(r,Colors.White));
 end;
   
 /// Рисует окружность указанного радиуса и цвета 
 procedure Circle(r: real; color: GColor);
 begin
   fso.CircleRealColor(r,color);
-  AddCommand(CircleC(r,color));
+  AddCommand(new CircleC(r,color));
 end;  
 
 /// Рисует точку заданным цветом
 procedure DrawPoint(x,y: real; color: GColor := Colors.Black);
 begin
   fso.PointRealColor(x,y,color);
-  AddCommand(PointC(x,y,color));
+  AddCommand(new PointC(x,y,color));
 end;  
 
 /// Рисует точки заданным цветом
 procedure DrawPoints(points: array of Point; color: GColor);
 begin
   fso.PointsRealColor(points,color);
-  AddCommand(PointsC(points,color));
+  AddCommand(new PointsC(points,color));
 end;  
 
 /// Рисует точки следующим цветом в палитре цветов
@@ -500,71 +594,7 @@ begin
   ToPoint(x,y);
 end;
 
-{$region Команды Черепахи при "проигрывании"}
 
-// Сделаем свои команды ForwPlay, TurnPlay, CirclePlay и т.д.
-
-procedure TurnPlay(da: real);
-begin
-  angle -= da;
-end;
-
-/// Продвигает Черепаху вперёд на расстояние r
-procedure ForwPlay(dc: DrawingContext; r: real);
-begin
-  tp += r * Vect(Cos(DegToRad(angle)),Sin(DegToRad(angle)));
-  if dr then 
-    dc.DrawLine(CurrentPen,Pnt(Pen.X,Pen.Y),fso.RealToScreen(tp));
-  fso.MoveToReal(tp.X,tp.Y)
-end;
-
-procedure DownPlay;
-begin
-  dr := True;
-end;  
-
-procedure UpPlay;
-begin
-  dr := False;
-end;  
-
-procedure ToPointPlay(x,y: real);
-begin
-  tp := Pnt(x,y);
-  fso.MoveToReal(tp.X,tp.Y);
-end;
-
-procedure CirclePlay(dc: DrawingContext; r: real; color: GColor);
-begin
-  dc.DrawEllipse(ColorBrush(color),ColorPen(Pen.Color,1),fso.RealToScreen(tp),r * Scale,r * Scale);
-end;  
-
-procedure PointPlay(dc: DrawingContext; x,y: real; color: GColor);
-begin
-  dc.DrawEllipse(ColorBrush(color),nil,fso.RealToScreen(Pnt(x,y)),PointRadius,PointRadius);
-end;  
-
-procedure PointsPlay(dc: DrawingContext; points: array of Point; color: GColor);
-begin
-  var cc := ColorBrush(color);
-  foreach var p in points do
-  begin  
-    var pp := fso.RealToScreen(p);
-    dc.DrawEllipse(cc,nil,pp,PointRadius,PointRadius);
-  end;  
-end;  
-
-procedure SetWidthPlay(r: real);
-begin
-  CurrentPen := ColorPen(Pen.Color,r);
-end;  
-
-procedure SetColorPlay(c: GColor);
-begin
-  CurrentPen := ColorPen(c,Pen.Width);
-end;  
-
-{$endregion}
 
 var cansellation := False;
 
@@ -573,22 +603,7 @@ begin
   FastDraw(dc -> begin
     dc.PushClip(new System.Windows.Media.RectangleGeometry(Rect(fso.x,fso.y,fso.w,fso.h)));
     foreach var command in commands do
-    begin  
-      {if cansellation then 
-        break;}
-      case command.Typ of
-    ForwComm:    ForwPlay(dc,command.r);
-    TurnComm:    TurnPlay(command.da);
-    UpComm:      UpPlay;
-    DownComm:    DownPlay;
-    ToPointComm: ToPointPlay(command.x,command.y);
-    CircleComm:  CirclePlay(dc,command.r,command.color);
-    PointComm:   PointPlay(dc,command.x,command.y,command.color);
-    PointsComm:   PointsPlay(dc,command.points,command.color);
-    SetWidthComm:  SetWidthPlay(command.r);
-    SetColorComm:  SetColorPlay(command.color);
-      end;
-    end;  
+      command.Play(dc);
     dc.Pop;  
   end);  
 end;

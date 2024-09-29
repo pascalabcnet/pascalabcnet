@@ -2117,6 +2117,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(list_generator _list_generator)
+		{
+		}
+
+		public virtual void post_do_visit(list_generator _list_generator)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -4374,6 +4382,17 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_global_statement);
 			visit(global_statement.idents);
 			post_do_visit(_global_statement);
+		}
+
+		public override void visit(list_generator _list_generator)
+		{
+			DefaultVisit(_list_generator);
+			pre_do_visit(_list_generator);
+			visit(list_generator._expr);
+			visit(list_generator._ident);
+			visit(list_generator._range);
+			visit(list_generator._condition);
+			post_do_visit(_list_generator);
 		}
 	}
 

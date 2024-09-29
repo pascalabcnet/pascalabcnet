@@ -56244,6 +56244,262 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class list_generator : expression
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public list_generator()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public list_generator(expression __expr,ident __ident,expression __range,expression __condition)
+		{
+			this.__expr=__expr;
+			this.__ident=__ident;
+			this.__range=__range;
+			this.__condition=__condition;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public list_generator(expression __expr,ident __ident,expression __range,expression __condition,SourceContext sc)
+		{
+			this.__expr=__expr;
+			this.__ident=__ident;
+			this.__range=__range;
+			this.__condition=__condition;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected expression __expr;
+		protected ident __ident;
+		protected expression __range;
+		protected expression __condition;
+
+		///<summary>
+		///
+		///</summary>
+		public expression _expr
+		{
+			get
+			{
+				return __expr;
+			}
+			set
+			{
+				__expr=value;
+				if (__expr != null)
+					__expr.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public ident _ident
+		{
+			get
+			{
+				return __ident;
+			}
+			set
+			{
+				__ident=value;
+				if (__ident != null)
+					__ident.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public expression _range
+		{
+			get
+			{
+				return __range;
+			}
+			set
+			{
+				__range=value;
+				if (__range != null)
+					__range.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public expression _condition
+		{
+			get
+			{
+				return __condition;
+			}
+			set
+			{
+				__condition=value;
+				if (__condition != null)
+					__condition.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			list_generator copy = new list_generator();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (_expr != null)
+			{
+				copy._expr = (expression)_expr.Clone();
+				copy._expr.Parent = copy;
+			}
+			if (_ident != null)
+			{
+				copy._ident = (ident)_ident.Clone();
+				copy._ident.Parent = copy;
+			}
+			if (_range != null)
+			{
+				copy._range = (expression)_range.Clone();
+				copy._range.Parent = copy;
+			}
+			if (_condition != null)
+			{
+				copy._condition = (expression)_condition.Clone();
+				copy._condition.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new list_generator TypedClone()
+		{
+			return Clone() as list_generator;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (_expr != null)
+				_expr.Parent = this;
+			if (_ident != null)
+				_ident.Parent = this;
+			if (_range != null)
+				_range.Parent = this;
+			if (_condition != null)
+				_condition.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			_expr?.FillParentsInAllChilds();
+			_ident?.FillParentsInAllChilds();
+			_range?.FillParentsInAllChilds();
+			_condition?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 4;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 4;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return _expr;
+					case 1:
+						return _ident;
+					case 2:
+						return _range;
+					case 3:
+						return _condition;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						_expr = (expression)value;
+						break;
+					case 1:
+						_ident = (ident)value;
+						break;
+					case 2:
+						_range = (expression)value;
+						break;
+					case 3:
+						_condition = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 
