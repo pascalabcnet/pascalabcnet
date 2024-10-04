@@ -13,9 +13,9 @@ namespace PascalABCCompiler.TreeConverter
 
 	public class convertion_data_and_alghoritms
 	{
-		internal SymbolTable.TreeConverterSymbolTable symtab=SymbolTable.SymbolTableController.CurrentSymbolTable;
+        private SymbolTable.TreeConverterSymbolTable symbolTable = SymbolTable.SymbolTableController.CurrentSymbolTable;
 
-		private PascalABCCompiler.Errors.SyntaxError _parser_error;
+    	private PascalABCCompiler.Errors.SyntaxError _parser_error;
 
 		private syntax_tree_visitor _stv;
 
@@ -27,6 +27,8 @@ namespace PascalABCCompiler.TreeConverter
 
 		public convertion_data_and_alghoritms(syntax_tree_visitor stv)
 		{
+            if (stv.for_intellisense)
+                symbolTable = new SymbolTable.TreeConverterSymbolTable();
             type_table.type_table_function_call_maker = create_simple_function_call;
 			_stv=stv;
             _type_constructor = new type_constructor(this);
@@ -58,7 +60,7 @@ namespace PascalABCCompiler.TreeConverter
 
 		public void reset()
 		{
-			symtab.Clear();
+			symbol_table.Clear();
             _type_constructor.reset();
             statement_list_stack.clear();
             arr_nums = 0;
@@ -131,7 +133,7 @@ namespace PascalABCCompiler.TreeConverter
 		{
 			get
 			{
-				return symtab;
+                return symbolTable;
 			}
 		}
 
@@ -487,7 +489,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         common_in_function_function_node cffn = (common_in_function_function_node)fn;
                         common_in_function_function_call cffc = new common_in_function_function_call(cffn,
-                            symtab.GetRelativeScopeDepth(cffn.function.scope, top_function.scope), loc);
+                            symbol_table.GetRelativeScopeDepth(cffn.function.scope, top_function.scope), loc);
                         cffc.parameters.AddRange(exprs);
                         expr_node = cffc;
                         break;

@@ -640,7 +640,7 @@ namespace SymbolTable
         #region DSSymbolTable(int hash_size,bool case_sensitive)
         public DSSymbolTable(int hash_size,bool case_sensitive)
 		{
-            CaseSensitive = case_sensitive;
+            // CaseSensitive = case_sensitive;
             Clear();
         }
 		#endregion
