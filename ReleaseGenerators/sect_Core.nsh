@@ -117,6 +117,7 @@
     File ..\bin\Lib\PointerTools.pcu
     File ..\bin\Lib\PointRect.pcu
     File ..\bin\Lib\PT4.pcu
+    File ..\bin\Lib\PT4_32.pcu
     File ..\bin\Lib\PT4Exam.pcu
     File ..\bin\Lib\PT4MakerNetX.pcu
     File ..\bin\Lib\PT4TaskMakerNET.pcu
@@ -208,6 +209,7 @@
     ${AddFile} "PointerTools.pcu"
     ${AddFile} "PointRect.pcu"
     ${AddFile} "PT4.pcu"
+    ${AddFile} "PT4_32.pcu"
     ${AddFile} "PT4Exam.pcu"
     ${AddFile} "PT4MakerNetX.pcu"
     ${AddFile} "PT4TaskMakerNET.pcu"
@@ -320,6 +322,7 @@
     File ..\bin\Lib\PointerTools.pas
     File ..\bin\Lib\PointRect.pas
     File ..\bin\Lib\PT4.pas
+    File ..\bin\Lib\PT4_32.pas
     File ..\bin\Lib\PT4Exam.pas
     File ..\bin\Lib\PT4MakerNetX.pas
     File ..\bin\Lib\xPT4MakerNetX.pas
@@ -399,6 +402,7 @@
     ${AddFile} "PointerTools.pas"
     ${AddFile} "PointRect.pas"
     ${AddFile} "PT4.pas"
+    ${AddFile} "PT4_32.pas"
     ${AddFile} "PT4Exam.pas"
     ${AddFile} "PT4MakerNetX.pas"
     ${AddFile} "xPT4MakerNetX.pas"

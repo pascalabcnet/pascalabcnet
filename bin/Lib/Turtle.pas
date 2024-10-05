@@ -282,6 +282,7 @@ begin
   tp := (0,0);
   angle := 90;
   MoveToReal(tp.X,tp.Y);
+  dr := False;
 end;
 
 procedure InitOnce; // Это тоже относится к Черепахе

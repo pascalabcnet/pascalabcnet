@@ -11,7 +11,7 @@ uses
    WPFObjects,
    NumLibABC,
    IniFile, PointerTools, PointRect, 
-   PT4, PT4Exam, PT4MakerNetX, PT4TaskMakerNET, 
+   PT4, PT4_32, PT4Exam, PT4MakerNetX, PT4TaskMakerNET, 
    Robot, RobotField,
    RobotTaskMaker, RobotZadan, Sockets, Utils, VCL, Timers, RBDMUtils,
    Collections, Arrays, Core, FormsABC, MPI, ClientServer, Speech, Sounds, Countries,

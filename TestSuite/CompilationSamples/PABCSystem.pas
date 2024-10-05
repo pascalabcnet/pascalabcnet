@@ -11606,6 +11606,17 @@ begin
       Result += 1;
 end;
 
+/// Возвращает элементы последовательности, ключи для которых отличаются, используя компоратор comp
+function DistinctBy<T, TKey>(Self: sequence of T; by: T->TKey; comp: IEqualityComparer<TKey>): sequence of T; extensionmethod;
+begin
+  var hs := new HashSet<TKey>(comp);
+  foreach var x in Self do
+    if hs.Add(by(x)) then
+      yield x;
+end;
+/// Возвращает элементы последовательности, ключи для которых отличаются, используя компоратор по-умолчанию
+function DistinctBy<T, TKey>(Self: sequence of T; by: T->TKey); extensionmethod := Self.DistinctBy(by, nil);
+
 // -----------------------------------------------------
 //>>     Методы расширения списков # Extension methods for List T
 // -----------------------------------------------------

@@ -35,6 +35,7 @@
 <param name="Keyword" value="TakeLast">
 <param name="Keyword" value="ToHashSet">
 <param name="Keyword" value="ToLinkedList">
+<param name="Keyword" value="ToSet">
 <param name="Keyword" value="ToSortedSet">
 <param name="Keyword" value="UnZipTuple">
 <param name="Keyword" value="WriteLines">
@@ -46,9 +47,9 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;√руппирует одинаковые подр€д идущие элементы, получа€ последовательность массивов</td></tr>
 <tr><td><code><b>function</b> Average(Self: <b>sequence </b>  <b>of</b> BigInteger): real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает среднее элементов последовательности</td></tr>
-<tr><td><code><b>function</b> Batch&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; size: integer): <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T;</code>
+<tr><td><code><b>function</b> Batch&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; size: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;–азбивает последовательность на серии длины size</td></tr>
-<tr><td><code><b>function</b> Batch&lt;T, Res&gt;(Self: <b>sequence </b>  <b>of</b> T; size: integer; proj: Func&lt;IEnumerable&lt;T&gt;, Res&gt;): <b>sequence </b>  <b>of</b> Res;</code>
+<tr><td><code><b>function</b> Batch&lt;T, Res&gt;(Self: <b>sequence </b>  <b>of</b> T; size: integer; proj: Func&lt;<b>array</b>  <b>of</b> T, Res&gt;): <b>sequence </b>  <b>of</b> Res;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;–азбивает последовательность на серии длины size и примен€ет проекцию к каждой серии</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1, TRes&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; func: (T,T1)-&gt;TRes): <b>sequence </b>  <b>of</b> TRes;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает декартово произведение последовательностей, проектиру€ каждую пару на значение</td></tr>
@@ -104,13 +105,13 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует элементы последовательности в строковое представление, после чего объедин€ет их в строку, использу€ delim в качестве разделител€</td></tr>
 <tr><td><code><b>function</b> JoinToString&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует элементы последовательности в строковое представление, после чего объедин€ет их в строку, использу€ пробел в качестве разделител€</td></tr>
-<tr><td><code><b>function</b> LastMaxBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; selector: T-&gt;TKey): T;</code>
+<tr><td><code><b>function</b> LastMaxBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; keySelector: T -&gt; TKey): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает последний элемент последовательности с максимальным значением ключа</td></tr>
-<tr><td><code><b>function</b> LastMinBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; selector: T-&gt;TKey): T;</code>
+<tr><td><code><b>function</b> LastMinBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; keySelector: T -&gt; TKey): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает последний элемент последовательности с минимальным значением ключа</td></tr>
-<tr><td><code><b>function</b> MaxBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; selector: T-&gt;TKey): T;</code>
+<tr><td><code><b>function</b> MaxBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; keySelector: T -&gt; TKey): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает первый элемент последовательности с максимальным значением ключа</td></tr>
-<tr><td><code><b>function</b> MinBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; selector: T-&gt;TKey): T;</code>
+<tr><td><code><b>function</b> MinBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; keySelector: T -&gt; TKey): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает первый элемент последовательности с минимальным значением ключа</td></tr>
 <tr><td><code><b>function</b> Numerate&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> (integer, T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ќумерует последовательность с единицы</td></tr>
@@ -190,6 +191,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает множество HashSet по данной последовательности</td></tr>
 <tr><td><code><b>function</b> ToLinkedList&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): LinkedList&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает LinkedList по данной последовательности</td></tr>
+<tr><td><code><b>function</b> ToSet&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): HashSet&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает множество по данной последовательности</td></tr>
 <tr><td><code><b>function</b> ToSortedSet&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): SortedSet&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает множество SortedSet по данной последовательности</td></tr>
 <tr><td><code><b>function</b> UnZipTuple&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> (T, T1)): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T1);</code>
