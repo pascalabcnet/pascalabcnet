@@ -15,7 +15,9 @@ namespace Languages.SPython.Frontend.Converters
         HashSet<string> globalVariables = new HashSet<string>();
         bool isInFunctionBody = false;
 
-        public AssignToVarConverterVisitor() {}
+        public AssignToVarConverterVisitor() {
+            localVariables.Add("result");
+        }
 
         // нужны методы из BaseChangeVisitor, но порядок обхода из WalkingVisitorNew
         public override void DefaultVisit(syntax_tree_node n)
