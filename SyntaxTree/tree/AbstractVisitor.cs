@@ -1332,6 +1332,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_list_generator);
 		}
+
+		public virtual void visit(spython_method_call _spython_method_call)
+		{
+			DefaultVisit(_spython_method_call);
+		}
 	}
 
 

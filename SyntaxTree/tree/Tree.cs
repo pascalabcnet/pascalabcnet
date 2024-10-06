@@ -56500,6 +56500,196 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class spython_method_call : expression
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public spython_method_call()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public spython_method_call(expression _method_name,statement _param_list)
+		{
+			this._method_name=_method_name;
+			this._param_list=_param_list;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public spython_method_call(expression _method_name,statement _param_list,SourceContext sc)
+		{
+			this._method_name=_method_name;
+			this._param_list=_param_list;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected expression _method_name;
+		protected statement _param_list;
+
+		///<summary>
+		///
+		///</summary>
+		public expression method_name
+		{
+			get
+			{
+				return _method_name;
+			}
+			set
+			{
+				_method_name=value;
+				if (_method_name != null)
+					_method_name.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public statement param_list
+		{
+			get
+			{
+				return _param_list;
+			}
+			set
+			{
+				_param_list=value;
+				if (_param_list != null)
+					_param_list.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			spython_method_call copy = new spython_method_call();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (method_name != null)
+			{
+				copy.method_name = (expression)method_name.Clone();
+				copy.method_name.Parent = copy;
+			}
+			if (param_list != null)
+			{
+				copy.param_list = (statement)param_list.Clone();
+				copy.param_list.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new spython_method_call TypedClone()
+		{
+			return Clone() as spython_method_call;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (method_name != null)
+				method_name.Parent = this;
+			if (param_list != null)
+				param_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			method_name?.FillParentsInAllChilds();
+			param_list?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return method_name;
+					case 1:
+						return param_list;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						method_name = (expression)value;
+						break;
+					case 1:
+						param_list = (statement)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 

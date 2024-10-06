@@ -3402,6 +3402,17 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="spython_method_call" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="method_name" SyntaxType="expression" />
+        <SyntaxField Name="param_list" SyntaxType="statement" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -4644,6 +4655,9 @@
       <HelpData Key="slice_expr_question.step" Value="" />
       <HelpData Key="slice_expr_question.to" Value="" />
       <HelpData Key="slice_expr_question.v" Value="" />
+      <HelpData Key="spython_method_call" Value="" />
+      <HelpData Key="spython_method_call.method_name" Value="" />
+      <HelpData Key="spython_method_call.param_list" Value="" />
       <HelpData Key="statement" Value="Оператор" />
       <HelpData Key="statement." Value="" />
       <HelpData Key="statement.label_name" Value="" />
