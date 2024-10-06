@@ -7280,36 +7280,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public void visit(spython_method_call _spython_method_call)
-		{
-			bw.Write((Int16)265);
-			write_spython_method_call(_spython_method_call);
-		}
-
-		public void write_spython_method_call(spython_method_call _spython_method_call)
-		{
-			write_expression(_spython_method_call);
-			if (_spython_method_call.method_name == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_spython_method_call.method_name.visit(this);
-			}
-			if (_spython_method_call.param_list == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_spython_method_call.param_list.visit(this);
-			}
-		}
-
 	}
 
 

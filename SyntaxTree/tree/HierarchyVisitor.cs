@@ -2125,14 +2125,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(spython_method_call _spython_method_call)
-		{
-		}
-
-		public virtual void post_do_visit(spython_method_call _spython_method_call)
-		{
-		}
-
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -4401,15 +4393,6 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(list_generator._range);
 			visit(list_generator._condition);
 			post_do_visit(_list_generator);
-		}
-
-		public override void visit(spython_method_call _spython_method_call)
-		{
-			DefaultVisit(_spython_method_call);
-			pre_do_visit(_spython_method_call);
-			visit(spython_method_call.method_name);
-			visit(spython_method_call.param_list);
-			post_do_visit(_spython_method_call);
 		}
 	}
 

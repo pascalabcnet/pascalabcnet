@@ -44,6 +44,7 @@
     <Compile Include="AssignToVarConverterVisitor.cs" />
     <Compile Include="ListGeneratorNodesVisitor.cs" />
     <Compile Include="RetainUsedGlobalVariablesVisitor.cs" />
+    <Compile Include="SPythonMethodCallNodesVisitor.cs" />
     <Compile Include="StandardSyntaxTreeConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

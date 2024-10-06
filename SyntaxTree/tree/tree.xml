@@ -3402,17 +3402,6 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="spython_method_call" BaseName="expression">
-      <Fields>
-        <SyntaxField Name="method_name" SyntaxType="expression" />
-        <SyntaxField Name="param_list" SyntaxType="statement" />
-      </Fields>
-      <Methods />
-      <Tags>
-        <CategoryIndices />
-        <TagIndices />
-      </Tags>
-    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>

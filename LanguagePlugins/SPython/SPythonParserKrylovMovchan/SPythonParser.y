@@ -671,6 +671,9 @@ proc_func_header
 proc_func_call
 	: variable LPAR optional_act_param_list RPAR
 		{
+			$$ = new method_call($1 as addressed_value, $3 as expression_list, @$);
+
+			/*
 			if ($3 is expression_list exprl) {
 				expression_list args = new expression_list();
 				expression_list kvargs = new expression_list();
@@ -697,6 +700,7 @@ proc_func_call
 			}
 			else
 				$$ = new method_call($1 as addressed_value, null, @$);
+			*/
 		}
 	;
 

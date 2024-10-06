@@ -13,6 +13,10 @@ namespace Languages.SPython.Frontend.Converters
             var lgnv = new ListGeneratorNodesVisitor();
             lgnv.ProcessNode(root);
 
+            // замена вызова функций с именованными параметрами на вызов метода класса
+            var smcnv = new SPythonMethodCallNodesVisitor();
+            smcnv.ProcessNode(root);
+
             // замена узлов assign на узлы var
             // (внутри ф-й основываясь на узлах global,
             // вне ф-й по первому появлению в symbolTable)

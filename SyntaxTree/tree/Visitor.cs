@@ -1594,12 +1594,6 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_list_generator">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(list_generator _list_generator);
-		///<summary>
-		///Method to visit spython_method_call.
-		///</summary>
-		///<param name="_spython_method_call">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(spython_method_call _spython_method_call);
 	}
 
 

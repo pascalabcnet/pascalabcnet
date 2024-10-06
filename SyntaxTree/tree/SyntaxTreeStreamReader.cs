@@ -550,8 +550,6 @@ namespace PascalABCCompiler.SyntaxTree
 					return new global_statement();
 				case 264:
 					return new list_generator();
-				case 265:
-					return new spython_method_call();
 			}
 			return null;
 		}
@@ -4615,19 +4613,6 @@ namespace PascalABCCompiler.SyntaxTree
 			_list_generator._ident = _read_node() as ident;
 			_list_generator._range = _read_node() as expression;
 			_list_generator._condition = _read_node() as expression;
-		}
-
-
-		public void visit(spython_method_call _spython_method_call)
-		{
-			read_spython_method_call(_spython_method_call);
-		}
-
-		public void read_spython_method_call(spython_method_call _spython_method_call)
-		{
-			read_expression(_spython_method_call);
-			_spython_method_call.method_name = _read_node() as expression;
-			_spython_method_call.param_list = _read_node() as statement;
 		}
 
 	}

@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 29.09.2024 13:47:43
+// DateTime: 06.10.2024 11:36:24
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -961,7 +961,10 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 92: // proc_func_call -> variable, LPAR, optional_act_param_list, RPAR
 {
-			if (ValueStack[ValueStack.Depth-2].stn is expression_list exprl) {
+			CurrentSemanticValue.ex = new method_call(ValueStack[ValueStack.Depth-4].ex as addressed_value, ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);
+
+			/*
+			if ($3 is expression_list exprl) {
 				expression_list args = new expression_list();
 				expression_list kvargs = new expression_list();
 
@@ -974,19 +977,20 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 						args.Add(expr);
 						args.source_context = new SourceContext(args.source_context, expr.source_context);
 					}
-					else parserTools.AddErrorFromResource("Arg after Kvarg", CurrentLocationSpan);
+					else parserTools.AddErrorFromResource("Arg after Kvarg", @$);
 				}
 
 				if (kvargs.expressions.Count() == 0)
-					CurrentSemanticValue.ex = new method_call(ValueStack[ValueStack.Depth-4].ex as addressed_value, args, CurrentLocationSpan);
+					$$ = new method_call($1 as addressed_value, args, @$);
 				else {
-					method_call mc = new method_call(new ident("!" + (ValueStack[ValueStack.Depth-4].ex as ident).name + ".Get"), kvargs, CurrentLocationSpan);
-					dot_node dn = new dot_node(mc as addressed_value, ValueStack[ValueStack.Depth-4].ex as addressed_value, CurrentLocationSpan);
-					CurrentSemanticValue.ex = new method_call(dn as addressed_value, args, CurrentLocationSpan);
+					method_call mc = new method_call(new ident("!" + ($1 as ident).name + ".Get"), kvargs, @$);
+					dot_node dn = new dot_node(mc as addressed_value, $1 as addressed_value, @$);
+					$$ = new method_call(dn as addressed_value, args, @$);
 				}
 			}
 			else
-				CurrentSemanticValue.ex = new method_call(ValueStack[ValueStack.Depth-4].ex as addressed_value, null, CurrentLocationSpan);
+				$$ = new method_call($1 as addressed_value, null, @$);
+			*/
 		}
         break;
       case 93: // simple_type_identifier -> ident
