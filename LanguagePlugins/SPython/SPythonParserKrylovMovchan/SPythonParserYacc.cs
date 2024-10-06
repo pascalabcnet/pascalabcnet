@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-56159VE
-// DateTime: 06.10.2024 11:36:24
-// UserName: ????
+// Machine:  DESKTOP-V3E9T2U
+// DateTime: 06.10.2024 22:17:38
+// UserName: alex
 // Input file <SPythonParser.y>
 
 // options: no-lines gplex
@@ -429,7 +429,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 				var initialization_part = new initfinal_part(null, ValueStack[ValueStack.Depth-2].stn as statement_list, null, null, null, CurrentLocationSpan);
 
 				root = CurrentSemanticValue.stn = new unit_module(
-					new unit_name(new ident(Path.GetFileNameWithoutExtension(parserTools.CurrentFileName)),
+					new unit_name(new ident(Path.GetFileNameWithoutExtension(parserTools.currentFileName)),
 					UnitHeaderKeyword.Unit, CurrentLocationSpan), interface_part, null,
 					initialization_part.initialization_sect,
 					initialization_part.finalization_sect, null, CurrentLocationSpan);
@@ -1117,7 +1117,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
                 var err_stn = progBlock;
 			    if ((progBlock is block) && (progBlock as block).program_code != null && (progBlock as block).program_code.subnodes != null && (progBlock as block).program_code.subnodes.Count > 0)
                     err_stn = (progBlock as block).program_code.subnodes[(progBlock as block).program_code.subnodes.Count - 1];
-                //parserTools.errors.Add(new SPythonUnexpectedToken(parserTools.CurrentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
+                //parserTools.errors.Add(new SPythonUnexpectedToken(parserTools.currentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
             }
             return progModule;
         }

@@ -130,7 +130,7 @@ ID {Alpha}{AlphaDigit}*
 public LexLocation CurrentLexLocation
 {
   get {
-    return new LexLocation(tokLin, tokCol, tokELin, tokECol, parserTools.CurrentFileName);
+    return new LexLocation(tokLin, tokCol, tokELin, tokECol, parserTools.currentFileName);
 	}
 }
 

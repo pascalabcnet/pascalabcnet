@@ -116,7 +116,7 @@ program
 				var initialization_part = new initfinal_part(null, $2 as statement_list, null, null, null, @$);
 
 				root = $$ = new unit_module(
-					new unit_name(new ident(Path.GetFileNameWithoutExtension(parserTools.CurrentFileName)),
+					new unit_name(new ident(Path.GetFileNameWithoutExtension(parserTools.currentFileName)),
 					UnitHeaderKeyword.Unit, @$), interface_part, null,
 					initialization_part.initialization_sect,
 					initialization_part.finalization_sect, null, @$);
@@ -830,7 +830,7 @@ optional_semicolon
                 var err_stn = progBlock;
 			    if ((progBlock is block) && (progBlock as block).program_code != null && (progBlock as block).program_code.subnodes != null && (progBlock as block).program_code.subnodes.Count > 0)
                     err_stn = (progBlock as block).program_code.subnodes[(progBlock as block).program_code.subnodes.Count - 1];
-                //parserTools.errors.Add(new SPythonUnexpectedToken(parserTools.CurrentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
+                //parserTools.errors.Add(new SPythonUnexpectedToken(parserTools.currentFileName, StringResources.Get("TKPOINT"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
             }
             return progModule;
         }

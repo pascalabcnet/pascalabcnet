@@ -56,13 +56,8 @@ namespace SPythonParser
     }
     public class SPythonParserTools : BaseParserTools
     {
-        public System.Collections.Stack NodesStack; // SSM: для каких-то вспомогательных целей в двух правилах
         public bool build_tree_for_formatter = false;
         public bool build_tree_for_format_strings = false;
-        public string CurrentFileName;
-
-        public List<var_def_statement> pascalABC_var_statements;
-        public List<type_declaration> pascalABC_type_declarations;
 
         public override Dictionary<string, string> TokenNum { get; protected set; }
         
@@ -112,9 +107,6 @@ namespace SPythonParser
             string currentFileName = null, List<compiler_directive> compilerDirectives = null) 
             : base(errors, warnings, validDirectives, buildTreeForFormatter, buildTreeForFormatterStrings, currentFileName, compilerDirectives)
         {
-            NodesStack = new System.Collections.Stack();
-            pascalABC_var_statements = new List<var_def_statement>();
-            pascalABC_type_declarations = new List<type_declaration>();
 
             InitializeTokenNum();
         }
