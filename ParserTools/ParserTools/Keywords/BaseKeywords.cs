@@ -16,7 +16,7 @@ namespace PascalABCCompiler.Parsers
 
         public Dictionary<string, KeywordKind> KeywordKinds { get; set; }
 
-        public List<string> Keywords { get; set; }
+        public List<string> Keywords { get; set; } = new List<string>();
 
         public List<string> TypeKeywords { get; set; } = new List<string>();
 

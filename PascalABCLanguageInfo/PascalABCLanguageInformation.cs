@@ -8,25 +8,27 @@ using PascalABCCompiler.SyntaxTree;
 using System.Reflection;
 
 using PascalABCCompiler.Parsers;
-using PascalABCCompiler;
 
 namespace Languages.Pascal.Frontend.Data
 {
 	public class PascalABCLanguageInformation : ILanguageInformation
 	{
-		protected IParser parser;
+		protected IParser Parser
+        {
+            get
+            {
+                // для заглушки, потом, может, вообще можно убрать поле парсер отсюда  EVA
+                return Facade.LanguageProvider.Instance.SelectLanguageByName(PascalABCCompiler.StringConstants.pascalLanguageName).Parser;
+            }
+        }
 
         public BaseKeywords KeywordsStorage { get; } = new Core.PascalABCKeywords();
 
-		public PascalABCLanguageInformation()
-		{
-            // для заглушки, потом, может, вообще можно убрать поле парсер отсюда  EVA
-			this.parser = Facade.LanguageProvider.Instance.SelectLanguageByName(StringConstants.pascalLanguageName).Parser;
-		}
-
         public bool IsKeyword(string value)
         {
-            return value != "typeof" && value != "sizeof" && KeywordsStorage.KeywordsToTokens.ContainsKey(value);
+            // typeof и sizeof воспринимаются Intellisense по другому, надо переделать   EVA 
+            return !value.Equals("typeof", StringComparison.CurrentCultureIgnoreCase) && !value.Equals("sizeof", StringComparison.CurrentCultureIgnoreCase) 
+                && KeywordsStorage.KeywordsToTokens.ContainsKey(value);
         }
 
         public virtual string BodyStartBracket
@@ -49,7 +51,7 @@ namespace Languages.Pascal.Frontend.Data
 		{
             get
             {
-                return StringConstants.pascalSystemUnitName;
+                return PascalABCCompiler.StringConstants.pascalSystemUnitName;
             }
 		}
 
@@ -519,9 +521,9 @@ namespace Languages.Pascal.Frontend.Data
             if (!string.IsNullOrEmpty(doc))
             {
                 doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "  /// ");
-                doc = doc.Replace("<returns>", StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
+                doc = doc.Replace("<returns>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
                 doc = doc.Replace("<params>", "");
-                doc = doc.Replace("<param>", StringResources.Get("CODE_COMPLETION_PARAMETER"));
+                doc = doc.Replace("<param>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_PARAMETER"));
                 doc = doc.Replace("</param>", "");
                 sb.AppendLine("  /// " + doc);
             }
@@ -586,7 +588,7 @@ namespace Languages.Pascal.Frontend.Data
             FieldInfo[] fields = t.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             if (fields.Length > 0)
             {
-                sb.AppendLine("  {$region " + StringResources.Get("CODE_COMPLETION_FIELDS") + "}");
+                sb.AppendLine("  {$region " + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_FIELDS") + "}");
                 for (int i = 0; i < fields.Length; i++)
                 {
                     if (fields[i].DeclaringType == t && !fields[i].IsPrivate && !fields[i].IsAssembly)
@@ -595,9 +597,9 @@ namespace Languages.Pascal.Frontend.Data
                         if (!string.IsNullOrEmpty(doc))
                         {
                             doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "    /// ");
-                            doc = doc.Replace("<returns>", StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
+                            doc = doc.Replace("<returns>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
                             doc = doc.Replace("<params>", "");
-                            doc = doc.Replace("<param>", StringResources.Get("CODE_COMPLETION_PARAMETER"));
+                            doc = doc.Replace("<param>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_PARAMETER"));
                             doc = doc.Replace("</param>", "");
                             sb.AppendLine("    /// " + doc);
                             ln++;
@@ -619,7 +621,7 @@ namespace Languages.Pascal.Frontend.Data
             EventInfo[] events = t.GetEvents(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             if (events.Length > 0)
             {
-                sb.AppendLine("  {$region " + StringResources.Get("CODE_COMPLETION_EVENTS") + "}");
+                sb.AppendLine("  {$region " + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EVENTS") + "}");
                 for (int i = 0; i < events.Length; i++)
                 {
                     if (events[i].DeclaringType != t)
@@ -631,9 +633,9 @@ namespace Languages.Pascal.Frontend.Data
                         if (!string.IsNullOrEmpty(doc))
                         {
                             doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "    /// ");
-                            doc = doc.Replace("<returns>", StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
+                            doc = doc.Replace("<returns>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
                             doc = doc.Replace("<params>", "");
-                            doc = doc.Replace("<param>", StringResources.Get("CODE_COMPLETION_PARAMETER"));
+                            doc = doc.Replace("<param>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_PARAMETER"));
                             doc = doc.Replace("</param>", "");
                             sb.AppendLine("    /// " + doc);
                         }
@@ -655,7 +657,7 @@ namespace Languages.Pascal.Frontend.Data
             PropertyInfo[] props = t.GetProperties(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             if (props.Length > 0)
             {
-                sb.AppendLine("  {$region " + StringResources.Get("CODE_COMPLETION_PROPERTIES") + "}");
+                sb.AppendLine("  {$region " + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_PROPERTIES") + "}");
                 for (int i = 0; i < props.Length; i++)
                 {
                     if (props[i].DeclaringType != t)
@@ -667,9 +669,9 @@ namespace Languages.Pascal.Frontend.Data
                         if (!string.IsNullOrEmpty(doc))
                         {
                             doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "    /// ");
-                            doc = doc.Replace("<returns>", StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
+                            doc = doc.Replace("<returns>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
                             doc = doc.Replace("<params>", "");
-                            doc = doc.Replace("<param>", StringResources.Get("CODE_COMPLETION_PARAMETER"));
+                            doc = doc.Replace("<param>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_PARAMETER"));
                             doc = doc.Replace("</param>", "");
                             sb.AppendLine("    /// " + doc);
                         }
@@ -691,7 +693,7 @@ namespace Languages.Pascal.Frontend.Data
             ConstructorInfo[] constrs = t.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             if (constrs.Length > 0)
             {
-                sb.AppendLine("  {$region " + StringResources.Get("CODE_COMPLETION_CONSTRUCTORS") + "}");
+                sb.AppendLine("  {$region " + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_CONSTRUCTORS") + "}");
                 for (int i = 0; i < constrs.Length; i++)
                 {
                     if (constrs[i].DeclaringType == t && !constrs[i].IsPrivate && !constrs[i].IsAssembly)
@@ -700,9 +702,9 @@ namespace Languages.Pascal.Frontend.Data
                         if (!string.IsNullOrEmpty(doc))
                         {
                             doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "    /// ");
-                            doc = doc.Replace("<returns>", StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
+                            doc = doc.Replace("<returns>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
                             doc = doc.Replace("<params>", "");
-                            doc = doc.Replace("<param>", StringResources.Get("CODE_COMPLETION_PARAMETER"));
+                            doc = doc.Replace("<param>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_PARAMETER"));
                             doc = doc.Replace("</param>", "");
                             sb.AppendLine("    /// " + doc);
                         }
@@ -723,7 +725,7 @@ namespace Languages.Pascal.Frontend.Data
             MethodInfo[] meths = t.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             if (meths.Length > 0)
             {
-                sb.AppendLine("  {$region " + StringResources.Get("CODE_COMPLETION_METHODS") + "}");
+                sb.AppendLine("  {$region " + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_METHODS") + "}");
                 for (int i = 0; i < meths.Length; i++)
                 {
                     if (meths[i].DeclaringType == t && !meths[i].IsPrivate && !meths[i].IsAssembly && !meths[i].Name.StartsWith("get_") && !meths[i].Name.StartsWith("set_") && !meths[i].Name.StartsWith("add_") && !meths[i].Name.StartsWith("remove_"))
@@ -732,9 +734,9 @@ namespace Languages.Pascal.Frontend.Data
                         if (!string.IsNullOrEmpty(doc))
                         {
                             doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "    /// ");
-                            doc = doc.Replace("<returns>", StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
+                            doc = doc.Replace("<returns>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
                             doc = doc.Replace("<params>", "");
-                            doc = doc.Replace("<param>", StringResources.Get("CODE_COMPLETION_PARAMETER"));
+                            doc = doc.Replace("<param>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_PARAMETER"));
                             doc = doc.Replace("</param>", "");
                             sb.AppendLine("    /// " + doc);
                         }
@@ -903,7 +905,7 @@ namespace Languages.Pascal.Frontend.Data
                 var strrank = rank > 1 ? "[" + new string(',', rank - 1) + "]" : "";
                 return $"array{strrank}" + " of " + GetShortTypeName(ctn.GetElementType());
             }
-            //if (ctn == Type.GetType("System.Void*")) return StringConstants.pointer_type_name;
+            //if (ctn == Type.GetType("System.Void*")) return PascalABCCompiler.StringConstants.pointer_type_name;
             return ctn.Name;
 		}
 		
@@ -1739,11 +1741,11 @@ namespace Languages.Pascal.Frontend.Data
             {
                 if (extensionType.IndexOf(' ') != -1)
                 {
-                    sb.Append("(" + StringResources.Get("CODE_COMPLETION_EXTENSION") + " " + extensionType + ") ");
+                    sb.Append("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION") + " " + extensionType + ") ");
                 }
                 else
                 {
-                    sb.Append("(" + StringResources.Get("CODE_COMPLETION_EXTENSION") + ") ");
+                    sb.Append("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION") + ") ");
                     extensionType = null;
                 }
             }
@@ -1944,12 +1946,12 @@ namespace Languages.Pascal.Frontend.Data
             {
                 if (extensionType != null && extensionType.IndexOf(' ') != -1)
                 {
-                    sb.Append("(" + StringResources.Get("CODE_COMPLETION_EXTENSION") + " " + extensionType + ") ");
+                    sb.Append("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION") + " " + extensionType + ") ");
                     extensionType = null;
                 }
                 else
                 {
-                    sb.Append("(" + StringResources.Get("CODE_COMPLETION_EXTENSION")+ ") ");
+                    sb.Append("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION")+ ") ");
                 }   
             }
               
@@ -2239,7 +2241,10 @@ namespace Languages.Pascal.Frontend.Data
 		
 		public KeywordKind GetKeywordKind(string name)
         {
-            return KeywordsStorage.KeywordKinds[name];
+            if (KeywordsStorage.KeywordKinds.TryGetValue(name, out var kind))
+                return kind;
+            else
+                return KeywordKind.None;
         }
 
        
@@ -2412,7 +2417,7 @@ namespace Languages.Pascal.Frontend.Data
                     sb.AppendLine(lineText);
                     sb.AppendLine("begin end;");
                     sb.AppendLine("begin end.");
-                    program_module node = this.parser.GetCompilationUnit("test.pas", sb.ToString(), null, null, ParseMode.Special) as program_module;
+                    program_module node = this.Parser.GetCompilationUnit("test.pas", sb.ToString(), null, null, ParseMode.Special) as program_module;
                     procedure_header header = (node.program_block.defs.defs[0] as procedure_definition).proc_header;
                     get_procedure_template(header, res, col);
                     return res.ToString();
@@ -2423,7 +2428,7 @@ namespace Languages.Pascal.Frontend.Data
                     sb.AppendLine(lineText);
                     sb.AppendLine("begin end;");
                     sb.AppendLine("begin end.");
-                    program_module node = this.parser.GetCompilationUnit("test.pas", sb.ToString(), null, null, ParseMode.Special) as program_module;
+                    program_module node = this.Parser.GetCompilationUnit("test.pas", sb.ToString(), null, null, ParseMode.Special) as program_module;
                     if (node.program_block.defs != null && node.program_block.defs.defs.Count > 0 && node.program_block.defs.defs[0] is procedure_definition)
                     {
                         procedure_header header = (node.program_block.defs.defs[0] as procedure_definition).proc_header;
@@ -3838,7 +3843,7 @@ namespace Languages.Pascal.Frontend.Data
 				return sb.ToString();
 			}
 			//if (ctn.IsArray) return "array of "+GetTypeName(ctn.GetElementType());
-			//if (ctn == Type.GetType("System.Void*")) return StringConstants.pointer_type_name;
+			//if (ctn == Type.GetType("System.Void*")) return PascalABCCompiler.StringConstants.pointer_type_name;
 			return ctn.Name;
 		}
 		
