@@ -129,14 +129,12 @@ namespace PascalABCCompiler.Parsers
     	//char GetParameterDelimiter();
     	string GetCompiledTypeRepresentation(Type t, System.Reflection.MemberInfo mi, ref int line, ref int col);
         bool IsKeyword(string value);
-        string[] Keywords
+        
+        BaseKeywords KeywordsStorage
         {
             get;
         }
-        string[] TypeKeywords
-        {
-            get;
-        }
+
         string SystemUnitName
         {
             get;

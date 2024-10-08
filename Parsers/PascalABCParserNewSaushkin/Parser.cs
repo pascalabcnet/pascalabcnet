@@ -78,7 +78,6 @@ namespace Languages.Pascal.Frontend.Wrapping
         public PascalABCNewLanguageParser()
         {
             InitializeValidDirectives();
-            Keywords = new PascalABCKeywords();
         }
         
         public override void Reset()
@@ -155,7 +154,7 @@ namespace Languages.Pascal.Frontend.Wrapping
                 buildTreeForFormatter, false,
                 Path.GetFullPath(fileName), CompilerDirectives); // контекст сканера и парсера
 
-            Scanner scanner = new Scanner(Text, parserTools, Keywords, definesList);
+            Scanner scanner = new Scanner(Text, parserTools, LanguageInformation.KeywordsStorage, definesList);
 
             GPPGParser parser = new GPPGParser(scanner, parserTools);
 

@@ -335,7 +335,7 @@ namespace VisualPascalABC
                 	special_module = true;
                 }*/
                 string pattern = charTyped.ToString();
-                string[] keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetKeywords();
+                var keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetKeywords();
                 if (CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.IsTypeAfterKeyword(keyw))
                 {
                     keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetTypeKeywords();
@@ -441,7 +441,7 @@ namespace VisualPascalABC
                 PascalABCCompiler.SyntaxTree.expression e = null;
                 if (ctrl_space && !shift_space && (pattern == null || pattern == ""))
                 {
-                    string[] keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetKeywords();
+                    var keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetKeywords();
                     foreach (string key in keywords)
                     {
                         //if (key.StartsWith(pattern, StringComparison.CurrentCultureIgnoreCase))

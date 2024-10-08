@@ -3,142 +3,30 @@
 using System;
 using System.Text;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using System.Reflection;
 
-namespace PascalABCCompiler.Parsers
+using PascalABCCompiler.Parsers;
+using PascalABCCompiler;
+
+namespace Languages.Pascal.Frontend.Data
 {
-	public class DefaultLanguageInformation : ILanguageInformation
+	public class PascalABCLanguageInformation : ILanguageInformation
 	{
 		protected IParser parser;
-		protected string[] type_keywords_array;
-		protected string[] keywords_array;
-		protected Dictionary<string, string> keywords = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
-		protected Hashtable ignored_keywords = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
-		protected Hashtable keyword_kinds = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
 
-		public DefaultLanguageInformation()
-		{
-			
-		}
-		
-		public DefaultLanguageInformation(IParser p)
-		{
-			this.parser = p;
-			InitKeywords();
-		}
-		
-		protected virtual void InitKeywords()
-		{
-			List<string> keys = new List<string>();
-            List<string> type_keys = new List<string>();
-            keywords.Add("and", "and"); keys.Add("and");
-            keywords.Add("or", "or"); keys.Add("or");
-            keywords.Add("xor", "xor"); keys.Add("xor");
-            keywords.Add("begin", "begin"); keys.Add("begin");
-            keywords.Add("end", "end"); keys.Add("end");
-            keywords.Add("for", "for"); keys.Add("for");
-            keywords.Add("while", "while"); keys.Add("while");
-            keywords.Add("repeat", "repeat"); keys.Add("repeat");
-            keywords.Add("until", "until"); keys.Add("until");
-            keywords.Add("do", "do"); keys.Add("do");
-            keywords.Add("to", "to"); keys.Add("to");
-            keywords.Add("downto", "downto"); keys.Add("downto");
-            keywords.Add("class", "class"); keys.Add("class"); type_keys.Add("class");
-            keywords.Add("record", "record"); keys.Add("record"); type_keys.Add("record");
-            keywords.Add("set", "set"); keys.Add("set"); type_keys.Add("set");
-            keywords.Add("file", "file"); keys.Add("file"); type_keys.Add("file");
-            keywords.Add("type", "type"); keys.Add("type"); keyword_kinds.Add("type", KeywordKind.Type);
-            keywords.Add("array", "array"); keys.Add("array"); type_keys.Add("array");
-            keywords.Add("of", "of"); keys.Add("of"); keyword_kinds.Add("of", KeywordKind.Of);
-            keywords.Add("private", "private"); keys.Add("private");
-            keywords.Add("protected", "protected"); keys.Add("protected");
-            keywords.Add("public", "public"); keys.Add("public");
-            keywords.Add("inherited", "inherited"); keys.Add("inherited"); keyword_kinds.Add("inherited", KeywordKind.Inherited);
-            keywords.Add("foreach", "foreach"); keys.Add("foreach");
-            keywords.Add("try", "try"); keys.Add("try");
-            keywords.Add("except", "except"); keys.Add("except");
-            keywords.Add("finally", "finally"); keys.Add("finally");
-            keywords.Add("uses", "uses"); keys.Add("uses"); keyword_kinds.Add("uses", KeywordKind.Uses);
-            keywords.Add("unit", "unit"); keys.Add("unit"); keyword_kinds.Add("unit", KeywordKind.Unit);
+        public BaseKeywords KeywordsStorage { get; } = new Core.PascalABCKeywords();
 
-            keywords.Add("procedure", "procedure"); keys.Add("procedure"); keyword_kinds.Add("procedure", KeywordKind.Function); type_keys.Add("procedure");
-            keywords.Add("function", "function"); keys.Add("function"); keyword_kinds.Add("function", KeywordKind.Function); type_keys.Add("function");
-            keywords.Add("constructor", "constructor"); keys.Add("constructor"); keyword_kinds.Add("constructor", KeywordKind.Constructor);
-            keywords.Add("destructor", "destructor"); keys.Add("destructor"); keyword_kinds.Add("destructor", KeywordKind.Destructor);
-            keywords.Add("interface", "interface"); keys.Add("interface");
-            keywords.Add("implementation", "implementation"); keys.Add("implementation");
-            keywords.Add("initialization", "initialization"); keys.Add("initialization");
-            keywords.Add("finalization", "finalization"); keys.Add("finalization");
-            keywords.Add("with", "with"); keys.Add("with");
-            keywords.Add("abstract","abstract"); keys.Add("abstract");
-            keywords.Add("virtual", "virtual"); keys.Add("virtual");
-            keywords.Add("override", "override"); keys.Add("override");
-            keywords.Add("reintroduce", "reintroduce"); keys.Add("reintroduce");
-            keywords.Add("sealed", "sealed"); keys.Add("sealed");
-            keywords.Add("case", "case"); keys.Add("case");
-            keywords.Add("var", "var"); keys.Add("var"); keyword_kinds.Add("var", KeywordKind.Var);
-            keywords.Add("const", "const"); keys.Add("const"); keyword_kinds.Add("const", KeywordKind.Const);
-            keywords.Add("if", "if"); keys.Add("if");
-            keywords.Add("then", "then"); keys.Add("then");
-            keywords.Add("else", "else"); keys.Add("else");
-            keywords.Add("in", "in"); keys.Add("in");
-            keywords.Add("operator", "operator"); keys.Add("operator");
-            keywords.Add("raise", "raise"); keys.Add("raise"); keyword_kinds.Add("raise", KeywordKind.Raise);
-            keywords.Add("program", "program"); keys.Add("program"); keyword_kinds.Add("program", KeywordKind.Program);
-            keywords.Add("new", "new"); keys.Add("new"); keyword_kinds.Add("new", KeywordKind.New);
-            keywords.Add("nil", "nil"); keys.Add("nil");
-            keywords.Add("loop", "loop"); keys.Add("loop");
-            keywords.Add("yield", "yield"); keys.Add("yield");
-            keywords.Add("sequence", "sequence"); keys.Add("sequence");
-            keywords.Add("extensionmethod", "extensionmethod"); keys.Add("extensionmethod");
-            keywords.Add("params", "params"); keys.Add("params");
-            keywords.Add("implicit", "implicit"); keys.Add("implicit");
-            keywords.Add("explicit", "explicit"); keys.Add("explicit");
-            keywords.Add("forward", "forward"); keys.Add("forward");
-            keywords.Add("break", "break"); keys.Add("break");
-            keywords.Add("continue", "continue"); keys.Add("continue");
-            keywords.Add("default", "default"); keys.Add("default");
-            keywords.Add("label", "label"); keys.Add("label");
-            keywords.Add("property", "property"); keys.Add("property");
-            keywords.Add("auto", "auto"); keys.Add("auto");
-            keywords.Add("external", "external"); keys.Add("external");
-            keywords.Add("lock", "lock"); keys.Add("lock");
-            keywords.Add("where", "where"); keys.Add("where");
-            keywords.Add("library", "library"); keys.Add("library");
-            keywords.Add("div", "div"); keys.Add("div");
-            keywords.Add("mod", "mod"); keys.Add("mod");
-            keywords.Add("shl", "shl"); keys.Add("shl");
-            keywords.Add("shr", "shr"); keys.Add("shr");
-            keywords.Add("not", "not"); keys.Add("not");
-            keywords.Add("as", "as"); keys.Add("as");
-            keywords.Add("is", "is"); keys.Add("is");
-            keywords.Add("on", "on"); keys.Add("on");
-            keywords.Add("goto", "goto"); keys.Add("goto");
-            keywords.Add("overload", "overload"); keys.Add("overload");
-            keywords.Add("internal", "internal"); keys.Add("internal");
-            //keywords.Add("template", "template"); keys.Add("template");
-            keywords.Add("partial", "partial"); keys.Add("partial");
-            keywords.Add("namespace", "namespace"); keys.Add("namespace");
-            keywords.Add("exit", "exit"); keys.Add("exit");
-            keywords.Add("event", "event"); keys.Add("event");
-            keywords.Add("match", "match"); keys.Add("match");
-            keywords.Add("when", "when"); keys.Add("when");
-            keywords.Add("static", "static"); keys.Add("static");
-            //keywords.Add("typeof", "typeof"); //keys.Add("typeof");
-            //keywords.Add("sizeof", "sizeof"); //keys.Add("sizeof");
-            keywords_array = new string[keywords.Count + 2];
-            keywords_array[0] = "typeof";
-            keywords_array[1] = "sizeof";
-            keywords.Values.CopyTo(keywords_array, 2);
-            type_keywords_array = type_keys.ToArray();
+		public PascalABCLanguageInformation()
+		{
+            // для заглушки, потом, может, вообще можно убрать поле парсер отсюда  EVA
+			this.parser = Facade.LanguageProvider.Instance.SelectLanguageByName(StringConstants.pascalLanguageName).Parser;
 		}
-        
+
         public bool IsKeyword(string value)
         {
-            return keywords.ContainsKey(value.ToLower());
+            return value != "typeof" && value != "sizeof" && KeywordsStorage.KeywordsToTokens.ContainsKey(value);
         }
 
         public virtual string BodyStartBracket
@@ -161,23 +49,23 @@ namespace PascalABCCompiler.Parsers
 		{
             get
             {
-                return "PABCSystem";
+                return StringConstants.pascalSystemUnitName;
             }
 		}
 
-        public string[] Keywords
+        public List<string> Keywords
         {
             get
             {
-                return keywords_array;
+                return KeywordsStorage.Keywords;
             }
         }
 
-        public string[] TypeKeywords
+        public List<string> TypeKeywords
         {
             get
             {
-                return type_keywords_array;
+                return KeywordsStorage.TypeKeywords;
             }
         }
 
@@ -2167,7 +2055,7 @@ namespace PascalABCCompiler.Parsers
 
         private string prepare_member_name(string s)
         {
-            if (keywords.ContainsKey(s))
+            if (IsKeyword(s))
                 return "&" + s;
             return s;
         }
@@ -2351,9 +2239,7 @@ namespace PascalABCCompiler.Parsers
 		
 		public KeywordKind GetKeywordKind(string name)
         {
-            object o = keyword_kinds[name];
-            if (o != null) return (KeywordKind)o;
-            else return KeywordKind.None;
+            return KeywordsStorage.KeywordKinds[name];
         }
 
        
@@ -2718,7 +2604,7 @@ namespace PascalABCCompiler.Parsers
             {
                 keyword = KeywordKind.Raise;
             }
-            else if (keywords.ContainsKey(s))
+            else if (IsKeyword(s))
             {
                 keyword = KeywordKind.CommonKeyword;
             }
@@ -3792,8 +3678,8 @@ namespace PascalABCCompiler.Parsers
 		}
 		
 	}
-	
-	public class CLanguageInformation : DefaultLanguageInformation
+    #region LEGACY - C language
+    /*public class CLanguageInformation : DefaultLanguageInformation
 	{
 		public CLanguageInformation(IParser p)
 		{
@@ -3941,14 +3827,14 @@ namespace PascalABCCompiler.Parsers
 				sb.Append(ctn.Name.Substring(0,ctn.Name.IndexOf('`')));
 				sb.Append('<');
 				sb.Append('>');
-				/*sb.Append('<');
+				*//*sb.Append('<');
 				for (int i=0; i<len; i++)
 				{
 					sb.Append('T');
 					if (i<len-1)
 					sb.Append(',');
 				}
-				sb.Append('>');*/
+				sb.Append('>');*//*
 				return sb.ToString();
 			}
 			//if (ctn.IsArray) return "array of "+GetTypeName(ctn.GetElementType());
@@ -4199,6 +4085,7 @@ namespace PascalABCCompiler.Parsers
 			sb.Append(')');
 			return sb.ToString();
 		}
-	}
+	}*/
+    #endregion
 }
 

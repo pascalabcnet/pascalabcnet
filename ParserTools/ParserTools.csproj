@@ -71,7 +71,6 @@
     <Compile Include="ParserTools\IDocParser.cs" />
     <Compile Include="ParserTools\IParser.cs" />
     <Compile Include="ParserTools\CommentBinder.cs" />
-    <Compile Include="ParserTools\DefaultLanguageInformation.cs" />
     <Compile Include="ParserTools\Errors.cs" />
     <Compile Include="ParserTools\Keywords\BaseKeywords.cs" />
     <Compile Include="ParserTools\ILanguageInformation.cs" />

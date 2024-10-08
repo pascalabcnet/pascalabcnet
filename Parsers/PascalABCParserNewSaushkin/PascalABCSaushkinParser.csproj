@@ -102,6 +102,7 @@
     <Compile Include="ABCPascal.cs" />
     <Compile Include="ABCPascalParserTools.cs" />
     <Compile Include="ABCPascalYacc.cs" />
+    <Compile Include="PascalABCLanguageInformation.cs" />
     <Compile Include="DocTagsParser\Parser.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Keywords.cs" />
