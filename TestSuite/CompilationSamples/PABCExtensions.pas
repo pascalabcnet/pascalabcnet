@@ -433,6 +433,8 @@ function operator implicit(a: array of BigInteger): set of BigInteger; extension
 function operator implicit(a: array of decimal): set of decimal; extensionmethod := TypedSet.InitBy(a);
 ///--
 function operator implicit(a: array of single): set of single; extensionmethod := TypedSet.InitBy(a);
+///--
+function operator implicit<T>(a: array of T): set of T; extensionmethod := TypedSet.InitBy(a);
 
 //------------------------------------------------------------------------------
 //          Операции для procedure
