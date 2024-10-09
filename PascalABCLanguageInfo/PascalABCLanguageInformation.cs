@@ -3063,11 +3063,15 @@ namespace Languages.Pascal.Frontend.Data
         public virtual string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets)
         {
             int i = off - 1;
+
+            // это например вызов метода без параметров
             expr_without_brackets = null;
             keyw = KeywordKind.None;
             if (i < 0)
                 return "";
             bool is_char = false;
+
+            // идем в обе стороны от off
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             if (Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i + 1) || Text[i] == '!'))
             {

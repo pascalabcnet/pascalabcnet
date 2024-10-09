@@ -135,11 +135,11 @@ namespace Languages.Pascal.Frontend.Wrapping
 
             syntax_tree_node root = Parse(Text, FileName);
 
-            if (root == null && origText != null && origText.Contains("<"))
+            /*if (root == null && origText != null && origText.Contains("<"))
             {
                 Errors.Clear();
                 root = Parse(String.Concat("<<expression>>", Environment.NewLine, origText.Replace("<", "&<")), FileName);
-            }
+            }*/
             return root as expression;
         }
 
