@@ -45,6 +45,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Errors\Errors.csproj">
+      <Project>{44a01f9e-dce7-470c-aae5-c3de0ccbee3b}</Project>
+      <Name>Errors</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj">
       <Project>{27d9800e-2689-4aa1-a2d6-128e4a9bae98}</Project>
       <Name>LambdaAnySynToSemConverter</Name>
@@ -52,6 +56,10 @@
     <ProjectReference Include="..\LanguageIntegrator\LanguageIntegrator.csproj">
       <Project>{a48d9069-d569-4110-9252-a10f139b669b}</Project>
       <Name>LanguageIntegrator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Localization\Localization.csproj">
+      <Project>{2de2842f-0912-4251-bc0f-480854c44a13}</Project>
+      <Name>Localization</Name>
     </ProjectReference>
     <ProjectReference Include="..\Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj">
       <Project>{0ed020ff-d28e-4791-bbdd-b8b9ba714096}</Project>
