@@ -26,11 +26,6 @@ namespace PascalABCCompiler.Parsers
 
         ILanguageInformation LanguageInformation { get; set; }
 
-        /// <summary>
-        /// Данные о всех поддерживаемых директивах компилятора
-        /// </summary>
-        Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; }
-
         compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, List<string> DefinesList = null);
 
         compilation_unit GetCompilationUnitForFormatter(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings);

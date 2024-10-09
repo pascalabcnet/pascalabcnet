@@ -15,10 +15,10 @@ namespace PascalABCCompiler.Parsers
     	/// Получить полное описание элемента (в желтой подсказке)
     	/// </summary>
 		string GetDescription(IBaseScope scope);
-		/// <summary>
-    	/// Получить краткое описание элемента (без ключевых слов)
-    	/// </summary>
-    	string GetSimpleDescription(IBaseScope scope);
+        /// <summary>
+        /// Получить краткое описание элемента (без ключевых слов)
+        /// </summary>
+        string GetSimpleDescription(IBaseScope scope);
     	/// <summary>
     	/// Получить короткое имя откомпилированного типа
     	/// </summary>
@@ -134,6 +134,11 @@ namespace PascalABCCompiler.Parsers
         {
             get;
         }
+
+        /// <summary>
+        /// Данные о всех поддерживаемых директивах компилятора
+        /// </summary>
+        Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; }
 
         string SystemUnitName
         {

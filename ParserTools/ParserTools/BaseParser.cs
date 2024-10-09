@@ -17,8 +17,6 @@ namespace PascalABCCompiler.Parsers
 
         public Func<bool> CheckIfParsingUnit { get; set; }
 
-        public Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; protected set; }
-
         public ILanguageInformation LanguageInformation { get; set; }
 
         /// <summary>
