@@ -63,9 +63,9 @@ namespace PascalABCCompiler.Parsers
         {
             ReloadKeyMap();
 
-            KeywordsToTokens = new Dictionary<string, int>(caseSensitive ? StringComparer.CurrentCultureIgnoreCase : StringComparer.CurrentCulture);
+            KeywordsToTokens = new Dictionary<string, int>(caseSensitive ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase);
 
-            KeywordKinds = new Dictionary<string, KeywordKind>(caseSensitive ? StringComparer.CurrentCultureIgnoreCase : StringComparer.CurrentCulture);
+            KeywordKinds = new Dictionary<string, KeywordKind>(caseSensitive ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase);
         }
 
         /// <summary>
