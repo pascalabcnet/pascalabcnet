@@ -135,6 +135,7 @@ namespace Languages.Pascal.Frontend.Wrapping
 
             syntax_tree_node root = Parse(Text, FileName);
 
+            // убрали эту вторую попытку пока, т.к. Intellisense не должен выдавать подсказку в случае, когда компилятор выдает ошибку в такой ситуации  EVA 10.10.2024
             /*if (root == null && origText != null && origText.Contains("<"))
             {
                 Errors.Clear();

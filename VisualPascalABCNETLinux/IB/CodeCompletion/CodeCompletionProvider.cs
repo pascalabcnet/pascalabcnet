@@ -113,12 +113,6 @@ namespace VisualPascalABC
 
             if (VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
                 e = language.Parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
-            if (e is PascalABCCompiler.SyntaxTree.bin_expr && expr.Contains("<"))
-            {
-                expr = expr.Replace("<","&<");
-                Errors.Clear();
-                e = language.Parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
-            }
             if (e == null)
                 return loc;
             CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
