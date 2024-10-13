@@ -13,5 +13,6 @@ def f():
 
 print(time.forty_two())
 time = 2;
-print(time);
-print(time.forty_two())
+time.print();
+time.time().print();
+#print(time.forty_two())

@@ -163,12 +163,7 @@ import_clause
 import_clause_one
 	: IMPORT ident SEMICOLON
 		{
-			if ($2 is ident id && id.name == "time") {
-				$$ = new uses_list(new unit_or_namespace(new ident_list(new ident("time1"), @2), @2),@2);
-				($$ as uses_list).AddUsesList(new uses_list(new unit_or_namespace(new ident_list($2 as ident, @2), @2),@2));
-			}
-			else 
-				$$ = new uses_list(new unit_or_namespace(new ident_list($2 as ident, @2), @2),@2);
+			$$ = new uses_list(new unit_or_namespace(new ident_list($2 as ident, @2), @2),@2);
 			$$.source_context = @$;
 		}
 	;
@@ -533,11 +528,7 @@ variable
 	| proc_func_call
 		{ $$ = $1; }
 	| variable DOT ident
-		{ 
-			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
-			//if ($1 is ident id1 && $3 is ident id2 && id1.name == id2.name && id1.name == "time")
-			//	$$ = new dot_node(new ident("time1"), $3 as addressed_value, @$); 
-		}
+		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
 	| const_value DOT ident
 		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
 	// list constant
