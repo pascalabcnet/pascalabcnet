@@ -1,0 +1,16 @@
+﻿import random
+
+a = random.randint(1, 100 + 1)
+print('Guess a number between 1 and 100')
+attempts = 0
+while True:
+    attempts += 1
+    guess = int(input())
+    if guess < a:
+        print('Try number greater than', guess);
+    elif guess > a:
+        print('Try number less than', guess)
+    else:
+        print('You won!!!')
+        break
+print('You needed', attempts, 'attempts')
