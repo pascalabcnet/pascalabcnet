@@ -2,10 +2,10 @@
 
 interface
 
-function ttime(): real;
+function forty_two(): real;
 
 implementation
 
-function ttime() : real := DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+function forty_two() : real := 42;
 
 end.

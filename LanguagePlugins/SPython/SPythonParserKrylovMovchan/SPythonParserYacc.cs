@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-V3E9T2U
-// DateTime: 06.10.2024 22:17:38
-// UserName: alex
+// Machine:  DESKTOP-56159VE
+// DateTime: 13.10.2024 12:00:19
+// UserName: ????
 // Input file <SPythonParser.y>
 
 // options: no-lines gplex
@@ -473,7 +473,12 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 5: // import_clause_one -> IMPORT, ident, SEMICOLON
 {
-			CurrentSemanticValue.stn = new uses_list(new unit_or_namespace(new ident_list(ValueStack[ValueStack.Depth-2].id as ident, LocationStack[LocationStack.Depth-2]), LocationStack[LocationStack.Depth-2]),LocationStack[LocationStack.Depth-2]);
+			if (ValueStack[ValueStack.Depth-2].id is ident id && id.name == "time") {
+				CurrentSemanticValue.stn = new uses_list(new unit_or_namespace(new ident_list(new ident("time1"), LocationStack[LocationStack.Depth-2]), LocationStack[LocationStack.Depth-2]),LocationStack[LocationStack.Depth-2]);
+				(CurrentSemanticValue.stn as uses_list).AddUsesList(new uses_list(new unit_or_namespace(new ident_list(ValueStack[ValueStack.Depth-2].id as ident, LocationStack[LocationStack.Depth-2]), LocationStack[LocationStack.Depth-2]),LocationStack[LocationStack.Depth-2]));
+			}
+			else 
+				CurrentSemanticValue.stn = new uses_list(new unit_or_namespace(new ident_list(ValueStack[ValueStack.Depth-2].id as ident, LocationStack[LocationStack.Depth-2]), LocationStack[LocationStack.Depth-2]),LocationStack[LocationStack.Depth-2]);
 			CurrentSemanticValue.stn.source_context = CurrentLocationSpan;
 		}
         break;
@@ -575,9 +580,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 { CurrentSemanticValue.id = ValueStack[ValueStack.Depth-1].id; }
         break;
       case 26: // dotted_ident -> dotted_ident, DOT, ident
-{
-			CurrentSemanticValue.id = new ident(ValueStack[ValueStack.Depth-3].id.name + "." + ValueStack[ValueStack.Depth-1].id.name);
-		}
+{ CurrentSemanticValue.id = new ident(ValueStack[ValueStack.Depth-3].id.name + "." + ValueStack[ValueStack.Depth-1].id.name); }
         break;
       case 27: // dotted_ident_list -> dotted_ident
 {
@@ -831,7 +834,11 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 { CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
         break;
       case 77: // variable -> variable, DOT, ident
-{ CurrentSemanticValue.ex = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].id as addressed_value, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].id as addressed_value, CurrentLocationSpan);
+			//if ($1 is ident id1 && $3 is ident id2 && id1.name == id2.name && id1.name == "time")
+			//	$$ = new dot_node(new ident("time1"), $3 as addressed_value, @$); 
+		}
         break;
       case 78: // variable -> const_value, DOT, ident
 { CurrentSemanticValue.ex = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].id as addressed_value, CurrentLocationSpan); }

@@ -1,11 +1,17 @@
 ﻿import time
-start = time.ttime() * 1000
+start = time.time() * 1000
 i = 1.
 sum = 0.
 while i<100000000:
   sum = sum + 1.0/i
   i = i + 1
-print(time.ttime() * 1000 - start)
+print(time.time() * 1000 - start)
 
 def f():
   print(start, i, sum)
+
+
+print(time.forty_two())
+time = 2;
+print(time);
+print(time.forty_two())

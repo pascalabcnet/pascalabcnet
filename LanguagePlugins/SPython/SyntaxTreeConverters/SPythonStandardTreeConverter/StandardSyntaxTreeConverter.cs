@@ -9,6 +9,10 @@ namespace Languages.SPython.Frontend.Converters
 
         protected override syntax_tree_node ApplyConcreteConversions(syntax_tree_node root)
         {
+            // замена time.time на time1.time 
+            var snv = new SameNameVisitor();
+            snv.ProcessNode(root);
+
             // замена генерации списков на Select.Where.ToArray
             var lgnv = new ListGeneratorNodesVisitor();
             lgnv.ProcessNode(root);
