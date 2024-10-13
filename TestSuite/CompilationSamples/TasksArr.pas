@@ -109,13 +109,13 @@ begin
      var cnt4 := a.CountOf(4);
      var cnt5 := a.CountOf(5);
      
-     var lst := ObjectList.New; // Можно без списка. Наверное, думал выводить что то еще
-     case cnt4.CompareTo(cnt5) of
-    1: lst.Add('четвёрок больше');
-    0: lst.Add('одинаково');
-    -1: lst.Add('пятёрок больше');
-     end;
-     CheckOutputAfterInitial(lst);
+   var ans: string := '';
+   case cnt4.CompareTo(cnt5) of
+  1: ans := 'четвёрок больше';
+  0: ans := 'одинаково';
+ -1: ans := 'пятёрок больше';
+   end;
+   CheckOutputAfterInitial(ans);
   end;
   'Arr_Replace1': begin 
      FilterOnlyNumbersAndBools;
@@ -742,6 +742,7 @@ initialization
   'Arr_MinMax1','Arr_MinMax2','Arr_MinMax3','Arr_MinMax4','Arr_Neighbors1','Arr_MinMaxInd1','Arr_MinMaxInd2',
   'Arr_Fill1','Arr_Fill2','Заполнение1','ЗаполнениеЛямбда1','Заполнение2','ЗаполнениеЛямбда2',
   'ЗаполнениеПоПред1','ЗаполнениеПоПред2','ЗаполнениеГеом1','ЗаполнениеГеом2','ЗаполнениеСумма1','ЗаполнениеСумма2',
+  'ЗаполнениеСумма3_add',
   'Arr_Transf1','Arr_Transf1a','Arr_Transf2','Arr_Transf3','Arr_Transf4','Arr_Transf5','Arr_Transf7',
   'Arr_Transf8','Arr_Transf9','Arr_Transf6',
   'Arr_Reverse1','Arr_Reverse2','Arr_Reverse3','Arr_Reverse3a',

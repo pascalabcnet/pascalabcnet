@@ -2,7 +2,7 @@
 
 NAME_CANNOT_HAVE_GENERIC_PARAMETERS_{0}=Ім'я {0} не може мати узагальнені параметри
 AUTO_CLASS_MUST_NOT_HAVE_POINTERS=Авто клас не може мати поля, що є вказівниками
-AUTO_CLASS_MUST_NOT_HAVE_PARENTS=Авто клас не може мати предків або реалізовувати інтерфейси
+AUTO_CLASS_MUST_NOT_HAVE_PARENTS_WITH_FIELDS=Авто клас не може мати предків с полями
 UNDEFINED_NAME_REFERENCE_{0}=Невідоме ім'я '{0}'
 TWO_TYPE_CONVERTIONS_POSSIBLE_FIRST_TYPE_{0}_SECOND_TYE_{1}=Можливі два перетворення типу: до типу {0} і до типу {1}
 CAN_NOT_CONVERT_TYPES_FROM_{0}_TO_{1}=Не можна перетворити тип {0} до {1}

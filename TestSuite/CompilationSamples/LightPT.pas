@@ -298,6 +298,9 @@ procedure CheckInitialIOSeqs(input,output: sequence of System.Type);
 
 procedure CheckOutputAfterInitial(params arr: array of object); // проверить только то, что после исходного вывода
 
+procedure CheckOutputAfterInitial(a: ObjectList);
+
+
 procedure CheckOutputAfterInitialSilent(params arr: array of object); 
 
 /// Проверить последовательность значений при выводе после начального вывода
@@ -666,6 +669,7 @@ type
     constructor (ServerAddr: string);
     begin
       Self.ServerAddr := ServerAddr;
+      System.Net.ServicePointManager.SecurityProtocol := System.Net.SecurityProtocolType(3072);
       client := new HttpClient();
       client.Timeout := TimeSpan.FromSeconds(10);
     end;
@@ -2379,6 +2383,8 @@ begin
   CheckOutputHelper(InitialOutputList.Count,arr);
 end;
 
+procedure CheckOutputAfterInitial(a: ObjectList) := CheckOutputAfterInitialSeq(a);
+
 procedure CheckOutputAfterInitialSilent(params arr: array of object);
 begin
   Silent := True;
@@ -2808,9 +2814,10 @@ begin
               raise e.InnerException;
           end;
           //InputList := InputList; 
-          //OutputList := OutputList; 
+          OutputList := OutputList; 
           
           FlattenOutput; // SSM 28.06.24 - и перед каждым тестом
+          OutputListIsClearedFromSpaces := False;
           CheckTask(TName);
           if TaskResult = BadSolution then
             break; // хоть один тест неудачный - выходим!

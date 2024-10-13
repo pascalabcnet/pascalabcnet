@@ -3013,6 +3013,8 @@ const
   Format_InvalidString = 'Входная строка имела неверный формат!!Input string was not in a correct format';
   Overflow_Int32 = 'Целочисленное переполнение!!Integer overflow';
   FOR_STEP_CANNOT_BE_EQUAL0 = 'Шаг цикла for не может быт равен 0!!Step of the for loop cannot be equal to 0';
+  SEQUENCE_CANNOT_BE_EMPTY = 'Последовательность не может быть пустой!!Sequence cannot be empty';
+  ARRAY_CANNOT_BE_EMPTY = 'Массив не может быть пустым!!Array cannot be empty';
 // -----------------------------------------------------
 //                  WINAPI
 // -----------------------------------------------------
@@ -11007,43 +11009,103 @@ end;
 // Дополнения 2024: Zip - синоним ZipTuple
 
 /// Возвращает первый элемент последовательности с минимальным значением ключа
-function MinBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensionmethod;
+function MinBy<T, TKey>(Self: sequence of T; keySelector: T -> TKey): T; extensionmethod; 
 begin
-  if selector = nil then
-    raise new ArgumentNullException('selector');
+  var enumerator := Self.GetEnumerator();
+  if not enumerator.MoveNext() then
+    raise new System.ArgumentException(GetTranslation(SEQUENCE_CANNOT_BE_EMPTY));
   
+  var minElement := enumerator.Current; 
+  var minKey := keySelector(minElement); 
+
   var comp := Comparer&<TKey>.Default;
-  Result := Self.Aggregate((min, x)-> comp.Compare(selector(x), selector(min)) < 0 ? x : min);
+  while enumerator.MoveNext() do
+  begin
+    var currentElement := enumerator.Current;
+    var currentKey := keySelector(currentElement);
+    if comp.Compare(currentKey,minKey) < 0 then
+    begin
+      minKey := currentKey;
+      minElement := currentElement; 
+    end;
+  end;
+  
+  Result := minElement;
 end;
 
 /// Возвращает первый элемент последовательности с максимальным значением ключа
-function MaxBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensionmethod;
+function MaxBy<T, TKey>(Self: sequence of T; keySelector: T -> TKey): T; extensionmethod; 
 begin
-  if selector = nil then
-    raise new ArgumentNullException('selector');
+  var enumerator := Self.GetEnumerator();
+  if not enumerator.MoveNext() then
+    raise new System.ArgumentException(GetTranslation(SEQUENCE_CANNOT_BE_EMPTY));
   
+  var maxElement := enumerator.Current; 
+  var maxKey := keySelector(maxElement); 
+
   var comp := Comparer&<TKey>.Default;
-  Result := Self.Aggregate((max, x)-> comp.Compare(selector(x), selector(max)) > 0 ? x : max);
+  while enumerator.MoveNext() do
+  begin
+    var currentElement := enumerator.Current;
+    var currentKey := keySelector(currentElement);
+    if comp.Compare(currentKey,maxKey) > 0 then
+    begin
+      maxKey := currentKey;
+      maxElement := currentElement; 
+    end;
+  end;
+  
+  Result := maxElement;
 end;
 
 /// Возвращает последний элемент последовательности с минимальным значением ключа
-function LastMinBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensionmethod;
+function LastMinBy<T, TKey>(Self: sequence of T; keySelector: T -> TKey): T; extensionmethod; 
 begin
-  if selector = nil then
-    raise new ArgumentNullException('selector');
+  var enumerator := Self.GetEnumerator();
+  if not enumerator.MoveNext() then
+    raise new System.ArgumentException(GetTranslation(SEQUENCE_CANNOT_BE_EMPTY));
   
+  var minElement := enumerator.Current; 
+  var minKey := keySelector(minElement); 
+
   var comp := Comparer&<TKey>.Default;
-  Result := Self.Aggregate((min, x)-> comp.Compare(selector(x), selector(min)) <= 0 ? x : min);
+  while enumerator.MoveNext() do
+  begin
+    var currentElement := enumerator.Current;
+    var currentKey := keySelector(currentElement);
+    if comp.Compare(currentKey,minKey) <= 0 then
+    begin
+      minKey := currentKey;
+      minElement := currentElement; 
+    end;
+  end;
+  
+  Result := minElement;
 end;
 
 /// Возвращает последний элемент последовательности с максимальным значением ключа
-function LastMaxBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensionmethod;
+function LastMaxBy<T, TKey>(Self: sequence of T; keySelector: T -> TKey): T; extensionmethod; 
 begin
-  if selector = nil then
-    raise new ArgumentNullException('selector');
+  var enumerator := Self.GetEnumerator();
+  if not enumerator.MoveNext() then
+    raise new System.ArgumentException(GetTranslation(SEQUENCE_CANNOT_BE_EMPTY));
   
+  var maxElement := enumerator.Current; 
+  var maxKey := keySelector(maxElement); 
+
   var comp := Comparer&<TKey>.Default;
-  Result := Self.Aggregate((max, x)-> comp.Compare(selector(x), selector(max)) >= 0 ? x : max);
+  while enumerator.MoveNext() do
+  begin
+    var currentElement := enumerator.Current;
+    var currentKey := keySelector(currentElement);
+    if comp.Compare(currentKey,maxKey) > 0 then
+    begin
+      maxKey := currentKey;
+      maxElement := currentElement; 
+    end;
+  end;
+  
+  Result := maxElement;
 end;
 
 {function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
@@ -11544,6 +11606,17 @@ begin
       Result += 1;
 end;
 
+/// Возвращает элементы последовательности, ключи для которых отличаются, используя компоратор comp
+function DistinctBy<T, TKey>(Self: sequence of T; by: T->TKey; comp: IEqualityComparer<TKey>): sequence of T; extensionmethod;
+begin
+  var hs := new HashSet<TKey>(comp);
+  foreach var x in Self do
+    if hs.Add(by(x)) then
+      yield x;
+end;
+/// Возвращает элементы последовательности, ключи для которых отличаются, используя компоратор по-умолчанию
+function DistinctBy<T, TKey>(Self: sequence of T; by: T->TKey); extensionmethod := Self.DistinctBy(by, nil);
+
 // -----------------------------------------------------
 //>>     Методы расширения списков # Extension methods for List T
 // -----------------------------------------------------
@@ -11672,7 +11745,100 @@ end;
 function LastIndexMax<T>(Self: List<T>): integer; extensionmethod; where T: System.IComparable<T>;
 begin
   Result := Self.LastIndexMax(Self.Count - 1);
-end;  
+end;
+
+/// Возвращает индекс первого элемента с минимальным значением ключа
+function IndexMinBy<T, TKey>(Self: array of T; keySelector: T -> TKey): integer; extensionmethod; 
+begin
+  if Self.Length = 0 then
+    raise new System.ArgumentException(ARRAY_CANNOT_BE_EMPTY);
+  
+  var minIndex := 0;
+  var minKey := keySelector(Self[0]); 
+
+  var comp := Comparer&<TKey>.Default;
+  for var i := 1 to Self.Length - 1 do
+  begin
+    var currentKey := keySelector(Self[i]); 
+    if comp.Compare(currentKey,minKey) < 0 then
+    begin
+      minKey := currentKey;
+      minIndex := i;
+    end;
+  end;
+  
+  Result := minIndex;
+end;
+
+/// Возвращает индекс первого элемента с максимальным значением ключа
+function IndexMaxBy<T, TKey>(Self: array of T; keySelector: T -> TKey): integer; extensionmethod; 
+begin
+  if Self.Length = 0 then
+    raise new System.ArgumentException(ARRAY_CANNOT_BE_EMPTY);
+  
+  var maxIndex := 0;
+  var maxKey := keySelector(Self[0]); 
+
+  var comp := Comparer&<TKey>.Default;
+  for var i := 1 to Self.Length - 1 do
+  begin
+    var currentKey := keySelector(Self[i]); 
+    if comp.Compare(currentKey,maxKey) > 0 then
+    begin
+      maxKey := currentKey;
+      maxIndex := i;
+    end;
+  end;
+  
+  Result := maxIndex;
+end;
+
+/// Возвращает индекс последнего элемента с минимальным значением ключа
+function LastIndexMinBy<T, TKey>(Self: array of T; keySelector: T -> TKey): integer; extensionmethod; 
+begin
+  if Self.Length = 0 then
+    raise new System.ArgumentException(ARRAY_CANNOT_BE_EMPTY);
+  
+  var minIndex := 0;
+  var minKey := keySelector(Self[0]); 
+
+  var comp := Comparer&<TKey>.Default;
+  for var i := 1 to Self.Length - 1 do
+  begin
+    var currentKey := keySelector(Self[i]); 
+    if comp.Compare(currentKey,minKey) <= 0 then
+    begin
+      minKey := currentKey;
+      minIndex := i;
+    end;
+  end;
+  
+  Result := minIndex;
+end;
+
+/// Возвращает индекс последнего элемента с максимальным значением ключа
+function LastIndexMaxBy<T, TKey>(Self: array of T; keySelector: T -> TKey): integer; extensionmethod; 
+begin
+  if Self.Length = 0 then
+    raise new System.ArgumentException(ARRAY_CANNOT_BE_EMPTY);
+  
+  var maxIndex := 0;
+  var maxKey := keySelector(Self[0]); 
+
+  var comp := Comparer&<TKey>.Default;
+  for var i := 1 to Self.Length - 1 do
+  begin
+    var currentKey := keySelector(Self[i]); 
+    if comp.Compare(currentKey,maxKey) >= 0 then
+    begin
+      maxKey := currentKey;
+      maxIndex := i;
+    end;
+  end;
+  
+  Result := maxIndex;
+end;
+
 
 /// Заменяет в массиве все вхождения одного значения на другое
 /// Заменяет в списке все вхождения одного значения на другое
@@ -12716,7 +12882,7 @@ begin
       Result := Self[i];
 end;
 
-/// Возвращает индекс первого минимального элемента начиная с позиции index
+/// Возвращает индекс первого минимального элемента 
 function IndexMin<T>(Self: array of T; index: integer := 0): integer; extensionmethod; where T: IComparable<T>;
 begin
   var min := Self[index];
@@ -12729,7 +12895,7 @@ begin
     end;
 end;
 
-/// Возвращает индекс первого максимального элемента начиная с позиции index
+/// Возвращает индекс первого максимального элемента 
 function IndexMax<T>(Self: array of T; index: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
 begin
   var max := Self[index];

@@ -117,6 +117,7 @@
     File ..\bin\Lib\PointerTools.pcu
     File ..\bin\Lib\PointRect.pcu
     File ..\bin\Lib\PT4.pcu
+    File ..\bin\Lib\PT4_32.pcu
     File ..\bin\Lib\PT4Exam.pcu
     File ..\bin\Lib\PT4MakerNetX.pcu
     File ..\bin\Lib\PT4TaskMakerNET.pcu
@@ -144,6 +145,7 @@
     File ..\bin\Lib\School.pcu
     File ..\bin\Lib\SF.pcu
     File ..\bin\Lib\Turtle.pcu
+    File ..\bin\Lib\Coords.pcu
     File ..\bin\Lib\TurtleWPF.pcu
     File ..\bin\Lib\LightPT.pcu
     File ..\bin\Lib\Tasks.pcu
@@ -207,6 +209,7 @@
     ${AddFile} "PointerTools.pcu"
     ${AddFile} "PointRect.pcu"
     ${AddFile} "PT4.pcu"
+    ${AddFile} "PT4_32.pcu"
     ${AddFile} "PT4Exam.pcu"
     ${AddFile} "PT4MakerNetX.pcu"
     ${AddFile} "PT4TaskMakerNET.pcu"
@@ -234,6 +237,7 @@
     ${AddFile} "School.pcu"
     ${AddFile} "SF.pcu"
     ${AddFile} "Turtle.pcu"
+    ${AddFile} "Coords.pcu"
     ${AddFile} "TurtleWPF.pcu"
     ${AddFile} "LightPT.pcu"
     ${AddFile} "Tasks.pcu"
@@ -318,6 +322,7 @@
     File ..\bin\Lib\PointerTools.pas
     File ..\bin\Lib\PointRect.pas
     File ..\bin\Lib\PT4.pas
+    File ..\bin\Lib\PT4_32.pas
     File ..\bin\Lib\PT4Exam.pas
     File ..\bin\Lib\PT4MakerNetX.pas
     File ..\bin\Lib\xPT4MakerNetX.pas
@@ -347,6 +352,7 @@
     File ..\bin\Lib\School.pas
     File ..\bin\Lib\SF.pas
     File ..\bin\Lib\Turtle.pas
+    File ..\bin\Lib\Coords.pas
     File ..\bin\Lib\TurtleWPF.pas
     File ..\bin\Lib\LightPT.pas
     File ..\bin\Lib\Tasks.pas
@@ -396,6 +402,7 @@
     ${AddFile} "PointerTools.pas"
     ${AddFile} "PointRect.pas"
     ${AddFile} "PT4.pas"
+    ${AddFile} "PT4_32.pas"
     ${AddFile} "PT4Exam.pas"
     ${AddFile} "PT4MakerNetX.pas"
     ${AddFile} "xPT4MakerNetX.pas"
@@ -424,6 +431,7 @@
     ${AddFile} "School.pas"
     ${AddFile} "SF.pas"
     ${AddFile} "Turtle.pas"
+    ${AddFile} "Coords.pas"
     ${AddFile} "TurtleWPF.pas"
     ${AddFile} "LightPT.pas"
     ${AddFile} "Tasks.pas"

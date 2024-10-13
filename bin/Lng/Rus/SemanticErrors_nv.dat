@@ -2,7 +2,7 @@
 
 NAME_CANNOT_HAVE_GENERIC_PARAMETERS_{0}=Имя {0} не может иметь обобщенные параметры
 AUTO_CLASS_MUST_NOT_HAVE_POINTERS=Авто класс не может иметь поля, являющиеся указателями
-AUTO_CLASS_MUST_NOT_HAVE_PARENTS=Авто класс не может иметь предков
+AUTO_CLASS_MUST_NOT_HAVE_PARENTS_WITH_FIELDS=Авто класс не может иметь предков, содержащих поля 
 AUTO_CLASS_MUST_NOT_HAVE_UNNAMED_ENUMS=Авто класс не может иметь полей с неименованными перечислимыми типами
 AUTO_CLASS_MUST_NOT_HAVE_EVENTS=Авто класс не может иметь поля, являющиеся событиями
 AUTO_CLASS_MUST_NOT_HAVE_PROPERTIES=Авто класс не может иметь свойства
