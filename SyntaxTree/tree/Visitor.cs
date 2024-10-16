@@ -1582,6 +1582,18 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_to_expr">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(to_expr _to_expr);
+		///<summary>
+		///Method to visit global_statement.
+		///</summary>
+		///<param name="_global_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(global_statement _global_statement);
+		///<summary>
+		///Method to visit list_generator.
+		///</summary>
+		///<param name="_list_generator">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(list_generator _list_generator);
 	}
 
 
