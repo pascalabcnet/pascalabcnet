@@ -24,20 +24,7 @@ namespace PascalABCCompiler.Parsers
         /// </summary>
         Func<bool> CheckIfParsingUnit { get; set; }
 
-        /// <summary>
-        /// Данные о всех поддерживаемых директивах компилятора
-        /// </summary>
-        Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; }
-
-        ILanguageInformation LanguageInformation
-        {
-        	get;
-        }
-
-        /// <summary>
-        /// Класс, отвечащий за хранение и обработку ключевых слов языка
-        /// </summary>
-        BaseKeywords Keywords { get; }
+        ILanguageInformation LanguageInformation { get; set; }
 
         compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, List<string> DefinesList = null);
 
@@ -50,7 +37,6 @@ namespace PascalABCCompiler.Parsers
         expression GetTypeAsExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings);
 
         void Reset();
-
     }
 
     

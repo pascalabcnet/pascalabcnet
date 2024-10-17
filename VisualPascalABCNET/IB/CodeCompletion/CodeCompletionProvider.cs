@@ -113,12 +113,6 @@ namespace VisualPascalABC
 
             if (VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
                 e = language.Parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
-            if (e is PascalABCCompiler.SyntaxTree.bin_expr && expr.Contains("<"))
-            {
-                expr = expr.Replace("<","&<");
-                Errors.Clear();
-                e = language.Parser.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
-            }
             if (e == null)
                 return loc;
             CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
@@ -335,7 +329,7 @@ namespace VisualPascalABC
                 	special_module = true;
                 }*/
                 string pattern = charTyped.ToString();
-                string[] keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetKeywords();
+                var keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetKeywords();
                 if (CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.IsTypeAfterKeyword(keyw))
                 {
                     keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetTypeKeywords();
@@ -441,7 +435,7 @@ namespace VisualPascalABC
                 PascalABCCompiler.SyntaxTree.expression e = null;
                 if (ctrl_space && !shift_space && (pattern == null || pattern == ""))
                 {
-                    string[] keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetKeywords();
+                    var keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetKeywords();
                     foreach (string key in keywords)
                     {
                         //if (key.StartsWith(pattern, StringComparison.CurrentCultureIgnoreCase))
