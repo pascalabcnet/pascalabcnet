@@ -4,14 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using ICSharpCode.Core;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using Languages.Integration;
 using PascalABCCompiler.Parsers;
 
 namespace VisualPascalABC
@@ -50,8 +46,9 @@ namespace VisualPascalABC
 
             PascalABCCompiler.SyntaxTree.expression expressionTree = parser.GetExpression("test" + Path.GetExtension(fileName), 
                 expr, Errors, Warnings);
-            
-            if (Errors.Count > 0)
+
+            // такая вторая попытка нигде больше не встречается, пока добавил проверку, что анализируем Паскаль  EVA
+            if (Errors.Count > 0 && parser == Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(PascalABCCompiler.StringConstants.pascalLanguageName).Parser)
             {
                 string s = expr.TrimStart();
                 if (s.Length > 0 && s[0] == '^')

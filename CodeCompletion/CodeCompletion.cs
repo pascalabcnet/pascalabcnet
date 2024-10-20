@@ -60,12 +60,8 @@ namespace CodeCompletion
         {
             pabcNamespaces.Clear();
         }
-
-		private static string get_doctagsParserExtension(string ext)
-		{
-			return ext + "dt";
-		}
 		
+        // нужно переделать на использование ILanguage  EVA
 		public static IParser CurrentParser
 		{
 			get

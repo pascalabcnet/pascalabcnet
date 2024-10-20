@@ -25,7 +25,7 @@ namespace Languages.Pascal.Frontend.Data
             }
         }
 
-        public BaseKeywords KeywordsStorage { get; } = new Core.PascalABCKeywords();
+        public BaseKeywords KeywordsStorage { get; } = new Core.PascalABCKeywords(); // про-ва имен поменять  EVA
 
         public Dictionary<string, DirectiveInfo> ValidDirectives { get; private set; }
 

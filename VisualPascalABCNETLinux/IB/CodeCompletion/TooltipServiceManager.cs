@@ -47,7 +47,8 @@ namespace VisualPascalABC
             PascalABCCompiler.SyntaxTree.expression expressionTree = parser.GetExpression("test" + Path.GetExtension(fileName),
                 expr, Errors, Warnings);
 
-            if (Errors.Count > 0)
+            // такая вторая попытка нигде больше не встречается, пока добавил проверку, что анализируем Паскаль  EVA
+            if (Errors.Count > 0 && parser == Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(PascalABCCompiler.StringConstants.pascalLanguageName).Parser)
             {
                 string s = expr.TrimStart();
                 if (s.Length > 0 && s[0] == '^')
