@@ -15,7 +15,7 @@
 `CodeCompletionKeyHandler` реагирует на нажатие вызовом метода `ShowCompletionWindow`. В нем есть обращение к `GenerateCompletionDataWithKeyword` из класса `CodeCompletionProvider`. В этом методе выделяется нужная подстрока и есть обращение к методу `GetCompletionData`. 
 **Логика этого метода следующая:**
 1) если был нажат `ctrl + space` (`shift + space` входит в это понятие тоже)
-Вызывается `FindPattern` из `LanguageInformation` для получения "токена" до каретки. Если в процессе встретится точка, то вызывается `FindExpression`.  Ниже если pattern пустой, то в итоговый список `ICompletionData` добавляются ключевые слова языка.
+Вызывается `FindPattern` из `LanguageInformation` для получения "токена" до курсора. Если в процессе встретится точка, то вызывается `FindExpression`.  Ниже если pattern пустой и не `shift + space`, то в итоговый список `ICompletionData` добавляются ключевые слова языка.
 2) если был нажат пробел после `new` 
 Вызывается SkipNew для пропуска `new`  и поиска expression перед ним.
 3) иначе, если не было введено `uses`
