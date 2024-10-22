@@ -74,11 +74,11 @@ namespace VisualPascalABC
             }
             else
             {
-                PABCNETCodeCompletionWindow ccw = CodeCompletionNamesOnlyInModuleAction.comp_windows[editor.ActiveTextAreaControl.TextArea] as PABCNETCodeCompletionWindow;
+                PABCNETCodeCompletionWindow ccw = CodeCompletionShiftSpaceActions.comp_windows[editor.ActiveTextAreaControl.TextArea] as PABCNETCodeCompletionWindow;
 
-                if (ccw != null && CodeCompletionNamesOnlyInModuleAction.is_begin)
+                if (ccw != null && CodeCompletionShiftSpaceActions.is_begin)
                 {
-                    CodeCompletionNamesOnlyInModuleAction.is_begin = false;
+                    CodeCompletionShiftSpaceActions.is_begin = false;
                     if (key != ' ')
                         ccw.ProcessKeyEvent(key);
                     else
@@ -115,8 +115,8 @@ namespace VisualPascalABC
                         true,
                         PascalABCCompiler.Parsers.KeywordKind.None
                     );
-                    CodeCompletionNamesOnlyInModuleAction.is_begin = true;
-                    CodeCompletionNamesOnlyInModuleAction.comp_windows[editor.ActiveTextAreaControl.TextArea] = codeCompletionWindow;
+                    CodeCompletionShiftSpaceActions.is_begin = true;
+                    CodeCompletionShiftSpaceActions.comp_windows[editor.ActiveTextAreaControl.TextArea] = codeCompletionWindow;
                     if (codeCompletionWindow != null)
                         codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
                 }
@@ -162,7 +162,7 @@ namespace VisualPascalABC
                             false,
                             keyw
                         );
-                        CodeCompletionNamesOnlyInModuleAction.comp_windows[editor.ActiveTextAreaControl.TextArea] = codeCompletionWindow;
+                        CodeCompletionShiftSpaceActions.comp_windows[editor.ActiveTextAreaControl.TextArea] = codeCompletionWindow;
                         if (codeCompletionWindow != null)
                             codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
                         //return true;
@@ -209,7 +209,7 @@ namespace VisualPascalABC
                         key,						// Key pressed - will be passed to the provider
                         keyw
                     );
-                    CodeCompletionNamesOnlyInModuleAction.comp_windows[editor.ActiveTextAreaControl.TextArea] = codeCompletionWindow;
+                    CodeCompletionShiftSpaceActions.comp_windows[editor.ActiveTextAreaControl.TextArea] = codeCompletionWindow;
                     if (codeCompletionWindow != null)
                         codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
 
@@ -272,7 +272,7 @@ namespace VisualPascalABC
                 CodeCompletion.AssemblyDocCache.Reset();
                 CodeCompletion.UnitDocCache.Reset();
                 codeCompletionWindow.Dispose();
-                CodeCompletionNamesOnlyInModuleAction.comp_windows[editor.ActiveTextAreaControl.TextArea] = null;
+                CodeCompletionShiftSpaceActions.comp_windows[editor.ActiveTextAreaControl.TextArea] = null;
                 codeCompletionWindow = null;
             }
         }
