@@ -407,7 +407,6 @@ namespace VisualPascalABC
             public bool shiftSpace;
             public bool spaceAfterNew;
             public bool spaceAfterUses;
-            public bool dollarAdded;
         }
 
         public ICompletionData[] GetCompletionData(int off, string text, int line, int col, char charTyped, KeywordKind keywordKind)
@@ -424,16 +423,15 @@ namespace VisualPascalABC
                     ctrlSpace = charTyped == '_',
                     shiftSpace = charTyped == '\0',
                     spaceAfterNew = keywordKind == KeywordKind.New,
-                    spaceAfterUses = keywordKind == KeywordKind.Uses,
-                    dollarAdded = charTyped == '$'
+                    spaceAfterUses = keywordKind == KeywordKind.Uses
                 };
 
                 // 
                 string expressionText = GetExpressionTextForCompletionData(off, text, line, col,
-                    currentLanguage.LanguageInformation, ref context, out var insidePatternWithDots, out var pattern);
+                    currentLanguage.LanguageInformation, ref context, out var insidePatternWithDots, out var ctrlSpaceAfterDot, out var pattern);
 
                 // добавляем ключевые слова в случае ctrl + space, нажатых в "пустом" месте
-                if (context.ctrlSpace && string.IsNullOrEmpty(pattern))
+                if (!ctrlSpaceAfterDot && context.ctrlSpace && string.IsNullOrEmpty(pattern))
                 {
                     var keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetKeywords();
 
@@ -448,7 +446,7 @@ namespace VisualPascalABC
                     return null;
 
                 SymInfo[] symInfos = GetSymInfosForCompletionData(line, col, ref context, currentLanguage.CaseSensitive,
-                    expressionText, insidePatternWithDots, pattern, expr, out var selectedSymInfo, out var lastUsedMember, out shouldReturnNull);
+                    expressionText, ctrlSpaceAfterDot, insidePatternWithDots, pattern, expr, out var selectedSymInfo, out var lastUsedMember, out shouldReturnNull);
 
                 if (shouldReturnNull)
                     return null;
@@ -504,7 +502,7 @@ namespace VisualPascalABC
                 defaultCompletionElement = data as UserDefaultCompletionData;*/
         }
 
-        private SymInfo[] GetSymInfosForCompletionData(int line, int col, ref ActionContext context, bool languageCaseSensitive, string expressionText, bool insidePatternWithDots, string pattern, PascalABCCompiler.SyntaxTree.expression expr, out SymInfo selectedSymInfo, out string lastUsedMember, out bool shouldReturnNull)
+        private SymInfo[] GetSymInfosForCompletionData(int line, int col, ref ActionContext context, bool languageCaseSensitive, string expressionText, bool ctrlSpaceAfterDot, bool insidePatternWithDots, string pattern, PascalABCCompiler.SyntaxTree.expression expr, out SymInfo selectedSymInfo, out string lastUsedMember, out bool shouldReturnNull)
         {
             SymInfo[] symInfos = null;
 
@@ -536,7 +534,7 @@ namespace VisualPascalABC
                     else
                         symInfos = CodeCompletion.DomConverter.standard_units;
                 }
-                else if (context.dotPressed || context.dollarAdded)
+                else if (context.dotPressed || ctrlSpaceAfterDot)
                 {
                     CodeCompletion.SymScope dotScope = null;
                     symInfos = dconv.GetName(expr, expressionText, line, col, keyword, ref dotScope);
@@ -573,7 +571,7 @@ namespace VisualPascalABC
             PascalABCCompiler.SyntaxTree.expression expr = null;
             shouldReturnNull = false;
 
-            if ((context.dotPressed || context.spaceAfterNew || context.spaceAfterUses || context.dollarAdded || insidePatternWithDots) && expressionText != null) // был !ctrlSpaceOrShiftSpace вместо первых четырех булевых значений
+            if ((context.dotPressed || context.spaceAfterNew || context.spaceAfterUses || insidePatternWithDots) && expressionText != null) // был !ctrlSpaceOrShiftSpace вместо первых четырех булевых значений
             {
                 List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
                 List<PascalABCCompiler.Errors.CompilerWarning> Warnings = new List<PascalABCCompiler.Errors.CompilerWarning>();
@@ -592,21 +590,28 @@ namespace VisualPascalABC
             return expr;
         }
 
-        private string GetExpressionTextForCompletionData(int off, string text, int line, int col, ILanguageInformation languageInformation, ref ActionContext context, out bool insidePatternWithDots, out string pattern)
+        private string GetExpressionTextForCompletionData(int off, string text, int line, int col, ILanguageInformation languageInformation, ref ActionContext context, out bool insidePatternWithDots, out bool ctrlSpaceAfterDot, out string pattern)
         {
 
             string expressionText = null;
             pattern = null;
             insidePatternWithDots = false;
+            ctrlSpaceAfterDot = false;
 
             if (context.ctrlSpace || context.shiftSpace)
             {
 
                 pattern = languageInformation.FindPattern(off, text, out var isPattern);
-                if (isPattern && text[off - pattern.Length - 1] == '.')
+
+                if (!isPattern && text[off - 1] == '.')
+                {
+                    ctrlSpaceAfterDot = true;
+                }
+                
+                if (isPattern && text[off - pattern.Length - 1] == '.' || ctrlSpaceAfterDot)
                 {
                     insidePatternWithDots = true;
-                    expressionText = FindExpression(off - pattern.Length - 1, text, line, col);
+                    expressionText = FindExpression(off - (pattern?.Length ?? 0) - 1, text, line, col);
                 }
 
             }
@@ -618,10 +623,6 @@ namespace VisualPascalABC
             else if (context.dotPressed) // keywordKind != KeywordKind.Uses
             {
                 expressionText = FindExpression(off, text, line, col);
-            }
-            else if (context.dollarAdded) // доллар добавляется в коде (в CodeCompletionAllNamesAction)
-            {
-                expressionText = FindExpression(off - 1, text, line, col);
             }
 
             return expressionText;

@@ -602,11 +602,13 @@ namespace VisualPascalABC
             int off = textArea.Caret.Offset;
             string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
 
+            // автодополнение xml-комментария
             if (off > 2 && text[off - 1] == '/' && text[off - 2] == '/' && text[off - 3] == '/')
             {
                 CodeCompletionActionsManager.GenerateCommentTemplate(textArea);
                 return;
             }
+            // автодополнение некоторого выражения из файла template.pct
             else
             {
                 string prev = get_prev_text(text, off - 1);
@@ -617,10 +619,12 @@ namespace VisualPascalABC
                 }
             }
 
+            // если подсказка по точке выключена дальше не идем
             if (!WorkbenchServiceFactory.Workbench.UserOptions.CodeCompletionDot)
                 return;
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return;
-            CodeCompletionProvider completionDataProvider = new CodeCompletionProvider();
+            
+            if (CodeCompletion.CodeCompletionController.CurrentParser == null) 
+                return;
 
             is_begin = true;
 
@@ -628,7 +632,7 @@ namespace VisualPascalABC
                     VisualPABCSingleton.MainForm,					// The parent window for the completion window
                     textArea.MotherTextEditorControl, 					// The text editor to show the window for
                     textArea.MotherTextEditorControl.FileName,		// Filename - will be passed back to the provider
-                    completionDataProvider,		// Provider to get the list of possible completions
+                    new CodeCompletionProvider(),		// Provider to get the list of possible completions
                     '\0',							// Key pressed - will be passed to the provider
                     false,
                     false,
@@ -640,15 +644,16 @@ namespace VisualPascalABC
             if (codeCompletionWindow != null)
             {
                 // ShowCompletionWindow can return null when the provider returns an empty list
-                codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
+                codeCompletionWindow.Closed += new EventHandler(OnCodeCompletionWindowClosed);
             }
         }
 
-        public void CloseCodeCompletionWindow(object sender, EventArgs e)
+        // такой же метод есть в CodeCompletionKeyHandler   EVA
+        public void OnCodeCompletionWindowClosed(object sender, EventArgs e)
         {
             if (codeCompletionWindow != null)
             {
-                codeCompletionWindow.Closed -= new EventHandler(CloseCodeCompletionWindow);
+                codeCompletionWindow.Closed -= new EventHandler(OnCodeCompletionWindowClosed);
                 CodeCompletionProvider.disp.Reset();
                 CodeCompletion.AssemblyDocCache.Reset();
                 CodeCompletion.UnitDocCache.Reset();
@@ -703,7 +708,6 @@ namespace VisualPascalABC
         PABCNETCodeCompletionWindow codeCompletionWindow;
         public static TextArea textArea;
         public static Hashtable comp_windows = new Hashtable();
-        protected char key = '_';
 
         public override void Execute(TextArea _textArea)
         {
@@ -719,29 +723,24 @@ namespace VisualPascalABC
                 if (CodeCompletion.CodeCompletionController.CurrentParser == null) return;
                 CodeCompletionProvider completionDataProvider = new CodeCompletionProvider();
 
-                bool is_pattern = false;
+                completionDataProvider.preSelection = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindPattern(off, text, out var is_pattern);
 
-                completionDataProvider.preSelection = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindPattern(off, text, out is_pattern);
-
-                if (!is_pattern && off > 0 && text[off - 1] == '.')
-                    key = '$';
                 codeCompletionWindow = PABCNETCodeCompletionWindow.ShowCompletionWindow(
                     VisualPABCSingleton.MainForm,					// The parent window for the completion window
                     textArea.MotherTextEditorControl, 					// The text editor to show the window for
                     textArea.MotherTextEditorControl.FileName,		// Filename - will be passed back to the provider
                     completionDataProvider,		// Provider to get the list of possible completions
-                    key,							// Key pressed - will be passed to the provider
+                    '_',							// Key pressed - will be passed to the provider
                     false,
                     false,
                     KeywordKind.None
                 );
-                key = '_';
                 CodeCompletionShiftSpaceActions.comp_windows[textArea] = codeCompletionWindow;
 
                 if (codeCompletionWindow != null)
                 {
                     // ShowCompletionWindow can return null when the provider returns an empty list
-                    codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
+                    codeCompletionWindow.Closed += new EventHandler(OnCodeCompletionWindowClosed);
                 }
             }
             //catch (Exception e)
@@ -750,11 +749,12 @@ namespace VisualPascalABC
             }
         }
 
-        public void CloseCodeCompletionWindow(object sender, EventArgs e)
+        // такой же метод есть в CodeCompletionKeyHandler   EVA
+        public void OnCodeCompletionWindowClosed(object sender, EventArgs e)
         {
             if (codeCompletionWindow != null)
             {
-                codeCompletionWindow.Closed -= new EventHandler(CloseCodeCompletionWindow);
+                codeCompletionWindow.Closed -= new EventHandler(OnCodeCompletionWindowClosed);
                 CodeCompletionProvider.disp.Reset();
                 CodeCompletion.AssemblyDocCache.Reset();
                 CodeCompletion.UnitDocCache.Reset();

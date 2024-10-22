@@ -40,7 +40,7 @@ namespace VisualPascalABC
             //editor.ActiveTextAreaControl.TextArea.KeyDown += new System.Windows.Forms.KeyEventHandler(TextArea_KeyDown);
             //editor.ActiveTextAreaControl.KeyDown += h.TextControlEventHandler;
             // When the editor is disposed, close the code completion window
-            editor.Disposed += h.CloseCodeCompletionWindow;
+            editor.Disposed += h.OnCodeCompletionWindowClosed;
             return h;
         }
 
@@ -118,7 +118,7 @@ namespace VisualPascalABC
                     CodeCompletionShiftSpaceActions.is_begin = true;
                     CodeCompletionShiftSpaceActions.comp_windows[editor.ActiveTextAreaControl.TextArea] = codeCompletionWindow;
                     if (codeCompletionWindow != null)
-                        codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
+                        codeCompletionWindow.Closed += new EventHandler(OnCodeCompletionWindowClosed);
                 }
             }
             else if (key == '(' || key == '[' || key == ',')
@@ -131,7 +131,7 @@ namespace VisualPascalABC
                     {
                         insightWindow = new PABCNETInsightWindow(VisualPABCSingleton.MainForm, editor);
                         insightWindow.Font = new Font(Constants.CompletionInsightWindowFontName, insightWindow.Font.Size);
-                        insightWindow.Closed += new EventHandler(CloseInsightWindow);
+                        insightWindow.Closed += new EventHandler(OnInsightWindowClosed);
                     }
                     else
                     {
@@ -164,7 +164,7 @@ namespace VisualPascalABC
                         );
                         CodeCompletionShiftSpaceActions.comp_windows[editor.ActiveTextAreaControl.TextArea] = codeCompletionWindow;
                         if (codeCompletionWindow != null)
-                            codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
+                            codeCompletionWindow.Closed += new EventHandler(OnCodeCompletionWindowClosed);
                         //return true;
                     }
                 }
@@ -211,7 +211,7 @@ namespace VisualPascalABC
                     );
                     CodeCompletionShiftSpaceActions.comp_windows[editor.ActiveTextAreaControl.TextArea] = codeCompletionWindow;
                     if (codeCompletionWindow != null)
-                        codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
+                        codeCompletionWindow.Closed += new EventHandler(OnCodeCompletionWindowClosed);
 
                 }
             }
@@ -253,21 +253,21 @@ namespace VisualPascalABC
             return false;
         }
 
-        void CloseInsightWindow(object sender, EventArgs e)
+        void OnInsightWindowClosed(object sender, EventArgs e)
         {
             if (insightWindow != null)
             {
-                insightWindow.Closed -= new EventHandler(CloseInsightWindow);
+                insightWindow.Closed -= new EventHandler(OnInsightWindowClosed);
                 insightWindow.Dispose();
                 insightWindow = null;
             }
         }
 
-        void CloseCodeCompletionWindow(object sender, EventArgs e)
+        void OnCodeCompletionWindowClosed(object sender, EventArgs e)
         {
             if (codeCompletionWindow != null)
             {
-                codeCompletionWindow.Closed -= new EventHandler(CloseCodeCompletionWindow);
+                codeCompletionWindow.Closed -= new EventHandler(OnCodeCompletionWindowClosed);
                 CodeCompletionProvider.disp.Reset();
                 CodeCompletion.AssemblyDocCache.Reset();
                 CodeCompletion.UnitDocCache.Reset();
