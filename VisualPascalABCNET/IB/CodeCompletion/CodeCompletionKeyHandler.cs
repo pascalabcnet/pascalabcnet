@@ -198,8 +198,10 @@ namespace VisualPascalABC
                     if (CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.IsDefinitionIdentifierAfterKeyword(keyw))
                         return false;
 
+                    // если не первый символ выражения
                     if (editor.ActiveTextAreaControl.TextArea.Caret.Offset > 0 && (char.IsLetterOrDigit(editor.Document.TextContent[editor.ActiveTextAreaControl.TextArea.Caret.Offset - 1]) || editor.Document.TextContent[editor.ActiveTextAreaControl.TextArea.Caret.Offset - 1] == '_'))
                         return false;
+                    
                     completionDataProvider = new CodeCompletionProvider();
                     codeCompletionWindow = PABCNETCodeCompletionWindow.ShowCompletionWindowWithFirstChar(
                         VisualPABCSingleton.MainForm,					// The parent window for the completion window

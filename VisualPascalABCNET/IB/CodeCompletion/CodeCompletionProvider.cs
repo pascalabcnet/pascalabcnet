@@ -316,12 +316,44 @@ namespace VisualPascalABC
             return expr;
         }
 
-        public ICompletionData[] GetCompletionDataByFirst(int off, string Text, int line, int col, char charTyped, PascalABCCompiler.Parsers.KeywordKind keyw)
+        public ICompletionData[] GetCompletionDataByFirst(int line, int col, char charTyped, PascalABCCompiler.Parsers.KeywordKind keyw)
         {
             List<ICompletionData> resultList = new List<ICompletionData>();
-            List<ICompletionData> lst = new List<ICompletionData>();
+            List<ICompletionData> candidatesForDefault = new List<ICompletionData>();
             try
             {
+
+                ILanguageInformation languageInformation = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation;
+
+                List<string> keywords;
+
+                bool isTypeAfterKeyword = false;
+
+                if (languageInformation.IsTypeAfterKeyword(keyw))
+                {
+                    keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetTypeKeywords();
+                    isTypeAfterKeyword = true;
+                }
+                else
+                {
+                    keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetKeywords();
+                }
+
+                SymInfo[] symInfos = null;
+
+                bool isNamespaceAfterKeyword = false;
+
+                if (!languageInformation.IsNamespaceAfterKeyword(keyw))
+                {
+                    resultList.AddRange(keywords.Select(keyword =>
+                        new UserDefaultCompletionData(keyword, null, ImagesProvider.IconNumberKeyword, false)));
+                }
+                else
+                {
+                    symInfos = CodeCompletion.DomConverter.standard_units;
+                    isNamespaceAfterKeyword = true;
+                }
+
                 CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[FileName];
                 /*if (dconv == null && CodeCompletion.CodeCompletionNameHelper.system_unit_file_full_name != null
                     && (keyw == CodeCompletion.KeywordKind.kw_colon || keyw == CodeCompletion.KeywordKind.kw_of))
@@ -329,75 +361,79 @@ namespace VisualPascalABC
                 	dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[CodeCompletion.CodeCompletionNameHelper.system_unit_file_full_name];
                 	special_module = true;
                 }*/
-                string pattern = charTyped.ToString();
-                var keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetKeywords();
-                if (CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.IsTypeAfterKeyword(keyw))
-                {
-                    keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetTypeKeywords();
-                }
-                if (!CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.IsNamespaceAfterKeyword(keyw))
-                    foreach (string key in keywords)
-                    {
-                        //if (key.StartsWith(pattern, StringComparison.CurrentCultureIgnoreCase))
-                        resultList.Add(new UserDefaultCompletionData(key, null, ImagesProvider.IconNumberKeyword, false));
-                    }
-                PascalABCCompiler.Parsers.SymInfo[] mis = null;
-                if (CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.IsNamespaceAfterKeyword(keyw))
-                {
-                    mis = CodeCompletion.DomConverter.standard_units;
-                }
+
                 if (dconv != null)
                 {
-                    //if (keyw == PascalABCCompiler.Parsers.KeywordKind.Colon || keyw == PascalABCCompiler.Parsers.KeywordKind.Of || keyw == PascalABCCompiler.Parsers.KeywordKind.TypeDecl)
-                    if (CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.IsTypeAfterKeyword(keyw))
-                        mis = dconv.GetTypeByPattern(pattern, line, col, true, VisualPABCSingleton.MainForm.UserOptions.CodeCompletionNamespaceVisibleRange);
-                    else if (CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.IsNamespaceAfterKeyword(keyw) && mis == null)
-                        mis = dconv.GetNamespaces();
-                    else
-                        mis = dconv.GetNameByPattern(null, line, col, true, VisualPABCSingleton.MainForm.UserOptions.CodeCompletionNamespaceVisibleRange);
+                    GetSymInfosForCompletionData(line, col, ref symInfos, isTypeAfterKeyword, isNamespaceAfterKeyword, dconv, charTyped.ToString());
                 }
-                Hashtable cache = new Hashtable();
-                if (mis != null)
+
+                if (symInfos != null)
                 {
-                    bool stop = false;
-                    ICompletionData data = CompletionDataDispatcher.GetLastUsedItem(charTyped);
-                    foreach (PascalABCCompiler.Parsers.SymInfo mi in mis)
-                    {
-                        if (mi.not_include) continue;
-
-                        if (cache.Contains(mi.name))
-                            continue;
-
-                        UserDefaultCompletionData ddd = new UserDefaultCompletionData(mi.name, mi.description, ImagesProvider.GetPictureNum(mi), false);
-                        if (!stop && data != null && string.Compare(mi.name, data.Text, true) == 0)
-                        {
-                            defaultCompletionElement = ddd;
-                            stop = true;
-                        }
-                        else if (!stop && data == null && mi.name.StartsWith(charTyped.ToString(), StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            //defaultCompletionElement = ddd;
-                            lst.Add(ddd);
-                            //stop = true;
-                        }
-                        disp.Add(mi, ddd);
-                        resultList.Add(ddd);
-                        cache[mi.name] = mi;
-                    }
+                    bool languageCaseSensitive = LanguageProvider.Instance.SelectLanguageByExtension(FileName).CaseSensitive;
+                    
+                    AddCompletionDatasForSymInfos(resultList, charTyped, candidatesForDefault, symInfos, languageCaseSensitive);
                     //resultList.Sort();
                     //defaultCompletionElement = resultList[0] as DefaultCompletionData;
                 }
             }
-            catch (Exception e)
-            {
+            catch (Exception) { }
 
-            }
-
-            lst.Sort();
-            if (lst.Count > 0) defaultCompletionElement = lst[0] as UserDefaultCompletionData;
-            ICompletionData[] res_arr = resultList.ToArray();
+            if (candidatesForDefault.Count > 0) 
+                defaultCompletionElement = candidatesForDefault.Min() as UserDefaultCompletionData;
+            
             this.ByFirstChar = true;
-            return res_arr;
+            
+            return resultList.ToArray();
+        }
+
+        private void AddCompletionDatasForSymInfos(List<ICompletionData> resultList, char charTyped, List<ICompletionData> candidatesForDefault, SymInfo[] symInfos, bool languageCaseSensitive)
+        {
+            HashSet<string> symbolsAdded = languageCaseSensitive ? new HashSet<string>() : new HashSet<string>(StringComparer.CurrentCultureIgnoreCase);
+
+            bool stop = false;
+            ICompletionData lastUsedItem = CompletionDataDispatcher.GetLastUsedItem(charTyped);
+
+            foreach (SymInfo mi in symInfos)
+            {
+                if (mi.not_include) continue;
+
+                if (symbolsAdded.Contains(mi.name))
+                    continue;
+
+                UserDefaultCompletionData completionData = new UserDefaultCompletionData(mi.name, mi.description, ImagesProvider.GetPictureNum(mi), false);
+
+                StringComparison stringComparison = languageCaseSensitive ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase;
+
+                if (!stop && lastUsedItem != null && string.Equals(mi.name, lastUsedItem.Text, stringComparison))
+                {
+                    defaultCompletionElement = completionData;
+                    stop = true;
+                }
+                else if (!stop && lastUsedItem == null && mi.name.StartsWith(charTyped.ToString(), stringComparison))
+                {
+                    //defaultCompletionElement = ddd;
+                    candidatesForDefault.Add(completionData);
+                    //stop = true;
+                }
+
+                disp.Add(mi, completionData);
+
+                resultList.Add(completionData);
+
+                symbolsAdded.Add(mi.name);
+            }
+        }
+
+        private void GetSymInfosForCompletionData(int line, int col, ref SymInfo[] symInfos, bool isTypeAfterKeyword, bool isNamespaceAfterKeyword, CodeCompletion.DomConverter dconv, string pattern)
+        {
+            //if (keyw == PascalABCCompiler.Parsers.KeywordKind.Colon || keyw == PascalABCCompiler.Parsers.KeywordKind.Of || keyw == PascalABCCompiler.Parsers.KeywordKind.TypeDecl)
+            if (isTypeAfterKeyword)
+                symInfos = dconv.GetTypeByPattern(pattern, line, col, true, VisualPABCSingleton.MainForm.UserOptions.CodeCompletionNamespaceVisibleRange);
+            // странное условие   EVA
+            else if (isNamespaceAfterKeyword && symInfos == null)
+                symInfos = dconv.GetNamespaces();
+            else
+                symInfos = dconv.GetNameByPattern(null, line, col, true, VisualPABCSingleton.MainForm.UserOptions.CodeCompletionNamespaceVisibleRange);
         }
 
         private struct ActionContext
@@ -696,11 +732,11 @@ namespace VisualPascalABC
         public ICompletionData[] GenerateCompletionDataByFirstChar(string fileName, TextArea textArea, char charTyped, PascalABCCompiler.Parsers.KeywordKind keyw)
         {
             controller = new CodeCompletion.CodeCompletionController();
-            int off = textArea.Caret.Offset;
+            // int off = textArea.Caret.Offset;
             string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
             //controller.Compile(file_name, text /*+ ")))));end."*/);
             FileName = fileName; Text = text;
-            ICompletionData[] data = GetCompletionDataByFirst(off, text, textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw);
+            ICompletionData[] data = GetCompletionDataByFirst(textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw);
             CodeCompletion.AssemblyDocCache.CompleteDocumentation();
             CodeCompletion.UnitDocCache.CompleteDocumentation();
             controller = null;
