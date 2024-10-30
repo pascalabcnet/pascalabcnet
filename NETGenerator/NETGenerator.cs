@@ -967,6 +967,11 @@ namespace PascalABCCompiler.NETGenerator
                 helper.AddDummyMethod(cur_unit_type, mb);
                 ConvertTypeMemberHeaders(cnns[iii].types);
             }
+            //Переводим псевдоинстанции generic-типов
+            foreach (IGenericTypeInstance ictn in p.generic_type_instances)
+            {
+                ConvertGenericInstanceTypeMembers(ictn);
+            }
 
             for (int iii = 0; iii < cnns.Length; iii++)
             {
@@ -986,11 +991,7 @@ namespace PascalABCCompiler.NETGenerator
                 il = tmp_il;
             }
 
-            //Переводим псевдоинстанции generic-типов
-            foreach (IGenericTypeInstance ictn in p.generic_type_instances)
-            {
-                ConvertGenericInstanceTypeMembers(ictn);
-            }
+            
 
             //Переводим псевдоинстанции функций
             foreach (IGenericFunctionInstance igfi in p.generic_function_instances)
