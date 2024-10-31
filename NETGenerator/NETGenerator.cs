@@ -192,6 +192,7 @@ namespace PascalABCCompiler.NETGenerator
         private List<LocalBuilder> pinned_variables = new List<LocalBuilder>();
         private bool pabc_rtl_converted = false;
         bool has_unmanaged_resources = false;
+        private Dictionary<ICommonFunctionNode, MethodBuilder> non_local_variables = new Dictionary<ICommonFunctionNode, MethodBuilder>();
 
         private void CheckLocation(SemanticTree.ILocation Location)
         {
@@ -980,6 +981,7 @@ namespace PascalABCCompiler.NETGenerator
                 cur_unit_type = NamespacesTypes[cnns[iii]];
                 ConvertFunctionHeaders(cnns[iii].functions);
             }
+            
             if (p.InitializationCode != null)
             {
                 tmp_il = il;
@@ -998,8 +1000,11 @@ namespace PascalABCCompiler.NETGenerator
             {
                 ConvertGenericFunctionInstance(igfi);
             }
+            foreach (var item in non_local_variables)
+            {
+                ConvertNonLocalVariables(item.Key.var_definition_nodes, item.Value);
+            }
 
-            
 
             ConstructorBuilder unit_cci = null;
 
@@ -3019,11 +3024,12 @@ namespace PascalABCCompiler.NETGenerator
             funcs.Add(func); //здесь наверное дублирование
             MethodBuilder tmp = cur_meth;
             cur_meth = methb;
-            
+
             //если функция не содержит вложенных процедур, то
             //переводим переменные как локальные
             if (func.functions_nodes.Length > 0)
-                ConvertNonLocalVariables(func.var_definition_nodes, frm.mb);
+                non_local_variables[func] = frm.mb;
+            //ConvertNonLocalVariables(func.var_definition_nodes, frm.mb);
             //переводим заголовки вложенных функций
             ConvertNestedFunctionHeaders(func.functions_nodes);
             //переводим тела вложенных функций
@@ -7003,7 +7009,8 @@ namespace PascalABCCompiler.NETGenerator
             MethodBuilder tmp = cur_meth;
             cur_meth = methb;
             //переводим переменные как нелокальные
-            ConvertNonLocalVariables(func.var_definition_nodes, frm.mb);
+            non_local_variables[func] = frm.mb;
+            //ConvertNonLocalVariables(func.var_definition_nodes, frm.mb);
             //переводим описания вложенных процедур
             ConvertNestedInMethodFunctionHeaders(func.functions_nodes, decl_type);
             foreach (ICommonNestedInFunctionFunctionNode f in func.functions_nodes)
