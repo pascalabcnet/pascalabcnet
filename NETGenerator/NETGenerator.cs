@@ -192,7 +192,8 @@ namespace PascalABCCompiler.NETGenerator
         private List<LocalBuilder> pinned_variables = new List<LocalBuilder>();
         private bool pabc_rtl_converted = false;
         bool has_unmanaged_resources = false;
-        private Dictionary<ICommonFunctionNode, Tuple<MethodBuilder, ILGenerator>> non_local_variables = new Dictionary<ICommonFunctionNode, Tuple<MethodBuilder, ILGenerator>>();
+        private Dictionary<ICommonFunctionNode, Tuple<MethodBuilder, MethodBuilder, List<ICommonFunctionNode>>> non_local_variables = 
+            new Dictionary<ICommonFunctionNode, Tuple<MethodBuilder, MethodBuilder, List<ICommonFunctionNode>>>();
 
         private void CheckLocation(SemanticTree.ILocation Location)
         {
@@ -979,9 +980,23 @@ namespace PascalABCCompiler.NETGenerator
                 if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
                 cur_type = NamespacesTypes[cnns[iii]];
                 cur_unit_type = NamespacesTypes[cnns[iii]];
-                ConvertFunctionHeaders(cnns[iii].functions);
+                ConvertFunctionHeaders(cnns[iii].functions, false);
             }
-            
+
+            //Переводим псевдоинстанции функций
+            foreach (IGenericFunctionInstance igfi in p.generic_function_instances)
+            {
+                ConvertGenericFunctionInstance(igfi);
+            }
+
+            for (int iii = 0; iii < cnns.Length; iii++)
+            {
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
+                cur_type = NamespacesTypes[cnns[iii]];
+                cur_unit_type = NamespacesTypes[cnns[iii]];
+                ConvertFunctionHeaders(cnns[iii].functions, true);
+            }
+
             if (p.InitializationCode != null)
             {
                 tmp_il = il;
@@ -995,18 +1010,14 @@ namespace PascalABCCompiler.NETGenerator
 
             
 
-            //Переводим псевдоинстанции функций
-            foreach (IGenericFunctionInstance igfi in p.generic_function_instances)
-            {
-                ConvertGenericFunctionInstance(igfi);
-            }
-            foreach (var item in non_local_variables)
+            
+            /*foreach (var item in non_local_variables)
             {
                 tmp_il = il;
-                il = item.Value.Item2;
+                il = item.Value.Item2.GetILGenerator();
                 ConvertNonLocalVariables(item.Key.var_definition_nodes, item.Value.Item1);
                 il = tmp_il;
-            }
+            }*/
 
 
             ConstructorBuilder unit_cci = null;
@@ -2667,10 +2678,14 @@ namespace PascalABCCompiler.NETGenerator
         }
 
         //перевод заголовков функций
-        private void ConvertFunctionHeaders(ICommonNamespaceFunctionNode[] funcs)
+        private void ConvertFunctionHeaders(ICommonNamespaceFunctionNode[] funcs, bool with_nested)
         {
             for (int i = 0; i < funcs.Length; i++)
             {
+                if (!with_nested && funcs[i].functions_nodes != null && funcs[i].functions_nodes.Length > 0)
+                    continue;
+                if (with_nested && (funcs[i].functions_nodes == null || funcs[i].functions_nodes.Length == 0))
+                    continue;
                 IStatementsListNode sl = (IStatementsListNode)funcs[i].function_code;
                 IStatementNode[] statements = sl.statements;
                 if (statements.Length > 0 && statements[0] is IExternalStatementNode)
@@ -2736,6 +2751,7 @@ namespace PascalABCCompiler.NETGenerator
                         ConvertFunctionHeader(funcs[i]);
             }
             //(ssyy) 21.05.2008
+            if (!with_nested)
             foreach (ICommonNamespaceFunctionNode ifn in funcs)
             {
                 if (ifn.is_generic_function)
@@ -3030,9 +3046,10 @@ namespace PascalABCCompiler.NETGenerator
 
             //если функция не содержит вложенных процедур, то
             //переводим переменные как локальные
+            //if (func.functions_nodes.Length > 0)
+            //    non_local_variables[func] = new Tuple<MethodBuilder, MethodBuilder, List<ICommonFunctionNode>>(frm.mb, methb, new List<ICommonFunctionNode>(funcs));
             if (func.functions_nodes.Length > 0)
-                non_local_variables[func] = new Tuple<MethodBuilder, ILGenerator>(frm.mb, il);
-            //ConvertNonLocalVariables(func.var_definition_nodes, frm.mb);
+                ConvertNonLocalVariables(func.var_definition_nodes, frm.mb);
             //переводим заголовки вложенных функций
             ConvertNestedFunctionHeaders(func.functions_nodes);
             //переводим тела вложенных функций
@@ -7012,8 +7029,8 @@ namespace PascalABCCompiler.NETGenerator
             MethodBuilder tmp = cur_meth;
             cur_meth = methb;
             //переводим переменные как нелокальные
-            non_local_variables[func] = new Tuple<MethodBuilder, ILGenerator>(frm.mb, il);
-            //ConvertNonLocalVariables(func.var_definition_nodes, frm.mb);
+            //non_local_variables[func] = new Tuple<MethodBuilder, MethodBuilder, List<ICommonFunctionNode>>(frm.mb, methb, new List<ICommonFunctionNode>(funcs));
+            ConvertNonLocalVariables(func.var_definition_nodes, frm.mb);
             //переводим описания вложенных процедур
             ConvertNestedInMethodFunctionHeaders(func.functions_nodes, decl_type);
             foreach (ICommonNestedInFunctionFunctionNode f in func.functions_nodes)
