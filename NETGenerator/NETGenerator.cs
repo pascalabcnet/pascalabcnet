@@ -192,7 +192,7 @@ namespace PascalABCCompiler.NETGenerator
         private List<LocalBuilder> pinned_variables = new List<LocalBuilder>();
         private bool pabc_rtl_converted = false;
         bool has_unmanaged_resources = false;
-        private Dictionary<ICommonFunctionNode, MethodBuilder> non_local_variables = new Dictionary<ICommonFunctionNode, MethodBuilder>();
+        private Dictionary<ICommonFunctionNode, Tuple<MethodBuilder, ILGenerator>> non_local_variables = new Dictionary<ICommonFunctionNode, Tuple<MethodBuilder, ILGenerator>>();
 
         private void CheckLocation(SemanticTree.ILocation Location)
         {
@@ -1002,7 +1002,10 @@ namespace PascalABCCompiler.NETGenerator
             }
             foreach (var item in non_local_variables)
             {
-                ConvertNonLocalVariables(item.Key.var_definition_nodes, item.Value);
+                tmp_il = il;
+                il = item.Value.Item2;
+                ConvertNonLocalVariables(item.Key.var_definition_nodes, item.Value.Item1);
+                il = tmp_il;
             }
 
 
@@ -3028,7 +3031,7 @@ namespace PascalABCCompiler.NETGenerator
             //если функция не содержит вложенных процедур, то
             //переводим переменные как локальные
             if (func.functions_nodes.Length > 0)
-                non_local_variables[func] = frm.mb;
+                non_local_variables[func] = new Tuple<MethodBuilder, ILGenerator>(frm.mb, il);
             //ConvertNonLocalVariables(func.var_definition_nodes, frm.mb);
             //переводим заголовки вложенных функций
             ConvertNestedFunctionHeaders(func.functions_nodes);
@@ -7009,7 +7012,7 @@ namespace PascalABCCompiler.NETGenerator
             MethodBuilder tmp = cur_meth;
             cur_meth = methb;
             //переводим переменные как нелокальные
-            non_local_variables[func] = frm.mb;
+            non_local_variables[func] = new Tuple<MethodBuilder, ILGenerator>(frm.mb, il);
             //ConvertNonLocalVariables(func.var_definition_nodes, frm.mb);
             //переводим описания вложенных процедур
             ConvertNestedInMethodFunctionHeaders(func.functions_nodes, decl_type);
