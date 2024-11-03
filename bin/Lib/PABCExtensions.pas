@@ -409,9 +409,9 @@ begin
     Result += x;
 end;}
 
-///--
-function operator implicit(a: array of integer): set of integer; extensionmethod := TypedSet.InitBy(a);
 {///--
+function operator implicit(a: array of integer): set of integer; extensionmethod := TypedSet.InitBy(a);
+///--
 function operator implicit(a: array of real): set of real; extensionmethod := TypedSet.InitBy(a);
 ///--
 function operator implicit(a: array of string): set of string; extensionmethod := TypedSet.InitBy(a);
@@ -433,9 +433,9 @@ function operator implicit(a: array of BigInteger): set of BigInteger; extension
 function operator implicit(a: array of decimal): set of decimal; extensionmethod := TypedSet.InitBy(a);
 ///--
 function operator implicit(a: array of single): set of single; extensionmethod := TypedSet.InitBy(a);
-}
 ///--
 function operator implicit<T>(a: array of T): set of T; extensionmethod := TypedSet.InitBy(a);
+}
 
 //------------------------------------------------------------------------------
 //          Операции для procedure
@@ -451,6 +451,206 @@ function operator*(n: integer; p: procedure): procedure; extensionmethod;
 begin
   Result := () -> for var i:=1 to n do p
 end;
+
+// Важнейший для новых множеств !!!
+procedure operator:=<T>(var Self: NewSet<T>; st: NewSet<T>); extensionmethod;
+begin
+  Self._hs := new HashSet<T>(st.hs);
+end;
+
+// Extension-vtnjls для новых множеств
+function operator implicit(n: NewSet<integer>): NewSet<byte>; extensionmethod;
+begin
+  foreach var x in n._hs do
+    Result._hs.Add(x);
+end;
+
+function operator implicit(n: NewSet<integer>): NewSet<shortint>; extensionmethod;
+begin
+  foreach var x in n._hs do
+    Result._hs.Add(x);
+end;
+
+function operator implicit(n: NewSet<integer>): NewSet<smallint>; extensionmethod;
+begin
+  foreach var x in n._hs do
+    Result._hs.Add(x);
+end;
+
+function operator implicit(n: NewSet<integer>): NewSet<word>; extensionmethod;
+begin
+  foreach var x in n._hs do
+    Result._hs.Add(x);
+end;
+
+function operator implicit(n: NewSet<integer>): NewSet<longword>; extensionmethod;
+begin
+  foreach var x in n._hs do
+    Result._hs.Add(x);
+end;
+
+function operator implicit(n: NewSet<integer>): NewSet<int64>; extensionmethod;
+begin
+  foreach var x in n._hs do
+    Result._hs.Add(x);
+end;
+
+function operator implicit(n: NewSet<integer>): NewSet<uint64>; extensionmethod;
+begin
+  foreach var x in n._hs do
+    Result._hs.Add(x);
+end;
+
+function NSToInts(ns: NewSet<byte>) := ns._hs.Select(x -> integer(x));
+function NSToInts(ns: NewSet<int64>) := ns._hs.Select(x -> integer(x));
+function NSToInts64(ns: NewSet<byte>) := ns._hs.Select(x -> int64(x));
+function NSToInts64(ns: NewSet<integer>) := ns._hs.Select(x -> int64(x));
+function NSToBytes(ns: NewSet<integer>) := ns._hs.Select(x -> byte(x));
+function NSToBytes(ns: NewSet<int64>) := ns._hs.Select(x -> byte(x));
+
+// и для массивов столько же
+function operator=(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.SetEquals(NSToInts(b));
+function operator=(a: NewSet<byte>; b: NewSet<integer>): boolean; extensionmethod := b._hs.SetEquals(NSToInts(a));
+function operator=(a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.SetEquals(NSToInts64(b));
+function operator=(a: NewSet<integer>; b: NewSet<int64>): boolean; extensionmethod := b._hs.SetEquals(NSToInts64(a));
+
+function operator=(a: NewSet<integer>; b: array of byte); extensionmethod := a._hs.SetEquals(b.Select(x -> integer(x)));
+function operator=(a: array of byte; b: NewSet<integer>): boolean; extensionmethod := b = a;
+function operator=(a: array of int64; b: NewSet<integer>); extensionmethod := a.ToHashSet.SetEquals(NSToInts64(b));
+function operator=(a: NewSet<integer>; b: array of int64): boolean; extensionmethod := b = a;
+
+//function operator=(a: NewSet<int64>; b: NewSet<byte>); extensionmethod := a._hs.SetEquals(NSToInts64(b));
+//function operator=(a: NewSet<byte>; b: NewSet<int64>): boolean; extensionmethod := a = b;
+
+// Следующие функции предназначены для сравнения массива целых со множеством. 
+// Массив должен интерпретироваться как множество
+// Не пойму - что использовать - эту строку или предыдущие. Все типы массивов сравнивать с NewSet<integer>
+// или наоборот все типы множеств - с array of integer 
+function operator=(a: NewSet<byte>; b: array of integer): boolean; extensionmethod := NSToInts(a).ToHashSet.SetEquals(b);
+
+function operator<>(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := not(a = b);
+function operator<>(a: NewSet<byte>; b: NewSet<integer>); extensionmethod := not(a = b);
+function operator<>(a: NewSet<int64>; b: NewSet<integer>); extensionmethod := not(a = b);
+function operator<>(a: NewSet<integer>; b: NewSet<int64>); extensionmethod := not(a = b);
+//function operator<>(a: NewSet<int64>; b: NewSet<byte>); extensionmethod := not(a = b);
+//function operator<>(a: NewSet<byte>; b: NewSet<int64>); extensionmethod := not(a = b);
+
+function operator<(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.IsProperSubsetOf(NSToInts(b));
+function operator<(a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.IsProperSubsetOf(NSToInts64(b));
+//function operator<(a: NewSet<int64>; b: NewSet<byte>); extensionmethod := a._hs.IsProperSubsetOf(NSToInts64(b));
+
+function operator>(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.IsProperSupersetOf(NSToInts(b));
+function operator>(a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.IsProperSupersetOf(NSToInts64(b));
+//function operator>(a: NewSet<int64>; b: NewSet<byte>); extensionmethod := a._hs.IsProperSupersetOf(NSToInts64(b));
+
+function operator<(a: NewSet<byte>; b: NewSet<integer>); extensionmethod := b > a;
+function operator<(a: NewSet<integer>; b: NewSet<int64>); extensionmethod := b > a;
+//function operator<(a: NewSet<byte>; b: NewSet<int64>); extensionmethod := b > a;
+
+function operator>(a: NewSet<byte>; b: NewSet<integer>); extensionmethod := b < a;
+function operator>(a: NewSet<integer>; b: NewSet<int64>); extensionmethod := b < a;
+//function operator>(a: NewSet<byte>; b: NewSet<int64>); extensionmethod := b < a;
+
+function operator<=(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.IsSubsetOf(NSToInts(b));
+function operator<=(a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.IsSubsetOf(NSToInts64(b));
+//function operator<=(a: NewSet<int64>; b: NewSet<byte>); extensionmethod := a._hs.IsSubsetOf(NSToInts64(b));
+
+function operator>=(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.IsSupersetOf(NSToInts(b));
+function operator>=(a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.IsSupersetOf(NSToInts64(b));
+//function operator>=(a: NewSet<int64>; b: NewSet<byte>); extensionmethod := a._hs.IsSupersetOf(NSToInts64(b));
+
+function operator<=(a: NewSet<byte>; b: NewSet<integer>); extensionmethod := b >= a;
+function operator<=(a: NewSet<integer>; b: NewSet<int64>); extensionmethod := b >= a;
+//function operator<(a: NewSet<byte>; b: NewSet<int64>); extensionmethod := b >= a;
+
+function operator>=(a: NewSet<byte>; b: NewSet<integer>); extensionmethod := b <= a;
+function operator>=(a: NewSet<integer>; b: NewSet<int64>); extensionmethod := b <= a;
+//function operator>(a: NewSet<byte>; b: NewSet<int64>); extensionmethod := b <= a;
+
+procedure operator*=(var a: NewSet<byte>; b: NewSet<integer>); extensionmethod := a._hs.IntersectWith(NSToBytes(b));
+procedure operator*=(var a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.IntersectWith(NSToInts(b));
+procedure operator*=(var a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.IntersectWith(NSToInts64(b));
+procedure operator*=(var a: NewSet<integer>; b: NewSet<int64>); extensionmethod := a._hs.IntersectWith(NSToInts(b));
+
+//procedure operator*=(var a: NewSet<byte>; b: NewSet<int64>); extensionmethod := a._hs.IntersectWith(NSToBytes(b));
+//procedure operator*=(var a: NewSet<int64>; b: NewSet<byte>); extensionmethod := a._hs.IntersectWith(NSToInts64(b));
+procedure operator+=(var a: NewSet<byte>; b: NewSet<integer>); extensionmethod := a._hs.UnionWith(NSToBytes(b));
+procedure operator+=(var a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.UnionWith(NSToInts(b));
+procedure operator+=(var a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.UnionWith(NSToInts64(b));
+procedure operator+=(var a: NewSet<integer>; b: NewSet<int64>); extensionmethod := a._hs.UnionWith(NSToInts(b));
+procedure operator+=(var a: NewSet<byte>; b: NewSet<int64>); extensionmethod := a._hs.UnionWith(NSToBytes(b));
+procedure operator+=(var a: NewSet<int64>; b: NewSet<byte>); extensionmethod := a._hs.UnionWith(NSToInts64(b));
+
+procedure operator-=(var a: NewSet<byte>; b: NewSet<integer>); extensionmethod := a._hs.ExceptWith(NSToBytes(b));
+procedure operator-=(var a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.ExceptWith(NSToInts(b));
+procedure operator-=(var a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.ExceptWith(NSToInts64(b));
+procedure operator-=(var a: NewSet<integer>; b: NewSet<int64>); extensionmethod := a._hs.ExceptWith(NSToInts(b));
+
+
+// Нет операции между set of byte и set of int64. Один из операндов должен быть set of integer
+function operator*(a: NewSet<integer>; b: NewSet<byte>): NewSet<integer>; extensionmethod;
+begin
+  Result += a; Result *= b
+end;
+
+function operator*(a: NewSet<byte>; b: NewSet<integer>): NewSet<integer>; extensionmethod;
+begin
+  Result += a; Result *= b
+end;
+
+function operator*(a: NewSet<integer>; b: NewSet<int64>): NewSet<int64>; extensionmethod;
+begin
+  Result += a; Result *= b
+end;
+
+function operator*(a: NewSet<int64>; b: NewSet<integer>): NewSet<int64>; extensionmethod;
+begin
+  Result += a; Result *= b
+end;
+//-----
+
+function operator+(a: NewSet<integer>; b: NewSet<byte>): NewSet<integer>; extensionmethod;
+begin
+  Result += a; Result += b
+end;
+
+function operator+(a: NewSet<byte>; b: NewSet<integer>): NewSet<integer>; extensionmethod;
+begin
+  Result += a; Result += b
+end;
+
+function operator+(a: NewSet<integer>; b: NewSet<int64>): NewSet<int64>; extensionmethod;
+begin
+  Result += a; Result += b
+end;
+
+function operator+(a: NewSet<int64>; b: NewSet<integer>): NewSet<int64>; extensionmethod;
+begin
+  Result += a; Result += b
+end;
+
+//-----
+function operator-(a: NewSet<integer>; b: NewSet<byte>): NewSet<integer>; extensionmethod;
+begin
+  Result += a; Result -= b
+end;
+
+function operator-(a: NewSet<byte>; b: NewSet<integer>): NewSet<integer>; extensionmethod;
+begin
+  Result += a; Result -= b
+end;
+
+function operator-(a: NewSet<integer>; b: NewSet<int64>): NewSet<int64>; extensionmethod;
+begin
+  Result += a; Result -= b
+end;
+
+function operator-(a: NewSet<int64>; b: NewSet<integer>): NewSet<int64>; extensionmethod;
+begin
+  Result += a; Result -= b
+end;
+
+
 
 var __initialized: boolean;
 

@@ -248,8 +248,8 @@ namespace PascalABCCompiler
         public static string subtract_of_set = "Subtract";
         public static string in_set = "InSet";
         public static string CreateSetProcedure = "CreateSet";
-        public static string IncludeProcedure = "Include";
-        public static string ExcludeProcedure = "Exclude";
+        //public static string IncludeProcedure = "Include";
+        //public static string ExcludeProcedure = "Exclude";
         public static string DiapasonType = "Diapason";
         public static string CreateDiapason = "CreateDiapason";
         public static string CreateObjDiapason = "CreateObjDiapason";

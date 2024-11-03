@@ -1,4 +1,4 @@
-const c : array of set of char = (['a','b'],[],['k','l']);
+﻿const c : array of set of char = (['a','b'],[],['k','l']);
 var a : array of set of char := (['a','b'],[],['k','l']);
     b : array of set of 1..4 := ([1,2,7],[2,3],[]);
     d : array[1..3] of set of 1..4;
