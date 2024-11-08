@@ -263,8 +263,8 @@ namespace PascalABCCompiler.SystemLibrary
         public static UnitDefinitionItem SetSubtractProcedure;
         public static UnitDefinitionItem InSetProcedure;
         public static UnitDefinitionItem CreateSetProcedure;
-        public static UnitDefinitionItem IncludeProcedure;
-        public static UnitDefinitionItem ExcludeProcedure;
+        //public static UnitDefinitionItem IncludeProcedure;
+        //public static UnitDefinitionItem ExcludeProcedure;
         public static UnitDefinitionItem DiapasonType;
         public static UnitDefinitionItem CreateDiapason;
         public static UnitDefinitionItem CreateObjDiapason;

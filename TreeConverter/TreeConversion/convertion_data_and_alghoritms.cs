@@ -1893,7 +1893,9 @@ namespace PascalABCCompiler.TreeConverter
 				{
                     if (ptc.first.from is null_type_node || ptc.second.to == null || ptc.second.from is null_type_node || ptc.second.from.is_generic_parameter)
                         continue; // SSM 9/12/20 fix 2363
-					AddError(new PossibleTwoTypeConversionsInFunctionCall(loc,ptc.first,ptc.second));
+                    if (ptc.first.from == ptc.second.from && ptc.first.to == ptc.second.to) // SSM fix 03/08/24 - непонятно, как до этого могло дойти
+                        continue;
+                    AddError(new PossibleTwoTypeConversionsInFunctionCall(loc,ptc.first,ptc.second));
 				}
 				
 			}
