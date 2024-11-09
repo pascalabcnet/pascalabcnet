@@ -5262,7 +5262,9 @@ namespace PascalABCCompiler.TreeConverter
                         consts.AddElement(en);
                         if (en.type.IsPointer)
                             AddError(new SimpleSemanticError(get_location(e), "POINTERS_IN_SETS_NOT_ALLOWED"));
-                        types.AddElement(en.type);
+                        if (en.type.type_special_kind == type_special_kind.diap_type)
+                            types.AddElement(en.type.base_type);
+                        else types.AddElement(en.type);
                     }
                 }
             // Константы и типы заполнены
@@ -12359,6 +12361,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (_type_declaration.type_def is SyntaxTree.named_type_reference||
                     _type_declaration.type_def is SyntaxTree.ref_type || _type_declaration.type_def is SyntaxTree.string_num_definition ||
                     _type_declaration.type_def is SyntaxTree.sequence_type || //SSM 01.11.2018
+                    _type_declaration.type_def is SyntaxTree.set_type_definition || //SSM 07.11.2024
                     tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.array_kind)// ||
                     /*tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.set_type*/
                 {
@@ -15379,7 +15382,18 @@ namespace PascalABCCompiler.TreeConverter
                 && cnfc1.function_node.attributes[0].attribute_type.name.ToLower() == "SetCreatorFunctionAttribute".ToLower()
                 )
             {
+                convertion_data_and_alghoritms.check_convert_type(cnfc1, tn, loc);
                 // Надо компоненты проверять на константность
+                var values0 = ((cnfc1.parameters[0] as basic_function_call).
+                      parameters[0] as common_namespace_function_call).parameters.Skip(3);
+                var values1 = ((cnfc1.parameters[1] as basic_function_call).
+                      parameters[0] as common_namespace_function_call).parameters.Skip(3);
+                var values = values0.Concat(values1).ToArray();
+                foreach (expression_node en in values)
+                {
+                    if (!(en is constant_node))
+                        AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                }
                 constant = new common_namespace_function_call_as_constant(cnfc1, loc);
                 return constant;
             }
@@ -15387,7 +15401,14 @@ namespace PascalABCCompiler.TreeConverter
                 && cnfc2.function_node.name.StartsWith("__NewSetCreatorInternal")
                 )
             {
+                convertion_data_and_alghoritms.check_convert_type(cnfc2, tn, loc);
+                var values = (cnfc2.parameters[0] as array_initializer).element_values;
                 // Надо компоненты проверять на константность
+                foreach (expression_node en in values)
+                {
+                    if (!(en is constant_node))
+                        AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                }
                 constant = new common_namespace_function_call_as_constant(cnfc2, loc);
                 return constant;
             }
@@ -15397,13 +15418,38 @@ namespace PascalABCCompiler.TreeConverter
             }
             else if (expr is common_namespace_function_call)
             {
+                // Отдельно для пустого множества 
                 common_namespace_function_call cnfc = expr as common_namespace_function_call;
+                if (cnfc.type.name == "NewSetEmpty")
+                {
+                    constant = new common_namespace_function_call_as_constant(expr as common_namespace_function_call, loc);
+                    return constant;
+                }
                 foreach (expression_node el in cnfc.parameters)
                     convert_strong_to_constant_node(el, el.type, false, false, cnfc.location);
                 //if (cnfc.function_node.namespace_node == context.converted_namespace)
                 //    AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
                 //  throw new ConstantExpressionExpected(loc);
                 constant = new common_namespace_function_call_as_constant(expr as common_namespace_function_call, loc);
+            }
+            else if (expr is common_namespace_function_call_as_constant cnfcac
+                && cnfcac.type.name == "NewSetEmpty")
+            {
+                expr = create_constructor_call(tn, new expressions_list(), loc);
+                constant = new common_constructor_call_as_constant(expr as common_constructor_call, loc);
+
+                return constant;
+            }
+            else if (expr is common_namespace_function_call_as_constant cnfcac1)
+            {
+                constant = cnfcac1;
+                return constant;
+            }
+            else if (expr is common_constructor_call_as_constant cccac)
+            {
+                //
+                constant = cccac.get_constant_copy(loc);
+                return constant;
             }
             else if (expr is basic_function_call)
             {

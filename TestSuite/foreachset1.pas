@@ -1,13 +1,13 @@
-type TDiap = 1..3;
+﻿type TDiap = 1..3;
 
 procedure Test(a : set of TDiap);
 begin
- assert(a = [1..3]);
+ assert(a = [1..6]);
 end;
 
 procedure Test2(var a : set of TDiap);
 begin
- assert(a = [1..3]);
+ assert(a = [1..5]);
 end;
 
 var a : set of TDiap;
@@ -19,9 +19,9 @@ var a : set of TDiap;
     
 begin
  a := [1..5];
- assert(a=[1..3]);
+ assert(a=[1..5]);
  b := a;
- assert(b=[1..3]);
+ assert(b=[1..5]);
  Test([1..6]);
  Test2(a);
  b := [5];

@@ -1390,7 +1390,7 @@ namespace PascalABCCompiler.NETGenerator
         {
             FieldBuilder fb = cur_type.DefineField(name, helper.GetTypeReference(type).tp, FieldAttributes.Static | FieldAttributes.Public | FieldAttributes.Literal);
             Type t = helper.GetTypeReference(type).tp;
-            if (t.IsEnum)
+            if (!t.Name.StartsWith("NewSet") && t.IsEnum) // SSM 05.11.24
             {
                 if (!(t is EnumBuilder))
                     fb.SetConstant(Enum.ToObject(t, (constant_value as IEnumConstNode).constant_value));
@@ -4732,8 +4732,9 @@ namespace PascalABCCompiler.NETGenerator
                         il.Emit(OpCodes.Ldloc, lb);
                         TypeInfo ti = helper.GetTypeReference(ElementValues[i].type);
                         PushIntConst(il, i);
-                        if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && !ti.tp.IsEnum)
-                            il.Emit(OpCodes.Ldelema, ti.tp);
+                        if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && 
+                            (ti.tp.Name.StartsWith("NewSet") || !ti.tp.IsEnum)) // SSM 05/11/24 т.к. NewSet бросает исключение в IsEnum
+                                il.Emit(OpCodes.Ldelema, ti.tp);
                         ILGenerator ilb = this.il;
                         this.il = il;
                         ElementValues[i].visit(this);

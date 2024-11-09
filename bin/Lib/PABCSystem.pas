@@ -591,6 +591,8 @@ type
       Result._hs.UnionWith(first);
     end;
     function ToString: string; override := '{}';
+    function ToSet<T>(): NewSet<T>; begin end; 
+
     static function operator implicit<T>(Self: NewSetEmpty): array of T; 
     begin
       Result := new T[0];

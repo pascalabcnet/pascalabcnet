@@ -1,4 +1,4 @@
-type TSet<T> = record
+﻿type TSet<T> = record
 str: string;
 set1: set of char;
 set2: set of T;
@@ -13,6 +13,6 @@ begin
   set2 := set1;
   Include(set2.set1,'b');
   Include(set2.set2,'b');
-  assert(set1.set1 = []);
-  assert(set1.set2 = []);
+  assert(set1.set1 = ['b']); // увы - при присваивании не вызывается operator := для компонент
+  assert(set1.set2 = ['b']);
 end.

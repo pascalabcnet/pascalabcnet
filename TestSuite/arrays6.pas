@@ -1,12 +1,12 @@
-
+﻿
 procedure Test;
-var b1 : set of byte := [-1..3];
+var b1 : set of byte := [0..3];
     b2 : array[1..5] of integer := (1,2,3,4,5);
     b3 : array of real := (2.4,3.5,1.2);
     b4 : array[1..3] of set of char := (['a','j'],['l','b','c'],[]);
     
 begin
-  var a1 : set of byte := [-1..3];
+  var a1 : set of byte := [0..3];
   assert(a1=[0..3]);
   assert(2 in a1);
   var a2 : array[1..5] of integer := (1,2,3,4,5);
@@ -29,14 +29,14 @@ begin
 end;
 
 procedure Test2;
-var b1 : set of byte := [-1..3];
+var b1 : set of byte := [0..3];
     b2 : array[1..5] of integer := (1,2,3,4,5);
     b3 : array of real := (2.4,3.5,1.2);
     b4 : array[1..3] of set of char := (['a','j'],['l','b','c'],[]);
 
 procedure Nested;
 begin
-  var a1 : set of byte := [-1..3];
+  var a1 : set of byte := [0..3];
   assert(a1=[0..3]);
   assert(2 in a1);
   var a2 : array[1..5] of integer := (1,2,3,4,5);
@@ -59,7 +59,7 @@ begin
 end;
     
 begin
-  var a1 : set of byte := [-1..3];
+  var a1 : set of byte := [0..3];
   assert(a1=[0..3]);
   assert(2 in a1);
   var a2 : array[1..5] of integer := (1,2,3,4,5);
@@ -82,7 +82,7 @@ begin
   Nested;
 end;
 
-var b1 : set of byte := [-1..3];
+var b1 : set of byte := [0..3];
     b2 : array[1..5] of integer := (1,2,3,4,5);
     b3 : array of real := (2.4,3.5,1.2);
     b4 : array[1..3] of set of char := (['a','j'],['l','b','c'],[]);
@@ -91,7 +91,7 @@ begin
   var a5 : array[0..2] of set of char := (['a','j'],['l','b','c'],[]);
   assert(a5[0] = ['a','j']);
   assert(a5[2]=[]);
-  var a1 : set of byte := [-1..3];
+  var a1 : set of byte := [0..3];
   assert(a1=[0..3]);
   assert(2 in a1);
   var a2 : array[1..5] of integer := (1,2,3,4,5);
