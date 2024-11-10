@@ -7280,6 +7280,121 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(import_statement _import_statement)
+		{
+			bw.Write((Int16)265);
+			write_import_statement(_import_statement);
+		}
+
+		public void write_import_statement(import_statement _import_statement)
+		{
+			write_statement(_import_statement);
+			if (_import_statement.modules_names == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_import_statement.modules_names.visit(this);
+			}
+		}
+
+
+		public void visit(as_statement _as_statement)
+		{
+			bw.Write((Int16)266);
+			write_as_statement(_as_statement);
+		}
+
+		public void write_as_statement(as_statement _as_statement)
+		{
+			write_statement(_as_statement);
+			if (_as_statement.real_name == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_as_statement.real_name.visit(this);
+			}
+			if (_as_statement.alias == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_as_statement.alias.visit(this);
+			}
+		}
+
+
+		public void visit(as_statement_list _as_statement_list)
+		{
+			bw.Write((Int16)267);
+			write_as_statement_list(_as_statement_list);
+		}
+
+		public void write_as_statement_list(as_statement_list _as_statement_list)
+		{
+			write_statement(_as_statement_list);
+			if (_as_statement_list.as_statements == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_as_statement_list.as_statements.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _as_statement_list.as_statements.Count; ssyy_i++)
+				{
+					if (_as_statement_list.as_statements[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_as_statement_list.as_statements[ssyy_i].visit(this);
+					}
+				}
+			}
+		}
+
+
+		public void visit(from_import_statement _from_import_statement)
+		{
+			bw.Write((Int16)268);
+			write_from_import_statement(_from_import_statement);
+		}
+
+		public void write_from_import_statement(from_import_statement _from_import_statement)
+		{
+			write_statement(_from_import_statement);
+			if (_from_import_statement.module_name == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_from_import_statement.module_name.visit(this);
+			}
+			bw.Write(_from_import_statement.is_star);
+			if (_from_import_statement.imported_names == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_from_import_statement.imported_names.visit(this);
+			}
+		}
+
 	}
 
 

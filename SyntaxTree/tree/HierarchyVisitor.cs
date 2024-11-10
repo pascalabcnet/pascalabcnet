@@ -2125,6 +2125,38 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(import_statement _import_statement)
+		{
+		}
+
+		public virtual void post_do_visit(import_statement _import_statement)
+		{
+		}
+
+		public virtual void pre_do_visit(as_statement _as_statement)
+		{
+		}
+
+		public virtual void post_do_visit(as_statement _as_statement)
+		{
+		}
+
+		public virtual void pre_do_visit(as_statement_list _as_statement_list)
+		{
+		}
+
+		public virtual void post_do_visit(as_statement_list _as_statement_list)
+		{
+		}
+
+		public virtual void pre_do_visit(from_import_statement _from_import_statement)
+		{
+		}
+
+		public virtual void post_do_visit(from_import_statement _from_import_statement)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -4393,6 +4425,41 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(list_generator._range);
 			visit(list_generator._condition);
 			post_do_visit(_list_generator);
+		}
+
+		public override void visit(import_statement _import_statement)
+		{
+			DefaultVisit(_import_statement);
+			pre_do_visit(_import_statement);
+			visit(import_statement.modules_names);
+			post_do_visit(_import_statement);
+		}
+
+		public override void visit(as_statement _as_statement)
+		{
+			DefaultVisit(_as_statement);
+			pre_do_visit(_as_statement);
+			visit(as_statement.real_name);
+			visit(as_statement.alias);
+			post_do_visit(_as_statement);
+		}
+
+		public override void visit(as_statement_list _as_statement_list)
+		{
+			DefaultVisit(_as_statement_list);
+			pre_do_visit(_as_statement_list);
+			for (int i = 0; i < as_statements.Count; i++)
+				visit(as_statement_list.as_statements[i]);
+			post_do_visit(_as_statement_list);
+		}
+
+		public override void visit(from_import_statement _from_import_statement)
+		{
+			DefaultVisit(_from_import_statement);
+			pre_do_visit(_from_import_statement);
+			visit(from_import_statement.module_name);
+			visit(from_import_statement.imported_names);
+			post_do_visit(_from_import_statement);
 		}
 	}
 

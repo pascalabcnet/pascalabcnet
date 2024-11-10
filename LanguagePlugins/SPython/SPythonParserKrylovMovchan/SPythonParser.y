@@ -11,6 +11,7 @@
 	private HashSet<string> globalVariables = new HashSet<string>();
 	private declarations decl_forward = new declarations();
 	private declarations decl = new declarations();
+	private uses_list imports = new uses_list();
 	private bool isInsideFunction = false;
 	private bool isVariableToBeAssigned = false;
 
@@ -48,7 +49,7 @@
     public type_definition td;
 }
 
-%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM GLOBAL
+%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM GLOBAL AS
 %token <ex> INTNUM REALNUM TRUE FALSE
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
 %token <stn> STRINGNUM
@@ -69,11 +70,12 @@
 %type <ex> expr proc_func_call const_value variable optional_condition act_param
 %type <stn> act_param_list optional_act_param_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt
 %type <stn> var_stmt assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
-%type <stn> decl_or_stmt decl_and_stmt_list expr_list
+%type <stn> import_or_decl_or_stmt import_and_decl_and_stmt_list expr_list
 %type <stn> stmt_list block
-%type <stn> program decl param_name form_param_sect form_param_list optional_form_param_list dotted_ident_list
+%type <stn> program import_or_decl param_name form_param_sect form_param_list optional_form_param_list dotted_ident_list
+%type <stn> ident_as_ident ident_as_ident_list
 %type <td> proc_func_header form_param_type simple_type_identifier
-%type <stn> import_clause import_clause_one
+%type <stn> import_clause
 %type <ob> optional_semicolon
 %type <op> assign_type
 
@@ -96,24 +98,23 @@ act		= actual
 
 %%
 program
-	: import_clause decl_and_stmt_list optional_semicolon
+	: import_and_decl_and_stmt_list optional_semicolon
 		{
 			// main program
 			if (!is_unit_to_be_parsed) {
-				var ul = $1 as uses_list;
-				var stl = $2 as statement_list;
+				var stl = $1 as statement_list;
 				stl.left_logical_bracket = new token_info("");
 				stl.right_logical_bracket = new token_info("");
-				var bl = new block(decl, stl, @2);
+				var bl = new block(decl, stl, @1);
 				decl.AddFirst(decl_forward.defs);
-				root = $$ = NewProgramModule(null, null, ul, bl, $3, @$);
+				root = $$ = NewProgramModule(null, null, imports, bl, $2, @$);
 				root.source_context = bl.source_context;
 			}
 			// unit
 			else {
 				decl.AddFirst(decl_forward.defs);
-				var interface_part = new interface_node(decl as declarations, $1 as uses_list, null, null);
-				var initialization_part = new initfinal_part(null, $2 as statement_list, null, null, null, @$);
+				var interface_part = new interface_node(decl as declarations, imports, null, null);
+				var initialization_part = new initfinal_part(null, $1 as statement_list, null, null, null, @$);
 
 				root = $$ = new unit_module(
 					new unit_name(new ident(Path.GetFileNameWithoutExtension(parserTools.currentFileName)),
@@ -126,72 +127,48 @@ program
 	;
 
 import_clause
-	:
+	: IMPORT ident_as_ident_list
 		{
-			$$ = null;
+			$$ = new import_statement($2 as as_statement_list, @2);
 		}
-	| import_clause import_clause_one
+	| FROM ident IMPORT ident_as_ident_list 
 		{
-   			if (parserTools.build_tree_for_formatter)
-   			{
-	        	if ($1 == null)
-                {
-	        		$$ = new uses_closure($2 as uses_list,@$);
-                }
-	        	else {
-                    ($1 as uses_closure).AddUsesList($2 as uses_list,@$);
-                    $$ = $1;
-                }
-   			}
-   			else
-   			{
-	        	if ($1 == null)
-                {
-                    $$ = $2;
-                    $$.source_context = @$;
-                }
-	        	else
-                {
-                    ($1 as uses_list).AddUsesList($2 as uses_list,@$);
-                    $$ = $1;
-                    $$.source_context = @$;
-                }
-			}
+			$$ = new from_import_statement($2 as ident, false, $4 as as_statement_list, @$);
+		}
+	| FROM ident IMPORT STAR 
+		{
+			$$ = new from_import_statement($2 as ident, true, null, @$);
 		}
 	;
 
-import_clause_one
-	: IMPORT ident SEMICOLON
-		{
-			$$ = new uses_list(new unit_or_namespace(new ident_list($2 as ident, @2), @2),@2);
-			$$.source_context = @$;
-		}
-	;
-
-decl_or_stmt
+import_or_decl_or_stmt
 	: stmt
 		{ $$ = $1; }
-	| decl
-		{ $$ = null; }
+	| import_or_decl
+		{ $$ = $1; }
 	;
 
-decl
+import_or_decl
 	: proc_func_decl
 		{
 			$$ = null;
 			decl.Add($1 as procedure_definition, @$);
 		}
+	| import_clause 
+		{
+			$$ = $1;
+		}
 	;
 
-decl_and_stmt_list
-	: decl_or_stmt
+import_and_decl_and_stmt_list
+	: import_or_decl_or_stmt
 		{
 			if ($1 is statement st)
 				$$ = new statement_list($1 as statement, @1);
 			else
 				$$ =  new statement_list();
 		}
-	| decl_and_stmt_list SEMICOLON decl_or_stmt
+	| import_and_decl_and_stmt_list SEMICOLON import_or_decl_or_stmt
 		{
 			if ($3 is statement st)
 				$$ = ($1 as statement_list).Add(st, @$);
@@ -214,8 +191,6 @@ stmt_list
 stmt
 	: assign_stmt
 		{ $$ = $1; }
-	//| block
-	//	{ $$ = $1; }
 	| var_stmt
 		{ $$ = $1; }
 	| if_stmt
@@ -281,6 +256,24 @@ dotted_ident_list
     | dotted_ident_list COMMA dotted_ident
         {
 			$$ = ($1 as ident_list).Add($3, @$);
+		}
+    ;
+
+ident_as_ident
+	: ident AS ident
+		{ $$ = new as_statement($1.name, $3.name); }
+	| ident
+		{ $$ = new as_statement($1.name, $1.name); }
+	;
+
+ident_as_ident_list
+    : ident_as_ident
+        {
+			$$ = new as_statement_list($1 as as_statement, @$);
+		}
+    | ident_as_ident_list COMMA ident_as_ident
+        {
+			$$ = ($1 as as_statement_list).Add($3 as as_statement, @$);
 		}
     ;
 

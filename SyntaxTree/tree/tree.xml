@@ -3402,6 +3402,49 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="import_statement" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="modules_names" SyntaxType="as_statement_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="as_statement" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="real_name" SyntaxType="ident" />
+        <SyntaxField Name="alias" SyntaxType="ident" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="as_statement_list" BaseName="statement">
+      <Fields>
+        <ExtendedField Name="as_statements" Type="List&lt;as_statement&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="from_import_statement" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="module_name" SyntaxType="ident" />
+        <ExtendedField Name="is_star" Type="bool" CreateVariable="false" DeleteVariable="false" />
+        <SyntaxField Name="imported_names" SyntaxType="as_statement_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3449,7 +3492,9 @@
       <HelpData Key="._range" Value="" />
       <HelpData Key="._realType" Value="" />
       <HelpData Key=".additional_restrictions" Value="" />
+      <HelpData Key=".alias" Value="" />
       <HelpData Key=".aloneparam" Value="" />
+      <HelpData Key=".as_nodes" Value="" />
       <HelpData Key=".attr" Value="" />
       <HelpData Key=".attributes" Value="" />
       <HelpData Key=".body" Value="" />
@@ -3502,6 +3547,7 @@
       <HelpData Key=".pattern" Value="" />
       <HelpData Key=".pattern_expression" Value="" />
       <HelpData Key=".procdef" Value="" />
+      <HelpData Key=".real_name" Value="" />
       <HelpData Key=".res" Value="" />
       <HelpData Key=".restriction" Value="" />
       <HelpData Key=".restriction_args" Value="" />
@@ -3573,8 +3619,19 @@
       <HelpData Key="array_type.size" Value="" />
       <HelpData Key="as_node" Value="" />
       <HelpData Key="as_node." Value="" />
+      <HelpData Key="as_node.alias" Value="" />
       <HelpData Key="as_node.left" Value="" />
+      <HelpData Key="as_node.name" Value="" />
+      <HelpData Key="as_node.real_name" Value="" />
       <HelpData Key="as_node.right" Value="" />
+      <HelpData Key="as_node_list" Value="" />
+      <HelpData Key="as_node_list.as_nodes" Value="" />
+      <HelpData Key="as_statement" Value="" />
+      <HelpData Key="as_statement.alias" Value="" />
+      <HelpData Key="as_statement.real_name" Value="" />
+      <HelpData Key="as_statement_list" Value="" />
+      <HelpData Key="as_statement_list.as_nodes" Value="" />
+      <HelpData Key="as_statement_list.as_statements" Value="" />
       <HelpData Key="assign" Value="Оператор присваивания" />
       <HelpData Key="assign." Value="" />
       <HelpData Key="assign.assign(addressed_value left,expression ex): this(left,ex,Operators.Assignment)" Value="" />
@@ -3993,6 +4050,11 @@
       <HelpData Key="fptype_and_expr" Value="" />
       <HelpData Key="fptype_and_expr." Value="" />
       <HelpData Key="fptype_and_expr.typedef" Value="" />
+      <HelpData Key="from_import_statement" Value="" />
+      <HelpData Key="from_import_statement.imported_names" Value="" />
+      <HelpData Key="from_import_statement.is_star" Value="" />
+      <HelpData Key="from_import_statement.module_name" Value="" />
+      <HelpData Key="from_import_statement.modules_names" Value="" />
       <HelpData Key="function_header" Value="" />
       <HelpData Key="function_header.function_header(formal_parameters _parameters, procedure_attributes_list _proc_attributes, method_name _name, where_definition_list _where_defs, type_definition _return_type, SourceContext sc)" Value="" />
       <HelpData Key="function_header.function_header(formal_parameters fp, procedure_attributes_list pal, string name, string returntype)" Value="for sugar" />
@@ -4081,6 +4143,10 @@
       <HelpData Key="implementation_node.implementation_definitions" Value="" />
       <HelpData Key="implementation_node.uses_modules" Value="" />
       <HelpData Key="implementation_node.using_namespaces" Value="" />
+      <HelpData Key="import" Value="" />
+      <HelpData Key="import.modules_names" Value="" />
+      <HelpData Key="import_statement" Value="" />
+      <HelpData Key="import_statement.modules_names" Value="" />
       <HelpData Key="index" Value="" />
       <HelpData Key="index.index_expr" Value="" />
       <HelpData Key="index.inverted" Value="" />

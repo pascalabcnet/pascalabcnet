@@ -550,6 +550,14 @@ namespace PascalABCCompiler.SyntaxTree
 					return new global_statement();
 				case 264:
 					return new list_generator();
+				case 265:
+					return new import_statement();
+				case 266:
+					return new as_statement();
+				case 267:
+					return new as_statement_list();
+				case 268:
+					return new from_import_statement();
 			}
 			return null;
 		}
@@ -4613,6 +4621,69 @@ namespace PascalABCCompiler.SyntaxTree
 			_list_generator._ident = _read_node() as ident;
 			_list_generator._range = _read_node() as expression;
 			_list_generator._condition = _read_node() as expression;
+		}
+
+
+		public void visit(import_statement _import_statement)
+		{
+			read_import_statement(_import_statement);
+		}
+
+		public void read_import_statement(import_statement _import_statement)
+		{
+			read_statement(_import_statement);
+			_import_statement.modules_names = _read_node() as as_statement_list;
+		}
+
+
+		public void visit(as_statement _as_statement)
+		{
+			read_as_statement(_as_statement);
+		}
+
+		public void read_as_statement(as_statement _as_statement)
+		{
+			read_statement(_as_statement);
+			_as_statement.real_name = _read_node() as ident;
+			_as_statement.alias = _read_node() as ident;
+		}
+
+
+		public void visit(as_statement_list _as_statement_list)
+		{
+			read_as_statement_list(_as_statement_list);
+		}
+
+		public void read_as_statement_list(as_statement_list _as_statement_list)
+		{
+			read_statement(_as_statement_list);
+			if (br.ReadByte() == 0)
+			{
+				_as_statement_list.as_statements = null;
+			}
+			else
+			{
+				_as_statement_list.as_statements = new List<as_statement>();
+				Int32 ssyy_count = br.ReadInt32();
+				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
+				{
+					_as_statement_list.as_statements.Add(_read_node() as as_statement);
+				}
+			}
+		}
+
+
+		public void visit(from_import_statement _from_import_statement)
+		{
+			read_from_import_statement(_from_import_statement);
+		}
+
+		public void read_from_import_statement(from_import_statement _from_import_statement)
+		{
+			read_statement(_from_import_statement);
+			_from_import_statement.module_name = _read_node() as ident;
+			_from_import_statement.is_star = br.ReadBoolean();
+			_from_import_statement.imported_names = _read_node() as as_statement_list;
 		}
 
 	}
