@@ -796,7 +796,7 @@ namespace VisualPascalABC
             string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
             //controller.Compile(file_name, text /*+ ")))));end."*/);
             FileName = fileName; Text = text;
-            ICompletionData[] data = GetCompletionDataByFirst(off, text, textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw);
+            ICompletionData[] data = GetCompletionDataByFirst(textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw);
             CodeCompletion.AssemblyDocCache.CompleteDocumentation();
             CodeCompletion.UnitDocCache.CompleteDocumentation();
             controller = null;
