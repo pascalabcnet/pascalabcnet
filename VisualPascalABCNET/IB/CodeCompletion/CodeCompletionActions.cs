@@ -118,22 +118,39 @@ namespace VisualPascalABC
 
         public static List<Position> GetDefinitionPosition(TextArea textArea, bool only_check)
         {
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return new List<Position>();
+
+            IParser parser = CodeCompletion.CodeCompletionController.CurrentParser;
+
+            if (parser == null) 
+                return new List<Position>();
+            
             IDocument doc = textArea.Document;
             string textContent = doc.TextContent;
             ccp = new CodeCompletionProvider();
             string full_expr;
             string expressionResult = FindFullExpression(textContent, textArea, out ccp.keyword, out full_expr);
+            
             if (expressionResult != null)
                 expressionResult = expressionResult.Trim();
-            if (expressionResult != full_expr && full_expr.StartsWith("("))
-                return new List<Position>();
             
-            if (full_expr != null && full_expr.Contains("^"))
-            	full_expr = full_expr.Replace("^","");
+            
+            // Проверка, что компилируем Паскаль временно  EVA 10.11.2024
+            if (parser == Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(StringConstants.pascalLanguageName).Parser)
+            {
+                if (expressionResult != full_expr && full_expr.StartsWith("("))
+                    return new List<Position>();
+
+                if (full_expr != null && full_expr.Contains("^"))
+                {
+                    full_expr = full_expr.Replace("^", "");
+                }
+            }
+            
             List<Position> poses = ccp.GetDefinition(full_expr, textArea.MotherTextEditorControl.FileName, textArea.Caret.Line, textArea.Caret.Column, only_check);
+            
             if (poses == null || poses.Count == 0)
                 poses = ccp.GetDefinition(expressionResult, textArea.MotherTextEditorControl.FileName, textArea.Caret.Line, textArea.Caret.Column, only_check);
+            
             return poses;
         }
 
