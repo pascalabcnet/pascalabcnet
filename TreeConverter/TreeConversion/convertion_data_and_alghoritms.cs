@@ -27,10 +27,6 @@ namespace PascalABCCompiler.TreeConverter
 
 		public convertion_data_and_alghoritms(syntax_tree_visitor stv)
 		{
-#if DEBUG
-            if (stv.for_intellisense)
-                symbolTable = new SymbolTable.TreeConverterSymbolTable();
-#endif
             type_table.type_table_function_call_maker = create_simple_function_call;
 			_stv=stv;
             _type_constructor = new type_constructor(this);
