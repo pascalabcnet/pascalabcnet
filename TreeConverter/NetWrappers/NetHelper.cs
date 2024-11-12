@@ -1567,7 +1567,7 @@ namespace PascalABCCompiler.NetHelper
         public static List<SymbolInfo> FindName(Type t, string name)
         {
             if (name == null) return null;
-            if (name == StringConstants.assign_name) return null;
+            if (name == StringConstants.assign_name && !t.IsValueType) return null;
             string s = StringConstants.GetNETOperName(name);
             string tmp_name = name;
             if (s != null)
