@@ -4989,7 +4989,7 @@ namespace PascalABCCompiler.NETGenerator
             if (expr != null && !(expr is IConstantNode) && !(expr is IArrayInitializer))
             {
                 expr.visit(this);
-                if (expr.type != null && expr is ICompiledStaticMethodCallNode)
+                if (expr.type != null && (!(expr is IBasicFunctionCallNode) && expr is IFunctionCallNode fcn && (fcn.function.name == "op_Assign" || fcn.function.name == ":=")))
                     il.Emit(OpCodes.Pop);
             }
             il = ilgn;
