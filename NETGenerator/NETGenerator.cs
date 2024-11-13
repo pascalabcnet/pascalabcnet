@@ -4989,6 +4989,8 @@ namespace PascalABCCompiler.NETGenerator
             if (expr != null && !(expr is IConstantNode) && !(expr is IArrayInitializer))
             {
                 expr.visit(this);
+                if (expr.type != null)
+                    il.Emit(OpCodes.Pop);
             }
             il = ilgn;
         }
