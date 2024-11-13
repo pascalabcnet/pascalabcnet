@@ -4989,7 +4989,7 @@ namespace PascalABCCompiler.NETGenerator
             if (expr != null && !(expr is IConstantNode) && !(expr is IArrayInitializer))
             {
                 expr.visit(this);
-                if (expr.type != null)
+                if (expr.type != null && expr is ICompiledStaticMethodCallNode)
                     il.Emit(OpCodes.Pop);
             }
             il = ilgn;
