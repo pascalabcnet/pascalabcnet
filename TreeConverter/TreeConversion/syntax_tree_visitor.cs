@@ -5321,7 +5321,6 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                _pascal_set_constant = _pascal_set_constant;
                 // Ну теперь самый общий NSet<el_type>(Arr<el_type>(consts), Arr<el_type>(consts_diap))
                 var nset_type = new semantic_type_node(el_type, psc);
                 var dnNSetInt = new dot_node(new ident("PABCSystem", psc), new ident("__NSetInteger", psc));

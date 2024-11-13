@@ -455,10 +455,10 @@ begin
 end;
 
 // Важнейший для новых множеств !!!
-procedure operator:=<T>(var Self: NewSet<T>; st: NewSet<T>); extensionmethod;
+{procedure operator:=<T>(var Self: NewSet<T>; st: NewSet<T>); extensionmethod;
 begin
   Self._hs := new HashSet<T>(st.hs);
-end;
+end;}
 
 {procedure operator:=<T>(var Self: NewSet<T>; st: NewSetEmpty); extensionmethod;
 begin

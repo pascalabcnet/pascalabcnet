@@ -483,6 +483,8 @@ type
   end;}
   
 type
+  NewSetEmpty = class;
+  
   /// Тип нового встроенного множества
   NewSet<T> = record(IEnumerable<T>)
   private
@@ -545,12 +547,17 @@ type
     static function operator implicit(ns: HashSet<T>): NewSet<T>;
     begin
       Result.hs.UnionWith(ns);
-    end;  
+    end;
+
+    static function operator implicit(ns: NewSetEmpty): NewSet<T>; begin end;
+    static function operator:=(var s: NewSet<T>; st: NewSet<T>): NewSet<T>; 
+    begin
+      s._hs := new HashSet<T>(st.hs);
+    end;
   end;
   
-  NewSetEmpty = record 
-    static function operator implicit<T>(ns: NewSetEmpty): NewSet<T>; begin end; 
-    
+  NewSetEmpty = class 
+  public
     static function operator=<T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := s1.Count = 0;
     static function operator=<T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := s1.Count = 0;
     static function operator<><T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := not (s1 = s2);
@@ -565,9 +572,9 @@ type
     static function operator<=<T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := s1.Count >= 0;
     // ToDo: определить то же для массивов на будущее
     
-    static function operator+(first, second: NewSetEmpty): NewSetEmpty; begin end; 
-    static function operator-(first, second: NewSetEmpty): NewSetEmpty; begin end; 
-    static function operator*(first, second: NewSetEmpty): NewSetEmpty; begin end; 
+    static function operator+(first, second: NewSetEmpty): NewSetEmpty := new NewSetEmpty;
+    static function operator-(first, second: NewSetEmpty): NewSetEmpty := new NewSetEmpty;
+    static function operator*(first, second: NewSetEmpty): NewSetEmpty := new NewSetEmpty;
     static function operator+<T>(first: NewSetEmpty; second: array of T): NewSet<T>;
     begin 
       Result._hs.UnionWith(second);
@@ -602,7 +609,7 @@ type
       Result := new HashSet<T>;
     end;
   end;  
-
+  
 type
   // Вспомогательный тип для множества
   ///-- 
@@ -15395,7 +15402,7 @@ end;}
 
 // Присваивание реализовано в PABCExtensions. Здесь не работает
 
-var _emptyset: NewSetEmpty;
+var _emptyset: NewSetEmpty := new NewSetEmpty;
 
 type 
   SetCreatorFunctionAttribute = class(Attribute)
@@ -15515,6 +15522,8 @@ begin
   foreach var x in a do
     Result._hs.Add(x);
 end;  
+
+//function operator implicit<T>(ns: NewSetEmpty): NewSet<T>; extensionmethod; begin end; 
 
 // -----------------------------------------------------------------------------
 //                Внутренние вспомогательные функции 

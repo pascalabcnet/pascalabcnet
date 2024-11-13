@@ -483,19 +483,21 @@ type
   end;}
   
 type
+  NewSetEmpty = class;
+  
   /// Тип нового встроенного множества
   NewSet<T> = record(IEnumerable<T>)
   private
   public
     ///--
-    _hs := new HashSet<T>;
+    hs := new HashSet<T>;
     ///--
-    function hs: HashSet<T>;
+    {function hs: HashSet<T>;
     begin
       if _hs = nil then
         _hs := new HashSet<T>;
       Result := _hs;
-    end;
+    end;}
     constructor (params a: array of T);
     begin
       hs.UnionWith(a);
@@ -504,7 +506,7 @@ type
     function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := GetEnumerator;
     static function operator implicit(a: array of T): NewSet<T>; 
     begin 
-      Result._hs := new HashSet<T>(a);
+      Result.hs := new HashSet<T>(a);
     end;
     function ToString: string; override;
     function Count: integer := hs.Count;
@@ -545,12 +547,17 @@ type
     static function operator implicit(ns: HashSet<T>): NewSet<T>;
     begin
       Result.hs.UnionWith(ns);
-    end;  
+    end;
+
+    static function operator implicit(ns: NewSetEmpty): NewSet<T>; begin end; 
+    static function operator:=(var Self: NewSet<T>; st: NewSet<T>): NewSet<T>; 
+    begin
+      Self.hs := new HashSet<T>(st.hs);
+    end;
   end;
   
-  NewSetEmpty = record 
-    static function operator implicit<T>(ns: NewSetEmpty): NewSet<T>; begin end; 
-    
+  NewSetEmpty = class 
+  public
     static function operator=<T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := s1.Count = 0;
     static function operator=<T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := s1.Count = 0;
     static function operator<><T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := not (s1 = s2);
@@ -565,16 +572,16 @@ type
     static function operator<=<T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := s1.Count >= 0;
     // ToDo: определить то же для массивов на будущее
     
-    static function operator+(first, second: NewSetEmpty): NewSetEmpty; begin end; 
-    static function operator-(first, second: NewSetEmpty): NewSetEmpty; begin end; 
-    static function operator*(first, second: NewSetEmpty): NewSetEmpty; begin end; 
+    static function operator+(first, second: NewSetEmpty): NewSetEmpty := new NewSetEmpty;
+    static function operator-(first, second: NewSetEmpty): NewSetEmpty := new NewSetEmpty;
+    static function operator*(first, second: NewSetEmpty): NewSetEmpty := new NewSetEmpty;
     static function operator+<T>(first: NewSetEmpty; second: array of T): NewSet<T>;
     begin 
-      Result._hs.UnionWith(second);
+      Result.hs.UnionWith(second);
     end;
     static function operator+<T>(first: array of T; second: NewSetEmpty): NewSet<T>;
     begin 
-      Result._hs.UnionWith(first);
+      Result.hs.UnionWith(first);
     end;
     static function operator+<T>(first: NewSet<T>; second: NewSetEmpty): NewSet<T> := first;
     static function operator+<T>(first: NewSetEmpty; second: NewSet<T>): NewSet<T> := second;
@@ -588,7 +595,7 @@ type
     static function operator-<T>(first: NewSetEmpty; second: array of T): NewSet<T>; begin end;
     static function operator-<T>(first: array of T; second: NewSetEmpty): NewSet<T>;
     begin 
-      Result._hs.UnionWith(first);
+      Result.hs.UnionWith(first);
     end;
     function ToString: string; override := '{}';
     function ToSet<T>(): NewSet<T>; begin end; 
@@ -602,7 +609,7 @@ type
       Result := new HashSet<T>;
     end;
   end;  
-
+  
 type
   // Вспомогательный тип для множества
   ///-- 
@@ -15395,7 +15402,7 @@ end;}
 
 // Присваивание реализовано в PABCExtensions. Здесь не работает
 
-var _emptyset: NewSetEmpty;
+var _emptyset: NewSetEmpty := new NewSetEmpty;
 
 type 
   SetCreatorFunctionAttribute = class(Attribute)
@@ -15406,14 +15413,14 @@ function EmptySet := _emptyset;
 [SetCreatorFunction]
 function __NewSetCreatorInternal<T>(params a: array of T): NewSet<T>;
 begin
-  Result._hs := new HashSet<T>;
-  Result._hs.UnionWith(a);
+  Result.hs := new HashSet<T>;
+  Result.hs.UnionWith(a);
 end; 
 
 [SetCreatorFunction]
 function __NSetInteger(a: array of integer; dd: array of integer): NewSet<integer>;
 begin
-  Result._hs.UnionWith(a);
+  Result.hs.UnionWith(a);
   var n := dd.Length;
   for var i:=0 to n-1 step 2 do
   begin
@@ -15425,7 +15432,7 @@ end;
 [SetCreatorFunction]
 function __NSetChar(a: array of char; dd: array of char): NewSet<char>;
 begin
-  Result._hs.UnionWith(a);
+  Result.hs.UnionWith(a);
   var n := dd.Length;
   for var i:=0 to n-1 step 2 do
   begin
@@ -15437,7 +15444,7 @@ end;
 [SetCreatorFunction]
 function __NSetBoolean(a: array of boolean; dd: array of boolean): NewSet<boolean>;
 begin
-  Result._hs.UnionWith(a);
+  Result.hs.UnionWith(a);
   var n := dd.Length;
   for var i:=0 to n-1 step 2 do
   begin
@@ -15449,7 +15456,7 @@ end;
 [SetCreatorFunction]
 function __NSetEnum<T>(a: array of T; dd: array of T): NewSet<T>;
 begin
-  Result._hs.UnionWith(a);
+  Result.hs.UnionWith(a);
   var vals := System.Enum.GetValues(typeof(T)).Cast&<T>.ToArray;
   var n := dd.Length;
   for var i:=0 to n-1 step 2 do
@@ -15471,50 +15478,52 @@ end;
 function operator implicit(n: array of integer): set of byte; extensionmethod;
 begin
   foreach var x in n do
-    Result._hs.Add(x);
+    Result.hs.Add(x);
 end;
 
 function operator implicit(n: array of integer): set of shortint; extensionmethod;
 begin
   foreach var x in n do
-    Result._hs.Add(x);
+    Result.hs.Add(x);
 end;
 
 function operator implicit(n: array of integer): set of smallint; extensionmethod;
 begin
   foreach var x in n do
-    Result._hs.Add(x);
+    Result.hs.Add(x);
 end;
 
 function operator implicit(n: array of integer): set of word; extensionmethod;
 begin
   foreach var x in n do
-    Result._hs.Add(x);
+    Result.hs.Add(x);
 end;
 
 function operator implicit(n: array of integer): set of longword; extensionmethod;
 begin
   foreach var x in n do
-    Result._hs.Add(x);
+    Result.hs.Add(x);
 end;
 
 function operator implicit(a: array of integer): set of int64; extensionmethod;
 begin
   foreach var x in a do
-    Result._hs.Add(x);
+    Result.hs.Add(x);
 end;
 
 function operator implicit(a: array of integer): set of uint64; extensionmethod;
 begin
   foreach var x in a do
-    Result._hs.Add(x);
+    Result.hs.Add(x);
 end;
 
 function operator implicit(a: array of integer): set of BigInteger; extensionmethod;
 begin
   foreach var x in a do
-    Result._hs.Add(x);
+    Result.hs.Add(x);
 end;  
+
+//function operator implicit<T>(ns: NewSetEmpty): NewSet<T>; extensionmethod; begin end; 
 
 // -----------------------------------------------------------------------------
 //                Внутренние вспомогательные функции 
