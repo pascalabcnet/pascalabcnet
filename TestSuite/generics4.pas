@@ -11,6 +11,8 @@ begin
   assert(set1.set1 = []);
   assert(set1.set2 = []);
   set2 := set1;
+  Include(set1.set1,'b');
+  Include(set1.set2,'b');
   Include(set2.set1,'b');
   Include(set2.set2,'b');
   assert(set1.set1 = ['b']); // увы - при присваивании не вызывается operator := для компонент

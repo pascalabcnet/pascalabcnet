@@ -15617,14 +15617,27 @@ namespace PascalABCCompiler.TreeConverter
             else if (expr is common_static_method_call)
             {
                 var csmc = expr as common_static_method_call;
-                var properties = new List<common_property_node>();
-                foreach (common_property_node cpn in csmc.function_node.cont_type.properties)
-                    if (cpn.get_function == csmc.function_node && cpn.set_function == null)
+                if (csmc.function_node.cont_type != null)
+                {
+                    foreach (common_property_node cpn in csmc.function_node.cont_type.properties)
+                        if (cpn.get_function == csmc.function_node && cpn.set_function == null)
+                        {
+                            constant = new common_static_method_call_as_constant(csmc, null);
+                            break;
+                        }
+                }
+                else
+                {
+                    var values = (csmc.parameters[0] as array_initializer).element_values;
+                    // Надо компоненты проверять на константность
+                    foreach (expression_node en in values)
                     {
-                        constant = new common_static_method_call_as_constant(csmc, null);
-                        break;
+                        if (!(en is constant_node))
+                            AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
                     }
-
+                    constant = new common_static_method_call_as_constant(csmc, loc);
+                    return constant;
+                }
             }
             else
             {
