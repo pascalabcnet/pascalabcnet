@@ -741,6 +741,8 @@ namespace PascalABCCompiler
 
         public Dictionary<Tuple<string, string>, Tuple<string, int>> PCUFileNamesDictionary { get; } = new Dictionary<Tuple<string, string>, Tuple<string, int>>();
 
+        private Dictionary<object, object> unitNames = new Dictionary<object, object>(); 
+
         public Dictionary<Tuple<string, string>, string> GetUnitFileNameCache { get; } = new Dictionary<Tuple<string, string>, string>();
 
         public void AddWarnings(List<CompilerWarning> WarningList)
@@ -960,6 +962,9 @@ namespace PascalABCCompiler
             SourceFileNamesDictionary.Clear();
             PCUFileNamesDictionary.Clear();
             GetUnitFileNameCache.Clear();
+
+            unitNames.Clear();
+
             Warnings.Clear();
             errorsList.Clear();
             //if (!File.Exists(CompilerOptions.SourceFileName)) throw new SourceFileNotFound(CompilerOptions.SourceFileName);
@@ -3446,6 +3451,22 @@ namespace PascalABCCompiler
             #endregion
 
             //Console.WriteLine("Compiling Interface "+ unitFileName);//DEBUG
+
+            // если есть такой конвертор у языка
+            if (currentUnit.Language.SpecialSyntaxTreeConverter != null)
+            {
+                foreach (var unitNode in interfaceUsesList)
+                {
+                    string fileName = GetUnitFileName(unitNode, currentDirectory);
+                    string id = Path.ChangeExtension(fileName, null);
+                    CompilationUnit unit = UnitTable[id];
+
+                    // этого надо реализовывать и для Паскаля, возможно, чтобы подключать паскалевкий модуль в питоне
+                    unit.Language.SpecialVisitor.CollectNames(unitNames);
+                }
+
+                currentUnit.Language.SpecialSyntaxTreeConverter.Convert(currentUnit.SyntaxTree, unitNames);
+            }
 
             // компилируем интерфейс текущего модуля EVA
             CompileCurrentUnitInterface(unitFileName, currentUnit, docs);
