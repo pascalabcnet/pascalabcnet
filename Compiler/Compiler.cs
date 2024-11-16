@@ -3462,7 +3462,7 @@ namespace PascalABCCompiler
                     CompilationUnit unit = UnitTable[id];
 
                     // этого надо реализовывать и для Паскаля, возможно, чтобы подключать паскалевкий модуль в питоне
-                    unit.Language.SpecialVisitor.CollectNames(unitNames);
+                    unit.Language.SpecialVisitor.CollectNames(unit.SyntaxTree, unitNames);
                 }
 
                 currentUnit.Language.SpecialSyntaxTreeConverter.Convert(currentUnit.SyntaxTree, unitNames);
