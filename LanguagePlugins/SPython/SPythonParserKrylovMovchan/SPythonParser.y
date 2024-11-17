@@ -724,6 +724,10 @@ simple_type_identifier
 					break;
 			}
 		}
+	| dotted_ident
+		{
+			$$ = new named_type_reference($1, @$);
+		}
 	;
 
 form_param_type

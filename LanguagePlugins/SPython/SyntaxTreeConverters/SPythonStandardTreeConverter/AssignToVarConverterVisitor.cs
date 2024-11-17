@@ -27,7 +27,7 @@ namespace Languages.SPython.Frontend.Converters
             {"input", "SPythonSystem"}
         };
 
-        Dictionary<string, HashSet<string>> moduleNameToSymbols = new Dictionary<string, HashSet<string>>() {
+        public Dictionary<string, HashSet<string>> moduleNameToSymbols = new Dictionary<string, HashSet<string>>() {
             {"random", new HashSet<string>() {"random", "randint"} }
         };
 

@@ -741,7 +741,7 @@ namespace PascalABCCompiler
 
         public Dictionary<Tuple<string, string>, Tuple<string, int>> PCUFileNamesDictionary { get; } = new Dictionary<Tuple<string, string>, Tuple<string, int>>();
 
-        private Dictionary<object, object> unitNames = new Dictionary<object, object>(); 
+        private Dictionary<string, string> unitNames = new Dictionary<string, string>(); 
 
         public Dictionary<Tuple<string, string>, string> GetUnitFileNameCache { get; } = new Dictionary<Tuple<string, string>, string>();
 
@@ -3462,10 +3462,12 @@ namespace PascalABCCompiler
                     CompilationUnit unit = UnitTable[id];
 
                     // этого надо реализовывать и для Паскаля, возможно, чтобы подключать паскалевкий модуль в питоне
-                    unit.Language.SpecialVisitor.CollectNames(unit.SyntaxTree, unitNames);
+                    //unit.Language.SpecialVisitor(unit.SyntaxTree, unitNames);
                 }
 
-                currentUnit.Language.SpecialSyntaxTreeConverter.Convert(currentUnit.SyntaxTree, unitNames);
+                // does it work? think so
+                currentUnit.Language.SetSpecialSyntaxTreeConverterParameter(unitNames);
+                currentUnit.Language.SpecialSyntaxTreeConverter.ProcessNode(currentUnit.SyntaxTree);
             }
 
             // компилируем интерфейс текущего модуля EVA

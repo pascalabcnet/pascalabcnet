@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using Languages.Facade;
+using Languages.SPython.Frontend.Converters;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.SystemLibrary;
 using PascalABCCompiler.TreeConverter;
+using SPythonSyntaxTreeVisitor;
 
 namespace Languages.SPython
 {
@@ -11,7 +13,7 @@ namespace Languages.SPython
         public SPythonLanguage() : base(
             name: "SPython",
             version: "0.0.1",
-            copyright: "Copyright © 2023-2023 by Vladislav Krylov, Egor Movchan",
+            copyright: "Copyright © 2023-2024 by Vladislav Krylov, Egor Movchan",
 
             parser: new SPythonParser.SPythonLanguageParser(),
             docParser: null,
@@ -21,7 +23,8 @@ namespace Languages.SPython
 
             filesExtensions: new string[] { ".pys" },
             caseSensitive: false,
-            systemUnitNames: new string[] { "SpythonSystem", "SpythonHidden" }
+            systemUnitNames: new string[] { "SpythonSystem", "SpythonHidden" },
+            specialSyntaxTreeConverter: new AssignToVarConverterVisitor()
             )
         { }
 
@@ -50,6 +53,11 @@ namespace Languages.SPython
         public override void SetSyntaxTreeToSemanticTreeConverter()
         {
             SyntaxTreeToSemanticTreeConverter = new SPythonSyntaxTreeVisitor.spython_syntax_tree_visitor();
+        }
+        
+        public override void SetSpecialSyntaxTreeConverterParameter(object obj)
+        {
+            (this.SpecialSyntaxTreeConverter as AssignToVarConverterVisitor).moduleNameToSymbols = obj as Dictionary<string, HashSet<string>>;
         }
     }
 }

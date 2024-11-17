@@ -24,8 +24,8 @@ namespace Languages.SPython.Frontend.Converters
             // замена узлов assign на узлы var
             // (внутри ф-й основываясь на узлах global,
             // вне ф-й по первому появлению в symbolTable)
-            var atvcv = new AssignToVarConverterVisitor();
-            atvcv.ProcessNode(root);
+            //var atvcv = new AssignToVarConverterVisitor();
+            //atvcv.ProcessNode(root);
 
             // удаление узлов global
             var egnv = new EraseGlobalNodesVisitor();
@@ -33,8 +33,8 @@ namespace Languages.SPython.Frontend.Converters
 
             // вынос переменных самого внешнего уровня на глобальный
             // если они используются в функциях (являются глобальными)
-            var rugvv = new RetainUsedGlobalVariablesVisitor();
-            rugvv.ProcessNode(root);
+            //var rugvv = new RetainUsedGlobalVariablesVisitor();
+            //rugvv.ProcessNode(root);
 
             return root;
         }

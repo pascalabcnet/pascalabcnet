@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System.Collections;
 using System.Collections.Generic;
 using PascalABCCompiler.Parsers;
+using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.TreeConverter;
 
@@ -74,5 +76,13 @@ namespace Languages.Facade
         // TODO: Возможно, стоит переделать логику обновления, чтобы не приходилось создавать новый объект каждый раз  EVA
         void SetSyntaxTreeToSemanticTreeConverter();
 
+
+        /// <summary>
+        /// Специальный синтаксический визитор, вызываемый после компиляции импортированных модулей
+        /// </summary>
+        WalkingVisitorNew SpecialSyntaxTreeConverter { get; }
+
+
+        void SetSpecialSyntaxTreeConverterParameter(object obj);
     }
 }
