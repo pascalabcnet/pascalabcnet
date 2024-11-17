@@ -741,7 +741,7 @@ namespace PascalABCCompiler
 
         public Dictionary<Tuple<string, string>, Tuple<string, int>> PCUFileNamesDictionary { get; } = new Dictionary<Tuple<string, string>, Tuple<string, int>>();
 
-        private Dictionary<string, string> unitNames = new Dictionary<string, string>(); 
+        private Dictionary<string, HashSet<string>> unitNames = new Dictionary<string, HashSet<string>>(); 
 
         public Dictionary<Tuple<string, string>, string> GetUnitFileNameCache { get; } = new Dictionary<Tuple<string, string>, string>();
 
@@ -3462,7 +3462,10 @@ namespace PascalABCCompiler
                     CompilationUnit unit = UnitTable[id];
 
                     // этого надо реализовывать и для Паскаля, возможно, чтобы подключать паскалевкий модуль в питоне
-                    //unit.Language.SpecialVisitor(unit.SyntaxTree, unitNames);
+                    SyntaxVisitors.CollectNameVisitor cnv = new SyntaxVisitors.CollectNameVisitor();
+                    cnv.UnitNamesToSymbols = unitNames;
+                    cnv.ThisUnitName = Path.GetFileNameWithoutExtension(fileName);
+                    cnv.ProcessNode(unit.SyntaxTree);
                 }
 
                 // does it work? think so

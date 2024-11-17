@@ -15,25 +15,39 @@ namespace Languages.SPython.Frontend.Converters
         SymbolTable localVariables = new SymbolTable();
         HashSet<string> globalVariables = new HashSet<string>();
         HashSet<string> importedModules = new HashSet<string>();
-        Dictionary<string, string> modulesAliases = new Dictionary<string, string>();
-        Dictionary<string, string> aliasToRealName = new Dictionary<string, string>() 
+        Dictionary<string, string> modulesAliases = new Dictionary<string, string>()
         {
-            {"print", "print"},
-            {"input", "input"}
+            {"SpythonSystem", "SpythonSystem"},
+            {"SpythonHidden", "SpythonHidden"},
         };
-        Dictionary<string, string> aliasToModuleName = new Dictionary<string, string>()
-        {
-            {"print", "SPythonSystem"},
-            {"input", "SPythonSystem"}
-        };
+        Dictionary<string, string> aliasToRealName = new Dictionary<string, string>();
+        Dictionary<string, string> aliasToModuleName = new Dictionary<string, string>();
 
-        public Dictionary<string, HashSet<string>> moduleNameToSymbols = new Dictionary<string, HashSet<string>>() {
-            {"random", new HashSet<string>() {"random", "randint"} }
-        };
+        private Dictionary<string, HashSet<string>> moduleNameToSymbols;
+
+        public Dictionary<string, HashSet<string>> ModuleNameToSymbols 
+        { 
+            get => moduleNameToSymbols; 
+            set
+            {
+                moduleNameToSymbols = value;
+
+                foreach (string name in moduleNameToSymbols["SpythonSystem"])
+                {
+                    aliasToRealName[name] = name;
+                    aliasToModuleName[name] = "SpythonSystem";
+                }
+                foreach (string name in moduleNameToSymbols["SpythonHidden"])
+                {
+                    aliasToRealName[name] = name;
+                    aliasToModuleName[name] = "SpythonHidden";
+                }
+            }
+        }
 
         HashSet<string> keyWords = new HashSet<string>()
         {
-            "integer", "true", "false", "int", "break"
+            "integer", "true", "false", "int", "break", "exit"
         };
 
         bool isInFunctionBody = false;
@@ -45,6 +59,7 @@ namespace Languages.SPython.Frontend.Converters
         // нужны методы из BaseChangeVisitor, но порядок обхода из WalkingVisitorNew
         public override void DefaultVisit(syntax_tree_node n)
         {
+            if (n == null) return;
             for (var i = 0; i < n.subnodes_count; i++)
                 ProcessNode(n[i]);
         }
@@ -73,13 +88,20 @@ namespace Languages.SPython.Frontend.Converters
             }
             if (stn is statement_list)
                 localVariables.ClearScope();
-            if (stn is program_module pm)
-            {
-                foreach (string module_name in importedModules)
-                    pm.used_units.Add(new unit_or_namespace(new ident_list(new ident(module_name))));
-            }
 
             base.Exit(stn);
+        }
+
+        public override void visit(procedure_header _procedure_header)
+        {
+            globalVariables.Add(_procedure_header.name.ToString());
+            base.visit(_procedure_header);
+        }
+
+        public override void visit(function_header _function_header)
+        {
+            globalVariables.Add(_function_header.name.ToString());
+            base.visit(_function_header);
         }
 
         public override void visit(dot_node _dot_node)
@@ -99,6 +121,7 @@ namespace Languages.SPython.Frontend.Converters
                         !globalVariables.Contains(left.name) &&
                         !functionParameters.Contains(left.name) &&
                         !modulesAliases.ContainsKey(left.name) &&
+                        !importedModules.Contains(left.name) &&
                         !keyWords.Contains(left.name))
                 {
                     throw new SyntaxVisitorError("Unknown name " + left.name,
@@ -127,6 +150,18 @@ namespace Languages.SPython.Frontend.Converters
             }
         }
 
+        public override void visit(unit_name _unit_name)
+        {
+            globalVariables.Add(_unit_name.idunit_name.name);
+        }
+
+        public override void visit(interface_node _interface_node)
+        {
+            visit(_interface_node.uses_modules);
+            visit(_interface_node.using_namespaces);
+            visit(_interface_node.interface_definitions);
+        }
+
         public override void visit(global_statement _global_statement)
         {
             foreach (ident _ident in _global_statement.idents.idents)
@@ -151,6 +186,12 @@ namespace Languages.SPython.Frontend.Converters
             base.visit(_var_statement);
         }
 
+        public override void visit(unit_or_namespace _unit_or_Namespace)
+        {
+            foreach (ident id in _unit_or_Namespace.name.idents)
+                modulesAliases[id.name] = id.name;
+        }
+
         public override void visit(import_statement _import_statement)
         {
             foreach (as_statement as_Statement in _import_statement.modules_names.as_statements)
@@ -158,6 +199,8 @@ namespace Languages.SPython.Frontend.Converters
                 importedModules.Add(as_Statement.real_name.name);
                 modulesAliases[as_Statement.alias.name] = as_Statement.real_name.name;
             }
+
+            ReplaceStatement(_import_statement, new empty_statement());
         }
 
         public override void visit(from_import_statement _from_import_statement)
@@ -184,6 +227,8 @@ namespace Languages.SPython.Frontend.Converters
                     aliasToModuleName[as_Statement.alias.name] = _from_import_statement.module_name.name;
                 }
             }
+
+            ReplaceStatement(_from_import_statement, new empty_statement());
         }
 
         public override void visit(variable_definitions _variable_definitions)

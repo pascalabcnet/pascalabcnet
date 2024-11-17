@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="EraseGlobalNodesVisitor.cs" />
     <Compile Include="AssignToVarConverterVisitor.cs" />
+    <Compile Include="ImportToUsesVisitor.cs" />
     <Compile Include="ListGeneratorNodesVisitor.cs" />
     <Compile Include="RetainUsedGlobalVariablesVisitor.cs" />
     <Compile Include="SameNameVisitor.cs" />

@@ -107,7 +107,7 @@ program
 				stl.right_logical_bracket = new token_info("");
 				var bl = new block(decl, stl, @1);
 				decl.AddFirst(decl_forward.defs);
-				root = $$ = NewProgramModule(null, null, imports, bl, $2, @$);
+				root = $$ = NewProgramModule(null, null, new uses_list(), bl, $2, @$);
 				root.source_context = bl.source_context;
 			}
 			// unit
@@ -129,14 +129,18 @@ program
 import_clause
 	: IMPORT ident_as_ident_list
 		{
+			foreach (as_statement as_Statement in ($2 as as_statement_list).as_statements)
+				imports.AddUsesList(new uses_list(as_Statement.real_name.name));
 			$$ = new import_statement($2 as as_statement_list, @2);
 		}
 	| FROM ident IMPORT ident_as_ident_list 
 		{
+			imports.AddUsesList(new uses_list(($2 as ident).name));
 			$$ = new from_import_statement($2 as ident, false, $4 as as_statement_list, @$);
 		}
 	| FROM ident IMPORT STAR 
 		{
+			imports.AddUsesList(new uses_list(($2 as ident).name));
 			$$ = new from_import_statement($2 as ident, true, null, @$);
 		}
 	;
@@ -723,10 +727,6 @@ simple_type_identifier
 					$$ = new named_type_reference($1, @$);
 					break;
 			}
-		}
-	| dotted_ident
-		{
-			$$ = new named_type_reference($1, @$);
 		}
 	;
 

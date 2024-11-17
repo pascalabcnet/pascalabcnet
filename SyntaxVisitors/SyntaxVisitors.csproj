@@ -83,6 +83,7 @@
     <Compile Include="SugarVisitors\NewRangeDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\SliceDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\TupleVisitor.cs" />
+    <Compile Include="UniversalVisitors\CollectNamesVisitor.cs" />
     <Compile Include="VisitorsForLambdas\RenameOnExceptVarsVisitor.cs" />
     <Compile Include="VisitorsForLambdas\RenameSameVarNamesVisitor.cs" />
     <Compile Include="VisitorsForLambdas\StandOutExprWithLambdaInForeachSequenceVisitor.cs" />

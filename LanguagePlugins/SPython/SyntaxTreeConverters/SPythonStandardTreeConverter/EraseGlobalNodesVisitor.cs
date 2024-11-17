@@ -14,14 +14,14 @@ namespace Languages.SPython.Frontend.Converters
             DeleteInStatementList(_global_statement);
         }
 
-        public override void visit(import_statement _import_statement)
-        {
-            DeleteInStatementList(_import_statement);
-        }
+        //public override void visit(import_statement _import_statement)
+        //{
+        //    DeleteInStatementList(_import_statement);
+        //}
 
-        public override void visit(from_import_statement _from_import_statement)
-        {
-            DeleteInStatementList(_from_import_statement);
-        }
+        //public override void visit(from_import_statement _from_import_statement)
+        //{
+        //    DeleteInStatementList(_from_import_statement);
+        //}
     }
 }

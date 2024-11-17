@@ -31,6 +31,9 @@ namespace Languages.SPython.Frontend.Converters
             var egnv = new EraseGlobalNodesVisitor();
             egnv.ProcessNode(root);
 
+            var ituv = new ImportToUsesVisitor();
+            ituv.ProcessNode(root);
+
             // вынос переменных самого внешнего уровня на глобальный
             // если они используются в функциях (являются глобальными)
             //var rugvv = new RetainUsedGlobalVariablesVisitor();
