@@ -526,15 +526,15 @@ type
     static procedure operator*=(Self, another: NewSet<T>) := Self.hs.IntersectWith(another.hs);
     static function operator+(first, second: NewSet<T>): NewSet<T>;
     begin
-      Result += first; Result += second;
+      Result.hs.UnionWith(first); Result._hs.UnionWith(second);
     end;
     static function operator*(first, second: NewSet<T>): NewSet<T>;
     begin
-      Result += first; Result *= second;
+      Result.hs.UnionWith(first); Result._hs.IntersectWith(second);
     end;    
     static function operator-(first, second: NewSet<T>): NewSet<T>;
     begin
-      Result += first; Result -= second;
+      Result.hs.UnionWith(first); Result.hs.ExceptWith(second);
     end;  
     static function operator=(first, second: NewSet<T>) := first.hs.SetEquals(second.hs);
     static function operator<>(first, second: NewSet<T>) := not (first = second);
@@ -550,7 +550,7 @@ type
     end;
 
     static function operator implicit(ns: NewSetEmpty): NewSet<T>; begin end;
-    static function operator:=(var s: NewSet<T>; st: NewSet<T>): NewSet<T>; 
+    static function operator:=(var s: NewSet<T>; st: NewSet<T>): NewSet<T>; // Эту функцию обязательно здесь определять
     begin
       s._hs := new HashSet<T>(st.hs);
     end;
@@ -577,11 +577,11 @@ type
     static function operator*(first, second: NewSetEmpty): NewSetEmpty := new NewSetEmpty;
     static function operator+<T>(first: NewSetEmpty; second: array of T): NewSet<T>;
     begin 
-      Result._hs.UnionWith(second);
+      Result.hs.UnionWith(second);
     end;
     static function operator+<T>(first: array of T; second: NewSetEmpty): NewSet<T>;
     begin 
-      Result._hs.UnionWith(first);
+      Result.hs.UnionWith(first);
     end;
     static function operator+<T>(first: NewSet<T>; second: NewSetEmpty): NewSet<T> := first;
     static function operator+<T>(first: NewSetEmpty; second: NewSet<T>): NewSet<T> := second;
@@ -595,7 +595,7 @@ type
     static function operator-<T>(first: NewSetEmpty; second: array of T): NewSet<T>; begin end;
     static function operator-<T>(first: array of T; second: NewSetEmpty): NewSet<T>;
     begin 
-      Result._hs.UnionWith(first);
+      Result.hs.UnionWith(first);
     end;
     function ToString: string; override := '{}';
     function ToSet<T>(): NewSet<T>; begin end; 
@@ -15413,7 +15413,7 @@ function EmptySet := _emptyset;
 [SetCreatorFunction]
 function __NewSetCreatorInternal<T>(params a: array of T): NewSet<T>;
 begin
-  Result._hs := new HashSet<T>;
+  //Result._hs := new HashSet<T>;
   Result._hs.UnionWith(a);
 end; 
 
