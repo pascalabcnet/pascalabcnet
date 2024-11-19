@@ -567,6 +567,7 @@ end;
 
 function operator=(a: NewSet<uint64>; b: NewSet<integer>): boolean; extensionmethod := b = a;
 
+
 function operator<>(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := not(a = b);
 function operator<>(a: NewSet<byte>; b: NewSet<integer>); extensionmethod := not(a = b);
 function operator<>(a: NewSet<integer>; b: NewSet<shortint>); extensionmethod := not(a = b);
@@ -582,11 +583,11 @@ function operator<>(a: NewSet<integer>; b: NewSet<int64>); extensionmethod := no
 function operator<>(a: NewSet<integer>; b: NewSet<uint64>); extensionmethod := not(a = b);
 function operator<>(a: NewSet<uint64>; b: NewSet<integer>); extensionmethod := not(a = b);
 
-function operator<(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.IsProperSubsetOf(NSToInts(b));
+(*function operator<(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.IsProperSubsetOf(NSToInts(b));
 function operator<(a: NewSet<byte>; b: NewSet<integer>); extensionmethod := b > a;
 function operator<(a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.IsProperSubsetOf(NSToInts64(b));
 function operator<(a: NewSet<integer>; b: NewSet<int64>); extensionmethod := b > a;
-  
+*) 
 function operator>(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.IsProperSupersetOf(NSToInts(b));
 function operator>(a: NewSet<byte>; b: NewSet<integer>); extensionmethod := b < a;
 function operator>(a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.IsProperSupersetOf(NSToInts64(b));
@@ -686,11 +687,11 @@ begin
 end;
 
 // и для массивов столько же
-function operator=(a: NewSet<integer>; b: array of byte); extensionmethod := a._hs.SetEquals(b.Select(x -> integer(x)));
+(*function operator=(a: NewSet<integer>; b: array of byte); extensionmethod := a._hs.SetEquals(b.Select(x -> integer(x)));
 function operator=(a: array of byte; b: NewSet<integer>): boolean; extensionmethod := b = a;
 function operator=(a: array of int64; b: NewSet<integer>); extensionmethod := a.ToHashSet.SetEquals(NSToInts64(b));
 function operator=(a: NewSet<integer>; b: array of int64): boolean; extensionmethod := b = a;
-
+*)
 //function operator=(a: NewSet<int64>; b: NewSet<byte>); extensionmethod := a._hs.SetEquals(NSToInts64(b));
 //function operator=(a: NewSet<byte>; b: NewSet<int64>): boolean; extensionmethod := a = b;
 
