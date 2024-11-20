@@ -4809,6 +4809,13 @@ begin
     exit;
   end;
   
+  if t.FullName.StartsWith('PABCSystem.NewSet`1') then
+  begin
+    res.Write('set of ');
+    TypeToTypeNameHelper(t.GetGenericArguments.Single, res);
+    exit;
+  end;
+  
   if t.GetInterfaces.Append(t).Contains(typeof(System.Collections.IEnumerable)) then
   begin
     var typed := t.GetInterfaces.Append(t).FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
