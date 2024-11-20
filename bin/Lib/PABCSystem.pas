@@ -485,7 +485,7 @@ type
 type
   NewSetEmpty = class;
   
-  /// Тип нового встроенного множества
+  /// Тип встроенного множества
   NewSet<T> = record(IEnumerable<T>)
   private
   public
@@ -508,14 +508,21 @@ type
     begin 
       Result._hs := new HashSet<T>(a);
     end;
+    /// Преобразовать к строковому представлению
     function ToString: string; override;
+    /// Количество элементов в множестве
     function Count: integer := hs.Count;
+    /// Создать копию множества
     function Clone: NewSet<T>; begin Result.hs.UnionWith(hs) end;
+    /// Добавить элемент в множество
     function Add(elem: T): boolean := hs.Add(elem);
+    /// Добавить набор элементов в множество. Вернуть True если элемент был добавлен
     procedure AddRange(elems: sequence of T) := hs.UnionWith(elems);
+    /// Удалить элемент из множества. Вернуть True если элемент был удален
     function Remove(elem: T): boolean := hs.Remove(elem);
     static procedure operator +=(Self: NewSet<T>; elem: T) := Self.hs.Add(elem);
     static procedure operator -=(Self: NewSet<T>; elem: T) := Self.hs.Remove(elem);
+    /// Содержится ли элемент во множестве
     function Contains(elem: T): boolean := hs.Contains(elem);
     static function operator in(elem: T; Self: NewSet<T>): boolean; 
     begin
@@ -534,7 +541,7 @@ type
     end;    
     static function operator-(first, second: NewSet<T>): NewSet<T>;
     begin
-      Result.hs.UnionWith(first); Result.hs.ExceptWith(second);
+      Result.hs.UnionWith(first); Result._hs.ExceptWith(second);
     end;  
     static function operator=(first, second: NewSet<T>) := first.hs.SetEquals(second.hs);
     static function operator<>(first, second: NewSet<T>) := not (first = second);
