@@ -33,6 +33,7 @@ const
   PARAMETER_TO_OUT_OF_RANGE = 'Параметр to за пределами диапазона!!The to parameter out of bounds';
   SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL = 'Размеры среза и присваиваемого выражения должны быть равны!!Slice size and assigned expression size must be equal';
   OUT_OF_TYPE_RANGE_IN_SET_ASSIGNMENT = 'Выход за границы типа множества!!Out of type range in set assignment';
+  OUT_OF_TYPE_RANGE_IN_SET_OPERATION = 'Выход за границы типа множества!!Out of type range in set operation';
 
 
 //{{{doc: Начало секции расширений строк для срезов }}} 
@@ -528,8 +529,25 @@ function NSToInts(ns: NewSet<word>) := ns._hs.Select(x -> integer(x));
 //function NSToInts(ns: NewSet<int64>) := ns._hs.Select(x -> integer(x));
 function NSToInts64(ns: NewSet<byte>) := ns._hs.Select(x -> int64(x));
 function NSToInts64(ns: NewSet<integer>) := ns._hs.Select(x -> int64(x));
-function NSToBytes(ns: NewSet<integer>) := ns._hs.Select(x -> byte(x));
-function NSToBytes(ns: NewSet<int64>) := ns._hs.Select(x -> byte(x));
+function NSToBytes(ns: NewSet<integer>): sequence of byte;
+begin
+  var res := new List<byte>;
+  foreach var x in ns._hs do
+    if (x >= byte.MinValue) and (x <= byte.MaxValue) then
+      res.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_OPERATION));
+  Result := res;  
+end; 
+
+function NSToBytes(ns: NewSet<int64>): sequence of byte; 
+begin
+  var res := new List<byte>;
+  foreach var x in ns._hs do
+    if (x >= byte.MinValue) and (x <= byte.MaxValue) then
+      res.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_OPERATION));
+  Result := res;  
+end; 
 
 // Надо set of integer со всеми
 function operator=(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a.hs.SetEquals(NSToInts(b));
@@ -613,7 +631,13 @@ procedure operator*=(var a: NewSet<int64>; b: NewSet<integer>); extensionmethod 
 
 //procedure operator+=<T>(var a: NewSet<T>; another: NewSet<T>); extensionmethod := a.hs.UnionWith(another.hs);
 
-procedure operator+=(a: NewSet<byte>; b: NewSet<integer>); extensionmethod := a.hs.UnionWith(NSToBytes(b));
+procedure operator+=(a: NewSet<byte>; b: NewSet<integer>); extensionmethod;
+begin
+  var x := a.hs;
+  var bt := NSToBytes(b);
+  a.hs.UnionWith(bt);
+end; 
+
 procedure operator+=(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a.hs.UnionWith(NSToInts(b));
 procedure operator+=(a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a.hs.UnionWith(NSToInts64(b));
 //procedure operator+=(a: NewSet<integer>; b: NewSet<int64>); extensionmethod := a.hs.UnionWith(NSToInts(b));
