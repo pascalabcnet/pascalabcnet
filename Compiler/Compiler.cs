@@ -3462,10 +3462,20 @@ namespace PascalABCCompiler
                     CompilationUnit unit = UnitTable[id];
 
                     // этого надо реализовывать и для Паскаля, возможно, чтобы подключать паскалевкий модуль в питоне
-                    SyntaxVisitors.CollectNameVisitor cnv = new SyntaxVisitors.CollectNameVisitor();
-                    cnv.UnitNamesToSymbols = unitNames;
-                    cnv.ThisUnitName = Path.GetFileNameWithoutExtension(fileName);
-                    cnv.ProcessNode(unit.SyntaxTree);
+                    //SyntaxVisitors.CollectNameVisitor cnv = new SyntaxVisitors.CollectNameVisitor();
+                    //cnv.UnitNamesToSymbols = unitNames;
+                    //cnv.ThisUnitName = Path.GetFileNameWithoutExtension(fileName);
+                    //cnv.ProcessNode(unit.SyntaxTree);
+
+                    string unitName = Path.GetFileNameWithoutExtension(fileName);
+                    unitNames.Add(unitName, new HashSet<string>());
+                    bool skip_first = true;
+                    foreach (var names in (unit.SemanticTree as common_unit_node).scope.Symbols.dict)
+                    {
+                        if (skip_first)
+                        { skip_first = false; continue; }
+                        unitNames[unitName].Add(names.Key);
+                    }
                 }
 
                 // does it work? think so
