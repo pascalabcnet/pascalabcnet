@@ -54,6 +54,7 @@ namespace Languages.SPython.Frontend.Converters
 
         public AssignToVarConverterVisitor() {
             localVariables.Add("result");
+
         }
 
         // нужны методы из BaseChangeVisitor, но порядок обхода из WalkingVisitorNew

@@ -3481,6 +3481,7 @@ namespace PascalABCCompiler
                 // does it work? think so
                 currentUnit.Language.SetSpecialSyntaxTreeConverterParameter(unitNames);
                 currentUnit.Language.SpecialSyntaxTreeConverter.ProcessNode(currentUnit.SyntaxTree);
+                unitNames.Clear();
             }
 
             // компилируем интерфейс текущего модуля EVA

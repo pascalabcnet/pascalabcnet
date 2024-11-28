@@ -57,6 +57,7 @@ namespace Languages.SPython
         
         public override void SetSpecialSyntaxTreeConverterParameter(object obj)
         {
+            SpecialSyntaxTreeConverter = new AssignToVarConverterVisitor();
             (this.SpecialSyntaxTreeConverter as AssignToVarConverterVisitor).ModuleNameToSymbols = obj as Dictionary<string, HashSet<string>>;
         }
     }
