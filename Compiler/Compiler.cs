@@ -159,6 +159,7 @@ using System.Linq;
 using System.Reflection;
 
 using Languages.Facade;
+using SyntaxVisitors;
 
 namespace PascalABCCompiler
 {
@@ -3478,7 +3479,6 @@ namespace PascalABCCompiler
                     }
                 }
 
-                // does it work? think so
                 currentUnit.Language.SetSpecialSyntaxTreeConverterParameter(unitNames);
                 currentUnit.Language.SpecialSyntaxTreeConverter.ProcessNode(currentUnit.SyntaxTree);
                 unitNames.Clear();

@@ -14,12 +14,7 @@ namespace Languages.SPython.Frontend.Converters
         HashSet<string> functionParameters = new HashSet<string>();
         SymbolTable localVariables = new SymbolTable();
         HashSet<string> globalVariables = new HashSet<string>();
-        HashSet<string> importedModules = new HashSet<string>();
-        Dictionary<string, string> modulesAliases = new Dictionary<string, string>()
-        {
-            {"SpythonSystem", "SpythonSystem"},
-            {"SpythonHidden", "SpythonHidden"},
-        };
+        Dictionary<string, string> modulesAliases = new Dictionary<string, string>();
         Dictionary<string, string> aliasToRealName = new Dictionary<string, string>();
         Dictionary<string, string> aliasToModuleName = new Dictionary<string, string>();
 
@@ -47,14 +42,15 @@ namespace Languages.SPython.Frontend.Converters
 
         HashSet<string> keyWords = new HashSet<string>()
         {
-            "integer", "true", "false", "int", "break", "exit"
+            "integer", "real", 
+            "true", "false", 
+            "break", "continue", "exit" 
         };
 
         bool isInFunctionBody = false;
 
         public AssignToVarConverterVisitor() {
             localVariables.Add("result");
-
         }
 
         // нужны методы из BaseChangeVisitor, но порядок обхода из WalkingVisitorNew
@@ -122,11 +118,10 @@ namespace Languages.SPython.Frontend.Converters
                         !globalVariables.Contains(left.name) &&
                         !functionParameters.Contains(left.name) &&
                         !modulesAliases.ContainsKey(left.name) &&
-                        !importedModules.Contains(left.name) &&
                         !keyWords.Contains(left.name))
                 {
-                    throw new SyntaxVisitorError("Unknown name " + left.name,
-                        _dot_node.source_context);
+                    throw new SyntaxVisitorError("UNEXPECTED_TOKEN_{0}",
+                        left.source_context, left.name);
                 }
         }
 
@@ -146,8 +141,8 @@ namespace Languages.SPython.Frontend.Converters
                 !modulesAliases.ContainsKey(_ident.name) &&
                 !keyWords.Contains(_ident.name))
             {
-                throw new SyntaxVisitorError("Unknown name " + _ident.name,
-                        _ident.source_context);
+                throw new SyntaxVisitorError("UNEXPECTED_TOKEN_{0}",
+                        _ident.source_context, _ident.name);
             }
         }
 
@@ -189,15 +184,14 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(unit_or_namespace _unit_or_Namespace)
         {
-            foreach (ident id in _unit_or_Namespace.name.idents)
-                modulesAliases[id.name] = id.name;
+            //foreach (ident id in _unit_or_Namespace.name.idents)
+                //modulesAliases[id.name] = id.name;
         }
 
         public override void visit(import_statement _import_statement)
         {
             foreach (as_statement as_Statement in _import_statement.modules_names.as_statements)
             {
-                importedModules.Add(as_Statement.real_name.name);
                 modulesAliases[as_Statement.alias.name] = as_Statement.real_name.name;
             }
 
@@ -206,7 +200,6 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(from_import_statement _from_import_statement)
         {
-            importedModules.Add(_from_import_statement.module_name.name);
 
             if (_from_import_statement.is_star)
             {
@@ -244,7 +237,6 @@ namespace Languages.SPython.Frontend.Converters
         {
             if (_assign.to is ident _ident) { 
                 if (
-                    !importedModules.Contains(_ident.name) &&
                     !functionParameters.Contains(_ident.name) &&
                     !localVariables.Contains(_ident.name) &&
                     !functionGlobalVariables.Contains(_ident.name) &&
