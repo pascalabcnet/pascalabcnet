@@ -12,7 +12,7 @@ namespace Languages.SPython.Frontend.Converters
         HashSet<string> functionGlobalVariables = new HashSet<string>();
         // параметры текущей просматриваемой функции
         HashSet<string> functionParameters = new HashSet<string>();
-        SymbolTable localVariables = new SymbolTable();
+        SymbolTable.LocalScope localVariables = new SymbolTable.LocalScope();
         HashSet<string> globalVariables = new HashSet<string>();
         Dictionary<string, string> modulesAliases = new Dictionary<string, string>();
         Dictionary<string, string> aliasToRealName = new Dictionary<string, string>();
@@ -53,6 +53,16 @@ namespace Languages.SPython.Frontend.Converters
             localVariables.Add("result");
         }
 
+        private void CreateNewLocalScope()
+        {
+            localVariables = new SymbolTable.LocalScope(localVariables);
+        }
+
+        private void EraseCurrentLocalScope()
+        {
+            localVariables.ClearScope();
+        }
+
         // нужны методы из BaseChangeVisitor, но порядок обхода из WalkingVisitorNew
         public override void DefaultVisit(syntax_tree_node n)
         {
@@ -63,9 +73,12 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void Enter(syntax_tree_node stn)
         {
-            if (stn is statement_list)
+            // циклы и определение функции порождают новое пространство имён
+            if (stn is foreach_stmt         
+                ||  stn is while_node           
+                ||  stn is procedure_definition)
             {
-                localVariables = new SymbolTable(localVariables);
+                CreateNewLocalScope();
             }
             if (stn is procedure_definition)
             {
@@ -83,8 +96,12 @@ namespace Languages.SPython.Frontend.Converters
                 functionGlobalVariables.Clear();
                 functionParameters.Clear();
             }
-            if (stn is statement_list)
-                localVariables.ClearScope();
+            if (stn is foreach_stmt
+                || stn is while_node
+                || stn is procedure_definition)
+            {
+                EraseCurrentLocalScope();
+            }
 
             base.Exit(stn);
         }
@@ -146,9 +163,19 @@ namespace Languages.SPython.Frontend.Converters
             }
         }
 
+        public override void visit(unit_or_namespace _unit_or_namespace)
+        {
+
+        }
+
         public override void visit(unit_name _unit_name)
         {
             globalVariables.Add(_unit_name.idunit_name.name);
+        }
+
+        public override void visit(foreach_stmt _foreach_stmt)
+        {
+            localVariables.Add(_foreach_stmt.identifier.name);
         }
 
         public override void visit(interface_node _interface_node)
@@ -182,10 +209,17 @@ namespace Languages.SPython.Frontend.Converters
             base.visit(_var_statement);
         }
 
-        public override void visit(unit_or_namespace _unit_or_Namespace)
+        public override void visit(if_node _if_node)
         {
-            //foreach (ident id in _unit_or_Namespace.name.idents)
-                //modulesAliases[id.name] = id.name;
+            base.visit(_if_node.condition);
+
+            CreateNewLocalScope();
+            base.visit(_if_node.then_body);
+            EraseCurrentLocalScope();
+
+            CreateNewLocalScope();
+            base.visit(_if_node.else_body);
+            EraseCurrentLocalScope();
         }
 
         public override void visit(import_statement _import_statement)
@@ -257,41 +291,44 @@ namespace Languages.SPython.Frontend.Converters
             base.visit(_assign);
         }
 
-
         public class SymbolTable
         {
-            private SymbolTable outerScope;
-            private HashSet<string> symbols = new HashSet<string>();
-            public SymbolTable(SymbolTable outerScope = null)
+            public class LocalScope
             {
-                this.outerScope = outerScope;
-            }
+                private LocalScope outerScope;
+                private HashSet<string> symbols = new HashSet<string>();
 
-            public bool Contains(string ident)
-            {
-                SymbolTable curr = this;
-
-                while (curr != null)
+                public LocalScope(LocalScope outerScope = null)
                 {
-                    if (curr.symbols.Contains(ident))
-                        return true;
-                    curr = curr.outerScope;
+                    this.outerScope = outerScope;
                 }
 
-                return false;
-            }
-
-            public void Add(string ident)
-            {
-                symbols.Add(ident);
-            }
-
-            public void ClearScope()
-            {
-                if (outerScope != null)
+                public bool Contains(string ident)
                 {
-                    symbols = outerScope.symbols;
-                    outerScope = outerScope.outerScope;
+                    LocalScope curr = this;
+
+                    while (curr != null)
+                    {
+                        if (curr.symbols.Contains(ident))
+                            return true;
+                        curr = curr.outerScope;
+                    }
+
+                    return false;
+                }
+
+                public void Add(string ident)
+                {
+                    symbols.Add(ident);
+                }
+
+                public void ClearScope()
+                {
+                    if (outerScope != null)
+                    {
+                        symbols = outerScope.symbols;
+                        outerScope = outerScope.outerScope;
+                    }
                 }
             }
         }
