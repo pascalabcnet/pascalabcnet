@@ -176,6 +176,7 @@ namespace Languages.SPython.Frontend.Converters
         public override void visit(foreach_stmt _foreach_stmt)
         {
             localVariables.Add(_foreach_stmt.identifier.name);
+            base.visit(_foreach_stmt);
         }
 
         public override void visit(interface_node _interface_node)
