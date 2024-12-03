@@ -504,10 +504,6 @@ type
     end;
     function GetEnumerator: IEnumerator<T> := hs.GetEnumerator;
     function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := GetEnumerator;
-    static function operator implicit(a: array of T): NewSet<T>; 
-    begin 
-      Result._hs := new HashSet<T>(a);
-    end;
     /// Преобразовать к строковому представлению
     function ToString: string; override;
     /// Количество элементов в множестве
@@ -554,6 +550,10 @@ type
     static function operator implicit(ns: HashSet<T>): NewSet<T>;
     begin
       Result.hs.UnionWith(ns);
+    end;
+    static function operator implicit(a: array of T): NewSet<T>; 
+    begin 
+      Result._hs := new HashSet<T>(a);
     end;
 
     static function operator implicit(ns: NewSetEmpty): NewSet<T>; begin end;
@@ -2699,7 +2699,7 @@ function HSetInt(params a: array of integer): HashSet<integer>;
 /// Возвращает множество на базе хеш таблицы, заполненное строковыми значениями
 function HSetStr(params a: array of string): HashSet<string>;
 /// Возвращает множество, заполненное указанными значениями
-function SetOf<T>(params a: array of T): HashSet<T>;
+function SetOf<T>(params a: array of T): NewSet<T>;
 
 
 /// Возвращает множество на базе бинарного дерева поиска, заполненное указанными значениями 
@@ -6097,8 +6097,10 @@ function HSet(a: IntRange): HashSet<integer> := new HashSet<integer>(a);
 
 function HSet(a: CharRange): HashSet<char> := new HashSet<char>(a);
 
-function SetOf<T>(params a: array of T): HashSet<T> := new HashSet<T>(a);
-
+function SetOf<T>(params a: array of T): NewSet<T>;
+begin
+  Result._hs := new HashSet<T>(a);
+end;
 
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
 begin
@@ -11188,9 +11190,9 @@ begin
 end;
 
 /// Возвращает множество по данной последовательности
-function ToSet<T>(Self: sequence of T): HashSet<T>; extensionmethod;
+function ToSet<T>(Self: sequence of T): NewSet<T>; extensionmethod;
 begin
-  Result := new HashSet<T>(Self);
+  Result._hs := new HashSet<T>(Self);
 end;
 
 /// Возвращает множество SortedSet по данной последовательности
@@ -15067,14 +15069,6 @@ function operator><T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1
 ///--
 function operator>=<T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1, T2, T3, T4,T5,T6,T7)); extensionmethod := CompareToTup5(Self, v) >= 0;
 
-{
-///--
-function operator implicit<T>(a: array of T): set of T; extensionmethod; 
-begin
-  foreach var x in a do
-    Include(Result,x);
-end;
-}
 
 {// Определяет, есть ли указанный элемент в массиве
  function Contains<T>(self: array of T; x: T): boolean; extensionmethod;
@@ -15482,60 +15476,7 @@ begin
   end
 end;
 
-function operator implicit(a: set of integer): set of BigInteger; extensionmethod;
-begin
-  foreach var x in a do
-    Result.Add(x);
-end;
-
-//------------------
-function operator implicit(n: array of integer): set of byte; extensionmethod;
-begin
-  foreach var x in n do
-    Result._hs.Add(x);
-end;
-
-function operator implicit(n: array of integer): set of shortint; extensionmethod;
-begin
-  foreach var x in n do
-    Result._hs.Add(x);
-end;
-
-function operator implicit(n: array of integer): set of smallint; extensionmethod;
-begin
-  foreach var x in n do
-    Result._hs.Add(x);
-end;
-
-function operator implicit(n: array of integer): set of word; extensionmethod;
-begin
-  foreach var x in n do
-    Result._hs.Add(x);
-end;
-
-function operator implicit(n: array of integer): set of longword; extensionmethod;
-begin
-  foreach var x in n do
-    Result._hs.Add(x);
-end;
-
-function operator implicit(a: array of integer): set of int64; extensionmethod;
-begin
-  foreach var x in a do
-    Result._hs.Add(x);
-end;
-
-function operator implicit(a: array of integer): set of uint64; extensionmethod;
-begin
-  foreach var x in a do
-    Result._hs.Add(x);
-end;
-
-function operator implicit(a: array of integer): set of BigInteger; extensionmethod;
-begin
-  foreach var x in a do
-    Result._hs.Add(x);
-end;  
+ 
 
 //function operator implicit<T>(ns: NewSetEmpty): NewSet<T>; extensionmethod; begin end; 
 
@@ -15824,7 +15765,8 @@ begin
   end;
   try
     if (System.Environment.OSVersion.Version.Major >= 6) and (System.Environment.OSVersion.Version.Minor >= 2) then
-      System.Console.OutputEncoding := Encoding.UTF8;
+      System.Console.OutputEncoding := new System.Text.UTF8Encoding(false);
+      //System.Console.OutputEncoding := Encoding.UTF8;
   except
   end;
   rnd := new System.Random;
