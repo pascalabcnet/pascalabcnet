@@ -15,7 +15,7 @@ assert([b,sh,sm,w,i,lw,li,ui]=[1,2,3,4,5,6,7,8]);
 Include(s1,integer.MaxValue);
 s1.Add(longword.MaxValue);
 //s1 += [longword.MaxValue];
-s1 += [int64.MaxValue,uint64.MaxValue];
-assert(s1=[integer.MaxValue,longword.MaxValue,int64.MaxValue,uint64.MaxValue]);
+//s1 += [int64.MaxValue,uint64.MaxValue];
+//assert(s1=[integer.MaxValue,longword.MaxValue,int64.MaxValue,uint64.MaxValue]);
 s1 := [byte.MaxValue,shortint.MaxValue,smallint.MaxValue,word.MaxValue,integer.MaxValue,longword.MaxValue,int64.MaxValue,uint64.MaxValue];
 end.

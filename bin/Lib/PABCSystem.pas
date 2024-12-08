@@ -485,7 +485,7 @@ type
 type
   NewSetEmpty = class;
   
-  /// Тип нового встроенного множества
+  /// Тип встроенного множества
   NewSet<T> = record(IEnumerable<T>)
   private
   public
@@ -504,18 +504,21 @@ type
     end;
     function GetEnumerator: IEnumerator<T> := hs.GetEnumerator;
     function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := GetEnumerator;
-    static function operator implicit(a: array of T): NewSet<T>; 
-    begin 
-      Result._hs := new HashSet<T>(a);
-    end;
+    /// Преобразовать к строковому представлению
     function ToString: string; override;
+    /// Количество элементов в множестве
     function Count: integer := hs.Count;
+    /// Создать копию множества
     function Clone: NewSet<T>; begin Result.hs.UnionWith(hs) end;
+    /// Добавить элемент в множество
     function Add(elem: T): boolean := hs.Add(elem);
+    /// Добавить набор элементов в множество. Вернуть True если элемент был добавлен
     procedure AddRange(elems: sequence of T) := hs.UnionWith(elems);
+    /// Удалить элемент из множества. Вернуть True если элемент был удален
     function Remove(elem: T): boolean := hs.Remove(elem);
     static procedure operator +=(Self: NewSet<T>; elem: T) := Self.hs.Add(elem);
     static procedure operator -=(Self: NewSet<T>; elem: T) := Self.hs.Remove(elem);
+    /// Содержится ли элемент во множестве
     function Contains(elem: T): boolean := hs.Contains(elem);
     static function operator in(elem: T; Self: NewSet<T>): boolean; 
     begin
@@ -526,15 +529,15 @@ type
     static procedure operator*=(Self, another: NewSet<T>) := Self.hs.IntersectWith(another.hs);
     static function operator+(first, second: NewSet<T>): NewSet<T>;
     begin
-      Result += first; Result += second;
+      Result.hs.UnionWith(first); Result._hs.UnionWith(second);
     end;
     static function operator*(first, second: NewSet<T>): NewSet<T>;
     begin
-      Result += first; Result *= second;
+      Result.hs.UnionWith(first); Result._hs.IntersectWith(second);
     end;    
     static function operator-(first, second: NewSet<T>): NewSet<T>;
     begin
-      Result += first; Result -= second;
+      Result.hs.UnionWith(first); Result._hs.ExceptWith(second);
     end;  
     static function operator=(first, second: NewSet<T>) := first.hs.SetEquals(second.hs);
     static function operator<>(first, second: NewSet<T>) := not (first = second);
@@ -548,9 +551,13 @@ type
     begin
       Result.hs.UnionWith(ns);
     end;
+    static function operator implicit(a: array of T): NewSet<T>; 
+    begin 
+      Result._hs := new HashSet<T>(a);
+    end;
 
     static function operator implicit(ns: NewSetEmpty): NewSet<T>; begin end;
-    static function operator:=(var s: NewSet<T>; st: NewSet<T>): NewSet<T>; 
+    static function operator:=(var s: NewSet<T>; st: NewSet<T>): NewSet<T>; // Эту функцию обязательно здесь определять
     begin
       s._hs := new HashSet<T>(st.hs);
     end;
@@ -577,11 +584,11 @@ type
     static function operator*(first, second: NewSetEmpty): NewSetEmpty := new NewSetEmpty;
     static function operator+<T>(first: NewSetEmpty; second: array of T): NewSet<T>;
     begin 
-      Result._hs.UnionWith(second);
+      Result.hs.UnionWith(second);
     end;
     static function operator+<T>(first: array of T; second: NewSetEmpty): NewSet<T>;
     begin 
-      Result._hs.UnionWith(first);
+      Result.hs.UnionWith(first);
     end;
     static function operator+<T>(first: NewSet<T>; second: NewSetEmpty): NewSet<T> := first;
     static function operator+<T>(first: NewSetEmpty; second: NewSet<T>): NewSet<T> := second;
@@ -595,7 +602,7 @@ type
     static function operator-<T>(first: NewSetEmpty; second: array of T): NewSet<T>; begin end;
     static function operator-<T>(first: array of T; second: NewSetEmpty): NewSet<T>;
     begin 
-      Result._hs.UnionWith(first);
+      Result.hs.UnionWith(first);
     end;
     function ToString: string; override := '{}';
     function ToSet<T>(): NewSet<T>; begin end; 
@@ -2692,7 +2699,7 @@ function HSetInt(params a: array of integer): HashSet<integer>;
 /// Возвращает множество на базе хеш таблицы, заполненное строковыми значениями
 function HSetStr(params a: array of string): HashSet<string>;
 /// Возвращает множество, заполненное указанными значениями
-function SetOf<T>(params a: array of T): HashSet<T>;
+function SetOf<T>(params a: array of T): NewSet<T>;
 
 
 /// Возвращает множество на базе бинарного дерева поиска, заполненное указанными значениями 
@@ -4809,6 +4816,13 @@ begin
     exit;
   end;
   
+  if t.FullName.StartsWith('PABCSystem.NewSet`1') then
+  begin
+    res.Write('set of ');
+    TypeToTypeNameHelper(t.GetGenericArguments.Single, res);
+    exit;
+  end;
+  
   if t.GetInterfaces.Append(t).Contains(typeof(System.Collections.IEnumerable)) then
   begin
     var typed := t.GetInterfaces.Append(t).FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
@@ -6083,8 +6097,10 @@ function HSet(a: IntRange): HashSet<integer> := new HashSet<integer>(a);
 
 function HSet(a: CharRange): HashSet<char> := new HashSet<char>(a);
 
-function SetOf<T>(params a: array of T): HashSet<T> := new HashSet<T>(a);
-
+function SetOf<T>(params a: array of T): NewSet<T>;
+begin
+  Result._hs := new HashSet<T>(a);
+end;
 
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
 begin
@@ -11174,9 +11190,9 @@ begin
 end;
 
 /// Возвращает множество по данной последовательности
-function ToSet<T>(Self: sequence of T): HashSet<T>; extensionmethod;
+function ToSet<T>(Self: sequence of T): NewSet<T>; extensionmethod;
 begin
-  Result := new HashSet<T>(Self);
+  Result._hs := new HashSet<T>(Self);
 end;
 
 /// Возвращает множество SortedSet по данной последовательности
@@ -15053,14 +15069,6 @@ function operator><T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1
 ///--
 function operator>=<T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1, T2, T3, T4,T5,T6,T7)); extensionmethod := CompareToTup5(Self, v) >= 0;
 
-{
-///--
-function operator implicit<T>(a: array of T): set of T; extensionmethod; 
-begin
-  foreach var x in a do
-    Include(Result,x);
-end;
-}
 
 {// Определяет, есть ли указанный элемент в массиве
  function Contains<T>(self: array of T; x: T): boolean; extensionmethod;
@@ -15413,7 +15421,7 @@ function EmptySet := _emptyset;
 [SetCreatorFunction]
 function __NewSetCreatorInternal<T>(params a: array of T): NewSet<T>;
 begin
-  Result._hs := new HashSet<T>;
+  //Result._hs := new HashSet<T>;
   Result._hs.UnionWith(a);
 end; 
 
@@ -15468,60 +15476,7 @@ begin
   end
 end;
 
-function operator implicit(a: set of integer): set of BigInteger; extensionmethod;
-begin
-  foreach var x in a do
-    Result.Add(x);
-end;
-
-//------------------
-function operator implicit(n: array of integer): set of byte; extensionmethod;
-begin
-  foreach var x in n do
-    Result._hs.Add(x);
-end;
-
-function operator implicit(n: array of integer): set of shortint; extensionmethod;
-begin
-  foreach var x in n do
-    Result._hs.Add(x);
-end;
-
-function operator implicit(n: array of integer): set of smallint; extensionmethod;
-begin
-  foreach var x in n do
-    Result._hs.Add(x);
-end;
-
-function operator implicit(n: array of integer): set of word; extensionmethod;
-begin
-  foreach var x in n do
-    Result._hs.Add(x);
-end;
-
-function operator implicit(n: array of integer): set of longword; extensionmethod;
-begin
-  foreach var x in n do
-    Result._hs.Add(x);
-end;
-
-function operator implicit(a: array of integer): set of int64; extensionmethod;
-begin
-  foreach var x in a do
-    Result._hs.Add(x);
-end;
-
-function operator implicit(a: array of integer): set of uint64; extensionmethod;
-begin
-  foreach var x in a do
-    Result._hs.Add(x);
-end;
-
-function operator implicit(a: array of integer): set of BigInteger; extensionmethod;
-begin
-  foreach var x in a do
-    Result._hs.Add(x);
-end;  
+ 
 
 //function operator implicit<T>(ns: NewSetEmpty): NewSet<T>; extensionmethod; begin end; 
 
@@ -15810,7 +15765,8 @@ begin
   end;
   try
     if (System.Environment.OSVersion.Version.Major >= 6) and (System.Environment.OSVersion.Version.Minor >= 2) then
-      System.Console.OutputEncoding := Encoding.UTF8;
+      System.Console.OutputEncoding := new System.Text.UTF8Encoding(false);
+      //System.Console.OutputEncoding := Encoding.UTF8;
   except
   end;
   rnd := new System.Random;
