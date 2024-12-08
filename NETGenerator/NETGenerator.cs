@@ -558,10 +558,10 @@ namespace PascalABCCompiler.NETGenerator
                 Directory.Delete(publish_dir, true);
             Directory.CreateDirectory(publish_dir);
             StringBuilder sb = new StringBuilder();
-            string framework = "net8.0";
+            string framework = "net9.0";
             if (comp_opt.target == TargetType.WinExe)
             {
-                framework = "net8.0-windows";
+                framework = "net9.0-windows";
                 sb.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk.WindowsDesktop\">");
                 sb.AppendLine("<PropertyGroup><PublishAot>true</PublishAot><PublishTrimmed>true</PublishTrimmed><OutputType>WinExe</OutputType><TargetFramework>" + framework + "</TargetFramework><UseWindowsForms>true</UseWindowsForms></PropertyGroup>");
                 sb.AppendLine("<ItemGroup><Reference Include = \"" + an.Name + "\"><HintPath>" + Path.Combine(dir, an.Name) + ".dll" + "</HintPath></Reference></ItemGroup>");
