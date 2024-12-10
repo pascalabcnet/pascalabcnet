@@ -5232,6 +5232,19 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.pascal_set_constant _pascal_set_constant)
         {
+            // Если хоть одно - diapason_expr, то это множество иначе литеральный массив
+            if (_pascal_set_constant.values == null ||
+                _pascal_set_constant.values.expressions.Any(ex => ex is SyntaxTree.diapason_expr)
+               )
+            { // это множество
+            }
+            else
+            {
+                var exl = new expression_list(_pascal_set_constant.values.expressions, _pascal_set_constant.source_context);
+                array_const_new ac = new array_const_new(exl,exl.source_context);
+                visit(ac);
+                return;
+            }
             // надо разбить на 2 списка констант
             expressions_list consts = new expressions_list();
             expressions_list consts_diap = new expressions_list();
@@ -5374,10 +5387,15 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.array_const_new acn)
         {
             var lst = acn.elements.expressions.Select(ex => { var semex = convert_strong(ex); try_convert_typed_expression_to_function_call(ref semex); return semex; }).ToList();
-            
+
             type_node_list types = new type_node_list();
             foreach (var tn in lst.Select(ex => ex.type))
-                types.AddElement(tn);
+            {
+                if (tn.type_special_kind == type_special_kind.diap_type) // SSM 4/12/24 - стирание информации о типе диапазона
+                    types.AddElement(tn.base_type);
+                else types.AddElement(tn);
+            }
+                
             var el_type = convertion_data_and_alghoritms.select_base_type_for_arr_const_new(types, lst, true);
             var syntax_type = new SyntaxTree.semantic_type_node(el_type);
             //SyntaxTree.semantic_addr_value sav;
@@ -15098,6 +15116,8 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(get_location(_array_type.indexers), "ARRAY_RANK_CANNOT_BE_GREATER_32");
                 type_node ret = null;
                 type_node et = convert_strong(_array_type.elements_type);
+                if (et.type_special_kind == type_special_kind.diap_type) // SSM 4/12/24
+                    et = et.base_type;
                 //if (et == SystemLibrary.SystemLibrary.void_type)
             	//AddError(new VoidNotValid(get_location(_array_type.elemets_types)));
                 check_for_type_allowed(et,get_location(_array_type.elements_type));
@@ -15311,6 +15331,27 @@ namespace PascalABCCompiler.TreeConverter
                 is_userdefined = !(cnf.function_node.namespace_node.namespace_name.Equals(StringConstants.pascalSystemUnitName) || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
             }
 
+            /*if (exp.type is ArrayConstType
+                || convertion_data_and_alghoritms.eq_type_nodes(exp.type, tn))
+            { 
+                return convert_strong_to_constant_node(exp, tn, is_const_section && is_userdefined, is_const_section);
+            }
+            else
+            {
+                var conv = convertion_data_and_alghoritms.convert_type(exp, tn);
+                return convert_strong_to_constant_node(conv, tn, is_const_section && is_userdefined, is_const_section);
+            }*/
+            
+            /*if (expr is pascal_set_constant)
+            {
+                var conv = convertion_data_and_alghoritms.convert_type(exp, tn);
+                return convert_strong_to_constant_node(conv, tn, is_const_section && is_userdefined, is_const_section);
+            }
+            else
+            {
+                return convert_strong_to_constant_node(exp, tn, is_const_section && is_userdefined, is_const_section);
+            }*/
+
             return convert_strong_to_constant_node(exp, tn, is_const_section && is_userdefined, is_const_section);
         }
 
@@ -15424,12 +15465,14 @@ namespace PascalABCCompiler.TreeConverter
                     constant = new common_namespace_function_call_as_constant(expr as common_namespace_function_call, loc);
                     return constant;
                 }
-                foreach (expression_node el in cnfc.parameters)
-                    convert_strong_to_constant_node(el, el.type, false, false, cnfc.location);
+                if (cnfc.function_node.name != "op_Implicit")
+                    foreach (expression_node el in cnfc.parameters)
+                        convert_strong_to_constant_node(el, el.type, false, false, cnfc.location);
                 //if (cnfc.function_node.namespace_node == context.converted_namespace)
                 //    AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
                 //  throw new ConstantExpressionExpected(loc);
                 constant = new common_namespace_function_call_as_constant(expr as common_namespace_function_call, loc);
+                return constant;
             }
             else if (expr is common_namespace_function_call_as_constant cnfcac
                 && cnfcac.type.name == "NewSetEmpty")
@@ -15444,6 +15487,11 @@ namespace PascalABCCompiler.TreeConverter
                 constant = cnfcac1;
                 return constant;
             }
+            else if (expr is common_constructor_call)
+            {
+                constant = new common_constructor_call_as_constant(expr as common_constructor_call, null);
+                return constant;
+            }
             else if (expr is common_constructor_call_as_constant cccac)
             {
                 //
@@ -15455,9 +15503,38 @@ namespace PascalABCCompiler.TreeConverter
                 basic_function_call cnfc = expr as basic_function_call;
                 //if (cnfc.function_node.namespace_node == context.converted_namespace)
                 //  throw new ConstantExpressionExpected(loc);
-                foreach (expression_node el in cnfc.parameters)
-                    convert_strong_to_constant_node(el, el.type);
-                constant = new basic_function_call_as_constant(expr as basic_function_call, loc);
+                
+                // Как быть с new integer[5](2,3,4)? Там cnfc.parameters сщдержит 1 элемент, у которого в parameters первые три элемента - информационные
+                if (cnfc.parameters[0] is common_namespace_function_call cnsfc && 
+                    cnsfc.function_node.SpecialFunctionKind == SpecialFunctionKind.NewArray)
+                {
+                    foreach (expression_node el in cnsfc.parameters.Skip(3)) // это для 1 + 2 * 3
+                        convert_strong_to_constant_node(el, el.type);
+                    if (convertion_data_and_alghoritms.eq_type_nodes(expr.type, tn))
+                    {
+                        constant = new basic_function_call_as_constant(expr as basic_function_call, loc);
+                        return constant;
+                    }
+                    else
+                    {
+                        var conv = convertion_data_and_alghoritms.convert_type(expr, tn);
+                        constant = convert_strong_to_constant_node(conv, tn);
+                        return constant;
+                    }
+                }
+                else
+                {
+                    foreach (expression_node el in cnfc.parameters) // это для 1 + 2 * 3 - этот код был
+                        convert_strong_to_constant_node(el, el.type);
+                }
+
+                constant = new basic_function_call_as_constant(expr as basic_function_call, loc); //  - этот код был
+                return constant;
+            }
+            else if (expr is basic_function_call_as_constant bfcac)
+            {
+                constant = bfcac;
+                return constant;
             }
             else if (expr is typed_expression)
             {
@@ -15625,6 +15702,11 @@ namespace PascalABCCompiler.TreeConverter
                             constant = new common_static_method_call_as_constant(csmc, null);
                             break;
                         }
+                    if (csmc.function_node.name == "op_Implicit") // SSM 04/12/24 - это делается для преобразования array в set
+                    {
+                        constant = new common_static_method_call_as_constant(csmc, loc);
+                        return constant;
+                    }
                 }
                 else
                 {
@@ -15991,7 +16073,17 @@ namespace PascalABCCompiler.TreeConverter
                 else
                     throw new CompilerInternalError("Unexpected array type");
             for (int i = 0; i < constant.element_values.Count; i++)
-                constant.element_values[i] = convert_strong_to_constant_node(constant.element_values[i], element_type);
+            {
+                if (constant.element_values[i].type is ArrayConstType 
+                  || convertion_data_and_alghoritms.eq_type_nodes(constant.element_values[i].type,element_type))
+                    constant.element_values[i] = convert_strong_to_constant_node(constant.element_values[i], element_type);
+                else
+                {
+                    var conv = convertion_data_and_alghoritms.convert_type(constant.element_values[i], element_type);
+                    constant.element_values[i] = convert_strong_to_constant_node(conv, element_type);
+                }
+                //convertion_data_and_alghoritms.check_convert_type(constant.element_values[i], element_type,constant.element_values[i].location);
+            }
             constant.SetType(tn);
             return constant;
         }
@@ -18207,6 +18299,16 @@ namespace PascalABCCompiler.TreeConverter
         {
             expression_node left = convert_strong(_bin_expr.left);
             expression_node right = convert_strong(_bin_expr.right);
+
+            // SSM 04/12/24 - массивы нельзя умножать и вычитать. Это запрещено т.к. в библиотеку добавлены arr * set и arr - set
+            if (left.type != null && left.type.type_special_kind == type_special_kind.array_kind 
+                && right.type != null && right.type.type_special_kind == type_special_kind.array_kind
+                && (_bin_expr.operation_type == Operators.Multiplication || _bin_expr.operation_type == Operators.Minus)
+                )
+            {
+                AddError(get_location(_bin_expr), "OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_TYPES_{1}_AND_{2}", name_reflector.get_name(_bin_expr.operation_type), left.type, right.type);
+            }
+
             if (_bin_expr.operation_type == Operators.In)
                 try_convert_typed_expression_to_function_call(ref left);
             expression_node res = find_operator(_bin_expr.operation_type, left, right, get_location(_bin_expr));

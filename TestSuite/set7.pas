@@ -11,7 +11,8 @@
   s2 : set of integer;
   
 begin
-assert([b,sh,sm,w,i,lw,li,ui]=[1,2,3,4,5,6,7,8]);
+var s1_8: set of integer := [1,2,3,4,5,6,7,8];
+assert([b,sh,sm,w,i,lw,li,ui]=s1_8);
 Include(s1,integer.MaxValue);
 s1.Add(longword.MaxValue);
 //s1 += [longword.MaxValue];

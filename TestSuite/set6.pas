@@ -2,7 +2,7 @@
   s : set of 1..3 = [1,2,3,4];
   s2 : set of char = {['a','b']*}['b'];
 
-var s3 : set of 1..3 := [1,2]+[3,4];
+var s3 : set of 1..3 := SetOf(1,2)+[3,4];
 
 begin
 assert(s=[1,2,3,4]);

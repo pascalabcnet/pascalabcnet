@@ -540,6 +540,9 @@ type
       Result.hs.UnionWith(first); Result._hs.ExceptWith(second);
     end;  
     static function operator=(first, second: NewSet<T>) := first.hs.SetEquals(second.hs);
+    {static function operator=(first: NewSet<T>; second: array of T) := first.hs.SetEquals(second);
+    static function operator=(first: array of T; second: NewSet<T>) := second = first;}
+    
     static function operator<>(first, second: NewSet<T>) := not (first = second);
     static function operator<(first, second: NewSet<T>) := first.hs.IsProperSubsetOf(second.hs);
     static function operator<=(first, second: NewSet<T>) := first.hs.IsSubsetOf(second.hs);
@@ -5015,6 +5018,7 @@ end;
 
 ///--
 function operator in<T>(x: T; a: array of T): boolean; extensionmethod := a.Contains(x);
+// operator in для конкретных num in [1,2,3] - в PABCExtensions
 
 function operator*<T>(a: array of T; n: integer): array of T; extensionmethod;
 begin
@@ -15478,7 +15482,11 @@ end;
 
  
 
-//function operator implicit<T>(ns: NewSetEmpty): NewSet<T>; extensionmethod; begin end; 
+function operator implicit<T>(a: array of T): HashSet<T>; extensionmethod
+  := new HashSet<T>(a);
+
+function operator implicit(a: array of integer): HashSet<integer>; extensionmethod
+  := new HashSet<integer>(a);
 
 // -----------------------------------------------------------------------------
 //                Внутренние вспомогательные функции 
