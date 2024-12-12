@@ -45,7 +45,7 @@ namespace Languages.SPython.Frontend.Converters
             {
                 symbolTable.IsInFunctionBody = true;
             }
-            if (stn is block && !isInProgramBlock)
+            if (stn is block && !isInProgramBlock && !symbolTable.IsInFunctionBody)
             {
                 isInProgramBlock = true;
                 symbolTable.ResetAliases();
@@ -199,12 +199,15 @@ namespace Languages.SPython.Frontend.Converters
                 symbolTable.AddModuleAlias(as_Statement.real_name.name, as_Statement.alias.name);
             }
 
-            Replace(_import_statement, new empty_statement());
+            var upper = UpperNode();
+            if (upper is interface_node _interface_node)
+                _interface_node.interface_definitions.ReplaceDescendant<syntax_tree_node, syntax_tree_node>(
+                    _import_statement, new empty_statement());
+            else Replace(_import_statement, new empty_statement());
         }
 
         public override void visit(from_import_statement _from_import_statement)
         {
-
             if (_from_import_statement.is_star)
             {
                 foreach (string name in symbolTable.ModuleNameToSymbols[_from_import_statement.module_name.name])
@@ -214,15 +217,19 @@ namespace Languages.SPython.Frontend.Converters
             {
                 foreach (as_statement as_Statement in _from_import_statement.imported_names.as_statements)
                 {
-                    //if (!moduleNameToSymbols[_from_import_statement.module_name.name].Contains(as_Statement.real_name.name))
-                    //    throw new SyntaxVisitorError("No such name in the module",
-                    //   _from_import_statement.source_context);
+                    if (!symbolTable.ModuleNameToSymbols[_from_import_statement.module_name.name].Contains(as_Statement.real_name.name))
+                        throw new SyntaxVisitorError("No such name in the module",
+                       _from_import_statement.source_context);
 
                     symbolTable.AddAlias(as_Statement.alias.name, as_Statement.real_name.name, _from_import_statement.module_name.name);
                 }
             }
 
-            Replace(_from_import_statement, new empty_statement());
+            var upper = UpperNode();
+            if (upper is interface_node _interface_node)
+                _interface_node.interface_definitions.ReplaceDescendant<syntax_tree_node, syntax_tree_node>(
+                    _from_import_statement, new empty_statement());
+            else Replace(_from_import_statement, new empty_statement());
         }
 
         public override void visit(variable_definitions _variable_definitions)
@@ -281,6 +288,7 @@ namespace Languages.SPython.Frontend.Converters
 
             private bool isInFunctionBody = false;
             public bool IsInFunctionBody {
+                get { return isInFunctionBody; }
                 set {
                     isInFunctionBody = value;
                     // enter function
