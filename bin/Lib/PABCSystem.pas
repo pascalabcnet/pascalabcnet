@@ -4819,7 +4819,7 @@ begin
     exit;
   end;
   
-  if t.FullName.StartsWith('PABCSystem.NewSet`1') then
+  if t.IsGenericType and (t.GetGenericTypeDefinition = typeof(NewSet<>)) then
   begin
     res.Write('set of ');
     TypeToTypeNameHelper(t.GetGenericArguments.Single, res);
