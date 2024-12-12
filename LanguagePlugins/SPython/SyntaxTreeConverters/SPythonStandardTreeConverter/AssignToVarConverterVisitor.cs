@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using PascalABCCompiler.SyntaxTree;
@@ -10,7 +12,9 @@ namespace Languages.SPython.Frontend.Converters
 {
     public class AssignToVarConverterVisitor : BaseChangeVisitor
     {
-        SymbolTable symbolTable = new SymbolTable();
+        private SymbolTable symbolTable = new SymbolTable();
+        private bool isInProgramBlock = false;
+        private HashSet<string> skippedFunction = new HashSet<string>();
 
         public void F(Dictionary<string, HashSet<string>> par)
         {
@@ -41,7 +45,12 @@ namespace Languages.SPython.Frontend.Converters
             {
                 symbolTable.IsInFunctionBody = true;
             }
-
+            if (stn is block && !isInProgramBlock)
+            {
+                isInProgramBlock = true;
+                symbolTable.ResetAliases();
+            }
+            
             base.Enter(stn);
         }
 
@@ -63,12 +72,26 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(procedure_header _procedure_header)
         {
+            string name = _procedure_header.name.meth_name.name;
+            if (!skippedFunction.Contains(name))
+            {
+                skippedFunction.Add(name);
+                return;
+            }
+
             symbolTable.Add(_procedure_header.name.ToString(), NameType.GlobalFunction);
             base.visit(_procedure_header);
         }
 
         public override void visit(function_header _function_header)
         {
+            string name = _function_header.name.meth_name.name;
+            if (!skippedFunction.Contains(name))
+            {
+                skippedFunction.Add(name);
+                return;
+            }
+
             symbolTable.Add(_function_header.name.ToString(), NameType.GlobalFunction);
             base.visit(_function_header);
         }
@@ -114,10 +137,10 @@ namespace Languages.SPython.Frontend.Converters
 
         }
 
-        //public override void visit(unit_name _unit_name)
-        //{
-        //    globalVariables.Add(_unit_name.idunit_name.name);
-        //}
+        public override void visit(unit_name _unit_name)
+        {
+
+        }
 
         public override void visit(foreach_stmt _foreach_stmt)
         {
@@ -176,7 +199,7 @@ namespace Languages.SPython.Frontend.Converters
                 symbolTable.AddModuleAlias(as_Statement.real_name.name, as_Statement.alias.name);
             }
 
-            ReplaceStatement(_import_statement, new empty_statement());
+            Replace(_import_statement, new empty_statement());
         }
 
         public override void visit(from_import_statement _from_import_statement)
@@ -199,7 +222,7 @@ namespace Languages.SPython.Frontend.Converters
                 }
             }
 
-            ReplaceStatement(_from_import_statement, new empty_statement());
+            Replace(_from_import_statement, new empty_statement());
         }
 
         public override void visit(variable_definitions _variable_definitions)
@@ -294,11 +317,23 @@ namespace Languages.SPython.Frontend.Converters
                 {
                     moduleNameToSymbols = value;
 
-                    foreach (string name in moduleNameToSymbols["SpythonSystem"])
-                        AddAlias(name, name, "SpythonSystem");
-                    foreach (string name in moduleNameToSymbols["SpythonHidden"])
-                        AddAlias(name, name, "SpythonHidden");
+                    ResetAliases();
                 }
+            }
+
+            public void ResetAliases()
+            {
+                modulesAliases.Clear();
+                aliasToRealNameAndModuleName.Clear();
+                AddAliasesFromStandartLibraries();
+            }
+
+            private void AddAliasesFromStandartLibraries()
+            {
+                foreach (string name in moduleNameToSymbols["SpythonSystem"])
+                    AddAlias(name, name, "SpythonSystem");
+                foreach (string name in moduleNameToSymbols["SpythonHidden"])
+                    AddAlias(name, name, "SpythonHidden");
             }
 
             public void AddAlias(string alias, string realName, string moduleName)

@@ -131,17 +131,23 @@ import_clause
 		{
 			foreach (as_statement as_Statement in ($2 as as_statement_list).as_statements)
 				imports.AddUsesList(new uses_list(as_Statement.real_name.name));
-			$$ = new import_statement($2 as as_statement_list, @2);
+			import_statement import_stmt =  new import_statement($2 as as_statement_list, @2);
+			decl.Add(import_stmt);
+			$$ = import_stmt;
 		}
 	| FROM ident IMPORT ident_as_ident_list 
 		{
 			imports.AddUsesList(new uses_list(($2 as ident).name));
-			$$ = new from_import_statement($2 as ident, false, $4 as as_statement_list, @$);
+			from_import_statement fis = new from_import_statement($2 as ident, false, $4 as as_statement_list, @$);
+			decl.Add(fis);
+			$$ = fis;
 		}
 	| FROM ident IMPORT STAR 
 		{
 			imports.AddUsesList(new uses_list(($2 as ident).name));
-			$$ = new from_import_statement($2 as ident, true, null, @$);
+			from_import_statement fis = new from_import_statement($2 as ident, true, null, @$);
+			decl.Add(fis);
+			$$ = fis;
 		}
 	;
 

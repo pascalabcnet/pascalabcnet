@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 28.11.2024 18:56:21
+// DateTime: 12.12.2024 13:14:47
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -457,19 +457,25 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 {
 			foreach (as_statement as_Statement in (ValueStack[ValueStack.Depth-1].stn as as_statement_list).as_statements)
 				imports.AddUsesList(new uses_list(as_Statement.real_name.name));
-			CurrentSemanticValue.stn = new import_statement(ValueStack[ValueStack.Depth-1].stn as as_statement_list, LocationStack[LocationStack.Depth-1]);
+			import_statement import_stmt =  new import_statement(ValueStack[ValueStack.Depth-1].stn as as_statement_list, LocationStack[LocationStack.Depth-1]);
+			decl.Add(import_stmt);
+			CurrentSemanticValue.stn = import_stmt;
 		}
         break;
       case 4: // import_clause -> FROM, ident, IMPORT, ident_as_ident_list
 {
 			imports.AddUsesList(new uses_list((ValueStack[ValueStack.Depth-3].id as ident).name));
-			CurrentSemanticValue.stn = new from_import_statement(ValueStack[ValueStack.Depth-3].id as ident, false, ValueStack[ValueStack.Depth-1].stn as as_statement_list, CurrentLocationSpan);
+			from_import_statement fis = new from_import_statement(ValueStack[ValueStack.Depth-3].id as ident, false, ValueStack[ValueStack.Depth-1].stn as as_statement_list, CurrentLocationSpan);
+			decl.Add(fis);
+			CurrentSemanticValue.stn = fis;
 		}
         break;
       case 5: // import_clause -> FROM, ident, IMPORT, STAR
 {
 			imports.AddUsesList(new uses_list((ValueStack[ValueStack.Depth-3].id as ident).name));
-			CurrentSemanticValue.stn = new from_import_statement(ValueStack[ValueStack.Depth-3].id as ident, true, null, CurrentLocationSpan);
+			from_import_statement fis = new from_import_statement(ValueStack[ValueStack.Depth-3].id as ident, true, null, CurrentLocationSpan);
+			decl.Add(fis);
+			CurrentSemanticValue.stn = fis;
 		}
         break;
       case 6: // import_or_decl_or_stmt -> stmt
