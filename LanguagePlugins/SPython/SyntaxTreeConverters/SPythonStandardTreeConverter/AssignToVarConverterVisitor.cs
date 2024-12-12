@@ -16,7 +16,7 @@ namespace Languages.SPython.Frontend.Converters
         private bool isInProgramBlock = false;
         private HashSet<string> skippedFunction = new HashSet<string>();
 
-        public void F(Dictionary<string, HashSet<string>> par)
+        public void SendObject(Dictionary<string, HashSet<string>> par)
         {
             symbolTable.ModuleNameToSymbols = par;
         }

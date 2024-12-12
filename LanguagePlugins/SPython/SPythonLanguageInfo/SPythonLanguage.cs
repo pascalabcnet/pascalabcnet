@@ -58,7 +58,7 @@ namespace Languages.SPython
         public override void SetSpecialSyntaxTreeConverterParameter(object obj)
         {
             SpecialSyntaxTreeConverter = new AssignToVarConverterVisitor();
-            (this.SpecialSyntaxTreeConverter as AssignToVarConverterVisitor).F(obj as Dictionary<string, HashSet<string>>);
+            (this.SpecialSyntaxTreeConverter as AssignToVarConverterVisitor).SendObject(obj as Dictionary<string, HashSet<string>>);
         }
     }
 }
