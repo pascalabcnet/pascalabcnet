@@ -12,15 +12,29 @@ namespace Languages.SPython.Frontend.Converters
 
         public ImportToUsesVisitor() { }
 
+        private Dictionary<string, string> specialModulesAliases = new Dictionary<string, string>
+        {
+            { "time", "time1" },
+            { "random", "random1" },
+        };
+
+        private string GetNameToImport(string nameToImport)
+        {
+            if (!specialModulesAliases.ContainsKey(nameToImport))
+                return nameToImport;
+            else 
+                return specialModulesAliases[nameToImport];
+        }
+
         public override void visit(import_statement _import_statement)
         {
             foreach (as_statement as_Statement in _import_statement.modules_names.as_statements)
-                modulesNames.Add(as_Statement.real_name.name);
+                modulesNames.Add(GetNameToImport(as_Statement.real_name.name));
         }
 
         public override void visit(from_import_statement _from_import_statement)
         {
-            modulesNames.Add(_from_import_statement.module_name.name);
+            modulesNames.Add(GetNameToImport(_from_import_statement.module_name.name));
         }
 
         public override void Exit(syntax_tree_node stn)

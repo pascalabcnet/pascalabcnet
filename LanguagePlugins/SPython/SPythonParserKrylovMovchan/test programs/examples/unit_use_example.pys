@@ -1,4 +1,4 @@
-﻿import unit_example
+﻿from unit_example import *
 
 a = [fib(i) for i in range(12)]
 for elem in a:

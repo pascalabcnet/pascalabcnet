@@ -196,7 +196,11 @@ namespace Languages.SPython.Frontend.Converters
         {
             foreach (as_statement as_Statement in _import_statement.modules_names.as_statements)
             {
-                symbolTable.AddModuleAlias(as_Statement.real_name.name, as_Statement.alias.name);
+                string real_name = as_Statement.real_name.name;
+                string alias = as_Statement.alias.name;
+                if (symbolTable.specialModulesAliases.ContainsKey(real_name))
+                    real_name = symbolTable.specialModulesAliases[real_name];
+                symbolTable.AddModuleAlias(real_name, alias);
             }
 
             var upper = UpperNode();
@@ -208,20 +212,24 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(from_import_statement _from_import_statement)
         {
+            string module_name = _from_import_statement.module_name.name;
+            if (symbolTable.specialModulesAliases.ContainsKey(module_name))
+                module_name = symbolTable.specialModulesAliases[module_name];
+
             if (_from_import_statement.is_star)
             {
-                foreach (string name in symbolTable.ModuleNameToSymbols[_from_import_statement.module_name.name])
-                    symbolTable.AddAlias(name, name, _from_import_statement.module_name.name);
+                foreach (string name in symbolTable.ModuleNameToSymbols[module_name])
+                    symbolTable.AddAlias(name, name, module_name);
             }
             else
             {
                 foreach (as_statement as_Statement in _from_import_statement.imported_names.as_statements)
                 {
-                    if (!symbolTable.ModuleNameToSymbols[_from_import_statement.module_name.name].Contains(as_Statement.real_name.name))
+                    if (!symbolTable.ModuleNameToSymbols[module_name].Contains(as_Statement.real_name.name))
                         throw new SyntaxVisitorError("No such name in the module",
                        _from_import_statement.source_context);
 
-                    symbolTable.AddAlias(as_Statement.alias.name, as_Statement.real_name.name, _from_import_statement.module_name.name);
+                    symbolTable.AddAlias(as_Statement.alias.name, as_Statement.real_name.name, module_name);
                 }
             }
 
@@ -284,6 +292,12 @@ namespace Languages.SPython.Frontend.Converters
                 { "break",      NameType.Keyword },
                 { "continue",   NameType.Keyword },
                 { "exit",       NameType.Keyword }
+            };
+
+            public Dictionary<string, string> specialModulesAliases = new Dictionary<string, string>
+            {
+                { "time", "time1" },
+                { "random", "random1" },
             };
 
             private bool isInFunctionBody = false;

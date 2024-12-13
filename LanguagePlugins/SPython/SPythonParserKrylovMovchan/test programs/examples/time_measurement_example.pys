@@ -2,9 +2,9 @@
 start = time.time() * 1000
 
 i = 1.0
-sum: float = 0
+sm: float = 0
 while i < 100000000:
-  sum += 1.0 / i
+  sm += 1.0 / i
   i += 1
 
 end = time.time() * 1000;

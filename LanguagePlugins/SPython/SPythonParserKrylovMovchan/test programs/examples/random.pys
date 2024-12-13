@@ -1,5 +1,0 @@
-﻿#unit random
-import PABCSystem
-  
-def randint(a: int, b: int) -> int:
-    return PABCSystem.random(a, b)
