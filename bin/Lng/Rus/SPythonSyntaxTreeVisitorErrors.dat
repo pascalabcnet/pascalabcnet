@@ -1,0 +1,4 @@
+﻿// Syntax tree conversion errors
+%PREFIX%=SPYTHONSYNTAXTREEVISITORSERROR_
+
+UNEXPECTED_TOKEN_{0}=Неизвестный символ {0}
