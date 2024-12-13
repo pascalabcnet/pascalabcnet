@@ -7,7 +7,7 @@ namespace Languages.SPython.Frontend.Converters
     {
         public override string Name { get; } = "Standard";
 
-        protected override syntax_tree_node ApplyConcreteConversions(syntax_tree_node root)
+        protected override syntax_tree_node ApplyConversions(syntax_tree_node root)
         {
             // замена time.time на time1.time 
             var snv = new SameNameVisitor();
