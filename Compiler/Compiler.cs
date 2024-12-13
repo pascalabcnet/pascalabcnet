@@ -242,6 +242,8 @@ namespace PascalABCCompiler
             set { _implementation_using_namespace_list = value; }
         }
 
+        public Dictionary<string, HashSet<string>> NamesFromUsedUnits { get; } = new Dictionary<string, HashSet<string>>();
+
         public UnitState State = UnitState.BeginCompilation;
     }
 
@@ -740,9 +742,7 @@ namespace PascalABCCompiler
 
         public Dictionary<Tuple<string, string>, Tuple<string, int>> SourceFileNamesDictionary { get; } = new Dictionary<Tuple<string, string>, Tuple<string, int>>();
 
-        public Dictionary<Tuple<string, string>, Tuple<string, int>> PCUFileNamesDictionary { get; } = new Dictionary<Tuple<string, string>, Tuple<string, int>>();
-
-        private Dictionary<string, HashSet<string>> unitNames = new Dictionary<string, HashSet<string>>(); 
+        public Dictionary<Tuple<string, string>, Tuple<string, int>> PCUFileNamesDictionary { get; } = new Dictionary<Tuple<string, string>, Tuple<string, int>>(); 
 
         public Dictionary<Tuple<string, string>, string> GetUnitFileNameCache { get; } = new Dictionary<Tuple<string, string>, string>();
 
@@ -963,8 +963,6 @@ namespace PascalABCCompiler
             SourceFileNamesDictionary.Clear();
             PCUFileNamesDictionary.Clear();
             GetUnitFileNameCache.Clear();
-
-            unitNames.Clear();
 
             Warnings.Clear();
             errorsList.Clear();
@@ -3409,7 +3407,7 @@ namespace PascalABCCompiler
                 // если модуль уже скомпилирован - возвращаем (возможно, только интерфейс модуля и тогда он докомпилируется в другом рекурсивном вызове)   EVA
                 if (currentUnit.State != UnitState.BeginCompilation || currentUnit.SemanticTree != null)  //TODO: ИЗБАВИТЬСЯ ОТ ВТОРОГО УСЛОВИЯ
                 {
-                    AddCurrentUnitAndItsReferencesToUsesLists(unitsFromUsesSection, directUnitsFromUsesSection, 
+                    AddCurrentUnitAndItsReferencesToUsesLists(unitsFromUsesSection, directUnitsFromUsesSection,
                                                               currentUnitNode, currentUnit, GetReferences(currentUnit));
                     return currentUnit;
                 }
@@ -3453,31 +3451,9 @@ namespace PascalABCCompiler
 
             //Console.WriteLine("Compiling Interface "+ unitFileName);//DEBUG
 
-            // если есть такой конвертор у языка
-            foreach (var unitNode in interfaceUsesList)
-            {
-                string fileName = GetUnitFileName(unitNode, currentDirectory);
-                string id = Path.ChangeExtension(fileName, null);
-                CompilationUnit unit = UnitTable[id];
+            CollectNamesFromUsedUnits(currentDirectory, currentUnit, interfaceUsesList);
 
-                // этого надо реализовывать и для Паскаля, возможно, чтобы подключать паскалевкий модуль в питоне
-                //SyntaxVisitors.CollectNameVisitor cnv = new SyntaxVisitors.CollectNameVisitor();
-                //cnv.UnitNamesToSymbols = unitNames;
-                //cnv.ThisUnitName = Path.GetFileNameWithoutExtension(fileName);
-                //cnv.ProcessNode(unit.SyntaxTree);
-
-                string unitName = Path.GetFileNameWithoutExtension(fileName);
-                unitNames.Add(unitName, new HashSet<string>());
-                bool skip_first = true;
-                foreach (var names in (unit.SemanticTree as common_unit_node).scope.Symbols.dict)
-                {
-                    if (skip_first)
-                    { skip_first = false; continue; }
-                    unitNames[unitName].Add(names.Key);
-                }
-            }
-
-            currentUnit.Language.ApplyConversionsAfterUsedModulesCompilation(currentUnit.SyntaxTree, unitNames);
+            currentUnit.Language.ApplyConversionsAfterUsedModulesCompilation(currentUnit.SyntaxTree, currentUnit.NamesFromUsedUnits);
 
             // компилируем интерфейс текущего модуля EVA
             CompileCurrentUnitInterface(unitFileName, currentUnit, docs);
@@ -3546,6 +3522,39 @@ namespace PascalABCCompiler
                 unitsFromUsesSection.Add(currentUnit.SemanticTree);
                 SaveSemanticTreeToFile(currentUnit,unitFileName);
             }*/
+        }
+
+        private void CollectNamesFromUsedUnits(string currentDirectory, CompilationUnit currentUnit, List<SyntaxTree.unit_or_namespace> interfaceUsesList)
+        {
+            if (currentUnit.NamesFromUsedUnits.Count == 0)
+            {
+                foreach (var unitNode in interfaceUsesList)
+                {
+                    string fileName;
+                    try
+                    {
+                        fileName = GetUnitFileName(unitNode, currentDirectory);
+                    }
+                    catch (UnitNotFound)
+                    {
+                        continue;
+                    }
+
+                    string id = Path.ChangeExtension(fileName, null);
+                    CompilationUnit unit = UnitTable[id];
+
+                    string unitName = Path.GetFileNameWithoutExtension(fileName);
+
+                    currentUnit.NamesFromUsedUnits.Add(unitName, new HashSet<string>());
+                    bool skip_first = true;
+                    foreach (var names in (unit.SemanticTree as common_unit_node).scope.Symbols.dict)
+                    {
+                        if (skip_first)
+                        { skip_first = false; continue; }
+                        currentUnit.NamesFromUsedUnits[unitName].Add(names.Key);
+                    }
+                }
+            }
         }
 
         private void CreateDependencyListsForCurrentUnit(CompilationUnit currentUnit, string currentDirectory, out List<SyntaxTree.unit_or_namespace> interfaceUsesList,
