@@ -76,13 +76,9 @@ namespace Languages.Facade
         // TODO: Возможно, стоит переделать логику обновления, чтобы не приходилось создавать новый объект каждый раз  EVA
         void SetSyntaxTreeToSemanticTreeConverter();
 
-
         /// <summary>
-        /// Специальный синтаксический визитор, вызываемый после компиляции импортированных модулей
+        /// Применение синтаксических визиторов после компиляции всех зависимостей (с использованием семантической информации)
         /// </summary>
-        WalkingVisitorNew SpecialSyntaxTreeConverter { get; }
-
-
-        void SetSpecialSyntaxTreeConverterParameter(object obj);
+        void ApplyConversionsAfterUsedModulesCompilation(syntax_tree_node root, object data);
     }
 }

@@ -3454,35 +3454,30 @@ namespace PascalABCCompiler
             //Console.WriteLine("Compiling Interface "+ unitFileName);//DEBUG
 
             // если есть такой конвертор у языка
-            if (currentUnit.Language.SpecialSyntaxTreeConverter != null)
+            foreach (var unitNode in interfaceUsesList)
             {
-                foreach (var unitNode in interfaceUsesList)
+                string fileName = GetUnitFileName(unitNode, currentDirectory);
+                string id = Path.ChangeExtension(fileName, null);
+                CompilationUnit unit = UnitTable[id];
+
+                // этого надо реализовывать и для Паскаля, возможно, чтобы подключать паскалевкий модуль в питоне
+                //SyntaxVisitors.CollectNameVisitor cnv = new SyntaxVisitors.CollectNameVisitor();
+                //cnv.UnitNamesToSymbols = unitNames;
+                //cnv.ThisUnitName = Path.GetFileNameWithoutExtension(fileName);
+                //cnv.ProcessNode(unit.SyntaxTree);
+
+                string unitName = Path.GetFileNameWithoutExtension(fileName);
+                unitNames.Add(unitName, new HashSet<string>());
+                bool skip_first = true;
+                foreach (var names in (unit.SemanticTree as common_unit_node).scope.Symbols.dict)
                 {
-                    string fileName = GetUnitFileName(unitNode, currentDirectory);
-                    string id = Path.ChangeExtension(fileName, null);
-                    CompilationUnit unit = UnitTable[id];
-
-                    // этого надо реализовывать и для Паскаля, возможно, чтобы подключать паскалевкий модуль в питоне
-                    //SyntaxVisitors.CollectNameVisitor cnv = new SyntaxVisitors.CollectNameVisitor();
-                    //cnv.UnitNamesToSymbols = unitNames;
-                    //cnv.ThisUnitName = Path.GetFileNameWithoutExtension(fileName);
-                    //cnv.ProcessNode(unit.SyntaxTree);
-
-                    string unitName = Path.GetFileNameWithoutExtension(fileName);
-                    unitNames.Add(unitName, new HashSet<string>());
-                    bool skip_first = true;
-                    foreach (var names in (unit.SemanticTree as common_unit_node).scope.Symbols.dict)
-                    {
-                        if (skip_first)
-                        { skip_first = false; continue; }
-                        unitNames[unitName].Add(names.Key);
-                    }
+                    if (skip_first)
+                    { skip_first = false; continue; }
+                    unitNames[unitName].Add(names.Key);
                 }
-
-                currentUnit.Language.SetSpecialSyntaxTreeConverterParameter(unitNames);
-                currentUnit.Language.SpecialSyntaxTreeConverter.ProcessNode(currentUnit.SyntaxTree);
-                unitNames.Clear();
             }
+
+            currentUnit.Language.ApplyConversionsAfterUsedModulesCompilation(currentUnit.SyntaxTree, unitNames);
 
             // компилируем интерфейс текущего модуля EVA
             CompileCurrentUnitInterface(unitFileName, currentUnit, docs);

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Languages.Facade;
 using Languages.SPython.Frontend.Converters;
+using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.SystemLibrary;
 using PascalABCCompiler.TreeConverter;
@@ -23,8 +24,7 @@ namespace Languages.SPython
 
             filesExtensions: new string[] { ".pys" },
             caseSensitive: false,
-            systemUnitNames: new string[] { "SpythonSystem", "SpythonHidden" },
-            specialSyntaxTreeConverter: new AssignToVarConverterVisitor()
+            systemUnitNames: new string[] { "SpythonSystem", "SpythonHidden" }
             )
         { }
 
@@ -54,11 +54,15 @@ namespace Languages.SPython
         {
             SyntaxTreeToSemanticTreeConverter = new SPythonSyntaxTreeVisitor.spython_syntax_tree_visitor();
         }
-        
-        public override void SetSpecialSyntaxTreeConverterParameter(object obj)
+
+        public override void ApplyConversionsAfterUsedModulesCompilation(syntax_tree_node root, object data)
         {
-            SpecialSyntaxTreeConverter = new AssignToVarConverterVisitor();
-            (this.SpecialSyntaxTreeConverter as AssignToVarConverterVisitor).SendObject(obj as Dictionary<string, HashSet<string>>);
+            var visitor = new AssignToVarConverterVisitor();
+
+            visitor.SendObject(data as Dictionary<string, HashSet<string>>);
+
+            visitor.ProcessNode(root);
         }
+
     }
 }

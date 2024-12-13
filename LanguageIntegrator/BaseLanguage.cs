@@ -20,7 +20,7 @@ namespace Languages.Facade
         /// </summary>
         public BaseLanguage(string name, string version, string copyright, IParser parser, IDocParser docParser,
             List<ISyntaxTreeConverter> syntaxTreeConverters, syntax_tree_visitor syntaxTreeToSemanticTreeConverter,
-            string[] filesExtensions, bool caseSensitive, string[] systemUnitNames, WalkingVisitorNew specialSyntaxTreeConverter = null)
+            string[] filesExtensions, bool caseSensitive, string[] systemUnitNames)
         {
             this.Name = name;
             this.Version = version;
@@ -32,7 +32,6 @@ namespace Languages.Facade
             this.FilesExtensions = filesExtensions;
             this.CaseSensitive = caseSensitive;
             this.SystemUnitNames = systemUnitNames;
-            this.SpecialSyntaxTreeConverter = specialSyntaxTreeConverter;
         }
 
         public virtual string Name { get; protected set; }
@@ -55,12 +54,10 @@ namespace Languages.Facade
 
         public virtual string[] SystemUnitNames { get; protected set; }
 
-        public virtual WalkingVisitorNew SpecialSyntaxTreeConverter { get; protected set; }
-
         public abstract void SetSemanticConstants();
 
         public abstract void SetSyntaxTreeToSemanticTreeConverter();
 
-        public virtual void SetSpecialSyntaxTreeConverterParameter(object obj) { }
+        public virtual void ApplyConversionsAfterUsedModulesCompilation(syntax_tree_node root, object data) { }
     }
 }
