@@ -1,4 +1,4 @@
-var i : integer;
+﻿var i : integer;
 
 procedure Test(a : set of 1..3);
 begin
@@ -12,5 +12,5 @@ end;
 
 begin
 Test([1..3]);
-assert(i=2);
+assert(i=1);
 end.

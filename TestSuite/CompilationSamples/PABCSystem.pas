@@ -481,7 +481,145 @@ type
     public function Equals(x: System.Object; y: System.Object): boolean;
     public function GetHashCode(obj: System.Object): integer;
   end;}
+  
+type
+  NewSetEmpty = class;
+  
+  /// Тип встроенного множества
+  NewSet<T> = record(IEnumerable<T>)
+  private
+  public
+    ///--
+    _hs := new HashSet<T>;
+    ///--
+    function hs: HashSet<T>;
+    begin
+      if _hs = nil then
+        _hs := new HashSet<T>;
+      Result := _hs;
+    end;
+    constructor (params a: array of T);
+    begin
+      hs.UnionWith(a);
+    end;
+    function GetEnumerator: IEnumerator<T> := hs.GetEnumerator;
+    function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := GetEnumerator;
+    /// Преобразовать к строковому представлению
+    function ToString: string; override;
+    /// Количество элементов в множестве
+    function Count: integer := hs.Count;
+    /// Создать копию множества
+    function Clone: NewSet<T>; begin Result.hs.UnionWith(hs) end;
+    /// Добавить элемент в множество
+    function Add(elem: T): boolean := hs.Add(elem);
+    /// Добавить набор элементов в множество. Вернуть True если элемент был добавлен
+    procedure AddRange(elems: sequence of T) := hs.UnionWith(elems);
+    /// Удалить элемент из множества. Вернуть True если элемент был удален
+    function Remove(elem: T): boolean := hs.Remove(elem);
+    static procedure operator +=(Self: NewSet<T>; elem: T) := Self.hs.Add(elem);
+    static procedure operator -=(Self: NewSet<T>; elem: T) := Self.hs.Remove(elem);
+    /// Содержится ли элемент во множестве
+    function Contains(elem: T): boolean := hs.Contains(elem);
+    static function operator in(elem: T; Self: NewSet<T>): boolean; 
+    begin
+      Result := Self.hs.Contains(elem);
+    end;
+    static procedure operator+=(Self, another: NewSet<T>) := Self.hs.UnionWith(another.hs);
+    static procedure operator-=(Self, another: NewSet<T>) := Self.hs.ExceptWith(another.hs);
+    static procedure operator*=(Self, another: NewSet<T>) := Self.hs.IntersectWith(another.hs);
+    static function operator+(first, second: NewSet<T>): NewSet<T>;
+    begin
+      Result.hs.UnionWith(first); Result._hs.UnionWith(second);
+    end;
+    static function operator*(first, second: NewSet<T>): NewSet<T>;
+    begin
+      Result.hs.UnionWith(first); Result._hs.IntersectWith(second);
+    end;    
+    static function operator-(first, second: NewSet<T>): NewSet<T>;
+    begin
+      Result.hs.UnionWith(first); Result._hs.ExceptWith(second);
+    end;  
+    static function operator=(first, second: NewSet<T>) := first.hs.SetEquals(second.hs);
+    {static function operator=(first: NewSet<T>; second: array of T) := first.hs.SetEquals(second);
+    static function operator=(first: array of T; second: NewSet<T>) := second = first;}
+    
+    static function operator<>(first, second: NewSet<T>) := not (first = second);
+    static function operator<(first, second: NewSet<T>) := first.hs.IsProperSubsetOf(second.hs);
+    static function operator<=(first, second: NewSet<T>) := first.hs.IsSubsetOf(second.hs);
+    static function operator>(first, second: NewSet<T>) := first.hs.IsProperSupersetOf(second.hs);
+    static function operator>=(first, second: NewSet<T>) := first.hs.IsSupersetOf(second.hs);
 
+    static function operator implicit(ns: NewSet<T>): HashSet<T> := ns.ToHashSet;
+    static function operator implicit(ns: HashSet<T>): NewSet<T>;
+    begin
+      Result.hs.UnionWith(ns);
+    end;
+    static function operator implicit(a: array of T): NewSet<T>; 
+    begin 
+      Result._hs := new HashSet<T>(a);
+    end;
+
+    static function operator implicit(ns: NewSetEmpty): NewSet<T>; begin end;
+    static function operator:=(var s: NewSet<T>; st: NewSet<T>): NewSet<T>; // Эту функцию обязательно здесь определять
+    begin
+      s._hs := new HashSet<T>(st.hs);
+    end;
+  end;
+  
+  NewSetEmpty = class 
+  public
+    static function operator=<T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := s1.Count = 0;
+    static function operator=<T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := s1.Count = 0;
+    static function operator<><T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := not (s1 = s2);
+    static function operator<><T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := not (s1 = s2);
+    static function operator><T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := s1.Count > 0;
+    static function operator><T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := False;
+    static function operator<<T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := False;
+    static function operator<<T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := s1.Count > 0;
+    static function operator>=<T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := s1.Count >= 0;
+    static function operator>=<T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := False;
+    static function operator<=<T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := False;
+    static function operator<=<T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := s1.Count >= 0;
+    // ToDo: определить то же для массивов на будущее
+    
+    static function operator+(first, second: NewSetEmpty): NewSetEmpty := new NewSetEmpty;
+    static function operator-(first, second: NewSetEmpty): NewSetEmpty := new NewSetEmpty;
+    static function operator*(first, second: NewSetEmpty): NewSetEmpty := new NewSetEmpty;
+    static function operator+<T>(first: NewSetEmpty; second: array of T): NewSet<T>;
+    begin 
+      Result.hs.UnionWith(second);
+    end;
+    static function operator+<T>(first: array of T; second: NewSetEmpty): NewSet<T>;
+    begin 
+      Result.hs.UnionWith(first);
+    end;
+    static function operator+<T>(first: NewSet<T>; second: NewSetEmpty): NewSet<T> := first;
+    static function operator+<T>(first: NewSetEmpty; second: NewSet<T>): NewSet<T> := second;
+    static function operator*<T>(first: NewSet<T>; second: NewSetEmpty): NewSet<T>; begin end;
+    static function operator*<T>(first: NewSetEmpty; second: NewSet<T>): NewSet<T>; begin end;
+    static function operator-<T>(first: NewSet<T>; second: NewSetEmpty): NewSet<T> := first;
+    static function operator-<T>(first: NewSetEmpty; second: NewSet<T>): NewSet<T>; begin end;
+    
+    static function operator*<T>(first: NewSetEmpty; second: array of T): NewSet<T>; begin end;
+    static function operator*<T>(first: array of T; second: NewSetEmpty): NewSet<T>; begin end;
+    static function operator-<T>(first: NewSetEmpty; second: array of T): NewSet<T>; begin end;
+    static function operator-<T>(first: array of T; second: NewSetEmpty): NewSet<T>;
+    begin 
+      Result.hs.UnionWith(first);
+    end;
+    function ToString: string; override := '{}';
+    function ToSet<T>(): NewSet<T>; begin end; 
+
+    static function operator implicit<T>(Self: NewSetEmpty): array of T; 
+    begin
+      Result := new T[0];
+    end;
+    static function operator implicit<T>(Self: NewSetEmpty): HashSet<T>; 
+    begin
+      Result := new HashSet<T>;
+    end;
+  end;  
+  
 type
   // Вспомогательный тип для множества
   ///-- 
@@ -527,6 +665,20 @@ type
     procedure Print(delim: string := ' ');
     procedure Println(delim: string := ' ');
   end;
+
+/// Значение пустого множества  
+function EmptySet: NewSetEmpty;
+
+/// Генератор множества
+function __NewSetCreatorInternal<T>(params a: array of T): NewSet<T>;
+/// Генератор множества
+function __NSetInteger(a: array of integer; dd: array of integer): NewSet<integer>;
+/// Генератор множества
+function __NSetChar(a: array of char; dd: array of char): NewSet<char>;
+/// Генератор множества
+function __NSetEnum<T>(a: array of T; dd: array of T): NewSet<T>;
+/// Генератор множества
+function __NSetBoolean(a: array of boolean; dd: array of boolean): NewSet<boolean>;
 
 type
   // Base class for typed and binary files
@@ -1872,6 +2024,30 @@ procedure Include(var s: TypedSet; el: object);
 ///- procedure Exclude(var s: set of T; element: T);
 ///Удаляет элемент element из множества s
 procedure Exclude(var s: TypedSet; el: object);
+///- procedure Include(var s: set of T; element: T);
+///Добавляет элемент element во множество s
+procedure Include<T>(var s: NewSet<T>; el: T);
+///- procedure Exclude(var s: set of T; element: T);
+///Удаляет элемент element из множества s
+procedure Exclude<T>(var s: NewSet<T>; el: T);
+
+procedure Include(var s: NewSet<byte>; el: byte);
+procedure Exclude(var s: NewSet<byte>; el: byte);
+procedure Include(var s: NewSet<word>; el: word);
+procedure Exclude(var s: NewSet<word>; el: word);
+procedure Include(var s: NewSet<integer>; el: integer);
+procedure Exclude(var s: NewSet<integer>; el: integer);
+procedure Include(var s: NewSet<longword>; el: longword);
+procedure Exclude(var s: NewSet<longword>; el: longword);
+procedure Include(var s: NewSet<shortint>; el: shortint);
+procedure Exclude(var s: NewSet<shortint>; el: shortint);
+procedure Include(var s: NewSet<smallint>; el: smallint);
+procedure Exclude(var s: NewSet<smallint>; el: smallint);
+procedure Include(var s: NewSet<int64>; el: int64);
+procedure Exclude(var s: NewSet<int64>; el: int64);
+procedure Include(var s: NewSet<uint64>; el: uint64);
+procedure Exclude(var s: NewSet<uint64>; el: uint64);
+
 
 // -----------------------------------------------------
 //>>     Подпрограммы для работы с символами # Subroutines for char
@@ -2526,7 +2702,7 @@ function HSetInt(params a: array of integer): HashSet<integer>;
 /// Возвращает множество на базе хеш таблицы, заполненное строковыми значениями
 function HSetStr(params a: array of string): HashSet<string>;
 /// Возвращает множество, заполненное указанными значениями
-function SetOf<T>(params a: array of T): HashSet<T>;
+function SetOf<T>(params a: array of T): NewSet<T>;
 
 
 /// Возвращает множество на базе бинарного дерева поиска, заполненное указанными значениями 
@@ -2969,6 +3145,8 @@ procedure __FinalizeModule__;
 function DQNToNullable<T>(v: T): Nullable<T>; where T: record;
 
 implementation
+
+function NewSet<T>.ToString: string := $'{ObjectToString(hs)}';
 
 var
   rnd: System.Random;
@@ -3821,6 +3999,25 @@ begin
   s.ExcludeElement(el);
 end;
 
+procedure Include<T>(var s: NewSet<T>; el: T) := s.Add(el);
+procedure Exclude<T>(var s: NewSet<T>; el: T) := s.Remove(el);
+procedure Include(var s: NewSet<byte>; el: byte) := s.Add(el);
+procedure Exclude(var s: NewSet<byte>; el: byte) := s.Remove(el);
+procedure Include(var s: NewSet<word>; el: word) := s.Add(el);
+procedure Exclude(var s: NewSet<word>; el: word) := s.Remove(el);
+procedure Include(var s: NewSet<integer>; el: integer) := s.Add(el);
+procedure Exclude(var s: NewSet<integer>; el: integer) := s.Remove(el);
+procedure Include(var s: NewSet<longword>; el: longword) := s.Add(el);
+procedure Exclude(var s: NewSet<longword>; el: longword) := s.Remove(el);
+procedure Include(var s: NewSet<shortint>; el: shortint) := s.Add(el);
+procedure Exclude(var s: NewSet<shortint>; el: shortint) := s.Remove(el);
+procedure Include(var s: NewSet<smallint>; el: smallint) := s.Add(el);
+procedure Exclude(var s: NewSet<smallint>; el: smallint) := s.Remove(el);
+procedure Include(var s: NewSet<int64>; el: int64) := s.Add(el);
+procedure Exclude(var s: NewSet<int64>; el: int64) := s.Remove(el);
+procedure Include(var s: NewSet<uint64>; el: uint64) := s.Add(el);
+procedure Exclude(var s: NewSet<uint64>; el: uint64) := s.Remove(el);
+
 [System.Diagnostics.DebuggerStepThrough]  
 function Union(s1, s2: TypedSet): TypedSet;
 begin
@@ -4622,6 +4819,13 @@ begin
     exit;
   end;
   
+  if t.FullName.StartsWith('PABCSystem.NewSet`1') then
+  begin
+    res.Write('set of ');
+    TypeToTypeNameHelper(t.GetGenericArguments.Single, res);
+    exit;
+  end;
+  
   if t.GetInterfaces.Append(t).Contains(typeof(System.Collections.IEnumerable)) then
   begin
     var typed := t.GetInterfaces.Append(t).FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
@@ -4814,6 +5018,7 @@ end;
 
 ///--
 function operator in<T>(x: T; a: array of T): boolean; extensionmethod := a.Contains(x);
+// operator in для конкретных num in [1,2,3] - в PABCExtensions
 
 function operator*<T>(a: array of T; n: integer): array of T; extensionmethod;
 begin
@@ -5896,8 +6101,10 @@ function HSet(a: IntRange): HashSet<integer> := new HashSet<integer>(a);
 
 function HSet(a: CharRange): HashSet<char> := new HashSet<char>(a);
 
-function SetOf<T>(params a: array of T): HashSet<T> := new HashSet<T>(a);
-
+function SetOf<T>(params a: array of T): NewSet<T>;
+begin
+  Result._hs := new HashSet<T>(a);
+end;
 
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
 begin
@@ -10987,9 +11194,9 @@ begin
 end;
 
 /// Возвращает множество по данной последовательности
-function ToSet<T>(Self: sequence of T): HashSet<T>; extensionmethod;
+function ToSet<T>(Self: sequence of T): NewSet<T>; extensionmethod;
 begin
-  Result := new HashSet<T>(Self);
+  Result._hs := new HashSet<T>(Self);
 end;
 
 /// Возвращает множество SortedSet по данной последовательности
@@ -14866,14 +15073,6 @@ function operator><T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1
 ///--
 function operator>=<T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1, T2, T3, T4,T5,T6,T7)); extensionmethod := CompareToTup5(Self, v) >= 0;
 
-{
-///--
-function operator implicit<T>(a: array of T): set of T; extensionmethod; 
-begin
-  foreach var x in a do
-    Include(Result,x);
-end;
-}
 
 {// Определяет, есть ли указанный элемент в массиве
  function Contains<T>(self: array of T; x: T): boolean; extensionmethod;
@@ -15206,6 +15405,89 @@ begin
   result := System.Runtime.InteropServices.Marshal.SizeOf(val);
 end;
 
+// Функции для новых множеств
+
+{procedure operator:=<T>(var Self: NewSet<T>; st: NewSet<T>); extensionmethod;
+begin
+  Self.hs := new HashSet<T>(st.hs);
+end;}
+
+// Присваивание реализовано в PABCExtensions. Здесь не работает
+
+var _emptyset: NewSetEmpty := new NewSetEmpty;
+
+type 
+  SetCreatorFunctionAttribute = class(Attribute)
+  end;
+
+function EmptySet := _emptyset;
+
+[SetCreatorFunction]
+function __NewSetCreatorInternal<T>(params a: array of T): NewSet<T>;
+begin
+  //Result._hs := new HashSet<T>;
+  Result._hs.UnionWith(a);
+end; 
+
+[SetCreatorFunction]
+function __NSetInteger(a: array of integer; dd: array of integer): NewSet<integer>;
+begin
+  Result._hs.UnionWith(a);
+  var n := dd.Length;
+  for var i:=0 to n-1 step 2 do
+  begin
+    for var j := dd[i] to dd[i+1] do
+      Result.Add(j);
+  end
+end;
+
+[SetCreatorFunction]
+function __NSetChar(a: array of char; dd: array of char): NewSet<char>;
+begin
+  Result._hs.UnionWith(a);
+  var n := dd.Length;
+  for var i:=0 to n-1 step 2 do
+  begin
+    for var j := dd[i] to dd[i+1] do
+      Result.Add(j);
+  end
+end;
+
+[SetCreatorFunction]
+function __NSetBoolean(a: array of boolean; dd: array of boolean): NewSet<boolean>;
+begin
+  Result._hs.UnionWith(a);
+  var n := dd.Length;
+  for var i:=0 to n-1 step 2 do
+  begin
+    for var j := dd[i] to dd[i+1] do
+      Result.Add(j);
+  end
+end;
+
+[SetCreatorFunction]
+function __NSetEnum<T>(a: array of T; dd: array of T): NewSet<T>;
+begin
+  Result._hs.UnionWith(a);
+  var vals := System.Enum.GetValues(typeof(T)).Cast&<T>.ToArray;
+  var n := dd.Length;
+  for var i:=0 to n-1 step 2 do
+  begin
+    var ind1 := vals.IndexOf(dd[i]);
+    var ind2 := vals.IndexOf(dd[i+1]);
+    for var j := ind1 to ind2 do
+      Result.Add(T(vals[j]));
+  end
+end;
+
+ 
+
+function operator implicit<T>(a: array of T): HashSet<T>; extensionmethod
+  := new HashSet<T>(a);
+
+function operator implicit(a: array of integer): HashSet<integer>; extensionmethod
+  := new HashSet<integer>(a);
+
 // -----------------------------------------------------------------------------
 //                Внутренние вспомогательные функции 
 // -----------------------------------------------------------------------------
@@ -15491,7 +15773,8 @@ begin
   end;
   try
     if (System.Environment.OSVersion.Version.Major >= 6) and (System.Environment.OSVersion.Version.Minor >= 2) then
-      System.Console.OutputEncoding := Encoding.UTF8;
+      System.Console.OutputEncoding := new System.Text.UTF8Encoding(false);
+      //System.Console.OutputEncoding := Encoding.UTF8;
   except
   end;
   rnd := new System.Random;

@@ -1893,7 +1893,9 @@ namespace PascalABCCompiler.TreeConverter
 				{
                     if (ptc.first.from is null_type_node || ptc.second.to == null || ptc.second.from is null_type_node || ptc.second.from.is_generic_parameter)
                         continue; // SSM 9/12/20 fix 2363
-					AddError(new PossibleTwoTypeConversionsInFunctionCall(loc,ptc.first,ptc.second));
+                    if (ptc.first.from == ptc.second.from && ptc.first.to == ptc.second.to) // SSM fix 03/08/24 - непонятно, как до этого могло дойти
+                        continue;
+                    AddError(new PossibleTwoTypeConversionsInFunctionCall(loc,ptc.first,ptc.second));
 				}
 				
 			}
@@ -2881,6 +2883,7 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     var tlist = new List<function_node>();
                                     tlist.Add(f2);
+                                    convert_function_call_expressions(tlist[0], parameters, tcll[0]);
                                     return tlist;
                                 }
                             }
@@ -2958,6 +2961,7 @@ namespace PascalABCCompiler.TreeConverter
                         set_of_possible_functions.Remove(fn);
                     var tlist = new List<function_node>();
                     tlist.Add(set_of_possible_functions[0]);
+                    convert_function_call_expressions(tlist[0], parameters, tcll[0]);
                     return tlist;
                 }
             }
@@ -2967,12 +2971,14 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     var tlist = new List<function_node>();
                     tlist.Add(set_of_possible_functions[1]);
+                    convert_function_call_expressions(tlist[0], parameters, tcll[0]);
                     return tlist;
                 }
                 else if (set_of_possible_functions[1].semantic_node_type == semantic_node_type.basic_function_node && set_of_possible_functions[0].semantic_node_type != semantic_node_type.basic_function_node)
                 {
                     var tlist = new List<function_node>();
                     tlist.Add(set_of_possible_functions[0]);
+                    convert_function_call_expressions(tlist[0], parameters, tcll[0]);
                     return tlist;
                 }
             }

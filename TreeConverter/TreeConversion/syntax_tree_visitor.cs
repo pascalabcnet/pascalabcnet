@@ -313,8 +313,8 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.InSetProcedure = null;
             SystemLibrary.SystemLibInitializer.CreateSetProcedure = null;
             SystemLibrary.SystemLibInitializer.TypedSetInitProcedure = null;
-            SystemLibrary.SystemLibInitializer.IncludeProcedure = null;
-            SystemLibrary.SystemLibInitializer.ExcludeProcedure = null;
+            //SystemLibrary.SystemLibInitializer.IncludeProcedure = null;
+            //SystemLibrary.SystemLibInitializer.ExcludeProcedure = null;
             SystemLibrary.SystemLibInitializer.DiapasonType = null;
             SystemLibrary.SystemLibInitializer.CreateDiapason = null;
             SystemLibrary.SystemLibInitializer.CreateObjDiapason = null;
@@ -402,8 +402,8 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.SetSubtractProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.subtract_of_set);
             SystemLibrary.SystemLibInitializer.InSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.in_set);
             SystemLibrary.SystemLibInitializer.CreateSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateSetProcedure);
-            SystemLibrary.SystemLibInitializer.IncludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.IncludeProcedure);
-            SystemLibrary.SystemLibInitializer.ExcludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ExcludeProcedure);
+            //SystemLibrary.SystemLibInitializer.IncludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.IncludeProcedure);
+            //SystemLibrary.SystemLibInitializer.ExcludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ExcludeProcedure);
             SystemLibrary.SystemLibInitializer.DiapasonType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.DiapasonType);
             SystemLibrary.SystemLibInitializer.CreateDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateDiapason);
             SystemLibrary.SystemLibInitializer.CreateObjDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateObjDiapason);
@@ -496,8 +496,8 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.SetSubtractProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.subtract_of_set);
             SystemLibrary.SystemLibInitializer.InSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.in_set);
             SystemLibrary.SystemLibInitializer.CreateSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateSetProcedure);
-            SystemLibrary.SystemLibInitializer.IncludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.IncludeProcedure);
-            SystemLibrary.SystemLibInitializer.ExcludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ExcludeProcedure);
+            //SystemLibrary.SystemLibInitializer.IncludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.IncludeProcedure);
+            //SystemLibrary.SystemLibInitializer.ExcludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ExcludeProcedure);
             SystemLibrary.SystemLibInitializer.DiapasonType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.DiapasonType);
             SystemLibrary.SystemLibInitializer.CreateDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateDiapason);
             SystemLibrary.SystemLibInitializer.CreateObjDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateObjDiapason);
@@ -3738,8 +3738,32 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.set_type_definition _set_type_definition)
         {
-            // throw new NotSupportedError(get_location(_set_type_definition));
-            if (SystemLibrary.SystemLibInitializer.TypedSetType == null || SystemLibrary.SystemLibInitializer.CreateSetProcedure == null)
+            // PABCSystem.NewSet<T>
+            // 
+            var ntr = new named_type_reference(new List<ident> { new ident("PABCSystem"), new ident("NewSet") });
+            type_node el_type = convert_strong(_set_type_definition.of_type);
+
+            if (el_type.type_special_kind == SemanticTree.type_special_kind.diap_type)
+            {
+                if (el_type is common_type_node ctn)
+                    el_type = ctn.base_type;
+            }
+
+            /* Не буду это делать!
+             * if (el_type == SystemLibrary.SystemLibrary.byte_type
+                || el_type == SystemLibrary.SystemLibrary.sbyte_type
+                || el_type == SystemLibrary.SystemLibrary.short_type
+                || el_type == SystemLibrary.SystemLibrary.ushort_type
+                )
+                el_type = SystemLibrary.SystemLibrary.integer_type;
+                */
+
+            var el_sem_type = new SyntaxTree.semantic_type_node(el_type, _set_type_definition.of_type.source_context);
+            var tpr = new template_param_list(el_sem_type);
+            var ttr = new SyntaxTree.template_type_reference(ntr, tpr);
+            ProcessNode(ttr);
+
+            /*if (SystemLibrary.SystemLibInitializer.TypedSetType == null || SystemLibrary.SystemLibInitializer.CreateSetProcedure == null)
                 AddError(new NotSupportedError(get_location(_set_type_definition)));
             type_node el_type = convert_strong(_set_type_definition.of_type);
             if (el_type.IsPointer)
@@ -3748,7 +3772,7 @@ namespace PascalABCCompiler.TreeConverter
             //	AddError(new VoidNotValid(get_location(_set_type_definition.of_type)));
             check_for_type_allowed(el_type, get_location(_set_type_definition.of_type));
             check_using_static_class(el_type, get_location(_set_type_definition.of_type));
-            return_value(context.create_set_type(el_type, get_location(_set_type_definition)));
+            return_value(context.create_set_type(el_type, get_location(_set_type_definition)));*/
         }
 
         public override void visit(SyntaxTree.known_type_definition _known_type_definition)
@@ -5110,6 +5134,39 @@ namespace PascalABCCompiler.TreeConverter
             set_intls[cnfc] = exprs;
         }
 
+        private System.Tuple<expression_node, expression_node> convert_diap_for_new_set(SyntaxTree.diapason_expr _diapason_expr, out type_node elem_type)
+        {
+            expression_node left = convert_strong(_diapason_expr.left);
+            if (left is typed_expression) left = convert_typed_expression_to_function_call(left as typed_expression);
+            expression_node right = convert_strong(_diapason_expr.right);
+            if (right is typed_expression) right = convert_typed_expression_to_function_call(right as typed_expression);
+            internal_interface ii = left.type.get_internal_interface(internal_interface_kind.ordinal_interface);
+            if (ii == null)
+            {
+                AddError(new OrdinalTypeExpected(left.location));
+            }
+            internal_interface iir = right.type.get_internal_interface(internal_interface_kind.ordinal_interface);
+            if (iir == null)
+            {
+                AddError(new OrdinalTypeExpected(right.location));
+            }
+            type_node_list tnl = new type_node_list();
+            tnl.AddElement(left.type);
+            tnl.AddElement(right.type);
+            elem_type = convertion_data_and_alghoritms.select_base_type(tnl, true);
+            if (elem_type == SystemLibrary.SystemLibrary.object_type)
+                AddError(new SimpleSemanticError(get_location(_diapason_expr), "BAD_DIAPASON_IN_SET_TYPE"));
+            // До этого момента совпадает с convert_diap_for_set
+
+            // если элементы - какого то целого типа, то привести к типу integer
+            if (elem_type != PascalABCCompiler.SystemLibrary.SystemLibrary.char_type && elem_type != PascalABCCompiler.SystemLibrary.SystemLibrary.bool_type && !elem_type.IsEnum)
+            {
+                left = convertion_data_and_alghoritms.explicit_convert_type(left, PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type);
+                right = convertion_data_and_alghoritms.explicit_convert_type(right, PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type);
+            }
+            return Tuple.Create(left, right);
+        }
+
         private expression_node convert_diap_for_set(SyntaxTree.diapason_expr _diapason_expr, out type_node elem_type)
         {
             expression_node left = convert_strong(_diapason_expr.left);
@@ -5175,24 +5232,38 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.pascal_set_constant _pascal_set_constant)
         {
-            //throw new NotSupportedError(get_location(_pascal_set_constant));
-            if (SystemLibrary.SystemLibInitializer.TypedSetType == null || SystemLibrary.SystemLibInitializer.CreateSetProcedure == null)
-            	AddError(new NotSupportedError(get_location(_pascal_set_constant)));
+            // Если хоть одно - diapason_expr, то это множество иначе литеральный массив
+            if (_pascal_set_constant.values == null ||
+                _pascal_set_constant.values.expressions.Any(ex => ex is SyntaxTree.diapason_expr)
+               )
+            { // это множество
+            }
+            else
+            {
+                var exl = new expression_list(_pascal_set_constant.values.expressions, _pascal_set_constant.source_context);
+                array_const_new ac = new array_const_new(exl,exl.source_context);
+                visit(ac);
+                return;
+            }
+            // надо разбить на 2 списка констант
             expressions_list consts = new expressions_list();
-            type_node el_type = null;
-            type_node_list types = new type_node_list();
+            expressions_list consts_diap = new expressions_list();
+
+            type_node el_type = null; // вывод самого общего типа элемента
+            type_node_list types = new type_node_list(); // этот список - единый. Он нужен только для вывода самого общего типа
             if (_pascal_set_constant.values != null && _pascal_set_constant.values.expressions != null)
                 foreach (SyntaxTree.expression e in _pascal_set_constant.values.expressions)
                 {
-            		if (e is SyntaxTree.nil_const)
-                        ErrorsList.Add(new SimpleSemanticError(get_location(e), "NIL_IN_SET_CONSTRUCTOR_NOT_ALLOWED"));
-            		else
-            		if (e is SyntaxTree.diapason_expr)
+                    if (e is SyntaxTree.nil_const)
+                        AddError(new SimpleSemanticError(get_location(e), "NIL_IN_SET_CONSTRUCTOR_NOT_ALLOWED"));
+                    else
+                    if (e is SyntaxTree.diapason_expr)
                     {
-                        expression_node en = convert_diap_for_set((e as SyntaxTree.diapason_expr), out el_type); 
-                        consts.AddElement(en);
+                        var pair = convert_diap_for_new_set((e as SyntaxTree.diapason_expr), out el_type);
+                        consts_diap.AddElement(pair.Item1);
+                        consts_diap.AddElement(pair.Item2);
                         if (el_type.IsPointer)
-                            ErrorsList.Add(new SimpleSemanticError(get_location(e), "POINTERS_IN_SETS_NOT_ALLOWED"));
+                            AddError(new SimpleSemanticError(get_location(e), "POINTERS_IN_SETS_NOT_ALLOWED"));
                         types.AddElement(el_type);
                     }
                     else
@@ -5200,66 +5271,131 @@ namespace PascalABCCompiler.TreeConverter
                         expression_node en = convert_strong(e);
                         if (en is typed_expression) en = convert_typed_expression_to_function_call(en as typed_expression);
                         if (en.type.type_special_kind == SemanticTree.type_special_kind.short_string)
-                        	en.type = SystemLibrary.SystemLibrary.string_type;
+                            en.type = SystemLibrary.SystemLibrary.string_type;
                         consts.AddElement(en);
-                        types.AddElement(en.type);
+                        if (en.type.IsPointer)
+                            AddError(new SimpleSemanticError(get_location(e), "POINTERS_IN_SETS_NOT_ALLOWED"));
+                        if (en.type.type_special_kind == type_special_kind.diap_type)
+                            types.AddElement(en.type.base_type);
+                        else types.AddElement(en.type);
                     }
                 }
-            type_node ctn = null;
-            if (consts.Count > 0)
+            // Константы и типы заполнены
+            // Выводим самый общий тип
+
+            //type_node ctn = null;
+            if (types.Count > 0)
             {
-                el_type = convertion_data_and_alghoritms.select_base_type(types, true);
+                el_type = convertion_data_and_alghoritms.select_base_type(types, true); // !!
                 if (el_type == null)
                     AddError(new SimpleSemanticError(get_location(_pascal_set_constant), "IMPOSSIBLE_TO_INFER_SET_TYPE"));
-
-                ctn = context.create_set_type(el_type, get_location(_pascal_set_constant));
-
+                // Делаю невозможным базовый тип object - не нравится это, и в массивах нет
+                if (el_type == SystemLibrary.SystemLibrary.object_type)
+                    AddError(new SimpleSemanticError(get_location(_pascal_set_constant), "IMPOSSIBLE_TO_INFER_SET_TYPE"));
+                // если есть диапазоны, то базовый тип не может быть int64 и проч - только integer!!!
+                if (consts_diap.Count > 0)
+                    if (el_type != PascalABCCompiler.SystemLibrary.SystemLibrary.char_type
+                        && el_type != PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type
+                        && el_type != PascalABCCompiler.SystemLibrary.SystemLibrary.bool_type
+                        && !el_type.IsEnum)
+                        AddError(new SimpleSemanticError(get_location(_pascal_set_constant), "IMPOSSIBLE_TO_INFER_SET_TYPE"));
             }
-            else ctn = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
 
-            /*if (el_type == SystemLibrary.SystemLibrary.string_type)
+            // Теперь базовый тип известен (он может быть null), и надо сгенерировать 
+            //  EmptySet
+            //  NSet<el_type>(consts) или 
+            //  NSet<el_type>(Arr<el_type>(consts), Arr<el_type>(consts_diap))
+            // и обойти его
+            // Для el_type, consts и consts_diap надо делать обёртку semantic_type_node 
+            // и semantic_addr_value (тут не знаю - это константы вроде, хотя там к expression_node приводится так что всё хорошо)
+            // new semantic_addr_value()
+
+            var p = _pascal_set_constant;
+            var psc = p.source_context;
+            if (el_type == null)
             {
-                for (int i = 0; i < consts.Count; i++)
-                    if (consts[i].type == SystemLibrary.SystemLibrary.char_type)
-                    {
-                        consts[i] = convertion_data_and_alghoritms.convert_type(consts[i], el_type);
-                    }
-            } */ // Не работает ! SSM 19.03.19
-
-            expressions_list consts_copy = new expressions_list();
-            consts_copy.AddRange(consts);
-
-            function_node fn = convertion_data_and_alghoritms.select_function(consts, SystemLibrary.SystemLibInitializer.CreateSetProcedure.SymbolInfo, (SystemLibrary.SystemLibInitializer.CreateSetProcedure.sym_info is common_namespace_function_node)?(SystemLibrary.SystemLibInitializer.CreateSetProcedure.sym_info as common_namespace_function_node).loc:null);
-
-
-            if (fn is common_namespace_function_node)
+                var dn = new dot_node(new ident("PABCSystem", psc), new ident("EmptySet", psc));
+                ProcessNode(dn);
+            }
+            else if (consts_diap.Count == 0)
             {
-                common_namespace_function_call cnfc = new common_namespace_function_call(fn as common_namespace_function_node, get_location(_pascal_set_constant));
-                add_set_initializer(cnfc, consts_copy);
-                cnfc.ret_type = ctn;
-                for (int i = 0; i < consts.Count; i++)
-                    cnfc.parameters.AddElement(consts[i]);
-                return_value(cnfc);
+                // Это прямо очень хорошо! Просто вызываем NSet<el_type>(consts)
+                var nset_type = new semantic_type_node(el_type, psc);
+                var dn = new ident("__NewSetCreatorInternal", psc);
+                var td = new semantic_type_node(el_type, psc);
+                var tpl = new template_param_list(new List<type_definition> { td }, psc);
+                var method_name = new ident_with_templateparams(dn, tpl, psc);
+                var m_el = new expression_list();
+                foreach (var el in consts)
+                    m_el.Add(new semantic_addr_value(el, el.location));
+                // Добавим все обёрнутые константы
+                var mc = new method_call(method_name, m_el, psc);
+                ProcessNode(mc);
             }
             else
             {
-                compiled_static_method_call cnfc = new compiled_static_method_call(fn as compiled_function_node, get_location(_pascal_set_constant));
-                add_set_initializer(cnfc, consts_copy);
-                cnfc.ret_type = ctn;
-                for (int i = 0; i < consts.Count; i++)
-                    cnfc.parameters.AddElement(consts[i]);
-                return_value(cnfc);
+                // Ну теперь самый общий NSet<el_type>(Arr<el_type>(consts), Arr<el_type>(consts_diap))
+                var nset_type = new semantic_type_node(el_type, psc);
+                var dnNSetInt = new dot_node(new ident("PABCSystem", psc), new ident("__NSetInteger", psc));
+                var dnNSetChar = new dot_node(new ident("PABCSystem", psc), new ident("__NSetChar", psc));
+                var dnNSetEnum = new dot_node(new ident("PABCSystem", psc), new ident("__NSetEnum", psc));
+                var dnNSetBool = new dot_node(new ident("PABCSystem", psc), new ident("__NSetBoolean", psc));
+
+                // PABCSystem.Arr<integer> нельзя использовать - кидает странную ошибку
+                var dnArr = new dot_node(new ident("PABCSystem", psc), new ident("Arr", psc));
+                var td = new semantic_type_node(el_type, psc);
+                var tpl = new template_param_list(new List<type_definition> { td }, psc);
+                var method_name_Arr = new ident_with_templateparams(dnArr, tpl, psc);
+
+                var m_el_Arr1 = new expression_list();
+                foreach (var el in consts)
+                    m_el_Arr1.Add(new semantic_addr_value(el, el.location));
+
+                var m_el_Arr2 = new expression_list();
+                foreach (var el in consts_diap)
+                    m_el_Arr2.Add(new semantic_addr_value(el, el.location));
+
+
+                var cnt1 = new expression_list(new int32_const(m_el_Arr1.Count), p.values.source_context);
+                var cnt2 = new expression_list(new int32_const(m_el_Arr2.Count), p.values.source_context);
+                var arr1_init = new SyntaxTree.array_const(m_el_Arr1, p.values.source_context);
+                var arr2_init = new SyntaxTree.array_const(m_el_Arr2, p.values.source_context);
+                var new_arr1 = new new_expr(td, cnt1, true, arr1_init, p.values.source_context);
+                var new_arr2 = new new_expr(td, cnt2, true, arr2_init, p.values.source_context);
+
+                //var mc1 = new method_call(method_name_Arr, m_el_Arr1, psc);
+                //var mc2 = new method_call(method_name_Arr, m_el_Arr2, psc);
+
+                var m_el_NSet = new expression_list();
+                m_el_NSet.Add(new_arr1);
+                m_el_NSet.Add(new_arr2);
+                method_call mc_NSet = null;
+
+                if (el_type == PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type)
+                    mc_NSet = new method_call(dnNSetInt, m_el_NSet, psc);
+                else if (el_type == PascalABCCompiler.SystemLibrary.SystemLibrary.char_type)
+                    mc_NSet = new method_call(dnNSetChar, m_el_NSet, psc);
+                else if (el_type.IsEnum)
+                    mc_NSet = new method_call(dnNSetEnum, m_el_NSet, psc);
+                else if (el_type == PascalABCCompiler.SystemLibrary.SystemLibrary.bool_type)
+                    mc_NSet = new method_call(dnNSetBool, m_el_NSet, psc);
+                else AddError(new SimpleSemanticError(get_location(_pascal_set_constant), "IMPOSSIBLE_TO_INFER_SET_TYPE"));
+                ProcessNode(mc_NSet);
             }
-            //return_value(new common_namespace_function_call_as_constant(cnfc,cnfc.location));
         }
 
         public override void visit(SyntaxTree.array_const_new acn)
         {
             var lst = acn.elements.expressions.Select(ex => { var semex = convert_strong(ex); try_convert_typed_expression_to_function_call(ref semex); return semex; }).ToList();
-            
+
             type_node_list types = new type_node_list();
             foreach (var tn in lst.Select(ex => ex.type))
-                types.AddElement(tn);
+            {
+                if (tn.type_special_kind == type_special_kind.diap_type) // SSM 4/12/24 - стирание информации о типе диапазона
+                    types.AddElement(tn.base_type);
+                else types.AddElement(tn);
+            }
+                
             var el_type = convertion_data_and_alghoritms.select_base_type_for_arr_const_new(types, lst, true);
             var syntax_type = new SyntaxTree.semantic_type_node(el_type);
             //SyntaxTree.semantic_addr_value sav;
@@ -7031,7 +7167,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                     }
                 }
-                else if (SystemLibrary.SystemLibInitializer.IncludeProcedure.Equal(sil)
+                /*else if (SystemLibrary.SystemLibInitializer.IncludeProcedure.Equal(sil)
                                 || SystemLibrary.SystemLibInitializer.ExcludeProcedure.Equal(sil))
                 {
                     if (_method_call.parameters != null && _method_call.parameters.expressions.Count == 2)
@@ -7083,9 +7219,9 @@ namespace PascalABCCompiler.TreeConverter
                                     AddError(en_cnfn.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                     return;
                                 }
-                        } */
+                        } 
                     }
-                }
+                }*/
                 else if (SystemLibrary.SystemLibInitializer.IncProcedure.Equal(sil))
                 {
                     expression_node bfcint = make_inc_call(sil?.FirstOrDefault(), _method_call.parameters, subloc2);
@@ -8029,7 +8165,7 @@ namespace PascalABCCompiler.TreeConverter
                     else
                         ConvertPointersForWriteFromDll(exprs);
                 }
-                else if (SystemLibrary.SystemLibInitializer.IncludeProcedure.Equal(sil)
+                /*else if (SystemLibrary.SystemLibInitializer.IncludeProcedure.Equal(sil)
                             || SystemLibrary.SystemLibInitializer.ExcludeProcedure.Equal(sil))
                 {
                     if (exprs.Count != 2) AddError(new NoFunctionWithSameArguments(FunctionName, loc, true));
@@ -8042,7 +8178,7 @@ namespace PascalABCCompiler.TreeConverter
                         convertion_data_and_alghoritms.check_convert_type(exprs[1], element_type, exprs[1].location);
                     else convertion_data_and_alghoritms.check_convert_type(exprs[1], exprs[0].type, exprs[0].location);
                     if (!exprs[0].is_addressed) AddError(new ThisExpressionCanNotBePassedAsVarParameter(exprs[0]));
-                }
+                }*/
                 else if (SystemLibrary.SystemLibInitializer.InSetProcedure.Equal(sil))
                 {
                     if (exprs.Count != 2) AddError(new NoFunctionWithSameArguments(FunctionName, loc, true));
@@ -12242,6 +12378,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (_type_declaration.type_def is SyntaxTree.named_type_reference||
                     _type_declaration.type_def is SyntaxTree.ref_type || _type_declaration.type_def is SyntaxTree.string_num_definition ||
                     _type_declaration.type_def is SyntaxTree.sequence_type || //SSM 01.11.2018
+                    _type_declaration.type_def is SyntaxTree.set_type_definition || //SSM 07.11.2024
                     tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.array_kind)// ||
                     /*tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.set_type*/
                 {
@@ -14979,6 +15116,8 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(get_location(_array_type.indexers), "ARRAY_RANK_CANNOT_BE_GREATER_32");
                 type_node ret = null;
                 type_node et = convert_strong(_array_type.elements_type);
+                if (et.type_special_kind == type_special_kind.diap_type) // SSM 4/12/24
+                    et = et.base_type;
                 //if (et == SystemLibrary.SystemLibrary.void_type)
             	//AddError(new VoidNotValid(get_location(_array_type.elemets_types)));
                 check_for_type_allowed(et,get_location(_array_type.elements_type));
@@ -15192,6 +15331,27 @@ namespace PascalABCCompiler.TreeConverter
                 is_userdefined = !(cnf.function_node.namespace_node.namespace_name.Equals(StringConstants.pascalSystemUnitName) || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
             }
 
+            /*if (exp.type is ArrayConstType
+                || convertion_data_and_alghoritms.eq_type_nodes(exp.type, tn))
+            { 
+                return convert_strong_to_constant_node(exp, tn, is_const_section && is_userdefined, is_const_section);
+            }
+            else
+            {
+                var conv = convertion_data_and_alghoritms.convert_type(exp, tn);
+                return convert_strong_to_constant_node(conv, tn, is_const_section && is_userdefined, is_const_section);
+            }*/
+            
+            /*if (expr is pascal_set_constant)
+            {
+                var conv = convertion_data_and_alghoritms.convert_type(exp, tn);
+                return convert_strong_to_constant_node(conv, tn, is_const_section && is_userdefined, is_const_section);
+            }
+            else
+            {
+                return convert_strong_to_constant_node(exp, tn, is_const_section && is_userdefined, is_const_section);
+            }*/
+
             return convert_strong_to_constant_node(exp, tn, is_const_section && is_userdefined, is_const_section);
         }
 
@@ -15238,7 +15398,9 @@ namespace PascalABCCompiler.TreeConverter
                 if (csmc.type != null && csmc.type != SystemLibrary.SystemLibrary.void_type && (csmc.function_node.IsSpecialName && csmc.function_node.is_readonly || NetHelper.NetHelper.PABCSystemType != null && csmc.function_node.cont_type.compiled_type.Assembly == NetHelper.NetHelper.PABCSystemType.Assembly || !is_const_section))
                     constant = new compiled_static_method_call_as_constant(csmc, expr.location);
             }
-            else if (expr is common_namespace_function_call && SystemLibrary.SystemLibInitializer.CreateSetProcedure != null && (expr as common_namespace_function_call).function_node == SystemLibrary.SystemLibInitializer.CreateSetProcedure.sym_info as common_namespace_function_node)
+            else if (expr is common_namespace_function_call 
+                && SystemLibrary.SystemLibInitializer.CreateSetProcedure != null 
+                && (expr as common_namespace_function_call).function_node == SystemLibrary.SystemLibInitializer.CreateSetProcedure.sym_info as common_namespace_function_node)
             {
                 common_namespace_function_call cnfc = expr as common_namespace_function_call;
                 expressions_list exprs = get_set_initializer(cnfc);
@@ -15255,28 +15417,124 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 constant = new common_namespace_function_call_as_constant(cnfc, loc);
             }
+            else if (expr is common_namespace_function_call cnfc1
+                && cnfc1.function_node.attributes.Count > 0
+                && cnfc1.function_node.attributes[0].attribute_type.name.ToLower() == "SetCreatorFunctionAttribute".ToLower()
+                )
+            {
+                convertion_data_and_alghoritms.check_convert_type(cnfc1, tn, loc);
+                // Надо компоненты проверять на константность
+                var values0 = ((cnfc1.parameters[0] as basic_function_call).
+                      parameters[0] as common_namespace_function_call).parameters.Skip(3);
+                var values1 = ((cnfc1.parameters[1] as basic_function_call).
+                      parameters[0] as common_namespace_function_call).parameters.Skip(3);
+                var values = values0.Concat(values1).ToArray();
+                foreach (expression_node en in values)
+                {
+                    if (!(en is constant_node))
+                        AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                }
+                constant = new common_namespace_function_call_as_constant(cnfc1, loc);
+                return constant;
+            }
+            else if (expr is common_namespace_function_call cnfc2
+                && cnfc2.function_node.name.StartsWith("__NewSetCreatorInternal")
+                )
+            {
+                convertion_data_and_alghoritms.check_convert_type(cnfc2, tn, loc);
+                var values = (cnfc2.parameters[0] as array_initializer).element_values;
+                // Надо компоненты проверять на константность
+                foreach (expression_node en in values)
+                {
+                    if (!(en is constant_node))
+                        AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                }
+                constant = new common_namespace_function_call_as_constant(cnfc2, loc);
+                return constant;
+            }
             else if (is_const_section_and_userfuncall && (expr is basic_function_call || expr is common_namespace_function_call)) // только в разделе const
             {
                 AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
             }
             else if (expr is common_namespace_function_call)
             {
+                // Отдельно для пустого множества 
                 common_namespace_function_call cnfc = expr as common_namespace_function_call;
-                foreach (expression_node el in cnfc.parameters)
-                    convert_strong_to_constant_node(el, el.type, false, false, cnfc.location);
+                if (cnfc.type.name == "NewSetEmpty")
+                {
+                    constant = new common_namespace_function_call_as_constant(expr as common_namespace_function_call, loc);
+                    return constant;
+                }
+                if (cnfc.function_node.name != "op_Implicit")
+                    foreach (expression_node el in cnfc.parameters)
+                        convert_strong_to_constant_node(el, el.type, false, false, cnfc.location);
                 //if (cnfc.function_node.namespace_node == context.converted_namespace)
                 //    AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
                 //  throw new ConstantExpressionExpected(loc);
                 constant = new common_namespace_function_call_as_constant(expr as common_namespace_function_call, loc);
+                return constant;
+            }
+            else if (expr is common_namespace_function_call_as_constant cnfcac
+                && cnfcac.type.name == "NewSetEmpty")
+            {
+                expr = create_constructor_call(tn, new expressions_list(), loc);
+                constant = new common_constructor_call_as_constant(expr as common_constructor_call, loc);
+
+                return constant;
+            }
+            else if (expr is common_namespace_function_call_as_constant cnfcac1)
+            {
+                constant = cnfcac1;
+                return constant;
+            }
+            else if (expr is common_constructor_call)
+            {
+                constant = new common_constructor_call_as_constant(expr as common_constructor_call, null);
+                return constant;
+            }
+            else if (expr is common_constructor_call_as_constant cccac)
+            {
+                //
+                constant = cccac.get_constant_copy(loc);
+                return constant;
             }
             else if (expr is basic_function_call)
             {
                 basic_function_call cnfc = expr as basic_function_call;
                 //if (cnfc.function_node.namespace_node == context.converted_namespace)
                 //  throw new ConstantExpressionExpected(loc);
-                foreach (expression_node el in cnfc.parameters)
-                    convert_strong_to_constant_node(el, el.type);
-                constant = new basic_function_call_as_constant(expr as basic_function_call, loc);
+                
+                // Как быть с new integer[5](2,3,4)? Там cnfc.parameters сщдержит 1 элемент, у которого в parameters первые три элемента - информационные
+                if (cnfc.parameters[0] is common_namespace_function_call cnsfc && 
+                    cnsfc.function_node.SpecialFunctionKind == SpecialFunctionKind.NewArray)
+                {
+                    foreach (expression_node el in cnsfc.parameters.Skip(3)) // это для 1 + 2 * 3
+                        convert_strong_to_constant_node(el, el.type);
+                    if (convertion_data_and_alghoritms.eq_type_nodes(expr.type, tn))
+                    {
+                        constant = new basic_function_call_as_constant(expr as basic_function_call, loc);
+                        return constant;
+                    }
+                    else
+                    {
+                        var conv = convertion_data_and_alghoritms.convert_type(expr, tn);
+                        constant = convert_strong_to_constant_node(conv, tn);
+                        return constant;
+                    }
+                }
+                else
+                {
+                    foreach (expression_node el in cnfc.parameters) // это для 1 + 2 * 3 - этот код был
+                        convert_strong_to_constant_node(el, el.type);
+                }
+
+                constant = new basic_function_call_as_constant(expr as basic_function_call, loc); //  - этот код был
+                return constant;
+            }
+            else if (expr is basic_function_call_as_constant bfcac)
+            {
+                constant = bfcac;
+                return constant;
             }
             else if (expr is typed_expression)
             {
@@ -15436,14 +15694,32 @@ namespace PascalABCCompiler.TreeConverter
             else if (expr is common_static_method_call)
             {
                 var csmc = expr as common_static_method_call;
-                var properties = new List<common_property_node>();
-                foreach (common_property_node cpn in csmc.function_node.cont_type.properties)
-                    if (cpn.get_function == csmc.function_node && cpn.set_function == null)
+                if (csmc.function_node.cont_type != null)
+                {
+                    foreach (common_property_node cpn in csmc.function_node.cont_type.properties)
+                        if (cpn.get_function == csmc.function_node && cpn.set_function == null)
+                        {
+                            constant = new common_static_method_call_as_constant(csmc, null);
+                            break;
+                        }
+                    if (csmc.function_node.name == "op_Implicit") // SSM 04/12/24 - это делается для преобразования array в set
                     {
-                        constant = new common_static_method_call_as_constant(csmc, null);
-                        break;
+                        constant = new common_static_method_call_as_constant(csmc, loc);
+                        return constant;
                     }
-
+                }
+                else
+                {
+                    var values = (csmc.parameters[0] as array_initializer).element_values;
+                    // Надо компоненты проверять на константность
+                    foreach (expression_node en in values)
+                    {
+                        if (!(en is constant_node))
+                            AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                    }
+                    constant = new common_static_method_call_as_constant(csmc, loc);
+                    return constant;
+                }
             }
             else
             {
@@ -15797,7 +16073,17 @@ namespace PascalABCCompiler.TreeConverter
                 else
                     throw new CompilerInternalError("Unexpected array type");
             for (int i = 0; i < constant.element_values.Count; i++)
-                constant.element_values[i] = convert_strong_to_constant_node(constant.element_values[i], element_type);
+            {
+                if (constant.element_values[i].type is ArrayConstType 
+                  || convertion_data_and_alghoritms.eq_type_nodes(constant.element_values[i].type,element_type))
+                    constant.element_values[i] = convert_strong_to_constant_node(constant.element_values[i], element_type);
+                else
+                {
+                    var conv = convertion_data_and_alghoritms.convert_type(constant.element_values[i], element_type);
+                    constant.element_values[i] = convert_strong_to_constant_node(conv, element_type);
+                }
+                //convertion_data_and_alghoritms.check_convert_type(constant.element_values[i], element_type,constant.element_values[i].location);
+            }
             constant.SetType(tn);
             return constant;
         }
@@ -18013,6 +18299,16 @@ namespace PascalABCCompiler.TreeConverter
         {
             expression_node left = convert_strong(_bin_expr.left);
             expression_node right = convert_strong(_bin_expr.right);
+
+            // SSM 04/12/24 - массивы нельзя умножать и вычитать. Это запрещено т.к. в библиотеку добавлены arr * set и arr - set
+            if (left.type != null && left.type.type_special_kind == type_special_kind.array_kind 
+                && right.type != null && right.type.type_special_kind == type_special_kind.array_kind
+                && (_bin_expr.operation_type == Operators.Multiplication || _bin_expr.operation_type == Operators.Minus)
+                )
+            {
+                AddError(get_location(_bin_expr), "OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_TYPES_{1}_AND_{2}", name_reflector.get_name(_bin_expr.operation_type), left.type, right.type);
+            }
+
             if (_bin_expr.operation_type == Operators.In)
                 try_convert_typed_expression_to_function_call(ref left);
             expression_node res = find_operator(_bin_expr.operation_type, left, right, get_location(_bin_expr));

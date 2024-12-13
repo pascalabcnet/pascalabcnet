@@ -242,16 +242,16 @@ end;
 procedure DrawPoint(x,y: real; color: GColor := Colors.Black; PointRadius: real := 2) := Coords.DrawPoint(x,y,color,PointRadius);
 
 /// Рисует точки заданным цветом
-procedure DrawPoints(points: array of Point; color: GColor; PointRadius: real := 2) := Coords.DrawPoints(points,color,PointRadius);
+procedure DrawPoints(points: array of Point; color: GColor; PointRadius: real := -1) := Coords.DrawPoints(points,color,PointRadius);
 
 /// Рисует точки следующим цветом в палитре цветов
-procedure DrawPoints(points: array of Point; PointRadius: real := 2) := Coords.DrawPoints(points,PointRadius);
+procedure DrawPoints(points: array of Point; PointRadius: real := -1) := Coords.DrawPoints(points,PointRadius);
 
 /// Рисует точки заданным цветом
-procedure DrawPoints(xx,yy: array of real; color: GColor; PointRadius: real := 2) := Coords.DrawPoints(xx,yy,color,PointRadius);
+procedure DrawPoints(xx,yy: array of real; color: GColor; PointRadius: real := -1) := Coords.DrawPoints(xx,yy,color,PointRadius);
 
 /// Рисует точки следующим цветом в палитре цветов
-procedure DrawPoints(xx,yy: array of real; PointRadius: real := 2) := Coords.DrawPoints(xx,yy,PointRadius);
+procedure DrawPoints(xx,yy: array of real; PointRadius: real := -1) := Coords.DrawPoints(xx,yy,PointRadius);
 
 /// Устанавливает ширину линии Черепахи
 procedure SetWidth(w: real);

@@ -5,6 +5,14 @@ uses GraphWPFBase;
 uses GraphWPF;
 uses System.Threading.Tasks;
 
+type
+  Globals = static class
+    static PointRadius: real := 2.0;
+    static LineWidth: real := 1.0;
+    static FontBackgroundColor: Color := Colors.Transparent;
+    static FontBorderWidth: real := 1.0;
+  end;
+
 type 
   Colors = GraphWPF.Colors;
   Point = System.Windows.Point;
@@ -15,7 +23,7 @@ type
   end;
   TypeFace = System.Windows.Media.Typeface;
   FormattedText = System.Windows.Media.FormattedText;
-
+  
 var 
 // Команды для "проигрывания" при перерисовке (изменении масштаба и сдвиге)
   Commands := new List<Command>;
@@ -28,7 +36,7 @@ begin
 end;
 
 var 
-  CurrentPen := ColorPen(Colors.Black,1.4);
+  CurrentPen := ColorPen(Colors.Black,1.4); // Для LineTo
   
   CurrentFontFace := new Typeface('Arial');
 
@@ -266,12 +274,16 @@ var x := FormText('sdfgh');
 
 procedure PointPlay(dc: DrawingContext; x,y: real; c: GColor; PointRadius: real);
 begin
+  if PointRadius = -1 then
+    PointRadius := Globals.PointRadius;
   var p := fso.RealToScreen(Pnt(x,y));
   dc.DrawEllipse(ColorBrush(c),nil,p,PointRadius,PointRadius);
 end;  
 
 procedure PointsPlay(dc: DrawingContext; points: array of Point; c: GColor; PointRadius: real);
 begin
+  if PointRadius = -1 then
+    PointRadius := Globals.PointRadius;
   var cc := ColorBrush(c);
   foreach var p in points do
   begin  
@@ -306,8 +318,10 @@ begin
   dc.DrawRectangle(cb,cp,Rect(p.x,p.y,w,h));
 end;
 
-procedure LinePlay(dc: DrawingContext; x,y,x1,y1: real; c: Color; width: real);
+procedure LinePlay(dc: DrawingContext; x,y,x1,y1: real; c: Color; Width: real);
 begin
+  if Width = -1 then
+    Width := Globals.LineWidth;
   var cp := ColorPen(c,Width);
   var p := fso.RealToScreen(Pnt(x,y));
   var p1 := fso.RealToScreen(Pnt(x1,y1));
@@ -329,37 +343,27 @@ begin
   end;
 end;
 
-procedure TextPlayUnscaled(dc: DrawingContext; x,y: real; text: string; size: real; color: GColor; 
-  Align: Alignment := Alignment.LeftTop);
+procedure TextPlay(dc: DrawingContext; x,y: real; text,fontname: string; size: real; color: GColor; 
+  Align: Alignment; unscaled: boolean; backgroundColor: GColor; borderWidth: real);
 begin
+  if unscaled = False then 
+    size := size*Scale/Scale0;
   if size > 30000 then
     size := 30000;
   var p := fso.RealToScreen(Pnt(x,y));
-  var ft := FormText(text,size,color);
+  var ft: FormattedText := 
+    fontname = nil ? FormText(text,size,color) : FormTextWithName(text,fontname,size,color);
   var (w,h) := (ft.Width,ft.Height);
   CorrectXYForTextHelper(p,w,h,Align);
+  if backgroundColor = Colors.Transparent then
+    backgroundColor := Globals.FontBackgroundColor;
+  if borderWidth = -1 then
+    borderWidth := Globals.FontBorderWidth;
+  if backgroundColor <> Colors.Transparent then
+    dc.DrawRectangle(ColorBrush(backgroundColor),ColorPen(Colors.Black,borderWidth),Rect(p.x-3,p.y-2,w+6,h+4));
   dc.DrawText(ft,p);
 end;
 
-procedure TextFontNamePlayUnscaled(dc: DrawingContext; x,y: real; text,fontname: string; size: real; color: GColor; 
-  Align: Alignment := Alignment.LeftTop);
-begin
-  if size > 30000 then
-    size := 30000;
-  var p := fso.RealToScreen(Pnt(x,y));
-  var ft := FormTextWithName(text,fontname,size,color);
-  var (w,h) := (ft.Width,ft.Height);
-  CorrectXYForTextHelper(p,w,h,Align);
-  dc.DrawText(ft,p);
-end;
-
-procedure TextPlay(dc: DrawingContext; x,y: real; text: string; size: real; color: GColor; 
-  Align: Alignment := Alignment.LeftTop)
-  := TextPlayUnscaled(dc,x,y,text,size*Scale/Scale0,color,Align);
-
-procedure TextFontNamePlay(dc: DrawingContext; x,y: real; text,fontname: string; size: real; color: GColor; 
-  Align: Alignment := Alignment.LeftTop)
-  := TextFontNamePlayUnscaled(dc,x,y,text,fontname,size*Scale/Scale0,color,Align);
 
 {$endregion}
 
@@ -403,38 +407,13 @@ type
     text: string;
     size: real;
     c: Color;
-    Align: Alignment;
-  public  
-    procedure Play(dc: DrawingContext); override := TextPlay(dc,x,y,text,size,c,Align);
-  end;
-  TextFontNameC = auto class(Command)
-    x,y: real;
-    text: string;
-    size: real;
-    c: Color;
     fontname: string;
     Align: Alignment;
+    unscaled: boolean;
+    backgroundColor: Color;
+    borderWidth: real;
   public  
-    procedure Play(dc: DrawingContext); override := TextFontNamePlay(dc,x,y,text,fontname,size,c,Align);
-  end;
-  TextUnscaledC = auto class(Command)
-    x,y: real;
-    text: string;
-    size: real;
-    c: Color;
-    Align: Alignment;
-  public  
-    procedure Play(dc: DrawingContext); override := TextPlayUnscaled(dc,x,y,text,size,c,Align);
-  end;
-  TextFontNameUnscaledC = auto class(Command)
-    x,y: real;
-    text: string;
-    size: real;
-    c: Color;
-    fontname: string;
-    Align: Alignment;
-  public  
-    procedure Play(dc: DrawingContext); override := TextFontNamePlayUnscaled(dc,x,y,text,fontname,size,c,Align);
+    procedure Play(dc: DrawingContext); override := TextPlay(dc,x,y,text,fontname,size,c,Align,unscaled,backgroundColor,borderWidth);
   end;
 
 procedure AddCommand(c: Command);
@@ -452,53 +431,84 @@ function Window := GraphWPF.Window;
 {$region Примитивы рисования, вносимые в список команд}
 
 /// Рисует точку заданным цветом
-procedure DrawPoint(x,y: real; Color: GColor := Colors.Black; PointRadius: real := 2)
+procedure DrawPoint(x,y: real; Color: GColor := Colors.Black; PointRadius: real := -1)
   := PointC.Create(x,y,color,PointRadius).AddToListAndPlay;
+
+/// Рисует точку заданным цветом
+procedure DrawPoint(p: Point; Color: GColor := Colors.Black; PointRadius: real := -1)
+  := DrawPoint(p.x,p.y,Color,PointRadius);
 
 /// Рисует прямоугольник
 procedure DrawRectangle(x,y,w,h: real; color: GColor := Colors.White; borderColor: GColor := Colors.Black)
   := RectangleC.Create(x,y,w,h,color,borderColor).AddToListAndPlay;
 
 /// Рисует отрезок
-procedure DrawLine(x,y,x1,y1: real; Color: GColor := Colors.Black; Width: real := 1)
+procedure DrawLine(x,y,x1,y1: real; Color: GColor := Colors.Black; Width: real := -1)
   := LineC.Create(x,y,x1,y1,color,width).AddToListAndPlay;
 
+/// Рисует отрезок
+procedure DrawLine(p1,p2: Point; Color: GColor := Colors.Black; Width: real := -1)
+  := DrawLine(p1.x,p1.y,p2.x,p2.y,Color,Width);
+
 /// Рисует прямоугольник без границы
-procedure FillRectangle(x,y,w,h: real; color: GColor := Colors.White)
+procedure FillRectangle(x,y,w,h: real; Color: GColor := Colors.White)
   := RectangleC.Create(x,y,w,h,color,Colors.Transparent).AddToListAndPlay;
 
 /// Рисует круг
-procedure DrawCircle(x,y,r: real; color: GColor := Colors.White; borderColor: GColor := Colors.Black)
+procedure DrawCircle(x,y,r: real; Color: GColor := Colors.White; borderColor: GColor := Colors.Black)
   := CircleC.Create(x,y,r,color,borderColor).AddToListAndPlay;
 
+/// Рисует круг
+procedure DrawCircle(p: Point; r: real; Color: GColor := Colors.White; borderColor: GColor := Colors.Black)
+  := DrawCircle(p.X,p.Y,r,Color,borderColor);
+
 /// Рисует круг без границы
-procedure FillCircle(x,y,r: real; color: GColor := Colors.White)
+procedure FillCircle(x,y,r: real; Color: GColor := Colors.White)
   := CircleC.Create(x,y,r,color,Colors.Transparent).AddToListAndPlay;
 
-/// Выводит текст в заданную позицию
-procedure DrawText(x,y: real; text: string; Size: real := 14; Color: GColor := Colors.Black; FontName: string := nil;
-  Align: Alignment := Alignment.LeftTop);
+/// Рисует круг без границы
+procedure FillCircle(p: Point; r: real; Color: GColor := Colors.White)
+  := FillCircle(p.X,p.Y,r,color);
+
+/// Выводит текст в указанную позицию
+procedure DrawText(x,y: real; text: string; Size: real := 14; Color: GColor := Colors.Black; 
+  FontName: string := nil; Align: Alignment := Alignment.LeftTop;
+  BackgroundColor: GColor := Colors.Transparent; BorderWidth: real := -1);
 begin
-  if FontName = nil then
-    TextC.Create(x,y,text,Size,Color,Align).AddToListAndPlay
-  else TextFontNameC.Create(x,y,text,Size,Color,fontname,Align).AddToListAndPlay;
+  TextC.Create(x,y,text,Size,Color,fontname,Align,false,BackgroundColor,BorderWidth).AddToListAndPlay
 end;  
 
-/// Выводит текст в заданную позицию
-procedure DrawTextUnscaled(x,y: real; text: string; Size: real := 14; Color: GColor := Colors.Black; FontName: string := nil;
-  Align: Alignment := Alignment.LeftTop);
+/// Выводит текст в указанную позицию
+procedure DrawText(p: Point; text: string; Size: real := 14; Color: GColor := Colors.Black; 
+  FontName: string := nil; Align: Alignment := Alignment.LeftTop;
+  BackgroundColor: GColor := Colors.Transparent; BorderWidth: real := -1);
 begin
-  if FontName = nil then
-    TextUnscaledC.Create(x,y,text,Size,Color,Align).AddToListAndPlay
-  else TextFontNameUnscaledC.Create(x,y,text,Size,Color,fontname,Align).AddToListAndPlay;
+  DrawText(p.X,p.Y,text,Size,Color,FontName,Align,BackgroundColor,BorderWidth);
 end;  
+
+/// Выводит текст в указанную позицию
+procedure DrawTextUnscaled(x,y: real; text: string; Size: real := 14; Color: GColor := Colors.Black; 
+  FontName: string := nil; Align: Alignment := Alignment.LeftTop;
+  BackgroundColor: GColor := Colors.Transparent; BorderWidth: real := -1);
+begin
+  TextC.Create(x,y,text,Size,Color,fontname,Align,true,BackgroundColor,BorderWidth).AddToListAndPlay
+end;  
+
+/// Выводит текст в указанную позицию
+procedure DrawTextUnscaled(p: Point; text: string; Size: real := 14; Color: GColor := Colors.Black; 
+  FontName: string := nil; Align: Alignment := Alignment.LeftTop;
+  BackgroundColor: GColor := Colors.Transparent; BorderWidth: real := -1);
+begin
+  DrawTextUnscaled(p.X,p.Y,text,Size,Color,FontName,Align,BackgroundColor,BorderWidth);
+end;  
+
 
 /// Рисует точки заданным цветом
-procedure DrawPoints(points: array of Point; color: GColor; PointRadius: real := 2)
+procedure DrawPoints(points: array of Point; color: GColor; PointRadius: real := -1)
   := PointsC.Create(points,color,PointRadius).AddToListAndPlay;
 
 /// Рисует точки следующим цветом в палитре цветов
-procedure DrawPoints(points: array of Point; PointRadius: real := 2);
+procedure DrawPoints(points: array of Point; PointRadius: real := -1);
 begin
   var color := Palette[PaletteIndex];
   PaletteIndex += 1;
@@ -508,18 +518,30 @@ begin
 end;  
 
 /// Рисует точки заданным цветом
-procedure DrawPoints(xx,yy: array of real; color: GColor; PointRadius: real := 2);
+procedure DrawPoints(xx,yy: array of real; color: GColor; PointRadius: real := -1);
 begin
   var points := Zip(xx,yy,(x,y) -> Pnt(x,y)).ToArray;
   DrawPoints(points,color,PointRadius);
 end;  
 
 /// Рисует точки следующим цветом в палитре цветов
-procedure DrawPoints(xx,yy: array of real; PointRadius: real := 2);
+procedure DrawPoints(xx,yy: array of real; PointRadius: real := -1);
 begin
   var points := Zip(xx,yy,(x,y) -> Pnt(x,y)).ToArray;
   DrawPoints(points,PointRadius);
-end;  
+end;
+
+/// Расстояние между точками
+function Distance(p1,p2: Point): real := Sqrt((p2.x-p1.x)**2 + (p2.y-p1.y)**2);
+/// Расстояние между точками
+function Distance(x1,y1,x2,y2: real): real := Sqrt((x2-x1)**2 + (y2-y1)**2);
+
+/// Расстояние между точками
+function Distance(Self: Point; p2: Point): real; extensionmethod := Distance(Self,p2);
+
+/// Середина отрезка
+function Middle(p1,p2: Point): Point := Pnt((p1.X + p2.X)/2, (p1.Y + p2.Y)/2);
+
 
 {$endregion}
 

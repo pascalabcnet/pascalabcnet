@@ -36,6 +36,7 @@ namespace PascalABCCompiler
             oper_names[noteq_name] = "op_Inequality";
             oper_names[shl_name] = "op_LeftShift";
             oper_names[shr_name] = "op_RightShift";
+            oper_names[assign_name] = "op_Assign";
         }
 
         public static string GetNETOperName(string name)
@@ -248,8 +249,8 @@ namespace PascalABCCompiler
         public static string subtract_of_set = "Subtract";
         public static string in_set = "InSet";
         public static string CreateSetProcedure = "CreateSet";
-        public static string IncludeProcedure = "Include";
-        public static string ExcludeProcedure = "Exclude";
+        //public static string IncludeProcedure = "Include";
+        //public static string ExcludeProcedure = "Exclude";
         public static string DiapasonType = "Diapason";
         public static string CreateDiapason = "CreateDiapason";
         public static string CreateObjDiapason = "CreateObjDiapason";
