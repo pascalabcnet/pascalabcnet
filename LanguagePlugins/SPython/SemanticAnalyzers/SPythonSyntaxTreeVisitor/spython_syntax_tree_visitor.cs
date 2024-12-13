@@ -39,6 +39,23 @@ namespace SPythonSyntaxTreeVisitor
             }
             return;
         }
+
+        protected override void get_system_module(common_unit_node psystem_unit)
+        {
+            init_system_module(psystem_unit);
+            //esli zapustili v otladke, to vosstanovim mnozhestvo i procedury sozdanija diapasonov, inache ne budet rabotat
+            if (debugging)
+            {
+                List<SymbolInfo> si = SystemLibInitializer.CreateDiapason.SymbolInfo;
+                si = SystemLibInitializer.CreateObjDiapason.SymbolInfo;
+                si = SystemLibInitializer.TypedSetType.SymbolInfo;
+            }
+            //if (SystemLibrary.SystemLibInitializer.TextFileType.Found)
+            //	SystemLibrary.SystemLibInitializer.TextFileType.GetTypeNodeSpecials().type_special_kind = PascalABCCompiler.SemanticTree.type_special_kind.text_file;
+            // SystemUnitAssigned = true;
+            CreateSpecialFields(psystem_unit);
+        }
+
         public override void AddError(location loc, string ErrResourceString, params object[] values)
         {
             Error err = new SPythonSemanticError(loc, ErrResourceString, values);
