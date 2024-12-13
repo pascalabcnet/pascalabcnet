@@ -55,14 +55,5 @@ namespace Languages.SPython
             SyntaxTreeToSemanticTreeConverter = new SPythonSyntaxTreeVisitor.spython_syntax_tree_visitor();
         }
 
-        public override void ApplyConversionsAfterUsedModulesCompilation(syntax_tree_node root, object data)
-        {
-            var visitor = new AssignToVarConverterVisitor();
-
-            visitor.SendObject(data as Dictionary<string, HashSet<string>>);
-
-            visitor.ProcessNode(root);
-        }
-
     }
 }

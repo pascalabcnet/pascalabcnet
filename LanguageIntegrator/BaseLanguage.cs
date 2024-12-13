@@ -57,7 +57,5 @@ namespace Languages.Facade
         public abstract void SetSemanticConstants();
 
         public abstract void SetSyntaxTreeToSemanticTreeConverter();
-
-        public virtual void ApplyConversionsAfterUsedModulesCompilation(syntax_tree_node root, object data) { }
     }
 }

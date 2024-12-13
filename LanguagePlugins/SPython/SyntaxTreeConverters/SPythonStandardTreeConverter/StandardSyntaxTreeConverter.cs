@@ -1,5 +1,6 @@
 ﻿using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SyntaxTreeConverters;
+using System.Collections.Generic;
 
 namespace Languages.SPython.Frontend.Converters
 {
@@ -38,6 +39,17 @@ namespace Languages.SPython.Frontend.Converters
             // если они используются в функциях (являются глобальными)
             var rugvv = new RetainUsedGlobalVariablesVisitor();
             rugvv.ProcessNode(root);
+
+            return root;
+        }
+
+        public override syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, object data) 
+        {
+            var visitor = new AssignToVarConverterVisitor();
+
+            visitor.SendObject(data as Dictionary<string, HashSet<string>>);
+
+            visitor.ProcessNode(root);
 
             return root;
         }

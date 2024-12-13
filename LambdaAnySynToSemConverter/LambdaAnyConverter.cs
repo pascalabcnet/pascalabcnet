@@ -18,6 +18,11 @@ namespace SyntaxSemanticVisitors
             LambdaAnyVisitor.New.ProcessNode(root);
             return root;
         }
+
+        public syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, object data)
+        {
+            return root;
+        }
     }
 
     public class LambdaAnyVisitor : BaseChangeVisitor

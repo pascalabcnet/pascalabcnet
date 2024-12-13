@@ -3452,8 +3452,8 @@ namespace PascalABCCompiler
             //Console.WriteLine("Compiling Interface "+ unitFileName);//DEBUG
 
             CollectNamesFromUsedUnits(currentDirectory, currentUnit, interfaceUsesList);
-
-            currentUnit.Language.ApplyConversionsAfterUsedModulesCompilation(currentUnit.SyntaxTree, currentUnit.NamesFromUsedUnits);
+            
+            ConvertSyntaxTreeAfterUsedModulesCompilation(currentUnit);
 
             // компилируем интерфейс текущего модуля EVA
             CompileCurrentUnitInterface(unitFileName, currentUnit, docs);
@@ -3522,6 +3522,14 @@ namespace PascalABCCompiler
                 unitsFromUsesSection.Add(currentUnit.SemanticTree);
                 SaveSemanticTreeToFile(currentUnit,unitFileName);
             }*/
+        }
+
+        private static void ConvertSyntaxTreeAfterUsedModulesCompilation(CompilationUnit currentUnit)
+        {
+            foreach (ISyntaxTreeConverter converter in currentUnit.Language.SyntaxTreeConverters)
+            {
+                currentUnit.SyntaxTree = (SyntaxTree.compilation_unit)converter.ConvertAfterUsedModulesCompilation(currentUnit.SyntaxTree, currentUnit.NamesFromUsedUnits);
+            }
         }
 
         private void CollectNamesFromUsedUnits(string currentDirectory, CompilationUnit currentUnit, List<SyntaxTree.unit_or_namespace> interfaceUsesList)

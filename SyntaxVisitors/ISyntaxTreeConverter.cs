@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using PascalABCCompiler.SyntaxTree;
 
@@ -28,5 +28,10 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         //ExecutionOrder ExecutionOrder { get; }
 
         syntax_tree_node Convert(syntax_tree_node root);
+
+        /// <summary>
+        /// Применение синтаксических визиторов после компиляции всех зависимостей (с использованием семантической информации)
+        /// </summary>
+        syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, object data);
     }
 }

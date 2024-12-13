@@ -21,5 +21,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         }
 
         protected abstract syntax_tree_node ApplyConversions(syntax_tree_node root);
+
+        public virtual syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, object data) { return root; }
     }
 }
