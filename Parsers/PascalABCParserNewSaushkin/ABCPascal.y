@@ -140,7 +140,7 @@
 %type <stn> program_header  
 %type <stn> parameter_decl
 %type <stn> parameter_decl_list property_parameter_list
-%type <ex> const_set  
+%type <ex> const_set pascal_set_const
 %type <ex> question_expr question_constexpr new_question_expr  
 %type <ex> record_const const_field_list_1 const_field_list  
 %type <stn> const_field  
@@ -987,9 +987,9 @@ const_factor
 //			$$ = new roof_dereference($2 as addressed_value, @$);
 //		}
     ;
-
-const_set
-    : tkSquareOpen elem_list tkSquareClose 
+    
+pascal_set_const
+	: tkSquareOpen elem_list tkSquareClose
         {
             // Если elem_list пуст или содержит диапазон, то это множество, иначе массив. С PascalABC.NET 3.10  
             /*var is_set = false;
@@ -1001,6 +1001,13 @@ const_set
             if (is_set)*/    
 				$$ = new pascal_set_constant($2 as expression_list, @$);
 			//else $$ = new array_const_new($2 as expression_list, @$); 				
+		}
+	;
+
+const_set
+    : pascal_set_const 
+        {
+            $$ = $1;				
 		}
     | tkVertParen elem_list tkVertParen     
         { 
@@ -2915,6 +2922,11 @@ proc_call
         { 
 			$$ = new procedure_call($1 as addressed_value, $1 is ident, @$); 
 		}
+	/*| pascal_set_const tkPoint identifier_keyword_operatorname  
+        {
+        	var abcd = new dot_node($1 as addressed_value, $3 as addressed_value, @$); 
+			$$ = new procedure_call(abcd as addressed_value, abcd is ident, @$);
+        }	*/
     ;
 
 goto_stmt
@@ -4164,6 +4176,8 @@ factor_without_unary_op
 	| var_reference
 		{ $$ = $1; }
 	;
+	
+	
 
 factor        
     : tkNil                     
@@ -4175,19 +4189,18 @@ factor
 		{ $$ = $1; }
     | default_expr
 		{ $$ = $1; }
-    | tkSquareOpen elem_list tkSquareClose     
+    | pascal_set_const     
         { 
-            // Если elem_list пуст или содержит диапазон, то это множество, иначе массив. С PascalABC.NET 3.10  
-            /*var is_set = false;
-            var el = $2 as expression_list;
-            if (el == null || el.Count == 0)
-              is_set = true;
-            else if (el.expressions.Count(x => x is diapason_expr_new) > 0)
-                is_set = true;
-            if (is_set)*/    
-				$$ = new pascal_set_constant($2 as expression_list, @$);
-			//else $$ = new array_const_new($2 as expression_list, @$); 				
+			$$ = $1;
 		}
+    | factor tkPoint identifier_keyword_operatorname  
+        {
+			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
+        }
+	| factor tkRoundOpen optional_expr_list_func_param tkRoundClose                
+        {
+			$$ = new method_call($1 as addressed_value,$3 as expression_list, @$);
+        }
     | tkNot factor              
         { 
 			$$ = new un_expr($2, $1.type, @$); 
@@ -4375,6 +4388,7 @@ variable
 		}
     | variable_or_literal_or_number tkSquareOpen expr_list tkSquareClose                
         {
+        	//$$ = NewIndexerOrSlice($1 as addressed_value,$3 as expression_list,@$);
         	var el = $3 as expression_list; // SSM 10/03/16
         	if (el.Count==1 && el.expressions[0] is format_expr) 
         	{

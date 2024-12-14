@@ -14832,30 +14832,31 @@ begin
   Result := (Self[0], Self[1], Self[2], Self[3], Self[4], Self[5], v);
 end;
 
-/// Выводит кортеж
+/// Выводит кортеж на экран, после чего выводит пробел
 procedure Print<T1, T2>(Self: (T1, T2)); extensionmethod := Print(Self);
-/// Выводит кортеж
+/// Выводит кортеж на экран, после чего выводит пробел
 procedure Print<T1, T2, T3>(Self: (T1, T2, T3)); extensionmethod := Print(Self);
-/// Выводит кортеж
+/// Выводит кортеж на экран, после чего выводит пробел
 procedure Print<T1, T2, T3, T4>(Self: (T1, T2, T3, T4)); extensionmethod := Print(Self);
-/// Выводит кортеж
+/// Выводит кортеж на экран, после чего выводит пробел
 procedure Print<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4, T5)); extensionmethod := Print(Self);
-/// Выводит кортеж
+/// Выводит кортеж на экран, после чего выводит пробел
 procedure Print<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5, T6)); extensionmethod := Print(Self);
-/// Выводит кортеж
+/// Выводит кортеж на экран, после чего выводит пробел
 procedure Print<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6, T7)); extensionmethod := Print(Self);
-/// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж на экран и переходит на новую строку
 procedure Println<T1, T2>(Self: (T1, T2)); extensionmethod := Println(Self);
-/// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж на экран и переходит на новую строку
 procedure Println<T1, T2, T3>(Self: (T1, T2, T3)); extensionmethod := Println(Self);
-/// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж на экран и переходит на новую строку
 procedure Println<T1, T2, T3, T4>(Self: (T1, T2, T3, T4)); extensionmethod := Println(Self);
-/// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж на экран и переходит на новую строку
 procedure Println<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4, T5)); extensionmethod := Println(Self);
-/// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж на экран и переходит на новую строку
 procedure Println<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5, T6)); extensionmethod := Println(Self);
-/// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж на экран и переходит на новую строку
 procedure Println<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6, T7)); extensionmethod := Println(Self);
+
 /// Преобразует кортеж элементов одного типа в массив
 function ToArray<T>(Self: (T,T)): array of T; extensionmethod := |Self[0],Self[1]|;
 /// Преобразует кортеж элементов одного типа в массив
