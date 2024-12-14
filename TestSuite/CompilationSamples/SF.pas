@@ -127,10 +127,6 @@ begin
     max := x
 end;
 
-/// Возвращает все перестановки
-function Prm<T>(Self: array of T): sequence of array of T; extensionmethod
-  := Self.Permutations;
-
 /// Возвращает все сочетания по m элементов
 function Cmb<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod 
   := Self.Combinations(m);
@@ -281,42 +277,67 @@ procedure Tr<T>(a: array of T; transform: T->T) := a.Transform(transform);
 function H<T>(Self: array of T): integer; extensionmethod := Self.High;
 
 /// Возвращает все перестановки множества элементов, заданного массивом
-function Prm<T>(Self: array of T): sequence of array of T; extensionmethod := Self.Permutations;
+function Prm<T>(Self: array of T): sequence of array of T; extensionmethod 
+  := Self.Permutations;
 
 /// Возвращает все перестановки множества элементов, заданного массивом
-function Prm<T>(Self: sequence of T): sequence of array of T; extensionmethod := Self.Permutations;
+function Prm<T>(Self: sequence of T): sequence of array of T; extensionmethod 
+  := Self.Permutations;
 
 /// Возвращает все частичные перестановки из n элементов по m 
-function Prm<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod := Self.Permutations(m);
+function Prm<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod 
+  := Self.Permutations(m);
 
 /// Возвращает все частичные перестановки из n элементов по m 
-function Prm<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod := Self.Permutations(m);
+function Prm<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod 
+  := Self.Permutations(m);
+  
+/// Возвращает все перестановки букв в строке в виде последовательности строк
+function Prm(Self: string): sequence of string; extensionmethod 
+  := Self.Permutations;
+
+/// Возвращает все частичные перестановки букв строки по m символов в виде последовательности строк
+function Prm(Self: string; m: integer): sequence of string; extensionmethod 
+  := Self.Permutations(m);
 
 /// Возвращает n-тую декартову степень множества элементов, заданного массивом
-function Cart<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod := Self.Cartesian(n);
+function Cart<T>(Self: array of T; n: integer): sequence of array of T; extensionmethod 
+  := Self.Cartesian(n);
 
 /// Возвращает n-тую декартову степень множества элементов, заданного массивом
-function Cart<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod := Self.Cartesian(n);
+function Cart<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod 
+  := Self.Cartesian(n);
 
 /// Возвращает n-тую декартову степень множества символов, заданного строкой
-function Cart(Self: string; n: integer): sequence of string; extensionmethod := Self.CartesianPower(n);
+function Cart(Self: string; n: integer): sequence of string; extensionmethod 
+  := Self.CartesianPower(n);
 
 /// Возвращает декартово произведение последовательностей в виде последовательности пар
-function Cart<T, T1>(Self: sequence of T; b: sequence of T1): sequence of (T, T1); extensionmethod := Self.Cartesian(b);
+function Cart<T, T1>(Self: sequence of T; b: sequence of T1): sequence of (T, T1); extensionmethod 
+  := Self.Cartesian(b);
 
 /// Возвращает декартово произведение последовательностей, проектируя каждую пару на значение
-function Cart<T, T1, T2>(Self: sequence of T; b: sequence of T1; func: (T,T1)->T2): sequence of T2; extensionmethod := Self.Cartesian(b,func);
+function Cart<T, T1, T2>(Self: sequence of T; b: sequence of T1; func: (T,T1)->T2): sequence of T2; extensionmethod 
+  := Self.Cartesian(b,func);
+  
+ 
+/// Возвращает все сочетания по m элементов
+function Cmb<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod 
+  := Self.Combinations(m);
+
+/// Возвращает все сочетания по m элементов
+function Cmb<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod 
+  := Self.Combinations(m);
+
+/// Возвращает все сочетания по m элементов
+function Cmb(Self: string; m: integer): sequence of string; extensionmethod
+  := Self.Combinations(m);
+ 
 
 /// Возвращает исходную последовательность или одноэлементную последовательность если исходная последовательность пуста
 function DefIfE<T>(Self: sequence of T; def: T): sequence of T; extensionmethod := Self.DefaultIfEmpty(def);
 
-/// Возвращает все сочетания по m элементов
-function Cmb<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod := Self.Combinations(m);
-
-/// Возвращает все сочетания по m элементов
-function Cmb<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod := Self.Combinations(m);
-
-/// Выводит кортеж
+/// Выводит кортеж на экран, после чего выводит пробел
 function Pr<T1,T2>(Self: (T1,T2)): (T1,T2); extensionmethod;
 begin 
   Result := Self; 

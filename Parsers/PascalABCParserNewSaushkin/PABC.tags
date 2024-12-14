@@ -35,9 +35,6 @@
     <name value="used_units_list" />
     <name value="interface_decl_sect_list" />
     <name value="int_decl_sect_list1" />
-    <name value="inclass_decl_sect_list" />
-    <name value="decl_sect_list1" />
-    <name value="inclass_decl_sect_list1" />
     <name value="optional_const_func_expr_list" />
     <name value="const_elem_list" />
     <name value="const_elem_list1" />
@@ -187,13 +184,9 @@
     <name value="implementation_part" />
     <name value="abc_interface_part" />
     <name value="initialization_part" />
-    <name value="int_decl_sect" />
     <name value="optional_where_section" />
     <name value="member_list_section" />
     <name value="decl_sect_list" />
-    <name value="decl_sect_list1" />
-    <name value="inclass_decl_sect_list" />
-    <name value="inclass_decl_sect_list1" />
   </tag>
   <tag value="Заголовки">
     <name value="int_proc_header" />
