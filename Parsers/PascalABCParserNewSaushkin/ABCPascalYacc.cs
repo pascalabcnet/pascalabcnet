@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  LAPTOP-TE3HP881
-// DateTime: 14.12.2024 20:15:40
+// DateTime: 15.12.2024 8:40:16
 // UserName: miks
 // Input file <ABCPascal.y>
 
@@ -3670,15 +3670,15 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCCompiler.ParserTools
       case 164: // pascal_set_const -> tkSquareOpen, elem_list, tkSquareClose
 {
             // �?сли elem_list п�?с�? или соде�?жи�? диапазон, �?о э�?о множес�?во, ина�?е массив. С PascalABC.NET 3.10  
-            /*var is_set = false;
-            var el = $2 as expression_list;
+            var is_set = false;
+            var el = ValueStack[ValueStack.Depth-2].stn as expression_list;
             if (el == null || el.Count == 0)
               is_set = true;
             else if (el.expressions.Count(x => x is diapason_expr_new) > 0)
                 is_set = true;
-            if (is_set)*/    
+            if (is_set)   
 				CurrentSemanticValue.ex = new pascal_set_constant(ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);
-			//else $$ = new array_const_new($2 as expression_list, @$); 				
+			else CurrentSemanticValue.ex = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan); 				
 		}
         break;
       case 165: // const_set -> pascal_set_const

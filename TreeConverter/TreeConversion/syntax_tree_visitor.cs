@@ -5233,7 +5233,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.pascal_set_constant _pascal_set_constant)
         {
             // Если хоть одно - diapason_expr, то это множество иначе литеральный массив
-            if (_pascal_set_constant.values == null ||
+            /*if (_pascal_set_constant.values == null ||
                 _pascal_set_constant.values.expressions.Any(ex => ex is SyntaxTree.diapason_expr)
                )
             { // это множество
@@ -5244,7 +5244,7 @@ namespace PascalABCCompiler.TreeConverter
                 array_const_new ac = new array_const_new(exl,exl.source_context);
                 visit(ac);
                 return;
-            }
+            }*/
             // надо разбить на 2 списка констант
             expressions_list consts = new expressions_list();
             expressions_list consts_diap = new expressions_list();

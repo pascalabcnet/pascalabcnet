@@ -992,15 +992,15 @@ pascal_set_const
 	: tkSquareOpen elem_list tkSquareClose
         {
             // Если elem_list пуст или содержит диапазон, то это множество, иначе массив. С PascalABC.NET 3.10  
-            /*var is_set = false;
+            var is_set = false;
             var el = $2 as expression_list;
             if (el == null || el.Count == 0)
               is_set = true;
             else if (el.expressions.Count(x => x is diapason_expr_new) > 0)
                 is_set = true;
-            if (is_set)*/    
+            if (is_set)   
 				$$ = new pascal_set_constant($2 as expression_list, @$);
-			//else $$ = new array_const_new($2 as expression_list, @$); 				
+			else $$ = new array_const_new($2 as expression_list, @$); 				
 		}
 	;
 
@@ -2781,10 +2781,6 @@ unlabelled_stmt
 		{ $$ = $1; }
     | proc_call
 		{ $$ = $1; }
-    /*| pascal_set_const tkPoint identifier  
-        {
-			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
-        }*/
     | goto_stmt
 		{ $$ = $1; }
     | compound_stmt
