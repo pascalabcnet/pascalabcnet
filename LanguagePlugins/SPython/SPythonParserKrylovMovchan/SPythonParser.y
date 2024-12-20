@@ -552,8 +552,8 @@ variable
 	// list generator
 	| LBRACKET expr FOR ident IN expr optional_condition RBRACKET
 		{
-			$$ = new list_generator($2, $4, $6, $7);
-			/*
+			//$$ = new list_generator($2, $4, $6, $7);
+			
 			dot_node dn;
 			ident_list idList;
 			formal_parameters formalPars;
@@ -597,7 +597,7 @@ variable
 			mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), @$);
 			dn = new dot_node(mc as addressed_value, (new ident("ToList")) as addressed_value, @$);
 			$$ = new method_call(dn as addressed_value, null, @$);
-			*/
+			
 		}
 	;
 

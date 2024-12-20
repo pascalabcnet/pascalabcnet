@@ -26,8 +26,8 @@ namespace Languages.SPython.Frontend.Converters
             niv.ProcessNode(root);
 
             // замена генерации списков на Select.Where.ToArray
-            var ldv = new ListDesugarVisitor();
-            ldv.ProcessNode(root);
+            //var ldv = new ListDesugarVisitor();
+            //ldv.ProcessNode(root);
 
             // вынос переменных самого внешнего уровня на глобальный
             // если они используются в функциях (являются глобальными)
