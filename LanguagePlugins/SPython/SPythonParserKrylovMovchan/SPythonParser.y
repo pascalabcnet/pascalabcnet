@@ -105,7 +105,7 @@ program
 				var stl = $1 as statement_list;
 				stl.left_logical_bracket = new token_info("");
 				stl.right_logical_bracket = new token_info("");
-				var bl = new block(decl, stl, @1);
+				var bl = new block(decl, stl, @$);
 				decl.AddFirst(decl_forward.defs);
 				root = $$ = NewProgramModule(null, null, new uses_list(), bl, $2, @$);
 				root.source_context = bl.source_context;
@@ -273,9 +273,9 @@ dotted_ident_list
 
 ident_as_ident
 	: ident AS ident
-		{ $$ = new as_statement($1.name, $3.name); }
+		{ $$ = new as_statement($1, $3, @$); }
 	| ident
-		{ $$ = new as_statement($1.name, $1.name); }
+		{ $$ = new as_statement($1, $1, @$); }
 	;
 
 ident_as_ident_list

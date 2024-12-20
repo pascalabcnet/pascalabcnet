@@ -21,6 +21,22 @@ namespace Languages.SPython.Frontend.Converters
             symbolTable.ModuleNameToSymbols = par;
         }
 
+        public void ReplaceInParent(syntax_tree_node from, syntax_tree_node to)
+        {
+            var upper = UpperNode();
+            if (upper == null)
+                throw new Exception("У корневого элемента нельзя получить UpperNode");
+            //if (upper is list_generator lg)
+            //{
+            //    if (lg._range == from)
+            //    {
+            //        lg._range = to as expression;
+            //        return;
+            //    }
+            //}
+            upper.ReplaceDescendant(from, to);
+        }
+
         // нужны методы из BaseChangeVisitor, но порядок обхода из WalkingVisitorNew
         public override void DefaultVisit(syntax_tree_node n)
         {
@@ -83,6 +99,17 @@ namespace Languages.SPython.Frontend.Converters
         {
         }
 
+        public override void visit(list_generator _list_generator)
+        {
+            //symbolTable.OpenLocalScope();
+            //symbolTable.Add(_list_generator._ident.name, NameType.LocalVariable);
+            //base.visit(_list_generator._range);
+            //if (_list_generator._condition != null)
+            //    base.visit(_list_generator._condition);
+            //base.visit(_list_generator._expr);
+            //symbolTable.CloseLocalScope();
+        }
+
         public override void visit(function_header _function_header)
         {
             string name = _function_header.name.meth_name.name;
@@ -122,7 +149,7 @@ namespace Languages.SPython.Frontend.Converters
             NameType nameType = symbolTable[_ident.name];
             if (nameType == NameType.ImportedNameAlias)
             {
-                Replace(_ident, new dot_node(new ident(symbolTable.AliasToModuleName(_ident.name))
+                ReplaceInParent(_ident, new dot_node(new ident(symbolTable.AliasToModuleName(_ident.name))
                     , new ident(symbolTable.AliasToRealName(_ident.name))));
             }
             else if (nameType == NameType.NoType)
@@ -212,7 +239,8 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(from_import_statement _from_import_statement)
         {
-            string module_name = _from_import_statement.module_name.name;
+            string module_real_name = _from_import_statement.module_name.name;
+            string module_name = module_real_name;
             if (symbolTable.specialModulesAliases.ContainsKey(module_name))
                 module_name = symbolTable.specialModulesAliases[module_name];
 
@@ -226,8 +254,8 @@ namespace Languages.SPython.Frontend.Converters
                 foreach (as_statement as_Statement in _from_import_statement.imported_names.as_statements)
                 {
                     if (!symbolTable.ModuleNameToSymbols[module_name].Contains(as_Statement.real_name.name))
-                        throw new SyntaxVisitorError("No such name in the module",
-                       _from_import_statement.source_context);
+                        throw new SPythonSyntaxVisitorError("MODULE_{0}_HAS_NO_NAME_{1}",
+                       _from_import_statement.source_context, module_real_name, as_Statement.real_name.name);
 
                     symbolTable.AddAlias(as_Statement.alias.name, as_Statement.real_name.name, module_name);
                 }

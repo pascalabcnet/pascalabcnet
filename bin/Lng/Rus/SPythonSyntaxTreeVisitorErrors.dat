@@ -2,3 +2,4 @@
 %PREFIX%=SPYTHONSYNTAXTREEVISITORSERROR_
 
 UNEXPECTED_TOKEN_{0}=Неизвестный символ {0}
+MODULE_{0}_HAS_NO_NAME_{1}=В модуле {0} не объявлено имя {1}

@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 20.12.2024 17:40:41
+// DateTime: 20.12.2024 18:25:28
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -433,7 +433,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 				var stl = ValueStack[ValueStack.Depth-2].stn as statement_list;
 				stl.left_logical_bracket = new token_info("");
 				stl.right_logical_bracket = new token_info("");
-				var bl = new block(decl, stl, LocationStack[LocationStack.Depth-2]);
+				var bl = new block(decl, stl, CurrentLocationSpan);
 				decl.AddFirst(decl_forward.defs);
 				root = CurrentSemanticValue.stn = NewProgramModule(null, null, new uses_list(), bl, ValueStack[ValueStack.Depth-1].ob, CurrentLocationSpan);
 				root.source_context = bl.source_context;
@@ -597,10 +597,10 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 		}
         break;
       case 30: // ident_as_ident -> ident, AS, ident
-{ CurrentSemanticValue.stn = new as_statement(ValueStack[ValueStack.Depth-3].id.name, ValueStack[ValueStack.Depth-1].id.name); }
+{ CurrentSemanticValue.stn = new as_statement(ValueStack[ValueStack.Depth-3].id, ValueStack[ValueStack.Depth-1].id, CurrentLocationSpan); }
         break;
       case 31: // ident_as_ident -> ident
-{ CurrentSemanticValue.stn = new as_statement(ValueStack[ValueStack.Depth-1].id.name, ValueStack[ValueStack.Depth-1].id.name); }
+{ CurrentSemanticValue.stn = new as_statement(ValueStack[ValueStack.Depth-1].id, ValueStack[ValueStack.Depth-1].id, CurrentLocationSpan); }
         break;
       case 32: // ident_as_ident_list -> ident_as_ident
 {

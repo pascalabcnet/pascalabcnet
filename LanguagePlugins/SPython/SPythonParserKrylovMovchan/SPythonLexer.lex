@@ -122,7 +122,12 @@ ID {Alpha}{AlphaDigit}*
 }
 
 %{
-  yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol);
+  //yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol);
+  if (currentLexLocation != null)
+    yylloc = currentLexLocation;
+  else
+	yylloc = CurrentLexLocation;
+  currentLexLocation = null;
 %}
 
 %%
