@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 12.12.2024 13:14:47
+// DateTime: 20.12.2024 17:40:41
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -567,7 +567,9 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 					symbolTable.Add(id.name);
 				//}
 			}*/
-			CurrentSemanticValue.stn = new global_statement(ValueStack[ValueStack.Depth-1].stn as ident_list, CurrentLocationSpan);
+			//$$ = new global_statement($2 as ident_list, @$);
+			CurrentSemanticValue.stn = null;
+			parserTools.AddErrorFromResource("UNSUPPORTED_CONSTRUCTION_{0}",CurrentLocationSpan, "global");
 		}
         break;
       case 25: // ident -> ID

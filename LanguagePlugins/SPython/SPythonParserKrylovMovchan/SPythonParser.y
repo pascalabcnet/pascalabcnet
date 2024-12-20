@@ -237,7 +237,9 @@ global_stmt
 					symbolTable.Add(id.name);
 				//}
 			}*/
-			$$ = new global_statement($2 as ident_list, @$);
+			//$$ = new global_statement($2 as ident_list, @$);
+			$$ = null;
+			parserTools.AddErrorFromResource("UNSUPPORTED_CONSTRUCTION_{0}",@$, "global");
 		}
 	;
 
