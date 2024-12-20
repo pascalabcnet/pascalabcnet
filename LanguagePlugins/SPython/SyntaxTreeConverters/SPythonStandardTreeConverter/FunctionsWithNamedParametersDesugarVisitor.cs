@@ -6,9 +6,9 @@ using SyntaxVisitors;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class SPythonMethodCallNodesVisitor : BaseChangeVisitor
+    internal class FunctionsWithNamedParametersDesugarVisitor : BaseChangeVisitor
     {
-        public SPythonMethodCallNodesVisitor() { }
+        public FunctionsWithNamedParametersDesugarVisitor() { }
 
         public override void visit(method_call _method_call)
         {

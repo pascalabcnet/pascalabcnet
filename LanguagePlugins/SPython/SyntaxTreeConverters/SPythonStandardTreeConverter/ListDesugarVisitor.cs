@@ -5,10 +5,10 @@ using SyntaxVisitors;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class ListGeneratorNodesVisitor : BaseChangeVisitor
+    internal class ListDesugarVisitor : BaseChangeVisitor
     {
         ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
-        public ListGeneratorNodesVisitor() {  }
+        public ListDesugarVisitor() {  }
 
         public override void visit(list_generator _list_generator)
         {

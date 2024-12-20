@@ -40,13 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EraseGlobalNodesVisitor.cs" />
-    <Compile Include="AssignToVarConverterVisitor.cs" />
+    <Compile Include="EraseSpythonOnlyNodesVisitor.cs" />
+    <Compile Include="NameInterpreterVisitor.cs" />
     <Compile Include="ImportToUsesVisitor.cs" />
-    <Compile Include="ListGeneratorNodesVisitor.cs" />
+    <Compile Include="ListDesugarVisitor.cs" />
     <Compile Include="RetainUsedGlobalVariablesVisitor.cs" />
     <Compile Include="SameNameVisitor.cs" />
-    <Compile Include="SPythonMethodCallNodesVisitor.cs" />
+    <Compile Include="FunctionsWithNamedParametersDesugarVisitor.cs" />
     <Compile Include="StandardSyntaxTreeConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringResources.cs" />

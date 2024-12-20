@@ -10,19 +10,15 @@ using SyntaxVisitors;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    public class AssignToVarConverterVisitor : BaseChangeVisitor
+    public class NameInterpreterVisitor : BaseChangeVisitor
     {
         private SymbolTable symbolTable = new SymbolTable();
         private bool isInProgramBlock = false;
         private HashSet<string> skippedFunction = new HashSet<string>();
 
-        public void SendObject(Dictionary<string, HashSet<string>> par)
-        {
-            symbolTable.ModuleNameToSymbols = par;
-        }
-
-        public AssignToVarConverterVisitor() {
+        public NameInterpreterVisitor(Dictionary<string, HashSet<string>> par) {
             symbolTable.Add("result", NameType.LocalVariable);
+            symbolTable.ModuleNameToSymbols = par;
         }
 
         // нужны методы из BaseChangeVisitor, но порядок обхода из WalkingVisitorNew

@@ -10,46 +10,37 @@ namespace Languages.SPython.Frontend.Converters
 
         protected override syntax_tree_node ApplyConversions(syntax_tree_node root)
         {
-            // замена time.time на time1.time 
-            //var snv = new SameNameVisitor();
-            //snv.ProcessNode(root);
-
-            // замена генерации списков на Select.Where.ToArray
-            var lgnv = new ListGeneratorNodesVisitor();
-            lgnv.ProcessNode(root);
-
-            // замена вызова функций с именованными параметрами на вызов метода класса
-            var smcnv = new SPythonMethodCallNodesVisitor();
-            smcnv.ProcessNode(root);
-
-            // замена узлов assign на узлы var
-            // (внутри ф-й основываясь на узлах global,
-            // вне ф-й по первому появлению в symbolTable)
-            //var atvcv = new AssignToVarConverterVisitor();
-            //atvcv.ProcessNode(root);
-
-            // удаление узлов global
-            var egnv = new EraseGlobalNodesVisitor();
-            egnv.ProcessNode(root);
-
+            // добавление всех import ..., from ... import ...
+            // как uses в начале программы для сбора имён из этих модулей
             var ituv = new ImportToUsesVisitor();
             ituv.ProcessNode(root);
-
-            // вынос переменных самого внешнего уровня на глобальный
-            // если они используются в функциях (являются глобальными)
-            var rugvv = new RetainUsedGlobalVariablesVisitor();
-            rugvv.ProcessNode(root);
 
             return root;
         }
 
         public override syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, object data) 
         {
-            var visitor = new AssignToVarConverterVisitor();
+            // визитер проверящий корректность имён из модулей
+            // и заменяющий первые присваивания переменных на объявление с инициализацией
+            var niv = new NameInterpreterVisitor(data as Dictionary<string, HashSet<string>>);
+            niv.ProcessNode(root);
 
-            visitor.SendObject(data as Dictionary<string, HashSet<string>>);
+            // замена генерации списков на Select.Where.ToArray
+            var ldv = new ListDesugarVisitor();
+            ldv.ProcessNode(root);
 
-            visitor.ProcessNode(root);
+            // вынос переменных самого внешнего уровня на глобальный
+            // если они используются в функциях (являются глобальными)
+            var rugvv = new RetainUsedGlobalVariablesVisitor();
+            rugvv.ProcessNode(root);
+
+            // замена вызова функций с именованными параметрами на вызов метода класса
+            var fwnpdv = new FunctionsWithNamedParametersDesugarVisitor();
+            fwnpdv.ProcessNode(root);
+
+            // удаление узлов global
+            var esonv = new EraseSpythonOnlyNodesVisitor();
+            esonv.ProcessNode(root);
 
             return root;
         }
