@@ -35,9 +35,10 @@ namespace Languages.SPython.Frontend.Converters
                     Replace(_method_call, new method_call(_method_call.dereferencing_value, args, _method_call.source_context));
                 else
                 {
-                    method_call mc = new method_call(new ident("!" + (_method_call.dereferencing_value as ident).name + ".Get"), kvargs, _method_call.source_context);
-                    dot_node dn = new dot_node(mc as addressed_value, _method_call.dereferencing_value as addressed_value, _method_call.source_context);
-                    Replace(_method_call, new method_call(dn as addressed_value, args, _method_call.source_context));
+                    method_call mc = new method_call(new ident("!" + ((_method_call.dereferencing_value as dot_node).right as ident).name + ".Get"), kvargs, _method_call.source_context);
+                    dot_node dn = new dot_node(mc as addressed_value, (_method_call.dereferencing_value as dot_node).right, _method_call.source_context);
+                    method_call to = new method_call(dn as addressed_value, args, _method_call.source_context);
+                    Replace(_method_call, to);
                 }
             }
 

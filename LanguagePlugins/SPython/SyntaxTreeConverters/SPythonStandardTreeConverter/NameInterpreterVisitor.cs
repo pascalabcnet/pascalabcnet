@@ -79,6 +79,10 @@ namespace Languages.SPython.Frontend.Converters
             base.visit(_procedure_header);
         }
 
+        public override void visit(name_assign_expr _name_assign_expr)
+        {
+        }
+
         public override void visit(function_header _function_header)
         {
             string name = _function_header.name.meth_name.name;
