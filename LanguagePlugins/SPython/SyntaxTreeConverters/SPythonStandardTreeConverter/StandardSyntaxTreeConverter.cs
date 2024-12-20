@@ -15,6 +15,11 @@ namespace Languages.SPython.Frontend.Converters
             var ituv = new ImportToUsesVisitor();
             ituv.ProcessNode(root);
 
+            // замена генерации списков на Select.Where.ToArray
+            // (почему-то не работает если переместить в ConvertAfterUsedModulesCompilation)
+            var ldv = new ListDesugarVisitor();
+            ldv.ProcessNode(root);
+
             return root;
         }
 
@@ -24,10 +29,6 @@ namespace Languages.SPython.Frontend.Converters
             // и заменяющий первые присваивания переменных на объявление с инициализацией
             var niv = new NameInterpreterVisitor(data as Dictionary<string, HashSet<string>>);
             niv.ProcessNode(root);
-
-            // замена генерации списков на Select.Where.ToArray
-            //var ldv = new ListDesugarVisitor();
-            //ldv.ProcessNode(root);
 
             // вынос переменных самого внешнего уровня на глобальный
             // если они используются в функциях (являются глобальными)
