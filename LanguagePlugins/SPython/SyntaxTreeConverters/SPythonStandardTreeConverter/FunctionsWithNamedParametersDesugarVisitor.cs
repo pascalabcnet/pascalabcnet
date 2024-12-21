@@ -28,7 +28,7 @@ namespace Languages.SPython.Frontend.Converters
                         args.Add(expr);
                         args.source_context = new SourceContext(args.source_context, expr.source_context);
                     }
-                    else throw new SyntaxVisitorError("Arg after Kvarg", _method_call.source_context);
+                    else throw new SPythonSyntaxVisitorError("ARG_AFTER_KVARGS", expr.source_context);
                 }
 
                 if (kvargs.expressions.Count() == 0)
