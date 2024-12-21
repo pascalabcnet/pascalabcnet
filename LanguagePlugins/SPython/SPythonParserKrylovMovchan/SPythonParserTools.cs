@@ -78,7 +78,7 @@ namespace SPythonParser
             TokenNum["LPAR"] = "'('";
             TokenNum["RPAR"] = "')'";
             TokenNum[";"] = StringResources.Get("EOL");
-            TokenNum["SEMICOLON"] = StringResources.Get("EOL");
+            TokenNum["SEMICOLON"] = "':'";
             TokenNum["#{"] = StringResources.Get("#{");
             TokenNum["INDENT"] = StringResources.Get("#{");
             TokenNum["#}"] = StringResources.Get("#}");

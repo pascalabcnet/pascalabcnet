@@ -138,7 +138,7 @@ namespace Languages.SPython.Frontend.Converters
                         left.name = symbolTable.AliasToRealName(left.name);
                         break;
                     case NameType.NoType:
-                        throw new SPythonSyntaxVisitorError("UNEXPECTED_TOKEN_{0}",
+                        throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}",
                         left.source_context, left.name);
                 }
             }
@@ -154,7 +154,7 @@ namespace Languages.SPython.Frontend.Converters
             }
             else if (nameType == NameType.NoType)
             {
-                throw new SPythonSyntaxVisitorError("UNEXPECTED_TOKEN_{0}"
+                throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}"
                     , _ident.source_context, _ident.name);
             }
         }
