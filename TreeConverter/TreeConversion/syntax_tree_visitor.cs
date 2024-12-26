@@ -91,7 +91,7 @@ namespace PascalABCCompiler.TreeConverter
 
         private common_unit_node _system_unit;
 		internal bool debug=true;
-		protected bool debugging=false;
+		internal bool debugging=false;
         public bool for_intellisense = false;
         private List<var_definition_node> compiledVariables = new List<var_definition_node>();
         internal List<Errors.Error> ErrorsList;
@@ -552,7 +552,7 @@ namespace PascalABCCompiler.TreeConverter
                 SystemLibrary.SystemLibInitializer.TextFileType.TypeNode.type_special_kind = PascalABCCompiler.SemanticTree.type_special_kind.text_file;
         }
 
-        protected virtual void get_system_module(common_unit_node psystem_unit)
+        private void get_system_module(common_unit_node psystem_unit)
         {
         	init_system_module(psystem_unit);
         	//esli zapustili v otladke, to vosstanovim mnozhestvo i procedury sozdanija diapasonov, inache ne budet rabotat
@@ -602,7 +602,7 @@ namespace PascalABCCompiler.TreeConverter
             tctn.scope.AddSymbol(StringConstants.noteq_name, SystemLibrary.SystemLibInitializer.CompareSetInEquals.SymbolInfo.FirstOrDefault());
         }
 
-        protected void CreateSpecialFields(common_unit_node psystem_unit)
+        private void CreateSpecialFields(common_unit_node psystem_unit)
         {
             List<SymbolInfo> sil = psystem_unit.scope.Find(StringConstants.IsConsoleApplicationVariableName);
             if (sil != null && sil.FirstOrDefault().sym_info is namespace_variable)
@@ -5233,7 +5233,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.pascal_set_constant _pascal_set_constant)
         {
             // Если хоть одно - diapason_expr, то это множество иначе литеральный массив
-            if (_pascal_set_constant.values == null ||
+            /*if (_pascal_set_constant.values == null ||
                 _pascal_set_constant.values.expressions.Any(ex => ex is SyntaxTree.diapason_expr)
                )
             { // это множество
@@ -5244,7 +5244,7 @@ namespace PascalABCCompiler.TreeConverter
                 array_const_new ac = new array_const_new(exl,exl.source_context);
                 visit(ac);
                 return;
-            }
+            }*/
             // надо разбить на 2 списка констант
             expressions_list consts = new expressions_list();
             expressions_list consts_diap = new expressions_list();
