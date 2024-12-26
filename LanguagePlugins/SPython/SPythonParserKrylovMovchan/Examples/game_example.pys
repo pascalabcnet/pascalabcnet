@@ -1,6 +1,6 @@
 ﻿import random as rnd
 
-a = rnd.random()
+a = rnd.randint(1, 100)
 print('Guess a number between 1 and 100')
 attempts = 0
 while True:

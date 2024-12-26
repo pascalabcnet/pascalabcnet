@@ -14,6 +14,9 @@ if not exist "%path_to_pas%" (
 	exit
 )
 
+mkdir C:\PABCWork.NET\SPythonExamples
+copy Examples\* C:\PABCWork.NET\SPythonExamples\
+
 copy *.dll "%path_to_pas%"
 
 call "%path_to_pas%\pabcnetc.exe" SpythonSystem.pas
@@ -21,7 +24,6 @@ call "%path_to_pas%\pabcnetc.exe" SpythonHidden.pas
 
 copy *.pas "%path_to_pas%\LibSource"
 move *.pcu "%path_to_pas%\Lib"
-
 
 copy *.xshd "%path_to_pas%\Highlighting"
 copy Lng\Rus\*.dat "%path_to_pas%\Lng\Rus"

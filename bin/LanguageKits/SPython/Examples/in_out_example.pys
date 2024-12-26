@@ -1,0 +1,19 @@
+﻿a = int(input())
+b = int(input())
+
+def print_expressions(a: int, b: int):
+    print('a +  b = ', a + b, end = '\n')
+    print('a -  b = ', a - b, end = '\n')
+    print('a *  b = ', a * b, end = '\n')
+    print('a // b = ', a // b, end = '\n')
+    print('a /  b = ', a / b, end = '\n')
+
+print_expressions(a, b)
+
+# 1
+# 2
+# a +  b =  3
+# a -  b =  -1
+# a *  b =  2
+# a // b =  0
+# a /  b =  0.5
