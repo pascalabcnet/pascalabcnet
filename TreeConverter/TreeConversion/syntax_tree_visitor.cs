@@ -3321,7 +3321,7 @@ namespace PascalABCCompiler.TreeConverter
                 _constructor.name.source_context = _constructor.name.meth_name.source_context = _constructor.source_context;
             }
 
-            if (_constructor.name.meth_name.name.ToLower() != StringConstants.default_constructor_name)
+            if (_constructor.name.meth_name.name != StringConstants.default_constructor_name)
                 AddError(get_location(_constructor.name), "CONSTRUCTOR_CAN_HAVE_ONLY_{0}_NAME", StringConstants.default_constructor_name);
             if ((_constructor.name.class_name == null) && (context.converting_block() != block_type.type_block))
             {
@@ -5693,7 +5693,7 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 sil = context.converted_namespace.find(id.name);
                             }
-                            if (sil != null && id.name.ToLower() == "create" && context.converted_type != null && sil.FirstOrDefault().sym_info is common_method_node && (sil.FirstOrDefault().sym_info as common_method_node).is_constructor)
+                            if (sil != null && id.name == StringConstants.default_constructor_name && context.converted_type != null && sil.FirstOrDefault().sym_info is common_method_node && (sil.FirstOrDefault().sym_info as common_method_node).is_constructor)
                             {
                                 List<SymbolInfo> base_si_list = context.converted_type.base_type.find(id.name);
                                 if (base_si_list != null)
@@ -17251,7 +17251,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     method_call mc = new method_call();
                     mc.parameters = (expr as SyntaxTree.array_const).elements;
-                    mc.dereferencing_value = new dot_node(new ident("Tuple", expr.source_context), new ident("Create", expr.source_context), expr.source_context);
+                    mc.dereferencing_value = new dot_node(new ident("Tuple", expr.source_context), new ident(StringConstants.default_constructor_name, expr.source_context), expr.source_context);
                     return mc;
                 }
                 else if (expr is SyntaxTree.bracket_expr && (tn.type_special_kind == SemanticTree.type_special_kind.array_kind || tn.type_special_kind == SemanticTree.type_special_kind.array_wrapper))

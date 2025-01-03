@@ -4180,7 +4180,7 @@ namespace CodeCompletion
                 ss.AddDefaultConstructorIfNeed();
                 if (((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Auto) == class_attribute.Auto))
                 {
-                    ProcScope ps = new ProcScope("Create", ss, true);
+                    ProcScope ps = new ProcScope(StringConstants.default_constructor_name, ss, true);
                     foreach (class_members members in _class_definition.body.class_def_blocks)
                     {
                         foreach (declaration decl in members.members)
@@ -4200,7 +4200,7 @@ namespace CodeCompletion
                     }
                     ps.return_type = ss;
                     ps.Complete();
-                    ss.AddName("Create", ps);
+                    ss.AddName(StringConstants.default_constructor_name, ps);
                 }
             }
             mark_as_possible_abstract(ss);
@@ -4472,7 +4472,7 @@ namespace CodeCompletion
                         ps = topScope.FindNameOnlyInThisType(meth_name) as ProcScope;
                         if (ps == null)
                         {
-                            ps = new ProcScope("Create", cur_scope, true);
+                            ps = new ProcScope(StringConstants.default_constructor_name, cur_scope, true);
                             ps.head_loc = loc;
                         }
                         else
@@ -4511,15 +4511,15 @@ namespace CodeCompletion
                     }
                     else
                     {
-                        ps = new ProcScope("Create", cur_scope, true);
+                        ps = new ProcScope(StringConstants.default_constructor_name, cur_scope, true);
                         ps.head_loc = loc;
                     }
                 }
                 else
                 {
-                    ps = new ProcScope("Create", cur_scope, true);
+                    ps = new ProcScope(StringConstants.default_constructor_name, cur_scope, true);
                     ps.head_loc = loc;
-                    SymScope ss = cur_scope.FindNameOnlyInThisType("Create");
+                    SymScope ss = cur_scope.FindNameOnlyInThisType(StringConstants.default_constructor_name);
                     if (ss != null && ss is ProcScope)
                     {
                         if (ps.topScope == ss.topScope)
@@ -4530,7 +4530,7 @@ namespace CodeCompletion
                         else
                             ps.nextProc = ss as ProcScope;
                         cur_scope.AddName("$method", ps);
-                        ps.si.name = "Create";
+                        ps.si.name = StringConstants.default_constructor_name;
                     }
                     else
                     {
@@ -4541,19 +4541,19 @@ namespace CodeCompletion
             }
             else
             {
-                ps = new ProcScope("Create", cur_scope, true);
+                ps = new ProcScope(StringConstants.default_constructor_name, cur_scope, true);
                 ps.head_loc = loc;
-                SymScope ss = cur_scope.FindNameOnlyInType("Create");
+                SymScope ss = cur_scope.FindNameOnlyInType(StringConstants.default_constructor_name);
                 if (ss != null && ss is ProcScope)
                 {
                     while ((ss as ProcScope).nextProc != null) ss = (ss as ProcScope).nextProc;
                     (ss as ProcScope).nextProc = ps;
                     cur_scope.AddName("$method", ps);
-                    ps.si.name = "Create";
+                    ps.si.name = StringConstants.default_constructor_name;
                 }
                 else
                 {
-                    cur_scope.AddName("Create", ps);
+                    cur_scope.AddName(StringConstants.default_constructor_name, ps);
                 }
                 ps.return_type = cur_scope as TypeScope;
             }
@@ -5757,7 +5757,7 @@ namespace CodeCompletion
         {
             method_call mc = new method_call();
             mc.parameters = _tuple_node.el;
-            mc.dereferencing_value = new dot_node(new ident("Tuple"), new ident("Create"));
+            mc.dereferencing_value = new dot_node(new ident("Tuple"), new ident(StringConstants.default_constructor_name));
             mc.visit(this);
         }
 		

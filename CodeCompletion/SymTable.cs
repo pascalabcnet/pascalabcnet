@@ -4333,8 +4333,8 @@ namespace CodeCompletion
                     }
                 }
 
-                ProcScope other_constr = this.FindNameOnlyInType("Create") as ProcScope;
-                ProcScope constr = new ProcScope("Create", this, true);
+                ProcScope other_constr = this.FindNameOnlyInType(StringConstants.default_constructor_name) as ProcScope;
+                ProcScope constr = new ProcScope(StringConstants.default_constructor_name, this, true);
                 if (other_constr != null && other_constr.declaringType == this)
                     constr.si.acc_mod = access_modifer.protected_modifer;
                 else
@@ -6886,7 +6886,7 @@ namespace CodeCompletion
             }
             if (sil == null && names.Count == 0)
             {
-                if (string.Compare(name, "Create", true) == 0 && this.ctn != typeof(object))
+                if (string.Compare(name, StringConstants.default_constructor_name, true) == 0 && this.ctn != typeof(object))
                     sil = PascalABCCompiler.NetHelper.NetHelper.GetConstructor(ctn);
                 if (sil == null)
                 {
@@ -6966,7 +6966,7 @@ namespace CodeCompletion
                     break;
                 case semantic_node_type.compiled_constructor_node:
                     {
-                        CompiledConstructorScope cms = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (sil.FirstOrDefault().sym_info as compiled_constructor_node).constructor_info, this);
+                        CompiledConstructorScope cms = new CompiledConstructorScope(new SymInfo(StringConstants.default_constructor_name, SymbolKind.Method, StringConstants.default_constructor_name), (sil.FirstOrDefault().sym_info as compiled_constructor_node).constructor_info, this);
                         names.Insert(0, cms);
 						sil.RemoveAt(0);
                         if(sil.Count() == 0)
@@ -6985,7 +6985,7 @@ namespace CodeCompletion
                             {
                                 if (si.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si.sym_info.semantic_node_type == semantic_node_type.compiled_constructor_node)
                                 {
-                                    tmp = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (si.sym_info as compiled_constructor_node).constructor_info, this);
+                                    tmp = new CompiledConstructorScope(new SymInfo(StringConstants.default_constructor_name, SymbolKind.Method, StringConstants.default_constructor_name), (si.sym_info as compiled_constructor_node).constructor_info, this);
                                     //tmp.nextProc = cms;
                                     //cms = tmp;
                                     names.Insert(0, tmp);
@@ -7047,7 +7047,7 @@ namespace CodeCompletion
                 return null;
             if (sil == null)
             {
-                if (string.Compare(name, "Create", true) == 0)
+                if (string.Compare(name, StringConstants.default_constructor_name, true) == 0)
                     sil = PascalABCCompiler.NetHelper.NetHelper.GetConstructor(ctn);
                 if (sil == null)
                 {
@@ -7113,7 +7113,7 @@ namespace CodeCompletion
                     }
                 case semantic_node_type.compiled_constructor_node:
                     {
-                        CompiledConstructorScope cms = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (sil.FirstOrDefault().sym_info as compiled_constructor_node).constructor_info, this);
+                        CompiledConstructorScope cms = new CompiledConstructorScope(new SymInfo(StringConstants.default_constructor_name, SymbolKind.Method, StringConstants.default_constructor_name), (sil.FirstOrDefault().sym_info as compiled_constructor_node).constructor_info, this);
                         sil.RemoveAt(0);
                         if (sil.Count() == 0)
                             sil = null;
@@ -7131,7 +7131,7 @@ namespace CodeCompletion
                             {
                                 if (si.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si.sym_info.semantic_node_type == semantic_node_type.compiled_constructor_node)
                                 {
-                                    tmp = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (si.sym_info as compiled_constructor_node).constructor_info, this);
+                                    tmp = new CompiledConstructorScope(new SymInfo(StringConstants.default_constructor_name, SymbolKind.Method, StringConstants.default_constructor_name), (si.sym_info as compiled_constructor_node).constructor_info, this);
                                     //tmp.nextProc = cms;
                                     //cms = tmp;
                                     int par_num = tmp.mi.GetParameters().Length;

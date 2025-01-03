@@ -315,7 +315,7 @@ namespace PascalABCCompiler
         public static string event_add_method_prefix = "add_";
         public static string event_remove_method_prefix = "remove_";
 
-        public static string default_constructor_name = "create";
+        public static string default_constructor_name = "Create";
 
         #region PASCAL COMPILER DIRECTIVES
         public const string compiler_directive_apptype = "apptype";

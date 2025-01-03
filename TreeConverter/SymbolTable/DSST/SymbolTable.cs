@@ -1040,9 +1040,6 @@ namespace SymbolTable
             /*if (!scope.CaseSensitive)
                 Name = Name.ToLower();*/
 
-            if (Name == "Print")
-                Name = Name;
-
             CurrentScope = FromScope; //глобальные переменные могут привести к ошибкам при поиске и повторном вызове!
 
             List<SymbolInfo> Result = new List<SymbolInfo>();

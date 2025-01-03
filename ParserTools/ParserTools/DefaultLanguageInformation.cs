@@ -295,7 +295,7 @@ namespace PascalABCCompiler.Parsers
 		
 		public virtual string GetShortName(ICompiledConstructorScope scope)
 		{
-			return "Create";
+			return StringConstants.default_constructor_name;
 		}
 
         public virtual string GetShortName(IProcScope scope)

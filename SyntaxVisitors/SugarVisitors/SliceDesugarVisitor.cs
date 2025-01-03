@@ -24,7 +24,7 @@ namespace SyntaxVisitors.SugarVisitors
             var sc = sl.source_context;
             foreach (var slice in sl.slices)
             {
-                var tup = new dot_node(new dot_node(new ident("?System",sc), new ident("Tuple",sc), sc), new ident("Create",sc), sc);
+                var tup = new dot_node(new dot_node(new ident("?System",sc), new ident("Tuple",sc), sc), new ident(PascalABCCompiler.StringConstants.default_constructor_name,sc), sc);
                 var eel = new expression_list();
                 // пытаемся разобраться с ^1
 
