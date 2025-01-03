@@ -358,10 +358,10 @@ namespace Languages.SPython.Frontend.Converters
 
             private void AddAliasesFromStandartLibraries()
             {
-                foreach (string name in moduleNameToSymbols["SpythonSystem"])
-                    AddAlias(name, name, "SpythonSystem");
-                foreach (string name in moduleNameToSymbols["SpythonHidden"])
-                    AddAlias(name, name, "SpythonHidden");
+                foreach (string name in moduleNameToSymbols["SPythonSystem"])
+                    AddAlias(name, name, "SPythonSystem");
+                foreach (string name in moduleNameToSymbols["SPythonHidden"])
+                    AddAlias(name, name, "SPythonHidden");
             }
 
             public string AliasToRealName(string alias)

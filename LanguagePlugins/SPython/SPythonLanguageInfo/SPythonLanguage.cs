@@ -14,7 +14,7 @@ namespace Languages.SPython
         public SPythonLanguage() : base(
             name: "SPython",
             version: "0.0.1",
-            copyright: "Copyright © 2023-2024 by Vladislav Krylov, Egor Movchan",
+            copyright: "Copyright © 2023-2025 by Vladislav Krylov, Egor Movchan",
 
             parser: new SPythonParser.SPythonLanguageParser(),
             docParser: null,
@@ -23,8 +23,8 @@ namespace Languages.SPython
             syntaxTreeToSemanticTreeConverter: new SPythonSyntaxTreeVisitor.spython_syntax_tree_visitor(),
 
             filesExtensions: new string[] { ".pys" },
-            caseSensitive: false,
-            systemUnitNames: new string[] { "SpythonSystem", "SpythonHidden" }
+            caseSensitive: true,
+            systemUnitNames: new string[] { "SPythonSystem", "SPythonHidden" }
             )
         { }
 

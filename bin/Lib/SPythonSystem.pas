@@ -10,7 +10,7 @@ uses PABCSystem;
 function input(): string;
 
 type 
-    !Print = record
+    !print = record
     public
         sep: string;
         &end:string;
@@ -19,7 +19,7 @@ type
           Result.sep := sep;
           Result.&end := &end;
         end;
-        procedure Print(params args: array of object);
+        procedure print(params args: array of object);
         begin
           for var i := 0 to args.length - 2 do
             Write(args[i], sep);
@@ -29,7 +29,7 @@ type
         end;
     end;
 
-procedure Print(params args: array of object);
+procedure print(params args: array of object);
 
 // Basic type conversion methods
 
@@ -81,7 +81,7 @@ begin
   Result := PABCSystem.ReadlnString();
 end;
   
-procedure Print(params args: array of object);
+procedure print(params args: array of object);
 begin
   !Print.Get().Print(args);
 end;
