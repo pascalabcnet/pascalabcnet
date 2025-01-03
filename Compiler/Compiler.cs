@@ -3451,7 +3451,7 @@ namespace PascalABCCompiler
 
             //Console.WriteLine("Compiling Interface "+ unitFileName);//DEBUG
 
-            CollectNamesFromUsedUnits(currentDirectory, currentUnit, interfaceUsesList);
+            CollectNamesFromUsedUnits(currentUnit);
             
             ConvertSyntaxTreeAfterUsedModulesCompilation(currentUnit);
 
@@ -3532,26 +3532,16 @@ namespace PascalABCCompiler
             }
         }
 
-        private void CollectNamesFromUsedUnits(string currentDirectory, CompilationUnit currentUnit, List<SyntaxTree.unit_or_namespace> interfaceUsesList)
+        private void CollectNamesFromUsedUnits(CompilationUnit currentUnit)
         {
             if (currentUnit.NamesFromUsedUnits.Count == 0)
             {
-                foreach (var unitNode in interfaceUsesList)
+                // пространства имен .NET пока не поддерживаются
+                foreach (var pair in currentUnit.InterfaceUsedDirectUnits)
                 {
-                    string fileName;
-                    try
-                    {
-                        fileName = GetUnitFileName(unitNode, currentDirectory);
-                    }
-                    catch (UnitNotFound)
-                    {
-                        continue;
-                    }
+                    CompilationUnit unit = pair.Value;
 
-                    string id = Path.ChangeExtension(fileName, null);
-                    CompilationUnit unit = UnitTable[id];
-
-                    string unitName = Path.GetFileNameWithoutExtension(fileName);
+                    string unitName = Path.GetFileNameWithoutExtension(unit.UnitFileName);
 
                     currentUnit.NamesFromUsedUnits.Add(unitName, new HashSet<string>());
                     bool skip_first = true;
