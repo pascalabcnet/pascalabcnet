@@ -170,8 +170,9 @@ namespace PascalABCCompiler.PCU
         public bool IncludeDebugInfo;
 
         public string SourceFileName;
-		
 
+        public bool interfaceScopeCaseSensitive;
+        
         public NameRef[] names; //список имен интерфейсной части модуля
 		public string[] incl_modules; //список подключаемых модулей
 		public string[] used_namespaces;
@@ -181,6 +182,7 @@ namespace PascalABCCompiler.PCU
 		public ImportedEntity[] imp_entitles; //список импортируемых сущностей
         public List<TreeRealization.compiler_directive> compiler_directives; //список директив
 
+        public bool implementationScopeCaseSensitive;
         //ssyy
         public NameRef[] implementation_names;
         public int interface_uses_count; //Количество модулей из incl_modules, относящихся к секции interface
@@ -301,14 +303,19 @@ namespace PascalABCCompiler.PCU
             
             //(ssyy) формируем список нешаблонных классов
             cur_cnn.MakeNonTemplateTypesList();
-
+            
             GetUsedUnits();//заполняем список полключаемых модулей
+
+            pcu_file.interfaceScopeCaseSensitive = cun.scope.CaseSensitive;
+
             GetCountOfMembers();//заполняем список имен интерфейсных сущностей
 			WriteUnit();//пишем имя interface_namespace
 			cur_cnn = cun.namespaces[1];
 
             //(ssyy) формируем список нешаблонных классов
             cur_cnn.MakeNonTemplateTypesList();
+
+            pcu_file.implementationScopeCaseSensitive = cun.implementation_scope.CaseSensitive;
 
             GetCountOfImplementationMembers();//(ssyy) заполняем список имен сущностей реализации
 			WriteUnit();//пишем имя implementation_namespace
@@ -434,7 +441,9 @@ namespace PascalABCCompiler.PCU
             fbw.Write(pcu_file.IncludeDebugInfo);
             if (pcu_file.IncludeDebugInfo)
                 fbw.Write(pcu_file.SourceFileName);
-			
+
+            fbw.Write(pcu_file.interfaceScopeCaseSensitive);
+
             fbw.Write(pcu_file.names.Length);
 			for (int i=0; i<pcu_file.names.Length; i++)
 			{
@@ -444,6 +453,8 @@ namespace PascalABCCompiler.PCU
                 fbw.Write(pcu_file.names[i].special_scope);
                 fbw.Write(pcu_file.names[i].always_restore);
 			}
+
+            fbw.Write(pcu_file.implementationScopeCaseSensitive);
 
             //ssyy
             fbw.Write(pcu_file.implementation_names.Length);
