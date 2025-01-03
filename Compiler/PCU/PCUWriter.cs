@@ -171,7 +171,7 @@ namespace PascalABCCompiler.PCU
 
         public string SourceFileName;
 
-        public bool interfaceScopeCaseSensitive;
+        public bool languageCaseSensitive;
         
         public NameRef[] names; //список имен интерфейсной части модуля
 		public string[] incl_modules; //список подключаемых модулей
@@ -182,7 +182,6 @@ namespace PascalABCCompiler.PCU
 		public ImportedEntity[] imp_entitles; //список импортируемых сущностей
         public List<TreeRealization.compiler_directive> compiler_directives; //список директив
 
-        public bool implementationScopeCaseSensitive;
         //ssyy
         public NameRef[] implementation_names;
         public int interface_uses_count; //Количество модулей из incl_modules, относящихся к секции interface
@@ -306,7 +305,7 @@ namespace PascalABCCompiler.PCU
             
             GetUsedUnits();//заполняем список полключаемых модулей
 
-            pcu_file.interfaceScopeCaseSensitive = cun.scope.CaseSensitive;
+            pcu_file.languageCaseSensitive = Unit.Language.CaseSensitive;
 
             GetCountOfMembers();//заполняем список имен интерфейсных сущностей
 			WriteUnit();//пишем имя interface_namespace
@@ -314,8 +313,6 @@ namespace PascalABCCompiler.PCU
 
             //(ssyy) формируем список нешаблонных классов
             cur_cnn.MakeNonTemplateTypesList();
-
-            pcu_file.implementationScopeCaseSensitive = cun.implementation_scope.CaseSensitive;
 
             GetCountOfImplementationMembers();//(ssyy) заполняем список имен сущностей реализации
 			WriteUnit();//пишем имя implementation_namespace
@@ -442,7 +439,7 @@ namespace PascalABCCompiler.PCU
             if (pcu_file.IncludeDebugInfo)
                 fbw.Write(pcu_file.SourceFileName);
 
-            fbw.Write(pcu_file.interfaceScopeCaseSensitive);
+            fbw.Write(pcu_file.languageCaseSensitive);
 
             fbw.Write(pcu_file.names.Length);
 			for (int i=0; i<pcu_file.names.Length; i++)
@@ -453,8 +450,6 @@ namespace PascalABCCompiler.PCU
                 fbw.Write(pcu_file.names[i].special_scope);
                 fbw.Write(pcu_file.names[i].always_restore);
 			}
-
-            fbw.Write(pcu_file.implementationScopeCaseSensitive);
 
             //ssyy
             fbw.Write(pcu_file.implementation_names.Length);

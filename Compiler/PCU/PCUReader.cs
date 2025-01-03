@@ -281,7 +281,7 @@ namespace PascalABCCompiler.PCU
                 cun.scope = new WrappedUnitInterfaceScope(this);
 
                 //TODO сохранить в PCU
-                cun.scope.CaseSensitive = pcu_file.interfaceScopeCaseSensitive;
+                cun.scope.CaseSensitive = pcu_file.languageCaseSensitive;
                 
                 if (string.Compare(unit_name, StringConstants.pascalSystemUnitName, true)==0)
                 	PascalABCCompiler.TreeConverter.syntax_tree_visitor.init_system_module(cun);
@@ -291,7 +291,7 @@ namespace PascalABCCompiler.PCU
                 //\ssyy
 
                 //TODO сохранить в PCU
-                cun.implementation_scope.CaseSensitive = pcu_file.implementationScopeCaseSensitive;
+                cun.implementation_scope.CaseSensitive = pcu_file.languageCaseSensitive;
 
                 string SourceFileName = pcu_file.SourceFileName;
                 if (Path.GetDirectoryName(SourceFileName) == "")
@@ -584,7 +584,7 @@ namespace PascalABCCompiler.PCU
             else
                 cur_doc = new document(pcu_file.SourceFileName);
 
-            pcu_file.interfaceScopeCaseSensitive = br.ReadBoolean();
+            pcu_file.languageCaseSensitive = br.ReadBoolean();
 
             int num_names = br.ReadInt32();
 			pcu_file.names = new NameRef[num_names];
@@ -596,8 +596,6 @@ namespace PascalABCCompiler.PCU
                 pcu_file.names[i].special_scope = br.ReadByte();
                 pcu_file.names[i].always_restore = br.ReadBoolean();
             }
-
-            pcu_file.implementationScopeCaseSensitive = br.ReadBoolean();
 
             //ssyy
             num_names = br.ReadInt32();
