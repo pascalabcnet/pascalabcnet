@@ -3555,7 +3555,7 @@ namespace PascalABCCompiler
 
                     currentUnit.NamesFromUsedUnits.Add(unitName, new HashSet<string>());
                     bool skip_first = true;
-                    foreach (var names in (unit.SemanticTree as common_unit_node).scope.Symbols.dict)
+                    foreach (var names in (unit.SemanticTree as common_unit_node).scope.Symbols.DictCaseSensitive)
                     {
                         if (skip_first)
                         { skip_first = false; continue; }
