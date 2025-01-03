@@ -1,6 +1,6 @@
-﻿using PascalABCCompiler.SyntaxTree;
+﻿using PascalABCCompiler;
+using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SyntaxTreeConverters;
-using System.Collections.Generic;
 
 namespace Languages.SPython.Frontend.Converters
 {
@@ -23,11 +23,11 @@ namespace Languages.SPython.Frontend.Converters
             return root;
         }
 
-        public override syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, object data) 
+        public override syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts)
         {
             // визитер проверящий корректность имён из модулей
             // и заменяющий первые присваивания переменных на объявление с инициализацией
-            var niv = new NameInterpreterVisitor(data as Dictionary<string, HashSet<string>>);
+            var niv = new NameInterpreterVisitor(compilationArtifacts.NamesFromUsedUnits);
             niv.ProcessNode(root);
 
             // вынос переменных самого внешнего уровня на глобальный

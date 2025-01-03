@@ -1,6 +1,7 @@
 ﻿using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.SyntaxTreeConverters;
+using PascalABCCompiler;
 
 /// <summary>
 /// Этот визитор позволяет при переходе к семантике заменить синтаксический узел lambda_any_type_node_syntax
@@ -19,7 +20,7 @@ namespace SyntaxSemanticVisitors
             return root;
         }
 
-        public syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, object data)
+        public syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts)
         {
             return root;
         }

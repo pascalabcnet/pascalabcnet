@@ -32,6 +32,6 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         /// <summary>
         /// Применение синтаксических визиторов после компиляции всех зависимостей (с использованием семантической информации)
         /// </summary>
-        syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, object data);
+        syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts);
     }
 }

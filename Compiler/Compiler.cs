@@ -242,6 +242,9 @@ namespace PascalABCCompiler
             set { _implementation_using_namespace_list = value; }
         }
 
+        /// <summary>
+        /// Глобальные имена сущностей из зависимостей интерфейсной части
+        /// </summary>
         public Dictionary<string, HashSet<string>> NamesFromUsedUnits { get; } = new Dictionary<string, HashSet<string>>();
 
         public UnitState State = UnitState.BeginCompilation;
@@ -3451,8 +3454,10 @@ namespace PascalABCCompiler
 
             //Console.WriteLine("Compiling Interface "+ unitFileName);//DEBUG
 
+            // заполняем currentUnit.NamesFromUsedUnits
             CollectNamesFromUsedUnits(currentUnit);
             
+            // конвертация синтаксического дерева с использованием данных из откомпилированных зависимостей
             ConvertSyntaxTreeAfterUsedModulesCompilation(currentUnit);
 
             // компилируем интерфейс текущего модуля EVA
@@ -3524,11 +3529,13 @@ namespace PascalABCCompiler
             }*/
         }
 
-        private static void ConvertSyntaxTreeAfterUsedModulesCompilation(CompilationUnit currentUnit)
+        private void ConvertSyntaxTreeAfterUsedModulesCompilation(CompilationUnit currentUnit)
         {
+            var artifacts = new CompilationArtifactsUsedBySyntaxConverters(currentUnit.NamesFromUsedUnits);
+
             foreach (ISyntaxTreeConverter converter in currentUnit.Language.SyntaxTreeConverters)
             {
-                currentUnit.SyntaxTree = (SyntaxTree.compilation_unit)converter.ConvertAfterUsedModulesCompilation(currentUnit.SyntaxTree, currentUnit.NamesFromUsedUnits);
+                currentUnit.SyntaxTree = (SyntaxTree.compilation_unit)converter.ConvertAfterUsedModulesCompilation(currentUnit.SyntaxTree, in artifacts);
             }
         }
 
