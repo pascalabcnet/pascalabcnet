@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  LAPTOP-TE3HP881
-// DateTime: 15.12.2024 8:40:16
+// DateTime: 04.01.2025 22:10:07
 // UserName: miks
 // Input file <ABCPascal.y>
 
@@ -3678,7 +3678,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCCompiler.ParserTools
                 is_set = true;
             if (is_set)   
 				CurrentSemanticValue.ex = new pascal_set_constant(ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);
-			else CurrentSemanticValue.ex = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan); 				
+			else CurrentSemanticValue.ex = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, '[', CurrentLocationSpan); 				
 		}
         break;
       case 165: // const_set -> pascal_set_const
@@ -3688,7 +3688,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCCompiler.ParserTools
         break;
       case 166: // const_set -> tkVertParen, elem_list, tkVertParen
 { 
-			CurrentSemanticValue.ex = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);  
+			CurrentSemanticValue.ex = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, '|', CurrentLocationSpan);  
 		}
         break;
       case 167: // sign -> tkPlus
@@ -6954,7 +6954,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCCompiler.ParserTools
         break;
       case 803: // variable -> tkVertParen, elem_list, tkVertParen
 { 
-			CurrentSemanticValue.ex = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);  
+			CurrentSemanticValue.ex = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, '|', CurrentLocationSpan);  
 		}
         break;
       case 804: // variable -> pascal_set_const

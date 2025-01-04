@@ -4459,6 +4459,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_addressed_value(_array_const_new);
 			_array_const_new.elements = _read_node() as expression_list;
+			_array_const_new.braces_type = br.ReadChar();
 		}
 
 
