@@ -1,9 +1,7 @@
-var s1,s2: string;
-
-begin
+﻿begin
   // Извлечение подстрок
-  s1 := 'ABCDEFGH';
-  s2 := s1.Substring( {начальная_позиция = } 3);
+  var s1 := 'ABCDEFGH';
+  var s2 := s1.Substring( {начальная_позиция = } 3);
   Writeln(s2);
   
   s2 := s1.Substring(3, {длина_подстроки = } 2);

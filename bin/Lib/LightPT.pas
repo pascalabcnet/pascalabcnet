@@ -7,6 +7,9 @@ interface
 
 uses System.Runtime.InteropServices;
 
+var
+  ServerAddr := 'https://air.mmcs.sfedu.ru/pascalabc';
+
 {==============================================================}
 {                  Класс для формирования вывода               }
 {==============================================================}
@@ -645,8 +648,6 @@ var
 
   LessonName: string := '';
   TaskNamesMap := new Dictionary<string,string>;
-  
-  ServerAddr := 'https://air.mmcs.sfedu.ru/pascalabc';
   
   // Дополнительные сообщения о записи в удаленную базу данных
   additionalMessages := False;
