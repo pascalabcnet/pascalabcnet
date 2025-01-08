@@ -11587,7 +11587,7 @@ begin
   end;
 end;
 
-/// Превращает последовательность в последовательность n-ок соседних элементов
+/// Превращает последовательность в последовательность массивов, содержащих n соседних элементов
 function Nwise<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
 begin 
   var chunk := new Queue<T>(n);
