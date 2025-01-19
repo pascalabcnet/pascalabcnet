@@ -1,146 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50215</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</ProjectGuid>
-    <RootNamespace>ICSharpCode.Core</RootNamespace>
-    <AssemblyName>ICSharpCode.Core</AssemblyName>
-    <OutputTarget>Library</OutputTarget>
-    <NoStdLib>False</NoStdLib>
-    <NoConfig>False</NoConfig>
-    <OutputType>Library</OutputType>
+    <TargetFramework>net40</TargetFramework>
+    
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    
+    <OutputPath>..\..\..\..\bin\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  
+  <!-- вероятно секцию можно удалить -->
+  <PropertyGroup>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
     <BaseAddress>83886080</BaseAddress>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <SourceAnalysisOverrideSettingsFile>C:\Users\daniel\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <Optimize>False</Optimize>
-    <DebugType>Full</DebugType>
-    <DocumentationFile>..\..\..\..\bin\ICSharpCode.Core.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-    <DefineConstants>DEBUG</DefineConstants>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\..\bin\</OutputPath>
-    <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugSymbols>False</DebugSymbols>
-    <Optimize>True</Optimize>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\..\bin\</OutputPath>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <FileAlignment>4096</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <StartAction>Program</StartAction>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Xml" />
-  </ItemGroup>
+  
   <ItemGroup>
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\AddInTree\AddIn\AddIn.cs" />
-    <Compile Include="Src\AddInTree\AddIn\AddInLoadException.cs" />
-    <Compile Include="Src\AddInTree\AddIn\AssemblyLocator.cs" />
-    <Compile Include="Src\AddInTree\AddIn\BuildItemArgs.cs" />
-    <Compile Include="Src\AddInTree\AddIn\Codon.cs" />
-    <Compile Include="Src\AddInTree\AddIn\ComplexCondition.cs" />
-    <Compile Include="Src\AddInTree\AddIn\Condition.cs" />
-    <Compile Include="Src\AddInTree\AddIn\ExtensionPath.cs" />
-    <Compile Include="Src\AddInTree\AddIn\IConditionEvaluator.cs" />
-    <Compile Include="Src\AddInTree\AddIn\ICondition.cs" />
-    <Compile Include="Src\AddInTree\AddIn\IDoozer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\Runtime.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultConditionEvaluators\CompareConditionEvaluator.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultConditionEvaluators\LazyConditionEvaluator.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultConditionEvaluators\OwnerStateConditionEvaluator.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ClassDoozer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\FileFilterDoozer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Icon\IconDescriptor.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Icon\IconDoozer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\LazyDoozer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\AbstractCheckableMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\AbstractMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\ICheckableMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\IMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\MenuItemDoozer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\AbstractComboBoxCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\IComboBoxCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\ToolBarItemDoozer.cs" />
-    <Compile Include="Src\AddInTree\AddInTree.cs" />
-    <Compile Include="Src\AddInTree\AddInTreeNode.cs" />
-    <Compile Include="Src\AddInTree\TopologicalSort.cs" />
-    <Compile Include="Src\AddInTree\TreePathNotFoundException.cs" />
-    <Compile Include="Src\CoreException.cs" />
-    <Compile Include="Src\ExtensionMethods.cs" />
-    <Compile Include="Src\Services\AnalyticsMonitor\AnalyticsMonitorService.cs" />
-    <Compile Include="Src\Services\AnalyticsMonitor\IAnalyticsMonitor.cs" />
-    <Compile Include="Src\Services\ApplicationStateInfoService.cs" />
-    <Compile Include="Src\Services\FileUtility\FileName.cs" />
-    <Compile Include="Src\Services\FileUtility\FileNameEventHandler.cs" />
-    <Compile Include="Src\Services\FileUtility\FileUtility.cs" />
-    <Compile Include="Src\Services\FileUtility\FileUtility.Minimal.cs" />
-    <Compile Include="Src\Services\LoggingService\TextWriterLoggingService.cs" />
-    <Compile Include="Src\Services\LoggingService\ILoggingService.cs" />
-    <Compile Include="Src\Services\MessageService\TextWriterMessageService.cs" />
-    <Compile Include="Src\Services\MessageService\IMessageService.cs" />
-    <Compile Include="Src\Services\MessageService\MessageService.cs" />
-    <Compile Include="Src\Services\PropertyService\Properties.cs" />
-    <Compile Include="Src\Services\PropertyService\PropertyChangedEvent.cs" />
-    <Compile Include="Src\Services\PropertyService\PropertyService.cs" />
-    <Compile Include="Src\Services\RegistryService\RegistryService.cs" />
-    <Compile Include="Src\Services\ResourceService\ResourceNotFoundException.cs" />
-    <Compile Include="Src\Services\ResourceService\ResourceService.cs" />
-    <Compile Include="Src\Services\ServiceManager.cs" />
-    <Compile Include="Src\Services\ServiceNotFoundException.cs" />
-    <Compile Include="Src\Services\StringParser\IStringTagProvider.cs" />
-    <Compile Include="Src\Services\StringParser\PropertyObjectTagProvider.cs" />
-    <Compile Include="Src\Services\StringParser\StringParser.cs" />
-    <Compile Include="Src\Util\AbstractCommand.cs" />
-    <Compile Include="Src\Util\CallbackOnDispose.cs" />
-    <Compile Include="Src\Util\DebugTextWriter.cs" />
-    <Compile Include="Src\Util\ICommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\IBuildItemsModifier.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\IncludeDoozer.cs" />
-    <Compile Include="Src\Services\LoggingService\LoggingService.cs" />
-    <Compile Include="Src\AddInTree\AddIn\Manifest.cs" />
-    <Compile Include="Src\AddInTree\AddIn\AddInReference.cs" />
-    <Compile Include="Src\AddInTree\CoreStartup.cs" />
-    <Compile Include="Src\AddInTree\AddInManager.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\StringDoozer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\AbstractTextBoxCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\ITextBoxCommand.cs" />
-  </ItemGroup>
-  <ItemGroup>
+    
     <Content Include="..\..\..\..\data\schemas\AddIn.xsd">
       <Link>Src\AddInTree\AddIn\AddIn.xsd</Link>
     </Content>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
