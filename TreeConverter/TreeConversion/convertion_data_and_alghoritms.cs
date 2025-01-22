@@ -1207,6 +1207,38 @@ namespace PascalABCCompiler.TreeConverter
 						}
 						else
 						{
+                            // SSM 20/01/25 - Tuple<int,int> -> Tuple<double,double>
+                            /*if (formal_param_type.original_generic != null 
+                                && formal_param_type.original_generic.BaseFullName.StartsWith("System.Tuple`")
+                                && factparams[i].type.original_generic != null
+                                && factparams[i].type.original_generic.BaseFullName.StartsWith("System.Tuple`")
+                                && formal_param_type.instance_params.Count == factparams[i].type.instance_params.Count
+                                && factparams[i] is IFunctionCallNode fpf 
+                                && fpf.function.name == "Create")
+                            {
+                                expressions_list el = null;
+                                function_node fn = null;
+                                if (fpf is common_static_method_call fpf1) { 
+                                    el = fpf1.parameters;
+                                    fn = fpf1.function_node;
+                                }
+                                else if (fpf is compiled_static_method_call fpf2) { 
+                                    el = fpf2.parameters;
+                                    fn = fpf2.function_node;
+                                }
+                                var ccc = syntax_tree_visitor.create_constructor_call(formal_param_type,
+                                     el, factparams[i].location);
+                                //factparams[i] = ccc;
+                                possible_type_convertions ptci = new possible_type_convertions();
+                                var ttttt = (ccc as compiled_constructor_call).function_node;
+                                ptci.first = new type_conversion(ttttt);
+                                ptci.second = null;
+                                ptci.from = factparams[i].type;
+                                ptci.to = formal_param_type;
+                                tc.AddElement(ptci);
+                                return tc;
+                            }*/
+
                             //issue #2161 - SSM 12.03.2020
                             //issue #348
                             if ((formal_param_type == SystemLibrary.SystemLibrary.object_type || formal_param_type.IsDelegate) && factparams[i].type is delegated_methods)

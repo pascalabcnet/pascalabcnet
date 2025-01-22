@@ -19807,7 +19807,7 @@ namespace PascalABCCompiler.TreeConverter
             return adrv;
         }
 
-        private base_function_call create_constructor_call(type_node tn, expressions_list exprs, location loc, Tuple<bool, List<SyntaxTree.expression>> lambdas_info = null, bool inherited_call=false)
+        public base_function_call create_constructor_call(type_node tn, expressions_list exprs, location loc, Tuple<bool, List<SyntaxTree.expression>> lambdas_info = null, bool inherited_call=false)
         {
             if (tn.IsInterface)
             {
