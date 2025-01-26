@@ -105,7 +105,7 @@ type
   
   /// Представляет произвольно большое целое число
   BigInteger = System.Numerics.BigInteger;
-
+  
   /// Представляет дату и время
   DateTime = System.DateTime;
   
@@ -181,6 +181,9 @@ type
   /// Представляет изменяемую строку символов
   StringBuilder = System.Text.StringBuilder;
   
+  /// Представляет строку с эффективным изменением
+  faststring = StringBuilder;
+
   /// Тип кодировки символов  
   Encoding = System.Text.Encoding;
   
@@ -483,7 +486,7 @@ type
   end;}
   
 type
-  NewSetEmpty = class;
+  EmptyCollection = class;
   
   /// Тип встроенного множества
   NewSet<T> = record(IEnumerable<T>)
@@ -558,65 +561,76 @@ type
     begin 
       Result._hs := new HashSet<T>(a);
     end;
-
-    static function operator implicit(ns: NewSetEmpty): NewSet<T>; begin end;
     static function operator:=(var s: NewSet<T>; st: NewSet<T>): NewSet<T>; // Эту функцию обязательно здесь определять
     begin
       s._hs := new HashSet<T>(st.hs);
     end;
+    static function operator implicit(ns: EmptyCollection): NewSet<T>; begin end;
   end;
   
-  NewSetEmpty = class 
+  EmptyCollection = class 
   public
-    static function operator=<T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := s1.Count = 0;
-    static function operator=<T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := s1.Count = 0;
-    static function operator<><T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := not (s1 = s2);
-    static function operator<><T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := not (s1 = s2);
-    static function operator><T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := s1.Count > 0;
-    static function operator><T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := False;
-    static function operator<<T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := False;
-    static function operator<<T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := s1.Count > 0;
-    static function operator>=<T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := s1.Count >= 0;
-    static function operator>=<T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := False;
-    static function operator<=<T>(s1: NewSet<T>; s2: NewSetEmpty): boolean := False;
-    static function operator<=<T>(s2: NewSetEmpty; s1: NewSet<T>): boolean := s1.Count >= 0;
+    static function operator=<T>(s1: NewSet<T>; s2: EmptyCollection): boolean := s1.Count = 0;
+    static function operator=<T>(s2: EmptyCollection; s1: NewSet<T>): boolean := s1.Count = 0;
+    static function operator<><T>(s1: NewSet<T>; s2: EmptyCollection): boolean := not (s1 = s2);
+    static function operator<><T>(s2: EmptyCollection; s1: NewSet<T>): boolean := not (s1 = s2);
+    static function operator><T>(s1: NewSet<T>; s2: EmptyCollection): boolean := s1.Count > 0;
+    static function operator><T>(s2: EmptyCollection; s1: NewSet<T>): boolean := False;
+    static function operator<<T>(s1: NewSet<T>; s2: EmptyCollection): boolean := False;
+    static function operator<<T>(s2: EmptyCollection; s1: NewSet<T>): boolean := s1.Count > 0;
+    static function operator>=<T>(s1: NewSet<T>; s2: EmptyCollection): boolean := s1.Count >= 0;
+    static function operator>=<T>(s2: EmptyCollection; s1: NewSet<T>): boolean := False;
+    static function operator<=<T>(s1: NewSet<T>; s2: EmptyCollection): boolean := False;
+    static function operator<=<T>(s2: EmptyCollection; s1: NewSet<T>): boolean := s1.Count >= 0;
     // ToDo: определить то же для массивов на будущее
     
-    static function operator+(first, second: NewSetEmpty): NewSetEmpty := new NewSetEmpty;
-    static function operator-(first, second: NewSetEmpty): NewSetEmpty := new NewSetEmpty;
-    static function operator*(first, second: NewSetEmpty): NewSetEmpty := new NewSetEmpty;
-    static function operator+<T>(first: NewSetEmpty; second: array of T): NewSet<T>;
+    static function operator+(first, second: EmptyCollection): EmptyCollection := new EmptyCollection;
+    static function operator-(first, second: EmptyCollection): EmptyCollection := new EmptyCollection;
+    static function operator*(first, second: EmptyCollection): EmptyCollection := new EmptyCollection;
+    static function operator+<T>(first: EmptyCollection; second: array of T): NewSet<T>;
     begin 
       Result.hs.UnionWith(second);
     end;
-    static function operator+<T>(first: array of T; second: NewSetEmpty): NewSet<T>;
+    static function operator+<T>(first: array of T; second: EmptyCollection): NewSet<T>;
     begin 
       Result.hs.UnionWith(first);
     end;
-    static function operator+<T>(first: NewSet<T>; second: NewSetEmpty): NewSet<T> := first;
-    static function operator+<T>(first: NewSetEmpty; second: NewSet<T>): NewSet<T> := second;
-    static function operator*<T>(first: NewSet<T>; second: NewSetEmpty): NewSet<T>; begin end;
-    static function operator*<T>(first: NewSetEmpty; second: NewSet<T>): NewSet<T>; begin end;
-    static function operator-<T>(first: NewSet<T>; second: NewSetEmpty): NewSet<T> := first;
-    static function operator-<T>(first: NewSetEmpty; second: NewSet<T>): NewSet<T>; begin end;
+    static function operator+<T>(first: NewSet<T>; second: EmptyCollection): NewSet<T> := first;
+    static function operator+<T>(first: EmptyCollection; second: NewSet<T>): NewSet<T> := second;
+    static function operator*<T>(first: NewSet<T>; second: EmptyCollection): NewSet<T>; begin end;
+    static function operator*<T>(first: EmptyCollection; second: NewSet<T>): NewSet<T>; begin end;
+    static function operator-<T>(first: NewSet<T>; second: EmptyCollection): NewSet<T> := first;
+    static function operator-<T>(first: EmptyCollection; second: NewSet<T>): NewSet<T>; begin end;
     
-    static function operator*<T>(first: NewSetEmpty; second: array of T): NewSet<T>; begin end;
-    static function operator*<T>(first: array of T; second: NewSetEmpty): NewSet<T>; begin end;
-    static function operator-<T>(first: NewSetEmpty; second: array of T): NewSet<T>; begin end;
-    static function operator-<T>(first: array of T; second: NewSetEmpty): NewSet<T>;
+    static function operator*<T>(first: EmptyCollection; second: array of T): NewSet<T>; begin end;
+    static function operator*<T>(first: array of T; second: EmptyCollection): NewSet<T>; begin end;
+    static function operator-<T>(first: EmptyCollection; second: array of T): NewSet<T>; begin end;
+    static function operator-<T>(first: array of T; second: EmptyCollection): NewSet<T>;
     begin 
       Result.hs.UnionWith(first);
     end;
     function ToString: string; override := '{}';
     function ToSet<T>(): NewSet<T>; begin end; 
 
-    static function operator implicit<T>(Self: NewSetEmpty): array of T; 
+    static function operator implicit<T>(Self: EmptyCollection): array of T; 
     begin
-      Result := new T[0];
+      Result := new T[0]//System.Array.Empty&<T>;
     end;
-    static function operator implicit<T>(Self: NewSetEmpty): HashSet<T>; 
+    static function operator implicit<T>(Self: EmptyCollection): HashSet<T>; 
     begin
       Result := new HashSet<T>;
+    end;
+    static function operator implicit<T>(Self: EmptyCollection): SortedSet<T>; 
+    begin
+      Result := new SortedSet<T>;
+    end;
+    static function operator implicit<T>(Self: EmptyCollection): List<T>; 
+    begin
+      Result := new List<T>;
+    end;
+    static function operator implicit<K,V>(Self: EmptyCollection): Dictionary<K,V>; 
+    begin
+      Result := new Dictionary<K,V>;
     end;
   end;  
   
@@ -667,7 +681,7 @@ type
   end;
 
 /// Значение пустого множества  
-function EmptySet: NewSetEmpty;
+function EmptySet: EmptyCollection;
 
 /// Генератор множества
 function __NewSetCreatorInternal<T>(params a: array of T): NewSet<T>;
@@ -14689,6 +14703,81 @@ begin
     &to.IndexValue := Self.Count - &to.IndexValue + 1;
   Result := SystemSliceStringImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, step, 0);
 end;
+
+//--------------------------------------------
+//>>     Методы расширения типа faststring (StringBuilder) # Extension methods for faststring (StringBuilder)
+//--------------------------------------------
+/// Возвращает индекс вхождения подстроки в быструю строку  
+function IndexOf(Self: faststring; subs: string; from: integer := 0): integer; extensionmethod;
+begin
+  var lens := Self.Length;
+  var lens1 := subs.Length;
+  
+  if (from < 0) or (lens1 > lens - from) then
+  begin
+    Result := -1;
+    exit;
+  end;
+  
+  if lens1 = 0 then 
+  begin
+    Result := from; 
+    exit; 
+  end;
+  
+  for var i := from to lens - lens1 do
+  begin
+    var found := True;
+    for var j := 0 to lens1 - 1 do
+    begin
+      if Self[i + j] <> subs[j + 1] then
+      begin
+        found := False;
+        break;
+      end;
+    end;
+    
+    if found then 
+    begin
+      Result := i; 
+      exit; 
+    end;
+  end;  
+  
+  Result := -1; 
+end;
+
+/// Преобразует быструю строку в последовательность символов
+function ToSequence(Self: faststring): sequence of char; extensionmethod;
+begin
+  for var i:=0 to Self.Length - 1 do
+    yield Self[i];
+end;
+
+function operator in(subs: string; s: faststring): boolean; extensionmethod;
+begin
+  Result := s.IndexOf(subs) <> -1;
+end;
+
+/// Замещает n вхождений указанной строки на другую строку (все при n = 0)
+function Replace(Self: faststring; OldValue, NewValue: string; n: integer): faststring; extensionmethod;
+begin
+  if n = 0 then
+    Self.Replace(OldValue, NewValue)   // стандартный метод StringBuilder
+  else begin
+    var from := 0;
+    loop n do
+    begin
+      var index := Self.IndexOf(OldValue, from);
+      if index = -1 then exit;
+      Self.Remove(index, OldValue.Length);
+      Self.Insert(index, NewValue);
+      from := index + NewValue.Length;
+    end;
+  end;
+  Result := Self;
+end;
+
 //--------------------------------------------
 //>>     Методы расширения типа Func # Extension methods for Func
 //--------------------------------------------
@@ -15415,7 +15504,7 @@ end;}
 
 // Присваивание реализовано в PABCExtensions. Здесь не работает
 
-var _emptyset: NewSetEmpty := new NewSetEmpty;
+var _emptyset: EmptyCollection := new EmptyCollection;
 
 type 
   SetCreatorFunctionAttribute = class(Attribute)

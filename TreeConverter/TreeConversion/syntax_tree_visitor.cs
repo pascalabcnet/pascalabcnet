@@ -15460,7 +15460,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 // Отдельно для пустого множества 
                 common_namespace_function_call cnfc = expr as common_namespace_function_call;
-                if (cnfc.type.name == "NewSetEmpty")
+                if (cnfc.type.name == "EmptyCollection")
                 {
                     constant = new common_namespace_function_call_as_constant(expr as common_namespace_function_call, loc);
                     return constant;
@@ -15475,7 +15475,7 @@ namespace PascalABCCompiler.TreeConverter
                 return constant;
             }
             else if (expr is common_namespace_function_call_as_constant cnfcac
-                && cnfcac.type.name == "NewSetEmpty")
+                && cnfcac.type.name == "EmptyCollection")
             {
                 expr = create_constructor_call(tn, new expressions_list(), loc);
                 constant = new common_constructor_call_as_constant(expr as common_constructor_call, loc);
