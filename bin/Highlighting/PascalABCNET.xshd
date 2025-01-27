@@ -237,6 +237,7 @@
 				<Key word = "word" />
 				<Key word = "integer" />
 				<Key word = "BigInteger" />
+				<Key word = "Complex" />
 				<Key word = "longword" />
 				<Key word = "uint64" />
 				<Key word = "cardinal" />
@@ -244,6 +245,7 @@
 				<Key word = "single" />
 				<Key word = "longint" />
 				<Key word = "string" />
+				<Key word = "faststring" />
 				<Key word = "char" />
 				<Key word = "real" />
 				<Key word = "double" />
