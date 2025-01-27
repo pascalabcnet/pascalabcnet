@@ -118,15 +118,15 @@
 				<Key word = "when" />
 				<Key word = "async" />
 				<Key word = "await" />
-			 </KeyWords> 
+			</KeyWords> 
 
 			<KeyWords name = "ProgramSections" bold = "true" italic = "false" color = "Black">
 				<Key word = "unit" />
 				<Key word = "library" />
 				<Key word = "namespace" />
 				<Key word = "program" />
-				<Key word = "interface" />	
-				<Key word = "implementation" />	
+				<Key word = "interface" />
+				<Key word = "implementation" />
 			</KeyWords> 
 
 			<KeyWords name = "BeginEnd" bold = "true" italic = "false" color = "Black">
