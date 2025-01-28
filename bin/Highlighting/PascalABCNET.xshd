@@ -13,288 +13,289 @@
 
 		<RuleSet ignorecase="true">
 			<Delimiters>&lt;&gt;~!%^*()-+=|\/{}[]:;"' ,	.?</Delimiters>
-	<Span name = "LineBigComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
-			   	<Begin>////</Begin>
-		  	</Span>
 
-		  	<Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
-			   	<Begin>//@!/@</Begin>
-		  	</Span>
+			<Span name = "MuitilineString" bold = "false" italic = "false" color = "Blue" stopateol = "false">
+				<Begin>'''</Begin>
+				<End>'''</End>
+			</Span>
 
-		  	<Span name = "LineComment" bold = "false" italic = "false" color = "Gray" stopateol = "true">
-			   	<Begin>///@!/@</Begin>
-		  	</Span>
-            
-		  	<!-- <Span name = "CompilerDirectives" rule = "CompilerDirectivesSet" bold = "false" italic = "false" color = "Black" stopateol = "true">
-			   	<Begin>#</Begin>
-		  	</Span> -->
+			<Span name = "LineBigComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
+				<Begin>////</Begin>
+			</Span>
+
+			<Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
+				<Begin>//@!/@</Begin>
+			</Span>
 			
+			<Span name = "LineComment" bold = "false" italic = "false" color = "Gray" stopateol = "true">
+				<Begin>///@!/@</Begin>
+			</Span>
+
+			<!-- <Span name = "CompilerDirectives" rule = "CompilerDirectivesSet" bold = "false" italic = "false" color = "Black" stopateol = "true">
+				<Begin>#</Begin>
+			</Span> -->
+
 			<Span name = "BlockComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "false">
 				<Begin>{@!$@</Begin>
 				<End>}</End>
 			</Span>
-			
+
 			<Span name = "BlockComment" bold = "false" italic = "false" color = "Gray" stopateol = "false">
 				<Begin>{$</Begin>
 				<End>}</End>
 			</Span>
-			
-		  	<Span name = "BlockComment2" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "false">
+
+			<Span name = "BlockComment2" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "false">
 				<Begin>(*</Begin>
 				<End>*)</End>
 			</Span>
-		  	
+
 			<Span name = "String" bold = "false" italic = "false" color = "Blue" stopateol = "true">
 				<Begin>'</Begin>
 				<End>'</End>
 			</Span>
-		  	
+
 			<Span name = "InterpolatedString" rule = "StringInterpolation" bold = "false" italic = "false" color = "Blue" stopateol = "true">
 				<Begin>$'</Begin>
 				<End>'</End>
 			</Span>
 
+			<KeyWords name = "ShortProgram" bold = "false" italic = "false" color = "Green">
+				<Key word = "##" />
+				<Key word = "###" />
+			</KeyWords>
 
-		<KeyWords name = "ShortProgram" bold = "false" italic = "false" color = "Green">
-			<Key word = "##" />
-			<Key word = "###" />
-		</KeyWords>
+			<KeyWords name = "KeyWords" bold = "true" italic = "false" color = "Black">
+				<Key word = "external" />
+				<Key word = "in" />
+				<Key word = "array" />
+				<Key word = "sequence" />
+				<Key word = "yield" />
+				<Key word = "case" />
+				<Key word = "class" />
+				<Key word = "auto" />
+				<Key word = "static" />
+				<Key word = "template" />
+				<Key word = "sealed" />
+				<Key word = "partial" />
+				<Key word = "const" />
+				<Key word = "lock" />
+				<Key word = "constructor" />
+				<Key word = "destructor" />
+				<Key word = "downto" />
+				<Key word = "do" />
+				<Key word = "else" />
+				<Key word = "file" />
+				<Key word = "for" />
+				<Key word = "loop" />
+				<Key word = "function" />
+				<Key word = "if" />
+				<Key word = "inherited" />
+				<Key word = "procedure" />
+				<Key word = "operator" />
+				<Key word = "property" />
+				<Key word = "record" />
+				<Key word = "repeat" />
+				<Key word = "set" />
+				<Key word = "type" />
+				<Key word = "then" />
+				<Key word = "to" />	
+				<Key word = "until" />
+				<Key word = "uses" />
+				<Key word = "var" />
+				<Key word = "event" />
+				<Key word = "while" />
+				<Key word = "params" />
+				<Key word = "with" />
+				<Key word = "of" />
+				<Key word = "label" />
+				<Key word = "implicit" />
+				<Key word = "explicit" />
+				<Key word = "initialization" />
+				<Key word = "finalization" />
+				<Key word = "where" />
+				<Key word = "match" />
+				<Key word = "when" />
+				<Key word = "async" />
+				<Key word = "await" />
+			</KeyWords> 
 
-	<KeyWords name = "KeyWords" bold = "true" italic = "false" color = "Black">
-		<Key word = "external" />
-		<Key word = "in" />
-		<Key word = "array" />
-		<Key word = "sequence" />
-		<Key word = "yield" />
-		<Key word = "case" />
-		<Key word = "class" />
-		<Key word = "auto" />
-        	<Key word = "static" />
-		<Key word = "template" />
-		<Key word = "sealed" />
-		<Key word = "partial" />
-		<Key word = "const" />
-		<Key word = "lock" />
-		<Key word = "constructor" />
-		<Key word = "destructor" />
-		<Key word = "downto" />
-		<Key word = "do" />
-		<Key word = "else" />
-		<Key word = "file" />
-		<Key word = "for" />
-		<Key word = "loop" />
-		<Key word = "function" />	
-		<Key word = "if" />	
-		<Key word = "inherited" />	
-		<Key word = "procedure" />	
-		<Key word = "operator" />	
-		<Key word = "property" />	
-		<Key word = "record" />	
-		<Key word = "repeat" />	
-		<Key word = "set" />	
-		<Key word = "type" />	
-		<Key word = "then" />	
-		<Key word = "to" />	
-		<Key word = "until" />	
-		<Key word = "uses" />	
-		<Key word = "var" />
-		<Key word = "event" />	
-		<Key word = "while" />	
-		<Key word = "params" />	
-		<Key word = "with" />	
-		<Key word = "of" />	
-		<Key word = "label" />
-		<Key word = "implicit" />
-		<Key word = "explicit" />
-		<Key word = "initialization" />	
-		<Key word = "finalization" />
-		<Key word = "where" />
-		<Key word = "match" />
-		<Key word = "when" />
-		<Key word = "async" />
-		<Key word = "await" />
-	 </KeyWords> 
+			<KeyWords name = "ProgramSections" bold = "true" italic = "false" color = "Black">
+				<Key word = "unit" />
+				<Key word = "library" />
+				<Key word = "namespace" />
+				<Key word = "program" />
+				<Key word = "interface" />
+				<Key word = "implementation" />
+			</KeyWords> 
 
-	 
-	<KeyWords name = "ProgramSections" bold = "true" italic = "false" color = "Black">
-		<Key word = "unit" />
-		<Key word = "library" />
-        <Key word = "namespace" />
-		<Key word = "program" />
-		<Key word = "interface" />	
-		<Key word = "implementation" />	
-	</KeyWords> 
+			<KeyWords name = "BeginEnd" bold = "true" italic = "false" color = "Black">
+				<Key word = "begin" />
+				<Key word = "end" />
+			</KeyWords> 
 
-	<KeyWords name = "BeginEnd" bold = "true" italic = "false" color = "Black">
-		<Key word = "begin" />
-		<Key word = "end" />
-	</KeyWords> 
+			<KeyWords name = "Special" bold = "true" italic = "false" color = "Red">
+				<Key word = "•" />
+			</KeyWords> 
 
-	<KeyWords name = "Special" bold = "true" italic = "false" color = "Red">
-		<Key word = "•" />
-	</KeyWords> 
+			<KeyWords name = "Async" bold = "true" italic = "false" color = "Black">
+				<Key word = "async" />
+				<Key word = "asyncparam" />
+			</KeyWords> 
 
-	<KeyWords name = "Async" bold = "true" italic = "false" color = "Black">
-		<Key word = "async" />
-		<Key word = "asyncparam" />
-	</KeyWords> 
+			<KeyWords name = "Punctuation" bold = "false" italic = "false" color = "Black">
+				<Key word = "," />
+				<Key word = "." />
+				<Key word = ";" />
+				<Key word = "(" />
+				<Key word = ")" />
+				<Key word = "[" />
+				<Key word = "]" />
+				<Key word = "+" />
+				<Key word = "-" />
+				<Key word = "/" />
+				<Key word = "*" />
+				<Key word = "&lt;" />
+				<Key word = "&gt;" />
+				<Key word = "&lt;=" />
+				<Key word = "&gt;=" />
+				<Key word = "^" />
+				<Key word = "=" />
+				<Key word = "&amp;" />
+			</KeyWords>
 
-     	<KeyWords name = "Punctuation" bold = "false" italic = "false" color = "Black">
-        	<Key word = "," />
-		<Key word = "." />
-		<Key word = ";" />
-		<Key word = "(" />
-		<Key word = ")" />
-		<Key word = "[" />
-		<Key word = "]" />
-		<Key word = "+" />
-        	<Key word = "-" />
-		<Key word = "/" />
-		<Key word = "*" />
-		<Key word = "&lt;" />
-		<Key word = "&gt;" />
-		<Key word = "&lt;=" />
-		<Key word = "&gt;=" />
-		<Key word = "^" />
-		<Key word = "=" />
-		<Key word = "&amp;" />
-	</KeyWords>
-		  
-	<KeyWords name = "AccessKeywords1" bold="true" italic="false" color="Black">
-		<Key word = "inherited" />
-	</KeyWords>
-	<KeyWords name = "NonReserved1" bold="false" italic="false" color="Blue">
-		<Key word = "self" />
-		<Key word = "result" />
-		<Key word = "value" />
-	</KeyWords>
-			
-	<KeyWords name = "OperatorKeywords" bold="true" italic="false" color="Black">
-		<Key word = "or" />
-		<Key word = "xor" />
-		<Key word = "and" />
-		<Key word = "div" />
-		<Key word = "mod" />
-		<Key word = "shl" />
-		<Key word = "shr" />
-		<Key word = "not" />
-		<Key word = "as" />
-		<Key word = "is" />
-		<Key word = "new" />
-		<Key word = "sizeof" />
-		<Key word = "typeof" />
-	</KeyWords>
-		  
-		
-	<KeyWords name = "SelectionStatements" bold="true" italic="false" color="Black">
-		<Key word = "else" />
-		<Key word = "if" />
-        	<Key word = "case" />
-	</KeyWords>
-		
-	<KeyWords name = "IterationStatements" bold="true" italic="false" color="Black">
-		<Key word = "do" />
-		<Key word = "for" />
-		<Key word = "foreach" />
-	</KeyWords>
-		
+			<KeyWords name = "AccessKeywords1" bold="true" italic="false" color="Black">
+				<Key word = "inherited" />
+			</KeyWords>
 
-	<KeyWords name = "ExceptionHandlingStatements" bold="true" italic="false" color="Black">
-		<Key word = "except" />
-		<Key word = "on" />
-		<Key word = "try" />	
-		<Key word = "finally" />	
-	</KeyWords>
+			<KeyWords name = "NonReserved1" bold="false" italic="false" color="Blue">
+				<Key word = "self" />
+				<Key word = "result" />
+				<Key word = "value" />
+			</KeyWords>
 
-	<KeyWords name = "RaiseStatement" bold="true" italic="false" color="DarkRed">
-		<Key word = "raise" />	
-	</KeyWords>
+			<KeyWords name = "OperatorKeywords" bold="true" italic="false" color="Black">
+				<Key word = "or" />
+				<Key word = "xor" />
+				<Key word = "and" />
+				<Key word = "div" />
+				<Key word = "mod" />
+				<Key word = "shl" />
+				<Key word = "shr" />
+				<Key word = "not" />
+				<Key word = "as" />
+				<Key word = "is" />
+				<Key word = "new" />
+				<Key word = "sizeof" />
+				<Key word = "typeof" />
+			</KeyWords>
 
-	<KeyWords name = "JumpStatements" bold="true" italic="false" color="DarkRed">
-		<Key word = "goto" />
-	</KeyWords>
+			<KeyWords name = "SelectionStatements" bold="true" italic="false" color="Black">
+				<Key word = "else" />
+				<Key word = "if" />
+				<Key word = "case" />
+			</KeyWords>
 
-	<KeyWords name = "JumpProcedures" bold="true" italic="false" color="DarkRed">
-		<Key word = "break" />
-		<Key word = "exit" />
-		<Key word = "continue" />
-	</KeyWords>
+			<KeyWords name = "IterationStatements" bold="true" italic="false" color="Black">
+				<Key word = "do" />
+				<Key word = "for" />
+				<Key word = "foreach" />
+			</KeyWords>
 
+			<KeyWords name = "ExceptionHandlingStatements" bold="true" italic="false" color="Black">
+				<Key word = "except" />
+				<Key word = "on" />
+				<Key word = "try" />
+				<Key word = "finally" />
+			</KeyWords>
 
-	<KeyWords name = "InternalConstant" bold = "false" italic = "false" color = "Blue">
-		<Key word = "true" />
-		<Key word = "false" />
-		<Key word = "nil" />	
-	</KeyWords> 
+			<KeyWords name = "RaiseStatement" bold="true" italic="false" color="DarkRed">
+				<Key word = "raise" />
+			</KeyWords>
 
-	<KeyWords name = "InternalTypes" bold="false" italic="false" color="Blue">
-		<Key word = "boolean" />
-		<Key word = "byte" />
-		<Key word = "shortint" />
-		<Key word = "smallint" />
-		<Key word = "word" />
-		<Key word = "integer" />
-		<Key word = "BigInteger" />
-		<Key word = "Complex" />
-		<Key word = "longword" />
-		<Key word = "uint64" />
-		<Key word = "cardinal" />
-		<Key word = "int64" />
-		<Key word = "single" />
-		<Key word = "longint" />
-		<Key word = "string" />
-		<Key word = "faststring" />
-		<Key word = "char" />
-		<Key word = "real" />
-		<Key word = "double" />
-		<Key word = "pointer" />
-		<Key word = "object" />
-		<Key word = "decimal" />
-	</KeyWords>
-		  
-	<KeyWords name = "ReferenceTypes" bold="true" italic="false" color="Black">
-		<Key word = "class" />
-		<Key word = "interface" />
-  	</KeyWords>
-		  
-	<KeyWords name = "Modifiers" bold="true" italic="false" color="Black">
-		<Key word = "abstract" />
-		<Key word = "overload" />
-		<Key word = "reintroduce" />
-		<Key word = "override" />
-		<Key word = "extensionmethod" />
-		<Key word = "virtual" />
-		<Key word = "default" />
-		<Key word = "forward" />
-	</KeyWords>
-	
-	<KeyWords name = "AccessModifiers" bold="true" italic="false" color="Black">
-		<Key word = "internal" />
-		<Key word = "public" />
-		<Key word = "protected" />
-		<Key word = "private" />
- 	</KeyWords>
+			<KeyWords name = "JumpStatements" bold="true" italic="false" color="DarkRed">
+				<Key word = "goto" />
+			</KeyWords>
 
-	</RuleSet>
-		
+			<KeyWords name = "JumpProcedures" bold="true" italic="false" color="DarkRed">
+				<Key word = "break" />
+				<Key word = "exit" />
+				<Key word = "continue" />
+			</KeyWords>
+
+			<KeyWords name = "InternalConstant" bold = "false" italic = "false" color = "Blue">
+				<Key word = "true" />
+				<Key word = "false" />
+				<Key word = "nil" />
+			</KeyWords> 
+
+			<KeyWords name = "InternalTypes" bold="false" italic="false" color="Blue">
+				<Key word = "boolean" />
+				<Key word = "byte" />
+				<Key word = "shortint" />
+				<Key word = "smallint" />
+				<Key word = "word" />
+				<Key word = "integer" />
+				<Key word = "BigInteger" />
+				<Key word = "Complex" />
+				<Key word = "longword" />
+				<Key word = "uint64" />
+				<Key word = "cardinal" />
+				<Key word = "int64" />
+				<Key word = "single" />
+				<Key word = "longint" />
+				<Key word = "string" />
+				<Key word = "faststring" />
+				<Key word = "char" />
+				<Key word = "real" />
+				<Key word = "double" />
+				<Key word = "pointer" />
+				<Key word = "object" />
+				<Key word = "decimal" />
+			</KeyWords>
+
+			<KeyWords name = "ReferenceTypes" bold="true" italic="false" color="Black">
+				<Key word = "class" />
+				<Key word = "interface" />
+			</KeyWords>
+
+			<KeyWords name = "Modifiers" bold="true" italic="false" color="Black">
+				<Key word = "abstract" />
+				<Key word = "overload" />
+				<Key word = "reintroduce" />
+				<Key word = "override" />
+				<Key word = "extensionmethod" />
+				<Key word = "virtual" />
+				<Key word = "default" />
+				<Key word = "forward" />
+			</KeyWords>
+
+			<KeyWords name = "AccessModifiers" bold="true" italic="false" color="Black">
+				<Key word = "internal" />
+				<Key word = "public" />
+				<Key word = "protected" />
+				<Key word = "private" />
+			</KeyWords>
+		</RuleSet>
+
 	<RuleSet name = "CommentMarkerSet" ignorecase = "false">
 		<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 		<KeyWords name = "ErrorWords" bold="true" italic="false" color="Red">
 			<Key word = "TODO" />
 			<Key word = "FIXME" />
-	  	</KeyWords>
+		</KeyWords>
 		<KeyWords name = "WarningWords" bold="true" italic="false" color="#EEE0E000">
 			<Key word = "HACK" />
 			<Key word = "UNDONE" />
-	  	</KeyWords>
+		</KeyWords>
 		<KeyWords name = "Russian" bold="true" italic="true" color="Green" >
 			<Key word = "Задание" />
 			<Key word = "Указание" />
 			<Key word = "Замечание" />
-	  	</KeyWords>
+		</KeyWords>
 		<KeyWords name = "Russian1" bold="true" italic="false" color="Green">
 			<Key word = "Тема" />
-	  	</KeyWords>
+		</KeyWords>
 	</RuleSet>
 
 
@@ -317,10 +318,10 @@
 			<Key word = "mainresource" />
 			<Key word = "NullBasedStrings" />
 			<Key word = "gendoc" />
-	  	</KeyWords>
+		</KeyWords>
 		<KeyWords name = "SpecialDireciveNames" bold="true" italic="false" color="Red">
 			<Key word = "savepcu" />
-	  	</KeyWords>
+		</KeyWords>
 		<KeyWords name = "DireciveValues" bold="false" italic="false" color="Blue">
 			<Key word = "console" />
 			<Key word = "windows" />
@@ -330,28 +331,28 @@
 			<Key word = "true" />
 	  	</KeyWords>
 	</RuleSet>
-	
+
 	<RuleSet name = "Default" reference = "PascalABC.NET">
-        <Delimiters>&lt;&gt;~!%^*#()-+=|\/{}[]:;"' ,	?.</Delimiters><!-- Digits -->
+		<Delimiters>&lt;&gt;~!%^*#()-+=|\/{}[]:;"' ,	?.</Delimiters><!-- Digits -->
 	</RuleSet>
-	
+
 	<RuleSet name = "StringInterpolation" ignorecase = "true">
 		<Span name = "String1" rule="StringInterpolation" bold = "false" italic = "false" color = "Blue" stopateol = "true">
 			<Begin>{{ }}</Begin>
 		</Span>
-		
+
 		<Span name = "String1" rule="Default" bold = "false" italic = "false" color = "Black" stopateol = "true">
 			<Begin>'</Begin>
 		</Span>
-		
+
 		<Span name = "String" rule="ExprStringInterpolation" bold = "false" italic = "false" color = "Black" stopateol = "true">
 			<Begin>{</Begin>
 			<End>}</End>
 		</Span>
 	</RuleSet>
-	
+
 	<RuleSet name = "ExprStringInterpolation" ignorecase = "true">
-        <Delimiters>&lt;&gt;&#x3C;>~!%^*#()-+=|\/[]:;"' ,	?.</Delimiters>
+		<Delimiters>&lt;&gt;&#x3C;>~!%^*#()-+=|\/[]:;"' ,	?.</Delimiters>
 		<Span name = "StringFormat" rule="StringInterpolation" bold = "false" italic = "false" color = "Blue" stopateol = "true">
 			<Begin>{</Begin>
 			<End>}</End>
@@ -361,16 +362,16 @@
 			<Begin>''</Begin>
 			<End>''</End>
 		</Span>
-		
+
 		<KeyWords name = "BlueWords" bold="false" italic="false" color="Blue">
 			<Key word = "self" />
 			<Key word = "result" />
 			<Key word = "value" />
-			
+
 			<Key word = "true" />
 			<Key word = "false" />
 			<Key word = "nil" />
-			
+
 			<Key word = "boolean" />
 			<Key word = "byte" />
 			<Key word = "shortint" />
