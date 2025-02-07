@@ -614,24 +614,18 @@ type
 
     static function operator implicit<T>(Self: EmptyCollection): array of T; 
     begin
-      Result := new T[0]//System.Array.Empty&<T>;
+      Result := System.Array.Empty&<T>;
     end;
-    static function operator implicit<T>(Self: EmptyCollection): HashSet<T>; 
+    static function operator implicit<T>(Self: EmptyCollection): sequence of T; 
     begin
-      Result := new HashSet<T>;
+      Result := System.Array.Empty&<T>;
     end;
-    static function operator implicit<T>(Self: EmptyCollection): SortedSet<T>; 
-    begin
-      Result := new SortedSet<T>;
-    end;
-    static function operator implicit<T>(Self: EmptyCollection): List<T>; 
-    begin
-      Result := new List<T>;
-    end;
-    static function operator implicit<K,V>(Self: EmptyCollection): Dictionary<K,V>; 
-    begin
-      Result := new Dictionary<K,V>;
-    end;
+    static function operator implicit<T>(Self: EmptyCollection): HashSet<T> := new HashSet<T>;
+    static function operator implicit<T>(Self: EmptyCollection): SortedSet<T> := new SortedSet<T>;
+    static function operator implicit<T>(Self: EmptyCollection): List<T> := new List<T>;
+    static function operator implicit<K,V>(Self: EmptyCollection): Dictionary<K,V> := new Dictionary<K,V>;
+    static function operator implicit<T>(Self: EmptyCollection): Stack<T> := new Stack<T>;
+    static function operator implicit<T>(Self: EmptyCollection): Queue<T> := new Queue<T>;
   end;  
   
 type
@@ -15496,13 +15490,6 @@ begin
 end;
 
 // Функции для новых множеств
-
-{procedure operator:=<T>(var Self: NewSet<T>; st: NewSet<T>); extensionmethod;
-begin
-  Self.hs := new HashSet<T>(st.hs);
-end;}
-
-// Присваивание реализовано в PABCExtensions. Здесь не работает
 
 var _emptyset: EmptyCollection := new EmptyCollection;
 

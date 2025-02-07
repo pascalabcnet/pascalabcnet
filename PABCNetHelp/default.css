@@ -1,96 +1,143 @@
-﻿BODY,
-TABLE,
-TD {
-        font-family: Arial;
-        background-color: #ffffff;
-        font-size: 11pt;
+/* Базовые стили */
+:root {
+    --primary-color: #2563eb;
+    --secondary-color: #1e40af;
+    --text-color: #1f2937;
+    --code-color: #0f172a;
+    --background-color: #ffffff;
+    --code-background: #f1f5f9;
+    --blockquote-border: #e2e8f0;
+    --font-sans: system-ui, -apple-system, Arial, sans-serif;
+    --font-mono: 'Fira Code', Consolas, Monaco, monospace;
 }
 
-BLOCKQUOTE {
-        margin-top: 6pt;
-        margin-bottom: 6pt;
-        margin-left: 20pt;
+body {
+    font-family: var(--font-sans);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
 }
 
-dfn {
-        color: #006000;
-        font-weight:bold;
+/* Типографика и заголовки */
+h1, h2, h3, h4, h5, h6 {
+    margin: 2rem 0 1rem;
+    line-height: 1.3;
+    color: var(--primary-color);
 }
 
+h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+}
+
+h2 {
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+h5, h6 {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+/* Параграфы и списки */
+p {
+    margin: 1rem 0;
+    font-size: 1rem;
+}
+
+ul, ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+li {
+    margin: 0.5rem 0;
+}
+
+/* Блоки кода и определения */
 code {
-	font-family: Consolas, monospace;
-        color: #000080;
-        font-size: 12pt;
+    font-family: var(--font-mono);
+    color: var(--code-color);
+    font-size: 0.95em;
+    background-color: var(--code-background);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
 }
 
 code.codeit {
-        color: #000000;
-        font-family: Times;
-        font-style: italic;
-        font-size: 12pt;
+    font-style: italic;
+    background: none;
+    padding: 0;
 }
 
-H1 {
-        font-family: Arial;
-        font-weight: bold;
-        margin-top: 12pt;
-        margin-bottom: 6pt;
-        font-size: 14pt;
-        color: #000080;
+dfn {
+    color: #047857;
+    font-weight: 600;
+    font-style: normal;
 }
 
-H2 {
-        font-family: Arial;
-        font-weight: normal;
-        margin-bottom: 2pt;
-        margin-top: 6pt;
-        font-size: 13pt;
-        color: #0000A0;
+/* Цитаты */
+blockquote {
+    margin: 1.5rem 0;
+    padding: 1rem 1.5rem;
+    border-left: 4px solid var(--blockquote-border);
+    background-color: var(--code-background);
+    border-radius: 0 4px 4px 0;
 }
 
-H3 {
-        font-weight: bold;
-        margin-bottom: 2pt;
-        margin-top: 6pt;
-        font-size: 12pt;
-        color: #000000;
+/* Таблицы */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
 }
 
-H4 {
-        font-weight: bold;
-        color: #000080;
-        margin-top: 6pt;
-        margin-bottom: 2pt;
-        font-size: 11pt;
+td, th {
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
 }
 
-H5 {
-        font-size: 11.0pt;
+th {
+    background-color: #f8fafc;
+    font-weight: 600;
 }
 
-H6 {
-        font-size: 11.0pt;
+/* Специальные элементы */
+td.secttitle {
+    background-color: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    padding: 1rem;
+    font-weight: 500;
 }
 
-P {
-        font-family: Arial;
-        margin-top: 6pt;
-        margin-bottom: 0pt;
-        font-family: Arial, sans-serif;
-        font-size: 11pt;
-}
+/* Адаптивность */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+        padding: 0 0.75rem;
+    }
 
-OL,
-UL {
-        margin-top: 3pt;
-        margin-bottom: 0pt;
-        font-size: 11pt;
-        font-family: Arial, sans-serif;
-}
-
-TD.secttitle {
-        border-style:solid; 
-        border-width:1px;   
-        border-color: #808080;
-        background-color: #E7E7F7;
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.75rem; }
+    h3 { font-size: 1.5rem; }
+    h4 { font-size: 1.25rem; }
+    h5, h6 { font-size: 1.125rem; }
 }

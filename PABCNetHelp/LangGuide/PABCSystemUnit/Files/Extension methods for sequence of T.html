@@ -4,6 +4,7 @@
 <param name="Keyword" value="Batch">
 <param name="Keyword" value="Cartesian">
 <param name="Keyword" value="CountOf">
+<param name="Keyword" value="DistinctBy">
 <param name="Keyword" value="Flatten">
 <param name="Keyword" value="ForEach">
 <param name="Keyword" value="Incremental">
@@ -69,6 +70,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает декартово произведение последовательностей в виде последовательности п€тЄрок</td></tr>
 <tr><td><code><b>function</b> CountOf&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; x: T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает количество элементов, равных указанному значению</td></tr>
+<tr><td><code><b>function</b> DistinctBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; by: T-&gt;TKey; comp: IEqualityComparer&lt;TKey&gt;): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает элементы последовательности, ключи дл€ которых отличаютс€, использу€ компоратор comp</td></tr>
+<tr><td><code><b>function</b> DistinctBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; by: T-&gt;TKey);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает элементы последовательности, ключи дл€ которых отличаютс€, использу€ компоратор по-умолчанию</td></tr>
 <tr><td><code><b>function</b> Flatten&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует последовательность последовательностей в плоскую последовательность</td></tr>
 <tr><td><code><b>procedure</b> ForEach&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; action: T -&gt; ());</code>
@@ -118,7 +123,7 @@
 <tr><td><code><b>function</b> Numerate&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; from: integer): <b>sequence </b>  <b>of</b> (integer, T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ќумерует последовательность с номера from</td></tr>
 <tr><td><code><b>function</b> Nwise&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; n: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕревращает последовательность в последовательность n-ок соседних элементов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕревращает последовательность в последовательность массивов, содержащих n соседних элементов</td></tr>
 <tr><td><code><b>function</b> Order&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает отсортированную по возрастанию последовательность</td></tr>
 <tr><td><code><b>function</b> Order(Self: <b>sequence </b>  <b>of</b> string): <b>sequence </b>  <b>of</b> string;</code>
@@ -191,7 +196,7 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает множество HashSet по данной последовательности</td></tr>
 <tr><td><code><b>function</b> ToLinkedList&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): LinkedList&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает LinkedList по данной последовательности</td></tr>
-<tr><td><code><b>function</b> ToSet&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): HashSet&lt;T&gt;;</code>
+<tr><td><code><b>function</b> ToSet&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): NewSet&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает множество по данной последовательности</td></tr>
 <tr><td><code><b>function</b> ToSortedSet&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): SortedSet&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает множество SortedSet по данной последовательности</td></tr>

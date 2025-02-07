@@ -1210,26 +1210,17 @@ namespace PascalABCCompiler.TreeConverter
 						else
 						{
                             // SSM 20/01/25 - Tuple<int,int> -> Tuple<double,double>
+                            // А если уже один такой conv есть? Как сливать несколько в один???
                             if (formal_param_type.original_generic != null 
                                 && formal_param_type.original_generic.BaseFullName.StartsWith("System.Tuple`")
                                 && factparams[i].type.original_generic != null
                                 && factparams[i].type.original_generic.BaseFullName.StartsWith("System.Tuple`")
                                 && formal_param_type.instance_params.Count == factparams[i].type.instance_params.Count
-                                //&& factparams[i] is IFunctionCallNode fpf 
-                                //&& fpf.function.name == "Create"
                                 )
                             {
                                 syntax_tree_visitor.contextChanger.SaveContextAndUpToGlobalLevel();
                                 var sl = new statement_list();
                                 var rettype = new semantic_type_node(formal_param_type);
-
-                                //expressions_list parameters = null;
-                                //if (fpf is common_static_method_call fpf1) {
-                                //    parameters = fpf1.parameters;
-                                //}
-                                //else if (fpf is compiled_static_method_call fpf2) {
-                                //    parameters = fpf2.parameters;
-                                //}
 
                                 var el = new expression_list();
                                 for (int ii = 1; ii <= formal_param_type.instance_params.Count; ii++)
@@ -1249,9 +1240,6 @@ namespace PascalABCCompiler.TreeConverter
                                 // Теперь до нее доберемся
                                 var fn = syntax_tree_visitor.context.last_created_function.sym_info as function_node;
                                 syntax_tree_visitor.contextChanger.RestoreCurrentContext();
-                                //var ccc = syntax_tree_visitor.create_constructor_call(formal_param_type,
-                                //     el, factparams[i].location);
-                                //factparams[i] = ccc;
                                 possible_type_convertions ptci = new possible_type_convertions();
                                 ptci.first = new type_conversion(fn);
                                 ptci.second = null;
