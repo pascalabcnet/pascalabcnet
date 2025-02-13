@@ -258,7 +258,8 @@ namespace PascalABCCompiler.TreeConverter
         {
             this.convertion_data_and_alghoritms = convertion_data_and_alghoritms;
             this.syntax_tree_visitor = syntax_tree_visitor;
-            _instance = this;
+            if (syntax_tree_visitor.GetType() == typeof(syntax_tree_visitor))
+                _instance = this;
         }
 		
         
