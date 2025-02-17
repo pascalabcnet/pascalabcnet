@@ -23,9 +23,9 @@ namespace AssignTupleDesugarAlgorithm
 
             OnEnterGraph(graph);
             foreach (SymbolNode v in graphTraversalOrder)
-            {
+            { 
                 if (OnProcessVertex(graph, v))
-                    _dfs(graph, v, OnEnter: OnEnterNode, OnProcessChild: OnProcessNodeChild, OnLeave: OnLeaveNode, vertexTraversalOrderFunc);
+                    _dfs(graph: graph, start_node: v, OnEnter: OnEnterNode, OnProcessChild: OnProcessNodeChild, OnLeave: OnLeaveNode, vertexTraversalOrderFunc: vertexTraversalOrderFunc);
             }
 
             OnLeaveGraph(graph);
