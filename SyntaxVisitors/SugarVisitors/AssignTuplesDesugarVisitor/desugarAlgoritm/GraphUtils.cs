@@ -18,40 +18,21 @@ namespace AssignTupleDesugarAlgorithm
             Func<AssignGraph, SymbolNode, IEnumerable<SymbolNode>> vertexTraversalOrderFunc = null,
             IEnumerable<SymbolNode> graphTraversalOrder = null)
         {
-            void dfs(SymbolNode start_node,
-                Action<AssignGraph, SymbolNode> OnEnter,
-                Func<AssignGraph, SymbolNode, SymbolNode, bool> OnProcessChild,
-                Action<AssignGraph, SymbolNode> OnLeave
-            )
-            {
-                OnEnter(graph, start_node);
-                IEnumerable<SymbolNode> vertexTraversalOrder;
-                if (vertexTraversalOrderFunc == null) vertexTraversalOrder = graph.OutAdjStructure[start_node];
-                else vertexTraversalOrder = vertexTraversalOrderFunc(graph, start_node);
-                foreach (SymbolNode current_node in vertexTraversalOrder)
-                {
-                    if (OnProcessChild(graph, start_node, current_node))
-                        dfs(current_node, OnEnter, OnProcessChild, OnLeave);
-                }
-
-                OnLeave(graph, start_node);
-            }
-
-
+            
             if (graphTraversalOrder == null) graphTraversalOrder = graph.vertexes;
 
             OnEnterGraph(graph);
             foreach (SymbolNode v in graphTraversalOrder)
             {
                 if (OnProcessVertex(graph, v))
-                    dfs(v, OnEnter: OnEnterNode, OnProcessChild: OnProcessNodeChild, OnLeave: OnLeaveNode);
+                    _dfs(graph, v, OnEnter: OnEnterNode, OnProcessChild: OnProcessNodeChild, OnLeave: OnLeaveNode, vertexTraversalOrderFunc);
             }
 
             OnLeaveGraph(graph);
         }
 
 
-        static private void dfs(AssignGraph graph, SymbolNode start_node,
+        static private void _dfs(AssignGraph graph, SymbolNode start_node,
                 Action<AssignGraph, SymbolNode> OnEnter,
                 Func<AssignGraph, SymbolNode, SymbolNode, bool> OnProcessChild,
                 Action<AssignGraph, SymbolNode> OnLeave,
@@ -65,7 +46,7 @@ namespace AssignTupleDesugarAlgorithm
             foreach (SymbolNode current_node in vertexTraversalOrder)
             {
                 if (OnProcessChild(graph, start_node, current_node))
-                    dfs(graph, current_node, OnEnter, OnProcessChild, OnLeave, vertexTraversalOrderFunc);
+                    _dfs(graph, current_node, OnEnter, OnProcessChild, OnLeave, vertexTraversalOrderFunc);
             }
 
             OnLeave(graph, start_node);
