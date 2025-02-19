@@ -12942,7 +12942,7 @@ namespace PascalABCCompiler.TreeConverter
                                     if (context.top_function.return_value_type == null || context.top_function.return_value_type == SystemLibrary.SystemLibrary.void_type)
                                         AddError(get_location(attr), "EXPECTED_RETURN_VALUE_FOR_ATTRIBUTE");
                                     throw new NotSupportedError(get_location(attr.qualifier));
-                                    qualifier = SemanticTree.attribute_qualifier_kind.return_kind;
+                                    // qualifier = SemanticTree.attribute_qualifier_kind.return_kind;
                                 }
                                 else
                                     throw new NotSupportedError(get_location(attr.qualifier));
