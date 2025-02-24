@@ -1,148 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A9AB4282-83B4-41A7-86C3-E5BF6A45E7E2}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyntaxVisitors</RootNamespace>
-    <AssemblyName>SyntaxVisitors</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <TargetFramework>net40</TargetFramework>
+    
     <OutputPath>..\bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
+  
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\Errors\Errors.csproj" />
+    <ProjectReference Include="..\Localization\Localization.csproj" />
+    <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj" />
+    <ProjectReference Include="..\Yield\YieldHelpers\YieldHelpers.csproj" />
+    <ProjectReference Include="..\ParserTools\ParserTools.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AllVarsInProcYieldsProba.cs" />
-    <Compile Include="BaseSyntaxTreeConverter.cs" />
-    <Compile Include="BaseVisitors\CollectNamespaces.cs" />
-    <Compile Include="BaseVisitors\HasStatementVisitor.cs" />
-    <Compile Include="ISyntaxTreeConverter.cs" />
-    <Compile Include="LightSymInfoVisitors\BindCollectLightSymInfo.cs" />
-    <Compile Include="LightSymInfoVisitors\CollectFullLightSymInfoVisitor.cs" />
-    <Compile Include="LightSymInfoVisitors\CollectLightSymInfoVisitor.cs" />
-    <Compile Include="LightSymInfoVisitors\LightScopeCreator.cs" />
-    <Compile Include="LightSymInfoVisitors\LightScopeHelperClasses.cs" />
-    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\desugarAlgoritm\Assign.cs" />
-    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\desugarAlgoritm\AssignGraph.cs" />
-    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\desugarAlgoritm\Cycle.cs" />
-    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\desugarAlgoritm\Edge.cs" />
-    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\desugarAlgoritm\GraphUtils.cs" />
-    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\desugarAlgoritm\Symbol.cs" />
-    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\desugarAlgoritm\SymbolNode.cs" />
-    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\NewAssignTuplesDesugarVisitor.cs" />
-    <Compile Include="SugarVisitors\CacheFunctionVisitor.cs" />
-    <Compile Include="SugarVisitors\ToExprVisitor.cs" />
-    <Compile Include="SugarVisitors\LetExprVisitor.cs" />
-    <Compile Include="SugarVisitors\TestAssignIsDefVisitor.cs" />
-    <Compile Include="SugarVisitors\UnpackLambdaParametersVisitor.cs" />
-    <Compile Include="TeacherControl\TeacherControl.cs" />
-    <Compile Include="UniversalVisitors\ABCStatisticsVisitors.cs" />
-    <Compile Include="BaseVisitors\SmallHelperVisitors.cs" />
-    <Compile Include="ChangeWhileVisitor.cs" />
-    <Compile Include="CheckingVisitors\UnnamedRecordsCheckErrorsVisitor.cs" />
-    <Compile Include="PatternsVisitors\ExtendedIsDesugaringVisitor.cs" />
-    <Compile Include="PatternsVisitors\PatternsDesugaringVisitor.cs" />
-    <Compile Include="PatternsVisitors\ReplaceNamesInIsVarVisitor.cs" />
-    <Compile Include="PatternsVisitors\SingleDeconstructChecker.cs" />
-    <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor\AssignTuplesDesugarVisitor.cs" />
-    <Compile Include="SugarVisitors\DoubleQuestionDesugarVisitor.cs" />
-    <Compile Include="SugarVisitors\IndexVisitor.cs" />
-    <Compile Include="SugarVisitors\LoopDesugarVisitor.cs" />
-    <Compile Include="SugarVisitors\PropertyDesugarVisitor.cs" />
-    <Compile Include="SugarVisitors\QuestionPointDesugarVisitor.cs" />
-    <Compile Include="SugarVisitors\NewRangeDesugarVisitor.cs" />
-    <Compile Include="SugarVisitors\SliceDesugarVisitor.cs" />
-    <Compile Include="SugarVisitors\TupleVisitor.cs" />
-    <Compile Include="VisitorsForLambdas\RenameOnExceptVarsVisitor.cs" />
-    <Compile Include="VisitorsForLambdas\RenameSameVarNamesVisitor.cs" />
-    <Compile Include="VisitorsForLambdas\StandOutExprWithLambdaInForeachSequenceVisitor.cs" />
-    <Compile Include="YieldVisitors\CapturedLambdaInYieldVisitor.cs" />
-    <Compile Include="YieldVisitors\ObjectCopier\ObjectCopier.cs" />
-    <Compile Include="Optimization\CalcConstExprs.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SyntaxTreeVisitorsErrors.cs" />
-    <Compile Include="UniversalVisitors\AddBeginEndsVisitor.cs" />
-    <Compile Include="UniversalVisitors\CountNodesVisitor.cs" />
-    <Compile Include="UniversalVisitors\DeleteRedundantBeginEnds.cs" />
-    <Compile Include="UniversalVisitors\SimplePrettyPrinterVisitor.cs" />
-    <Compile Include="YieldVisitors\CheckVariablesRedefenitionVisitor.cs" />
-    <Compile Include="YieldVisitors\CollectClassMethodsVisitor.cs" />
-    <Compile Include="YieldVisitors\CollectClassPropertiesVisitor.cs" />
-    <Compile Include="YieldVisitors\CollectUnitGlobalsVisitor.cs" />
-    <Compile Include="YieldVisitors\DeleteAllLocalDefs.cs" />
-    <Compile Include="YieldVisitors\DeleteLocalDefs.cs" />
-    <Compile Include="YieldVisitors\CollectClassFieldsVisitor.cs" />
-    <Compile Include="YieldVisitors\LoweringVisitor.cs" />
-    <Compile Include="YieldVisitors\LocalVariablesTypeDetectorHelperVisior.cs" />
-    <Compile Include="YieldVisitors\LoweringYieldSequenceVisitor.cs" />
-    <Compile Include="YieldVisitors\MarkMethodHasYieldVisitor.cs" />
-    <Compile Include="YieldVisitors\ProcessYieldsCapturedVars.cs" />
-    <Compile Include="YieldVisitors\RenameSameBlockLocalVarsVisitor.cs" />
-    <Compile Include="YieldVisitors\ReplaceBreakContinueWithGotoLabelVisitor.cs" />
-    <Compile Include="YieldVisitors\ReplaceCapturedVariablesVisitor.cs" />
-    <Compile Include="YieldVisitors\ReplaceFormalParametersRefsVisitor.cs" />
-    <Compile Include="YieldVisitors\ReplaceVariableNameVisitor.cs" />
-    <Compile Include="YieldVisitors\ReplaceYieldWithLamdasVisitor.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Errors\Errors.csproj">
-      <Project>{44a01f9e-dce7-470c-aae5-c3de0ccbee3b}</Project>
-      <Name>Errors</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Localization\Localization.csproj">
-      <Project>{2de2842f-0912-4251-bc0f-480854c44a13}</Project>
-      <Name>Localization</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ParserTools\ParserTools.csproj">
-      <Project>{af2efd7b-69dd-4b43-af65-b59b29349c23}</Project>
-      <Name>ParserTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
-      <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
-      <Name>SyntaxTree</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Yield\YieldHelpers\YieldHelpers.csproj">
-      <Project>{ce5c55c2-a11c-4e94-a9fa-3fc6ca3e4c09}</Project>
-      <Name>YieldHelpers</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

@@ -1,4 +1,4 @@
-call Studio.bat /t:rebuild "/property:Configuration=Release" "/p:Platform=Any CPU" PascalABCNET.sln
+dotnet build -c Release --no-incremental PascalABCNET.sln
 
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 

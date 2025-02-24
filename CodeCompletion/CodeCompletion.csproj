@@ -1,140 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1AB15F6E-C22E-499A-A7ED-54BA7DE5CFA6}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CodeCompletion</RootNamespace>
-    <AssemblyName>CodeCompletion</AssemblyName>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>4.0</OldToolsVersion>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <TargetFramework>net40</TargetFramework>
+    
     <OutputPath>..\bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
+  
   <ItemGroup>
-    <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\Compiler\Compiler.csproj" />
+    <ProjectReference Include="..\Errors\Errors.csproj" />
+    <ProjectReference Include="..\LanguageIntegrator\LanguageIntegrator.csproj" />
+    <ProjectReference Include="..\ParserTools\ParserTools.csproj" />
+    <ProjectReference Include="..\SemanticTree\SemanticTree.csproj" />
+    <ProjectReference Include="..\StringConstants\StringConstants.csproj" />
+    <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj" />
+    <ProjectReference Include="..\TreeConverter\TreeConverter.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="CodeCompletion.cs" />
-    <Compile Include="CodeCompletionPCUReader.cs" />
-    <Compile Include="CodeFormatter.cs" />
-    <Compile Include="DomConverter.cs" />
-    <Compile Include="DomSyntaxTreeVisitor.cs" />
-    <Compile Include="ExpressionEvaluator.cs" />
-    <Compile Include="ExpressionVisitor.cs" />
-    <Compile Include="FindReferences.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SemanticTreeWalker.cs" />
-    <Compile Include="SymTable.cs" />
-    <Compile Include="Testing.cs" />
-    <Compile Include="TypeTable.cs" />
-    <Compile Include="UnitXmlDocs.cs" />
-    <Compile Include="XmlDocs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Compiler\Compiler.csproj">
-      <Project>{1E42361A-EDA3-4872-88AF-A3AAF600D36D}</Project>
-      <Name>Compiler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Errors\Errors.csproj">
-      <Project>{44A01F9E-DCE7-470C-AAE5-C3DE0CCBEE3B}</Project>
-      <Name>Errors</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LanguageIntegrator\LanguageIntegrator.csproj">
-      <Project>{a48d9069-d569-4110-9252-a10f139b669b}</Project>
-      <Name>LanguageIntegrator</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ParserTools\ParserTools.csproj">
-      <Project>{AF2EFD7B-69DD-4B43-AF65-B59B29349C23}</Project>
-      <Name>ParserTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SemanticTree\SemanticTree.csproj">
-      <Project>{613E0DDA-AA8A-437C-AC45-507B47429FF9}</Project>
-      <Name>SemanticTree</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\StringConstants\StringConstants.csproj">
-      <Project>{e8aefbf9-0113-4fa4-be45-6cda555498b7}</Project>
-      <Name>StringConstants</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
-      <Project>{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}</Project>
-      <Name>SyntaxTree</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TreeConverter\TreeConverter.csproj">
-      <Project>{1C9C945A-586D-42A2-A06B-65D84FA7FF78}</Project>
-      <Name>TreeConverter</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>Клиентский профиль .NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Установщик Windows 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
