@@ -39,6 +39,8 @@ namespace CodeCompletion
         //TreeConverterSymbolTable tcst;
         public CodeCompletionController controller;
         public bool is_compiled = false;
+
+        // TODO: Требуется адаптировать к многоязычности  EVA
         public static SymInfo[] standard_units;
         private Hashtable cur_used_assemblies;
         public CompilationUnit unit;
