@@ -32,17 +32,14 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void Enter(syntax_tree_node stn)
         {
-            if (stn is foreach_stmt     
-                || stn is for_node
-                ||  stn is while_node           
-                ||  stn is procedure_definition)
+            if (stn is statement_list)
             {
                 symbolTable.OpenLocalScope();
             }
             if (stn is procedure_definition)
             {
-                symbolTable.Add("result", NameKind.LocalVariable);
                 symbolTable.IsInFunctionBody = true;
+                symbolTable.OpenLocalScope();
             }
             if (stn is block && !isInProgramBlock && !symbolTable.IsInFunctionBody)
             {
@@ -58,11 +55,9 @@ namespace Languages.SPython.Frontend.Converters
             if (stn is procedure_definition)
             {
                 symbolTable.IsInFunctionBody = false;
+                symbolTable.CloseLocalScope();
             }
-            if (stn is foreach_stmt
-                || stn is for_node
-                || stn is while_node
-                || stn is procedure_definition)
+            if (stn is statement_list)
             {
                 symbolTable.CloseLocalScope();
             }
@@ -159,17 +154,26 @@ namespace Languages.SPython.Frontend.Converters
             visit(_interface_node.interface_definitions);
         }
 
-        //public override void visit(global_statement _global_statement)
-        //{
-        //    foreach (ident _ident in _global_statement.idents.idents)
-        //        if (symbolTable.localVariables.Contains(_ident.name))
-        //            throw new SyntaxVisitorError("Variable local declaration before global statement", 
-        //                _global_statement.source_context);
-        //        else if (functionParameters.Contains(_ident.name))
-        //            throw new SyntaxVisitorError("Variable declared global has the same name as function parameter", 
-        //                _global_statement.source_context);
-        //        else functionGlobalVariables.Add(_ident.name);
-        //}
+        public override void visit(global_statement _global_statement)
+        {
+            foreach (ident _ident in _global_statement.idents.idents)
+            {
+                NameKind nameType = symbolTable[_ident.name];
+                switch (nameType)
+                {
+                    case NameKind.GlobalVariable:
+                    case NameKind.ImportedNameAlias:
+                        symbolTable.MakeVisibleForAssignment(_ident.name);
+                        break;
+                    case NameKind.Unknown:
+                        throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}",
+                        _global_statement.source_context, _ident.name);
+                    default:
+                        throw new SPythonSyntaxVisitorError("SCOPE_CONTAINS_NAME_{0}",
+                        _global_statement.source_context, _ident.name);
+                }
+            }
+        }
 
         public override void visit(typed_parameters _typed_parameters)
         {
@@ -185,19 +189,6 @@ namespace Languages.SPython.Frontend.Converters
             base.visit(_var_statement);
         }
 
-        public override void visit(if_node _if_node)
-        {
-            base.visit(_if_node.condition);
-
-            symbolTable.OpenLocalScope();
-            base.visit(_if_node.then_body);
-            symbolTable.CloseLocalScope();
-
-            symbolTable.OpenLocalScope();
-            base.visit(_if_node.else_body);
-            symbolTable.CloseLocalScope();
-        }
-
         public override void visit(import_statement _import_statement)
         {
             foreach (as_statement as_Statement in _import_statement.modules_names.as_statements)
@@ -208,12 +199,6 @@ namespace Languages.SPython.Frontend.Converters
                     real_name = symbolTable.specialModulesAliases[real_name];
                 symbolTable.AddModuleAlias(real_name, alias);
             }
-
-            var upper = UpperNode();
-            if (upper is interface_node _interface_node)
-                _interface_node.interface_definitions.ReplaceDescendant<syntax_tree_node, syntax_tree_node>(
-                    _import_statement, new empty_statement());
-            else Replace(_import_statement, new empty_statement());
         }
 
         public override void visit(from_import_statement _from_import_statement)
@@ -239,38 +224,36 @@ namespace Languages.SPython.Frontend.Converters
                     symbolTable.AddAlias(as_Statement.real_name.name, as_Statement.alias.name, module_name);
                 }
             }
-
-            var upper = UpperNode();
-            if (upper is interface_node _interface_node)
-                _interface_node.interface_definitions.ReplaceDescendant<syntax_tree_node, syntax_tree_node>(
-                    _from_import_statement, new empty_statement());
-            else Replace(_from_import_statement, new empty_statement());
         }
 
         public override void visit(variable_definitions _variable_definitions)
         {
             string variable_name = _variable_definitions.var_definitions[0].vars.idents[0].name;
-            symbolTable.Add(variable_name, NameKind.GlobalVariable);
+            // Присвоение к переменной из модуля воспринимается парсером как объявление
+            if (symbolTable[variable_name] == NameKind.ImportedNameAlias)
+                Replace(_variable_definitions, new empty_statement());
+            else
+            {
+                symbolTable.Add(variable_name, NameKind.GlobalVariable);
 
-            base.visit(_variable_definitions);
+                base.visit(_variable_definitions);
+            }
         }
 
         public override void visit(assign _assign)
         {
-            if (_assign.to is ident _ident) { 
-                if (symbolTable[_ident.name] == NameKind.Unknown) {
+            if (_assign.to is ident _ident) {
+                if (!symbolTable.IsVisibleForAssignment(_ident.name))
+                {
                     symbolTable.Add(_ident.name, NameKind.LocalVariable);
 
                     var _var_statement = SyntaxTreeBuilder.BuildVarStatementNodeFromAssignNode(_assign);
-                    //if (!_assign.first_assignment_defines_type)
-                    //_var_statement.var_def.vars_type = VariablesToDefinitions[_ident.name].var_definitions[0].vars_type;
 
                     ReplaceStatement(_assign, _var_statement);
 
-                    base.visit(_assign);
+                    base.visit(_var_statement);
                     return;
                 }
-                symbolTable.Add(_ident.name, NameKind.LocalVariable);
             }
             base.visit(_assign);
         }
@@ -334,10 +317,24 @@ namespace Languages.SPython.Frontend.Converters
                 { "random", "random1" },
             };
 
+            // names added to current function with global statements
+            private HashSet<string> NamesAddedByGlobal = new HashSet<string>();
+
             private bool isInFunctionBody = false;
             public bool IsInFunctionBody {
                 get { return isInFunctionBody; }
-                set { isInFunctionBody = value; }
+                set 
+                { 
+                    isInFunctionBody = value; 
+                    if (isInFunctionBody)
+                    {
+                        Add("result", NameKind.LocalVariable);
+                    }
+                    else
+                    {
+                        NamesAddedByGlobal.Clear();
+                    }
+                }
             }
 
             // module alias -> module real name
@@ -377,14 +374,27 @@ namespace Languages.SPython.Frontend.Converters
                 return aliasToRealNameAndModuleName[alias].Item2;
             }
 
+            public void MakeVisibleForAssignment(string name)
+            {
+                NamesAddedByGlobal.Add(name);
+            }
+
+            public bool IsVisibleForAssignment(string name)
+            {
+                NameKind kind = this[name];
+                if (kind == NameKind.Unknown) return false;
+                if (!isInFunctionBody) return true;
+                return (kind != NameKind.GlobalVariable &&
+                    kind != NameKind.ImportedNameAlias) ||
+                    NamesAddedByGlobal.Contains(name);
+            }
+
             public NameKind this[string name]
             {
                 get { 
                     if (localVariables.Contains(name))
                         return NameKind.LocalVariable;
-                    if (nameTypes.ContainsKey(name) &&
-                        (nameTypes[name] != NameKind.GlobalVariable
-                        || !isInFunctionBody))
+                    if (nameTypes.ContainsKey(name))
                         return nameTypes[name];
                     return NameKind.Unknown; 
                 }

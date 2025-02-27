@@ -288,7 +288,7 @@ end;
 procedure InitOnce; // Это тоже относится к Черепахе
 begin
   Window.Title := 'Исполнитель Черепаха';
-  Font.Size := 12;
+  Font.Size := 14;
   Pen.RoundCap := True;
 end;
 

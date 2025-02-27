@@ -1,37 +1,24 @@
-Uses System, PABCSystem;
-
-const Size = 10;
-
-procedure PrintArray<T>(a: array of T);
-begin
-  foreach v: T in a do
-    Write(v, ' ');
-  Writeln;
-end;    
-
-var a: array of integer;
+﻿const Size = 10;
 
 begin
-  SetLength(a, Size);
   // Заполнение массива
-  for var i:=0 to a.Length-1 do
-    a[i] := Random(100);
-  
+  var a := ArrRandomInteger(Size);
+
   // Вывод всех элементов массива
-  PrintArray(a);
+  a.Println;
   
   // Сортировка массива (знак & используется для того,
   // чтобы воспользоваться ключевым словом array при обозначении класса Array)
-  &Array.Sort(a);
+  Sort(a);
 
-  PrintArray(a);
+  a.Println;
 
   // Обращение массива
-  &Array.Reverse(a);
+  Reverse(a);
 
-  PrintArray(a);
+  a.Println;
 
   // Поиск вхождения элемента в массив
-  var i := &Array.IndexOf(a, 99);
-  Writeln(i);
+  var i := a.IndexOf(99);
+  Println(i);
 end.

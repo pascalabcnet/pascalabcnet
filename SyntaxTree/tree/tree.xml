@@ -3276,6 +3276,7 @@
     <SyntaxNode Name="array_const_new" BaseName="addressed_value">
       <Fields>
         <SyntaxField Name="elements" SyntaxType="expression_list" />
+        <ExtendedField Name="braces_type" Type="char" CreateVariable="false" DeleteVariable="false" />
       </Fields>
       <Methods />
       <Tags>
@@ -3598,6 +3599,7 @@
       <HelpData Key="array_const" Value="" />
       <HelpData Key="array_const.elements" Value="" />
       <HelpData Key="array_const_new" Value="" />
+      <HelpData Key="array_const_new.braces_type" Value="" />
       <HelpData Key="array_const_new.elements" Value="" />
       <HelpData Key="array_of_const_type" Value="array of const" />
       <HelpData Key="array_of_const_type_defenition" Value="array of const" />

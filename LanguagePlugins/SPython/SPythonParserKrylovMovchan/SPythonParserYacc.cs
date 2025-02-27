@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 21.12.2024 18:26:20
+// DateTime: 26.02.2025 18:56:04
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -567,9 +567,9 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 					symbolTable.Add(id.name);
 				//}
 			}*/
-			//$$ = new global_statement($2 as ident_list, @$);
-			CurrentSemanticValue.stn = null;
-			parserTools.AddErrorFromResource("UNSUPPORTED_CONSTRUCTION_{0}",CurrentLocationSpan, "global");
+			CurrentSemanticValue.stn = new global_statement(ValueStack[ValueStack.Depth-1].stn as ident_list, CurrentLocationSpan);
+			//$$ = null;
+			//parserTools.AddErrorFromResource("UNSUPPORTED_CONSTRUCTION_{0}",@$, "global");
 		}
         break;
       case 25: // ident -> ID
@@ -633,6 +633,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 				globalVariables.Add(id.name);
 				ass.first_assignment_defines_type = true;
 				type_definition ntr = new named_type_reference(new ident("integer"));
+				//type_definition ntr = (new same_type_node($3) as type_definition);
 				var vds = new var_def_statement(new ident_list(id, LocationStack[LocationStack.Depth-3]), ntr, null, definition_attribute.None, false, CurrentLocationSpan);
 				decl.Add(new variable_definitions(vds, CurrentLocationSpan), CurrentLocationSpan);
 			}
@@ -861,7 +862,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 84: // variable -> LBRACKET, expr_list, RBRACKET
 {
-			var acn = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);
+			var acn = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, '|', CurrentLocationSpan);
 			var dn = new dot_node(acn as addressed_value, (new ident("ToList")) as addressed_value, CurrentLocationSpan);
 			CurrentSemanticValue.ex = new method_call(dn as addressed_value, null, CurrentLocationSpan);
 		}
@@ -956,7 +957,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 			//$$ = pd1;
 			CurrentSemanticValue.stn = new procedure_definition(ValueStack[ValueStack.Depth-5].td as procedure_header, new block(null, ValueStack[ValueStack.Depth-3].stn as statement_list, LocationStack[LocationStack.Depth-3]), CurrentLocationSpan);
 
-			var pd = new procedure_definition(ValueStack[ValueStack.Depth-5].td as procedure_header, null, LocationStack[LocationStack.Depth-5]);
+			var pd = new procedure_definition((ValueStack[ValueStack.Depth-5].td as procedure_header).TypedClone(), null, LocationStack[LocationStack.Depth-5]);
             pd.proc_header.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_forward));
 			decl_forward.Add(pd, LocationStack[LocationStack.Depth-5]);
 		}

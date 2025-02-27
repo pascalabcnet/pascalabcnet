@@ -237,9 +237,9 @@ global_stmt
 					symbolTable.Add(id.name);
 				//}
 			}*/
-			//$$ = new global_statement($2 as ident_list, @$);
-			$$ = null;
-			parserTools.AddErrorFromResource("UNSUPPORTED_CONSTRUCTION_{0}",@$, "global");
+			$$ = new global_statement($2 as ident_list, @$);
+			//$$ = null;
+			//parserTools.AddErrorFromResource("UNSUPPORTED_CONSTRUCTION_{0}",@$, "global");
 		}
 	;
 
@@ -313,6 +313,7 @@ assign_stmt
 				globalVariables.Add(id.name);
 				ass.first_assignment_defines_type = true;
 				type_definition ntr = new named_type_reference(new ident("integer"));
+				//type_definition ntr = (new same_type_node($3) as type_definition);
 				var vds = new var_def_statement(new ident_list(id, @1), ntr, null, definition_attribute.None, false, @$);
 				decl.Add(new variable_definitions(vds, @$), @$);
 			}
@@ -539,7 +540,7 @@ variable
 	// list constant
 	| LBRACKET expr_list RBRACKET
 		{
-			var acn = new array_const_new($2 as expression_list, @$);
+			var acn = new array_const_new($2 as expression_list, '|', @$);
 			var dn = new dot_node(acn as addressed_value, (new ident("ToList")) as addressed_value, @$);
 			$$ = new method_call(dn as addressed_value, null, @$);
 		}
@@ -641,7 +642,7 @@ proc_func_decl
 			//$$ = pd1;
 			$$ = new procedure_definition($2 as procedure_header, new block(null, $4 as statement_list, @4), @$);
 
-			var pd = new procedure_definition($2 as procedure_header, null, @2);
+			var pd = new procedure_definition(($2 as procedure_header).TypedClone(), null, @2);
             pd.proc_header.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_forward));
 			decl_forward.Add(pd, @2);
 		}

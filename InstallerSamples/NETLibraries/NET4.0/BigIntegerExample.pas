@@ -1,12 +1,9 @@
-// Использование длинных целых. Вычисление 100!
-{$reference 'System.Numerics.dll'}
-uses System.Numerics;
-
-var n := 100;
+﻿// Использование длинных целых. Вычисление 100!
 
 begin
-  var f := new BigInteger(1);
+  var n := 100;
+  var f: BigInteger := 1;
   for var i:=2 to n do
     f := f * i;
-  writelnFormat('{0}! = {1}',n,f);
+  Print($'{n}! = {f}');
 end.

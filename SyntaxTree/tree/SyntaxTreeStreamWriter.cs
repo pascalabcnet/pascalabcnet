@@ -6953,6 +6953,7 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_array_const_new.elements.visit(this);
 			}
+			bw.Write(_array_const_new.braces_type);
 		}
 
 

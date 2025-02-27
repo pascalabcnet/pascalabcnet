@@ -1,4 +1,4 @@
-﻿uses Turtle,GraphWPF;
+﻿uses Turtle;
 
 var 
   Atom,FStr,XStr,YStr: string;
@@ -8,13 +8,13 @@ var
 procedure Init1; // Dragon
 begin
   (Atom,FStr,XStr,YStr) := ('fx','f','x+yf+','-fx-y');
-  (angle,len,n,x0,y0) := (90,3,15,300,450);
+  (angle,len,n,x0,y0) := (90,0.1,15,7,0);
 end;
 
 procedure Init2; // Koch curve
 begin
   (Atom,FStr,XStr,YStr) := ('F', 'F-F++F-F', '', '');
-  (angle,len,n,x0,y0) := (60,5,7,10,550);
+  (angle,len,n,x0,y0) := (60,0.012,7,-13,0);
 end;
 
 procedure Init3; // Quadratic Koch Island
@@ -48,6 +48,7 @@ begin
   SetWidth(0.5);
   //SetColor(Colors.Red);
   Down;
+  Turn(90);
   RunStr(Atom,n);
   Up;
 end. 

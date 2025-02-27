@@ -45,7 +45,7 @@
     <Compile Include="ImportToUsesVisitor.cs" />
     <Compile Include="ListDesugarVisitor.cs" />
     <Compile Include="RetainUsedGlobalVariablesVisitor.cs" />
-    <Compile Include="SameNameVisitor.cs" />
+    <Compile Include="TreeNodesRearrangementVisitor.cs" />
     <Compile Include="FunctionsWithNamedParametersDesugarVisitor.cs" />
     <Compile Include="StandardSyntaxTreeConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

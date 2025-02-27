@@ -1,4 +1,4 @@
-﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (05.08.2024)
+﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (07.02.2025)
 unit School;
 
 interface
@@ -388,7 +388,7 @@ end;
 function BinFormat(number: BigInteger; bytes: integer; split: string): string;
 begin
   if number < 0 then number := -number;
-  var a := number = 0 ? |byte(0)| : number.ToByteArray;
+  var a := number = 0 ? [byte(0)] : number.ToByteArray;
   var len := a.Length;
   if (number > 0) and (a[^1] = 0) then Dec(len);
   SetLength(a, Max(bytes, len));
@@ -756,7 +756,7 @@ function IsPrime(Self: integer): boolean; extensionmethod := IsPrime(Self);
 function Primes(n: integer): List<integer>;
 // Решето Эратосфена
 begin
-  Result := new List<integer>;
+  Result := [];
   if n < 2 then
     exit;
   var Sieve := new boolean[n];
@@ -784,7 +784,7 @@ function Primes(m, n: integer): List<integer>;
 begin
   var ls := ubPrimeDivs; // длина сегмента
   if m > n then Swap(m, n);
-  Result := new List<integer>;
+  Result := [];
   if m <= LPrimes[^1] then
   begin
     foreach var prime in LPrimes do
@@ -851,7 +851,7 @@ end;
 /// Для составных чисел при n >= 4 возвращается список уникальных простых делителей.
 function PrimeDivisors(n: integer): List<integer>;
 begin
-  Result := new List<integer>;
+  Result := [];
   if n < 2 then exit;
   var (i, prime, m) := (0, LPrimes[0], n);
   while Sqr(prime) <= n do
@@ -914,7 +914,7 @@ function PrimeDivisorsCount(Self: integer): integer; extensionmethod := PrimeDiv
 /// Для составных чисел n >= 4 возвращается список всех простых факторов.
 function PrimeFactors(n: integer): List<integer>;
 begin
-  Result := new List<integer>;
+  Result := [];
   if n < 2 then exit;
   var (i, prime, m) := (0, LPrimes[0], n);
   while Sqr(prime) <= n do
@@ -983,7 +983,7 @@ function Factorize(Self: integer): List<integer>; extensionmethod := PrimeFactor
 /// Обратное действие выполняет функция DigitsToInt64.
 function Digits(n: int64; base: integer): List<integer>;
 begin
-  Result := new List<integer>;
+  Result := [];
   if (n < 0) or (base < 2) or (base > integer.MaxValue) then exit;
   if n = 0 then Result := Lst(0)
   else
@@ -1008,7 +1008,7 @@ function Digits(Self: int64; base: integer := 10): List<integer>;
 /// Обратное действие выполняют функции DigitsToInt64 и DigitsToBigInteger. 
 function Digits(n: BigInteger; base: integer): List<integer>;
 begin
-  Result := new List<integer>;
+  Result := [];
   if (n < 0) or (base < 2) or (base > integer.MaxValue) then exit;
   if n = 0 then Result := Lst(0)
   else
@@ -1066,7 +1066,7 @@ function DigitsToBigInteger(Self: List<integer>; base: integer := 10): BigIntege
 // на основе идеи А. Богданова
 function Divisors(n: integer): List<integer>;
 begin
-  Result := new List<integer>;
+  Result := [];
   Result.Add(1);
   foreach var prime in LPrimes do
   begin
@@ -1249,7 +1249,7 @@ function TrueTable(n: integer; f: (array of boolean) -> boolean):
     array[,] of boolean;
 begin
   Result := new boolean[1 shl n, n + 1];
-  foreach var values in |False, True|.CartesianPower(n) index i do
+  foreach var values in [False, True].CartesianPower(n) index i do
   begin
     foreach var val in values index j do 
     begin
