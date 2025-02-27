@@ -91,7 +91,7 @@ namespace PascalABCCompiler.TreeConverter
 
         private common_unit_node _system_unit;
 		internal bool debug=true;
-		protected bool debugging=false;
+		internal bool debugging=false;
         public bool for_intellisense = false;
         private List<var_definition_node> compiledVariables = new List<var_definition_node>();
         internal List<Errors.Error> ErrorsList;
@@ -552,7 +552,7 @@ namespace PascalABCCompiler.TreeConverter
                 SystemLibrary.SystemLibInitializer.TextFileType.TypeNode.type_special_kind = PascalABCCompiler.SemanticTree.type_special_kind.text_file;
         }
 
-        protected virtual void get_system_module(common_unit_node psystem_unit)
+        private void get_system_module(common_unit_node psystem_unit)
         {
         	init_system_module(psystem_unit);
         	//esli zapustili v otladke, to vosstanovim mnozhestvo i procedury sozdanija diapasonov, inache ne budet rabotat
@@ -602,7 +602,7 @@ namespace PascalABCCompiler.TreeConverter
             tctn.scope.AddSymbol(StringConstants.noteq_name, SystemLibrary.SystemLibInitializer.CompareSetInEquals.SymbolInfo.FirstOrDefault());
         }
 
-        protected virtual void CreateSpecialFields(common_unit_node psystem_unit)
+        private void CreateSpecialFields(common_unit_node psystem_unit)
         {
             List<SymbolInfo> sil = psystem_unit.scope.Find(StringConstants.IsConsoleApplicationVariableName);
             if (sil != null && sil.FirstOrDefault().sym_info is namespace_variable)
@@ -3321,7 +3321,7 @@ namespace PascalABCCompiler.TreeConverter
                 _constructor.name.source_context = _constructor.name.meth_name.source_context = _constructor.source_context;
             }
 
-            if (_constructor.name.meth_name.name != StringConstants.default_constructor_name)
+            if (_constructor.name.meth_name.name.ToLower() != StringConstants.default_constructor_name)
                 AddError(get_location(_constructor.name), "CONSTRUCTOR_CAN_HAVE_ONLY_{0}_NAME", StringConstants.default_constructor_name);
             if ((_constructor.name.class_name == null) && (context.converting_block() != block_type.type_block))
             {
@@ -5693,7 +5693,7 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 sil = context.converted_namespace.find(id.name);
                             }
-                            if (sil != null && id.name == StringConstants.default_constructor_name && context.converted_type != null && sil.FirstOrDefault().sym_info is common_method_node && (sil.FirstOrDefault().sym_info as common_method_node).is_constructor)
+                            if (sil != null && id.name.ToLower() == "create" && context.converted_type != null && sil.FirstOrDefault().sym_info is common_method_node && (sil.FirstOrDefault().sym_info as common_method_node).is_constructor)
                             {
                                 List<SymbolInfo> base_si_list = context.converted_type.base_type.find(id.name);
                                 if (base_si_list != null)
@@ -12942,7 +12942,7 @@ namespace PascalABCCompiler.TreeConverter
                                     if (context.top_function.return_value_type == null || context.top_function.return_value_type == SystemLibrary.SystemLibrary.void_type)
                                         AddError(get_location(attr), "EXPECTED_RETURN_VALUE_FOR_ATTRIBUTE");
                                     throw new NotSupportedError(get_location(attr.qualifier));
-                                    qualifier = SemanticTree.attribute_qualifier_kind.return_kind;
+                                    // qualifier = SemanticTree.attribute_qualifier_kind.return_kind;
                                 }
                                 else
                                     throw new NotSupportedError(get_location(attr.qualifier));
@@ -15437,10 +15437,11 @@ namespace PascalABCCompiler.TreeConverter
                 constant = new common_namespace_function_call_as_constant(cnfc1, loc);
                 return constant;
             }
-            else if (expr is common_namespace_function_call cnfc2
-                && cnfc2.function_node.name.StartsWith("__NewSetCreatorInternal")
+            else if (expr is common_namespace_function_call
+                && (expr as common_namespace_function_call).function_node.name.StartsWith("__NewSetCreatorInternal")
                 )
             {
+                var cnfc2 = expr as common_namespace_function_call;
                 convertion_data_and_alghoritms.check_convert_type(cnfc2, tn, loc);
                 var values = (cnfc2.parameters[0] as array_initializer).element_values;
                 // Надо компоненты проверять на константность
@@ -17251,7 +17252,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     method_call mc = new method_call();
                     mc.parameters = (expr as SyntaxTree.array_const).elements;
-                    mc.dereferencing_value = new dot_node(new ident("Tuple", expr.source_context), new ident(StringConstants.default_constructor_name, expr.source_context), expr.source_context);
+                    mc.dereferencing_value = new dot_node(new ident("Tuple", expr.source_context), new ident("Create", expr.source_context), expr.source_context);
                     return mc;
                 }
                 else if (expr is SyntaxTree.bracket_expr && (tn.type_special_kind == SemanticTree.type_special_kind.array_kind || tn.type_special_kind == SemanticTree.type_special_kind.array_wrapper))

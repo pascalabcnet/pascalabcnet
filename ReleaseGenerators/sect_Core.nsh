@@ -446,6 +446,7 @@
     ${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
     
+    CreateDirectory "$COMMONSTARTMENU\PascalABC.NET"
     CreateDirectory "$SMPROGRAMS\PascalABC.NET"
     Push "OptimizerConversion.dll"
     Call NGEN
