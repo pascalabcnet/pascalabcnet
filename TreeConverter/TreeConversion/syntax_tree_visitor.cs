@@ -91,7 +91,7 @@ namespace PascalABCCompiler.TreeConverter
 
         private common_unit_node _system_unit;
 		internal bool debug=true;
-		internal bool debugging=false;
+		public bool debugging=false;
         public bool for_intellisense = false;
         private List<var_definition_node> compiledVariables = new List<var_definition_node>();
         internal List<Errors.Error> ErrorsList;
@@ -552,7 +552,7 @@ namespace PascalABCCompiler.TreeConverter
                 SystemLibrary.SystemLibInitializer.TextFileType.TypeNode.type_special_kind = PascalABCCompiler.SemanticTree.type_special_kind.text_file;
         }
 
-        private void get_system_module(common_unit_node psystem_unit)
+        protected virtual void get_system_module(common_unit_node psystem_unit)
         {
         	init_system_module(psystem_unit);
         	//esli zapustili v otladke, to vosstanovim mnozhestvo i procedury sozdanija diapasonov, inache ne budet rabotat
@@ -602,7 +602,7 @@ namespace PascalABCCompiler.TreeConverter
             tctn.scope.AddSymbol(StringConstants.noteq_name, SystemLibrary.SystemLibInitializer.CompareSetInEquals.SymbolInfo.FirstOrDefault());
         }
 
-        private void CreateSpecialFields(common_unit_node psystem_unit)
+        protected void CreateSpecialFields(common_unit_node psystem_unit)
         {
             List<SymbolInfo> sil = psystem_unit.scope.Find(StringConstants.IsConsoleApplicationVariableName);
             if (sil != null && sil.FirstOrDefault().sym_info is namespace_variable)
