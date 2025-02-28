@@ -73,6 +73,8 @@ function sum(list: List<integer>): integer;
 
 function sum(list: List<real>): real;
 
+function !assign<T>(var a: T; b: T): T;
+
 implementation
 
 function input(): string;
@@ -138,5 +140,11 @@ end;
 
 function sum(list: List<integer>): integer := list.sum();
 function sum(list: List<real>): real := list.sum();
+
+function !assign<T>(var a: T; b: T): T;
+begin
+  a := b;
+  Result := a;
+end;
 
 end.

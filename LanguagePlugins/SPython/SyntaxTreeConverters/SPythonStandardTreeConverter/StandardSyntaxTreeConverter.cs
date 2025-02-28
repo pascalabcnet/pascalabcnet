@@ -1,4 +1,5 @@
-﻿using PascalABCCompiler;
+﻿using Languages.Pascal.Frontend.Converters;
+using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SyntaxTreeConverters;
 
@@ -19,6 +20,10 @@ namespace Languages.SPython.Frontend.Converters
             // (не работает из-за лямбд, если переместить в ConvertAfterUsedModulesCompilation)
             var ldv = new ListDesugarVisitor();
             ldv.ProcessNode(root);
+
+            // дешугаризация составных сравнительных операций
+            var ccdv = new CompoundComparisonDesugarVisitor();
+            ccdv.ProcessNode(root);
 
             return root;
         }

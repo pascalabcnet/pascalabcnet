@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompoundComparisonDesugarVisitor.cs" />
     <Compile Include="EraseSpythonOnlyNodesVisitor.cs" />
     <Compile Include="NameInterpreterVisitor.cs" />
     <Compile Include="ImportToUsesVisitor.cs" />
