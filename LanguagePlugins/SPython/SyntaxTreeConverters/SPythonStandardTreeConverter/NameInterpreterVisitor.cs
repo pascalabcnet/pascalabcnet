@@ -254,6 +254,11 @@ namespace Languages.SPython.Frontend.Converters
                     base.visit(_var_statement);
                     return;
                 }
+                else if (symbolTable[_ident.name] == NameKind.ImportedNameAlias)
+                {
+                    // Присвоение к переменной из модуля воспринимается парсером как объявление
+                    _assign.first_assignment_defines_type = false;
+                }
             }
             base.visit(_assign);
         }
@@ -261,12 +266,19 @@ namespace Languages.SPython.Frontend.Converters
         [Flags]
         private enum NameKind
         {
+            // Имя отсутствует в текущем контексте
             Unknown             = 0b_0000_0000,
+            // Ключевые слова языка
             Keyword             = 0b_0000_0001,
+            // Имя глобальной переменной
             GlobalVariable      = 0b_0000_0010,
+            // Имя глобальной функции
             GlobalFunction      = 0b_0000_0100,
+            // Имя подключённого модуля или его псевдоним 
             ModuleAlias         = 0b_0000_1000,
+            // Имя, подключённое из модуля, или его псевдоним 
             ImportedNameAlias   = 0b_0001_0000,
+            // Локальня переменная
             LocalVariable       = 0b_0010_0000,
         }
 
