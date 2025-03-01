@@ -16,6 +16,7 @@ namespace Languages.SPython.Frontend.Converters
             var ituv = new ImportToUsesVisitor();
             ituv.ProcessNode(root);
 
+            // вынос forward объявлений для всех функций в начало
             var afdv = new AddForwardDeclarationsVisitor();
             afdv.ProcessNode(root);
 

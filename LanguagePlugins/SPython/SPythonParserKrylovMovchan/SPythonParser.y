@@ -102,14 +102,11 @@ program
 				stl.left_logical_bracket = new token_info("");
 				stl.right_logical_bracket = new token_info("");
 				var bl = new block(new declarations(), stl, @$);
-				//decl.AddFirst(decl_forward.defs);
 				root = $$ = NewProgramModule(null, null, new uses_list(), bl, $2, @$);
 				root.source_context = bl.source_context;
 			}
 			// unit
 			else {
-				//decl.AddFirst(decl_forward.defs);
-				//var interface_part = new interface_node(decl as declarations, imports, null, null);
 				var interface_part = new interface_node(new declarations(), imports, null, null);
 				var initialization_part = new initfinal_part(null, $1 as statement_list, null, null, null, @$);
 
@@ -129,21 +126,18 @@ import_clause
 			foreach (as_statement as_Statement in ($2 as as_statement_list).as_statements)
 				imports.AddUsesList(new uses_list(as_Statement.real_name.name));
 			import_statement import_stmt =  new import_statement($2 as as_statement_list, @2);
-			//decl.Add(import_stmt);
 			$$ = import_stmt;
 		}
 	| FROM ident IMPORT ident_as_ident_list 
 		{
 			imports.AddUsesList(new uses_list(($2 as ident).name));
 			from_import_statement fis = new from_import_statement($2 as ident, false, $4 as as_statement_list, @$);
-			//decl.Add(fis);
 			$$ = fis;
 		}
 	| FROM ident IMPORT STAR 
 		{
 			imports.AddUsesList(new uses_list(($2 as ident).name));
 			from_import_statement fis = new from_import_statement($2 as ident, true, null, @$);
-			//decl.Add(fis);
 			$$ = fis;
 		}
 	;
@@ -158,8 +152,6 @@ import_or_decl_or_stmt
 import_or_decl
 	: proc_func_decl
 		{
-			//$$ = null;
-			//decl.Add($1 as procedure_definition, @$);
 			$$ = new declarations_as_statement(new declarations($1 as procedure_definition, @$), @$);
 		}
 	| import_clause 
@@ -172,18 +164,10 @@ import_and_decl_and_stmt_list
 	: import_or_decl_or_stmt
 		{
 			$$ = new statement_list($1 as statement, @1);
-			//if ($1 is statement st)
-			//	$$ = new statement_list($1 as statement, @1);
-			//else
-			//	$$ =  new statement_list();
 		}
 	| import_and_decl_and_stmt_list SEMICOLON import_or_decl_or_stmt
 		{
 			$$ = ($1 as statement_list).Add($3 as statement, @$);
-			//if ($3 is statement st)
-			//	$$ = ($1 as statement_list).Add(st, @$);
-			//else
-			//	$$ = ($1 as statement_list);
 		}
 	;
 
@@ -275,14 +259,7 @@ var_stmt
 	: variable COLON simple_type_identifier ASSIGN expr
 		{
 			var vds = new var_def_statement(new ident_list($1 as ident, @1), $3, $5, definition_attribute.None, false, @$);
-
-			//if ($1 is ident id && ScopeCounter == 0 && !globalVariables.Contains(id.name)) {
-			//		globalVariables.Add(id.name);
-			//		$$ = new assign(id as addressed_value, $5, $4.type, @$);
-			//		//decl.Add(new variable_definitions(vds, @$), @$);
-			//}
-			//else
-				$$ = new var_statement(vds, @$);
+			$$ = new var_statement(vds, @$);
 		}
 	;
 
@@ -290,61 +267,6 @@ assign_stmt
 	: variable ASSIGN expr
 		{
 			$$ = new assign($1 as addressed_value, $3, $2.type, @$);
-			//var ass = new assign($1 as addressed_value, $3, $2.type, @$);
-
-			//if ($1 is ident id && ScopeCounter == 0 && !globalVariables.Contains(id.name)) {
-			//	globalVariables.Add(id.name);
-			//	ass.first_assignment_defines_type = true;
-			//	type_definition ntr = new named_type_reference(new ident("integer"));
-			//	//type_definition ntr = (new same_type_node($3) as type_definition);
-			//	var vds = new var_def_statement(new ident_list(id, @1), ntr, null, definition_attribute.None, false, @$);
-			//	decl.Add(new variable_definitions(vds, @$), @$);
-			//}
-			
-			//$$ = ass;
-
-			/*if ($1 is ident id) {
-				// объявление
-				if (!isInsideFunction && ($2 != null || (!symbolTable.Contains(id.name) && (isInsideFunction || !globalVariables.Contains(id.name))))) {
-
-					// объявление глобальной переменной
-					if (symbolTable.OuterScope == null) {
-						if (globalVariables.Contains(id.name)) {
-							parserTools.AddErrorFromResource("This variable is declared before", @$);
-						}
-						else {
-							var ass = new assign(id as addressed_value, $3, $2.type, @$);
-							globalVariables.Add(id.name);
-
-							type_definition ntr;
-
-							if ($2 == null) {
-								ntr = new named_type_reference(new ident("integer"));
-								// ntr = (new same_type_node($3) as type_definition);
-								ass.first_assignment_defines_type = true;
-							}
-							else ntr = $2 as type_definition;
-
-							var vds = new var_def_statement(new ident_list(id, @1), ntr, null, definition_attribute.None, false, @$);
-							decl.Add(new variable_definitions(vds, @$), @$);
-							$$ = ass;
-						}
-					}
-					// объявление локальной переменной
-					else {
-						var vds = new var_def_statement(new ident_list(id, @1), $2, $3, definition_attribute.None, false, @$);
-						symbolTable.Add(id.name);
-						$$ = new var_statement(vds, @$);
-					}
-				}
-				// присваивание
-				else {
-					$$ = new assign(id as addressed_value, $3, $2.type, @$);
-				}
-			}
-			else {
-				$$ = new assign($1 as addressed_value, $3, $2.type, @$);
-			}*/
 		}
 	| variable assign_type expr
 		{
@@ -607,10 +529,6 @@ proc_func_decl
 	: proc_func_header block
 		{
 			$$ = new procedure_definition($1 as procedure_header, new block(null, $2 as statement_list, @2), @$);
-
-			//var pd = new procedure_definition(($1 as procedure_header).TypedClone(), null, @1);
-            //pd.proc_header.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_forward));
-			//decl_forward.Add(pd, @1);
 		}
 	;
 

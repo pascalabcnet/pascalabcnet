@@ -17,6 +17,10 @@ namespace Languages.SPython.Frontend.Converters
             {
                 decls = pm.program_block.defs;
             }
+            if (stn is interface_node intn)
+            {
+                decls = intn.interface_definitions;
+            }
 
             base.Enter(stn);
         }
