@@ -420,7 +420,7 @@ expr
 	| const_value
 		{ $$ = $1; }
 	| LPAR expr RPAR
-		{ $$ = $2; }
+		{ $$ = new bracket_expr($2, @$); }
 	;
 
 const_value
