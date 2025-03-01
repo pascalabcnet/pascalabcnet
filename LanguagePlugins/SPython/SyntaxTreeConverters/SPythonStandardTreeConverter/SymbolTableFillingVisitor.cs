@@ -12,13 +12,13 @@ using SyntaxVisitors;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    public class NameInterpreterVisitor : BaseChangeVisitor
+    // заполняет таблицу символов динамически, при проходе по дереву сверху вниз
+    public class SymbolTableFillingVisitor : BaseChangeVisitor
     {
-        private SymbolTable symbolTable;
-        private bool isInProgramBlock = false;
-        private HashSet<string> skippedFunction = new HashSet<string>();
+        protected SymbolTable symbolTable;
+        protected bool isInProgramBlock = false;
 
-        public NameInterpreterVisitor(Dictionary<string, HashSet<string>> par) {
+        public SymbolTableFillingVisitor(Dictionary<string, HashSet<string>> par) {
             symbolTable = new SymbolTable(par);
         }
 
@@ -65,126 +65,79 @@ namespace Languages.SPython.Frontend.Converters
             base.Exit(stn);
         }
 
-        public override void visit(procedure_header _procedure_header)
+        private bool IsForwardDeclaration(procedure_header _procedure_header)
         {
-            string name = _procedure_header.name.meth_name.name;
-            if (!skippedFunction.Contains(name))
-            {
-                skippedFunction.Add(name);
-                return;
-            }
+            foreach (procedure_attribute attr in _procedure_header.proc_attributes.proc_attributes)
+                if (attr.attribute_type is proc_attribute.attr_forward)
+                    return true;
 
-            symbolTable.Add(_procedure_header.name.ToString(), NameKind.GlobalFunction);
-            base.visit(_procedure_header);
+            return false;
         }
 
-        public override void visit(name_assign_expr _name_assign_expr)
+        private bool IsForwardDeclaration(function_header _function_header)
         {
+            foreach (procedure_attribute attr in _function_header.proc_attributes.proc_attributes)
+                if (attr.attribute_type is proc_attribute.attr_forward)
+                    return true;
+
+            return false;
+        }
+
+        public override void visit(procedure_header _procedure_header)
+        {
+            if (!IsForwardDeclaration(_procedure_header))
+            {
+                string procedure_name = _procedure_header.name.meth_name.name;
+                symbolTable.Add(procedure_name, NameKind.GlobalFunction);
+                base.visit(_procedure_header);
+            }
         }
 
         public override void visit(function_header _function_header)
         {
-            string name = _function_header.name.meth_name.name;
-            if (!skippedFunction.Contains(name))
+            if (!IsForwardDeclaration(_function_header))
             {
-                skippedFunction.Add(name);
-                return;
+                string function_name = _function_header.name.meth_name.name;
+                symbolTable.Add(function_name, NameKind.GlobalFunction);
+                base.visit(_function_header);
             }
-
-            symbolTable.Add(_function_header.name.ToString(), NameKind.GlobalFunction);
-            base.visit(_function_header);
-        }
-
-        public override void visit(dot_node _dot_node)
-        {
-            if (_dot_node.left is ident left)
-            {
-                NameKind nameType = symbolTable[left.name];
-                switch (nameType)
-                {
-                    case NameKind.ModuleAlias:
-                        left.name = symbolTable.AliasToRealName(left.name);
-                        break;
-                    case NameKind.ImportedNameAlias:
-                        _dot_node.left = new dot_node(new ident(symbolTable.AliasToModuleName(left.name)), left);
-                        left.name = symbolTable.AliasToRealName(left.name);
-                        break;
-                    case NameKind.Unknown:
-                        throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}",
-                        left.source_context, left.name);
-                }
-            }
-        }
-
-        public override void visit(ident _ident)
-        {
-            NameKind nameType = symbolTable[_ident.name];
-            if (nameType == NameKind.ImportedNameAlias)
-            {
-                Replace(_ident, new dot_node(new ident(symbolTable.AliasToModuleName(_ident.name))
-                    , new ident(symbolTable.AliasToRealName(_ident.name))));
-            }
-            else if (nameType == NameKind.Unknown)
-            {
-                throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}"
-                    , _ident.source_context, _ident.name);
-            }
-        }
-
-        public override void visit(unit_or_namespace _unit_or_namespace)
-        {
-
-        }
-
-        public override void visit(unit_name _unit_name)
-        {
-
         }
 
         public override void visit(foreach_stmt _foreach_stmt)
         {
+            symbolTable.OpenLocalScope();
             symbolTable.Add(_foreach_stmt.identifier.name, NameKind.LocalVariable);
             base.visit(_foreach_stmt);
+            symbolTable.CloseLocalScope();
         }
 
         public override void visit(interface_node _interface_node)
         {
-            visit(_interface_node.uses_modules);
-            visit(_interface_node.using_namespaces);
-            visit(_interface_node.interface_definitions);
+            ProcessNode(_interface_node.uses_modules);
+            ProcessNode(_interface_node.using_namespaces);
+            ProcessNode(_interface_node.interface_definitions);
         }
 
         public override void visit(global_statement _global_statement)
         {
             foreach (ident _ident in _global_statement.idents.idents)
             {
-                NameKind nameType = symbolTable[_ident.name];
-                switch (nameType)
-                {
-                    case NameKind.GlobalVariable:
-                    case NameKind.ImportedNameAlias:
-                        symbolTable.MakeVisibleForAssignment(_ident.name);
-                        break;
-                    case NameKind.Unknown:
-                        throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}",
-                        _global_statement.source_context, _ident.name);
-                    default:
-                        throw new SPythonSyntaxVisitorError("SCOPE_CONTAINS_NAME_{0}",
-                        _global_statement.source_context, _ident.name);
-                }
+                symbolTable.MakeVisibleForAssignment(_ident.name);
             }
         }
 
         public override void visit(typed_parameters _typed_parameters)
         {
-            symbolTable.Add(_typed_parameters.idents.idents[0].name, NameKind.LocalVariable);
+            foreach (ident id in _typed_parameters.idents.idents)
+                symbolTable.Add(id.name, NameKind.LocalVariable);
 
             base.visit(_typed_parameters);
         }
 
         public override void visit(var_statement _var_statement)
         {
-            symbolTable.Add(_var_statement.var_def.vars.idents[0].name, NameKind.LocalVariable);
+            foreach (ident id in _var_statement.var_def.vars.idents)
+                symbolTable.Add(id.name, NameKind.LocalVariable);
 
             base.visit(_var_statement);
         }
@@ -195,8 +148,8 @@ namespace Languages.SPython.Frontend.Converters
             {
                 string real_name = as_Statement.real_name.name;
                 string alias = as_Statement.alias.name;
-                if (symbolTable.specialModulesAliases.ContainsKey(real_name))
-                    real_name = symbolTable.specialModulesAliases[real_name];
+                if (SymbolTable.specialModulesAliases.ContainsKey(real_name))
+                    real_name = SymbolTable.specialModulesAliases[real_name];
                 symbolTable.AddModuleAlias(real_name, alias);
             }
         }
@@ -205,8 +158,8 @@ namespace Languages.SPython.Frontend.Converters
         {
             string module_real_name = _from_import_statement.module_name.name;
             string module_name = module_real_name;
-            if (symbolTable.specialModulesAliases.ContainsKey(module_name))
-                module_name = symbolTable.specialModulesAliases[module_name];
+            if (SymbolTable.specialModulesAliases.ContainsKey(module_name))
+                module_name = SymbolTable.specialModulesAliases[module_name];
 
             if (_from_import_statement.is_star)
             {
@@ -228,43 +181,27 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(variable_definitions _variable_definitions)
         {
-            string variable_name = _variable_definitions.var_definitions[0].vars.idents[0].name;
-            // Присвоение к переменной из модуля воспринимается парсером как объявление
-            if (symbolTable[variable_name] == NameKind.ImportedNameAlias)
-                Replace(_variable_definitions, new empty_statement());
-            else
+            foreach (var_def_statement vds in _variable_definitions.var_definitions)
             {
-                symbolTable.Add(variable_name, NameKind.GlobalVariable);
-
-                base.visit(_variable_definitions);
-            }
-        }
-
-        public override void visit(assign _assign)
-        {
-            if (_assign.to is ident _ident) {
-                if (!symbolTable.IsVisibleForAssignment(_ident.name))
-                {
-                    symbolTable.Add(_ident.name, NameKind.LocalVariable);
-
-                    var _var_statement = SyntaxTreeBuilder.BuildVarStatementNodeFromAssignNode(_assign);
-
-                    ReplaceStatement(_assign, _var_statement);
-
-                    base.visit(_var_statement);
-                    return;
-                }
-                else if (symbolTable[_ident.name] == NameKind.ImportedNameAlias)
+                foreach (ident id in vds.vars.idents)
                 {
                     // Присвоение к переменной из модуля воспринимается парсером как объявление
-                    _assign.first_assignment_defines_type = false;
+                    if (symbolTable[id.name] == NameKind.ImportedNameAlias)
+                    {
+                        //Replace(_variable_definitions, new empty_statement());
+                    }
+                    else
+                    {
+                        symbolTable.Add(id.name, NameKind.GlobalVariable);
+
+                        base.visit(_variable_definitions);
+                    }
                 }
             }
-            base.visit(_assign);
         }
 
         [Flags]
-        private enum NameKind
+        protected enum NameKind
         {
             // Имя отсутствует в текущем контексте
             Unknown             = 0b_0000_0000,
@@ -282,7 +219,7 @@ namespace Languages.SPython.Frontend.Converters
             LocalVariable       = 0b_0010_0000,
         }
 
-        private class SymbolTable
+        protected class SymbolTable
         {
             private Dictionary<string, NameKind> nameTypes = new Dictionary<string, NameKind>();
 
@@ -323,7 +260,7 @@ namespace Languages.SPython.Frontend.Converters
                 ResetDictionaries();
             }
 
-            public Dictionary<string, string> specialModulesAliases = new Dictionary<string, string>
+            public static Dictionary<string, string> specialModulesAliases = new Dictionary<string, string>
             {
                 { "time", "time1" },
                 { "random", "random1" },
@@ -333,6 +270,7 @@ namespace Languages.SPython.Frontend.Converters
             private HashSet<string> NamesAddedByGlobal = new HashSet<string>();
 
             private bool isInFunctionBody = false;
+
             public bool IsInFunctionBody {
                 get { return isInFunctionBody; }
                 set 
@@ -351,6 +289,7 @@ namespace Languages.SPython.Frontend.Converters
 
             // module alias -> module real name
             private Dictionary<string, string> modulesAliases = new Dictionary<string, string>();
+
             // alias of function or global variable from module -> real name and module real name
             private Dictionary<string, Tuple<string, string>> aliasToRealNameAndModuleName = new Dictionary<string, Tuple<string, string>>();
 
@@ -358,6 +297,7 @@ namespace Languages.SPython.Frontend.Converters
 
             // moduleRealName -> functions and global variables in this module real names
             private Dictionary<string, HashSet<string>> moduleNameToSymbols;
+
             public Dictionary<string, HashSet<string>> ModuleNameToSymbols
             {
                 get => moduleNameToSymbols;

@@ -32,8 +32,8 @@ namespace Languages.SPython.Frontend.Converters
         {
             // визитер проверящий корректность имён из модулей
             // и заменяющий первые присваивания переменных на объявление с инициализацией
-            var niv = new NameInterpreterVisitor(compilationArtifacts.NamesFromUsedUnits);
-            niv.ProcessNode(root);
+            var ncv = new NameCorrectVisitor(compilationArtifacts.NamesFromUsedUnits);
+            ncv.ProcessNode(root);
 
             // выносит глобальные переменные на локальный уровень
             // если они не используются в функциях (не являются глобальными)

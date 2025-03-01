@@ -42,7 +42,8 @@
   <ItemGroup>
     <Compile Include="CompoundComparisonDesugarVisitor.cs" />
     <Compile Include="EraseSpythonOnlyNodesVisitor.cs" />
-    <Compile Include="NameInterpreterVisitor.cs" />
+    <Compile Include="NameCorrectVisitor.cs" />
+    <Compile Include="SymbolTableFillingVisitor.cs" />
     <Compile Include="ImportToUsesVisitor.cs" />
     <Compile Include="ListDesugarVisitor.cs" />
     <Compile Include="RetainUsedGlobalVariablesVisitor.cs" />
