@@ -5,8 +5,10 @@ using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
+using System.Security.Cryptography;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using AssignTupleDesugarAlgorithm;
 using PascalABCCompiler.SyntaxTree;
 using SyntaxVisitors;
 
@@ -14,7 +16,29 @@ namespace Languages.SPython.Frontend.Converters
 {
     internal class NameCorrectVisitor : SymbolTableFillingVisitor
     {
+        private declarations decls;
+
         public NameCorrectVisitor(Dictionary<string, HashSet<string>> par) : base(par) { }
+
+        public override void Enter(syntax_tree_node stn)
+        {
+            if (stn is program_module pm)
+            {
+                decls = pm.program_block.defs;
+            }
+
+            base.Enter(stn);
+        }
+
+        public override void visit(declarations_as_statement _declarations_as_statement)
+        {
+            foreach (declaration decl in _declarations_as_statement.defs.defs)
+            {
+                decls.Add(decl);
+                ProcessNode(decl);
+                ReplaceStatement(_declarations_as_statement, new empty_statement());
+            }
+        }
 
         public override void visit(name_assign_expr _name_assign_expr)
         {
@@ -94,19 +118,30 @@ namespace Languages.SPython.Frontend.Converters
             {
                 if (!symbolTable.IsVisibleForAssignment(_ident.name))
                 {
-                    symbolTable.Add(_ident.name, NameKind.LocalVariable);
+                    if (symbolTable.IsOutermostScope())
+                    {
+                        symbolTable.Add(_ident.name, NameKind.GlobalVariable);
 
-                    var _var_statement = SyntaxTreeBuilder.BuildVarStatementNodeFromAssignNode(_assign);
+                        _assign.first_assignment_defines_type = true;
+                        type_definition ntr = new named_type_reference(new ident("integer"));
+                        SourceContext sc = _assign.source_context;
+                        var vds = new var_def_statement(new ident_list(_ident.name, _ident.source_context), ntr, null, definition_attribute.None, false, sc);
+                        decls.Add(new variable_definitions(vds, sc), sc);
 
-                    ReplaceStatement(_assign, _var_statement);
+                        base.visit(_assign);
+                        return;
+                    }
+                    else
+                    {
+                        symbolTable.Add(_ident.name, NameKind.LocalVariable);
 
-                    base.visit(_var_statement);
-                    return;
-                }
-                else if (symbolTable[_ident.name] == NameKind.ImportedNameAlias)
-                {
-                    // Присвоение к переменной из модуля воспринимается парсером как объявление
-                    //_assign.first_assignment_defines_type = false;
+                        var _var_statement = SyntaxTreeBuilder.BuildVarStatementNodeFromAssignNode(_assign);
+
+                        ReplaceStatement(_assign, _var_statement);
+
+                        ProcessNode(_var_statement);
+                        return;
+                    }
                 }
             }
             base.visit(_assign);

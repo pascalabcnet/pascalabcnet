@@ -16,7 +16,6 @@ namespace Languages.SPython.Frontend.Converters
     public class SymbolTableFillingVisitor : BaseChangeVisitor
     {
         protected SymbolTable symbolTable;
-        protected bool isInProgramBlock = false;
 
         public SymbolTableFillingVisitor(Dictionary<string, HashSet<string>> par) {
             symbolTable = new SymbolTable(par);
@@ -40,11 +39,6 @@ namespace Languages.SPython.Frontend.Converters
             {
                 symbolTable.IsInFunctionBody = true;
                 symbolTable.OpenLocalScope();
-            }
-            if (stn is block && !isInProgramBlock && !symbolTable.IsInFunctionBody)
-            {
-                isInProgramBlock = true;
-                symbolTable.ResetDictionaries();
             }
             
             base.Enter(stn);
@@ -185,17 +179,8 @@ namespace Languages.SPython.Frontend.Converters
             {
                 foreach (ident id in vds.vars.idents)
                 {
-                    // Присвоение к переменной из модуля воспринимается парсером как объявление
-                    if (symbolTable[id.name] == NameKind.ImportedNameAlias)
-                    {
-                        //Replace(_variable_definitions, new empty_statement());
-                    }
-                    else
-                    {
-                        symbolTable.Add(id.name, NameKind.GlobalVariable);
-
-                        base.visit(_variable_definitions);
-                    }
+                    symbolTable.Add(id.name, NameKind.GlobalVariable);
+                    base.visit(_variable_definitions);
                 }
             }
         }
@@ -223,13 +208,11 @@ namespace Languages.SPython.Frontend.Converters
         {
             private Dictionary<string, NameKind> nameTypes = new Dictionary<string, NameKind>();
 
-            private Dictionary<string, NameKind> globalNamesReserve = new Dictionary<string, NameKind>();
-
             static string[] Keywords = {
                     "integer"
                     , "real"
-                    , "true"
-                    , "false"
+                    , "True"
+                    , "False"
                     , "break"
                     , "continue"
                     , "exit"
@@ -241,23 +224,11 @@ namespace Languages.SPython.Frontend.Converters
                     nameTypes.Add(keyword, NameKind.Keyword);
             }
 
-            // Erase everything, except global variables and keywords
-            public void ResetDictionaries()
-            {
-                nameTypes.Clear();
-                FillKeywords();
-                foreach (var kvpair in globalNamesReserve)
-                    nameTypes.Add(kvpair.Key, kvpair.Value);
-                globalNamesReserve.Clear();
-                modulesAliases.Clear();
-                aliasToRealNameAndModuleName.Clear();
-                AddAliasesFromStandartLibraries();
-            }
-
             public SymbolTable(Dictionary<string, HashSet<string>> par)
             {
                 ModuleNameToSymbols = par;
-                ResetDictionaries();
+                FillKeywords();
+                AddAliasesFromStandartLibraries();
             }
 
             public static Dictionary<string, string> specialModulesAliases = new Dictionary<string, string>
@@ -370,11 +341,6 @@ namespace Languages.SPython.Frontend.Converters
 
             private void AddGlobalName(string name, NameKind nameType)
             {
-                if (nameType == NameKind.GlobalVariable
-                    || nameType == NameKind.GlobalFunction)
-                    if (!globalNamesReserve.ContainsKey(name))
-                        globalNamesReserve.Add(name, nameType);
-
                 EraseNameAsLocal(name);
 
                 if (nameTypes.ContainsKey(name))
@@ -411,6 +377,11 @@ namespace Languages.SPython.Frontend.Converters
             public void CloseLocalScope()
             {
                 localVariables.ClearScope();
+            }
+
+            public bool IsOutermostScope()
+            {
+                return localVariables.IsOutermostScope();
             }
 
             public class LocalScope
@@ -461,6 +432,11 @@ namespace Languages.SPython.Frontend.Converters
                         symbols = outerScope.symbols;
                         outerScope = outerScope.outerScope;
                     }
+                }
+
+                public bool IsOutermostScope()
+                {
+                    return outerScope.outerScope == null;
                 }
             }
         }

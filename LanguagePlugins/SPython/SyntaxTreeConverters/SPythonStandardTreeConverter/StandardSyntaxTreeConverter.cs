@@ -16,6 +16,9 @@ namespace Languages.SPython.Frontend.Converters
             var ituv = new ImportToUsesVisitor();
             ituv.ProcessNode(root);
 
+            var afdv = new AddForwardDeclarationsVisitor();
+            afdv.ProcessNode(root);
+
             // замена генерации списков на Select.Where.ToArray
             // (не работает из-за лямбд, если переместить в ConvertAfterUsedModulesCompilation)
             var ldv = new ListDesugarVisitor();
