@@ -18,6 +18,8 @@ namespace Languages.SPython.Frontend.Converters
     {
         private declarations decls;
 
+        public HashSet<string> variablesUsedAsGlobal = new HashSet<string>();
+
         public NameCorrectVisitor(Dictionary<string, HashSet<string>> par) : base(par) { }
 
         public override void Enter(syntax_tree_node stn)
@@ -38,24 +40,10 @@ namespace Languages.SPython.Frontend.Converters
         {
             if (symbolTable.IsOutermostScope())
             {
-                // не работает для нескольких переменных (var a1, a2, ...: type := value;)
-                assign _assign = new assign();
-
-                foreach (ident id in _var_statement.var_def.vars.idents)
-                {
-                    type_definition td = _var_statement.var_def.vars_type;
-                    SourceContext sc = _var_statement.source_context;
-                    var vds = new var_def_statement(new ident_list(id), td, null, definition_attribute.None, false, sc);
-                    decls.Add(new variable_definitions(vds, sc), sc);
-                    //assigns.Add(new assign(id, _var_statement.var_def.inital_value, sc));
-                    _assign = new assign(id, _var_statement.var_def.inital_value, sc);
-                }
-
-                ReplaceStatement(_var_statement, _assign);
-
-                base.visit(_var_statement);
-
-                ProcessNode(_assign);
+                // не работает для нескольких переменных (var a1, a2, ...: type;)
+                ident id = _var_statement.var_def.vars.idents[0];
+                symbolTable.Add(id.name, NameKind.GlobalVariable);
+                ProcessNode(_var_statement.var_def);
             }
             else base.visit(_var_statement);
         }
@@ -101,16 +89,24 @@ namespace Languages.SPython.Frontend.Converters
         {
             if (_dot_node.left is ident left)
             {
-                NameKind nameType = symbolTable[left.name];
-                switch (nameType)
+                NameKind nameKind = symbolTable[left.name];
+                switch (nameKind)
                 {
                     case NameKind.ModuleAlias:
                         left.name = symbolTable.AliasToRealName(left.name);
                         break;
+
                     case NameKind.ImportedNameAlias:
                         _dot_node.left = new dot_node(new ident(symbolTable.AliasToModuleName(left.name)), left);
                         left.name = symbolTable.AliasToRealName(left.name);
                         break;
+
+                    case NameKind.GlobalVariable:
+                        if (symbolTable.IsInFunctionBody &&
+                        !variablesUsedAsGlobal.Contains(left.name))
+                            variablesUsedAsGlobal.Add(left.name);
+                        break;
+
                     case NameKind.Unknown:
                         throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}",
                         left.source_context, left.name);
@@ -120,15 +116,22 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(ident _ident)
         {
-            NameKind nameType = symbolTable[_ident.name];
-            if (nameType == NameKind.ImportedNameAlias)
+            NameKind nameKind = symbolTable[_ident.name];
+            switch (nameKind)
             {
-                Replace(_ident, new dot_node(new ident(symbolTable.AliasToModuleName(_ident.name))
+                case NameKind.ImportedNameAlias:
+                    Replace(_ident, new dot_node(new ident(symbolTable.AliasToModuleName(_ident.name))
                     , new ident(symbolTable.AliasToRealName(_ident.name))));
-            }
-            else if (nameType == NameKind.Unknown)
-            {
-                throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}"
+                    break;
+
+                case NameKind.GlobalVariable:
+                    if (symbolTable.IsInFunctionBody &&
+                        !variablesUsedAsGlobal.Contains(_ident.name))
+                        variablesUsedAsGlobal.Add(_ident.name);
+                    break;
+
+                case NameKind.Unknown:
+                    throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}"
                     , _ident.source_context, _ident.name);
             }
         }
@@ -140,29 +143,22 @@ namespace Languages.SPython.Frontend.Converters
                 if (!symbolTable.IsVisibleForAssignment(_ident.name))
                 {
                     if (symbolTable.IsOutermostScope())
-                    {
                         symbolTable.Add(_ident.name, NameKind.GlobalVariable);
-
-                        _assign.first_assignment_defines_type = true;
-                        type_definition td = new named_type_reference(new ident("integer"));
-                        SourceContext sc = _assign.source_context;
-                        var vds = new var_def_statement(new ident_list(_ident.name, _ident.source_context), td, null, definition_attribute.None, false, sc);
-                        decls.Add(new variable_definitions(vds, sc), sc);
-
-                        base.visit(_assign);
-                        return;
-                    }
                     else
-                    {
                         symbolTable.Add(_ident.name, NameKind.LocalVariable);
 
-                        var _var_statement = SyntaxTreeBuilder.BuildVarStatementNodeFromAssignNode(_assign);
+                    var _var_statement = SyntaxTreeBuilder.BuildVarStatementNodeFromAssignNode(_assign);
 
-                        ReplaceStatement(_assign, _var_statement);
+                    ReplaceStatement(_assign, _var_statement);
 
-                        ProcessNode(_var_statement);
-                        return;
-                    }
+                    ProcessNode(_var_statement);
+                    return;
+                }
+                else if (symbolTable.IsInFunctionBody 
+                    && symbolTable[_ident.name] == NameKind.GlobalVariable 
+                    && !variablesUsedAsGlobal.Contains(_ident.name))
+                {
+                    variablesUsedAsGlobal.Add(_ident.name);
                 }
             }
             base.visit(_assign);

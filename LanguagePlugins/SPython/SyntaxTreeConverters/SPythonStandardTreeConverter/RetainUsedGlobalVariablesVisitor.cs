@@ -1,19 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Linq;
 using PascalABCCompiler.SyntaxTree;
 
 namespace Languages.SPython.Frontend.Converters
 {
     public class RetainUsedGlobalVariablesVisitor : BaseChangeVisitor
     {
-        private HashSet<string> variablesDeclaredGlobal = new HashSet<string>();
-        private HashSet<string> variablesUsedGlobal = new HashSet<string>();
-        private HashSet<string> localVariables = new HashSet<string>();
-        private Dictionary<string, variable_definitions> variablesToDefinitions = new Dictionary<string, variable_definitions>();
-        private bool isInProgramCode = false;
-        private bool isInFunction = false;
+        public HashSet<string> variablesUsedAsGlobal = new HashSet<string>();
+        private int scopeCounter = 0;
         private declarations decls;
-        private procedure_definition main;
 
         public RetainUsedGlobalVariablesVisitor() {}
 
@@ -24,12 +20,12 @@ namespace Languages.SPython.Frontend.Converters
                 ProcessNode(n[i]);
         }
 
-        private bool IsUnusedGlobalVariable(string name) {
-            return variablesDeclaredGlobal.Contains(name) && !variablesUsedGlobal.Contains(name);
-        }
-
         public override void Enter(syntax_tree_node stn)
         {
+            if (stn is statement_list)
+            {
+                scopeCounter++;
+            }
             if (stn is program_module pm)
             {
                 decls = pm.program_block.defs;
@@ -44,82 +40,32 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void Exit(syntax_tree_node stn)
         {
-            if (stn is procedure_definition _procedure_definition)
+            if (stn is statement_list)
             {
-                localVariables.Clear();
+                scopeCounter--;
             }
-            if (stn is program_module pm)
-            {
-                isInProgramCode = true;
-                ProcessNode(main);
-            }
-
             base.Exit(stn);
-        }
-
-        public override void visit(procedure_definition _procedure_definition)
-        {
-            if (isInProgramCode || _procedure_definition.proc_header.name.meth_name.name != "%%MAIN%%")
-            {
-                isInFunction = !isInProgramCode;
-                base.visit(_procedure_definition);
-                isInFunction = false;
-            }
-            else main = _procedure_definition;
-        }
-
-        public override void visit(variable_definitions _variable_definitions)
-        {
-            string variable_name = _variable_definitions.var_definitions[0].vars.idents[0].name;
-            variablesDeclaredGlobal.Add(variable_name);
-            variablesToDefinitions[variable_name] = _variable_definitions;
-            
-            base.visit(_variable_definitions);
         }
 
         public override void visit(var_statement _var_statement)
         {
-            if (isInFunction)
-                localVariables.Add(_var_statement.var_def.vars.idents[0].name);
-
-            base.visit(_var_statement);
-        }
-
-        public override void visit(typed_parameters _typed_parameters)
-        {
-            localVariables.Add(_typed_parameters.idents.idents[0].name);
-
-            base.visit(_typed_parameters);
-        }
-
-        public override void visit(ident _ident)
-        {
-            if (isInFunction &&
-                variablesDeclaredGlobal.Contains(_ident.name)   &&
-                !localVariables.Contains(_ident.name)           && 
-                !variablesUsedGlobal.Contains(_ident.name)
-                )
-                variablesUsedGlobal.Add(_ident.name);
-
-            base.visit(_ident);
-        }
-
-        public override void visit(assign _assign)
-        {
-            if (isInProgramCode && _assign.to is ident _ident && IsUnusedGlobalVariable(_ident.name))
+            ident id = _var_statement.var_def.vars.idents[0];
+            if (scopeCounter == 1 && variablesUsedAsGlobal.Contains(id.name))
             {
-                var _var_statement = SyntaxTreeBuilder.BuildVarStatementNodeFromAssignNode(_assign);
-                if (!_assign.first_assignment_defines_type)
-                    _var_statement.var_def.vars_type = variablesToDefinitions[_ident.name].var_definitions[0].vars_type;
-
-                variablesDeclaredGlobal.Remove(_ident.name);
-                decls.Remove(variablesToDefinitions[_ident.name]);
-
-                ReplaceStatement(_assign, _var_statement);
-                return;
+                variablesUsedAsGlobal.Remove(id.name);
+                SourceContext sc = _var_statement.source_context;
+                assign _assign = new assign(id, _var_statement.var_def.inital_value, sc);
+                type_definition td = _var_statement.var_def.vars_type;
+                if (td == null)
+                {
+                    td = new named_type_reference(new ident("integer"));
+                    _assign.first_assignment_defines_type = true;
+                }
+                var vds = new var_def_statement(new ident_list(id, id.source_context), td, null, definition_attribute.None, false, sc);
+                decls.Add(new variable_definitions(vds, sc), sc);
+                
+                ReplaceStatement(_var_statement, _assign);
             }
-            
-            base.visit(_assign);
         }
     }
 }
