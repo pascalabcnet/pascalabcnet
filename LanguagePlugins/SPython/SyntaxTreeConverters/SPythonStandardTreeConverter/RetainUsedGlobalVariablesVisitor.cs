@@ -54,17 +54,21 @@ namespace Languages.SPython.Frontend.Converters
             {
                 variablesUsedAsGlobal.Remove(id.name);
                 SourceContext sc = _var_statement.source_context;
-                assign _assign = new assign(id, _var_statement.var_def.inital_value, sc);
+                statement replace_to = new empty_statement();
                 type_definition td = _var_statement.var_def.vars_type;
+                if (_var_statement.var_def.inital_value != null)
+                {
+                    replace_to = new assign(id, _var_statement.var_def.inital_value, sc);
+                }
                 if (td == null)
                 {
+                    (replace_to as assign).first_assignment_defines_type = true;
                     td = new named_type_reference(new ident("integer"));
-                    _assign.first_assignment_defines_type = true;
                 }
                 var vds = new var_def_statement(new ident_list(id, id.source_context), td, null, definition_attribute.None, false, sc);
                 decls.Add(new variable_definitions(vds, sc), sc);
                 
-                ReplaceStatement(_var_statement, _assign);
+                ReplaceStatement(_var_statement, replace_to);
             }
         }
     }

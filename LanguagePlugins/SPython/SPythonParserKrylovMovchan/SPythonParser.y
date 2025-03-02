@@ -256,7 +256,12 @@ ident_as_ident_list
     ;
 
 var_stmt
-	: variable COLON simple_type_identifier ASSIGN expr
+	: variable COLON simple_type_identifier
+		{
+			var vds = new var_def_statement(new ident_list($1 as ident, @1), $3, null, definition_attribute.None, false, @$);
+			$$ = new var_statement(vds, @$);
+		}
+	| variable COLON simple_type_identifier ASSIGN expr
 		{
 			var vds = new var_def_statement(new ident_list($1 as ident, @1), $3, $5, definition_attribute.None, false, @$);
 			$$ = new var_statement(vds, @$);
