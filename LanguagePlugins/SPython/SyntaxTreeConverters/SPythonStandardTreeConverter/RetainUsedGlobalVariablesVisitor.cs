@@ -2,6 +2,7 @@
 using System.ComponentModel.Design;
 using System.Linq;
 using PascalABCCompiler.SyntaxTree;
+using SyntaxVisitors.PatternsVisitors;
 
 namespace Languages.SPython.Frontend.Converters
 {
@@ -10,6 +11,7 @@ namespace Languages.SPython.Frontend.Converters
         public HashSet<string> variablesUsedAsGlobal = new HashSet<string>();
         private int scopeCounter = 0;
         private declarations decls;
+        private bool isUnitCompiled = false;
 
         public RetainUsedGlobalVariablesVisitor() {}
 
@@ -32,6 +34,7 @@ namespace Languages.SPython.Frontend.Converters
             }
             if (stn is interface_node intn)
             {
+                isUnitCompiled = true;
                 decls = intn.interface_definitions;
             }
 
@@ -50,9 +53,9 @@ namespace Languages.SPython.Frontend.Converters
         public override void visit(var_statement _var_statement)
         {
             ident id = _var_statement.var_def.vars.idents[0];
-            if (scopeCounter == 1 && variablesUsedAsGlobal.Contains(id.name))
+            if (scopeCounter == 1 && (isUnitCompiled || variablesUsedAsGlobal.Contains(id.name)))
             {
-                variablesUsedAsGlobal.Remove(id.name);
+                //variablesUsedAsGlobal.Remove(id.name);
                 SourceContext sc = _var_statement.source_context;
                 statement replace_to = new empty_statement();
                 type_definition td = _var_statement.var_def.vars_type;
