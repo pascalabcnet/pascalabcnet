@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Design;
 using PascalABCCompiler.SyntaxTree;
 
 namespace Languages.SPython.Frontend.Converters
@@ -9,9 +10,10 @@ namespace Languages.SPython.Frontend.Converters
         private HashSet<string> variablesUsedGlobal = new HashSet<string>();
         private HashSet<string> localVariables = new HashSet<string>();
         private Dictionary<string, variable_definitions> variablesToDefinitions = new Dictionary<string, variable_definitions>();
-        private bool isInFunctionBody = false;
         private bool isInProgramCode = false;
-        private declarations declarationsNode;
+        private bool isInFunction = false;
+        private declarations decls;
+        private procedure_definition main;
 
         public RetainUsedGlobalVariablesVisitor() {}
 
@@ -28,18 +30,13 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void Enter(syntax_tree_node stn)
         {
-            if (stn is procedure_definition _procedure_definition)
+            if (stn is program_module pm)
             {
-                isInFunctionBody = true;
+                decls = pm.program_block.defs;
             }
-            if (stn is statement_list _statement_list)
+            if (stn is interface_node intn)
             {
-                if (!isInFunctionBody)
-                    isInProgramCode = true;
-            }
-            if (stn is declarations _declarations)
-            {
-                declarationsNode = _declarations;
+                decls = intn.interface_definitions;
             }
 
             base.Enter(stn);
@@ -49,11 +46,26 @@ namespace Languages.SPython.Frontend.Converters
         {
             if (stn is procedure_definition _procedure_definition)
             {
-                isInFunctionBody = false;
                 localVariables.Clear();
+            }
+            if (stn is program_module pm)
+            {
+                isInProgramCode = true;
+                ProcessNode(main);
             }
 
             base.Exit(stn);
+        }
+
+        public override void visit(procedure_definition _procedure_definition)
+        {
+            if (isInProgramCode || _procedure_definition.proc_header.name.meth_name.name != "%%MAIN%%")
+            {
+                isInFunction = !isInProgramCode;
+                base.visit(_procedure_definition);
+                isInFunction = false;
+            }
+            else main = _procedure_definition;
         }
 
         public override void visit(variable_definitions _variable_definitions)
@@ -67,7 +79,7 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(var_statement _var_statement)
         {
-            if (isInFunctionBody)
+            if (isInFunction)
                 localVariables.Add(_var_statement.var_def.vars.idents[0].name);
 
             base.visit(_var_statement);
@@ -82,7 +94,7 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(ident _ident)
         {
-            if (isInFunctionBody                                &&
+            if (isInFunction &&
                 variablesDeclaredGlobal.Contains(_ident.name)   &&
                 !localVariables.Contains(_ident.name)           && 
                 !variablesUsedGlobal.Contains(_ident.name)
@@ -101,7 +113,7 @@ namespace Languages.SPython.Frontend.Converters
                     _var_statement.var_def.vars_type = variablesToDefinitions[_ident.name].var_definitions[0].vars_type;
 
                 variablesDeclaredGlobal.Remove(_ident.name);
-                declarationsNode.Remove(variablesToDefinitions[_ident.name]);
+                decls.Remove(variablesToDefinitions[_ident.name]);
 
                 ReplaceStatement(_assign, _var_statement);
                 return;

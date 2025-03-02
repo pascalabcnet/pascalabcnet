@@ -38,16 +38,26 @@ namespace Languages.SPython.Frontend.Converters
         {
             if (symbolTable.IsOutermostScope())
             {
+                // не работает для нескольких переменных (var a1, a2, ...: type := value;)
+                assign _assign = new assign();
+
                 foreach (ident id in _var_statement.var_def.vars.idents)
                 {
                     type_definition td = _var_statement.var_def.vars_type;
                     SourceContext sc = _var_statement.source_context;
-                    var vds = new var_def_statement(new ident_list(id.name, id.source_context), td, null, definition_attribute.None, false, sc);
+                    var vds = new var_def_statement(new ident_list(id), td, null, definition_attribute.None, false, sc);
                     decls.Add(new variable_definitions(vds, sc), sc);
+                    //assigns.Add(new assign(id, _var_statement.var_def.inital_value, sc));
+                    _assign = new assign(id, _var_statement.var_def.inital_value, sc);
                 }
-            }
 
-            base.visit(_var_statement);
+                ReplaceStatement(_var_statement, _assign);
+
+                base.visit(_var_statement);
+
+                ProcessNode(_assign);
+            }
+            else base.visit(_var_statement);
         }
 
         public override void visit(name_assign_expr _name_assign_expr)

@@ -38,12 +38,7 @@ namespace Languages.SPython.Frontend.Converters
             // и заменяющий первые присваивания переменных на объявление с инициализацией
             var ncv = new NameCorrectVisitor(compilationArtifacts.NamesFromUsedUnits);
             ncv.ProcessNode(root);
-
-            // выносит глобальные переменные на локальный уровень
-            // если они не используются в функциях (не являются глобальными)
-            //var rugvv = new RetainUsedGlobalVariablesVisitor();
-            //rugvv.ProcessNode(root);
-
+            
             // замена вызова функций с именованными параметрами на вызов метода класса
             var fwnpdv = new FunctionsWithNamedParametersDesugarVisitor();
             fwnpdv.ProcessNode(root);
@@ -55,6 +50,11 @@ namespace Languages.SPython.Frontend.Converters
             // перестроение структуры дерева, для последующих этапов компиляции
             var tnrv = new TreeNodesRearrangementVisitor();
             tnrv.ProcessNode(root);
+
+            // выносит глобальные переменные на локальный уровень
+            // если они не используются в функциях (не являются глобальными)
+            var rugvv = new RetainUsedGlobalVariablesVisitor();
+            rugvv.ProcessNode(root);
 
             return root;
         }
