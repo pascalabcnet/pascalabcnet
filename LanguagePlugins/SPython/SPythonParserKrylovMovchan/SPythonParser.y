@@ -334,9 +334,9 @@ const_value
 	| REALNUM
 		{ $$ = $1; }
 	| TRUE
-		{ $$ = new ident("True"); }
+		{ $$ = new ident("true"); }
 	| FALSE
-		{ $$ = new ident("False"); }
+		{ $$ = new ident("false"); }
 	| STRINGNUM
 		{ $$ = $1 as literal; }
 	;

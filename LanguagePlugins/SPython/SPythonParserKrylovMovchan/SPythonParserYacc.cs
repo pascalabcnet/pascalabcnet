@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 01.03.2025 15:29:26
+// DateTime: 01.03.2025 19:26:49
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -419,14 +419,11 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 				stl.left_logical_bracket = new token_info("");
 				stl.right_logical_bracket = new token_info("");
 				var bl = new block(new declarations(), stl, CurrentLocationSpan);
-				//decl.AddFirst(decl_forward.defs);
 				root = CurrentSemanticValue.stn = NewProgramModule(null, null, new uses_list(), bl, ValueStack[ValueStack.Depth-1].ob, CurrentLocationSpan);
 				root.source_context = bl.source_context;
 			}
 			// unit
 			else {
-				//decl.AddFirst(decl_forward.defs);
-				//var interface_part = new interface_node(decl as declarations, imports, null, null);
 				var interface_part = new interface_node(new declarations(), imports, null, null);
 				var initialization_part = new initfinal_part(null, ValueStack[ValueStack.Depth-2].stn as statement_list, null, null, null, CurrentLocationSpan);
 
@@ -444,7 +441,6 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 			foreach (as_statement as_Statement in (ValueStack[ValueStack.Depth-1].stn as as_statement_list).as_statements)
 				imports.AddUsesList(new uses_list(as_Statement.real_name.name));
 			import_statement import_stmt =  new import_statement(ValueStack[ValueStack.Depth-1].stn as as_statement_list, LocationStack[LocationStack.Depth-1]);
-			//decl.Add(import_stmt);
 			CurrentSemanticValue.stn = import_stmt;
 		}
         break;
@@ -452,7 +448,6 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 {
 			imports.AddUsesList(new uses_list((ValueStack[ValueStack.Depth-3].id as ident).name));
 			from_import_statement fis = new from_import_statement(ValueStack[ValueStack.Depth-3].id as ident, false, ValueStack[ValueStack.Depth-1].stn as as_statement_list, CurrentLocationSpan);
-			//decl.Add(fis);
 			CurrentSemanticValue.stn = fis;
 		}
         break;
@@ -460,7 +455,6 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 {
 			imports.AddUsesList(new uses_list((ValueStack[ValueStack.Depth-3].id as ident).name));
 			from_import_statement fis = new from_import_statement(ValueStack[ValueStack.Depth-3].id as ident, true, null, CurrentLocationSpan);
-			//decl.Add(fis);
 			CurrentSemanticValue.stn = fis;
 		}
         break;
@@ -472,8 +466,6 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 8: // import_or_decl -> proc_func_decl
 {
-			//$$ = null;
-			//decl.Add($1 as procedure_definition, @$);
 			CurrentSemanticValue.stn = new declarations_as_statement(new declarations(ValueStack[ValueStack.Depth-1].stn as procedure_definition, CurrentLocationSpan), CurrentLocationSpan);
 		}
         break;
@@ -485,20 +477,12 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
       case 10: // import_and_decl_and_stmt_list -> import_or_decl_or_stmt
 {
 			CurrentSemanticValue.stn = new statement_list(ValueStack[ValueStack.Depth-1].stn as statement, LocationStack[LocationStack.Depth-1]);
-			//if ($1 is statement st)
-			//	$$ = new statement_list($1 as statement, @1);
-			//else
-			//	$$ =  new statement_list();
 		}
         break;
       case 11: // import_and_decl_and_stmt_list -> import_and_decl_and_stmt_list, SEMICOLON, 
                //                                  import_or_decl_or_stmt
 {
 			CurrentSemanticValue.stn = (ValueStack[ValueStack.Depth-3].stn as statement_list).Add(ValueStack[ValueStack.Depth-1].stn as statement, CurrentLocationSpan);
-			//if ($3 is statement st)
-			//	$$ = ($1 as statement_list).Add(st, @$);
-			//else
-			//	$$ = ($1 as statement_list);
 		}
         break;
       case 12: // stmt_list -> stmt
@@ -586,74 +570,12 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
       case 34: // var_stmt -> variable, COLON, simple_type_identifier, ASSIGN, expr
 {
 			var vds = new var_def_statement(new ident_list(ValueStack[ValueStack.Depth-5].ex as ident, LocationStack[LocationStack.Depth-5]), ValueStack[ValueStack.Depth-3].td, ValueStack[ValueStack.Depth-1].ex, definition_attribute.None, false, CurrentLocationSpan);
-
-			//if ($1 is ident id && ScopeCounter == 0 && !globalVariables.Contains(id.name)) {
-			//		globalVariables.Add(id.name);
-			//		$$ = new assign(id as addressed_value, $5, $4.type, @$);
-			//		//decl.Add(new variable_definitions(vds, @$), @$);
-			//}
-			//else
-				CurrentSemanticValue.stn = new var_statement(vds, CurrentLocationSpan);
+			CurrentSemanticValue.stn = new var_statement(vds, CurrentLocationSpan);
 		}
         break;
       case 35: // assign_stmt -> variable, ASSIGN, expr
 {
 			CurrentSemanticValue.stn = new assign(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
-			//var ass = new assign($1 as addressed_value, $3, $2.type, @$);
-
-			//if ($1 is ident id && ScopeCounter == 0 && !globalVariables.Contains(id.name)) {
-			//	globalVariables.Add(id.name);
-			//	ass.first_assignment_defines_type = true;
-			//	type_definition ntr = new named_type_reference(new ident("integer"));
-			//	//type_definition ntr = (new same_type_node($3) as type_definition);
-			//	var vds = new var_def_statement(new ident_list(id, @1), ntr, null, definition_attribute.None, false, @$);
-			//	decl.Add(new variable_definitions(vds, @$), @$);
-			//}
-			
-			//$$ = ass;
-
-			/*if ($1 is ident id) {
-				// об�?явление
-				if (!isInsideFunction && ($2 != null || (!symbolTable.Contains(id.name) && (isInsideFunction || !globalVariables.Contains(id.name))))) {
-
-					// об�?явление глобал�?ной пе�?еменной
-					if (symbolTable.OuterScope == null) {
-						if (globalVariables.Contains(id.name)) {
-							parserTools.AddErrorFromResource("This variable is declared before", @$);
-						}
-						else {
-							var ass = new assign(id as addressed_value, $3, $2.type, @$);
-							globalVariables.Add(id.name);
-
-							type_definition ntr;
-
-							if ($2 == null) {
-								ntr = new named_type_reference(new ident("integer"));
-								// ntr = (new same_type_node($3) as type_definition);
-								ass.first_assignment_defines_type = true;
-							}
-							else ntr = $2 as type_definition;
-
-							var vds = new var_def_statement(new ident_list(id, @1), ntr, null, definition_attribute.None, false, @$);
-							decl.Add(new variable_definitions(vds, @$), @$);
-							$$ = ass;
-						}
-					}
-					// об�?явление локал�?ной пе�?еменной
-					else {
-						var vds = new var_def_statement(new ident_list(id, @1), $2, $3, definition_attribute.None, false, @$);
-						symbolTable.Add(id.name);
-						$$ = new var_statement(vds, @$);
-					}
-				}
-				// п�?исваивание
-				else {
-					$$ = new assign(id as addressed_value, $3, $2.type, @$);
-				}
-			}
-			else {
-				$$ = new assign($1 as addressed_value, $3, $2.type, @$);
-			}*/
 		}
         break;
       case 36: // assign_stmt -> variable, assign_type, expr
@@ -739,10 +661,10 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 { CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
         break;
       case 62: // const_value -> TRUE
-{ CurrentSemanticValue.ex = new ident("True"); }
+{ CurrentSemanticValue.ex = new ident("true"); }
         break;
       case 63: // const_value -> FALSE
-{ CurrentSemanticValue.ex = new ident("False"); }
+{ CurrentSemanticValue.ex = new ident("false"); }
         break;
       case 64: // const_value -> STRINGNUM
 { CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].stn as literal; }
@@ -913,10 +835,6 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
       case 90: // proc_func_decl -> proc_func_header, block
 {
 			CurrentSemanticValue.stn = new procedure_definition(ValueStack[ValueStack.Depth-2].td as procedure_header, new block(null, ValueStack[ValueStack.Depth-1].stn as statement_list, LocationStack[LocationStack.Depth-1]), CurrentLocationSpan);
-
-			//var pd = new procedure_definition(($1 as procedure_header).TypedClone(), null, @1);
-            //pd.proc_header.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_forward));
-			//decl_forward.Add(pd, @1);
 		}
         break;
       case 91: // proc_func_header -> DEF, func_name_ident, LPAR, optional_form_param_list, RPAR, 

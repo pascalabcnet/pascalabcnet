@@ -8,9 +8,6 @@ namespace Languages.SPython.Frontend.Converters
 {
     internal class TreeNodesRearrangementVisitor : BaseChangeVisitor
     {
-        // declaration до объявления мейна (forward объявления функций и объявления переменных)
-        private List<declaration> prefix = new List<declaration>();
-
         private procedure_definition mainFunction;
 
         // declaration после объявления мейна (объявления функций с определениями)
@@ -44,15 +41,16 @@ namespace Languages.SPython.Frontend.Converters
             {
                 scopeCounter++;
             }
+            if (stn is program_module pm)
+            {
+                decls = pm.program_block.defs;
+            }
+            if (stn is interface_node intn)
+            {
+                decls = intn.interface_definitions;
+            }
 
             base.Enter(stn);
-        }
-
-        public static void Swap<T>(ref T a, ref T b)
-        {
-            T t = a;
-            a = b;
-            b = t;
         }
 
         private void BuildMainFunction(statement_list _statement_list)
@@ -78,9 +76,6 @@ namespace Languages.SPython.Frontend.Converters
                 if (!isInFunction && scopeCounter == 0)
                 {
                     BuildMainFunction(sl);
-                    decls.list.Clear();
-                    foreach (declaration decl in prefix)
-                        decls.list.Add(decl);
                     decls.list.Add(mainFunction);
                     foreach (declaration decl in suffix)
                         decls.list.Add(decl);
@@ -88,34 +83,17 @@ namespace Languages.SPython.Frontend.Converters
                     sl.Add(new procedure_call(new method_call(new ident(mainFunctionName), null), true));
                 }
             }
-            if (stn is declarations ds)
-            {
-                decls = ds;
-            }
 
             base.Exit(stn);
         }
 
-        public override void visit(var_def_statement _var_def_statement)
+        public override void visit(declarations_as_statement _declarations_as_statement)
         {
-            if (scopeCounter == 0)
-                prefix.Add(_var_def_statement);
-        }
-
-        private bool IsForwardDeclaration(procedure_definition _procedure_definition)
-        {
-            foreach (procedure_attribute attr in _procedure_definition.proc_header.proc_attributes.proc_attributes)
-                if (attr.attribute_type is proc_attribute.attr_forward) 
-                    return true;
-
-            return false;
-        }
-
-        public override void visit(procedure_definition _procedure_definition)
-        {
-            if (IsForwardDeclaration(_procedure_definition))
-                prefix.Add(_procedure_definition);
-            else suffix.Add(_procedure_definition);
+            foreach (declaration decl in _declarations_as_statement.defs.defs)
+            {
+                suffix.Add(decl);
+                ReplaceStatement(_declarations_as_statement, new empty_statement());
+            }
         }
     }
 }

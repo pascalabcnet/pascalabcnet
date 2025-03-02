@@ -41,8 +41,8 @@ namespace Languages.SPython.Frontend.Converters
 
             // выносит глобальные переменные на локальный уровень
             // если они не используются в функциях (не являются глобальными)
-            var rugvv = new RetainUsedGlobalVariablesVisitor();
-            rugvv.ProcessNode(root);
+            //var rugvv = new RetainUsedGlobalVariablesVisitor();
+            //rugvv.ProcessNode(root);
 
             // замена вызова функций с именованными параметрами на вызов метода класса
             var fwnpdv = new FunctionsWithNamedParametersDesugarVisitor();

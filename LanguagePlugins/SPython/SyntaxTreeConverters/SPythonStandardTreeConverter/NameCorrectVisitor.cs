@@ -34,14 +34,20 @@ namespace Languages.SPython.Frontend.Converters
             base.Enter(stn);
         }
 
-        public override void visit(declarations_as_statement _declarations_as_statement)
+        public override void visit(var_statement _var_statement)
         {
-            foreach (declaration decl in _declarations_as_statement.defs.defs)
+            if (symbolTable.IsOutermostScope())
             {
-                decls.Add(decl);
-                ProcessNode(decl);
-                ReplaceStatement(_declarations_as_statement, new empty_statement());
+                foreach (ident id in _var_statement.var_def.vars.idents)
+                {
+                    type_definition td = _var_statement.var_def.vars_type;
+                    SourceContext sc = _var_statement.source_context;
+                    var vds = new var_def_statement(new ident_list(id.name, id.source_context), td, null, definition_attribute.None, false, sc);
+                    decls.Add(new variable_definitions(vds, sc), sc);
+                }
             }
+
+            base.visit(_var_statement);
         }
 
         public override void visit(name_assign_expr _name_assign_expr)
@@ -68,7 +74,6 @@ namespace Languages.SPython.Frontend.Converters
                 {
                     case NameKind.GlobalVariable:
                     case NameKind.ImportedNameAlias:
-                        symbolTable.MakeVisibleForAssignment(_ident.name);
                         break;
                     case NameKind.Unknown:
                         throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}",
@@ -78,6 +83,8 @@ namespace Languages.SPython.Frontend.Converters
                         _global_statement.source_context, _ident.name);
                 }
             }
+
+            base.visit(_global_statement);
         }
 
         public override void visit(dot_node _dot_node)
@@ -127,9 +134,9 @@ namespace Languages.SPython.Frontend.Converters
                         symbolTable.Add(_ident.name, NameKind.GlobalVariable);
 
                         _assign.first_assignment_defines_type = true;
-                        type_definition ntr = new named_type_reference(new ident("integer"));
+                        type_definition td = new named_type_reference(new ident("integer"));
                         SourceContext sc = _assign.source_context;
-                        var vds = new var_def_statement(new ident_list(_ident.name, _ident.source_context), ntr, null, definition_attribute.None, false, sc);
+                        var vds = new var_def_statement(new ident_list(_ident.name, _ident.source_context), td, null, definition_attribute.None, false, sc);
                         decls.Add(new variable_definitions(vds, sc), sc);
 
                         base.visit(_assign);
