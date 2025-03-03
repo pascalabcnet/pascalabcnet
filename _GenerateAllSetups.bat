@@ -16,7 +16,7 @@ Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs Configuration
 Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs ReleaseGenerators\PascalABCNET_version.nsh.tmpl ReleaseGenerators\PascalABCNET_version.nsh
 Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs Configuration\pabcversion.txt.tmpl Release\pabcversion.txt
 
-call Studio.bat /t:rebuild "/property:Configuration=Release" PascalABCNET.sln
+dotnet build -c Release --no-incremental PascalABCNET.sln
 
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
@@ -53,7 +53,7 @@ call PascalABCNET_ALL.bat
 
 cd ..
 
-call Studio.bat /t:rebuild "/property:Configuration=Release" PascalABCNET.sln
+dotnet build -c Release --no-incremental PascalABCNET.sln
 
 GOTO EXIT
 
