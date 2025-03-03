@@ -26,6 +26,19 @@ namespace Languages.Pascal.Frontend.Converters
                 case "bool":
                     id.name = "boolean";
                     break;
+
+                case "integer":
+                    throw new SPythonSyntaxVisitorError("PASCALABCNET_TYPE_{0}_INSTEAD_OF_SPYTHON_TYPE_{1}",
+                   id.source_context, id.name, "int");
+                case "real":
+                    throw new SPythonSyntaxVisitorError("PASCALABCNET_TYPE_{0}_INSTEAD_OF_SPYTHON_TYPE_{1}",
+                   id.source_context, id.name, "float");
+                case "string":
+                    throw new SPythonSyntaxVisitorError("PASCALABCNET_TYPE_{0}_INSTEAD_OF_SPYTHON_TYPE_{1}",
+                   id.source_context, id.name, "str");
+                case "boolean":
+                    throw new SPythonSyntaxVisitorError("PASCALABCNET_TYPE_{0}_INSTEAD_OF_SPYTHON_TYPE_{1}",
+                   id.source_context, id.name, "bool");
             }
         }
     }
