@@ -75,6 +75,9 @@ function sum(list: List<real>): real;
 
 function !assign<T>(var a: T; b: T): T;
 
+type 
+    list<T> = PABCSystem.List<T>;
+
 implementation
 
 function input(): string;

@@ -114,6 +114,34 @@ namespace Languages.SPython.Frontend.Converters
             }
         }
 
+        public override void visit(named_type_reference _named_type_reference)
+        {
+            ident id = _named_type_reference.names[0];
+            NameKind nameKind = symbolTable[id.name];
+            switch (nameKind)
+            {
+                case NameKind.ModuleAlias:
+                    id.name = symbolTable.AliasToRealName(id.name);
+                    break;
+
+                case NameKind.ImportedNameAlias:
+                    _named_type_reference.names.Insert(0, new ident(symbolTable.AliasToModuleName(id.name), id.source_context));
+                    _named_type_reference.names[1].name = symbolTable.AliasToRealName(_named_type_reference.names[1].name);
+                    break;
+
+                // Сомнительно
+                case NameKind.GlobalVariable:
+                    if (symbolTable.IsInFunctionBody &&
+                    !variablesUsedAsGlobal.Contains(id.name))
+                        variablesUsedAsGlobal.Add(id.name);
+                    break;
+
+                case NameKind.Unknown:
+                    throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}",
+                    id.source_context, id.name);
+            }
+        }
+
         public override void visit(ident _ident)
         {
             NameKind nameKind = symbolTable[_ident.name];

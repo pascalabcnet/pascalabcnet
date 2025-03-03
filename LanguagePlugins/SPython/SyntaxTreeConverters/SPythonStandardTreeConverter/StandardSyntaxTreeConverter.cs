@@ -29,6 +29,9 @@ namespace Languages.SPython.Frontend.Converters
             var ccdv = new CompoundComparisonDesugarVisitor();
             ccdv.ProcessNode(root);
 
+            var tcv = new TypeCorrectVisitor();
+            tcv.ProcessNode(root);
+
             return root;
         }
 

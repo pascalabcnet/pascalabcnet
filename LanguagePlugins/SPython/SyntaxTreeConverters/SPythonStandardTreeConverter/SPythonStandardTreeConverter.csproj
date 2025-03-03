@@ -53,6 +53,7 @@
     <Compile Include="StandardSyntaxTreeConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringResources.cs" />
+    <Compile Include="TypeCorrectVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Errors\Errors.csproj">

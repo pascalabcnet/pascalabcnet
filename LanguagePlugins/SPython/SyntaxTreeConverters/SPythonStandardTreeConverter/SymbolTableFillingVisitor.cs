@@ -202,8 +202,12 @@ namespace Languages.SPython.Frontend.Converters
             static string[] Keywords = {
                     "integer"
                     , "real"
+                    , "string"
+                    , "boolean"
+
                     , "true"
                     , "false"
+
                     , "break"
                     , "continue"
                     , "exit"

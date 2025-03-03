@@ -70,8 +70,8 @@
 %type <stn> stmt_list block
 %type <stn> program import_or_decl param_name form_param_sect form_param_list optional_form_param_list dotted_ident_list
 %type <stn> ident_as_ident ident_as_ident_list
-%type <td> proc_func_header form_param_type simple_type_identifier
-%type <stn> import_clause
+%type <td> proc_func_header type_ref simple_type_identifier, template_type
+%type <stn> import_clause, template_type_params, template_param_list
 %type <ob> optional_semicolon
 %type <op> assign_type
 
@@ -256,12 +256,12 @@ ident_as_ident_list
     ;
 
 var_stmt
-	: variable COLON simple_type_identifier
+	: variable COLON type_ref
 		{
 			var vds = new var_def_statement(new ident_list($1 as ident, @1), $3, null, definition_attribute.None, false, @$);
 			$$ = new var_statement(vds, @$);
 		}
-	| variable COLON simple_type_identifier ASSIGN expr
+	| variable COLON type_ref ASSIGN expr
 		{
 			var vds = new var_def_statement(new ident_list($1 as ident, @1), $3, $5, definition_attribute.None, false, @$);
 			$$ = new var_statement(vds, @$);
@@ -542,7 +542,7 @@ proc_func_header
 		{
 			$$ = new procedure_header($4 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$);
 		}
-	| DEF func_name_ident LPAR optional_form_param_list RPAR ARROW form_param_type COLON
+	| DEF func_name_ident LPAR optional_form_param_list RPAR ARROW type_ref COLON
 		{
 			$$ = new function_header($4 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, $7 as type_definition, @$);
 		}
@@ -587,6 +587,8 @@ proc_func_call
 simple_type_identifier
 	: ident
 		{
+			$$ = new named_type_reference($1, @$);
+			/*
 			switch ($1.name) {
 				case "bool":
 					$$ = new named_type_reference("boolean", @$);
@@ -611,16 +613,48 @@ simple_type_identifier
 				default:
 					$$ = new named_type_reference($1, @$);
 					break;
-			}
+			}*/
+		}
+	| simple_type_identifier DOT ident
+        { 
+			$$ = ($1 as named_type_reference).Add($3, @$);
 		}
 	;
 
-form_param_type
+type_ref
 	: simple_type_identifier
 		{
 			$$ = $1 as named_type_reference;
 		}
+	| template_type
+		{ $$ = $1; }
 	;
+
+template_type
+    : simple_type_identifier template_type_params    
+        { 
+			$$ = new template_type_reference($1 as named_type_reference, $2 as template_param_list, @$); 
+		}
+    ;
+
+template_type_params
+    : LBRACKET template_param_list RBRACKET            
+        {
+			$$ = $2;
+			$$.source_context = @$;
+		}
+    ;
+
+template_param_list
+    : type_ref                              
+        { 
+			$$ = new template_param_list($1, @$);
+		}
+    | template_param_list COMMA type_ref  
+        { 
+			$$ = ($1 as template_param_list).Add($3, @$);
+		}
+    ;
 
 param_name
 	: ident
@@ -630,7 +664,7 @@ param_name
     ;
 
 form_param_sect
-	: param_name COLON form_param_type
+	: param_name COLON type_ref
 		{
 			$$ = new typed_parameters($1 as ident_list, $3, parametr_kind.none, null, @$);
 		}
