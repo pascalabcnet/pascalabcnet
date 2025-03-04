@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 04.03.2025 14:05:48
+// DateTime: 04.03.2025 15:47:30
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -64,11 +64,6 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 	public SPythonParserTools parserTools;
     public List<compiler_directive> CompilerDirectives;
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
-
-	private int ScopeCounter = 0;
-	private HashSet<string> globalVariables = new HashSet<string>();
-	private uses_list imports = new uses_list();
-
 	public bool is_unit_to_be_parsed = false;
 
 	public SPythonGPPGParser(AbstractScanner<ValueType, LexLocation> scanner, SPythonParserTools parserTools,
@@ -445,7 +440,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 			}
 			// unit
 			else {
-				var interface_part = new interface_node(new declarations(), imports, null, null);
+				var interface_part = new interface_node(new declarations(), new uses_list(), null, null);
 				var initialization_part = new initfinal_part(null, ValueStack[ValueStack.Depth-2].stn as statement_list, null, null, null, CurrentLocationSpan);
 
 				root = CurrentSemanticValue.stn = new unit_module(
@@ -459,31 +454,28 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 3: // import_clause -> IMPORT, ident_as_ident_list
 {
-			foreach (as_statement as_Statement in (ValueStack[ValueStack.Depth-1].stn as as_statement_list).as_statements)
-				imports.AddUsesList(new uses_list(as_Statement.real_name.name));
-			import_statement import_stmt =  new import_statement(ValueStack[ValueStack.Depth-1].stn as as_statement_list, LocationStack[LocationStack.Depth-1]);
-			CurrentSemanticValue.stn = import_stmt;
+			CurrentSemanticValue.stn = new import_statement(ValueStack[ValueStack.Depth-1].stn as as_statement_list, CurrentLocationSpan);
 		}
         break;
       case 4: // import_clause -> FROM, ident, IMPORT, ident_as_ident_list
 {
-			imports.AddUsesList(new uses_list((ValueStack[ValueStack.Depth-3].id as ident).name));
-			from_import_statement fis = new from_import_statement(ValueStack[ValueStack.Depth-3].id as ident, false, ValueStack[ValueStack.Depth-1].stn as as_statement_list, CurrentLocationSpan);
-			CurrentSemanticValue.stn = fis;
+			CurrentSemanticValue.stn = new from_import_statement(ValueStack[ValueStack.Depth-3].id as ident, false, ValueStack[ValueStack.Depth-1].stn as as_statement_list, CurrentLocationSpan);
 		}
         break;
       case 5: // import_clause -> FROM, ident, IMPORT, STAR
 {
-			imports.AddUsesList(new uses_list((ValueStack[ValueStack.Depth-3].id as ident).name));
-			from_import_statement fis = new from_import_statement(ValueStack[ValueStack.Depth-3].id as ident, true, null, CurrentLocationSpan);
-			CurrentSemanticValue.stn = fis;
+			CurrentSemanticValue.stn = new from_import_statement(ValueStack[ValueStack.Depth-3].id as ident, true, null, CurrentLocationSpan);
 		}
         break;
       case 6: // import_or_decl_or_stmt -> stmt
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+		}
         break;
       case 7: // import_or_decl_or_stmt -> import_or_decl
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+		}
         break;
       case 8: // import_or_decl -> proc_func_decl
 {
@@ -497,7 +489,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 10: // import_and_decl_and_stmt_list -> import_or_decl_or_stmt
 {
-			CurrentSemanticValue.stn = new statement_list(ValueStack[ValueStack.Depth-1].stn as statement, LocationStack[LocationStack.Depth-1]);
+			CurrentSemanticValue.stn = new statement_list(ValueStack[ValueStack.Depth-1].stn as statement, CurrentLocationSpan);
 		}
         break;
       case 11: // import_and_decl_and_stmt_list -> import_and_decl_and_stmt_list, SEMICOLON, 
@@ -508,7 +500,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 12: // stmt_list -> stmt
 {
-			CurrentSemanticValue.stn = new statement_list(ValueStack[ValueStack.Depth-1].stn as statement, LocationStack[LocationStack.Depth-1]);
+			CurrentSemanticValue.stn = new statement_list(ValueStack[ValueStack.Depth-1].stn as statement, CurrentLocationSpan);
 		}
         break;
       case 13: // stmt_list -> stmt_list, SEMICOLON, stmt
@@ -517,34 +509,54 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 		}
         break;
       case 14: // stmt -> assign_stmt
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+		}
         break;
       case 15: // stmt -> var_stmt
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+		}
         break;
       case 16: // stmt -> if_stmt
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+		}
         break;
       case 17: // stmt -> proc_func_call_stmt
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+		}
         break;
       case 18: // stmt -> while_stmt
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+		}
         break;
       case 19: // stmt -> for_stmt
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+		}
         break;
       case 20: // stmt -> return_stmt
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+		}
         break;
       case 21: // stmt -> break_stmt
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+		}
         break;
       case 22: // stmt -> continue_stmt
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+		}
         break;
       case 23: // stmt -> global_stmt
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+		}
         break;
       case 24: // global_stmt -> GLOBAL, dotted_ident_list
 {
@@ -557,10 +569,14 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 		}
         break;
       case 26: // dotted_ident -> ident
-{ CurrentSemanticValue.id = ValueStack[ValueStack.Depth-1].id; }
+{ 
+			CurrentSemanticValue.id = ValueStack[ValueStack.Depth-1].id; 
+		}
         break;
       case 27: // dotted_ident -> dotted_ident, DOT, ident
-{ CurrentSemanticValue.id = new ident(ValueStack[ValueStack.Depth-3].id.name + "." + ValueStack[ValueStack.Depth-1].id.name); }
+{ 
+			CurrentSemanticValue.id = new ident(ValueStack[ValueStack.Depth-3].id.name + "." + ValueStack[ValueStack.Depth-1].id.name, CurrentLocationSpan); 
+		}
         break;
       case 28: // dotted_ident_list -> dotted_ident
 {
@@ -573,10 +589,14 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 		}
         break;
       case 30: // ident_as_ident -> ident, AS, ident
-{ CurrentSemanticValue.stn = new as_statement(ValueStack[ValueStack.Depth-3].id, ValueStack[ValueStack.Depth-1].id, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.stn = new as_statement(ValueStack[ValueStack.Depth-3].id, ValueStack[ValueStack.Depth-1].id, CurrentLocationSpan); 
+		}
         break;
       case 31: // ident_as_ident -> ident
-{ CurrentSemanticValue.stn = new as_statement(ValueStack[ValueStack.Depth-1].id, ValueStack[ValueStack.Depth-1].id, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.stn = new as_statement(ValueStack[ValueStack.Depth-1].id, ValueStack[ValueStack.Depth-1].id, CurrentLocationSpan); 
+		}
         break;
       case 32: // ident_as_ident_list -> ident_as_ident
 {
@@ -602,69 +622,107 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 36: // assign_stmt -> variable, ASSIGN, expr
 {
+			if (!(ValueStack[ValueStack.Depth-3].ex is addressed_value))
+        		parserTools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO", CurrentLocationSpan);
 			CurrentSemanticValue.stn = new assign(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
 		}
         break;
       case 37: // assign_stmt -> variable, assign_type, expr
 {
 			if (!(ValueStack[ValueStack.Depth-3].ex is addressed_value))
-        		parserTools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO",CurrentLocationSpan);
+        		parserTools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO", CurrentLocationSpan);
 			CurrentSemanticValue.stn = new assign(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
 		}
         break;
       case 38: // assign_type -> PLUSEQUAL
-{ CurrentSemanticValue.op = ValueStack[ValueStack.Depth-1].op; }
+{ 
+			CurrentSemanticValue.op = ValueStack[ValueStack.Depth-1].op; 
+		}
         break;
       case 39: // assign_type -> MINUSEQUAL
-{ CurrentSemanticValue.op = ValueStack[ValueStack.Depth-1].op; }
+{ 
+			CurrentSemanticValue.op = ValueStack[ValueStack.Depth-1].op; 
+		}
         break;
       case 40: // assign_type -> STAREQUAL
-{ CurrentSemanticValue.op = ValueStack[ValueStack.Depth-1].op; }
+{ 
+			CurrentSemanticValue.op = ValueStack[ValueStack.Depth-1].op; 
+		}
         break;
       case 41: // assign_type -> DIVEQUAL
-{ CurrentSemanticValue.op = ValueStack[ValueStack.Depth-1].op; }
+{ 
+			CurrentSemanticValue.op = ValueStack[ValueStack.Depth-1].op; 
+		}
         break;
       case 42: // expr -> expr, PLUS, expr
-{ CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 43: // expr -> expr, STAR, expr
-{ CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 44: // expr -> expr, DIVIDE, expr
-{ CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 45: // expr -> expr, MINUS, expr
-{ CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 46: // expr -> expr, LESS, expr
-{ CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 47: // expr -> expr, GREATER, expr
-{ CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 48: // expr -> expr, LESSEQUAL, expr
-{ CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 49: // expr -> expr, GREATEREQUAL, expr
-{ CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 50: // expr -> expr, EQUAL, expr
-{ CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 51: // expr -> expr, NOTEQUAL, expr
-{ CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 52: // expr -> expr, AND, expr
-{ CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 53: // expr -> expr, OR, expr
-{ CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 54: // expr -> expr, SLASHSLASH, expr
-{ CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 55: // expr -> expr, PERCENTAGE, expr
-{ CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 56: // expr -> expr, STARSTAR, expr
 {
@@ -674,34 +732,54 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 		}
         break;
       case 57: // expr -> MINUS, expr
-{ CurrentSemanticValue.ex = new un_expr(ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new un_expr(ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 58: // expr -> NOT, expr
-{ CurrentSemanticValue.ex = new un_expr(ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new un_expr(ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+		}
         break;
       case 59: // expr -> variable
-{ CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
+{ 
+			CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; 
+		}
         break;
       case 60: // expr -> const_value
-{ CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
+{ 
+			CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; 
+		}
         break;
       case 61: // expr -> LPAR, expr, RPAR
-{ CurrentSemanticValue.ex = new bracket_expr(ValueStack[ValueStack.Depth-2].ex, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new bracket_expr(ValueStack[ValueStack.Depth-2].ex, CurrentLocationSpan); 
+		}
         break;
       case 62: // const_value -> INTNUM
-{ CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
+{ 
+			CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; 
+		}
         break;
       case 63: // const_value -> REALNUM
-{ CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
+{ 
+			CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; 
+		}
         break;
       case 64: // const_value -> TRUE
-{ CurrentSemanticValue.ex = new ident("true"); }
+{ 
+			CurrentSemanticValue.ex = new ident("true", CurrentLocationSpan); 
+		}
         break;
       case 65: // const_value -> FALSE
-{ CurrentSemanticValue.ex = new ident("false"); }
+{ 
+			CurrentSemanticValue.ex = new ident("false", CurrentLocationSpan); 
+		}
         break;
       case 66: // const_value -> STRINGNUM
-{ CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].stn as literal; }
+{ 
+			CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].stn as literal; 
+		}
         break;
       case 67: // expr_list -> expr
 {
@@ -724,13 +802,19 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 		}
         break;
       case 71: // optional_elif -> optional_else
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+		}
         break;
       case 72: // optional_else -> ELSE, COLON, block
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+		}
         break;
       case 73: // optional_else -> /* empty */
-{ CurrentSemanticValue.stn = null; }
+{ 
+			CurrentSemanticValue.stn = null; 
+		}
         break;
       case 74: // while_stmt -> WHILE, expr, COLON, block
 {
@@ -739,12 +823,11 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 75: // for_stmt -> FOR, ident, IN, expr, COLON, block
 {
-			CurrentSemanticValue.stn = new foreach_stmt(ValueStack[ValueStack.Depth-5].id, new no_type_foreach(), ValueStack[ValueStack.Depth-3].ex, (statement)ValueStack[ValueStack.Depth-1].stn, null, CurrentLocationSpan);
+			CurrentSemanticValue.stn = new foreach_stmt(ValueStack[ValueStack.Depth-5].id, new no_type_foreach(), ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].stn as statement, null, CurrentLocationSpan);
 		}
         break;
       case 76: // func_name_ident -> ident
 {
-			globalVariables.Add(ValueStack[ValueStack.Depth-1].id.name);
 			CurrentSemanticValue.id = ValueStack[ValueStack.Depth-1].id;
 		}
         break;
@@ -753,22 +836,22 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 			statement res_assign = new assign(new ident("result"), ValueStack[ValueStack.Depth-1].ex, Operators.Assignment, CurrentLocationSpan);
 			statement exit_call = new procedure_call(new ident("exit"), true, CurrentLocationSpan);
 			CurrentSemanticValue.stn = new statement_list(res_assign, CurrentLocationSpan);
-			(CurrentSemanticValue.stn  as statement_list).Add(exit_call, CurrentLocationSpan);
+			(CurrentSemanticValue.stn as statement_list).Add(exit_call, CurrentLocationSpan);
 		}
         break;
       case 78: // return_stmt -> RETURN
 {
-			CurrentSemanticValue.stn = new procedure_call(new ident("exit"), true, CurrentLocationSpan);
+			CurrentSemanticValue.stn = new procedure_call(new ident("exit", CurrentLocationSpan), true, CurrentLocationSpan);
 		}
         break;
       case 79: // break_stmt -> BREAK
 {
-			CurrentSemanticValue.stn = new procedure_call(new ident("break"), true, CurrentLocationSpan);
+			CurrentSemanticValue.stn = new procedure_call(new ident("break", CurrentLocationSpan), true, CurrentLocationSpan);
 		}
         break;
       case 80: // continue_stmt -> CONTINUE
 {
-			CurrentSemanticValue.stn = new procedure_call(new ident("continue"), true, CurrentLocationSpan);
+			CurrentSemanticValue.stn = new procedure_call(new ident("continue", CurrentLocationSpan), true, CurrentLocationSpan);
 		}
         break;
       case 81: // proc_func_call_stmt -> proc_func_call
@@ -777,93 +860,59 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 		}
         break;
       case 82: // variable -> ident
-{ CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].id; }
+{ 
+			CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].id; 
+		}
         break;
       case 83: // variable -> proc_func_call
-{ CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
+{ 
+			CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; 
+		}
         break;
       case 84: // variable -> variable, DOT, ident
-{ CurrentSemanticValue.ex = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].id as addressed_value, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].id as addressed_value, CurrentLocationSpan); 
+		}
         break;
       case 85: // variable -> const_value, DOT, ident
-{ CurrentSemanticValue.ex = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].id as addressed_value, CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new dot_node(ValueStack[ValueStack.Depth-3].ex as addressed_value, ValueStack[ValueStack.Depth-1].id as addressed_value, CurrentLocationSpan); 
+		}
         break;
       case 86: // variable -> LBRACKET, expr_list, RBRACKET
 {
 			var acn = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, '|', CurrentLocationSpan);
-			var dn = new dot_node(acn as addressed_value, (new ident("ToList")) as addressed_value, CurrentLocationSpan);
+			var dn = new dot_node(acn as addressed_value, (new ident("ToList", CurrentLocationSpan)) as addressed_value, CurrentLocationSpan);
 			CurrentSemanticValue.ex = new method_call(dn as addressed_value, null, CurrentLocationSpan);
 		}
         break;
       case 87: // variable -> variable, LBRACKET, expr, RBRACKET
 {
-			var el = new expression_list(ValueStack[ValueStack.Depth-2].ex as expression);
+			var el = new expression_list(ValueStack[ValueStack.Depth-2].ex as expression, CurrentLocationSpan);
 			CurrentSemanticValue.ex = new indexer(ValueStack[ValueStack.Depth-4].ex as addressed_value, el, CurrentLocationSpan);
 		}
         break;
       case 88: // variable -> LBRACKET, expr, FOR, ident, IN, expr, optional_condition, RBRACKET
 {
-			CurrentSemanticValue.ex = new list_generator(ValueStack[ValueStack.Depth-7].ex, ValueStack[ValueStack.Depth-5].id, ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-2].ex);
-			
-			/*
-			dot_node dn;
-			ident_list idList;
-			formal_parameters formalPars;
-			statement_list sl;
-			function_lambda_definition lambda;
-			method_call mc;
-
-			// [ expr1 for ident in expr2 if expr3 ] -> expr2.Where(ident -> expr3).Select(ident -> expr1).ToList()
-			if ($7 != null) {
-				string ident_name = $4.name;
-				idList = new ident_list(new ident(ident_name), @4);
-				formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), parametr_kind.none, null, @4), @4);
-
-				dn = new dot_node($6 as addressed_value, (new ident("Where")) as addressed_value, @$);
-
-				sl = new statement_list(new assign("result",$7,@8),@8);
-				sl.expr_lambda_body = true;
-				lambda = new function_lambda_definition(
-				lambdaHelper.CreateLambdaName(), formalPars,
-				new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), sl, @$);
-
-				mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), @$);
-				dn = new dot_node(mc as addressed_value, (new ident("Select")) as addressed_value, @$);
-			}
-			// [ expr1 for ident in expr2 ] -> expr2.Select(ident -> expr1).ToList()
-			else
-				dn = new dot_node($6 as addressed_value, (new ident("Select")) as addressed_value, @$);
-
-
-			idList = new ident_list($4, @4);
-			formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), parametr_kind.none, null, @4), @4);
-
-			sl = new statement_list(new assign("result",$2,@2),@2);
-			sl.expr_lambda_body = true;
-
-			lambda = new function_lambda_definition(
-				lambdaHelper.CreateLambdaName(), formalPars,
-				new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), sl, @$);
-
-
-			mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), @$);
-			dn = new dot_node(mc as addressed_value, (new ident("ToList")) as addressed_value, @$);
-			$$ = new method_call(dn as addressed_value, null, @$);
-			*/
+			CurrentSemanticValue.ex = new list_generator(ValueStack[ValueStack.Depth-7].ex, ValueStack[ValueStack.Depth-5].id, ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-2].ex, CurrentLocationSpan);
 		}
         break;
       case 89: // optional_condition -> /* empty */
-{ CurrentSemanticValue.ex = null; }
+{ 
+			CurrentSemanticValue.ex = null; 
+		}
         break;
       case 90: // optional_condition -> IF, expr
-{ CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
+{ 
+			CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; 
+		}
         break;
       case 91: // block -> INDENT, stmt_list, SEMICOLON, UNINDENT
 {
 			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-3].stn as statement_list;
 			(CurrentSemanticValue.stn as statement_list).left_logical_bracket = ValueStack[ValueStack.Depth-4].ti;
-			(CurrentSemanticValue.stn as statement_list).right_logical_bracket = ValueStack[ValueStack.Depth-2].ti;
-			CurrentSemanticValue.stn.source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-4],LocationStack[LocationStack.Depth-3],LocationStack[LocationStack.Depth-2]);
+			(CurrentSemanticValue.stn as statement_list).right_logical_bracket = ValueStack[ValueStack.Depth-1].ti;
+			CurrentSemanticValue.stn.source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-3], LocationStack[LocationStack.Depth-2]);
 		}
         break;
       case 92: // proc_func_decl -> proc_func_header, block
@@ -874,78 +923,23 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
       case 93: // proc_func_header -> DEF, func_name_ident, LPAR, optional_form_param_list, RPAR, 
                //                     COLON
 {
-			CurrentSemanticValue.td = new procedure_header(ValueStack[ValueStack.Depth-3].stn as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), CurrentLocationSpan), new method_name(null,null, ValueStack[ValueStack.Depth-5].id, null, CurrentLocationSpan), null, CurrentLocationSpan);
+			CurrentSemanticValue.td = new procedure_header(ValueStack[ValueStack.Depth-3].stn as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>()), new method_name(null,null, ValueStack[ValueStack.Depth-5].id, null, LocationStack[LocationStack.Depth-5]), null, CurrentLocationSpan);
 		}
         break;
       case 94: // proc_func_header -> DEF, func_name_ident, LPAR, optional_form_param_list, RPAR, 
                //                     ARROW, type_ref, COLON
 {
-			CurrentSemanticValue.td = new function_header(ValueStack[ValueStack.Depth-5].stn as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), CurrentLocationSpan), new method_name(null,null, ValueStack[ValueStack.Depth-7].id, null, CurrentLocationSpan), null, ValueStack[ValueStack.Depth-2].td as type_definition, CurrentLocationSpan);
+			CurrentSemanticValue.td = new function_header(ValueStack[ValueStack.Depth-5].stn as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>()), new method_name(null,null, ValueStack[ValueStack.Depth-7].id, null, LocationStack[LocationStack.Depth-7]), null, ValueStack[ValueStack.Depth-2].td as type_definition, CurrentLocationSpan);
 		}
         break;
       case 95: // proc_func_call -> variable, LPAR, optional_act_param_list, RPAR
 {
 			CurrentSemanticValue.ex = new method_call(ValueStack[ValueStack.Depth-4].ex as addressed_value, ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);
-
-			/*
-			if ($3 is expression_list exprl) {
-				expression_list args = new expression_list();
-				expression_list kvargs = new expression_list();
-
-				foreach (var expr in exprl.expressions) {
-					if (expr is name_assign_expr) {
-						kvargs.Add(expr);
-						kvargs.source_context = new SourceContext(kvargs.source_context, expr.source_context);
-					}
-					else if (kvargs.expressions.Count() == 0) {
-						args.Add(expr);
-						args.source_context = new SourceContext(args.source_context, expr.source_context);
-					}
-					else parserTools.AddErrorFromResource("Arg after Kvarg", @$);
-				}
-
-				if (kvargs.expressions.Count() == 0)
-					$$ = new method_call($1 as addressed_value, args, @$);
-				else {
-					method_call mc = new method_call(new ident("!" + ($1 as ident).name + ".Get"), kvargs, @$);
-					dot_node dn = new dot_node(mc as addressed_value, $1 as addressed_value, @$);
-					$$ = new method_call(dn as addressed_value, args, @$);
-				}
-			}
-			else
-				$$ = new method_call($1 as addressed_value, null, @$);
-			*/
 		}
         break;
       case 96: // simple_type_identifier -> ident
 {
 			CurrentSemanticValue.td = new named_type_reference(ValueStack[ValueStack.Depth-1].id, CurrentLocationSpan);
-			/*
-			switch ($1.name) {
-				case "bool":
-					$$ = new named_type_reference("boolean", @$);
-					break;
-				case "int":
-					$$ = new named_type_reference("integer", @$);
-					break;
-				case "float":
-					$$ = new named_type_reference("real", @$);
-					break;
-				case "str":
-					$$ = new named_type_reference("string", @$);
-					break;
-
-				//case "integer":
-				//case "real":
-				//case "string":
-				//case "boolean":
-				//	$$ = new named_type_reference("error", @$);
-				//	break;
-
-				default:
-					$$ = new named_type_reference($1, @$);
-					break;
-			}*/
 		}
         break;
       case 97: // simple_type_identifier -> simple_type_identifier, DOT, ident
@@ -959,7 +953,9 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 		}
         break;
       case 99: // type_ref -> template_type
-{ CurrentSemanticValue.td = ValueStack[ValueStack.Depth-1].td; }
+{ 
+			CurrentSemanticValue.td = ValueStack[ValueStack.Depth-1].td; 
+		}
         break;
       case 100: // template_type -> simple_type_identifier, template_type_params
 { 
@@ -1005,8 +1001,6 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
       case 108: // optional_form_param_list -> form_param_list
 {
 			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn;
-			if (CurrentSemanticValue.stn != null)
-				CurrentSemanticValue.stn.source_context = CurrentLocationSpan;
 		}
         break;
       case 109: // optional_form_param_list -> /* empty */
@@ -1015,10 +1009,14 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 		}
         break;
       case 110: // act_param -> expr
-{ CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
+{ 
+			CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; 
+		}
         break;
       case 111: // act_param -> ident, ASSIGN, expr
-{ CurrentSemanticValue.ex = new name_assign_expr(ValueStack[ValueStack.Depth-3].id,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan); }
+{ 
+			CurrentSemanticValue.ex = new name_assign_expr(ValueStack[ValueStack.Depth-3].id, ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan); 
+		}
         break;
       case 112: // act_param_list -> act_param
 {
@@ -1033,8 +1031,6 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
       case 114: // optional_act_param_list -> act_param_list
 {
 			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn;
-			if (CurrentSemanticValue.stn != null)
-				CurrentSemanticValue.stn.source_context = CurrentLocationSpan;
 		}
         break;
       case 115: // optional_act_param_list -> /* empty */
@@ -1043,10 +1039,14 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 		}
         break;
       case 116: // optional_semicolon -> SEMICOLON
-{ CurrentSemanticValue.ob = ValueStack[ValueStack.Depth-1].ti; }
+{ 
+			CurrentSemanticValue.ob = ValueStack[ValueStack.Depth-1].ti; 
+		}
         break;
       case 117: // optional_semicolon -> /* empty */
-{ CurrentSemanticValue.ob = null; }
+{ 
+			CurrentSemanticValue.ob = null; 
+		}
         break;
     }
   }

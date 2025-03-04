@@ -6,11 +6,6 @@
 	public SPythonParserTools parserTools;
     public List<compiler_directive> CompilerDirectives;
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
-
-	private int ScopeCounter = 0;
-	private HashSet<string> globalVariables = new HashSet<string>();
-	private uses_list imports = new uses_list();
-
 	public bool is_unit_to_be_parsed = false;
 
 	public SPythonGPPGParser(AbstractScanner<ValueType, LexLocation> scanner, SPythonParserTools parserTools,
@@ -108,7 +103,7 @@ program
 			}
 			// unit
 			else {
-				var interface_part = new interface_node(new declarations(), imports, null, null);
+				var interface_part = new interface_node(new declarations(), new uses_list(), null, null);
 				var initialization_part = new initfinal_part(null, $1 as statement_list, null, null, null, @$);
 
 				root = $$ = new unit_module(
@@ -124,30 +119,27 @@ program
 import_clause
 	: IMPORT ident_as_ident_list
 		{
-			foreach (as_statement as_Statement in ($2 as as_statement_list).as_statements)
-				imports.AddUsesList(new uses_list(as_Statement.real_name.name));
-			import_statement import_stmt =  new import_statement($2 as as_statement_list, @2);
-			$$ = import_stmt;
+			$$ = new import_statement($2 as as_statement_list, @$);
 		}
 	| FROM ident IMPORT ident_as_ident_list 
 		{
-			imports.AddUsesList(new uses_list(($2 as ident).name));
-			from_import_statement fis = new from_import_statement($2 as ident, false, $4 as as_statement_list, @$);
-			$$ = fis;
+			$$ = new from_import_statement($2 as ident, false, $4 as as_statement_list, @$);
 		}
 	| FROM ident IMPORT STAR 
 		{
-			imports.AddUsesList(new uses_list(($2 as ident).name));
-			from_import_statement fis = new from_import_statement($2 as ident, true, null, @$);
-			$$ = fis;
+			$$ = new from_import_statement($2 as ident, true, null, @$);
 		}
 	;
 
 import_or_decl_or_stmt
 	: stmt
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| import_or_decl
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	;
 
 import_or_decl
@@ -164,7 +156,7 @@ import_or_decl
 import_and_decl_and_stmt_list
 	: import_or_decl_or_stmt
 		{
-			$$ = new statement_list($1 as statement, @1);
+			$$ = new statement_list($1 as statement, @$);
 		}
 	| import_and_decl_and_stmt_list SEMICOLON import_or_decl_or_stmt
 		{
@@ -175,7 +167,7 @@ import_and_decl_and_stmt_list
 stmt_list
 	: stmt
 		{
-			$$ = new statement_list($1 as statement, @1);
+			$$ = new statement_list($1 as statement, @$);
 		}
 	| stmt_list SEMICOLON stmt
 		{
@@ -185,25 +177,45 @@ stmt_list
 
 stmt
 	: assign_stmt
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| var_stmt
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| if_stmt
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| proc_func_call_stmt
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| while_stmt
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| for_stmt
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| return_stmt
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| break_stmt
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| continue_stmt
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| global_stmt
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	;
 
 global_stmt
@@ -222,9 +234,13 @@ ident
 
 dotted_ident
 	: ident
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| dotted_ident DOT ident
-		{ $$ = new ident($1.name + "." + $3.name); }
+		{ 
+			$$ = new ident($1.name + "." + $3.name, @$); 
+		}
 	;
 
 dotted_ident_list
@@ -240,9 +256,13 @@ dotted_ident_list
 
 ident_as_ident
 	: ident AS ident
-		{ $$ = new as_statement($1, $3, @$); }
+		{ 
+			$$ = new as_statement($1, $3, @$); 
+		}
 	| ident
-		{ $$ = new as_statement($1, $1, @$); }
+		{ 
+			$$ = new as_statement($1, $1, @$); 
+		}
 	;
 
 ident_as_ident_list
@@ -272,56 +292,94 @@ var_stmt
 assign_stmt
 	: variable ASSIGN expr
 		{
+			if (!($1 is addressed_value))
+        		parserTools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO", @$);
 			$$ = new assign($1 as addressed_value, $3, $2.type, @$);
 		}
 	| variable assign_type expr
 		{
 			if (!($1 is addressed_value))
-        		parserTools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO",@$);
+        		parserTools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO", @$);
 			$$ = new assign($1 as addressed_value, $3, $2.type, @$);
 		}
 	;
 
 assign_type
 	: PLUSEQUAL
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
     | MINUSEQUAL
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
     | STAREQUAL
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
     | DIVEQUAL
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
     ;
 
 expr
 	: expr PLUS 		expr
-		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
 	| expr STAR 	expr
-		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
 	| expr DIVIDE 		expr
-		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
 	| expr MINUS 		expr
-		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
   	| expr LESS 		expr
-		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
 	| expr GREATER 		expr
-		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
 	| expr LESSEQUAL 	expr
-		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
 	| expr GREATEREQUAL expr
-		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
 	| expr EQUAL 		expr
-		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
 	| expr NOTEQUAL 	expr
-		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
 	| expr AND 			expr
-		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
 	| expr OR 			expr
-		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
 	| expr SLASHSLASH	expr
-		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
 	| expr PERCENTAGE	expr
-		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
 	| expr STARSTAR		expr
 		{
 			addressed_value method_name = new ident("!pow", @$);
@@ -329,28 +387,48 @@ expr
 			$$ = new method_call(method_name, el, @$);
 		}
 	| MINUS	expr
-		{ $$ = new un_expr($2, $1.type, @$); }
+		{ 
+			$$ = new un_expr($2, $1.type, @$); 
+		}
 	| NOT	expr
-		{ $$ = new un_expr($2, $1.type, @$); }
+		{ 
+			$$ = new un_expr($2, $1.type, @$); 
+		}
 	| variable
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| const_value
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| LPAR expr RPAR
-		{ $$ = new bracket_expr($2, @$); }
+		{ 
+			$$ = new bracket_expr($2, @$); 
+		}
 	;
 
 const_value
 	: INTNUM
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| REALNUM
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| TRUE
-		{ $$ = new ident("true"); }
+		{ 
+			$$ = new ident("true", @$); 
+		}
 	| FALSE
-		{ $$ = new ident("false"); }
+		{ 
+			$$ = new ident("false", @$); 
+		}
 	| STRINGNUM
-		{ $$ = $1 as literal; }
+		{ 
+			$$ = $1 as literal; 
+		}
 	;
 
 expr_list
@@ -377,14 +455,20 @@ optional_elif
 			$$ = new if_node($2, $4 as statement, $5 as statement, @$);
 		}
 	| optional_else
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	;
 
 optional_else
 	: ELSE COLON block
-		{ $$ = $3; }
+		{ 
+			$$ = $3; 
+		}
 	|
-		{ $$ = null; }
+		{ 
+			$$ = null; 
+		}
 	;
 
 while_stmt
@@ -397,14 +481,13 @@ while_stmt
 for_stmt
 	: FOR ident IN expr COLON block
 		{
-			$$ = new foreach_stmt($2, new no_type_foreach(), $4, (statement)$6, null, @$);
+			$$ = new foreach_stmt($2, new no_type_foreach(), $4, $6 as statement, null, @$);
 		}
 	;
 
 func_name_ident
 	: ident
 		{
-			globalVariables.Add($1.name);
 			$$ = $1;
 		}
 	;
@@ -416,25 +499,25 @@ return_stmt
 			statement res_assign = new assign(new ident("result"), $2, Operators.Assignment, @$);
 			statement exit_call = new procedure_call(new ident("exit"), true, @$);
 			$$ = new statement_list(res_assign, @$);
-			($$  as statement_list).Add(exit_call, @$);
+			($$ as statement_list).Add(exit_call, @$);
 		}
 	| RETURN
 		{
-			$$ = new procedure_call(new ident("exit"), true, @$);
+			$$ = new procedure_call(new ident("exit", @$), true, @$);
 		}
 	;
 
 break_stmt
 	: BREAK
 		{
-			$$ = new procedure_call(new ident("break"), true, @$);
+			$$ = new procedure_call(new ident("break", @$), true, @$);
 		}
 	;
 
 continue_stmt
 	: CONTINUE
 		{
-			$$ = new procedure_call(new ident("continue"), true, @$);
+			$$ = new procedure_call(new ident("continue", @$), true, @$);
 		}
 	;
 
@@ -447,84 +530,50 @@ proc_func_call_stmt
 
 variable
 	: ident
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| proc_func_call
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| variable DOT ident
-		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
+		{ 
+			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); 
+		}
 	| const_value DOT ident
-		{ $$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); }
+		{ 
+			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); 
+		}
 	// list constant
 	| LBRACKET expr_list RBRACKET
 		{
 			var acn = new array_const_new($2 as expression_list, '|', @$);
-			var dn = new dot_node(acn as addressed_value, (new ident("ToList")) as addressed_value, @$);
+			var dn = new dot_node(acn as addressed_value, (new ident("ToList", @$)) as addressed_value, @$);
 			$$ = new method_call(dn as addressed_value, null, @$);
 		}
 	// index property
 	| variable LBRACKET expr RBRACKET
 		{
-			var el = new expression_list($3 as expression);
+			var el = new expression_list($3 as expression, @$);
 			$$ = new indexer($1 as addressed_value, el, @$);
 		}
 	// list generator
 	| LBRACKET expr FOR ident IN expr optional_condition RBRACKET
 		{
-			$$ = new list_generator($2, $4, $6, $7);
-			
-			/*
-			dot_node dn;
-			ident_list idList;
-			formal_parameters formalPars;
-			statement_list sl;
-			function_lambda_definition lambda;
-			method_call mc;
-
-			// [ expr1 for ident in expr2 if expr3 ] -> expr2.Where(ident -> expr3).Select(ident -> expr1).ToList()
-			if ($7 != null) {
-				string ident_name = $4.name;
-				idList = new ident_list(new ident(ident_name), @4);
-				formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), parametr_kind.none, null, @4), @4);
-
-				dn = new dot_node($6 as addressed_value, (new ident("Where")) as addressed_value, @$);
-
-				sl = new statement_list(new assign("result",$7,@8),@8);
-				sl.expr_lambda_body = true;
-				lambda = new function_lambda_definition(
-				lambdaHelper.CreateLambdaName(), formalPars,
-				new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), sl, @$);
-
-				mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), @$);
-				dn = new dot_node(mc as addressed_value, (new ident("Select")) as addressed_value, @$);
-			}
-			// [ expr1 for ident in expr2 ] -> expr2.Select(ident -> expr1).ToList()
-			else
-				dn = new dot_node($6 as addressed_value, (new ident("Select")) as addressed_value, @$);
-
-
-			idList = new ident_list($4, @4);
-			formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), parametr_kind.none, null, @4), @4);
-
-			sl = new statement_list(new assign("result",$2,@2),@2);
-			sl.expr_lambda_body = true;
-
-			lambda = new function_lambda_definition(
-				lambdaHelper.CreateLambdaName(), formalPars,
-				new lambda_inferred_type(new lambda_any_type_node_syntax(), @4), sl, @$);
-
-
-			mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), @$);
-			dn = new dot_node(mc as addressed_value, (new ident("ToList")) as addressed_value, @$);
-			$$ = new method_call(dn as addressed_value, null, @$);
-			*/
+			$$ = new list_generator($2, $4, $6, $7, @$);
 		}
 	;
 
 optional_condition
 	:
-		{ $$ = null; }
+		{ 
+			$$ = null; 
+		}
 	| IF expr
-		{ $$ = $2; }
+		{ 
+			$$ = $2; 
+		}
 	;
 
 block
@@ -532,8 +581,8 @@ block
 		{
 			$$ = $2 as statement_list;
 			($$ as statement_list).left_logical_bracket = $1;
-			($$ as statement_list).right_logical_bracket = $3;
-			$$.source_context = LexLocation.MergeAll(@1,@2,@3);
+			($$ as statement_list).right_logical_bracket = $4;
+			$$.source_context = LexLocation.MergeAll(@2, @3);
 		}
 	;
 
@@ -547,11 +596,11 @@ proc_func_decl
 proc_func_header
 	: DEF func_name_ident LPAR optional_form_param_list RPAR COLON
 		{
-			$$ = new procedure_header($4 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, @$);
+			$$ = new procedure_header($4 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>()), new method_name(null,null, $2, null, @2), null, @$);
 		}
 	| DEF func_name_ident LPAR optional_form_param_list RPAR ARROW type_ref COLON
 		{
-			$$ = new function_header($4 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>(), @$), new method_name(null,null, $2, null, @$), null, $7 as type_definition, @$);
+			$$ = new function_header($4 as formal_parameters, new procedure_attributes_list(new List<procedure_attribute>()), new method_name(null,null, $2, null, @2), null, $7 as type_definition, @$);
 		}
 	;
 
@@ -559,35 +608,6 @@ proc_func_call
 	: variable LPAR optional_act_param_list RPAR
 		{
 			$$ = new method_call($1 as addressed_value, $3 as expression_list, @$);
-
-			/*
-			if ($3 is expression_list exprl) {
-				expression_list args = new expression_list();
-				expression_list kvargs = new expression_list();
-
-				foreach (var expr in exprl.expressions) {
-					if (expr is name_assign_expr) {
-						kvargs.Add(expr);
-						kvargs.source_context = new SourceContext(kvargs.source_context, expr.source_context);
-					}
-					else if (kvargs.expressions.Count() == 0) {
-						args.Add(expr);
-						args.source_context = new SourceContext(args.source_context, expr.source_context);
-					}
-					else parserTools.AddErrorFromResource("Arg after Kvarg", @$);
-				}
-
-				if (kvargs.expressions.Count() == 0)
-					$$ = new method_call($1 as addressed_value, args, @$);
-				else {
-					method_call mc = new method_call(new ident("!" + ($1 as ident).name + ".Get"), kvargs, @$);
-					dot_node dn = new dot_node(mc as addressed_value, $1 as addressed_value, @$);
-					$$ = new method_call(dn as addressed_value, args, @$);
-				}
-			}
-			else
-				$$ = new method_call($1 as addressed_value, null, @$);
-			*/
 		}
 	;
 
@@ -595,32 +615,6 @@ simple_type_identifier
 	: ident
 		{
 			$$ = new named_type_reference($1, @$);
-			/*
-			switch ($1.name) {
-				case "bool":
-					$$ = new named_type_reference("boolean", @$);
-					break;
-				case "int":
-					$$ = new named_type_reference("integer", @$);
-					break;
-				case "float":
-					$$ = new named_type_reference("real", @$);
-					break;
-				case "str":
-					$$ = new named_type_reference("string", @$);
-					break;
-
-				//case "integer":
-				//case "real":
-				//case "string":
-				//case "boolean":
-				//	$$ = new named_type_reference("error", @$);
-				//	break;
-
-				default:
-					$$ = new named_type_reference($1, @$);
-					break;
-			}*/
 		}
 	| simple_type_identifier DOT ident
         { 
@@ -634,7 +628,9 @@ type_ref
 			$$ = $1 as named_type_reference;
 		}
 	| template_type
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	;
 
 template_type
@@ -692,8 +688,6 @@ optional_form_param_list
     : form_param_list
         {
 			$$ = $1;
-			if ($$ != null)
-				$$.source_context = @$;
 		}
 	|
         {
@@ -703,9 +697,13 @@ optional_form_param_list
 
 act_param
 	: expr
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| ident ASSIGN expr
-		{ $$ = new name_assign_expr($1,$3,@$); }
+		{ 
+			$$ = new name_assign_expr($1, $3, @$); 
+		}
 	;
 
 act_param_list
@@ -723,8 +721,6 @@ optional_act_param_list
 	: act_param_list
 		{
 			$$ = $1;
-			if ($$ != null)
-				$$.source_context = @$;
 		}
 	|
         {
@@ -734,9 +730,13 @@ optional_act_param_list
 
 optional_semicolon
 	: SEMICOLON
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	|
-		{ $$ = null; }
+		{ 
+			$$ = null; 
+		}
 	;
 
 %%
