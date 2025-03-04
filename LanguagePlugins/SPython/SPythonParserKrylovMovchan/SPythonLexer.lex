@@ -110,6 +110,7 @@ ID {Alpha}{AlphaDigit}*
 ";"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.SEMICOLON; }
 "("  { currentLexLocation = CurrentLexLocation; return (int)Tokens.LPAR; }
 ")"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.RPAR; }
+"**" { currentLexLocation = CurrentLexLocation; return (int)Tokens.STARSTAR; }
 
 "##" {
   parserTools.AddErrorFromResource("WRONG_INDENT", new LexLocation(CurrentLexLocation.StartLine + 1, 0, CurrentLexLocation.StartLine + 1, 0));

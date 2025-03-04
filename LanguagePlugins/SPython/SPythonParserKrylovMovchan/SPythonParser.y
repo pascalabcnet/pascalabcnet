@@ -53,7 +53,7 @@
 %token <op> PLUS MINUS STAR DIVIDE SLASHSLASH PERCENTAGE
 %token <id> ID
 %token <op> LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
-%token <op> AND OR NOT
+%token <op> AND OR NOT STARSTAR
 
 %left OR
 %left AND
@@ -61,6 +61,7 @@
 %left PLUS MINUS
 %left STAR DIVIDE SLASHSLASH PERCENTAGE
 %left NOT
+%right STARSTAR
 
 %type <id> ident dotted_ident func_name_ident
 %type <ex> expr proc_func_call const_value variable optional_condition act_param
@@ -321,6 +322,12 @@ expr
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
 	| expr PERCENTAGE	expr
 		{ $$ = new bin_expr($1, $3, $2.type, @$); }
+	| expr STARSTAR		expr
+		{
+			addressed_value method_name = new ident("!pow", @$);
+			expression_list el = new expression_list(new List<expression> { $1, $3 }, @$);
+			$$ = new method_call(method_name, el, @$);
+		}
 	| MINUS	expr
 		{ $$ = new un_expr($2, $1.type, @$); }
 	| NOT	expr
