@@ -40,7 +40,7 @@
     public type_definition td;
 }
 
-%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM GLOBAL AS
+%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM GLOBAL AS PASS
 %token <ex> INTNUM REALNUM TRUE FALSE
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
 %token <stn> STRINGNUM
@@ -60,7 +60,7 @@
 
 %type <id> ident dotted_ident func_name_ident
 %type <ex> expr proc_func_call const_value variable optional_condition act_param
-%type <stn> act_param_list optional_act_param_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt
+%type <stn> act_param_list optional_act_param_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt pass_stmt
 %type <stn> var_stmt assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
 %type <stn> import_or_decl_or_stmt import_and_decl_and_stmt_list expr_list
 %type <stn> stmt_list block
@@ -215,6 +215,17 @@ stmt
 	| global_stmt
 		{ 
 			$$ = $1; 
+		}
+	| pass_stmt
+		{ 
+			$$ = $1; 
+		}
+	;
+
+pass_stmt
+	: PASS
+		{
+			$$ = new empty_statement();
 		}
 	;
 

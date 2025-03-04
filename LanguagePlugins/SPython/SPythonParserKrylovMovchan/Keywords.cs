@@ -33,7 +33,8 @@ namespace SPythonParser
                 ["global"] = (int)Tokens.GLOBAL,
                 ["True"] = (int)Tokens.TRUE,
                 ["False"] = (int)Tokens.FALSE,
-                ["as"] = (int)Tokens.AS
+                ["as"] = (int)Tokens.AS,
+                ["pass"] = (int)Tokens.PASS
             }
             .ToDictionary(kv => ConvertKeyword(kv.Key), kv => kv.Value);
         }
