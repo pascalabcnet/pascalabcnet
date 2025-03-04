@@ -12,6 +12,8 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(list_generator _list_generator)
         {
+            base.visit(_list_generator);
+
             dot_node dn;
             ident_list idList;
             formal_parameters formalPars;
