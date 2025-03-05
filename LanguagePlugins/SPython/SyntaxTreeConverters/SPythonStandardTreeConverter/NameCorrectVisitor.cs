@@ -32,6 +32,10 @@ namespace Languages.SPython.Frontend.Converters
             {
                 decls = intn.interface_definitions;
             }
+            if (stn is ident && stn.Parent is dot_node dn && dn.right == stn)
+            {
+                visitNode = false;
+            }
 
             base.Enter(stn);
         }
@@ -85,35 +89,6 @@ namespace Languages.SPython.Frontend.Converters
             base.visit(_global_statement);
         }
 
-        public override void visit(dot_node _dot_node)
-        {
-            if (_dot_node.left is ident left)
-            {
-                NameKind nameKind = symbolTable[left.name];
-                switch (nameKind)
-                {
-                    case NameKind.ModuleAlias:
-                        left.name = symbolTable.AliasToRealName(left.name);
-                        break;
-
-                    case NameKind.ImportedNameAlias:
-                        _dot_node.left = new dot_node(new ident(symbolTable.AliasToModuleName(left.name)), left);
-                        left.name = symbolTable.AliasToRealName(left.name);
-                        break;
-
-                    case NameKind.GlobalVariable:
-                        if (symbolTable.IsInFunctionBody &&
-                        !variablesUsedAsGlobal.Contains(left.name))
-                            variablesUsedAsGlobal.Add(left.name);
-                        break;
-
-                    case NameKind.Unknown:
-                        throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}",
-                        left.source_context, left.name);
-                }
-            }
-        }
-
         public override void visit(named_type_reference _named_type_reference)
         {
             ident id = _named_type_reference.names[0];
@@ -144,12 +119,17 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(ident _ident)
         {
+            SourceContext sc = _ident.source_context;
             NameKind nameKind = symbolTable[_ident.name];
             switch (nameKind)
             {
+                case NameKind.ModuleAlias:
+                    _ident.name = symbolTable.AliasToRealName(_ident.name);
+                    break;
+
                 case NameKind.ImportedNameAlias:
-                    Replace(_ident, new dot_node(new ident(symbolTable.AliasToModuleName(_ident.name))
-                    , new ident(symbolTable.AliasToRealName(_ident.name))));
+                    Replace(_ident, new dot_node(new ident(symbolTable.AliasToModuleName(_ident.name), sc)
+                    , new ident(symbolTable.AliasToRealName(_ident.name), sc), sc));
                     break;
 
                 case NameKind.GlobalVariable:
@@ -160,7 +140,7 @@ namespace Languages.SPython.Frontend.Converters
 
                 case NameKind.Unknown:
                     throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}"
-                    , _ident.source_context, _ident.name);
+                    , sc, _ident.name);
             }
         }
 

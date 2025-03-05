@@ -35,7 +35,7 @@ namespace Languages.SPython.Frontend.Converters
             {
                 symbolTable.OpenLocalScope();
             }
-            if (stn is procedure_definition)
+            if (stn is procedure_definition || stn is function_lambda_definition)
             {
                 symbolTable.IsInFunctionBody = true;
                 symbolTable.OpenLocalScope();
@@ -46,7 +46,7 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void Exit(syntax_tree_node stn)
         {
-            if (stn is procedure_definition)
+            if (stn is procedure_definition || stn is function_lambda_definition)
             {
                 symbolTable.IsInFunctionBody = false;
                 symbolTable.CloseLocalScope();
@@ -80,12 +80,15 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(function_header _function_header)
         {
-            if (!IsForwardDeclaration(_function_header))
-            {
-                string function_name = _function_header.name.meth_name.name;
-                symbolTable.Add(function_name, NameKind.GlobalFunction);
-                base.visit(_function_header);
-            }
+            visit(_function_header as procedure_header);
+        }
+
+        public override void visit(function_lambda_definition _function_lambda_definition)
+        {
+            foreach (ident id in _function_lambda_definition.ident_list.list)
+                symbolTable.Add(id.name, NameKind.LocalVariable);
+
+            base.visit(_function_lambda_definition);
         }
 
         public override void visit(foreach_stmt _foreach_stmt)
