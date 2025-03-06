@@ -335,7 +335,11 @@ assign_type
     ;
 
 expr
-	: expr PLUS 		expr
+	: expr IF expr ELSE expr
+		{
+			$$ = new question_colon_expression($3, $1, $5, @$);
+		}
+	| expr PLUS 		expr
 		{ 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
