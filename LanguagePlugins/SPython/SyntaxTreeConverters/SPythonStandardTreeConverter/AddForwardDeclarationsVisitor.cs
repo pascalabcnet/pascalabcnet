@@ -32,5 +32,10 @@ namespace Languages.SPython.Frontend.Converters
             pd.proc_header.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_forward, context));
             decls.Add(pd, context);
         }
+
+        public override void visit(function_header _function_header)
+        {
+            visit(_function_header as procedure_header);
+        }
     }
 }

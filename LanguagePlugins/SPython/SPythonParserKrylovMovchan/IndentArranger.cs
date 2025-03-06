@@ -3,6 +3,8 @@ using System.Linq;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using SyntaxVisitors;
+using PascalABCCompiler.SyntaxTree;
 
 namespace SPythonParser
 {   
@@ -19,6 +21,9 @@ namespace SPythonParser
 
         // регулярное выражение разбивающее строку программы на группы, последняя из которых - комментарий в конце строки
         private static readonly Regex programLineRegex = new Regex("^(([^\n\"\'#])+|(\'([^\'\n\\\\]|\\\\.)*\')|(\"([^\"\n\\\\]|\\\\.)*\"))*(#.*)?$");
+
+        private static readonly Regex reg = new Regex(@"'([^'\\]*(\\.[^'\\]*)*)'|""([^""\\]*(\\.[^""\\]*)*)""");
+
 
         public IndentArranger() {}
 
@@ -52,6 +57,32 @@ namespace SPythonParser
             }
         }
 
+        int bracketCount = 0;
+        int prevBracketCount = 0;
+
+        private void CountBrackets(string programLine)
+        {
+            string cleanLine = reg.Replace(programLine, match => "");
+
+            foreach (char c in cleanLine)
+            {
+                switch (c)
+                {
+                    case '(':
+                    case '{':
+                    case '[':
+                        ++bracketCount;
+                        break;
+
+                    case ')':
+                    case '}':
+                    case ']':
+                        --bracketCount;
+                        break;
+                }
+            }
+        }
+
         // считывает первый токен в строке (с первого символа латиницы или _)
         // возвращает тип этого токена
         private bool IsFirstTokenElseOrElif(string line)
@@ -77,6 +108,10 @@ namespace SPythonParser
             foreach (var line in programLines)
             {
                 lineCounter++;
+                prevBracketCount = bracketCount;
+                CountBrackets(line);
+                if (prevBracketCount != 0 && bracketCount != 0)
+                    continue;
 
                 bool isEmptyLine = true; // строка не содержит символов кроме \s\t\n\r
                 int currentLineSpaceCounter = 0;
@@ -101,6 +136,12 @@ namespace SPythonParser
                 // пропуск строки не содержащей код 
                 if (isEmptyLine)
                 {
+                    continue;
+                }
+
+                if (prevBracketCount != 0)
+                {
+                    lastNotEmptyLine = lineCounter;
                     continue;
                 }
 
