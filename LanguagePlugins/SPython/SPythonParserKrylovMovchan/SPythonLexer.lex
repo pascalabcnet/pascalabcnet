@@ -120,6 +120,10 @@ ID {Alpha}{AlphaDigit}*
 	return (int)Tokens.EOF;
 }
 
+"#$" {
+  return (int)Tokens.END_OF_FILE;
+}
+
 [^ \r\n] {
   parserTools.AddErrorFromResource("UNEXPECTED_TOKEN_{0}", CurrentLexLocation, yytext);
 	return (int)Tokens.EOF;

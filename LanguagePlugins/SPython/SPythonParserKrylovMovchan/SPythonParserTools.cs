@@ -67,6 +67,8 @@ namespace SPythonParser
             TokenNum["STATEMENT"] = StringResources.Get("STMT");
             TokenNum["EXPRESSION"] = StringResources.Get("EXPR");
             TokenNum["EOF"] = StringResources.Get("EOF1");
+            TokenNum["#$"] = StringResources.Get("EOF1");
+            TokenNum["END_OF_FILE"] = StringResources.Get("EOF1");
             TokenNum["ID"] = StringResources.Get("IDENTIFIER");
             TokenNum["INTNUM"] = StringResources.Get("INTNUM");
             TokenNum["REALNUM"] = StringResources.Get("REALNUM");
@@ -241,7 +243,7 @@ namespace SPythonParser
                 MaxTok = "}";
             var MaxTokHuman = ConvertToHumanName(MaxTok);
 
-            if (yytext == ";" || yytext == "#{" || yytext == "#}")
+            if (yytext == ";" || yytext == "#{" || yytext == "#}" || yytext == "#$")
             {
                 prefix = StringResources.Get("FOUNDM{0}");
                 yytext = ConvertToHumanName(yytext);

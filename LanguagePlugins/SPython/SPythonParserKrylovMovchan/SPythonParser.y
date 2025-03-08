@@ -40,7 +40,7 @@
     public type_definition td;
 }
 
-%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM GLOBAL AS PASS
+%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM GLOBAL AS PASS END_OF_FILE
 %token <ex> INTNUM REALNUM TRUE FALSE
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
 %token <stn> STRINGNUM
@@ -90,7 +90,7 @@ act		= actual
 
 %%
 program
-	: import_and_decl_and_stmt_list optional_semicolon
+	: import_and_decl_and_stmt_list optional_semicolon END_OF_FILE
 		{
 			// main program
 			if (!is_unit_to_be_parsed) {

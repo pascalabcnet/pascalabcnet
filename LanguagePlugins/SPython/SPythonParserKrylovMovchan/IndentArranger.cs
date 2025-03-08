@@ -39,6 +39,8 @@ namespace SPythonParser
 
             sourceText = String.Join("\n", programLines);
 
+            sourceText += "#$";
+
             // создание файла с полученным текстом для дебага
             //File.WriteAllText("./processed_file.txt", sourceText);
         }
