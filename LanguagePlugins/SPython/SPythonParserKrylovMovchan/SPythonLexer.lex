@@ -59,16 +59,19 @@ ID {Alpha}{AlphaDigit}*
   switch (res)
   {
     case (int)Tokens.ID:
-      yylval.id = parserTools.create_ident(cur_yytext,currentLexLocation);
+      yylval.id = parserTools.create_ident(cur_yytext, currentLexLocation);
       break;
     case (int)Tokens.AND:
-      yylval.op = new op_type_node(Operators.LogicalAND);
+      yylval.op = new op_type_node(Operators.LogicalAND, currentLexLocation);
+      yylval.op.text = cur_yytext;
       break;
     case (int)Tokens.OR:
-      yylval.op = new op_type_node(Operators.LogicalOR);
+      yylval.op = new op_type_node(Operators.LogicalOR, currentLexLocation);
+      yylval.op.text = cur_yytext;
       break;
     case (int)Tokens.NOT:
-      yylval.op = new op_type_node(Operators.LogicalNOT);
+      yylval.op = new op_type_node(Operators.LogicalNOT, currentLexLocation);
+      yylval.op.text = cur_yytext;
       break;
   }
 
@@ -93,24 +96,24 @@ ID {Alpha}{AlphaDigit}*
 ">"  { yylval.op = new op_type_node(Operators.Greater); return (int)Tokens.GREATER; }
 "==" { yylval.op = new op_type_node(Operators.Equal); return (int)Tokens.EQUAL; }
 "!=" { yylval.op = new op_type_node(Operators.NotEqual); return (int)Tokens.NOTEQUAL; }
-"="  { yylval.op = new op_type_node(Operators.Assignment); currentLexLocation = CurrentLexLocation; return (int)Tokens.ASSIGN; }
+"="  { yylval.op = new op_type_node(Operators.Assignment); return (int)Tokens.ASSIGN; }
 
-"#{" { currentLexLocation = CurrentLexLocation; return (int)Tokens.INDENT; }
-"#}" { currentLexLocation = CurrentLexLocation; return (int)Tokens.UNINDENT; }
-"{"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.LBRACE; }
-"}"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.RBRACE; }
-"["  { currentLexLocation = CurrentLexLocation; return (int)Tokens.LBRACKET; }
-"]"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.RBRACKET; }
+"#{" { return (int)Tokens.INDENT; }
+"#}" { return (int)Tokens.UNINDENT; }
+"{"  { return (int)Tokens.LBRACE; }
+"}"  { return (int)Tokens.RBRACE; }
+"["  { return (int)Tokens.LBRACKET; }
+"]"  { return (int)Tokens.RBRACKET; }
 
-"->" { currentLexLocation = CurrentLexLocation; return (int)Tokens.ARROW; }
+"->" { yylval.ti = new token_info(yytext); return (int)Tokens.ARROW; }
 
-"."  { currentLexLocation = CurrentLexLocation; return (int)Tokens.DOT; }
-","  { currentLexLocation = CurrentLexLocation; return (int)Tokens.COMMA; }
-":"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.COLON; }
-";"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.SEMICOLON; }
-"("  { currentLexLocation = CurrentLexLocation; return (int)Tokens.LPAR; }
-")"  { currentLexLocation = CurrentLexLocation; return (int)Tokens.RPAR; }
-"**" { currentLexLocation = CurrentLexLocation; return (int)Tokens.STARSTAR; }
+"."  { return (int)Tokens.DOT; }
+","  { return (int)Tokens.COMMA; }
+":"  { return (int)Tokens.COLON; }
+";"  { return (int)Tokens.SEMICOLON; }
+"("  { return (int)Tokens.LPAR; }
+")"  { return (int)Tokens.RPAR; }
+"**" { return (int)Tokens.STARSTAR; }
 
 "##" {
   parserTools.AddErrorFromResource("WRONG_INDENT", new LexLocation(CurrentLexLocation.StartLine + 1, 0, CurrentLexLocation.StartLine + 1, 0));
@@ -127,7 +130,7 @@ ID {Alpha}{AlphaDigit}*
   if (currentLexLocation != null)
     yylloc = currentLexLocation;
   else
-	yylloc = CurrentLexLocation;
+	  yylloc = CurrentLexLocation;
   currentLexLocation = null;
 %}
 
@@ -143,6 +146,11 @@ public LexLocation CurrentLexLocation
 public override void yyerror(string format, params object[] args)
 {
 	string errorMsg = parserTools.CreateErrorString(yytext, args);
-	parserTools.AddError(errorMsg,CurrentLexLocation);
+	parserTools.AddError(errorMsg, CurrentLexLocation);
+}
+
+protected override bool yywrap()
+{
+  return true;
 }
 

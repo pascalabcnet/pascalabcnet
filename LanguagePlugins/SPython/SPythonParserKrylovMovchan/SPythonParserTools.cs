@@ -78,7 +78,7 @@ namespace SPythonParser
             TokenNum["LPAR"] = "'('";
             TokenNum["RPAR"] = "')'";
             TokenNum[";"] = StringResources.Get("EOL");
-            TokenNum["SEMICOLON"] = "':'";
+            TokenNum["SEMICOLON"] = StringResources.Get("SEMICOLON");;
             TokenNum["#{"] = StringResources.Get("#{");
             TokenNum["INDENT"] = StringResources.Get("#{");
             TokenNum["#}"] = StringResources.Get("#}");
@@ -132,7 +132,7 @@ namespace SPythonParser
                 case "LPAR":
                     return 100;
                 case "RPAR":
-                    return 100;
+                    return 130;
                 case "DOT":
                     return 20;
                 case "RBRACKET":
