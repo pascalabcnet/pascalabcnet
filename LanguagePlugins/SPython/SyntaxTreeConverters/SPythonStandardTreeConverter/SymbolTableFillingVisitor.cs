@@ -59,23 +59,11 @@ namespace Languages.SPython.Frontend.Converters
             base.Exit(stn);
         }
 
-        private bool IsForwardDeclaration(procedure_header _procedure_header)
-        {
-            foreach (procedure_attribute attr in _procedure_header.proc_attributes.proc_attributes)
-                if (attr.attribute_type is proc_attribute.attr_forward)
-                    return true;
-
-            return false;
-        }
-
         public override void visit(procedure_header _procedure_header)
         {
-            if (!IsForwardDeclaration(_procedure_header))
-            {
-                string procedure_name = _procedure_header.name.meth_name.name;
-                symbolTable.Add(procedure_name, NameKind.GlobalFunction);
-                base.visit(_procedure_header);
-            }
+            string procedure_name = _procedure_header.name.meth_name.name;
+            symbolTable.Add(procedure_name, NameKind.GlobalFunction);
+            base.visit(_procedure_header);
         }
 
         public override void visit(function_header _function_header)

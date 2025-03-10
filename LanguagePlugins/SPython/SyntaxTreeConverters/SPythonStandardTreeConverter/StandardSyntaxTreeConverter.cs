@@ -16,16 +16,12 @@ namespace Languages.SPython.Frontend.Converters
             var ituv = new ImportToUsesVisitor();
             ituv.ProcessNode(root);
 
-            // вынос forward объявлений для всех функций в начало
-            var afdv = new AddForwardDeclarationsVisitor();
-            afdv.ProcessNode(root);
-
             // замена генерации списков на Select.Where.ToArray
             // (не работает из-за лямбд, если переместить в ConvertAfterUsedModulesCompilation)
             var ldv = new ListDesugarVisitor();
             ldv.ProcessNode(root);
 
-            // дешугаризация составных сравнительных операций
+            // дешугаризация составных сравнительных операций (e.g. a == b == c)
             var ccdv = new CompoundComparisonDesugarVisitor();
             ccdv.ProcessNode(root);
 
@@ -47,6 +43,10 @@ namespace Languages.SPython.Frontend.Converters
             var rugvv = new RetainUsedGlobalVariablesVisitor();
             rugvv.variablesUsedAsGlobal = ncv.variablesUsedAsGlobal;
             rugvv.ProcessNode(root);
+
+            // вынос forward объявлений для всех функций в начало
+            var afdv = new AddForwardDeclarationsVisitor();
+            afdv.ProcessNode(root);
 
             // замена вызова функций с именованными параметрами на вызов метода класса
             var fwnpdv = new FunctionsWithNamedParametersDesugarVisitor();
