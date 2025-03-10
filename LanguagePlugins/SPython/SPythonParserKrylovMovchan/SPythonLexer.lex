@@ -35,18 +35,21 @@ ID {Alpha}{AlphaDigit}*
 %%
 
 {INTNUM} {
+  yylval = new SPythonParserYacc.ValueType();
   currentLexLocation = CurrentLexLocation;
   yylval.ex = parserTools.create_int_const(yytext,currentLexLocation);
   return (int)Tokens.INTNUM;
 }
 
 {REALNUM} {
+  yylval = new SPythonParserYacc.ValueType();
   currentLexLocation = CurrentLexLocation;
   yylval.ex = parserTools.create_double_const(yytext,currentLexLocation);
   return (int)Tokens.REALNUM;
 }
 
 {STRINGNUM} {
+  yylval = new SPythonParserYacc.ValueType();
   currentLexLocation = CurrentLexLocation;
   yylval.stn = parserTools.create_string_const(yytext,currentLexLocation);
   return (int)Tokens.STRINGNUM;
@@ -56,6 +59,7 @@ ID {Alpha}{AlphaDigit}*
   string cur_yytext = yytext;
   int res = keywords.KeywordOrIDToken(cur_yytext);
   currentLexLocation = CurrentLexLocation;
+  yylval = new SPythonParserYacc.ValueType();
   switch (res)
   {
     case (int)Tokens.ID:
@@ -78,42 +82,42 @@ ID {Alpha}{AlphaDigit}*
   return res;
 }
 
-"+=" { yylval.op = new op_type_node(Operators.AssignmentAddition); return (int)Tokens.PLUSEQUAL; }
-"-=" { yylval.op = new op_type_node(Operators.AssignmentSubtraction); return (int)Tokens.MINUSEQUAL; }
-"*=" { yylval.op = new op_type_node(Operators.AssignmentMultiplication); return (int)Tokens.STAREQUAL; }
-"/=" { yylval.op = new op_type_node(Operators.AssignmentDivision); return (int)Tokens.DIVEQUAL; }
+"+=" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.AssignmentAddition); return (int)Tokens.PLUSEQUAL; }
+"-=" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.AssignmentSubtraction); return (int)Tokens.MINUSEQUAL; }
+"*=" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.AssignmentMultiplication); return (int)Tokens.STAREQUAL; }
+"/=" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.AssignmentDivision); return (int)Tokens.DIVEQUAL; }
 
-"+"  { yylval.op = new op_type_node(Operators.Plus); return (int)Tokens.PLUS; }
-"-"  { yylval.op = new op_type_node(Operators.Minus); return (int)Tokens.MINUS; }
-"*"  { yylval.op = new op_type_node(Operators.Multiplication); return (int)Tokens.STAR; }
-"//" { yylval.op = new op_type_node(Operators.IntegerDivision); return (int)Tokens.SLASHSLASH; }
-"/"  { yylval.op = new op_type_node(Operators.Division); return (int)Tokens.DIVIDE; }
-"%"  { yylval.op = new op_type_node(Operators.ModulusRemainder); return (int)Tokens.PERCENTAGE; }
+"+"  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.Plus); return (int)Tokens.PLUS; }
+"-"  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.Minus); return (int)Tokens.MINUS; }
+"*"  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.Multiplication); return (int)Tokens.STAR; }
+"//" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.IntegerDivision); return (int)Tokens.SLASHSLASH; }
+"/"  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.Division); return (int)Tokens.DIVIDE; }
+"%"  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.ModulusRemainder); return (int)Tokens.PERCENTAGE; }
 
-"<=" { yylval.op = new op_type_node(Operators.LessEqual); return (int)Tokens.LESSEQUAL; }
-">=" { yylval.op = new op_type_node(Operators.GreaterEqual); return (int)Tokens.GREATEREQUAL; }
-"<"  { yylval.op = new op_type_node(Operators.Less); return (int)Tokens.LESS; }
-">"  { yylval.op = new op_type_node(Operators.Greater); return (int)Tokens.GREATER; }
-"==" { yylval.op = new op_type_node(Operators.Equal); return (int)Tokens.EQUAL; }
-"!=" { yylval.op = new op_type_node(Operators.NotEqual); return (int)Tokens.NOTEQUAL; }
-"="  { yylval.op = new op_type_node(Operators.Assignment); return (int)Tokens.ASSIGN; }
+"<=" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.LessEqual); return (int)Tokens.LESSEQUAL; }
+">=" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.GreaterEqual); return (int)Tokens.GREATEREQUAL; }
+"<"  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.Less); return (int)Tokens.LESS; }
+">"  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.Greater); return (int)Tokens.GREATER; }
+"==" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.Equal); return (int)Tokens.EQUAL; }
+"!=" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.NotEqual); return (int)Tokens.NOTEQUAL; }
+"="  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.Assignment); return (int)Tokens.ASSIGN; }
 
-"#{" { return (int)Tokens.INDENT; }
-"#}" { return (int)Tokens.UNINDENT; }
-"{"  { return (int)Tokens.LBRACE; }
-"}"  { return (int)Tokens.RBRACE; }
-"["  { return (int)Tokens.LBRACKET; }
-"]"  { return (int)Tokens.RBRACKET; }
+"#{" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.INDENT; }
+"#}" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.UNINDENT; }
+"{"  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.LBRACE; }
+"}"  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.RBRACE; }
+"["  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.LBRACKET; }
+"]"  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.RBRACKET; }
 
-"->" { yylval.ti = new token_info(yytext); return (int)Tokens.ARROW; }
+"->" { yylval = new SPythonParserYacc.ValueType(); yylval.ti = new token_info(yytext); return (int)Tokens.ARROW; }
 
-"."  { return (int)Tokens.DOT; }
-","  { return (int)Tokens.COMMA; }
-":"  { return (int)Tokens.COLON; }
-";"  { return (int)Tokens.SEMICOLON; }
-"("  { return (int)Tokens.LPAR; }
-")"  { return (int)Tokens.RPAR; }
-"**" { return (int)Tokens.STARSTAR; }
+"."  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.DOT; }
+","  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.COMMA; }
+":"  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.COLON; }
+";"  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.SEMICOLON; }
+"("  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.LPAR; }
+")"  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.RPAR; }
+"**" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.STARSTAR; }
 
 "##" {
   parserTools.AddErrorFromResource("WRONG_INDENT", new LexLocation(CurrentLexLocation.StartLine + 1, 0, CurrentLexLocation.StartLine + 1, 0));

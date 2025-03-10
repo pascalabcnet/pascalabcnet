@@ -126,7 +126,7 @@ namespace SPythonParser
                 case "EQUAL":
                     return 90;
                 case "COLON":
-                    return 80;
+                    return 200;
                 case "ASSIGN":
                     return 70;
                 case "ID":
