@@ -1,19 +1,24 @@
-﻿a = int(input())
+﻿print('Enter 1st integer:', end=' ')
+a = int(input())
+print('Enter 2nd integer:', end=' ')
 b = int(input())
 
 def print_expressions(a: int, b: int):
-    print('a +  b = ', a + b, end = '\n')
-    print('a -  b = ', a - b, end = '\n')
-    print('a *  b = ', a * b, end = '\n')
-    print('a // b = ', a // b, end = '\n')
-    print('a /  b = ', a / b, end = '\n')
+    print(a, '+', b, '=', a + b, end = '\n')
+    print(a, '-', b, '=', a - b, end = '\n')
+    print(a, '*', b, '=', a * b, end = '\n')
+    print(a, '%', b, '=', a % b, end = '\n')
+    print(a, '/', b, '=', a / b, end = '\n')
+    print(a, '//', b, '=', a // b, end = '\n')
 
 print_expressions(a, b)
 
-# 1
-# 2
-# a +  b =  3
-# a -  b =  -1
-# a *  b =  2
-# a // b =  0
-# a /  b =  0.5
+
+#Enter 1st integer: 5
+#Enter 2nd integer: 2
+#5 + 2 = 7
+#5 - 2 = 3
+#5 * 2 = 10
+#5 % 2 = 1
+#5 / 2 = 2.5
+#5 // 2 = 2

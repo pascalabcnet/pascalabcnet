@@ -1,9 +1,11 @@
 ﻿from unit_example import *
 
-a = [fib(i) for i in range(12)]
-for elem in a:
-    print(elem, end=' ')
+fib_to_12 = [fib(i) for i in range(12)]
+print("Fibonacci Sequence:", end=' ')
+for fib_num in fib_to_12:
+    print(fib_num, end=' ')
 print()
 
+print('Factorials:')
 for i in range(7):
     print(i, '! = ', fact(i), sep='')

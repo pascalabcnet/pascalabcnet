@@ -1,4 +1,4 @@
-﻿unit Time1;
+﻿unit time1;
 
 interface
 
