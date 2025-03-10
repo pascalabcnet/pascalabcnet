@@ -81,7 +81,7 @@ namespace Languages.Pascal.Frontend.Converters
                 Operators comp2 = _bin_expr.operation_type;
                 expression right = _bin_expr.right;
                 ident id = new ident(NewIdentName(), middle.source_context);
-                type_definition td = new same_type_node(middle, middle.source_context);
+                type_definition td = new same_type_node(middle.TypedClone(), middle.source_context);
                 var_def_statement vds = new var_def_statement(id, td, middle.source_context);
                 statement_list curr_statement_list = GetCurrentStatementList(_bin_expr);
                 int index = curr_sl_index - curr_statement_list.subnodes_without_list_elements_count;
