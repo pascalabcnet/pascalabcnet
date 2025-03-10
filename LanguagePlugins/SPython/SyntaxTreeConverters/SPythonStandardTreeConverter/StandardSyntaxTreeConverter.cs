@@ -25,6 +25,7 @@ namespace Languages.SPython.Frontend.Converters
             var ccdv = new CompoundComparisonDesugarVisitor();
             ccdv.ProcessNode(root);
 
+            // замена типов из SPython на типы из PascalABC.NET
             var tcv = new TypeCorrectVisitor();
             tcv.ProcessNode(root);
 
@@ -33,13 +34,13 @@ namespace Languages.SPython.Frontend.Converters
 
         public override syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts)
         {
-            // визитер проверящий корректность имён из модулей
-            // и заменяющий первые присваивания переменных на объявление с инициализацией
+            // проверка корректности имён, разрешение неоднозначности
+            // сохранение множества переменных, использующихся как глобальные в ncv.variablesUsedAsGlobal
             var ncv = new NameCorrectVisitor(compilationArtifacts.NamesFromUsedUnits);
             ncv.ProcessNode(root);
 
-            // выносит глобальные переменные на локальный уровень
-            // если они не используются в функциях (не являются глобальными)
+            // выносит объявлений переменных из ncv.variablesUsedAsGlobal на глобальный уровень
+            // (в модулях все переменные, объявленные на глобальном уровне являются глобальными)
             var rugvv = new RetainUsedGlobalVariablesVisitor();
             rugvv.variablesUsedAsGlobal = ncv.variablesUsedAsGlobal;
             rugvv.ProcessNode(root);
@@ -57,6 +58,12 @@ namespace Languages.SPython.Frontend.Converters
             esonv.ProcessNode(root);
 
             // перестроение структуры дерева, для последующих этапов компиляции
+            // итоговое представление:
+            // 1) объявления глобальных переменных (без присваиваний)
+            // 2) forward объявления функций
+            // 3) объявление функции %%MAIN%%, содержащей компилируемую программу
+            // 4) объявления функций, объявленных в программе
+            // 5) begin %%MAIN%%() end.
             var tnrv = new TreeNodesRearrangementVisitor();
             tnrv.ProcessNode(root);
 
