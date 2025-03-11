@@ -1,0 +1,26 @@
+﻿N = 7
+
+# Prints the first N integers
+# that can be represented in 3 different ways
+# as the sum of two squares
+def print_sequence(N: int):
+ a = 0
+ while True:
+  a += 1
+  for b in range(1, a):
+   for c in range(1, b):
+     for d in range(1, c + 1):
+       for e in range(1, d):
+         for f in range(1, e):
+          if a ** 2 + f ** 2 == b ** 2 + e ** 2 == c ** 2 + d ** 2:
+            print(a ** 2 + f ** 2, '\t=   ',
+                  a, '^2 + ', f, '^2 \t=   ', 
+                  b, '^2 + ', e, '^2 \t=   ',
+                  c, '^2 + ', d, '^2', sep='')
+            
+            N -= 1
+            if N == 0:
+              return
+
+
+print_sequence(N)
