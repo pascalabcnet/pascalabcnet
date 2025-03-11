@@ -69,7 +69,7 @@ namespace Languages.Pascal.Frontend.Converters
                 // to
                 //
                 // var id: typeof(middle);
-                // ((left comp1 !assign(id, middle)) && (name comp2 right))
+                // ((left comp1 !assign(id, middle)) && (id comp2 right))
                 //
                 // then recursive call for left
                 // P.S. !assign(a, b) assigns b to a and return a
@@ -94,7 +94,6 @@ namespace Languages.Pascal.Frontend.Converters
                 bin_expr new_left = new bin_expr(left, method_call, comp1, new SourceContext(left.source_context, method_call.source_context));
                 bin_expr new_right = new bin_expr(id, right, comp2, new SourceContext(id.source_context, right.source_context));
                 bin_expr new_bin_expr = new bin_expr(new_left, new_right, Operators.LogicalAND, _bin_expr.source_context);
-                //Replace(_bin_expr, new_bin_expr);
                 _bin_expr.Parent.ReplaceDescendant(_bin_expr, new_bin_expr);
                 new_bin_expr.left.visit(this);
             }
