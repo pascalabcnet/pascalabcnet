@@ -7,10 +7,6 @@ GetSamples.exe _svn\BF BF
 GetSamples.exe _svn\PL0\ PL0\
 cd ..\..
 
-cd utils\DefaultLanguageResMaker\
-LanguageResMaker.exe
-cd ..\..
-
 Utils\IncrementVresion\IncrementVresion.exe Configuration\Version.defs REVISION 1
 Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs Configuration\GlobalAssemblyInfo.cs.tmpl Configuration\GlobalAssemblyInfo.cs
 Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs ReleaseGenerators\PascalABCNET_version.nsh.tmpl ReleaseGenerators\PascalABCNET_version.nsh
