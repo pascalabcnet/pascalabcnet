@@ -104,6 +104,8 @@ ID {Alpha}{AlphaDigit}*
 
 "#{" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.INDENT; }
 "#}" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.UNINDENT; }
+"#;" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.END_OF_LINE; }
+
 "{"  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.LBRACE; }
 "}"  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.RBRACE; }
 "["  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.LBRACKET; }
@@ -119,8 +121,9 @@ ID {Alpha}{AlphaDigit}*
 ")"  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.RPAR; }
 "**" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.STARSTAR; }
 
-"##" {
-  parserTools.AddErrorFromResource("WRONG_INDENT", new LexLocation(CurrentLexLocation.StartLine + 1, 0, CurrentLexLocation.StartLine + 1, 0));
+"#!" {
+  parserTools.AddErrorFromResource("WRONG_INDENT", 
+    new LexLocation(CurrentLexLocation.StartLine + 1, 0, CurrentLexLocation.StartLine + 1, 0));
 	return (int)Tokens.EOF;
 }
 

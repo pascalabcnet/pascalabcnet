@@ -40,9 +40,10 @@
     public type_definition td;
 }
 
-%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM GLOBAL AS PASS END_OF_FILE
+%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM GLOBAL AS PASS
+%token <ti> INDENT UNINDENT END_OF_FILE END_OF_LINE
 %token <ex> INTNUM REALNUM TRUE FALSE
-%token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
+%token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON ARROW
 %token <stn> STRINGNUM
 %token <op> ASSIGN PLUSEQUAL MINUSEQUAL STAREQUAL DIVEQUAL
 %token <op> PLUS MINUS STAR DIVIDE SLASHSLASH PERCENTAGE
@@ -68,7 +69,7 @@
 %type <stn> ident_as_ident ident_as_ident_list
 %type <td> proc_func_header type_ref simple_type_identifier, template_type
 %type <stn> import_clause, template_type_params, template_param_list
-%type <ob> optional_semicolon
+%type <ob> optional_semicolon end_of_line
 %type <op> assign_type
 
 %start program
@@ -158,7 +159,7 @@ import_and_decl_and_stmt_list
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}
-	| import_and_decl_and_stmt_list SEMICOLON import_or_decl_or_stmt
+	| import_and_decl_and_stmt_list end_of_line import_or_decl_or_stmt
 		{
 			$$ = ($1 as statement_list).Add($3 as statement, @$);
 		}
@@ -169,7 +170,7 @@ stmt_list
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}
-	| stmt_list SEMICOLON stmt
+	| stmt_list end_of_line stmt
 		{
 			$$ = ($1 as statement_list).Add($3 as statement, @$);
 		}
@@ -592,7 +593,7 @@ optional_condition
 	;
 
 block
-	: INDENT stmt_list SEMICOLON UNINDENT
+	: INDENT stmt_list end_of_line UNINDENT
 		{
 			$$ = $2 as statement_list;
 			($$ as statement_list).left_logical_bracket = $1;
@@ -742,6 +743,17 @@ optional_act_param_list
 			$$ = null;
 		}
     ;
+
+end_of_line
+	: END_OF_LINE
+		{
+			$$ = $1;
+		}
+	| SEMICOLON
+		{
+			$$ = $1;
+		}
+	;
 
 optional_semicolon
 	: SEMICOLON

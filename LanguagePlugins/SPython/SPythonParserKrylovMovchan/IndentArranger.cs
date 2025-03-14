@@ -16,7 +16,9 @@ namespace SPythonParser
         private const int indentSpaceNumber = 4;
         private const string indentToken = "#{";
         private const string unindentToken = "#}";
-        private const string badIndentToken = "##";
+        private const string badIndentToken = "#!";
+        private const string endOfLineToken = "#;";
+        private const string endOfFIleToken = "#$";
         public const string createdFileNameAddition = "_processed";
 
         // регулярное выражение разбивающее строку программы на группы, последняя из которых - комментарий в конце строки
@@ -41,7 +43,7 @@ namespace SPythonParser
 
             // нужен токен в конце для правильного позиционирования ошибок,
             // допущенных в конце программы
-            sourceText += "#$";
+            sourceText += endOfFIleToken;
 
             // создание файла с полученным текстом для дебага
             //File.WriteAllText("./processed_file.txt", sourceText);
@@ -189,8 +191,8 @@ namespace SPythonParser
                         AddSemicolonIfNeeded(ref programLines[lastNotEmptyLine]);
 
                         programLines[lastNotEmptyLine] += unindentToken +
-                            string.Concat(Enumerable.Repeat(";" + unindentToken, unindentCounter))
-                            + (isEndOfStatement ? ";" : "");
+                            string.Concat(Enumerable.Repeat(endOfLineToken + unindentToken, unindentCounter))
+                            + (isEndOfStatement ? endOfLineToken : "");
                     }
                     // количество пробелов в строке является некорректным 
                     // (не соответствует количеству пробелов в строке с любым отступом) 
@@ -210,7 +212,7 @@ namespace SPythonParser
                 // закрытие всех отступов в конце файла
                 AddSemicolonIfNeeded(ref programLines[lastNotEmptyLine]);
                 programLines[lastNotEmptyLine] += unindentToken +
-                    string.Concat(Enumerable.Repeat(";" + unindentToken, indentStack.Count() - 2));
+                    string.Concat(Enumerable.Repeat(endOfLineToken + unindentToken, indentStack.Count() - 2));
             }
         }
 
@@ -218,7 +220,7 @@ namespace SPythonParser
         {
             int i = s.Length - 1;
             while (i > -1 && Char.IsWhiteSpace(s[i])) --i;
-            if (i == -1 || s[i] != ';') s += ";";
+            if (i == -1 || s[i] != ';') s += endOfLineToken;
         }
     }
 }
