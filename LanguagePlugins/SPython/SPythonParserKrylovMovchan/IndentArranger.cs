@@ -31,7 +31,9 @@ namespace SPythonParser
 
         public void ProcessSourceText(ref string sourceText)
         {
-            string[] programLines = sourceText.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            //string[] programLines = sourceText.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            // В редакторе в особых случаях добавляется \n вместо \r\n
+            string[] programLines = sourceText.Split(new string[] { "\n" }, StringSplitOptions.None);
 
             // удаляем комментарии в тексте программы
             EraseComments(ref programLines);
@@ -142,6 +144,7 @@ namespace SPythonParser
                 // пропуск строки не содержащей код 
                 if (isEmptyLine)
                 {
+                    lastNotEmptyLine = lineCounter;
                     continue;
                 }
 

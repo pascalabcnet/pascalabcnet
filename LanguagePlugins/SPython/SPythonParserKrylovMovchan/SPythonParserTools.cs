@@ -8,6 +8,7 @@ using PascalABCCompiler.Parsers;
 using System.Text;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.ParserTools.Directives;
+using QUT.Gppg;
 
 namespace SPythonParser
 {
@@ -118,8 +119,8 @@ namespace SPythonParser
         {
             switch (tok)
             {
-                case "SEMICOLON":
-                    return 120;
+                case "END_OF_LINE":
+                    return 300;
                 case "STATEMENT":
                     return 100;
                 case "EXPRESSION":
@@ -183,76 +184,62 @@ namespace SPythonParser
             return lt;
         }
 
-        public string CreateErrorString(string yytext, params object[] args)
+        public LexLocation GetLexLocation(string found, string expected, LexLocation prev_loc, LexLocation curr_loc)
         {
+            if (found == "#{" && expected == "COLON")
+            {
+                // жертвы, чтобы достать имя файла
+                SourceContext sc = curr_loc;
+                return new LexLocation(prev_loc.EndLine, prev_loc.EndColumn, prev_loc.EndLine, prev_loc.EndColumn + 1, sc.FileName);
+            }
+            if (found == "#{" || found == "#}")
+            {
+                SourceContext sc = curr_loc;
+                return new LexLocation(curr_loc.StartLine + 1, 0, curr_loc.StartLine + 1, 0, sc.FileName);
+            }
+            return curr_loc;
+        }
+
+        public string ExpectedToken(params object[] args) {
+            List<string> tokens = new List<string>(args.Skip(1).Cast<string>());
+
+            // Это - временное решение, пока эти слова относятся к идентификаторам (что неправильно)
+            //if (tokens.Contains("ID"))
+            //    tokens = tokens.Except((new string[] { "tkAbstract", "tkOverload", "tkReintroduce", "tkOverride", "tkVirtual", "tkAt", "tkOn", "tkName", "tkForward", "tkRead", "tkWrite" })).ToList();
+
+            if (tokens.Contains("FOR") && tokens.Contains("IF") && tokens.Contains("WHILE") && tokens.Contains("DEF"))
+                return "STATEMENT";
+
+            if (tokens.Contains("ID") && tokens.Contains("INTNUM") && tokens.Contains("REALNUM") && tokens.Contains("STRINGNUM"))
+                return "EXPRESSION";
+
+            tokens = tokens.OrderByDescending(s => TokenPriority(s)).ToList();
+            
+            return tokens.First();
+        }
+
+        public string CreateErrorString(string yytext, string exp_token) {
             string prefix = "";
             if (yytext != "")
                 prefix = StringResources.Get("FOUND{0}");
             else
                 prefix = StringResources.Get("FOUNDEOF");
 
-            /*if (this.build_tree_for_format_strings && prefix == StringResources.Get("FOUNDEOF"))
-            {
-                yytext = "}";
-                prefix = StringResources.Get("FOUND{0}");
-            }*/
-
-            // Преобразовали в список строк - хорошо
-            List<string> tokens = new List<string>(args.Skip(1).Cast<string>());
-
-            // Исключаем, т.к. в реальных программах никогда не встретятся
-            //tokens = tokens.Except((new string[] { "tkParseModeExpression", "tkParseModeStatement", "tkDirectiveName" })).ToList();
-
-            // Это - временное решение, пока эти слова относятся к идентификаторам (что неправильно)
-            //if (tokens.Contains("ID"))
-            //    tokens = tokens.Except((new string[] { "tkAbstract", "tkOverload", "tkReintroduce", "tkOverride", "tkVirtual", "tkAt", "tkOn", "tkName", "tkForward", "tkRead", "tkWrite" })).ToList();
-
-            // Добавляем фиктивный токен, что означает, что далее могут идти несколько токенов, начинающих выражение
-            if (tokens.Contains("FOR") && tokens.Contains("IF") && tokens.Contains("WHILE") && tokens.Contains("DEF"))
-            {
-                tokens.Clear();
-                tokens.Add("STATEMENT");
-            }
-
-            // Добавляем фиктивный токен, что означает, что далее могут идти несколько токенов, начинающих выражение
-            if (tokens.Contains("ID") && tokens.Contains("INTNUM") && tokens.Contains("REALNUM") && tokens.Contains("STRINGNUM"))
-            {
-                tokens.Clear();
-                tokens.Add("EXPRESSION");
-            }
-
-            tokens = tokens.OrderByDescending(s => TokenPriority(s)).ToList();
-
-            /*if (args.Contains("EOF") && yytext!="")
-                return "Текст за концом программы недопустим";
-             if (args.Contains("tkIdentifier"))
-                 return string.Format(prefix + "ожидался идентификатор", "'" + yytext + "'");*/
-            /*if (tokens.Contains("tkProgram"))
-                return string.Format(prefix + StringResources.Get("EXPECTEDBEGIN"), "'" + yytext + "'");
-            */
-            var MaxTok = tokens.First();
-            //if (yytext != null && yytext.ToLower() == "record" && MaxTok == "tkSealed")
-            //    return StringResources.Get("WRONG_ATTRIBUTE_FOR_RECORD");
-
             var ExpectedString = StringResources.Get("EXPECTED{1}");
 
-            if (MaxTok.Equals("STATEMENT") || MaxTok.Equals("ID") || MaxTok.Equals("INDENT") || MaxTok.Equals("UNINDENT"))
+            if (exp_token.Equals("STATEMENT") || exp_token.Equals("ID") || exp_token.Equals("INDENT") || exp_token.Equals("UNINDENT"))
                 ExpectedString = StringResources.Get("EXPECTEDR{1}");
-            else if (MaxTok.Equals("STRINGNUM"))
+            else if (exp_token.Equals("STRINGNUM"))
                 ExpectedString = StringResources.Get("EXPECTEDF{1}");
-            if ((MaxTok == "EOF" || MaxTok == "EOF1" || MaxTok == "FOUNDEOF") && this.build_tree_for_format_strings)
-                MaxTok = "}";
-            var MaxTokHuman = ConvertToHumanName(MaxTok);
+            var MaxTokHuman = ConvertToHumanName(exp_token);
 
-            if (yytext == ";" || yytext == "#{" || yytext == "#}" || yytext == "#$")
+            if (yytext == "#{" || yytext == "#}" || yytext == "#;" || yytext == "#$")
             {
                 prefix = StringResources.Get("FOUNDM{0}");
                 yytext = ConvertToHumanName(yytext);
                 return string.Format(prefix + ExpectedString, yytext, MaxTokHuman);
             }
-
-            // string w = string.Join(" или ", tokens.Select(s => ConvertToHumanName((string)s)));
-       
+            
             return string.Format(prefix + ExpectedString, "'" + yytext + "'", MaxTokHuman);
         }
 

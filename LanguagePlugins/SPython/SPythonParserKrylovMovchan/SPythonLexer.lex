@@ -21,6 +21,7 @@ ID {Alpha}{AlphaDigit}*
   public SPythonParserTools parserTools;
   public List<string> Defines = new List<string>();
   LexLocation currentLexLocation;
+  LexLocation prevLexLocation;
 
   public Scanner(string text, SPythonParserTools parserTools, PascalABCCompiler.Parsers.BaseKeywords keywords, List<string> defines = null) 
   {
@@ -138,10 +139,12 @@ ID {Alpha}{AlphaDigit}*
 
 %{
   //yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol);
+  prevLexLocation = yylloc;
   if (currentLexLocation != null)
     yylloc = currentLexLocation;
   else
 	  yylloc = CurrentLexLocation;
+  
   currentLexLocation = null;
 %}
 
@@ -156,8 +159,17 @@ public LexLocation CurrentLexLocation
 
 public override void yyerror(string format, params object[] args)
 {
-	string errorMsg = parserTools.CreateErrorString(yytext, args);
-	parserTools.AddError(errorMsg, CurrentLexLocation);
+    string expected = parserTools.ExpectedToken(args);
+    LexLocation lexLocation = parserTools.GetLexLocation(
+      yytext, expected, prevLexLocation, CurrentLexLocation);
+    
+    if (yytext != "#{" || expected != "END_OF_LINE") {
+      string errorMsg = parserTools.CreateErrorString(yytext, expected);
+      parserTools.AddError(errorMsg, lexLocation);
+    }
+    else {
+      parserTools.AddErrorFromResource("WRONG_INDENT", lexLocation);
+    }
 }
 
 protected override bool yywrap()
