@@ -12,10 +12,20 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <EmbeddedResource Include="DefaultLang.resources" />
+    <EmbeddedResource Include="DefaultLang.resources" Visible="false" />
   </ItemGroup>
   
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
+  
+  <Target Name="MakeLangResFile" BeforeTargets="BeforeBuild">
+    <Exec
+      Command="cd ..\Utils\DefaultLanguageResMaker &amp; LanguageResMaker.exe"
+      Condition="$(OS) == 'Windows_NT'" />
+
+    <Exec
+      Command="cd ../Utils/DefaultLanguageResMaker &amp;&amp; mono LanguageResMaker.exe"
+      Condition="$(OS) != 'Windows_NT'" />
+  </Target>
 </Project>

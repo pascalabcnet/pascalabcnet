@@ -1,8 +1,4 @@
 #!/bin/sh -e
-cd Utils/DefaultLanguageResMaker
-mono LanguageResMaker.exe
-cd ../..
-
 dotnet build -c Release --no-incremental pabcnetc.sln
 dotnet build -c Release --no-incremental PascalABCNETLinux.sln
 mono --aot bin/pabcnetc.exe
