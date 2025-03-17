@@ -4,7 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using PascalABCCompiler.SyntaxTree;
 using SyntaxVisitors;
 
-namespace Languages.Pascal.Frontend.Converters
+namespace Languages.SPython.Frontend.Converters
 {
     internal class CompoundComparisonDesugarVisitor : BaseChangeVisitor
     {
