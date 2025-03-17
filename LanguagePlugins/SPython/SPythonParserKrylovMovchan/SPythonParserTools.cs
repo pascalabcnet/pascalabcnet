@@ -186,17 +186,13 @@ namespace SPythonParser
 
         public LexLocation GetLexLocation(string found, string expected, LexLocation prev_loc, LexLocation curr_loc)
         {
-            if (found == "#{" && expected == "COLON")
-            {
-                // жертвы, чтобы достать имя файла
-                SourceContext sc = curr_loc;
-                return new LexLocation(prev_loc.EndLine, prev_loc.EndColumn, prev_loc.EndLine, prev_loc.EndColumn + 1, sc.FileName);
-            }
-            if (found == "#{" || found == "#}")
-            {
-                SourceContext sc = curr_loc;
-                return new LexLocation(curr_loc.StartLine + 1, 0, curr_loc.StartLine + 1, 0, sc.FileName);
-            }
+            // жертвы, чтобы достать имя файла
+            SourceContext sc = curr_loc;
+            if (found == "#{")
+                if (expected == "END_OF_LINE")
+                    return new LexLocation(curr_loc.StartLine + 1, 0, curr_loc.StartLine + 1, 0, sc.FileName);
+                else
+                    return new LexLocation(prev_loc.EndLine, prev_loc.EndColumn, prev_loc.EndLine, prev_loc.EndColumn + 1, sc.FileName);
             return curr_loc;
         }
 

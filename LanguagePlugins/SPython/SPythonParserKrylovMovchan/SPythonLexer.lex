@@ -176,12 +176,12 @@ public override void yyerror(string format, params object[] args)
     LexLocation lexLocation = parserTools.GetLexLocation(
       yytext, expected, prevLexLocation, CurrentLexLocation);
     
-    if (yytext != "#{" || expected != "END_OF_LINE") {
-      string errorMsg = parserTools.CreateErrorString(yytext, expected);
-      parserTools.AddError(errorMsg, lexLocation);
+    if (yytext == "#{" && expected == "END_OF_LINE") {
+      parserTools.AddErrorFromResource("WRONG_INDENT", lexLocation);
     }
     else {
-      parserTools.AddErrorFromResource("WRONG_INDENT", lexLocation);
+      string errorMsg = parserTools.CreateErrorString(yytext, expected);
+      parserTools.AddError(errorMsg, lexLocation);
     }
 }
 
