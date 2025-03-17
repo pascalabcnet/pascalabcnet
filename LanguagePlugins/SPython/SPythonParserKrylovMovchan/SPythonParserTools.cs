@@ -200,9 +200,11 @@ namespace SPythonParser
             return curr_loc;
         }
 
-        public string ExpectedToken(params object[] args) {
+        public string ExpectedToken(bool line_needs_colon, params object[] args) {
             List<string> tokens = new List<string>(args.Skip(1).Cast<string>());
 
+            if (line_needs_colon && args.Contains("COLON"))
+                return "COLON";
             // Это - временное решение, пока эти слова относятся к идентификаторам (что неправильно)
             //if (tokens.Contains("ID"))
             //    tokens = tokens.Except((new string[] { "tkAbstract", "tkOverload", "tkReintroduce", "tkOverride", "tkVirtual", "tkAt", "tkOn", "tkName", "tkForward", "tkRead", "tkWrite" })).ToList();
