@@ -20,9 +20,10 @@ ID {Alpha}{AlphaDigit}*
   private SPythonKeywords keywords;
   public SPythonParserTools parserTools;
   public List<string> Defines = new List<string>();
-  private bool line_needs_colon = false;
+  private int last_line_needed_colon = -1;
   private LexLocation currentLexLocation;
-  private LexLocation prevLexLocation;
+  private LexLocation prevLexLocation 
+  = new LexLocation(-1, -1, -1, -1, "");
 
   public Scanner(string text, SPythonParserTools parserTools, PascalABCCompiler.Parsers.BaseKeywords keywords, List<string> defines = null) 
   {
@@ -85,7 +86,7 @@ ID {Alpha}{AlphaDigit}*
     case (int)Tokens.WHILE:
     case (int)Tokens.FOR:
     case (int)Tokens.DEF:
-      line_needs_colon = true;
+      last_line_needed_colon = CurrentLexLocation.StartLine;
       break;
   }
 
@@ -141,10 +142,6 @@ ID {Alpha}{AlphaDigit}*
   return (int)Tokens.END_OF_FILE;
 }
 
-"\n" {
-  line_needs_colon = false;
-}
-
 [^ \r\n] {
   parserTools.AddErrorFromResource("UNEXPECTED_TOKEN_{0}", CurrentLexLocation, yytext);
 	return (int)Tokens.EOF;
@@ -172,7 +169,7 @@ public LexLocation CurrentLexLocation
 
 public override void yyerror(string format, params object[] args)
 {
-    string expected = parserTools.ExpectedToken(line_needs_colon, args);
+    string expected = parserTools.ExpectedToken(last_line_needed_colon == prevLexLocation.StartLine, args);
     LexLocation lexLocation = parserTools.GetLexLocation(
       yytext, expected, prevLexLocation, CurrentLexLocation);
     
