@@ -88,6 +88,10 @@ ID {Alpha}{AlphaDigit}*
     case (int)Tokens.DEF:
       last_line_needed_colon = CurrentLexLocation.StartLine;
       break;
+    case (int)Tokens.CLASS:
+    case (int)Tokens.LAMBDA:
+      parserTools.AddErrorFromResource("UNSUPPORTED_CONSTRUCTION_{0}", currentLexLocation, yytext);
+      break;
   }
 
   return res;
