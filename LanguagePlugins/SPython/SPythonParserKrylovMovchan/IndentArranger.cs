@@ -108,8 +108,6 @@ namespace SPythonParser
 
         private void ArrangeIndents(ref string[] programLines)
         {
-            int lastNotEmptyLine = -1;
-
             Stack<int> indentStack = new Stack<int>();
             indentStack.Push(0);
 
@@ -118,7 +116,7 @@ namespace SPythonParser
                 lineCounter++;
                 prevBracketCount = bracketCount;
                 CountBrackets(line);
-                if (prevBracketCount != 0 && bracketCount != 0)
+                if (prevBracketCount != 0)
                     continue;
 
                 bool isEmptyLine = true; // строка не содержит символов кроме \s\t\n\r
@@ -141,32 +139,21 @@ namespace SPythonParser
                     }
                 }
 
-                // пропуск строки не содержащей код 
-                if (isEmptyLine)
-                {
-                    lastNotEmptyLine = lineCounter;
-                    continue;
-                }
-
-                if (prevBracketCount != 0)
-                {
-                    lastNotEmptyLine = lineCounter;
-                    continue;
-                }
+                if (isEmptyLine) continue;
 
                 int previosSpaceCounter = indentStack.Peek();
                 // текущий отступ соответствует предыдущему отступу
                 if (currentLineSpaceCounter == previosSpaceCounter)
                 {
-                    if (lastNotEmptyLine != -1)
-                        AddSemicolonIfNeeded(ref programLines[lastNotEmptyLine]);
+                    if (lineCounter != 0)
+                        AddSemicolonIfNeeded(ref programLines[lineCounter - 1]);
                 }
                 // текущий отступ соответствует увеличению
                 else if (currentLineSpaceCounter > previosSpaceCounter)
                 {
-                    if (lastNotEmptyLine != -1)
+                    if (lineCounter != 0)
                     {
-                        programLines[lastNotEmptyLine] += indentToken;
+                        programLines[lineCounter - 1] += indentToken;
                         indentStack.Push(currentLineSpaceCounter);
                     }
                     else
@@ -191,9 +178,9 @@ namespace SPythonParser
                         bool isEndOfStatement = !IsFirstTokenElseOrElif(line);
 
                         unindentCounter--;
-                        AddSemicolonIfNeeded(ref programLines[lastNotEmptyLine]);
+                        AddSemicolonIfNeeded(ref programLines[lineCounter - 1]);
 
-                        programLines[lastNotEmptyLine] += unindentToken +
+                        programLines[lineCounter - 1] += unindentToken +
                             string.Concat(Enumerable.Repeat(endOfLineToken + unindentToken, unindentCounter))
                             + (isEndOfStatement ? endOfLineToken : "");
                     }
@@ -201,20 +188,18 @@ namespace SPythonParser
                     // (не соответствует количеству пробелов в строке с любым отступом) 
                     else // currentLineSpaceCounter > indentStack.Peek()
                     {
-                        if (lastNotEmptyLine != -1)
-                            programLines[lastNotEmptyLine] += badIndentToken;
+                        if (lineCounter != 0)
+                            programLines[lineCounter - 1] += badIndentToken;
                     }
                 }
-
-                lastNotEmptyLine = lineCounter;
             }
 
 
-            if (lastNotEmptyLine != -1 && indentStack.Count() > 1)
+            if (lineCounter != -1 && indentStack.Count() > 1)
             {
                 // закрытие всех отступов в конце файла
-                AddSemicolonIfNeeded(ref programLines[lastNotEmptyLine]);
-                programLines[lastNotEmptyLine] += unindentToken +
+                AddSemicolonIfNeeded(ref programLines[lineCounter]);
+                programLines[lineCounter] += unindentToken +
                     string.Concat(Enumerable.Repeat(endOfLineToken + unindentToken, indentStack.Count() - 2));
             }
         }
