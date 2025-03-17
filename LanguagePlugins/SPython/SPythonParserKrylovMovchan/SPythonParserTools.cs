@@ -81,6 +81,8 @@ namespace SPythonParser
             TokenNum["END_OF_LINE"] = StringResources.Get("#;");
             TokenNum["#;"] = StringResources.Get("#;");
             //TokenNum["tkStringLiteral"] = StringResources.Get("TKSTRINGLITERAL");
+            TokenNum["IN"] = "'in'";
+            TokenNum["IMPORT"] = "'import'";
             TokenNum["SEMICOLON"] = "';'";
             TokenNum["ASSIGN"] = "'='";
             TokenNum["COLON"] = "':'";
