@@ -17,6 +17,7 @@ namespace SPythonParser
         private const string indentToken = "#{";
         private const string unindentToken = "#}";
         private const string badIndentToken = "#!";
+        private const string programBeginWithIndentToken = "#b";
         private const string endOfLineToken = "#;";
         private const string endOfFIleToken = "#$";
         public const string createdFileNameAddition = "_processed";
@@ -110,6 +111,7 @@ namespace SPythonParser
         {
             Stack<int> indentStack = new Stack<int>();
             indentStack.Push(0);
+            bool skipped_first = false;
 
             foreach (var line in programLines)
             {
@@ -145,19 +147,23 @@ namespace SPythonParser
                 // текущий отступ соответствует предыдущему отступу
                 if (currentLineSpaceCounter == previosSpaceCounter)
                 {
-                    if (lineCounter != 0)
-                        AddSemicolonIfNeeded(ref programLines[lineCounter - 1]);
+                    if (!skipped_first)
+                    {
+                        skipped_first = true;
+                        continue;
+                    }
+                    AddSemicolonIfNeeded(ref programLines[lineCounter - 1]);
                 }
                 // текущий отступ соответствует увеличению
                 else if (currentLineSpaceCounter > previosSpaceCounter)
                 {
-                    if (lineCounter != 0)
+                    if (skipped_first && lineCounter != 0)
                     {
                         programLines[lineCounter - 1] += indentToken;
                         indentStack.Push(currentLineSpaceCounter);
                     }
                     else
-                        programLines[0] = badIndentToken + programLines[0];
+                        programLines[lineCounter] = programBeginWithIndentToken;
                 }
                 // оставшиеся случаи: отступ некорректный или уменьшение на один или несколько отступов
                 else

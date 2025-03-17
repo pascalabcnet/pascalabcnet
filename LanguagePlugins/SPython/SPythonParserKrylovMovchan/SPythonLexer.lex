@@ -142,6 +142,12 @@ ID {Alpha}{AlphaDigit}*
 	return (int)Tokens.EOF;
 }
 
+"#b" {
+  parserTools.AddErrorFromResource("PROGRAM_BEGIN_WITH_INDENT", 
+    CurrentLexLocation);
+	return (int)Tokens.EOF;
+}
+
 "#$" {
   return (int)Tokens.END_OF_FILE;
 }
