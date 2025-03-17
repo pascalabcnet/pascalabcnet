@@ -188,19 +188,22 @@ namespace SPythonParser
         {
             // жертвы, чтобы достать имя файла
             SourceContext sc = curr_loc;
-            if (found == "#{")
-                if (expected == "END_OF_LINE")
-                    return new LexLocation(curr_loc.StartLine + 1, 0, curr_loc.StartLine + 1, 0, sc.FileName);
-                else
-                    return new LexLocation(prev_loc.EndLine, prev_loc.EndColumn, prev_loc.EndLine, prev_loc.EndColumn + 1, sc.FileName);
+            if (found == "#{" && expected == "END_OF_LINE" ||
+                found == "#;" && expected == "INDENT")
+                return new LexLocation(curr_loc.StartLine + 1, 0, curr_loc.StartLine + 1, 0, sc.FileName);
+            if (found == "#{" || found == "#;")
+                return new LexLocation(prev_loc.EndLine, prev_loc.EndColumn, prev_loc.EndLine, prev_loc.EndColumn + 1, sc.FileName);
             return curr_loc;
         }
 
         public string ExpectedToken(bool line_needs_colon, params object[] args) {
+            string found = args[0].ToString();
             List<string> tokens = new List<string>(args.Skip(1).Cast<string>());
 
-            if (line_needs_colon && args.Contains("COLON"))
-                return "COLON";
+            if (tokens.Count != 1) {
+                tokens = tokens.Except((new string[] { found })).ToList();
+            }
+
             // Это - временное решение, пока эти слова относятся к идентификаторам (что неправильно)
             //if (tokens.Contains("ID"))
             //    tokens = tokens.Except((new string[] { "tkAbstract", "tkOverload", "tkReintroduce", "tkOverride", "tkVirtual", "tkAt", "tkOn", "tkName", "tkForward", "tkRead", "tkWrite" })).ToList();
@@ -211,12 +214,26 @@ namespace SPythonParser
             if (tokens.Contains("ID") && tokens.Contains("INTNUM") && tokens.Contains("REALNUM") && tokens.Contains("STRINGNUM"))
                 return "EXPRESSION";
 
+            if (line_needs_colon && tokens.Contains("COLON"))
+                return "COLON";
+
             tokens = tokens.OrderByDescending(s => TokenPriority(s)).ToList();
             
             return tokens.First();
         }
 
         public string CreateErrorString(string yytext, string exp_token) {
+            if (yytext.Equals("#;") && exp_token.Equals("INDENT")) {
+                return StringResources.Get("LINE_WITHOUT_INDENT");
+            }
+            
+            if (yytext.Equals("#{") && !exp_token.Equals("END_OF_LINE")) {
+                yytext = "#;";
+            }
+            if (exp_token.Equals("INDENT")) {
+                exp_token = "END_OF_LINE";
+            }
+
             string prefix = "";
             if (yytext != "")
                 prefix = StringResources.Get("FOUND{0}");
@@ -225,7 +242,13 @@ namespace SPythonParser
 
             var ExpectedString = StringResources.Get("EXPECTED{1}");
 
-            if (exp_token.Equals("STATEMENT") || exp_token.Equals("ID") || exp_token.Equals("INDENT") || exp_token.Equals("UNINDENT"))
+            if (exp_token.Equals("STATEMENT") || 
+                exp_token.Equals("ID") || 
+                exp_token.Equals("INDENT") || 
+                exp_token.Equals("UNINDENT") ||
+                exp_token.Equals("UNINDENT") ||
+                exp_token.Equals("END_OF_LINE") ||
+                exp_token.Equals("END_OF_FILE"))
                 ExpectedString = StringResources.Get("EXPECTEDR{1}");
             else if (exp_token.Equals("STRINGNUM"))
                 ExpectedString = StringResources.Get("EXPECTEDF{1}");
