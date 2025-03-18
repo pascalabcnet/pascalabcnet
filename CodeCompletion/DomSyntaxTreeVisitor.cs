@@ -2706,9 +2706,9 @@ namespace CodeCompletion
         PascalABCCompiler.TreeRealization.using_namespace_list unl = new PascalABCCompiler.TreeRealization.using_namespace_list();
 		public SymScope cur_scope;
 
-        public static string FindPCUFileName(string UnitName, string curr_path)
+        public static string FindPCUFileName(string UnitName, string curr_path, bool caseSensitiveSearch)
         {
-        	return CodeCompletionController.comp.FindPCUFileName(UnitName, curr_path, out _);
+        	return CodeCompletionController.comp.FindPCUFileName(UnitName, curr_path, out _, caseSensitiveSearch);
         }
         
 		private void add_system_unit()
@@ -2808,7 +2808,7 @@ namespace CodeCompletion
                         NamespaceScope ns_scope = null;
                         if (i == 0)
                         {
-                            string pcu_unit_name = FindPCUFileName(str, curr_path);
+                            string pcu_unit_name = FindPCUFileName(str, curr_path, false); // // TODO: исправить последний параметр !!! EVA
                             string unit_name = CodeCompletionNameHelper.FindSourceFileName(str, out _, curr_path);
 
                             /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
@@ -5388,7 +5388,7 @@ namespace CodeCompletion
                                 }
                                 else
                                 {
-                                    string unit_name = CodeCompletionController.comp.FindSourceFileName(str, System.IO.Path.GetDirectoryName(_c_module.file_name), out _);
+                                    string unit_name = CodeCompletionController.comp.FindSourceFileName(str, System.IO.Path.GetDirectoryName(_c_module.file_name), out _, false); // TODO: исправить последний параметр !!! EVA
                                     if (unit_name == null)
                                     {
                                         unit_name = Path.Combine(System.IO.Path.GetDirectoryName(_c_module.file_name), str) + System.IO.Path.GetExtension(_c_module.file_name);

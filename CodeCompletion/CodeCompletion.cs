@@ -396,7 +396,7 @@ namespace CodeCompletion
                 Dirs.AddRange(CodeCompletionController.comp.CompilerOptions.SearchDirectories);
             if (CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent))
                 Dirs.Add((string)CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]);
-            return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, out found_dir_ind, Dirs.ToArray());
+            return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, out found_dir_ind, false, Dirs.ToArray()); // TODO: исправить последний параметр !!! EVA
         }
 
         public static CodeCompletionNameHelper Helper
