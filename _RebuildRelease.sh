@@ -1,10 +1,6 @@
 #!/bin/sh -e
-cd Utils/DefaultLanguageResMaker
-mono LanguageResMaker.exe
-cd ../..
-
-MONO_IOMAP=case msbuild /p:Configuration=Release pabcnetc.sln
-MONO_IOMAP=case msbuild /p:Configuration=Release PascalABCNETLinux.sln
+dotnet build -c Release --no-incremental pabcnetc.sln
+dotnet build -c Release --no-incremental PascalABCNETLinux.sln
 mono --aot bin/pabcnetc.exe
 mono --aot bin/NETGenerator.dll
 mono --aot bin/TreeConverter.dll
@@ -19,6 +15,5 @@ mono --aot bin/Errors.dll
 mono --aot bin/LanguageIntegrator.dll
 mono --aot bin/StringConstants.dll
 mono --aot bin/PascalABCLanguageInfo.dll
-export MONO_IOMAP=all
 cd ReleaseGenerators
 mono ../bin/pabcnetc.exe RebuildStandartModulesMono.pas  /rebuild
