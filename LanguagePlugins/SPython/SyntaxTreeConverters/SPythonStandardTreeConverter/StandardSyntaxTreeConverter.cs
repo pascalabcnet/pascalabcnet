@@ -34,6 +34,10 @@ namespace Languages.SPython.Frontend.Converters
             var tcv = new TypeCorrectVisitor();
             tcv.ProcessNode(root);
 
+            // вынос forward объявлений для всех функций в начало
+            var afdv = new AddForwardDeclarationsVisitor();
+            afdv.ProcessNode(root);
+
             return root;
         }
 
@@ -49,11 +53,7 @@ namespace Languages.SPython.Frontend.Converters
             var rugvv = new RetainUsedGlobalVariablesVisitor();
             rugvv.variablesUsedAsGlobal = ncv.variablesUsedAsGlobal;
             rugvv.ProcessNode(root);
-
-            // вынос forward объявлений для всех функций в начало
-            var afdv = new AddForwardDeclarationsVisitor();
-            afdv.ProcessNode(root);
-
+            
             // замена вызова функций с именованными параметрами на вызов метода класса
             var fwnpdv = new FunctionsWithNamedParametersDesugarVisitor();
             fwnpdv.ProcessNode(root);
@@ -64,8 +64,8 @@ namespace Languages.SPython.Frontend.Converters
 
             // перестроение структуры дерева, для последующих этапов компиляции
             // итоговое представление:
-            // 1) объявления глобальных переменных (без присваиваний)
-            // 2) forward объявления функций
+            // 1) forward объявления функций
+            // 2) объявления глобальных переменных (без присваиваний)
             // 3) объявление функции %%MAIN%%, содержащей компилируемую программу
             // 4) объявления функций, объявленных в программе
             // 5) begin %%MAIN%%() end.
