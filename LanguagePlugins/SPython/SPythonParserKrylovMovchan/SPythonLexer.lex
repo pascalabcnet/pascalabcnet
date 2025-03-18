@@ -20,7 +20,10 @@ ID {Alpha}{AlphaDigit}*
   private SPythonKeywords keywords;
   public SPythonParserTools parserTools;
   public List<string> Defines = new List<string>();
-  LexLocation currentLexLocation;
+  private int last_line_needed_colon = -1;
+  private LexLocation currentLexLocation;
+  private LexLocation prevLexLocation 
+  = new LexLocation(-1, -1, -1, -1, "");
 
   public Scanner(string text, SPythonParserTools parserTools, PascalABCCompiler.Parsers.BaseKeywords keywords, List<string> defines = null) 
   {
@@ -77,6 +80,18 @@ ID {Alpha}{AlphaDigit}*
       yylval.op = new op_type_node(Operators.LogicalNOT, currentLexLocation);
       yylval.op.text = cur_yytext;
       break;
+    case (int)Tokens.IF:
+    case (int)Tokens.ELIF:
+    case (int)Tokens.ELSE:
+    case (int)Tokens.WHILE:
+    case (int)Tokens.FOR:
+    case (int)Tokens.DEF:
+      last_line_needed_colon = CurrentLexLocation.StartLine;
+      break;
+    case (int)Tokens.CLASS:
+    case (int)Tokens.LAMBDA:
+      parserTools.AddErrorFromResource("UNSUPPORTED_CONSTRUCTION_{0}", currentLexLocation, yytext);
+      break;
   }
 
   return res;
@@ -104,6 +119,8 @@ ID {Alpha}{AlphaDigit}*
 
 "#{" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.INDENT; }
 "#}" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.UNINDENT; }
+"#;" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.END_OF_LINE; }
+
 "{"  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.LBRACE; }
 "}"  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.RBRACE; }
 "["  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.LBRACKET; }
@@ -119,8 +136,15 @@ ID {Alpha}{AlphaDigit}*
 ")"  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.RPAR; }
 "**" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.STARSTAR; }
 
-"##" {
-  parserTools.AddErrorFromResource("WRONG_INDENT", new LexLocation(CurrentLexLocation.StartLine + 1, 0, CurrentLexLocation.StartLine + 1, 0));
+"#!" {
+  parserTools.AddErrorFromResource("WRONG_INDENT", 
+    new LexLocation(CurrentLexLocation.StartLine + 1, 0, CurrentLexLocation.StartLine + 1, 0));
+	return (int)Tokens.EOF;
+}
+
+"#b" {
+  parserTools.AddErrorFromResource("PROGRAM_BEGIN_WITH_INDENT", 
+    CurrentLexLocation);
 	return (int)Tokens.EOF;
 }
 
@@ -135,10 +159,12 @@ ID {Alpha}{AlphaDigit}*
 
 %{
   //yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol);
+  prevLexLocation = yylloc;
   if (currentLexLocation != null)
     yylloc = currentLexLocation;
   else
 	  yylloc = CurrentLexLocation;
+  
   currentLexLocation = null;
 %}
 
@@ -153,8 +179,17 @@ public LexLocation CurrentLexLocation
 
 public override void yyerror(string format, params object[] args)
 {
-	string errorMsg = parserTools.CreateErrorString(yytext, args);
-	parserTools.AddError(errorMsg, CurrentLexLocation);
+    string expected = parserTools.ExpectedToken(last_line_needed_colon == prevLexLocation.StartLine, args);
+    LexLocation lexLocation = parserTools.GetLexLocation(
+      yytext, expected, prevLexLocation, CurrentLexLocation);
+    
+    if (yytext == "#{" && expected == "END_OF_LINE") {
+      parserTools.AddErrorFromResource("WRONG_INDENT", lexLocation);
+    }
+    else {
+      string errorMsg = parserTools.CreateErrorString(yytext, expected);
+      parserTools.AddError(errorMsg, lexLocation);
+    }
 }
 
 protected override bool yywrap()

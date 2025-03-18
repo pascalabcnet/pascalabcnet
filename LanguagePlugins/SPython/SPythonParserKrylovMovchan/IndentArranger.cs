@@ -16,7 +16,10 @@ namespace SPythonParser
         private const int indentSpaceNumber = 4;
         private const string indentToken = "#{";
         private const string unindentToken = "#}";
-        private const string badIndentToken = "##";
+        private const string badIndentToken = "#!";
+        private const string programBeginWithIndentToken = "#b";
+        private const string endOfLineToken = "#;";
+        private const string endOfFIleToken = "#$";
         public const string createdFileNameAddition = "_processed";
 
         // регулярное выражение разбивающее строку программы на группы, последняя из которых - комментарий в конце строки
@@ -29,7 +32,9 @@ namespace SPythonParser
 
         public void ProcessSourceText(ref string sourceText)
         {
-            string[] programLines = sourceText.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            //string[] programLines = sourceText.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            // В редакторе в особых случаях добавляется \n вместо \r\n
+            string[] programLines = sourceText.Split(new string[] { "\n" }, StringSplitOptions.None);
 
             // удаляем комментарии в тексте программы
             EraseComments(ref programLines);
@@ -41,7 +46,7 @@ namespace SPythonParser
 
             // нужен токен в конце для правильного позиционирования ошибок,
             // допущенных в конце программы
-            sourceText += "#$";
+            sourceText += endOfFIleToken;
 
             // создание файла с полученным текстом для дебага
             //File.WriteAllText("./processed_file.txt", sourceText);
@@ -104,17 +109,16 @@ namespace SPythonParser
 
         private void ArrangeIndents(ref string[] programLines)
         {
-            int lastNotEmptyLine = -1;
-
             Stack<int> indentStack = new Stack<int>();
             indentStack.Push(0);
+            bool skipped_first = false;
 
             foreach (var line in programLines)
             {
                 lineCounter++;
                 prevBracketCount = bracketCount;
                 CountBrackets(line);
-                if (prevBracketCount != 0 && bracketCount != 0)
+                if (prevBracketCount != 0)
                     continue;
 
                 bool isEmptyLine = true; // строка не содержит символов кроме \s\t\n\r
@@ -137,35 +141,29 @@ namespace SPythonParser
                     }
                 }
 
-                // пропуск строки не содержащей код 
-                if (isEmptyLine)
-                {
-                    continue;
-                }
-
-                if (prevBracketCount != 0)
-                {
-                    lastNotEmptyLine = lineCounter;
-                    continue;
-                }
+                if (isEmptyLine) continue;
 
                 int previosSpaceCounter = indentStack.Peek();
                 // текущий отступ соответствует предыдущему отступу
                 if (currentLineSpaceCounter == previosSpaceCounter)
                 {
-                    if (lastNotEmptyLine != -1)
-                        AddSemicolonIfNeeded(ref programLines[lastNotEmptyLine]);
+                    if (!skipped_first)
+                    {
+                        skipped_first = true;
+                        continue;
+                    }
+                    AddSemicolonIfNeeded(ref programLines[lineCounter - 1]);
                 }
                 // текущий отступ соответствует увеличению
                 else if (currentLineSpaceCounter > previosSpaceCounter)
                 {
-                    if (lastNotEmptyLine != -1)
+                    if (skipped_first && lineCounter != 0)
                     {
-                        programLines[lastNotEmptyLine] += indentToken;
+                        programLines[lineCounter - 1] += indentToken;
                         indentStack.Push(currentLineSpaceCounter);
                     }
                     else
-                        programLines[0] = badIndentToken + programLines[0];
+                        programLines[lineCounter] = programBeginWithIndentToken;
                 }
                 // оставшиеся случаи: отступ некорректный или уменьшение на один или несколько отступов
                 else
@@ -186,31 +184,29 @@ namespace SPythonParser
                         bool isEndOfStatement = !IsFirstTokenElseOrElif(line);
 
                         unindentCounter--;
-                        AddSemicolonIfNeeded(ref programLines[lastNotEmptyLine]);
+                        AddSemicolonIfNeeded(ref programLines[lineCounter - 1]);
 
-                        programLines[lastNotEmptyLine] += unindentToken +
-                            string.Concat(Enumerable.Repeat(";" + unindentToken, unindentCounter))
-                            + (isEndOfStatement ? ";" : "");
+                        programLines[lineCounter - 1] += unindentToken +
+                            string.Concat(Enumerable.Repeat(endOfLineToken + unindentToken, unindentCounter))
+                            + (isEndOfStatement ? endOfLineToken : "");
                     }
                     // количество пробелов в строке является некорректным 
                     // (не соответствует количеству пробелов в строке с любым отступом) 
                     else // currentLineSpaceCounter > indentStack.Peek()
                     {
-                        if (lastNotEmptyLine != -1)
-                            programLines[lastNotEmptyLine] += badIndentToken;
+                        if (lineCounter != 0)
+                            programLines[lineCounter - 1] += badIndentToken;
                     }
                 }
-
-                lastNotEmptyLine = lineCounter;
             }
 
 
-            if (lastNotEmptyLine != -1 && indentStack.Count() > 1)
+            if (lineCounter != -1 && indentStack.Count() > 1)
             {
                 // закрытие всех отступов в конце файла
-                AddSemicolonIfNeeded(ref programLines[lastNotEmptyLine]);
-                programLines[lastNotEmptyLine] += unindentToken +
-                    string.Concat(Enumerable.Repeat(";" + unindentToken, indentStack.Count() - 2));
+                AddSemicolonIfNeeded(ref programLines[lineCounter]);
+                programLines[lineCounter] += unindentToken +
+                    string.Concat(Enumerable.Repeat(endOfLineToken + unindentToken, indentStack.Count() - 2));
             }
         }
 
@@ -218,7 +214,7 @@ namespace SPythonParser
         {
             int i = s.Length - 1;
             while (i > -1 && Char.IsWhiteSpace(s[i])) --i;
-            if (i == -1 || s[i] != ';') s += ";";
+            if (i == -1 || s[i] != ';') s += endOfLineToken;
         }
     }
 }

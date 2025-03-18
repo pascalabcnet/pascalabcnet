@@ -40,9 +40,10 @@
     public type_definition td;
 }
 
-%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM GLOBAL AS PASS END_OF_FILE
+%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM GLOBAL AS PASS CLASS LAMBDA
+%token <ti> INDENT UNINDENT END_OF_FILE END_OF_LINE
 %token <ex> INTNUM REALNUM TRUE FALSE
-%token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON INDENT UNINDENT ARROW
+%token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON ARROW
 %token <stn> STRINGNUM
 %token <op> ASSIGN PLUSEQUAL MINUSEQUAL STAREQUAL DIVEQUAL
 %token <op> PLUS MINUS STAR DIVIDE SLASHSLASH PERCENTAGE
@@ -62,13 +63,13 @@
 %type <ex> expr proc_func_call const_value variable optional_condition act_param
 %type <stn> act_param_list optional_act_param_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt pass_stmt
 %type <stn> var_stmt assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif
-%type <stn> import_or_decl_or_stmt import_and_decl_and_stmt_list expr_list
+%type <stn> expr_list
 %type <stn> stmt_list block
-%type <stn> program import_or_decl param_name form_param_sect form_param_list optional_form_param_list dotted_ident_list
+%type <stn> program param_name form_param_sect form_param_list optional_form_param_list dotted_ident_list
 %type <stn> ident_as_ident ident_as_ident_list
 %type <td> proc_func_header type_ref simple_type_identifier, template_type
 %type <stn> import_clause, template_type_params, template_param_list
-%type <ob> optional_semicolon
+%type <ob> optional_semicolon end_of_line
 %type <op> assign_type
 
 %start program
@@ -90,7 +91,7 @@ act		= actual
 
 %%
 program
-	: import_and_decl_and_stmt_list optional_semicolon END_OF_FILE
+	: stmt_list optional_semicolon END_OF_FILE
 		{
 			// main program
 			if (!is_unit_to_be_parsed) {
@@ -116,60 +117,12 @@ program
 		}
 	;
 
-import_clause
-	: IMPORT ident_as_ident_list
-		{
-			$$ = new import_statement($2 as as_statement_list, @$);
-		}
-	| FROM ident IMPORT ident_as_ident_list 
-		{
-			$$ = new from_import_statement($2 as ident, false, $4 as as_statement_list, @$);
-		}
-	| FROM ident IMPORT STAR 
-		{
-			$$ = new from_import_statement($2 as ident, true, null, @$);
-		}
-	;
-
-import_or_decl_or_stmt
-	: stmt
-		{ 
-			$$ = $1; 
-		}
-	| import_or_decl
-		{ 
-			$$ = $1; 
-		}
-	;
-
-import_or_decl
-	: proc_func_decl
-		{
-			$$ = new declarations_as_statement(new declarations($1 as procedure_definition, @$), @$);
-		}
-	| import_clause 
-		{
-			$$ = $1;
-		}
-	;
-
-import_and_decl_and_stmt_list
-	: import_or_decl_or_stmt
-		{
-			$$ = new statement_list($1 as statement, @$);
-		}
-	| import_and_decl_and_stmt_list SEMICOLON import_or_decl_or_stmt
-		{
-			$$ = ($1 as statement_list).Add($3 as statement, @$);
-		}
-	;
-
 stmt_list
 	: stmt
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}
-	| stmt_list SEMICOLON stmt
+	| stmt_list end_of_line stmt
 		{
 			$$ = ($1 as statement_list).Add($3 as statement, @$);
 		}
@@ -219,6 +172,31 @@ stmt
 	| pass_stmt
 		{ 
 			$$ = $1; 
+		}
+	// works only on global level
+	| proc_func_decl
+		{
+			$$ = new declarations_as_statement(new declarations($1 as procedure_definition, @$), @$);
+		}
+	// works only on global level
+	| import_clause
+		{
+			$$ = $1; 
+		}
+	;
+
+import_clause
+	: IMPORT ident_as_ident_list
+		{
+			$$ = new import_statement($2 as as_statement_list, @$);
+		}
+	| FROM ident IMPORT ident_as_ident_list 
+		{
+			$$ = new from_import_statement($2 as ident, false, $4 as as_statement_list, @$);
+		}
+	| FROM ident IMPORT STAR 
+		{
+			$$ = new from_import_statement($2 as ident, true, null, @$);
 		}
 	;
 
@@ -592,7 +570,7 @@ optional_condition
 	;
 
 block
-	: INDENT stmt_list SEMICOLON UNINDENT
+	: INDENT stmt_list end_of_line UNINDENT
 		{
 			$$ = $2 as statement_list;
 			($$ as statement_list).left_logical_bracket = $1;
@@ -742,6 +720,17 @@ optional_act_param_list
 			$$ = null;
 		}
     ;
+
+end_of_line
+	: END_OF_LINE
+		{
+			$$ = $1;
+		}
+	| SEMICOLON
+		{
+			$$ = $1;
+		}
+	;
 
 optional_semicolon
 	: SEMICOLON

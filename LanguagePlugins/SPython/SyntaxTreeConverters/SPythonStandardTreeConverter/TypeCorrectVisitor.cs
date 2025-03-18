@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Languages.Pascal.Frontend.Converters
+namespace Languages.SPython.Frontend.Converters
 {
     public class TypeCorrectVisitor : BaseChangeVisitor
     {
