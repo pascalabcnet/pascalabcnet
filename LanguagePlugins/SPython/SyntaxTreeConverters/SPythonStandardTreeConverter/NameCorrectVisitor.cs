@@ -79,10 +79,10 @@ namespace Languages.SPython.Frontend.Converters
                         break;
                     case NameKind.Unknown:
                         throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}",
-                        _global_statement.source_context, _ident.name);
+                        _ident.source_context, _ident.name);
                     default:
                         throw new SPythonSyntaxVisitorError("SCOPE_CONTAINS_NAME_{0}",
-                        _global_statement.source_context, _ident.name);
+                        _ident.source_context, _ident.name);
                 }
             }
 

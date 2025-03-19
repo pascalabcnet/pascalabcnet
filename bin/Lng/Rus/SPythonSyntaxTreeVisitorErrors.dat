@@ -9,3 +9,5 @@ PASCALABCNET_TYPE_{0}_INSTEAD_OF_SPYTHON_TYPE_{1}=Неизвестный тип 
 LOCAL_IMPORT_USE=В текущей версии компилятора конструкция 'import ...' допустима только на глобальном уровне
 LOCAL_FROM_IMPORT_USE=В текущей версии компилятора конструкция 'from ... import ...' допустима только на глобальном уровне
 LOCAL_FUNCTION_DECLARATION=В текущей версии компилятора объявление функции допустимо только на глобальном уровне
+GLOBAL_NOT_IN_FUNCTION=конструкция 'global ...' допустима только внутри функции
+GLOBAL_IN_NOT_OUTERMOST_BLOCK=конструкция 'global ...' не допустима во вложенном блоке кода

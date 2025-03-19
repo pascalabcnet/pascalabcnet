@@ -12,7 +12,7 @@ namespace Languages.SPython.Frontend.Converters
         protected override syntax_tree_node ApplyConversions(syntax_tree_node root)
         {
             // кидает ошибки за использование 
-            // нереализованных конструкций языка
+            // неподдерживаемых конструкций языка
             var ucv = new UnsupportedConstructsVisitor();
             ucv.ProcessNode(root);
 
