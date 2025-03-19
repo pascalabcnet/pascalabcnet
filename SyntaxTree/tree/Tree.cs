@@ -1006,7 +1006,8 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.from.Parent = copy;
 			}
 			copy.operator_type = operator_type;
-			return copy;
+			copy.first_assignment_defines_type = first_assignment_defines_type;
+            return copy;
 		}
 
 		/// <summary> Получает копию данного узла корректного типа </summary>

@@ -62,7 +62,7 @@ namespace Languages.Pascal.Frontend.Converters
             if (isInProcedure && _return_statement.expr != null)
             {
                 throw new SPythonSyntaxVisitorError("RETURN_HAS_RETURN_VALUE",
-                   _return_statement.source_context);
+                   _return_statement.expr.source_context);
             }
 
             base.visit(_return_statement);
@@ -71,14 +71,14 @@ namespace Languages.Pascal.Frontend.Converters
         public override void visit(global_statement _global_statement)
         {
             // конструкция  'global ...' используется вне функции
-            if (!isInFunction)
+            if (!isInProcedure && !isInFunction)
             {
                 throw new SPythonSyntaxVisitorError("GLOBAL_NOT_IN_FUNCTION",
                    _global_statement.source_context);
             }
             // конструкция  'global ...' используется
             // не на самом внешнем блоке внутри функции
-            if (blockLevel != 1)
+            if (blockLevel != 2)
             {
                 throw new SPythonSyntaxVisitorError("GLOBAL_IN_NOT_OUTERMOST_BLOCK",
                    _global_statement.source_context);
