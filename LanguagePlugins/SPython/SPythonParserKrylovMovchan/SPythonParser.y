@@ -485,18 +485,14 @@ func_name_ident
 		}
 	;
 
-// return `expr` ~ result := `expr`; exit;
 return_stmt
 	: RETURN expr
 		{
-			statement res_assign = new assign(new ident("result"), $2, Operators.Assignment, @$);
-			statement exit_call = new procedure_call(new ident("exit"), true, @$);
-			$$ = new statement_list(res_assign, @$);
-			($$ as statement_list).Add(exit_call, @$);
+			$$ = new return_statement($2, @$);
 		}
 	| RETURN
 		{
-			$$ = new procedure_call(new ident("exit", @$), true, @$);
+			$$ = new return_statement(null, @$);
 		}
 	;
 

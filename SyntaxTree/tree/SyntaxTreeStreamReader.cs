@@ -558,6 +558,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new as_statement_list();
 				case 268:
 					return new from_import_statement();
+				case 269:
+					return new return_statement();
 			}
 			return null;
 		}
@@ -4685,6 +4687,18 @@ namespace PascalABCCompiler.SyntaxTree
 			_from_import_statement.module_name = _read_node() as ident;
 			_from_import_statement.is_star = br.ReadBoolean();
 			_from_import_statement.imported_names = _read_node() as as_statement_list;
+		}
+
+
+		public void visit(return_statement _return_statement)
+		{
+			read_return_statement(_return_statement);
+		}
+
+		public void read_return_statement(return_statement _return_statement)
+		{
+			read_statement(_return_statement);
+			_return_statement.expr = _read_node() as expression;
 		}
 
 	}

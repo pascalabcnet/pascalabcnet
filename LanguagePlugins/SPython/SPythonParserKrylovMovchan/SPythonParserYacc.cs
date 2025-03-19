@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 18.03.2025 14:17:17
+// DateTime: 19.03.2025 16:21:58
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -834,15 +834,12 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 76: // return_stmt -> RETURN, expr
 {
-			statement res_assign = new assign(new ident("result"), ValueStack[ValueStack.Depth-1].ex, Operators.Assignment, CurrentLocationSpan);
-			statement exit_call = new procedure_call(new ident("exit"), true, CurrentLocationSpan);
-			CurrentSemanticValue.stn = new statement_list(res_assign, CurrentLocationSpan);
-			(CurrentSemanticValue.stn as statement_list).Add(exit_call, CurrentLocationSpan);
+			CurrentSemanticValue.stn = new return_statement(ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan);
 		}
         break;
       case 77: // return_stmt -> RETURN
 {
-			CurrentSemanticValue.stn = new procedure_call(new ident("exit", CurrentLocationSpan), true, CurrentLocationSpan);
+			CurrentSemanticValue.stn = new return_statement(null, CurrentLocationSpan);
 		}
         break;
       case 78: // break_stmt -> BREAK

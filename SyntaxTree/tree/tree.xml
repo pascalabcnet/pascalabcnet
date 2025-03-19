@@ -3446,6 +3446,16 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="return_statement" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="expr" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3628,10 +3638,10 @@
       <HelpData Key="as_node.right" Value="" />
       <HelpData Key="as_node_list" Value="" />
       <HelpData Key="as_node_list.as_nodes" Value="" />
-      <HelpData Key="as_statement" Value="" />
+      <HelpData Key="as_statement" Value="SPython-only node" />
       <HelpData Key="as_statement.alias" Value="" />
       <HelpData Key="as_statement.real_name" Value="" />
-      <HelpData Key="as_statement_list" Value="" />
+      <HelpData Key="as_statement_list" Value="SPython-onle node" />
       <HelpData Key="as_statement_list.as_nodes" Value="" />
       <HelpData Key="as_statement_list.as_statements" Value="" />
       <HelpData Key="assign" Value="Оператор присваивания" />
@@ -4052,7 +4062,7 @@
       <HelpData Key="fptype_and_expr" Value="" />
       <HelpData Key="fptype_and_expr." Value="" />
       <HelpData Key="fptype_and_expr.typedef" Value="" />
-      <HelpData Key="from_import_statement" Value="" />
+      <HelpData Key="from_import_statement" Value="SPython-only node" />
       <HelpData Key="from_import_statement.imported_names" Value="" />
       <HelpData Key="from_import_statement.is_star" Value="" />
       <HelpData Key="from_import_statement.module_name" Value="" />
@@ -4090,7 +4100,7 @@
       <HelpData Key="function_lambda_definition.visit_for_type_inference" Value="" />
       <HelpData Key="get_address" Value="" />
       <HelpData Key="get_address.address_of" Value="" />
-      <HelpData Key="global_statement" Value="" />
+      <HelpData Key="global_statement" Value="SPython-only node" />
       <HelpData Key="global_statement.idents" Value="" />
       <HelpData Key="goto_statement" Value="" />
       <HelpData Key="goto_statement.goto_statement(string name)" Value="" />
@@ -4147,7 +4157,7 @@
       <HelpData Key="implementation_node.using_namespaces" Value="" />
       <HelpData Key="import" Value="" />
       <HelpData Key="import.modules_names" Value="" />
-      <HelpData Key="import_statement" Value="" />
+      <HelpData Key="import_statement" Value="SPython-only node" />
       <HelpData Key="import_statement.modules_names" Value="" />
       <HelpData Key="index" Value="" />
       <HelpData Key="index.index_expr" Value="" />
@@ -4240,7 +4250,7 @@
       <HelpData Key="let_var_expr" Value="" />
       <HelpData Key="let_var_expr.ex" Value="" />
       <HelpData Key="let_var_expr.id" Value="" />
-      <HelpData Key="list_generator" Value="" />
+      <HelpData Key="list_generator" Value="SPython-only node" />
       <HelpData Key="list_generator._condition" Value="" />
       <HelpData Key="list_generator._expr" Value="" />
       <HelpData Key="list_generator._ident" Value="" />
@@ -4609,6 +4619,8 @@
       <HelpData Key="repeat_node" Value="Цикл с постусловием (repeat)" />
       <HelpData Key="repeat_node.expr" Value="Условие завершения цикла" />
       <HelpData Key="repeat_node.statements" Value="Тело цикла" />
+      <HelpData Key="return_statement" Value="SPython-only node" />
+      <HelpData Key="return_statement.expr" Value="" />
       <HelpData Key="return_stmt" Value="" />
       <HelpData Key="return_stmt." Value="" />
       <HelpData Key="return_stmt.JumpType" Value="" />

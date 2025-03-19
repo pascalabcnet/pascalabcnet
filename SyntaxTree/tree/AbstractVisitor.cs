@@ -1352,6 +1352,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_from_import_statement);
 		}
+
+		public virtual void visit(return_statement _return_statement)
+		{
+			DefaultVisit(_return_statement);
+		}
 	}
 
 

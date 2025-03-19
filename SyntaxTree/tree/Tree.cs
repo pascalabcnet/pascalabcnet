@@ -1006,7 +1006,6 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.from.Parent = copy;
 			}
 			copy.operator_type = operator_type;
-			copy.first_assignment_defines_type = this.first_assignment_defines_type;
 			return copy;
 		}
 
@@ -56108,7 +56107,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///SPython-only node
 	///</summary>
 	[Serializable]
 	public partial class global_statement : statement
@@ -56265,7 +56264,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///SPython-only node
 	///</summary>
 	[Serializable]
 	public partial class list_generator : expression
@@ -56521,7 +56520,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///SPython-only node
 	///</summary>
 	[Serializable]
 	public partial class import_statement : statement
@@ -56678,7 +56677,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///SPython-only node
 	///</summary>
 	[Serializable]
 	public partial class as_statement : statement
@@ -56868,7 +56867,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///SPython-onle node
 	///</summary>
 	[Serializable]
 	public partial class as_statement_list : statement
@@ -57199,7 +57198,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///SPython-only node
 	///</summary>
 	[Serializable]
 	public partial class from_import_statement : statement
@@ -57390,6 +57389,163 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 1:
 						imported_names = (as_statement_list)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///SPython-only node
+	///</summary>
+	[Serializable]
+	public partial class return_statement : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public return_statement()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public return_statement(expression _expr)
+		{
+			this._expr=_expr;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public return_statement(expression _expr,SourceContext sc)
+		{
+			this._expr=_expr;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected expression _expr;
+
+		///<summary>
+		///
+		///</summary>
+		public expression expr
+		{
+			get
+			{
+				return _expr;
+			}
+			set
+			{
+				_expr=value;
+				if (_expr != null)
+					_expr.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			return_statement copy = new return_statement();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (expression)expr.Clone();
+				copy.expr.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new return_statement TypedClone()
+		{
+			return Clone() as return_statement;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (expr != null)
+				expr.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			expr?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return expr;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						expr = (expression)value;
 						break;
 				}
 			}

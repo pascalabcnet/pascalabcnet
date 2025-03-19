@@ -2157,6 +2157,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(return_statement _return_statement)
+		{
+		}
+
+		public virtual void post_do_visit(return_statement _return_statement)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -4460,6 +4468,14 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(from_import_statement.module_name);
 			visit(from_import_statement.imported_names);
 			post_do_visit(_from_import_statement);
+		}
+
+		public override void visit(return_statement _return_statement)
+		{
+			DefaultVisit(_return_statement);
+			pre_do_visit(_return_statement);
+			visit(return_statement.expr);
+			post_do_visit(_return_statement);
 		}
 	}
 

@@ -7396,6 +7396,27 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(return_statement _return_statement)
+		{
+			bw.Write((Int16)269);
+			write_return_statement(_return_statement);
+		}
+
+		public void write_return_statement(return_statement _return_statement)
+		{
+			write_statement(_return_statement);
+			if (_return_statement.expr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_return_statement.expr.visit(this);
+			}
+		}
+
 	}
 
 

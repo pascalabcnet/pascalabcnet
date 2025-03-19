@@ -21,6 +21,11 @@ namespace Languages.SPython.Frontend.Converters
             var ituv = new ImportToUsesVisitor();
             ituv.ProcessNode(root);
 
+            // замена return;       на { exit(); }
+            // замена return expr;  на { result := expr; exit(); }
+            var rdv = new ReturnDesugarVisitor();
+            rdv.ProcessNode(root);
+
             // замена генерации списков на Select.Where.ToArray
             // (не работает из-за лямбд, если переместить в ConvertAfterUsedModulesCompilation)
             var ldv = new ListDesugarVisitor();
