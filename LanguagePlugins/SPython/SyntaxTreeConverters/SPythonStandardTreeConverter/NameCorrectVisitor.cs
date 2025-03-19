@@ -104,13 +104,6 @@ namespace Languages.SPython.Frontend.Converters
                     _named_type_reference.names[1].name = symbolTable.AliasToRealName(_named_type_reference.names[1].name);
                     break;
 
-                // Сомнительно
-                case NameKind.GlobalVariable:
-                    if (symbolTable.IsInFunctionBody &&
-                    !variablesUsedAsGlobal.Contains(id.name))
-                        variablesUsedAsGlobal.Add(id.name);
-                    break;
-
                 case NameKind.Unknown:
                     throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}",
                     id.source_context, id.name);
@@ -138,9 +131,15 @@ namespace Languages.SPython.Frontend.Converters
                         variablesUsedAsGlobal.Add(_ident.name);
                     break;
 
+                case NameKind.ForwardDeclaredFunction:
+                    if (!symbolTable.IsInFunctionBody)
+                        throw new SPythonSyntaxVisitorError("FUNCTION_{0}_USED_BEFORE_DECLARATION",
+                                                            sc, _ident.name);
+                    break;
+
                 case NameKind.Unknown:
-                    throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}"
-                    , sc, _ident.name);
+                    throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}", 
+                                                        sc, _ident.name);
             }
         }
 
@@ -148,7 +147,7 @@ namespace Languages.SPython.Frontend.Converters
         {
             if (_assign.to is ident _ident)
             {
-                if (!symbolTable.IsVisibleForAssignment(_ident.name))
+                if (!symbolTable.IsVisibleToAssign(_ident.name))
                 {
                     if (symbolTable.IsOutermostScope())
                         symbolTable.Add(_ident.name, NameKind.GlobalVariable);

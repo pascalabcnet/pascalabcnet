@@ -59,10 +59,26 @@ namespace Languages.SPython.Frontend.Converters
             base.Exit(stn);
         }
 
+        private bool IsForwardDeclaration(procedure_header _procedure_header)
+        {
+            foreach (procedure_attribute attr in _procedure_header.proc_attributes.proc_attributes)
+                if (attr.attribute_type is proc_attribute.attr_forward)
+                    return true;
+
+            return false;
+        }
+
         public override void visit(procedure_header _procedure_header)
         {
             string procedure_name = _procedure_header.name.meth_name.name;
-            symbolTable.Add(procedure_name, NameKind.GlobalFunction);
+            if (IsForwardDeclaration(_procedure_header))
+            {
+                symbolTable.Add(procedure_name, NameKind.ForwardDeclaredFunction);
+            }
+            else
+            {
+                symbolTable.Add(procedure_name, NameKind.GlobalFunction);
+            }
             base.visit(_procedure_header);
         }
 
@@ -171,24 +187,27 @@ namespace Languages.SPython.Frontend.Converters
         protected enum NameKind
         {
             // Имя отсутствует в текущем контексте
-            Unknown             = 0b_0000_0000,
+            Unknown                 = 0b_0000_0000,
             // Ключевые слова языка
-            Keyword             = 0b_0000_0001,
+            Keyword                 = 0b_0000_0001,
             // Имя глобальной переменной
-            GlobalVariable      = 0b_0000_0010,
+            GlobalVariable          = 0b_0000_0010,
             // Имя глобальной функции
-            GlobalFunction      = 0b_0000_0100,
+            GlobalFunction          = 0b_0000_0100,
             // Имя подключённого модуля или его псевдоним 
-            ModuleAlias         = 0b_0000_1000,
+            ModuleAlias             = 0b_0000_1000,
             // Имя, подключённое из модуля, или его псевдоним 
-            ImportedNameAlias   = 0b_0001_0000,
+            ImportedNameAlias       = 0b_0001_0000,
             // Локальня переменная
-            LocalVariable       = 0b_0010_0000,
+            LocalVariable           = 0b_0010_0000,
+            // Имя глобальной forward-объявленной функции 
+            ForwardDeclaredFunction = 0b_0100_0000,
         }
 
         protected class SymbolTable
         {
             private Dictionary<string, NameKind> nameTypes = new Dictionary<string, NameKind>();
+            private HashSet<string> forwardDeclaredFunctions = new HashSet<string>();
 
             static string[] Keywords = {
                     "integer"
@@ -288,7 +307,7 @@ namespace Languages.SPython.Frontend.Converters
                 NamesAddedByGlobal.Add(name);
             }
 
-            public bool IsVisibleForAssignment(string name)
+            public bool IsVisibleToAssign(string name)
             {
                 NameKind kind = this[name];
                 if (kind == NameKind.Unknown) return false;
@@ -305,6 +324,8 @@ namespace Languages.SPython.Frontend.Converters
                         return NameKind.LocalVariable;
                     if (nameTypes.ContainsKey(name))
                         return nameTypes[name];
+                    if (forwardDeclaredFunctions.Contains(name))
+                        return NameKind.ForwardDeclaredFunction;
                     return NameKind.Unknown; 
                 }
             }
@@ -319,6 +340,9 @@ namespace Languages.SPython.Frontend.Converters
                     case NameKind.GlobalVariable:
                     case NameKind.GlobalFunction:
                         AddGlobalName(name, nameType);
+                        break;
+                    case NameKind.ForwardDeclaredFunction:
+                        forwardDeclaredFunctions.Add(name);
                         break;
                     default:
                         throw new NotImplementedException();
