@@ -10,7 +10,10 @@ namespace Languages.Pascal.Frontend.Converters
     public class UnsupportedConstructsVisitor : BaseEnterExitVisitor
     {
         private int blockLevel = 0;
+        // function returns a value
         private bool isInFunction = false;
+        // procedure doesn't return value
+        private bool isInProcedure = false;
 
         public UnsupportedConstructsVisitor() { }
 
@@ -20,9 +23,12 @@ namespace Languages.Pascal.Frontend.Converters
             {
                 ++blockLevel;
             }
-            if (st is procedure_definition)
+            if (st is procedure_definition pd)
             {
-                isInFunction = true;
+                if (pd.proc_header is function_header)
+                    isInFunction = true;
+                else
+                    isInProcedure = true;
             }
         }
 
@@ -34,8 +40,32 @@ namespace Languages.Pascal.Frontend.Converters
             }
             if (st is procedure_definition)
             {
-                isInFunction = false;
+                isInProcedure = isInFunction = false;
             }
+        }
+
+        public override void visit(return_statement _return_statement)
+        {
+            // 'return' или 'return expr' вне функции
+            if (!isInFunction && !isInProcedure)
+            {
+                throw new SPythonSyntaxVisitorError("RETURN_NOT_IN_FUNCTION",
+                   _return_statement.source_context);
+            }
+            // 'return' внутри функции, которая должна возвращать значение
+            if (isInFunction && _return_statement.expr == null)
+            {
+                throw new SPythonSyntaxVisitorError("RETURN_NOT_RETURN_VALUE",
+                   _return_statement.source_context);
+            }
+            // 'return expr' внутри функции, которая не возвращает значение
+            if (isInProcedure && _return_statement.expr != null)
+            {
+                throw new SPythonSyntaxVisitorError("RETURN_HAS_RETURN_VALUE",
+                   _return_statement.source_context);
+            }
+
+            base.visit(_return_statement);
         }
 
         public override void visit(global_statement _global_statement)

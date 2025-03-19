@@ -12,3 +12,6 @@ LOCAL_FUNCTION_DECLARATION=В текущей версии компилятора
 GLOBAL_NOT_IN_FUNCTION=конструкция 'global ...' допустима только внутри функции
 GLOBAL_IN_NOT_OUTERMOST_BLOCK=конструкция 'global ...' не допустима во вложенном блоке кода
 FUNCTION_{0}_USED_BEFORE_DECLARATION='{0}' объявлена позже как функция, её использование до объявления допустимо только в теле других функций
+RETURN_NOT_RETURN_VALUE=функция должна возвращать значение
+RETURN_HAS_RETURN_VALUE=функция не должна возвращать значение
+RETURN_NOT_IN_FUNCTION=конструкция 'return ...' должна быть внутри функции
