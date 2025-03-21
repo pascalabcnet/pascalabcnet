@@ -26,6 +26,9 @@ namespace Languages.SPython.Frontend.Converters
                 case "bool":
                     id.name = "boolean";
                     break;
+                case "bigint":
+                    id.name = "biginteger";
+                    break;
 
                 case "integer":
                     throw new SPythonSyntaxVisitorError("PASCALABCNET_TYPE_{0}_INSTEAD_OF_SPYTHON_TYPE_{1}",
@@ -39,6 +42,9 @@ namespace Languages.SPython.Frontend.Converters
                 case "boolean":
                     throw new SPythonSyntaxVisitorError("PASCALABCNET_TYPE_{0}_INSTEAD_OF_SPYTHON_TYPE_{1}",
                    id.source_context, id.name, "bool");
+                case "biginteger":
+                    throw new SPythonSyntaxVisitorError("PASCALABCNET_TYPE_{0}_INSTEAD_OF_SPYTHON_TYPE_{1}",
+                   id.source_context, id.name, "bigint");
             }
         }
     }

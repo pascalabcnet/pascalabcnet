@@ -205,6 +205,7 @@
 		<Key word = "all" />
 		<Key word = "any" />
 		<Key word = "ascii" />
+		<Key word = "bigint" />
 		<Key word = "bin" />
 		<Key word = "bool" />
 		<Key word = "bytearray" />

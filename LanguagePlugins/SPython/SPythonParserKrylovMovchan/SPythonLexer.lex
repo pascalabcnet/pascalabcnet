@@ -15,6 +15,7 @@ INTNUM  ({NonZeroDigit}{Digit}*)|0
 REALNUM ({INTNUM}?\.{INTNUM})|({INTNUM}\.)
 STRINGNUM (\'([^\'\n\\]|\\.)*\')|(\"([^\"\n\\]|\\.)*\")
 ID {Alpha}{AlphaDigit}*
+BIGINTNUM {INTNUM}bi
 
 %{
   private SPythonKeywords keywords;
@@ -42,6 +43,13 @@ ID {Alpha}{AlphaDigit}*
   currentLexLocation = CurrentLexLocation;
   yylval.ex = parserTools.create_int_const(yytext,currentLexLocation);
   return (int)Tokens.INTNUM;
+}
+
+{BIGINTNUM} { 
+  yylval = new SPythonParserYacc.ValueType();
+  currentLexLocation = CurrentLexLocation;
+  yylval.ex = parserTools.create_bigint_const(yytext,currentLexLocation); 
+  return (int)Tokens.BIGINT; 
 }
 
 {REALNUM} {

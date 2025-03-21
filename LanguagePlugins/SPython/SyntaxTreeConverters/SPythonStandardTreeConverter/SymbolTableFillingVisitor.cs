@@ -210,9 +210,9 @@ namespace Languages.SPython.Frontend.Converters
             private HashSet<string> forwardDeclaredFunctions = new HashSet<string>();
 
             static string[] Keywords = {
-                "integer", "real", "string", "boolean", 
-                "break", "continue", "exit", "halt",
-                "true", "false", 
+                "integer", "real", "string", "boolean", // standard types
+                "break", "continue", "exit", "halt",    // standard ops
+                "true", "false",                        // constants
             };
 
             private void FillKeywords()

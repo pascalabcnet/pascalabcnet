@@ -79,14 +79,21 @@ function !assign<T>(var a: T; b: T): T;
 
 function !pow(x, n: integer): integer;
 
+function !pow(x, n: biginteger): biginteger;
+
 function !pow(x: integer; y: real): real;
 
 function !pow(x: real; y: real): real;
 
+function bigint(x: integer): biginteger;
+
 function !pow_recursion(x, n: integer): integer;
+
+function !pow_recursion(x, n: biginteger): biginteger;
 
 type 
     list<T> = PABCSystem.List<T>;
+    biginteger = PABCSystem.BigInteger;
 
 implementation
 
@@ -162,6 +169,26 @@ begin
   Result := a;
 end;
 
+function !pow(x, n: biginteger): biginteger;
+begin
+  if (n < 0) then
+    raise new System.ArgumentException('возведение в степень не работает для целой отрицательной степени типа bigint.');
+  Result := !pow_recursion(x, n);
+end;
+
+function !pow_recursion(x, n: biginteger): biginteger;
+begin
+  
+  if (n = 0) then
+    Result := 1
+  else begin
+    Result := !pow_recursion(x, n div 2);
+    Result *= Result;
+    if ((n mod 2) = 1) then
+      Result *= x;
+  end;
+end;
+
 function !pow(x, n: integer): integer;
 begin
   if (n < 0) then
@@ -184,6 +211,11 @@ begin
     if ((n mod 2) = 1) then
       Result *= x;
   end;
+end;
+
+function bigint(x: integer): biginteger;
+begin
+  Result := x;
 end;
 
 end.
