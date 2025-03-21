@@ -15,6 +15,7 @@ mono --aot bin/Errors.dll
 mono --aot bin/LanguageIntegrator.dll
 mono --aot bin/StringConstants.dll
 mono --aot bin/PascalABCLanguageInfo.dll
+
 cd ReleaseGenerators
 mono ../bin/pabcnetc.exe RebuildStandartModulesMono.pas  /rebuild
 if [ $? -eq 0 ]; then
