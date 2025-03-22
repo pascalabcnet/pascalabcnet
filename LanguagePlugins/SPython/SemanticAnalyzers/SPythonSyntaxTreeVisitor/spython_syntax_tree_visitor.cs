@@ -68,28 +68,45 @@ namespace SPythonSyntaxTreeVisitor
                 base.AddError(err);
             }
         }
+
+        private type_node ConvertTypeNameToSPythonTypeName(type_node tn)
+        {
+            if (tn is compiled_type_node cnt)
+            {
+                string new_name = tn.PrintableName;
+                new_name = new_name.Replace("<", "[");
+                new_name = new_name.Replace(">", "]");
+                new_name = new_name.Replace("List", "list");
+                new_name = new_name.Replace("integer", "int");
+                new_name = new_name.Replace("string", "str");
+                new_name = new_name.Replace("real", "float");
+                new_name = new_name.Replace("boolean", "bool");
+                new_name = new_name.Replace("System.Numerics.BigInteger", "bigint");
+                return new common_type_node(new_name, type_access_level.tal_public, null, null, cnt.location);
+            }
+            return tn;
+        }
+
         public override void AddError(Error err, bool shouldReturn = false)
         {
-            // TODO : Add Error Rerouting according to Python semantics
+            // TODO : Add Error Rerouting according to SPython semantics
             switch (err)
             {
                 case OperatorCanNotBeAppliedToThisTypes _op_err:
                     if (_op_err.operator_name == "mod")
-                    {
                         base.AddError(new OperatorCanNotBeAppliedToThisTypes("%", _op_err.left, _op_err.right, _op_err.loc), shouldReturn);
-                        return;
-                    }
                     else if (_op_err.operator_name == "div")
-                    {
                         base.AddError(new OperatorCanNotBeAppliedToThisTypes("//", _op_err.left, _op_err.right, _op_err.loc), shouldReturn);
-                        return;
-                    }
-                    break;
+                    return;
                 case FunctionExpectedProcedureMeet _proc_meet:
                     base.AddError(new SPythonSemanticError(_proc_meet.loc, "SPYTHONSEMANTIC_FUNCTION_{0}_NO_RETURN", _proc_meet.function.name));
                     return;
-                case SimpleSemanticError _ss_err:
-                    break;
+                case CanNotConvertTypes conv_err:
+                    base.AddError(new CanNotConvertTypes(conv_err.expression_node,
+                        ConvertTypeNameToSPythonTypeName(conv_err.from), 
+                        ConvertTypeNameToSPythonTypeName(conv_err.to),
+                        conv_err.loc));
+                    return;
             }
             base.AddError(err, shouldReturn);
 
