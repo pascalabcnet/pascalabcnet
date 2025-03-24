@@ -74,14 +74,15 @@ namespace SPythonSyntaxTreeVisitor
             if (tn is compiled_type_node cnt)
             {
                 string new_name = tn.PrintableName;
-                new_name = new_name.Replace("<", "[");
-                new_name = new_name.Replace(">", "]");
-                new_name = new_name.Replace("List", "list");
-                new_name = new_name.Replace("integer", "int");
-                new_name = new_name.Replace("string", "str");
-                new_name = new_name.Replace("real", "float");
-                new_name = new_name.Replace("boolean", "bool");
-                new_name = new_name.Replace("System.Numerics.BigInteger", "bigint");
+                new_name = new_name
+                    .Replace("<", "[")
+                    .Replace(">", "]")
+                    .Replace("List", "list")
+                    .Replace("integer", "int")
+                    .Replace("string", "str")
+                    .Replace("real", "float")
+                    .Replace("boolean", "bool")
+                    .Replace("System.Numerics.BigInteger", "bigint");
                 return new common_type_node(new_name, type_access_level.tal_public, null, null, cnt.location);
             }
             return tn;

@@ -40,7 +40,7 @@
     public type_definition td;
 }
 
-%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM GLOBAL AS PASS CLASS LAMBDA EXIT
+%token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM GLOBAL AS PASS CLASS LAMBDA EXIT NEW IS
 %token <ti> INDENT UNINDENT END_OF_FILE END_OF_LINE
 %token <ex> INTNUM REALNUM TRUE FALSE BIGINT
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON ARROW
@@ -60,7 +60,7 @@
 %right STARSTAR
 
 %type <id> ident dotted_ident func_name_ident
-%type <ex> expr proc_func_call const_value variable optional_condition act_param
+%type <ex> expr proc_func_call const_value variable optional_condition act_param new_expr is_expr
 %type <stn> act_param_list optional_act_param_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt pass_stmt
 %type <stn> var_stmt assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif exit_stmt
 %type <stn> expr_list
@@ -404,9 +404,31 @@ expr
 		{ 
 			$$ = $1; 
 		}
+	| new_expr
+		{
+			$$ = $1;
+		}
+	| is_expr
+		{
+			$$ = $1;
+		}
 	| LPAR expr RPAR
 		{ 
 			$$ = new bracket_expr($2, @$); 
+		}
+	;
+
+is_expr
+	: variable IS type_ref
+		{
+			$$ = parserTools.NewAsIsExpr($1, op_typecast.is_op, $3, @$);
+		}
+	;
+
+new_expr
+	: NEW type_ref LPAR optional_act_param_list RPAR
+		{
+			$$ = new new_expr($2, $4 as expression_list, false, null, @$);
 		}
 	;
 

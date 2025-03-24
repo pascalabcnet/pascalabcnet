@@ -1,8 +1,9 @@
 ﻿N = 7
 
-# Prints the first N integers
-# that can be represented in 3 different ways
-# as the sum of two squares
+# Выводит первые N чисел, 
+# которые можно тремя различными
+# способами представить как
+# сумму двух квадратов целых чисел
 def print_sequence(N: int):
  a = 0
  while True:

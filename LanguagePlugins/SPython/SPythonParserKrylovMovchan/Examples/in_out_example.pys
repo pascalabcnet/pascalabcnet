@@ -1,24 +1,24 @@
-﻿print('Enter 1st integer:', end=' ')
-a = int(input())
-print('Enter 2nd integer:', end=' ')
-b = int(input())
+﻿a = int(input('Введите первое число:'))
+b = int(input('Введите второе число:'))
 
 def print_expressions(a: int, b: int):
-    print(a, '+', b, '=', a + b, end = '\n')
-    print(a, '-', b, '=', a - b, end = '\n')
-    print(a, '*', b, '=', a * b, end = '\n')
-    print(a, '%', b, '=', a % b, end = '\n')
-    print(a, '/', b, '=', a / b, end = '\n')
+    print(a, ' +', b, '=', a + b, end = '\n')
+    print(a, ' -', b, '=', a - b, end = '\n')
+    print(a, ' *', b, '=', a * b, end = '\n')
+    print(a, ' %', b, '=', a % b, end = '\n')
+    print(a, ' /', b, '=', a / b, end = '\n')
     print(a, '//', b, '=', a // b, end = '\n')
+    print(a, '**', b, '=', a ** b, end = '\n')
 
 print_expressions(a, b)
 
 
-#Enter 1st integer: 5
-#Enter 2nd integer: 2
-#5 + 2 = 7
-#5 - 2 = 3
-#5 * 2 = 10
-#5 % 2 = 1
-#5 / 2 = 2.5
-#5 // 2 = 2
+# Введите первое число: 10
+# Введите второе число: 6
+# 10  + 6 = 16
+# 10  - 6 = 4
+# 10  * 6 = 60
+# 10  % 6 = 4
+# 10  / 6 = 1.66666666666667
+# 10 // 6 = 1
+# 10 ** 6 = 1000000

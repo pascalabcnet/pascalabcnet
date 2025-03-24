@@ -1,16 +1,26 @@
 ﻿import random as rnd
 
-a = rnd.randint(1, 100)
-print('Guess a number between 1 and 100')
+hidden_number = rnd.randint(1, 100)
+print('Угадай число от 1 до 100')
 attempts = 0
+left_border = 1
+right_border = 100
 while True:
     attempts += 1
-    guess = int(input())
-    if guess < a:
-        print('Try number greater than', guess);
-    elif guess > a:
-        print('Try number less than', guess)
+    guess = int(input('Попытка ' + str(attempts) + ':'))
+    if guess < left_border or right_border < guess:
+        print('Число', guess, 'не из диапазона', 
+            '[' + str(left_border) + ',', str(right_border) + ']')
+        continue
+    if guess < hidden_number:
+        left_border = guess + 1
+        print('Загаданное число больше', guess);
+    elif guess > hidden_number:
+        right_border = guess - 1
+        print('Загаданное число меньше', guess);
     else:
-        print('You won!!!')
+        print('Победа!!!')
         break
-print('You needed', attempts, 'attempts')
+    print('Попробуй число от', left_border, 
+                        'до', right_border)
+print('Тебе понадобилось', attempts, 'попыток')

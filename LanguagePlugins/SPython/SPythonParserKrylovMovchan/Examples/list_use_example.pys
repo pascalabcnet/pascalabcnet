@@ -1,7 +1,7 @@
 ﻿def print_matr(matr: list[list[int]]):
     for row in matr: 
         for elem in row: 
-            print(elem, end=' ')
+            print(elem, '\t', end=' ')
         print()
 
 

@@ -37,7 +37,9 @@ namespace SPythonParser
                 ["pass"] = (int)Tokens.PASS,
                 ["class"] = (int)Tokens.CLASS,
                 ["lambda"] = (int)Tokens.LAMBDA,
-                ["exit"] = (int)Tokens.EXIT
+                ["exit"] = (int)Tokens.EXIT,
+                ["new"] = (int)Tokens.NEW,
+                ["is"] = (int)Tokens.IS,
             }
             .ToDictionary(kv => ConvertKeyword(kv.Key), kv => kv.Value);
         }

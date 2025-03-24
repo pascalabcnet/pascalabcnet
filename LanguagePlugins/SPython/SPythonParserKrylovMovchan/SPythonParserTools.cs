@@ -285,6 +285,13 @@ namespace SPythonParser
         {
             throw new NotImplementedException();
         }
+
+        public typecast_node NewAsIsExpr(syntax_tree_node term, op_typecast typecast_op, type_definition simple_or_template_type_reference, LexLocation loc)
+        {
+            var naie = new typecast_node((addressed_value)term, simple_or_template_type_reference, typecast_op, loc); 
+            
+            return naie;
+        }
     }
 
     // temp

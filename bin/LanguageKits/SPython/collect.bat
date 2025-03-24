@@ -9,8 +9,8 @@ call ..\..\..\LanguagePlugins\SPython\SPythonParserKrylovMovchan\Gppg.exe /no-li
 
 @if %ERRORLEVEL% NEQ 0 GOTO ERROR
 
-call ..\..\..\Studio.bat /t:rebuild /verbosity:d "/property:Configuration=Release" ..\..\..\LanguagePlugins\SPython\SPythonParserKrylovMovchan\SPythonParser.csproj
-call ..\..\..\Studio.bat /t:rebuild /verbosity:d "/property:Configuration=Release" ..\..\..\LanguagePlugins\SPython\SemanticAnalyzers\SPythonSyntaxTreeVisitor\SPythonSyntaxTreeVisitor.csproj
+call ..\..\..\LanguagePlugins\SPython\SPythonParserKrylovMovchan\Studio.bat /t:rebuild /verbosity:d "/property:Configuration=Release" ..\..\..\LanguagePlugins\SPython\SPythonParserKrylovMovchan\SPythonParser.csproj
+call ..\..\..\LanguagePlugins\SPython\SPythonParserKrylovMovchan\Studio.bat /t:rebuild /verbosity:d "/property:Configuration=Release" ..\..\..\LanguagePlugins\SPython\SemanticAnalyzers\SPythonSyntaxTreeVisitor\SPythonSyntaxTreeVisitor.csproj
 
 @if %ERRORLEVEL% NEQ 0 GOTO ERROR
 

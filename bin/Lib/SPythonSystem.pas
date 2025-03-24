@@ -9,6 +9,8 @@ uses PABCSystem;
 
 function input(): string;
 
+function input(s: string): string;
+
 type 
     !print = record
     public
@@ -100,6 +102,12 @@ implementation
 function input(): string;
 begin
   PABCSystem.Print();
+  Result := PABCSystem.ReadlnString();
+end;
+
+function input(s: string): string;
+begin
+  PABCSystem.Print(s);
   Result := PABCSystem.ReadlnString();
 end;
   
