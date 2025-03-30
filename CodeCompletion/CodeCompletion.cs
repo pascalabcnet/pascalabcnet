@@ -417,7 +417,7 @@ namespace CodeCompletion
     	public static string GetModifiedProgramm(string src)
     	{
     		sb.Remove(0,sb.Length);
-    		if (!src.EndsWith("end."))
+    		if (!src.TrimEnd().EndsWith("end."))
     		{
     			sb.AppendLine(src);
     			sb.AppendLine();

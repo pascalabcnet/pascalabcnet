@@ -164,6 +164,10 @@ namespace VisualPascalABC
                         if (string.IsNullOrEmpty(text))
                             text = "begin end.";
                         CodeCompletion.DomConverter tmp = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
+
+                        // очистка кэша и данных от старых компиляций, чтобы при новой компиляции не появились ссылки на старые данные
+                        CodeCompletion.TypeTable.Clear();
+
                         long cur_mem = Environment.WorkingSet;
                         CodeCompletion.DomConverter dc = controller.Compile(FileName, text);
                         mem_delta += Environment.WorkingSet - cur_mem;
@@ -219,6 +223,10 @@ namespace VisualPascalABC
                                         CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
                                         string text = visualEnvironmentCompiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText) as string;
                                         CodeCompletion.DomConverter tmp = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
+
+                                        // очистка кэша и данных от старых компиляций, чтобы при новой компиляции не появились ссылки на старые данные
+                                        CodeCompletion.TypeTable.Clear();
+
                                         long cur_mem = Environment.WorkingSet;
                                         dc = controller.Compile(FileName, text);
                                         mem_delta += Environment.WorkingSet - cur_mem;
@@ -252,10 +260,7 @@ namespace VisualPascalABC
                     GC.Collect();
                 }
             }
-            catch (Exception e)
-            {
-
-            }
+            catch (Exception) { }
 
         }
 
