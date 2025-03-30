@@ -149,9 +149,8 @@ namespace VisualPascalABC
                 bool is_comp = false;
                 foreach (string FileName in open_files.Keys)
                 {
-                    //(ssyy) 18.05.08 Вставил проверку на null
-                    object o = open_files[FileName];
-                    if (o != null && (bool)o == true)
+
+                    if (open_files[FileName])
                     {
                         is_comp = true;
                         CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
