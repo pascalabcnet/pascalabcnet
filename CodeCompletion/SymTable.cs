@@ -4114,7 +4114,7 @@ namespace CodeCompletion
         }
     }
 
-    public struct InstanceCreationContext
+    internal struct InstanceCreationContext : IEquatable<InstanceCreationContext>
     {
         public TypeScope originalType;
         public List<TypeScope> genericArguments;
@@ -4129,30 +4129,15 @@ namespace CodeCompletion
 
         private struct ScopeComparer : IEqualityComparer<TypeScope>
         {
-            public bool Equals(TypeScope t1, TypeScope t2)
-            {
-                if (t1.si == null || t2.si == null)
-                {
-                    return false;
-                }
-                
-                return t1.GetDescription() == t2.GetDescription();
-            }
+            public bool Equals(TypeScope t1, TypeScope t2) => t1.IsEqual(t2);
 
-            public int GetHashCode(TypeScope t)
-            {
-                return t.GetDescription().GetHashCode();
-            }
+            public int GetHashCode(TypeScope t) => t.GetDescription().GetHashCode();
         }
 
-        public override bool Equals(object obj)
+        public bool Equals(InstanceCreationContext otherInfo)
         {
-            if (!(obj is InstanceCreationContext))
-                return false;
 
-            InstanceCreationContext otherInfo = (InstanceCreationContext)obj;
-
-            return this.originalType.GetDescription() == otherInfo.originalType.GetDescription() &&
+            return this.originalType.IsEqual(otherInfo.originalType) &&
                 this.genericArguments.SequenceEqual(otherInfo.genericArguments, new ScopeComparer()) &&
                 this.exact == otherInfo.exact;
         }
@@ -4184,7 +4169,7 @@ namespace CodeCompletion
         public bool is_final;
         public bool aliased = false;
         internal bool lazy_instance = false;
-        protected static Dictionary<InstanceCreationContext, TypeScope> instance_cache = new Dictionary<InstanceCreationContext, TypeScope>();
+        internal static Dictionary<InstanceCreationContext, TypeScope> instance_cache = new Dictionary<InstanceCreationContext, TypeScope>();
 
         public TypeScope() { }
         public TypeScope(SymbolKind kind, SymScope topScope, SymScope baseScope)

@@ -58,6 +58,9 @@ namespace CodeCompletion
 		public void Convert(compilation_unit cu)
         {
             method_call_cache.Clear();
+
+            TypeScope.instance_cache.Clear();
+
             try
             {
 				cu.visit(this);
