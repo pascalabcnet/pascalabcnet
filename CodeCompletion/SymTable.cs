@@ -1,17 +1,14 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using PascalABCCompiler;
+using PascalABCCompiler.Parsers;
+using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.TreeRealization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using SymbolTable;
-using PascalABCCompiler.TreeRealization;
-using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.Parsers;
 using System.Linq;
-using PascalABCCompiler;
-using PascalABCCompiler.TreeConverter;
+using System.Reflection;
 
 namespace CodeCompletion
 {
@@ -3589,8 +3586,23 @@ namespace CodeCompletion
 
         public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
+
             if ((elementType is UnknownScope || elementType is TemplateParameterScope) && gen_args.Count > 0)
-               return new ArrayScope(gen_args[gen_args.Count-1], Rank > 1?indexes:null);
+            {
+                InstanceCreationContext info = new InstanceCreationContext(this, gen_args, exact);
+
+                if (instance_cache.TryGetValue(info, out var instance))
+                {
+                    return instance;
+                }
+
+                var arrayScope = new ArrayScope(gen_args[gen_args.Count - 1], Rank > 1 ? indexes : null);
+
+                instance_cache[info] = arrayScope;
+
+                return arrayScope;
+            }
+            
             return this;
         }
 
@@ -4102,6 +4114,56 @@ namespace CodeCompletion
         }
     }
 
+    public struct InstanceCreationContext
+    {
+        public TypeScope originalType;
+        public List<TypeScope> genericArguments;
+        public bool exact;
+
+        public InstanceCreationContext(TypeScope originalType, List<TypeScope> genericArguments, bool exact)
+        {
+            this.originalType = originalType;
+            this.genericArguments = genericArguments;
+            this.exact = exact;
+        }
+
+        private struct ScopeComparer : IEqualityComparer<TypeScope>
+        {
+            public bool Equals(TypeScope t1, TypeScope t2)
+            {
+                if (t1.si == null || t2.si == null)
+                {
+                    return false;
+                }
+                
+                return t1.GetDescription() == t2.GetDescription();
+            }
+
+            public int GetHashCode(TypeScope t)
+            {
+                return t.GetDescription().GetHashCode();
+            }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is InstanceCreationContext))
+                return false;
+
+            InstanceCreationContext otherInfo = (InstanceCreationContext)obj;
+
+            return this.originalType.GetDescription() == otherInfo.originalType.GetDescription() &&
+                this.genericArguments.SequenceEqual(otherInfo.genericArguments, new ScopeComparer()) &&
+                this.exact == otherInfo.exact;
+        }
+
+        public override int GetHashCode()
+        {
+            return string.Join("", genericArguments.Select(arg => arg.si != null ? arg.GetDescription() : "")
+                .Concat(new string[] { originalType.GetDescription(), exact.ToString() })).GetHashCode();
+        }
+    }
+
     //opisanie tipa (klassa, zapisi) ot nego est nasledniki. sdelal ih dlja udobstva.
     public class TypeScope : SymScope, ITypeScope
     {
@@ -4122,7 +4184,7 @@ namespace CodeCompletion
         public bool is_final;
         public bool aliased = false;
         internal bool lazy_instance = false;
-        private static Dictionary<TypeScope, List<TypeScope>> instance_cache = new Dictionary<TypeScope, List<TypeScope>>();
+        protected static Dictionary<InstanceCreationContext, TypeScope> instance_cache = new Dictionary<InstanceCreationContext, TypeScope>();
 
         public TypeScope() { }
         public TypeScope(SymbolKind kind, SymScope topScope, SymScope baseScope)
@@ -4475,7 +4537,16 @@ namespace CodeCompletion
 
         public virtual TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
+
+            InstanceCreationContext info = new InstanceCreationContext(this, gen_args, exact);
+
+            if (instance_cache.TryGetValue(info, out var instance))
+            {
+                return instance;
+            }
+
             TypeScope ts = new TypeScope(this.kind, this.topScope, this.baseScope);
+
             ts.original_type = this;
             ts.loc = this.loc;
             ts.other_partials = this.other_partials;
@@ -4590,6 +4661,9 @@ namespace CodeCompletion
                     new_ps.nextProc = procs[ps.nextProc] as ProcScope;
                 }
             }
+
+            instance_cache[info] = ts;
+
             return ts;
         }
 
@@ -5784,9 +5858,17 @@ namespace CodeCompletion
 
         public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
-            Type t = this.ctn;
             if (!ctn.IsGenericType)
                 return this;
+
+            InstanceCreationContext info = new InstanceCreationContext(this, gen_args, exact);
+
+            if (instance_cache.TryGetValue(info, out var instance))
+            {
+                return instance;
+            }
+
+            Type t = this.ctn;
             if (!ctn.IsGenericTypeDefinition)
             {
                 t = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace + "." + this.ctn.Name);
@@ -5885,6 +5967,9 @@ namespace CodeCompletion
                 for (int i = 0; i < this.implemented_interfaces.Count; i++)
                     sc.implemented_interfaces.Add(this.implemented_interfaces[i].GetInstance(gen_args));
             sc.si.description = sc.GetDescription();
+
+            instance_cache[info] = sc;
+
             return sc;
         }
 
