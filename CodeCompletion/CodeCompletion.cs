@@ -124,6 +124,9 @@ namespace CodeCompletion
                 File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
 #endif
             }
+            
+            TypeScope.instance_cache.Clear();
+
             DomConverter dconv = new DomConverter(this);
             if (cu != null)
             {
