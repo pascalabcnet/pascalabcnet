@@ -69,13 +69,13 @@ function abs(x: real): real;
 
 //Standard functions with Lists
 
-function len<T>(list: List<T>): integer;
+function len<T>(lst: PABCSystem.List<T>): integer;
 
-function sorted<T>(list: List<T>): PABCSystem.List<T>;
+function sorted<T>(lst: PABCSystem.List<T>): PABCSystem.List<T>;
 
-function sum(list: List<integer>): integer;
+function sum(lst: PABCSystem.List<integer>): integer;
 
-function sum(list: List<real>): real;
+function sum(lst: PABCSystem.List<real>): real;
 
 function !assign<T>(var a: T; b: T): T;
 
@@ -93,8 +93,52 @@ function !pow_recursion(x, n: integer): integer;
 
 function !pow_recursion(x, n: biginteger): biginteger;
 
+type
+    list<T> = class(IEnumerable<T>)
+    private
+        lst: PABCSystem.List<T>;
+    public
+        constructor;
+        begin
+            lst := new PABCSystem.List<T>;
+        end;
+
+        procedure Append(value: T);
+        begin
+            lst.Add(value);
+        end;
+        
+        property Cells[x: integer]: T
+          read lst[x]
+          write begin
+            lst[x] := value;
+          end; default;
+
+        static function operator implicit(list: list<T>): PABCSystem.List<T>;
+        begin
+            result := list.lst;
+        end;
+
+        static function operator implicit(list: PABCSystem.List<T>): list<T>;
+        begin
+            result := new list<T>;
+            result.lst := list;
+        end;
+
+        function Count: integer;
+        begin
+            result := lst.Count();
+        end;
+        
+        function GetEnumerator(): IEnumerator<T>;
+        begin
+            result := lst.GetEnumerator();
+        end;
+    end;
+
 type 
-    list<T> = PABCSystem.List<T>;
+    
+    //list<T> = PABCSystem.List<T>;
     biginteger = PABCSystem.BigInteger;
 
 implementation
@@ -159,17 +203,17 @@ function abs(x: integer): integer := if x >= 0 then x else -x;
 
 function abs(x: real): real := PABCSystem.Abs(x);
 
-function len<T>(list: List<T>): integer := list.Count;
+function len<T>(lst: PABCSystem.List<T>): integer := lst.Count;
 
-function sorted<T>(list: List<T>): PABCSystem.List<T>;
+function sorted<T>(lst: PABCSystem.List<T>): PABCSystem.List<T>;
 begin
-  var new_list := new PABCSystem.List<T>(list);
+  var new_list := new PABCSystem.List<T>(lst);
   new_list.sort();
   Result := new_list;
 end;
 
-function sum(list: List<integer>): integer := list.sum();
-function sum(list: List<real>): real := list.sum();
+function sum(lst: PABCSystem.List<integer>): integer := lst.sum();
+function sum(lst: PABCSystem.List<real>): real := lst.sum();
 
 function !assign<T>(var a: T; b: T): T;
 begin
