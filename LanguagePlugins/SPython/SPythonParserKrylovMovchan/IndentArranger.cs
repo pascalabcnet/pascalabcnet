@@ -118,6 +118,8 @@ namespace SPythonParser
                 lineCounter++;
                 prevBracketCount = bracketCount;
                 CountBrackets(line);
+                if (lineCounter > 0 && LineEndsWithBackSlash(ref programLines[lineCounter - 1]))
+                    continue;
                 if (prevBracketCount != 0)
                     continue;
 
@@ -210,11 +212,27 @@ namespace SPythonParser
             }
         }
 
-        private void AddSemicolonIfNeeded(ref string s)
+        private int IndexOfLastSignificantSymbol(string s)
         {
             int i = s.Length - 1;
             while (i > -1 && Char.IsWhiteSpace(s[i])) --i;
-            if (i == -1 || s[i] != ';') s += endOfLineToken;
+            return i;
+        }
+
+        private bool LineEndsWithBackSlash(ref string s)
+        {
+            int i = IndexOfLastSignificantSymbol(s);
+            if (i == -1 || s[i] != '\\')
+                return false;
+            s = s.Substring(0, i);
+            return true;
+        }
+
+        private void AddSemicolonIfNeeded(ref string s)
+        {
+            int i = IndexOfLastSignificantSymbol(s);
+            if (i == -1 || s[i] != ';')
+                s += endOfLineToken;
         }
     }
 }
