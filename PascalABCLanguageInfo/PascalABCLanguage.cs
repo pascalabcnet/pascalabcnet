@@ -19,7 +19,6 @@ namespace Languages.Pascal
             copyright: "Copyright © 2005-2025 by Ivan Bondarev, Stanislav Mikhalkovich",
 
             languageInformation: new Frontend.Data.PascalABCLanguageInformation(),
-
             parser: new Frontend.Wrapping.PascalABCNewLanguageParser(),
             docParser: new Frontend.Documentation.PascalDocTagsLanguageParser(),
 

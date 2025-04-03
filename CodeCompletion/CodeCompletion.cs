@@ -120,6 +120,10 @@ namespace CodeCompletion
                 File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
 #endif
             }
+
+            // очистка кэша и данных от старых компиляций, чтобы при новой компиляции не появились ссылки на старые данные
+            TypeTable.Clear();
+
             DomConverter dconv = new DomConverter(this);
             if (cu != null)
             {
@@ -413,7 +417,7 @@ namespace CodeCompletion
     	public static string GetModifiedProgramm(string src)
     	{
     		sb.Remove(0,sb.Length);
-    		if (!src.EndsWith("end."))
+    		if (!src.TrimEnd().EndsWith("end."))
     		{
     			sb.AppendLine(src);
     			sb.AppendLine();
