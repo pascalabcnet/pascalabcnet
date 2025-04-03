@@ -20,12 +20,12 @@ namespace Languages.Pascal.Frontend.Data
         {
             get
             {
-                // для заглушки, потом, может, вообще можно убрать поле парсер отсюда  EVA
+                // Поле парсера желательно убрать отсюда  EVA
                 return Facade.LanguageProvider.Instance.SelectLanguageByName(StringConstants.pascalLanguageName).Parser;
             }
         }
 
-        public BaseKeywords KeywordsStorage { get; } = new Core.PascalABCKeywords(); // про-ва имен поменять  EVA
+        public BaseKeywords KeywordsStorage { get; } = new Core.PascalABCKeywords();
 
         public Dictionary<string, DirectiveInfo> ValidDirectives { get; private set; }
 
@@ -83,7 +83,7 @@ namespace Languages.Pascal.Frontend.Data
 
         public bool IsKeyword(string value)
         {
-            // typeof и sizeof воспринимаются Intellisense по другому, надо переделать   EVA 
+            // typeof и sizeof воспринимаются Intellisense по другому  EVA 
             return !value.Equals("typeof", StringComparison.CurrentCultureIgnoreCase) && !value.Equals("sizeof", StringComparison.CurrentCultureIgnoreCase) 
                 && KeywordsStorage.KeywordsToTokens.ContainsKey(value);
         }
