@@ -22,4 +22,12 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
         protected abstract syntax_tree_node ApplyConcreteConversions(syntax_tree_node root);
     }
+
+    
+    public class DefaultSyntaxTreeConverter : BaseSyntaxTreeConverter
+    {
+        public override string Name => "Default";
+
+        protected override syntax_tree_node ApplyConcreteConversions(syntax_tree_node root) => root;
+    }
 }
