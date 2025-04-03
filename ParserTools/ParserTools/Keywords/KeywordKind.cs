@@ -55,33 +55,23 @@ namespace PascalABCCompiler.Parsers
         CommonExpressionKeyword
     }
 
-    /*public class Keyword
+    /*public struct Keyword
     {
-        string _name;
-        KeywordKind _kind = KeywordKind.None;
-        public string Name
+        public string Name { get; set; }
+        public KeywordKind Kind { get; set; }
+        
+        public bool IsTypeKeyword { get; set; }
+
+        public System.Enum Token { get; set; }
+
+        public Keyword(string name, System.Enum token, KeywordKind kind = KeywordKind.None, bool isTypeKeyword = false)
         {
-            get
-            {
-                return _name;
-            }
+            Name = name;
+            Token = token;
+            Kind = kind;
+            IsTypeKeyword = isTypeKeyword;
         }
-        KeywordKind Kind
-        {
-            get
-            {
-                return _kind;
-            }
-        }
-        public Keyword(string name, KeywordKind kind)
-        {
-            _name = name;
-            _kind = kind;
-        }
-        public Keyword(string name)
-        {
-            _name = name;
-        }
+
         public override string ToString()
         {
             return Name;

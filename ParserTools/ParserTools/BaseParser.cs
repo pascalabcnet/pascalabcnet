@@ -17,20 +17,7 @@ namespace PascalABCCompiler.Parsers
 
         public Func<bool> CheckIfParsingUnit { get; set; }
 
-        public Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; protected set; }
-
-        private ILanguageInformation languageInformation;
-        public virtual ILanguageInformation LanguageInformation
-        {
-            get
-            {
-                if (languageInformation == null)
-                    languageInformation = new DefaultLanguageInformation(this);
-                return languageInformation;
-            }
-        }
-
-        public BaseKeywords Keywords { get; protected set; }
+        public ILanguageInformation LanguageInformation { get; set; }
 
         /// <summary>
         /// Возвращеает синтаксическое дерево модуля

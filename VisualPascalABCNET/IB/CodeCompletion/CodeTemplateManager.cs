@@ -11,6 +11,7 @@ namespace VisualPascalABC
 	{
         public Dictionary<string, string> ht = new Dictionary<string, string>();
 
+		// TODO: Требуется адаптация к многоязычности  EVA
         public CodeTemplateManager(string filename = "template.pct", bool searchFromLocalDirectory = false)
 		{
 			try

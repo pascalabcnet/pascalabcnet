@@ -118,22 +118,39 @@ namespace VisualPascalABC
 
         public static List<Position> GetDefinitionPosition(TextArea textArea, bool only_check)
         {
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return new List<Position>();
+
+            IParser parser = CodeCompletion.CodeCompletionController.CurrentParser;
+
+            if (parser == null) 
+                return new List<Position>();
+            
             IDocument doc = textArea.Document;
             string textContent = doc.TextContent;
             ccp = new CodeCompletionProvider();
             string full_expr;
             string expressionResult = FindFullExpression(textContent, textArea, out ccp.keyword, out full_expr);
+            
             if (expressionResult != null)
                 expressionResult = expressionResult.Trim();
-            if (expressionResult != full_expr && full_expr.StartsWith("("))
-                return new List<Position>();
             
-            if (full_expr != null && full_expr.Contains("^"))
-            	full_expr = full_expr.Replace("^","");
+            
+            // Проверка, что компилируем Паскаль временно  EVA 10.11.2024
+            if (parser == Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(StringConstants.pascalLanguageName).Parser)
+            {
+                if (expressionResult != full_expr && full_expr.StartsWith("("))
+                    return new List<Position>();
+
+                if (full_expr != null && full_expr.Contains("^"))
+                {
+                    full_expr = full_expr.Replace("^", "");
+                }
+            }
+            
             List<Position> poses = ccp.GetDefinition(full_expr, textArea.MotherTextEditorControl.FileName, textArea.Caret.Line, textArea.Caret.Column, only_check);
+            
             if (poses == null || poses.Count == 0)
                 poses = ccp.GetDefinition(expressionResult, textArea.MotherTextEditorControl.FileName, textArea.Caret.Line, textArea.Caret.Column, only_check);
+            
             return poses;
         }
 
@@ -574,12 +591,93 @@ namespace VisualPascalABC
         }
     }
 
-    public class CodeCompletionNamesOnlyInModuleAction : CodeCompletionAllNamesAction
+    /// <summary>
+    /// Включает в себя три различных действия по shift + space, что не очень хорошо  EVA
+    /// </summary>
+    public class CodeCompletionShiftSpaceActions : ICSharpCode.TextEditor.Actions.AbstractEditAction
     {
+        PABCNETCodeCompletionWindow codeCompletionWindow;
+        public static TextArea textArea = CodeCompletionAllNamesAction.textArea;
+        public static Hashtable comp_windows = CodeCompletionAllNamesAction.comp_windows;
+        public static bool is_begin = false;
+
+        private string get_prev_text(string text, int off)
+        {
+            StringBuilder sb = new StringBuilder();
+            while (off >= 0 && char.IsLetterOrDigit(text[off]))
+            {
+                sb.Insert(0, text[off--]);
+            }
+            return sb.ToString();
+        }
+
         public override void Execute(TextArea _textArea)
         {
-            key = '\0';
-            base.Execute(_textArea);
+            //base.Execute(_textArea);
+
+            textArea = _textArea;
+            int off = textArea.Caret.Offset;
+            string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
+
+            // автодополнение xml-комментария
+            if (off > 2 && text[off - 1] == '/' && text[off - 2] == '/' && text[off - 3] == '/')
+            {
+                CodeCompletionActionsManager.GenerateCommentTemplate(textArea);
+                return;
+            }
+            // автодополнение некоторого выражения из файла template.pct
+            else
+            {
+                string prev = get_prev_text(text, off - 1);
+                if (!string.IsNullOrEmpty(prev))
+                {
+                    CodeCompletionActionsManager.GenerateTemplate(prev, textArea);
+                    return;
+                }
+            }
+
+            // если подсказка по точке выключена дальше не идем
+            if (!WorkbenchServiceFactory.Workbench.UserOptions.CodeCompletionDot)
+                return;
+            
+            if (CodeCompletion.CodeCompletionController.CurrentParser == null) 
+                return;
+
+            is_begin = true;
+
+            codeCompletionWindow = PABCNETCodeCompletionWindow.ShowCompletionWindow(
+                    VisualPABCSingleton.MainForm,					// The parent window for the completion window
+                    textArea.MotherTextEditorControl, 					// The text editor to show the window for
+                    textArea.MotherTextEditorControl.FileName,		// Filename - will be passed back to the provider
+                    new CodeCompletionProvider(),		// Provider to get the list of possible completions
+                    '\0',							// Key pressed - will be passed to the provider
+                    false,
+                    false,
+                    KeywordKind.None
+                );
+
+            comp_windows[textArea] = codeCompletionWindow;
+
+            if (codeCompletionWindow != null)
+            {
+                // ShowCompletionWindow can return null when the provider returns an empty list
+                codeCompletionWindow.Closed += new EventHandler(OnCodeCompletionWindowClosed);
+            }
+        }
+
+        // такой же метод есть в CodeCompletionKeyHandler   EVA
+        public void OnCodeCompletionWindowClosed(object sender, EventArgs e)
+        {
+            if (codeCompletionWindow != null)
+            {
+                codeCompletionWindow.Closed -= new EventHandler(OnCodeCompletionWindowClosed);
+                CodeCompletionProvider.disp.Reset();
+                CodeCompletion.AssemblyDocCache.Reset();
+                CodeCompletion.UnitDocCache.Reset();
+                codeCompletionWindow.Dispose();
+                codeCompletionWindow = null;
+            }
+            comp_windows[textArea] = null;
         }
     }
 
@@ -627,18 +725,6 @@ namespace VisualPascalABC
         PABCNETCodeCompletionWindow codeCompletionWindow;
         public static TextArea textArea;
         public static Hashtable comp_windows = new Hashtable();
-        public static bool is_begin = false;
-        protected char key = '_';
-
-        private string get_prev_text(string text, int off)
-        {
-            StringBuilder sb = new StringBuilder();
-            while (off >= 0 && char.IsLetterOrDigit(text[off]))
-            {
-                sb.Insert(0, text[off--]);
-            }
-            return sb.ToString();
-        }
 
         public override void Execute(TextArea _textArea)
         {
@@ -647,52 +733,31 @@ namespace VisualPascalABC
                 textArea = _textArea;
                 int off = textArea.Caret.Offset;
                 string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
-                if (key == '\0')
-                    if (off > 2 && text[off - 1] == '/' && text[off - 2] == '/' && text[off - 3] == '/')
-                    {
-                        CodeCompletionActionsManager.GenerateCommentTemplate(textArea);
-                        return;
-                    }
-                    else
-                    {
-                        string prev = get_prev_text(text, off - 1);
-                        if (!string.IsNullOrEmpty(prev))
-                        {
-                            CodeCompletionActionsManager.GenerateTemplate(prev, textArea);
-                            return;
-                        }
-                    }
+                
                 if (!WorkbenchServiceFactory.Workbench.UserOptions.CodeCompletionDot)
                     return;
+
                 if (CodeCompletion.CodeCompletionController.CurrentParser == null) return;
                 CodeCompletionProvider completionDataProvider = new CodeCompletionProvider();
 
-                bool is_pattern = false;
+                completionDataProvider.preSelection = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindPattern(off, text, out var is_pattern);
 
-
-                is_begin = true;
-
-                completionDataProvider.preSelection = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindPattern(off, text, out is_pattern);
-
-                if (!is_pattern && off > 0 && text[off - 1] == '.')
-                    key = '$';
                 codeCompletionWindow = PABCNETCodeCompletionWindow.ShowCompletionWindow(
                     VisualPABCSingleton.MainForm,					// The parent window for the completion window
                     textArea.MotherTextEditorControl, 					// The text editor to show the window for
                     textArea.MotherTextEditorControl.FileName,		// Filename - will be passed back to the provider
                     completionDataProvider,		// Provider to get the list of possible completions
-                    key,							// Key pressed - will be passed to the provider
+                    '_',							// Key pressed - will be passed to the provider
                     false,
                     false,
-                    PascalABCCompiler.Parsers.KeywordKind.None
+                    KeywordKind.None
                 );
-                key = '_';
-                CodeCompletionNamesOnlyInModuleAction.comp_windows[textArea] = codeCompletionWindow;
+                CodeCompletionShiftSpaceActions.comp_windows[textArea] = codeCompletionWindow;
 
                 if (codeCompletionWindow != null)
                 {
                     // ShowCompletionWindow can return null when the provider returns an empty list
-                    codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
+                    codeCompletionWindow.Closed += new EventHandler(OnCodeCompletionWindowClosed);
                 }
             }
             //catch (Exception e)
@@ -701,11 +766,12 @@ namespace VisualPascalABC
             }
         }
 
-        public void CloseCodeCompletionWindow(object sender, EventArgs e)
+        // такой же метод есть в CodeCompletionKeyHandler   EVA
+        public void OnCodeCompletionWindowClosed(object sender, EventArgs e)
         {
             if (codeCompletionWindow != null)
             {
-                codeCompletionWindow.Closed -= new EventHandler(CloseCodeCompletionWindow);
+                codeCompletionWindow.Closed -= new EventHandler(OnCodeCompletionWindowClosed);
                 CodeCompletionProvider.disp.Reset();
                 CodeCompletion.AssemblyDocCache.Reset();
                 CodeCompletion.UnitDocCache.Reset();
