@@ -54152,22 +54152,25 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public array_const_new(expression_list _elements)
+		public array_const_new(expression_list _elements,char _braces_type)
 		{
 			this._elements=_elements;
+			this._braces_type=_braces_type;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public array_const_new(expression_list _elements,SourceContext sc)
+		public array_const_new(expression_list _elements,char _braces_type,SourceContext sc)
 		{
 			this._elements=_elements;
+			this._braces_type=_braces_type;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
 		protected expression_list _elements;
+		protected char _braces_type;
 
 		///<summary>
 		///
@@ -54183,6 +54186,21 @@ namespace PascalABCCompiler.SyntaxTree
 				_elements=value;
 				if (_elements != null)
 					_elements.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public char braces_type
+		{
+			get
+			{
+				return _braces_type;
+			}
+			set
+			{
+				_braces_type=value;
 			}
 		}
 
@@ -54204,6 +54222,7 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.elements = (expression_list)elements.Clone();
 				copy.elements.Parent = copy;
 			}
+			copy.braces_type = braces_type;
 			return copy;
 		}
 

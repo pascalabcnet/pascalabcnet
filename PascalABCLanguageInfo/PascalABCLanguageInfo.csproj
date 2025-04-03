@@ -1,94 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BD902586-E0D5-407A-904A-32249B8B709E}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net40</TargetFramework>
+    
     <RootNamespace>Languages.Pascal</RootNamespace>
-    <AssemblyName>PascalABCLanguageInfo</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    
     <OutputPath>..\bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+  
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj" />
+    <ProjectReference Include="..\LanguageIntegrator\LanguageIntegrator.csproj" />
+    <ProjectReference Include="..\Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj" />
+    <ProjectReference Include="..\ParserTools\ParserTools.csproj" />
+    <ProjectReference Include="..\StringConstants\StringConstants.csproj" />
+    <ProjectReference Include="..\SyntaxTreeConverters\SyntaxTreeConverters.csproj" />
+    <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj" />
+    <ProjectReference Include="..\SyntaxVisitors\SyntaxVisitors.csproj" />
+    <ProjectReference Include="..\TreeConverter\TreeConverter.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="PascalABCLanguage.cs" />
-    <Compile Include="PascalABCLanguageInformation.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Errors\Errors.csproj">
-      <Project>{44a01f9e-dce7-470c-aae5-c3de0ccbee3b}</Project>
-      <Name>Errors</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj">
-      <Project>{27d9800e-2689-4aa1-a2d6-128e4a9bae98}</Project>
-      <Name>LambdaAnySynToSemConverter</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LanguageIntegrator\LanguageIntegrator.csproj">
-      <Project>{a48d9069-d569-4110-9252-a10f139b669b}</Project>
-      <Name>LanguageIntegrator</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Localization\Localization.csproj">
-      <Project>{2de2842f-0912-4251-bc0f-480854c44a13}</Project>
-      <Name>Localization</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj">
-      <Project>{0ed020ff-d28e-4791-bbdd-b8b9ba714096}</Project>
-      <Name>PascalABCSaushkinParser</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ParserTools\ParserTools.csproj">
-      <Project>{af2efd7b-69dd-4b43-af65-b59b29349c23}</Project>
-      <Name>ParserTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\StringConstants\StringConstants.csproj">
-      <Project>{e8aefbf9-0113-4fa4-be45-6cda555498b7}</Project>
-      <Name>StringConstants</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SyntaxTreeConverters\SyntaxTreeConverters.csproj">
-      <Project>{f10a5330-dcf4-4533-877c-7b1b1be23884}</Project>
-      <Name>SyntaxTreeConverters</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
-      <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
-      <Name>SyntaxTree</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SyntaxVisitors\SyntaxVisitors.csproj">
-      <Project>{A9AB4282-83B4-41A7-86C3-E5BF6A45E7E2}</Project>
-      <Name>SyntaxVisitors</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TreeConverter\TreeConverter.csproj">
-      <Project>{1c9c945a-586d-42a2-a06b-65d84fa7ff78}</Project>
-      <Name>TreeConverter</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

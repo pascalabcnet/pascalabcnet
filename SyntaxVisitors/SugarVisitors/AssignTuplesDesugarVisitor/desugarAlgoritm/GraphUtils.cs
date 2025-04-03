@@ -18,38 +18,39 @@ namespace AssignTupleDesugarAlgorithm
             Func<AssignGraph, SymbolNode, IEnumerable<SymbolNode>> vertexTraversalOrderFunc = null,
             IEnumerable<SymbolNode> graphTraversalOrder = null)
         {
-            void dfs(SymbolNode start_node,
-                Action<AssignGraph, SymbolNode> OnEnter,
-                Func<AssignGraph, SymbolNode, SymbolNode, bool> OnProcessChild,
-                Action<AssignGraph, SymbolNode> OnLeave
-            )
-            {
-                OnEnter(graph, start_node);
-                IEnumerable<SymbolNode> vertexTraversalOrder;
-                if (vertexTraversalOrderFunc == null) vertexTraversalOrder = graph.OutAdjStructure[start_node];
-                else vertexTraversalOrder = vertexTraversalOrderFunc(graph, start_node);
-                foreach (SymbolNode current_node in vertexTraversalOrder)
-                {
-                    if (OnProcessChild(graph, start_node, current_node))
-                        dfs(current_node, OnEnter, OnProcessChild, OnLeave);
-                }
-
-                OnLeave(graph, start_node);
-            }
-
-
+            
             if (graphTraversalOrder == null) graphTraversalOrder = graph.vertexes;
 
             OnEnterGraph(graph);
             foreach (SymbolNode v in graphTraversalOrder)
-            {
+            { 
                 if (OnProcessVertex(graph, v))
-                    dfs(v, OnEnter: OnEnterNode, OnProcessChild: OnProcessNodeChild, OnLeave: OnLeaveNode);
+                    _dfs(graph: graph, start_node: v, OnEnter: OnEnterNode, OnProcessChild: OnProcessNodeChild, OnLeave: OnLeaveNode, vertexTraversalOrderFunc: vertexTraversalOrderFunc);
             }
 
             OnLeaveGraph(graph);
         }
 
+
+        static private void _dfs(AssignGraph graph, SymbolNode start_node,
+                Action<AssignGraph, SymbolNode> OnEnter,
+                Func<AssignGraph, SymbolNode, SymbolNode, bool> OnProcessChild,
+                Action<AssignGraph, SymbolNode> OnLeave,
+                Func<AssignGraph, SymbolNode, IEnumerable<SymbolNode>> vertexTraversalOrderFunc
+            )
+        {
+            OnEnter(graph, start_node);
+            IEnumerable<SymbolNode> vertexTraversalOrder;
+            if (vertexTraversalOrderFunc == null) vertexTraversalOrder = graph.OutAdjStructure[start_node];
+            else vertexTraversalOrder = vertexTraversalOrderFunc(graph, start_node);
+            foreach (SymbolNode current_node in vertexTraversalOrder)
+            {
+                if (OnProcessChild(graph, start_node, current_node))
+                    _dfs(graph, current_node, OnEnter, OnProcessChild, OnLeave, vertexTraversalOrderFunc);
+            }
+
+            OnLeave(graph, start_node);
+        }
 
         private class SynonymsGraph {
 
@@ -97,20 +98,19 @@ namespace AssignTupleDesugarAlgorithm
             var moved_last = new LinkedList<Edge>();
             var movedAssigns = new HashSet<int>();
 
+            Action<int, bool> moveAssign = (int i, bool toFirst) =>
+           {
+               Edge assign = new Edge(new SymbolNode(right[i]), new SymbolNode(left[i]));
+               if (toFirst)
+                   moved_first.Add(assign);
+               else
+                   moved_last.AddFirst(assign);
+               movedAssigns.Add(i);
+           };
 
-            void moveAssign(int i, bool toFirst)
+            Action<int, bool> addTemp = (int i, bool toFirst) =>
             {
-                Edge assign = new Edge(new SymbolNode(right[i]), new SymbolNode(left[i]));
                 if (toFirst)
-                    moved_first.Add(assign);
-                else
-                    moved_last.AddFirst(assign);
-                movedAssigns.Add(i);
-            }
-
-            void addTemp(int i, bool toFirst)
-            {
-                if(toFirst)
                 {
                     var temp_symbol = new TempSymbol();
                     assign_first.Add(new Edge(new SymbolNode(right[i]), new TempSymbolNode(temp_symbol)));
@@ -122,7 +122,7 @@ namespace AssignTupleDesugarAlgorithm
                     assign_last.Add(new Edge(new TempSymbolNode(temp_s), new SymbolNode(left[i])));
                     left[i] = temp_s;
                 }
-            }
+            };
 
             // if repeated assigns or pointers -> 2n 
             for (int i = 0; i < left.Count(); i++)
@@ -208,9 +208,9 @@ namespace AssignTupleDesugarAlgorithm
                     moveAssign(i, false);
                 }
             }
-            void resolveGraph(SynonymsGraph sGraph)
+            Action<SynonymsGraph> resolveGraph = (SynonymsGraph sGraph) =>
             {
-          
+
                 foreach (var i in sGraph.left)
                 {
                     var type = right[i].type;
@@ -242,7 +242,7 @@ namespace AssignTupleDesugarAlgorithm
                     if (type == Symbol.Type.LOCAL)
                     {
                         if (!right.Contains(left[i]))
-                           moveAssign(i, true);
+                            moveAssign(i, true);
                     }
                     else if (type == Symbol.Type.FROM_OUTER_SCOPE)
                     {
@@ -260,7 +260,7 @@ namespace AssignTupleDesugarAlgorithm
                             moveAssign(i, true);
                     }
                 }
-                foreach(int i in movedAssigns)
+                foreach (int i in movedAssigns)
                 {
                     sGraph.left.Remove(i);
                     sGraph.right.Remove(i);
@@ -311,15 +311,13 @@ namespace AssignTupleDesugarAlgorithm
                         }
                         else
                             addTemp(i, true);
-                        
+
                     }
                     if (movedFromThisGraph != null)
                         moved_first.Add(movedFromThisGraph);
                     sGraph.right.Clear();
                 }
-            }
-            
-
+            };
 
             foreach (var g in graphs)
                 resolveGraph(g);
@@ -366,9 +364,6 @@ namespace AssignTupleDesugarAlgorithm
             return graph;
         }
         
-
-
-
         private static List<Edge> make2n(List<Symbol> left, List<Symbol> right)
         {
             var temps = new List<SymbolNode>();

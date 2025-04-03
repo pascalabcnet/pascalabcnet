@@ -1,13 +1,11 @@
-var s1,s2: string;
-
-begin
+﻿begin
   // Определение длины строки
-  s1 := 'ABCDEFGH';
+  var s1 := 'ABCDEFGH';
   Writeln(s1.Length);
 
   // Сравнение строк без учета регистра символов
   s1 := 'AAA';
-  s2 := 'aaa';
+  var s2 := 'aaa';
   if String.Compare(s1, s2, {ignoreCase - без учета регистра} true) = 0 then
     Writeln('Строки совпадают с точностью до регистра букв');
   

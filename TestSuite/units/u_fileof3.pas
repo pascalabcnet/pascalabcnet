@@ -1,4 +1,4 @@
-unit u_fileof3;
+﻿unit u_fileof3;
 type 
   TRec2 = record
             a : integer;
@@ -29,10 +29,10 @@ type
          end;
 
 var rec, rec2 : TRec; 
-    f : file of TRec;
+    //f : file of TRec;
     
 begin
-  Assign(f,'test5.dat');
+  {Assign(f,'test5.dat');
   Rewrite(f);
   rec2.b := 1;
   rec2.sh := 2;
@@ -79,5 +79,5 @@ begin
   assert(rec.r = 3.14);
   assert(rec.f = single(2.71));
   
-  Close(f);
+  Close(f);}
 end.

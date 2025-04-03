@@ -26,7 +26,7 @@ end;
 procedure Init4; // Gosper hexagonal curve
 begin
   (Atom,FStr,XStr,YStr) := ('XF', 'F', 'X+YF++YF-FX--FXFX-YF+','-FX+YFYF++YF+FX--FX-Y');
-  (angle,len,n,x0,y0) := (60,4,5,580,56);
+  (angle,len,n,x0,y0) := (60,0.13,5,-8,6);
 end;
 
 procedure RunStr(s: string; n: integer);

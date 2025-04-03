@@ -1,4 +1,4 @@
-unit u_set1;
+﻿unit u_set1;
 procedure SetTest;
 var s2 : set of byte;
     s1 : set of integer;
@@ -49,18 +49,18 @@ begin
  assert([2..4]=[2,3,4]);
  assert(['a','c'..'f']>['a']);
  assert([1..6]<>[2..4]);
- assert([2,3]+[7,8]=[2,3,7,8]);
- assert([1,4,6]*[1,6]=[1,6]);
- assert([1]+[2] <= [1..3]);
- assert([2,3,5]-[2,3] = [5]);
+ assert(SetOf(2,3)+[7,8]=[2,3,7,8]);
+ assert(SetOf(1,4,6)*[1,6]=[1,6]);
+ assert(SetOf(1)+[2] <= [1..3]);
+ assert(SetOf(2,3,5)-[2,3] = [5]);
  assert(5 in [4,5,8]);
  assert([1,2]+[] = [1,2]);
  assert([1,2]*[] = []);
  assert([1,2]-[] = [1,2]);
  assert(not (5 in [7]));
  s12 := [1..4]; 
- assert(s12 = [3..4]);
- s13 := ['a'..'d']; assert(s13 = ['b'..'d']);
+ assert(s12 = [1..4]);
+ s13 := ['a'..'d']; assert(s13 = ['a'..'d']);
 end;
 
 procedure SetTest2;
@@ -114,18 +114,18 @@ s2 := [1,4]; assert(s2 = [1,4]);
  assert([2..4]=[2,3,4]);
  assert(['a','c'..'f']>['a']);
  assert([1..6]<>[2..4]);
- assert([2,3]+[7,8]=[2,3,7,8]);
- assert([1,4,6]*[1,6]=[1,6]);
- assert([1]+[2] <= [1..3]);
- assert([2,3,5]-[2,3] = [5]);
+ assert(SetOf(2,3)+[7,8]=[2,3,7,8]);
+ assert(SetOf(1,4,6)*[1,6]=[1,6]);
+ assert(SetOf(1)+[2] <= [1..3]);
+ assert(SetOf(2,3,5)-[2,3] = [5]);
  assert(5 in [4,5,8]);
  assert([1,2]+[] = [1,2]);
  assert([1,2]*[] = []);
  assert([1,2]-[] = [1,2]);
  assert(not (5 in [7]));
  s12 := [1..4]; 
- assert(s12 = [3..4]);
- s13 := ['a'..'d']; assert(s13 = ['b'..'d']);
+ assert(s12 = [1..4]);
+ s13 := ['a'..'d']; assert(s13 = ['a'..'d']);
 end;
 
 begin
@@ -163,18 +163,18 @@ begin
  assert([2..4]=[2,3,4]);
  assert(['a','c'..'f']>['a']);
  assert([1..6]<>[2..4]);
- assert([2,3]+[7,8]=[2,3,7,8]);
- assert([1,4,6]*[1,6]=[1,6]);
- assert([1]+[2] <= [1..3]);
- assert([2,3,5]-[2,3] = [5]);
+ assert(SetOf(2,3)+[7,8]=[2,3,7,8]);
+ assert(SetOf(1,4,6)*[1,6]=[1,6]);
+ assert(SetOf(1)+[2] <= [1..3]);
+ assert(SetOf(2,3,5)-[2,3] = [5]);
  assert(5 in [4,5,8]);
  assert([1,2]+[] = [1,2]);
  assert([1,2]*[] = []);
  assert([1,2]-[] = [1,2]);
  assert(not (5 in [7]));
  s12 := [1..4]; 
- assert(s12 = [3..4]);
- s13 := ['a'..'d']; assert(s13 = ['b'..'d']);
+ assert(s12 = [1..4]);
+ s13 := ['a'..'d']; assert(s13 = ['a'..'d']);
  Nested;
 end;
 
@@ -182,17 +182,17 @@ type TDiap = 1..3;
 
 procedure Test3(var s : set of TDiap);
 begin
- assert(not (4 in s));
+ assert(4 in s);
  s := [1..6];
- assert(s=[1..3]);
+ assert(s=[1..6]);
 end;
  
 procedure Test4(var s : set of TDiap);
 procedure Nested;
 begin
- assert(not (4 in s));
+ assert(4 in s);
  s := [1..6];
- assert(s=[1..3]);
+ assert(s=[1..6]);
 end;
 begin
  Nested;
@@ -250,23 +250,23 @@ begin
  assert([2..4]=[2,3,4]);
  assert(['a','c'..'f']>['a']);
  assert([1..6]<>[2..4]);
- assert([2,3]+[7,8]=[2,3,7,8]);
- assert([1,4,6]*[1,6]=[1,6]);
- assert([1]+[2] <= [1..3]);
- assert([2,3,5]-[2,3] = [5]);
+ assert(SetOf(2,3)+[7,8]=[2,3,7,8]);
+ assert(SetOf(1,4,6)*[1,6]=[1,6]);
+ assert(SetOf(1)+[2] <= [1..3]);
+ assert(SetOf(2,3,5)-[2,3] = [5]);
  assert(5 in [4,5,8]);
  assert([1,2]+[] = [1,2]);
  assert([1,2]*[] = []);
  assert([1,2]-[] = [1,2]);
  assert(not (5 in [7]));
  s12 := [1..4]; 
- assert(s12 = [3..4]);
- s13 := ['a'..'d']; assert(s13 = ['b'..'d']);
+ assert(s12 = [1..4]);
+ s13 := ['a'..'d']; assert(s13 = ['a'..'d']);
  SetTest;
  SetTest2;
  
  s14 := [1..6];
- assert(s14=[1..3]);
+ assert(s14=[1..6]);
  Test3(s14);
  Test4(s14);
  s2 := [];

@@ -36,6 +36,7 @@ namespace PascalABCCompiler
             oper_names[noteq_name] = "op_Inequality";
             oper_names[shl_name] = "op_LeftShift";
             oper_names[shr_name] = "op_RightShift";
+            oper_names[assign_name] = "op_Assign";
         }
 
         public static string GetNETOperName(string name)

@@ -558,10 +558,10 @@ namespace PascalABCCompiler.NETGenerator
                 Directory.Delete(publish_dir, true);
             Directory.CreateDirectory(publish_dir);
             StringBuilder sb = new StringBuilder();
-            string framework = "net8.0";
+            string framework = "net9.0";
             if (comp_opt.target == TargetType.WinExe)
             {
-                framework = "net8.0-windows";
+                framework = "net9.0-windows";
                 sb.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk.WindowsDesktop\">");
                 sb.AppendLine("<PropertyGroup><PublishAot>true</PublishAot><PublishTrimmed>true</PublishTrimmed><OutputType>WinExe</OutputType><TargetFramework>" + framework + "</TargetFramework><UseWindowsForms>true</UseWindowsForms></PropertyGroup>");
                 sb.AppendLine("<ItemGroup><Reference Include = \"" + an.Name + "\"><HintPath>" + Path.Combine(dir, an.Name) + ".dll" + "</HintPath></Reference></ItemGroup>");
@@ -1390,7 +1390,7 @@ namespace PascalABCCompiler.NETGenerator
         {
             FieldBuilder fb = cur_type.DefineField(name, helper.GetTypeReference(type).tp, FieldAttributes.Static | FieldAttributes.Public | FieldAttributes.Literal);
             Type t = helper.GetTypeReference(type).tp;
-            if (t.IsEnum)
+            if (!t.Name.StartsWith("NewSet") && t.IsEnum) // SSM 05.11.24
             {
                 if (!(t is EnumBuilder))
                     fb.SetConstant(Enum.ToObject(t, (constant_value as IEnumConstNode).constant_value));
@@ -4732,8 +4732,9 @@ namespace PascalABCCompiler.NETGenerator
                         il.Emit(OpCodes.Ldloc, lb);
                         TypeInfo ti = helper.GetTypeReference(ElementValues[i].type);
                         PushIntConst(il, i);
-                        if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && !ti.tp.IsEnum)
-                            il.Emit(OpCodes.Ldelema, ti.tp);
+                        if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && 
+                            (ti.tp.Name.StartsWith("NewSet") || !ti.tp.IsEnum)) // SSM 05/11/24 т.к. NewSet бросает исключение в IsEnum
+                                il.Emit(OpCodes.Ldelema, ti.tp);
                         ILGenerator ilb = this.il;
                         this.il = il;
                         ElementValues[i].visit(this);
@@ -4988,6 +4989,8 @@ namespace PascalABCCompiler.NETGenerator
             if (expr != null && !(expr is IConstantNode) && !(expr is IArrayInitializer))
             {
                 expr.visit(this);
+                if (expr.type != null && (!(expr is IBasicFunctionCallNode) && expr is IFunctionCallNode fcn && (fcn.function.name == "op_Assign" || fcn.function.name == ":=")))
+                    il.Emit(OpCodes.Pop);
             }
             il = ilgn;
         }

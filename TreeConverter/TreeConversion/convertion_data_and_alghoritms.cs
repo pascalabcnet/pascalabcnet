@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using PascalABCCompiler.SemanticTree;
+using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeRealization;
+using static PascalABCCompiler.SyntaxTree.SyntaxTreeBuilder;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -1207,6 +1209,46 @@ namespace PascalABCCompiler.TreeConverter
 						}
 						else
 						{
+                            // SSM 20/01/25 - Tuple<int,int> -> Tuple<double,double>
+                            // А если уже один такой conv есть? Как сливать несколько в один???
+                            if (formal_param_type.original_generic != null 
+                                && formal_param_type.original_generic.BaseFullName.StartsWith("System.Tuple`")
+                                && factparams[i].type.original_generic != null
+                                && factparams[i].type.original_generic.BaseFullName.StartsWith("System.Tuple`")
+                                && formal_param_type.instance_params.Count == factparams[i].type.instance_params.Count
+                                )
+                            {
+                                syntax_tree_visitor.contextChanger.SaveContextAndUpToGlobalLevel();
+                                var sl = new statement_list();
+                                var rettype = new semantic_type_node(formal_param_type);
+
+                                var el = new expression_list();
+                                for (int ii = 1; ii <= formal_param_type.instance_params.Count; ii++)
+                                    el.Add(new dot_node(new ident("x"), new ident("Item" + ii.ToString(),
+                                        factparams[i].location)));
+                                        //parameters[ii-1].location)));
+                                SyntaxTree.expression ex = new SyntaxTree.new_expr(rettype,el);
+                                sl.Add(new SyntaxTree.assign("Result", ex));
+                                // Определим функцию преобразования на внешнем уровне
+                                var fun = BuildSimpleFunctionOneParameter("_conv" + UniqueString(), "x",
+                                    new SyntaxTree.semantic_type_node(factparams[i].type),
+                                    rettype,
+                                    sl
+                                    );
+                                // Теперь ее надо обойти
+                                syntax_tree_visitor.ProcessNode(fun);
+                                // Теперь до нее доберемся
+                                var fn = syntax_tree_visitor.context.last_created_function.sym_info as function_node;
+                                syntax_tree_visitor.contextChanger.RestoreCurrentContext();
+                                possible_type_convertions ptci = new possible_type_convertions();
+                                ptci.first = new type_conversion(fn);
+                                ptci.second = null;
+                                ptci.from = factparams[i].type;
+                                ptci.to = formal_param_type;
+                                tc.AddElement(ptci);
+                                return tc;
+                            }
+
                             //issue #2161 - SSM 12.03.2020
                             //issue #348
                             if ((formal_param_type == SystemLibrary.SystemLibrary.object_type || formal_param_type.IsDelegate) && factparams[i].type is delegated_methods)
@@ -2883,6 +2925,7 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     var tlist = new List<function_node>();
                                     tlist.Add(f2);
+                                    convert_function_call_expressions(tlist[0], parameters, tcll[0]);
                                     return tlist;
                                 }
                             }
@@ -2960,6 +3003,7 @@ namespace PascalABCCompiler.TreeConverter
                         set_of_possible_functions.Remove(fn);
                     var tlist = new List<function_node>();
                     tlist.Add(set_of_possible_functions[0]);
+                    convert_function_call_expressions(tlist[0], parameters, tcll[0]);
                     return tlist;
                 }
             }
@@ -2969,12 +3013,14 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     var tlist = new List<function_node>();
                     tlist.Add(set_of_possible_functions[1]);
+                    convert_function_call_expressions(tlist[0], parameters, tcll[0]);
                     return tlist;
                 }
                 else if (set_of_possible_functions[1].semantic_node_type == semantic_node_type.basic_function_node && set_of_possible_functions[0].semantic_node_type != semantic_node_type.basic_function_node)
                 {
                     var tlist = new List<function_node>();
                     tlist.Add(set_of_possible_functions[0]);
+                    convert_function_call_expressions(tlist[0], parameters, tcll[0]);
                     return tlist;
                 }
             }

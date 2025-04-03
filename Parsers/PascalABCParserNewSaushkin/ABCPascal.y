@@ -62,7 +62,7 @@
 %type <stn> attribute_declarations  
 %type <stn> ot_visibility_specifier  
 %type <stn> one_attribute attribute_variable 
-%type <ex> const_factor const_factor_without_unary_op const_variable_2 const_term const_variable literal_or_number unsigned_number variable_or_literal_or_number 
+%type <ex> const_factor const_factor_without_unary_op const_variable_2 const_term const_variable literal_or_number unsigned_number // variable_or_literal_or_number 
 %type <stn> program_block  
 %type <ob> optional_var class_attribute class_attributes class_attributes1 
 %type <ob>  lambda_unpacked_params_or_id lambda_list_of_unpacked_params_or_id
@@ -140,7 +140,7 @@
 %type <stn> program_header  
 %type <stn> parameter_decl
 %type <stn> parameter_decl_list property_parameter_list
-%type <ex> const_set  
+%type <ex> const_set pascal_set_const
 %type <ex> question_expr question_constexpr new_question_expr  
 %type <ex> record_const const_field_list_1 const_field_list  
 %type <stn> const_field  
@@ -544,17 +544,17 @@ decl_sect_list_proc_func_only
 			if (GlobalDecls==null) 
 				GlobalDecls = $$ as declarations;
 		}
-	| decl_sect_list_proc_func_only attribute_declarations proc_func_decl_noclass
+	| decl_sect_list_proc_func_only /*attribute_declarations*/ proc_func_decl_noclass
 		{
 			var dcl = $1 as declarations;
-			($3 as procedure_definition).AssignAttrList($2 as attribute_list);
+			//($2 as procedure_definition).AssignAttrList($2 as attribute_list);
 			if (dcl.Count == 0)			
-				$$ = dcl.Add($3 as declaration, @3);
+				$$ = dcl.Add($2 as declaration, @2);
 			else
 			{
 				var sc = dcl.source_context;
-				sc = sc.Merge($3.source_context);
-				$$ = dcl.Add($3 as declaration, @3);
+				sc = sc.Merge($2.source_context);
+				$$ = dcl.Add($2 as declaration, @2);
 				$$.source_context = sc;			
 			}
 		}		
@@ -987,24 +987,31 @@ const_factor
 //			$$ = new roof_dereference($2 as addressed_value, @$);
 //		}
     ;
-
-const_set
-    : tkSquareOpen elem_list tkSquareClose 
+    
+pascal_set_const
+	: tkSquareOpen elem_list tkSquareClose
         {
             // Если elem_list пуст или содержит диапазон, то это множество, иначе массив. С PascalABC.NET 3.10  
-            /*var is_set = false;
+            var is_set = false;
             var el = $2 as expression_list;
             if (el == null || el.Count == 0)
               is_set = true;
             else if (el.expressions.Count(x => x is diapason_expr_new) > 0)
                 is_set = true;
-            if (is_set)*/    
+            if (is_set)   
 				$$ = new pascal_set_constant($2 as expression_list, @$);
-			//else $$ = new array_const_new($2 as expression_list, @$); 				
+			else $$ = new array_const_new($2 as expression_list, '[', @$); 				
+		}
+	;
+
+const_set
+    : pascal_set_const 
+        {
+            $$ = $1;				
 		}
     | tkVertParen elem_list tkVertParen     
         { 
-			$$ = new array_const_new($2 as expression_list, @$);  
+			$$ = new array_const_new($2 as expression_list, '|', @$);  
 		}
     ;
 
@@ -2915,6 +2922,11 @@ proc_call
         { 
 			$$ = new procedure_call($1 as addressed_value, $1 is ident, @$); 
 		}
+	/*| pascal_set_const tkPoint identifier_keyword_operatorname  
+        {
+        	var abcd = new dot_node($1 as addressed_value, $3 as addressed_value, @$); 
+			$$ = new procedure_call(abcd as addressed_value, abcd is ident, @$);
+        }	*/
     ;
 
 goto_stmt
@@ -4164,6 +4176,8 @@ factor_without_unary_op
 	| var_reference
 		{ $$ = $1; }
 	;
+	
+	
 
 factor        
     : tkNil                     
@@ -4175,19 +4189,18 @@ factor
 		{ $$ = $1; }
     | default_expr
 		{ $$ = $1; }
-    | tkSquareOpen elem_list tkSquareClose     
+    /*| pascal_set_const     
         { 
-            // Если elem_list пуст или содержит диапазон, то это множество, иначе массив. С PascalABC.NET 3.10  
-            /*var is_set = false;
-            var el = $2 as expression_list;
-            if (el == null || el.Count == 0)
-              is_set = true;
-            else if (el.expressions.Count(x => x is diapason_expr_new) > 0)
-                is_set = true;
-            if (is_set)*/    
-				$$ = new pascal_set_constant($2 as expression_list, @$);
-			//else $$ = new array_const_new($2 as expression_list, @$); 				
-		}
+			$$ = $1;
+		}*/
+    /*| factor tkPoint identifier_keyword_operatorname  
+        {
+			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
+        }
+	| factor tkRoundOpen optional_expr_list_func_param tkRoundClose                
+        {
+			$$ = new method_call($1 as addressed_value,$3 as expression_list, @$);
+        }*/
     | tkNot factor              
         { 
 			$$ = new un_expr($2, $1.type, @$); 
@@ -4301,12 +4314,12 @@ variable_as_type
 		{ $$ = new ident_with_templateparams($1 as addressed_value, $2 as template_param_list, @$);   }
 	;
 	
-variable_or_literal_or_number
+/*variable_or_literal_or_number
 	: variable 
 		{ $$ = $1; }
 	| literal_or_number
 		{ $$ = $1; }
-	;
+	;*/
 	
 var_with_init_for_expr_with_let
 	: tkVar identifier tkAssign expr tkSemiColon
@@ -4373,9 +4386,14 @@ variable
 				parserTools.AddErrorFromResource("UNEXPECTED_SYMBOL{0}", @1, "^");		
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); 
 		}
-    | variable_or_literal_or_number tkSquareOpen expr_list tkSquareClose                
+    | variable tkSquareOpen expr_list tkSquareClose                
         {
-        	var el = $3 as expression_list; // SSM 10/03/16
+        	$$ = NewIndexerOrSlice($1 as addressed_value,$3 as expression_list,@$);
+        }
+    | literal_or_number tkSquareOpen expr_list tkSquareClose                
+        {
+        	$$ = NewIndexerOrSlice($1 as addressed_value,$3 as expression_list,@$);
+        	/*var el = $3 as expression_list; // SSM 10/03/16
         	if (el.Count==1 && el.expressions[0] is format_expr) 
         	{
         		var fe = el.expressions[0] as format_expr;
@@ -4415,9 +4433,21 @@ variable
 				sle.slices = ll;
 				$$ = sle;
             }
-			else $$ = new indexer($1 as addressed_value, el, @$);
+			else $$ = new indexer($1 as addressed_value, el, @$);*/
         }
-    | variable_or_literal_or_number tkQuestionSquareOpen format_expr tkSquareClose                
+    | variable tkQuestionSquareOpen format_expr tkSquareClose                
+        {
+        	var fe = $3 as format_expr; // SSM 9/01/17
+            if (!parserTools.buildTreeForFormatter)
+            {
+                if (fe.expr == null)
+                    fe.expr = new int32_const(int.MaxValue,@3);
+                if (fe.format1 == null)
+                    fe.format1 = new int32_const(int.MaxValue,@3);
+            }
+      		$$ = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
+        }
+    | literal_or_number tkQuestionSquareOpen format_expr tkSquareClose // дублирую для устранения конфликтов Reduce Reduce             
         {
         	var fe = $3 as format_expr; // SSM 9/01/17
             if (!parserTools.buildTreeForFormatter)
@@ -4431,8 +4461,12 @@ variable
         }
     | tkVertParen elem_list tkVertParen     
         { 
-			$$ = new array_const_new($2 as expression_list, @$);  
+			$$ = new array_const_new($2 as expression_list, '|', @$);  
 		}
+	| pascal_set_const     
+        { 
+			$$ = $1;
+		}	
     | proc_func_call
     	{ $$ = $1; }
     | variable tkPoint identifier_keyword_operatorname

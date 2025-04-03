@@ -32,6 +32,9 @@ const
   PARAMETER_FROM_OUT_OF_RANGE = 'Параметр from за пределами диапазона!!The from parameter out of bounds';
   PARAMETER_TO_OUT_OF_RANGE = 'Параметр to за пределами диапазона!!The to parameter out of bounds';
   SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL = 'Размеры среза и присваиваемого выражения должны быть равны!!Slice size and assigned expression size must be equal';
+  OUT_OF_TYPE_RANGE_IN_SET_ASSIGNMENT = 'Выход за границы типа множества!!Out of type range in set assignment';
+  OUT_OF_TYPE_RANGE_IN_SET_OPERATION = 'Выход за границы типа множества!!Out of type range in set operation';
+  OUT_OF_TYPE_RANGE_IN_ARR_OPERATION = 'Выход за границы типа массива!!Out of type range in array operation';
 
 //{{{doc: Начало секции расширений строк для срезов }}} 
 
@@ -453,204 +456,741 @@ begin
 end;
 
 // Важнейший для новых множеств !!!
-procedure operator:=<T>(var Self: NewSet<T>; st: NewSet<T>); extensionmethod;
+{procedure operator:=<T>(var Self: set of T>; st: set of T>); extensionmethod;
 begin
   Self._hs := new HashSet<T>(st.hs);
-end;
+end;}
 
-// Extension-vtnjls для новых множеств
-function operator implicit(n: NewSet<integer>): NewSet<byte>; extensionmethod;
+{procedure operator:=<T>(var Self: set of T>; st: NewSetEmpty); extensionmethod;
+begin
+  Self._hs := new HashSet<T>();
+end;}
+
+// --------------------------------------
+// Extension-методы для новых множеств
+// --------------------------------------
+
+// operator implicit
+function operator implicit(n: set of integer): set of byte; extensionmethod;
 begin
   foreach var x in n._hs do
+    if (x >= byte.MinValue) and (x <= byte.MaxValue) then
+      Result._hs.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_ASSIGNMENT));
+end;
+
+function operator implicit(n: set of integer): set of shortint; extensionmethod;
+begin
+  foreach var x in n._hs do
+    if (x >= shortint.MinValue) and (x <= shortint.MaxValue) then
+      Result._hs.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_ASSIGNMENT));
+end;
+
+function operator implicit(n: set of integer): set of smallint; extensionmethod;
+begin
+  foreach var x in n._hs do
+    if (x >= smallint.MinValue) and (x <= smallint.MaxValue) then
+      Result._hs.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_ASSIGNMENT));
+end;
+
+function operator implicit(n: set of integer): set of word; extensionmethod;
+begin
+  foreach var x in n._hs do
+    if (x >= word.MinValue) and (x <= word.MaxValue) then
+      Result._hs.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_ASSIGNMENT));
+end;
+
+function operator implicit(n: set of integer): set of longword; extensionmethod;
+begin
+  foreach var x in n._hs do
+    if (x >= longword.MinValue) and (x <= longword.MaxValue) then
+      Result._hs.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_ASSIGNMENT));
+end;
+
+function operator implicit(n: set of integer): set of int64; extensionmethod;
+begin
+  foreach var x in n._hs do
+    Result._hs.Add(x)
+end;
+
+function operator implicit(n: set of integer): set of uint64; extensionmethod;
+begin
+  foreach var x in n._hs do
+    if x >= 0 then
+      Result._hs.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_ASSIGNMENT));
+end;
+
+function operator implicit(a: set of integer): set of BigInteger; extensionmethod;
+begin
+  foreach var x in a do
     Result._hs.Add(x);
 end;
 
-function operator implicit(n: NewSet<integer>): NewSet<shortint>; extensionmethod;
+//-- operator implicit array of integer -> set of целое
+function operator implicit(n: array of integer): set of byte; extensionmethod;
 begin
-  foreach var x in n._hs do
+  foreach var x in n do
+    if (x >= byte.MinValue) and (x <= byte.MaxValue) then
+      Result._hs.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_ASSIGNMENT));
+end;
+
+function operator implicit(n: array of integer): set of shortint; extensionmethod;
+begin
+  foreach var x in n do
+    if (x >= shortint.MinValue) and (x <= shortint.MaxValue) then
+      Result._hs.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_ASSIGNMENT));
+end;
+
+function operator implicit(n: array of integer): set of smallint; extensionmethod;
+begin
+  foreach var x in n do
+    if (x >= smallint.MinValue) and (x <= smallint.MaxValue) then
+      Result._hs.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_ASSIGNMENT));
+end;
+
+function operator implicit(n: array of integer): set of word; extensionmethod;
+begin
+  foreach var x in n do
+    if (x >= word.MinValue) and (x <= word.MaxValue) then
+      Result._hs.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_ASSIGNMENT));
+end;
+
+function operator implicit(n: array of integer): set of longword; extensionmethod;
+begin
+  foreach var x in n do
+    if (x >= longword.MinValue) and (x <= longword.MaxValue) then
+      Result._hs.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_ASSIGNMENT));
+end;
+
+function operator implicit(a: array of integer): set of int64; extensionmethod;
+begin
+  foreach var x in a do
     Result._hs.Add(x);
 end;
 
-function operator implicit(n: NewSet<integer>): NewSet<smallint>; extensionmethod;
+function operator implicit(a: array of integer): set of uint64; extensionmethod;
 begin
-  foreach var x in n._hs do
+  foreach var x in a do
+    if x >= 0 then
+      Result._hs.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_ASSIGNMENT));
+end;
+
+function operator implicit(a: array of integer): set of BigInteger; extensionmethod;
+begin
+  foreach var x in a do
     Result._hs.Add(x);
-end;
+end; 
 
-function operator implicit(n: NewSet<integer>): NewSet<word>; extensionmethod;
+function NSToInts(ns: set of byte) := ns._hs.Select(x -> integer(x));
+function NSToInts(ns: set of shortint) := ns._hs.Select(x -> integer(x));
+function NSToInts(ns: set of smallint) := ns._hs.Select(x -> integer(x));
+function NSToInts(ns: set of word) := ns._hs.Select(x -> integer(x));
+function NSToInts64(ns: set of byte) := ns._hs.Select(x -> int64(x));
+function NSToInts64(ns: set of integer) := ns._hs.Select(x -> int64(x));
+
+function NSToBytes(ns: set of integer): sequence of byte;
 begin
-  foreach var x in n._hs do
-    Result._hs.Add(x);
-end;
+  var res := new List<byte>;
+  foreach var x in ns._hs do
+    if (x >= byte.MinValue) and (x <= byte.MaxValue) then
+      res.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_OPERATION));
+  Result := res;  
+end; 
 
-function operator implicit(n: NewSet<integer>): NewSet<longword>; extensionmethod;
+function NSToBytes(ns: set of int64): sequence of byte; 
 begin
-  foreach var x in n._hs do
-    Result._hs.Add(x);
-end;
+  var res := new List<byte>;
+  foreach var x in ns._hs do
+    if (x >= byte.MinValue) and (x <= byte.MaxValue) then
+      res.Add(x)
+    else raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_SET_OPERATION));
+  Result := res;  
+end; 
 
-function operator implicit(n: NewSet<integer>): NewSet<int64>; extensionmethod;
+// operator= для set
+// set of integer сравнивается со всеми
+function operator=(a: set of integer; b: set of byte); extensionmethod 
+  := (a.Count = b.Count) and b.All(x -> x in a); // x в меньшем диапазоне, поэтому x in a работает верно
+function operator=(a: set of byte; b: set of integer): boolean; extensionmethod 
+  := b = a;
+function operator=(a: set of integer; b: set of shortint); extensionmethod 
+  := (a.Count = b.Count) and b.All(x -> x in a);
+function operator=(a: set of shortint; b: set of integer): boolean; extensionmethod 
+  := b = a;
+function operator=(a: set of integer; b: set of smallint); extensionmethod 
+  := (a.Count = b.Count) and b.All(x -> x in a);
+function operator=(a: set of smallint; b: set of integer): boolean; extensionmethod 
+  := b = a;
+function operator=(a: set of integer; b: set of word); extensionmethod 
+  := (a.Count = b.Count) and b.All(x -> x in a);
+function operator=(a: set of word; b: set of integer): boolean; extensionmethod 
+  := b = a;
+
+// В этом случае integer и longword не вкладываются друг в друга
+function operator=(a: set of integer; b: set of longword): boolean; extensionmethod
+  := (a.Count = b.Count) and a.All(x -> x >= 0) and a.All(x -> x in b);
+function operator=(a: set of longword; b: set of integer): boolean; extensionmethod 
+  := b = a;
+
+function operator=(a: set of int64; b: set of integer); extensionmethod 
+  := (a.Count = b.Count) and b.All(x -> x in a);
+function operator=(a: set of integer; b: set of int64): boolean; extensionmethod 
+  := b = a;
+
+// Здесь оба типа нельзя расширить до общего типа, и есть проблема
+function operator=(a: set of integer; b: set of uint64): boolean; extensionmethod
+  := (a.Count = b.Count) and a.All(x -> x >= 0) and a.All(x -> x in b);
+function operator=(a: set of uint64; b: set of integer): boolean; extensionmethod := b = a;
+
+
+// arrays = sets
+function operator=(a: array of integer; b: set of byte); extensionmethod 
+  := a.ToSet = b; 
+function operator=(a: set of byte; b: array of integer): boolean; extensionmethod := b = a;
+function operator=(a: array of integer; b: set of shortint); extensionmethod 
+  := a.ToSet = b;
+function operator=(a: set of shortint; b: array of integer): boolean; extensionmethod := b = a;
+function operator=(a: array of integer; b: set of smallint); extensionmethod 
+  := a.ToSet = b;
+function operator=(a: set of smallint; b: array of integer): boolean; extensionmethod := b = a;
+function operator=(a: array of integer; b: set of word); extensionmethod 
+  := a.ToSet = b; 
+function operator=(a: set of word; b: array of integer): boolean; extensionmethod := b = a;
+function operator=(a: array of integer; b: set of longword): boolean; extensionmethod
+  := a.ToSet = b; 
+function operator=(a: set of longword; b: array of integer): boolean; extensionmethod := b = a;
+function operator=(a: array of integer; b: set of int64): boolean; extensionmethod 
+  := a.ToSet = b; 
+function operator=(a: set of int64; b: array of integer); extensionmethod := b = a;
+function operator=(a: array of integer; b: set of uint64): boolean; extensionmethod
+  := a.ToSet = b;
+function operator=(a: set of uint64; b: array of integer): boolean; extensionmethod := b = a;
+function operator=(a: array of integer; b: set of integer); extensionmethod 
+  := (a.Count = b.Count) and a.All(x -> x in b); 
+function operator=(a: set of integer; b: array of integer): boolean; extensionmethod := b = a;
+
+// operator<> для set
+function operator<>(a: set of integer; b: set of byte); extensionmethod := not(a = b);
+function operator<>(a: set of byte; b: set of integer); extensionmethod := not(a = b);
+function operator<>(a: set of integer; b: set of shortint); extensionmethod := not(a = b);
+function operator<>(a: set of shortint; b: set of integer); extensionmethod := not(a = b);
+function operator<>(a: set of integer; b: set of smallint); extensionmethod := not(a = b);
+function operator<>(a: set of smallint; b: set of integer); extensionmethod := not(a = b);
+function operator<>(a: set of integer; b: set of word); extensionmethod := not(a = b);
+function operator<>(a: set of word; b: set of integer); extensionmethod := not(a = b);
+function operator<>(a: set of integer; b: set of longword); extensionmethod := not(a = b);
+function operator<>(a: set of longword; b: set of integer); extensionmethod := not(a = b);
+function operator<>(a: set of integer; b: set of int64); extensionmethod := not(a = b);
+function operator<>(a: set of int64; b: set of integer); extensionmethod := not(a = b);
+function operator<>(a: set of integer; b: set of uint64); extensionmethod := not(a = b);
+function operator<>(a: set of uint64; b: set of integer); extensionmethod := not(a = b);
+
+// set<>array
+function operator<>(a: array of integer; b: set of byte); extensionmethod := not(a = b);
+function operator<>(a: set of byte; b: array of integer); extensionmethod := not(a = b);
+function operator<>(a: array of integer; b: set of shortint); extensionmethod := not(a = b);
+function operator<>(a: set of shortint; b: array of integer); extensionmethod := not(a = b);
+function operator<>(a: array of integer; b: set of smallint); extensionmethod := not(a = b);
+function operator<>(a: set of smallint; b: array of integer); extensionmethod := not(a = b);
+function operator<>(a: array of integer; b: set of word); extensionmethod := not(a = b);
+function operator<>(a: set of word; b: array of integer); extensionmethod := not(a = b);
+function operator<>(a: array of integer; b: set of longword); extensionmethod := not(a = b);
+function operator<>(a: set of longword; b: array of integer); extensionmethod := not(a = b);
+function operator<>(a: array of integer; b: set of int64); extensionmethod := not(a = b);
+function operator<>(a: set of int64; b: array of integer); extensionmethod := not(a = b);
+function operator<>(a: array of integer; b: set of uint64); extensionmethod := not(a = b);
+function operator<>(a: set of uint64; b: array of integer); extensionmethod := not(a = b);
+function operator<>(a: array of integer; b: set of integer); extensionmethod := not(a = b);
+function operator<>(a: set of integer; b: array of integer); extensionmethod := not(a = b);
+
+// operator< для set
+function operator<(a: set of integer; b: set of byte); extensionmethod 
+  := (a.Count < b.Count) and a.All(x -> (x >= 0) and (x <= byte.MaxValue) and (x in b)); 
+function operator<(a: set of byte; b: set of integer); extensionmethod 
+  := (a.Count < b.Count) and a.All(x -> x in b);
+function operator<(a: set of integer; b: set of int64); extensionmethod 
+  := (a.Count < b.Count) and a.All(x -> x in b);
+function operator<(a: set of int64; b: set of integer); extensionmethod 
+  := (a.Count < b.Count) and a.All(x -> (x >= 0) and (x <= byte.MaxValue) and (x in b));
+ 
+// set < array
+function operator<(a: array of integer; b: set of byte); extensionmethod 
+  := a.ToSet < b; 
+function operator<(a: set of byte; b: array of integer); extensionmethod 
+  := a < b.ToSet;
+function operator<(a: array of integer; b: set of int64); extensionmethod 
+  := a.ToSet < b;
+function operator<(a: set of int64; b: array of integer); extensionmethod 
+  := a < b.ToSet;
+function operator<(a: array of integer; b: set of integer); extensionmethod 
+  := (a.Count < b.Count) and a.All(x -> x in b); 
+function operator<(a: set of integer; b: array of integer); extensionmethod 
+  := (a.Count < b.Count) and a.All(x -> x in b);
+
+// operator> для set
+function operator>(a: set of integer; b: set of byte); extensionmethod 
+  := b < a;
+function operator>(a: set of byte; b: set of integer); extensionmethod 
+  := b < a;
+function operator>(a: set of integer; b: set of int64); extensionmethod 
+  := b < a;
+function operator>(a: set of int64; b: set of integer); extensionmethod 
+  := b < a;
+  
+// set > array
+function operator>(a: array of integer; b: set of byte); extensionmethod 
+  := b < a;
+function operator>(a: set of byte; b: array of integer); extensionmethod 
+  := b < a;
+function operator>(a: array of integer; b: set of int64); extensionmethod 
+  := b < a;
+function operator>(a: set of int64; b: array of integer); extensionmethod 
+  := b < a;
+function operator>(a: array of integer; b: set of integer); extensionmethod 
+  := b < a;
+function operator>(a: set of integer; b: array of integer); extensionmethod 
+  := b < a;
+
+// operator<= для set - доделать!!!
+function operator<=(a: set of integer; b: set of byte); extensionmethod 
+  := (a.Count <= b.Count) and a.All(x -> (x >= 0) and (x <= byte.MaxValue) and (x in b));
+function operator<=(a: set of byte; b: set of integer); extensionmethod 
+  := (a.Count <= b.Count) and a.All(x -> x in b);
+function operator<=(a: set of int64; b: set of integer); extensionmethod 
+  := (a.Count <= b.Count) and a.All(x -> x in b);
+function operator<=(a: set of integer; b: set of int64); extensionmethod 
+  := (a.Count <= b.Count) and a.All(x -> (x >= 0) and (x <= byte.MaxValue) and (x in b));
+
+// set <= array
+function operator<=(a: array of integer; b: set of byte); extensionmethod 
+  := a.ToSet <= b; 
+function operator<=(a: set of byte; b: array of integer); extensionmethod 
+  := a <= b.ToSet;
+function operator<=(a: array of integer; b: set of int64); extensionmethod 
+  := a.ToSet <= b;
+function operator<=(a: set of int64; b: array of integer); extensionmethod 
+  := a <= b.ToSet;
+function operator<=(a: array of integer; b: set of integer); extensionmethod 
+  := (a.Count <= b.Count) and a.All(x -> x in b); 
+function operator<=(a: set of integer; b: array of integer); extensionmethod 
+  := (a.Count <= b.Count) and a.All(x -> x in b);
+
+
+// operator>= для set
+function operator>=(a: set of integer; b: set of byte); extensionmethod 
+  := b <= a;
+function operator>=(a: set of byte; b: set of integer); extensionmethod 
+  := b <= a;
+function operator>=(a: set of int64; b: set of integer); extensionmethod 
+  := b <= a;
+function operator>=(a: set of integer; b: set of int64); extensionmethod 
+  := b <= a;
+  
+// set >= array
+function operator>=(a: array of integer; b: set of byte); extensionmethod 
+  := b <= a;
+function operator>=(a: set of byte; b: array of integer); extensionmethod 
+  := b <= a;
+function operator>=(a: array of integer; b: set of int64); extensionmethod 
+  := b <= a;
+function operator>=(a: set of int64; b: array of integer); extensionmethod 
+  := b <= a;
+function operator>=(a: array of integer; b: set of integer); extensionmethod 
+  := b <= a;
+function operator>=(a: set of integer; b: array of integer); extensionmethod 
+  := b <= a;
+  
+
+// set *= set
+procedure operator*=(a: set of byte; b: set of integer); extensionmethod 
+  := a *= NewSet&<byte>(b);
+procedure operator*=(a: set of word; b: set of integer); extensionmethod 
+  := a *= NewSet&<word>(b);
+procedure operator*=(a: set of shortint; b: set of integer); extensionmethod 
+  := a *= NewSet&<shortint>(b);
+procedure operator*=(a: set of smallint; b: set of integer); extensionmethod 
+  := a *= NewSet&<smallint>(b);
+procedure operator*=(a: set of longword; b: set of integer); extensionmethod 
+  := a *= NewSet&<longword>(b);
+procedure operator*=(a: set of int64; b: set of integer); extensionmethod 
+  := a *= NewSet&<int64>(b);
+procedure operator*=(a: set of uint64; b: set of integer); extensionmethod 
+  := a *= NewSet&<uint64>(b);
+
+// set *= array
+procedure operator*=(a: set of byte; b: array of integer); extensionmethod 
+  := a *= NewSet&<byte>(b);
+procedure operator*=(a: set of word; b: array of integer); extensionmethod 
+  := a *= NewSet&<word>(b);
+procedure operator*=(a: set of shortint; b: array of integer); extensionmethod 
+  := a *= NewSet&<shortint>(b);
+procedure operator*=(a: set of smallint; b: array of integer); extensionmethod 
+  := a *= NewSet&<smallint>(b);
+procedure operator*=(a: set of longword; b: array of integer); extensionmethod 
+  := a *= NewSet&<longword>(b);
+procedure operator*=(a: set of int64; b: array of integer); extensionmethod 
+  := a *= NewSet&<int64>(b);
+procedure operator*=(a: set of uint64; b: array of integer); extensionmethod 
+  := a *= NewSet&<uint64>(b);
+
+
+// set += set
+procedure operator+=(a: set of byte; b: set of integer); extensionmethod 
+  := a += NewSet&<byte>(b);
+procedure operator+=(a: set of word; b: set of integer); extensionmethod 
+  := a += NewSet&<word>(b);
+procedure operator+=(a: set of shortint; b: set of integer); extensionmethod 
+  := a += NewSet&<shortint>(b);
+procedure operator+=(a: set of smallint; b: set of integer); extensionmethod 
+  := a += NewSet&<smallint>(b);
+procedure operator+=(a: set of longword; b: set of integer); extensionmethod 
+  := a += NewSet&<longword>(b);
+procedure operator+=(a: set of int64; b: set of integer); extensionmethod 
+  := a += NewSet&<int64>(b);
+procedure operator+=(a: set of uint64; b: set of integer); extensionmethod 
+  := a += NewSet&<uint64>(b);
+
+// set += array
+procedure operator+=(a: set of byte; b: array of integer); extensionmethod 
+  := a += NewSet&<byte>(b);
+procedure operator+=(a: set of word; b: array of integer); extensionmethod 
+  := a += NewSet&<word>(b);
+procedure operator+=(a: set of shortint; b: array of integer); extensionmethod 
+  := a += NewSet&<shortint>(b);
+procedure operator+=(a: set of smallint; b: array of integer); extensionmethod 
+  := a += NewSet&<smallint>(b);
+procedure operator+=(a: set of longword; b: array of integer); extensionmethod 
+  := a += NewSet&<longword>(b);
+procedure operator+=(a: set of int64; b: array of integer); extensionmethod 
+  := a += NewSet&<int64>(b);
+procedure operator+=(a: set of uint64; b: array of integer); extensionmethod 
+  := a += NewSet&<uint64>(b);
+
+// set -= set
+procedure operator-=(a: set of byte; b: set of integer); extensionmethod 
+  := a -= NewSet&<byte>(b);
+procedure operator-=(a: set of word; b: set of integer); extensionmethod 
+  := a -= NewSet&<word>(b);
+procedure operator-=(a: set of shortint; b: set of integer); extensionmethod 
+  := a -= NewSet&<shortint>(b);
+procedure operator-=(a: set of smallint; b: set of integer); extensionmethod 
+  := a -= NewSet&<smallint>(b);
+procedure operator-=(a: set of longword; b: set of integer); extensionmethod 
+  := a -= NewSet&<longword>(b);
+procedure operator-=(a: set of int64; b: set of integer); extensionmethod 
+  := a -= NewSet&<int64>(b);
+procedure operator-=(a: set of uint64; b: set of integer); extensionmethod 
+  := a -= NewSet&<uint64>(b);
+
+// set -= array
+procedure operator-=(a: set of byte; b: array of integer); extensionmethod 
+  := a -= NewSet&<byte>(b);
+procedure operator-=(a: set of word; b: array of integer); extensionmethod 
+  := a -= NewSet&<word>(b);
+procedure operator-=(a: set of shortint; b: array of integer); extensionmethod 
+  := a -= NewSet&<shortint>(b);
+procedure operator-=(a: set of smallint; b: array of integer); extensionmethod 
+  := a -= NewSet&<smallint>(b);
+procedure operator-=(a: set of longword; b: array of integer); extensionmethod 
+  := a -= NewSet&<longword>(b);
+procedure operator-=(a: set of int64; b: array of integer); extensionmethod 
+  := a -= NewSet&<int64>(b);
+procedure operator-=(a: set of uint64; b: array of integer); extensionmethod 
+  := a -= NewSet&<uint64>(b);
+
+// Один из операндов должен быть set of integer (array of integer)
+// operator* sets
+function operator*(a: set of integer; b: set of byte): set of integer; extensionmethod;
 begin
-  foreach var x in n._hs do
-    Result._hs.Add(x);
+  Result := a;
+  Result.hs.IntersectWith(b.Select(x -> integer(x)));
 end;
 
-function operator implicit(n: NewSet<integer>): NewSet<uint64>; extensionmethod;
+function operator*(a: set of byte; b: set of integer): set of integer; extensionmethod
+  := b * a;
+  
+function operator*(a: set of integer; b: set of int64): set of int64; extensionmethod;
 begin
-  foreach var x in n._hs do
-    Result._hs.Add(x);
+  Result := b;
+  Result.hs.IntersectWith(a.Select(x -> int64(x)));
 end;
 
-function NSToInts(ns: NewSet<byte>) := ns._hs.Select(x -> integer(x));
-function NSToInts(ns: NewSet<int64>) := ns._hs.Select(x -> integer(x));
-function NSToInts64(ns: NewSet<byte>) := ns._hs.Select(x -> int64(x));
-function NSToInts64(ns: NewSet<integer>) := ns._hs.Select(x -> int64(x));
-function NSToBytes(ns: NewSet<integer>) := ns._hs.Select(x -> byte(x));
-function NSToBytes(ns: NewSet<int64>) := ns._hs.Select(x -> byte(x));
+function operator*(a: set of int64; b: set of integer): set of int64; extensionmethod
+  := b * a;
 
-// и для массивов столько же
-function operator=(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.SetEquals(NSToInts(b));
-function operator=(a: NewSet<byte>; b: NewSet<integer>): boolean; extensionmethod := b._hs.SetEquals(NSToInts(a));
-function operator=(a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.SetEquals(NSToInts64(b));
-function operator=(a: NewSet<integer>; b: NewSet<int64>): boolean; extensionmethod := b._hs.SetEquals(NSToInts64(a));
-
-function operator=(a: NewSet<integer>; b: array of byte); extensionmethod := a._hs.SetEquals(b.Select(x -> integer(x)));
-function operator=(a: array of byte; b: NewSet<integer>): boolean; extensionmethod := b = a;
-function operator=(a: array of int64; b: NewSet<integer>); extensionmethod := a.ToHashSet.SetEquals(NSToInts64(b));
-function operator=(a: NewSet<integer>; b: array of int64): boolean; extensionmethod := b = a;
-
-//function operator=(a: NewSet<int64>; b: NewSet<byte>); extensionmethod := a._hs.SetEquals(NSToInts64(b));
-//function operator=(a: NewSet<byte>; b: NewSet<int64>): boolean; extensionmethod := a = b;
-
-// Следующие функции предназначены для сравнения массива целых со множеством. 
-// Массив должен интерпретироваться как множество
-// Не пойму - что использовать - эту строку или предыдущие. Все типы массивов сравнивать с NewSet<integer>
-// или наоборот все типы множеств - с array of integer 
-function operator=(a: NewSet<byte>; b: array of integer): boolean; extensionmethod := NSToInts(a).ToHashSet.SetEquals(b);
-
-function operator<>(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := not(a = b);
-function operator<>(a: NewSet<byte>; b: NewSet<integer>); extensionmethod := not(a = b);
-function operator<>(a: NewSet<int64>; b: NewSet<integer>); extensionmethod := not(a = b);
-function operator<>(a: NewSet<integer>; b: NewSet<int64>); extensionmethod := not(a = b);
-//function operator<>(a: NewSet<int64>; b: NewSet<byte>); extensionmethod := not(a = b);
-//function operator<>(a: NewSet<byte>; b: NewSet<int64>); extensionmethod := not(a = b);
-
-function operator<(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.IsProperSubsetOf(NSToInts(b));
-function operator<(a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.IsProperSubsetOf(NSToInts64(b));
-//function operator<(a: NewSet<int64>; b: NewSet<byte>); extensionmethod := a._hs.IsProperSubsetOf(NSToInts64(b));
-
-function operator>(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.IsProperSupersetOf(NSToInts(b));
-function operator>(a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.IsProperSupersetOf(NSToInts64(b));
-//function operator>(a: NewSet<int64>; b: NewSet<byte>); extensionmethod := a._hs.IsProperSupersetOf(NSToInts64(b));
-
-function operator<(a: NewSet<byte>; b: NewSet<integer>); extensionmethod := b > a;
-function operator<(a: NewSet<integer>; b: NewSet<int64>); extensionmethod := b > a;
-//function operator<(a: NewSet<byte>; b: NewSet<int64>); extensionmethod := b > a;
-
-function operator>(a: NewSet<byte>; b: NewSet<integer>); extensionmethod := b < a;
-function operator>(a: NewSet<integer>; b: NewSet<int64>); extensionmethod := b < a;
-//function operator>(a: NewSet<byte>; b: NewSet<int64>); extensionmethod := b < a;
-
-function operator<=(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.IsSubsetOf(NSToInts(b));
-function operator<=(a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.IsSubsetOf(NSToInts64(b));
-//function operator<=(a: NewSet<int64>; b: NewSet<byte>); extensionmethod := a._hs.IsSubsetOf(NSToInts64(b));
-
-function operator>=(a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.IsSupersetOf(NSToInts(b));
-function operator>=(a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.IsSupersetOf(NSToInts64(b));
-//function operator>=(a: NewSet<int64>; b: NewSet<byte>); extensionmethod := a._hs.IsSupersetOf(NSToInts64(b));
-
-function operator<=(a: NewSet<byte>; b: NewSet<integer>); extensionmethod := b >= a;
-function operator<=(a: NewSet<integer>; b: NewSet<int64>); extensionmethod := b >= a;
-//function operator<(a: NewSet<byte>; b: NewSet<int64>); extensionmethod := b >= a;
-
-function operator>=(a: NewSet<byte>; b: NewSet<integer>); extensionmethod := b <= a;
-function operator>=(a: NewSet<integer>; b: NewSet<int64>); extensionmethod := b <= a;
-//function operator>(a: NewSet<byte>; b: NewSet<int64>); extensionmethod := b <= a;
-
-procedure operator*=(var a: NewSet<byte>; b: NewSet<integer>); extensionmethod := a._hs.IntersectWith(NSToBytes(b));
-procedure operator*=(var a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.IntersectWith(NSToInts(b));
-procedure operator*=(var a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.IntersectWith(NSToInts64(b));
-procedure operator*=(var a: NewSet<integer>; b: NewSet<int64>); extensionmethod := a._hs.IntersectWith(NSToInts(b));
-
-//procedure operator*=(var a: NewSet<byte>; b: NewSet<int64>); extensionmethod := a._hs.IntersectWith(NSToBytes(b));
-//procedure operator*=(var a: NewSet<int64>; b: NewSet<byte>); extensionmethod := a._hs.IntersectWith(NSToInts64(b));
-procedure operator+=(var a: NewSet<byte>; b: NewSet<integer>); extensionmethod := a._hs.UnionWith(NSToBytes(b));
-procedure operator+=(var a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.UnionWith(NSToInts(b));
-procedure operator+=(var a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.UnionWith(NSToInts64(b));
-procedure operator+=(var a: NewSet<integer>; b: NewSet<int64>); extensionmethod := a._hs.UnionWith(NSToInts(b));
-procedure operator+=(var a: NewSet<byte>; b: NewSet<int64>); extensionmethod := a._hs.UnionWith(NSToBytes(b));
-procedure operator+=(var a: NewSet<int64>; b: NewSet<byte>); extensionmethod := a._hs.UnionWith(NSToInts64(b));
-
-procedure operator-=(var a: NewSet<byte>; b: NewSet<integer>); extensionmethod := a._hs.ExceptWith(NSToBytes(b));
-procedure operator-=(var a: NewSet<integer>; b: NewSet<byte>); extensionmethod := a._hs.ExceptWith(NSToInts(b));
-procedure operator-=(var a: NewSet<int64>; b: NewSet<integer>); extensionmethod := a._hs.ExceptWith(NSToInts64(b));
-procedure operator-=(var a: NewSet<integer>; b: NewSet<int64>); extensionmethod := a._hs.ExceptWith(NSToInts(b));
-
-
-// Нет операции между set of byte и set of int64. Один из операндов должен быть set of integer
-function operator*(a: NewSet<integer>; b: NewSet<byte>): NewSet<integer>; extensionmethod;
+// set * array
+function operator*(a: array of integer; b: set of byte): set of integer; extensionmethod;
 begin
-  Result += a; Result *= b
+  Result.hs.UnionWith(a); 
+  Result.hs.IntersectWith(b.Select(x -> integer(x)));
 end;
 
-function operator*(a: NewSet<byte>; b: NewSet<integer>): NewSet<integer>; extensionmethod;
+function operator*(a: set of byte; b: array of integer): set of integer; extensionmethod
+  := b * a;
+  
+function operator*(a: array of integer; b: set of int64): set of int64; extensionmethod;
 begin
-  Result += a; Result *= b
+  Result.hs.UnionWith(b);
+  Result.hs.IntersectWith(a.Select(x -> int64(x)));
 end;
 
-function operator*(a: NewSet<integer>; b: NewSet<int64>): NewSet<int64>; extensionmethod;
+function operator*(a: set of int64; b: array of integer): set of int64; extensionmethod
+  := b * a;
+
+function operator*(a: array of integer; b: set of integer): set of integer; extensionmethod;
 begin
-  Result += a; Result *= b
+  Result.hs.UnionWith(a); 
+  Result.hs.IntersectWith(b);
 end;
 
-function operator*(a: NewSet<int64>; b: NewSet<integer>): NewSet<int64>; extensionmethod;
+function operator*(a: set of integer; b: array of integer): set of integer; extensionmethod
+  := b * a;
+  
+
+// operator+ sets
+function operator+(a: set of integer; b: set of byte): set of integer; extensionmethod;
 begin
-  Result += a; Result *= b
+  Result.hs.UnionWith(a); 
+  Result.hs.UnionWith(b.Select(x -> integer(x)));
 end;
-//-----
 
-function operator+(a: NewSet<integer>; b: NewSet<byte>): NewSet<integer>; extensionmethod;
+function operator+(a: set of byte; b: set of integer): set of integer; extensionmethod
+  := b + a;
+
+function operator+(a: set of integer; b: set of int64): set of int64; extensionmethod;
 begin
-  Result += a; Result += b
+  Result.hs.UnionWith(b);
+  Result.hs.UnionWith(a.Select(x -> int64(x)));
 end;
 
-function operator+(a: NewSet<byte>; b: NewSet<integer>): NewSet<integer>; extensionmethod;
+function operator+(a: set of int64; b: set of integer): set of int64; extensionmethod
+  := b + a;
+
+// set + array
+function operator+(a: array of integer; b: set of byte): set of integer; extensionmethod;
 begin
-  Result += a; Result += b
+  Result.hs.UnionWith(a); 
+  Result.hs.UnionWith(b.Select(x -> integer(x)));
 end;
 
-function operator+(a: NewSet<integer>; b: NewSet<int64>): NewSet<int64>; extensionmethod;
+function operator+(a: set of byte; b: array of integer): set of integer; extensionmethod
+  := b + a;
+
+function operator+(a: array of integer; b: set of int64): set of int64; extensionmethod;
 begin
-  Result += a; Result += b
+  Result.hs.UnionWith(b);
+  Result.hs.UnionWith(a.Select(x -> int64(x)));
 end;
 
-function operator+(a: NewSet<int64>; b: NewSet<integer>): NewSet<int64>; extensionmethod;
+function operator+(a: set of int64; b: array of integer): set of int64; extensionmethod
+  := b + a;
+
+function operator+(a: set of integer; b: array of integer): set of integer; extensionmethod;
 begin
-  Result += a; Result += b
+  Result.hs.UnionWith(a);
+  Result.hs.UnionWith(b);
 end;
 
-//-----
-function operator-(a: NewSet<integer>; b: NewSet<byte>): NewSet<integer>; extensionmethod;
+function operator+(a: array of integer; b: set of integer): set of integer; extensionmethod
+  := b + a;
+
+
+// operator+ для array of num + [1,2,3]
+function operator+(a: array of byte; b: array of integer): array of integer; extensionmethod 
+  := a.ConvertAll(x -> integer(x)) + b;
+function operator+(a: array of integer; b: array of byte): array of integer; extensionmethod 
+  := b + a;
+function operator+(a: array of shortint; b: array of integer): array of integer; extensionmethod 
+  := a.ConvertAll(x -> integer(x)) + b;
+function operator+(a: array of integer; b: array of shortint): array of integer; extensionmethod 
+  := b + a;
+function operator+(a: array of smallint; b: array of integer): array of integer; extensionmethod 
+  := a.ConvertAll(x -> integer(x)) + b;
+function operator+(a: array of integer; b: array of smallint): array of integer; extensionmethod 
+  := b + a;
+function operator+(a: array of word; b: array of integer): array of integer; extensionmethod 
+  := a.ConvertAll(x -> integer(x)) + b;
+function operator+(a: array of integer; b: array of word): array of integer; extensionmethod 
+  := b + a;
+function operator+(a: array of longword; b: array of integer): array of int64; extensionmethod 
+  := a.ConvertAll(x -> int64(x)) + b.ConvertAll(x -> int64(x));
+function operator+(a: array of integer; b: array of longword): array of int64; extensionmethod 
+  := b + a;
+function operator+(a: array of int64; b: array of integer): array of int64; extensionmethod 
+  := a + b.ConvertAll(x -> int64(x));
+function operator+(a: array of integer; b: array of int64): array of int64; extensionmethod 
+  := b + a;
+function operator+(a: array of uint64; b: array of integer): array of uint64; extensionmethod;
 begin
-  Result += a; Result -= b
-end;
+  if b.Any(x -> x < 0) then
+    raise new System.ArgumentException(GetTranslation(OUT_OF_TYPE_RANGE_IN_ARR_OPERATION));
+  Result := a + b.ConvertAll(x -> uint64(x));
+end;  
+function operator+(a: array of integer; b: array of uint64): array of uint64; extensionmethod 
+  := b + a;
 
-function operator-(a: NewSet<byte>; b: NewSet<integer>): NewSet<integer>; extensionmethod;
+
+// operator- sets
+function operator-(a: set of integer; b: set of byte): set of integer; extensionmethod;
 begin
-  Result += a; Result -= b
+  Result.hs.UnionWith(a); 
+  Result.hs.ExceptWith(b.Select(x -> integer(x)));
 end;
 
-function operator-(a: NewSet<integer>; b: NewSet<int64>): NewSet<int64>; extensionmethod;
+function operator-(a: set of byte; b: set of integer): set of integer; extensionmethod;
 begin
-  Result += a; Result -= b
+  Result.hs.UnionWith(a.Select(x -> integer(x))); 
+  Result.hs.ExceptWith(b);
 end;
 
-function operator-(a: NewSet<int64>; b: NewSet<integer>): NewSet<int64>; extensionmethod;
+function operator-(a: set of integer; b: set of int64): set of int64; extensionmethod;
 begin
-  Result += a; Result -= b
+  Result.hs.UnionWith(a.Select(x -> int64(x))); 
+  Result.hs.ExceptWith(b);
 end;
 
+function operator-(a: set of int64; b: set of integer): set of int64; extensionmethod;
+begin
+  Result.hs.UnionWith(a); 
+  Result.hs.ExceptWith(b.Select(x -> int64(x)));
+end;
 
+// set - array
+function operator-(a: array of integer; b: set of byte): set of integer; extensionmethod;
+begin
+  Result.hs.UnionWith(a); 
+  Result.hs.ExceptWith(b.Select(x -> integer(x)));
+end;
+
+function operator-(a: set of byte; b: array of integer): set of integer; extensionmethod;
+begin
+  Result.hs.UnionWith(a.Select(x -> integer(x))); 
+  Result.hs.ExceptWith(b);
+end;
+
+function operator-(a: array of integer; b: set of int64): set of int64; extensionmethod;
+begin
+  Result.hs.UnionWith(a.Select(x -> int64(x))); 
+  Result.hs.ExceptWith(b);
+end;
+
+function operator-(a: set of int64; b: array of integer): set of int64; extensionmethod;
+begin
+  Result.hs.UnionWith(a); 
+  Result.hs.ExceptWith(b.Select(x -> int64(x)));
+end;
+
+function operator-(a: array of integer; b: set of integer): set of integer; extensionmethod;
+begin
+  Result.hs.UnionWith(a); 
+  Result.hs.ExceptWith(b);
+end;
+
+function operator-(a: set of integer; b: array of integer): set of integer; extensionmethod;
+begin
+  Result.hs.UnionWith(a); 
+  Result.hs.ExceptWith(b);
+end;
+
+{function operator in(x: byte; a: array of integer): boolean; extensionmethod
+  := a.Contains(integer(x));
+function operator in(x: word; a: array of integer): boolean; extensionmethod
+  := a.Contains(integer(x));
+function operator in(x: shortint; a: array of integer): boolean; extensionmethod
+  := a.Contains(integer(x));
+function operator in(x: smallint; a: array of integer): boolean; extensionmethod
+  := a.Contains(integer(x));
+function operator in(x: longword; a: array of integer): boolean; extensionmethod
+  := a.Select(x -> int64(x)).Contains(int64(x));
+function operator in(x: int64; a: array of integer): boolean; extensionmethod
+  := a.Select(x -> int64(x)).Contains(x);
+function operator in(x: uint64; a: array of integer): boolean; extensionmethod;
+begin
+  if x > integer.MaxValue then
+    Result := False
+  else Result := a.Contains(integer(x));
+end;}
+
+function operator in(x: int64; a: array of byte): boolean; extensionmethod
+  := (x >= byte.MinValue) and (x <= byte.MaxValue) and a.Contains(byte(x));
+function operator in(x: int64; a: array of shortint): boolean; extensionmethod
+  := (x >= shortint.MinValue) and (x <= shortint.MaxValue) and a.Contains(shortint(x));
+function operator in(x: int64; a: array of smallint): boolean; extensionmethod
+  := (x >= smallint.MinValue) and (x <= smallint.MaxValue) and a.Contains(smallint(x));
+function operator in(x: int64; a: array of word): boolean; extensionmethod
+  := (x >= word.MinValue) and (x <= word.MaxValue) and a.Contains(word(x));
+function operator in(x: int64; a: array of longword): boolean; extensionmethod
+  := (x >= longword.MinValue) and (x <= longword.MaxValue) and a.Contains(longword(x));
+function operator in(x: int64; a: array of integer): boolean; extensionmethod
+  := (x >= integer.MinValue) and (x <= integer.MaxValue) and a.Contains(integer(x));
+function operator in(x: int64; a: array of uint64): boolean; extensionmethod
+  := (x >= uint64.MinValue) and a.Contains(uint64(x));
+
+function operator in(x: byte; a: array of byte): boolean; extensionmethod := int64(x) in a;
+function operator in(x: byte; a: array of shortint): boolean; extensionmethod := int64(x) in a;
+function operator in(x: byte; a: array of smallint): boolean; extensionmethod := int64(x) in a;
+function operator in(x: byte; a: array of word): boolean; extensionmethod := int64(x) in a;
+function operator in(x: byte; a: array of longword): boolean; extensionmethod := int64(x) in a;
+function operator in(x: byte; a: array of integer): boolean; extensionmethod := int64(x) in a;
+function operator in(x: byte; a: array of int64): boolean; extensionmethod := int64(x) in a;
+function operator in(x: byte; a: array of uint64): boolean; extensionmethod := int64(x) in a;
+
+function operator in(x: shortint; a: array of byte): boolean; extensionmethod := int64(x) in a;
+function operator in(x: shortint; a: array of shortint): boolean; extensionmethod := int64(x) in a;
+function operator in(x: shortint; a: array of smallint): boolean; extensionmethod := int64(x) in a;
+function operator in(x: shortint; a: array of word): boolean; extensionmethod := int64(x) in a;
+function operator in(x: shortint; a: array of longword): boolean; extensionmethod := int64(x) in a;
+function operator in(x: shortint; a: array of integer): boolean; extensionmethod := int64(x) in a;
+function operator in(x: shortint; a: array of int64): boolean; extensionmethod := int64(x) in a;
+function operator in(x: shortint; a: array of uint64): boolean; extensionmethod := int64(x) in a;
+
+function operator in(x: smallint; a: array of byte): boolean; extensionmethod := int64(x) in a;
+function operator in(x: smallint; a: array of shortint): boolean; extensionmethod := int64(x) in a;
+function operator in(x: smallint; a: array of smallint): boolean; extensionmethod := int64(x) in a;
+function operator in(x: smallint; a: array of word): boolean; extensionmethod := int64(x) in a;
+function operator in(x: smallint; a: array of longword): boolean; extensionmethod := int64(x) in a;
+function operator in(x: smallint; a: array of integer): boolean; extensionmethod := int64(x) in a;
+function operator in(x: smallint; a: array of int64): boolean; extensionmethod := int64(x) in a;
+function operator in(x: smallint; a: array of uint64): boolean; extensionmethod := int64(x) in a;
+
+function operator in(x: word; a: array of byte): boolean; extensionmethod := int64(x) in a;
+function operator in(x: word; a: array of shortint): boolean; extensionmethod := int64(x) in a;
+function operator in(x: word; a: array of smallint): boolean; extensionmethod := int64(x) in a;
+function operator in(x: word; a: array of word): boolean; extensionmethod := int64(x) in a;
+function operator in(x: word; a: array of longword): boolean; extensionmethod := int64(x) in a;
+function operator in(x: word; a: array of integer): boolean; extensionmethod := int64(x) in a;
+function operator in(x: word; a: array of int64): boolean; extensionmethod := int64(x) in a;
+function operator in(x: word; a: array of uint64): boolean; extensionmethod := int64(x) in a;
+
+function operator in(x: longword; a: array of byte): boolean; extensionmethod := int64(x) in a;
+function operator in(x: longword; a: array of shortint): boolean; extensionmethod := int64(x) in a;
+function operator in(x: longword; a: array of smallint): boolean; extensionmethod := int64(x) in a;
+function operator in(x: longword; a: array of word): boolean; extensionmethod := int64(x) in a;
+function operator in(x: longword; a: array of longword): boolean; extensionmethod := int64(x) in a;
+function operator in(x: longword; a: array of integer): boolean; extensionmethod := int64(x) in a;
+function operator in(x: longword; a: array of int64): boolean; extensionmethod := int64(x) in a;
+function operator in(x: longword; a: array of uint64): boolean; extensionmethod := int64(x) in a;
+
+function operator in(x: integer; a: array of byte): boolean; extensionmethod := int64(x) in a;
+function operator in(x: integer; a: array of shortint): boolean; extensionmethod := int64(x) in a;
+function operator in(x: integer; a: array of smallint): boolean; extensionmethod := int64(x) in a;
+function operator in(x: integer; a: array of word): boolean; extensionmethod := int64(x) in a;
+function operator in(x: integer; a: array of longword): boolean; extensionmethod := int64(x) in a;
+function operator in(x: integer; a: array of integer): boolean; extensionmethod := int64(x) in a;
+function operator in(x: integer; a: array of int64): boolean; extensionmethod := int64(x) in a;
+function operator in(x: integer; a: array of uint64): boolean; extensionmethod := int64(x) in a;
 
 var __initialized: boolean;
 

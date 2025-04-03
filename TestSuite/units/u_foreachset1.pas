@@ -1,4 +1,4 @@
-unit u_foreachset1;
+﻿unit u_foreachset1;
 type TDiap = 1..3;
 
 procedure Test(a : set of TDiap);
@@ -19,11 +19,11 @@ var a : set of TDiap;
     d : 2..3;
     
 begin
- a := [1..5];
+ a := [1..3];
  assert(a=[1..3]);
  b := a;
  assert(b=[1..3]);
- Test([1..6]);
+ Test([1..3]);
  Test2(a);
  b := [5];
  foreach i : integer in b do

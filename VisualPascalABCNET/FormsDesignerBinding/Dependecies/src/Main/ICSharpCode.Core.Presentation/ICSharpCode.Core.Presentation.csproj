@@ -1,122 +1,38 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <ProjectGuid>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</ProjectGuid>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <OutputType>Library</OutputType>
-    <RootNamespace>ICSharpCode.Core.Presentation</RootNamespace>
-    <AssemblyName>ICSharpCode.Core.Presentation</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\3.0\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
+    <TargetFramework>net40</TargetFramework>
+
+    <UseWPF>true</UseWPF>
+
     <OutputPath>..\..\..\bin\</OutputPath>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-    <NoStdLib>False</NoStdLib>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  
+  <!-- вероятно секцию можно удалить -->
+  <PropertyGroup>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
-    <RunCodeAnalysis>False</RunCodeAnalysis>
-    <CodeAnalysisRules>-Microsoft.Performance#CA1810</CodeAnalysisRules>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>Full</DebugType>
-    <Optimize>False</Optimize>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>False</DebugSymbols>
-    <DebugType>None</DebugType>
-    <Optimize>True</Optimize>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <DefineConstants>TRACE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <BaseAddress>4194304</BaseAddress>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <FileAlignment>4096</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <UseVSHostingProcess>true</UseVSHostingProcess>
-  </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
-  <ItemGroup>
-    <Reference Include="PresentationCore">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="PresentationFramework">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsFormsIntegration" />
-  </ItemGroup>
+  
   <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ExtendedPopup.cs" />
-    <Compile Include="GlobalStyles.cs" />
-    <Compile Include="Menu\MenuCheckBox.cs" />
-    <Compile Include="NotBoolConverter.cs" />
-    <Compile Include="RestrictDesiredSize.cs" />
-    <Compile Include="SortableGridViewColumn.cs" />
-    <Compile Include="ConditionalSeparator.cs" />
-    <Compile Include="DropDownButton.cs" />
-    <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="GetBitmapExtension.cs" />
-    <Compile Include="IOptionBindingContainer.cs" />
-    <Compile Include="IStatusUpdate.cs" />
-    <Compile Include="LanguageChangeWeakEventManager.cs">
-      <DependentUpon>IStatusUpdate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="LocalizeExtension.cs" />
-    <Compile Include="Menu\IMenuItemBuilder.cs" />
-    <Compile Include="Menu\MenuCommand.cs" />
-    <Compile Include="Menu\MenuService.cs" />
-    <Compile Include="Menu\CoreMenuItem.cs" />
-    <Compile Include="NativeMethods.cs" />
-    <Compile Include="OptionBinding.cs" />
-    <Compile Include="PresentationResourceService.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SplitButton.cs" />
-    <Compile Include="StringParseExtension.cs" />
-    <Compile Include="ToolBar\ToolBarButton.cs" />
-    <Compile Include="ToolBar\ToolBarCheckBox.cs" />
-    <Compile Include="ToolBar\ToolBarComboBox.cs" />
-    <Compile Include="ToolBar\ToolBarDropDownButton.cs" />
-    <Compile Include="ToolBar\ToolBarService.cs" />
-    <Compile Include="ToolBar\ToolBarSplitButton.cs" />
+    
     <CodeAnalysisDictionary Include="Properties\CodeAnalysisDictionary.xml" />
-    <Compile Include="WpfTreeNavigation.cs" />
   </ItemGroup>
+  
   <ItemGroup>
-    <Page Include="themes\Aero.NormalColor.xaml" />
-    <Page Include="themes\generic.xaml" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
+  
   <ItemGroup>
-    <ProjectReference Include="..\Core\Project\ICSharpCode.Core.csproj">
-      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
-      <Name>ICSharpCode.Core</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\Core\Project\ICSharpCode.Core.csproj" />
   </ItemGroup>
 </Project>

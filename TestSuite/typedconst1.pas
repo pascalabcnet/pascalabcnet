@@ -1,4 +1,4 @@
-type TArr = array[1..3] of integer;
+﻿type TArr = array[1..3] of integer;
      TRec = record a : integer; b : real; end;
      TSet = set of byte;
      
