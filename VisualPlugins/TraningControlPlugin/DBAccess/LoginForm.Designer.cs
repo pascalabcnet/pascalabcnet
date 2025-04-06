@@ -1,4 +1,4 @@
-﻿namespace DBAccessPluginNamespace
+﻿namespace VisualPascalABCPlugins.DBAccess
 {
     partial class LoginForm
     {

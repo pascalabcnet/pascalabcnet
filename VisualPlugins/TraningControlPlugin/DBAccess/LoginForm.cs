@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using VisualPascalABCPlugins;
 
-namespace DBAccessPluginNamespace
+namespace VisualPascalABCPlugins.DBAccess
 {
     public partial class LoginForm : Form
     {
