@@ -41,10 +41,10 @@ begin
   self.AddRange(arr);
 end;
 
-function BinarySearch<T>(self: array of T; item: T): integer; extensionmethod;
+{function BinarySearch<T>(self: array of T; item: T): integer; extensionmethod;
 begin
   Result := System.Array.BinarySearch(self, item);
-end;
+end;}
 
 procedure Test1<T>(self: array[,] of T); extensionmethod;
 begin

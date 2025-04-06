@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DBAccessPluginNamespace
+namespace VisualPascalABCPlugins.DBAccess
 {
     public enum UserTypeEnum {None, Student, Teacher, Admin };
     

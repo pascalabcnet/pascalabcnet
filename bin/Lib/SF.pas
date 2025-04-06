@@ -319,11 +319,6 @@ function Cart<T, T1>(Self: sequence of T; b: sequence of T1): sequence of (T, T1
 /// Возвращает декартово произведение последовательностей, проектируя каждую пару на значение
 function Cart<T, T1, T2>(Self: sequence of T; b: sequence of T1; func: (T,T1)->T2): sequence of T2; extensionmethod 
   := Self.Cartesian(b,func);
-  
- 
-/// Возвращает все сочетания по m элементов
-function Cmb<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod 
-  := Self.Combinations(m);
 
 /// Возвращает все сочетания по m элементов
 function Cmb<T>(Self: sequence of T; m: integer): sequence of array of T; extensionmethod 
