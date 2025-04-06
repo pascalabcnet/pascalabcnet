@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
-using DBAccessPluginNamespace;
+using VisualPascalABCPlugins.DBAccess;
 
 namespace VisualPascalABCPlugins
 {

@@ -14155,6 +14155,7 @@ namespace PascalABCCompiler.TreeConverter
             common_type_node common_converted_type_tmp = context.converted_type;
             compiled_type_node compiled_converted_type_tmp = context.converted_compiled_type;
             common_namespace_function_node cnfn2 = context.top_function as common_namespace_function_node;
+
             if (cnfn2 != null && cnfn2.ConnectedToType != null)
             {
                 if (cnfn2.ConnectedToType is compiled_type_node)
@@ -14346,8 +14347,20 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
-            bool unique = context.close_function_params(body_exists);
+            common_type_node common_converted_type_tmp = context.converted_type;
+            compiled_type_node compiled_converted_type_tmp = context.converted_compiled_type;
+            common_namespace_function_node cnfn2 = context.top_function as common_namespace_function_node;
 
+            if (cnfn2 != null && cnfn2.ConnectedToType != null)
+            {
+                if (cnfn2.ConnectedToType is compiled_type_node)
+                    context.converted_compiled_type = cnfn2.ConnectedToType as compiled_type_node;
+                else if (cnfn2.ConnectedToType is common_type_node)
+                    context.converted_type = cnfn2.ConnectedToType as common_type_node;
+            }
+            bool unique = context.close_function_params(body_exists);
+            context.converted_compiled_type = compiled_converted_type_tmp;
+            context.converted_type = common_converted_type_tmp;
             if (context.converted_type != null && context.converted_type.IsInterface)
             {
                 if (body_exists)

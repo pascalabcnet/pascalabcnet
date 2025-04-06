@@ -24,4 +24,12 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
         public virtual syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts) { return root; }
     }
+
+    
+    public class DefaultSyntaxTreeConverter : BaseSyntaxTreeConverter
+    {
+        public override string Name => "Default";
+
+        protected override syntax_tree_node ApplyConcreteConversions(syntax_tree_node root) => root;
+    }
 }
