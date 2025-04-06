@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
 using Languages.Facade;
-using Languages.SPython.Frontend.Converters;
-using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.SystemLibrary;
 using PascalABCCompiler.TreeConverter;
-using SPythonSyntaxTreeVisitor;
 
 namespace Languages.SPython
 {
@@ -20,7 +17,7 @@ namespace Languages.SPython
             docParser: null,
 
             syntaxTreeConverters: new List<ISyntaxTreeConverter>() { new Frontend.Converters.StandardSyntaxTreeConverter(), new SyntaxSemanticVisitors.LambdaAnyConverter() },
-            syntaxTreeToSemanticTreeConverter: new SPythonSyntaxTreeVisitor.spython_syntax_tree_visitor(),
+            // syntaxTreeToSemanticTreeConverter: new SPythonSyntaxTreeVisitor.spython_syntax_tree_visitor(LanguageProvider.Instance.MainLanguage.SyntaxTreeToSemanticTreeConverter),
 
             filesExtensions: new string[] { ".pys" },
             caseSensitive: true,

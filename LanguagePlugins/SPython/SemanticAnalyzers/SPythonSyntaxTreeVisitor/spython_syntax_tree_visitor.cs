@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using PascalABCCompiler.SemanticTree;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SystemLibrary;
-using PascalABCCompiler.TreeConverter.TreeConversion;
 using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.Errors;
@@ -13,12 +9,14 @@ using PascalABCCompiler.Errors;
 
 namespace SPythonSyntaxTreeVisitor
 {
+    // Возможно, стоит заменить на декоратор или стратегию вместо наследования EVA
     public class spython_syntax_tree_visitor : syntax_tree_visitor
     {
-        public spython_syntax_tree_visitor(): base()
+        public spython_syntax_tree_visitor() : base(false)
         {
             OnLeave = RunAdditionalChecks;
         }
+
         private void RunAdditionalChecks(syntax_tree_node node)
         {
             switch (node)

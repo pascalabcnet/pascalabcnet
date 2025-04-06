@@ -275,12 +275,12 @@ namespace PascalABCCompiler.TreeConverter
             CapturedVariablesSubstitutionClassGenerator.Reset();
         }
 
-        public syntax_tree_visitor()
+        public syntax_tree_visitor(bool updateCompilationContextInstance = true)
         {
             convertion_data_and_alghoritms = new convertion_data_and_alghoritms(this);
             ret = new returner(this);
-            context = new compilation_context(convertion_data_and_alghoritms, this);
-			contextChanger = new ContextChanger(context);
+            context = new compilation_context(convertion_data_and_alghoritms, this, updateCompilationContextInstance);
+            contextChanger = new ContextChanger(context);
             internal_reset();
         }
 

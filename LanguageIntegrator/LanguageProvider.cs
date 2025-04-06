@@ -25,6 +25,17 @@ namespace Languages.Facade
 
 
         /// <summary>
+        /// Основной язык платформы - PascalABC.NET
+        /// </summary>
+        public ILanguage MainLanguage
+        { 
+            get
+            {
+                return Languages[0];
+            }
+        }
+
+        /// <summary>
         /// Выбор языка по расширению файла - бросает ошибку некорректного расширения
         /// </summary>
         /// <param name="fileName">Имя файла</param>

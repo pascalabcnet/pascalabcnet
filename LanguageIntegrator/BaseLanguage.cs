@@ -19,8 +19,7 @@ namespace Languages.Facade
         /// Все параметры должны быть не null (и не пустым массивом), кроме IDocParser в случае, если он не требуется
         /// </summary>
         public BaseLanguage(string name, string version, string copyright, IParser parser, IDocParser docParser,
-            List<ISyntaxTreeConverter> syntaxTreeConverters, syntax_tree_visitor syntaxTreeToSemanticTreeConverter,
-            string[] filesExtensions, bool caseSensitive, string[] systemUnitNames)
+            List<ISyntaxTreeConverter> syntaxTreeConverters, string[] filesExtensions, bool caseSensitive, string[] systemUnitNames)
         {
             this.Name = name;
             this.Version = version;
@@ -28,7 +27,7 @@ namespace Languages.Facade
             this.Parser = parser;
             this.DocParser = docParser;
             this.SyntaxTreeConverters = syntaxTreeConverters;
-            this.SyntaxTreeToSemanticTreeConverter = syntaxTreeToSemanticTreeConverter;
+            // this.SyntaxTreeToSemanticTreeConverter = syntaxTreeToSemanticTreeConverter;
             this.FilesExtensions = filesExtensions;
             this.CaseSensitive = caseSensitive;
             this.SystemUnitNames = systemUnitNames;

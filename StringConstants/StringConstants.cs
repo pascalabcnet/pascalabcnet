@@ -371,8 +371,25 @@ namespace PascalABCCompiler
             pascalSystemUnitName,
             pascalExtensionsUnitName
         };
-        public const string pascalLanguageDllName = "PascalLanguage.dll";
+        public const string pascalLanguageDllName = "PascalABCLanguageInfo.dll";
         #endregion
+
+        public static readonly string[] platformLibraries = new[] {
+            "avalondock.dll",
+            "codecompletion.dll",
+            "compiler.dll",
+            "compilertools.dll",
+            "debuggercore.dll",
+            "netgenerator.dll",
+            "treeconverter.dll",
+            "pascalabcparser.dll",
+            "syntaxtree.dll",
+            "semantictree.dll",
+            "weifenluo.winformsui.docking.dll",
+            "pluginssupport.dll",
+            "localization.dll",
+            pascalLanguageDllName.ToLower()
+        };
 
         public static readonly string[] netSystemLibraries = new[] { "mscorlib.dll", "System.dll", "System.Core.dll", "System.Numerics.dll", "System.Windows.Forms.dll", "System.Drawing.dll" };
 

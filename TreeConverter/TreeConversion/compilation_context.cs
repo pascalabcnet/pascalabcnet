@@ -254,11 +254,12 @@ namespace PascalABCCompiler.TreeConverter
         internal System.Collections.Hashtable member_decls = new System.Collections.Hashtable();
         internal bool namespace_converted = false;
 
-        public compilation_context(convertion_data_and_alghoritms convertion_data_and_alghoritms, syntax_tree_visitor syntax_tree_visitor)
+        public compilation_context(convertion_data_and_alghoritms convertion_data_and_alghoritms, syntax_tree_visitor syntax_tree_visitor, bool updateInstance)
         {
             this.convertion_data_and_alghoritms = convertion_data_and_alghoritms;
             this.syntax_tree_visitor = syntax_tree_visitor;
-            if (syntax_tree_visitor.GetType() == typeof(syntax_tree_visitor))
+            
+            if (updateInstance)
                 _instance = this;
         }
 		
