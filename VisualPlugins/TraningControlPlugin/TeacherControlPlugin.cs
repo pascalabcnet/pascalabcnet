@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
 using VisualPascalABCPlugins.DBAccess;
+using PascalABCCompiler;
 
 namespace VisualPascalABCPlugins
 {
@@ -41,7 +42,7 @@ namespace VisualPascalABCPlugins
         public VisualPascalABCPlugin_TeacherControlPlugin(IWorkbench Workbench)
         {
             this.Workbench = Workbench;
-            VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
+            VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;            
 
             User = new SiteAccessProvider();
 
@@ -58,8 +59,28 @@ namespace VisualPascalABCPlugins
             // Регистрация обработчика
             this.Workbench.ServiceContainer.RunService.Starting += RunStartingHandler;
             this.Workbench.ServiceContainer.RunService.ChangeArgsBeforeRun += ChangeArgsBeforeRunHandler;
+            VisualEnvironmentCompiler.Compiler.SourceFilesProvider = TeacherSourceFilesProvider;
             //Workbench.ServiceContainer.BuildService.BeforeCompile += BeforeCompileHandler;
         }
+
+        public object TeacherSourceFilesProvider(string FileName, SourceFileOperation FileOperation)
+        {
+            switch (FileOperation)
+            {
+                case SourceFileOperation.GetText:
+                    if (!File.Exists(FileName)) return null;
+                    string Text = FileReader.ReadFileContent(FileName, null);
+                    // Здесь можно дешифровать когда надо
+                    //File.AppendAllText("d:\\aaaa.txt", FileName + "\n");
+                    return Text;
+                case SourceFileOperation.Exists:
+                    return File.Exists(FileName);
+                case SourceFileOperation.GetLastWriteTime:
+                    return File.GetLastWriteTime(FileName);
+            }
+            return null;
+        }
+
         public void Execute()
         {
             loginForm.SiteProvider = User;
