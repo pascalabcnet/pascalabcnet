@@ -317,7 +317,7 @@ namespace CodeCompletion
         protected bool IsHiddenName(string name)
         {
             char c = name[0];
-            return c == '#' || c == '%' || c == '<' || name.Contains("$") || name.Contains("_<>");
+            return c == '!' || c == '#' || c == '%' || c == '<' || name.Contains("$") || name.Contains("_<>");
         }
 
         public void AddExtensionMethod(string name, ProcScope meth, TypeScope ts)

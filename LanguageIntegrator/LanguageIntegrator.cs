@@ -63,7 +63,7 @@ namespace Languages.Integration
                 
                 foreach (var dll in dllFiles)
                 {
-                    if (dll.Name.EndsWith("Language.dll"))
+                    if (dll.Name.EndsWith("LanguageInfo.dll"))
                     {
                         IntegrateLanguageFromAssembly(dll);
                         break;

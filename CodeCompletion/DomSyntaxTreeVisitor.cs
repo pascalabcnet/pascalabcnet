@@ -1,19 +1,20 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using PascalABCCompiler;
+using PascalABCCompiler.Parsers;
+using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.TreeRealization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
-using PascalABCCompiler.SyntaxTree;
+using System.Linq;
 using System.Reflection;
-using PascalABCCompiler;
-using PascalABCCompiler.TreeRealization;
-using PascalABCCompiler.Parsers;
+using System.Text;
 
 namespace CodeCompletion
 {
-	public class SemanticOptions
+    public class SemanticOptions
 	{
 		public bool allow_import_types=true;
 	}
@@ -2711,71 +2712,55 @@ namespace CodeCompletion
         	return CodeCompletionController.comp.FindPCUFileName(UnitName, curr_path, out _, caseSensitiveSearch);
         }
         
-		private void add_system_unit()
-		{
-			string unit_file_name = this.converter.controller.Parser?.LanguageInformation.SystemUnitName;
-			if (unit_file_name == null) return;
-			string unit_name = CodeCompletionNameHelper.FindSourceFileName(unit_file_name, out _);
-            if (unit_name != null)
-            {
-                 DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
-                 if (dc == null)
-                 {
-                 	CodeCompletionController ccc = new CodeCompletionController();
-                 	dc = ccc.CompileAllIfNeed(unit_name, true);
-                 	//dc.CompileAllIfNeed(unit_name);
-                 	if (dc.visitor != null && dc.visitor.entry_scope != null)
-                 	{
-                 		dc.visitor.entry_scope.InitAssemblies();
-                 		entry_scope.AddUsedUnit(dc.visitor.entry_scope);
-                 		add_standart_types(dc.visitor.entry_scope);
-                 		//get_standart_types(dc.stv);
-                 		entry_scope.AddName(StringConstants.pascalSystemUnitName,dc.visitor.entry_scope);
-                 	}
-                 	CodeCompletionController.comp_modules[unit_name] = dc;
-                 	
-                 }
-                 else if (dc.visitor != null && dc.visitor.entry_scope != null)
-                 {
-                 	dc.visitor.entry_scope.InitAssemblies();
-                 	entry_scope.AddUsedUnit(dc.visitor.entry_scope);
-                 	//get_standart_types(dc.stv);
-                 	entry_scope.AddName(StringConstants.pascalSystemUnitName,dc.visitor.entry_scope);
-                 }
-            }
-		}
-
-        private void add_extensions_unit()
+        private void AddUnit(string unitName)
         {
-            string unit_name = CodeCompletionNameHelper.FindSourceFileName(StringConstants.pascalExtensionsUnitName, out _);
-
-            if (unit_name != null)
+            string unitPath = CodeCompletionNameHelper.FindSourceFileName(unitName, out _);
+            if (unitPath != null)
             {
-                DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
+                DomConverter dc = CodeCompletionController.comp_modules[unitPath] as DomConverter;
                 if (dc == null)
                 {
                     CodeCompletionController ccc = new CodeCompletionController();
-                    dc = ccc.CompileAllIfNeed(unit_name, true);
+                    dc = ccc.CompileAllIfNeed(unitPath, true);
+                    //dc.CompileAllIfNeed(unit_name);
                     if (dc.visitor != null && dc.visitor.entry_scope != null)
                     {
                         dc.visitor.entry_scope.InitAssemblies();
                         entry_scope.AddUsedUnit(dc.visitor.entry_scope);
-                        entry_scope.AddName(StringConstants.pascalExtensionsUnitName, dc.visitor.entry_scope);
+                        
+                        // стандартные типы добавляются в PABCSystem  EVA
+                        if (unitName == StringConstants.pascalSystemUnitName)
+                            add_standart_types(dc.visitor.entry_scope);
+                        //get_standart_types(dc.stv);
+                        entry_scope.AddName(unitName, dc.visitor.entry_scope);
                     }
-                    CodeCompletionController.comp_modules[unit_name] = dc;
+                    CodeCompletionController.comp_modules[unitPath] = dc;
+
                 }
                 else if (dc.visitor != null && dc.visitor.entry_scope != null)
                 {
                     dc.visitor.entry_scope.InitAssemblies();
                     entry_scope.AddUsedUnit(dc.visitor.entry_scope);
-                    entry_scope.AddName(StringConstants.pascalExtensionsUnitName, dc.visitor.entry_scope);
+                    //get_standart_types(dc.stv);
+                    entry_scope.AddName(unitName, dc.visitor.entry_scope);
                 }
             }
         }
+        
+        /*
+        private void add_system_unit()
+		{
+            AddUnit(this.converter.controller.Parser?.LanguageInformation.SystemUnitName);
+		}
+
+        private void add_extensions_unit()
+        {
+            AddUnit(StringConstants.pascalExtensionsUnitName);
+        }
+        */
 
         private static void add_unit_ref(unit_or_namespace s, string curr_path,
             SymScope cur_scope, Hashtable ns_cache, bool allow_import_types,
-            ref bool has_system_unit, ref bool has_extensions_unit,
             using_namespace_list unl)
         {
 
@@ -2873,10 +2858,6 @@ namespace CodeCompletion
                             str += ".";
 
                     }
-                    if (string.Compare(str, StringConstants.pascalSystemUnitNamespaceName, true) == 0)
-                        has_system_unit = true;
-                    if (string.Compare(str, StringConstants.pascalExtensionsUnitName, true) == 0)
-                        has_extensions_unit = true;
                     unl.AddElement(new PascalABCCompiler.TreeRealization.using_namespace(str));
                 }
             }
@@ -2990,8 +2971,6 @@ namespace CodeCompletion
                 
 
             Hashtable ns_cache = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
-            bool has_system_unit = false;
-            bool has_extensions_unit = false;
             foreach (string file in included_files)
             {
                 DomConverter dc = CodeCompletionController.comp_modules[file] as DomConverter;
@@ -3004,8 +2983,13 @@ namespace CodeCompletion
                     
                 }
             }
+
+            string[] usedUnitsNames = new string[0];
+
             if (_program_module.used_units != null)
             {
+                usedUnitsNames = _program_module.used_units.units.Select(unit => unit.name.idents[0].name).ToArray();
+
                 unit_scope.uses_source_range = get_location(_program_module.used_units);
 
                 //foreach (unit_or_namespace s in _program_module.used_units.units)
@@ -3013,16 +2997,21 @@ namespace CodeCompletion
                 {
                     unit_or_namespace s = _program_module.used_units.units[j];
                     add_unit_ref(s, Path.GetDirectoryName(_program_module.file_name),
-                        cur_scope, ns_cache, semantic_options.allow_import_types,
-                        ref has_system_unit, ref has_extensions_unit, unl);
+                        cur_scope, ns_cache, semantic_options.allow_import_types, unl);
                 }
 
             }
-            if (!has_system_unit)
-                add_system_unit();
 
-            if (!has_extensions_unit)
-                add_extensions_unit();
+            var currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(_program_module.Language);
+
+            StringComparer comparer = currentLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
+
+            // Добавление всех стандартных модулей EVA
+            foreach (var unitName in currentLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
+            {
+                AddUnit(unitName);
+            }
+
 
             foreach (string s in namespaces)
             {
@@ -4740,26 +4729,36 @@ namespace CodeCompletion
 
         public override void visit(interface_node _interface_node)
         {
-            //throw new Exception("The method or operation is not implemented.");
-            bool has_system_unit = false;
-            bool has_extensions_unit = false;
+
+            string[] usedUnitsNames = new string[0];
+
             if (_interface_node.uses_modules != null)
             {
                 (cur_scope as InterfaceUnitScope).uses_source_range = get_location(_interface_node.uses_modules);
+
+                usedUnitsNames = _interface_node.uses_modules.units.Select(unit => unit.name.idents[0].name).ToArray();
+
                 //foreach (unit_or_namespace s in _interface_node.uses_modules.units)
                 for (int j = _interface_node.uses_modules.units.Count - 1; j >= 0; j--)
                 {
                     unit_or_namespace s = _interface_node.uses_modules.units[j];
                     add_unit_ref(s, Path.GetDirectoryName(this.cur_unit_file_name),
-                        cur_scope, ns_cache, semantic_options.allow_import_types,
-                        ref has_system_unit, ref has_extensions_unit, unl);
+                        cur_scope, ns_cache, semantic_options.allow_import_types, unl);
                 }
             }
-            //if (_interface_node.unit_name.idunit_name.name != StringConstants.system_unit_file_name)
-            if (!is_system_unit && !has_system_unit)
-                add_system_unit();
-            if (!is_system_unit && !is_extensions_unit && !has_extensions_unit)
-                add_extensions_unit();
+
+            var currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(this.cur_unit_file_name);
+
+            string currentUnitName = Path.GetFileNameWithoutExtension(this.cur_unit_file_name);
+
+            StringComparer comparer = currentLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
+
+            // Добавление всех стандартных модулей EVA
+            foreach (var unitName in currentLanguage.SystemUnitNames.Except(usedUnitsNames.Concat(new string[] { currentUnitName }), comparer))
+            {
+                AddUnit(unitName);
+            }
+
             if (_interface_node.interface_definitions != null)
                 foreach (declaration decl in _interface_node.interface_definitions.defs)
                 {
@@ -4792,10 +4791,8 @@ namespace CodeCompletion
                 for (int j = _implementation_node.uses_modules.units.Count - 1; j >= 0; j--)
                 {
                     unit_or_namespace s = _implementation_node.uses_modules.units[j];
-                    bool has_system_unit = false, has_extensions_unit = false;
                     add_unit_ref(s, Path.GetDirectoryName(this.cur_unit_file_name),
-                        cur_scope, ns_cache, semantic_options.allow_import_types,
-                        ref has_system_unit, ref has_extensions_unit, unl);
+                        cur_scope, ns_cache, semantic_options.allow_import_types, unl);
                 }
             }
             impl_scope = cur_scope;
@@ -5313,129 +5310,9 @@ namespace CodeCompletion
                 _expression_as_statement.expr.visit(this);
         }
 
-        public override void visit(c_scalar_type _c_scalar_type)
-        {
-        	switch (_c_scalar_type.scalar_name)
-        	{
-        		case c_scalar_type_name.tn_int : returned_scope = TypeTable.int_type; break;
-        		case c_scalar_type_name.tn_double : returned_scope = TypeTable.real_type; break;
-        		case c_scalar_type_name.tn_float : returned_scope = TypeTable.float_type; break;
-        		case c_scalar_type_name.tn_char : returned_scope = TypeTable.char_type; break;
-        		case c_scalar_type_name.tn_long :
-        		case c_scalar_type_name.tn_long_int : if (_c_scalar_type.sign == c_scalar_sign.unsigned) returned_scope = TypeTable.uint64_type;
-        											  else returned_scope = TypeTable.int64_type;
-        											  break;
-        		case c_scalar_type_name.tn_short :
-        		case c_scalar_type_name.tn_short_int : if (_c_scalar_type.sign == c_scalar_sign.unsigned) returned_scope = TypeTable.uint16_type;
-        											  else returned_scope = TypeTable.int16_type;
-        											  break;
-        		case c_scalar_type_name.tn_void : returned_scope = TypeTable.void_type; break;
-        	}
-        }
-
-        public override void visit(c_module _c_module)
-        {
-            //Assembly _as = System.Reflection.Assembly.LoadFrom(get_assembly_path("mscorlib.dll",_c_module.file_name));
-            System.Reflection.Assembly _as = System.Reflection.Assembly.LoadFrom(get_assembly_path("mscorlib.dll",_c_module.file_name));
-            PascalABCCompiler.NetHelper.NetHelper.init_namespaces(_as);
-            //add_standart_types_simple();
-            //List<Scope> netScopes = new List<Scope>();
-            //PascalABCCompiler.NetHelper.NetScope ns=new PascalABCCompiler.NetHelper.NetScope(unl,_as,tcst);
-            if (_c_module.compiler_directives != null)
-                foreach (PascalABCCompiler.SyntaxTree.compiler_directive dir in _c_module.compiler_directives)
-                {
-                    if (dir.Name.text == "reference")
-                    {
-                        try
-                        {
-                            //System.Reflection.Assembly assm = System.Reflection.Assembly.LoadFrom(get_assembly_path(dir.Directive.text,_c_module.file_name));
-                            System.Reflection.Assembly assm = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(get_assembly_path(dir.Directive.text, _c_module.file_name));
-                            PascalABCCompiler.NetHelper.NetHelper.init_namespaces(assm);
-                        }
-                        catch (Exception e)
-                        {
-#if DEBUG
-                            File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
-#endif
-                        }
-                    }
-                }
-            cur_scope = new InterfaceUnitScope(new SymInfo("", SymbolKind.Block,"module"),null);
-            doc = new document(_c_module.file_name);
-            cur_scope.loc = get_location(_c_module);
-            entry_scope = cur_scope;
-            
-            add_system_unit();
-            if (_c_module.used_units != null)
-            {
-                (cur_scope as InterfaceUnitScope).uses_source_range = get_location(_c_module.used_units);
-                foreach (unit_or_namespace s in _c_module.used_units.units)
-                {
-                    try
-                    {
-                        string str = "";
-                        for (int i = 0; i < s.name.idents.Count; i++)
-                        {
-                            str += s.name.idents[i].name;
-                            NamespaceScope ns_scope = null;
-                            if (i == 0)
-                            {
-                                if (PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str))
-                                {
-                                    ns_scope = new NamespaceScope(str);
-                                    cur_scope.AddName(str, ns_scope);
-                                    if (s.name.idents.Count == 1) cur_scope.AddUsedUnit(ns_scope);
-                                }
-                                else
-                                {
-                                    string unit_name = CodeCompletionController.comp.FindSourceFileName(str, System.IO.Path.GetDirectoryName(_c_module.file_name), out _, false); // TODO: исправить последний параметр !!! EVA
-                                    if (unit_name == null)
-                                    {
-                                        unit_name = Path.Combine(System.IO.Path.GetDirectoryName(_c_module.file_name), str) + System.IO.Path.GetExtension(_c_module.file_name);
-                                        if (!System.IO.File.Exists(unit_name)) unit_name = null;
-                                    }
-                                    if (unit_name != null)
-                                    {
-                                        DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
-                                        if (dc == null /*|| CodeCompletionController.recomp_files[unit_name] != null*/)
-                                        {
-                                            dc = new CodeCompletionController().CompileAllIfNeed(unit_name);
-                                        }
-                                        if (dc.visitor != null)
-                                        {
-                                            cur_scope.AddUsedUnit(dc.visitor.entry_scope);
-                                            cur_scope.AddName(str, dc.visitor.entry_scope);
-                                        }
-                                    }
-                                }
-                            }
-                            if (i < s.name.idents.Count - 1) str += ".";
-                            if (i == s.name.idents.Count - 1 && i > 0) cur_scope.AddUsedUnit(new NamespaceScope(str));
-                        }
-                        unl.AddElement(new PascalABCCompiler.TreeRealization.using_namespace(str));
-                    }
-                    catch (Exception e)
-                    {
-#if DEBUG
-                        File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
-#endif
-                    }
-                }
-            }
-           
-            
-			//PascalABCCompiler.TreeRealization.common_type_node ctn = new ;
-			if (_c_module.defs != null)
-			foreach (declaration decl in _c_module.defs.defs)
-            {
-				decl.visit(this);
-            }
-			
-        }
-
         public override void visit(declarations_as_statement _declarations_as_statement)
         {
-            throw new Exception("The method or operation is not implemented.");
+            // throw new Exception("The method or operation is not implemented.");
         }
 
         public override void visit(array_size _array_size)
@@ -5451,12 +5328,6 @@ namespace CodeCompletion
         public override void visit(enumerator_list _enumerator_list)
         {
             throw new Exception("The method or operation is not implemented.");
-        }
-
-        public override void visit(c_for_cycle _c_for_cycle)
-        {
-            //throw new Exception("The method or operation is not implemented.");
-            
         }
 
         public override void visit(switch_stmt _switch_stmt)

@@ -150,17 +150,17 @@ namespace SPythonParser
 
         protected override syntax_tree_node BuildTreeInExprMode(string FileName, string Text)
         {
-            throw null;
+            return null;
         }
 
         protected override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text)
         {
-            throw null;
+            return null;
         }
 
         protected override syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text)
         {
-            throw null;
+            return null;
         }
 
         protected override syntax_tree_node BuildTreeInStatementMode(string FileName, string Text)

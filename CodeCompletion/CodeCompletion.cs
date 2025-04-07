@@ -8,7 +8,6 @@ using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.Errors;
 using System.IO;
-using PascalABCCompiler;
 using Languages.Facade;
 //using ICSharpCode.SharpDevelop.Dom;
 
@@ -108,15 +107,23 @@ namespace CodeCompletion
             List<PascalABCCompiler.Errors.Error> ErrorsList = new List<PascalABCCompiler.Errors.Error>();
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
             PascalABCCompiler.SyntaxTree.compilation_unit cu = null;
+            IDocParser docParser = null;
             string ext = Path.GetExtension(FileName);
             try
             {
                 cu = ParsersControllerGetCompilationUnit(FileName, Text, ErrorsList, Warnings);
                 ErrorsList.Clear();
-                documentation_comment_list dt = LanguageProvider.SelectLanguageByExtension(FileName).DocParser.BuildTree(Text);
-                PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
-                if (cu != null)
-                    docs = docconst.Construct(cu, dt);
+
+                docParser = LanguageProvider.SelectLanguageByExtension(FileName).DocParser;
+
+                if (docParser != null)
+                {
+                    documentation_comment_list dt = docParser.BuildTree(Text);
+                    PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
+                    if (cu != null)
+                        docs = docconst.Construct(cu, dt);
+                }
+                
             }
             catch (Exception e)
             {
@@ -154,10 +161,13 @@ namespace CodeCompletion
                             cu = get_fictive_unit(Text, FileName);
                     }
                     ErrorsList.Clear();
-                    documentation_comment_list dt = LanguageProvider.SelectLanguageByExtension(FileName).DocParser.BuildTree(Text);
-                    PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
-                    if (cu != null)
-                        docs = docconst.Construct(cu, dt);
+                    if (docParser != null)
+                    {
+                        documentation_comment_list dt = LanguageProvider.SelectLanguageByExtension(FileName).DocParser.BuildTree(Text);
+                        PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
+                        if (cu != null)
+                            docs = docconst.Construct(cu, dt);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -300,10 +310,16 @@ namespace CodeCompletion
             }
             ErrorsList.Clear();
             Warnings.Clear();
-            documentation_comment_list dt = language.DocParser.BuildTree(Text);
-            PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
-            if (cu != null)
-                docs = docconst.Construct(cu, dt);
+
+            var docParser = language.DocParser;
+
+            if (docParser != null)
+            {
+                documentation_comment_list dt = docParser.BuildTree(Text);
+                PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
+                if (cu != null)
+                    docs = docconst.Construct(cu, dt);
+            }
             
             dconv.visitor.parse_only_interface = parse_only_interface;
             if (CodeCompletionTools.XmlDoc.LookupLocalizedXmlDocForUnitWithSources(FileName, CodeCompletionController.currentLanguageISO) != null)
@@ -330,9 +346,14 @@ namespace CodeCompletion
                 }
                 ErrorsList.Clear();
                 Warnings.Clear();
-                dt = language.DocParser.BuildTree(Text);
-                if (cu != null)
-                    docs = docconst.Construct(cu, dt);
+
+                if (docParser != null)
+                {
+                    documentation_comment_list dt = docParser.BuildTree(Text);
+                    PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
+                    if (cu != null)
+                        docs = docconst.Construct(cu, dt);
+                }
                 if (CodeCompletionTools.XmlDoc.LookupLocalizedXmlDocForUnitWithSources(FileName, CodeCompletionController.currentLanguageISO) != null)
                 {
                 	dconv.visitor.add_doc_from_text = false;

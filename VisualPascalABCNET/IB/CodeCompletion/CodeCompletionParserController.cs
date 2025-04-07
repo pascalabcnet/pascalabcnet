@@ -4,6 +4,7 @@ using Languages.Integration;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace VisualPascalABC
 {
@@ -132,14 +133,11 @@ namespace VisualPascalABC
 
         private void InternalParsing()
         {
-#if DEBUG
-#else
             while (true)
             {
                 ParseInThread();
                 System.Threading.Thread.Sleep(2000);
             }
-#endif
         }
 
         private long mem_delta = 0;
@@ -150,7 +148,7 @@ namespace VisualPascalABC
             {
                 Dictionary<string, string> recomp_files = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 bool is_comp = false;
-                foreach (string FileName in open_files.Keys)
+                foreach (string FileName in open_files.Keys.ToArray())
                 {
 
                     if (open_files[FileName])
@@ -184,7 +182,7 @@ namespace VisualPascalABC
                             CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                     }
                 }
-                foreach (string FileName in open_files.Keys)
+                foreach (string FileName in open_files.Keys.ToArray())
                 {
                     CodeCompletion.DomConverter dc = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
                     CodeCompletion.SymScope ss = null;
