@@ -2496,8 +2496,6 @@ namespace CodeCompletion
         }
 		
         private Hashtable ns_cache;
-        private bool is_system_unit=false;
-        private bool is_extensions_unit = false;
         private bool is_namespace = false;
 
         public override void visit(unit_module _unit_module)
@@ -2630,14 +2628,9 @@ namespace CodeCompletion
 
                 }
             }
-            if (_unit_module.unit_name.idunit_name.name == this.converter.controller.Parser.LanguageInformation.SystemUnitName)
+            if (_unit_module.unit_name.idunit_name.name == StringConstants.pascalSystemUnitName)
             {
-                is_system_unit = true;
                 add_standart_types(entry_scope);
-            }
-            if (_unit_module.unit_name.idunit_name.name == StringConstants.pascalExtensionsUnitName)
-            {
-                is_extensions_unit = true;
             }
             CodeCompletionController.comp_modules[_unit_module.file_name] = this.converter;
             if (!existed_ns)
@@ -4749,14 +4742,15 @@ namespace CodeCompletion
 
             var currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(this.cur_unit_file_name);
 
-            string currentUnitName = Path.GetFileNameWithoutExtension(this.cur_unit_file_name);
-
             StringComparer comparer = currentLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
 
-            // Добавление всех стандартных модулей EVA
-            foreach (var unitName in currentLanguage.SystemUnitNames.Except(usedUnitsNames.Concat(new string[] { currentUnitName }), comparer))
+            if (!currentLanguage.SystemUnitNames.Contains(Path.GetFileNameWithoutExtension(this.cur_unit_file_name)))
             {
-                AddUnit(unitName);
+                // Добавление всех стандартных модулей EVA
+                foreach (var unitName in currentLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
+                {
+                    AddUnit(unitName);
+                }
             }
 
             if (_interface_node.interface_definitions != null)
