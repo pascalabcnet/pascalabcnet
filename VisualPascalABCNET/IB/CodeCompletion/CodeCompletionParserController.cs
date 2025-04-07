@@ -1,9 +1,8 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using Languages.Integration;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace VisualPascalABC
 {
@@ -147,7 +146,7 @@ namespace VisualPascalABC
             {
                 Dictionary<string, string> recomp_files = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 bool is_comp = false;
-                foreach (string FileName in open_files.Keys)
+                foreach (string FileName in open_files.Keys.ToList()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
                 {
 
                     if (open_files[FileName])
@@ -181,7 +180,7 @@ namespace VisualPascalABC
                             CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                     }
                 }
-                foreach (string FileName in open_files.Keys)
+                foreach (string FileName in open_files.Keys.ToList()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
                 {
                     CodeCompletion.DomConverter dc = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
                     CodeCompletion.SymScope ss = null;
