@@ -398,7 +398,7 @@ namespace CodeCompletion
         }
 
         const string LibSourceDirectoryIdent = "%LIBSOURCEDIRECTORY%";
-        public static string FindSourceFileName(string unit_name, out int found_dir_ind, params string[] ddirs)
+        public static string FindSourceFileName(string unit_name, out int found_dir_ind, bool caseSensitiveSearch, params string[] ddirs)
         {
             // TODO: check error in older version
             List<string> Dirs = new List<string>();
@@ -407,7 +407,7 @@ namespace CodeCompletion
                 Dirs.AddRange(CodeCompletionController.comp.CompilerOptions.SearchDirectories);
             if (CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent))
                 Dirs.Add((string)CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]);
-            return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, out found_dir_ind, false, Dirs.ToArray()); // TODO: исправить последний параметр !!! EVA
+            return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, out found_dir_ind, caseSensitiveSearch, Dirs.ToArray());
         }
 
         public static CodeCompletionNameHelper Helper

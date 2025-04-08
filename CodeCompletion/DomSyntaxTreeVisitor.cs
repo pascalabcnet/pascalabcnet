@@ -2705,9 +2705,9 @@ namespace CodeCompletion
         	return CodeCompletionController.comp.FindPCUFileName(UnitName, curr_path, out _, caseSensitiveSearch);
         }
         
-        private void AddUnit(string unitName)
+        private void AddUnit(string unitName, bool caseSensitiveSearch)
         {
-            string unitPath = CodeCompletionNameHelper.FindSourceFileName(unitName, out _);
+            string unitPath = CodeCompletionNameHelper.FindSourceFileName(unitName, out _, caseSensitiveSearch);
             if (unitPath != null)
             {
                 DomConverter dc = CodeCompletionController.comp_modules[unitPath] as DomConverter;
@@ -2754,14 +2754,14 @@ namespace CodeCompletion
 
         private static void add_unit_ref(unit_or_namespace s, string curr_path,
             SymScope cur_scope, Hashtable ns_cache, bool allow_import_types,
-            using_namespace_list unl)
+            using_namespace_list unl, bool caseSensitiveSearch)
         {
 
             try
             {
                 if (s is uses_unit_in uui)
                 {
-                    string unit_name = CodeCompletionNameHelper.FindSourceFileName(uui.in_file.Value, out _, curr_path);
+                    string unit_name = CodeCompletionNameHelper.FindSourceFileName(uui.in_file.Value, out _, caseSensitiveSearch, curr_path);
                     if (unit_name==null) throw new InvalidOperationException($"uses '{uui.in_file.Value}';");
 
                     DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
@@ -2786,8 +2786,8 @@ namespace CodeCompletion
                         NamespaceScope ns_scope = null;
                         if (i == 0)
                         {
-                            string pcu_unit_name = FindPCUFileName(str, curr_path, false); // // TODO: исправить последний параметр !!! EVA
-                            string unit_name = CodeCompletionNameHelper.FindSourceFileName(str, out _, curr_path);
+                            string pcu_unit_name = FindPCUFileName(str, curr_path, caseSensitiveSearch);
+                            string unit_name = CodeCompletionNameHelper.FindSourceFileName(str, out _, caseSensitiveSearch, curr_path);
 
                             /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                 && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
@@ -2977,6 +2977,8 @@ namespace CodeCompletion
                 }
             }
 
+            var currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(_program_module.Language);
+
             string[] usedUnitsNames = new string[0];
 
             if (_program_module.used_units != null)
@@ -2990,19 +2992,18 @@ namespace CodeCompletion
                 {
                     unit_or_namespace s = _program_module.used_units.units[j];
                     add_unit_ref(s, Path.GetDirectoryName(_program_module.file_name),
-                        cur_scope, ns_cache, semantic_options.allow_import_types, unl);
+                        cur_scope, ns_cache, semantic_options.allow_import_types, 
+                        unl, currentLanguage.CaseSensitive);
                 }
 
             }
-
-            var currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(_program_module.Language);
 
             StringComparer comparer = currentLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
 
             // Добавление всех стандартных модулей EVA
             foreach (var unitName in currentLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
             {
-                AddUnit(unitName);
+                AddUnit(unitName, currentLanguage.CaseSensitive);
             }
 
 
@@ -4722,6 +4723,7 @@ namespace CodeCompletion
 
         public override void visit(interface_node _interface_node)
         {
+            var currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(this.cur_unit_file_name);
 
             string[] usedUnitsNames = new string[0];
 
@@ -4736,11 +4738,10 @@ namespace CodeCompletion
                 {
                     unit_or_namespace s = _interface_node.uses_modules.units[j];
                     add_unit_ref(s, Path.GetDirectoryName(this.cur_unit_file_name),
-                        cur_scope, ns_cache, semantic_options.allow_import_types, unl);
+                        cur_scope, ns_cache, semantic_options.allow_import_types, 
+                        unl, currentLanguage.CaseSensitive);
                 }
             }
-
-            var currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(this.cur_unit_file_name);
 
             StringComparer comparer = currentLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
 
@@ -4749,7 +4750,7 @@ namespace CodeCompletion
                 // Добавление всех стандартных модулей EVA
                 foreach (var unitName in currentLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
                 {
-                    AddUnit(unitName);
+                    AddUnit(unitName, currentLanguage.CaseSensitive);
                 }
             }
 
@@ -4772,7 +4773,8 @@ namespace CodeCompletion
 
         public override void visit(implementation_node _implementation_node)
         {
-            //throw new Exception("The method or operation is not implemented.");
+            var currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(this.cur_unit_file_name);
+
             SymScope tmp = cur_scope;
             unl.Clear();
             cur_scope = new ImplementationUnitScope(new SymInfo("$implementation", SymbolKind.Namespace, "implementation"), cur_scope);
@@ -4786,7 +4788,8 @@ namespace CodeCompletion
                 {
                     unit_or_namespace s = _implementation_node.uses_modules.units[j];
                     add_unit_ref(s, Path.GetDirectoryName(this.cur_unit_file_name),
-                        cur_scope, ns_cache, semantic_options.allow_import_types, unl);
+                        cur_scope, ns_cache, semantic_options.allow_import_types, 
+                        unl, currentLanguage.CaseSensitive);
                 }
             }
             impl_scope = cur_scope;
