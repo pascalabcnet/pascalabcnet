@@ -1060,7 +1060,12 @@ namespace CodeCompletion
                 RestoreCurrentUsedAssemblies();
                 string description = ss.si.description;
                 if (description != null)
+                {
                     description = description.Replace("!#", "");
+                    // Пусть здесь делаем все замены
+                    // Для рекурсивных <<>> нужно писать собственный парсер
+                    //description = System.Text.RegularExpressions.Regex.Replace(description, @"NewSet<\s*(.*)\s*>", "set of $1");
+                }
                 return description;
             }
             RestoreCurrentUsedAssemblies();

@@ -50,7 +50,7 @@ implementation
 {$reference System.Xml.dll}
 
 uses System.IO.Compression;
-uses System.Xml,sf;
+uses System.Xml,SF;
 
 var
   numFmt, numBrd: List<int>;

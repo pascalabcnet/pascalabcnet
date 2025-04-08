@@ -1152,11 +1152,34 @@ namespace PascalABCCompiler.NetHelper
                                 fn.parameters[0].type.type_special_kind == type_special_kind.array_kind
                                   && fn.parameters[0].type.element_type.is_generic_parameter
                                   && fn.parameters.Count == 1
+                                  // Вот это условие для set of T должно удовлетвориться и тогда всё будет работать!
                                   && (fn.return_value_type == to || fn.return_value_type.original_generic == to)
                                )
                             {
                                 return fn;
                             }
+                            // А теперь конкретно для преобразования array of T в set of T !!! Надо переделывать. Позже
+                            if (
+                                fn.parameters[0].type.type_special_kind == type_special_kind.array_kind
+                                  && fn.parameters[0].type.element_type.is_generic_parameter
+                                  && fn.parameters.Count == 1
+                                  && to is common_type_node ctn && ctn.type_special_kind == type_special_kind.set_type
+                                )
+                            {
+                                List<type_node> instance_params = new List<type_node>();
+                                
+                                instance_params.Add(ctn.element_type); // Это должен быть конкретный тип
+                                var fn1 = fn.get_instance(instance_params, false, null);
+                                if (
+                                    fn1.return_value_type == to || fn1.return_value_type.original_generic == to
+                                   )
+                                {
+                                    // Вернуть тем не менее fn! Во внешнем коде он тоже инстанцируется!
+                                    // Это обязательно надо переделывать!
+                                    return fn;
+                                }
+                            }
+
                         }
                     }
             }
@@ -1544,7 +1567,7 @@ namespace PascalABCCompiler.NetHelper
         public static List<SymbolInfo> FindName(Type t, string name)
         {
             if (name == null) return null;
-            if (name == StringConstants.assign_name) return null;
+            if (name == StringConstants.assign_name && !t.IsValueType) return null;
             string s = StringConstants.GetNETOperName(name);
             string tmp_name = name;
             if (s != null)

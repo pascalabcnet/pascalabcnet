@@ -27,7 +27,7 @@ namespace AssignTupleDesugarAlgorithm
 
         public bool Equals(SymbolNode other)
         {
-            if (other is null) return false;
+            if (other == null) return false;
 
             return label == other.label;
         }

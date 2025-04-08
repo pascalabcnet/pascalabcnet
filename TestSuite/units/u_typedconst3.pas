@@ -1,4 +1,4 @@
-unit u_typedconst3;
+﻿unit u_typedconst3;
 const cc1 : 1..7 = 2;
 type Digits = (one,two, three, four);
 
@@ -11,5 +11,5 @@ begin
   assert(rec.a = 2);
   assert(rec2.a = 3);
   assert(rec3.a = two);
-  assert(rec4.a = [1..4]);
+  assert(rec4.a = [1..5]);
 end.

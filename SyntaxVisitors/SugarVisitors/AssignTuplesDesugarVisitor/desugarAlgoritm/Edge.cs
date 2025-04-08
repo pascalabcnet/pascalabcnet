@@ -23,7 +23,7 @@ namespace AssignTupleDesugarAlgorithm
 
         public bool Equals(Edge other)
         {
-            if (other is null) return false;
+            if (other == null) return false;
             return from == other.from && to == other.to;
         }
     }

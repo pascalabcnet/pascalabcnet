@@ -5,6 +5,8 @@ using System.Text;
 
 namespace PascalABCCompiler.SyntaxTree
 {
+    // По идее из разных мест сюда всё собрано в три разных хаотичных класса
+
     #region Генерация новых узлов синтаксического дерева
     /// <summary>
     /// Класс для генерации новых узлов синтаксического дерева
@@ -295,11 +297,11 @@ namespace PascalABCCompiler.SyntaxTree
         private static procedure_definition InternalCreateProcedureDefinitionNode(string methName, formal_parameters formalPars, bool classKeyword, statement procBody, SourceContext sc)
         {
             return SyntaxTreeNodesConstructor.CreateProcedureDefinitionNode(new method_name(methName),
-                                                                                                                         formalPars,
-                                                                                                                         false,
-                                                                                                                         classKeyword,
-                                                                                                                         procBody,
-                                                                                                                         sc);
+                formalPars,
+                false,
+                classKeyword,
+                procBody,
+                sc);
         }
 
         public static procedure_definition CreateProcedureDefinitionNode(string methName, formal_parameters formalPars, bool classKeyword, statement procBody, SourceContext sc)
@@ -315,12 +317,12 @@ namespace PascalABCCompiler.SyntaxTree
         private static procedure_definition InternalCreateFunctionDefinitionNode(string methName, formal_parameters formalPars, bool classKeyword, statement procBody, type_definition returnType, SourceContext sc)
         {
             return SyntaxTreeNodesConstructor.CreateFunctionDefinitionNode(new method_name(methName),
-                                                                                                                        formalPars,
-                                                                                                                        false,
-                                                                                                                        classKeyword,
-                                                                                                                        procBody,
-                                                                                                                        returnType,
-                                                                                                                        sc);
+                formalPars,
+                false,
+                classKeyword,
+                procBody,
+                returnType,
+                sc);
         }
 
         public static procedure_definition CreateFunctionDefinitionNode(string methName, formal_parameters formalPars, bool classKeyword, statement procBody, type_definition returnType, SourceContext sc)
@@ -355,10 +357,14 @@ namespace PascalABCCompiler.SyntaxTree
         public static SourceContext BuildGenSC = new SourceContext(0, 777777, 0, 0, 0, 0);
 
         private static int GenIdNum = 0;
-        public static ident GenIdentName()
+        public static string UniqueString()
         {
             GenIdNum++;
-            return new ident("$GenId" + GenIdNum.ToString());
+            return GenIdNum.ToString();
+        }
+        public static ident GenIdentName()
+        {
+            return new ident("$GenId" + UniqueString());
         }
 
         public static type_definition BuildSimpleType(string name)
@@ -420,6 +426,23 @@ namespace PascalABCCompiler.SyntaxTree
             return sl;
         }
 
+        // SSM 25.01.25
+        public static procedure_definition BuildSimpleFunction(string name, List<ident> paramNames, List<type_definition> paramTypes, type_definition returnType, statement procBody, SourceContext sc = null)
+        {
+            var fp = SyntaxTreeBuilder.BuildFormalParameters(paramNames, paramTypes);
+            var fdn = SyntaxTreeNodesConstructor.CreateFunctionDefinitionNode(new method_name(name), fp, false, false, procBody, returnType, sc);
+            return fdn;
+        }
+        public static procedure_definition BuildSimpleFunctionOneParameter(string name, string paramName, type_definition paramType, type_definition returnType, statement procBody, SourceContext sc = null)
+        {
+            var lstNames = new List<ident>();
+            lstNames.Add(new ident(paramName));
+            var lstTypes = new List<type_definition>();
+            lstTypes.Add(paramType);
+            var fp = SyntaxTreeBuilder.BuildFormalParameters(lstNames, lstTypes);
+            var fdn = SyntaxTreeNodesConstructor.CreateFunctionDefinitionNode(new method_name(name), fp, false, false, procBody, returnType, sc);
+            return fdn;
+        }
         public static procedure_definition BuildSimpleConstructor(List<ident> fields, List<ident> formal_names, List<type_definition> types)
         {
             var fp = SyntaxTreeBuilder.BuildFormalParameters(formal_names, types);

@@ -38,6 +38,25 @@ namespace PascalABCCompiler.TreeConverter
 		private System.Collections.Generic.Dictionary<type_node, List<type_node>> types_unsized_arrays =
 			new System.Collections.Generic.Dictionary<type_node, List<type_node>>();
 
+		public List<common_type_node> get_generic_arrays(int rank)
+		{
+			List<common_type_node> lst = new List<common_type_node>();
+			foreach (var key in types_unsized_arrays.Keys)
+			{
+				if (key.is_generic_parameter)
+				{
+					List<type_node> ret = types_unsized_arrays[key];
+                    for (int i = 0; i < ret.Count; i++)
+                        if (ret[i] is common_type_node ctn)
+                        {
+							if (ctn.rank == rank)
+								lst.Add(ctn);
+                        }
+                }
+			}
+			return lst;
+        }
+
 		public type_node create_unsized_array(type_node element_type, int rank, location loc)
 		{
 			List<type_node> ret = null;

@@ -1,4 +1,4 @@
-uses typedef1u;
+﻿uses typedef1u;
 
 var i : myint;
     pi : myptrint;
@@ -62,10 +62,10 @@ begin
   assert(set3<[one,two,three]);
   assert(set3>[enum1]);
   
-  set4 := [one..four]; assert(set4=[one..three]);
+  set4 := [one..four]; assert(set4=[one..four]);
   Exclude(set4,one); 
-  assert(set4=[two,three]);
-  diap2 := one; Include(set4,diap2);
+  assert(set4=[two,three,four]);
+  diap2 := one; Include(set4,one);
   assert(one in set4);
   
   diap := 4; assert(diap=4);

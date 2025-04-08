@@ -74,77 +74,56 @@ type
     r,g,b: byte;
   end;
   PRGB = ^uint32;
+
 label 1;
 var
-  ptr1,ptr2: pointer;
-  iptr1,iptr2: integer;
+  ptr1,ptr2: IntPtr;
   p1,p2: PRGB;
+
   rect: System.Drawing.Rectangle;
+
   bmpData1,bmpData2: System.Drawing.Imaging.BitmapData;
+
 begin
+
   rect := new System.Drawing.Rectangle(0,0,b1.Width,b1.Height);
+
   bmpData1 := b1.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, b1.PixelFormat);
-  ptr1 := bmpData1.Scan0.ToPointer;
-  iptr1 := integer(ptr1);
+
+  ptr1 := bmpData1.Scan0;
 
   bmpData2 := b2.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, b2.PixelFormat);
-  ptr2 := bmpData2.Scan0.ToPointer;
-  iptr2 := integer(ptr2);
-
+  ptr2 := bmpData2.Scan0;
   var pixelFormatSize := Image.GetPixelFormatSize(b1.PixelFormat) div 8;
   var Offset := bmpData1.stride - b1.Width * pixelFormatSize; 
-  
   Result := False;
   for var y:=0 to b1.Height-1 do
   begin
     for var x:=0 to b1.Width-1 do
     begin
-      p1 := PRGB(pointer(iptr1));
-      p2 := PRGB(pointer(iptr2));
-      //writeln(p1^.R,' ',p1^.G,' ',p1^.B,'  ',p2^.R,' ',p2^.G,' ',p2^.B);
-//      if ((p1^.R and p1^.G and p1^.B)<>$FF) and ((p2^.R and p2^.G and p2^.B)<>$FF) then
+      p1 := PRGB(pointer(ptr1));
+      p2 := PRGB(pointer(ptr2));
       if (p1^<>$FFFFFFFF) and (p2^<>$FFFFFFFF) then
       begin
         Result := True;
         goto 1;
       end;
-      iptr1 += pixelFormatSize;
-      iptr2 += pixelFormatSize;
+      ptr1 := ptr1 + pixelFormatSize;
+      ptr2 := ptr2 + pixelFormatSize;
     end;
-    iptr1 += Offset;
-    iptr2 += Offset;
+    ptr1 := ptr1 + Offset;
+    ptr2 := ptr2 + Offset;
   end;
 1:  
-  b2.UnlockBits(bmpData1);
+  b2.UnlockBits(bmpData2);
   b1.UnlockBits(bmpData1);
-end;     
-     
-function GetView(b: Bitmap; r: System.Drawing.Rectangle): Bitmap;
-var 
-  w,h,stride,padding,pixelFormatSize: integer;
-  ptr,start: System.IntPtr;
-  rect: System.Drawing.Rectangle;
-  bmpData: System.Drawing.Imaging.BitmapData;
+end; 
+ 
+function GetView(b: Bitmap; r: System.Drawing.Rectangle): Bitmap;  
 begin
-  w := b.Width;
-  h := b.Height;
-  rect := new System.Drawing.Rectangle(0,0,w,h);
-  bmpData := b.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, b.PixelFormat);
-          
-  ptr := bmpData.Scan0;
-  b.UnlockBits(bmpData);
-
-  pixelFormatSize := Image.GetPixelFormatSize(b.PixelFormat) div 8;
-  
+  var rect := new System.Drawing.Rectangle(0,0,b.Width,b.Height);
   r := System.Drawing.Rectangle.Intersect(r,rect);
-  start := (System.IntPtr)(integer(ptr) + w * pixelFormatSize * r.Y + r.X * pixelFormatSize);
-
-  stride := w * pixelFormatSize;
-  padding := stride mod 4;
-  if padding<>0 then 
-    stride := stride + 4 - padding; //pad out to multiple of 4
-
-  Result := new Bitmap(r.Width,r.Height,stride,b.PixelFormat,start);
+  result := b.Clone(r, b.PixelFormat);
 end;
      
 procedure Swap(var x1,x2: integer);

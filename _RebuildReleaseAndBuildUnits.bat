@@ -1,4 +1,4 @@
-call Studio.bat /t:rebuild "/property:Configuration=Release" "/p:Platform=Any CPU" PascalABCNET.sln
+dotnet build -c Release --no-incremental PascalABCNET.sln
 
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
@@ -18,8 +18,8 @@ cd ..
 ExecHide.exe gacutil.exe /u PABCRtl
 ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 
-..\bin\pabcnetc RebuildStandartModules.pas /rebuild
-@IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+rem ..\bin\pabcnetc RebuildStandartModules.pas /rebuild
+rem @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 
 cd ..\bin

@@ -192,6 +192,8 @@ namespace PascalABCCompiler.NETGenerator
         private List<LocalBuilder> pinned_variables = new List<LocalBuilder>();
         private bool pabc_rtl_converted = false;
         bool has_unmanaged_resources = false;
+        private Dictionary<ICommonFunctionNode, Tuple<MethodBuilder, MethodBuilder, List<ICommonFunctionNode>>> non_local_variables = 
+            new Dictionary<ICommonFunctionNode, Tuple<MethodBuilder, MethodBuilder, List<ICommonFunctionNode>>>();
 
         private void CheckLocation(SemanticTree.ILocation Location)
         {
@@ -556,10 +558,10 @@ namespace PascalABCCompiler.NETGenerator
                 Directory.Delete(publish_dir, true);
             Directory.CreateDirectory(publish_dir);
             StringBuilder sb = new StringBuilder();
-            string framework = "net8.0";
+            string framework = "net9.0";
             if (comp_opt.target == TargetType.WinExe)
             {
-                framework = "net8.0-windows";
+                framework = "net9.0-windows";
                 sb.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk.WindowsDesktop\">");
                 sb.AppendLine("<PropertyGroup><PublishAot>true</PublishAot><PublishTrimmed>true</PublishTrimmed><OutputType>WinExe</OutputType><TargetFramework>" + framework + "</TargetFramework><UseWindowsForms>true</UseWindowsForms></PropertyGroup>");
                 sb.AppendLine("<ItemGroup><Reference Include = \"" + an.Name + "\"><HintPath>" + Path.Combine(dir, an.Name) + ".dll" + "</HintPath></Reference></ItemGroup>");
@@ -967,14 +969,34 @@ namespace PascalABCCompiler.NETGenerator
                 helper.AddDummyMethod(cur_unit_type, mb);
                 ConvertTypeMemberHeaders(cnns[iii].types);
             }
+            //Переводим псевдоинстанции generic-типов
+            foreach (IGenericTypeInstance ictn in p.generic_type_instances)
+            {
+                ConvertGenericInstanceTypeMembers(ictn);
+            }
 
             for (int iii = 0; iii < cnns.Length; iii++)
             {
                 if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
                 cur_type = NamespacesTypes[cnns[iii]];
                 cur_unit_type = NamespacesTypes[cnns[iii]];
-                ConvertFunctionHeaders(cnns[iii].functions);
+                ConvertFunctionHeaders(cnns[iii].functions, false);
             }
+
+            //Переводим псевдоинстанции функций
+            foreach (IGenericFunctionInstance igfi in p.generic_function_instances)
+            {
+                ConvertGenericFunctionInstance(igfi);
+            }
+
+            for (int iii = 0; iii < cnns.Length; iii++)
+            {
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
+                cur_type = NamespacesTypes[cnns[iii]];
+                cur_unit_type = NamespacesTypes[cnns[iii]];
+                ConvertFunctionHeaders(cnns[iii].functions, true);
+            }
+
             if (p.InitializationCode != null)
             {
                 tmp_il = il;
@@ -986,19 +1008,17 @@ namespace PascalABCCompiler.NETGenerator
                 il = tmp_il;
             }
 
-            //Переводим псевдоинстанции generic-типов
-            foreach (IGenericTypeInstance ictn in p.generic_type_instances)
-            {
-                ConvertGenericInstanceTypeMembers(ictn);
-            }
-
-            //Переводим псевдоинстанции функций
-            foreach (IGenericFunctionInstance igfi in p.generic_function_instances)
-            {
-                ConvertGenericFunctionInstance(igfi);
-            }
+            
 
             
+            /*foreach (var item in non_local_variables)
+            {
+                tmp_il = il;
+                il = item.Value.Item2.GetILGenerator();
+                ConvertNonLocalVariables(item.Key.var_definition_nodes, item.Value.Item1);
+                il = tmp_il;
+            }*/
+
 
             ConstructorBuilder unit_cci = null;
 
@@ -1370,7 +1390,7 @@ namespace PascalABCCompiler.NETGenerator
         {
             FieldBuilder fb = cur_type.DefineField(name, helper.GetTypeReference(type).tp, FieldAttributes.Static | FieldAttributes.Public | FieldAttributes.Literal);
             Type t = helper.GetTypeReference(type).tp;
-            if (t.IsEnum)
+            if (!t.Name.StartsWith("NewSet") && t.IsEnum) // SSM 05.11.24
             {
                 if (!(t is EnumBuilder))
                     fb.SetConstant(Enum.ToObject(t, (constant_value as IEnumConstNode).constant_value));
@@ -2658,10 +2678,14 @@ namespace PascalABCCompiler.NETGenerator
         }
 
         //перевод заголовков функций
-        private void ConvertFunctionHeaders(ICommonNamespaceFunctionNode[] funcs)
+        private void ConvertFunctionHeaders(ICommonNamespaceFunctionNode[] funcs, bool with_nested)
         {
             for (int i = 0; i < funcs.Length; i++)
             {
+                if (!with_nested && funcs[i].functions_nodes != null && funcs[i].functions_nodes.Length > 0)
+                    continue;
+                if (with_nested && (funcs[i].functions_nodes == null || funcs[i].functions_nodes.Length == 0))
+                    continue;
                 IStatementsListNode sl = (IStatementsListNode)funcs[i].function_code;
                 IStatementNode[] statements = sl.statements;
                 if (statements.Length > 0 && statements[0] is IExternalStatementNode)
@@ -2727,6 +2751,7 @@ namespace PascalABCCompiler.NETGenerator
                         ConvertFunctionHeader(funcs[i]);
             }
             //(ssyy) 21.05.2008
+            if (!with_nested)
             foreach (ICommonNamespaceFunctionNode ifn in funcs)
             {
                 if (ifn.is_generic_function)
@@ -3018,9 +3043,11 @@ namespace PascalABCCompiler.NETGenerator
             funcs.Add(func); //здесь наверное дублирование
             MethodBuilder tmp = cur_meth;
             cur_meth = methb;
-            
+
             //если функция не содержит вложенных процедур, то
             //переводим переменные как локальные
+            //if (func.functions_nodes.Length > 0)
+            //    non_local_variables[func] = new Tuple<MethodBuilder, MethodBuilder, List<ICommonFunctionNode>>(frm.mb, methb, new List<ICommonFunctionNode>(funcs));
             if (func.functions_nodes.Length > 0)
                 ConvertNonLocalVariables(func.var_definition_nodes, frm.mb);
             //переводим заголовки вложенных функций
@@ -4705,8 +4732,9 @@ namespace PascalABCCompiler.NETGenerator
                         il.Emit(OpCodes.Ldloc, lb);
                         TypeInfo ti = helper.GetTypeReference(ElementValues[i].type);
                         PushIntConst(il, i);
-                        if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && !ti.tp.IsEnum)
-                            il.Emit(OpCodes.Ldelema, ti.tp);
+                        if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && 
+                            (ti.tp.Name.StartsWith("NewSet") || !ti.tp.IsEnum)) // SSM 05/11/24 т.к. NewSet бросает исключение в IsEnum
+                                il.Emit(OpCodes.Ldelema, ti.tp);
                         ILGenerator ilb = this.il;
                         this.il = il;
                         ElementValues[i].visit(this);
@@ -4961,6 +4989,8 @@ namespace PascalABCCompiler.NETGenerator
             if (expr != null && !(expr is IConstantNode) && !(expr is IArrayInitializer))
             {
                 expr.visit(this);
+                if (expr.type != null && (!(expr is IBasicFunctionCallNode) && expr is IFunctionCallNode fcn && (fcn.function.name == "op_Assign" || fcn.function.name == ":=")))
+                    il.Emit(OpCodes.Pop);
             }
             il = ilgn;
         }
@@ -7002,6 +7032,7 @@ namespace PascalABCCompiler.NETGenerator
             MethodBuilder tmp = cur_meth;
             cur_meth = methb;
             //переводим переменные как нелокальные
+            //non_local_variables[func] = new Tuple<MethodBuilder, MethodBuilder, List<ICommonFunctionNode>>(frm.mb, methb, new List<ICommonFunctionNode>(funcs));
             ConvertNonLocalVariables(func.var_definition_nodes, frm.mb);
             //переводим описания вложенных процедур
             ConvertNestedInMethodFunctionHeaders(func.functions_nodes, decl_type);

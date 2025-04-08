@@ -1,7 +1,6 @@
-begin
-  var d := Dict('begin' => 0);
-  var delims := Seq(' ',')','(',';','''',',','.','[',']',#10,#13);
-  var words := ReadAllText('TextFileCount1.pas').ToWords(delims); 
+﻿begin
+  var d := Dict('begin' to 0);
+  var words := ReadAllText('TextFileCount1.pas').ToWords(AllDelimiters); 
   foreach var word in words do
     d[word] := d.Get(word) + 1;
   d.Print(NewLine);    

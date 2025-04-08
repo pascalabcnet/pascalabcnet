@@ -15,6 +15,9 @@
   ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /u "InteractiveDataDisplay.WPF"'
   ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /i "$INSTDIR\Lib\InteractiveDataDisplay.WPF.dll"'
   
+  ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /u "MathNet.Numerics.dll"'
+  ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /i "$INSTDIR\Lib\MathNet.Numerics.dll"'
+
 
   ;\MikhailoMMX
   Delete "$INSTDIR\gacutil.exe"

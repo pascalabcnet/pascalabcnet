@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using QUT.Gppg;
@@ -565,6 +566,52 @@ namespace Languages.Pascal.Frontend.Core
 
             return sl;
         }/**/
+
+        public expression NewIndexerOrSlice(addressed_value av, expression_list el, LexLocation loc)
+        {
+            if (el.Count == 1 && el.expressions[0] is format_expr)
+            {
+                var fe = el.expressions[0] as format_expr;
+                if (!parserTools.buildTreeForFormatter)
+                {
+                    if (fe.expr == null)
+                        fe.expr = new int32_const(int.MaxValue,el.source_context);
+                    if (fe.format1 == null)
+                        fe.format1 = new int32_const(int.MaxValue, el.source_context);
+                }
+        		return new slice_expr(av, fe.expr, fe.format1, fe.format2, el.source_context);
+            }
+            // многомерные срезы
+            else if (el.expressions.Any(e => e is format_expr))
+            {
+                // Срезы многомерных массивов разрешены только для массивов размерности < 5  
+                if (el.expressions.Count > 4)
+                    parserTools.AddErrorFromResource("SLICES_OF MULTIDIMENSIONAL_ARRAYS_ALLOW_ONLY_FOR_RANK_LT_5",loc);
+                var ll = new List<Tuple<expression, expression, expression>>();
+                foreach (var ex in el.expressions)
+                {
+                    if (ex is format_expr fe)
+                    {
+                        if (fe.expr == null)
+                            fe.expr = new int32_const(int.MaxValue, fe.source_context);
+                        if (fe.format1 == null)
+                            fe.format1 = new int32_const(int.MaxValue, fe.source_context);
+                        if (fe.format2 == null)
+                            fe.format2 = new int32_const(1, fe.source_context);
+                        ll.Add(Tuple.Create(fe.expr, fe.format1, fe.format2));
+                    }
+                    else
+                    {
+                        // скалярное значение вместо среза
+                        ll.Add(Tuple.Create(ex, (expression)new int32_const(0, ex.source_context), (expression)new int32_const(int.MaxValue, ex.source_context))); 
+                    }
+                }
+                var sle = new slice_expr(av, null, null, null,loc);
+                sle.slices = ll;
+                return sle;
+            }
+            else return new indexer(av, el, loc);
+        }
 
         public procedure_definition CreateAndAddToClassReadFunc(expression ex, ident id, SourceContext sc)
         {

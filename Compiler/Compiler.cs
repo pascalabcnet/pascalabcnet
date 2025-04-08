@@ -774,6 +774,10 @@ namespace PascalABCCompiler
             {
                 return sourceFilesProvider;
             }
+            set
+            {
+                sourceFilesProvider = value;
+            }
         }
 
         private List<Errors.Error> errorsList = new List<Errors.Error>();
@@ -3311,7 +3315,7 @@ namespace PascalABCCompiler
             // Это только для локального компилятора?
             var stat = new SyntaxVisitors.ABCStatisticsVisitor();
             stat.ProcessNode(unitSyntaxTree);
-            pABCCodeHealth = stat.CalcHealth(out int _, out int _);
+            pABCCodeHealth = stat.CalcHealth(out int aaa, out int bbb);
         }
 
         private SyntaxTree.compilation_unit InternalParseText(ILanguage language, string fileName, string text, List<Error> errorList, List<CompilerWarning> warnings, List<string> definesList = null, bool calculateHealth = true)

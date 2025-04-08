@@ -16,9 +16,9 @@ begin
     end;
   end;
 
-  Writeln('Простые числа < ',n,':');
-  Writeln(primes);
-  Writeln;
-  Writeln('Время вычисления: ',Milliseconds/1000);
+  Println('Простые числа <',n,':');
+  Println(primes);
+  Println;
+  Println('Время вычисления:',Milliseconds/1000);
 end.
 

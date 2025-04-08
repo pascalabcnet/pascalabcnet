@@ -859,7 +859,8 @@ namespace PascalABCCompiler.TreeRealization
             }
             else
             {
-                ptc.second = new type_conversion(fn);
+                if (ptc.first.convertion_method != fn) // SSM 04/08/24 !!! - это когда есть op_implicit(Typ<integer>): Typ<byte>
+                    ptc.second = new type_conversion(fn);
             }
             ptc.from = from;
             ptc.to = to;

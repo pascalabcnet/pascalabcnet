@@ -1,0 +1,6 @@
+﻿//Register and Control Plugin
+
+%PREFIX%=VPP_REGISTER_AND_CONTROL_PLUGIN_
+NAME=Авторизация
+DESCRIPTION=Авторизация: вход не выполнен 
+FORMNAME=Авторизация

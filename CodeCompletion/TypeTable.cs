@@ -1,15 +1,8 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using PascalABCCompiler.SyntaxTree;
-using System.Reflection;
 using PascalABCCompiler;
-using PascalABCCompiler.TreeConverter;
-using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.Parsers;
 
 namespace CodeCompletion
@@ -33,7 +26,9 @@ namespace CodeCompletion
         public static CompiledScope obj_type;
         public static CompiledScope void_type;
         private static Dictionary<Type, CompiledScope> type_cache = new Dictionary<Type, CompiledScope>();
-        
+
+        private static readonly CompiledScope[] standardTypes;
+
         private static ProcScope int_plus;
         private static ProcScope int_minus;
         private static ProcScope int_mul;
@@ -132,6 +127,14 @@ namespace CodeCompletion
         public static void Clear()
         {
         	type_cache.Clear();
+
+            // методы расширения добавляются при компиляции и, если их не очищать,
+            // то они могут содержать ссылки на неактуальные Scope с прошлых запусков Intellisence,
+            // то есть это потенциальные утечки памяти EVA
+            foreach (var type in standardTypes)
+            {
+                type.extension_methods?.Clear();
+            }
         }
 
         static TypeTable()
@@ -1049,6 +1052,26 @@ namespace CodeCompletion
             ps.AddParameter(left);
             ps.AddParameter(right);
             string_type.AddName(StringConstants.greq_name, ps);
+
+            standardTypes = new CompiledScope[]
+            {
+                int_type,
+                real_type,
+                string_type,
+                bool_type,
+                char_type,
+                byte_type,
+                float_type,
+                sbyte_type,
+                int16_type,
+                int64_type,
+                uint16_type,
+                uint32_type,
+                uint64_type,
+                ptr_type,
+                obj_type,
+                void_type
+            };
         }
 
         public static CompiledScope get_compiled_type(Type t)

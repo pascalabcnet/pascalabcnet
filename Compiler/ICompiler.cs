@@ -94,7 +94,7 @@ namespace PascalABCCompiler
 
         SourceFilesProviderDelegate SourceFilesProvider
         {
-            get;
+            get; set;
         }
 
         event ChangeCompilerStateEventDelegate OnChangeCompilerState;

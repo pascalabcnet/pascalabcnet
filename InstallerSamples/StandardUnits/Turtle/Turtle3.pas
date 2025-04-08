@@ -20,7 +20,7 @@ end;
 procedure Init3; // Quadratic Koch Island
 begin
   (Atom,FStr,XStr,YStr) := ('F+F+F+F', 'F+F-FF+F+F-F', '', '');
-  (angle,len,n,x0,y0) := (90,4,4,250,450);
+  (angle,len,n,x0,y0) := (90,0.15,4,8,-1);
 end;
 
 procedure Init4; // Gosper hexagonal curve

@@ -439,7 +439,9 @@ r.a8 := two;
 r.a9 := three;
 r.a10[three] := 2;
 r.a11[false,'c'] := 'pqrs';
-Include(r.a12,r.a9);
+//Include(r.a12,r.a9);
+r.a12 += [r.a9];
+
 r.a12 += [two];
 r.a13 := [r.a3,'y',Succ('y')];
 SetLength(r.a17,4);

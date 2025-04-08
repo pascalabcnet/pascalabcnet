@@ -3466,7 +3466,7 @@ namespace CodeFormatters
 
         public override void visit(array_const_new acn)
         {
-            sb.Append("|");
+            sb.Append(acn.braces_type);
             visit_node(acn.elements);
             //sb.Append("|");
         }
