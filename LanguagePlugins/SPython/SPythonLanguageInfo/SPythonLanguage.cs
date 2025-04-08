@@ -13,6 +13,7 @@ namespace Languages.SPython
             version: "0.0.1",
             copyright: "Copyright © 2023-2025 by Vladislav Krylov, Egor Movchan",
 
+            languageInformation: new Frontend.Data.SPythonLanguageInformation(),
             parser: new SPythonParser.SPythonLanguageParser(),
             docParser: null,
 

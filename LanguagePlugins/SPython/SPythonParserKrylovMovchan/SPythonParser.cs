@@ -13,11 +13,6 @@ namespace SPythonParser
     public class SPythonLanguageParser : BaseParser
     {
 
-        public SPythonLanguageParser()
-        {
-            Keywords = new SPythonKeywords();
-        }
-
         public override void Reset()
         {
             CompilerDirectives = new List<compiler_directive>();
@@ -57,14 +52,14 @@ namespace SPythonParser
             Console.SetError(sw);
 #endif
 #endif
-            SPythonParserTools parserTools = new SPythonParserTools(Errors, Warnings, ValidDirectives, buildTreeForFormatter, false,
+            SPythonParserTools parserTools = new SPythonParserTools(Errors, Warnings, LanguageInformation.ValidDirectives, buildTreeForFormatter, false,
                 Path.GetFullPath(fileName), CompilerDirectives); // контекст сканера и парсера
 
 
             IndentArranger ia = new IndentArranger();
             ia.ProcessSourceText(ref Text);
 
-            var scanner = new Scanner(Text, parserTools, Keywords, definesList);
+            var scanner = new Scanner(Text, parserTools, LanguageInformation.KeywordsStorage, definesList);
 
             SPythonGPPGParser parser = new SPythonGPPGParser(scanner, parserTools, CheckIfParsingUnit.Invoke());
 

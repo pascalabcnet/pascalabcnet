@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="SPythonLanguage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SPythonLanguageInformation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj">
@@ -51,6 +52,10 @@
     <ProjectReference Include="..\..\..\LanguageIntegrator\LanguageIntegrator.csproj">
       <Project>{a48d9069-d569-4110-9252-a10f139b669b}</Project>
       <Name>LanguageIntegrator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Localization\Localization.csproj">
+      <Project>{2de2842f-0912-4251-bc0f-480854c44a13}</Project>
+      <Name>Localization</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\ParserTools\ParserTools.csproj">
       <Project>{af2efd7b-69dd-4b43-af65-b59b29349c23}</Project>

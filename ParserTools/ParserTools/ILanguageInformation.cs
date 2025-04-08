@@ -140,10 +140,6 @@ namespace PascalABCCompiler.Parsers
         /// </summary>
         Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; }
 
-        string SystemUnitName
-        {
-            get;
-        }
         string BodyStartBracket
         {
             get;

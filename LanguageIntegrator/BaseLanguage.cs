@@ -18,8 +18,9 @@ namespace Languages.Facade
         /// <summary>
         /// Все параметры должны быть не null (и не пустым массивом), кроме IDocParser в случае, если он не требуется
         /// </summary>
-        public BaseLanguage(string name, string version, string copyright, IParser parser, IDocParser docParser,
-            List<ISyntaxTreeConverter> syntaxTreeConverters, string[] filesExtensions, bool caseSensitive, string[] systemUnitNames)
+        public BaseLanguage(string name, string version, string copyright, ILanguageInformation languageInformation,
+            IParser parser, IDocParser docParser, List<ISyntaxTreeConverter> syntaxTreeConverters, 
+            string[] filesExtensions, bool caseSensitive, string[] systemUnitNames)
         {
             this.Name = name;
             this.Version = version;
