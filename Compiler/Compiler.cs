@@ -2705,7 +2705,7 @@ namespace PascalABCCompiler
 
             // если нет ни одного типа файла, то ошибка 
             if (!sourceFileExists && !pcuFileExists)
-                throw new UnitNotFound(sourceContext.FileName, unitName, sourceContext);
+                throw new UnitNotFound(sourceContext?.FileName, unitName, sourceContext);
 
             if (pcuFileExists && sourceFileExists)
             {
