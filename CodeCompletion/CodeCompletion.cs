@@ -59,6 +59,7 @@ namespace CodeCompletion
             pabcNamespaces.Clear();
         }
 		
+        // нужно переделать на использование ILanguage  EVA
 		public static IParser CurrentParser
 		{
 			get
@@ -383,18 +384,18 @@ namespace CodeCompletion
             return false;
         }
 
-        public string[] GetKeywords()
+        public List<string> GetKeywords()
         {
             if (CodeCompletionController.CurrentParser != null)
-            	return CodeCompletionController.CurrentParser.LanguageInformation.Keywords;
-            return new string[0];
+            	return CodeCompletionController.CurrentParser.LanguageInformation.KeywordsStorage.Keywords;
+            return new List<string>();
         }
 
-        public string[] GetTypeKeywords()
+        public List<string> GetTypeKeywords()
         {
             if (CodeCompletionController.CurrentParser != null)
-            	return CodeCompletionController.CurrentParser.LanguageInformation.TypeKeywords;
-            return new string[0];
+            	return CodeCompletionController.CurrentParser.LanguageInformation.KeywordsStorage.TypeKeywords;
+            return new List<string>();
         }
 
         const string LibSourceDirectoryIdent = "%LIBSOURCEDIRECTORY%";

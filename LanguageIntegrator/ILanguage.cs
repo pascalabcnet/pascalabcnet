@@ -30,6 +30,8 @@ namespace Languages.Facade
         /// </summary>
         string Copyright { get; }
 
+        ILanguageInformation LanguageInformation { get; }
+
         /// <summary>
         /// Основной парсер языка
         /// </summary>

@@ -24,7 +24,9 @@ namespace Languages.Facade
             this.Name = name;
             this.Version = version;
             this.Copyright = copyright;
+            this.LanguageInformation = languageInformation;
             this.Parser = parser;
+            this.Parser.LanguageInformation = languageInformation;
             this.DocParser = docParser;
             this.SyntaxTreeConverters = syntaxTreeConverters;
             // this.SyntaxTreeToSemanticTreeConverter = syntaxTreeToSemanticTreeConverter;
@@ -38,6 +40,8 @@ namespace Languages.Facade
         public virtual string Version { get; protected set; }
 
         public virtual string Copyright { get; protected set; }
+
+        public virtual ILanguageInformation LanguageInformation { get; }
 
         public virtual IParser Parser { get; protected set; }
 

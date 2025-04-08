@@ -32,4 +32,12 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
         protected override syntax_tree_node ApplyConversions(syntax_tree_node root) => root;
     }
+
+    
+    public class DefaultSyntaxTreeConverter : BaseSyntaxTreeConverter
+    {
+        public override string Name => "Default";
+
+        protected override syntax_tree_node ApplyConcreteConversions(syntax_tree_node root) => root;
+    }
 }

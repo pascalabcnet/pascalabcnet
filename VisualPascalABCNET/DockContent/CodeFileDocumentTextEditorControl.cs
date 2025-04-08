@@ -21,7 +21,7 @@ namespace VisualPascalABC
         public CodeFileDocumentTextEditorControl()
         {
             editactions[Keys.Space | Keys.Control] = new CodeCompletionAllNamesAction();
-            editactions[Keys.Space | Keys.Shift] = new CodeCompletionNamesOnlyInModuleAction();
+            editactions[Keys.Space | Keys.Shift] = new CodeCompletionShiftSpaceActions();
             editactions[Keys.Enter | Keys.Control] = new GotoAction();
             editactions[Keys.LButton | Keys.Control] = new GotoAction();
             editactions[Keys.C | Keys.Shift | Keys.Control] = new ClassOrMethodRealizationAction();
