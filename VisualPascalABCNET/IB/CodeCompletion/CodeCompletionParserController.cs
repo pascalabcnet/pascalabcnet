@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using Languages.Integration;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -77,9 +75,12 @@ namespace VisualPascalABC
 
         public void RegisterFileForParsing(string FileName)
         {
-            open_files[FileName] = true;
-            CodeCompletion.CodeCompletionController.SetParser(System.IO.Path.GetExtension(FileName));
-            //ParseAllFiles();
+            if (Languages.Facade.LanguageProvider.Instance.HasLanguageForExtension(FileName))
+            {
+                open_files[FileName] = true;
+                CodeCompletion.CodeCompletionController.SetLanguage(FileName);
+                //ParseAllFiles();
+            }
         }
 
         public void CloseFile(string FileName)

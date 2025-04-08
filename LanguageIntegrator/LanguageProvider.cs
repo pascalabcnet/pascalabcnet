@@ -38,7 +38,7 @@ namespace Languages.Facade
         /// <summary>
         /// Выбор языка по расширению файла - бросает ошибку некорректного расширения
         /// </summary>
-        /// <param name="fileName">Имя файла</param>
+        /// <param name="fileName">Имя файла или просто расширение</param>
         /// <returns></returns>
         /// <exception cref="ParserBadFileExtension"></exception>
         public ILanguage SelectLanguageByExtension(string fileName)
@@ -62,6 +62,16 @@ namespace Languages.Facade
                         return language;
 
             return null;
+        }
+
+        /// <summary>
+        /// Есть ли язык, поддерживающий такое расширение файла
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public bool HasLanguageForExtension(string fileName)
+        {
+            return SelectLanguageByExtensionSafe(fileName) != null;
         }
 
         /// <summary>
