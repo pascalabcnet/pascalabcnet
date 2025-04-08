@@ -5306,7 +5306,8 @@ namespace CodeCompletion
 
         public override void visit(declarations_as_statement _declarations_as_statement)
         {
-            // throw new Exception("The method or operation is not implemented.");
+            foreach (declaration decl in _declarations_as_statement.defs.defs)
+                decl.visit(this);
         }
 
         public override void visit(array_size _array_size)
