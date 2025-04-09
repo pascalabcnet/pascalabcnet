@@ -24,7 +24,7 @@ namespace VisualPascalABCPlugins
 
         private PluginGUIItem Item;
         public string Name { get => "Teacher Control Plugin"; }
-        public string Version { get => "0.1"; }
+        public string Version { get => "0.2"; }
         public string Copyright { get => "Copyright © 2021-2025 by Stanislav Mikhalkovich"; }
 
         public string Login = null;
@@ -59,7 +59,7 @@ namespace VisualPascalABCPlugins
             // Регистрация обработчика
             this.Workbench.ServiceContainer.RunService.Starting += RunStartingHandler;
             this.Workbench.ServiceContainer.RunService.ChangeArgsBeforeRun += ChangeArgsBeforeRunHandler;
-            VisualEnvironmentCompiler.Compiler.SourceFilesProvider = TeacherSourceFilesProvider;
+            //VisualEnvironmentCompiler.Compiler.SourceFilesProvider = TeacherSourceFilesProvider;
             //Workbench.ServiceContainer.BuildService.BeforeCompile += BeforeCompileHandler;
         }
 
