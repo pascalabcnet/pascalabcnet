@@ -41,6 +41,12 @@ namespace VisualPascalABCPlugins
             }
             return encrypted;
         }
+        public static string EncryptString(string src)
+        {
+            var bytes = Encrypt(src);
+            return Convert.ToBase64String(bytes);
+        }
+
 
         public static string Decrypt(byte[] data)
         {
@@ -57,6 +63,12 @@ namespace VisualPascalABCPlugins
                 text = sr.ReadToEnd();
             }
             return text;
+        }
+
+        public static string DecryptString(string data)
+        {
+            var bytes = Convert.FromBase64String(data);
+            return Decrypt(bytes);
         }
 
         public static string[] ReadLoginPassFromAuth(string AuthFileFullName)
