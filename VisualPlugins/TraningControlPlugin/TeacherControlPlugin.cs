@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using System.IO;
 using VisualPascalABCPlugins.DBAccess;
 using PascalABCCompiler;
+using System.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace VisualPascalABCPlugins
 {
@@ -24,7 +26,7 @@ namespace VisualPascalABCPlugins
 
         private PluginGUIItem Item;
         public string Name { get => "Teacher Control Plugin"; }
-        public string Version { get => "0.1"; }
+        public string Version { get => "0.2"; }
         public string Copyright { get => "Copyright © 2021-2025 by Stanislav Mikhalkovich"; }
 
         public string Login = null;
@@ -53,32 +55,31 @@ namespace VisualPascalABCPlugins
                 TryChangeServerAddress(ref ServerAddress);
                 User.ServAddr = ServerAddress;
                 loginForm = new LoginForm(this);
+                VisualEnvironmentCompiler.ConvertUnitTextProperty = (FileName, Text) =>
+                {
+                    string fname = Path.GetFileNameWithoutExtension(FileName);
+                    if (fname == "Tasks")
+                    {
+                        int newLinePos = Text.IndexOf('\n');
+                        string firstLine = newLinePos == -1 ? Text : Text.Substring(0, newLinePos);
+                        if (firstLine.Contains("encrypted"))
+                        {
+                            string remainingText = Text.Substring(newLinePos + 1);
+                            Text = TeacherPluginUtils.DecryptString(remainingText);
+                        }    
+                            
+                        return Text;
+                    }
+                    return Text;
+                };
             }
             // RegisterForm.VisualEnvironmentCompiler = VisualEnvironmentCompiler; // Пока форма регистрации никак не связана с компилятором
 
             // Регистрация обработчика
             this.Workbench.ServiceContainer.RunService.Starting += RunStartingHandler;
             this.Workbench.ServiceContainer.RunService.ChangeArgsBeforeRun += ChangeArgsBeforeRunHandler;
-            VisualEnvironmentCompiler.Compiler.SourceFilesProvider = TeacherSourceFilesProvider;
+            //VisualEnvironmentCompiler.Compiler.SourceFilesProvider = TeacherSourceFilesProvider;
             //Workbench.ServiceContainer.BuildService.BeforeCompile += BeforeCompileHandler;
-        }
-
-        public object TeacherSourceFilesProvider(string FileName, SourceFileOperation FileOperation)
-        {
-            switch (FileOperation)
-            {
-                case SourceFileOperation.GetText:
-                    if (!File.Exists(FileName)) return null;
-                    string Text = FileReader.ReadFileContent(FileName, null);
-                    // Здесь можно дешифровать когда надо
-                    //File.AppendAllText("d:\\aaaa.txt", FileName + "\n");
-                    return Text;
-                case SourceFileOperation.Exists:
-                    return File.Exists(FileName);
-                case SourceFileOperation.GetLastWriteTime:
-                    return File.GetLastWriteTime(FileName);
-            }
-            return null;
         }
 
         public void Execute()
