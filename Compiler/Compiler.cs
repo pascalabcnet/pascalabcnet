@@ -3527,7 +3527,6 @@ namespace PascalABCCompiler
             OnChangeCompilerState(this, CompilerState.EndCompileFile, unitFileName);
 
             //SavePCU(currentUnit, unitFileName);
-            currentUnit.UnitFileName = unitFileName;
 
             return currentUnit;
 
@@ -3846,7 +3845,9 @@ namespace PascalABCCompiler
             currentUnit.Language = LanguageProvider.SelectLanguageByExtension(unitFileName);
 
             currentUnit.CaseSensitive = currentUnit.Language.CaseSensitive;
-            
+
+            currentUnit.UnitFileName = unitFileName;
+
             // получение итогового синтаксического дерева после сахарных преобразований
             ConstructSyntaxTreeAndRunSugarConversions(unitFileName, currentUnit, out docs);
 
