@@ -67,7 +67,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public convertion_data_and_alghoritms convertion_data_and_alghoritms;
 
-        internal returner ret;
+        public returner ret;
 
         internal document current_document;
 
@@ -160,7 +160,11 @@ namespace PascalABCCompiler.TreeConverter
             this.debug = initializationData.debug;
             this.debugging = initializationData.debugging;
             this.for_intellisense = initializationData.forIntellisense;
+            
             SystemLibrary.SystemLibrary.syn_visitor = this;
+            convertion_data_and_alghoritms.syntax_tree_visitor = this;
+            ret.syntax_tree_visitor = this;
+            context.syntax_tree_visitor = this;
         }
 
         public List<TreeRealization.var_definition_node> CompiledVariables => compiledVariables;
@@ -275,13 +279,17 @@ namespace PascalABCCompiler.TreeConverter
             CapturedVariablesSubstitutionClassGenerator.Reset();
         }
 
-        public syntax_tree_visitor(bool updateCompilationContextInstance = true)
+        public syntax_tree_visitor(bool mainConverterInitialization = true)
         {
-            convertion_data_and_alghoritms = new convertion_data_and_alghoritms(this);
-            ret = new returner(this);
-            context = new compilation_context(convertion_data_and_alghoritms, this, updateCompilationContextInstance);
-            contextChanger = new ContextChanger(context);
-            internal_reset();
+            // объекты ниже создаем только для паскалевского визитора, чтобы они оставались в единственном экземпляре EVA
+            if (mainConverterInitialization)
+            {
+                convertion_data_and_alghoritms = new convertion_data_and_alghoritms(this);
+                ret = new returner(this);
+                context = new compilation_context(convertion_data_and_alghoritms, this);
+                contextChanger = new ContextChanger(context);
+                internal_reset();
+            }
         }
 
 

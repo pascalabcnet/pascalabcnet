@@ -246,7 +246,7 @@ namespace PascalABCCompiler.TreeConverter
 
 		private SemanticTree.field_access_level _fal;
         private bool _has_nested_functions;
-        internal syntax_tree_visitor syntax_tree_visitor;
+        internal syntax_tree_visitor syntax_tree_visitor { get; set; }
 		
         private static compilation_context _instance;
 
@@ -254,13 +254,11 @@ namespace PascalABCCompiler.TreeConverter
         internal System.Collections.Hashtable member_decls = new System.Collections.Hashtable();
         internal bool namespace_converted = false;
 
-        public compilation_context(convertion_data_and_alghoritms convertion_data_and_alghoritms, syntax_tree_visitor syntax_tree_visitor, bool updateInstance)
+        public compilation_context(convertion_data_and_alghoritms convertion_data_and_alghoritms, syntax_tree_visitor syntax_tree_visitor)
         {
             this.convertion_data_and_alghoritms = convertion_data_and_alghoritms;
             this.syntax_tree_visitor = syntax_tree_visitor;
-            
-            if (updateInstance)
-                _instance = this;
+            _instance = this;
         }
 		
         

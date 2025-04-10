@@ -12,8 +12,13 @@ namespace SPythonSyntaxTreeVisitor
     // Возможно, стоит заменить на декоратор или стратегию вместо наследования EVA
     public class spython_syntax_tree_visitor : syntax_tree_visitor
     {
-        public spython_syntax_tree_visitor() : base(false)
+        public spython_syntax_tree_visitor(syntax_tree_visitor mainSyntaxTreeVisitor) : base(false)
         {
+            convertion_data_and_alghoritms = mainSyntaxTreeVisitor.convertion_data_and_alghoritms;
+            ret = mainSyntaxTreeVisitor.ret;
+            context = mainSyntaxTreeVisitor.context;
+            contextChanger = mainSyntaxTreeVisitor.contextChanger;
+
             OnLeave = RunAdditionalChecks;
         }
 

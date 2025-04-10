@@ -50,7 +50,7 @@ namespace Languages.SPython
 
         public override void SetSyntaxTreeToSemanticTreeConverter()
         {
-            SyntaxTreeToSemanticTreeConverter = new SPythonSyntaxTreeVisitor.spython_syntax_tree_visitor();
+            SyntaxTreeToSemanticTreeConverter = new SPythonSyntaxTreeVisitor.spython_syntax_tree_visitor(LanguageProvider.Instance.MainLanguage.SyntaxTreeToSemanticTreeConverter);
         }
 
     }

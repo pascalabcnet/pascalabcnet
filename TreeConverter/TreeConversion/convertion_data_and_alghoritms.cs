@@ -137,13 +137,17 @@ namespace PascalABCCompiler.TreeConverter
 			}
 		}
 
-        //TODO: Наверно это свойство вообще не нужно.
+
 		public syntax_tree_visitor syntax_tree_visitor
 		{
 			get
 			{
 				return _stv;
 			}
+            set
+            {
+                _stv = value;
+            }
 		}
 
         //TODO: Избавиться от дублирования метода.
