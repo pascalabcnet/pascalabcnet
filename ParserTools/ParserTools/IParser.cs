@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+п»ї// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
@@ -20,24 +20,11 @@ namespace PascalABCCompiler.Parsers
         }
 
         /// <summary>
-        /// Callback для проверки, парсим ли мы сейчас модуль или нет (для языков без ключевых слов у модуля)
+        /// Callback РґР»СЏ РїСЂРѕРІРµСЂРєРё, РїР°СЂСЃРёРј Р»Рё РјС‹ СЃРµР№С‡Р°СЃ РјРѕРґСѓР»СЊ РёР»Рё РЅРµС‚ (РґР»СЏ СЏР·С‹РєРѕРІ Р±РµР· РєР»СЋС‡РµРІС‹С… СЃР»РѕРІ Сѓ РјРѕРґСѓР»СЏ)
         /// </summary>
         Func<bool> CheckIfParsingUnit { get; set; }
 
-        /// <summary>
-        /// Данные о всех поддерживаемых директивах компилятора
-        /// </summary>
-        Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; }
-
-        ILanguageInformation LanguageInformation
-        {
-        	get;
-        }
-
-        /// <summary>
-        /// Класс, отвечащий за хранение и обработку ключевых слов языка
-        /// </summary>
-        BaseKeywords Keywords { get; }
+        ILanguageInformation LanguageInformation { get; set; }
 
         compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, List<string> DefinesList = null);
 
@@ -50,7 +37,6 @@ namespace PascalABCCompiler.Parsers
         expression GetTypeAsExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings);
 
         void Reset();
-
     }
 
     

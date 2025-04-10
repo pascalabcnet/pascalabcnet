@@ -15,10 +15,10 @@ namespace PascalABCCompiler.Parsers
     	/// Получить полное описание элемента (в желтой подсказке)
     	/// </summary>
 		string GetDescription(IBaseScope scope);
-		/// <summary>
-    	/// Получить краткое описание элемента (без ключевых слов)
-    	/// </summary>
-    	string GetSimpleDescription(IBaseScope scope);
+        /// <summary>
+        /// Получить краткое описание элемента (без ключевых слов)
+        /// </summary>
+        string GetSimpleDescription(IBaseScope scope);
     	/// <summary>
     	/// Получить короткое имя откомпилированного типа
     	/// </summary>
@@ -129,14 +129,17 @@ namespace PascalABCCompiler.Parsers
     	//char GetParameterDelimiter();
     	string GetCompiledTypeRepresentation(Type t, System.Reflection.MemberInfo mi, ref int line, ref int col);
         bool IsKeyword(string value);
-        string[] Keywords
+        
+        BaseKeywords KeywordsStorage
         {
             get;
         }
-        string[] TypeKeywords
-        {
-            get;
-        }
+
+        /// <summary>
+        /// Данные о всех поддерживаемых директивах компилятора
+        /// </summary>
+        Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; }
+
         string SystemUnitName
         {
             get;
