@@ -12,8 +12,12 @@ namespace SPythonSyntaxTreeVisitor
     // Возможно, стоит заменить на декоратор или стратегию вместо наследования EVA
     public class spython_syntax_tree_visitor : syntax_tree_visitor
     {
+        syntax_tree_visitor mainVisitor;
+
         public spython_syntax_tree_visitor(syntax_tree_visitor mainSyntaxTreeVisitor) : base(false)
         {
+
+            mainVisitor = mainSyntaxTreeVisitor;
             convertion_data_and_alghoritms = mainSyntaxTreeVisitor.convertion_data_and_alghoritms;
             ret = mainSyntaxTreeVisitor.ret;
             context = mainSyntaxTreeVisitor.context;
@@ -57,6 +61,14 @@ namespace SPythonSyntaxTreeVisitor
 
             // SystemUnitAssigned = true; - убрали для SPython
             CreateSpecialFields(psystem_unit);
+        }
+
+        // Инициализируем только переменные экземпляра, не влияем на глобальное состояние в отличие от визитора Паскаля EVA
+        protected override void internal_reset()
+        {
+            _system_unit = mainVisitor._system_unit;
+            SystemLibrary.system_unit = _system_unit;
+            ResetSelfFields();
         }
 
         public override void AddError(location loc, string ErrResourceString, params object[] values)

@@ -89,7 +89,7 @@ namespace PascalABCCompiler.TreeConverter
 
         private common_unit_node _compiled_unit;
 
-        private common_unit_node _system_unit;
+        public common_unit_node _system_unit;
 		internal bool debug=true;
 		public bool debugging=false;
         public bool for_intellisense = false;
@@ -161,7 +161,10 @@ namespace PascalABCCompiler.TreeConverter
             this.debugging = initializationData.debugging;
             this.for_intellisense = initializationData.forIntellisense;
             
+            // Возможно, это тоже вызывает ошибки, если присваивается не паскалевский визитор, пока непонятно EVA
             SystemLibrary.SystemLibrary.syn_visitor = this;
+            
+            // Добавлено, потому что в SPython используются эти же объекты, а не создаются новые EVA
             convertion_data_and_alghoritms.syntax_tree_visitor = this;
             ret.syntax_tree_visitor = this;
             context.syntax_tree_visitor = this;
@@ -242,7 +245,7 @@ namespace PascalABCCompiler.TreeConverter
             return gpa;
         }
 
-        private void internal_reset()
+        protected virtual void internal_reset()
         {
             PascalABCCompiler.SystemLibrary.SystemLibInitializer.initialization_properties init_properties =
                 new PascalABCCompiler.SystemLibrary.SystemLibInitializer.initialization_properties();
@@ -256,6 +259,18 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibrary.system_unit = _system_unit;
             generic_convertions.reset_generics();
             generic_convertions.visitor = this;
+            
+            #region MikhailoMMX, реинициализация класса OpenMP
+            OpenMP.InternalReset();
+            #endregion
+            CapturedVariablesSubstitutionClassGenerator.Reset();
+
+            ResetSelfFields();
+        }
+
+        // Добавили, чтобы можно было использовать его для потомков syntax_tree_visitor EVA
+        protected void ResetSelfFields()
+        {
             _record_created = false;
             RefTypesForCheckPointersTypeForDotNetFramework.Clear();
             reset_for_interface();
@@ -270,13 +285,9 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.NeedsToRestore.Clear();
             type_section_converting = false;
             ThrowCompilationError = true;
-            #region MikhailoMMX, реинициализация класса OpenMP
-            OpenMP.InternalReset();
-            CurrentParallelPosition = ParallelPosition.Outside;
-            #endregion
-
             lambdaProcessingState = LambdaProcessingState.None; //lroman
-            CapturedVariablesSubstitutionClassGenerator.Reset();
+            // MikhailoMMX, реинициализация для OpenMP
+            CurrentParallelPosition = ParallelPosition.Outside;
         }
 
         public syntax_tree_visitor(bool mainConverterInitialization = true)
