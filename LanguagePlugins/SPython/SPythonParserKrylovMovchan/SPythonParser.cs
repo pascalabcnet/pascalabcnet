@@ -76,7 +76,7 @@ namespace SPythonParser
 
         protected override syntax_tree_node BuildTreeInTypeExprMode(string FileName, string Text)
         {
-            Text = string.Concat("<<type>>", Environment.NewLine, Text);
+            Text = string.Concat("<<type>>", Text);
 
             return Parse(Text, FileName) as expression;
         }
@@ -86,7 +86,7 @@ namespace SPythonParser
             if (Text == string.Empty)
                 return null;
             
-            Text = string.Concat("<<expression>>", Environment.NewLine, Text);
+            Text = string.Concat("<<expression>>", Text);
 
             return Parse(Text, FileName) as expression;
         }
@@ -107,7 +107,7 @@ namespace SPythonParser
 
         protected override syntax_tree_node BuildTreeInStatementMode(string FileName, string Text)
         {
-            Text = string.Concat("<<statement>>", Environment.NewLine, Text);
+            Text = string.Concat("<<statement>>", Text);
 
             return Parse(Text, FileName) as statement;
         }

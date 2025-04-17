@@ -115,7 +115,7 @@ program
 					initialization_part.finalization_sect, null, @$);
 			}
 		}
-	| parts
+	| parts END_OF_FILE
 		{ 
 			root = $1; 
 		}
