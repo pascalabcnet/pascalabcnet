@@ -94,7 +94,6 @@ function !pow_recursion(x, n: integer): integer;
 function !pow_recursion(x, n: biginteger): biginteger;
 
 type 
-    
     list<T> = PABCSystem.List<T>;
     biginteger = PABCSystem.BigInteger;
 
@@ -225,6 +224,20 @@ end;
 function bigint(x: integer): biginteger;
 begin
   Result := x;
+end;
+
+function !count<T>(Self: list<T>; val: T): integer; extensionmethod;
+begin
+  Result := 0;
+  for var i := 0 to Self.Count - 1 do
+       if val = Self[i] then
+         Result += 1;
+end;
+
+function pop<T>(Self: list<T>; ind: integer): T; extensionmethod;
+begin
+  Result := Self[ind];
+  Self.RemoveAt(ind);
 end;
 
 end.

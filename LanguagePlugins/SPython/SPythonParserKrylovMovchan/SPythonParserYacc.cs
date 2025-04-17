@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-V3E9T2U
-// DateTime: 07.04.2025 22:07:50
-// UserName: alex
+// Machine:  DESKTOP-56159VE
+// DateTime: 17.04.2025 14:49:56
+// UserName: ????
 // Input file <SPythonParser.y>
 
 // options: no-lines gplex

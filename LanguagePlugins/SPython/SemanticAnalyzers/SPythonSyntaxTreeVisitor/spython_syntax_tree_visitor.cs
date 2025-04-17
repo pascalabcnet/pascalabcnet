@@ -5,7 +5,8 @@ using PascalABCCompiler.SystemLibrary;
 using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.Errors;
-
+using System.ComponentModel.Design;
+using System;
 
 namespace SPythonSyntaxTreeVisitor
 {
@@ -127,6 +128,50 @@ namespace SPythonSyntaxTreeVisitor
             base.AddError(err, shouldReturn);
 
         }
+
+        private Dictionary<string, string> listNamesMapping = 
+            new Dictionary<string, string> { 
+                { "append", "Add" },
+                { "clear", "Clear" },
+                { "insert", "Insert" },
+                { "remove", "Remove" },
+                { "pop", "pop" },
+                { "index", "IndexOf" },
+                { "count", "!count" },
+                { "sort", "Sort" },
+                { "reverse", "Reverse" },
+                { "copy", "ToList" },
+            };
+
+        public override void visit(method_call _method_call)
+        {
+            if (_method_call.dereferencing_value is dot_node dn)
+            {
+                try
+                {
+                    expression_node left = convert_strong(dn.left);
+                    dn.left = new semantic_addr_value(left);
+                    if (dn.right is ident id && left.type.name.StartsWith("List"))
+                    {
+                        if (!listNamesMapping.ContainsKey(id.name))
+                        {
+                            AddError(left.location, "SPYTHONSEMANTIC_TYPE_{0}_HAS_NO_{1}_METHOD", ConvertTypeNameToSPythonTypeName(left.type), id.name);
+                        }
+                        else
+                        {
+                            id.name = listNamesMapping[id.name];
+                        }
+                    }
+                }
+                catch (Error e)
+                {
+                    if (e.Message != "Ожидалось имя переменной")
+                        throw e; 
+                }
+            }
+            base.visit(_method_call);
+        }
+
         public override void visit(bin_expr _bin_expr)
         {
             expression_node left = convert_strong(_bin_expr.left);
