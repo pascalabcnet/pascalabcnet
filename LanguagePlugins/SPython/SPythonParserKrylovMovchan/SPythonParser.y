@@ -41,7 +41,7 @@
 }
 
 %token <ti> FOR IN WHILE IF ELSE ELIF DEF RETURN BREAK CONTINUE IMPORT FROM GLOBAL AS PASS CLASS LAMBDA EXIT NEW IS
-%token <ti> INDENT UNINDENT END_OF_FILE END_OF_LINE
+%token <ti> INDENT UNINDENT END_OF_FILE END_OF_LINE DECLTYPE
 %token <ex> INTNUM REALNUM TRUE FALSE BIGINT
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON ARROW
 %token <stn> STRINGNUM
@@ -50,6 +50,7 @@
 %token <id> ID
 %token <op> LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
 %token <op> AND OR NOT STARSTAR
+%token <ti> tkParseModeExpression tkParseModeStatement tkParseModeType
 
 %left OR
 %left AND
@@ -59,16 +60,16 @@
 %left NOT
 %right STARSTAR
 
-%type <id> ident dotted_ident func_name_ident
-%type <ex> expr proc_func_call const_value variable optional_condition act_param new_expr is_expr
+%type <id> ident dotted_ident func_name_ident type_decl_identifier
+%type <ex> expr proc_func_call const_value variable optional_condition act_param new_expr is_expr variable_as_type
 %type <stn> act_param_list optional_act_param_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt pass_stmt
 %type <stn> var_stmt assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif exit_stmt
 %type <stn> expr_list
 %type <stn> stmt_list block
 %type <stn> program param_name form_param_sect form_param_list optional_form_param_list dotted_ident_list
 %type <stn> ident_as_ident ident_as_ident_list
-%type <td> proc_func_header type_ref simple_type_identifier, template_type
-%type <stn> import_clause, template_type_params, template_param_list
+%type <td> proc_func_header type_ref simple_type_identifier template_type
+%type <stn> import_clause template_type_params template_param_list parts stmt_or_expression
 %type <ob> optional_semicolon end_of_line
 %type <op> assign_type
 
@@ -113,9 +114,54 @@ program
 					initialization_part.initialization_sect,
 					initialization_part.finalization_sect, null, @$);
 			}
-
+		}
+	| parts
+		{ 
+			root = $1; 
 		}
 	;
+
+parts
+    : tkParseModeExpression expr
+        { $$ = $2; }
+    | tkParseModeExpression DECLTYPE type_decl_identifier
+        { $$ = $3; }
+    | tkParseModeType variable_as_type
+		{ $$ = $2; }
+	| tkParseModeStatement stmt_or_expression
+        { $$ = $2; }
+    ;
+
+type_decl_identifier
+    : ident
+		{ 
+			$$ = $1; 
+		}
+    | ident  template_type_params           
+        { 
+			$$ = new template_type_name($1.name, $2 as ident_list, @$); 
+        }
+	;
+
+variable_as_type
+	: dotted_ident 
+		{ 
+			$$ = $1;
+		}
+	| dotted_ident template_type_params 
+		{ 
+			$$ = new ident_with_templateparams($1 as addressed_value, $2 as template_param_list, @$);   
+		}
+	;
+
+stmt_or_expression
+    : expr 
+        { $$ = new expression_as_statement($1,@$);}
+    | assign_stmt
+        { $$ = $1; }
+    | var_stmt
+        { $$ = $1; }
+    ;
 
 stmt_list
 	: stmt

@@ -36,6 +36,7 @@ namespace SPythonParser
             CreateNewKeyword("exit", Tokens.EXIT);
             CreateNewKeyword("new", Tokens.NEW, KeywordKind.New);
             CreateNewKeyword("is", Tokens.IS);
+            CreateNewKeyword("decltype", Tokens.DECLTYPE);
         }
 
         protected override int GetIdToken() => (int)Tokens.ID;

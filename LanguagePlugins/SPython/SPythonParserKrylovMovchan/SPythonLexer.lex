@@ -144,6 +144,10 @@ BIGINTNUM {INTNUM}bi
 ")"  { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.RPAR; }
 "**" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.STARSTAR; }
 
+\<\<expression\>\>  { return (int)Tokens.tkParseModeExpression; }
+\<\<statement\>\>   { return (int)Tokens.tkParseModeStatement;  }
+\<\<type\>\>        { return (int)Tokens.tkParseModeType;       }
+
 "#!" {
   parserTools.AddErrorFromResource("WRONG_INDENT", 
     new LexLocation(CurrentLexLocation.StartLine + 1, 0, CurrentLexLocation.StartLine + 1, 0));

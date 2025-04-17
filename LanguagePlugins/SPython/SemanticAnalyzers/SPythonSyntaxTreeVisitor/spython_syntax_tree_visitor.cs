@@ -143,6 +143,7 @@ namespace SPythonSyntaxTreeVisitor
                 { "copy", "ToList" },
             };
 
+        /*
         public override void visit(method_call _method_call)
         {
             if (_method_call.dereferencing_value is dot_node dn)
@@ -171,6 +172,7 @@ namespace SPythonSyntaxTreeVisitor
             }
             base.visit(_method_call);
         }
+        */
 
         public override void visit(bin_expr _bin_expr)
         {
