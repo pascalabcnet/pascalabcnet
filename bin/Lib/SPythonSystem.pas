@@ -1,6 +1,11 @@
 ﻿{$HiddenIdents}
 unit SPythonSystem;
 
+{$reference '%GAC%\System.dll'}
+{$reference '%GAC%\mscorlib.dll'}
+{$reference '%GAC%\System.Core.dll'}
+{$reference '%GAC%\System.Numerics.dll'}
+
 interface
 
 uses PABCSystem;

@@ -965,6 +965,8 @@ namespace Languages.SPython.Frontend.Data
                 case ScopeKind.Procedure: return GetDescriptionForProcedure(scope as IProcScope);
                 case ScopeKind.ElementScope: return GetDescriptionForElementScope(scope as IElementScope);
                 case ScopeKind.TypeSynonim: return GetSynonimDescription(scope as ITypeSynonimScope);
+                case ScopeKind.Namespace: return GetDescriptionForNamespace(scope as INamespaceScope);
+
                 /*case ScopeKind.Array: return GetDescriptionForArray(scope as IArrayScope);
                 case ScopeKind.Enum: return GetDescriptionForEnum(scope as IEnumScope);
                 case ScopeKind.Set: return GetDescriptionForSet(scope as ISetScope);
@@ -1259,7 +1261,9 @@ namespace Languages.SPython.Frontend.Data
                 case ScopeKind.Procedure: return GetSimpleDescriptionForProcedure(scope as IProcScope);
                 case ScopeKind.ElementScope: return GetSimpleDescriptionForElementScope(scope as IElementScope);
                 case ScopeKind.TypeSynonim: return GetSimpleSynonimDescription(scope as ITypeSynonimScope);
-
+                case ScopeKind.UnitInterface: return GetDescriptionForModule(scope as IInterfaceUnitScope);
+                case ScopeKind.Namespace: return GetDescriptionForNamespace(scope as INamespaceScope);
+                
                 /*case ScopeKind.Enum: return GetDescriptionForEnum(scope as IEnumScope);
                 case ScopeKind.Set: return GetDescriptionForSet(scope as ISetScope);
 
@@ -1267,10 +1271,19 @@ namespace Languages.SPython.Frontend.Data
                 case ScopeKind.CompiledProperty: return GetDescriptionForCompiledProperty(scope as ICompiledPropertyScope);
                 case ScopeKind.CompiledMethod: return GetDescriptionForCompiledMethod(scope as ICompiledMethodScope);
 
-                case ScopeKind.CompiledConstructor: return GetDescriptionForCompiledConstructor(scope as ICompiledConstructorScope);
-                case ScopeKind.UnitInterface: return GetDescriptionForModule(scope as IInterfaceUnitScope);*/
+                case ScopeKind.CompiledConstructor: return GetDescriptionForCompiledConstructor(scope as ICompiledConstructorScope);*/
             }
             return "";
+        }
+
+        private string GetDescriptionForModule(IInterfaceUnitScope scope)
+        {
+            return "unit " + scope.Name;
+        }
+
+        private string GetDescriptionForNamespace(INamespaceScope scope)
+        {
+            return "namespace " + scope.Name;
         }
 
         private string GetSimpleSynonimDescription(ITypeSynonimScope scope)

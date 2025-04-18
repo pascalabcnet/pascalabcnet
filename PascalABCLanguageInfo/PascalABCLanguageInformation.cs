@@ -223,7 +223,7 @@ namespace Languages.Pascal.Frontend.Data
             return "";
         }
 
-        public string GetDescriptionForModule(IInterfaceUnitScope scope)
+        private string GetDescriptionForModule(IInterfaceUnitScope scope)
         {
             return (scope.IsNamespaceUnit ? "namespace " : "unit ") + scope.Name;
         }
@@ -1648,7 +1648,7 @@ namespace Languages.Pascal.Frontend.Data
             return sb.ToString();
         }
 
-        protected string GetDescriptionForNamespace(INamespaceScope scope)
+        private string GetDescriptionForNamespace(INamespaceScope scope)
         {
             return "namespace " + scope.Name;
         }
