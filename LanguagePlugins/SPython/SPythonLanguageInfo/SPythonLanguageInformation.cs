@@ -381,7 +381,7 @@ namespace Languages.SPython.Frontend.Data
             bool is_comm = false;
             while (i >= 0 && !is_comm && Text[i] != '\n' && Text[i] != '\r')
             {
-                if (Text[i] == '\'')
+                if (Text[i] == '\'' || Text[i] == '"')
                 {
                     if (kav.Count == 0) kav.Push('\'');
                     else kav.Pop();
@@ -391,7 +391,7 @@ namespace Languages.SPython.Frontend.Data
                     if (kav.Count == 0)
                     {
                         comment_position = i;
-                        while (i >= 0 && Text[i] != '\'')
+                        while (i >= 0 && Text[i] != '\'' && Text[i] != '"')
                             i--;
                         if (i >= 1 && Text[i - 1] == '$')
                             return false;
@@ -403,8 +403,8 @@ namespace Languages.SPython.Frontend.Data
                 {
                     return false;
                 }
-                else if (Text[i] == '/')
-                    if (i > 0 && Text[i - 1] == '/' && kav.Count == 0)
+                else if (Text[i] == '#')
+                    if (kav.Count == 0)
                     {
                         is_comm = true;
                         one_line_comment = true;
@@ -471,7 +471,7 @@ namespace Languages.SPython.Frontend.Data
                                 if (keyw == KeywordKind.Function || keyw == KeywordKind.Constructor || keyw == KeywordKind.Destructor)
                                     return "";
                             }
-                            else if (i >= 0 && Text[i] == '\'') return "";
+                            else if (i >= 0 && (Text[i] == '\'' || Text[i] == '"')) return "";
                             i = tmp;
                         }
                         sb.Insert(0, ch);//.Append(Text[i]);
@@ -593,7 +593,7 @@ namespace Languages.SPython.Frontend.Data
                                                 else
                                                     bound = 0;
                                             }
-                                            else if (i >= 0 && Text[i] == '\'') return "";
+                                            else if (i >= 0 && (Text[i] == '\'' || Text[i] == '"')) return "";
                                             i = tmp;
                                         }
                                     }
@@ -619,6 +619,7 @@ namespace Languages.SPython.Frontend.Data
                                 else sb.Insert(0, ch);
                                 break;
                             case '\'':
+                            case '"':
                                 if (kav.Count == 0)
                                     kav.Push(ch);
                                 else
@@ -828,7 +829,7 @@ namespace Languages.SPython.Frontend.Data
                                 }
                             }
                         }
-                        else if (c == '\'' && !in_comment)
+                        else if ((c == '\'' || c == '"') && !in_comment)
                         {
                             in_kav = !in_kav;
                         }
@@ -840,10 +841,9 @@ namespace Languages.SPython.Frontend.Data
                         {
                             in_comment = false;
                         }
-                        else if (c == '/' && !in_kav && !in_comment)
+                        else if (c == '#' && !in_kav && !in_comment)
                         {
-                            if (j + 1 < Text.Length && Text[j + 1] == '/')
-                                break;
+                            break;
                         }
                         j++;
                     }
@@ -1396,7 +1396,7 @@ namespace Languages.SPython.Frontend.Data
 
         public override bool IsDefinitionIdentifierAfterKeyword(KeywordKind keyw)
         {
-            if (keyw == KeywordKind.Function || keyw == KeywordKind.Constructor)
+            if (keyw == KeywordKind.Function || keyw == KeywordKind.Constructor || keyw == KeywordKind.Punkt)
                 return true;
             return false;
         }
@@ -1426,7 +1426,7 @@ namespace Languages.SPython.Frontend.Data
             bool in_format_str = false;
             while (j <= i)
             {
-                if (Text[j] == '\'')
+                if (Text[j] == '\'' || Text[j] == '"')
                 {
                     if (kav_stack.Count == 0 && !in_keyw)
                     {
@@ -1455,13 +1455,13 @@ namespace Languages.SPython.Frontend.Data
             while (j >= 0)
             {
                 //if (Text[j] == '{') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
-                if (!in_keyw && (Text[j] == '\'' || Text[j] == '\n'))
+                if (!in_keyw && (Text[j] == '\'' || Text[j] == '"' || Text[j] == '\n'))
                     break;
                 if (Text[j] == '}')
                     in_keyw = true;
                 else
-                if (Text[j] == '/' && !in_keyw)
-                    if (j > 0 && Text[j - 1] == '/') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
+                if (Text[j] == '#' && !in_keyw)
+                    return PascalABCCompiler.Parsers.KeywordKind.Punkt;
                 j--;
             }
             //if (j>= 0 && Text[j] == '\'') return CodeCompletion.KeywordKind.kw_punkt;
