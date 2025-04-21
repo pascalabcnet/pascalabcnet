@@ -100,7 +100,7 @@ function !pow_recursion(x, n: biginteger): biginteger;
 
 type 
     list<T> = PABCSystem.List<T>;
-    biginteger = PABCSystem.BigInteger;
+    // biginteger = PABCSystem.BigInteger;
 
 implementation
 

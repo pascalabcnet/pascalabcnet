@@ -2628,10 +2628,24 @@ namespace CodeCompletion
 
                 }
             }
-            if (_unit_module.unit_name.idunit_name.name == StringConstants.pascalSystemUnitName)
+
+            string unitName = _unit_module.unit_name.idunit_name.name;
+
+            // считаем основной модуль идущим первым в списке EVA
+            var language = Languages.Facade.LanguageProvider.Instance.Languages.Find(lang => lang.SystemUnitNames.First() == unitName);
+
+            if (language != null)
             {
-                add_standart_types(entry_scope);
+                // добавление стандартных типов можно делать в отдельный фиктивный модуль, как в основном компиляторе
+                // это позволит работать директиве DisableStandardUnits, а также не будет засорять сам стандартный модуль типами EVA
+                add_standart_types(entry_scope, language.LanguageInformation);
+
+                if (language == Languages.Facade.LanguageProvider.Instance.MainLanguage)
+                {
+                    AddPascalStandardProcedures();
+                }
             }
+
             CodeCompletionController.comp_modules[_unit_module.file_name] = this.converter;
             if (!existed_ns)
                 foreach (string s in namespaces)
@@ -2721,9 +2735,9 @@ namespace CodeCompletion
                         dc.visitor.entry_scope.InitAssemblies();
                         entry_scope.AddUsedUnit(dc.visitor.entry_scope);
                         
-                        // стандартные типы добавляются в PABCSystem  EVA
-                        if (unitName == StringConstants.pascalSystemUnitName)
-                            add_standart_types(dc.visitor.entry_scope);
+                        // стандартные типы добавляются в PABCSystem - это не требуется, поскольку они там уже есть после Compile  EVA
+                        //if (unitName == StringConstants.pascalSystemUnitName)
+                        //    add_standart_types(dc.visitor.entry_scope);
                         //get_standart_types(dc.stv);
                         entry_scope.AddName(unitName, dc.visitor.entry_scope);
                     }
@@ -3054,87 +3068,68 @@ namespace CodeCompletion
             }
         }
         
-        private void add_standart_types(SymScope cur_scope)
+        private void add_standart_types(SymScope cur_scope, ILanguageInformation languageInfo)
         {
-        	string type_name = null;
-        	//obj_type = new CompiledScope(new SymInfo(StringConstants.object_type_name, SymbolKind.Type,StringConstants.object_type_name),typeof(object));
-        	cur_scope.AddName(StringConstants.object_type_name,TypeTable.obj_type);
-        	//int_type = new CompiledScope(new SymInfo(StringConstants.integer_type_name, SymbolKind.Type,StringConstants.integer_type_name),typeof(int));
-        	//cur_scope.AddName(StringConstants.integer_type_name, int_type);
-        	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.IntType);
-        	if (type_name != null) cur_scope.AddName(type_name, TypeTable.int_type);
-        	//real_type = new CompiledScope(new SymInfo(StringConstants.real_type_name, SymbolKind.Type,StringConstants.real_type_name),typeof(double));
-        	//cur_scope.AddName(StringConstants.real_type_name,real_type);
-            type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.DoubleType);
-            if (type_name != null) cur_scope.AddName(type_name, TypeTable.real_type);
-        	//string_type = new CompiledScope(new SymInfo(StringConstants.string_type_name, SymbolKind.Class,StringConstants.string_type_name),typeof(string));
-        	cur_scope.AddName(StringConstants.string_type_name,TypeTable.string_type);
-        	//cur_scope.AddName(StringConstants.string_type_name,
-        	//new CompiledScope(new SymInfo(StringConstants.string_type_name, SymbolKind.Type,StringConstants.ShortStringTypeName),typeof(string)));
-        	//char_type = new CompiledScope(new SymInfo(StringConstants.char_type_name, SymbolKind.Type,StringConstants.char_type_name),typeof(char));
-        	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.CharType);
-            if (type_name != null) cur_scope.AddName(type_name, TypeTable.char_type);
-        	//cur_scope.AddName(StringConstants.char_type_name,char_type);
-        	//bool_type = new CompiledScope(new SymInfo(StringConstants.bool_type_name, SymbolKind.Type,StringConstants.bool_type_name),typeof(bool));
-        	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.BoolType);
-            if (type_name != null) cur_scope.AddName(type_name, TypeTable.bool_type);
-        	//cur_scope.AddName(StringConstants.bool_type_name,bool_type);
-        	//byte_type = new CompiledScope(new SymInfo(StringConstants.byte_type_name, SymbolKind.Type,StringConstants.byte_type_name),typeof(byte));
-        	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.ByteType);
-            if (type_name != null) cur_scope.AddName(type_name, TypeTable.byte_type);
-        	//cur_scope.AddName(StringConstants.byte_type_name,byte_type);
-        	//int16_type = new CompiledScope(new SymInfo(StringConstants.short_type_name, SymbolKind.Type,StringConstants.short_type_name),typeof(short));
-        	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.ShortType);
-            if (type_name != null) cur_scope.AddName(type_name, TypeTable.int16_type);
-        	//cur_scope.AddName(StringConstants.short_type_name,int16_type);
-        	//sbyte_type = new CompiledScope(new SymInfo(StringConstants.sbyte_type_name, SymbolKind.Type,StringConstants.sbyte_type_name),typeof(sbyte));
-        	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.SByteType);
-            if (type_name != null) cur_scope.AddName(type_name, TypeTable.sbyte_type);
-        	//cur_scope.AddName(StringConstants.sbyte_type_name,sbyte_type);
-        	//uint16_type = new CompiledScope(new SymInfo(StringConstants.ushort_type_name, SymbolKind.Type,StringConstants.ushort_type_name),typeof(ushort));
-        	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.UShortType);
-            if (type_name != null) cur_scope.AddName(type_name, TypeTable.uint16_type);
-        	//cur_scope.AddName(StringConstants.ushort_type_name,uint16_type);
-        	//uint32_type = new CompiledScope(new SymInfo(StringConstants.uint_type_name, SymbolKind.Type,StringConstants.uint_type_name),typeof(uint));
-        	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.UIntType);
-            if (type_name != null) cur_scope.AddName(type_name, TypeTable.uint32_type);
-        	//cur_scope.AddName(StringConstants.uint_type_name,uint32_type);
-        	//int64_type = new CompiledScope(new SymInfo(StringConstants.long_type_name, SymbolKind.Type,StringConstants.long_type_name),typeof(long));
-        	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.Int64Type);
-            if (type_name != null) cur_scope.AddName(type_name, TypeTable.int64_type);
-        	//cur_scope.AddName(StringConstants.long_type_name,int64_type);
-        	//uint64_type = new CompiledScope(new SymInfo(StringConstants.ulong_type_name, SymbolKind.Type,StringConstants.ulong_type_name),typeof(ulong));
-        	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.UInt64Type);
-            if (type_name != null) cur_scope.AddName(type_name, TypeTable.uint64_type);
-        	//cur_scope.AddName(StringConstants.ulong_type_name,uint64_type);
-        	//float_type = new CompiledScope(new SymInfo(StringConstants.float_type_name, SymbolKind.Type,StringConstants.float_type_name),typeof(float));
-        	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.FloatType);
-            if (type_name != null) cur_scope.AddName(type_name, TypeTable.float_type);
-        	//cur_scope.AddName(StringConstants.float_type_name,float_type);
-        	//ptr_type = new CompiledScope(new SymInfo(StringConstants.pointer_type_name, SymbolKind.Type,StringConstants.pointer_type_name),Type.GetType("System.Void*"));
-        	type_name = this.converter.controller.Parser.LanguageInformation.GetStandardTypeByKeyword(PascalABCCompiler.Parsers.KeywordKind.PointerType);
-            if (type_name != null) cur_scope.AddName(type_name, TypeTable.ptr_type);
-        	//cur_scope.AddName(StringConstants.pointer_type_name,ptr_type);
-        	ProcScope ps = new ProcScope(StringConstants.set_length_procedure_name,null);
-        	ps.AddParameter(new ElementScope(new SymInfo("arr", SymbolKind.Parameter,"arr"),new ArrayScope(),null,ps));
-        	ps.parameters[0].param_kind = parametr_kind.var_parametr;
-        	ps.AddParameter(new ElementScope(new SymInfo("length", SymbolKind.Parameter,"length"),TypeTable.int_type,null,ps));
-        	ps.Complete();
-        	cur_scope.AddName(StringConstants.set_length_procedure_name,ps);
-        	cur_scope.AddName(StringConstants.true_const_name,new ElementScope(new SymInfo(StringConstants.true_const_name, SymbolKind.Constant,StringConstants.true_const_name),TypeTable.bool_type,true,null));
-        	cur_scope.AddName(StringConstants.false_const_name,new ElementScope(new SymInfo(StringConstants.false_const_name, SymbolKind.Constant,StringConstants.false_const_name),TypeTable.bool_type,false,null));
-       		ps = new ProcScope(StringConstants.new_procedure_name,null);
-       		ElementScope prm = new ElementScope(new SymInfo("p", SymbolKind.Parameter,"p"),TypeTable.ptr_type,null,ps);
-       		prm.param_kind = parametr_kind.var_parametr;
-       		ps.AddParameter(prm);
-       		ps.Complete();
-       		cur_scope.AddName(StringConstants.new_procedure_name,ps);
-       		ps = new ProcScope(StringConstants.dispose_procedure_name,null);
-       		prm = new ElementScope(new SymInfo("p", SymbolKind.Parameter,"p"),TypeTable.ptr_type,null,ps);
-       		prm.param_kind = parametr_kind.var_parametr;
-       		ps.AddParameter(prm);
-       		ps.Complete();
-       		cur_scope.AddName(StringConstants.dispose_procedure_name,ps);
+
+            var standardTypesData = new List<(PascalABCCompiler.Parsers.KeywordKind keywordKind, CompiledScope type)>()
+            {
+                (PascalABCCompiler.Parsers.KeywordKind.ObjectType, TypeTable.obj_type),
+                (PascalABCCompiler.Parsers.KeywordKind.IntType, TypeTable.int_type),
+                (PascalABCCompiler.Parsers.KeywordKind.DoubleType, TypeTable.real_type),
+                (PascalABCCompiler.Parsers.KeywordKind.StringType, TypeTable.string_type),
+                (PascalABCCompiler.Parsers.KeywordKind.CharType, TypeTable.char_type),
+                (PascalABCCompiler.Parsers.KeywordKind.BoolType, TypeTable.bool_type),
+                (PascalABCCompiler.Parsers.KeywordKind.ByteType, TypeTable.byte_type),
+                (PascalABCCompiler.Parsers.KeywordKind.ShortType, TypeTable.int16_type),
+                (PascalABCCompiler.Parsers.KeywordKind.SByteType, TypeTable.sbyte_type),
+                (PascalABCCompiler.Parsers.KeywordKind.UShortType, TypeTable.uint16_type),
+                (PascalABCCompiler.Parsers.KeywordKind.UIntType, TypeTable.uint32_type),
+                (PascalABCCompiler.Parsers.KeywordKind.Int64Type, TypeTable.int64_type),
+                (PascalABCCompiler.Parsers.KeywordKind.UIntType, TypeTable.uint32_type),
+                (PascalABCCompiler.Parsers.KeywordKind.UInt64Type, TypeTable.uint64_type),
+                (PascalABCCompiler.Parsers.KeywordKind.FloatType, TypeTable.float_type),
+                (PascalABCCompiler.Parsers.KeywordKind.PointerType, TypeTable.ptr_type)
+            };
+
+            foreach (var (keywordKind, type) in standardTypesData)
+            {
+
+                var type_name = languageInfo.GetStandardTypeByKeyword(keywordKind);
+
+                if (type_name != null)
+                {
+                    var typeClone = TypeTable.StandardTypeClone(type);
+
+                    cur_scope.AddName(type.si.name, typeClone);
+
+                    // перекрываем имя типа Паскаля нужным именем EVA
+                    typeClone.si.addit_name = type_name;
+                }
+            }
+        }
+
+        public void AddPascalStandardProcedures()
+        {
+            ProcScope ps = new ProcScope(StringConstants.set_length_procedure_name, null);
+            ps.AddParameter(new ElementScope(new SymInfo("arr", SymbolKind.Parameter, "arr"), new ArrayScope(), null, ps));
+            ps.parameters[0].param_kind = parametr_kind.var_parametr;
+            ps.AddParameter(new ElementScope(new SymInfo("length", SymbolKind.Parameter, "length"), TypeTable.int_type, null, ps));
+            ps.Complete();
+            cur_scope.AddName(StringConstants.set_length_procedure_name, ps);
+            cur_scope.AddName(StringConstants.true_const_name, new ElementScope(new SymInfo(StringConstants.true_const_name, SymbolKind.Constant, StringConstants.true_const_name), TypeTable.bool_type, true, null));
+            cur_scope.AddName(StringConstants.false_const_name, new ElementScope(new SymInfo(StringConstants.false_const_name, SymbolKind.Constant, StringConstants.false_const_name), TypeTable.bool_type, false, null));
+            ps = new ProcScope(StringConstants.new_procedure_name, null);
+            ElementScope prm = new ElementScope(new SymInfo("p", SymbolKind.Parameter, "p"), TypeTable.ptr_type, null, ps);
+            prm.param_kind = parametr_kind.var_parametr;
+            ps.AddParameter(prm);
+            ps.Complete();
+            cur_scope.AddName(StringConstants.new_procedure_name, ps);
+            ps = new ProcScope(StringConstants.dispose_procedure_name, null);
+            prm = new ElementScope(new SymInfo("p", SymbolKind.Parameter, "p"), TypeTable.ptr_type, null, ps);
+            prm.param_kind = parametr_kind.var_parametr;
+            ps.AddParameter(prm);
+            ps.Complete();
+            cur_scope.AddName(StringConstants.dispose_procedure_name, ps);
 
             ps = new ProcScope(StringConstants.IncProcedure, null);
             prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.int16_type, null, ps);
