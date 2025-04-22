@@ -1,79 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{431AA1A0-81B9-4D93-9CB1-219BDF7825C9}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Languages.Pascal.Frontend.Converters</RootNamespace>
-    <AssemblyName>SPythonStandardTreeConverter</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <TargetFramework>net40</TargetFramework>
+    
+    <RootNamespace>Languages.SPython.Frontend.Converters</RootNamespace>
+    
+    <OutputPath>..\bin\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\..\..\..\Errors\Errors.csproj" />
+    <ProjectReference Include="..\..\..\..\Localization\Localization.csproj" />
+    <ProjectReference Include="..\..\..\..\SyntaxTree\SyntaxTree.csproj" />
+    <ProjectReference Include="..\..\..\..\SyntaxVisitors\SyntaxVisitors.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AddForwardDeclarationsVisitor.cs" />
-    <Compile Include="CompoundComparisonDesugarVisitor.cs" />
-    <Compile Include="EraseSpythonOnlyNodesVisitor.cs" />
-    <Compile Include="NameCorrectVisitor.cs" />
-    <Compile Include="ReturnDesugarVisitor.cs" />
-    <Compile Include="SymbolTableFillingVisitor.cs" />
-    <Compile Include="ImportToUsesVisitor.cs" />
-    <Compile Include="ListDesugarVisitor.cs" />
-    <Compile Include="RetainUsedGlobalVariablesVisitor.cs" />
-    <Compile Include="TreeNodesRearrangementVisitor.cs" />
-    <Compile Include="FunctionsWithNamedParametersDesugarVisitor.cs" />
-    <Compile Include="StandardSyntaxTreeConverter.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StringResources.cs" />
-    <Compile Include="TypeCorrectVisitor.cs" />
-    <Compile Include="UnsupportedConstructsVisitor.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Errors\Errors.csproj">
-      <Project>{44A01F9E-DCE7-470C-AAE5-C3DE0CCBEE3B}</Project>
-      <Name>Errors</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Localization\Localization.csproj">
-      <Project>{2de2842f-0912-4251-bc0f-480854c44a13}</Project>
-      <Name>Localization</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\SyntaxTree\SyntaxTree.csproj">
-      <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
-      <Name>SyntaxTree</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\SyntaxVisitors\SyntaxVisitors.csproj">
-      <Project>{a9ab4282-83b4-41a7-86c3-e5bf6a45e7e2}</Project>
-      <Name>SyntaxVisitors</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

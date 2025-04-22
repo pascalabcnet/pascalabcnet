@@ -3166,28 +3166,30 @@ namespace CodeCompletion
         private void add_standart_types(SymScope cur_scope, ILanguageInformation languageInfo)
         {
 
-            var standardTypesData = new List<(PascalABCCompiler.Parsers.KeywordKind keywordKind, CompiledScope type)>()
+            var standardTypesData = new List<Tuple<PascalABCCompiler.Parsers.KeywordKind, CompiledScope>>()
             {
-                (PascalABCCompiler.Parsers.KeywordKind.ObjectType, TypeTable.obj_type),
-                (PascalABCCompiler.Parsers.KeywordKind.IntType, TypeTable.int_type),
-                (PascalABCCompiler.Parsers.KeywordKind.DoubleType, TypeTable.real_type),
-                (PascalABCCompiler.Parsers.KeywordKind.StringType, TypeTable.string_type),
-                (PascalABCCompiler.Parsers.KeywordKind.CharType, TypeTable.char_type),
-                (PascalABCCompiler.Parsers.KeywordKind.BoolType, TypeTable.bool_type),
-                (PascalABCCompiler.Parsers.KeywordKind.ByteType, TypeTable.byte_type),
-                (PascalABCCompiler.Parsers.KeywordKind.ShortType, TypeTable.int16_type),
-                (PascalABCCompiler.Parsers.KeywordKind.SByteType, TypeTable.sbyte_type),
-                (PascalABCCompiler.Parsers.KeywordKind.UShortType, TypeTable.uint16_type),
-                (PascalABCCompiler.Parsers.KeywordKind.UIntType, TypeTable.uint32_type),
-                (PascalABCCompiler.Parsers.KeywordKind.Int64Type, TypeTable.int64_type),
-                (PascalABCCompiler.Parsers.KeywordKind.UIntType, TypeTable.uint32_type),
-                (PascalABCCompiler.Parsers.KeywordKind.UInt64Type, TypeTable.uint64_type),
-                (PascalABCCompiler.Parsers.KeywordKind.FloatType, TypeTable.float_type),
-                (PascalABCCompiler.Parsers.KeywordKind.PointerType, TypeTable.ptr_type)
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.ObjectType, TypeTable.obj_type),
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.IntType, TypeTable.int_type),
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.DoubleType, TypeTable.real_type),
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.StringType, TypeTable.string_type),
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.CharType, TypeTable.char_type),
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.BoolType, TypeTable.bool_type),
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.ByteType, TypeTable.byte_type),
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.ShortType, TypeTable.int16_type),
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.SByteType, TypeTable.sbyte_type),
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.UShortType, TypeTable.uint16_type),
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.UIntType, TypeTable.uint32_type),
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.Int64Type, TypeTable.int64_type),
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.UIntType, TypeTable.uint32_type),
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.UInt64Type, TypeTable.uint64_type),
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.FloatType, TypeTable.float_type),
+                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.PointerType, TypeTable.ptr_type)
             };
 
-            foreach (var (keywordKind, type) in standardTypesData)
+            foreach (var data in standardTypesData)
             {
+                var keywordKind = data.Item1;
+                var type = data.Item2;
 
                 var type_name = languageInfo.GetStandardTypeByKeyword(keywordKind);
 
@@ -3195,7 +3197,7 @@ namespace CodeCompletion
                 {
                     var typeClone = TypeTable.StandardTypeClone(type);
 
-                    cur_scope.AddName(type.si.name, typeClone);
+                    cur_scope.AddName(type.Name, typeClone);
 
                     // перекрываем имя типа Паскаля нужным именем EVA
                     typeClone.si.addit_name = type_name;
