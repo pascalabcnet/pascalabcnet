@@ -780,6 +780,10 @@ namespace PascalABCCompiler
             {
                 return sourceFilesProvider;
             }
+            set
+            {
+                sourceFilesProvider = value;
+            }
         }
 
         private List<Errors.Error> errorsList = new List<Errors.Error>();

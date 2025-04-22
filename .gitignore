@@ -1,4 +1,4 @@
-
+﻿
 
 
 # general ignore
@@ -133,6 +133,11 @@
 # this is added to index at "/bin/lib"
 /ReleaseGenerators/nunit.framework.dll
 /TestSuite/errors/nunit.framework.dll
+
+
+
+# NSIS
+!/Utils/NSIS2/Bin/*
 
 
 
