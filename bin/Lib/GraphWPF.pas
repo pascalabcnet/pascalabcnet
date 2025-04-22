@@ -1786,6 +1786,8 @@ type
       if real.IsNaN(YTicks) then
         YTicks := Ticks(max-min);
       var th := TextHeightP('0');
+      if title<>'' then 
+        th := TextHeightP(title);
       var tw := GetRY0.Step(YTicks).TakeWhile(ry -> ry <= max).Select(y -> TextWidthP(y.Round(YTicksPrecision).ToString)).Max;
       var dd := TextWidthP(b.Round(xTicksPrecision).ToString)/2;
 
