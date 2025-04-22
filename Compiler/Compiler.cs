@@ -3575,11 +3575,8 @@ namespace PascalABCCompiler
                     string unitName = Path.GetFileNameWithoutExtension(unit.UnitFileName);
 
                     currentUnit.NamesFromUsedUnits.Add(unitName, new HashSet<string>());
-                    bool skip_first = true;
-                    foreach (var names in (unit.SemanticTree as common_unit_node).scope.Symbols.DictCaseSensitive)
+                    foreach (var names in (unit.SemanticTree as common_unit_node).scope.Symbols.DictCaseSensitive.Skip(1))
                     {
-                        if (skip_first)
-                        { skip_first = false; continue; }
                         currentUnit.NamesFromUsedUnits[unitName].Add(names.Key);
                     }
                 }

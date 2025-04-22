@@ -432,10 +432,7 @@ namespace VisualPascalABC
                 OutputWindow.outputTextBox = OutputTextBoxs[CurrentCodeFileDocument];
             }
 
-            if (Languages.Facade.LanguageProvider.Instance.HasLanguageForExtension(CurrentCodeFileDocument.FileName))
-            {
-                CodeCompletion.CodeCompletionController.SetLanguage(CurrentCodeFileDocument.FileName);
-            }
+            CodeCompletion.CodeCompletionController.SetLanguage(CurrentCodeFileDocument.FileName);
 
             SetFocusToEditor();
             bool run = WorkbenchServiceFactory.RunService.IsRun(CurrentEXEFileName);

@@ -3,6 +3,7 @@
 using PascalABCCompiler;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.TreeRealization;
 using System;
 using System.Collections;
@@ -2610,24 +2611,24 @@ namespace CodeCompletion
             cur_scope.file_name = _unit_module.file_name;
             cur_scope.loc = get_location(_unit_module);
             //if (!existed_ns)
-                cur_scope.AddName(_unit_module.unit_name.idunit_name.name, cur_scope);
+            cur_scope.AddName(_unit_module.unit_name.idunit_name.name, cur_scope);
 
             if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_unit_module.unit_name))
                 cur_scope.AddDocumentation(this.converter.controller.docs[_unit_module.unit_name]);
             entry_scope = cur_scope;
             if (_unit_module.unit_name.HeaderKeyword == UnitHeaderKeyword.Library)
-            foreach (string file in included_files)
-            {
-                DomConverter dc = CodeCompletionController.comp_modules[file] as DomConverter;
-                if (dc == null)
+                foreach (string file in included_files)
                 {
-                    dc = new CodeCompletionController().CompileAllIfNeed(file, true);
-                }
-                if (dc.visitor != null)
-                {
+                    DomConverter dc = CodeCompletionController.comp_modules[file] as DomConverter;
+                    if (dc == null)
+                    {
+                        dc = new CodeCompletionController().CompileAllIfNeed(file, true);
+                    }
+                    if (dc.visitor != null)
+                    {
 
+                    }
                 }
-            }
 
             string unitName = _unit_module.unit_name.idunit_name.name;
 
@@ -2657,6 +2658,62 @@ namespace CodeCompletion
                         ns_cache[s] = s;
                     }
                 }
+
+            var currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(_unit_module.file_name);
+
+            if (currentLanguage.UseSyntaxTreeConvertersInIntellisense)
+            {
+                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConverters)
+                {
+                    _unit_module = (unit_module)converter.Convert(_unit_module);
+                }
+            }
+
+            string[] usedUnitsNames = new string[0];
+
+            interface_node _interface_node = _unit_module.interface_part;
+
+            if (_interface_node.uses_modules != null)
+            {
+                (cur_scope as InterfaceUnitScope).uses_source_range = get_location(_interface_node.uses_modules);
+
+                usedUnitsNames = _interface_node.uses_modules.units.Select(unit => unit.name.idents[0].name).ToArray();
+
+                //foreach (unit_or_namespace s in _interface_node.uses_modules.units)
+                for (int j = _interface_node.uses_modules.units.Count - 1; j >= 0; j--)
+                {
+                    unit_or_namespace s = _interface_node.uses_modules.units[j];
+                    add_unit_ref(s, Path.GetDirectoryName(_unit_module.file_name),
+                        cur_scope, ns_cache, semantic_options.allow_import_types,
+                        unl, currentLanguage.CaseSensitive);
+                }
+            }
+
+            StringComparer comparer = currentLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
+
+            // если это стандартный модуль, то подразумевается, что в нем явно указано какие из других стандартных модулей он использует EVA
+            if (!currentLanguage.SystemUnitNames.Contains(Path.GetFileNameWithoutExtension(_unit_module.file_name)))
+            {
+                // Добавление всех стандартных модулей EVA
+                foreach (var standardUnitName in currentLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
+                {
+                    AddStandardUnit(standardUnitName, currentLanguage.CaseSensitive);
+                }
+            }
+
+            if (currentLanguage.UseSyntaxTreeConvertersInIntellisense)
+            {
+                var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
+
+                var artifacts = new CompilationArtifactsUsedBySyntaxConverters(namesFromUsedUnits);
+
+                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConverters)
+                {
+                    _unit_module = (unit_module)converter.ConvertAfterUsedModulesCompilation(_unit_module, in artifacts);
+                }
+            }
+            
+
             DateTime start_time = DateTime.Now;
 
             System.Diagnostics.Debug.WriteLine("intellisense parsing interface started " + System.Convert.ToInt32((DateTime.Now - start_time).TotalMilliseconds));
@@ -2703,6 +2760,25 @@ namespace CodeCompletion
 
         }
 
+        private Dictionary<string, HashSet<string>> CollectNamesFromUsedUnits(SymScope currentUnitScope)
+        {
+            var namesFromUsedUnits = new Dictionary<string, HashSet<string>>();
+
+            foreach (var unitScope in currentUnitScope.used_units)
+            {
+
+                if (unitScope is InterfaceUnitScope interfaceScope)
+                {
+                    namesFromUsedUnits.Add(unitScope.Name, new HashSet<string>());
+
+                    foreach (var symbol in unitScope.symbol_table)
+                        namesFromUsedUnits[unitScope.Name].Add((string)((DictionaryEntry)symbol).Key);
+                }
+            }
+
+            return namesFromUsedUnits;
+        }
+
         public string get_assembly_path(string name, string CompFile)
         {
         	string fname = (string.Format("{0}\\{1}",System.IO.Path.GetDirectoryName(CompFile), name)).ToLower();
@@ -2719,7 +2795,7 @@ namespace CodeCompletion
         	return CodeCompletionController.comp.FindPCUFileName(UnitName, curr_path, out _, caseSensitiveSearch);
         }
         
-        private void AddUnit(string unitName, bool caseSensitiveSearch)
+        private void AddStandardUnit(string unitName, bool caseSensitiveSearch)
         {
             string unitPath = CodeCompletionNameHelper.FindSourceFileName(unitName, out _, caseSensitiveSearch);
             if (unitPath != null)
@@ -2993,6 +3069,14 @@ namespace CodeCompletion
 
             var currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(_program_module.Language);
 
+            if (currentLanguage.UseSyntaxTreeConvertersInIntellisense)
+            {
+                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConverters)
+                {
+                    _program_module = (program_module)converter.Convert(_program_module);
+                }
+            }
+
             string[] usedUnitsNames = new string[0];
 
             if (_program_module.used_units != null)
@@ -3009,7 +3093,6 @@ namespace CodeCompletion
                         cur_scope, ns_cache, semantic_options.allow_import_types, 
                         unl, currentLanguage.CaseSensitive);
                 }
-
             }
 
             StringComparer comparer = currentLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
@@ -3017,9 +3100,8 @@ namespace CodeCompletion
             // Добавление всех стандартных модулей EVA
             foreach (var unitName in currentLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
             {
-                AddUnit(unitName, currentLanguage.CaseSensitive);
+                AddStandardUnit(unitName, currentLanguage.CaseSensitive);
             }
-
 
             foreach (string s in namespaces)
             {
@@ -3028,6 +3110,18 @@ namespace CodeCompletion
                     NamespaceScope ns_scope = new NamespaceScope(s);
                     cur_scope.AddName(s, ns_scope);
                     ns_cache[s] = s;
+                }
+            }
+
+            if (currentLanguage.UseSyntaxTreeConvertersInIntellisense)
+            {
+                var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
+
+                var artifacts = new CompilationArtifactsUsedBySyntaxConverters(namesFromUsedUnits);
+
+                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConverters)
+                {
+                    _program_module = (program_module)converter.ConvertAfterUsedModulesCompilation(_program_module, in artifacts);
                 }
             }
 
@@ -4718,36 +4812,7 @@ namespace CodeCompletion
 
         public override void visit(interface_node _interface_node)
         {
-            var currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(this.cur_unit_file_name);
-
-            string[] usedUnitsNames = new string[0];
-
-            if (_interface_node.uses_modules != null)
-            {
-                (cur_scope as InterfaceUnitScope).uses_source_range = get_location(_interface_node.uses_modules);
-
-                usedUnitsNames = _interface_node.uses_modules.units.Select(unit => unit.name.idents[0].name).ToArray();
-
-                //foreach (unit_or_namespace s in _interface_node.uses_modules.units)
-                for (int j = _interface_node.uses_modules.units.Count - 1; j >= 0; j--)
-                {
-                    unit_or_namespace s = _interface_node.uses_modules.units[j];
-                    add_unit_ref(s, Path.GetDirectoryName(this.cur_unit_file_name),
-                        cur_scope, ns_cache, semantic_options.allow_import_types, 
-                        unl, currentLanguage.CaseSensitive);
-                }
-            }
-
-            StringComparer comparer = currentLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
-
-            if (!currentLanguage.SystemUnitNames.Contains(Path.GetFileNameWithoutExtension(this.cur_unit_file_name)))
-            {
-                // Добавление всех стандартных модулей EVA
-                foreach (var unitName in currentLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
-                {
-                    AddUnit(unitName, currentLanguage.CaseSensitive);
-                }
-            }
+            
 
             if (_interface_node.interface_definitions != null)
                 foreach (declaration decl in _interface_node.interface_definitions.defs)

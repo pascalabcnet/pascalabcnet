@@ -51,7 +51,7 @@ namespace CodeCompletion
 
 		public static void SetLanguage(string fileName)
 		{
-            currentLanguage = LanguageProvider.SelectLanguageByExtension(fileName);
+            currentLanguage = LanguageProvider.SelectLanguageByExtensionSafe(fileName);
 		}
 		
         public void ResetNamespaces()
