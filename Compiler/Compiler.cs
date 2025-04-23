@@ -843,8 +843,6 @@ namespace PascalABCCompiler
             // 29.07.2024  EVA
             CompilerOptions = new CompilerOptions();
 
-            SaveUnitCheckInParsers();
-
             SyntaxTreeToSemanticTreeConverter = new TreeConverter.SyntaxTreeToSemanticTreeConverter();
             CodeGeneratorsController = new CodeGenerators.Controller();
 
@@ -856,18 +854,6 @@ namespace PascalABCCompiler
             semanticTreeConvertersController.AddConverters();
 
             OnChangeCompilerState(this, CompilerState.Ready, null);
-        }
-
-        /// <summary>
-        /// Передаем парсерам возможность проверить, компилируется ли в данный момент модуль 
-        /// (нужно, если нет ключевого слова unit или подобного в языке)
-        /// </summary>
-        private void SaveUnitCheckInParsers()
-        {
-            foreach (var parser in LanguageProvider.Languages.Select(language => language.Parser))
-            {
-                parser.CheckIfParsingUnit = CurrentUnitIsNotMainProgram;
-            }
         }
 
         void semanticTreeConvertersController_ChangeState(SemanticTreeConvertersController.State State, ISemanticTreeConverter SemanticTreeConverter)
@@ -2603,12 +2589,8 @@ namespace PascalABCCompiler
                             foundDirIndex = dirIndex;
                             return Path.GetFullPath(foundFileName);
                         }
-
-                        foundDirIndex = 0;
-                        return null;
                     }
-
-                    if (File.Exists(fullFileName))
+                    else if (File.Exists(fullFileName))
                     {
                         foundDirIndex = dirIndex;
                         // Path.GetFullPath чтобы нормализовать
@@ -3353,7 +3335,7 @@ namespace PascalABCCompiler
         private SyntaxTree.compilation_unit InternalParseText(ILanguage language, string fileName, string text, List<Error> errorList, List<CompilerWarning> warnings, List<string> definesList = null, bool calculateHealth = true)
         {
             OnChangeCompilerState(this, CompilerState.BeginParsingFile, fileName);
-            SyntaxTree.compilation_unit unitSyntaxTree = language.Parser.GetCompilationUnit(fileName, text, ErrorsList, warnings, Parsers.ParseMode.Normal, definesList);
+            SyntaxTree.compilation_unit unitSyntaxTree = language.Parser.GetCompilationUnit(fileName, text, ErrorsList, warnings, Parsers.ParseMode.Normal, CurrentUnitIsNotMainProgram(), definesList);
             OnChangeCompilerState(this, CompilerState.EndParsingFile, fileName);
 
             // Вычисляем сколько строк скомпилировали

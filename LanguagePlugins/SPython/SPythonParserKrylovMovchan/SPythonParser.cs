@@ -27,12 +27,12 @@ namespace SPythonParser
 
         }
 
-        protected override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, List<string> DefinesList = null)
+        protected override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, bool compilingNotMainProgram, List<string> DefinesList = null)
         {
             Errors.Clear();
             Warnings.Clear();
 
-            syntax_tree_node root = Parse(Text, FileName, false, DefinesList);
+            syntax_tree_node root = Parse(Text, FileName, false, compilingNotMainProgram, DefinesList);
 
             if (Errors.Count > 0)
                 return null;
@@ -43,7 +43,7 @@ namespace SPythonParser
             return root;
         }
 
-        public syntax_tree_node Parse(string Text, string fileName, bool buildTreeForFormatter = false, List<string> definesList = null)
+        public syntax_tree_node Parse(string Text, string fileName, bool buildTreeForFormatter = false, bool compilingNotMainProgram = false, List<string> definesList = null)
         {
 #if DEBUG
 #if _ERR
@@ -62,7 +62,7 @@ namespace SPythonParser
 
             var scanner = new Scanner(Text, parserTools, LanguageInformation.KeywordsStorage, definesList);
 
-            SPythonGPPGParser parser = new SPythonGPPGParser(scanner, parserTools, CheckIfParsingUnit.Invoke());
+            SPythonGPPGParser parser = new SPythonGPPGParser(scanner, parserTools, compilingNotMainProgram);
 
             if (!parser.Parse())
                 if (Errors.Count == 0)
@@ -112,11 +112,11 @@ namespace SPythonParser
             return expr;
         }
 
-        protected override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text)
+        protected override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text, bool compilingNotMainProgram)
         {
             Errors.Clear();
             
-            return Parse(Text, FileName);
+            return Parse(Text, FileName, compilingNotMainProgram);
         }
 
         protected override syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text)

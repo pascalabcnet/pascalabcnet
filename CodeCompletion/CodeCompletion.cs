@@ -68,23 +68,23 @@ namespace CodeCompletion
 			}
 		}
 
-        internal compilation_unit ParsersControllerGetCompilationUnit(string FileName, string Text, List<Error> ErrorsList, List<CompilerWarning> Warnings)
+        internal compilation_unit ParsersControllerGetCompilationUnit(string FileName, string Text, List<Error> ErrorsList, List<CompilerWarning> Warnings, bool compilingNotMainProgram)
         {
             ILanguage language = LanguageProvider.SelectLanguageByExtensionSafe(FileName);
             if (language == null)
                 return null;
             Parser = language.Parser;
 
-            return Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal);
+            return Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal, compilingNotMainProgram);
         }
 		
-        internal compilation_unit ParsersControllerGetCompilationUnitSpecial(string FileName, string Text, List<Error> ErrorsList, List<CompilerWarning> Warnings)
+        internal compilation_unit ParsersControllerGetCompilationUnitSpecial(string FileName, string Text, List<Error> ErrorsList, List<CompilerWarning> Warnings, bool compilingNotMainProgram)
         {
             ILanguage language = LanguageProvider.SelectLanguageByExtensionSafe(FileName);
             if (language == null)
                 return null;
 
-            return Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Special);
+            return Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Special, compilingNotMainProgram);
         }
         
         public DomConverter Compile(string FileName, string Text)
@@ -98,7 +98,7 @@ namespace CodeCompletion
             string ext = Path.GetExtension(FileName);
             try
             {
-                cu = ParsersControllerGetCompilationUnit(FileName, Text, ErrorsList, Warnings);
+                cu = ParsersControllerGetCompilationUnit(FileName, Text, ErrorsList, Warnings, false);
                 ErrorsList.Clear();
 
                 docParser = LanguageProvider.SelectLanguageByExtension(FileName).DocParser;
@@ -142,7 +142,7 @@ namespace CodeCompletion
                     string tmp = ParsersHelper.GetModifiedProgramm(Text);
                     if (tmp != null)
                     {
-                        cu = ParsersControllerGetCompilationUnitSpecial(FileName, tmp, ErrorsList, Warnings);
+                        cu = ParsersControllerGetCompilationUnitSpecial(FileName, tmp, ErrorsList, Warnings, false);
                     }
                     if (comp_modules[FileName] == null)
                     {
@@ -209,7 +209,7 @@ namespace CodeCompletion
         {
             List<PascalABCCompiler.Errors.Error> ErrorsList = new List<PascalABCCompiler.Errors.Error>();
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
-            PascalABCCompiler.SyntaxTree.compilation_unit cu = ParsersControllerGetCompilationUnit(FileName, Text, ErrorsList, Warnings);
+            PascalABCCompiler.SyntaxTree.compilation_unit cu = ParsersControllerGetCompilationUnit(FileName, Text, ErrorsList, Warnings, false);
             return cu;
         }
 
@@ -295,7 +295,7 @@ namespace CodeCompletion
             Parser = language.Parser;
             if (Text != null)
             {
-                cu = language.Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal);
+                cu = language.Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal, true);
             }
             ErrorsList.Clear();
             Warnings.Clear();
@@ -327,7 +327,7 @@ namespace CodeCompletion
                     string tmp = ParsersHelper.GetModifiedProgramm(Text);
                     if (tmp != null)
                     {
-                    	cu = ParsersControllerGetCompilationUnitSpecial(FileName, tmp, ErrorsList, Warnings);
+                    	cu = ParsersControllerGetCompilationUnitSpecial(FileName, tmp, ErrorsList, Warnings, true);
                     	ErrorsList.Clear();
                     }
                     if (cu == null)
@@ -408,7 +408,8 @@ namespace CodeCompletion
             Dirs.AddRange(ddirs);
             if (CodeCompletionController.comp != null)
                 Dirs.AddRange(CodeCompletionController.comp.CompilerOptions.SearchDirectories);
-            if (CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent))
+            // Надо как-то проверять, что мы не в инсталированной версии EVA
+            if (CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent) && Directory.Exists((string)CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]))
                 Dirs.Add((string)CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]);
             return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, out found_dir_ind, caseSensitiveSearch, Dirs.ToArray());
         }
