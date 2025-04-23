@@ -12,7 +12,7 @@ namespace SPythonParser
 
     public class SPythonLanguageParser : BaseParser
     {
-        public List<ISyntaxTreeConverter> SyntaxTreeConverters { get; set; }
+        public List<ISyntaxTreeConverter> SyntaxTreeConvertersForIntellisense { get; set; }
 
         public override void Reset()
         {
@@ -84,7 +84,7 @@ namespace SPythonParser
             if (expr == null)
                 return null;
 
-            foreach (ISyntaxTreeConverter converter in SyntaxTreeConverters)
+            foreach (ISyntaxTreeConverter converter in SyntaxTreeConvertersForIntellisense)
             {
                 expr = (expression)converter.Convert(expr);
             }
@@ -104,7 +104,7 @@ namespace SPythonParser
             if (expr == null)
                 return null;
 
-            foreach (ISyntaxTreeConverter converter in SyntaxTreeConverters)
+            foreach (ISyntaxTreeConverter converter in SyntaxTreeConvertersForIntellisense)
             {
                 expr = (expression)converter.Convert(expr);
             }
@@ -135,7 +135,7 @@ namespace SPythonParser
             if (st == null)
                 return null;
 
-            foreach (ISyntaxTreeConverter converter in SyntaxTreeConverters)
+            foreach (ISyntaxTreeConverter converter in SyntaxTreeConvertersForIntellisense)
             {
                 st = (statement)converter.Convert(st);
             }

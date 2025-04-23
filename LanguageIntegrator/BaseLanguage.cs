@@ -19,7 +19,7 @@ namespace Languages.Facade
         /// Все параметры должны быть не null (и не пустым массивом), кроме IDocParser в случае, если он не требуется
         /// </summary>
         public BaseLanguage(string name, string version, string copyright, ILanguageInformation languageInformation,
-            IParser parser, IDocParser docParser, List<ISyntaxTreeConverter> syntaxTreeConverters, bool useSyntaxTreeConvertersInIntellisense,
+            IParser parser, IDocParser docParser, List<ISyntaxTreeConverter> syntaxTreeConverters, List<ISyntaxTreeConverter> syntaxTreeConvertersForIntellisense,
             string[] filesExtensions, bool caseSensitive, string[] systemUnitNames)
         {
             this.Name = name;
@@ -30,7 +30,7 @@ namespace Languages.Facade
             this.Parser.LanguageInformation = languageInformation;
             this.DocParser = docParser;
             this.SyntaxTreeConverters = syntaxTreeConverters;
-            this.UseSyntaxTreeConvertersInIntellisense = useSyntaxTreeConvertersInIntellisense;
+            this.SyntaxTreeConvertersForIntellisense = syntaxTreeConvertersForIntellisense;
             this.FilesExtensions = filesExtensions;
             this.CaseSensitive = caseSensitive;
             this.SystemUnitNames = systemUnitNames;
@@ -50,7 +50,7 @@ namespace Languages.Facade
 
         public virtual List<ISyntaxTreeConverter> SyntaxTreeConverters { get; protected set; }
 
-        public virtual bool UseSyntaxTreeConvertersInIntellisense { get; protected set; }
+        public virtual List<ISyntaxTreeConverter> SyntaxTreeConvertersForIntellisense { get; protected set; }
 
         public virtual syntax_tree_visitor SyntaxTreeToSemanticTreeConverter { get; protected set; }
 

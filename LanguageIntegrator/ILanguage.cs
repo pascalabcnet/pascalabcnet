@@ -45,10 +45,7 @@ namespace Languages.Facade
         /// </summary>
         List<ISyntaxTreeConverter> SyntaxTreeConverters { get; }
 
-        /// <summary>
-        /// Нужно ли вызывать SyntaxTreeConverters в Intellisense
-        /// </summary>
-        bool UseSyntaxTreeConvertersInIntellisense { get; }
+        List<ISyntaxTreeConverter> SyntaxTreeConvertersForIntellisense { get; }
 
         /// <summary>
         /// Преобразователь из синтаксического дерева в семантическое

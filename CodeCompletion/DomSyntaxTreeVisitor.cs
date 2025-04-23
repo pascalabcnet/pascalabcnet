@@ -2662,9 +2662,9 @@ namespace CodeCompletion
 
             var currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(_unit_module.file_name);
 
-            if (currentLanguage.UseSyntaxTreeConvertersInIntellisense)
+            if (currentLanguage.SyntaxTreeConvertersForIntellisense != null)
             {
-                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConverters)
+                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConvertersForIntellisense)
                 {
                     _unit_module = (unit_module)converter.Convert(_unit_module);
                 }
@@ -2702,13 +2702,13 @@ namespace CodeCompletion
                 }
             }
 
-            if (currentLanguage.UseSyntaxTreeConvertersInIntellisense)
+            if (currentLanguage.SyntaxTreeConvertersForIntellisense != null)
             {
                 var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
 
                 var artifacts = new CompilationArtifactsUsedBySyntaxConverters(namesFromUsedUnits);
 
-                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConverters)
+                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConvertersForIntellisense)
                 {
                     _unit_module = (unit_module)converter.ConvertAfterUsedModulesCompilation(_unit_module, in artifacts);
                 }
@@ -3070,9 +3070,9 @@ namespace CodeCompletion
 
             var currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(_program_module.Language);
 
-            if (currentLanguage.UseSyntaxTreeConvertersInIntellisense)
+            if (currentLanguage.SyntaxTreeConvertersForIntellisense != null)
             {
-                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConverters)
+                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConvertersForIntellisense)
                 {
                     _program_module = (program_module)converter.Convert(_program_module);
                 }
@@ -3114,13 +3114,13 @@ namespace CodeCompletion
                 }
             }
 
-            if (currentLanguage.UseSyntaxTreeConvertersInIntellisense)
+            if (currentLanguage.SyntaxTreeConvertersForIntellisense != null)
             {
                 var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
 
                 var artifacts = new CompilationArtifactsUsedBySyntaxConverters(namesFromUsedUnits);
 
-                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConverters)
+                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConvertersForIntellisense)
                 {
                     _program_module = (program_module)converter.ConvertAfterUsedModulesCompilation(_program_module, in artifacts);
                 }
