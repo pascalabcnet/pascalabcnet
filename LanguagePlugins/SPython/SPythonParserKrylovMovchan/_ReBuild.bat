@@ -1,6 +1,7 @@
 call generateParser.bat
-call Studio.bat /t:rebuild /verbosity:d "/property:Configuration=Release" SPythonParser.sln
+dotnet build -c Release --no-incremental -v d SPythonParser.sln
 
 @IF %ERRORLEVEL% NEQ 0 PAUSE
-move bin\Release\SPythonLanguageParser.dll ..\..\bin\
-move bin\Release\SPythonLanguageParser.pdb ..\..\bin\
+move obj\Release\SPythonParser.dll ..\..\..\bin\
+move obj\Release\SPythonParser.pdb ..\..\..\bin\
+@IF %ERRORLEVEL% NEQ 0 PAUSE
