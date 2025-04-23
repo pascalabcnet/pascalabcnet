@@ -12,7 +12,8 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(method_call _method_call)
         {
-            if (_method_call.parameters is expression_list exprl) {
+            if (_method_call.parameters is expression_list exprl &&
+                _method_call.dereferencing_value is dot_node caller) {
                 expression_list args = new expression_list();
                 expression_list kvargs = new expression_list();
 
@@ -31,19 +32,16 @@ namespace Languages.SPython.Frontend.Converters
                     else throw new SPythonSyntaxVisitorError("ARG_AFTER_KVARGS", expr.source_context);
                 }
 
-                if (kvargs.expressions.Count() == 0)
-                    Replace(_method_call, new method_call(_method_call.dereferencing_value, args, _method_call.source_context));
-                else
+                if (kvargs.expressions.Count() != 0)
                 {
-                    method_call mc = new method_call(new ident("!" + ((_method_call.dereferencing_value as dot_node).right as ident).name + ".Get"), kvargs, _method_call.source_context);
-                    dot_node dn = new dot_node(mc as addressed_value, (_method_call.dereferencing_value as dot_node).right, _method_call.source_context);
-                    method_call to = new method_call(dn as addressed_value, args, _method_call.source_context);
+                    method_call mc = new method_call(
+                        new dot_node(new ident("!" + (caller.right as ident).name),
+                        new ident("Get")), kvargs, _method_call.source_context);
+                    dot_node dn = new dot_node(mc, caller.right, _method_call.source_context);
+                    method_call to = new method_call(dn, args, _method_call.source_context);
                     Replace(_method_call, to);
                 }
             }
-
-            else
-                Replace(_method_call, new method_call(_method_call.dereferencing_value as addressed_value, null, _method_call.source_context));
         }
     }
 }
