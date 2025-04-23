@@ -19,7 +19,11 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   
-  <Target Name="MakeLangResFile" BeforeTargets="BeforeBuild">
+  <ItemGroup>
+    <LangFiles Include="..\bin\Lng\Rus\**\*" />
+  </ItemGroup>
+  
+  <Target Name="MakeLangResFile" BeforeTargets="BeforeBuild" Inputs="@(LangFiles)" Outputs="DefaultLang.resources">
     <Exec
       Command="cd ..\Utils\DefaultLanguageResMaker &amp; LanguageResMaker.exe"
       Condition="$(OS) == 'Windows_NT'" />

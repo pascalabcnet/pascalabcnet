@@ -308,6 +308,8 @@ namespace Languages.Pascal.Frontend.Data
         {
             switch (keyw)
             {
+                case KeywordKind.ObjectType: return "object";
+                case KeywordKind.StringType: return "string";
                 case KeywordKind.ByteType: return "byte";
                 case KeywordKind.SByteType: return "shortint";
                 case KeywordKind.ShortType: return "smallint";

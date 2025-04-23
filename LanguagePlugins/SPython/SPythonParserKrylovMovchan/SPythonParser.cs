@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
 using SPythonParserYacc;
-using System;
+using PascalABCCompiler.SyntaxTreeConverters;
 
 
 
@@ -12,6 +12,7 @@ namespace SPythonParser
 
     public class SPythonLanguageParser : BaseParser
     {
+        public List<ISyntaxTreeConverter> SyntaxTreeConverters { get; set; }
 
         public override void Reset()
         {
@@ -78,7 +79,17 @@ namespace SPythonParser
         {
             Text = string.Concat("<<type>>", Text);
 
-            return Parse(Text, FileName) as expression;
+            var expr = Parse(Text, FileName) as expression;
+
+            if (expr == null)
+                return null;
+
+            foreach (ISyntaxTreeConverter converter in SyntaxTreeConverters)
+            {
+                expr = (expression)converter.Convert(expr);
+            }
+
+            return expr;
         }
 
         protected override syntax_tree_node BuildTreeInExprMode(string FileName, string Text)
@@ -88,7 +99,17 @@ namespace SPythonParser
             
             Text = string.Concat("<<expression>>", Text);
 
-            return Parse(Text, FileName) as expression;
+            var expr = Parse(Text, FileName) as expression;
+
+            if (expr == null)
+                return null;
+
+            foreach (ISyntaxTreeConverter converter in SyntaxTreeConverters)
+            {
+                expr = (expression)converter.Convert(expr);
+            }
+            
+            return expr;
         }
 
         protected override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text)
@@ -109,7 +130,17 @@ namespace SPythonParser
         {
             Text = string.Concat("<<statement>>", Text);
 
-            return Parse(Text, FileName) as statement;
+            var st = Parse(Text, FileName) as statement;
+
+            if (st == null)
+                return null;
+
+            foreach (ISyntaxTreeConverter converter in SyntaxTreeConverters)
+            {
+                st = (statement)converter.Convert(st);
+            }
+
+            return st;
         }
     }
 }

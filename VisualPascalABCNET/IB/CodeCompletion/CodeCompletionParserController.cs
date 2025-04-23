@@ -75,12 +75,9 @@ namespace VisualPascalABC
 
         public void RegisterFileForParsing(string FileName)
         {
-            if (Languages.Facade.LanguageProvider.Instance.HasLanguageForExtension(FileName))
-            {
-                open_files[FileName] = true;
-                CodeCompletion.CodeCompletionController.SetLanguage(FileName);
-                //ParseAllFiles();
-            }
+            open_files[FileName] = true;
+            CodeCompletion.CodeCompletionController.SetLanguage(FileName);
+            //ParseAllFiles();
         }
 
         public void CloseFile(string FileName)
@@ -100,7 +97,7 @@ namespace VisualPascalABC
         {
             try
             {
-                foreach (string s in open_files.Keys)
+                foreach (string s in open_files.Keys.ToArray())
                 {
                     if (ProjectFactory.Instance.CurrentProject.ContainsSourceFile(s))
                         open_files[s] = true;
@@ -149,7 +146,7 @@ namespace VisualPascalABC
             {
                 Dictionary<string, string> recomp_files = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 bool is_comp = false;
-                foreach (string FileName in open_files.Keys.ToArray())
+                foreach (string FileName in open_files.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
                 {
 
                     if (open_files[FileName])
@@ -183,7 +180,7 @@ namespace VisualPascalABC
                             CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                     }
                 }
-                foreach (string FileName in open_files.Keys.ToArray())
+                foreach (string FileName in open_files.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
                 {
                     CodeCompletion.DomConverter dc = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
                     CodeCompletion.SymScope ss = null;

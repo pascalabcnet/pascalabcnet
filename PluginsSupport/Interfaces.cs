@@ -111,6 +111,9 @@ namespace VisualPascalABCPlugins
     }
 
     public delegate IAsyncResult InvokeDegegate(Delegate method, params object[] args);
+
+    public delegate string ConvertTextDelegate(string FileName, string text); // Это пока только для шифрованного Tasks. 
+
     public interface IVisualEnvironmentCompiler
     {
         PascalABCCompiler.ICompiler Compiler
@@ -143,7 +146,7 @@ namespace VisualPascalABCPlugins
         {
             get;
         }
-
+        ConvertTextDelegate ConvertUnitTextProperty { get; set; }
     }
 
     public interface ICodeFileDocument

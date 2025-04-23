@@ -51,7 +51,7 @@ namespace CodeCompletion
 
 		public static void SetLanguage(string fileName)
 		{
-            currentLanguage = LanguageProvider.SelectLanguageByExtension(fileName);
+            currentLanguage = LanguageProvider.SelectLanguageByExtensionSafe(fileName);
 		}
 		
         public void ResetNamespaces()
@@ -118,6 +118,8 @@ namespace CodeCompletion
                 File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
 #endif
             }
+            
+            TypeScope.instance_cache.Clear();
 
             // очистка кэша и данных от старых компиляций, чтобы при новой компиляции не появились ссылки на старые данные
             TypeTable.Clear();

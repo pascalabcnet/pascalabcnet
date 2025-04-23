@@ -513,6 +513,12 @@ namespace Languages.SPython.Frontend.Data
                             case ')':
                             case ']':
                             case '>':
+                                // Добавил это условие для питона EVA
+                                if (pressed_key == '(' && ch == ')' && !sb.ToString().Contains(".") && tokens.Count == 0)
+                                {
+                                    end = true;
+                                    break;
+                                }
                                 if (kav.Count == 0)
                                 {
                                     int j = i + 1;
@@ -1354,9 +1360,11 @@ namespace Languages.SPython.Frontend.Data
             switch (keyw)
             {
                 case KeywordKind.IntType: return "int";
+                case KeywordKind.Int64Type: return "bigint";
                 case KeywordKind.DoubleType: return "float";
                 case KeywordKind.CharType: return "char";
                 case KeywordKind.BoolType: return "bool";
+                case KeywordKind.StringType: return "str";
             }
             return null;
         }
