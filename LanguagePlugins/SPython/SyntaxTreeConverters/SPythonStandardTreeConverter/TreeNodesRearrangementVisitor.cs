@@ -59,7 +59,7 @@ namespace Languages.SPython.Frontend.Converters
             procedure_header _procedure_header = new procedure_header(mainFunctionName);
             block _block = new block(null, mainBody, mainBody.source_context);
             //block _block = new block(null, new statement_list(), _statement_list.source_context);
-            mainFunction = new procedure_definition(_procedure_header, _block);
+            mainFunction = new procedure_definition(_procedure_header, _block, false, _block.source_context);
         }
 
         public override void Exit(syntax_tree_node stn)
