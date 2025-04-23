@@ -77,7 +77,8 @@
 **/UniversalParserHelper.dll
 
 **/SPythonLanguageInfo.dll
-**/SPythonLanguageParser.dll
+**/SPythonParser.dll
+**/SPythonParser.dll.config
 **/SPythonStandardTreeConverter.dll
 **/SPythonSyntaxTreeVisitor.dll
 

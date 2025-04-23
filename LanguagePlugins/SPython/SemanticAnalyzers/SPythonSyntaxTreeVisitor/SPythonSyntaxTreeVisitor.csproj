@@ -5,7 +5,7 @@
     
     <RootNamespace>Languages.SPython.Backend.Conversion</RootNamespace>
     
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\..\..\..\bin\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
