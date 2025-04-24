@@ -20,6 +20,8 @@ namespace PascalABCCompiler.Parsers
 
         public abstract string ParameterDelimiter { get; }
 
+        public abstract string ResultVariableName { get; }
+
         public abstract string GenericTypesStartBracket { get; }
         public abstract string GenericTypesEndBracket { get; }
 

@@ -14,11 +14,13 @@ namespace Languages.SPython.Frontend.Data
 
         public override Dictionary<string, DirectiveInfo> ValidDirectives { get; protected set; }
 
-        public override string BodyStartBracket => throw new NotImplementedException();
+        public override string BodyStartBracket => null;
 
-        public override string BodyEndBracket => throw new NotImplementedException();
+        public override string BodyEndBracket => null;
 
         public override string ParameterDelimiter => ",";
+
+        public override string ResultVariableName => null;
 
         public override string GenericTypesStartBracket => "[";
 
@@ -1267,6 +1269,7 @@ namespace Languages.SPython.Frontend.Data
                 case ScopeKind.Procedure: return GetSimpleDescriptionForProcedure(scope as IProcScope);
                 case ScopeKind.ElementScope: return GetSimpleDescriptionForElementScope(scope as IElementScope);
                 case ScopeKind.TypeSynonim: return GetSimpleSynonimDescription(scope as ITypeSynonimScope);
+                case ScopeKind.Array: return GetDescriptionForArray(scope as IArrayScope);
                 case ScopeKind.UnitInterface: return GetDescriptionForModule(scope as IInterfaceUnitScope);
                 case ScopeKind.Namespace: return GetDescriptionForNamespace(scope as INamespaceScope);
                 
@@ -1295,6 +1298,30 @@ namespace Languages.SPython.Frontend.Data
         private string GetSimpleSynonimDescription(ITypeSynonimScope scope)
         {
             return scope.Name;
+        }
+
+        protected string GetDescriptionForArray(IArrayScope scope)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("array");
+            ITypeScope[] inds = scope.Indexers;
+            if (!scope.IsDynamic)
+            {
+                sb.Append('[');
+                for (int i = 0; i < inds.Length; i++)
+                {
+                    sb.Append(GetSimpleDescription(inds[i]));
+                    if (i < inds.Length - 1) sb.Append(',');
+                }
+                sb.Append(']');
+            }
+            if (scope.ElementType != null)
+            {
+                string s = GetSimpleDescription(scope.ElementType);
+                if (s.Length > 0 && s[0] == '$') s = s.Substring(1, s.Length - 1);
+                sb.Append(" of " + s);
+            }
+            return sb.ToString();
         }
 
         private string GetSimpleDescriptionForCompiledType(ICompiledTypeScope scope, bool fullName)

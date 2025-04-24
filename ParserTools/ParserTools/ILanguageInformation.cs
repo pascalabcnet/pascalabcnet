@@ -152,6 +152,10 @@ namespace PascalABCCompiler.Parsers
         {
             get;
         }
+        string ResultVariableName
+        {
+            get;
+        }
         bool CaseSensitive
         {
             get;

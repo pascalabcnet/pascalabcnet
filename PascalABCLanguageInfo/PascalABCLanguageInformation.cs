@@ -128,6 +128,8 @@ namespace Languages.Pascal.Frontend.Data
             }
         }
 
+        public override string ResultVariableName => "Result";
+
         public override string GenericTypesStartBracket => "<";
 
         public override string GenericTypesEndBracket => ">";

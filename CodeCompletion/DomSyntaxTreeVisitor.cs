@@ -33,6 +33,7 @@ namespace CodeCompletion
 		private bool is_proc_realization=false;
 		private string meth_name;
 		private string cur_unit_file_name;
+        private Languages.Facade.ILanguage currentUnitLanguage;
 		private RetValue cnst_val;
 		private ExpressionEvaluator ev = new ExpressionEvaluator();
 		public bool add_doc_from_text=true;
@@ -475,9 +476,10 @@ namespace CodeCompletion
             }
             else if (has_lambdas(_assign.from))
                 _assign.from.visit(this);
-            else if (_assign.to is ident && cur_scope != null && cur_scope.Name.StartsWith("<>lambda") && string.Compare((_assign.to as ident).name, "Result", true) == 0)
+            else if (_assign.to is ident && cur_scope != null && cur_scope.Name.StartsWith("<>lambda")
+                && (_assign.to as ident).name.Equals(currentUnitLanguage.LanguageInformation.ResultVariableName, currentUnitLanguage.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
             {
-                var sc = cur_scope.FindNameOnlyInThisType("Result");
+                var sc = cur_scope.FindNameOnlyInThisType(currentUnitLanguage.LanguageInformation.ResultVariableName);
                 if (sc is ElementScope)
                 {
                     ElementScope es = sc as ElementScope;
@@ -2087,7 +2089,12 @@ namespace CodeCompletion
                 ps.AddName("self", new ElementScope(new SymInfo("self", SymbolKind.Parameter, "self"), cur_scope, ps));
 
             returned_scope = ps;
-            ps.AddName("Result", new ElementScope(new SymInfo("Result", SymbolKind.Variable, "Result"), ps.return_type, ps));
+           
+            var resultName = currentUnitLanguage.LanguageInformation.ResultVariableName;
+            if (resultName != null)
+            {
+                ps.AddName(resultName, new ElementScope(new SymInfo(resultName, SymbolKind.Variable, resultName), ps.return_type, ps));
+            }
             ps.Complete();
             if (pr != null && not_def)
                 pr.Complete();
@@ -2159,7 +2166,7 @@ namespace CodeCompletion
                             if (bl.program_code.subnodes.Count == 1)
                             {
                                 var ass = bl.program_code.subnodes[0] as assign;
-                                if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower() == "result")
+                                if (ass != null && ass.to is ident && (ass.to as ident).name.Equals(currentUnitLanguage.LanguageInformation.ResultVariableName, currentUnitLanguage.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
                                 {
                                     if (!(ass.from is nil_const))
                                     {
@@ -2660,11 +2667,11 @@ namespace CodeCompletion
                     }
                 }
 
-            var currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(_unit_module.file_name);
+            currentUnitLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(_unit_module.file_name);
 
-            if (currentLanguage.SyntaxTreeConvertersForIntellisense != null)
+            if (currentUnitLanguage.SyntaxTreeConvertersForIntellisense != null)
             {
-                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConvertersForIntellisense)
+                foreach (ISyntaxTreeConverter converter in currentUnitLanguage.SyntaxTreeConvertersForIntellisense)
                 {
                     _unit_module = (unit_module)converter.Convert(_unit_module);
                 }
@@ -2686,34 +2693,34 @@ namespace CodeCompletion
                     unit_or_namespace s = _interface_node.uses_modules.units[j];
                     add_unit_ref(s, Path.GetDirectoryName(_unit_module.file_name),
                         cur_scope, ns_cache, semantic_options.allow_import_types,
-                        unl, currentLanguage.CaseSensitive);
+                        unl, currentUnitLanguage.CaseSensitive);
                 }
             }
 
             if (cur_scope != null && _unit_module.initialization_part != null)
             {
-                CompileImportedDependencies(_unit_module.initialization_part, _unit_module.file_name, ns_cache, currentLanguage);
+                CompileImportedDependencies(_unit_module.initialization_part, _unit_module.file_name, ns_cache, currentUnitLanguage.CaseSensitive);
             }
 
-            StringComparer comparer = currentLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
+            StringComparer comparer = currentUnitLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
 
             // если это стандартный модуль, то подразумевается, что в нем явно указано какие из других стандартных модулей он использует EVA
-            if (!currentLanguage.SystemUnitNames.Contains(Path.GetFileNameWithoutExtension(_unit_module.file_name)))
+            if (!currentUnitLanguage.SystemUnitNames.Contains(Path.GetFileNameWithoutExtension(_unit_module.file_name)))
             {
                 // Добавление всех стандартных модулей EVA
-                foreach (var standardUnitName in currentLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
+                foreach (var standardUnitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
                 {
-                    AddStandardUnit(standardUnitName, currentLanguage.CaseSensitive);
+                    AddStandardUnit(standardUnitName, currentUnitLanguage.CaseSensitive);
                 }
             }
 
-            if (currentLanguage.SyntaxTreeConvertersForIntellisense != null)
+            if (currentUnitLanguage.SyntaxTreeConvertersForIntellisense != null)
             {
                 var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
 
                 var artifacts = new CompilationArtifactsUsedBySyntaxConverters(namesFromUsedUnits);
 
-                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConvertersForIntellisense)
+                foreach (ISyntaxTreeConverter converter in currentUnitLanguage.SyntaxTreeConvertersForIntellisense)
                 {
                     _unit_module = (unit_module)converter.ConvertAfterUsedModulesCompilation(_unit_module, in artifacts);
                 }
@@ -3285,11 +3292,11 @@ namespace CodeCompletion
                 }
             }
 
-            var currentLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(_program_module.Language);
+            currentUnitLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(_program_module.Language);
 
-            if (currentLanguage.SyntaxTreeConvertersForIntellisense != null)
+            if (currentUnitLanguage.SyntaxTreeConvertersForIntellisense != null)
             {
-                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConvertersForIntellisense)
+                foreach (ISyntaxTreeConverter converter in currentUnitLanguage.SyntaxTreeConvertersForIntellisense)
                 {
                     _program_module = (program_module)converter.Convert(_program_module);
                 }
@@ -3309,21 +3316,21 @@ namespace CodeCompletion
                     unit_or_namespace s = _program_module.used_units.units[j];
                     add_unit_ref(s, Path.GetDirectoryName(_program_module.file_name),
                         cur_scope, ns_cache, semantic_options.allow_import_types,
-                        unl, currentLanguage.CaseSensitive);
+                        unl, currentUnitLanguage.CaseSensitive);
                 }
             }
 
             if (cur_scope != null && _program_module.program_block.program_code != null)
             {
-                CompileImportedDependencies(_program_module.program_block.program_code, _program_module.file_name, ns_cache, currentLanguage);
+                CompileImportedDependencies(_program_module.program_block.program_code, _program_module.file_name, ns_cache, currentUnitLanguage.CaseSensitive);
             }
 
-            StringComparer comparer = currentLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
+            StringComparer comparer = currentUnitLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
 
             // Добавление всех стандартных модулей EVA
-            foreach (var unitName in currentLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
+            foreach (var unitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
             {
-                AddStandardUnit(unitName, currentLanguage.CaseSensitive);
+                AddStandardUnit(unitName, currentUnitLanguage.CaseSensitive);
             }
 
             foreach (string s in namespaces)
@@ -3336,13 +3343,13 @@ namespace CodeCompletion
                 }
             }
 
-            if (currentLanguage.SyntaxTreeConvertersForIntellisense != null)
+            if (currentUnitLanguage.SyntaxTreeConvertersForIntellisense != null)
             {
                 var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
 
                 var artifacts = new CompilationArtifactsUsedBySyntaxConverters(namesFromUsedUnits);
 
-                foreach (ISyntaxTreeConverter converter in currentLanguage.SyntaxTreeConvertersForIntellisense)
+                foreach (ISyntaxTreeConverter converter in currentUnitLanguage.SyntaxTreeConvertersForIntellisense)
                 {
                     _program_module = (program_module)converter.ConvertAfterUsedModulesCompilation(_program_module, in artifacts);
                 }
@@ -3385,7 +3392,7 @@ namespace CodeCompletion
             }
         }
 
-        private void CompileImportedDependencies(statement_list statementList, string fileName, Hashtable ns_cache, Languages.Facade.ILanguage currentLanguage)
+        private void CompileImportedDependencies(statement_list statementList, string fileName, Hashtable ns_cache, bool caseSensitiveSearch)
         {
             var importStatements = statementList.list.Where(st => st is import_statement || st is from_import_statement);
 
@@ -3398,7 +3405,7 @@ namespace CodeCompletion
                         add_unit_ref_for_import(new ident_list(unitNode), import,
                             Path.GetDirectoryName(fileName),
                             cur_scope, ns_cache, semantic_options.allow_import_types,
-                            unl, currentLanguage.CaseSensitive);
+                            unl, caseSensitiveSearch);
                     }
                 }
                 else if (importStatement is from_import_statement fromImport)
@@ -3406,7 +3413,7 @@ namespace CodeCompletion
                     add_unit_ref_for_import(new ident_list(fromImport.module_name), fromImport,
                         Path.GetDirectoryName(fileName),
                         cur_scope, ns_cache, semantic_options.allow_import_types,
-                        unl, currentLanguage.CaseSensitive);
+                        unl, caseSensitiveSearch);
                 }
             }
         }
@@ -5816,17 +5823,19 @@ namespace CodeCompletion
             TypeScope saved_return_type = ps.return_type;
             if (!disable_lambda_compilation)
             {
+                string resultName = currentUnitLanguage.LanguageInformation.ResultVariableName;
                 if (awaitedProcType != null)
                 {
                     var invokeMeth = awaitedProcType.FindNameOnlyInType("Invoke") as ProcScope;
-                    if (invokeMeth != null && invokeMeth.return_type != null)
+                    if (invokeMeth != null && invokeMeth.return_type != null && resultName != null)
                     {
-                        cur_scope.AddName("Result", new ElementScope(new SymInfo("Result",SymbolKind.Variable,"Result"), invokeMeth.return_type, cur_scope));
+                        
+                        cur_scope.AddName(resultName, new ElementScope(new SymInfo(resultName,SymbolKind.Variable,resultName), invokeMeth.return_type, cur_scope));
                     }
                 }
                 statement_list sl = _function_lambda_definition.proc_body as statement_list;
                 if (sl != null && sl.list.Count == 1 && sl.list[0] is assign && (sl.list[0] as assign).to is ident
-                    && ((sl.list[0] as assign).to as ident).name.ToLower() == "result")
+                    && ((sl.list[0] as assign).to as ident).name.Equals(resultName, currentUnitLanguage.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
                 {
                     (sl.list[0] as assign).from.visit(this);
                     ps.return_type = returned_scope as TypeScope;
