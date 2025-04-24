@@ -8,7 +8,7 @@ unit SPythonSystem;
 
 interface
 
-uses PABCSystem;
+// uses PABCSystem;
 
 // Basic IO methods
 

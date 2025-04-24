@@ -2659,10 +2659,12 @@ namespace CodeCompletion
 
             currentUnitLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(_unit_module.file_name);
 
+            var languageUsingStandardUnit = Languages.Facade.LanguageProvider.Instance.Languages.Find(lang => lang.SystemUnitNames.Contains(unitName));
+
             if (!existed_ns)
             {
-                // Пока что добавили возможость грубо отключить добавление NET пространств имен по умолчанию здесь (второе условие нужно, чтобы в стандартный модуль языка они тоже не добавлялись) EVA
-                if (currentUnitLanguage.LanguageInformation.AddStandardNetNamespacesToUserScope && language.LanguageInformation.AddStandardNetNamespacesToUserScope)
+                // Пока что добавили возможость грубо отключить добавление NET пространств имен по умолчанию здесь (второе условие нужно, чтобы в стандартные модули языка они тоже не добавлялись) EVA
+                if (currentUnitLanguage.LanguageInformation.AddStandardNetNamespacesToUserScope && (languageUsingStandardUnit?.LanguageInformation.AddStandardNetNamespacesToUserScope ?? true))
                 {
                     foreach (string s in namespaces)
                     {
@@ -2717,7 +2719,8 @@ namespace CodeCompletion
                 // Добавление всех стандартных модулей EVA
                 foreach (var standardUnitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
                 {
-                    AddStandardUnit(standardUnitName, currentUnitLanguage.CaseSensitive, currentUnitLanguage.LanguageInformation.AddStandardUnitNamesToUserScope);
+                    AddStandardUnit(standardUnitName, currentUnitLanguage.CaseSensitive, currentUnitLanguage.LanguageInformation.AddStandardUnitNamesToUserScope
+                        && (languageUsingStandardUnit?.LanguageInformation.AddStandardUnitNamesToUserScope ?? true));
                 }
             }
 
