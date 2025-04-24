@@ -32,6 +32,10 @@ namespace Languages.SPython.Frontend.Data
 
         public override bool IncludeDotNetEntities => true;
 
+        public override bool AddStandardUnitNamesToUserScope => false;
+
+        public override bool AddStandardNetNamespacesToUserScope => false;
+
         public override string ConstructHeader(string meth, IProcScope scope, int tabCount)
         {
             throw new NotImplementedException();

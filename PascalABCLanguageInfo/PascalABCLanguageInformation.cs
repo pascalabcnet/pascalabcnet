@@ -152,6 +152,10 @@ namespace Languages.Pascal.Frontend.Data
             }
         }
 
+        public override bool AddStandardUnitNamesToUserScope => true;
+
+        public override bool AddStandardNetNamespacesToUserScope => true;
+
         public override string GetDescription(IBaseScope scope)
         {
             switch (scope.Kind)

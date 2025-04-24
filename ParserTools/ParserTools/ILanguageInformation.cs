@@ -164,6 +164,15 @@ namespace PascalABCCompiler.Parsers
         {
             get;
         }
+        bool AddStandardUnitNamesToUserScope
+        {
+            get;
+        }
+
+        bool AddStandardNetNamespacesToUserScope
+        {
+            get;
+        }
     }
 
     /*public interface ICodeFormatter

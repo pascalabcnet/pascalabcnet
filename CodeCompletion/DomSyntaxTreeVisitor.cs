@@ -2656,18 +2656,25 @@ namespace CodeCompletion
             }
 
             CodeCompletionController.comp_modules[_unit_module.file_name] = this.converter;
-            if (!existed_ns)
-                foreach (string s in namespaces)
-                {
-                    if (!ns_cache.ContainsKey(s))
-                    {
-                        NamespaceScope ns_scope = new NamespaceScope(s);
-                        entry_scope.AddName(s, ns_scope);
-                        ns_cache[s] = s;
-                    }
-                }
 
             currentUnitLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(_unit_module.file_name);
+
+            if (!existed_ns)
+            {
+                // Пока что добавили возможость грубо отключить добавление NET пространств имен по умолчанию здесь (второе условие нужно, чтобы в стандартный модуль языка они тоже не добавлялись) EVA
+                if (currentUnitLanguage.LanguageInformation.AddStandardNetNamespacesToUserScope && language.LanguageInformation.AddStandardNetNamespacesToUserScope)
+                {
+                    foreach (string s in namespaces)
+                    {
+                        if (!ns_cache.ContainsKey(s))
+                        {
+                            NamespaceScope ns_scope = new NamespaceScope(s);
+                            entry_scope.AddName(s, ns_scope);
+                            ns_cache[s] = s;
+                        }
+                    }
+                }
+            }
 
             if (currentUnitLanguage.SyntaxTreeConvertersForIntellisense != null)
             {
@@ -2710,7 +2717,7 @@ namespace CodeCompletion
                 // Добавление всех стандартных модулей EVA
                 foreach (var standardUnitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
                 {
-                    AddStandardUnit(standardUnitName, currentUnitLanguage.CaseSensitive);
+                    AddStandardUnit(standardUnitName, currentUnitLanguage.CaseSensitive, currentUnitLanguage.LanguageInformation.AddStandardUnitNamesToUserScope);
                 }
             }
 
@@ -2822,7 +2829,7 @@ namespace CodeCompletion
         	return CodeCompletionController.comp.FindPCUFileName(UnitName, curr_path, out _, caseSensitiveSearch);
         }
         
-        private void AddStandardUnit(string unitName, bool caseSensitiveSearch)
+        private void AddStandardUnit(string unitName, bool caseSensitiveSearch, bool addStandardUnitNameToCurrentScope)
         {
             string unitPath = CodeCompletionNameHelper.FindSourceFileName(unitName, out _, caseSensitiveSearch);
             if (unitPath != null)
@@ -2842,7 +2849,17 @@ namespace CodeCompletion
                         //if (unitName == StringConstants.pascalSystemUnitName)
                         //    add_standart_types(dc.visitor.entry_scope);
                         //get_standart_types(dc.stv);
-                        entry_scope.AddName(unitName, dc.visitor.entry_scope);
+                        
+                        // для SPython, например, не нужно подсказывать стандартные модули в программе, это условие для этого EVA
+                        if (addStandardUnitNameToCurrentScope)
+                        {
+                            entry_scope.AddName(unitName, dc.visitor.entry_scope);
+                        }
+                        else
+                        {
+                            dc.visitor.entry_scope.AddName(unitName, dc.visitor.entry_scope);
+                        }
+                        
                     }
                     CodeCompletionController.comp_modules[unitPath] = dc;
 
@@ -2852,7 +2869,10 @@ namespace CodeCompletion
                     dc.visitor.entry_scope.InitAssemblies();
                     entry_scope.AddUsedUnit(dc.visitor.entry_scope);
                     //get_standart_types(dc.stv);
-                    entry_scope.AddName(unitName, dc.visitor.entry_scope);
+                    if (addStandardUnitNameToCurrentScope)
+                    {
+                        entry_scope.AddName(unitName, dc.visitor.entry_scope);
+                    }
                 }
             }
         }
@@ -3185,7 +3205,6 @@ namespace CodeCompletion
             List<string> namespaces = new List<string>();
             PascalABCCompiler.NetHelper.NetHelper.init_namespaces(_as);
             AssemblyDocCache.Load(_as, path);
-
             namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(_as));
             //List<Scope> netScopes = new List<Scope>();
             //PascalABCCompiler.NetHelper.NetScope ns=new PascalABCCompiler.NetHelper.NetScope(unl,_as,tcst);
@@ -3330,16 +3349,20 @@ namespace CodeCompletion
             // Добавление всех стандартных модулей EVA
             foreach (var unitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
             {
-                AddStandardUnit(unitName, currentUnitLanguage.CaseSensitive);
+                AddStandardUnit(unitName, currentUnitLanguage.CaseSensitive, currentUnitLanguage.LanguageInformation.AddStandardUnitNamesToUserScope);
             }
 
-            foreach (string s in namespaces)
+            // Пока что добавили возможость грубо отключить добавление NET пространств имен по умолчанию здесь EVA
+            if (currentUnitLanguage.LanguageInformation.AddStandardNetNamespacesToUserScope)
             {
-                if (!ns_cache.ContainsKey(s))
+                foreach (string s in namespaces)
                 {
-                    NamespaceScope ns_scope = new NamespaceScope(s);
-                    cur_scope.AddName(s, ns_scope);
-                    ns_cache[s] = s;
+                    if (!ns_cache.ContainsKey(s))
+                    {
+                        NamespaceScope ns_scope = new NamespaceScope(s);
+                        cur_scope.AddName(s, ns_scope);
+                        ns_cache[s] = s;
+                    }
                 }
             }
 

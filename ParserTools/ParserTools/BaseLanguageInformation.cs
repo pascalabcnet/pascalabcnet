@@ -31,6 +31,10 @@ namespace PascalABCCompiler.Parsers
 
         public abstract bool IncludeDotNetEntities { get; }
 
+        public abstract bool AddStandardUnitNamesToUserScope { get; }
+
+        public abstract bool AddStandardNetNamespacesToUserScope { get; }
+
         // перенести сюда реализацию  EVA
         public abstract string ConstructHeader(string meth, IProcScope scope, int tabCount);
 
