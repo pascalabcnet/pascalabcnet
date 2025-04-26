@@ -36,6 +36,8 @@ type
         end;
     end;
 
+function __NewSetCreatorInternal<T>(params a: array of T): NewSet<T>;
+
 procedure print(params args: array of object);
 
 // Basic type conversion methods
@@ -244,5 +246,11 @@ begin
   Result := Self[ind];
   Self.RemoveAt(ind);
 end;
+
+function __NewSetCreatorInternal<T>(params a: array of T): NewSet<T>;
+begin
+  //Result._hs := new HashSet<T>;
+  Result._hs.UnionWith(a);
+end; 
 
 end.

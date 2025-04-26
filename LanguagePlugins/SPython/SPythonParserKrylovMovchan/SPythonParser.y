@@ -72,6 +72,7 @@
 %type <stn> import_clause template_type_params template_param_list parts stmt_or_expression
 %type <ob> optional_semicolon end_of_line
 %type <op> assign_type
+%type <ex> list_constant set_constant
 
 %start program
 
@@ -434,6 +435,15 @@ expr
 			expression_list el = new expression_list(new List<expression> { $1, $3 }, @$);
 			$$ = new method_call(method_name, el, @$);
 		}
+	| expr IN			expr
+		{
+			$$ = new bin_expr($1, $3, Operators.In, @$); 
+		}
+	| expr NOT IN			expr
+		{
+			// $$ = new bin_expr($1, $4, Operators.NotIn, @$); 
+			$$ = new un_expr(new bin_expr($1, $4, Operators.In, @$),Operators.LogicalNOT,@$);
+		}
 	| MINUS	expr
 		{ 
 			$$ = new un_expr($2, $1.type, @$); 
@@ -616,11 +626,13 @@ variable
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); 
 		}
 	// list constant
-	| LBRACKET expr_list RBRACKET
+	| list_constant
 		{
-			var acn = new array_const_new($2 as expression_list, '|', @$);
-			var dn = new dot_node(acn as addressed_value, (new ident("ToList", @$)) as addressed_value, @$);
-			$$ = new method_call(dn as addressed_value, null, @$);
+			$$ = $1;
+		}
+	| set_constant
+		{
+			$$ = $1;
 		}
 	// index property
 	| variable LBRACKET expr RBRACKET
@@ -632,6 +644,22 @@ variable
 	| LBRACKET expr FOR ident IN expr optional_condition RBRACKET
 		{
 			$$ = new list_generator($2, $4, $6, $7, @$);
+		}
+	;
+
+set_constant
+	: LBRACE expr_list RBRACE
+		{
+			$$ = new pascal_set_constant($2 as expression_list, @$);
+		}
+	;
+
+list_constant
+	: LBRACKET expr_list RBRACKET
+		{
+			var acn = new array_const_new($2 as expression_list, '|', @$);
+			var dn = new dot_node(acn as addressed_value, (new ident("ToList", @$)) as addressed_value, @$);
+			$$ = new method_call(dn as addressed_value, null, @$);
 		}
 	;
 
