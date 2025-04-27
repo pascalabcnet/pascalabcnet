@@ -43,6 +43,7 @@ procedure print(params args: array of object);
 // Basic type conversion methods
 
 function int(val: string): integer;
+
 function &type(obj: object): System.Type;
 
 //function int(val: string): integer;
@@ -99,6 +100,10 @@ function bigint(x: integer): biginteger;
 function !pow_recursion(x, n: integer): integer;
 
 function !pow_recursion(x, n: biginteger): biginteger;
+
+function CreateTuple<T1, T2>(v1: T1; v2: T2): System.Tuple<T1, T2>;
+
+function Dict<TKey, TVal>(params pairs: array of (TKey, TVal)): Dictionary<TKey, TVal>;
 
 type 
     list<T> = PABCSystem.List<T>;
@@ -252,5 +257,14 @@ begin
   //Result._hs := new HashSet<T>;
   Result._hs.UnionWith(a);
 end; 
+
+function CreateTuple<T1, T2>(v1: T1; v2: T2): System.Tuple<T1, T2> := (v1, v2);
+
+function Dict<TKey, TVal>(params pairs: array of (TKey, TVal)): Dictionary<TKey, TVal>;
+begin
+  Result := new Dictionary<TKey, TVal>();
+  for var i := 0 to pairs.Length - 1 do
+    Result.Add(pairs[i][0], pairs[i][1]);
+end;
 
 end.

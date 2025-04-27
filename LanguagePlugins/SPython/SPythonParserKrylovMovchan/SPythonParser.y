@@ -69,10 +69,11 @@
 %type <stn> program param_name form_param_sect form_param_list optional_form_param_list dotted_ident_list
 %type <stn> ident_as_ident ident_as_ident_list
 %type <td> proc_func_header type_ref simple_type_identifier template_type
-%type <stn> import_clause template_type_params template_param_list parts stmt_or_expression
+%type <stn> import_clause template_type_params template_param_list parts stmt_or_expression expr_mapping_list
 %type <ob> optional_semicolon end_of_line
 %type <op> assign_type
-%type <ex> list_constant set_constant
+%type <ex> expr_mapping 
+%type <ex> list_constant set_constant dict_constant
 
 %start program
 
@@ -318,6 +319,25 @@ ident_as_ident_list
     | ident_as_ident_list COMMA ident_as_ident
         {
 			$$ = ($1 as as_statement_list).Add($3 as as_statement, @$);
+		}
+    ;
+
+expr_mapping
+	: expr COLON expr 
+		{
+			expression_list el = new expression_list(new List<expression> { $1, $3 }, @$);
+			$$ = new tuple_node(el, @$);
+		}
+	;
+
+expr_mapping_list
+    : expr_mapping
+        {
+			$$ = new expression_list($1, @$);
+		}
+    | expr_mapping_list COMMA expr_mapping
+        {
+			$$ = ($1 as expression_list).Add($3, @$);
 		}
     ;
 
@@ -634,6 +654,10 @@ variable
 		{
 			$$ = $1;
 		}
+	| dict_constant
+		{
+			$$ = $1;
+		}
 	// index property
 	| variable LBRACKET expr RBRACKET
 		{
@@ -644,6 +668,13 @@ variable
 	| LBRACKET expr FOR ident IN expr optional_condition RBRACKET
 		{
 			$$ = new list_generator($2, $4, $6, $7, @$);
+		}
+	;
+
+dict_constant
+	: LBRACE expr_mapping_list RBRACE
+		{
+			$$ = new method_call(new ident("Dict", @$), $2 as expression_list, @$);
 		}
 	;
 
