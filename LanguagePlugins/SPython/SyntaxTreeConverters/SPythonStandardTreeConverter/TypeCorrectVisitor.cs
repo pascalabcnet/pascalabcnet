@@ -29,6 +29,12 @@ namespace Languages.SPython.Frontend.Converters
                 case "bigint":
                     id.name = "biginteger";
                     break;
+                case "dict":
+                    id.name = "dictionary";
+                    break;
+                case "set":
+                    id.name = "sset";
+                    break;
 
                 case "integer":
                     throw new SPythonSyntaxVisitorError("PASCALABCNET_TYPE_{0}_INSTEAD_OF_SPYTHON_TYPE_{1}",

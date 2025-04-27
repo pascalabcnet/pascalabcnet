@@ -78,6 +78,8 @@ function abs(x: real): real;
 //Standard functions with Lists
 
 function len<T>(lst: PABCSystem.List<T>): integer;
+function len<T>(st: set of T): integer;
+function len<K, V>(dct: PABCSystem.Dictionary<K, V>): integer;
 
 function sorted<T>(lst: PABCSystem.List<T>): PABCSystem.List<T>;
 
@@ -108,6 +110,8 @@ function Dict<TKey, TVal>(params pairs: array of (TKey, TVal)): Dictionary<TKey,
 type 
     list<T> = PABCSystem.List<T>;
     biginteger = PABCSystem.BigInteger;
+    dictionary<K, V> = PABCSystem.Dictionary<K, V>;
+    sset<T> = set of T;
 
 implementation
 
@@ -171,7 +175,9 @@ function abs(x: integer): integer := if x >= 0 then x else -x;
 
 function abs(x: real): real := PABCSystem.Abs(x);
 
-function len<T>(lst: PABCSystem.List<T>): integer := lst.Count;
+function len<T>(lst: PABCSystem.List<T>): integer := lst.Count();
+function len<T>(st: set of T): integer := st.Count();
+function len<K, V>(dct: PABCSystem.Dictionary<K, V>): integer := dct.Count();
 
 function sorted<T>(lst: PABCSystem.List<T>): PABCSystem.List<T>;
 begin
