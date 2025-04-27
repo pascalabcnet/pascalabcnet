@@ -81,6 +81,9 @@ function len<T>(lst: PABCSystem.List<T>): integer;
 function len<T>(st: set of T): integer;
 function len<K, V>(dct: PABCSystem.Dictionary<K, V>): integer;
 
+function &set<T>(sq: sequence of T): set of T;
+function &list<T>(sq: sequence of T): PABCSystem.List<T>;
+
 function sorted<T>(lst: PABCSystem.List<T>): PABCSystem.List<T>;
 
 function sum(lst: PABCSystem.List<integer>): integer;
@@ -108,10 +111,10 @@ function CreateTuple<T1, T2>(v1: T1; v2: T2): System.Tuple<T1, T2>;
 function Dict<TKey, TVal>(params pairs: array of (TKey, TVal)): Dictionary<TKey, TVal>;
 
 type 
-    list<T> = PABCSystem.List<T>;
     biginteger = PABCSystem.BigInteger;
-    dictionary<K, V> = PABCSystem.Dictionary<K, V>;
-    sset<T> = set of T;
+    !list<T> = PABCSystem.List<T>;
+    !dict<K, V> = PABCSystem.Dictionary<K, V>;
+    !set<T> = set of T;
 
 implementation
 
@@ -244,7 +247,7 @@ begin
   Result := x;
 end;
 
-function !count<T>(Self: list<T>; val: T): integer; extensionmethod;
+function !count<T>(Self: PABCSystem.List<T>; val: T): integer; extensionmethod;
 begin
   Result := 0;
   for var i := 0 to Self.Count - 1 do
@@ -252,7 +255,7 @@ begin
          Result += 1;
 end;
 
-function pop<T>(Self: list<T>; ind: integer): T; extensionmethod;
+function pop<T>(Self: PABCSystem.List<T>; ind: integer): T; extensionmethod;
 begin
   Result := Self[ind];
   Self.RemoveAt(ind);
@@ -272,5 +275,13 @@ begin
   for var i := 0 to pairs.Length - 1 do
     Result.Add(pairs[i][0], pairs[i][1]);
 end;
+
+function &set<T>(sq: sequence of T): set of T;
+begin
+  foreach var e in sq do
+    Result.Add(e);
+end;
+
+function &list<T>(sq: sequence of T): PABCSystem.List<T> := sq.ToList();
 
 end.

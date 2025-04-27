@@ -29,11 +29,14 @@ namespace Languages.SPython.Frontend.Converters
                 case "bigint":
                     id.name = "biginteger";
                     break;
+                case "list":
+                    id.name = "!list";
+                    break;
                 case "dict":
-                    id.name = "dictionary";
+                    id.name = "!dict";
                     break;
                 case "set":
-                    id.name = "sset";
+                    id.name = "!set";
                     break;
 
                 case "integer":
