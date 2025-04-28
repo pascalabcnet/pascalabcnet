@@ -2719,8 +2719,7 @@ namespace CodeCompletion
                 // Добавление всех стандартных модулей EVA
                 foreach (var standardUnitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
                 {
-                    AddStandardUnit(standardUnitName, currentUnitLanguage.CaseSensitive, currentUnitLanguage.LanguageInformation.AddStandardUnitNamesToUserScope
-                        && (languageUsingStandardUnit?.LanguageInformation.AddStandardUnitNamesToUserScope ?? true));
+                    AddStandardUnit(standardUnitName, currentUnitLanguage.CaseSensitive, currentUnitLanguage.LanguageInformation.AddStandardUnitNamesToUserScope);
                 }
             }
 

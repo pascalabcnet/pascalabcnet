@@ -36,6 +36,34 @@ namespace Languages.SPython.Frontend.Data
 
         public override bool AddStandardNetNamespacesToUserScope => false;
 
+        private readonly Dictionary<string, string> renamings = new Dictionary<string, string>
+        {
+            ["biginteger"] = "bigint"
+        };
+
+        private readonly HashSet<string> exclutions = new HashSet<string>
+        {
+            "PABCSystem", "__NewSetCreatorInternal"
+        };
+
+        public override void RenameOrExcludeSpecialNames(SymInfo[] symInfos)
+        {
+            for (var i = 0; i < symInfos.Length; i++)
+            {
+                if (renamings.TryGetValue(symInfos[i].name, out var newName))
+                {
+                    // копирование на всякий случай
+                    symInfos[i] = new SymInfo(symInfos[i]);
+                    symInfos[i].name = newName;
+                }
+                else if (exclutions.Contains(symInfos[i].name))
+                {
+                    symInfos[i] = new SymInfo(symInfos[i]);
+                    symInfos[i].not_include = true;
+                }
+            }
+        }
+
         public override string ConstructHeader(string meth, IProcScope scope, int tabCount)
         {
             throw new NotImplementedException();

@@ -35,6 +35,8 @@ namespace PascalABCCompiler.Parsers
 
         public abstract bool AddStandardNetNamespacesToUserScope { get; }
 
+        public virtual void RenameOrExcludeSpecialNames(SymInfo[] symInfos) { }
+
         // перенести сюда реализацию  EVA
         public abstract string ConstructHeader(string meth, IProcScope scope, int tabCount);
 

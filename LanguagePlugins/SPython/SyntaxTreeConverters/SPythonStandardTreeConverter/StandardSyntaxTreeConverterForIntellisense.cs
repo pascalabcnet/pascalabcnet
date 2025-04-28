@@ -36,8 +36,8 @@ namespace Languages.SPython.Frontend.Converters
             ccdv.ProcessNode(root);
 
             // замена типов из SPython на типы из PascalABC.NET
-            // var tcv = new TypeCorrectVisitor();
-            // tcv.ProcessNode(root);
+            var tcv = new TypeCorrectVisitorForIntellisense();
+            tcv.ProcessNode(root);
 
             // вынос forward объявлений для всех функций в начало
             var afdv = new AddForwardDeclarationsVisitor();
