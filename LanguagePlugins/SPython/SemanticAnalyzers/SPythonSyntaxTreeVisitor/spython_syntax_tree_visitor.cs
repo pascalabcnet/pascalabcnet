@@ -128,8 +128,10 @@ namespace SPythonSyntaxTreeVisitor
 
         }
 
-        private Dictionary<string, string> listNamesMapping = 
-            new Dictionary<string, string> { 
+        private Dictionary<string, Dictionary<string, string>> containersNamesMapping = new Dictionary<string, Dictionary<string, string>>
+        {
+            {"List" ,
+                new Dictionary<string, string> {
                 { "append", "Add" },
                 { "clear", "Clear" },
                 { "insert", "Insert" },
@@ -140,26 +142,39 @@ namespace SPythonSyntaxTreeVisitor
                 { "sort", "Sort" },
                 { "reverse", "Reverse" },
                 { "copy", "ToList" },
-            };
+            } }
+        };
+            
 
-        /*
+        HashSet<method_call> visited_method_calls = new HashSet<method_call>();
+
         public override void visit(method_call _method_call)
         {
-            if (_method_call.dereferencing_value is dot_node dn)
+            if (visited_method_calls.Contains(_method_call))
+            {
+                base.visit(_method_call);
+                return;
+            }
+            visited_method_calls.Add(_method_call);
+            if (_method_call.dereferencing_value is dot_node dn && dn.right is ident id)
             {
                 try
                 {
                     expression_node left = convert_strong(dn.left);
-                    dn.left = new semantic_addr_value(left);
-                    if (dn.right is ident id && left.type.name.StartsWith("List"))
+                    //dn.left = new semantic_addr_value(left);
+                    if (left.type != null) 
+                    foreach (string tName in containersNamesMapping.Keys)
                     {
-                        if (!listNamesMapping.ContainsKey(id.name))
+                        if (left.type.name.StartsWith(tName))
                         {
-                            AddError(left.location, "SPYTHONSEMANTIC_TYPE_{0}_HAS_NO_{1}_METHOD", ConvertTypeNameToSPythonTypeName(left.type), id.name);
-                        }
-                        else
-                        {
-                            id.name = listNamesMapping[id.name];
+                            if (!containersNamesMapping[tName].ContainsKey(id.name))
+                            {
+                                AddError(left.location, "SPYTHONSEMANTIC_TYPE_{0}_HAS_NO_{1}_METHOD", ConvertTypeNameToSPythonTypeName(left.type), id.name);
+                            }
+                            else
+                            {
+                                id.name = containersNamesMapping[tName][id.name];
+                            }
                         }
                     }
                 }
@@ -171,7 +186,6 @@ namespace SPythonSyntaxTreeVisitor
             }
             base.visit(_method_call);
         }
-        */
 
         public override void visit(bin_expr _bin_expr)
         {

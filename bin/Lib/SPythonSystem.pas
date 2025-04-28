@@ -26,8 +26,9 @@ type
           Result.sep := sep;
           Result.&end := &end;
         end;
-        procedure print(params args: array of object);
+        function print(params args: array of object): integer;
         begin
+          Result := args.Count();
           for var i := 0 to args.length - 2 do
             Write(args[i], sep);
           if args.length <> 0 then 
@@ -40,7 +41,7 @@ function __NewSetCreatorInternal<T>(params a: array of T): NewSet<T>;
 
 procedure print(params args: array of object);
 
-// Basic type conversion methods
+procedure clear<T>(var st: set of T);
 
 function int(val: string): integer;
 
@@ -259,6 +260,26 @@ function pop<T>(Self: PABCSystem.List<T>; ind: integer): T; extensionmethod;
 begin
   Result := Self[ind];
   Self.RemoveAt(ind);
+end;
+
+procedure add<T>(Self: set of T; val: T); extensionmethod;
+begin
+  Self += val;
+end;
+
+procedure remove<T>(Self: set of T; val: T); extensionmethod;
+begin
+  Self -= val;
+end;
+
+function copy<T>(Self: set of T): set of T; extensionmethod;
+begin
+  Result := Self;
+end;
+
+procedure clear<T>(var st: set of T);
+begin
+  st := [];
 end;
 
 function __NewSetCreatorInternal<T>(params a: array of T): NewSet<T>;
