@@ -2808,7 +2808,14 @@ namespace CodeCompletion
                     namesFromUsedUnits.Add(unitScope.Name, new HashSet<string>());
 
                     foreach (var symbol in unitScope.symbol_table)
-                        namesFromUsedUnits[unitScope.Name].Add((string)((DictionaryEntry)symbol).Key);
+                    {
+                        string name = (string)((DictionaryEntry)symbol).Key;
+                        
+                        if (name == unitScope.Name)
+                            continue;
+
+                        namesFromUsedUnits[unitScope.Name].Add(name);
+                    }
                 }
             }
 
@@ -3001,7 +3008,7 @@ namespace CodeCompletion
             }
         }
 
-        private static void add_unit_ref_for_import(ident_list importedModuleName, statement importStatement, string curr_path,
+        private static void add_unit_ref_for_import(ident_list importedModuleName, statement importStatement, as_statement_list asStatementsList, string curr_path,
             SymScope cur_scope, Hashtable ns_cache, bool allow_import_types,
             using_namespace_list unl, bool caseSensitiveSearch)
         {
@@ -3027,7 +3034,7 @@ namespace CodeCompletion
                             if (dc.visitor != null)
                             {
                                 dc.visitor.entry_scope.InitAssemblies();
-                                AddImportedNamesToCurScope(importStatement, cur_scope, str, dc.visitor.entry_scope);
+                                AddImportedNamesToCurScope(importStatement, asStatementsList, cur_scope, str, dc.visitor.entry_scope);
                             }
                         }
                         else
@@ -3038,26 +3045,26 @@ namespace CodeCompletion
                                 IntellisensePCUReader pcu_rdr = new IntellisensePCUReader();
                                 SymScope ss = pcu_rdr.GetUnit(unit_name);
                                 UnitDocCache.Load(ss, unit_name);
-                                AddImportedNamesToCurScope(importStatement, cur_scope, str, ss);
+                                AddImportedNamesToCurScope(importStatement, asStatementsList, cur_scope, str, ss);
                             }
                             else
                             {
                                 if (CodeCompletion.CodeCompletionController.pabcNamespaces.ContainsKey(str.ToLower()))
                                 {
                                     InterfaceUnitScope un_scope = CodeCompletion.CodeCompletionController.pabcNamespaces[str.ToLower()];
-                                    AddImportedNamesToCurScope(importStatement, cur_scope, str, un_scope);
+                                    AddImportedNamesToCurScope(importStatement, asStatementsList, cur_scope, str, un_scope);
                                 }
                                 else if (PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str))
                                 {
                                     ns_scope = new NamespaceScope(str);
                                     ns_cache[str] = str;
-                                    AddImportedNamesToCurScope(importStatement, cur_scope, str, ns_scope, importedModuleName.idents.Count > 1);
+                                    AddImportedNamesToCurScope(importStatement, asStatementsList, cur_scope, str, ns_scope, importedModuleName.idents.Count > 1);
                                 }
                             }
                         }
                     }
                     if (i == importedModuleName.idents.Count - 1 && i > 0)
-                        AddImportedNamesToCurScope(importStatement, cur_scope, str, ns_scope, false);
+                        AddImportedNamesToCurScope(importStatement, asStatementsList, cur_scope, str, ns_scope, false);
                     
                     if (i < importedModuleName.idents.Count - 1)
                         str += ".";
@@ -3072,18 +3079,24 @@ namespace CodeCompletion
             }
         }
 
-        private static void AddImportedNamesToCurScope(statement importStatement, SymScope currentScope, string importedModuleName, SymScope importedModuleScope, bool notFinalNamespaceName = false)
+        private static void AddImportedNamesToCurScope(statement importStatement, as_statement_list asStatementsList, SymScope currentScope, string importedModuleName, SymScope importedModuleScope, bool notFinalNamespaceName = false)
         {
             SymScope fictiveUnit = currentScope.used_units.Find(unit => unit.Name == importedModuleName);
 
-            if (importStatement is import_statement)
+            if (importStatement is import_statement import)
             {
                 if (fictiveUnit == null)
                 {
-                    fictiveUnit = new InterfaceUnitScope(new SymInfo(importedModuleName, SymbolKind.Namespace, ""), null);
-                    fictiveUnit.AddName(importedModuleName, importedModuleScope);
+                    fictiveUnit = new InterfaceUnitScope(new SymInfo(importedModuleName, SymbolKind.Namespace, ""), null);    
                     currentScope.AddUsedUnit(fictiveUnit);
                 }
+
+                string aliasName = asStatementsList.as_statements.Find(st => st.real_name.name == importedModuleName).alias.name;
+                fictiveUnit.AddName(aliasName, importedModuleScope);
+
+                // Поправляем реальное имя, которое портится в InterfaceUnitScope.AddName() EVA
+                importedModuleScope.si.name = importedModuleName;
+                importedModuleScope.si.addit_name = aliasName;
             }
             else if (importStatement is from_import_statement fromImport && !notFinalNamespaceName)
             {
@@ -3096,17 +3109,20 @@ namespace CodeCompletion
                     if (fictiveUnit == null)
                     {
                         fictiveUnit = new InterfaceUnitScope(new SymInfo(importedModuleName, SymbolKind.Namespace, ""), null);
+                        currentScope.AddUsedUnit(fictiveUnit);
                     }
                     
-                    foreach (var asStatement in fromImport.imported_names.as_statements)
+                    foreach (var asStatement in asStatementsList.as_statements)
                     {
                         SymScope nameScope = importedModuleScope.FindNameOnlyInType(asStatement.real_name.name);
                         if (nameScope != null)
                         {
-                            fictiveUnit.AddName(asStatement.real_name.name, nameScope);
+                            fictiveUnit.AddName(asStatement.alias.name, nameScope);
+                            // Поправляем реальное имя, которое портится в InterfaceUnitScope.AddName() EVA
+                            nameScope.si.name = asStatement.real_name.name;
+                            nameScope.si.addit_name = asStatement.alias.name;
                         }
                     }
-                    currentScope.AddUsedUnit(fictiveUnit);
                 }
             }
         }
@@ -3427,7 +3443,7 @@ namespace CodeCompletion
                 {
                     foreach (var unitNode in import.modules_names.as_statements.Select(st => st.real_name).Reverse())
                     {
-                        add_unit_ref_for_import(new ident_list(unitNode), import,
+                        add_unit_ref_for_import(new ident_list(unitNode), import, import.modules_names,
                             Path.GetDirectoryName(fileName),
                             cur_scope, ns_cache, semantic_options.allow_import_types,
                             unl, caseSensitiveSearch);
@@ -3435,7 +3451,7 @@ namespace CodeCompletion
                 }
                 else if (importStatement is from_import_statement fromImport)
                 {
-                    add_unit_ref_for_import(new ident_list(fromImport.module_name), fromImport,
+                    add_unit_ref_for_import(new ident_list(fromImport.module_name), fromImport, fromImport.imported_names,
                         Path.GetDirectoryName(fileName),
                         cur_scope, ns_cache, semantic_options.allow_import_types,
                         unl, caseSensitiveSearch);

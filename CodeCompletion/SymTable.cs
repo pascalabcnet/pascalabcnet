@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using PascalABCCompiler;
 using PascalABCCompiler.Parsers;
@@ -890,14 +890,20 @@ namespace CodeCompletion
                         List<SymScope> lst = o as List<SymScope>;
                         foreach (SymScope s in lst)
                         {
-                            if (s.si.name == name)
+                            // Добавил второе условие с addit_name, чтобы работали подсказки для anotherName при использовании from ... import name as anotherName EVA
+                            if (s.si.name == name || s.si.addit_name == name)
+                            {
                                 ss = s;
+                                // изменил на возврат первого совпадения для стандартных типов в SPython пока они не в фиктивном модуле, а в SPythonSystem EVA
+                                break;
+                            }
+                                
                         }
                     }
                 if (ss == null) return null;
                 TypeScope ts = ss as TypeScope;
                 if (CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive)
-                    if (ss.si.name != name)
+                    if (ss.si.name != name && ss.si.addit_name != name)
                         return null;
                 if (ss.loc != null && loc != null && check_for_def && cur_line != -1 && cur_col != -1)
                 {
@@ -5006,7 +5012,7 @@ namespace CodeCompletion
                         UnitDocCache.AddDescribeToComplete(ss);
                 }
             }
-            // SSM 10/07/24 ������� ��� ����� �� ������������ ����������� ����� �������� ������
+            // SSM 10/07/24 добавил это чтобы не показывались статические члены базового класса
             if (this.documentation != null && this.documentation.Contains("!#") && baseScope is CompiledScope)
                 return lst.ToArray();
 

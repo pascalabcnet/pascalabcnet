@@ -50,6 +50,9 @@ namespace Languages.SPython.Frontend.Data
         {
             for (var i = 0; i < symInfos.Length; i++)
             {
+                if (symInfos[i] == null)
+                    continue;
+
                 if (renamings.TryGetValue(symInfos[i].name, out var newName))
                 {
                     // копирование на всякий случай
