@@ -3478,10 +3478,7 @@ namespace CodeCompletion
                 {
                     var typeClone = TypeTable.StandardTypeClone(type);
 
-                    cur_scope.AddName(type.Name, typeClone);
-
-                    // перекрываем имя типа Паскаля нужным именем EVA
-                    typeClone.si.addit_name = type_name;
+                    cur_scope.AddName(type_name, typeClone);
                 }
             }
         }

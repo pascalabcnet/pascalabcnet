@@ -1078,7 +1078,6 @@ namespace Languages.SPython.Frontend.Data
             {
                 case SymbolKind.Variable: sb.Append("var " + GetTopScopeName(scope.TopScope) + scope.Name + ((type_name != "") ? ": " + type_name : "")); break;
                 case SymbolKind.Parameter: sb.Append(kind_of_param(scope) + "parameter " + scope.Name + ": " + type_name + (scope.ConstantValue != null ? (":=" + scope.ConstantValue.ToString()) : "")); break;
- 
                 case SymbolKind.Field:
                     if (scope.IsStatic)
                         sb.Append("static ");
@@ -1121,7 +1120,6 @@ namespace Languages.SPython.Frontend.Data
                     case TypeCode.Boolean: return "bool";
                     case TypeCode.String: return "str";
                     case TypeCode.Char: return "char";
-                    case TypeCode.Int64: return "bigint";
                 }
                 /*if (ctn.IsPointer)
                     if (ctn.FullName == "System.Void*")
@@ -1204,7 +1202,6 @@ namespace Languages.SPython.Frontend.Data
                     case TypeCode.Boolean: return "bool";
                     case TypeCode.String: return "str";
                     case TypeCode.Char: return "char";
-                    case TypeCode.Int64: return "bigint";
                 }
                 /*if (ctn.IsPointer)
                     if (ctn.FullName == "System.Void*")
@@ -1264,6 +1261,11 @@ namespace Languages.SPython.Frontend.Data
                 case ScopeKind.Set:
                     if (scope is ITypeScope && (scope as ITypeScope).Aliased)
                         return scope.Name;
+                    break;
+                case ScopeKind.TypeSynonim:
+                case ScopeKind.Type:
+                    if (scope.Name == "biginteger")
+                        return "bigint";
                     break;
             }
             switch (scope.Kind)
@@ -1391,7 +1393,6 @@ namespace Languages.SPython.Frontend.Data
             switch (keyw)
             {
                 case KeywordKind.IntType: return "int";
-                case KeywordKind.Int64Type: return "bigint";
                 case KeywordKind.DoubleType: return "float";
                 case KeywordKind.CharType: return "char";
                 case KeywordKind.BoolType: return "bool";
