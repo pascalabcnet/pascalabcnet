@@ -87,21 +87,20 @@ namespace SPythonSyntaxTreeVisitor
 
         private type_node ConvertTypeNameToSPythonTypeName(type_node tn)
         {
-            if (tn is compiled_type_node cnt)
-            {
-                string new_name = tn.PrintableName;
-                new_name = new_name
-                    .Replace("<", "[")
-                    .Replace(">", "]")
-                    .Replace("List", "list")
-                    .Replace("integer", "int")
-                    .Replace("string", "str")
-                    .Replace("real", "float")
-                    .Replace("boolean", "bool")
-                    .Replace("System.Numerics.BigInteger", "bigint");
-                return new common_type_node(new_name, type_access_level.tal_public, null, null, cnt.location);
-            }
-            return tn;
+            string new_name = tn.PrintableName;
+            new_name = new_name
+                .Replace(",", ", ")
+                .Replace("<", "[")
+                .Replace(">", "]")
+                .Replace("List", "list")
+                .Replace("NewSet", "set")
+                .Replace("Dictionary", "dict")
+                .Replace("integer", "int")
+                .Replace("string", "str")
+                .Replace("real", "float")
+                .Replace("boolean", "bool")
+                .Replace("System.Numerics.BigInteger", "bigint");
+            return new common_type_node(new_name, type_access_level.tal_public, null, null, tn.location);
         }
 
         public override void AddError(Error err, bool shouldReturn = false)
