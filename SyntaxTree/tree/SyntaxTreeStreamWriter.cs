@@ -7242,7 +7242,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_list_generator(list_generator _list_generator)
 		{
-			write_expression(_list_generator);
+			write_addressed_value(_list_generator);
 			if (_list_generator._expr == null)
 			{
 				bw.Write((byte)0);

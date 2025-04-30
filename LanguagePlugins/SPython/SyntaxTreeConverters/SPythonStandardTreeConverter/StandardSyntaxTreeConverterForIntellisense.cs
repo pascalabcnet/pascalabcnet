@@ -28,8 +28,9 @@ namespace Languages.SPython.Frontend.Converters
 
             // замена генерации списков на Select.Where.ToArray
             // (не работает из-за лямбд, если переместить в ConvertAfterUsedModulesCompilation)
-            var ldv = new ListDesugarVisitor();
+            var ldv = new ListDesugarVisitor(root);
             ldv.ProcessNode(root);
+            root = ldv.UpdatedRoot();
 
             // дешугаризация составных сравнительных операций (e.g. a == b == c)
             var ccdv = new CompoundComparisonDesugarVisitor();

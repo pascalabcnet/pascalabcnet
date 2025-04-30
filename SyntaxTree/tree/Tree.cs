@@ -1006,8 +1006,7 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.from.Parent = copy;
 			}
 			copy.operator_type = operator_type;
-			copy.first_assignment_defines_type = first_assignment_defines_type;
-            return copy;
+			return copy;
 		}
 
 		/// <summary> Получает копию данного узла корректного типа </summary>
@@ -56268,7 +56267,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///SPython-only node
 	///</summary>
 	[Serializable]
-	public partial class list_generator : expression
+	public partial class list_generator : addressed_value
 	{
 
 		///<summary>

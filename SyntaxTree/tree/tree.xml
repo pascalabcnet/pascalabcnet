@@ -3390,7 +3390,7 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="list_generator" BaseName="expression">
+    <SyntaxNode Name="list_generator" BaseName="addressed_value">
       <Fields>
         <SyntaxField Name="_expr" SyntaxType="expression" />
         <SyntaxField Name="_ident" SyntaxType="ident" />

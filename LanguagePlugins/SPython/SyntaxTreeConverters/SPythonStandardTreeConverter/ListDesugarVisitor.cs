@@ -7,8 +7,17 @@ namespace Languages.SPython.Frontend.Converters
 {
     internal class ListDesugarVisitor : BaseChangeVisitor
     {
-        ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
-        public ListDesugarVisitor() {  }
+        private ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
+        private syntax_tree_node root;
+        private bool replaceRoot = false;
+        private syntax_tree_node lastDesugaredNode = null;
+        public ListDesugarVisitor(syntax_tree_node root) { this.root = root; }
+
+        public syntax_tree_node UpdatedRoot()
+        {
+            if (replaceRoot) return lastDesugaredNode;
+            return root;
+        }
 
         public override void visit(list_generator _list_generator)
         {
@@ -58,7 +67,15 @@ namespace Languages.SPython.Frontend.Converters
             mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), _list_generator.source_context);
             dn = new dot_node(mc as addressed_value, (new ident("ToList")) as addressed_value, _list_generator.source_context);
 
-            Replace(_list_generator, new method_call(dn as addressed_value, null, _list_generator.source_context));
+            method_call replaceTo = new method_call(dn as addressed_value, null, _list_generator.source_context);
+
+            if (root != _list_generator)
+                Replace(_list_generator, replaceTo);
+            else
+            {
+                replaceRoot = true;
+                lastDesugaredNode = replaceTo;
+            }
         }
 
         public override void visit(tuple_node tup)
