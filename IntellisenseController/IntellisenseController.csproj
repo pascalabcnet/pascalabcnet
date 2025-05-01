@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8915E6DE-FDE5-4BC1-B17C-CA8A1342A8A0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IntellisenseController</RootNamespace>
+    <AssemblyName>IntellisenseController</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ICSharpCode.TextEditor">
+      <HintPath>..\Libraries\ICSharpCode.TextEditor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CodeCompletionActions.cs" />
+    <Compile Include="CodeCompletionHelpers.cs" />
+    <Compile Include="CodeCompletionHighlighter.cs" />
+    <Compile Include="CodeCompletionImagesProvider.cs" />
+    <Compile Include="CodeCompletionParserController.cs" />
+    <Compile Include="CodeTemplateManager.cs" />
+    <Compile Include="DefinitionByMouseClickManager.cs" />
+    <Compile Include="FoldingStrategy.cs" />
+    <Compile Include="InsightProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TooltipServiceManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CodeCompletion\CodeCompletion.csproj">
+      <Project>{1ab15f6e-c22e-499a-a7ed-54ba7de5cfa6}</Project>
+      <Name>CodeCompletion</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Errors\Errors.csproj">
+      <Project>{44a01f9e-dce7-470c-aae5-c3de0ccbee3b}</Project>
+      <Name>Errors</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LanguageIntegrator\LanguageIntegrator.csproj">
+      <Project>{a48d9069-d569-4110-9252-a10f139b669b}</Project>
+      <Name>LanguageIntegrator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Localization\Localization.csproj">
+      <Project>{2de2842f-0912-4251-bc0f-480854c44a13}</Project>
+      <Name>Localization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ParserTools\ParserTools.csproj">
+      <Project>{af2efd7b-69dd-4b43-af65-b59b29349c23}</Project>
+      <Name>ParserTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PluginsSupport\PluginsSupport.csproj">
+      <Project>{cfc683f8-0165-4a9f-9c3f-bb8c5bab507f}</Project>
+      <Name>PluginsSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StringConstants\StringConstants.csproj">
+      <Project>{e8aefbf9-0113-4fa4-be45-6cda555498b7}</Project>
+      <Name>StringConstants</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
+      <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
+      <Name>SyntaxTree</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
