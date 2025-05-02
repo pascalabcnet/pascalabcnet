@@ -130,7 +130,7 @@ namespace SPythonSyntaxTreeVisitor
 
         private Dictionary<string, Dictionary<string, string>> containersNamesMapping = new Dictionary<string, Dictionary<string, string>>
         {
-            {"List" ,
+            {"List",
                 new Dictionary<string, string> {
                 { "append", "Add" },
                 { "clear", "Clear" },
@@ -142,6 +142,20 @@ namespace SPythonSyntaxTreeVisitor
                 { "sort", "Sort" },
                 { "reverse", "Reverse" },
                 { "copy", "ToList" },
+            } },
+
+            {"NewSet",
+                new Dictionary<string, string> {
+                { "add", "add" },
+                { "remove", "remove" },
+                { "copy", "copy" },
+            } },
+
+            {"Dictionary",
+                new Dictionary<string, string> {
+                { "keys", "get_keys" },
+                { "values", "get_values" },
+                { "copy", "copy" },
             } }
         };
             

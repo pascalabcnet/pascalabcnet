@@ -45,6 +45,9 @@ procedure clear<T>(var st: set of T);
 
 function int(val: string): integer;
 
+function get_keys<K, V>(dct: Dictionary<K, V>): sequence of K;
+function get_values<K, V>(dct: Dictionary<K, V>): sequence of V;
+
 function &type(obj: object): System.Type;
 
 //function int(val: string): integer;
@@ -271,6 +274,9 @@ procedure remove<T>(Self: set of T; val: T); extensionmethod;
 begin
   Self -= val;
 end;
+
+function get_keys<K, V>(dct: Dictionary<K, V>):= dct.keys;
+function get_values<K, V>(dct: Dictionary<K, V>):= dct.values;
 
 function copy<T>(Self: set of T): set of T; extensionmethod;
 begin
