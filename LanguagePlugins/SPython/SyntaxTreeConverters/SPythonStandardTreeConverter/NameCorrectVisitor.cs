@@ -145,7 +145,7 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(assign _assign)
         {
-            if (_assign.to is ident _ident)
+            if (_assign.operator_type == Operators.Assignment && _assign.to is ident _ident)
             {
                 if (!symbolTable.IsVisibleToAssign(_ident.name))
                 {
