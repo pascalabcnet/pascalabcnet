@@ -48,6 +48,7 @@
     <Compile Include="CodeCompletionHighlighter.cs" />
     <Compile Include="CodeCompletionImagesProvider.cs" />
     <Compile Include="CodeCompletionParserController.cs" />
+    <Compile Include="CodeCompletionProvider.cs" />
     <Compile Include="CodeTemplateManager.cs" />
     <Compile Include="DefinitionByMouseClickManager.cs" />
     <Compile Include="FoldingStrategy.cs" />

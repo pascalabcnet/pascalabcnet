@@ -8,11 +8,95 @@ using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using PascalABCCompiler.Parsers;
 using System.Linq;
+using Languages.Facade;
 
 namespace VisualPascalABC
 {
 
-    public class CodeCompletionProvider : ICompletionDataProvider
+    public class UserDefaultCompletionData
+    {
+        string text;
+        string description;
+        int imageIndex;
+        bool isExtension;
+
+
+        public bool IsOnOverrideWindow = false;
+
+        public bool FirstInsert = false;
+
+        public bool IsExtension
+        {
+            get { return isExtension; }
+            set { isExtension = value; }
+        }
+
+        public int ImageIndex
+        {
+            get
+            {
+                return imageIndex;
+            }
+        }
+
+        public string Text
+        {
+            get
+            {
+                return text;
+            }
+            set
+            {
+                text = value;
+            }
+        }
+
+        public string Description
+        {
+            get
+            {
+                return description;
+            }
+            set
+            {
+                description = value;
+            }
+        }
+
+        double priority;
+
+        public double Priority
+        {
+            get
+            {
+                return priority;
+            }
+            set
+            {
+                priority = value;
+            }
+        }
+
+        public UserDefaultCompletionData(string text, string description, bool override_methods = false, bool is_extension = false)
+        {
+            this.text = text;
+            this.description = description;
+            if (this.description != null)
+                this.description = this.description.Replace("!#", "");
+            this.isExtension = is_extension;
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (obj == null || !(obj is UserDefaultCompletionData))
+            {
+                return -1;
+            }
+            return string.Compare(text, ((UserDefaultCompletionData)obj).Text, true);
+        }
+    }
+
+    public class CodeCompletionProvider //  : ICompletionDataProvider
     {
         public string preSelection;
         // public static CodeCompletionImagesProvider ImagesProvider;
@@ -55,15 +139,15 @@ namespace VisualPascalABC
             }
         }
 
-        /*public UserDefaultCompletionData DefaultCompletionElement
+        public UserDefaultCompletionData DefaultCompletionElement
         {
             get
             {
                 return defaultCompletionElement;
             }
-        }*/
+        }
 
-        // private UserDefaultCompletionData defaultCompletionElement;
+        private UserDefaultCompletionData defaultCompletionElement;
         private int defaultIndex = -1;
 
         public CompletionDataProviderKeyResult ProcessKey(char key)
@@ -296,7 +380,11 @@ namespace VisualPascalABC
         public string FindExpression(int off, string Text, int line, int col)
         {
             if (CodeCompletion.CodeCompletionController.CurrentParser != null)
+            {
+                Console.Error.WriteLine(off + " " + Text + " " + line + " " + col);
                 return CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpression(off, Text, line, col, out keyword);
+            }
+                
             return null;
         }
 
@@ -319,9 +407,9 @@ namespace VisualPascalABC
         /// <summary>
         /// Возвращает подсказки определяемые первым символом выражения, введенного пользователем
         /// </summary>
-        public ICompletionData[] GetCompletionDataByFirst(int line, int col, char charTyped, KeywordKind keyw)
+        public UserDefaultCompletionData[] GetCompletionDataByFirst(int line, int col, char charTyped, KeywordKind keyw)
         {
-            List<ICompletionData> resultList = new List<ICompletionData>();
+            List<UserDefaultCompletionData> resultList = new List<UserDefaultCompletionData>();
             try
             {
 
@@ -352,7 +440,7 @@ namespace VisualPascalABC
                 else
                 {
                     resultList.AddRange(keywords.Select(keyword =>
-                        new UserDefaultCompletionData(keyword, null, ImagesProvider.IconNumberKeyword, false)));
+                        new UserDefaultCompletionData(keyword, null)));
                 }
 
                 SymInfo[] symInfos = GetSymInfosForCompletionDataByFirst(line, col, isTypeAfterKeyword, isNamespaceAfterKeyword, charTyped.ToString());
@@ -378,11 +466,11 @@ namespace VisualPascalABC
         /// Добавляет в resultList (итоговый список подсказок) данные, соответствующие переданному массиву типа SymInfo[].
         /// Используется для случая ввода пользователем первого символа выражения
         /// </summary>
-        private void AddCompletionDatasByFirstForSymInfos(List<ICompletionData> resultList, char charTyped, SymInfo[] symInfos, bool languageCaseSensitive)
+        private void AddCompletionDatasByFirstForSymInfos(List<UserDefaultCompletionData> resultList, char charTyped, SymInfo[] symInfos, bool languageCaseSensitive)
         {
             HashSet<string> symbolsAdded = languageCaseSensitive ? new HashSet<string>() : new HashSet<string>(StringComparer.CurrentCultureIgnoreCase);
 
-            List<ICompletionData> candidatesForDefault = new List<ICompletionData>();
+            List<UserDefaultCompletionData> candidatesForDefault = new List<UserDefaultCompletionData>();
 
             bool stop = false;
             ICompletionData lastUsedItem = CompletionDataDispatcher.GetLastUsedItem(charTyped);
@@ -394,7 +482,7 @@ namespace VisualPascalABC
                 if (symbolsAdded.Contains(symInfo.name))
                     continue;
 
-                UserDefaultCompletionData completionData = new UserDefaultCompletionData(symInfo.name, symInfo.description, ImagesProvider.GetPictureNum(symInfo), false);
+                UserDefaultCompletionData completionData = new UserDefaultCompletionData(symInfo.name, symInfo.description);
 
                 StringComparison stringComparison = languageCaseSensitive ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase;
 
@@ -412,7 +500,8 @@ namespace VisualPascalABC
                     //stop = true;
                 }
                 
-                disp.Add(symInfo, completionData);
+                // убрал !!!!!
+                // disp.Add(symInfo, completionData);
 
                 resultList.Add(completionData);
 
@@ -451,11 +540,11 @@ namespace VisualPascalABC
                 //if (keyw == PascalABCCompiler.Parsers.KeywordKind.Colon || keyw == PascalABCCompiler.Parsers.KeywordKind.Of || keyw == PascalABCCompiler.Parsers.KeywordKind.TypeDecl)
                 if (isTypeAfterKeyword)
                 {
-                    symInfos = dconv.GetTypeByPattern(pattern, line, col, true, VisualPABCSingleton.MainForm.UserOptions.CodeCompletionNamespaceVisibleRange);
+                    symInfos = dconv.GetTypeByPattern(pattern, line, col, true, 3 /*VisualPABCSingleton.MainForm.UserOptions.CodeCompletionNamespaceVisibleRange*/);
                 }
                 else if (isNamespaceAfterKeyword)
                 {
-                    if (WorkbenchServiceFactory.Workbench.UserOptions.EnableSmartIntellisense)
+                    if (true/*WorkbenchServiceFactory.Workbench.UserOptions.EnableSmartIntellisense*/)
                         symInfos = dconv.GetNamespaces();
                     else
                         symInfos = CodeCompletion.DomConverter.standard_units;
@@ -463,7 +552,7 @@ namespace VisualPascalABC
                 else
                 {
                     // интересно, что передается pattern = null  EVA
-                    symInfos = dconv.GetNameByPattern(null, line, col, true, VisualPABCSingleton.MainForm.UserOptions.CodeCompletionNamespaceVisibleRange);
+                    symInfos = dconv.GetNameByPattern(null, line, col, true, 3 /*VisualPABCSingleton.MainForm.UserOptions.CodeCompletionNamespaceVisibleRange*/);
                 }
             }
 
@@ -485,59 +574,56 @@ namespace VisualPascalABC
         /// <summary>
         /// Возвращает массив подсказок для случая нажатия пользователем "триггерной" клавиши
         /// </summary>
-        public ICompletionData[] GetCompletionData(int off, string text, int line, int col, char charTyped, KeywordKind keywordKind)
+        public UserDefaultCompletionData[] GetCompletionData(int off, string text, int line, int col, char charTyped, KeywordKind keywordKind)
         {
-            List<ICompletionData> resultList = new List<ICompletionData>();
-            try
+            List<UserDefaultCompletionData> resultList = new List<UserDefaultCompletionData>();
+
+            // поменять на обращение к CodeCompletionController.CurrentLanguage
+            ILanguage currentLanguage = LanguageProvider.Instance.SelectLanguageByExtension(FileName);
+
+            var context = new ActionContext()
             {
-                // поменять на обращение к CodeCompletionController.CurrentLanguage
-                ILanguage currentLanguage = LanguageProvider.Instance.SelectLanguageByExtension(FileName);
+                dotPressed = charTyped == '.',
+                ctrlSpace = charTyped == '_',
+                shiftSpace = charTyped == '\0',
+                spaceAfterNew = keywordKind == KeywordKind.New,
+                spaceAfterUses = keywordKind == KeywordKind.Uses
+            };
 
-                var context = new ActionContext()
-                {
-                    dotPressed = charTyped == '.',
-                    ctrlSpace = charTyped == '_',
-                    shiftSpace = charTyped == '\0',
-                    spaceAfterNew = keywordKind == KeywordKind.New,
-                    spaceAfterUses = keywordKind == KeywordKind.Uses
-                };
+            string expressionText = GetExpressionTextForCompletionData(off, text, line, col,
+                currentLanguage.LanguageInformation, in context, out var insidePatternWithDots, out var ctrlOrShiftSpaceAfterDot, out var pattern);
 
-                string expressionText = GetExpressionTextForCompletionData(off, text, line, col,
-                    currentLanguage.LanguageInformation, in context, out var insidePatternWithDots, out var ctrlOrShiftSpaceAfterDot, out var pattern);
+            // добавляем ключевые слова в случае "ctrl + space", нажатых в "пустом" месте
+            if (!ctrlOrShiftSpaceAfterDot && context.ctrlSpace && string.IsNullOrEmpty(pattern))
+            {
+                var keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetKeywords();
 
-                // добавляем ключевые слова в случае "ctrl + space", нажатых в "пустом" месте
-                if (!ctrlOrShiftSpaceAfterDot && context.ctrlSpace && string.IsNullOrEmpty(pattern))
-                {
-                    var keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetKeywords();
-
-                    resultList.AddRange(keywords.Select(keyword =>
-                        new UserDefaultCompletionData(keyword, null, ImagesProvider.IconNumberKeyword, false)));
-                }
-
-                PascalABCCompiler.SyntaxTree.expression expr = null;
-                
-                // для "ctrl + space" и "shift + space" дерево expression не требуется (кроме случая insidePatternWithDots)
-                if ((context.dotPressed || context.spaceAfterNew || context.spaceAfterUses || insidePatternWithDots) && expressionText != null)
-                {
-                    expr = GetExpressionForCompletionData(currentLanguage.Parser,
-                        in context, expressionText, insidePatternWithDots, out var shouldReturnNull);
-
-                    if (shouldReturnNull)
-                        return null;
-                }
-
-                SymInfo[] symInfos = GetSymInfosForCompletionData(line, col, in context, currentLanguage.CaseSensitive,
-                    expressionText, ctrlOrShiftSpaceAfterDot, insidePatternWithDots, pattern, expr, out var selectedSymInfo, out var lastUsedMember, out var shouldReturnNull2);
-
-                if (shouldReturnNull2)
-                    return null;
-
-                if (symInfos != null)
-                {
-                    AddCompletionDatasForSymInfos(resultList, currentLanguage.CaseSensitive, symInfos, selectedSymInfo, lastUsedMember);
-                }
+                resultList.AddRange(keywords.Select(keyword =>
+                    new UserDefaultCompletionData(keyword, null)));
             }
-            catch (Exception) { }
+
+            PascalABCCompiler.SyntaxTree.expression expr = null;
+
+            // для "ctrl + space" и "shift + space" дерево expression не требуется (кроме случая insidePatternWithDots)
+            if ((context.dotPressed || context.spaceAfterNew || context.spaceAfterUses || insidePatternWithDots) && expressionText != null)
+            {
+                expr = GetExpressionForCompletionData(currentLanguage.Parser,
+                    in context, expressionText, insidePatternWithDots, out var shouldReturnNull);
+
+                if (shouldReturnNull)
+                    return null;
+            }
+
+            SymInfo[] symInfos = GetSymInfosForCompletionData(line, col, in context, currentLanguage.CaseSensitive,
+                expressionText, ctrlOrShiftSpaceAfterDot, insidePatternWithDots, pattern, expr, out var selectedSymInfo, out var lastUsedMember, out var shouldReturnNull2);
+
+            if (shouldReturnNull2)
+                return null;
+
+            if (symInfos != null)
+            {
+                AddCompletionDatasForSymInfos(resultList, currentLanguage.CaseSensitive, symInfos, selectedSymInfo, lastUsedMember);
+            }
 
             return resultList.ToArray();
         }
@@ -546,7 +632,7 @@ namespace VisualPascalABC
         /// Добавляет в resultList (итоговый список подсказок) данные, соответствующие переданному массиву типа SymInfo[].
         /// Используется для случая нажатия пользователем "триггерной" клавиши
         /// </summary>
-        private void AddCompletionDatasForSymInfos(List<ICompletionData> resultList, bool languageCaseSensitive, SymInfo[] symInfos, SymInfo selectedSymInfo, string lastUsedMember)
+        private void AddCompletionDatasForSymInfos(List<UserDefaultCompletionData> resultList, bool languageCaseSensitive, SymInfo[] symInfos, SymInfo selectedSymInfo, string lastUsedMember)
         {
             // ICompletionData data = null;
 
@@ -562,10 +648,9 @@ namespace VisualPascalABC
 
                 UserDefaultCompletionData completionData = new UserDefaultCompletionData(
                     symInfo.addit_name != null ? symInfo.addit_name : symInfo.name,
-                    symInfo.description, ImagesProvider.GetPictureNum(symInfo), false
-                    );
+                    symInfo.description);
 
-                disp.Add(symInfo, completionData);
+                // disp.Add(symInfo, completionData);
 
                 resultList.Add(completionData);
 
@@ -619,7 +704,7 @@ namespace VisualPascalABC
                 }
                 else if (context.spaceAfterUses)
                 {
-                    if (WorkbenchServiceFactory.Workbench.UserOptions.EnableSmartIntellisense)
+                    if (true/*WorkbenchServiceFactory.Workbench.UserOptions.EnableSmartIntellisense*/)
                         symInfos = dconv.GetNamespaces();
                     else
                         symInfos = CodeCompletion.DomConverter.standard_units;
@@ -630,7 +715,7 @@ namespace VisualPascalABC
                     CodeCompletion.SymScope dotScope = null;
                     symInfos = dconv.GetName(expr, expressionText, line, col, keyword, ref dotScope);
 
-                    if (dotScope != null && VisualPABCSingleton.MainForm.UserOptions.EnableSmartIntellisense)
+                    if (dotScope != null /*&& VisualPABCSingleton.MainForm.UserOptions.EnableSmartIntellisense*/)
                     {
                         CompletionDataDispatcher.AddMemberBeforeDot(dotScope);
                         lastUsedMember = CompletionDataDispatcher.GetRecentUsedMember(dotScope);
@@ -651,7 +736,7 @@ namespace VisualPascalABC
                             .ToArray();
                     }
                     else
-                        symInfos = dconv.GetNameByPattern(pattern, line, col, context.ctrlSpace, VisualPABCSingleton.MainForm.UserOptions.CodeCompletionNamespaceVisibleRange);
+                        symInfos = dconv.GetNameByPattern(pattern, line, col, context.ctrlSpace, 3 /*VisualPABCSingleton.MainForm.UserOptions.CodeCompletionNamespaceVisibleRange*/);
                 }
 
             }
@@ -735,14 +820,14 @@ namespace VisualPascalABC
 
         public ICompletionData[] ddata;
 
-        public ICompletionData[] GenerateCompletionDataWithKeyword(string fileName, TextArea textArea, char charTyped, PascalABCCompiler.Parsers.KeywordKind keyw)
+        public UserDefaultCompletionData[] GenerateCompletionDataWithKeyword(string fileName, string text, int off, int line, int col, char charTyped, PascalABCCompiler.Parsers.KeywordKind keyw)
         {
             controller = new CodeCompletion.CodeCompletionController();
-            int off = textArea.Caret.Offset;
-            string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
+            // int off = textArea.Caret.Offset;
+            // string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
             //controller.Compile(file_name, text /*+ ")))));end."*/);
             FileName = fileName; Text = text;
-            ICompletionData[] data = GetCompletionData(off, text, textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw);
+            UserDefaultCompletionData[] data = GetCompletionData(off, text, line, col, charTyped, keyw);
             CodeCompletion.AssemblyDocCache.CompleteDocumentation();
             CodeCompletion.UnitDocCache.CompleteDocumentation();
             controller = null;
@@ -750,15 +835,15 @@ namespace VisualPascalABC
             return data;
         }
 
-        public ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
+        /*public ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
         {
             return null;
-        }
+        }*/
 
-        public ICompletionData[] GenerateCompletionDataForOverridableMethods(string fileName, TextArea textArea)
+        public UserDefaultCompletionData[] GenerateCompletionDataForOverridableMethods(string fileName, TextArea textArea)
         {
             controller = new CodeCompletion.CodeCompletionController();
-            List<ICompletionData> lst = new List<ICompletionData>();
+            List<UserDefaultCompletionData> lst = new List<UserDefaultCompletionData>();
             int line = textArea.Caret.Line;
             int col = textArea.Caret.Column;
             try
@@ -773,7 +858,7 @@ namespace VisualPascalABC
                 {
                     foreach (SymInfo mi in mis)
                     {
-                        UserDefaultCompletionData ddd = new UserDefaultCompletionData(mi.name, mi.description, ImagesProvider.GetPictureNum(mi), true);
+                        UserDefaultCompletionData ddd = new UserDefaultCompletionData(mi.name, mi.description, true);
                         lst.Add(ddd);
                     }
                 }
@@ -784,19 +869,19 @@ namespace VisualPascalABC
             }
 
             //lst.Sort();
-            ICompletionData[] res_arr = lst.ToArray();
+            UserDefaultCompletionData[] res_arr = lst.ToArray();
             controller = null;
             return res_arr;
         }
 
-        public ICompletionData[] GenerateCompletionDataByFirstChar(string fileName, TextArea textArea, char charTyped, PascalABCCompiler.Parsers.KeywordKind keyw)
+        public UserDefaultCompletionData[] GenerateCompletionDataByFirstChar(string fileName, string text, int off, int line, int col, char charTyped, PascalABCCompiler.Parsers.KeywordKind keyw)
         {
             controller = new CodeCompletion.CodeCompletionController();
             // int off = textArea.Caret.Offset;
-            string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
+            // string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
             //controller.Compile(file_name, text /*+ ")))));end."*/);
             FileName = fileName; Text = text;
-            ICompletionData[] data = GetCompletionDataByFirst(textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw);
+            UserDefaultCompletionData[] data = GetCompletionDataByFirst(line, col, charTyped, keyw);
             CodeCompletion.AssemblyDocCache.CompleteDocumentation();
             CodeCompletion.UnitDocCache.CompleteDocumentation();
             controller = null;

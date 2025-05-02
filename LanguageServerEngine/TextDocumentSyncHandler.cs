@@ -1,6 +1,4 @@
-﻿using MediatR;
-using OmniSharp.Extensions.LanguageServer.Protocol.Document;
-using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
+﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server.Capabilities;
 using System.Linq;
@@ -9,55 +7,34 @@ using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using OmniSharp.Extensions.LanguageServer.Protocol;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
-using CodeCompletion;
 
 namespace LanguageServerEngine
 {
     internal class TextDocumentSyncHandler : ITextDocumentSyncHandler
     {
-        private readonly ILanguageServerFacade router;
+        // private readonly ILanguageServer router;
+
+        private SynchronizationCapability capability;
 
         private readonly DocumentStorage documentStorage;
 
         private readonly Dictionary<string, bool> openFiles = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
 
-        public TextDocumentSyncHandler(ILanguageServerFacade router, DocumentStorage documentStorage)
+        public TextDocumentSyncHandler(DocumentStorage documentStorage)
         {
-            this.router = router;
             this.documentStorage = documentStorage;
         }
 
-        private TextDocumentSelector documentSelector => new TextDocumentSelector(
-            TextDocumentFilter.ForPattern("**/*.pas"
-                //"**/*.{" +
-                //string.Join(
-                //    ",",
-                //    Languages.Facade.LanguageProvider.Instance.Languages
-                //    .SelectMany(lang => lang.FilesExtensions)
-                //    .Select(ext => ext.Substring(1))
-                //    )
-                //+ "}"
-            )
-        );
-
         public TextDocumentSyncKind Change { get; } = TextDocumentSyncKind.Incremental;
 
-        public TextDocumentChangeRegistrationOptions GetRegistrationOptions(TextSynchronizationCapability capability, ClientCapabilities clientCapabilities)
-        {
-            return new TextDocumentChangeRegistrationOptions()
-            {
-                DocumentSelector = documentSelector,
-                SyncKind = Change
-            };
-        }
+        public TextDocumentSyncOptions Options => new TextDocumentSyncOptions() { OpenClose = true, Change = Change };
 
-        public TextDocumentAttributes GetTextDocumentAttributes(DocumentUri uri)
+        public TextDocumentAttributes GetTextDocumentAttributes(Uri uri)
         {
             return new TextDocumentAttributes(uri, "PascalABC.NET");
         }
 
-        public Task<Unit> Handle(DidChangeTextDocumentParams request, CancellationToken cancellationToken)
+        public Task Handle(DidChangeTextDocumentParams request)
         {
             var documentUri = request.TextDocument.Uri.ToString();
 
@@ -69,12 +46,12 @@ namespace LanguageServerEngine
 
             ParseInThread();
 
-            return Unit.Task;
+            return Task.CompletedTask;
         }
 
-        public Task<Unit> Handle(DidOpenTextDocumentParams request, CancellationToken cancellationToken)
+        public Task Handle(DidOpenTextDocumentParams request)
         {
-            
+            Console.Error.WriteLine("did open params received");
 
             string documentUri = request.TextDocument.Uri.ToString();
 
@@ -86,10 +63,10 @@ namespace LanguageServerEngine
 
             // Console.Error.WriteLine((CodeCompletion.CodeCompletionController.comp_modules[documentUri] as DomConverter).visitor.cur_scope);
 
-            return Unit.Task;
+            return Task.CompletedTask;
         }
 
-        public Task<Unit> Handle(DidCloseTextDocumentParams request, CancellationToken cancellationToken)
+        public Task Handle(DidCloseTextDocumentParams request)
         {
             string documentUri = request.TextDocument.Uri.ToString();
 
@@ -97,36 +74,42 @@ namespace LanguageServerEngine
 
             CloseFile(documentUri);
 
-            return Unit.Task;
+            return Task.CompletedTask;
         }
 
-        public Task<Unit> Handle(DidSaveTextDocumentParams request, CancellationToken cancellationToken)
+        public Task Handle(DidSaveTextDocumentParams request)
         {
-            return Unit.Task;
+            return Task.CompletedTask;
         }
 
-        TextDocumentOpenRegistrationOptions IRegistration<TextDocumentOpenRegistrationOptions, TextSynchronizationCapability>.GetRegistrationOptions(TextSynchronizationCapability capability, ClientCapabilities clientCapabilities)
+        TextDocumentRegistrationOptions IRegistration<TextDocumentRegistrationOptions>.GetRegistrationOptions()
         {
-            return new TextDocumentOpenRegistrationOptions()
+            return new TextDocumentRegistrationOptions()
             {
-                DocumentSelector = documentSelector
+                DocumentSelector = BaseConfiguration.TextDocumentSelector
             };
         }
 
-        TextDocumentCloseRegistrationOptions IRegistration<TextDocumentCloseRegistrationOptions, TextSynchronizationCapability>.GetRegistrationOptions(TextSynchronizationCapability capability, ClientCapabilities clientCapabilities)
-        {
-            return new TextDocumentCloseRegistrationOptions()
-            {
-                DocumentSelector = documentSelector
-            };
-        }
-
-        TextDocumentSaveRegistrationOptions IRegistration<TextDocumentSaveRegistrationOptions, TextSynchronizationCapability>.GetRegistrationOptions(TextSynchronizationCapability capability, ClientCapabilities clientCapabilities)
+        TextDocumentSaveRegistrationOptions IRegistration<TextDocumentSaveRegistrationOptions>.GetRegistrationOptions()
         {
             return new TextDocumentSaveRegistrationOptions()
             {
-                DocumentSelector = documentSelector
+                DocumentSelector = BaseConfiguration.TextDocumentSelector
             };
+        }
+
+        public TextDocumentChangeRegistrationOptions GetRegistrationOptions()
+        {
+            return new TextDocumentChangeRegistrationOptions()
+            {
+                DocumentSelector = BaseConfiguration.TextDocumentSelector,
+                SyncKind = Change
+            };
+        }
+
+        public void SetCapability(SynchronizationCapability capability)
+        {
+            this.capability = capability;
         }
 
         private void RegisterFileForParsing(string FileName)
@@ -172,6 +155,7 @@ namespace LanguageServerEngine
                         openFiles[FileName] = false;
                         if (dc.is_compiled)
                         {
+                            Console.Error.WriteLine("Compiled");
                             //CodeCompletion.CodeCompletionController.comp_modules.Remove(file_name);
                             if (tmp != null && tmp.visitor.entry_scope != null)
                             {
@@ -228,11 +212,11 @@ namespace LanguageServerEngine
                                         CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                                         if (dc.is_compiled)
                                         {
-                                            /*if (tmp != null && tmp.stv.entry_scope != null)
-                                            {
-                                                tmp.stv.entry_scope.Clear();
-                                                if (tmp.stv.cur_scope != null) tmp.stv.cur_scope.Clear();
-                                            }*/
+                                            //if (tmp != null && tmp.stv.entry_scope != null)
+                                            //{
+                                            //    tmp.stv.entry_scope.Clear();
+                                            //    if (tmp.stv.cur_scope != null) tmp.stv.cur_scope.Clear();
+                                            //}
                                             CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                                             recomp_files[FileName] = FileName;
                                             ss.used_units[i] = dc.visitor.entry_scope;
@@ -247,19 +231,19 @@ namespace LanguageServerEngine
                         }
                     }
                 }
-                if (is_comp && mem_delta > 20000000 /*&& mem_delta > 10000000*/)
+                if (is_comp && mem_delta > 20000000 && mem_delta > 10000000)
                 //postavil delta dlja pamjati, posle kototoj delaetsja sborka musora
                 {
                     GC.Collect();
                 }
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
 
                 Console.Error.WriteLine("Intellisense exception:");
                 Console.Error.WriteLine(e.Message + "\n" + e.StackTrace);
             }
 
         }
-
     }
 }

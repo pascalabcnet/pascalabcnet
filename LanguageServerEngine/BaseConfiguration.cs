@@ -7,8 +7,8 @@ namespace LanguageServerEngine
     internal static class BaseConfiguration
     {
 
-        public static TextDocumentSelector TextDocumentSelector => new TextDocumentSelector(
-            TextDocumentFilter.ForPattern(
+        public static DocumentSelector TextDocumentSelector => new DocumentSelector(
+            DocumentFilter.ForPattern(
                 "**/*.{" +
                 string.Join(
                     ",",
