@@ -1006,6 +1006,7 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.from.Parent = copy;
 			}
 			copy.operator_type = operator_type;
+			copy.first_assignment_defines_type = first_assignment_defines_type;
 			return copy;
 		}
 
