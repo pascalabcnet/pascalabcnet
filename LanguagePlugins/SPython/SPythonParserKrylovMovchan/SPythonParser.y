@@ -669,6 +669,12 @@ variable
 			dot_node dn = new dot_node($2 as addressed_value, (new ident("ToList")) as addressed_value, $2.source_context);
 			$$ = new method_call(dn as addressed_value, null, $2.source_context);
 		}
+	// set generator
+	| LBRACE generator_object RBRACE
+		{
+			dot_node dn = new dot_node($2 as addressed_value, (new ident("ToSet")) as addressed_value, $2.source_context);
+			$$ = new method_call(dn as addressed_value, null, $2.source_context);
+		}
 	;
 
 generator_object
