@@ -64,10 +64,7 @@ namespace Languages.SPython.Frontend.Converters
                 new lambda_inferred_type(new lambda_any_type_node_syntax(), _generator_object._ident.source_context), sl, _generator_object.source_context);
 
 
-            mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), _generator_object.source_context);
-            dn = new dot_node(mc as addressed_value, (new ident("ToList")) as addressed_value, _generator_object.source_context);
-
-            method_call replaceTo = new method_call(dn as addressed_value, null, _generator_object.source_context);
+            method_call replaceTo = new method_call(dn as addressed_value, new expression_list(lambda as expression), _generator_object.source_context);
 
             if (root != _generator_object)
                 Replace(_generator_object, replaceTo);

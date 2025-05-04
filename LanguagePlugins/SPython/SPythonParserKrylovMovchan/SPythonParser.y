@@ -73,7 +73,7 @@
 %type <ob> optional_semicolon end_of_line
 %type <op> assign_type
 %type <ex> expr_mapping 
-%type <ex> list_constant set_constant dict_constant
+%type <ex> list_constant set_constant dict_constant generator_object
 
 %start program
 
@@ -664,9 +664,17 @@ variable
 			$$ = new indexer($1 as addressed_value, el, @$);
 		}
 	// list generator
-	| LBRACKET expr FOR ident IN expr optional_condition RBRACKET
+	| LBRACKET generator_object RBRACKET
 		{
-			$$ = new generator_object($2, $4, $6, $7, @$);
+			dot_node dn = new dot_node($2 as addressed_value, (new ident("ToList")) as addressed_value, $2.source_context);
+			$$ = new method_call(dn as addressed_value, null, $2.source_context);
+		}
+	;
+
+generator_object
+	: expr FOR ident IN expr optional_condition
+		{
+			$$ = new generator_object($1, $3, $5, $6, @$);
 		}
 	;
 
