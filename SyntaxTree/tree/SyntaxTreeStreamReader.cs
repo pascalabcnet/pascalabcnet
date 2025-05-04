@@ -549,7 +549,7 @@ namespace PascalABCCompiler.SyntaxTree
 				case 263:
 					return new global_statement();
 				case 264:
-					return new list_generator();
+					return new generator_object();
 				case 265:
 					return new import_statement();
 				case 266:
@@ -4612,18 +4612,18 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(list_generator _list_generator)
+		public void visit(generator_object _generator_object)
 		{
-			read_list_generator(_list_generator);
+			read_generator_object(_generator_object);
 		}
 
-		public void read_list_generator(list_generator _list_generator)
+		public void read_generator_object(generator_object _generator_object)
 		{
-			read_addressed_value(_list_generator);
-			_list_generator._expr = _read_node() as expression;
-			_list_generator._ident = _read_node() as ident;
-			_list_generator._range = _read_node() as expression;
-			_list_generator._condition = _read_node() as expression;
+			read_addressed_value(_generator_object);
+			_generator_object._expr = _read_node() as expression;
+			_generator_object._ident = _read_node() as ident;
+			_generator_object._range = _read_node() as expression;
+			_generator_object._condition = _read_node() as expression;
 		}
 
 

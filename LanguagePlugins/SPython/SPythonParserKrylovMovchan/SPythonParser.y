@@ -645,7 +645,6 @@ variable
 		{ 
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); 
 		}
-	// list constant
 	| list_constant
 		{
 			$$ = $1;
@@ -667,7 +666,7 @@ variable
 	// list generator
 	| LBRACKET expr FOR ident IN expr optional_condition RBRACKET
 		{
-			$$ = new list_generator($2, $4, $6, $7, @$);
+			$$ = new generator_object($2, $4, $6, $7, @$);
 		}
 	;
 

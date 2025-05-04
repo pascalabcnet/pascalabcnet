@@ -56268,13 +56268,13 @@ namespace PascalABCCompiler.SyntaxTree
 	///SPython-only node
 	///</summary>
 	[Serializable]
-	public partial class list_generator : addressed_value
+	public partial class generator_object : addressed_value
 	{
 
 		///<summary>
 		///Конструктор без параметров.
 		///</summary>
-		public list_generator()
+		public generator_object()
 		{
 
 		}
@@ -56282,7 +56282,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public list_generator(expression __expr,ident __ident,expression __range,expression __condition)
+		public generator_object(expression __expr,ident __ident,expression __range,expression __condition)
 		{
 			this.__expr=__expr;
 			this.__ident=__ident;
@@ -56294,7 +56294,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public list_generator(expression __expr,ident __ident,expression __range,expression __condition,SourceContext sc)
+		public generator_object(expression __expr,ident __ident,expression __range,expression __condition,SourceContext sc)
 		{
 			this.__expr=__expr;
 			this.__ident=__ident;
@@ -56380,7 +56380,7 @@ namespace PascalABCCompiler.SyntaxTree
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
-			list_generator copy = new list_generator();
+			generator_object copy = new generator_object();
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
@@ -56413,9 +56413,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		/// <summary> Получает копию данного узла корректного типа </summary>
-		public new list_generator TypedClone()
+		public new generator_object TypedClone()
 		{
-			return Clone() as list_generator;
+			return Clone() as generator_object;
 		}
 
 		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>

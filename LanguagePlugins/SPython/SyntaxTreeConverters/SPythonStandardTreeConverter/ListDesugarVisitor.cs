@@ -19,9 +19,9 @@ namespace Languages.SPython.Frontend.Converters
             return root;
         }
 
-        public override void visit(list_generator _list_generator)
+        public override void visit(generator_object _generator_object)
         {
-            base.visit(_list_generator);
+            base.visit(_generator_object);
 
             dot_node dn;
             ident_list idList;
@@ -31,46 +31,46 @@ namespace Languages.SPython.Frontend.Converters
             method_call mc;
 
             // [ expr1 for ident in expr2 if expr3 ] -> expr2.Where(ident -> expr3).Select(ident -> expr1).ToList()
-            if (_list_generator._condition != null)
+            if (_generator_object._condition != null)
             {
-                string ident_name = _list_generator._ident.name;
-                idList = new ident_list(new ident(ident_name), _list_generator._ident.source_context);
-                formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), _list_generator._ident.source_context), parametr_kind.none, null, _list_generator._ident.source_context), _list_generator._ident.source_context);
+                string ident_name = _generator_object._ident.name;
+                idList = new ident_list(new ident(ident_name), _generator_object._ident.source_context);
+                formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), _generator_object._ident.source_context), parametr_kind.none, null, _generator_object._ident.source_context), _generator_object._ident.source_context);
 
-                dn = new dot_node(_list_generator._range as addressed_value, (new ident("Where")) as addressed_value, _list_generator.source_context);
+                dn = new dot_node(_generator_object._range as addressed_value, (new ident("Where")) as addressed_value, _generator_object.source_context);
 
-                sl = new statement_list(new assign("result", _list_generator._condition, _list_generator._condition.source_context), _list_generator._condition.source_context); //!
+                sl = new statement_list(new assign("result", _generator_object._condition, _generator_object._condition.source_context), _generator_object._condition.source_context); //!
                 sl.expr_lambda_body = true;
                 lambda = new function_lambda_definition(
                 lambdaHelper.CreateLambdaName(), formalPars,
-                new lambda_inferred_type(new lambda_any_type_node_syntax(), _list_generator._ident.source_context), sl, _list_generator.source_context);
+                new lambda_inferred_type(new lambda_any_type_node_syntax(), _generator_object._ident.source_context), sl, _generator_object.source_context);
 
-                mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), _list_generator.source_context);
-                dn = new dot_node(mc as addressed_value, (new ident("Select")) as addressed_value, _list_generator.source_context);
+                mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), _generator_object.source_context);
+                dn = new dot_node(mc as addressed_value, (new ident("Select")) as addressed_value, _generator_object.source_context);
             }
             // [ expr1 for ident in expr2 ] -> expr2.Select(ident -> expr1).ToList()
             else
-                dn = new dot_node(_list_generator._range as addressed_value, (new ident("Select")) as addressed_value, _list_generator.source_context);
+                dn = new dot_node(_generator_object._range as addressed_value, (new ident("Select")) as addressed_value, _generator_object.source_context);
 
 
-            idList = new ident_list(_list_generator._ident, _list_generator._ident.source_context);
-            formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), _list_generator._ident.source_context), parametr_kind.none, null, _list_generator._ident.source_context), _list_generator._ident.source_context);
+            idList = new ident_list(_generator_object._ident, _generator_object._ident.source_context);
+            formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), _generator_object._ident.source_context), parametr_kind.none, null, _generator_object._ident.source_context), _generator_object._ident.source_context);
 
-            sl = new statement_list(new assign("result", _list_generator._expr, _list_generator._expr.source_context), _list_generator._expr.source_context);
+            sl = new statement_list(new assign("result", _generator_object._expr, _generator_object._expr.source_context), _generator_object._expr.source_context);
             sl.expr_lambda_body = true;
 
             lambda = new function_lambda_definition(
                 lambdaHelper.CreateLambdaName(), formalPars,
-                new lambda_inferred_type(new lambda_any_type_node_syntax(), _list_generator._ident.source_context), sl, _list_generator.source_context);
+                new lambda_inferred_type(new lambda_any_type_node_syntax(), _generator_object._ident.source_context), sl, _generator_object.source_context);
 
 
-            mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), _list_generator.source_context);
-            dn = new dot_node(mc as addressed_value, (new ident("ToList")) as addressed_value, _list_generator.source_context);
+            mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), _generator_object.source_context);
+            dn = new dot_node(mc as addressed_value, (new ident("ToList")) as addressed_value, _generator_object.source_context);
 
-            method_call replaceTo = new method_call(dn as addressed_value, null, _list_generator.source_context);
+            method_call replaceTo = new method_call(dn as addressed_value, null, _generator_object.source_context);
 
-            if (root != _list_generator)
-                Replace(_list_generator, replaceTo);
+            if (root != _generator_object)
+                Replace(_generator_object, replaceTo);
             else
             {
                 replaceRoot = true;

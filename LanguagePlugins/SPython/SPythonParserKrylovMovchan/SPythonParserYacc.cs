@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 02.05.2025 12:09:07
+// DateTime: 04.05.2025 10:27:19
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -1093,7 +1093,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 113: // variable -> LBRACKET, expr, FOR, ident, IN, expr, optional_condition, RBRACKET
 {
-			CurrentSemanticValue.ex = new list_generator(ValueStack[ValueStack.Depth-7].ex, ValueStack[ValueStack.Depth-5].id, ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-2].ex, CurrentLocationSpan);
+			CurrentSemanticValue.ex = new generator_object(ValueStack[ValueStack.Depth-7].ex, ValueStack[ValueStack.Depth-5].id, ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-2].ex, CurrentLocationSpan);
 		}
         break;
       case 114: // dict_constant -> LBRACE, expr_mapping_list, RBRACE

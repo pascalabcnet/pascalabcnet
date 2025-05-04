@@ -7234,50 +7234,50 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(list_generator _list_generator)
+		public void visit(generator_object _generator_object)
 		{
 			bw.Write((Int16)264);
-			write_list_generator(_list_generator);
+			write_generator_object(_generator_object);
 		}
 
-		public void write_list_generator(list_generator _list_generator)
+		public void write_generator_object(generator_object _generator_object)
 		{
-			write_addressed_value(_list_generator);
-			if (_list_generator._expr == null)
+			write_addressed_value(_generator_object);
+			if (_generator_object._expr == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				_list_generator._expr.visit(this);
+				_generator_object._expr.visit(this);
 			}
-			if (_list_generator._ident == null)
+			if (_generator_object._ident == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				_list_generator._ident.visit(this);
+				_generator_object._ident.visit(this);
 			}
-			if (_list_generator._range == null)
+			if (_generator_object._range == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				_list_generator._range.visit(this);
+				_generator_object._range.visit(this);
 			}
-			if (_list_generator._condition == null)
+			if (_generator_object._condition == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				_list_generator._condition.visit(this);
+				_generator_object._condition.visit(this);
 			}
 		}
 

@@ -3390,7 +3390,7 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="list_generator" BaseName="addressed_value">
+    <SyntaxNode Name="generator_object" BaseName="addressed_value">
       <Fields>
         <SyntaxField Name="_expr" SyntaxType="expression" />
         <SyntaxField Name="_ident" SyntaxType="ident" />
@@ -4098,6 +4098,11 @@
       <HelpData Key="function_lambda_definition.substituting_node" Value="" />
       <HelpData Key="function_lambda_definition.usedkeyword" Value="" />
       <HelpData Key="function_lambda_definition.visit_for_type_inference" Value="" />
+      <HelpData Key="generator_object" Value="SPython-only node" />
+      <HelpData Key="generator_object._condition" Value="" />
+      <HelpData Key="generator_object._expr" Value="" />
+      <HelpData Key="generator_object._ident" Value="" />
+      <HelpData Key="generator_object._range" Value="" />
       <HelpData Key="get_address" Value="" />
       <HelpData Key="get_address.address_of" Value="" />
       <HelpData Key="global_statement" Value="SPython-only node" />

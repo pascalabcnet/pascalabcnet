@@ -1328,9 +1328,9 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_global_statement);
 		}
 
-		public virtual void visit(list_generator _list_generator)
+		public virtual void visit(generator_object _generator_object)
 		{
-			DefaultVisit(_list_generator);
+			DefaultVisit(_generator_object);
 		}
 
 		public virtual void visit(import_statement _import_statement)
