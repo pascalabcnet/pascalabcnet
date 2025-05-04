@@ -143,6 +143,7 @@ namespace SPythonSyntaxTreeVisitor
                 { "reverse", "Reverse" },
                 { "copy", "ToList" },
                 { "Select", "Select" },
+                { "Where", "Where" },
             } },
 
             {"NewSet",

@@ -864,6 +864,10 @@ optional_act_param_list
 		{
 			$$ = $1;
 		}
+	| generator_object
+		{
+			$$ = new expression_list($1, @$);
+		}
 	|
         {
 			$$ = null;
