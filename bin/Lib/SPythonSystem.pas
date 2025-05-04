@@ -37,6 +37,9 @@ type
         end;
     end;
 
+function all(s: sequence of boolean): boolean;
+function any(s: sequence of boolean): boolean;
+
 function __NewSetCreatorInternal<T>(params a: array of T): NewSet<T>;
 
 procedure print(params args: array of object);
@@ -310,5 +313,27 @@ begin
 end;
 
 function &list<T>(sq: sequence of T): PABCSystem.List<T> := sq.ToList();
+
+function all(s: sequence of boolean): boolean;
+begin
+  Result := true;
+  foreach var elem in s do
+    if (not elem) then
+    begin
+      Result := false;
+      break;
+    end;
+end;
+
+function any(s: sequence of boolean): boolean;
+begin
+  Result := false;
+  foreach var elem in s do
+    if (elem) then
+    begin
+      Result := true;
+      break;
+    end;
+end;
 
 end.
