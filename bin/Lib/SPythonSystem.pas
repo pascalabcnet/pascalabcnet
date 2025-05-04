@@ -336,4 +336,9 @@ begin
     end;
 end;
 
+function ToDictionary<T, U>(Self: sequence of System.tuple<T, U>): Dictionary<T, U>; extensionmethod;
+begin
+  Result := Self.ToDictionary(x->x[0],x->x[1]);
+end;
+
 end.

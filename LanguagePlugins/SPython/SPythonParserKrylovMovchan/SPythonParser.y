@@ -73,7 +73,7 @@
 %type <ob> optional_semicolon end_of_line
 %type <op> assign_type
 %type <ex> expr_mapping 
-%type <ex> list_constant set_constant dict_constant generator_object
+%type <ex> list_constant set_constant dict_constant generator_object generator_object_for_dict
 
 %start program
 
@@ -675,10 +675,23 @@ variable
 			dot_node dn = new dot_node($2 as addressed_value, (new ident("ToSet")) as addressed_value, $2.source_context);
 			$$ = new method_call(dn as addressed_value, null, $2.source_context);
 		}
+	// dict generator
+	| LBRACE generator_object_for_dict RBRACE
+		{
+			dot_node dn = new dot_node($2 as addressed_value, (new ident("ToDictionary")) as addressed_value, $2.source_context);
+			$$ = new method_call(dn as addressed_value, null, $2.source_context);
+		}
 	;
 
 generator_object
 	: expr FOR ident IN expr optional_condition
+		{
+			$$ = new generator_object($1, $3, $5, $6, @$);
+		}
+	;
+
+generator_object_for_dict
+	: expr_mapping FOR ident IN expr optional_condition
 		{
 			$$ = new generator_object($1, $3, $5, $6, @$);
 		}
