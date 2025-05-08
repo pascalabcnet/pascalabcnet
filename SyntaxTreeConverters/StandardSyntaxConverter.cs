@@ -17,6 +17,8 @@ namespace Languages.Pascal.Frontend.Converters
         {
             root.FillParentsInAllChilds();
 
+            ExitParamVisitor.New.ProcessNode(root);
+
             var binder = new BindCollectLightSymInfo(root as compilation_unit);
 #if DEBUG
             //            var stat = new ABCStatisticsVisitor();
