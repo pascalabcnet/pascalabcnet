@@ -95,11 +95,15 @@ namespace SPythonSyntaxTreeVisitor
                 .Replace("List", "list")
                 .Replace("NewSet", "set")
                 .Replace("Dictionary", "dict")
+                .Replace("empty_list", "list[anytype]")
+                .Replace("empty_set", "set[anytype]")
+                .Replace("empty_dict", "dict[anytype]")
                 .Replace("integer", "int")
                 .Replace("string", "str")
                 .Replace("real", "float")
                 .Replace("boolean", "bool")
-                .Replace("System.Numerics.BigInteger", "bigint");
+                .Replace("System.Numerics.BigInteger", "bigint")
+                ;
             return new common_type_node(new_name, type_access_level.tal_public, null, null, tn.location);
         }
 
