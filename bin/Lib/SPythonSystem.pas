@@ -51,7 +51,7 @@ function int(val: string): integer;
 function get_keys<K, V>(dct: Dictionary<K, V>): sequence of K;
 function get_values<K, V>(dct: Dictionary<K, V>): sequence of V;
 
-function &type(obj: object): System.Type;
+function &type(obj: object): string;
 
 //function int(val: string): integer;
 function int(b: boolean): integer;
@@ -178,7 +178,24 @@ begin
     Result := 0;
 end;
 
-function &type(obj: object): System.Type := obj.GetType();
+function &type(obj: object): string;
+begin
+    Result := TypeName(obj)
+    .Replace(',', ', ')
+    .Replace('<', '[')
+    .Replace('>', ']')
+    .Replace('List', 'list')
+    .Replace('NewSet', 'set')
+    .Replace('Dictionary', 'dict')
+    .Replace('empty_list', 'list[anytype]')
+    .Replace('empty_set', 'set[anytype]')
+    .Replace('empty_dict', 'dict[anytype]')
+    .Replace('integer', 'int')
+    .Replace('string', 'str')
+    .Replace('real', 'float')
+    .Replace('boolean', 'bool')
+    .Replace('System.Numerics.BigInteger', 'bigint');
+end;
 
 function int(obj: object): integer := Convert.ToInt32(obj);
 
