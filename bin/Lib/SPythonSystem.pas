@@ -122,6 +122,32 @@ type
     !list<T> = PABCSystem.List<T>;
     !dict<K, V> = PABCSystem.Dictionary<K, V>;
     !set<T> = set of T;
+    
+    empty_list = class
+    class function operator implicit<T>(x: empty_list): !list<T>; 
+    begin
+      Result := new !list<T>();
+    end;
+    end;
+    
+    empty_set = class
+    class function operator implicit<T>(x: empty_set): !set<T>; 
+    begin
+      Result := new !set<T>;
+    end;
+    end;
+    
+    empty_dict = class
+    class function operator implicit<K, V>(x: empty_dict): !dict<K, V>; 
+    begin
+      Result := new !dict<K, V>();
+    end;
+    end;
+
+
+function !empty_list(): empty_list;
+function !empty_dict(): empty_dict;
+function &set(): empty_set;
 
 implementation
 
@@ -340,5 +366,9 @@ function ToDictionary<T, U>(Self: sequence of System.tuple<T, U>): Dictionary<T,
 begin
   Result := Self.ToDictionary(x->x[0],x->x[1]);
 end;
+
+function !empty_list(): empty_list := new empty_list();
+function !empty_dict(): empty_dict := new empty_dict();
+function &set(): empty_set := new empty_set;
 
 end.

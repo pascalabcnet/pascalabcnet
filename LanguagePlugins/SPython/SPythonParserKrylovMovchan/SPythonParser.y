@@ -702,6 +702,10 @@ dict_constant
 		{
 			$$ = new method_call(new ident("Dict", @$), $2 as expression_list, @$);
 		}
+	| LBRACE RBRACE
+		{
+			$$ = new method_call(new ident("!empty_dict", @$), null, @$);
+		}
 	;
 
 set_constant
@@ -717,6 +721,10 @@ list_constant
 			var acn = new array_const_new($2 as expression_list, '|', @$);
 			var dn = new dot_node(acn as addressed_value, (new ident("ToList", @$)) as addressed_value, @$);
 			$$ = new method_call(dn as addressed_value, null, @$);
+		}
+	| LBRACKET RBRACKET
+		{
+			$$ = new method_call(new ident("!empty_list", @$), null, @$);
 		}
 	;
 
