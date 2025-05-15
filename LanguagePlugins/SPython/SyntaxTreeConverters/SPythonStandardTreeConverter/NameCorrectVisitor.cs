@@ -143,16 +143,50 @@ namespace Languages.SPython.Frontend.Converters
             }
         }
 
+        // кидает ошибки если инициализировать пустой коллекцией
+        // не указывая типа переменной
+        private void CheckInitializationWithEmptyCollection(assign _assign)
+        {
+            // a = []
+            // a = !empty_list()
+            // a = {}
+            // a = !empty_dict()
+            // a = set()
+            if (_assign.from is method_call mc &&
+                mc.dereferencing_value is ident id &&
+                mc.parameters == null)
+            {
+                if (id.name == "!empty_list")
+                {
+                    throw new SPythonSyntaxVisitorError("IMPOSSIBLE_TO_INFER_LIST_TYPE",
+                        _assign.from.source_context);
+                }
+                else if (id.name == "!empty_dict")
+                {
+                    throw new SPythonSyntaxVisitorError("IMPOSSIBLE_TO_INFER_DICT_TYPE",
+                        _assign.from.source_context);
+                }
+                if (id.name == "set")
+                {
+                    throw new SPythonSyntaxVisitorError("IMPOSSIBLE_TO_INFER_SET_TYPE",
+                        _assign.from.source_context);
+                }
+            }
+        }
+
         public override void visit(assign _assign)
         {
             if (_assign.operator_type == Operators.Assignment && _assign.to is ident _ident)
             {
                 if (!symbolTable.IsVisibleToAssign(_ident.name))
                 {
+                    // инициализация новой переменной с присвоением
                     if (symbolTable.IsOutermostScope())
                         symbolTable.Add(_ident.name, NameKind.GlobalVariable);
                     else
                         symbolTable.Add(_ident.name, NameKind.LocalVariable);
+
+                    CheckInitializationWithEmptyCollection(_assign);
 
                     var _var_statement = SyntaxTreeBuilder.BuildVarStatementNodeFromAssignNode(_assign);
 

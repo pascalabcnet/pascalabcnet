@@ -15,3 +15,6 @@ FUNCTION_{0}_USED_BEFORE_DECLARATION='{0}' объявлена позже как 
 RETURN_NOT_RETURN_VALUE=функция должна возвращать значение
 RETURN_HAS_RETURN_VALUE=функция не должна возвращать значение
 RETURN_NOT_IN_FUNCTION=конструкция 'return ...' должна быть внутри функции
+IMPOSSIBLE_TO_INFER_LIST_TYPE=Нельзя вычислить тип списка
+IMPOSSIBLE_TO_INFER_SET_TYPE=Нельзя вычислить тип множества
+IMPOSSIBLE_TO_INFER_DICT_TYPE=Нельзя вычислить тип словаря

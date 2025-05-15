@@ -181,11 +181,9 @@ end;
 function &type(obj: object): string;
 begin
     Result := TypeName(obj)
-    .Replace(',', ', ')
     .Replace('<', '[')
     .Replace('>', ']')
     .Replace('List', 'list')
-    .Replace('NewSet', 'set')
     .Replace('Dictionary', 'dict')
     .Replace('empty_list', 'list[anytype]')
     .Replace('empty_set', 'set[anytype]')

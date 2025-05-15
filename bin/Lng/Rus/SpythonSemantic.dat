@@ -2,6 +2,3 @@
 NOT_ALLOWED_{0}_DIFF_TYPES_{1}_{2}=Операция {0} неприменима к типам {1} и {2}
 FUNCTION_{0}_NO_RETURN=Функция {0} не возвращает значение
 TYPE_{0}_HAS_NO_{1}_METHOD=В типе {0} не определён метод {1}
-IMPOSSIBLE_TO_INFER_LIST_TYPE=Нельзя вычислить тип списка
-IMPOSSIBLE_TO_INFER_SET_TYPE=Нельзя вычислить тип множества
-IMPOSSIBLE_TO_INFER_DICT_TYPE=Нельзя вычислить тип словаря

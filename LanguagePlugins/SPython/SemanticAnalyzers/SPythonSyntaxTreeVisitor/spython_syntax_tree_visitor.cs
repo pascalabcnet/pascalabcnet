@@ -165,39 +165,6 @@ namespace SPythonSyntaxTreeVisitor
             } }
         };
 
-        public override void visit(var_def_statement _var_def_statement)
-        {
-            // a = []
-            // a = SPythonSystem.!empty_list()
-            // a = {}
-            // a = SPythonSystem.!empty_dict()
-            // a = set()
-            // a = SPythonSystem.!set()
-            if (_var_def_statement.vars_type == null &&
-                _var_def_statement.inital_value is method_call mc && 
-                mc.dereferencing_value is dot_node dn && 
-                mc.parameters == null &&
-                dn.left is ident left && 
-                left.name == "SPythonSystem" &&
-                dn.right is ident right)
-            {
-                if (right.name == "!empty_list")
-                {
-                    AddError(get_location(_var_def_statement.inital_value), "SPYTHONSEMANTIC_IMPOSSIBLE_TO_INFER_LIST_TYPE");
-                }
-                else if (right.name == "!empty_dict")
-                {
-                    AddError(get_location(_var_def_statement.inital_value), "SPYTHONSEMANTIC_IMPOSSIBLE_TO_INFER_DICT_TYPE");
-                }
-                if (right.name == "!set")
-                {
-                    AddError(get_location(_var_def_statement.inital_value), "SPYTHONSEMANTIC_IMPOSSIBLE_TO_INFER_SET_TYPE");
-                }
-            }
-
-            base.visit(_var_def_statement);
-        }
-
 
         HashSet<method_call> visited_method_calls = new HashSet<method_call>();
 
