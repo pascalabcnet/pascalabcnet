@@ -1,72 +1,55 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using System;
-using System.Text;
 
 namespace LanguageServerEngine
 {
     internal static class LspDataConvertor
     {
-        // Конвертирует LSP-позицию (строка, символ) в индекс строки
-        internal static int GetOffsetFromPosition(StringBuilder sb, Position position)
-        {
-            int currentLine = 0;
-            int currentOffset = 0;
 
-            while (currentLine < position.Line && currentOffset < sb.Length)
+        internal static Range GetRangeForSymbolAtPos(string line, Position pos)
+        {
+            int i = (int)pos.Character;
+
+            int j = 1;
+
+            while (i - j > 0 && (char.IsLetterOrDigit(line[i - j]) || line[i - j] == '_' || line[i - j] == '&' || line[i - j] == '!'))
             {
-                if (sb[currentOffset] == '\n')
-                    currentLine++;
-                currentOffset++;
+                j++;
             }
 
-            return currentOffset + (int)position.Character;
+            int startColumn = i - j + 1;
+
+            int endColumn;
+
+            // для случая, когда символ справа от позиции
+            if (!(char.IsLetterOrDigit(line[i]) || line[i] == '_' || line[i] == '&' || line[i] == '!'))
+            {
+                endColumn = i;
+                return new Range(new Position(pos.Line, startColumn), new Position(pos.Line, endColumn));
+            }
+
+            j = 1;
+
+            while (i + j < line.Length && (char.IsLetterOrDigit(line[i + j]) || line[i + j] == '_' || line[i + j] == '&' || line[i + j] == '!'))
+            {
+                j++;
+            }
+
+            endColumn = i + j;
+
+            return new Range(new Position(pos.Line, startColumn), new Position(pos.Line, endColumn));
         }
 
-        public static string GetTextInRange(string documentText, Range range)
+        internal static string GetNormalizedPathFromUri(Uri uri)
         {
-            if (string.IsNullOrEmpty(documentText))
-                return string.Empty;
+            string path = uri.LocalPath;
 
-            var lines = documentText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
-            // Проверка на выход за границы документа
-            if (range.Start.Line >= lines.Length || range.End.Line >= lines.Length)
-                return string.Empty;
-
-            // Если диапазон начинается и заканчивается на одной строке
-            if (range.Start.Line == range.End.Line)
+            if (path.StartsWith("/") && path.Length > 2 && char.IsLetter(path[1]) && path[2] == ':')
             {
-                string line = lines[range.Start.Line];
-                int start = Math.Min((int)range.Start.Character, line.Length);
-                int end = Math.Min((int)range.End.Character, line.Length);
-                return line.Substring(start, end - start);
+                path = path.Substring(1);
             }
 
-            // Если диапазон охватывает несколько строк
-            var result = new StringBuilder();
-
-            // Первая строка (от Start.Character до конца строки)
-            string firstLine = lines[range.Start.Line];
-            int firstLineStart = (int)Math.Min(range.Start.Character, firstLine.Length);
-            result.Append(firstLine.Substring(firstLineStart));
-
-            // Промежуточные строки (если есть)
-            for (int i = (int)range.Start.Line + 1; i < range.End.Line; i++)
-            {
-                result.AppendLine(); // или просто result.Append("\n"), если не нужны \r\n
-                result.Append(lines[i]);
-            }
-
-            // Последняя строка (от начала до End.Character)
-            if (range.Start.Line != range.End.Line)
-            {
-                result.AppendLine();
-                string lastLine = lines[range.End.Line];
-                int lastLineEnd = (int)Math.Min(range.End.Character, lastLine.Length);
-                result.Append(lastLine.Substring(0, lastLineEnd));
-            }
-
-            return result.ToString();
+            return path;
         }
     }
 }

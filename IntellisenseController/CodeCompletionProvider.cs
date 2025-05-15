@@ -13,7 +13,7 @@ using Languages.Facade;
 namespace VisualPascalABC
 {
 
-    public class UserDefaultCompletionData
+    public class UserDefaultCompletionData : IComparable
     {
         string text;
         string description;
@@ -381,7 +381,6 @@ namespace VisualPascalABC
         {
             if (CodeCompletion.CodeCompletionController.CurrentParser != null)
             {
-                Console.Error.WriteLine(off + " " + Text + " " + line + " " + col);
                 return CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpression(off, Text, line, col, out keyword);
             }
                 

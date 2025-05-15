@@ -1,36 +1,32 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using System.Collections.Generic;
 using System.IO;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using PascalABCCompiler.Parsers;
 
 namespace VisualPascalABC
 {
     public class TooltipServiceManager
     {
-        static DeclarationViewWindow dvw;
+        // static DeclarationViewWindow dvw;
 
-        private static string GetPopupHintText(TextArea textArea, ToolTipRequestEventArgs e)
+        public static string GetPopupHintText(int offset, int line, int col, string text, string fileName)
         {
-            TextLocation logicPos = e.LogicalPosition;
+            /*TextLocation logicPos = e.LogicalPosition;
             IDocument doc = textArea.Document;
             LineSegment lineSegment = doc.GetLineSegment(logicPos.Y);
             
             string fileName = textArea.MotherTextEditorControl.FileName;
 
             if (logicPos.X > lineSegment.Length - 1)
-                return null;
+                return null;*/
 
             //string expr = FindFullExpression(doc.TextContent, seg.Offset + logicPos.X,e.LogicalPosition.Line,e.LogicalPosition.Column);
 
             IParser parser = CodeCompletion.CodeCompletionController.CurrentParser;
 
             string expr = parser.LanguageInformation.FindExpressionFromAnyPosition(
-                lineSegment.Offset + logicPos.X, doc.TextContent, e.LogicalPosition.Line, e.LogicalPosition.Column, out var keyw, out var exprWithoutBrackets);
+                offset, text, line, col, out var keyw, out var exprWithoutBrackets);
             
             // пока непонятно, когда такое может быть  EVA
             if (expr == null)
@@ -74,10 +70,10 @@ namespace VisualPascalABC
             }
             
             CodeCompletion.DomConverter domConverter = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
-            
+
             if (domConverter == null) return null;
-            
-            return domConverter.GetDescription(expressionTree, fileName, exprWithoutBrackets, e.LogicalPosition.Line, e.LogicalPosition.Column, keyw, header);
+
+            return domConverter.GetDescription(expressionTree, fileName, exprWithoutBrackets, line, col, keyw, header);
         }
 
         static int _mouse_hint_x = 0, _mouse_hint_y = 0;

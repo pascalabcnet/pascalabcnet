@@ -10,9 +10,8 @@ using OmniSharp.Extensions.LanguageServer.Protocol;
 
 namespace LanguageServerEngine
 {
-    internal class TextDocumentSyncHandler : ITextDocumentSyncHandler
+    internal class TextDocumentSyncHandler : ITextDocumentSyncHandler, IDisposable
     {
-        // private readonly ILanguageServer router;
 
         private SynchronizationCapability capability;
 
@@ -20,9 +19,22 @@ namespace LanguageServerEngine
 
         private readonly Dictionary<string, bool> openFiles = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
 
+        private readonly Thread backgroundParsingThread;
+
+        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private readonly ManualResetEventSlim parseLockEvent = new ManualResetEventSlim(false);
+
         public TextDocumentSyncHandler(DocumentStorage documentStorage)
         {
             this.documentStorage = documentStorage;
+
+            backgroundParsingThread = new Thread(BackgroundParsingLoop)
+            {
+                IsBackground = true,
+                Priority = ThreadPriority.BelowNormal
+            };
+
+            backgroundParsingThread.Start();
         }
 
         public TextDocumentSyncKind Change { get; } = TextDocumentSyncKind.Incremental;
@@ -36,15 +48,13 @@ namespace LanguageServerEngine
 
         public Task Handle(DidChangeTextDocumentParams request)
         {
-            var documentUri = request.TextDocument.Uri.ToString();
+            string documentPath = LspDataConvertor.GetNormalizedPathFromUri(request.TextDocument.Uri);
 
-            var contentChange = request.ContentChanges.First(); // берем пока одно изменение
+            var contentChange = request.ContentChanges.First(); // берем одно изменение
 
-            documentStorage.UpdateDocument(documentUri, contentChange);
+            documentStorage.UpdateDocument(documentPath, contentChange);
 
-            SetAsChanged(documentUri);
-
-            ParseInThread();
+            SetAsChanged(documentPath);
 
             return Task.CompletedTask;
         }
@@ -53,26 +63,22 @@ namespace LanguageServerEngine
         {
             Console.Error.WriteLine("did open params received");
 
-            string documentUri = request.TextDocument.Uri.ToString();
+            string documentPath = LspDataConvertor.GetNormalizedPathFromUri(request.TextDocument.Uri);
 
-            documentStorage.AddDocument(documentUri, request.TextDocument.Text);
+            documentStorage.AddDocument(documentPath, request.TextDocument.Text);
 
-            RegisterFileForParsing(documentUri);
-
-            ParseInThread();
-
-            // Console.Error.WriteLine((CodeCompletion.CodeCompletionController.comp_modules[documentUri] as DomConverter).visitor.cur_scope);
+            RegisterFileForParsing(documentPath);
 
             return Task.CompletedTask;
         }
 
         public Task Handle(DidCloseTextDocumentParams request)
         {
-            string documentUri = request.TextDocument.Uri.ToString();
+            string documentPath = LspDataConvertor.GetNormalizedPathFromUri(request.TextDocument.Uri);
 
-            documentStorage.RemoveDocument(documentUri);
+            documentStorage.RemoveDocument(documentPath);
 
-            CloseFile(documentUri);
+            CloseFile(documentPath);
 
             return Task.CompletedTask;
         }
@@ -112,6 +118,34 @@ namespace LanguageServerEngine
             this.capability = capability;
         }
 
+        private void BackgroundParsingLoop()
+        {
+            while (!cancellationTokenSource.IsCancellationRequested)
+            {
+                try
+                {
+                    ParseInThread();
+
+                    // ожидание 2 секунды
+                    parseLockEvent.Wait(TimeSpan.FromSeconds(2), cancellationTokenSource.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Выход при отмене
+                    break; 
+                }
+                catch (Exception e)
+                {
+
+                    Console.Error.WriteLine("Intellisense exception:");
+                    Console.Error.WriteLine(e.Message + "\n" + e.StackTrace);
+
+                    // ожидание перед повторной попыткой
+                    Thread.Sleep(500);
+                }
+            }
+        }
+
         private void RegisterFileForParsing(string FileName)
         {
             openFiles[FileName] = true;
@@ -132,118 +166,122 @@ namespace LanguageServerEngine
 
         private void ParseInThread()
         {
-            try
+            long mem_delta = 0;
+
+            Dictionary<string, string> recomp_files = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            bool is_comp = false;
+            foreach (string FileName in openFiles.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
             {
-                long mem_delta = 0;
+                if (cancellationTokenSource.IsCancellationRequested)
+                    return;
 
-                Dictionary<string, string> recomp_files = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                bool is_comp = false;
-                foreach (string FileName in openFiles.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
+                if (openFiles[FileName])
                 {
-
-                    if (openFiles[FileName])
+                    is_comp = true;
+                    CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
+                    string text = documentStorage.GetDocumentText(FileName);
+                    if (string.IsNullOrEmpty(text))
+                        text = "begin end.";
+                    CodeCompletion.DomConverter tmp = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
+                    long cur_mem = Environment.WorkingSet;
+                    CodeCompletion.DomConverter dc = controller.Compile(FileName, text);
+                    mem_delta += Environment.WorkingSet - cur_mem;
+                    openFiles[FileName] = false;
+                    if (dc.is_compiled)
                     {
-                        is_comp = true;
-                        CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
-                        string text = documentStorage.GetDocument(FileName).ToString();
-                        if (string.IsNullOrEmpty(text))
-                            text = "begin end.";
-                        CodeCompletion.DomConverter tmp = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
-                        long cur_mem = Environment.WorkingSet;
-                        CodeCompletion.DomConverter dc = controller.Compile(FileName, text);
-                        mem_delta += Environment.WorkingSet - cur_mem;
-                        openFiles[FileName] = false;
-                        if (dc.is_compiled)
+                        Console.Error.WriteLine("Compiled");
+                        //CodeCompletion.CodeCompletionController.comp_modules.Remove(file_name);
+                        if (tmp != null && tmp.visitor.entry_scope != null)
                         {
-                            Console.Error.WriteLine("Compiled");
-                            //CodeCompletion.CodeCompletionController.comp_modules.Remove(file_name);
-                            if (tmp != null && tmp.visitor.entry_scope != null)
-                            {
-                                tmp.visitor.entry_scope.Clear();
-                                if (tmp.visitor.cur_scope != null)
-                                    tmp.visitor.cur_scope.Clear();
-                            }
-                            CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
-                            recomp_files[FileName] = FileName;
-                            openFiles[FileName] = false;
-                            //if (ParseInformationUpdated != null)
-                            //    ParseInformationUpdated(dc.visitor.entry_scope, FileName);
+                            tmp.visitor.entry_scope.Clear();
+                            if (tmp.visitor.cur_scope != null)
+                                tmp.visitor.cur_scope.Clear();
                         }
-                        else if (CodeCompletion.CodeCompletionController.comp_modules[FileName] == null)
-                            CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
+                        CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
+                        recomp_files[FileName] = FileName;
+                        openFiles[FileName] = false;
+                        //if (ParseInformationUpdated != null)
+                        //    ParseInformationUpdated(dc.visitor.entry_scope, FileName);
                     }
+                    else if (CodeCompletion.CodeCompletionController.comp_modules[FileName] == null)
+                        CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                 }
-                foreach (string FileName in openFiles.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
+            }
+            foreach (string FileName in openFiles.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
+            {
+                if (cancellationTokenSource.IsCancellationRequested)
+                    return;
+
+                CodeCompletion.DomConverter dc = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
+                CodeCompletion.SymScope ss = null;
+                if (dc != null)
                 {
-                    CodeCompletion.DomConverter dc = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
-                    CodeCompletion.SymScope ss = null;
-                    if (dc != null)
+                    if (dc.visitor.entry_scope != null) ss = dc.visitor.entry_scope;
+                    else if (dc.visitor.impl_scope != null) ss = dc.visitor.impl_scope;
+                    int j = 0;
+                    while (j < 2)
                     {
-                        if (dc.visitor.entry_scope != null) ss = dc.visitor.entry_scope;
-                        else if (dc.visitor.impl_scope != null) ss = dc.visitor.impl_scope;
-                        int j = 0;
-                        while (j < 2)
+                        if (j == 0)
                         {
-                            if (j == 0)
+                            ss = dc.visitor.entry_scope;
+                            j++;
+                        }
+                        else
+                        {
+                            ss = dc.visitor.impl_scope;
+                            j++;
+                        }
+                        if (ss != null)
+                        {
+                            for (int i = 0; i < ss.used_units.Count; i++)
                             {
-                                ss = dc.visitor.entry_scope;
-                                j++;
-                            }
-                            else
-                            {
-                                ss = dc.visitor.impl_scope;
-                                j++;
-                            }
-                            if (ss != null)
-                            {
-                                for (int i = 0; i < ss.used_units.Count; i++)
+                                string s = ss.used_units[i].file_name;
+                                if (s != null && openFiles.ContainsKey(s) && recomp_files.ContainsKey(s))
                                 {
-                                    string s = ss.used_units[i].file_name;
-                                    if (s != null && openFiles.ContainsKey(s) && recomp_files.ContainsKey(s))
+                                    is_comp = true;
+                                    CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
+                                    string text = documentStorage.GetDocumentText(FileName).ToString();
+                                    CodeCompletion.DomConverter tmp = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
+                                    long cur_mem = Environment.WorkingSet;
+                                    dc = controller.Compile(FileName, text);
+                                    mem_delta += Environment.WorkingSet - cur_mem;
+                                    openFiles[FileName] = false;
+                                    CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
+                                    if (dc.is_compiled)
                                     {
-                                        is_comp = true;
-                                        CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
-                                        string text = documentStorage.GetDocument(FileName).ToString();
-                                        CodeCompletion.DomConverter tmp = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
-                                        long cur_mem = Environment.WorkingSet;
-                                        dc = controller.Compile(FileName, text);
-                                        mem_delta += Environment.WorkingSet - cur_mem;
-                                        openFiles[FileName] = false;
+                                        //if (tmp != null && tmp.stv.entry_scope != null)
+                                        //{
+                                        //    tmp.stv.entry_scope.Clear();
+                                        //    if (tmp.stv.cur_scope != null) tmp.stv.cur_scope.Clear();
+                                        //}
                                         CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
-                                        if (dc.is_compiled)
-                                        {
-                                            //if (tmp != null && tmp.stv.entry_scope != null)
-                                            //{
-                                            //    tmp.stv.entry_scope.Clear();
-                                            //    if (tmp.stv.cur_scope != null) tmp.stv.cur_scope.Clear();
-                                            //}
-                                            CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
-                                            recomp_files[FileName] = FileName;
-                                            ss.used_units[i] = dc.visitor.entry_scope;
-                                            //if (ParseInformationUpdated != null)
-                                            //    ParseInformationUpdated(dc.visitor.entry_scope, FileName);
-                                        }
-                                        else if (CodeCompletion.CodeCompletionController.comp_modules[FileName] == null)
-                                            CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
+                                        recomp_files[FileName] = FileName;
+                                        ss.used_units[i] = dc.visitor.entry_scope;
+                                        //if (ParseInformationUpdated != null)
+                                        //    ParseInformationUpdated(dc.visitor.entry_scope, FileName);
                                     }
+                                    else if (CodeCompletion.CodeCompletionController.comp_modules[FileName] == null)
+                                        CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                                 }
                             }
                         }
                     }
                 }
-                if (is_comp && mem_delta > 20000000 && mem_delta > 10000000)
-                //postavil delta dlja pamjati, posle kototoj delaetsja sborka musora
-                {
-                    GC.Collect();
-                }
             }
-            catch (Exception e)
+            if (is_comp && mem_delta > 20000000 && mem_delta > 10000000)
+            //postavil delta dlja pamjati, posle kototoj delaetsja sborka musora
             {
-
-                Console.Error.WriteLine("Intellisense exception:");
-                Console.Error.WriteLine(e.Message + "\n" + e.StackTrace);
+                GC.Collect();
             }
+        }
 
+        public void Dispose()
+        {
+            cancellationTokenSource.Cancel(); // Отменяем операцию парсинга
+            parseLockEvent.Set(); // Разблокируем поток, если он ждёт
+            backgroundParsingThread.Join();
+            parseLockEvent.Dispose();
+            cancellationTokenSource.Dispose();
         }
     }
 }

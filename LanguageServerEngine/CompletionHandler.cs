@@ -3,7 +3,6 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using System;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using VisualPascalABC;
@@ -16,13 +15,15 @@ namespace LanguageServerEngine
 
         private CompletionCapability capability;
 
-        private string[] specialTriggerCharacters = new string[] { ".", "(" };
+        private readonly string[] specialTriggerCharacters = new string[] { "." };
 
         private CodeCompletionProvider completionProvider;
 
         public CompletionHandler(DocumentStorage documentStorage)
         {
             completionProvider = new CodeCompletionProvider();
+            CodeCompletion.CodeCompletionController.comp = new PascalABCCompiler.Compiler();
+            
             this.documentStorage = documentStorage;
         }
 
@@ -39,33 +40,46 @@ namespace LanguageServerEngine
         public Task<CompletionList> Handle(TextDocumentPositionParams request, CancellationToken cancellationToken)
         {
 
-            var documentPath = request.TextDocument.Uri.ToString();
+            var documentPath = LspDataConvertor.GetNormalizedPathFromUri(request.TextDocument.Uri);
 
             Position pos = request.Position;
 
-            var docText = documentStorage.GetDocument(documentPath).ToString();
+            var docText = documentStorage.GetDocumentText(documentPath);
 
-            var changedLineText = LspDataConvertor.GetTextInRange(docText, new Range()
+            var buffer = documentStorage.GetDocumentBuffer(documentPath);
+
+            var changedLineText = buffer.GetLine((int)pos.Line);
+
+            int col = (int)pos.Character;
+
+            char triggerChar = col > 0 ? changedLineText[col - 1] : '_';
+
+            // отслеживание ctrl + space "на пустом месте" (также сюда относится вставка пробельных символов)
+            if (char.IsWhiteSpace(triggerChar))
             {
-                Start = new Position(pos.Line, 0),
-                End = pos
-            });
-
-            string triggerChar = changedLineText.Length > 0 ? changedLineText[changedLineText.Length - 1].ToString() : "";
+                triggerChar = '_';
+            }
 
             UserDefaultCompletionData[] completionList = null;
 
+            int symbolIndex = buffer.GetOffsetFromPosition((int)pos.Line, (int)pos.Character) - 1;
+
             try
             {
-                if (specialTriggerCharacters.Contains(triggerChar))
+                if (specialTriggerCharacters.Contains(triggerChar.ToString()) || triggerChar == '_')
                 {
                     completionList = completionProvider.GenerateCompletionDataWithKeyword(documentPath, docText,
-                        LspDataConvertor.GetOffsetFromPosition(documentStorage.GetDocument(documentPath), pos) - 1,
-                        (int)pos.Line, (int)pos.Character, triggerChar[0], PascalABCCompiler.Parsers.KeywordKind.None);
+                            symbolIndex,
+                            (int)pos.Line, (int)pos.Character, triggerChar, PascalABCCompiler.Parsers.KeywordKind.None);
                 }
                 else
                 {
+                    PascalABCCompiler.Parsers.KeywordKind keyw = KeywordChecker.TestForKeyword(docText, symbolIndex);
                     
+                    if (CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.IsDefinitionIdentifierAfterKeyword(keyw))
+                        return Task.FromResult(new CompletionList());
+
+                    completionList = completionProvider.GenerateCompletionDataByFirstChar(documentPath, docText, symbolIndex, (int)pos.Line, (int)pos.Character, triggerChar, keyw);
                 }
             }
             catch (Exception e)
@@ -76,14 +90,26 @@ namespace LanguageServerEngine
 
             if (completionList != null)
             {
-                Console.Error.WriteLine("completions got");
-                return Task.FromResult(new CompletionList(completionList.Select(item => new CompletionItem() { Label = item.Text, Detail = item.Description })));
+                Console.Error.WriteLine("Completions got:");
+
+                var resultList = new CompletionList(completionList.Select(item => new CompletionItem() { 
+                    Label = item.Text, 
+                    Detail = item.Description, 
+                    InsertText = GetInsertedTextForCompletionItem(item.Text)
+                }));
+
+                return Task.FromResult(resultList);
             }
-            else
-            {
-                return Task.FromResult(new CompletionList(new CompletionItem() { Label = "Console" }));
-            }
+            
+            return Task.FromResult(new CompletionList());
+            
         }
+
+        private string GetInsertedTextForCompletionItem(string text)
+        {
+            return !text.EndsWith("<>") ? null : text.Substring(0, text.Length - 2);
+        }
+
 
         public void SetCapability(CompletionCapability capability)
         {
