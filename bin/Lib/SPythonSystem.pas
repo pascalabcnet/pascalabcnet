@@ -46,7 +46,7 @@ procedure print(params args: array of object);
 
 procedure clear<T>(var st: set of T);
 
-function map<TInput, TOutput>(func: object -> TOutput; arr: sequence of TInput): sequence of TOutput;
+function int(val: string): integer;
 
 function round(val: real): integer;
 
@@ -56,7 +56,7 @@ function get_values<K, V>(dct: Dictionary<K, V>): sequence of V;
 function &type(obj: object): string;
 
 //function int(val: string): integer;
-function int(obj: object): integer;
+function int(b: boolean): integer;
 
 function str(val: object): string;
 
@@ -95,8 +95,9 @@ function &list<T>(sq: sequence of T): PABCSystem.List<T>;
 
 function sorted<T>(lst: PABCSystem.List<T>): PABCSystem.List<T>;
 
-function sum(lst: sequence of integer): integer;
-function sum(lst: sequence of real): real;
+function sum(lst: PABCSystem.List<integer>): integer;
+
+function sum(lst: PABCSystem.List<real>): real;
 
 function !assign<T>(var a: T; b: T): T;
 
@@ -169,14 +170,21 @@ begin
   !Print.Get().Print(args);
 end;
 
+function int(val: string): integer := integer.Parse(val);
+
+function int(b: boolean): integer;
+begin
+  if b then
+    Result := 1
+  else
+    Result := 0;
+end;
+
 function &type(obj: object): string;
 begin
     Result := TypeName(obj)
     .Replace('<', '[')
     .Replace('>', ']')
-    .Replace('function', '')
-    .Replace('procedure', '')
-    .Replace(':', ' ->')
     .Replace('List', 'list')
     .Replace('Dictionary', 'dict')
     .Replace('empty_list', 'list[anytype]')
@@ -186,9 +194,7 @@ begin
     .Replace('string', 'str')
     .Replace('real', 'float')
     .Replace('boolean', 'bool')
-    .Replace('System.Numerics.BigInteger', 'bigint')
-    .Replace('Object', 'anytype')
-    ;
+    .Replace('System.Numerics.BigInteger', 'bigint');
 end;
 
 function int(obj: object): integer := Convert.ToInt32(obj);
@@ -233,8 +239,8 @@ begin
   Result := new_list;
 end;
 
-function sum(lst: sequence of integer): integer := lst.sum();
-function sum(lst: sequence of real): real := lst.sum();
+function sum(lst: PABCSystem.List<integer>): integer := lst.sum();
+function sum(lst: PABCSystem.List<real>): real := lst.sum();
 
 function !assign<T>(var a: T; b: T): T;
 begin
@@ -383,11 +389,5 @@ function !empty_dict(): empty_dict := new empty_dict();
 function &set(): empty_set := new empty_set;
 
 function round(val: real): integer := PABCSystem.round(val);
-
-function map<TInput, TOutput>(func: object -> TOutput; arr: sequence of TInput): sequence of TOutput;
-begin
-  foreach var elem in arr do
-    yield func(elem);
-end;
 
 end.
