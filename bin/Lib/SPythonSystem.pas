@@ -48,6 +48,8 @@ procedure clear<T>(var st: set of T);
 
 function int(val: string): integer;
 
+function round(val: real): integer;
+
 function get_keys<K, V>(dct: Dictionary<K, V>): sequence of K;
 function get_values<K, V>(dct: Dictionary<K, V>): sequence of V;
 
@@ -385,5 +387,7 @@ end;
 function !empty_list(): empty_list := new empty_list();
 function !empty_dict(): empty_dict := new empty_dict();
 function &set(): empty_set := new empty_set;
+
+function round(val: real): integer := PABCSystem.round(val);
 
 end.
