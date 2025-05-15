@@ -155,6 +155,8 @@ namespace SPythonSyntaxTreeVisitor
                 { "add", "add" },
                 { "remove", "remove" },
                 { "copy", "copy" },
+                { "Select", "Select" },
+                { "Where", "Where" },
             } },
 
             {"Dictionary",
@@ -162,6 +164,8 @@ namespace SPythonSyntaxTreeVisitor
                 { "keys", "get_keys" },
                 { "values", "get_values" },
                 { "copy", "copy" },
+                { "Select", "Select" },
+                { "Where", "Where" },
             } }
         };
 

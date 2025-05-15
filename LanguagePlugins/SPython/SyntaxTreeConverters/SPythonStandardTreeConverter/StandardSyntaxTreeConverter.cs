@@ -26,6 +26,11 @@ namespace Languages.SPython.Frontend.Converters
             var rdv = new ReturnDesugarVisitor();
             rdv.ProcessNode(root);
 
+            // замена вызова функции map(func, sequence)
+            // на func(element) for element in sequence
+            var mdv = new MapDesugarVisitor();
+            mdv.ProcessNode(root);
+
             // замена генерации списков на Select.Where.ToArray
             // (не работает из-за лямбд, если переместить в ConvertAfterUsedModulesCompilation)
             var ldv = new ListDesugarVisitor(root);

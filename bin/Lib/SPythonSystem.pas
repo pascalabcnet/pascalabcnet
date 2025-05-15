@@ -48,7 +48,11 @@ procedure clear<T>(var st: set of T);
 
 function int(val: string): integer;
 
+function int(val: real): integer;
+
 function round(val: real): integer;
+
+function split(s: string): sequence of string;
 
 function get_keys<K, V>(dct: Dictionary<K, V>): sequence of K;
 function get_values<K, V>(dct: Dictionary<K, V>): sequence of V;
@@ -95,9 +99,9 @@ function &list<T>(sq: sequence of T): PABCSystem.List<T>;
 
 function sorted<T>(lst: PABCSystem.List<T>): PABCSystem.List<T>;
 
-function sum(lst: PABCSystem.List<integer>): integer;
+function sum(lst: sequence of integer): integer;
 
-function sum(lst: PABCSystem.List<real>): real;
+function sum(lst: sequence of real): real;
 
 function !assign<T>(var a: T; b: T): T;
 
@@ -172,6 +176,8 @@ end;
 
 function int(val: string): integer := integer.Parse(val);
 
+function int(val: real): integer := round(val);
+
 function int(b: boolean): integer;
 begin
   if b then
@@ -239,8 +245,8 @@ begin
   Result := new_list;
 end;
 
-function sum(lst: PABCSystem.List<integer>): integer := lst.sum();
-function sum(lst: PABCSystem.List<real>): real := lst.sum();
+function sum(lst: sequence of integer): integer := lst.sum();
+function sum(lst: sequence of real): real := lst.sum();
 
 function !assign<T>(var a: T; b: T): T;
 begin
@@ -389,5 +395,28 @@ function !empty_dict(): empty_dict := new empty_dict();
 function &set(): empty_set := new empty_set;
 
 function round(val: real): integer := PABCSystem.round(val);
+
+function split(s: string): sequence of string;
+begin
+  var temp := '';
+  var i := 0;
+  
+  while i <= s.Length - 1 do
+  begin
+    if (i <= s.Length - 1) and (s.Substring(i, 1) = ' ') then
+    begin
+      yield temp;
+      temp := '';
+      i += 1;
+    end
+    else
+    begin
+      temp += s[i];
+      i += 1;
+    end;
+  end;
+  
+  yield temp;
+end;
 
 end.
