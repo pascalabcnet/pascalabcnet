@@ -19,5 +19,5 @@ begin
   leaderboard := leaderboard.OrderByDescending(p -> p.Points).ToArray;
   Println(leaderboard);
   if leaderboard.IsOrderedByDescending(p -> p.Points) then
-    Println('Теперь рейтинг составлен неверно!');
+    Println('Теперь рейтинг составлен верно!');
 end.

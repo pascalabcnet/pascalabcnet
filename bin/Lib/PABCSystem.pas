@@ -2334,6 +2334,8 @@ function Pred(x: uint64): uint64;
 ///--
 function Pred(x: boolean): boolean;
 
+/// Возвращает True, если значение val находится между a и b включительно (a ≤ val ≤ b)
+function InRange<T>(val, a, b: T): boolean; where T: IComparable<T>;
 /// Меняет местами значения двух переменных
 procedure Swap<T>(var a, b: T);
 /// Возвращает True, если достигнут конец строки
@@ -2346,6 +2348,9 @@ function SeekEof: boolean;
 function SeekEoln: boolean;
 /// Возвращает аргумены командой строки, с которыми была запущена программа
 function CommandLineArgs: array of string;
+
+/// Преобразует объект в строковое представление
+function ObjectToString(obj: object): string;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для работы с динамическими массивами # Subroutines for array of T
@@ -2916,9 +2921,6 @@ function RuntimeDetermineType(T: System.Type): byte;
 function RuntimeInitialize(kind: byte; variable: object): object;
 ///Вычисление размера типа на этапе выполнения
 function GetRuntimeSize<T>: integer;
-
-/// Преобразует объект в строковое представление
-function ObjectToString(obj: object): string;
 
 function IsUnix: boolean;
 ///--
@@ -10682,6 +10684,12 @@ begin
   Result := char(integer(x)-n);
 end;
 
+/// Возвращает True, если значение val находится между a и b включительно (a ≤ val ≤ b)
+function InRange<T>(val, a, b: T): boolean; where T: IComparable<T>;
+begin
+  Result := (val.CompareTo(a) >= 0) and (val.CompareTo(b) <= 0);
+end;
+
 procedure Swap<T>(var a, b: T);
 begin
   var v := a;
@@ -14195,10 +14203,10 @@ begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
-/// Возвращает True если значение находится между двумя другими
+/// Возвращает True если значение находится в диапазоне [a,b]
 function InRange(Self: integer; a,b: integer): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  Result := (a <= Self) and (Self <= b);
 end;
 
 ///--
@@ -14297,16 +14305,16 @@ end;
 // -----------------------------------------------------
 //>>     Методы расширения типа real # Extension methods for real
 // -----------------------------------------------------
-/// Возвращает True если значение находится между двумя другими
+/// Возвращает True если значение находится в диапазоне [a,b]
 function Between(Self: real; a, b: real): boolean; extensionmethod;
 begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
-/// Возвращает True если значение находится между двумя другими
+/// Возвращает True если значение находится в диапазоне [a, b]
 function InRange(Self: real; a,b: real): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  Result := (a <= Self) and (Self <= b);
 end;
 
 /// Возвращает квадратный корень числа
@@ -14412,10 +14420,10 @@ begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
-/// Возвращает True если значение находится между двумя другими
+/// Возвращает True если символ находится в диапазоне [a,b]
 function InRange(Self: char; a,b: char): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  Result := (a <= Self) and (Self <= b);
 end;
 
 /// Предыдущий символ
@@ -14485,10 +14493,10 @@ begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
-/// Возвращает True если значение находится между двумя другими
+/// Возвращает True если строка находится в диапазоне [a,b] (лексикографическое сравнение)
 function InRange(Self: string; a, b: string): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  Result := (a <= Self) and (Self <= b);
 end;
 
 /// Считывает целое из строки начиная с позиции from и устанавливает from за считанным значением

@@ -4,6 +4,8 @@
 <param name="Keyword" value="Eof">
 <param name="Keyword" value="Eoln">
 <param name="Keyword" value="Inc">
+<param name="Keyword" value="InRange">
+<param name="Keyword" value="ObjectToString">
 <param name="Keyword" value="Ord">
 <param name="Keyword" value="Pred">
 <param name="Keyword" value="SeekEof">
@@ -34,6 +36,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;”величивает значение перечислимого типа на 1</td></tr>
 <tr><td><code><b>procedure</b> Inc(<b>var</b> e: перечислимый тип; n: integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;”величивает значение перечислимого типа на n</td></tr>
+<tr><td><code><b>function</b> InRange&lt;T&gt;(val, a, b: T): boolean; <b>where</b> T: IComparable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает True, если значение val находитс€ между a и b включительно (a ? val ? b)</td></tr>
+<tr><td><code><b>function</b> ObjectToString(obj: object): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует объект в строковое представление</td></tr>
 <tr><td><code><b>function</b> Ord(a: целое): целое;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает пор€дковый номер значени€ a</td></tr>
 <tr><td><code><b>function</b> Ord(a: перечислимый тип): integer;</code>
