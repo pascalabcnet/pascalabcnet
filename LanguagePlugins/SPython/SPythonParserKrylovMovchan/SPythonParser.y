@@ -49,16 +49,21 @@
 %token <op> PLUS MINUS STAR DIVIDE SLASHSLASH PERCENTAGE
 %token <id> ID
 %token <op> LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
-%token <op> AND OR NOT STARSTAR
+%token <op> AND OR NOT STARSTAR BINXOR SHL SHR BINNOT BINAND BINOR
 %token <ti> tkParseModeExpression tkParseModeStatement tkParseModeType
 
 %left OR
 %left AND
+%left NOT
 %left LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
+%left BINOR
+%left BINXOR
+%left BINAND
+%left SHL SHR
 %left PLUS MINUS
 %left STAR DIVIDE SLASHSLASH PERCENTAGE
-%left NOT
 %right STARSTAR
+%left BINNOT
 
 %type <id> ident dotted_ident func_name_ident type_decl_identifier
 %type <ex> expr proc_func_call const_value variable optional_condition act_param new_expr is_expr variable_as_type
@@ -449,6 +454,26 @@ expr
 		{ 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
+	| expr SHL	expr
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
+	| expr SHR	expr
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
+	| expr BINAND	expr
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
+	| expr BINOR	expr
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
+	| expr BINXOR	expr
+		{ 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
 	| expr STARSTAR		expr
 		{
 			addressed_value method_name = new ident("!pow", @$);
@@ -469,6 +494,10 @@ expr
 			$$ = new un_expr($2, $1.type, @$); 
 		}
 	| NOT	expr
+		{ 
+			$$ = new un_expr($2, $1.type, @$); 
+		}
+	| BINNOT expr
 		{ 
 			$$ = new un_expr($2, $1.type, @$); 
 		}

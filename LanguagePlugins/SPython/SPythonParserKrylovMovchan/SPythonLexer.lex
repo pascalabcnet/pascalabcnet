@@ -125,6 +125,16 @@ BIGINTNUM {INTNUM}bi
 "!=" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.NotEqual); return (int)Tokens.NOTEQUAL; }
 "="  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.Assignment); return (int)Tokens.ASSIGN; }
 
+//"&"  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.BitwiseAND); return (int)Tokens.BINAND; }
+"&"  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.LogicalAND); return (int)Tokens.BINAND; }
+//"|"  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.BitwiseOR); return (int)Tokens.BINOR; }
+"|"  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.LogicalOR); return (int)Tokens.BINOR; }
+//"~"  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.BitwiseNOT); return (int)Tokens.BINNOT; }
+"~"  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.LogicalNOT); return (int)Tokens.BINNOT; }
+"<<" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.BitwiseLeftShift); return (int)Tokens.SHL; }
+">>" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.BitwiseRightShift); return (int)Tokens.SHR; }
+"^"  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.BitwiseXOR); return (int)Tokens.BINXOR; }
+
 "#{" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.INDENT; }
 "#}" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.UNINDENT; }
 "#;" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.END_OF_LINE; }
