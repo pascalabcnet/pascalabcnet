@@ -213,30 +213,32 @@ namespace SPythonSyntaxTreeVisitor
 
         public override void visit(assign _assign)
         {
-            expression_node to = convert_strong(_assign.to);
-            SourceContext sc = _assign.source_context;
 
             if (_assign.from is bin_expr be && 
                 _assign.to is ident il && 
                 be.left is ident ir &&
-                il.name == ir.name &&
-                to.type.name.StartsWith("NewSet"))
+                il.name == ir.name)
             {
-                if (be.operation_type == Operators.LogicalAND)
+                expression_node to = convert_strong(_assign.to);
+                SourceContext sc = _assign.source_context;
+
+                if (to.type.name.StartsWith("NewSet"))
                 {
-                    var replace = new assign(new semantic_addr_value(to), be.right, Operators.AssignmentMultiplication, sc);
-                    base.visit(replace);
-                    return;
-                }
-                if (be.operation_type == Operators.LogicalOR)
-                {
-                    var replace = new assign(new semantic_addr_value(to), be.right, Operators.AssignmentAddition, sc);
-                    base.visit(replace);
-                    return;
+                    if (be.operation_type == Operators.LogicalAND)
+                    {
+                        var replace = new assign(new semantic_addr_value(to), be.right, Operators.AssignmentMultiplication, sc);
+                        base.visit(replace);
+                        return;
+                    }
+                    if (be.operation_type == Operators.LogicalOR)
+                    {
+                        var replace = new assign(new semantic_addr_value(to), be.right, Operators.AssignmentAddition, sc);
+                        base.visit(replace);
+                        return;
+                    }
                 }
             }
-            var new_assign = new assign(new semantic_addr_value(to), _assign.from, _assign.operator_type, sc);
-            base.visit(new_assign);
+            base.visit(_assign);
         }
 
         public override void visit(bin_expr _bin_expr)
