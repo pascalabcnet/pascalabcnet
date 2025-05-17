@@ -21,6 +21,11 @@ namespace Languages.SPython.Frontend.Converters
             var ituv = new ImportToUsesVisitor();
             ituv.ProcessNode(root);
 
+            // замена name bin_bit_op= expr
+            // на name = name bit_bit_op (expr)
+            var bsdv = new BitwiseAssignmentDesugarVisitor();
+            bsdv.ProcessNode(root);
+
             // замена return;       на { exit(); }
             // замена return expr;  на { result := expr; exit(); }
             var rdv = new ReturnDesugarVisitor();
