@@ -31,10 +31,10 @@ namespace Languages.SPython.Frontend.Converters
             var mdv = new MapDesugarVisitor();
             mdv.ProcessNode(root);
 
-            // замена генерации списков на Select.Where.ToArray
+            // замена генерации последовательностей на Select.Where
             // (не работает из-за лямбд, если переместить в ConvertAfterUsedModulesCompilation)
-            var ldv = new ListDesugarVisitor(root);
-            ldv.ProcessNode(root);
+            var godv = new GeneratorObjectDesugarVisitor(root);
+            godv.ProcessNode(root);
 
             // дешугаризация составных сравнительных операций (e.g. a == b == c)
             var ccdv = new CompoundComparisonDesugarVisitor();

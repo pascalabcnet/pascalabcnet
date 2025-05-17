@@ -5,13 +5,13 @@ using SyntaxVisitors;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class ListDesugarVisitor : BaseChangeVisitor
+    internal class GeneratorObjectDesugarVisitor : BaseChangeVisitor
     {
         private ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
         private syntax_tree_node root;
         private bool replaceRoot = false;
         private syntax_tree_node lastDesugaredNode = null;
-        public ListDesugarVisitor(syntax_tree_node root) { this.root = root; }
+        public GeneratorObjectDesugarVisitor(syntax_tree_node root) { this.root = root; }
 
         public syntax_tree_node UpdatedRoot()
         {
