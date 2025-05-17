@@ -211,6 +211,34 @@ namespace SPythonSyntaxTreeVisitor
             base.visit(_method_call);
         }
 
+        public override void visit(assign _assign)
+        {
+            expression_node to = convert_strong(_assign.to);
+            SourceContext sc = _assign.source_context;
+
+            if (_assign.from is bin_expr be && 
+                _assign.to is ident il && 
+                be.left is ident ir &&
+                il.name == ir.name &&
+                to.type.name.StartsWith("NewSet"))
+            {
+                if (be.operation_type == Operators.LogicalAND)
+                {
+                    var replace = new assign(new semantic_addr_value(to), be.right, Operators.AssignmentMultiplication, sc);
+                    base.visit(replace);
+                    return;
+                }
+                if (be.operation_type == Operators.LogicalOR)
+                {
+                    var replace = new assign(new semantic_addr_value(to), be.right, Operators.AssignmentAddition, sc);
+                    base.visit(replace);
+                    return;
+                }
+            }
+            var new_assign = new assign(new semantic_addr_value(to), _assign.from, _assign.operator_type, sc);
+            base.visit(new_assign);
+        }
+
         public override void visit(bin_expr _bin_expr)
         {
             expression_node left = convert_strong(_bin_expr.left);
@@ -222,6 +250,18 @@ namespace SPythonSyntaxTreeVisitor
 
             switch (_bin_expr.operation_type)
             {
+                case Operators.LogicalOR:
+                    if (left.type.name.StartsWith("NewSet") && left.type.name == right.type.name)
+                    {
+                        new_bin_expr.operation_type = Operators.Plus;
+                    }
+                    break;
+                case Operators.LogicalAND:
+                    if (left.type.name.StartsWith("NewSet") && left.type.name == right.type.name)
+                    {
+                        new_bin_expr.operation_type = Operators.Multiplication;
+                    }
+                    break;
                 /*case Operators.Plus:
                     if (left.type == right.type && left.type.name == "boolean")
                     {
