@@ -2334,8 +2334,10 @@ function Pred(x: uint64): uint64;
 ///--
 function Pred(x: boolean): boolean;
 
-/// Возвращает True, если значение val находится между a и b включительно (a ≤ val ≤ b)
+/// Возвращает True, если значение val находится между a и b включительно 
 function InRange<T>(val, a, b: T): boolean; where T: IComparable<T>;
+/// Возвращает True, если значение val находится между a и b (включительно) независимо от порядка a и b
+function Between<T>(val, a, b: T): boolean; where T: IComparable<T>;
 /// Меняет местами значения двух переменных
 procedure Swap<T>(var a, b: T);
 /// Возвращает True, если достигнут конец строки
@@ -10684,10 +10686,19 @@ begin
   Result := char(integer(x)-n);
 end;
 
-/// Возвращает True, если значение val находится между a и b включительно (a ≤ val ≤ b)
+/// Возвращает True, если значение val находится между a и b включительно 
 function InRange<T>(val, a, b: T): boolean; where T: IComparable<T>;
 begin
   Result := (val.CompareTo(a) >= 0) and (val.CompareTo(b) <= 0);
+end;
+
+/// Возвращает True, если значение val находится между a и b (включительно) независимо от порядка a и b
+function Between<T>(val, a, b: T): boolean; where T: IComparable<T>;
+begin
+  if a.CompareTo(b) > 0 then  
+    Result := (val.CompareTo(b) >= 0) and (val.CompareTo(a) <= 0)
+  else
+    Result := (val.CompareTo(a) >= 0) and (val.CompareTo(b) <= 0);
 end;
 
 procedure Swap<T>(var a, b: T);
@@ -14487,7 +14498,7 @@ begin
   Result := Self.Split(|oldStr|, count+1, System.StringSplitOptions.None).JoinToString(newStr);
 end;
 
-/// Возвращает True если значение находится между двумя другими
+/// Возвращает True если строка находится между двумя другими (лексикографическое сравнение)
 function Between(Self: string; a, b: string): boolean; extensionmethod;
 begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
