@@ -11,6 +11,7 @@ using PascalABCCompiler.ParserTools.Directives;
 using QUT.Gppg;
 using System.Text.RegularExpressions;
 using Languages.Facade;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SPythonParser
 {
@@ -218,7 +219,11 @@ namespace SPythonParser
 
                 if (format != null)
                 {
-                    AddErrorFromResource("FSTRING_UNNKOWN_FORMAT_{0}", format_sc, format);
+                    var formatRegex = new Regex(@"^(x|X|d|b|\.(0|([1-9][0-9]*))f)$");
+                    var formatMatch = formatRegex.Match(format);
+                    if (!formatMatch.Success)
+                        AddErrorFromResource("FSTRING_UNNKOWN_FORMAT_{0}", format_sc, format);
+                    format = formatMatch.Value;
                 }
 
                 if (m.Index > lastIndex)
@@ -228,7 +233,6 @@ namespace SPythonParser
                         parts.Add(new string_const(text, sc));
                 }
 
-                //expression expr = new SPythonLanguageParser().BuildTreeInExprModeTemp(currentFileName, expr_text);
                 List<Error> errors = new List<Error>();
                 expression expr = 
                     LanguageProvider.Instance.SelectLanguageByExtension(currentFileName).Parser
@@ -241,7 +245,16 @@ namespace SPythonParser
                 }
 
                 expr.source_context = expr_sc;
-                method_call mc = new method_call(new ident("str"), new expression_list(expr, sc), sc);
+                method_call mc;
+                if (format == null)
+                {
+                    mc = new method_call(new ident("str"), new expression_list(expr, sc), sc);
+                }
+                else
+                {
+                    mc = new method_call(new ident("!format"), 
+                        new expression_list(new List<expression> { expr, new string_const(format, sc) }, sc), sc);
+                }
                 parts.Add(mc);
                 lastIndex = m.Index + m.Length;
             }

@@ -76,6 +76,12 @@ function range(e: integer): sequence of integer;
 
 function range(s: integer; e: integer): sequence of integer;
 
+function !format(obj: object; fmt: string): string;
+
+function !format(i: integer; fmt: string): string;
+
+function !format(val: real; fmt: string): string;
+
 //function all<T>(seq: sequence of T): boolean;
 
 //function any<T>(seq: sequence of T): boolean;
@@ -417,6 +423,75 @@ begin
   end;
   
   yield temp;
+end;
+
+function !format(i: integer; fmt: string): string;
+begin
+  if ((fmt.ToLower() = 'x') or (fmt = 'b') or (fmt = 'd')) then
+  begin
+      var HexChars := '0123456789abcdef';
+      if (fmt = 'X') then
+        HexChars := HexChars.ToUpper();
+      var value := Cardinal(i);
+      var radix := 10;
+      if (fmt.ToLower() = 'x') then radix := 16;
+      if (fmt = 'b') then radix := 2;
+      if value = 0 then
+      begin
+        Result := '0';
+        Exit;
+      end;
+    
+      while value > 0 do
+      begin
+        var digit := value mod radix;
+        Result := HexChars[digit + 1] + Result;
+        value := value div radix;
+      end;
+      Exit;
+  end;
+  if (fmt[1] = '.') then
+  begin
+    Result := !format(i + 0.0, fmt);
+    Exit;
+  end;
+  raise new System.ArgumentException('Неверный формат для целочисленного аргумента');
+end;
+
+function !format(val: real; fmt: string): string;
+begin
+  var digits: integer;
+  if (fmt.Length >= 3) and (fmt[1] = '.') and (fmt.EndsWith('f')) then
+  begin
+    var numStr := fmt.Substring(1, fmt.Length - 2);
+    if TryStrToInt(numStr, digits) then
+    begin
+      var intPart := Trunc(val);
+      if (digits = 0) then
+      begin
+        Result := intPart.ToString;
+        Exit;
+      end;
+      var frac := Abs(val - intPart);
+
+      var fracPart := Round(frac * Power(10, digits));
+
+      var fracStr := fracPart.ToString;
+      while fracStr.Length < digits do
+        fracStr := '0' + fracStr;
+
+      Result := intPart.ToString + '.' + fracStr;
+      Exit;
+    end;
+  end;
+
+  raise new System.ArgumentException('Неверный формат для вещественного аргумента');
+end;
+
+function !format(obj: object; fmt: string): string;
+begin
+  Result := '';
+  raise new System.ArgumentException('Формат не соответствует типу данных выражения в f-строке');
 end;
 
 end.
