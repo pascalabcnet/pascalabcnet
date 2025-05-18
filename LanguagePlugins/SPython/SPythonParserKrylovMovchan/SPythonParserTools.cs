@@ -10,6 +10,7 @@ using PascalABCCompiler.Errors;
 using PascalABCCompiler.ParserTools.Directives;
 using QUT.Gppg;
 using System.Text.RegularExpressions;
+using Languages.Facade;
 
 namespace SPythonParser
 {
@@ -187,42 +188,78 @@ namespace SPythonParser
             return lt;
         }
 
-        static private expression RemoveBracesAndContent(string input, SourceContext sc)
-    {
-        var regex = new Regex(@"\{([^}]+)\}");
-        var parts = new List<expression>();
-
-        int lastIndex = 0;
-        foreach (Match m in regex.Matches(input))
+        private expression RemoveBracesAndContent(string input, SourceContext sc)
         {
-            if (m.Index > lastIndex)
+            var regex = new Regex(@"\{([^}]+)\}");
+            var parts = new List<expression>();
+
+            int lastIndex = 0;
+            foreach (Match m in regex.Matches(input))
             {
-                var text = input.Substring(lastIndex, m.Index - lastIndex);
+                var innerRegex = new Regex(@"^([^:]*)(?::(.*))?$");
+
+                SourceContext expr_sc = new SourceContext(sc.LeftSourceContext, sc.RightSourceContext);
+                expr_sc.begin_position.column_num += m.Index + 3;
+
+                var raw = m.Groups[1].Value;
+                var innerMatch = innerRegex.Match(raw);
+
+                if (!innerMatch.Success)
+                {
+                    AddErrorFromResource("ILL_FORMED_FSTRING_{0}", expr_sc, raw);
+                    return null;
+                }
+
+                string expr_text = innerMatch.Groups[1].Value;
+                string format = innerMatch.Groups[2].Success ? innerMatch.Groups[2].Value : null;
+
+                SourceContext format_sc = new SourceContext(sc.LeftSourceContext, sc.RightSourceContext);
+                format_sc.begin_position.column_num += m.Index + 4 + expr_text.Length;
+
+                if (format != null)
+                {
+                    AddErrorFromResource("FSTRING_UNNKOWN_FORMAT_{0}", format_sc, format);
+                }
+
+                if (m.Index > lastIndex)
+                {
+                    var text = input.Substring(lastIndex, m.Index - lastIndex);
+                    if (text != "")
+                        parts.Add(new string_const(text, sc));
+                }
+
+                //expression expr = new SPythonLanguageParser().BuildTreeInExprModeTemp(currentFileName, expr_text);
+                List<Error> errors = new List<Error>();
+                expression expr = LanguageProvider.Instance.SelectLanguageByExtensionSafe(currentFileName).Parser.GetExpression(
+                    currentFileName, expr_text, errors, new List<CompilerWarning>());
+
+                if (expr == null)
+                {
+                    AddErrorFromResource("FSTRING_NESTED_EXPRESSION_{0}_PARSING_FAILURE", expr_sc, expr_text);
+                    expr = new expression();
+                }
+
+                expr.source_context = expr_sc;
+                method_call mc = new method_call(new ident("str"), new expression_list(expr, sc), sc);
+                parts.Add(mc);
+                lastIndex = m.Index + m.Length;
+            }
+
+            if (lastIndex < input.Length)
+            {
+                var text = input.Substring(lastIndex);
                 if (text != "")
                     parts.Add(new string_const(text, sc));
             }
 
-            SourceContext sc1 = new SourceContext(sc.LeftSourceContext, sc.RightSourceContext);
-            sc1.begin_position.column_num += m.Index + 3;
-            parts.Add(new ident(m.Groups[1].Value, sc1));
-            lastIndex = m.Index + m.Length;
-        }
+            expression result = parts[parts.Count - 1];
+            for (int i = parts.Count - 2; i >= 0; i--)
+            {
+                result = new bin_expr(parts[i], result, Operators.Plus, sc);
+            }
 
-        if (lastIndex < input.Length)
-        {
-            var text = input.Substring(lastIndex);
-            if (text != "")
-                parts.Add(new string_const(text, sc));
+            return result;
         }
-
-        expression result = parts[parts.Count - 1];
-        for (int i = parts.Count - 2; i >= 0; i--)
-        {
-            result = new bin_expr(parts[i], result, Operators.Plus, sc);
-        }
-
-        return result;
-    }
 
         public expression create_fstring(string text, SourceContext sc)
         {
