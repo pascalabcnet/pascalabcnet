@@ -230,8 +230,9 @@ namespace SPythonParser
 
                 //expression expr = new SPythonLanguageParser().BuildTreeInExprModeTemp(currentFileName, expr_text);
                 List<Error> errors = new List<Error>();
-                expression expr = LanguageProvider.Instance.SelectLanguageByExtensionSafe(currentFileName).Parser.GetExpression(
-                    currentFileName, expr_text, errors, new List<CompilerWarning>());
+                expression expr = 
+                    LanguageProvider.Instance.SelectLanguageByExtension(currentFileName).Parser
+                    .GetExpression(currentFileName, expr_text, errors, new List<CompilerWarning>());
 
                 if (expr == null)
                 {
