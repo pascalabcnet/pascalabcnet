@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36109.1 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageServerEngine", "..\LanguageServerEngine\LanguageServerEngine.csproj", "{162D6B7C-3074-ACF9-31E6-A282D8013F5C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntellisenseController", "IntellisenseController\IntellisenseController.csproj", "{8915E6DE-FDE5-4BC1-B17C-CA8A1342A8A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageServerEngine", "LanguageServerEngine\LanguageServerEngine.csproj", "{80DDE0C2-19E3-AEDF-03A2-F09248506988}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompilerTools", "..\CompilerTools\CompilerTools.csproj", "{44B2D93F-9818-703F-FD33-9C6BDF2FF334}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntellisenseController", "..\IntellisenseController\IntellisenseController.csproj", "{8915E6DE-FDE5-4BC1-B17C-CA8A1342A8A0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageIntegrator", "..\LanguageIntegrator\LanguageIntegrator.csproj", "{3E85D401-27EC-FF72-EC9A-5EFC97AC6912}"
 EndProject
@@ -43,18 +43,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{162D6B7C-3074-ACF9-31E6-A282D8013F5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{162D6B7C-3074-ACF9-31E6-A282D8013F5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{162D6B7C-3074-ACF9-31E6-A282D8013F5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{162D6B7C-3074-ACF9-31E6-A282D8013F5C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{44B2D93F-9818-703F-FD33-9C6BDF2FF334}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{44B2D93F-9818-703F-FD33-9C6BDF2FF334}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44B2D93F-9818-703F-FD33-9C6BDF2FF334}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44B2D93F-9818-703F-FD33-9C6BDF2FF334}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8915E6DE-FDE5-4BC1-B17C-CA8A1342A8A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8915E6DE-FDE5-4BC1-B17C-CA8A1342A8A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8915E6DE-FDE5-4BC1-B17C-CA8A1342A8A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8915E6DE-FDE5-4BC1-B17C-CA8A1342A8A0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3E85D401-27EC-FF72-EC9A-5EFC97AC6912}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3E85D401-27EC-FF72-EC9A-5EFC97AC6912}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E85D401-27EC-FF72-EC9A-5EFC97AC6912}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -111,6 +103,14 @@ Global
 		{5046FC1D-334A-1F42-DEA6-FA521D386AF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5046FC1D-334A-1F42-DEA6-FA521D386AF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5046FC1D-334A-1F42-DEA6-FA521D386AF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8915E6DE-FDE5-4BC1-B17C-CA8A1342A8A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8915E6DE-FDE5-4BC1-B17C-CA8A1342A8A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8915E6DE-FDE5-4BC1-B17C-CA8A1342A8A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8915E6DE-FDE5-4BC1-B17C-CA8A1342A8A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80DDE0C2-19E3-AEDF-03A2-F09248506988}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80DDE0C2-19E3-AEDF-03A2-F09248506988}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80DDE0C2-19E3-AEDF-03A2-F09248506988}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80DDE0C2-19E3-AEDF-03A2-F09248506988}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

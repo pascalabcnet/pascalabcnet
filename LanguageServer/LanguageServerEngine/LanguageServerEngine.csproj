@@ -6,7 +6,7 @@
 
     <RootNamespace>LanguageServerEngine</RootNamespace>
     
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\..\bin\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -17,9 +17,9 @@
     <PackageReference Include="OmniSharp.Extensions.LanguageServer" Version="0.8.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CompilerTools\CompilerTools.csproj" />
+    <ProjectReference Include="..\..\CompilerTools\CompilerTools.csproj" />
     <ProjectReference Include="..\IntellisenseController\IntellisenseController.csproj" />
-    <ProjectReference Include="..\LanguageIntegrator\LanguageIntegrator.csproj" />
+    <ProjectReference Include="..\..\LanguageIntegrator\LanguageIntegrator.csproj" />
   </ItemGroup>
 
   <ItemGroup>
