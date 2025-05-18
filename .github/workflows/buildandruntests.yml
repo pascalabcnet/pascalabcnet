@@ -20,7 +20,7 @@ defaults:
 jobs:
   build:
 
-    name: Prepare and build on Windows Server 2016 VM
+    name: Prepare and build on Windows Server VM
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
