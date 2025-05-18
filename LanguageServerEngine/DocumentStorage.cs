@@ -1,13 +1,14 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace LanguageServerEngine
 {
-    internal class DocumentStorage
+    internal class DocumentStorage : PascalABCCompiler.ISourceTextProvider
     {
-        private readonly Dictionary<string, TextBuffer> documents = new Dictionary<string, TextBuffer>();
+        private readonly ConcurrentDictionary<string, TextBuffer> documents = new ConcurrentDictionary<string, TextBuffer>();
 
         public void UpdateDocument(string documentPath, TextDocumentContentChangeEvent change)
         {
@@ -33,13 +34,15 @@ namespace LanguageServerEngine
 
         public void RemoveDocument(string documentPath)
         {
-            documents.Remove(documentPath);
+            documents.TryRemove(documentPath, out _);
         }
 
         public TextBuffer GetDocumentBuffer(string documentPath)
         {
             return documents[documentPath];
         }
+
+        public string GetText(string filePath) => GetDocumentText(filePath);
 
         public string GetDocumentText(string documentPath)
         {
@@ -114,6 +117,7 @@ namespace LanguageServerEngine
             }
         }
 
+        /// <summary> Возвращает индекс символа по позиции (line, column). </summary>
         public int GetOffsetFromPosition(int line, int column)
         {
             int newLineLen = Environment.NewLine.Length;

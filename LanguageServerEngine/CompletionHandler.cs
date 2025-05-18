@@ -66,12 +66,14 @@ namespace LanguageServerEngine
 
             try
             {
+                // подсказка по точке, либо ctrl + space
                 if (specialTriggerCharacters.Contains(triggerChar.ToString()) || triggerChar == '_')
                 {
                     completionList = completionProvider.GenerateCompletionDataWithKeyword(documentPath, docText,
                             symbolIndex,
                             (int)pos.Line, (int)pos.Character, triggerChar, PascalABCCompiler.Parsers.KeywordKind.None);
                 }
+                // дополнение первого символа
                 else
                 {
                     PascalABCCompiler.Parsers.KeywordKind keyw = KeywordChecker.TestForKeyword(docText, symbolIndex);

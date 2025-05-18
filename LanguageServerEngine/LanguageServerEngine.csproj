@@ -17,6 +17,7 @@
     <PackageReference Include="OmniSharp.Extensions.LanguageServer" Version="0.8.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CompilerTools\CompilerTools.csproj" />
     <ProjectReference Include="..\IntellisenseController\IntellisenseController.csproj" />
     <ProjectReference Include="..\LanguageIntegrator\LanguageIntegrator.csproj" />
   </ItemGroup>
