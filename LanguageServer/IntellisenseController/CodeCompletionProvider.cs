@@ -10,7 +10,7 @@ using PascalABCCompiler.Parsers;
 using System.Linq;
 using Languages.Facade;
 
-namespace VisualPascalABC
+namespace CodeCompletion
 {
 
     public class UserDefaultCompletionData : IComparable
@@ -406,7 +406,7 @@ namespace VisualPascalABC
         /// <summary>
         /// Возвращает подсказки определяемые первым символом выражения, введенного пользователем
         /// </summary>
-        public UserDefaultCompletionData[] GetCompletionDataByFirst(int line, int col, char charTyped, KeywordKind keyw)
+        public UserDefaultCompletionData[] GetCompletionDataByFirst(int line, int col, char charTyped, PascalABCCompiler.Parsers.KeywordKind keyw)
         {
             List<UserDefaultCompletionData> resultList = new List<UserDefaultCompletionData>();
             try
@@ -573,7 +573,7 @@ namespace VisualPascalABC
         /// <summary>
         /// Возвращает массив подсказок для случая нажатия пользователем "триггерной" клавиши
         /// </summary>
-        public UserDefaultCompletionData[] GetCompletionData(int off, string text, int line, int col, char charTyped, KeywordKind keywordKind)
+        public UserDefaultCompletionData[] GetCompletionData(int off, string text, int line, int col, char charTyped, PascalABCCompiler.Parsers.KeywordKind keywordKind)
         {
             List<UserDefaultCompletionData> resultList = new List<UserDefaultCompletionData>();
 
@@ -585,8 +585,8 @@ namespace VisualPascalABC
                 dotPressed = charTyped == '.',
                 ctrlSpace = charTyped == '_',
                 shiftSpace = charTyped == '\0',
-                spaceAfterNew = keywordKind == KeywordKind.New,
-                spaceAfterUses = keywordKind == KeywordKind.Uses
+                spaceAfterNew = keywordKind == PascalABCCompiler.Parsers.KeywordKind.New,
+                spaceAfterUses = keywordKind == PascalABCCompiler.Parsers.KeywordKind.Uses
             };
 
             string expressionText = GetExpressionTextForCompletionData(off, text, line, col,

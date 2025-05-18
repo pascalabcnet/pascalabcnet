@@ -1,5 +1,10 @@
-﻿using OmniSharp.Extensions.LanguageServer.Protocol.Models;
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using CodeCompletion;
+using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LanguageServerEngine
 {
@@ -50,6 +55,63 @@ namespace LanguageServerEngine
             }
 
             return path;
+        }
+
+        internal static List<SignatureInformation> GetLspMethodsInfoFromStringDescriptions(string[] descriptions, bool forIndexers)
+        {
+            var resultMethods = new List<SignatureInformation>();
+
+            foreach (var description in descriptions)
+            {
+                int index = description.IndexOf('\n');
+
+                string label = description.Substring(0, index != -1 ? index : description.Length);
+
+                string documentation = index != -1 ? description.Substring(index + 1) : null;
+
+                string[] parameters;
+
+                // подсказка для индексов
+                if (forIndexers)
+                {
+                    int startIndex = label.IndexOf('[') + 1;
+
+                    parameters = label.Substring(startIndex, label.Substring(startIndex).IndexOf("]"))
+                        .Split(new string[] { CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+                }
+                // подсказка для обычных методов
+                else
+                {
+                    // поиск с индекса 1 для учета обозначения расширения
+                    int startIndex = label.Substring(1).IndexOf("(") + 2;
+
+                    parameters = label.Substring(startIndex, label.Substring(startIndex).IndexOf(")"))
+                        .Split(new string[] { CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+                }
+
+                // Проверка нужна, потому что иначе Documentation сформируется неправильно при присвоении null
+                if (documentation != null)
+                {
+                    var info = new SignatureInformation()
+                    {
+                        Documentation = documentation,
+                        Label = label,
+                        Parameters = parameters.Select(param => new ParameterInformation() { Label = param }).ToArray()
+                    };
+                    resultMethods.Add(info);
+                }
+                else
+                {
+                    var info = new SignatureInformation()
+                    {
+                        Label = label,
+                        Parameters = parameters.Select(param => new ParameterInformation() { Label = param }).ToArray()
+                    };
+                    resultMethods.Add(info);
+                }
+            }
+
+            return resultMethods;
         }
     }
 }

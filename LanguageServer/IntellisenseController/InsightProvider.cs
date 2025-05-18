@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using ICSharpCode.TextEditor;
 
-namespace VisualPascalABC
+namespace CodeCompletion
 {
     public class DefaultInsightDataProvider
     {

@@ -1,11 +1,13 @@
-﻿using OmniSharp.Extensions.LanguageServer.Protocol;
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using VisualPascalABC;
+using CodeCompletion;
 
 namespace LanguageServerEngine
 {

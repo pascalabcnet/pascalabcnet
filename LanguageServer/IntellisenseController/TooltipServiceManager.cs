@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using PascalABCCompiler.Parsers;
 
-namespace VisualPascalABC
+namespace CodeCompletion
 {
     public class TooltipServiceManager
     {

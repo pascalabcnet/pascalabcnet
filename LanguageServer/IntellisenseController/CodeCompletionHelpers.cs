@@ -8,7 +8,7 @@ using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.TextEditor.Document;
 
-namespace VisualPascalABC
+namespace CodeCompletion
 {
 	/// <summary>
 	/// Класс, предназначенный для хранения последних выбранных методов в Intellisense

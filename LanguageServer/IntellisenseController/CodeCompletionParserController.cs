@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace VisualPascalABC
+namespace CodeCompletion
 {
     public delegate void ParseInformationUpdatedDelegate(object obj, string fileName);
 

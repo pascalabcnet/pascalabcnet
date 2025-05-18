@@ -1,11 +1,12 @@
-﻿using OmniSharp.Extensions.JsonRpc;
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using OmniSharp.Extensions.JsonRpc;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using VisualPascalABC;
 using CodeCompletion;
 
 namespace LanguageServerEngine

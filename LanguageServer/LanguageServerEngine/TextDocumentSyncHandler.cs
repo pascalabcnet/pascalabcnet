@@ -1,12 +1,13 @@
-﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server.Capabilities;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
-using System.Collections.Generic;
 using OmniSharp.Extensions.LanguageServer.Protocol;
-using VisualPascalABC;
+using CodeCompletion;
 
 namespace LanguageServerEngine
 {
@@ -16,8 +17,6 @@ namespace LanguageServerEngine
         private SynchronizationCapability capability;
 
         private readonly DocumentStorage documentStorage;
-
-        private readonly Dictionary<string, bool> openFiles = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
 
         private readonly CodeCompletionParserController codeCompletionController;
 
@@ -36,7 +35,7 @@ namespace LanguageServerEngine
 
         public TextDocumentAttributes GetTextDocumentAttributes(Uri uri)
         {
-            return new TextDocumentAttributes(uri, "PascalABC.NET");
+            return new TextDocumentAttributes(uri, PascalABCCompiler.StringConstants.pascalLanguageName);
         }
 
         public Task Handle(DidChangeTextDocumentParams request)
