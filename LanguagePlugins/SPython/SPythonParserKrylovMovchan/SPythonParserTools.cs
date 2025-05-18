@@ -9,6 +9,7 @@ using System.Text;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.ParserTools.Directives;
 using QUT.Gppg;
+using System.Text.RegularExpressions;
 
 namespace SPythonParser
 {
@@ -184,6 +185,51 @@ namespace SPythonParser
             lt = new string_const(text);
             lt.source_context = sc;
             return lt;
+        }
+
+        static private expression RemoveBracesAndContent(string input, SourceContext sc)
+    {
+        var regex = new Regex(@"\{([^}]+)\}");
+        var parts = new List<expression>();
+
+        int lastIndex = 0;
+        foreach (Match m in regex.Matches(input))
+        {
+            if (m.Index > lastIndex)
+            {
+                var text = input.Substring(lastIndex, m.Index - lastIndex);
+                if (text != "")
+                    parts.Add(new string_const(text, sc));
+            }
+
+            SourceContext sc1 = new SourceContext(sc.LeftSourceContext, sc.RightSourceContext);
+            sc1.begin_position.column_num += m.Index + 3;
+            parts.Add(new ident(m.Groups[1].Value, sc1));
+            lastIndex = m.Index + m.Length;
+        }
+
+        if (lastIndex < input.Length)
+        {
+            var text = input.Substring(lastIndex);
+            if (text != "")
+                parts.Add(new string_const(text, sc));
+        }
+
+        expression result = parts[parts.Count - 1];
+        for (int i = parts.Count - 2; i >= 0; i--)
+        {
+            result = new bin_expr(parts[i], result, Operators.Plus, sc);
+        }
+
+        return result;
+    }
+
+        public expression create_fstring(string text, SourceContext sc)
+        {
+            text = ReplaceSpecialSymbols(text.Substring(2, text.Length - 3));
+            expression res = RemoveBracesAndContent(text, sc);
+            res.source_context = sc;
+            return res;
         }
 
         public LexLocation GetLexLocation(string found, string expected, LexLocation prev_loc, LexLocation curr_loc)

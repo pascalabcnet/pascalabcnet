@@ -14,6 +14,7 @@ AlphaDigit {Alpha}|{Digit}
 INTNUM  ({NonZeroDigit}{Digit}*)|0
 REALNUM ({INTNUM}?\.{INTNUM})|({INTNUM}\.)
 STRINGNUM (\'([^\'\n\\]|\\.)*\')|(\"([^\"\n\\]|\\.)*\")
+FSTRINGNUM f(\'([^\'\n\\]|\\.)*\')|(\"([^\"\n\\]|\\.)*\")
 ID {Alpha}{AlphaDigit}*
 BIGINTNUM {INTNUM}bi
 
@@ -64,6 +65,13 @@ BIGINTNUM {INTNUM}bi
   currentLexLocation = CurrentLexLocation;
   yylval.stn = parserTools.create_string_const(yytext,currentLexLocation);
   return (int)Tokens.STRINGNUM;
+}
+
+{FSTRINGNUM} {
+  yylval = new SPythonParserYacc.ValueType();
+  currentLexLocation = CurrentLexLocation;
+  yylval.ex = parserTools.create_fstring(yytext,currentLexLocation);
+  return (int)Tokens.FSTRINGNUM;
 }
 
 {ID}  {
