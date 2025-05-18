@@ -1,4 +1,4 @@
-name: Build & Run all tests on Ubuntu (release)
+﻿name: Build & Run all tests on Ubuntu (release)
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ defaults:
 jobs:
   build:
 
-    name: Prepare and build on Ubuntu
+    name: Prepare and build on Ubuntu VM
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
