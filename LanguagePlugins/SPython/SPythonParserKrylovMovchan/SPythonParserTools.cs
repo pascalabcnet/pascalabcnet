@@ -321,15 +321,24 @@ namespace SPythonParser
             return tokens.First();
         }
 
-        public string CreateErrorString(string yytext, string exp_token) {
-            if (yytext.Equals("#;") && exp_token.Equals("INDENT")) {
+        public const_node create_spy_int_const(string text, SourceContext sc) {
+
+            return create_int_const(text.Replace("_", ""), sc);
+        }
+
+        public string CreateErrorString(string yytext, string exp_token)
+        {
+            if (yytext.Equals("#;") && exp_token.Equals("INDENT"))
+            {
                 return StringResources.Get("LINE_WITHOUT_INDENT");
             }
-            
-            if (yytext.Equals("#{") && !exp_token.Equals("END_OF_LINE")) {
+
+            if (yytext.Equals("#{") && !exp_token.Equals("END_OF_LINE"))
+            {
                 yytext = "#;";
             }
-            if (exp_token.Equals("INDENT")) {
+            if (exp_token.Equals("INDENT"))
+            {
                 exp_token = "END_OF_LINE";
             }
 
@@ -341,9 +350,9 @@ namespace SPythonParser
 
             var ExpectedString = StringResources.Get("EXPECTED{1}");
 
-            if (exp_token.Equals("STATEMENT") || 
-                exp_token.Equals("ID") || 
-                exp_token.Equals("INDENT") || 
+            if (exp_token.Equals("STATEMENT") ||
+                exp_token.Equals("ID") ||
+                exp_token.Equals("INDENT") ||
                 exp_token.Equals("UNINDENT") ||
                 exp_token.Equals("UNINDENT") ||
                 exp_token.Equals("END_OF_LINE") ||
@@ -359,7 +368,7 @@ namespace SPythonParser
                 yytext = ConvertToHumanName(yytext);
                 return string.Format(prefix + ExpectedString, yytext, MaxTokHuman);
             }
-            
+
             return string.Format(prefix + ExpectedString, "'" + yytext + "'", MaxTokHuman);
         }
 

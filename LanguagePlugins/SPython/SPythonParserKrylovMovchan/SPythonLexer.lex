@@ -11,7 +11,7 @@ Alpha         [[:IsLetter:]_]
 NonZeroDigit  [1-9]
 Digit         0|{NonZeroDigit}
 AlphaDigit {Alpha}|{Digit}
-INTNUM  ({NonZeroDigit}{Digit}*)|0
+INTNUM  ({NonZeroDigit}(_?{Digit})*)|0
 REALNUM ({INTNUM}?\.{INTNUM})|({INTNUM}\.)
 STRINGNUM (\'([^\'\n\\]|\\.)*\')|(\"([^\"\n\\]|\\.)*\")
 FSTRINGNUM f((\'([^\'\n\\]|\\.)*\')|(\"([^\"\n\\]|\\.)*\"))
@@ -42,7 +42,7 @@ BIGINTNUM {INTNUM}bi
 {INTNUM} {
   yylval = new SPythonParserYacc.ValueType();
   currentLexLocation = CurrentLexLocation;
-  yylval.ex = parserTools.create_int_const(yytext,currentLexLocation);
+  yylval.ex = parserTools.create_spy_int_const(yytext,currentLexLocation);
   return (int)Tokens.INTNUM;
 }
 
