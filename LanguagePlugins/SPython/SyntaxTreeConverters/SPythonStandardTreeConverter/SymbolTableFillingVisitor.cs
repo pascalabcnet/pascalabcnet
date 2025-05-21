@@ -37,8 +37,8 @@ namespace Languages.SPython.Frontend.Converters
             }
             if (stn is procedure_definition || stn is function_lambda_definition)
             {
-                symbolTable.IsInFunctionBody = true;
                 symbolTable.OpenLocalScope();
+                symbolTable.IsInFunctionBody = true;
             }
             
             base.Enter(stn);
