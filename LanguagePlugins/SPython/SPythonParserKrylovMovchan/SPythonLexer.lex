@@ -14,7 +14,7 @@ AlphaDigit {Alpha}|{Digit}
 INTNUM  ({NonZeroDigit}{Digit}*)|0
 REALNUM ({INTNUM}?\.{INTNUM})|({INTNUM}\.)
 STRINGNUM (\'([^\'\n\\]|\\.)*\')|(\"([^\"\n\\]|\\.)*\")
-FSTRINGNUM f(\'([^\'\n\\]|\\.)*\')|(\"([^\"\n\\]|\\.)*\")
+FSTRINGNUM f((\'([^\'\n\\]|\\.)*\')|(\"([^\"\n\\]|\\.)*\"))
 ID {Alpha}{AlphaDigit}*
 BIGINTNUM {INTNUM}bi
 
