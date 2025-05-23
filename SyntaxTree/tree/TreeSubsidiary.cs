@@ -143,7 +143,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 	public enum known_type {string_type};
 
-    public enum parametr_kind { none, var_parametr, const_parametr, out_parametr, params_parametr };
+    public enum parametr_kind { none, var_parametr, const_parametr, out_parametr, params_parametr, /*Spython kvargs parameter*/ kvargs_parameter };
 
     [FlagsAttribute] public enum class_attribute { None = 0, Sealed = 1, Partial = 2, Abstract = 4, Auto = 8, Static=16 }; // Auto - SSM 24.03.14
     public enum class_keyword { Class, Interface, Record, Struct, Union, TemplateClass, TemplateRecord, TemplateInterface };

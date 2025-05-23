@@ -50,8 +50,8 @@ namespace Languages.SPython.Frontend.Converters
             tcv.ProcessNode(root);
 
             // вынос forward объявлений для всех функций в начало
-            var afdv = new AddForwardDeclarationsVisitor();
-            afdv.ProcessNode(root);
+            //var afdv = new AddForwardDeclarationsVisitor();
+            //afdv.ProcessNode(root);
 
             return root;
         }
@@ -68,7 +68,10 @@ namespace Languages.SPython.Frontend.Converters
             var rugvv = new RetainUsedGlobalVariablesVisitor();
             rugvv.variablesUsedAsGlobal = ncv.variablesUsedAsGlobal;
             rugvv.ProcessNode(root);
-            
+
+            var kfdv = new KvargsFunctionDesugarVisitor();
+            kfdv.ProcessNode(root);
+
             // замена вызова функций с именованными параметрами на вызов метода класса
             var fwnpdv = new FunctionsWithNamedParametersDesugarVisitor();
             fwnpdv.ProcessNode(root);
