@@ -887,6 +887,12 @@ form_param_sect
 		{
 			$$ = new typed_parameters($1 as ident_list, $3, parametr_kind.none, null, @$);
 		}
+	// *args
+	| STAR param_name COLON type_ref
+		{
+			var at = new array_type(null, $4, @$); 
+			$$ = new typed_parameters($2 as ident_list, at, parametr_kind.params_parametr, null, @$); 
+		}
 	;
 
 form_param_list
