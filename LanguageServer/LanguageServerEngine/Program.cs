@@ -4,6 +4,11 @@ using Microsoft.Extensions.Logging;
 using OmniSharp.Extensions.LanguageServer.Server;
 using System;
 using System.Threading.Tasks;
+using System.IO;
+using System.Threading;
+using System.Linq;
+using System.Text;
+using System.IO.Pipes;
 
 namespace LanguageServerEngine
 {
@@ -15,13 +20,18 @@ namespace LanguageServerEngine
 
             Languages.Integration.LanguageIntegrator.LoadAllLanguages();
 
-            Console.Error.WriteLine("Language server started ...");
+            var pipeName = "language-pipe";
+            var inputPipe = new NamedPipeServerStream(pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+            Console.Error.WriteLine("Waiting for client...");
+            await inputPipe.WaitForConnectionAsync();
+
+            //Console.Error.WriteLine("Language server started ...");
 
             var loggerFactory = new LoggerFactory();
 
             var server = new LanguageServer(
-                    Console.OpenStandardInput(),
-                    Console.OpenStandardOutput(),
+                    inputPipe,
+                    inputPipe,
                     loggerFactory,
                     true
              );

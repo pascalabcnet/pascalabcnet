@@ -14,19 +14,22 @@ namespace LanguageServerEngine
 
         public void UpdateDocument(string documentPath, TextDocumentContentChangeEvent change)
         {
-            var buffer = documents[documentPath];
+            //var buffer = documents[documentPath];
 
-            var range = change.Range;
+            documents[documentPath] = new TextBuffer(change.Text);
 
-            int startLine = (int)range.Start.Line;
-            int startCol = (int)range.Start.Character;
-            int endLine = (int)range.End.Line;
-            int endCol = (int)range.End.Character;
+            //var range = change.Range;
 
-            if (change.RangeLength > 0)
-                buffer.Delete(startLine, startCol, endLine, endCol);
+            //int startLine = (int)range.Start.Line;
+            //int startCol = (int)range.Start.Character;
+            //int endLine = (int)range.End.Line;
+            //int endCol = (int)range.End.Character;
 
-            buffer.Insert(startLine, startCol, change.Text);
+            //if (change.RangeLength > 0)
+                
+            //buffer.Delete(startLine, startCol, endLine, endCol);
+
+            //buffer.Insert(startLine, startCol, change.Text);
         }
 
         public void AddDocument(string documentPath, string documentText)
