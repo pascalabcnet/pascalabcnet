@@ -50,8 +50,8 @@ namespace Languages.SPython.Frontend.Converters
             tcv.ProcessNode(root);
 
             // вынос forward объявлений для всех функций в начало
-            //var afdv = new AddForwardDeclarationsVisitor();
-            //afdv.ProcessNode(root);
+            var afdv = new AddForwardDeclarationsVisitor();
+            afdv.ProcessNode(root);
 
             return root;
         }
