@@ -21,9 +21,10 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");
 
             var IsTuple = IsTupleType(t);
+            var IsKeyValuePair = !IsTuple && IsKeyValuePairType(t);
             var IsSequence = !IsTuple && IsSequenceType(t);
 
-            if (!IsTuple && !IsSequence)
+            if (!IsTuple && !IsKeyValuePair && !IsSequence)
             {
                 AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");
             }
@@ -32,7 +33,13 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var n = vars.variables.Count();
                 if (n > t.GetGenericArguments().Count())
-                    AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                    AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT");
+            }
+            if (IsKeyValuePair)
+            {
+                var n = vars.variables.Count();
+                if (n > 2)
+                    AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_KEYVALUEPAIR_ASSIGNMENT");
             }
         }
 
@@ -52,12 +59,13 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");
                 return;
             }
-                
+
 
             var IsTuple = IsTupleType(t);
-            var IsSequence = !IsTuple && IsSequenceType(t);
+            var IsKeyValuePair = !IsTuple && IsKeyValuePairType(t);
+            var IsSequence = !IsTuple && !IsKeyValuePair && IsSequenceType(t);
 
-            if (!IsTuple && !IsSequence)
+            if (!IsTuple && !IsKeyValuePair && !IsSequence)
             {
                 AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");
             }
@@ -66,7 +74,13 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var n = vars.idents.Count();
                 if (n > t.GetGenericArguments().Count())
-                    AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                    AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT");
+            }
+            if (IsKeyValuePair)
+            {
+                var n = vars.idents.Count();
+                if (n > 2)
+                    AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_KEYVALUEPAIR_ASSIGNMENT");
             }
         }
 

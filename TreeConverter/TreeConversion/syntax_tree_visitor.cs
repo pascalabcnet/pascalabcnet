@@ -19004,9 +19004,9 @@ namespace PascalABCCompiler.TreeConverter
                     // выбираем IEnumerable<T>
                     if (genericInterfaceCount == 1)
                         return filteredInterfaces.First(item => item.is_generic_type_instance);
-                    // явно реализует IEnumerable
+                    // явно реализует IEnumerable - странно - заменил на null - SSM 23.05.25
                     else
-                        return IEnumType;
+                        return null; // IEnumType;
                 case 1:
                     var method = methods[0];
 
@@ -22183,12 +22183,17 @@ namespace PascalABCCompiler.TreeConverter
             return !t.IsArray && (t.FullName.StartsWith("System.Tuple") || t.FullName.StartsWith("System.ValueTuple"));
         }
 
+        public bool IsKeyValuePairType(Type t)
+        {
+            return t.FullName.StartsWith("System.Collections.Generic.KeyValuePair`2");
+        }
+
         public bool IsSequenceType(Type t)
         {
             return t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null;
         }
 
-        private void CheckUnpacking(expression ex, out expression_node sem_ex, out bool IsTuple, out bool IsSequence, int countvars, syntax_tree_node stn)
+        /*private void CheckUnpacking(expression ex, out expression_node sem_ex, out bool IsTuple, out bool IsSequence, int countvars, syntax_tree_node stn)
         {
             sem_ex = convert_strong(ex);
             sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
@@ -22206,7 +22211,7 @@ namespace PascalABCCompiler.TreeConverter
             if (IsTuple)
             {
                 if (countvars > t.GetGenericArguments().Count())
-                    AddError(get_location(stn), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                    AddError(get_location(stn), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT");
             }
         }
 
@@ -22223,7 +22228,7 @@ namespace PascalABCCompiler.TreeConverter
                 dn = new method_call(dn, pars);
             }
             return dn;
-        }
+        }*/
 
         public override void visit(SyntaxTree.assign_tuple asstup) // сахарный узел
         {
@@ -22286,7 +22291,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var nn = assvartup.idents.idents.Count();
                 if (nn > t.GetGenericArguments().Count())
-                    AddError(get_location(assvartup.idents), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                    AddError(get_location(assvartup.idents), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT");
             }*/
 
 
@@ -22331,6 +22336,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             var IsSequence = false;
             var IsTuple = false;
+            var IsKeyValuePair = false;
             var sem_ex = convert_strong(ith.id);
             sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
             var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
@@ -22340,19 +22346,22 @@ namespace PascalABCCompiler.TreeConverter
                 type_node elem_type = null;
                 var b = FindIEnumerableElementType(sem_ex.type, ref elem_type, out bb);
                 if (b)
+                    // Не очень понятно, зачем это нужно. И это точно не срабатывает
                     IsSequence = true;
                 else
                     AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
-                
             }
-                
+
             if (t != null)
                 IsTuple = IsTupleType(t);
-            
-            if (t != null)
-                IsSequence = !IsTuple && IsSequenceType(t);
 
-            if (!IsTuple && !IsSequence)
+            if (t != null)
+                IsKeyValuePair = !IsTuple && IsKeyValuePairType(t);
+
+            if (t != null)
+                IsSequence = !IsTuple && !IsKeyValuePair && IsSequenceType(t);
+
+            if (!IsTuple && !IsSequence && !IsKeyValuePair)
             {
                 AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
             }
@@ -22373,8 +22382,14 @@ namespace PascalABCCompiler.TreeConverter
                 ReplaceUsingParent(ith, mc);
                 visit(mc);
             }
+            else if (IsKeyValuePair)
+            {
+                var meth_name = i == 0 ? "Key" : "Value";
+                var dn = new dot_node(ith.id.TypedClone(), new ident(meth_name));
+                ReplaceUsingParent(ith, dn);
+                visit(dn);
+            }
         }
-
 
         public override void visit(var_tuple_def_statement vtd)
         {
