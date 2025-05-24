@@ -38,17 +38,19 @@ type
     end;
 
 type kvargs_gen<T> = class
-      public kvargs: Dictionary<string, T>;
+      public kvargs: Dictionary<string, T>
+        := new Dictionary<string, T>();
       
       constructor Create(
         keys: array of string;
         params values: array of T
         );
       begin
-        kvargs := new Dictionary<string, T>();
         for var i := 0 to keys.count() - 1 do
           kvargs[keys[i]] := values[i];
       end;
+      
+      constructor Create(); begin end;
     end;
 
 function all(s: sequence of boolean): boolean;
