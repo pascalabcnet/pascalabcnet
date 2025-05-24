@@ -48,23 +48,27 @@ namespace Languages.SPython.Frontend.Converters
             return false;
         }
 
+        private int createdDeclarations = 0;
+
         private declaration CreateTypeDefinitionForKvargsFunction(procedure_definition pd)
         {
             typed_parameters kvargs_parameter = LastParameter(pd);
             pd.proc_header.parameters.Remove(kvargs_parameter);
-            ident class_name = new ident("tempname");
+            ident name = pd.proc_header.name.meth_name;
+            ident class_name = name;
 
             if (IsForwardDeclaration(pd.proc_header))
             {
                 // base class type
                 template_param_list tpl = new template_param_list(kvargs_parameter.vars_type, kvargs_parameter.source_context);
-                ident base_class_name = new ident("kvargs_gen`1");
+                ident base_class_name = new ident("kvargs_gen`" + (++createdDeclarations).ToString());
                 named_type_reference ntr = new named_type_reference(base_class_name);
                 template_type_reference ttr = new template_type_reference(ntr, tpl);
                 named_type_reference_list ntrl = new named_type_reference_list(ttr);
 
                 // class body
                 access_modifer_node amn = new access_modifer_node(access_modifer.public_modifer);
+                pd.proc_header.name.meth_name = "!" + pd.proc_header.name;
                 class_members cm = new class_members(pd.proc_header);
                 class_body_list cbl = new class_body_list(cm);
 
@@ -77,7 +81,7 @@ namespace Languages.SPython.Frontend.Converters
             }
             else
             {
-                pd.proc_header.name = new method_name(null, class_name, pd.proc_header.name.meth_name, null);
+                pd.proc_header.name = new method_name(null, class_name, "!" + name, null);
                 return pd;
             }
         }
