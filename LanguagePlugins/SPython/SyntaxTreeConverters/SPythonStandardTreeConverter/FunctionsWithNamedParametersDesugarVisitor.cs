@@ -12,8 +12,7 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(method_call _method_call)
         {
-            if (_method_call.parameters is expression_list exprl &&
-                _method_call.dereferencing_value is ident caller) {
+            if (_method_call.parameters is expression_list exprl) {
                 expression_list args = new expression_list();
                 expression_list kvargs_names_array = new expression_list();
                 expression_list kvargs = new expression_list();
@@ -42,11 +41,20 @@ namespace Languages.SPython.Frontend.Converters
                     array_const_new acn = new array_const_new(kvargs_names_array, '|');
                     kvargs.expressions.Insert(0, acn);
 
-                    ident method_name = caller;
-                    ident class_name = new ident(method_name.name);
+                    ident method_name = new ident();
+                    if (_method_call.dereferencing_value is ident id)
+                    {
+                        method_name = id;
+                    }
+                    else if (_method_call.dereferencing_value is dot_node dnn)
+                    {
+                        method_name = dnn.right as ident;
+                    }
+
+                    ident class_name = new ident("!" + method_name);
                     dot_node ctor_call_name = new dot_node(class_name, new ident("create"));
                     method_call ctor_call = new method_call(ctor_call_name, kvargs, _method_call.source_context);
-                    dot_node dn = new dot_node(ctor_call, new ident("!" + method_name), _method_call.source_context);
+                    dot_node dn = new dot_node(ctor_call, new ident(method_name.name), _method_call.source_context);
                     method_call new_method_call = new method_call(dn, args, _method_call.source_context);
                     Replace(_method_call, new_method_call);
                 }

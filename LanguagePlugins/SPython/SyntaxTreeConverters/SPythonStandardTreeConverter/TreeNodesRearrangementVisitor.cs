@@ -92,8 +92,8 @@ namespace Languages.SPython.Frontend.Converters
             foreach (declaration decl in _declarations_as_statement.defs.defs)
             {
                 suffix.Add(decl);
-                ReplaceStatement(_declarations_as_statement, new empty_statement());
             }
+            ReplaceStatement(_declarations_as_statement, new empty_statement());
         }
     }
 }

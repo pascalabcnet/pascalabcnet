@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 
 namespace Languages.SPython.Frontend.Converters
@@ -9,6 +10,27 @@ namespace Languages.SPython.Frontend.Converters
     internal class KvargsFunctionDesugarVisitor: BaseChangeVisitor
     {
         public KvargsFunctionDesugarVisitor() { }
+
+        private declarations decls;
+        private declarations current_decls;
+
+        public override void Enter(syntax_tree_node stn)
+        {
+            if (stn is program_module pm)
+            {
+                decls = pm.program_block.defs;
+            }
+            if (stn is interface_node intn)
+            {
+                decls = intn.interface_definitions;
+            }
+            if (stn is declarations_as_statement das)
+            {
+                current_decls = das.defs;
+            }
+
+            base.Enter(stn);
+        }
 
         private typed_parameters LastParameter(procedure_definition pd)
         {
@@ -30,12 +52,52 @@ namespace Languages.SPython.Frontend.Converters
             return HasParameters(pd) && IsKvargsParameter(LastParameter(pd));
         }
 
+        private void AddNoKvargsVersion(procedure_definition pd)
+        {
+            procedure_definition noKvargsVersion = pd.TypedClone();
+            typed_parameters kvargs_parameter = LastParameter(noKvargsVersion);
+            noKvargsVersion.proc_header.parameters.Remove(kvargs_parameter);
+            ident name = noKvargsVersion.proc_header.name.meth_name;
+            ident class_name = "!" + name;
+
+            if (IsForwardDeclaration(noKvargsVersion.proc_header))
+            {
+                decls.Add(noKvargsVersion);
+            }
+            else
+            {
+                List<typed_parameters> tp_list = noKvargsVersion.proc_header.parameters.params_list;
+                expression_list args = new expression_list();
+                foreach (typed_parameters tp in tp_list)
+                {
+                    foreach (ident id in tp.idents.list)
+                    {
+                        args.Add(id);
+                    }
+                }
+
+                dot_node ctor_call_name = new dot_node(class_name, new ident("create"));
+                method_call ctor_call = new method_call(ctor_call_name, null);
+                dot_node dn = new dot_node(ctor_call, new ident(name.name));
+                method_call method_call = new method_call(dn, args);
+
+                assign assign = new assign(new ident("result"), method_call, Operators.Assignment);
+
+                statement_list stmtlist = new statement_list(assign);
+                declarations empty_declarations = new declarations();
+                block block = new block(empty_declarations, stmtlist);
+                noKvargsVersion.proc_body = block;
+                current_decls.Add(noKvargsVersion);
+            }
+        }
+
         public override void visit(procedure_definition pd)
         {
             if (!HasKvargsParameter(pd))
                 return;
-
+            
             declaration d = CreateTypeDefinitionForKvargsFunction(pd);
+            AddNoKvargsVersion(pd);
             Replace(pd, d);
         }
 
@@ -52,12 +114,13 @@ namespace Languages.SPython.Frontend.Converters
 
         private declaration CreateTypeDefinitionForKvargsFunction(procedure_definition pd)
         {
-            typed_parameters kvargs_parameter = LastParameter(pd);
-            pd.proc_header.parameters.Remove(kvargs_parameter);
-            ident name = pd.proc_header.name.meth_name;
-            ident class_name = name;
+            procedure_definition new_pd = pd.TypedClone();
+            typed_parameters kvargs_parameter = LastParameter(new_pd);
+            new_pd.proc_header.parameters.Remove(kvargs_parameter);
+            ident name = new_pd.proc_header.name.meth_name;
+            ident class_name = "!" + name;
 
-            if (IsForwardDeclaration(pd.proc_header))
+            if (IsForwardDeclaration(new_pd.proc_header))
             {
                 // base class type
                 template_param_list tpl = new template_param_list(kvargs_parameter.vars_type, kvargs_parameter.source_context);
@@ -68,8 +131,8 @@ namespace Languages.SPython.Frontend.Converters
 
                 // class body
                 access_modifer_node amn = new access_modifer_node(access_modifer.public_modifer);
-                pd.proc_header.name.meth_name = "!" + pd.proc_header.name;
-                class_members cm = new class_members(pd.proc_header);
+                new_pd.proc_header.name.meth_name = new_pd.proc_header.name.meth_name;
+                class_members cm = new class_members(new_pd.proc_header);
                 class_body_list cbl = new class_body_list(cm);
 
                 // type class declaration 
@@ -81,8 +144,8 @@ namespace Languages.SPython.Frontend.Converters
             }
             else
             {
-                pd.proc_header.name = new method_name(null, class_name, "!" + name, null);
-                return pd;
+                new_pd.proc_header.name = new method_name(null, class_name, name, null);
+                return new_pd;
             }
         }
     }
