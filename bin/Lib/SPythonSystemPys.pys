@@ -1,0 +1,19 @@
+﻿from PABCSystem import Object as obj, Write as pas_print
+from SPythonSystem import range
+
+def print(*args: obj, **kvargs: str) -> int:
+    sep: str = ' '
+    end: str = '\n'
+    if 'sep' in kvargs.keys():
+        sep = kvargs['sep']
+    if 'end' in kvargs.keys():
+        end = kvargs['end']
+    
+    for i in range(0, len(args) - 1):
+        pas_print(args[i])
+        pas_print(sep)
+    
+    if len(args) != 0:
+        pas_print(args[len(args) - 1])
+    pas_print(end)
+    return 0

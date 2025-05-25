@@ -22,7 +22,7 @@ namespace Languages.SPython
 
             filesExtensions: new string[] { ".pys" },
             caseSensitive: true,
-            systemUnitNames: new string[] { "SPythonSystem", "SPythonHidden" }
+            systemUnitNames: new string[] { "SPythonSystem", "SPythonHidden", "SPythonSystemPys" }
             )
         {
             ((SPythonParser.SPythonLanguageParser)Parser).SyntaxTreeConvertersForIntellisense = SyntaxTreeConvertersForIntellisense;

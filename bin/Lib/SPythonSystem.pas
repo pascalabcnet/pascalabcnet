@@ -16,27 +16,6 @@ function input(): string;
 
 function input(s: string): string;
 
-type 
-    !print = record
-    public
-        sep: string;
-        &end:string;
-        static function Get(sep:string := ' '; &end: string := #10): !Print;
-        begin
-          Result.sep := sep;
-          Result.&end := &end;
-        end;
-        function print(params args: array of object): integer;
-        begin
-          Result := args.Count();
-          for var i := 0 to args.length - 2 do
-            Write(args[i], sep);
-          if args.length <> 0 then 
-            Write(args[^1]);
-          Write(&end);
-        end;
-    end;
-
 type kvargs_gen<T> = class
       public kvargs: Dictionary<string, T>
         := new Dictionary<string, T>();
@@ -66,8 +45,6 @@ function all(s: sequence of boolean): boolean;
 function any(s: sequence of boolean): boolean;
 
 function __NewSetCreatorInternal<T>(params a: array of T): NewSet<T>;
-
-procedure print(params args: array of object);
 
 procedure clear<T>(var st: set of T);
 
@@ -124,6 +101,7 @@ function abs(x: real): real;
 function len<T>(lst: PABCSystem.List<T>): integer;
 function len<T>(st: set of T): integer;
 function len<K, V>(dct: PABCSystem.Dictionary<K, V>): integer;
+function len<T>(arr: array of T): integer;
 
 function &set<T>(sq: sequence of T): set of T;
 function &list<T>(sq: sequence of T): PABCSystem.List<T>;
@@ -199,11 +177,6 @@ begin
   PABCSystem.Print(s);
   Result := PABCSystem.ReadlnString();
 end;
-  
-procedure print(params args: array of object);
-begin
-  !Print.Get().Print(args);
-end;
 
 function int(val: string): integer := integer.Parse(val);
 
@@ -268,6 +241,7 @@ function abs(x: real): real := PABCSystem.Abs(x);
 function len<T>(lst: PABCSystem.List<T>): integer := lst.Count();
 function len<T>(st: set of T): integer := st.Count();
 function len<K, V>(dct: PABCSystem.Dictionary<K, V>): integer := dct.Count();
+function len<T>(arr: array of T): integer := arr.Count();
 
 function sorted<T>(lst: PABCSystem.List<T>): PABCSystem.List<T>;
 begin

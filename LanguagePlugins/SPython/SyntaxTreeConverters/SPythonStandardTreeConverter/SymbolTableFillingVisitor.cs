@@ -258,6 +258,8 @@ namespace Languages.SPython.Frontend.Converters
             // module alias -> module real name
             private Dictionary<string, string> modulesAliases = new Dictionary<string, string>();
 
+            private List<string> StandardLibraries = new List<string> { "SPythonSystem", "SPythonHidden", "SPythonSystemPys" };
+
             // alias of function or global variable from module -> real name and module real name
             private Dictionary<string, Tuple<string, string>> aliasToRealNameAndModuleName = new Dictionary<string, Tuple<string, string>>();
 
@@ -275,10 +277,12 @@ namespace Languages.SPython.Frontend.Converters
 
             private void AddAliasesFromStandartLibraries()
             {
-                foreach (string name in moduleNameToSymbols["SPythonSystem"])
-                    AddAlias(name, name, "SPythonSystem");
-                foreach (string name in moduleNameToSymbols["SPythonHidden"])
-                    AddAlias(name, name, "SPythonHidden");
+                foreach (string standardLibrary in StandardLibraries)
+                {
+                    if (moduleNameToSymbols.ContainsKey(standardLibrary))
+                        foreach (string name in moduleNameToSymbols[standardLibrary])
+                            AddAlias(name, name, standardLibrary);
+                }
             }
 
             public string AliasToRealName(string alias)

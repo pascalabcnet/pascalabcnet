@@ -49,10 +49,6 @@ namespace Languages.SPython.Frontend.Converters
             var tcv = new TypeCorrectVisitor();
             tcv.ProcessNode(root);
 
-            // вынос forward объявлений для всех функций в начало
-            var afdv = new AddForwardDeclarationsVisitor();
-            afdv.ProcessNode(root);
-
             return root;
         }
 
@@ -62,6 +58,10 @@ namespace Languages.SPython.Frontend.Converters
             // сохранение множества переменных, использующихся как глобальные в ncv.variablesUsedAsGlobal
             var ncv = new NameCorrectVisitor(compilationArtifacts.NamesFromUsedUnits);
             ncv.ProcessNode(root);
+
+            // вынос forward объявлений для всех функций в начало
+            var afdv = new AddForwardDeclarationsVisitor();
+            afdv.ProcessNode(root);
 
             // выносит объявлений переменных из ncv.variablesUsedAsGlobal на глобальный уровень
             // (в модулях все переменные, объявленные на глобальном уровне являются глобальными)
