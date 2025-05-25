@@ -15,14 +15,19 @@ namespace Languages.SPython.Frontend.Converters
             if (_method_call.parameters is expression_list exprl &&
                 _method_call.dereferencing_value is ident caller) {
                 expression_list args = new expression_list();
+                expression_list kvargs_names_array = new expression_list();
                 expression_list kvargs = new expression_list();
 
                 foreach (var expr in exprl.expressions)
                 {
-                    if (expr is name_assign_expr)
+                    if (expr is name_assign_expr nae)
                     {
-                        kvargs.Add(expr);
-                        kvargs.source_context = new SourceContext(kvargs.source_context, expr.source_context);
+                        kvargs_names_array.Add(new string_const(nae.name.name));
+                        kvargs_names_array.source_context
+                            = new SourceContext(kvargs_names_array.source_context, expr.source_context);
+                        kvargs.Add(nae.expr);
+                        kvargs.source_context 
+                            = new SourceContext(kvargs.source_context, expr.source_context);
                     }
                     else if (kvargs.expressions.Count() == 0)
                     {
@@ -34,10 +39,13 @@ namespace Languages.SPython.Frontend.Converters
 
                 if (kvargs.expressions.Count() != 0)
                 {
+                    array_const_new acn = new array_const_new(kvargs_names_array, '|');
+                    kvargs.expressions.Insert(0, acn);
+
                     ident method_name = caller;
                     ident class_name = new ident(method_name.name);
                     dot_node ctor_call_name = new dot_node(class_name, new ident("create"));
-                    method_call ctor_call = new method_call(ctor_call_name, null, _method_call.source_context);
+                    method_call ctor_call = new method_call(ctor_call_name, kvargs, _method_call.source_context);
                     dot_node dn = new dot_node(ctor_call, new ident("!" + method_name), _method_call.source_context);
                     method_call new_method_call = new method_call(dn, args, _method_call.source_context);
                     Replace(_method_call, new_method_call);

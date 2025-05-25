@@ -50,6 +50,15 @@ type kvargs_gen<T> = class
           kvargs[keys[i]] := values[i];
       end;
       
+      constructor Create(
+        keys: array of char;
+        params values: array of T
+        );
+      begin
+        for var i := 0 to keys.count() - 1 do
+          kvargs[keys[i]] := values[i];
+      end;
+      
       constructor Create(); begin end;
     end;
 
