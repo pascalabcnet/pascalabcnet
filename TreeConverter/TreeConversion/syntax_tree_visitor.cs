@@ -18848,7 +18848,7 @@ namespace PascalABCCompiler.TreeConverter
             return isIEnumType || isIEnumTypedType;
         }
 
-        private Type FindIEnumerableInterfaceInCompiledType(Type compiledType)
+        private Type ChooseIEnumerableInterfaceInCompiledType(Type compiledType)
         {
             var IEnumType = typeof(IEnumerable);
             var IEnumTypedType = typeof(IEnumerable<>);
@@ -18933,18 +18933,16 @@ namespace PascalABCCompiler.TreeConverter
         /// <summary>
         /// Собирает интерфейсы, реализованные типом и его предками
         /// </summary>
-        private List<type_node> CollectInterfacesFromTypeNode(type_node node)
+        private IEnumerable<type_node> CollectInterfacesFromTypeNode(type_node node)
         {
-            var result = new List<ITypeNode>();
-            result.AddRange(node.ImplementingInterfaces);
-
-            if (node.base_type != null)
+            do
             {
-                var interfInBase = CollectInterfacesFromTypeNode(node.base_type);
-                result.AddRange(interfInBase);
-            }
+                foreach (var item in node.ImplementingInterfaces)
+                    yield return (type_node)item;
 
-            return result.Cast<type_node>().ToList();
+                node = node.base_type;
+            }
+            while (node != null);
         }
 
         private bool IsIEnumeratorInterface(type_node t)
@@ -18961,7 +18959,7 @@ namespace PascalABCCompiler.TreeConverter
             return IsIEnumeratorInterface(orig.compiled_type);
         }
 
-        private type_node FindIEnumerableInterfaceInTypeNode(type_node node)
+        private type_node ChooseIEnumerableInterfaceInTypeNode(type_node node)
         {
             var IEnumType = compiled_type_node.get_type_node( typeof(IEnumerable) );
             var IEnumTypedType = compiled_type_node.get_type_node( typeof(IEnumerable<>) );
@@ -19004,9 +19002,9 @@ namespace PascalABCCompiler.TreeConverter
                     // выбираем IEnumerable<T>
                     if (genericInterfaceCount == 1)
                         return filteredInterfaces.First(item => item.is_generic_type_instance);
-                    // явно реализует IEnumerable - странно - заменил на null - SSM 23.05.25
+                    // явно реализует IEnumerable
                     else
-                        return null; // IEnumType;
+                        return IEnumType;
                 case 1:
                     var method = methods[0];
 
@@ -19045,9 +19043,9 @@ namespace PascalABCCompiler.TreeConverter
                 // непосредственно тип, от котоого разворачивается foreach
                 Type ct = orig.compiled_type;
 
-                var isEnumeratedType = typeof(IEnumerable).IsAssignableFrom(ct);
+                var supportsEnumeration = typeof(IEnumerable).IsAssignableFrom(ct);
 
-                if (!isEnumeratedType)
+                if (!supportsEnumeration)
                     return false;
 
                 // для массива
@@ -19062,7 +19060,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
 
                 // в иных случаях ищем подходящий интерфейс
-                var desiredInterface = FindIEnumerableInterfaceInCompiledType(ct);
+                var desiredInterface = ChooseIEnumerableInterfaceInCompiledType(ct);
 
                 if (desiredInterface == null)
                     return false;
@@ -19118,6 +19116,11 @@ namespace PascalABCCompiler.TreeConverter
             // также сюда попадают set of T даже если они подтягиваются из библиотеки
             else
             {
+                var supportsEnumeration = CollectInterfacesFromTypeNode(tn).Any(IsIEnumerableInterface);
+
+				if (!supportsEnumeration)
+					return false;
+
                 // массивы и set of T
                 if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.typed_file)
                 {
@@ -19129,7 +19132,7 @@ namespace PascalABCCompiler.TreeConverter
                     return true;
                 }
 
-                var desiredInterface = FindIEnumerableInterfaceInTypeNode(tn);
+                var desiredInterface = ChooseIEnumerableInterfaceInTypeNode(tn);
 
                 if (desiredInterface == null)
                     return false;
