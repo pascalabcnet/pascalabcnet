@@ -63,18 +63,18 @@ namespace Languages.SPython.Frontend.Converters
             var afdv = new AddForwardDeclarationsVisitor();
             afdv.ProcessNode(root);
 
-            // выносит объявлений переменных из ncv.variablesUsedAsGlobal на глобальный уровень
-            // (в модулях все переменные, объявленные на глобальном уровне являются глобальными)
-            var rugvv = new RetainUsedGlobalVariablesVisitor();
-            rugvv.variablesUsedAsGlobal = ncv.variablesUsedAsGlobal;
-            rugvv.ProcessNode(root);
-
             var kfdv = new KvargsFunctionDesugarVisitor();
             kfdv.ProcessNode(root);
 
             // замена вызова функций с именованными параметрами на вызов метода класса
             var fwnpdv = new FunctionsWithNamedParametersDesugarVisitor();
             fwnpdv.ProcessNode(root);
+
+            // выносит объявлений переменных из ncv.variablesUsedAsGlobal на глобальный уровень
+            // (в модулях все переменные, объявленные на глобальном уровне являются глобальными)
+            var rugvv = new RetainUsedGlobalVariablesVisitor();
+            rugvv.variablesUsedAsGlobal = ncv.variablesUsedAsGlobal;
+            rugvv.ProcessNode(root);
 
             // удаление специфичных синтаксических узлов Spython'a перед конвертацией в семантическое дерево
             var esonv = new EraseSpythonOnlyNodesVisitor();

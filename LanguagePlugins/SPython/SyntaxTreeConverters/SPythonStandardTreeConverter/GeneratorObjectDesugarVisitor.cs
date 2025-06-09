@@ -30,7 +30,7 @@ namespace Languages.SPython.Frontend.Converters
             function_lambda_definition lambda;
             method_call mc;
 
-            // [ expr1 for ident in expr2 if expr3 ] -> expr2.Where(ident -> expr3).Select(ident -> expr1).ToList()
+            // [ expr1 for ident in expr2 if expr3 ] -> expr2.Where(ident -> expr3).Select(ident -> expr1)
             if (_generator_object._condition != null)
             {
                 string ident_name = _generator_object._ident.name;
@@ -48,7 +48,7 @@ namespace Languages.SPython.Frontend.Converters
                 mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), _generator_object.source_context);
                 dn = new dot_node(mc as addressed_value, (new ident("Select")) as addressed_value, _generator_object.source_context);
             }
-            // [ expr1 for ident in expr2 ] -> expr2.Select(ident -> expr1).ToList()
+            // [ expr1 for ident in expr2 ] -> expr2.Select(ident -> expr1)
             else
                 dn = new dot_node(_generator_object._range as addressed_value, (new ident("Select")) as addressed_value, _generator_object.source_context);
 

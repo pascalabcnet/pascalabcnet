@@ -124,7 +124,7 @@ namespace Languages.SPython.Frontend.Converters
             {
                 // base class type
                 template_param_list tpl = new template_param_list(kvargs_parameter.vars_type, kvargs_parameter.source_context);
-                ident base_class_name = new ident("kvargs_gen`" + (++createdDeclarations).ToString());
+                ident base_class_name = new ident("kvargs_gen`1");
                 named_type_reference ntr = new named_type_reference(base_class_name);
                 template_type_reference ttr = new template_type_reference(ntr, tpl);
                 named_type_reference_list ntrl = new named_type_reference_list(ttr);

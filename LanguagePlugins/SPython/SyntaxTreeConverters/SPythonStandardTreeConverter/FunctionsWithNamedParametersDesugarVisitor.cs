@@ -57,8 +57,10 @@ namespace Languages.SPython.Frontend.Converters
                     dot_node dn = new dot_node(ctor_call, new ident(method_name.name), _method_call.source_context);
                     method_call new_method_call = new method_call(dn, args, _method_call.source_context);
                     Replace(_method_call, new_method_call);
+                    return;
                 }
             }
+            base.visit(_method_call);
         }
     }
 }
