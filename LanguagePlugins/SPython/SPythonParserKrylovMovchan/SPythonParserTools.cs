@@ -188,6 +188,14 @@ namespace SPythonParser
             lt.source_context = sc;
             return lt;
         }
+        
+        private int num1 = 0;
+
+        public ident NewId(string prefix, SourceContext sc = null)
+        {
+            num1++;
+            return new ident(prefix + num1.ToString(),sc);
+        }
 
         private expression RemoveBracesAndContent(string input, SourceContext sc)
         {
@@ -234,7 +242,7 @@ namespace SPythonParser
                 }
 
                 List<Error> errors = new List<Error>();
-                expression expr = 
+                expression expr =
                     LanguageProvider.Instance.SelectLanguageByExtension(currentFileName).Parser
                     .GetExpression(currentFileName, expr_text, errors, new List<CompilerWarning>());
 
@@ -252,7 +260,7 @@ namespace SPythonParser
                 }
                 else
                 {
-                    mc = new method_call(new ident("!format"), 
+                    mc = new method_call(new ident("!format"),
                         new expression_list(new List<expression> { expr, new string_const(format, sc) }, sc), sc);
                 }
                 parts.Add(mc);

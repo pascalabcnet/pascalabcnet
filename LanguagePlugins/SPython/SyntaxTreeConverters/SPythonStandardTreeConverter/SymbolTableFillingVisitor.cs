@@ -99,6 +99,15 @@ namespace Languages.SPython.Frontend.Converters
         {
             symbolTable.OpenLocalScope();
             symbolTable.Add(_foreach_stmt.identifier.name, NameKind.LocalVariable);
+
+            if (_foreach_stmt.ext is ident_list _ident_list)
+            {
+                foreach (ident _ident in _ident_list.idents)
+                {
+                    symbolTable.Add(_ident.name, NameKind.LocalVariable);
+                }
+            }
+
             base.visit(_foreach_stmt);
             symbolTable.CloseLocalScope();
         }

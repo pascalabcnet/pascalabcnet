@@ -72,7 +72,7 @@
 %type <stn> expr_list
 %type <stn> stmt_list block
 %type <stn> program param_name form_param_sect form_param_list optional_form_param_list dotted_ident_list
-%type <stn> ident_as_ident ident_as_ident_list
+%type <stn> ident_as_ident ident_as_ident_list ident_list
 %type <td> proc_func_header type_ref simple_type_identifier template_type
 %type <stn> import_clause template_type_params template_param_list parts stmt_or_expression expr_mapping_list
 %type <ob> optional_semicolon end_of_line
@@ -639,6 +639,28 @@ for_stmt
 	: FOR ident IN expr COLON block
 		{
 			$$ = new foreach_stmt($2, new no_type_foreach(), $4, $6 as statement, null, @$);
+		}
+	| FOR ident COMMA ident_list IN expr COLON block
+		{
+			($4 as ident_list).AddFirst($2);
+			var id = parserTools.NewId("#fe",@4);
+            var tttt = new assign_var_tuple($4 as ident_list, id, @$);
+            statement_list nine = $8 is statement_list ? $8 as statement_list : new statement_list($8 as statement, @8);
+            nine.Insert(0, tttt);
+			var fe = new foreach_stmt(id, new no_type_foreach(), $6, nine, null, @$);
+			fe.ext = $4 as ident_list;
+			$$ = fe;
+		}
+	;
+
+ident_list
+	: ident
+        {
+			$$ = new ident_list($1, @$);
+		}
+    | ident_list COMMA ident
+        {
+			$$ = ($1 as ident_list).Add($3, @$);
 		}
 	;
 

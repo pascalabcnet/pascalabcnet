@@ -2,6 +2,8 @@
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SyntaxTreeConverters;
+using SyntaxVisitors.SugarVisitors;
+using System.Reflection;
 
 namespace Languages.SPython.Frontend.Converters
 {
@@ -58,6 +60,11 @@ namespace Languages.SPython.Frontend.Converters
             // сохранение множества переменных, использующихся как глобальные в ncv.variablesUsedAsGlobal
             var ncv = new NameCorrectVisitor(compilationArtifacts.NamesFromUsedUnits);
             ncv.ProcessNode(root);
+
+
+            var binder = new BindCollectLightSymInfo(root as compilation_unit);
+            NewAssignTuplesDesugarVisitor.Create(binder).ProcessNode(root);
+
 
             // вынос forward объявлений для всех функций в начало
             var afdv = new AddForwardDeclarationsVisitor();
