@@ -52,7 +52,7 @@ namespace Languages.SPython.Frontend.Converters
                     }
 
                     ident class_name = new ident("!" + method_name);
-                    dot_node ctor_call_name = new dot_node(class_name, new ident("create"));
+                    dot_node ctor_call_name = new dot_node(class_name, new ident("Create"));
                     method_call ctor_call = new method_call(ctor_call_name, kvargs, _method_call.source_context);
                     dot_node dn = new dot_node(ctor_call, new ident(method_name.name), _method_call.source_context);
                     method_call new_method_call = new method_call(dn, args, _method_call.source_context);

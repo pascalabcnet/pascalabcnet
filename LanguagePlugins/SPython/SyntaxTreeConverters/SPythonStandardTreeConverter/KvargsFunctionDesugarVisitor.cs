@@ -76,7 +76,7 @@ namespace Languages.SPython.Frontend.Converters
                     }
                 }
 
-                dot_node ctor_call_name = new dot_node(class_name, new ident("create"));
+                dot_node ctor_call_name = new dot_node(class_name, new ident("Create"));
                 method_call ctor_call = new method_call(ctor_call_name, null);
                 dot_node dn = new dot_node(ctor_call, new ident(name.name));
                 method_call method_call = new method_call(dn, args);
