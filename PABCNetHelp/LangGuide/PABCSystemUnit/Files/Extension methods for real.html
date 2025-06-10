@@ -2,8 +2,6 @@
 <param name="Keyword" value="Between">
 <param name="Keyword" value="Ceil">
 <param name="Keyword" value="Clamp">
-<param name="Keyword" value="ClampBottom">
-<param name="Keyword" value="ClampTop">
 <param name="Keyword" value="Floor">
 <param name="Keyword" value="InRange">
 <param name="Keyword" value="Round">
@@ -19,12 +17,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает True если значение находитс€ в диапазоне [a,b]</td></tr>
 <tr><td><code><b>function</b> Ceil(Self: real): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает наменьшее целое, большее или равное вещественному числу</td></tr>
-<tr><td><code><b>function</b> Clamp(Self: real; bottom,top: real): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает число, ограниченное диапазоном от bottom до top включительно</td></tr>
-<tr><td><code><b>function</b> ClampBottom(Self: real; bottom: real): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает число, ограниченное величиной bottom снизу</td></tr>
-<tr><td><code><b>function</b> ClampTop(Self: real; top: real): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает число, ограниченное величиной top сверху</td></tr>
+<tr><td><code><b>function</b> Clamp(Self: real; min,max: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает число, ограниченное диапазоном от min до max включительно</td></tr>
 <tr><td><code><b>function</b> Floor(Self: real): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает наибольшее целое, меньшее или равное вещественному числу</td></tr>
 <tr><td><code><b>function</b> InRange(Self: real; a,b: real): boolean;</code>
