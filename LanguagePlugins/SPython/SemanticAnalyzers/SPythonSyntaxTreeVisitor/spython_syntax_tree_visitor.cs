@@ -186,7 +186,7 @@ namespace SPythonSyntaxTreeVisitor
                 {
                     expression_node left = convert_strong(dn.left);
                     //dn.left = new semantic_addr_value(left);
-                    if (left.type != null) 
+                    if (left?.type != null) 
                     foreach (string tName in containersNamesMapping.Keys)
                     {
                         if (left.type.name.StartsWith(tName))
