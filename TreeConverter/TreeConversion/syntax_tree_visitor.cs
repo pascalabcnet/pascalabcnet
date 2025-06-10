@@ -3340,7 +3340,7 @@ namespace PascalABCCompiler.TreeConverter
                 _constructor.name.source_context = _constructor.name.meth_name.source_context = _constructor.source_context;
             }
 
-            if (_constructor.name.meth_name.name.ToLower() != StringConstants.default_constructor_name)
+            if (_constructor.name.meth_name.name.ToLower() != StringConstants.default_constructor_name.ToLower())
                 AddError(get_location(_constructor.name), "CONSTRUCTOR_CAN_HAVE_ONLY_{0}_NAME", StringConstants.default_constructor_name);
             if ((_constructor.name.class_name == null) && (context.converting_block() != block_type.type_block))
             {
