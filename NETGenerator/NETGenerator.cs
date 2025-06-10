@@ -164,7 +164,7 @@ namespace PascalABCCompiler.NETGenerator
         protected bool make_next_spoint = true;
         protected SemanticTree.ILocation EntryPointLocation;
         protected Label ExitLabel;//метка для выхода из процедуры
-        protected bool ExitProcedureCall = false; //призна того что всертиласть exit и надо пометиь коней процедуры
+        protected bool ExitProcedureCall = false; //призна того что встретиласть exit и надо пометить коней процедуры
         protected Dictionary<IConstantNode, FieldBuilder> ConvertedConstants = new Dictionary<IConstantNode, FieldBuilder>();
         //ivan
         protected List<EnumBuilder> enums = new List<EnumBuilder>();
