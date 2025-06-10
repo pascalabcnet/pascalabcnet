@@ -70,7 +70,7 @@ namespace Languages.SPython.Frontend.Converters
             var afdv = new AddForwardDeclarationsVisitor();
             afdv.ProcessNode(root);
 
-            var kfdv = new KvargsFunctionDesugarVisitor();
+            var kfdv = new KwargsFunctionDesugarVisitor();
             kfdv.ProcessNode(root);
 
             // замена вызова функций с именованными параметрами на вызов метода класса

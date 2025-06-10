@@ -915,10 +915,10 @@ form_param_sect
 			var at = new array_type(null, $4, @$); 
 			$$ = new typed_parameters($2 as ident_list, at, parametr_kind.params_parametr, null, @$); 
 		}
-	// **kvargs
+	// **kwargs
 	| STARSTAR param_name COLON type_ref
 		{
-			$$ = new typed_parameters($2 as ident_list, $4, parametr_kind.kvargs_parameter, null, @$);
+			$$ = new typed_parameters($2 as ident_list, $4, parametr_kind.kwargs_parameter, null, @$);
 		}
 	;
 

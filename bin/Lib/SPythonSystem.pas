@@ -16,8 +16,8 @@ function input(): string;
 
 function input(s: string): string;
 
-type kvargs_gen<T> = class
-      public kvargs: Dictionary<string, T>
+type kwargs_gen<T> = class
+      public !kwargs: Dictionary<string, T>
         := new Dictionary<string, T>();
       
       constructor Create(
@@ -26,7 +26,7 @@ type kvargs_gen<T> = class
         );
       begin
         for var i := 0 to keys.count() - 1 do
-          kvargs[keys[i]] := values[i];
+          !kwargs[keys[i]] := values[i];
       end;
       
       constructor Create(
@@ -35,7 +35,7 @@ type kvargs_gen<T> = class
         );
       begin
         for var i := 0 to keys.count() - 1 do
-          kvargs[keys[i]] := values[i];
+          !kwargs[keys[i]] := values[i];
       end;
       
       constructor Create(); begin end;

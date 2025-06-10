@@ -7,9 +7,9 @@ using System.Text;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class KvargsFunctionDesugarVisitor: BaseChangeVisitor
+    internal class KwargsFunctionDesugarVisitor: BaseChangeVisitor
     {
-        public KvargsFunctionDesugarVisitor() { }
+        public KwargsFunctionDesugarVisitor() { }
 
         private declarations decls;
         private declarations current_decls;
@@ -42,31 +42,59 @@ namespace Languages.SPython.Frontend.Converters
             return pd.proc_header.parameters != null;
         }
 
-        private bool IsKvargsParameter(typed_parameters tp)
+        private bool IsKwargsParameter(typed_parameters tp)
         {
-            return tp.param_kind == parametr_kind.kvargs_parameter;
+            return tp.param_kind == parametr_kind.kwargs_parameter;
         }
 
-        private bool HasKvargsParameter(procedure_definition pd)
+        private bool HasKwargsParameter(procedure_definition pd)
         {
-            return HasParameters(pd) && IsKvargsParameter(LastParameter(pd));
+            if (!HasParameters(pd))
+                return false;
+
+            foreach (typed_parameters param in pd.proc_header.parameters.params_list)
+            {
+                if (IsKwargsParameter(param))
+                    return true;
+            }
+
+            return false;
         }
 
-        private void AddNoKvargsVersion(procedure_definition pd)
+        string renameFrom = "";
+
+        private void RenameKwargParametor(procedure_definition pd)
         {
-            procedure_definition noKvargsVersion = pd.TypedClone();
-            typed_parameters kvargs_parameter = LastParameter(noKvargsVersion);
-            noKvargsVersion.proc_header.parameters.Remove(kvargs_parameter);
-            ident name = noKvargsVersion.proc_header.name.meth_name;
+            renameFrom = LastParameter(pd).idents.idents[0].name;
+            var body = pd.proc_body;
+            base.visit(pd);
+            renameFrom = "";
+        }
+
+        public override void visit(ident id)
+        {
+            // сомнительно, лучше сделать другим визитором
+            if (renameFrom != "" && id.name == renameFrom)
+            {
+                id.name = "!kwargs";
+            }
+        }
+
+        private void AddNoKwargsVersion(procedure_definition pd)
+        {
+            procedure_definition noKwargsVersion = pd.TypedClone();
+            typed_parameters kwargs_parameter = LastParameter(noKwargsVersion);
+            noKwargsVersion.proc_header.parameters.Remove(kwargs_parameter);
+            ident name = noKwargsVersion.proc_header.name.meth_name;
             ident class_name = "!" + name;
 
-            if (IsForwardDeclaration(noKvargsVersion.proc_header))
+            if (IsForwardDeclaration(noKwargsVersion.proc_header))
             {
-                decls.Add(noKvargsVersion);
+                decls.Add(noKwargsVersion);
             }
             else
             {
-                List<typed_parameters> tp_list = noKvargsVersion.proc_header.parameters.params_list;
+                List<typed_parameters> tp_list = noKwargsVersion.proc_header.parameters.params_list;
                 expression_list args = new expression_list();
                 foreach (typed_parameters tp in tp_list)
                 {
@@ -76,9 +104,9 @@ namespace Languages.SPython.Frontend.Converters
                     }
                 }
 
-                dot_node ctor_call_name = new dot_node(class_name, new ident("Create"));
-                method_call ctor_call = new method_call(ctor_call_name, null);
-                dot_node dn = new dot_node(ctor_call, new ident(name.name));
+                new_expr ne = new new_expr(new named_type_reference(class_name), null, false, null);
+
+                dot_node dn = new dot_node(ne, new ident(name.name));
                 method_call method_call = new method_call(dn, args);
 
                 assign assign = new assign(new ident("result"), method_call, Operators.Assignment);
@@ -86,18 +114,36 @@ namespace Languages.SPython.Frontend.Converters
                 statement_list stmtlist = new statement_list(assign);
                 declarations empty_declarations = new declarations();
                 block block = new block(empty_declarations, stmtlist);
-                noKvargsVersion.proc_body = block;
-                current_decls.Add(noKvargsVersion);
+                noKwargsVersion.proc_body = block;
+                current_decls.Add(noKwargsVersion);
+            }
+        }
+
+        void CheckIfKwargParametorIsUsedCorrectly(procedure_definition pd)
+        {
+            var params_list = pd.proc_header.parameters.params_list;
+            for (int i = 0; i < params_list.Count() - 1; ++i)
+            {
+                if (IsKwargsParameter(params_list[i]))
+                {
+                    throw new SPythonSyntaxVisitorError("KWARG_PARAMETOR_NOT_LAST",
+                   params_list[i].source_context);
+                }
             }
         }
 
         public override void visit(procedure_definition pd)
         {
-            if (!HasKvargsParameter(pd))
+            if (!HasKwargsParameter(pd))
                 return;
-            
-            declaration d = CreateTypeDefinitionForKvargsFunction(pd);
-            AddNoKvargsVersion(pd);
+
+            // Проверяем что kwarg-параметр только последний
+            CheckIfKwargParametorIsUsedCorrectly(pd);
+
+            RenameKwargParametor(pd);
+
+            declaration d = CreateTypeDefinitionForKwargsFunction(pd);
+            AddNoKwargsVersion(pd);
             Replace(pd, d);
         }
 
@@ -110,21 +156,19 @@ namespace Languages.SPython.Frontend.Converters
             return false;
         }
 
-        private int createdDeclarations = 0;
-
-        private declaration CreateTypeDefinitionForKvargsFunction(procedure_definition pd)
+        private declaration CreateTypeDefinitionForKwargsFunction(procedure_definition pd)
         {
             procedure_definition new_pd = pd.TypedClone();
-            typed_parameters kvargs_parameter = LastParameter(new_pd);
-            new_pd.proc_header.parameters.Remove(kvargs_parameter);
+            typed_parameters kwargs_parameter = LastParameter(new_pd);
+            new_pd.proc_header.parameters.Remove(kwargs_parameter);
             ident name = new_pd.proc_header.name.meth_name;
             ident class_name = "!" + name;
 
             if (IsForwardDeclaration(new_pd.proc_header))
             {
                 // base class type
-                template_param_list tpl = new template_param_list(kvargs_parameter.vars_type, kvargs_parameter.source_context);
-                ident base_class_name = new ident("kvargs_gen`1");
+                template_param_list tpl = new template_param_list(kwargs_parameter.vars_type, kwargs_parameter.source_context);
+                ident base_class_name = new ident("kwargs_gen`1");
                 named_type_reference ntr = new named_type_reference(base_class_name);
                 template_type_reference ttr = new template_type_reference(ntr, tpl);
                 named_type_reference_list ntrl = new named_type_reference_list(ttr);

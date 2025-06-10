@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 10.06.2025 13:30:02
+// DateTime: 10.06.2025 17:50:16
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -1404,7 +1404,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 156: // form_param_sect -> STARSTAR, param_name, COLON, type_ref
 {
-			CurrentSemanticValue.stn = new typed_parameters(ValueStack[ValueStack.Depth-3].stn as ident_list, ValueStack[ValueStack.Depth-1].td, parametr_kind.kvargs_parameter, null, CurrentLocationSpan);
+			CurrentSemanticValue.stn = new typed_parameters(ValueStack[ValueStack.Depth-3].stn as ident_list, ValueStack[ValueStack.Depth-1].td, parametr_kind.kwargs_parameter, null, CurrentLocationSpan);
 		}
         break;
       case 157: // form_param_list -> form_param_sect
