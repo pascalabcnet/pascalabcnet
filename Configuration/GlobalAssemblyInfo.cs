@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDelaySign(false)]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("PascalABC.NET Compiler")]
-[assembly: AssemblyCopyright("Copyright © 2005-2021 by Ivan Bondarev, Stanislav Mihalkovich")]
+[assembly: AssemblyCopyright("Copyright © 2005-2025 by Ivan Bondarev, Stanislav Mihalkovich")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 [assembly: AssemblyVersion(RevisionClass.FullVersion)]
