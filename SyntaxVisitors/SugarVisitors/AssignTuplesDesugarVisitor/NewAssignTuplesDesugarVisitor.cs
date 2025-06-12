@@ -1,13 +1,11 @@
 ﻿using AssignTupleDesugarAlgorithm;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SyntaxVisitors.SugarVisitors
 {
-    public class NewAssignTuplesDesugarVisitor : AssignTuplesDesugarVisitor, IPipelineVisitor
+    public class NewAssignTuplesDesugarVisitor : AssignTuplesDesugarVisitor
     {
 
         private BindCollectLightSymInfo binder;
@@ -21,17 +19,6 @@ namespace SyntaxVisitors.SugarVisitors
         public NewAssignTuplesDesugarVisitor(BindCollectLightSymInfo binder)
         {
             this.binder = binder; 
-        }
-
-        public NewAssignTuplesDesugarVisitor() { }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            binder = context.Get<BindCollectLightSymInfo>("binder");
-
-            ProcessNode(root);
-
-            next();
         }
 
         List<statement> desugar(tuple_node tn, addressed_value_list vars)

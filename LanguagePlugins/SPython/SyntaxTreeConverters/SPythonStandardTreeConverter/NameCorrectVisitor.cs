@@ -1,47 +1,18 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
-using System;
 using System.Collections.Generic;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class NameCorrectVisitor : SymbolTableFillingVisitor, IPipelineVisitor
+    internal class NameCorrectVisitor : SymbolTableFillingVisitor
     {
         public HashSet<string> variablesUsedAsGlobal = new HashSet<string>();
 
-        public NameCorrectVisitor() : base() { }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        public NameCorrectVisitor(Dictionary<string, HashSet<string>> namesFromUsedUnits, HashSet<string> definedFunctionsNames) : base(namesFromUsedUnits) 
         {
-            bool forIntellisense = context.Get<bool>("forIntellisense");
-
-            symbolTable = new SymbolTable(context.Get<Dictionary<string, HashSet<string>>>("namesFromUsedUnits"));
-
-            foreach (string definedFunctionName in context.Get<HashSet<string>>("definedFunctionsNames"))
+            foreach (string definedFunctionName in definedFunctionsNames)
             {
                 symbolTable.Add(definedFunctionName, NameKind.ForwardDeclaredFunction);
             }
-
-            if (forIntellisense)
-            {
-                try
-                {
-                    ProcessNode(root);
-                }
-                catch (Exception)
-                {
-                    // при ошибке завершаем pipeline, т.к. дальнейший обход бесполезен
-                    return;
-                }
-            }
-            else
-            {
-                ProcessNode(root);
-            }
-
-            context.Set("variablesUsedAsGlobal", variablesUsedAsGlobal);
-
-            next();
         }
 
         public override void Enter(syntax_tree_node stn)

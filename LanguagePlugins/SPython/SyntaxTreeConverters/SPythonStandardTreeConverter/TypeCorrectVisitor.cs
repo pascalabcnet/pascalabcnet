@@ -1,21 +1,15 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
-using System;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    public class TypeCorrectVisitor : BaseChangeVisitor, IPipelineVisitor
+    public class TypeCorrectVisitor : BaseChangeVisitor
     {
 
         private bool forIntellisense;
 
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        public TypeCorrectVisitor(bool forIntellisense)
         {
-            forIntellisense = context.Get<bool>("forIntellisense");
-
-            ProcessNode(root);
-
-            next();
+            this.forIntellisense = forIntellisense;
         }
 
         public override void visit(named_type_reference _named_type_reference)

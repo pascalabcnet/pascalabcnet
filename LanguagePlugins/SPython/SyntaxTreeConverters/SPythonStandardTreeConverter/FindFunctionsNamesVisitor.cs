@@ -1,24 +1,11 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class FindFunctionsNamesVisitor : BaseChangeVisitor, IPipelineVisitor
+    internal class FindFunctionsNamesVisitor : BaseChangeVisitor
     {
-        private HashSet<string> definedFunctionsNames = new HashSet<string>();
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            context.Set("definedFunctionsNames", definedFunctionsNames);
-
-            next();
-        }
+        public HashSet<string> definedFunctionsNames = new HashSet<string>();
 
         public override void visit(procedure_definition pd)
         {

@@ -1,19 +1,10 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
-using System;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class ReturnDesugarVisitor : BaseChangeVisitor, IPipelineVisitor
+    internal class ReturnDesugarVisitor : BaseChangeVisitor
     {
         public ReturnDesugarVisitor() { }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            next();
-        }
 
         public override void visit(return_statement _return_statement)
         {

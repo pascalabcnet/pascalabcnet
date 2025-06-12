@@ -1,24 +1,18 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
-using System;
 using System.Collections.Generic;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class GeneratorObjectDesugarVisitor : BaseChangeVisitor, IPipelineVisitor
+    internal class GeneratorObjectDesugarVisitor : BaseChangeVisitor
     {
         private ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
         private syntax_tree_node root;
         private bool replaceRoot = false;
         private syntax_tree_node lastDesugaredNode = null;
 
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        public GeneratorObjectDesugarVisitor(syntax_tree_node root)
         {
             this.root = root;
-
-            ProcessNode(root);
-
-            next();
         }
 
         public syntax_tree_node UpdatedRoot()

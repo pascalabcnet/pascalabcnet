@@ -1,22 +1,13 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
-using System;
 using System.Collections.Generic;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class CompoundComparisonDesugarVisitor : BaseChangeVisitor, IPipelineVisitor
+    internal class CompoundComparisonDesugarVisitor : BaseChangeVisitor
     {
         private int curr_sl_index;
 
         public CompoundComparisonDesugarVisitor() { }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            next();
-        }
 
         public override void visit(statement_list sl)
         {

@@ -172,18 +172,11 @@ namespace SyntaxVisitors.CheckingVisitors
         }
 
     }
-    public class UnnamedRecordsCheckVisitor : BaseEnterExitVisitor, IPipelineVisitor
+    public class UnnamedRecordsCheckVisitor : BaseEnterExitVisitor
     {
         public static UnnamedRecordsCheckVisitor New
         {
             get { return new UnnamedRecordsCheckVisitor(); }
-        }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            next();
         }
 
         public override void Exit(syntax_tree_node st)

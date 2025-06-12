@@ -1,24 +1,16 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class KwargsFunctionDesugarVisitor: BaseChangeVisitor, IPipelineVisitor
+    internal class KwargsFunctionDesugarVisitor: BaseChangeVisitor
     {
         public KwargsFunctionDesugarVisitor() { }
 
         private declarations decls;
         private declarations current_decls;
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            next();
-        }
 
         public override void Enter(syntax_tree_node stn)
         {

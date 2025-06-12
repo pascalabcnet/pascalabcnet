@@ -1,11 +1,9 @@
-﻿using PascalABCCompiler.SyntaxTreeConverters;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace PascalABCCompiler.SyntaxTree
 {
-   public class BindCollectLightSymInfo : CollectLightSymInfoVisitor, IPipelineVisitor
+   public class BindCollectLightSymInfo : CollectLightSymInfoVisitor
     {
         protected override AbstractScopeCreator scopeCreator => _scopeCreator;
 
@@ -13,27 +11,9 @@ namespace PascalABCCompiler.SyntaxTree
 
         public BindCollectLightSymInfo(compilation_unit root) : base(root)
         {
-            InternalVisit(root);
-        }
-
-        public BindCollectLightSymInfo() : base() { }
-
-        private void InternalVisit(compilation_unit root)
-        {
             Current = Root;
             visit(root);
             Current = null;
-        }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            Root = scopeCreator.GetScope(root) as GlobalScopeSyntax;
-
-            InternalVisit(root as compilation_unit);
-
-            context.Set("binder", this);
-
-            next();
         }
 
         public BindResult bind(ident node)

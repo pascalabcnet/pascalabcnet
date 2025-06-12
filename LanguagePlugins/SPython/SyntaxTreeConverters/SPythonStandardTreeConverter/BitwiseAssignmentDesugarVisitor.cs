@@ -4,16 +4,9 @@ using System;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class BitwiseAssignmentDesugarVisitor : BaseChangeVisitor, IPipelineVisitor
+    internal class BitwiseAssignmentDesugarVisitor : BaseChangeVisitor
     {
         public BitwiseAssignmentDesugarVisitor() { }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            next();
-        }
 
         public override void visit(assign _assign)
         {

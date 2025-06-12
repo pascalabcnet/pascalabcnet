@@ -1,20 +1,11 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
 using System;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    public class EraseSpythonOnlyNodesVisitor : BaseChangeVisitor, IPipelineVisitor
+    public class EraseSpythonOnlyNodesVisitor : BaseChangeVisitor
     {
         public EraseSpythonOnlyNodesVisitor() {}
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            if (!context.Get<bool>("forIntellisense"))
-                ProcessNode(root);
-
-            next();
-        }
 
         public override void visit(global_statement _global_statement)
         {

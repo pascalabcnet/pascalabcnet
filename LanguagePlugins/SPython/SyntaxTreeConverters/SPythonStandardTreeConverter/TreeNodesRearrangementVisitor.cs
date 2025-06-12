@@ -1,11 +1,9 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
-using System;
 using System.Collections.Generic;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class TreeNodesRearrangementVisitor : BaseChangeVisitor, IPipelineVisitor
+    internal class TreeNodesRearrangementVisitor : BaseChangeVisitor
     {
         private procedure_definition mainFunction;
 
@@ -20,13 +18,6 @@ namespace Languages.SPython.Frontend.Converters
         private int scopeCounter = 0;
 
         public TreeNodesRearrangementVisitor() { }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            next();
-        }
 
         // нужны методы из BaseChangeVisitor, но порядок обхода из WalkingVisitorNew
         public override void DefaultVisit(syntax_tree_node n)

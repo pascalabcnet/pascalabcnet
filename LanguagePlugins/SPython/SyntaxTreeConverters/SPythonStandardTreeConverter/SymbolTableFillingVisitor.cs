@@ -13,8 +13,6 @@ namespace Languages.SPython.Frontend.Converters
             symbolTable = new SymbolTable(par);
         }
 
-        protected SymbolTableFillingVisitor() { }
-
         // нужны методы из BaseChangeVisitor, но порядок обхода из WalkingVisitorNew
         public override void DefaultVisit(syntax_tree_node n)
         {

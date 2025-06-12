@@ -6,8 +6,6 @@ namespace PascalABCCompiler.SyntaxTree
 {
     public abstract class CollectLightSymInfoVisitor : BaseEnterExitVisitor
     {
-
-
         public GlobalScopeSyntax Root;
         public ScopeSyntax Current;
         protected Dictionary<string, NamedScopeSyntax> classes = new Dictionary<string, NamedScopeSyntax>();
@@ -19,8 +17,6 @@ namespace PascalABCCompiler.SyntaxTree
         {
             Root = scopeCreator.GetScope(root) as GlobalScopeSyntax;
         }
-
-        protected CollectLightSymInfoVisitor() { }
 
         abstract protected AbstractScopeCreator scopeCreator
         { get; }

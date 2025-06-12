@@ -12,10 +12,6 @@ namespace PascalABCCompiler.SyntaxTreeConverters
     {
         public abstract string Name { get; }
 
-        protected virtual IPipelineVisitor[] VisitorsForConvert { get; }
-
-        protected virtual IPipelineVisitor[] VisitorsForConvertAfterUsedModulesCompilation => new IPipelineVisitor[0];
-
         public syntax_tree_node Convert(syntax_tree_node root, bool forIntellisense)
         {
             // Прошивание ссылками на Parent nodes. Должно идти первым
@@ -26,84 +22,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             return ApplyConversions(root, forIntellisense);
         }
 
-        protected virtual syntax_tree_node ApplyConversions(syntax_tree_node root, bool forIntellisense)
-        {
-            var context = new VisitorsContext();
+        protected abstract syntax_tree_node ApplyConversions(syntax_tree_node root, bool forIntellisense);
 
-            context.Set("forIntellisense", forIntellisense);
-
-            int i = 0;
-
-            if (forIntellisense)
-            {
-                PipelineSafe(VisitorsForConvert, context, root, i);
-            }
-            else
-            {
-                Pipeline(VisitorsForConvert, context, root, i);
-            }
-
-            return root;
-        }
-
-        public syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts) 
-        {
-            var context = new VisitorsContext();
-
-            context.Set("forIntellisense", forIntellisense);
-
-            context.Set("namesFromUsedUnits", compilationArtifacts.NamesFromUsedUnits);
-
-            int i = 0;
-
-            if (forIntellisense)
-            {
-                PipelineSafe(VisitorsForConvertAfterUsedModulesCompilation, context, root, i);
-            }
-            else
-            {
-                Pipeline(VisitorsForConvertAfterUsedModulesCompilation, context, root, i);
-            }
-
-            return root;
-        }
-
-        private void Pipeline(IPipelineVisitor[] visitors, VisitorsContext context, syntax_tree_node root, int index)
-        {
-            if (index == visitors.Length)
-                return;
-
-            visitors[index].Visit(root, context, () => Pipeline(visitors, context, root, index + 1));
-        }
-
-        private void PipelineSafe(IPipelineVisitor[] visitors, VisitorsContext context, syntax_tree_node root, int index)
-        {
-            if (index == visitors.Length)
-                return;
-
-            try
-            {
-                visitors[index].Visit(root, context, () => PipelineSafe(visitors, context, root, index + 1));
-            }
-            catch (Exception)
-            {
-                // Продолжаем пробовать обходить
-                PipelineSafe(visitors, context, root, index + 1);
-            }
-        }
-    }
-
-    public interface IPipelineVisitor
-    {
-        void Visit(syntax_tree_node root, VisitorsContext context, Action next);
-    }
-
-    public class VisitorsContext
-    {
-        public Dictionary<string, object> data = new Dictionary<string, object>();
-
-        public void Set(string key, object value) => data[key] = value;
-        public T Get<T>(string key) => (T)data[key];
+        public virtual syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts) => root;
     }
 
 
@@ -111,6 +32,6 @@ namespace PascalABCCompiler.SyntaxTreeConverters
     {
         public override string Name => "Default";
 
-        protected override IPipelineVisitor[] VisitorsForConvert => new IPipelineVisitor[0];
+        protected override syntax_tree_node ApplyConversions(syntax_tree_node root, bool forIntellisense) => root;
     }
 }

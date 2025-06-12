@@ -1,20 +1,12 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
 using System;
 using System.Linq;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class FunctionsWithNamedParametersDesugarVisitor : BaseChangeVisitor, IPipelineVisitor
+    internal class FunctionsWithNamedParametersDesugarVisitor : BaseChangeVisitor
     {
         public FunctionsWithNamedParametersDesugarVisitor() { }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            next();
-        }
 
         public override void visit(method_call _method_call)
         {
