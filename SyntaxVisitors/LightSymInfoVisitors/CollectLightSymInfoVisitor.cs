@@ -19,8 +19,8 @@ namespace PascalABCCompiler.SyntaxTree
         {
             Root = scopeCreator.GetScope(root) as GlobalScopeSyntax;
         }
-        
 
+        protected CollectLightSymInfoVisitor() { }
 
         abstract protected AbstractScopeCreator scopeCreator
         { get; }

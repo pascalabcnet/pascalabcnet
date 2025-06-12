@@ -1,37 +1,51 @@
-﻿using System;
+﻿using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
+using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.AccessControl;
-using System.Security.Cryptography;
-using System.Xml.Linq;
-using System.Xml.Serialization;
-using AssignTupleDesugarAlgorithm;
-using PascalABCCompiler.SyntaxTree;
-using SyntaxVisitors;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class NameCorrectVisitor : SymbolTableFillingVisitor
+    internal class NameCorrectVisitor : SymbolTableFillingVisitor, IPipelineVisitor
     {
-        private declarations decls;
-
         public HashSet<string> variablesUsedAsGlobal = new HashSet<string>();
 
-        public NameCorrectVisitor(Dictionary<string, HashSet<string>> par) : base(par) { }
+        public NameCorrectVisitor() : base() { }
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        {
+            bool forIntellisense = context.Get<bool>("forIntellisense");
+
+            symbolTable = new SymbolTable(context.Get<Dictionary<string, HashSet<string>>>("namesFromUsedUnits"));
+
+            foreach (string definedFunctionName in context.Get<HashSet<string>>("definedFunctionsNames"))
+            {
+                symbolTable.Add(definedFunctionName, NameKind.ForwardDeclaredFunction);
+            }
+
+            if (forIntellisense)
+            {
+                try
+                {
+                    ProcessNode(root);
+                }
+                catch (Exception)
+                {
+                    // при ошибке завершаем pipeline, т.к. дальнейший обход бесполезен
+                    return;
+                }
+            }
+            else
+            {
+                ProcessNode(root);
+            }
+
+            context.Set("variablesUsedAsGlobal", variablesUsedAsGlobal);
+
+            next();
+        }
 
         public override void Enter(syntax_tree_node stn)
         {
-            if (stn is program_module pm)
-            {
-                decls = pm.program_block.defs;
-            }
-            if (stn is interface_node intn)
-            {
-                decls = intn.interface_definitions;
-            }
             if (stn is ident && stn.Parent is dot_node dn && dn.right == stn)
             {
                 visitNode = false;
@@ -92,7 +106,14 @@ namespace Languages.SPython.Frontend.Converters
         public override void visit(named_type_reference _named_type_reference)
         {
             ident id = _named_type_reference.names[0];
-            NameKind nameKind = symbolTable[id.name];
+            string name = id.name;
+
+            if (name == "int" || name == "str" || name == "bool" || name == "float")
+            {
+                return;
+            }
+
+            NameKind nameKind = symbolTable[name];
             switch (nameKind)
             {
                 case NameKind.ModuleAlias:

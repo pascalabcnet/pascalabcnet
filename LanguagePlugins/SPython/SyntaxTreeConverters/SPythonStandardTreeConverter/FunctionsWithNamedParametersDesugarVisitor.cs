@@ -1,14 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Data;
+﻿using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
+using System;
 using System.Linq;
-using PascalABCCompiler.SyntaxTree;
-using SyntaxVisitors;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class FunctionsWithNamedParametersDesugarVisitor : BaseChangeVisitor
+    internal class FunctionsWithNamedParametersDesugarVisitor : BaseChangeVisitor, IPipelineVisitor
     {
         public FunctionsWithNamedParametersDesugarVisitor() { }
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        {
+            ProcessNode(root);
+
+            next();
+        }
 
         public override void visit(method_call _method_call)
         {

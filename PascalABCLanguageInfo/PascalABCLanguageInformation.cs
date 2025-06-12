@@ -156,6 +156,8 @@ namespace Languages.Pascal.Frontend.Data
 
         public override bool AddStandardNetNamespacesToUserScope => true;
 
+        public override bool UsesFunctionsOverlappingSourceContext => false;
+
         public override string GetDescription(IBaseScope scope)
         {
             switch (scope.Kind)
@@ -1678,8 +1680,8 @@ namespace Languages.Pascal.Frontend.Data
                 }
                 else
                 {
-                    sb.Append("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION") + ") ");
-                }
+                    sb.Append("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION")+ ") ");
+                }   
             }
 
             if (scope.IsStatic) sb.Append("static ");

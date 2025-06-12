@@ -1,8 +1,8 @@
-﻿using PascalABCCompiler.Parsers;
-using PascalABCCompiler.ParserTools.Directives;
+﻿using PascalABCCompiler.ParserTools.Directives;
 using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -34,6 +34,10 @@ namespace PascalABCCompiler.Parsers
         public abstract bool AddStandardUnitNamesToUserScope { get; }
 
         public abstract bool AddStandardNetNamespacesToUserScope { get; }
+
+        public abstract bool UsesFunctionsOverlappingSourceContext { get; }
+
+        public virtual Dictionary<string, string> SpecialModulesAliases => null;
 
         public virtual void RenameOrExcludeSpecialNames(SymInfo[] symInfos) { }
 
@@ -204,6 +208,15 @@ namespace PascalABCCompiler.Parsers
             {
                 return sc.Name + (((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>") && sc.Name != "class") ? "<>" : "") + ".";
             }
+
+            if (sc is IInterfaceUnitScope && SpecialModulesAliases != null)
+            {
+                var p = SpecialModulesAliases.FirstOrDefault(kv => kv.Value == sc.Name);
+
+                if (!p.Equals(default(KeyValuePair<string, string>)))
+                    return p.Key + ".";
+            }
+
             return sc.Name + ".";
         }
 

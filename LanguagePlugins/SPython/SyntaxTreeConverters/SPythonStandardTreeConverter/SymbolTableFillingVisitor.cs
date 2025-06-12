@@ -1,14 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.AccessControl;
-using System.Xml.Linq;
-using System.Xml.Serialization;
 using PascalABCCompiler.SyntaxTree;
-using SyntaxVisitors;
 
 namespace Languages.SPython.Frontend.Converters
 {
@@ -20,6 +12,8 @@ namespace Languages.SPython.Frontend.Converters
         public SymbolTableFillingVisitor(Dictionary<string, HashSet<string>> par) {
             symbolTable = new SymbolTable(par);
         }
+
+        protected SymbolTableFillingVisitor() { }
 
         // нужны методы из BaseChangeVisitor, но порядок обхода из WalkingVisitorNew
         public override void DefaultVisit(syntax_tree_node n)
@@ -71,6 +65,8 @@ namespace Languages.SPython.Frontend.Converters
         public override void visit(procedure_header _procedure_header)
         {
             string procedure_name = _procedure_header.name.meth_name.name;
+            // Сейчас здесь не могут быть встречены forward-объявления функций
+            // но на будущее...
             if (IsForwardDeclaration(_procedure_header))
             {
                 symbolTable.Add(procedure_name, NameKind.ForwardDeclaredFunction);
@@ -219,7 +215,7 @@ namespace Languages.SPython.Frontend.Converters
             private HashSet<string> forwardDeclaredFunctions = new HashSet<string>();
 
             static string[] Keywords = {
-                "integer", "real", "string", "boolean", // standard types
+                "int", "float", "str", "bool", // standard types
                 "break", "continue", "exit", "halt",    // standard ops
                 "true", "false",                        // constants
             };

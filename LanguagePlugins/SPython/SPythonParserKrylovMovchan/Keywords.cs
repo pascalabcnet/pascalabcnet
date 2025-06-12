@@ -24,7 +24,7 @@ namespace SPythonParser
             CreateNewKeyword("and", Tokens.AND);
             CreateNewKeyword("or", Tokens.OR);
             CreateNewKeyword("not", Tokens.NOT);
-            CreateNewKeyword("import", Tokens.IMPORT, KeywordKind.Uses);
+            CreateNewKeyword("import", Tokens.IMPORT /*, KeywordKind.Uses*/);
             CreateNewKeyword("from", Tokens.FROM);
             CreateNewKeyword("global", Tokens.GLOBAL);
             CreateNewKeyword("True", Tokens.TRUE);

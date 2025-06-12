@@ -4,6 +4,7 @@ using PascalABCCompiler.TreeRealization;
 using TreeConverter.LambdaExpressions;
 using System.Linq;
 using for_node = PascalABCCompiler.SyntaxTree.for_node;
+using System.Collections.Generic;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -108,9 +109,10 @@ namespace PascalABCCompiler.TreeConverter
                 
 
             var IsTuple = IsTupleType(t);
-            var IsSequence = !IsTuple && IsSequenceType(t);
+            var IsKeyValuePair = !IsTuple && IsKeyValuePairType(t);
+            var IsSequence = !IsTuple && !IsKeyValuePair && IsSequenceType(t);
 
-            if (!IsTuple && !IsSequence)
+            if (!IsTuple && !IsSequence && !IsKeyValuePair)
             {
                 AddError(inwhatloc, "TUPLE_OR_SEQUENCE_EXPECTED_FOREACH");
             }
@@ -119,7 +121,13 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var n = vars.idents.Count();
                 if (n > t.GetGenericArguments().Count())
-                    AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                    AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT");
+            }
+            if (IsKeyValuePair)
+            {
+                var n = vars.idents.Count();
+                if (n > 2)
+                    AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_KEYVALUEPAIR_ASSIGNMENT");
             }
         }
 

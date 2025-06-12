@@ -1,8 +1,6 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="Between">
 <param name="Keyword" value="Clamp">
-<param name="Keyword" value="ClampBottom">
-<param name="Keyword" value="ClampTop">
 <param name="Keyword" value="Divs">
 <param name="Keyword" value="DivsAll">
 <param name="Keyword" value="DivsAny">
@@ -20,12 +18,8 @@
 </HEAD><body><H1>ћетоды расширени€ типа integer</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Between(Self: integer; a, b: integer): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает True если значение находитс€ между двум€ другими</td></tr>
-<tr><td><code><b>function</b> Clamp(Self: integer; bottom,top: integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает число, ограниченное диапазоном от bottom до top включительно</td></tr>
-<tr><td><code><b>function</b> ClampBottom(Self: integer; bottom: integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает число, ограниченное величиной bottom снизу</td></tr>
-<tr><td><code><b>function</b> ClampTop(Self: integer; top: integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает число, ограниченное величиной top сверху</td></tr>
+<tr><td><code><b>function</b> Clamp(Self: integer; min,max: integer): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает число, ограниченное диапазоном от min до max включительно</td></tr>
 <tr><td><code><b>function</b> Divs(Self,d: integer): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает True если целое делитс€ на указанное значение</td></tr>
 <tr><td><code><b>function</b> DivsAll(Self: integer; <b>params</b> a: <b>array</b>  <b>of</b> integer): boolean;</code>
@@ -35,7 +29,7 @@
 <tr><td><code><b>function</b> Downto(Self: integer; n: integer): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;√енерирует последовательность целых от текущего значени€ до n в убывающем пор€дке</td></tr>
 <tr><td><code><b>function</b> InRange(Self: integer; a,b: integer): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает True если значение находитс€ между двум€ другими</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает True если значение находитс€ в диапазоне [a,b]</td></tr>
 <tr><td><code><b>function</b> IsEven(Self: integer): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает, €вл€етс€ ли целое четным</td></tr>
 <tr><td><code><b>function</b> IsOdd(Self: integer): boolean;</code>

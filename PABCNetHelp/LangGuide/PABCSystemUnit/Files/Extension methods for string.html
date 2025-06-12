@@ -31,11 +31,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Методы расширения типа string</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Between(Self: string; a, b: string): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится между двумя другими</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если строка находится между двумя другими (лексикографическое сравнение)</td></tr>
 <tr><td><code><b>function</b> IndicesOf(Self, SubS: string; overlay: boolean := False): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов вхождений подстроки в основную строкуПараметр overlay определяет, разрешены ли перекрытия вхождений подстрок</td></tr>
 <tr><td><code><b>function</b> InRange(Self: string; a, b: string): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится между двумя другими</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если строка находится в диапазоне [a,b] (лексикографическое сравнение)</td></tr>
 <tr><td><code><b>function</b> Inverse(Self: string): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает инверсию строки</td></tr>
 <tr><td><code><b>function</b> IsInteger(Self: string): boolean;</code>

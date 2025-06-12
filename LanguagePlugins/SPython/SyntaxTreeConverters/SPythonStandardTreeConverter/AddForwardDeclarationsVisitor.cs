@@ -1,15 +1,21 @@
-﻿using Languages.Pascal.Frontend.Converters;
-using PascalABCCompiler;
-using PascalABCCompiler.SyntaxTree;
+﻿using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SyntaxTreeConverters;
+using System;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class AddForwardDeclarationsVisitor : BaseChangeVisitor
+    internal class AddForwardDeclarationsVisitor : BaseChangeVisitor, IPipelineVisitor
     {
         private declarations decls;
 
         public AddForwardDeclarationsVisitor() { }
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        {
+            ProcessNode(root);
+
+            next();
+        }
 
         public override void Enter(syntax_tree_node stn)
         {

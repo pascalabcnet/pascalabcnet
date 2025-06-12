@@ -27,11 +27,11 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
         //ExecutionOrder ExecutionOrder { get; }
 
-        syntax_tree_node Convert(syntax_tree_node root);
+        syntax_tree_node Convert(syntax_tree_node root, bool forIntellisense);
 
         /// <summary>
         /// Применение синтаксических визиторов после компиляции всех зависимостей (с использованием семантической информации)
         /// </summary>
-        syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts);
+        syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts);
     }
 }

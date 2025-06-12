@@ -3,6 +3,7 @@ using PascalABCCompiler.ParserTools.Directives;
 using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -36,6 +37,8 @@ namespace Languages.SPython.Frontend.Data
 
         public override bool AddStandardNetNamespacesToUserScope => false;
 
+        public override bool UsesFunctionsOverlappingSourceContext => true;
+
         private readonly Dictionary<string, string> renamings = new Dictionary<string, string>
         {
             ["biginteger"] = "bigint"
@@ -43,8 +46,16 @@ namespace Languages.SPython.Frontend.Data
 
         private readonly HashSet<string> exclutions = new HashSet<string>
         {
-            "PABCSystem", "__NewSetCreatorInternal"
+            "__NewSetCreatorInternal"
         };
+
+        private readonly Dictionary<string, string> specialModulesAliases = new Dictionary<string, string>
+        {
+            { "time", "time1" },
+            { "random", "random1" },
+        };
+
+        public override Dictionary<string, string> SpecialModulesAliases => specialModulesAliases;
 
         public override void RenameOrExcludeSpecialNames(SymInfo[] symInfos)
         {
@@ -1324,6 +1335,11 @@ namespace Languages.SPython.Frontend.Data
 
         private string GetDescriptionForModule(IInterfaceUnitScope scope)
         {
+            var p = specialModulesAliases.FirstOrDefault(kv => kv.Value == scope.Name);
+
+            if (!p.Equals(default(KeyValuePair<string, string>)))
+                return "unit " + p.Key;
+
             return "unit " + scope.Name;
         }
 

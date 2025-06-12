@@ -1,17 +1,22 @@
 ﻿using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 
 namespace SyntaxVisitors.SugarVisitors
 {
-    public class PropertyDesugarVisitor : BaseChangeVisitor
+    public class PropertyDesugarVisitor : BaseChangeVisitor, IPipelineVisitor
     {
         public static PropertyDesugarVisitor New
         {
             get { return new PropertyDesugarVisitor(); }
+        }
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        {
+            ProcessNode(root);
+
+            next();
         }
 
         public override void visit(class_members _class_members)

@@ -10,7 +10,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
     // Первое предназначение - вынести последовательность из заголовка в foreach до foreach как отдельное присваивание
     // Второе предназначение - переименовать все переменные, совпадающие по имени с типом T обобщенного класса, в котором находится метод, содержащий лямбду
-    public class VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer: CollectFullLightSymInfoVisitor
+    public class VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer: CollectFullLightSymInfoVisitor, IPipelineVisitor
     {
         /// <summary>
         /// Надо приводить к нижнему регистру
@@ -32,6 +32,17 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         {
 
         }
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        {
+            Root = scopeCreator.GetScope(root) as GlobalScopeSyntax;
+
+            ProcessNode(root);
+
+            next();
+        }
+
+        public VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer() : base() { }
 
         public override void AddSymbol(ident name, SymKind kind, type_definition td = null, SymbolAttributes attr = 0)
         {

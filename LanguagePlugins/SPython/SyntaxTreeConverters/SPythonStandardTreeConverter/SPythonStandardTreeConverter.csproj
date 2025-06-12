@@ -12,6 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Errors\Errors.csproj" />
+    <ProjectReference Include="..\..\..\..\LanguageIntegrator\LanguageIntegrator.csproj" />
     <ProjectReference Include="..\..\..\..\Localization\Localization.csproj" />
     <ProjectReference Include="..\..\..\..\SyntaxTree\SyntaxTree.csproj" />
     <ProjectReference Include="..\..\..\..\SyntaxVisitors\SyntaxVisitors.csproj" />

@@ -1,16 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Security.Cryptography.X509Certificates;
-using PascalABCCompiler.SyntaxTree;
-using SyntaxVisitors;
+﻿using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
+using System;
+using System.Collections.Generic;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class CompoundComparisonDesugarVisitor : BaseChangeVisitor
+    internal class CompoundComparisonDesugarVisitor : BaseChangeVisitor, IPipelineVisitor
     {
         private int curr_sl_index;
 
         public CompoundComparisonDesugarVisitor() { }
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        {
+            ProcessNode(root);
+
+            next();
+        }
 
         public override void visit(statement_list sl)
         {

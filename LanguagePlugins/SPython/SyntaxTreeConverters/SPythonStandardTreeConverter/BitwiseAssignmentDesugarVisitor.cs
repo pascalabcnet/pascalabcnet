@@ -1,14 +1,19 @@
 ﻿using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class BitwiseAssignmentDesugarVisitor : BaseChangeVisitor
+    internal class BitwiseAssignmentDesugarVisitor : BaseChangeVisitor, IPipelineVisitor
     {
         public BitwiseAssignmentDesugarVisitor() { }
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        {
+            ProcessNode(root);
+
+            next();
+        }
 
         public override void visit(assign _assign)
         {

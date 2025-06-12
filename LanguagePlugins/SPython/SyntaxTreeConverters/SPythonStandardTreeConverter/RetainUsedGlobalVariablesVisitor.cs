@@ -1,19 +1,27 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using PascalABCCompiler.SyntaxTree;
-using SyntaxVisitors.PatternsVisitors;
+﻿using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
+using System;
+using System.Collections.Generic;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    public class RetainUsedGlobalVariablesVisitor : BaseChangeVisitor
+    public class RetainUsedGlobalVariablesVisitor : BaseChangeVisitor, IPipelineVisitor
     {
-        public HashSet<string> variablesUsedAsGlobal = new HashSet<string>();
+        private HashSet<string> variablesUsedAsGlobal = new HashSet<string>();
         private int scopeCounter = 0;
         private declarations decls;
         private bool isUnitCompiled = false;
 
         public RetainUsedGlobalVariablesVisitor() {}
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        {
+            variablesUsedAsGlobal = context.Get<HashSet<string>>("variablesUsedAsGlobal");
+
+            ProcessNode(root);
+
+            next();
+        }
 
         // нужны методы из BaseChangeVisitor, но порядок обхода из WalkingVisitorNew
         public override void DefaultVisit(syntax_tree_node n)

@@ -132,6 +132,8 @@ namespace PascalABCCompiler.Parsers
 
         void RenameOrExcludeSpecialNames(SymInfo[] symInfos);
 
+        Dictionary<string, string> SpecialModulesAliases { get; }
+
         BaseKeywords KeywordsStorage
         {
             get;
@@ -172,6 +174,14 @@ namespace PascalABCCompiler.Parsers
         }
 
         bool AddStandardNetNamespacesToUserScope
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Может ли source context функций быть вложен в source context других функций
+        /// </summary>
+        bool UsesFunctionsOverlappingSourceContext
         {
             get;
         }

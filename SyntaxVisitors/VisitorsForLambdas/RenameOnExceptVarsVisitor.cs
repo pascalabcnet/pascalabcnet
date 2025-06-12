@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
 
 namespace SyntaxVisitors
 {
@@ -54,12 +55,20 @@ namespace SyntaxVisitors
         }
     }
 
-    public class FindOnExceptVarsAndApplyRenameVisitor : BaseChangeVisitor
+    public class FindOnExceptVarsAndApplyRenameVisitor : BaseChangeVisitor, IPipelineVisitor
     {
         public static FindOnExceptVarsAndApplyRenameVisitor New
         {
             get { return new FindOnExceptVarsAndApplyRenameVisitor();  }
         }
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        {
+            ProcessNode(root);
+
+            next();
+        }
+
         public override void visit(exception_handler eh)
         {
             if (eh.variable != null)

@@ -1,9 +1,7 @@
 ﻿using Languages.Pascal.Frontend.Converters;
-using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SyntaxTreeConverters;
 using SyntaxVisitors.SugarVisitors;
-using System.Reflection;
 
 namespace Languages.SPython.Frontend.Converters
 {
@@ -11,81 +9,69 @@ namespace Languages.SPython.Frontend.Converters
     {
         public override string Name { get; } = "Standard";
 
-        protected override syntax_tree_node ApplyConversions(syntax_tree_node root)
+        protected override IPipelineVisitor[] VisitorsForConvert => new IPipelineVisitor[]
         {
             // кидает ошибки за использование 
             // неподдерживаемых конструкций языка
-            var ucv = new UnsupportedConstructsVisitor();
-            ucv.ProcessNode(root);
+            new UnsupportedConstructsVisitor(),
 
             // добавление всех import ..., from ... import ...
             // как uses в начале программы для сбора имён из этих модулей
-            var ituv = new ImportToUsesVisitor();
-            ituv.ProcessNode(root);
+            new ImportToUsesVisitor(),
 
-            // замена name bin_bit_op= expr
-            // на name = name bit_bit_op (expr)
-            var bsdv = new BitwiseAssignmentDesugarVisitor();
-            bsdv.ProcessNode(root);
+            // замена
+            // name bin_bit_op= expr
+            // на
+            // name = name bin_bit_op (expr)
+            new BitwiseAssignmentDesugarVisitor(),
 
             // замена return;       на { exit(); }
             // замена return expr;  на { result := expr; exit(); }
-            var rdv = new ReturnDesugarVisitor();
-            rdv.ProcessNode(root);
+            new ReturnDesugarVisitor(),
 
             // замена вызова функции map(func, sequence)
             // на func(element) for element in sequence
-            var mdv = new MapDesugarVisitor();
-            mdv.ProcessNode(root);
+            new MapDesugarVisitor(),
 
             // замена генерации последовательностей на Select.Where
-            // (не работает из-за лямбд, если переместить в ConvertAfterUsedModulesCompilation)
-            var godv = new GeneratorObjectDesugarVisitor(root);
-            godv.ProcessNode(root);
+            // (не работает из-за лямбд (скорее всего), если переместить в ConvertAfterUsedModulesCompilation)
+            new GeneratorObjectDesugarVisitor(),
 
             // дешугаризация составных сравнительных операций (e.g. a == b == c)
-            var ccdv = new CompoundComparisonDesugarVisitor();
-            ccdv.ProcessNode(root);
+            new CompoundComparisonDesugarVisitor(),
+        };
 
-            // замена типов из SPython на типы из PascalABC.NET
-            var tcv = new TypeCorrectVisitor();
-            tcv.ProcessNode(root);
-
-            return root;
-        }
-
-        public override syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts)
+        protected override IPipelineVisitor[] VisitorsForConvertAfterUsedModulesCompilation => new IPipelineVisitor[]
         {
+            // Сохраняет множество имён функций, которые объявлены в программе для NameCorrectVisitor
+            new FindFunctionsNamesVisitor(),
+
             // проверка корректности имён, разрешение неоднозначности
             // сохранение множества переменных, использующихся как глобальные в ncv.variablesUsedAsGlobal
-            var ncv = new NameCorrectVisitor(compilationArtifacts.NamesFromUsedUnits);
-            ncv.ProcessNode(root);
+            new NameCorrectVisitor(),
 
+            // замена типов из SPython на типы из PascalABC.NET
+            new TypeCorrectVisitor(),
 
-            var binder = new BindCollectLightSymInfo(root as compilation_unit);
-            NewAssignTuplesDesugarVisitor.Create(binder).ProcessNode(root);
-
+            // украл из паскаля, нужны для работы 'for i1, i2 in expr' (работает с кортежными присваиваниями)
+            new BindCollectLightSymInfo(),
+            new NewAssignTuplesDesugarVisitor(),
 
             // вынос forward объявлений для всех функций в начало
-            var afdv = new AddForwardDeclarationsVisitor();
-            afdv.ProcessNode(root);
+            new AddForwardDeclarationsVisitor(),
 
-            var kfdv = new KwargsFunctionDesugarVisitor();
-            kfdv.ProcessNode(root);
+            // выполняет генерацию кода для функций с kwarg-аргументами
+            new KwargsFunctionDesugarVisitor(),
 
-            // замена вызова функций с именованными параметрами на вызов метода класса
-            var fwnpdv = new FunctionsWithNamedParametersDesugarVisitor();
-            fwnpdv.ProcessNode(root);
+            // замена вызова функций с kwarg-аргументами на вызов метода класса
+            new FunctionsWithNamedParametersDesugarVisitor(),
 
             // выносит объявлений переменных из ncv.variablesUsedAsGlobal на глобальный уровень
             // (в модулях все переменные, объявленные на глобальном уровне являются глобальными)
-            var rugvv = new RetainUsedGlobalVariablesVisitor();
-            rugvv.variablesUsedAsGlobal = ncv.variablesUsedAsGlobal;
-            rugvv.ProcessNode(root);
+            new RetainUsedGlobalVariablesVisitor(),
 
             // удаление специфичных синтаксических узлов Spython'a перед конвертацией в семантическое дерево
-            var esonv = new EraseSpythonOnlyNodesVisitor();
-            esonv.ProcessNode(root);
+            new EraseSpythonOnlyNodesVisitor(),
 
             // перестроение структуры дерева, для последующих этапов компиляции
             // итоговое представление:
@@ -94,10 +80,7 @@ namespace Languages.SPython.Frontend.Converters
             // 3) объявление функции %%MAIN%%, содержащей компилируемую программу
             // 4) объявления функций, объявленных в программе
             // 5) begin %%MAIN%%() end.
-            var tnrv = new TreeNodesRearrangementVisitor();
-            tnrv.ProcessNode(root);
-
-            return root;
-        }
+            new TreeNodesRearrangementVisitor()
+        };
     }
 }

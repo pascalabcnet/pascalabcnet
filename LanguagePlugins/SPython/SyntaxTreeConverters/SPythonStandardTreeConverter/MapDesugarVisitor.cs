@@ -1,13 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using PascalABCCompiler.SyntaxTree;
-using SyntaxVisitors;
+﻿using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
+using System;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class MapDesugarVisitor : BaseChangeVisitor
+    internal class MapDesugarVisitor : BaseChangeVisitor, IPipelineVisitor
     {
         public MapDesugarVisitor() { }
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        {
+            ProcessNode(root);
+
+            next();
+        }
 
         public override void visit(method_call mc)
         {

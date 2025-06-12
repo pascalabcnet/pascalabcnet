@@ -708,11 +708,21 @@ namespace CodeCompletion
             return this.FindScopeByLocation(line, column);
         }
 
-        //naiti scope po location
-        //algoritm lokalizueztsja scope v glubinu poka ne naidetsja istinnyj scope, soderzhashij mesto gde nahodimsja
         public virtual SymScope FindScopeByLocation(int line, int column)
         {
+            SymScope minScope = null;
+            return FindScopeByLocation(line, column, ref minScope);
+        }
+
+        //naiti scope po location
+        //algoritm lokalizueztsja scope v glubinu poka ne naidetsja istinnyj scope, soderzhashij mesto gde nahodimsja
+        public virtual SymScope FindScopeByLocation(int line, int column, ref SymScope minScope)
+        {
             SymScope res = null;
+
+            // задает нужна ли модификация алгоритма с обходом всех кандидатов   EVA
+            bool findMinScope = CodeCompletionController.CurrentParser.LanguageInformation.UsesFunctionsOverlappingSourceContext;
+
             cur_line = line;
             cur_col = column;
             if (members == null) return null;
@@ -730,19 +740,53 @@ namespace CodeCompletion
                         if (this is TypeScope && ss.loc.end_line_num > loc.end_line_num)
                             continue;
                         res = ss;
-                        SymScope tmp = ss.FindScopeByLocation(line, column);
+                        
+                        SymScope tmp = ss.FindScopeByLocation(line, column, ref minScope);
                         if (tmp != null)
-                            return tmp;
-                        else
+                        {
+                            res = tmp;
+                        }
+
+                        if (!findMinScope)
                             return res;
+
+                        UpdateMinScopeIfNeeded(ref minScope, res);
                     }
                     else if (!(ss is CompiledScope))
                     {
-                        SymScope tmp = ss.FindScopeByLocation(line, column);
-                        if (tmp != null) return tmp;
+                        SymScope tmp = ss.FindScopeByLocation(line, column, ref minScope);
+                        if (tmp != null)
+                        {
+                            res = tmp;
+
+                            if (!findMinScope)
+                                return res;
+                            
+                            UpdateMinScopeIfNeeded(ref minScope, res);
+                        }
                     }
                 }
             return res;
+        }
+
+        /// <summary>
+        /// Сравнивает minScope и scopeToCompare, если второй занимает меньше строк или minScope = null, то minScope = scopeToCompare.
+        /// scopeToCompare не должен быть равен null
+        /// </summary>
+        /// <returns></returns>
+        private static SymScope UpdateMinScopeIfNeeded(ref SymScope minScope, SymScope scopeToCompare)
+        {
+            if (minScope != null)
+            {
+                if (scopeToCompare.loc.end_line_num - scopeToCompare.loc.begin_line_num < minScope.loc.end_line_num - minScope.loc.begin_line_num)
+                    minScope = scopeToCompare;
+            }
+            else
+            {
+                minScope = scopeToCompare;
+            }
+
+            return minScope;
         }
 
         //poluchenie vseh imen posle tochki

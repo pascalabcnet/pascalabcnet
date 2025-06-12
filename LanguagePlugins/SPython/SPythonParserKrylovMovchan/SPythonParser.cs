@@ -86,7 +86,7 @@ namespace SPythonParser
 
             foreach (ISyntaxTreeConverter converter in SyntaxTreeConvertersForIntellisense)
             {
-                expr = (expression)converter.Convert(expr);
+                expr = (expression)converter.Convert(expr, true);
             }
 
             return expr;
@@ -106,7 +106,7 @@ namespace SPythonParser
 
             foreach (ISyntaxTreeConverter converter in SyntaxTreeConvertersForIntellisense)
             {
-                expr = (expression)converter.Convert(expr);
+                expr = (expression)converter.Convert(expr, true);
             }
             
             return expr;
@@ -137,7 +137,7 @@ namespace SPythonParser
 
             foreach (ISyntaxTreeConverter converter in SyntaxTreeConvertersForIntellisense)
             {
-                st = (statement)converter.Convert(st);
+                st = (statement)converter.Convert(st, true);
             }
 
             return st;

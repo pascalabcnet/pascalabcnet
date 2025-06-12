@@ -1,13 +1,11 @@
 ﻿using Languages.SPython.Frontend.Converters;
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Languages.Pascal.Frontend.Converters
 {
-    public class UnsupportedConstructsVisitor : BaseEnterExitVisitor
+    public class UnsupportedConstructsVisitor : BaseEnterExitVisitor, IPipelineVisitor
     {
         private int blockLevel = 0;
         // function returns a value
@@ -16,6 +14,14 @@ namespace Languages.Pascal.Frontend.Converters
         private bool isInProcedure = false;
 
         public UnsupportedConstructsVisitor() { }
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        {
+            if (!context.Get<bool>("forIntellisense"))
+                ProcessNode(root);
+
+            next();
+        }
 
         public override void Enter(syntax_tree_node st)
         {

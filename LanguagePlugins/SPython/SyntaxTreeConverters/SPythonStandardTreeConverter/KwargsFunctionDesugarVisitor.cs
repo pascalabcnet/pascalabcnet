@@ -1,18 +1,24 @@
 ﻿using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class KwargsFunctionDesugarVisitor: BaseChangeVisitor
+    internal class KwargsFunctionDesugarVisitor: BaseChangeVisitor, IPipelineVisitor
     {
         public KwargsFunctionDesugarVisitor() { }
 
         private declarations decls;
         private declarations current_decls;
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        {
+            ProcessNode(root);
+
+            next();
+        }
 
         public override void Enter(syntax_tree_node stn)
         {
@@ -109,9 +115,19 @@ namespace Languages.SPython.Frontend.Converters
                 dot_node dn = new dot_node(ne, new ident(name.name));
                 method_call method_call = new method_call(dn, args);
 
-                assign assign = new assign(new ident("result"), method_call, Operators.Assignment);
+                statement stmt;
 
-                statement_list stmtlist = new statement_list(assign);
+                if (pd.proc_header is function_header)
+                {
+                    stmt = new assign(new ident("result"), method_call, Operators.Assignment);
+                }
+                else
+                {
+                    stmt = new procedure_call(method_call, false);
+                }
+
+                statement_list stmtlist = new statement_list(stmt);
+
                 declarations empty_declarations = new declarations();
                 block block = new block(empty_declarations, stmtlist);
                 noKwargsVersion.proc_body = block;

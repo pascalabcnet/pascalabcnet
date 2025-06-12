@@ -18,14 +18,14 @@ namespace Languages.SPython
             docParser: null,
 
             syntaxTreeConverters: new List<ISyntaxTreeConverter>() { new Frontend.Converters.StandardSyntaxTreeConverter(), new SyntaxSemanticVisitors.LambdaAnyConverter() },
-            syntaxTreeConvertersForIntellisense: new List<ISyntaxTreeConverter>() { new Frontend.Converters.StandardSyntaxTreeConverterForIntellisense() },
+            applySyntaxTreeConvertersForIntellisense: true,
 
             filesExtensions: new string[] { ".pys" },
             caseSensitive: true,
             systemUnitNames: new string[] { "SPythonSystem", "SPythonHidden", "SPythonSystemPys" }
             )
         {
-            ((SPythonParser.SPythonLanguageParser)Parser).SyntaxTreeConvertersForIntellisense = SyntaxTreeConvertersForIntellisense;
+            ((SPythonParser.SPythonLanguageParser)Parser).SyntaxTreeConvertersForIntellisense = SyntaxTreeConverters;
         }
 
         /// <summary>

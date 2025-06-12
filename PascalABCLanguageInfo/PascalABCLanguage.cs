@@ -23,7 +23,7 @@ namespace Languages.Pascal
             docParser: new Frontend.Documentation.PascalDocTagsLanguageParser(),
 
             syntaxTreeConverters: new List<ISyntaxTreeConverter>() { new Frontend.Converters.StandardSyntaxTreeConverter(), new SyntaxSemanticVisitors.LambdaAnyConverter() },
-            syntaxTreeConvertersForIntellisense: null,
+            applySyntaxTreeConvertersForIntellisense: false,
             
             filesExtensions: new string[] { StringConstants.pascalSourceFileExtension },
             caseSensitive: false,

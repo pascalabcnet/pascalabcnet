@@ -45,7 +45,7 @@ namespace Languages.Facade
         /// </summary>
         List<ISyntaxTreeConverter> SyntaxTreeConverters { get; }
 
-        List<ISyntaxTreeConverter> SyntaxTreeConvertersForIntellisense { get; }
+        bool ApplySyntaxTreeConvertersForIntellisense { get; }
 
         /// <summary>
         /// Преобразователь из синтаксического дерева в семантическое

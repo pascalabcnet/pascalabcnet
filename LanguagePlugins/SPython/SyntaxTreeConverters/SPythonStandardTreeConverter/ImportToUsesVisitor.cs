@@ -1,25 +1,25 @@
-﻿using System;
-using System.Collections;
+﻿using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
+using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Security.Cryptography;
-using PascalABCCompiler.SyntaxTree;
-using SyntaxVisitors;
 
 namespace Languages.SPython.Frontend.Converters
 {
-    internal class ImportToUsesVisitor : BaseChangeVisitor
+    internal class ImportToUsesVisitor : BaseChangeVisitor, IPipelineVisitor
     {
         Dictionary<string, SourceContext> modulesNames = new Dictionary<string, SourceContext>();
 
         public ImportToUsesVisitor() { }
 
-        private Dictionary<string, string> specialModulesAliases = new Dictionary<string, string>
+        private Dictionary<string, string> specialModulesAliases = Facade.LanguageProvider.Instance.SelectLanguageByName("SPython").LanguageInformation.SpecialModulesAliases;
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
         {
-            { "time", "time1" },
-            { "random", "random1" },
-        };
+            if (!context.Get<bool>("forIntellisense"))
+                ProcessNode(root);
+
+            next();
+        }
 
         private string GetNameToImport(string nameToImport)
         {

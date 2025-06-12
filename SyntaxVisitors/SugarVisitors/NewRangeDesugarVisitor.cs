@@ -2,19 +2,25 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
 
 namespace SyntaxVisitors.SugarVisitors
 {
 
-    public class NewRangeDesugarAndFindHasYieldVisitor : BaseChangeVisitor
+    public class NewRangeDesugarAndFindHasYieldVisitor : BaseChangeVisitor, IPipelineVisitor
     {
         public static NewRangeDesugarAndFindHasYieldVisitor New
         {
             get { return new NewRangeDesugarAndFindHasYieldVisitor(); }
+        }
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        {
+            ProcessNode(root);
+
+            next();
         }
 
         public override void visit(diapason_expr_new diap)

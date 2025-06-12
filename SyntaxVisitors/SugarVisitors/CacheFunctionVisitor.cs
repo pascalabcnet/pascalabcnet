@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
 
 namespace SyntaxVisitors.SugarVisitors
 {
-    public class CacheFunctionVisitor : BaseChangeVisitor
+    public class CacheFunctionVisitor : BaseChangeVisitor, IPipelineVisitor
     {
         private static int num = 0;
         public static string UniqueNumStr()
@@ -18,6 +18,13 @@ namespace SyntaxVisitors.SugarVisitors
         public static CacheFunctionVisitor New
         {
             get { return new CacheFunctionVisitor(); }
+        }
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        {
+            ProcessNode(root);
+
+            next();
         }
 
         public override void visit(simple_attribute_list al)

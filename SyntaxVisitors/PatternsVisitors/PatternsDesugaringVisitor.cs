@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
 
 namespace SyntaxVisitors.PatternsVisitors
 {
@@ -80,7 +81,7 @@ namespace SyntaxVisitors.PatternsVisitors
         public List<semantic_check_sugared_statement_node> ElemTypeChecks { get; set; } = new List<semantic_check_sugared_statement_node>();
     }
 
-    public class PatternsDesugaringVisitor : BaseChangeVisitor
+    public class PatternsDesugaringVisitor : BaseChangeVisitor, IPipelineVisitor
     {
         private enum PatternLocation { Unknown, IfCondition, Assign }
 
@@ -109,6 +110,13 @@ namespace SyntaxVisitors.PatternsVisitors
         private List<statement> typeChecks = new List<statement>();
 
         public static PatternsDesugaringVisitor New => new PatternsDesugaringVisitor();
+
+        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
+        {
+            ProcessNode(root);
+
+            next();
+        }
 
         public override void visit(match_with matchWith)
         {
