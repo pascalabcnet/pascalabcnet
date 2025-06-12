@@ -36,6 +36,10 @@ namespace Languages.SPython.Frontend.Converters
                 case Operators.AssignmentBitwiseRightShift: {
                         bin_op_type = Operators.BitwiseRightShift;
                         break; }
+                case Operators.AssignmentIntDivision: {
+                        bin_op_type = Operators.IntegerDivision;
+                        break;
+                    }
                 default: {
                         return; }
             }

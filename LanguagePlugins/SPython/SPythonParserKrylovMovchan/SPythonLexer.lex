@@ -113,6 +113,8 @@ BIGINTNUM {INTNUM}bi
   return res;
 }
 
+"//="  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.AssignmentIntDivision); return (int)Tokens.INTDIVISIONEQUAL; }
+
 "+=" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.AssignmentAddition); return (int)Tokens.PLUSEQUAL; }
 "-=" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.AssignmentSubtraction); return (int)Tokens.MINUSEQUAL; }
 "*=" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.AssignmentMultiplication); return (int)Tokens.STAREQUAL; }
@@ -150,6 +152,7 @@ BIGINTNUM {INTNUM}bi
 "<<=" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.AssignmentBitwiseLeftShift); return (int)Tokens.SHLEQUAL; }
 ">>=" { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.AssignmentBitwiseRightShift); return (int)Tokens.SHREQUAL; }
 "^="  { yylval = new SPythonParserYacc.ValueType(); yylval.op = new op_type_node(Operators.AssignmentBitwiseXOR); return (int)Tokens.BINXOREQUAL; }
+
 
 "#{" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.INDENT; }
 "#}" { yylval = new SPythonParserYacc.ValueType(); return (int)Tokens.UNINDENT; }

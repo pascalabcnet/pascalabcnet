@@ -45,7 +45,7 @@
 %token <ex> INTNUM REALNUM TRUE FALSE BIGINT FSTRINGNUM
 %token <ti> LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET DOT COMMA COLON SEMICOLON ARROW
 %token <stn> STRINGNUM
-%token <op> ASSIGN PLUSEQUAL MINUSEQUAL STAREQUAL DIVEQUAL BINXOREQUAL SHLEQUAL SHREQUAL BINANDEQUAL BINOREQUAL
+%token <op> ASSIGN PLUSEQUAL MINUSEQUAL STAREQUAL DIVEQUAL BINXOREQUAL SHLEQUAL SHREQUAL BINANDEQUAL BINOREQUAL INTDIVISIONEQUAL
 %token <op> PLUS MINUS STAR DIVIDE SLASHSLASH PERCENTAGE
 %token <id> ID
 %token <op> LESS GREATER LESSEQUAL GREATEREQUAL EQUAL NOTEQUAL
@@ -377,39 +377,43 @@ assign_stmt
 assign_type
 	: PLUSEQUAL
 		{ 
-			$$ = $1; 
+			$$ = $1;
 		}
     | MINUSEQUAL
 		{ 
-			$$ = $1; 
+			$$ = $1;
 		}
     | STAREQUAL
 		{ 
-			$$ = $1; 
+			$$ = $1;
 		}
     | DIVEQUAL
 		{ 
-			$$ = $1; 
+			$$ = $1;
 		}
 	| BINXOREQUAL
 		{
-			$$ = $1; 
+			$$ = $1;
 		}
 	| SHLEQUAL
 		{
-			$$ = $1; 
+			$$ = $1;
 		}
 	| SHREQUAL
 		{
-			$$ = $1; 
+			$$ = $1;
 		}
 	| BINANDEQUAL
 		{
-			$$ = $1; 
+			$$ = $1;
 		}
 	| BINOREQUAL
 		{
-			$$ = $1; 
+			$$ = $1;
+		}
+	| INTDIVISIONEQUAL
+		{
+			$$ = $1;
 		}
     ;
 

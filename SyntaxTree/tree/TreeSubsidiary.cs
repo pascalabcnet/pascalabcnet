@@ -75,7 +75,9 @@ namespace PascalABCCompiler.SyntaxTree
         Implicit,
         Explicit,
         Deref,                   // ^ SSM 3.02.12
-        Power
+        Power,
+
+        AssignmentIntDivision,   // for SPython a //= b
     };
 
     public class OperatorServices
