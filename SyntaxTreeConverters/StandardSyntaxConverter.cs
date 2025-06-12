@@ -12,99 +12,108 @@ namespace Languages.Pascal.Frontend.Converters
     public class StandardSyntaxTreeConverter : BaseSyntaxTreeConverter
     {
         public override string Name { get; } = "Standard";
-
-        protected override IPipelineVisitor[] VisitorsForConvert => new IPipelineVisitor[]
+        
+        protected override syntax_tree_node ApplyConversions(syntax_tree_node root, bool forIntellisense)
         {
-            new ExitParamVisitor(),
+            ExitParamVisitor.New.ProcessNode(root);
 
-            new BindCollectLightSymInfo(),
-
-            // new ABCStatisticsVisitor(),
-
+            var binder = new BindCollectLightSymInfo(root as compilation_unit);
+#if DEBUG
+            //            var stat = new ABCStatisticsVisitor();
+            //            stat.ProcessNode(root);
+#endif
             // SSM 02.01.24
-            // new LetExprVisitor(),
+            //LetExprVisitor.New.ProcessNode(root);
 
             // new range - до всего! До выноса выражения с лямбдой из foreach. 11.07 добавил поиск yields и присваивание pd.HasYield
-            new NewRangeDesugarAndFindHasYieldVisitor(),
+            NewRangeDesugarAndFindHasYieldVisitor.New.ProcessNode(root);
 
             // Распаковка параметров в лямбдах
-            new UnpackLambdaParametersVisitor(),
+            UnpackLambdaParametersVisitor.New.ProcessNode(root);
 
             // Unnamed Records перенёс сюда
-            new UnnamedRecordsCheckVisitor(),
+            UnnamedRecordsCheckVisitor.New.ProcessNode(root);
 
             // Выносим выражения с лямбдами из заголовка foreach + считаем максимум 10 вложенных лямбд
-            new StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor(),
-
-            new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(),
-
-            new FindOnExceptVarsAndApplyRenameVisitor(),
+            StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New.ProcessNode(root);
+            new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as compilation_unit).ProcessNode(root); 
+            FindOnExceptVarsAndApplyRenameVisitor.New.ProcessNode(root);
 
             // loop
-            new LoopDesugarVisitor(),
+            LoopDesugarVisitor.New.ProcessNode(root);
+#if DEBUG
+            //new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
+#endif
+            bool optimize_tuple_assign = true;
+            // tuple_node
+            TupleVisitor.Create(optimize_tuple_assign).ProcessNode(root);
 
-            // new SimplePrettyPrinterVisitor("D:/out.txt"),
-
-            // optimize tuple assign - true
-            new TupleVisitor(optimize_tup_opt: true),
-
-            // index
-            new IndexVisitor(),
+            // index 
+            IndexVisitor.New.ProcessNode(root);
 
             // slice_expr и slice_expr_question
+            SliceDesugarVisitor.New.ProcessNode(root);
             // поставил раньше AssignTuplesDesugarVisitor из за var (a,b) := a[1:3];
-            new SliceDesugarVisitor(),
 
             // теперь коллизия с (a[1:6], a[6:11]):= (a[6:11], a[1:6]);
             // assign_tuple и assign_var_tuple
-            // if (!optimize_tuple_assign)
-            // AssignTuplesDesugarVisitor.New.ProcessNode(root); // теперь это - на семантике
-            // else // следующий визитор
-
-            new NewAssignTuplesDesugarVisitor(),
+            if (!optimize_tuple_assign)
+                AssignTuplesDesugarVisitor.New.ProcessNode(root); // теперь это - на семантике
+            else 
+                NewAssignTuplesDesugarVisitor.Create(binder).ProcessNode(root);
 
             // question_point_desugar_visitor
-            new QuestionPointDesugarVisitor(),
+            QuestionPointDesugarVisitor.New.ProcessNode(root);
 
             // double_question_desugar_visitor
-            new DoubleQuestionDesugarVisitor(),
+            DoubleQuestionDesugarVisitor.New.ProcessNode(root);
 
             // Patterns
-            // new SingleDeconstructChecker(), // SSM 21.10.18 - пока разрешил множественные деконструкторы. Если будут проблемы - запретить
-
-            // Десахаризация расширенного is, который используется в сложных логических выражениях
-            new ExtendedIsDesugaringVisitor(),
-
-            // Обязательно в этом порядке.
-            new PatternsDesugaringVisitor(),
-
-            // new SimplePrettyPrinterVisitor("D:/out.txt"),
-
-            // new TestAssignIsDefVisitor(),
+            // SingleDeconstructChecker.New.ProcessNode(root); // SSM 21.10.18 - пока разрешил множественные деконструкторы. Если будут проблемы - запретить
+            ExtendedIsDesugaringVisitor.New.ProcessNode(root); // Десахаризация расширенного is, который используется в сложных логических выражениях
+            PatternsDesugaringVisitor.New.ProcessNode(root);  // Обязательно в этом порядке.
+#if DEBUG
+            //new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
+            // TestAssignIsDefVisitor.New.ProcessNode(root);
+#endif
 
             // simple_property
-            new PropertyDesugarVisitor(),
+            PropertyDesugarVisitor.New.ProcessNode(root);
 
             // Всё, связанное с yield
-            // CapturedNamesHelper.Reset(); // вызывается внутри следующего визитора
-            new MarkMethodHasYieldAndCheckSomeErrorsVisitor(),
-            new ProcessYieldCapturedVarsVisitor(),
+            CapturedNamesHelper.Reset();
+            MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
+            ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
 
-            new CacheFunctionVisitor(),
+            CacheFunctionVisitor.New.ProcessNode(root);
 
-            new ToExprVisitor(),
+            ToExprVisitor.New.ProcessNode(root);
 
             // При наличии файла lightpt.dat подключает модули LightPT и Tasks
-            new TeacherControlConverter(),
+            root = TeacherControlConverter.New.Convert(root);
 
-            // new SimplePrettyPrinterVisitor("D:\\Tree.txt"),
+#if DEBUG
+            //new SimplePrettyPrinterVisitor("D:\\Tree.txt").ProcessNode(root);
+            //FillParentNodeVisitor.New.ProcessNode(root);
 
-            // new FillParentNodeVisitor(),
 
-            // new CollectLightSymInfoVisitor(),
-            // cv.Output(@"Light1.txt");
+            /*var cv = CollectLightSymInfoVisitor.New;
+            cv.ProcessNode(root);
+            cv.Output(@"Light1.txt");*/
 
-            // new SimplePrettyPrinterVisitor(@"d:\\zzz1.txt")
-        };
+            /*try
+            {
+                root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz1.txt"));
+            }
+            catch(Exception e)
+            {
+
+                System.IO.File.AppendAllText(@"d:\\zzz1.txt",e.Message);
+            }*/
+
+
+#endif
+            return root;
+        }
     }
 }

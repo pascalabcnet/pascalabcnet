@@ -1,16 +1,18 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors.SugarVisitors
 {
     /// <summary>
     ///  А здесь не только замена кортежа - здесь оптимизация (a,b) := (1,2) и var (a,b) := (1,2)
     /// </summary>
-    public class ToExprVisitor : BaseChangeVisitor, IPipelineVisitor
+    public class ToExprVisitor : BaseChangeVisitor
     {
         public static ToExprVisitor New
         {
@@ -22,13 +24,6 @@ namespace SyntaxVisitors.SugarVisitors
         {
             num++;
             return "#let_expr_vis"+num.ToString();
-        }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            next();
         }
 
         public override void visit(to_expr to_ex)

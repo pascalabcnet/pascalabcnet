@@ -13,7 +13,6 @@ using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
 
 using PascalABCCompiler.YieldHelpers;
-using PascalABCCompiler.SyntaxTreeConverters;
 
 namespace SyntaxVisitors
 {
@@ -38,7 +37,7 @@ namespace SyntaxVisitors
         }
     }
 
-    public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor, IPipelineVisitor
+    public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor
     {
         int clnum = 0;
 
@@ -62,13 +61,6 @@ namespace SyntaxVisitors
         public ProcessYieldCapturedVarsVisitor()
         {
             //PrintInfo = false; 
-        }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            next();
         }
 
         /*public override void Enter(syntax_tree_node st)

@@ -9,7 +9,6 @@ using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
 using PascalABCCompiler.Errors;
-using PascalABCCompiler.SyntaxTreeConverters;
 
 namespace SyntaxVisitors
 {
@@ -34,7 +33,7 @@ namespace SyntaxVisitors
 
     }
 
-    public class MarkMethodHasYieldAndCheckSomeErrorsVisitor : WalkingVisitorNew, IPipelineVisitor
+    public class MarkMethodHasYieldAndCheckSomeErrorsVisitor : WalkingVisitorNew
     {
         private bool HasYields = false;
         private procedure_definition CurrentMethod = null;
@@ -44,15 +43,6 @@ namespace SyntaxVisitors
         public static MarkMethodHasYieldAndCheckSomeErrorsVisitor New
         {
             get { return new MarkMethodHasYieldAndCheckSomeErrorsVisitor(); }
-        }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            CapturedNamesHelper.Reset();
-
-            ProcessNode(root);
-
-            next();
         }
 
         public override void visit(function_lambda_definition ld)

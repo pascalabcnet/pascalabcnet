@@ -1,19 +1,14 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace SyntaxVisitors.PatternsVisitors
 {
-    public class ExtendedIsDesugaringVisitor : BaseChangeVisitor, IPipelineVisitor
+    public class ExtendedIsDesugaringVisitor : BaseChangeVisitor
     {
         public static ExtendedIsDesugaringVisitor New => new ExtendedIsDesugaringVisitor();
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            next();
-        }
 
         public override void visit(if_node _if_node)
         {

@@ -1,22 +1,18 @@
-﻿using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using PascalABCCompiler.SyntaxTree;
 
 
 namespace SyntaxVisitors
 {
-    public class TeacherControlConverter : IPipelineVisitor
+    public class TeacherControlConverter : WalkingVisitorNew
     {
         public static TeacherControlConverter New
         {
             get { return new TeacherControlConverter(); }
-        }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            Convert(root);
-
-            next();
         }
 
         public string Name { get => "TeacherContolConverter"; }

@@ -3,24 +3,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
 
 namespace SyntaxVisitors.SugarVisitors
 {
-    public class ExitParamVisitor : BaseChangeVisitor, IPipelineVisitor
+    public class ExitParamVisitor : BaseChangeVisitor
     {
         public static ExitParamVisitor New
         {
             get { return new ExitParamVisitor(); }
-        }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            next();
         }
 
         public override void visit(procedure_call pc)

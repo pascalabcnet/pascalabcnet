@@ -12,7 +12,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
     {
         public abstract string Name { get; }
 
-        protected abstract IPipelineVisitor[] VisitorsForConvert { get; }
+        protected virtual IPipelineVisitor[] VisitorsForConvert { get; }
 
         protected virtual IPipelineVisitor[] VisitorsForConvertAfterUsedModulesCompilation => new IPipelineVisitor[0];
 
@@ -26,7 +26,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             return ApplyConversions(root, forIntellisense);
         }
 
-        private syntax_tree_node ApplyConversions(syntax_tree_node root, bool forIntellisense)
+        protected virtual syntax_tree_node ApplyConversions(syntax_tree_node root, bool forIntellisense)
         {
             var context = new VisitorsContext();
 

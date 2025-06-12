@@ -1,17 +1,18 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+
+using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors.SugarVisitors
 {
     /// <summary>
     ///  А здесь не только замена кортежа - здесь оптимизация (a,b) := (1,2) и var (a,b) := (1,2)
     /// </summary>
-    public class TupleVisitor : BaseChangeVisitor, IPipelineVisitor
+    public class TupleVisitor : BaseChangeVisitor
     {
         public bool optimize_tuple_assign;
 
@@ -21,14 +22,6 @@ namespace SyntaxVisitors.SugarVisitors
         }
 
         public static TupleVisitor Create(bool optimize_tup_opt) => new TupleVisitor(optimize_tup_opt);
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            next();
-        }
-
         private int num = 0;
         public string UniqueName()
         {

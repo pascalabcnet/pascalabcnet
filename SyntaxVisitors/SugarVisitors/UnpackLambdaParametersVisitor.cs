@@ -1,24 +1,19 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors.SugarVisitors
 {
-    public class UnpackLambdaParametersVisitor : BaseChangeVisitor, IPipelineVisitor
+    public class UnpackLambdaParametersVisitor : BaseChangeVisitor
     {
         public static UnpackLambdaParametersVisitor New
         {
             get { return new UnpackLambdaParametersVisitor(); }
-        }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            next();
         }
 
         private static int num = 0;

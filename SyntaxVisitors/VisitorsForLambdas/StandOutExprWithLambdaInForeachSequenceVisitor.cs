@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using PascalABCCompiler.SyntaxTree;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
@@ -9,7 +10,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
     // Первое предназначение - вынести последовательность из заголовка в foreach до foreach как отдельное присваивание
     // Второе предназначение - переименовать все переменные, совпадающие по имени с типом T обобщенного класса, в котором находится метод, содержащий лямбду
-    public class StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor : BaseChangeVisitor, IPipelineVisitor
+    public class StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor : BaseChangeVisitor
     {
         public static StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor New
         {
@@ -17,13 +18,6 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             {
                 return new StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor();
             }
-        }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            next();
         }
 
         private int GenIdNum = 0;

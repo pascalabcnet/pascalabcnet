@@ -1,21 +1,17 @@
-﻿using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors.SugarVisitors
 {
-    public class DoubleQuestionDesugarVisitor : BaseChangeVisitor, IPipelineVisitor
+    public class DoubleQuestionDesugarVisitor : BaseChangeVisitor
     {
         public static DoubleQuestionDesugarVisitor New
         {
             get { return new DoubleQuestionDesugarVisitor(); }
-        }
-
-        public void Visit(syntax_tree_node root, VisitorsContext context, Action next)
-        {
-            ProcessNode(root);
-
-            next();
         }
 
         private int num = 0;

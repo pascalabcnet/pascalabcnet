@@ -16,8 +16,6 @@ namespace PascalABCCompiler.SyntaxTree
             
         }
 
-        protected CollectFullLightSymInfoVisitor() : base() { }
-
         public override void Enter(syntax_tree_node st)
         {
             var scope = scopeCreator.GetScope(st);
