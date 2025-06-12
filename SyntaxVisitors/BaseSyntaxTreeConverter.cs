@@ -113,4 +113,12 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
         protected override IPipelineVisitor[] VisitorsForConvert => new IPipelineVisitor[0];
     }
+
+    
+    public class DefaultSyntaxTreeConverter : BaseSyntaxTreeConverter
+    {
+        public override string Name => "Default";
+
+        protected override syntax_tree_node ApplyConcreteConversions(syntax_tree_node root) => root;
+    }
 }
