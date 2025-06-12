@@ -1,9 +1,0 @@
-﻿from unit_example import *
-
-a = [fib(i) for i in range(12)]
-for elem in a:
-    print(elem, end=' ')
-print()
-
-for i in range(7):
-    print(i, '! = ', fact(i), sep='')
