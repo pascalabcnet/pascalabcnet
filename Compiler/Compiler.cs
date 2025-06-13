@@ -3573,7 +3573,7 @@ namespace PascalABCCompiler
             foreach (ISyntaxTreeConverter converter in currentUnit.Language.SyntaxTreeConverters)
             {
                 OnChangeCompilerState(this, CompilerState.SyntaxTreeConversion, converter.Name);
-                currentUnit.SyntaxTree = (SyntaxTree.compilation_unit)converter.ConvertAfterUsedModulesCompilation(currentUnit.SyntaxTree, CompilerOptions.ForIntellisense, in artifacts);
+                currentUnit.SyntaxTree = (SyntaxTree.compilation_unit)converter.ConvertAfterUsedModulesCompilation(currentUnit.SyntaxTree, false, in artifacts);
             }
         }
 
@@ -3947,7 +3947,7 @@ namespace PascalABCCompiler
             foreach (ISyntaxTreeConverter converter in converters)
             {
                 OnChangeCompilerState(this, CompilerState.SyntaxTreeConversion, converter.Name);
-                syntaxTree = converter.Convert(syntaxTree, CompilerOptions.ForIntellisense) as SyntaxTree.compilation_unit;
+                syntaxTree = converter.Convert(syntaxTree, false) as SyntaxTree.compilation_unit;
             }
 
             return syntaxTree;

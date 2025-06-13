@@ -711,17 +711,20 @@ namespace CodeCompletion
         public virtual SymScope FindScopeByLocation(int line, int column)
         {
             SymScope minScope = null;
-            return FindScopeByLocation(line, column, ref minScope);
+
+            // задает нужна ли модификация алгоритма с обходом всех кандидатов   EVA
+            bool findMinScope = CodeCompletionController.CurrentParser.LanguageInformation.UsesFunctionsOverlappingSourceContext;
+
+            SymScope foundScope = FindScopeByLocation(line, column, ref minScope, findMinScope);
+
+            return findMinScope ? minScope : foundScope;
         }
 
         //naiti scope po location
         //algoritm lokalizueztsja scope v glubinu poka ne naidetsja istinnyj scope, soderzhashij mesto gde nahodimsja
-        public virtual SymScope FindScopeByLocation(int line, int column, ref SymScope minScope)
+        public virtual SymScope FindScopeByLocation(int line, int column, ref SymScope minScope, bool findMinScope)
         {
             SymScope res = null;
-
-            // задает нужна ли модификация алгоритма с обходом всех кандидатов   EVA
-            bool findMinScope = CodeCompletionController.CurrentParser.LanguageInformation.UsesFunctionsOverlappingSourceContext;
 
             cur_line = line;
             cur_col = column;
@@ -741,7 +744,7 @@ namespace CodeCompletion
                             continue;
                         res = ss;
                         
-                        SymScope tmp = ss.FindScopeByLocation(line, column, ref minScope);
+                        SymScope tmp = ss.FindScopeByLocation(line, column, ref minScope, findMinScope);
                         if (tmp != null)
                         {
                             res = tmp;
@@ -754,7 +757,7 @@ namespace CodeCompletion
                     }
                     else if (!(ss is CompiledScope))
                     {
-                        SymScope tmp = ss.FindScopeByLocation(line, column, ref minScope);
+                        SymScope tmp = ss.FindScopeByLocation(line, column, ref minScope, findMinScope);
                         if (tmp != null)
                         {
                             res = tmp;
@@ -778,7 +781,7 @@ namespace CodeCompletion
         {
             if (minScope != null)
             {
-                if (scopeToCompare.loc.end_line_num - scopeToCompare.loc.begin_line_num < minScope.loc.end_line_num - minScope.loc.begin_line_num)
+                if (scopeToCompare.loc.end_line_num - scopeToCompare.loc.begin_line_num <= minScope.loc.end_line_num - minScope.loc.begin_line_num)
                     minScope = scopeToCompare;
             }
             else
@@ -1840,9 +1843,9 @@ namespace CodeCompletion
             def_proc.ClearNames();
         }
 
-        public override SymScope FindScopeByLocation(int line, int column)
+        public override SymScope FindScopeByLocation(int line, int column, ref SymScope minScope, bool findMinScope)
         {
-            return def_proc.FindScopeByLocation(line, column);
+            return def_proc.FindScopeByLocation(line, column, ref minScope, findMinScope);
         }
 
         public override string GetDescriptionWithoutDoc()
