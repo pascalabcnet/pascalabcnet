@@ -5,7 +5,6 @@ del ..\Release\PascalABCNETMono.zip
 ..\utils\pkzipc\pkzipc.exe -add -nozip -dir ..\Release\PascalABCNETMono.zip Highlighting\*.xshd
 ..\utils\pkzipc\pkzipc.exe -add -nozip -dir ..\Release\PascalABCNETMono.zip Ico\*.ico
 ..\utils\pkzipc\pkzipc.exe -add -nozip -dir ..\Release\PascalABCNETMono.zip Lng\Rus\*.dat Lng\Rus\.LanguageName Lng\Rus\.LanguageName Lng\Rus\_Global Lng\Rus\_Global_loc
-..\utils\pkzipc\pkzipc.exe -add -nozip -dir ..\Release\PascalABCNETMono.zip -dir LanguageKits
 cd ..\ReleaseGenerators
 ..\utils\pkzipc\pkzipc.exe -add -nozip -dir ..\Release\PascalABCNETMono.zip Samples\Pas\*
 cd ..\Release

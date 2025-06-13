@@ -45,6 +45,8 @@ namespace Languages.Facade
         /// </summary>
         List<ISyntaxTreeConverter> SyntaxTreeConverters { get; }
 
+        bool ApplySyntaxTreeConvertersForIntellisense { get; }
+
         /// <summary>
         /// Преобразователь из синтаксического дерева в семантическое
         /// </summary>
@@ -75,6 +77,5 @@ namespace Languages.Facade
         /// </summary>
         // TODO: Возможно, стоит переделать логику обновления, чтобы не приходилось создавать новый объект каждый раз  EVA
         void SetSyntaxTreeToSemanticTreeConverter();
-
     }
 }

@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using PascalABCCompiler.SyntaxTree;
+using System;
+using System.Collections.Generic;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
 {
@@ -10,24 +12,26 @@ namespace PascalABCCompiler.SyntaxTreeConverters
     {
         public abstract string Name { get; }
 
-        public syntax_tree_node Convert(syntax_tree_node root)
+        public syntax_tree_node Convert(syntax_tree_node root, bool forIntellisense)
         {
             // Прошивание ссылками на Parent nodes. Должно идти первым
             // FillParentNodeVisitor расположен в SyntaxTree/tree как базовый визитор, отвечающий за построение дерева
             //FillParentNodeVisitor.New.ProcessNode(root); // почему-то перепрошивает не всё. А следующий вызов - всё
             root.FillParentsInAllChilds();
 
-            return ApplyConcreteConversions(root);
+            return ApplyConversions(root, forIntellisense);
         }
 
-        protected abstract syntax_tree_node ApplyConcreteConversions(syntax_tree_node root);
+        protected abstract syntax_tree_node ApplyConversions(syntax_tree_node root, bool forIntellisense);
+
+        public virtual syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts) => root;
     }
 
-    
+
     public class DefaultSyntaxTreeConverter : BaseSyntaxTreeConverter
     {
         public override string Name => "Default";
 
-        protected override syntax_tree_node ApplyConcreteConversions(syntax_tree_node root) => root;
+        protected override syntax_tree_node ApplyConversions(syntax_tree_node root, bool forIntellisense) => root;
     }
 }

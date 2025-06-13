@@ -87,7 +87,7 @@ namespace SyntaxVisitors.SugarVisitors
                     vs = new var_statement(tupleIdent, pp[0].Item1 as expression);
                 else vs = new var_statement(tupleIdent,
                   new method_call(
-                      new dot_node(new dot_node("?System", TupleName),new ident("Create")),
+                      new dot_node(new dot_node("?System", TupleName),new ident(PascalABCCompiler.StringConstants.default_constructor_name)),
                       new expression_list(pp.Select(pair => pair.Item1 as expression).ToList())
                   )
                 );

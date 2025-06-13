@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors.CheckingVisitors
 {
@@ -178,6 +178,7 @@ namespace SyntaxVisitors.CheckingVisitors
         {
             get { return new UnnamedRecordsCheckVisitor(); }
         }
+
         public override void Exit(syntax_tree_node st)
         {
             var cd = st as class_definition;

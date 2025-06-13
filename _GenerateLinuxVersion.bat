@@ -6,7 +6,6 @@ mkdir Release\PascalABCNETLinux\LibSource\
 mkdir Release\PascalABCNETLinux\Lng\Rus
 mkdir Release\PascalABCNETLinux\Lng\Eng
 mkdir Release\PascalABCNETLinux\Highlighting\
-mkdir Release\PascalABCNETLinux\LanguageKits\
 del Release\PascalABCNETLinux.zip
 
 

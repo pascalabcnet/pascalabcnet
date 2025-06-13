@@ -19,7 +19,7 @@ namespace PascalABCCompiler.TreeConverter
 	{
         private semantic_node ret_semantic;
 
-        private syntax_tree_visitor syntax_tree_visitor;
+        public syntax_tree_visitor syntax_tree_visitor { get; set; }
 
 		public returner(syntax_tree_visitor stv)
 		{

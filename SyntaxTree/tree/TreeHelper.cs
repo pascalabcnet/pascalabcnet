@@ -1213,7 +1213,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class constructor
     {
-        public constructor(formal_parameters fp, SourceContext sc = null) : this(null, fp, new procedure_attributes_list(), new method_name("Create"), false, false, null, null, sc)
+        public constructor(formal_parameters fp, SourceContext sc = null) : this(null, fp, new procedure_attributes_list(), new method_name(StringConstants.default_constructor_name), false, false, null, null, sc)
         { }
         public override string ToString()
         {

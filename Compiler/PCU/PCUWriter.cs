@@ -170,8 +170,9 @@ namespace PascalABCCompiler.PCU
         public bool IncludeDebugInfo;
 
         public string SourceFileName;
-		
 
+        public bool languageCaseSensitive;
+        
         public NameRef[] names; //список имен интерфейсной части модуля
 		public string[] incl_modules; //список подключаемых модулей
 		public string[] used_namespaces;
@@ -301,8 +302,11 @@ namespace PascalABCCompiler.PCU
             
             //(ssyy) формируем список нешаблонных классов
             cur_cnn.MakeNonTemplateTypesList();
-
+            
             GetUsedUnits();//заполняем список полключаемых модулей
+
+            pcu_file.languageCaseSensitive = Unit.Language.CaseSensitive;
+
             GetCountOfMembers();//заполняем список имен интерфейсных сущностей
 			WriteUnit();//пишем имя interface_namespace
 			cur_cnn = cun.namespaces[1];
@@ -434,7 +438,9 @@ namespace PascalABCCompiler.PCU
             fbw.Write(pcu_file.IncludeDebugInfo);
             if (pcu_file.IncludeDebugInfo)
                 fbw.Write(pcu_file.SourceFileName);
-			
+
+            fbw.Write(pcu_file.languageCaseSensitive);
+
             fbw.Write(pcu_file.names.Length);
 			for (int i=0; i<pcu_file.names.Length; i++)
 			{

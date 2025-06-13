@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using PascalABCCompiler;
 using PascalABCCompiler.Parsers;
@@ -314,7 +314,7 @@ namespace CodeCompletion
         protected bool IsHiddenName(string name)
         {
             char c = name[0];
-            return c == '#' || c == '%' || c == '<' || name.Contains("$") || name.Contains("_<>");
+            return c == '!' || c == '#' || c == '%' || c == '<' || name.Contains("$") || name.Contains("_<>");
         }
 
         public void AddExtensionMethod(string name, ProcScope meth, TypeScope ts)
@@ -708,11 +708,24 @@ namespace CodeCompletion
             return this.FindScopeByLocation(line, column);
         }
 
-        //naiti scope po location
-        //algoritm lokalizueztsja scope v glubinu poka ne naidetsja istinnyj scope, soderzhashij mesto gde nahodimsja
         public virtual SymScope FindScopeByLocation(int line, int column)
         {
+            SymScope minScope = null;
+
+            // задает нужна ли модификация алгоритма с обходом всех кандидатов   EVA
+            bool findMinScope = CodeCompletionController.CurrentParser.LanguageInformation.UsesFunctionsOverlappingSourceContext;
+
+            SymScope foundScope = FindScopeByLocation(line, column, ref minScope, findMinScope);
+
+            return findMinScope ? minScope : foundScope;
+        }
+
+        //naiti scope po location
+        //algoritm lokalizueztsja scope v glubinu poka ne naidetsja istinnyj scope, soderzhashij mesto gde nahodimsja
+        public virtual SymScope FindScopeByLocation(int line, int column, ref SymScope minScope, bool findMinScope)
+        {
             SymScope res = null;
+
             cur_line = line;
             cur_col = column;
             if (members == null) return null;
@@ -730,19 +743,53 @@ namespace CodeCompletion
                         if (this is TypeScope && ss.loc.end_line_num > loc.end_line_num)
                             continue;
                         res = ss;
-                        SymScope tmp = ss.FindScopeByLocation(line, column);
+                        
+                        SymScope tmp = ss.FindScopeByLocation(line, column, ref minScope, findMinScope);
                         if (tmp != null)
-                            return tmp;
-                        else
+                        {
+                            res = tmp;
+                        }
+
+                        if (!findMinScope)
                             return res;
+
+                        UpdateMinScopeIfNeeded(ref minScope, res);
                     }
                     else if (!(ss is CompiledScope))
                     {
-                        SymScope tmp = ss.FindScopeByLocation(line, column);
-                        if (tmp != null) return tmp;
+                        SymScope tmp = ss.FindScopeByLocation(line, column, ref minScope, findMinScope);
+                        if (tmp != null)
+                        {
+                            res = tmp;
+
+                            if (!findMinScope)
+                                return res;
+                            
+                            UpdateMinScopeIfNeeded(ref minScope, res);
+                        }
                     }
                 }
             return res;
+        }
+
+        /// <summary>
+        /// Сравнивает minScope и scopeToCompare, если второй занимает меньше строк или minScope = null, то minScope = scopeToCompare.
+        /// scopeToCompare не должен быть равен null
+        /// </summary>
+        /// <returns></returns>
+        private static SymScope UpdateMinScopeIfNeeded(ref SymScope minScope, SymScope scopeToCompare)
+        {
+            if (minScope != null)
+            {
+                if (scopeToCompare.loc.end_line_num - scopeToCompare.loc.begin_line_num <= minScope.loc.end_line_num - minScope.loc.begin_line_num)
+                    minScope = scopeToCompare;
+            }
+            else
+            {
+                minScope = scopeToCompare;
+            }
+
+            return minScope;
         }
 
         //poluchenie vseh imen posle tochki
@@ -890,14 +937,20 @@ namespace CodeCompletion
                         List<SymScope> lst = o as List<SymScope>;
                         foreach (SymScope s in lst)
                         {
-                            if (s.si.name == name)
+                            // Добавил второе условие с addit_name, чтобы работали подсказки для anotherName при использовании from ... import name as anotherName EVA
+                            if (s.si.name == name || s.si.addit_name == name)
+                            {
                                 ss = s;
+                                // изменил на возврат первого совпадения для стандартных типов в SPython пока они не в фиктивном модуле, а в SPythonSystem EVA
+                                break;
+                            }
+                                
                         }
                     }
                 if (ss == null) return null;
                 TypeScope ts = ss as TypeScope;
                 if (CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive)
-                    if (ss.si.name != name)
+                    if (ss.si.name != name && ss.si.addit_name != name)
                         return null;
                 if (ss.loc != null && loc != null && check_for_def && cur_line != -1 && cur_col != -1)
                 {
@@ -1790,9 +1843,9 @@ namespace CodeCompletion
             def_proc.ClearNames();
         }
 
-        public override SymScope FindScopeByLocation(int line, int column)
+        public override SymScope FindScopeByLocation(int line, int column, ref SymScope minScope, bool findMinScope)
         {
-            return def_proc.FindScopeByLocation(line, column);
+            return def_proc.FindScopeByLocation(line, column, ref minScope, findMinScope);
         }
 
         public override string GetDescriptionWithoutDoc()
@@ -4380,8 +4433,8 @@ namespace CodeCompletion
                     }
                 }
 
-                ProcScope other_constr = this.FindNameOnlyInType("Create") as ProcScope;
-                ProcScope constr = new ProcScope("Create", this, true);
+                ProcScope other_constr = this.FindNameOnlyInType(StringConstants.default_constructor_name) as ProcScope;
+                ProcScope constr = new ProcScope(StringConstants.default_constructor_name, this, true);
                 if (other_constr != null && other_constr.declaringType == this)
                     constr.si.acc_mod = access_modifer.protected_modifer;
                 else
@@ -5006,7 +5059,7 @@ namespace CodeCompletion
                         UnitDocCache.AddDescribeToComplete(ss);
                 }
             }
-            // SSM 10/07/24 ������� ��� ����� �� ������������ ����������� ����� �������� ������
+            // SSM 10/07/24 добавил это чтобы не показывались статические члены базового класса
             if (this.documentation != null && this.documentation.Contains("!#") && baseScope is CompiledScope)
                 return lst.ToArray();
 
@@ -6956,7 +7009,7 @@ namespace CodeCompletion
             }
             if (sil == null && names.Count == 0)
             {
-                if (string.Compare(name, "Create", true) == 0 && this.ctn != typeof(object))
+                if (string.Compare(name, StringConstants.default_constructor_name, true) == 0 && this.ctn != typeof(object))
                     sil = PascalABCCompiler.NetHelper.NetHelper.GetConstructor(ctn);
                 if (sil == null)
                 {
@@ -7036,7 +7089,7 @@ namespace CodeCompletion
                     break;
                 case semantic_node_type.compiled_constructor_node:
                     {
-                        CompiledConstructorScope cms = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (sil.FirstOrDefault().sym_info as compiled_constructor_node).constructor_info, this);
+                        CompiledConstructorScope cms = new CompiledConstructorScope(new SymInfo(StringConstants.default_constructor_name, SymbolKind.Method, StringConstants.default_constructor_name), (sil.FirstOrDefault().sym_info as compiled_constructor_node).constructor_info, this);
                         names.Insert(0, cms);
 						sil.RemoveAt(0);
                         if(sil.Count() == 0)
@@ -7055,7 +7108,7 @@ namespace CodeCompletion
                             {
                                 if (si.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si.sym_info.semantic_node_type == semantic_node_type.compiled_constructor_node)
                                 {
-                                    tmp = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (si.sym_info as compiled_constructor_node).constructor_info, this);
+                                    tmp = new CompiledConstructorScope(new SymInfo(StringConstants.default_constructor_name, SymbolKind.Method, StringConstants.default_constructor_name), (si.sym_info as compiled_constructor_node).constructor_info, this);
                                     //tmp.nextProc = cms;
                                     //cms = tmp;
                                     names.Insert(0, tmp);
@@ -7117,7 +7170,7 @@ namespace CodeCompletion
                 return null;
             if (sil == null)
             {
-                if (string.Compare(name, "Create", true) == 0)
+                if (string.Compare(name, StringConstants.default_constructor_name, true) == 0)
                     sil = PascalABCCompiler.NetHelper.NetHelper.GetConstructor(ctn);
                 if (sil == null)
                 {
@@ -7183,7 +7236,7 @@ namespace CodeCompletion
                     }
                 case semantic_node_type.compiled_constructor_node:
                     {
-                        CompiledConstructorScope cms = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (sil.FirstOrDefault().sym_info as compiled_constructor_node).constructor_info, this);
+                        CompiledConstructorScope cms = new CompiledConstructorScope(new SymInfo(StringConstants.default_constructor_name, SymbolKind.Method, StringConstants.default_constructor_name), (sil.FirstOrDefault().sym_info as compiled_constructor_node).constructor_info, this);
                         sil.RemoveAt(0);
                         if (sil.Count() == 0)
                             sil = null;
@@ -7201,7 +7254,7 @@ namespace CodeCompletion
                             {
                                 if (si.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si.sym_info.semantic_node_type == semantic_node_type.compiled_constructor_node)
                                 {
-                                    tmp = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (si.sym_info as compiled_constructor_node).constructor_info, this);
+                                    tmp = new CompiledConstructorScope(new SymInfo(StringConstants.default_constructor_name, SymbolKind.Method, StringConstants.default_constructor_name), (si.sym_info as compiled_constructor_node).constructor_info, this);
                                     //tmp.nextProc = cms;
                                     //cms = tmp;
                                     int par_num = tmp.mi.GetParameters().Length;

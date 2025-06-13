@@ -23,7 +23,7 @@ namespace SyntaxVisitors.SugarVisitors
                 new method_call(
                     new dot_node(
                         new ident("SystemIndex", ind.source_context),
-                        new ident("Create", ind.source_context),
+                        new ident(PascalABCCompiler.StringConstants.default_constructor_name, ind.source_context),
                         ind.source_context),
                     new expression_list(
                         new List<expression>()

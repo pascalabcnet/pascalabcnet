@@ -113,7 +113,6 @@ Section
 	${AddDirectory} "$INSTDIR\PT4"
 	${AddDirectory} "$INSTDIR\Ico"
 	${AddDirectory} "$INSTDIR\Doc"
-  ${AddDirectory} "$INSTDIR\LanguageKits"
 	${AddInstallerFile} "Uninstall.exe"
 SectionEnd
 
