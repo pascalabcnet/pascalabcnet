@@ -72,6 +72,7 @@ namespace Languages.Pascal.Frontend.Data
                 [StringConstants.compiler_directive_version_string] = new DirectiveInfo(IsValidVersionCheck()),
                 [StringConstants.compiler_directive_product_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
                 [StringConstants.compiler_directive_company_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
+                [StringConstants.compiler_directive_copyright_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
                 [StringConstants.compiler_directive_trademark_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
                 [StringConstants.compiler_directive_main_resource_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
                 [StringConstants.compiler_directive_title_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
