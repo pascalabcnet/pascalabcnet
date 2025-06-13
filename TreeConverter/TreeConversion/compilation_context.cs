@@ -2633,11 +2633,11 @@ namespace PascalABCCompiler.TreeConverter
 			if (sil==null)
 			{
 				if (!check_name_redefinition)
-					CurrentHandlerList.Add(name.ToLower());
+					CurrentHandlerList.Add(name);
 				return;
 			}
 			if (!check_name_redefinition)
-				if (CurrentHandlerList.Contains(name.ToLower()))
+				if (CurrentHandlerList.Contains(name, CurrentScope.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase))
 				return;
 			location first_loc=convertion_data_and_alghoritms.get_location(sil.FirstOrDefault().sym_info);
             //TODO: Можно передавать список всех повторных объявлений.
