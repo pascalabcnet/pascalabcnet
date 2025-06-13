@@ -102,6 +102,7 @@ function len<T>(lst: PABCSystem.List<T>): integer;
 function len<T>(st: set of T): integer;
 function len<K, V>(dct: PABCSystem.Dictionary<K, V>): integer;
 function len<T>(arr: array of T): integer;
+function len(s: string): integer;
 
 function &set<T>(sq: sequence of T): set of T;
 function &list<T>(sq: sequence of T): PABCSystem.List<T>;
@@ -242,6 +243,7 @@ function len<T>(lst: PABCSystem.List<T>): integer := lst.Count();
 function len<T>(st: set of T): integer := st.Count();
 function len<K, V>(dct: PABCSystem.Dictionary<K, V>): integer := dct.Count();
 function len<T>(arr: array of T): integer := arr.Count();
+function len(s: string): integer := s.Length;
 
 function sorted<T>(lst: PABCSystem.List<T>): PABCSystem.List<T>;
 begin
