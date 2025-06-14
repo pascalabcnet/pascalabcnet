@@ -3045,10 +3045,11 @@ namespace CodeCompletion
                 }
             }*/
 
-            if (currentUnitLanguage.LanguageInformation.SpecialModulesAliases != null && currentUnitLanguage.LanguageInformation.SpecialModulesAliases.TryGetValue(nameInUses, out var realName))
+            if (currentUnitLanguage.LanguageInformation.SpecialModulesAliases != null 
+                && currentUnitLanguage.LanguageInformation.SpecialModulesAliases.TryGetValue(nameInUses, out var realName))
                 return realName;
-            else
-                return nameInUses;
+                
+            return nameInUses;
         }
 
         private void add_unit_ref_for_import(ident_list importedModuleName, statement importStatement, as_statement_list asStatementsList, string curr_path,
