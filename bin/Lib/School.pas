@@ -827,7 +827,7 @@ end;
 /// Первые k простых чисел 
 function FirstPrimes(k: integer): List<integer>;
 begin
-  k := k.ClampTop(integer.MaxValue); // на всякий случай
+  // k := Min(k,integer.MaxValue); // на всякий случай
   if k <= nPrimeDivs then Result := LPrimes[:k]
   else
   begin

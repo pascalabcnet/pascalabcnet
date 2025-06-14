@@ -34,6 +34,7 @@ namespace VisualPascalABC
         private SetFlagDelegate SetCompilingButtonsEnabled;
         private SetFlagDelegate SetDebugButtonsEnabled;
         public delegate void SetTextDelegate(string text);
+        public delegate string ConvertUnitText(string FileName, string text); // Это пока только для шифрованного Tasks. В остальных случаях он нулевой 
         private SetTextDelegate SetStateText;
         private SetTextDelegate AddTextToCompilerMessages;
         private bool Compilation = false;
@@ -249,9 +250,6 @@ namespace VisualPascalABC
                         return ed.Document.TextContent;
                     if (!File.Exists(FileName))
                         return null;
-                    /*TextReader tr = new StreamReader(file_name, System.Text.Encoding.GetEncoding(1251));
-                    string Text = tr.ReadToEnd();
-                    tr.Close();*/
                     string Text = PascalABCCompiler.FileReader.ReadFileContent(FileName, null);
                     return Text;
                 case PascalABCCompiler.SourceFileOperation.Exists:

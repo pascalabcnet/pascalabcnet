@@ -12,7 +12,13 @@ namespace PascalABCCompiler.Parsers
         /// <summary>
         /// Соотвествие ключевых слов токенам
         /// </summary>
-        protected abstract Dictionary<string, int> KeywordsToTokens { get; set; }
+        public Dictionary<string, int> KeywordsToTokens { get; set; }
+
+        public Dictionary<string, KeywordKind> KeywordKinds { get; set; }
+
+        public List<string> Keywords { get; set; } = new List<string>();
+
+        public List<string> TypeKeywords { get; set; } = new List<string>();
 
         /// <summary>
         /// Словарь соответствий ключевых слов их эквивалентам (задается пользователем в специальном файле)
@@ -43,7 +49,7 @@ namespace PascalABCCompiler.Parsers
         }
 
         /// <summary>
-        /// Возвращает само эквивалент ключевого слова, либо его само, если эквивалента нет
+        /// Возвращает эквивалент ключевого слова, либо его самого, если эквивалента нет
         /// </summary>
         public string ConvertKeyword(string keyword)
         {
@@ -53,9 +59,13 @@ namespace PascalABCCompiler.Parsers
                 return keymap[keyword];
         }
 
-        public BaseKeywords()
+        public BaseKeywords(bool caseSensitive)
         {
             ReloadKeyMap();
+
+            KeywordsToTokens = new Dictionary<string, int>(caseSensitive ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase);
+
+            KeywordKinds = new Dictionary<string, KeywordKind>(caseSensitive ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase);
         }
 
         /// <summary>
@@ -72,6 +82,22 @@ namespace PascalABCCompiler.Parsers
                 return token;
             else
                 return GetIdToken();
+        }
+
+        public void CreateNewKeyword(string name, Enum token, KeywordKind kind = KeywordKind.None, bool isTypeKeyword = false)
+        {
+            name = ConvertKeyword(name);
+
+            if (kind != KeywordKind.None)
+                KeywordKinds[name] = kind;
+
+            Keywords.Add(name);
+            KeywordsToTokens[name] = (int)(object)token;
+
+            if (isTypeKeyword)
+                TypeKeywords.Add(name);
+
+            // return new Keyword(name, token, kind, isTypeKeyword);
         }
     }
 }

@@ -16,8 +16,9 @@ namespace Languages.Pascal
         public PascalABCLanguage() : base(
             name: StringConstants.pascalLanguageName,
             version: "1.2",
-            copyright: "Copyright © 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich",
+            copyright: "Copyright © 2005-2025 by Ivan Bondarev, Stanislav Mikhalkovich",
 
+            languageInformation: new Frontend.Data.PascalABCLanguageInformation(),
             parser: new Frontend.Wrapping.PascalABCNewLanguageParser(),
             docParser: new Frontend.Documentation.PascalDocTagsLanguageParser(),
 

@@ -2,12 +2,12 @@
 begin
   System.Array.Reverse(Self);
   Result := Self;
-end;}
+end;
 
 function BinarySearch<T>(self: array of T; item: T): integer; extensionmethod;
 begin
   Result := System.Array.BinarySearch(self,item);
-end;
+end;}
 
 
 begin

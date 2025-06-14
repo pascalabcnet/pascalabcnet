@@ -30,6 +30,18 @@
     File "..\bin\Mono.Cecil.dll"
     File "..\bin\TeacherControlPlugin.dll"
     File "..\bin\LambdaAnySynToSemConverter.dll"
+    
+    File "..\bin\Microsoft.Bcl.HashCode.dll"
+    File "..\bin\System.Buffers.dll"
+    File "..\bin\System.Collections.Immutable.dll"
+    File "..\bin\System.Formats.Nrbf.dll"
+    File "..\bin\System.Memory.dll"
+    File "..\bin\System.Numerics.Vectors.dll"
+    File "..\bin\System.Reflection.Metadata.dll"
+    File "..\bin\System.Resources.Extensions.dll"
+    File "..\bin\System.Runtime.CompilerServices.Unsafe.dll"
+    File "..\bin\System.ValueTuple.dll"
+    
     ;File "libs\System.Core.dll"
     File "gacutil.exe"
     File "gacutil.exe.config"
@@ -446,6 +458,7 @@
     ${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
     
+    CreateDirectory "$COMMONSTARTMENU\PascalABC.NET"
     CreateDirectory "$SMPROGRAMS\PascalABC.NET"
     Push "OptimizerConversion.dll"
     Call NGEN

@@ -1,4 +1,4 @@
-
+﻿
 
 
 # general ignore
@@ -98,6 +98,16 @@
 /bin/WeifenLuo.WinFormsUI.DockingLinux.dll
 /bin/WeifenLuo.WinFormsUI.Docking.ThemeVS2005.dll
 /bin/WeifenLuo.WinFormsUI.Docking.ThemeVS2005Linux.dll
+/bin/Microsoft.Bcl.HashCode.dll
+/bin/System.Buffers.dll
+/bin/System.Collections.Immutable.dll
+/bin/System.Formats.Nrbf.dll
+/bin/System.Memory.dll
+/bin/System.Numerics.Vectors.dll
+/bin/System.Reflection.Metadata.dll
+/bin/System.Resources.Extensions.dll
+/bin/System.Runtime.CompilerServices.Unsafe.dll
+/bin/System.ValueTuple.dll
 #TODO копируется только при сборке pabcnetc.sln - это норм?
 # - в самом проекте написано что его надо удалить...
 /bin/YieldConversionSyntax.dll
@@ -118,6 +128,11 @@
 # this is added to index at "/bin/lib"
 /ReleaseGenerators/nunit.framework.dll
 /TestSuite/errors/nunit.framework.dll
+
+
+
+# NSIS
+!/Utils/NSIS2/Bin/*
 
 
 

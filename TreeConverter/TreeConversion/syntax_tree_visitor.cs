@@ -12942,7 +12942,7 @@ namespace PascalABCCompiler.TreeConverter
                                     if (context.top_function.return_value_type == null || context.top_function.return_value_type == SystemLibrary.SystemLibrary.void_type)
                                         AddError(get_location(attr), "EXPECTED_RETURN_VALUE_FOR_ATTRIBUTE");
                                     throw new NotSupportedError(get_location(attr.qualifier));
-                                    qualifier = SemanticTree.attribute_qualifier_kind.return_kind;
+                                    // qualifier = SemanticTree.attribute_qualifier_kind.return_kind;
                                 }
                                 else
                                     throw new NotSupportedError(get_location(attr.qualifier));
@@ -14155,6 +14155,7 @@ namespace PascalABCCompiler.TreeConverter
             common_type_node common_converted_type_tmp = context.converted_type;
             compiled_type_node compiled_converted_type_tmp = context.converted_compiled_type;
             common_namespace_function_node cnfn2 = context.top_function as common_namespace_function_node;
+
             if (cnfn2 != null && cnfn2.ConnectedToType != null)
             {
                 if (cnfn2.ConnectedToType is compiled_type_node)
@@ -14346,8 +14347,20 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
-            bool unique = context.close_function_params(body_exists);
+            common_type_node common_converted_type_tmp = context.converted_type;
+            compiled_type_node compiled_converted_type_tmp = context.converted_compiled_type;
+            common_namespace_function_node cnfn2 = context.top_function as common_namespace_function_node;
 
+            if (cnfn2 != null && cnfn2.ConnectedToType != null)
+            {
+                if (cnfn2.ConnectedToType is compiled_type_node)
+                    context.converted_compiled_type = cnfn2.ConnectedToType as compiled_type_node;
+                else if (cnfn2.ConnectedToType is common_type_node)
+                    context.converted_type = cnfn2.ConnectedToType as common_type_node;
+            }
+            bool unique = context.close_function_params(body_exists);
+            context.converted_compiled_type = compiled_converted_type_tmp;
+            context.converted_type = common_converted_type_tmp;
             if (context.converted_type != null && context.converted_type.IsInterface)
             {
                 if (body_exists)
@@ -15437,10 +15450,11 @@ namespace PascalABCCompiler.TreeConverter
                 constant = new common_namespace_function_call_as_constant(cnfc1, loc);
                 return constant;
             }
-            else if (expr is common_namespace_function_call cnfc2
-                && cnfc2.function_node.name.StartsWith("__NewSetCreatorInternal")
+            else if (expr is common_namespace_function_call
+                && (expr as common_namespace_function_call).function_node.name.StartsWith("__NewSetCreatorInternal")
                 )
             {
+                var cnfc2 = expr as common_namespace_function_call;
                 convertion_data_and_alghoritms.check_convert_type(cnfc2, tn, loc);
                 var values = (cnfc2.parameters[0] as array_initializer).element_values;
                 // Надо компоненты проверять на константность
@@ -18834,7 +18848,7 @@ namespace PascalABCCompiler.TreeConverter
             return isIEnumType || isIEnumTypedType;
         }
 
-        private Type FindIEnumerableInterfaceInCompiledType(Type compiledType)
+        private Type ChooseIEnumerableInterfaceInCompiledType(Type compiledType)
         {
             var IEnumType = typeof(IEnumerable);
             var IEnumTypedType = typeof(IEnumerable<>);
@@ -18919,18 +18933,16 @@ namespace PascalABCCompiler.TreeConverter
         /// <summary>
         /// Собирает интерфейсы, реализованные типом и его предками
         /// </summary>
-        private List<type_node> CollectInterfacesFromTypeNode(type_node node)
+        private IEnumerable<type_node> CollectInterfacesFromTypeNode(type_node node)
         {
-            var result = new List<ITypeNode>();
-            result.AddRange(node.ImplementingInterfaces);
-
-            if (node.base_type != null)
+            do
             {
-                var interfInBase = CollectInterfacesFromTypeNode(node.base_type);
-                result.AddRange(interfInBase);
-            }
+                foreach (var item in node.ImplementingInterfaces)
+                    yield return (type_node)item;
 
-            return result.Cast<type_node>().ToList();
+                node = node.base_type;
+            }
+            while (node != null);
         }
 
         private bool IsIEnumeratorInterface(type_node t)
@@ -18947,7 +18959,7 @@ namespace PascalABCCompiler.TreeConverter
             return IsIEnumeratorInterface(orig.compiled_type);
         }
 
-        private type_node FindIEnumerableInterfaceInTypeNode(type_node node)
+        private type_node ChooseIEnumerableInterfaceInTypeNode(type_node node)
         {
             var IEnumType = compiled_type_node.get_type_node( typeof(IEnumerable) );
             var IEnumTypedType = compiled_type_node.get_type_node( typeof(IEnumerable<>) );
@@ -19031,9 +19043,9 @@ namespace PascalABCCompiler.TreeConverter
                 // непосредственно тип, от котоого разворачивается foreach
                 Type ct = orig.compiled_type;
 
-                var isEnumeratedType = typeof(IEnumerable).IsAssignableFrom(ct);
+                var supportsEnumeration = typeof(IEnumerable).IsAssignableFrom(ct);
 
-                if (!isEnumeratedType)
+                if (!supportsEnumeration)
                     return false;
 
                 // для массива
@@ -19048,7 +19060,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
 
                 // в иных случаях ищем подходящий интерфейс
-                var desiredInterface = FindIEnumerableInterfaceInCompiledType(ct);
+                var desiredInterface = ChooseIEnumerableInterfaceInCompiledType(ct);
 
                 if (desiredInterface == null)
                     return false;
@@ -19104,6 +19116,11 @@ namespace PascalABCCompiler.TreeConverter
             // также сюда попадают set of T даже если они подтягиваются из библиотеки
             else
             {
+                var supportsEnumeration = CollectInterfacesFromTypeNode(tn).Any(IsIEnumerableInterface);
+
+				if (!supportsEnumeration)
+					return false;
+
                 // массивы и set of T
                 if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.typed_file)
                 {
@@ -19115,7 +19132,7 @@ namespace PascalABCCompiler.TreeConverter
                     return true;
                 }
 
-                var desiredInterface = FindIEnumerableInterfaceInTypeNode(tn);
+                var desiredInterface = ChooseIEnumerableInterfaceInTypeNode(tn);
 
                 if (desiredInterface == null)
                     return false;
@@ -22169,12 +22186,17 @@ namespace PascalABCCompiler.TreeConverter
             return !t.IsArray && (t.FullName.StartsWith("System.Tuple") || t.FullName.StartsWith("System.ValueTuple"));
         }
 
+        public bool IsKeyValuePairType(Type t)
+        {
+            return t.FullName.StartsWith("System.Collections.Generic.KeyValuePair`2");
+        }
+
         public bool IsSequenceType(Type t)
         {
             return t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null;
         }
 
-        private void CheckUnpacking(expression ex, out expression_node sem_ex, out bool IsTuple, out bool IsSequence, int countvars, syntax_tree_node stn)
+        /*private void CheckUnpacking(expression ex, out expression_node sem_ex, out bool IsTuple, out bool IsSequence, int countvars, syntax_tree_node stn)
         {
             sem_ex = convert_strong(ex);
             sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
@@ -22192,7 +22214,7 @@ namespace PascalABCCompiler.TreeConverter
             if (IsTuple)
             {
                 if (countvars > t.GetGenericArguments().Count())
-                    AddError(get_location(stn), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                    AddError(get_location(stn), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT");
             }
         }
 
@@ -22209,7 +22231,7 @@ namespace PascalABCCompiler.TreeConverter
                 dn = new method_call(dn, pars);
             }
             return dn;
-        }
+        }*/
 
         public override void visit(SyntaxTree.assign_tuple asstup) // сахарный узел
         {
@@ -22272,7 +22294,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var nn = assvartup.idents.idents.Count();
                 if (nn > t.GetGenericArguments().Count())
-                    AddError(get_location(assvartup.idents), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                    AddError(get_location(assvartup.idents), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT");
             }*/
 
 
@@ -22317,6 +22339,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             var IsSequence = false;
             var IsTuple = false;
+            var IsKeyValuePair = false;
             var sem_ex = convert_strong(ith.id);
             sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
             var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
@@ -22326,19 +22349,22 @@ namespace PascalABCCompiler.TreeConverter
                 type_node elem_type = null;
                 var b = FindIEnumerableElementType(sem_ex.type, ref elem_type, out bb);
                 if (b)
+                    // Не очень понятно, зачем это нужно. И это точно не срабатывает
                     IsSequence = true;
                 else
                     AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
-                
             }
-                
+
             if (t != null)
                 IsTuple = IsTupleType(t);
-            
-            if (t != null)
-                IsSequence = !IsTuple && IsSequenceType(t);
 
-            if (!IsTuple && !IsSequence)
+            if (t != null)
+                IsKeyValuePair = !IsTuple && IsKeyValuePairType(t);
+
+            if (t != null)
+                IsSequence = !IsTuple && !IsKeyValuePair && IsSequenceType(t);
+
+            if (!IsTuple && !IsSequence && !IsKeyValuePair)
             {
                 AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
             }
@@ -22359,8 +22385,14 @@ namespace PascalABCCompiler.TreeConverter
                 ReplaceUsingParent(ith, mc);
                 visit(mc);
             }
+            else if (IsKeyValuePair)
+            {
+                var meth_name = i == 0 ? "Key" : "Value";
+                var dn = new dot_node(ith.id.TypedClone(), new ident(meth_name));
+                ReplaceUsingParent(ith, dn);
+                visit(dn);
+            }
         }
-
 
         public override void visit(var_tuple_def_statement vtd)
         {

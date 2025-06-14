@@ -119,19 +119,19 @@ namespace AssignTupleDesugarAlgorithm
 
             List<SymbolNode> roots = vertexes.ToList().FindAll(vertex => GetInEdgesForVertex(vertex).Count == 0);
 
-            void treeTraversal(SymbolNode root)
-            {
-                foreach (SymbolNode node in OutAdjStructure[root]) treeTraversal(node);
-
-                var inEdges = GetInEdgesForVertex(root);
-                if (inEdges.Count() > 0) assignOrder.Add(inEdges.First());
-            }
-
-            foreach (SymbolNode root in roots) treeTraversal(root);
+            foreach (SymbolNode root in roots) treeTraversal(root, assignOrder);
 
             assignOrder.AddRange(assignLast);
             this.assignOrder = assignOrder;
             return this.assignOrder;
+        }
+
+        void treeTraversal(SymbolNode root, List<Edge> assignOrder)
+        {
+            foreach (SymbolNode node in OutAdjStructure[root]) treeTraversal(node, assignOrder);
+
+            var inEdges = GetInEdgesForVertex(root);
+            if (inEdges.Count() > 0) assignOrder.Add(inEdges.First());
         }
 
         public AssignGraph(List<Edge> edges, List<SymbolNode> vertexes) : this(edges)

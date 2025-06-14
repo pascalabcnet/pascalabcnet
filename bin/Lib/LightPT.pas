@@ -610,6 +610,9 @@ procedure SetMessagesOn;
 /// Выключить дополнительные сообщения о записи в удаленную базу данных
 procedure SetMessageOff;
 
+/// Шифрование строки
+function EncryptString(src: string): string;
+
 implementation
 
 uses __RedirectIOMode;
@@ -1039,6 +1042,12 @@ begin
   cs.Close;
   ms.Close;
   Result := ms.ToArray;
+end;
+
+function EncryptString(src: string): string;
+begin
+  var bytes := Encrypt(src);
+  Result := Convert.ToBase64String(bytes);
 end;
 
 function Decrypt(data: array of byte): string;

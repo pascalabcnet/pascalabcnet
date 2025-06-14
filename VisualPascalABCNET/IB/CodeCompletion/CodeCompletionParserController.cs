@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using Languages.Integration;
 using System;
-using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace VisualPascalABC
 {
@@ -10,7 +10,7 @@ namespace VisualPascalABC
 
     public class CodeCompletionParserController : VisualPascalABCPlugins.ICodeCompletionService
     {
-        public static Hashtable open_files = new Hashtable(StringComparer.OrdinalIgnoreCase);
+        public static Dictionary<string, bool> open_files = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         public VisualEnvironmentCompiler visualEnvironmentCompiler;
         private System.Threading.Thread th = null;
         private CodeCompletionProvider ccp;
@@ -84,8 +84,7 @@ namespace VisualPascalABC
         {
             if (CodeCompletion.CodeCompletionController.comp_modules[FileName] != null)
                 CodeCompletion.CodeCompletionController.comp_modules.Remove(FileName);
-            if (open_files[FileName] != null)
-                open_files.Remove(FileName);
+            open_files.Remove(FileName);
         }
 
         public void SetAsChanged(string FileName)
@@ -98,17 +97,13 @@ namespace VisualPascalABC
         {
             try
             {
-                Hashtable open_files2 = open_files.Clone() as Hashtable;
-                foreach (string s in open_files2.Keys)
+                foreach (string s in open_files.Keys.ToArray())
                 {
                     if (ProjectFactory.Instance.CurrentProject.ContainsSourceFile(s))
                         open_files[s] = true;
                 }
             }
-            catch (Exception e)
-            {
-
-            }
+            catch (Exception) { }
         }
 
         /// <summary>
@@ -149,14 +144,12 @@ namespace VisualPascalABC
         {
             try
             {
-                Hashtable open_files2 = (Hashtable)open_files.Clone();
-                Hashtable recomp_files = new Hashtable(StringComparer.OrdinalIgnoreCase);
+                Dictionary<string, string> recomp_files = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 bool is_comp = false;
-                foreach (string FileName in open_files2.Keys)
+                foreach (string FileName in open_files.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
                 {
-                    //(ssyy) 18.05.08 Вставил проверку на null
-                    object o = open_files[FileName];
-                    if (o != null && (bool)o == true)
+
+                    if (open_files[FileName])
                     {
                         is_comp = true;
                         CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
@@ -187,7 +180,7 @@ namespace VisualPascalABC
                             CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                     }
                 }
-                foreach (string FileName in open_files2.Keys)
+                foreach (string FileName in open_files.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
                 {
                     CodeCompletion.DomConverter dc = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
                     CodeCompletion.SymScope ss = null;
@@ -213,7 +206,7 @@ namespace VisualPascalABC
                                 for (int i = 0; i < ss.used_units.Count; i++)
                                 {
                                     string s = ss.used_units[i].file_name;
-                                    if (s != null && open_files2.ContainsKey(s) && recomp_files.ContainsKey(s))
+                                    if (s != null && open_files.ContainsKey(s) && recomp_files.ContainsKey(s))
                                     {
                                         is_comp = true;
                                         CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
@@ -252,10 +245,7 @@ namespace VisualPascalABC
                     GC.Collect();
                 }
             }
-            catch (Exception e)
-            {
-
-            }
+            catch (Exception) { }
 
         }
 

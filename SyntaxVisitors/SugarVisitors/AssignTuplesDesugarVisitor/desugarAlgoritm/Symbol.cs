@@ -82,7 +82,7 @@ namespace AssignTupleDesugarAlgorithm
 
         public override bool Equals(object obj)
         {
-            if (obj is null) return false;
+            if (obj == null) return false;
             if (obj.GetType() != GetType()) return false;
             return name == (obj as Symbol).name;
         }

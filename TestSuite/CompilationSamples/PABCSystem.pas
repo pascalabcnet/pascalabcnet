@@ -2334,6 +2334,10 @@ function Pred(x: uint64): uint64;
 ///--
 function Pred(x: boolean): boolean;
 
+/// Возвращает True, если значение val находится между a и b включительно 
+function InRange<T>(val, a, b: T): boolean; where T: IComparable<T>;
+/// Возвращает True, если значение val находится между a и b (включительно) независимо от порядка a и b
+function Between<T>(val, a, b: T): boolean; where T: IComparable<T>;
 /// Меняет местами значения двух переменных
 procedure Swap<T>(var a, b: T);
 /// Возвращает True, если достигнут конец строки
@@ -2346,6 +2350,9 @@ function SeekEof: boolean;
 function SeekEoln: boolean;
 /// Возвращает аргумены командой строки, с которыми была запущена программа
 function CommandLineArgs: array of string;
+
+/// Преобразует объект в строковое представление
+function ObjectToString(obj: object): string;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для работы с динамическими массивами # Subroutines for array of T
@@ -2917,9 +2924,6 @@ function RuntimeInitialize(kind: byte; variable: object): object;
 ///Вычисление размера типа на этапе выполнения
 function GetRuntimeSize<T>: integer;
 
-/// Преобразует объект в строковое представление
-function ObjectToString(obj: object): string;
-
 function IsUnix: boolean;
 ///--
 function ExecuteAssemlyIsDll: boolean;
@@ -3164,43 +3168,44 @@ var
 const
   WRITELN_IN_BINARYFILE_ERROR_MESSAGE = 'Операция Writeln не применима к бинарным файлам!!Writeln is not applicable to binary files';
   InternalNullBasedArrayName = 'NullBasedArray';
-  FILE_NOT_ASSIGNED = 'Для файловой переменной не вызвана процедура Assign!!File is not assigned';
-  FILE_NOT_OPENED = 'Файл не открыт!!File is not opened';
-  FILE_NOT_OPENED_FOR_READING = 'Файл не открыт на чтение!!File is not opened for reading';
-  FILE_NOT_OPENED_FOR_WRITING = 'Файл не открыт на запись!!File is not opened for writing';
-  READ_LEXEM_AFTER_END_OF_TEXT_FILE = 'Попытка считывания за концом текстового файла!!Read after end of text file';
-  READ_LEXEM_AFTER_END_OF_INPUT_STREAM = 'Попытка считывания за концом потока ввода!!Read after end of input stream';
-  RANGE_ERROR_MESSAGE = 'Выход за границы диапазона!!Out of range';
-  EOF_FOR_TEXT_WRITEOPENED = 'Функция Eof не может быть вызвана для текстового файла, открытого на запись!!Eof function can''t be called for file, opened on writing';
-  EOLN_FOR_TEXT_WRITEOPENED = 'Функция Eoln не может быть вызвана для текстового файла, открытого на запись!!Eoln function can''t be called for file, opened on writing';
-  SEEKEOF_FOR_TEXT_WRITEOPENED = 'Функция SeekEof не может быть вызвана для текстового файла, открытого на запись!!SeekEof function can''t be called for file, opened on writing';
-  SEEKEOLN_FOR_TEXT_WRITEOPENED = 'Функция SeekEoln не может быть вызвана для текстового файла, открытого на запись!!SeekEoln function can''t be called for file, opened on writing';
-  BAD_TYPE_IN_RUNTIMESIZEOF = 'Для типизированных файлов нельзя указывать тип элементов, являющийся ссылочным или содержащий ссылочные поля!!Bad Type in RunTimeSizeOf';
+  FILE_NOT_ASSIGNED = 'Для файловой переменной не вызвана процедура Assign!!File variable was not assigned using Assign';
+  FILE_NOT_OPENED = 'Файл не открыт!!File is not open';
+  FILE_NOT_OPENED_FOR_READING = 'Файл не открыт на чтение!!File is not open for reading';
+  FILE_NOT_OPENED_FOR_WRITING = 'Файл не открыт на запись!!File is not open for writing';
+  READ_LEXEM_AFTER_END_OF_TEXT_FILE = 'Попытка считывания за концом текстового файла!!Attempt to read beyond end of text file';
+  READ_LEXEM_AFTER_END_OF_INPUT_STREAM = 'Попытка считывания за концом потока ввода!!Attempt to read beyond end of input stream';
+  RANGE_ERROR_MESSAGE = 'Выход за пределы допустимого диапазона!!Out of range';
+  EOF_FOR_TEXT_WRITEOPENED = 'Функция Eof не может быть вызвана для текстового файла, открытого на запись!!Eof function cannot be called on a text file opened for writing';
+  EOLN_FOR_TEXT_WRITEOPENED = 'Функция Eoln не может быть вызвана для текстового файла, открытого на запись!!Eoln function cannot be called on a text file opened for writing';
+  SEEKEOF_FOR_TEXT_WRITEOPENED = 'Функция SeekEof не может быть вызвана для текстового файла, открытого на запись!!SeekEof function cannot be called on a text file opened for writing';
+  SEEKEOLN_FOR_TEXT_WRITEOPENED = 'Функция SeekEoln не может быть вызвана для текстового файла, открытого на запись!!SeekEoln function cannot be called on a text file opened for writing';
+  BAD_TYPE_IN_RUNTIMESIZEOF = 'Типизированный файл не может содержать ссылочный тип или тип со ссылочными полями!!Typed file cannot contain a reference type or a type with reference fields';
   PARAMETER_MUST_BE_GREATER_EQUAL_0 = 'Параметр должен быть >= 0!!Parameter must be >= 0';
-  PARAMETER_MUST_BE_GREATER_0 = 'Параметр должен быть > 0!!Parameter must be > 0';
-  PARAMETER_MUST_BE_GREATER_1 = 'Параметр должен быть > 1!!Parameter must be > 1';
-  PARAMETER_STEP_MUST_BE_NOT_EQUAL_0 = 'Параметр step не может быть равен 0!!The step parameter must be not equal to 0';
-  PARAMETER_STEP_MUST_BE_GREATER_0 = 'Параметр step должен быть > 0!!The step parameter must be not greater than 0';
-  PARAMETER_FROM_OUT_OF_RANGE = 'Параметр from за пределами диапазона!!The from parameter out of bounds';
-  PARAMETER_TO_OUT_OF_RANGE = 'Параметр to за пределами диапазона!!The to parameter out of bounds';
-  ARR_LENGTH_MUST_BE_MATCH_TO_MATR_SIZE = 'Размер одномерного массива не согласован с размером двумерного массива!!The 1-dim array length does not match 2-dim array size';
-  INITELEM_COUNT_MUST_BE_EQUAL_TO_MATRIX_ELEMS_COUNT = 'Количество инициализирующих элементов не совпадает с количеством элементов матрицы!!The number of elements in init list must be equal to the number of elements in matrix';
-  TYPED_FILE_CANBE_OPENED_IN_SINGLEBYTE_ENCODING_ONLY = 'При открытии типизированного файла можно указывать только однобайтную кодировку!!Typed file can be opened in single byte encoding only';
-  BAD_ROW_INDEX = 'Один из элементов массива RowIndex выходит за пределы индексов строк двумерного массива!!One of the elements of RowIndex array is out of range of 2-dim array row indexes';
-  BAD_COL_INDEX = 'Один из элементов массива ColIndex выходит за пределы индексов столбцов двумерного массива!!One of the elements of ColIndex array is out of range of 2-dim array column indexes';
-  BAD_ROW_INDEX_FROM = 'FromRow выходит за пределы индексов строк двумерного массива!!FromRow is out of range of 2-dim array row indexes';
-  BAD_ROW_INDEX_TO = 'ToRow выходит за пределы индексов строк двумерного массива!!ToRow is out of range of 2-dim array row indexes';
-  BAD_COL_INDEX_FROM = 'FromCol выходит за пределы индексов строк двумерного массива!!FromCol is out of range of 2-dim array column indexes';
-  BAD_COL_INDEX_TO = 'ToCol выходит за пределы индексов строк двумерного массива!!ToCol is out of range of 2-dim array column indexes';
-  SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL = 'Размеры среза и присваиваемого выражения должны быть равны!!Slice size and assigned expression size must be equal';
+  PARAMETER_MUST_BE_GREATER_0 = 'Параметр должен быть больше 0!!Parameter must be > 0';
+  PARAMETER_MUST_BE_GREATER_1 = 'Параметр должен быть больше 1!!Parameter must be > 1';
+  PARAMETER_STEP_MUST_BE_NOT_EQUAL_0 = 'Параметр step не может быть равен 0!!Step parameter must not be equal to 0';
+  PARAMETER_STEP_MUST_BE_GREATER_0 = 'Параметр step должен быть > 0!!Step parameter must be greater than 0';
+  PARAMETER_FROM_OUT_OF_RANGE = 'Параметр from за пределами диапазона!!From parameter is out of range';
+  PARAMETER_TO_OUT_OF_RANGE = 'Параметр to за пределами диапазона!!To parameter is out of range';
+  ARR_LENGTH_MUST_BE_MATCH_TO_MATR_SIZE = 'Размер одномерного массива не согласован с размером двумерного массива!!The length of the 1D array must match the size of the 2D array';
+  INITELEM_COUNT_MUST_BE_EQUAL_TO_MATRIX_ELEMS_COUNT = 'Количество инициализирующих элементов не совпадает с количеством элементов матрицы!!The number of initializer elements must equal the number of elements in the matrix';
+  TYPED_FILE_CANBE_OPENED_IN_SINGLEBYTE_ENCODING_ONLY = 'При открытии типизированного файла можно указывать только однобайтную кодировку!!Typed files can only be opened with single-byte encodings';
+  BAD_ROW_INDEX = 'Один из элементов массива RowIndex выходит за пределы индексов строк двумерного массива!!An element in the RowIndex array is out of range for the matrix row indices';
+  BAD_COL_INDEX = 'Один из элементов массива ColIndex выходит за пределы индексов столбцов двумерного массива!!An element in the ColIndex array is out of range for the matrix column indices';
+  BAD_ROW_INDEX_FROM = 'FromRow выходит за пределы индексов строк двумерного массива!!FromRow is out of range for the matrix row indices';
+  BAD_ROW_INDEX_TO = 'ToRow выходит за пределы индексов строк двумерного массива!!ToRow is out of range for the matrix row indices';
+  BAD_COL_INDEX_FROM = 'FromCol выходит за пределы индексов строк двумерного массива!!FromCol is out of range for the matrix column indices';
+  BAD_COL_INDEX_TO = 'ToCol выходит за пределы индексов строк двумерного массива!!ToCol is out of range for the matrix column indices';
+  SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL = 'Размеры среза и присваиваемого выражения должны быть равны!!Slice size must match the size of the assigned expression';
   MATR_DIMENSIONS_MUST_BE_EQUAL = 'Размеры матриц должны совпадать!!Matrix dimensions must be equal';
-  COUNT_PARAMS_MAXFUN_MUSTBE_GREATER1 = 'Количество параметров функции Max должно быть > 1!!The number of parameters of the Max function must be > 1';
-  COUNT_PARAMS_MINFUN_MUSTBE_GREATER1 = 'Количество параметров функции Min должно быть > 1!!The number of parameters of the Min function must be > 1';
-  Format_InvalidString = 'Входная строка имела неверный формат!!Input string was not in a correct format';
+  COUNT_PARAMS_MAXFUN_MUSTBE_GREATER1 = 'Количество параметров функции Max должно быть > 1!!Max function must have more than one parameter';
+  COUNT_PARAMS_MINFUN_MUSTBE_GREATER1 = 'Количество параметров функции Min должно быть > 1!!Min function must have more than one parameter';
+  Format_InvalidString = 'Входная строка имела неверный формат!!Input string was not in a valid format';
   Overflow_Int32 = 'Целочисленное переполнение!!Integer overflow';
-  FOR_STEP_CANNOT_BE_EQUAL0 = 'Шаг цикла for не может быт равен 0!!Step of the for loop cannot be equal to 0';
+  FOR_STEP_CANNOT_BE_EQUAL0 = 'Шаг цикла for не может быт равен 0!!The step of a for loop cannot be 0';
   SEQUENCE_CANNOT_BE_EMPTY = 'Последовательность не может быть пустой!!Sequence cannot be empty';
   ARRAY_CANNOT_BE_EMPTY = 'Массив не может быть пустым!!Array cannot be empty';
+  MIN_CANNOT_BE_GREATER_THAN_MAX = 'CLamp: min не может быть больше чем max!!CLamp: min cannot be greater than max';
 // -----------------------------------------------------
 //                  WINAPI
 // -----------------------------------------------------
@@ -10682,6 +10687,21 @@ begin
   Result := char(integer(x)-n);
 end;
 
+/// Возвращает True, если значение val находится между a и b включительно 
+function InRange<T>(val, a, b: T): boolean; where T: IComparable<T>;
+begin
+  Result := (val.CompareTo(a) >= 0) and (val.CompareTo(b) <= 0);
+end;
+
+/// Возвращает True, если значение val находится между a и b (включительно) независимо от порядка a и b
+function Between<T>(val, a, b: T): boolean; where T: IComparable<T>;
+begin
+  if a.CompareTo(b) > 0 then  
+    Result := (val.CompareTo(b) >= 0) and (val.CompareTo(a) <= 0)
+  else
+    Result := (val.CompareTo(a) >= 0) and (val.CompareTo(b) <= 0);
+end;
+
 procedure Swap<T>(var a, b: T);
 begin
   var v := a;
@@ -11193,6 +11213,124 @@ end;
 function OrderDescending(Self: sequence of string): sequence of string; extensionmethod;
 begin
   Result := Self.OrderByDescending(x -> x, System.StringComparer.Ordinal);
+end;
+
+/// Проверяет, отсортирована ли последовательность по возрастанию ключа, используя компаратор
+function IsOrderedBy<T, TKey>(self: sequence of T; keySelector: T -> TKey; 
+  comparer: IComparer<TKey>): boolean; extensionmethod;
+begin
+  var prevKey: TKey;
+  var first := True;
+  foreach var item in self do
+  begin
+    var currentKey := keySelector(item);
+    if not first and (comparer.Compare(prevKey, currentKey) > 0) then
+      exit(False);
+    prevKey := currentKey;
+    first := False;
+  end;
+  Result := True;
+end;
+
+/// Проверяет, отсортирована ли последовательность по возрастанию ключа
+function IsOrderedBy<T, TKey>(self: sequence of T; keySelector: T -> TKey): boolean;
+  extensionmethod; where TKey: System.IComparable<TKey>;
+begin  
+  Result := self.IsOrderedBy(keySelector, Comparer&<TKey>.Default);
+end;
+
+/// Проверяет, отсортирована ли последовательность по возрастанию в порядке, заданном компаратором comparer
+function IsOrdered<T>(self: sequence of T; comparer: IComparer<T>): boolean; extensionmethod;
+begin
+  var prev: T;
+  var first := True;
+  foreach var current in self do
+  begin
+    if not first and (comparer.Compare(prev, current) > 0) then
+      exit(False);
+    prev := current;
+    first := False;
+  end;
+  Result := True;
+end;
+
+/// Проверяет, отсортирована ли последовательность по возрастанию 
+function IsOrdered<T>(self: sequence of T): boolean; extensionmethod; where T: System.IComparable<T>;
+begin
+  var prev: T;
+  var first := True;
+  foreach var current in self do
+  begin
+    if not first and (prev.CompareTo(current) > 0) then
+      exit(False);
+    prev := current;
+    first := False;
+  end;
+  Result := True;
+end;
+
+/// Проверяет, отсортирована ли последовательность по убыванию ключа, используя компаратор
+function IsOrderedByDescending<T, TKey>(self: sequence of T; keySelector: T -> TKey; 
+  comparer: IComparer<TKey>): boolean; extensionmethod;
+begin
+  var prevKey: TKey;
+  var first := True;
+  foreach var item in self do
+  begin
+    var currentKey := keySelector(item);
+    if not first and (comparer.Compare(prevKey, currentKey) < 0) then 
+      exit(False);
+    prevKey := currentKey;
+    first := False;
+  end;
+  Result := True;
+end;
+
+/// Проверяет, отсортирована ли последовательность по убыванию ключа
+function IsOrderedByDescending<T, TKey>(self: sequence of T; keySelector: T -> TKey): boolean; 
+  extensionmethod; where TKey: System.IComparable<TKey>;
+begin
+  var prevKey: TKey;
+  var first := True;
+  foreach var item in self do
+  begin
+    var currentKey := keySelector(item);
+    if not first and (prevKey.CompareTo(currentKey) < 0) then
+      exit(False);
+    prevKey := currentKey;
+    first := False;
+  end;
+  Result := True;
+end;
+
+/// Проверяет, отсортирована ли последовательность по убыванию 
+function IsOrderedDescending<T>(self: sequence of T): boolean; extensionmethod; where T: System.IComparable<T>;
+begin
+  var prev: T;
+  var first := True;
+  foreach var current in self do
+  begin
+    if not first and (prev.CompareTo(current) < 0) then
+      exit(False);
+    prev := current;
+    first := False;
+  end;
+  Result := True;
+end;
+
+/// Проверяет, отсортирована ли последовательность по убыванию в порядке, заданном компаратором comparer
+function IsOrderedDescending<T>(self: sequence of T; comparer: IComparer<T>): boolean; extensionmethod;
+begin
+  var prev: T;
+  var first := True;
+  foreach var current in self do
+  begin
+    if not first and (comparer.Compare(prev, current) < 0) then // Обратный знак
+      exit(False);
+    prev := current;
+    first := False;
+  end;
+  Result := True;
 end;
 
 /// Возвращает множество HashSet по данной последовательности
@@ -13342,12 +13480,88 @@ begin
   System.Array.Copy(a,Self,a.Length);
 end;
 
-
 /// Возвращает индекс последнего элемента массива
 function High(Self: System.Array); extensionmethod := High(Self);
 
 /// Возвращает индекс первого элемента массива
 function Low(Self: System.Array); extensionmethod := Low(Self);
+
+/// Проверяет, отсортирован ли массив по возрастанию ключа
+function IsOrderedBy<T, TKey>(self: array of T; keySelector: T -> TKey): boolean; 
+  extensionmethod; where TKey: System.IComparable<TKey>;
+begin
+  for var i := 0 to self.High - 1 do
+    if keySelector(self[i]).CompareTo(keySelector(self[i + 1])) > 0 then
+      exit(False);
+  Result := True;
+end;
+
+/// Проверяет, отсортирован ли массив по возрастанию ключа с компаратором
+function IsOrderedBy<T, TKey>(self: array of T; keySelector: T -> TKey; 
+  comparer: IComparer<TKey>): boolean; extensionmethod;
+begin
+  for var i := 0 to self.High - 1 do
+    if comparer.Compare(keySelector(self[i]), keySelector(self[i + 1])) > 0 then
+      exit(False);
+  Result := True;
+end;
+
+/// Проверяет, отсортирован ли массив по убыванию ключа
+function IsOrderedByDescending<T, TKey>(self: array of T; keySelector: T -> TKey): boolean; 
+  extensionmethod; where TKey: System.IComparable<TKey>;
+begin
+  for var i := 0 to self.High - 1 do
+    if keySelector(self[i]).CompareTo(keySelector(self[i + 1])) < 0 then // Обратный знак
+      exit(False);
+  Result := True;
+end;
+
+/// Проверяет, отсортирован ли массив по убыванию ключа с компаратором
+function IsOrderedByDescending<T, TKey>(self: array of T; keySelector: T -> TKey; 
+  comparer: IComparer<TKey>): boolean; extensionmethod;
+begin
+  for var i := 0 to self.High - 1 do
+    if comparer.Compare(keySelector(self[i]), keySelector(self[i + 1])) < 0 then // Обратный знак
+      exit(False);
+  Result := True;
+end;
+
+/// Проверяет, отсортирован ли массив по возрастанию 
+function IsOrdered<T>(self: array of T): boolean; extensionmethod; where T: System.IComparable<T>;
+begin
+  for var i := 0 to self.High - 1 do
+    if self[i].CompareTo(self[i + 1]) > 0 then
+      exit(False);
+  Result := True;
+end;
+
+/// Проверяет, отсортирован ли массив в порядке, заданном компаратором comparer
+function IsOrdered<T>(self: array of T; comparer: IComparer<T>): boolean; extensionmethod;
+begin
+  for var i := 0 to self.High - 1 do
+    if comparer.Compare(self[i], self[i + 1]) > 0 then
+      exit(False);
+  Result := True;
+end;
+
+/// Проверяет, отсортирован ли массив по убыванию 
+function IsOrderedDescending<T>(self: array of T): boolean; extensionmethod; where T: System.IComparable<T>;
+begin
+  for var i := 0 to self.High - 1 do
+    if self[i].CompareTo(self[i + 1]) < 0 then
+      exit(False);
+  Result := True;
+end;
+
+/// Проверяет, отсортирован ли массив по убыванию в порядке, заданном компаратором comparer
+function IsOrderedDescending<T>(self: array of T; comparer: IComparer<T>): boolean; extensionmethod;
+begin
+  for var i := 0 to self.High - 1 do
+    if comparer.Compare(self[i], self[i + 1]) < 0 then // Обратный знак
+      exit(False);
+  Result := True;
+end;
+
 
 /// Возвращает последовательность индексов одномерного массива
 function Indices<T>(Self: array of T): sequence of integer; extensionmethod := Range(0, Self.Length - 1);
@@ -14001,10 +14215,10 @@ begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
-/// Возвращает True если значение находится между двумя другими
+/// Возвращает True если значение находится в диапазоне [a,b]
 function InRange(Self: integer; a,b: integer): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  Result := (a <= Self) and (Self <= b);
 end;
 
 ///--
@@ -14065,29 +14279,15 @@ begin
   Result := Range(0, Self - 1);
 end;
 
-/// Возвращает число, ограниченное диапазоном от bottom до top включительно
-function Clamp(Self: integer; bottom,top: integer): integer; extensionmethod;
+/// Возвращает число, ограниченное диапазоном от min до max включительно
+function Clamp(Self: integer; min,max: integer): integer; extensionmethod;
 begin
-  if Self < bottom then 
-    Result := bottom
-  else if Self > top then 
-    Result := top
-  else Result := Self;  
-end;
-
-/// Возвращает число, ограниченное величиной top сверху
-function ClampTop(Self: integer; top: integer): integer; extensionmethod;
-begin
-  if Self > top then 
-    Result := top
-  else Result := Self;  
-end;
-
-/// Возвращает число, ограниченное величиной bottom снизу
-function ClampBottom(Self: integer; bottom: integer): integer; extensionmethod;
-begin
-  if Self < bottom then 
-    Result := bottom
+  if min > max then
+    raise new System.ArgumentException(GetTranslation(MIN_CANNOT_BE_GREATER_THAN_MAX));
+  if Self < min then 
+    Result := min
+  else if Self > max then 
+    Result := max
   else Result := Self;  
 end;
 
@@ -14103,16 +14303,16 @@ end;
 // -----------------------------------------------------
 //>>     Методы расширения типа real # Extension methods for real
 // -----------------------------------------------------
-/// Возвращает True если значение находится между двумя другими
+/// Возвращает True если значение находится в диапазоне [a,b]
 function Between(Self: real; a, b: real): boolean; extensionmethod;
 begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
-/// Возвращает True если значение находится между двумя другими
+/// Возвращает True если значение находится в диапазоне [a, b]
 function InRange(Self: real; a,b: real): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  Result := (a <= Self) and (Self <= b);
 end;
 
 /// Возвращает квадратный корень числа
@@ -14182,32 +14382,17 @@ begin
   Result := Format('{0:f' + frac + '}', Self)
 end;
 
-/// Возвращает число, ограниченное диапазоном от bottom до top включительно
-function Clamp(Self: real; bottom,top: real): real; extensionmethod;
+/// Возвращает число, ограниченное диапазоном от min до max включительно
+function Clamp(Self: real; min,max: real): real; extensionmethod;
 begin
-  if Self < bottom then 
-    Result := bottom
-  else if Self > top then 
-    Result := top
+  if min > max then
+    raise new System.ArgumentException(GetTranslation(MIN_CANNOT_BE_GREATER_THAN_MAX));
+  if Self < min then 
+    Result := min
+  else if Self > max then 
+    Result := max
   else Result := Self;  
 end;
-
-/// Возвращает число, ограниченное величиной top сверху
-function ClampTop(Self: real; top: real): real; extensionmethod;
-begin
-  if Self > top then 
-    Result := top
-  else Result := Self;  
-end;
-
-/// Возвращает число, ограниченное величиной bottom снизу
-function ClampBottom(Self: real; bottom: real): real; extensionmethod;
-begin
-  if Self < bottom then 
-    Result := bottom
-  else Result := Self;  
-end;
-
 
 //------------------------------------------------------------------------------
 //>>     Методы расширения типа char # Extension methods for char
@@ -14218,10 +14403,10 @@ begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
-/// Возвращает True если значение находится между двумя другими
+/// Возвращает True если символ находится в диапазоне [a,b]
 function InRange(Self: char; a,b: char): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  Result := (a <= Self) and (Self <= b);
 end;
 
 /// Предыдущий символ
@@ -14285,16 +14470,16 @@ begin
   Result := Self.Split(|oldStr|, count+1, System.StringSplitOptions.None).JoinToString(newStr);
 end;
 
-/// Возвращает True если значение находится между двумя другими
+/// Возвращает True если строка находится между двумя другими (лексикографическое сравнение)
 function Between(Self: string; a, b: string): boolean; extensionmethod;
 begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
-/// Возвращает True если значение находится между двумя другими
+/// Возвращает True если строка находится в диапазоне [a,b] (лексикографическое сравнение)
 function InRange(Self: string; a, b: string): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  Result := (a <= Self) and (Self <= b);
 end;
 
 /// Считывает целое из строки начиная с позиции from и устанавливает from за считанным значением
