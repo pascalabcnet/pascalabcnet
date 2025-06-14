@@ -229,6 +229,15 @@ namespace PascalABCCompiler.Parsers
             {
                 return sc.Name + (((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>")) ? "<>" : "");
             }
+
+            if (sc is IInterfaceUnitScope && SpecialModulesAliases != null)
+            {
+                var p = SpecialModulesAliases.FirstOrDefault(kv => kv.Value == sc.Name);
+
+                if (!p.Equals(default(KeyValuePair<string, string>)))
+                    return p.Key + ".";
+            }
+
             return sc.Name;
         }
 
