@@ -361,6 +361,8 @@ namespace VisualPascalABC
                 {
                     bool languageCaseSensitive = LanguageProvider.Instance.SelectLanguageByExtension(FileName).CaseSensitive;
 
+                    languageInformation.RenameOrExcludeSpecialNames(symInfos);
+
                     AddCompletionDatasByFirstForSymInfos(resultList, charTyped, symInfos, languageCaseSensitive);
 
                     //resultList.Sort();
@@ -534,6 +536,8 @@ namespace VisualPascalABC
 
                 if (symInfos != null)
                 {
+                    currentLanguage.LanguageInformation.RenameOrExcludeSpecialNames(symInfos);
+
                     AddCompletionDatasForSymInfos(resultList, currentLanguage.CaseSensitive, symInfos, selectedSymInfo, lastUsedMember);
                 }
             }

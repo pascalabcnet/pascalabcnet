@@ -419,7 +419,9 @@ namespace VisualPascalABC
                 OutputWindow.outputTextBox.Visible = false;
                 OutputWindow.outputTextBox = OutputTextBoxs[CurrentCodeFileDocument];
             }
-            CodeCompletion.CodeCompletionController.SetParser(Path.GetExtension(CurrentCodeFileDocument.FileName));
+
+            CodeCompletion.CodeCompletionController.SetLanguage(CurrentCodeFileDocument.FileName);
+
             SetFocusToEditor();
             bool run = WorkbenchServiceFactory.RunService.IsRun(CurrentEXEFileName);
             WorkbenchServiceFactory.DebuggerManager.SetAsPossibleDebugPage(CurrentCodeFileDocument);

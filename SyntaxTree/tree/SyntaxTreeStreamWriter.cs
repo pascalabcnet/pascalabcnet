@@ -7234,50 +7234,186 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(list_generator _list_generator)
+		public void visit(generator_object _generator_object)
 		{
 			bw.Write((Int16)264);
-			write_list_generator(_list_generator);
+			write_generator_object(_generator_object);
 		}
 
-		public void write_list_generator(list_generator _list_generator)
+		public void write_generator_object(generator_object _generator_object)
 		{
-			write_expression(_list_generator);
-			if (_list_generator._expr == null)
+			write_addressed_value(_generator_object);
+			if (_generator_object._expr == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				_list_generator._expr.visit(this);
+				_generator_object._expr.visit(this);
 			}
-			if (_list_generator._ident == null)
+			if (_generator_object._ident == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				_list_generator._ident.visit(this);
+				_generator_object._ident.visit(this);
 			}
-			if (_list_generator._range == null)
+			if (_generator_object._range == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				_list_generator._range.visit(this);
+				_generator_object._range.visit(this);
 			}
-			if (_list_generator._condition == null)
+			if (_generator_object._condition == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				_list_generator._condition.visit(this);
+				_generator_object._condition.visit(this);
+			}
+		}
+
+
+		public void visit(import_statement _import_statement)
+		{
+			bw.Write((Int16)265);
+			write_import_statement(_import_statement);
+		}
+
+		public void write_import_statement(import_statement _import_statement)
+		{
+			write_statement(_import_statement);
+			if (_import_statement.modules_names == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_import_statement.modules_names.visit(this);
+			}
+		}
+
+
+		public void visit(as_statement _as_statement)
+		{
+			bw.Write((Int16)266);
+			write_as_statement(_as_statement);
+		}
+
+		public void write_as_statement(as_statement _as_statement)
+		{
+			write_statement(_as_statement);
+			if (_as_statement.real_name == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_as_statement.real_name.visit(this);
+			}
+			if (_as_statement.alias == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_as_statement.alias.visit(this);
+			}
+		}
+
+
+		public void visit(as_statement_list _as_statement_list)
+		{
+			bw.Write((Int16)267);
+			write_as_statement_list(_as_statement_list);
+		}
+
+		public void write_as_statement_list(as_statement_list _as_statement_list)
+		{
+			write_statement(_as_statement_list);
+			if (_as_statement_list.as_statements == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_as_statement_list.as_statements.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _as_statement_list.as_statements.Count; ssyy_i++)
+				{
+					if (_as_statement_list.as_statements[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_as_statement_list.as_statements[ssyy_i].visit(this);
+					}
+				}
+			}
+		}
+
+
+		public void visit(from_import_statement _from_import_statement)
+		{
+			bw.Write((Int16)268);
+			write_from_import_statement(_from_import_statement);
+		}
+
+		public void write_from_import_statement(from_import_statement _from_import_statement)
+		{
+			write_statement(_from_import_statement);
+			if (_from_import_statement.module_name == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_from_import_statement.module_name.visit(this);
+			}
+			bw.Write(_from_import_statement.is_star);
+			if (_from_import_statement.imported_names == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_from_import_statement.imported_names.visit(this);
+			}
+		}
+
+
+		public void visit(return_statement _return_statement)
+		{
+			bw.Write((Int16)269);
+			write_return_statement(_return_statement);
+		}
+
+		public void write_return_statement(return_statement _return_statement)
+		{
+			write_statement(_return_statement);
+			if (_return_statement.expr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_return_statement.expr.visit(this);
 			}
 		}
 

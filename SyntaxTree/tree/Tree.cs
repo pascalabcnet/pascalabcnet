@@ -1006,6 +1006,7 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.from.Parent = copy;
 			}
 			copy.operator_type = operator_type;
+			copy.first_assignment_defines_type = first_assignment_defines_type;
 			return copy;
 		}
 
@@ -56107,7 +56108,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///SPython-only node
 	///</summary>
 	[Serializable]
 	public partial class global_statement : statement
@@ -56264,16 +56265,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///SPython-only node
 	///</summary>
 	[Serializable]
-	public partial class list_generator : expression
+	public partial class generator_object : addressed_value
 	{
 
 		///<summary>
 		///Конструктор без параметров.
 		///</summary>
-		public list_generator()
+		public generator_object()
 		{
 
 		}
@@ -56281,7 +56282,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public list_generator(expression __expr,ident __ident,expression __range,expression __condition)
+		public generator_object(expression __expr,ident __ident,expression __range,expression __condition)
 		{
 			this.__expr=__expr;
 			this.__ident=__ident;
@@ -56293,7 +56294,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public list_generator(expression __expr,ident __ident,expression __range,expression __condition,SourceContext sc)
+		public generator_object(expression __expr,ident __ident,expression __range,expression __condition,SourceContext sc)
 		{
 			this.__expr=__expr;
 			this.__ident=__ident;
@@ -56379,7 +56380,7 @@ namespace PascalABCCompiler.SyntaxTree
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
-			list_generator copy = new list_generator();
+			generator_object copy = new generator_object();
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
@@ -56412,9 +56413,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		/// <summary> Получает копию данного узла корректного типа </summary>
-		public new list_generator TypedClone()
+		public new generator_object TypedClone()
 		{
-			return Clone() as list_generator;
+			return Clone() as generator_object;
 		}
 
 		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
@@ -56502,6 +56503,1050 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 3:
 						_condition = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///SPython-only node
+	///</summary>
+	[Serializable]
+	public partial class import_statement : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public import_statement()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public import_statement(as_statement_list _modules_names)
+		{
+			this._modules_names=_modules_names;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public import_statement(as_statement_list _modules_names,SourceContext sc)
+		{
+			this._modules_names=_modules_names;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected as_statement_list _modules_names;
+
+		///<summary>
+		///
+		///</summary>
+		public as_statement_list modules_names
+		{
+			get
+			{
+				return _modules_names;
+			}
+			set
+			{
+				_modules_names=value;
+				if (_modules_names != null)
+					_modules_names.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			import_statement copy = new import_statement();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (modules_names != null)
+			{
+				copy.modules_names = (as_statement_list)modules_names.Clone();
+				copy.modules_names.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new import_statement TypedClone()
+		{
+			return Clone() as import_statement;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (modules_names != null)
+				modules_names.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			modules_names?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return modules_names;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						modules_names = (as_statement_list)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///SPython-only node
+	///</summary>
+	[Serializable]
+	public partial class as_statement : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public as_statement()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public as_statement(ident _real_name,ident _alias)
+		{
+			this._real_name=_real_name;
+			this._alias=_alias;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public as_statement(ident _real_name,ident _alias,SourceContext sc)
+		{
+			this._real_name=_real_name;
+			this._alias=_alias;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected ident _real_name;
+		protected ident _alias;
+
+		///<summary>
+		///
+		///</summary>
+		public ident real_name
+		{
+			get
+			{
+				return _real_name;
+			}
+			set
+			{
+				_real_name=value;
+				if (_real_name != null)
+					_real_name.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public ident alias
+		{
+			get
+			{
+				return _alias;
+			}
+			set
+			{
+				_alias=value;
+				if (_alias != null)
+					_alias.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			as_statement copy = new as_statement();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (real_name != null)
+			{
+				copy.real_name = (ident)real_name.Clone();
+				copy.real_name.Parent = copy;
+			}
+			if (alias != null)
+			{
+				copy.alias = (ident)alias.Clone();
+				copy.alias.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new as_statement TypedClone()
+		{
+			return Clone() as as_statement;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (real_name != null)
+				real_name.Parent = this;
+			if (alias != null)
+				alias.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			real_name?.FillParentsInAllChilds();
+			alias?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return real_name;
+					case 1:
+						return alias;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						real_name = (ident)value;
+						break;
+					case 1:
+						alias = (ident)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///SPython-onle node
+	///</summary>
+	[Serializable]
+	public partial class as_statement_list : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public as_statement_list()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public as_statement_list(List<as_statement> _as_statements)
+		{
+			this._as_statements=_as_statements;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public as_statement_list(List<as_statement> _as_statements,SourceContext sc)
+		{
+			this._as_statements=_as_statements;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		public as_statement_list(as_statement elem, SourceContext sc = null)
+		{
+			Add(elem, sc);
+		    FillParentsInDirectChilds();
+		}
+		
+		protected List<as_statement> _as_statements=new List<as_statement>();
+
+		///<summary>
+		///
+		///</summary>
+		public List<as_statement> as_statements
+		{
+			get
+			{
+				return _as_statements;
+			}
+			set
+			{
+				_as_statements=value;
+			}
+		}
+
+
+		public as_statement_list Add(as_statement elem, SourceContext sc = null)
+		{
+			as_statements.Add(elem);
+			if (elem != null)
+				elem.Parent = this;
+			if (sc != null)
+				source_context = sc;
+			return this;
+		}
+		
+		public void AddFirst(as_statement el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			as_statements.Insert(0, el);
+			FillParentsInDirectChilds();
+		}
+		
+		public void AddFirst(IEnumerable<as_statement> els)
+		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
+			as_statements.InsertRange(0, els);
+			foreach (var el in els)
+				if (el != null)
+					el.Parent = this;
+		}
+		
+		public void AddMany(params as_statement[] els)
+		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
+			as_statements.AddRange(els);
+			foreach (var el in els)
+				if (el != null)
+					el.Parent = this;
+		}
+		
+		private int FindIndexInList(as_statement el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			var ind = as_statements.FindIndex(x => x == el);
+			if (ind == -1)
+				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
+			return ind;
+		}
+		
+		public void InsertAfter(as_statement el, as_statement newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			as_statements.Insert(FindIndexInList(el) + 1, newel);
+			newel.Parent = this;
+		}
+		
+		public void InsertAfter(as_statement el, IEnumerable<as_statement> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			as_statements.InsertRange(FindIndexInList(el) + 1, newels);
+			foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public void InsertBefore(as_statement el, as_statement newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			as_statements.Insert(FindIndexInList(el), newel);
+			newel.Parent = this;
+		}
+		
+		public void InsertBefore(as_statement el, IEnumerable<as_statement> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			as_statements.InsertRange(FindIndexInList(el), newels);
+			foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public bool Remove(as_statement el)
+		{
+			return as_statements.Remove(el);
+		}
+		
+		public void ReplaceInList(as_statement el, as_statement newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			as_statements[FindIndexInList(el)] = newel;
+			newel.Parent = this;
+		}
+		
+		public void ReplaceInList(as_statement el, IEnumerable<as_statement> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			var ind = FindIndexInList(el);
+			as_statements.RemoveAt(ind);
+			as_statements.InsertRange(ind, newels);
+		    foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public int RemoveAll(Predicate<as_statement> match)
+		{
+			return as_statements.RemoveAll(match);
+		}
+		
+		public as_statement Last()
+		{
+			if (as_statements.Count > 0)
+		        return as_statements[as_statements.Count - 1];
+			throw new InvalidOperationException("Список пуст");
+		}
+		
+		public int Count
+		{
+		    get { return as_statements.Count; }
+		}
+		
+		public void Insert(int pos, as_statement el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			as_statements.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
+		}
+		
+		
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			as_statement_list copy = new as_statement_list();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (as_statements != null)
+			{
+				foreach (as_statement elem in as_statements)
+				{
+					if (elem != null)
+					{
+						copy.Add((as_statement)elem.Clone());
+						copy.Last().Parent = copy;
+					}
+					else
+						copy.Add(null);
+				}
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new as_statement_list TypedClone()
+		{
+			return Clone() as as_statement_list;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (as_statements != null)
+			{
+				foreach (var child in as_statements)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			if (as_statements != null)
+			{
+				foreach (var child in as_statements)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0 + (as_statements == null ? 0 : as_statements.Count);
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(as_statements != null)
+				{
+					if(index_counter < as_statements.Count)
+					{
+						return as_statements[index_counter];
+					}
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(as_statements != null)
+				{
+					if(index_counter < as_statements.Count)
+					{
+						as_statements[index_counter]= (as_statement)value;
+						return;
+					}
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///SPython-only node
+	///</summary>
+	[Serializable]
+	public partial class from_import_statement : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public from_import_statement()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public from_import_statement(ident _module_name,bool _is_star,as_statement_list _imported_names)
+		{
+			this._module_name=_module_name;
+			this._is_star=_is_star;
+			this._imported_names=_imported_names;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public from_import_statement(ident _module_name,bool _is_star,as_statement_list _imported_names,SourceContext sc)
+		{
+			this._module_name=_module_name;
+			this._is_star=_is_star;
+			this._imported_names=_imported_names;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected ident _module_name;
+		protected bool _is_star;
+		protected as_statement_list _imported_names;
+
+		///<summary>
+		///
+		///</summary>
+		public ident module_name
+		{
+			get
+			{
+				return _module_name;
+			}
+			set
+			{
+				_module_name=value;
+				if (_module_name != null)
+					_module_name.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public bool is_star
+		{
+			get
+			{
+				return _is_star;
+			}
+			set
+			{
+				_is_star=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public as_statement_list imported_names
+		{
+			get
+			{
+				return _imported_names;
+			}
+			set
+			{
+				_imported_names=value;
+				if (_imported_names != null)
+					_imported_names.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			from_import_statement copy = new from_import_statement();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (module_name != null)
+			{
+				copy.module_name = (ident)module_name.Clone();
+				copy.module_name.Parent = copy;
+			}
+			copy.is_star = is_star;
+			if (imported_names != null)
+			{
+				copy.imported_names = (as_statement_list)imported_names.Clone();
+				copy.imported_names.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new from_import_statement TypedClone()
+		{
+			return Clone() as from_import_statement;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (module_name != null)
+				module_name.Parent = this;
+			if (imported_names != null)
+				imported_names.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			module_name?.FillParentsInAllChilds();
+			imported_names?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return module_name;
+					case 1:
+						return imported_names;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						module_name = (ident)value;
+						break;
+					case 1:
+						imported_names = (as_statement_list)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///SPython-only node
+	///</summary>
+	[Serializable]
+	public partial class return_statement : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public return_statement()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public return_statement(expression _expr)
+		{
+			this._expr=_expr;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public return_statement(expression _expr,SourceContext sc)
+		{
+			this._expr=_expr;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected expression _expr;
+
+		///<summary>
+		///
+		///</summary>
+		public expression expr
+		{
+			get
+			{
+				return _expr;
+			}
+			set
+			{
+				_expr=value;
+				if (_expr != null)
+					_expr.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			return_statement copy = new return_statement();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (expression)expr.Clone();
+				copy.expr.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new return_statement TypedClone()
+		{
+			return Clone() as return_statement;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (expr != null)
+				expr.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			expr?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return expr;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						expr = (expression)value;
 						break;
 				}
 			}

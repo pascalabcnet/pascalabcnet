@@ -48,7 +48,7 @@ namespace VisualPascalABC
                 expr, Errors, Warnings);
 
             // Пока добавили проверку, что анализируем Паскаль  EVA
-            if (Errors.Count > 0 && parser == Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(PascalABCCompiler.StringConstants.pascalLanguageName).Parser)
+            if (Errors.Count > 0 && parser == Languages.Facade.LanguageProvider.Instance.MainLanguage.Parser)
             {
                 string s = expr.TrimStart();
                 if (s.Length > 0 && s[0] == '^')

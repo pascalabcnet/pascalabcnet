@@ -14,9 +14,9 @@ using static PascalABCCompiler.ParserTools.Directives.DirectiveHelper;
 
 namespace Languages.Pascal.Frontend.Data
 {
-	public class PascalABCLanguageInformation : ILanguageInformation
-	{
-		protected IParser Parser
+    public class PascalABCLanguageInformation : BaseLanguageInformation
+    {
+        protected IParser Parser
         {
             get
             {
@@ -25,9 +25,9 @@ namespace Languages.Pascal.Frontend.Data
             }
         }
 
-        public BaseKeywords KeywordsStorage { get; } = new Core.PascalABCKeywords();
+        public override BaseKeywords KeywordsStorage { get; } = new Core.PascalABCKeywords();
 
-        public Dictionary<string, DirectiveInfo> ValidDirectives { get; private set; }
+        public override Dictionary<string, DirectiveInfo> ValidDirectives { get; protected set; }
 
         public PascalABCLanguageInformation()
         {
@@ -82,14 +82,14 @@ namespace Languages.Pascal.Frontend.Data
             #endregion
         }
 
-        public bool IsKeyword(string value)
+        public override bool IsKeyword(string value)
         {
             // typeof и sizeof воспринимаются Intellisense по другому  EVA 
-            return !value.Equals("typeof", StringComparison.CurrentCultureIgnoreCase) && !value.Equals("sizeof", StringComparison.CurrentCultureIgnoreCase) 
+            return !value.Equals("typeof", StringComparison.CurrentCultureIgnoreCase) && !value.Equals("sizeof", StringComparison.CurrentCultureIgnoreCase)
                 && KeywordsStorage.KeywordsToTokens.ContainsKey(value);
         }
 
-        public virtual string BodyStartBracket
+        public override string BodyStartBracket
         {
             get
             {
@@ -97,21 +97,13 @@ namespace Languages.Pascal.Frontend.Data
             }
         }
 
-        public virtual string BodyEndBracket
+        public override string BodyEndBracket
         {
             get
             {
                 return "end";
             }
         }
-
-		public virtual string SystemUnitName
-		{
-            get
-            {
-                return PascalABCCompiler.StringConstants.pascalSystemUnitName;
-            }
-		}
 
         public List<string> Keywords
         {
@@ -129,7 +121,7 @@ namespace Languages.Pascal.Frontend.Data
             }
         }
 
-        public virtual string ParameterDelimiter
+        public override string ParameterDelimiter
         {
             get
             {
@@ -137,7 +129,15 @@ namespace Languages.Pascal.Frontend.Data
             }
         }
 
-        public virtual bool CaseSensitive
+        public override string ResultVariableName => "Result";
+
+        public override string GenericTypesStartBracket => "<";
+
+        public override string GenericTypesEndBracket => ">";
+
+        public override string ReturnTypeDelimiter => ":";
+
+        public override bool CaseSensitive
         {
             get
             {
@@ -145,7 +145,7 @@ namespace Languages.Pascal.Frontend.Data
             }
         }
 
-        public virtual bool IncludeDotNetEntities
+        public override bool IncludeDotNetEntities
         {
             get
             {
@@ -153,232 +153,217 @@ namespace Languages.Pascal.Frontend.Data
             }
         }
 
-		public virtual string GetDescription(IBaseScope scope)
-		{
-			switch (scope.Kind)
-			{
-				case ScopeKind.Type : return GetDescriptionForType(scope as ITypeScope);
-				case ScopeKind.CompiledType : return GetDescriptionForCompiledType(scope as ICompiledTypeScope);
-				case ScopeKind.Delegate : return GetDescriptionForDelegate(scope as IProcType);
-				case ScopeKind.TypeSynonim : return GetSynonimDescription(scope as ITypeSynonimScope);
-				case ScopeKind.Array : return GetDescriptionForArray(scope as IArrayScope);
-				case ScopeKind.Diapason : return GetDescriptionForDiapason(scope as IDiapasonScope);
-				case ScopeKind.File : return GetDescriptionForFile(scope as IFileScope);
-				case ScopeKind.Pointer : return GetDescriptionForPointer(scope as IPointerScope);
-				case ScopeKind.Enum : return GetDescriptionForEnum(scope as IEnumScope);
-				case ScopeKind.Set : return GetDescriptionForSet(scope as ISetScope);
-				case ScopeKind.ElementScope : return GetDescriptionForElementScope(scope as IElementScope);
-				case ScopeKind.CompiledField : return GetDescriptionForCompiledField(scope as ICompiledFieldScope);
-				case ScopeKind.CompiledProperty : return GetDescriptionForCompiledProperty(scope as ICompiledPropertyScope);
-				case ScopeKind.CompiledMethod : return GetDescriptionForCompiledMethod(scope as ICompiledMethodScope);
-				case ScopeKind.Namespace : return GetDescriptionForNamespace(scope as INamespaceScope);
-				case ScopeKind.Procedure : return GetDescriptionForProcedure(scope as IProcScope);
-				case ScopeKind.CompiledEvent : return GetDescriptionForCompiledEvent(scope as ICompiledEventScope);
-				case ScopeKind.CompiledConstructor : return GetDescriptionForCompiledConstructor(scope as ICompiledConstructorScope);
-				case ScopeKind.ShortString : return GetDescriptionForShortString(scope as IShortStringScope);
-				//case ScopeKind.Procedure : return GetDescriptionForProcedure(scope as IProcScope);
-			}
-			return "";
-		}
-		
-		public virtual string GetSimpleDescription(IBaseScope scope)
-		{
-			if (scope == null)
-				return "";
-			switch (scope.Kind)
-			{
-				case ScopeKind.Delegate : 
-				case ScopeKind.Array :
-				case ScopeKind.Diapason : 
-				case ScopeKind.File : 
-				case ScopeKind.Pointer :
-				case ScopeKind.Enum : 
-				case ScopeKind.Set : 
-				case ScopeKind.ShortString : 
-					if (scope is ITypeScope && (scope as ITypeScope).Aliased)
-						return scope.Name;
-				break;
-			}
-			switch (scope.Kind)
-			{
-				case ScopeKind.Type : return GetSimpleDescriptionForType(scope as ITypeScope);
-				case ScopeKind.CompiledType : return GetSimpleDescriptionForCompiledType(scope as ICompiledTypeScope);
-				case ScopeKind.Delegate : return GetDescriptionForDelegate(scope as IProcType);
-				case ScopeKind.TypeSynonim : return GetSimpleSynonimDescription(scope as ITypeSynonimScope);
-				case ScopeKind.Array : return GetDescriptionForArray(scope as IArrayScope);
-				case ScopeKind.Diapason : return GetDescriptionForDiapason(scope as IDiapasonScope);
-				case ScopeKind.File : return GetDescriptionForFile(scope as IFileScope);
-				case ScopeKind.Pointer : return GetDescriptionForPointer(scope as IPointerScope);
-				case ScopeKind.Enum : return GetDescriptionForEnum(scope as IEnumScope);
-				case ScopeKind.Set : return GetDescriptionForSet(scope as ISetScope);
-				case ScopeKind.ElementScope : return GetSimpleDescriptionForElementScope(scope as IElementScope);
-				case ScopeKind.CompiledField : return GetDescriptionForCompiledField(scope as ICompiledFieldScope);
-				case ScopeKind.CompiledProperty : return GetDescriptionForCompiledProperty(scope as ICompiledPropertyScope);
-				case ScopeKind.CompiledMethod : return GetDescriptionForCompiledMethod(scope as ICompiledMethodScope);
-				case ScopeKind.Namespace : return GetDescriptionForNamespace(scope as INamespaceScope);
-				case ScopeKind.Procedure : return GetSimpleDescriptionForProcedure(scope as IProcScope);
-				case ScopeKind.CompiledEvent : return GetDescriptionForCompiledEvent(scope as ICompiledEventScope);
-				case ScopeKind.CompiledConstructor : return GetDescriptionForCompiledConstructor(scope as ICompiledConstructorScope);
-				case ScopeKind.ShortString : return GetDescriptionForShortString(scope as IShortStringScope);
-				case ScopeKind.UnitInterface : return GetDescriptionForModule(scope as IInterfaceUnitScope);
-				//case ScopeKind.Procedure : return GetDescriptionForProcedure(scope as IProcScope);
-			}
-			return "";
-		}
-		
-		public virtual string GetDescriptionForModule(IInterfaceUnitScope scope)
-		{
-			return (scope.IsNamespaceUnit?"namespace ":"unit ")+scope.Name;
-		}
-		
-		public virtual string GetShortName(ICompiledTypeScope scope)
-		{
-			return GetShortTypeName(scope.CompiledType);
-		}
-		
-		public virtual string GetShortName(ICompiledMethodScope scope)
-		{
-			return GetShortTypeName(scope.CompiledMethod);
-		}
-		
-		public virtual string GetShortName(ICompiledConstructorScope scope)
-		{
-			return "Create";
-		}
+        public override bool AddStandardUnitNamesToUserScope => true;
 
-        public virtual string GetShortName(IProcScope scope)
+        public override bool AddStandardNetNamespacesToUserScope => true;
+
+        public override bool UsesFunctionsOverlappingSourceContext => false;
+
+        public override string GetDescription(IBaseScope scope)
+        {
+            switch (scope.Kind)
+            {
+                case ScopeKind.Type: return GetDescriptionForType(scope as ITypeScope);
+                case ScopeKind.CompiledType: return GetDescriptionForCompiledType(scope as ICompiledTypeScope);
+                case ScopeKind.Delegate: return GetDescriptionForDelegate(scope as IProcType);
+                case ScopeKind.TypeSynonim: return GetSynonimDescription(scope as ITypeSynonimScope);
+                case ScopeKind.Array: return GetDescriptionForArray(scope as IArrayScope);
+                case ScopeKind.Diapason: return GetDescriptionForDiapason(scope as IDiapasonScope);
+                case ScopeKind.File: return GetDescriptionForFile(scope as IFileScope);
+                case ScopeKind.Pointer: return GetDescriptionForPointer(scope as IPointerScope);
+                case ScopeKind.Enum: return GetDescriptionForEnum(scope as IEnumScope);
+                case ScopeKind.Set: return GetDescriptionForSet(scope as ISetScope);
+                case ScopeKind.ElementScope: return GetDescriptionForElementScope(scope as IElementScope);
+                case ScopeKind.CompiledField: return GetDescriptionForCompiledField(scope as ICompiledFieldScope);
+                case ScopeKind.CompiledProperty: return GetDescriptionForCompiledProperty(scope as ICompiledPropertyScope);
+                case ScopeKind.CompiledMethod: return GetDescriptionForCompiledMethod(scope as ICompiledMethodScope);
+                case ScopeKind.Namespace: return GetDescriptionForNamespace(scope as INamespaceScope);
+                case ScopeKind.Procedure: return GetDescriptionForProcedure(scope as IProcScope);
+                case ScopeKind.CompiledEvent: return GetDescriptionForCompiledEvent(scope as ICompiledEventScope);
+                case ScopeKind.CompiledConstructor: return GetDescriptionForCompiledConstructor(scope as ICompiledConstructorScope);
+                case ScopeKind.ShortString: return GetDescriptionForShortString(scope as IShortStringScope);
+                    //case ScopeKind.Procedure : return GetDescriptionForProcedure(scope as IProcScope);
+            }
+            return "";
+        }
+
+        public override string GetSimpleDescription(IBaseScope scope)
+        {
+            if (scope == null)
+                return "";
+            switch (scope.Kind)
+            {
+                case ScopeKind.Delegate:
+                case ScopeKind.Array:
+                case ScopeKind.Diapason:
+                case ScopeKind.File:
+                case ScopeKind.Pointer:
+                case ScopeKind.Enum:
+                case ScopeKind.Set:
+                case ScopeKind.ShortString:
+                    if (scope is ITypeScope && (scope as ITypeScope).Aliased)
+                        return scope.Name;
+                    break;
+            }
+            switch (scope.Kind)
+            {
+                case ScopeKind.Type: return GetSimpleDescriptionForType(scope as ITypeScope);
+                case ScopeKind.CompiledType: return GetSimpleDescriptionForCompiledType(scope as ICompiledTypeScope);
+                case ScopeKind.Delegate: return GetDescriptionForDelegate(scope as IProcType);
+                case ScopeKind.TypeSynonim: return GetSimpleSynonimDescription(scope as ITypeSynonimScope);
+                case ScopeKind.Array: return GetDescriptionForArray(scope as IArrayScope);
+                case ScopeKind.Diapason: return GetDescriptionForDiapason(scope as IDiapasonScope);
+                case ScopeKind.File: return GetDescriptionForFile(scope as IFileScope);
+                case ScopeKind.Pointer: return GetDescriptionForPointer(scope as IPointerScope);
+                case ScopeKind.Enum: return GetDescriptionForEnum(scope as IEnumScope);
+                case ScopeKind.Set: return GetDescriptionForSet(scope as ISetScope);
+                case ScopeKind.ElementScope: return GetSimpleDescriptionForElementScope(scope as IElementScope);
+                case ScopeKind.CompiledField: return GetDescriptionForCompiledField(scope as ICompiledFieldScope);
+                case ScopeKind.CompiledProperty: return GetDescriptionForCompiledProperty(scope as ICompiledPropertyScope);
+                case ScopeKind.CompiledMethod: return GetDescriptionForCompiledMethod(scope as ICompiledMethodScope);
+                case ScopeKind.Namespace: return GetDescriptionForNamespace(scope as INamespaceScope);
+                case ScopeKind.Procedure: return GetSimpleDescriptionForProcedure(scope as IProcScope);
+                case ScopeKind.CompiledEvent: return GetDescriptionForCompiledEvent(scope as ICompiledEventScope);
+                case ScopeKind.CompiledConstructor: return GetDescriptionForCompiledConstructor(scope as ICompiledConstructorScope);
+                case ScopeKind.ShortString: return GetDescriptionForShortString(scope as IShortStringScope);
+                case ScopeKind.UnitInterface: return GetDescriptionForModule(scope as IInterfaceUnitScope);
+                    //case ScopeKind.Procedure : return GetDescriptionForProcedure(scope as IProcScope);
+            }
+            return "";
+        }
+
+        private string GetDescriptionForModule(IInterfaceUnitScope scope)
+        {
+            return (scope.IsNamespaceUnit ? "namespace " : "unit ") + scope.Name;
+        }
+
+
+        public override string GetShortName(ICompiledConstructorScope scope)
+        {
+            return StringConstants.default_constructor_name;
+        }
+
+        public override string GetKeyword(SymbolKind kind)
+        {
+            switch (kind)
+            {
+                case SymbolKind.Class: return "class";
+                case SymbolKind.Enum: return "enum";
+                case SymbolKind.Struct: return "record";
+                case SymbolKind.Type: return "type";
+                case SymbolKind.Interface: return "interface";
+                case SymbolKind.Null: return "nil";
+            }
+            return "";
+        }
+
+        public override string GetArrayDescription(string elementType, int rank)
+        {
+            if (rank == 1)
+                return "array of " + elementType;
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append('[');
+                sb.Append(',', rank - 1);
+                sb.Append(']');
+                return "array" + sb.ToString() + " of " + elementType;
+            }
+        }
+
+        public string GetCompiledTypeTextRepresentation(Type t)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(scope.Name);
-            if (scope.TemplateParameters != null && scope.TemplateParameters.Length > 0)
-                sb.Append("<>");
+            sb.Append("type " + t.Name + " = ");
+            if (t.IsEnum)
+            {
+                //sb.Append(GetEnum(t));
+                sb.AppendLine(";");
+                return sb.ToString();
+            }
+            else if (t.BaseType == typeof(MulticastDelegate))
+            {
+                //sb.Append(GetDelegate(t));
+                sb.AppendLine(";");
+                return sb.ToString();
+            }
+            else if (t.IsInterface)
+                sb.Append("interface");
+            else if (t.IsValueType)
+                sb.Append("record");
+            else if (t.IsClass)
+                sb.Append("class");
+            if (t.BaseType != null)
+            {
+                sb.Append('(');
+                sb.Append(GetFullTypeName(t.BaseType));
+            }
+            Type[] intfs = t.GetInterfaces();
+            if (intfs.Length > 0)
+            {
+                if (t.BaseType == null)
+                    sb.Append('(');
+                for (int i = 0; i < intfs.Length; i++)
+                {
+                    if (i != 0 || t.BaseType != null)
+                        sb.Append(", ");
+                    sb.Append(GetFullTypeName(intfs[i]));
+                }
+            }
             return sb.ToString();
         }
 
-        public virtual string GetFullTypeName(ICompiledTypeScope scope, bool no_alias=true)
-		{
-			return GetFullTypeName(scope.CompiledType);
-		}
-		
-		public virtual string GetKeyword(SymbolKind kind)
-		{
-			switch (kind)
-			{
-				case SymbolKind.Class : return "class";
-				case SymbolKind.Enum : return "enum";
-				case SymbolKind.Struct : return "record";
-				case SymbolKind.Type : return "type";
-				case SymbolKind.Interface : return "interface";
-				case SymbolKind.Null : return "nil";
-			}
-			return "";
-		}
-		
-		public virtual string GetArrayDescription(string elementType, int rank)
-		{
-			if (rank == 1)
-			return "array of "+elementType;
-			else
-			{
-				StringBuilder sb = new StringBuilder();
-				sb.Append('[');
-				sb.Append(',',rank-1);
-				sb.Append(']');
-				return "array"+sb.ToString()+" of "+elementType;
-			}
-		}
-		
-		public string GetCompiledTypeTextRepresentation(Type t)
-		{
-			StringBuilder sb = new StringBuilder();
-			sb.Append("type "+t.Name+" = ");
-			if (t.IsEnum)
-			{
-				//sb.Append(GetEnum(t));
-				sb.AppendLine(";");
-				return sb.ToString();
-			}
-			else if (t.BaseType == typeof(MulticastDelegate))
-			{
-				//sb.Append(GetDelegate(t));
-				sb.AppendLine(";");
-				return sb.ToString();
-			}
-			else if (t.IsInterface)
-				sb.Append("interface");
-			else if (t.IsValueType)
-				sb.Append("record");
-			else if (t.IsClass)
-				sb.Append("class");
-			if (t.BaseType != null)
-			{
-				sb.Append('(');
-				sb.Append(GetFullTypeName(t.BaseType));
-			}
-			Type[] intfs = t.GetInterfaces();
-			if (intfs.Length > 0)
-			{
-				if (t.BaseType == null)
-					sb.Append('(');
-				for (int i=0; i<intfs.Length; i++)
-				{
-					if (i != 0 || t.BaseType != null)
-						sb.Append(", ");
-					sb.Append(GetFullTypeName(intfs[i]));
-				}
-			}
-			return sb.ToString();
-		}
-		
-		public virtual string GetStandardTypeByKeyword(KeywordKind keyw)
-		{
-			switch (keyw)
-			{
-				case KeywordKind.ByteType : return "byte";
-				case KeywordKind.SByteType : return "shortint";
-				case KeywordKind.ShortType : return "smallint";
-				case KeywordKind.UShortType : return "word";
-				case KeywordKind.IntType : return "integer";
-				case KeywordKind.UIntType : return "longword";
-				case KeywordKind.Int64Type : return "int64";
-				case KeywordKind.UInt64Type : return "uint64";
-				case KeywordKind.DoubleType : return "real";
-				case KeywordKind.FloatType : return "single";
-				case KeywordKind.CharType : return "char";
-				case KeywordKind.BoolType : return "boolean";
-				case KeywordKind.PointerType : return "pointer";
-			}
-			return null;
-		}
-		
-		protected virtual string GetDescriptionForDelegate(IProcType t)
-		{
-			StringBuilder sb = new StringBuilder();
-			if (t.Target.ReturnType != null)
-				sb.Append("function");
-			else sb.Append("procedure");
-			IElementScope[] prms = t.Target.Parameters;
-			if (prms.Length > 0)
-			{
-				sb.Append('(');
-				for (int i=0; i<prms.Length; i++)
-				{
-					sb.Append(GetSimpleDescription(prms[i]));
-					if (i < prms.Length - 1)
-					{
-						sb.Append("; ");
-					}
-				}
-				sb.Append(')');
-			}
-			if (t.Target.ReturnType != null)
-			{
-				sb.Append(": "+GetSimpleDescription(t.Target.ReturnType));
-			}
-			return sb.ToString();
-		}
+        public override string GetStandardTypeByKeyword(KeywordKind keyw)
+        {
+            switch (keyw)
+            {
+                case KeywordKind.ObjectType: return "object";
+                case KeywordKind.StringType: return "string";
+                case KeywordKind.ByteType: return "byte";
+                case KeywordKind.SByteType: return "shortint";
+                case KeywordKind.ShortType: return "smallint";
+                case KeywordKind.UShortType: return "word";
+                case KeywordKind.IntType: return "integer";
+                case KeywordKind.UIntType: return "longword";
+                case KeywordKind.Int64Type: return "int64";
+                case KeywordKind.UInt64Type: return "uint64";
+                case KeywordKind.DoubleType: return "real";
+                case KeywordKind.FloatType: return "single";
+                case KeywordKind.CharType: return "char";
+                case KeywordKind.BoolType: return "boolean";
+                case KeywordKind.PointerType: return "pointer";
+            }
+            return null;
+        }
 
-        protected virtual string GetFullTypeName(Type ctn, bool no_alias = true)
+        protected string GetDescriptionForDelegate(IProcType t)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (t.Target.ReturnType != null)
+                sb.Append("function");
+            else sb.Append("procedure");
+            IElementScope[] prms = t.Target.Parameters;
+            if (prms.Length > 0)
+            {
+                sb.Append('(');
+                for (int i = 0; i < prms.Length; i++)
+                {
+                    sb.Append(GetSimpleDescription(prms[i]));
+                    if (i < prms.Length - 1)
+                    {
+                        sb.Append("; ");
+                    }
+                }
+                sb.Append(')');
+            }
+            if (t.Target.ReturnType != null)
+            {
+                sb.Append(ReturnTypeDelimiter + " " + GetSimpleDescription(t.Target.ReturnType));
+            }
+            return sb.ToString();
+        }
+
+        protected override string GetFullTypeName(Type ctn, bool no_alias = true)
         {
             TypeCode tc = Type.GetTypeCode(ctn);
             if (ctn.FullName == null && !ctn.IsArray && !ctn.IsGenericTypeDefinition && ctn.IsGenericParameter)
@@ -430,14 +415,14 @@ namespace Languages.Pascal.Frontend.Data
                     sb.Append(ctn.Namespace + "." + ctn.Name.Substring(0, gen_pos));
                 else
                     sb.Append(ctn.Namespace + "." + ctn.Name);
-                sb.Append('<');
+                sb.Append(GenericTypesStartBracket);
                 for (int i = 0; i < len; i++)
                 {
                     sb.Append(gen_ps[i].Name);
                     if (i < len - 1)
                         sb.Append(", ");
                 }
-                sb.Append('>');
+                sb.Append(GenericTypesEndBracket);
                 return sb.ToString();
             }
             if (ctn.IsArray)
@@ -452,35 +437,6 @@ namespace Languages.Pascal.Frontend.Data
             return ctn.FullName;
         }
 
-        private string get_tuple_string(ITypeScope[] generic_args)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("(");
-            for (int i = 0; i < generic_args.Length; i++)
-            {
-                sb.Append(GetSimpleDescriptionWithoutNamespace(generic_args[i]));
-                if (i < generic_args.Length - 1)
-                    sb.Append(",");
-            }
-            sb.Append(")");
-            return sb.ToString();
-        }
-
-        private string get_tuple_string(Type t)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("(");
-            Type[] generic_args = t.GetGenericArguments();
-            for (int i = 0; i<generic_args.Length; i++)
-            {
-                sb.Append(GetShortTypeName(generic_args[i], false));
-                if (i < generic_args.Length - 1)
-                    sb.Append(",");
-            }
-            sb.Append(")");
-            return sb.ToString();
-        }
-
         private bool enum_out_of_order(FieldInfo[] fields) //возвращает true, если значения полей этого enum'а идут не по порядку или не с нуля (IDE issue #117)
         {
             for (int i = 0; i < fields.Length; i++)
@@ -488,38 +444,38 @@ namespace Languages.Pascal.Frontend.Data
                 if (fields[i].Name != "value__")
                 {
                     object o = fields[i].GetRawConstantValue(); //ошибка была здесь, так как я не знал, что у констант enum'а может быть другой тип помимо int
-	                if (o is byte b1)
-	                {
-		                if (b1 != i - 1) return true;
-	                }
-	                else if (o is sbyte b2)
-	                {
-		                if (b2 != i - 1) return true;
-	                }
-	                else if (o is short b3)
-	                {
-		                if (b3 != i - 1) return true;
-	                }
-	                else if (o is ushort b4)
-	                {
-		                if (b4 != i - 1) return true;
-	                }
-	                else if (o is int b5)
-	                {
-		                if (b5 != i - 1) return true;
-	                }
-	                else if (o is uint b6)
-	                {
-		                return true;
-	                }
-	                else if (o is long b7)
-	                {
-		                return true;
-	                }
-	                else if (o is ulong b8)
-	                {
-		                return true;
-	                }
+                    if (o is byte b1)
+                    {
+                        if (b1 != i - 1) return true;
+                    }
+                    else if (o is sbyte b2)
+                    {
+                        if (b2 != i - 1) return true;
+                    }
+                    else if (o is short b3)
+                    {
+                        if (b3 != i - 1) return true;
+                    }
+                    else if (o is ushort b4)
+                    {
+                        if (b4 != i - 1) return true;
+                    }
+                    else if (o is int b5)
+                    {
+                        if (b5 != i - 1) return true;
+                    }
+                    else if (o is uint b6)
+                    {
+                        return true;
+                    }
+                    else if (o is long b7)
+                    {
+                        return true;
+                    }
+                    else if (o is ulong b8)
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -527,10 +483,10 @@ namespace Languages.Pascal.Frontend.Data
 
         private string get_enum_constants(Type t)
         {
-            FieldInfo[] fields = t.GetFields(BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static);
+            FieldInfo[] fields = t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
             bool outoforder = enum_out_of_order(fields);
-			bool is_flags = Attribute.IsDefined(t, typeof(FlagsAttribute));
-			int max_name_len = fields.Max(fi => fi.Name.Length);
+            bool is_flags = Attribute.IsDefined(t, typeof(FlagsAttribute));
+            int max_name_len = fields.Max(fi => fi.Name.Length);
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("(");
             for (int i = 0; i < fields.Length; i++)
@@ -544,8 +500,9 @@ namespace Languages.Pascal.Frontend.Data
                         if (is_flags) sb.Append(' ', max_name_len - fields[i].Name.Length);
                         sb.Append(" = ");
                         if (is_flags)
-							sb.Append('$' + Convert.ToInt64(fields[i].GetRawConstantValue()).ToString("X")); else
-							sb.Append(fields[i].GetRawConstantValue());
+                            sb.Append('$' + Convert.ToInt64(fields[i].GetRawConstantValue()).ToString("X"));
+                        else
+                            sb.Append(fields[i].GetRawConstantValue());
                     }
                     if (i < fields.Length - 1)
                         sb.AppendLine(",");
@@ -558,18 +515,18 @@ namespace Languages.Pascal.Frontend.Data
             return sb.ToString();
         }
 
-        public virtual string GetCompiledTypeRepresentation(Type t, MemberInfo mi, ref int line, ref int col)
+        public override string GetCompiledTypeRepresentation(Type t, MemberInfo mi, ref int line, ref int col)
         {
             StringBuilder sb = new StringBuilder();
             int ln = 1;
             if (t.Namespace == "System")
                 sb.AppendLine("unit SystemUnit;");
             else
-                sb.AppendLine("unit " + t.Namespace.Replace(".", "_") + ";"); 
+                sb.AppendLine("unit " + t.Namespace.Replace(".", "_") + ";");
             ln++;
             sb.AppendLine(); ln++;
             sb.AppendLine("type "); ln++;
-            
+
             if (mi == t)
             {
                 line = ln;
@@ -598,7 +555,7 @@ namespace Languages.Pascal.Frontend.Data
                     sb.Append(prepare_member_name(t.Name.Substring(0, ind)));
                 else
                     sb.Append(t.Name);
-                sb.Append('<');
+                sb.Append(GenericTypesStartBracket);
                 Type[] gen_args = t.GetGenericArguments();
                 for (int i = 0; i < gen_args.Length; i++)
                 {
@@ -606,11 +563,11 @@ namespace Languages.Pascal.Frontend.Data
                     if (i < gen_args.Length - 1)
                         sb.Append(", ");
                 }
-                sb.Append('>');
+                sb.Append(GenericTypesEndBracket);
             }
             else
                 sb.Append(prepare_member_name(t.Name));
-            sb.Append(" = " + (t.IsSealed && t.IsAbstract ? "static ":"")+GetClassKeyword(t));
+            sb.Append(" = " + (t.IsSealed && t.IsAbstract ? "static " : "") + GetClassKeyword(t));
             bool bracket = false;
             if (t.IsEnum)
             {
@@ -621,7 +578,7 @@ namespace Languages.Pascal.Frontend.Data
             }
             if (t.BaseType != null && t.BaseType != typeof(object))
             {
-                sb.Append("("); 
+                sb.Append("(");
                 bracket = true;
                 sb.Append(GetFullTypeName(t.BaseType));
             }
@@ -739,7 +696,7 @@ namespace Languages.Pascal.Frontend.Data
                             col = 3;
                         }
                         sb.Append("    ");
-                        sb.Append(GetDescriptionForCompiledProperty(props[i]).Replace("; readonly"," read"));
+                        sb.Append(GetDescriptionForCompiledProperty(props[i]).Replace("; readonly", " read"));
                         sb.AppendLine(); ln++;
                         sb.AppendLine(); ln++;
                     }
@@ -747,7 +704,7 @@ namespace Languages.Pascal.Frontend.Data
                 sb.AppendLine("  {$endregion}");
                 sb.AppendLine();
             }
-            
+
             ConstructorInfo[] constrs = t.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             if (constrs.Length > 0)
             {
@@ -812,7 +769,7 @@ namespace Languages.Pascal.Frontend.Data
                 sb.AppendLine("  {$endregion}");
                 sb.AppendLine();
             }
-            
+
             sb.AppendLine("  end;");
             sb.AppendLine();
             sb.AppendLine("end.");
@@ -828,32 +785,32 @@ namespace Languages.Pascal.Frontend.Data
             return line;
         }
 
-        public virtual string GetCompiledMethodRepresentation(MethodInfo mi)
+        public string GetCompiledMethodRepresentation(MethodInfo mi)
         {
             return null;
         }
 
-        public virtual string GetCompiledFieldRepresentation(FieldInfo mi)
+        public string GetCompiledFieldRepresentation(FieldInfo mi)
         {
             return null;
         }
 
-        public virtual string GetCompiledPropertyRepresentation(PropertyInfo mi)
+        public string GetCompiledPropertyRepresentation(PropertyInfo mi)
         {
             return null;
         }
 
-        public virtual string GetCompiledEventRepresentation(EventInfo mi)
+        public string GetCompiledEventRepresentation(EventInfo mi)
         {
             return null;
         }
 
-        public virtual string GetCompiledConstructorRepresentation(ConstructorInfo mi)
+        public string GetCompiledConstructorRepresentation(ConstructorInfo mi)
         {
             return null;
         }
 
-        public virtual string GetClassKeyword(Type t)
+        public string GetClassKeyword(Type t)
         {
             if (t.IsInterface)
                 return "interface";
@@ -866,34 +823,25 @@ namespace Languages.Pascal.Frontend.Data
             return "";
         }
 
-		public virtual string GetClassKeyword(PascalABCCompiler.SyntaxTree.class_keyword keyw)
-		{
-			switch(keyw)
-			{
-				case PascalABCCompiler.SyntaxTree.class_keyword.Class : return "class";
-				case PascalABCCompiler.SyntaxTree.class_keyword.Interface : return "interface";
-				case PascalABCCompiler.SyntaxTree.class_keyword.Record : return "record";
-				case PascalABCCompiler.SyntaxTree.class_keyword.TemplateClass : return "template class";
-				case PascalABCCompiler.SyntaxTree.class_keyword.TemplateRecord : return "template record";
-				case PascalABCCompiler.SyntaxTree.class_keyword.TemplateInterface : return "template interface";
-			}
-			return null;
-		}
-		
-		protected virtual string GetShortTypeName(MethodInfo mi)
-		{
-			StringBuilder sb = new StringBuilder();
-			sb.Append(mi.Name);
-			if (mi.GetGenericArguments().Length > 0)
-				sb.Append("<>");
-			return sb.ToString();
-		}
-		
-		public virtual string GetShortTypeName(Type ctn, bool noalias=true)
-		{
-			TypeCode tc = Type.GetTypeCode(ctn);
-			if (ctn.FullName == null && !ctn.IsArray && !ctn.IsGenericTypeDefinition && ctn.IsGenericParameter) 
-				return ctn.Name;
+        public override string GetClassKeyword(PascalABCCompiler.SyntaxTree.class_keyword keyw)
+        {
+            switch (keyw)
+            {
+                case PascalABCCompiler.SyntaxTree.class_keyword.Class: return "class";
+                case PascalABCCompiler.SyntaxTree.class_keyword.Interface: return "interface";
+                case PascalABCCompiler.SyntaxTree.class_keyword.Record: return "record";
+                case PascalABCCompiler.SyntaxTree.class_keyword.TemplateClass: return "template class";
+                case PascalABCCompiler.SyntaxTree.class_keyword.TemplateRecord: return "template record";
+                case PascalABCCompiler.SyntaxTree.class_keyword.TemplateInterface: return "template interface";
+            }
+            return null;
+        }
+
+        public override string GetShortTypeName(Type ctn, bool noalias = true)
+        {
+            TypeCode tc = Type.GetTypeCode(ctn);
+            if (ctn.FullName == null && !ctn.IsArray && !ctn.IsGenericTypeDefinition && ctn.IsGenericParameter)
+                return ctn.Name;
             if (!ctn.IsEnum)
             {
                 switch (tc)
@@ -919,8 +867,8 @@ namespace Languages.Pascal.Frontend.Data
                         return "^" + GetShortTypeName(ctn.GetElementType(), noalias);
             }
             else return ctn.Name;
-			if (ctn.Name.Contains("`"))
-			{
+            if (ctn.Name.Contains("`"))
+            {
                 if (!noalias)
                 {
                     if (ctn.Name.Contains("Func`") || ctn.Name.Contains("Predicate`"))
@@ -932,10 +880,10 @@ namespace Languages.Pascal.Frontend.Data
                     else if (ctn.Name.Contains("Tuple`"))
                         return get_tuple_string(ctn);
                 }
-				int len = ctn.GetGenericArguments().Length;
-				System.Text.StringBuilder sb = new System.Text.StringBuilder();
-				sb.Append(ctn.Name.Substring(0,ctn.Name.IndexOf('`')));
-				sb.Append('<');
+                int len = ctn.GetGenericArguments().Length;
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                sb.Append(ctn.Name.Substring(0, ctn.Name.IndexOf('`')));
+                sb.Append(GenericTypesStartBracket);
                 if (!noalias)
                 {
                     Type[] gen_ps = ctn.GetGenericArguments();
@@ -946,8 +894,8 @@ namespace Languages.Pascal.Frontend.Data
                             sb.Append(", ");
                     }
                 }
-				sb.Append('>');
-				/*sb.Append('<');
+                sb.Append(GenericTypesEndBracket);
+                /*sb.Append('<');
 				for (int i=0; i<len; i++)
 				{
 					sb.Append('T');
@@ -955,7 +903,7 @@ namespace Languages.Pascal.Frontend.Data
 					sb.Append(',');
 				}
 				sb.Append('>');*/
-				return sb.ToString();
+                return sb.ToString();
             }
             if (ctn.IsArray)
             {
@@ -965,145 +913,14 @@ namespace Languages.Pascal.Frontend.Data
             }
             //if (ctn == Type.GetType("System.Void*")) return PascalABCCompiler.StringConstants.pointer_type_name;
             return ctn.Name;
-		}
-		
-		protected virtual string GetTopScopeName(IBaseScope sc)
-		{
-			if (sc == null) return "";
-			if (sc.Name == "" || sc.Name.Contains("$") || sc.Name == "PABCSystem") return "";
-			if (sc is IProcScope) return "";
-			if (sc is ITypeScope)
-			{
-				return sc.Name+(((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>") && sc.Name != "class")?"<>":"")+".";
-			}
-			return sc.Name + ".";
-		}
-		
-		private string GetTopScopeNameWithoutDot(IBaseScope sc)
-		{
-			if (sc == null) return "";
-			if (sc.Name == "" || sc.Name.Contains("$") || sc.Name == "PABCSystem") return "";
-			if (sc is IProcScope) return "";
-			if (sc is ITypeScope)
-			{
-				return sc.Name+(((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>"))? "<>":"");
-			}
-			return sc.Name;
-		}
-		
-		protected virtual string GetTemplateString(ITypeScope scope)
-		{
-			string[] generic_params = scope.TemplateArguments;
-			if (generic_params != null && generic_params.Length > 0)
-			{
-				ITypeScope[] gen_insts = scope.GenericInstances;
-				if (gen_insts == null || gen_insts.Length == 0)
-				{
-					System.Text.StringBuilder sb = new System.Text.StringBuilder();
-					sb.Append('<');
-					for (int i=0; i<generic_params.Length; i++)
-					{
-						sb.Append(generic_params[i]);
-						if (i < generic_params.Length -1)
-						sb.Append(',');
-					}
-					sb.Append('>');
-					return sb.ToString();
-				}
-				else
-				{
-					System.Text.StringBuilder sb = new System.Text.StringBuilder();
-					sb.Append('<');
-					for (int i=0; i<gen_insts.Length; i++)
-					{
-						sb.Append(GetSimpleDescriptionWithoutNamespace(gen_insts[i]));
-						if (i < gen_insts.Length -1)
-						sb.Append(", ");
-					}
-					sb.Append('>');
-					return sb.ToString();
-				}
-			}
-			return null;
-		}
-		
-		protected virtual string GetDescriptionForType(ITypeScope scope)
-		{
-			string template_str=GetTemplateString(scope);
-			switch(scope.ElemKind)
-			{
-				case SymbolKind.Class :
-                    string mod = "";
-                    if (scope.IsStatic)
-                        mod = "static ";
-                    else
-                    {
-                        if (scope.IsAbstract)
-                            mod = "abstract ";
-                        if (scope.IsFinal)
-                            mod += "sealed ";
-                    }
-					if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
-						return mod+"class "+scope.TopScope.Name + "." +scope.Name+template_str;
-					else return mod+"class "+scope.Name+template_str;
-				case SymbolKind.Interface :
-					if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
-					return "interface "+scope.TopScope.Name + "." +scope.Name+template_str;
-					else return "interface "+scope.Name+template_str;
-				case SymbolKind.Enum :
-					if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
-					return "enum "+scope.TopScope.Name + "." +scope.Name;
-					else return "enum "+scope.Name;
-				case SymbolKind.Delegate :
-					if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
-					return "delegate "+scope.TopScope.Name + "." +scope.Name+template_str;
-					else return "delegate "+scope.Name+template_str;
-				case SymbolKind.Struct :
-					if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
-					return "record "+scope.TopScope.Name + "." +scope.Name+template_str;
-					else return "record "+scope.Name+template_str;
-			}
-			
-			if (scope.TopScope != null)
-			return scope.TopScope.Name + "." +scope.Name;
-			else return scope.Name;
-		}
+        }
 
-        protected virtual string GetSimpleDescriptionForType(ITypeScope scope)
+        protected string GetDescriptionForType(ITypeScope scope)
         {
             string template_str = GetTemplateString(scope);
-            if (scope.Name.StartsWith("$"))
-                return scope.Name.Substring(1, scope.Name.Length - 1) + template_str;
-            if (!string.IsNullOrEmpty(template_str))
-                return scope.Name.Replace("<>", "") + template_str;
-            return scope.Name + template_str;
-        }
-		
-		protected virtual string GetDescriptionForCompiledType(ICompiledTypeScope scope)
-		{
-			string s = GetFullTypeName(scope.CompiledType);
-			ITypeScope[] instances = scope.GenericInstances;
-			if (instances.Length > 0)
-			{
-				System.Text.StringBuilder sb = new System.Text.StringBuilder();
-				int ind = s.IndexOf('<');
-				if (ind != -1) sb.Append(s.Substring(0,ind));
-				else
-				sb.Append(s);
-				sb.Append('<');
-				for (int i=0; i<instances.Length; i++)
-				{
-					sb.Append(GetSimpleDescriptionWithoutNamespace(instances[i]));
-					//sb.Append(instances[i].Name);
-					if (i < instances.Length - 1) sb.Append(", ");
-				}
-				sb.Append('>');
-				s = sb.ToString();
-			}
-			
-			switch(scope.ElemKind)
-			{
-				case SymbolKind.Class :
+            switch (scope.ElemKind)
+            {
+                case SymbolKind.Class:
                     string mod = "";
                     if (scope.IsStatic)
                         mod = "static ";
@@ -1114,141 +931,80 @@ namespace Languages.Pascal.Frontend.Data
                         if (scope.IsFinal)
                             mod += "sealed ";
                     }
-                    return mod+"class "+s;
-				case SymbolKind.Interface :
-					return "interface "+s;
-				case SymbolKind.Enum :
-					return "enum "+s;
-				case SymbolKind.Delegate :
-					return "delegate "+s;
-				case SymbolKind.Struct :
-					return "record "+s;
-				case SymbolKind.Type :
-					return "type "+s;
-			}
-			return s;
-		}
+                    if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
+                        return mod + "class " + scope.TopScope.Name + "." + scope.Name + template_str;
+                    else return mod + "class " + scope.Name + template_str;
+                case SymbolKind.Interface:
+                    if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
+                        return "interface " + scope.TopScope.Name + "." + scope.Name + template_str;
+                    else return "interface " + scope.Name + template_str;
+                case SymbolKind.Enum:
+                    if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
+                        return "enum " + scope.TopScope.Name + "." + scope.Name;
+                    else return "enum " + scope.Name;
+                case SymbolKind.Delegate:
+                    if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
+                        return "delegate " + scope.TopScope.Name + "." + scope.Name + template_str;
+                    else return "delegate " + scope.Name + template_str;
+                case SymbolKind.Struct:
+                    if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
+                        return "record " + scope.TopScope.Name + "." + scope.Name + template_str;
+                    else return "record " + scope.Name + template_str;
+            }
 
+            if (scope.TopScope != null)
+                return scope.TopScope.Name + "." + scope.Name;
+            else return scope.Name;
+        }
 
-
-        public virtual string GetSimpleDescriptionWithoutNamespace(ITypeScope scope)
+        protected string GetDescriptionForCompiledType(ICompiledTypeScope scope)
         {
-            ICompiledTypeScope cts = scope as ICompiledTypeScope;
-            if (cts == null)
-                return GetSimpleDescription(scope);
-            string s = GetShortName(cts);
+            string s = GetFullTypeName(scope.CompiledType);
             ITypeScope[] instances = scope.GenericInstances;
-            if (instances != null && instances.Length > 0)
+            if (instances.Length > 0)
             {
                 System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                int ind = s.IndexOf('<');
+                int ind = s.IndexOf(GenericTypesStartBracket);
                 if (ind != -1) sb.Append(s.Substring(0, ind));
                 else
                     sb.Append(s);
-                sb.Append('<');
+                sb.Append(GenericTypesStartBracket);
                 for (int i = 0; i < instances.Length; i++)
                 {
                     sb.Append(GetSimpleDescriptionWithoutNamespace(instances[i]));
+                    //sb.Append(instances[i].Name);
                     if (i < instances.Length - 1) sb.Append(", ");
                 }
-                sb.Append('>');
+                sb.Append(GenericTypesEndBracket);
                 s = sb.ToString();
             }
-            return s;
-        }
 
-        protected bool isIdentifier(string str)
-        {
-            foreach (char c in str)
+            switch (scope.ElemKind)
             {
-                if (!char.IsLetterOrDigit(c))
-                    return false;
-            }
-            return true;
-        }
-
-        protected string getLambdaRepresentation(Type t, bool has_return_value, List<string> parameters, Dictionary<string, string> generic_param_args=null)
-        {
-            StringBuilder sb = new StringBuilder();
-            if (parameters.Count != t.GetGenericArguments().Length || true)
-            {
-                List<string> old_parameters = parameters;
-                parameters = new List<string>();
-                int ind = 0;
-                foreach (Type generic_arg in t.GetGenericArguments())
-                {
-                    if (generic_arg.IsGenericParameter)
+                case SymbolKind.Class:
+                    string mod = "";
+                    if (scope.IsStatic)
+                        mod = "static ";
+                    else
                     {
-                        if (generic_param_args != null)
-                        {
-                            if (generic_param_args.ContainsKey(generic_arg.Name))
-                                parameters.Add(generic_param_args[generic_arg.Name]);
-                            else
-                                parameters.Add(generic_arg.Name);
-                        }
-                        else if (ind < old_parameters.Count)
-                        {
-                            parameters.Add(old_parameters[ind]);
-                            ind++;
-                        }
-                        else
-                            parameters.Add(generic_arg.Name);
+                        if (scope.IsAbstract)
+                            mod = "abstract ";
+                        if (scope.IsFinal)
+                            mod += "sealed ";
                     }
-                    else
-                        //parameters.Add(GetShortTypeName(generic_arg, false));
-                        parameters.Add(get_type_instance(generic_arg,parameters,generic_param_args));
-                }
+                    return mod + "class " + s;
+                case SymbolKind.Interface:
+                    return "interface " + s;
+                case SymbolKind.Enum:
+                    return "enum " + s;
+                case SymbolKind.Delegate:
+                    return "delegate " + s;
+                case SymbolKind.Struct:
+                    return "record " + s;
+                case SymbolKind.Type:
+                    return "type " + s;
             }
-            foreach (string parameter in parameters)
-            {
-                if (!isIdentifier(parameter))
-                    return get_type_instance(t, parameters, generic_param_args, true);
-            }
-            if (has_return_value)
-            {
-                if (parameters.Count > 2)
-                    sb.Append("(" + string.Join(",", parameters.GetRange(0, parameters.Count - 1).ToArray()) + ")->" + parameters[parameters.Count - 1]);
-                else if (parameters.Count > 1)
-                    sb.Append(parameters[0] + "->" + parameters[1]);
-                else if (parameters.Count == 1)
-                {
-                    if (t.FullName == "System.Predicate`1" || t.Name == "Predicate`1")
-                        sb.Append(parameters[0] + "->boolean");
-                    else
-                        sb.Append("()->" + parameters[0]);
-                }
-
-            }
-            else if (parameters.Count > 0)
-            {
-                if (t.FullName == "System.Predicate`1" || t.Name == "Predicate`1")
-                    sb.Append(parameters[0] + "->boolean");
-                else if (parameters.Count > 1)
-                    sb.Append("(" + string.Join(",", parameters.ToArray()) + ")->()");
-                else
-                    sb.Append(parameters[0] + "->()");
-            }
-            if (sb.Length == 0)
-                sb.Append(t.Name);
-            return sb.ToString();
-        }
-
-        protected string getLambdaRepresentation(ICompiledTypeScope scope, bool has_return_value)
-        {
-            StringBuilder sb = new StringBuilder();
-            ITypeScope[] instances = scope.GenericInstances;
-            List<string> parameters = new List<string>();
-            if (instances != null && instances.Length > 0)
-            {
-                foreach (ITypeScope ts in instances)
-                    parameters.Add(GetSimpleDescriptionWithoutNamespace(ts));
-            }
-            /*else
-            {
-                foreach (Type t in scope.CompiledType.GetGenericArguments())
-                    parameters.Add(t.Name);
-            }*/
-            return getLambdaRepresentation(scope.CompiledType, has_return_value, parameters);
+            return s;
         }
 
         protected string GetSimpleDescriptionForCompiledType(ICompiledTypeScope scope, bool fullName)
@@ -1287,167 +1043,167 @@ namespace Languages.Pascal.Frontend.Data
             }
             else
             {
-                string s = !fullName?GetShortTypeName(scope.CompiledType):GetFullTypeName(scope.CompiledType);
+                string s = !fullName ? GetShortTypeName(scope.CompiledType) : GetFullTypeName(scope.CompiledType);
                 ITypeScope[] instances = scope.GenericInstances;
                 if (instances != null && instances.Length > 0)
                 {
                     System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                    int ind = s.IndexOf('<');
+                    int ind = s.IndexOf(GenericTypesStartBracket);
                     if (ind != -1) sb.Append(s.Substring(0, ind));
                     else
                         sb.Append(s);
-                    sb.Append('<');
+                    sb.Append(GenericTypesStartBracket);
                     for (int i = 0; i < instances.Length; i++)
                     {
                         sb.Append(GetSimpleDescriptionWithoutNamespace(instances[i]));
                         if (i < instances.Length - 1) sb.Append(", ");
                     }
-                    sb.Append('>');
+                    sb.Append(GenericTypesEndBracket);
                     s = sb.ToString();
                 }
                 return s;
             }
         }
 
-        protected virtual string GetSimpleDescriptionForCompiledType(ICompiledTypeScope scope)
-		{
+        protected string GetSimpleDescriptionForCompiledType(ICompiledTypeScope scope)
+        {
             return GetSimpleDescriptionForCompiledType(scope, false);
-		}
-		
-		protected virtual string GetDescriptionForArray(IArrayScope scope)
-		{
-			StringBuilder sb = new StringBuilder();
-			sb.Append("array");
-			ITypeScope[] inds = scope.Indexers;
-			if (!scope.IsDynamic)
-			{
-				sb.Append('[');
-				for (int i=0; i<inds.Length; i++)
-				{
-					sb.Append(GetSimpleDescription(inds[i]));
-					if (i<inds.Length-1) sb.Append(',');
-				}
-				sb.Append(']');
-			}
-			if (scope.ElementType != null)
-			{
-				string s = GetSimpleDescription(scope.ElementType);
-				if (s.Length > 0 && s[0] == '$') s = s.Substring(1,s.Length-1);
-				sb.Append(" of "+s);
-			}
-			return sb.ToString();
-		}
-		
-		protected virtual string GetDescriptionForDiapason(IDiapasonScope scope)
-		{
-			return scope.Left.ToString() + ".." + scope.Right.ToString();
-		}
-		
-		protected virtual string GetDescriptionForFile(IFileScope scope)
-		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			sb.Append("file");
-			if (scope.ElementType != null)
-			{
-				string s = GetSimpleDescription(scope.ElementType);
-				if (s.Length > 0 && s[0] == '$') s = s.Substring(1,s.Length-1);
-				sb.Append(" of "+s);
-			}
-			return sb.ToString();
-		}
-		
-		private Stack<ITypeScope> typs = new Stack<ITypeScope>();
-		
-		protected virtual string GetDescriptionForPointer(IPointerScope scope)
-		{
-			string s = "";
-			if (scope.ElementType != null)
-			{
-				if (!typs.Contains(scope))
-				{
-					typs.Push(scope);
-					s = "^"+GetSimpleDescription(scope.ElementType);
-				}
-				else 
-				s = "";
-			}
-			else
-			s = "pointer";
-			if (typs.Count > 0)
-				typs.Pop();
-			return s;
-		}
-		
-		protected virtual string GetDescriptionForEnum(IEnumScope scope)
-		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			sb.Append('(');
-			for (int i=0; i<scope.EnumConsts.Length; i++)
-			{
-				sb.Append(scope.EnumConsts[i]);
-				if (i < scope.EnumConsts.Length-1)
-				sb.Append(',');
-				if (i >= 2) 
-				{
-					sb.Append("...");
-					break;
-				}
-			}
-			sb.Append(')');
-			return sb.ToString();
-		}
-		
-		protected virtual string GetDescriptionForSet(ISetScope scope)
-		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			sb.Append("set of ");
-			if (scope.ElementType != null)
-			{
-				string s = GetSimpleDescription(scope.ElementType);
-				if (s.Length > 0 && s[0] == '$') s = s.Substring(1,s.Length-1);
-				sb.Append(s);
-			}
-			return sb.ToString();
-		}
-		
-		private string kind_of_param(IElementScope scope)
-		{
-			switch (scope.ParamKind)
-			{
-				case PascalABCCompiler.SyntaxTree.parametr_kind.const_parametr : return "const ";
-				case PascalABCCompiler.SyntaxTree.parametr_kind.var_parametr : return "var ";
-				case PascalABCCompiler.SyntaxTree.parametr_kind.params_parametr : return "params ";
-				case PascalABCCompiler.SyntaxTree.parametr_kind.out_parametr : return "out ";
-			}
-			return "";
-		}
-		
-		protected virtual string get_index_description(IElementScope scope)
-		{
-			ITypeScope[] indexers = scope.Indexers;
-			if (indexers == null || indexers.Length == 0) return "";
-			StringBuilder sb = new StringBuilder();
-			sb.Append('[');
-			for (int i=0; i<indexers.Length; i++)
-			{
-				sb.Append(GetSimpleDescription(indexers[i]));
-				if (i <indexers.Length-1)
-					sb.Append(',');
-			}
-			sb.Append(']');
-			return sb.ToString();
-		}
-		
-		private void append_modifiers(StringBuilder sb, IElementScope scope)
-		{
-			if (scope.IsVirtual) sb.Append("; virtual");
-			if (scope.IsAbstract) sb.Append("; abstract");
-			if (scope.IsOverride) sb.Append("; override");
-			//if (scope.IsStatic) sb.Append("; static");
-			if (scope.IsReintroduce) sb.Append("; reintroduce");
-		}
+        }
 
-        protected virtual string GetDescriptionForElementScope(IElementScope scope)
+        protected string GetDescriptionForArray(IArrayScope scope)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("array");
+            ITypeScope[] inds = scope.Indexers;
+            if (!scope.IsDynamic)
+            {
+                sb.Append('[');
+                for (int i = 0; i < inds.Length; i++)
+                {
+                    sb.Append(GetSimpleDescription(inds[i]));
+                    if (i < inds.Length - 1) sb.Append(',');
+                }
+                sb.Append(']');
+            }
+            if (scope.ElementType != null)
+            {
+                string s = GetSimpleDescription(scope.ElementType);
+                if (s.Length > 0 && s[0] == '$') s = s.Substring(1, s.Length - 1);
+                sb.Append(" of " + s);
+            }
+            return sb.ToString();
+        }
+
+        protected string GetDescriptionForDiapason(IDiapasonScope scope)
+        {
+            return scope.Left.ToString() + ".." + scope.Right.ToString();
+        }
+
+        protected string GetDescriptionForFile(IFileScope scope)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.Append("file");
+            if (scope.ElementType != null)
+            {
+                string s = GetSimpleDescription(scope.ElementType);
+                if (s.Length > 0 && s[0] == '$') s = s.Substring(1, s.Length - 1);
+                sb.Append(" of " + s);
+            }
+            return sb.ToString();
+        }
+
+        private Stack<ITypeScope> typs = new Stack<ITypeScope>();
+
+        protected string GetDescriptionForPointer(IPointerScope scope)
+        {
+            string s = "";
+            if (scope.ElementType != null)
+            {
+                if (!typs.Contains(scope))
+                {
+                    typs.Push(scope);
+                    s = "^" + GetSimpleDescription(scope.ElementType);
+                }
+                else
+                    s = "";
+            }
+            else
+                s = "pointer";
+            if (typs.Count > 0)
+                typs.Pop();
+            return s;
+        }
+
+        protected string GetDescriptionForEnum(IEnumScope scope)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.Append('(');
+            for (int i = 0; i < scope.EnumConsts.Length; i++)
+            {
+                sb.Append(scope.EnumConsts[i]);
+                if (i < scope.EnumConsts.Length - 1)
+                    sb.Append(',');
+                if (i >= 2)
+                {
+                    sb.Append("...");
+                    break;
+                }
+            }
+            sb.Append(')');
+            return sb.ToString();
+        }
+
+        protected string GetDescriptionForSet(ISetScope scope)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.Append("set of ");
+            if (scope.ElementType != null)
+            {
+                string s = GetSimpleDescription(scope.ElementType);
+                if (s.Length > 0 && s[0] == '$') s = s.Substring(1, s.Length - 1);
+                sb.Append(s);
+            }
+            return sb.ToString();
+        }
+
+        protected override string kind_of_param(IElementScope scope)
+        {
+            switch (scope.ParamKind)
+            {
+                case PascalABCCompiler.SyntaxTree.parametr_kind.const_parametr: return "const ";
+                case PascalABCCompiler.SyntaxTree.parametr_kind.var_parametr: return "var ";
+                case PascalABCCompiler.SyntaxTree.parametr_kind.params_parametr: return "params ";
+                case PascalABCCompiler.SyntaxTree.parametr_kind.out_parametr: return "out ";
+            }
+            return "";
+        }
+
+        protected string get_index_description(IElementScope scope)
+        {
+            ITypeScope[] indexers = scope.Indexers;
+            if (indexers == null || indexers.Length == 0) return "";
+            StringBuilder sb = new StringBuilder();
+            sb.Append('[');
+            for (int i = 0; i < indexers.Length; i++)
+            {
+                sb.Append(GetSimpleDescription(indexers[i]));
+                if (i < indexers.Length - 1)
+                    sb.Append(',');
+            }
+            sb.Append(']');
+            return sb.ToString();
+        }
+
+        private void append_modifiers(StringBuilder sb, IElementScope scope)
+        {
+            if (scope.IsVirtual) sb.Append("; ");
+            if (scope.IsAbstract) sb.Append("; abstract");
+            if (scope.IsOverride) sb.Append("; override");
+            //if (scope.IsStatic) sb.Append("; static");
+            if (scope.IsReintroduce) sb.Append("; reintroduce");
+        }
+
+        protected string GetDescriptionForElementScope(IElementScope scope)
         {
             string type_name = null;
             StringBuilder sb = new StringBuilder();
@@ -1458,7 +1214,7 @@ namespace Languages.Pascal.Frontend.Data
                 type_name = type_name.Substring(1, type_name.Length - 1);
             switch (scope.ElemKind)
             {
-                case SymbolKind.Variable: sb.Append("var " + GetTopScopeName(scope.TopScope) + scope.Name + ((type_name != "")?": " + type_name:"")); break;
+                case SymbolKind.Variable: sb.Append("var " + GetTopScopeName(scope.TopScope) + scope.Name + ((type_name != "") ? ": " + type_name : "")); break;
                 case SymbolKind.Parameter: sb.Append(kind_of_param(scope) + "parameter " + scope.Name + ": " + type_name + (scope.ConstantValue != null ? (":=" + scope.ConstantValue.ToString()) : "")); break;
                 case SymbolKind.Constant:
                     {
@@ -1495,15 +1251,8 @@ namespace Languages.Pascal.Frontend.Data
             sb.Append(';');
             return sb.ToString();
         }
-		
-		protected virtual string GetSimpleDescriptionForElementScope(IElementScope scope)
-		{
-			string type_name = GetSimpleDescription(scope.Type);
-			if (type_name.StartsWith("$")) type_name = type_name.Substring(1,type_name.Length-1);
-			return kind_of_param(scope) + scope.Name + ": "+type_name + (scope.ConstantValue!=null?(":="+scope.ConstantValue.ToString()):"");
-		}
 
-        public virtual string GetDescriptionForCompiledField(FieldInfo fi)
+        public string GetDescriptionForCompiledField(FieldInfo fi)
         {
             StringBuilder sb = new StringBuilder();
             if (fi.IsPublic)
@@ -1527,44 +1276,44 @@ namespace Languages.Pascal.Frontend.Data
             return sb.ToString();
         }
 
-		protected virtual string GetDescriptionForCompiledField(ICompiledFieldScope scope)
-		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			if (!scope.CompiledField.IsLiteral)
-			if (scope.CompiledField.IsStatic && !scope.IsGlobal) sb.Append("static ");
-			else sb.Append("var ");
-			string inst_type = null;
-			if (scope.GenericArgs != null)
-			{
-				inst_type = get_type_instance(scope.CompiledField.FieldType,scope.GenericArgs);
-			}
-			if (!scope.CompiledField.IsLiteral)
-				sb.Append(GetShortTypeName(scope.CompiledField.DeclaringType) +"."+ scope.CompiledField.Name + ": "+(inst_type != null?inst_type:GetSimpleDescription(scope.Type)));
-			else
-				sb.Append("const "+GetShortTypeName(scope.CompiledField.DeclaringType) +"."+ scope.CompiledField.Name + ": "+GetSimpleDescription(scope.Type));
-			//if (scope.CompiledField.IsStatic) sb.Append("; static");
-			if (scope.IsReadOnly) sb.Append("; readonly");
-			sb.Append(';');
-			return sb.ToString();
-		}
-		
-		private string get_indexer_for_prop(ICompiledPropertyScope scope)
-		{
-			ITypeScope[] indexers = scope.Indexers;
-			if (indexers.Length == 0) return "";
-			StringBuilder sb = new StringBuilder();
-			sb.Append('[');
-			for (int i=0; i<indexers.Length; i++)
-			{
-				sb.Append(GetSimpleDescriptionWithoutNamespace(indexers[i]));
-				if (i<indexers.Length-1)
-					sb.Append(',');
-			}
-			sb.Append(']');
-			return sb.ToString();
-		}
+        protected string GetDescriptionForCompiledField(ICompiledFieldScope scope)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            if (!scope.CompiledField.IsLiteral)
+                if (scope.CompiledField.IsStatic && !scope.IsGlobal) sb.Append("static ");
+                else sb.Append("var ");
+            string inst_type = null;
+            if (scope.GenericArgs != null)
+            {
+                inst_type = get_type_instance(scope.CompiledField.FieldType, scope.GenericArgs);
+            }
+            if (!scope.CompiledField.IsLiteral)
+                sb.Append(GetShortTypeName(scope.CompiledField.DeclaringType) + "." + scope.CompiledField.Name + ": " + (inst_type != null ? inst_type : GetSimpleDescription(scope.Type)));
+            else
+                sb.Append("const " + GetShortTypeName(scope.CompiledField.DeclaringType) + "." + scope.CompiledField.Name + ": " + GetSimpleDescription(scope.Type));
+            //if (scope.CompiledField.IsStatic) sb.Append("; static");
+            if (scope.IsReadOnly) sb.Append("; readonly");
+            sb.Append(';');
+            return sb.ToString();
+        }
 
-        public virtual string GetDescriptionForCompiledProperty(PropertyInfo pi)
+        private string get_indexer_for_prop(ICompiledPropertyScope scope)
+        {
+            ITypeScope[] indexers = scope.Indexers;
+            if (indexers.Length == 0) return "";
+            StringBuilder sb = new StringBuilder();
+            sb.Append('[');
+            for (int i = 0; i < indexers.Length; i++)
+            {
+                sb.Append(GetSimpleDescriptionWithoutNamespace(indexers[i]));
+                if (i < indexers.Length - 1)
+                    sb.Append(',');
+            }
+            sb.Append(']');
+            return sb.ToString();
+        }
+
+        public string GetDescriptionForCompiledProperty(PropertyInfo pi)
         {
             StringBuilder sb = new StringBuilder();
             MethodInfo get_meth = pi.GetGetMethod(true);
@@ -1596,19 +1345,19 @@ namespace Languages.Pascal.Frontend.Data
             return sb.ToString();
         }
 
-		protected virtual string GetDescriptionForCompiledProperty(ICompiledPropertyScope scope)
-		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			MethodInfo acc = scope.CompiledProperty.GetGetMethod();
-			string inst_type = null;
-			if (acc != null)
-			if (acc.IsStatic) sb.Append("static ");
-			if (scope.Type is ICompiledTypeScope && scope.GenericArgs != null)
-			{
-				Type t = (scope.Type as ICompiledTypeScope).CompiledType;
-				inst_type = get_type_instance(t,scope.GenericArgs);
-			}
-			sb.Append("property "+ GetShortTypeName(scope.CompiledProperty.DeclaringType) +"."+ scope.CompiledProperty.Name + get_indexer_for_prop(scope));
+        protected string GetDescriptionForCompiledProperty(ICompiledPropertyScope scope)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            MethodInfo acc = scope.CompiledProperty.GetGetMethod();
+            string inst_type = null;
+            if (acc != null)
+                if (acc.IsStatic) sb.Append("static ");
+            if (scope.Type is ICompiledTypeScope && scope.GenericArgs != null)
+            {
+                Type t = (scope.Type as ICompiledTypeScope).CompiledType;
+                inst_type = get_type_instance(t, scope.GenericArgs);
+            }
+            sb.Append("property " + GetShortTypeName(scope.CompiledProperty.DeclaringType) + "." + scope.CompiledProperty.Name + get_indexer_for_prop(scope));
             if (inst_type == null)
             {
                 if (scope.Type is ICompiledTypeScope)
@@ -1619,102 +1368,25 @@ namespace Languages.Pascal.Frontend.Data
             else
                 sb.Append(": " + inst_type);
             if (acc != null)
-			//if (acc.IsStatic) sb.Append("; static");
-			if (acc.IsVirtual) sb.Append("; virtual");
-			else if (acc.IsAbstract) sb.Append("; abstract");
-			if (scope.IsReadOnly) sb.Append("; readonly");
-			sb.Append(';');
-			return sb.ToString();
-		}
-		
-		private bool is_params(ParameterInfo _par)
-		{
-			object[] objarr = _par.GetCustomAttributes(typeof(ParamArrayAttribute), true);
+                //if (acc.IsStatic) sb.Append("; static");
+                if (acc.IsVirtual) sb.Append("; ");
+                else if (acc.IsAbstract) sb.Append("; abstract");
+            if (scope.IsReadOnly) sb.Append("; readonly");
+            sb.Append(';');
+            return sb.ToString();
+        }
+
+        private bool is_params(ParameterInfo _par)
+        {
+            object[] objarr = _par.GetCustomAttributes(typeof(ParamArrayAttribute), true);
             if ((objarr == null) || (objarr.Length == 0))
             {
                 return false;
             }
             return true;
-		}
-
-        private string get_type_instance(Type t, List<string> generic_args, Dictionary<string, string> generic_param_args=null, bool no_alias=false)
-        {
-            if (t.IsGenericParameter)
-            {
-                if (generic_param_args != null)
-                {
-                    if (generic_param_args.ContainsKey(t.Name))
-                        return generic_param_args[t.Name];
-                    else
-                        return t.Name;
-                }
-                else if (t.GenericParameterPosition < generic_args.Count)
-                    return generic_args[t.GenericParameterPosition];
-                else
-                    return t.Name;
-            }
-            if (t.IsArray)
-                return "array of " + get_type_instance(t.GetElementType(), generic_args, generic_param_args, no_alias);
-            if (t.ContainsGenericParameters)
-            {
-                if (!no_alias)
-                {
-                    if (t.Name == "IEnumerable`1")
-                    {
-                        Type tt = t.GetGenericArguments()[0];
-                        if (generic_param_args != null)
-                        {
-                            if (tt.IsGenericParameter && generic_param_args.ContainsKey(tt.Name))
-                                return "sequence of " + generic_param_args[tt.Name];
-                            else
-                                return "sequence of " + GetShortTypeName(tt, false);
-                        }
-                        else 
-                            return "sequence of " + (generic_args.Count>0?generic_args[0]:GetShortTypeName(tt, false));
-                    }
-                    else if (t.Name.Contains("Func`") || t.Name.Contains("Predicate`"))
-                        return getLambdaRepresentation(t, true, generic_args, generic_param_args);
-                    else if (t.Name.Contains("Action`") )
-                        return getLambdaRepresentation(t, false, generic_args, generic_param_args);
-                    else if (t.Name.Contains("Tuple`"))
-                        return get_tuple_string(t);
-                }
-                string name = GetShortTypeName(t);
-                StringBuilder sb = new StringBuilder();
-                int ind = name.IndexOf('<');
-                if (ind == -1)
-                    return name;
-                sb.Append(name.Substring(0, ind));
-                Type[] args = t.GetGenericArguments();
-                sb.Append('<');
-                for (int i = 0; i < args.Length; i++)
-                {
-                    if (args[i].IsGenericParameter)
-                    {
-                        if (generic_param_args != null)
-                        {
-                            if (generic_param_args.ContainsKey(args[i].Name))
-                                sb.Append(generic_param_args[args[i].Name]);
-                            else
-                                sb.Append(args[i].Name);
-                        }
-                        else if (args[i].GenericParameterPosition < generic_args.Count)
-                            sb.Append(generic_args[args[i].GenericParameterPosition]);
-                        else
-                            sb.Append(args[i].Name);
-                    }
-                    else
-                        sb.Append(get_type_instance(args[i], generic_args, generic_param_args));
-                    if (i < args.Length - 1)
-                        sb.Append(", ");
-                }
-                sb.Append('>');
-                return sb.ToString();
-            }
-            return GetFullTypeName(t, no_alias);
         }
 
-        public virtual string GetDescriptionForCompiledMethod(MethodInfo mi)
+        public string GetDescriptionForCompiledMethod(MethodInfo mi)
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
@@ -1731,13 +1403,13 @@ namespace Languages.Pascal.Frontend.Data
             if (mi.GetGenericArguments().Length > 0)
             {
                 Type[] tt = mi.GetGenericArguments();
-                sb.Append('<');
+                sb.Append(GenericTypesStartBracket);
                 for (int i = 0; i < tt.Length; i++)
                 {
                     sb.Append(tt[i].Name);
                     if (i < tt.Length - 1) sb.Append(", ");
                 }
-                sb.Append('>');
+                sb.Append(GenericTypesEndBracket);
             }
             sb.Append('(');
             ParameterInfo[] pis = mi.GetParameters();
@@ -1769,7 +1441,7 @@ namespace Languages.Pascal.Frontend.Data
                     Type t = pis[i].ParameterType.GetElementType();
                     sb.Append(GetFullTypeName(t));
                 }
-                
+
                 if (i < pis.Length - 1)
                     sb.Append("; ");
             }
@@ -1777,17 +1449,17 @@ namespace Languages.Pascal.Frontend.Data
             string ret_inst_type = null;
             if (mi.ReturnType != typeof(void))
             {
-                sb.Append(": " + GetFullTypeName(mi.ReturnType));
+                sb.Append(ReturnTypeDelimiter + " " + GetFullTypeName(mi.ReturnType));
             }
             //if (scope.CompiledMethod.IsStatic) sb.Append("; static");
-            if (mi.IsVirtual && !mi.IsFinal) sb.Append("; virtual");
+            if (mi.IsVirtual && !mi.IsFinal) sb.Append("; ");
             else if (mi.IsAbstract) sb.Append("; abstract");
             //else if (scope.CompiledMethod.IsHideBySig) sb.Append("; reintroduce");
             sb.Append(';');
             return sb.ToString();
         }
 
-        protected virtual string GetDescriptionForCompiledMethod(ICompiledMethodScope scope)
+        protected string GetDescriptionForCompiledMethod(ICompiledMethodScope scope)
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             string extensionType = null;
@@ -1807,7 +1479,7 @@ namespace Languages.Pascal.Frontend.Data
                     extensionType = null;
                 }
             }
-                
+
             if (scope.IsStatic && !scope.IsGlobal) sb.Append("static ");
             if (scope.ReturnType == null)
                 sb.Append("procedure ");
@@ -1835,7 +1507,7 @@ namespace Languages.Pascal.Frontend.Data
                     }
                     ind++;
                 }
-                    
+
             }
             else
             {
@@ -1879,7 +1551,7 @@ namespace Languages.Pascal.Frontend.Data
 
             if (scope.CompiledMethod.GetGenericArguments().Length > 0)
             {
-                sb.Append('<');
+                sb.Append(GenericTypesStartBracket);
                 for (int i = gen_ind; i < tt.Length; i++)
                 {
                     if (class_generic_table.ContainsKey(tt[i].Name))
@@ -1905,15 +1577,15 @@ namespace Languages.Pascal.Frontend.Data
                             }
                         }
                     }
-                    
+
                     else
                         sb.Append(tt[i].Name);
                     if (i < tt.Length - 1) sb.Append(", ");
                 }
-                sb.Append('>');
+                sb.Append(GenericTypesEndBracket);
             }
             sb.Append('(');
-            
+
             for (int i = 0; i < pis.Length; i++)
             {
                 if (i == 0 && scope.IsExtension)
@@ -1972,29 +1644,29 @@ namespace Languages.Pascal.Frontend.Data
                 if (ret_inst_type == null)
                 {
                     if (scope.ReturnType is ICompiledTypeScope)
-                        sb.Append(": " + GetFullTypeName((scope.ReturnType as ICompiledTypeScope).CompiledType, false));
+                        sb.Append(ReturnTypeDelimiter + " " + GetFullTypeName((scope.ReturnType as ICompiledTypeScope).CompiledType, false));
                     else
-                        sb.Append(": " + GetSimpleDescription(scope.ReturnType));
+                        sb.Append(ReturnTypeDelimiter + " " + GetSimpleDescription(scope.ReturnType));
                 }
                 else
-                    sb.Append(": " + ret_inst_type);
+                    sb.Append(ReturnTypeDelimiter + " " + ret_inst_type);
             }
             //if (scope.CompiledMethod.IsStatic) sb.Append("; static");
-            if (scope.IsVirtual) sb.Append("; virtual");
+            if (scope.IsVirtual) sb.Append("; ");
             else if (scope.IsAbstract) sb.Append("; abstract");
             //else if (scope.CompiledMethod.IsHideBySig) sb.Append("; reintroduce");
             sb.Append(';');
             return sb.ToString();
         }
-		
-		protected virtual string GetDescriptionForNamespace(INamespaceScope scope)
-		{
-			return "namespace "+scope.Name;
-		}
-		
-		protected virtual string GetDescriptionForProcedure(IProcScope scope)
-		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+        private string GetDescriptionForNamespace(INamespaceScope scope)
+        {
+            return "namespace " + scope.Name;
+        }
+
+        protected string GetDescriptionForProcedure(IProcScope scope)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
             string extensionType = null;
             if (scope.IsExtension && scope.Parameters.Length > 0)
             {
@@ -2012,20 +1684,20 @@ namespace Languages.Pascal.Frontend.Data
                     sb.Append("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION")+ ") ");
                 }   
             }
-              
-			if (scope.IsStatic) sb.Append("static ");
-			if (scope.IsConstructor())
-				sb.Append("constructor ");
-			else
-			if (scope.ReturnType == null)
-				sb.Append("procedure ");
-			else
-				sb.Append("function ");
-			if (!scope.IsConstructor())
-			{
+
+            if (scope.IsStatic) sb.Append("static ");
+            if (scope.IsConstructor())
+                sb.Append("constructor ");
+            else
+            if (scope.ReturnType == null)
+                sb.Append("procedure ");
+            else
+                sb.Append("function ");
+            if (!scope.IsConstructor())
+            {
                 if (extensionType != null)
                 {
-                    sb.Append(extensionType+".");
+                    sb.Append(extensionType + ".");
                     sb.Append(scope.Name);
                 }
                 else
@@ -2033,12 +1705,12 @@ namespace Languages.Pascal.Frontend.Data
                     sb.Append(GetTopScopeName(scope.TopScope));
                     sb.Append(scope.Name);
                 }
-			}
-			else
-			{
-				sb.Append(GetTopScopeNameWithoutDot(scope.TopScope));
-			}
-			/*string[] template_args = scope.TemplateParameters;
+            }
+            else
+            {
+                sb.Append(GetTopScopeNameWithoutDot(scope.TopScope));
+            }
+            /*string[] template_args = scope.TemplateParameters;
 			if (template_args != null)
 			{
 				sb.Append('<');
@@ -2050,68 +1722,30 @@ namespace Languages.Pascal.Frontend.Data
 				}
 				sb.Append('>');
 			}*/
-			sb.Append(GetGenericString(scope.TemplateParameters));
-			sb.Append('(');
-			IElementScope[] parameters = scope.Parameters;
-			for (int i=0; i<parameters.Length; i++)
-			{
+            sb.Append(GetGenericString(scope.TemplateParameters));
+            sb.Append('(');
+            IElementScope[] parameters = scope.Parameters;
+            for (int i = 0; i < parameters.Length; i++)
+            {
                 if (scope.IsExtension && i == 0)
                     continue;
-				sb.Append(GetSimpleDescription(parameters[i]));
-				if (i < parameters.Length - 1)
-				{
-					sb.Append("; ");
-				}
-			}
-			sb.Append(')');
-			if (scope.ReturnType != null && !scope.IsConstructor() && !(scope.ReturnType is IProcType && (scope.ReturnType as IProcType).Target == scope))
-				sb.Append(": "+GetSimpleDescription(scope.ReturnType));
-			//if (scope.IsStatic) sb.Append("; static");
-			if (scope.IsVirtual) sb.Append("; virtual");
-			else if (scope.IsAbstract) sb.Append("; abstract");
-			else if (scope.IsOverride) sb.Append("; override");
-			else if (scope.IsReintroduce) sb.Append("; reintroduce");
-			sb.Append(';');
-			return sb.ToString();
-		}
-		
-		protected virtual string GetGenericString(string[] template_args)
-		{
-			StringBuilder sb = new StringBuilder();
-			if (template_args != null)
-			{
-				sb.Append('<');
-				for (int i=0; i<template_args.Length; i++)
-				{
-					sb.Append(template_args[i]);
-					if (i < template_args.Length-1)
-						sb.Append(", ");
-				}
-				sb.Append('>');
-			}
-			return sb.ToString();
-		}
-		
-		protected virtual string GetSimpleDescriptionForProcedure(IProcScope scope)
-		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			if (scope.TopScope is ITypeScope && scope.Realization == null)
-				sb.Append(GetTopScopeName(scope.TopScope));
-			sb.Append(scope.Name); 
-			sb.Append(GetGenericString(scope.TemplateParameters));
-			sb.Append('(');
-			IElementScope[] parameters = scope.Parameters;
-			for (int i=0; i<parameters.Length; i++)
-			{
-				sb.Append(GetSimpleDescription(parameters[i]));
-				if (i < parameters.Length - 1)
-				{
-					sb.Append("; ");
-				}
-			}
-			sb.Append(')');
-			return sb.ToString();
-		}
+                sb.Append(GetSimpleDescription(parameters[i]));
+                if (i < parameters.Length - 1)
+                {
+                    sb.Append("; ");
+                }
+            }
+            sb.Append(')');
+            if (scope.ReturnType != null && !scope.IsConstructor() && !(scope.ReturnType is IProcType && (scope.ReturnType as IProcType).Target == scope))
+                sb.Append(ReturnTypeDelimiter + " " + GetSimpleDescription(scope.ReturnType));
+            //if (scope.IsStatic) sb.Append("; static");
+            if (scope.IsVirtual) sb.Append("; ");
+            else if (scope.IsAbstract) sb.Append("; abstract");
+            else if (scope.IsOverride) sb.Append("; override");
+            else if (scope.IsReintroduce) sb.Append("; reintroduce");
+            sb.Append(';');
+            return sb.ToString();
+        }
 
         private string prepare_member_name(string s)
         {
@@ -2120,7 +1754,7 @@ namespace Languages.Pascal.Frontend.Data
             return s;
         }
 
-        protected virtual string GetDescriptionForCompiledEvent(EventInfo ei)
+        protected string GetDescriptionForCompiledEvent(EventInfo ei)
         {
             MethodInfo add_meth = ei.GetAddMethod(true);
             StringBuilder sb = new StringBuilder();
@@ -2132,12 +1766,12 @@ namespace Languages.Pascal.Frontend.Data
             return sb.ToString();
         }
 
-		protected virtual string GetDescriptionForCompiledEvent(ICompiledEventScope scope)
-		{
-			return (scope.IsStatic?"static ":"")+"event "+ GetShortTypeName(scope.CompiledEvent.DeclaringType, true) +"."+ scope.CompiledEvent.Name + ": "+GetSimpleDescription(scope.Type)+ ";";
-		}
+        protected string GetDescriptionForCompiledEvent(ICompiledEventScope scope)
+        {
+            return (scope.IsStatic ? "static " : "") + "event " + GetShortTypeName(scope.CompiledEvent.DeclaringType, true) + "." + scope.CompiledEvent.Name + ": " + GetSimpleDescription(scope.Type) + ";";
+        }
 
-        protected virtual string GetDescriptionForCompiledConstructor(ConstructorInfo ci)
+        protected string GetDescriptionForCompiledConstructor(ConstructorInfo ci)
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             if (ci.IsPublic)
@@ -2170,65 +1804,65 @@ namespace Languages.Pascal.Frontend.Data
             return sb.ToString();
         }
 
-		protected virtual string GetDescriptionForCompiledConstructor(ICompiledConstructorScope scope)
-		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			sb.Append("constructor ");
-			sb.Append(GetShortTypeName(scope.CompiledConstructor.DeclaringType));
-			//sb.Append(".");
-			//sb.Append("Create");
-			sb.Append('(');
-			ParameterInfo[] pis = scope.CompiledConstructor.GetParameters();
-			for (int i=0; i<pis.Length; i++)
-			{
-				if (pis[i].ParameterType.IsByRef)
-					sb.Append("var ");
-				else if (is_params(pis[i]))
-					sb.Append("params ");
-				sb.Append(pis[i].Name);
-				sb.Append(": ");
-				if (!pis[i].ParameterType.IsByRef)
-				sb.Append(GetFullTypeName(pis[i].ParameterType));
-				else sb.Append(GetFullTypeName(pis[i].ParameterType.GetElementType()));
-				if (i < pis.Length - 1)
-				sb.Append("; ");
-			}
-			sb.Append(')');
-			sb.Append(';');
-			return sb.ToString();
-		}
-		
-		protected virtual string GetDescriptionForShortString(IShortStringScope scope)
-		{
-			return "string"+"["+scope.Length+"]";
-		}
-		
-		public string GetSynonimDescription(ITypeScope scope)
-		{
-			return "type "+scope.Name + GetGenericString(scope.TemplateArguments)+" = " +scope.Description;
-		}
-		
-		public string GetSynonimDescription(ITypeSynonimScope scope)
-		{
+        protected string GetDescriptionForCompiledConstructor(ICompiledConstructorScope scope)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.Append("constructor ");
+            sb.Append(GetShortTypeName(scope.CompiledConstructor.DeclaringType));
+            //sb.Append(".");
+            //sb.Append("Create");
+            sb.Append('(');
+            ParameterInfo[] pis = scope.CompiledConstructor.GetParameters();
+            for (int i = 0; i < pis.Length; i++)
+            {
+                if (pis[i].ParameterType.IsByRef)
+                    sb.Append("var ");
+                else if (is_params(pis[i]))
+                    sb.Append("params ");
+                sb.Append(pis[i].Name);
+                sb.Append(": ");
+                if (!pis[i].ParameterType.IsByRef)
+                    sb.Append(GetFullTypeName(pis[i].ParameterType));
+                else sb.Append(GetFullTypeName(pis[i].ParameterType.GetElementType()));
+                if (i < pis.Length - 1)
+                    sb.Append("; ");
+            }
+            sb.Append(')');
+            sb.Append(';');
+            return sb.ToString();
+        }
+
+        protected string GetDescriptionForShortString(IShortStringScope scope)
+        {
+            return "string" + "[" + scope.Length + "]";
+        }
+
+        public override string GetSynonimDescription(ITypeScope scope)
+        {
+            return "type " + scope.Name + GetGenericString(scope.TemplateArguments) + " = " + scope.Description;
+        }
+
+        public override string GetSynonimDescription(ITypeSynonimScope scope)
+        {
             if (scope.ActType is ICompiledTypeScope && !(scope.ActType as ICompiledTypeScope).Aliased)
                 return "type " + scope.Name + GetGenericString(scope.TemplateArguments) + " = " + GetSimpleDescriptionForCompiledType(scope.ActType as ICompiledTypeScope, true);
             else
-			    return "type " + scope.Name+GetGenericString(scope.TemplateArguments) + " = " + GetSimpleDescription(scope.ActType);
-		}
-		
-		public string GetSynonimDescription(IProcScope scope)
-		{
-			return "type "+scope.Name+" = "+scope.Description;
-		}
-		
-		public virtual string[] GetIndexerString(IBaseScope scope)
-		{
-			IBaseScope tmp_si = scope;
-        	if (scope == null) return null;
-        	if (scope is IElementScope) 
-        		if ((scope as IElementScope).Indexers.Length == 0)
-        		scope = (scope as IElementScope).Type;
-        	if (scope is IProcScope) scope = (scope as IProcScope).ReturnType;
+                return "type " + scope.Name + GetGenericString(scope.TemplateArguments) + " = " + GetSimpleDescription(scope.ActType);
+        }
+
+        public override string GetSynonimDescription(IProcScope scope)
+        {
+            return "type " + scope.Name + " = " + scope.Description;
+        }
+
+        public string[] GetIndexerString(IBaseScope scope)
+        {
+            IBaseScope tmp_si = scope;
+            if (scope == null) return null;
+            if (scope is IElementScope)
+                if ((scope as IElementScope).Indexers.Length == 0)
+                    scope = (scope as IElementScope).Type;
+            if (scope is IProcScope) scope = (scope as IProcScope).ReturnType;
             if (!(scope is IElementScope))
             {
                 ITypeScope ts = scope as ITypeScope;
@@ -2253,105 +1887,96 @@ namespace Languages.Pascal.Frontend.Data
                     }
                 else
                     sb.Append("integer");
-        		sb.Append("] : ");
-        		sb.Append(GetSimpleDescriptionWithoutNamespace(ts.ElementType));
-        		return new string[1]{sb.ToString()};
-        	}
-        	else
-        	{
-        		IElementScope es = scope as IElementScope;
-        		ITypeScope[] indexers = es.Indexers;
-        		if (indexers == null || indexers.Length == 0 || es.ElementType == null) return null;
-        		StringBuilder sb = new StringBuilder();
-        		sb.Append(es.Name);
-        		sb.Append('[');
-        		for (int i=0; i<indexers.Length; i++)
-        		{
-        			sb.Append(GetSimpleDescriptionWithoutNamespace(indexers[i]));
-        			if (i < indexers.Length - 1)
-        				sb.Append(',');
-        		}
-        		sb.Append("] : ");
-        		sb.Append(GetSimpleDescriptionWithoutNamespace(es.ElementType));
-        		return new string[1]{sb.ToString()};
-        	}
-		}
-		
-		protected virtual string GetSimpleSynonimDescription(ITypeSynonimScope scope)
-		{
-			return scope.Name;
-		}
-		
-		public virtual string GetStringForChar(char c)
-		{
-			return "'"+c.ToString()+"'";
-		}
-		
-		public virtual string GetStringForSharpChar(int num)
-		{
-			return "#"+num.ToString();
-		}
-		
-		public virtual string GetStringForString(string s)
-		{
-			return "'"+s+"'";
-		}
-		
-		public KeywordKind GetKeywordKind(string name)
-        {
-            if (KeywordsStorage.KeywordKinds.TryGetValue(name, out var kind))
-                return kind;
+                sb.Append("] : ");
+                sb.Append(GetSimpleDescriptionWithoutNamespace(ts.ElementType));
+                return new string[1] { sb.ToString() };
+            }
             else
-                return KeywordKind.None;
+            {
+                IElementScope es = scope as IElementScope;
+                ITypeScope[] indexers = es.Indexers;
+                if (indexers == null || indexers.Length == 0 || es.ElementType == null) return null;
+                StringBuilder sb = new StringBuilder();
+                sb.Append(es.Name);
+                sb.Append('[');
+                for (int i = 0; i < indexers.Length; i++)
+                {
+                    sb.Append(GetSimpleDescriptionWithoutNamespace(indexers[i]));
+                    if (i < indexers.Length - 1)
+                        sb.Append(',');
+                }
+                sb.Append("] : ");
+                sb.Append(GetSimpleDescriptionWithoutNamespace(es.ElementType));
+                return new string[1] { sb.ToString() };
+            }
         }
 
-       
-        
-        protected virtual string GetAccessModifier(access_modifer mod)
+        private string GetSimpleSynonimDescription(ITypeSynonimScope scope)
         {
-        	switch (mod)
-        	{
-        		case access_modifer.private_modifer : return "private";
-        		case access_modifer.protected_modifer : return "protected";
-        		case access_modifer.public_modifer : return "public";
-        		case access_modifer.published_modifer : return "published";
-        		case access_modifer.internal_modifer : return "internal";
-        	}
-        	return "";
+            return scope.Name;
         }
-        
-        public virtual string ConstructOverridedMethodHeader(IProcScope scope, out int off)
+
+        public override string GetStringForChar(char c)
         {
-        	System.Text.StringBuilder sb = new System.Text.StringBuilder();
-        	if (scope.AccessModifier != access_modifer.internal_modifer)
-        	sb.Append(GetAccessModifier(scope.AccessModifier)+" ");
-        	if (scope.ReturnType == null)
-				sb.Append("procedure ");
-			else
-				sb.Append("function ");
-			off = sb.Length;
-			sb.Append(scope.Name); 
-			sb.Append(GetGenericString(scope.TemplateParameters));
-			if (!(scope is ICompiledMethodScope))
-			{
-				IElementScope[] parameters = scope.Parameters;
-				if (parameters != null && parameters.Length > 0)
-				{
-					sb.Append('(');
-				for (int i=0; i<scope.Parameters.Length; i++)
-				{
-					sb.Append(GetSimpleDescription(parameters[i]));
-					if (i < parameters.Length - 1)
-					{
-						sb.Append("; ");
-					}
-				}
-				sb.Append(')');
-				}
-			}
-			else
-			{
-				ParameterInfo[] pis = (scope as ICompiledMethodScope).CompiledMethod.GetParameters();
+            return "'" + c.ToString() + "'";
+        }
+
+        public override string GetStringForSharpChar(int num)
+        {
+            return "#" + num.ToString();
+        }
+
+        public override string GetStringForString(string s)
+        {
+            return "'" + s + "'";
+        }
+
+
+        protected string GetAccessModifier(access_modifer mod)
+        {
+            switch (mod)
+            {
+                case access_modifer.private_modifer: return "private";
+                case access_modifer.protected_modifer: return "protected";
+                case access_modifer.public_modifer: return "public";
+                case access_modifer.published_modifer: return "published";
+                case access_modifer.internal_modifer: return "internal";
+            }
+            return "";
+        }
+
+        public override string ConstructOverridedMethodHeader(IProcScope scope, out int off)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            if (scope.AccessModifier != access_modifer.internal_modifer)
+                sb.Append(GetAccessModifier(scope.AccessModifier) + " ");
+            if (scope.ReturnType == null)
+                sb.Append("procedure ");
+            else
+                sb.Append("function ");
+            off = sb.Length;
+            sb.Append(scope.Name);
+            sb.Append(GetGenericString(scope.TemplateParameters));
+            if (!(scope is ICompiledMethodScope))
+            {
+                IElementScope[] parameters = scope.Parameters;
+                if (parameters != null && parameters.Length > 0)
+                {
+                    sb.Append('(');
+                    for (int i = 0; i < scope.Parameters.Length; i++)
+                    {
+                        sb.Append(GetSimpleDescription(parameters[i]));
+                        if (i < parameters.Length - 1)
+                        {
+                            sb.Append("; ");
+                        }
+                    }
+                    sb.Append(')');
+                }
+            }
+            else
+            {
+                ParameterInfo[] pis = (scope as ICompiledMethodScope).CompiledMethod.GetParameters();
                 if (pis.Length > 0)
                 {
                     sb.Append('(');
@@ -2371,32 +1996,32 @@ namespace Languages.Pascal.Frontend.Data
                     }
                     sb.Append(')');
                 }
-			}
-			if (scope.ReturnType != null)
-				sb.Append(": "+GetSimpleDescription(scope.ReturnType));
-			sb.Append("; override;");
-			return sb.ToString();
+            }
+            if (scope.ReturnType != null)
+                sb.Append(ReturnTypeDelimiter + " " + GetSimpleDescription(scope.ReturnType));
+            sb.Append("; override;");
+            return sb.ToString();
         }
-        
-        public virtual string ConstructHeader(IProcRealizationScope scope, int tabCount)
+
+        public override string ConstructHeader(IProcRealizationScope scope, int tabCount)
         {
-        	System.Text.StringBuilder sb = new System.Text.StringBuilder();
-        	sb.Append('\t');
-        	if (!scope.DefProc.IsAbstract)
-        	sb.Append(GetAccessModifier(access_modifer.public_modifer)+" ");
-        	else
-        	if (scope.DefProc.AccessModifier != access_modifer.none && scope.DefProc.AccessModifier != access_modifer.internal_modifer)
-        		sb.Append(GetAccessModifier(scope.DefProc.AccessModifier)+" ");
-        	if (scope.DefProc.ReturnType == null)
-				sb.Append("procedure ");
-			else
-				sb.Append("function ");
-			sb.Append(scope.Name); 
-			sb.Append(GetGenericString(scope.TemplateParameters));
-			
-			if (!(scope.DefProc is ICompiledMethodScope))
-			{
-				IElementScope[] parameters = scope.DefProc.Parameters;
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.Append('\t');
+            if (!scope.DefProc.IsAbstract)
+                sb.Append(GetAccessModifier(access_modifer.public_modifer) + " ");
+            else
+            if (scope.DefProc.AccessModifier != access_modifer.none && scope.DefProc.AccessModifier != access_modifer.internal_modifer)
+                sb.Append(GetAccessModifier(scope.DefProc.AccessModifier) + " ");
+            if (scope.DefProc.ReturnType == null)
+                sb.Append("procedure ");
+            else
+                sb.Append("function ");
+            sb.Append(scope.Name);
+            sb.Append(GetGenericString(scope.TemplateParameters));
+
+            if (!(scope.DefProc is ICompiledMethodScope))
+            {
+                IElementScope[] parameters = scope.DefProc.Parameters;
                 if (parameters != null && parameters.Length > 0)
                 {
                     sb.Append('(');
@@ -2410,60 +2035,60 @@ namespace Languages.Pascal.Frontend.Data
                     }
                     sb.Append(')');
                 }
-			}
-			else
-			{
-				ParameterInfo[] pis = (scope.DefProc as ICompiledMethodScope).CompiledMethod.GetParameters();
-				if (pis.Length > 0)
-				{
-					sb.Append('(');
-				for (int i=0; i<pis.Length; i++)
-				{
-				if (pis[i].ParameterType.IsByRef)
-					sb.Append("var ");
-				else if (is_params(pis[i]))
-					sb.Append("params ");
-				sb.Append(pis[i].Name);
-				sb.Append(": ");
-				if (!pis[i].ParameterType.IsByRef)
-				sb.Append(GetFullTypeName(pis[i].ParameterType));
-				else sb.Append(GetFullTypeName(pis[i].ParameterType.GetElementType()));
-				if (i < pis.Length - 1)
-				sb.Append("; ");
-				}
-				sb.Append(')');
-				}
-			}
-			
-			if (scope.DefProc.ReturnType != null)
-				sb.Append(": "+GetSimpleDescription(scope.DefProc.ReturnType));
-			sb.Append(';');
-			if (scope.DefProc.IsAbstract)
-				sb.Append("override;");
-			return sb.ToString();
+            }
+            else
+            {
+                ParameterInfo[] pis = (scope.DefProc as ICompiledMethodScope).CompiledMethod.GetParameters();
+                if (pis.Length > 0)
+                {
+                    sb.Append('(');
+                    for (int i = 0; i < pis.Length; i++)
+                    {
+                        if (pis[i].ParameterType.IsByRef)
+                            sb.Append("var ");
+                        else if (is_params(pis[i]))
+                            sb.Append("params ");
+                        sb.Append(pis[i].Name);
+                        sb.Append(": ");
+                        if (!pis[i].ParameterType.IsByRef)
+                            sb.Append(GetFullTypeName(pis[i].ParameterType));
+                        else sb.Append(GetFullTypeName(pis[i].ParameterType.GetElementType()));
+                        if (i < pis.Length - 1)
+                            sb.Append("; ");
+                    }
+                    sb.Append(')');
+                }
+            }
+
+            if (scope.DefProc.ReturnType != null)
+                sb.Append(ReturnTypeDelimiter + " " + GetSimpleDescription(scope.DefProc.ReturnType));
+            sb.Append(';');
+            if (scope.DefProc.IsAbstract)
+                sb.Append("override;");
+            return sb.ToString();
         }
-        
+
         private void get_procedure_template(procedure_header header, StringBuilder res, int col)
         {
-        	if (header.parameters != null)
-        		for (int i=0; i<header.parameters.params_list.Count; i++)
-        		for (int j=0; j<header.parameters.params_list[i].idents.idents.Count; j++)
-        		{
-        			res.AppendLine();
-        			for (int k=0;k<col-3; k++)
-						res.Append(' ');
-        			res.Append("/// <param name=\""+header.parameters.params_list[i].idents.idents[j].name+"\"></param>");
-        		}
-        		if (header is function_header)
-        		{
-        			res.AppendLine();
-        			for (int k=0;k<col-3; k++)
-						res.Append(' ');
-        			res.Append("/// <returns></returns>");
-        		}
+            if (header.parameters != null)
+                for (int i = 0; i < header.parameters.params_list.Count; i++)
+                    for (int j = 0; j < header.parameters.params_list[i].idents.idents.Count; j++)
+                    {
+                        res.AppendLine();
+                        for (int k = 0; k < col - 3; k++)
+                            res.Append(' ');
+                        res.Append("/// <param name=\"" + header.parameters.params_list[i].idents.idents[j].name + "\"></param>");
+                    }
+            if (header is function_header)
+            {
+                res.AppendLine();
+                for (int k = 0; k < col - 3; k++)
+                    res.Append(' ');
+                res.Append("/// <returns></returns>");
+            }
         }
-        
-        public virtual string GetDocumentTemplate(string lineText, string Text, int line, int col, int pos)
+
+        public override string GetDocumentTemplate(string lineText, string Text, int line, int col, int pos)
         {
             try
             {
@@ -2475,7 +2100,7 @@ namespace Languages.Pascal.Frontend.Data
                     sb.AppendLine(lineText);
                     sb.AppendLine("begin end;");
                     sb.AppendLine("begin end.");
-                    program_module node = this.Parser.GetCompilationUnit("test.pas", sb.ToString(), null, null, ParseMode.Special) as program_module;
+                    program_module node = this.Parser.GetCompilationUnit("test.pas", sb.ToString(), null, null, ParseMode.Special, false) as program_module;
                     procedure_header header = (node.program_block.defs.defs[0] as procedure_definition).proc_header;
                     get_procedure_template(header, res, col);
                     return res.ToString();
@@ -2486,7 +2111,7 @@ namespace Languages.Pascal.Frontend.Data
                     sb.AppendLine(lineText);
                     sb.AppendLine("begin end;");
                     sb.AppendLine("begin end.");
-                    program_module node = this.Parser.GetCompilationUnit("test.pas", sb.ToString(), null, null, ParseMode.Special) as program_module;
+                    program_module node = this.Parser.GetCompilationUnit("test.pas", sb.ToString(), null, null, ParseMode.Special, false) as program_module;
                     if (node.program_block.defs != null && node.program_block.defs.defs.Count > 0 && node.program_block.defs.defs[0] is procedure_definition)
                     {
                         procedure_header header = (node.program_block.defs.defs[0] as procedure_definition).proc_header;
@@ -2501,94 +2126,94 @@ namespace Languages.Pascal.Frontend.Data
             {
 
             }
-        	return "";
+            return "";
         }
-        
-		public virtual string ConstructHeader(string meth, IProcScope scope, int tabCount)
-		{
-			int i=0;
-        	bool is_cnstr = false;
-        	StringBuilder sb = new StringBuilder();
+
+        public override string ConstructHeader(string meth, IProcScope scope, int tabCount)
+        {
+            int i = 0;
+            bool is_cnstr = false;
+            StringBuilder sb = new StringBuilder();
             if (meth.StartsWith("static "))
                 meth = meth.Remove(0, "static ".Length);
             else if (meth.StartsWith("class "))
                 meth = meth.Remove(0, "class ".Length);
             if (scope.IsStatic)
                 sb.Append("static ");
-        	while (i < meth.Length && char.IsLetterOrDigit(meth[i]))
-        	{
-        		sb.Append(meth[i++]);
-        	}
-        	if (sb.ToString().ToLower() == "constructor") is_cnstr = true;
-        	sb.Append(' ');
-        	while (i < meth.Length && !(char.IsLetterOrDigit(meth[i]) || meth[i] == '_' || meth[i] == '(' || meth[i] == ';'))
-        	if (meth[i] == '{')
-        		while (i<meth.Length && meth[i] != '}') i++;
-        	else
-        		i++;
-        	if (i < meth.Length)
-        	{
-        		if (scope.TopScope is ITypeScope && ((scope.TopScope as ITypeScope).ElemKind == SymbolKind.Class || (scope.TopScope as ITypeScope).ElemKind == SymbolKind.Struct))
-        			sb.Append(GetSimpleDescriptionForType(scope.TopScope as ITypeScope)+".");
-        			//if (meth[i] == '(' || meth[i] == ';')
-        		sb.Append(scope.Name);
-        		sb.Append(GetGenericString(scope.TemplateParameters));
-                
-        		while (i < meth.Length && (char.IsLetterOrDigit(meth[i]) || meth[i] == '_')) i++;
-        		while (i < meth.Length && meth[i] != ';' && meth[i] != '(' && meth[i] != ':')
-        			if (meth[i] == '{') while (i<meth.Length && meth[i] != '}') i++;
-        			else i++;
-        		if (meth[i] == '(')
-        		{
-        			sb.Append('(');
-        			bool in_kav = false;
-        			Stack<char> sk_stack = new Stack<char>();
-        			sk_stack.Push('(');i++;
-        			bool default_value = false;
-        			while (i < meth.Length && sk_stack.Count > 0)
-        			{
-        				if (meth[i] == '\'') in_kav = !in_kav;
-        				else if (meth[i] == '(') {if (!in_kav) sk_stack.Push('(');}
-        				else if (meth[i] == ')') {if (!in_kav) sk_stack.Pop();}
-        				if (meth[i] == ':' && meth[i+1] == '=' && !in_kav)
-        					default_value = true;
-        				else if (meth[i] == ';' && !in_kav)
-        					default_value = false;
-        				if (!default_value || meth[i] == ')' && sk_stack.Count == 0)
-        				{
-        					if (meth[i] == ')' && sk_stack.Count == 0 && default_value)
-        						sb = new StringBuilder(sb.ToString().TrimEnd());
-        					sb.Append(meth[i]);
-        				}
-        				i++;
-        			}
-        			while (i<meth.Length && meth[i] != ':' && meth[i] != ';')
-        				if (meth[i] == '{') while (i<meth.Length && meth[i] != '}') i++;
-        				else sb.Append(meth[i++]);
-        				
-        				//sb.Append(')');
-        		}
-        		if (meth[i] == ':')
-        		{
-        			bool in_kav = false;
-        			while (i < meth.Length && !(meth[i] == ';' && !in_kav))
-        			{
-        				if (meth[i] == '{' && !in_kav) while (i<meth.Length && meth[i] != '}') i++;
-        				else if (meth[i] == '\'') in_kav = !in_kav;
-        				sb.Append(meth[i]);
-        				i++;
-        			}
-        		}
-        		sb.Append(';');
-        	}
-        	sb.AppendLine();
-        	sb.AppendLine("begin");
-        	for (int j=0; j<tabCount; j++)
-        		sb.Append(' ');
-        	sb.AppendLine();
-        	sb.AppendLine("end;");
-        	return sb.ToString();
-		}
+            while (i < meth.Length && char.IsLetterOrDigit(meth[i]))
+            {
+                sb.Append(meth[i++]);
+            }
+            if (sb.ToString().ToLower() == "constructor") is_cnstr = true;
+            sb.Append(' ');
+            while (i < meth.Length && !(char.IsLetterOrDigit(meth[i]) || meth[i] == '_' || meth[i] == '(' || meth[i] == ';'))
+                if (meth[i] == '{')
+                    while (i < meth.Length && meth[i] != '}') i++;
+                else
+                    i++;
+            if (i < meth.Length)
+            {
+                if (scope.TopScope is ITypeScope && ((scope.TopScope as ITypeScope).ElemKind == SymbolKind.Class || (scope.TopScope as ITypeScope).ElemKind == SymbolKind.Struct))
+                    sb.Append(GetSimpleDescriptionForType(scope.TopScope as ITypeScope) + ".");
+                //if (meth[i] == '(' || meth[i] == ';')
+                sb.Append(scope.Name);
+                sb.Append(GetGenericString(scope.TemplateParameters));
+
+                while (i < meth.Length && (char.IsLetterOrDigit(meth[i]) || meth[i] == '_')) i++;
+                while (i < meth.Length && meth[i] != ';' && meth[i] != '(' && meth[i] != ':')
+                    if (meth[i] == '{') while (i < meth.Length && meth[i] != '}') i++;
+                    else i++;
+                if (meth[i] == '(')
+                {
+                    sb.Append('(');
+                    bool in_kav = false;
+                    Stack<char> sk_stack = new Stack<char>();
+                    sk_stack.Push('('); i++;
+                    bool default_value = false;
+                    while (i < meth.Length && sk_stack.Count > 0)
+                    {
+                        if (meth[i] == '\'') in_kav = !in_kav;
+                        else if (meth[i] == '(') { if (!in_kav) sk_stack.Push('('); }
+                        else if (meth[i] == ')') { if (!in_kav) sk_stack.Pop(); }
+                        if (meth[i] == ':' && meth[i + 1] == '=' && !in_kav)
+                            default_value = true;
+                        else if (meth[i] == ';' && !in_kav)
+                            default_value = false;
+                        if (!default_value || meth[i] == ')' && sk_stack.Count == 0)
+                        {
+                            if (meth[i] == ')' && sk_stack.Count == 0 && default_value)
+                                sb = new StringBuilder(sb.ToString().TrimEnd());
+                            sb.Append(meth[i]);
+                        }
+                        i++;
+                    }
+                    while (i < meth.Length && meth[i] != ':' && meth[i] != ';')
+                        if (meth[i] == '{') while (i < meth.Length && meth[i] != '}') i++;
+                        else sb.Append(meth[i++]);
+
+                    //sb.Append(')');
+                }
+                if (meth[i] == ':')
+                {
+                    bool in_kav = false;
+                    while (i < meth.Length && !(meth[i] == ';' && !in_kav))
+                    {
+                        if (meth[i] == '{' && !in_kav) while (i < meth.Length && meth[i] != '}') i++;
+                        else if (meth[i] == '\'') in_kav = !in_kav;
+                        sb.Append(meth[i]);
+                        i++;
+                    }
+                }
+                sb.Append(';');
+            }
+            sb.AppendLine();
+            sb.AppendLine("begin");
+            for (int j = 0; j < tabCount; j++)
+                sb.Append(' ');
+            sb.AppendLine();
+            sb.AppendLine("end;");
+            return sb.ToString();
+        }
 
         private bool isOperator(string Text, int i, out int next)
         {
@@ -2615,83 +2240,30 @@ namespace Languages.Pascal.Frontend.Data
                     {
                         next = i - 2;
                         return true;
-                    }   
+                    }
                     return false;
                 }
             }
             return false;
         }
 
-        private void TestForKeyword(string Text, int i, ref int bound, bool sym_punkt, out KeywordKind keyword)
+        private bool CheckForComment(string Text, int off, out int comment_position, out bool one_line_comment)
         {
-            StringBuilder sb = new StringBuilder();
-            while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_'))
-            {
-                sb.Insert(0, Text[i]);
-                i--;
-            }
-            while (i >= 0 && char.IsWhiteSpace(Text[i]))
-            {
-                i--;
-            }
-            if (i >= 0 && (Text[i] == '.' || Text[i] == '&'))
-                sb.Insert(0, Text[i]);
-            string s = sb.ToString().ToLower();
-            if (s == "new")
-            {
-                bound = i + 1;
-                keyword = KeywordKind.New;
-            }
-            else if ((s == "procedure" || s == "function") && !sym_punkt)
-            {
-                keyword = KeywordKind.Function;
-            }
-            else if (s == "constructor" && !sym_punkt)
-            {
-                keyword = KeywordKind.Constructor;
-            }
-            else if (s == "destructor" && !sym_punkt)
-            {
-                keyword = KeywordKind.Destructor;
-            }
-            else if (s == "uses")
-            {
-                keyword = KeywordKind.Uses;
-            }
-            else if (s == "inherited")
-            {
-                bound = i + 1;
-                keyword = KeywordKind.Inherited;
-            }
-            else if (s == "raise")
-            {
-                keyword = KeywordKind.Raise;
-            }
-            else if (IsKeyword(s))
-            {
-                keyword = KeywordKind.CommonKeyword;
-            }
-
-            else keyword = KeywordKind.None;
-        }
-		
-		private bool CheckForComment(string Text, int off, out int comment_position, out bool one_line_comment)
-		{
-			int i = off;
+            int i = off;
             one_line_comment = false;
             comment_position = -1;
-			Stack<char> kav = new Stack<char>();
-			bool is_comm = false;
-			while (i>=0 && !is_comm && Text[i] != '\n' && Text[i] != '\r')
-			{
-				if (Text[i] == '\'')
-				{
-					if (kav.Count == 0) kav.Push('\'');
-					else kav.Pop();
-				}
-				else if (Text[i] == '{')
-				{
-					if (kav.Count == 0)
+            Stack<char> kav = new Stack<char>();
+            bool is_comm = false;
+            while (i >= 0 && !is_comm && Text[i] != '\n' && Text[i] != '\r')
+            {
+                if (Text[i] == '\'')
+                {
+                    if (kav.Count == 0) kav.Push('\'');
+                    else kav.Pop();
+                }
+                else if (Text[i] == '{')
+                {
+                    if (kav.Count == 0)
                     {
                         comment_position = i;
                         while (i >= 0 && Text[i] != '\'')
@@ -2700,26 +2272,26 @@ namespace Languages.Pascal.Frontend.Data
                             return false;
                         is_comm = true;
                         return is_comm;
-                    }  
-				}
-				else if (Text[i] == '}')
-				{
-					return false;
-				}
-				else if (Text[i] == '/')
-					if (i > 0 && Text[i-1] == '/' && kav.Count == 0)
+                    }
+                }
+                else if (Text[i] == '}')
+                {
+                    return false;
+                }
+                else if (Text[i] == '/')
+                    if (i > 0 && Text[i - 1] == '/' && kav.Count == 0)
                     {
                         is_comm = true;
                         one_line_comment = true;
                         comment_position = i - 1;
                     }
-					
-				i--;
-			}
-			return is_comm;
-		}
 
-        public virtual string FindExpression(int off, string Text, int line, int col, out KeywordKind keyw)
+                i--;
+            }
+            return is_comm;
+        }
+
+        public override string FindExpression(int off, string Text, int line, int col, out KeywordKind keyw)
         {
             int i = off - 1;
             int bound = 0;
@@ -2759,7 +2331,7 @@ namespace Languages.Pascal.Frontend.Data
                                         break;
                                 }
                             }
-                            
+
                             if (i >= 0)
                                 i--;
                         }
@@ -2798,7 +2370,7 @@ namespace Languages.Pascal.Frontend.Data
                     }
                     else
                         if (ch == '\'')
-                            kav.Push('\'');
+                        kav.Push('\'');
                     sb.Insert(0, ch);//.Append(Text[i]);
                 }
                 else if (ch == '.' || ch == '^' || ch == '&' || ch == '?' && IsPunctuation(Text, i + 1))
@@ -2868,10 +2440,10 @@ namespace Languages.Pascal.Frontend.Data
                             if (tokens.Count == 0)
                             {
                                 int j = i + 1;
-                                
+
                                 while (j < Text.Length && char.IsWhiteSpace(Text[j]))
                                     j++;
-                                
+
                                 if (ugl_skobki.Count > 0 || i == off - 1 || j == off && off == Text.Length || j < Text.Length && Text[i - 1] != '-' && (Text[j] == '.' || Text[j] == '('))
                                 {
                                     ugl_skobki.Push('>');
@@ -2905,8 +2477,8 @@ namespace Languages.Pascal.Frontend.Data
                         case '[':
                         case '(':
                         case '|':
-                            if (ch == '|' && ((tokens.Count == 0) || (tokens.Peek()==']') || (tokens.Peek() == ')') || (tokens.Peek() == ','))) 
-                                // Закрывающий | - после него (tokens.Pop()) - пусто или ] ) ,
+                            if (ch == '|' && ((tokens.Count == 0) || (tokens.Peek() == ']') || (tokens.Peek() == ')') || (tokens.Peek() == ',')))
+                            // Закрывающий | - после него (tokens.Pop()) - пусто или ] ) ,
                             {
                                 if (kav.Count == 0)
                                 {
@@ -2922,7 +2494,7 @@ namespace Languages.Pascal.Frontend.Data
                                     punkt_sym = true;
                                 }
                             }
-                            else 
+                            else
                             {
                                 if (kav.Count == 0) // в т.ч. открывающий |
                                 {
@@ -2950,7 +2522,7 @@ namespace Languages.Pascal.Frontend.Data
                                                         i--;
                                                 }
                                             }
-                                            if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '!' || Text[i] == '?' && IsPunctuation(Text, i+1)))
+                                            if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '!' || Text[i] == '?' && IsPunctuation(Text, i + 1)))
                                             {
                                                 bound = i + 1;
                                                 TestForKeyword(Text, i, ref bound, punkt_sym, out keyw);
@@ -2972,7 +2544,7 @@ namespace Languages.Pascal.Frontend.Data
                                             keyw = KeywordKind.SquareBracket;
                                         }
                                     }
-                                    
+
                                 }
                                 else sb.Insert(0, ch); punkt_sym = true;
                             }
@@ -3012,8 +2584,8 @@ namespace Languages.Pascal.Frontend.Data
                                             sb.Insert(0, ch);
                                             i = comment_position;
                                         }
-                                            
-                                    }    
+
+                                    }
                                     else
                                         sb.Insert(0, ch);
                                 }
@@ -3046,28 +2618,13 @@ namespace Languages.Pascal.Frontend.Data
 
         }
 
-        public virtual string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out string expr_without_brackets)
-        {
-            KeywordKind keyw = KeywordKind.None;
-            return FindExpressionFromAnyPosition(off, Text, line, col, out keyw, out expr_without_brackets);
-        }
-
-        private bool IsPunctuation(string Text, int ind)
-        {
-            while (ind < Text.Length && char.IsWhiteSpace(Text[ind]))
-                ind++;
-            if (ind >= Text.Length)
-                return true;
-            return char.IsPunctuation(Text[ind]);
-        }
-
-        public virtual string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets)
+        public override string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out string expr_without_brackets)
         {
             int i = off - 1;
 
             // это например вызов метода без параметров
             expr_without_brackets = null;
-            keyw = KeywordKind.None;
+            var keyw = KeywordKind.None;
             if (i < 0)
                 return "";
             bool is_char = false;
@@ -3159,7 +2716,7 @@ namespace Languages.Pascal.Frontend.Data
                     }
                     break;
                 }
-                else if ((c == '<' || c == '&' && j < Text.Length - 1 && Text[j+1] == '<') && !in_comment)
+                else if ((c == '<' || c == '&' && j < Text.Length - 1 && Text[j + 1] == '<') && !in_comment)
                 {
                     Stack<char> sk_stack = new Stack<char>();
                     if (c == '&')
@@ -3238,13 +2795,13 @@ namespace Languages.Pascal.Frontend.Data
                         return ss.Substring(ind + 3);
                 }
                 if (is_new && ss != null && ss.IndexOf("new") == -1 && ss.IndexOf(":") != -1)
-                    return expr_without_brackets + "(true?"+ss;
+                    return expr_without_brackets + "(true?" + ss;
                 return ss;
             }
             return null;
         }
 
-        public virtual KeywordKind TestForKeyword(string Text, int i)
+        public override KeywordKind TestForKeyword(string Text, int i)
         {
             StringBuilder sb = new StringBuilder();
             int orig_i = i;
@@ -3268,8 +2825,8 @@ namespace Languages.Pascal.Frontend.Data
                             in_keyw = false;
                             in_format_str = true;
                         }
-                            
-                    }   
+
+                    }
                     else if (kav_stack.Count > 0)
                         kav_stack.Pop();
                 }
@@ -3325,35 +2882,27 @@ namespace Languages.Pascal.Frontend.Data
                     i--;
                 }
             string s = sb.ToString().ToLower();
-            /*if (s == "new")
-            {
-                i = orig_i + 1;
-                while (i < Text.Length && char.IsWhiteSpace(Text[i]))
-                    i++;
-                if (i < Text.Length && Text[i] != '(')
-                    return KeywordKind.Punkt;
-            }*/
 
             return GetKeywordKind(s);
         }
-		
-		public virtual string SkipNew(int off, string Text, ref KeywordKind keyw)
+
+        public override string SkipNew(int off, string Text, ref KeywordKind keyw)
         {
-        	int tmp = off;
-        	string expr = null;
-        	while (off >= 0 && Char.IsLetterOrDigit(Text[off])) off--;
-        	while (off >= 0 && (Text[off] == ' ' || char.IsControl(Text[off]))) off--;
-        	if (off >= 1 && Text[off] == '=' && Text[off-1] == ':')
-        	{
-        		off -= 2;
-        		while (off >= 0 && (Text[off] == ' ' || char.IsControl(Text[off]))) off--;
-        		if (off >= 0 && (Text[off] == '_' || char.IsLetterOrDigit(Text[off]) || Text[off] == '!' || Text[off] == ']' || Text[off] == '>'))
-        			expr = FindExpression(off+1,Text,0,0,out keyw);
-        	}
-        	return expr;
+            int tmp = off;
+            string expr = null;
+            while (off >= 0 && char.IsLetterOrDigit(Text[off])) off--;
+            while (off >= 0 && (Text[off] == ' ' || char.IsControl(Text[off]))) off--;
+            if (off >= 1 && Text[off] == '=' && Text[off - 1] == ':')
+            {
+                off -= 2;
+                while (off >= 0 && (Text[off] == ' ' || char.IsControl(Text[off]))) off--;
+                if (off >= 0 && (Text[off] == '_' || char.IsLetterOrDigit(Text[off]) || Text[off] == '!' || Text[off] == ']' || Text[off] == '>'))
+                    expr = FindExpression(off + 1, Text, 0, 0, out keyw);
+            }
+            return expr;
         }
 
-        public virtual string FindExpressionForMethod(int off, string Text, int line, int col, char pressed_key, ref int num_param)
+        public override string FindExpressionForMethod(int off, string Text, int line, int col, char pressed_key, ref int num_param)
         {
             int i = off - 1;
             string pattern = null;
@@ -3462,7 +3011,7 @@ namespace Languages.Pascal.Frontend.Data
                                         skobki.Push(ch);
                                     if (tokens.Count > 0 || pressed_key == ',')
                                         sb.Insert(0, ch);
-                                    else if (i == off - 1 || j == off && off == Text.Length || ugl_skobki.Count > 0 || j < Text.Length && Text[i-1] != '-' && (Text[j] == '.' || Text[j] == '('))
+                                    else if (i == off - 1 || j == off && off == Text.Length || ugl_skobki.Count > 0 || j < Text.Length && Text[i - 1] != '-' && (Text[j] == '.' || Text[j] == '('))
                                     {
                                         tokens.Push(ch);
                                         ugl_skobki.Push(ch);
@@ -3589,7 +3138,7 @@ namespace Languages.Pascal.Frontend.Data
                                                     continue;
                                                 }
                                             }
-                                                
+
                                         }
                                         else
                                             sb.Insert(0, ch);//esli est skobki, prodolzhaem
@@ -3617,7 +3166,7 @@ namespace Languages.Pascal.Frontend.Data
                                             sb.Insert(0, ch);
                                             i = comment_position;
                                         }
-                                            
+
                                     }
                                     else
                                         sb.Insert(0, ch);//a inache vyrazhenie na neskolkih strokah
@@ -3655,96 +3204,30 @@ namespace Languages.Pascal.Frontend.Data
             //return RemovePossibleKeywords(sb);
             return sb.ToString();
         }
-		
-		public virtual string FindOnlyIdentifier(int off, string Text, int line, int col, ref string name)
-		{
-			int i = off-1;
-            if (i < 0)
-                return "";
-            bool is_char = false;
-        	System.Text.StringBuilder sb = new System.Text.StringBuilder();
-        	if (Text[i] != ' ' && !char.IsControl(Text[i]))
-        	{
-        		sb.Remove(0,sb.Length);
-        		while (i >= 0 && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '!'))
-        		{
-        			//sb.Insert(0,Text[i]);//.Append(Text[i]);
-        			i--;
-        		}
-        		is_char = true;
-        	}
-        	i++;
-            if (i < Text.Length && Text[i] != ' ' && !char.IsControl(Text[i]))
-        	{
-        		while (i < Text.Length && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '!'))
-        		{
-        			sb.Append(Text[i]);//.Append(Text[i]);
-        			i++;
-        		}
-        		is_char = true;
-        	}
-            name = sb.ToString();
-            KeywordKind keyw = KeywordKind.None;
-        	if (is_char) 
-        	{
-        		return FindExpression(i,Text,line,col,out keyw);
-        	}
-            return null;
-		}
-		
-		public virtual string FindPattern(int off, string Text, out bool is_pattern)
-		{
-			System.Text.StringBuilder sb=null;
-			is_pattern = false;
-            if (off > 0 && (char.IsLetterOrDigit(Text[off - 1]) || Text[off - 1] == '_' || Text[off-1] == '&' || Text[off - 1] == '!'))
-            {
-                sb = new System.Text.StringBuilder();
-                int i = off - 1;
-                is_pattern = true;
-                while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[off-1] == '&' || Text[i] == '!'))
-                  sb.Insert(0, Text[i--]);
-                return sb.ToString();
-            }
-            return null;
-		}
-		
-		public virtual bool IsMethodCallParameterSeparator(char key)
-		{
-			return key == ',';
-		}
-		
-		public virtual bool IsOpenBracketForMethodCall(char key)
-		{
-			return key == '(';
-		}
-		
-		public virtual bool IsOpenBracketForIndex(char key)
-		{
-			return key == '[';
-		}
-		
-		public virtual bool IsDefinitionIdentifierAfterKeyword(KeywordKind keyw)
-		{
-			if (keyw == PascalABCCompiler.Parsers.KeywordKind.Function || keyw == PascalABCCompiler.Parsers.KeywordKind.Constructor || keyw == PascalABCCompiler.Parsers.KeywordKind.Destructor || keyw == PascalABCCompiler.Parsers.KeywordKind.Type || keyw == PascalABCCompiler.Parsers.KeywordKind.Var
-           		|| keyw == PascalABCCompiler.Parsers.KeywordKind.Unit || keyw == PascalABCCompiler.Parsers.KeywordKind.Const || keyw == PascalABCCompiler.Parsers.KeywordKind.Program || keyw == PascalABCCompiler.Parsers.KeywordKind.Punkt)
-           	return true;
-			return false;
-		}
-		
-		public virtual bool IsTypeAfterKeyword(KeywordKind keyw)
-		{
-			if (keyw == PascalABCCompiler.Parsers.KeywordKind.Colon || keyw == PascalABCCompiler.Parsers.KeywordKind.Of || keyw == PascalABCCompiler.Parsers.KeywordKind.TypeDecl)
-				return true;
-			return false;
-		}
-		
-		public virtual bool IsNamespaceAfterKeyword(KeywordKind keyw)
-		{
-			if (keyw == PascalABCCompiler.Parsers.KeywordKind.Uses) return true;
-			return false;
-		}
-		
-	}
+
+
+        public override bool IsMethodCallParameterSeparator(char key)
+        {
+            return key == ',';
+        }
+
+
+        public override bool IsDefinitionIdentifierAfterKeyword(KeywordKind keyw)
+        {
+            if (keyw == PascalABCCompiler.Parsers.KeywordKind.Function || keyw == PascalABCCompiler.Parsers.KeywordKind.Constructor || keyw == PascalABCCompiler.Parsers.KeywordKind.Destructor || keyw == PascalABCCompiler.Parsers.KeywordKind.Type || keyw == PascalABCCompiler.Parsers.KeywordKind.Var
+                   || keyw == PascalABCCompiler.Parsers.KeywordKind.Unit || keyw == PascalABCCompiler.Parsers.KeywordKind.Const || keyw == PascalABCCompiler.Parsers.KeywordKind.Program || keyw == PascalABCCompiler.Parsers.KeywordKind.Punkt)
+                return true;
+            return false;
+        }
+
+        public override bool IsTypeAfterKeyword(KeywordKind keyw)
+        {
+            if (keyw == KeywordKind.Colon || keyw == KeywordKind.Of || keyw == KeywordKind.TypeDecl)
+                return true;
+            return false;
+        }
+
+    }
     #region LEGACY - C language
     /*public class CLanguageInformation : DefaultLanguageInformation
 	{
@@ -3772,7 +3255,7 @@ namespace Languages.Pascal.Frontend.Data
 //            keywords.Add("finally", "finally"); keys.Add("finally");
 //            keywords.Add("using", "using"); keys.Add("using"); keyword_kinds.Add("using", KeywordKind.Uses);
 
-            //keywords.Add("virtual", "virtual"); keys.Add("virtual");
+            //keywords.Add("", ""); keys.Add("");
             keywords.Add("static", "static"); keys.Add("static");
 			
             keywords.Add("switch", "switch"); keys.Add("switch");
@@ -4049,7 +3532,7 @@ namespace Languages.Pascal.Frontend.Data
 		
 		private void append_modifiers(StringBuilder sb, IElementScope scope)
 		{
-			if (scope.IsVirtual) sb.Append("virtual ");
+			if (scope.Is) sb.Append(" ");
 			if (scope.IsStatic) sb.Append("static ");
 		}
 		

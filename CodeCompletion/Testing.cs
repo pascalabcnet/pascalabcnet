@@ -31,13 +31,13 @@ namespace CodeCompletion
             var controller = new CodeCompletion.CodeCompletionController();
             CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = true;
             CodeCompletion.CodeCompletionController.comp = comp;
-            CodeCompletion.CodeCompletionController.SetParser(StringConstants.pascalSourceFileExtension);
+            CodeCompletion.CodeCompletionController.SetLanguage(StringConstants.pascalSourceFileExtension);
+            IParser parser = LanguageProvider.Instance.MainLanguage.Parser;
+
             var files = Directory.GetFiles(dir, "*.pas");
             for (int i = 0; i < files.Length; i++)
             {
                 var FileName = files[i];
-
-                IParser parser = LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser;
 
                 var content = File.ReadAllText(FileName);
                 var dc = controller.Compile(FileName, content);
@@ -104,13 +104,14 @@ namespace CodeCompletion
             var comp = new PascalABCCompiler.Compiler();
             var controller = new CodeCompletion.CodeCompletionController();
             CodeCompletion.CodeCompletionController.comp = comp;
-            CodeCompletion.CodeCompletionController.SetParser(StringConstants.pascalSourceFileExtension);
+            
+            CodeCompletion.CodeCompletionController.SetLanguage(StringConstants.pascalSourceFileExtension);
+            IParser parser = LanguageProvider.Instance.MainLanguage.Parser;
+
             var files = Directory.GetFiles(dir, "*.pas");
             for (int i = 0; i < files.Length; i++)
             {
                 var FileName = files[i];
-
-                IParser parser = LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser;
 
                 var content = File.ReadAllText(FileName);
                 var dc = controller.Compile(FileName, content);

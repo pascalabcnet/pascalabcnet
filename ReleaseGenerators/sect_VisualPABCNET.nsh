@@ -46,7 +46,6 @@
     ${AddFile} "RunUnitTests.exe"
 	
     SetOutPath "$INSTDIR\Temp"
-    SetOutPath "$INSTDIR\LanguageKits"
     SetOutPath "$INSTDIR"
     Push "Pause.exe"
     Call NGEN

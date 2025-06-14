@@ -78,7 +78,7 @@ namespace PascalABCCompiler.SyntaxTree
 
             var name = node.proc_header?.name?.meth_name;
             if (name == null)
-                name = "create";
+                name = "Create";
             var res = new ProcScopeSyntax(name);
             if (node.proc_header is function_header fh)
             {

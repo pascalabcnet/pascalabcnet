@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using AssignTupleDesugarAlgorithm;
+﻿using AssignTupleDesugarAlgorithm;
 using PascalABCCompiler.SyntaxTree;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SyntaxVisitors.SugarVisitors
 {
@@ -20,7 +20,6 @@ namespace SyntaxVisitors.SugarVisitors
         {
             this.binder = binder; 
         }
-     
 
         List<statement> desugar(tuple_node tn, addressed_value_list vars)
         {

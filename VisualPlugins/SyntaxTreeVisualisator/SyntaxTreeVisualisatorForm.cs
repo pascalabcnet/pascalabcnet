@@ -236,7 +236,7 @@ namespace VisualPascalABCPlugins
         {
             string FileName = (string)VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.GetCurrentSourceFileName, null);
             string FileText = (string)VisualEnvironmentCompiler.StandartCompiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText);
-            return LanguageProvider.Instance.SelectLanguageByExtensionSafe(FileName)?.Parser.GetCompilationUnit(FileName, FileText, Errors, new List<CompilerWarning>(), PascalABCCompiler.Parsers.ParseMode.Normal);
+            return LanguageProvider.Instance.SelectLanguageByExtensionSafe(FileName)?.Parser.GetCompilationUnit(FileName, FileText, Errors, new List<CompilerWarning>(), PascalABCCompiler.Parsers.ParseMode.Normal, false);
         }
 
         PascalABCCompiler.SyntaxTree.documentation_comment_list ParseCurrentDocs()

@@ -15,16 +15,14 @@ namespace PascalABCCompiler.Parsers
 
         public List<compiler_directive> CompilerDirectives { get; protected set; } = new List<compiler_directive>();
 
-        public Func<bool> CheckIfParsingUnit { get; set; }
-
         public ILanguageInformation LanguageInformation { get; set; }
 
         /// <summary>
         /// Возвращеает синтаксическое дерево модуля
         /// </summary>
-        public SyntaxTree.compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, List<string> DefinesList = null)
+        public SyntaxTree.compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, bool compilingNotMainProgram, List<string> DefinesList = null)
         {
-            return GetSyntaxTreeChecked<SyntaxTree.compilation_unit>(FileName, Text, Errors, Warnings, parseMode, DefinesList);
+            return GetSyntaxTreeChecked<SyntaxTree.compilation_unit>(FileName, Text, Errors, Warnings, parseMode, compilingNotMainProgram, DefinesList);
         }
 
         public SyntaxTree.compilation_unit GetCompilationUnitForFormatter(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
@@ -57,9 +55,9 @@ namespace PascalABCCompiler.Parsers
         /// <summary>
         /// Обобщенная функция для получения различных синтаксических узлов c проверкой, что узел того типа, который ожидался
         /// </summary>
-        private T GetSyntaxTreeChecked<T>(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, List<string> DefinesList = null) where T : SyntaxTree.syntax_tree_node
+        private T GetSyntaxTreeChecked<T>(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, bool compilingNotMainProgram = false, List<string> DefinesList = null) where T : SyntaxTree.syntax_tree_node
         {
-            syntax_tree_node unitNode = BuildTree(FileName, Text, Errors, Warnings, parseMode, DefinesList);
+            syntax_tree_node unitNode = BuildTree(FileName, Text, Errors, Warnings, parseMode, compilingNotMainProgram, DefinesList);
 
             if (unitNode == null)
                 return null;
@@ -78,7 +76,7 @@ namespace PascalABCCompiler.Parsers
             this.Warnings = Warnings;
         }
 
-        protected virtual syntax_tree_node BuildTree(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode ParseMode, List<string> DefinesList = null)
+        protected virtual syntax_tree_node BuildTree(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode ParseMode, bool compilingNotMainProgram, List<string> DefinesList = null)
         {
             InitializeBeforeParsing(Errors, Warnings);
             
@@ -88,7 +86,7 @@ namespace PascalABCCompiler.Parsers
             switch (ParseMode)
             {
                 case ParseMode.Normal:
-                    root = BuildTreeInNormalMode(FileName, Text, DefinesList);
+                    root = BuildTreeInNormalMode(FileName, Text, compilingNotMainProgram, DefinesList);
                     break;
                 case ParseMode.Expression:
                     root = BuildTreeInExprMode(FileName, Text);
@@ -97,7 +95,7 @@ namespace PascalABCCompiler.Parsers
                     root = BuildTreeInTypeExprMode(FileName, Text);
                     break;
                 case ParseMode.Special:
-                    root = BuildTreeInSpecialMode(FileName, Text);
+                    root = BuildTreeInSpecialMode(FileName, Text, compilingNotMainProgram);
                     break;
                 case ParseMode.ForFormatter:
                     root = BuildTreeInFormatterMode(FileName, Text);
@@ -124,13 +122,13 @@ namespace PascalABCCompiler.Parsers
 
         protected virtual void PreBuildTree(string FileName) { }
 
-        protected abstract syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, List<string> DefinesList = null);
+        protected abstract syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, bool compilingNotMainProgram, List<string> DefinesList = null);
 
         protected abstract syntax_tree_node BuildTreeInTypeExprMode(string FileName, string Text);
 
         protected abstract syntax_tree_node BuildTreeInExprMode(string FileName, string Text);
 
-        protected abstract syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text);
+        protected abstract syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text, bool compilingNotMainProgram);
 
         protected abstract syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text);
 

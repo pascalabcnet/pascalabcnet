@@ -77,7 +77,7 @@ namespace VisualPascalABC
         public void RegisterFileForParsing(string FileName)
         {
             open_files[FileName] = true;
-            CodeCompletion.CodeCompletionController.SetParser(System.IO.Path.GetExtension(FileName));
+            CodeCompletion.CodeCompletionController.SetLanguage(FileName);
             //ParseAllFiles();
         }
 
