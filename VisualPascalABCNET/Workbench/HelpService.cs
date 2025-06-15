@@ -165,7 +165,8 @@ namespace VisualPascalABC
                 {
                     if (pos.full_metadata_title != null)
                     {
-                        AddTabWithUrl(MainDockPanel, pos.full_metadata_title, getMSDNUrlByName(tw.Word, pos));
+                        //AddTabWithUrl(MainDockPanel, pos.full_metadata_title, getMSDNUrlByName(tw.Word, pos)); //keep this line for future
+                        System.Diagnostics.Process.Start(getMSDNUrlByName(tw.Word, pos));
                     }
                 }
             }
