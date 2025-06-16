@@ -75,7 +75,7 @@
 %type <stn> ident_as_ident ident_as_ident_list ident_list
 %type <td> proc_func_header type_ref simple_type_identifier template_type 
 %type <stn> import_clause template_type_params template_param_list parts stmt_or_expression expr_mapping_list
-%type <ob> optional_semicolon end_of_line
+%type <ob> optional_semicolon end_of_line variable_list
 %type <op> assign_type
 %type <ex> expr_mapping 
 %type <ex> list_constant set_constant dict_constant generator_object generator_object_for_dict
@@ -383,6 +383,24 @@ assign_stmt
 			if (!($1 is addressed_value))
         		parserTools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO", @$);
 			$$ = new assign($1 as addressed_value, $3, $2.type, @$);
+		}
+	| LPAR variable COMMA variable_list RPAR ASSIGN assign_right_part
+		{
+			// if False:
+			if ($6.type != Operators.Assignment)
+			    parserTools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE", @6);
+			($4 as addressed_value_list).Insert(0, $2 as addressed_value);
+			($4 as syntax_tree_node).source_context = LexLocation.MergeAll(@1, @2, @3, @4, @5);
+			$$ = new assign_tuple($4 as addressed_value_list, $7, @$);
+		}
+	| variable COMMA variable_list ASSIGN assign_right_part
+		{
+			// if False:
+			if ($4.type != Operators.Assignment)
+			    parserTools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE", @4);
+			($3 as addressed_value_list).Insert(0, $1 as addressed_value);
+			($3 as syntax_tree_node).source_context = LexLocation.MergeAll(@1, @2, @3);
+			$$ = new assign_tuple($3 as addressed_value_list, $5, @$);
 		}
 	;
 
@@ -801,6 +819,19 @@ variable
 		{
 			dot_node dn = new dot_node($2 as addressed_value, (new ident("ToDictionary")) as addressed_value, $2.source_context);
 			$$ = new method_call(dn as addressed_value, null, $2.source_context);
+		}
+	;
+
+variable_list
+	: variable
+		{
+			$$ = new addressed_value_list($1 as addressed_value,@1);
+		}
+	| variable_list COMMA variable
+		{
+			($1 as addressed_value_list).Add($3 as addressed_value);
+			($1 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3);
+			$$ = $1;
 		}
 	;
 
