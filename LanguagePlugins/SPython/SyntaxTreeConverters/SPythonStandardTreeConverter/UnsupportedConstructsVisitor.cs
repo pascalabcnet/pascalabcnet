@@ -120,5 +120,18 @@ namespace Languages.Pascal.Frontend.Converters
 
             base.visit(_procedure_definition);
         }
+
+        public override void visit(assign_tuple _assign_tuple)
+        {
+            // выявление ошибок типа
+            // a, b = 1, 2, 3
+            if (_assign_tuple.expr is tuple_node right_part
+                && _assign_tuple.vars.Count < right_part.el.Count
+                )
+            {
+                throw new SPythonSyntaxVisitorError("LEFT_SIZE_TUPLE_ASSIGNMENT_LESS_THAN_RIGHT",
+                   _assign_tuple.source_context);
+            }
+        }
     }
 }

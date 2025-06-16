@@ -17,7 +17,13 @@ namespace Languages.SPython.Frontend.Converters
             int index = ttr.name.names.Count - 1;
             if (ttr.name.names[index].name == "tuple")
             {
-                ttr.name.names[index].name += ttr.params_list.Count;
+                int cnt = ttr.params_list.Count;
+                if (cnt > 7)
+                {
+                    throw new SPythonSyntaxVisitorError("LONG_TUPLE_TYPENAME",
+                       ttr.source_context, cnt);
+                }
+                ttr.name.names[index].name += cnt;
             }
             base.visit(ttr);
         }
