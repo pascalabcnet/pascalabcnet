@@ -736,7 +736,7 @@ func_name_ident
 	;
 
 return_stmt
-	: RETURN expr
+	: RETURN assign_right_part
 		{
 			$$ = new return_statement($2, @$);
 		}

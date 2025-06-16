@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-56159VE
-// DateTime: 16.06.2025 14:35:12
+// DateTime: 16.06.2025 17:17:24
 // UserName: ????
 // Input file <SPythonParser.y>
 
@@ -348,8 +348,8 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
     states[245] = new State(-121);
     states[246] = new State(-120);
     states[247] = new State(-23);
-    states[248] = new State(new int[]{58,62,72,64,74,66,63,80,28,85,29,86,30,87,31,88,45,89,33,90,32,91,38,93,36,99,21,111,34,127,43,-124,26,-124,25,-124},new int[]{-5,249,-8,68,-1,79,-6,81,-7,82,-59,92,-60,98,-61,109,-11,110,-12,125,-64,126});
-    states[249] = new State(new int[]{6,13,57,17,59,19,60,21,58,23,64,25,65,27,66,29,67,31,68,33,69,35,70,37,71,39,61,41,62,43,76,45,77,47,78,49,79,51,75,53,73,55,4,57,72,59,43,-123,26,-123,25,-123});
+    states[248] = new State(new int[]{58,62,72,64,74,66,63,80,28,85,29,86,30,87,31,88,45,89,33,90,32,91,38,93,36,99,21,111,34,127,43,-124,26,-124,25,-124},new int[]{-65,249,-5,12,-8,68,-1,79,-6,81,-7,82,-59,92,-60,98,-61,109,-11,110,-12,125,-64,126,-66,172});
+    states[249] = new State(-123);
     states[250] = new State(-24);
     states[251] = new State(-125);
     states[252] = new State(-25);
@@ -560,7 +560,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
     rules[120] = new Rule(-43, new int[]{-1});
     rules[121] = new Rule(-43, new int[]{-43,41,-1});
     rules[122] = new Rule(-3, new int[]{-1});
-    rules[123] = new Rule(-17, new int[]{10,-5});
+    rules[123] = new Rule(-17, new int[]{10,-65});
     rules[124] = new Rule(-17, new int[]{10});
     rules[125] = new Rule(-18, new int[]{11});
     rules[126] = new Rule(-19, new int[]{12});
@@ -1278,7 +1278,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
 			CurrentSemanticValue.id = ValueStack[ValueStack.Depth-1].id;
 		}
         break;
-      case 123: // return_stmt -> RETURN, expr
+      case 123: // return_stmt -> RETURN, assign_right_part
 {
 			CurrentSemanticValue.stn = new return_statement(ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan);
 		}
