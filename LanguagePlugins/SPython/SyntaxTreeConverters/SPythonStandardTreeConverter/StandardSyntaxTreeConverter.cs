@@ -2,6 +2,7 @@
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SyntaxTreeConverters;
+using SyntaxVisitors;
 using SyntaxVisitors.SugarVisitors;
 using System;
 
@@ -40,6 +41,12 @@ namespace Languages.SPython.Frontend.Converters
             // замена генерации последовательностей на Select.Where
             // (не работает из-за лямбд (скорее всего), если переместить в ConvertAfterUsedModulesCompilation)
             new TryCatchDecorator(new GeneratorObjectDesugarVisitor(root), forIntellisense).ProcessNode(root);
+
+            // Выносим выражения с лямбдами из заголовка foreach + считаем максимум 10 вложенных лямбд
+            // Украл из PABC
+            StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New.ProcessNode(root);
+            new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as compilation_unit).ProcessNode(root);
+            FindOnExceptVarsAndApplyRenameVisitor.New.ProcessNode(root);
 
             // дешугаризация составных сравнительных операций (e.g. a == b == c)
             new TryCatchDecorator(new CompoundComparisonDesugarVisitor(), forIntellisense).ProcessNode(root);
