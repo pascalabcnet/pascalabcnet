@@ -166,6 +166,11 @@ namespace Languages.SPython.Frontend.Converters
             }
         }
 
+        //public override void visit(assign_tuple _assign_tuple)
+        //{
+        //
+        //}
+
         public override void visit(assign _assign)
         {
             if (_assign.operator_type == Operators.Assignment && _assign.to is ident _ident)

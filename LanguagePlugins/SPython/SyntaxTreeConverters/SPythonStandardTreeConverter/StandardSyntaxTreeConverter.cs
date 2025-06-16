@@ -49,6 +49,11 @@ namespace Languages.SPython.Frontend.Converters
 
         public override syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts)
         {
+            // украл из паскаля, нужны для работы 'for i1, i2 in expr' (работает с кортежными присваиваниями)
+            var binder = new BindCollectLightSymInfo(root as compilation_unit);
+            new TryCatchDecorator(binder, forIntellisense).ProcessNode(root);
+            new TryCatchDecorator(new NewAssignTuplesDesugarVisitor(binder), forIntellisense).ProcessNode(root);
+
             // Сохраняет множество имён функций, которые объявлены в программе для NameCorrectVisitor
             var ffv = new FindFunctionsNamesVisitor();
             
@@ -63,11 +68,6 @@ namespace Languages.SPython.Frontend.Converters
 
             // замена типов из SPython на типы из PascalABC.NET
             new TryCatchDecorator(new TypeCorrectVisitor(forIntellisense), forIntellisense).ProcessNode(root);
-
-            // украл из паскаля, нужны для работы 'for i1, i2 in expr' (работает с кортежными присваиваниями)
-            var binder = new BindCollectLightSymInfo(root as compilation_unit);
-            new TryCatchDecorator(binder, forIntellisense).ProcessNode(root);
-            new TryCatchDecorator(new NewAssignTuplesDesugarVisitor(binder), forIntellisense).ProcessNode(root);
 
             // вынос forward объявлений для всех функций в начало
             new TryCatchDecorator(new AddForwardDeclarationsVisitor(), forIntellisense).ProcessNode(root);
