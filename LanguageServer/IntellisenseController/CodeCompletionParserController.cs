@@ -232,7 +232,7 @@ namespace CodeCompletion
                     }
                 }
             }
-            if (is_comp && mem_delta > 20000000 && mem_delta > 10000000)
+            if (is_comp && mem_delta > 20000000)
             //postavil delta dlja pamjati, posle kototoj delaetsja sborka musora
             {
                 GC.Collect();
