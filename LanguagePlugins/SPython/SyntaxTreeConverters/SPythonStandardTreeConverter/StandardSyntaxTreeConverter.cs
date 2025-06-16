@@ -43,7 +43,7 @@ namespace Languages.SPython.Frontend.Converters
             new TryCatchDecorator(new GeneratorObjectDesugarVisitor(root), forIntellisense).ProcessNode(root);
 
             // Выносим выражения с лямбдами из заголовка foreach + считаем максимум 10 вложенных лямбд
-            // Украл из PABC
+            // украл из паскаля
             StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New.ProcessNode(root);
             new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as compilation_unit).ProcessNode(root);
             FindOnExceptVarsAndApplyRenameVisitor.New.ProcessNode(root);
@@ -60,6 +60,13 @@ namespace Languages.SPython.Frontend.Converters
             var binder = new BindCollectLightSymInfo(root as compilation_unit);
             new TryCatchDecorator(binder, forIntellisense).ProcessNode(root);
             new TryCatchDecorator(new NewAssignTuplesDesugarVisitor(binder), forIntellisense).ProcessNode(root);
+
+            // Заменяет 
+            // variable_name = single_length_string
+            // на
+            // variable_name = str(single_length_string)
+            // чтобы при выведении типа правильно вывел str, а не char
+            new AssignmentCharAsStringVisitor().ProcessNode(root);
 
             // Сохраняет множество имён функций, которые объявлены в программе для NameCorrectVisitor
             var ffv = new FindFunctionsNamesVisitor();
