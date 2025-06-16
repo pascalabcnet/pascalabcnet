@@ -12,6 +12,16 @@ namespace Languages.SPython.Frontend.Converters
             this.forIntellisense = forIntellisense;
         }
 
+        public override void visit(template_type_reference ttr)
+        {
+            int index = ttr.name.names.Count - 1;
+            if (ttr.name.names[index].name == "tuple")
+            {
+                ttr.name.names[index].name += ttr.params_list.Count;
+            }
+            base.visit(ttr);
+        }
+
         public override void visit(named_type_reference _named_type_reference)
         {
             ident id = _named_type_reference.names[_named_type_reference.names.Count - 1];

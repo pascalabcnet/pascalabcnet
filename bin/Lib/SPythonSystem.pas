@@ -163,6 +163,12 @@ type
     !list<T> = PABCSystem.List<T>;
     !dict<K, V> = PABCSystem.Dictionary<K, V>;
     !set<T> = set of T;
+    tuple2<T1, T2> = System.Tuple<T1, T2>;
+    tuple3<T1, T2, T3> = System.Tuple<T1, T2, T3>;
+    tuple4<T1, T2, T3, T4> = System.Tuple<T1, T2, T3, T4>;
+    tuple5<T1, T2, T3, T4, T5> = System.Tuple<T1, T2, T3, T4, T5>;
+    tuple6<T1, T2, T3, T4, T5, T6> = System.Tuple<T1, T2, T3, T4, T5, T6>;
+    tuple7<T1, T2, T3, T4, T5, T6, T7> = System.Tuple<T1, T2, T3, T4, T5, T6, T7>;
     
     empty_list = class
     class function operator implicit<T>(x: empty_list): !list<T>; 
