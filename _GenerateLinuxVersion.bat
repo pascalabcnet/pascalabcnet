@@ -22,7 +22,6 @@ copy bin\ICSharpCode.SharpDevelop.Dom.dll Release\PascalABCNETLinux\ICSharpCode.
 copy bin\ICSharpCode.TextEditorLinux.dll Release\PascalABCNETLinux\ICSharpCode.TextEditorLinux.dll
 copy bin\Localization.dll Release\PascalABCNETLinux\Localization.dll
 copy bin\Mono.Cecil.dll Release\PascalABCNETLinux\Mono.Cecil.dll
-copy bin\Mono.Debugger.Soft.dll Release\PascalABCNETLinux\Mono.Debugger.Soft.dll
 copy bin\mono_pabcIDE.bat Release\PascalABCNETLinux\mono_pabcIDE.bat
 copy bin\mono_pabcnetc.bat Release\PascalABCNETLinux\mono_pabcnetc.bat
 copy bin\NETGenerator.dll Release\PascalABCNETLinux\NETGenerator.dll
