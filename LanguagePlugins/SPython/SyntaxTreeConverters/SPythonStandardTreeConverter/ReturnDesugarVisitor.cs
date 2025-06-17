@@ -1,4 +1,5 @@
-﻿using PascalABCCompiler.SyntaxTree;
+﻿using PascalABCCompiler;
+using PascalABCCompiler.SyntaxTree;
 
 namespace Languages.SPython.Frontend.Converters
 {
@@ -19,7 +20,7 @@ namespace Languages.SPython.Frontend.Converters
             // return expr;
             else
             {
-                statement res_assign = new assign(new ident("result"), _return_statement.expr, Operators.Assignment, sc);
+                statement res_assign = new assign(new ident(StringConstants.result_variable_name), _return_statement.expr, Operators.Assignment, sc);
                 statement exit_call = new procedure_call(new ident("exit"), true, sc);
                 statement_list new_statement = new statement_list(res_assign, sc);
                 new_statement.Add(exit_call, sc);

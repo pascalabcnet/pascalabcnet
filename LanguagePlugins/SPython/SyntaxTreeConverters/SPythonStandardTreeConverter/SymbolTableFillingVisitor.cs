@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
 namespace Languages.SPython.Frontend.Converters
@@ -254,7 +255,7 @@ namespace Languages.SPython.Frontend.Converters
                     isInFunctionBody = value; 
                     if (isInFunctionBody)
                     {
-                        Add("result", NameKind.LocalVariable);
+                        Add(StringConstants.result_variable_name, NameKind.LocalVariable);
                     }
                     else
                     {

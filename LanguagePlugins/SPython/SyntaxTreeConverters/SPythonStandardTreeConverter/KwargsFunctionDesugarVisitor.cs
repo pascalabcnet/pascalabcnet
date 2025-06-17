@@ -1,4 +1,5 @@
-﻿using PascalABCCompiler.SyntaxTree;
+﻿using PascalABCCompiler;
+using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -111,7 +112,7 @@ namespace Languages.SPython.Frontend.Converters
 
                 if (pd.proc_header is function_header)
                 {
-                    stmt = new assign(new ident("result"), method_call, Operators.Assignment);
+                    stmt = new assign(new ident(StringConstants.result_variable_name), method_call, Operators.Assignment);
                 }
                 else
                 {

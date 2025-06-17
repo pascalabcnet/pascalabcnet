@@ -1,4 +1,5 @@
-﻿using PascalABCCompiler.SyntaxTree;
+﻿using PascalABCCompiler;
+using PascalABCCompiler.SyntaxTree;
 using System.Collections.Generic;
 
 namespace Languages.SPython.Frontend.Converters
@@ -41,7 +42,7 @@ namespace Languages.SPython.Frontend.Converters
 
                 dn = new dot_node(_generator_object._range as addressed_value, (new ident("Where")) as addressed_value, _generator_object.source_context);
 
-                sl = new statement_list(new assign("result", _generator_object._condition, _generator_object._condition.source_context), _generator_object._condition.source_context); //!
+                sl = new statement_list(new assign(StringConstants.result_variable_name, _generator_object._condition, _generator_object._condition.source_context), _generator_object._condition.source_context); //!
                 sl.expr_lambda_body = true;
                 lambda = new function_lambda_definition(
                 lambdaHelper.CreateLambdaName(), formalPars,
@@ -58,7 +59,7 @@ namespace Languages.SPython.Frontend.Converters
             idList = new ident_list(_generator_object._ident, _generator_object._ident.source_context);
             formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new lambda_any_type_node_syntax(), _generator_object._ident.source_context), parametr_kind.none, null, _generator_object._ident.source_context), _generator_object._ident.source_context);
 
-            sl = new statement_list(new assign("result", _generator_object._expr, _generator_object._expr.source_context), _generator_object._expr.source_context);
+            sl = new statement_list(new assign(StringConstants.result_variable_name, _generator_object._expr, _generator_object._expr.source_context), _generator_object._expr.source_context);
             sl.expr_lambda_body = true;
 
             lambda = new function_lambda_definition(
