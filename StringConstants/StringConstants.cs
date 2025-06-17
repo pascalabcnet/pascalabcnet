@@ -308,7 +308,7 @@ namespace PascalABCCompiler
         private static string of_word = "of";
         private static string space = " ";
 
-        public static string result_variable_name = "result";
+        public static string result_variable_name = "Result";
 
         public static string event_add_method_nameformat = event_add_method_prefix + "{0}";
         public static string event_remove_method_nameformat = event_remove_method_prefix + "{0}";

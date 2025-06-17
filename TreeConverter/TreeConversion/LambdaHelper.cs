@@ -203,7 +203,7 @@ namespace PascalABCCompiler.TreeConverter
                                                                                    lambdaDef.formal_parameters.params_list[i].vars_type,
                                                                                    null));
             if (lambdaDef.return_type != null)
-                stmtList.subnodes.Add(SyntaxTreeNodesConstructor.CreateVarStatementNode("result", lambdaDef.return_type, null)); // переделать, не сработает, если тип возвращаемого значения не указан
+                stmtList.subnodes.Add(SyntaxTreeNodesConstructor.CreateVarStatementNode(StringConstants.result_variable_name, lambdaDef.return_type, null)); // переделать, не сработает, если тип возвращаемого значения не указан
             stmtList.subnodes.AddRange((lambdaDef.proc_body as statement_list).subnodes);
             block resBlock = new block();
             resBlock.program_code = stmtList;
@@ -235,7 +235,7 @@ namespace PascalABCCompiler.TreeConverter
                 // Очищаем от Result := , который мы создали на предыдущем этапе
 
                 var ass = stl.list[0] as assign;
-                if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower() == "result")
+                if (ass != null && ass.to is ident && (ass.to as ident).name.Equals(StringConstants.result_variable_name, SemanticRulesConstants.SymbolTableCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
                 {
                     var f = ass.from;
                     if (f is method_call)
@@ -449,7 +449,7 @@ namespace PascalABCCompiler.TreeConverter
             public override void visit(assign value)
             {
                 var to = value.to as ident;
-                if (to != null && value.operator_type == Operators.Assignment && to.name.ToLower() == "result")
+                if (to != null && value.operator_type == Operators.Assignment && to.name.Equals(StringConstants.result_variable_name, SemanticRulesConstants.SymbolTableCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
                 {
                     exprList.Add(value.from);
                 }

@@ -12768,7 +12768,7 @@ namespace PascalABCCompiler.TreeConverter
                         if (attr.qualifier != null)
                             if (j == 0)
                             {
-                                if (string.Compare(attr.qualifier.name, "return", true) == 0 || string.Compare(attr.qualifier.name, "result", true) == 0)
+                                if (string.Compare(attr.qualifier.name, "return", true) == 0 || string.Compare(attr.qualifier.name, StringConstants.result_variable_name, !context.CurrentScope.CaseSensitive) == 0)
                                 {
                                     if (context.top_function == null)
                                         AddError(get_location(attr), "ATTRIBUTE_APPLICABLE_ONLY_TO_METHOD");
@@ -13514,7 +13514,7 @@ namespace PascalABCCompiler.TreeConverter
                         AddError(get_location(fh.name), "ONLY_IN_SHORT_FUNC_DEFS_RETURN_TYPE_CANBE_OMITTED");
 
                     var ass = bl.program_code.subnodes[0] as SyntaxTree.assign;
-                    if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower()=="result")
+                    if (ass != null && ass.to is ident && (ass.to as ident).name.Equals(StringConstants.result_variable_name, context.CurrentScope.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
                     {
                         if (ass.from is nil_const)
                             AddError(get_location(ass.from), "CAN_NOT_DEDUCE_TYPE_{0}","nil");
@@ -21151,7 +21151,7 @@ namespace PascalABCCompiler.TreeConverter
             if (_function_lambda_definition.return_type is lambda_inferred_type && stl != null && stl.list.Count == 1 && _function_lambda_definition.usedkeyword == 0)
             {
                 var ass = stl.list[0] as assign;
-                if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower() == "result")
+                if (ass != null && ass.to is ident && (ass.to as ident).name.Equals(StringConstants.result_variable_name, context.CurrentScope.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
                 {
                     var f = ass.from;
                     if (f is method_call)
