@@ -30,6 +30,7 @@ copy bin\OptimizerConversion.dll Release\PascalABCNETLinux\OptimizerConversion.d
 copy bin\LanguageIntegrator.dll Release\PascalABCNETLinux\LanguageIntegrator.dll
 copy bin\StringConstants.dll Release\PascalABCNETLinux\StringConstants.dll
 
+copy bin\SharpDisasm.dll Release\SharpDisasm.dll
 copy bin\Microsoft.Bcl.HashCode.dll Release\PascalABCNETLinux\Microsoft.Bcl.HashCode.dll
 copy bin\System.Buffers.dll Release\PascalABCNETLinux\System.Buffers.dll
 copy bin\System.Collections.Immutable.dll Release\PascalABCNETLinux\System.Collections.Immutable.dll
