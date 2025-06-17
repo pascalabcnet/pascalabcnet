@@ -1,6 +1,8 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="Between">
 <param name="Keyword" value="Clamp">
+<param name="Keyword" value="ClampBottom">
+<param name="Keyword" value="ClampTop">
 <param name="Keyword" value="Divs">
 <param name="Keyword" value="DivsAll">
 <param name="Keyword" value="DivsAny">
@@ -18,8 +20,12 @@
 </HEAD><body><H1>Методы расширения типа integer</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Between(Self: integer; a, b: integer): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится между двумя другими</td></tr>
-<tr><td><code><b>function</b> Clamp(Self: integer; min,max: integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, ограниченное диапазоном от min до max включительно</td></tr>
+<tr><td><code><b>function</b> Clamp(Self: integer; bottom,top: integer): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, ограниченное диапазоном от bottom до top включительно</td></tr>
+<tr><td><code><b>function</b> ClampBottom(Self: integer; bottom: integer): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, ограниченное величиной bottom снизу</td></tr>
+<tr><td><code><b>function</b> ClampTop(Self: integer; top: integer): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, ограниченное величиной top сверху</td></tr>
 <tr><td><code><b>function</b> Divs(Self,d: integer): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если целое делится на указанное значение</td></tr>
 <tr><td><code><b>function</b> DivsAll(Self: integer; <b>params</b> a: <b>array</b>  <b>of</b> integer): boolean;</code>
