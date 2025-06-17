@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace PascalABCCompiler.SyntaxTree
 {
-   public class BindCollectLightSymInfo : CollectLightSymInfoVisitor 
+   public class BindCollectLightSymInfo : CollectLightSymInfoVisitor
     {
         protected override AbstractScopeCreator scopeCreator => _scopeCreator;
 

@@ -2117,11 +2117,51 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(list_generator _list_generator)
+		public virtual void pre_do_visit(generator_object _generator_object)
 		{
 		}
 
-		public virtual void post_do_visit(list_generator _list_generator)
+		public virtual void post_do_visit(generator_object _generator_object)
+		{
+		}
+
+		public virtual void pre_do_visit(import_statement _import_statement)
+		{
+		}
+
+		public virtual void post_do_visit(import_statement _import_statement)
+		{
+		}
+
+		public virtual void pre_do_visit(as_statement _as_statement)
+		{
+		}
+
+		public virtual void post_do_visit(as_statement _as_statement)
+		{
+		}
+
+		public virtual void pre_do_visit(as_statement_list _as_statement_list)
+		{
+		}
+
+		public virtual void post_do_visit(as_statement_list _as_statement_list)
+		{
+		}
+
+		public virtual void pre_do_visit(from_import_statement _from_import_statement)
+		{
+		}
+
+		public virtual void post_do_visit(from_import_statement _from_import_statement)
+		{
+		}
+
+		public virtual void pre_do_visit(return_statement _return_statement)
+		{
+		}
+
+		public virtual void post_do_visit(return_statement _return_statement)
 		{
 		}
 
@@ -4384,15 +4424,58 @@ namespace PascalABCCompiler.SyntaxTree
 			post_do_visit(_global_statement);
 		}
 
-		public override void visit(list_generator _list_generator)
+		public override void visit(generator_object _generator_object)
 		{
-			DefaultVisit(_list_generator);
-			pre_do_visit(_list_generator);
-			visit(list_generator._expr);
-			visit(list_generator._ident);
-			visit(list_generator._range);
-			visit(list_generator._condition);
-			post_do_visit(_list_generator);
+			DefaultVisit(_generator_object);
+			pre_do_visit(_generator_object);
+			visit(generator_object._expr);
+			visit(generator_object._ident);
+			visit(generator_object._range);
+			visit(generator_object._condition);
+			post_do_visit(_generator_object);
+		}
+
+		public override void visit(import_statement _import_statement)
+		{
+			DefaultVisit(_import_statement);
+			pre_do_visit(_import_statement);
+			visit(import_statement.modules_names);
+			post_do_visit(_import_statement);
+		}
+
+		public override void visit(as_statement _as_statement)
+		{
+			DefaultVisit(_as_statement);
+			pre_do_visit(_as_statement);
+			visit(as_statement.real_name);
+			visit(as_statement.alias);
+			post_do_visit(_as_statement);
+		}
+
+		public override void visit(as_statement_list _as_statement_list)
+		{
+			DefaultVisit(_as_statement_list);
+			pre_do_visit(_as_statement_list);
+			for (int i = 0; i < as_statements.Count; i++)
+				visit(as_statement_list.as_statements[i]);
+			post_do_visit(_as_statement_list);
+		}
+
+		public override void visit(from_import_statement _from_import_statement)
+		{
+			DefaultVisit(_from_import_statement);
+			pre_do_visit(_from_import_statement);
+			visit(from_import_statement.module_name);
+			visit(from_import_statement.imported_names);
+			post_do_visit(_from_import_statement);
+		}
+
+		public override void visit(return_statement _return_statement)
+		{
+			DefaultVisit(_return_statement);
+			pre_do_visit(_return_statement);
+			visit(return_statement.expr);
+			post_do_visit(_return_statement);
 		}
 	}
 

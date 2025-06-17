@@ -37,6 +37,7 @@
 **/CompilerController.dll
 **/CompilerTools.dll
 **/Errors.dll
+**/GPPG.dll
 **/HelpBuilder.dll
 **/InternalErrorReport.dll
 **/LambdaAnySynToSemConverter.dll
@@ -73,8 +74,6 @@
 **/PascalABCNET.exe.config
 **/PascalABCNETLinux.exe
 **/PascalABCNETLinux.exe.config
-
-
 
 # external .dll files copied to bin
 /bin/AvalonDock.dll

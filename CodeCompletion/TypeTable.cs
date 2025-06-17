@@ -143,7 +143,6 @@ namespace CodeCompletion
 
             int_type = get_compiled_type(new SymInfo(StringConstants.integer_type_name, SymbolKind.Type, StringConstants.integer_type_name), typeof(int));
 
-
             real_type = get_compiled_type(new SymInfo(StringConstants.real_type_name, SymbolKind.Type, StringConstants.real_type_name), typeof(double));
 
             string_type = get_compiled_type(new SymInfo(StringConstants.string_type_name, SymbolKind.Class, StringConstants.string_type_name), typeof(string));
@@ -1091,6 +1090,17 @@ namespace CodeCompletion
         	return sc;
         }
         
+        // нужно, чтобы name у стандартных типов можно было задавать различное в зависимости от языка EVA
+        public static CompiledScope StandardTypeClone(CompiledScope type)
+        {
+            var newType = new CompiledScope(new SymInfo(type.si), type.ctn);
+
+            newType.members = type.members;
+            newType.extension_methods = type.extension_methods;
+
+            return newType;
+        }
+
        	public static TypeScope get_type(object o)
         {
         	if (o == null) return null;

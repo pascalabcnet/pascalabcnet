@@ -1,6 +1,7 @@
 ﻿using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.SyntaxTreeConverters;
+using PascalABCCompiler;
 
 /// <summary>
 /// Этот визитор позволяет при переходе к семантике заменить синтаксический узел lambda_any_type_node_syntax
@@ -13,9 +14,14 @@ namespace SyntaxSemanticVisitors
     public class LambdaAnyConverter : ISyntaxTreeConverter
     {
         public string Name { get; } = "LambdaAny";
-        public syntax_tree_node Convert(syntax_tree_node root)
+        public syntax_tree_node Convert(syntax_tree_node root, bool forIntellisense)
         {
             LambdaAnyVisitor.New.ProcessNode(root);
+            return root;
+        }
+
+        public syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts)
+        {
             return root;
         }
     }

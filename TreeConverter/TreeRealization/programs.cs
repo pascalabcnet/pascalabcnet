@@ -461,7 +461,7 @@ namespace PascalABCCompiler.TreeRealization
                 {
                     if (!ctn.IsInterface && ctn.static_constr == null)
                     {
-                        ctn.static_constr = new common_method_node(StringConstants.static_ctor_prefix + "Create", null, ctn, SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_private, null);
+                        ctn.static_constr = new common_method_node(StringConstants.static_ctor_prefix + StringConstants.default_constructor_name, null, ctn, SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_private, null);
                         ctn.static_constr.is_constructor = true;
                         ctn.static_constr.function_code = new statements_list(null);
                         ctn.methods.AddElement(ctn.static_constr);
@@ -482,7 +482,7 @@ namespace PascalABCCompiler.TreeRealization
                     {
                         if (ctn.static_constr == null)
                         {
-                            ctn.static_constr = new common_method_node(StringConstants.static_ctor_prefix + "Create", null, ctn, SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_private, null);
+                            ctn.static_constr = new common_method_node(StringConstants.static_ctor_prefix + StringConstants.default_constructor_name, null, ctn, SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_private, null);
                             ctn.static_constr.is_constructor = true;
                             ctn.static_constr.function_code = new statements_list(null);
                             ctn.methods.AddElement(ctn.static_constr);
