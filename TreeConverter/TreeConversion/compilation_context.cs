@@ -804,8 +804,8 @@ namespace PascalABCCompiler.TreeConverter
             int i = 0;
             if (si.sym_info == null)
             {
-                if (name.ToLower() == "result")
-                    AddError(loc, "CAN_NOT_DEDUCE_TYPE_{0}", "Result");
+                if (name.Equals(StringConstants.result_variable_name, CurrentScope.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
+                    AddError(loc, "CAN_NOT_DEDUCE_TYPE_{0}", StringConstants.result_variable_name);
                 else
                     AddError(new ExpectedType(loc));
             }
