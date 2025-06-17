@@ -51,6 +51,11 @@ namespace Languages.SPython.Frontend.Converters
             base.Exit(stn);
         }
 
+        public override void visit(semantic_check_sugared_statement_node _)
+        {
+            // Скипаем. Узел нужен на семантике, здесь порождает лишние ошибки.
+        }
+
         private bool IsForwardDeclaration(procedure_header _procedure_header)
         {
             foreach (procedure_attribute attr in _procedure_header.proc_attributes.proc_attributes)
@@ -213,7 +218,7 @@ namespace Languages.SPython.Frontend.Converters
             private HashSet<string> forwardDeclaredFunctions = new HashSet<string>();
 
             static string[] Keywords = {
-                "int", "float", "str", "bool", // standard types
+                "int", "float", "str", "bool", "tuple", // standard types
                 "break", "continue", "exit", "halt",    // standard ops
                 "true", "false",                        // constants
             };

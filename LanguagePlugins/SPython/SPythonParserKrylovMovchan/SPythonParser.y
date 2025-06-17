@@ -73,12 +73,13 @@
 %type <stn> stmt_list block
 %type <stn> program param_name form_param_sect form_param_list optional_form_param_list dotted_ident_list
 %type <stn> ident_as_ident ident_as_ident_list ident_list
-%type <td> proc_func_header type_ref simple_type_identifier template_type
+%type <td> proc_func_header type_ref simple_type_identifier template_type 
 %type <stn> import_clause template_type_params template_param_list parts stmt_or_expression expr_mapping_list
-%type <ob> optional_semicolon end_of_line
+%type <ob> optional_semicolon end_of_line variable_list
 %type <op> assign_type
 %type <ex> expr_mapping 
 %type <ex> list_constant set_constant dict_constant generator_object generator_object_for_dict
+%type <ex> tuple_expr assign_right_part turbo_tuple_expr
 
 %start program
 
@@ -359,18 +360,47 @@ var_stmt
 		}
 	;
 
+assign_right_part 
+	: expr
+		{
+			$$ = $1;
+		}
+	| turbo_tuple_expr
+		{
+			$$ = $1;
+		}
+	;
+
 assign_stmt
-	: variable ASSIGN expr
+	: variable ASSIGN assign_right_part
 		{
 			if (!($1 is addressed_value))
         		parserTools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO", @$);
 			$$ = new assign($1 as addressed_value, $3, $2.type, @$);
 		}
-	| variable assign_type expr
+	| variable assign_type assign_right_part
 		{
 			if (!($1 is addressed_value))
         		parserTools.AddErrorFromResource("LEFT_SIDE_CANNOT_BE_ASSIGNED_TO", @$);
 			$$ = new assign($1 as addressed_value, $3, $2.type, @$);
+		}
+	| LPAR variable COMMA variable_list RPAR ASSIGN assign_right_part
+		{
+			// if False:
+			if ($6.type != Operators.Assignment)
+			    parserTools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE", @6);
+			($4 as addressed_value_list).Insert(0, $2 as addressed_value);
+			($4 as syntax_tree_node).source_context = LexLocation.MergeAll(@1, @2, @3, @4, @5);
+			$$ = new assign_tuple($4 as addressed_value_list, $7, @$);
+		}
+	| variable COMMA variable_list ASSIGN assign_right_part
+		{
+			// if False:
+			if ($4.type != Operators.Assignment)
+			    parserTools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE", @4);
+			($3 as addressed_value_list).Insert(0, $1 as addressed_value);
+			($3 as syntax_tree_node).source_context = LexLocation.MergeAll(@1, @2, @3);
+			$$ = new assign_tuple($3 as addressed_value_list, $5, @$);
 		}
 	;
 
@@ -541,9 +571,39 @@ expr
 		{
 			$$ = $1;
 		}
+	| tuple_expr
+		{
+			$$ = $1;
+		}
 	| LPAR expr RPAR
 		{ 
 			$$ = new bracket_expr($2, @$); 
+		}
+	;
+
+tuple_expr
+	: LPAR expr COMMA expr_list RPAR
+		{
+			// inherited from PABC
+			if (($4 as expression_list).Count > 6) 
+				parserTools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7", @$);
+            ($4 as expression_list).Insert(0, $2);
+			$$ = new tuple_node($4 as expression_list, @$);
+		}
+	;
+
+ // Способ задать кортеж без скобочек. 
+ // Работает только для присваивания, типа
+ // a = 1, 2 или a, b = 1, 2
+ // Название просто прикольное
+turbo_tuple_expr
+	: expr COMMA expr_list
+	{
+			// inherited from PABC
+			if (($3 as expression_list).Count > 6) 
+				parserTools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7", @$);
+            ($3 as expression_list).Insert(0, $1);
+			$$ = new tuple_node($3 as expression_list, @$);
 		}
 	;
 
@@ -676,7 +736,7 @@ func_name_ident
 	;
 
 return_stmt
-	: RETURN expr
+	: RETURN assign_right_part
 		{
 			$$ = new return_statement($2, @$);
 		}
@@ -759,6 +819,19 @@ variable
 		{
 			dot_node dn = new dot_node($2 as addressed_value, (new ident("ToDictionary")) as addressed_value, $2.source_context);
 			$$ = new method_call(dn as addressed_value, null, $2.source_context);
+		}
+	;
+
+variable_list
+	: variable
+		{
+			$$ = new addressed_value_list($1 as addressed_value,@1);
+		}
+	| variable_list COMMA variable
+		{
+			($1 as addressed_value_list).Add($3 as addressed_value);
+			($1 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3);
+			$$ = $1;
 		}
 	;
 
