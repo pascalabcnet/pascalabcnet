@@ -202,10 +202,8 @@ namespace SPythonSyntaxTreeVisitor
                         }
                     }
                 }
-                catch (Error e)
+                catch (ExpectedAnotherKindOfObject e)
                 {
-                    if (e.Message != "Ожидалось имя переменной")
-                        throw e; 
                 }
             }
             base.visit(_method_call);
