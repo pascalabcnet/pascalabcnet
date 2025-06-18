@@ -234,7 +234,7 @@ namespace PascalABCCompiler.TreeConverter
                 // Очищаем от Result := , который мы создали на предыдущем этапе
 
                 var ass = stl.list[0] as assign;
-                if (ass != null && ass.to is ident && (ass.to as ident).name == result_var_name)
+                if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower() == result_var_name.ToLower())
                 {
                     var f = ass.from;
                     if (f is method_call)
