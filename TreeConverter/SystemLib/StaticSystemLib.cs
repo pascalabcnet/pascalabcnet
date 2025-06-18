@@ -60,6 +60,7 @@ namespace PascalABCCompiler.SystemLibrary
         private static compiled_type_node _ilist1_interface;
         private static compiled_type_node _icollection1_interface;
         private static compiled_type_node _ireadonlycollection_interface;
+        private static compiled_type_node _ireadonlylist_interface;
         private static compiled_type_node _ienumerable1_interface;
 
         private static compiled_function_node _delegate_combine_method;
@@ -1178,9 +1179,15 @@ namespace PascalABCCompiler.SystemLibrary
             _icollection_interface = compiled_type_node.get_type_node(typeof(ICollection));
             _ienumerable_interface = compiled_type_node.get_type_node(typeof(IEnumerable));
             _ilist1_interface = compiled_type_node.get_type_node(typeof(IList<>));
+
             var t = Type.GetType("System.Collections.Generic.IReadOnlyCollection`1");
             if (t != null)
                 _ireadonlycollection_interface = compiled_type_node.get_type_node(t);
+
+            t = Type.GetType("System.Collections.Generic.IReadOnlyList`1");
+            if (t != null)
+                _ireadonlylist_interface = compiled_type_node.get_type_node(t);
+
             _icollection1_interface = compiled_type_node.get_type_node(typeof(ICollection<>));
             _ienumerable1_interface = compiled_type_node.get_type_node(typeof(IEnumerable<>));
             _assert_method = compiled_function_node.get_compiled_method(typeof(System.Diagnostics.Debug).GetMethod("Assert",new Type[1]{typeof(bool)}));
@@ -5269,6 +5276,14 @@ namespace PascalABCCompiler.SystemLibrary
             get
             {
                 return _ireadonlycollection_interface;
+            }
+        }
+
+        public static compiled_type_node ireadonlylist_interface
+        {
+            get
+            {
+                return _ireadonlylist_interface;
             }
         }
 

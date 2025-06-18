@@ -1,7 +1,7 @@
-begin
+﻿begin
   var d := new Dictionary<string,integer>;
   foreach var s in ReadLines('TextFileCount.pas') do
-    foreach var word in s.ToWords(' ',':',')','(',';','''',',','.','=','<','>','[',']','+','-') do
+    foreach var word in s.ToWords(AllDelimiters) do
       d[word] := d.Get(word) + 1;
-  d.Print(NewLine);    
+  d.PrintLines;    
 end.

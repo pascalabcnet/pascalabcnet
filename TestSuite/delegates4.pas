@@ -1,4 +1,4 @@
-type TFunc = function(i: integer):integer;
+﻿type TFunc = function(i: integer):integer;
 
 function f1(i : integer) : integer;
 begin

@@ -7,16 +7,12 @@ GetSamples.exe _svn\BF BF
 GetSamples.exe _svn\PL0\ PL0\
 cd ..\..
 
-cd utils\DefaultLanguageResMaker\
-LanguageResMaker.exe
-cd ..\..
-
 Utils\IncrementVresion\IncrementVresion.exe Configuration\Version.defs REVISION 1
 Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs Configuration\GlobalAssemblyInfo.cs.tmpl Configuration\GlobalAssemblyInfo.cs
 Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs ReleaseGenerators\PascalABCNET_version.nsh.tmpl ReleaseGenerators\PascalABCNET_version.nsh
 Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs Configuration\pabcversion.txt.tmpl Release\pabcversion.txt
 
-call Studio.bat /t:rebuild "/property:Configuration=Release" PascalABCNET.sln
+dotnet build -c Release --no-incremental PascalABCNET.sln
 
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
@@ -52,12 +48,8 @@ cd ..\ReleaseGenerators
 call PascalABCNET_ALL.bat
 
 cd ..
-call Studio.bat /t:rebuild "/property:Configuration=Release" PascalABCNET_40.sln
-cd ReleaseGenerators
-call PascalABCNETWithDotNet40.bat
 
-cd ..
-call Studio.bat /t:rebuild "/property:Configuration=Release" PascalABCNET.sln
+dotnet build -c Release --no-incremental PascalABCNET.sln
 
 GOTO EXIT
 

@@ -156,7 +156,14 @@ namespace VisualPascalABC
 
         public void ExecPaste()
         {
-            CurrentCodeFileDocument.Paste(true);
+            try
+            {
+                CurrentCodeFileDocument?.Paste(true);
+            }
+            catch (Exception)
+            {
+
+            }
         }
 
         internal void NavigationLocationChanged()

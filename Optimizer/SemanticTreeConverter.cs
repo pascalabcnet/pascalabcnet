@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -29,7 +29,7 @@ namespace PascalABCCompiler
 
         public string Copyright
         {
-            get { return "Copyright � 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich"; }
+            get { return "Copyright © 2005-2025 by Ivan Bondarev, Stanislav Mikhalkovich"; }
         }
 
         public PascalABCCompiler.SemanticTreeConverters.ConverterType ConverterType

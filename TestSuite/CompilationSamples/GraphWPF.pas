@@ -230,6 +230,8 @@ type
     function Center: Point;
     /// Сохраняет содержимое графического окна в файл с именем fname
     procedure Save(fname: string);
+    /// Сохраняет содержимое графического окна в буфер обмена
+    procedure SaveToClipboard;
     /// Восстанавливает содержимое графического окна из файла с именем fname
     procedure Load(fname: string);
     /// Заполняет содержимое графического окна обоями из файла с именем fname
@@ -249,6 +251,8 @@ type
   public
     /// Сохраняет содержимое графического окна в файл с именем fname
     procedure Save(fname: string);
+    /// Сохраняет содержимое графического окна в буфер обмена
+    procedure SaveToClipboard;
     /// Восстанавливает содержимое графического окна из файла с именем fname
     procedure Load(fname: string);
     /// Очищает графическое окно белым цветом
@@ -1782,6 +1786,8 @@ type
       if real.IsNaN(YTicks) then
         YTicks := Ticks(max-min);
       var th := TextHeightP('0');
+      if title<>'' then 
+        th := TextHeightP(title);
       var tw := GetRY0.Step(YTicks).TakeWhile(ry -> ry <= max).Select(y -> TextWidthP(y.Round(YTicksPrecision).ToString)).Max;
       var dd := TextWidthP(b.Round(xTicksPrecision).ToString)/2;
 
@@ -2005,7 +2011,7 @@ begin
 end;
 function GraphWindowType.GetHeight := InvokeReal(GraphWindowTypeGetHeightP);
 
-procedure SaveWindowP(canvas: FrameworkElement; filename: string);
+function SaveWindowToBitmapP(canvas: FrameworkElement): BitmapSource;
 begin
   HostToRenderBitmap;
   var (scalex,scaley) := ScaleToDevice;
@@ -2042,6 +2048,19 @@ begin
   
   bmp.Render(canvas);
   
+  Result := bmp;
+end;
+
+procedure SaveWindowToClipboardP(canvas: FrameworkElement);
+begin
+  var bmp := SaveWindowToBitmapP(canvas);
+  Clipboard.SetImage(bmp)
+end;
+
+procedure SaveWindowP(canvas: FrameworkElement; filename: string);
+begin
+  var bmp := SaveWindowToBitmapP(canvas);
+  
   dpic[filename] := bmp;
 
   (canvas as MyVisualHost).children.RemoveAt(0);
@@ -2066,6 +2085,8 @@ end;
 
 procedure GraphWindowType.Save(fname: string) := Invoke(SaveWindowP,host,fname);
 
+procedure GraphWindowType.SaveToClipboard := Invoke(SaveWindowToClipboardP,host);
+
 procedure GraphWindowType.Load(fname: string) := DrawImageUnscaled(0,0,fname);
 
 procedure GraphWindowType.Fill(fname: string);
@@ -2087,6 +2108,8 @@ function GraphWindowType.ClientRect: GRect := Rect(0,0,Width,Height);
 
 
 procedure WindowTypeWPF.Save(fname: string) := GraphWindow.Save(fname);
+
+procedure WindowTypeWPF.SaveToClipboard := GraphWindow.SaveToClipboard;
 
 procedure WindowTypeWPF.Load(fname: string) := GraphWindow.Load(fname);
 

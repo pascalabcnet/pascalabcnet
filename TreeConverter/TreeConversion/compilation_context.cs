@@ -2052,8 +2052,11 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.greq_name,tctn,SemanticTree.basic_function_type.enumgreq,SystemLibrary.SystemLibrary.bool_type);
             SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.sm_name,tctn,SemanticTree.basic_function_type.enumsm,SystemLibrary.SystemLibrary.bool_type);
             SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.smeq_name,tctn,SemanticTree.basic_function_type.enumsmeq,SystemLibrary.SystemLibrary.bool_type);
-            
-			SystemLibrary.SystemLibrary.make_generated_type_conversion(tctn,SystemLibrary.SystemLibrary.byte_type,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.itob,false);
+            SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.or_name, tctn, SemanticTree.basic_function_type.enumsor, tctn);
+            SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.and_name, tctn, SemanticTree.basic_function_type.enumsand, tctn);
+            SystemLibrary.SystemLibrary.make_binary_operator(StringConstants.xor_name, tctn, SemanticTree.basic_function_type.enumsxor, tctn);
+
+            SystemLibrary.SystemLibrary.make_generated_type_conversion(tctn,SystemLibrary.SystemLibrary.byte_type,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.itob,false);
             SystemLibrary.SystemLibrary.make_generated_type_conversion(tctn,SystemLibrary.SystemLibrary.sbyte_type,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.itosb,false);
             SystemLibrary.SystemLibrary.make_generated_type_conversion(tctn,SystemLibrary.SystemLibrary.short_type,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.itos,false);
             SystemLibrary.SystemLibrary.make_generated_type_conversion(tctn,SystemLibrary.SystemLibrary.ushort_type,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.itous,false);
@@ -3226,6 +3229,17 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         }
                     }
+                    if (_ctn.type_special_kind == SemanticTree.type_special_kind.array_kind && _ctn.element_type.is_generic_parameter)
+                    {
+                        var arr_types = type_constructor.instance.get_generic_arrays(_ctn.rank);
+                        foreach (var ctn in arr_types)
+                        {
+                            var addit_si_list = ctn.Scope.FindOnlyInScope(fn.name);
+                            if (addit_si_list != null)
+                                si_list.AddRange(addit_si_list);
+                        }
+                       
+                    }
                 }
                 else if (_compiled_tn != null)
                 {
@@ -3259,7 +3273,10 @@ namespace PascalABCCompiler.TreeConverter
                 foreach (var tmp_si in si_list)
                 {
                     if (tmp_si.sym_info == fn)
+                    {
+                        
                         continue;
+                    }
                     if (tmp_si.sym_info.general_node_type != general_node_type.function_node)
                     {
                         TreeRealization.BasePCUReader.RestoreSymbols(si_list, fn.name);

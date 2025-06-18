@@ -25,7 +25,7 @@ namespace PascalABCCompiler.ParserTools
         }
     }
 
-    // Класс глобальных описаний и статических методов
+    // Класс глобальных описаний и общих методов
     // для использования различными подсистемами парсера и сканера
     public abstract class BaseParserTools
     {
@@ -38,13 +38,21 @@ namespace PascalABCCompiler.ParserTools
         public string currentFileName;
         public List<compiler_directive> compilerDirectives;
 
-        public static Dictionary<string, string> tokenNum; // строки, соответствующие терминалам, для вывода ошибок - SSM
+        public abstract Dictionary<string, string> TokenNum { get; protected set; } // строки, соответствующие терминалам, для вывода ошибок - SSM
 
-        public IParser ParserRef { get; private set; }
+        public Dictionary<string, DirectiveInfo> ValidDirectives { get; private set; }
 
-        protected BaseParserTools(IParser parserRef)
+        protected BaseParserTools(List<Error> errors, List<CompilerWarning> warnings,
+            Dictionary<string, DirectiveInfo> validDirectives, bool buildTreeForFormatter, bool buildTreeForFormatterStrings,
+            string currentFileName, List<compiler_directive> compilerDirectives)
         {
-            this.ParserRef = parserRef;
+            this.errors = errors;
+            this.warnings = warnings;
+            this.ValidDirectives = validDirectives;
+            this.buildTreeForFormatter = buildTreeForFormatter;
+            this.buildTreeForFormatterStrings = buildTreeForFormatterStrings;
+            this.currentFileName = currentFileName;
+            this.compilerDirectives = compilerDirectives;
         }
 
         public SourceContext ToSourceContext(LexLocation loc)
@@ -57,8 +65,8 @@ namespace PascalABCCompiler.ParserTools
         public string ConvertToHumanName(string s)
         {
             var v = s;
-            if (tokenNum.ContainsKey(v))
-                v = tokenNum[v];
+            if (TokenNum.ContainsKey(v))
+                v = TokenNum[v];
             else if (v.StartsWith("tk"))
                 v = v.Remove(0, 2).ToLower();
 
@@ -204,7 +212,7 @@ namespace PascalABCCompiler.ParserTools
             string paramsString = directiveText.Substring(directiveText.IndexOf(directiveName) + directiveName.Length);
 
             // если кавычки используются как специальные символы (для объединения нескольких слов в одно)
-            if (ParserRef.ValidDirectives[directiveName].quotesAreSpecialSymbols)
+            if (ValidDirectives[directiveName].quotesAreSpecialSymbols)
             {
                 directiveParams = SplitDirectiveParamsWithQuotesAsSpecialSymbols(paramsString);
             }
@@ -229,7 +237,7 @@ namespace PascalABCCompiler.ParserTools
             }
 
             // проверка имени директивы
-            if (!ParserRef.ValidDirectives.ContainsKey(directiveName))
+            if (!ValidDirectives.ContainsKey(directiveName))
             {
                 AddErrorFromResource("UNKNOWN_DIRECTIVE{0}", location, directiveName);
                 return;
@@ -246,7 +254,7 @@ namespace PascalABCCompiler.ParserTools
         /// </summary>
         public void ValidateDirectiveParams(string directiveName, List<string> directiveParams, SourceContext loc)
         {
-            var directiveInfo = ParserRef.ValidDirectives[directiveName];
+            var directiveInfo = ValidDirectives[directiveName];
 
             if (directiveInfo.checkParamsNumNeeded)
             {

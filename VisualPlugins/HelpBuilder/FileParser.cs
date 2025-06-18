@@ -48,7 +48,6 @@ namespace VisualPascalABCPlugins
             VisualEnvironmentCompiler.StandartCompiler.InternalDebug.AlwaysGenerateXMLDoc = true;
             PascalABCCompiler.CompilerType ct = VisualEnvironmentCompiler.DefaultCompilerType;
             VisualEnvironmentCompiler.DefaultCompilerType = PascalABCCompiler.CompilerType.Standart;
-            VisualEnvironmentCompiler.StandartCompiler.InternalDebug.DocumentedUnits.Add(FileName.ToLower());
             try
             {
             	VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.BuildUnit, FileName);

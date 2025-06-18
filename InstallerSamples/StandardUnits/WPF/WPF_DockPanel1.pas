@@ -1,7 +1,7 @@
 ﻿uses WPF;
 
 begin
-  var dpanel := DockPanel.Create.AsMainContent;
+  var dpanel := Panels.DockPanel.AsMainContent;
   var b := Controls.Button('One');
   var b1 := Controls.Button('Two');
   var b2 := Controls.Button('Three');

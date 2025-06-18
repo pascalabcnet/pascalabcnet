@@ -39,6 +39,8 @@ namespace CodeCompletion
         //TreeConverterSymbolTable tcst;
         public CodeCompletionController controller;
         public bool is_compiled = false;
+
+        // TODO: Требуется адаптировать к многоязычности  EVA
         public static SymInfo[] standard_units;
         private Hashtable cur_used_assemblies;
         public CompilationUnit unit;
@@ -1060,7 +1062,12 @@ namespace CodeCompletion
                 RestoreCurrentUsedAssemblies();
                 string description = ss.si.description;
                 if (description != null)
+                {
                     description = description.Replace("!#", "");
+                    // Пусть здесь делаем все замены
+                    // Для рекурсивных <<>> нужно писать собственный парсер
+                    //description = System.Text.RegularExpressions.Regex.Replace(description, @"NewSet<\s*(.*)\s*>", "set of $1");
+                }
                 return description;
             }
             RestoreCurrentUsedAssemblies();

@@ -38,7 +38,26 @@ namespace PascalABCCompiler.TreeConverter
 		private System.Collections.Generic.Dictionary<type_node, List<type_node>> types_unsized_arrays =
 			new System.Collections.Generic.Dictionary<type_node, List<type_node>>();
 
-		public type_node create_unsized_array(type_node element_type, common_namespace_node cmn, int rank, location loc)
+		public List<common_type_node> get_generic_arrays(int rank)
+		{
+			List<common_type_node> lst = new List<common_type_node>();
+			foreach (var key in types_unsized_arrays.Keys)
+			{
+				if (key.is_generic_parameter)
+				{
+					List<type_node> ret = types_unsized_arrays[key];
+                    for (int i = 0; i < ret.Count; i++)
+                        if (ret[i] is common_type_node ctn)
+                        {
+							if (ctn.rank == rank)
+								lst.Add(ctn);
+                        }
+                }
+			}
+			return lst;
+        }
+
+		public type_node create_unsized_array(type_node element_type, int rank, location loc)
 		{
 			List<type_node> ret = null;
 			if(types_unsized_arrays.TryGetValue(element_type,out ret))
@@ -79,15 +98,10 @@ namespace PascalABCCompiler.TreeConverter
 				SystemLibrary.SystemLibrary.init_reference_type(ctn);
 				return ctn;
 			}
-			SymbolTable.Scope top_scope = null;
-			if (cmn != null)
-			{
-				top_scope = cmn.scope;
-			}
 
 			common_type_node comtn = new common_type_node(SystemLibrary.SystemLibrary.array_base_type,
 			                                              StringConstants.get_array_type_name(element_type.name,rank), SemanticTree.type_access_level.tal_public,
-			                                              cmn, convertion_data_and_alghoritms.symbol_table.CreateClassScope(top_scope,SystemLibrary.SystemLibrary.array_base_type.Scope), loc);
+			                                              null, convertion_data_and_alghoritms.symbol_table.CreateClassScope(null, SystemLibrary.SystemLibrary.array_base_type.Scope), loc);
 			comtn.internal_type_special_kind = SemanticTree.type_special_kind.array_kind;
 			comtn.is_class = true;
 			comtn.add_internal_interface(aii);
@@ -111,6 +125,9 @@ namespace PascalABCCompiler.TreeConverter
                 comtn.ImplementingInterfaces.Add(SystemLibrary.SystemLibrary.ienumerable1_interface.get_instance(type_params));
 				if (SystemLibrary.SystemLibrary.ireadonlycollection_interface != null)
 					comtn.ImplementingInterfaces.Add(SystemLibrary.SystemLibrary.ireadonlycollection_interface.get_instance(type_params));
+
+				if (SystemLibrary.SystemLibrary.ireadonlylist_interface != null)
+					comtn.ImplementingInterfaces.Add(SystemLibrary.SystemLibrary.ireadonlylist_interface.get_instance(type_params));
 			}
             //SystemLibrary.SystemLibrary.ic
             //(ssyy) Убрал 18.05.08

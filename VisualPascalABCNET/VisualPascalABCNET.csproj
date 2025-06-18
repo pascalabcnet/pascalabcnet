@@ -1,123 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{BC35F816-54EE-47E0-89FC-1C66EAC155A9}</ProjectGuid>
+    <TargetFramework>net471</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    
     <RootNamespace>VisualPascalABC</RootNamespace>
-    <AssemblyName>PascalABCNET</AssemblyName>
+    
     <ApplicationIcon>_ABC13.ico</ApplicationIcon>
-    <TargetZone>LocalIntranet</TargetZone>
-    <GenerateManifests>false</GenerateManifests>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-    <NoStdLib>False</NoStdLib>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>4.0</OldToolsVersion>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <TargetFrameworkProfile />
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
+    
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>PdbOnly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\bin\</OutputPath>
-    <DefineConstants>RELEASE;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DebugSymbols>false</DebugSymbols>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <BaseAddress>4194304</BaseAddress>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <FileAlignment>4096</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup>
+    
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    
+    <OutputPath>..\bin\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AssemblyName>PascalABCNET</AssemblyName>
+    
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Debugger.Core">
-      <HintPath>..\Libraries\Debugger.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.SharpDevelop.Dom, Version=4.2.1.8805, Culture=neutral, PublicKeyToken=f829da5c02be14ee, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>FormsDesignerBinding\Libs\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.SharpDevelop.Widgets, Version=4.2.1.8805, Culture=neutral, PublicKeyToken=f829da5c02be14ee, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>FormsDesignerBinding\Libs\ICSharpCode.SharpDevelop.Widgets.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.TextEditor">
-      <HintPath>..\Libraries\ICSharpCode.TextEditor.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Build.Engine" />
-    <Reference Include="Microsoft.Build.Framework" />
-    <Reference Include="Microsoft.Build.Tasks" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="SharpDisasm">
-      <HintPath>..\Libraries\SharpDisasm.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Design" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Messaging" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Forms.DataVisualization" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml" />
-    <Reference Include="UIAutomationProvider" />
-    <Reference Include="WeifenLuo.WinFormsUI.Docking">
-      <HintPath>..\Libraries\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="WindowsFormsIntegration" />
-  </ItemGroup>
+  
   <ItemGroup>
     <Compile Include="ABCHealth.cs">
       <SubType>Form</SubType>
@@ -642,44 +546,18 @@
     <Compile Include="DS\Utils\ProcessRunner.cs" />
     <Compile Include="DS\VisualEnvironmentCompiler.cs" />
     <Compile Include="VisualStates.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\new_file.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\new_file1.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\open.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\save.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\save_all.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\undo.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\redo.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\cut.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\copy.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\paste.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\start.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\stop.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="ABCNET32.ico" />
     <None Include="Resources\format1.png" />
     <None Include="Resources\format2.png" />
@@ -790,99 +668,71 @@
       <DependentUpon>RunArguments.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CodeCompletion\CodeCompletion.csproj">
-      <Project>{1AB15F6E-C22E-499A-A7ED-54BA7DE5CFA6}</Project>
-      <Name>CodeCompletion</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CompilerTools\CompilerTools.csproj">
-      <Project>{a25d26fb-3043-4bcf-833e-e3f4c3be795e}</Project>
-      <Name>CompilerTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Compiler\Compiler.csproj">
-      <Project>{1E42361A-EDA3-4872-88AF-A3AAF600D36D}</Project>
-      <Name>Compiler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Errors\Errors.csproj">
-      <Project>{44A01F9E-DCE7-470C-AAE5-C3DE0CCBEE3B}</Project>
-      <Name>Errors</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Localization\Localization.csproj">
-      <Project>{2DE2842F-0912-4251-BC0F-480854C44A13}</Project>
-      <Name>Localization</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LanguageIntegrator\LanguageIntegrator.csproj">
-      <Project>{a48d9069-d569-4110-9252-a10f139b669b}</Project>
-      <Name>LanguageIntegrator</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ParserTools\ParserTools.csproj">
-      <Project>{AF2EFD7B-69DD-4B43-AF65-B59B29349C23}</Project>
-      <Name>ParserTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PluginsSupport\PluginsSupport.csproj">
-      <Project>{cfc683f8-0165-4a9f-9c3f-bb8c5bab507f}</Project>
-      <Name>PluginsSupport</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\StringConstants\StringConstants.csproj">
-      <Project>{e8aefbf9-0113-4fa4-be45-6cda555498b7}</Project>
-      <Name>StringConstants</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
-      <Project>{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}</Project>
-      <Name>SyntaxTree</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TreeConverter\TreeConverter.csproj">
-      <Project>{1C9C945A-586D-42A2-A06B-65D84FA7FF78}</Project>
-      <Name>TreeConverter</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SyntaxVisitors\SyntaxVisitors.csproj">
-      <Project>{a9ab4282-83b4-41a7-86c3-e5bf6a45e7e2}</Project>
-      <Name>SyntaxVisitors</Name>
-    </ProjectReference>
-    <ProjectReference Include="FormsDesignerBinding\Dependecies\src\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
-      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
-      <Name>ICSharpCode.SharpDevelop</Name>
-    </ProjectReference>
-    <ProjectReference Include="FormsDesignerBinding\Dependecies\src\Main\Core\Project\ICSharpCode.Core.csproj">
-      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
-      <Name>ICSharpCode.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="FormsDesignerBinding\Dependecies\src\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
-      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
-      <Name>ICSharpCode.Core.Presentation</Name>
-    </ProjectReference>
-    <ProjectReference Include="FormsDesignerBinding\Dependecies\src\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
-      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
-      <Name>ICSharpCode.Core.WinForms</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>Клиентский профиль .NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Установщик Windows 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
+  
+  
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  
+  <ItemGroup>
+    <ProjectReference Include="../CodeCompletion/CodeCompletion.csproj" />
+    <ProjectReference Include="../CompilerTools/CompilerTools.csproj" />
+    <ProjectReference Include="../Compiler/Compiler.csproj" />
+    <ProjectReference Include="../Errors/Errors.csproj" />
+    <ProjectReference Include="../Localization/Localization.csproj" />
+    <ProjectReference Include="../LanguageIntegrator/LanguageIntegrator.csproj" />
+    <ProjectReference Include="../ParserTools/ParserTools.csproj" />
+    <ProjectReference Include="../PluginsSupport/PluginsSupport.csproj" />
+    <ProjectReference Include="../StringConstants/StringConstants.csproj" />
+    <ProjectReference Include="../SyntaxTree/SyntaxTree.csproj" />
+    <ProjectReference Include="../TreeConverter/TreeConverter.csproj" />
+    <ProjectReference Include="../SyntaxVisitors/SyntaxVisitors.csproj" />
+    <ProjectReference Include="FormsDesignerBinding/Dependecies/src/Main/Base/Project/ICSharpCode.SharpDevelop.csproj" />
+    <ProjectReference Include="FormsDesignerBinding/Dependecies/src/Main/Core/Project/ICSharpCode.Core.csproj" />
+    <ProjectReference Include="FormsDesignerBinding/Dependecies/src/Main/ICSharpCode.Core.Presentation/ICSharpCode.Core.Presentation.csproj" />
+    <ProjectReference Include="FormsDesignerBinding/Dependecies/src/Main/ICSharpCode.Core.WinForms/ICSharpCode.Core.WinForms.csproj" />
+    <ProjectReference Include="../pabcnetc/PABCNETC.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="System.Resources.Extensions" Version="9.0.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="Debugger.Core">
+      <HintPath>..\Libraries\Debugger.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpDevelop.Dom, Version=4.2.1.8805, Culture=neutral, PublicKeyToken=f829da5c02be14ee, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>FormsDesignerBinding\Libs\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpDevelop.Widgets, Version=4.2.1.8805, Culture=neutral, PublicKeyToken=f829da5c02be14ee, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>FormsDesignerBinding\Libs\ICSharpCode.SharpDevelop.Widgets.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.TextEditor">
+      <HintPath>..\Libraries\ICSharpCode.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="SharpDisasm">
+      <HintPath>..\Libraries\SharpDisasm.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Messaging" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WeifenLuo.WinFormsUI.Docking">
+      <HintPath>..\Libraries\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
 </Project>

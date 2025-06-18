@@ -7,6 +7,9 @@ interface
 
 uses System.Runtime.InteropServices;
 
+var
+  ServerAddr := 'https://air.mmcs.sfedu.ru/pascalabc';
+
 {==============================================================}
 {                  Класс для формирования вывода               }
 {==============================================================}
@@ -111,10 +114,42 @@ function MatrRandomReal(m: integer; n: integer): array [,] of real;
 
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger(prompt: string): integer;
-/// Выводит приглашение к вводу и возвращает два значения типа integer, введенные с клавиатуры
-function ReadInteger2(prompt: string): (integer, integer);
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
 function ReadlnInteger(prompt: string): integer;
+/// Выводит приглашение к вводу и возвращает два значения типа integer, введенные с клавиатуры
+function ReadInteger2(prompt: string): (integer, integer);
+/// Выводит приглашение к вводу и возвращает два значения типа integer, введенные с клавиатуры
+function ReadlnInteger2(prompt: string): (integer, integer);
+/// Выводит приглашение к вводу и возвращает три значения типа integer, введенные с клавиатуры
+function ReadInteger3(prompt: string): (integer, integer, integer);
+/// Выводит приглашение к вводу и возвращает три значения типа integer, введенные с клавиатуры
+function ReadlnInteger3(prompt: string): (integer, integer, integer);
+/// Выводит приглашение к вводу и возвращает три значения типа integer, введенные с клавиатуры
+function ReadInteger4(prompt: string): (integer, integer, integer, integer);
+/// Выводит приглашение к вводу и возвращает три значения типа integer, введенные с клавиатуры
+function ReadlnInteger4(prompt: string): (integer, integer, integer, integer);
+
+/// Выводит приглашение к вводу и возвращает значение типа real, введенное с клавиатуры
+function ReadReal(prompt: string): real;
+/// Выводит приглашение к вводу и возвращает значение типа real, введенное с клавиатуры
+function ReadlnReal(prompt: string): real;
+/// Выводит приглашение к вводу и возвращает два значения типа real, введенные с клавиатуры
+function ReadReal2(prompt: string): (real, real);
+/// Выводит приглашение к вводу и возвращает два значения типа real, введенные с клавиатуры
+function ReadlnReal2(prompt: string): (real, real);
+/// Выводит приглашение к вводу и возвращает три значения типа real, введенные с клавиатуры
+function ReadReal3(prompt: string): (real, real, real);
+/// Выводит приглашение к вводу и возвращает три значения типа real, введенные с клавиатуры
+function ReadlnReal3(prompt: string): (real, real, real);
+/// Выводит приглашение к вводу и возвращает три значения типа real, введенные с клавиатуры
+function ReadReal4(prompt: string): (real, real, real, real);
+/// Выводит приглашение к вводу и возвращает три значения типа real, введенные с клавиатуры
+function ReadlnReal4(prompt: string): (real, real, real, real);
+
+/// Выводит приглашение к вводу и возвращает значение типа char, введенное с клавиатуры
+function ReadChar(prompt: string): char;
+/// Выводит приглашение к вводу и возвращает значение типа char, введенное с клавиатуры
+function ReadlnChar(prompt: string): char;
 
 /// Выводит приглашение к вводу и возвращает значение типа string, введенное с клавиатуры
 function ReadString(prompt: string): string;
@@ -161,17 +196,21 @@ function ToObjArray(a: sequence of boolean): array of object;
 {        Основные процедуры для проверки правильности ввода-вывода        }
 {=========================================================================}
 
-// Самые часто используемые: CheckInput, CheckOutput, CheckOutputSeq
+// Самые часто используемые: CheckOutput
+// CheckInput заменено на CheckData
 
-/// Проверить типы вводимых данных
+/// Проверить типы вводимых данных. Пользуйтесь CheckData(Input := cInt * 2)
 procedure CheckInput(a: array of System.Type);
-/// Проверить значения при выводе
+/// Проверить значения при выводе. Основной способ проверки
 procedure CheckOutput(params arr: array of object);
 /// Проверить значения при выводе. Сообщения ColoredMessage гасить. Нужно для повторных вызовов CheckOutput
 procedure CheckOutputSilent(params arr: array of object);
+/// Проверить значения при выводе. Основной способ проверки
+procedure CheckOutput(a: ObjectList);
+/// Проверить значения при выводе. Сообщения ColoredMessage гасить. Нужно для повторных вызовов CheckOutput
+procedure CheckOutputSilent(a: ObjectList);
 
-
-/// Проверить, что данные не вводились
+/// Проверить, что данные не вводились. Пользуйтесь CheckData(Empty)
 procedure CheckInputIsEmpty;
 
 /// Проверить, что помимо начального ввода других данных не вводилось
@@ -218,8 +257,10 @@ procedure CheckOutputSeqSilent(a: sequence of boolean);
 procedure CheckOutputSeqSilent(a: sequence of object);
 /// Проверить последовательность значений при выводе. Не выводить сообщения ColoredMessages
 procedure CheckOutputSeqSilent(a: sequence of word);
+
 /// Проверить последовательность значений при выводе. Не выводить сообщения ColoredMessages
 procedure CheckOutputSeqSilent(a: ObjectList);
+
 
 /// Проверить вывод в виде строки
 procedure CheckOutputString(str: string);
@@ -235,17 +276,6 @@ function CompareArrValues(a,lst: array of object): boolean;
 
 /// Сравнить значения с выводом
 function CompareValuesWithOutput(params a: array of object): boolean;
-
-// Для совместимости
-procedure CheckOutputNew(params arr: array of object);
-procedure CheckOutputSeqNew(a: sequence of integer);
-procedure CheckOutputSeqNew(a: sequence of real);
-procedure CheckOutputSeqNew(a: sequence of string);
-procedure CheckOutputSeqNew(a: sequence of char);
-procedure CheckOutputSeqNew(a: sequence of boolean);
-procedure CheckOutputSeqNew(a: sequence of object);
-procedure CheckOutputSeqNew(a: sequence of word);
-procedure CheckOutputSeqNew(a: ObjectList);
 
 {============================================================================================}
 {   Подпрограммы для проверки начального ввода-вывода, представленного в заготовке задания   }
@@ -270,6 +300,9 @@ procedure CheckInitialInputSeq(a: sequence of System.Type);
 procedure CheckInitialIOSeqs(input,output: sequence of System.Type);
 
 procedure CheckOutputAfterInitial(params arr: array of object); // проверить только то, что после исходного вывода
+
+procedure CheckOutputAfterInitial(a: ObjectList);
+
 
 procedure CheckOutputAfterInitialSilent(params arr: array of object); 
 
@@ -520,11 +553,11 @@ procedure GenerateTests<T1,T2,T3>(params a: array of (T1,T2,T3));
 {=========================================================}
 {               Фильтрация выходного списка               }
 {=========================================================}
-/// Преобразование строк, являющихся целыми, в целые в OutputList
+/// Преобразование строк и символов, являющихся числами, в числа в OutputList
 procedure ConvertStringsToNumbersInOutputList;
 /// Если в OutputList массивы, вытянуть их в единый список
 procedure FlattenOutput;
-/// Очистить выходной список от пробелов
+/// Очистить выходной список от пробелов, возникающих в методах расширения типа a.Print. Очень редко очищать не надо при решении задач на символы с пробелами
 procedure ClearOutputListFromSpaces;
 /// Отфильтровать в выходном списке только числа
 procedure FilterOnlyNumbers;
@@ -577,6 +610,9 @@ procedure SetMessagesOn;
 /// Выключить дополнительные сообщения о записи в удаленную базу данных
 procedure SetMessageOff;
 
+/// Шифрование строки
+function EncryptString(src: string): string;
+
 implementation
 
 uses __RedirectIOMode;
@@ -616,8 +652,6 @@ var
   LessonName: string := '';
   TaskNamesMap := new Dictionary<string,string>;
   
-  ServerAddr := 'https://air.mmcs.sfedu.ru/pascalabc';
-  
   // Дополнительные сообщения о записи в удаленную базу данных
   additionalMessages := False;
 
@@ -639,6 +673,7 @@ type
     constructor (ServerAddr: string);
     begin
       Self.ServerAddr := ServerAddr;
+      System.Net.ServicePointManager.SecurityProtocol := System.Net.SecurityProtocolType(3072);
       client := new HttpClient();
       client.Timeout := TimeSpan.FromSeconds(10);
     end;
@@ -943,7 +978,8 @@ begin
 end; 
 
 /// надо ли пополнять список ввода в функциях, используемых для ввода
-function NeedAddDataToInputList: boolean := IsLightPT and ((TestMode = tmNone) or (TestMode = tmAutoTest));
+function NeedAddDataToInputList: boolean 
+  := IsLightPT and ((TestMode = tmNone) or (TestMode = tmAutoTest));
 
 /// Полный путь к папке auth-файла
 function FindAuthDat: string;
@@ -1006,6 +1042,12 @@ begin
   cs.Close;
   ms.Close;
   Result := ms.ToArray;
+end;
+
+function EncryptString(src: string): string;
+begin
+  var bytes := Encrypt(src);
+  Result := Convert.ToBase64String(bytes);
 end;
 
 function Decrypt(data: array of byte): string;
@@ -1395,6 +1437,13 @@ begin
     else if s.TryToReal(rval) then
       Result := rval
   end
+  else if ob is char then
+  begin
+    var s := ''+char(ob);
+    var ival: integer;
+    if s.TryToInteger(ival) then
+      Result := ival
+  end
 end;
 
 procedure ConvertStringsToNumbersInOutputList;
@@ -1720,6 +1769,11 @@ end;
 /// Возвращает случайное целое в диапазоне от a до b
 function Random(a, b: integer): integer;
 begin
+  // Есть три состояния:
+  // 1. Вызов в основной программе (первый запуск) - TestMode = tmNone
+  // 2. Вызов в основной программе (последующие запуски) - TestMode = tmTest
+  // 3. Вызов в функции GenerateTestData - TestMode = tmGenTest - тогда срабатывает обычная ArrRandomInteger
+  //    как и в случае 1.  
   if TestMode = tmTest then
     Result := InputList.ReadTestDataInt // считать следующее данное из заполненного в GenTestMode InputList
   else Result := PABCSystem.Random(a, b);
@@ -1885,17 +1939,13 @@ begin
   // Есть три состояния:
   // 1. Вызов в основной программе (первый запуск) - TestMode = tmNone
   // 2. Вызов в основной программе (последующие запуски) - TestMode = tmTest
-  // 3. Вызов в функции GenerateTestData - TestMode = tmGenTest - это только в состоянии TestMode = True
-  {if GenTest then
-  begin
-    Result := PABCSystem.ArrRandomInteger(n, a, b); // приходится вызывать дважды!
-    exit;
-  end;}
+  // 3. Вызов в функции GenerateTestData - TestMode = tmGenTest - тогда срабатывает обычная ArrRandomInteger
+  //    как и в случае 1.  
   if TestMode = tmTest then
     Result := InputList.ReadTestDataIntArr(n)
   else Result := PABCSystem.ArrRandomInteger(n, a, b); 
   
-  if NeedAddDataToInputList then // IsLightPT and (TestMode = tmNone)
+  if NeedAddDataToInputList then // IsLightPT and ((TestMode = tmNone) or (TestMode = tmAutoTest))
   for var i:=0 to n-1 do
     InputList.Add(Result[i]);
 end;
@@ -1945,46 +1995,131 @@ begin
     InputList.Add(x);
 end;
 
-/// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
 function MatrRandomReal(m: integer; n: integer): array [,] of real := MatrRandomReal(m,n,0,10);
 
-/// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
+procedure ReadRemainderAction;
+begin
+  if not IsPT then
+  begin  
+    OutputList.RemoveAt(OutputList.Count - 1);
+    OutputList.RemoveAt(OutputList.Count - 1);
+    CreateNewLineBeforeMessage := False;
+  end;
+end;
+
 function ReadInteger(prompt: string): integer;
 begin
   Result := PABCSystem.ReadInteger(prompt);
-  if IsPT then exit;
-  OutputList.RemoveAt(OutputList.Count - 1);
-  OutputList.RemoveAt(OutputList.Count - 1);
-  CreateNewLineBeforeMessage := False;
+  ReadRemainderAction;
 end;
 
-/// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
 function ReadlnInteger(prompt: string): integer;
 begin
   Result := PABCSystem.ReadlnInteger(prompt);
-  if IsPT then exit;
-  OutputList.RemoveAt(OutputList.Count - 1);
-  OutputList.RemoveAt(OutputList.Count - 1);
-  CreateNewLineBeforeMessage := False;
+  ReadRemainderAction;
 end;
 
-/// Выводит приглашение к вводу и возвращает два значения типа integer, введенные с клавиатуры
 function ReadInteger2(prompt: string): (integer, integer);
 begin
   Result := PABCSystem.ReadInteger2(prompt);
-  if IsPT then exit;
-  OutputList.RemoveAt(OutputList.Count - 1);
-  OutputList.RemoveAt(OutputList.Count - 1);
-  CreateNewLineBeforeMessage := False;
+  ReadRemainderAction;
 end;
+
+function ReadlnInteger2(prompt: string): (integer,integer);
+begin
+  Result := PABCSystem.ReadlnInteger2(prompt);
+  ReadRemainderAction;
+end;
+
+function ReadInteger3(prompt: string): (integer,integer,integer);
+begin
+  Result := PABCSystem.ReadInteger3(prompt);
+  ReadRemainderAction;
+end;
+
+function ReadlnInteger3(prompt: string): (integer,integer,integer);
+begin
+  Result := PABCSystem.ReadlnInteger3(prompt);
+  ReadRemainderAction;
+end;
+
+function ReadInteger4(prompt: string): (integer, integer,integer,integer);
+begin
+  Result := PABCSystem.ReadInteger4(prompt);
+  ReadRemainderAction;
+end;
+
+function ReadlnInteger4(prompt: string): (integer,integer,integer,integer);
+begin
+  Result := PABCSystem.ReadlnInteger4(prompt);
+  ReadRemainderAction;
+end;
+
+function ReadReal(prompt: string): real;
+begin
+  Result := PABCSystem.ReadReal(prompt);
+  ReadRemainderAction;
+end;
+
+function ReadlnReal(prompt: string): real;
+begin
+  Result := PABCSystem.ReadlnReal(prompt);
+  ReadRemainderAction;
+end;
+
+function ReadReal2(prompt: string): (real, real);
+begin
+  Result := PABCSystem.ReadReal2(prompt);
+  ReadRemainderAction;
+end;
+
+function ReadlnReal2(prompt: string): (real, real);
+begin
+  Result := PABCSystem.ReadlnReal2(prompt);
+  ReadRemainderAction;
+end;
+
+function ReadReal3(prompt: string): (real, real, real);
+begin
+  Result := PABCSystem.ReadReal3(prompt);
+  ReadRemainderAction;
+end;
+
+function ReadlnReal3(prompt: string): (real, real, real);
+begin
+  Result := PABCSystem.ReadlnReal3(prompt);
+  ReadRemainderAction;
+end;
+
+function ReadReal4(prompt: string): (real, real, real, real);
+begin
+  Result := PABCSystem.ReadReal4(prompt);
+  ReadRemainderAction;
+end;
+
+function ReadlnReal4(prompt: string): (real, real, real, real);
+begin
+  Result := PABCSystem.ReadlnReal4(prompt);
+  ReadRemainderAction;
+end;
+
+function ReadChar(prompt: string): char;
+begin
+  Result := PABCSystem.ReadChar(prompt);
+  ReadRemainderAction;
+end;
+
+function ReadlnChar(prompt: string): char;
+begin
+  Result := PABCSystem.ReadlnChar(prompt);
+  ReadRemainderAction;
+end;
+
 
 function ReadString(prompt: string): string;
 begin
   Result := PABCSystem.ReadString(prompt);
-  if IsPT then exit;
-  OutputList.RemoveAt(OutputList.Count - 1);
-  OutputList.RemoveAt(OutputList.Count - 1);
-  CreateNewLineBeforeMessage := False;
+  ReadRemainderAction;
 end;
 
 function ReadlnString(prompt: string) := ReadString(prompt);
@@ -2091,11 +2226,14 @@ procedure CheckOutputAfterInitialSeqSilent(seq: sequence of char); begin Silent 
 procedure CheckOutputAfterInitialSeqSilent(seq: sequence of object); begin Silent := True; CheckOutputAfterInitialSeq(seq); Silent := False; end;
 procedure CheckOutputAfterInitialSeqSilent(seq: ObjectList); begin Silent := True; CheckOutputAfterInitialSeq(seq); Silent := False; end;
 
+var OutputListIsClearedFromSpaces := False;
 
 procedure ClearOutputListFromSpaces;
 begin
+  if OutputListIsClearedFromSpaces then exit;
   OutputList := OutputList.Where(s -> (not (s is string)) or ((s as string) <> ' ')).ToList;
   OutputList := OutputList.Where(s -> (not (s is char)) or ((char(s)) <> ' ')).ToList;
+  OutputListIsClearedFromSpaces := True;
 end;
 
 procedure FilterOnlyNumbers;
@@ -2139,23 +2277,44 @@ begin
   CreateNewLineBeforeMessage := False;
 end;
 
-procedure CheckOutputHelper(i0: integer; params arr: array of object);
-  procedure OutputTestResult;
+function FlattenElement(x: object): List<object>;
+begin
+  var res := new List<object>;
+  if x is string then
+    res.Add(x)
+  else if x is IEnumerable<object> (var xen) then
+    foreach var ob in xen do
+      res.AddRange(FlattenElement(ob))
+  else if x is System.Collections.IEnumerable (var xx) then
   begin
-    ColoredMessage($'Основной запуск верный',MsgColorGray);
-    ColoredMessage($'Ошибочное решение на тесте:',MsgColorOrange);
-    ColoredMessage($'Тестовые данные      : {InputList.JoinToString}',MsgColorGray);
-    ColoredMessage($'Полученный результат : {OutputList.JoinToString}',MsgColorGray);
-    if i0 = 0 then
-      ColoredMessage($'Правильный результат : {arr.JoinToString}',MsgColorGray)
-    else ColoredMessage($'Правильный результат : {(OutputList[:i0]+arr).JoinToString}',MsgColorGray)
-  end;
+    var en := xx.GetEnumerator;
+    while en.MoveNext do
+      res.Add(en.Current)
+  end    
+  else res.Add(x);
+  Result := res;  
+end;
 
+procedure OutputTestResult(i0: integer; arr: array of object);
+begin
+  ColoredMessage($'Основной запуск верный',MsgColorGray);
+  ColoredMessage($'Ошибочное решение на тесте:',MsgColorOrange);
+  ColoredMessage($'Тестовые данные      : {InputList.JoinToString}',MsgColorGray);
+  ColoredMessage($'Полученный результат : {OutputList.JoinToString}',MsgColorGray);
+  if i0 = 0 then
+    ColoredMessage($'Правильный результат : {arr.JoinToString}',MsgColorGray)
+  else ColoredMessage($'Правильный результат : {(OutputList[:i0]+arr).JoinToString}',MsgColorGray)
+end;
+
+procedure CheckOutputHelper(i0: integer; params arr: array of object);
 begin
   if (TaskResult = InitialTask) and CancelMessagesIfInitial
      or (TaskResult = BadInitialTask) then
     exit;
-
+  
+  // SSM 28.06.24 - вытягиваем в линию выходные данные
+  arr := arr.SelectMany(x -> FlattenElement(x)).ToArray;
+  
   // Если мы попали сюда, то OutputList.Count >= InitialOutputList.Count
   var mn := Min(arr.Length, OutputList.Count - i0);
   
@@ -2167,7 +2326,7 @@ begin
     then 
     begin
       if TestNumber > 0 then
-        OutputTestResult
+        OutputTestResult(i0,arr)
       else
       begin
         if i > InitialOutputList.Count then
@@ -2181,7 +2340,7 @@ begin
       if i >= InitialOutputList.Count then // ? Если первое данное неправильное - всё равно попадаем сюда!!!
       begin
         if TestNumber > 0 then
-          OutputTestResult
+          OutputTestResult(i0,arr)
         else
         begin
           if i > InitialOutputList.Count then
@@ -2199,7 +2358,7 @@ begin
   if arr.Length <> OutputList.Count - i0 then
   begin  
     if TestNumber > 0 then
-      OutputTestResult
+      OutputTestResult(i0,arr)
     else
     if OutputList.Count > 0 then begin
       if arr.Length > OutputList.Count - i0 then // выведено меньше чем надо
@@ -2218,6 +2377,8 @@ begin
   CheckOutputHelper(0,arr);
 end;
 
+procedure CheckOutput(a: ObjectList) := CheckOutputSeq(a);
+
 procedure CheckOutputSilent(params arr: array of object);
 begin
   Silent := True;
@@ -2225,10 +2386,14 @@ begin
   Silent := False;
 end;
 
+procedure CheckOutputSilent(a: ObjectList) := CheckOutputSeqSilent(a);
+
 procedure CheckOutputAfterInitial(params arr: array of object);
 begin
   CheckOutputHelper(InitialOutputList.Count,arr);
 end;
+
+procedure CheckOutputAfterInitial(a: ObjectList) := CheckOutputAfterInitialSeq(a);
 
 procedure CheckOutputAfterInitialSilent(params arr: array of object);
 begin
@@ -2311,7 +2476,7 @@ type
   IntAr2 = array [,] of integer;
   RealAr2 = array [,] of real;
   
-function FlattenElement(x: object): List<object>; 
+{function FlattenElement(x: object): List<object>; 
 begin
   var lst := new List<object>;
   if x is IntAr (var iarr) then
@@ -2328,7 +2493,7 @@ begin
     lst.AddRange(lrarr.Select(x -> object(x)))
   else lst.Add(x);
   Result := lst;
-end;
+end;}
 
 procedure FlattenOutput;
 begin
@@ -2634,6 +2799,7 @@ begin
     TName := ConvertTaskName(TaskName);
     TestMode := tmNone;
     TestNumber := 0;
+    FlattenOutput; // SSM 28.06.24 
     CheckTask(TName); // может выдавать сообщения, предваряющие неверное решение, в CheckOutput. 
     if {not IsPT and not IsRobot and not IsDrawMan and} (TestCount > 0) then // То это LightPT - т.к. только в LightPT TestCount м.б. > 0
     begin
@@ -2658,8 +2824,10 @@ begin
               raise e.InnerException;
           end;
           //InputList := InputList; 
-          //OutputList := OutputList; 
+          OutputList := OutputList; 
           
+          FlattenOutput; // SSM 28.06.24 - и перед каждым тестом
+          OutputListIsClearedFromSpaces := False;
           CheckTask(TName);
           if TaskResult = BadSolution then
             break; // хоть один тест неудачный - выходим!

@@ -32,6 +32,17 @@ copy bin\OptimizerConversion.dll Release\PascalABCNETLinux\OptimizerConversion.d
 copy bin\LanguageIntegrator.dll Release\PascalABCNETLinux\LanguageIntegrator.dll
 copy bin\StringConstants.dll Release\PascalABCNETLinux\StringConstants.dll
 
+copy bin\Microsoft.Bcl.HashCode.dll Release\PascalABCNETLinux\Microsoft.Bcl.HashCode.dll
+copy bin\System.Buffers.dll Release\PascalABCNETLinux\System.Buffers.dll
+copy bin\System.Collections.Immutable.dll Release\PascalABCNETLinux\System.Collections.Immutable.dll
+copy bin\System.Formats.Nrbf.dll Release\PascalABCNETLinux\System.Formats.Nrbf.dll
+copy bin\System.Memory.dll Release\PascalABCNETLinux\System.Memory.dll
+copy bin\System.Numerics.Vectors.dll Release\PascalABCNETLinux\System.Numerics.Vectors.dll
+copy bin\System.Reflection.Metadata.dll Release\PascalABCNETLinux\System.Reflection.Metadata.dll
+copy bin\System.Resources.Extensions.dll Release\PascalABCNETLinux\System.Resources.Extensions.dll
+copy bin\System.Runtime.CompilerServices.Unsafe.dll Release\PascalABCNETLinux\System.Runtime.CompilerServices.Unsafe.dll
+copy bin\System.ValueTuple.dll Release\PascalABCNETLinux\System.ValueTuple.dll
+
 copy bin\pabcnetc.exe Release\PascalABCNETLinux\pabcnetc.exe
 copy bin\pabcnetc.exe.config Release\PascalABCNETLinux\pabcnetc.exe.config
 copy bin\pabcnetcclear.exe Release\PascalABCNETLinux\pabcnetcclear.exe
@@ -41,7 +52,7 @@ copy bin\PascalABCNET.chm Release\PascalABCNETLinux\PascalABCNET.chm
 copy bin\PascalABCNETLinux.exe Release\PascalABCNETLinux\PascalABCNETLinux.exe
 copy bin\PascalABCNETLinux.exe.config Release\PascalABCNETLinux\PascalABCNETLinux.exe.config
 copy bin\PascalABCParser.dll Release\PascalABCNETLinux\PascalABCParser.dll
-copy bin\PascalLanguage.dll Release\PascalABCNETLinux\PascalLanguage.dll
+copy bin\PascalABCLanguageInfo.dll Release\PascalABCNETLinux\PascalABCLanguageInfo.dll
 copy bin\Pause.exe Release\PascalABCNETLinux\Pause.exe
 copy bin\PluginsSupportLinux.dll Release\PascalABCNETLinux\PluginsSupportLinux.dll
 copy bin\ProgrammRunner.exe Release\PascalABCNETLinux\ProgrammRunner.exe

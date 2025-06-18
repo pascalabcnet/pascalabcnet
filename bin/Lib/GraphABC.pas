@@ -1,4 +1,4 @@
-﻿// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 ///Модуль предоставляет константы, типы, процедуры, функции и классы для рисования в графическом окне
 unit GraphABC;
@@ -8,13 +8,12 @@ unit GraphABC;
 {$apptype windows} 
 {$reference '%GAC%\System.Windows.Forms.dll'}
 {$reference '%GAC%\System.Drawing.dll'}
-{$gendoc true}
 
 interface
 
 uses 
   System,
-  System.Drawing,
+  System.Drawing, 
   System.Windows.Forms, 
   System.Drawing.Drawing2D;
 
@@ -478,6 +477,8 @@ procedure DrawTextCentered(x, y: integer; n: integer);
 procedure DrawTextCentered(x, y: integer; r: real);
 /// Заливает область одного цвета цветом c, начиная с точки (x,y).
 procedure FloodFill(x, y: integer; c: Color);
+/// Заливает область Bitmap одного цвета цветом c, начиная с точки (x,y) .
+procedure BitmapFloodFill(bmp: Bitmap; x, y: integer; c: Color);
 
 {procedure FillCircle(x,y,r: integer; c: Color);
 procedure DrawCircle(x,y,r: integer; c: Color);
@@ -2346,7 +2347,7 @@ begin
   GraphABCHelper.TextOut(x, y, s, gb);
 end;
 
-function ExtFloodFill(hdc: IntPtr; x, y: integer; color: integer; filltype: integer): boolean; external 'Gdi32.dll' name 'ExtFloodFill';
+
 
 function SelectObject(hdc, hgdiobj: IntPtr): IntPtr; external 'Gdi32.dll' name 'SelectObject';
 
@@ -2357,46 +2358,11 @@ function DeleteObject(obj: IntPtr): integer; external 'Gdi32.dll' name 'DeleteOb
 function CreateCompatibleDC(obj: IntPtr): IntPtr; external 'Gdi32.dll' name 'CreateCompatibleDC';
 
 procedure Picture.FloodFill(x, y: integer; c: Color);
-//var hdc, hBrush, hOldBrush: IntPtr;
 begin
-  {var borderColor: Color := GetPixel(x, y);
-  
-  var bc := ColorTranslator.ToWin32(borderColor);
-  var cc := ColorTranslator.ToWin32(c);
-  
-  Monitor.Enter(f);
-  
-  hdc := gbmp.GetHDC();
-  hBrush := CreateSolidBrush(cc);
-  
-  hOldBrush := SelectObject(hdc, hBrush);
-  ExtFloodFill(hdc, x, y, bc, 1);
-  SelectObject(hdc, holdBrush);
-  
-  DeleteObject(hBrush);
-  
-  gbmp.ReleaseHdc();
-  
-  DeleteObject(hdc);
-  
-  Monitor.Exit(f);}
-  var st := new Stack<Point>();
-  var targetColor := bmp.GetPixel(x,y);
-  st.Push(Pnt(x,y));
-  while st.Count > 0 do
-  begin
-    var p := st.Pop;
-    if (p.x < 0) or (p.x >= WindowWidth) or (p.y < 0) or (p.y >= WindowHeight) then
-      continue;
-    if bmp.GetPixel(p.x,p.y) = targetColor then
-    begin
-      bmp.SetPixel(p.x,p.y,c);
-      st.Push(Pnt(p.x,p.y-1));
-      st.Push(Pnt(p.x,p.y+1));
-      st.Push(Pnt(p.x-1,p.y));
-      st.Push(Pnt(p.x+1,p.y));
-    end;
-  end;
+   Monitor.Enter(f);
+   BitmapFloodFill(bmp, x, y, c);
+   gbmp.DrawImage(bmp, 0, 0);
+   Monitor.Exit(f);
 end;
 
 procedure Picture.Clear;
@@ -3040,74 +3006,87 @@ begin
   ClosedCurve(pnts.ToArray);
 end;
 
-// Fills
-{procedure FloodFill(x, y: integer; c: Color);
-var
-  hdc, hBrush, hOldBrush: IntPtr;
-begin
-  var borderColor: Color := GetPixel(x, y);
-  //  var bc: integer := integer(borderColor.R) + (integer(borderColor.G) shl 8) + (integer(borderColor.B) shl 16);
-  //  var cc: integer := integer(c.R) + (integer(c.G) shl 8) + (integer(c.B) shl 16);
-  
-  var bc := ColorTranslator.ToWin32(borderColor);
-  var cc := ColorTranslator.ToWin32(c);
-  
-  Monitor.Enter(f);
-  
-  hdc := gr.GetHDC();
-  hBrush := CreateSolidBrush(cc);
-  
-  hOldBrush := SelectObject(hdc, hBrush);
-  ExtFloodFill(hdc, x, y, bc, 1);
-  SelectObject(hdc, holdBrush);
-  
-  var hbmp := bmp.GetHbitmap(); // Создается GDI Bitmap
-  var memdc: IntPtr := CreateCompatibleDC(hdc);
-  SelectObject(memdc, hbmp);
-  
-  hOldBrush := SelectObject(memdc, hBrush);
-  ExtFloodFill(memdc, x, y, bc, 1);
-  SelectObject(hdc, holdBrush);
-  
-  var bmp1 := Bitmap.FromHbitmap(hbmp);
-  gbmp.DrawImage(bmp1, 0, 0);
-  
-  bmp1.Dispose();
-  //  bmp := Bitmap.FromHbitmap(hbmp);
-  
-  DeleteObject(memdc);
-  DeleteObject(hbmp);
-  DeleteObject(hBrush);
-  
-  gr.ReleaseHdc();
-  
-  DeleteObject(hdc);
-  
-  Monitor.Exit(f);
-end;}
 
+procedure BitmapFloodFill(bmp: Bitmap; x, y: integer; c: Color);
+type 
+  RGB = record
+    r,g,b: byte;
+  end;
+  PRGB = ^uint32;
+begin
+    var data := bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
+        System.Drawing.Imaging.ImageLockMode.ReadWrite, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+    var pixelFormatSize := Image.GetPixelFormatSize(bmp.PixelFormat) div 8;
+    //ссылка на начало картинки
+    var ptr1: IntPtr := data.Scan0;
+    var w := data.Stride div 4;
+    var h := bmp.Height;
+    var check: LinkedList<Point> := new LinkedList<Point>;
+    var newColor := c.ToArgb();
+    var oldColor := PRGB(pointer(ptr1 + (x + y * w ) * pixelFormatSize))^;
+    var spanAbove := false;
+    var spanBelow := false;
+    var x1 := 0;    
+    ///starts filling
+    if (newColor <> oldColor) then
+    begin
+        check.AddLast(new Point(x, y));
+        while (check.Count > 0) do
+        begin
+            var cur:Point := check.First.Value;
+            check.RemoveFirst();
+            var _x := cur.X;
+            var _y := cur.Y;
+            x1 := _x;
+            while((x1 >= 0) and ( PRGB(pointer(ptr1 + (x1 + _y * w ) * pixelFormatSize))^ = oldColor)) do dec(x1);
+            inc(x1);
+            (spanAbove, spanBelow) := (false, false);
+              while((x1 < w) and ( PRGB(pointer(ptr1 + (x1 + _y * w ) * pixelFormatSize))^ = oldColor)) do
+            begin
+              PRGB(pointer(ptr1 + (x1 + _y * w ) * pixelFormatSize))^ := newColor;
+               if(not spanAbove and (_y >0 ) and (PRGB(pointer(ptr1 + (x1 + (_y -1) * w ) * pixelFormatSize))^ = oldColor)) then
+              begin
+                check.AddLast(new Point(x1, _y - 1));
+                spanAbove := true
+              end 
+              else
+                if(spanAbove and (_y > 0) and (PRGB(pointer(ptr1 + (x1 + (_y -1) * w ) * pixelFormatSize))^ <> oldColor)) then
+                begin
+                  spanAbove := false;
+                end;
+              if(not spanBelow and (_y < h - 1 ) and (PRGB(pointer(ptr1 + (x1 + (_y + 1) * w ) * pixelFormatSize))^  = oldColor)) then
+              begin
+                check.AddLast(new Point(x1, _y + 1));
+                spanBelow := true
+              end 
+              else
+                if(spanBelow and (_y < h - 1) and (PRGB(pointer(ptr1 + (x1 + (_y + 1) * w ) * pixelFormatSize))^ <> oldColor)) then
+                begin
+                  spanBelow := false;
+                end;
+              inc(x1);
+            end;
+        end;    
+      end;  
+    ///end filling
+    bmp.UnlockBits(data);
+end;
+
+
+
+
+///Fill area by C color
 procedure FloodFill(x, y: integer; c: Color);
 begin
-  LockDrawing;
-  var st := new Stack<Point>();
-  var targetColor := GetPixel(x,y);
-  st.Push(Pnt(x,y));
-  while st.Count > 0 do
-  begin
-    var p := st.Pop;
-    if (p.x < 0) or (p.x >= WindowWidth) or (p.y < 0) or (p.y >= WindowHeight) then
-      continue;
-    if GetPixel(p.x,p.y) = targetColor then
-    begin
-      PutPixel(p.x,p.y,c);
-      st.Push(Pnt(p.x,p.y-1));
-      st.Push(Pnt(p.x,p.y+1));
-      st.Push(Pnt(p.x-1,p.y));
-      st.Push(Pnt(p.x+1,p.y));
-    end;
-  end;
-  UnLockDrawing;
+  Monitor.Enter(f);
+  BitmapFloodFill(bmp, x, y, c);
+  if NotLockDrawing then
+    gr.DrawImage(bmp, 0, 0);
+  if DrawInBuffer then
+    gbmp.DrawImage(bmp, 0, 0);
+  Monitor.Exit(f);
 end;
+
 
 procedure FillRect(x1, y1, x2, y2: integer);
 begin

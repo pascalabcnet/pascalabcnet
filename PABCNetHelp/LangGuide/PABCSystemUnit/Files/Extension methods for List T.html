@@ -2,10 +2,14 @@
 <param name="Keyword" value="AdjacentFind">
 <param name="Keyword" value="Fill">
 <param name="Keyword" value="IndexMax">
+<param name="Keyword" value="IndexMaxBy">
 <param name="Keyword" value="IndexMin">
+<param name="Keyword" value="IndexMinBy">
 <param name="Keyword" value="Indices">
 <param name="Keyword" value="LastIndexMax">
+<param name="Keyword" value="LastIndexMaxBy">
 <param name="Keyword" value="LastIndexMin">
+<param name="Keyword" value="LastIndexMinBy">
 <param name="Keyword" value="RandomElement">
 <param name="Keyword" value="RemoveLast">
 <param name="Keyword" value="Replace">
@@ -24,8 +28,12 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет элементы списка значениями, вычисляемыми по некоторому правилу</td></tr>
 <tr><td><code><b>function</b> IndexMax&lt;T&gt;(Self: List&lt;T&gt;; index: integer := 0): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого максимального элемента начиная с позиции index</td></tr>
+<tr><td><code><b>function</b> IndexMaxBy&lt;T, TKey&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого элемента с максимальным значением ключа</td></tr>
 <tr><td><code><b>function</b> IndexMin&lt;T&gt;(Self: List&lt;T&gt;; index: integer := 0): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого минимального элемента начиная с позиции index</td></tr>
+<tr><td><code><b>function</b> IndexMinBy&lt;T, TKey&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого элемента с минимальным значением ключа</td></tr>
 <tr><td><code><b>function</b> Indices&lt;T&gt;(Self: List&lt;T&gt;): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов списка</td></tr>
 <tr><td><code><b>function</b> Indices&lt;T&gt;(Self: List&lt;T&gt;; cond: T-&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
@@ -36,10 +44,14 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]</td></tr>
 <tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: List&lt;T&gt;): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего максимального элемента</td></tr>
+<tr><td><code><b>function</b> LastIndexMaxBy&lt;T, TKey&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего элемента с максимальным значением ключа</td></tr>
 <tr><td><code><b>function</b> LastIndexMin&lt;T&gt;(Self: List&lt;T&gt;; index: integer): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]</td></tr>
 <tr><td><code><b>function</b> LastIndexMin&lt;T&gt;(Self: List&lt;T&gt;): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента</td></tr>
+<tr><td><code><b>function</b> LastIndexMinBy&lt;T, TKey&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего элемента с минимальным значением ключа</td></tr>
 <tr><td><code><b>function</b> RandomElement&lt;T&gt;(Self: List&lt;T&gt;): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный элемент списка</td></tr>
 <tr><td><code><b>function</b> RemoveLast&lt;T&gt;(Self: List&lt;T&gt;): List&lt;T&gt;;</code>

@@ -223,7 +223,7 @@ namespace PascalABCCompiler.PCU
         {
 
             var FullUnitName = comp.FindPCUFileName(UnitName, dir, out _);
-            if (FullUnitName == null) throw new FileNotFound(UnitName, null);
+            if (FullUnitName == null) throw new Errors.FileNotFound(UnitName, null);
 
             return FullUnitName;
         }
@@ -1335,7 +1335,7 @@ namespace PascalABCCompiler.PCU
                 	loc = ReadDebugInfo();
                 	type_node elem_type = GetTypeReference();
                 	int rank = br.ReadInt32();
-                	return type_constructor.instance.create_unsized_array(elem_type, null, rank, loc);
+                	return type_constructor.instance.create_unsized_array(elem_type, rank, loc);
                 case 6:
                     return GetTemplateInstance();
                 case 7:
@@ -1847,7 +1847,10 @@ namespace PascalABCCompiler.PCU
             common_method_node raise_meth = null;
             if (CanReadObject())
             raise_meth = GetClassMethod(br.ReadInt32());
-            class_field cf = GetClassField(br.ReadInt32());
+            int field_off = br.ReadInt32();
+            class_field cf = null;
+            if (field_off > 0)
+                cf = GetClassField(field_off);
             common_type_node cont = (common_type_node)GetTypeReference(br.ReadInt32());
             if (name==null)
                 name = GetStringInClass(cont, name_ref);
@@ -3235,7 +3238,12 @@ namespace PascalABCCompiler.PCU
             var_definition_node vdn = GetLocalOrNamespaceVariableByOffset(br.ReadInt32());
             expression_node expr = CreateExpression();
             statement_node body = CreateStatement();
-            return new foreach_node(vdn, expr, body, null);
+            type_node elementType = null;
+            if (CanReadObject())
+                elementType = GetTypeReference();
+
+            bool isGeneric = br.ReadBoolean();
+            return new foreach_node(vdn, expr, body, elementType, isGeneric, null);
         }
 
         private statement_node CreateLock()

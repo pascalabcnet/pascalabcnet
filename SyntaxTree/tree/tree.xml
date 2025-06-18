@@ -3276,6 +3276,7 @@
     <SyntaxNode Name="array_const_new" BaseName="addressed_value">
       <Fields>
         <SyntaxField Name="elements" SyntaxType="expression_list" />
+        <ExtendedField Name="braces_type" Type="char" CreateVariable="false" DeleteVariable="false" />
       </Fields>
       <Methods />
       <Tags>
@@ -3368,6 +3369,40 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="to_expr" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="key" SyntaxType="expression" />
+        <SyntaxField Name="value" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="global_statement" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="idents" SyntaxType="ident_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="list_generator" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="_expr" SyntaxType="expression" />
+        <SyntaxField Name="_ident" SyntaxType="ident" />
+        <SyntaxField Name="_range" SyntaxType="expression" />
+        <SyntaxField Name="_condition" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3409,6 +3444,10 @@
       <HelpData Key=".Name" Value="" />
       <HelpData Key=".UnknownID" Value="" />
       <HelpData Key=".Vds" Value="" />
+      <HelpData Key="._condition" Value="" />
+      <HelpData Key="._expr" Value="" />
+      <HelpData Key="._ident" Value="" />
+      <HelpData Key="._range" Value="" />
       <HelpData Key="._realType" Value="" />
       <HelpData Key=".additional_restrictions" Value="" />
       <HelpData Key=".aloneparam" Value="" />
@@ -3436,6 +3475,7 @@
       <HelpData Key=".has_deref" Value="" />
       <HelpData Key=".i" Value="" />
       <HelpData Key=".id" Value="" />
+      <HelpData Key=".idents" Value="" />
       <HelpData Key=".if_false" Value="" />
       <HelpData Key=".if_true" Value="" />
       <HelpData Key=".il" Value="" />
@@ -3445,6 +3485,7 @@
       <HelpData Key=".initial_value" Value="ссылка на addrvalue, которой интциализируется идентификатор" />
       <HelpData Key=".inverted" Value="" />
       <HelpData Key=".item_expression" Value="" />
+      <HelpData Key=".key" Value="" />
       <HelpData Key=".left" Value="" />
       <HelpData Key=".lists" Value="" />
       <HelpData Key=".listunitsections" Value="" />
@@ -3512,6 +3553,7 @@
       <HelpData Key="array_const" Value="" />
       <HelpData Key="array_const.elements" Value="" />
       <HelpData Key="array_const_new" Value="" />
+      <HelpData Key="array_const_new.braces_type" Value="" />
       <HelpData Key="array_const_new.elements" Value="" />
       <HelpData Key="array_of_const_type" Value="array of const" />
       <HelpData Key="array_of_const_type_defenition" Value="array of const" />
@@ -3986,6 +4028,8 @@
       <HelpData Key="function_lambda_definition.visit_for_type_inference" Value="" />
       <HelpData Key="get_address" Value="" />
       <HelpData Key="get_address.address_of" Value="" />
+      <HelpData Key="global_statement" Value="" />
+      <HelpData Key="global_statement.idents" Value="" />
       <HelpData Key="goto_statement" Value="" />
       <HelpData Key="goto_statement.goto_statement(string name)" Value="" />
       <HelpData Key="goto_statement.goto_statement(string name, SourceContext sc)" Value="" />
@@ -4130,6 +4174,11 @@
       <HelpData Key="let_var_expr" Value="" />
       <HelpData Key="let_var_expr.ex" Value="" />
       <HelpData Key="let_var_expr.id" Value="" />
+      <HelpData Key="list_generator" Value="" />
+      <HelpData Key="list_generator._condition" Value="" />
+      <HelpData Key="list_generator._expr" Value="" />
+      <HelpData Key="list_generator._ident" Value="" />
+      <HelpData Key="list_generator._range" Value="" />
       <HelpData Key="literal" Value="#12 либо 'abc'" />
       <HelpData Key="literal_const_line" Value="Представляет в синтаксическом дереве строку вида #123'abc'#124#125." />
       <HelpData Key="literal_const_line.literal_const_line Add(literal _literal)" Value="" />
@@ -4597,6 +4646,9 @@
       <HelpData Key="slice_expr_question.step" Value="" />
       <HelpData Key="slice_expr_question.to" Value="" />
       <HelpData Key="slice_expr_question.v" Value="" />
+      <HelpData Key="spython_method_call" Value="" />
+      <HelpData Key="spython_method_call.method_name" Value="" />
+      <HelpData Key="spython_method_call.param_list" Value="" />
       <HelpData Key="statement" Value="Оператор" />
       <HelpData Key="statement." Value="" />
       <HelpData Key="statement.label_name" Value="" />
@@ -4669,6 +4721,9 @@
       <HelpData Key="template_type_reference." Value="" />
       <HelpData Key="template_type_reference.name" Value="" />
       <HelpData Key="template_type_reference.params_list" Value="" />
+      <HelpData Key="to_expr" Value="" />
+      <HelpData Key="to_expr.key" Value="" />
+      <HelpData Key="to_expr.value" Value="" />
       <HelpData Key="token_info" Value="" />
       <HelpData Key="token_info." Value="" />
       <HelpData Key="token_info.override string ToString()" Value="" />

@@ -2459,6 +2459,21 @@ namespace PascalABCCompiler.TreeRealization
                             {
                                 fn = fn.get_instance(ctn.instance_params, true, null);
                             }
+                            else if (ctn.type_special_kind == SemanticTree.type_special_kind.array_kind) 
+                            // надо ещё проверить rank - а его просто проверить только у compiled_type_node - как у common_type_node - не знаю
+                            {
+                                var rank = 1;
+                                if (ctn is compiled_type_node comptn)
+                                    rank = comptn.rank;
+                                else if (ctn is compiled_type_node commtn)
+                                    rank = commtn.rank;
+                                if (rank == 1)
+                                {
+                                    List<type_node> instance_params = new List<type_node>();
+                                    instance_params.Add(ctn.element_type);
+                                    fn = fn.get_instance(instance_params, false, null);
+                                }
+                            }
                             else if (fn.get_generic_params_list() != null && fn.get_generic_params_list().Count > 0)
                             {
                                 if (ctn.IsPointer)
@@ -3869,7 +3884,12 @@ namespace PascalABCCompiler.TreeRealization
                     _implicit_convertions_to.Add(ctn, fn);
                 else if (fn == null && this.type_special_kind == SemanticTree.type_special_kind.array_kind && this.base_type.Scope != null)
                 {
-                    fn = NetHelper.NetHelper.get_implicit_conversion(this.base_type as compiled_type_node, this.base_type as compiled_type_node, ctn, this.base_type.Scope as NetHelper.NetTypeScope);
+                    var ttn = ctn;
+                    if (cctn != null && cctn.is_generic_type_instance)
+                        ttn = compiled_type_node.get_type_node(cctn.compiled_type.GetGenericTypeDefinition());
+
+                    fn = NetHelper.NetHelper.get_implicit_conversion(this.base_type as compiled_type_node, 
+                        this.base_type as compiled_type_node, ttn, this.base_type.Scope as NetHelper.NetTypeScope);
                     if (fn != null)
                     {
                         List<type_node> instance_params = new List<type_node>();

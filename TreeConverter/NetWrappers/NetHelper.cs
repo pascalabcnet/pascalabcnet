@@ -1115,20 +1115,71 @@ namespace PascalABCCompiler.NetHelper
             {
                 List<SymbolInfo> sil = scope.FindOnlyInType(op_name, scope);
                 if(sil != null)
+                    // что будет если два одинаковых преобразования? Может ли такое быть?
                     foreach(SymbolInfo si in sil)
                     {
                         if (si.sym_info is common_namespace_function_node)
                         {
                             function_node fn = si.sym_info as function_node;
-                            if ((fn.return_value_type == to || fn.return_value_type.original_generic == to 
-                                || to.type_special_kind == type_special_kind.array_kind && fn.return_value_type != null && fn.return_value_type.type_special_kind == type_special_kind.array_kind 
-                                && fn.return_value_type.element_type.is_generic_parameter) && 
-                                fn.parameters.Count == 1 && 
-                                (fn.parameters[0].type == from || fn.parameters[0].type.original_generic == from)
-                                || fn.parameters[0].type.type_special_kind == type_special_kind.array_kind && fn.parameters[0].type.element_type.is_generic_parameter)
+                            // SSM 17/07/24 Тут треш какой-то. fn - функция приведения типа. 
+                            if (
+                                // Тип возвращаемого значения fn совпадает с to
+                                (fn.return_value_type == to || fn.return_value_type.original_generic == to
+                                  // Тут странное условие. to - это массив, fn.return_value_type - это массив и 
+                                  // тип элемента этого массива - generic. То есть, это функция преобразования к array of T
+                                  // непонятно, можно ли тут двумерные массивы или просто system.array
+                                  || to.type_special_kind == type_special_kind.array_kind 
+                                     && fn.return_value_type != null 
+                                     && fn.return_value_type.type_special_kind == type_special_kind.array_kind 
+                                     && fn.return_value_type.element_type.is_generic_parameter
+                                ) 
+                                  // Ну тут более менее понятно. Параметр у преобразования - один - 
+                                  // и он в точности равен from
+                                  && fn.parameters.Count == 1 
+                                  && (fn.parameters[0].type == from || fn.parameters[0].type.original_generic == from)
+                                // А тут самый главный треш. Мы преобразуем из массива. Почему то не проверяется уже, что 
+                                // количество параметров = 1. Ну ладно. Наверное это всегда так
+                                // Но далее просто сказано, что это обобщенный массив.
+                                // То есть, мы преобразуем из обобщенного массива array of T КУДА УГОДНО
+                                // и вообще не сравниваем с to. В этом и ошибка!
+                                //|| fn.parameters[0].type.type_special_kind == type_special_kind.array_kind 
+                                //  && fn.parameters[0].type.element_type.is_generic_parameter
+                               )
                             {
                                 return fn;
                             }
+                            if (
+                                fn.parameters[0].type.type_special_kind == type_special_kind.array_kind
+                                  && fn.parameters[0].type.element_type.is_generic_parameter
+                                  && fn.parameters.Count == 1
+                                  // Вот это условие для set of T должно удовлетвориться и тогда всё будет работать!
+                                  && (fn.return_value_type == to || fn.return_value_type.original_generic == to)
+                               )
+                            {
+                                return fn;
+                            }
+                            // А теперь конкретно для преобразования array of T в set of T !!! Надо переделывать. Позже
+                            if (
+                                fn.parameters[0].type.type_special_kind == type_special_kind.array_kind
+                                  && fn.parameters[0].type.element_type.is_generic_parameter
+                                  && fn.parameters.Count == 1
+                                  && to is common_type_node ctn && ctn.type_special_kind == type_special_kind.set_type
+                                )
+                            {
+                                List<type_node> instance_params = new List<type_node>();
+                                
+                                instance_params.Add(ctn.element_type); // Это должен быть конкретный тип
+                                var fn1 = fn.get_instance(instance_params, false, null);
+                                if (
+                                    fn1.return_value_type == to || fn1.return_value_type.original_generic == to
+                                   )
+                                {
+                                    // Вернуть тем не менее fn! Во внешнем коде он тоже инстанцируется!
+                                    // Это обязательно надо переделывать!
+                                    return fn;
+                                }
+                            }
+
                         }
                     }
             }
@@ -1516,7 +1567,7 @@ namespace PascalABCCompiler.NetHelper
         public static List<SymbolInfo> FindName(Type t, string name)
         {
             if (name == null) return null;
-            if (name == StringConstants.assign_name) return null;
+            if (name == StringConstants.assign_name && !t.IsValueType) return null;
             string s = StringConstants.GetNETOperName(name);
             string tmp_name = name;
             if (s != null)
@@ -1536,12 +1587,37 @@ namespace PascalABCCompiler.NetHelper
 
             //TODO: проанализировать и изменить алгоритмы, использующие поиск.
             //List<SymbolInfo> si_list = new List<SymbolInfo>();
+            if (tmp_name == "/" && mis.Count > 1)
+            {
+                List<MemberInfo> tmp_mis = new List<MemberInfo>();
+                bool has_fdiv_ext = false;
+                foreach (MemberInfo mi in mis)
+                {
+                    if (mi.Name == "/")
+                    {
+                        tmp_mis.Add(mi);
+                        has_fdiv_ext = true;
+                        break;
+                    }
+                }
+                
+                foreach (MemberInfo mi in mis)
+                {
+                    if (mi.Name != "/" && !(has_fdiv_ext && mi.Name == "div"))
+                    {
+                        tmp_mis.Add(mi);
+                    }
+                }
+                mis = tmp_mis;
+            }
             foreach (MemberInfo mi in mis)
             {
                 if (mi.DeclaringType != null && PABCSystemType != null && mi.DeclaringType.Assembly == PABCSystemType.Assembly && !UsePABCRtl)
                     continue;
                 if (is_visible(mi))
                 {
+                    //if (tmp_name == "/" && (mi.Name == "op_Division" || mi.Name == "div") && mi.DeclaringType.FullName == "System.Numerics.BigInteger")
+                    //    continue;
                     SymbolInfo temp = null;
                     switch (mi.MemberType)
                     {

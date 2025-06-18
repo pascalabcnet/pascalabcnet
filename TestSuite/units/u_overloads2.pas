@@ -1,4 +1,4 @@
-unit u_overloads2;
+﻿unit u_overloads2;
 var i : integer;
 
 procedure Test(a : set of 1..3);
@@ -13,5 +13,5 @@ end;
 
 begin
 Test([1..3]);
-assert(i=2);
+assert(i=1);
 end.

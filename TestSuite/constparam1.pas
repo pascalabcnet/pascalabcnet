@@ -1,4 +1,4 @@
-type TRec = record
+﻿type TRec = record
   a : integer;
 end;
 
@@ -53,7 +53,7 @@ begin
   Test(10);
   Test2(['1','2','3']);
   Test3('abc');
-  Test4([1,2,4]);
+  Test4([1,2]);
   Test5('abcdef');
   Test6(3);
   Test7(2);

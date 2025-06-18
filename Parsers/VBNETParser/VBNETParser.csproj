@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net40</TargetFramework>
+    
+    <OutputPath>..\..\bin\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Deterministic>false</Deterministic>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Errors\Errors.csproj" />
+    <ProjectReference Include="..\..\Localization\Localization.csproj" />
+    <ProjectReference Include="..\..\ParserTools\ParserTools.csproj" />
+    <ProjectReference Include="..\..\SyntaxTree\SyntaxTree.csproj" />
+  </ItemGroup>
+  
+
+</Project>

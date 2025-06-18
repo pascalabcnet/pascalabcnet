@@ -25,6 +25,8 @@ using while_node = PascalABCCompiler.TreeRealization.while_node;
 using TreeConverter.LambdaExpressions.Closure;
 using TreeConverter.LambdaExpressions;
 using PascalABCCompiler.TreeConverter.TreeConversion;
+using System.Reflection;
+using PascalABCCompiler.SemanticTree;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -111,6 +113,8 @@ namespace PascalABCCompiler.TreeConverter
         {
             //convertion_data_and_alghoritms.__i = 0;
             Initialize(initializationData);
+
+            this.docs = initializationData.docs;
             //comp_units=UsedUnits;
             //visit(SyntaxUnit
             //SyntaxTreeToSemanticTreeConverter.interface_using_list = namespaces;
@@ -121,6 +125,9 @@ namespace PascalABCCompiler.TreeConverter
         public void InitializeForCompilingImplementation(InitializationDataForCompilingImplementation initializationData)
         {
             Initialize(initializationData);
+
+            if (this.docs != null)
+                this.docs = initializationData.docs;
 
             using_list.AddRange(initializationData.interfaceNamespaces);
             interface_using_list.AddRange(initializationData.interfaceNamespaces);
@@ -150,8 +157,6 @@ namespace PascalABCCompiler.TreeConverter
 
             SymbolTable.CaseSensitive = SemanticRulesConstants.SymbolTableCaseSensitive;
 
-            if (docs != null)
-                this.docs = initializationData.docs;
             this.debug = initializationData.debug;
             this.debugging = initializationData.debugging;
             this.for_intellisense = initializationData.forIntellisense;
@@ -308,8 +313,8 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.InSetProcedure = null;
             SystemLibrary.SystemLibInitializer.CreateSetProcedure = null;
             SystemLibrary.SystemLibInitializer.TypedSetInitProcedure = null;
-            SystemLibrary.SystemLibInitializer.IncludeProcedure = null;
-            SystemLibrary.SystemLibInitializer.ExcludeProcedure = null;
+            //SystemLibrary.SystemLibInitializer.IncludeProcedure = null;
+            //SystemLibrary.SystemLibInitializer.ExcludeProcedure = null;
             SystemLibrary.SystemLibInitializer.DiapasonType = null;
             SystemLibrary.SystemLibInitializer.CreateDiapason = null;
             SystemLibrary.SystemLibInitializer.CreateObjDiapason = null;
@@ -397,8 +402,8 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.SetSubtractProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.subtract_of_set);
             SystemLibrary.SystemLibInitializer.InSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.in_set);
             SystemLibrary.SystemLibInitializer.CreateSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateSetProcedure);
-            SystemLibrary.SystemLibInitializer.IncludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.IncludeProcedure);
-            SystemLibrary.SystemLibInitializer.ExcludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ExcludeProcedure);
+            //SystemLibrary.SystemLibInitializer.IncludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.IncludeProcedure);
+            //SystemLibrary.SystemLibInitializer.ExcludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ExcludeProcedure);
             SystemLibrary.SystemLibInitializer.DiapasonType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.DiapasonType);
             SystemLibrary.SystemLibInitializer.CreateDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateDiapason);
             SystemLibrary.SystemLibInitializer.CreateObjDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateObjDiapason);
@@ -491,8 +496,8 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.SetSubtractProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.subtract_of_set);
             SystemLibrary.SystemLibInitializer.InSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.in_set);
             SystemLibrary.SystemLibInitializer.CreateSetProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateSetProcedure);
-            SystemLibrary.SystemLibInitializer.IncludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.IncludeProcedure);
-            SystemLibrary.SystemLibInitializer.ExcludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ExcludeProcedure);
+            //SystemLibrary.SystemLibInitializer.IncludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.IncludeProcedure);
+            //SystemLibrary.SystemLibInitializer.ExcludeProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.ExcludeProcedure);
             SystemLibrary.SystemLibInitializer.DiapasonType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.DiapasonType);
             SystemLibrary.SystemLibInitializer.CreateDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateDiapason);
             SystemLibrary.SystemLibInitializer.CreateObjDiapason = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.CreateObjDiapason);
@@ -1175,7 +1180,12 @@ namespace PascalABCCompiler.TreeConverter
                 left_type = SystemLibrary.SystemLibrary.integer_type;
                 left.type = left_type;
             }
-                
+
+            if (right_type == null && right is enum_const_node)
+            {
+                right_type = SystemLibrary.SystemLibrary.integer_type;
+                right.type = right_type;
+            }
 
             if (left_type.semantic_node_type == semantic_node_type.delegated_method)
             {
@@ -2920,7 +2930,8 @@ namespace PascalABCCompiler.TreeConverter
 #if DEBUG
                         //System.IO.File.AppendAllText("aa.txt", context._cmn.functions[context._cmn.functions.Count - 1].name+"\n");
 #endif
-                        context._cmn.functions.remove_at(context._cmn.functions.Count - 1);
+                        context._cmn.functions[context._cmn.functions.Count - 1].function_code = new statements_list(null);
+                        //context._cmn.functions.remove_at(context._cmn.functions.Count - 1);
 
                     }
 
@@ -3650,7 +3661,11 @@ namespace PascalABCCompiler.TreeConverter
                 cdn.const_value = new enum_const_node(num++, null, get_location(id));
                 else
                 {
-                	constant_node cn = convert_strong_to_constant_node(en.value,SystemLibrary.SystemLibrary.integer_type);
+                	constant_node cn = convert_strong_to_constant_node(en.value, SystemLibrary.SystemLibrary.integer_type);
+                    if (cn is basic_function_call_as_constant bfcc && bfcc.method_call.function_node.compile_time_executor != null)
+                    {
+                        cn = convert_strong_to_constant_node(bfcc.method_call.function_node.compile_time_executor(bfcc.location, bfcc.method_call.parameters.ToArray()), SystemLibrary.SystemLibrary.integer_type);
+                    }
                 	check_for_strong_constant(cn,get_location(en.value));
                 	cdn.const_value = new enum_const_node((cn as int_const_node).constant_value,null,get_location(id));
                 }
@@ -3658,6 +3673,12 @@ namespace PascalABCCompiler.TreeConverter
             }
             common_type_node ctn = context.create_enum_type(null, get_location(_enum_type_definition)); //_enum_type_definition.values
             num = 0;
+            foreach (constant_definition_node cdn in cnsts)
+            {
+                cdn.const_value.type = ctn;
+            }
+
+            int i = 0;
             foreach (SyntaxTree.enumerator en in _enum_type_definition.enumerators.enumerators)
             {
                 SyntaxTree.ident id = (en.name as named_type_reference).FirstIdent;
@@ -3666,14 +3687,12 @@ namespace PascalABCCompiler.TreeConverter
                 cdn.const_value = new enum_const_node(num++, null, get_location(id));
                 else
                 {
-                	constant_node cn = convert_strong_to_constant_node(en.value,SystemLibrary.SystemLibrary.integer_type);
-                	check_for_strong_constant(cn,get_location(en.value));
-                	cdn.const_value = new enum_const_node((cn as int_const_node).constant_value,null,get_location(id));
+                    cdn.const_value = cnsts[i].const_value;
                 }
                 cdn.const_value.type = ctn;
+                i++;
             }
-            foreach (constant_definition_node cdn in cnsts)
-                cdn.const_value.type = ctn;
+
             internal_interface ii = SystemLibrary.SystemLibrary.integer_type.get_internal_interface(internal_interface_kind.ordinal_interface);
             ordinal_type_interface oti_old = (ordinal_type_interface)ii;
             enum_const_node lower_value = new enum_const_node(0, ctn, ctn.loc);
@@ -3683,6 +3702,7 @@ namespace PascalABCCompiler.TreeConverter
                 oti_old.lower_eq_method, oti_old.greater_eq_method, oti_old.lower_method, oti_old.greater_method, lower_value, upper_value, oti_old.value_to_int, oti_old.ordinal_type_to_int);
 
             ctn.add_internal_interface(oti_new);
+
             //foreach (constant_definition_node cdn in cnsts)
             //  cdn.const_value.type = ctn;
             //context.leave_block();
@@ -3718,8 +3738,32 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.set_type_definition _set_type_definition)
         {
-            // throw new NotSupportedError(get_location(_set_type_definition));
-            if (SystemLibrary.SystemLibInitializer.TypedSetType == null || SystemLibrary.SystemLibInitializer.CreateSetProcedure == null)
+            // PABCSystem.NewSet<T>
+            // 
+            var ntr = new named_type_reference(new List<ident> { new ident("PABCSystem"), new ident("NewSet") });
+            type_node el_type = convert_strong(_set_type_definition.of_type);
+
+            if (el_type.type_special_kind == SemanticTree.type_special_kind.diap_type)
+            {
+                if (el_type is common_type_node ctn)
+                    el_type = ctn.base_type;
+            }
+
+            /* Не буду это делать!
+             * if (el_type == SystemLibrary.SystemLibrary.byte_type
+                || el_type == SystemLibrary.SystemLibrary.sbyte_type
+                || el_type == SystemLibrary.SystemLibrary.short_type
+                || el_type == SystemLibrary.SystemLibrary.ushort_type
+                )
+                el_type = SystemLibrary.SystemLibrary.integer_type;
+                */
+
+            var el_sem_type = new SyntaxTree.semantic_type_node(el_type, _set_type_definition.of_type.source_context);
+            var tpr = new template_param_list(el_sem_type);
+            var ttr = new SyntaxTree.template_type_reference(ntr, tpr);
+            ProcessNode(ttr);
+
+            /*if (SystemLibrary.SystemLibInitializer.TypedSetType == null || SystemLibrary.SystemLibInitializer.CreateSetProcedure == null)
                 AddError(new NotSupportedError(get_location(_set_type_definition)));
             type_node el_type = convert_strong(_set_type_definition.of_type);
             if (el_type.IsPointer)
@@ -3728,7 +3772,7 @@ namespace PascalABCCompiler.TreeConverter
             //	AddError(new VoidNotValid(get_location(_set_type_definition.of_type)));
             check_for_type_allowed(el_type, get_location(_set_type_definition.of_type));
             check_using_static_class(el_type, get_location(_set_type_definition.of_type));
-            return_value(context.create_set_type(el_type, get_location(_set_type_definition)));
+            return_value(context.create_set_type(el_type, get_location(_set_type_definition)));*/
         }
 
         public override void visit(SyntaxTree.known_type_definition _known_type_definition)
@@ -3994,8 +4038,15 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 var ff = convert_strong(c);
                                 if (!ff.IsInterface)
-                                    AddError(new AutoClassMustNotHaveParents(get_location(_class_definition)));
-
+                                {
+                                    if (ff is common_type_node ctn)
+                                    {
+                                        // разрешить также наследовать автоклассы от классов без полей
+                                        if (ctn.fields.Count == 0) 
+                                            continue;
+                                    }
+                                    AddError(new AutoClassMustNotHaveParentsWithFields(get_location(_class_definition)));
+                                }
                             }
 
                             List<SyntaxTree.ident> names = new List<SyntaxTree.ident>();
@@ -5083,6 +5134,39 @@ namespace PascalABCCompiler.TreeConverter
             set_intls[cnfc] = exprs;
         }
 
+        private System.Tuple<expression_node, expression_node> convert_diap_for_new_set(SyntaxTree.diapason_expr _diapason_expr, out type_node elem_type)
+        {
+            expression_node left = convert_strong(_diapason_expr.left);
+            if (left is typed_expression) left = convert_typed_expression_to_function_call(left as typed_expression);
+            expression_node right = convert_strong(_diapason_expr.right);
+            if (right is typed_expression) right = convert_typed_expression_to_function_call(right as typed_expression);
+            internal_interface ii = left.type.get_internal_interface(internal_interface_kind.ordinal_interface);
+            if (ii == null)
+            {
+                AddError(new OrdinalTypeExpected(left.location));
+            }
+            internal_interface iir = right.type.get_internal_interface(internal_interface_kind.ordinal_interface);
+            if (iir == null)
+            {
+                AddError(new OrdinalTypeExpected(right.location));
+            }
+            type_node_list tnl = new type_node_list();
+            tnl.AddElement(left.type);
+            tnl.AddElement(right.type);
+            elem_type = convertion_data_and_alghoritms.select_base_type(tnl, true);
+            if (elem_type == SystemLibrary.SystemLibrary.object_type)
+                AddError(new SimpleSemanticError(get_location(_diapason_expr), "BAD_DIAPASON_IN_SET_TYPE"));
+            // До этого момента совпадает с convert_diap_for_set
+
+            // если элементы - какого то целого типа, то привести к типу integer
+            if (elem_type != PascalABCCompiler.SystemLibrary.SystemLibrary.char_type && elem_type != PascalABCCompiler.SystemLibrary.SystemLibrary.bool_type && !elem_type.IsEnum)
+            {
+                left = convertion_data_and_alghoritms.explicit_convert_type(left, PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type);
+                right = convertion_data_and_alghoritms.explicit_convert_type(right, PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type);
+            }
+            return Tuple.Create(left, right);
+        }
+
         private expression_node convert_diap_for_set(SyntaxTree.diapason_expr _diapason_expr, out type_node elem_type)
         {
             expression_node left = convert_strong(_diapason_expr.left);
@@ -5148,24 +5232,38 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.pascal_set_constant _pascal_set_constant)
         {
-            //throw new NotSupportedError(get_location(_pascal_set_constant));
-            if (SystemLibrary.SystemLibInitializer.TypedSetType == null || SystemLibrary.SystemLibInitializer.CreateSetProcedure == null)
-            	AddError(new NotSupportedError(get_location(_pascal_set_constant)));
+            // Если хоть одно - diapason_expr, то это множество иначе литеральный массив
+            /*if (_pascal_set_constant.values == null ||
+                _pascal_set_constant.values.expressions.Any(ex => ex is SyntaxTree.diapason_expr)
+               )
+            { // это множество
+            }
+            else
+            {
+                var exl = new expression_list(_pascal_set_constant.values.expressions, _pascal_set_constant.source_context);
+                array_const_new ac = new array_const_new(exl,exl.source_context);
+                visit(ac);
+                return;
+            }*/
+            // надо разбить на 2 списка констант
             expressions_list consts = new expressions_list();
-            type_node el_type = null;
-            type_node_list types = new type_node_list();
+            expressions_list consts_diap = new expressions_list();
+
+            type_node el_type = null; // вывод самого общего типа элемента
+            type_node_list types = new type_node_list(); // этот список - единый. Он нужен только для вывода самого общего типа
             if (_pascal_set_constant.values != null && _pascal_set_constant.values.expressions != null)
                 foreach (SyntaxTree.expression e in _pascal_set_constant.values.expressions)
                 {
-            		if (e is SyntaxTree.nil_const)
-                        ErrorsList.Add(new SimpleSemanticError(get_location(e), "NIL_IN_SET_CONSTRUCTOR_NOT_ALLOWED"));
-            		else
-            		if (e is SyntaxTree.diapason_expr)
+                    if (e is SyntaxTree.nil_const)
+                        AddError(new SimpleSemanticError(get_location(e), "NIL_IN_SET_CONSTRUCTOR_NOT_ALLOWED"));
+                    else
+                    if (e is SyntaxTree.diapason_expr)
                     {
-                        expression_node en = convert_diap_for_set((e as SyntaxTree.diapason_expr), out el_type); 
-                        consts.AddElement(en);
+                        var pair = convert_diap_for_new_set((e as SyntaxTree.diapason_expr), out el_type);
+                        consts_diap.AddElement(pair.Item1);
+                        consts_diap.AddElement(pair.Item2);
                         if (el_type.IsPointer)
-                            ErrorsList.Add(new SimpleSemanticError(get_location(e), "POINTERS_IN_SETS_NOT_ALLOWED"));
+                            AddError(new SimpleSemanticError(get_location(e), "POINTERS_IN_SETS_NOT_ALLOWED"));
                         types.AddElement(el_type);
                     }
                     else
@@ -5173,66 +5271,131 @@ namespace PascalABCCompiler.TreeConverter
                         expression_node en = convert_strong(e);
                         if (en is typed_expression) en = convert_typed_expression_to_function_call(en as typed_expression);
                         if (en.type.type_special_kind == SemanticTree.type_special_kind.short_string)
-                        	en.type = SystemLibrary.SystemLibrary.string_type;
+                            en.type = SystemLibrary.SystemLibrary.string_type;
                         consts.AddElement(en);
-                        types.AddElement(en.type);
+                        if (en.type.IsPointer)
+                            AddError(new SimpleSemanticError(get_location(e), "POINTERS_IN_SETS_NOT_ALLOWED"));
+                        if (en.type.type_special_kind == type_special_kind.diap_type)
+                            types.AddElement(en.type.base_type);
+                        else types.AddElement(en.type);
                     }
                 }
-            type_node ctn = null;
-            if (consts.Count > 0)
+            // Константы и типы заполнены
+            // Выводим самый общий тип
+
+            //type_node ctn = null;
+            if (types.Count > 0)
             {
-                el_type = convertion_data_and_alghoritms.select_base_type(types, true);
+                el_type = convertion_data_and_alghoritms.select_base_type(types, true); // !!
                 if (el_type == null)
                     AddError(new SimpleSemanticError(get_location(_pascal_set_constant), "IMPOSSIBLE_TO_INFER_SET_TYPE"));
-
-                ctn = context.create_set_type(el_type, get_location(_pascal_set_constant));
-
+                // Делаю невозможным базовый тип object - не нравится это, и в массивах нет
+                if (el_type == SystemLibrary.SystemLibrary.object_type)
+                    AddError(new SimpleSemanticError(get_location(_pascal_set_constant), "IMPOSSIBLE_TO_INFER_SET_TYPE"));
+                // если есть диапазоны, то базовый тип не может быть int64 и проч - только integer!!!
+                if (consts_diap.Count > 0)
+                    if (el_type != PascalABCCompiler.SystemLibrary.SystemLibrary.char_type
+                        && el_type != PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type
+                        && el_type != PascalABCCompiler.SystemLibrary.SystemLibrary.bool_type
+                        && !el_type.IsEnum)
+                        AddError(new SimpleSemanticError(get_location(_pascal_set_constant), "IMPOSSIBLE_TO_INFER_SET_TYPE"));
             }
-            else ctn = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
 
-            /*if (el_type == SystemLibrary.SystemLibrary.string_type)
+            // Теперь базовый тип известен (он может быть null), и надо сгенерировать 
+            //  EmptySet
+            //  NSet<el_type>(consts) или 
+            //  NSet<el_type>(Arr<el_type>(consts), Arr<el_type>(consts_diap))
+            // и обойти его
+            // Для el_type, consts и consts_diap надо делать обёртку semantic_type_node 
+            // и semantic_addr_value (тут не знаю - это константы вроде, хотя там к expression_node приводится так что всё хорошо)
+            // new semantic_addr_value()
+
+            var p = _pascal_set_constant;
+            var psc = p.source_context;
+            if (el_type == null)
             {
-                for (int i = 0; i < consts.Count; i++)
-                    if (consts[i].type == SystemLibrary.SystemLibrary.char_type)
-                    {
-                        consts[i] = convertion_data_and_alghoritms.convert_type(consts[i], el_type);
-                    }
-            } */ // Не работает ! SSM 19.03.19
-
-            expressions_list consts_copy = new expressions_list();
-            consts_copy.AddRange(consts);
-
-            function_node fn = convertion_data_and_alghoritms.select_function(consts, SystemLibrary.SystemLibInitializer.CreateSetProcedure.SymbolInfo, (SystemLibrary.SystemLibInitializer.CreateSetProcedure.sym_info is common_namespace_function_node)?(SystemLibrary.SystemLibInitializer.CreateSetProcedure.sym_info as common_namespace_function_node).loc:null);
-
-
-            if (fn is common_namespace_function_node)
+                var dn = new dot_node(new ident("PABCSystem", psc), new ident("EmptySet", psc));
+                ProcessNode(dn);
+            }
+            else if (consts_diap.Count == 0)
             {
-                common_namespace_function_call cnfc = new common_namespace_function_call(fn as common_namespace_function_node, get_location(_pascal_set_constant));
-                add_set_initializer(cnfc, consts_copy);
-                cnfc.ret_type = ctn;
-                for (int i = 0; i < consts.Count; i++)
-                    cnfc.parameters.AddElement(consts[i]);
-                return_value(cnfc);
+                // Это прямо очень хорошо! Просто вызываем NSet<el_type>(consts)
+                var nset_type = new semantic_type_node(el_type, psc);
+                var dn = new ident("__NewSetCreatorInternal", psc);
+                var td = new semantic_type_node(el_type, psc);
+                var tpl = new template_param_list(new List<type_definition> { td }, psc);
+                var method_name = new ident_with_templateparams(dn, tpl, psc);
+                var m_el = new expression_list();
+                foreach (var el in consts)
+                    m_el.Add(new semantic_addr_value(el, el.location));
+                // Добавим все обёрнутые константы
+                var mc = new method_call(method_name, m_el, psc);
+                ProcessNode(mc);
             }
             else
             {
-                compiled_static_method_call cnfc = new compiled_static_method_call(fn as compiled_function_node, get_location(_pascal_set_constant));
-                add_set_initializer(cnfc, consts_copy);
-                cnfc.ret_type = ctn;
-                for (int i = 0; i < consts.Count; i++)
-                    cnfc.parameters.AddElement(consts[i]);
-                return_value(cnfc);
+                // Ну теперь самый общий NSet<el_type>(Arr<el_type>(consts), Arr<el_type>(consts_diap))
+                var nset_type = new semantic_type_node(el_type, psc);
+                var dnNSetInt = new dot_node(new ident("PABCSystem", psc), new ident("__NSetInteger", psc));
+                var dnNSetChar = new dot_node(new ident("PABCSystem", psc), new ident("__NSetChar", psc));
+                var dnNSetEnum = new dot_node(new ident("PABCSystem", psc), new ident("__NSetEnum", psc));
+                var dnNSetBool = new dot_node(new ident("PABCSystem", psc), new ident("__NSetBoolean", psc));
+
+                // PABCSystem.Arr<integer> нельзя использовать - кидает странную ошибку
+                var dnArr = new dot_node(new ident("PABCSystem", psc), new ident("Arr", psc));
+                var td = new semantic_type_node(el_type, psc);
+                var tpl = new template_param_list(new List<type_definition> { td }, psc);
+                var method_name_Arr = new ident_with_templateparams(dnArr, tpl, psc);
+
+                var m_el_Arr1 = new expression_list();
+                foreach (var el in consts)
+                    m_el_Arr1.Add(new semantic_addr_value(el, el.location));
+
+                var m_el_Arr2 = new expression_list();
+                foreach (var el in consts_diap)
+                    m_el_Arr2.Add(new semantic_addr_value(el, el.location));
+
+
+                var cnt1 = new expression_list(new int32_const(m_el_Arr1.Count), p.values.source_context);
+                var cnt2 = new expression_list(new int32_const(m_el_Arr2.Count), p.values.source_context);
+                var arr1_init = new SyntaxTree.array_const(m_el_Arr1, p.values.source_context);
+                var arr2_init = new SyntaxTree.array_const(m_el_Arr2, p.values.source_context);
+                var new_arr1 = new new_expr(td, cnt1, true, arr1_init, p.values.source_context);
+                var new_arr2 = new new_expr(td, cnt2, true, arr2_init, p.values.source_context);
+
+                //var mc1 = new method_call(method_name_Arr, m_el_Arr1, psc);
+                //var mc2 = new method_call(method_name_Arr, m_el_Arr2, psc);
+
+                var m_el_NSet = new expression_list();
+                m_el_NSet.Add(new_arr1);
+                m_el_NSet.Add(new_arr2);
+                method_call mc_NSet = null;
+
+                if (el_type == PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type)
+                    mc_NSet = new method_call(dnNSetInt, m_el_NSet, psc);
+                else if (el_type == PascalABCCompiler.SystemLibrary.SystemLibrary.char_type)
+                    mc_NSet = new method_call(dnNSetChar, m_el_NSet, psc);
+                else if (el_type.IsEnum)
+                    mc_NSet = new method_call(dnNSetEnum, m_el_NSet, psc);
+                else if (el_type == PascalABCCompiler.SystemLibrary.SystemLibrary.bool_type)
+                    mc_NSet = new method_call(dnNSetBool, m_el_NSet, psc);
+                else AddError(new SimpleSemanticError(get_location(_pascal_set_constant), "IMPOSSIBLE_TO_INFER_SET_TYPE"));
+                ProcessNode(mc_NSet);
             }
-            //return_value(new common_namespace_function_call_as_constant(cnfc,cnfc.location));
         }
 
         public override void visit(SyntaxTree.array_const_new acn)
         {
             var lst = acn.elements.expressions.Select(ex => { var semex = convert_strong(ex); try_convert_typed_expression_to_function_call(ref semex); return semex; }).ToList();
-            
+
             type_node_list types = new type_node_list();
             foreach (var tn in lst.Select(ex => ex.type))
-                types.AddElement(tn);
+            {
+                if (tn.type_special_kind == type_special_kind.diap_type) // SSM 4/12/24 - стирание информации о типе диапазона
+                    types.AddElement(tn.base_type);
+                else types.AddElement(tn);
+            }
+                
             var el_type = convertion_data_and_alghoritms.select_base_type_for_arr_const_new(types, lst, true);
             var syntax_type = new SyntaxTree.semantic_type_node(el_type);
             //SyntaxTree.semantic_addr_value sav;
@@ -7004,7 +7167,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                     }
                 }
-                else if (SystemLibrary.SystemLibInitializer.IncludeProcedure.Equal(sil)
+                /*else if (SystemLibrary.SystemLibInitializer.IncludeProcedure.Equal(sil)
                                 || SystemLibrary.SystemLibInitializer.ExcludeProcedure.Equal(sil))
                 {
                     if (_method_call.parameters != null && _method_call.parameters.expressions.Count == 2)
@@ -7056,9 +7219,9 @@ namespace PascalABCCompiler.TreeConverter
                                     AddError(en_cnfn.location, "EXPRESSION_IS_NOT_ADDRESSED");
                                     return;
                                 }
-                        } */
+                        } 
                     }
-                }
+                }*/
                 else if (SystemLibrary.SystemLibInitializer.IncProcedure.Equal(sil))
                 {
                     expression_node bfcint = make_inc_call(sil?.FirstOrDefault(), _method_call.parameters, subloc2);
@@ -8002,7 +8165,7 @@ namespace PascalABCCompiler.TreeConverter
                     else
                         ConvertPointersForWriteFromDll(exprs);
                 }
-                else if (SystemLibrary.SystemLibInitializer.IncludeProcedure.Equal(sil)
+                /*else if (SystemLibrary.SystemLibInitializer.IncludeProcedure.Equal(sil)
                             || SystemLibrary.SystemLibInitializer.ExcludeProcedure.Equal(sil))
                 {
                     if (exprs.Count != 2) AddError(new NoFunctionWithSameArguments(FunctionName, loc, true));
@@ -8015,7 +8178,7 @@ namespace PascalABCCompiler.TreeConverter
                         convertion_data_and_alghoritms.check_convert_type(exprs[1], element_type, exprs[1].location);
                     else convertion_data_and_alghoritms.check_convert_type(exprs[1], exprs[0].type, exprs[0].location);
                     if (!exprs[0].is_addressed) AddError(new ThisExpressionCanNotBePassedAsVarParameter(exprs[0]));
-                }
+                }*/
                 else if (SystemLibrary.SystemLibInitializer.InSetProcedure.Equal(sil))
                 {
                     if (exprs.Count != 2) AddError(new NoFunctionWithSameArguments(FunctionName, loc, true));
@@ -12208,11 +12371,14 @@ namespace PascalABCCompiler.TreeConverter
                 context.check_name_free(name, loc);
                 is_direct_type_decl = true;
                 type_node tn = convert_strong(_type_declaration.type_def);
+                if (_type_declaration.type_def is enum_type_definition)
+                    context.check_name_free(name, loc);
                 assign_doc_info(tn,_type_declaration);
                 is_direct_type_decl = false;
                 if (_type_declaration.type_def is SyntaxTree.named_type_reference||
                     _type_declaration.type_def is SyntaxTree.ref_type || _type_declaration.type_def is SyntaxTree.string_num_definition ||
                     _type_declaration.type_def is SyntaxTree.sequence_type || //SSM 01.11.2018
+                    _type_declaration.type_def is SyntaxTree.set_type_definition || //SSM 07.11.2024
                     tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.array_kind)// ||
                     /*tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.set_type*/
                 {
@@ -12776,7 +12942,7 @@ namespace PascalABCCompiler.TreeConverter
                                     if (context.top_function.return_value_type == null || context.top_function.return_value_type == SystemLibrary.SystemLibrary.void_type)
                                         AddError(get_location(attr), "EXPECTED_RETURN_VALUE_FOR_ATTRIBUTE");
                                     throw new NotSupportedError(get_location(attr.qualifier));
-                                    qualifier = SemanticTree.attribute_qualifier_kind.return_kind;
+                                    // qualifier = SemanticTree.attribute_qualifier_kind.return_kind;
                                 }
                                 else
                                     throw new NotSupportedError(get_location(attr.qualifier));
@@ -13718,7 +13884,7 @@ namespace PascalABCCompiler.TreeConverter
         					cmc.parameters.AddElement(new int_const_node((prm.type.element_type.element_type as short_string_type_node).Length,null));
         				}
         				what_do.statements.AddElement(cmc);
-        				foreach_node fn = new foreach_node(var,in_what,what_do,null);
+        				foreach_node fn = new foreach_node(var, in_what,what_do, prm.type.element_type, true, null);
         				sl.statements.AddElementFirst(fn);
         			}
         		}
@@ -13989,6 +14155,7 @@ namespace PascalABCCompiler.TreeConverter
             common_type_node common_converted_type_tmp = context.converted_type;
             compiled_type_node compiled_converted_type_tmp = context.converted_compiled_type;
             common_namespace_function_node cnfn2 = context.top_function as common_namespace_function_node;
+
             if (cnfn2 != null && cnfn2.ConnectedToType != null)
             {
                 if (cnfn2.ConnectedToType is compiled_type_node)
@@ -14180,8 +14347,20 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
-            bool unique = context.close_function_params(body_exists);
+            common_type_node common_converted_type_tmp = context.converted_type;
+            compiled_type_node compiled_converted_type_tmp = context.converted_compiled_type;
+            common_namespace_function_node cnfn2 = context.top_function as common_namespace_function_node;
 
+            if (cnfn2 != null && cnfn2.ConnectedToType != null)
+            {
+                if (cnfn2.ConnectedToType is compiled_type_node)
+                    context.converted_compiled_type = cnfn2.ConnectedToType as compiled_type_node;
+                else if (cnfn2.ConnectedToType is common_type_node)
+                    context.converted_type = cnfn2.ConnectedToType as common_type_node;
+            }
+            bool unique = context.close_function_params(body_exists);
+            context.converted_compiled_type = compiled_converted_type_tmp;
+            context.converted_type = common_converted_type_tmp;
             if (context.converted_type != null && context.converted_type.IsInterface)
             {
                 if (body_exists)
@@ -14790,6 +14969,14 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(get_location(_typed_parametres.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
                 }
+                if (tn is compiled_type_node && (tn as compiled_type_node).rank > 1)
+                {
+                    AddError(get_location(_typed_parametres.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
+                }
+                if (tn is common_type_node && (tn as common_type_node).rank > 1)
+                {
+                    AddError(get_location(_typed_parametres.vars_type), "ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED");
+                }
             }
             com_par.type = tn;
             foreach (SyntaxTree.ident id in _typed_parametres.idents.idents)
@@ -14942,12 +15129,13 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(get_location(_array_type.indexers), "ARRAY_RANK_CANNOT_BE_GREATER_32");
                 type_node ret = null;
                 type_node et = convert_strong(_array_type.elements_type);
+                if (et.type_special_kind == type_special_kind.diap_type) // SSM 4/12/24
+                    et = et.base_type;
                 //if (et == SystemLibrary.SystemLibrary.void_type)
             	//AddError(new VoidNotValid(get_location(_array_type.elemets_types)));
                 check_for_type_allowed(et,get_location(_array_type.elements_type));
                 check_using_static_class(et, get_location(_array_type.elements_type));
-                ret = convertion_data_and_alghoritms.type_constructor.create_unsized_array(et,
-                    context.converted_namespace, rank, get_location(_array_type));
+                ret = convertion_data_and_alghoritms.type_constructor.create_unsized_array(et, rank, get_location(_array_type));
                 return_value(ret);
                 return;
             }
@@ -15156,6 +15344,27 @@ namespace PascalABCCompiler.TreeConverter
                 is_userdefined = !(cnf.function_node.namespace_node.namespace_name.Equals(StringConstants.pascalSystemUnitName) || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
             }
 
+            /*if (exp.type is ArrayConstType
+                || convertion_data_and_alghoritms.eq_type_nodes(exp.type, tn))
+            { 
+                return convert_strong_to_constant_node(exp, tn, is_const_section && is_userdefined, is_const_section);
+            }
+            else
+            {
+                var conv = convertion_data_and_alghoritms.convert_type(exp, tn);
+                return convert_strong_to_constant_node(conv, tn, is_const_section && is_userdefined, is_const_section);
+            }*/
+            
+            /*if (expr is pascal_set_constant)
+            {
+                var conv = convertion_data_and_alghoritms.convert_type(exp, tn);
+                return convert_strong_to_constant_node(conv, tn, is_const_section && is_userdefined, is_const_section);
+            }
+            else
+            {
+                return convert_strong_to_constant_node(exp, tn, is_const_section && is_userdefined, is_const_section);
+            }*/
+
             return convert_strong_to_constant_node(exp, tn, is_const_section && is_userdefined, is_const_section);
         }
 
@@ -15202,7 +15411,9 @@ namespace PascalABCCompiler.TreeConverter
                 if (csmc.type != null && csmc.type != SystemLibrary.SystemLibrary.void_type && (csmc.function_node.IsSpecialName && csmc.function_node.is_readonly || NetHelper.NetHelper.PABCSystemType != null && csmc.function_node.cont_type.compiled_type.Assembly == NetHelper.NetHelper.PABCSystemType.Assembly || !is_const_section))
                     constant = new compiled_static_method_call_as_constant(csmc, expr.location);
             }
-            else if (expr is common_namespace_function_call && SystemLibrary.SystemLibInitializer.CreateSetProcedure != null && (expr as common_namespace_function_call).function_node == SystemLibrary.SystemLibInitializer.CreateSetProcedure.sym_info as common_namespace_function_node)
+            else if (expr is common_namespace_function_call 
+                && SystemLibrary.SystemLibInitializer.CreateSetProcedure != null 
+                && (expr as common_namespace_function_call).function_node == SystemLibrary.SystemLibInitializer.CreateSetProcedure.sym_info as common_namespace_function_node)
             {
                 common_namespace_function_call cnfc = expr as common_namespace_function_call;
                 expressions_list exprs = get_set_initializer(cnfc);
@@ -15219,28 +15430,125 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 constant = new common_namespace_function_call_as_constant(cnfc, loc);
             }
+            else if (expr is common_namespace_function_call cnfc1
+                && cnfc1.function_node.attributes.Count > 0
+                && cnfc1.function_node.attributes[0].attribute_type.name.ToLower() == "SetCreatorFunctionAttribute".ToLower()
+                )
+            {
+                convertion_data_and_alghoritms.check_convert_type(cnfc1, tn, loc);
+                // Надо компоненты проверять на константность
+                var values0 = ((cnfc1.parameters[0] as basic_function_call).
+                      parameters[0] as common_namespace_function_call).parameters.Skip(3);
+                var values1 = ((cnfc1.parameters[1] as basic_function_call).
+                      parameters[0] as common_namespace_function_call).parameters.Skip(3);
+                var values = values0.Concat(values1).ToArray();
+                foreach (expression_node en in values)
+                {
+                    if (!(en is constant_node))
+                        AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                }
+                constant = new common_namespace_function_call_as_constant(cnfc1, loc);
+                return constant;
+            }
+            else if (expr is common_namespace_function_call
+                && (expr as common_namespace_function_call).function_node.name.StartsWith("__NewSetCreatorInternal")
+                )
+            {
+                var cnfc2 = expr as common_namespace_function_call;
+                convertion_data_and_alghoritms.check_convert_type(cnfc2, tn, loc);
+                var values = (cnfc2.parameters[0] as array_initializer).element_values;
+                // Надо компоненты проверять на константность
+                foreach (expression_node en in values)
+                {
+                    if (!(en is constant_node))
+                        AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                }
+                constant = new common_namespace_function_call_as_constant(cnfc2, loc);
+                return constant;
+            }
             else if (is_const_section_and_userfuncall && (expr is basic_function_call || expr is common_namespace_function_call)) // только в разделе const
             {
                 AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
             }
             else if (expr is common_namespace_function_call)
             {
+                // Отдельно для пустого множества 
                 common_namespace_function_call cnfc = expr as common_namespace_function_call;
-                foreach (expression_node el in cnfc.parameters)
-                    convert_strong_to_constant_node(el, el.type, false, false, cnfc.location);
+                if (cnfc.type.name == "EmptyCollection")
+                {
+                    constant = new common_namespace_function_call_as_constant(expr as common_namespace_function_call, loc);
+                    return constant;
+                }
+                if (cnfc.function_node.name != "op_Implicit")
+                    foreach (expression_node el in cnfc.parameters)
+                        convert_strong_to_constant_node(el, el.type, false, false, cnfc.location);
                 //if (cnfc.function_node.namespace_node == context.converted_namespace)
                 //    AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
                 //  throw new ConstantExpressionExpected(loc);
                 constant = new common_namespace_function_call_as_constant(expr as common_namespace_function_call, loc);
+                return constant;
+            }
+            else if (expr is common_namespace_function_call_as_constant cnfcac
+                && cnfcac.type.name == "EmptyCollection")
+            {
+                expr = create_constructor_call(tn, new expressions_list(), loc);
+                constant = new common_constructor_call_as_constant(expr as common_constructor_call, loc);
+
+                return constant;
+            }
+            else if (expr is common_namespace_function_call_as_constant cnfcac1)
+            {
+                constant = cnfcac1;
+                return constant;
+            }
+            else if (expr is common_constructor_call)
+            {
+                constant = new common_constructor_call_as_constant(expr as common_constructor_call, null);
+                return constant;
+            }
+            else if (expr is common_constructor_call_as_constant cccac)
+            {
+                //
+                constant = cccac.get_constant_copy(loc);
+                return constant;
             }
             else if (expr is basic_function_call)
             {
                 basic_function_call cnfc = expr as basic_function_call;
                 //if (cnfc.function_node.namespace_node == context.converted_namespace)
                 //  throw new ConstantExpressionExpected(loc);
-                foreach (expression_node el in cnfc.parameters)
-                    convert_strong_to_constant_node(el, el.type);
-                constant = new basic_function_call_as_constant(expr as basic_function_call, loc);
+                
+                // Как быть с new integer[5](2,3,4)? Там cnfc.parameters сщдержит 1 элемент, у которого в parameters первые три элемента - информационные
+                if (cnfc.parameters[0] is common_namespace_function_call cnsfc && 
+                    cnsfc.function_node.SpecialFunctionKind == SpecialFunctionKind.NewArray)
+                {
+                    foreach (expression_node el in cnsfc.parameters.Skip(3)) // это для 1 + 2 * 3
+                        convert_strong_to_constant_node(el, el.type);
+                    if (convertion_data_and_alghoritms.eq_type_nodes(expr.type, tn))
+                    {
+                        constant = new basic_function_call_as_constant(expr as basic_function_call, loc);
+                        return constant;
+                    }
+                    else
+                    {
+                        var conv = convertion_data_and_alghoritms.convert_type(expr, tn);
+                        constant = convert_strong_to_constant_node(conv, tn);
+                        return constant;
+                    }
+                }
+                else
+                {
+                    foreach (expression_node el in cnfc.parameters) // это для 1 + 2 * 3 - этот код был
+                        convert_strong_to_constant_node(el, el.type);
+                }
+
+                constant = new basic_function_call_as_constant(expr as basic_function_call, loc); //  - этот код был
+                return constant;
+            }
+            else if (expr is basic_function_call_as_constant bfcac)
+            {
+                constant = bfcac;
+                return constant;
             }
             else if (expr is typed_expression)
             {
@@ -15400,14 +15708,32 @@ namespace PascalABCCompiler.TreeConverter
             else if (expr is common_static_method_call)
             {
                 var csmc = expr as common_static_method_call;
-                var properties = new List<common_property_node>();
-                foreach (common_property_node cpn in csmc.function_node.cont_type.properties)
-                    if (cpn.get_function == csmc.function_node && cpn.set_function == null)
+                if (csmc.function_node.cont_type != null)
+                {
+                    foreach (common_property_node cpn in csmc.function_node.cont_type.properties)
+                        if (cpn.get_function == csmc.function_node && cpn.set_function == null)
+                        {
+                            constant = new common_static_method_call_as_constant(csmc, null);
+                            break;
+                        }
+                    if (csmc.function_node.name == "op_Implicit") // SSM 04/12/24 - это делается для преобразования array в set
                     {
-                        constant = new common_static_method_call_as_constant(csmc, null);
-                        break;
+                        constant = new common_static_method_call_as_constant(csmc, loc);
+                        return constant;
                     }
-
+                }
+                else
+                {
+                    var values = (csmc.parameters[0] as array_initializer).element_values;
+                    // Надо компоненты проверять на константность
+                    foreach (expression_node en in values)
+                    {
+                        if (!(en is constant_node))
+                            AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+                    }
+                    constant = new common_static_method_call_as_constant(csmc, loc);
+                    return constant;
+                }
             }
             else
             {
@@ -15592,13 +15918,14 @@ namespace PascalABCCompiler.TreeConverter
         private record_initializer ConvertRecordInitializer(common_type_node ctn, record_initializer constant)
         {
         	location loc = constant.location;
+            var non_static_fields = ctn.fields.Where(x => !x.IsStatic).ToArray();
             if (!ctn.is_value_type)
                 AddError(loc, "RECORD_CONST_NOT_ALLOWED_{0}", ctn.name);
-            if (ctn.fields.Count != constant.record_const_definition_list.Count)
+            if (non_static_fields.Length != constant.record_const_definition_list.Count)
                 AddError(loc, "INVALID_RECORD_CONST_FIELD_COUNT");
             constant.type = ctn;
             constant.field_values.Clear();
-            for (int i = 0; i < ctn.fields.Count; i++)
+            for (int i = 0; i < non_static_fields.Length; i++)
             {
                 class_field cf = ctn.fields[i];
                 if (cf.name.ToLower() != constant.record_const_definition_list[i].name.name.ToLower())
@@ -15760,7 +16087,17 @@ namespace PascalABCCompiler.TreeConverter
                 else
                     throw new CompilerInternalError("Unexpected array type");
             for (int i = 0; i < constant.element_values.Count; i++)
-                constant.element_values[i] = convert_strong_to_constant_node(constant.element_values[i], element_type);
+            {
+                if (constant.element_values[i].type is ArrayConstType 
+                  || convertion_data_and_alghoritms.eq_type_nodes(constant.element_values[i].type,element_type))
+                    constant.element_values[i] = convert_strong_to_constant_node(constant.element_values[i], element_type);
+                else
+                {
+                    var conv = convertion_data_and_alghoritms.convert_type(constant.element_values[i], element_type);
+                    constant.element_values[i] = convert_strong_to_constant_node(conv, element_type);
+                }
+                //convertion_data_and_alghoritms.check_convert_type(constant.element_values[i], element_type,constant.element_values[i].location);
+            }
             constant.SetType(tn);
             return constant;
         }
@@ -17231,7 +17568,7 @@ namespace PascalABCCompiler.TreeConverter
             if (tn is undefined_type || tn is null_type_node)
             {
                 if (tn is ArrayConstType)
-                    return convertion_data_and_alghoritms.type_constructor.create_unsized_array((tn as ArrayConstType).element_type, context.converted_namespace, 1, loc);
+                    return convertion_data_and_alghoritms.type_constructor.create_unsized_array(((ArrayConstType)tn).element_type, 1, loc);
                 AddError(loc, "CAN_NOT_DEDUCE_TYPE_{0}", tn.name);
             }
             return tn;
@@ -17976,6 +18313,16 @@ namespace PascalABCCompiler.TreeConverter
         {
             expression_node left = convert_strong(_bin_expr.left);
             expression_node right = convert_strong(_bin_expr.right);
+
+            // SSM 04/12/24 - массивы нельзя умножать и вычитать. Это запрещено т.к. в библиотеку добавлены arr * set и arr - set
+            if (left.type != null && left.type.type_special_kind == type_special_kind.array_kind 
+                && right.type != null && right.type.type_special_kind == type_special_kind.array_kind
+                && (_bin_expr.operation_type == Operators.Multiplication || _bin_expr.operation_type == Operators.Minus)
+                )
+            {
+                AddError(get_location(_bin_expr), "OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_TYPES_{1}_AND_{2}", name_reflector.get_name(_bin_expr.operation_type), left.type, right.type);
+            }
+
             if (_bin_expr.operation_type == Operators.In)
                 try_convert_typed_expression_to_function_call(ref left);
             expression_node res = find_operator(_bin_expr.operation_type, left, right, get_location(_bin_expr));
@@ -18475,179 +18822,331 @@ namespace PascalABCCompiler.TreeConverter
             return false;
         }
 
+        private bool IsIEnumerableInterface(Type t)
+        {
+            var IEnumType = typeof(IEnumerable);
+            var IEnumTypedType = typeof(IEnumerable<>);
+
+            var isIEnumType = (t == IEnumType);
+            var isIEnumTypedType = t.IsGenericType 
+                && (t.GetGenericTypeDefinition() == IEnumTypedType
+            );
+
+            return isIEnumType || isIEnumTypedType;
+        }
+
+        private bool IsIEnumeratorInterface(Type t)
+        {
+            var IEnumType = typeof(IEnumerator);
+            var IEnumTypedType = typeof(IEnumerator<>);
+
+            var isIEnumType = (t == IEnumType);
+            var isIEnumTypedType = t.IsGenericType
+                && (t.GetGenericTypeDefinition() == IEnumTypedType
+            );
+
+            return isIEnumType || isIEnumTypedType;
+        }
+
+        private Type ChooseIEnumerableInterfaceInCompiledType(Type compiledType)
+        {
+            var IEnumType = typeof(IEnumerable);
+            var IEnumTypedType = typeof(IEnumerable<>);
+
+            // если тип является интерфейсом IEnumerable или IEnumerable<T> то берём его
+            if (IsIEnumerableInterface(compiledType))
+                return compiledType;
+
+            // иначе ищем подходящие интерфейсы в иерархии
+            var filteredInterfaces = compiledType.FindInterfaces(
+                (item, _) => IsIEnumerableInterface(item),
+                null
+            );
+
+            var genericInterfaceCount = filteredInterfaces.Count(item => item.IsGenericType);
+
+            if (compiledType.IsInterface)
+            {
+                // интерфейс наследует несколько IEnumerable<T> с разными T
+                // невозможно выбрать. требуется явное приведение
+                if (genericInterfaceCount > 1)
+                    return null;
+                
+                if (genericInterfaceCount == 1)
+                    return filteredInterfaces.First(item => item.IsGenericType);
+                else
+                    return IEnumType;
+            }
+
+            // для класса/записи необходимо учитывать явные реализации GetEnumerator
+            var methods = compiledType.GetMethods().Where(item => 
+                item.Name == "GetEnumerator"
+                && item.GetParameters().Length == 0
+                && IsIEnumeratorInterface(item.ReturnType)
+            ).ToArray();
+
+            switch (methods.Length)
+            {
+                case 0:
+                    // тип реализует явно несколько IEnumerable<T>
+                    // невозможно выбрать. требуется явное приведение
+                    if (genericInterfaceCount > 1)
+                        return null;
+                    // тип реализует и IEnumerable и IEnumerable<T> явно
+                    // выбираем IEnumerable<T>
+                    if (genericInterfaceCount == 1)
+                        return filteredInterfaces.First(item => item.IsGenericType);
+                    // явно реализует IEnumerable
+                    else
+                        return IEnumType;
+                case 1:
+                    var method = methods[0];
+
+                    if (!method.ReturnType.IsGenericType)
+                        return IEnumType;
+                    else
+                    {
+                        var elementType = method.ReturnType.GetGenericArguments().First();
+                        return IEnumTypedType.MakeGenericType(elementType);
+                    }
+                default:
+                    // в типе наследнике перекрыли GetEnumerator
+                    // невозможно точно выбрать метод
+                    return null;
+            }
+        }
+
+        private bool IsIEnumerableInterface(type_node t)
+        {
+            compiled_type_node orig;
+
+            if (t is compiled_type_node)
+                orig = t as compiled_type_node;
+            else if (t is compiled_generic_instance_type_node)
+                orig = (t as compiled_generic_instance_type_node).original_generic as compiled_type_node;
+            else
+                return false;
+
+            return IsIEnumerableInterface(orig.compiled_type);
+        }
+
+        /// <summary>
+        /// Собирает интерфейсы, реализованные типом и его предками
+        /// </summary>
+        private IEnumerable<type_node> CollectInterfacesFromTypeNode(type_node node)
+        {
+            do
+            {
+                foreach (var item in node.ImplementingInterfaces)
+                    yield return (type_node)item;
+
+                node = node.base_type;
+            }
+            while (node != null);
+        }
+
+        private bool IsIEnumeratorInterface(type_node t)
+        {
+            compiled_type_node orig;
+
+            if (t is compiled_type_node)
+                orig = t as compiled_type_node;
+            else if (t is compiled_generic_instance_type_node)
+                orig = (t as compiled_generic_instance_type_node).original_generic as compiled_type_node;
+            else
+                return false;
+
+            return IsIEnumeratorInterface(orig.compiled_type);
+        }
+
+        private type_node ChooseIEnumerableInterfaceInTypeNode(type_node node)
+        {
+            var IEnumType = compiled_type_node.get_type_node( typeof(IEnumerable) );
+            var IEnumTypedType = compiled_type_node.get_type_node( typeof(IEnumerable<>) );
+
+            var filteredInterfaces = CollectInterfacesFromTypeNode(node)
+                .Where(item => IsIEnumerableInterface(item))
+                .ToArray();
+            
+            var genericInterfaceCount = filteredInterfaces.Count(item => item.is_generic_type_instance);
+
+            if (node.IsInterface)
+            {
+                // интерфейс наследует несколько IEnumerable<T> с разными T
+                // невозможно выбрать. требуется явное приведение
+                if (genericInterfaceCount > 1)
+                    return null;
+                
+                if (genericInterfaceCount == 1)
+                    return filteredInterfaces.First(item => item.is_generic_type_instance);
+                else
+                    return IEnumType;
+            }
+
+            var commonType = (common_type_node)node;
+
+            var methods = commonType.methods.Where(item =>
+                item.name.Equals("GetEnumerator", StringComparison.OrdinalIgnoreCase)
+                && item.parameters.Count == 0
+                && IsIEnumeratorInterface(item.return_value_type)
+            ).ToArray();
+
+            switch (methods.Length)
+            {
+                case 0:
+                    // тип реализует явно несколько IEnumerable<T>
+                    // невозможно выбрать. требуется явное приведение
+                    if (genericInterfaceCount > 1)
+                        return null;
+                    // тип реализует и IEnumerable и IEnumerable<T> явно
+                    // выбираем IEnumerable<T>
+                    if (genericInterfaceCount == 1)
+                        return filteredInterfaces.First(item => item.is_generic_type_instance);
+                    // явно реализует IEnumerable
+                    else
+                        return IEnumType;
+                case 1:
+                    var method = methods[0];
+
+                    if (!method.return_value_type.is_generic_type_instance)
+                        return IEnumType;
+                    else
+                        return IEnumTypedType.get_instance(method.return_value_type.instance_params);
+                default:
+                    // в типе наследнике перекрыли GetEnumerator
+                    // невозможно точно выбрать метод
+                    return null;
+            }
+        }
+
         public bool FindIEnumerableElementType(type_node tn, ref type_node elem_type, out bool sys_coll_ienum)
         {
             sys_coll_ienum = false;
-            var IEnstring = "System.Collections.IEnumerable";
-            compiled_type_node ctn = compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(IEnstring));
-            if (tn is compiled_type_node || tn is compiled_generic_instance_type_node) // Если этот тип зашит в .NET
-            // IEnumerable<integer>, Range(1,10), Dictionary<string,integer>: tn = compiled_type_node
-            // IEnumerable<T>: tn = compiled_generic_instance_type_node
-            // FibGen = class(IEnumerable,IEnumerator): tn = common_type_node, en = compiled_type_node
-            // array of Person: tn = common_type_node
+
+            // поиск в типе, объявленном в другой сборке
+            // и тип и типоаргументы объявлены в другой сборке
+            //     Dictionary<string, integer>: tn = compiled_type_node
+            //     IEnumerable<integer>: tn = compiled_type_node
+            // 
+            // тип объявлен в другой сборке, а типоаргументы в коде
+            //     Dictionary<string, MyType>: tn = compiled_generic_instance_type_node
+            //     IEnumerable<T1>: tn = compiled_generic_instance_type_node (например в generic подпрогамме)
+            if (tn is compiled_type_node || tn is compiled_generic_instance_type_node)
             {
                 compiled_type_node orig;
 
                 if (tn is compiled_type_node)
                     orig = tn as compiled_type_node;
-                else orig = (tn as compiled_generic_instance_type_node).original_generic as compiled_type_node;
-                    //var pars = tn.instance_params;
-                System.Type ct = orig.compiled_type;
-                    
-                Type r;
-                var IEnTstring = "System.Collections.Generic.IEnumerable`1";
-                //if (ct.ToString().StartsWith(IEnTstring))  // SSM Ошибка!!! IEnumerable`1[] тоже начинается с IEnumerable`1, но это массив!
-                if (ct.Name.Equals("IEnumerable`1"))
-                    r = ct;
-                else
-                    r = ct.GetInterface(IEnTstring);
-                if (r != null)
+                else 
+                    orig = (tn as compiled_generic_instance_type_node).original_generic as compiled_type_node;
+
+                // непосредственно тип, от котоого разворачивается foreach
+                Type ct = orig.compiled_type;
+
+                var supportsEnumeration = typeof(IEnumerable).IsAssignableFrom(ct);
+
+                if (!supportsEnumeration)
+                    return false;
+
+                // для массива
+                if (tn.element_type != null)
                 {
-                    Type arg1 = r.GetGenericArguments().First(); // тип параметра IEnumerable
-                    var str = arg1.GetGenericArguments().Count();
-                    if (tn is compiled_type_node)
+                    elem_type = tn.element_type;
+
+                    if (ct.GetArrayRank() > 1)
+                        sys_coll_ienum = true;
+
+                    return true;
+                }
+
+                // в иных случаях ищем подходящий интерфейс
+                var desiredInterface = ChooseIEnumerableInterfaceInCompiledType(ct);
+
+                if (desiredInterface == null)
+                    return false;
+
+                // обнаружен IEnumerable
+                if (!desiredInterface.IsGenericType)
+                {
+                    elem_type = SystemLibrary.SystemLibrary.object_type;
+                    sys_coll_ienum = true;
+                    return true;
+                }
+
+                var foundElementType = desiredInterface.GetGenericArguments().First();
+
+                if (tn is compiled_type_node)
+                    elem_type = compiled_type_node.get_type_node(foundElementType);
+                else
+                {
+                    // для "tn is compiled_generic_instance_type_node" необходимо восстановить стёртые типы
+                    // orig.instance_params содержит имена типоаргументов при объявлении
+                    // tn.instance_params содержит фактические типоаргументы
+                    // остаётся найти нужный индекс в orig и взять аргумент из tn
+
+                    if (foundElementType.IsGenericParameter)
                     {
-                        elem_type = compiled_type_node.get_type_node(arg1);
+                        var ind = orig.instance_params.FindIndex(item => item.name == foundElementType.Name);
+                        elem_type = tn.instance_params[ind];
                     }
                     else
                     {
-                        if (arg1.GetGenericArguments().Count()>0)
-                        {
-                            elem_type = compiled_type_node.get_type_node(arg1.GetGenericTypeDefinition());
-                            elem_type = elem_type.get_instance(tn.instance_params); // SSM 19/07/15 - работает!!!
-                        }
-                        else
-                        {
-                            var ip = tn.instance_params;
+                        // значит элемент последовательности сам является generic типом
+                        // нужно сопоставить все типоаргументы из orig типоаргументам из tn
+                        // нельзя просто брать все, тк их количество может отличаться
 
-                            var IGrTstring = "System.Linq.IGrouping`2";
-                            if (ct.ToString().StartsWith(IGrTstring))
-                                elem_type = ip[1];
-                            else
-                            {
-                                var ln = tn.ImplementingInterfaces;
-                                elem_type = null;
-                                foreach (var x in ln)
-                                {
-                                    var xctn = x as compiled_generic_instance_type_node;
-                                    if (xctn != null && xctn.name.StartsWith("IEnumerable<")) // Немного грубовато. 
-                                    {
-                                        elem_type = xctn.instance_params[0];
-                                        break;
-                                    }
-                                }
-                                if (ct.Name == "ValueCollection" && ct.IsNested && ct.GetGenericArguments().Length == 2)
-                                {
-                                    elem_type = ip[1];
-                                }
-                                else if (elem_type == null)
-                                    elem_type = ip[0];
-                            }
-                                
-                            //var Tname = ip[0].name;
-                            //elem_type = convert_strong(new SyntaxTree.named_type_reference(Tname, _foreach_stmt.in_what.source_context));
-                        }
+                        var declaredTypes = foundElementType
+                            .GetGenericArguments()
+                            .Select(item=> item.Name)
+                            .ToArray();
 
-                        //elem_type.instance_params = tn.instance_params;
-                        //var ip = tn.instance_params;
-                        //var Tname = new string(tn.name.SkipWhile(c => c != '<').Skip(1).TakeWhile(c => c != ',' && c != '>').ToArray());
-                        //var Tname = ip[0].name;
-                        //var Tname = "System.Collections.Generic.KeyValuePair'2"; // <integer,TClass>
-                        //elem_type = convert_strong(new SyntaxTree.named_type_reference(Tname, _foreach_stmt.in_what.source_context));
-                    }
-                    return true;
-                }
-                else
-                {
-                    if (tn.element_type != null) // значит, это массив любой размерности - 02.02.16 SSM - еще может быть множество set of T - 22.02.16 SSM
-                    {
-                        elem_type = tn.element_type;
-                        return true;
-                    }
+                        var actualTypes = tn.instance_params
+                            .Where((item, i) => declaredTypes.Contains(orig.instance_params[i].name))
+                            .ToList();
 
-                    var ttt = tn.ImplementingInterfaces;
-                    foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces)
-                    {
-                        if (itn == ctn)
-                        {
-                            elem_type = SystemLibrary.SystemLibrary.object_type;
-                            sys_coll_ienum = true;
-                            return true;
-                        }
+                        elem_type = compiled_type_node.get_type_node( foundElementType.GetGenericTypeDefinition() );
+                        elem_type = elem_type.get_instance(actualTypes);
                     }
                 }
-            }
-            /*else if (tn is compiled_generic_instance_type_node)
-            {
-                var g = tn as compiled_generic_instance_type_node;
-                var og = g.original_generic;
-                var tt = og.ImplementingInterfaces;
-                if (_foreach_stmt.type_name != null && _foreach_stmt.type_name.GetType()!=typeof(SyntaxTree.no_type_foreach))
-                    elem_type = convert_strong(_foreach_stmt.type_name);
-                else
-                {
-                    var fn = tn.full_name;
-                }
+
                 return true;
-            }  */
-            else // если мы самостоятельно определяем этот тип - можно реализовать в PascalABC.NET только IEnumerable. // Сейчас уже можно!!!!!
-            // Попытка реализовать IEnumerable<T> натыкается на необходимость определять GetEnumerator, возвращающий IEnumerator и IEnumerator<T>
-            {
-                if (tn == null || tn is null_type_node || tn.ImplementingInterfaces == null)
-                {
-                    if (tn != null && tn.base_type != null)
-                        return FindIEnumerableElementType(tn.base_type, ref elem_type, out sys_coll_ienum);
-                    return false;
-                }
+            }
 
-                if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.typed_file) // еще может быть множество set of T - 22.02.16 SSM
+            // поиск в типе, объявленном в коде
+            // также сюда попадают set of T даже если они подтягиваются из библиотеки
+            else
+            {
+                var supportsEnumeration = CollectInterfacesFromTypeNode(tn).Any(IsIEnumerableInterface);
+
+				if (!supportsEnumeration)
+					return false;
+
+                // массивы и set of T
+                if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.typed_file)
                 {
                     elem_type = tn.element_type;
+
+                    if ((tn as common_type_node).rank != 1)
+                        sys_coll_ienum = true;
+
                     return true;
                 }
 
-                foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces) // Ищем интерфейс IEnumerable<T> и возвращаем T в качестве elem_type
-                {
-                    if (itn is compiled_generic_instance_type_node)
-                    {
-                        var itnc = (itn as compiled_generic_instance_type_node);
-                        var tt = (itnc.original_generic as compiled_type_node).compiled_type;
-                        if (tt == typeof(System.Collections.Generic.IEnumerable<>))
-                        {
-                            elem_type = itnc.generic_parameters[0] as common_type_node;
-                            return true;
-                        }
-                    }
-                }
+                var desiredInterface = ChooseIEnumerableInterfaceInTypeNode(tn);
 
-                foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces) // если не нашли - ищем интерфейс IEnumerable и возвращаем object в качестве elem_type
+                if (desiredInterface == null)
+                    return false;
+
+                if (!desiredInterface.is_generic_type_instance)
                 {
-                    if (itn is compiled_type_node) // Именно этот кусок отвечает за IEnumerable<integer> и мы его закомментировали
-                    {
-                        var itnc = (itn as compiled_type_node).compiled_type; /* SSM раскомментировал 15.05.2020 - пришла пора*/
-                        if (itnc.IsGenericType)
-                        {
-                            var my = itnc.GetGenericTypeDefinition();// = typeof(System.Collections.Generic.IEnumerable<>)
-                            if (my == typeof(System.Collections.Generic.IEnumerable<>))
-                            {
-                                var aarg1 = itnc.GetGenericArguments().First();
-                                elem_type = compiled_type_node.get_type_node(aarg1);
-                                return true;
-                            }
-                        }
-                        else /* end SSM раскомментировал 15.05.2020 - пришла пора*/
-                        if (itn == ctn)
-                        {
-                            elem_type = SystemLibrary.SystemLibrary.object_type;
-                            sys_coll_ienum = true;
-                            return true;
-                        }
-                    }
+                    elem_type = SystemLibrary.SystemLibrary.object_type;
+                    sys_coll_ienum = true;
                 }
+                else
+                    elem_type = desiredInterface.instance_params[0];
+
+                return true;
             }
-            if (tn != null && tn.base_type != null)
-                return FindIEnumerableElementType(tn.base_type, ref elem_type, out sys_coll_ienum);
-            return false;
         }
 
         private int GenIdNum = 0;
@@ -19325,7 +19824,7 @@ namespace PascalABCCompiler.TreeConverter
             return adrv;
         }
 
-        private base_function_call create_constructor_call(type_node tn, expressions_list exprs, location loc, Tuple<bool, List<SyntaxTree.expression>> lambdas_info = null, bool inherited_call=false)
+        public base_function_call create_constructor_call(type_node tn, expressions_list exprs, location loc, Tuple<bool, List<SyntaxTree.expression>> lambdas_info = null, bool inherited_call=false)
         {
             if (tn.IsInterface)
             {
@@ -19639,7 +20138,7 @@ namespace PascalABCCompiler.TreeConverter
                 //if (exprs.Count == 1)
                 {
                     //new typename[size]
-                    type_node atn = convertion_data_and_alghoritms.type_constructor.create_unsized_array(tn, context.converted_namespace, exprs.Count, loc);
+                    type_node atn = convertion_data_and_alghoritms.type_constructor.create_unsized_array(tn, exprs.Count, loc);
                     //тип элементов
                     typeof_operator to = new typeof_operator(tn, loc);
                     List<expression_node> lst = new List<expression_node>();
@@ -21687,12 +22186,17 @@ namespace PascalABCCompiler.TreeConverter
             return !t.IsArray && (t.FullName.StartsWith("System.Tuple") || t.FullName.StartsWith("System.ValueTuple"));
         }
 
+        public bool IsKeyValuePairType(Type t)
+        {
+            return t.FullName.StartsWith("System.Collections.Generic.KeyValuePair`2");
+        }
+
         public bool IsSequenceType(Type t)
         {
             return t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null;
         }
 
-        private void CheckUnpacking(expression ex, out expression_node sem_ex, out bool IsTuple, out bool IsSequence, int countvars, syntax_tree_node stn)
+        /*private void CheckUnpacking(expression ex, out expression_node sem_ex, out bool IsTuple, out bool IsSequence, int countvars, syntax_tree_node stn)
         {
             sem_ex = convert_strong(ex);
             sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
@@ -21710,7 +22214,7 @@ namespace PascalABCCompiler.TreeConverter
             if (IsTuple)
             {
                 if (countvars > t.GetGenericArguments().Count())
-                    AddError(get_location(stn), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                    AddError(get_location(stn), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT");
             }
         }
 
@@ -21727,7 +22231,7 @@ namespace PascalABCCompiler.TreeConverter
                 dn = new method_call(dn, pars);
             }
             return dn;
-        }
+        }*/
 
         public override void visit(SyntaxTree.assign_tuple asstup) // сахарный узел
         {
@@ -21790,7 +22294,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var nn = assvartup.idents.idents.Count();
                 if (nn > t.GetGenericArguments().Count())
-                    AddError(get_location(assvartup.idents), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                    AddError(get_location(assvartup.idents), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT");
             }*/
 
 
@@ -21835,6 +22339,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             var IsSequence = false;
             var IsTuple = false;
+            var IsKeyValuePair = false;
             var sem_ex = convert_strong(ith.id);
             sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
             var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
@@ -21844,19 +22349,22 @@ namespace PascalABCCompiler.TreeConverter
                 type_node elem_type = null;
                 var b = FindIEnumerableElementType(sem_ex.type, ref elem_type, out bb);
                 if (b)
+                    // Не очень понятно, зачем это нужно. И это точно не срабатывает
                     IsSequence = true;
                 else
                     AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
-                
             }
-                
+
             if (t != null)
                 IsTuple = IsTupleType(t);
-            
-            if (t != null)
-                IsSequence = !IsTuple && IsSequenceType(t);
 
-            if (!IsTuple && !IsSequence)
+            if (t != null)
+                IsKeyValuePair = !IsTuple && IsKeyValuePairType(t);
+
+            if (t != null)
+                IsSequence = !IsTuple && !IsKeyValuePair && IsSequenceType(t);
+
+            if (!IsTuple && !IsSequence && !IsKeyValuePair)
             {
                 AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
             }
@@ -21877,8 +22385,14 @@ namespace PascalABCCompiler.TreeConverter
                 ReplaceUsingParent(ith, mc);
                 visit(mc);
             }
+            else if (IsKeyValuePair)
+            {
+                var meth_name = i == 0 ? "Key" : "Value";
+                var dn = new dot_node(ith.id.TypedClone(), new ident(meth_name));
+                ReplaceUsingParent(ith, dn);
+                visit(dn);
+            }
         }
-
 
         public override void visit(var_tuple_def_statement vtd)
         {

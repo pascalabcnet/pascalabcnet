@@ -1,19 +1,20 @@
+﻿// Весь этот тест убрал т.к.типизированных файлов множеств больше нет
 type TByteSet = set of byte;
      TEnumSet = set of (one, two, three, four,five,six,seven,eight,nine,ten);
      TDiapSet = set of 0..99;
      TDiapSet2 = set of two..seven;
      
-var f : file of TByteSet;
+var {f : file of TByteSet;
     f1 : file of TEnumSet;
     f2 : file of TDiapSet;
-    f3 : file of TDiapSet2;
+    f3 : file of TDiapSet2;}
     set1 : TByteSet;
     set2 : TEnumSet;
     set3 : TDiapSet;
     set4 : TDiapSet2;
     
 begin
- Assign(f,'test2.dat');
+ {Assign(f,'test2.dat');
  Rewrite(f);
  set1 := [1,2,5,9,15];
  Write(f,set1);
@@ -55,5 +56,5 @@ begin
  set4 := [];
  Read(f3,set4);
  //assert(set4=[four,seven]);
- Close(f3);
+ Close(f3);}
 end.

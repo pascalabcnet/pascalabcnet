@@ -1,4 +1,4 @@
-type TClass = class
+﻿type TClass = class
 procedure Meth;
 end;
 
@@ -33,7 +33,7 @@ begin
  assert(rec.b[1]=1);
  assert(set1=['a','c','f']);
  assert(num1=three);
- assert(set2=[three,four]);
+ assert(set2=[one,three,four]);
 end;
 begin
  assert(i=12);
@@ -46,7 +46,7 @@ begin
  assert(rec.b[1]=1);
  assert(set1=['a','c','f']);
  assert(num1=three);
- assert(set2=[three,four]);
+ assert(set2=[one,three,four]);
 Nested;
 end;
 

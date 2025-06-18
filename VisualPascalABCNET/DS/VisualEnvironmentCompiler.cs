@@ -34,6 +34,8 @@ namespace VisualPascalABC
         public delegate void SetFlagDelegate(bool flag);
         private SetFlagDelegate SetCompilingButtonsEnabled;
         private SetFlagDelegate SetDebugButtonsEnabled;
+        public ConvertTextDelegate ConvertUnitTextProperty { get; set; }
+
         public delegate void SetTextDelegate(string text);
         private SetTextDelegate SetStateText;
         private SetTextDelegate AddTextToCompilerMessages;
@@ -247,13 +249,21 @@ namespace VisualPascalABC
             {
                 case PascalABCCompiler.SourceFileOperation.GetText:
                     if (tp != null)
-                        return ed.Document.TextContent;
+                    {
+                        string Text1 = ed.Document.TextContent;
+                        if (ConvertUnitTextProperty != null)
+                            Text1 = ConvertUnitTextProperty(FileName, Text1);
+                        return Text1;
+                    }
+                        
                     if (!File.Exists(FileName))
                         return null;
                     /*TextReader tr = new StreamReader(file_name, System.Text.Encoding.GetEncoding(1251));
                     string Text = tr.ReadToEnd();
                     tr.Close();*/
                     string Text = PascalABCCompiler.FileReader.ReadFileContent(FileName, null);
+                    if (ConvertUnitTextProperty != null)
+                        Text = ConvertUnitTextProperty(FileName, Text);
                     return Text;
                 case PascalABCCompiler.SourceFileOperation.Exists:
                     if (tp != null)
@@ -322,7 +332,7 @@ namespace VisualPascalABC
         /// </summary>
         private void OnLanguageLoaded(Languages.Facade.ILanguage language)
         {
-            string languageConnectedMessage = string.Format(VECStringResources.Get("LANGUAGE_LOADED{0}{1}"), language.Name, Path.GetFileName(language.GetType().Assembly.Location));
+            string languageConnectedMessage = string.Format(VECStringResources.Get("LANGUAGE_LOADED{0}"), language.Name);
             languageConnectedMessage += Environment.NewLine;
             AddTextToCompilerMessages(languageConnectedMessage);
         }

@@ -17,6 +17,10 @@
 <param name="Keyword" value="IndexMin">
 <param name="Keyword" value="IndexOf">
 <param name="Keyword" value="Indices">
+<param name="Keyword" value="IsOrdered">
+<param name="Keyword" value="IsOrderedBy">
+<param name="Keyword" value="IsOrderedByDescending">
+<param name="Keyword" value="IsOrderedDescending">
 <param name="Keyword" value="LastIndexMax">
 <param name="Keyword" value="LastIndexMin">
 <param name="Keyword" value="LastIndexOf">
@@ -84,9 +88,9 @@
 <tr><td><code><b>function</b> High(Self: System.Array);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего элемента массива</td></tr>
 <tr><td><code><b>function</b> IndexMax&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer := 0): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого максимального элемента начиная с позиции index</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого максимального элемента</td></tr>
 <tr><td><code><b>function</b> IndexMin&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer := 0): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого минимального элемента начиная с позиции index</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого минимального элемента</td></tr>
 <tr><td><code><b>function</b> IndexOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого вхождения элемента или -1 если элемент не найден</td></tr>
 <tr><td><code><b>function</b> IndexOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T; start: integer): integer;</code>
@@ -97,6 +101,22 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию</td></tr>
 <tr><td><code><b>function</b> Indices&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; cond: (T,integer) -&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию</td></tr>
+<tr><td><code><b>function</b> IsOrdered&lt;T&gt;(self: <b>array</b>  <b>of</b> T): boolean;  <b>where</b> T: IComparable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив по возрастанию</td></tr>
+<tr><td><code><b>function</b> IsOrdered&lt;T&gt;(self: <b>array</b>  <b>of</b> T; comparer: IComparer&lt;T&gt;): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив в порядке, заданном компаратором comparer</td></tr>
+<tr><td><code><b>function</b> IsOrderedBy&lt;T, TKey&gt;(self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив по возрастанию ключа</td></tr>
+<tr><td><code><b>function</b> IsOrderedBy&lt;T, TKey&gt;(self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив по возрастанию ключа с компаратором</td></tr>
+<tr><td><code><b>function</b> IsOrderedByDescending&lt;T, TKey&gt;(self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив по убыванию ключа</td></tr>
+<tr><td><code><b>function</b> IsOrderedByDescending&lt;T, TKey&gt;(self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив по убыванию ключа с компаратором</td></tr>
+<tr><td><code><b>function</b> IsOrderedDescending&lt;T&gt;(self: <b>array</b>  <b>of</b> T): boolean;  <b>where</b> T: IComparable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив по убыванию</td></tr>
+<tr><td><code><b>function</b> IsOrderedDescending&lt;T&gt;(self: <b>array</b>  <b>of</b> T; comparer: IComparer&lt;T&gt;): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив по убыванию в порядке, заданном компаратором comparer</td></tr>
 <tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]</td></tr>
 <tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>

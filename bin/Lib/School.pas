@@ -1,4 +1,4 @@
-﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (24.03.2024)
+﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (07.02.2025)
 unit School;
 
 interface
@@ -167,10 +167,13 @@ function Dec(str: string; base: integer): int64;
 /// Перевод из системы по основанию base [2..36] в десятичную
 function DecBig(str: string; base: integer): BigInteger;
 
-/// Перевод BigInteger в систему счисления по основанию base (2..36)
+/// Перевод десятичного int64 в систему счисления по основанию base (2..36)
+function ToBase(number: int64; base: integer): string;
+
+/// Перевод десятичного BigInteger в систему счисления по основанию base (2..36)
 function ToBase(number: BigInteger; base: integer): string;
 
-/// Перевод десятичного числа в систему счисления по основанию base (2..36)
+/// Перевод десятичного string в систему счисления по основанию base (2..36)
 function ToBase(str: string; base: integer): string;
 
 /// Возвращает кортеж из минимума и максимума последовательности
@@ -200,8 +203,8 @@ function LCM(a, b: int64): int64;
 /// Возвращает НОД и НОК пары чисел
 function НОДНОК(a, b: int64): (int64, int64);
 
-/// Разложение числа на простые множители
-function Factorize(n: integer): List<integer>;
+/// возвращает True, если число n простое и False в противном случае
+function IsPrime(n: integer): boolean;
 
 /// Простые числа на интервале [2;n] 
 function Primes(n: integer): List<integer>;
@@ -212,8 +215,32 @@ function Primes(m, n: integer): List<integer>;
 /// Первые k простых чисел 
 function FirstPrimes(k: integer): List<integer>;
 
-/// Количество простых делителей числа n
+/// Разложение числа на простые множители (список всех его простых делителей)
+function Factorize(n: integer): List<integer>;
+
+/// Список уникальных простых делителей числа n
+/// Для n < 2 возвращается пустой список.
+/// Для простого n возвращается список из одного числа n.
+/// Для составных чисел при n >= 4 возвращается список уникальных простых делителей.
+function PrimeDivisors(n: integer): List<integer>;
+
+/// Количество уникальных простых делителей числа n
+/// Для n < 2 возвращается 0.
+/// Для простых чисел возвращается 1.
+/// Для составных чисел при n >= 4 возвращается количество уникальных простых делителей.
 function PrimeDivisorsCount(n: integer): integer;
+
+/// Список простых факторов (простых делителей) числа n
+/// Для n < 2 возвращается пустой список.
+/// Для простого n возвращается список из одного числа n.
+/// Для составных чисел n >= 4 возвращается список всех простых факторов.
+function PrimeFactors(n: integer): List<integer>;
+
+/// Количество простых факторов (простых делителей) числа n
+/// Для n < 2 возвращается 0.
+/// Для простых чисел возвращается 1.
+/// Для составных чисел при n >= 4 возвращается количество всех простых факторов.
+function PrimeFactorsCount(n: integer): integer;
 
 /// Возвращает целочисленный список расширенного представления
 /// десятичного числа n по основанию base.
@@ -361,7 +388,7 @@ end;
 function BinFormat(number: BigInteger; bytes: integer; split: string): string;
 begin
   if number < 0 then number := -number;
-  var a := number = 0 ? |byte(0)| : number.ToByteArray;
+  var a := number = 0 ? [byte(0)] : number.ToByteArray;
   var len := a.Length;
   if (number > 0) and (a[^1] = 0) then Dec(len);
   SetLength(a, Max(bytes, len));
@@ -444,13 +471,13 @@ function Dec(str: string; base: integer): int64;
 begin
   if not (base in 2..36) then
     raise new School_InvalidBase
-    ($'ToDecimal: Недопустимое основание {base}');
+    ($'Dec: Недопустимое основание {base}');
   str := str.ToUpper;
   var invalid_chars := 
     str.Except(valid_chars[:base + 1]).JoinToString;
   if invalid_chars.Length > 0 then
     raise new School_BadCharInString
-    ($'ToDecimal: Недопустимые символы "{invalid_chars}"');
+    ($'Dec: Недопустимые символы "{invalid_chars}"');
   var rank_weight := 1bi;
   var res := 0bi;
   foreach var char in str.Reverse do
@@ -466,13 +493,13 @@ function DecBig(str: string; base: integer): BigInteger;
 begin
   if not (base in 2..36) then
     raise new School_InvalidBase
-    ($'ToDecimal: Недопустимое основание {base}');
+    ($'DecBig: Недопустимое основание {base}');
   str := str.ToUpper;
   var invalid_chars := 
     str.Except(valid_chars[:base + 1]).JoinToString;
   if invalid_chars.Length > 0 then
     raise new School_BadCharInString
-    ($'ToDecimal: Недопустимые символы "{invalid_chars}"');
+    ($'DecBig: Недопустимые символы "{invalid_chars}"');
   var rank_weight := 1bi;
   Result := 0bi;
   foreach var char in str.Reverse do
@@ -487,12 +514,31 @@ end;
 
 {$region ToBase}
 
-/// Перевод BigInteger в систему счисления по основанию base (2..36)
+/// Перевод десятичного int64 в систему счисления по основанию base (2..36)
+function ToBase(number: int64; base: integer): string;
+begin
+  if not (base in 2..36) then
+    raise new School_InvalidBase
+    ($'ToBase: Недопустимое основание {base}');
+  var sb := new System.Text.StringBuilder('');
+  while number > 0 do 
+  begin
+    sb.Insert(0, valid_chars[number mod base + 1]);
+    number := number div base
+  end;
+  Result := if sb.Length = 0 then '0'
+    else sb.ToString
+end;
+
+/// Перевод десятичного int64 в систему счисления по основанию base (2..36)
+function ToBase(Self: int64; base: integer): string; extensionmethod := ToBase(Self, base);
+
+/// Перевод десятичного BigInteger в систему счисления по основанию base (2..36)
 function ToBase(number: BigInteger; base: integer): string;
 begin
   if not (base in 2..36) then
     raise new School_InvalidBase
-    ($'ToDecimal: Недопустимое основание {base}');
+    ($'ToBase: Недопустимое основание {base}');
   var sb := new System.Text.StringBuilder('');
   while number > 0 do 
   begin
@@ -503,24 +549,22 @@ begin
     else sb.ToString
 end;
 
-/// Перевод BigInteger в систему счисления по основанию base (2..36)
-function ToBase(Self: BigInteger; base: integer): string; extensionmethod :=
-ToBase(Self, base);
+/// Перевод десятичного BigInteger в систему счисления по основанию base (2..36)
+function ToBase(Self: BigInteger; base: integer): string; extensionmethod := ToBase(Self, base);
 
-/// Перевод десятичного числа в систему счисления по основанию base (2..36)
+/// Перевод десятичного string в систему счисления по основанию base (2..36)
 function ToBase(str: string; base: integer): string;
 begin
   if not (base in 2..36) then
     raise new School_InvalidBase
-    ($'ToDecimal: Недопустимое основание {base}');
+    ($'ToBase: Недопустимое основание {base}');
   var number: BigInteger;
   if BigInteger.TryParse(str, number) then
     Result := ToBase(number, base)
 end;
 
-/// Перевод десятичного числа в систему счисления по основанию base (2..36)
-function ToBase(Self: string; base: integer): string; extensionmethod :=
-ToBase(Self, base);
+/// Перевод десятичного string в систему счисления по основанию base (2..36)
+function ToBase(Self: string; base: integer): string; extensionmethod := ToBase(Self, base);
 
 {$endregion}
 
@@ -665,42 +709,54 @@ end;
 
 {$endregion}
 
-{$region Factorize}
+{$region Primes}
 
-/// Разложение числа n на простые множители
-function Factorize(n: integer): List<integer>;
+// Внутреняя процедура для заполнения LPrimes
+// Решето Эратосфена
+procedure PrimesInternal;
 begin
-  n := Abs(n);
-  Result := new List<integer>;
-  foreach var Divisor in LPrimes do
-  begin
-    while (Sqr(Divisor) <= n) and (n >= Divisor) do  
-      if n mod Divisor = 0 then
+  LPrimes := new List<integer>;
+  var Sieve := new boolean[ubPrimeDivs + 1];
+  for var i := 2 to ubPrimeDivs do
+    if not Sieve[i] then
+    begin
+      LPrimes.Add(i);
+      var k := i;
+      while k <= ubPrimeDivs - i do
       begin
-        Result.Add(Divisor);
-        n := n div Divisor;
+        k += i;
+        Sieve[k] := True
       end
-      else
-        break;
-    if n < Divisor then
-      break
-  end;  
-  Result.Add(n)
+    end
 end;
 
-/// Разложение числа на простые множители
-function Factorize(Self: integer): List<integer>; extensionmethod :=
-Factorize(Self);
+/// возвращает True, если число n простое и False в противном случае
+function IsPrime(n: integer): boolean;
+begin
+  if n < 2 then
+    Result := False
+  else
+  begin
+    Result := True;
+    foreach var prime in LPrimes do
+      if Sqr(prime) > n then
+        break
+      else if n mod prime = 0 then
+      begin
+        Result := False;
+        break
+      end
+  end
+end;
 
-{$endregion}
-
-{$region Primes}
+/// возвращает True, если число простое и False в противном случае
+function IsPrime(Self: integer): boolean; extensionmethod := IsPrime(Self);
 
 /// Простые числа на интервале [2;n]
 function Primes(n: integer): List<integer>;
 // Решето Эратосфена
 begin
-  Result := new List<integer>;
+  Result := [];
   if n < 2 then
     exit;
   var Sieve := new boolean[n];
@@ -723,50 +779,12 @@ begin
       Result.Add(i)
 end;
 
-// Внутреняя процедура для заполнения LPrimes
-// Решето Эратосфена
-procedure PrimesInternal;
-begin
-  LPrimes := new List<integer>;
-  var Sieve := new boolean[ubPrimeDivs + 1];
-  for var i := 2 to ubPrimeDivs do
-    if not Sieve[i] then
-    begin
-      LPrimes.Add(i);
-      var k := i;
-      while k <= ubPrimeDivs - i do
-      begin
-        k += i;
-        Sieve[k] := True
-      end
-    end
-end;
-
-/// возвращает True, если число простое и False в противном случае
-function IsPrime(Self: integer): boolean; extensionmethod;
-begin
-  if Self < 2 then
-    Result := False
-  else
-  begin
-    Result := True;
-    foreach var prime in LPrimes do
-      if Sqr(prime) > Self then
-        break
-      else if Self mod prime = 0 then
-      begin
-        Result := False;
-        break
-      end
-  end
-end;
-
 /// Простые числа на интервале [m;n] 
 function Primes(m, n: integer): List<integer>;
 begin
   var ls := ubPrimeDivs; // длина сегмента
   if m > n then Swap(m, n);
-  Result := new List<integer>;
+  Result := [];
   if m <= LPrimes[^1] then
   begin
     foreach var prime in LPrimes do
@@ -809,13 +827,13 @@ end;
 /// Первые k простых чисел 
 function FirstPrimes(k: integer): List<integer>;
 begin
-  k := k.ClampTop(integer.MaxValue); // на всякий случай
+  // k := Min(k,integer.MaxValue); // на всякий случай
   if k <= nPrimeDivs then Result := LPrimes[:k]
   else
   begin
     Result := LPrimes;
     var kprimes := nPrimeDivs; // количество найденных простых чисел
-    var n := maxPrimeDiv + 2; // очередной кандидат на простое число
+    var n := maxPrimeDiv + 2;  // очередной кандидат на простое число
     repeat
       if n.IsPrime then
       begin
@@ -827,26 +845,133 @@ begin
   end
 end;
 
-/// Количество простых делителей числа n
+/// Список уникальных простых делителей числа n
+/// Для n < 2 возвращается пустой список.
+/// Для простого n возвращается список из одного числа n.
+/// Для составных чисел при n >= 4 возвращается список уникальных простых делителей.
+function PrimeDivisors(n: integer): List<integer>;
+begin
+  Result := [];
+  if n < 2 then exit;
+  var (i, prime, m) := (0, LPrimes[0], n);
+  while Sqr(prime) <= n do
+  begin
+    if n mod prime = 0 then
+    begin
+      Result.Add(prime);
+      repeat
+        n := n div prime
+      until n mod prime <> 0
+    end;
+    Inc(i);
+    prime := LPrimes[i];
+  end;
+  if Result.Count = 0 then Result.Add(m)
+  else if n > 1 then Result.Add(n)
+end;
+
+/// Список уникальных простых делителей числа n
+/// Для n < 2 возвращается пустой список.
+/// Для простого n возвращается список из одного числа n.
+/// Для составных чисел при n >= 4 возвращается список уникальных простых делителей.
+function PrimeDivisors(Self: integer): List<integer>; extensionmethod := PrimeDivisors(Self);
+
+/// Количество уникальных простых делителей числа n
+/// Для n < 2 возвращается 0.
+/// Для простых чисел возвращается 1.
+/// Для составных чисел при n >= 4 возвращается количество уникальных простых делителей.
 function PrimeDivisorsCount(n: integer): integer;
 begin
   Result := 0;
-  foreach var prime in LPrimes do
+  if n < 2 then Exit;
+  var (i, prime, DivIsPrime) := (0, LPrimes[0], True);
+  while Sqr(prime) <= n do
   begin
-    while (Sqr(prime) <= n) and (n >= prime) do  
-      if n mod prime = 0 then
-      begin
-        Result += 1;
-        n := n div prime;
-      end
-      else break;
-    if n < prime then break
-  end;  
-  Result += 1
+    if n mod prime = 0 then
+    begin
+      Inc(Result);
+      DivIsPrime := False;
+      repeat
+        n := n div prime
+      until n mod prime <> 0
+    end;
+    Inc(i);
+    prime := LPrimes[i];
+  end;
+  if DivIsPrime then Result := 1
+  else if n > 1 then Result += 1
 end;
 
-/// Количество простых делителей числа
+/// Количество уникальных простых делителей числа n
+/// Для n < 2 возвращается 0.
+/// Для простых чисел возвращается 1.
+/// Для составных чисел при n >= 4 возвращается количество уникальных простых делителей.
 function PrimeDivisorsCount(Self: integer): integer; extensionmethod := PrimeDivisorsCount(Self);
+
+/// Список простых факторов (простых делителей) числа n
+/// Для n < 2 возвращается пустой список.
+/// Для простого n возвращается список из одного числа n.
+/// Для составных чисел n >= 4 возвращается список всех простых факторов.
+function PrimeFactors(n: integer): List<integer>;
+begin
+  Result := [];
+  if n < 2 then exit;
+  var (i, prime, m) := (0, LPrimes[0], n);
+  while Sqr(prime) <= n do
+  begin
+    while n mod prime = 0 do
+    begin
+      Result.Add(prime);
+      n := n div prime
+    end;
+    Inc(i);
+    prime := LPrimes[i];
+  end;
+  if Result.Count = 0 then Result.Add(m)
+  else if n > 1 then Result.Add(n)
+end;
+
+/// Список простых факторов (простых делителей) числа n
+/// Для n < 2 возвращается пустой список.
+/// Для простого n возвращается список из одного числа n.
+/// Для составных чисел n >= 4 возвращается список всех простых факторов.
+function PrimeFactors(Self: integer): List<integer>; extensionmethod := PrimeFactors(Self);
+
+/// Количество простых факторов (простых делителей) числа n
+/// Для n < 2 возвращается 0.
+/// Для простых чисел возвращается 1.
+/// Для составных чисел при n >= 4 возвращается количество всех простых факторов.
+function PrimeFactorsCount(n: integer): integer;
+begin
+  Result := 0;
+  if n < 2 then exit;
+  var (i, prime, DivIsPrime) := (0, LPrimes[0], True);
+  while Sqr(prime) <= n do
+  begin
+    while n mod prime = 0 do
+    begin
+      Inc(Result);
+      DivIsPrime := False;
+      n := n div prime
+    end;
+    Inc(i);
+    prime := LPrimes[i];
+  end;
+  if DivIsPrime then Result := 1
+  else if n > 1 then Result += 1
+end;
+
+/// Количество простых факторов (простых делителей) числа n
+/// Для n < 2 возвращается 0.
+/// Для простых чисел возвращается 1.
+/// Для составных чисел при n >= 4 возвращается количество всех простых факторов.
+function PrimeFactorsCount(Self: integer): integer; extensionmethod := PrimeFactorsCount(Self);
+
+/// Разложение числа на простые множители
+function Factorize(n: integer): List<integer> := PrimeFactors(n);
+
+/// Разложение числа на простые множители
+function Factorize(Self: integer): List<integer>; extensionmethod := PrimeFactors(Self);
 
 {$endregion}
 
@@ -858,7 +983,7 @@ function PrimeDivisorsCount(Self: integer): integer; extensionmethod := PrimeDiv
 /// Обратное действие выполняет функция DigitsToInt64.
 function Digits(n: int64; base: integer): List<integer>;
 begin
-  Result := new List<integer>;
+  Result := [];
   if (n < 0) or (base < 2) or (base > integer.MaxValue) then exit;
   if n = 0 then Result := Lst(0)
   else
@@ -883,7 +1008,7 @@ function Digits(Self: int64; base: integer := 10): List<integer>;
 /// Обратное действие выполняют функции DigitsToInt64 и DigitsToBigInteger. 
 function Digits(n: BigInteger; base: integer): List<integer>;
 begin
-  Result := new List<integer>;
+  Result := [];
   if (n < 0) or (base < 2) or (base > integer.MaxValue) then exit;
   if n = 0 then Result := Lst(0)
   else
@@ -941,7 +1066,7 @@ function DigitsToBigInteger(Self: List<integer>; base: integer := 10): BigIntege
 // на основе идеи А. Богданова
 function Divisors(n: integer): List<integer>;
 begin
-  Result := new List<integer>;
+  Result := [];
   Result.Add(1);
   foreach var prime in LPrimes do
   begin
@@ -1124,7 +1249,7 @@ function TrueTable(n: integer; f: (array of boolean) -> boolean):
     array[,] of boolean;
 begin
   Result := new boolean[1 shl n, n + 1];
-  foreach var values in |False, True|.CartesianPower(n) index i do
+  foreach var values in [False, True].CartesianPower(n) index i do
   begin
     foreach var val in values index j do 
     begin

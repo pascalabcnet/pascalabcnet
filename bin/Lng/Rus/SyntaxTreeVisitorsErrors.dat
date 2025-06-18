@@ -54,3 +54,6 @@ FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_BE_DEFINED_GLOBALLY=Функции с ат
 FUNCTIONS_WITH_CACHE_ATTRIBUTE_CANNOT_HAVE_YIELD=Функции с атрибутом [Cache] не должны содержать оператор yield
 FOR_LOOP_WITH_STEP_CANNOT_USE_DOWNTO=В цикле for с шагом нельзя использовать направление downto
 STEP_CANNOT_BE_0=Шаг в цикле for не может быть равным 0
+EXIT_PROC_CAN_HAVE_ONLY_ONE_OR_ZERO_PARAMS=exit не может иметь 2 и более параметров
+EXIT_WITH_PARAM_MUST_BE_ONLY_IN_FUNC=exit с параметром может вызываться только в функции
+EXIT_WITH_PARAM_CANNOT_BE_IN_LAMBDA_PROCEDURE=exit с параметром не может вызываться в лямбда-процедуре

@@ -2,7 +2,7 @@
 
 NAME_CANNOT_HAVE_GENERIC_PARAMETERS_{0}=Имя {0} не может иметь обобщенные параметры
 AUTO_CLASS_MUST_NOT_HAVE_POINTERS=Авто класс не может иметь поля, являющиеся указателями
-AUTO_CLASS_MUST_NOT_HAVE_PARENTS=Авто класс не может иметь предков
+AUTO_CLASS_MUST_NOT_HAVE_PARENTS_WITH_FIELDS=Авто класс не может иметь предков, содержащих поля 
 AUTO_CLASS_MUST_NOT_HAVE_UNNAMED_ENUMS=Авто класс не может иметь полей с неименованными перечислимыми типами
 AUTO_CLASS_MUST_NOT_HAVE_EVENTS=Авто класс не может иметь поля, являющиеся событиями
 AUTO_CLASS_MUST_NOT_HAVE_PROPERTIES=Авто класс не может иметь свойства
@@ -95,7 +95,7 @@ CAN_NOT_EXPLICITLY_CONVERT_TYPE_{0}_TO_TYPE_{1}=Невозможно явно п
 ONLY_ONE_PARAMETER_OF_TYPE_CONVERSION_ALLOWED=У операции преобразования типов допустим только один параметр 
 REAL_TYPE_IN_DOUBLE_COLON_EXPRESSION_EXPECTED=Данный формат вывода может быть применен только к вещественному типу
 ONLY_ONE_PARAMS_PARAMETER_ALLOWED=Допустим только один параметр с ключевым словом params
-ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED=Только динамический массив может описываться с ключевым словом params
+ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED=Только одномерный динамический массив может описываться с ключевым словом params
 {0}_DIMENSIONAL_ARRAY_CAN_NOT_HAVE_{1}_AND_MORE_INDEXING=Неверное количество индексов. Должно быть {0} 
 TUPLE_CAN_HAVE_ONLY_ONE_INDEX=Кортеж может иметь только один индекс 
 TUPLE_INDEX_OUT_OF_RANGE_{0}=Индекс кортежа должен быть ≥0 и ≤{0}

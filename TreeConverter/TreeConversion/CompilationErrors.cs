@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using PascalABCCompiler.SemanticTree;
 
 using PascalABCCompiler.TreeRealization;
-using PascalABCCompiler.TreeConverter;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -625,12 +624,12 @@ namespace PascalABCCompiler.TreeConverter
     }
 
     /*->*/
-    public class AutoClassMustNotHaveParents : CompilationErrorWithLocation
+    public class AutoClassMustNotHaveParentsWithFields : CompilationErrorWithLocation
     {
-        public AutoClassMustNotHaveParents(location loc) : base(loc) { }
+        public AutoClassMustNotHaveParentsWithFields(location loc) : base(loc) { }
         public override string ToString()
         {
-            return string.Format(StringResources.Get("AUTO_CLASS_MUST_NOT_HAVE_PARENTS"));
+            return string.Format(StringResources.Get("AUTO_CLASS_MUST_NOT_HAVE_PARENTS_WITH_FIELDS"));
         }
     }
     /*->*/

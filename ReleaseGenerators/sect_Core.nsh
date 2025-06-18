@@ -30,6 +30,18 @@
     File "..\bin\Mono.Cecil.dll"
     File "..\bin\TeacherControlPlugin.dll"
     File "..\bin\LambdaAnySynToSemConverter.dll"
+    
+    File "..\bin\Microsoft.Bcl.HashCode.dll"
+    File "..\bin\System.Buffers.dll"
+    File "..\bin\System.Collections.Immutable.dll"
+    File "..\bin\System.Formats.Nrbf.dll"
+    File "..\bin\System.Memory.dll"
+    File "..\bin\System.Numerics.Vectors.dll"
+    File "..\bin\System.Reflection.Metadata.dll"
+    File "..\bin\System.Resources.Extensions.dll"
+    File "..\bin\System.Runtime.CompilerServices.Unsafe.dll"
+    File "..\bin\System.ValueTuple.dll"
+    
     ;File "libs\System.Core.dll"
     File "gacutil.exe"
     File "gacutil.exe.config"
@@ -117,6 +129,7 @@
     File ..\bin\Lib\PointerTools.pcu
     File ..\bin\Lib\PointRect.pcu
     File ..\bin\Lib\PT4.pcu
+    File ..\bin\Lib\PT4_32.pcu
     File ..\bin\Lib\PT4Exam.pcu
     File ..\bin\Lib\PT4MakerNetX.pcu
     File ..\bin\Lib\PT4TaskMakerNET.pcu
@@ -144,6 +157,7 @@
     File ..\bin\Lib\School.pcu
     File ..\bin\Lib\SF.pcu
     File ..\bin\Lib\Turtle.pcu
+    File ..\bin\Lib\Coords.pcu
     File ..\bin\Lib\TurtleWPF.pcu
     File ..\bin\Lib\LightPT.pcu
     File ..\bin\Lib\Tasks.pcu
@@ -166,6 +180,7 @@
     File ..\bin\Lib\HelixToolkit.dll
     File ..\bin\Lib\nunit.framework.dll 
     File ..\bin\Lib\InteractiveDataDisplay.WPF.dll 
+    File ..\bin\Lib\MathNet.Numerics.dll
     
     File ..\bin\Lib\turtle.png
 
@@ -206,6 +221,7 @@
     ${AddFile} "PointerTools.pcu"
     ${AddFile} "PointRect.pcu"
     ${AddFile} "PT4.pcu"
+    ${AddFile} "PT4_32.pcu"
     ${AddFile} "PT4Exam.pcu"
     ${AddFile} "PT4MakerNetX.pcu"
     ${AddFile} "PT4TaskMakerNET.pcu"
@@ -233,6 +249,7 @@
     ${AddFile} "School.pcu"
     ${AddFile} "SF.pcu"
     ${AddFile} "Turtle.pcu"
+    ${AddFile} "Coords.pcu"
     ${AddFile} "TurtleWPF.pcu"
     ${AddFile} "LightPT.pcu"
     ${AddFile} "Tasks.pcu"
@@ -258,6 +275,7 @@
     ${AddFile} "HelixToolkit.dll"
     ${AddFile} "nunit.framework.dll"
     ${AddFile} "InteractiveDataDisplay.WPF.dll"
+    ${AddFile} "MathNet.Numerics.dll"
     
     ${AddFile} "PABCRtl.pdb"
 
@@ -275,6 +293,8 @@
     Push "Lib\nunit.framework.dll"
     Call NGEN
     Push "Lib\InteractiveDataDisplay.WPF.dll"
+    Call NGEN
+    Push "Lib\MathNet.Numerics.dll"
     Call NGEN
     
     
@@ -314,6 +334,7 @@
     File ..\bin\Lib\PointerTools.pas
     File ..\bin\Lib\PointRect.pas
     File ..\bin\Lib\PT4.pas
+    File ..\bin\Lib\PT4_32.pas
     File ..\bin\Lib\PT4Exam.pas
     File ..\bin\Lib\PT4MakerNetX.pas
     File ..\bin\Lib\xPT4MakerNetX.pas
@@ -343,6 +364,7 @@
     File ..\bin\Lib\School.pas
     File ..\bin\Lib\SF.pas
     File ..\bin\Lib\Turtle.pas
+    File ..\bin\Lib\Coords.pas
     File ..\bin\Lib\TurtleWPF.pas
     File ..\bin\Lib\LightPT.pas
     File ..\bin\Lib\Tasks.pas
@@ -392,6 +414,7 @@
     ${AddFile} "PointerTools.pas"
     ${AddFile} "PointRect.pas"
     ${AddFile} "PT4.pas"
+    ${AddFile} "PT4_32.pas"
     ${AddFile} "PT4Exam.pas"
     ${AddFile} "PT4MakerNetX.pas"
     ${AddFile} "xPT4MakerNetX.pas"
@@ -420,6 +443,7 @@
     ${AddFile} "School.pas"
     ${AddFile} "SF.pas"
     ${AddFile} "Turtle.pas"
+    ${AddFile} "Coords.pas"
     ${AddFile} "TurtleWPF.pas"
     ${AddFile} "LightPT.pas"
     ${AddFile} "Tasks.pas"
@@ -434,6 +458,7 @@
     ${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
     
+    CreateDirectory "$COMMONSTARTMENU\PascalABC.NET"
     CreateDirectory "$SMPROGRAMS\PascalABC.NET"
     Push "OptimizerConversion.dll"
     Call NGEN

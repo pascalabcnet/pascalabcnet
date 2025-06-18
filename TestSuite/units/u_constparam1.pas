@@ -1,4 +1,4 @@
-unit u_constparam1;
+﻿unit u_constparam1;
 type TRec = record
   a : integer;
 end;
@@ -13,14 +13,14 @@ begin
   assert(s = ['1','2','3']);
 end;
 
-procedure Test4(const s : set of 1..3);
-begin
-  assert(s=[1,2]);
-end;
-
 procedure Test3(const s : string);
 begin
   assert(s = 'abc');
+end;
+
+procedure Test4(const s : set of 1..3);
+begin
+  assert(s=[1,2,4]);
 end;
 
 procedure Test5(const s : string[3]);

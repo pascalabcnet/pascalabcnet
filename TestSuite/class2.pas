@@ -1,4 +1,4 @@
-type TClass = class
+﻿type TClass = class
 function Test1 : integer;
 begin
 Result := 1;
@@ -50,7 +50,7 @@ if Test3 then
 begin
 end;
 while not Test3 do;
-var set1 := [Test1,Test2];
+var set1: set of integer := [Test1,Test2];
 assert(Test1 in set1);
 var set2 := [Test1..Test2];
 assert(3 in set2);

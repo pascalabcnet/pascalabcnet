@@ -1,7 +1,7 @@
 ﻿// Вывод английских согласных
-var vowel: string := 'aeiouy';
-
 begin
-  var all := Range('a','z').JoinIntoString('');
+  var vowel: string := 'aeiouy';
+
+  var all := ('a'..'z').JoinToString;
   all.Except(vowel).Println;
 end.

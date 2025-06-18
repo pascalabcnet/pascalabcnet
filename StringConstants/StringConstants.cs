@@ -36,6 +36,7 @@ namespace PascalABCCompiler
             oper_names[noteq_name] = "op_Inequality";
             oper_names[shl_name] = "op_LeftShift";
             oper_names[shr_name] = "op_RightShift";
+            oper_names[assign_name] = "op_Assign";
         }
 
         public static string GetNETOperName(string name)
@@ -248,8 +249,8 @@ namespace PascalABCCompiler
         public static string subtract_of_set = "Subtract";
         public static string in_set = "InSet";
         public static string CreateSetProcedure = "CreateSet";
-        public static string IncludeProcedure = "Include";
-        public static string ExcludeProcedure = "Exclude";
+        //public static string IncludeProcedure = "Include";
+        //public static string ExcludeProcedure = "Exclude";
         public static string DiapasonType = "Diapason";
         public static string CreateDiapason = "CreateDiapason";
         public static string CreateObjDiapason = "CreateObjDiapason";
@@ -317,33 +318,34 @@ namespace PascalABCCompiler
         public static string default_constructor_name = "create";
 
         #region PASCAL COMPILER DIRECTIVES
-        public static string compiler_directive_apptype = "apptype";
-        public static string compiler_directive_reference = "reference";
-        public static string compiler_directive_include_namespace = "includenamespace";
-        public static string compiler_directive_savepcu = "savepcu";
-        public static string compiler_directive_zerobasedstrings = "zerobasedstrings";
-        public static string compiler_directive_zerobasedstrings_ON = "string_zerobased+";
-        public static string compiler_directive_zerobasedstrings_OFF = "string_zerobased-";
-        public static string compiler_directive_nullbasedstrings_ON = "string_nullbased+"; // для совместимости. Deprecated
-        public static string compiler_directive_nullbasedstrings_OFF = "string_nullbased-"; // для совместимости. Deprecated
-        public static string compiler_directive_initstring_as_empty_ON = "string_initempty+";
-        public static string compiler_directive_initstring_as_empty_OFF = "string_initempty-";
-        public static string compiler_directive_resource = "resource";
-        public static string compiler_directive_platformtarget = "platformtarget";
-        public static string compiler_directive_faststrings = "faststrings";
-        public static string compiler_directive_gendoc = "gendoc";
-        public static string compiler_directive_region = "region";
-        public static string compiler_directive_endregion = "endregion";
-        public static string compiler_directive_ifdef = "ifdef";
-        public static string compiler_directive_endif = "endif";
-        public static string compiler_directive_ifndef = "ifndef";
-        public static string compiler_directive_else = "else";
-        public static string compiler_directive_undef = "undef";
-        public static string compiler_directive_define = "define";
-        public static string compiler_directive_include = "include";
-        public static string compiler_directive_targetframework = "targetframework";
-        public static string compiler_directive_hidden_idents = "hiddenidents";
-        public static string compiler_directive_omp = "omp";
+        public const string compiler_directive_apptype = "apptype";
+        public const string compiler_directive_reference = "reference";
+        public const string compiler_directive_include_namespace = "includenamespace";
+        public const string compiler_directive_savepcu = "savepcu";
+        public const string compiler_directive_zerobasedstrings = "zerobasedstrings";
+        public const string compiler_directive_zerobasedstrings_ON = "string_zerobased+";
+        public const string compiler_directive_zerobasedstrings_OFF = "string_zerobased-";
+        public const string compiler_directive_nullbasedstrings_ON = "string_nullbased+"; // для совместимости. Deprecated
+        public const string compiler_directive_nullbasedstrings_OFF = "string_nullbased-"; // для совместимости. Deprecated
+        public const string compiler_directive_initstring_as_empty_ON = "string_initempty+";
+        public const string compiler_directive_initstring_as_empty_OFF = "string_initempty-";
+        public const string compiler_directive_resource = "resource";
+        public const string compiler_directive_platformtarget = "platformtarget";
+        public const string compiler_directive_faststrings = "faststrings";
+        public const string compiler_directive_gendoc = "gendoc";
+        public const string compiler_directive_region = "region";
+        public const string compiler_directive_endregion = "endregion";
+        public const string compiler_directive_ifdef = "ifdef";
+        public const string compiler_directive_endif = "endif";
+        public const string compiler_directive_ifndef = "ifndef";
+        public const string compiler_directive_else = "else";
+        public const string compiler_directive_undef = "undef";
+        public const string compiler_directive_define = "define";
+        public const string compiler_directive_include = "include";
+        public const string compiler_directive_targetframework = "targetframework";
+        public const string compiler_directive_hidden_idents = "hiddenidents";
+        public const string compiler_directive_disable_standard_units = "disablestandardunits";
+        public const string compiler_directive_omp = "omp";
         public const string compiler_directive_version_string = "version";
         public const string compiler_directive_product_string = "product";
         public const string compiler_directive_company_string = "company";
@@ -372,9 +374,9 @@ namespace PascalABCCompiler
         public const string pascalLanguageDllName = "PascalLanguage.dll";
         #endregion
 
-        #region PARSERS
-        public const char hideParserExtensionPostfixChar = '_';
-        #endregion
+        public static readonly string[] netSystemLibraries = new[] { "mscorlib.dll", "System.dll", "System.Core.dll", "System.Numerics.dll", "System.Windows.Forms.dll", "System.Drawing.dll" };
+
+        public static readonly string[] graph3DDependencies = new[] { "PresentationFramework.dll", "WindowsBase.dll", "PresentationCore.dll", "HelixToolkit.Wpf.dll", "HelixToolkit.dll" };
 
         public static string get_array_type_name(string type_name, int rank)
         {

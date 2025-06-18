@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using PascalABCCompiler.SemanticTree;
+using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeRealization;
+using static PascalABCCompiler.SyntaxTree.SyntaxTreeBuilder;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -655,7 +657,12 @@ namespace PascalABCCompiler.TreeConverter
 
             //TODO: А если наследование?
             possible_type_convertions pct = type_table.get_convertions(en.type,to);
-
+            if (pct.first == null && pct.second == null && en.type is delegated_methods && to.IsDelegate)
+            {
+                pct = type_table.get_convertions(to, en.type);
+                if (pct.first != null)
+                    return en;
+            }
 			if (pct.second!=null)
 			{
                 if (pct.second.to == null && en is typed_expression && !to.IsDelegate)
@@ -1202,6 +1209,46 @@ namespace PascalABCCompiler.TreeConverter
 						}
 						else
 						{
+                            // SSM 20/01/25 - Tuple<int,int> -> Tuple<double,double>
+                            // А если уже один такой conv есть? Как сливать несколько в один???
+                            if (formal_param_type.original_generic != null 
+                                && formal_param_type.original_generic.BaseFullName.StartsWith("System.Tuple`")
+                                && factparams[i].type.original_generic != null
+                                && factparams[i].type.original_generic.BaseFullName.StartsWith("System.Tuple`")
+                                && formal_param_type.instance_params.Count == factparams[i].type.instance_params.Count
+                                )
+                            {
+                                syntax_tree_visitor.contextChanger.SaveContextAndUpToGlobalLevel();
+                                var sl = new statement_list();
+                                var rettype = new semantic_type_node(formal_param_type);
+
+                                var el = new expression_list();
+                                for (int ii = 1; ii <= formal_param_type.instance_params.Count; ii++)
+                                    el.Add(new dot_node(new ident("x"), new ident("Item" + ii.ToString(),
+                                        factparams[i].location)));
+                                        //parameters[ii-1].location)));
+                                SyntaxTree.expression ex = new SyntaxTree.new_expr(rettype,el);
+                                sl.Add(new SyntaxTree.assign("Result", ex));
+                                // Определим функцию преобразования на внешнем уровне
+                                var fun = BuildSimpleFunctionOneParameter("_conv" + UniqueString(), "x",
+                                    new SyntaxTree.semantic_type_node(factparams[i].type),
+                                    rettype,
+                                    sl
+                                    );
+                                // Теперь ее надо обойти
+                                syntax_tree_visitor.ProcessNode(fun);
+                                // Теперь до нее доберемся
+                                var fn = syntax_tree_visitor.context.last_created_function.sym_info as function_node;
+                                syntax_tree_visitor.contextChanger.RestoreCurrentContext();
+                                possible_type_convertions ptci = new possible_type_convertions();
+                                ptci.first = new type_conversion(fn);
+                                ptci.second = null;
+                                ptci.from = factparams[i].type;
+                                ptci.to = formal_param_type;
+                                tc.AddElement(ptci);
+                                return tc;
+                            }
+
                             //issue #2161 - SSM 12.03.2020
                             //issue #348
                             if ((formal_param_type == SystemLibrary.SystemLibrary.object_type || formal_param_type.IsDelegate) && factparams[i].type is delegated_methods)
@@ -1888,7 +1935,9 @@ namespace PascalABCCompiler.TreeConverter
 				{
                     if (ptc.first.from is null_type_node || ptc.second.to == null || ptc.second.from is null_type_node || ptc.second.from.is_generic_parameter)
                         continue; // SSM 9/12/20 fix 2363
-					AddError(new PossibleTwoTypeConversionsInFunctionCall(loc,ptc.first,ptc.second));
+                    if (ptc.first.from == ptc.second.from && ptc.first.to == ptc.second.to) // SSM fix 03/08/24 - непонятно, как до этого могло дойти
+                        continue;
+                    AddError(new PossibleTwoTypeConversionsInFunctionCall(loc,ptc.first,ptc.second));
 				}
 				
 			}
@@ -2428,7 +2477,7 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             possible_type_convertions_list_list tcll = new possible_type_convertions_list_list();
-
+            Dictionary<function_node, possible_type_convertions_list> last_chance_list = new Dictionary<function_node, possible_type_convertions_list>();
             for (int i = 0; i < set_of_possible_functions.Count; i++)
             {
                 Errors.Error err = null;
@@ -2446,6 +2495,7 @@ namespace PascalABCCompiler.TreeConverter
                         if (fact.type is delegated_methods dm)
                         {
                             var fact_is_function_with_return_value = dm.proper_methods.Count > 0 && dm.proper_methods[0].function.return_value_type != null;
+                           
                             var fact_is_lambda = syntax_nodes_parameters != null && k < syntax_nodes_parameters.Count && syntax_nodes_parameters[k] is SyntaxTree.function_lambda_definition;
                             var form_is_procedure = false;
                             var form_is_delegate = false;
@@ -2467,6 +2517,8 @@ namespace PascalABCCompiler.TreeConverter
                             if (fact_is_function_with_return_value && form_is_procedure)
                             {
                                 proc_func_or_lambdaAndNotDelegate_OK_flag = false;
+                                if (dm.proper_methods[0].function.return_value_type is lambda_any_type_node)
+                                    last_chance_list[set_of_possible_functions[i]] = tc;
                                 break;
                             }
                             if (fact_is_lambda && !form_is_delegate) // лямбда вместо не делегата - исключает функцию из рассмотрения
@@ -2530,6 +2582,12 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
 
+            if (set_of_possible_functions.Count == 0 && indefinits.Count == 0 && last_chance_list.Count == 1)
+            {
+                tcll.AddElement(last_chance_list.First().Value);
+                set_of_possible_functions.Add(last_chance_list.First().Key);
+            }
+
             if (set_of_possible_functions.Count == 0 && indefinits.Count == 0)
             {
                 if (_is_assigment && parameters.Count == 2)
@@ -2538,7 +2596,8 @@ namespace PascalABCCompiler.TreeConverter
                     err_out = new OperatorCanNotBeAppliedToThisTypes(_tmp_bfn.name, parameters[0], parameters[1], loc);
                 else if (is_op)
                     err_out = new OperatorCanNotBeAppliedToThisTypes(first_function.name, parameters[0], parameters.Count > 1 ? parameters[1] : null, loc);
-                else err_out = new NoFunctionWithSameArguments(FunctionName, loc, is_alone_method_defined);
+                else 
+                    err_out = new NoFunctionWithSameArguments(FunctionName, loc, is_alone_method_defined);
                 return set_of_possible_functions;
             }
 
@@ -2876,6 +2935,7 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     var tlist = new List<function_node>();
                                     tlist.Add(f2);
+                                    convert_function_call_expressions(tlist[0], parameters, tcll[0]);
                                     return tlist;
                                 }
                             }
@@ -2953,6 +3013,7 @@ namespace PascalABCCompiler.TreeConverter
                         set_of_possible_functions.Remove(fn);
                     var tlist = new List<function_node>();
                     tlist.Add(set_of_possible_functions[0]);
+                    convert_function_call_expressions(tlist[0], parameters, tcll[0]);
                     return tlist;
                 }
             }
@@ -2962,12 +3023,14 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     var tlist = new List<function_node>();
                     tlist.Add(set_of_possible_functions[1]);
+                    convert_function_call_expressions(tlist[0], parameters, tcll[0]);
                     return tlist;
                 }
                 else if (set_of_possible_functions[1].semantic_node_type == semantic_node_type.basic_function_node && set_of_possible_functions[0].semantic_node_type != semantic_node_type.basic_function_node)
                 {
                     var tlist = new List<function_node>();
                     tlist.Add(set_of_possible_functions[0]);
+                    convert_function_call_expressions(tlist[0], parameters, tcll[0]);
                     return tlist;
                 }
             }
@@ -3285,7 +3348,13 @@ namespace PascalABCCompiler.TreeConverter
                     ret_type = types[i];
                 else if (tc == type_compare.non_comparable_type)
                 {
-                    AddError(lst[i].location, "UNCOMPARABLE_TYPES_IN_ARRAY_CONST");
+                    if (can_convert_type(ret_type, types[i])) // трудно представить что обва типа можно преобразовать друг к другу
+                    { 
+                        ret_type = types[i];
+                        continue;
+                    }
+                    if (!can_convert_type(types[i], ret_type))
+                        AddError(lst[i].location, "UNCOMPARABLE_TYPES_IN_ARRAY_CONST");
                 }
 
             }

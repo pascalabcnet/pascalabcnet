@@ -6,24 +6,25 @@ var AllTaskNames: array of string;
 
 procedure CheckTaskT(name: string);
 begin
-  FlattenOutput; // Во всех задачах на массивы
   ClearOutputListFromSpaces; // Это чтобы a.Print работал. По идее, надо писать всегда. Яне знаю задач, где пробелы в ответе
 
   case name of
   'ДвумерныеМассивы1': begin 
-    ConvertStringsToNumbersInOutputList;
-    //FilterOnlyNumbersAndBools; 
-    CheckOutputSeq(|5,4,5,5,2,4,3,3,5,3,5,4|);
+    // Есть проблема - если при выводе вещественные будут перемежаться с целыми, то ошибка!
+    ConvertStringsToNumbersInOutputList; // Это при выводе двумерных массивов возникают строки. 
+    // Если строка не преобразуется в массив, то так и останется строкой
+    FilterOnlyNumbersAndBools; // после преобразования те строки, которые нельзя преобразовать в числа, отфильтровать
+    CheckOutput(5,4,5,5,2,4,3,3,5,3,5,4);
   end;
   'ДвумерныеМассивы2': begin 
-    // Преобразовать в 6 целых по строкам
     ConvertStringsToNumbersInOutputList;
-    CheckOutputSeq(|5,4,5,5,2,4,3,3,5,3,5,4|);
+    FilterOnlyNumbersAndBools;
+    CheckOutput(5,4,5,5,2,4,3,3,5,3,5,4);
   end;
   'ДвумерныеМассивы3': begin 
     ConvertStringsToNumbersInOutputList;
-    CheckData(Input := |cInt|*12);
-    CheckOutputSeq(InputList);
+    CheckData(Input := cInt*12);
+    CheckOutput(InputList);
   end;
   'Заполн1_Формула','Заполн2_Matr': begin 
     ConvertStringsToNumbersInOutputList;
@@ -33,7 +34,7 @@ begin
     for var i:=0 to 8 do
     for var j:=0 to 8 do
       ob.Add((i+1)*(j+1));
-    CheckOutputSeq(ob);
+    CheckOutput(ob);
   end;
   'Заполн3_Шахм': begin 
     ConvertStringsToNumbersInOutputList;
@@ -45,42 +46,42 @@ begin
       if (i + j).IsEven then
         ob.Add(1)
       else ob.Add(0);
-    CheckOutputSeq(ob);
+    CheckOutput(ob);
   end;
   'SumInMatr': begin 
     ConvertStringsToNumbersInOutputList;
     var n := 12;
-    CheckData(InitialInput := |cInt|*n, InitialOutput := |cInt|*n);
+    CheckData(InitialInput := cInt*n, InitialOutput := cInt*n);
     var res := IntArr(n).Sum;
     CheckOutputAfterInitial(res);
   end;
   'MaxInMatr': begin 
     ConvertStringsToNumbersInOutputList;
     var n := 12;
-    CheckData(|cInt|*n, |cInt|*n);
+    CheckData(InitialInput := cInt*n, InitialOutput := cInt*n);
     var res := IntArr(n).Max;
     CheckOutputAfterInitial(res);
   end;
   'СтрокаСтолбец1','СтрокаСтолбец3': begin 
     ConvertStringsToNumbersInOutputList;
     var n := 54;
-    CheckData(|cInt|*n, |cInt|*n);
+    CheckData(InitialInput := cInt*n, InitialOutput := cInt*n);
 
     var m := MatrByRow(6,9,IntArr(n));
-    CheckOutputAfterInitialSeq(m.Row(2)); 
+    CheckOutputAfterInitial(m.Row(2)); 
   end;
   'СтрокаСтолбец2','СтрокаСтолбец4': begin 
     ConvertStringsToNumbersInOutputList;
     var n := 54;
-    CheckData(|cInt|*n, |cInt|*n);
+    CheckData(InitialInput := cInt*n, InitialOutput := cInt*n);
 
     var m := MatrByRow(6,9,IntArr(n));
-    CheckOutputAfterInitialSeq(m.Col(8)); 
+    CheckOutputAfterInitial(m.Col(8)); 
   end;
   'MaxInRow': begin 
     ConvertStringsToNumbersInOutputList;
     var n := 54;
-    CheckData(|cInt|*n, |cInt|*n);
+    CheckData(InitialInput := cInt*n, InitialOutput := cInt*n);
 
     var m := MatrByRow(6,9,IntArr(n));
     CheckOutputAfterInitial(m.Row(0).Max,m.Row(5).Min,m.Col(4).Average);    
@@ -88,7 +89,7 @@ begin
   'CountInRowsCols': begin 
     ConvertStringsToNumbersInOutputList;
     var n := 54;
-    CheckData(|cInt|*n, |cInt|*n);
+    CheckData(InitialInput := cInt*n, InitialOutput := cInt*n);
     GenerateTests(10, tInt(1,5) * n);
     
     var m := MatrByRow(6,9,IntArr(n));

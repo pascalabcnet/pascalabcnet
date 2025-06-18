@@ -1,4 +1,4 @@
-unit u_nested2;
+﻿unit u_nested2;
 type TClass = class
 procedure Meth;
 end;
@@ -20,7 +20,7 @@ const
   rec : TRec = (a:2;b:(1,3));
   set1 : set of char = ['a','c','f'];
   num1 = three;
-  set2 : set of two..four=[one,three,four];
+  set2 : set of two..four=[three,four];
   
 procedure Nested;
 begin

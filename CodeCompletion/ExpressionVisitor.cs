@@ -1264,10 +1264,18 @@ namespace CodeCompletion
             method_call_cache[_method_call] = returned_scope;
         }
 
-        public override void visit(pascal_set_constant _pascal_set_constant)
+        public override void visit(pascal_set_constant psc)
         {
             //throw new NotImplementedException();
-            returned_scope = null;
+            // returned_scope = null;
+            
+            var dn = new dot_node(new ident(StringConstants.pascalSystemUnitName), new ident("Arr"), psc.source_context);
+            var el = new expression_list(psc.values.expressions[0], psc.source_context);
+            var nn = new method_call(dn, el, psc.source_context);
+            var dn1 = new dot_node(new ident(StringConstants.pascalSystemUnitName), new ident("__NewSetCreatorInternal"), psc.source_context);
+            var el1 = new expression_list(nn, psc.source_context);
+            var nn1 = new method_call(dn1, el1, psc.source_context);
+            visit(nn1);
         }
 
         public override void visit(array_const _array_const)
@@ -2048,7 +2056,7 @@ namespace CodeCompletion
         public override void visit(array_const_new acn)
         {
             acn.elements.expressions[0].visit(this);
-            var rr = this.returned_scope;
+            //var rr = this.returned_scope;
             //var nn = new new_expr((syntax_type, plist, true, new SyntaxTree.array_const(acn.elements, acn.elements.source_context), acn.source_context);
             //var nn = new new_expr($2, el, true, $6 as array_const, @$);
             var dn = new dot_node(new ident(StringConstants.pascalSystemUnitName), new ident("Arr"), acn.source_context);
