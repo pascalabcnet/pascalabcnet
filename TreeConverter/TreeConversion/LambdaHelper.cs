@@ -2,12 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using PascalABCCompiler.TreeRealization;
-using System.Collections;
 using PascalABCCompiler.SyntaxTree;
 using TreeConverter.LambdaExpressions;
+using static PascalABCCompiler.StringConstants;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -203,7 +202,7 @@ namespace PascalABCCompiler.TreeConverter
                                                                                    lambdaDef.formal_parameters.params_list[i].vars_type,
                                                                                    null));
             if (lambdaDef.return_type != null)
-                stmtList.subnodes.Add(SyntaxTreeNodesConstructor.CreateVarStatementNode(StringConstants.result_variable_name, lambdaDef.return_type, null)); // переделать, не сработает, если тип возвращаемого значения не указан
+                stmtList.subnodes.Add(SyntaxTreeNodesConstructor.CreateVarStatementNode(result_var_name, lambdaDef.return_type, null)); // переделать, не сработает, если тип возвращаемого значения не указан
             stmtList.subnodes.AddRange((lambdaDef.proc_body as statement_list).subnodes);
             block resBlock = new block();
             resBlock.program_code = stmtList;
@@ -224,7 +223,7 @@ namespace PascalABCCompiler.TreeConverter
         /// Заменяет x -> begin result := x.Print end;  на  x -> begin x.Print end  в случае если это один оператор и вызов метода
         ///
         /// </summary>
-        public static bool TryConvertFuncLambdaBodyWithMethodCallToProcLambdaBody(function_lambda_definition lambdaDef)
+        public static bool TryConvertFuncLambdaBodyWithMethodCallToProcLambdaBody(function_lambda_definition lambdaDef, StringComparison stringComparison)
         {
             // SSM 12/12/16 - сделал чтобы всегда эта функция возвращала true.
             // Посмотрю далее на её поведение. Мне кажется, что если мы попали сюда, то мы хотим присвоить процедурному типу, 
@@ -235,7 +234,7 @@ namespace PascalABCCompiler.TreeConverter
                 // Очищаем от Result := , который мы создали на предыдущем этапе
 
                 var ass = stl.list[0] as assign;
-                if (ass != null && ass.to is ident && (ass.to as ident).name.Equals(StringConstants.result_variable_name, SemanticRulesConstants.SymbolTableCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
+                if (ass != null && ass.to is ident && (ass.to as ident).name.Equals(result_var_name, stringComparison))
                 {
                     var f = ass.from;
                     if (f is method_call)
@@ -363,7 +362,7 @@ namespace PascalABCCompiler.TreeConverter
                     else // SSM 23/07/16 - попытка бороться с var p: Shape->() := a->a.Print()
                     {
                         // lambdaDef.usedkeyword == 1 // function
-                        var b = lambdaDef.usedkeyword == 0 && TryConvertFuncLambdaBodyWithMethodCallToProcLambdaBody(lambdaDef); // пытаться конвертировать только если мы явно не указали, что это функция
+                        var b = lambdaDef.usedkeyword == 0 && TryConvertFuncLambdaBodyWithMethodCallToProcLambdaBody(lambdaDef, visitor.context.CurrentScope.StringComparison); // пытаться конвертировать только если мы явно не указали, что это функция
                         if (!b)
                             visitor.AddError(visitor.get_location(lambdaDef), "UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE");
                     }
@@ -449,7 +448,7 @@ namespace PascalABCCompiler.TreeConverter
             public override void visit(assign value)
             {
                 var to = value.to as ident;
-                if (to != null && value.operator_type == Operators.Assignment && to.name.Equals(StringConstants.result_variable_name, SemanticRulesConstants.SymbolTableCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
+                if (to != null && value.operator_type == Operators.Assignment && to.name.Equals(result_var_name, SemanticRulesConstants.SymbolTableCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
                 {
                     exprList.Add(value.from);
                 }

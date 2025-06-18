@@ -166,6 +166,9 @@ namespace SymbolTable
         public Scope TopScope;
 
 		public int ScopeNum;
+
+        public StringComparison StringComparison => CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+
         public Scope(DSSymbolTable vSymbolTable, Scope TopScope, string Name)
 		{
 			SymbolTable=vSymbolTable;

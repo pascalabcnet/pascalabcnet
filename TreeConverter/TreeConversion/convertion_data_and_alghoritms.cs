@@ -1228,7 +1228,7 @@ namespace PascalABCCompiler.TreeConverter
                                         factparams[i].location)));
                                         //parameters[ii-1].location)));
                                 SyntaxTree.expression ex = new SyntaxTree.new_expr(rettype,el);
-                                sl.Add(new SyntaxTree.assign(StringConstants.result_variable_name, ex));
+                                sl.Add(new SyntaxTree.assign(StringConstants.result_var_name, ex));
                                 // Определим функцию преобразования на внешнем уровне
                                 var fun = BuildSimpleFunctionOneParameter("_conv" + UniqueString(), "x",
                                     new SyntaxTree.semantic_type_node(factparams[i].type),
