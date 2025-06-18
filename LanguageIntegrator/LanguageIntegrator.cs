@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Languages.Facade;
+using PascalABCCompiler;
 
 namespace Languages.Integration
 {
@@ -62,7 +63,7 @@ namespace Languages.Integration
                 
                 foreach (var dll in dllFiles)
                 {
-                    if (dll.Name.EndsWith("Language.dll"))
+                    if (dll.Name.EndsWith("LanguageInfo.dll"))
                     {
                         IntegrateLanguageFromAssembly(dll);
                         break;
@@ -91,7 +92,12 @@ namespace Languages.Integration
 
             FileInfo[] dllFiles = directory.GetFiles("*LanguageInfo.dll");
 
-            foreach (FileInfo languageFile in dllFiles)
+            var mainLanguageDll = dllFiles.First(fileInfo => fileInfo.Name == StringConstants.pascalLanguageDllName);
+
+            // первым добавляем PascalABC.NET
+            IntegrateLanguageFromAssembly(mainLanguageDll);
+
+            foreach (FileInfo languageFile in dllFiles.Where(dll => dll != mainLanguageDll))
             {
                 IntegrateLanguageFromAssembly(languageFile);
             }

@@ -113,7 +113,7 @@ namespace Languages.Pascal.Frontend.Wrapping
             return parser.root;
         }
 
-        protected override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, List<string> DefinesList = null)
+        protected override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, bool compilingNotMainProgram, List<string> DefinesList = null)
         {
             Errors.Clear();
             Warnings.Clear();
@@ -161,7 +161,7 @@ namespace Languages.Pascal.Frontend.Wrapping
             return root as statement;
         }
 
-        protected override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text)
+        protected override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text, bool compilingNotMainProgram)
         {
             Errors.Clear();
             syntax_tree_node root = Parse(Text, FileName);

@@ -360,7 +360,9 @@ namespace VisualPascalABC
                 if (symInfos != null)
                 {
                     bool languageCaseSensitive = LanguageProvider.Instance.SelectLanguageByExtension(FileName).CaseSensitive;
-                    
+
+                    languageInformation.RenameOrExcludeSpecialNames(symInfos);
+
                     AddCompletionDatasByFirstForSymInfos(resultList, charTyped, symInfos, languageCaseSensitive);
                     
                     //resultList.Sort();
@@ -391,21 +393,23 @@ namespace VisualPascalABC
             {
                 if (symInfo == null || symInfo.not_include) continue;
 
-                if (symbolsAdded.Contains(symInfo.name))
+                string nameToShow = symInfo.addit_name != null ? symInfo.addit_name : symInfo.name;
+
+                if (symbolsAdded.Contains(nameToShow + symInfo.kind))
                     continue;
 
-                UserDefaultCompletionData completionData = new UserDefaultCompletionData(symInfo.name, symInfo.description, ImagesProvider.GetPictureNum(symInfo), false);
+                UserDefaultCompletionData completionData = new UserDefaultCompletionData(nameToShow, symInfo.description, ImagesProvider.GetPictureNum(symInfo), false);
 
                 StringComparison stringComparison = languageCaseSensitive ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase;
 
                 // если мы выбирали что-то раньше из списка подсказок, то считаем это элементом по умолчанию
-                if (!stop && lastUsedItem != null && string.Equals(symInfo.name, lastUsedItem.Text, stringComparison))
+                if (!stop && lastUsedItem != null && string.Equals(nameToShow, lastUsedItem.Text, stringComparison))
                 {
                     defaultCompletionElement = completionData;
                     stop = true;
                 }
                 // иначе формируем список подходящих подсказок - "кандидатов" для элемента по умолчанию
-                else if (!stop && lastUsedItem == null && symInfo.name.StartsWith(charTyped.ToString(), stringComparison))
+                else if (!stop && lastUsedItem == null && nameToShow.StartsWith(charTyped.ToString(), stringComparison))
                 {
                     //defaultCompletionElement = ddd;
                     candidatesForDefault.Add(completionData);
@@ -416,7 +420,7 @@ namespace VisualPascalABC
 
                 resultList.Add(completionData);
 
-                symbolsAdded.Add(symInfo.name);
+                symbolsAdded.Add(nameToShow + symInfo.kind);
             }
 
             if (candidatesForDefault.Count > 0)
@@ -534,6 +538,8 @@ namespace VisualPascalABC
 
                 if (symInfos != null)
                 {
+                    currentLanguage.LanguageInformation.RenameOrExcludeSpecialNames(symInfos);
+
                     AddCompletionDatasForSymInfos(resultList, currentLanguage.CaseSensitive, symInfos, selectedSymInfo, lastUsedMember);
                 }
             }
@@ -557,19 +563,18 @@ namespace VisualPascalABC
                 if (symInfo == null || symInfo.not_include)
                     continue;
 
-                if (symbolsAdded.Contains(symInfo.name + symInfo.kind))
+                string nameToShow = symInfo.addit_name != null ? symInfo.addit_name : symInfo.name;
+
+                if (symbolsAdded.Contains(nameToShow + symInfo.kind))
                     continue;
 
-                UserDefaultCompletionData completionData = new UserDefaultCompletionData(
-                    symInfo.addit_name != null ? symInfo.addit_name : symInfo.name,
-                    symInfo.description, ImagesProvider.GetPictureNum(symInfo), false
-                    );
+                UserDefaultCompletionData completionData = new UserDefaultCompletionData(nameToShow, symInfo.description, ImagesProvider.GetPictureNum(symInfo), false);
 
                 disp.Add(symInfo, completionData);
 
                 resultList.Add(completionData);
 
-                symbolsAdded.Add(symInfo.name + symInfo.kind);
+                symbolsAdded.Add(nameToShow + symInfo.kind);
 
                 /*if (VisualPABCSingleton.MainForm.UserOptions.EnableSmartIntellisense && mi.name != null && mi.name != "" && data == null)
                 {
@@ -577,7 +582,7 @@ namespace VisualPascalABC
                         if (data != null && data.Text == ddd.Text) data = ddd;
                 }*/
 
-                if (lastUsedMember != null && lastUsedMember == symInfo.name || selectedSymInfo != null && symInfo == selectedSymInfo)
+                if (lastUsedMember != null && lastUsedMember == nameToShow || selectedSymInfo != null && symInfo == selectedSymInfo)
                 {
                     defaultCompletionElement = completionData;
                 }

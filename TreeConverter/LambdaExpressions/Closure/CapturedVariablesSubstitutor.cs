@@ -20,11 +20,15 @@ namespace TreeConverter.LambdaExpressions.Closure
         private readonly syntax_tree_node _syntaxTreeNodeWhereVaribleIsDeclared;
         private readonly syntax_tree_node _syntaxTreeUnderSubstitution;
 
+        private readonly StringComparison stringComparison;
+
         public SubstitutionKey(string varName, syntax_tree_node varDefLocation, syntax_tree_node block)
         {
-            _variableName = varName.ToLower();
+            _variableName = varName;
             _syntaxTreeNodeWhereVaribleIsDeclared = varDefLocation;
             _syntaxTreeUnderSubstitution = block;
+
+            stringComparison = SemanticRulesConstants.SymbolTableCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
         }
         
         public bool IsPartialKeyEquals(syntax_tree_node block)
@@ -40,7 +44,7 @@ namespace TreeConverter.LambdaExpressions.Closure
 			    return false;
 			}
 
-            return _variableName == other._variableName &&
+            return _variableName.Equals(other._variableName, stringComparison) &&
                    _syntaxTreeNodeWhereVaribleIsDeclared == other._syntaxTreeNodeWhereVaribleIsDeclared &&
                    _syntaxTreeUnderSubstitution == other._syntaxTreeUnderSubstitution;
         }
@@ -61,7 +65,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                            (end == null ? 0 : end.column_num.GetHashCode() ^ end.line_num.GetHashCode());
                 };
 
-            return _variableName.ToLower().GetHashCode() ^
+            return (stringComparison == StringComparison.Ordinal ? _variableName.GetHashCode() : _variableName.ToLower().GetHashCode()) ^
                 (_syntaxTreeNodeWhereVaribleIsDeclared == null ? 0 : _syntaxTreeNodeWhereVaribleIsDeclared.GetHashCode()) ^
                 (_syntaxTreeUnderSubstitution == null ? 0 : _syntaxTreeUnderSubstitution.GetHashCode());
         }
@@ -568,10 +572,10 @@ namespace TreeConverter.LambdaExpressions.Closure
                             if (varDefKey != null)
                             {
                                 var varsToExclude =
-                                    varDefKey.Vars.Select(var => ((IVAriableDefinitionNode) var.SymbolInfo.sym_info).name.ToLower()); //TODO: пока что только локальные переменные!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                    varDefKey.Vars.Select(var => ((IVAriableDefinitionNode) var.SymbolInfo.sym_info).name); //TODO: пока что только локальные переменные!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                                     
                                 var newVarList = varStatement.var_def.vars.idents
-                                    .Where(id => !varsToExclude.Contains(id.name.ToLower()))
+                                    .Where(id => !varsToExclude.Contains(id.name, _visitor.context.CurrentScope.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase))
                                     .ToList();
 
                                 if (newVarList.Count > 0)

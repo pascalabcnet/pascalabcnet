@@ -169,9 +169,12 @@ namespace TreeConverter.LambdaExpressions.Closure
 
         private void VisitCapturedVar(CapturedVariablesTreeNode scope, CapturedVariablesTreeNode.CapturedSymbolInfo symbolInfo)
         {
-            var varName = ((IVAriableDefinitionNode)symbolInfo.SymbolInfo.sym_info).name.ToLower();
+            var varName = ((IVAriableDefinitionNode)symbolInfo.SymbolInfo.sym_info).name; //.ToLower();
+
+            StringComparison stringComparison = symbolInfo.SymbolInfo.scope.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+
             var ff = symbolInfo.SymbolInfo.sym_info.GetType();
-            var isSelfWordInClass = scope is CapturedVariablesTreeNodeClassScope && varName == PascalABCCompiler.StringConstants.self_word;
+            var isSelfWordInClass = scope is CapturedVariablesTreeNodeClassScope && varName.Equals(PascalABCCompiler.StringConstants.self_word, stringComparison);
             SourceContext sourceCtxt = null;
             if (symbolInfo.SymbolInfo.sym_info.location != null)
                 sourceCtxt = new SourceContext(symbolInfo.SymbolInfo.sym_info.location.begin_line_num, symbolInfo.SymbolInfo.sym_info.location.begin_column_num,

@@ -37,6 +37,7 @@
 **/CompilerController.dll
 **/CompilerTools.dll
 **/Errors.dll
+**/GPPG.dll
 **/HelpBuilder.dll
 **/InternalErrorReport.dll
 **/LambdaAnySynToSemConverter.dll
@@ -74,8 +75,6 @@
 **/PascalABCNETLinux.exe
 **/PascalABCNETLinux.exe.config
 
-
-
 # external .dll files copied to bin
 /bin/AvalonDock.dll
 /bin/PT4Tools.dll
@@ -91,7 +90,6 @@
 /bin/ICSharpCode.SharpZipLib.dll
 /bin/ICSharpCode.TextEditor.dll
 /bin/ICSharpCode.TextEditorLinux.dll
-/bin/Microsoft.Scripting.dll
 /bin/Mono.Cecil.dll
 /bin/SharpDisasm.dll
 /bin/WeifenLuo.WinFormsUI.Docking.dll

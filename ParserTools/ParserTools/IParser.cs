@@ -19,14 +19,9 @@ namespace PascalABCCompiler.Parsers
             get;
         }
 
-        /// <summary>
-        /// Callback для проверки, парсим ли мы сейчас модуль или нет (для языков без ключевых слов у модуля)
-        /// </summary>
-        Func<bool> CheckIfParsingUnit { get; set; }
-
         ILanguageInformation LanguageInformation { get; set; }
 
-        compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, List<string> DefinesList = null);
+        compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, bool compilingNotMainProgram, List<string> DefinesList = null);
 
         compilation_unit GetCompilationUnitForFormatter(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings);
 

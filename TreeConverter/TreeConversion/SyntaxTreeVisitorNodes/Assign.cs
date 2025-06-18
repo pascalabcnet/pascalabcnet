@@ -127,12 +127,28 @@ namespace PascalABCCompiler.TreeConverter
             {
                 // Перенёс вычисление from в начало - чтобы потом сделать узел, задающий тип при первом присваивании
                 from0 = convert_strong(_assign.from);
-                 if (_assign.first_assignment_defines_type) // всегда в этом случае должно быть присваивание := а не += и т.д.
-                 {
-                      var sc = context.CurrentScope;
-                      var ttt = sc.Find((_assign.to as ident).name); // всегда в этом случае должно быть простое имя
-                      (ttt[0].sym_info as var_definition_node).type = from0.type;
-                 }
+                if (_assign.first_assignment_defines_type) // всегда в этом случае должно быть присваивание := а не += и т.д.
+                {
+                    type_node type = from0.type;
+                    if (from0 is typed_expression) // Movchan 26.02.25 Если присваивается процедура или функция (пофиксил аналогично #1439 и #1511)
+                    {
+                        base_function_call bfc = ((from0 as typed_expression).type as delegated_methods).proper_methods[0];
+
+                        type =
+                            convertion_data_and_alghoritms.type_constructor.create_delegate(
+                                context.get_delegate_type_name()
+                                , bfc.simple_function_node.return_value_type
+                                , bfc.simple_function_node.parameters
+                                , context.converted_namespace
+                                , null);
+
+                        context.converted_namespace.types.AddElement(type as common_type_node);
+                    }
+
+                    var sc = context.CurrentScope;
+                    var ttt = sc.Find((_assign.to as ident).name); // всегда в этом случае должно быть простое имя
+                    (ttt[0].sym_info as var_definition_node).type = type;
+                }
             }
 
             internal_is_assign = true;

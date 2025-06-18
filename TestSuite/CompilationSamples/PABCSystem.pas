@@ -14279,17 +14279,23 @@ begin
   Result := Range(0, Self - 1);
 end;
 
-/// Возвращает число, ограниченное диапазоном от min до max включительно
-function Clamp(Self: integer; min,max: integer): integer; extensionmethod;
+/// Возвращает число, ограниченное диапазоном от bottom до top включительно
+function Clamp(Self: integer; bottom,top: integer): integer; extensionmethod;
 begin
-  if min > max then
+  if bottom > top then
     raise new System.ArgumentException(GetTranslation(MIN_CANNOT_BE_GREATER_THAN_MAX));
-  if Self < min then 
-    Result := min
-  else if Self > max then 
-    Result := max
+  if Self < bottom then 
+    Result := bottom
+  else if Self > top then 
+    Result := top
   else Result := Self;  
 end;
+
+/// Возвращает число, ограниченное величиной top сверху
+function ClampTop(Self: integer; top: integer): integer; extensionmethod := Min(Self, top);
+
+/// Возвращает число, ограниченное величиной bottom снизу
+function ClampBottom(Self: integer; bottom: integer): integer; extensionmethod := Max(Self, bottom);
 
 // -----------------------------------------------------
 //>>     Методы расширения типа BigInteger # Extension methods for BigInteger
@@ -14382,17 +14388,24 @@ begin
   Result := Format('{0:f' + frac + '}', Self)
 end;
 
-/// Возвращает число, ограниченное диапазоном от min до max включительно
-function Clamp(Self: real; min,max: real): real; extensionmethod;
+/// Возвращает число, ограниченное диапазоном от bottom до top включительно
+function Clamp(Self: real; bottom,top: real): real; extensionmethod;
 begin
-  if min > max then
+  if bottom > top then
     raise new System.ArgumentException(GetTranslation(MIN_CANNOT_BE_GREATER_THAN_MAX));
-  if Self < min then 
-    Result := min
-  else if Self > max then 
-    Result := max
+  if Self < bottom then 
+    Result := bottom
+  else if Self > top then 
+    Result := top
   else Result := Self;  
 end;
+
+/// Возвращает число, ограниченное величиной top сверху
+function ClampTop(Self: real; top: real): real; extensionmethod := Min(Self, top);
+
+/// Возвращает число, ограниченное величиной bottom снизу
+function ClampBottom(Self: real; bottom: real): real; extensionmethod := Max(Self, bottom);
+
 
 //------------------------------------------------------------------------------
 //>>     Методы расширения типа char # Extension methods for char

@@ -2117,7 +2117,7 @@ namespace PascalABCCompiler.TreeRealization
             }
 
             type_node base_tn = base_type;
-            if (sil == null && string.Compare(name, "create", true) != 0)
+            if (sil == null && string.Compare(name, StringConstants.default_constructor_name, true) != 0)
             {
                 while (sil == null && base_tn != null)
                 {
@@ -3626,7 +3626,7 @@ namespace PascalABCCompiler.TreeRealization
                 // Для исправления #2058 было закомментировано sil == null. Это неправильно, поскольку в sil были только неявно реализуемые 
                 // методы интерфейса, а при входе в if к ним стали добавляться явно реализуемые, что неправильно
                 // Поэтому будет правильно эту строку откомментировать и исправлять ошибку в #2058 по другому 
-                if (/*sil == null && */sil2 == null && string.Compare(name,"Create",true) != 0) // закомментированное - работает #2058 и не работает в #2256
+                if (/*sil == null && */sil2 == null && string.Compare(name,StringConstants.default_constructor_name,true) != 0) // закомментированное - работает #2058 и не работает в #2256
                 {
                     compiled_type_node bas_type = base_type as compiled_type_node;
                     while (sil == null && bas_type != null && bas_type.scope != null)
