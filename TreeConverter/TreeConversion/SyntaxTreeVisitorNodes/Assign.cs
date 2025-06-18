@@ -61,7 +61,9 @@ namespace PascalABCCompiler.TreeConverter
             if (stflambda.Count > 0) // мы находимся внутри лямбды - возможно, вложенной
             {
                 var fld = stflambda.Peek();
-                if (_assign.to is ident && (_assign.to as ident).name.ToLower() == "result" && fld.RealSemTypeOfResExpr == null)
+                if (_assign.to is ident 
+                    && (_assign.to as ident).name.Equals(StringConstants.result_var_name, context.CurrentScope.StringComparison) 
+                    && fld.RealSemTypeOfResExpr == null)
                     // если это - первое присваивание Result
                 {
                     fld.RealSemTypeOfResExpr = from.type;
