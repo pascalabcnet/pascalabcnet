@@ -11948,9 +11948,19 @@ begin
     yield c.TakeGroup().ToArray;
 end;
 
+type
+  AdjacentGroupByResult<TKey, TResult> = sealed auto class(System.Linq.IGrouping<TKey, TResult>)
+    public auto property Key: TKey;
+    public auto property Elements: sequence of TResult;
+    
+    public function GetEnumerator: IEnumerator<TResult> := Elements.GetEnumerator;
+    public function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := GetEnumerator;
+    
+  end;
+  
 /// Группирует подряд идущие элементы с одинаковыми значениями ключами
 /// Использует компаратор comp
-function AdjacentGroupBy<T,TKey>(self: sequence of T; by: T->TKey; comp: IEqualityComparer<TKey>): sequence of (TKey, array of T); extensionmethod;
+function AdjacentGroupBy<T,TKey>(self: sequence of T; by: T->TKey; comp: IEqualityComparer<TKey>): sequence of System.Linq.IGrouping<TKey, T>; extensionmethod;
 begin
   var enmr := self.GetEnumerator;
   if not enmr.MoveNext then exit;
@@ -11973,7 +11983,7 @@ begin
     
     if (n_key_hc<>key_hc) or not comp.Equals(n_key, key) then
     begin
-      yield (key, l.ToArray);
+      yield new AdjacentGroupByResult<TKey,T>(key, l.ToArray);
       l.Clear;
       key := n_key;
       key_hc := n_key_hc;
@@ -11982,7 +11992,7 @@ begin
     l += o;
   end;
   
-  yield (key, l.ToArray);
+  yield new AdjacentGroupByResult<TKey,T>(key, l.ToArray);
 end;
 /// Группирует подряд идущие элементы с одинаковыми значениями ключами
 /// Использует компаратор по-умолчанию
