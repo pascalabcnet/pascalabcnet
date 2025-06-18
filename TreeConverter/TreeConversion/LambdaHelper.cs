@@ -223,7 +223,7 @@ namespace PascalABCCompiler.TreeConverter
         /// Заменяет x -> begin result := x.Print end;  на  x -> begin x.Print end  в случае если это один оператор и вызов метода
         ///
         /// </summary>
-        public static bool TryConvertFuncLambdaBodyWithMethodCallToProcLambdaBody(function_lambda_definition lambdaDef, StringComparison stringComparison)
+        public static bool TryConvertFuncLambdaBodyWithMethodCallToProcLambdaBody(function_lambda_definition lambdaDef)
         {
             // SSM 12/12/16 - сделал чтобы всегда эта функция возвращала true.
             // Посмотрю далее на её поведение. Мне кажется, что если мы попали сюда, то мы хотим присвоить процедурному типу, 
@@ -234,7 +234,7 @@ namespace PascalABCCompiler.TreeConverter
                 // Очищаем от Result := , который мы создали на предыдущем этапе
 
                 var ass = stl.list[0] as assign;
-                if (ass != null && ass.to is ident && (ass.to as ident).name.Equals(result_var_name, stringComparison))
+                if (ass != null && ass.to is ident && (ass.to as ident).name == result_var_name)
                 {
                     var f = ass.from;
                     if (f is method_call)
@@ -362,7 +362,7 @@ namespace PascalABCCompiler.TreeConverter
                     else // SSM 23/07/16 - попытка бороться с var p: Shape->() := a->a.Print()
                     {
                         // lambdaDef.usedkeyword == 1 // function
-                        var b = lambdaDef.usedkeyword == 0 && TryConvertFuncLambdaBodyWithMethodCallToProcLambdaBody(lambdaDef, visitor.context.CurrentScope.StringComparison); // пытаться конвертировать только если мы явно не указали, что это функция
+                        var b = lambdaDef.usedkeyword == 0 && TryConvertFuncLambdaBodyWithMethodCallToProcLambdaBody(lambdaDef); // пытаться конвертировать только если мы явно не указали, что это функция
                         if (!b)
                             visitor.AddError(visitor.get_location(lambdaDef), "UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE");
                     }

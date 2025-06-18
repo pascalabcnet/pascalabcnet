@@ -2516,11 +2516,11 @@ namespace PascalABCCompiler.TreeConverter
             function_node fn = null;
             if (exl.Count > 1)
             {
-                fn = convertion_data_and_alghoritms.select_function(exl, (SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node).find_in_type(StringConstants.default_constructor_name), loc);
+                fn = convertion_data_and_alghoritms.select_function(exl, (SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node).find_in_type(default_constructor_name), loc);
             }
             else
             {
-                fn = convertion_data_and_alghoritms.select_function(exl, (SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node).find_in_type(StringConstants.default_constructor_name), loc);
+                fn = convertion_data_and_alghoritms.select_function(exl, (SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node).find_in_type(default_constructor_name), loc);
             }
             //expression_node expr = convertion_data_and_alghoritms.create_simple_function_call(fn, null, exl.ToArray());
             expression_node expr = create_static_method_call_with_params(fn, loc, tn, false, exl);
@@ -2855,7 +2855,7 @@ namespace PascalABCCompiler.TreeConverter
                             //Пытаемся добавить вызов .ctor() предка...
                             //Для начала проверим, есть ли у предка таковой.
                             bool not_found = true;
-                            List<SymbolInfo> sym = context.converted_type.base_type.find_in_type(StringConstants.default_constructor_name, context.CurrentScope);
+                            List<SymbolInfo> sym = context.converted_type.base_type.find_in_type(default_constructor_name, context.CurrentScope);
                             if (sym != null)
                             {
                                 foreach (SymbolInfo sym_unit in sym)
@@ -2891,7 +2891,7 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 //Генерируем вызов .ctor() предка
                                 SyntaxTree.inherited_ident ii = new SyntaxTree.inherited_ident();
-                                ii.name = StringConstants.default_constructor_name;
+                                ii.name = default_constructor_name;
                                 _block.program_code.subnodes.Insert(0, new SyntaxTree.procedure_call(ii));
                                 //context.allow_inherited_ctor_call = false;
                             }
@@ -3336,13 +3336,13 @@ namespace PascalABCCompiler.TreeConverter
 
             if (_constructor.name == null)
             {
-                SyntaxTree.ident name = new SyntaxTree.ident(StringConstants.default_constructor_name);
+                SyntaxTree.ident name = new SyntaxTree.ident(default_constructor_name);
                 _constructor.name = new PascalABCCompiler.SyntaxTree.method_name(null, null, name, null);
                 _constructor.name.source_context = _constructor.name.meth_name.source_context = _constructor.source_context;
             }
 
-            if (_constructor.name.meth_name.name.ToLower() != StringConstants.default_constructor_name.ToLower())
-                AddError(get_location(_constructor.name), "CONSTRUCTOR_CAN_HAVE_ONLY_{0}_NAME", StringConstants.default_constructor_name);
+            if (_constructor.name.meth_name.name.ToLower() != default_constructor_name.ToLower())
+                AddError(get_location(_constructor.name), "CONSTRUCTOR_CAN_HAVE_ONLY_{0}_NAME", default_constructor_name);
             if ((_constructor.name.class_name == null) && (context.converting_block() != block_type.type_block))
             {
                 AddError(get_location(_constructor.name), "ONLY_CONSTRUCTOR_OF_TYPE_ALLOWED");
@@ -4380,7 +4380,7 @@ namespace PascalABCCompiler.TreeConverter
             SyntaxTree.procedure_attributes_list pal = new PascalABCCompiler.SyntaxTree.procedure_attributes_list();
             //pal.proc_attributes.Add(new PascalABCCompiler.SyntaxTree.procedure_attribute(SyntaxTree.proc_attribute.attr_overload)); attr_overload - убрал отовсюду! ССМ
             SyntaxTree.constructor constr = new PascalABCCompiler.SyntaxTree.constructor();
-            constr.name = new SyntaxTree.method_name(null, null, new PascalABCCompiler.SyntaxTree.ident(StringConstants.default_constructor_name), null);
+            constr.name = new SyntaxTree.method_name(null, null, new PascalABCCompiler.SyntaxTree.ident(default_constructor_name), null);
             constr.proc_attributes = pal;
             SyntaxTree.block bl = new SyntaxTree.block();
             bl.program_code = new SyntaxTree.statement_list();
@@ -8066,7 +8066,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (SystemLibrary.SystemLibInitializer.PointerOutputConstructor == null)
                     {
-                        List<SymbolInfo> sil = (SystemLibrary.SystemLibInitializer.PointerOutputType.sym_info as common_type_node).find_in_type(StringConstants.default_constructor_name);
+                        List<SymbolInfo> sil = (SystemLibrary.SystemLibInitializer.PointerOutputType.sym_info as common_type_node).find_in_type(default_constructor_name);
                         common_method_node cnode = null;
                         int cur_si_ind = 0;
                         do
@@ -8099,7 +8099,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (SystemLibrary.SystemLibInitializer.PointerOutputConstructor == null)
                     {
-                        List<SymbolInfo> sil = (SystemLibrary.SystemLibInitializer.PointerOutputType.sym_info as compiled_type_node).find_in_type(StringConstants.default_constructor_name);
+                        List<SymbolInfo> sil = (SystemLibrary.SystemLibInitializer.PointerOutputType.sym_info as compiled_type_node).find_in_type(default_constructor_name);
                         compiled_constructor_node cnode = null;
                         int cur_si_index = 0;
                         do
@@ -17862,7 +17862,7 @@ namespace PascalABCCompiler.TreeConverter
            
             List<SymbolInfo> sil = null;
             if (cmn.is_constructor)
-            	sil = context.converted_type.base_type.find_in_type(StringConstants.default_constructor_name, context.CurrentScope);
+            	sil = context.converted_type.base_type.find_in_type(default_constructor_name, context.CurrentScope);
             else
             	sil = context.converted_type.base_type.find_in_type(cmn.name, context.CurrentScope);
             if (sil != null)
@@ -19858,7 +19858,7 @@ namespace PascalABCCompiler.TreeConverter
             {
             	AddError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", tn.name);
             }
-            List<SymbolInfo> sil = tn.find_in_type(StringConstants.default_constructor_name, context.CurrentScope); //tn.Scope); 
+            List<SymbolInfo> sil = tn.find_in_type(default_constructor_name, context.CurrentScope); //tn.Scope); 
             delete_inherited_constructors(ref sil, tn);
             if (sil == null)
                 AddError(loc, "CONSTRUCTOR_NOT_FOUND");
@@ -20459,7 +20459,7 @@ namespace PascalABCCompiler.TreeConverter
                 return;
 
             {
-                var fn = _ctn.base_type.find_in_type(StringConstants.default_constructor_name, _ctn.base_type.Scope)
+                var fn = _ctn.base_type.find_in_type(default_constructor_name, _ctn.base_type.Scope)
                     ?.Select(si => si.sym_info).OfType<function_node>()
                     .FirstOrDefault(_fn => _fn.parameters.Count == 0);
                 var base_constructor_call = make_base_constructor_call(fn, out _, out _);
@@ -20493,7 +20493,7 @@ namespace PascalABCCompiler.TreeConverter
                 return;
             }
             //Получили список процедур предка, имеющих имя Create
-            List<SymbolInfo> sil = _ctn.base_type.find_in_type(StringConstants.default_constructor_name, _ctn.base_type.Scope);
+            List<SymbolInfo> sil = _ctn.base_type.find_in_type(default_constructor_name, _ctn.base_type.Scope);
             delete_inherited_constructors(ref sil, _ctn.base_type);
             if (sil != null)
             {
@@ -20523,12 +20523,12 @@ namespace PascalABCCompiler.TreeConverter
 
                         // Иначе partial классам генерирует кучу копий дефолтных конструкторов
                         if (_ctn.methods.Any(m =>
-                            m.is_constructor && m.name == StringConstants.default_constructor_name &&
+                            m.is_constructor && m.name == default_constructor_name &&
                             m.parameters.Count == fn.parameters.Count &&
                             m.parameters.Zip(fn.parameters, (par1, par2) => par1.type == par2.type).All(b => b)
                         )) continue;
 
-                        var gen_constr = context.create_function(StringConstants.default_constructor_name, loc) as common_method_node;
+                        var gen_constr = context.create_function(default_constructor_name, loc) as common_method_node;
                         gen_constr.polymorphic_state = ps;
                         gen_constr.is_overload = true;
                         gen_constr.is_constructor = true;

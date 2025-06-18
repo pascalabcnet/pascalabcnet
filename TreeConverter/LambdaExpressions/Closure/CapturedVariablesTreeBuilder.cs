@@ -213,6 +213,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
 
             var stringComparer = _visitor.context.CurrentScope.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
+            var stringComparison = _visitor.context.CurrentScope.StringComparison;
 
             if (si.sym_info.semantic_node_type == semantic_node_type.namespace_variable ||
                 si.sym_info.semantic_node_type == semantic_node_type.common_namespace_function_node ||
@@ -399,12 +400,12 @@ namespace TreeConverter.LambdaExpressions.Closure
                             _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                         }
                     }*/
-                    if (si.sym_info.semantic_node_type == semantic_node_type.common_parameter && prScope.FunctionNode.parameters.First(v => stringComparer.Compare(v.name, idName) == 0).parameter_type != parameter_type.value && InLambdaContext)
+                    if (si.sym_info.semantic_node_type == semantic_node_type.common_parameter && prScope.FunctionNode.parameters.First(v => v.name.Equals(idName, stringComparison)).parameter_type != parameter_type.value && InLambdaContext)
                     {
                         _visitor.AddError(new CannotCaptureNonValueParameters(_visitor.get_location(id)));
                     }
                     
-                    if (stringComparer.Compare(idName, PascalABCCompiler.StringConstants.self_word) == 0 && si.scope is SymbolTable.ClassMethodScope &&
+                    if (idName.Equals(PascalABCCompiler.StringConstants.self_word, stringComparison) && si.scope is SymbolTable.ClassMethodScope &&
                         _classScope != null)
                     {
                         var selfField = _classScope.VariablesDefinedInScope.Find(var => var.SymbolInfo == si);
@@ -427,7 +428,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                             var found = false;
                             foreach (var v in prScope.VariablesDefinedInScope) // и не было с таким же именем
                             {
-                                if (v.SymbolInfo.sym_info is var_definition_node vdn && stringComparer.Compare(vdn.name, idName) == 0) // SSM попытка бороться с #2001 - исключаю одноимённые
+                                if (v.SymbolInfo.sym_info is var_definition_node vdn && vdn.name.Equals(idName, stringComparison)) // SSM попытка бороться с #2001 - исключаю одноимённые
                                 {
                                     found = true;
                                     break;
@@ -471,7 +472,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                         var index = -1;
                         for (var i=0; i < sc.VariablesDefinedInScope.Count; i++) 
                         {
-                            if (sc.VariablesDefinedInScope[i].SymbolInfo.sym_info is var_definition_node vdn && stringComparer.Compare(vdn.name, idName) == 0) // SSM #2001 и подобные - исключаю одноимённые
+                            if (sc.VariablesDefinedInScope[i].SymbolInfo.sym_info is var_definition_node vdn && vdn.name.Equals(idName, stringComparison)) // SSM #2001 и подобные - исключаю одноимённые
                             {
                                 index = i;
                                 si = sc.VariablesDefinedInScope[i].SymbolInfo;
