@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using PascalABCCompiler.SemanticTree;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
+using static PascalABCCompiler.StringConstants;
 
 namespace TreeConverter.LambdaExpressions.Closure
 {
@@ -171,10 +171,8 @@ namespace TreeConverter.LambdaExpressions.Closure
         {
             var varName = ((IVAriableDefinitionNode)symbolInfo.SymbolInfo.sym_info).name; //.ToLower();
 
-            StringComparison stringComparison = symbolInfo.SymbolInfo.scope.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
-
             var ff = symbolInfo.SymbolInfo.sym_info.GetType();
-            var isSelfWordInClass = scope is CapturedVariablesTreeNodeClassScope && varName.Equals(PascalABCCompiler.StringConstants.self_word, stringComparison);
+            var isSelfWordInClass = scope is CapturedVariablesTreeNodeClassScope && varName.Equals(self_word, symbolInfo.SymbolInfo.scope.StringComparison);
             SourceContext sourceCtxt = null;
             if (symbolInfo.SymbolInfo.sym_info.location != null)
                 sourceCtxt = new SourceContext(symbolInfo.SymbolInfo.sym_info.location.begin_line_num, symbolInfo.SymbolInfo.sym_info.location.begin_column_num,

@@ -21,9 +21,7 @@ copy bin\ICSharpCode.SharpDevelop.dll Release\PascalABCNETLinux\ICSharpCode.Shar
 copy bin\ICSharpCode.SharpDevelop.Dom.dll Release\PascalABCNETLinux\ICSharpCode.SharpDevelop.Dom.dll
 copy bin\ICSharpCode.TextEditorLinux.dll Release\PascalABCNETLinux\ICSharpCode.TextEditorLinux.dll
 copy bin\Localization.dll Release\PascalABCNETLinux\Localization.dll
-copy bin\Microsoft.Scripting.dll Release\PascalABCNETLinux\Microsoft.Scripting.dll
 copy bin\Mono.Cecil.dll Release\PascalABCNETLinux\Mono.Cecil.dll
-copy bin\Mono.Debugger.Soft.dll Release\PascalABCNETLinux\Mono.Debugger.Soft.dll
 copy bin\mono_pabcIDE.bat Release\PascalABCNETLinux\mono_pabcIDE.bat
 copy bin\mono_pabcnetc.bat Release\PascalABCNETLinux\mono_pabcnetc.bat
 copy bin\NETGenerator.dll Release\PascalABCNETLinux\NETGenerator.dll
@@ -31,6 +29,7 @@ copy bin\OptimizerConversion.dll Release\PascalABCNETLinux\OptimizerConversion.d
 copy bin\LanguageIntegrator.dll Release\PascalABCNETLinux\LanguageIntegrator.dll
 copy bin\StringConstants.dll Release\PascalABCNETLinux\StringConstants.dll
 
+copy bin\SharpDisasm.dll Release\SharpDisasm.dll
 copy bin\Microsoft.Bcl.HashCode.dll Release\PascalABCNETLinux\Microsoft.Bcl.HashCode.dll
 copy bin\System.Buffers.dll Release\PascalABCNETLinux\System.Buffers.dll
 copy bin\System.Collections.Immutable.dll Release\PascalABCNETLinux\System.Collections.Immutable.dll

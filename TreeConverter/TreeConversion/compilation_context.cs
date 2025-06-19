@@ -804,8 +804,8 @@ namespace PascalABCCompiler.TreeConverter
             int i = 0;
             if (si.sym_info == null)
             {
-                if (name.Equals(StringConstants.result_variable_name, CurrentScope.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
-                    AddError(loc, "CAN_NOT_DEDUCE_TYPE_{0}", StringConstants.result_variable_name);
+                if (name.Equals(StringConstants.result_var_name, CurrentScope.StringComparison))
+                    AddError(loc, "CAN_NOT_DEDUCE_TYPE_{0}", StringConstants.result_var_name);
                 else
                     AddError(new ExpectedType(loc));
             }
@@ -1175,7 +1175,7 @@ namespace PascalABCCompiler.TreeConverter
         public SymbolInfo create_special_names()
         {
             SymbolInfo si= new SymbolInfo(top_function.return_variable);
-            top_function.scope.AddSymbol(StringConstants.result_variable_name, si);
+            top_function.scope.AddSymbol(StringConstants.result_var_name, si);
             return si;
         }
         

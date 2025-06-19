@@ -62,7 +62,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var fld = stflambda.Peek();
                 if (_assign.to is ident 
-                    && (_assign.to as ident).name.Equals(StringConstants.result_variable_name, context.CurrentScope.CaseSensitive ? System.StringComparison.Ordinal : System.StringComparison.OrdinalIgnoreCase) 
+                    && (_assign.to as ident).name.Equals(StringConstants.result_var_name, context.CurrentScope.StringComparison) 
                     && fld.RealSemTypeOfResExpr == null)
                     // если это - первое присваивание Result
                 {
