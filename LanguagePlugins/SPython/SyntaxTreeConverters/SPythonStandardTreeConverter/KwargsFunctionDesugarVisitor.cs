@@ -112,7 +112,7 @@ namespace Languages.SPython.Frontend.Converters
 
                 if (pd.proc_header is function_header)
                 {
-                    stmt = new assign(new ident(StringConstants.result_variable_name), method_call, Operators.Assignment);
+                    stmt = new assign(new ident(StringConstants.result_var_name), method_call, Operators.Assignment);
                 }
                 else
                 {

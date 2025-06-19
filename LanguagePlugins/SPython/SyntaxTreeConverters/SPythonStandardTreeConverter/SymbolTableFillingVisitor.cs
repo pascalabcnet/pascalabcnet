@@ -255,7 +255,7 @@ namespace Languages.SPython.Frontend.Converters
                     isInFunctionBody = value; 
                     if (isInFunctionBody)
                     {
-                        Add(StringConstants.result_variable_name, NameKind.LocalVariable);
+                        Add(StringConstants.result_var_name, NameKind.LocalVariable);
                     }
                     else
                     {
