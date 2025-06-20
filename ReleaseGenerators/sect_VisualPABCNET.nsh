@@ -7,7 +7,6 @@
     File "..\bin\PascalABCNET.exe"   
     ;File "..\bin\PascalABCNET.exe.manifest"   
     File "..\bin\Debugger.Core.dll"
-    File "..\bin\SharpDisasm.dll"
     File "..\bin\PascalABCNET.chm"
     File "..\bin\CodeCompletion.dll"
     File "..\bin\WeifenLuo.WinFormsUI.Docking.dll"

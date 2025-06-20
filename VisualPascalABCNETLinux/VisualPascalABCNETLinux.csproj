@@ -819,9 +819,6 @@
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Tasks" />
-    <Reference Include="SharpDisasm">
-      <HintPath>..\Libraries\SharpDisasm.dll</HintPath>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Messaging" />
     <Reference Include="System.Design" />
@@ -844,5 +841,6 @@
   
   <ItemGroup>
     <PackageReference Include="System.Resources.Extensions" Version="9.0.0" />
+    <PackageReference Include="SharpDisasm" Version="1.0.2" />
   </ItemGroup>
 </Project>
