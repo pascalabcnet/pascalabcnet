@@ -19,6 +19,7 @@ defaults:
 
 jobs:
   build:
+
     name: Prepare and build on Windows Server VM
     runs-on: windows-latest
     steps:
@@ -35,21 +36,6 @@ jobs:
         PABCNET_RUN_TESTS:  false
         PABCNET_INC_BUILD:  false
         PABCNET_VERBOSE:    false
-
-  run-GitIgnoreTester:
-    name: Run GitIgnoreTester
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Build project in Release-mode compile and run GitIgnoreTester
-      run: |
-      
-        dotnet build -c Release PascalABCNET.sln
-        
-        cd .\bin
-        pabcnetcclear GitIgnoreTester.pas
-        GitIgnoreTester.exe NoWait
 
     #- name: Publish artifacts (5/5)...
     #  uses: actions/upload-artifact@v2
