@@ -48,6 +48,7 @@ namespace Languages.SPython
             SemanticRulesConstants.StrongPointersTypeCheckForDotNet = true;
             SemanticRulesConstants.AllowChangeLoopVariable = false;
             SemanticRulesConstants.AllowGlobalVisibilityForPABCDll = true;
+            SemanticRulesConstants.AllowMethodCallsWithoutParentheses = false;
         }
 
         public override void SetSyntaxTreeToSemanticTreeConverter()
