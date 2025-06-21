@@ -135,6 +135,11 @@ namespace PascalABCCompiler.TreeConverter
         public static bool AddressOfOperatorNonOverloaded = true;
 
         public static bool GenerateNativeCode = false;
+
+        /// <summary>
+        /// Разрешить вызов методов, не имеющих параметров (или со всеми параметрами по умолчанию) без скобок
+        /// </summary>
+        public static bool AllowMethodCallsWithoutParentheses = true;
     }
 }
 
