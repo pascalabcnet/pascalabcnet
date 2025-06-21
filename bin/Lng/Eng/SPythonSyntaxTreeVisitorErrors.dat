@@ -1,0 +1,23 @@
+﻿// Syntax tree conversion errors
+%PREFIX%=SPYTHONSYNTAXTREEVISITORSERROR_
+
+UNKNOWN_NAME_{0}=Unknown name '{0}'
+MODULE_{0}_HAS_NO_NAME_{1}=Module '{0}' does not contains name '{1}'
+SCOPE_CONTAINS_NAME_{0}=Name '{0}' is already in current scope
+ARG_AFTER_KWARGS=Unnamed argument can not be after named one
+PASCALABCNET_TYPE_{0}_INSTEAD_OF_SPYTHON_TYPE_{1}=Unknown type '{0}'. Maybe you meant '{1}'
+LOCAL_IMPORT_USE=Current compile version supports 'import ...' only on outerscope 
+LOCAL_FROM_IMPORT_USE=Current compile version supports 'from ... import ...' only on global level
+LOCAL_FUNCTION_DECLARATION=Current compile version supports function declaration on global level
+GLOBAL_NOT_IN_FUNCTION=Construction 'global ...' may be used only inside a function
+GLOBAL_IN_NOT_OUTERMOST_BLOCK=Construction 'global ...' is supported only on function outerscope
+FUNCTION_{0}_USED_BEFORE_DECLARATION=Function '{0}' is declared later; its use before declaration is allowed only inside other functions
+RETURN_NOT_RETURN_VALUE=The function must return a value
+RETURN_HAS_RETURN_VALUE=The function must not return a value
+RETURN_NOT_IN_FUNCTION='return ...' statement must be inside a function
+IMPOSSIBLE_TO_INFER_LIST_TYPE=Cannot infer the type of the list
+IMPOSSIBLE_TO_INFER_SET_TYPE=Cannot infer the type of the set
+IMPOSSIBLE_TO_INFER_DICT_TYPE=Cannot infer the type of the dictionary
+KWARG_PARAMETOR_NOT_LAST=Keyword argument parameter must be the last one
+LONG_TUPLE_TYPENAME=Tuple size should be less than or equal to seven
+LEFT_SIZE_TUPLE_ASSIGNMENT_LESS_THAN_RIGHT=Tuple assignment must have the same number of elements on both sides

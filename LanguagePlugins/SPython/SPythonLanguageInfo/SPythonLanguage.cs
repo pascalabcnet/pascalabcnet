@@ -1,42 +1,42 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Languages.Facade;
-using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.SystemLibrary;
 using PascalABCCompiler.TreeConverter;
 
-namespace Languages.Pascal
+namespace Languages.SPython
 {
-    public class PascalABCLanguage : BaseLanguage
+    public class SPythonLanguage : BaseLanguage
     {
+        public SPythonLanguage() : base(
+            name: "SPython",
+            version: "0.0.1",
+            copyright: "Copyright © 2023-2025 by Vladislav Krylov, Egor Movchan",
 
-        public PascalABCLanguage() : base(
-            name: StringConstants.pascalLanguageName,
-            version: "1.2",
-            copyright: "Copyright © 2005-2025 by Ivan Bondarev, Stanislav Mikhalkovich",
-
-            languageInformation: new Frontend.Data.PascalABCLanguageInformation(),
-            parser: new Frontend.Wrapping.PascalABCNewLanguageParser(),
-            docParser: new Frontend.Documentation.PascalDocTagsLanguageParser(),
+            languageInformation: new Frontend.Data.SPythonLanguageInformation(),
+            parser: new SPythonParser.SPythonLanguageParser(),
+            docParser: null,
 
             syntaxTreeConverters: new List<ISyntaxTreeConverter>() { new Frontend.Converters.StandardSyntaxTreeConverter(), new SyntaxSemanticVisitors.LambdaAnyConverter() },
-            applySyntaxTreeConvertersForIntellisense: false,
-            
-            filesExtensions: new string[] { StringConstants.pascalSourceFileExtension },
-            caseSensitive: false,
-            systemUnitNames: StringConstants.pascalDefaultStandardModules
-            ) { }
+            applySyntaxTreeConvertersForIntellisense: true,
 
+            filesExtensions: new string[] { ".pys" },
+            caseSensitive: true,
+            systemUnitNames: new string[] { "SPythonSystem", "SPythonHidden", "SPythonSystemPys" }
+            )
+        {
+            ((SPythonParser.SPythonLanguageParser)Parser).SyntaxTreeConvertersForIntellisense = SyntaxTreeConverters;
+        }
 
+        /// <summary>
+        /// TODO: требуется проверка и настройка работы  EVA
+        /// </summary>
         public override void SetSemanticConstants()
         {
             SemanticRulesConstants.ClassBaseType = SystemLibrary.object_type;
             SemanticRulesConstants.StructBaseType = SystemLibrary.value_type;
             SemanticRulesConstants.AddResultVariable = true;
-            SemanticRulesConstants.ZeroBasedStrings = false;
+            SemanticRulesConstants.ZeroBasedStrings = true;
             SemanticRulesConstants.FastStrings = false;
             SemanticRulesConstants.InitStringAsEmptyString = true;
             SemanticRulesConstants.UseDivisionAssignmentOperatorsForIntegerTypes = false;
@@ -48,12 +48,13 @@ namespace Languages.Pascal
             SemanticRulesConstants.StrongPointersTypeCheckForDotNet = true;
             SemanticRulesConstants.AllowChangeLoopVariable = false;
             SemanticRulesConstants.AllowGlobalVisibilityForPABCDll = true;
-            SemanticRulesConstants.AllowMethodCallsWithoutParentheses = true;
+            SemanticRulesConstants.AllowMethodCallsWithoutParentheses = false;
         }
 
         public override void SetSyntaxTreeToSemanticTreeConverter()
         {
-            SyntaxTreeToSemanticTreeConverter = new syntax_tree_visitor();
+            SyntaxTreeToSemanticTreeConverter = new SPythonSyntaxTreeVisitor.spython_syntax_tree_visitor(LanguageProvider.Instance.MainLanguage.SyntaxTreeToSemanticTreeConverter);
         }
+
     }
 }

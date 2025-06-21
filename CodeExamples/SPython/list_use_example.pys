@@ -1,0 +1,13 @@
+﻿def print_matr(matr: list[list[int]]):
+    for row in matr: 
+        for elem in row: 
+            print(elem, '\t', end=' ')
+        print()
+
+
+matrix_of_integers: list[list[int]]
+matrix_of_integers = [
+                        [j * i for j in range(1, 10)]
+                        for i in range(1, 10) if i % 2 == 0
+                     ]
+print_matr(matrix_of_integers)
