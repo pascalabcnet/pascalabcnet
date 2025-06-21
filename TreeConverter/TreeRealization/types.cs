@@ -4633,6 +4633,11 @@ namespace PascalABCCompiler.TreeRealization
         {
             foreach (base_function_call fn in _proper_methods)
             {
+                if (!SemanticRulesConstants.AllowMethodCallsWithoutParentheses)
+                {
+                    continue;
+                }
+
                 if (fn.simple_function_node.parameters.Count == 0
                     || (fn.simple_function_node is common_namespace_function_node && (fn.simple_function_node as common_namespace_function_node).ConnectedToType != null 
                             || fn.simple_function_node is compiled_function_node && (fn.simple_function_node as compiled_function_node).ConnectedToType != null)

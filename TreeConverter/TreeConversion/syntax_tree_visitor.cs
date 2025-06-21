@@ -10243,7 +10243,8 @@ namespace PascalABCCompiler.TreeConverter
                                             only_extension_methods = false;
                                         else
                                         {
-                                            if (tmp_fn.parameters.Count == 1 || tmp_fn.parameters.Count == 2 && (tmp_fn.parameters[1].is_params || tmp_fn.parameters[1].default_value != null))
+                                            if (SemanticRulesConstants.AllowMethodCallsWithoutParentheses && 
+                                                (tmp_fn.parameters.Count == 1 || tmp_fn.parameters.Count == 2 && (tmp_fn.parameters[1].is_params || tmp_fn.parameters[1].default_value != null)))
                                                 has_empty_methods = true;
                                         }
                                     }
@@ -10590,7 +10591,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             foreach (SymbolInfo tmp_si in tmp_list)
             {
-                if (tmp_si.sym_info is function_node && (tmp_si.sym_info as function_node).is_extension_method && !has_property(ref sil)
+                if (SemanticRulesConstants.AllowMethodCallsWithoutParentheses && tmp_si.sym_info is function_node && (tmp_si.sym_info as function_node).is_extension_method && !has_property(ref sil)
                             || tmp_si.sym_info is common_method_node && (tmp_si.sym_info as common_method_node).is_constructor
                             || tmp_si.sym_info is compiled_constructor_node)
                     return true;
