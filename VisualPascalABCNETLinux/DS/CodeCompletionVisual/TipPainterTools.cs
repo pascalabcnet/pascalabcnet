@@ -27,57 +27,7 @@ namespace ICSharpCode.TextEditor.Util
                                                               string description,
                                                               int param_num, bool addit_info)
         {
-            string basicDescription = null;
-            string documentation = null;
-            int bold_beg = -1;
-            int bold_len = 0;
-            if (IsVisibleText(description))
-            {
-                string[] splitDescription = description.Split(new char[] { '\n' }, 2);
-
-                if (splitDescription.Length > 0)
-                {
-                    basicDescription = splitDescription[0];
-                    int extensionIndex = basicDescription.IndexOf("(расширение") + 1;
-                    if (param_num == 1)
-                    {
-                        bold_beg = basicDescription.IndexOf('(') + 1;
-                        if (bold_beg != 0 && bold_beg == extensionIndex)
-                            bold_beg = basicDescription.IndexOf('(', basicDescription.IndexOf(')') + 1) + 1;
-                        if (bold_beg != 0)
-                        {
-                            int end = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter);
-                            int end_sk = basicDescription.IndexOf(')', bold_beg);
-                            if (end > end_sk || end == -1) end = end_sk;
-                            //if (end == -1) end = basicDescription.IndexOf(')');
-                            if (end != -1) bold_len = end - bold_beg;
-                        }
-                    }
-                    else
-                    {
-                        int i = 1; bold_beg = 0;
-                        while (i < param_num)
-                        {
-                            bold_beg = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter, bold_beg) + 1;
-                            if (bold_beg == 0) break;
-                            i++;
-                        }
-                        if (bold_beg != 0)
-                        {
-                            int end = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter, bold_beg);
-                            int end_sk = basicDescription.IndexOf(')', bold_beg);
-                            if (end > end_sk || end == -1) end = end_sk;
-                            if (end != -1) bold_len = end - bold_beg;
-                        }
-                    }
-                    if (splitDescription.Length > 1)
-                    {
-                        documentation = splitDescription[1].Trim();
-                    }
-					else
-						documentation = " ";
-                }
-            }
+            GetToolipParts(description, param_num, out var basicDescription, out var documentation, out var bold_beg, out var bold_len);
 
             return GetDrawingSizeDrawHelpTip(control, graphics, font, countMessage, basicDescription, documentation, bold_beg, bold_len, param_num, addit_info);
         }
@@ -88,65 +38,93 @@ namespace ICSharpCode.TextEditor.Util
                                                               string countMessage,
                                                               string description, int param_num, bool addit_info)
         {
-            string basicDescription = null;
-            string documentation = null;
-            int bold_beg = -1;
-            int bold_len = 0;
-            
+            GetToolipParts(description, param_num, out var basicDescription, out var documentation, out var bold_beg, out var bold_len);
+
+            return DrawHelpTip(control, graphics, font, countMessage,
+                        basicDescription, documentation, bold_beg, bold_len, param_num, addit_info);
+        }
+
+        private static void GetToolipParts(string description, int param_num, out string basicDescription, out string documentation, out int bold_beg, out int bold_len)
+        {
+            basicDescription = null;
+            documentation = null;
+            bold_beg = 0;
+            bold_len = 0;
             if (IsVisibleText(description))
             {
-                string[] splitDescription = description.Split
-                    (new char[] { '\n' }, 2);
+                string[] splitDescription = description.Split(new char[] { '\n' }, 2);
 
                 if (splitDescription.Length > 0)
                 {
-                    basicDescription = splitDescription[0];
-                    int extensionIndex = basicDescription.IndexOf("(расширение") + 1;
-                    if (param_num == 1)
-                    {
-                        bold_beg = basicDescription.IndexOf('(') + 1;
-                        if (bold_beg != 0 && bold_beg == extensionIndex)
-                            bold_beg = basicDescription.IndexOf('(', basicDescription.IndexOf(')') + 1) + 1;
-                        if (bold_beg != 0)
-                        {
-                            int end = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter);
-                            int end_sk = basicDescription.IndexOf(')', bold_beg);
-                            if (end > end_sk || end == -1) end = end_sk;
-                            //if (end == -1) end = basicDescription.IndexOf(')');
-                            if (end != -1) bold_len = end - bold_beg;
-                        }
-                    }
-                    else
-                    {
-                        int i = 1; bold_beg = 0;
-                        while (i < param_num)
-                        {
-                            bold_beg = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter, bold_beg) + 1;
-                            if (bold_beg == 0) break;
-                            i++;
-                        }
-                        if (bold_beg != 0)
-                        {
-                            int end = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter, bold_beg);
-                            int end_sk = basicDescription.IndexOf(')', bold_beg);
-                            if (end > end_sk || end == -1) end = end_sk;
-                            if (end != -1) bold_len = end - bold_beg;
-                        }
-                    }
                     if (splitDescription.Length > 1)
                     {
                         documentation = splitDescription[1].Trim();
                     }
-					else
-						documentation = " ";
+
+                    basicDescription = splitDescription[0];
+
+                    if (param_num == -1)
+                        return;
+
+                    int extensionIndex = basicDescription.IndexOf("(расширение") + 1;
+
+                    int startIndex = basicDescription.IndexOf('(') + 1;
+
+                    if (startIndex != 0 && startIndex == extensionIndex)
+                        startIndex = basicDescription.IndexOf('(', basicDescription.IndexOf(')') + 1) + 1;
+
+                    int paranthesisIndex = FindClosingParenthesis(basicDescription.Substring(startIndex));
+
+                    if (paranthesisIndex == -1)
+                        return;
+
+                    int end_sk = paranthesisIndex + startIndex;
+
+                    if (param_num == 1)
+                    {
+                        bold_beg = startIndex;
+
+                        if (bold_beg != 0)
+                        {
+                            int paramDelimIndex = FindParamDelim(basicDescription.Substring(bold_beg), 1);
+
+                            if (paramDelimIndex == -1)
+                            {
+                                bold_len = end_sk - bold_beg;
+                            }
+                            else
+                            {
+                                bold_len = paramDelimIndex;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        string paramDelim = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter;
+
+                        int paramDelimIndex = FindParamDelim(basicDescription.Substring(startIndex), param_num - 1);
+
+                        if (paramDelimIndex != -1)
+                        {
+                            bold_beg = paramDelimIndex + startIndex + paramDelim.Length;
+                            int secondParamDelimIndex = FindParamDelim(basicDescription.Substring(startIndex), param_num);
+
+                            if (secondParamDelimIndex == -1)
+                            {
+                                bold_len = end_sk - bold_beg;
+                            }
+                            else
+                            {
+                                bold_len = secondParamDelimIndex + startIndex - bold_beg;
+                            }
+                        }
+                    }
                 }
             }
-            return DrawHelpTip(control, graphics, font, countMessage,
-                        basicDescription, documentation, bold_beg, bold_len, param_num, addit_info);
         }
-		
-		// btw. I know it's ugly.
-		public static Rectangle DrawingRectangle1;
+
+        // btw. I know it's ugly.
+        public static Rectangle DrawingRectangle1;
 		public static Rectangle DrawingRectangle2;
 
         public static Size GetDrawingSizeDrawHelpTip(Control control,
@@ -538,5 +516,79 @@ namespace ICSharpCode.TextEditor.Util
 		{
 			return text != null && text.Length > 0;
 		}
-	}
+
+        private static int FindClosingParenthesis(string descriptionAfterOpeningParenthesis)
+        {
+            int count = 1;
+
+            int i = 0;
+
+            foreach (char c in descriptionAfterOpeningParenthesis)
+            {
+                if (c == '(')
+                {
+                    count++;
+                }
+                else if (c == ')')
+                {
+                    count--;
+                }
+
+                if (count == 0)
+                {
+                    break;
+                }
+
+                i++;
+            }
+
+            return i;
+        }
+
+        private static int FindParamDelim(string descriptionAfterOpeningParenthesis, int number)
+        {
+            string paramDelimiter = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter;
+
+            int count = 1;
+
+            int i = 0;
+
+            int delimNum = 0;
+
+            foreach (char c in descriptionAfterOpeningParenthesis)
+            {
+                if (c == '(' || c == '[' || c == '<' || c == '{')
+                {
+                    count++;
+                }
+                else if (c == ')' || c == ']' || c == '>' || c == '}')
+                {
+                    count--;
+                }
+
+                if (count == 0)
+                {
+                    break;
+                }
+                // если не внутри внутренних скобок
+                else if (count == 1)
+                {
+                    if (descriptionAfterOpeningParenthesis.Substring(i).StartsWith(paramDelimiter))
+                    {
+                        delimNum++;
+
+                        if (delimNum == number)
+                            break;
+                    }
+                }
+
+                i++;
+            }
+
+            if (delimNum < number || i == descriptionAfterOpeningParenthesis.Length)
+                return -1;
+
+            return i;
+        }
+    }
 }
