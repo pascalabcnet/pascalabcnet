@@ -556,11 +556,11 @@ namespace ICSharpCode.TextEditor.Util
 
             foreach (char c in descriptionAfterOpeningParenthesis)
             {
-                if (c == '(')
+                if (c == '(' || c == '[' || c == '<' || c == '{')
                 {
                     count++;
                 }
-                else if (c == ')')
+                else if (c == ')' || c == ']' || c == '>' || c == '}')
                 {
                     count--;
                 }
