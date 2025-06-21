@@ -92,6 +92,7 @@ namespace SPythonSyntaxTreeVisitor
                 .Replace(",", ", ")
                 .Replace("<", "[")
                 .Replace(">", "]")
+                .Replace("Tuple", "tuple")
                 .Replace("List", "list")
                 .Replace("NewSet", "set")
                 .Replace("Dictionary", "dict")

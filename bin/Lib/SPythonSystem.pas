@@ -228,6 +228,7 @@ begin
     .Replace('<', '[')
     .Replace('>', ']')
     .Replace('List', 'list')
+    .Replace('Tuple', 'tuple')
     .Replace('Dictionary', 'dict')
     .Replace('empty_list', 'list[anytype]')
     .Replace('empty_set', 'set[anytype]')
