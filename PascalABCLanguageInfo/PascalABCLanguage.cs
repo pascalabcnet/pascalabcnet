@@ -48,6 +48,7 @@ namespace Languages.Pascal
             SemanticRulesConstants.StrongPointersTypeCheckForDotNet = true;
             SemanticRulesConstants.AllowChangeLoopVariable = false;
             SemanticRulesConstants.AllowGlobalVisibilityForPABCDll = true;
+            SemanticRulesConstants.AllowMethodCallsWithoutParentheses = true;
         }
 
         public override void SetSyntaxTreeToSemanticTreeConverter()
