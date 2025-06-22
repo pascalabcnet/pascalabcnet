@@ -131,6 +131,10 @@ namespace Languages.Pascal.Frontend.Data
 
         public override string ResultVariableName => "Result";
 
+        public override string ProcedureName => "procedure";
+
+        public override string FunctionName => "function";
+
         public override string GenericTypesStartBracket => "<";
 
         public override string GenericTypesEndBracket => ">";
@@ -1007,69 +1011,6 @@ namespace Languages.Pascal.Frontend.Data
             return s;
         }
 
-        protected string GetSimpleDescriptionForCompiledType(ICompiledTypeScope scope, bool fullName)
-        {
-            if (scope.CompiledType.Name != null && scope.CompiledType.Name.Contains("Func`"))
-            {
-                return getLambdaRepresentation(scope, true);
-            }
-            else if (scope.CompiledType.Name != null && scope.CompiledType.Name.Contains("Action`"))
-            {
-                return getLambdaRepresentation(scope, false);
-            }
-            else if (scope.CompiledType.Name != null && scope.CompiledType.Name.Contains("Predicate`1"))
-            {
-                return getLambdaRepresentation(scope, false);
-            }
-            else if (scope.CompiledType.Name == "IEnumerable`1")
-            {
-                ITypeScope[] instances = scope.GenericInstances;
-                if (instances != null && instances.Length > 0)
-                {
-                    return "sequence of " + GetSimpleDescriptionWithoutNamespace(instances[0]);
-                }
-                else
-                    return "sequence of T";
-            }
-            else if (scope.CompiledType.Name != null && scope.CompiledType.Name.Contains("Tuple`"))
-            {
-                ITypeScope[] instances = scope.GenericInstances;
-                if (instances != null && instances.Length > 0)
-                {
-                    return get_tuple_string(instances);
-                }
-                else
-                    return "(T1,...)";
-            }
-            else
-            {
-                string s = !fullName ? GetShortTypeName(scope.CompiledType) : GetFullTypeName(scope.CompiledType);
-                ITypeScope[] instances = scope.GenericInstances;
-                if (instances != null && instances.Length > 0)
-                {
-                    System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                    int ind = s.IndexOf(GenericTypesStartBracket);
-                    if (ind != -1) sb.Append(s.Substring(0, ind));
-                    else
-                        sb.Append(s);
-                    sb.Append(GenericTypesStartBracket);
-                    for (int i = 0; i < instances.Length; i++)
-                    {
-                        sb.Append(GetSimpleDescriptionWithoutNamespace(instances[i]));
-                        if (i < instances.Length - 1) sb.Append(", ");
-                    }
-                    sb.Append(GenericTypesEndBracket);
-                    s = sb.ToString();
-                }
-                return s;
-            }
-        }
-
-        protected string GetSimpleDescriptionForCompiledType(ICompiledTypeScope scope)
-        {
-            return GetSimpleDescriptionForCompiledType(scope, false);
-        }
-
         protected string GetDescriptionForArray(IArrayScope scope)
         {
             StringBuilder sb = new StringBuilder();
@@ -1376,289 +1317,6 @@ namespace Languages.Pascal.Frontend.Data
             return sb.ToString();
         }
 
-        private bool is_params(ParameterInfo _par)
-        {
-            object[] objarr = _par.GetCustomAttributes(typeof(ParamArrayAttribute), true);
-            if ((objarr == null) || (objarr.Length == 0))
-            {
-                return false;
-            }
-            return true;
-        }
-
-        public string GetDescriptionForCompiledMethod(MethodInfo mi)
-        {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-
-            if (mi.IsPublic)
-                sb.Append("public ");
-            else if (mi.IsFamily)
-                sb.Append("protected ");
-            if (mi.IsStatic) sb.Append("static ");
-            if (mi.ReturnType == typeof(void))
-                sb.Append("procedure ");
-            else
-                sb.Append("function ");
-            sb.Append(prepare_member_name(mi.Name));
-            if (mi.GetGenericArguments().Length > 0)
-            {
-                Type[] tt = mi.GetGenericArguments();
-                sb.Append(GenericTypesStartBracket);
-                for (int i = 0; i < tt.Length; i++)
-                {
-                    sb.Append(tt[i].Name);
-                    if (i < tt.Length - 1) sb.Append(", ");
-                }
-                sb.Append(GenericTypesEndBracket);
-            }
-            sb.Append('(');
-            ParameterInfo[] pis = mi.GetParameters();
-            for (int i = 0; i < pis.Length; i++)
-            {
-                if (pis[i].ParameterType.IsByRef)
-                    sb.Append("var ");
-                else if (is_params(pis[i]))
-                    sb.Append("params ");
-                sb.Append(prepare_member_name(pis[i].Name));
-                sb.Append(": ");
-                string inst_type = null;
-                if (!pis[i].ParameterType.IsByRef)
-                {
-                    sb.Append(GetFullTypeName(pis[i].ParameterType));
-                    if (pis[i].IsOptional)
-                    {
-                        sb.Append(" := ");
-                        if (pis[i].DefaultValue != null)
-                        {
-                            if (pis[i].DefaultValue is string) sb.Append($"'{pis[i].DefaultValue.ToString()}'");
-                            else sb.Append(pis[i].DefaultValue.ToString());
-                        }
-                        else sb.Append("nil");
-                    }
-                }
-                else
-                {
-                    Type t = pis[i].ParameterType.GetElementType();
-                    sb.Append(GetFullTypeName(t));
-                }
-
-                if (i < pis.Length - 1)
-                    sb.Append("; ");
-            }
-            sb.Append(')');
-            string ret_inst_type = null;
-            if (mi.ReturnType != typeof(void))
-            {
-                sb.Append(ReturnTypeDelimiter + " " + GetFullTypeName(mi.ReturnType));
-            }
-            //if (scope.CompiledMethod.IsStatic) sb.Append("; static");
-            if (mi.IsVirtual && !mi.IsFinal) sb.Append("; ");
-            else if (mi.IsAbstract) sb.Append("; abstract");
-            //else if (scope.CompiledMethod.IsHideBySig) sb.Append("; reintroduce");
-            sb.Append(';');
-            return sb.ToString();
-        }
-
-        protected string GetDescriptionForCompiledMethod(ICompiledMethodScope scope)
-        {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            string extensionType = null;
-            if (scope.IsExtension && scope.Parameters.Length > 0)
-            {
-                extensionType = GetSimpleDescription(scope.Parameters[0].Type);
-            }
-            if (scope.IsExtension)
-            {
-                if (extensionType.IndexOf(' ') != -1)
-                {
-                    sb.Append("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION") + " " + extensionType + ") ");
-                }
-                else
-                {
-                    sb.Append("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION") + ") ");
-                    extensionType = null;
-                }
-            }
-
-            if (scope.IsStatic && !scope.IsGlobal) sb.Append("static ");
-            if (scope.ReturnType == null)
-                sb.Append("procedure ");
-            else
-                sb.Append("function ");
-            Dictionary<string, string> generic_param_args = null;
-            Dictionary<string, int> class_generic_table = new Dictionary<string, int>();
-            ParameterInfo[] pis = scope.CompiledMethod.GetParameters();
-            Type[] tt = scope.CompiledMethod.GetGenericArguments();
-            int gen_ind = 0;
-            if (!scope.IsExtension)
-            {
-                sb.Append(GetShortTypeName(scope.CompiledMethod.DeclaringType));
-                int ind = 0;
-                foreach (Type gen_arg in scope.CompiledMethod.DeclaringType.GetGenericArguments())
-                {
-                    if (gen_arg.IsGenericParameter)
-                    {
-                        if (generic_param_args == null)
-                            generic_param_args = new Dictionary<string, string>();
-                        if (scope.GenericArgs != null && scope.GenericArgs.Count > ind)
-                            generic_param_args.Add(gen_arg.Name, scope.GenericArgs[ind]);
-                        else if (scope.DeclaringType.TemplateArguments != null && scope.DeclaringType.TemplateArguments.Length > ind)
-                            generic_param_args.Add(gen_arg.Name, scope.DeclaringType.TemplateArguments[ind]);
-                    }
-                    ind++;
-                }
-
-            }
-            else
-            {
-                gen_ind = 0;
-                generic_param_args = new Dictionary<string, string>();
-                for (int i = 0; i < pis.Length; i++)
-                {
-                    if (i == 0)
-                    {
-                        Type[] class_generic_args = pis[i].ParameterType.GetGenericArguments();
-                        for (int j = 0; j < class_generic_args.Length; j++)
-                        {
-                            if (!class_generic_table.ContainsKey(class_generic_args[i].Name))
-                                class_generic_table.Add(class_generic_args[i].Name, j);
-                            if (scope.GenericArgs != null && scope.GenericArgs.Count > j)
-                            {
-                                if (scope.DeclaringType.GenericInstances.Length > 0)
-                                    generic_param_args[class_generic_args[i].Name] = GetSimpleDescription(scope.DeclaringType.GenericInstances[0]);
-                                else if (scope.DeclaringType is ICompiledTypeScope)
-                                {
-                                    Type ctn = (scope.DeclaringType as ICompiledTypeScope).CompiledType;
-                                    if (ctn.IsGenericType && !ctn.IsGenericTypeDefinition)
-                                        generic_param_args[class_generic_args[i].Name] = GetSimpleDescriptionForCompiledType((scope.DeclaringType as ICompiledTypeScope).GetCompiledGenericArguments()[0]);
-                                }
-                            }
-                            else if (scope.DeclaringType.TemplateArguments != null && scope.DeclaringType.TemplateArguments.Length > j)
-                                generic_param_args[class_generic_args[i].Name] = scope.DeclaringType.TemplateArguments[j];
-                        }
-                        break;
-                    }
-                }
-                if (extensionType == null)
-                    sb.Append(GetShortTypeName(scope.CompiledMethod.GetParameters()[0].ParameterType));
-            }
-            //if (scope.Name != "Invoke")
-            {
-                if (extensionType == null)
-                    sb.Append(".");
-                sb.Append(scope.Name);
-            }
-
-            if (scope.CompiledMethod.GetGenericArguments().Length > 0)
-            {
-                sb.Append(GenericTypesStartBracket);
-                for (int i = gen_ind; i < tt.Length; i++)
-                {
-                    if (class_generic_table.ContainsKey(tt[i].Name))
-                    {
-                        int ind = class_generic_table[tt[i].Name];
-                        if (scope.GenericArgs != null && scope.GenericArgs.Count > ind)
-                        {
-                            if (scope.DeclaringType.GenericInstances.Length > ind)
-                            {
-                                sb.Append(GetSimpleDescription(scope.DeclaringType.GenericInstances[ind]));
-                                if (!generic_param_args.ContainsKey(tt[i].Name))
-                                    generic_param_args.Add(tt[i].Name, GetSimpleDescription(scope.DeclaringType.GenericInstances[ind]));
-                            }
-                            else if (scope.DeclaringType is ICompiledTypeScope)
-                            {
-                                Type ctn = (scope.DeclaringType as ICompiledTypeScope).CompiledType;
-                                if (ctn.IsGenericType && !ctn.IsGenericTypeDefinition)
-                                {
-                                    sb.Append(GetSimpleDescription((scope.DeclaringType as ICompiledTypeScope).GetCompiledGenericArguments()[ind]));
-                                    if (!generic_param_args.ContainsKey(tt[i].Name))
-                                        generic_param_args.Add(tt[i].Name, GetSimpleDescription((scope.DeclaringType as ICompiledTypeScope).GetCompiledGenericArguments()[ind]));
-                                }
-                            }
-                        }
-                    }
-
-                    else
-                        sb.Append(tt[i].Name);
-                    if (i < tt.Length - 1) sb.Append(", ");
-                }
-                sb.Append(GenericTypesEndBracket);
-            }
-            sb.Append('(');
-
-            for (int i = 0; i < pis.Length; i++)
-            {
-                if (i == 0 && scope.IsExtension)
-                    continue;
-                if (pis[i].ParameterType.IsByRef)
-                    sb.Append("var ");
-                else if (is_params(pis[i]))
-                    sb.Append("params ");
-                sb.Append(pis[i].Name);
-                sb.Append(": ");
-                string inst_type = null;
-                if (!pis[i].ParameterType.IsByRef)
-                {
-                    if (scope.GenericArgs != null)
-                    {
-                        inst_type = get_type_instance(pis[i].ParameterType, scope.GenericArgs, generic_param_args);
-                    }
-                    if (inst_type == null)
-                        sb.Append(GetShortTypeName(pis[i].ParameterType, false));
-                    else
-                        sb.Append(inst_type);
-                    if (pis[i].IsOptional)
-                    {
-                        sb.Append(" := ");
-                        if (pis[i].DefaultValue != null)
-                        {
-                            if (pis[i].DefaultValue is string) sb.Append($"'{pis[i].DefaultValue.ToString()}'");
-                            else sb.Append(pis[i].DefaultValue.ToString());
-                        }
-                        else sb.Append("nil");
-                    }
-                }
-                else
-                {
-                    Type t = pis[i].ParameterType.GetElementType();
-                    if (scope.GenericArgs != null)
-                    {
-                        inst_type = get_type_instance(t, scope.GenericArgs, generic_param_args);
-                    }
-                    if (inst_type == null)
-                        sb.Append(GetShortTypeName(t, false));
-                    else
-                        sb.Append(inst_type);
-                }
-                if (i < pis.Length - 1)
-                    sb.Append("; ");
-            }
-            sb.Append(')');
-            string ret_inst_type = null;
-            if (scope.ReturnType != null)
-            {
-                if (scope.GenericArgs != null)
-                {
-                    ret_inst_type = get_type_instance(scope.CompiledMethod.ReturnType, scope.GenericArgs, generic_param_args);
-                }
-                if (ret_inst_type == null)
-                {
-                    if (scope.ReturnType is ICompiledTypeScope)
-                        sb.Append(ReturnTypeDelimiter + " " + GetFullTypeName((scope.ReturnType as ICompiledTypeScope).CompiledType, false));
-                    else
-                        sb.Append(ReturnTypeDelimiter + " " + GetSimpleDescription(scope.ReturnType));
-                }
-                else
-                    sb.Append(ReturnTypeDelimiter + " " + ret_inst_type);
-            }
-            //if (scope.CompiledMethod.IsStatic) sb.Append("; static");
-            if (scope.IsVirtual) sb.Append("; ");
-            else if (scope.IsAbstract) sb.Append("; abstract");
-            //else if (scope.CompiledMethod.IsHideBySig) sb.Append("; reintroduce");
-            sb.Append(';');
-            return sb.ToString();
-        }
-
         private string GetDescriptionForNamespace(INamespaceScope scope)
         {
             return "namespace " + scope.Name;
@@ -1747,13 +1405,6 @@ namespace Languages.Pascal.Frontend.Data
             return sb.ToString();
         }
 
-        private string prepare_member_name(string s)
-        {
-            if (IsKeyword(s))
-                return "&" + s;
-            return s;
-        }
-
         protected string GetDescriptionForCompiledEvent(EventInfo ei)
         {
             MethodInfo add_meth = ei.GetAddMethod(true);
@@ -1789,7 +1440,7 @@ namespace Languages.Pascal.Frontend.Data
             {
                 if (pis[i].ParameterType.IsByRef)
                     sb.Append("var ");
-                else if (is_params(pis[i]))
+                else if (IsParams(pis[i]))
                     sb.Append("params ");
                 sb.Append(prepare_member_name(pis[i].Name));
                 sb.Append(": ");
@@ -1817,7 +1468,7 @@ namespace Languages.Pascal.Frontend.Data
             {
                 if (pis[i].ParameterType.IsByRef)
                     sb.Append("var ");
-                else if (is_params(pis[i]))
+                else if (IsParams(pis[i]))
                     sb.Append("params ");
                 sb.Append(pis[i].Name);
                 sb.Append(": ");
@@ -1984,7 +1635,7 @@ namespace Languages.Pascal.Frontend.Data
                     {
                         if (pis[i].ParameterType.IsByRef)
                             sb.Append("var ");
-                        else if (is_params(pis[i]))
+                        else if (IsParams(pis[i]))
                             sb.Append("params ");
                         sb.Append(pis[i].Name);
                         sb.Append(": ");
@@ -2046,7 +1697,7 @@ namespace Languages.Pascal.Frontend.Data
                     {
                         if (pis[i].ParameterType.IsByRef)
                             sb.Append("var ");
-                        else if (is_params(pis[i]))
+                        else if (IsParams(pis[i]))
                             sb.Append("params ");
                         sb.Append(pis[i].Name);
                         sb.Append(": ");

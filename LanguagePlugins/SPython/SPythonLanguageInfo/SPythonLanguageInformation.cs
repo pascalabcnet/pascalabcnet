@@ -23,6 +23,10 @@ namespace Languages.SPython.Frontend.Data
 
         public override string ResultVariableName => null;
 
+        public override string ProcedureName => null;
+
+        public override string FunctionName => "def";
+
         public override string GenericTypesStartBracket => "[";
 
         public override string GenericTypesEndBracket => "]";
@@ -1020,6 +1024,7 @@ namespace Languages.SPython.Frontend.Data
                 case ScopeKind.ElementScope: return GetDescriptionForElementScope(scope as IElementScope);
                 case ScopeKind.TypeSynonim: return GetSynonimDescription(scope as ITypeSynonimScope);
                 case ScopeKind.Namespace: return GetDescriptionForNamespace(scope as INamespaceScope);
+                case ScopeKind.CompiledMethod: return GetDescriptionForCompiledMethod(scope as ICompiledMethodScope);
 
                 /*case ScopeKind.Array: return GetDescriptionForArray(scope as IArrayScope);
                 case ScopeKind.Enum: return GetDescriptionForEnum(scope as IEnumScope);
@@ -1027,7 +1032,7 @@ namespace Languages.SPython.Frontend.Data
 
                 case ScopeKind.CompiledField: return GetDescriptionForCompiledField(scope as ICompiledFieldScope);
                 case ScopeKind.CompiledProperty: return GetDescriptionForCompiledProperty(scope as ICompiledPropertyScope);
-                case ScopeKind.CompiledMethod: return GetDescriptionForCompiledMethod(scope as ICompiledMethodScope);
+
 
                 case ScopeKind.CompiledConstructor: return GetDescriptionForCompiledConstructor(scope as ICompiledConstructorScope);*/
             }
@@ -1320,13 +1325,14 @@ namespace Languages.SPython.Frontend.Data
                 case ScopeKind.Array: return GetDescriptionForArray(scope as IArrayScope);
                 case ScopeKind.UnitInterface: return GetDescriptionForModule(scope as IInterfaceUnitScope);
                 case ScopeKind.Namespace: return GetDescriptionForNamespace(scope as INamespaceScope);
-                
+                case ScopeKind.CompiledMethod: return GetDescriptionForCompiledMethod(scope as ICompiledMethodScope);
+
                 /*case ScopeKind.Enum: return GetDescriptionForEnum(scope as IEnumScope);
                 case ScopeKind.Set: return GetDescriptionForSet(scope as ISetScope);
 
                 case ScopeKind.CompiledField: return GetDescriptionForCompiledField(scope as ICompiledFieldScope);
                 case ScopeKind.CompiledProperty: return GetDescriptionForCompiledProperty(scope as ICompiledPropertyScope);
-                case ScopeKind.CompiledMethod: return GetDescriptionForCompiledMethod(scope as ICompiledMethodScope);
+
 
                 case ScopeKind.CompiledConstructor: return GetDescriptionForCompiledConstructor(scope as ICompiledConstructorScope);*/
             }
