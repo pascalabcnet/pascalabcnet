@@ -9,7 +9,7 @@ FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_DEFAULT_PARAMETERS=Functions with yield can
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_RESULT=Functions with yield cannot contain Result variable
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCK=Functions with yield cannot contain lock statement
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_TRY_EXCEPT_FINALLY=Functions with yield cannot contain try..except or try..finally statements
-FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_NESTED_SUBROUTINES=Functions with yield cannot contain nested subrotines or be nested
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_NESTED_SUBROUTINES=Functions with yield cannot contain nested subroutines or be nested
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCAL_TYPE_DEFINITIONS=Functions with yield cannot contain local type definitions
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_INHERITED_CALLS=Functions with yield cannot contain calls of inherited methods
 FUNCTION_WITH_YIELD_CANNOT_CONTAIN_OLDSTYLE_ARRAY_INITIALIZERS=Functions with yield cannot contain Delphi-style array initializers  
@@ -23,18 +23,18 @@ ONLY_ONE_DECONSTRUCT_ALLOWED=Only one user deconstructor is allowed
 
 Var_{0}_is_already_defined=Variable {0} is already defined
 
-?._CANNOT_BE_IN_THIS_CONTEXT=Operator ?. cannot be in this context
+?._CANNOT_BE_IN_THIS_CONTEXT=?. operator cannot be used in this context
 
 INVALID_INTERFACE_MEMBER=Interfaces cannot contain fields and method implementation
 INDEXED_AUTO_PROPERTY=Autoproperties cannot be indexed properties
 
-NESTED_RECORD_CANNOT_IMPLEMENT_INTERFACE=Nested records can not implement interfaces
-NESTED_RECORD_CANNOT_CONTAIN_METHODS=Nested records can not contain methods 
-NESTED_RECORD_CANNOT_CONTAIN_PROPERTIES=Nested records can not contain properties
-NESTED_RECORD_CANNOT_CONTAIN_CONSTRUCTORS=Nested records can not contain constructors
+NESTED_RECORD_CANNOT_IMPLEMENT_INTERFACE=Nested records cannot implement interfaces
+NESTED_RECORD_CANNOT_CONTAIN_METHODS=Nested records cannot contain methods 
+NESTED_RECORD_CANNOT_CONTAIN_PROPERTIES=Nested records cannot contain properties
+NESTED_RECORD_CANNOT_CONTAIN_CONSTRUCTORS=Nested records cannot contain constructors
 NESTED_RECORD_CAN_CONTAIN_ONLY_ONE_PUBLIC_VISIBILITY_SECTION=Nested records can contain only one section with public visibility 
-NESTED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS=Nested records can not contain several visibility section
-UNNAMED_RECORD_CANNOT_CATCH_NAMES_FROM_NONGLOBAL_CONTEXT=Nested records cannot catch names from nonglobal context
+NESTED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS=Nested records cannot contain multiple visibility sections
+UNNAMED_RECORD_CANNOT_CATCH_NAMES_FROM_NONGLOBAL_CONTEXT=Nested records cannot catch names from non-global context
 TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT=Too many elements on the left side of tuple assignment
 NESTED_LAMBDAS_MAXIMUM_10=Maximum number of nested lambdas = 10
 EMBEDDED_STATEMENT_CANNOT_BE_A_DECLARATION=Embedded statement cannot be a declaration or labeled statement
@@ -42,11 +42,14 @@ EMBEDDED_STATEMENT_CANNOT_BE_A_DECLARATION=Embedded statement cannot be a declar
 ONLY_FUNCTION_SHOULD_HAVE_CACHE_ATTRIBUTE=Only functions must have [Cache] attribute
 EXTENSION_FUNCTIONS_SHOULD_NOT_HAVE_CACHE_ATTRIBUTE=Extension methods shouldn't have [Cache] attribute
 FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_HAVE_PARAMETERS=Functions with [Cache] attribute must have at least 1 parameter
-FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_HAVE_LESSTHEN8_PARAMETERS=Functions with [Cache] attribute must have less then 8 parameters
-FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_HAVE_EXPLICIT_RETURN_TYPE=Functions with [Cache] attribute must have explicitely specified return type
-FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_COMPOUND_NAME=Functions with [Cache] should not have compound name
-FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_VAR_CONST_PARAMS_MODIFIERS=Functions with [Cache] should not have var, const or params modifier
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_HAVE_LESSTHEN8_PARAMETERS=Functions with [Cache] attribute must have fewer than 8 parameters
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_HAVE_EXPLICIT_RETURN_TYPE=Functions with [Cache] attribute must have explicitly specified return type
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_COMPOUND_NAME=Functions with [Cache] attribute should not have compound names
+FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_NOT_HAVE_VAR_CONST_PARAMS_MODIFIERS=Functions with [Cache] attribute should not have var, const or params modifiers
 FUNCTIONS_WITH_CACHE_ATTRIBUTE_SHOULD_BE_DEFINED_GLOBALLY=Functions with [Cache] attribute must be defined globally
 FUNCTIONS_WITH_CACHE_ATTRIBUTE_CANNOT_HAVE_YIELD=Functions with [Cache] attribute must not contain yield statements
 FOR_LOOP_WITH_STEP_CANNOT_USE_DOWNTO=For loop with step cannot use downto
 STEP_CANNOT_BE_0=Step cannot be 0
+EXIT_PROC_CAN_HAVE_ONLY_ONE_OR_ZERO_PARAMS = exit(param) cannot have two or more arguments
+EXIT_WITH_PARAM_MUST_BE_ONLY_IN_FUNC=exit(param) is invalid in procedures
+EXIT_WITH_PARAM_CANNOT_BE_IN_LAMBDA_PROCEDURE=exit(param)' is invalid in lambda procedures

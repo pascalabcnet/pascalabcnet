@@ -65,7 +65,7 @@ namespace PascalABCCompiler.TreeConverter
     public class CompilationError : Errors.SemanticError
     {
         public CompilationError()
-            : base("???", "Undefined FileName")
+            : base("???", "Undefined file_name")
         {
         }
 

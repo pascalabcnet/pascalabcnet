@@ -5,10 +5,7 @@ using System.IO;
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
-using PascalABCCompiler;
 using Languages.Pascal.Frontend.Core;
-using PascalABCCompiler.ParserTools.Directives;
-using static PascalABCCompiler.ParserTools.Directives.DirectiveHelper;
 
 namespace Languages.Pascal.Frontend.Wrapping
 {
@@ -74,65 +71,11 @@ namespace Languages.Pascal.Frontend.Wrapping
     /// </summary>
     public class PascalABCNewLanguageParser : BaseParser
     {
-
-        public PascalABCNewLanguageParser()
-        {
-            InitializeValidDirectives();
-            Keywords = new PascalABCKeywords();
-        }
         
         public override void Reset()
         {
             CompilerDirectives = new List<compiler_directive>();
             Errors.Clear();
-        }
-
-
-        /// <summary>
-        /// Здесь записываются все директивы, поддерживаемые языком, а также правила для проверки их параметров (ограничения, накладываемые со стороны языка)
-        /// </summary>
-        private void InitializeValidDirectives()
-        {
-            #region VALID DIRECTIVES
-            ValidDirectives = new Dictionary<string, DirectiveInfo>(StringComparer.CurrentCultureIgnoreCase)
-            {
-                [StringConstants.compiler_directive_apptype] = new DirectiveInfo(SingleAnyOfCheck("console", "windows", "dll", "pcu")),
-                [StringConstants.compiler_directive_reference] = new DirectiveInfo(quotesAreSpecialSymbols: true),
-                [StringConstants.compiler_directive_include_namespace] = new DirectiveInfo(quotesAreSpecialSymbols: true),
-                [StringConstants.compiler_directive_savepcu] = new DirectiveInfo(SingleAnyOfCheck("true", "false")),
-                [StringConstants.compiler_directive_zerobasedstrings] = new DirectiveInfo(SingleAnyOfCheck("on", "off"), paramsNums: new int[2] { 0, 1 }),
-                [StringConstants.compiler_directive_zerobasedstrings_ON] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_zerobasedstrings_OFF] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_nullbasedstrings_ON] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_nullbasedstrings_OFF] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_initstring_as_empty_ON] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_initstring_as_empty_OFF] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_resource] = new DirectiveInfo(quotesAreSpecialSymbols: true),
-                [StringConstants.compiler_directive_platformtarget] = new DirectiveInfo(SingleAnyOfCheck("x86", "x64", "anycpu", "dotnet5win", "dotnet5linux", "dotnet5macos", "native")),
-                [StringConstants.compiler_directive_faststrings] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_gendoc] = new DirectiveInfo(SingleAnyOfCheck("true", "false")),
-                [StringConstants.compiler_directive_region] = new DirectiveInfo(checkParamsNumNeeded: false),
-                [StringConstants.compiler_directive_endregion] = new DirectiveInfo(checkParamsNumNeeded: false),
-                [StringConstants.compiler_directive_ifdef] = new DirectiveInfo(SingleIsValidIdCheck()),
-                [StringConstants.compiler_directive_endif] = new DirectiveInfo(SingleIsValidIdCheck(), paramsNums: new int[2] { 0, 1 }),
-                [StringConstants.compiler_directive_ifndef] = new DirectiveInfo(SingleIsValidIdCheck()),
-                [StringConstants.compiler_directive_else] = new DirectiveInfo(SingleIsValidIdCheck(), paramsNums: new int[2] { 0, 1 }),
-                [StringConstants.compiler_directive_undef] = new DirectiveInfo(SingleIsValidIdCheck()),
-                [StringConstants.compiler_directive_define] = new DirectiveInfo(SingleIsValidIdCheck()),
-                [StringConstants.compiler_directive_include] = new DirectiveInfo(quotesAreSpecialSymbols: true),
-                [StringConstants.compiler_directive_targetframework] = new DirectiveInfo(),
-                [StringConstants.compiler_directive_hidden_idents] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_disable_standard_units] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_version_string] = new DirectiveInfo(IsValidVersionCheck()),
-                [StringConstants.compiler_directive_product_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
-                [StringConstants.compiler_directive_company_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
-                [StringConstants.compiler_directive_trademark_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
-                [StringConstants.compiler_directive_main_resource_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
-                [StringConstants.compiler_directive_title_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
-                [StringConstants.compiler_directive_description_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
-                [StringConstants.compiler_directive_omp] = new DirectiveInfo(SingleAnyOfCheck("critical", "parallel"), checkParamsNumNeeded: false)
-            }; 
-            #endregion
         }
 
         protected override void PreBuildTree(string FileName)
@@ -151,11 +94,11 @@ namespace Languages.Pascal.Frontend.Wrapping
 #endif
 #endif
 
-            PascalParserTools parserTools = new PascalParserTools(Errors, Warnings, ValidDirectives, 
+            PascalParserTools parserTools = new PascalParserTools(Errors, Warnings, LanguageInformation.ValidDirectives, 
                 buildTreeForFormatter, false,
                 Path.GetFullPath(fileName), CompilerDirectives); // контекст сканера и парсера
 
-            Scanner scanner = new Scanner(Text, parserTools, Keywords, definesList);
+            Scanner scanner = new Scanner(Text, parserTools, LanguageInformation.KeywordsStorage, definesList);
 
             GPPGParser parser = new GPPGParser(scanner, parserTools);
 
@@ -170,7 +113,7 @@ namespace Languages.Pascal.Frontend.Wrapping
             return parser.root;
         }
 
-        protected override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, List<string> DefinesList = null)
+        protected override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, bool compilingNotMainProgram, List<string> DefinesList = null)
         {
             Errors.Clear();
             Warnings.Clear();
@@ -192,11 +135,12 @@ namespace Languages.Pascal.Frontend.Wrapping
 
             syntax_tree_node root = Parse(Text, FileName);
 
-            if (root == null && origText != null && origText.Contains("<"))
+            // убрали эту вторую попытку пока, т.к. Intellisense не должен выдавать подсказку в случае, когда компилятор выдает ошибку в такой ситуации  EVA 10.10.2024
+            /*if (root == null && origText != null && origText.Contains("<"))
             {
                 Errors.Clear();
                 root = Parse(String.Concat("<<expression>>", Environment.NewLine, origText.Replace("<", "&<")), FileName);
-            }
+            }*/
             return root as expression;
         }
 
@@ -217,7 +161,7 @@ namespace Languages.Pascal.Frontend.Wrapping
             return root as statement;
         }
 
-        protected override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text)
+        protected override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text, bool compilingNotMainProgram)
         {
             Errors.Clear();
             syntax_tree_node root = Parse(Text, FileName);

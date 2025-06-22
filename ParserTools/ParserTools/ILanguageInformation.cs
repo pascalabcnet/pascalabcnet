@@ -15,10 +15,10 @@ namespace PascalABCCompiler.Parsers
     	/// Получить полное описание элемента (в желтой подсказке)
     	/// </summary>
 		string GetDescription(IBaseScope scope);
-		/// <summary>
-    	/// Получить краткое описание элемента (без ключевых слов)
-    	/// </summary>
-    	string GetSimpleDescription(IBaseScope scope);
+        /// <summary>
+        /// Получить краткое описание элемента (без ключевых слов)
+        /// </summary>
+        string GetSimpleDescription(IBaseScope scope);
     	/// <summary>
     	/// Получить короткое имя откомпилированного типа
     	/// </summary>
@@ -129,18 +129,21 @@ namespace PascalABCCompiler.Parsers
     	//char GetParameterDelimiter();
     	string GetCompiledTypeRepresentation(Type t, System.Reflection.MemberInfo mi, ref int line, ref int col);
         bool IsKeyword(string value);
-        string[] Keywords
+
+        void RenameOrExcludeSpecialNames(SymInfo[] symInfos);
+
+        Dictionary<string, string> SpecialModulesAliases { get; }
+
+        BaseKeywords KeywordsStorage
         {
             get;
         }
-        string[] TypeKeywords
-        {
-            get;
-        }
-        string SystemUnitName
-        {
-            get;
-        }
+
+        /// <summary>
+        /// Данные о всех поддерживаемых директивах компилятора
+        /// </summary>
+        Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; }
+
         string BodyStartBracket
         {
             get;
@@ -153,11 +156,32 @@ namespace PascalABCCompiler.Parsers
         {
             get;
         }
+        string ResultVariableName
+        {
+            get;
+        }
         bool CaseSensitive
         {
             get;
         }
         bool IncludeDotNetEntities
+        {
+            get;
+        }
+        bool AddStandardUnitNamesToUserScope
+        {
+            get;
+        }
+
+        bool AddStandardNetNamespacesToUserScope
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Может ли source context функций быть вложен в source context других функций
+        /// </summary>
+        bool UsesFunctionsOverlappingSourceContext
         {
             get;
         }

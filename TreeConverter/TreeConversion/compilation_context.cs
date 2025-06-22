@@ -246,7 +246,7 @@ namespace PascalABCCompiler.TreeConverter
 
 		private SemanticTree.field_access_level _fal;
         private bool _has_nested_functions;
-        internal syntax_tree_visitor syntax_tree_visitor;
+        internal syntax_tree_visitor syntax_tree_visitor { get; set; }
 		
         private static compilation_context _instance;
 
@@ -804,8 +804,8 @@ namespace PascalABCCompiler.TreeConverter
             int i = 0;
             if (si.sym_info == null)
             {
-                if (name.ToLower() == "result")
-                    AddError(loc, "CAN_NOT_DEDUCE_TYPE_{0}", "Result");
+                if (name.Equals(StringConstants.result_var_name, CurrentScope.StringComparison))
+                    AddError(loc, "CAN_NOT_DEDUCE_TYPE_{0}", StringConstants.result_var_name);
                 else
                     AddError(new ExpectedType(loc));
             }
@@ -1175,7 +1175,7 @@ namespace PascalABCCompiler.TreeConverter
         public SymbolInfo create_special_names()
         {
             SymbolInfo si= new SymbolInfo(top_function.return_variable);
-            top_function.scope.AddSymbol(StringConstants.result_variable_name, si);
+            top_function.scope.AddSymbol(StringConstants.result_var_name, si);
             return si;
         }
         
@@ -1308,7 +1308,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         common_method_node cmmn;
                         SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.Scope, /*name.ToLower() == "create" ? _ctn.Scope :*/ _cmn.scope, null,
-                            name.ToLower() == "create" ? "constructor " + _ctn.Scope : "method " + name);
+                            name == StringConstants.default_constructor_name ? "constructor " + _ctn.Scope : "method " + name);
                         //TODO:сделать static и virtual.
                         //TODO: interface and implementation scopes.
                         cmmn = new common_method_node(name, def_loc, _ctn, SemanticTree.polymorphic_state.ps_common, _fal, scope);
@@ -2387,7 +2387,7 @@ namespace PascalABCCompiler.TreeConverter
                     check_predefinition_defined();
                     if (_ctn.is_generic_type_definition && !_ctn.IsInterface && _ctn.static_constr == null)
                     {
-                        _ctn.static_constr = new common_method_node(StringConstants.static_ctor_prefix + "Create", null, _ctn, SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_private, null);
+                        _ctn.static_constr = new common_method_node(StringConstants.static_ctor_prefix + StringConstants.default_constructor_name, null, _ctn, SemanticTree.polymorphic_state.ps_static, SemanticTree.field_access_level.fal_private, null);
                         _ctn.static_constr.is_constructor = true;
                         statements_list st = new statements_list(null); 
                         st.statements.AddElement(new return_node(new null_const_node(SystemLibrary.SystemLibrary.object_type, null), null));
@@ -2633,11 +2633,11 @@ namespace PascalABCCompiler.TreeConverter
 			if (sil==null)
 			{
 				if (!check_name_redefinition)
-					CurrentHandlerList.Add(name.ToLower());
+					CurrentHandlerList.Add(name);
 				return;
 			}
 			if (!check_name_redefinition)
-				if (CurrentHandlerList.Contains(name.ToLower()))
+				if (CurrentHandlerList.Contains(name, CurrentScope.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase))
 				return;
 			location first_loc=convertion_data_and_alghoritms.get_location(sil.FirstOrDefault().sym_info);
             //TODO: Можно передавать список всех повторных объявлений.

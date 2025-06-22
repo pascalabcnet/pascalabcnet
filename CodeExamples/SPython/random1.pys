@@ -1,0 +1,8 @@
+﻿#unit random
+import PABCSystem
+
+def random() -> float:
+    return PABCSystem.random()
+    
+def randint(a: int, b: int) -> int:
+    return PABCSystem.random(a, b)

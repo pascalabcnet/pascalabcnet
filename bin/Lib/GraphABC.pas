@@ -612,6 +612,8 @@ function TextHeight(s: string): integer;
 //--------------------------------------------
 ////                Графическое окно
 //--------------------------------------------
+/// обновляет содержимое окна под Linux
+procedure SyncWindow;
 /// Очищает графическое окно белым цветом
 procedure ClearWindow;
 /// Очищает графическое окно цветом c
@@ -3272,7 +3274,9 @@ begin
   else 
   begin
     //    try
-    CurrentSolidBrush.Color := c;
+      CurrentSolidBrush := new SolidBrush(c);
+      Brush.NETBrush := CurrentSolidBrush;  
+    //CurrentSolidBrush.Color := c;
     {    except
           on e: System.InvalidOperationException do
             writeln(e.StackTrace);
@@ -3414,6 +3418,12 @@ begin
 end;
 
 // Window
+procedure SyncWindow;
+begin
+  if IsUnix then
+    Window.Left := Window.Left;
+end;
+  
 procedure ClearWindow;
 begin
   ClearWindow(clWhite);
@@ -3718,8 +3728,8 @@ procedure Redraw;
 var
   tempbmp: Bitmap;
 begin
-  if IsUnix then
-    exit;
+  //if IsUnix then
+  //    exit;
   //TODO Без этого падает если свернуто
   if MainForm.WindowState = FormWindowState.Minimized then 
     exit;
@@ -3739,8 +3749,8 @@ end;
 
 procedure FullRedraw;
 begin
-  if IsUnix then
-    exit;
+  //if IsUnix then
+  //  exit;
   Monitor.Enter(f);
   if gr <> nil then 
     gr.DrawImage(bmp, 0, 0);
@@ -3749,8 +3759,8 @@ end;
 
 procedure LockDrawing;
 begin
-  if IsUnix then
-    exit;
+  //if IsUnix then
+  //  exit;
   NotLockDrawing := False;
 end;
 

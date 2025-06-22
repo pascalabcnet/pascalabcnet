@@ -5,6 +5,7 @@ using PascalABCCompiler.Parsers;
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.TreeConverter;
+using PascalABCCompiler.SyntaxTree;
 
 namespace Languages.Facade
 {
@@ -17,17 +18,19 @@ namespace Languages.Facade
         /// <summary>
         /// Все параметры должны быть не null (и не пустым массивом), кроме IDocParser в случае, если он не требуется
         /// </summary>
-        public BaseLanguage(string name, string version, string copyright, IParser parser, IDocParser docParser,
-            List<ISyntaxTreeConverter> syntaxTreeConverters, syntax_tree_visitor syntaxTreeToSemanticTreeConverter,
+        public BaseLanguage(string name, string version, string copyright, ILanguageInformation languageInformation,
+            IParser parser, IDocParser docParser, List<ISyntaxTreeConverter> syntaxTreeConverters, bool applySyntaxTreeConvertersForIntellisense,
             string[] filesExtensions, bool caseSensitive, string[] systemUnitNames)
         {
             this.Name = name;
             this.Version = version;
             this.Copyright = copyright;
+            this.LanguageInformation = languageInformation;
             this.Parser = parser;
+            this.Parser.LanguageInformation = languageInformation;
             this.DocParser = docParser;
             this.SyntaxTreeConverters = syntaxTreeConverters;
-            this.SyntaxTreeToSemanticTreeConverter = syntaxTreeToSemanticTreeConverter;
+            this.ApplySyntaxTreeConvertersForIntellisense = applySyntaxTreeConvertersForIntellisense;
             this.FilesExtensions = filesExtensions;
             this.CaseSensitive = caseSensitive;
             this.SystemUnitNames = systemUnitNames;
@@ -39,11 +42,15 @@ namespace Languages.Facade
 
         public virtual string Copyright { get; protected set; }
 
+        public virtual ILanguageInformation LanguageInformation { get; }
+
         public virtual IParser Parser { get; protected set; }
 
         public virtual IDocParser DocParser { get; protected set; }
 
         public virtual List<ISyntaxTreeConverter> SyntaxTreeConverters { get; protected set; }
+
+        public virtual bool ApplySyntaxTreeConvertersForIntellisense { get; protected set; }
 
         public virtual syntax_tree_visitor SyntaxTreeToSemanticTreeConverter { get; protected set; }
 

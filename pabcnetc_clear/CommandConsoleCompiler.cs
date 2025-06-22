@@ -15,7 +15,7 @@ namespace PascalABCCompiler
     }
     public class CommandConsoleCompiler
     {
-        
+
 
         private Compiler compiler;
 
@@ -49,7 +49,7 @@ namespace PascalABCCompiler
 
         internal Dictionary<string, SourceFile> SourceFiles = new Dictionary<string, SourceFile>();
 
-        
+
 
         public object SourceFilesProvider(string FileName, SourceFileOperation FileOperation)
         {
@@ -121,7 +121,7 @@ namespace PascalABCCompiler
                     (res, c);
                 c += i;
             }
-            return Encoding.GetEncoding(1251).GetString(res);*/             
+            return Encoding.GetEncoding(1251).GetString(res);*/
         }
         bool compilerReloading = false;
         public void LoadCompiler()
@@ -179,7 +179,7 @@ namespace PascalABCCompiler
                 arg = line.Substring(4);
             command = Convert.ToInt32(line.Substring(0, 3));
         }
-        
+
         Stream standardInput;
 
         object ReadObject()
@@ -269,7 +269,7 @@ namespace PascalABCCompiler
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.InputEncoding = System.Text.Encoding.UTF8;
 
-            // загрузка всех парсеров и других составляющих языков  EVA
+            // Р·Р°РіСЂСѓР·РєР° РІСЃРµС… РїР°СЂСЃРµСЂРѕРІ Рё РґСЂСѓРіРёС… СЃРѕСЃС‚Р°РІР»СЏСЋС‰РёС… СЏР·С‹РєРѕРІ  EVA
             Languages.Integration.LanguageIntegrator.LoadAllLanguages();
 
             LoadCompiler();

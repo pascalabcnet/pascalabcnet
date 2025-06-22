@@ -18,65 +18,68 @@ namespace VisualPascalABC
 
         private static string GetPopupHintText(TextArea textArea, ToolTipRequestEventArgs e)
         {
-            ICSharpCode.TextEditor.TextLocation logicPos = e.LogicalPosition;
+            TextLocation logicPos = e.LogicalPosition;
             IDocument doc = textArea.Document;
-            LineSegment seg = doc.GetLineSegment(logicPos.Y);
-            string FileName = textArea.MotherTextEditorControl.FileName;
-            PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
-            if (logicPos.X > seg.Length - 1)
+            LineSegment lineSegment = doc.GetLineSegment(logicPos.Y);
+
+            string fileName = textArea.MotherTextEditorControl.FileName;
+
+            if (logicPos.X > lineSegment.Length - 1)
                 return null;
+
             //string expr = FindFullExpression(doc.TextContent, seg.Offset + logicPos.X,e.LogicalPosition.Line,e.LogicalPosition.Column);
-            string expr_without_brackets = null;
-            string expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(seg.Offset + logicPos.X, doc.TextContent, e.LogicalPosition.Line, e.LogicalPosition.Column, out keyw, out expr_without_brackets);
+
+            IParser parser = CodeCompletion.CodeCompletionController.CurrentParser;
+
+            string expr = parser.LanguageInformation.FindExpressionFromAnyPosition(
+                lineSegment.Offset + logicPos.X, doc.TextContent, e.LogicalPosition.Line, e.LogicalPosition.Column, out var keyw, out var exprWithoutBrackets);
+
+            // пока непонятно, когда такое может быть  EVA
             if (expr == null)
-                expr = expr_without_brackets;
-            if (expr_without_brackets == null)
+                expr = exprWithoutBrackets;
+
+            if (expr == null)
                 return null;
+
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
+            List<PascalABCCompiler.Errors.CompilerWarning> Warnings = new List<PascalABCCompiler.Errors.CompilerWarning>();
 
-            IParser parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(FileName).Parser;
+            PascalABCCompiler.SyntaxTree.expression expressionTree = parser.GetExpression("test" + Path.GetExtension(fileName),
+                expr, Errors, Warnings);
 
-            PascalABCCompiler.SyntaxTree.expression tree = parser.GetExpression("test" + Path.GetExtension(FileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
-            bool header = false;
-            if (Errors.Count > 0)
+            // Пока добавили проверку, что анализируем Паскаль  EVA
+            if (Errors.Count > 0 && parser == Languages.Facade.LanguageProvider.Instance.MainLanguage.Parser)
             {
-                if (expr.IndexOf('<') != -1 && expr.IndexOf('>') != -1)
+                string s = expr.TrimStart();
+                if (s.Length > 0 && s[0] == '^')
                 {
                     Errors.Clear();
-                    tree = parser.GetExpression("test" + Path.GetExtension(FileName), expr.Replace("<", "&<"), Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
-                }
-                else
-                {
-                    string s = expr.TrimStart();
-                    if (s.Length > 0 && s[0] == '^')
-                    {
-                        Errors.Clear();
-                        expr_without_brackets = expr_without_brackets.TrimStart().Substring(1);
-                        tree = parser.GetExpression("test" + Path.GetExtension(FileName), s.Substring(1), Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
-                    }
+                    exprWithoutBrackets = exprWithoutBrackets.TrimStart().Substring(1);
+                    expressionTree = parser.GetExpression("test" + Path.GetExtension(fileName), s.Substring(1), Errors, Warnings);
                 }
             }
-            if (tree == null || Errors.Count > 0)
+
+            List<PascalABCCompiler.Errors.Error> Errors2 = new List<PascalABCCompiler.Errors.Error>();
+
+            // проверка для выражения без скобок
+            PascalABCCompiler.SyntaxTree.expression expressionTree2 = parser.GetExpression("test" + Path.GetExtension(fileName), exprWithoutBrackets, Errors2, Warnings);
+
+            // если не получается, то сразу возврат
+            if (expressionTree2 == null || Errors2.Count > 0)
+                return null;
+
+            bool header = false;
+            if (expressionTree == null || Errors.Count > 0)
             {
-                Errors.Clear();
-                tree = parser.GetExpression("test" + Path.GetExtension(FileName), expr_without_brackets, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
                 header = true;
-                if (tree == null || Errors.Count > 0)
-                    return null;
+                expressionTree = expressionTree2;
             }
-            else
-            {
-                Errors.Clear();
-                PascalABCCompiler.SyntaxTree.expression tree2 = parser.GetExpression("test" + Path.GetExtension(FileName), expr_without_brackets, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
-                //header = true;
-                if (tree2 == null || Errors.Count > 0)
-                    return null;
-                //if (tree is PascalABCCompiler.SyntaxTree.new_expr && (tree as PascalABCCompiler.SyntaxTree.new_expr).params_list == null)
-                //	tree = tree2;
-            }
-            CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[FileName];
-            if (dconv == null) return null;
-            return dconv.GetDescription(tree, FileName, expr_without_brackets, e.LogicalPosition.Line, e.LogicalPosition.Column, keyw, header);
+
+            CodeCompletion.DomConverter domConverter = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
+
+            if (domConverter == null) return null;
+
+            return domConverter.GetDescription(expressionTree, fileName, exprWithoutBrackets, e.LogicalPosition.Line, e.LogicalPosition.Column, keyw, header);
         }
 
         static int _mouse_hint_x = 0, _mouse_hint_y = 0;

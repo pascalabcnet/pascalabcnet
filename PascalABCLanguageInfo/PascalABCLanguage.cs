@@ -18,11 +18,12 @@ namespace Languages.Pascal
             version: "1.2",
             copyright: "Copyright © 2005-2025 by Ivan Bondarev, Stanislav Mikhalkovich",
 
+            languageInformation: new Frontend.Data.PascalABCLanguageInformation(),
             parser: new Frontend.Wrapping.PascalABCNewLanguageParser(),
             docParser: new Frontend.Documentation.PascalDocTagsLanguageParser(),
 
             syntaxTreeConverters: new List<ISyntaxTreeConverter>() { new Frontend.Converters.StandardSyntaxTreeConverter(), new SyntaxSemanticVisitors.LambdaAnyConverter() },
-            syntaxTreeToSemanticTreeConverter: new syntax_tree_visitor(),
+            applySyntaxTreeConvertersForIntellisense: false,
             
             filesExtensions: new string[] { StringConstants.pascalSourceFileExtension },
             caseSensitive: false,
@@ -47,6 +48,7 @@ namespace Languages.Pascal
             SemanticRulesConstants.StrongPointersTypeCheckForDotNet = true;
             SemanticRulesConstants.AllowChangeLoopVariable = false;
             SemanticRulesConstants.AllowGlobalVisibilityForPABCDll = true;
+            SemanticRulesConstants.AllowMethodCallsWithoutParentheses = true;
         }
 
         public override void SetSyntaxTreeToSemanticTreeConverter()

@@ -28,6 +28,8 @@ namespace Languages.Facade
         /// </summary>
         string Copyright { get; }
 
+        ILanguageInformation LanguageInformation { get; }
+
         /// <summary>
         /// Основной парсер языка
         /// </summary>
@@ -42,6 +44,8 @@ namespace Languages.Facade
         /// Постпреобразования синтаксического дерева (синтаксический сахар и др.)
         /// </summary>
         List<ISyntaxTreeConverter> SyntaxTreeConverters { get; }
+
+        bool ApplySyntaxTreeConvertersForIntellisense { get; }
 
         /// <summary>
         /// Преобразователь из синтаксического дерева в семантическое
@@ -73,6 +77,5 @@ namespace Languages.Facade
         /// </summary>
         // TODO: Возможно, стоит переделать логику обновления, чтобы не приходилось создавать новый объект каждый раз  EVA
         void SetSyntaxTreeToSemanticTreeConverter();
-
     }
 }

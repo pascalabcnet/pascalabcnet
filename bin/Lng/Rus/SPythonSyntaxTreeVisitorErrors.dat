@@ -1,0 +1,23 @@
+﻿// Syntax tree conversion errors
+%PREFIX%=SPYTHONSYNTAXTREEVISITORSERROR_
+
+UNKNOWN_NAME_{0}=Неизвестное имя '{0}'
+MODULE_{0}_HAS_NO_NAME_{1}=В модуле '{0}' не объявлено имя '{1}'
+SCOPE_CONTAINS_NAME_{0}=Имя '{0}' присутствует в текущем пространстве имён
+ARG_AFTER_KWARGS=После именованного аргумента может идти только именованный аргумент
+PASCALABCNET_TYPE_{0}_INSTEAD_OF_SPYTHON_TYPE_{1}=Неизвестный тип '{0}', возможно Вы имели в виду '{1}'
+LOCAL_IMPORT_USE=В текущей версии компилятора конструкция 'import ...' допустима только на глобальном уровне
+LOCAL_FROM_IMPORT_USE=В текущей версии компилятора конструкция 'from ... import ...' допустима только на глобальном уровне
+LOCAL_FUNCTION_DECLARATION=В текущей версии компилятора объявление функции допустимо только на глобальном уровне
+GLOBAL_NOT_IN_FUNCTION=конструкция 'global ...' допустима только внутри функции
+GLOBAL_IN_NOT_OUTERMOST_BLOCK=конструкция 'global ...' недопустима во вложенном блоке кода
+FUNCTION_{0}_USED_BEFORE_DECLARATION='{0}' объявлена позже как функция, её использование до объявления допустимо только в теле других функций
+RETURN_NOT_RETURN_VALUE=Функция должна возвращать значение
+RETURN_HAS_RETURN_VALUE=Попытка вернуть значение из функции, у которой не указан тип возвращаемого значения
+RETURN_NOT_IN_FUNCTION=Конструкция 'return ...' должна быть внутри функции
+IMPOSSIBLE_TO_INFER_LIST_TYPE=Нельзя вычислить тип списка
+IMPOSSIBLE_TO_INFER_SET_TYPE=Нельзя вычислить тип множества
+IMPOSSIBLE_TO_INFER_DICT_TYPE=Нельзя вычислить тип словаря
+KWARG_PARAMETOR_NOT_LAST=kwarg-параметр должен быть последним в списке параметров
+LONG_TUPLE_TYPENAME=Размер кортежа не может быть больше семи
+LEFT_SIZE_TUPLE_ASSIGNMENT_LESS_THAN_RIGHT=Количество переменных в левой части кортежного присваивания должно совпадать с размером кортежа в правой части

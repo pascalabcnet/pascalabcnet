@@ -137,13 +137,17 @@ namespace PascalABCCompiler.TreeConverter
 			}
 		}
 
-        //TODO: Наверно это свойство вообще не нужно.
+
 		public syntax_tree_visitor syntax_tree_visitor
 		{
 			get
 			{
 				return _stv;
 			}
+            set
+            {
+                _stv = value;
+            }
 		}
 
         //TODO: Избавиться от дублирования метода.
@@ -1228,7 +1232,7 @@ namespace PascalABCCompiler.TreeConverter
                                         factparams[i].location)));
                                         //parameters[ii-1].location)));
                                 SyntaxTree.expression ex = new SyntaxTree.new_expr(rettype,el);
-                                sl.Add(new SyntaxTree.assign("Result", ex));
+                                sl.Add(new SyntaxTree.assign(StringConstants.result_var_name, ex));
                                 // Определим функцию преобразования на внешнем уровне
                                 var fun = BuildSimpleFunctionOneParameter("_conv" + UniqueString(), "x",
                                     new SyntaxTree.semantic_type_node(factparams[i].type),
@@ -3348,6 +3352,11 @@ namespace PascalABCCompiler.TreeConverter
                     ret_type = types[i];
                 else if (tc == type_compare.non_comparable_type)
                 {
+                    if (can_convert_type(ret_type, types[i])) // трудно представить что обва типа можно преобразовать друг к другу
+                    { 
+                        ret_type = types[i];
+                        continue;
+                    }
                     if (!can_convert_type(types[i], ret_type))
                         AddError(lst[i].location, "UNCOMPARABLE_TYPES_IN_ARRAY_CONST");
                 }

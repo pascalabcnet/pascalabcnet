@@ -1160,7 +1160,7 @@ namespace PascalABCCompiler.TreeRealization
                     }
                 }
 
-                if (dii.parameters.Count == 0)
+                if (dii.parameters.Count == 0 && TreeConverter.SemanticRulesConstants.AllowMethodCallsWithoutParentheses)
                 {
                     if (dii.return_value_type == to)
                     {
