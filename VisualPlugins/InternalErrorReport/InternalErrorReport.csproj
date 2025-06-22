@@ -23,14 +23,12 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.1.271, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
-      <HintPath>..\..\Libraries\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="System.Resources.Extensions" Version="9.0.0" />
+    <PackageReference Include="SharpZipLib" Version="1.3.3" />
   </ItemGroup>
 </Project>
