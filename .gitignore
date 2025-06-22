@@ -75,6 +75,12 @@
 **/PascalABCNETLinux.exe
 **/PascalABCNETLinux.exe.config
 
+**/SPythonLanguageInfo.dll
+**/SPythonParser.dll
+**/SPythonParser.dll.config
+**/SPythonStandardTreeConverter.dll
+**/SPythonSyntaxTreeVisitor.dll
+
 # external .dll files copied to bin
 /bin/AvalonDock.dll
 /bin/PT4Tools.dll
