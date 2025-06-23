@@ -114,6 +114,11 @@ namespace Languages.Pascal.Frontend.Core
             CreateNewKeyword("index", Tokens.tkIndex);
             CreateNewKeyword("async", Tokens.tkAsync);
             CreateNewKeyword("await", Tokens.tkAwait);
+            
+            // В парсере это не ключевые слова
+            CreateNewKeyword("break");
+            CreateNewKeyword("exit");
+            CreateNewKeyword("continue");
             #endregion
         }
 

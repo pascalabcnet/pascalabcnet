@@ -389,7 +389,7 @@ namespace CodeCompletion
         public List<string> GetKeywords()
         {
             if (CodeCompletionController.CurrentParser != null)
-            	return CodeCompletionController.CurrentParser.LanguageInformation.KeywordsStorage.Keywords;
+            	return CodeCompletionController.CurrentParser.LanguageInformation.KeywordsStorage.KeywordsForIntellisenseList;
             return new List<string>();
         }
 

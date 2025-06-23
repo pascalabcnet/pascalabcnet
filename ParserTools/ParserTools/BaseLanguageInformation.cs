@@ -754,9 +754,9 @@ namespace PascalABCCompiler.Parsers
 
         public abstract bool IsDefinitionIdentifierAfterKeyword(KeywordKind keyw);
 
-        public virtual bool IsKeyword(string value)
+        public bool IsKeyword(string value)
         {
-            return KeywordsStorage.KeywordsToTokens.ContainsKey(value);
+            return KeywordsStorage.KeywordsForIntellisenseSet.Contains(value);
         }
 
         public abstract bool IsMethodCallParameterSeparator(char key);
