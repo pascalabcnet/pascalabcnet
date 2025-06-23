@@ -44,6 +44,11 @@ type kwargs_gen<T> = class
 function all(s: sequence of boolean): boolean;
 function any(s: sequence of boolean): boolean;
 
+function enumerate<T>(s: sequence of T; start: integer := 0): sequence of (integer,T);
+function filter<T>(cond: T -> boolean; s: sequence of T): sequence of T;
+function sorted<T>(s: sequence of T; reverse: boolean := false): sequence of T;
+function sorted<T,T1>(s: sequence of T; key: T -> T1; reverse: boolean := false): sequence of T;
+
 function __NewSetCreatorInternal<T>(params a: array of T): NewSet<T>;
 
 procedure clear<T>(var st: set of T);
@@ -162,6 +167,7 @@ type
     biginteger = PABCSystem.BigInteger;
     !list<T> = PABCSystem.List<T>;
     !dict<K, V> = PABCSystem.Dictionary<K, V>;
+    dct<K, V> = PABCSystem.Dictionary<K, V>;
     !set<T> = set of T;
     tuple2<T1, T2> = System.Tuple<T1, T2>;
     tuple3<T1, T2, T3> = System.Tuple<T1, T2, T3>;
@@ -210,6 +216,18 @@ begin
   Result := PABCSystem.ReadlnString();
 end;
 
+function enumerate<T>(s: sequence of T; start: integer): sequence of (integer,T)
+  := s.Numerate(start);
+  
+function filter<T>(cond: T -> boolean; s: sequence of T): sequence of T
+  := s.Where(cond);
+
+function sorted<T>(s: sequence of T; reverse: boolean): sequence of T
+  := reverse ? s.OrderDescending : s.Order;
+
+function sorted<T,T1>(s: sequence of T; key: T -> T1; reverse: boolean): sequence of T
+  := reverse ? s.OrderByDescending(key) : s.OrderBy(key);
+
 function int(val: string): integer := integer.Parse(val);
 
 function int(val: real): integer := round(val);
@@ -228,7 +246,6 @@ begin
     .Replace('<', '[')
     .Replace('>', ']')
     .Replace('List', 'list')
-    .Replace('Tuple', 'tuple')
     .Replace('Dictionary', 'dict')
     .Replace('empty_list', 'list[anytype]')
     .Replace('empty_set', 'set[anytype]')

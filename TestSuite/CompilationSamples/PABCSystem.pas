@@ -11948,7 +11948,55 @@ begin
     yield c.TakeGroup().ToArray;
 end;
 
-// ToDo Сделать AdjacentGroup с функцией сравнения
+type
+  AdjacentGroupByResult<TKey, TResult> = sealed auto class(System.Linq.IGrouping<TKey, TResult>)
+    public auto property Key: TKey;
+    public auto property Elements: sequence of TResult;
+    
+    public function GetEnumerator: IEnumerator<TResult> := Elements.GetEnumerator;
+    public function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := GetEnumerator;
+    
+  end;
+  
+/// Группирует подряд идущие элементы с одинаковыми значениями ключами
+/// Использует компаратор comp
+function AdjacentGroupBy<T,TKey>(self: sequence of T; by: T->TKey; comp: IEqualityComparer<TKey>): sequence of System.Linq.IGrouping<TKey, T>; extensionmethod;
+begin
+  var enmr := self.GetEnumerator;
+  if not enmr.MoveNext then exit;
+  if comp=nil then comp := System.Collections.Generic.EqualityComparer&<TKey>.Default;
+  
+  var l := new List<T>;
+  var key: TKey;
+  begin
+    var o := enmr.Current;
+    l += o;
+    key := by(o);
+  end;
+  var key_hc := comp.GetHashCode(key);
+  
+  while enmr.MoveNext do
+  begin
+    var o := enmr.Current;
+    var n_key := by(o);
+    var n_key_hc := comp.GetHashCode(n_key);
+    
+    if (n_key_hc<>key_hc) or not comp.Equals(n_key, key) then
+    begin
+      yield new AdjacentGroupByResult<TKey,T>(key, l.ToArray);
+      l.Clear;
+      key := n_key;
+      key_hc := n_key_hc;
+    end;
+    
+    l += o;
+  end;
+  
+  yield new AdjacentGroupByResult<TKey,T>(key, l.ToArray);
+end;
+/// Группирует подряд идущие элементы с одинаковыми значениями ключами
+/// Использует компаратор по-умолчанию
+function AdjacentGroupBy<T,TKey>(self: sequence of T; by: T->TKey); extensionmethod := self.AdjacentGroupBy(by, nil);
 
 /// Возвращает количество элементов, равных указанному значению
 function CountOf<T>(Self: sequence of T; x: T): integer; extensionmethod;
