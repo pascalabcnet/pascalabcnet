@@ -1255,7 +1255,9 @@ namespace PascalABCCompiler.TreeConverter
 
                             //issue #2161 - SSM 12.03.2020
                             //issue #348
-                            if ((formal_param_type == SystemLibrary.SystemLibrary.object_type || formal_param_type.IsDelegate) && factparams[i].type is delegated_methods)
+                            if ((formal_param_type == SystemLibrary.SystemLibrary.object_type || formal_param_type.IsDelegate) 
+                                && factparams[i].type is delegated_methods dm1 
+                                && !dm1.proper_methods[0].function.is_generic_function) // SSM 23.06.2025 issue #3290
                             {
                                 possible_type_convertions ptci = new possible_type_convertions();
                                 ptci.first = null;
