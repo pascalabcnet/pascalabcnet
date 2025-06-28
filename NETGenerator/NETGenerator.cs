@@ -1390,7 +1390,9 @@ namespace PascalABCCompiler.NETGenerator
         {
             FieldBuilder fb = cur_type.DefineField(name, helper.GetTypeReference(type).tp, FieldAttributes.Static | FieldAttributes.Public | FieldAttributes.Literal);
             Type t = helper.GetTypeReference(type).tp;
-            if (!t.Name.StartsWith("NewSet") && t.IsEnum) // SSM 05.11.24
+
+			// Для инстанцированных generic типов вызов .IsEnum приводит к исключению
+			if (!t.IsConstructedGenericType() && t.IsEnum)
             {
                 if (!(t is EnumBuilder))
                     fb.SetConstant(Enum.ToObject(t, (constant_value as IEnumConstNode).constant_value));
