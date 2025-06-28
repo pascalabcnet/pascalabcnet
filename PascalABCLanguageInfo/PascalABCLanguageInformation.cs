@@ -82,13 +82,6 @@ namespace Languages.Pascal.Frontend.Data
             #endregion
         }
 
-        public override bool IsKeyword(string value)
-        {
-            // typeof и sizeof воспринимаются Intellisense по другому  EVA 
-            return !value.Equals("typeof", StringComparison.CurrentCultureIgnoreCase) && !value.Equals("sizeof", StringComparison.CurrentCultureIgnoreCase)
-                && KeywordsStorage.KeywordsToTokens.ContainsKey(value);
-        }
-
         public override string BodyStartBracket
         {
             get
@@ -109,7 +102,7 @@ namespace Languages.Pascal.Frontend.Data
         {
             get
             {
-                return KeywordsStorage.Keywords;
+                return KeywordsStorage.KeywordsForIntellisenseList;
             }
         }
 
