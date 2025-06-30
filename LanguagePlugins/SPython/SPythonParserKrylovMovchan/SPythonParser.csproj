@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net40</TargetFramework>
+    
+    <RootNamespace>Languages.SPython.Frontend.Wrapping</RootNamespace>
+    
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Errors\Errors.csproj" />
+    <ProjectReference Include="..\..\..\LanguageIntegrator\LanguageIntegrator.csproj" />
+    <ProjectReference Include="..\..\..\Localization\Localization.csproj" />
+    <ProjectReference Include="..\..\..\ParserTools\ParserTools.csproj" />
+    <ProjectReference Include="..\..\..\SyntaxTree\SyntaxTree.csproj" />
+    <ProjectReference Include="..\..\..\SyntaxVisitors\SyntaxVisitors.csproj" />
+  </ItemGroup>
+</Project>

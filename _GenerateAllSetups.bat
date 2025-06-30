@@ -47,10 +47,6 @@ TestRunner.exe 6
 cd ..\ReleaseGenerators
 call PascalABCNET_ALL.bat
 
-cd ..
-
-dotnet build -c Release --no-incremental PascalABCNET.sln
-
 GOTO EXIT
 
 :ERROR

@@ -69,7 +69,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (Variables[i].name.StartsWith("$rv_"))
                 {
                     TreeRealization.local_variable OldResult = Variables[i] as TreeRealization.local_variable;
-                    TreeRealization.local_variable NewResult = new PascalABCCompiler.TreeRealization.local_variable("result", OldResult.type, OldResult.function, OldResult.loc);
+                    TreeRealization.local_variable NewResult = new PascalABCCompiler.TreeRealization.local_variable(StringConstants.result_var_name, OldResult.type, OldResult.function, OldResult.loc);
                     Variables[i] = NewResult;
                 }
         }

@@ -345,6 +345,9 @@ namespace VisualPascalABC
             NavigationManager = new NavigationManager(ExecuteSourceLocationAction);
             NavigationManager.StateChanged += new NavigationManager.NavigationManagerStateChanged(NavigationManager_StateChanged);
 
+            // загрузка всех парсеров и других составляющих языков  EVA
+            Languages.Integration.LanguageIntegrator.LoadAllLanguages();
+
             string newFileName = InstNameNewProgramm(MainDockPanel);
             AddNewProgramToTab(MainDockPanel, newFileName);
             
@@ -585,10 +588,7 @@ namespace VisualPascalABC
         {
 
             if(_mainFormWindowStateMaximized)
-                this.WindowState = FormWindowState.Maximized;        
-
-            // загрузка всех парсеров и других составляющих языков  EVA
-            Languages.Integration.LanguageIntegrator.LoadAllLanguages();
+                this.WindowState = FormWindowState.Maximized;
 
             ChangedSelectedTab();
             VisualEnvironmentCompiler.ChangeVisualEnvironmentState += new ChangeVisualEnvironmentStateDelegate(VisualEnvironmentCompiler_ChangeVisualEnvironmentState);

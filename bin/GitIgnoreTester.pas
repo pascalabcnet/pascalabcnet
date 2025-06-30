@@ -6,6 +6,8 @@ begin
   Result := System.Text.Encoding.UTF8.GetString(bytes);
 end);
 
+var no_wait := 'NoWait' in CommandLineArgs;
+
 // Чтобы удобнее сравнивать вывод этой программы
 //Rewrite(output, 'temp.txt');
 try
@@ -79,19 +81,61 @@ try
   end;
   
   var err := false;
-  foreach var fname in index_files.Order do
+  var write_files_block := procedure(header, tail: string; enumerate: procedure(on_file: Action<string>)) ->
   begin
-    if fname not in ignored_files then continue;
-    $'Ignored index file: {fname}'.Println;
-    err := true;
+    var any_found := false;
+    enumerate(fname->
+    begin
+      if not any_found then
+      begin
+        any_found := true;
+        err := true;
+        header.Println;
+      end;
+      $'- {fname}'.Println;
+    end);
+    if any_found then
+    begin
+      tail.Println;
+      Println('='*30);
+    end;
   end;
-  foreach var fname in all_files.Order do
+  
+  write_files_block(
+    'Ignored index files:',
+    '''
+    These files were added to git, even though they are marked as ignored
+    # If they were intended to be added, likely its folder should be removed from .gitignore (or added to .gitignore exceptions)
+    ''',
+    on_file -> foreach var fname in index_files.Order do
+    begin
+      if fname not in ignored_files then continue;
+      on_file(fname);
+    end
+  );
+  
+  write_files_block(
+    'Unversioned files:',
+    '''
+    These files were found in the local folder, but aren't known to git
+    # If you added them manually, you probably want to add them to the git history
+    # If they were created automatically during build/tests/setup generation, you probably want them in .gitignore
+    ''',
+    on_file -> foreach var fname in all_files.Order do
+    begin
+      if fname in index_files then continue;
+      if fname in ignored_files then continue;
+      on_file(fname);
+    end
+  );
+  
+  if err and no_wait then
   begin
-    if fname in index_files then continue;
-    if fname in ignored_files then continue;
-    $'Unversioned file: {fname}'.Println;
-    err := true;
+    '''
+    HINT: You can run "bin/GitIgnoreTester.pas" manually in your local directory to test .gitignore changes faster
+    '''.Println;
   end;
+  
   System.Environment.ExitCode := Ord(err);
   
 except
@@ -102,5 +146,5 @@ except
   end;
 end;
 //output.Close;
-if 'NoWait' not in CommandLineArgs then
+if not no_wait then
   ReadString('Done');

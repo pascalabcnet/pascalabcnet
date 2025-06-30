@@ -1,9 +1,12 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Between">
 <param name="Keyword" value="CommandLineArgs">
 <param name="Keyword" value="Dec">
 <param name="Keyword" value="Eof">
 <param name="Keyword" value="Eoln">
 <param name="Keyword" value="Inc">
+<param name="Keyword" value="InRange">
+<param name="Keyword" value="ObjectToString">
 <param name="Keyword" value="Ord">
 <param name="Keyword" value="Pred">
 <param name="Keyword" value="SeekEof">
@@ -12,7 +15,9 @@
 <param name="Keyword" value="Swap"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Общие подпрограммы</H1>
-<table border=0 cellpadding=5><tr><td><code><b>function</b> CommandLineArgs: <b>array</b>  <b>of</b> string;</code>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> Between&lt;T&gt;(val, a, b: T): boolean; <b>where</b> T: IComparable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если значение val находится между a и b (включительно) независимо от порядка a и b</td></tr>
+<tr><td><code><b>function</b> CommandLineArgs: <b>array</b>  <b>of</b> string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает аргумены командой строки, с которыми была запущена программа</td></tr>
 <tr><td><code><b>procedure</b> Dec(<b>var</b> i: integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает значение переменной i на 1</td></tr>
@@ -34,6 +39,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает значение перечислимого типа на 1</td></tr>
 <tr><td><code><b>procedure</b> Inc(<b>var</b> e: перечислимый тип; n: integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает значение перечислимого типа на n</td></tr>
+<tr><td><code><b>function</b> InRange&lt;T&gt;(val, a, b: T): boolean; <b>where</b> T: IComparable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если значение val находится между a и b включительно</td></tr>
+<tr><td><code><b>function</b> ObjectToString(obj: object): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует объект в строковое представление</td></tr>
 <tr><td><code><b>function</b> Ord(a: целое): целое;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает порядковый номер значения a</td></tr>
 <tr><td><code><b>function</b> Ord(a: перечислимый тип): integer;</code>

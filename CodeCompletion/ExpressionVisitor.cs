@@ -2032,7 +2032,7 @@ namespace CodeCompletion
         {
             method_call mc = new method_call();
             mc.parameters = _tuple_node.el;
-            mc.dereferencing_value = new dot_node(new ident("Tuple"), new ident("Create"));
+            mc.dereferencing_value = new dot_node(new ident("Tuple"), new ident(StringConstants.default_constructor_name));
             mc.visit(this);
         }
 

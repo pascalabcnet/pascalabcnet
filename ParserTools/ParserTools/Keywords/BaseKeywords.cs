@@ -10,14 +10,28 @@ namespace PascalABCCompiler.Parsers
     public abstract class BaseKeywords
     {
         /// <summary>
-        /// Соотвествие ключевых слов токенам
+        /// Соотвествие ключевых слов токенам (ключевые слова для парсера)
         /// </summary>
         public Dictionary<string, int> KeywordsToTokens { get; set; }
 
+        /// <summary>
+        /// Типы ключевых слов
+        /// </summary>
         public Dictionary<string, KeywordKind> KeywordKinds { get; set; }
 
-        public List<string> Keywords { get; set; } = new List<string>();
+        /// <summary>
+        /// Ключевые слова в контексте Intellisense (множество)
+        /// </summary>
+        public HashSet<string> KeywordsForIntellisenseSet { get; }
 
+        /// <summary>
+        /// Ключевые слова в контексте Intellisense (список)
+        /// </summary>
+        public List<string> KeywordsForIntellisenseList { get; set; } = new List<string>();
+
+        /// <summary>
+        /// Ключевые слова, соответствующие типам (array, set), либо классу, функции
+        /// </summary>
         public List<string> TypeKeywords { get; set; } = new List<string>();
 
         /// <summary>
@@ -42,7 +56,7 @@ namespace PascalABCCompiler.Parsers
                 if (System.IO.File.Exists(pathToKeymapFile))
                     keymap = System.IO.File.ReadLines(pathToKeymapFile, Encoding.Unicode).Select(s => s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)).ToDictionary(w => w[0], w => w[1]);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //var w = e.Message;
             }
@@ -63,9 +77,13 @@ namespace PascalABCCompiler.Parsers
         {
             ReloadKeyMap();
 
-            KeywordsToTokens = new Dictionary<string, int>(caseSensitive ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase);
+            StringComparer stringComparer = caseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
 
-            KeywordKinds = new Dictionary<string, KeywordKind>(caseSensitive ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase);
+            KeywordsToTokens = new Dictionary<string, int>(stringComparer);
+
+            KeywordsForIntellisenseSet = new HashSet<string>(stringComparer);
+
+            KeywordKinds = new Dictionary<string, KeywordKind>(stringComparer);
         }
 
         /// <summary>
@@ -84,20 +102,22 @@ namespace PascalABCCompiler.Parsers
                 return GetIdToken();
         }
 
-        public void CreateNewKeyword(string name, Enum token, KeywordKind kind = KeywordKind.None, bool isTypeKeyword = false)
+        public void CreateNewKeyword(string name, Enum token = null, KeywordKind kind = KeywordKind.None, bool isTypeKeyword = false)
         {
             name = ConvertKeyword(name);
 
             if (kind != KeywordKind.None)
                 KeywordKinds[name] = kind;
 
-            Keywords.Add(name);
-            KeywordsToTokens[name] = (int)(object)token;
+            KeywordsForIntellisenseList.Add(name);
+            KeywordsForIntellisenseSet.Add(name);
+
+            // token null может передаваться, если это ключевое слово исключительно для Intellisense (например, break)
+            if (token != null)
+                KeywordsToTokens[name] = (int)(object)token;
 
             if (isTypeKeyword)
                 TypeKeywords.Add(name);
-
-            // return new Keyword(name, token, kind, isTypeKeyword);
         }
     }
 }

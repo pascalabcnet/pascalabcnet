@@ -22,13 +22,13 @@ namespace PascalABCCompiler.TreeConverter
 
         public SyntaxTreeToSemanticTreeConverter()
         {
+
             foreach (var language in LanguageProvider.Instance.Languages)
             {
                 language.SetSyntaxTreeToSemanticTreeConverter();
-                // пока что берем стандартный визитор вначале  EVA
-                if (language.Name == StringConstants.pascalLanguageName)
-                    syntaxTreeVisitor = language.SyntaxTreeToSemanticTreeConverter;
             }
+
+            syntaxTreeVisitor = LanguageProvider.Instance.MainLanguage.SyntaxTreeToSemanticTreeConverter;
 
             //(ssyy) запоминаем visitor 
             SystemLibrary.SystemLibrary.syn_visitor = syntaxTreeVisitor;

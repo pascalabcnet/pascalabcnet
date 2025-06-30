@@ -1,0 +1,34 @@
+﻿%PREFIX%=SPYTHONPARSER_
+FOUND{0}=Found {0} but 
+FOUNDM{0}=Found {0} but 
+FOUNDEOF=Found end of file but 
+EXPECTED{0}=Expected {0}
+EXPECTED{1}=expected {1}
+EXPECTEDR{1}=expected {1}
+EXPECTEDF{1}=expected {1}
+GLOBAL_VAR_{0}_SIM_PARAMETER=global variable name {0} is the same as parameter name
+USING_VARIABLE_{0}_BEFORE_ASSIGNMENT=Variable {0} used before declaration
+NO_GLOBAL_VAR_{0}=Unknown global name {0}
+WRONG_INDENT=Indent does not match any block of code
+PROGRAM_BEGIN_WITH_INDENT=Program can not begin with indent
+UNEXPECTED_TOKEN_{0}=Unknown symbol {0}
+UNSUPPORTED_CONSTRUCTION_{0}=Construction {0} is not support in current compiler version
+LINE_WITHOUT_INDENT=Expected code block with indent 
+ILL_FORMED_FSTRING_{0}=Wrong f-string format {0}
+FSTRING_UNNKOWN_FORMAT_{0}=Unknown format {0}
+FSTRING_NESTED_EXPRESSION_{0}_PARSING_FAILURE=Expression '{0}' has an error
+
+IDENTIFIER=identifier
+EOF1=end of file
+EOL=end of line
+STRINGNUM=string constant
+INTNUM=integer
+REALNUM=float
+#{=indent
+#}=end of indent
+#$=end of file
+#;=end of line
+
+
+EXPR=expression
+STMT=statement

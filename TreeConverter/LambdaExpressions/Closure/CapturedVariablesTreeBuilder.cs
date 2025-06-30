@@ -197,7 +197,7 @@ namespace TreeConverter.LambdaExpressions.Closure
 
         public override void visit(ident id)
         {
-            var idName = id.name.ToLower();
+            var idName = id.name;
 
             SymbolInfo si = _visitor.context.find_first(idName);
             //var q = si.GetHashCode();
@@ -211,6 +211,9 @@ namespace TreeConverter.LambdaExpressions.Closure
                 }*/
                 return;
             }
+
+            var stringComparer = _visitor.context.CurrentScope.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
+            var stringComparison = _visitor.context.CurrentScope.StringComparison;
 
             if (si.sym_info.semantic_node_type == semantic_node_type.namespace_variable ||
                 si.sym_info.semantic_node_type == semantic_node_type.common_namespace_function_node ||
@@ -230,7 +233,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 si.sym_info.semantic_node_type == semantic_node_type.generic_indicator ||
                 //si.sym_info.semantic_node_type == semantic_node_type.class_constant_definition ||
                 si.sym_info.semantic_node_type == semantic_node_type.function_constant_definition || // SSM 03.11.18 bug fix #1449
-                si.sym_info.semantic_node_type == semantic_node_type.basic_function_node && (idName == "exit" || idName == "continue" || idName == "break"))
+                si.sym_info.semantic_node_type == semantic_node_type.basic_function_node && new string[] { "exit", "continue", "break" }.Contains(idName, stringComparer))
             {
                 return;
             }
@@ -397,12 +400,12 @@ namespace TreeConverter.LambdaExpressions.Closure
                             _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                         }
                     }*/
-                    if (si.sym_info.semantic_node_type == semantic_node_type.common_parameter && prScope.FunctionNode.parameters.First(v => v.name.ToLower() == idName).parameter_type != parameter_type.value && InLambdaContext)
+                    if (si.sym_info.semantic_node_type == semantic_node_type.common_parameter && prScope.FunctionNode.parameters.First(v => v.name.Equals(idName, stringComparison)).parameter_type != parameter_type.value && InLambdaContext)
                     {
                         _visitor.AddError(new CannotCaptureNonValueParameters(_visitor.get_location(id)));
                     }
                     
-                    if (idName == PascalABCCompiler.StringConstants.self_word && si.scope is SymbolTable.ClassMethodScope &&
+                    if (idName.Equals(PascalABCCompiler.StringConstants.self_word, stringComparison) && si.scope is SymbolTable.ClassMethodScope &&
                         _classScope != null)
                     {
                         var selfField = _classScope.VariablesDefinedInScope.Find(var => var.SymbolInfo == si);
@@ -425,7 +428,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                             var found = false;
                             foreach (var v in prScope.VariablesDefinedInScope) // и не было с таким же именем
                             {
-                                if (v.SymbolInfo.sym_info is var_definition_node vdn && vdn.name.ToLower() == id.name.ToLower()) // SSM попытка бороться с #2001 - исключаю одноимённые
+                                if (v.SymbolInfo.sym_info is var_definition_node vdn && vdn.name.Equals(idName, stringComparison)) // SSM попытка бороться с #2001 - исключаю одноимённые
                                 {
                                     found = true;
                                     break;
@@ -469,7 +472,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                         var index = -1;
                         for (var i=0; i < sc.VariablesDefinedInScope.Count; i++) 
                         {
-                            if (sc.VariablesDefinedInScope[i].SymbolInfo.sym_info is var_definition_node vdn && vdn.name.ToLower() == id.name.ToLower()) // SSM #2001 и подобные - исключаю одноимённые
+                            if (sc.VariablesDefinedInScope[i].SymbolInfo.sym_info is var_definition_node vdn && vdn.name.Equals(idName, stringComparison)) // SSM #2001 и подобные - исключаю одноимённые
                             {
                                 index = i;
                                 si = sc.VariablesDefinedInScope[i].SymbolInfo;
@@ -615,7 +618,7 @@ namespace TreeConverter.LambdaExpressions.Closure
 
         public override void visit(foreach_stmt _foreach_stmt)
         {
-            var loopIdentName = _foreach_stmt.identifier.name.ToLower();
+            var loopIdentName = _foreach_stmt.identifier.name; //.ToLower();
 
             definition_node dn = null;
             var_definition_node vdn = null;
@@ -700,7 +703,7 @@ namespace TreeConverter.LambdaExpressions.Closure
         public override void visit(PascalABCCompiler.SyntaxTree.for_node _for_node)
         {
             var loc1 = _visitor.get_location(_for_node.loop_variable);
-            var loopIdentName = _for_node.loop_variable.name.ToLower();
+            var loopIdentName = _for_node.loop_variable.name; //.ToLower();
             var nodesToProcess = new List<syntax_tree_node>();
 
             var_definition_node vdn;

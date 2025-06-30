@@ -308,14 +308,14 @@ namespace PascalABCCompiler
         private static string of_word = "of";
         private static string space = " ";
 
-        public static string result_variable_name = "result";
+        public static string result_var_name = "Result";
 
         public static string event_add_method_nameformat = event_add_method_prefix + "{0}";
         public static string event_remove_method_nameformat = event_remove_method_prefix + "{0}";
         public static string event_add_method_prefix = "add_";
         public static string event_remove_method_prefix = "remove_";
 
-        public static string default_constructor_name = "create";
+        public static string default_constructor_name = "Create";
 
         #region PASCAL COMPILER DIRECTIVES
         public const string compiler_directive_apptype = "apptype";
@@ -371,8 +371,25 @@ namespace PascalABCCompiler
             pascalSystemUnitName,
             pascalExtensionsUnitName
         };
-        public const string pascalLanguageDllName = "PascalLanguage.dll";
+        public const string pascalLanguageDllName = "PascalABCLanguageInfo.dll";
         #endregion
+
+        public static readonly string[] platformLibraries = new[] {
+            "avalondock.dll",
+            "codecompletion.dll",
+            "compiler.dll",
+            "compilertools.dll",
+            "debuggercore.dll",
+            "netgenerator.dll",
+            "treeconverter.dll",
+            "pascalabcparser.dll",
+            "syntaxtree.dll",
+            "semantictree.dll",
+            "weifenluo.winformsui.docking.dll",
+            "pluginssupport.dll",
+            "localization.dll",
+            pascalLanguageDllName.ToLower()
+        };
 
         public static readonly string[] netSystemLibraries = new[] { "mscorlib.dll", "System.dll", "System.Core.dll", "System.Numerics.dll", "System.Windows.Forms.dll", "System.Drawing.dll" };
 

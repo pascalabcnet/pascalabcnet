@@ -13,9 +13,9 @@ namespace Languages.Pascal.Frontend.Converters
     {
         public override string Name { get; } = "Standard";
         
-        protected override syntax_tree_node ApplyConcreteConversions(syntax_tree_node root)
+        protected override syntax_tree_node ApplyConversions(syntax_tree_node root, bool forIntellisense)
         {
-            root.FillParentsInAllChilds();
+            ExitParamVisitor.New.ProcessNode(root);
 
             var binder = new BindCollectLightSymInfo(root as compilation_unit);
 #if DEBUG

@@ -1,0 +1,32 @@
+﻿# объединяет списки целых в один
+def chain(*args: list[int]) -> list[int]:
+    sz = 0
+    for arg in args:
+      sz += len(arg)
+    
+    res = [0 for i in range(sz)]
+    i = 0
+    for arg in args:
+       for j in range(len(arg)):
+           res[i] = arg[j]
+           i += 1
+    return res
+
+# если вызвать как repeat(10, times=12)
+def repeat(val: int, **kwargs: int) -> list[int]:
+     times = 1
+     if 'times' in kwargs.keys():
+        times = kwargs['times']
+     return [val for i in range(times)]
+
+# если вызвать как repeat(10, 12)
+def repeat(val: int, times: int) -> list[int]:
+    return repeat(val, times=times)
+    # можно просто так
+    # return [val for i in range(times)]   
+
+
+# просто функция, чтобы показать как итерироваться по kwargs
+def print_int_kwargs(**kwargs: int):
+    for key, value in kwargs:
+      print(f'kwargs[{key}] = {value}')

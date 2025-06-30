@@ -9,6 +9,10 @@
 <param name="Keyword" value="ForEach">
 <param name="Keyword" value="Incremental">
 <param name="Keyword" value="Interleave">
+<param name="Keyword" value="IsOrdered">
+<param name="Keyword" value="IsOrderedBy">
+<param name="Keyword" value="IsOrderedByDescending">
+<param name="Keyword" value="IsOrderedDescending">
 <param name="Keyword" value="JoinToString">
 <param name="Keyword" value="LastMaxBy">
 <param name="Keyword" value="LastMinBy">
@@ -106,6 +110,22 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;„ередует элементы трех последовательностей</td></tr>
 <tr><td><code><b>function</b> Interleave&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; a, b, c: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;„ередует элементы четырех последовательностей</td></tr>
+<tr><td><code><b>function</b> IsOrdered&lt;T&gt;(self: <b>sequence </b>  <b>of</b> T; comparer: IComparer&lt;T&gt;): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕровер€ет, отсортирована ли последовательность по возрастанию в пор€дке, заданном компаратором comparer</td></tr>
+<tr><td><code><b>function</b> IsOrdered&lt;T&gt;(self: <b>sequence </b>  <b>of</b> T): boolean;  <b>where</b> T: IComparable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕровер€ет, отсортирована ли последовательность по возрастанию</td></tr>
+<tr><td><code><b>function</b> IsOrderedBy&lt;T, TKey&gt;(self: <b>sequence </b>  <b>of</b> T; keySelector: T -&gt; TKey;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕровер€ет, отсортирована ли последовательность по возрастанию ключа, использу€ компаратор</td></tr>
+<tr><td><code><b>function</b> IsOrderedBy&lt;T, TKey&gt;(self: <b>sequence </b>  <b>of</b> T; keySelector: T -&gt; TKey): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕровер€ет, отсортирована ли последовательность по возрастанию ключа</td></tr>
+<tr><td><code><b>function</b> IsOrderedByDescending&lt;T, TKey&gt;(self: <b>sequence </b>  <b>of</b> T; keySelector: T -&gt; TKey;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕровер€ет, отсортирована ли последовательность по убыванию ключа, использу€ компаратор</td></tr>
+<tr><td><code><b>function</b> IsOrderedByDescending&lt;T, TKey&gt;(self: <b>sequence </b>  <b>of</b> T; keySelector: T -&gt; TKey): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕровер€ет, отсортирована ли последовательность по убыванию ключа</td></tr>
+<tr><td><code><b>function</b> IsOrderedDescending&lt;T&gt;(self: <b>sequence </b>  <b>of</b> T): boolean;  <b>where</b> T: IComparable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕровер€ет, отсортирована ли последовательность по убыванию</td></tr>
+<tr><td><code><b>function</b> IsOrderedDescending&lt;T&gt;(self: <b>sequence </b>  <b>of</b> T; comparer: IComparer&lt;T&gt;): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕровер€ет, отсортирована ли последовательность по убыванию в пор€дке, заданном компаратором comparer</td></tr>
 <tr><td><code><b>function</b> JoinToString&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; delim: string): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует элементы последовательности в строковое представление, после чего объедин€ет их в строку, использу€ delim в качестве разделител€</td></tr>
 <tr><td><code><b>function</b> JoinToString&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): string;</code>

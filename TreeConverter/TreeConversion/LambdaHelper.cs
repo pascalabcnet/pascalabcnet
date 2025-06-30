@@ -2,12 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using PascalABCCompiler.TreeRealization;
-using System.Collections;
 using PascalABCCompiler.SyntaxTree;
 using TreeConverter.LambdaExpressions;
+using static PascalABCCompiler.StringConstants;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -203,7 +202,7 @@ namespace PascalABCCompiler.TreeConverter
                                                                                    lambdaDef.formal_parameters.params_list[i].vars_type,
                                                                                    null));
             if (lambdaDef.return_type != null)
-                stmtList.subnodes.Add(SyntaxTreeNodesConstructor.CreateVarStatementNode("result", lambdaDef.return_type, null)); // переделать, не сработает, если тип возвращаемого значения не указан
+                stmtList.subnodes.Add(SyntaxTreeNodesConstructor.CreateVarStatementNode(result_var_name, lambdaDef.return_type, null)); // переделать, не сработает, если тип возвращаемого значения не указан
             stmtList.subnodes.AddRange((lambdaDef.proc_body as statement_list).subnodes);
             block resBlock = new block();
             resBlock.program_code = stmtList;
@@ -235,7 +234,7 @@ namespace PascalABCCompiler.TreeConverter
                 // Очищаем от Result := , который мы создали на предыдущем этапе
 
                 var ass = stl.list[0] as assign;
-                if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower() == "result")
+                if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower() == result_var_name.ToLower())
                 {
                     var f = ass.from;
                     if (f is method_call)
@@ -449,7 +448,7 @@ namespace PascalABCCompiler.TreeConverter
             public override void visit(assign value)
             {
                 var to = value.to as ident;
-                if (to != null && value.operator_type == Operators.Assignment && to.name.ToLower() == "result")
+                if (to != null && value.operator_type == Operators.Assignment && to.name.Equals(result_var_name, SemanticRulesConstants.SymbolTableCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
                 {
                     exprList.Add(value.from);
                 }

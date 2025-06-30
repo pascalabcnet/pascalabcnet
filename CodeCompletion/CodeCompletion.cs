@@ -8,7 +8,6 @@ using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.Errors;
 using System.IO;
-using PascalABCCompiler;
 using Languages.Facade;
 //using ICSharpCode.SharpDevelop.Dom;
 
@@ -17,10 +16,10 @@ namespace CodeCompletion
     public class CodeCompletionController
     {
         public static LanguageProvider LanguageProvider = LanguageProvider.Instance;
-        string FileName;
+        private string FileName;
         string Text;
-        public Dictionary<PascalABCCompiler.SyntaxTree.syntax_tree_node, string> docs = new Dictionary<PascalABCCompiler.SyntaxTree.syntax_tree_node, string>();
-		static bool parsers_loaded=false;
+        public Dictionary<syntax_tree_node, string> docs = new Dictionary<syntax_tree_node, string>();
+		// static bool parsers_loaded=false;
 		public IParser Parser;
 
         static CodeCompletionController()
@@ -31,29 +30,28 @@ namespace CodeCompletion
         
         public CodeCompletionController()
         {
-        	if (!parsers_loaded)
+        	/*if (!parsers_loaded)
         	{
         		//ParsersController.Reload();
         		parsers_loaded = true;
-        	}
+        	}*/
         	//dconv = new DomConverter(this);
         }
 
         public static PascalABCCompiler.Compiler comp;// = new PascalABCCompiler.Compiler();
         public static Hashtable StandartDirectories = new Hashtable();
         public static Hashtable comp_modules = new Hashtable(StringComparer.OrdinalIgnoreCase);
-        public static Hashtable parsers = new Hashtable(StringComparer.OrdinalIgnoreCase);
+        // public static Hashtable parsers = new Hashtable(StringComparer.OrdinalIgnoreCase);
         public static Dictionary<string, InterfaceUnitScope> pabcNamespaces = new Dictionary<string, InterfaceUnitScope>();
          	
         public static string currentLanguageISO;
-		//public static PascalABCCompiler.Parsers.IParser currentParser;
-		static string cur_ext = ".pas";
-        private static IParser currentParser;
+		// public static PascalABCCompiler.Parsers.IParser currentParser;
+		// static string cur_ext = ".pas";
+        private static ILanguage currentLanguage;
 
-		public static void SetParser(string ext)
+		public static void SetLanguage(string fileName)
 		{
-			cur_ext = ext;
-            currentParser = null;
+            currentLanguage = LanguageProvider.SelectLanguageByExtensionSafe(fileName);
 		}
 		
         public void ResetNamespaces()
@@ -66,35 +64,27 @@ namespace CodeCompletion
 		{
 			get
 			{
-                if (currentParser == null)
-                    currentParser = parsers[cur_ext] as IParser;
-				return currentParser;
+                return currentLanguage?.Parser;
 			}
 		}
 
-        internal compilation_unit ParsersControllerGetCompilationUnit(string FileName, string Text, List<Error> ErrorsList, List<CompilerWarning> Warnings)
+        internal compilation_unit ParsersControllerGetCompilationUnit(string FileName, string Text, List<Error> ErrorsList, List<CompilerWarning> Warnings, bool compilingNotMainProgram)
         {
             ILanguage language = LanguageProvider.SelectLanguageByExtensionSafe(FileName);
             if (language == null)
                 return null;
             Parser = language.Parser;
-            parsers[Path.GetExtension(FileName)] = Parser;
-            compilation_unit cu = null;
-            cu = Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal);
-            //ParsersController.GetExpression("test.pas", "a+b", new List<PascalABCCompiler.Errors.Error>());
-            return cu;
+
+            return Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal, compilingNotMainProgram);
         }
 		
-        internal compilation_unit ParsersControllerGetCompilationUnitSpecial(string FileName, string Text, List<Error> ErrorsList, List<CompilerWarning> Warnings)
+        internal compilation_unit ParsersControllerGetCompilationUnitSpecial(string FileName, string Text, List<Error> ErrorsList, List<CompilerWarning> Warnings, bool compilingNotMainProgram)
         {
             ILanguage language = LanguageProvider.SelectLanguageByExtensionSafe(FileName);
             if (language == null)
                 return null;
-            parsers[Path.GetExtension(FileName)] = Parser;
-            compilation_unit cu = null;
-            cu = Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Special);
-            //ParsersController.GetExpression("test.pas","a+b",new List<PascalABCCompiler.Errors.Error>());
-            return cu;
+
+            return Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Special, compilingNotMainProgram);
         }
         
         public DomConverter Compile(string FileName, string Text)
@@ -104,15 +94,23 @@ namespace CodeCompletion
             List<PascalABCCompiler.Errors.Error> ErrorsList = new List<PascalABCCompiler.Errors.Error>();
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
             PascalABCCompiler.SyntaxTree.compilation_unit cu = null;
+            IDocParser docParser = null;
             string ext = Path.GetExtension(FileName);
             try
             {
-                cu = ParsersControllerGetCompilationUnit(FileName, Text, ErrorsList, Warnings);
+                cu = ParsersControllerGetCompilationUnit(FileName, Text, ErrorsList, Warnings, false);
                 ErrorsList.Clear();
-                documentation_comment_list dt = LanguageProvider.SelectLanguageByExtension(FileName).DocParser.BuildTree(Text);
-                PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
-                if (cu != null)
-                    docs = docconst.Construct(cu, dt);
+
+                docParser = LanguageProvider.SelectLanguageByExtension(FileName).DocParser;
+
+                if (docParser != null)
+                {
+                    documentation_comment_list dt = docParser.BuildTree(Text);
+                    PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
+                    if (cu != null)
+                        docs = docconst.Construct(cu, dt);
+                }
+                
             }
             catch (Exception e)
             {
@@ -144,7 +142,7 @@ namespace CodeCompletion
                     string tmp = ParsersHelper.GetModifiedProgramm(Text);
                     if (tmp != null)
                     {
-                        cu = ParsersControllerGetCompilationUnitSpecial(FileName, tmp, ErrorsList, Warnings);
+                        cu = ParsersControllerGetCompilationUnitSpecial(FileName, tmp, ErrorsList, Warnings, false);
                     }
                     if (comp_modules[FileName] == null)
                     {
@@ -152,10 +150,13 @@ namespace CodeCompletion
                             cu = get_fictive_unit(Text, FileName);
                     }
                     ErrorsList.Clear();
-                    documentation_comment_list dt = LanguageProvider.SelectLanguageByExtension(FileName).DocParser.BuildTree(Text);
-                    PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
-                    if (cu != null)
-                        docs = docconst.Construct(cu, dt);
+                    if (docParser != null)
+                    {
+                        documentation_comment_list dt = docParser.BuildTree(Text);
+                        PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
+                        if (cu != null)
+                            docs = docconst.Construct(cu, dt);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -208,11 +209,11 @@ namespace CodeCompletion
         {
             List<PascalABCCompiler.Errors.Error> ErrorsList = new List<PascalABCCompiler.Errors.Error>();
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
-            PascalABCCompiler.SyntaxTree.compilation_unit cu = ParsersControllerGetCompilationUnit(FileName, Text, ErrorsList, Warnings);
+            PascalABCCompiler.SyntaxTree.compilation_unit cu = ParsersControllerGetCompilationUnit(FileName, Text, ErrorsList, Warnings, false);
             return cu;
         }
 
-        public DomConverter CompileAllIfNeed(string FileName, string Text)
+        /*public DomConverter CompileAllIfNeed(string FileName, string Text)
         {
             DomConverter dconv = (DomConverter)comp_modules[FileName];
             if (dconv != null) return dconv;
@@ -275,7 +276,7 @@ namespace CodeCompletion
             if (docs != null) docs.Clear();
             //GC.Collect();
             return dconv;
-        }
+        }*/
 
         public DomConverter CompileAllIfNeed(string FileName, bool parse_only_interface=false)
         {
@@ -294,14 +295,20 @@ namespace CodeCompletion
             Parser = language.Parser;
             if (Text != null)
             {
-                cu = language.Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal);
+                cu = language.Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal, true);
             }
             ErrorsList.Clear();
             Warnings.Clear();
-            documentation_comment_list dt = language.DocParser.BuildTree(Text);
-            PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
-            if (cu != null)
-                docs = docconst.Construct(cu, dt);
+
+            var docParser = language.DocParser;
+
+            if (docParser != null)
+            {
+                documentation_comment_list dt = docParser.BuildTree(Text);
+                PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
+                if (cu != null)
+                    docs = docconst.Construct(cu, dt);
+            }
             
             dconv.visitor.parse_only_interface = parse_only_interface;
             if (CodeCompletionTools.XmlDoc.LookupLocalizedXmlDocForUnitWithSources(FileName, CodeCompletionController.currentLanguageISO) != null)
@@ -320,7 +327,7 @@ namespace CodeCompletion
                     string tmp = ParsersHelper.GetModifiedProgramm(Text);
                     if (tmp != null)
                     {
-                    	cu = ParsersControllerGetCompilationUnitSpecial(FileName, tmp, ErrorsList, Warnings);
+                    	cu = ParsersControllerGetCompilationUnitSpecial(FileName, tmp, ErrorsList, Warnings, true);
                     	ErrorsList.Clear();
                     }
                     if (cu == null)
@@ -328,9 +335,14 @@ namespace CodeCompletion
                 }
                 ErrorsList.Clear();
                 Warnings.Clear();
-                dt = language.DocParser.BuildTree(Text);
-                if (cu != null)
-                    docs = docconst.Construct(cu, dt);
+
+                if (docParser != null)
+                {
+                    documentation_comment_list dt = docParser.BuildTree(Text);
+                    PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
+                    if (cu != null)
+                        docs = docconst.Construct(cu, dt);
+                }
                 if (CodeCompletionTools.XmlDoc.LookupLocalizedXmlDocForUnitWithSources(FileName, CodeCompletionController.currentLanguageISO) != null)
                 {
                 	dconv.visitor.add_doc_from_text = false;
@@ -377,7 +389,7 @@ namespace CodeCompletion
         public List<string> GetKeywords()
         {
             if (CodeCompletionController.CurrentParser != null)
-            	return CodeCompletionController.CurrentParser.LanguageInformation.KeywordsStorage.Keywords;
+            	return CodeCompletionController.CurrentParser.LanguageInformation.KeywordsStorage.KeywordsForIntellisenseList;
             return new List<string>();
         }
 
@@ -389,16 +401,17 @@ namespace CodeCompletion
         }
 
         const string LibSourceDirectoryIdent = "%LIBSOURCEDIRECTORY%";
-        public static string FindSourceFileName(string unit_name, out int found_dir_ind, params string[] ddirs)
+        public static string FindSourceFileName(string unit_name, out int found_dir_ind, bool caseSensitiveSearch, params string[] ddirs)
         {
             // TODO: check error in older version
             List<string> Dirs = new List<string>();
             Dirs.AddRange(ddirs);
             if (CodeCompletionController.comp != null)
                 Dirs.AddRange(CodeCompletionController.comp.CompilerOptions.SearchDirectories);
-            if (CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent))
+            // Надо как-то проверять, что мы не в инсталированной версии EVA
+            if (CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent) && Directory.Exists((string)CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]))
                 Dirs.Add((string)CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]);
-            return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, out found_dir_ind, Dirs.ToArray());
+            return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, out found_dir_ind, caseSensitiveSearch, Dirs.ToArray());
         }
 
         public static CodeCompletionNameHelper Helper

@@ -368,7 +368,7 @@ namespace PascalABCCompiler
             DateTime ldt = DateTime.Now;
             Compiler = new PascalABCCompiler.Compiler(null,ChangeCompilerState);
             //GC.Collect();
-            WriteColorText(Compiler.Banner + "\nCopyright (c) 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich\n", ConsoleColor.Green);
+            WriteColorText(Compiler.Banner + "\nCopyright (c) 2005-2025 by Ivan Bondarev, Stanislav Mikhalkovich\n", ConsoleColor.Green);
             Console.WriteLine("OK {0}ms", (DateTime.Now - ldt).TotalMilliseconds);
             if (Compiler.SupportedSourceFiles.Length == 0)
                 WriteColorText(StringResourcesGet("ERROR_PARSERS_NOT_FOUND")+Environment.NewLine, ConsoleColor.Red);

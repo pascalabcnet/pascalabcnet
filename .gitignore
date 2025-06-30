@@ -38,6 +38,7 @@
 **/CompilerController.dll
 **/CompilerTools.dll
 **/Errors.dll
+**/GPPG.dll
 **/HelpBuilder.dll
 **/InternalErrorReport.dll
 **/LambdaAnySynToSemConverter.dll
@@ -77,7 +78,11 @@
 **/LanguageServerEngine.exe
 **/LanguageServerEngine.exe.config
 
-
+**/SPythonLanguageInfo.dll
+**/SPythonParser.dll
+**/SPythonParser.dll.config
+**/SPythonStandardTreeConverter.dll
+**/SPythonSyntaxTreeVisitor.dll
 
 # external .dll files copied to bin
 /bin/AvalonDock.dll
@@ -91,16 +96,20 @@
 /bin/ICSharpCode.SharpDevelop.dll
 /bin/ICSharpCode.SharpDevelop.Dom.dll
 /bin/ICSharpCode.SharpDevelop.Widgets.dll
-/bin/ICSharpCode.SharpZipLib.dll
 /bin/ICSharpCode.TextEditor.dll
 /bin/ICSharpCode.TextEditorLinux.dll
-/bin/Microsoft.Scripting.dll
-/bin/Mono.Cecil.dll
-/bin/SharpDisasm.dll
 /bin/WeifenLuo.WinFormsUI.Docking.dll
 /bin/WeifenLuo.WinFormsUI.DockingLinux.dll
 /bin/WeifenLuo.WinFormsUI.Docking.ThemeVS2005.dll
 /bin/WeifenLuo.WinFormsUI.Docking.ThemeVS2005Linux.dll
+
+# from nuget
+/bin/ICSharpCode.SharpZipLib.dll
+/bin/SharpDisasm.dll
+/bin/Mono.Cecil.dll
+/bin/Mono.Cecil.Mdb.dll
+/bin/Mono.Cecil.Pdb.dll
+/bin/Mono.Cecil.Rocks.dll
 /bin/Microsoft.Bcl.HashCode.dll
 /bin/System.Buffers.dll
 /bin/System.Collections.Immutable.dll
