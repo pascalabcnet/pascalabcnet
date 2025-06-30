@@ -15,6 +15,8 @@ namespace LanguageServerEngine
 
             Languages.Integration.LanguageIntegrator.LoadAllLanguages();
 
+            CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = true;
+
             Console.Error.WriteLine("Language server started ...");
 
             var loggerFactory = new LoggerFactory();
