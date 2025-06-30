@@ -1,4 +1,4 @@
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 ///Модуль предоставляет константы, типы, процедуры, функции и классы для рисования в графическом окне
 unit GraphABC;
@@ -4203,7 +4203,7 @@ begin
   InitForm;
   StartIsComplete := True;
   
-  mre.Set();
+  MainForm.Load += (s,e) -> mre.Set();
   Application.Run(MainForm);
 end;
 
