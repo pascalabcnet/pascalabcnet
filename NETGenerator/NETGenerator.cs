@@ -1950,7 +1950,7 @@ namespace PascalABCCompiler.NETGenerator
 
                             mi = TypeBuilder.GetMethod(t, mi);
                         }
-                        else if (t.Name != "TypeBuilderInstantiation")
+                        else if (t.GetType().Name != "TypeBuilderInstantiation")
                         {
                             try
                             {
