@@ -111,7 +111,7 @@ namespace CodeCompletion
         public void RegisterFileForParsing(string FileName)
         {
             openFiles[FileName] = true;
-            CodeCompletion.CodeCompletionController.SetParser(System.IO.Path.GetExtension(FileName));
+            CodeCompletion.CodeCompletionController.SetLanguage(FileName);
             //ParseAllFiles();
         }
 
