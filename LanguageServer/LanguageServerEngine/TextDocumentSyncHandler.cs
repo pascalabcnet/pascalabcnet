@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using CodeCompletion;
+using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server.Capabilities;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
-using OmniSharp.Extensions.LanguageServer.Protocol;
-using CodeCompletion;
 
 namespace LanguageServerEngine
 {
@@ -19,6 +19,8 @@ namespace LanguageServerEngine
         private readonly DocumentStorage documentStorage;
 
         private readonly CodeCompletionParserController codeCompletionController;
+
+        private bool syncKindChosen = false;
 
         public TextDocumentSyncHandler(DocumentStorage documentStorage)
         {
@@ -42,9 +44,17 @@ namespace LanguageServerEngine
         {
             string documentPath = LspDataConvertor.GetNormalizedPathFromUri(request.TextDocument.Uri);
 
-            var contentChange = request.ContentChanges.First(); // берем одно изменение
+            // используется ли инкрементальный режим клиентом
+            if (!syncKindChosen && request.ContentChanges.First().Range != null)
+            {
+                documentStorage.SwitchOnIncrementalMode();
+                syncKindChosen = true;
+            }
 
-            documentStorage.UpdateDocument(documentPath, contentChange);
+            foreach (var contentChange in request.ContentChanges)
+            {
+                documentStorage.UpdateDocument(documentPath, contentChange);
+            }
 
             codeCompletionController.SetAsChanged(documentPath);
 

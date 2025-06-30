@@ -40,15 +40,13 @@ namespace LanguageServerEngine
 
             var docText = documentStorage.GetDocumentText(documentPath);
 
-            var buffer = documentStorage.GetDocumentBuffer(documentPath);
+            var textInfoProvider = documentStorage.GetTextInfoProvider(documentPath);
 
-            var changedLineText = buffer.GetLine((int)pos.Line);
-
-            char triggerChar = changedLineText.Substring(0, (int)pos.Character).Last();
+            char triggerChar = textInfoProvider.GetSymbolAtPos((int)pos.Line, (int)pos.Character - 1);
 
             var insightProvider = new DefaultInsightDataProvider(-1, triggerChar);
 
-            int symbolIndex = buffer.GetOffsetFromPosition((int)pos.Line, (int)pos.Character) - 1;
+            int symbolIndex = textInfoProvider.GetOffsetFromPosition((int)pos.Line, (int)pos.Character) - 1;
 
             try
             {

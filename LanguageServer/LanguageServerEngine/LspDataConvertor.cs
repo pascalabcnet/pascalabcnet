@@ -10,6 +10,23 @@ namespace LanguageServerEngine
 {
     internal static class LspDataConvertor
     {
+        internal static string GetLineByOffset(string text, int offset)
+        {
+            int firstNewLine = text.LastIndexOf(Environment.NewLine, offset);
+
+            if (firstNewLine == -1)
+                firstNewLine = -Environment.NewLine.Length;
+
+            int lastNewLine = text.IndexOf(Environment.NewLine, offset);
+
+            if (lastNewLine == -1)
+                lastNewLine = text.Length;
+
+            int startIndex = firstNewLine + Environment.NewLine.Length;
+
+            return text.Substring(startIndex, lastNewLine - startIndex);
+        }
+
 
         internal static Range GetRangeForSymbolAtPos(string line, Position pos)
         {
@@ -26,8 +43,8 @@ namespace LanguageServerEngine
 
             int endColumn;
 
-            // для случая, когда символ справа от позиции
-            if (!(char.IsLetterOrDigit(line[i]) || line[i] == '_' || line[i] == '&' || line[i] == '!'))
+            // для случая, когда символ слева от позиции
+            if (i >= line.Length || !char.IsLetterOrDigit(line[i]))
             {
                 endColumn = i;
                 return new Range(new Position(pos.Line, startColumn), new Position(pos.Line, endColumn));
