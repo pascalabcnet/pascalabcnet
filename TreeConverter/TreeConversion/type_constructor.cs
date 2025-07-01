@@ -125,6 +125,9 @@ namespace PascalABCCompiler.TreeConverter
                 comtn.ImplementingInterfaces.Add(SystemLibrary.SystemLibrary.ienumerable1_interface.get_instance(type_params));
 				if (SystemLibrary.SystemLibrary.ireadonlycollection_interface != null)
 					comtn.ImplementingInterfaces.Add(SystemLibrary.SystemLibrary.ireadonlycollection_interface.get_instance(type_params));
+
+				if (SystemLibrary.SystemLibrary.ireadonlylist_interface != null)
+					comtn.ImplementingInterfaces.Add(SystemLibrary.SystemLibrary.ireadonlylist_interface.get_instance(type_params));
 			}
             //SystemLibrary.SystemLibrary.ic
             //(ssyy) Убрал 18.05.08

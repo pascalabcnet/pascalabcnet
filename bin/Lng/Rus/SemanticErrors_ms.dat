@@ -1,9 +1,10 @@
 ﻿%PREFIX%=SEMANTICERROR_
 CAN_NOT_READ=Нельзя считывать данные этого типа
 TUPLE_EXPECTED=Ожидался кортеж
-TUPLE_OR_SEQUENCE_EXPECTED=Ожидался кортеж или последовательность
-TUPLE_OR_SEQUENCE_EXPECTED_FOREACH=Ожидалась последовательность кортежей или последовательностей
-TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT=Слишком много переменных при распаковке кортежа
+TUPLE_OR_SEQUENCE_EXPECTED=Ожидался кортеж или последовательность или пара (ключ,значение)
+TUPLE_OR_SEQUENCE_EXPECTED_FOREACH=Ожидалась последовательность кортежей или последовательностей или пар (ключ,значение)
+TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT=Слишком много переменных при распаковке кортежа
+TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_KEYVALUEPAIR_ASSIGNMENT=Слишком много переменных при распаковке пары (ключ,значение)
 ONLY_BASE_ASSIGNMENT_FOR_TUPLE=Для кортежа допустимо только обычное присваивание :=
 TUPLE_TYPE_ERROR=Ошибочная конструкция при построении типа кортежа
 INTEGER_VALUE_EXPECTED=Ожидалось значение целого типа

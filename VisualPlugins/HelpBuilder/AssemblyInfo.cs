@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HelpBuilder")]
-[assembly: AssemblyCopyright("Copyright © 2005-2024 by Ivan Bondarev, Stanislav Mikhalkovich")]
+[assembly: AssemblyCopyright("Copyright © 2005-2025 by Ivan Bondarev, Stanislav Mikhalkovich")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

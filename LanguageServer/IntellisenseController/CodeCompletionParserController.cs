@@ -111,7 +111,7 @@ namespace CodeCompletion
         public void RegisterFileForParsing(string FileName)
         {
             openFiles[FileName] = true;
-            CodeCompletion.CodeCompletionController.SetParser(System.IO.Path.GetExtension(FileName));
+            CodeCompletion.CodeCompletionController.SetLanguage(FileName);
             //ParseAllFiles();
         }
 
@@ -232,7 +232,7 @@ namespace CodeCompletion
                     }
                 }
             }
-            if (is_comp && mem_delta > 20000000 && mem_delta > 10000000)
+            if (is_comp && mem_delta > 20000000)
             //postavil delta dlja pamjati, posle kototoj delaetsja sborka musora
             {
                 GC.Collect();

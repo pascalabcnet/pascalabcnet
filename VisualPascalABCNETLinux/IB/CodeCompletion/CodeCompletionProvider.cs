@@ -361,6 +361,8 @@ namespace VisualPascalABC
                 {
                     bool languageCaseSensitive = LanguageProvider.Instance.SelectLanguageByExtension(FileName).CaseSensitive;
 
+                    languageInformation.RenameOrExcludeSpecialNames(symInfos);
+
                     AddCompletionDatasByFirstForSymInfos(resultList, charTyped, symInfos, languageCaseSensitive);
 
                     //resultList.Sort();
@@ -534,6 +536,8 @@ namespace VisualPascalABC
 
                 if (symInfos != null)
                 {
+                    currentLanguage.LanguageInformation.RenameOrExcludeSpecialNames(symInfos);
+
                     AddCompletionDatasForSymInfos(resultList, currentLanguage.CaseSensitive, symInfos, selectedSymInfo, lastUsedMember);
                 }
             }
@@ -636,8 +640,8 @@ namespace VisualPascalABC
                         lastUsedMember = CompletionDataDispatcher.GetRecentUsedMember(dotScope);
                     }
                 }
-                // ctrl + space после некоторого выражения
-                else if (context.ctrlSpace) // context.chiftSpace здесь не может быть true, поскольку такие ситуации обрабатываются в ShiftSpaceActions.Execute()
+                // ctrl + space или shift + space
+                else if (context.ctrlSpace || context.shiftSpace)
                 {
                     CodeCompletion.SymScope dotScope = null;
 

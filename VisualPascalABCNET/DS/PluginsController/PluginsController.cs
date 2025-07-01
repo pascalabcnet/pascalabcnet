@@ -2,8 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using PascalABCCompiler;
+using System.Linq;
 
 namespace VisualPascalABCPlugins
 {
@@ -145,24 +146,9 @@ namespace VisualPascalABCPlugins
             VisualPascalABCPlugins.IVisualPascalABCPlugin Plugin;
             foreach (FileInfo fi in dllfiles)
             {
-                switch (fi.Name.ToLower())
-                {
-                    case "avalondock.dll":
-                    case "codecompletion.dll":
-                    case "compiler.dll":
-                    case "compilertools.dll":
-                    case "debuggercore.dll":
-                    case "netgenerator.dll":
-                    case "treeconverter.dll":
-                    case "pascalabcparser.dll":
-                    case "syntaxtree.dll":
-                    case "semantictree.dll":
-                    case "weifenluo.winformsui.docking.dll":
-                    case "pluginssupport.dll":
-                    case "localization.dll":
-                    case "pascallanguage.dll":
-                        continue;
-                }
+                if (StringConstants.platformLibraries.Contains(fi.Name.ToLower()))
+                    continue;
+
                 if (fi.Name.StartsWith("NETXP.", StringComparison.InvariantCultureIgnoreCase) || fi.Name.StartsWith("Mono.", StringComparison.InvariantCultureIgnoreCase) || fi.Name.StartsWith("ICSharpCode.", StringComparison.InvariantCultureIgnoreCase))
                     continue;
                 try

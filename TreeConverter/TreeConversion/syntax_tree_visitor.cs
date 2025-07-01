@@ -22,6 +22,7 @@ using repeat_node = PascalABCCompiler.TreeRealization.repeat_node;
 using sizeof_operator = PascalABCCompiler.TreeRealization.sizeof_operator;
 using typeof_operator = PascalABCCompiler.TreeRealization.typeof_operator;
 using while_node = PascalABCCompiler.TreeRealization.while_node;
+using static PascalABCCompiler.StringConstants;
 using TreeConverter.LambdaExpressions.Closure;
 using TreeConverter.LambdaExpressions;
 using PascalABCCompiler.TreeConverter.TreeConversion;
@@ -67,7 +68,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public convertion_data_and_alghoritms convertion_data_and_alghoritms;
 
-        internal returner ret;
+        public returner ret;
 
         internal document current_document;
 
@@ -89,9 +90,9 @@ namespace PascalABCCompiler.TreeConverter
 
         private common_unit_node _compiled_unit;
 
-        private common_unit_node _system_unit;
+        public common_unit_node _system_unit;
 		internal bool debug=true;
-		internal bool debugging=false;
+		public bool debugging=false;
         public bool for_intellisense = false;
         private List<var_definition_node> compiledVariables = new List<var_definition_node>();
         internal List<Errors.Error> ErrorsList;
@@ -160,7 +161,14 @@ namespace PascalABCCompiler.TreeConverter
             this.debug = initializationData.debug;
             this.debugging = initializationData.debugging;
             this.for_intellisense = initializationData.forIntellisense;
+            
+            // Возможно, это тоже вызывает ошибки, если присваивается не паскалевский визитор, пока непонятно EVA
             SystemLibrary.SystemLibrary.syn_visitor = this;
+            
+            // Добавлено, потому что в SPython используются эти же объекты, а не создаются новые EVA
+            convertion_data_and_alghoritms.syntax_tree_visitor = this;
+            ret.syntax_tree_visitor = this;
+            context.syntax_tree_visitor = this;
         }
 
         public List<TreeRealization.var_definition_node> CompiledVariables => compiledVariables;
@@ -238,7 +246,7 @@ namespace PascalABCCompiler.TreeConverter
             return gpa;
         }
 
-        private void internal_reset()
+        protected virtual void internal_reset()
         {
             PascalABCCompiler.SystemLibrary.SystemLibInitializer.initialization_properties init_properties =
                 new PascalABCCompiler.SystemLibrary.SystemLibInitializer.initialization_properties();
@@ -252,6 +260,18 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibrary.system_unit = _system_unit;
             generic_convertions.reset_generics();
             generic_convertions.visitor = this;
+            
+            #region MikhailoMMX, реинициализация класса OpenMP
+            OpenMP.InternalReset();
+            #endregion
+            CapturedVariablesSubstitutionClassGenerator.Reset();
+
+            ResetSelfFields();
+        }
+
+        // Добавили, чтобы можно было использовать его для потомков syntax_tree_visitor EVA
+        protected void ResetSelfFields()
+        {
             _record_created = false;
             RefTypesForCheckPointersTypeForDotNetFramework.Clear();
             reset_for_interface();
@@ -266,22 +286,22 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.NeedsToRestore.Clear();
             type_section_converting = false;
             ThrowCompilationError = true;
-            #region MikhailoMMX, реинициализация класса OpenMP
-            OpenMP.InternalReset();
-            CurrentParallelPosition = ParallelPosition.Outside;
-            #endregion
-
             lambdaProcessingState = LambdaProcessingState.None; //lroman
-            CapturedVariablesSubstitutionClassGenerator.Reset();
+            // MikhailoMMX, реинициализация для OpenMP
+            CurrentParallelPosition = ParallelPosition.Outside;
         }
 
-        public syntax_tree_visitor()
+        public syntax_tree_visitor(bool mainConverterInitialization = true)
         {
-            convertion_data_and_alghoritms = new convertion_data_and_alghoritms(this);
-            ret = new returner(this);
-            context = new compilation_context(convertion_data_and_alghoritms, this);
-			contextChanger = new ContextChanger(context);
-            internal_reset();
+            // объекты ниже создаем только для паскалевского визитора, чтобы они оставались в единственном экземпляре EVA
+            if (mainConverterInitialization)
+            {
+                convertion_data_and_alghoritms = new convertion_data_and_alghoritms(this);
+                ret = new returner(this);
+                context = new compilation_context(convertion_data_and_alghoritms, this);
+                contextChanger = new ContextChanger(context);
+                internal_reset();
+            }
         }
 
 
@@ -552,7 +572,7 @@ namespace PascalABCCompiler.TreeConverter
                 SystemLibrary.SystemLibInitializer.TextFileType.TypeNode.type_special_kind = PascalABCCompiler.SemanticTree.type_special_kind.text_file;
         }
 
-        private void get_system_module(common_unit_node psystem_unit)
+        protected virtual void get_system_module(common_unit_node psystem_unit)
         {
         	init_system_module(psystem_unit);
         	//esli zapustili v otladke, to vosstanovim mnozhestvo i procedury sozdanija diapasonov, inache ne budet rabotat
@@ -602,7 +622,7 @@ namespace PascalABCCompiler.TreeConverter
             tctn.scope.AddSymbol(StringConstants.noteq_name, SystemLibrary.SystemLibInitializer.CompareSetInEquals.SymbolInfo.FirstOrDefault());
         }
 
-        private void CreateSpecialFields(common_unit_node psystem_unit)
+        protected void CreateSpecialFields(common_unit_node psystem_unit)
         {
             List<SymbolInfo> sil = psystem_unit.scope.Find(StringConstants.IsConsoleApplicationVariableName);
             if (sil != null && sil.FirstOrDefault().sym_info is namespace_variable)
@@ -2496,11 +2516,11 @@ namespace PascalABCCompiler.TreeConverter
             function_node fn = null;
             if (exl.Count > 1)
             {
-                fn = convertion_data_and_alghoritms.select_function(exl, (SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node).find_in_type(StringConstants.default_constructor_name), loc);
+                fn = convertion_data_and_alghoritms.select_function(exl, (SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node).find_in_type(default_constructor_name), loc);
             }
             else
             {
-                fn = convertion_data_and_alghoritms.select_function(exl, (SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node).find_in_type(StringConstants.default_constructor_name), loc);
+                fn = convertion_data_and_alghoritms.select_function(exl, (SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node).find_in_type(default_constructor_name), loc);
             }
             //expression_node expr = convertion_data_and_alghoritms.create_simple_function_call(fn, null, exl.ToArray());
             expression_node expr = create_static_method_call_with_params(fn, loc, tn, false, exl);
@@ -2835,7 +2855,7 @@ namespace PascalABCCompiler.TreeConverter
                             //Пытаемся добавить вызов .ctor() предка...
                             //Для начала проверим, есть ли у предка таковой.
                             bool not_found = true;
-                            List<SymbolInfo> sym = context.converted_type.base_type.find_in_type(StringConstants.default_constructor_name, context.CurrentScope);
+                            List<SymbolInfo> sym = context.converted_type.base_type.find_in_type(default_constructor_name, context.CurrentScope);
                             if (sym != null)
                             {
                                 foreach (SymbolInfo sym_unit in sym)
@@ -2871,7 +2891,7 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 //Генерируем вызов .ctor() предка
                                 SyntaxTree.inherited_ident ii = new SyntaxTree.inherited_ident();
-                                ii.name = StringConstants.default_constructor_name;
+                                ii.name = default_constructor_name;
                                 _block.program_code.subnodes.Insert(0, new SyntaxTree.procedure_call(ii));
                                 //context.allow_inherited_ctor_call = false;
                             }
@@ -3316,13 +3336,13 @@ namespace PascalABCCompiler.TreeConverter
 
             if (_constructor.name == null)
             {
-                SyntaxTree.ident name = new SyntaxTree.ident(StringConstants.default_constructor_name);
+                SyntaxTree.ident name = new SyntaxTree.ident(default_constructor_name);
                 _constructor.name = new PascalABCCompiler.SyntaxTree.method_name(null, null, name, null);
                 _constructor.name.source_context = _constructor.name.meth_name.source_context = _constructor.source_context;
             }
 
-            if (_constructor.name.meth_name.name.ToLower() != StringConstants.default_constructor_name)
-                AddError(get_location(_constructor.name), "CONSTRUCTOR_CAN_HAVE_ONLY_{0}_NAME", StringConstants.default_constructor_name);
+            if (_constructor.name.meth_name.name.ToLower() != default_constructor_name.ToLower())
+                AddError(get_location(_constructor.name), "CONSTRUCTOR_CAN_HAVE_ONLY_{0}_NAME", default_constructor_name);
             if ((_constructor.name.class_name == null) && (context.converting_block() != block_type.type_block))
             {
                 AddError(get_location(_constructor.name), "ONLY_CONSTRUCTOR_OF_TYPE_ALLOWED");
@@ -4360,7 +4380,7 @@ namespace PascalABCCompiler.TreeConverter
             SyntaxTree.procedure_attributes_list pal = new PascalABCCompiler.SyntaxTree.procedure_attributes_list();
             //pal.proc_attributes.Add(new PascalABCCompiler.SyntaxTree.procedure_attribute(SyntaxTree.proc_attribute.attr_overload)); attr_overload - убрал отовсюду! ССМ
             SyntaxTree.constructor constr = new PascalABCCompiler.SyntaxTree.constructor();
-            constr.name = new SyntaxTree.method_name(null, null, new PascalABCCompiler.SyntaxTree.ident(StringConstants.default_constructor_name), null);
+            constr.name = new SyntaxTree.method_name(null, null, new PascalABCCompiler.SyntaxTree.ident(default_constructor_name), null);
             constr.proc_attributes = pal;
             SyntaxTree.block bl = new SyntaxTree.block();
             bl.program_code = new SyntaxTree.statement_list();
@@ -8046,7 +8066,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (SystemLibrary.SystemLibInitializer.PointerOutputConstructor == null)
                     {
-                        List<SymbolInfo> sil = (SystemLibrary.SystemLibInitializer.PointerOutputType.sym_info as common_type_node).find_in_type(StringConstants.default_constructor_name);
+                        List<SymbolInfo> sil = (SystemLibrary.SystemLibInitializer.PointerOutputType.sym_info as common_type_node).find_in_type(default_constructor_name);
                         common_method_node cnode = null;
                         int cur_si_ind = 0;
                         do
@@ -8079,7 +8099,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (SystemLibrary.SystemLibInitializer.PointerOutputConstructor == null)
                     {
-                        List<SymbolInfo> sil = (SystemLibrary.SystemLibInitializer.PointerOutputType.sym_info as compiled_type_node).find_in_type(StringConstants.default_constructor_name);
+                        List<SymbolInfo> sil = (SystemLibrary.SystemLibInitializer.PointerOutputType.sym_info as compiled_type_node).find_in_type(default_constructor_name);
                         compiled_constructor_node cnode = null;
                         int cur_si_index = 0;
                         do
@@ -10223,7 +10243,8 @@ namespace PascalABCCompiler.TreeConverter
                                             only_extension_methods = false;
                                         else
                                         {
-                                            if (tmp_fn.parameters.Count == 1 || tmp_fn.parameters.Count == 2 && (tmp_fn.parameters[1].is_params || tmp_fn.parameters[1].default_value != null))
+                                            if (SemanticRulesConstants.AllowMethodCallsWithoutParentheses && 
+                                                (tmp_fn.parameters.Count == 1 || tmp_fn.parameters.Count == 2 && (tmp_fn.parameters[1].is_params || tmp_fn.parameters[1].default_value != null)))
                                                 has_empty_methods = true;
                                         }
                                     }
@@ -10570,7 +10591,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             foreach (SymbolInfo tmp_si in tmp_list)
             {
-                if (tmp_si.sym_info is function_node && (tmp_si.sym_info as function_node).is_extension_method && !has_property(ref sil)
+                if (SemanticRulesConstants.AllowMethodCallsWithoutParentheses && tmp_si.sym_info is function_node && (tmp_si.sym_info as function_node).is_extension_method && !has_property(ref sil)
                             || tmp_si.sym_info is common_method_node && (tmp_si.sym_info as common_method_node).is_constructor
                             || tmp_si.sym_info is compiled_constructor_node)
                     return true;
@@ -12768,7 +12789,7 @@ namespace PascalABCCompiler.TreeConverter
                         if (attr.qualifier != null)
                             if (j == 0)
                             {
-                                if (string.Compare(attr.qualifier.name, "return", true) == 0 || string.Compare(attr.qualifier.name, "result", true) == 0)
+                                if (attr.qualifier.name.Equals("return", context.CurrentScope.StringComparison) || attr.qualifier.name.Equals(result_var_name, context.CurrentScope.StringComparison))
                                 {
                                     if (context.top_function == null)
                                         AddError(get_location(attr), "ATTRIBUTE_APPLICABLE_ONLY_TO_METHOD");
@@ -13514,7 +13535,7 @@ namespace PascalABCCompiler.TreeConverter
                         AddError(get_location(fh.name), "ONLY_IN_SHORT_FUNC_DEFS_RETURN_TYPE_CANBE_OMITTED");
 
                     var ass = bl.program_code.subnodes[0] as SyntaxTree.assign;
-                    if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower()=="result")
+                    if (ass != null && ass.to is ident && (ass.to as ident).name.Equals(result_var_name, context.CurrentScope.StringComparison))
                     {
                         if (ass.from is nil_const)
                             AddError(get_location(ass.from), "CAN_NOT_DEDUCE_TYPE_{0}","nil");
@@ -17842,7 +17863,7 @@ namespace PascalABCCompiler.TreeConverter
            
             List<SymbolInfo> sil = null;
             if (cmn.is_constructor)
-            	sil = context.converted_type.base_type.find_in_type(StringConstants.default_constructor_name, context.CurrentScope);
+            	sil = context.converted_type.base_type.find_in_type(default_constructor_name, context.CurrentScope);
             else
             	sil = context.converted_type.base_type.find_in_type(cmn.name, context.CurrentScope);
             if (sil != null)
@@ -18848,7 +18869,7 @@ namespace PascalABCCompiler.TreeConverter
             return isIEnumType || isIEnumTypedType;
         }
 
-        private Type FindIEnumerableInterfaceInCompiledType(Type compiledType)
+        private Type ChooseIEnumerableInterfaceInCompiledType(Type compiledType)
         {
             var IEnumType = typeof(IEnumerable);
             var IEnumTypedType = typeof(IEnumerable<>);
@@ -18933,18 +18954,16 @@ namespace PascalABCCompiler.TreeConverter
         /// <summary>
         /// Собирает интерфейсы, реализованные типом и его предками
         /// </summary>
-        private List<type_node> CollectInterfacesFromTypeNode(type_node node)
+        private IEnumerable<type_node> CollectInterfacesFromTypeNode(type_node node)
         {
-            var result = new List<ITypeNode>();
-            result.AddRange(node.ImplementingInterfaces);
-
-            if (node.base_type != null)
+            do
             {
-                var interfInBase = CollectInterfacesFromTypeNode(node.base_type);
-                result.AddRange(interfInBase);
-            }
+                foreach (var item in node.ImplementingInterfaces)
+                    yield return (type_node)item;
 
-            return result.Cast<type_node>().ToList();
+                node = node.base_type;
+            }
+            while (node != null);
         }
 
         private bool IsIEnumeratorInterface(type_node t)
@@ -18961,7 +18980,7 @@ namespace PascalABCCompiler.TreeConverter
             return IsIEnumeratorInterface(orig.compiled_type);
         }
 
-        private type_node FindIEnumerableInterfaceInTypeNode(type_node node)
+        private type_node ChooseIEnumerableInterfaceInTypeNode(type_node node)
         {
             var IEnumType = compiled_type_node.get_type_node( typeof(IEnumerable) );
             var IEnumTypedType = compiled_type_node.get_type_node( typeof(IEnumerable<>) );
@@ -19045,9 +19064,9 @@ namespace PascalABCCompiler.TreeConverter
                 // непосредственно тип, от котоого разворачивается foreach
                 Type ct = orig.compiled_type;
 
-                var isEnumeratedType = typeof(IEnumerable).IsAssignableFrom(ct);
+                var supportsEnumeration = typeof(IEnumerable).IsAssignableFrom(ct);
 
-                if (!isEnumeratedType)
+                if (!supportsEnumeration)
                     return false;
 
                 // для массива
@@ -19062,7 +19081,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
 
                 // в иных случаях ищем подходящий интерфейс
-                var desiredInterface = FindIEnumerableInterfaceInCompiledType(ct);
+                var desiredInterface = ChooseIEnumerableInterfaceInCompiledType(ct);
 
                 if (desiredInterface == null)
                     return false;
@@ -19118,6 +19137,11 @@ namespace PascalABCCompiler.TreeConverter
             // также сюда попадают set of T даже если они подтягиваются из библиотеки
             else
             {
+                var supportsEnumeration = CollectInterfacesFromTypeNode(tn).Any(IsIEnumerableInterface);
+
+				if (!supportsEnumeration)
+					return false;
+
                 // массивы и set of T
                 if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.typed_file)
                 {
@@ -19129,7 +19153,7 @@ namespace PascalABCCompiler.TreeConverter
                     return true;
                 }
 
-                var desiredInterface = FindIEnumerableInterfaceInTypeNode(tn);
+                var desiredInterface = ChooseIEnumerableInterfaceInTypeNode(tn);
 
                 if (desiredInterface == null)
                     return false;
@@ -19835,7 +19859,7 @@ namespace PascalABCCompiler.TreeConverter
             {
             	AddError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", tn.name);
             }
-            List<SymbolInfo> sil = tn.find_in_type(StringConstants.default_constructor_name, context.CurrentScope); //tn.Scope); 
+            List<SymbolInfo> sil = tn.find_in_type(default_constructor_name, context.CurrentScope); //tn.Scope); 
             delete_inherited_constructors(ref sil, tn);
             if (sil == null)
                 AddError(loc, "CONSTRUCTOR_NOT_FOUND");
@@ -20436,7 +20460,7 @@ namespace PascalABCCompiler.TreeConverter
                 return;
 
             {
-                var fn = _ctn.base_type.find_in_type(StringConstants.default_constructor_name, _ctn.base_type.Scope)
+                var fn = _ctn.base_type.find_in_type(default_constructor_name, _ctn.base_type.Scope)
                     ?.Select(si => si.sym_info).OfType<function_node>()
                     .FirstOrDefault(_fn => _fn.parameters.Count == 0);
                 var base_constructor_call = make_base_constructor_call(fn, out _, out _);
@@ -20470,7 +20494,7 @@ namespace PascalABCCompiler.TreeConverter
                 return;
             }
             //Получили список процедур предка, имеющих имя Create
-            List<SymbolInfo> sil = _ctn.base_type.find_in_type(StringConstants.default_constructor_name, _ctn.base_type.Scope);
+            List<SymbolInfo> sil = _ctn.base_type.find_in_type(default_constructor_name, _ctn.base_type.Scope);
             delete_inherited_constructors(ref sil, _ctn.base_type);
             if (sil != null)
             {
@@ -20500,12 +20524,12 @@ namespace PascalABCCompiler.TreeConverter
 
                         // Иначе partial классам генерирует кучу копий дефолтных конструкторов
                         if (_ctn.methods.Any(m =>
-                            m.is_constructor && m.name == StringConstants.default_constructor_name &&
+                            m.is_constructor && m.name == default_constructor_name &&
                             m.parameters.Count == fn.parameters.Count &&
                             m.parameters.Zip(fn.parameters, (par1, par2) => par1.type == par2.type).All(b => b)
                         )) continue;
 
-                        var gen_constr = context.create_function(StringConstants.default_constructor_name, loc) as common_method_node;
+                        var gen_constr = context.create_function(default_constructor_name, loc) as common_method_node;
                         gen_constr.polymorphic_state = ps;
                         gen_constr.is_overload = true;
                         gen_constr.is_constructor = true;
@@ -21148,7 +21172,7 @@ namespace PascalABCCompiler.TreeConverter
             if (_function_lambda_definition.return_type is lambda_inferred_type && stl != null && stl.list.Count == 1 && _function_lambda_definition.usedkeyword == 0)
             {
                 var ass = stl.list[0] as assign;
-                if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower() == "result")
+                if (ass != null && ass.to is ident && (ass.to as ident).name.Equals(result_var_name, context.CurrentScope.StringComparison))
                 {
                     var f = ass.from;
                     if (f is method_call)
@@ -22183,12 +22207,17 @@ namespace PascalABCCompiler.TreeConverter
             return !t.IsArray && (t.FullName.StartsWith("System.Tuple") || t.FullName.StartsWith("System.ValueTuple"));
         }
 
+        public bool IsKeyValuePairType(Type t)
+        {
+            return t.FullName.StartsWith("System.Collections.Generic.KeyValuePair`2");
+        }
+
         public bool IsSequenceType(Type t)
         {
             return t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null;
         }
 
-        private void CheckUnpacking(expression ex, out expression_node sem_ex, out bool IsTuple, out bool IsSequence, int countvars, syntax_tree_node stn)
+        /*private void CheckUnpacking(expression ex, out expression_node sem_ex, out bool IsTuple, out bool IsSequence, int countvars, syntax_tree_node stn)
         {
             sem_ex = convert_strong(ex);
             sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
@@ -22206,7 +22235,7 @@ namespace PascalABCCompiler.TreeConverter
             if (IsTuple)
             {
                 if (countvars > t.GetGenericArguments().Count())
-                    AddError(get_location(stn), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                    AddError(get_location(stn), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT");
             }
         }
 
@@ -22223,7 +22252,7 @@ namespace PascalABCCompiler.TreeConverter
                 dn = new method_call(dn, pars);
             }
             return dn;
-        }
+        }*/
 
         public override void visit(SyntaxTree.assign_tuple asstup) // сахарный узел
         {
@@ -22286,7 +22315,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var nn = assvartup.idents.idents.Count();
                 if (nn > t.GetGenericArguments().Count())
-                    AddError(get_location(assvartup.idents), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                    AddError(get_location(assvartup.idents), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT");
             }*/
 
 
@@ -22331,6 +22360,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             var IsSequence = false;
             var IsTuple = false;
+            var IsKeyValuePair = false;
             var sem_ex = convert_strong(ith.id);
             sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
             var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
@@ -22340,19 +22370,22 @@ namespace PascalABCCompiler.TreeConverter
                 type_node elem_type = null;
                 var b = FindIEnumerableElementType(sem_ex.type, ref elem_type, out bb);
                 if (b)
+                    // Не очень понятно, зачем это нужно. И это точно не срабатывает
                     IsSequence = true;
                 else
                     AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
-                
             }
-                
+
             if (t != null)
                 IsTuple = IsTupleType(t);
-            
-            if (t != null)
-                IsSequence = !IsTuple && IsSequenceType(t);
 
-            if (!IsTuple && !IsSequence)
+            if (t != null)
+                IsKeyValuePair = !IsTuple && IsKeyValuePairType(t);
+
+            if (t != null)
+                IsSequence = !IsTuple && !IsKeyValuePair && IsSequenceType(t);
+
+            if (!IsTuple && !IsSequence && !IsKeyValuePair)
             {
                 AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
             }
@@ -22373,8 +22406,14 @@ namespace PascalABCCompiler.TreeConverter
                 ReplaceUsingParent(ith, mc);
                 visit(mc);
             }
+            else if (IsKeyValuePair)
+            {
+                var meth_name = i == 0 ? "Key" : "Value";
+                var dn = new dot_node(ith.id.TypedClone(), new ident(meth_name));
+                ReplaceUsingParent(ith, dn);
+                visit(dn);
+            }
         }
-
 
         public override void visit(var_tuple_def_statement vtd)
         {

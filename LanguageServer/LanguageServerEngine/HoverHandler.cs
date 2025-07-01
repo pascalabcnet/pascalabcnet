@@ -30,7 +30,7 @@ namespace LanguageServerEngine
 
             var docText = documentStorage.GetDocumentText(documentPath);
 
-            var buffer = documentStorage.GetDocumentBuffer(documentPath);
+            var buffer = documentStorage.GetTextInfoProvider(documentPath);
 
             int offset = buffer.GetOffsetFromPosition((int)pos.Line, (int)pos.Character);
 
@@ -54,7 +54,8 @@ namespace LanguageServerEngine
                     new Hover()
                     {
                         Contents = new MarkedStringsOrMarkupContent(markedContent),
-                        Range = LspDataConvertor.GetRangeForSymbolAtPos(buffer.GetLine((int)pos.Line), pos)
+                        Range = LspDataConvertor.GetRangeForSymbolAtPos(
+                            LspDataConvertor.GetLineByOffset(docText, offset), pos)
                     }
                     );
             }

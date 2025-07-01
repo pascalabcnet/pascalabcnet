@@ -164,7 +164,7 @@ namespace PascalABCCompiler.NETGenerator
         protected bool make_next_spoint = true;
         protected SemanticTree.ILocation EntryPointLocation;
         protected Label ExitLabel;//метка для выхода из процедуры
-        protected bool ExitProcedureCall = false; //призна того что всертиласть exit и надо пометиь коней процедуры
+        protected bool ExitProcedureCall = false; //признак того, что встретилась exit и надо пометить конец процедуры
         protected Dictionary<IConstantNode, FieldBuilder> ConvertedConstants = new Dictionary<IConstantNode, FieldBuilder>();
         //ivan
         protected List<EnumBuilder> enums = new List<EnumBuilder>();
@@ -1390,7 +1390,9 @@ namespace PascalABCCompiler.NETGenerator
         {
             FieldBuilder fb = cur_type.DefineField(name, helper.GetTypeReference(type).tp, FieldAttributes.Static | FieldAttributes.Public | FieldAttributes.Literal);
             Type t = helper.GetTypeReference(type).tp;
-            if (!t.Name.StartsWith("NewSet") && t.IsEnum) // SSM 05.11.24
+
+			// Для инстанцированных generic типов вызов .IsEnum приводит к исключению
+			if (!t.IsConstructedGenericType() && t.IsEnum)
             {
                 if (!(t is EnumBuilder))
                     fb.SetConstant(Enum.ToObject(t, (constant_value as IEnumConstNode).constant_value));

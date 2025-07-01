@@ -48,13 +48,11 @@ namespace LanguageServerEngine
 
             var docText = documentStorage.GetDocumentText(documentPath);
 
-            var buffer = documentStorage.GetDocumentBuffer(documentPath);
-
-            var changedLineText = buffer.GetLine((int)pos.Line);
+            var textInfoProvider = documentStorage.GetTextInfoProvider(documentPath);
 
             int col = (int)pos.Character;
 
-            char triggerChar = col > 0 ? changedLineText[col - 1] : '_';
+            char triggerChar = col > 0 ? textInfoProvider.GetSymbolAtPos((int)pos.Line, col - 1) : '_';
 
             // отслеживание ctrl + space "на пустом месте" (также сюда относится вставка пробельных символов)
             if (char.IsWhiteSpace(triggerChar))
@@ -64,7 +62,7 @@ namespace LanguageServerEngine
 
             UserDefaultCompletionData[] completionList = null;
 
-            int symbolIndex = buffer.GetOffsetFromPosition((int)pos.Line, (int)pos.Character) - 1;
+            int symbolIndex = textInfoProvider.GetOffsetFromPosition((int)pos.Line, (int)pos.Character) - 1;
 
             try
             {

@@ -20,12 +20,12 @@ namespace LanguageServerEngine
 
             Languages.Integration.LanguageIntegrator.LoadAllLanguages();
 
+            CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = true;
+
             var pipeName = "language-pipe";
             var inputPipe = new NamedPipeServerStream(pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
             Console.Error.WriteLine("Waiting for client...");
             await inputPipe.WaitForConnectionAsync();
-
-            //Console.Error.WriteLine("Language server started ...");
 
             var loggerFactory = new LoggerFactory();
 
