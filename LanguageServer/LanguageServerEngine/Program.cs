@@ -4,10 +4,6 @@ using Microsoft.Extensions.Logging;
 using OmniSharp.Extensions.LanguageServer.Server;
 using System;
 using System.Threading.Tasks;
-using System.IO;
-using System.Threading;
-using System.Linq;
-using System.Text;
 using System.IO.Pipes;
 
 namespace LanguageServerEngine
@@ -36,6 +32,12 @@ namespace LanguageServerEngine
                         new LoggerFactory(),
                         true
                     );
+
+                    AddHandlers(server);
+
+                    await server.Initialize();
+
+                    await server.WaitForExit;
                 }
                 else
                 {
@@ -56,20 +58,30 @@ namespace LanguageServerEngine
             else
             {
                 var pipeName = "language-pipe";
-                var inputPipe = new NamedPipeServerStream(pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                using (var inputPipe = new NamedPipeServerStream(pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
+                {
+                    Console.Error.WriteLine("Waiting for client...");
 
-                Console.Error.WriteLine("Waiting for client...");
+                    await inputPipe.WaitForConnectionAsync();
 
-                await inputPipe.WaitForConnectionAsync();
+                    server = new LanguageServer(
+                        inputPipe,
+                        inputPipe,
+                        new LoggerFactory(),
+                        true
+                    );
 
-                server = new LanguageServer(
-                    inputPipe,
-                    inputPipe,
-                    new LoggerFactory(),
-                    true
-                );
+                    AddHandlers(server);
+
+                    await server.Initialize();
+
+                    await server.WaitForExit;
+                }
             }
+        }
 
+        private static void AddHandlers(LanguageServer server)
+        {
             var documentStorage = new DocumentStorage();
 
             server.AddHandler(new TextDocumentSyncHandler(documentStorage));
@@ -79,10 +91,6 @@ namespace LanguageServerEngine
             server.AddHandler(new HoverHandler(documentStorage));
 
             server.AddHandler(new SignatureHelpHandler(documentStorage));
-
-            await server.Initialize();
-
-            await server.WaitForExit;
         }
     }
 }
