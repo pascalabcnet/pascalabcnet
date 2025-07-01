@@ -45,9 +45,11 @@ namespace LanguageServerEngine
             string documentPath = LspDataConvertor.GetNormalizedPathFromUri(request.TextDocument.Uri);
 
             // используется ли инкрементальный режим клиентом
-            if (!syncKindChosen && request.ContentChanges.First().Range != null)
+            if (!syncKindChosen)
             {
-                documentStorage.SwitchOnIncrementalMode();
+                if (request.ContentChanges.First().Range != null)
+                    documentStorage.SwitchOnIncrementalMode();
+
                 syncKindChosen = true;
             }
 
