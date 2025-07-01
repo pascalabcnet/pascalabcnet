@@ -34,7 +34,7 @@ namespace LanguageServerEngine
 
             int j = 1;
 
-            while (i - j > 0 && (char.IsLetterOrDigit(line[i - j]) || line[i - j] == '_' || line[i - j] == '&' || line[i - j] == '!'))
+            while (i - j >= 0 && (char.IsLetterOrDigit(line[i - j]) || line[i - j] == '_' || line[i - j] == '&' || line[i - j] == '!'))
             {
                 j++;
             }

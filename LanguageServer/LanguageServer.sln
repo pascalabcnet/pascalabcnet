@@ -37,6 +37,26 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compiler", "..\Compiler\Com
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETGenerator", "..\NETGenerator\NETGenerator.csproj", "{5046FC1D-334A-1F42-DEA6-FA521D386AF3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LanguagePlugins", "LanguagePlugins", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SPython", "SPython", "{1833DA55-E483-4971-AC98-B193EE32C9EA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SemanticAnalyzers", "SemanticAnalyzers", "{5ECE247A-9BFA-4161-9C1C-73B9627A8CD5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCSaushkinParser", "..\Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj", "{B02EA6E9-A883-AD90-57AE-CFEB1692B19E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCLanguageInfo", "..\PascalABCLanguageInfo\PascalABCLanguageInfo.csproj", "{A63D0E5B-2A72-B7A3-5D42-6AA828902201}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonSyntaxTreeVisitor", "..\LanguagePlugins\SPython\SemanticAnalyzers\SPythonSyntaxTreeVisitor\SPythonSyntaxTreeVisitor.csproj", "{F1285CC7-EA46-6BBA-0A2C-53426EA8126D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyntaxTreeConverters", "SyntaxTreeConverters", "{2F646CB5-E71E-437C-A09C-1648FBA5D7AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonStandardTreeConverter", "..\LanguagePlugins\SPython\SyntaxTreeConverters\SPythonStandardTreeConverter\SPythonStandardTreeConverter.csproj", "{61F2B4D0-58B4-50B7-BE4C-DCD2A00AE317}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonLanguageInfo", "..\LanguagePlugins\SPython\SPythonLanguageInfo\SPythonLanguageInfo.csproj", "{113F5496-405E-0A97-AE39-4D22776EE9FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonParser", "..\LanguagePlugins\SPython\SPythonParserKrylovMovchan\SPythonParser.csproj", "{05CC547B-D45C-F408-FCD9-EF18A94B1628}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,9 +131,42 @@ Global
 		{5046FC1D-334A-1F42-DEA6-FA521D386AF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5046FC1D-334A-1F42-DEA6-FA521D386AF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5046FC1D-334A-1F42-DEA6-FA521D386AF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B02EA6E9-A883-AD90-57AE-CFEB1692B19E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B02EA6E9-A883-AD90-57AE-CFEB1692B19E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B02EA6E9-A883-AD90-57AE-CFEB1692B19E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B02EA6E9-A883-AD90-57AE-CFEB1692B19E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A63D0E5B-2A72-B7A3-5D42-6AA828902201}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A63D0E5B-2A72-B7A3-5D42-6AA828902201}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A63D0E5B-2A72-B7A3-5D42-6AA828902201}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A63D0E5B-2A72-B7A3-5D42-6AA828902201}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1285CC7-EA46-6BBA-0A2C-53426EA8126D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1285CC7-EA46-6BBA-0A2C-53426EA8126D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1285CC7-EA46-6BBA-0A2C-53426EA8126D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1285CC7-EA46-6BBA-0A2C-53426EA8126D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61F2B4D0-58B4-50B7-BE4C-DCD2A00AE317}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61F2B4D0-58B4-50B7-BE4C-DCD2A00AE317}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61F2B4D0-58B4-50B7-BE4C-DCD2A00AE317}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61F2B4D0-58B4-50B7-BE4C-DCD2A00AE317}.Release|Any CPU.Build.0 = Release|Any CPU
+		{113F5496-405E-0A97-AE39-4D22776EE9FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{113F5496-405E-0A97-AE39-4D22776EE9FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{113F5496-405E-0A97-AE39-4D22776EE9FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{113F5496-405E-0A97-AE39-4D22776EE9FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05CC547B-D45C-F408-FCD9-EF18A94B1628}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05CC547B-D45C-F408-FCD9-EF18A94B1628}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05CC547B-D45C-F408-FCD9-EF18A94B1628}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05CC547B-D45C-F408-FCD9-EF18A94B1628}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1833DA55-E483-4971-AC98-B193EE32C9EA} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{5ECE247A-9BFA-4161-9C1C-73B9627A8CD5} = {1833DA55-E483-4971-AC98-B193EE32C9EA}
+		{F1285CC7-EA46-6BBA-0A2C-53426EA8126D} = {5ECE247A-9BFA-4161-9C1C-73B9627A8CD5}
+		{2F646CB5-E71E-437C-A09C-1648FBA5D7AD} = {1833DA55-E483-4971-AC98-B193EE32C9EA}
+		{61F2B4D0-58B4-50B7-BE4C-DCD2A00AE317} = {2F646CB5-E71E-437C-A09C-1648FBA5D7AD}
+		{113F5496-405E-0A97-AE39-4D22776EE9FB} = {1833DA55-E483-4971-AC98-B193EE32C9EA}
+		{05CC547B-D45C-F408-FCD9-EF18A94B1628} = {1833DA55-E483-4971-AC98-B193EE32C9EA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4EB4E761-9307-4C8D-9560-2BF32065742A}
