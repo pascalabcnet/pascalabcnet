@@ -14,7 +14,7 @@ namespace LanguageServerEngine
 {
     internal class Program
     {
-        static async Task Main()
+        static async Task Main(string[] args)
         {
             PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
 
@@ -22,19 +22,53 @@ namespace LanguageServerEngine
 
             CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = true;
 
-            var pipeName = "language-pipe";
-            var inputPipe = new NamedPipeServerStream(pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
-            Console.Error.WriteLine("Waiting for client...");
-            await inputPipe.WaitForConnectionAsync();
+            LanguageServer server;
 
-            var loggerFactory = new LoggerFactory();
+            if (args.Length > 1)
+            {
+                // Если клиент общается через stdin/stdout (например, VS Code)
+                if (args[0] == "--transport" && args[1] == "stdio")
+                {
 
-            var server = new LanguageServer(
+                    server = new LanguageServer(
+                        Console.OpenStandardInput(),
+                        Console.OpenStandardOutput(),
+                        new LoggerFactory(),
+                        true
+                    );
+                }
+                else
+                {
+                    Console.Error.WriteLine($"Error: Arguments '{args[1]} {args[2]}' are not supported.");
+                    Console.Error.WriteLine($"Shutting down...");
+
+                    return;
+                }
+            }
+            else if (args.Length == 1)
+            {
+                Console.Error.WriteLine($"Error: Wrong number of arguments passed.");
+                Console.Error.WriteLine($"Shutting down...");
+
+                return;
+            }
+            // Иначе сервер создает pipe
+            else
+            {
+                var pipeName = "language-pipe";
+                var inputPipe = new NamedPipeServerStream(pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+
+                Console.Error.WriteLine("Waiting for client...");
+
+                await inputPipe.WaitForConnectionAsync();
+
+                server = new LanguageServer(
                     inputPipe,
                     inputPipe,
-                    loggerFactory,
+                    new LoggerFactory(),
                     true
-             );
+                );
+            }
 
             var documentStorage = new DocumentStorage();
 
