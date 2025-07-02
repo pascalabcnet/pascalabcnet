@@ -219,6 +219,12 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			} else {
 				declarationViewWindow.Description = null;
 			}
+   			if (data == null && Visible) //close ccw if no data found
+			{
+				Close();
+				fiexerrorTextAreaInvalidate();
+				// editorControl.Focus(); //req for linux
+			}
 		}
 		
 		public override bool ProcessKeyEvent(char ch)
