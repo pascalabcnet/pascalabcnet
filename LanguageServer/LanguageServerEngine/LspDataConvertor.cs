@@ -86,24 +86,79 @@ namespace LanguageServerEngine
 
                 string documentation = index != -1 ? description.Substring(index + 1) : null;
 
-                string[] parameters;
+                List<string> parameters = new List<string>();
+
+                var languageInfo = CodeCompletionController.CurrentParser.LanguageInformation;
 
                 // подсказка для индексов
                 if (forIndexers)
                 {
                     int startIndex = label.IndexOf('[') + 1;
 
-                    parameters = label.Substring(startIndex, label.Substring(startIndex).IndexOf("]"))
-                        .Split(new string[] { CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+                    var descriptionAfterBracket = label.Substring(startIndex);
+
+                    int paramNum = 1;
+
+                    int firstCharIndex = 0;
+
+                    while (true)
+                    {
+                        int paramDelimIndex = languageInfo.FindParamDelimForIndexer(descriptionAfterBracket, paramNum);
+
+                        if (paramDelimIndex == -1)
+                        {
+                            int closingIndex = languageInfo.FindClosingParenthesis(descriptionAfterBracket, ']');
+
+                            if (closingIndex - firstCharIndex > 1)
+                            {
+                                parameters.Add(descriptionAfterBracket.Substring(firstCharIndex, closingIndex - firstCharIndex));
+                            }
+                            break;
+                        }
+                        else
+                        {
+                            parameters.Add(descriptionAfterBracket.Substring(firstCharIndex, paramDelimIndex - firstCharIndex));
+                        }
+
+                        paramNum++;
+
+                        firstCharIndex = paramDelimIndex + languageInfo.DelimiterInIndexer.Length;
+                    }
                 }
                 // подсказка для обычных методов
                 else
                 {
-                    // поиск с индекса 1 для учета обозначения расширения
-                    int startIndex = label.Substring(1).IndexOf("(") + 2;
+                    int startIndex = label.IndexOf("(", label.IndexOf("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION")) + 1) + 1;
 
-                    parameters = label.Substring(startIndex, label.Substring(startIndex).IndexOf(")"))
-                        .Split(new string[] { CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+                    var descriptionAfterBracket = label.Substring(startIndex);
+
+                    int paramNum = 1;
+
+                    int firstCharIndex = 0;
+
+                    while (true)
+                    {
+                        int paramDelimIndex = languageInfo.FindParamDelim(descriptionAfterBracket, paramNum);
+
+                        if (paramDelimIndex == -1)
+                        {
+                            int closingIndex = languageInfo.FindClosingParenthesis(descriptionAfterBracket, ')');
+
+                            if (closingIndex - firstCharIndex > 1)
+                            {
+                                parameters.Add(descriptionAfterBracket.Substring(firstCharIndex, closingIndex - firstCharIndex));
+                            }
+                            break;
+                        }
+                        else
+                        {
+                            parameters.Add(descriptionAfterBracket.Substring(firstCharIndex, paramDelimIndex - firstCharIndex));
+                        }
+
+                        paramNum++;
+
+                        firstCharIndex = paramDelimIndex + languageInfo.ParameterDelimiter.Length;
+                    }
                 }
 
                 // Проверка нужна, потому что иначе Documentation сформируется неправильно при присвоении null

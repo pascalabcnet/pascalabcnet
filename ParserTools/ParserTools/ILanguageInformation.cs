@@ -134,6 +134,12 @@ namespace PascalABCCompiler.Parsers
 
         bool IsParams(string paramDescription);
 
+        int FindClosingParenthesis(string descriptionAfterOpeningParenthesis, char parenthesis);
+
+        int FindParamDelim(string descriptionAfterOpeningParenthesis, int number);
+
+        int FindParamDelimForIndexer(string descriptionAfterOpeningParenthesis, int number);
+
         Dictionary<string, string> SpecialModulesAliases { get; }
 
         BaseKeywords KeywordsStorage
@@ -157,6 +163,10 @@ namespace PascalABCCompiler.Parsers
         string ParameterDelimiter
         {
             get;
+        }
+        string DelimiterInIndexer
+        { 
+            get; 
         }
         string ResultVariableName
         {
