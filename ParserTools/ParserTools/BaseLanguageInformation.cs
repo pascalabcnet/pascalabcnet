@@ -20,6 +20,8 @@ namespace PascalABCCompiler.Parsers
 
         public abstract string ParameterDelimiter { get; }
 
+        public abstract string DelimiterInIndexer { get; }
+
         public abstract string ResultVariableName { get; }
 
         public abstract string GenericTypesStartBracket { get; }
@@ -1154,6 +1156,84 @@ namespace PascalABCCompiler.Parsers
                 return sb.ToString();
             }
             return GetFullTypeName(t, no_alias);
+        }
+
+        public int FindClosingParenthesis(string descriptionAfterOpeningParenthesis, char parenthesis)
+        {
+            char openingParenthesis = parenthesis == ')' ? '(' : '[';
+
+            int count = 1;
+
+            int i = 0;
+
+            foreach (char c in descriptionAfterOpeningParenthesis)
+            {
+                if (c == openingParenthesis)
+                {
+                    count++;
+                }
+                else if (c == parenthesis)
+                {
+                    count--;
+                }
+
+                if (count == 0)
+                {
+                    break;
+                }
+
+                i++;
+            }
+
+            return i;
+        }
+
+        public int FindParamDelim(string descriptionAfterOpeningParenthesis, int number) => FindParamDelim(descriptionAfterOpeningParenthesis, number, ParameterDelimiter);
+
+        public int FindParamDelimForIndexer(string descriptionAfterOpeningParenthesis, int number) => FindParamDelim(descriptionAfterOpeningParenthesis, number, DelimiterInIndexer);
+
+        public int FindParamDelim(string descriptionAfterOpeningParenthesis, int number, string paramDelim)
+        {
+            int count = 1;
+
+            int i = 0;
+
+            int delimNum = 0;
+
+            foreach (char c in descriptionAfterOpeningParenthesis)
+            {
+                if (c == '(' || c == '[' || c == '<' || c == '{')
+                {
+                    count++;
+                }
+                else if (c == ')' || c == ']' || c == '>' || c == '}')
+                {
+                    count--;
+                }
+
+                if (count == 0)
+                {
+                    break;
+                }
+                // если не внутри внутренних скобок
+                else if (count == 1)
+                {
+                    if (descriptionAfterOpeningParenthesis.Substring(i).StartsWith(paramDelim))
+                    {
+                        delimNum++;
+
+                        if (delimNum == number)
+                            break;
+                    }
+                }
+
+                i++;
+            }
+
+            if (delimNum < number || i == descriptionAfterOpeningParenthesis.Length)
+                return -1;
+
+            return i;
         }
     }
 }

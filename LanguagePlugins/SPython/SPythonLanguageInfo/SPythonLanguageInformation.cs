@@ -21,6 +21,8 @@ namespace Languages.SPython.Frontend.Data
 
         public override string ParameterDelimiter => ",";
 
+        public override string DelimiterInIndexer => ",";
+
         public override string ResultVariableName => null;
 
         public override string ProcedureName => null;

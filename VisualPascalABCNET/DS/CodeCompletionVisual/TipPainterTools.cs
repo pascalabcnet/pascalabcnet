@@ -67,9 +67,11 @@ namespace ICSharpCode.TextEditor.Util
                     if (param_num == -1)
                         return;
 
+                    var languageInfo = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation;
+
                     int startIndex = basicDescription.IndexOf("(", basicDescription.IndexOf("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION")) + 1) + 1;
 
-                    int paranthesisIndex = FindClosingParenthesis(basicDescription.Substring(startIndex));
+                    int paranthesisIndex = languageInfo.FindClosingParenthesis(basicDescription.Substring(startIndex), ')');
 
                     if (paranthesisIndex == -1)
                         return;
@@ -82,7 +84,7 @@ namespace ICSharpCode.TextEditor.Util
 
                         if (bold_beg != 0)
                         {
-                            int paramDelimIndex = FindParamDelim(basicDescription.Substring(bold_beg), 1);
+                            int paramDelimIndex = languageInfo.FindParamDelim(basicDescription.Substring(bold_beg), 1);
 
                             if (paramDelimIndex == -1)
                             {
@@ -96,14 +98,13 @@ namespace ICSharpCode.TextEditor.Util
                     }
                     else
                     {
-                        string paramDelim = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter;
 
-                        int paramDelimIndex = FindParamDelim(basicDescription.Substring(startIndex), param_num - 1);
+                        int paramDelimIndex = languageInfo.FindParamDelim(basicDescription.Substring(startIndex), param_num - 1);
 
                         if (paramDelimIndex != -1)
                         {
-                            bold_beg = paramDelimIndex + startIndex + paramDelim.Length;
-                            int secondParamDelimIndex = FindParamDelim(basicDescription.Substring(startIndex), param_num);
+                            bold_beg = paramDelimIndex + startIndex + languageInfo.ParameterDelimiter.Length;
+                            int secondParamDelimIndex = languageInfo.FindParamDelim(basicDescription.Substring(startIndex), param_num);
                             
                             if (secondParamDelimIndex == -1)
                             {
@@ -510,79 +511,5 @@ namespace ICSharpCode.TextEditor.Util
 		{
 			return text != null && text.Length > 0;
 		}
-
-        private static int FindClosingParenthesis(string descriptionAfterOpeningParenthesis)
-        {
-            int count = 1;
-
-            int i = 0;
-
-            foreach (char c in descriptionAfterOpeningParenthesis)
-            {
-                if (c == '(')
-                {
-                    count++;
-                }
-                else if (c == ')')
-                {
-                    count--;
-                }
-
-                if (count == 0)
-                {
-                    break;
-                }
-
-                i++;
-            }
-
-            return i;
-        }
-
-        private static int FindParamDelim(string descriptionAfterOpeningParenthesis, int number)
-        {
-            string paramDelimiter = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter;
-
-            int count = 1;
-
-            int i = 0;
-
-            int delimNum = 0;
-
-            foreach (char c in descriptionAfterOpeningParenthesis)
-            {
-                if (c == '(' || c == '[' || c == '<' || c == '{')
-                {
-                    count++;
-                }
-                else if (c == ')' || c == ']' || c == '>' || c == '}')
-                {
-                    count--;
-                }
-
-                if (count == 0)
-                {
-                    break;
-                }
-                // если не внутри внутренних скобок
-                else if (count == 1)
-                {
-                    if (descriptionAfterOpeningParenthesis.Substring(i).StartsWith(paramDelimiter))
-                    {
-                        delimNum++;
-
-                        if (delimNum == number)
-                            break;
-                    }
-                }
-
-                i++;
-            }
-
-            if (delimNum < number || i == descriptionAfterOpeningParenthesis.Length)
-                return -1;
-
-            return i;
-        }
     }
 }

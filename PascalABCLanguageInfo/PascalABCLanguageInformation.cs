@@ -122,6 +122,8 @@ namespace Languages.Pascal.Frontend.Data
             }
         }
 
+        public override string DelimiterInIndexer => ",";
+
         public override string ResultVariableName => "Result";
 
         public override string ProcedureName => "procedure";
