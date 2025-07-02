@@ -67,12 +67,7 @@ namespace ICSharpCode.TextEditor.Util
                     if (param_num == -1)
                         return;
 
-                    int extensionIndex = basicDescription.IndexOf("(расширение") + 1;
-
-                    int startIndex = basicDescription.IndexOf('(') + 1;
-
-                    if (startIndex != 0 && startIndex == extensionIndex)
-                        startIndex = basicDescription.IndexOf('(', basicDescription.IndexOf(')') + 1) + 1;
+                    int startIndex = basicDescription.IndexOf("(", basicDescription.IndexOf("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION")) + 1) + 1;
 
                     int paranthesisIndex = FindClosingParenthesis(basicDescription.Substring(startIndex));
 
