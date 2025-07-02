@@ -70,15 +70,24 @@ namespace VisualPascalABC
 
         public CompletionDataProviderKeyResult ProcessKey(char key)
         {
-            if (char.IsLetterOrDigit(key) || key == '_')
-            {
-                return CompletionDataProviderKeyResult.NormalKey;
-            }
-            else
+            if (key == '\t'  || key =='\r'  || key == ' ')
             {
                 // key triggers insertion of selected items
                 return CompletionDataProviderKeyResult.InsertionKey;
             }
+            else
+            {
+                return CompletionDataProviderKeyResult.NormalKey;
+            }
+            // if (char.IsLetterOrDigit(key) || key == '_')
+            // {
+            //     return CompletionDataProviderKeyResult.NormalKey;
+            // }
+            // else
+            // {
+            //     // key triggers insertion of selected items
+            //     return CompletionDataProviderKeyResult.InsertionKey;
+            // }
         }
 
         /// <summary>
