@@ -4735,7 +4735,7 @@ namespace PascalABCCompiler.NETGenerator
                         TypeInfo ti = helper.GetTypeReference(ElementValues[i].type);
                         PushIntConst(il, i);
                         if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && 
-                            (ti.tp.Name.StartsWith("NewSet") || !ti.tp.IsEnum)) // SSM 05/11/24 т.к. NewSet бросает исключение в IsEnum
+                            (ti.tp.IsConstructedGenericType() || !ti.tp.IsEnum)) // инстанцированные генерик типы бросают исключение при вызове .IsEnum
                                 il.Emit(OpCodes.Ldelema, ti.tp);
                         ILGenerator ilb = this.il;
                         this.il = il;
