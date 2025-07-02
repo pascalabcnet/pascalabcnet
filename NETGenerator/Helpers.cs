@@ -5,6 +5,7 @@ using System;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections;
+using System.Linq;
 
 namespace PascalABCCompiler.NETGenerator {
 	
@@ -836,16 +837,21 @@ namespace PascalABCCompiler.NETGenerator {
             return null;
         }
 
-        public bool IsConstructedGenericType(Type t)
+        /// <summary>
+        /// До вызова <c>.CreateType()</c> позволяет определить, был ли тип объявлен в коде, а не в готовой сборке.
+        /// Generic типы инстанцированные Pascal типами также считаются Pascal типами (пример: <c>IEnumerable&lt;PascalType&gt;</c>)
+        /// </summary>
+        public bool IsPascalType(Type t)
         {
             if (t is TypeBuilder || t is GenericTypeParameterBuilder || t is EnumBuilder || t.GetType().FullName == "System.Reflection.Emit.TypeBuilderInstantiation")
                 return true;
-            if (t.IsGenericType)
-                foreach (Type gt in t.GetGenericArguments())
-                    if (IsConstructedGenericType(gt))
-                        return true;
+
+            if ( t.IsGenericType && t.GetGenericArguments().Any(IsPascalType) )
+                return true;
+
             if (t.IsArray)
-                return IsConstructedGenericType(t.GetElementType());
+                return IsPascalType(t.GetElementType());
+
             return false;
         }
 
