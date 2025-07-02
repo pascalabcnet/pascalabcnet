@@ -71,8 +71,8 @@ namespace LanguageServerEngine
             {
                 var lastParam = resultMethods[activeSignature].Parameters.Last().Label;
 
-                // params случай, TODO: вынести в LanguageInformation
-                if (lastParam.EndsWith("...") || lastParam.TrimStart().StartsWith("params"))
+                // params случай
+                if (CodeCompletionController.CurrentParser.LanguageInformation.IsParams(lastParam))
                 {
                     activeParameter = Math.Min(insightProvider.num_param, paramsOfActiveSignature.Count()) - 1;
                 }

@@ -42,6 +42,10 @@ namespace PascalABCCompiler.Parsers
 
         public virtual Dictionary<string, string> SpecialModulesAliases => null;
 
+        protected abstract string IntTypeName { get; }
+
+        public abstract bool IsParams(string paramDescription);
+
         public virtual void RenameOrExcludeSpecialNames(SymInfo[] symInfos) { }
 
         // перенести сюда реализацию  EVA
@@ -142,10 +146,143 @@ namespace PascalABCCompiler.Parsers
 
         protected abstract string GetFullTypeName(Type ctn, bool no_alias = true);
 
-        // перенести реализацию сюда EVA
-        public virtual string[] GetIndexerString(IBaseScope scope)
+        protected string GetDescriptionForProcedure(IProcScope scope)
         {
-            return null;
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            string extensionType = null;
+            if (scope.IsExtension && scope.Parameters.Length > 0)
+            {
+                extensionType = GetSimpleDescription(scope.Parameters[0].Type);
+            }
+            if (scope.IsExtension)
+            {
+                if (extensionType != null && extensionType.IndexOf(' ') != -1)
+                {
+                    sb.Append("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION") + " " + extensionType + ") ");
+                    extensionType = null;
+                }
+                else
+                {
+                    sb.Append("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION") + ") ");
+                }
+            }
+
+            if (scope.IsStatic) sb.Append("static ");
+            if (scope.IsConstructor())
+                sb.Append("constructor ");
+            else
+            if (scope.ReturnType == null && ProcedureName != null)
+                sb.Append(ProcedureName + " ");
+            else
+                sb.Append(FunctionName + " ");
+            if (!scope.IsConstructor())
+            {
+                if (extensionType != null)
+                {
+                    sb.Append(extensionType + ".");
+                    sb.Append(scope.Name);
+                }
+                else
+                {
+                    sb.Append(GetTopScopeName(scope.TopScope));
+                    sb.Append(scope.Name);
+                }
+            }
+            else
+            {
+                sb.Append(GetTopScopeNameWithoutDot(scope.TopScope));
+            }
+            /*string[] template_args = scope.TemplateParameters;
+			if (template_args != null)
+			{
+				sb.Append('<');
+				for (int i=0; i<template_args.Length; i++)
+				{
+					sb.Append(template_args[i]);
+					if (i < template_args.Length-1)
+						sb.Append(',');
+				}
+				sb.Append('>');
+			}*/
+            sb.Append(GetGenericString(scope.TemplateParameters));
+            sb.Append('(');
+            IElementScope[] parameters = scope.Parameters;
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (scope.IsExtension && i == 0)
+                    continue;
+                sb.Append(GetSimpleDescription(parameters[i]));
+                if (i < parameters.Length - 1)
+                {
+                    sb.Append("; ");
+                }
+            }
+            sb.Append(')');
+            if (scope.ReturnType != null && !scope.IsConstructor() && !(scope.ReturnType is IProcType && (scope.ReturnType as IProcType).Target == scope))
+                sb.Append(ReturnTypeDelimiter + " " + GetSimpleDescription(scope.ReturnType));
+            //if (scope.IsStatic) sb.Append("; static");
+            if (scope.IsVirtual) sb.Append("; ");
+            else if (scope.IsAbstract) sb.Append("; abstract");
+            else if (scope.IsOverride) sb.Append("; override");
+            else if (scope.IsReintroduce) sb.Append("; reintroduce");
+            sb.Append(';');
+            return sb.ToString();
+        }
+
+        public string[] GetIndexerString(IBaseScope scope)
+        {
+            IBaseScope tmp_si = scope;
+            if (scope == null) return null;
+            if (scope is IElementScope)
+                if ((scope as IElementScope).Indexers.Length == 0)
+                    scope = (scope as IElementScope).Type;
+            if (scope is IProcScope) scope = (scope as IProcScope).ReturnType;
+            if (!(scope is IElementScope))
+            {
+                ITypeScope ts = scope as ITypeScope;
+                if (ts == null) return null;
+                ITypeScope[] indexers = ts.Indexers;
+                if (tmp_si is ITypeScope)
+                    indexers = ts.StaticIndexers;
+                if ((indexers == null || indexers.Length == 0) && !(ts is IArrayScope))
+                    return null;
+                StringBuilder sb = new StringBuilder();
+                if (!(tmp_si is ITypeScope))
+                    sb.Append("this");
+                else
+                    sb.Append(GetSimpleDescriptionWithoutNamespace(tmp_si as ITypeScope));
+                sb.Append('[');
+                if (indexers != null)
+                    for (int i = 0; i < indexers.Length; i++)
+                    {
+                        sb.Append(GetSimpleDescriptionWithoutNamespace(indexers[i]));
+                        if (i < indexers.Length - 1)
+                            sb.Append(',');
+                    }
+                else
+                    sb.Append(IntTypeName);
+                sb.Append("] : ");
+                sb.Append(GetSimpleDescriptionWithoutNamespace(ts.ElementType));
+                return new string[1] { sb.ToString() };
+            }
+            else
+            {
+                IElementScope es = scope as IElementScope;
+                ITypeScope[] indexers = es.Indexers;
+                if (indexers == null || indexers.Length == 0 || es.ElementType == null) return null;
+                StringBuilder sb = new StringBuilder();
+                sb.Append(es.Name);
+                sb.Append('[');
+                for (int i = 0; i < indexers.Length; i++)
+                {
+                    sb.Append(GetSimpleDescriptionWithoutNamespace(indexers[i]));
+                    if (i < indexers.Length - 1)
+                        sb.Append(',');
+                }
+                sb.Append("] : ");
+                sb.Append(GetSimpleDescriptionWithoutNamespace(es.ElementType));
+                return new string[1] { sb.ToString() };
+            }
         }
 
         public abstract string GetKeyword(SymbolKind kind);
@@ -202,7 +339,6 @@ namespace PascalABCCompiler.Parsers
             return scope.Name + template_str;
         }
 
-        // TODO: Адаптировать к многоязычности EVA
         protected string GetDescriptionForCompiledMethod(ICompiledMethodScope scope)
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
