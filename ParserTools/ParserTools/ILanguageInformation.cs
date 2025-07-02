@@ -132,6 +132,8 @@ namespace PascalABCCompiler.Parsers
 
         void RenameOrExcludeSpecialNames(SymInfo[] symInfos);
 
+        bool IsParams(string paramDescription);
+
         Dictionary<string, string> SpecialModulesAliases { get; }
 
         BaseKeywords KeywordsStorage
