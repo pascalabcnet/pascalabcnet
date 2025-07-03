@@ -57,6 +57,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonLanguageInfo", "..\L
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonParser", "..\LanguagePlugins\SPython\SPythonParserKrylovMovchan\SPythonParser.csproj", "{05CC547B-D45C-F408-FCD9-EF18A94B1628}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxTreeConverters", "..\SyntaxTreeConverters\SyntaxTreeConverters.csproj", "{9BC163B9-4000-F57F-3D7C-5B1B4BF58F32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaAnySynToSemConverter", "..\LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj", "{ED1AB9E2-5632-4204-6273-F2A584F87B8C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -155,6 +159,14 @@ Global
 		{05CC547B-D45C-F408-FCD9-EF18A94B1628}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05CC547B-D45C-F408-FCD9-EF18A94B1628}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05CC547B-D45C-F408-FCD9-EF18A94B1628}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BC163B9-4000-F57F-3D7C-5B1B4BF58F32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BC163B9-4000-F57F-3D7C-5B1B4BF58F32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BC163B9-4000-F57F-3D7C-5B1B4BF58F32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BC163B9-4000-F57F-3D7C-5B1B4BF58F32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED1AB9E2-5632-4204-6273-F2A584F87B8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED1AB9E2-5632-4204-6273-F2A584F87B8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED1AB9E2-5632-4204-6273-F2A584F87B8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED1AB9E2-5632-4204-6273-F2A584F87B8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
