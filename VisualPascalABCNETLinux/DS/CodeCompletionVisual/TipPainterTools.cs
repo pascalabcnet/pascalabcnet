@@ -70,7 +70,7 @@ namespace ICSharpCode.TextEditor.Util
 
                     int startIndex = basicDescription.IndexOf("(", basicDescription.IndexOf("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION")) + 1) + 1;
 
-                    int paranthesisIndex = languageInfo.FindClosingParenthesis(basicDescription.Substring(startIndex));
+                    int paranthesisIndex = languageInfo.FindClosingParenthesis(basicDescription.Substring(startIndex), ')');
 
                     if (paranthesisIndex == -1)
                         return;
