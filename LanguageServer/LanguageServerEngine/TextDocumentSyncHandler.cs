@@ -65,8 +65,6 @@ namespace LanguageServerEngine
 
         public Task Handle(DidOpenTextDocumentParams request)
         {
-            Console.Error.WriteLine("did open params received");
-
             string documentPath = LspDataConvertor.GetNormalizedPathFromUri(request.TextDocument.Uri);
 
             documentStorage.AddDocument(documentPath, request.TextDocument.Text);

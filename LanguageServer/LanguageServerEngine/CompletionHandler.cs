@@ -77,23 +77,17 @@ namespace LanguageServerEngine
                 else
                 {
                     PascalABCCompiler.Parsers.KeywordKind keyw = KeywordChecker.TestForKeyword(docText, symbolIndex);
-                    
+
                     if (CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.IsDefinitionIdentifierAfterKeyword(keyw))
                         return Task.FromResult(new CompletionList());
 
                     completionList = completionProvider.GenerateCompletionDataByFirstChar(documentPath, docText, symbolIndex, (int)pos.Line, (int)pos.Character, triggerChar, keyw);
                 }
             }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine("Intellisense exception:");
-                Console.Error.WriteLine(e.Message + "\n" + e.StackTrace);
-            }
+            catch (Exception) { }
 
             if (completionList != null)
             {
-                Console.Error.WriteLine("Completions got:");
-
                 var resultList = new CompletionList(completionList.Select(item => new CompletionItem() { 
                     Label = item.Text, 
                     Detail = item.Description, 

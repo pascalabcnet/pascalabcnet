@@ -60,12 +60,8 @@ namespace CodeCompletion
                     // Выход при отмене
                     break;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-
-                    Console.Error.WriteLine("Intellisense exception:");
-                    Console.Error.WriteLine(e.Message + "\n" + e.StackTrace);
-
                     // ожидание перед повторной попыткой
                     Thread.Sleep(500);
                 }
@@ -153,7 +149,6 @@ namespace CodeCompletion
                     openFiles[FileName] = false;
                     if (dc.is_compiled)
                     {
-                        Console.Error.WriteLine("Compiled");
                         //CodeCompletion.CodeCompletionController.comp_modules.Remove(file_name);
                         if (tmp != null && tmp.visitor.entry_scope != null)
                         {
