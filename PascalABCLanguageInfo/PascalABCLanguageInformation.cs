@@ -162,7 +162,7 @@ namespace Languages.Pascal.Frontend.Data
 
         public override bool IsParams(string paramDescription)
         {
-            return paramDescription.EndsWith("...") || paramDescription.TrimStart().StartsWith("params");
+            return paramDescription.Contains("...") || paramDescription.TrimStart().StartsWith("params");
         }
 
         public override string GetDescription(IBaseScope scope)
