@@ -21,6 +21,8 @@ namespace Languages.SPython.Frontend.Data
 
         public override string ParameterDelimiter => ",";
 
+        public override string DelimiterInIndexer => ",";
+
         public override string ResultVariableName => null;
 
         public override string ProcedureName => null;
@@ -42,6 +44,13 @@ namespace Languages.SPython.Frontend.Data
         public override bool AddStandardNetNamespacesToUserScope => false;
 
         public override bool UsesFunctionsOverlappingSourceContext => true;
+
+        protected override string IntTypeName => "int";
+
+        public override bool IsParams(string paramDescription)
+        {
+            return paramDescription.TrimStart().StartsWith("params");
+        }
 
         private readonly Dictionary<string, string> renamings = new Dictionary<string, string>
         {

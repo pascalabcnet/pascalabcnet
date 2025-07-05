@@ -2535,7 +2535,8 @@ namespace CodeCompletion
             return is_constructor;
         }
 
-        public override void MakeSynonimDescription()
+        // не используется нигде для ProcScope EVA
+        public override void MakeSynonimDescription() 
         {
             //aliased = true;
             si.description = CodeCompletionController.CurrentParser?.LanguageInformation.GetSynonimDescription(this);
