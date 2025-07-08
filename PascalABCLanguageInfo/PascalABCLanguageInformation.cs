@@ -2132,13 +2132,13 @@ namespace Languages.Pascal.Frontend.Data
 
         }
 
-        public override string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out string expr_without_brackets)
+        public override string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets)
         {
             int i = off - 1;
 
             // это например вызов метода без параметров
             expr_without_brackets = null;
-            var keyw = KeywordKind.None;
+            keyw = KeywordKind.None;
             if (i < 0)
                 return "";
             bool is_char = false;

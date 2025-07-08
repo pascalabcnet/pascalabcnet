@@ -65,14 +65,14 @@ namespace PascalABCCompiler.Parsers
         // перенести сюда реализацию  EVA
         public abstract string FindExpressionForMethod(int off, string Text, int line, int col, char pressed_key, ref int num_param);
 
-        public string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets)
+        public string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out string expr_without_brackets)
         {
-            keyw = KeywordKind.None;
-            return FindExpressionFromAnyPosition(off, Text, line, col, out expr_without_brackets);
+            KeywordKind keyw = KeywordKind.None;
+            return FindExpressionFromAnyPosition(off, Text, line, col, out keyw, out expr_without_brackets);
         }
 
         // перенести сюда реализацию  EVA
-        public abstract string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out string expr_without_brackets);
+        public abstract string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets);
 
         public virtual string FindOnlyIdentifier(int off, string Text, int line, int col, ref string name)
         {
