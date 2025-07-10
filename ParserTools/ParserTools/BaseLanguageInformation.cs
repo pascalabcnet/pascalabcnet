@@ -67,8 +67,7 @@ namespace PascalABCCompiler.Parsers
 
         public string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out string expr_without_brackets)
         {
-            KeywordKind keyw = KeywordKind.None;
-            return FindExpressionFromAnyPosition(off, Text, line, col, out keyw, out expr_without_brackets);
+            return FindExpressionFromAnyPosition(off, Text, line, col, out _, out expr_without_brackets);
         }
 
         // перенести сюда реализацию  EVA
