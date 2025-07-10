@@ -215,7 +215,7 @@ namespace PascalABCCompiler.Parsers
                 sb.Append(GetSimpleDescription(parameters[i]));
                 if (i < parameters.Length - 1)
                 {
-                    sb.Append("; ");
+                    sb.Append(ParameterDelimiter + " ");
                 }
             }
             sb.Append(')');
