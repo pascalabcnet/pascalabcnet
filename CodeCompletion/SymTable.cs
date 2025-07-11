@@ -2603,6 +2603,7 @@ namespace CodeCompletion
 
         public override void BuildDescription()
         {
+            if (documentation != null && documentation.Length > 0 && documentation[0] == '-') return;
             si.description = ToString();
             si.addit_name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
         }
