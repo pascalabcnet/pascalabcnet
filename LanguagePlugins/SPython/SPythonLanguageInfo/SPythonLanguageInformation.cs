@@ -819,13 +819,13 @@ namespace Languages.SPython.Frontend.Data
             return false;
         }
 
-        public override string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out string expr_without_brackets)
+        public override string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets)
         {
             int i = off - 1;
 
             // это например вызов метода без параметров
             expr_without_brackets = null;
-            var keyw = KeywordKind.None;
+            keyw = KeywordKind.None;
             if (i < 0)
                 return "";
             bool is_char = false;
@@ -1029,135 +1029,25 @@ namespace Languages.SPython.Frontend.Data
             {
                 case ScopeKind.Type: return GetDescriptionForType(scope as ITypeScope);
                 case ScopeKind.CompiledType: return GetDescriptionForCompiledType(scope as ICompiledTypeScope);
+                case ScopeKind.Delegate: return GetDescriptionForDelegate(scope as IProcType);
                 case ScopeKind.Procedure: return GetDescriptionForProcedure(scope as IProcScope);
                 case ScopeKind.ElementScope: return GetDescriptionForElementScope(scope as IElementScope);
                 case ScopeKind.TypeSynonim: return GetSynonimDescription(scope as ITypeSynonimScope);
                 case ScopeKind.Namespace: return GetDescriptionForNamespace(scope as INamespaceScope);
                 case ScopeKind.CompiledMethod: return GetDescriptionForCompiledMethod(scope as ICompiledMethodScope);
-
-                /*case ScopeKind.Array: return GetDescriptionForArray(scope as IArrayScope);
                 case ScopeKind.Enum: return GetDescriptionForEnum(scope as IEnumScope);
-                case ScopeKind.Set: return GetDescriptionForSet(scope as ISetScope);
+                case ScopeKind.Array: return GetDescriptionForArray(scope as IArrayScope);
+
+
+
+                /*case ScopeKind.Set: return GetDescriptionForSet(scope as ISetScope);
 
                 case ScopeKind.CompiledField: return GetDescriptionForCompiledField(scope as ICompiledFieldScope);
                 case ScopeKind.CompiledProperty: return GetDescriptionForCompiledProperty(scope as ICompiledPropertyScope);
 
 
                 case ScopeKind.CompiledConstructor: return GetDescriptionForCompiledConstructor(scope as ICompiledConstructorScope);*/
-            }
-            return "";
-        }
 
-        protected string GetDescriptionForProcedure(IProcScope scope)
-        {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            string extensionType = null;
-            if (scope.IsExtension && scope.Parameters.Length > 0)
-            {
-                extensionType = GetSimpleDescription(scope.Parameters[0].Type);
-            }
-            if (scope.IsExtension)
-            {
-                if (extensionType != null && extensionType.IndexOf(' ') != -1)
-                {
-                    sb.Append("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION") + " " + extensionType + ") ");
-                    extensionType = null;
-                }
-                else
-                {
-                    sb.Append("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION") + ") ");
-                }
-            }
-
-            if (scope.IsStatic) sb.Append("static ");
-            if (scope.IsConstructor())
-                sb.Append("constructor ");
-            else
-                sb.Append("def ");
-            /*if (scope.ReturnType == null)
-                sb.Append("procedure ");
-            else
-                sb.Append("function ");*/
-            if (!scope.IsConstructor())
-            {
-                if (extensionType != null)
-                {
-                    sb.Append(extensionType + ".");
-                    sb.Append(scope.Name);
-                }
-                else
-                {
-                    sb.Append(GetTopScopeName(scope.TopScope));
-                    sb.Append(scope.Name);
-                }
-            }
-            else
-            {
-                sb.Append(GetTopScopeNameWithoutDot(scope.TopScope));
-            }
-
-            sb.Append(GetGenericString(scope.TemplateParameters));
-            sb.Append('(');
-            IElementScope[] parameters = scope.Parameters;
-            for (int i = 0; i < parameters.Length; i++)
-            {
-                if (scope.IsExtension && i == 0)
-                    continue;
-                sb.Append(GetSimpleDescription(parameters[i]));
-                if (i < parameters.Length - 1)
-                {
-                    sb.Append("; ");
-                }
-            }
-            sb.Append(')');
-            if (scope.ReturnType != null && !scope.IsConstructor() && !(scope.ReturnType is IProcType && (scope.ReturnType as IProcType).Target == scope))
-                sb.Append(" " + ReturnTypeDelimiter + " " + GetSimpleDescription(scope.ReturnType));
-            //if (scope.IsStatic) sb.Append("; static");
-            if (scope.IsVirtual) sb.Append("; ");
-            else if (scope.IsAbstract) sb.Append("; abstract");
-            else if (scope.IsOverride) sb.Append("; override");
-            else if (scope.IsReintroduce) sb.Append("; reintroduce");
-            sb.Append(';');
-            return sb.ToString();
-        }
-
-        protected string GetDescriptionForElementScope(IElementScope scope)
-        {
-            string type_name = null;
-            StringBuilder sb = new StringBuilder();
-            if (scope.Type == null) type_name = "";
-            else
-                type_name = GetSimpleDescription(scope.Type);
-            if (type_name.StartsWith("$"))
-                type_name = type_name.Substring(1, type_name.Length - 1);
-            switch (scope.ElemKind)
-            {
-                case SymbolKind.Variable: sb.Append("var " + GetTopScopeName(scope.TopScope) + scope.Name + ((type_name != "") ? ": " + type_name : "")); break;
-                case SymbolKind.Parameter: sb.Append(kind_of_param(scope) + "parameter " + scope.Name + ": " + type_name + (scope.ConstantValue != null ? (":=" + scope.ConstantValue.ToString()) : "")); break;
-                case SymbolKind.Field:
-                    if (scope.IsStatic)
-                        sb.Append("static ");
-                    else
-                        sb.Append("var ");
-                    sb.Append(GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name);
-                    // append_modifiers(sb, scope);
-                    //if (scope.IsStatic) sb.Append("; static");
-                    if (scope.IsReadOnly) sb.Append("; readonly");
-                    break;
-
-            }
-            sb.Append(';');
-            return sb.ToString();
-        }
-
-        protected override string kind_of_param(IElementScope scope)
-        {
-            switch (scope.ParamKind)
-            {
-                case PascalABCCompiler.SyntaxTree.parametr_kind.const_parametr: return "const ";
-                case PascalABCCompiler.SyntaxTree.parametr_kind.var_parametr: return "var ";
-                case PascalABCCompiler.SyntaxTree.parametr_kind.params_parametr: return "params ";
-                case PascalABCCompiler.SyntaxTree.parametr_kind.out_parametr: return "out ";
             }
             return "";
         }
@@ -1328,6 +1218,7 @@ namespace Languages.SPython.Frontend.Data
             {
                 case ScopeKind.Type: return GetSimpleDescriptionForType(scope as ITypeScope);
                 case ScopeKind.CompiledType: return GetSimpleDescriptionForCompiledType(scope as ICompiledTypeScope, false);
+                case ScopeKind.Delegate: return GetDescriptionForDelegate(scope as IProcType);
                 case ScopeKind.Procedure: return GetSimpleDescriptionForProcedure(scope as IProcScope);
                 case ScopeKind.ElementScope: return GetSimpleDescriptionForElementScope(scope as IElementScope);
                 case ScopeKind.TypeSynonim: return GetSimpleSynonimDescription(scope as ITypeSynonimScope);
@@ -1335,8 +1226,9 @@ namespace Languages.SPython.Frontend.Data
                 case ScopeKind.UnitInterface: return GetDescriptionForModule(scope as IInterfaceUnitScope);
                 case ScopeKind.Namespace: return GetDescriptionForNamespace(scope as INamespaceScope);
                 case ScopeKind.CompiledMethod: return GetDescriptionForCompiledMethod(scope as ICompiledMethodScope);
+                case ScopeKind.Enum: return GetDescriptionForEnum(scope as IEnumScope);
 
-                /*case ScopeKind.Enum: return GetDescriptionForEnum(scope as IEnumScope);
+                /*
                 case ScopeKind.Set: return GetDescriptionForSet(scope as ISetScope);
 
                 case ScopeKind.CompiledField: return GetDescriptionForCompiledField(scope as ICompiledFieldScope);
@@ -1366,88 +1258,6 @@ namespace Languages.SPython.Frontend.Data
         private string GetSimpleSynonimDescription(ITypeSynonimScope scope)
         {
             return scope.Name;
-        }
-
-        protected string GetDescriptionForArray(IArrayScope scope)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("array");
-            ITypeScope[] inds = scope.Indexers;
-            if (!scope.IsDynamic)
-            {
-                sb.Append('[');
-                for (int i = 0; i < inds.Length; i++)
-                {
-                    sb.Append(GetSimpleDescription(inds[i]));
-                    if (i < inds.Length - 1) sb.Append(',');
-                }
-                sb.Append(']');
-            }
-            if (scope.ElementType != null)
-            {
-                string s = GetSimpleDescription(scope.ElementType);
-                if (s.Length > 0 && s[0] == '$') s = s.Substring(1, s.Length - 1);
-                sb.Append(" of " + s);
-            }
-            return sb.ToString();
-        }
-
-        private string GetSimpleDescriptionForCompiledType(ICompiledTypeScope scope, bool fullName)
-        {
-            if (scope.CompiledType.Name != null && scope.CompiledType.Name.Contains("Func`"))
-            {
-                return getLambdaRepresentation(scope, true);
-            }
-            else if (scope.CompiledType.Name != null && scope.CompiledType.Name.Contains("Action`"))
-            {
-                return getLambdaRepresentation(scope, false);
-            }
-            else if (scope.CompiledType.Name != null && scope.CompiledType.Name.Contains("Predicate`1"))
-            {
-                return getLambdaRepresentation(scope, false);
-            }
-            if (scope.CompiledType.Name == "IEnumerable`1")
-            {
-                ITypeScope[] instances = scope.GenericInstances;
-                if (instances != null && instances.Length > 0)
-                {
-                    return "sequence of " + GetSimpleDescriptionWithoutNamespace(instances[0]);
-                }
-                else
-                    return "sequence of T";
-            }
-            else if (scope.CompiledType.Name != null && scope.CompiledType.Name.Contains("Tuple`"))
-            {
-                ITypeScope[] instances = scope.GenericInstances;
-                if (instances != null && instances.Length > 0)
-                {
-                    return get_tuple_string(instances);
-                }
-                else
-                    return "(T1,...)";
-            }
-            else
-            {
-                string s = !fullName ? GetShortTypeName(scope.CompiledType) : GetFullTypeName(scope.CompiledType);
-                ITypeScope[] instances = scope.GenericInstances;
-                if (instances != null && instances.Length > 0)
-                {
-                    System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                    int ind = s.IndexOf(GenericTypesStartBracket);
-                    if (ind != -1) sb.Append(s.Substring(0, ind));
-                    else
-                        sb.Append(s);
-                    sb.Append(GenericTypesStartBracket);
-                    for (int i = 0; i < instances.Length; i++)
-                    {
-                        sb.Append(GetSimpleDescriptionWithoutNamespace(instances[i]));
-                        if (i < instances.Length - 1) sb.Append(", ");
-                    }
-                    sb.Append(GenericTypesEndBracket);
-                    s = sb.ToString();
-                }
-                return s;
-            }
         }
 
         public override string GetStandardTypeByKeyword(KeywordKind keyw)
