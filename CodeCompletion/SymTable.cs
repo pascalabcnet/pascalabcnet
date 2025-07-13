@@ -542,6 +542,10 @@ namespace CodeCompletion
         /// </summary>
         public SymScope WithRefreshedDescription()
         {
+            // случай задания описания вручную
+            if (documentation != null && documentation.Length > 0 && documentation[0] == '-')
+                return this;
+
             if (Description != null)
             {
                 int ind = Description.IndexOf("\n");
