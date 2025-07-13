@@ -796,7 +796,12 @@ namespace PascalABCCompiler.Parsers
     }
     
     public interface IArrayScope : ITypeScope
-    {	
+    {
+    	ITypeScope[] Indexers
+    	{
+    		get;
+    	}
+    	
     	bool IsDynamic
     	{
     		get;

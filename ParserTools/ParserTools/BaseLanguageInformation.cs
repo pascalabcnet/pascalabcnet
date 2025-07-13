@@ -65,13 +65,14 @@ namespace PascalABCCompiler.Parsers
         // перенести сюда реализацию  EVA
         public abstract string FindExpressionForMethod(int off, string Text, int line, int col, char pressed_key, ref int num_param);
 
-        public string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out string expr_without_brackets)
+        public string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets)
         {
-            return FindExpressionFromAnyPosition(off, Text, line, col, out _, out expr_without_brackets);
+            keyw = KeywordKind.None;
+            return FindExpressionFromAnyPosition(off, Text, line, col, out expr_without_brackets);
         }
 
         // перенести сюда реализацию  EVA
-        public abstract string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets);
+        public abstract string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out string expr_without_brackets);
 
         public virtual string FindOnlyIdentifier(int off, string Text, int line, int col, ref string name)
         {
@@ -215,7 +216,7 @@ namespace PascalABCCompiler.Parsers
                 sb.Append(GetSimpleDescription(parameters[i]));
                 if (i < parameters.Length - 1)
                 {
-                    sb.Append(ParameterDelimiter + " ");
+                    sb.Append("; ");
                 }
             }
             sb.Append(')');
@@ -284,150 +285,6 @@ namespace PascalABCCompiler.Parsers
                 sb.Append(GetSimpleDescriptionWithoutNamespace(es.ElementType));
                 return new string[1] { sb.ToString() };
             }
-        }
-
-        protected string GetDescriptionForEnum(IEnumScope scope)
-        {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            sb.Append('(');
-            for (int i = 0; i < scope.EnumConsts.Length; i++)
-            {
-                sb.Append(scope.EnumConsts[i]);
-                if (i < scope.EnumConsts.Length - 1)
-                    sb.Append(',');
-                if (i >= 2)
-                {
-                    sb.Append("...");
-                    break;
-                }
-            }
-            sb.Append(')');
-            return sb.ToString();
-        }
-
-        private void append_modifiers(StringBuilder sb, IElementScope scope)
-        {
-            if (scope.IsVirtual) sb.Append("; ");
-            if (scope.IsAbstract) sb.Append("; abstract");
-            if (scope.IsOverride) sb.Append("; override");
-            //if (scope.IsStatic) sb.Append("; static");
-            if (scope.IsReintroduce) sb.Append("; reintroduce");
-        }
-
-        protected string get_index_description(IElementScope scope)
-        {
-            ITypeScope[] indexers = scope.Indexers;
-            if (indexers == null || indexers.Length == 0) return "";
-            StringBuilder sb = new StringBuilder();
-            sb.Append('[');
-            for (int i = 0; i < indexers.Length; i++)
-            {
-                sb.Append(GetSimpleDescription(indexers[i]));
-                if (i < indexers.Length - 1)
-                    sb.Append(',');
-            }
-            sb.Append(']');
-            return sb.ToString();
-        }
-
-        protected string GetDescriptionForElementScope(IElementScope scope)
-        {
-            string type_name = null;
-            StringBuilder sb = new StringBuilder();
-            if (scope.Type == null) type_name = "";
-            else
-                type_name = GetSimpleDescription(scope.Type);
-            if (type_name.StartsWith("$"))
-                type_name = type_name.Substring(1, type_name.Length - 1);
-            switch (scope.ElemKind)
-            {
-                case SymbolKind.Variable: sb.Append("var " + GetTopScopeName(scope.TopScope) + scope.Name + ((type_name != "") ? ": " + type_name : "")); break;
-                case SymbolKind.Parameter: sb.Append(kind_of_param(scope) + "parameter " + scope.Name + ": " + type_name + (scope.ConstantValue != null ? (":=" + scope.ConstantValue.ToString()) : "")); break;
-                case SymbolKind.Constant:
-                    {
-                        if (scope.ConstantValue == null)
-                            sb.Append("const " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name);
-                        else sb.Append("const " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name + " = " + scope.ConstantValue.ToString());
-                    }
-                    break;
-                case SymbolKind.Event:
-                    if (scope.IsStatic) sb.Append("static ");
-                    sb.Append("event " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name);
-                    append_modifiers(sb, scope);
-                    break;
-                case SymbolKind.Field:
-                    if (scope.IsStatic)
-                        sb.Append("static ");
-                    else
-                        sb.Append("var ");
-                    sb.Append(GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name);
-                    append_modifiers(sb, scope);
-                    //if (scope.IsStatic) sb.Append("; static");
-                    if (scope.IsReadOnly) sb.Append("; readonly");
-                    break;
-                case SymbolKind.Property:
-                    if (scope.IsStatic)
-                        sb.Append("static ");
-                    sb.Append("property " + GetTopScopeName(scope.TopScope) + scope.Name + get_index_description(scope) + ": " + type_name);
-                    if (scope.IsReadOnly)
-                        sb.Append("; readonly");
-                    append_modifiers(sb, scope);
-                    break;
-
-            }
-            sb.Append(';');
-            return sb.ToString();
-        }
-
-        protected string GetDescriptionForArray(IArrayScope scope)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("array");
-            ITypeScope[] inds = scope.Indexers;
-            if (!scope.IsDynamic)
-            {
-                sb.Append('[');
-                for (int i = 0; i < inds.Length; i++)
-                {
-                    sb.Append(GetSimpleDescription(inds[i]));
-                    if (i < inds.Length - 1) sb.Append(',');
-                }
-                sb.Append(']');
-            }
-            if (scope.ElementType != null)
-            {
-                string s = GetSimpleDescription(scope.ElementType);
-                if (s.Length > 0 && s[0] == '$') s = s.Substring(1, s.Length - 1);
-                sb.Append(" of " + s);
-            }
-            return sb.ToString();
-        }
-
-        protected string GetDescriptionForDelegate(IProcType t)
-        {
-            StringBuilder sb = new StringBuilder();
-            if (t.Target.ReturnType != null || ProcedureName == null)
-                sb.Append(FunctionName);
-            else sb.Append(ProcedureName);
-            IElementScope[] prms = t.Target.Parameters;
-            if (prms.Length > 0)
-            {
-                sb.Append('(');
-                for (int i = 0; i < prms.Length; i++)
-                {
-                    sb.Append(GetSimpleDescription(prms[i]));
-                    if (i < prms.Length - 1)
-                    {
-                        sb.Append(ParameterDelimiter + " ");
-                    }
-                }
-                sb.Append(')');
-            }
-            if (t.Target.ReturnType != null)
-            {
-                sb.Append(ReturnTypeDelimiter + " " + GetSimpleDescription(t.Target.ReturnType));
-            }
-            return sb.ToString();
         }
 
         public abstract string GetKeyword(SymbolKind kind);
@@ -881,17 +738,7 @@ namespace PascalABCCompiler.Parsers
             return sc.Name;
         }
 
-        protected string kind_of_param(IElementScope scope)
-        {
-            switch (scope.ParamKind)
-            {
-                case PascalABCCompiler.SyntaxTree.parametr_kind.const_parametr: return "const ";
-                case PascalABCCompiler.SyntaxTree.parametr_kind.var_parametr: return "var ";
-                case PascalABCCompiler.SyntaxTree.parametr_kind.params_parametr: return "params ";
-                case PascalABCCompiler.SyntaxTree.parametr_kind.out_parametr: return "out ";
-            }
-            return "";
-        }
+        protected abstract string kind_of_param(IElementScope scope);
 
         protected string GetSimpleDescriptionForElementScope(IElementScope scope)
         {

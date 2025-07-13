@@ -1,4 +1,4 @@
-type TClass = class
+﻿type TClass = class
   a: integer;
 end;
 

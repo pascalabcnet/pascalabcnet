@@ -9,6 +9,7 @@ AUTO_CLASS_MUST_NOT_HAVE_PROPERTIES=Auto class can not have properties
 UNDEFINED_NAME_REFERENCE_{0}=Undefined name reference '{0}'
 TWO_TYPE_CONVERTIONS_POSSIBLE_FIRST_TYPE_{0}_SECOND_TYE_{1}=Two type of convertions are possible: to type '{0}' and to type '{1}'
 CAN_NOT_CONVERT_TYPES_FROM_{0}_TO_{1}=Incompatible types: '{0}' and '{1}'
+GENERIC_FUNCTION_{0}_CANNOT_BE_AN_ARGUMENT=Generic function {0} cannot be an argument
 NO_FUNCION_WITH_THIS_NAME=No function with this name
 INVALID_FUNCTION_PARAMETERS_NUM=Wrong number of function parameters
 INVALID_PROCEDURE_PARAMETERS_NUM=Wrong number of procedure parameters

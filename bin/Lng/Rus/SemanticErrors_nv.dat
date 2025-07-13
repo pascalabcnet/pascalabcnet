@@ -9,6 +9,7 @@ AUTO_CLASS_MUST_NOT_HAVE_PROPERTIES=Авто класс не может имет
 UNDEFINED_NAME_REFERENCE_{0}=Неизвестное имя '{0}'
 TWO_TYPE_CONVERTIONS_POSSIBLE_FIRST_TYPE_{0}_SECOND_TYE_{1}=Возможны два преобразования типа: к типу {0} и к типу {1}
 CAN_NOT_CONVERT_TYPES_FROM_{0}_TO_{1}=Нельзя преобразовать тип {0} к {1}
+GENERIC_FUNCTION_{0}_CANNOT_BE_AN_ARGUMENT=Обобщенная подпрограмма {0} не может быть аргументом
 NO_FUNCION_WITH_THIS_NAME=Нет функции с таким именем
 INVALID_FUNCTION_PARAMETERS_NUM=Неверное количество параметров функции
 INVALID_PROCEDURE_PARAMETERS_NUM=Неверное количество параметров процедуры

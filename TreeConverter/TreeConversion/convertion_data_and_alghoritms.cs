@@ -1183,6 +1183,15 @@ namespace PascalABCCompiler.TreeConverter
 				}
 				else
 				{
+                    if (factparams[i].type is delegated_methods dm2
+                                && dm2.proper_methods[0].function.is_generic_function
+                                && !syntax_tree_visitor.context.WithSection)
+                    {
+                        var name = dm2.proper_methods[0].function.name;
+                        error = new GenericFunctionCannotBeAnArgument(name, locg);
+                        return null; // фактический параметр - имя неинстанцированной generic-функции!
+                    }
+
                     ptc = type_table.get_convertions(factparams[i].type, formal_param_type);
 
                     if (factparams[i] is null_const_node && !type_table.is_with_nil_allowed(formal_param_type) && !formal_param_type.IsPointer) // SSM 01.07.19 - nil не может быть преобразована за счёт вызова функции
