@@ -355,7 +355,7 @@ namespace CodeCompletion
             List<SymInfo> lst = new List<SymInfo>();
             List<ProcScope> meth_list = GetExtensionMethods(ts);
             for (int i = 0; i < meth_list.Count; i++)
-                lst.Add(meth_list[i].si);
+                lst.Add(meth_list[i].WithRefreshedDescription().si);
             return lst.ToArray();
         }
 
@@ -529,6 +529,43 @@ namespace CodeCompletion
         public virtual string GetFullName()
         {
             return si.name;
+        }
+
+        /// <summary>
+        /// Построение зависимого от языка описания scope и сохранение его в description, addit_name при необходимости
+        /// </summary>
+        public virtual void BuildDescription() { }
+
+        /// <summary>
+        /// Вызывает BuildDescription для текущего scope, если Description не равно null.
+        /// Документация внутри Description остается прежней.
+        /// </summary>
+        public SymScope WithRefreshedDescription()
+        {
+            // случай задания описания вручную
+            if (documentation != null && documentation.Length > 0 && documentation[0] == '-')
+                return this;
+
+            if (Description != null)
+            {
+                int ind = Description.IndexOf("\n");
+
+                string docs = null;
+
+                if (ind != -1)
+                {
+                    docs = Description.Substring(ind + 1);
+                }
+
+                BuildDescription();
+
+                if (ind != -1)
+                {
+                    si.description += "\n" + docs;
+                }
+            }
+
+            return this;
         }
 
         public virtual string GetDescription()
@@ -717,7 +754,7 @@ namespace CodeCompletion
 
             SymScope foundScope = FindScopeByLocation(line, column, ref minScope, findMinScope);
 
-            return findMinScope ? minScope : foundScope;
+            return findMinScope ? minScope?.WithRefreshedDescription() : foundScope?.WithRefreshedDescription();
         }
 
         //naiti scope po location
@@ -800,7 +837,7 @@ namespace CodeCompletion
             {
                 if (ss != this && !(ss is NamespaceScope) && ss.si.kind != SymbolKind.Namespace && !IsHiddenName(ss.si.name))
                 {
-                    lst.Add(ss.si);
+                    lst.Add(ss.WithRefreshedDescription().si);
                     if (!ss.si.has_doc)
                         UnitDocCache.AddDescribeToComplete(ss);
                 }
@@ -839,13 +876,13 @@ namespace CodeCompletion
                         {
                             if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                             {
-                                lst.Add(ss.si);
+                                lst.Add(ss.WithRefreshedDescription().si);
                             }
                         }
-                        else lst.Add(ss.si);
+                        else lst.Add(ss.WithRefreshedDescription().si);
                     }
                     else
-                        lst.Add(ss.si);
+                        lst.Add(ss.WithRefreshedDescription().si);
                     if (!ss.si.has_doc)
                         UnitDocCache.AddDescribeToComplete(ss);
                 }
@@ -870,17 +907,17 @@ namespace CodeCompletion
                         {
                             if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                             {
-                                lst.Add(ss.si);
+                                lst.Add(ss.WithRefreshedDescription().si);
                             }
                             else if (ts != null && ts.predef_loc != null && IsAfterDefinition(ts.predef_loc.begin_line_num, ts.predef_loc.begin_column_num))
                             {
-                                lst.Add(ss.si);
+                                lst.Add(ss.WithRefreshedDescription().si);
                             }
                         }
-                        else lst.Add(ss.si);
+                        else lst.Add(ss.WithRefreshedDescription().si);
                     }
                     else
-                        lst.Add(ss.si);
+                        lst.Add(ss.WithRefreshedDescription().si);
                     if (!ss.si.has_doc)
                         UnitDocCache.AddDescribeToComplete(ss);
                 }
@@ -908,7 +945,7 @@ namespace CodeCompletion
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in members)
             {
-                if (ss != this && !(ss is NamespaceScope) && ss.si.kind != SymbolKind.Namespace) lst.Add(ss.si);
+                if (ss != this && !(ss is NamespaceScope) && ss.si.kind != SymbolKind.Namespace) lst.Add(ss.WithRefreshedDescription().si);
                 if (!ss.si.has_doc)
                     UnitDocCache.AddDescribeToComplete(ss);
             }
@@ -1158,8 +1195,8 @@ namespace CodeCompletion
             this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
             is_namespace = isNamespace;
             file_name = fileName;
-            si.description = this.ToString();
-            
+
+            BuildDescription();
         }
 
         ~InterfaceUnitScope()
@@ -1345,6 +1382,11 @@ namespace CodeCompletion
             foreach (var un in namespace_units)
                 lst.AddRange(un.GetNamesAsInObject());
             return lst.ToArray();
+        }
+
+        public override void BuildDescription()
+        {
+            si.description = ToString();
         }
 
         public override string ToString()
@@ -1629,6 +1671,11 @@ namespace CodeCompletion
                 return is_reintroduce;
             }
         }
+
+        public override void BuildDescription()
+        {
+            si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+        }   
 
         public void MakeDescription()
         {
@@ -1950,6 +1997,13 @@ namespace CodeCompletion
         public override bool IsEqual(SymScope ts)
         {
             return def_proc.IsEqual(ts);
+        }
+
+        public override void BuildDescription()
+        {
+            def_proc.BuildDescription();
+            
+            si.description = def_proc.Description;
         }
 
         public override string ToString()
@@ -2551,6 +2605,13 @@ namespace CodeCompletion
             if (documentation != null) this.si.description += "\n" + this.documentation;
         }
 
+        public override void BuildDescription()
+        {
+            if (documentation != null && documentation.Length > 0 && documentation[0] == '-') return;
+            si.description = ToString();
+            si.addit_name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
+        }
+
         public void AddTemplateParameter(string name)
         {
             if (template_parameters == null) template_parameters = new List<string>();
@@ -2613,13 +2674,13 @@ namespace CodeCompletion
                         {
                             if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                             {
-                                lst.Add(ss.si);
+                                lst.Add(ss.WithRefreshedDescription().si);
                             }
                         }
-                        else lst.Add(ss.si);
+                        else lst.Add(ss.WithRefreshedDescription().si);
                     }
                     else
-                        lst.Add(ss.si);
+                        lst.Add(ss.WithRefreshedDescription().si);
                     if (!ss.si.has_doc)
                         UnitDocCache.AddDescribeToComplete(ss);
                 }
@@ -2640,13 +2701,13 @@ namespace CodeCompletion
                         {
                             if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                             {
-                                lst.Add(ss.si);
+                                lst.Add(ss.WithRefreshedDescription().si);
                             }
                         }
-                        else lst.Add(ss.si);
+                        else lst.Add(ss.WithRefreshedDescription().si);
                     }
                     else
-                        lst.Add(ss.si);
+                        lst.Add(ss.WithRefreshedDescription().si);
                     if (!ss.si.has_doc)
                         UnitDocCache.AddDescribeToComplete(ss);
                 }
@@ -3159,7 +3220,7 @@ namespace CodeCompletion
             this.declScope = declScope;
             this.topScope = declScope;
             this.name = name;
-            si.description = name + " in " + declScope.si.name;
+            BuildDescription();
         }
 
         public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
@@ -3177,6 +3238,10 @@ namespace CodeCompletion
             }
         }
 
+        public override void BuildDescription()
+        {
+            si.description = name + " in " + declScope.si.name;
+        }
     }
 
     //sinonim type myreal = real;
@@ -3191,7 +3256,7 @@ namespace CodeCompletion
             this.si = si;
             this.generic_params = generic_params;
             if (actType.si != null && actType.si.description != null)
-                this.si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+                BuildDescription();
             //this.si.describe = "type "+this.si.name + " = "+actType.si.name;
         }
 
@@ -3377,7 +3442,7 @@ namespace CodeCompletion
             if (len != null)
             {
                 this.si = new SymInfo("string", SymbolKind.Type, "string");
-                this.si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+                BuildDescription();
             }
             else this.si = actType.si;
         }
@@ -4468,7 +4533,7 @@ namespace CodeCompletion
             if (members != null)
                 foreach (SymScope ss in members)
                     if (ss is ProcScope && ss.is_virtual)
-                        procs.Add(ss as ProcScope);
+                        procs.Add(ss.WithRefreshedDescription() as ProcScope);
             if (baseScope != null)
                 procs.AddRange(baseScope.GetOverridableMethods());
             return procs;
@@ -4480,7 +4545,7 @@ namespace CodeCompletion
             if (members != null)
                 foreach (SymScope ss in members)
                     if (ss is ProcScope && (ss.is_abstract || this.si.kind == SymbolKind.Interface))
-                        procs.Add(ss as ProcScope);
+                        procs.Add(ss.WithRefreshedDescription() as ProcScope);
             if (si.kind == SymbolKind.Interface && implemented_interfaces != null)
                 foreach (TypeScope t in implemented_interfaces)
                     procs.AddRange(t.GetAbstractMethods());
@@ -4851,6 +4916,11 @@ namespace CodeCompletion
             return constrs;
         }
 
+        public override void BuildDescription()
+        {
+            si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+        }
+
         //opisanie, vysvechivaetsja v zheltkom okoshke
         public override string GetDescription()
         {
@@ -4870,7 +4940,7 @@ namespace CodeCompletion
             {
                 if (!IsHiddenName(ss.si.name))
                 {
-                    lst.Add(ss.si);
+                    lst.Add(ss.WithRefreshedDescription().si);
                     if (!ss.si.has_doc)
                         UnitDocCache.AddDescribeToComplete(ss);
                 }
@@ -4895,20 +4965,23 @@ namespace CodeCompletion
                     if (ss.si.acc_mod == access_modifer.private_modifer)
                     {
                         if (ev.CheckPrivateForBaseAccess(ev.entry_scope, this))
-                            if (!is_static) lst.Add(ss.si);
-                            else if (ss.is_static) lst.Add(ss.si);
+                            AddSymInfo();
                     }
                     else if (ss.si.acc_mod == access_modifer.protected_modifer)
                     {
                         if (ev.CheckForBaseAccess(ev.entry_scope, this))
-                            if (!is_static) lst.Add(ss.si);
-                            else if (ss.is_static) lst.Add(ss.si);
+                            AddSymInfo();
                     }
                     else
-                        if (!is_static) lst.Add(ss.si);
-                        else if (ss.is_static) lst.Add(ss.si);
+                        AddSymInfo();
                     if (!ss.si.has_doc)
                         UnitDocCache.AddDescribeToComplete(ss);
+                }
+
+                void AddSymInfo()
+                {
+                    if (!is_static) lst.Add(ss.WithRefreshedDescription().si);
+                    else if (ss.is_static) lst.Add(ss.WithRefreshedDescription().si);
                 }
             }
             if (baseScope != null)
@@ -4930,13 +5003,13 @@ namespace CodeCompletion
                 if (!IsHiddenName(ss.si.name) && !ss.is_static)
                     if (!(ss is ProcScope) && !(ss is TemplateParameterScope))
                     {
-                        lst.Add(ss.si);
+                        lst.Add(ss.WithRefreshedDescription().si);
                         if (!ss.si.has_doc)
                             UnitDocCache.AddDescribeToComplete(ss);
                     }
                     else if (!(ss as ProcScope).IsConstructor())
                     {
-                        lst.Add(ss.si);
+                        lst.Add(ss.WithRefreshedDescription().si);
                         if (!ss.si.has_doc)
                             UnitDocCache.AddDescribeToComplete(ss);
                     }
@@ -4991,20 +5064,23 @@ namespace CodeCompletion
                     if (ss.si.acc_mod == access_modifer.private_modifer)
                     {
                         if (ev.CheckPrivateForBaseAccess(ev.entry_scope, this))
-                            if (!is_static) lst.Add(ss.si);
-                            else if (ss.is_static) lst.Add(ss.si);
+                            AddSymInfo();
                     }
                     else if (ss.si.acc_mod == access_modifer.protected_modifer)
                     {
                         if (ev.CheckForBaseAccess(ev.entry_scope, this))
-                            if (!is_static) lst.Add(ss.si);
-                            else if (ss.is_static) lst.Add(ss.si);
+                            AddSymInfo();
                     }
                     else
-                        if (!is_static) lst.Add(ss.si);
-                        else if (ss.is_static) lst.Add(ss.si);
+                        AddSymInfo();
                     if (!ss.si.has_doc)
                         UnitDocCache.AddDescribeToComplete(ss);
+                }
+
+                void AddSymInfo()
+                {
+                    if (!is_static) lst.Add(ss.WithRefreshedDescription().si);
+                    else if (ss.is_static) lst.Add(ss.WithRefreshedDescription().si);
                 }
             }
             if (baseScope != null)
@@ -5029,31 +5105,31 @@ namespace CodeCompletion
                         if (ss.si.acc_mod == access_modifer.private_modifer)
                         {
                             if (ss.is_static && ev.CheckPrivateForBaseAccess(ev.entry_scope, this))
-                                lst.Add(ss.si);
+                                lst.Add(ss.WithRefreshedDescription().si);
                         }
                         else if (ss.si.acc_mod == access_modifer.protected_modifer)
                         {
                             if (ss.is_static && ev.CheckForBaseAccess(ev.entry_scope, this))
-                                lst.Add(ss.si);
+                                lst.Add(ss.WithRefreshedDescription().si);
                         }
                         else if (ss.is_static)
                         {
                             if (!((ss is ProcScope) && (ss as ProcScope).IsConstructor()))
-                                lst.Add(ss.si);
+                                lst.Add(ss.WithRefreshedDescription().si);
                         }
 
                         else if ((ss is ProcScope) && (ss as ProcScope).IsConstructor())
                             if (!((ss as ProcScope).parameters == null || (ss as ProcScope).parameters.Count == 0) || !called_in_base)
-                                lst.Add(ss.si);
+                                lst.Add(ss.WithRefreshedDescription().si);
                     }
                     else
                     {
                         if (ss is ProcScope && !(ss as ProcScope).already_defined)
                         {
                             if (keyword == PascalABCCompiler.Parsers.KeywordKind.Function || keyword == PascalABCCompiler.Parsers.KeywordKind.Destructor)
-                                lst.Add(ss.si);
+                                lst.Add(ss.WithRefreshedDescription().si);
                             else if ((ss as ProcScope).IsConstructor())
-                                lst.Add(ss.si);
+                                lst.Add(ss.WithRefreshedDescription().si);
                         }
                     }
                     if (!ss.si.has_doc)
@@ -5085,15 +5161,15 @@ namespace CodeCompletion
                     if (ss.si.acc_mod == access_modifer.private_modifer)
                     {
                         if (ev.CheckPrivateForBaseAccess(ev.entry_scope, this))
-                            lst.Add(ss.si);
+                            lst.Add(ss.WithRefreshedDescription().si);
                     }
                     else if (ss.si.acc_mod == access_modifer.protected_modifer)
                     {
                         if (ev.CheckForBaseAccess(ev.entry_scope, this))
-                            lst.Add(ss.si);
+                            lst.Add(ss.WithRefreshedDescription().si);
                     }
                     else
-                        lst.Add(ss.si);
+                        lst.Add(ss.WithRefreshedDescription().si);
                     if (!ss.si.has_doc)
                         UnitDocCache.AddDescribeToComplete(ss);
                 }
@@ -5368,7 +5444,7 @@ namespace CodeCompletion
         {
             this.name = name;
             this.si = new SymInfo(name, SymbolKind.Namespace, name);
-            this.si.description = CodeCompletionController.CurrentParser?.LanguageInformation.GetDescription(this);
+            BuildDescription();
         }
 
         public override ScopeKind Kind
@@ -5377,6 +5453,11 @@ namespace CodeCompletion
             {
                 return ScopeKind.Namespace;
             }
+        }
+
+        public override void BuildDescription()
+        {
+            si.description = CodeCompletionController.CurrentParser?.LanguageInformation.GetDescription(this);
         }
 
         private SymInfo convertToDefaultNETNames(Type t, SymInfo si)
@@ -5405,20 +5486,20 @@ namespace CodeCompletion
                                 continue;
                             if (t.BaseType == typeof(MulticastDelegate))
                                 //syms.Add(new CompiledScope(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Delegate, "delegate "+TypeUtility.GetTypeName(t) + "\n" + AssemblyDocCache.GetDocumentation(t)),t));
-                                syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Delegate, null), t).si);
+                                syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Delegate, null), t).WithRefreshedDescription().si);
                             else
                                 if (t.IsClass)
                                     //syms.Add(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Type, "class "+TypeUtility.GetTypeName(t)+ "\n" +AssemblyDocCache.GetDocumentation(t)));
-                                    syms.Add(convertToDefaultNETNames(t, TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Class, null), t).si));
+                                    syms.Add(convertToDefaultNETNames(t, TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Class, null), t).WithRefreshedDescription().si));
                                 else if (t.IsInterface)
                                     //syms.Add(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Interface, "interface "+TypeUtility.GetTypeName(t)+ "\n" +AssemblyDocCache.GetDocumentation(t)));
-                                    syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Interface, null), t).si);
+                                    syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Interface, null), t).WithRefreshedDescription().si);
                                 else if (t.IsEnum)
                                     //syms.Add(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Enum, "enum "+TypeUtility.GetTypeName(t)+ "\n" +AssemblyDocCache.GetDocumentation(t)));
-                                    syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Enum, null), t).si);
+                                    syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Enum, null), t).WithRefreshedDescription().si);
                                 else if (t.IsValueType)
                                     //syms.Add(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Struct, "record "+TypeUtility.GetTypeName(t)+ "\n" +AssemblyDocCache.GetDocumentation(t)));
-                                    syms.Add(convertToDefaultNETNames(t, TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Struct, null), t).si));
+                                    syms.Add(convertToDefaultNETNames(t, TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Struct, null), t).WithRefreshedDescription().si));
                         }
                     }
 
@@ -5583,20 +5664,20 @@ namespace CodeCompletion
                     {
                         if (t.BaseType == typeof(MulticastDelegate))
                             //syms.Add(new CompiledScope(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Delegate, "delegate "+TypeUtility.GetTypeName(t) + "\n" + AssemblyDocCache.GetDocumentation(t)),t));
-                            syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Delegate, null), t).si);
+                            syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Delegate, null), t).WithRefreshedDescription().si);
                         else
                             if (t.IsClass)
                                 //syms.Add(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Class, "class "+TypeUtility.GetTypeName(t)+ "\n" +AssemblyDocCache.GetDocumentation(t)));
-                                syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Class, null), t).si);
+                                syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Class, null), t).WithRefreshedDescription().si);
                             else if (t.IsInterface)
                                 //	syms.Add(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Interface, "interface "+TypeUtility.GetTypeName(t)+ "\n" +AssemblyDocCache.GetDocumentation(t)));
-                                syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Interface, null), t).si);
+                                syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Interface, null), t).WithRefreshedDescription().si);
                             else if (t.IsEnum)
                                 //syms.Add(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Enum, "enum "+TypeUtility.GetTypeName(t)+ "\n" +AssemblyDocCache.GetDocumentation(t)));
-                                syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Enum, null), t).si);
+                                syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Enum, null), t).WithRefreshedDescription().si);
                             else if (t.IsValueType)
                                 //syms.Add(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Struct, "record "+TypeUtility.GetTypeName(t)+ "\n" +AssemblyDocCache.GetDocumentation(t)));
-                                syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Struct, null), t).si);
+                                syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Struct, null), t).WithRefreshedDescription().si);
                     }
                 }
 
@@ -6065,10 +6146,10 @@ namespace CodeCompletion
                                 {
                                     if (si2.acc_mod == access_modifer.protected_modifer)
                                     {
-                                        syms.Add(member);
+                                        syms.Add((ProcScope)member.WithRefreshedDescription());
                                     }
                                     else if (si2.acc_mod != access_modifer.private_modifer && si2.acc_mod != access_modifer.internal_modifer)
-                                        syms.Add(member);
+                                        syms.Add((ProcScope)member.WithRefreshedDescription());
                                 }
                             }
                             break;
@@ -6102,10 +6183,10 @@ namespace CodeCompletion
                                 {
                                     if (si2.acc_mod == access_modifer.protected_modifer)
                                     {
-                                        syms.Add(member);
+                                        syms.Add((ProcScope)member.WithRefreshedDescription());
                                     }
                                     else if (si2.acc_mod != access_modifer.private_modifer && si2.acc_mod != access_modifer.internal_modifer)
-                                        syms.Add(member);
+                                        syms.Add((ProcScope)member.WithRefreshedDescription());
                                 }
                             }
                             break;
@@ -6357,15 +6438,8 @@ namespace CodeCompletion
                         case MemberTypes.Method: if (!(mi as MethodInfo).IsSpecialName && (mi as MethodInfo).IsStatic)
                             {
                                 SymInfo si2 = new SymInfo(null, SymbolKind.Method, null);
-                                CompiledMethodScope member = new CompiledMethodScope(si2, mi as MethodInfo, this);
-                                si2 = member.si;
-                                if (si2.acc_mod == access_modifer.protected_modifer)
-                                {
-                                    if (ev.CheckForBaseAccess(ev.entry_scope, this))
-                                        syms.Add(si2);
-                                }
-                                else if (si2.acc_mod != access_modifer.private_modifer && si2.acc_mod != access_modifer.internal_modifer)
-                                    syms.Add(si2);
+
+                                AddSymInfoWithAccessCheck(syms, new CompiledMethodScope(si2, mi as MethodInfo, this).si, ev);
                             }
                             break;
                         case MemberTypes.Field:
@@ -6374,29 +6448,16 @@ namespace CodeCompletion
                                 {
                                     SymInfo si2 = new SymInfo(null, SymbolKind.Field, null);
                                     if ((mi as FieldInfo).IsLiteral) si2.kind = SymbolKind.Constant;
-                                    si2 = new CompiledFieldScope(si2, mi as FieldInfo, this).si;
-                                    if (si2.acc_mod == access_modifer.protected_modifer)
-                                    {
-                                        if (ev.CheckForBaseAccess(ev.entry_scope, this))
-                                            syms.Add(si2);
-                                    }
-                                    else if (si2.acc_mod != access_modifer.private_modifer && si2.acc_mod != access_modifer.internal_modifer)
-                                        syms.Add(si2);
+
+                                    AddSymInfoWithAccessCheck(syms, new CompiledFieldScope(si2, mi as FieldInfo, this).si, ev);
                                 }
                             }
                             break;
                         case MemberTypes.Constructor:
                             {
                                 SymInfo si2 = new SymInfo(null, SymbolKind.Method, null);
-                                CompiledConstructorScope member = new CompiledConstructorScope(si2, mi as ConstructorInfo, this);
-                                si2 = member.si;
-                                if (si2.acc_mod == access_modifer.protected_modifer)
-                                {
-                                    if (ev.CheckForBaseAccess(ev.entry_scope, this))
-                                        syms.Add(si2);
-                                }
-                                else if (si2.acc_mod != access_modifer.private_modifer && si2.acc_mod != access_modifer.internal_modifer)
-                                    syms.Add(si2);
+
+                                AddSymInfoWithAccessCheck(syms, new CompiledConstructorScope(si2, mi as ConstructorInfo, this).si, ev);
                             }
                             break;
                         case MemberTypes.Property:
@@ -6405,14 +6466,8 @@ namespace CodeCompletion
                                 if (pi.GetGetMethod(true) != null && pi.GetGetMethod(true).IsStatic)
                                 {
                                     SymInfo si2 = new SymInfo(null, SymbolKind.Property, null);
-                                    si2 = new CompiledPropertyScope(si2, mi as PropertyInfo, this).si;
-                                    if (si2.acc_mod == access_modifer.protected_modifer)
-                                    {
-                                        if (ev.CheckForBaseAccess(ev.entry_scope, this))
-                                            syms.Add(si2);
-                                    }
-                                    else if (si2.acc_mod != access_modifer.private_modifer && si2.acc_mod != access_modifer.internal_modifer)
-                                        syms.Add(si2);
+
+                                    AddSymInfoWithAccessCheck(syms, new CompiledPropertyScope(si2, mi as PropertyInfo, this).si, ev);
                                 }
                             }
                             break;
@@ -6422,15 +6477,8 @@ namespace CodeCompletion
                                 if (acc_mi != null && acc_mi.IsStatic)
                                 {
                                     SymInfo si2 = new SymInfo(null, SymbolKind.Event, null);
-                                    si2 = new CompiledEventScope(si2, mi as EventInfo, this).si;
-                                    syms.Add(si2);
-                                    if (si2.acc_mod == access_modifer.protected_modifer)
-                                    {
-                                        if (ev.CheckForBaseAccess(ev.entry_scope, this))
-                                            syms.Add(si2);
-                                    }
-                                    else if (si2.acc_mod != access_modifer.private_modifer && si2.acc_mod != access_modifer.internal_modifer)
-                                        syms.Add(si2);
+
+                                    AddSymInfoWithAccessCheck(syms, new CompiledEventScope(si2, mi as EventInfo, this).si, ev);
                                 }
                             }
                             break;
@@ -6439,9 +6487,8 @@ namespace CodeCompletion
                                 if ((mi as Type).IsNestedPublic)
                                 {
                                     SymInfo si2 = new SymInfo(null, SymbolKind.Type, null);
-                                    CompiledScope member = TypeTable.get_compiled_type(si2, mi as Type);
-                                    si2 = member.si;
-                                    syms.Add(si2);
+
+                                    AddSymInfoWithAccessCheck(syms, TypeTable.get_compiled_type(si2, mi as Type).si, ev);
                                 }
                             }
                             break;
@@ -6596,19 +6643,15 @@ namespace CodeCompletion
             }
             foreach (MemberInfo mi in mis)
                 if (!IsHiddenName(mi.Name))
+                {
                     switch (mi.MemberType)
                     {
-                        case MemberTypes.Method: if (!(mi as MethodInfo).IsSpecialName)
+                        case MemberTypes.Method:
+                            if (!(mi as MethodInfo).IsSpecialName)
                             {
                                 SymInfo si2 = new SymInfo(null, SymbolKind.Method, null);
-                                si2 = new CompiledMethodScope(si2, mi as MethodInfo, this).si;
-                                if (si2.acc_mod == access_modifer.protected_modifer)
-                                {
-                                    if (ev.CheckForBaseAccess(ev.entry_scope, this))
-                                        syms.Add(si2);
-                                }
-                                else if (si2.acc_mod != access_modifer.private_modifer && si2.acc_mod != access_modifer.internal_modifer)
-                                    syms.Add(si2);
+
+                                AddSymInfoWithAccessCheck(syms, new CompiledMethodScope(si2, mi as MethodInfo, this).si, ev);
                             }
                             break;
                         case MemberTypes.Field:
@@ -6617,50 +6660,46 @@ namespace CodeCompletion
                                 {
                                     SymInfo si2 = new SymInfo(null, SymbolKind.Field, null);
                                     if ((mi as FieldInfo).IsLiteral) si2.kind = SymbolKind.Constant;
-                                    si2 = new CompiledFieldScope(si2, mi as FieldInfo, this).si;
-                                    if (si2.acc_mod == access_modifer.protected_modifer)
-                                    {
-                                        if (ev.CheckForBaseAccess(ev.entry_scope, this))
-                                            syms.Add(si2);
-                                    }
-                                    else if (si2.acc_mod != access_modifer.private_modifer && si2.acc_mod != access_modifer.internal_modifer)
-                                        syms.Add(si2);
+                                    AddSymInfoWithAccessCheck(syms, new CompiledFieldScope(si2, mi as FieldInfo, this).si, ev);
                                 }
                             }
                             break;
                         case MemberTypes.Property:
                             {
                                 SymInfo si2 = new SymInfo(null, SymbolKind.Property, null);
-                                si2 = new CompiledPropertyScope(si2, mi as PropertyInfo, this).si;
-                                if (si2.acc_mod == access_modifer.protected_modifer)
-                                {
-                                    if (ev.CheckForBaseAccess(ev.entry_scope, this))
-                                        syms.Add(si2);
-                                }
-                                else if (si2.acc_mod != access_modifer.private_modifer && si2.acc_mod != access_modifer.internal_modifer)
-                                    syms.Add(si2);
+
+                                AddSymInfoWithAccessCheck(syms, new CompiledPropertyScope(si2, mi as PropertyInfo, this).si, ev);
                             }
                             break;
                         case MemberTypes.Event:
                             {
                                 SymInfo si2 = new SymInfo(null, SymbolKind.Event, null);
-                                si2 = new CompiledEventScope(si2, mi as EventInfo, this).si;
-                                if (si2.acc_mod == access_modifer.protected_modifer)
-                                {
-                                    if (ev.CheckForBaseAccess(ev.entry_scope, this))
-                                        syms.Add(si2);
-                                }
-                                else if (si2.acc_mod != access_modifer.private_modifer && si2.acc_mod != access_modifer.internal_modifer)
-                                    syms.Add(si2);
+
+                                AddSymInfoWithAccessCheck(syms, new CompiledEventScope(si2, mi as EventInfo, this).si, ev);
                             }
                             break;
                     }
+
+                    
+                }
+                    
             if (implemented_interfaces != null && false)
             {
                 foreach (TypeScope ts in implemented_interfaces)
                     syms.AddRange(ts.GetNamesAsInObject(ev));
             }
             return syms.ToArray();
+        }
+
+        private void AddSymInfoWithAccessCheck(List<SymInfo> syms, SymInfo si, ExpressionVisitor ev)
+        {
+            if (si.acc_mod == access_modifer.protected_modifer)
+            {
+                if (ev.CheckForBaseAccess(ev.entry_scope, this))
+                    syms.Add(si);
+            }
+            else if (si.acc_mod != access_modifer.private_modifer && si.acc_mod != access_modifer.internal_modifer)
+                syms.Add(si);
         }
 
         public override SymInfo[] GetNamesAsInBaseClass(ExpressionVisitor ev, bool is_static)

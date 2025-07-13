@@ -336,7 +336,7 @@ namespace CodeCompletion
                         ProcScope proc = symsc as ProcScope;
                         if (proc != null && !proc.already_defined && !proc.is_abstract && symsc.loc != null)
                         {
-                            meths.Add(proc);
+                            meths.Add((ProcScope)proc.WithRefreshedDescription());
                         }
                     }
                 }
@@ -369,7 +369,7 @@ namespace CodeCompletion
                             ProcScope proc = symsc as ProcScope;
                             if (proc != null && !proc.already_defined && !proc.is_abstract && symsc.loc != null)
                             {
-                                meths.Add(proc);
+                                meths.Add((ProcScope)proc.WithRefreshedDescription());
                             }
                         }
                     }
@@ -1016,9 +1016,12 @@ namespace CodeCompletion
             }
             if (ss != null && ss.si != null)
             {
+                ss = ss.WithRefreshedDescription();
+
                 try
                 {
-                    if (ss.si.has_doc != true)
+                    if (!ss.si.has_doc)
+                    {
                         if (ss is CompiledScope)
                             ss.AddDocumentation(AssemblyDocCache.GetDocumentation((ss as CompiledScope).ctn));
                         else if (ss is CompiledMethodScope)
@@ -1047,11 +1050,12 @@ namespace CodeCompletion
                             else
                                 ss.AddDocumentation(UnitDocCache.GetDocumentation(ps));
                         }
-                            
+
                         else if (ss is InterfaceUnitScope)
                             ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as InterfaceUnitScope));
                         else if (ss is ElementScope && string.IsNullOrEmpty(ss.si.description) && (ss as ElementScope).sc is TypeScope)
                             ss.si.description = (ss as ElementScope).sc.Description;
+                    }
                 }
                 catch (Exception e)
                 {
@@ -1136,6 +1140,8 @@ namespace CodeCompletion
             si = scopes[0];
             if (si != null && si is ProcScope)
             {
+                scopes.ForEach(sc => sc = (ProcScope)sc.WithRefreshedDescription());
+
                 List<string> procs = new List<string>();
                 List<ProcScope> proc_defs = new List<ProcScope>();
                 ProcScope ps = si as ProcScope;
