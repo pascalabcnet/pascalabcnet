@@ -102,15 +102,18 @@ namespace PascalABCCompiler.Parsers
                 return GetIdToken();
         }
 
-        public void CreateNewKeyword(string name, Enum token = null, KeywordKind kind = KeywordKind.None, bool isTypeKeyword = false)
+        public void CreateNewKeyword(string name, Enum token = null, KeywordKind kind = KeywordKind.None, bool isTypeKeyword = false, bool excludedInIntellisense = false)
         {
             name = ConvertKeyword(name);
 
             if (kind != KeywordKind.None)
                 KeywordKinds[name] = kind;
 
-            KeywordsForIntellisenseList.Add(name);
-            KeywordsForIntellisenseSet.Add(name);
+            if (!excludedInIntellisense)
+            {
+                KeywordsForIntellisenseList.Add(name);
+                KeywordsForIntellisenseSet.Add(name);
+            }
 
             // token null может передаваться, если это ключевое слово исключительно для Intellisense (например, break)
             if (token != null)

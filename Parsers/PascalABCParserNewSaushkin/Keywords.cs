@@ -92,8 +92,8 @@ namespace Languages.Pascal.Frontend.Core
             CreateNewKeyword("protected", Tokens.tkProtected);
             CreateNewKeyword("public", Tokens.tkPublic);
             CreateNewKeyword("internal", Tokens.tkInternal);
-            CreateNewKeyword("read", Tokens.tkRead);
-            CreateNewKeyword("write", Tokens.tkWrite);
+            CreateNewKeyword("read", Tokens.tkRead, excludedInIntellisense: true);
+            CreateNewKeyword("write", Tokens.tkWrite, excludedInIntellisense: true);
             CreateNewKeyword("on", Tokens.tkOn);
             CreateNewKeyword("forward", Tokens.tkForward);
             CreateNewKeyword("abstract", Tokens.tkAbstract);
@@ -112,8 +112,8 @@ namespace Languages.Pascal.Frontend.Core
             CreateNewKeyword("static", Tokens.tkStatic);
             CreateNewKeyword("step", Tokens.tkStep);
             CreateNewKeyword("index", Tokens.tkIndex);
-            CreateNewKeyword("async", Tokens.tkAsync);
-            CreateNewKeyword("await", Tokens.tkAwait);
+            CreateNewKeyword("async", Tokens.tkAsync, excludedInIntellisense: true);
+            CreateNewKeyword("await", Tokens.tkAwait, excludedInIntellisense: true);
             
             // В парсере это не ключевые слова
             CreateNewKeyword("break");
