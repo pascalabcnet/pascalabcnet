@@ -691,7 +691,7 @@ namespace VisualPascalABC
                 completionDataProvider.preSelection = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindPattern(off, text, out is_pattern);
 
                 if (!is_pattern && off > 0 && text[off - 1] == '.')
-                    key = '$';
+                    key = '_';//was '$'
                 codeCompletionWindow = PABCNETCodeCompletionWindow.ShowCompletionWindow(
                     VisualPABCSingleton.MainForm,					// The parent window for the completion window
                     textArea.MotherTextEditorControl, 					// The text editor to show the window for
