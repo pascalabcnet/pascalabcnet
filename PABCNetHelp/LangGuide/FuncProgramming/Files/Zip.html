@@ -2,13 +2,13 @@
 <param name="Keyword" value="Zip">
 </object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
 <body>
-<H1>Метод Zip</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<H1>РњРµС‚РѕРґ Zip</H1><h2>РћРїРёСЃР°РЅРёРµ РјРµС‚РѕРґРѕРІ</h2><p>РњРµС‚РѕРґС‹ РїСЂРёРІРµРґРµРЅС‹ РґР»СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё <code><b>sequence of</b> T</code>.</p><table>
 <tr><td>
 <code><b>function </b>Zip&lt;TSecond,Res&gt;(second: <b>sequence of</b> TSecond; resultSelector: (T,TSecond)-&gt;Res): <b>sequence of</b> Res;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности, используя указанную функцию, принимающую по одному элементу каждой последовательности и возвращающую элемент результирующей последовательности.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±СЉРµРґРёРЅСЏРµС‚ РґРІРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё, РёСЃРїРѕР»СЊР·СѓСЏ СѓРєР°Р·Р°РЅРЅСѓСЋ С„СѓРЅРєС†РёСЋ, РїСЂРёРЅРёРјР°СЋС‰СѓСЋ РїРѕ РѕРґРЅРѕРјСѓ СЌР»РµРјРµРЅС‚Сѓ РєР°Р¶РґРѕР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё Рё РІРѕР·РІСЂР°С‰Р°СЋС‰СѓСЋ СЌР»РµРјРµРЅС‚ СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰РµР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё.
 </td></tr>
 </table>
-<h2>Пример </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
+<h2>РџСЂРёРјРµСЂ </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
 	a := Arr(1,2,3);<br>&nbsp; <strong>var</strong> b := Lst(4,5,6);<br>&nbsp; 
 	a.Zip(b,(x,y) -&gt; x+y).Println; // 5 7 9&nbsp; <br><strong>end</strong>.</code></blockquote>
 </body>

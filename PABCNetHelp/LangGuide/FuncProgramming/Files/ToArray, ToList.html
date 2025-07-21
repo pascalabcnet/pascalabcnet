@@ -3,17 +3,17 @@
 <param name="Keyword" value="ToList">
 </object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
 <body>
-<H1>Методы ToArray, ToList</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<H1>РњРµС‚РѕРґС‹ ToArray, ToList</H1><h2>РћРїРёСЃР°РЅРёРµ РјРµС‚РѕРґРѕРІ</h2><p>РњРµС‚РѕРґС‹ РїСЂРёРІРµРґРµРЅС‹ РґР»СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё <code><b>sequence of</b> T</code>.</p><table>
 <tr><td>
 <code><b>function </b>ToArray(): array of T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает массив из последовательности.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РјР°СЃСЃРёРІ РёР· РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё.
 </td></tr>
 <tr><td>
 <code><b>function </b>ToList(): List&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает список List из последовательности.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ СЃРїРёСЃРѕРє List РёР· РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё.
 </td></tr>
 </table>
-<h2>Пример </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
+<h2>РџСЂРёРјРµСЂ </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
 	a := Arr(1,2,3);<br>&nbsp; a := a.Select(x-&gt;x*x).ToArray;<br>&nbsp; <strong>
 	var</strong> l := Lst(1,2,3);<br>&nbsp; l := l.Select(x-&gt;x*x).ToList;<br>
 	<strong>end</strong>.</code></blockquote>

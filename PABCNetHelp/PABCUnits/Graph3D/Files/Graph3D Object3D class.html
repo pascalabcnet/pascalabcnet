@@ -9,30 +9,30 @@
 <param name="Keyword" value="Y">
 <param name="Keyword" value="Z"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Graph3D: класс Object3D</H1>Базовый класс трехмерных объектов. Базовый класс - <code>ISerializable</code>.
-<table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства класса Object3D</font></td></tr>
+</HEAD><body><H1>Graph3D: РєР»Р°СЃСЃ Object3D</H1>Р‘Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ С‚СЂРµС…РјРµСЂРЅС‹С… РѕР±СЉРµРєС‚РѕРІ. Р‘Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ - <code>ISerializable</code>.
+<table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">РЎРІРѕР№СЃС‚РІР° РєР»Р°СЃСЃР° Object3D</font></td></tr>
 
 <tr><tr><td><code><b>property</b> X: real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Координата X</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РљРѕРѕСЂРґРёРЅР°С‚Р° X</td></tr>
 <tr><td><code><b>property</b> Y: real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Координата Y</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РљРѕРѕСЂРґРёРЅР°С‚Р° Y</td></tr>
 <tr><td><code><b>property</b> Z: real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Координата Z</td></tr>
-</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы класса Object3D</font></td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РљРѕРѕСЂРґРёРЅР°С‚Р° Z</td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">РњРµС‚РѕРґС‹ РєР»Р°СЃСЃР° Object3D</font></td></tr>
 
 <tr><tr><td><code><b>function</b> MoveBy(dx, dy, dz: real): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает 3D-объект на вектор (dx,dy,dz)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС‰Р°РµС‚ 3D-РѕР±СЉРµРєС‚ РЅР° РІРµРєС‚РѕСЂ (dx,dy,dz)</td></tr>
 <tr><td><code><b>function</b> MoveBy(v: Vector3D): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает 3D-объект на вектор v</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС‰Р°РµС‚ 3D-РѕР±СЉРµРєС‚ РЅР° РІРµРєС‚РѕСЂ v</td></tr>
 <tr><td><code><b>function</b> MoveByX(dx: real): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает x-координату 3D-объекта на dx</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС‰Р°РµС‚ x-РєРѕРѕСЂРґРёРЅР°С‚Сѓ 3D-РѕР±СЉРµРєС‚Р° РЅР° dx</td></tr>
 <tr><td><code><b>function</b> MoveByY(dy: real): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает y-координату 3D-объекта на dy</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС‰Р°РµС‚ y-РєРѕРѕСЂРґРёРЅР°С‚Сѓ 3D-РѕР±СЉРµРєС‚Р° РЅР° dy</td></tr>
 <tr><td><code><b>function</b> MoveByZ(dz: real): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает z-координату 3D-объекта на dz</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС‰Р°РµС‚ z-РєРѕРѕСЂРґРёРЅР°С‚Сѓ 3D-РѕР±СЉРµРєС‚Р° РЅР° dz</td></tr>
 <tr><td><code><b>function</b> MoveTo(xx, yy, zz: real): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает 3D-объект к точке (xx,yy,zz)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС‰Р°РµС‚ 3D-РѕР±СЉРµРєС‚ Рє С‚РѕС‡РєРµ (xx,yy,zz)</td></tr>
 <tr><td><code><b>function</b> MoveTo(p: Point3D): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает 3D-объект к точке p</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС‰Р°РµС‚ 3D-РѕР±СЉРµРєС‚ Рє С‚РѕС‡РєРµ p</td></tr>
 </tr></table>
 </body></HTML>

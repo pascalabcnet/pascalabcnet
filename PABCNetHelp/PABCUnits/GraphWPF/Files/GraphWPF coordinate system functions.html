@@ -8,24 +8,24 @@
 <param name="Keyword" value="YMax">
 <param name="Keyword" value="YMin"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Функции для настройки системы координат</H1>
+</HEAD><body><H1>Р¤СѓРЅРєС†РёРё РґР»СЏ РЅР°СЃС‚СЂРѕР№РєРё СЃРёСЃС‚РµРјС‹ РєРѕРѕСЂРґРёРЅР°С‚</H1>
 <table border=0 cellpadding=5><tr><td><code><b>procedure</b> DrawGrid;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует сетку системы координат</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р РёСЃСѓРµС‚ СЃРµС‚РєСѓ СЃРёСЃС‚РµРјС‹ РєРѕРѕСЂРґРёРЅР°С‚</td></tr>
 <tr><td><code><b>procedure</b> SetMathematicCoords(x1: real := -10; x2: real := 10; drawgrid: boolean := true);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает математическую систему координат с диапазоном [x1,x2] по оси OX.</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РјР°С‚РµРјР°С‚РёС‡РµСЃРєСѓСЋ СЃРёСЃС‚РµРјСѓ РєРѕРѕСЂРґРёРЅР°С‚ СЃ РґРёР°РїР°Р·РѕРЅРѕРј [x1,x2] РїРѕ РѕСЃРё OX.</td></tr>
 <tr><td><code><b>procedure</b> SetMathematicCoords(x1,x2,ymin: real; drawgrid: boolean := true);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает математическую систему координат с диапазоном [x1,x2] по оси OX и минимальной координатой ymin по оси OY</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РјР°С‚РµРјР°С‚РёС‡РµСЃРєСѓСЋ СЃРёСЃС‚РµРјСѓ РєРѕРѕСЂРґРёРЅР°С‚ СЃ РґРёР°РїР°Р·РѕРЅРѕРј [x1,x2] РїРѕ РѕСЃРё OX Рё РјРёРЅРёРјР°Р»СЊРЅРѕР№ РєРѕРѕСЂРґРёРЅР°С‚РѕР№ ymin РїРѕ РѕСЃРё OY</td></tr>
 <tr><td><code><b>procedure</b> SetStandardCoords(scale: real := 1.0; x0: real := 0; y0: real := 0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает стандартную систему координат (ось OY направлена вниз) с центром (x0,y0)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЃС‚Р°РЅРґР°СЂС‚РЅСѓСЋ СЃРёСЃС‚РµРјСѓ РєРѕРѕСЂРґРёРЅР°С‚ (РѕСЃСЊ OY РЅР°РїСЂР°РІР»РµРЅР° РІРЅРёР·) СЃ С†РµРЅС‚СЂРѕРј (x0,y0)</td></tr>
 <tr><td><code><b>procedure</b> SetStandardCoordsSharpLines(x0: real := 0; y0: real := 0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает стандартную систему координат с центром (x0,y0). Изображение не масштабируется к разрешению монитора и линии получаются чёткими</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЃС‚Р°РЅРґР°СЂС‚РЅСѓСЋ СЃРёСЃС‚РµРјСѓ РєРѕРѕСЂРґРёРЅР°С‚ СЃ С†РµРЅС‚СЂРѕРј (x0,y0). РР·РѕР±СЂР°Р¶РµРЅРёРµ РЅРµ РјР°СЃС€С‚Р°Р±РёСЂСѓРµС‚СЃСЏ Рє СЂР°Р·СЂРµС€РµРЅРёСЋ РјРѕРЅРёС‚РѕСЂР° Рё Р»РёРЅРёРё РїРѕР»СѓС‡Р°СЋС‚СЃСЏ С‡С‘С‚РєРёРјРё</td></tr>
 <tr><td><code><b>function</b> XMax: real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Максимальная отображаемая x-координата</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РѕС‚РѕР±СЂР°Р¶Р°РµРјР°СЏ x-РєРѕРѕСЂРґРёРЅР°С‚Р°</td></tr>
 <tr><td><code><b>function</b> XMin: real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Минимальная отображаемая x-координата</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРёРЅРёРјР°Р»СЊРЅР°СЏ РѕС‚РѕР±СЂР°Р¶Р°РµРјР°СЏ x-РєРѕРѕСЂРґРёРЅР°С‚Р°</td></tr>
 <tr><td><code><b>function</b> YMax: real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Максимальная отображаемая y-координата</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РѕС‚РѕР±СЂР°Р¶Р°РµРјР°СЏ y-РєРѕРѕСЂРґРёРЅР°С‚Р°</td></tr>
 <tr><td><code><b>function</b> YMin: real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Минимальная отображаемая y-координата</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРёРЅРёРјР°Р»СЊРЅР°СЏ РѕС‚РѕР±СЂР°Р¶Р°РµРјР°СЏ y-РєРѕРѕСЂРґРёРЅР°С‚Р°</td></tr>
 </table>
 </body></HTML>
