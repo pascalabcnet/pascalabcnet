@@ -17,40 +17,40 @@
 <param name="Keyword" value="WindowHeight">
 <param name="Keyword" value="WindowWidth"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Подпрограммы модуля CRT</H1>
+</HEAD><body><H1>РџРѕРґРїСЂРѕРіСЂР°РјРјС‹ РјРѕРґСѓР»СЏ CRT</H1>
 <table border=0 cellpadding=5><tr><td><code><b>procedure</b> ClearLine;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает линию на которой установлен курсор</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‡РёС‰Р°РµС‚ Р»РёРЅРёСЋ РЅР° РєРѕС‚РѕСЂРѕР№ СѓСЃС‚Р°РЅРѕРІР»РµРЅ РєСѓСЂСЃРѕСЂ</td></tr>
 <tr><td><code><b>procedure</b> ClrScr;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает экран, заполняя его текущим цветом фона</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‡РёС‰Р°РµС‚ СЌРєСЂР°РЅ, Р·Р°РїРѕР»РЅСЏСЏ РµРіРѕ С‚РµРєСѓС‰РёРј С†РІРµС‚РѕРј С„РѕРЅР°</td></tr>
 <tr><td><code><b>procedure</b> Delay(ms: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Делает паузу на ms миллисекунд</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р”РµР»Р°РµС‚ РїР°СѓР·Сѓ РЅР° ms РјРёР»Р»РёСЃРµРєСѓРЅРґ</td></tr>
 <tr><td><code><b>procedure</b> GotoXY(x, y: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переводит курсор в координаты (x,y)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРІРѕРґРёС‚ РєСѓСЂСЃРѕСЂ РІ РєРѕРѕСЂРґРёРЅР°С‚С‹ (x,y)</td></tr>
 <tr><td><code><b>procedure</b> HideCursor;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Скрывает курсор</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРєСЂС‹РІР°РµС‚ РєСѓСЂСЃРѕСЂ</td></tr>
 <tr><td><code><b>function</b> KeyPressed: boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает true если была нажата клавиша. Считать символ можно спомощью функции ReadKey</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ true РµСЃР»Рё Р±С‹Р»Р° РЅР°Р¶Р°С‚Р° РєР»Р°РІРёС€Р°. РЎС‡РёС‚Р°С‚СЊ СЃРёРјРІРѕР» РјРѕР¶РЅРѕ СЃРїРѕРјРѕС‰СЊСЋ С„СѓРЅРєС†РёРё ReadKey</td></tr>
 <tr><td><code><b>function</b> ReadKey: char;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считыват нажатую клавишу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°С‚ РЅР°Р¶Р°С‚СѓСЋ РєР»Р°РІРёС€Сѓ</td></tr>
 <tr><td><code><b>procedure</b> SetWindowCaption(s: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Задает заголовок консольного окна</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РґР°РµС‚ Р·Р°РіРѕР»РѕРІРѕРє РєРѕРЅСЃРѕР»СЊРЅРѕРіРѕ РѕРєРЅР°</td></tr>
 <tr><td><code><b>procedure</b> SetWindowSize(w, h: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Задает размеры консольного окна</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РґР°РµС‚ СЂР°Р·РјРµСЂС‹ РєРѕРЅСЃРѕР»СЊРЅРѕРіРѕ РѕРєРЅР°</td></tr>
 <tr><td><code><b>procedure</b> SetWindowTitle(s: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Задает заголовок консольного окна</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РґР°РµС‚ Р·Р°РіРѕР»РѕРІРѕРє РєРѕРЅСЃРѕР»СЊРЅРѕРіРѕ РѕРєРЅР°</td></tr>
 <tr><td><code><b>procedure</b> ShowCursor;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Показывает курсор если он скрыт</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРѕРєР°Р·С‹РІР°РµС‚ РєСѓСЂСЃРѕСЂ РµСЃР»Рё РѕРЅ СЃРєСЂС‹С‚</td></tr>
 <tr><td><code><b>procedure</b> TextBackground(c: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Задает цвет фона выводимого текста</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РґР°РµС‚ С†РІРµС‚ С„РѕРЅР° РІС‹РІРѕРґРёРјРѕРіРѕ С‚РµРєСЃС‚Р°</td></tr>
 <tr><td><code><b>procedure</b> TextColor(c: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Задает цвет выводимого текста</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РґР°РµС‚ С†РІРµС‚ РІС‹РІРѕРґРёРјРѕРіРѕ С‚РµРєСЃС‚Р°</td></tr>
 <tr><td><code><b>function</b> WhereX: integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает Х-координату курсора</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РҐ-РєРѕРѕСЂРґРёРЅР°С‚Сѓ РєСѓСЂСЃРѕСЂР°</td></tr>
 <tr><td><code><b>function</b> WhereY: integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает Y-координату курсора</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ Y-РєРѕРѕСЂРґРёРЅР°С‚Сѓ РєСѓСЂСЃРѕСЂР°</td></tr>
 <tr><td><code><b>function</b> WindowHeight: integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает высоту экрана</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІС‹СЃРѕС‚Сѓ СЌРєСЂР°РЅР°</td></tr>
 <tr><td><code><b>function</b> WindowWidth: integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ширину экрана</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С€РёСЂРёРЅСѓ СЌРєСЂР°РЅР°</td></tr>
 </table>
 </body></HTML>

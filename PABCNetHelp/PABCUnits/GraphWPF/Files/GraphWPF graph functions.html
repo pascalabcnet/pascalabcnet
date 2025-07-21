@@ -1,26 +1,26 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="DrawGraph"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Функции для вывода графиков</H1>
+</HEAD><body><H1>Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РіСЂР°С„РёРєРѕРІ</H1>
 <table border=0 cellpadding=5><tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b, min, max, x, y, w, h: real; title: string := '');</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р РёСЃСѓРµС‚ РіСЂР°С„РёРє С„СѓРЅРєС†РёРё f, Р·Р°РґР°РЅРЅРѕР№ РЅР° РѕС‚СЂРµР·РєРµ [a,b] РїРѕ РѕСЃРё Р°Р±СЃС†РёСЃСЃ Рё РЅР° РѕС‚СЂРµР·РєРµ [min,max] РїРѕ РѕСЃРё РѕСЂРґРёРЅР°С‚, РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРµ, Р·Р°РґР°РІР°РµРјРѕРј РїР°СЂР°РјРµС‚СЂР°РјРё x,y,w,h</td></tr>
 <tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b, min, max, x, y, w, h: real; XTicks: real; YTicks: real; title: string := '');</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h. Два последних параметра задают шаг сетки по OX и OY</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р РёСЃСѓРµС‚ РіСЂР°С„РёРє С„СѓРЅРєС†РёРё f, Р·Р°РґР°РЅРЅРѕР№ РЅР° РѕС‚СЂРµР·РєРµ [a,b] РїРѕ РѕСЃРё Р°Р±СЃС†РёСЃСЃ Рё РЅР° РѕС‚СЂРµР·РєРµ [min,max] РїРѕ РѕСЃРё РѕСЂРґРёРЅР°С‚, РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРµ, Р·Р°РґР°РІР°РµРјРѕРј РїР°СЂР°РјРµС‚СЂР°РјРё x,y,w,h. Р”РІР° РїРѕСЃР»РµРґРЅРёС… РїР°СЂР°РјРµС‚СЂР° Р·Р°РґР°СЋС‚ С€Р°Рі СЃРµС‚РєРё РїРѕ OX Рё OY</td></tr>
 <tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b, min, max: real; r: GRect; title: string := '');</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р РёСЃСѓРµС‚ РіСЂР°С„РёРє С„СѓРЅРєС†РёРё f, Р·Р°РґР°РЅРЅРѕР№ РЅР° РѕС‚СЂРµР·РєРµ [a,b] РїРѕ РѕСЃРё Р°Р±СЃС†РёСЃСЃ Рё РЅР° РѕС‚СЂРµР·РєРµ [min,max] РїРѕ РѕСЃРё РѕСЂРґРёРЅР°С‚, РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРµ r</td></tr>
 <tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b, min, max: real; r: GRect; XTicks, YTicks: real; title: string := '');</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r. Два последних параметра задают шаг сетки по OX и OY</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р РёСЃСѓРµС‚ РіСЂР°С„РёРє С„СѓРЅРєС†РёРё f, Р·Р°РґР°РЅРЅРѕР№ РЅР° РѕС‚СЂРµР·РєРµ [a,b] РїРѕ РѕСЃРё Р°Р±СЃС†РёСЃСЃ Рё РЅР° РѕС‚СЂРµР·РєРµ [min,max] РїРѕ РѕСЃРё РѕСЂРґРёРЅР°С‚, РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРµ r. Р”РІР° РїРѕСЃР»РµРґРЅРёС… РїР°СЂР°РјРµС‚СЂР° Р·Р°РґР°СЋС‚ С€Р°Рі СЃРµС‚РєРё РїРѕ OX Рё OY</td></tr>
 <tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b, min, max: real; title: string := '');</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, на полное графическое окно</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р РёСЃСѓРµС‚ РіСЂР°С„РёРє С„СѓРЅРєС†РёРё f, Р·Р°РґР°РЅРЅРѕР№ РЅР° РѕС‚СЂРµР·РєРµ [a,b] РїРѕ РѕСЃРё Р°Р±СЃС†РёСЃСЃ Рё РЅР° РѕС‚СЂРµР·РєРµ [min,max] РїРѕ РѕСЃРё РѕСЂРґРёРЅР°С‚, РЅР° РїРѕР»РЅРѕРµ РіСЂР°С„РёС‡РµСЃРєРѕРµ РѕРєРЅРѕ</td></tr>
 <tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b: real; x, y, w, h: real; title: string := '');</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике, задаваемом параметрами x,y,w,h</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р РёСЃСѓРµС‚ РіСЂР°С„РёРє С„СѓРЅРєС†РёРё f, Р·Р°РґР°РЅРЅРѕР№ РЅР° РѕС‚СЂРµР·РєРµ [a,b], РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРµ, Р·Р°РґР°РІР°РµРјРѕРј РїР°СЂР°РјРµС‚СЂР°РјРё x,y,w,h</td></tr>
 <tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b: real; r: GRect; title: string := '');</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике r</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р РёСЃСѓРµС‚ РіСЂР°С„РёРє С„СѓРЅРєС†РёРё f, Р·Р°РґР°РЅРЅРѕР№ РЅР° РѕС‚СЂРµР·РєРµ [a,b], РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРµ r</td></tr>
 <tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; r: GRect; title: string := '');</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [-5,5], в прямоугольнике r</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р РёСЃСѓРµС‚ РіСЂР°С„РёРє С„СѓРЅРєС†РёРё f, Р·Р°РґР°РЅРЅРѕР№ РЅР° РѕС‚СЂРµР·РєРµ [-5,5], РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРµ r</td></tr>
 <tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b: real; title: string := '');</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b], на полное графическое окно</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р РёСЃСѓРµС‚ РіСЂР°С„РёРє С„СѓРЅРєС†РёРё f, Р·Р°РґР°РЅРЅРѕР№ РЅР° РѕС‚СЂРµР·РєРµ [a,b], РЅР° РїРѕР»РЅРѕРµ РіСЂР°С„РёС‡РµСЃРєРѕРµ РѕРєРЅРѕ</td></tr>
 <tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; title: string := '');</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [-5,5], на полное графическое окно</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р РёСЃСѓРµС‚ РіСЂР°С„РёРє С„СѓРЅРєС†РёРё f, Р·Р°РґР°РЅРЅРѕР№ РЅР° РѕС‚СЂРµР·РєРµ [-5,5], РЅР° РїРѕР»РЅРѕРµ РіСЂР°С„РёС‡РµСЃРєРѕРµ РѕРєРЅРѕ</td></tr>
 </table>
 </body></HTML>
