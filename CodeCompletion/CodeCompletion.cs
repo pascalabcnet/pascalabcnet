@@ -39,7 +39,7 @@ namespace CodeCompletion
         }
 
         public static PascalABCCompiler.Compiler comp;// = new PascalABCCompiler.Compiler();
-        public static Hashtable StandartDirectories = new Hashtable();
+        public static Dictionary<string, string> StandartDirectories = new Dictionary<string, string>();
         public static Hashtable comp_modules = new Hashtable(StringComparer.OrdinalIgnoreCase);
         // public static Hashtable parsers = new Hashtable(StringComparer.OrdinalIgnoreCase);
         public static Dictionary<string, InterfaceUnitScope> pabcNamespaces = new Dictionary<string, InterfaceUnitScope>();
@@ -409,8 +409,8 @@ namespace CodeCompletion
             if (CodeCompletionController.comp != null)
                 Dirs.AddRange(CodeCompletionController.comp.CompilerOptions.SearchDirectories);
             // Надо как-то проверять, что мы не в инсталированной версии EVA
-            if (CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent) && Directory.Exists((string)CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]))
-                Dirs.Add((string)CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]);
+            if (CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent) && Directory.Exists(CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]))
+                Dirs.Add(CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]);
             return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, out found_dir_ind, caseSensitiveSearch, Dirs.ToArray());
         }
 
