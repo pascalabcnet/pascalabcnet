@@ -837,7 +837,79 @@ begin
       Lst.AddRange(|d1,d2,d3,a|);
     end;
     CheckOutput(lst);
-  end;  
+  end; 
+  'Product': begin 
+    CheckData(Empty);
+    var lst := ObjectList.New;
+    for var c := 'a' to 'z' do
+    for var i := 0 to 9 do
+    begin  
+      lst.Add(c);
+      lst.Add(i);
+    end;
+    CheckOutput(lst);
+  end;
+  'Перебор вариантов': begin 
+    FilterOnlyNumbersAndBools;
+    CheckData(Empty);
+    CheckOutput(4,6,12,3); 
+  end;
+  'ProductPartial': begin 
+    FilterOnlyNumbersAndBools;
+    CheckData(Empty);
+    var lst := ObjectList.New;
+    for var i:=1 to 4 do
+    for var j:=1 to 4 do
+    for var k:=1 to 4 do
+      if (j < k) and (j < i) then
+      lst.AddRange(|i,j,k|);
+    CheckOutput(lst); 
+  end;
+  'Combinations1': begin 
+    FilterOnlyNumbersAndBools;
+    CheckData(Empty);
+    var lst := ObjectList.New;
+    for var i := 1 to 5 do
+    for var j := i+1 to 5 do
+    for var k := j+1 to 5 do
+      lst.AddRange(|i,j,k|);
+    CheckOutput(lst); 
+  end;
+  'Permutations1': begin 
+    FilterOnlyNumbersAndBools;
+    CheckData(Empty);
+    var lst := ObjectList.New;
+    for var i := 1 to 3 do
+    for var j := 1 to 3 do
+    for var k := 1 to 3 do
+      if (i<>j) and (j<>k) and (i<>k) then
+        lst.AddRange(|i,j,k|);
+    CheckOutput(lst); 
+  end;
+  'Permutations2': begin 
+    FilterOnlyNumbersAndBools;
+    CheckData(Empty);
+    var lst := ObjectList.New;
+    for var i := 1 to 4 do
+    for var j := 1 to 4 do
+    for var k := 1 to 4 do
+    for var m := 1 to 4 do
+      if (i<>j) and (i<>k) and (i<>m) and (j<>k) and (j<>m) and (k<>m)
+      then
+        lst.AddRange(|i,j,k,m|);
+    CheckOutput(lst); 
+  end;
+  'ПрямоугольныеТреугольники': begin 
+    FilterOnlyNumbers;
+    CheckData(Empty);
+    var lst := ObjectList.New;
+    for var a:=1 to 20 do
+    for var b:=1 to 20 do
+    for var c:=1 to 20 do
+      if (a*a + b*b = c*c) and (a<b) then
+        lst.AddRange(|a,b,c|);
+    CheckOutput(lst);  
+  end;
   
   end;
 end;
@@ -860,6 +932,8 @@ initialization
   'Divisors','SimpleNumbers',
   'сс1','сс2','сс3','сс4','сс5','сс6','сс7','сс8',
   'ссi1','ссi2','ссi3','ссi4','ссi5','ссi6',
-  'Combinations','Primes','1_ПрямоугольныеТреугольники','ДесятичныеЧисла','ДвоичныеЧисла' );
+  'Combinations','Primes','1_ПрямоугольныеТреугольники','ДесятичныеЧисла','ДвоичныеЧисла',
+  'Product','Счастливые билеты','Перебор вариантов','ProductPartial','Combinations1','Permutations1','Permutations2','ПрямоугольныеТреугольники'
+  );
 finalization
 end.
