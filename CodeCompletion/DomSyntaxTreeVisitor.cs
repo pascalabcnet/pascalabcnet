@@ -2961,12 +2961,11 @@ namespace CodeCompletion
                                     cur_scope.AddName(usedName, ns_scope);
                                     cur_scope.AddUsedUnit(ns_scope);
                                 }
-                                else if (PascalABCCompiler.NetHelper.NetHelper.IsType(usedName) && allow_import_types)
+                                /*else if (PascalABCCompiler.NetHelper.NetHelper.IsType(usedName) && allow_import_types)
                                 {
                                     Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(usedName);
                                     cur_scope.AddUsedUnit(new NamespaceTypeScope(TypeTable.get_compiled_type(new SymInfo(t.Name, SymbolKind.Class, t.FullName), t)));
-                                }
-
+                                }*/
                             }
                         }
                     }
