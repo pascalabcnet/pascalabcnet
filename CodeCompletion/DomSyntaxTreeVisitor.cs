@@ -2514,7 +2514,17 @@ namespace CodeCompletion
             AssemblyDocCache.Load(_as, path);
             PascalABCCompiler.NetHelper.NetHelper.init_namespaces(_as);
             List<string> namespaces = new List<string>();
-            namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(_as));
+
+            currentUnitLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(_unit_module.file_name);
+
+            string unitName = _unit_module.unit_name.idunit_name.name;
+
+            var languageUsingStandardUnit = Languages.Facade.LanguageProvider.Instance.Languages.Find(lang => lang.SystemUnitNames.Contains(unitName));
+
+            // Пока что добавили возможость грубо отключить добавление NET пространств имен по умолчанию здесь (второе условие нужно, чтобы в стандартные модули языка они тоже не добавлялись) EVA
+            if (currentUnitLanguage.LanguageInformation.AddStandardNetNamespacesToUserScope && (languageUsingStandardUnit?.LanguageInformation.AddStandardNetNamespacesToUserScope ?? true))
+                namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(_as));
+            
             InterfaceUnitScope unit_scope = null;
             bool existed_ns = false;
             is_namespace = _unit_module.unit_name.HeaderKeyword == UnitHeaderKeyword.Namespace;
@@ -2638,8 +2648,6 @@ namespace CodeCompletion
                     }
                 }
 
-            string unitName = _unit_module.unit_name.idunit_name.name;
-
             // считаем основной модуль идущим первым в списке EVA
             var language = Languages.Facade.LanguageProvider.Instance.Languages.Find(lang => lang.SystemUnitNames.First() == unitName);
 
@@ -2657,23 +2665,15 @@ namespace CodeCompletion
 
             CodeCompletionController.comp_modules[_unit_module.file_name] = this.converter;
 
-            currentUnitLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(_unit_module.file_name);
-
-            var languageUsingStandardUnit = Languages.Facade.LanguageProvider.Instance.Languages.Find(lang => lang.SystemUnitNames.Contains(unitName));
-
             if (!existed_ns)
             {
-                // Пока что добавили возможость грубо отключить добавление NET пространств имен по умолчанию здесь (второе условие нужно, чтобы в стандартные модули языка они тоже не добавлялись) EVA
-                if (currentUnitLanguage.LanguageInformation.AddStandardNetNamespacesToUserScope && (languageUsingStandardUnit?.LanguageInformation.AddStandardNetNamespacesToUserScope ?? true))
+                foreach (string s in namespaces)
                 {
-                    foreach (string s in namespaces)
+                    if (!ns_cache.ContainsKey(s))
                     {
-                        if (!ns_cache.ContainsKey(s))
-                        {
-                            NamespaceScope ns_scope = new NamespaceScope(s);
-                            entry_scope.AddName(s, ns_scope);
-                            ns_cache[s] = s;
-                        }
+                        NamespaceScope ns_scope = new NamespaceScope(s);
+                        entry_scope.AddName(s, ns_scope);
+                        ns_cache[s] = s;
                     }
                 }
             }
@@ -3131,7 +3131,13 @@ namespace CodeCompletion
             List<string> namespaces = new List<string>();
             PascalABCCompiler.NetHelper.NetHelper.init_namespaces(_as);
             AssemblyDocCache.Load(_as, path);
-            namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(_as));
+
+            currentUnitLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(_program_module.Language);
+
+            // Пока что добавили возможость грубо отключить добавление NET пространств имен по умолчанию здесь EVA
+            if (currentUnitLanguage.LanguageInformation.AddStandardNetNamespacesToUserScope)
+                namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(_as));
+            
             //List<Scope> netScopes = new List<Scope>();
             //PascalABCCompiler.NetHelper.NetScope ns=new PascalABCCompiler.NetHelper.NetScope(unl,_as,tcst);
             InterfaceUnitScope unit_scope = null;
@@ -3237,8 +3243,6 @@ namespace CodeCompletion
                 }
             }
 
-            currentUnitLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(_program_module.Language);
-
             if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense)
             {
                 foreach (ISyntaxTreeConverter converter in currentUnitLanguage.SyntaxTreeConverters)
@@ -3279,17 +3283,13 @@ namespace CodeCompletion
                 AddStandardUnit(unitName, currentUnitLanguage.CaseSensitive, currentUnitLanguage.LanguageInformation.AddStandardUnitNamesToUserScope);
             }
 
-            // Пока что добавили возможость грубо отключить добавление NET пространств имен по умолчанию здесь EVA
-            if (currentUnitLanguage.LanguageInformation.AddStandardNetNamespacesToUserScope)
+            foreach (string s in namespaces)
             {
-                foreach (string s in namespaces)
+                if (!ns_cache.ContainsKey(s))
                 {
-                    if (!ns_cache.ContainsKey(s))
-                    {
-                        NamespaceScope ns_scope = new NamespaceScope(s);
-                        cur_scope.AddName(s, ns_scope);
-                        ns_cache[s] = s;
-                    }
+                    NamespaceScope ns_scope = new NamespaceScope(s);
+                    cur_scope.AddName(s, ns_scope);
+                    ns_cache[s] = s;
                 }
             }
 
