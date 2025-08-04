@@ -15,10 +15,6 @@ using System.Text;
 
 namespace CodeCompletion
 {
-    public class SemanticOptions
-	{
-		public bool allow_import_types=true;
-	}
 	
 	public class DomSyntaxTreeVisitor : AbstractVisitor
     {
@@ -44,7 +40,6 @@ namespace CodeCompletion
         private static Compiler compiler;
         public static bool use_semantic_for_intellisense;
         private Dictionary<method_call, SymScope> method_call_cache = new Dictionary<method_call, SymScope>();
-        public SemanticOptions semantic_options = new SemanticOptions();
         public Hashtable cur_used_assemblies;
 
         public DomSyntaxTreeVisitor(DomConverter converter)
@@ -2701,8 +2696,7 @@ namespace CodeCompletion
                 {
                     unit_or_namespace s = _interface_node.uses_modules.units[j];
                     CompileUsedUnitOrNamespace(s, Path.GetDirectoryName(_unit_module.file_name),
-                        cur_scope, ns_cache, semantic_options.allow_import_types,
-                        unl, currentUnitLanguage.CaseSensitive);
+                        cur_scope, ns_cache, unl, currentUnitLanguage.CaseSensitive);
                 }
             }
 
@@ -2899,8 +2893,7 @@ namespace CodeCompletion
         }
 
         private void CompileUsedUnitOrNamespace(unit_or_namespace s, string curr_path,
-            SymScope cur_scope, Hashtable ns_cache, bool allow_import_types,
-            using_namespace_list unl, bool caseSensitiveSearch)
+            SymScope cur_scope, Hashtable ns_cache, using_namespace_list unl, bool caseSensitiveSearch)
         {
 
             try
@@ -2961,6 +2954,7 @@ namespace CodeCompletion
                                     cur_scope.AddName(usedName, ns_scope);
                                     cur_scope.AddUsedUnit(ns_scope);
                                 }
+                                // Не поддерживается в основном компиляторе EVA
                                 /*else if (PascalABCCompiler.NetHelper.NetHelper.IsType(usedName) && allow_import_types)
                                 {
                                     Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(usedName);
@@ -3024,8 +3018,7 @@ namespace CodeCompletion
         }
 
         private void CompileImportedUnit(string importedName, statement importStatement, as_statement_list asStatementsList, string curr_path,
-            SymScope cur_scope, Hashtable ns_cache, bool allow_import_types,
-            using_namespace_list unl, bool caseSensitiveSearch)
+            SymScope cur_scope, using_namespace_list unl, bool caseSensitiveSearch)
         {
             try
             {
@@ -3263,8 +3256,7 @@ namespace CodeCompletion
                 {
                     unit_or_namespace s = _program_module.used_units.units[j];
                     CompileUsedUnitOrNamespace(s, Path.GetDirectoryName(_program_module.file_name),
-                        cur_scope, ns_cache, semantic_options.allow_import_types,
-                        unl, currentUnitLanguage.CaseSensitive);
+                        cur_scope, ns_cache, unl, currentUnitLanguage.CaseSensitive);
                 }
             }
 
@@ -3353,8 +3345,7 @@ namespace CodeCompletion
                     {
                         CompileImportedUnit(unitNode.name, import, import.modules_names,
                             Path.GetDirectoryName(fileName),
-                            cur_scope, ns_cache, semantic_options.allow_import_types,
-                            unl, caseSensitiveSearch);
+                            cur_scope, unl, caseSensitiveSearch);
 
                         usedUnitNames.Add(unitNode.name);
                     }
@@ -3363,8 +3354,7 @@ namespace CodeCompletion
                 {
                     CompileImportedUnit(fromImport.module_name.name, fromImport, fromImport.imported_names,
                         Path.GetDirectoryName(fileName),
-                        cur_scope, ns_cache, semantic_options.allow_import_types,
-                        unl, caseSensitiveSearch);
+                        cur_scope, unl, caseSensitiveSearch);
 
                     usedUnitNames.Add(fromImport.module_name.name);
                 }
@@ -5056,8 +5046,7 @@ namespace CodeCompletion
                 {
                     unit_or_namespace s = _implementation_node.uses_modules.units[j];
                     CompileUsedUnitOrNamespace(s, Path.GetDirectoryName(this.cur_unit_file_name),
-                        cur_scope, ns_cache, semantic_options.allow_import_types, 
-                        unl, currentLanguage.CaseSensitive);
+                        cur_scope, ns_cache, unl, currentLanguage.CaseSensitive);
                 }
             }
             impl_scope = cur_scope;
