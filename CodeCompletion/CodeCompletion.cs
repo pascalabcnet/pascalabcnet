@@ -9,15 +9,13 @@ using PascalABCCompiler.Parsers;
 using PascalABCCompiler.Errors;
 using System.IO;
 using Languages.Facade;
-//using ICSharpCode.SharpDevelop.Dom;
 
 namespace CodeCompletion
 {
     public class CodeCompletionController
     {
-        public static LanguageProvider LanguageProvider = LanguageProvider.Instance;
-        private string FileName;
-        string Text;
+        private static readonly LanguageProvider LanguageProvider = LanguageProvider.Instance;
+
         public Dictionary<syntax_tree_node, string> docs = new Dictionary<syntax_tree_node, string>();
 		// static bool parsers_loaded=false;
 		public IParser Parser;
@@ -70,8 +68,6 @@ namespace CodeCompletion
         
         public DomConverter Compile(string FileName, string Text)
         {
-            this.Text = Text;
-            this.FileName = FileName;
             List<Error> ErrorsList = new List<Error>();
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
             compilation_unit cu = null;
@@ -170,8 +166,7 @@ namespace CodeCompletion
 
         public DomConverter CompileAllIfNeed(string FileName, bool parse_only_interface=false)
         {
-            this.FileName = FileName;
-            this.Text = comp.GetSourceFileText(FileName);
+            string Text = comp.GetSourceFileText(FileName);
             List<Error> ErrorsList = new List<Error>();
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
             compilation_unit cu = null;
