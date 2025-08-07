@@ -34,156 +34,156 @@
 <param name="Keyword" value="Sort">
 <param name="Keyword" value="SortDescending">
 <param name="Keyword" value="Transform">
-<param name="Keyword" value="расширение"></object>
+<param name="Keyword" value="СЂР°СЃС€РёСЂРµРЅРёРµ"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Методы расширения одномерных динамических массивов</H1>
-<table border=0 cellpadding=5><tr><td><code>(расширение <b>sequence </b>  <b>of</b> T) <b>function</b> Cartesian&lt;T, T1&gt;(b: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей в виде последовательности пар</td></tr>
-<tr><td><code>(расширение <b>sequence </b>  <b>of</b> T) <b>function</b> Cartesian&lt;T, T1&gt;(b: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает n-тую декартову степень множества символов, заданного строкой</td></tr>
+</HEAD><body><H1>РњРµС‚РѕРґС‹ СЂР°СЃС€РёСЂРµРЅРёСЏ РѕРґРЅРѕРјРµСЂРЅС‹С… РґРёРЅР°РјРёС‡РµСЃРєРёС… РјР°СЃСЃРёРІРѕРІ</H1>
+<table border=0 cellpadding=5><tr><td><code>(СЂР°СЃС€РёСЂРµРЅРёРµ <b>sequence </b>  <b>of</b> T) <b>function</b> Cartesian&lt;T, T1&gt;(b: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРµРєР°СЂС‚РѕРІРѕ РїСЂРѕРёР·РІРµРґРµРЅРёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№ РІ РІРёРґРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РїР°СЂ</td></tr>
+<tr><td><code>(СЂР°СЃС€РёСЂРµРЅРёРµ <b>sequence </b>  <b>of</b> T) <b>function</b> Cartesian&lt;T, T1&gt;(b: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ n-С‚СѓСЋ РґРµРєР°СЂС‚РѕРІСѓ СЃС‚РµРїРµРЅСЊ РјРЅРѕР¶РµСЃС‚РІР° СЃРёРјРІРѕР»РѕРІ, Р·Р°РґР°РЅРЅРѕРіРѕ СЃС‚СЂРѕРєРѕР№</td></tr>
 <tr><td><code><b>function</b> AdjacentFind&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; eq: (T,T)-&gt;boolean; start: integer := 0): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит первую пару подряд идущих одинаковых элементов, используя функцию сравнения eq, и возвращает индекс первого элемента пары. Если не найден, возвращается -1</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°С…РѕРґРёС‚ РїРµСЂРІСѓСЋ РїР°СЂСѓ РїРѕРґСЂСЏРґ РёРґСѓС‰РёС… РѕРґРёРЅР°РєРѕРІС‹С… СЌР»РµРјРµРЅС‚РѕРІ, РёСЃРїРѕР»СЊР·СѓСЏ С„СѓРЅРєС†РёСЋ СЃСЂР°РІРЅРµРЅРёСЏ eq, Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РїР°СЂС‹. Р•СЃР»Рё РЅРµ РЅР°Р№РґРµРЅ, РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ -1</td></tr>
 <tr><td><code><b>function</b> ArrEqual&lt;T&gt;(Self,b: <b>array</b>  <b>of</b> T): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает, совпадают ли массивы</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚, СЃРѕРІРїР°РґР°СЋС‚ Р»Рё РјР°СЃСЃРёРІС‹</td></tr>
 <tr><td><code><b>function</b> BinarySearch&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет бинарный поиск в отсортированном массиве</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РїРѕР»РЅСЏРµС‚ Р±РёРЅР°СЂРЅС‹Р№ РїРѕРёСЃРє РІ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅРѕРј РјР°СЃСЃРёРІРµ</td></tr>
 <tr><td><code><b>function</b> CartesianPower&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; n: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает n-тую декартову степень множества элементов, заданного массивом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ n-С‚СѓСЋ РґРµРєР°СЂС‚РѕРІСѓ СЃС‚РµРїРµРЅСЊ РјРЅРѕР¶РµСЃС‚РІР° СЌР»РµРјРµРЅС‚РѕРІ, Р·Р°РґР°РЅРЅРѕРіРѕ РјР°СЃСЃРёРІРѕРј</td></tr>
 <tr><td><code><b>function</b> CartesianPower&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; n: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает n-тую декартову степень множества элементов, заданного последовательностью</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ n-С‚СѓСЋ РґРµРєР°СЂС‚РѕРІСѓ СЃС‚РµРїРµРЅСЊ РјРЅРѕР¶РµСЃС‚РІР° СЌР»РµРјРµРЅС‚РѕРІ, Р·Р°РґР°РЅРЅРѕРіРѕ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊСЋ</td></tr>
 <tr><td><code><b>function</b> CartesianPower(Self: string; n: integer): <b>sequence </b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает n-тую декартову степень множества символов, заданного строкой</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ n-С‚СѓСЋ РґРµРєР°СЂС‚РѕРІСѓ СЃС‚РµРїРµРЅСЊ РјРЅРѕР¶РµСЃС‚РІР° СЃРёРјРІРѕР»РѕРІ, Р·Р°РґР°РЅРЅРѕРіРѕ СЃС‚СЂРѕРєРѕР№</td></tr>
 <tr><td><code><b>function</b> Combinations&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; m: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все сочетания по m элементов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ СЃРѕС‡РµС‚Р°РЅРёСЏ РїРѕ m СЌР»РµРјРµРЅС‚РѕРІ</td></tr>
 <tr><td><code><b>function</b> Combinations&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; m: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все сочетания по m элементов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ СЃРѕС‡РµС‚Р°РЅРёСЏ РїРѕ m СЌР»РµРјРµРЅС‚РѕРІ</td></tr>
 <tr><td><code><b>function</b> Combinations(Self: string; m: integer): <b>sequence </b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все сочетания по m элементов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ СЃРѕС‡РµС‚Р°РЅРёСЏ РїРѕ m СЌР»РµРјРµРЅС‚РѕРІ</td></tr>
 <tr><td><code><b>function</b> ConvertAll&lt;T, T1&gt;(Self: <b>array</b>  <b>of</b> T; converter: T-&gt;T1): <b>array</b>  <b>of</b> T1;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива и возвращает преобразованный массив</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЌР»РµРјРµРЅС‚С‹ РјР°СЃСЃРёРІР° Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРЅС‹Р№ РјР°СЃСЃРёРІ</td></tr>
 <tr><td><code><b>function</b> ConvertAll&lt;T, T1&gt;(Self: <b>array</b>  <b>of</b> T; converter: (T,integer)-&gt;T1): <b>array</b>  <b>of</b> T1;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива и возвращает преобразованный массив</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЌР»РµРјРµРЅС‚С‹ РјР°СЃСЃРёРІР° Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРЅС‹Р№ РјР°СЃСЃРёРІ</td></tr>
 <tr><td><code><b>procedure</b> Fill&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет элементы массива указанным значением</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ СЌР»РµРјРµРЅС‚С‹ РјР°СЃСЃРёРІР° СѓРєР°Р·Р°РЅРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј</td></tr>
 <tr><td><code><b>procedure</b> Fill&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; f: integer-&gt;T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет элементы массива значениями, вычисляемыми по некоторому правилу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ СЌР»РµРјРµРЅС‚С‹ РјР°СЃСЃРёРІР° Р·РЅР°С‡РµРЅРёСЏРјРё, РІС‹С‡РёСЃР»СЏРµРјС‹РјРё РїРѕ РЅРµРєРѕС‚РѕСЂРѕРјСѓ РїСЂР°РІРёР»Сѓ</td></tr>
 <tr><td><code><b>procedure</b> FillRandom(Self: <b>array</b>  <b>of</b> integer; a,b: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет массив случайными значениями в диапазоне от a до b</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ РјР°СЃСЃРёРІ СЃР»СѓС‡Р°Р№РЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РІ РґРёР°РїР°Р·РѕРЅРµ РѕС‚ a РґРѕ b</td></tr>
 <tr><td><code><b>procedure</b> FillRandom(Self: <b>array</b>  <b>of</b> real; a,b: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет массив случайными значениями в диапазоне от a до b</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ РјР°СЃСЃРёРІ СЃР»СѓС‡Р°Р№РЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РІ РґРёР°РїР°Р·РѕРЅРµ РѕС‚ a РґРѕ b</td></tr>
 <tr><td><code><b>function</b> Find&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; p: T-&gt;boolean): T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет поиск первого элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается нулевое значение соответствующего типа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РїРѕР»РЅСЏРµС‚ РїРѕРёСЃРє РїРµСЂРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РІ РјР°СЃСЃРёРІРµ, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РµРіРѕ РїСЂРµРґРёРєР°С‚Сѓ. Р•СЃР»Рё РЅРµ РЅР°Р№РґРµРЅ, РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ РЅСѓР»РµРІРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ С‚РёРїР°</td></tr>
 <tr><td><code><b>function</b> FindAll&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; p: T-&gt;boolean): <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает в виде массива все элементы, удовлетворяющие предикату</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІ РІРёРґРµ РјР°СЃСЃРёРІР° РІСЃРµ СЌР»РµРјРµРЅС‚С‹, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёРµ РїСЂРµРґРёРєР°С‚Сѓ</td></tr>
 <tr><td><code><b>function</b> FindIndex&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; p: T-&gt;boolean): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет поиск индекса первого элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается -1</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РїРѕР»РЅСЏРµС‚ РїРѕРёСЃРє РёРЅРґРµРєСЃР° РїРµСЂРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РІ РјР°СЃСЃРёРІРµ, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РµРіРѕ РїСЂРµРґРёРєР°С‚Сѓ. Р•СЃР»Рё РЅРµ РЅР°Р№РґРµРЅ, РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ -1</td></tr>
 <tr><td><code><b>function</b> FindIndex&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; start: integer; p: T-&gt;boolean): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет поиск индекса первого элемента в массиве, удовлетворяющего предикату, начиная с индекса start. Если не найден, возвращается -1</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РїРѕР»РЅСЏРµС‚ РїРѕРёСЃРє РёРЅРґРµРєСЃР° РїРµСЂРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РІ РјР°СЃСЃРёРІРµ, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РµРіРѕ РїСЂРµРґРёРєР°С‚Сѓ, РЅР°С‡РёРЅР°СЏ СЃ РёРЅРґРµРєСЃР° start. Р•СЃР»Рё РЅРµ РЅР°Р№РґРµРЅ, РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ -1</td></tr>
 <tr><td><code><b>function</b> FindLast&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; p: T-&gt;boolean): T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет поиск последнего элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается нулевое значение соответствующего типа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РїРѕР»РЅСЏРµС‚ РїРѕРёСЃРє РїРѕСЃР»РµРґРЅРµРіРѕ СЌР»РµРјРµРЅС‚Р° РІ РјР°СЃСЃРёРІРµ, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РµРіРѕ РїСЂРµРґРёРєР°С‚Сѓ. Р•СЃР»Рё РЅРµ РЅР°Р№РґРµРЅ, РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ РЅСѓР»РµРІРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ С‚РёРїР°</td></tr>
 <tr><td><code><b>function</b> FindLastIndex&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; p: T-&gt;boolean): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет поиск индекса последнего элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается -1</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РїРѕР»РЅСЏРµС‚ РїРѕРёСЃРє РёРЅРґРµРєСЃР° РїРѕСЃР»РµРґРЅРµРіРѕ СЌР»РµРјРµРЅС‚Р° РІ РјР°СЃСЃРёРІРµ, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РµРіРѕ РїСЂРµРґРёРєР°С‚Сѓ. Р•СЃР»Рё РЅРµ РЅР°Р№РґРµРЅ, РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ -1</td></tr>
 <tr><td><code><b>function</b> FindLastIndex&lt;T&gt;(self: <b>array</b>  <b>of</b> T; start: integer; p: T-&gt;boolean): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет поиск индекса последнего элемента в массиве, удовлетворяющего предикату, в диапазоне индексов от 0 до start. Если не найден, возвращается -1</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РїРѕР»РЅСЏРµС‚ РїРѕРёСЃРє РёРЅРґРµРєСЃР° РїРѕСЃР»РµРґРЅРµРіРѕ СЌР»РµРјРµРЅС‚Р° РІ РјР°СЃСЃРёРІРµ, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РµРіРѕ РїСЂРµРґРёРєР°С‚Сѓ, РІ РґРёР°РїР°Р·РѕРЅРµ РёРЅРґРµРєСЃРѕРІ РѕС‚ 0 РґРѕ start. Р•СЃР»Рё РЅРµ РЅР°Р№РґРµРЅ, РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ -1</td></tr>
 <tr><td><code><b>function</b> High(Self: System.Array);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего элемента массива</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ СЌР»РµРјРµРЅС‚Р° РјР°СЃСЃРёРІР°</td></tr>
 <tr><td><code><b>function</b> IndexMax&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer := 0): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого максимального элемента</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ РјР°РєСЃРёРјР°Р»СЊРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°</td></tr>
 <tr><td><code><b>function</b> IndexMin&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer := 0): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого минимального элемента</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°</td></tr>
 <tr><td><code><b>function</b> IndexOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого вхождения элемента или -1 если элемент не найден</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ РІС…РѕР¶РґРµРЅРёСЏ СЌР»РµРјРµРЅС‚Р° РёР»Рё -1 РµСЃР»Рё СЌР»РµРјРµРЅС‚ РЅРµ РЅР°Р№РґРµРЅ</td></tr>
 <tr><td><code><b>function</b> IndexOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T; start: integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого вхождения элемента начиная с индекса start или -1 если элемент не найден</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ РІС…РѕР¶РґРµРЅРёСЏ СЌР»РµРјРµРЅС‚Р° РЅР°С‡РёРЅР°СЏ СЃ РёРЅРґРµРєСЃР° start РёР»Рё -1 РµСЃР»Рё СЌР»РµРјРµРЅС‚ РЅРµ РЅР°Р№РґРµРЅ</td></tr>
 <tr><td><code><b>function</b> Indices&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов одномерного массива</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРЅРґРµРєСЃРѕРІ РѕРґРЅРѕРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР°</td></tr>
 <tr><td><code><b>function</b> Indices&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; cond: T-&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРЅРґРµРєСЃРѕРІ СЌР»РµРјРµРЅС‚РѕРІ РѕРґРЅРѕРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР°, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёС… СѓСЃР»РѕРІРёСЋ</td></tr>
 <tr><td><code><b>function</b> Indices&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; cond: (T,integer) -&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРЅРґРµРєСЃРѕРІ СЌР»РµРјРµРЅС‚РѕРІ РѕРґРЅРѕРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР°, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёС… СѓСЃР»РѕРІРёСЋ</td></tr>
 <tr><td><code><b>function</b> IsOrdered&lt;T&gt;(self: <b>array</b>  <b>of</b> T): boolean;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив по возрастанию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРІРµСЂСЏРµС‚, РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅ Р»Рё РјР°СЃСЃРёРІ РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> IsOrdered&lt;T&gt;(self: <b>array</b>  <b>of</b> T; comparer: IComparer&lt;T&gt;): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив в порядке, заданном компаратором comparer</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРІРµСЂСЏРµС‚, РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅ Р»Рё РјР°СЃСЃРёРІ РІ РїРѕСЂСЏРґРєРµ, Р·Р°РґР°РЅРЅРѕРј РєРѕРјРїР°СЂР°С‚РѕСЂРѕРј comparer</td></tr>
 <tr><td><code><b>function</b> IsOrderedBy&lt;T, TKey&gt;(self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив по возрастанию ключа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРІРµСЂСЏРµС‚, РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅ Р»Рё РјР°СЃСЃРёРІ РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ РєР»СЋС‡Р°</td></tr>
 <tr><td><code><b>function</b> IsOrderedBy&lt;T, TKey&gt;(self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив по возрастанию ключа с компаратором</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРІРµСЂСЏРµС‚, РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅ Р»Рё РјР°СЃСЃРёРІ РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ РєР»СЋС‡Р° СЃ РєРѕРјРїР°СЂР°С‚РѕСЂРѕРј</td></tr>
 <tr><td><code><b>function</b> IsOrderedByDescending&lt;T, TKey&gt;(self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив по убыванию ключа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРІРµСЂСЏРµС‚, РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅ Р»Рё РјР°СЃСЃРёРІ РїРѕ СѓР±С‹РІР°РЅРёСЋ РєР»СЋС‡Р°</td></tr>
 <tr><td><code><b>function</b> IsOrderedByDescending&lt;T, TKey&gt;(self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив по убыванию ключа с компаратором</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРІРµСЂСЏРµС‚, РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅ Р»Рё РјР°СЃСЃРёРІ РїРѕ СѓР±С‹РІР°РЅРёСЋ РєР»СЋС‡Р° СЃ РєРѕРјРїР°СЂР°С‚РѕСЂРѕРј</td></tr>
 <tr><td><code><b>function</b> IsOrderedDescending&lt;T&gt;(self: <b>array</b>  <b>of</b> T): boolean;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив по убыванию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРІРµСЂСЏРµС‚, РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅ Р»Рё РјР°СЃСЃРёРІ РїРѕ СѓР±С‹РІР°РЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> IsOrderedDescending&lt;T&gt;(self: <b>array</b>  <b>of</b> T; comparer: IComparer&lt;T&gt;): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, отсортирован ли массив по убыванию в порядке, заданном компаратором comparer</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРІРµСЂСЏРµС‚, РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅ Р»Рё РјР°СЃСЃРёРІ РїРѕ СѓР±С‹РІР°РЅРёСЋ РІ РїРѕСЂСЏРґРєРµ, Р·Р°РґР°РЅРЅРѕРј РєРѕРјРїР°СЂР°С‚РѕСЂРѕРј comparer</td></tr>
 <tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РІ РґРёР°РїР°Р·РѕРЅРµ [0,index-1]</td></tr>
 <tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего максимального элемента</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ РјР°РєСЃРёРјР°Р»СЊРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°</td></tr>
 <tr><td><code><b>function</b> LastIndexMin&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РІ РґРёР°РїР°Р·РѕРЅРµ [0,index-1]</td></tr>
 <tr><td><code><b>function</b> LastIndexMin&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°</td></tr>
 <tr><td><code><b>function</b> LastIndexOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего вхождения элемента или -1 если элемент не найден</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ РІС…РѕР¶РґРµРЅРёСЏ СЌР»РµРјРµРЅС‚Р° РёР»Рё -1 РµСЃР»Рё СЌР»РµРјРµРЅС‚ РЅРµ РЅР°Р№РґРµРЅ</td></tr>
 <tr><td><code><b>function</b> LastIndexOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T; start: integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего вхождения элемента начиная с индекса start или -1 если элемент не найден</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ РІС…РѕР¶РґРµРЅРёСЏ СЌР»РµРјРµРЅС‚Р° РЅР°С‡РёРЅР°СЏ СЃ РёРЅРґРµРєСЃР° start РёР»Рё -1 РµСЃР»Рё СЌР»РµРјРµРЅС‚ РЅРµ РЅР°Р№РґРµРЅ</td></tr>
 <tr><td><code><b>function</b> Low(Self: System.Array);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого элемента массива</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РјР°СЃСЃРёРІР°</td></tr>
 <tr><td><code><b>function</b> Max&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): T;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает максимальный элемент</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЌР»РµРјРµРЅС‚</td></tr>
 <tr><td><code><b>function</b> Max(Self: <b>array</b>  <b>of</b> integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает максимальный элемент</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЌР»РµРјРµРЅС‚</td></tr>
 <tr><td><code><b>function</b> Max(Self: <b>array</b>  <b>of</b> real): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает максимальный элемент</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЌР»РµРјРµРЅС‚</td></tr>
 <tr><td><code><b>function</b> Min&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): T;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает минимальный элемент</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРёРЅРёРјР°Р»СЊРЅС‹Р№ СЌР»РµРјРµРЅС‚</td></tr>
 <tr><td><code><b>function</b> Min(Self: <b>array</b>  <b>of</b> integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает минимальный элемент</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРёРЅРёРјР°Р»СЊРЅС‹Р№ СЌР»РµРјРµРЅС‚</td></tr>
 <tr><td><code><b>function</b> Min(Self: <b>array</b>  <b>of</b> real): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает минимальный элемент</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРёРЅРёРјР°Р»СЊРЅС‹Р№ СЌР»РµРјРµРЅС‚</td></tr>
 <tr><td><code><b>function</b> Permutations&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все перестановки множества элементов, заданного массивом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ РїРµСЂРµСЃС‚Р°РЅРѕРІРєРё РјРЅРѕР¶РµСЃС‚РІР° СЌР»РµРјРµРЅС‚РѕРІ, Р·Р°РґР°РЅРЅРѕРіРѕ РјР°СЃСЃРёРІРѕРј</td></tr>
 <tr><td><code><b>function</b> Permutations&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все перестановки множества элементов, заданного последовательностью</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ РїРµСЂРµСЃС‚Р°РЅРѕРІРєРё РјРЅРѕР¶РµСЃС‚РІР° СЌР»РµРјРµРЅС‚РѕРІ, Р·Р°РґР°РЅРЅРѕРіРѕ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊСЋ</td></tr>
 <tr><td><code><b>function</b> Permutations&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; m: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все частичные перестановки из n элементов по m</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ С‡Р°СЃС‚РёС‡РЅС‹Рµ РїРµСЂРµСЃС‚Р°РЅРѕРІРєРё РёР· n СЌР»РµРјРµРЅС‚РѕРІ РїРѕ m</td></tr>
 <tr><td><code><b>function</b> Permutations&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; m: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все частичные перестановки из n элементов по m</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ С‡Р°СЃС‚РёС‡РЅС‹Рµ РїРµСЂРµСЃС‚Р°РЅРѕРІРєРё РёР· n СЌР»РµРјРµРЅС‚РѕРІ РїРѕ m</td></tr>
 <tr><td><code><b>function</b> Permutations(Self: string): <b>sequence </b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все перестановки букв в строке в виде последовательности строк</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ РїРµСЂРµСЃС‚Р°РЅРѕРІРєРё Р±СѓРєРІ РІ СЃС‚СЂРѕРєРµ РІ РІРёРґРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё СЃС‚СЂРѕРє</td></tr>
 <tr><td><code><b>function</b> Permutations(Self: string; m: integer): <b>sequence </b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все частичные перестановки букв строки по m символов в виде последовательности строк</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ С‡Р°СЃС‚РёС‡РЅС‹Рµ РїРµСЂРµСЃС‚Р°РЅРѕРІРєРё Р±СѓРєРІ СЃС‚СЂРѕРєРё РїРѕ m СЃРёРјРІРѕР»РѕРІ РІ РІРёРґРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё СЃС‚СЂРѕРє</td></tr>
 <tr><td><code><b>function</b> RandomElement&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный элемент массива</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»СѓС‡Р°Р№РЅС‹Р№ СЌР»РµРјРµРЅС‚ РјР°СЃСЃРёРІР°</td></tr>
 <tr><td><code><b>function</b> Shuffle&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемешивает элементы массива случайным образом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС€РёРІР°РµС‚ СЌР»РµРјРµРЅС‚С‹ РјР°СЃСЃРёРІР° СЃР»СѓС‡Р°Р№РЅС‹Рј РѕР±СЂР°Р·РѕРј</td></tr>
 <tr><td><code><b>function</b> Slice&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; from, step: integer): <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает срез массива от индекса from с шагом step</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃСЂРµР· РјР°СЃСЃРёРІР° РѕС‚ РёРЅРґРµРєСЃР° from СЃ С€Р°РіРѕРј step</td></tr>
 <tr><td><code><b>function</b> Slice&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; from, step, count: integer): <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает срез массива от индекса from с шагом step длины не более count</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃСЂРµР· РјР°СЃСЃРёРІР° РѕС‚ РёРЅРґРµРєСЃР° from СЃ С€Р°РіРѕРј step РґР»РёРЅС‹ РЅРµ Р±РѕР»РµРµ count</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(Self: <b>array</b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕСЂС‚РёСЂСѓРµС‚ РјР°СЃСЃРёРІ РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ</td></tr>
 <tr><td><code><b>procedure</b> Sort(Self: <b>array</b>  <b>of</b> string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕСЂС‚РёСЂСѓРµС‚ РјР°СЃСЃРёРІ РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; cmp: (T,T) -&gt;integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию, используя cmp в качестве функции сравнения элементов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕСЂС‚РёСЂСѓРµС‚ РјР°СЃСЃРёРІ РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ, РёСЃРїРѕР»СЊР·СѓСЏ cmp РІ РєР°С‡РµСЃС‚РІРµ С„СѓРЅРєС†РёРё СЃСЂР°РІРЅРµРЅРёСЏ СЌР»РµРјРµРЅС‚РѕРІ</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T,T1&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; T1);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию по ключу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕСЂС‚РёСЂСѓРµС‚ РјР°СЃСЃРёРІ РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ РїРѕ РєР»СЋС‡Сѓ</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию по ключу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕСЂС‚РёСЂСѓРµС‚ РјР°СЃСЃРёРІ РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ РїРѕ РєР»СЋС‡Сѓ</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(Self: <b>array</b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕСЂС‚РёСЂСѓРµС‚ РјР°СЃСЃРёРІ РїРѕ СѓР±С‹РІР°РЅРёСЋ</td></tr>
 <tr><td><code><b>procedure</b> SortDescending(Self: <b>array</b>  <b>of</b> string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕСЂС‚РёСЂСѓРµС‚ РјР°СЃСЃРёРІ РїРѕ СѓР±С‹РІР°РЅРёСЋ</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T,T1&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; T1);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию по ключу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕСЂС‚РёСЂСѓРµС‚ РјР°СЃСЃРёРІ РїРѕ СѓР±С‹РІР°РЅРёСЋ РїРѕ РєР»СЋС‡Сѓ</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию по ключу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕСЂС‚РёСЂСѓРµС‚ РјР°СЃСЃРёРІ РїРѕ СѓР±С‹РІР°РЅРёСЋ РїРѕ РєР»СЋС‡Сѓ</td></tr>
 <tr><td><code><b>procedure</b> Transform&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; f: T-&gt;T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива по заданному правилу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЌР»РµРјРµРЅС‚С‹ РјР°СЃСЃРёРІР° РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСЂР°РІРёР»Сѓ</td></tr>
 <tr><td><code><b>procedure</b> Transform&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; f: (T,integer)-&gt;T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива по заданному правилу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЌР»РµРјРµРЅС‚С‹ РјР°СЃСЃРёРІР° РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСЂР°РІРёР»Сѓ</td></tr>
 </table>
 </body></HTML>

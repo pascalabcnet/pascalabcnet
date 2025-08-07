@@ -5,40 +5,40 @@
 <param name="Keyword" value="TextSize">
 <param name="Keyword" value="TextWidth"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Функции для вывода текста</H1>
+</HEAD><body><H1>Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р°</H1>
 <table border=0 cellpadding=5><tr><td><code><b>procedure</b> DrawText(x, y, w, h: real; text: object; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в прямоугольник размера (w,h) с координатами левого верхнего угла (x,y)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ С‚РµРєСЃС‚РѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚Р° РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє СЂР°Р·РјРµСЂР° (w,h) СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё Р»РµРІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ СѓРіР»Р° (x,y)</td></tr>
 <tr><td><code><b>procedure</b> DrawText(x, y, w, h: real; text: object; color: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта указанным цветом в прямоугольник (x,y,w,h)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ С‚РµРєСЃС‚РѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚Р° СѓРєР°Р·Р°РЅРЅС‹Рј С†РІРµС‚РѕРј РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє (x,y,w,h)</td></tr>
 <tr><td><code><b>procedure</b> DrawText(rect: GRect; text: object; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в указанный прямоугольник</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ С‚РµРєСЃС‚РѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚Р° РІ СѓРєР°Р·Р°РЅРЅС‹Р№ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє</td></tr>
 <tr><td><code><b>procedure</b> DrawText(rect: GRect; text: object; color: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в указанный прямоугольник указанным цветом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ С‚РµРєСЃС‚РѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚Р° РІ СѓРєР°Р·Р°РЅРЅС‹Р№ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє СѓРєР°Р·Р°РЅРЅС‹Рј С†РІРµС‚РѕРј</td></tr>
 <tr><td><code><b>procedure</b> DrawText(x, y, w, h: real; text: object; f: FontOptions; align: Alignment; angle: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит строку в прямоугольник (x,y,w,h) указанным шрифтом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ СЃС‚СЂРѕРєСѓ РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє (x,y,w,h) СѓРєР°Р·Р°РЅРЅС‹Рј С€СЂРёС„С‚РѕРј</td></tr>
 <tr><td><code><b>function</b> TextHeight(text: string): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Высота текста при выводе</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹СЃРѕС‚Р° С‚РµРєСЃС‚Р° РїСЂРё РІС‹РІРѕРґРµ</td></tr>
 <tr><td><code><b>function</b> TextHeight(text: string; f: FontOptions): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Высота текста при выводе заданным шрифтом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹СЃРѕС‚Р° С‚РµРєСЃС‚Р° РїСЂРё РІС‹РІРѕРґРµ Р·Р°РґР°РЅРЅС‹Рј С€СЂРёС„С‚РѕРј</td></tr>
 <tr><td><code><b>procedure</b> TextOut(x, y: real; text: object; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в позицию (x,y)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ С‚РµРєСЃС‚РѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚Р° РІ РїРѕР·РёС†РёСЋ (x,y)</td></tr>
 <tr><td><code><b>procedure</b> TextOut(x, y: real; text: object; color: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в позицию (x,y) указанным цветом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ С‚РµРєСЃС‚РѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚Р° РІ РїРѕР·РёС†РёСЋ (x,y) СѓРєР°Р·Р°РЅРЅС‹Рј С†РІРµС‚РѕРј</td></tr>
 <tr><td><code><b>procedure</b> TextOut(x, y: real; text: object; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в позицию (x,y) указанным шрифтом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ С‚РµРєСЃС‚РѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚Р° РІ РїРѕР·РёС†РёСЋ (x,y) СѓРєР°Р·Р°РЅРЅС‹Рј С€СЂРёС„С‚РѕРј</td></tr>
 <tr><td><code><b>procedure</b> TextOut(pos: Point; text: object; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в позицию pos</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ С‚РµРєСЃС‚РѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚Р° РІ РїРѕР·РёС†РёСЋ pos</td></tr>
 <tr><td><code><b>procedure</b> TextOut(pos: Point; text: object; color: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в позицию pos указанным цветом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ С‚РµРєСЃС‚РѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚Р° РІ РїРѕР·РёС†РёСЋ pos СѓРєР°Р·Р°РЅРЅС‹Рј С†РІРµС‚РѕРј</td></tr>
 <tr><td><code><b>procedure</b> TextOut(pos: Point; text: object; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит текстовое представление объекта в позицию pos указанным шрифтом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ С‚РµРєСЃС‚РѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚Р° РІ РїРѕР·РёС†РёСЋ pos СѓРєР°Р·Р°РЅРЅС‹Рј С€СЂРёС„С‚РѕРј</td></tr>
 <tr><td><code><b>function</b> TextSize(text: string): Size;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Размер текста при выводе</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р Р°Р·РјРµСЂ С‚РµРєСЃС‚Р° РїСЂРё РІС‹РІРѕРґРµ</td></tr>
 <tr><td><code><b>function</b> TextSize(text: string; f: FontOptions): Size;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Размер текста при выводе заданным шрифтом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р Р°Р·РјРµСЂ С‚РµРєСЃС‚Р° РїСЂРё РІС‹РІРѕРґРµ Р·Р°РґР°РЅРЅС‹Рј С€СЂРёС„С‚РѕРј</td></tr>
 <tr><td><code><b>function</b> TextWidth(text: string): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина текста при выводе</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЁРёСЂРёРЅР° С‚РµРєСЃС‚Р° РїСЂРё РІС‹РІРѕРґРµ</td></tr>
 <tr><td><code><b>function</b> TextWidth(text: string; f: FontOptions): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина текста при выводе заданным шрифтом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЁРёСЂРёРЅР° С‚РµРєСЃС‚Р° РїСЂРё РІС‹РІРѕРґРµ Р·Р°РґР°РЅРЅС‹Рј С€СЂРёС„С‚РѕРј</td></tr>
 </table>
 </body></HTML>

@@ -3,21 +3,21 @@
 <param name="Keyword" value="All">
 </object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
 <body>
-<H1>Методы Any, All</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<H1>РњРµС‚РѕРґС‹ Any, All</H1><h2>РћРїРёСЃР°РЅРёРµ РјРµС‚РѕРґРѕРІ</h2><p>РњРµС‚РѕРґС‹ РїСЂРёРІРµРґРµРЅС‹ РґР»СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё <code><b>sequence of</b> T</code>.</p><table>
 <tr><td>
 <code><b>function </b>Any(): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, содержит ли последовательность какие-либо элементы.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРІРµСЂСЏРµС‚, СЃРѕРґРµСЂР¶РёС‚ Р»Рё РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РєР°РєРёРµ-Р»РёР±Рѕ СЌР»РµРјРµРЅС‚С‹.
 </td></tr>
 <tr><td>
 <code><b>function </b>Any(predicate: T-&gt;boolean): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, удовлетворяет ли какой-либо элемент последовательности заданному условию.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРІРµСЂСЏРµС‚, СѓРґРѕРІР»РµС‚РІРѕСЂСЏРµС‚ Р»Рё РєР°РєРѕР№-Р»РёР±Рѕ СЌР»РµРјРµРЅС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё Р·Р°РґР°РЅРЅРѕРјСѓ СѓСЃР»РѕРІРёСЋ.
 </td></tr>
 <tr><td>
 <code><b>function </b>All(predicate: T-&gt;boolean): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, все ли элементы последовательности удовлетворяют условию.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРІРµСЂСЏРµС‚, РІСЃРµ Р»Рё СЌР»РµРјРµРЅС‚С‹ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‚ СѓСЃР»РѕРІРёСЋ.
 </td></tr>
 </table>
-<h2>Пример </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
+<h2>РџСЂРёРјРµСЂ </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
 	a := Lst(1,3,5);<br>&nbsp; Println(a.All(x -&gt; x mod 2 &lt;&gt; 0)); // True<br>&nbsp; 
 	Println(a.Any(x -&gt; x mod 2 = 0));&nbsp; // False<br><strong>end</strong>.</code></blockquote>
 </body>
