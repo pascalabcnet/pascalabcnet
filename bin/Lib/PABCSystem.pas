@@ -3198,8 +3198,8 @@ const
   BAD_COL_INDEX_TO = 'ToCol выходит за пределы индексов строк двумерного массива!!ToCol is out of range for the matrix column indices';
   SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL = 'Размеры среза и присваиваемого выражения должны быть равны!!Slice size must match the size of the assigned expression';
   MATR_DIMENSIONS_MUST_BE_EQUAL = 'Размеры матриц должны совпадать!!Matrix dimensions must be equal';
-  COUNT_PARAMS_MAXFUN_MUSTBE_GREATER1 = 'Количество параметров функции Max должно быть > 1!!Max function must have more than one parameter';
-  COUNT_PARAMS_MINFUN_MUSTBE_GREATER1 = 'Количество параметров функции Min должно быть > 1!!Min function must have more than one parameter';
+  COUNT_PARAMS_MAXFUN_MUSTBE_GREATER0 = 'Количество параметров функции Max должно быть > 1!!Max function must have more than one parameter';
+  COUNT_PARAMS_MINFUN_MUSTBE_GREATER0 = 'Количество параметров функции Min должно быть > 1!!Min function must have more than one parameter';
   Format_InvalidString = 'Входная строка имела неверный формат!!Input string was not in a valid format';
   Overflow_Int32 = 'Целочисленное переполнение!!Integer overflow';
   FOR_STEP_CANNOT_BE_EQUAL0 = 'Шаг цикла for не может быт равен 0!!The step of a for loop cannot be 0';
@@ -9607,15 +9607,15 @@ end;
 
 function Min<T>(params a: array of T): T;
 begin
-  if a.Length<2 then
-    raise new System.ArgumentException(GetTranslation(COUNT_PARAMS_MINFUN_MUSTBE_GREATER1));
+  if a.Length<1 then
+    raise new System.ArgumentException(GetTranslation(COUNT_PARAMS_MINFUN_MUSTBE_GREATER0));
   Result := a.Min;
 end;
   
 function Max<T>(params a: array of T): T;
 begin
-  if a.Length<2 then
-    raise new System.ArgumentException(GetTranslation(COUNT_PARAMS_MAXFUN_MUSTBE_GREATER1));
+  if a.Length<1 then
+    raise new System.ArgumentException(GetTranslation(COUNT_PARAMS_MAXFUN_MUSTBE_GREATER0));
   Result := a.Max;
 end;
 

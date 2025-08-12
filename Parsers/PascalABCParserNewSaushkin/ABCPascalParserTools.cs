@@ -37,7 +37,7 @@ namespace Languages.Pascal.Frontend.Core
                 ["tkPoint"] = "'.'",
                 ["tkRoundOpen"] = "'('",
                 ["tkRoundClose"] = "')'",
-                ["tkSemiColon"] = "','",
+                ["tkSemiColon"] = "';'",
                 ["tkSquareOpen"] = "'['",
                 ["tkSquareClose"] = "']'",
                 ["tkQuestion"] = "'?'",

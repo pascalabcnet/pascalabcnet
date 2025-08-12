@@ -35,8 +35,10 @@ begin
   Result := Self;
 end;
 
+const InitialPenWidth = 1.4;
+
 var 
-  CurrentPen := ColorPen(Colors.Black,1.4); // Для LineTo
+  CurrentPen := ColorPen(Colors.Black,InitialPenWidth); // Для LineTo
   
   CurrentFontFace := new Typeface('Arial');
 
