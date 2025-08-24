@@ -5,4 +5,7 @@
   File "Files\Databases\*.csv"  
   File "Files\Databases\*.txt"  
   File "Files\Words\*.txt"  
+
+  SetOutPath "$INSTDIR\Files\Images"
+  File "Files\Images\*.png"  
 SectionEnd
