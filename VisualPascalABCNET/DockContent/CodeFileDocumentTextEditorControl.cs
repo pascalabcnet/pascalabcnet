@@ -117,7 +117,8 @@ namespace VisualPascalABC
 		
 		public void UpdateFolding()
 		{
-			CodeCompletionParserController.open_files[this.FileName] = true;
+            if (Languages.Facade.LanguageProvider.Instance.HasLanguageForExtension(FileName))
+			    CodeCompletionParserController.filesToParse[FileName] = true;
 		}
 		
         public void CollapseRegions()

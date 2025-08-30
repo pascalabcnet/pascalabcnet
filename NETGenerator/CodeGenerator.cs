@@ -7,8 +7,7 @@
  *
  ***************************************************************************/
 
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using PascalABCCompiler.NetHelper;
 
 namespace PascalABCCompiler.CodeGenerators
@@ -23,7 +22,7 @@ namespace PascalABCCompiler.CodeGenerators
 		private NETGenerator.ILConverter il_converter;//=new NETGenerator.ILConverter();
 
 		public void GenerateILCodeAndSaveAssembly(SemanticTree.IProgramNode ProgramTree,string TargetFileName,string SourceFileName ,
-            NETGenerator.CompilerOptions options, Hashtable StandartDirectories, string[] ResourceFiles)
+            NETGenerator.CompilerOptions options, Dictionary<string, string> StandartDirectories, string[] ResourceFiles)
 		{
             il_converter = new NETGenerator.ILConverter(StandartDirectories);
 			il_converter.ConvertFromTree(ProgramTree, TargetFileName, SourceFileName, options, ResourceFiles);

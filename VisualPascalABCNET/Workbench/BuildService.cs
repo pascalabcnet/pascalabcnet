@@ -68,7 +68,7 @@ namespace VisualPascalABC
             CompilerOptions1.UseDllForSystemUnits = false;
             CompilerOptions1.RunWithEnvironment = RunWithEnvironment;
             bool savePCU = Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate;
-            if (Path.GetDirectoryName(CompilerOptions1.SourceFileName).ToLower() == ((string)WorkbenchStorage.StandartDirectories[Constants.LibSourceDirectoryIdent]).ToLower())
+            if (Path.GetDirectoryName(CompilerOptions1.SourceFileName).ToLower() == WorkbenchStorage.StandartDirectories[Constants.LibSourceDirectoryIdent].ToLower())
                 Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = false;
 
             if (RuntimeServicesModule != null)
@@ -128,7 +128,7 @@ namespace VisualPascalABC
 
             //CompilerOptions1.SavePCUInThreadPull = true;
             bool savePCU = Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate;
-            if (Path.GetDirectoryName(FileName).ToLower() == ((string)WorkbenchStorage.StandartDirectories[Constants.LibSourceDirectoryIdent]).ToLower())
+            if (Path.GetDirectoryName(FileName).ToLower() == WorkbenchStorage.StandartDirectories[Constants.LibSourceDirectoryIdent].ToLower())
                 Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = false;
 
             string ofn = Workbench.VisualEnvironmentCompiler.Compile(CompilerOptions1);
@@ -220,7 +220,7 @@ namespace VisualPascalABC
 
             //CompilerOptions1.SavePCUInThreadPull = true;
             __savePCU = Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate;
-            if (Path.GetDirectoryName(FileName).ToLower() == ((string)WorkbenchStorage.StandartDirectories[Constants.LibSourceDirectoryIdent]).ToLower())
+            if (Path.GetDirectoryName(FileName).ToLower() == WorkbenchStorage.StandartDirectories[Constants.LibSourceDirectoryIdent].ToLower())
                 Workbench.VisualEnvironmentCompiler.Compiler.InternalDebug.PCUGenerate = false;
 
             Workbench.VisualEnvironmentCompiler.Compiler.OnChangeCompilerState += CompilationOnChangeCompilerState;
