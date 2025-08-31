@@ -1,0 +1,5 @@
+﻿s = '123 456'
+
+res = map(int,s.split)
+
+print(res)

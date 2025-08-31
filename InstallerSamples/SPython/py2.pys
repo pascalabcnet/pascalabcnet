@@ -1,0 +1,5 @@
+﻿def ip2int( s: str ) -> int:
+  n = [ int(p) for p in s.split('.') ]
+  return n[0]*256**3 + n[1]*256**2 + n[2]*256 + n[3]
+  
+print(ip2int('127.0.0.1'))  

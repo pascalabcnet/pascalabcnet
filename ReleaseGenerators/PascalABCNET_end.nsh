@@ -80,6 +80,10 @@ SectionEnd
   LangString DESC_Minimal ${LANG_ENGLISH} "Minimal"
   LangString DESC_PascalABCNET_Language ${LANG_RUSSIAN} "Язык PascalABC.NET"
   LangString DESC_PascalABCNET_Language ${LANG_ENGLISH} "PascalABC.NET language"
+
+  LangString DESC_SPython_Language ${LANG_RUSSIAN} "Язык SPython"
+  LangString DESC_SPython_Language ${LANG_ENGLISH} "SPython language"
+
   LangString DESC_Compiler ${LANG_RUSSIAN} "Компилятор"
   LangString DESC_Compiler ${LANG_ENGLISH} "Compiler"
   LangString DESC_Envr ${LANG_RUSSIAN} "Оболочка"

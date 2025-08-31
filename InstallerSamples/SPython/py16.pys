@@ -1,0 +1,3 @@
+﻿import random
+b = [random.randint(0, 99) for i in range(20)]
+print(b)

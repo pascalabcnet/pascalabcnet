@@ -1,0 +1,20 @@
+﻿a = 1
+
+def fun():
+  global a
+  # изменение глобальной a
+  a = 2
+
+def fun2():
+  # создание локальной a
+  a = 3
+  
+print(a)  
+fun()
+print(a)  
+fun2()
+# a не меняется
+print(a)  
+
+  
+  
