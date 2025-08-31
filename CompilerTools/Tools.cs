@@ -20,11 +20,11 @@ namespace PascalABCCompiler
                     sc.begin_position.line_num, sc.begin_position.column_num,
                     sc.end_position.line_num, sc.end_position.column_num);
         }
-        public static string ReplaceAllKeys(string str, Hashtable hashtable)
+        public static string ReplaceAllKeys(string str, Dictionary<string, string> hashtable)
         {
             foreach (string key in hashtable.Keys)
                 if (hashtable[key] != null)
-                    str = str.Replace(key, hashtable[key].ToString());
+                    str = str.Replace(key, hashtable[key]);
             return str;
         }
 

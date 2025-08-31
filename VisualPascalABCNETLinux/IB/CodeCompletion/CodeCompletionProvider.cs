@@ -257,7 +257,7 @@ namespace VisualPascalABC
                 }
                 if (fnd_scope != null)
                 {
-                    foreach (string FileName in CodeCompletionParserController.open_files.Keys)
+                    foreach (string FileName in CodeCompletionParserController.filesToParse.Keys)
                     {
                         CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
                         string text = VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText) as string;

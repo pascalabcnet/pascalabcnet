@@ -271,9 +271,9 @@ namespace PascalABCCompiler.NETGenerator
             make_next_spoint = true;
         }
 
-        private Hashtable StandartDirectories;
+        private Dictionary<string, string> StandartDirectories;
 
-        public ILConverter(Hashtable StandartDirectories)
+        public ILConverter(Dictionary<string, string> StandartDirectories)
         {
             this.StandartDirectories = StandartDirectories;
         }

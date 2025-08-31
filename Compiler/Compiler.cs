@@ -448,13 +448,13 @@ namespace PascalABCCompiler
         }
         //для поиска pcu в третью очередь исп. путь к pas файлу
 
-        public Hashtable StandardDirectories;
+        public Dictionary<string, string> StandardDirectories;
 
         private void SetDirectories()
         {
             SystemDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
 
-            StandardDirectories = new Hashtable(StringComparer.InvariantCultureIgnoreCase)
+            StandardDirectories = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
             {
                 { "%PABCSYSTEM%", SystemDirectory }
             };

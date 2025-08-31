@@ -5387,7 +5387,7 @@ namespace CodeCompletion
     //		
     //	}
 
-    public class NamespaceTypeScope : SymScope, INamespaceTypeScope
+    /*public class NamespaceTypeScope : SymScope, INamespaceTypeScope
     {
         private CompiledScope entry_type;
 
@@ -5433,7 +5433,7 @@ namespace CodeCompletion
         {
             return entry_type.GetStaticNames();
         }
-    }
+    }*/
 
     public class NamespaceScope : SymScope, INamespaceScope
     {

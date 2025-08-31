@@ -357,7 +357,7 @@ namespace VisualPascalABC
 
             PlayPauseButtonsVisibleInPanel = false;
 
-            WorkbenchStorage.StandartDirectories = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+            WorkbenchStorage.StandartDirectories = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
             WorkbenchStorage.StandartDirectories.Add(Constants.SystemDirectoryIdent, System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName));
 
             //---------------------------------------------
@@ -707,10 +707,11 @@ namespace VisualPascalABC
                 case VisualEnvironmentCompilerAction.OpenFile:
                     return WorkbenchServiceFactory.FileService.OpenFile((string)obj, null);
                 case VisualEnvironmentCompilerAction.GetDirectory:
-                    string s=VisualEnvironmentCompiler.Compiler.CompilerOptions.StandardDirectories[(string)obj] as string;
-                    if (s != null) 
+                    VisualEnvironmentCompiler.Compiler.CompilerOptions.StandardDirectories.TryGetValue((string)obj, out var s);
+                    if (s != null)
                         return s;
-                    return WorkbenchStorage.StandartDirectories[(string)obj] as string;
+                    WorkbenchStorage.StandartDirectories.TryGetValue((string)obj, out s);
+                    return s;
                 case VisualEnvironmentCompilerAction.PT4PositionCursorAfterTask: // SSM 09.11.19
                     {
                         var ta = CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea;
