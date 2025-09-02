@@ -26,7 +26,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			//pe.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 			if (Description != null && Description.Length > 0) {
 				if (!in_completion_list)
-					ICSharpCode.TextEditor.Util.TipPainterTools.DrawHelpTipFromCombinedDescription(this, pe.Graphics, Font, null, Description,-1,false);
+					ICSharpCode.TextEditor.Util.TipPainterTools.DrawHelpTipFromCombinedDescription(this, pe.Graphics, Font, null, Description,-1, -1, false);
 				else
 				{
 					if (has_tags())

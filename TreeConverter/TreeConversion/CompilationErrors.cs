@@ -290,6 +290,21 @@ namespace PascalABCCompiler.TreeConverter
 
     }
 
+    public class GenericFunctionCannotBeAnArgument : CompilationErrorWithLocation
+    {
+        private readonly string _name;
+        public GenericFunctionCannotBeAnArgument(string name, location loc)
+            : base(loc)
+        {
+            _name = name;
+        }
+        public type_node name { get; }
+        public override string ToString()
+        {
+            return string.Format(StringResources.Get("GENERIC_FUNCTION_{0}_CANNOT_BE_AN_ARGUMENT"), _name);
+        }
+    }
+
     public class CanNotConvertTypes : CompilationErrorWithLocation
     {
 

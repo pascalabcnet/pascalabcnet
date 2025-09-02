@@ -1,10 +1,10 @@
 ﻿/// Исполнитель Черепаха
 unit Turtle;
 
+interface
+
 uses GraphWPFBase;
 uses GraphWPF;
-uses System.Threading.Tasks;
-uses Coords;
 
 type 
   Colors = GraphWPF.Colors;
@@ -14,6 +14,70 @@ var
   tp: Point;   // текущая точка Черепахи (экранная, но сделаем её логической)
   angle: real; // Угол поворота Черепахи
   dr := False; // Опущен хвост Черепахи или нет
+  
+function Window: WindowTypeWPF;
+  
+/// Продвигает Черепаху вперед на расстояние r
+procedure Forw(r: real);
+
+/// Продвигает Черепаху назад на расстояние r
+procedure Back(r: real);
+
+/// Поворачивает Черепаху на угол da по часовой стрелке
+procedure Turn(da: real);
+
+/// Поворачивает Черепаху на угол da по часовой стрелке
+procedure TurnRight(da: real);
+
+/// Поворачивает Черепаху на угол da против часовой стрелки
+procedure TurnLeft(da: real);
+
+/// Опускает хвост Черепахи
+procedure Down;
+
+/// Поднимает хвост Черепахи
+procedure Up;
+
+/// Перемещает Черепаху в точку (x,y)
+procedure ToPoint(x,y: real);
+
+/// Рисует окружность указанного радиуса
+procedure Circle(r: real);
+  
+/// Рисует окружность указанного радиуса и цвета 
+procedure Circle(r: real; color: GColor);
+
+/// Рисует точку заданным цветом заданного размера
+procedure DrawPoint(x,y: real; color: GColor := Colors.Black; PointRadius: real := 2);
+
+/// Рисует точки заданным цветом заданного размера
+procedure DrawPoints(points: array of Point; color: GColor; PointRadius: real := -1);
+
+/// Рисует точки следующим цветом в палитре цветов
+procedure DrawPoints(points: array of Point; PointRadius: real := -1);
+
+/// Рисует точки заданным цветом
+procedure DrawPoints(xx,yy: array of real; color: GColor; PointRadius: real := -1);
+
+/// Рисует точки следующим цветом в палитре цветов
+procedure DrawPoints(xx,yy: array of real; PointRadius: real := -1);
+
+/// Устанавливает ширину линии Черепахи
+procedure SetWidth(w: real);
+
+/// Устанавливает цвет линии Черепахи
+procedure SetColor(c: GColor);
+
+/// Устанавливает положение начала координат 
+procedure SetOrigin(x,y: real);
+
+{$endregion}
+
+
+implementation
+
+uses System.Threading.Tasks;
+uses Coords;
 
 procedure MoveToReal(x,y: real);
 begin
@@ -239,23 +303,24 @@ begin
 end;  
 
 /// Рисует точку заданным цветом
-procedure DrawPoint(x,y: real; color: GColor := Colors.Black; PointRadius: real := 2) := Coords.DrawPoint(x,y,color,PointRadius);
+procedure DrawPoint(x,y: real; color: GColor; PointRadius: real) := Coords.DrawPoint(x,y,color,PointRadius);
 
 /// Рисует точки заданным цветом
-procedure DrawPoints(points: array of Point; color: GColor; PointRadius: real := -1) := Coords.DrawPoints(points,color,PointRadius);
+procedure DrawPoints(points: array of Point; color: GColor; PointRadius: real) := Coords.DrawPoints(points,color,PointRadius);
 
 /// Рисует точки следующим цветом в палитре цветов
-procedure DrawPoints(points: array of Point; PointRadius: real := -1) := Coords.DrawPoints(points,PointRadius);
+procedure DrawPoints(points: array of Point; PointRadius: real) := Coords.DrawPoints(points,PointRadius);
 
 /// Рисует точки заданным цветом
-procedure DrawPoints(xx,yy: array of real; color: GColor; PointRadius: real := -1) := Coords.DrawPoints(xx,yy,color,PointRadius);
+procedure DrawPoints(xx,yy: array of real; color: GColor; PointRadius: real) := Coords.DrawPoints(xx,yy,color,PointRadius);
 
 /// Рисует точки следующим цветом в палитре цветов
-procedure DrawPoints(xx,yy: array of real; PointRadius: real := -1) := Coords.DrawPoints(xx,yy,PointRadius);
+procedure DrawPoints(xx,yy: array of real; PointRadius: real) := Coords.DrawPoints(xx,yy,PointRadius);
 
 /// Устанавливает ширину линии Черепахи
 procedure SetWidth(w: real);
 begin
+  AddCommand(new SetWidthC(w));
   CurrentPen := ColorPen(Pen.Color,w);
   Pen.Width := w;
 end;  
@@ -263,6 +328,7 @@ end;
 /// Устанавливает цвет линии Черепахи
 procedure SetColor(c: GColor);
 begin
+  AddCommand(new SetColorC(c));
   CurrentPen := ColorPen(c,Pen.Width);
   Pen.Color := c;
 end;  
@@ -282,6 +348,7 @@ begin
   tp := (0,0);
   angle := 90;
   MoveToReal(tp.X,tp.Y);
+  CurrentPen := ColorPen(Colors.Black,InitialPenWidth);
   dr := False;
 end;
 

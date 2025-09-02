@@ -1183,6 +1183,15 @@ namespace PascalABCCompiler.TreeConverter
 				}
 				else
 				{
+                    if (factparams[i].type is delegated_methods dm2
+                                && dm2.proper_methods[0].function.is_generic_function
+                                && !syntax_tree_visitor.context.WithSection)
+                    {
+                        var name = dm2.proper_methods[0].function.name;
+                        error = new GenericFunctionCannotBeAnArgument(name, locg);
+                        return null; // фактический параметр - имя неинстанцированной generic-функции!
+                    }
+
                     ptc = type_table.get_convertions(factparams[i].type, formal_param_type);
 
                     if (factparams[i] is null_const_node && !type_table.is_with_nil_allowed(formal_param_type) && !formal_param_type.IsPointer) // SSM 01.07.19 - nil не может быть преобразована за счёт вызова функции
@@ -1255,7 +1264,13 @@ namespace PascalABCCompiler.TreeConverter
 
                             //issue #2161 - SSM 12.03.2020
                             //issue #348
-                            if ((formal_param_type == SystemLibrary.SystemLibrary.object_type || formal_param_type.IsDelegate) && factparams[i].type is delegated_methods)
+                            if (formal_param_type == SystemLibrary.SystemLibrary.object_type
+                                && factparams[i].type is delegated_methods dm1
+                                && !dm1.proper_methods[0].function.is_generic_function
+                                ||
+                                formal_param_type.IsDelegate 
+                                && factparams[i].type is delegated_methods
+                               ) // SSM 23.06.2025 issue #3290
                             {
                                 possible_type_convertions ptci = new possible_type_convertions();
                                 ptci.first = null;

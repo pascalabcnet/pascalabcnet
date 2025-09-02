@@ -20,6 +20,8 @@ namespace PascalABCCompiler.Parsers
 
         public abstract string ParameterDelimiter { get; }
 
+        public abstract string DelimiterInIndexer { get; }
+
         public abstract string ResultVariableName { get; }
 
         public abstract string GenericTypesStartBracket { get; }
@@ -42,6 +44,10 @@ namespace PascalABCCompiler.Parsers
 
         public virtual Dictionary<string, string> SpecialModulesAliases => null;
 
+        protected abstract string IntTypeName { get; }
+
+        public abstract bool IsParams(string paramDescription);
+
         public virtual void RenameOrExcludeSpecialNames(SymInfo[] symInfos) { }
 
         // перенести сюда реализацию  EVA
@@ -59,14 +65,13 @@ namespace PascalABCCompiler.Parsers
         // перенести сюда реализацию  EVA
         public abstract string FindExpressionForMethod(int off, string Text, int line, int col, char pressed_key, ref int num_param);
 
-        public string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets)
+        public string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out string expr_without_brackets)
         {
-            keyw = KeywordKind.None;
-            return FindExpressionFromAnyPosition(off, Text, line, col, out expr_without_brackets);
+            return FindExpressionFromAnyPosition(off, Text, line, col, out _, out expr_without_brackets);
         }
 
         // перенести сюда реализацию  EVA
-        public abstract string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out string expr_without_brackets);
+        public abstract string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets);
 
         public virtual string FindOnlyIdentifier(int off, string Text, int line, int col, ref string name)
         {
@@ -142,10 +147,287 @@ namespace PascalABCCompiler.Parsers
 
         protected abstract string GetFullTypeName(Type ctn, bool no_alias = true);
 
-        // перенести реализацию сюда EVA
-        public virtual string[] GetIndexerString(IBaseScope scope)
+        protected string GetDescriptionForProcedure(IProcScope scope)
         {
-            return null;
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            string extensionType = null;
+            if (scope.IsExtension && scope.Parameters.Length > 0)
+            {
+                extensionType = GetSimpleDescription(scope.Parameters[0].Type);
+            }
+            if (scope.IsExtension)
+            {
+                if (extensionType != null && extensionType.IndexOf(' ') != -1)
+                {
+                    sb.Append("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION") + " " + extensionType + ") ");
+                    extensionType = null;
+                }
+                else
+                {
+                    sb.Append("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION") + ") ");
+                }
+            }
+
+            if (scope.IsStatic) sb.Append("static ");
+            if (scope.IsConstructor())
+                sb.Append("constructor ");
+            else
+            if (scope.ReturnType == null && ProcedureName != null)
+                sb.Append(ProcedureName + " ");
+            else
+                sb.Append(FunctionName + " ");
+            if (!scope.IsConstructor())
+            {
+                if (extensionType != null)
+                {
+                    sb.Append(extensionType + ".");
+                    sb.Append(scope.Name);
+                }
+                else
+                {
+                    sb.Append(GetTopScopeName(scope.TopScope));
+                    sb.Append(scope.Name);
+                }
+            }
+            else
+            {
+                sb.Append(GetTopScopeNameWithoutDot(scope.TopScope));
+            }
+            /*string[] template_args = scope.TemplateParameters;
+			if (template_args != null)
+			{
+				sb.Append('<');
+				for (int i=0; i<template_args.Length; i++)
+				{
+					sb.Append(template_args[i]);
+					if (i < template_args.Length-1)
+						sb.Append(',');
+				}
+				sb.Append('>');
+			}*/
+            sb.Append(GetGenericString(scope.TemplateParameters));
+            sb.Append('(');
+            IElementScope[] parameters = scope.Parameters;
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (scope.IsExtension && i == 0)
+                    continue;
+                sb.Append(GetSimpleDescription(parameters[i]));
+                if (i < parameters.Length - 1)
+                {
+                    sb.Append(ParameterDelimiter + " ");
+                }
+            }
+            sb.Append(')');
+            if (scope.ReturnType != null && !scope.IsConstructor() && !(scope.ReturnType is IProcType && (scope.ReturnType as IProcType).Target == scope))
+                sb.Append(ReturnTypeDelimiter + " " + GetSimpleDescription(scope.ReturnType));
+            //if (scope.IsStatic) sb.Append("; static");
+            if (scope.IsVirtual) sb.Append("; ");
+            else if (scope.IsAbstract) sb.Append("; abstract");
+            else if (scope.IsOverride) sb.Append("; override");
+            else if (scope.IsReintroduce) sb.Append("; reintroduce");
+            sb.Append(';');
+            return sb.ToString();
+        }
+
+        public string[] GetIndexerString(IBaseScope scope)
+        {
+            IBaseScope tmp_si = scope;
+            if (scope == null) return null;
+            if (scope is IElementScope)
+                if ((scope as IElementScope).Indexers.Length == 0)
+                    scope = (scope as IElementScope).Type;
+            if (scope is IProcScope) scope = (scope as IProcScope).ReturnType;
+            if (!(scope is IElementScope))
+            {
+                ITypeScope ts = scope as ITypeScope;
+                if (ts == null) return null;
+                ITypeScope[] indexers = ts.Indexers;
+                if (tmp_si is ITypeScope)
+                    indexers = ts.StaticIndexers;
+                if ((indexers == null || indexers.Length == 0) && !(ts is IArrayScope))
+                    return null;
+                StringBuilder sb = new StringBuilder();
+                if (!(tmp_si is ITypeScope))
+                    sb.Append("this");
+                else
+                    sb.Append(GetSimpleDescriptionWithoutNamespace(tmp_si as ITypeScope));
+                sb.Append('[');
+                if (indexers != null)
+                    for (int i = 0; i < indexers.Length; i++)
+                    {
+                        sb.Append(GetSimpleDescriptionWithoutNamespace(indexers[i]));
+                        if (i < indexers.Length - 1)
+                            sb.Append(',');
+                    }
+                else
+                    sb.Append(IntTypeName);
+                sb.Append("] : ");
+                sb.Append(GetSimpleDescriptionWithoutNamespace(ts.ElementType));
+                return new string[1] { sb.ToString() };
+            }
+            else
+            {
+                IElementScope es = scope as IElementScope;
+                ITypeScope[] indexers = es.Indexers;
+                if (indexers == null || indexers.Length == 0 || es.ElementType == null) return null;
+                StringBuilder sb = new StringBuilder();
+                sb.Append(es.Name);
+                sb.Append('[');
+                for (int i = 0; i < indexers.Length; i++)
+                {
+                    sb.Append(GetSimpleDescriptionWithoutNamespace(indexers[i]));
+                    if (i < indexers.Length - 1)
+                        sb.Append(',');
+                }
+                sb.Append("] : ");
+                sb.Append(GetSimpleDescriptionWithoutNamespace(es.ElementType));
+                return new string[1] { sb.ToString() };
+            }
+        }
+
+        protected string GetDescriptionForEnum(IEnumScope scope)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.Append('(');
+            for (int i = 0; i < scope.EnumConsts.Length; i++)
+            {
+                sb.Append(scope.EnumConsts[i]);
+                if (i < scope.EnumConsts.Length - 1)
+                    sb.Append(',');
+                if (i >= 2)
+                {
+                    sb.Append("...");
+                    break;
+                }
+            }
+            sb.Append(')');
+            return sb.ToString();
+        }
+
+        private void append_modifiers(StringBuilder sb, IElementScope scope)
+        {
+            if (scope.IsVirtual) sb.Append("; ");
+            if (scope.IsAbstract) sb.Append("; abstract");
+            if (scope.IsOverride) sb.Append("; override");
+            //if (scope.IsStatic) sb.Append("; static");
+            if (scope.IsReintroduce) sb.Append("; reintroduce");
+        }
+
+        protected string get_index_description(IElementScope scope)
+        {
+            ITypeScope[] indexers = scope.Indexers;
+            if (indexers == null || indexers.Length == 0) return "";
+            StringBuilder sb = new StringBuilder();
+            sb.Append('[');
+            for (int i = 0; i < indexers.Length; i++)
+            {
+                sb.Append(GetSimpleDescription(indexers[i]));
+                if (i < indexers.Length - 1)
+                    sb.Append(',');
+            }
+            sb.Append(']');
+            return sb.ToString();
+        }
+
+        protected string GetDescriptionForElementScope(IElementScope scope)
+        {
+            string type_name = null;
+            StringBuilder sb = new StringBuilder();
+            if (scope.Type == null) type_name = "";
+            else
+                type_name = GetSimpleDescription(scope.Type);
+            if (type_name.StartsWith("$"))
+                type_name = type_name.Substring(1, type_name.Length - 1);
+            switch (scope.ElemKind)
+            {
+                case SymbolKind.Variable: sb.Append("var " + GetTopScopeName(scope.TopScope) + scope.Name + ((type_name != "") ? ": " + type_name : "")); break;
+                case SymbolKind.Parameter: sb.Append(kind_of_param(scope) + "parameter " + scope.Name + ": " + type_name + (scope.ConstantValue != null ? (":=" + scope.ConstantValue.ToString()) : "")); break;
+                case SymbolKind.Constant:
+                    {
+                        if (scope.ConstantValue == null)
+                            sb.Append("const " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name);
+                        else sb.Append("const " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name + " = " + scope.ConstantValue.ToString());
+                    }
+                    break;
+                case SymbolKind.Event:
+                    if (scope.IsStatic) sb.Append("static ");
+                    sb.Append("event " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name);
+                    append_modifiers(sb, scope);
+                    break;
+                case SymbolKind.Field:
+                    if (scope.IsStatic)
+                        sb.Append("static ");
+                    else
+                        sb.Append("var ");
+                    sb.Append(GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name);
+                    append_modifiers(sb, scope);
+                    //if (scope.IsStatic) sb.Append("; static");
+                    if (scope.IsReadOnly) sb.Append("; readonly");
+                    break;
+                case SymbolKind.Property:
+                    if (scope.IsStatic)
+                        sb.Append("static ");
+                    sb.Append("property " + GetTopScopeName(scope.TopScope) + scope.Name + get_index_description(scope) + ": " + type_name);
+                    if (scope.IsReadOnly)
+                        sb.Append("; readonly");
+                    append_modifiers(sb, scope);
+                    break;
+
+            }
+            sb.Append(';');
+            return sb.ToString();
+        }
+
+        protected string GetDescriptionForArray(IArrayScope scope)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("array");
+            ITypeScope[] inds = scope.Indexers;
+            if (!scope.IsDynamic)
+            {
+                sb.Append('[');
+                for (int i = 0; i < inds.Length; i++)
+                {
+                    sb.Append(GetSimpleDescription(inds[i]));
+                    if (i < inds.Length - 1) sb.Append(',');
+                }
+                sb.Append(']');
+            }
+            if (scope.ElementType != null)
+            {
+                string s = GetSimpleDescription(scope.ElementType);
+                if (s.Length > 0 && s[0] == '$') s = s.Substring(1, s.Length - 1);
+                sb.Append(" of " + s);
+            }
+            return sb.ToString();
+        }
+
+        protected string GetDescriptionForDelegate(IProcType t)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (t.Target.ReturnType != null || ProcedureName == null)
+                sb.Append(FunctionName);
+            else sb.Append(ProcedureName);
+            IElementScope[] prms = t.Target.Parameters;
+            if (prms.Length > 0)
+            {
+                sb.Append('(');
+                for (int i = 0; i < prms.Length; i++)
+                {
+                    sb.Append(GetSimpleDescription(prms[i]));
+                    if (i < prms.Length - 1)
+                    {
+                        sb.Append(ParameterDelimiter + " ");
+                    }
+                }
+                sb.Append(')');
+            }
+            if (t.Target.ReturnType != null)
+            {
+                sb.Append(ReturnTypeDelimiter + " " + GetSimpleDescription(t.Target.ReturnType));
+            }
+            return sb.ToString();
         }
 
         public abstract string GetKeyword(SymbolKind kind);
@@ -202,7 +484,6 @@ namespace PascalABCCompiler.Parsers
             return scope.Name + template_str;
         }
 
-        // TODO: Адаптировать к многоязычности EVA
         protected string GetDescriptionForCompiledMethod(ICompiledMethodScope scope)
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
@@ -600,7 +881,17 @@ namespace PascalABCCompiler.Parsers
             return sc.Name;
         }
 
-        protected abstract string kind_of_param(IElementScope scope);
+        protected string kind_of_param(IElementScope scope)
+        {
+            switch (scope.ParamKind)
+            {
+                case PascalABCCompiler.SyntaxTree.parametr_kind.const_parametr: return "const ";
+                case PascalABCCompiler.SyntaxTree.parametr_kind.var_parametr: return "var ";
+                case PascalABCCompiler.SyntaxTree.parametr_kind.params_parametr: return "params ";
+                case PascalABCCompiler.SyntaxTree.parametr_kind.out_parametr: return "out ";
+            }
+            return "";
+        }
 
         protected string GetSimpleDescriptionForElementScope(IElementScope scope)
         {
@@ -754,9 +1045,9 @@ namespace PascalABCCompiler.Parsers
 
         public abstract bool IsDefinitionIdentifierAfterKeyword(KeywordKind keyw);
 
-        public virtual bool IsKeyword(string value)
+        public bool IsKeyword(string value)
         {
-            return KeywordsStorage.KeywordsToTokens.ContainsKey(value);
+            return KeywordsStorage.KeywordsForIntellisenseSet.Contains(value);
         }
 
         public abstract bool IsMethodCallParameterSeparator(char key);
@@ -1018,6 +1309,84 @@ namespace PascalABCCompiler.Parsers
                 return sb.ToString();
             }
             return GetFullTypeName(t, no_alias);
+        }
+
+        public int FindClosingParenthesis(string descriptionAfterOpeningParenthesis, char parenthesis)
+        {
+            char openingParenthesis = parenthesis == ')' ? '(' : '[';
+
+            int count = 1;
+
+            int i = 0;
+
+            foreach (char c in descriptionAfterOpeningParenthesis)
+            {
+                if (c == openingParenthesis)
+                {
+                    count++;
+                }
+                else if (c == parenthesis)
+                {
+                    count--;
+                }
+
+                if (count == 0)
+                {
+                    break;
+                }
+
+                i++;
+            }
+
+            return i;
+        }
+
+        public int FindParamDelim(string descriptionAfterOpeningParenthesis, int number) => FindParamDelim(descriptionAfterOpeningParenthesis, number, ParameterDelimiter);
+
+        public int FindParamDelimForIndexer(string descriptionAfterOpeningParenthesis, int number) => FindParamDelim(descriptionAfterOpeningParenthesis, number, DelimiterInIndexer);
+
+        public int FindParamDelim(string descriptionAfterOpeningParenthesis, int number, string paramDelim)
+        {
+            int count = 1;
+
+            int i = 0;
+
+            int delimNum = 0;
+
+            foreach (char c in descriptionAfterOpeningParenthesis)
+            {
+                if (c == '(' || c == '[' || c == '<' || c == '{')
+                {
+                    count++;
+                }
+                else if (c == ')' || c == ']' || c == '>' || c == '}')
+                {
+                    count--;
+                }
+
+                if (count == 0)
+                {
+                    break;
+                }
+                // если не внутри внутренних скобок
+                else if (count == 1)
+                {
+                    if (descriptionAfterOpeningParenthesis.Substring(i).StartsWith(paramDelim))
+                    {
+                        delimNum++;
+
+                        if (delimNum == number)
+                            break;
+                    }
+                }
+
+                i++;
+            }
+
+            if (delimNum < number || i == descriptionAfterOpeningParenthesis.Length)
+                return -1;
+
+            return i;
         }
     }
 }

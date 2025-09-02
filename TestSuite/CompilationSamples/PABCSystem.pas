@@ -3198,8 +3198,8 @@ const
   BAD_COL_INDEX_TO = 'ToCol выходит за пределы индексов строк двумерного массива!!ToCol is out of range for the matrix column indices';
   SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL = 'Размеры среза и присваиваемого выражения должны быть равны!!Slice size must match the size of the assigned expression';
   MATR_DIMENSIONS_MUST_BE_EQUAL = 'Размеры матриц должны совпадать!!Matrix dimensions must be equal';
-  COUNT_PARAMS_MAXFUN_MUSTBE_GREATER1 = 'Количество параметров функции Max должно быть > 1!!Max function must have more than one parameter';
-  COUNT_PARAMS_MINFUN_MUSTBE_GREATER1 = 'Количество параметров функции Min должно быть > 1!!Min function must have more than one parameter';
+  COUNT_PARAMS_MAXFUN_MUSTBE_GREATER0 = 'Количество параметров функции Max должно быть > 1!!Max function must have more than one parameter';
+  COUNT_PARAMS_MINFUN_MUSTBE_GREATER0 = 'Количество параметров функции Min должно быть > 1!!Min function must have more than one parameter';
   Format_InvalidString = 'Входная строка имела неверный формат!!Input string was not in a valid format';
   Overflow_Int32 = 'Целочисленное переполнение!!Integer overflow';
   FOR_STEP_CANNOT_BE_EQUAL0 = 'Шаг цикла for не может быт равен 0!!The step of a for loop cannot be 0';
@@ -9607,15 +9607,15 @@ end;
 
 function Min<T>(params a: array of T): T;
 begin
-  if a.Length<2 then
-    raise new System.ArgumentException(GetTranslation(COUNT_PARAMS_MINFUN_MUSTBE_GREATER1));
+  if a.Length<1 then
+    raise new System.ArgumentException(GetTranslation(COUNT_PARAMS_MINFUN_MUSTBE_GREATER0));
   Result := a.Min;
 end;
   
 function Max<T>(params a: array of T): T;
 begin
-  if a.Length<2 then
-    raise new System.ArgumentException(GetTranslation(COUNT_PARAMS_MAXFUN_MUSTBE_GREATER1));
+  if a.Length<1 then
+    raise new System.ArgumentException(GetTranslation(COUNT_PARAMS_MAXFUN_MUSTBE_GREATER0));
   Result := a.Max;
 end;
 
@@ -11948,7 +11948,55 @@ begin
     yield c.TakeGroup().ToArray;
 end;
 
-// ToDo Сделать AdjacentGroup с функцией сравнения
+type
+  AdjacentGroupByResult<TKey, TResult> = sealed auto class(System.Linq.IGrouping<TKey, TResult>)
+    public auto property Key: TKey;
+    public auto property Elements: sequence of TResult;
+    
+    public function GetEnumerator: IEnumerator<TResult> := Elements.GetEnumerator;
+    public function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := GetEnumerator;
+    
+  end;
+  
+/// Группирует подряд идущие элементы с одинаковыми значениями ключами
+/// Использует компаратор comp
+function AdjacentGroupBy<T,TKey>(self: sequence of T; by: T->TKey; comp: IEqualityComparer<TKey>): sequence of System.Linq.IGrouping<TKey, T>; extensionmethod;
+begin
+  var enmr := self.GetEnumerator;
+  if not enmr.MoveNext then exit;
+  if comp=nil then comp := System.Collections.Generic.EqualityComparer&<TKey>.Default;
+  
+  var l := new List<T>;
+  var key: TKey;
+  begin
+    var o := enmr.Current;
+    l += o;
+    key := by(o);
+  end;
+  var key_hc := comp.GetHashCode(key);
+  
+  while enmr.MoveNext do
+  begin
+    var o := enmr.Current;
+    var n_key := by(o);
+    var n_key_hc := comp.GetHashCode(n_key);
+    
+    if (n_key_hc<>key_hc) or not comp.Equals(n_key, key) then
+    begin
+      yield new AdjacentGroupByResult<TKey,T>(key, l.ToArray);
+      l.Clear;
+      key := n_key;
+      key_hc := n_key_hc;
+    end;
+    
+    l += o;
+  end;
+  
+  yield new AdjacentGroupByResult<TKey,T>(key, l.ToArray);
+end;
+/// Группирует подряд идущие элементы с одинаковыми значениями ключами
+/// Использует компаратор по-умолчанию
+function AdjacentGroupBy<T,TKey>(self: sequence of T; by: T->TKey); extensionmethod := self.AdjacentGroupBy(by, nil);
 
 /// Возвращает количество элементов, равных указанному значению
 function CountOf<T>(Self: sequence of T; x: T): integer; extensionmethod;

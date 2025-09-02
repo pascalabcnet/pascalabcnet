@@ -164,7 +164,7 @@ namespace PascalABCCompiler.NETGenerator
         protected bool make_next_spoint = true;
         protected SemanticTree.ILocation EntryPointLocation;
         protected Label ExitLabel;//метка для выхода из процедуры
-        protected bool ExitProcedureCall = false; //призна того что встретиласть exit и надо пометить коней процедуры
+        protected bool ExitProcedureCall = false; //признак того, что встретилась exit и надо пометить конец процедуры
         protected Dictionary<IConstantNode, FieldBuilder> ConvertedConstants = new Dictionary<IConstantNode, FieldBuilder>();
         //ivan
         protected List<EnumBuilder> enums = new List<EnumBuilder>();
@@ -1390,7 +1390,9 @@ namespace PascalABCCompiler.NETGenerator
         {
             FieldBuilder fb = cur_type.DefineField(name, helper.GetTypeReference(type).tp, FieldAttributes.Static | FieldAttributes.Public | FieldAttributes.Literal);
             Type t = helper.GetTypeReference(type).tp;
-            if (!t.Name.StartsWith("NewSet") && t.IsEnum) // SSM 05.11.24
+
+			// Для инстанцированных generic типов вызов .IsEnum приводит к исключению
+			if (!t.IsConstructedGenericType() && t.IsEnum)
             {
                 if (!(t is EnumBuilder))
                     fb.SetConstant(Enum.ToObject(t, (constant_value as IEnumConstNode).constant_value));
@@ -1948,7 +1950,7 @@ namespace PascalABCCompiler.NETGenerator
 
                             mi = TypeBuilder.GetMethod(t, mi);
                         }
-                        else if (t.Name != "TypeBuilderInstantiation")
+                        else if (t.GetType().Name != "TypeBuilderInstantiation")
                         {
                             try
                             {
@@ -3920,7 +3922,7 @@ namespace PascalABCCompiler.NETGenerator
                 PushIntConst(il, i - 2 - rank);
                 ILGenerator ilb = this.il;
 
-                if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && (helper.IsConstructedGenericType(ti.tp) || ti.tp.IsGenericType || !ti.tp.IsEnum))
+                if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && (helper.IsPascalType(ti.tp) || ti.tp.IsGenericType || !ti.tp.IsEnum))
                     if (!(ti.tp is EnumBuilder))
                         il.Emit(OpCodes.Ldelema, ti.tp);
                 if (_arr_type.is_nullable_type && exprs[i] is INullConstantNode)
@@ -4641,7 +4643,7 @@ namespace PascalABCCompiler.NETGenerator
                         this.il = ilb;
                     }
 
-                    if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && lb.LocalType.GetElementType().IsValueType && (helper.IsConstructedGenericType(ti.tp) || ti.tp.IsGenericType || !ti.tp.IsEnum))
+                    if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && lb.LocalType.GetElementType().IsValueType && (helper.IsPascalType(ti.tp) || ti.tp.IsGenericType || !ti.tp.IsEnum))
                     {
                         if (!(ti.tp is EnumBuilder))
                             il.Emit(OpCodes.Ldelema, ti.tp);
@@ -4733,7 +4735,7 @@ namespace PascalABCCompiler.NETGenerator
                         TypeInfo ti = helper.GetTypeReference(ElementValues[i].type);
                         PushIntConst(il, i);
                         if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && 
-                            (ti.tp.Name.StartsWith("NewSet") || !ti.tp.IsEnum)) // SSM 05/11/24 т.к. NewSet бросает исключение в IsEnum
+                            (ti.tp.IsConstructedGenericType() || !ti.tp.IsEnum)) // инстанцированные генерик типы бросают исключение при вызове .IsEnum
                                 il.Emit(OpCodes.Ldelema, ti.tp);
                         ILGenerator ilb = this.il;
                         this.il = il;
@@ -11661,7 +11663,7 @@ namespace PascalABCCompiler.NETGenerator
                 // если элемент перечисления объявлен в коде
                 // или типоаргумент элемента перечисления объявлен в коде
                 // например IEnumerable<MyType>, array of MyType
-                if (helper.IsConstructedGenericType(elementType))
+                if (helper.IsPascalType(elementType))
                 {
                     enumer_mi = TypeBuilder.GetMethod(
                         TypeFactory.IEnumerableGenericType.MakeGenericType(elementType),
@@ -11710,7 +11712,7 @@ namespace PascalABCCompiler.NETGenerator
             MethodInfo get_current_meth = enumer_mi.ReturnType.GetMethod("get_Current");
             if (enumer_mi.ReturnType.IsGenericType && !enumer_mi.ReturnType.IsGenericTypeDefinition)
             {
-                if (helper.IsConstructedGenericType(return_type))
+                if (helper.IsPascalType(return_type))
                     get_current_meth = TypeBuilder.GetMethod(return_type, enumer_mi.ReturnType.GetGenericTypeDefinition().GetMethod("get_Current"));
                 else
                     get_current_meth = return_type.GetMethod("get_Current");
@@ -11779,7 +11781,7 @@ namespace PascalABCCompiler.NETGenerator
             il.BeginFinallyBlock();
             //il.MarkLabel(br_lbl);
             bool is_disposable = false;
-            if (helper.IsConstructedGenericType(return_type))
+            if (helper.IsPascalType(return_type))
             {
                 if (enumer_mi.ReturnType.GetGenericTypeDefinition().GetMethod("Dispose") != null)
                     is_disposable = true;

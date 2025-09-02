@@ -28,11 +28,11 @@ copy bin\OptimizerConversion.dll Release\PascalABCNETLinux\OptimizerConversion.d
 copy bin\LanguageIntegrator.dll Release\PascalABCNETLinux\LanguageIntegrator.dll
 copy bin\StringConstants.dll Release\PascalABCNETLinux\StringConstants.dll
 
-copy bin\SharpDisasm.dll Release\SharpDisasm.dll
+copy bin\SharpDisasm.dll Release\PascalABCNETLinux\SharpDisasm.dll
 copy bin\Mono.Cecil.dll Release\PascalABCNETLinux\Mono.Cecil.dll
-copy bin\Mono.Cecil.Mdb.dll Release\Mono.Cecil.Mdb.dll
-copy bin\Mono.Cecil.Pdb.dll Release\Mono.Cecil.Pdb.dll
-copy bin\Mono.Cecil.Rocks.dll Release\Mono.Cecil.Rocks.dll
+copy bin\Mono.Cecil.Mdb.dll Release\PascalABCNETLinux\Mono.Cecil.Mdb.dll
+copy bin\Mono.Cecil.Pdb.dll Release\PascalABCNETLinux\Mono.Cecil.Pdb.dll
+copy bin\Mono.Cecil.Rocks.dll Release\PascalABCNETLinux\Mono.Cecil.Rocks.dll
 copy bin\Microsoft.Bcl.HashCode.dll Release\PascalABCNETLinux\Microsoft.Bcl.HashCode.dll
 copy bin\System.Buffers.dll Release\PascalABCNETLinux\System.Buffers.dll
 copy bin\System.Collections.Immutable.dll Release\PascalABCNETLinux\System.Collections.Immutable.dll
@@ -235,6 +235,7 @@ xcopy InstallerSamples\StandardUnits\       Release\Samples\StandardUnits\      
 xcopy InstallerSamples\WhatsNew\            Release\Samples\WhatsNew\            /s /e
 
 xcopy InstallerSamples\Graphics\GraphABC\   Release\Samples\Graphics\GraphABC\   /s /e
+xcopy InstallerSamples\Graphics\GraphABC\ABCObjects\   Release\Samples\Graphics\GraphABC\ABCObjects\   /s /e
 
 cd Release
 

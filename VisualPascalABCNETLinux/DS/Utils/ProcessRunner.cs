@@ -213,6 +213,8 @@ namespace VisualPascalABC.Utils
         public string TempBatFile = null;
         public void Start(string command, string arguments, bool redirectIO, bool redirectErrors, bool RunWithPause, bool attachDebugger, bool fictive_attach)
 		{
+        	if (command.Contains(" "))
+            	command = "\"" + command + "\"";
             RedirectIO=redirectIO;
 			process = new Process();
             string BatFile = null;

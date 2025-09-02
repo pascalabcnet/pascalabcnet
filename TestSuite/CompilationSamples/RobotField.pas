@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit RobotField;
 
@@ -28,27 +28,27 @@ var
   LabelGoodEndColor: Color;
   
   HelpStr := 
-'Разработчик  исполнителя  Робот:  Михалкович С.С., 2002-19  '#10#13#10#13+
-    'Команды  исполнителя  Робот:'#10#13+
-    '    Right - вправо'#10#13+
-    '    Left - влево'#10#13
-    '    Up - вверх'#10#13+
-    '    Down - вниз'#10#13
-    '    Paint - закрасить текущую клетку'#10#13
-    '    Task(name) - вызвать задание с указанным именем'#10#13
-    '    StandardField - вызвать стандартное поле'#10#13
-    '    Field(n,m) - вызвать поле размера n на m'#10#13#10#13
-    'Условия, проверяемые  исполнителем  Робот:'#10#13
-    '    WallFromRight - справа стена'#10#13
-    '    WallFromLeft -  слева стена'#10#13
-    '    WallFromUp - сверху стена'#10#13
-    '    WallFromDown - снизу стена'#10#13
-    '    FreeFromRight - справа свободно'#10#13
-    '    FreeFromLeft - слева свободно'#10#13
-    '    FreeFromUp - сверху свободно'#10#13
-    '    FreeFromDown - снизу свободно'#10#13
-    '    CellIsPainted - клетка закрашена'#10#13
-    '    CellIsFree - клетка не закрашена'#10#13;
+'Разработчик  исполнителя  Робот:  Михалкович С.С., 2002-19  ' + NewLine + NewLine +
+    'Команды  исполнителя  Робот:' + NewLine +
+    '    Right - вправо' + NewLine +
+    '    Left - влево' + NewLine +
+    '    Up - вверх' + NewLine +
+    '    Down - вниз' + NewLine +
+    '    Paint - закрасить текущую клетку' + NewLine +
+    '    Task(name) - вызвать задание с указанным именем' + NewLine +
+    '    StandardField - вызвать стандартное поле' + NewLine +
+    '    Field(n,m) - вызвать поле размера n на m' + NewLine + NewLine +
+    'Условия, проверяемые  исполнителем  Робот:' + NewLine +
+    '    WallFromRight - справа стена' + NewLine +
+    '    WallFromLeft -  слева стена' + NewLine +
+    '    WallFromUp - сверху стена' + NewLine +
+    '    WallFromDown - снизу стена' + NewLine +
+    '    FreeFromRight - справа свободно' + NewLine +
+    '    FreeFromLeft - слева свободно' + NewLine +
+    '    FreeFromUp - сверху свободно' + NewLine +
+    '    FreeFromDown - снизу свободно' + NewLine +
+    '    CellIsPainted - клетка закрашена' + NewLine +
+    '    CellIsFree - клетка не закрашена' + NewLine;
   
 type 
   TRobotField = class
@@ -909,9 +909,9 @@ begin
   labelExState.AutoSize := true;
   labelExState.Dock := DockStyle.Fill;
   //labelExState.FlatStyle := FlatStyle.System;
-  labelExState.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Bold{, System.Drawing.GraphicsUnit.Point, ((byte)(204))});
+  labelExState.Font := new System.Drawing.Font('Sans Serif', 8, System.Drawing.FontStyle.Bold{, System.Drawing.GraphicsUnit.Point, ((byte)(204))});
   labelExState.Location := new Point(5, 2);
-  labelExState.Margin := new Padding(3, 3, 3, 3);
+  if not IsUnix then labelExState.Margin := new Padding(3, 3, 3, 3);
   labelExState.Size := new Size(453, 15)*ScreenScale;
   labelExState.Text := 'Робот: Готов';
   labelExState.TextAlign := ContentAlignment.MiddleCenter;
@@ -993,11 +993,11 @@ begin
   //labelZad.AutoSize := true;
   labelZad.Dock := DockStyle.Fill;
   //labelZad.FlatStyle := FlatStyle.System;
-  labelZad.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Bold{, System.Drawing.GraphicsUnit.Point, ((byte)(204))});
+  labelZad.Font := new System.Drawing.Font('Sans Serif', 8, System.Drawing.FontStyle.Bold{, System.Drawing.GraphicsUnit.Point, ((byte)(204))});
   labelZad.ForeColor := SystemColors.HotTrack;
   labelZad.Location := new Point(6, 3);
-  labelZad.Margin := new Padding(4, 1, 3, 0);
-  labelZad.Size := new Size(668, 14)*ScreenScale;
+  if(not IsUnix) then labelZad.Margin := new Padding(4, 1, 3, 0);
+  labelZad.Size := new Size(668, 15)*ScreenScale;
   labelZad.Text := 'Задание';
   labelZad.TextAlign := ContentAlignment.MiddleLeft;
   // 
@@ -1093,8 +1093,13 @@ begin
   else 
     if RobField.TaskName = '' then
       labelExState.Text := 'Робот: Работа окончена'
-    else    
-      labelExState.Text := 'Робот: Работа окончена, задание не выполнено';
+    else 
+      begin   
+        tableLayoutPanel1.BackColor := LabelBadEndColor;
+        labelExState.BackColor := LabelBadEndColor;
+        tableLayoutPanelBottom.BackColor := LabelBadEndColor;
+        labelExState.Text := 'Робот: Работа окончена, задание не выполнено';
+      end;  
 end;
 
 var 
@@ -1142,7 +1147,7 @@ begin
   RobField := new TRobotField(0,0,50);
 
   t := System.Threading.Thread.CurrentThread;  
-  robField.SetSpeed(settings.Speed);
+  RobField.SetSpeed(settings.Speed);
   //MainWindow.Bounds := new System.Drawing.Rectangle(settings.Left,settings.Top,settings.Width,settings.Height);
   var del : procedure := MainForm.Show;
   MainForm.Invoke(del);

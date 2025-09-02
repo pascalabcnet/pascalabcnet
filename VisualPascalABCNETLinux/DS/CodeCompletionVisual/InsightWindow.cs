@@ -167,15 +167,16 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 			}
 			//pe.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
 			int num_param = (DataProvider as VisualPascalABC.DefaultInsightDataProvider).num_param;
-			drawingSize = TipPainterTools.GetDrawingSizeHelpTipFromCombinedDescription(this,
+			int paramsCount = (DataProvider as VisualPascalABC.DefaultInsightDataProvider).param_count;
+            drawingSize = TipPainterTools.GetDrawingSizeHelpTipFromCombinedDescription(this,
 			                                                                           pe.Graphics,
 			                                                                           Font,
 			                                                                           methodCountMessage,
-			                                                                           description,num_param,true);
+			                                                                           description,num_param, paramsCount, true);
 			if (drawingSize != Size) {
 				SetLocation();
 			} else {
-				TipPainterTools.DrawHelpTipFromCombinedDescription(this, pe.Graphics, Font, methodCountMessage, description, num_param,true);
+				TipPainterTools.DrawHelpTipFromCombinedDescription(this, pe.Graphics, Font, methodCountMessage, description, num_param, paramsCount, true);
 			}
 			lastCursorScreenPosition = control.ActiveTextAreaControl.TextArea.Caret.ScreenPosition;
 		}
