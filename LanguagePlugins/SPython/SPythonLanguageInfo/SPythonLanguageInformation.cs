@@ -1030,24 +1030,22 @@ namespace Languages.SPython.Frontend.Data
                 case ScopeKind.Type: return GetDescriptionForType(scope as ITypeScope);
                 case ScopeKind.CompiledType: return GetDescriptionForCompiledType(scope as ICompiledTypeScope);
                 case ScopeKind.Delegate: return GetDescriptionForDelegate(scope as IProcType);
-                case ScopeKind.Procedure: return GetDescriptionForProcedure(scope as IProcScope);
-                case ScopeKind.ElementScope: return GetDescriptionForElementScope(scope as IElementScope);
                 case ScopeKind.TypeSynonim: return GetSynonimDescription(scope as ITypeSynonimScope);
-                case ScopeKind.Namespace: return GetDescriptionForNamespace(scope as INamespaceScope);
-                case ScopeKind.CompiledMethod: return GetDescriptionForCompiledMethod(scope as ICompiledMethodScope);
-                case ScopeKind.Enum: return GetDescriptionForEnum(scope as IEnumScope);
                 case ScopeKind.Array: return GetDescriptionForArray(scope as IArrayScope);
-
-
-
-                /*case ScopeKind.Set: return GetDescriptionForSet(scope as ISetScope);
-
+                case ScopeKind.Diapason: return GetDescriptionForDiapason(scope as IDiapasonScope);
+                case ScopeKind.File: return GetDescriptionForFile(scope as IFileScope);
+                case ScopeKind.Pointer: return GetDescriptionForPointer(scope as IPointerScope);
+                case ScopeKind.Enum: return GetDescriptionForEnum(scope as IEnumScope);
+                case ScopeKind.Set: return GetDescriptionForSet(scope as ISetScope);
+                case ScopeKind.ElementScope: return GetDescriptionForElementScope(scope as IElementScope);
                 case ScopeKind.CompiledField: return GetDescriptionForCompiledField(scope as ICompiledFieldScope);
                 case ScopeKind.CompiledProperty: return GetDescriptionForCompiledProperty(scope as ICompiledPropertyScope);
-
-
-                case ScopeKind.CompiledConstructor: return GetDescriptionForCompiledConstructor(scope as ICompiledConstructorScope);*/
-
+                case ScopeKind.CompiledMethod: return GetDescriptionForCompiledMethod(scope as ICompiledMethodScope);
+                case ScopeKind.Namespace: return GetDescriptionForNamespace(scope as INamespaceScope);
+                case ScopeKind.Procedure: return GetDescriptionForProcedure(scope as IProcScope);
+                case ScopeKind.CompiledEvent: return GetDescriptionForCompiledEvent(scope as ICompiledEventScope);
+                case ScopeKind.CompiledConstructor: return GetDescriptionForCompiledConstructor(scope as ICompiledConstructorScope);
+                case ScopeKind.ShortString: return GetDescriptionForShortString(scope as IShortStringScope);
             }
             return "";
         }
@@ -1202,9 +1200,14 @@ namespace Languages.SPython.Frontend.Data
                 return "";
             switch (scope.Kind)
             {
+                case ScopeKind.Delegate:
                 case ScopeKind.Array:
+                case ScopeKind.Diapason:
+                case ScopeKind.File:
+                case ScopeKind.Pointer:
                 case ScopeKind.Enum:
                 case ScopeKind.Set:
+                case ScopeKind.ShortString:
                     if (scope is ITypeScope && (scope as ITypeScope).Aliased)
                         return scope.Name;
                     break;
@@ -1217,25 +1220,26 @@ namespace Languages.SPython.Frontend.Data
             switch (scope.Kind)
             {
                 case ScopeKind.Type: return GetSimpleDescriptionForType(scope as ITypeScope);
-                case ScopeKind.CompiledType: return GetSimpleDescriptionForCompiledType(scope as ICompiledTypeScope, false);
+                case ScopeKind.CompiledType: return GetSimpleDescriptionForCompiledType(scope as ICompiledTypeScope);
                 case ScopeKind.Delegate: return GetDescriptionForDelegate(scope as IProcType);
-                case ScopeKind.Procedure: return GetSimpleDescriptionForProcedure(scope as IProcScope);
-                case ScopeKind.ElementScope: return GetSimpleDescriptionForElementScope(scope as IElementScope);
                 case ScopeKind.TypeSynonim: return GetSimpleSynonimDescription(scope as ITypeSynonimScope);
                 case ScopeKind.Array: return GetDescriptionForArray(scope as IArrayScope);
-                case ScopeKind.UnitInterface: return GetDescriptionForModule(scope as IInterfaceUnitScope);
-                case ScopeKind.Namespace: return GetDescriptionForNamespace(scope as INamespaceScope);
-                case ScopeKind.CompiledMethod: return GetDescriptionForCompiledMethod(scope as ICompiledMethodScope);
+                case ScopeKind.Diapason: return GetDescriptionForDiapason(scope as IDiapasonScope);
+                case ScopeKind.File: return GetDescriptionForFile(scope as IFileScope);
+                case ScopeKind.Pointer: return GetDescriptionForPointer(scope as IPointerScope);
                 case ScopeKind.Enum: return GetDescriptionForEnum(scope as IEnumScope);
-
-                /*
                 case ScopeKind.Set: return GetDescriptionForSet(scope as ISetScope);
-
+                case ScopeKind.ElementScope: return GetSimpleDescriptionForElementScope(scope as IElementScope);
                 case ScopeKind.CompiledField: return GetDescriptionForCompiledField(scope as ICompiledFieldScope);
                 case ScopeKind.CompiledProperty: return GetDescriptionForCompiledProperty(scope as ICompiledPropertyScope);
-
-
-                case ScopeKind.CompiledConstructor: return GetDescriptionForCompiledConstructor(scope as ICompiledConstructorScope);*/
+                case ScopeKind.CompiledMethod: return GetDescriptionForCompiledMethod(scope as ICompiledMethodScope);
+                case ScopeKind.Namespace: return GetDescriptionForNamespace(scope as INamespaceScope);
+                case ScopeKind.Procedure: return GetSimpleDescriptionForProcedure(scope as IProcScope);
+                case ScopeKind.CompiledEvent: return GetDescriptionForCompiledEvent(scope as ICompiledEventScope);
+                case ScopeKind.CompiledConstructor: return GetDescriptionForCompiledConstructor(scope as ICompiledConstructorScope);
+                case ScopeKind.ShortString: return GetDescriptionForShortString(scope as IShortStringScope);
+                case ScopeKind.UnitInterface: return GetDescriptionForModule(scope as IInterfaceUnitScope);
+                    //case ScopeKind.Procedure : return GetDescriptionForProcedure(scope as IProcScope);
             }
             return "";
         }
@@ -1248,6 +1252,55 @@ namespace Languages.SPython.Frontend.Data
                 return "unit " + p.Key;
 
             return "unit " + scope.Name;
+        }
+
+        private string GetDescriptionForFile(IFileScope scope)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("file");
+            if (scope.ElementType != null)
+            {
+                string s = GetSimpleDescription(scope.ElementType);
+                if (s.Length > 0 && s[0] == '$') s = s.Substring(1, s.Length - 1);
+                sb.Append("[" + s + "]");
+            }
+            return sb.ToString();
+        }
+
+        private string GetDescriptionForSet(ISetScope scope)
+        {
+            StringBuilder sb = new StringBuilder();
+            
+            sb.Append("set[");
+            
+            if (scope.ElementType != null)
+            {
+                string s = GetSimpleDescription(scope.ElementType);
+                if (s.Length > 0 && s[0] == '$') s = s.Substring(1, s.Length - 1);
+                sb.Append(s);
+            }
+
+            sb.Append("]");
+
+            return sb.ToString();
+        }
+
+        private string GetDescriptionForDiapason(IDiapasonScope scope)
+        {
+            return scope.Left.ToString() + ".." + scope.Right.ToString();
+        }
+
+        private string GetDescriptionForPointer(IPointerScope scope)
+        {
+            string s = "";
+            if (scope.ElementType != null)
+            {
+                s = "^" + GetSimpleDescription(scope.ElementType);
+            }
+            else
+                s = "pointer";
+
+            return s;
         }
 
         private string GetDescriptionForNamespace(INamespaceScope scope)
