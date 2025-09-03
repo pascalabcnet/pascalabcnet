@@ -1,0 +1,11 @@
+﻿season = int(input())
+if season == 1:
+  print("весна")
+elif season == 2:
+  print("лето")
+elif season == 3:
+  print("осень")
+elif season == 4:
+  print("зима")
+  
+  

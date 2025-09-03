@@ -3237,6 +3237,318 @@ type
     end;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс ParticleSystemT # Graph3D ParticleSystemT class
+// ----------------------------------------------------- 
+  [Serializable]
+/// Класс ParticleSystem (система частиц)
+  ParticleSystemT = class(ObjectWithChildren3D,ISerializable)
+  private
+    texturName: string;
+    {procedure SetD(d: real) := Invoke(procedure(d: real)->(model as TorusVisual3D).TorusDiameter := d, d);
+    function  GetD: real := InvokeReal(()->(model as TorusVisual3D).TorusDiameter);
+    procedure SetTD(d: real) := Invoke(procedure(d: real)->(model as TorusVisual3D).TubeDiameter := d, d);
+    function  GetTD: real := InvokeReal(()->(model as TorusVisual3D).TubeDiameter);}
+    {procedure SetTN(name: string) := 
+    begin
+      var smokeBrush := new ImageBrush(
+        new System.Windows.Media.Imaging.BitmapImage(new System.Uri(name, System.UriKind.Absolute)));
+      Invoke(procedure(name: string) -> (model as ParticleSystem).Texture := smokeBrush, smokeBrush);
+    end;}
+    procedure SetTN(name: string) := 
+    begin
+      texturName := name;
+      Invoke(procedure() -> begin 
+        var smokeBrush := new ImageBrush(
+          new System.Windows.Media.Imaging.BitmapImage(new System.Uri(name, System.UriKind.Relative)));
+        (model as ParticleSystem).Texture := smokeBrush
+      end);
+    end;
+    
+  protected
+    function CreateObject: Object3D; override := new ParticleSystemT(X, Y, Z, texturName);
+  public 
+    function Model: ParticleSystem := inherited model as ParticleSystem;
+    constructor(x, y, z: real; textureName: string);
+    begin
+      texturName := textureName;
+      var ps := new ParticleSystem;
+      var smokeBrush := new ImageBrush(
+        new System.Windows.Media.Imaging.BitmapImage(new System.Uri(texturName, System.UriKind.Relative)));
+          
+      ps.Texture := smokeBrush;
+      ps.LifeTime := 5;
+      ps.FadeOutTime := 0;
+      ps.VelocityDamping := 0.999;
+      ps.AngularVelocity := 10;
+      ps.SizeRate := 1;
+      ps.AccelerationDirection := V3D(3,0,-1);
+      ps.Acceleration := 4;
+      ps.AccelerationSpreading := 10;
+      ps.EmitRate := 100;
+      ps.StartRadius := 0;
+      ps.StartSize := 0.5;
+      ps.StartDirection := V3D(0,0,1);
+      ps.StartSpreading := 10;
+      ps.StartVelocity := 4;
+      ps.StartVelocityRandomness := 2;
+      ps.Position := new Point3D(x, y, z);
+
+      CreateBase0(ps, x, y, z);
+    end;
+    
+    property TextureName: string write SetTN;
+    property LifeTime: real read InvokeReal(() -> Model.LifeTime) write Invoke(procedure -> (Model.LifeTime := value));
+    property FadeOutTime: real read InvokeReal(() -> Model.FadeOutTime) write Invoke(procedure -> (Model.FadeOutTime := value));
+    property VelocityDamping: real read InvokeReal(() -> Model.VelocityDamping) write Invoke(procedure -> (Model.VelocityDamping := value));
+    property AngularVelocity: real read InvokeReal(() -> Model.AngularVelocity) write Invoke(procedure -> (Model.AngularVelocity := value));
+    property SizeRate: real read InvokeReal(() -> Model.SizeRate) write Invoke(procedure -> (Model.SizeRate := value));
+    property AccelerationDirection: Vector3D read Inv&<Vector3D>(() -> Model.AccelerationDirection) write Invoke(procedure -> (Model.AccelerationDirection := value));
+    property Acceleration: real read InvokeReal(() -> Model.Acceleration) write Invoke(procedure -> (Model.Acceleration := value));
+    property AccelerationSpreading: real read InvokeReal(() -> Model.AccelerationSpreading) write Invoke(procedure -> (Model.AccelerationSpreading := value));
+    property EmitRate: real read InvokeReal(() -> Model.EmitRate) write Invoke(procedure -> (Model.EmitRate := value));
+    property StartRadius: real read InvokeReal(() -> Model.StartRadius) write Invoke(procedure -> (Model.StartRadius := value));
+    property StartSize: real read InvokeReal(() -> Model.StartSize) write Invoke(procedure -> (Model.StartSize := value));
+    property StartDirection: Vector3D read Inv&<Vector3D>(() -> Model.StartDirection) write Invoke(procedure -> (Model.StartDirection := value));
+    property StartSpreading: real read InvokeReal(() -> Model.StartSpreading) write Invoke(procedure -> (Model.StartSpreading := value));
+    property StartVelocity: real read InvokeReal(() -> Model.StartVelocity) write Invoke(procedure -> (Model.StartVelocity := value));
+    property StartVelocityRandomness: real read InvokeReal(() -> Model.StartVelocityRandomness) write Invoke(procedure -> (Model.StartVelocityRandomness := value));
+    
+/// Возвращает клон тора
+    function Clone := (inherited Clone) as ParticleSystemT;
+    
+    function CreateModel: Visual3D; override := new TorusVisual3D;
+///--
+    procedure GetObjectData(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited GetObjectData(info,context);
+      //info.AddValue('Diameter', Diameter, typeof(real));
+      //info.AddValue('TubeDiameter', TubeDiameter, typeof(real));
+    end;
+///--
+    constructor Create(info: SerializationInfo; context: StreamingContext);
+    begin
+      inherited Create(info,context);
+      //Diameter := info.GetDouble('Diameter');
+      //TubeDiameter := info.GetDouble('TubeDiameter');
+    end;
+  end;
+  
+type
+  ClothInternal = class
+  public
+    auto property WindSpeed: real := 6;
+    auto property WindDirection: real := 180;
+    auto property FPS: real;
+
+  private
+    integrator: VerletIntegrator;
+    function GetWind: Vector3D;
+    begin
+      var dir := WindDirection / 180 * Pi;
+      Result := new Vector3D(Cos(dir) * WindSpeed, Sin(dir) * WindSpeed, 0);
+    end;
+  public
+    auto property Gravity: Vector3D := new Vector3D(0, 0, -9);
+    auto property Damping: real := 0.999;
+    property Wind: Vector3D read GetWind;
+
+  private
+    m := 48;
+    n := 32;
+    normalforcecoeff := 10.0;
+    relax := 1.5;
+    tangentforcecoeff := 0.1;
+    Mesh: MeshGeometry3D;
+  public
+    constructor(Height,Length,PoleHeight: real; image: string);
+    begin
+      Mesh := new MeshGeometry3D();
+      Material := MaterialHelper.CreateImageMaterial(image);
+      //Damping := 0.999;
+      integrator := new VerletIntegrator();
+      integrator.Iterations := 20;
+      integrator.Damping := self.Damping;
+      //WindSpeed := 6;
+      //WindDirection := 180;
+      Self.PoleHeight := PoleHeight;
+      Self.Height := Height;
+      Self.Length := Length;
+      //Mass := 0.8;
+    end;
+  public
+    Material: Material;
+    Height, Length, PoleHeight: real;
+    auto property Mass: real := 0.8;
+
+    procedure Init;
+    begin
+      CreateInitialMesh();
+      integrator.Init(Mesh);
+      CreateConstraints();
+      integrator.SetInverseMass(1 / Mass);
+      for var i := 0 to n-1 do
+        integrator.FixPosition(i * m);
+    end;
+
+  private
+    procedure CreateConstraints;
+    begin
+      for var i := 0 to n-1 do
+        for var j := 0 to m-1 do
+        begin
+          var ij := i * m + j;
+          if j + 1 < m then
+            integrator.AddConstraint(ij, ij + 1, relax);
+          if i + 1 < n then
+            integrator.AddConstraint(ij, ij + m, relax);
+        end;
+    end;
+
+    procedure CreateInitialMesh;
+    begin
+      var pts := new Point3D[n, m];
+      for var i := 0 to n-1 do
+        for var j := 0 to m-1 do
+          pts[i, j] := new Point3D(real(-Length * j / (m - 1)),
+                                                  0,
+                                                  real(PoleHeight - Height * i / (n - 1)));
+
+      var mb := new MeshBuilder(false, true);
+      mb.AddRectangularMesh(pts, nil, false, false);
+      Mesh := mb.ToMesh()
+    end;
+
+    function CalculateNormals: array of Vector3D;
+    begin
+      var pts := integrator.Positions;
+      var normals := new Vector3D[n * m];
+      for var i := 0 to n-1 do
+      begin
+        var i1 := i + 1;
+        if i1 = n then i1 -= 1;
+        var i0 := i1 - 1;
+        for var j := 0 to m-1 do
+        begin
+          var j1 := j + 1;
+          if j1 = m then j1 -= 1;
+          var j0 := j1 - 1;
+          var normal := Vector3D.CrossProduct(
+                          Point3D.Subtract(pts[i1 * m + j0], pts[i0 * m + j0]),
+                          Point3D.Subtract(pts[i0 * m + j1], pts[i0 * m + j0])
+                        );
+          normal.Normalize();
+          normals[i * m + j] := normal;
+        end;
+      end;
+      Result := normals;
+    end;
+
+    procedure AccumulateForces;
+    begin
+      integrator.Damping := self.Damping;
+      var wind := Wind;
+      var gravity := Gravity;
+      var mass := Mass;
+      var normals := CalculateNormals();
+      for var i := 0 to normals.Length-1 do
+      begin
+        var n := normals[i];
+        var F := n * Vector3D.DotProduct(n, wind) * normalforcecoeff + wind * tangentforcecoeff;
+        F.X += gravity.X * mass;
+        F.Y += gravity.Y * mass;
+        F.Z += gravity.Z * mass;
+        integrator.SetForce(i, F);
+      end;
+    end;
+
+  public
+    procedure Update(dt: real);
+    begin
+      UpdateFps(dt);
+      AccumulateForces();
+      integrator.TimeStep(dt);
+    end;
+
+  private
+    timeFrames: real := 0;
+    nFrames: integer := 0;
+
+    procedure UpdateFps(dt: real);
+    begin
+      timeFrames += dt;
+      nFrames += 1;
+      if timeFrames > 1 then
+      begin
+        FPS := nFrames / timeFrames;
+        timeFrames := 0;
+        nFrames := 0;
+      end;
+    end;
+
+  public
+    procedure Transfer;
+    begin
+      integrator.TransferPositions(Mesh);
+    end;
+  end;
+
+type
+  [Serializable]
+  ClothSystemT = class(ObjectWithMaterial3D,System.Runtime.Serialization.ISerializable)
+    texturName: string;
+    fl: ClothInternal;
+    watch: StopWatch;
+    procedure DrawFrame(dt: real);
+    begin
+      fl.Transfer;
+    end;
+    procedure SetWS(value: real) := fl.WindSpeed := value;
+    procedure SetWD(value: real) := fl.WindDirection := value;
+    procedure SetG(value: real) := fl.Gravity := V3D(0,0,-value);
+    procedure SetD(value: real) := fl.Damping := value;
+    procedure SetM(value: real) := fl.Mass := value;
+    procedure SetIt(value: integer) := fl.integrator.Iterations := value;
+  public 
+    property WindSpeed: real read fl.WindSpeed write SetWS;
+    property WindDirection: real read fl.WindDirection write SetWD;
+    property Gravity: real read -fl.Gravity.Z write SetG;
+    property Damping: real read fl.Damping write SetD;
+    property Mass: real read fl.Mass write SetM;
+    property Iterations: integer read fl.integrator.Iterations write SetIt;
+
+    constructor(x, y, z: real; Height,Length,PoleHeight: real; textureName: string);
+
+    private
+    st: boolean := False;
+    mre: System.Threading.ManualResetEvent := new System.Threading.ManualResetEvent(false);
+    public
+    procedure Stop();
+    begin
+      mre.Reset();
+      st := True;
+      watch.Stop();
+    end;
+    procedure Start();
+    begin
+      mre.Set();
+      st := False;
+      watch.Restart();
+    end;
+    private
+    procedure IntegrationWorker();
+    begin
+      while true do
+      begin
+        if st then
+          mre.WaitOne();
+        var dt := 1.0 * watch.ElapsedTicks / Stopwatch.Frequency;
+        watch.Restart();
+        Fl.Update(dt);
+      end
+    end;
+  end;
+  
   
 // -----------------------------------------------------
 //>>     Graph3D: сервисные функции # Graph3D service functions
@@ -3419,6 +3731,12 @@ function Torus(x, y, z, Diameter, TubeDiameter: real; m: Material := nil): Torus
 function Torus(p: Point3D; Diameter, TubeDiameter: real; m: Material := nil): TorusT;
 /// Возвращает треугольник, соединяющий точки p1, p2, p3
 function Triangle(p1, p2, p3: Point3D; m: Material := nil): TriangleT;
+/// Возвращает систему частиц с центром в точке (x, y, z), именем текстуры TextureName
+function ParticleSystem(x, y, z: real; textureName: string): ParticleSystemT;
+/// Возвращает анимируемый объект из ткани (например, флаг на ветру)
+function Cloth(x, y, z, Height, Length, PoleHeight: real; textureName: string): ClothSystemT;
+  
+
 
 // Конец примитивов
 //------------------------------------------------------------------------------------
@@ -3565,6 +3883,24 @@ end;
 procedure ShowObjects;
 begin
   Invoke(()->begin hvp.Visibility := Visibility.Visible end);
+end;
+
+constructor ClothSystemT.Create(x, y, z: real; Height,Length,PoleHeight: real; textureName: string);
+begin
+  texturName := textureName;
+  fl := new ClothInternal(Height,Length,PoleHeight,texturName);
+  fl.Init;
+  var FlagModel := new GeometryModel3D(Fl.Mesh,Fl.Material);
+  FlagModel.BackMaterial := Fl.Material;
+  
+  var mv: ModelVisual3D := new ModelVisual3D();
+  mv.Content := FlagModel;
+  
+  CreateBase0(mv, x, y, z);
+  watch := new Stopwatch();
+  watch.Start();
+  var t := System.Threading.Tasks.Task.Factory.StartNew(IntegrationWorker);
+  OnDrawFrame += DrawFrame;
 end;
 
 
@@ -4368,6 +4704,12 @@ function Torus(p: Point3D; Diameter, TubeDiameter: real; m: Material): TorusT :=
 
 function Triangle(p1, p2, p3: Point3D; m: Material): TriangleT := Inv(()->TriangleT.Create(p1, p2, p3, m));
 
+function ParticleSystem(x, y, z: real; textureName: string): ParticleSystemT := Inv(() -> ParticleSystemT.Create(x,y,z,textureName));
+
+function Cloth(x, y, z, Height, Length, PoleHeight: real; textureName: string): ClothSystemT
+  := Inv(() -> ClothSystemT.Create(x,y,z,Height,Length,PoleHeight,textureName));
+
+
 // Конец примитивов
 //------------------------------------------------------------------------------------
 
@@ -4551,6 +4893,17 @@ procedure Proba := Invoke(ProbaP);
 
 procedure ProbaP2;
 begin
+  var smokeBrush := new ImageBrush(
+    new System.Windows.Media.Imaging.BitmapImage(new System.Uri('d:\\smoke.png', System.UriKind.Absolute)));
+
+  var pc := new HelixToolkit.Wpf.ParticleSystem();
+  pc.Texture := smokeBrush;
+  pc.LifeTime := 3;
+  pc.EmitRate := 50;
+  pc.Position := new Point3D(0, 0, 0);
+  pc.StartSize := 0.5;
+  pc.FadeOutTime := 1;
+  hvp.Children.Add(pc);
   //var c := new CubeVisual3D();
   //var c := new IcosahedronVisual3D();
   //c.Length := 1;

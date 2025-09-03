@@ -1,0 +1,17 @@
+﻿students = [
+    {"name": "Alice", "grade": "90"},
+    {"name": "Bob", "grade": "85"},
+    {"name": "Charlie", "grade": "92"}
+]
+
+print(students)
+print(type(students))
+
+def grade_sort(d: dict[str,str]) -> int:
+    return int(d["grade"])
+
+# отсортировать студентов по убыванию рейтинга
+sorted_students = sorted(students, grade_sort, True)
+print(sorted_students)
+
+

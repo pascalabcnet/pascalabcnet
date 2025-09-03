@@ -1,0 +1,8 @@
+﻿from PABCSystem import Sin,KV,Dict
+
+graph = { 'A': {'C': 3, 'D': 1}}
+
+graph1 = Dict(KV(1,2))
+
+print(Sin(3.1415/2),graph1,graph1)
+

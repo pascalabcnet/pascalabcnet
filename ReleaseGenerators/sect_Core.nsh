@@ -179,6 +179,13 @@
     File ..\bin\Lib\Tasks1Arr.pcu
     File ..\bin\Lib\WPF.pcu
 
+    File ..\bin\Lib\SPythonHidden.pcu
+    File ..\bin\Lib\SPythonSystem.pcu
+    File ..\bin\Lib\time1.pcu
+    File ..\bin\Lib\SPythonSystemPys.pcu
+    File ..\bin\Lib\itertools.pcu
+    File ..\bin\Lib\math.pcu
+
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
     File ..\bin\Lib\HelixToolkit.dll
@@ -271,6 +278,13 @@
     ${AddFile} "Tasks1Arr.pcu"
     ${AddFile} "WPF.pcu"
 
+    ;SPython
+    ${AddFile} "SPythonHidden.pcu"
+    ${AddFile} "SPythonSystem.pcu"
+    ${AddFile} "time1.pcu"
+    ${AddFile} "SPythonSystemPys.pcu"
+    ${AddFile} "itertools.pcu"
+    ${AddFile} "math.pcu"
 
     ${AddFile} "turtle.png"
 
@@ -379,6 +393,15 @@
     File ..\bin\Lib\Мозаика.pas
     File ..\bin\Lib\WPF.pas
 
+    ;SPython
+    File ..\bin\Lib\SPythonHidden.pas
+    File ..\bin\Lib\SPythonSystem.pas
+    File ..\bin\Lib\time1.pas
+
+    File ..\bin\Lib\SPythonSystemPys.pys
+    File ..\bin\Lib\itertools.pys
+    File ..\bin\Lib\math.pys
+
     File ..\bin\Lib\__RedirectIOMode.vb
     File ..\bin\Lib\VBSystem.vb
     
@@ -457,6 +480,15 @@
     ${AddFile} "XLSX.pas"
     ${AddFile} "Мозаика.pas"
     ${AddFile} "WPF.pas"
+
+    ;SPython
+    ${AddFile} "SPythonHidden.pas"
+    ${AddFile} "SPythonSystem.pas"
+    ${AddFile} "time1.pas"
+
+    ${AddFile} "SPythonSystemPys.pys"
+    ${AddFile} "itertools.pys"
+    ${AddFile} "math.pys"
 
 
     ${AddFile} "__RedirectIOMode.vb"

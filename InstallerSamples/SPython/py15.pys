@@ -1,0 +1,12 @@
+﻿def product(a: list[int], **kwargs: int) -> list[list[int]]:
+    repeat = kwargs['repeat']
+    if repeat == 1:
+      return [[a[i]] for i in range(len(a))]
+    prev = product(a, repeat = repeat - 1)
+    res: list[list[int]] = []
+    for elem in a:
+        for p in prev:
+            res.append([elem] + p)
+    return res
+    
+print(product([1,2,3], repeat = 3));

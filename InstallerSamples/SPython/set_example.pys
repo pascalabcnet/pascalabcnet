@@ -1,0 +1,11 @@
+﻿from time import time
+
+s: set[int] = set()
+t1 = time()
+
+for i in range(1, 1000000):
+    s |= {i}
+
+t2 = time()
+print(t2 - t1)
+print(len(s))

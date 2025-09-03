@@ -1,0 +1,7 @@
+﻿def f() -> tuple[int,int]:
+    return (1,1)
+    
+print((1,2) != (2,3))
+
+s = 'ds1h'
+print('1' in s)

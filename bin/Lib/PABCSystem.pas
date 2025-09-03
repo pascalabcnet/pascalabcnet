@@ -9269,13 +9269,13 @@ function Sign(x: BigInteger) := x.Sign;
 
 function Sign(x: int64) := Math.Sign(x);
 
-function Sign(x: byte): integer := 1;
+function Sign(x: byte): integer := if x = 0 then 0 else 1;
 
-function Sign(x: word): integer := 1;
+function Sign(x: word): integer := if x = 0 then 0 else 1;
 
-function Sign(x: longword): integer := 1;
+function Sign(x: longword): integer := if x = 0 then 0 else 1;
 
-function Sign(x: uint64): integer := 1;
+function Sign(x: uint64): integer := if x = 0 then 0 else 1;
 
 function Sign(x: real): integer := Math.Sign(x);
 

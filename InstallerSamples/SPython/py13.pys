@@ -1,0 +1,13 @@
+﻿lst = [3,6,2,5,1,4]
+
+def even(x: int) -> bool:
+    return x % 2 == 0
+    
+def square(x: int) -> int:
+    return x * x    
+
+# Стиль SPython и PascalABC.NET
+lst.Where(even).Select(square).Order.Println()
+
+# Стиль Python
+print(sorted(map(square,filter(even,lst))))

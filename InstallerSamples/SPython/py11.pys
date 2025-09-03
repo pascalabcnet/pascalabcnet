@@ -1,0 +1,3 @@
+﻿fruits = ['apple', 'banana', 'cherry']
+for i, fruit in enumerate(fruits, 1):  # начнём с 1
+    print(i, fruit)
