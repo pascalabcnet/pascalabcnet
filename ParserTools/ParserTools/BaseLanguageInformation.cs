@@ -841,7 +841,7 @@ namespace PascalABCCompiler.Parsers
                     sb.Append(GetFullTypeName(pis[i].ParameterType));
                 else sb.Append(GetFullTypeName(pis[i].ParameterType.GetElementType()));
                 if (i < pis.Length - 1)
-                    sb.Append("; ");
+                    sb.Append(ParameterDelimiter + " ");
             }
             sb.Append(')');
             sb.Append(';');
