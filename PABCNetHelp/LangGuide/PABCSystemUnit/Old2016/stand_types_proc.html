@@ -17,65 +17,65 @@
 </object></head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title><link rel="StyleSheet" href="../../default.css"><body>
-<H1>Стандартные процедурные типы</H1>
+<H1>РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РїСЂРѕС†РµРґСѓСЂРЅС‹Рµ С‚РёРїС‹</H1>
 <table border=0 CELLPADDING=5>
 <tr><td>
 	<code>Action0<br>
-</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Представляет действие без параметров</td></tr>
+</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРґСЃС‚Р°РІР»СЏРµС‚ РґРµР№СЃС‚РІРёРµ Р±РµР· РїР°СЂР°РјРµС‚СЂРѕРІ</td></tr>
 <tr><td>
 	<code>Action&lt;T&gt; </code><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Представляет действие с одним параметром
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРґСЃС‚Р°РІР»СЏРµС‚ РґРµР№СЃС‚РІРёРµ СЃ РѕРґРЅРёРј РїР°СЂР°РјРµС‚СЂРѕРј
 </td></tr>
 <tr><td>
 	<code>Action2&lt;T1,T2&gt; </code><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Представляет действие с двумя параметрами
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРґСЃС‚Р°РІР»СЏРµС‚ РґРµР№СЃС‚РІРёРµ СЃ РґРІСѓРјСЏ РїР°СЂР°РјРµС‚СЂР°РјРё
 </td></tr>
 <tr><td>
 	<code>Action3&lt;T1,T2,T3&gt; </code><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Представляет действие с тремя параметрами
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРґСЃС‚Р°РІР»СЏРµС‚ РґРµР№СЃС‚РІРёРµ СЃ С‚СЂРµРјСЏ РїР°СЂР°РјРµС‚СЂР°РјРё
 </td></tr>
 <tr><td>
 	<code>Func0&lt;Res&gt; </code><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Представляет функцию без параметров
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРґСЃС‚Р°РІР»СЏРµС‚ С„СѓРЅРєС†РёСЋ Р±РµР· РїР°СЂР°РјРµС‚СЂРѕРІ
 </td></tr>
 <tr><td>
 	<code>Func&lt;T,Res&gt; </code><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Представляет функцию с одним параметром
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРґСЃС‚Р°РІР»СЏРµС‚ С„СѓРЅРєС†РёСЋ СЃ РѕРґРЅРёРј РїР°СЂР°РјРµС‚СЂРѕРј
 </td></tr>
 <tr><td>
 	<code>IntFunc = Func&lt;integer,integer&gt; </code><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Представляет функцию с одним параметром целого типа, возвращающую 
-	целое
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРґСЃС‚Р°РІР»СЏРµС‚ С„СѓРЅРєС†РёСЋ СЃ РѕРґРЅРёРј РїР°СЂР°РјРµС‚СЂРѕРј С†РµР»РѕРіРѕ С‚РёРїР°, РІРѕР·РІСЂР°С‰Р°СЋС‰СѓСЋ 
+	С†РµР»РѕРµ
 </td></tr>
 <tr><td>
 	<code>RealFunc = Func&lt;real,real&gt; </code><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Представляет функцию с одним параметром вещественного типа, 
-	возвращающую вещественное
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРґСЃС‚Р°РІР»СЏРµС‚ С„СѓРЅРєС†РёСЋ СЃ РѕРґРЅРёРј РїР°СЂР°РјРµС‚СЂРѕРј РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ С‚РёРїР°, 
+	РІРѕР·РІСЂР°С‰Р°СЋС‰СѓСЋ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ
 </td></tr>
 <tr><td>
 	<code>StringFunc = Func&lt;string,string&gt; </code><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Представляет функцию с одним параметром строкового типа, 
-	возвращающую строковое
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРґСЃС‚Р°РІР»СЏРµС‚ С„СѓРЅРєС†РёСЋ СЃ РѕРґРЅРёРј РїР°СЂР°РјРµС‚СЂРѕРј СЃС‚СЂРѕРєРѕРІРѕРіРѕ С‚РёРїР°, 
+	РІРѕР·РІСЂР°С‰Р°СЋС‰СѓСЋ СЃС‚СЂРѕРєРѕРІРѕРµ
 </td></tr>
 <tr><td>
 	<code>Func2&lt;T1,T2,Res&gt; </code><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Представляет функцию с двумя параметрами
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРґСЃС‚Р°РІР»СЏРµС‚ С„СѓРЅРєС†РёСЋ СЃ РґРІСѓРјСЏ РїР°СЂР°РјРµС‚СЂР°РјРё
 </td></tr>
 <tr><td>
 	<code>Func3&lt;T1,T2,T3,Res&gt; </code><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Представляет функцию с тремя параметрами
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРґСЃС‚Р°РІР»СЏРµС‚ С„СѓРЅРєС†РёСЋ СЃ С‚СЂРµРјСЏ РїР°СЂР°РјРµС‚СЂР°РјРё
 </td></tr>
 <tr><td>
 	<code>Predicate&lt;T&gt; </code><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Представляет функцию с одним параметром, возвращающую boolean
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРґСЃС‚Р°РІР»СЏРµС‚ С„СѓРЅРєС†РёСЋ СЃ РѕРґРЅРёРј РїР°СЂР°РјРµС‚СЂРѕРј, РІРѕР·РІСЂР°С‰Р°СЋС‰СѓСЋ boolean
 </td></tr>
 <tr><td>
 	<code>Predicate2&lt;T1,T2&gt; </code><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Представляет функцию с двумя параметрами, возвращающую boolean
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРґСЃС‚Р°РІР»СЏРµС‚ С„СѓРЅРєС†РёСЋ СЃ РґРІСѓРјСЏ РїР°СЂР°РјРµС‚СЂР°РјРё, РІРѕР·РІСЂР°С‰Р°СЋС‰СѓСЋ boolean
 </td></tr>
 <tr><td>
 	<code>Predicate3&lt;T1,T2,T3&gt; </code><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Представляет функцию с тремя параметрами, возвращающую boolean
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРґСЃС‚Р°РІР»СЏРµС‚ С„СѓРЅРєС†РёСЋ СЃ С‚СЂРµРјСЏ РїР°СЂР°РјРµС‚СЂР°РјРё, РІРѕР·РІСЂР°С‰Р°СЋС‰СѓСЋ boolean
 </td></tr>
 </table>
 </body></html>

@@ -20,50 +20,50 @@
 <param name="Keyword" value="Rotate">
 <param name="Keyword" value="UpDirection"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Graph3D: класс CameraType</H1>Класс камеры.
-<table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства класса CameraType</font></td></tr>
+</HEAD><body><H1>Graph3D: РєР»Р°СЃСЃ CameraType</H1>РљР»Р°СЃСЃ РєР°РјРµСЂС‹.
+<table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">РЎРІРѕР№СЃС‚РІР° РєР»Р°СЃСЃР° CameraType</font></td></tr>
 
 <tr><tr><td><code><b>property</b> Count: integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Количество источников света</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РљРѕР»РёС‡РµСЃС‚РІРѕ РёСЃС‚РѕС‡РЅРёРєРѕРІ СЃРІРµС‚Р°</td></tr>
 <tr><td><code><b>property</b> Distanse: real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Расстояние камеры до начала координат</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р Р°СЃСЃС‚РѕСЏРЅРёРµ РєР°РјРµСЂС‹ РґРѕ РЅР°С‡Р°Р»Р° РєРѕРѕСЂРґРёРЅР°С‚</td></tr>
 <tr><td><code><b>property</b> LookDirection: Vector3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Направление взгляда камеры</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°РїСЂР°РІР»РµРЅРёРµ РІР·РіР»СЏРґР° РєР°РјРµСЂС‹</td></tr>
 <tr><td><code><b>property</b> Position: Point3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Позиция камеры</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРѕР·РёС†РёСЏ РєР°РјРµСЂС‹</td></tr>
 <tr><td><code><b>property</b> UpDirection: Vector3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Направление "вверх" камеры</td></tr>
-</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы класса CameraType</font></td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°РїСЂР°РІР»РµРЅРёРµ "РІРІРµСЂС…" РєР°РјРµСЂС‹</td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">РњРµС‚РѕРґС‹ РєР»Р°СЃСЃР° CameraType</font></td></tr>
 
 <tr><tr><td><code><b>procedure</b> AddBackwardForce(Force: real := 0.2);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавное движение камеры назад с некоторой силой</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±РµСЃРїРµС‡РёРІР°РµС‚ РїР»Р°РІРЅРѕРµ РґРІРёР¶РµРЅРёРµ РєР°РјРµСЂС‹ РЅР°Р·Р°Рґ СЃ РЅРµРєРѕС‚РѕСЂРѕР№ СЃРёР»РѕР№</td></tr>
 <tr><td><code><b>procedure</b> AddDirectionalLight(c: Color; v: Vector3D);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавляет направленный источник света</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р”РѕР±Р°РІР»СЏРµС‚ РЅР°РїСЂР°РІР»РµРЅРЅС‹Р№ РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р°</td></tr>
 <tr><td><code><b>procedure</b> AddDownForce(Force: real := 0.2);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавное движение камеры вниз</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±РµСЃРїРµС‡РёРІР°РµС‚ РїР»Р°РІРЅРѕРµ РґРІРёР¶РµРЅРёРµ РєР°РјРµСЂС‹ РІРЅРёР·</td></tr>
 <tr><td><code><b>procedure</b> AddForwardForce(Force: real := 0.2);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавное движение камеры вперед с некоторой силой</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±РµСЃРїРµС‡РёРІР°РµС‚ РїР»Р°РІРЅРѕРµ РґРІРёР¶РµРЅРёРµ РєР°РјРµСЂС‹ РІРїРµСЂРµРґ СЃ РЅРµРєРѕС‚РѕСЂРѕР№ СЃРёР»РѕР№</td></tr>
 <tr><td><code><b>procedure</b> AddLeftForce(Force: real := 0.2);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавное движение камеры влево</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±РµСЃРїРµС‡РёРІР°РµС‚ РїР»Р°РІРЅРѕРµ РґРІРёР¶РµРЅРёРµ РєР°РјРµСЂС‹ РІР»РµРІРѕ</td></tr>
 <tr><td><code><b>procedure</b> AddMoveForce(ForwardForce,RightForce,UpForce: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавное движение камеры</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±РµСЃРїРµС‡РёРІР°РµС‚ РїР»Р°РІРЅРѕРµ РґРІРёР¶РµРЅРёРµ РєР°РјРµСЂС‹</td></tr>
 <tr><td><code><b>procedure</b> AddPointLight(c: Color; p: Point3D);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавляет точечный источник света</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р”РѕР±Р°РІР»СЏРµС‚ С‚РѕС‡РµС‡РЅС‹Р№ РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р°</td></tr>
 <tr><td><code><b>procedure</b> AddRightForce(Force: real := 0.2);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавное движение камеры вправо</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±РµСЃРїРµС‡РёРІР°РµС‚ РїР»Р°РІРЅРѕРµ РґРІРёР¶РµРЅРёРµ РєР°РјРµСЂС‹ РІРїСЂР°РІРѕ</td></tr>
 <tr><td><code><b>procedure</b> AddRotateForce(RightForce,UpForce: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавный поворот камеры</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±РµСЃРїРµС‡РёРІР°РµС‚ РїР»Р°РІРЅС‹Р№ РїРѕРІРѕСЂРѕС‚ РєР°РјРµСЂС‹</td></tr>
 <tr><td><code><b>procedure</b> AddSpotLight(c: Color; p: Point3D; v: Vector3D; outerconeangle, innerconeangle: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавляет конусообразный источник света</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р”РѕР±Р°РІР»СЏРµС‚ РєРѕРЅСѓСЃРѕРѕР±СЂР°Р·РЅС‹Р№ РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р°</td></tr>
 <tr><td><code><b>procedure</b> AddUpForce(Force: real := 0.2);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавное движение камеры вверх</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±РµСЃРїРµС‡РёРІР°РµС‚ РїР»Р°РІРЅРѕРµ РґРІРёР¶РµРЅРёРµ РєР°РјРµСЂС‹ РІРІРµСЂС…</td></tr>
 <tr><td><code><b>procedure</b> MoveBy(dx,dy,dz: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает камеру на вектор (dx,dy,dz)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС‰Р°РµС‚ РєР°РјРµСЂСѓ РЅР° РІРµРєС‚РѕСЂ (dx,dy,dz)</td></tr>
 <tr><td><code><b>procedure</b> MoveBy(v: Vector3D);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает камеру на вектор v</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС‰Р°РµС‚ РєР°РјРµСЂСѓ РЅР° РІРµРєС‚РѕСЂ v</td></tr>
 <tr><td><code><b>procedure</b> RemoveLight(i: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет источник света</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґР°Р»СЏРµС‚ РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р°</td></tr>
 <tr><td><code><b>procedure</b> Rotate(axis: Vector3D; angle: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поворачивает камеру на данный угол относительно данной оси</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРѕРІРѕСЂР°С‡РёРІР°РµС‚ РєР°РјРµСЂСѓ РЅР° РґР°РЅРЅС‹Р№ СѓРіРѕР» РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РґР°РЅРЅРѕР№ РѕСЃРё</td></tr>
 </tr></table>
 </body></HTML>
