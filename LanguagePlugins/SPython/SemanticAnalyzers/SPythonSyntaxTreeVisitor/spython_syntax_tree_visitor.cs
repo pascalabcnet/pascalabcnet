@@ -118,6 +118,8 @@ namespace SPythonSyntaxTreeVisitor
                         base.AddError(new OperatorCanNotBeAppliedToThisTypes("%", _op_err.left, _op_err.right, _op_err.loc), shouldReturn);
                     else if (_op_err.operator_name == "div")
                         base.AddError(new OperatorCanNotBeAppliedToThisTypes("//", _op_err.left, _op_err.right, _op_err.loc), shouldReturn);
+                    else 
+                        break;
                     return;
                 case FunctionExpectedProcedureMeet _proc_meet:
                     base.AddError(new SPythonSemanticError(_proc_meet.loc, "SPYTHONSEMANTIC_FUNCTION_{0}_NO_RETURN", _proc_meet.function.name));
