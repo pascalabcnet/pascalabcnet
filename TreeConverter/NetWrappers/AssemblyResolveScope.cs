@@ -146,6 +146,8 @@ namespace PascalABCCompiler.NetHelper
 
         private Assembly OnAssemblyResolve(object obj, ResolveEventArgs args)
         {
+            if (args.RequestingAssembly == null) //fix Linux/Mono IDE missworking after loading a huge pas source such as GraphABC.pas or GraphABCHelper.pas
+                return null;
             var requestedName = new AssemblyName(args.Name);
             if (_assembliesByName.TryGetValue(requestedName.Name, out var assembly))
                 return assembly;

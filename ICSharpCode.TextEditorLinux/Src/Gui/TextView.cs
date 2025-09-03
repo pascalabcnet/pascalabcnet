@@ -778,9 +778,10 @@ namespace ICSharpCode.TextEditor
 		public int GetVisualColumn(int logicalLine, int logicalColumn)
 		{
 			int column = 0;
-			using (Graphics g = textArea.CreateGraphics()) {
-				CountColumns(ref column, 0, logicalColumn, logicalLine, g);
-			}
+   			if (TextArea.Document.TextContent.Length > 0) //fix crush under linux after clear document content - no content = zero columns
+				using (Graphics g = textArea.CreateGraphics()) {
+					CountColumns(ref column, 0, logicalColumn, logicalLine, g);
+				}
 			return column;
 		}
 		
