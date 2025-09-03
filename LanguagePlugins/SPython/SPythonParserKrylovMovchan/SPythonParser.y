@@ -66,7 +66,7 @@
 %left BINNOT
 
 %type <id> ident dotted_ident func_name_ident type_decl_identifier
-%type <ex> extended_expr expr proc_func_call const_value variable optional_condition act_param extended_new_expr new_expr is_expr variable_as_type
+%type <ex> extended_expr expr intellisense_dotted_ident proc_func_call const_value variable optional_condition act_param extended_new_expr new_expr is_expr variable_as_type
 %type <stn> act_param_list optional_act_param_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt pass_stmt
 %type <stn> var_stmt assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif exit_stmt
 %type <stn> expr_list
@@ -174,11 +174,11 @@ type_decl_identifier
 	;
 
 variable_as_type
-	: dotted_ident 
+	: intellisense_dotted_ident
 		{ 
 			$$ = $1;
 		}
-	| dotted_ident template_type_params 
+	| intellisense_dotted_ident template_type_params 
 		{ 
 			$$ = new ident_with_templateparams($1 as addressed_value, $2 as template_param_list, @$);   
 		}
@@ -317,6 +317,17 @@ dotted_ident
 		}
 	;
 
+// этот нетерминал аналог dotted_identifier из ABCPascal.y
+intellisense_dotted_ident
+	: ident
+		{ 
+			$$ = $1; 
+		}
+	| intellisense_dotted_ident DOT ident
+		{ 
+			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
+		}
+	;
 dotted_ident_list
     : dotted_ident
         {
