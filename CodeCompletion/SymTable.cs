@@ -363,7 +363,7 @@ namespace CodeCompletion
         {
             /*if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
                 return new List<ProcScope>();*/
-            List<ProcScope> meths = GetExtensionMethods(ts, name);
+            /*List<ProcScope> meths = GetExtensionMethods(ts, name);
             List<ProcScope> lst = new List<ProcScope>();
             
             for (int i = 0; i < meths.Count; i++)
@@ -372,12 +372,14 @@ namespace CodeCompletion
                 {
                     lst.Add(meths[i]);
                 }
-            }
-            return lst;
+            }*/
+            return GetExtensionMethods(ts, name);
         }
 
         public List<ProcScope> GetExtensionMethods(TypeScope ts, string name=null)
         {
+            StringComparison comparison = CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+
             if (ts is TypeSynonim)
                 return GetExtensionMethods((ts as TypeSynonim).actType, name);
             if (ts.original_type != null)
@@ -398,7 +400,7 @@ namespace CodeCompletion
                     {
                         foreach (var meth in meths)
                         {
-                            if (!lst.Contains(meth) && (name == null || string.Compare(meth.si.name, name, true) == 0))
+                            if (!lst.Contains(meth) && (name == null || meth.si.name.Equals(name, comparison)))
                                 lst.Add(meth);
                         }
                     }
@@ -418,7 +420,7 @@ namespace CodeCompletion
                                 var meth_list = extension_methods[t];
                                 foreach (var meth in meth_list)
                                 {
-                                    if (!lst.Contains(meth) && (name == null || string.Compare(meth.si.name, name, true) == 0))
+                                    if (!lst.Contains(meth) && (name == null || meth.si.name.Equals(name, comparison)))
                                         lst.Add(meth);
                                 }
                             }
@@ -444,7 +446,7 @@ namespace CodeCompletion
                         {
                             foreach (var meth in meths)
                             {
-                                if (!lst.Contains(meth) && (name == null || string.Compare(meth.si.name, name, true) == 0))
+                                if (!lst.Contains(meth) && (name == null || meth.si.name.Equals(name, comparison)))
                                     lst.Add(meth);
                             }
                         }
@@ -461,7 +463,7 @@ namespace CodeCompletion
                                     var meth_list = extension_methods[t];
                                     foreach (var meth in meth_list)
                                     {
-                                        if (!lst.Contains(meth) && (name == null || string.Compare(meth.si.name, name, true) == 0))
+                                        if (!lst.Contains(meth) && (name == null || meth.si.name.Equals(name, comparison)))
                                             lst.Add(meth);
                                     }
                                     //break;
@@ -481,7 +483,7 @@ namespace CodeCompletion
                         var unit_meth_lst = this.used_units[i].GetExtensionMethods(ts, name);
                         foreach (var meth in unit_meth_lst)
                         {
-                            if (!lst.Contains(meth) && (name == null || string.Compare(meth.si.name, name, true) == 0))
+                            if (!lst.Contains(meth) && (name == null || meth.si.name.Equals(name, comparison)))
                                 lst.Add(meth);
                         }
                     }
@@ -7038,8 +7040,10 @@ namespace CodeCompletion
 
         public override List<SymScope> FindOverloadNames(string name)
         {
+            StringComparison comparison = CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+
             List<SymScope> names = new List<SymScope>();
-            List<PascalABCCompiler.TreeConverter.SymbolInfo> sil = PascalABCCompiler.NetHelper.NetHelper.FindNameIncludeProtected(ctn, name);
+            List<PascalABCCompiler.TreeConverter.SymbolInfo> sil = PascalABCCompiler.NetHelper.NetHelper.FindNameIncludeProtected(ctn, name, CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive);
             //IEnumerable<MemberInfo> ext_meths = PascalABCCompiler.NetHelper.NetHelper.GetExtensionMethods(ctn);
             List<ProcScope> pascal_ext_meths = this.GetExtensionMethods(name, this);
             if (sil != null && sil.Count > 1 && sil.FirstOrDefault().sym_info.semantic_node_type == semantic_node_type.basic_property_node)
@@ -7049,7 +7053,7 @@ namespace CodeCompletion
             }
             if (sil == null && names.Count == 0)
             {
-                if (string.Compare(name, StringConstants.default_constructor_name, true) == 0 && this.ctn != typeof(object))
+                if (name.Equals(StringConstants.default_constructor_name, comparison) && this.ctn != typeof(object))
                     sil = PascalABCCompiler.NetHelper.NetHelper.GetConstructor(ctn);
                 if (sil == null)
                 {
@@ -7205,12 +7209,14 @@ namespace CodeCompletion
 
         public override SymScope FindName(string name)
         {
-            List<PascalABCCompiler.TreeConverter.SymbolInfo> sil = PascalABCCompiler.NetHelper.NetHelper.FindNameIncludeProtected(ctn, name);
+            StringComparison comparison = CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+
+            List<PascalABCCompiler.TreeConverter.SymbolInfo> sil = PascalABCCompiler.NetHelper.NetHelper.FindNameIncludeProtected(ctn, name, CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive);
             if (!CodeCompletionController.CurrentParser.LanguageInformation.IncludeDotNetEntities)
                 return null;
             if (sil == null)
             {
-                if (string.Compare(name, StringConstants.default_constructor_name, true) == 0)
+                if (name.Equals(StringConstants.default_constructor_name, comparison))
                     sil = PascalABCCompiler.NetHelper.NetHelper.GetConstructor(ctn);
                 if (sil == null)
                 {

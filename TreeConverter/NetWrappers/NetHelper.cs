@@ -1499,7 +1499,7 @@ namespace PascalABCCompiler.NetHelper
         	return FindType(name) != null;
         }
         
-        public static List<SymbolInfo> FindNameIncludeProtected(Type t, string name)
+        public static List<SymbolInfo> FindNameIncludeProtected(Type t, string name, bool caseSensitiveSearch)
         {
         	if (name == null) return null;
 			if (name == StringConstants.assign_name) return null;
@@ -1511,7 +1511,20 @@ namespace PascalABCCompiler.NetHelper
 			}
 			List<SymbolInfo> sil=null;
 			List<MemberInfo> mis = GetMembers(t,name);
-        	
+
+            // вообще, фильтровать лучше в GetMembers EVA
+            mis = new List<MemberInfo>(mis);
+            if (caseSensitiveSearch)
+            {
+                for (int i = 0; i < mis.Count;)
+                {
+                    if (mis[i].Name != name)
+                        mis.RemoveAt(i);
+                    else
+                        i++;
+                }
+            }
+
             foreach (MemberInfo mi in mis)
             {
                 if (mi.DeclaringType != null && PABCSystemType != null && mi.DeclaringType.Assembly == PABCSystemType.Assembly && !UsePABCRtl)
@@ -1548,7 +1561,7 @@ namespace PascalABCCompiler.NetHelper
             Type nested_t = null;
             foreach (Type nt in t.GetNestedTypes())
             {
-                if (string.Compare(nt.Name, name, true) == 0)
+                if (nt.Name.Equals(name, caseSensitiveSearch ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
                 {
                     nested_t = nt;
                     break;
