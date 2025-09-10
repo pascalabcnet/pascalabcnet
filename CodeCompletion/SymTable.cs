@@ -185,6 +185,16 @@ namespace CodeCompletion
             members = new List<SymScope>();
         }
 
+        /// <summary>
+        /// Использует глубокое копирование SymInfo для создания нового экземпляра, остальное копируется поверхностно
+        /// </summary>
+        public SymScope CopyWithNewSymInfo()
+        {
+            var s = (SymScope)MemberwiseClone();
+            s.si = new SymInfo(si);
+            return s;
+        }
+
         public virtual void Clear()
         {
             if (members != null)
@@ -976,8 +986,8 @@ namespace CodeCompletion
                         List<SymScope> lst = o as List<SymScope>;
                         foreach (SymScope s in lst)
                         {
-                            // Добавил второе условие с addit_name, чтобы работали подсказки для anotherName при использовании from ... import name as anotherName EVA
-                            if (s.si.name == name || s.si.addit_name == name)
+                            // Добавил второе условие с aliasName, чтобы работали подсказки для anotherName при использовании from ... import name as anotherName EVA
+                            if (s.si.name == name || s.si.aliasName == name)
                             {
                                 ss = s;
                                 // изменил на возврат первого совпадения для стандартных типов в SPython пока они не в фиктивном модуле, а в SPythonSystem EVA
@@ -989,7 +999,7 @@ namespace CodeCompletion
                 if (ss == null) return null;
                 TypeScope ts = ss as TypeScope;
                 if (CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive)
-                    if (ss.si.name != name && ss.si.addit_name != name)
+                    if (ss.si.name != name && ss.si.aliasName != name)
                         return null;
                 if (ss.loc != null && loc != null && check_for_def && cur_line != -1 && cur_col != -1)
                 {

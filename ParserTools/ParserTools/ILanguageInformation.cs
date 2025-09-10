@@ -379,6 +379,7 @@ namespace PascalABCCompiler.Parsers
     {
         public string name;
         public string addit_name;
+        public string aliasName;
         public string description;
         public SymbolKind kind;
         public bool IsUnitNamespace;
@@ -398,6 +399,7 @@ namespace PascalABCCompiler.Parsers
         {
             this.name = si.name;
             this.addit_name = si.addit_name;
+            this.aliasName = si.aliasName;
             this.description = si.description;
             this.kind = si.kind;
             this.IsUnitNamespace = si.IsUnitNamespace;
