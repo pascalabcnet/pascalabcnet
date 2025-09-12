@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-V3E9T2U
-// DateTime: 03.09.2025 11:37:43
+// DateTime: 12.09.2025 13:40:00
 // UserName: alex
 // Input file <SPythonParser.y>
 
@@ -1391,8 +1391,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 142: // variable -> LBRACKET, generator_object, RBRACKET
 {
-			dot_node dn = new dot_node(ValueStack[ValueStack.Depth-2].ex as addressed_value, (new ident("ToList")) as addressed_value, ValueStack[ValueStack.Depth-2].ex.source_context);
-			CurrentSemanticValue.ex = new method_call(dn as addressed_value, null, ValueStack[ValueStack.Depth-2].ex.source_context);
+			CurrentSemanticValue.ex = new method_call(new ident("list", ValueStack[ValueStack.Depth-2].ex.source_context), new expression_list(ValueStack[ValueStack.Depth-2].ex, ValueStack[ValueStack.Depth-2].ex.source_context), ValueStack[ValueStack.Depth-2].ex.source_context);
 		}
         break;
       case 143: // variable -> LBRACE, generator_object, RBRACE
@@ -1448,8 +1447,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
       case 152: // list_constant -> LBRACKET, expr_list, RBRACKET
 {
 			var acn = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, '|', CurrentLocationSpan);
-			var dn = new dot_node(acn as addressed_value, (new ident("ToList", CurrentLocationSpan)) as addressed_value, CurrentLocationSpan);
-			CurrentSemanticValue.ex = new method_call(dn as addressed_value, null, CurrentLocationSpan);
+			CurrentSemanticValue.ex = new method_call(new ident("list", CurrentLocationSpan), new expression_list(acn, CurrentLocationSpan), CurrentLocationSpan);
 		}
         break;
       case 153: // list_constant -> LBRACKET, RBRACKET

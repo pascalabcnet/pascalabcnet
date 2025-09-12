@@ -79,7 +79,7 @@ namespace Languages.SPython.Frontend.Converters
             ident id = _named_type_reference.names[0];
             string name = id.name;
 
-            if (name == "int" || name == "str" || name == "bool" || name == "float" || name == "set" || name == "list" || name == "dict")
+            if (name == "int" || name == "str" || name == "bool" || name == "float" || name == "set" || name == "dict")
             {
                 return;
             }
@@ -99,6 +99,32 @@ namespace Languages.SPython.Frontend.Converters
                 case NameKind.Unknown:
                     throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}",
                     id.source_context, id.name);
+            }
+        }
+
+        public override void visit(template_type_reference _template_type_reference)
+        {
+            named_type_reference _named_type_reference = _template_type_reference.name;
+            string name = _named_type_reference.names[0].name;
+
+            string fullName = name + $"`{_template_type_reference.params_list.Count}";
+
+            if (name == "list")
+                return;
+
+            NameKind nameKind = symbolTable[fullName];
+
+            switch (nameKind)
+            {
+
+                case NameKind.ImportedNameAlias:
+                    _named_type_reference.names.Insert(0, new ident(symbolTable.AliasToModuleName(fullName), _named_type_reference.names[0].source_context));
+                    _named_type_reference.names[1].name = symbolTable.AliasToRealName(fullName);
+                    break;
+
+                case NameKind.Unknown:
+                    throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}",
+                    _named_type_reference.names[0].source_context, name);
             }
         }
 

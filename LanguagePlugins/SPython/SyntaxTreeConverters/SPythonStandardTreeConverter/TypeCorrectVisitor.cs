@@ -25,6 +25,16 @@ namespace Languages.SPython.Frontend.Converters
                 }
                 ttr.name.names[index].name += cnt;
             }
+
+            ident id = ttr.name.names[index];
+            
+            switch (id.name)
+            {
+                case "list":
+                    id.name = "!list";
+                    break;
+            }
+
             base.visit(ttr);
         }
 
@@ -72,9 +82,6 @@ namespace Languages.SPython.Frontend.Converters
 
             switch (id.name)
             {
-                case "list":
-                    id.name = "!list";
-                    break;
                 case "dict":
                     id.name = "!dict";
                     break;

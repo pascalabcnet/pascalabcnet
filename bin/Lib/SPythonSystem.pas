@@ -101,18 +101,91 @@ function abs(x: real): real;
 
 // function floor(x: real): real;
 
+type !list<T> = class(IEnumerable<T>)
+    private
+      wrappee : PABCSystem.List<T>;
+    
+      constructor Create(l : PABCSystem.List<T>) := wrappee := l;
+    
+    public
+    
+      static function operator implicit(l : PABCSystem.List<T>) : !list<T> := new !list<T>(l);
+      
+      constructor Create() := wrappee := new PABCSystem.List<T>();
+      
+      constructor Create(capacity : integer) := wrappee := new PABCSystem.List<T>(capacity);
+    
+      constructor Create(collection : sequence of T) := wrappee := new PABCSystem.List<T>(collection);
+    
+      procedure append(item : T) := wrappee.Add(item);
+      
+      procedure clear() := wrappee.Clear();
+      
+      procedure insert(index : integer; item : T) := wrappee.Insert(index, item);
+      
+      function remove(item : T) : boolean := wrappee.Remove(item);
+      
+      function pop() : T;
+      begin
+        var lastIndex := wrappee.Count - 1;
+        Result := wrappee[lastIndex];
+        wrappee.RemoveAt(lastIndex);
+      end;
+      
+      function pop(index : integer) : T;
+      begin
+        Result := wrappee[index];
+        wrappee.RemoveAt(index);
+      end;
+    
+      function index(item : T) : integer := wrappee.IndexOf(item);
+      
+      function index(item : T; start : integer) : integer := wrappee.IndexOf(item, start);
+      
+      function index(item : T; start : integer; &end : integer) : integer := wrappee.IndexOf(item, start, &end - start + 1);
+      
+      function count(item : T) : integer;
+      begin
+        var comparer := System.Collections.Generic.EqualityComparer&<T>.Default;
+        
+        Result := 0;
+        for var i := 0 to wrappee.Count - 1 do
+        begin
+          if comparer.Equals(wrappee[i], item) then
+            Result += 1;
+        end;
+      end;
+    
+      procedure sort() := wrappee.Sort();
+    
+      procedure sort(reverse : boolean) := wrappee.OrderByDescending(x -> x);
+      
+      procedure sort<TKey>(key : T -> TKey) := wrappee.OrderBy(key);
+      
+      procedure sort<TKey>(key : T -> TKey; reverse : boolean) := wrappee.OrderByDescending(key);
+      
+      procedure reverse() := wrappee.Reverse();
+    
+      function copy() : !list<T> := new !list<T>(wrappee.ToList());
+    
+      function GetEnumerator() : IEnumerator<T> := wrappee.GetEnumerator();
+
+      function System.Collections.IEnumerable.GetEnumerator() : System.Collections.IEnumerator := GetEnumerator();
+    end;
+
 //Standard functions with Lists
 
-function len<T>(lst: PABCSystem.List<T>): integer;
+function len<T>(lst: !list<T>): integer;
 function len<T>(st: set of T): integer;
 function len<K, V>(dct: PABCSystem.Dictionary<K, V>): integer;
 function len<T>(arr: array of T): integer;
 function len(s: string): integer;
 
 function &set<T>(sq: sequence of T): set of T;
-function &list<T>(sq: sequence of T): PABCSystem.List<T>;
 
-function sorted<T>(lst: PABCSystem.List<T>): PABCSystem.List<T>;
+function list<T>(sq: sequence of T): !list<T>;
+
+function sorted<T>(lst: !list<T>): !list<T>;
 
 function sum(lst: sequence of integer): integer;
 
@@ -165,7 +238,6 @@ function Dict<TKey, TVal>(params pairs: array of (TKey, TVal)): Dictionary<TKey,
 
 type 
     biginteger = PABCSystem.BigInteger;
-    !list<T> = PABCSystem.List<T>;
     !dict<K, V> = PABCSystem.Dictionary<K, V>;
     dct<K, V> = PABCSystem.Dictionary<K, V>;
     !set<T> = set of T;
@@ -288,17 +360,17 @@ function abs(x: integer): integer := if x >= 0 then x else -x;
 
 function abs(x: real): real := PABCSystem.Abs(x);
 
-function len<T>(lst: PABCSystem.List<T>): integer := lst.Count();
+function len<T>(lst: !list<T>): integer := lst.Count();
 function len<T>(st: set of T): integer := st.Count();
 function len<K, V>(dct: PABCSystem.Dictionary<K, V>): integer := dct.Count();
 function len<T>(arr: array of T): integer := arr.Count();
 function len(s: string): integer := s.Length;
 
-function sorted<T>(lst: PABCSystem.List<T>): PABCSystem.List<T>;
+function sorted<T>(lst: !list<T>): !list<T>;
 begin
-  var new_list := new PABCSystem.List<T>(lst);
-  new_list.sort();
-  Result := new_list;
+  var newList := lst.copy();
+  newList.sort();
+  Result := newList;
 end;
 
 function sum(lst: sequence of integer): integer := lst.sum();
@@ -357,20 +429,6 @@ end;
 function bigint(x: integer): biginteger;
 begin
   Result := x;
-end;
-
-function !count<T>(Self: PABCSystem.List<T>; val: T): integer; extensionmethod;
-begin
-  Result := 0;
-  for var i := 0 to Self.Count - 1 do
-       if val = Self[i] then
-         Result += 1;
-end;
-
-function pop<T>(Self: PABCSystem.List<T>; ind: integer): T; extensionmethod;
-begin
-  Result := Self[ind];
-  Self.RemoveAt(ind);
 end;
 
 procedure add<T>(Self: set of T; val: T); extensionmethod;
@@ -448,7 +506,7 @@ begin
     Result.Add(e);
 end;
 
-function &list<T>(sq: sequence of T): PABCSystem.List<T> := sq.ToList();
+function list<T>(sq: sequence of T): !list<T> := new !list<T>(sq);
 
 function all(s: sequence of boolean): boolean;
 begin
