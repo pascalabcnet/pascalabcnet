@@ -33,6 +33,9 @@ namespace Languages.SPython.Frontend.Converters
                 case "list":
                     id.name = "!list";
                     break;
+                case "set":
+                    id.name = "!set";
+                    break;
             }
 
             base.visit(ttr);
@@ -84,9 +87,6 @@ namespace Languages.SPython.Frontend.Converters
             {
                 case "dict":
                     id.name = "!dict";
-                    break;
-                case "set":
-                    id.name = "!set";
                     break;
             }
         }

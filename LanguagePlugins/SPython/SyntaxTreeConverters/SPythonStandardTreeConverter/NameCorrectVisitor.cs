@@ -79,7 +79,7 @@ namespace Languages.SPython.Frontend.Converters
             ident id = _named_type_reference.names[0];
             string name = id.name;
 
-            if (name == "int" || name == "str" || name == "bool" || name == "float" || name == "set" || name == "dict")
+            if (name == "int" || name == "str" || name == "bool" || name == "float" || name == "dict")
             {
                 return;
             }
@@ -109,7 +109,7 @@ namespace Languages.SPython.Frontend.Converters
 
             string fullName = name + $"`{_template_type_reference.params_list.Count}";
 
-            if (name == "list")
+            if (name == "list" || name == "set")
                 return;
 
             NameKind nameKind = symbolTable[fullName];

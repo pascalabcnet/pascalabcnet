@@ -843,8 +843,7 @@ variable
 	// set generator
 	| LBRACE generator_object RBRACE
 		{
-			dot_node dn = new dot_node($2 as addressed_value, (new ident("ToSet")) as addressed_value, $2.source_context);
-			$$ = new method_call(dn as addressed_value, null, $2.source_context);
+			$$ = new method_call(new ident("set", $2.source_context), new expression_list($2, $2.source_context), $2.source_context);
 		}
 	// dict generator
 	| LBRACE generator_object_for_dict RBRACE
@@ -895,7 +894,8 @@ dict_constant
 set_constant
 	: LBRACE expr_list RBRACE
 		{
-			$$ = new pascal_set_constant($2 as expression_list, @$);
+			var acn = new array_const_new($2 as expression_list, '|', @$);
+			$$ = new method_call(new ident("set", @$), new expression_list(acn, @$), @$);
 		}
 	;
 

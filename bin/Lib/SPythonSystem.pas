@@ -49,10 +49,6 @@ function filter<T>(cond: T -> boolean; s: sequence of T): sequence of T;
 function sorted<T>(s: sequence of T; reverse: boolean := false): sequence of T;
 function sorted<T,T1>(s: sequence of T; key: T -> T1; reverse: boolean := false): sequence of T;
 
-function __NewSetCreatorInternal<T>(params a: array of T): NewSet<T>;
-
-procedure clear<T>(var st: set of T);
-
 function int(val: string): integer;
 
 function int(val: real): integer;
@@ -119,11 +115,17 @@ type !list<T> = class(IEnumerable<T>)
     
       procedure append(item : T) := wrappee.Add(item);
       
+      procedure extend(seq : sequence of T) := wrappee.AddRange(seq);
+      
       procedure clear() := wrappee.Clear();
       
       procedure insert(index : integer; item : T) := wrappee.Insert(index, item);
       
-      function remove(item : T) : boolean := wrappee.Remove(item);
+      procedure remove(item : T);
+      begin
+         if not wrappee.Remove(item) then
+           raise new System.ArgumentException($'ValueError: {item} is not in list');
+      end;
       
       function pop() : T;
       begin
@@ -138,11 +140,16 @@ type !list<T> = class(IEnumerable<T>)
         wrappee.RemoveAt(index);
       end;
     
-      function index(item : T) : integer := wrappee.IndexOf(item);
+      function index(item : T) : integer := index(item, 0, wrappee.Count);
       
-      function index(item : T; start : integer) : integer := wrappee.IndexOf(item, start);
+      function index(item : T; start : integer) : integer := index(item, start, wrappee.Count);
       
-      function index(item : T; start : integer; &end : integer) : integer := wrappee.IndexOf(item, start, &end - start + 1);
+      function index(item : T; start : integer; &end : integer) : integer;
+      begin
+        Result := wrappee.IndexOf(item, start, &end - start);
+        if Result = -1 then
+          raise new System.ArgumentException($'ValueError: {item} is not in list');
+      end;
       
       function count(item : T) : integer;
       begin
@@ -173,15 +180,136 @@ type !list<T> = class(IEnumerable<T>)
       function System.Collections.IEnumerable.GetEnumerator() : System.Collections.IEnumerator := GetEnumerator();
     end;
 
+type !set<T> = record(IEnumerable<T>)
+  private
+    wrappee : PABCSystem.HashSet<T>;
+    
+    constructor Create(h : PABCSystem.HashSet<T>) := wrappee := h;
+    
+  public
+    
+    constructor Create() := wrappee := new PABCSystem.HashSet<T>();
+    
+    constructor Create(collection : sequence of T) := wrappee := new PABCSystem.HashSet<T>(collection);
+    
+    constructor Create(collection : sequence of T; comparer : PABCSystem.IEqualityComparer<T>) := wrappee := new PABCSystem.HashSet<T>(collection, comparer);
+    
+    constructor Create(comparer : PABCSystem.IEqualityComparer<T>) := wrappee := new PABCSystem.HashSet<T>(comparer);
+    
+    constructor Create(elem : T);
+    begin
+      wrappee := new PABCSystem.HashSet<T>();
+      wrappee.Add(elem);
+    end;
+    
+    procedure add(elem : T) := wrappee.Add(elem);
+    
+    procedure remove(elem : T);
+    begin
+      if not wrappee.Remove(elem) then
+        raise new System.Collections.Generic.KeyNotFoundException('KeyError: ' + elem.ToString());
+    end;
+    
+    procedure discard(elem : T) := wrappee.Remove(elem);
+    
+    function pop() : T;
+    begin 
+      if wrappee.Count = 0 then
+        raise new System.Collections.Generic.KeyNotFoundException('KeyError: ''pop from an empty set''');
+      
+      Result := wrappee.First();
+      wrappee.Remove(Result);
+    end;
+    
+    procedure clear() := wrappee.Clear();
+    
+    function copy() : !set<T> := new !set<T>(wrappee.ToHashSet());
+    
+    static function operator in(elem: T; Self: !set<T>): boolean;
+    begin
+      Result := Self.wrappee.Contains(elem);
+    end;
+    
+  private 
+    function setOperation1(op : (HashSet<T>, sequence of T) -> (); params others : array of sequence of T) : !set<T>;
+    begin
+      Result.wrappee := wrappee.ToHashSet();
+      foreach var seq in others do
+        op(Result.wrappee, seq);
+    end;
+    
+    procedure setOperation2(op : (HashSet<T>, sequence of T) -> (); params others : array of sequence of T);
+    begin
+      foreach var seq in others do
+        op(wrappee, seq);
+    end;
+    
+  public
+    function intersection(params others : array of sequence of T) : !set<T> := setOperation1((h1, h2) -> h1.IntersectWith(h2), others);
+    
+    function union(params others : array of sequence of T) : !set<T> := setOperation1((h1, h2) -> h1.UnionWith(h2), others);
+    
+    function difference(params others : array of sequence of T) : !set<T> := setOperation1((h1, h2) -> h1.ExceptWith(h2), others);
+    
+    function symmetric_difference(params others : array of sequence of T) : !set<T> := setOperation1((h1, h2) -> h1.SymmetricExceptWith(h2), others);
+    
+    procedure update(params others : array of sequence of T) := setOperation2((h1, h2) -> h1.UnionWith(h2), others);
+    
+    procedure intersection_update(params others : array of sequence of T) := setOperation2((h1, h2) -> h1.IntersectWith(h2), others);
+    
+    procedure difference_update(params others : array of sequence of T) := setOperation2((h1, h2) -> h1.ExceptWith(h2), others);
+    
+    procedure symmetric_difference_update(params others : array of sequence of T) := setOperation2((h1, h2) -> h1.SymmetricExceptWith(h2), others);
+    
+    function isdisjoint(other : sequence of T) : boolean;
+    
+    function issubset(other : sequence of T) : boolean := wrappee.IsSubsetOf(other);
+    
+    function issuperset(other : sequence of T) : boolean := wrappee.IsSupersetOf(other);
+    
+    static function operator=(s1 : !set<T>; s2 : !set<T>) : boolean := s1.wrappee.SetEquals(s2.wrappee);
+    
+    static function operator<>(s1 : !set<T>; s2 : !set<T>) : boolean := not (s1 = s2);
+    
+    static function operator<=(s1 : !set<T>; s2 : !set<T>) : boolean := s1.issubset(s2);
+    
+    static function operator<(s1 : !set<T>; s2 : !set<T>) : boolean := (s1 <= s2) and (s1 <> s2);
+    
+    static function operator>=(s1 : !set<T>; s2 : !set<T>) : boolean := s1.issuperset(s2);
+    
+    static function operator>(s1 : !set<T>; s2 : !set<T>) : boolean := (s1 >= s2) and (s1 <> s2);
+    
+    static function operator or(s1 : !set<T>; s2 : !set<T>) : !set<T> := s1.union(s2);
+    
+    static function operator and(s1 : !set<T>; s2 : !set<T>) : !set<T> := s1.intersection(s2);
+    
+    static function operator-(s1 : !set<T>; s2 : !set<T>) : !set<T> := s1.difference(s2);
+    
+    static function operator xor(s1 : !set<T>; s2 : !set<T>) : !set<T> := s1.symmetric_difference(s2);
+    
+    // static procedure operator +=(var s1 : !set<T>; s2 : !set<T>) := s1.wrappee.UnionWith(s2.wrappee);
+    
+//    static function operator:=(var s1: !set<T>; s2: !set<T>): !set<T>;
+//    begin
+//      s1.wrappee := s2.wrappee.ToHashSet();
+//    end;
+    
+    static function operator implicit(s : HashSet<T>) : !set<T> := new !set<T>(s);
+    
+    function GetEnumerator() : IEnumerator<T> := wrappee.GetEnumerator();
+
+    function System.Collections.IEnumerable.GetEnumerator() : System.Collections.IEnumerator := GetEnumerator();
+end;
+
 //Standard functions with Lists
 
 function len<T>(lst: !list<T>): integer;
-function len<T>(st: set of T): integer;
+function len<T>(st: !set<T>): integer;
 function len<K, V>(dct: PABCSystem.Dictionary<K, V>): integer;
 function len<T>(arr: array of T): integer;
 function len(s: string): integer;
 
-function &set<T>(sq: sequence of T): set of T;
+function &set<T>(sq: sequence of T): !set<T>;
 
 function list<T>(sq: sequence of T): !list<T>;
 
@@ -240,7 +368,6 @@ type
     biginteger = PABCSystem.BigInteger;
     !dict<K, V> = PABCSystem.Dictionary<K, V>;
     dct<K, V> = PABCSystem.Dictionary<K, V>;
-    !set<T> = set of T;
     tuple2<T1, T2> = System.Tuple<T1, T2>;
     tuple3<T1, T2, T3> = System.Tuple<T1, T2, T3>;
     tuple4<T1, T2, T3, T4> = System.Tuple<T1, T2, T3, T4>;
@@ -258,7 +385,7 @@ type
     empty_set = class
     class function operator implicit<T>(x: empty_set): !set<T>; 
     begin
-      Result := new !set<T>;
+      Result := new !set<T>();
     end;
     end;
     
@@ -361,7 +488,7 @@ function abs(x: integer): integer := if x >= 0 then x else -x;
 function abs(x: real): real := PABCSystem.Abs(x);
 
 function len<T>(lst: !list<T>): integer := lst.Count();
-function len<T>(st: set of T): integer := st.Count();
+function len<T>(st: !set<T>): integer := st.Count();
 function len<K, V>(dct: PABCSystem.Dictionary<K, V>): integer := dct.Count();
 function len<T>(arr: array of T): integer := arr.Count();
 function len(s: string): integer := s.Length;
@@ -431,34 +558,31 @@ begin
   Result := x;
 end;
 
-procedure add<T>(Self: set of T; val: T); extensionmethod;
+function !set<T>.isdisjoint(other : sequence of T) : boolean;
 begin
-  Self += val;
-end;
-
-procedure remove<T>(Self: set of T; val: T); extensionmethod;
-begin
-  Self -= val;
+  if other = nil then
+    raise new System.ArgumentNullException('other', 'Null object is not iterable');
+  
+  var c1 := wrappee.Count;
+  var c2 := other.Count();
+  
+  if (c1 = 0) or (c2 = 0) then
+    Result := true
+  else
+  begin
+    if c1 >= c2 then
+      Result := other.All(elem -> not wrappee.Contains(elem))
+    else
+    begin
+      var otherSet := new HashSet<T>(other);
+      Result := wrappee.All(elem -> not otherSet.Contains(elem));
+    end;
+  end;
+  
 end;
 
 function get_keys<K, V>(dct: Dictionary<K, V>):= dct.keys;
 function get_values<K, V>(dct: Dictionary<K, V>):= dct.values;
-
-function copy<T>(Self: set of T): set of T; extensionmethod;
-begin
-  Result := Self;
-end;
-
-procedure clear<T>(var st: set of T);
-begin
-  st := [];
-end;
-
-function __NewSetCreatorInternal<T>(params a: array of T): NewSet<T>;
-begin
-  //Result._hs := new HashSet<T>;
-  Result._hs.UnionWith(a);
-end; 
 
 // TUPLES BEGIN
 function CreateTuple<T1, T2>(
@@ -500,10 +624,9 @@ begin
     Result.Add(pairs[i][0], pairs[i][1]);
 end;
 
-function &set<T>(sq: sequence of T): set of T;
+function &set<T>(sq: sequence of T): !set<T>;
 begin
-  foreach var e in sq do
-    Result.Add(e);
+  Result := new !set<T>(sq);
 end;
 
 function list<T>(sq: sequence of T): !list<T> := new !list<T>(sq);
