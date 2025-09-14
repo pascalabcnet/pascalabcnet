@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-V3E9T2U
-// DateTime: 13.09.2025 20:45:34
+// DateTime: 14.09.2025 15:38:38
 // UserName: alex
 // Input file <SPythonParser.y>
 
@@ -1430,7 +1430,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 149: // dict_constant -> LBRACE, expr_mapping_list, RBRACE
 {
-			CurrentSemanticValue.ex = new method_call(new ident("Dict", CurrentLocationSpan), ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);
+			CurrentSemanticValue.ex = new method_call(new ident("dict", CurrentLocationSpan), ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);
 		}
         break;
       case 150: // dict_constant -> LBRACE, RBRACE

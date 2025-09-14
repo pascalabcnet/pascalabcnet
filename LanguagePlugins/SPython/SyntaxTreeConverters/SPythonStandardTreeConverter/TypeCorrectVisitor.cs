@@ -36,6 +36,9 @@ namespace Languages.SPython.Frontend.Converters
                 case "set":
                     id.name = "!set";
                     break;
+                case "dict":
+                    id.name = "!dict";
+                    break;
             }
 
             base.visit(ttr);
@@ -81,13 +84,6 @@ namespace Languages.SPython.Frontend.Converters
                         throw new SPythonSyntaxVisitorError("PASCALABCNET_TYPE_{0}_INSTEAD_OF_SPYTHON_TYPE_{1}",
                        id.source_context, id.name, "bigint");
                 }
-            }
-
-            switch (id.name)
-            {
-                case "dict":
-                    id.name = "!dict";
-                    break;
             }
         }
     }

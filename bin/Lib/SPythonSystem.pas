@@ -16,6 +16,7 @@ function input(): string;
 
 function input(s: string): string;
 
+///-
 type kwargs_gen<T> = class
       public !kwargs: Dictionary<string, T>
         := new Dictionary<string, T>();
@@ -103,6 +104,10 @@ type !list<T> = class(IEnumerable<T>)
     
       constructor Create(l : PABCSystem.List<T>) := wrappee := l;
     
+      function GetItem(ind : integer) : T := wrappee[ind];
+      
+      procedure SetItem(ind : integer; newItem : T) := wrappee[ind] := newItem;
+    
     public
     
       static function operator implicit(l : PABCSystem.List<T>) : !list<T> := new !list<T>(l);
@@ -112,6 +117,11 @@ type !list<T> = class(IEnumerable<T>)
       constructor Create(capacity : integer) := wrappee := new PABCSystem.List<T>(capacity);
     
       constructor Create(collection : sequence of T) := wrappee := new PABCSystem.List<T>(collection);
+    
+      property ByIndex[ind : integer] : T read GetItem write SetItem; default;
+    
+      ///--
+      property __count : integer read wrappee.Count;
     
       procedure append(item : T) := wrappee.Add(item);
       
@@ -201,6 +211,9 @@ type !set<T> = record(IEnumerable<T>)
       wrappee := new PABCSystem.HashSet<T>();
       wrappee.Add(elem);
     end;
+    
+    ///--
+    property __count : integer read wrappee.Count;
     
     procedure add(elem : T) := wrappee.Add(elem);
     
@@ -301,17 +314,155 @@ type !set<T> = record(IEnumerable<T>)
     function System.Collections.IEnumerable.GetEnumerator() : System.Collections.IEnumerator := GetEnumerator();
 end;
 
+type !dict<K, V> = class(IEnumerable<PABCSystem.KeyValuePair<K, V>>)
+  private
+    wrappee : PABCSystem.Dictionary<K, V>;
+    
+    constructor Create(d : PABCSystem.Dictionary<K, V>) := wrappee := d;
+    
+    function GetValue(key : K) : V := wrappee[key];
+    
+    procedure SetValue(key : K; val : V) := wrappee[key] := val;
+    
+  public
+    
+    constructor Create() := wrappee := new PABCSystem.Dictionary<K, V>();
+    
+    constructor Create(capacity : integer) := wrappee := new PABCSystem.Dictionary<K, V>(capacity);
+    
+    constructor Create(comparer : PABCSystem.IEqualityComparer<K>) := wrappee := new PABCSystem.Dictionary<K, V>(comparer);
+    
+    constructor Create(capacity : integer; comparer : PABCSystem.IEqualityComparer<K>) := wrappee := new PABCSystem.Dictionary<K, V>(capacity, comparer);
+  
+    constructor Create(params pairs: array of (K, V));
+    begin
+      wrappee := new PABCSystem.Dictionary<K, V>();
+      
+      for var i := 0 to pairs.Length - 1 do
+        wrappee[pairs[i].Item1] := pairs[i].Item2;
+    end;
+  
+    constructor Create(seqOfPairs : sequence of (K, V));
+    begin
+      wrappee := new PABCSystem.Dictionary<K, V>();
+      
+      foreach var p in seqOfPairs do
+        wrappee[p.Item1] := p.Item2;
+    end;
+  
+    ///--
+    property __count : integer read wrappee.Count;
+  
+    property ByKey[key : K] : V read GetValue write SetValue; default;
+  
+    static function operator in(key: K; Self: !dict<K, V>): boolean;
+    begin
+      Result := Self.wrappee.ContainsKey(key);
+    end;
+  
+    procedure clear() := wrappee.Clear();
+    
+    function copy() : !dict<K, V> := new !dict<K, V>(new Dictionary<K,V>(wrappee));
+  
+    static function fromkeys(sq : sequence of K; val : V := default(V)) : !dict<K, V>;
+    begin
+      Result := new !dict<K, V>();
+      
+      foreach var key in sq do
+        Result[key] := val;
+    end;
+  
+    function get(key : K; &default : V := default(V)) : V;
+    begin
+      var val : V;
+      if wrappee.TryGetValue(key, val) then
+        Result := val
+      else
+        Result := &default;
+    end;
+  
+    function items() : sequence of KeyValuePair<K, V> := wrappee;
+  
+    function keys() := wrappee.Keys;
+    
+    function pop(key : K) : V;
+    begin
+      Result := wrappee[key];
+      wrappee.Remove(key);
+    end;
+    
+    function pop(key : K; &default : V) : V;
+    begin
+      var val : V;
+      if wrappee.TryGetValue(key, val) then
+      begin
+        Result := val;
+        wrappee.Remove(key);
+      end
+      else
+        Result := &default;
+    end;
+    
+    function popitem() : KeyValuePair<K, V>;
+    begin
+      Result := wrappee.Last();
+      wrappee.Remove(Result.Key);
+    end;
+    
+    function setdefault(key : K; &default : V := default(V)) : V;
+    begin
+      var val : V;
+      if wrappee.TryGetValue(key, val) then
+        Result := val
+      else
+      begin
+        wrappee[key] := &default;
+        Result := &default;
+      end;
+    end;
+  
+    procedure update(params pairs: array of (K, V));
+    begin
+      for var i := 0 to pairs.Length - 1 do
+        wrappee[pairs[i].Item1] := pairs[i].Item2;
+    end;
+    
+    procedure update(seqOfPairs : sequence of (K, V));
+    begin
+      foreach var p in seqOfPairs do
+        wrappee[p.Item1] := p.Item2;
+    end;
+  
+    function values() := wrappee.Values;
+    
+    static function operator or(d1 : !dict<K, V>; d2 : !dict<K, V>) : !dict<K, V>;
+    begin
+      Result := new !dict<K, V>(d1.wrappee);
+      
+      foreach var p in d2.wrappee do
+        Result[p.Key] := p.Value;
+    end;
+  
+    static function operator implicit(d : PABCSystem.Dictionary<K, V>) : !dict<K, V> := new !dict<K, V>(d);
+  
+    function GetEnumerator() : IEnumerator<KeyValuePair<K, V>> := wrappee.GetEnumerator();
+
+    function System.Collections.IEnumerable.GetEnumerator() : System.Collections.IEnumerator := GetEnumerator();
+end;
+
 //Standard functions with Lists
 
 function len<T>(lst: !list<T>): integer;
 function len<T>(st: !set<T>): integer;
-function len<K, V>(dct: PABCSystem.Dictionary<K, V>): integer;
+function len<K, V>(dct: !dict<K, V>): integer;
 function len<T>(arr: array of T): integer;
 function len(s: string): integer;
 
 function &set<T>(sq: sequence of T): !set<T>;
 
 function list<T>(sq: sequence of T): !list<T>;
+
+function list<K, V>(d : !dict<K, V>) : !list<K>;
 
 function sorted<T>(lst: !list<T>): !list<T>;
 
@@ -362,12 +513,12 @@ function CreateTuple<T1, T2, T3, T4, T5, T6, T7>(
 
 // TUPLES END
 
-function Dict<TKey, TVal>(params pairs: array of (TKey, TVal)): Dictionary<TKey, TVal>;
+function dict<TKey, TVal>(params pairs: array of (TKey, TVal)): !dict<TKey, TVal>;
+
+function dict<TKey, TVal>(seqOfPairs: IEnumerable<System.Tuple<TKey, TVal>>) : !dict<TKey, TVal>;
 
 type 
     biginteger = PABCSystem.BigInteger;
-    !dict<K, V> = PABCSystem.Dictionary<K, V>;
-    dct<K, V> = PABCSystem.Dictionary<K, V>;
     tuple2<T1, T2> = System.Tuple<T1, T2>;
     tuple3<T1, T2, T3> = System.Tuple<T1, T2, T3>;
     tuple4<T1, T2, T3, T4> = System.Tuple<T1, T2, T3, T4>;
@@ -444,8 +595,9 @@ begin
     Result := TypeName(obj)
     .Replace('<', '[')
     .Replace('>', ']')
-    .Replace('List', 'list')
-    .Replace('Dictionary', 'dict')
+    .Replace('!list', 'list')
+    .Replace('!set', 'set')
+    .Replace('!dict', 'dict')
     .Replace('empty_list', 'list[anytype]')
     .Replace('empty_set', 'set[anytype]')
     .Replace('empty_dict', 'dict[anytype]')
@@ -487,10 +639,10 @@ function abs(x: integer): integer := if x >= 0 then x else -x;
 
 function abs(x: real): real := PABCSystem.Abs(x);
 
-function len<T>(lst: !list<T>): integer := lst.Count();
-function len<T>(st: !set<T>): integer := st.Count();
-function len<K, V>(dct: PABCSystem.Dictionary<K, V>): integer := dct.Count();
-function len<T>(arr: array of T): integer := arr.Count();
+function len<T>(lst: !list<T>): integer := lst.__count;
+function len<T>(st: !set<T>): integer := st.__count;
+function len<K, V>(dct: !dict<K, V>): integer := dct.__count;
+function len<T>(arr: array of T): integer := arr.Length;
 function len(s: string): integer := s.Length;
 
 function sorted<T>(lst: !list<T>): !list<T>;
@@ -617,12 +769,9 @@ function CreateTuple<T1, T2, T3, T4, T5, T6, T7>(
 
 // TUPLES END
 
-function Dict<TKey, TVal>(params pairs: array of (TKey, TVal)): Dictionary<TKey, TVal>;
-begin
-  Result := new Dictionary<TKey, TVal>();
-  for var i := 0 to pairs.Length - 1 do
-    Result.Add(pairs[i][0], pairs[i][1]);
-end;
+function dict<TKey, TVal>(params pairs: array of (TKey, TVal)): !dict<TKey, TVal> := new !dict<TKey, TVal>(pairs);
+
+function dict<TKey, TVal>(seqOfPairs: sequence of (TKey, TVal)): !dict<TKey, TVal> := new !dict<TKey, TVal>(seqOfPairs);
 
 function &set<T>(sq: sequence of T): !set<T>;
 begin
@@ -630,6 +779,8 @@ begin
 end;
 
 function list<T>(sq: sequence of T): !list<T> := new !list<T>(sq);
+
+function list<K, V>(d : !dict<K, V>) : !list<K> := new !list<K>(d.keys());
 
 function all(s: sequence of boolean): boolean;
 begin
@@ -653,7 +804,8 @@ begin
     end;
 end;
 
-function ToDictionary<T, U>(Self: sequence of System.tuple<T, U>): Dictionary<T, U>; extensionmethod;
+///-
+function ToDictionary<T, U>(Self: sequence of System.Tuple<T, U>): !dict<T, U>; extensionmethod;
 begin
   Result := Self.ToDictionary(x->x[0],x->x[1]);
 end;

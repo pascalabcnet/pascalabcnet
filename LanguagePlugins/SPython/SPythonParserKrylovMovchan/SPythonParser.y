@@ -883,7 +883,7 @@ generator_object_for_dict
 dict_constant
 	: LBRACE expr_mapping_list RBRACE
 		{
-			$$ = new method_call(new ident("Dict", @$), $2 as expression_list, @$);
+			$$ = new method_call(new ident("dict", @$), $2 as expression_list, @$);
 		}
 	| LBRACE RBRACE
 		{
