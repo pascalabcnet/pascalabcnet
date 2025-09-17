@@ -121,7 +121,7 @@ type !list<T> = class(IEnumerable<T>)
       property ByIndex[ind : integer] : T read GetItem write SetItem; default;
     
       ///--
-      property __count : integer read wrappee.Count;
+      property !count : integer read wrappee.Count;
     
       procedure append(item : T) := wrappee.Add(item);
       
@@ -206,14 +206,8 @@ type !set<T> = record(IEnumerable<T>)
     
     constructor Create(comparer : PABCSystem.IEqualityComparer<T>) := wrappee := new PABCSystem.HashSet<T>(comparer);
     
-    constructor Create(elem : T);
-    begin
-      wrappee := new PABCSystem.HashSet<T>();
-      wrappee.Add(elem);
-    end;
-    
     ///--
-    property __count : integer read wrappee.Count;
+    property !count : integer read wrappee.Count;
     
     procedure add(elem : T) := wrappee.Add(elem);
     
@@ -268,11 +262,19 @@ type !set<T> = record(IEnumerable<T>)
     
     procedure update(params others : array of sequence of T) := setOperation2((h1, h2) -> h1.UnionWith(h2), others);
     
+    procedure update(other : sequence of T) := wrappee.UnionWith(other);
+    
     procedure intersection_update(params others : array of sequence of T) := setOperation2((h1, h2) -> h1.IntersectWith(h2), others);
+    
+    procedure intersection_update(other : sequence of T) := wrappee.IntersectWith(other);
     
     procedure difference_update(params others : array of sequence of T) := setOperation2((h1, h2) -> h1.ExceptWith(h2), others);
     
+    procedure difference_update(other : sequence of T) := wrappee.ExceptWith(other);
+    
     procedure symmetric_difference_update(params others : array of sequence of T) := setOperation2((h1, h2) -> h1.SymmetricExceptWith(h2), others);
+    
+    procedure symmetric_difference_update(other : sequence of T) := wrappee.SymmetricExceptWith(other);
     
     function isdisjoint(other : sequence of T) : boolean;
     
@@ -294,13 +296,37 @@ type !set<T> = record(IEnumerable<T>)
     
     static function operator or(s1 : !set<T>; s2 : !set<T>) : !set<T> := s1.union(s2);
     
+    ///-
+    function !orEqual(other : !set<T>) : !set<T>;
+    begin
+      update(other);
+      Result := Self;
+    end;
+    
     static function operator and(s1 : !set<T>; s2 : !set<T>) : !set<T> := s1.intersection(s2);
+    
+    ///-
+    function !andEqual(other : !set<T>) : !set<T>;
+    begin
+      intersection_update(other);
+      Result := Self;
+    end;
     
     static function operator-(s1 : !set<T>; s2 : !set<T>) : !set<T> := s1.difference(s2);
     
+    static function operator -=(var s1 : !set<T>; s2 : !set<T>) : !set<T>;
+    begin
+      s1.difference_update(s2);
+    end;
+    
     static function operator xor(s1 : !set<T>; s2 : !set<T>) : !set<T> := s1.symmetric_difference(s2);
     
-    // static procedure operator +=(var s1 : !set<T>; s2 : !set<T>) := s1.wrappee.UnionWith(s2.wrappee);
+    ///-
+    function !xorEqual(other : !set<T>) : !set<T>;
+    begin
+      symmetric_difference_update(other);
+      Result := Self;
+    end;
     
 //    static function operator:=(var s1: !set<T>; s2: !set<T>): !set<T>;
 //    begin
@@ -351,7 +377,7 @@ type !dict<K, V> = class(IEnumerable<PABCSystem.KeyValuePair<K, V>>)
     end;
   
     ///--
-    property __count : integer read wrappee.Count;
+    property !count : integer read wrappee.Count;
   
     property ByKey[key : K] : V read GetValue write SetValue; default;
   
@@ -639,9 +665,9 @@ function abs(x: integer): integer := if x >= 0 then x else -x;
 
 function abs(x: real): real := PABCSystem.Abs(x);
 
-function len<T>(lst: !list<T>): integer := lst.__count;
-function len<T>(st: !set<T>): integer := st.__count;
-function len<K, V>(dct: !dict<K, V>): integer := dct.__count;
+function len<T>(lst: !list<T>): integer := lst.!count;
+function len<T>(st: !set<T>): integer := st.!count;
+function len<K, V>(dct: !dict<K, V>): integer := dct.!count;
 function len<T>(arr: array of T): integer := arr.Length;
 function len(s: string): integer := s.Length;
 

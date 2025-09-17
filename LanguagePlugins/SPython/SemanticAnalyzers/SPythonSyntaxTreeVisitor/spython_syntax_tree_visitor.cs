@@ -146,17 +146,26 @@ namespace SPythonSyntaxTreeVisitor
                 expression_node to = convert_strong(_assign.to);
                 SourceContext sc = _assign.source_context;
 
-                if (to.type.name.StartsWith("NewSet"))
+                if (to.type.is_generic_type_instance && to.type.name.StartsWith("!set"))
                 {
                     if (be.operation_type == Operators.LogicalAND)
                     {
-                        var replace = new assign(new semantic_addr_value(to), be.right, Operators.AssignmentMultiplication, sc);
+                        var replace = new method_call(new dot_node(new semantic_addr_value(to, to.location), new ident("!andEqual")),
+                            new expression_list(be.right), sc);
                         base.visit(replace);
                         return;
                     }
                     if (be.operation_type == Operators.LogicalOR)
                     {
-                        var replace = new assign(new semantic_addr_value(to), be.right, Operators.AssignmentAddition, sc);
+                        var replace = new method_call(new dot_node(new semantic_addr_value(to, to.location), new ident("!orEqual")), 
+                            new expression_list(be.right), sc);
+                        base.visit(replace);
+                        return;
+                    }
+                    if (be.operation_type == Operators.BitwiseXOR)
+                    {
+                        var replace = new method_call(new dot_node(new semantic_addr_value(to, to.location), new ident("!xorEqual")),
+                            new expression_list(be.right), sc);
                         base.visit(replace);
                         return;
                     }
@@ -176,18 +185,6 @@ namespace SPythonSyntaxTreeVisitor
 
             switch (_bin_expr.operation_type)
             {
-                case Operators.LogicalOR:
-                    if (left.type.name.StartsWith("NewSet") && left.type.name == right.type.name)
-                    {
-                        new_bin_expr.operation_type = Operators.Plus;
-                    }
-                    break;
-                case Operators.LogicalAND:
-                    if (left.type.name.StartsWith("NewSet") && left.type.name == right.type.name)
-                    {
-                        new_bin_expr.operation_type = Operators.Multiplication;
-                    }
-                    break;
                 /*case Operators.Plus:
                     if (left.type == right.type && left.type.name == "boolean")
                     {
