@@ -109,9 +109,6 @@ namespace Languages.SPython.Frontend.Converters
 
             string fullName = name + $"`{_template_type_reference.params_list.Count}";
 
-            if (name == "list" || name == "set" || name == "dict")
-                return;
-
             NameKind nameKind = symbolTable[fullName];
 
             switch (nameKind)

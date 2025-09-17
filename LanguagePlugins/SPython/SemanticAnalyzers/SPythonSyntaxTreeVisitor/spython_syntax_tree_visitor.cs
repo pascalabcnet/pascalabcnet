@@ -146,7 +146,7 @@ namespace SPythonSyntaxTreeVisitor
                 expression_node to = convert_strong(_assign.to);
                 SourceContext sc = _assign.source_context;
 
-                if (to.type.is_generic_type_instance && to.type.name.StartsWith("!set"))
+                if (to.type.is_generic_type_instance && to.type.name.StartsWith("set"))
                 {
                     if (be.operation_type == Operators.LogicalAND)
                     {

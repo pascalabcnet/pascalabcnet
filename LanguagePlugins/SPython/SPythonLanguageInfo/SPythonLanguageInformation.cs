@@ -59,7 +59,7 @@ namespace Languages.SPython.Frontend.Data
 
         private readonly HashSet<string> exclutions = new HashSet<string>
         {
-            "__NewSetCreatorInternal"
+            // "__NewSetCreatorInternal"
         };
 
         private readonly Dictionary<string, string> specialModulesAliases = new Dictionary<string, string>

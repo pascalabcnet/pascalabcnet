@@ -98,7 +98,7 @@ function abs(x: real): real;
 
 // function floor(x: real): real;
 
-type !list<T> = class(IEnumerable<T>)
+type list<T> = class(IEnumerable<T>)
     private
       wrappee : PABCSystem.List<T>;
     
@@ -110,7 +110,7 @@ type !list<T> = class(IEnumerable<T>)
     
     public
     
-      static function operator implicit(l : PABCSystem.List<T>) : !list<T> := new !list<T>(l);
+      static function operator implicit(l : PABCSystem.List<T>) : list<T> := new list<T>(l);
       
       constructor Create() := wrappee := new PABCSystem.List<T>();
       
@@ -183,14 +183,14 @@ type !list<T> = class(IEnumerable<T>)
       
       procedure reverse() := wrappee.Reverse();
     
-      function copy() : !list<T> := new !list<T>(wrappee.ToList());
+      function copy() : list<T> := new list<T>(wrappee.ToList());
     
       function GetEnumerator() : IEnumerator<T> := wrappee.GetEnumerator();
 
       function System.Collections.IEnumerable.GetEnumerator() : System.Collections.IEnumerator := GetEnumerator();
     end;
 
-type !set<T> = record(IEnumerable<T>)
+type &set<T> = record(IEnumerable<T>)
   private
     wrappee : PABCSystem.HashSet<T>;
     
@@ -230,15 +230,15 @@ type !set<T> = record(IEnumerable<T>)
     
     procedure clear() := wrappee.Clear();
     
-    function copy() : !set<T> := new !set<T>(wrappee.ToHashSet());
+    function copy() : &set<T> := new &set<T>(wrappee.ToHashSet());
     
-    static function operator in(elem: T; Self: !set<T>): boolean;
+    static function operator in(elem: T; Self: &set<T>): boolean;
     begin
       Result := Self.wrappee.Contains(elem);
     end;
     
   private 
-    function setOperation1(op : (HashSet<T>, sequence of T) -> (); params others : array of sequence of T) : !set<T>;
+    function setOperation1(op : (HashSet<T>, sequence of T) -> (); params others : array of sequence of T) : &set<T>;
     begin
       Result.wrappee := wrappee.ToHashSet();
       foreach var seq in others do
@@ -252,13 +252,13 @@ type !set<T> = record(IEnumerable<T>)
     end;
     
   public
-    function intersection(params others : array of sequence of T) : !set<T> := setOperation1((h1, h2) -> h1.IntersectWith(h2), others);
+    function intersection(params others : array of sequence of T) : &set<T> := setOperation1((h1, h2) -> h1.IntersectWith(h2), others);
     
-    function union(params others : array of sequence of T) : !set<T> := setOperation1((h1, h2) -> h1.UnionWith(h2), others);
+    function union(params others : array of sequence of T) : &set<T> := setOperation1((h1, h2) -> h1.UnionWith(h2), others);
     
-    function difference(params others : array of sequence of T) : !set<T> := setOperation1((h1, h2) -> h1.ExceptWith(h2), others);
+    function difference(params others : array of sequence of T) : &set<T> := setOperation1((h1, h2) -> h1.ExceptWith(h2), others);
     
-    function symmetric_difference(params others : array of sequence of T) : !set<T> := setOperation1((h1, h2) -> h1.SymmetricExceptWith(h2), others);
+    function symmetric_difference(params others : array of sequence of T) : &set<T> := setOperation1((h1, h2) -> h1.SymmetricExceptWith(h2), others);
     
     procedure update(params others : array of sequence of T) := setOperation2((h1, h2) -> h1.UnionWith(h2), others);
     
@@ -282,65 +282,65 @@ type !set<T> = record(IEnumerable<T>)
     
     function issuperset(other : sequence of T) : boolean := wrappee.IsSupersetOf(other);
     
-    static function operator=(s1 : !set<T>; s2 : !set<T>) : boolean := s1.wrappee.SetEquals(s2.wrappee);
+    static function operator=(s1 : &set<T>; s2 : &set<T>) : boolean := s1.wrappee.SetEquals(s2.wrappee);
     
-    static function operator<>(s1 : !set<T>; s2 : !set<T>) : boolean := not (s1 = s2);
+    static function operator<>(s1 : &set<T>; s2 : &set<T>) : boolean := not (s1 = s2);
     
-    static function operator<=(s1 : !set<T>; s2 : !set<T>) : boolean := s1.issubset(s2);
+    static function operator<=(s1 : &set<T>; s2 : &set<T>) : boolean := s1.issubset(s2);
     
-    static function operator<(s1 : !set<T>; s2 : !set<T>) : boolean := (s1 <= s2) and (s1 <> s2);
+    static function operator<(s1 : &set<T>; s2 : &set<T>) : boolean := (s1 <= s2) and (s1 <> s2);
     
-    static function operator>=(s1 : !set<T>; s2 : !set<T>) : boolean := s1.issuperset(s2);
+    static function operator>=(s1 : &set<T>; s2 : &set<T>) : boolean := s1.issuperset(s2);
     
-    static function operator>(s1 : !set<T>; s2 : !set<T>) : boolean := (s1 >= s2) and (s1 <> s2);
+    static function operator>(s1 : &set<T>; s2 : &set<T>) : boolean := (s1 >= s2) and (s1 <> s2);
     
-    static function operator or(s1 : !set<T>; s2 : !set<T>) : !set<T> := s1.union(s2);
+    static function operator or(s1 : &set<T>; s2 : &set<T>) : &set<T> := s1.union(s2);
     
     ///-
-    function !orEqual(other : !set<T>) : !set<T>;
+    function !orEqual(other : &set<T>) : &set<T>;
     begin
       update(other);
       Result := Self;
     end;
     
-    static function operator and(s1 : !set<T>; s2 : !set<T>) : !set<T> := s1.intersection(s2);
+    static function operator and(s1 : &set<T>; s2 : &set<T>) : &set<T> := s1.intersection(s2);
     
     ///-
-    function !andEqual(other : !set<T>) : !set<T>;
+    function !andEqual(other : &set<T>) : &set<T>;
     begin
       intersection_update(other);
       Result := Self;
     end;
     
-    static function operator-(s1 : !set<T>; s2 : !set<T>) : !set<T> := s1.difference(s2);
+    static function operator-(s1 : &set<T>; s2 : &set<T>) : &set<T> := s1.difference(s2);
     
-    static function operator -=(var s1 : !set<T>; s2 : !set<T>) : !set<T>;
+    static function operator -=(var s1 : &set<T>; s2 : &set<T>) : &set<T>;
     begin
       s1.difference_update(s2);
     end;
     
-    static function operator xor(s1 : !set<T>; s2 : !set<T>) : !set<T> := s1.symmetric_difference(s2);
+    static function operator xor(s1 : &set<T>; s2 : &set<T>) : &set<T> := s1.symmetric_difference(s2);
     
     ///-
-    function !xorEqual(other : !set<T>) : !set<T>;
+    function !xorEqual(other : &set<T>) : &set<T>;
     begin
       symmetric_difference_update(other);
       Result := Self;
     end;
     
-//    static function operator:=(var s1: !set<T>; s2: !set<T>): !set<T>;
+//    static function operator:=(var s1: &set<T>; s2: &set<T>): &set<T>;
 //    begin
 //      s1.wrappee := s2.wrappee.ToHashSet();
 //    end;
     
-    static function operator implicit(s : HashSet<T>) : !set<T> := new !set<T>(s);
+    static function operator implicit(s : HashSet<T>) : &set<T> := new &set<T>(s);
     
     function GetEnumerator() : IEnumerator<T> := wrappee.GetEnumerator();
 
     function System.Collections.IEnumerable.GetEnumerator() : System.Collections.IEnumerator := GetEnumerator();
 end;
 
-type !dict<K, V> = class(IEnumerable<PABCSystem.KeyValuePair<K, V>>)
+type dict<K, V> = class(IEnumerable<PABCSystem.KeyValuePair<K, V>>)
   private
     wrappee : PABCSystem.Dictionary<K, V>;
     
@@ -381,18 +381,18 @@ type !dict<K, V> = class(IEnumerable<PABCSystem.KeyValuePair<K, V>>)
   
     property ByKey[key : K] : V read GetValue write SetValue; default;
   
-    static function operator in(key: K; Self: !dict<K, V>): boolean;
+    static function operator in(key: K; Self: dict<K, V>): boolean;
     begin
       Result := Self.wrappee.ContainsKey(key);
     end;
   
     procedure clear() := wrappee.Clear();
     
-    function copy() : !dict<K, V> := new !dict<K, V>(new Dictionary<K,V>(wrappee));
+    function copy() : dict<K, V> := new dict<K, V>(new Dictionary<K,V>(wrappee));
   
-    static function fromkeys(sq : sequence of K; val : V := default(V)) : !dict<K, V>;
+    static function fromkeys(sq : sequence of K; val : V := default(V)) : dict<K, V>;
     begin
-      Result := new !dict<K, V>();
+      Result := new dict<K, V>();
       
       foreach var key in sq do
         Result[key] := val;
@@ -461,15 +461,15 @@ type !dict<K, V> = class(IEnumerable<PABCSystem.KeyValuePair<K, V>>)
   
     function values() := wrappee.Values;
     
-    static function operator or(d1 : !dict<K, V>; d2 : !dict<K, V>) : !dict<K, V>;
+    static function operator or(d1 : dict<K, V>; d2 : dict<K, V>) : dict<K, V>;
     begin
-      Result := new !dict<K, V>(d1.wrappee);
+      Result := new dict<K, V>(d1.wrappee);
       
       foreach var p in d2.wrappee do
         Result[p.Key] := p.Value;
     end;
   
-    static function operator implicit(d : PABCSystem.Dictionary<K, V>) : !dict<K, V> := new !dict<K, V>(d);
+    static function operator implicit(d : PABCSystem.Dictionary<K, V>) : dict<K, V> := new dict<K, V>(d);
   
     function GetEnumerator() : IEnumerator<KeyValuePair<K, V>> := wrappee.GetEnumerator();
 
@@ -478,19 +478,15 @@ end;
 
 //Standard functions with Lists
 
-function len<T>(lst: !list<T>): integer;
-function len<T>(st: !set<T>): integer;
-function len<K, V>(dct: !dict<K, V>): integer;
+function len<T>(lst: list<T>): integer;
+function len<T>(st: &set<T>): integer;
+function len<K, V>(dct: dict<K, V>): integer;
 function len<T>(arr: array of T): integer;
 function len(s: string): integer;
 
-function &set<T>(sq: sequence of T): !set<T>;
+// function &set<T>(sq: sequence of T): &set<T>;
 
-function list<T>(sq: sequence of T): !list<T>;
-
-function list<K, V>(d : !dict<K, V>) : !list<K>;
-
-function sorted<T>(lst: !list<T>): !list<T>;
+function sorted<T>(lst: list<T>): list<T>;
 
 function sum(lst: sequence of integer): integer;
 
@@ -539,10 +535,6 @@ function CreateTuple<T1, T2, T3, T4, T5, T6, T7>(
 
 // TUPLES END
 
-function dict<TKey, TVal>(params pairs: array of (TKey, TVal)): !dict<TKey, TVal>;
-
-function dict<TKey, TVal>(seqOfPairs: IEnumerable<System.Tuple<TKey, TVal>>) : !dict<TKey, TVal>;
-
 type 
     biginteger = PABCSystem.BigInteger;
     tuple2<T1, T2> = System.Tuple<T1, T2>;
@@ -553,30 +545,30 @@ type
     tuple7<T1, T2, T3, T4, T5, T6, T7> = System.Tuple<T1, T2, T3, T4, T5, T6, T7>;
     
     empty_list = class
-    class function operator implicit<T>(x: empty_list): !list<T>; 
+    class function operator implicit<T>(x: empty_list): list<T>; 
     begin
-      Result := new !list<T>();
+      Result := new list<T>();
     end;
     end;
     
     empty_set = class
-    class function operator implicit<T>(x: empty_set): !set<T>; 
+    class function operator implicit<T>(x: empty_set): &set<T>; 
     begin
-      Result := new !set<T>();
+      Result := new &set<T>();
     end;
     end;
     
     empty_dict = class
-    class function operator implicit<K, V>(x: empty_dict): !dict<K, V>; 
+    class function operator implicit<K, V>(x: empty_dict): dict<K, V>; 
     begin
-      Result := new !dict<K, V>();
+      Result := new dict<K, V>();
     end;
     end;
 
 
 function !empty_list(): empty_list;
 function !empty_dict(): empty_dict;
-function &set(): empty_set;
+
 
 implementation
 
@@ -623,7 +615,7 @@ begin
     .Replace('>', ']')
     .Replace('!list', 'list')
     .Replace('!set', 'set')
-    .Replace('!dict', 'dict')
+    .Replace('dict', 'dict')
     .Replace('empty_list', 'list[anytype]')
     .Replace('empty_set', 'set[anytype]')
     .Replace('empty_dict', 'dict[anytype]')
@@ -665,13 +657,13 @@ function abs(x: integer): integer := if x >= 0 then x else -x;
 
 function abs(x: real): real := PABCSystem.Abs(x);
 
-function len<T>(lst: !list<T>): integer := lst.!count;
-function len<T>(st: !set<T>): integer := st.!count;
-function len<K, V>(dct: !dict<K, V>): integer := dct.!count;
+function len<T>(lst: list<T>): integer := lst.!count;
+function len<T>(st: &set<T>): integer := st.!count;
+function len<K, V>(dct: dict<K, V>): integer := dct.!count;
 function len<T>(arr: array of T): integer := arr.Length;
 function len(s: string): integer := s.Length;
 
-function sorted<T>(lst: !list<T>): !list<T>;
+function sorted<T>(lst: list<T>): list<T>;
 begin
   var newList := lst.copy();
   newList.sort();
@@ -736,7 +728,7 @@ begin
   Result := x;
 end;
 
-function !set<T>.isdisjoint(other : sequence of T) : boolean;
+function &set<T>.isdisjoint(other : sequence of T) : boolean;
 begin
   if other = nil then
     raise new System.ArgumentNullException('other', 'Null object is not iterable');
@@ -795,18 +787,10 @@ function CreateTuple<T1, T2, T3, T4, T5, T6, T7>(
 
 // TUPLES END
 
-function dict<TKey, TVal>(params pairs: array of (TKey, TVal)): !dict<TKey, TVal> := new !dict<TKey, TVal>(pairs);
-
-function dict<TKey, TVal>(seqOfPairs: sequence of (TKey, TVal)): !dict<TKey, TVal> := new !dict<TKey, TVal>(seqOfPairs);
-
-function &set<T>(sq: sequence of T): !set<T>;
-begin
-  Result := new !set<T>(sq);
-end;
-
-function list<T>(sq: sequence of T): !list<T> := new !list<T>(sq);
-
-function list<K, V>(d : !dict<K, V>) : !list<K> := new !list<K>(d.keys());
+//function &set<T>(sq: sequence of T): &set<T>;
+//begin
+//  Result := new &set<T>(sq);
+//end;
 
 function all(s: sequence of boolean): boolean;
 begin
@@ -831,14 +815,14 @@ begin
 end;
 
 ///-
-function ToDictionary<T, U>(Self: sequence of System.Tuple<T, U>): !dict<T, U>; extensionmethod;
+function ToDictionary<T, U>(Self: sequence of System.Tuple<T, U>): dict<T, U>; extensionmethod;
 begin
   Result := Self.ToDictionary(x->x[0],x->x[1]);
 end;
 
 function !empty_list(): empty_list := new empty_list();
 function !empty_dict(): empty_dict := new empty_dict();
-function &set(): empty_set := new empty_set;
+
 
 function round(val: real): integer := PABCSystem.round(val);
 
