@@ -41,7 +41,7 @@ namespace Languages.SPython.Frontend.Data
 
         public override bool AddStandardUnitNamesToUserScope => false;
 
-        public override bool AddStandardNetNamespacesToUserScope => false;
+        public override bool AddStandardNetNamespacesToUserScope => true;
 
         public override bool UsesFunctionsOverlappingSourceContext => true;
 
