@@ -984,23 +984,30 @@ namespace CodeCompletion
                     else
                     {
                         List<SymScope> lst = o as List<SymScope>;
+                        
+                        // у generic типов надо убрать префикс
+                        string shortName = System.Text.RegularExpressions.Regex.Replace(name, @"`\d+$", "");
+
                         foreach (SymScope s in lst)
                         {
                             // Добавил второе условие с aliasName, чтобы работали подсказки для anotherName при использовании from ... import name as anotherName EVA
-                            if (s.si.name == name || s.si.aliasName == name)
+                            if (s.si.name == shortName || s.si.aliasName == shortName)
                             {
                                 ss = s;
                                 // изменил на возврат первого совпадения для стандартных типов в SPython пока они не в фиктивном модуле, а в SPythonSystem EVA
                                 break;
                             }
-                                
                         }
                     }
                 if (ss == null) return null;
                 TypeScope ts = ss as TypeScope;
                 if (CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive)
-                    if (ss.si.name != name && ss.si.aliasName != name)
+                {
+                    string shortName = System.Text.RegularExpressions.Regex.Replace(name, @"`\d+$", "");
+
+                    if (ss.si.name != shortName && ss.si.aliasName != shortName)
                         return null;
+                }
                 if (ss.loc != null && loc != null && check_for_def && cur_line != -1 && cur_col != -1)
                 {
                     if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0 && this != ss)
