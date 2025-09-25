@@ -235,7 +235,7 @@ xcopy InstallerSamples\StandardUnits\       Release\Samples\StandardUnits\      
 xcopy InstallerSamples\WhatsNew\            Release\Samples\WhatsNew\            /s /e
 
 xcopy InstallerSamples\Graphics\GraphABC\   Release\Samples\Graphics\GraphABC\   /s /e
-xcopy InstallerSamples\Graphics\GraphABC\ABCObjects\   Release\Samples\Graphics\GraphABC\ABCObjects\   /s /e
+xcopy InstallerSamples\Graphics\ABCObjects\   Release\Samples\Graphics\ABCObjects\   /s /e
 
 cd Release
 
