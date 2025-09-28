@@ -9272,19 +9272,17 @@ namespace PascalABCCompiler.NETGenerator
                     if (real_parameters[1].type is ICompiledGenericTypeInstance)
                         t2 = helper.GetTypeReference(real_parameters[1].type).tp;
                     MethodInfo mi = null;
-                    MemberInfo[] eq_members = ctn1.compiled_type.GetMember("Equals", BindingFlags.Public | BindingFlags.Instance);
+                    var eq_members = ctn1.compiled_type.GetMethods(BindingFlags.Public | BindingFlags.Instance).Where(item => item.Name == "Equals");
                     bool value_type_eq = false;
-                    foreach (MemberInfo member in eq_members)
-                        if (member is MethodInfo)
+                    foreach (var member in eq_members)
+                        if (mi == null)
+                            mi = member;
+                        else if (member.GetParameters()[0].ParameterType.IsValueType)
                         {
-                            if (mi == null)
-                                mi = member as MethodInfo;
-                            else if ((member as MethodInfo).GetParameters()[0].ParameterType.IsValueType)
-                            {
-                                mi = member as MethodInfo;
-                                value_type_eq = true;
-                            }
+                            mi = member;
+                            value_type_eq = true;
                         }
+                        
                     if (mi != null)
                     {
                         
