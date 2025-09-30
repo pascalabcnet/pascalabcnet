@@ -1,5 +1,7 @@
 ﻿{$reference 'foreach_resolver_lib.dll'}
 
+uses System;
+
 type
   c0 = class
     procedure pr:= exit;
@@ -26,7 +28,7 @@ begin
   var v3:= new c3;
   v3._element:= 'myStr';
   foreach var item in v3 do 
-    print(item);
+    item.GetHashCode;
   
   Assert(check);
   check:= false;
@@ -43,6 +45,14 @@ begin
   v5._element:= 4;
   foreach var item in v5 do
     Assert(item = 4);
+  
+  Assert(check);
+  check:= false;
+  
+  var v6:= new c6<integer, Dictionary<integer, c0>>;
+  v6._element:= new List<Tuple<Dictionary<Dictionary<integer, c0>, integer>, Dictionary<Dictionary<integer, c0>, Dictionary<integer, c0>>, integer>>;
+  foreach var item in v6 do
+    item.FirstOrDefault;
   
   Assert(check);
 end.
