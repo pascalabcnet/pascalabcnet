@@ -1,5 +1,5 @@
 ﻿library foreach_resolver_lib;
-  uses System.Collections, System.Collections.Generic;
+  uses System, System.Collections, System.Collections.Generic;
   
   var check:= false;
   
@@ -55,4 +55,20 @@
     c4 = class (c2) end;
     
     c5 = class (c1<string, integer>) end;
+    
+    c6<T1, T2> = class (IEnumerable<IEnumerable<Tuple<Dictionary<T2, T1>, Dictionary<T2, T2>, integer>>>)
+    public
+      _element: IEnumerable<Tuple<Dictionary<T2, T1>, Dictionary<T2, T2>, integer>>;
+    
+      function GetEnumerator: IEnumerator<IEnumerable<Tuple<Dictionary<T2, T1>, Dictionary<T2, T2>, integer>>>;
+      begin 
+        check:= true;
+        var l:= new List<IEnumerable<Tuple<Dictionary<T2, T1>, Dictionary<T2, T2>, integer>>>;
+        l.Add(_element);
+        result:= l.GetEnumerator;
+      end;
+      
+      function IEnumerable.GetEnumerator: IEnumerator;
+      begin end;
+    end;
 end.

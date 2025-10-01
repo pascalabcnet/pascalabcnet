@@ -19040,6 +19040,32 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        private type_node RestoreTypesInGeneric(Type orig, IList<type_node> genericArgs)
+        {
+            if (!orig.IsGenericType)
+                throw new InvalidOperationException();
+
+            var actualTypes = new List<type_node>();
+
+            foreach (var declaredType in orig.GetGenericArguments())
+            {
+                type_node actualType;
+
+                if (declaredType.IsGenericParameter)
+                    actualType = genericArgs[declaredType.GenericParameterPosition];
+                else if (declaredType.IsGenericType)
+                    actualType = RestoreTypesInGeneric(declaredType, genericArgs);
+                else
+                    actualType = compiled_type_node.get_type_node(declaredType);
+
+                actualTypes.Add(actualType);
+            }
+
+            var result = compiled_type_node.get_type_node( orig.GetGenericTypeDefinition() );
+
+            return result.get_instance(actualTypes);
+        }
+
         public bool FindIEnumerableElementType(type_node tn, ref type_node elem_type, out bool sys_coll_ienum)
         {
             sys_coll_ienum = false;
@@ -19101,32 +19127,24 @@ namespace PascalABCCompiler.TreeConverter
                 else
                 {
                     // для "tn is compiled_generic_instance_type_node" необходимо восстановить стёртые типы
-                    // orig.instance_params содержит имена типоаргументов при объявлении
-                    // tn.instance_params содержит фактические типоаргументы
-                    // остаётся найти нужный индекс в orig и взять аргумент из tn
+                    // tn.instance_params содержит фактические типоаргументы (их может быть несколько)
+                    // чтобы взять нужный, проверяем позицию через .GenericParameterPosition
 
                     if (foundElementType.IsGenericParameter)
                     {
-                        var ind = orig.instance_params.FindIndex(item => item.name == foundElementType.Name);
+                        var ind = foundElementType.GenericParameterPosition;
                         elem_type = tn.instance_params[ind];
                     }
                     else
                     {
                         // значит элемент последовательности сам является generic типом
-                        // нужно сопоставить все типоаргументы из orig типоаргументам из tn
-                        // нельзя просто брать все, тк их количество может отличаться
+                        // при чём его типоаргументы могут быть как из tn.instance_params, так и самостоятельными
+                        // IEnumerable< IEnumerable<PascalType> >
+                        // IEnumerable< Dictionary<integer, PascalType> >
+                        //
+                        // а также глубоко вложенными IEnumerable< IEnumerable<IEnumerable<PascalType>> >
 
-                        var declaredTypes = foundElementType
-                            .GetGenericArguments()
-                            .Select(item=> item.Name)
-                            .ToArray();
-
-                        var actualTypes = tn.instance_params
-                            .Where((item, i) => declaredTypes.Contains(orig.instance_params[i].name))
-                            .ToList();
-
-                        elem_type = compiled_type_node.get_type_node( foundElementType.GetGenericTypeDefinition() );
-                        elem_type = elem_type.get_instance(actualTypes);
+                        elem_type = RestoreTypesInGeneric(foundElementType, tn.instance_params); 
                     }
                 }
 
