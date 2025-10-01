@@ -62,7 +62,7 @@ namespace VisualPascalABC
         private DebugHelper DebugHelper;
 		private CodeCompletionParserController CodeCompletionParserController;
 		public UserOptions UserOptions;
-        private System.Collections.Hashtable StandartDirectories;
+        private Dictionary<string, string> StandartDirectories;
         Dictionary<string, CodeFileDocumentControl> OpenDocuments;
 
         public VisualEnvironmentCompiler(InvokeDegegate beginInvoke, 
@@ -70,7 +70,7 @@ namespace VisualPascalABC
             SetTextDelegate addTextToCompilerMessages, ToolStripMenuItem pluginsMenuItem, 
             ToolStrip pluginsToolStrip, ExecuteSourceLocationActionDelegate ExecuteSLAction, 
             ExecuteVisualEnvironmentCompilerActionDelegate ExecuteVECAction,
-            PascalABCCompiler.Errors.ErrorsStrategyManager ErrorsManager, RunManager RunnerManager, DebugHelper DebugHelper,UserOptions UserOptions,System.Collections.Hashtable StandartDirectories,
+            PascalABCCompiler.Errors.ErrorsStrategyManager ErrorsManager, RunManager RunnerManager, DebugHelper DebugHelper,UserOptions UserOptions, Dictionary<string, string> StandartDirectories,
             Dictionary<string, CodeFileDocumentControl> OpenDocuments, IWorkbench workbench)
         {
             this.StandartDirectories = StandartDirectories;

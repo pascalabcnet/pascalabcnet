@@ -231,7 +231,7 @@ namespace VisualPascalABC
         internal static string WorkingDirectory = null;
         internal static string WorkingDirectoryInOptionsFile = null;
         internal static string LibSourceDirectory = null;
-        internal static Hashtable StandartDirectories;
+        internal static Dictionary<string, string> StandartDirectories;
         internal static System.Threading.Thread MainProgramThread;
         internal static bool SetCurrentTabPageIfWriteToOutputWindow = false;
         internal static bool WorkingDirectoryExsist

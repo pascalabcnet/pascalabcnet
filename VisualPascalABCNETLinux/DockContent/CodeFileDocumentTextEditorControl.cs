@@ -114,12 +114,13 @@ namespace VisualPascalABC
 		{
 			ActiveTextAreaControl.TextArea.Refresh(ActiveTextAreaControl.TextArea.FoldMargin);
 		}
-		
-		public void UpdateFolding()
-		{
-			CodeCompletionParserController.open_files[this.FileName] = true;
-		}
-		
+
+        public void UpdateFolding()
+        {
+            if (Languages.Facade.LanguageProvider.Instance.HasLanguageForExtension(FileName))
+                CodeCompletionParserController.filesToParse[FileName] = true;
+        }
+
         public void CollapseRegions()
         {
             foreach (FoldMarker marker in Document.FoldingManager.FoldMarker)

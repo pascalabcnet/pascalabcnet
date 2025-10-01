@@ -10,7 +10,7 @@ namespace VisualPascalABC
 
     public class CodeCompletionParserController : VisualPascalABCPlugins.ICodeCompletionService
     {
-        public static Dictionary<string, bool> open_files = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        public static Dictionary<string, bool> filesToParse = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         public VisualEnvironmentCompiler visualEnvironmentCompiler;
         private System.Threading.Thread th = null;
         private CodeCompletionProvider ccp;
@@ -68,40 +68,42 @@ namespace VisualPascalABC
                 CodeCompletion.CodeCompletionController.comp_modules[NewFileName] = CodeCompletion.CodeCompletionController.comp_modules[OldFileName];
                 if (CodeCompletion.CodeCompletionController.comp_modules.ContainsKey(OldFileName))
                     CodeCompletion.CodeCompletionController.comp_modules.Remove(OldFileName);
-                open_files[NewFileName] = open_files[OldFileName];
-                if (open_files.ContainsKey(OldFileName))
-                    open_files.Remove(OldFileName);
+                filesToParse[NewFileName] = filesToParse[OldFileName];
+                if (filesToParse.ContainsKey(OldFileName))
+                    filesToParse.Remove(OldFileName);
             }
         }
 
         public void RegisterFileForParsing(string FileName)
         {
-            open_files[FileName] = true;
-            CodeCompletion.CodeCompletionController.SetLanguage(FileName);
-            //ParseAllFiles();
+            if (Languages.Facade.LanguageProvider.Instance.HasLanguageForExtension(FileName))
+            {
+                filesToParse[FileName] = true;
+                CodeCompletion.CodeCompletionController.SetLanguage(FileName);
+            }
         }
 
         public void CloseFile(string FileName)
         {
             if (CodeCompletion.CodeCompletionController.comp_modules[FileName] != null)
                 CodeCompletion.CodeCompletionController.comp_modules.Remove(FileName);
-            open_files.Remove(FileName);
+            filesToParse.Remove(FileName);
         }
 
         public void SetAsChanged(string FileName)
         {
-            if (FileName != null)
-                open_files[FileName] = true;
+            if (FileName != null && filesToParse.ContainsKey(FileName))
+                filesToParse[FileName] = true;
         }
 
         public void SetAllInProjectChanged()
         {
             try
             {
-                foreach (string s in open_files.Keys.ToArray())
+                foreach (string s in filesToParse.Keys.ToArray())
                 {
                     if (ProjectFactory.Instance.CurrentProject.ContainsSourceFile(s))
-                        open_files[s] = true;
+                        filesToParse[s] = true;
                 }
             }
             catch (Exception e)
@@ -151,10 +153,10 @@ namespace VisualPascalABC
             {
                 Dictionary<string, string> recomp_files = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 bool is_comp = false;
-                foreach (string FileName in open_files.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
+                foreach (string FileName in filesToParse.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
                 {
                     
-                    if (open_files[FileName])
+                    if (filesToParse[FileName])
                     {
                         is_comp = true;
                         CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
@@ -165,7 +167,7 @@ namespace VisualPascalABC
                         long cur_mem = Environment.WorkingSet;
                         CodeCompletion.DomConverter dc = controller.Compile(FileName, text);
                         mem_delta += Environment.WorkingSet - cur_mem;
-                        open_files[FileName] = false;
+                        filesToParse[FileName] = false;
                         if (dc.is_compiled)
                         {
                             //CodeCompletion.CodeCompletionController.comp_modules.Remove(file_name);
@@ -177,7 +179,7 @@ namespace VisualPascalABC
                             }
                             CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                             recomp_files[FileName] = FileName;
-                            open_files[FileName] = false;
+                            filesToParse[FileName] = false;
                             if (ParseInformationUpdated != null)
                                 ParseInformationUpdated(dc.visitor.entry_scope, FileName);
                         }
@@ -185,7 +187,7 @@ namespace VisualPascalABC
                             CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                     }
                 }
-                foreach (string FileName in open_files.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
+                foreach (string FileName in filesToParse.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
                 {
                     CodeCompletion.DomConverter dc = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
                     CodeCompletion.SymScope ss = null;
@@ -211,7 +213,7 @@ namespace VisualPascalABC
                                 for (int i = 0; i < ss.used_units.Count; i++)
                                 {
                                     string s = ss.used_units[i].file_name;
-                                    if (s != null && open_files.ContainsKey(s) && recomp_files.ContainsKey(s))
+                                    if (s != null && filesToParse.ContainsKey(s) && recomp_files.ContainsKey(s))
                                     {
                                         is_comp = true;
                                         CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
@@ -220,7 +222,7 @@ namespace VisualPascalABC
                                         long cur_mem = Environment.WorkingSet;
                                         dc = controller.Compile(FileName, text);
                                         mem_delta += Environment.WorkingSet - cur_mem;
-                                        open_files[FileName] = false;
+                                        filesToParse[FileName] = false;
                                         CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                                         if (dc.is_compiled)
                                         {
