@@ -17,32 +17,32 @@
 </object></head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title><link rel="StyleSheet" href="../../default.css"><body>
-<H1>Класс Picture графического рисунка</H1>
-<p>Класс <code>Picture</code> 
-представляет собой графический рисунок модуля GraphABC и 
-является надстройкой над типом <code>System.Drawing.Bitmap</code>. Он 
-имеет свойство прозрачности, которое можно включать/выключать, 
-а также возможность непосредственного рисования на себе всех графических 
-примитивов. </p>
+<H1>РљР»Р°СЃСЃ Picture РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ СЂРёСЃСѓРЅРєР°</H1>
+<p>РљР»Р°СЃСЃ <code>Picture</code> 
+РїСЂРµРґСЃС‚Р°РІР»СЏРµС‚ СЃРѕР±РѕР№ РіСЂР°С„РёС‡РµСЃРєРёР№ СЂРёСЃСѓРЅРѕРє РјРѕРґСѓР»СЏ GraphABC Рё 
+СЏРІР»СЏРµС‚СЃСЏ РЅР°РґСЃС‚СЂРѕР№РєРѕР№ РЅР°Рґ С‚РёРїРѕРј <code>System.Drawing.Bitmap</code>. РћРЅ 
+РёРјРµРµС‚ СЃРІРѕР№СЃС‚РІРѕ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚Рё, РєРѕС‚РѕСЂРѕРµ РјРѕР¶РЅРѕ РІРєР»СЋС‡Р°С‚СЊ/РІС‹РєР»СЋС‡Р°С‚СЊ, 
+Р° С‚Р°РєР¶Рµ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РЅРµРїРѕСЃСЂРµРґСЃС‚РІРµРЅРЅРѕРіРѕ СЂРёСЃРѕРІР°РЅРёСЏ РЅР° СЃРµР±Рµ РІСЃРµС… РіСЂР°С„РёС‡РµСЃРєРёС… 
+РїСЂРёРјРёС‚РёРІРѕРІ. </p>
 <table border=0 CELLPADDING=5>
 <tr>
 	<td height="12"></td>
 </tr>
 <tr><td style="border-style:solid; border-width:1px; border-color: #808080;  background-color: #E7E7F7">
-<font style="font-size: 11pt">Конструкторы класса 
+<font style="font-size: 11pt">РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹ РєР»Р°СЃСЃР° 
 Picture</font></td></tr>
 <tr><td>
 <code>
     <b>constructor</b> Create(w,h: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает рисунок размера <code>w</code> на 
-<code>h</code> пикселей
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ СЂРёСЃСѓРЅРѕРє СЂР°Р·РјРµСЂР° <code>w</code> РЅР° 
+<code>h</code> РїРёРєСЃРµР»РµР№
 </td></tr>
 <tr><td>
 <code>
     <b>constructor</b> Create(fname: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает рисунок из файла с именем 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ СЂРёСЃСѓРЅРѕРє РёР· С„Р°Р№Р»Р° СЃ РёРјРµРЅРµРј 
 <code>fname</code>
 </td></tr>
 <tr>
@@ -50,38 +50,38 @@ Picture</font></td></tr>
 <code>
     <b>constructor</b> Create(r: System.Drawing.Rectangle);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает рисунок из прямоугольника 
-<code>r</code> графического окна
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ СЂРёСЃСѓРЅРѕРє РёР· РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР° 
+<code>r</code> РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР°
 </td>
 </tr>
 <tr><td height="8"></td></tr>
 <tr>
 	<td style="border:1px solid #808080; background-color: #E7E7F7">
-<font style="font-size: 11pt">Свойства класса 
+<font style="font-size: 11pt">РЎРІРѕР№СЃС‚РІР° РєР»Р°СЃСЃР° 
 Picture</font></td>
 </tr>
 <tr><td>
 <code>
     <b>property</b> Width: integer;</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина рисунка в пикселах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЁРёСЂРёРЅР° СЂРёСЃСѓРЅРєР° РІ РїРёРєСЃРµР»Р°С…
 </td></tr>
 <tr><td>
 <code>
     <b>property</b> Height: integer;</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Высота рисунка в пикселах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹СЃРѕС‚Р° СЂРёСЃСѓРЅРєР° РІ РїРёРєСЃРµР»Р°С…
 </td></tr>
 <tr><td>
 <code>
     <b>property</b> Transparent: boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Прозрачность рисунка; прозрачный цвет задается свойством 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ СЂРёСЃСѓРЅРєР°; РїСЂРѕР·СЂР°С‡РЅС‹Р№ С†РІРµС‚ Р·Р°РґР°РµС‚СЃСЏ СЃРІРѕР№СЃС‚РІРѕРј 
 <code>TransparentColor</code>
 </td></tr>
 <tr><td>
 <code>
     <b>property</b> TransparentColor: Color;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Прозрачный цвет рисунка. Должна быть установлена прозрачность 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕР·СЂР°С‡РЅС‹Р№ С†РІРµС‚ СЂРёСЃСѓРЅРєР°. Р”РѕР»Р¶РЅР° Р±С‹С‚СЊ СѓСЃС‚Р°РЅРѕРІР»РµРЅР° РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ 
 <code>Transparent</code> = <code>True</code>
 </td></tr>
 <tr>
@@ -89,7 +89,7 @@ Picture</font></td>
 </tr>
 <tr>
 	<td style="border:1px solid #808080; background-color: #E7E7F7">
-<font style="font-size: 11pt">Методы класса 
+<font style="font-size: 11pt">РњРµС‚РѕРґС‹ РєР»Р°СЃСЃР° 
 Picture</font></td>
 </tr>
 <tr>
@@ -97,7 +97,7 @@ Picture</font></td>
 <code>
     <b>procedure</b> Load(fname: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Загружает рисунок из файла с именем 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РіСЂСѓР¶Р°РµС‚ СЂРёСЃСѓРЅРѕРє РёР· С„Р°Р№Р»Р° СЃ РёРјРµРЅРµРј 
 <code>fname</code>
 </td>
 </tr>
@@ -106,7 +106,7 @@ Picture</font></td>
 <code>
     <b>procedure</b> Save(fname: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сохраняет рисунок в файл с именем 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕС…СЂР°РЅСЏРµС‚ СЂРёСЃСѓРЅРѕРє РІ С„Р°Р№Р» СЃ РёРјРµРЅРµРј 
 <code>fname</code>
 </td>
 </tr>
@@ -115,317 +115,317 @@ Picture</font></td>
 <code>
     <b>procedure</b> SetSize(w,h: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает размер рисунка 
-<code>w</code> на <code>h</code> пикселей
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЂР°Р·РјРµСЂ СЂРёСЃСѓРЅРєР° 
+<code>w</code> РЅР° <code>h</code> РїРёРєСЃРµР»РµР№
 </td>
 </tr>
 <tr><td>
 <code>
     <b>function</b> Intersect(p: Picture): boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает <code>True</code>, если изображение данного рисунка 
-пересекается с изображением рисунка <code>p</code>, и <code>False</code> в 
-противном случае. Для проверки пересечения оба объекта рисуются 
-на белом фоне, и прямоугольник пересечения попиксельно проверяется на 
-пересечение. К сожалению, при таком алгоритме любые белые пиксели считаются не 
-принадлежащими объекту. Поэтому для корректной работы этого метода не 
-следует использовать белый цвет для внутренности объекта.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ <code>True</code>, РµСЃР»Рё РёР·РѕР±СЂР°Р¶РµРЅРёРµ РґР°РЅРЅРѕРіРѕ СЂРёСЃСѓРЅРєР° 
+РїРµСЂРµСЃРµРєР°РµС‚СЃСЏ СЃ РёР·РѕР±СЂР°Р¶РµРЅРёРµРј СЂРёСЃСѓРЅРєР° <code>p</code>, Рё <code>False</code> РІ 
+РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ. Р”Р»СЏ РїСЂРѕРІРµСЂРєРё РїРµСЂРµСЃРµС‡РµРЅРёСЏ РѕР±Р° РѕР±СЉРµРєС‚Р° СЂРёСЃСѓСЋС‚СЃСЏ 
+РЅР° Р±РµР»РѕРј С„РѕРЅРµ, Рё РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє РїРµСЂРµСЃРµС‡РµРЅРёСЏ РїРѕРїРёРєСЃРµР»СЊРЅРѕ РїСЂРѕРІРµСЂСЏРµС‚СЃСЏ РЅР° 
+РїРµСЂРµСЃРµС‡РµРЅРёРµ. Рљ СЃРѕР¶Р°Р»РµРЅРёСЋ, РїСЂРё С‚Р°РєРѕРј Р°Р»РіРѕСЂРёС‚РјРµ Р»СЋР±С‹Рµ Р±РµР»С‹Рµ РїРёРєСЃРµР»Рё СЃС‡РёС‚Р°СЋС‚СЃСЏ РЅРµ 
+РїСЂРёРЅР°РґР»РµР¶Р°С‰РёРјРё РѕР±СЉРµРєС‚Сѓ. РџРѕСЌС‚РѕРјСѓ РґР»СЏ РєРѕСЂСЂРµРєС‚РЅРѕР№ СЂР°Р±РѕС‚С‹ СЌС‚РѕРіРѕ РјРµС‚РѕРґР° РЅРµ 
+СЃР»РµРґСѓРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ Р±РµР»С‹Р№ С†РІРµС‚ РґР»СЏ РІРЅСѓС‚СЂРµРЅРЅРѕСЃС‚Рё РѕР±СЉРµРєС‚Р°.
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Draw(x,y: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит рисунок в позиции (x,y)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ СЂРёСЃСѓРЅРѕРє РІ РїРѕР·РёС†РёРё (x,y)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Draw(x,y: integer; g: Graphics);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит рисунок в позиции (x,y) на поверхность рисования 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ СЂРёСЃСѓРЅРѕРє РІ РїРѕР·РёС†РёРё (x,y) РЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ СЂРёСЃРѕРІР°РЅРёСЏ 
 <code>g</code>
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Draw(x,y,w,h: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит рисунок в позиции (x,y), масштабируя его к размеру (w,h)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ СЂРёСЃСѓРЅРѕРє РІ РїРѕР·РёС†РёРё (x,y), РјР°СЃС€С‚Р°Р±РёСЂСѓСЏ РµРіРѕ Рє СЂР°Р·РјРµСЂСѓ (w,h)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Draw(x,y,w,h: integer; g: Graphics);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит рисунок в позиции (x,y), масштабируя его к размеру (w,h), на поверхность рисования 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ СЂРёСЃСѓРЅРѕРє РІ РїРѕР·РёС†РёРё (x,y), РјР°СЃС€С‚Р°Р±РёСЂСѓСЏ РµРіРѕ Рє СЂР°Р·РјРµСЂСѓ (w,h), РЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ СЂРёСЃРѕРІР°РЅРёСЏ 
 <code>g</code>
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Draw(x,y: integer; r: System.Drawing.Rectangle); // r - part <b>of</b> Picture
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит часть рисунка, заключенную в прямоугольнике 
-<code>r</code>, в позиции (x,y)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ С‡Р°СЃС‚СЊ СЂРёСЃСѓРЅРєР°, Р·Р°РєР»СЋС‡РµРЅРЅСѓСЋ РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРµ 
+<code>r</code>, РІ РїРѕР·РёС†РёРё (x,y)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Draw(x,y: integer; r: System.Drawing.Rectangle; g: Graphics);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит часть рисунка, заключенную в прямоугольнике 
-<code>r</code>, в позиции (x,y) на поверхность рисования g
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ С‡Р°СЃС‚СЊ СЂРёСЃСѓРЅРєР°, Р·Р°РєР»СЋС‡РµРЅРЅСѓСЋ РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРµ 
+<code>r</code>, РІ РїРѕР·РёС†РёРё (x,y) РЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ СЂРёСЃРѕРІР°РЅРёСЏ g
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Draw(x,y,w,h: integer; r: System.Drawing.Rectangle); // r - part <b>of</b> Picture
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит часть рисунка, заключенную в прямоугольнике 
-<code>r</code>, в позиции (x,y), масштабируя его к размеру (w,h)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ С‡Р°СЃС‚СЊ СЂРёСЃСѓРЅРєР°, Р·Р°РєР»СЋС‡РµРЅРЅСѓСЋ РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРµ 
+<code>r</code>, РІ РїРѕР·РёС†РёРё (x,y), РјР°СЃС€С‚Р°Р±РёСЂСѓСЏ РµРіРѕ Рє СЂР°Р·РјРµСЂСѓ (w,h)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Draw(x,y,w,h: integer; r: System.Drawing.Rectangle; g: Graphics);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит часть рисунка, заключенную в прямоугольнике 
-<code>r</code>, в позиции (x,y), масштабируя его к размеру (w,h), на поверхность рисования g
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ С‡Р°СЃС‚СЊ СЂРёСЃСѓРЅРєР°, Р·Р°РєР»СЋС‡РµРЅРЅСѓСЋ РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРµ 
+<code>r</code>, РІ РїРѕР·РёС†РёРё (x,y), РјР°СЃС€С‚Р°Р±РёСЂСѓСЏ РµРіРѕ Рє СЂР°Р·РјРµСЂСѓ (w,h), РЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ СЂРёСЃРѕРІР°РЅРёСЏ g
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> CopyRect(dst: System.Drawing.Rectangle; p: Picture; src: System.Drawing.Rectangle);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Копирует прямоугольник <code>src</code> рисунка 
-<code>p</code> в прямоугольник <code>dst</code> текущего рисунка
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РљРѕРїРёСЂСѓРµС‚ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє <code>src</code> СЂРёСЃСѓРЅРєР° 
+<code>p</code> РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє <code>dst</code> С‚РµРєСѓС‰РµРіРѕ СЂРёСЃСѓРЅРєР°
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> CopyRect(dst: System.Drawing.Rectangle; bmp: Bitmap; src: System.Drawing.Rectangle);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Копирует прямоугольник <code>src</code> битового образа 
-<code>bmp</code> в прямоугольник <code>dst</code> текущего рисунка
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РљРѕРїРёСЂСѓРµС‚ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє <code>src</code> Р±РёС‚РѕРІРѕРіРѕ РѕР±СЂР°Р·Р° 
+<code>bmp</code> РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє <code>dst</code> С‚РµРєСѓС‰РµРіРѕ СЂРёСЃСѓРЅРєР°
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> FlipHorizontal;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Зеркально отображает рисунок относительно горизонтальной оси симметрии
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—РµСЂРєР°Р»СЊРЅРѕ РѕС‚РѕР±СЂР°Р¶Р°РµС‚ СЂРёСЃСѓРЅРѕРє РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕР№ РѕСЃРё СЃРёРјРјРµС‚СЂРёРё
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> FlipVertical;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Зеркально отображает рисунок относительно вертикальной оси симметрии
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—РµСЂРєР°Р»СЊРЅРѕ РѕС‚РѕР±СЂР°Р¶Р°РµС‚ СЂРёСЃСѓРЅРѕРє РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РІРµСЂС‚РёРєР°Р»СЊРЅРѕР№ РѕСЃРё СЃРёРјРјРµС‚СЂРёРё
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> SetPixel(x,y: integer; c: Color);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Закрашивает пиксел (x,y) рисунка цветом 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РєСЂР°С€РёРІР°РµС‚ РїРёРєСЃРµР» (x,y) СЂРёСЃСѓРЅРєР° С†РІРµС‚РѕРј 
 <code>c</code>
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> PutPixel(x,y: integer; c: Color);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Закрашивает пиксел (x,y) рисунка цветом 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РєСЂР°С€РёРІР°РµС‚ РїРёРєСЃРµР» (x,y) СЂРёСЃСѓРЅРєР° С†РІРµС‚РѕРј 
 <code>c</code>
 </td></tr>
 <tr><td>
 <code>
     <b>function</b> GetPixel(x,y: integer): Color;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет пиксела (x,y) рисунка
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РІРµС‚ РїРёРєСЃРµР»Р° (x,y) СЂРёСЃСѓРЅРєР°
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Line(x1,y1,x2,y2: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке отрезок от точки (x1,y1) до точки (x2,y2)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ РѕС‚СЂРµР·РѕРє РѕС‚ С‚РѕС‡РєРё (x1,y1) РґРѕ С‚РѕС‡РєРё (x2,y2)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Line(x1,y1,x2,y2: integer; c: Color);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке отрезок от точки (x1,y1) до точки (x2,y2) цветом 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ РѕС‚СЂРµР·РѕРє РѕС‚ С‚РѕС‡РєРё (x1,y1) РґРѕ С‚РѕС‡РєРё (x2,y2) С†РІРµС‚РѕРј 
 <code>c</code>
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> FillCircle(x,y,r: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет на рисунке внутренность окружности с центром (x,y) и радиусом 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ РЅР° СЂРёСЃСѓРЅРєРµ РІРЅСѓС‚СЂРµРЅРЅРѕСЃС‚СЊ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё СЃ С†РµРЅС‚СЂРѕРј (x,y) Рё СЂР°РґРёСѓСЃРѕРј 
 <code>r</code>
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> DrawCircle(x,y,r: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке окружность с центром (x,y) и радиусом 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ РѕРєСЂСѓР¶РЅРѕСЃС‚СЊ СЃ С†РµРЅС‚СЂРѕРј (x,y) Рё СЂР°РґРёСѓСЃРѕРј 
 <code>r</code>
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> FillEllipse(x1,y1,x2,y2: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет на рисунке внутренность эллипса, ограниченного прямоугольником, заданным координатами противоположных вершин (x1,y1) и (x2,y2)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ РЅР° СЂРёСЃСѓРЅРєРµ РІРЅСѓС‚СЂРµРЅРЅРѕСЃС‚СЊ СЌР»Р»РёРїСЃР°, РѕРіСЂР°РЅРёС‡РµРЅРЅРѕРіРѕ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРј, Р·Р°РґР°РЅРЅС‹Рј РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅС‹С… РІРµСЂС€РёРЅ (x1,y1) Рё (x2,y2)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> DrawEllipse(x1,y1,x2,y2: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке границу эллипса, ограниченного прямоугольником, заданным координатами противоположных вершин (x1,y1) и (x2,y2)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ РіСЂР°РЅРёС†Сѓ СЌР»Р»РёРїСЃР°, РѕРіСЂР°РЅРёС‡РµРЅРЅРѕРіРѕ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРј, Р·Р°РґР°РЅРЅС‹Рј РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅС‹С… РІРµСЂС€РёРЅ (x1,y1) Рё (x2,y2)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> FillRectangle(x1,y1,x2,y2: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет на рисунке внутренность прямоугольника, заданного координатами противоположных вершин (x1,y1) и (x2,y2)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ РЅР° СЂРёСЃСѓРЅРєРµ РІРЅСѓС‚СЂРµРЅРЅРѕСЃС‚СЊ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°, Р·Р°РґР°РЅРЅРѕРіРѕ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅС‹С… РІРµСЂС€РёРЅ (x1,y1) Рё (x2,y2)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> FillRect(x1,y1,x2,y2: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет на рисунке внутренность прямоугольника, заданного координатами противоположных вершин (x1,y1) и (x2,y2)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ РЅР° СЂРёСЃСѓРЅРєРµ РІРЅСѓС‚СЂРµРЅРЅРѕСЃС‚СЊ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°, Р·Р°РґР°РЅРЅРѕРіРѕ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅС‹С… РІРµСЂС€РёРЅ (x1,y1) Рё (x2,y2)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> DrawRectangle(x1,y1,x2,y2: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке границу ы прямоугольника, заданного координатами противоположных вершин (x1,y1) и (x2,y2)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ РіСЂР°РЅРёС†Сѓ С‹ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°, Р·Р°РґР°РЅРЅРѕРіРѕ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅС‹С… РІРµСЂС€РёРЅ (x1,y1) Рё (x2,y2)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Circle(x,y,r: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке заполненную окружность с центром (x,y) и радиусом 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ Р·Р°РїРѕР»РЅРµРЅРЅСѓСЋ РѕРєСЂСѓР¶РЅРѕСЃС‚СЊ СЃ С†РµРЅС‚СЂРѕРј (x,y) Рё СЂР°РґРёСѓСЃРѕРј 
 <code>r</code>
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Ellipse(x1,y1,x2,y2: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке заполненный эллипс, ограниченный прямоугольником, заданным координатами противоположных вершин (x1,y1) и (x2,y2)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ СЌР»Р»РёРїСЃ, РѕРіСЂР°РЅРёС‡РµРЅРЅС‹Р№ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРј, Р·Р°РґР°РЅРЅС‹Рј РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅС‹С… РІРµСЂС€РёРЅ (x1,y1) Рё (x2,y2)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Rectangle(x1,y1,x2,y2: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке заполненный прямоугольник, заданный координатами противоположных вершин (x1,y1) и (x2,y2)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє, Р·Р°РґР°РЅРЅС‹Р№ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅС‹С… РІРµСЂС€РёРЅ (x1,y1) Рё (x2,y2)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> RoundRect(x1,y1,x2,y2,w,h: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке заполненный прямоугольник со скругленными краями; (x1,y1) и (x2,y2) задают пару противоположных вершин, а 
-<code>w</code> и <code>h</code> – ширину и высоту эллипса, используемого для скругления краев
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє СЃРѕ СЃРєСЂСѓРіР»РµРЅРЅС‹РјРё РєСЂР°СЏРјРё; (x1,y1) Рё (x2,y2) Р·Р°РґР°СЋС‚ РїР°СЂСѓ РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅС‹С… РІРµСЂС€РёРЅ, Р° 
+<code>w</code> Рё <code>h</code> вЂ“ С€РёСЂРёРЅСѓ Рё РІС‹СЃРѕС‚Сѓ СЌР»Р»РёРїСЃР°, РёСЃРїРѕР»СЊР·СѓРµРјРѕРіРѕ РґР»СЏ СЃРєСЂСѓРіР»РµРЅРёСЏ РєСЂР°РµРІ
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Arc(x,y,r,a1,a2: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке дугу окружности с центром в точке (x,y) и радиусом 
-<code>r</code>, заключенной между двумя лучами, образующими углы <code>a1</code> и 
-<code>a2</code> с осью OX (<code>a1</code> и <code>a2</code> – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ РґСѓРіСѓ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x,y) Рё СЂР°РґРёСѓСЃРѕРј 
+<code>r</code>, Р·Р°РєР»СЋС‡РµРЅРЅРѕР№ РјРµР¶РґСѓ РґРІСѓРјСЏ Р»СѓС‡Р°РјРё, РѕР±СЂР°Р·СѓСЋС‰РёРјРё СѓРіР»С‹ <code>a1</code> Рё 
+<code>a2</code> СЃ РѕСЃСЊСЋ OX (<code>a1</code> Рё <code>a2</code> вЂ“ РІРµС‰РµСЃС‚РІРµРЅРЅС‹Рµ, Р·Р°РґР°СЋС‚СЃСЏ РІ РіСЂР°РґСѓСЃР°С… Рё РѕС‚СЃС‡РёС‚С‹РІР°СЋС‚СЃСЏ РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> FillPie(x,y,r,a1,a2: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет на рисунке внутренность сектора окружности, ограниченного дугой с центром в точке (x,y) и радиусом 
-<code>r</code>, заключенной между двумя лучами, образующими углы <code>a1</code> и 
-<code>a2</code> с осью OX (<code>a1</code> и <code>a2</code> – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ РЅР° СЂРёСЃСѓРЅРєРµ РІРЅСѓС‚СЂРµРЅРЅРѕСЃС‚СЊ СЃРµРєС‚РѕСЂР° РѕРєСЂСѓР¶РЅРѕСЃС‚Рё, РѕРіСЂР°РЅРёС‡РµРЅРЅРѕРіРѕ РґСѓРіРѕР№ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x,y) Рё СЂР°РґРёСѓСЃРѕРј 
+<code>r</code>, Р·Р°РєР»СЋС‡РµРЅРЅРѕР№ РјРµР¶РґСѓ РґРІСѓРјСЏ Р»СѓС‡Р°РјРё, РѕР±СЂР°Р·СѓСЋС‰РёРјРё СѓРіР»С‹ <code>a1</code> Рё 
+<code>a2</code> СЃ РѕСЃСЊСЋ OX (<code>a1</code> Рё <code>a2</code> вЂ“ РІРµС‰РµСЃС‚РІРµРЅРЅС‹Рµ, Р·Р°РґР°СЋС‚СЃСЏ РІ РіСЂР°РґСѓСЃР°С… Рё РѕС‚СЃС‡РёС‚С‹РІР°СЋС‚СЃСЏ РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> DrawPie(x,y,r,a1,a2: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке сектор окружности, ограниченный дугой с центром в точке (x,y) и радиусом 
-<code>r</code>, заключенной между двумя лучами, образующими углы <code>a1</code> и 
-<code>a2</code> с осью OX (<code>a1</code> и <code>a2</code> – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ СЃРµРєС‚РѕСЂ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё, РѕРіСЂР°РЅРёС‡РµРЅРЅС‹Р№ РґСѓРіРѕР№ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x,y) Рё СЂР°РґРёСѓСЃРѕРј 
+<code>r</code>, Р·Р°РєР»СЋС‡РµРЅРЅРѕР№ РјРµР¶РґСѓ РґРІСѓРјСЏ Р»СѓС‡Р°РјРё, РѕР±СЂР°Р·СѓСЋС‰РёРјРё СѓРіР»С‹ <code>a1</code> Рё 
+<code>a2</code> СЃ РѕСЃСЊСЋ OX (<code>a1</code> Рё <code>a2</code> вЂ“ РІРµС‰РµСЃС‚РІРµРЅРЅС‹Рµ, Р·Р°РґР°СЋС‚СЃСЏ РІ РіСЂР°РґСѓСЃР°С… Рё РѕС‚СЃС‡РёС‚С‹РІР°СЋС‚СЃСЏ РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Pie(x,y,r,a1,a2: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке заполненный сектор окружности, ограниченный дугой с центром в точке (x,y) и радиусом 
-<code>r</code>, заключенной между двумя лучами, образующими углы <code>a1</code> и 
-<code>a2</code> с осью OX (<code>a1</code> и <code>a2</code> – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ СЃРµРєС‚РѕСЂ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё, РѕРіСЂР°РЅРёС‡РµРЅРЅС‹Р№ РґСѓРіРѕР№ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x,y) Рё СЂР°РґРёСѓСЃРѕРј 
+<code>r</code>, Р·Р°РєР»СЋС‡РµРЅРЅРѕР№ РјРµР¶РґСѓ РґРІСѓРјСЏ Р»СѓС‡Р°РјРё, РѕР±СЂР°Р·СѓСЋС‰РёРјРё СѓРіР»С‹ <code>a1</code> Рё 
+<code>a2</code> СЃ РѕСЃСЊСЋ OX (<code>a1</code> Рё <code>a2</code> вЂ“ РІРµС‰РµСЃС‚РІРµРЅРЅС‹Рµ, Р·Р°РґР°СЋС‚СЃСЏ РІ РіСЂР°РґСѓСЃР°С… Рё РѕС‚СЃС‡РёС‚С‹РІР°СЋС‚СЃСЏ РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> DrawPolygon(points: <b>array</b> <b>of</b> Point);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке замкнутую ломаную по точкам, координаты которых заданы в массиве 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ Р·Р°РјРєРЅСѓС‚СѓСЋ Р»РѕРјР°РЅСѓСЋ РїРѕ С‚РѕС‡РєР°Рј, РєРѕРѕСЂРґРёРЅР°С‚С‹ РєРѕС‚РѕСЂС‹С… Р·Р°РґР°РЅС‹ РІ РјР°СЃСЃРёРІРµ 
 <code>points</code>
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> FillPolygon(points: <b>array</b> <b>of</b> Point);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет на рисунке многоугольник, координаты вершин которого заданы в массиве 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ РЅР° СЂРёСЃСѓРЅРєРµ РјРЅРѕРіРѕСѓРіРѕР»СЊРЅРёРє, РєРѕРѕСЂРґРёРЅР°С‚С‹ РІРµСЂС€РёРЅ РєРѕС‚РѕСЂРѕРіРѕ Р·Р°РґР°РЅС‹ РІ РјР°СЃСЃРёРІРµ 
 <code>points</code>
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Polygon(points: <b>array</b> <b>of</b> Point);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке заполненный многоугольник, координаты вершин которого заданы в массиве 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ РјРЅРѕРіРѕСѓРіРѕР»СЊРЅРёРє, РєРѕРѕСЂРґРёРЅР°С‚С‹ РІРµСЂС€РёРЅ РєРѕС‚РѕСЂРѕРіРѕ Р·Р°РґР°РЅС‹ РІ РјР°СЃСЃРёРІРµ 
 <code>points</code>
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Polyline(points: <b>array</b> <b>of</b> Point);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке ломаную по точкам, координаты которых заданы в массиве 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ Р»РѕРјР°РЅСѓСЋ РїРѕ С‚РѕС‡РєР°Рј, РєРѕРѕСЂРґРёРЅР°С‚С‹ РєРѕС‚РѕСЂС‹С… Р·Р°РґР°РЅС‹ РІ РјР°СЃСЃРёРІРµ 
 <code>points</code>
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Curve(points: <b>array</b> <b>of</b> Point);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке кривую по точкам, координаты которых заданы в массиве 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ РєСЂРёРІСѓСЋ РїРѕ С‚РѕС‡РєР°Рј, РєРѕРѕСЂРґРёРЅР°С‚С‹ РєРѕС‚РѕСЂС‹С… Р·Р°РґР°РЅС‹ РІ РјР°СЃСЃРёРІРµ 
 <code>points</code>
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> DrawClosedCurve(points: <b>array</b> <b>of</b> Point);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке замкнутую кривую по точкам, координаты которых заданы в массиве 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ Р·Р°РјРєРЅСѓС‚СѓСЋ РєСЂРёРІСѓСЋ РїРѕ С‚РѕС‡РєР°Рј, РєРѕРѕСЂРґРёРЅР°С‚С‹ РєРѕС‚РѕСЂС‹С… Р·Р°РґР°РЅС‹ РІ РјР°СЃСЃРёРІРµ 
 <code>points</code>
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> FillClosedCurve(points: <b>array</b> <b>of</b> Point);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет на рисунке замкнутую кривую по точкам, координаты которых заданы в массиве 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ РЅР° СЂРёСЃСѓРЅРєРµ Р·Р°РјРєРЅСѓС‚СѓСЋ РєСЂРёРІСѓСЋ РїРѕ С‚РѕС‡РєР°Рј, РєРѕРѕСЂРґРёРЅР°С‚С‹ РєРѕС‚РѕСЂС‹С… Р·Р°РґР°РЅС‹ РІ РјР°СЃСЃРёРІРµ 
 <code>points</code>
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> ClosedCurve(points: <b>array</b> <b>of</b> Point);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке заполненную замкнутую кривую по точкам, координаты которых заданы в массиве 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ Р·Р°РїРѕР»РЅРµРЅРЅСѓСЋ Р·Р°РјРєРЅСѓС‚СѓСЋ РєСЂРёРІСѓСЋ РїРѕ С‚РѕС‡РєР°Рј, РєРѕРѕСЂРґРёРЅР°С‚С‹ РєРѕС‚РѕСЂС‹С… Р·Р°РґР°РЅС‹ РІ РјР°СЃСЃРёРІРµ 
 <code>points</code>
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> TextOut(x,y: integer; s: string); 
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке строку <code>s</code> в прямоугольник к координатами левого верхнего угла (x,y)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РЅР° СЂРёСЃСѓРЅРєРµ СЃС‚СЂРѕРєСѓ <code>s</code> РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє Рє РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё Р»РµРІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ СѓРіР»Р° (x,y)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> FloodFill(x,y: integer; c: Color);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заливает на рисунке область одного цвета цветом 
-<code>c</code>, начиная с точки (x,y).
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°Р»РёРІР°РµС‚ РЅР° СЂРёСЃСѓРЅРєРµ РѕР±Р»Р°СЃС‚СЊ РѕРґРЅРѕРіРѕ С†РІРµС‚Р° С†РІРµС‚РѕРј 
+<code>c</code>, РЅР°С‡РёРЅР°СЏ СЃ С‚РѕС‡РєРё (x,y).
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Clear;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает рисунок белым цветом
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‡РёС‰Р°РµС‚ СЂРёСЃСѓРЅРѕРє Р±РµР»С‹Рј С†РІРµС‚РѕРј
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Clear(c: Color);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает рисунок цветом <code>c</code>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‡РёС‰Р°РµС‚ СЂРёСЃСѓРЅРѕРє С†РІРµС‚РѕРј <code>c</code>
 </td></tr>
 </table>
 </body></html>

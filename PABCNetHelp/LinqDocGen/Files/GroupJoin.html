@@ -2,15 +2,15 @@
 <param name="Keyword" value="GroupJoin">
 </object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
 <body>
-<H1>Метод GroupJoin</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<H1>РњРµС‚РѕРґ GroupJoin</H1><h2>РћРїРёСЃР°РЅРёРµ РјРµС‚РѕРґРѕРІ</h2><p>РњРµС‚РѕРґС‹ РїСЂРёРІРµРґРµРЅС‹ РґР»СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё <code><b>sequence of</b> T</code>.</p><table>
 <tr><td>
 <code><b>function </b>GroupJoin&lt;TInner,Key,Res&gt;(inner: <b>sequence of</b> TInner; outerKeySelector: T-&gt;Key; innerKeySelector: TInner-&gt;TKey; resultSelector: (T,<b>sequence of</b> TInner)-&gt;Res): <b>sequence of</b> Res;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности на основе равенства ключей и группирует результаты. Затем функция resultSelector проектирует ключ и последовательность соответствующих ему значений на элемент результирующей последовательности.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±СЉРµРґРёРЅСЏРµС‚ РґРІРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РЅР° РѕСЃРЅРѕРІРµ СЂР°РІРµРЅСЃС‚РІР° РєР»СЋС‡РµР№ Рё РіСЂСѓРїРїРёСЂСѓРµС‚ СЂРµР·СѓР»СЊС‚Р°С‚С‹. Р—Р°С‚РµРј С„СѓРЅРєС†РёСЏ resultSelector РїСЂРѕРµРєС‚РёСЂСѓРµС‚ РєР»СЋС‡ Рё РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёС… РµРјСѓ Р·РЅР°С‡РµРЅРёР№ РЅР° СЌР»РµРјРµРЅС‚ СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰РµР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё.
 </td></tr>
 <tr><td>
 <code><b>function </b>GroupJoin&lt;TInner,Key,Res&gt;(inner: <b>sequence of</b> TInner; outerKeySelector: T-&gt;Key; innerKeySelector: TInner-&gt;TKey; resultSelector: (T,<b>sequence of</b> TInner)-&gt;Res; comparer: IEqualityComparer&lt;Key&gt;): <b>sequence of</b> Res;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности на основе равенства ключей и группирует результаты. Для сравнения ключей используется указанный компаратор. Затем функция resultSelector проектирует ключ и последовательность соответствующих ему значений на элемент результирующей последовательности.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±СЉРµРґРёРЅСЏРµС‚ РґРІРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РЅР° РѕСЃРЅРѕРІРµ СЂР°РІРµРЅСЃС‚РІР° РєР»СЋС‡РµР№ Рё РіСЂСѓРїРїРёСЂСѓРµС‚ СЂРµР·СѓР»СЊС‚Р°С‚С‹. Р”Р»СЏ СЃСЂР°РІРЅРµРЅРёСЏ РєР»СЋС‡РµР№ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ СѓРєР°Р·Р°РЅРЅС‹Р№ РєРѕРјРїР°СЂР°С‚РѕСЂ. Р—Р°С‚РµРј С„СѓРЅРєС†РёСЏ resultSelector РїСЂРѕРµРєС‚РёСЂСѓРµС‚ РєР»СЋС‡ Рё РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёС… РµРјСѓ Р·РЅР°С‡РµРЅРёР№ РЅР° СЌР»РµРјРµРЅС‚ СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰РµР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё.
 </td></tr>
 </table>
-<h2>Пример </h2><blockquote><code></code></blockquote>
+<h2>РџСЂРёРјРµСЂ </h2><blockquote><code></code></blockquote>
 </body>

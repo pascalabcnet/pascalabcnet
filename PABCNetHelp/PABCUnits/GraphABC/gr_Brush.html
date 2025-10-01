@@ -13,84 +13,84 @@
 </object></head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title><link rel="StyleSheet" href="../../default.css"><body>
-<H1>Подпрограммы для работы с кистью</H1>
-<p>Рисование внутренностей замкнутых областей осуществляется текущей 
-кистью. Доступ к 
-свойствам текущей кисти можно осуществлять как в процедурном, так и в 
-объектно-ориентированном стиле.</p>
-<p>Процедуры и функции для доступа к свойствам кисти 
-сгруппированы парами: если <code>Prop</code> - имя 
-свойства кисти, то функция <code>PenProp</code> 
-возвращает значение этого свойства, а процедура <code>SetPenProp(p)</code> 
-устанавливает это свойство:</p>
+<H1>РџРѕРґРїСЂРѕРіСЂР°РјРјС‹ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РєРёСЃС‚СЊСЋ</H1>
+<p>Р РёСЃРѕРІР°РЅРёРµ РІРЅСѓС‚СЂРµРЅРЅРѕСЃС‚РµР№ Р·Р°РјРєРЅСѓС‚С‹С… РѕР±Р»Р°СЃС‚РµР№ РѕСЃСѓС‰РµСЃС‚РІР»СЏРµС‚СЃСЏ С‚РµРєСѓС‰РµР№ 
+РєРёСЃС‚СЊСЋ. Р”РѕСЃС‚СѓРї Рє 
+СЃРІРѕР№СЃС‚РІР°Рј С‚РµРєСѓС‰РµР№ РєРёСЃС‚Рё РјРѕР¶РЅРѕ РѕСЃСѓС‰РµСЃС‚РІР»СЏС‚СЊ РєР°Рє РІ РїСЂРѕС†РµРґСѓСЂРЅРѕРј, С‚Р°Рє Рё РІ 
+РѕР±СЉРµРєС‚РЅРѕ-РѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅРѕРј СЃС‚РёР»Рµ.</p>
+<p>РџСЂРѕС†РµРґСѓСЂС‹ Рё С„СѓРЅРєС†РёРё РґР»СЏ РґРѕСЃС‚СѓРїР° Рє СЃРІРѕР№СЃС‚РІР°Рј РєРёСЃС‚Рё 
+СЃРіСЂСѓРїРїРёСЂРѕРІР°РЅС‹ РїР°СЂР°РјРё: РµСЃР»Рё <code>Prop</code> - РёРјСЏ 
+СЃРІРѕР№СЃС‚РІР° РєРёСЃС‚Рё, С‚Рѕ С„СѓРЅРєС†РёСЏ <code>PenProp</code> 
+РІРѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ СЌС‚РѕРіРѕ СЃРІРѕР№СЃС‚РІР°, Р° РїСЂРѕС†РµРґСѓСЂР° <code>SetPenProp(p)</code> 
+СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЌС‚Рѕ СЃРІРѕР№СЃС‚РІРѕ:</p>
 <table border=0 CELLPADDING=5>
 <tr><td>
 <code>
 <b>procedure</b> SetBrushColor(c: Color);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает цвет текущей кисти
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С†РІРµС‚ С‚РµРєСѓС‰РµР№ РєРёСЃС‚Рё
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> BrushColor: Color;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет текущей кисти
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РІРµС‚ С‚РµРєСѓС‰РµР№ РєРёСЃС‚Рё
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SetBrushStyle(bs: <a href="gr_BrushStyle.html">BrushStyleType</a>);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает стиль текущей кисти.
-Константы стилей кисти приведены
-<a href="gr_BrushStyle.html">здесь</a></td></tr>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЃС‚РёР»СЊ С‚РµРєСѓС‰РµР№ РєРёСЃС‚Рё.
+РљРѕРЅСЃС‚Р°РЅС‚С‹ СЃС‚РёР»РµР№ РєРёСЃС‚Рё РїСЂРёРІРµРґРµРЅС‹
+<a href="gr_BrushStyle.html">Р·РґРµСЃСЊ</a></td></tr>
 <tr><td>
 <code>
 <b>function</b> BrushStyle: <a href="gr_BrushStyle.html">BrushStyleType</a>;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает стиль текущей кисти.
-Константы стилей кисти приведены
-<a href="gr_BrushStyle.html">здесь</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚РёР»СЊ С‚РµРєСѓС‰РµР№ РєРёСЃС‚Рё.
+РљРѕРЅСЃС‚Р°РЅС‚С‹ СЃС‚РёР»РµР№ РєРёСЃС‚Рё РїСЂРёРІРµРґРµРЅС‹
+<a href="gr_BrushStyle.html">Р·РґРµСЃСЊ</a>
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SetBrushHatch(bh: <a href="gr_BrushHatchStyle.html">HatchStyle</a>);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает штриховку текущей кисти.
-Константы стилей штриховки кисти приведены
-<a href="gr_BrushHatchStyle.html">здесь</a></td></tr>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С€С‚СЂРёС…РѕРІРєСѓ С‚РµРєСѓС‰РµР№ РєРёСЃС‚Рё.
+РљРѕРЅСЃС‚Р°РЅС‚С‹ СЃС‚РёР»РµР№ С€С‚СЂРёС…РѕРІРєРё РєРёСЃС‚Рё РїСЂРёРІРµРґРµРЅС‹
+<a href="gr_BrushHatchStyle.html">Р·РґРµСЃСЊ</a></td></tr>
 <tr><td>
 <code>
 <b>function</b> BrushHatch: <a href="gr_BrushHatchStyle.html">HatchStyle</a>;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает штриховку текущей кисти.
-Константы стилей штриховки кисти приведены
-<a href="gr_BrushHatchStyle.html">здесь</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С€С‚СЂРёС…РѕРІРєСѓ С‚РµРєСѓС‰РµР№ РєРёСЃС‚Рё.
+РљРѕРЅСЃС‚Р°РЅС‚С‹ СЃС‚РёР»РµР№ С€С‚СЂРёС…РѕРІРєРё РєРёСЃС‚Рё РїСЂРёРІРµРґРµРЅС‹
+<a href="gr_BrushHatchStyle.html">Р·РґРµСЃСЊ</a>
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SetHatchBrushBackgroundColor(c: Color);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает цвет заднего плана текущей штриховой кисти
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С†РІРµС‚ Р·Р°РґРЅРµРіРѕ РїР»Р°РЅР° С‚РµРєСѓС‰РµР№ С€С‚СЂРёС…РѕРІРѕР№ РєРёСЃС‚Рё
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> HatchBrushBackgroundColor: Color;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет заднего плана текущей штриховой кисти
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РІРµС‚ Р·Р°РґРЅРµРіРѕ РїР»Р°РЅР° С‚РµРєСѓС‰РµР№ С€С‚СЂРёС…РѕРІРѕР№ РєРёСЃС‚Рё
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SetGradientBrushSecondColor(c: Color);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает второй цвет текущей градиентной кисти
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РІС‚РѕСЂРѕР№ С†РІРµС‚ С‚РµРєСѓС‰РµР№ РіСЂР°РґРёРµРЅС‚РЅРѕР№ РєРёСЃС‚Рё
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> GradientBrushSecondColor: Color;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает второй цвет текущей градиентной кисти
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІС‚РѕСЂРѕР№ С†РІРµС‚ С‚РµРєСѓС‰РµР№ РіСЂР°РґРёРµРЅС‚РЅРѕР№ РєРёСЃС‚Рё
 </td></tr>
 </table>
-<p>Кроме этого, можно изменять свойства текущей кисти через
-<a href="gr_BrushClass.html">объект Brush</code></a>.</p>
+<p>РљСЂРѕРјРµ СЌС‚РѕРіРѕ, РјРѕР¶РЅРѕ РёР·РјРµРЅСЏС‚СЊ СЃРІРѕР№СЃС‚РІР° С‚РµРєСѓС‰РµР№ РєРёСЃС‚Рё С‡РµСЂРµР·
+<a href="gr_BrushClass.html">РѕР±СЉРµРєС‚ Brush</code></a>.</p>
 </body></html>

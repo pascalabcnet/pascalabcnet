@@ -12,30 +12,30 @@
 <param name="Keyword" value="Sz3D">
 <param name="Keyword" value="V3D"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Короткие функции модуля Graph3D</H1>
+</HEAD><body><H1>РљРѕСЂРѕС‚РєРёРµ С„СѓРЅРєС†РёРё РјРѕРґСѓР»СЏ Graph3D</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> ARGB(a, r, g, b: byte): Color;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет по красной, зеленой и синей составляющей и параметру прозрачности (в диапазоне 0..255)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РІРµС‚ РїРѕ РєСЂР°СЃРЅРѕР№, Р·РµР»РµРЅРѕР№ Рё СЃРёРЅРµР№ СЃРѕСЃС‚Р°РІР»СЏСЋС‰РµР№ Рё РїР°СЂР°РјРµС‚СЂСѓ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚Рё (РІ РґРёР°РїР°Р·РѕРЅРµ 0..255)</td></tr>
 <tr><td><code><b>function</b> EmptyColor: Color;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает полностью прозрачный цвет</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕР»РЅРѕСЃС‚СЊСЋ РїСЂРѕР·СЂР°С‡РЅС‹Р№ С†РІРµС‚</td></tr>
 <tr><td><code><b>function</b> GrayColor(b: byte): Color;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает серый цвет с интенсивностью b</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРµСЂС‹Р№ С†РІРµС‚ СЃ РёРЅС‚РµРЅСЃРёРІРЅРѕСЃС‚СЊСЋ b</td></tr>
 <tr><td><code><b>procedure</b> Invoke(p: <b>procedure</b>);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Процедура синхронизации операций с потоком, создающим графические элементы</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕС†РµРґСѓСЂР° СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё РѕРїРµСЂР°С†РёР№ СЃ РїРѕС‚РѕРєРѕРј, СЃРѕР·РґР°СЋС‰РёРј РіСЂР°С„РёС‡РµСЃРєРёРµ СЌР»РµРјРµРЅС‚С‹</td></tr>
 <tr><td><code><b>function</b> P3D(x, y, z: real): Point3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-точку с координатами (x,y,z)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-С‚РѕС‡РєСѓ СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё (x,y,z)</td></tr>
 <tr><td><code><b>function</b> Pnt(x, y: real): Point;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает точку с координатами (x,y)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РѕС‡РєСѓ СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё (x,y)</td></tr>
 <tr><td><code><b>function</b> RandomColor: Color;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный цвет</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»СѓС‡Р°Р№РЅС‹Р№ С†РІРµС‚</td></tr>
 <tr><td><code><b>function</b> Rect(x, y, w, h: real): GRect;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает прямоугольник с координатами угла (x,y), шириной w и высотой h</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё СѓРіР»Р° (x,y), С€РёСЂРёРЅРѕР№ w Рё РІС‹СЃРѕС‚РѕР№ h</td></tr>
 <tr><td><code><b>procedure</b> Redraw(p: <b>procedure</b>);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Процедура ускорения вывода. Обновляет экран после всех изменений</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕС†РµРґСѓСЂР° СѓСЃРєРѕСЂРµРЅРёСЏ РІС‹РІРѕРґР°. РћР±РЅРѕРІР»СЏРµС‚ СЌРєСЂР°РЅ РїРѕСЃР»Рµ РІСЃРµС… РёР·РјРµРЅРµРЅРёР№</td></tr>
 <tr><td><code><b>function</b> RGB(r, g, b: byte): Color;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РІРµС‚ РїРѕ РєСЂР°СЃРЅРѕР№, Р·РµР»РµРЅРѕР№ Рё СЃРёРЅРµР№ СЃРѕСЃС‚Р°РІР»СЏСЋС‰РµР№ (РІ РґРёР°РїР°Р·РѕРЅРµ 0..255)</td></tr>
 <tr><td><code><b>function</b> Sz3D(x, y, z: real): Size3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-размер с координатами (x,y,z)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-СЂР°Р·РјРµСЂ СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё (x,y,z)</td></tr>
 <tr><td><code><b>function</b> V3D(x, y, z: real): Vector3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-вектор с координатами (x,y,z)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-РІРµРєС‚РѕСЂ СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё (x,y,z)</td></tr>
 </table>
 </body></HTML>
