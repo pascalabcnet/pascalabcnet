@@ -200,6 +200,11 @@ namespace CodeCompletion
                             }
                         }
                     }
+                    else if (returned_scopes[i] is TypeScope)
+                    {
+                        // операция преобразования типа не поддерживается здесь  EVA
+                        continue;
+                    }
                     else if (i == 0)
                         return proces;
                 }
@@ -1161,7 +1166,8 @@ namespace CodeCompletion
                 method_call_cache[_method_call] = returned_scope;
                 return;
             }
-            if (names.Length > 0 && names[0] is TypeScope)
+            // Срабатывает на операции преобразования типа
+            if (names.All(name => name is TypeScope))
             {
                 returned_scope = new ElementScope(names[0]);
                 method_call_cache[_method_call] = returned_scope;
@@ -1208,17 +1214,38 @@ namespace CodeCompletion
             if (ps == null && names.Length > 0)
             {
                 returned_scope = null;
-                foreach (SymScope ss in names)
-                    if (ss is ProcScope)
+
+                // Если есть ProcScope, то приоритет отдаем ему.
+                // Неверно в случае, когда есть подходящая операция преобразования типа у TypeScope,
+                // но операция преобразования типа по хорошему должна обрабатываться в select_method  EVA
+                if (names[0] is TypeScope && names.Length > 1)
+                {
+                    var p = names.FirstOrDefault(s => s is ProcScope);
+
+                    if (p != null)
+                        returned_scope = p;
+                    else
                     {
-                        returned_scope = ss;
-                        break;
-                    }
-                    else if (ss is TypeScope)
-                    {
-                        returned_scope = new ElementScope(ss);
+                        returned_scope = new ElementScope(names[0]);
                         return;
                     }
+                }
+                else
+                {
+                    foreach (SymScope ss in names)
+                    {
+                        if (ss is ProcScope)
+                        {
+                            returned_scope = ss;
+                            break;
+                        }
+                        else if (ss is TypeScope)
+                        {
+                            returned_scope = new ElementScope(ss);
+                            return;
+                        }
+                    }
+                }
             }
             if (returned_scope != null)
             {
@@ -1237,7 +1264,8 @@ namespace CodeCompletion
                     else
                         returned_scope = new ElementScope(ps);
                 }
-                else if (returned_scope is ProcRealization)
+                // ниже мертый код, поскольку эти типы наследники ProcScope  EVA
+                /*else if (returned_scope is ProcRealization)
                 {
                     if ((returned_scope as ProcRealization).def_proc != null && (returned_scope as ProcRealization).def_proc.return_type != null)
                         returned_scope = new ElementScope((returned_scope as ProcRealization).def_proc.return_type);
@@ -1248,7 +1276,7 @@ namespace CodeCompletion
                     if ((returned_scope as CompiledMethodScope).return_type != null)
                         returned_scope = new ElementScope((returned_scope as CompiledMethodScope).return_type);
                     else returned_scope = null;
-                }
+                }*/
                 /*else if (ret_tn is ElementScope && (ret_tn as ElementScope).sc is ProcScope)
 				{
 					ret_tn = new ElementScope(((ret_tn as ElementScope).sc as ProcScope).return_type);

@@ -25,6 +25,7 @@ namespace Languages.SPython.Frontend.Converters
                 }
                 ttr.name.names[index].name += cnt;
             }
+
             base.visit(ttr);
         }
 
@@ -68,19 +69,6 @@ namespace Languages.SPython.Frontend.Converters
                         throw new SPythonSyntaxVisitorError("PASCALABCNET_TYPE_{0}_INSTEAD_OF_SPYTHON_TYPE_{1}",
                        id.source_context, id.name, "bigint");
                 }
-            }
-
-            switch (id.name)
-            {
-                case "list":
-                    id.name = "!list";
-                    break;
-                case "dict":
-                    id.name = "!dict";
-                    break;
-                case "set":
-                    id.name = "!set";
-                    break;
             }
         }
     }

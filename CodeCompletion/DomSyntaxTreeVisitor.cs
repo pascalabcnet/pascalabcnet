@@ -3077,11 +3077,14 @@ namespace CodeCompletion
                 }
 
                 string aliasName = asStatementsList.as_statements.Find(st => st.real_name.name == importedModuleName).alias.name;
-                fictiveUnit.AddName(aliasName, importedModuleScope);
+
+                SymScope moduleScope = importedModuleScope.CopyWithNewSymInfo();
+
+                fictiveUnit.AddName(aliasName, moduleScope);
 
                 // Поправляем реальное имя, которое портится в InterfaceUnitScope.AddName() EVA
-                importedModuleScope.si.name = importedModuleName;
-                importedModuleScope.si.addit_name = aliasName;
+                moduleScope.si.name = importedModuleName;
+                moduleScope.si.aliasName = aliasName;
             }
             else if (importStatement is from_import_statement fromImport)
             {
@@ -3102,13 +3105,13 @@ namespace CodeCompletion
                     
                     foreach (var asStatement in asStatementsList.as_statements)
                     {
-                        SymScope nameScope = importedModuleScope.FindNameOnlyInType(asStatement.real_name.name);
+                        SymScope nameScope = importedModuleScope.FindNameOnlyInType(asStatement.real_name.name)?.CopyWithNewSymInfo();
                         if (nameScope != null)
                         {
                             fictiveUnit.AddName(asStatement.alias.name, nameScope);
                             // Поправляем реальное имя, которое портится в InterfaceUnitScope.AddName() EVA
                             nameScope.si.name = asStatement.real_name.name;
-                            nameScope.si.addit_name = asStatement.alias.name;
+                            nameScope.si.aliasName = asStatement.alias.name;
                         }
                     }
                 }

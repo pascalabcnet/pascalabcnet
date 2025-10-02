@@ -188,7 +188,6 @@ namespace Languages.Pascal.Frontend.Data
                 case ScopeKind.CompiledEvent: return GetDescriptionForCompiledEvent(scope as ICompiledEventScope);
                 case ScopeKind.CompiledConstructor: return GetDescriptionForCompiledConstructor(scope as ICompiledConstructorScope);
                 case ScopeKind.ShortString: return GetDescriptionForShortString(scope as IShortStringScope);
-                    //case ScopeKind.Procedure : return GetDescriptionForProcedure(scope as IProcScope);
             }
             return "";
         }
@@ -986,12 +985,12 @@ namespace Languages.Pascal.Frontend.Data
             return s;
         }
 
-        protected string GetDescriptionForDiapason(IDiapasonScope scope)
+        private string GetDescriptionForDiapason(IDiapasonScope scope)
         {
             return scope.Left.ToString() + ".." + scope.Right.ToString();
         }
 
-        protected string GetDescriptionForFile(IFileScope scope)
+        private string GetDescriptionForFile(IFileScope scope)
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             sb.Append("file");
@@ -1004,29 +1003,20 @@ namespace Languages.Pascal.Frontend.Data
             return sb.ToString();
         }
 
-        private Stack<ITypeScope> typs = new Stack<ITypeScope>();
-
-        protected string GetDescriptionForPointer(IPointerScope scope)
+        private string GetDescriptionForPointer(IPointerScope scope)
         {
             string s = "";
             if (scope.ElementType != null)
             {
-                if (!typs.Contains(scope))
-                {
-                    typs.Push(scope);
-                    s = "^" + GetSimpleDescription(scope.ElementType);
-                }
-                else
-                    s = "";
+                s = "^" + GetSimpleDescription(scope.ElementType);
             }
             else
                 s = "pointer";
-            if (typs.Count > 0)
-                typs.Pop();
+     
             return s;
         }
 
-        protected string GetDescriptionForSet(ISetScope scope)
+        private string GetDescriptionForSet(ISetScope scope)
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             sb.Append("set of ");
@@ -1063,43 +1053,6 @@ namespace Languages.Pascal.Frontend.Data
             return sb.ToString();
         }
 
-        protected string GetDescriptionForCompiledField(ICompiledFieldScope scope)
-        {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            if (!scope.CompiledField.IsLiteral)
-                if (scope.CompiledField.IsStatic && !scope.IsGlobal) sb.Append("static ");
-                else sb.Append("var ");
-            string inst_type = null;
-            if (scope.GenericArgs != null)
-            {
-                inst_type = get_type_instance(scope.CompiledField.FieldType, scope.GenericArgs);
-            }
-            if (!scope.CompiledField.IsLiteral)
-                sb.Append(GetShortTypeName(scope.CompiledField.DeclaringType) + "." + scope.CompiledField.Name + ": " + (inst_type != null ? inst_type : GetSimpleDescription(scope.Type)));
-            else
-                sb.Append("const " + GetShortTypeName(scope.CompiledField.DeclaringType) + "." + scope.CompiledField.Name + ": " + GetSimpleDescription(scope.Type));
-            //if (scope.CompiledField.IsStatic) sb.Append("; static");
-            if (scope.IsReadOnly) sb.Append("; readonly");
-            sb.Append(';');
-            return sb.ToString();
-        }
-
-        private string get_indexer_for_prop(ICompiledPropertyScope scope)
-        {
-            ITypeScope[] indexers = scope.Indexers;
-            if (indexers.Length == 0) return "";
-            StringBuilder sb = new StringBuilder();
-            sb.Append('[');
-            for (int i = 0; i < indexers.Length; i++)
-            {
-                sb.Append(GetSimpleDescriptionWithoutNamespace(indexers[i]));
-                if (i < indexers.Length - 1)
-                    sb.Append(',');
-            }
-            sb.Append(']');
-            return sb.ToString();
-        }
-
         public string GetDescriptionForCompiledProperty(PropertyInfo pi)
         {
             StringBuilder sb = new StringBuilder();
@@ -1132,37 +1085,6 @@ namespace Languages.Pascal.Frontend.Data
             return sb.ToString();
         }
 
-        protected string GetDescriptionForCompiledProperty(ICompiledPropertyScope scope)
-        {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            MethodInfo acc = scope.CompiledProperty.GetGetMethod();
-            string inst_type = null;
-            if (acc != null)
-                if (acc.IsStatic) sb.Append("static ");
-            if (scope.Type is ICompiledTypeScope && scope.GenericArgs != null)
-            {
-                Type t = (scope.Type as ICompiledTypeScope).CompiledType;
-                inst_type = get_type_instance(t, scope.GenericArgs);
-            }
-            sb.Append("property " + GetShortTypeName(scope.CompiledProperty.DeclaringType) + "." + scope.CompiledProperty.Name + get_indexer_for_prop(scope));
-            if (inst_type == null)
-            {
-                if (scope.Type is ICompiledTypeScope)
-                    sb.Append(": " + GetFullTypeName((scope.Type as ICompiledTypeScope).CompiledType, false));
-                else
-                    sb.Append(": " + GetSimpleDescription(scope.Type));
-            }
-            else
-                sb.Append(": " + inst_type);
-            if (acc != null)
-                //if (acc.IsStatic) sb.Append("; static");
-                if (acc.IsVirtual) sb.Append("; ");
-                else if (acc.IsAbstract) sb.Append("; abstract");
-            if (scope.IsReadOnly) sb.Append("; readonly");
-            sb.Append(';');
-            return sb.ToString();
-        }
-
         private string GetDescriptionForNamespace(INamespaceScope scope)
         {
             return "namespace " + scope.Name;
@@ -1178,11 +1100,6 @@ namespace Languages.Pascal.Frontend.Data
                 sb.Append("protected ");
             sb.Append((add_meth.IsStatic ? "static " : "") + "event " + prepare_member_name(ei.Name) + ": " + GetFullTypeName(ei.EventHandlerType) + ";");
             return sb.ToString();
-        }
-
-        protected string GetDescriptionForCompiledEvent(ICompiledEventScope scope)
-        {
-            return (scope.IsStatic ? "static " : "") + "event " + GetShortTypeName(scope.CompiledEvent.DeclaringType, true) + "." + scope.CompiledEvent.Name + ": " + GetSimpleDescription(scope.Type) + ";";
         }
 
         protected string GetDescriptionForCompiledConstructor(ConstructorInfo ci)
@@ -1216,39 +1133,6 @@ namespace Languages.Pascal.Frontend.Data
             sb.Append(')');
             sb.Append(';');
             return sb.ToString();
-        }
-
-        protected string GetDescriptionForCompiledConstructor(ICompiledConstructorScope scope)
-        {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            sb.Append("constructor ");
-            sb.Append(GetShortTypeName(scope.CompiledConstructor.DeclaringType));
-            //sb.Append(".");
-            //sb.Append("Create");
-            sb.Append('(');
-            ParameterInfo[] pis = scope.CompiledConstructor.GetParameters();
-            for (int i = 0; i < pis.Length; i++)
-            {
-                if (pis[i].ParameterType.IsByRef)
-                    sb.Append("var ");
-                else if (IsParams(pis[i]))
-                    sb.Append("params ");
-                sb.Append(pis[i].Name);
-                sb.Append(": ");
-                if (!pis[i].ParameterType.IsByRef)
-                    sb.Append(GetFullTypeName(pis[i].ParameterType));
-                else sb.Append(GetFullTypeName(pis[i].ParameterType.GetElementType()));
-                if (i < pis.Length - 1)
-                    sb.Append("; ");
-            }
-            sb.Append(')');
-            sb.Append(';');
-            return sb.ToString();
-        }
-
-        protected string GetDescriptionForShortString(IShortStringScope scope)
-        {
-            return "string" + "[" + scope.Length + "]";
         }
 
         public override string GetSynonimDescription(ITypeScope scope)

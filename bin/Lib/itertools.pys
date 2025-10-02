@@ -15,7 +15,7 @@ def chain(*args: list[int]) -> list[int]:
 # если вызвать как repeat(10, times=12)
 def repeat(val: int, **kwargs: int) -> list[int]:
      times = 1
-     if 'times' in kwargs.keys():
+     if 'times' in kwargs.get_keys():
         times = kwargs['times']
      return [val for i in range(times)]
 

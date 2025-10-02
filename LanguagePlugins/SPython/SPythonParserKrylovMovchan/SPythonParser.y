@@ -66,7 +66,7 @@
 %left BINNOT
 
 %type <id> ident dotted_ident func_name_ident type_decl_identifier
-%type <ex> expr proc_func_call const_value variable optional_condition act_param new_expr is_expr variable_as_type
+%type <ex> extended_expr expr intellisense_dotted_ident proc_func_call const_value variable optional_condition act_param extended_new_expr new_expr is_expr variable_as_type
 %type <stn> act_param_list optional_act_param_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt pass_stmt
 %type <stn> var_stmt assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif exit_stmt
 %type <stn> expr_list
@@ -130,7 +130,7 @@ program
 	;
 
 parts
-    : tkParseModeExpression expr
+    : tkParseModeExpression extended_expr
         { $$ = $2; }
     | tkParseModeExpression DECLTYPE type_decl_identifier
         { $$ = $3; }
@@ -139,6 +139,28 @@ parts
 	| tkParseModeStatement stmt_or_expression
         { $$ = $2; }
     ;
+
+extended_expr
+	: expr
+		{ 
+			$$ = $1; 
+		}
+	| extended_new_expr
+		{ 
+			$$ = $1; 
+		}
+	;
+
+extended_new_expr
+	: new_expr
+		{ 
+			$$ = $1;
+		}
+	| NEW type_ref
+		{
+			$$ = new new_expr($2, null, false, null, @$);
+		}
+	;
 
 type_decl_identifier
     : ident
@@ -152,11 +174,11 @@ type_decl_identifier
 	;
 
 variable_as_type
-	: dotted_ident 
+	: intellisense_dotted_ident
 		{ 
 			$$ = $1;
 		}
-	| dotted_ident template_type_params 
+	| intellisense_dotted_ident template_type_params 
 		{ 
 			$$ = new ident_with_templateparams($1 as addressed_value, $2 as template_param_list, @$);   
 		}
@@ -295,6 +317,17 @@ dotted_ident
 		}
 	;
 
+// этот нетерминал аналог dotted_identifier из ABCPascal.y
+intellisense_dotted_ident
+	: ident
+		{ 
+			$$ = $1; 
+		}
+	| intellisense_dotted_ident DOT ident
+		{ 
+			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
+		}
+	;
 dotted_ident_list
     : dotted_ident
         {
@@ -805,14 +838,12 @@ variable
 	// list generator
 	| LBRACKET generator_object RBRACKET
 		{
-			dot_node dn = new dot_node($2 as addressed_value, (new ident("ToList")) as addressed_value, $2.source_context);
-			$$ = new method_call(dn as addressed_value, null, $2.source_context);
+			$$ = new method_call(new ident("list", $2.source_context), new expression_list($2, $2.source_context), $2.source_context);
 		}
 	// set generator
 	| LBRACE generator_object RBRACE
 		{
-			dot_node dn = new dot_node($2 as addressed_value, (new ident("ToSet")) as addressed_value, $2.source_context);
-			$$ = new method_call(dn as addressed_value, null, $2.source_context);
+			$$ = new method_call(new ident("set", $2.source_context), new expression_list($2, $2.source_context), $2.source_context);
 		}
 	// dict generator
 	| LBRACE generator_object_for_dict RBRACE
@@ -852,7 +883,7 @@ generator_object_for_dict
 dict_constant
 	: LBRACE expr_mapping_list RBRACE
 		{
-			$$ = new method_call(new ident("Dict", @$), $2 as expression_list, @$);
+			$$ = new method_call(new ident("dict", @$), $2 as expression_list, @$);
 		}
 	| LBRACE RBRACE
 		{
@@ -863,7 +894,8 @@ dict_constant
 set_constant
 	: LBRACE expr_list RBRACE
 		{
-			$$ = new pascal_set_constant($2 as expression_list, @$);
+			var acn = new array_const_new($2 as expression_list, '|', @$);
+			$$ = new method_call(new ident("set", @$), new expression_list(acn, @$), @$);
 		}
 	;
 
@@ -871,8 +903,7 @@ list_constant
 	: LBRACKET expr_list RBRACKET
 		{
 			var acn = new array_const_new($2 as expression_list, '|', @$);
-			var dn = new dot_node(acn as addressed_value, (new ident("ToList", @$)) as addressed_value, @$);
-			$$ = new method_call(dn as addressed_value, null, @$);
+			$$ = new method_call(new ident("list", @$), new expression_list(acn, @$), @$);
 		}
 	| LBRACKET RBRACKET
 		{
