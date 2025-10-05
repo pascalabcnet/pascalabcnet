@@ -161,6 +161,7 @@
     File ..\bin\Lib\School.pcu
     File ..\bin\Lib\SF.pcu
     File ..\bin\Lib\Turtle.pcu
+    File ..\bin\Lib\TurtleABC.pcu
     File ..\bin\Lib\Coords.pcu
     File ..\bin\Lib\TurtleWPF.pcu
     File ..\bin\Lib\LightPT.pcu
@@ -260,6 +261,7 @@
     ${AddFile} "School.pcu"
     ${AddFile} "SF.pcu"
     ${AddFile} "Turtle.pcu"
+    ${AddFile} "TurtleABC.pcu"
     ${AddFile} "Coords.pcu"
     ${AddFile} "TurtleWPF.pcu"
     ${AddFile} "LightPT.pcu"
@@ -382,6 +384,7 @@
     File ..\bin\Lib\School.pas
     File ..\bin\Lib\SF.pas
     File ..\bin\Lib\Turtle.pas
+    File ..\bin\Lib\TurtleABC.pas
     File ..\bin\Lib\Coords.pas
     File ..\bin\Lib\TurtleWPF.pas
     File ..\bin\Lib\LightPT.pas
@@ -470,6 +473,7 @@
     ${AddFile} "School.pas"
     ${AddFile} "SF.pas"
     ${AddFile} "Turtle.pas"
+    ${AddFile} "TurtleABC.pas"
     ${AddFile} "Coords.pas"
     ${AddFile} "TurtleWPF.pas"
     ${AddFile} "LightPT.pas"
