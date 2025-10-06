@@ -1,25 +1,23 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Xml;
 using System.Reflection;
 using System.Text;
-using System.Globalization;
 
 namespace CodeCompletionTools
 {
 	
 	public partial class AssemblyDocCache
 	{
-		private static Hashtable ht=new Hashtable();
+        private static Dictionary<Assembly, XmlDoc> ht = new Dictionary<Assembly, XmlDoc>();
 
         public static string Load(Assembly a, string path)
         {
-            if (ht[a] != null) return null;
+            if (!ht.ContainsKey(a)) return null;
             string dir;
             if (string.IsNullOrEmpty(a.Location))
             	dir = path;
@@ -177,7 +175,7 @@ namespace CodeCompletionTools
 		
 		public static string GetDocumentation(Type t)
 		{
-			XmlDoc xdoc = (XmlDoc)ht[t.Assembly];
+			ht.TryGetValue(t.Assembly, out var xdoc);
 			try
 			{
 				if (xdoc != null)
@@ -195,7 +193,7 @@ namespace CodeCompletionTools
 
         public static string GetFullDocumentation(Type t)
         {
-            XmlDoc xdoc = (XmlDoc)ht[t.Assembly];
+            ht.TryGetValue(t.Assembly, out var xdoc);
             try
             {
                 if (xdoc != null)
@@ -277,11 +275,11 @@ namespace CodeCompletionTools
             return sb.ToString();
         }
 		
-		public static string GetDocumentation(ConstructorInfo mi)
-		{
+        public static string GetDocumentation(ConstructorInfo mi)
+        {
             try
             {
-                XmlDoc xdoc = (XmlDoc)ht[mi.DeclaringType.Assembly];
+                ht.TryGetValue(mi.DeclaringType.Assembly, out var xdoc);
                 if (xdoc != null)
                 {
                     string s = GetNormalHint(xdoc.GetDocumentation("M:" + mi.DeclaringType.FullName + ".#ctor" + GetParamNames(mi), false));
@@ -292,14 +290,14 @@ namespace CodeCompletionTools
             {
 
             }
-			return "";
-		}
+            return "";
+        }
 
         public static string GetFullDocumentation(ConstructorInfo mi)
         {
             try
             {
-                XmlDoc xdoc = (XmlDoc)ht[mi.DeclaringType.Assembly];
+                ht.TryGetValue(mi.DeclaringType.Assembly, out var xdoc);
                 if (xdoc != null)
                 {
                     return xdoc.GetDocumentation("M:" + mi.DeclaringType.FullName + ".#ctor" + GetParamNames(mi), false);
@@ -316,7 +314,7 @@ namespace CodeCompletionTools
 		{
 			try
 			{
-				XmlDoc xdoc = (XmlDoc)ht[fi.DeclaringType.Assembly];
+				ht.TryGetValue(fi.DeclaringType.Assembly, out var xdoc);
 				if (xdoc != null)
 				{
 					string s = GetNormalHint(xdoc.GetDocumentation("F:"+fi.DeclaringType.FullName+"."+fi.Name,false));
@@ -334,7 +332,7 @@ namespace CodeCompletionTools
         {
             try
             {
-                XmlDoc xdoc = (XmlDoc)ht[fi.DeclaringType.Assembly];
+                ht.TryGetValue(fi.DeclaringType.Assembly, out var xdoc);
                 if (xdoc != null)
                 {
                     return xdoc.GetDocumentation("F:" + fi.DeclaringType.FullName + "." + fi.Name, false);
@@ -351,7 +349,7 @@ namespace CodeCompletionTools
 		{
 			try
 			{
-				XmlDoc xdoc = (XmlDoc)ht[pi.DeclaringType.Assembly];
+				ht.TryGetValue(pi.DeclaringType.Assembly, out var xdoc);
 				if (xdoc != null)
 				{
 					string s = GetNormalHint(xdoc.GetDocumentation("P:"+pi.DeclaringType.FullName+"."+pi.Name,false));
@@ -369,7 +367,7 @@ namespace CodeCompletionTools
         {
             try
             {
-                XmlDoc xdoc = (XmlDoc)ht[pi.DeclaringType.Assembly];
+                ht.TryGetValue(pi.DeclaringType.Assembly, out var xdoc);
                 if (xdoc != null)
                 {
                     return xdoc.GetDocumentation("P:" + pi.DeclaringType.FullName + "." + pi.Name, false);
@@ -386,7 +384,7 @@ namespace CodeCompletionTools
 		{
 			try
 			{
-				XmlDoc xdoc = (XmlDoc)ht[ei.DeclaringType.Assembly];
+				ht.TryGetValue(ei.DeclaringType.Assembly, out var xdoc);
 				if (xdoc != null)
 				{
 					string s = GetNormalHint(xdoc.GetDocumentation("E:"+ei.DeclaringType.FullName+"."+ei.Name,false));
@@ -404,7 +402,7 @@ namespace CodeCompletionTools
         {
             try
             {
-                XmlDoc xdoc = (XmlDoc)ht[ei.DeclaringType.Assembly];
+                ht.TryGetValue(ei.DeclaringType.Assembly, out var xdoc);
                 if (xdoc != null)
                 {
                     return xdoc.GetDocumentation("E:" + ei.DeclaringType.FullName + "." + ei.Name, false);
@@ -429,7 +427,7 @@ namespace CodeCompletionTools
 		{
 			try
 			{
-				XmlDoc xdoc = (XmlDoc)ht[mi.DeclaringType.Assembly];
+				ht.TryGetValue(mi.DeclaringType.Assembly, out var xdoc);
 				if (xdoc != null)
 				{
 					string generic_add = GetGenericAddString(mi);
@@ -448,7 +446,7 @@ namespace CodeCompletionTools
         {
             try
             {
-                XmlDoc xdoc = (XmlDoc)ht[mi.DeclaringType.Assembly];
+                ht.TryGetValue(mi.DeclaringType.Assembly, out var xdoc);
                 if (xdoc != null)
                 {
                     string generic_add = GetGenericAddString(mi);
@@ -470,7 +468,7 @@ namespace CodeCompletionTools
 		
 		public static string GetDocumentation(Assembly a, string descr)
 		{
-			XmlDoc xdoc = (XmlDoc)ht[a];
+			ht.TryGetValue(a, out var xdoc);
 			try
 			{
 				if (xdoc != null)

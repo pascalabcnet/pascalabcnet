@@ -42,7 +42,7 @@ namespace CodeCompletion
 
         // TODO: Требуется адаптировать к многоязычности  EVA
         public static SymInfo[] standard_units;
-        private Hashtable cur_used_assemblies;
+        private HashSet<Assembly> cur_used_assemblies;
         public CompilationUnit unit;
 
         private void InitModules()
@@ -1230,7 +1230,7 @@ namespace CodeCompletion
             return false;
         }
 
-        private Hashtable tmp_cur_used_assemblies;
+        private HashSet<Assembly> tmp_cur_used_assemblies;
 
         //kazhdaja programma mozhet imet svoj spisok podkluchaemyh sborok, 
         //poetomu nado sohranat i vosstanavlivat tekushij kesh sborok

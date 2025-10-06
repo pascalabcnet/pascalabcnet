@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace PascalABCCompiler.NETGenerator {
 	
@@ -515,11 +516,11 @@ namespace PascalABCCompiler.NETGenerator {
 	
 	public class Helper {
 		public Hashtable defs=new Hashtable();
-        private Hashtable processing_types = new Hashtable();
+        private HashSet<ICommonTypeNode> processing_types = new HashSet<ICommonTypeNode>();
 		private MethodInfo arr_mi=null;
-		private Hashtable pas_defs = new Hashtable();
-        private Hashtable memoized_exprs = new Hashtable();
-		private Hashtable dummy_methods = new Hashtable();
+        private Dictionary<ITypeNode, Type> pas_defs = new Dictionary<ITypeNode, Type>();
+        private Dictionary<IExpressionNode, LocalBuilder> memoized_exprs = new Dictionary<IExpressionNode, LocalBuilder>();
+        private Dictionary<TypeBuilder, MethodBuilder> dummy_methods = new Dictionary<TypeBuilder, MethodBuilder>();
 
 		public Helper() {}
 		
@@ -528,9 +529,9 @@ namespace PascalABCCompiler.NETGenerator {
 			dummy_methods[tb] = mb;
         }
 
-		public MethodBuilder GetDummyMethod(TypeBuilder tb)
+        public MethodBuilder GetDummyMethod(TypeBuilder tb)
         {
-			return dummy_methods[tb] as MethodBuilder;
+            return dummy_methods[tb];
         }
 
 		public void AddPascalTypeReference(ITypeNode tn, Type t)
@@ -540,7 +541,8 @@ namespace PascalABCCompiler.NETGenerator {
 		
 		public Type GetPascalTypeReference(ITypeNode tn)
 		{
-			return pas_defs[tn] as Type;
+			pas_defs.TryGetValue(tn, out var result);
+			return result;
 		}
 		
 		public ConstInfo AddConstant(IConstantDefinitionNode cnst, FieldBuilder fb)
@@ -872,14 +874,14 @@ namespace PascalABCCompiler.NETGenerator {
             return null;
         }
 
-		public void SetAsProcessing(ICommonTypeNode type)
+        public void SetAsProcessing(ICommonTypeNode type)
         {
-            processing_types[type] = true;
+            processing_types.Add(type);
         }
 
         public bool IsProcessing(ICommonTypeNode type)
         {
-            return processing_types[type] != null;
+            return processing_types.Contains(type);
         }
 
         public void LinkExpressionToLocalBuilder(IExpressionNode expr, LocalBuilder lb)
@@ -889,7 +891,8 @@ namespace PascalABCCompiler.NETGenerator {
 
         public LocalBuilder GetLocalBuilderForExpression(IExpressionNode expr)
         {
-            return memoized_exprs[expr] as LocalBuilder;
+            memoized_exprs.TryGetValue(expr, out var result);
+            return result;
         }
 
         //получение типа
@@ -1050,6 +1053,4 @@ namespace PascalABCCompiler.NETGenerator {
             return m;
         }
     }
-	
-	
 }

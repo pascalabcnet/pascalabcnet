@@ -2,9 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Reflection.Emit;
-using System.Collections;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -19,7 +17,7 @@ namespace PascalABCCompiler.NETGenerator
         public static TypeInfo string_type;
         public static TypeInfo byte_type;
         public static Type ExceptionType = typeof(Exception);
-        public static Type VoidType =   typeof(void);
+        public static Type VoidType = typeof(void);
         public static Type StringType = typeof(string);
         public static Type ObjectType = typeof(object);
         public static Type MonitorType = typeof(System.Threading.Monitor);
@@ -46,7 +44,7 @@ namespace PascalABCCompiler.NETGenerator
         public static Type DoubleType = typeof(Double);
         public static Type GCHandleType = typeof(GCHandle);
         public static Type MarshalType = typeof(Marshal);
-        public static Type TypeType =   typeof(Type);
+        public static Type TypeType = typeof(Type);
         public static Type ValueType = typeof(ValueType);
         public static Type IEnumerableType = typeof(System.Collections.IEnumerable);
         public static Type IEnumeratorType = typeof(System.Collections.IEnumerator);
@@ -54,13 +52,13 @@ namespace PascalABCCompiler.NETGenerator
         public static Type IEnumerableGenericType = typeof(System.Collections.Generic.IEnumerable<>);
         public static Type IEnumeratorGenericType = typeof(System.Collections.Generic.IEnumerator<>);
 
-        private static Hashtable types;
-        private static Hashtable sizes;
+        private static HashSet<Type> types;
+        private static Dictionary<Type, int> sizes;
         public static MethodInfo ArrayCopyMethod;
         public static MethodInfo GetTypeFromHandleMethod;
-		public static MethodInfo ResizeMethod;
+        public static MethodInfo ResizeMethod;
         public static MethodInfo GCHandleFreeMethod;
-		public static MethodInfo StringNullOrEmptyMethod;
+        public static MethodInfo StringNullOrEmptyMethod;
         public static MethodInfo UnsizedArrayCreateMethodTemplate = null;
         public static MethodInfo GCHandleAlloc;
         public static MethodInfo GCHandleAllocPinned;
@@ -86,34 +84,30 @@ namespace PascalABCCompiler.NETGenerator
             char_type = new TypeInfo(typeof(char));
             string_type = new TypeInfo(typeof(string));
             byte_type = new TypeInfo(typeof(byte));
-            
-            types = new Hashtable();
-            types[BoolType] = BoolType;
-            types[SByteType] = SByteType;
-            types[ByteType] = ByteType;
-            types[CharType] = CharType;
-            types[Int16Type] = Int16Type;
-            types[Int32Type] = Int32Type;
-            types[Int64Type] = Int64Type;
-            types[UInt16Type] = UInt16Type;
-            types[UInt32Type] = UInt32Type;
-            types[UInt64Type] = UInt64Type;
-            types[SingleType] = SingleType;
-            types[DoubleType] = DoubleType;
 
-            sizes = new Hashtable();
-            sizes[BoolType] = sizeof(Boolean);
-            sizes[SByteType] = sizeof(SByte);
-            sizes[ByteType] = sizeof(Byte);
-            sizes[CharType] = sizeof(Char);
-            sizes[Int16Type] = sizeof(Int16);
-            sizes[Int32Type] = sizeof(Int32);
-            sizes[Int64Type] = sizeof(Int64);
-            sizes[UInt16Type] = sizeof(UInt16);
-            sizes[UInt32Type] = sizeof(UInt32);
-            sizes[UInt64Type] = sizeof(UInt64);
-            sizes[SingleType] = sizeof(Single);
-            sizes[DoubleType] = sizeof(Double);
+            types = new HashSet<Type>()
+            {
+                BoolType, SByteType, ByteType, CharType,
+                Int16Type, Int32Type, Int64Type,
+                UInt16Type, UInt32Type, UInt64Type,
+                SingleType, DoubleType
+            };
+
+            sizes = new Dictionary<Type, int>
+            {
+                [BoolType] = sizeof(Boolean),
+                [SByteType] = sizeof(SByte),
+                [ByteType] = sizeof(Byte),
+                [CharType] = sizeof(Char),
+                [Int16Type] = sizeof(Int16),
+                [Int32Type] = sizeof(Int32),
+                [Int64Type] = sizeof(Int64),
+                [UInt16Type] = sizeof(UInt16),
+                [UInt32Type] = sizeof(UInt32),
+                [UInt64Type] = sizeof(UInt64),
+                [SingleType] = sizeof(Single),
+                [DoubleType] = sizeof(Double)
+            };
             //sizes[UIntPtr] = sizeof(UIntPtr);
             
             //types[TypeType] = TypeType;
@@ -133,12 +127,12 @@ namespace PascalABCCompiler.NETGenerator
 
         public static bool IsStandType(Type t)
         {
-            return types[t] != null;
+            return types.Contains(t);
         }
 
         public static int GetPrimitiveTypeSize(Type PrimitiveType)
         {
-            return (int)sizes[PrimitiveType];
+            return sizes[PrimitiveType];
         }
     }
 

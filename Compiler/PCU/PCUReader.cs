@@ -2,13 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using TreeConverter;
 using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
-using Languages.Facade;
 
 namespace PascalABCCompiler.PCU
 {
@@ -50,11 +47,11 @@ namespace PascalABCCompiler.PCU
         private Dictionary<int, definition_node> ext_members = new Dictionary<int, definition_node>(64);//таблица<int,definition_node> для связывания смещений с импортируемыми сущностями
         private Dictionary<string, Assembly> assemblies = new Dictionary<string, Assembly>();
         private Dictionary<common_type_node, string[]> class_names = new Dictionary<common_type_node, string[]>();
-        private Hashtable used_units = new Hashtable();
-        public static Hashtable units = new Hashtable(StringComparer.OrdinalIgnoreCase);
+        private HashSet<string> used_units = new HashSet<string>();
+        public static Dictionary<string, PCUReader> units = new Dictionary<string, PCUReader>(StringComparer.OrdinalIgnoreCase);
         public static List<PCUReader> AllReaders = new List<PCUReader>();
         public bool need=false;
-        private Hashtable already_compiled = new Hashtable();
+        private HashSet<string> already_compiled = new HashSet<string>();
         private bool readDebugInfo=true;
         private int InitializationMethodOffset = 0;
         private int FinalizationMethodOffset = 0;
@@ -183,12 +180,12 @@ namespace PascalABCCompiler.PCU
 
         public void AddAlreadyCompiledUnit(string name)
         {
-            already_compiled[name] = name;
+            already_compiled.Add(name);
         }
 
         public bool AlreadyCompiled(string name)
         {
-            return already_compiled[name] != null;
+            return already_compiled.Contains(name);
         }
 
         public static void CloseUnits()
@@ -233,8 +230,7 @@ namespace PascalABCCompiler.PCU
         {
             if (id == -1) return this;
             string s = GetFullUnitName(pcu_file.incl_modules[id], pcu_file.languageCaseSensitive);
-            var pr = (PCUReader)units[s];
-            if (pr == null)
+            if ( !units.TryGetValue(s, out var pr) )
             {
                 pr = new PCUReader(this);
                 pr.GetCompilationUnit(s, this.readDebugInfo, pcu_file.languageCaseSensitive);
@@ -257,8 +253,8 @@ namespace PascalABCCompiler.PCU
                 this.FileName = FileName;
                 this.readDebugInfo = readDebugInfo;
                 unit_name = System.IO.Path.GetFileNameWithoutExtension(FileName);
-                PCUReader pr = (PCUReader)units[FileName];
-                if (pr != null) return pr.unit;
+                if ( units.TryGetValue(FileName, out var pr) )
+                    return pr.unit;
                 if (!File.Exists(FileName)) return null;
                 //fs = new FileStream(file_name, FileMode.Open, FileAccess.Read);
                 ms = new MemoryStream(File.ReadAllBytes(FileName));
@@ -361,7 +357,7 @@ namespace PascalABCCompiler.PCU
             if (comp.NeedRecompiled(FileName, pcu_file.incl_modules, this, pcu_file.languageCaseSensitive))
             {
                 //comp.RecompileList.Add(unit_name,unit_name);
-                comp.RecompileList[FileName] = FileName;
+                comp.RecompileList.Add(FileName);
                 need = true;
                 return need;
             }
@@ -373,14 +369,13 @@ namespace PascalABCCompiler.PCU
                 var used_unit_fname = comp.GetUnitFileName(Path.GetFileNameWithoutExtension(pcu_file.incl_modules[i]), pcu_file.incl_modules[i], dir, new SyntaxTree.SourceContext(0,0,0,0, FileName), pcu_file.languageCaseSensitive);
                 if (Path.GetExtension(used_unit_fname) != comp.CompilerOptions.CompiledUnitExtension) return true;
 
-                PCUReader pr = (PCUReader)units[used_unit_fname];
-                if (pr == null)
+                if ( !units.TryGetValue(used_unit_fname, out var pr) );
                     pr = new PCUReader(this);
                 pr.AddAlreadyCompiledUnit(FileName);
-                if (used_units[used_unit_fname] == null)
+                if (!used_units.Contains(used_unit_fname))
                 {
-                    used_units[used_unit_fname] = used_units;
-                    if (already_compiled[used_unit_fname] == null)
+                    used_units.Add(used_unit_fname);
+                    if (!already_compiled.Contains(used_unit_fname))
                     {
                         var sub_u = pr.GetCompilationUnit(used_unit_fname, this.readDebugInfo, pcu_file.languageCaseSensitive);
                         if (sub_u == null) return true;
@@ -2495,8 +2490,7 @@ namespace PascalABCCompiler.PCU
             //Добавляем подключенные модули
             for (int i = 0; i < uses_count; i++)
             {
-                PCUReader pcu_r = units[GetFullUnitName(pcu_file.incl_modules[i], pcu_file.languageCaseSensitive)] as PCUReader;
-                if (pcu_r != null)
+                if ( units.TryGetValue(GetFullUnitName(pcu_file.incl_modules[i], pcu_file.languageCaseSensitive), out var pcu_r) );
                 {
                     top_scopes.Add(pcu_r.cun.scope);
                 }

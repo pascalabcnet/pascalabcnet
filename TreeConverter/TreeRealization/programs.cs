@@ -100,8 +100,8 @@ namespace PascalABCCompiler.TreeRealization
             common_namespace_node[] ret = new common_namespace_node[namespaces.Count];
             namespaces.Values.CopyTo(ret, 0);
             return ret;*/
-            System.Collections.Hashtable ht = new System.Collections.Hashtable();
-            System.Collections.ArrayList al = new System.Collections.ArrayList();
+            var ht = new Dictionary<string, common_namespace_node>();
+            var al = new List<common_namespace_node>();
             common_namespace_node main_cnn = null;
             foreach (common_unit_node un in units)
             {
@@ -109,7 +109,7 @@ namespace PascalABCCompiler.TreeRealization
                 {
                     //if (cnn.namespace_full_name != "")
                     //{
-                        if (ht[cnn.namespace_name] == null)
+                        if (!ht.ContainsKey(cnn.namespace_name))
                         {
                             al.Add(cnn); ht[cnn.namespace_name] = cnn;
                         }
@@ -160,15 +160,15 @@ namespace PascalABCCompiler.TreeRealization
                 if (_namespaces == null)
                 {
                     _namespaces = get_units_namespaces(_units);
-                    System.Collections.Hashtable ns_ht = new System.Collections.Hashtable();
+                    var ns_ht = new HashSet<string>();
                     foreach (common_unit_node un in units)
             		{
             			foreach (string s in un.used_namespaces)
             			{
-            				if (!ns_ht.ContainsKey(s))
+            				if (!ns_ht.Contains(s))
             				{
             					this._used_namespaces.Add(s);
-            					ns_ht.Add(s,s);
+            					ns_ht.Add(s);
             				}
             			}
                     }

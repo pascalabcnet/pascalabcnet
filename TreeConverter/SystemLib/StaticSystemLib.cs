@@ -18,7 +18,6 @@ namespace PascalABCCompiler.SystemLibrary
     //TODO: Все базовые методы должны быть определены здесь как статические и использовать их отсюда, а не создавать их по два раза.
     public static class SystemLibrary
     {
-    	
         private static compiled_type_node _bool_type;
         private static compiled_type_node _byte_type;
         private static compiled_type_node _sbyte_type;
@@ -95,7 +94,7 @@ namespace PascalABCCompiler.SystemLibrary
 		private static SymbolTable.TreeConverterSymbolTable _symtab;
         private static System.Collections.Generic.Dictionary<SemanticTree.basic_function_type, basic_function_node> ht = new System.Collections.Generic.Dictionary<SemanticTree.basic_function_type, basic_function_node>();
 
-        private static System.Collections.Hashtable writable_in_typed_files_types = new System.Collections.Hashtable();
+        private static HashSet<compiled_type_node> writable_in_typed_files_types = new HashSet<compiled_type_node>();
 
         private static string_const_node _empty_string;
 
@@ -2079,18 +2078,18 @@ namespace PascalABCCompiler.SystemLibrary
             // То есть, это было неправильное исправление 
 
             writable_in_typed_files_types.Clear();
-            writable_in_typed_files_types.Add(_bool_type, _bool_type);
-            writable_in_typed_files_types.Add(_byte_type, _byte_type);
-            writable_in_typed_files_types.Add(_sbyte_type, _sbyte_type);
-            writable_in_typed_files_types.Add(_short_type, _short_type);
-            writable_in_typed_files_types.Add(_ushort_type, _ushort_type);
-            writable_in_typed_files_types.Add(_integer_type, _integer_type);
-            writable_in_typed_files_types.Add(_uint_type, _uint_type);
-            writable_in_typed_files_types.Add(_int64_type, _int64_type);
-            writable_in_typed_files_types.Add(_uint64_type, _uint64_type);
-            writable_in_typed_files_types.Add(_double_type, _double_type);
-            writable_in_typed_files_types.Add(_char_type, _char_type);
-            writable_in_typed_files_types.Add(_float_type, _float_type);
+            writable_in_typed_files_types.Add(_bool_type);
+            writable_in_typed_files_types.Add(_byte_type);
+            writable_in_typed_files_types.Add(_sbyte_type);
+            writable_in_typed_files_types.Add(_short_type);
+            writable_in_typed_files_types.Add(_ushort_type);
+            writable_in_typed_files_types.Add(_integer_type);
+            writable_in_typed_files_types.Add(_uint_type);
+            writable_in_typed_files_types.Add(_int64_type);
+            writable_in_typed_files_types.Add(_uint64_type);
+            writable_in_typed_files_types.Add(_double_type);
+            writable_in_typed_files_types.Add(_char_type);
+            writable_in_typed_files_types.Add(_float_type);
             
             foreach (type_node tn in wait_add_ref_list)
             	init_reference_type(tn);
@@ -2120,7 +2119,7 @@ namespace PascalABCCompiler.SystemLibrary
 
         public static bool CanUseThisTypeForTypedFiles(type_node tn)
         {
-            return writable_in_typed_files_types[tn] != null;
+            return writable_in_typed_files_types.Contains(tn);
         }
 
         private static void add_std_convertions()

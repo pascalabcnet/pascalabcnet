@@ -1,8 +1,6 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using System.Collections.Generic;
-using System.Text;
 using PascalABCCompiler.TreeRealization;
 using System.Collections;
 
@@ -37,8 +35,8 @@ namespace PascalABCCompiler
     public class OptimizerHelper
     {
         private Hashtable ht = new Hashtable();
-        private Hashtable warns = new Hashtable();
-        private Hashtable ext_funcs = new Hashtable();
+        private Dictionary<var_definition_node, List<CompilerWarningWithLocation>> warns = new Dictionary<var_definition_node, List<CompilerWarningWithLocation>>();
+        private HashSet<common_function_node> ext_funcs = new HashSet<common_function_node>();
 
         public void AddVariable(var_definition_node vdn)
         {
@@ -76,8 +74,7 @@ namespace PascalABCCompiler
 
         public void AddTempWarning(var_definition_node vdn, CompilerWarningWithLocation cw)
         {
-            List<CompilerWarningWithLocation> lst = (List<CompilerWarningWithLocation>)warns[vdn];
-            if (lst == null)
+            if ( !warns.TryGetValue(vdn, out var lst) )
             {
                 lst = new List<CompilerWarningWithLocation>();
                 warns[vdn] = lst;
@@ -87,18 +84,18 @@ namespace PascalABCCompiler
 
         public void AddRealWarning(var_definition_node vdn, List<CompilerWarningWithLocation> cw)
         {
-            List<CompilerWarningWithLocation> lst = (List<CompilerWarningWithLocation>)warns[vdn];
+            List<CompilerWarningWithLocation> lst = warns[vdn];
             cw.AddRange(lst);
         }
 
         public void MarkAsExternal(common_function_node cfn)
         {
-            ext_funcs[cfn] = cfn;
+            ext_funcs.Add(cfn);
         }
 
         public bool IsExternal(common_function_node cfn)
         {
-            return ext_funcs[cfn] != null;
+            return ext_funcs.Contains(cfn);
         }
     }
 }
