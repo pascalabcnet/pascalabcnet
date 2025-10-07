@@ -820,7 +820,10 @@ const_relop_expr
 		}
     | const_relop_expr const_relop const_simple_expr   
         { 
-			$$ = new bin_expr($1, $3, $2.type, @$); 
+        	if ($2.type == Operators.NotIn)
+        		$$ = new un_expr(new bin_expr($1, $3, Operators.In, @$),Operators.LogicalNOT,@$);
+        	else	
+				$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
 	;
 
@@ -857,6 +860,16 @@ const_relop
 		{ $$ = $1; }
     | tkIn
 		{ $$ = $1; }
+    | tkNot tkIn
+		{ 
+			if (parserTools.buildTreeForFormatter)
+				$$ = $2;
+			else
+			{
+				$$ = $2;	
+				$$.type = Operators.NotIn;
+			}				
+		}
     ;
 
 const_simple_expr
