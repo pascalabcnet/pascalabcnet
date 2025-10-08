@@ -16,74 +16,74 @@
 <param name="Keyword" value="WriteAllText">
 <param name="Keyword" value="WriteLines"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Подпрограммы для работы с текстовыми файлами</H1>
+</HEAD><body><H1>РџРѕРґРїСЂРѕРіСЂР°РјРјС‹ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ С‚РµРєСЃС‚РѕРІС‹РјРё С„Р°Р№Р»Р°РјРё</H1>
 <table border=0 cellpadding=5><tr><td><code><b>procedure</b> Append(f: Text);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на дополнение в кодировке Windows</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» РЅР° РґРѕРїРѕР»РЅРµРЅРёРµ РІ РєРѕРґРёСЂРѕРІРєРµ Windows</td></tr>
 <tr><td><code><b>procedure</b> Append(f: Text; en: Encoding);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на дополнение в указанной кодировке</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» РЅР° РґРѕРїРѕР»РЅРµРЅРёРµ РІ СѓРєР°Р·Р°РЅРЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ</td></tr>
 <tr><td><code><b>procedure</b> Append(f: Text; fileName: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла fileName и открывает текстовый файл на дополнение в кодировке Windows</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРІСЏР·С‹РІР°РµС‚ С„Р°Р№Р»РѕРІСѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ f СЃ РёРјРµРЅРµРј С„Р°Р№Р»Р° fileName Рё РѕС‚РєСЂС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» РЅР° РґРѕРїРѕР»РЅРµРЅРёРµ РІ РєРѕРґРёСЂРѕРІРєРµ Windows</td></tr>
 <tr><td><code><b>procedure</b> Append(f: Text; fileName: string; en: Encoding);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла fileName и открывает текстовый файл на дополнение в указанной кодировке</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРІСЏР·С‹РІР°РµС‚ С„Р°Р№Р»РѕРІСѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ f СЃ РёРјРµРЅРµРј С„Р°Р№Р»Р° fileName Рё РѕС‚РєСЂС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» РЅР° РґРѕРїРѕР»РЅРµРЅРёРµ РІ СѓРєР°Р·Р°РЅРЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ</td></tr>
 <tr><td><code><b>function</b> Eoln(f: Text): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если в файле достигнут конец строки</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РІ С„Р°Р№Р»Рµ РґРѕСЃС‚РёРіРЅСѓС‚ РєРѕРЅРµС† СЃС‚СЂРѕРєРё</td></tr>
 <tr><td><code><b>procedure</b> Flush(f: Text);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает содержимое буфера файла на диск</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРёСЃС‹РІР°РµС‚ СЃРѕРґРµСЂР¶РёРјРѕРµ Р±СѓС„РµСЂР° С„Р°Р№Р»Р° РЅР° РґРёСЃРє</td></tr>
 <tr><td><code><b>function</b> OpenAppend(fileName: string): Text;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fileName, открытый на дополнение в кодировке Windows</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» СЃ РёРјРµРЅРµРј fileName, РѕС‚РєСЂС‹С‚С‹Р№ РЅР° РґРѕРїРѕР»РЅРµРЅРёРµ РІ РєРѕРґРёСЂРѕРІРєРµ Windows</td></tr>
 <tr><td><code><b>function</b> OpenAppend(fileName: string; en: Encoding): Text;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fileName, открытый на дополнение в указанной кодировке</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» СЃ РёРјРµРЅРµРј fileName, РѕС‚РєСЂС‹С‚С‹Р№ РЅР° РґРѕРїРѕР»РЅРµРЅРёРµ РІ СѓРєР°Р·Р°РЅРЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ</td></tr>
 <tr><td><code><b>function</b> OpenRead(fileName: string): Text;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fileName, открытый на чтение в кодировке Windows</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» СЃ РёРјРµРЅРµРј fileName, РѕС‚РєСЂС‹С‚С‹Р№ РЅР° С‡С‚РµРЅРёРµ РІ РєРѕРґРёСЂРѕРІРєРµ Windows</td></tr>
 <tr><td><code><b>function</b> OpenRead(fileName: string; en: Encoding): Text;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fileName, открытый на чтение в указанной кодировке</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» СЃ РёРјРµРЅРµРј fileName, РѕС‚РєСЂС‹С‚С‹Р№ РЅР° С‡С‚РµРЅРёРµ РІ СѓРєР°Р·Р°РЅРЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ</td></tr>
 <tr><td><code><b>function</b> OpenWrite(fileName: string): Text;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fileName, открытый на запись в кодировке Windows</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» СЃ РёРјРµРЅРµРј fileName, РѕС‚РєСЂС‹С‚С‹Р№ РЅР° Р·Р°РїРёСЃСЊ РІ РєРѕРґРёСЂРѕРІРєРµ Windows</td></tr>
 <tr><td><code><b>function</b> OpenWrite(fileName: string; en: Encoding): Text;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fileName, открытый на запись в указанной кодировке</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» СЃ РёРјРµРЅРµРј fileName, РѕС‚РєСЂС‹С‚С‹Р№ РЅР° Р·Р°РїРёСЃСЊ РІ СѓРєР°Р·Р°РЅРЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ</td></tr>
 <tr><td><code><b>function</b> ReadAllLines(path: string): <b>array</b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает файл, считывает из него строки в кодировке Windows в виде массива строк, после чего закрывает файл</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С„Р°Р№Р», СЃС‡РёС‚С‹РІР°РµС‚ РёР· РЅРµРіРѕ СЃС‚СЂРѕРєРё РІ РєРѕРґРёСЂРѕРІРєРµ Windows РІ РІРёРґРµ РјР°СЃСЃРёРІР° СЃС‚СЂРѕРє, РїРѕСЃР»Рµ С‡РµРіРѕ Р·Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р»</td></tr>
 <tr><td><code><b>function</b> ReadAllLines(path: string; en: Encoding): <b>array</b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает файл, считывает из него строки в указаной кодировке в виде массива строк, после чего закрывает файл</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С„Р°Р№Р», СЃС‡РёС‚С‹РІР°РµС‚ РёР· РЅРµРіРѕ СЃС‚СЂРѕРєРё РІ СѓРєР°Р·Р°РЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ РІ РІРёРґРµ РјР°СЃСЃРёРІР° СЃС‚СЂРѕРє, РїРѕСЃР»Рµ С‡РµРіРѕ Р·Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р»</td></tr>
 <tr><td><code><b>function</b> ReadAllText(path: string): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает файл, считывает его содержимое в кодировке Windows в виде строки, после чего закрывает файл</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С„Р°Р№Р», СЃС‡РёС‚С‹РІР°РµС‚ РµРіРѕ СЃРѕРґРµСЂР¶РёРјРѕРµ РІ РєРѕРґРёСЂРѕРІРєРµ Windows РІ РІРёРґРµ СЃС‚СЂРѕРєРё, РїРѕСЃР»Рµ С‡РµРіРѕ Р·Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р»</td></tr>
 <tr><td><code><b>function</b> ReadAllText(path: string; en: Encoding): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает файл, считывает его содержимое в указаной кодировке в виде строки, после чего закрывает файл</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С„Р°Р№Р», СЃС‡РёС‚С‹РІР°РµС‚ РµРіРѕ СЃРѕРґРµСЂР¶РёРјРѕРµ РІ СѓРєР°Р·Р°РЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ РІ РІРёРґРµ СЃС‚СЂРѕРєРё, РїРѕСЃР»Рµ С‡РµРіРѕ Р·Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р»</td></tr>
 <tr><td><code><b>function</b> ReadLines(path: string): <b>sequence </b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает файл, считывает из него строки в кодировке Windows и закрывает файл. В каждый момент в памяти хранится только текущая строка</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С„Р°Р№Р», СЃС‡РёС‚С‹РІР°РµС‚ РёР· РЅРµРіРѕ СЃС‚СЂРѕРєРё РІ РєРѕРґРёСЂРѕРІРєРµ Windows Рё Р·Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р». Р’ РєР°Р¶РґС‹Р№ РјРѕРјРµРЅС‚ РІ РїР°РјСЏС‚Рё С…СЂР°РЅРёС‚СЃСЏ С‚РѕР»СЊРєРѕ С‚РµРєСѓС‰Р°СЏ СЃС‚СЂРѕРєР°</td></tr>
 <tr><td><code><b>function</b> ReadLines(path: string; en: Encoding): <b>sequence </b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает файл, считывает из него строки в указаной кодировке и закрывает файл. В каждый момент в памяти хранится только текущая строка</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С„Р°Р№Р», СЃС‡РёС‚С‹РІР°РµС‚ РёР· РЅРµРіРѕ СЃС‚СЂРѕРєРё РІ СѓРєР°Р·Р°РЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ Рё Р·Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р». Р’ РєР°Р¶РґС‹Р№ РјРѕРјРµРЅС‚ РІ РїР°РјСЏС‚Рё С…СЂР°РЅРёС‚СЃСЏ С‚РѕР»СЊРєРѕ С‚РµРєСѓС‰Р°СЏ СЃС‚СЂРѕРєР°</td></tr>
 <tr><td><code><b>procedure</b> Reset(f: Text);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на чтение в кодировке Windows</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» РЅР° С‡С‚РµРЅРёРµ РІ РєРѕРґРёСЂРѕРІРєРµ Windows</td></tr>
 <tr><td><code><b>procedure</b> Reset(f: Text; en: Encoding);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на чтение в указанной кодировке</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» РЅР° С‡С‚РµРЅРёРµ РІ СѓРєР°Р·Р°РЅРЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ</td></tr>
 <tr><td><code><b>procedure</b> Reset(f: Text; fileName: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла fileName и открывает текстовый файл на чтение в кодировке Windows</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРІСЏР·С‹РІР°РµС‚ С„Р°Р№Р»РѕРІСѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ f СЃ РёРјРµРЅРµРј С„Р°Р№Р»Р° fileName Рё РѕС‚РєСЂС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» РЅР° С‡С‚РµРЅРёРµ РІ РєРѕРґРёСЂРѕРІРєРµ Windows</td></tr>
 <tr><td><code><b>procedure</b> Reset(f: Text; fileName: string; en: Encoding);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла fileName и открывает текстовый файл на чтение в указанной кодировке</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРІСЏР·С‹РІР°РµС‚ С„Р°Р№Р»РѕРІСѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ f СЃ РёРјРµРЅРµРј С„Р°Р№Р»Р° fileName Рё РѕС‚РєСЂС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» РЅР° С‡С‚РµРЅРёРµ РІ СѓРєР°Р·Р°РЅРЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ</td></tr>
 <tr><td><code><b>procedure</b> Rewrite(f: Text);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на запись в кодировке Windows.Если файл существовал - он обнуляется, если нет - создается пустой</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» РЅР° Р·Р°РїРёСЃСЊ РІ РєРѕРґРёСЂРѕРІРєРµ Windows.Р•СЃР»Рё С„Р°Р№Р» СЃСѓС‰РµСЃС‚РІРѕРІР°Р» - РѕРЅ РѕР±РЅСѓР»СЏРµС‚СЃСЏ, РµСЃР»Рё РЅРµС‚ - СЃРѕР·РґР°РµС‚СЃСЏ РїСѓСЃС‚РѕР№</td></tr>
 <tr><td><code><b>procedure</b> Rewrite(f: Text; en: Encoding);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на запись в указанной кодировке.Если файл существовал - он обнуляется, если нет - создается пустой</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» РЅР° Р·Р°РїРёСЃСЊ РІ СѓРєР°Р·Р°РЅРЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ.Р•СЃР»Рё С„Р°Р№Р» СЃСѓС‰РµСЃС‚РІРѕРІР°Р» - РѕРЅ РѕР±РЅСѓР»СЏРµС‚СЃСЏ, РµСЃР»Рё РЅРµС‚ - СЃРѕР·РґР°РµС‚СЃСЏ РїСѓСЃС‚РѕР№</td></tr>
 <tr><td><code><b>procedure</b> Rewrite(f: Text; fileName: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную с именем файла fileName и открывает текстовый файл f на запись в кодировке Windows.Если файл существовал - он обнуляется, если нет - создается пустой</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРІСЏР·С‹РІР°РµС‚ С„Р°Р№Р»РѕРІСѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ СЃ РёРјРµРЅРµРј С„Р°Р№Р»Р° fileName Рё РѕС‚РєСЂС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» f РЅР° Р·Р°РїРёСЃСЊ РІ РєРѕРґРёСЂРѕРІРєРµ Windows.Р•СЃР»Рё С„Р°Р№Р» СЃСѓС‰РµСЃС‚РІРѕРІР°Р» - РѕРЅ РѕР±РЅСѓР»СЏРµС‚СЃСЏ, РµСЃР»Рё РЅРµС‚ - СЃРѕР·РґР°РµС‚СЃСЏ РїСѓСЃС‚РѕР№</td></tr>
 <tr><td><code><b>procedure</b> Rewrite(f: Text; fileName: string; en: Encoding);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла fileName и открывает текстовый файл f на запись в указанной кодировке.Если файл существовал - он обнуляется, если нет - создается пустой</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРІСЏР·С‹РІР°РµС‚ С„Р°Р№Р»РѕРІСѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ f СЃ РёРјРµРЅРµРј С„Р°Р№Р»Р° fileName Рё РѕС‚РєСЂС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» f РЅР° Р·Р°РїРёСЃСЊ РІ СѓРєР°Р·Р°РЅРЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ.Р•СЃР»Рё С„Р°Р№Р» СЃСѓС‰РµСЃС‚РІРѕРІР°Р» - РѕРЅ РѕР±РЅСѓР»СЏРµС‚СЃСЏ, РµСЃР»Рё РЅРµС‚ - СЃРѕР·РґР°РµС‚СЃСЏ РїСѓСЃС‚РѕР№</td></tr>
 <tr><td><code><b>function</b> SeekEof(f: Text): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает пробельные символы, после чего возвращает True, если достигнут конец файла</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРїСѓСЃРєР°РµС‚ РїСЂРѕР±РµР»СЊРЅС‹Рµ СЃРёРјРІРѕР»С‹, РїРѕСЃР»Рµ С‡РµРіРѕ РІРѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РґРѕСЃС‚РёРіРЅСѓС‚ РєРѕРЅРµС† С„Р°Р№Р»Р°</td></tr>
 <tr><td><code><b>function</b> SeekEoln(f: Text): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает пробельные символы, после чего возвращает True, если в файле достигнут конец строки</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРїСѓСЃРєР°РµС‚ РїСЂРѕР±РµР»СЊРЅС‹Рµ СЃРёРјРІРѕР»С‹, РїРѕСЃР»Рµ С‡РµРіРѕ РІРѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РІ С„Р°Р№Р»Рµ РґРѕСЃС‚РёРіРЅСѓС‚ РєРѕРЅРµС† СЃС‚СЂРѕРєРё</td></tr>
 <tr><td><code><b>procedure</b> WriteAllLines(path: string; ss: <b>array</b>  <b>of</b> string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл, записывает в него строки из массива в кодировке Windows, после чего закрывает файл</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ С„Р°Р№Р», Р·Р°РїРёСЃС‹РІР°РµС‚ РІ РЅРµРіРѕ СЃС‚СЂРѕРєРё РёР· РјР°СЃСЃРёРІР° РІ РєРѕРґРёСЂРѕРІРєРµ Windows, РїРѕСЃР»Рµ С‡РµРіРѕ Р·Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р»</td></tr>
 <tr><td><code><b>procedure</b> WriteAllLines(path: string; ss: <b>array</b>  <b>of</b> string; en: Encoding);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл, записывает в него строки из массива в указанной кодировке, после чего закрывает файл</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ С„Р°Р№Р», Р·Р°РїРёСЃС‹РІР°РµС‚ РІ РЅРµРіРѕ СЃС‚СЂРѕРєРё РёР· РјР°СЃСЃРёРІР° РІ СѓРєР°Р·Р°РЅРЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ, РїРѕСЃР»Рµ С‡РµРіРѕ Р·Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р»</td></tr>
 <tr><td><code><b>procedure</b> WriteAllText(path: string; s: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл, записывает в него строку в кодировке Windows, после чего закрывает файл</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ С„Р°Р№Р», Р·Р°РїРёСЃС‹РІР°РµС‚ РІ РЅРµРіРѕ СЃС‚СЂРѕРєСѓ РІ РєРѕРґРёСЂРѕРІРєРµ Windows, РїРѕСЃР»Рµ С‡РµРіРѕ Р·Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р»</td></tr>
 <tr><td><code><b>procedure</b> WriteAllText(path: string; s: string; en: Encoding);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл, записывает в него строку в указанной кодировке, после чего закрывает файл</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ С„Р°Р№Р», Р·Р°РїРёСЃС‹РІР°РµС‚ РІ РЅРµРіРѕ СЃС‚СЂРѕРєСѓ РІ СѓРєР°Р·Р°РЅРЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ, РїРѕСЃР»Рµ С‡РµРіРѕ Р·Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р»</td></tr>
 <tr><td><code><b>procedure</b> WriteLines(path: string; ss: <b>sequence </b>  <b>of</b> string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл, записывает в него строки из последовательности в кодировке Windows, после чего закрывает файл</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ С„Р°Р№Р», Р·Р°РїРёСЃС‹РІР°РµС‚ РІ РЅРµРіРѕ СЃС‚СЂРѕРєРё РёР· РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РІ РєРѕРґРёСЂРѕРІРєРµ Windows, РїРѕСЃР»Рµ С‡РµРіРѕ Р·Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р»</td></tr>
 <tr><td><code><b>procedure</b> WriteLines(path: string; ss: <b>sequence </b>  <b>of</b> string; en: Encoding);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл, записывает в него строки из последовательности в указанной кодировке, после чего закрывает файл</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ С„Р°Р№Р», Р·Р°РїРёСЃС‹РІР°РµС‚ РІ РЅРµРіРѕ СЃС‚СЂРѕРєРё РёР· РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РІ СѓРєР°Р·Р°РЅРЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ, РїРѕСЃР»Рµ С‡РµРіРѕ Р·Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р»</td></tr>
 </table>
 </body></HTML>

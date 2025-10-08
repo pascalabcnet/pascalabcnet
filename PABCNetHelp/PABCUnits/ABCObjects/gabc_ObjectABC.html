@@ -31,38 +31,38 @@
 </object></head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title><link rel="StyleSheet" href="../../default.css"><body>
-<H1>Класс ObjectABC</H1>
-<p>Класс<b> </b><code>ObjectABC</code> является базовым классом для всех
-графических объектов <code>ABCObjects</code>.
-Его основными потомками, определенными в модуле <code>
-ABCObjects</code>, являются следующие классы: <code>
+<H1>РљР»Р°СЃСЃ ObjectABC</H1>
+<p>РљР»Р°СЃСЃ<b> </b><code>ObjectABC</code> СЏРІР»СЏРµС‚СЃСЏ Р±Р°Р·РѕРІС‹Рј РєР»Р°СЃСЃРѕРј РґР»СЏ РІСЃРµС…
+РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ <code>ABCObjects</code>.
+Р•РіРѕ РѕСЃРЅРѕРІРЅС‹РјРё РїРѕС‚РѕРјРєР°РјРё, РѕРїСЂРµРґРµР»РµРЅРЅС‹РјРё РІ РјРѕРґСѓР»Рµ <code>
+ABCObjects</code>, СЏРІР»СЏСЋС‚СЃСЏ СЃР»РµРґСѓСЋС‰РёРµ РєР»Р°СЃСЃС‹: <code>
 BoundedObjectABC</code>, <code>RectangleABC</code>, <code>SquareABC</code>,
 <code>EllipseABC</code>, <code>CircleABC</code>, <code>TextABC</code>, <code>
 RegularPolygonABC</code>, <code>StarABC</code>, <code>PictureABC</code>, <code>
-MultiPictureABC</code>, <code>BoardABC</code>&nbsp; и <code>ContainerABC</code>. 
-Класс<b> </b><code>ObjectABC</code> - абстрактный: объекты этого класса не 
-создаются. </p>
+MultiPictureABC</code>, <code>BoardABC</code>&nbsp; Рё <code>ContainerABC</code>. 
+РљР»Р°СЃСЃ<b> </b><code>ObjectABC</code> - Р°Р±СЃС‚СЂР°РєС‚РЅС‹Р№: РѕР±СЉРµРєС‚С‹ СЌС‚РѕРіРѕ РєР»Р°СЃСЃР° РЅРµ 
+СЃРѕР·РґР°СЋС‚СЃСЏ. </p>
 <table border=0 CELLPADDING=5>
 <tr>
 	<td height="12"></td>
 </tr>
 <tr>
 	<td style="border-style:solid; border-width:1px; border-color: #808080;  background-color: #E7E7F7">
-<font style="font-size: 11pt">Конструкторы класса ObjectABC</font></td>
+<font style="font-size: 11pt">РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹ РєР»Р°СЃСЃР° ObjectABC</font></td>
 </tr>
 <tr><td>
 <code>
     <b>constructor</b> Create(x,y,w,h: integer; cl: GColor);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает графический объект размера (<code>w</code>,
-<code>h</code>) цвета <code>cl</code> с координатами левого верхнего угла (<code>x</code>,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚ СЂР°Р·РјРµСЂР° (<code>w</code>,
+<code>h</code>) С†РІРµС‚Р° <code>cl</code> СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё Р»РµРІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ СѓРіР»Р° (<code>x</code>,
 <code>y</code>)
 </td></tr>
 <tr><td>
 <code>
     <b>constructor</b> Create(g: ObjectABC);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает графический объект - копию объекта 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚ - РєРѕРїРёСЋ РѕР±СЉРµРєС‚Р° 
 <code>g</code>
 </td></tr>
 <tr>
@@ -70,14 +70,14 @@ MultiPictureABC</code>, <code>BoardABC</code>&nbsp; и <code>ContainerABC</code>.
 </tr>
 <tr>
 	<td style="border:1px solid #808080; background-color: #E7E7F7">
-<font style="font-size: 11pt">Свойства класса ObjectABC</font></td>
+<font style="font-size: 11pt">РЎРІРѕР№СЃС‚РІР° РєР»Р°СЃСЃР° ObjectABC</font></td>
 </tr>
 <tr>
 	<td>
 <code>
     <b>property</b> Left: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отступ графического объекта от левого края
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚СЃС‚СѓРї РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° РѕС‚ Р»РµРІРѕРіРѕ РєСЂР°СЏ
 </td>
 </tr>
 <tr>
@@ -85,7 +85,7 @@ MultiPictureABC</code>, <code>BoardABC</code>&nbsp; и <code>ContainerABC</code>.
 <code>
     <b>property</b> Top: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отступ графического объекта от верхнего края
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚СЃС‚СѓРї РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° РѕС‚ РІРµСЂС…РЅРµРіРѕ РєСЂР°СЏ
 </td>
 </tr>
 <tr>
@@ -93,7 +93,7 @@ MultiPictureABC</code>, <code>BoardABC</code>&nbsp; и <code>ContainerABC</code>.
 <code>
     <b>property</b> Width: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина графического объекта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЁРёСЂРёРЅР° РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°
 </td>
 </tr>
 <tr>
@@ -101,7 +101,7 @@ MultiPictureABC</code>, <code>BoardABC</code>&nbsp; и <code>ContainerABC</code>.
 <code>
     <b>property</b> Height: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Высота графического объекта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹СЃРѕС‚Р° РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°
 </td>
 </tr>
 <tr>
@@ -109,9 +109,9 @@ MultiPictureABC</code>, <code>BoardABC</code>&nbsp; и <code>ContainerABC</code>.
 <code>
     <b>property</b> dx: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-координата вектора перемещения объекта при вызове метода Move. По 
-умолчанию установлено в 0. Для неподвижных объектов может быть использовано для 
-хранения любой дополнительной информации, связанной с объектом
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-РєРѕРѕСЂРґРёРЅР°С‚Р° РІРµРєС‚РѕСЂР° РїРµСЂРµРјРµС‰РµРЅРёСЏ РѕР±СЉРµРєС‚Р° РїСЂРё РІС‹Р·РѕРІРµ РјРµС‚РѕРґР° Move. РџРѕ 
+СѓРјРѕР»С‡Р°РЅРёСЋ СѓСЃС‚Р°РЅРѕРІР»РµРЅРѕ РІ 0. Р”Р»СЏ РЅРµРїРѕРґРІРёР¶РЅС‹С… РѕР±СЉРµРєС‚РѕРІ РјРѕР¶РµС‚ Р±С‹С‚СЊ РёСЃРїРѕР»СЊР·РѕРІР°РЅРѕ РґР»СЏ 
+С…СЂР°РЅРµРЅРёСЏ Р»СЋР±РѕР№ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕР№ РёРЅС„РѕСЂРјР°С†РёРё, СЃРІСЏР·Р°РЅРЅРѕР№ СЃ РѕР±СЉРµРєС‚РѕРј
 </td>
 </tr>
 <tr>
@@ -119,9 +119,9 @@ MultiPictureABC</code>, <code>BoardABC</code>&nbsp; и <code>ContainerABC</code>.
 <code>
     <b>property</b> dy: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y-координата вектора перемещения объекта при вызове метода Move. По 
-умолчанию установлено в 0. Для неподвижных объектов может быть использовано для 
-хранения любой дополнительной информации, связанной с объектом
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y-РєРѕРѕСЂРґРёРЅР°С‚Р° РІРµРєС‚РѕСЂР° РїРµСЂРµРјРµС‰РµРЅРёСЏ РѕР±СЉРµРєС‚Р° РїСЂРё РІС‹Р·РѕРІРµ РјРµС‚РѕРґР° Move. РџРѕ 
+СѓРјРѕР»С‡Р°РЅРёСЋ СѓСЃС‚Р°РЅРѕРІР»РµРЅРѕ РІ 0. Р”Р»СЏ РЅРµРїРѕРґРІРёР¶РЅС‹С… РѕР±СЉРµРєС‚РѕРІ РјРѕР¶РµС‚ Р±С‹С‚СЊ РёСЃРїРѕР»СЊР·РѕРІР°РЅРѕ РґР»СЏ 
+С…СЂР°РЅРµРЅРёСЏ Р»СЋР±РѕР№ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕР№ РёРЅС„РѕСЂРјР°С†РёРё, СЃРІСЏР·Р°РЅРЅРѕР№ СЃ РѕР±СЉРµРєС‚РѕРј
 </td>
 </tr>
 <tr>
@@ -129,7 +129,7 @@ MultiPictureABC</code>, <code>BoardABC</code>&nbsp; и <code>ContainerABC</code>.
 <code>
     <b>property</b> Center: Point;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Центр графического объекта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р¦РµРЅС‚СЂ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°
 </td>
 </tr>
 <tr>
@@ -137,7 +137,7 @@ MultiPictureABC</code>, <code>BoardABC</code>&nbsp; и <code>ContainerABC</code>.
 <code>
     <b>property</b> Position: Point;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Левый верхний угол графического объекта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р›РµРІС‹Р№ РІРµСЂС…РЅРёР№ СѓРіРѕР» РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°
 </td>
 </tr>
 <tr>
@@ -145,7 +145,7 @@ MultiPictureABC</code>, <code>BoardABC</code>&nbsp; и <code>ContainerABC</code>.
 <code>
     <b>property</b> Visible: boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Видим ли графический объект
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РёРґРёРј Р»Рё РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚
 </td>
 </tr>
 <tr>
@@ -153,7 +153,7 @@ MultiPictureABC</code>, <code>BoardABC</code>&nbsp; и <code>ContainerABC</code>.
 <code>
     <b>property</b> Color: GColor;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет графического объекта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р¦РІРµС‚ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°
 </td>
 </tr>
 <tr>
@@ -161,7 +161,7 @@ MultiPictureABC</code>, <code>BoardABC</code>&nbsp; и <code>ContainerABC</code>.
 <code>
     <b>property</b> FontColor: GColor;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет шрифта графического объекта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р¦РІРµС‚ С€СЂРёС„С‚Р° РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°
 </td>
 </tr>
 <tr>
@@ -169,7 +169,7 @@ MultiPictureABC</code>, <code>BoardABC</code>&nbsp; и <code>ContainerABC</code>.
 <code>
     <b>property</b> Text: string;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Текст внутри графического объекта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РўРµРєСЃС‚ РІРЅСѓС‚СЂРё РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°
 </td>
 </tr>
 <tr>
@@ -177,15 +177,15 @@ MultiPictureABC</code>, <code>BoardABC</code>&nbsp; и <code>ContainerABC</code>.
 <code>
     <b>property</b> TextVisible: boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Видимость текста внутри графического объекта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РёРґРёРјРѕСЃС‚СЊ С‚РµРєСЃС‚Р° РІРЅСѓС‚СЂРё РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°
 </td>
 </tr>
 <tr>
 	<td>
 <code>
     <b>property</b> TextScale: real;</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Масштаб текста относительно размеров графического объекта, 0&lt;=TextScale&lt;=1. 
-При TextScale=1 текст занимает всю ширину или высоту объекта. По умолчанию 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњР°СЃС€С‚Р°Р± С‚РµРєСЃС‚Р° РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ СЂР°Р·РјРµСЂРѕРІ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°, 0&lt;=TextScale&lt;=1. 
+РџСЂРё TextScale=1 С‚РµРєСЃС‚ Р·Р°РЅРёРјР°РµС‚ РІСЃСЋ С€РёСЂРёРЅСѓ РёР»Рё РІС‹СЃРѕС‚Сѓ РѕР±СЉРµРєС‚Р°. РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 
 TextScale=0.8</td>
 </tr>
 <tr>
@@ -193,7 +193,7 @@ TextScale=0.8</td>
 <code>
     <b>property</b> FontName: string;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Имя шрифта для вывода свойства Text
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РРјСЏ С€СЂРёС„С‚Р° РґР»СЏ РІС‹РІРѕРґР° СЃРІРѕР№СЃС‚РІР° Text
 </td>
 </tr>
 <tr>
@@ -201,7 +201,7 @@ TextScale=0.8</td>
 <code>
     <b>property</b> FontStyle: FontStyleType;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Стиль шрифта для вывода свойства Text
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‚РёР»СЊ С€СЂРёС„С‚Р° РґР»СЏ РІС‹РІРѕРґР° СЃРІРѕР№СЃС‚РІР° Text
 </td>
 </tr>
 <tr>
@@ -209,23 +209,23 @@ TextScale=0.8</td>
 <code>
     <b>property</b> Number: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Целое число, выводимое в центре графического объекта. Для вывода 
-используется свойство Text
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р¦РµР»РѕРµ С‡РёСЃР»Рѕ, РІС‹РІРѕРґРёРјРѕРµ РІ С†РµРЅС‚СЂРµ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°. Р”Р»СЏ РІС‹РІРѕРґР° 
+РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ СЃРІРѕР№СЃС‚РІРѕ Text
 </td>
 </tr>
 <tr>
 	<td>
 <code><b>property</b> RealNumber: real;</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вещественное число, выводимое в центре графического объекта. Для вывода 
-используется свойство Text. Вещественное число выводится с одним знаком после 
-десятичной точки</td>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РµС‰РµСЃС‚РІРµРЅРЅРѕРµ С‡РёСЃР»Рѕ, РІС‹РІРѕРґРёРјРѕРµ РІ С†РµРЅС‚СЂРµ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°. Р”Р»СЏ РІС‹РІРѕРґР° 
+РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ СЃРІРѕР№СЃС‚РІРѕ Text. Р’РµС‰РµСЃС‚РІРµРЅРЅРѕРµ С‡РёСЃР»Рѕ РІС‹РІРѕРґРёС‚СЃСЏ СЃ РѕРґРЅРёРј Р·РЅР°РєРѕРј РїРѕСЃР»Рµ 
+РґРµСЃСЏС‚РёС‡РЅРѕР№ С‚РѕС‡РєРё</td>
 </tr>
 <tr>
 	<td>
 <code>
     <b>property</b> Owner: ContainerABC;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Владелец графического объекта, ответственный также за перерисовку графического объекта внутри себя (по умолчанию nil)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’Р»Р°РґРµР»РµС† РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°, РѕС‚РІРµС‚СЃС‚РІРµРЅРЅС‹Р№ С‚Р°РєР¶Рµ Р·Р° РїРµСЂРµСЂРёСЃРѕРІРєСѓ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° РІРЅСѓС‚СЂРё СЃРµР±СЏ (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ nil)
 </td>
 </tr>
 <tr>
@@ -233,96 +233,96 @@ TextScale=0.8</td>
 </tr>
 <tr>
 	<td style="border:1px solid #808080; background-color: #E7E7F7">
-<font style="font-size: 11pt">Методы класса ObjectABC</font></td>
+<font style="font-size: 11pt">РњРµС‚РѕРґС‹ РєР»Р°СЃСЃР° ObjectABC</font></td>
 </tr>
 <tr><td>
 <code>
     <b>procedure</b> MoveTo(x,y: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает левый верхний угол графического объекта к точке (x,y)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС‰Р°РµС‚ Р»РµРІС‹Р№ РІРµСЂС…РЅРёР№ СѓРіРѕР» РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° Рє С‚РѕС‡РєРµ (x,y)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> MoveOn(a,b: integer); 
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект на вектор (a,b)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС‰Р°РµС‚ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚ РЅР° РІРµРєС‚РѕСЂ (a,b)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Move; <b>virtual</b>;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект на вектор, задаваемый свойствами dx,dy
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС‰Р°РµС‚ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚ РЅР° РІРµРєС‚РѕСЂ, Р·Р°РґР°РІР°РµРјС‹Р№ СЃРІРѕР№СЃС‚РІР°РјРё dx,dy
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> Scale(f: real); <b>virtual</b>;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Масштабирует графический объект в f раз (f&gt;1 - увеличение, 0&lt;f&lt;1 - уменьшение)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњР°СЃС€С‚Р°Р±РёСЂСѓРµС‚ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚ РІ f СЂР°Р· (f&gt;1 - СѓРІРµР»РёС‡РµРЅРёРµ, 0&lt;f&lt;1 - СѓРјРµРЅСЊС€РµРЅРёРµ)
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> ToFront;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переносит графический объект на передний план
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРЅРѕСЃРёС‚ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚ РЅР° РїРµСЂРµРґРЅРёР№ РїР»Р°РЅ
 </td></tr>
 <tr><td>
 <code>
     <b>procedure</b> ToBack;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переносит графический объект на задний план
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРЅРѕСЃРёС‚ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚ РЅР° Р·Р°РґРЅРёР№ РїР»Р°РЅ
 </td></tr>
 <tr><td>
 <code>
     <b>function</b> Bounds: System.Drawing.Rectangle;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает прямоугольник, определяющий границы графического объекта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє, РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ РіСЂР°РЅРёС†С‹ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°
 </td></tr>
 <tr><td>
 <code>
     <b>function</b> PtInside(x,y: integer): boolean; <b>virtual</b>;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если точка (x,y) находится внутри графического объекта, и False в противном случае
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё С‚РѕС‡РєР° (x,y) РЅР°С…РѕРґРёС‚СЃСЏ РІРЅСѓС‚СЂРё РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°, Рё False РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ
 </td></tr>
 <tr><td>
 <code>
     <b>function</b> Intersect(g: ObjectABC): boolean;<br>
-</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если изображение данного графического объекта пересекается с изображением
+</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РёР·РѕР±СЂР°Р¶РµРЅРёРµ РґР°РЅРЅРѕРіРѕ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° РїРµСЂРµСЃРµРєР°РµС‚СЃСЏ СЃ РёР·РѕР±СЂР°Р¶РµРЅРёРµРј
 
-    графического объекта g, и False в противном случае. Белый цвет считается прозрачным и не принадлежащим объекту</td></tr>
+    РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° g, Рё False РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ. Р‘РµР»С‹Р№ С†РІРµС‚ СЃС‡РёС‚Р°РµС‚СЃСЏ РїСЂРѕР·СЂР°С‡РЅС‹Рј Рё РЅРµ РїСЂРёРЅР°РґР»РµР¶Р°С‰РёРј РѕР±СЉРµРєС‚Сѓ</td></tr>
 <tr><td>
 <code>
     <b>function</b> IntersectRect(r: System.Drawing.Rectangle): boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если прямоугольник графического объекта пересекается прямоугольником r, и False в противном случае
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р° РїРµСЂРµСЃРµРєР°РµС‚СЃСЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРј r, Рё False РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ
 </td></tr>
 <tr><td>
 <code>
     <b>function</b> Clone0: ObjectABC; <b>virtual</b>;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает клон графического объекта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєР»РѕРЅ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°
 </td></tr>
 <tr>
 	<td>
 <code>
     <b>function</b> Clone: ObjectABC; 
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает клон графического объекта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєР»РѕРЅ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°
 </td>
 </tr>
 <tr>
 	<td>
 <code>
     <b>procedure</b> Draw(x,y: integer; g: Graphics); <b>virtual</b>;</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Защищенная. Не 
-вызывается явно. Переопределяется для каждого графического класса. Рисует объект на
-объекте <code>g:</code> <code>Graphics</code></td>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°С‰РёС‰РµРЅРЅР°СЏ. РќРµ 
+РІС‹Р·С‹РІР°РµС‚СЃСЏ СЏРІРЅРѕ. РџРµСЂРµРѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РґР»СЏ РєР°Р¶РґРѕРіРѕ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РєР»Р°СЃСЃР°. Р РёСЃСѓРµС‚ РѕР±СЉРµРєС‚ РЅР°
+РѕР±СЉРµРєС‚Рµ <code>g:</code> <code>Graphics</code></td>
 </tr>
 <tr>
 	<td>
 <code>
     <b>destructor</b> Destroy;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уничтожает графический объект
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРЅРёС‡С‚РѕР¶Р°РµС‚ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚
 </td>
 </tr>
 </table>
