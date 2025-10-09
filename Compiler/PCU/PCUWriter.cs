@@ -255,7 +255,7 @@ namespace PascalABCCompiler.PCU
 
         //ivan
         private List<DotNetNameRef> dot_net_name_list = new List<DotNetNameRef>();
-        private Hashtable tokens = new Hashtable();
+        private Dictionary<MemberInfo, int> tokens = new Dictionary<MemberInfo, int>();
         //ivan
 
 
@@ -1202,8 +1202,10 @@ namespace PascalABCCompiler.PCU
         private int GetTokenForNetEntity(FieldInfo val)
         {
             int off=0;
-            object o = tokens[val];
-            if (o != null) return (int)o;
+
+            if (tokens.TryGetValue(val, out var o))
+                return o;
+
             DotNetNameRef dnnr = new DotNetNameRef();
             dnnr.kind = DotNetKind.Field;
             dnnr.name = val.Name;
@@ -1218,8 +1220,10 @@ namespace PascalABCCompiler.PCU
         {
             int off = 0;
             //if (tokens.TryGetValue(val, out off)) return off;
-            object o = tokens[val];
-            if (o != null) return (int)o;
+
+            if (tokens.TryGetValue(val, out var o))
+                return o;
+
             DotNetNameRef dnnr = new DotNetNameRef();
             dnnr.kind = DotNetKind.Method;
             dnnr.name = val.Name;
@@ -1255,8 +1259,10 @@ namespace PascalABCCompiler.PCU
         {
             int off = 0;
             //if (tokens.TryGetValue(val, out off)) return off;
-            object o = tokens[val];
-            if (o != null) return (int)o;
+
+            if (tokens.TryGetValue(val, out var o))
+                return o;
+
             DotNetNameRef dnnr = new DotNetNameRef();
             dnnr.kind = DotNetKind.Constructor;
             dnnr.name = ".ctor";
@@ -1284,8 +1290,10 @@ namespace PascalABCCompiler.PCU
         {
             int off = 0;
             //if (tokens.TryGetValue(val, out off)) return off;
-            object o = tokens[val];
-            if (o != null) return (int)o;
+
+            if (tokens.TryGetValue(val, out var o))
+                return o;
+
             DotNetNameRef dnnr = new DotNetNameRef();
             dnnr.kind = DotNetKind.Property;
             dnnr.name = val.Name;
@@ -1314,8 +1322,10 @@ namespace PascalABCCompiler.PCU
         {
             int off = 0;
             //if (tokens.TryGetValue(val, out off)) return off;
-            object o = tokens[val];
-            if (o != null) return (int)o;
+
+            if (tokens.TryGetValue(val, out var o))
+                return o;
+
             DotNetNameRef dnnr = new DotNetNameRef();
             dnnr.kind = DotNetKind.Type;
             if (val.FullName != null)
@@ -1891,28 +1901,27 @@ namespace PascalABCCompiler.PCU
 			return offset;
 		}
 
-        private Hashtable var_positions = new Hashtable();
-        private Hashtable const_positions = new Hashtable();
+        private Dictionary<namespace_variable, List<int>> var_positions = new Dictionary<namespace_variable, List<int>>();
+        private Dictionary<namespace_constant_definition, List<int>> const_positions = new Dictionary<namespace_constant_definition, List<int>>();
         
         private void SaveVariableReferencePosition(namespace_variable nv)
         {
-            List<int> offs = (List<int>)var_positions[nv];
-            if (offs == null)
-            {
+            if ( !var_positions.TryGetValue(nv, out var offs) ){
                 offs = new List<int>();
                 var_positions[nv] = offs;
             }
+
             offs.Add((int)bw.BaseStream.Position);
         }
-		
+
         private void SaveConstantReferencePosition(namespace_constant_definition nv)
         {
-            List<int> offs = (List<int>)const_positions[nv];
-            if (offs == null)
+            if ( !const_positions.TryGetValue(nv, out var offs) )
             {
                 offs = new List<int>();
                 const_positions[nv] = offs;
             }
+
             offs.Add((int)bw.BaseStream.Position);
         }
         
@@ -1921,7 +1930,7 @@ namespace PascalABCCompiler.PCU
             int tmp = (int)bw.BaseStream.Position;
             foreach (namespace_variable nv in var_positions.Keys)
             {
-                List<int> offs = (List<int>)var_positions[nv];
+                List<int> offs = var_positions[nv];
                 byte is_def = 0;
                 for (int i = 0; i < offs.Count; i++)
                 {
@@ -1931,13 +1940,13 @@ namespace PascalABCCompiler.PCU
             }
             bw.BaseStream.Position = tmp;
         }
-		
+
         private void WriteConstantPositions()
         {
             int tmp = (int)bw.BaseStream.Position;
             foreach (namespace_constant_definition nv in const_positions.Keys)
             {
-                List<int> offs = (List<int>)const_positions[nv];
+                List<int> offs = const_positions[nv];
                 byte is_def = 0;
                 for (int i = 0; i < offs.Count; i++)
                 {

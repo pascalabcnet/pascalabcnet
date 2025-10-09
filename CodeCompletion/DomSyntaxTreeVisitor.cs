@@ -40,7 +40,7 @@ namespace CodeCompletion
         private static Compiler compiler;
         public static bool use_semantic_for_intellisense;
         private Dictionary<method_call, SymScope> method_call_cache = new Dictionary<method_call, SymScope>();
-        public Hashtable cur_used_assemblies;
+        public HashSet<Assembly> cur_used_assemblies;
 
         public DomSyntaxTreeVisitor(DomConverter converter)
 		{
@@ -69,7 +69,7 @@ namespace CodeCompletion
                 //throw e;
             	//System.Diagnostics.Debug.WriteLine(e.StackTrace);
             }
-            cur_used_assemblies = (Hashtable)PascalABCCompiler.NetHelper.NetHelper.cur_used_assemblies.Clone();
+            cur_used_assemblies = new HashSet<Assembly>(PascalABCCompiler.NetHelper.NetHelper.cur_used_assemblies);
             if (use_semantic_for_intellisense && !parse_only_interface)
             try
             {

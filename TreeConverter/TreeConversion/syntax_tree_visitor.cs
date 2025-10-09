@@ -12761,7 +12761,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (td.attributes != null)
             {
-                Hashtable ht = new Hashtable();
+                var ht = new HashSet<type_node>();
                 foreach (SyntaxTree.simple_attribute_list sal in td.attributes.attributes)
                     for (int j = 0; j < sal.attributes.Count; j++)
                     {
@@ -12784,7 +12784,7 @@ namespace PascalABCCompiler.TreeConverter
                             AddError(get_location(attr), "DUPLICATE_ATTRIBUTE_{0}_APPLICATION", tn.name);
                         }
                         else
-                            ht[tn] = tn;
+                            ht.Add(tn);
                         SemanticTree.attribute_qualifier_kind qualifier = SemanticTree.attribute_qualifier_kind.none_kind;
                         if (attr.qualifier != null)
                             if (j == 0)
@@ -12928,7 +12928,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (cun.attributes != null)
             {
-                Hashtable ht = new Hashtable();
+                var ht = new HashSet<type_node>();
                 foreach (SyntaxTree.simple_attribute_list sal in un.attributes.attributes)
                     for (int j = 0; j < sal.attributes.Count; j++)
                     {
@@ -12951,7 +12951,7 @@ namespace PascalABCCompiler.TreeConverter
                             AddError(get_location(attr), "DUPLICATE_ATTRIBUTE_{0}_APPLICATION", tn.name);
                         }
                         else
-                            ht[tn] = tn;
+                            ht.Add(tn);
                         SemanticTree.attribute_qualifier_kind qualifier = SemanticTree.attribute_qualifier_kind.none_kind;
                         if (attr.qualifier != null)
                             if (j == 0)
@@ -13258,7 +13258,7 @@ namespace PascalABCCompiler.TreeConverter
         //Добавляет ограничители для параметра шаблона
         private void add_generic_eliminations(common_type_node param, List<SyntaxTree.type_definition> specificators)
         {
-            Hashtable used_interfs = new Hashtable();
+            var used_interfs = new HashSet<type_node>();
             // System.Enum это класс, но его наследники - записи
             // Если указать "where T: Enum, record" - станет нельзя применять T=Enum, с ошибкой что Enum не запись
             // Но чтобы в секции where override метода можно было указать record без System.Enum
@@ -13320,13 +13320,13 @@ namespace PascalABCCompiler.TreeConverter
                         //    param.is_class = true;
                         if (spec_type.IsInterface)
                         {
-                            if (used_interfs[spec_type] != null)
+                            if (used_interfs.Contains(spec_type))
                             {
                                 AddError(get_location(specificators[i]), "INTERFACE_{0}_ALREADY_ADDED_TO_IMPLEMENTING_LIST", spec_type.PrintableName);
                             }
                             else
                             {
-                                used_interfs.Add(spec_type, spec_type);
+                                used_interfs.Add(spec_type);
                             }
                             //Добавляем интерфейс
                             type_table.AddInterface(param, spec_type, get_location(specificators[i]));
@@ -13358,7 +13358,7 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     foreach (type_node tn in spec_type.ImplementingInterfaces)
                                     {
-                                        used_interfs.Add(tn, tn);
+                                        used_interfs.Add(tn);
                                         type_table.AddInterface(param, tn, get_location(specificators[i]));
                                     }
                                 }

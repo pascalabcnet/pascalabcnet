@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Threading;
 
 using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
@@ -286,9 +285,9 @@ namespace PascalABCCompiler.NetHelper
     }
 	
 	public static class NetHelper {
-		private static Hashtable namespaces;
-		private static Hashtable types;
-        private static Dictionary<string,FoundInfo> type_search_cache;
+        private static Dictionary<string, Type> namespaces;
+        private static Hashtable types;
+        private static Dictionary<string, FoundInfo> type_search_cache;
 		private static Hashtable compiled_pascal_types;
 		/*private static Hashtable methods;
 		private static Hashtable properties;
@@ -300,19 +299,19 @@ namespace PascalABCCompiler.NetHelper
 		//private static Hashtable meth_nodes;
 		private static Dictionary<PropertyInfo, compiled_property_node> prop_nodes;
 		private static Hashtable field_nodes;
-        private static Hashtable constr_nodes;
-		private static Hashtable stand_types;
-        private static Hashtable type_handles;
-        private static Hashtable method_handles;
-        private static Hashtable constr_handles;
-        private static Hashtable field_handles;
-		private static Hashtable assemblies;
-        private static Hashtable special_types;
-        private static Hashtable ns_types;
+        private static Dictionary<ConstructorInfo, compiled_constructor_node> constr_nodes;
+		private static HashSet<Type> stand_types;
+        private static Dictionary<Assembly, Dictionary<int, Type>> type_handles;
+        private static Dictionary<Type, Dictionary<int, MethodInfo>> method_handles;
+        private static Dictionary<Type, Dictionary<int, ConstructorInfo>> constr_handles;
+        private static Dictionary<Type, Dictionary<int, FieldInfo>> field_handles;
+        private static HashSet<Assembly> assemblies;
+        private static Dictionary<int, Type> special_types;
+        private static Dictionary<string, Type[]> ns_types;
 		private static Type memberInfo;
-		private static Hashtable namespace_assemblies;
-		public static Hashtable cur_used_assemblies;
-        private static Hashtable cached_type_extensions;
+        private static Dictionary<Assembly, HashSet<string>> namespace_assemblies;
+        public static HashSet<Assembly> cur_used_assemblies;
+        private static HashSet<Type> cached_type_extensions;
 		public static Type DelegateType;
         public static Type EnumType;
         public static Type ArrayType;
@@ -334,29 +333,28 @@ namespace PascalABCCompiler.NetHelper
         public static Dictionary<string, List<int>> generics_names = new Dictionary<string, List<int>>();
         private static Dictionary<string, MemberInfo> member_cache = new Dictionary<string, MemberInfo>();
 
-		public static void reset()
-		{
+        public static void reset()
+        {
             if (cur_used_assemblies == null)
-                cur_used_assemblies = new Hashtable();
+                cur_used_assemblies = new HashSet<Assembly>();
             cur_used_assemblies.Clear();
-			cur_used_assemblies[typeof(string).Assembly] = typeof(string).Assembly;
-			cur_used_assemblies[typeof(Microsoft.CSharp.CSharpCodeProvider).Assembly] = typeof(Microsoft.CSharp.CSharpCodeProvider).Assembly;
+            cur_used_assemblies.Add(typeof(string).Assembly);
+            cur_used_assemblies.Add(typeof(Microsoft.CSharp.CSharpCodeProvider).Assembly);
             type_search_cache.Clear();
+        }
 
-		}
-		
-		private static Hashtable ass_name_cache;
-		private static Hashtable file_dates;
+        private static Dictionary<string, Assembly> ass_name_cache;
+        private static Dictionary<Assembly, DateTime> file_dates;
         private static Dictionary<Assembly, string> assm_full_paths;
 
 
-        public static bool IsAssemblyChanged(string name)
+		public static bool IsAssemblyChanged(string name)
 		{
 			if (name == null) return false;
-			Assembly a = ass_name_cache[name] as Assembly;
+			ass_name_cache.TryGetValue(name, out var a);
 			if (a != null)
 			{
-				if (System.IO.File.GetLastWriteTime(name) != (DateTime)file_dates[a])
+				if (System.IO.File.GetLastWriteTime(name) != file_dates[a])
 					return true;
 				return false;
 			}
@@ -367,12 +365,12 @@ namespace PascalABCCompiler.NetHelper
 		public static Assembly LoadAssembly(string name, bool use_load_from = false)
 		{
             if (name == null) return null;
-			Assembly a = ass_name_cache[name] as Assembly;
+            ass_name_cache.TryGetValue(name, out var a);
             if (a == null && name.IndexOf(System.IO.Path.DirectorySeparatorChar) == -1)
-                a = ass_name_cache[System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), name)] as Assembly;
+                ass_name_cache.TryGetValue(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), name), out a);
             if (a != null)
 			{
-				if (System.IO.File.GetLastWriteTime(name) == (DateTime)file_dates[a])
+				if (System.IO.File.GetLastWriteTime(name) == file_dates[a])
 					return a;
 				namespace_assemblies.Remove(a);
 				assemblies.Remove(a);
@@ -433,24 +431,23 @@ namespace PascalABCCompiler.NetHelper
 		}
 		
 		
-		public static Hashtable entry_types = new Hashtable();
+        public static Dictionary<Assembly, List<Type>> entry_types = new Dictionary<Assembly, List<Type>>();
         private static string curr_inited_assm_path = null;
 
         public static List<Type> init_namespaces(System.Reflection.Assembly _assembly)
         {
-            Assembly assembly = (Assembly)assemblies[_assembly];
+            Assembly assembly = assemblies.Contains(_assembly) ? _assembly : null;
             List<string> nss = new List<string>();
-            cur_used_assemblies[_assembly] = _assembly;
+            cur_used_assemblies.Add(_assembly);
             Type entry_type = null;
-            List<Type> unit_types = entry_types[_assembly] as List<Type>;
-            if (unit_types == null)
+            if ( !entry_types.TryGetValue(_assembly, out var unit_types) )
                 unit_types = new List<Type>();
             if (assembly == null)
             {
 
                 Type[] tarr = _assembly.GetTypes();
                 //Hashtable ns_ht = new Hashtable(CaseInsensitiveHashCodeProvider.Default,CaseInsensitiveComparer.Default);
-                Hashtable ns_ht = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
+                var ns_ht = new HashSet<string>(StringComparer.CurrentCultureIgnoreCase);
                 foreach (Type t in tarr)
                 {
                     if (t.IsNotPublic)
@@ -461,7 +458,7 @@ namespace PascalABCCompiler.NetHelper
                         int pos = s.LastIndexOf('.');
                         //if (pos == -1) 
                         //if (namespaces[s] == null) ns_ht.Add(s,s);
-                        ns_ht[s] = s;
+                        ns_ht.Add(s);
                         namespaces[s] = t;
                         // SSM 17.05.19 Запретил uses Reflection: https://github.com/pascalabcnet/pascalabcnet/issues/1941
                         /*if (pos != -1)
@@ -482,9 +479,9 @@ namespace PascalABCCompiler.NetHelper
                             s = s.Substring(0, pos);
                             pos = s.LastIndexOf('.');
                             //if (pos == -1)
-                            if (namespaces[s] == null)
+                            if (!namespaces.ContainsKey(s))
                                 namespaces[s] = t;
-                            ns_ht[s] = s;
+                            ns_ht.Add(s);
                         }
                     }
                     TypeInfo ti = new TypeInfo(t, t.FullName);
@@ -747,7 +744,7 @@ namespace PascalABCCompiler.NetHelper
                     }
                 }
                 namespace_assemblies[_assembly] = ns_ht;
-                assemblies[_assembly] = _assembly;
+                assemblies.Add(_assembly);
             }
             return unit_types;
         }
@@ -856,13 +853,13 @@ namespace PascalABCCompiler.NetHelper
 		
         public static bool NamespaceExists(string Namespace)
         {
-        	Type t = (Type)namespaces[Namespace];
-       		
-        	if (t != null && cur_used_assemblies.ContainsKey(t.Assembly)) return true;
-        	foreach (Assembly a in namespace_assemblies.Keys)
-        		if (cur_used_assemblies.ContainsKey(a) && (namespace_assemblies[a] as Hashtable).ContainsKey(Namespace))
+            namespaces.TryGetValue(Namespace, out var t);
+
+            if (t != null && cur_used_assemblies.Contains(t.Assembly)) return true;
+            foreach (Assembly a in namespace_assemblies.Keys)
+                if (cur_used_assemblies.Contains(a) && namespace_assemblies[a].Contains(Namespace))
                     return true;
-        	return false;
+            return false;
         }
 
         static NetHelper()
@@ -875,46 +872,46 @@ namespace PascalABCCompiler.NetHelper
             //types = new Hashtable(1024, CaseInsensitiveHashCodeProvider.Default, CaseInsensitiveComparer.Default);
             types = new Hashtable(8096, StringComparer.CurrentCultureIgnoreCase);
             compiled_pascal_types = new Hashtable(1024, StringComparer.CurrentCultureIgnoreCase);
-            namespaces = new Hashtable(1024, StringComparer.CurrentCultureIgnoreCase);
-            ass_name_cache = new Hashtable(1024, StringComparer.CurrentCultureIgnoreCase);
+            namespaces = new Dictionary<string, Type>(1024, StringComparer.CurrentCultureIgnoreCase);
+            ass_name_cache = new Dictionary<string, Assembly>(1024, StringComparer.CurrentCultureIgnoreCase);
             assm_full_paths = new Dictionary<Assembly, string>();
             //ass_name_cache = new Hashtable(CaseInsensitiveHashCodeProvider.Default, CaseInsensitiveComparer.Default);
-            file_dates = new Hashtable();
+            file_dates = new Dictionary<Assembly, DateTime>();
             //methods = new Hashtable();
             //properties = new Hashtable();
             members = new Dictionary<Type, Dictionary<string, List<MemberInfo>>>(128);
             //fields = new Hashtable();
-            assemblies = new Hashtable();
+            assemblies = new HashSet<Assembly>();
             //meth_nodes = new Hashtable();
             prop_nodes = new Dictionary<PropertyInfo,compiled_property_node>();
             field_nodes = new Hashtable();
-            constr_nodes = new Hashtable();
-            stand_types = new Hashtable();
-            type_handles = new Hashtable();
-            method_handles = new Hashtable();
-            constr_handles = new Hashtable();
-            field_handles = new Hashtable();
-            special_types = new Hashtable();
+            constr_nodes = new Dictionary<ConstructorInfo, compiled_constructor_node>();
+            stand_types = new HashSet<Type>();
+            type_handles = new Dictionary<Assembly, Dictionary<int, Type>>();
+            method_handles = new Dictionary<Type, Dictionary<int, MethodInfo>>();
+            constr_handles = new Dictionary<Type, Dictionary<int, ConstructorInfo>>();
+            field_handles = new Dictionary<Type, Dictionary<int, FieldInfo>>();
+            special_types = new Dictionary<int, Type>();
             type_search_cache = new Dictionary<string,FoundInfo>(300);
-            cached_type_extensions = new Hashtable();
-            namespace_assemblies = new Hashtable();
-            cur_used_assemblies = new Hashtable();
+            cached_type_extensions = new HashSet<Type>();
+            namespace_assemblies = new Dictionary<Assembly, HashSet<string>>();
+            cur_used_assemblies = new HashSet<Assembly>();
             //ns_types = new Hashtable(CaseInsensitiveHashCodeProvider.Default, CaseInsensitiveComparer.Default);
-            ns_types = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
+            ns_types = new Dictionary<string, Type[]>(StringComparer.CurrentCultureIgnoreCase);
             memberInfo = typeof(MemberInfo);
 
-            stand_types[typeof(int)] = stand_types;
-            stand_types[typeof(byte)] = stand_types;
-            stand_types[typeof(bool)] = stand_types;
-            stand_types[typeof(sbyte)] = stand_types;
-            stand_types[typeof(short)] = stand_types;
-            stand_types[typeof(ushort)] = stand_types;
-            stand_types[typeof(uint)] = stand_types;
-            stand_types[typeof(long)] = stand_types;
-            stand_types[typeof(ulong)] = stand_types;
-            stand_types[typeof(char)] = stand_types;
-            stand_types[typeof(float)] = stand_types;
-            stand_types[typeof(double)] = stand_types;
+            stand_types.Add(typeof(int));
+            stand_types.Add(typeof(byte));
+            stand_types.Add(typeof(bool));
+            stand_types.Add(typeof(sbyte));
+            stand_types.Add(typeof(short));
+            stand_types.Add(typeof(ushort));
+            stand_types.Add(typeof(uint));
+            stand_types.Add(typeof(long));
+            stand_types.Add(typeof(ulong));
+            stand_types.Add(typeof(char));
+            stand_types.Add(typeof(float));
+            stand_types.Add(typeof(double));
             //stand_types[typeof(decimal)]=stand_types;
             //stand_types[NetHelper.void_ptr_type] = stand_types;
             DelegateType = typeof(Delegate);
@@ -970,36 +967,35 @@ namespace PascalABCCompiler.NetHelper
             special_types[t.MetadataToken] = t;
         }
 
-		public static bool IsStandType(Type t)
-		{
-			if (stand_types[t] != null) return true;
-			return false;
-		}
-		
-		public static bool IsNetNamespace(string name, Type tt = null)
-		{
+        public static bool IsStandType(Type t)
+        {
+            return stand_types.Contains(t);
+        }
+
+        public static bool IsNetNamespace(string name, Type tt = null)
+        {
             Type t = null;
             if (tt != null)
                 t = tt;
             else
-                t = namespaces[name] as Type;
-        	if (t != null && cur_used_assemblies.ContainsKey(t.Assembly)) return true;
-        	foreach (Assembly a in namespace_assemblies.Keys)
-        		if (cur_used_assemblies != null && cur_used_assemblies.ContainsKey(a) && (namespace_assemblies[a] as Hashtable).ContainsKey(name))
+                namespaces.TryGetValue(name, out t);
+            if (t != null && cur_used_assemblies.Contains(t.Assembly)) return true;
+            foreach (Assembly a in namespace_assemblies.Keys)
+                if (cur_used_assemblies != null && cur_used_assemblies.Contains(a) && namespace_assemblies[a].Contains(name))
                     return true;
-        	return false;
-		}
+            return false;
+        }
 
         public static bool IsNetNamespaceInAssembly(string name, Assembly a)
         {
-            if (cur_used_assemblies != null && cur_used_assemblies.ContainsKey(a) && (namespace_assemblies[a] as Hashtable).ContainsKey(name))
+            if (cur_used_assemblies != null && cur_used_assemblies.Contains(a) && namespace_assemblies[a].Contains(name))
                 return true;
             return false;
         }
 
 		public static bool IsNetNamespace(string name,PascalABCCompiler.TreeRealization.using_namespace_list _unar, out string full_ns)
 		{
-			Type t = namespaces[name] as Type;
+			namespaces.TryGetValue(name, out var t);
 			full_ns = name;
 			if (t != null)
 			{
@@ -1023,8 +1019,7 @@ namespace PascalABCCompiler.NetHelper
                 for (int i = 0; i < _unar.Count; i++)
                 {
                     string full_name = _unar[i].namespace_name + "." + name;
-                    t = namespaces[full_name] as Type;
-                    if (t != null)
+                    if ( namespaces.TryGetValue(full_name, out t) )
                     {
                         full_ns = full_name;
                         return IsNetNamespace(full_ns, t);
@@ -1051,7 +1046,7 @@ namespace PascalABCCompiler.NetHelper
         public static IEnumerable<MemberInfo> GetExtensionMethods(Type t)
         {
             List<MethodInfo> meths = null;
-            if (SystemCoreAssembly == null || !cur_used_assemblies.ContainsKey(SystemCoreAssembly))
+            if (SystemCoreAssembly == null || !cur_used_assemblies.Contains(SystemCoreAssembly))
                 return new List<MemberInfo>();
             if (type_extensions.TryGetValue(t, out meths) || t.IsGenericType && type_extensions.TryGetValue(t.GetGenericTypeDefinition(), out meths))
             {
@@ -1213,14 +1208,14 @@ namespace PascalABCCompiler.NetHelper
 		
 		public static string[] GetNamespaces(Assembly a)
 		{
-			Hashtable ht = (Hashtable)namespace_assemblies[a];
+			var ht = namespace_assemblies[a];
 			List<string> lst = new List<string>();
-			foreach (string s in ht.Values)
+			foreach (string s in ht)
 				//if (s.IndexOf('.') == -1)
 				lst.Add(s);
 			return lst.ToArray();
 		}
-		
+
         public static void FormBaseInterfacesList(Type t, List<Type> interfaces)
         {
             if (interfaces.IndexOf(t) < 0)
@@ -1297,7 +1292,7 @@ namespace PascalABCCompiler.NetHelper
                         arrays_with_extension_methods[tmp_t] = tmp_t;
                     if (tmp_t.IsGenericTypeDefinition)
                         generics_with_extension_methods[tmp_t] = tmp_t;
-                    cached_type_extensions[t] = t;
+                    cached_type_extensions.Add(t);
                     while (tmp_t != null)
                     {
                         List<MethodInfo> meths1 = null;
@@ -1320,7 +1315,7 @@ namespace PascalABCCompiler.NetHelper
                                 all_meths.AddRange(meths3);
                             foreach (MethodInfo mi in all_meths)
                             {
-                                if (cur_used_assemblies.ContainsKey(mi.DeclaringType.Assembly))
+                                if (cur_used_assemblies.Contains(mi.DeclaringType.Assembly))
                                 {
                                     List<MemberInfo> al = null;
                                     string s = StringConstants.GetNETOperName(mi.Name);
@@ -1348,7 +1343,7 @@ namespace PascalABCCompiler.NetHelper
                         {
                             foreach (MethodInfo mi in meths)
                             {
-                                if (cur_used_assemblies.ContainsKey(mi.DeclaringType.Assembly))
+                                if (cur_used_assemblies.Contains(mi.DeclaringType.Assembly))
                                 {
                                     List<MemberInfo> al = null;
                                     if (!ht.TryGetValue(mi.Name, out al))
@@ -1931,7 +1926,7 @@ namespace PascalABCCompiler.NetHelper
 
         public static compiled_constructor_node GetConstructorNode(ConstructorInfo ci)
         {
-        	return (compiled_constructor_node)constr_nodes[ci];
+            return constr_nodes[ci];
         }
 
         public static void AddConstructor(ConstructorInfo ci, compiled_constructor_node ccn)
@@ -2051,7 +2046,7 @@ namespace PascalABCCompiler.NetHelper
                     return null;
                 List<TypeInfo> ti_list = fi.GetTypesByNamespaceList(_unar);
                 foreach (TypeInfo ti in ti_list)
-                    if (cur_used_assemblies.ContainsKey(ti.type.Assembly))
+                    if (cur_used_assemblies.Contains(ti.type.Assembly))
                         return ti.type;
             }
             object o = types[name];
@@ -2074,7 +2069,7 @@ namespace PascalABCCompiler.NetHelper
                     {
                         fi.type_infos.Add(new TypeNamespaceInfo(t, null));
                     }
-                    if (cur_used_assemblies.ContainsKey(t.type.Assembly))
+                    if (cur_used_assemblies.Contains(t.type.Assembly))
                         return t.type;
                     else
                         return null;
@@ -2092,7 +2087,7 @@ namespace PascalABCCompiler.NetHelper
                         {
                             fi.type_infos.Add(new TypeNamespaceInfo(t, _unar[i]));
                         }
-                        if (cur_used_assemblies.ContainsKey(t.type.Assembly))
+                        if (cur_used_assemblies.Contains(t.type.Assembly))
                             return t.type;
                         else
                             return null;
@@ -2116,7 +2111,7 @@ namespace PascalABCCompiler.NetHelper
                         {
                             fi.type_infos.Add(new TypeNamespaceInfo(t, null));
                         }
-                        if (cur_used_assemblies.ContainsKey(t.type.Assembly))
+                        if (cur_used_assemblies.Contains(t.type.Assembly))
                             return t.type;
                     }
                     for (int i = 0; i < _unar.Count; i++)
@@ -2132,7 +2127,7 @@ namespace PascalABCCompiler.NetHelper
                             {
                                 fi.type_infos.Add(new TypeNamespaceInfo(t, _unar[i]));
                             }
-                            if (cur_used_assemblies.ContainsKey(t.type.Assembly))
+                            if (cur_used_assemblies.Contains(t.type.Assembly))
                                 return t.type;
                             //else
                             //    return null;
@@ -2152,10 +2147,10 @@ namespace PascalABCCompiler.NetHelper
                 List<TypeInfo> founded_types = new List<TypeInfo>();
                 foreach (TypeInfo t in typs)
                 {
-                    if (cur_used_assemblies.ContainsKey(t.type.Assembly))
+                    if (cur_used_assemblies.Contains(t.type.Assembly))
                         founded_types.Add(t);
                 }
-                if (founded_types.Count == 1 && cur_used_assemblies.ContainsKey(founded_types[0].type.Assembly))
+                if (founded_types.Count == 1 && cur_used_assemblies.Contains(founded_types[0].type.Assembly))
                     return founded_types[0].type;
                 else
                     return null;
@@ -2176,7 +2171,7 @@ namespace PascalABCCompiler.NetHelper
 			//ivan added - runtime types adding
 			Type t = Type.GetType(name, false, true);
             if (t == null)
-                foreach (Assembly a in assemblies.Values)
+                foreach (Assembly a in assemblies)
                 {
                     t = a.GetType(name, false, true);
                     if (t != null) break;
@@ -2210,8 +2205,8 @@ namespace PascalABCCompiler.NetHelper
 		public static Type[] FindTypesInNamespace(string name)
 		{
 			List<Type> lst = new List<Type>();
-			Type[] typs = (Type[])ns_types[name];
-			if (typs != null) return typs;
+			if ( ns_types.TryGetValue(name, out var typs) )
+				return typs;
 			foreach (string s in types.Keys)
 			{
 				TypeInfo ti = types[s] as TypeInfo;
@@ -2247,75 +2242,79 @@ namespace PascalABCCompiler.NetHelper
 			return lst.ToArray();
 		}
 		
-        private static Hashtable InitHandles(Assembly a)
+        private static Dictionary<int, Type> InitHandles(Assembly a)
         {
             Type[] types = a.GetTypes();
-            Hashtable ht = new Hashtable();
+            var ht = new Dictionary<int, Type>();
             foreach (Type t in types)
-                ht[(int)t.MetadataToken] = t;
+                ht[t.MetadataToken] = t;
             type_handles[a] = ht;
             return ht;
         }
 
-        private static Hashtable InitMethodHandles(Type t)
+        private static Dictionary<int, MethodInfo> InitMethodHandles(Type t)
         {
             MethodInfo[] mis = t.GetMethods();
-            Hashtable ht = new Hashtable();
+            var ht = new Dictionary<int, MethodInfo>();
             foreach (MethodInfo mi in mis)
-                ht[(int)mi.MetadataToken] = mi;
+                ht[mi.MetadataToken] = mi;
             method_handles[t] = ht;
             return ht;
         }
 
-        private static Hashtable InitConstructorHandles(Type t)
+        private static Dictionary<int, ConstructorInfo> InitConstructorHandles(Type t)
         {
             ConstructorInfo[] cis = t.GetConstructors();
-            Hashtable ht = new Hashtable();
+            var ht = new Dictionary<int, ConstructorInfo>();
             foreach (ConstructorInfo ci in cis)
-                ht[(int)ci.MetadataToken] = ci;
+                ht[ci.MetadataToken] = ci;
             constr_handles[t] = ht;
             return ht;
         }
 
-        private static Hashtable InitFieldHandles(Type t)
+        private static Dictionary<int, FieldInfo> InitFieldHandles(Type t)
         {
             FieldInfo[] fis = t.GetFields();
-            Hashtable ht = new Hashtable();
+            var ht = new Dictionary<int, FieldInfo>();
             foreach (FieldInfo fi in fis)
-                ht[(int)fi.MetadataToken] = fi;
+                ht[fi.MetadataToken] = fi;
             field_handles[t] = ht;
             return ht;
         }
 
         public static Type FindTypeByHandle(Assembly a, int handle)
         {
-            Hashtable ht = (Hashtable)type_handles[a];
-            if (ht == null) ht = InitHandles(a);
-            Type t = (Type)ht[handle];
-            if (t == null)
-                return (Type)special_types[handle];
+            if (!type_handles.TryGetValue(a, out var ht))
+                ht = InitHandles(a);
+
+            if (!ht.TryGetValue(handle, out var t))
+                t = special_types[handle];
+
             return t;
         }
 
         public static MethodInfo FindMethodByHandle(Type t, int handle)
         {
-            Hashtable ht = (Hashtable)method_handles[t];
-            if (ht == null) ht = InitMethodHandles(t);
-            return (MethodInfo)ht[handle];
+            if (!method_handles.TryGetValue(t, out var ht))
+                ht = InitMethodHandles(t);
+
+            return ht[handle];
         }
 
         public static ConstructorInfo FindConstructorByHandle(Type t, int handle)
         {
-            Hashtable ht = (Hashtable)constr_handles[t];
-            if (ht == null) ht = InitConstructorHandles(t);
-            return (ConstructorInfo)ht[handle];
+            if (!constr_handles.TryGetValue(t, out var ht))
+                ht = InitConstructorHandles(t);
+
+            return ht[handle];
         }
 
         public static FieldInfo FindFieldByHandle(Type t, int handle)
         {
-            Hashtable ht = (Hashtable)field_handles[t];
-            if (ht == null) ht = InitFieldHandles(t);
-            return (FieldInfo)ht[handle];
+            if (!field_handles.TryGetValue(t, out var ht))
+                ht = InitFieldHandles(t);
+
+            return ht[handle];
         }
 
         public static void AddGenericInfo(Type t)

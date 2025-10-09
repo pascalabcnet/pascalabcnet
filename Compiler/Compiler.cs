@@ -156,7 +156,6 @@ using System.Linq;
 using System.Reflection;
 
 using Languages.Facade;
-using SyntaxVisitors;
 
 namespace PascalABCCompiler
 {
@@ -680,7 +679,7 @@ namespace PascalABCCompiler
         /// </summary>
         private List<CompilationUnit> UnitsToCompileDelayedList = new List<CompilationUnit>();
         
-        public Hashtable RecompileList = new Hashtable(StringComparer.OrdinalIgnoreCase);
+        public HashSet<string> RecompileList = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         private CompilationUnit currentCompilationUnit = null;
         
@@ -4005,7 +4004,7 @@ namespace PascalABCCompiler
                 {
                     if (UnitTable[Path.ChangeExtension(used_unit_fname, null)] != null) return true;
                     need = true;
-                    RecompileList[pcu_name] = pcu_name;
+                    RecompileList.Add(pcu_name);
                 }
             }
             if (need) return true;
@@ -4027,7 +4026,7 @@ namespace PascalABCCompiler
                     pr.AddAlreadyCompiledUnit(pcu_name2);
                     return true;
                 }
-                if (RecompileList.ContainsKey(pcu_name2))
+                if (RecompileList.Contains(pcu_name2))
                 {
                     return true;
                 }

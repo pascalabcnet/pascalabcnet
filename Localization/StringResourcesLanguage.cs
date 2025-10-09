@@ -2,8 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
-using System.Collections;
-using System.Text;
 using System.IO;
 
 namespace PascalABCCompiler
@@ -11,9 +9,9 @@ namespace PascalABCCompiler
 
     public class StringResourcesLanguage
     {
-        private static Hashtable AccessibleLanguagesHashtable = new Hashtable(StringComparer.OrdinalIgnoreCase);
-        private static Hashtable AccessibleTwoLetterISOHashtable = new Hashtable(StringComparer.OrdinalIgnoreCase);
-        private static Hashtable AccessibleLCIDHashtable = new Hashtable(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<string, string> AccessibleLanguagesHashtable = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<string, string> AccessibleTwoLetterISOHashtable = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<string, string> AccessibleLCIDHashtable = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private static List<string> accessibleLanguages = new List<string>();
         private static string DefaultLanguage = null;
         private static string DefaultTwoLetterISO = null;
@@ -119,11 +117,11 @@ namespace PascalABCCompiler
             get{return currentLanguageName;}
             set
             {
-                if (AccessibleLanguagesHashtable[value] == null) return;
+                if (!AccessibleLanguagesHashtable.ContainsKey(value)) return;
                 currentLanguageName = value;
-                currentTwoLetterISO = AccessibleTwoLetterISOHashtable[value] as string;
-                currentLCID = AccessibleLCIDHashtable[currentTwoLetterISO] as string;
-                StringResources.ResDirectoryName = AccessibleLanguagesHashtable[currentLanguageName] as string;
+                currentTwoLetterISO = AccessibleTwoLetterISOHashtable[value];
+                currentLCID = AccessibleLCIDHashtable[currentTwoLetterISO];
+                StringResources.ResDirectoryName = AccessibleLanguagesHashtable[currentLanguageName];
                 StringResources.UpdateObjectsText();
             }
         }
@@ -146,7 +144,8 @@ namespace PascalABCCompiler
 
         public static string GetLCIDByTwoLetterISO(string iso)
         {
-            return AccessibleLCIDHashtable[iso] as string;
+            AccessibleLCIDHashtable.TryGetValue(iso, out var result);
+            return result;
         }
     }
 }
