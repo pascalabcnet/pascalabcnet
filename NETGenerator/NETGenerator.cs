@@ -686,7 +686,6 @@ namespace PascalABCCompiler.NETGenerator
         public void ConvertFromTree(SemanticTree.IProgramNode p, string TargetFileName, string SourceFileName, CompilerOptions options, string[] ResourceFiles)
         {
             //SystemLibrary.SystemLibInitializer.RestoreStandardFunctions();
-            bool RunOnly = false;
             string fname = TargetFileName;
             var onlyfname = System.IO.Path.GetFileName(fname);
             comp_opt = options;
@@ -744,11 +743,8 @@ namespace PascalABCCompiler.NETGenerator
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
             }
-                
-            if (RunOnly)
-                ab = ad.DefineDynamicAssembly(an, AssemblyBuilderAccess.Run, dir);//определяем сборку
-            else
-                ab = ad.DefineDynamicAssembly(an, AssemblyBuilderAccess.Save, dir);//определяем сборку
+
+            ab = ad.DefineDynamicAssembly(an, AssemblyBuilderAccess.Save, dir);//определяем сборку
             
             //int nn = ad.GetAssemblies().Length;
             if (options.NeedDefineVersionInfo)
@@ -787,15 +783,11 @@ namespace PascalABCCompiler.NETGenerator
             //bool emit_sym = true;
             if (save_debug_info) //если модуль отладочный, то устанавливаем атрибут, запрещающий inline методов
                 ab.SetCustomAttribute(typeof(System.Diagnostics.DebuggableAttribute).GetConstructor(new Type[] { typeof(bool), typeof(bool) }), new byte[] { 0x01, 0x00, 0x01, 0x01, 0x00, 0x00 });
-            if (RunOnly)
-                mb = ab.DefineDynamicModule(name, save_debug_info);
+
+            if (!IsDotnet5() && !IsDotnetNative() && (comp_opt.target == TargetType.Exe || comp_opt.target == TargetType.WinExe))
+                mb = ab.DefineDynamicModule(name + ".exe", an.Name + ".exe", save_debug_info); //определяем модуль (save_debug_info - флаг включать отладочную информацию)
             else
-            {
-                if (!IsDotnet5() && !IsDotnetNative() && (comp_opt.target == TargetType.Exe || comp_opt.target == TargetType.WinExe))
-                    mb = ab.DefineDynamicModule(name + ".exe", an.Name + ".exe", save_debug_info); //определяем модуль (save_debug_info - флаг включать отладочную информацию)
-                else
-                    mb = ab.DefineDynamicModule(name + ".dll", an.Name + ".dll", save_debug_info);
-            }
+                mb = ab.DefineDynamicModule(name + ".dll", an.Name + ".dll", save_debug_info);
 
             cur_unit = Path.GetFileNameWithoutExtension(SourceFileName);
             string entry_cur_unit = cur_unit;
@@ -1257,68 +1249,59 @@ namespace PascalABCCompiler.NETGenerator
                 ab.SetCustomAttribute(new CustomAttributeBuilder(typeof(TargetFrameworkAttribute).GetConstructor(new Type[] { typeof(string) }), new object[] { $".NETFramework,Version=v{frameworkVersion}" }));
             }
 
-            if (RunOnly)
+            int tries = 0;
+            bool not_done = true;
+            do
             {
-                object main_class = ab.CreateInstance(cur_unit + ".Program");
-                MethodInfo methodInfo = main_class.GetType().GetMethod("Main");
-                methodInfo.Invoke(main_class, null);
-            }
-            else
-            {
-                int tries = 0;
-                bool not_done = true;
-                do
+                try
                 {
-                    try
+                    if (comp_opt.target == TargetType.Exe || comp_opt.target == TargetType.WinExe)
                     {
-                        if (comp_opt.target == TargetType.Exe || comp_opt.target == TargetType.WinExe)
-                        {
-                            if (IsDotnet5() || IsDotnetNative())
-                                ab.Save(an.Name + ".dll");
-                            else if (comp_opt.platformtarget == NETGenerator.CompilerOptions.PlatformTarget.x86)
-                                ab.Save(an.Name + ".exe", PortableExecutableKinds.Required32Bit, ImageFileMachine.I386);
-                            //else if (comp_opt.platformtarget == NETGenerator.CompilerOptions.PlatformTarget.x64)
-                            //    ab.Save(an.Name + ".exe", PortableExecutableKinds.PE32Plus, ImageFileMachine.IA64);
-                            else ab.Save(an.Name + ".exe");
-                            //сохраняем сборку
-                            if (IsDotnet5())
-                                BuildDotnet5(orig_dir, dir, dotnet_publish_dir);
-                            else if (IsDotnetNative())
-                                BuildDotnetNative(p, orig_dir, dir, dotnet_publish_dir, SourceFileName);
-                        }
-                        else
-                        {
-                            if (comp_opt.platformtarget == NETGenerator.CompilerOptions.PlatformTarget.x86)
-                                ab.Save(an.Name + ".dll", PortableExecutableKinds.Required32Bit, ImageFileMachine.I386);
-                            //else if (comp_opt.platformtarget == NETGenerator.CompilerOptions.PlatformTarget.x64)
-                            //    ab.Save(an.Name + ".dll", PortableExecutableKinds.PE32Plus, ImageFileMachine.IA64);
-                            else ab.Save(an.Name + ".dll");
-                            if (IsDotnetNative())
-                                BuildDotnetNative(p, orig_dir, dir, dotnet_publish_dir, SourceFileName);
-                        }
-                        not_done = false;
+                        if (IsDotnet5() || IsDotnetNative())
+                            ab.Save(an.Name + ".dll");
+                        else if (comp_opt.platformtarget == NETGenerator.CompilerOptions.PlatformTarget.x86)
+                            ab.Save(an.Name + ".exe", PortableExecutableKinds.Required32Bit, ImageFileMachine.I386);
+                        //else if (comp_opt.platformtarget == NETGenerator.CompilerOptions.PlatformTarget.x64)
+                        //    ab.Save(an.Name + ".exe", PortableExecutableKinds.PE32Plus, ImageFileMachine.IA64);
+                        else ab.Save(an.Name + ".exe");
+                        //сохраняем сборку
+                        if (IsDotnet5())
+                            BuildDotnet5(orig_dir, dir, dotnet_publish_dir);
+                        else if (IsDotnetNative())
+                            BuildDotnetNative(p, orig_dir, dir, dotnet_publish_dir, SourceFileName);
                     }
-                    catch (System.Runtime.InteropServices.COMException e)
+                    else
                     {
-                        throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));
+                        if (comp_opt.platformtarget == NETGenerator.CompilerOptions.PlatformTarget.x86)
+                            ab.Save(an.Name + ".dll", PortableExecutableKinds.Required32Bit, ImageFileMachine.I386);
+                        //else if (comp_opt.platformtarget == NETGenerator.CompilerOptions.PlatformTarget.x64)
+                        //    ab.Save(an.Name + ".dll", PortableExecutableKinds.PE32Plus, ImageFileMachine.IA64);
+                        else ab.Save(an.Name + ".dll");
+                        if (IsDotnetNative())
+                            BuildDotnetNative(p, orig_dir, dir, dotnet_publish_dir, SourceFileName);
                     }
-                    catch (System.IO.IOException e)
-                    {
-                        if (tries < num_try_save)
-                        {
-                            if (has_unmanaged_resources)
-                                throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));   
-                            tries++;
-                        }
-                        else
-                            throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));
-                    }
+                    not_done = false;
                 }
-                while (not_done);
+                catch (System.Runtime.InteropServices.COMException e)
+                {
+                    throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));
+                }
+                catch (System.IO.IOException e)
+                {
+                    if (tries < num_try_save)
+                    {
+                        if (has_unmanaged_resources)
+                            throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));   
+                        tries++;
+                    }
+                    else
+                        throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));
+                }
             }
+            while (not_done);
+
             foreach (FileStream fs in ResStreams)
                 fs.Close();
-
         }
 
         public void EmitAssemblyRedirects(AssemblyResolveScope resolveScope, string targetAssemblyPath)
