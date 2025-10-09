@@ -14,10 +14,8 @@ using System.Runtime.Versioning;
 using System.Security;
 using System.Text;
 using System.Threading;
-using NETGenerator;
 using PascalABCCompiler.NetHelper;
 using PascalABCCompiler.SemanticTree;
-using PascalABCCompiler.TreeConverter;
 
 namespace PascalABCCompiler.NETGenerator
 {
@@ -9255,9 +9253,9 @@ namespace PascalABCCompiler.NETGenerator
                 //(ssyy) 29.01.2008 Внёс band, bor под switch
                 basic_function_type ft = value.basic_function.basic_function_type;
                 if ((ft == basic_function_type.objeq || ft == basic_function_type.objnoteq) && real_parameters[0].type.is_value_type && 
-                    (real_parameters[0].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[0].type as ICompiledTypeNode).compiled_type) || real_parameters[0].type is ICompiledGenericTypeInstance) && !real_parameters[0].type.is_nullable_type
+                    (real_parameters[0].type is ICompiledTypeNode && !TypeFactory.IsStandType((real_parameters[0].type as ICompiledTypeNode).compiled_type) || real_parameters[0].type is ICompiledGenericTypeInstance) && !real_parameters[0].type.is_nullable_type
                      && real_parameters[1].type.is_value_type &&
-                    (real_parameters[1].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[1].type as ICompiledTypeNode).compiled_type) || real_parameters[1].type is ICompiledGenericTypeInstance) && !real_parameters[1].type.is_nullable_type)
+                    (real_parameters[1].type is ICompiledTypeNode && !TypeFactory.IsStandType((real_parameters[1].type as ICompiledTypeNode).compiled_type) || real_parameters[1].type is ICompiledGenericTypeInstance) && !real_parameters[1].type.is_nullable_type)
                 {
                     ICompiledTypeNode ctn1 = real_parameters[0].type as ICompiledTypeNode;
                     ICompiledTypeNode ctn2 = real_parameters[1].type as ICompiledTypeNode;
