@@ -2,29 +2,29 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
-using System.Reflection.Emit;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
+using System.Security;
 
 namespace PascalABCCompiler.NETGenerator
 {
     public class TypeFactory
     {
-        public static TypeInfo int_type;
-        public static TypeInfo double_type;
-        public static TypeInfo bool_type;
-        public static TypeInfo char_type;
-        public static TypeInfo string_type;
-        public static TypeInfo byte_type;
+        public static Type AttributeType = typeof(Attribute);
+        public static Type DefaultMemberAttributeType = typeof(DefaultMemberAttribute);
+        public static Type ConditionalAttributeType = typeof(System.Diagnostics.ConditionalAttribute);
+
         public static Type ExceptionType = typeof(Exception);
         public static Type VoidType = typeof(void);
         public static Type StringType = typeof(string);
         public static Type ObjectType = typeof(object);
         public static Type MonitorType = typeof(System.Threading.Monitor);
-        public static Type IntPtr = typeof(System.IntPtr);
+        public static Type IntPtrType = typeof(System.IntPtr);
+        public static Type UIntPtrType = typeof(UIntPtr);
         public static Type ArrayType = typeof(System.Array);
         public static Type MulticastDelegateType = typeof(MulticastDelegate);
-        public static Type DefaultMemberAttributeType = typeof(DefaultMemberAttribute);
         public static Type EnumType = typeof(Enum);
         public static Type ExtensionAttributeType = typeof(System.Runtime.CompilerServices.ExtensionAttribute);
         public static Type ConvertType = typeof(Convert);
@@ -54,37 +54,63 @@ namespace PascalABCCompiler.NETGenerator
 
         private static HashSet<Type> types;
         private static Dictionary<Type, int> sizes;
+
         public static MethodInfo ArrayCopyMethod;
+        public static MethodInfo ArrayLengthGetMethod;
         public static MethodInfo GetTypeFromHandleMethod;
         public static MethodInfo ResizeMethod;
         public static MethodInfo GCHandleFreeMethod;
         public static MethodInfo StringNullOrEmptyMethod;
-        public static MethodInfo UnsizedArrayCreateMethodTemplate = null;
+        public static MethodInfo StringCopyMethod;
         public static MethodInfo GCHandleAlloc;
         public static MethodInfo GCHandleAllocPinned;
         public static MethodInfo OffsetToStringDataProperty;
         public static MethodInfo StringLengthMethod;
         public static MethodInfo CharToString;
-        public static ConstructorInfo IndexOutOfRangeConstructor;
-        public static ConstructorInfo ParamArrayAttributeConstructor;
-        public static MethodInfo StringCopyMethod;
+        public static MethodInfo MathMinMethod;
+        public static MethodInfo MarshalAllocHGlobalMethod;
+        public static MethodInfo MarshalFreeHGlobalMethod;
+        public static MethodInfo MarshalCopyMethod;
+        public static MethodInfo MarshalSizeOfMethod;
+        public static MethodInfo NullableHasValueGetMethod;
+        public static MethodInfo NullableGetValueOrDefaultMethod;
+        public static MethodInfo EnvironmentIs64BitProcessGetMethod;
+        public static MethodInfo ActivatorCreateInstanceMethod;
+        public static MethodInfo IEnumerableGenericGetEnumeratorMethod;
+        public static MethodInfo IEnumerableGetEnumeratorMethod;
+        public static MethodInfo IEnumeratorMoveNextMethod;
+        public static MethodInfo MonitorEnterMethod;
+        public static MethodInfo MonitorExitMethod;
+        public static MethodInfo ConvertToByteMethod;
+        public static MethodInfo ConvertToSByteMethod;
+        public static MethodInfo ConvertToInt16Method;
+        public static MethodInfo ConvertToUInt16Method;
+        public static MethodInfo ConvertToInt32Method;
+        public static MethodInfo ConvertToUInt32Method;
+        public static MethodInfo ConvertToInt64Method;
+        public static MethodInfo ConvertToUInt64Method;
+        public static MethodInfo ConvertToCharMethod;
+        public static MethodInfo ConvertToBooleanMethod;
+        public static MethodInfo ConvertToDoubleMethod;
+        public static MethodInfo ConvertToSingleMethod;
+        public static MethodInfo IDisposableDisposeMethod;
 
-        public static MethodInfo GetUnsizedArrayCreateMethod(TypeInfo ti)
-        {
-            if (UnsizedArrayCreateMethodTemplate == null)
-                UnsizedArrayCreateMethodTemplate = ArrayType.GetMethod("Resize");
-            return UnsizedArrayCreateMethodTemplate.MakeGenericMethod(ti.tp.GetElementType());
-        }
+        public static PropertyInfo SecurityRulesAttributeSkipVerificationInFullTrustProperty;
+
+        public static ConstructorInfo IndexOutOfRangeCtor;
+        public static ConstructorInfo ParamArrayAttributeCtor;
+        public static ConstructorInfo DebuggableAttributeCtor;
+        public static ConstructorInfo AssemblyKeyFileAttributeCtor;
+        public static ConstructorInfo AssemblyDelaySignAttributeCtor;
+        public static ConstructorInfo TargetFrameworkAttributeCtor;
+        public static ConstructorInfo SecurityRulesAttributeCtor;
+        public static ConstructorInfo STAThreadAttributeCtor;
+        public static ConstructorInfo CompilationRelaxationsAttributeCtor;
+        public static ConstructorInfo AssemblyTitleAttributeCtor;
+        public static ConstructorInfo AssemblyDescriptionAttributeCtor;
 
         static TypeFactory()
         {
-            int_type = new TypeInfo(typeof(int));
-            double_type = new TypeInfo(typeof(double));
-            bool_type = new TypeInfo(typeof(bool));
-            char_type = new TypeInfo(typeof(char));
-            string_type = new TypeInfo(typeof(string));
-            byte_type = new TypeInfo(typeof(byte));
-
             types = new HashSet<Type>()
             {
                 BoolType, SByteType, ByteType, CharType,
@@ -111,18 +137,59 @@ namespace PascalABCCompiler.NETGenerator
             //sizes[UIntPtr] = sizeof(UIntPtr);
             
             //types[TypeType] = TypeType;
-            ArrayCopyMethod = typeof(Array).GetMethod("Copy", new Type[3] { typeof(Array), typeof(Array), typeof(int) });
-            StringNullOrEmptyMethod = typeof(string).GetMethod("IsNullOrEmpty");
-            GCHandleAlloc = typeof(System.Runtime.InteropServices.GCHandle).GetMethod("Alloc",new Type[1]{TypeFactory.ObjectType});
-            GCHandleAllocPinned = typeof(System.Runtime.InteropServices.GCHandle).GetMethod("Alloc", new Type[2] { TypeFactory.ObjectType, typeof(GCHandleType) });
+            ArrayCopyMethod = ArrayType.GetMethod("Copy", new Type[3] { ArrayType, ArrayType, Int32Type });
+            ArrayLengthGetMethod = ArrayType.GetMethod("get_Length");
+            StringNullOrEmptyMethod = StringType.GetMethod("IsNullOrEmpty");
+            GCHandleAlloc = GCHandleType.GetMethod("Alloc",new Type[1]{ ObjectType });
+            GCHandleAllocPinned = GCHandleType.GetMethod("Alloc", new Type[2] { ObjectType, typeof(GCHandleType) });
             OffsetToStringDataProperty = typeof(System.Runtime.CompilerServices.RuntimeHelpers).GetProperty("OffsetToStringData",BindingFlags.Public|BindingFlags.Static|BindingFlags.Instance).GetGetMethod();
-            StringLengthMethod = typeof(string).GetProperty("Length").GetGetMethod();
-            IndexOutOfRangeConstructor = typeof(IndexOutOfRangeException).GetConstructor(Type.EmptyTypes);
-            ParamArrayAttributeConstructor = typeof(ParamArrayAttribute).GetConstructor(Type.EmptyTypes);
-            GCHandleFreeMethod = typeof(GCHandle).GetMethod("Free");
-            GetTypeFromHandleMethod = typeof(Type).GetMethod("GetTypeFromHandle");
-            StringCopyMethod = typeof(string).GetMethod("Copy");
-            CharToString = typeof(char).GetMethod("ToString", BindingFlags.Static | BindingFlags.Public);
+            StringLengthMethod = StringType.GetProperty("Length").GetGetMethod();
+            
+            GCHandleFreeMethod = GCHandleType.GetMethod("Free");
+            GetTypeFromHandleMethod = TypeType.GetMethod("GetTypeFromHandle");
+            StringCopyMethod = StringType.GetMethod("Copy");
+            CharToString = CharType.GetMethod("ToString", BindingFlags.Static | BindingFlags.Public);
+            MathMinMethod = typeof(Math).GetMethod("Min", new Type[] { Int32Type, Int32Type });
+            MarshalAllocHGlobalMethod = MarshalType.GetMethod("AllocHGlobal", new Type[1] { Int32Type });
+            MarshalFreeHGlobalMethod = MarshalType.GetMethod("FreeHGlobal", new Type[1] { typeof(IntPtr) });
+            MarshalCopyMethod = MarshalType.GetMethod("Copy", new Type[4] { typeof(byte[]), Int32Type, IntPtrType, Int32Type });
+            MarshalSizeOfMethod = MarshalType.GetMethod("SizeOf", new Type[] { TypeType });
+            NullableHasValueGetMethod = typeof(Nullable<>).GetProperty("HasValue").GetGetMethod();
+            NullableGetValueOrDefaultMethod = typeof(Nullable<>).GetMethod("GetValueOrDefault", Type.EmptyTypes);
+            EnvironmentIs64BitProcessGetMethod = typeof(Environment).GetProperty("Is64BitProcess", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).GetGetMethod();
+            ActivatorCreateInstanceMethod = typeof(Activator).GetMethod("CreateInstance", Type.EmptyTypes);
+            IEnumerableGenericGetEnumeratorMethod = IEnumerableGenericType.GetMethod("GetEnumerator");
+            IEnumerableGetEnumeratorMethod = IEnumerableType.GetMethod("GetEnumerator");
+            IEnumeratorMoveNextMethod = IEnumeratorType.GetMethod("MoveNext", BindingFlags.Instance | BindingFlags.Public);
+            MonitorEnterMethod = MonitorType.GetMethod("Enter", new Type[1] { ObjectType });
+            MonitorExitMethod = MonitorType.GetMethod("Exit", new Type[1] { ObjectType });
+            ConvertToByteMethod = ConvertType.GetMethod("ToByte", new Type[1] { ObjectType });
+            ConvertToSByteMethod = ConvertType.GetMethod("ToSByte", new Type[1] { ObjectType });
+            ConvertToInt16Method = ConvertType.GetMethod("ToInt16", new Type[1] { ObjectType });
+            ConvertToUInt16Method = ConvertType.GetMethod("ToUInt16", new Type[1] { ObjectType });
+            ConvertToInt32Method = ConvertType.GetMethod("ToInt32", new Type[1] { ObjectType });
+            ConvertToUInt32Method = ConvertType.GetMethod("ToUInt32", new Type[1] { ObjectType });
+            ConvertToInt64Method = ConvertType.GetMethod("ToInt64", new Type[1] { ObjectType });
+            ConvertToUInt64Method = ConvertType.GetMethod("ToUInt64", new Type[1] { ObjectType });
+            ConvertToCharMethod = ConvertType.GetMethod("ToChar", new Type[1] { ObjectType });
+            ConvertToBooleanMethod = ConvertType.GetMethod("ToBoolean", new Type[1] { ObjectType });
+            ConvertToDoubleMethod = ConvertType.GetMethod("ToDouble", new Type[1] { ObjectType });
+            ConvertToSingleMethod = ConvertType.GetMethod("ToSingle", new Type[1] { ObjectType });
+            IDisposableDisposeMethod = IDisposableType.GetMethod("Dispose", BindingFlags.Instance | BindingFlags.Public);
+
+            SecurityRulesAttributeSkipVerificationInFullTrustProperty = typeof(SecurityRulesAttribute).GetProperty("SkipVerificationInFullTrust");
+
+            IndexOutOfRangeCtor = typeof(IndexOutOfRangeException).GetConstructor(Type.EmptyTypes);
+            ParamArrayAttributeCtor = typeof(ParamArrayAttribute).GetConstructor(Type.EmptyTypes);
+            DebuggableAttributeCtor = typeof(System.Diagnostics.DebuggableAttribute).GetConstructor(new Type[] { BoolType, BoolType });
+            AssemblyKeyFileAttributeCtor = typeof(AssemblyKeyFileAttribute).GetConstructor(new Type[] { StringType });
+            AssemblyDelaySignAttributeCtor = typeof(AssemblyDelaySignAttribute).GetConstructor(new Type[] { BoolType });
+            TargetFrameworkAttributeCtor = typeof(TargetFrameworkAttribute).GetConstructor(new Type[] { StringType });
+            SecurityRulesAttributeCtor = typeof(SecurityRulesAttribute).GetConstructor(new Type[] { typeof(SecurityRuleSet) });
+            STAThreadAttributeCtor = typeof(STAThreadAttribute).GetConstructor(Type.EmptyTypes);
+            CompilationRelaxationsAttributeCtor = typeof(System.Runtime.CompilerServices.CompilationRelaxationsAttribute).GetConstructor(new Type[] { Int32Type });
+            AssemblyTitleAttributeCtor = typeof(AssemblyTitleAttribute).GetConstructor(new Type[] { StringType });
+            AssemblyDescriptionAttributeCtor = typeof(AssemblyDescriptionAttribute).GetConstructor(new Type[] { StringType });
         }
 
         public static bool IsStandType(Type t)

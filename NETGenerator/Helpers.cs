@@ -995,7 +995,7 @@ namespace PascalABCCompiler.NETGenerator {
                 case type_special_kind.diap_type:
                     return GetTypeReference(type.base_type);
                 case type_special_kind.short_string:
-                    return TypeFactory.string_type;
+                    return new TypeInfo(TypeFactory.StringType);
                 case type_special_kind.array_kind:
                     TypeInfo tmp = GetTypeReference(type.element_type);
                     if (tmp == null) return null;
