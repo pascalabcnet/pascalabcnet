@@ -4,9 +4,9 @@ from SPythonSystem import range, len
 def print(*args: obj, **kwargs: str):
     sep: str = ' '
     end: str = '\n'
-    if 'sep' in kwargs.keys():
+    if 'sep' in kwargs.get_keys():
         sep = kwargs['sep']
-    if 'end' in kwargs.keys():
+    if 'end' in kwargs.get_keys():
         end = kwargs['end']
     
     for i in range(0, len(args) - 1):

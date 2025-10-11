@@ -1,15 +1,14 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using PascalABCCompiler.Parsers;
 using Languages.Facade;
+using PascalABCCompiler.Parsers;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Windows.Forms;
 
 namespace VisualPascalABC
 {
@@ -393,7 +392,7 @@ namespace VisualPascalABC
             {
                 if (symInfo == null || symInfo.not_include) continue;
 
-                string nameToShow = symInfo.addit_name != null ? symInfo.addit_name : symInfo.name;
+                string nameToShow = GetDisplayedName(symInfo);
 
                 if (symbolsAdded.Contains(nameToShow + symInfo.kind))
                     continue;
@@ -563,8 +562,8 @@ namespace VisualPascalABC
                 if (symInfo == null || symInfo.not_include)
                     continue;
 
-                string nameToShow = symInfo.addit_name != null ? symInfo.addit_name : symInfo.name;
-
+                string nameToShow = GetDisplayedName(symInfo);
+                
                 if (symbolsAdded.Contains(nameToShow + symInfo.kind))
                     continue;
 
@@ -807,6 +806,17 @@ namespace VisualPascalABC
             controller = null;
             //GC.Collect();
             return data;
+        }
+
+        private string GetDisplayedName(SymInfo symInfo)
+        {
+            if (symInfo.aliasName != null)
+                return symInfo.aliasName;
+
+            if (symInfo.addit_name != null)
+                return symInfo.addit_name;
+
+            return symInfo.name;
         }
     }
 }
