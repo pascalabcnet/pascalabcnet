@@ -1,4 +1,4 @@
-// Пример использования классового (статического) конструктора
+﻿// Пример использования классового (статического) конструктора
 type 
   Person = class
   private
@@ -8,7 +8,7 @@ type
   public
     class constructor; // Конструктор класса. Вызывается до создания первого объекта класса и до вызова любого классового метода
     begin
-      writeln('  Вызван классовый конструктор');
+      Println('  Вызван классовый конструктор');
       SetLength(arr,3);
       arr[0] := new Person('Иванов',20);
       arr[1] := new Person('Петрова',19);
@@ -21,7 +21,7 @@ type
     end;
     function ToString: string; override;
     begin
-      Result := Format('Имя: {0}   Возраст: {1}',name,age);      
+      Result := $'Имя: {name}   Возраст: {age}';      
     end;
     class function RandomPerson: Person; // Классовый метод. Может обращаться только к классовым полям
     begin
@@ -30,7 +30,7 @@ type
   end;
   
 begin
-  writeln('Случайные персоны');
+  Println('Случайные персоны');
   for var i:=1 to 5 do
-    writeln(Person.RandomPerson); // Вызов классового метода
+    Println(Person.RandomPerson); // Вызов классового метода
 end.  

@@ -1,4 +1,4 @@
-// Обобщенные функции
+﻿// Обобщенные функции
 // Выведение типа T по типам параметров
 
 procedure Swap<T>(var a,b: T);
@@ -11,13 +11,13 @@ end;
 begin
   var a := 2;
   var b := 3;
-  writelnFormat('До Swap a={0}, b={1}',a,b);
+  Println($'До Swap a={a}, b={b}');
   Swap(a,b);
-  writelnFormat('После Swap a={0}, b={1}',a,b);
+  Println($'После Swap a={a}, b={b}');
   var c := 2.5;
   var d := 3.3;
-  writeln;
-  writelnFormat('До Swap c={0}, d={1}',c,d);
+  Println;
+  Println($'До Swap c={c}, d={d}');
   Swap(c,d);
-  writelnFormat('После Swap c={0}, d={1}',c,d);
+  Println($'После Swap c={c}, d={d}');
 end.

@@ -1,4 +1,4 @@
-// Перегрузка операций
+﻿// Перегрузка операций
 type 
   Frac = record
   private
@@ -72,11 +72,11 @@ var
   f1 := new Frac(3,5);
 
 begin
-  writelnFormat('{0} + {1} = {2}',f,f1,f+f1);
-  writelnFormat('{0} - {1} = {2}',f,f1,f-f1);
-  writelnFormat('{0} * {1} = {2}',f,f1,f*f1);
-  writelnFormat('{0} / {1} = {2}',f,f1,f/f1);
-  writeln(f1=f);
+  Println($'{f} + {f1} = {f+f1}');
+  Println($'{f} - {f1} = {f-f1}');
+  Println($'{f} * {f1} = {f*f1}');
+  Println($'{f} / {f1} = {f/f1}');
+  Println(f1 = f);
   f += f1;
-  writeln(-f);
+  Println(-f);
 end.

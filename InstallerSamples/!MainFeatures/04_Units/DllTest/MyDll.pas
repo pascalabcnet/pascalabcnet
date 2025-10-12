@@ -1,4 +1,4 @@
-// Dll-библиотека
+﻿// Dll-библиотека
 library MyDll;
 
 const n = 10;
@@ -10,7 +10,7 @@ end;
 
 procedure PrintPascalABCNET;
 begin
-  writeln('PascalABC.NET');
+  Println('PascalABC.NET');
 end;
 
 end.

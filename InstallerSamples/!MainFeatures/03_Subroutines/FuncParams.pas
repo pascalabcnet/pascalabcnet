@@ -1,4 +1,4 @@
-// Переменное число параметров 
+﻿// Переменное число параметров 
 function Sum(params arg: array of integer): integer;
 begin
   Result := 0;
@@ -7,6 +7,6 @@ begin
 end;
 
 begin
-  writeln(Sum(1,2,3));
-  writeln(Sum(4,5,6,7));
+  Println(Sum(1,2,3));
+  Println(Sum(4,5,6,7));
 end.  

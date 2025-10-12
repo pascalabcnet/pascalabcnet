@@ -1,5 +1,5 @@
-// Секция Where - ограничение на типы параметров
-uses System,System.Collections.Generic;
+﻿// Секция Where - ограничение на типы параметров
+uses System;
 
 type
    MyClass<T,T1> = class 

@@ -1,19 +1,16 @@
-// Бестиповые файлы
-var 
-  f: file;
-  i: integer;
-  r: real;
-  s: string;
+﻿// Бестиповые файлы
 
 begin
-  assign(f,'a.dat');
-  rewrite(f);
+  var f: file := CreateBinary('a.dat');
   // Записываем в файл данные любых типов
-  write(f,1,2.5,'Hello');  
-  close(f);
-  reset(f);
+  f.Write(1,2.5,'Hello');  
+  f.Close;
+  f.Reset;
   // Считываем эти данные из файла
-  read(f,i,r,s);
-  write(i,' ',r,' ',s);
-  close(f);
+  var i: integer;
+  var r: real;
+  var s: string;
+  Read(f,i,r,s);
+  Print(i,r,s);
+  f.Close;
 end.

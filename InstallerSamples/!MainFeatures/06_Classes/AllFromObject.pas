@@ -1,4 +1,4 @@
-// Все типы кроме указателей - производные от Object
+﻿// Все типы кроме указателей - производные от Object
 var 
   i: integer;
   r: real;
@@ -6,9 +6,9 @@ var
 
 begin
   o := i;
-  writeln(o.GetType);
+  Println(o.GetType,TypeName(o));
   o := r;
-  writeln(o.GetType);
-  if o.GetType=typeof(real) then
-    writeln('В переменной o - вещественный тип');
+  Println(o.GetType,TypeName(o));
+  if o.GetType = typeof(real) then
+    Println('В переменной o - вещественный тип');
 end.

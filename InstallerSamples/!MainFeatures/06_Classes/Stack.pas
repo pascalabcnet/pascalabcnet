@@ -1,4 +1,4 @@
-// Демонстрация создания простого класса стека на базе массива
+﻿// Демонстрация создания простого класса стека на базе массива
 type
   Stack<T> = class
   private
@@ -14,23 +14,23 @@ type
     begin
       Create(100);
     end;
-    procedure push(i: T);
+    procedure Push(i: T);
     begin
       a[last] := i;
       Inc(last);
     end;
-    function pop: T;
+    function Pop: T;
     begin
       Dec(last);
-      pop := a[last];
+      Result := a[last];
     end;
-    function top: T;
+    function Top: T;
     begin
-      top := a[last-1];
+      Result := a[last-1];
     end;
-    function empty: boolean;
+    function Empty: boolean;
     begin
-      Result := (last=0);
+      Result := last=0;
     end;
     function ToString: string; override;
     begin
@@ -40,17 +40,15 @@ type
     end;
   end;
   
-var s: Stack<integer>;
-
 begin
-  s := new Stack<integer>;
-  s.push(7);
-  s.push(2);
-  s.push(5);
-  s.push(4);
-  writeln(s);
-  while not s.empty do
-    write(s.pop,' ');
+  var s := new Stack<integer>;
+  s.Push(7);
+  s.Push(2);
+  s.Push(5);
+  s.Push(4);
+  Println(s);
+  while not s.Empty do
+    Print(s.Pop);
 end.
 
 

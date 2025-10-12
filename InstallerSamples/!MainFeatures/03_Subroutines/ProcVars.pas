@@ -1,9 +1,9 @@
-// Все возможные способы инициализации поцедурной переменной
+﻿// Все возможные способы инициализации поцедурной переменной
 // Процедурный тип реализован через делегаты .NET, для него доступны операции +=, -=
 
 procedure pp;
 begin
-  writeln('Вызов обычной процедуры');
+  Println('Вызов обычной процедуры');
 end;
 
 type 
@@ -17,23 +17,23 @@ type
     end;
     procedure pp;
     begin
-      writeln('Вызов метода класса, значение поля равно ',x);
+      Println('Вызов метода класса, значение поля равно',x);
     end;
     class procedure ppstatic; 
     begin
-      writeln('Вызов классового метода класса');
+      Println('Вызов классового метода класса');
     end;
   end;
 
-var p: procedure;
-
 begin
+  var p: procedure;
+
   p := pp;
   var a1: A := new A(5);
   p += a1.pp;
   p += A.ppstatic;
   p;
-  writeln;
+  Println;
   p -= pp;
   p;
 end.

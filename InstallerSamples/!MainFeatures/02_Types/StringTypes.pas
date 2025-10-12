@@ -1,4 +1,4 @@
-// Строки string, string[n], shortstring
+﻿// Строки string, string[n], shortstring
 var 
   s: string; // память, занимаемая s, зависит от ее длины
   s10: string[10]; // память под ss фиксирована
@@ -9,9 +9,9 @@ var
 begin
   s := '12345678901234567890';
   s10 := s; // обрезание
-  writeln(s10);
+  Println(s10);
   s += s; s += s;
   s += s; s += s;
-  writeln(s);
-  writeln('Длина строки = ',s.Length);
+  Println(s);
+  Println('Длина строки =',s.Length);
 end.

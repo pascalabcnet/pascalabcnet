@@ -1,27 +1,19 @@
-// Использование LinkedList - двусвязного списка стандартной библиотеки - и его итератора
-uses System.Collections,System.Collections.Generic;
-
-procedure print(l: ICollection);
-begin
-  foreach x: integer in l do
-    write(x,' ');
-  writeln;  
-end;
-
-var l: LinkedList<integer> := new LinkedList<integer>;
+﻿// Использование LinkedList - двусвязного списка стандартной библиотеки - и его итератора
 
 begin
-  l.AddLast(3);
-  l.AddLast(5);
-  l.AddLast(7);
-  l.AddFirst(2);
-  print(l);
+  var L: LinkedList<integer> := new LinkedList<integer>;
+
+  L.AddLast(3);
+  L.AddLast(5);
+  L.AddLast(7);
+  L.AddFirst(2);
+  Println(L);
   
   var a := new integer[10];
-  l.CopyTo(a,0);
-  print(a);
+  L.CopyTo(a,0);
+  Println(a);
   
-  var lit: LinkedListNode<integer> := l.Find(5);  
-  l.AddBefore(lit,777);
-  print(l);
+  var lit: LinkedListNode<integer> := L.Find(5);
+  L.AddBefore(lit,777);
+  Println(L);
 end.

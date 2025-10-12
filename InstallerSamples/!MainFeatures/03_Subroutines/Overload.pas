@@ -1,17 +1,17 @@
-// Перегрузка имен подпрограмм
+﻿// Перегрузка имен подпрограмм
 procedure proc(i: integer);
 begin
-  writeln('integer');
+  Println('integer');
 end;
 
 procedure proc(c: char);
 begin
-  writeln('char');
+  Println('char');
 end;
 
 procedure proc(r: real);
 begin
-  writeln('real');
+  Println('real');
 end;
 
 begin

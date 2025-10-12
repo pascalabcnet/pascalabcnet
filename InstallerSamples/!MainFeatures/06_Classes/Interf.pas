@@ -1,4 +1,4 @@
-// Иллюстрация использования интерфейсов
+﻿// Иллюстрация использования интерфейсов
 type
   IShape = interface
     procedure Draw;
@@ -26,17 +26,18 @@ type
       Result := new Point(xx,yy);
     end;
   end;
-
-var 
-  p: Point := new Point(2,3);
-  ish: IShape := p;
-  icl: ICloneable := p;
   
 begin
+  var p: Point := new Point(2,3);
+  var ish: IShape := p;
+  var icl: ICloneable := p;
+
   Println(ish.X,ish.Y);
+
   var p1: Point := Point(icl.Clone);
   p := nil;
   Println(p1.X,p1.Y);
+
   Println(ish is Point);
   Println(ish is ICloneable); // Cross cast!
 end.

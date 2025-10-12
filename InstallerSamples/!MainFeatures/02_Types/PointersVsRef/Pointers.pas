@@ -1,4 +1,4 @@
-// Выделение динамической памяти
+﻿// Выделение динамической памяти
 // Использование указателей для создания односвязного списка
 type 
   PNode = ^TNode;
@@ -14,21 +14,20 @@ begin
   Result^.next := n;
 end;
 
-var first: PNode;
-  
 begin
-  first := nil;
+  var first: PNode := nil;
+  
   // Добавляем в начало односвязного списка
   first := NewNode(3,first);
   first := NewNode(7,first);
   first := NewNode(5,first);
   
   // Вывод односвязного списка
-  writeln('Содержимое односвязного списка: ');
+  Println('Содержимое односвязного списка:');
   var p := first;
   while p<>nil do
   begin
-    write(p^.data,' ');
+    Print(p^.data);
     p := p^.next;
   end;
   

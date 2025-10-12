@@ -1,4 +1,4 @@
-// Модуль ABCObjects. Изменение свойств объекта
+﻿// Модуль ABCObjects. Изменение свойств объекта
 uses ABCObjects,GraphABC;
 
 const delay = 300;
@@ -8,13 +8,9 @@ begin
   Sleep(delay);
 end;
 
-var 
-  r: RectangleABC;
-  z: StarABC;
-
 begin
-  z := new StarABC(Window.Center.X,Window.Center.Y,70,30,6,Color.Green);
-  r := new RectangleABC(100,100,200,100,Color.Gold);
+  var z := new StarABC(Window.Center.X,Window.Center.Y,70,30,6,Color.Green);
+  var r := new RectangleABC(100,100,200,100,Color.Gold);
   Pause;
   r.Center := Window.Center;
   Pause;

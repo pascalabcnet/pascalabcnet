@@ -1,19 +1,16 @@
 ﻿// Стандартные функции Ord, Chr, OrdAnsi, ChrAnsi
-var 
-  c: char;
-  i: integer;
 
 begin
-  writeln('sizeof(char) = ',sizeof(char));
-  writeln;
-  c := 'Ж';
-  i := Ord(c);
-  writelnFormat('Код символа {0} в кодировке Unicode равен {1}',c,i);
+  Println('sizeof(char) =',sizeof(char));
+  Println;
+  var c: char  := 'Ж';
+  var i: integer := Ord(c);
+  Println($'Код символа {c} в кодировке Unicode равен {i}');
   c := Chr(i);
-  writelnFormat('Символ с кодом {0} в кодировке Unicode - это {1}',i,c);
-  writeln;
+  Println($'Символ с кодом {i} в кодировке Unicode - это {c}');
+  Println;
   i := OrdAnsi(c);
-  writelnFormat('Код символа {0} в кодировке Windows равен {1}',c,i);
+  Println($'Код символа {c} в кодировке Windows равен {i}');
   c := ChrAnsi(i);
-  writelnFormat('Символ с кодом {0} в кодировке Windows - это {1}',i,c);
+  Println($'Символ с кодом {i} в кодировке Windows - это {c}');
 end.
