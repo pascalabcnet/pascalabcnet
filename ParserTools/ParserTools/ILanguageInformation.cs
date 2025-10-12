@@ -185,6 +185,12 @@ namespace PascalABCCompiler.Parsers
             get;
         }
 
+        /// <summary>
+        /// Добавить пространства имен .NET, подключаемые по умолчанию. Полной поддержки false нет (см. комментарий)
+        /// </summary>
+        // Если поставить false, то CorrectTreeWithSemantic из DomSyntaxTreeVisitor будет поправлять типы неправильно
+        // из-за того, что полное имя типа integer, например, System.Int32,
+        // а имя System не будет добавлено в Scope и значит выведется Int32 без преобразования в кастомное название типа для языка
         bool AddStandardNetNamespacesToUserScope
         {
             get;
@@ -379,6 +385,7 @@ namespace PascalABCCompiler.Parsers
     {
         public string name;
         public string addit_name;
+        public string aliasName;
         public string description;
         public SymbolKind kind;
         public bool IsUnitNamespace;
@@ -398,6 +405,7 @@ namespace PascalABCCompiler.Parsers
         {
             this.name = si.name;
             this.addit_name = si.addit_name;
+            this.aliasName = si.aliasName;
             this.description = si.description;
             this.kind = si.kind;
             this.IsUnitNamespace = si.IsUnitNamespace;

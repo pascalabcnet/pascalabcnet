@@ -1016,7 +1016,12 @@ namespace CodeCompletion
             }
             if (ss != null && ss.si != null)
             {
-                ss = ss.WithRefreshedDescription();
+                // в случае операции преобразования типа эта ветка срабатывает
+                if (ss is ElementScope && string.IsNullOrEmpty(ss.si.description) && (ss as ElementScope).sc is TypeScope)
+                    ss.si.description = (ss as ElementScope).sc.Description;
+                else
+                    // обновление описания
+                    ss = ss.WithRefreshedDescription();
 
                 try
                 {
@@ -1050,19 +1055,16 @@ namespace CodeCompletion
                             else
                                 ss.AddDocumentation(UnitDocCache.GetDocumentation(ps));
                         }
-
                         else if (ss is InterfaceUnitScope)
                             ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as InterfaceUnitScope));
-                        else if (ss is ElementScope && string.IsNullOrEmpty(ss.si.description) && (ss as ElementScope).sc is TypeScope)
-                            ss.si.description = (ss as ElementScope).sc.Description;
                     }
                 }
                 catch (Exception e)
-                {
+                    {
 #if DEBUG
-                    File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+                        File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
 #endif
-                }
+                    }
                 RestoreCurrentUsedAssemblies();
                 string description = ss.si.description;
                 if (description != null)
