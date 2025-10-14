@@ -1,5 +1,6 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="AdjacentGroup">
+<param name="Keyword" value="AdjacentGroupBy">
 <param name="Keyword" value="Average">
 <param name="Keyword" value="Batch">
 <param name="Keyword" value="Cartesian">
@@ -50,6 +51,10 @@
 </HEAD><body><H1>Методы расширения последовательностей</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> AdjacentGroup&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует одинаковые подряд идущие элементы, получая последовательность массивов</td></tr>
+<tr><td><code><b>function</b> AdjacentGroupBy&lt;T,TKey&gt;(self: <b>sequence </b>  <b>of</b> T; by: T-&gt;TKey; comp: IEqualityComparer&lt;TKey&gt;): <b>sequence </b>  <b>of</b> System.Linq.IGrouping&lt;TKey, T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует подряд идущие элементы с одинаковыми значениями ключамиИспользует компаратор comp</td></tr>
+<tr><td><code><b>function</b> AdjacentGroupBy&lt;T,TKey&gt;(self: <b>sequence </b>  <b>of</b> T; by: T-&gt;TKey);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует подряд идущие элементы с одинаковыми значениями ключамиИспользует компаратор по-умолчанию</td></tr>
 <tr><td><code><b>function</b> Average(Self: <b>sequence </b>  <b>of</b> BigInteger): real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает среднее элементов последовательности</td></tr>
 <tr><td><code><b>function</b> Batch&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; size: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>

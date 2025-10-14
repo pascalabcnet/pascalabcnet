@@ -60,10 +60,10 @@ const
   MaxInt = integer.MaxValue;
   /// Константа Pi
   /// !! Pi constant
-  Pi = System.Math.PI;
+  Pi = 3.141592653589793;
   /// Константа E
   /// !! E constant
-  E = System.Math.E;
+  E = 2.718281828459045;
   /// Константа перехода на новую строку
   /// !! The newline string defined for this environment.
   NewLine = System.Environment.NewLine;
@@ -1599,7 +1599,7 @@ function BinaryFileRead(var f: BinaryFile; ElementType: System.Type): object;
 //>>     Cистемные подпрограммы # System subroutines
 // -----------------------------------------------------
 
-//========= Сведения о системе и параметрах запуска ==========
+// ========== Работа с каталогами и файлами ===========
 
 /// Возвращает версию PascalABC.NET
 function PascalABCVersion: string;

@@ -2,6 +2,7 @@
 <param name="Keyword" value="Arrow">
 <param name="Keyword" value="BillboardText">
 <param name="Keyword" value="Box">
+<param name="Keyword" value="Cloth">
 <param name="Keyword" value="Cone">
 <param name="Keyword" value="CoordinateSystem">
 <param name="Keyword" value="Cube">
@@ -12,6 +13,7 @@
 <param name="Keyword" value="Icosahedron">
 <param name="Keyword" value="Lego">
 <param name="Keyword" value="Octahedron">
+<param name="Keyword" value="ParticleSystem">
 <param name="Keyword" value="Polygon3D">
 <param name="Keyword" value="Polyline3D">
 <param name="Keyword" value="Prism">
@@ -51,6 +53,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает паралеллепипед с центром в точке (x, y, z) и размерами SizeX, SizeY, SizeZ</td></tr>
 <tr><td><code><b>function</b> Box(center: Point3D; sz: Size3D; m: Material := nil): BoxT;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает паралеллепипед с центром в точке center и размерами SizeX, SizeY, SizeZ</td></tr>
+<tr><td><code><b>function</b> Cloth(x, y, z, Height, Length, PoleHeight: real; textureName: string): ClothSystemT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимируемый объект из ткани (например, флаг на ветру)</td></tr>
 <tr><td><code><b>function</b> Cone(x, y, z, Height, Radius: real; m: Material := nil): TruncatedConeT;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает конус с центром основания в точке (x, y, z) высотой Height, радиусом Radius</td></tr>
 <tr><td><code><b>function</b> Cone(p: Point3D; Height, Radius: real; m: Material := nil): TruncatedConeT;</code>
@@ -89,6 +93,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает октаэдр с центром в точке (x, y, z) и радиусом описанной окружности Radius</td></tr>
 <tr><td><code><b>function</b> Octahedron(p: Point3D; Radius: real; m: Material := nil): OctahedronT;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает октаэдр с центром в точке p и радиусом описанной окружности Radius</td></tr>
+<tr><td><code><b>function</b> ParticleSystem(x, y, z: real; textureName: string): ParticleSystemT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает систему частиц с центром в точке (x, y, z), именем текстуры TextureName</td></tr>
 <tr><td><code><b>function</b> Polygon3D(points: <b>sequence </b>  <b>of</b> Point3D; Thickness: real; c: Color): SegmentsT;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает замкнутую ломаную, задаваемую последовательностью точек points, толщиной Thickness, заданного цвета</td></tr>
 <tr><td><code><b>function</b> Polygon3D(points: <b>sequence </b>  <b>of</b> Point3D; Thickness: real := 1.2): SegmentsT;</code>
