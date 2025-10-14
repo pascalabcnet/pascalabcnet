@@ -1,38 +1,36 @@
-// Цикл for. Шаг цикла 2
+﻿// Цикл for. Шаг цикла 2
 const n = 25;
 
-var i: integer;
-
 begin
-  writeln('Четные числа от 1 до ',2*n);
-  for i:=1 to n do
-    write(2*i,' ');
-  writeln;
-  writeln;
+  Println('Чётные числа от 1 до', 2 * n);
+  for var i := 1 to n do
+    Print(2 * i);
+  Println;
+  Println;
 
-  writeln('Четные числа от 1 до ',2*n);
+  Println('Чётные числа от 1 до', 2 * n);
   var x := 2;
-  for i:=1 to n do
+  for var i := 1 to n do
   begin
-    write(x,' ');
+    Print(x);
     x += 2;
-  end;  
-  writeln;
-  writeln;
+  end;
+  Println;
+  Println;
 
-  writeln('Нечетные числа от 1 до ',2*n);
-  for i:=1 to n do
-    write(2*i-1,' ');
-  writeln;
-  writeln;
+  Println('Нечётные числа от 1 до', 2 * n);
+  for var i := 1 to n do
+    Print(2 * i - 1);
+  Println;
+  Println;
 
-  writeln('Нечетные числа от 1 до ',2*n);
+  Println('Нечётные числа от 1 до', 2 * n);
   x := 1;
-  for i:=1 to n do
+  for var i := 1 to n do
   begin
-    write(x,' ');
+    Print(x);
     x += 2;
-  end;  
-  writeln;
-  writeln;
+  end;
+  Println;
+  Println;
 end.

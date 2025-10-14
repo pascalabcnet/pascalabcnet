@@ -1,5 +1,7 @@
 ﻿// Первая программа
-program HelloWorld;
+
+program HelloWorld; // Эта строка необязательна
+
 begin
-  Writeln('Привет, мир!');
+  Println('Привет, мир!');
 end.

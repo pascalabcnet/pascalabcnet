@@ -4,5 +4,5 @@ var i: integer
 
 begin
   i := 2;
-  Writeln(i);
+  Println(i);
 end.

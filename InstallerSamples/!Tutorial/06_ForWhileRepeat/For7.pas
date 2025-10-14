@@ -1,17 +1,17 @@
-// Цикл for. Числа Фибоначчи
+п»ї// Р¦РёРєР» for. Р§РёСЃР»Р° Р¤РёР±РѕРЅР°С‡С‡Рё
 const n = 25;
 
 begin
   var a := 1;
   var b := 1;
-  writeln('Числа Фибоначчи:');
-  write(a,' ',b,' ');
-  
-  for var i:=3 to n do
+  Println('Р§РёСЃР»Р° Р¤РёР±РѕРЅР°С‡С‡Рё:');
+  Print(a,b);
+  for var i := 3 to n do
   begin
     var c := a + b;
-    write(c,' ');
+    Print(c);
     a := b;
     b := c;
   end;
+  Println;
 end.

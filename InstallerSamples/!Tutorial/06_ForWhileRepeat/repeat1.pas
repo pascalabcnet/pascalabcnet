@@ -1,12 +1,11 @@
-// Цикл repeat. Контроль ввода
-var mark: integer;
-
+﻿// Цикл repeat. Контроль ввода
 begin
+  var mark: integer;
   repeat
-    writeln('Введите оценку (2..5): ');
-    readln(mark);
-    if (mark<2) or (mark>5) then
-      writeln('Оценка неверная. Повторите ввод');
-  until (mark>=2) and (mark<=5);
-  writeln('Вы ввели оценку ',mark);
+    Println('Введите оценку (2..5):');
+    mark := ReadInteger;
+    if (mark < 2) or (mark > 5) then
+      Println('Оценка неверная. Повторите ввод');
+  until (mark >= 2) and (mark <= 5);
+  Println('Вы ввели оценку', mark);
 end.

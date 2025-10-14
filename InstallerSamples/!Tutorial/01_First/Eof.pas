@@ -1,9 +1,9 @@
 ﻿// Демонстрация работы функции eof. Запускать по Shift-F9, завершать по Ctrl-Z
+// Ctrl-Z не работает с 3.9
 begin
-  var s: char;
   while not Eof do
   begin
-    Read(s);
-    Println('-',Ord(s),' -');
+    var s := ReadChar;
+    Println('-', Ord(s), '-',CurrentIOSystem.peek);
   end;
 end.

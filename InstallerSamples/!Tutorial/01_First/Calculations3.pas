@@ -2,9 +2,9 @@
 
 begin
   var (a,b) := ReadlnInteger2('Введите a и b:');
-  Writeln;
-  Writeln(a,' + ',b,' = ',a+b);
-  Writeln(a,' - ',b,' = ',a-b);
-  Writeln(a,' * ',b,' = ',a*b);
-  Writeln(a,' / ',b,' = ',a/b);
+  Println;
+  Println(a,'+',b,'=',a+b);
+  Println(a,'-',b,'=',a-b);
+  Println(a,'*',b,'=',a*b);
+  Println(a,'/',b,'=',a/b);
 end.

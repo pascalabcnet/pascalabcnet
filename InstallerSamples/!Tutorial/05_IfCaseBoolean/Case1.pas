@@ -1,15 +1,14 @@
-// Оператор выбора
-var x: integer;
+﻿// Оператор выбора
 
 begin
-  writeln('Введите оценку (1..5): ');
-  readln(x);
+  var x := ReadInteger('Введите оценку (1..5):');
   case x of
-    1: writeln('Единица');
-    2: writeln('Двойка');
-    3: writeln('Тройка');
-    4: writeln('Четверка');
-    5: writeln('Пятерка');  
-  else writeln('Такой оценки нет');
+    1: Println('Единица');
+    2: Println('Двойка');
+    3: Println('Тройка');
+    4: Println('Четвёрка');
+    5: Println('Пятёрка');
+  else
+    Println('Такой оценки нет');
   end;
 end.

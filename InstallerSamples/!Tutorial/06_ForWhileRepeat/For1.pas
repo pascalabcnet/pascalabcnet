@@ -1,22 +1,20 @@
-// Цикл for
+﻿// Цикл for
 
 const n = 20;
 
-var i: integer;
-
 begin
-  writeln('Числа от 1 до ',n,':');
-  for i:=1 to n do
-    write(i,' ');
-  writeln;
-  writeln;
-  writeln('Числа от ',n,' до 1:');
-  for i:=n downto 1 do
-    write(i,' ');
-  writeln;
-  writeln;
-  writeln('Маленькие английские буквы:');
-  for c: char := 'a' to 'z' do
-    write(c,' ');
-  writeln;
+  Println('Числа от 1 до', n, ':');
+  for var i := 1 to n do
+    Print(i);
+  Println;
+  Println;
+  Println('Числа от', n, 'до 1:');
+  for var i := n downto 1 do
+    Print(i);
+  Println;
+  Println;
+  Println('Маленькие английские буквы:');
+  for var c := 'a' to 'z' do
+    Print(c);
+  Println;
 end.

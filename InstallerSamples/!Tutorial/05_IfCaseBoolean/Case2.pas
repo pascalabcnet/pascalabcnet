@@ -1,12 +1,10 @@
-// Оператор выбора
-var day: integer;
+﻿// Оператор выбора
 
 begin
-  writeln('Введите номер дня недели (1..7): ');
-  readln(day);
+  var day := ReadInteger('Введите номер дня недели (1..7):');
   case day of
-    1..5: writeln('Будний');
-    6,7: writeln('Выходной');
-  else writeln('Неверный день недели');
+    1..5: Println('Будний');
+    6,7: Println('Выходной');
+  else Println('Неверный день недели');
   end;
 end.

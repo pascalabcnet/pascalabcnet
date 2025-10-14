@@ -1,10 +1,9 @@
-// Условный оператор. Полная форма
-var 
-  x: integer := 5;
-  y: integer := 3;
+﻿// Условный оператор. Полная форма
 
 begin
-  if x<y then
-    writeln(x,'<',y)
-  else writeln(y,'<',x);
+  var x: integer := 5;
+  var y: integer := 3;
+  if x < y then
+    Println(x, '<', y)
+  else Println(y, '<', x);
 end.

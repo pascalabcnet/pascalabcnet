@@ -1,4 +1,4 @@
-// Вложенные циклы for. Сетка из квадртов
+﻿// Вложенные циклы for. Сетка из квадртов
 uses GraphABC;
 
 const 
@@ -7,8 +7,8 @@ const
 
 begin
   var h := sz+zz;
-  for var nx:=0 to Window.Width div h do
-  for var ny:=0 to Window.Height div h do
+  for var nx:=0 to Window.Width div h - 1 do
+  for var ny:=0 to Window.Height div h - 1 do
   begin
     Brush.Color := clRandom;
     Rectangle(zz+nx*h,zz+ny*h,zz+nx*h+sz,zz+ny*h+sz);

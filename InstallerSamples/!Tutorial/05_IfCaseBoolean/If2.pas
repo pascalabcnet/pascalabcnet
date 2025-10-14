@@ -1,9 +1,7 @@
-// Условный оператор. Сокращенная форма
-var pass: string;
+﻿// Условный оператор. Сокращенная форма
 
 begin
-  writeln('Введите пароль: ');
-  readln(pass);
-  if pass = 'NET' then 
-    writeln('Пароль правильный');
+  var pass := ReadString('Введите пароль:');
+  if pass = 'NET' then
+    Println('Пароль правильный');
 end.

@@ -4,10 +4,10 @@ const
   b = 363;
 
 begin
-  Writeln('Вычисления:');
-  Writeln;
-  Writeln(a,' + ',b,' = ',a+b);
-  Writeln(a,' - ',b,' = ',a-b);
-  Writeln(a,' * ',b,' = ',a*b);
-  Writeln(a,' / ',b,' = ',a/b);
+  Println('Вычисления:');
+  Println;
+  Println(a,'+',b,'=',a+b);
+  Println(a,'-',b,'=',a-b);
+  Println(a,'*',b,'=',a*b);
+  Println(a,'/',b,'=',a/b);
 end.

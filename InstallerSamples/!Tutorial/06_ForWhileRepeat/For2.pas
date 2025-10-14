@@ -1,15 +1,14 @@
-// Цикл for. Последовательность случайных чисел
+﻿// Цикл for. Последовательность случайных чисел
 
 const n = 20;
 
-var i: integer;
-
 begin
-  write('Случайные оценки: ');
-  for i:=1 to n do
-    write(Random(2,5),' ');
-  writeln;
-  write('Случайные целые от 1 до 99: ');
-  for i:=n downto 1 do
-    write(Random(1,99),' ');
+  Print('Случайные оценки:');
+  for var i := 1 to n do
+    Print(Random(2, 5));
+  Println;
+  Print('Случайные целые от 1 до 99:');
+  for var i := n downto 1 do
+    Print(Random(1, 99));
+  Println;
 end.

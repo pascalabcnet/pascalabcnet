@@ -1,12 +1,13 @@
-// Цикл while. Вывод чисел с шагом 3
+﻿// Цикл while. Вывод чисел с шагом 3
 const n = 60;
 
 begin
-  writeln('Числа от 1 до ',n,', кратные 3');
+  Println($'Числа от 1 до {n}, кратные 3');
   var x := 3;
-  while x<=n do
+  while x <= n do
   begin
-    write(x,' ');
+    Print(x);
     x += 3;
   end;
+  Println;
 end.

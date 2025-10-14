@@ -9,7 +9,7 @@ begin
   var x := a;
   for var i:=0 to n do
   begin
-    WritelnFormat('{0:f2}  {1:f4}',x,sqrt(x));  
+    Println($'{x:f2}  {Sqrt(x):f4}');  
     x += h;
   end;
 end.

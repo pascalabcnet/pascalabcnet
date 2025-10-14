@@ -1,12 +1,7 @@
 ﻿// Цикл repeat. Алгоритм Евклида нахождения наибольшего общего делителя
 begin
-  Print('Введите два целых числа:');
-  var A := ReadInteger;
-  var B := ReadInteger;
-  repeat
-    var C := A mod B;
-    A := B;
-    B := C;
-  until B = 0;
+  var (A, B) := ReadInteger2('Введите два целых числа:');
+  while B <> 0 do
+    (A, B) := (B, A mod B);
   Println('Наибольший общий делитель =', A);
 end.
