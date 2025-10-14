@@ -1,13 +1,10 @@
-// Стандартные функции Ord Chr
-var 
-  i: integer;
-  c: char;
+﻿// Стандартные функции Ord и Chr
 
 begin
-  c := 'z';
-  i := Ord(c);
-  writelnFormat('Код символа {0} в кодировке Windows равен {1}',c,i);
-  i := 193;
+  var c := 'z';
+  var i := Ord(c);
+  Println($'Код символа {c} в кодировке Unicode равен {i}');
+  i := 1025;
   c := Chr(i);
-  writelnFormat('Символ с кодом {0} в кодировке Windows - это {1}',i,c);
+  Println($'Символ с кодом {i} в кодировке Unicode - это {c}');
 end.

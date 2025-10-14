@@ -1,13 +1,11 @@
-// Стандартные функции OrdUnicode ChrUnicode
-var 
-  i: integer;
-  c: char;
+﻿// Стандартные функции OrdWindows ChrWindows
 
 begin
-  c := 'Д';
-  i := OrdUnicode(c);
-  writelnFormat('Код символа {0} в кодировке Unicode равен {1}',c,i);
-  i := 1046;
-  c := ChrUnicode(i);
-  writelnFormat('Символ с кодом {0} в кодировке Unicode - это {1}',i,c);
+  var c := 'Д';
+  var i := OrdWindows(c);
+  Println($'Код символа {c} в кодировке Windows равен {i}');
+  i := 196;
+  c := ChrWindows(i);
+  Println($'Символ с кодом {i} в кодировке Windows - это {c}');
 end.
+

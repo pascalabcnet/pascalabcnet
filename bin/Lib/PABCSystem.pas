@@ -2077,9 +2077,9 @@ function Succ(x: char): char;
 // Возвращает символ, отстоящий от x на n позиций вперёд
 //function Succ(x: char; n: integer): char;
 /// Преобразует код в символ в кодировке Windows
-function ChrAnsi(a: byte): char;
+function ChrWindows(a: byte): char;
 /// Преобразует символ в код в кодировке Windows
-function OrdAnsi(a: char): byte;
+function OrdWindows(a: char): byte;
 /// Преобразует код в символ в кодировке Unicode 
 function Chr(a: word): char;
 /// Преобразует символ в код в кодировке Unicode 
@@ -9860,7 +9860,7 @@ end;
 //                Char and String: implementation
 // -----------------------------------------------------
 
-function ChrAnsi(a: Byte): char;
+function ChrWindows(a: Byte): char;
 begin
   if a < 128 then
     Result := char(a)
@@ -9871,7 +9871,7 @@ begin
   end;
 end;
 
-function OrdAnsi(a: char): byte;
+function OrdWindows(a: char): byte;
 begin
   if a < #128 then
     Result := byte(a)
