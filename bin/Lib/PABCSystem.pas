@@ -60,10 +60,10 @@ const
   MaxInt = integer.MaxValue;
   /// Константа Pi
   /// !! Pi constant
-  Pi = 3.141592653589793;
+  Pi = System.Math.PI;
   /// Константа E
   /// !! E constant
-  E = 2.718281828459045;
+  E = System.Math.E;
   /// Константа перехода на новую строку
   /// !! The newline string defined for this environment.
   NewLine = System.Environment.NewLine;
@@ -73,17 +73,20 @@ const
 //{{{--doc: Конец секции стандартных констант для документации }}} 
 
 
-//Маркер того, что это системный модуль
 ///--
 const
-  END_OF_LINE_SYMBOL = #10;
+//Маркер того, что это системный модуль
   __IS_SYSTEM_MODULE = true;
+  END_OF_LINE_SYMBOL = #10;
 
 //{{{doc: Начало секции стандартных типов для документации }}} 
 type
 // -----------------------------------------------------
 //>>     Стандартные типы # Standard types
 // -----------------------------------------------------
+
+// ======== Базовые типы ========
+
   /// Базовый тип объектов
   Object = System.Object;
   
@@ -112,6 +115,11 @@ type
   /// Представляет комплексное число
   Complex = System.Numerics.Complex;
   
+  /// Представляет тип короткой строки фиксированной длины 255 символов
+  ShortString = string[255];
+  
+// ======== Коллекции ========
+ 
   /// Представляет кортеж
   Tuple = System.Tuple;
   
@@ -154,6 +162,8 @@ type
   /// Представляет стек - набор элементов, реализованных по принципу "последний вошел-первый вышел"
   Stack<T> = System.Collections.Generic.Stack<T>;
   
+// ======== Интерфейсы ========
+  
   /// Представляет интерфейс для коллекции
   ICollection<T> = System.Collections.Generic.ICollection<T>;
   
@@ -178,6 +188,8 @@ type
   /// Представляет интерфейс для множества
   ISet<T> = System.Collections.Generic.ISet<T>;
   
+// ======== Разное ========
+  
   /// Представляет изменяемую строку символов
   StringBuilder = System.Text.StringBuilder;
   
@@ -192,6 +204,8 @@ type
 
   /// Класс, управляющий сборкой мусора
   GC = System.GC;
+  
+// ======== Делегаты ========
 
   /// Представляет действие без параметров
   Action0 = System.Action;
@@ -235,6 +249,8 @@ type
   /// Представляет функцию с тремя параметрами, возвращающую boolean 
   Predicate3<T1, T2, T3> = function(x1: T1; x2: T2; x3: T3): boolean;
   
+// ======== Регулярные выражения ========  
+  
   /// Представляет регулярное выражение
   Regex = System.Text.RegularExpressions.Regex;
   
@@ -256,6 +272,8 @@ type
   /// Представляет результаты из набора групп при выполнении Regex.Match
   RegexGroupCollection = System.Text.RegularExpressions.GroupCollection;
   
+// ======== Разное ========
+  
   /// Предоставляет методы для точного измерения затраченного времени
   Stopwatch = System.Diagnostics.Stopwatch;
   
@@ -271,9 +289,6 @@ type
   /// Сведения для форматирования числовых значений
   NumberFormatInfo = System.Globalization.NumberFormatInfo;
 
-  /// Представляет тип короткой строки фиксированной длины 255 символов
-  ShortString = string[255];
-  
   // Атрибут для кеширования результатов функции
   CacheAttribute = class(System.Attribute) 
     public constructor Create; 
@@ -298,16 +313,16 @@ type
   PPointer = ^pointer;//void*
   PInteger = ^integer;//int32
   PLongword = ^longword;//uint32
-  PLongint = ^longint;//int64
+  PLongint = ^longint;//int32
   //8
   PInt64 = ^int64;
-  PUInt64 = ^uint64;//unit64
+  PUInt64 = ^uint64;//uint64
   
   //8
   PSingle = ^single;//single
   //16
   PReal = ^real;//double
-  PDouble = ^double;//double  //ошибка, не сохранится, надо исправить
+  PDouble = ^double;//double (синоним) 
   //------------------------------------------------------------------------------
 
 
@@ -1583,12 +1598,20 @@ function BinaryFileRead(var f: BinaryFile; ElementType: System.Type): object;
 // -----------------------------------------------------
 //>>     Cистемные подпрограммы # System subroutines
 // -----------------------------------------------------
+
+//========= Сведения о системе и параметрах запуска ==========
+
 /// Возвращает версию PascalABC.NET
 function PascalABCVersion: string;
 /// Возвращает количество параметров командной строки
 function ParamCount: integer;
 /// Возвращает i-тый параметр командной строки
 function ParamStr(i: integer): string;
+/// Возващает имя запущенного .exe-файла
+function GetEXEFileName: string;
+
+//========== Работа с каталогами и файлами ===========
+
 /// Возвращает текущий каталог
 function GetDir: string;
 /// Меняет текущий каталог
@@ -1610,7 +1633,7 @@ function RemoveDir(dirName: string): boolean;
 function RenameFile(fileName, newfileName: string): boolean;
 /// Переименовывает каталог dirName, давая ему новое имя newDirName. Возвращает True, если каталог успешно переименован
 function RenameDirectory(dirName, newDirName: string): boolean;
-/// Устанавливает текущий каталог. Возвращает True, если каталог успешно удален
+/// Устанавливает текущий каталог. Возвращает True, если каталог успешно установлен
 function SetCurrentDir(dirName: string): boolean;
 
 /// Изменяет расширение файла с именем fileName на newExt
@@ -1618,12 +1641,16 @@ function ChangeFileNameExtension(fileName, newExt: string): string;
 /// Возвращает True, если файл с именем fileName существует
 function FileExists(fileName: string): boolean;
 
+//========== Отладка и диагностика =============
+
 ///- procedure Assert(cond: boolean);
 /// Выводит в специальном окне стек вызовов подпрограмм если условие не выполняется
 procedure Assert(cond: boolean; sourceFile: string := ''; line: integer := 0);
 ///- procedure Assert(cond: boolean; message: string);
 /// Выводит в специальном окне диагностическое сообщение и стек вызовов подпрограмм если условие не выполняется
 procedure Assert(cond: boolean; message: string; sourceFile: string := ''; line: integer := 0);
+
+//============= Информация о дисках ==============
 
 /// Возвращает свободное место в байтах на диске с именем diskname
 function DiskFree(diskName: string): int64;
@@ -1633,6 +1660,9 @@ function DiskSize(diskName: string): int64;
 function DiskFree(disk: integer): int64;
 /// Возвращает размер в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.
 function DiskSize(disk: integer): int64;
+
+//========== Управление программой и временем =============
+
 /// Возвращает количество миллисекунд с момента начала работы программы
 function Milliseconds: integer;
 /// Возвращает количество миллисекунд с момента последнего вызова Milliseconds или MillisecondsDelta или начала программы
@@ -1645,10 +1675,13 @@ procedure Halt(exitCode: integer);
 
 /// Делает паузу на ms миллисекунд
 procedure Sleep(ms: integer);
-/// Возващает имя запущенного .exe-файла
-function GetEXEFileName: string;
+
+//========== Сервисные функции =============
+
 /// Преобразует указатель к строковому представлению
 function PointerToString(p: pointer): string;
+
+//========== Работа с внешними процессами =============
 
 /// Запускает программу или документ с именем fileName 
 procedure Exec(fileName: string);
@@ -1659,6 +1692,8 @@ procedure Execute(fileName: string);
 /// Запускает программу или документ с именем fileName и параметрами командной строки args
 procedure Execute(fileName: string; args: string);
 
+//========== Перечисление файлов и каталогов ===========
+
 /// Возвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска 
 function EnumerateFiles(path: string; searchPattern: string := '*.*'): sequence of string;
 /// Возвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска, включая подкаталоги 
@@ -1668,11 +1703,15 @@ function EnumerateDirectories(path: string): sequence of string;
 /// Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги
 function EnumerateAllDirectories(path: string): sequence of string;
 
+//========== Информация о типах PascalABC.NET ===========
+
 /// Возвращает строку с именем данного типа
 function TypeToTypeName(t: System.Type): string;
 
 /// Возвращает строку с именем типа объекта
 function TypeName(obj: object): string;
+
+//========== Форматы чисел ===========
 
 /// Создаёт настройки форматирования числовых значений
 function NumberFormat(DecimalSeparator: string := '.'; GroupSeparator: string := ',')
