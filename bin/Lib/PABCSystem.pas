@@ -1879,6 +1879,10 @@ function Ceil(x: real): integer;
 function RadToDeg(x: real): real;
 /// Переводит градусы в радианы
 function DegToRad(x: real): real;
+/// Возвращает угол (в радианах) между положительной осью X и вектором (x, y) с учётом квадранта
+function Atan2(y, x: real): real;
+/// Возвращает гипотенузу треугольника с катетами x,y 
+function Hypot(x, y: real): real;
 
 /// Инициализирует датчик псевдослучайных чисел
 procedure Randomize;
@@ -2375,8 +2379,10 @@ function Pred(x: boolean): boolean;
 
 /// Возвращает True, если значение val находится между a и b включительно 
 function InRange<T>(val, a, b: T): boolean; where T: IComparable<T>;
-/// Возвращает True, если значение val находится между a и b (включительно) независимо от порядка a и b
-function Between<T>(val, a, b: T): boolean; where T: IComparable<T>;
+/// Возвращает True, если значение val находится между a и b независимо от порядка a и b
+function Between<T>(val, a, b: T; inclusive: boolean := true): boolean; where T: IComparable<T>;
+/// Возвращает значение, ограниченное диапазоном от bottom до top включительно
+function Clamp<T>(x,bottom,top: T): T; where T: IComparable<T>;
 /// Меняет местами значения двух переменных
 procedure Swap<T>(var a, b: T);
 /// Возвращает True, если достигнут конец строки
@@ -9449,6 +9455,39 @@ function RadToDeg(x: real) := x * 180 / Pi;
 
 function DegToRad(x: real) := x * Pi / 180;
 
+function Atan2(y, x: real): real;
+begin
+  if x > 0 then
+    Result := ArcTan(y / x)
+  else if x < 0 then
+    if y >= 0 then
+      Result := ArcTan(y / x) + Pi
+    else Result := ArcTan(y / x) - Pi
+  else if y > 0 then
+    Result := Pi / 2
+  else if y < 0 then
+    Result := -Pi / 2
+  else Result := 0;
+end;
+
+function Hypot(x, y: real): real;
+begin
+  var ax := Abs(x);
+  var ay := Abs(y);
+  if ax > ay then
+  begin
+    var r := ay / ax;
+    Result := ax * Sqrt(1 + r * r);
+  end
+  else if ay > 0 then
+  begin
+    var r := ax / ay;
+    Result := ay * Sqrt(1 + r * r);
+  end
+  else Result := 0;
+end;
+
+
 procedure Randomize;
 begin
   rnd := new System.Random;
@@ -10732,13 +10771,32 @@ begin
   Result := (val.CompareTo(a) >= 0) and (val.CompareTo(b) <= 0);
 end;
 
-/// Возвращает True, если значение val находится между a и b (включительно) независимо от порядка a и b
-function Between<T>(val, a, b: T): boolean; where T: IComparable<T>;
+/// Возвращает True, если значение val находится между a и b независимо от порядка a и b
+function Between<T>(val, a, b: T; inclusive: boolean): boolean; where T: IComparable<T>;
 begin
+  var cmpA := val.CompareTo(a);
+  var cmpB := val.CompareTo(b);
   if a.CompareTo(b) > 0 then  
-    Result := (val.CompareTo(b) >= 0) and (val.CompareTo(a) <= 0)
+    if inclusive then
+      Result := (cmpB >= 0) and (cmpA <= 0)
+    else
+      Result := (cmpB > 0) and (cmpA < 0)
   else
-    Result := (val.CompareTo(a) >= 0) and (val.CompareTo(b) <= 0);
+    if inclusive then
+      Result := (cmpA >= 0) and (cmpB <= 0)
+    else
+      Result := (cmpA > 0) and (cmpB < 0);
+end;
+
+function Clamp<T>(x,bottom,top: T): T; where T: IComparable<T>;
+begin
+  if bottom.CompareTo(top) > 0 then
+    raise new System.ArgumentException(GetTranslation(MIN_CANNOT_BE_GREATER_THAN_MAX));
+  if x.CompareTo(bottom) < 0 then 
+    Result := bottom
+  else if x.CompareTo(top) > 0 then 
+    Result := top
+  else Result := x;
 end;
 
 procedure Swap<T>(var a, b: T);
@@ -14297,9 +14355,12 @@ begin
 end;
 
 /// Возвращает True если значение находится между двумя другими
-function Between(Self: integer; a, b: integer): boolean; extensionmethod;
+function Between(Self: integer; a, b: integer; inclusive: boolean := true): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  if inclusive then
+    Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a)
+  else
+    Result := (a < Self) and (Self < b) or (b < Self) and (Self < a);
 end;
 
 /// Возвращает True если значение находится в диапазоне [a,b]
@@ -14396,10 +14457,13 @@ end;
 // -----------------------------------------------------
 //>>     Методы расширения типа real # Extension methods for real
 // -----------------------------------------------------
-/// Возвращает True если значение находится в диапазоне [a,b]
-function Between(Self: real; a, b: real): boolean; extensionmethod;
+/// Возвращает True если значение находится между двумя другими
+function Between(Self: real; a, b: real; inclusive: boolean := True): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  if inclusive then
+    Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a)
+  else
+    Result := (a < Self) and (Self < b) or (b < Self) and (Self < a);
 end;
 
 /// Возвращает True если значение находится в диапазоне [a, b]
@@ -14493,14 +14557,16 @@ function ClampTop(Self: real; top: real): real; extensionmethod := Min(Self, top
 /// Возвращает число, ограниченное величиной bottom снизу
 function ClampBottom(Self: real; bottom: real): real; extensionmethod := Max(Self, bottom);
 
-
 //------------------------------------------------------------------------------
 //>>     Методы расширения типа char # Extension methods for char
 //------------------------------------------------------------------------------
 /// Возвращает True если значение находится между двумя другими
-function Between(Self: char; a, b: char): boolean; extensionmethod;
+function Between(Self: char; a, b: char; inclusive: boolean := True): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  if inclusive then
+    Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a)
+  else
+    Result := (a < Self) and (Self < b) or (b < Self) and (Self < a);
 end;
 
 /// Возвращает True если символ находится в диапазоне [a,b]
@@ -14567,13 +14633,16 @@ function Replace(Self: string; oldStr,newStr: string; count: integer): string; e
 begin
   //var reg := new Regex(Regex.Escape(oldStr));
   //Result := reg.Replace(Self,newStr,count);
-  Result := Self.Split(|oldStr|, count+1, System.StringSplitOptions.None).JoinToString(newStr);
+  Result := Self.Split([oldStr], count+1, System.StringSplitOptions.None).JoinToString(newStr);
 end;
 
 /// Возвращает True если строка находится между двумя другими (лексикографическое сравнение)
-function Between(Self: string; a, b: string): boolean; extensionmethod;
+function Between(Self: string; a, b: string; inclusive: boolean := True): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  if inclusive then
+    Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a)
+  else
+    Result := (a < Self) and (Self < b) or (b < Self) and (Self < a);
 end;
 
 /// Возвращает True если строка находится в диапазоне [a,b] (лексикографическое сравнение)
