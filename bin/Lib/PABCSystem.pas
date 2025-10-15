@@ -1829,6 +1829,8 @@ function Log10(x: real): real;
 function LogN(base, x: real): real;
 /// Возвращает квадратный корень числа x
 function Sqrt(x: real): real;
+/// Возвращает кубический корень числа x (x может быть < 0)
+function Cbrt(x: real): real;
 ///-function Sqr(x: число): число;
 /// Возвращает квадрат числа x
 function Sqr(x: shortint): integer;
@@ -9383,6 +9385,8 @@ function Log10(x: real) := Math.Log10(x);
 function LogN(base, x: real) := Math.Log(x) / Math.Log(base);
 
 function Sqrt(x: real) := Math.Sqrt(x);
+
+function Cbrt(x: real) := Sign(x) * Power(Abs(x), 1/3);
 
 function Sqr(x: integer): int64 := int64(x) * int64(x);
 
