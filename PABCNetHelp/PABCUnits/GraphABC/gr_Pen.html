@@ -13,82 +13,82 @@
 </object></head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title><link rel="StyleSheet" href="../../default.css"><body>
-<H1>Подпрограммы для работы с пером</H1>
-<p>Рисование линий осуществляется текущим пером. Доступ к 
-свойствам текущего пера можно осуществлять как в процедурном, так и в 
-объектно-ориентированном стиле.</p>
-<p>Процедуры и функции для доступа к свойствам пера 
-сгруппированы парами: если <code>Prop</code> - имя 
-свойства пера, то функция <code>PenProp</code> возвращает 
-значение этого свойства, а процедура <code>SetPenProp(p)</code> 
-устанавливает это свойство:<br>
+<H1>РџРѕРґРїСЂРѕРіСЂР°РјРјС‹ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РїРµСЂРѕРј</H1>
+<p>Р РёСЃРѕРІР°РЅРёРµ Р»РёРЅРёР№ РѕСЃСѓС‰РµСЃС‚РІР»СЏРµС‚СЃСЏ С‚РµРєСѓС‰РёРј РїРµСЂРѕРј. Р”РѕСЃС‚СѓРї Рє 
+СЃРІРѕР№СЃС‚РІР°Рј С‚РµРєСѓС‰РµРіРѕ РїРµСЂР° РјРѕР¶РЅРѕ РѕСЃСѓС‰РµСЃС‚РІР»СЏС‚СЊ РєР°Рє РІ РїСЂРѕС†РµРґСѓСЂРЅРѕРј, С‚Р°Рє Рё РІ 
+РѕР±СЉРµРєС‚РЅРѕ-РѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅРѕРј СЃС‚РёР»Рµ.</p>
+<p>РџСЂРѕС†РµРґСѓСЂС‹ Рё С„СѓРЅРєС†РёРё РґР»СЏ РґРѕСЃС‚СѓРїР° Рє СЃРІРѕР№СЃС‚РІР°Рј РїРµСЂР° 
+СЃРіСЂСѓРїРїРёСЂРѕРІР°РЅС‹ РїР°СЂР°РјРё: РµСЃР»Рё <code>Prop</code> - РёРјСЏ 
+СЃРІРѕР№СЃС‚РІР° РїРµСЂР°, С‚Рѕ С„СѓРЅРєС†РёСЏ <code>PenProp</code> РІРѕР·РІСЂР°С‰Р°РµС‚ 
+Р·РЅР°С‡РµРЅРёРµ СЌС‚РѕРіРѕ СЃРІРѕР№СЃС‚РІР°, Р° РїСЂРѕС†РµРґСѓСЂР° <code>SetPenProp(p)</code> 
+СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЌС‚Рѕ СЃРІРѕР№СЃС‚РІРѕ:<br>
 &nbsp;</p>
 <table border=0 CELLPADDING=5>
 <tr><td>
 <code>
 <b>procedure</b> SetPenColor(c: Color); 
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает цвет текущего пера
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С†РІРµС‚ С‚РµРєСѓС‰РµРіРѕ РїРµСЂР°
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> PenColor: Color;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет текущего пера
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РІРµС‚ С‚РµРєСѓС‰РµРіРѕ РїРµСЂР°
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SetPenWidth(Width: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает ширину текущего пера
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С€РёСЂРёРЅСѓ С‚РµРєСѓС‰РµРіРѕ РїРµСЂР°
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> PenWidth: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ширину текущего пера
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С€РёСЂРёРЅСѓ С‚РµРєСѓС‰РµРіРѕ РїРµСЂР°
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SetPenStyle(style: 
 <a href="gr_PenDashStyle.html">DashStyle</a>);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает стиль текущего пера. 
-Константы стилей пера приведены <a href="gr_PenDashStyle.html">здесь</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЃС‚РёР»СЊ С‚РµРєСѓС‰РµРіРѕ РїРµСЂР°. 
+РљРѕРЅСЃС‚Р°РЅС‚С‹ СЃС‚РёР»РµР№ РїРµСЂР° РїСЂРёРІРµРґРµРЅС‹ <a href="gr_PenDashStyle.html">Р·РґРµСЃСЊ</a>
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> PenStyle: DashStyle;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает стиль текущего пера. 
-Константы стилей пера приведены <a href="gr_PenDashStyle.html">здесь</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚РёР»СЊ С‚РµРєСѓС‰РµРіРѕ РїРµСЂР°. 
+РљРѕРЅСЃС‚Р°РЅС‚С‹ СЃС‚РёР»РµР№ РїРµСЂР° РїСЂРёРІРµРґРµРЅС‹ <a href="gr_PenDashStyle.html">Р·РґРµСЃСЊ</a>
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SetPenMode(m: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает режим текущего пера
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЂРµР¶РёРј С‚РµРєСѓС‰РµРіРѕ РїРµСЂР°
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> PenMode: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает режим текущего пера
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЂРµР¶РёРј С‚РµРєСѓС‰РµРіРѕ РїРµСЂР°
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> PenX: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращают x-координату текущей позиции рисования
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°СЋС‚ x-РєРѕРѕСЂРґРёРЅР°С‚Сѓ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё СЂРёСЃРѕРІР°РЅРёСЏ
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> PenY: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращают y-координату текущей позиции рисования
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°СЋС‚ y-РєРѕРѕСЂРґРёРЅР°С‚Сѓ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё СЂРёСЃРѕРІР°РЅРёСЏ
 </td></tr>
 </table>
-<p>Кроме этого, можно изменять свойства текущего пера через 
-<a href="gr_PenClass.html">объект </a> <code><a href="gr_PenClass.html">Pen</a></code>.</p>
+<p>РљСЂРѕРјРµ СЌС‚РѕРіРѕ, РјРѕР¶РЅРѕ РёР·РјРµРЅСЏС‚СЊ СЃРІРѕР№СЃС‚РІР° С‚РµРєСѓС‰РµРіРѕ РїРµСЂР° С‡РµСЂРµР· 
+<a href="gr_PenClass.html">РѕР±СЉРµРєС‚ </a> <code><a href="gr_PenClass.html">Pen</a></code>.</p>
 
 </body></html>

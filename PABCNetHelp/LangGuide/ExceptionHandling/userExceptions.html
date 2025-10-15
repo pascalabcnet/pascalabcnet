@@ -7,25 +7,25 @@
 </head>
 
 <body>
-<H1>Исключения, определяемые пользователем</H1>
-<p>Для определения своего типа исключения достаточно породить класс - наследник 
-класса <code>Exception</code>:</p>
+<H1>РСЃРєР»СЋС‡РµРЅРёСЏ, РѕРїСЂРµРґРµР»СЏРµРјС‹Рµ РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј</H1>
+<p>Р”Р»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ СЃРІРѕРµРіРѕ С‚РёРїР° РёСЃРєР»СЋС‡РµРЅРёСЏ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РїРѕСЂРѕРґРёС‚СЊ РєР»Р°СЃСЃ - РЅР°СЃР»РµРґРЅРёРє 
+РєР»Р°СЃСЃР° <code>Exception</code>:</p>
 <blockquote>
 	<p><code><b>type</b> MyException =<b> class</b>(Exception) <b>end</b>;</code></p>
 </blockquote>
-<p>Тело класса-исключения может быть пустым, но, тем не менее, новое имя для 
-типа исключения позволит его разграничить с остальными исключениями:</p>
+<p>РўРµР»Рѕ РєР»Р°СЃСЃР°-РёСЃРєР»СЋС‡РµРЅРёСЏ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј, РЅРѕ, С‚РµРј РЅРµ РјРµРЅРµРµ, РЅРѕРІРѕРµ РёРјСЏ РґР»СЏ 
+С‚РёРїР° РёСЃРєР»СЋС‡РµРЅРёСЏ РїРѕР·РІРѕР»РёС‚ РµРіРѕ СЂР°Р·РіСЂР°РЅРёС‡РёС‚СЊ СЃ РѕСЃС‚Р°Р»СЊРЅС‹РјРё РёСЃРєР»СЋС‡РµРЅРёСЏРјРё:</p>
 <blockquote>
 	<p><code><b>try</b><br>
 &nbsp; ...<br>
 	<b>except</b><br>
-	&nbsp; <b>on</b> MyException <b>do</b><br>&nbsp;&nbsp;&nbsp; writeln('Целочисленное 
-	деление на 0');&nbsp; <br>&nbsp; <b>on</b> Exception <b>do</b><br><b>&nbsp;&nbsp;&nbsp; 
-	</b>writeln('Файл отсутствует');&nbsp;<br>
+	&nbsp; <b>on</b> MyException <b>do</b><br>&nbsp;&nbsp;&nbsp; writeln('Р¦РµР»РѕС‡РёСЃР»РµРЅРЅРѕРµ 
+	РґРµР»РµРЅРёРµ РЅР° 0');&nbsp; <br>&nbsp; <b>on</b> Exception <b>do</b><br><b>&nbsp;&nbsp;&nbsp; 
+	</b>writeln('Р¤Р°Р№Р» РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚');&nbsp;<br>
 	<b>end</b>;</code></p>
 </blockquote>
-<p>Исключение может содержать дополнительную информацию, связанную с точкой, в 
-которой произошло исключение:</p>
+<p>РСЃРєР»СЋС‡РµРЅРёРµ РјРѕР¶РµС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ, СЃРІСЏР·Р°РЅРЅСѓСЋ СЃ С‚РѕС‡РєРѕР№, РІ 
+РєРѕС‚РѕСЂРѕР№ РїСЂРѕРёР·РѕС€Р»Рѕ РёСЃРєР»СЋС‡РµРЅРёРµ:</p>
 <blockquote>
 	<p><code><b>type</b> <br>
 &nbsp; FileNotFoundException = <b>class</b>(Exception)<b><br>
@@ -41,16 +41,16 @@
 	<b>begin</b><br>
 &nbsp; <b>if</b> <b>not</b> 
 	FileExists(fname) <b>then</b><br>
-&nbsp;&nbsp;&nbsp; <b>raise</b> <b>new</b> FileNotFoundException('Файл 
-	не найден',fname);<br>
+&nbsp;&nbsp;&nbsp; <b>raise</b> <b>new</b> FileNotFoundException('Р¤Р°Р№Р» 
+	РЅРµ РЅР°Р№РґРµРЅ',fname);<br>
 	<b>end</b>;</code></p>
 	<p><code>...</code></p>
 	<p><code><b>try</b><br>
 &nbsp; ...<br>
 	<b>except</b><br>
 	&nbsp; <b>on</b> e: FileNotFoundException <b>do</b><br><b>&nbsp;&nbsp;&nbsp; 
-	</b>writeln('Файл '+e.fname+'
-	не найден');&nbsp;<br>
+	</b>writeln('Р¤Р°Р№Р» '+e.fname+'
+	РЅРµ РЅР°Р№РґРµРЅ');&nbsp;<br>
 	<b>end</b>;</code></p>
 </blockquote>
 </body>

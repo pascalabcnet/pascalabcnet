@@ -5,33 +5,33 @@
 <param name="Keyword" value="SkipWhile">
 </object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
 <body>
-<H1>Методы Take, TakeWhile, Skip, SkipWhile</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<H1>РњРµС‚РѕРґС‹ Take, TakeWhile, Skip, SkipWhile</H1><h2>РћРїРёСЃР°РЅРёРµ РјРµС‚РѕРґРѕРІ</h2><p>РњРµС‚РѕРґС‹ РїСЂРёРІРµРґРµРЅС‹ РґР»СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё <code><b>sequence of</b> T</code>.</p><table>
 <tr><td>
 <code><b>function </b>Take(count: integer): <b>sequence of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов с начала последовательности.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· count СЌР»РµРјРµРЅС‚РѕРІ СЃ РЅР°С‡Р°Р»Р° РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё.
 </td></tr>
 <tr><td>
 <code><b>function </b>TakeWhile(predicate: T-&gt;boolean): <b>sequence of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цепочку элементов последовательности, удовлетворяющих указанному условию, до первого не удовлетворяющего.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РµРїРѕС‡РєСѓ СЌР»РµРјРµРЅС‚РѕРІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёС… СѓРєР°Р·Р°РЅРЅРѕРјСѓ СѓСЃР»РѕРІРёСЋ, РґРѕ РїРµСЂРІРѕРіРѕ РЅРµ СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РµРіРѕ.
 </td></tr>
 <tr><td>
 <code><b>function </b>TakeWhile(predicate: (T,integer)-&gt;boolean): <b>sequence of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цепочку элементов последовательности, удовлетворяющих указанному условию, до первого не удовлетворяющего (учитывается индекс элемента).
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РµРїРѕС‡РєСѓ СЌР»РµРјРµРЅС‚РѕРІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёС… СѓРєР°Р·Р°РЅРЅРѕРјСѓ СѓСЃР»РѕРІРёСЋ, РґРѕ РїРµСЂРІРѕРіРѕ РЅРµ СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РµРіРѕ (СѓС‡РёС‚С‹РІР°РµС‚СЃСЏ РёРЅРґРµРєСЃ СЌР»РµРјРµРЅС‚Р°).
 </td></tr>
 <tr><td>
 <code><b>function </b>Skip(count: integer): <b>sequence of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает count элементов в последовательности и возвращает остальные элементы.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРїСѓСЃРєР°РµС‚ count СЌР»РµРјРµРЅС‚РѕРІ РІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РѕСЃС‚Р°Р»СЊРЅС‹Рµ СЌР»РµРјРµРЅС‚С‹.
 </td></tr>
 <tr><td>
 <code><b>function </b>SkipWhile(predicate: T-&gt;boolean): <b>sequence of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает элементы в последовательности, пока они удовлетворяют заданному условию, и затем возвращает оставшиеся элементы.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРїСѓСЃРєР°РµС‚ СЌР»РµРјРµРЅС‚С‹ РІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё, РїРѕРєР° РѕРЅРё СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‚ Р·Р°РґР°РЅРЅРѕРјСѓ СѓСЃР»РѕРІРёСЋ, Рё Р·Р°С‚РµРј РІРѕР·РІСЂР°С‰Р°РµС‚ РѕСЃС‚Р°РІС€РёРµСЃСЏ СЌР»РµРјРµРЅС‚С‹.
 </td></tr>
 <tr><td>
 <code><b>function </b>SkipWhile(predicate: (T,integer)-&gt;boolean): <b>sequence of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает элементы в последовательности, пока они удовлетворяют заданному условию, и затем возвращает оставшиеся элементы (учитывается индекс элемента).
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРїСѓСЃРєР°РµС‚ СЌР»РµРјРµРЅС‚С‹ РІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё, РїРѕРєР° РѕРЅРё СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‚ Р·Р°РґР°РЅРЅРѕРјСѓ СѓСЃР»РѕРІРёСЋ, Рё Р·Р°С‚РµРј РІРѕР·РІСЂР°С‰Р°РµС‚ РѕСЃС‚Р°РІС€РёРµСЃСЏ СЌР»РµРјРµРЅС‚С‹ (СѓС‡РёС‚С‹РІР°РµС‚СЃСЏ РёРЅРґРµРєСЃ СЌР»РµРјРµРЅС‚Р°).
 </td></tr>
 </table>
-<h2>Пример </h2><blockquote><code><strong>begin<br>&nbsp; var</strong> a := 
+<h2>РџСЂРёРјРµСЂ </h2><blockquote><code><strong>begin<br>&nbsp; var</strong> a := 
 	Arr(1,2,3,4,5,6);<br>&nbsp; a.Take(3).Println; // 1 2 3<br>&nbsp; a.Skip(3).Println; 
 	// 4 5 6<br>&nbsp; a.Skip(2).Take(3).Println; // 3 4 5<br>&nbsp; a.TakeWhile(x 
 	-&gt; x&lt;3).Println; // 1 2

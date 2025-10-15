@@ -3,14 +3,14 @@
 <param name="Keyword" value="BeginFrameBasedAnimationTime">
 <param name="Keyword" value="EndFrameBasedAnimation"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Процедуры покадровой анимации</H1>
+</HEAD><body><H1>РџСЂРѕС†РµРґСѓСЂС‹ РїРѕРєР°РґСЂРѕРІРѕР№ Р°РЅРёРјР°С†РёРё</H1>
 <table border=0 cellpadding=5><tr><td><code><b>procedure</b> BeginFrameBasedAnimation(Draw: <b>procedure</b>; frate: integer := 61);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Начинает анимацию, основанную на кадре. Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°С‡РёРЅР°РµС‚ Р°РЅРёРјР°С†РёСЋ, РѕСЃРЅРѕРІР°РЅРЅСѓСЋ РЅР° РєР°РґСЂРµ. РџРµСЂРµРґ СЂРёСЃРѕРІР°РЅРёРµРј РєР°Р¶РґРѕРіРѕ РєР°РґСЂР° СЃРѕРґРµСЂР¶РёРјРѕРµ РѕРєРЅР° СЃС‚РёСЂР°РµС‚СЃСЏ, Р·Р°С‚РµРј РІС‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРѕС†РµРґСѓСЂР° Draw</td></tr>
 <tr><td><code><b>procedure</b> BeginFrameBasedAnimation(Draw: <b>procedure</b>(frame: integer); frate: integer := 61);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Начинает анимацию, основанную на кадре. Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw с параметром, равным номеру кадра</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°С‡РёРЅР°РµС‚ Р°РЅРёРјР°С†РёСЋ, РѕСЃРЅРѕРІР°РЅРЅСѓСЋ РЅР° РєР°РґСЂРµ. РџРµСЂРµРґ СЂРёСЃРѕРІР°РЅРёРµРј РєР°Р¶РґРѕРіРѕ РєР°РґСЂР° СЃРѕРґРµСЂР¶РёРјРѕРµ РѕРєРЅР° СЃС‚РёСЂР°РµС‚СЃСЏ, Р·Р°С‚РµРј РІС‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРѕС†РµРґСѓСЂР° Draw СЃ РїР°СЂР°РјРµС‚СЂРѕРј, СЂР°РІРЅС‹Рј РЅРѕРјРµСЂСѓ РєР°РґСЂР°</td></tr>
 <tr><td><code><b>procedure</b> BeginFrameBasedAnimationTime(Draw: <b>procedure</b>(dt: real));</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Начинает анимацию, основанную на кадре, и передаёт в каждый обработчик кадра время dt, прошедшее с момента последней перерисовки</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°С‡РёРЅР°РµС‚ Р°РЅРёРјР°С†РёСЋ, РѕСЃРЅРѕРІР°РЅРЅСѓСЋ РЅР° РєР°РґСЂРµ, Рё РїРµСЂРµРґР°С‘С‚ РІ РєР°Р¶РґС‹Р№ РѕР±СЂР°Р±РѕС‚С‡РёРє РєР°РґСЂР° РІСЂРµРјСЏ dt, РїСЂРѕС€РµРґС€РµРµ СЃ РјРѕРјРµРЅС‚Р° РїРѕСЃР»РµРґРЅРµР№ РїРµСЂРµСЂРёСЃРѕРІРєРё</td></tr>
 <tr><td><code><b>procedure</b> EndFrameBasedAnimation;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Завершает анимацию, основанную на кадре</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РІРµСЂС€Р°РµС‚ Р°РЅРёРјР°С†РёСЋ, РѕСЃРЅРѕРІР°РЅРЅСѓСЋ РЅР° РєР°РґСЂРµ</td></tr>
 </table>
 </body></HTML>
