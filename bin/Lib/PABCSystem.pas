@@ -1831,6 +1831,17 @@ function LogN(base, x: real): real;
 function Sqrt(x: real): real;
 /// Возвращает кубический корень числа x (x может быть < 0)
 function Cbrt(x: real): real;
+
+/// Вычисляет целочисленный квадратный корень из n. 
+/// Возвращает наибольшее целое число r, такое что r² ≤ n < (r+1)²
+/// Если n является точным квадратом, возвращает точный корень
+function ISqrt(n: int64): int64;
+
+/// Вычисляет целочисленный квадратный корень из n. 
+/// Возвращает наибольшее целое число r, такое что r² ≤ n < (r+1)²
+/// Если n является точным квадратом, возвращает точный корень
+function ISqrt(n: BigInteger): BigInteger;
+
 ///-function Sqr(x: число): число;
 /// Возвращает квадрат числа x
 function Sqr(x: shortint): integer;
@@ -1890,6 +1901,8 @@ function Hypot(x, y: real): real;
 procedure Randomize;
 /// Инициализирует датчик псевдослучайных чисел, используя значение seed. При одном и том же seed генерируются одинаковые псевдослучайные последовательности
 procedure Randomize(seed: integer);
+/// Инициализирует датчик псевдослучайных чисел, используя значение seed. При одном и том же seed генерируются одинаковые псевдослучайные последовательности
+procedure SetRandomSeed(seed: integer);
 /// Возвращает случайное целое в диапазоне от 0 до maxValue-1
 function Random(maxValue: integer): integer;
 /// Возвращает случайное вещественное в диапазоне [0,maxValue)
@@ -9388,6 +9401,44 @@ function Sqrt(x: real) := Math.Sqrt(x);
 
 function Cbrt(x: real) := Sign(x) * Power(Abs(x), 1/3);
 
+function ISqrt(n: int64): int64;
+begin
+  if n < 0 then
+    raise new System.ArgumentOutOfRangeException('n');
+  if n < 2 then
+    exit(n);
+  
+  var x := n;
+  var y := (x + 1) div 2;  
+  
+  while y < x do
+  begin
+    x := y;
+    y := (x + n div x) div 2;
+  end;
+  Result := x;
+end;
+
+function ISqrt(n: BigInteger): BigInteger;
+begin
+  if n < 0 then
+    raise new System.ArgumentOutOfRangeException('n');
+  
+  if n < 2 then
+    Exit(n);
+  
+  var x := n;
+  var y := (x + 1) shr 1;  
+  
+  while y < x do
+  begin
+    x := y;
+    y := (x + n div x) shr 1;
+  end;
+  
+  Result := x;
+end;
+
 function Sqr(x: integer): int64 := int64(x) * int64(x);
 
 function Sqr(x: shortint): integer := x * x;
@@ -9507,6 +9558,9 @@ procedure Randomize(seed: integer);
 begin
   rnd := new System.Random(seed);
 end;
+
+procedure SetRandomSeed(seed: integer) := Randomize(seed);
+
 
 function Random(MaxValue: integer) := rnd.Next(MaxValue);
 
