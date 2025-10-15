@@ -310,6 +310,45 @@ begin
   dc.DrawEllipse(cb,cp,p,r,r);
 end;
 
+procedure ArcPlay(dc: DrawingContext; x,y,r,startAngle,endAngle: real; c: Color);
+begin
+  var cp := ColorPen(c,CurrentPenWidth);
+  var center := fso.RealToScreen(Pnt(x,y));
+  r := r * Scale;
+  
+  var geometry := new System.Windows.Media.StreamGeometry();
+  var context := geometry.Open();
+  var startAngleRad := startAngle * PI / 180;
+  var endAngleRad := endAngle * PI / 180;
+  var startPoint := new Point(
+    center.X + r * Cos(startAngleRad),
+    center.Y - r * Sin(startAngleRad)
+  );
+  var endPoint := new Point(
+    center.X + r * Cos(endAngleRad),
+    center.Y - r * Sin(endAngleRad)
+  );
+            
+  context.BeginFigure(startPoint, false, false);
+            
+  var cw := endAngle - startAngle < 0;
+  var dir := System.Windows.Media.SweepDirection.Counterclockwise;
+  if cw then
+    dir := System.Windows.Media.SweepDirection.Clockwise;
+  context.ArcTo(endPoint,
+      new System.Windows.Size(r, r),
+      0,
+      False,
+      dir,
+      true,
+      false
+  );
+  context.Close;
+
+  dc.DrawGeometry(nil, cp, geometry);
+end;
+
+
 procedure RectanglePlay(dc: DrawingContext; x,y,w,h: real; c: Color; borderc: Color);
 begin
   var cb := ColorBrush(c);
@@ -403,6 +442,12 @@ type
     width: real;
   public  
     procedure Play(dc: DrawingContext); override := LinePlay(dc,x,y,x1,y1,c,width);
+  end;
+  ArcC = auto class(Command)
+    x,y,radius,startAngle,endAngle: real;
+    c: Color;
+  public  
+    procedure Play(dc: DrawingContext); override := ArcPlay(dc,x,y,radius,startAngle,endAngle,c);
   end;
   TextC = auto class(Command)
     x,y: real;
@@ -532,6 +577,11 @@ begin
   var points := Zip(xx,yy,(x,y) -> Pnt(x,y)).ToArray;
   DrawPoints(points,PointRadius);
 end;
+
+/// Рисует дугу
+procedure DrawArc(x,y,r,startAngle,endAngle: real; Color: GColor := Colors.Black)
+  := ArcC.Create(x,y,r,startAngle,endAngle,Color).AddToListAndPlay;
+
 
 /// Расстояние между точками
 function Distance(p1,p2: Point): real := Sqrt((p2.x-p1.x)**2 + (p2.y-p1.y)**2);
@@ -671,6 +721,39 @@ type
     AfterResize := True;
   end;
   end;
+  
+procedure SetMouseDown(handler: (real,real,integer) -> ());
+begin
+  OnMouseDown += handler;
+end;
+
+procedure SetMouseUp(handler: (real,real,integer) -> ());
+begin
+  OnMouseUp += handler;
+end;
+
+procedure SetMouseMove(handler: (real,real,integer) -> ());
+begin
+  OnMouseMove += handler;
+end;
+
+procedure SetKeyPress(handler: char -> ());
+begin
+  OnKeyPress += handler;
+end;
+
+procedure SetKeyDown(handler: Key -> ());
+begin
+  OnKeyDown += handler;
+end;
+
+function RealToScreenX(xx: real) := fso.RealToScreenX(xx);
+function RealToScreenY(yy: real) := fso.RealToScreenY(yy);
+function ScreenToRealX(xx: real) := fso.ScreenToRealX(xx);
+function ScreenToRealY(yy: real) := fso.ScreenToRealY(yy);
+function ScreenToReal(p: Point): Point := fso.ScreenToReal(p);
+function RealToScreen(p: Point): Point := fso.RealToScreen(p);
+
 
 initialization
   InitCoordGrid;

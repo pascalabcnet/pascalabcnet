@@ -9,8 +9,8 @@ begin
   c := Chr(i);
   Println($'Символ с кодом {i} в кодировке Unicode - это {c}');
   Println;
-  i := OrdAnsi(c);
+  i := OrdWindows(c);
   Println($'Код символа {c} в кодировке Windows равен {i}');
-  c := ChrAnsi(i);
+  c := ChrWindows(i);
   Println($'Символ с кодом {i} в кодировке Windows - это {c}');
 end.

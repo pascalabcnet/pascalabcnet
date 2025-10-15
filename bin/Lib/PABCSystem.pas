@@ -2123,6 +2123,12 @@ function Succ(x: char): char;
 function ChrWindows(a: byte): char;
 /// Преобразует символ в код в кодировке Windows
 function OrdWindows(a: char): byte;
+
+/// Преобразует код в символ в кодировке Windows. Устарело. Используйте ChrWindows
+function ChrAnsi(a: byte): char;
+/// Преобразует символ в код в кодировке Windows. Устарело. Используйте OrdWindows
+function OrdAnsi(a: char): byte;
+
 /// Преобразует код в символ в кодировке Unicode 
 function Chr(a: word): char;
 /// Преобразует символ в код в кодировке Unicode 
@@ -9959,6 +9965,11 @@ begin
     Result := Encoding.GetEncoding(1251).GetBytes(new char[1](a))[0];
   end;
 end;
+
+function ChrAnsi(a: byte): char := ChrWindows(a);
+
+function OrdAnsi(a: char): byte := OrdWindows(a);
+
 
 function Ord(a: integer): integer;
 begin
