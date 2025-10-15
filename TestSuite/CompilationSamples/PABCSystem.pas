@@ -73,17 +73,20 @@ const
 //{{{--doc: Конец секции стандартных констант для документации }}} 
 
 
-//Маркер того, что это системный модуль
 ///--
 const
-  END_OF_LINE_SYMBOL = #10;
+//Маркер того, что это системный модуль
   __IS_SYSTEM_MODULE = true;
+  END_OF_LINE_SYMBOL = #10;
 
 //{{{doc: Начало секции стандартных типов для документации }}} 
 type
 // -----------------------------------------------------
 //>>     Стандартные типы # Standard types
 // -----------------------------------------------------
+
+// ======== Базовые типы ========
+
   /// Базовый тип объектов
   Object = System.Object;
   
@@ -112,6 +115,11 @@ type
   /// Представляет комплексное число
   Complex = System.Numerics.Complex;
   
+  /// Представляет тип короткой строки фиксированной длины 255 символов
+  ShortString = string[255];
+  
+// ======== Коллекции ========
+ 
   /// Представляет кортеж
   Tuple = System.Tuple;
   
@@ -154,6 +162,8 @@ type
   /// Представляет стек - набор элементов, реализованных по принципу "последний вошел-первый вышел"
   Stack<T> = System.Collections.Generic.Stack<T>;
   
+// ======== Интерфейсы ========
+  
   /// Представляет интерфейс для коллекции
   ICollection<T> = System.Collections.Generic.ICollection<T>;
   
@@ -178,6 +188,8 @@ type
   /// Представляет интерфейс для множества
   ISet<T> = System.Collections.Generic.ISet<T>;
   
+// ======== Разное ========
+  
   /// Представляет изменяемую строку символов
   StringBuilder = System.Text.StringBuilder;
   
@@ -192,6 +204,8 @@ type
 
   /// Класс, управляющий сборкой мусора
   GC = System.GC;
+  
+// ======== Делегаты ========
 
   /// Представляет действие без параметров
   Action0 = System.Action;
@@ -235,6 +249,8 @@ type
   /// Представляет функцию с тремя параметрами, возвращающую boolean 
   Predicate3<T1, T2, T3> = function(x1: T1; x2: T2; x3: T3): boolean;
   
+// ======== Регулярные выражения ========  
+  
   /// Представляет регулярное выражение
   Regex = System.Text.RegularExpressions.Regex;
   
@@ -256,6 +272,8 @@ type
   /// Представляет результаты из набора групп при выполнении Regex.Match
   RegexGroupCollection = System.Text.RegularExpressions.GroupCollection;
   
+// ======== Разное ========
+  
   /// Предоставляет методы для точного измерения затраченного времени
   Stopwatch = System.Diagnostics.Stopwatch;
   
@@ -271,9 +289,6 @@ type
   /// Сведения для форматирования числовых значений
   NumberFormatInfo = System.Globalization.NumberFormatInfo;
 
-  /// Представляет тип короткой строки фиксированной длины 255 символов
-  ShortString = string[255];
-  
   // Атрибут для кеширования результатов функции
   CacheAttribute = class(System.Attribute) 
     public constructor Create; 
@@ -298,16 +313,16 @@ type
   PPointer = ^pointer;//void*
   PInteger = ^integer;//int32
   PLongword = ^longword;//uint32
-  PLongint = ^longint;//int64
+  PLongint = ^longint;//int32
   //8
   PInt64 = ^int64;
-  PUInt64 = ^uint64;//unit64
+  PUInt64 = ^uint64;//uint64
   
   //8
   PSingle = ^single;//single
   //16
   PReal = ^real;//double
-  PDouble = ^double;//double  //ошибка, не сохранится, надо исправить
+  PDouble = ^double;//double (синоним) 
   //------------------------------------------------------------------------------
 
 
@@ -1583,12 +1598,20 @@ function BinaryFileRead(var f: BinaryFile; ElementType: System.Type): object;
 // -----------------------------------------------------
 //>>     Cистемные подпрограммы # System subroutines
 // -----------------------------------------------------
+
+// ========== Работа с каталогами и файлами ===========
+
 /// Возвращает версию PascalABC.NET
 function PascalABCVersion: string;
 /// Возвращает количество параметров командной строки
 function ParamCount: integer;
 /// Возвращает i-тый параметр командной строки
 function ParamStr(i: integer): string;
+/// Возващает имя запущенного .exe-файла
+function GetEXEFileName: string;
+
+//========== Работа с каталогами и файлами ===========
+
 /// Возвращает текущий каталог
 function GetDir: string;
 /// Меняет текущий каталог
@@ -1610,7 +1633,7 @@ function RemoveDir(dirName: string): boolean;
 function RenameFile(fileName, newfileName: string): boolean;
 /// Переименовывает каталог dirName, давая ему новое имя newDirName. Возвращает True, если каталог успешно переименован
 function RenameDirectory(dirName, newDirName: string): boolean;
-/// Устанавливает текущий каталог. Возвращает True, если каталог успешно удален
+/// Устанавливает текущий каталог. Возвращает True, если каталог успешно установлен
 function SetCurrentDir(dirName: string): boolean;
 
 /// Изменяет расширение файла с именем fileName на newExt
@@ -1618,12 +1641,16 @@ function ChangeFileNameExtension(fileName, newExt: string): string;
 /// Возвращает True, если файл с именем fileName существует
 function FileExists(fileName: string): boolean;
 
+//========== Отладка и диагностика =============
+
 ///- procedure Assert(cond: boolean);
 /// Выводит в специальном окне стек вызовов подпрограмм если условие не выполняется
 procedure Assert(cond: boolean; sourceFile: string := ''; line: integer := 0);
 ///- procedure Assert(cond: boolean; message: string);
 /// Выводит в специальном окне диагностическое сообщение и стек вызовов подпрограмм если условие не выполняется
 procedure Assert(cond: boolean; message: string; sourceFile: string := ''; line: integer := 0);
+
+//============= Информация о дисках ==============
 
 /// Возвращает свободное место в байтах на диске с именем diskname
 function DiskFree(diskName: string): int64;
@@ -1633,6 +1660,9 @@ function DiskSize(diskName: string): int64;
 function DiskFree(disk: integer): int64;
 /// Возвращает размер в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.
 function DiskSize(disk: integer): int64;
+
+//========== Управление программой и временем =============
+
 /// Возвращает количество миллисекунд с момента начала работы программы
 function Milliseconds: integer;
 /// Возвращает количество миллисекунд с момента последнего вызова Milliseconds или MillisecondsDelta или начала программы
@@ -1645,10 +1675,13 @@ procedure Halt(exitCode: integer);
 
 /// Делает паузу на ms миллисекунд
 procedure Sleep(ms: integer);
-/// Возващает имя запущенного .exe-файла
-function GetEXEFileName: string;
+
+//========== Сервисные функции =============
+
 /// Преобразует указатель к строковому представлению
 function PointerToString(p: pointer): string;
+
+//========== Работа с внешними процессами =============
 
 /// Запускает программу или документ с именем fileName 
 procedure Exec(fileName: string);
@@ -1659,6 +1692,8 @@ procedure Execute(fileName: string);
 /// Запускает программу или документ с именем fileName и параметрами командной строки args
 procedure Execute(fileName: string; args: string);
 
+//========== Перечисление файлов и каталогов ===========
+
 /// Возвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска 
 function EnumerateFiles(path: string; searchPattern: string := '*.*'): sequence of string;
 /// Возвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска, включая подкаталоги 
@@ -1668,11 +1703,15 @@ function EnumerateDirectories(path: string): sequence of string;
 /// Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги
 function EnumerateAllDirectories(path: string): sequence of string;
 
+//========== Информация о типах PascalABC.NET ===========
+
 /// Возвращает строку с именем данного типа
 function TypeToTypeName(t: System.Type): string;
 
 /// Возвращает строку с именем типа объекта
 function TypeName(obj: object): string;
+
+//========== Форматы чисел ===========
 
 /// Создаёт настройки форматирования числовых значений
 function NumberFormat(DecimalSeparator: string := '.'; GroupSeparator: string := ',')
@@ -1790,6 +1829,19 @@ function Log10(x: real): real;
 function LogN(base, x: real): real;
 /// Возвращает квадратный корень числа x
 function Sqrt(x: real): real;
+/// Возвращает кубический корень числа x (x может быть < 0)
+function Cbrt(x: real): real;
+
+/// Вычисляет целочисленный квадратный корень из n. 
+/// Возвращает наибольшее целое число r, такое что r² ≤ n < (r+1)²
+/// Если n является точным квадратом, возвращает точный корень
+function ISqrt(n: int64): int64;
+
+/// Вычисляет целочисленный квадратный корень из n. 
+/// Возвращает наибольшее целое число r, такое что r² ≤ n < (r+1)²
+/// Если n является точным квадратом, возвращает точный корень
+function ISqrt(n: BigInteger): BigInteger;
+
 ///-function Sqr(x: число): число;
 /// Возвращает квадрат числа x
 function Sqr(x: shortint): integer;
@@ -1840,11 +1892,17 @@ function Ceil(x: real): integer;
 function RadToDeg(x: real): real;
 /// Переводит градусы в радианы
 function DegToRad(x: real): real;
+/// Возвращает угол (в радианах) между положительной осью X и вектором (x, y) с учётом квадранта
+function Atan2(y, x: real): real;
+/// Возвращает гипотенузу треугольника с катетами x,y 
+function Hypot(x, y: real): real;
 
 /// Инициализирует датчик псевдослучайных чисел
 procedure Randomize;
 /// Инициализирует датчик псевдослучайных чисел, используя значение seed. При одном и том же seed генерируются одинаковые псевдослучайные последовательности
 procedure Randomize(seed: integer);
+/// Инициализирует датчик псевдослучайных чисел, используя значение seed. При одном и том же seed генерируются одинаковые псевдослучайные последовательности
+procedure SetRandomSeed(seed: integer);
 /// Возвращает случайное целое в диапазоне от 0 до maxValue-1
 function Random(maxValue: integer): integer;
 /// Возвращает случайное вещественное в диапазоне [0,maxValue)
@@ -2077,9 +2135,15 @@ function Succ(x: char): char;
 // Возвращает символ, отстоящий от x на n позиций вперёд
 //function Succ(x: char; n: integer): char;
 /// Преобразует код в символ в кодировке Windows
-function ChrAnsi(a: byte): char;
+function ChrWindows(a: byte): char;
 /// Преобразует символ в код в кодировке Windows
+function OrdWindows(a: char): byte;
+
+/// Преобразует код в символ в кодировке Windows. Устарело. Используйте ChrWindows
+function ChrAnsi(a: byte): char;
+/// Преобразует символ в код в кодировке Windows. Устарело. Используйте OrdWindows
 function OrdAnsi(a: char): byte;
+
 /// Преобразует код в символ в кодировке Unicode 
 function Chr(a: word): char;
 /// Преобразует символ в код в кодировке Unicode 
@@ -2336,8 +2400,10 @@ function Pred(x: boolean): boolean;
 
 /// Возвращает True, если значение val находится между a и b включительно 
 function InRange<T>(val, a, b: T): boolean; where T: IComparable<T>;
-/// Возвращает True, если значение val находится между a и b (включительно) независимо от порядка a и b
-function Between<T>(val, a, b: T): boolean; where T: IComparable<T>;
+/// Возвращает True, если значение val находится между a и b независимо от порядка a и b
+function Between<T>(val, a, b: T; inclusive: boolean := true): boolean; where T: IComparable<T>;
+/// Возвращает значение, ограниченное диапазоном от bottom до top включительно
+function Clamp<T>(x,bottom,top: T): T; where T: IComparable<T>;
 /// Меняет местами значения двух переменных
 procedure Swap<T>(var a, b: T);
 /// Возвращает True, если достигнут конец строки
@@ -9333,6 +9399,46 @@ function LogN(base, x: real) := Math.Log(x) / Math.Log(base);
 
 function Sqrt(x: real) := Math.Sqrt(x);
 
+function Cbrt(x: real) := Sign(x) * Power(Abs(x), 1/3);
+
+function ISqrt(n: int64): int64;
+begin
+  if n < 0 then
+    raise new System.ArgumentOutOfRangeException('n');
+  if n < 2 then
+    exit(n);
+  
+  var x := n;
+  var y := (x + 1) div 2;  
+  
+  while y < x do
+  begin
+    x := y;
+    y := (x + n div x) div 2;
+  end;
+  Result := x;
+end;
+
+function ISqrt(n: BigInteger): BigInteger;
+begin
+  if n < 0 then
+    raise new System.ArgumentOutOfRangeException('n');
+  
+  if n < 2 then
+    Exit(n);
+  
+  var x := n;
+  var y := (x + 1) shr 1;  
+  
+  while y < x do
+  begin
+    x := y;
+    y := (x + n div x) shr 1;
+  end;
+  
+  Result := x;
+end;
+
 function Sqr(x: integer): int64 := int64(x) * int64(x);
 
 function Sqr(x: shortint): integer := x * x;
@@ -9410,6 +9516,26 @@ function RadToDeg(x: real) := x * 180 / Pi;
 
 function DegToRad(x: real) := x * Pi / 180;
 
+function Atan2(y, x: real): real := System.Math.Atan2(y,x);
+
+function Hypot(x, y: real): real;
+begin
+  var ax := Abs(x);
+  var ay := Abs(y);
+  if ax > ay then
+  begin
+    var r := ay / ax;
+    Result := ax * Sqrt(1 + r * r);
+  end
+  else if ay > 0 then
+  begin
+    var r := ax / ay;
+    Result := ay * Sqrt(1 + r * r);
+  end
+  else Result := 0;
+end;
+
+
 procedure Randomize;
 begin
   rnd := new System.Random;
@@ -9419,6 +9545,9 @@ procedure Randomize(seed: integer);
 begin
   rnd := new System.Random(seed);
 end;
+
+procedure SetRandomSeed(seed: integer) := Randomize(seed);
+
 
 function Random(MaxValue: integer) := rnd.Next(MaxValue);
 
@@ -9860,7 +9989,7 @@ end;
 //                Char and String: implementation
 // -----------------------------------------------------
 
-function ChrAnsi(a: Byte): char;
+function ChrWindows(a: Byte): char;
 begin
   if a < 128 then
     Result := char(a)
@@ -9871,7 +10000,7 @@ begin
   end;
 end;
 
-function OrdAnsi(a: char): byte;
+function OrdWindows(a: char): byte;
 begin
   if a < #128 then
     Result := byte(a)
@@ -9881,6 +10010,11 @@ begin
     Result := Encoding.GetEncoding(1251).GetBytes(new char[1](a))[0];
   end;
 end;
+
+function ChrAnsi(a: byte): char := ChrWindows(a);
+
+function OrdAnsi(a: char): byte := OrdWindows(a);
+
 
 function Ord(a: integer): integer;
 begin
@@ -10693,13 +10827,32 @@ begin
   Result := (val.CompareTo(a) >= 0) and (val.CompareTo(b) <= 0);
 end;
 
-/// Возвращает True, если значение val находится между a и b (включительно) независимо от порядка a и b
-function Between<T>(val, a, b: T): boolean; where T: IComparable<T>;
+/// Возвращает True, если значение val находится между a и b независимо от порядка a и b
+function Between<T>(val, a, b: T; inclusive: boolean): boolean; where T: IComparable<T>;
 begin
+  var cmpA := val.CompareTo(a);
+  var cmpB := val.CompareTo(b);
   if a.CompareTo(b) > 0 then  
-    Result := (val.CompareTo(b) >= 0) and (val.CompareTo(a) <= 0)
+    if inclusive then
+      Result := (cmpB >= 0) and (cmpA <= 0)
+    else
+      Result := (cmpB > 0) and (cmpA < 0)
   else
-    Result := (val.CompareTo(a) >= 0) and (val.CompareTo(b) <= 0);
+    if inclusive then
+      Result := (cmpA >= 0) and (cmpB <= 0)
+    else
+      Result := (cmpA > 0) and (cmpB < 0);
+end;
+
+function Clamp<T>(x,bottom,top: T): T; where T: IComparable<T>;
+begin
+  if bottom.CompareTo(top) > 0 then
+    raise new System.ArgumentException(GetTranslation(MIN_CANNOT_BE_GREATER_THAN_MAX));
+  if x.CompareTo(bottom) < 0 then 
+    Result := bottom
+  else if x.CompareTo(top) > 0 then 
+    Result := top
+  else Result := x;
 end;
 
 procedure Swap<T>(var a, b: T);
@@ -14258,9 +14411,12 @@ begin
 end;
 
 /// Возвращает True если значение находится между двумя другими
-function Between(Self: integer; a, b: integer): boolean; extensionmethod;
+function Between(Self: integer; a, b: integer; inclusive: boolean := true): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  if inclusive then
+    Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a)
+  else
+    Result := (a < Self) and (Self < b) or (b < Self) and (Self < a);
 end;
 
 /// Возвращает True если значение находится в диапазоне [a,b]
@@ -14357,10 +14513,13 @@ end;
 // -----------------------------------------------------
 //>>     Методы расширения типа real # Extension methods for real
 // -----------------------------------------------------
-/// Возвращает True если значение находится в диапазоне [a,b]
-function Between(Self: real; a, b: real): boolean; extensionmethod;
+/// Возвращает True если значение находится между двумя другими
+function Between(Self: real; a, b: real; inclusive: boolean := True): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  if inclusive then
+    Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a)
+  else
+    Result := (a < Self) and (Self < b) or (b < Self) and (Self < a);
 end;
 
 /// Возвращает True если значение находится в диапазоне [a, b]
@@ -14454,14 +14613,16 @@ function ClampTop(Self: real; top: real): real; extensionmethod := Min(Self, top
 /// Возвращает число, ограниченное величиной bottom снизу
 function ClampBottom(Self: real; bottom: real): real; extensionmethod := Max(Self, bottom);
 
-
 //------------------------------------------------------------------------------
 //>>     Методы расширения типа char # Extension methods for char
 //------------------------------------------------------------------------------
 /// Возвращает True если значение находится между двумя другими
-function Between(Self: char; a, b: char): boolean; extensionmethod;
+function Between(Self: char; a, b: char; inclusive: boolean := True): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  if inclusive then
+    Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a)
+  else
+    Result := (a < Self) and (Self < b) or (b < Self) and (Self < a);
 end;
 
 /// Возвращает True если символ находится в диапазоне [a,b]
@@ -14528,13 +14689,16 @@ function Replace(Self: string; oldStr,newStr: string; count: integer): string; e
 begin
   //var reg := new Regex(Regex.Escape(oldStr));
   //Result := reg.Replace(Self,newStr,count);
-  Result := Self.Split(|oldStr|, count+1, System.StringSplitOptions.None).JoinToString(newStr);
+  Result := Self.Split([oldStr], count+1, System.StringSplitOptions.None).JoinToString(newStr);
 end;
 
 /// Возвращает True если строка находится между двумя другими (лексикографическое сравнение)
-function Between(Self: string; a, b: string): boolean; extensionmethod;
+function Between(Self: string; a, b: string; inclusive: boolean := True): boolean; extensionmethod;
 begin
-  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+  if inclusive then
+    Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a)
+  else
+    Result := (a < Self) and (Self < b) or (b < Self) and (Self < a);
 end;
 
 /// Возвращает True если строка находится в диапазоне [a,b] (лексикографическое сравнение)

@@ -9516,20 +9516,7 @@ function RadToDeg(x: real) := x * 180 / Pi;
 
 function DegToRad(x: real) := x * Pi / 180;
 
-function Atan2(y, x: real): real;
-begin
-  if x > 0 then
-    Result := ArcTan(y / x)
-  else if x < 0 then
-    if y >= 0 then
-      Result := ArcTan(y / x) + Pi
-    else Result := ArcTan(y / x) - Pi
-  else if y > 0 then
-    Result := Pi / 2
-  else if y < 0 then
-    Result := -Pi / 2
-  else Result := 0;
-end;
+function Atan2(y, x: real): real := System.Math.Atan2(y,x);
 
 function Hypot(x, y: real): real;
 begin
