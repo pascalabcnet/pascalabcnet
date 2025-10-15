@@ -2,7 +2,7 @@
 
 <head>
 <object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
-<param name="Keyword" value="Ковариантность">
+<param name="Keyword" value="РљРѕРІР°СЂРёР°РЅС‚РЅРѕСЃС‚СЊ">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
@@ -10,41 +10,41 @@
 </head>
 
 <body>
-<H1>Ковариантность параметров обобщенных типов</H1>
-<p>Параметры обобщенного типа в C# могут быть объявлены ковариантными или 
-контравариантными. При описании обобщенного типа на C# ковариантный параметр 
-отмечается модификатором out, а контравариантный - модификатором in:</p>
+<H1>РљРѕРІР°СЂРёР°РЅС‚РЅРѕСЃС‚СЊ РїР°СЂР°РјРµС‚СЂРѕРІ РѕР±РѕР±С‰РµРЅРЅС‹С… С‚РёРїРѕРІ</H1>
+<p>РџР°СЂР°РјРµС‚СЂС‹ РѕР±РѕР±С‰РµРЅРЅРѕРіРѕ С‚РёРїР° РІ C# РјРѕРіСѓС‚ Р±С‹С‚СЊ РѕР±СЉСЏРІР»РµРЅС‹ РєРѕРІР°СЂРёР°РЅС‚РЅС‹РјРё РёР»Рё 
+РєРѕРЅС‚СЂР°РІР°СЂРёР°РЅС‚РЅС‹РјРё. РџСЂРё РѕРїРёСЃР°РЅРёРё РѕР±РѕР±С‰РµРЅРЅРѕРіРѕ С‚РёРїР° РЅР° C# РєРѕРІР°СЂРёР°РЅС‚РЅС‹Р№ РїР°СЂР°РјРµС‚СЂ 
+РѕС‚РјРµС‡Р°РµС‚СЃСЏ РјРѕРґРёС„РёРєР°С‚РѕСЂРѕРј out, Р° РєРѕРЅС‚СЂР°РІР°СЂРёР°РЅС‚РЅС‹Р№ - РјРѕРґРёС„РёРєР°С‚РѕСЂРѕРј in:</p>
 <blockquote>
 	<pre class="wrap has-inner-focus" data-moniker=" dotnet-uwp-10.0 net-5.0 net-6.0 net-7.0 net-8.0 netcore-1.0 netcore-1.1 netcore-2.0 netcore-2.1 netcore-2.2 netcore-3.0 netcore-3.1 netframework-4.0 netframework-4.5 netframework-4.5.1 netframework-4.5.2 netframework-4.6 netframework-4.6.1 netframework-4.6.2 netframework-4.7 netframework-4.7.1 netframework-4.7.2 netframework-4.8 netframework-4.8.1 netstandard-1.0 netstandard-1.1 netstandard-1.2 netstandard-1.3 netstandard-1.4 netstandard-1.5 netstandard-1.6 netstandard-2.0 netstandard-2.1 xamarinandroid-7.1 xamarinios-10.8 xamarinmac-3.0 "><span><code class="csharp lang-csharp" data-author-content="public interface IEnumerable&lt;out T&gt; : System.Collections.IEnumerable" dir="ltr"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> </code><code data-author-content="public interface IEnumerable&lt;out T&gt; : System.Collections.IEnumerable" dir="ltr"><span class="hljs-title">IEnumerable</span>&lt;<span class="hljs-title">out</span> <span class="hljs-title">T</span></code><code class="csharp lang-csharp" data-author-content="public interface IEnumerable&lt;out T&gt; : System.Collections.IEnumerable" dir="ltr">&gt;</code></span></pre>
 	<pre class="wrap has-inner-focus" data-moniker=" dotnet-uwp-10.0 net-5.0 net-6.0 net-7.0 netcore-1.0 netcore-1.1 netcore-2.0 netcore-2.1 netcore-2.2 netcore-3.0 netcore-3.1 netframework-4.0 netframework-4.5 netframework-4.5.1 netframework-4.5.2 netframework-4.6 netframework-4.6.1 netframework-4.6.2 netframework-4.7 netframework-4.7.1 netframework-4.7.2 netframework-4.8 netstandard-1.0 netstandard-1.1 netstandard-1.2 netstandard-1.3 netstandard-1.4 netstandard-1.5 netstandard-1.6 netstandard-2.0 netstandard-2.1 xamarinandroid-7.1 xamarinios-10.8 xamarinmac-3.0 "><code class="csharp lang-csharp" data-author-content="public interface IComparer&lt;in T&gt;" dir="ltr"><span><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IComparer</span>&lt;<span class="hljs-title">in</span> <span class="hljs-title">T</span>&gt;</span></code></pre>
 </blockquote>
-<p>Ковариантный тип позволяет использовать вместо него любой производный класс, 
-а контравариантный - любой надкласс этого типа.</p>
-<p>В PascalABC.NET можно лишо пользоваться обобщенными типами с ковариантными 
-параметрами из стандартной библиотеки .NET. Наиболее часто используемым 
-обобщенным типом с ковариантными параметрами является <span>
+<p>РљРѕРІР°СЂРёР°РЅС‚РЅС‹Р№ С‚РёРї РїРѕР·РІРѕР»СЏРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РІРјРµСЃС‚Рѕ РЅРµРіРѕ Р»СЋР±РѕР№ РїСЂРѕРёР·РІРѕРґРЅС‹Р№ РєР»Р°СЃСЃ, 
+Р° РєРѕРЅС‚СЂР°РІР°СЂРёР°РЅС‚РЅС‹Р№ - Р»СЋР±РѕР№ РЅР°РґРєР»Р°СЃСЃ СЌС‚РѕРіРѕ С‚РёРїР°.</p>
+<p>Р’ PascalABC.NET РјРѕР¶РЅРѕ Р»РёС€Рѕ РїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ РѕР±РѕР±С‰РµРЅРЅС‹РјРё С‚РёРїР°РјРё СЃ РєРѕРІР°СЂРёР°РЅС‚РЅС‹РјРё 
+РїР°СЂР°РјРµС‚СЂР°РјРё РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕР№ Р±РёР±Р»РёРѕС‚РµРєРё .NET. РќР°РёР±РѕР»РµРµ С‡Р°СЃС‚Рѕ РёСЃРїРѕР»СЊР·СѓРµРјС‹Рј 
+РѕР±РѕР±С‰РµРЅРЅС‹Рј С‚РёРїРѕРј СЃ РєРѕРІР°СЂРёР°РЅС‚РЅС‹РјРё РїР°СЂР°РјРµС‚СЂР°РјРё СЏРІР»СЏРµС‚СЃСЏ <span>
 <code data-author-content="public interface IEnumerable&lt;out T&gt; : System.Collections.IEnumerable" dir="ltr">
 <span class="hljs-title">IEnumerable</span>&lt;<span class="hljs-title">out</span>
 <span class="hljs-title">T</span></code><code class="csharp lang-csharp" data-author-content="public interface IEnumerable&lt;out T&gt; : System.Collections.IEnumerable" dir="ltr">&gt;</code></span>, 
-который в PascalABC.NET представлен типом <code><strong>sequence of</strong> T</code>. </p>
-<p>Основное использование ковариантности здесь заключается в том, что вместо <code>
-<strong>sequence of</strong> Base</code> можно подставлять <code><strong>
-sequence of</strong> Derived</code>, где <code>Derived</code> - производный 
-класс, а <code>Base</code> - базовый. Например:</p>
+РєРѕС‚РѕСЂС‹Р№ РІ PascalABC.NET РїСЂРµРґСЃС‚Р°РІР»РµРЅ С‚РёРїРѕРј <code><strong>sequence of</strong> T</code>. </p>
+<p>РћСЃРЅРѕРІРЅРѕРµ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РєРѕРІР°СЂРёР°РЅС‚РЅРѕСЃС‚Рё Р·РґРµСЃСЊ Р·Р°РєР»СЋС‡Р°РµС‚СЃСЏ РІ С‚РѕРј, С‡С‚Рѕ РІРјРµСЃС‚Рѕ <code>
+<strong>sequence of</strong> Base</code> РјРѕР¶РЅРѕ РїРѕРґСЃС‚Р°РІР»СЏС‚СЊ <code><strong>
+sequence of</strong> Derived</code>, РіРґРµ <code>Derived</code> - РїСЂРѕРёР·РІРѕРґРЅС‹Р№ 
+РєР»Р°СЃСЃ, Р° <code>Base</code> - Р±Р°Р·РѕРІС‹Р№. РќР°РїСЂРёРјРµСЂ:</p>
 <blockquote>
 	<p><code><strong>begin</strong><br>&nbsp; <strong>var</strong> a: <strong>
 	sequence of</strong> object;<br>&nbsp; <strong>var</strong> b: <strong>
 	sequence of</strong> integer;<br>&nbsp; a := b;<br>&nbsp; a := Arr(1,2,3);<br>&nbsp; 
 	a := new List&lt;DateTime&gt;;<br><strong>end</strong>.</code></p>
 </blockquote>
-<p>Следует обратить внимание, что <code>
-<strong>array of</strong> integer</code> можно присвоить переменной типа <code>
-<strong>sequence of</strong> integer</code> согласно принципу подстановки, а
+<p>РЎР»РµРґСѓРµС‚ РѕР±СЂР°С‚РёС‚СЊ РІРЅРёРјР°РЅРёРµ, С‡С‚Рѕ <code>
+<strong>array of</strong> integer</code> РјРѕР¶РЅРѕ РїСЂРёСЃРІРѕРёС‚СЊ РїРµСЂРµРјРµРЅРЅРѕР№ С‚РёРїР° <code>
+<strong>sequence of</strong> integer</code> СЃРѕРіР»Р°СЃРЅРѕ РїСЂРёРЅС†РёРїСѓ РїРѕРґСЃС‚Р°РЅРѕРІРєРё, Р°
 <code>
-<strong>sequence of</strong> integer</code> можно присвоить переменной типа
+<strong>sequence of</strong> integer</code> РјРѕР¶РЅРѕ РїСЂРёСЃРІРѕРёС‚СЊ РїРµСЂРµРјРµРЅРЅРѕР№ С‚РёРїР°
 <code>
-<strong>sequence of</strong> object</code>&nbsp; за счет ковариантности. Именно 
-поэтому присваивание <code>a := Arr(1,2,3)</code> допустимо.</p>
+<strong>sequence of</strong> object</code>&nbsp; Р·Р° СЃС‡РµС‚ РєРѕРІР°СЂРёР°РЅС‚РЅРѕСЃС‚Рё. РРјРµРЅРЅРѕ 
+РїРѕСЌС‚РѕРјСѓ РїСЂРёСЃРІР°РёРІР°РЅРёРµ <code>a := Arr(1,2,3)</code> РґРѕРїСѓСЃС‚РёРјРѕ.</p>
 </body>
 
 </html>

@@ -9,881 +9,881 @@
 </OBJECT>
 <UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Îáùèå ñâåäåíèÿ">
+		<param name="Name" value="ÐžÐ±Ñ‰Ð¸Ðµ ÑÐ²ÐµÐ´ÐµÐ½Ð¸Ñ">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Î ñèñòåìå PascalABC.NET">
+			<param name="Name" value="Ðž ÑÐ¸ÑÑ‚ÐµÐ¼Ðµ PascalABC.NET">
 			<param name="Local" value="Common\main.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Êîðîòêî î ãëàâíîì">
+			<param name="Name" value="ÐšÐ¾Ñ€Ð¾Ñ‚ÐºÐ¾ Ð¾ Ð³Ð»Ð°Ð²Ð½Ð¾Ð¼">
 			<param name="Local" value="Common\features.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="×òî òàêîå .NET">
+			<param name="Name" value="Ð§Ñ‚Ð¾ Ñ‚Ð°ÐºÐ¾Ðµ .NET">
 			<param name="Local" value="Common\Net.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ïðåèìóùåñòâà PascalABC.NET">
+			<param name="Name" value="ÐŸÑ€ÐµÐ¸Ð¼ÑƒÑ‰ÐµÑÑ‚Ð²Ð° PascalABC.NET">
 			<param name="Local" value="Common\AdvantagePABC.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Îòëè÷èÿ ÿçûêà PascalABC.NET îò Delphi Object Pascal">
+			<param name="Name" value="ÐžÑ‚Ð»Ð¸Ñ‡Ð¸Ñ ÑÐ·Ñ‹ÐºÐ° PascalABC.NET Ð¾Ñ‚ Delphi Object Pascal">
 			<param name="Local" value="Common\PABCNETvsDelphi.html">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Ñïðàâî÷íèê ïî ÿçûêó">
+		<param name="Name" value="Ð¡Ð¿Ñ€Ð°Ð²Ð¾Ñ‡Ð½Ð¸Ðº Ð¿Ð¾ ÑÐ·Ñ‹ÐºÑƒ">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Îáçîð ÿçûêà PascalABC.NET">
+			<param name="Name" value="ÐžÐ±Ð·Ð¾Ñ€ ÑÐ·Ñ‹ÐºÐ° PascalABC.NET">
 			<param name="Local" value="LangGuide\index_lang_guide.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ñòðóêòóðà ïðîãðàììû">
+			<param name="Name" value="Ð¡Ñ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ð° Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñòðóêòóðà ïðîãðàììû: îáçîð">
+				<param name="Name" value="Ð¡Ñ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ð° Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="LangGuide\_ProgrStruct_Defs\index_progrstruct.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Èäåíòèôèêàòîðû è êëþ÷åâûå ñëîâà">
+				<param name="Name" value="Ð˜Ð´ÐµÐ½Ñ‚Ð¸Ñ„Ð¸ÐºÐ°Ñ‚Ð¾Ñ€Ñ‹ Ð¸ ÐºÐ»ÑŽÑ‡ÐµÐ²Ñ‹Ðµ ÑÐ»Ð¾Ð²Ð°">
 				<param name="Local" value="LangGuide\_ProgrStruct_Defs\identifiers.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Êîììåíòàðèè">
+				<param name="Name" value="ÐšÐ¾Ð¼Ð¼ÐµÐ½Ñ‚Ð°Ñ€Ð¸Ð¸">
 				<param name="Local" value="LangGuide\_ProgrStruct_Defs\comments.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïèñàíèå ïåðåìåííûõ">
+				<param name="Name" value="ÐžÐ¿Ð¸ÑÐ°Ð½Ð¸Ðµ Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ñ…">
 				<param name="Local" value="LangGuide\_ProgrStruct_Defs\vardef.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïèñàíèå êîíñòàíò">
+				<param name="Name" value="ÐžÐ¿Ð¸ÑÐ°Ð½Ð¸Ðµ ÐºÐ¾Ð½ÑÑ‚Ð°Ð½Ñ‚">
 				<param name="Local" value="LangGuide\_ProgrStruct_Defs\constdef.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïèñàíèå ìåòîê">
+				<param name="Name" value="ÐžÐ¿Ð¸ÑÐ°Ð½Ð¸Ðµ Ð¼ÐµÑ‚Ð¾Ðº">
 				<param name="Local" value="LangGuide\_ProgrStruct_Defs\labeldef.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïèñàíèå òèïîâ">
+				<param name="Name" value="ÐžÐ¿Ð¸ÑÐ°Ð½Ð¸Ðµ Ñ‚Ð¸Ð¿Ð¾Ð²">
 				<param name="Local" value="LangGuide\_ProgrStruct_Defs\typesdef.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îáëàñòü äåéñòâèÿ èäåíòèôèêàòîðà">
+				<param name="Name" value="ÐžÐ±Ð»Ð°ÑÑ‚ÑŒ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ Ð¸Ð´ÐµÐ½Ñ‚Ð¸Ñ„Ð¸ÐºÐ°Ñ‚Ð¾Ñ€Ð°">
 				<param name="Local" value="LangGuide\_ProgrStruct_Defs\scope.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Òèïû äàííûõ">
+			<param name="Name" value="Ð¢Ð¸Ð¿Ñ‹ Ð´Ð°Ð½Ð½Ñ‹Ñ…">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Òèïû: îáçîð">
+				<param name="Name" value="Ð¢Ð¸Ð¿Ñ‹: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="LangGuide\Types\index_types.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ðàçìåðíûå è ññûëî÷íûå òèïû">
+				<param name="Name" value="Ð Ð°Ð·Ð¼ÐµÑ€Ð½Ñ‹Ðµ Ð¸ ÑÑÑ‹Ð»Ð¾Ñ‡Ð½Ñ‹Ðµ Ñ‚Ð¸Ð¿Ñ‹">
 				<param name="Local" value="LangGuide\Types\value_ref_types.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Öåëûå òèïû">
+				<param name="Name" value="Ð¦ÐµÐ»Ñ‹Ðµ Ñ‚Ð¸Ð¿Ñ‹">
 				<param name="Local" value="LangGuide\Types\integer.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Âåùåñòâåííûå òèïû">
+				<param name="Name" value="Ð’ÐµÑ‰ÐµÑÑ‚Ð²ÐµÐ½Ð½Ñ‹Ðµ Ñ‚Ð¸Ð¿Ñ‹">
 				<param name="Local" value="LangGuide\Types\real.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ëîãè÷åñêèé òèï">
+				<param name="Name" value="Ð›Ð¾Ð³Ð¸Ñ‡ÐµÑÐºÐ¸Ð¹ Ñ‚Ð¸Ð¿">
 				<param name="Local" value="LangGuide\Types\boolean.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñèìâîëüíûé òèï">
+				<param name="Name" value="Ð¡Ð¸Ð¼Ð²Ð¾Ð»ÑŒÐ½Ñ‹Ð¹ Ñ‚Ð¸Ð¿">
 				<param name="Local" value="LangGuide\Types\char.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïåðå÷èñëèìûé è äèàïàçîííûé òèïû">
+				<param name="Name" value="ÐŸÐµÑ€ÐµÑ‡Ð¸ÑÐ»Ð¸Ð¼Ñ‹Ð¹ Ð¸ Ð´Ð¸Ð°Ð¿Ð°Ð·Ð¾Ð½Ð½Ñ‹Ð¹ Ñ‚Ð¸Ð¿Ñ‹">
 				<param name="Local" value="LangGuide\Types\enum_subrange.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñòðîêîâûé òèï">
+				<param name="Name" value="Ð¡Ñ‚Ñ€Ð¾ÐºÐ¾Ð²Ñ‹Ð¹ Ñ‚Ð¸Ð¿">
 				<param name="Local" value="LangGuide\Types\string.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ðàçìåðíûå ñòðîêè">
+				<param name="Name" value="Ð Ð°Ð·Ð¼ÐµÑ€Ð½Ñ‹Ðµ ÑÑ‚Ñ€Ð¾ÐºÐ¸">
 				<param name="Local" value="LangGuide\Types\valuestrings.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Êëàññ string">
+				<param name="Name" value="ÐšÐ»Ð°ÑÑ string">
 				<param name="Local" value="LangGuide\Types\stringmembers.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìàññèâû">
+				<param name="Name" value="ÐœÐ°ÑÑÐ¸Ð²Ñ‹">
 				<param name="Local" value="LangGuide\Types\arrays.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Äèíàìè÷åñêèå ìàññèâû">
+				<param name="Name" value="Ð”Ð¸Ð½Ð°Ð¼Ð¸Ñ‡ÐµÑÐºÐ¸Ðµ Ð¼Ð°ÑÑÐ¸Ð²Ñ‹">
 				<param name="Local" value="LangGuide\Types\dynamicarrays.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñòàòè÷åñêèå ìàññèâû">
+				<param name="Name" value="Ð¡Ñ‚Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸Ðµ Ð¼Ð°ÑÑÐ¸Ð²Ñ‹">
 				<param name="Local" value="LangGuide\Types\staticarrays.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Çàïèñè">
+				<param name="Name" value="Ð—Ð°Ð¿Ð¸ÑÐ¸">
 				<param name="Local" value="LangGuide\Types\records.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Êîðòåæè">
+				<param name="Name" value="ÐšÐ¾Ñ€Ñ‚ÐµÐ¶Ð¸">
 				<param name="Local" value="LangGuide\Types\tuples.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìíîæåñòâà">
+				<param name="Name" value="ÐœÐ½Ð¾Ð¶ÐµÑÑ‚Ð²Ð°">
 				<param name="Local" value="LangGuide\Types\sets.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ôàéëîâûå òèïû">
+				<param name="Name" value="Ð¤Ð°Ð¹Ð»Ð¾Ð²Ñ‹Ðµ Ñ‚Ð¸Ð¿Ñ‹">
 				<param name="Local" value="LangGuide\Types\files.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîñëåäîâàòåëüíîñòè">
+				<param name="Name" value="ÐŸÐ¾ÑÐ»ÐµÐ´Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾ÑÑ‚Ð¸">
 				<param name="Local" value="LangGuide\Types\sequences.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Óêàçàòåëè">
+				<param name="Name" value="Ð£ÐºÐ°Ð·Ð°Ñ‚ÐµÐ»Ð¸">
 				<param name="Local" value="LangGuide\Types\pointers.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïðîöåäóðíûé òèï">
+				<param name="Name" value="ÐŸÑ€Ð¾Ñ†ÐµÐ´ÑƒÑ€Ð½Ñ‹Ð¹ Ñ‚Ð¸Ð¿">
 				<param name="Local" value="LangGuide\Types\proctype.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ýêâèâàëåíòíîñòü è ñîâìåñòèìîñòü òèïîâ">
+				<param name="Name" value="Ð­ÐºÐ²Ð¸Ð²Ð°Ð»ÐµÐ½Ñ‚Ð½Ð¾ÑÑ‚ÑŒ Ð¸ ÑÐ¾Ð²Ð¼ÐµÑÑ‚Ð¸Ð¼Ð¾ÑÑ‚ÑŒ Ñ‚Ð¸Ð¿Ð¾Ð²">
 				<param name="Local" value="LangGuide\Types\typecompatibility.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îòîáðàæåíèå íà òèïû .NET">
+				<param name="Name" value="ÐžÑ‚Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ Ð½Ð° Ñ‚Ð¸Ð¿Ñ‹ .NET">
 				<param name="Local" value="LangGuide\Types\typesprojection.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Âûðàæåíèÿ è îïåðàöèè">
+			<param name="Name" value="Ð’Ñ‹Ñ€Ð°Ð¶ÐµÐ½Ð¸Ñ Ð¸ Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸Ð¸">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Âûðàæåíèÿ è îïåðàöèè: îáçîð">
+				<param name="Name" value="Ð’Ñ‹Ñ€Ð°Ð¶ÐµÐ½Ð¸Ñ Ð¸ Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸Ð¸: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="LangGuide\Operations_Expressions\index_expressions.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Àðèôìåòè÷åñêèå îïåðàöèè">
+				<param name="Name" value="ÐÑ€Ð¸Ñ„Ð¼ÐµÑ‚Ð¸Ñ‡ÐµÑÐºÐ¸Ðµ Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸Ð¸">
 				<param name="Local" value="LangGuide\Operations_Expressions\arithmop.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ëîãè÷åñêèå îïåðàöèè">
+				<param name="Name" value="Ð›Ð¾Ð³Ð¸Ñ‡ÐµÑÐºÐ¸Ðµ Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸Ð¸">
 				<param name="Local" value="LangGuide\Operations_Expressions\logicop.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîáèòîâûå îïåðàöèè">
+				<param name="Name" value="ÐŸÐ¾Ð±Ð¸Ñ‚Ð¾Ð²Ñ‹Ðµ Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸Ð¸">
 				<param name="Local" value="LangGuide\Operations_Expressions\bitop.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàöèè ñðàâíåíèÿ">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ð¸ ÑÑ€Ð°Ð²Ð½ÐµÐ½Ð¸Ñ">
 				<param name="Local" value="LangGuide\Operations_Expressions\relop.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñòðîêîâûå îïåðàöèè">
+				<param name="Name" value="Ð¡Ñ‚Ñ€Ð¾ÐºÐ¾Ð²Ñ‹Ðµ Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸Ð¸">
 				<param name="Local" value="LangGuide\Operations_Expressions\stringop.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàöèè ñ óêàçàòåëÿìè">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ð¸ Ñ ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑÐ¼Ð¸">
 				<param name="Local" value="LangGuide\Operations_Expressions\pointerop.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàöèè ñ ìíîæåñòâàìè">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ð¸ Ñ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²Ð°Ð¼Ð¸">
 				<param name="Local" value="LangGuide\Operations_Expressions\setop.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàöèÿ @">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ñ @">
 				<param name="Local" value="LangGuide\Operations_Expressions\addrop.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàöèè is è as">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ð¸ is Ð¸ as">
 				<param name="Local" value="LangGuide\Operations_Expressions\isasop.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàöèÿ new">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ñ new">
 				<param name="Local" value="LangGuide\Operations_Expressions\newop.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàöèè typeof è sizeof">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ð¸ typeof Ð¸ sizeof">
 				<param name="Local" value="LangGuide\Operations_Expressions\typeof_sizeof.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàöèÿ ÿâíîãî ïðèâåäåíèÿ òèïîâ">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ñ ÑÐ²Ð½Ð¾Ð³Ð¾ Ð¿Ñ€Ð¸Ð²ÐµÐ´ÐµÐ½Ð¸Ñ Ñ‚Ð¸Ð¿Ð¾Ð²">
 				<param name="Local" value="LangGuide\Operations_Expressions\typecast.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Óñëîâíàÿ îïåðàöèÿ">
+				<param name="Name" value="Ð£ÑÐ»Ð¾Ð²Ð½Ð°Ñ Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸Ñ">
 				<param name="Local" value="LangGuide\Operations_Expressions\IfOperation.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñðåçû">
+				<param name="Name" value="Ð¡Ñ€ÐµÐ·Ñ‹">
 				<param name="Local" value="LangGuide\Operations_Expressions\Slice.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïðèîðèòåò îïåðàöèé">
+				<param name="Name" value="ÐŸÑ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚ Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸Ð¹">
 				<param name="Local" value="LangGuide\Operations_Expressions\oppriority.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Îïåðàòîðû">
+			<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€Ñ‹">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîðû: îáçîð">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€Ñ‹: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="LangGuide\Operators\index_statements.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîð ïðèñâàèâàíèÿ">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€ Ð¿Ñ€Ð¸ÑÐ²Ð°Ð¸Ð²Ð°Ð½Ð¸Ñ">
 				<param name="Local" value="LangGuide\Operators\assign.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñîñòàâíîé îïåðàòîð">
+				<param name="Name" value="Ð¡Ð¾ÑÑ‚Ð°Ð²Ð½Ð¾Ð¹ Ð¾Ð¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€">
 				<param name="Local" value="LangGuide\Operators\beginend.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïóñòîé îïåðàòîð">
+				<param name="Name" value="ÐŸÑƒÑÑ‚Ð¾Ð¹ Ð¾Ð¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€">
 				<param name="Local" value="LangGuide\Operators\emptyop.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Óñëîâíûé îïåðàòîð">
+				<param name="Name" value="Ð£ÑÐ»Ð¾Ð²Ð½Ñ‹Ð¹ Ð¾Ð¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€">
 				<param name="Local" value="LangGuide\Operators\if.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîð îïèñàíèÿ ïåðåìåííîé">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€ Ð¾Ð¿Ð¸ÑÐ°Ð½Ð¸Ñ Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ð¾Ð¹">
 				<param name="Local" value="LangGuide\Operators\var_statement.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîð âûáîðà">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€ Ð²Ñ‹Ð±Ð¾Ñ€Ð°">
 				<param name="Local" value="LangGuide\Operators\case.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîð öèêëà for">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€ Ñ†Ð¸ÐºÐ»Ð° for">
 				<param name="Local" value="LangGuide\Operators\for.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîð öèêëà loop">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€ Ñ†Ð¸ÐºÐ»Ð° loop">
 				<param name="Local" value="LangGuide\Operators\loop.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîð öèêëà foreach">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€ Ñ†Ð¸ÐºÐ»Ð° foreach">
 				<param name="Local" value="LangGuide\Operators\foreach.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîðû öèêëà while è repeat">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€Ñ‹ Ñ†Ð¸ÐºÐ»Ð° while Ð¸ repeat">
 				<param name="Local" value="LangGuide\Operators\while.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîð with">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€ with">
 				<param name="Local" value="LangGuide\Operators\with.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîð goto">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€ goto">
 				<param name="Local" value="LangGuide\Operators\goto.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîðû break, continue è exit">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€Ñ‹ break, continue Ð¸ exit">
 				<param name="Local" value="LangGuide\Operators\break.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîð yield">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€ yield">
 				<param name="Local" value="LangGuide\Operators\yield.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîð yield sequence">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€ yield sequence">
 				<param name="Local" value="LangGuide\Operators\yieldsequence.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîð try ... except">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€ try ... except">
 				<param name="Local" value="LangGuide\Operators\try_except.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîð try ... finally">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€ try ... finally">
 				<param name="Local" value="LangGuide\Operators\try_finally.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîð raise">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€ raise">
 				<param name="Local" value="LangGuide\Operators\raise.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîðû += è -=">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€Ñ‹ += Ð¸ -=">
 				<param name="Local" value="LangGuide\Operators\plusequal.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðàòîð lock">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€ lock">
 				<param name="Local" value="LangGuide\Operators\lock.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ïðîöåäóðû è ôóíêöèè">
+			<param name="Name" value="ÐŸÑ€Ð¾Ñ†ÐµÐ´ÑƒÑ€Ñ‹ Ð¸ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïèñàíèå ïðîöåäóð è ôóíêöèé">
+				<param name="Name" value="ÐžÐ¿Ð¸ÑÐ°Ð½Ð¸Ðµ Ð¿Ñ€Ð¾Ñ†ÐµÐ´ÑƒÑ€ Ð¸ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¹">
 				<param name="Local" value="LangGuide\ProcFunc\procdef.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïàðàìåòðû ïðîöåäóð è ôóíêöèé">
+				<param name="Name" value="ÐŸÐ°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð¿Ñ€Ð¾Ñ†ÐµÐ´ÑƒÑ€ Ð¸ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¹">
 				<param name="Local" value="LangGuide\ProcFunc\params.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïåðåìåííîå ÷èñëî ïàðàìåòðîâ">
+				<param name="Name" value="ÐŸÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ð¾Ðµ Ñ‡Ð¸ÑÐ»Ð¾ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð²">
 				<param name="Local" value="LangGuide\ProcFunc\variableparams.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïàðàìåòðû ïî óìîë÷àíèþ">
+				<param name="Name" value="ÐŸÐ°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð¿Ð¾ ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ">
 				<param name="Local" value="LangGuide\ProcFunc\defaultparams.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Óïðîùåííûé ñèíòàêñèñ îïèñàíèÿ ïîäïðîãðàìì">
+				<param name="Name" value="Ð£Ð¿Ñ€Ð¾Ñ‰ÐµÐ½Ð½Ñ‹Ð¹ ÑÐ¸Ð½Ñ‚Ð°ÐºÑÐ¸Ñ Ð¾Ð¿Ð¸ÑÐ°Ð½Ð¸Ñ Ð¿Ð¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼">
 				<param name="Local" value="LangGuide\ProcFunc\shortfundef.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Èìåíîâàííûå àðãóìåíòû">
+				<param name="Name" value="Ð˜Ð¼ÐµÐ½Ð¾Ð²Ð°Ð½Ð½Ñ‹Ðµ Ð°Ñ€Ð³ÑƒÐ¼ÐµÐ½Ñ‚Ñ‹">
 				<param name="Local" value="LangGuide\ProcFunc\namedarguments.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îïåðåæàþùåå îáúÿâëåíèå">
+				<param name="Name" value="ÐžÐ¿ÐµÑ€ÐµÐ¶Ð°ÑŽÑ‰ÐµÐµ Ð¾Ð±ÑŠÑÐ²Ð»ÐµÐ½Ð¸Ðµ">
 				<param name="Local" value="LangGuide\ProcFunc\forward.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïåðåãðóçêà èìåí ïîäïðîãðàìì">
+				<param name="Name" value="ÐŸÐµÑ€ÐµÐ³Ñ€ÑƒÐ·ÐºÐ° Ð¸Ð¼ÐµÐ½ Ð¿Ð¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼">
 				<param name="Local" value="LangGuide\ProcFunc\overloading.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Âûçîâ ïîäïðîãðàìì èç íåóïðàâëÿåìîé dll">
+				<param name="Name" value="Ð’Ñ‹Ð·Ð¾Ð² Ð¿Ð¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼ Ð¸Ð· Ð½ÐµÑƒÐ¿Ñ€Ð°Ð²Ð»ÑÐµÐ¼Ð¾Ð¹ dll">
 				<param name="Local" value="LangGuide\ProcFunc\external.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ìîäóëè è áèáëèîòåêè">
+			<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»Ð¸ Ð¸ Ð±Ð¸Ð±Ð»Ð¸Ð¾Ñ‚ÐµÐºÐ¸">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñòðóêòóðà ìîäóëÿ">
+				<param name="Name" value="Ð¡Ñ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ð° Ð¼Ð¾Ð´ÑƒÐ»Ñ">
 				<param name="Local" value="LangGuide\Modules\indexmodule.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ðàçäåë uses">
+				<param name="Name" value="Ð Ð°Ð·Ð´ÐµÐ» uses">
 				<param name="Local" value="LangGuide\Modules\uses.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Óïðîùåííûé ñèíòàêñèñ ìîäóëÿ">
+				<param name="Name" value="Ð£Ð¿Ñ€Ð¾Ñ‰ÐµÐ½Ð½Ñ‹Ð¹ ÑÐ¸Ð½Ñ‚Ð°ÐºÑÐ¸Ñ Ð¼Ð¾Ð´ÑƒÐ»Ñ">
 				<param name="Local" value="LangGuide\Modules\simplemodule.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Öèêëè÷åñêèå ññûëêè ìåæäó ìîäóëÿìè">
+				<param name="Name" value="Ð¦Ð¸ÐºÐ»Ð¸Ñ‡ÐµÑÐºÐ¸Ðµ ÑÑÑ‹Ð»ÐºÐ¸ Ð¼ÐµÐ¶Ð´Ñƒ Ð¼Ð¾Ð´ÑƒÐ»ÑÐ¼Ð¸">
 				<param name="Local" value="LangGuide\Modules\cyclemodules.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Áèáëèîòåêè dll">
+				<param name="Name" value="Ð‘Ð¸Ð±Ð»Ð¸Ð¾Ñ‚ÐµÐºÐ¸ dll">
 				<param name="Local" value="LangGuide\Modules\libraries.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñîâìåñòíîå èñïîëüçîâàíèå ìîäóëåé è áèáëèîòåê">
+				<param name="Name" value="Ð¡Ð¾Ð²Ð¼ÐµÑÑ‚Ð½Ð¾Ðµ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð¼Ð¾Ð´ÑƒÐ»ÐµÐ¹ Ð¸ Ð±Ð¸Ð±Ð»Ð¸Ð¾Ñ‚ÐµÐº">
 				<param name="Local" value="LangGuide\Modules\libraries_units.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Äîêóìåíòèðóþùèå êîììåíòàðèè">
+				<param name="Name" value="Ð”Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ð¸Ñ€ÑƒÑŽÑ‰Ð¸Ðµ ÐºÐ¾Ð¼Ð¼ÐµÐ½Ñ‚Ð°Ñ€Ð¸Ð¸">
 				<param name="Local" value="LangGuide\Modules\doccomments.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Êëàññû">
+			<param name="Name" value="ÐšÐ»Ð°ÑÑÑ‹">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Êëàññû è îáúåêòû: îáçîð">
+				<param name="Name" value="ÐšÐ»Ð°ÑÑÑ‹ Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="LangGuide\Classes\index_classes.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Âèäèìîñòü ÷ëåíîâ êëàññà">
+				<param name="Name" value="Ð’Ð¸Ð´Ð¸Ð¼Ð¾ÑÑ‚ÑŒ Ñ‡Ð»ÐµÐ½Ð¾Ð² ÐºÐ»Ð°ÑÑÐ°">
 				<param name="Local" value="LangGuide\Classes\visibility.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹">
 				<param name="Local" value="LangGuide\Classes\methods.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Èíèöèàëèçàòîðû ïîëåé">
+				<param name="Name" value="Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ‚Ð¾Ñ€Ñ‹ Ð¿Ð¾Ð»ÐµÐ¹">
 				<param name="Local" value="LangGuide\Classes\initfields.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Êîíñòðóêòîðû">
+				<param name="Name" value="ÐšÐ¾Ð½ÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€Ñ‹">
 				<param name="Local" value="LangGuide\Classes\constrdestr.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïðåäâàðèòåëüíîå îáúÿâëåíèå êëàññîâ">
+				<param name="Name" value="ÐŸÑ€ÐµÐ´Ð²Ð°Ñ€Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾Ðµ Ð¾Ð±ÑŠÑÐ²Ð»ÐµÐ½Ð¸Ðµ ÐºÐ»Ð°ÑÑÐ¾Ð²">
 				<param name="Local" value="LangGuide\Classes\classdefbefore.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïåðåìåííàÿ Self">
+				<param name="Name" value="ÐŸÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ð°Ñ Self">
 				<param name="Local" value="LangGuide\Classes\self.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñâîéñòâà">
+				<param name="Name" value="Ð¡Ð²Ð¾Ð¹ÑÑ‚Ð²Ð°">
 				<param name="Local" value="LangGuide\Classes\properties.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Èíäåêñíûå ñâîéñòâà">
+				<param name="Name" value="Ð˜Ð½Ð´ÐµÐºÑÐ½Ñ‹Ðµ ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð°">
 				<param name="Local" value="LangGuide\Classes\indexedproperties.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Íàñëåäîâàíèå">
+				<param name="Name" value="ÐÐ°ÑÐ»ÐµÐ´Ð¾Ð²Ð°Ð½Ð¸Ðµ">
 				<param name="Local" value="LangGuide\Classes\inheritance.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïåðåîïðåäåëåíèå ìåòîäîâ">
+				<param name="Name" value="ÐŸÐµÑ€ÐµÐ¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ðµ Ð¼ÐµÑ‚Ð¾Ð´Ð¾Ð²">
 				<param name="Local" value="LangGuide\Classes\inherited.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Íàñëåäîâàíèå êîíñòðóêòîðîâ">
+				<param name="Name" value="ÐÐ°ÑÐ»ÐµÐ´Ð¾Ð²Ð°Ð½Ð¸Ðµ ÐºÐ¾Ð½ÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€Ð¾Ð²">
 				<param name="Local" value="LangGuide\Classes\constrinheritance.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Âèðòóàëüíûå ìåòîäû è ïîëèìîðôèçì">
+				<param name="Name" value="Ð’Ð¸Ñ€Ñ‚ÑƒÐ°Ð»ÑŒÐ½Ñ‹Ðµ Ð¼ÐµÑ‚Ð¾Ð´Ñ‹ Ð¸ Ð¿Ð¾Ð»Ð¸Ð¼Ð¾Ñ€Ñ„Ð¸Ð·Ð¼">
 				<param name="Local" value="LangGuide\Classes\virtual.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Àáñòðàêòíûå ìåòîäû è êëàññû">
+				<param name="Name" value="ÐÐ±ÑÑ‚Ñ€Ð°ÐºÑ‚Ð½Ñ‹Ðµ Ð¼ÐµÑ‚Ð¾Ð´Ñ‹ Ð¸ ÐºÐ»Ð°ÑÑÑ‹">
 				<param name="Local" value="LangGuide\Classes\abstractmethods.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïåðåãðóçêà îïåðàöèé">
+				<param name="Name" value="ÐŸÐµÑ€ÐµÐ³Ñ€ÑƒÐ·ÐºÐ° Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸Ð¹">
 				<param name="Local" value="LangGuide\Classes\operoverloading.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñòàòè÷åñêèå êëàññû, ïîëÿ, ìåòîäû, ñâîéñòâà è êîíñòðóêòîðû">
+				<param name="Name" value="Ð¡Ñ‚Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸Ðµ ÐºÐ»Ð°ÑÑÑ‹, Ð¿Ð¾Ð»Ñ, Ð¼ÐµÑ‚Ð¾Ð´Ñ‹, ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð° Ð¸ ÐºÐ¾Ð½ÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€Ñ‹">
 				<param name="Local" value="LangGuide\Classes\classconstr.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû ðàñøèðåíèÿ">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ">
 				<param name="Local" value="LangGuide\Classes\extensionmethods.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Àòðèáóòû">
+				<param name="Name" value="ÐÑ‚Ñ€Ð¸Ð±ÑƒÑ‚Ñ‹">
 				<param name="Local" value="LangGuide\Classes\attributes.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Àíîíèìíûå êëàññû">
+				<param name="Name" value="ÐÐ½Ð¾Ð½Ð¸Ð¼Ð½Ñ‹Ðµ ÐºÐ»Ð°ÑÑÑ‹">
 				<param name="Local" value="LangGuide\Classes\anontypes.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Àâòîêëàññû">
+				<param name="Name" value="ÐÐ²Ñ‚Ð¾ÐºÐ»Ð°ÑÑÑ‹">
 				<param name="Local" value="LangGuide\Classes\autoclasses.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Îáðàáîòêà èñêëþ÷åíèé">
+			<param name="Name" value="ÐžÐ±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ° Ð¸ÑÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ð¹">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îáðàáîòêà èñêëþ÷åíèé: îáçîð">
+				<param name="Name" value="ÐžÐ±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ° Ð¸ÑÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ð¹: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="LangGuide\ExceptionHandling\Overview.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñòàíäàðòíûå êëàññû èñêëþ÷åíèé">
+				<param name="Name" value="Ð¡Ñ‚Ð°Ð½Ð´Ð°Ñ€Ñ‚Ð½Ñ‹Ðµ ÐºÐ»Ð°ÑÑÑ‹ Ð¸ÑÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ð¹">
 				<param name="Local" value="LangGuide\ExceptionHandling\StandardExceptions.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Èñêëþ÷åíèÿ, îïðåäåëÿåìûå ïîëüçîâàòåëåì">
+				<param name="Name" value="Ð˜ÑÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ñ, Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÑÐµÐ¼Ñ‹Ðµ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÐµÐ¼">
 				<param name="Local" value="LangGuide\ExceptionHandling\userExceptions.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîâòîðíàÿ ãåíåðàöèÿ èñêëþ÷åíèÿ">
+				<param name="Name" value="ÐŸÐ¾Ð²Ñ‚Ð¾Ñ€Ð½Ð°Ñ Ð³ÐµÐ½ÐµÑ€Ð°Ñ†Ð¸Ñ Ð¸ÑÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ñ">
 				<param name="Local" value="LangGuide\ExceptionHandling\reraise.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïðèìåðû îáðàáîòêè èñêëþ÷åíèé">
+				<param name="Name" value="ÐŸÑ€Ð¸Ð¼ÐµÑ€Ñ‹ Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ¸ Ð¸ÑÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ð¹">
 				<param name="Local" value="LangGuide\ExceptionHandling\ExeptionsExamples.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Èíòåðôåéñû">
+			<param name="Name" value="Ð˜Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÑ‹">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Èíòåðôåéñû: îáçîð">
+				<param name="Name" value="Ð˜Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÑ‹: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="LangGuide\Interfaces\indexinterf.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ðåàëèçàöèÿ íåñêîëüêèõ èíòåðôåéñîâ ">
+				<param name="Name" value="Ð ÐµÐ°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ Ð½ÐµÑÐºÐ¾Ð»ÑŒÐºÐ¸Ñ… Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ¾Ð² ">
 				<param name="Local" value="LangGuide\Interfaces\manyinterf.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Îáîáùåííûå òèïû">
+			<param name="Name" value="ÐžÐ±Ð¾Ð±Ñ‰ÐµÐ½Ð½Ñ‹Ðµ Ñ‚Ð¸Ð¿Ñ‹">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îáîáùåííûå òèïû: îáçîð">
+				<param name="Name" value="ÐžÐ±Ð¾Ð±Ñ‰ÐµÐ½Ð½Ñ‹Ðµ Ñ‚Ð¸Ð¿Ñ‹: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="LangGuide\Generics\index_generics.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îáîáùåííûå ïîäïðîãðàììû: îáçîð">
+				<param name="Name" value="ÐžÐ±Ð¾Ð±Ñ‰ÐµÐ½Ð½Ñ‹Ðµ Ð¿Ð¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="LangGuide\Generics\generic_sub.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îáîáùåííûå ïîäïðîãðàììû â êà÷åñòâå ïàðàìåòðîâ">
+				<param name="Name" value="ÐžÐ±Ð¾Ð±Ñ‰ÐµÐ½Ð½Ñ‹Ðµ Ð¿Ð¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð² ÐºÐ°Ñ‡ÐµÑÑ‚Ð²Ðµ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð²">
 				<param name="Local" value="LangGuide\Generics\generic_sub_params.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îãðàíè÷åíèÿ íà ïàðàìåòðû îáîáùåííûõ ïîäïðîãðàìì è êëàññîâ">
+				<param name="Name" value="ÐžÐ³Ñ€Ð°Ð½Ð¸Ñ‡ÐµÐ½Ð¸Ñ Ð½Ð° Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð¾Ð±Ð¾Ð±Ñ‰ÐµÐ½Ð½Ñ‹Ñ… Ð¿Ð¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼ Ð¸ ÐºÐ»Ð°ÑÑÐ¾Ð²">
 				<param name="Local" value="LangGuide\Generics\generic_constraints.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Êîâàðèàíòíîñòü â ïàðàìåòðàõ îáîáùåííûõ òèïîâ">
+				<param name="Name" value="ÐšÐ¾Ð²Ð°Ñ€Ð¸Ð°Ð½Ñ‚Ð½Ð¾ÑÑ‚ÑŒ Ð² Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð°Ñ… Ð¾Ð±Ð¾Ð±Ñ‰ÐµÐ½Ð½Ñ‹Ñ… Ñ‚Ð¸Ð¿Ð¾Ð²">
 				<param name="Local" value="LangGuide\Generics\covariance.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ýëåìåíòû ôóíêöèîíàëüíîãî ïðîãðàììèðîâàíèÿ">
+			<param name="Name" value="Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚Ñ‹ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¾Ð½Ð°Ð»ÑŒÐ½Ð¾Ð³Ð¾ Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ñ">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ëÿìáäà-âûðàæåíèÿ">
+				<param name="Name" value="Ð›ÑÐ¼Ð±Ð´Ð°-Ð²Ñ‹Ñ€Ð°Ð¶ÐµÐ½Ð¸Ñ">
 				<param name="Local" value="LangGuide\FuncProgramming\lambdas.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Çàõâàò ïåðåìåííûõ">
+				<param name="Name" value="Ð—Ð°Ñ…Ð²Ð°Ñ‚ Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ñ…">
 				<param name="Local" value="LangGuide\FuncProgramming\capture_variables.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû ïîñëåäîâàòåëüíîñòåé: îáçîð">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ð¿Ð¾ÑÐ»ÐµÐ´Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾ÑÑ‚ÐµÐ¹: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="LangGuide\FuncProgramming\extensionmethodsforsequences.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû äëÿ ïîñëåäîâàòåëüíîñòåé">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ð´Ð»Ñ Ð¿Ð¾ÑÐ»ÐµÐ´Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾ÑÑ‚ÐµÐ¹">
 				</OBJECT>
 			<UL>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä Print">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ Print">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Print.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä Where">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ Where">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Where.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä Select">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ Select">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Select.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä SelectMany">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ SelectMany">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\SelectMany.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîäû Take, TakeWhile, Skip, SkipWhile">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Take, TakeWhile, Skip, SkipWhile">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Take, TakeWhile, Skip, SkipWhile.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä Sorted">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ Sorted">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Sorted.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîäû OrderBy, OrderByDescending">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ OrderBy, OrderByDescending">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\OrderBy, OrderByDescending.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîäû ThenBy,ThenByDescending">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ ThenBy,ThenByDescending">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\ThenBy,ThenByDescending.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä Concat">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ Concat">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Concat.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä Zip">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ Zip">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Zip.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä Distinct">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ Distinct">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Distinct.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîäû Union,Intersect,Except">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Union,Intersect,Except">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Union,Intersect,Except.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä Reverse">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ Reverse">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Reverse.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä SequenceEqual">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ SequenceEqual">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\SequenceEqual.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîäû First, FirstOrDefault">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ First, FirstOrDefault">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\First, FirstOrDefault.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîäû Last, LastOrDefault">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Last, LastOrDefault">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Last, LastOrDefault.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîäû Single, SingleOrDefault">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Single, SingleOrDefault">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Single, SingleOrDefault.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä DefaultIfEmpty">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ DefaultIfEmpty">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\DefaultIfEmpty.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîäû ElementAt, ElementAtOrDefault">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ ElementAt, ElementAtOrDefault">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\ElementAt, ElementAtOrDefault.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîäû Any, All">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Any, All">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Any, All.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä Count">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ Count">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Count.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä Contains">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ Contains">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Contains.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä Aggregate">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ Aggregate">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Aggregate.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîäû Sum, Average">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Sum, Average">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Sum, Average.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîäû Min, Max">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Min, Max">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Min, Max.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä Join">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ Join">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Join.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä GroupJoin">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ GroupJoin">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\GroupJoin.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä GroupBy">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ GroupBy">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\GroupBy.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä AsEnumerable">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ AsEnumerable">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\AsEnumerable.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîäû ToArray, ToList">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ ToArray, ToList">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\ToArray, ToList.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä ToDictionary">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ ToDictionary">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\ToDictionary.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä ToLookup">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ ToLookup">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\ToLookup.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä OfType">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ OfType">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\OfType.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä Cast">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ Cast">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\Cast.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ìåòîä JoinIntoString">
+					<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´ JoinIntoString">
 					<param name="Local" value="LangGuide\FuncProgramming\Files\JoinIntoString.html">
 					</OBJECT>
 			</UL>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Óïðàâëåíèå ïàìÿòüþ">
+			<param name="Name" value="Ð£Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð¿Ð°Ð¼ÑÑ‚ÑŒÑŽ">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Óïðàâëåíèå ïàìÿòüþ: îáçîð">
+				<param name="Name" value="Ð£Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð¿Ð°Ð¼ÑÑ‚ÑŒÑŽ: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="LangGuide\MemoryManagement\index_memory.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ñèñòåìíûé ìîäóëü PABCSystem">
+			<param name="Name" value="Ð¡Ð¸ÑÑ‚ÐµÐ¼Ð½Ñ‹Ð¹ Ð¼Ð¾Ð´ÑƒÐ»ÑŒ PABCSystem">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Mîäóëü PABCSystem: îáçîð">
+				<param name="Name" value="MÐ¾Ð´ÑƒÐ»ÑŒ PABCSystem: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="LangGuide\PABCSystemUnit\_main.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñòàíäàðòíûå êîíñòàíòû">
+				<param name="Name" value="Ð¡Ñ‚Ð°Ð½Ð´Ð°Ñ€Ñ‚Ð½Ñ‹Ðµ ÐºÐ¾Ð½ÑÑ‚Ð°Ð½Ñ‚Ñ‹">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Standard constants.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñòàíäàðòíûå òèïû">
+				<param name="Name" value="Ð¡Ñ‚Ð°Ð½Ð´Ð°Ñ€Ñ‚Ð½Ñ‹Ðµ Ñ‚Ð¸Ð¿Ñ‹">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Standard types.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îáùèå ïîäïðîãðàììû">
+				<param name="Name" value="ÐžÐ±Ñ‰Ð¸Ðµ Ð¿Ð¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Common subroutines.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîäïðîãðàììû ââîäà">
+				<param name="Name" value="ÐŸÐ¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð²Ð²Ð¾Ð´Ð°">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Read subroutines.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîäïðîãðàììû âûâîäà">
+				<param name="Name" value="ÐŸÐ¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð²Ñ‹Ð²Ð¾Ð´Ð°">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Write subroutines.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìàòåìàòè÷åñêèå ïîäïðîãðàììû">
+				<param name="Name" value="ÐœÐ°Ñ‚ÐµÐ¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸Ðµ Ð¿Ð¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Math subroutines.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Cèñòåìíûå ïîäïðîãðàììû">
+				<param name="Name" value="CÐ¸ÑÑ‚ÐµÐ¼Ð½Ñ‹Ðµ Ð¿Ð¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\System subroutines.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îáùèå ïîäïðîãðàììû äëÿ ðàáîòû ñ ôàéëàìè">
+				<param name="Name" value="ÐžÐ±Ñ‰Ð¸Ðµ Ð¿Ð¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ Ñ„Ð°Ð¹Ð»Ð°Ð¼Ð¸">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Common subroutines for files.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîäïðîãðàììû äëÿ ðàáîòû ñ òåêñòîâûìè ôàéëàìè">
+				<param name="Name" value="ÐŸÐ¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ Ñ‚ÐµÐºÑÑ‚Ð¾Ð²Ñ‹Ð¼Ð¸ Ñ„Ð°Ð¹Ð»Ð°Ð¼Ð¸">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for text files.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîäïðîãðàììû äëÿ ðàáîòû ñ òèïèçèðîâàííûìè è áåñòèïîâûìè ôàéëàìè">
+				<param name="Name" value="ÐŸÐ¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ Ñ‚Ð¸Ð¿Ð¸Ð·Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ð¼Ð¸ Ð¸ Ð±ÐµÑÑ‚Ð¸Ð¿Ð¾Ð²Ñ‹Ð¼Ð¸ Ñ„Ð°Ð¹Ð»Ð°Ð¼Ð¸">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for typed and untyped files.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîäïðîãðàììû äëÿ ðàáîòû ñ äâîè÷íûìè ôàéëàìè">
+				<param name="Name" value="ÐŸÐ¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ Ð´Ð²Ð¾Ð¸Ñ‡Ð½Ñ‹Ð¼Ð¸ Ñ„Ð°Ð¹Ð»Ð°Ð¼Ð¸">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for binary files.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîäïðîãðàììû äëÿ ðàáîòû ñ èìåíàìè ôàéëîâ">
+				<param name="Name" value="ÐŸÐ¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ Ð¸Ð¼ÐµÐ½Ð°Ð¼Ð¸ Ñ„Ð°Ð¹Ð»Ð¾Ð²">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Functions for file names.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîäïðîãðàììû äëÿ ðàáîòû ñ ñèìâîëàìè">
+				<param name="Name" value="ÐŸÐ¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ ÑÐ¸Ð¼Ð²Ð¾Ð»Ð°Ð¼Ð¸">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for char.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîäïðîãðàììû äëÿ ðàáîòû ñî ñòðîêàìè">
+				<param name="Name" value="ÐŸÐ¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ ÑÐ¾ ÑÑ‚Ñ€Ð¾ÐºÐ°Ð¼Ð¸">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for string.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîäïðîãðàììû äëÿ ðàáîòû ñ äèíàìè÷åñêèìè ìàññèâàìè">
+				<param name="Name" value="ÐŸÐ¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ Ð´Ð¸Ð½Ð°Ð¼Ð¸Ñ‡ÐµÑÐºÐ¸Ð¼Ð¸ Ð¼Ð°ÑÑÐ¸Ð²Ð°Ð¼Ð¸">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for array of T.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîäïðîãðàììû äëÿ ðàáîòû ñî ñòàíäàðòíûìè ìíîæåñòâàìè">
+				<param name="Name" value="ÐŸÐ¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ ÑÐ¾ ÑÑ‚Ð°Ð½Ð´Ð°Ñ€Ñ‚Ð½Ñ‹Ð¼Ð¸ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²Ð°Ð¼Ð¸">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for set of T.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîäïðîãðàììû äëÿ ðàáîòû ñ êîìïëåêñíûìè ÷èñëàìè">
+				<param name="Name" value="ÐŸÐ¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ ÐºÐ¾Ð¼Ð¿Ð»ÐµÐºÑÐ½Ñ‹Ð¼Ð¸ Ñ‡Ð¸ÑÐ»Ð°Ð¼Ð¸">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Functions for Complex numbers.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîäïðîãðàììû äëÿ ãåíåðàöèè ïîñëåäîâàòåëüíîñòåé">
+				<param name="Name" value="ÐŸÐ¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ð³ÐµÐ½ÐµÑ€Ð°Ñ†Ð¸Ð¸ Ð¿Ð¾ÑÐ»ÐµÐ´Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾ÑÑ‚ÐµÐ¹">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for sequence generation.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîäïðîãðàììû äëÿ ñîçäàíèÿ äèíàìè÷åñêèõ ìàññèâîâ">
+				<param name="Name" value="ÐŸÐ¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ñ Ð´Ð¸Ð½Ð°Ð¼Ð¸Ñ‡ÐµÑÐºÐ¸Ñ… Ð¼Ð°ÑÑÐ¸Ð²Ð¾Ð²">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for array of T generation.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïîäïðîãðàììû äëÿ ñîçäàíèÿ äâóìåðíûõ äèíàìè÷åñêèõ ìàññèâîâ">
+				<param name="Name" value="ÐŸÐ¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ñ Ð´Ð²ÑƒÐ¼ÐµÑ€Ð½Ñ‹Ñ… Ð´Ð¸Ð½Ð°Ð¼Ð¸Ñ‡ÐµÑÐºÐ¸Ñ… Ð¼Ð°ÑÑÐ¸Ð²Ð¾Ð²">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for matrixes.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Êîðîòêèå ôóíêöèè Lst, HSet, SSet, Dict, KV">
+				<param name="Name" value="ÐšÐ¾Ñ€Ð¾Ñ‚ÐºÐ¸Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Lst, HSet, SSet, Dict, KV">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Short functions Lst, HSet, SSet, Dict, KV.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ãåíåðàöèÿ áåñêîíå÷íûõ ïîñëåäîâàòåëüíîñòåé">
+				<param name="Name" value="Ð“ÐµÐ½ÐµÑ€Ð°Ñ†Ð¸Ñ Ð±ÐµÑÐºÐ¾Ð½ÐµÑ‡Ð½Ñ‹Ñ… Ð¿Ð¾ÑÐ»ÐµÐ´Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾ÑÑ‚ÐµÐ¹">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Infinite sequences.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû ðàñøèðåíèÿ ïîñëåäîâàòåëüíîñòåé">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ Ð¿Ð¾ÑÐ»ÐµÐ´Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾ÑÑ‚ÐµÐ¹">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for sequence of T.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû ðàñøèðåíèÿ îäíîìåðíûõ äèíàìè÷åñêèõ ìàññèâîâ">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ Ð¾Ð´Ð½Ð¾Ð¼ÐµÑ€Ð½Ñ‹Ñ… Ð´Ð¸Ð½Ð°Ð¼Ð¸Ñ‡ÐµÑÐºÐ¸Ñ… Ð¼Ð°ÑÑÐ¸Ð²Ð¾Ð²">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for array of T.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû ðàñøèðåíèÿ äâóìåðíûõ äèíàìè÷åñêèõ ìàññèâîâ">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ Ð´Ð²ÑƒÐ¼ÐµÑ€Ð½Ñ‹Ñ… Ð´Ð¸Ð½Ð°Ð¼Ð¸Ñ‡ÐµÑÐºÐ¸Ñ… Ð¼Ð°ÑÑÐ¸Ð²Ð¾Ð²">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for array [,] of T.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû ðàñøèðåíèÿ ñïèñêîâ">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ ÑÐ¿Ð¸ÑÐºÐ¾Ð²">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for List T.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû ðàñøèðåíèÿ òèïà integer">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ Ñ‚Ð¸Ð¿Ð° integer">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for integer.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû ðàñøèðåíèÿ òèïà BigInteger">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ Ñ‚Ð¸Ð¿Ð° BigInteger">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for BigInteger.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû ðàñøèðåíèÿ òèïà real">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ Ñ‚Ð¸Ð¿Ð° real">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for real.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû ðàñøèðåíèÿ òèïà char">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ Ñ‚Ð¸Ð¿Ð° char">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for char.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû ðàñøèðåíèÿ òèïà string">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ Ñ‚Ð¸Ð¿Ð° string">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for string.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû ðàñøèðåíèÿ òèïà Func">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ Ñ‚Ð¸Ð¿Ð° Func">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for Func.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû ðàñøèðåíèÿ òèïà Complex">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ Ñ‚Ð¸Ð¿Ð° Complex">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for Complex.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû ðàñøèðåíèÿ ñëîâàðåé">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ ÑÐ»Ð¾Ð²Ð°Ñ€ÐµÐ¹">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for IDictionary.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îáùèå ìåòîäû ôàéëîâûõ òèïîâ">
+				<param name="Name" value="ÐžÐ±Ñ‰Ð¸Ðµ Ð¼ÐµÑ‚Ð¾Ð´Ñ‹ Ñ„Ð°Ð¹Ð»Ð¾Ð²Ñ‹Ñ… Ñ‚Ð¸Ð¿Ð¾Ð²">
 				<param name="Local" value="LangGuide\PABCSystemUnit\stand_common_files_methods.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû òåêñòîâûõ ôàéëîâ">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ‚ÐµÐºÑÑ‚Ð¾Ð²Ñ‹Ñ… Ñ„Ð°Ð¹Ð»Ð¾Ð²">
 				<param name="Local" value="LangGuide\PABCSystemUnit\stand_text_files_methods.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû äâîè÷íûõ ôàéëîâ">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ð´Ð²Ð¾Ð¸Ñ‡Ð½Ñ‹Ñ… Ñ„Ð°Ð¹Ð»Ð¾Ð²">
 				<param name="Local" value="LangGuide\PABCSystemUnit\stand_binary_files_methods.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû òèïèçèðîâàííûõ ôàéëîâ">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ‚Ð¸Ð¿Ð¸Ð·Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ñ… Ñ„Ð°Ð¹Ð»Ð¾Ð²">
 				<param name="Local" value="LangGuide\PABCSystemUnit\stand_typed_files_methods.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìåòîäû ðàñøèðåíèÿ òèïèçèðîâàííûõ ôàéëîâ">
+				<param name="Name" value="ÐœÐµÑ‚Ð¾Ð´Ñ‹ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ Ñ‚Ð¸Ð¿Ð¸Ð·Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ñ… Ñ„Ð°Ð¹Ð»Ð¾Ð²">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for typed files.html">
 				</OBJECT>
 		</UL>
@@ -892,789 +892,789 @@
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="OpenMP: îáçîð">
+				<param name="Name" value="OpenMP: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="LangGuide\OpenMP\indexopenmp.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Äèðåêòèâà parallel for">
+				<param name="Name" value="Ð”Ð¸Ñ€ÐµÐºÑ‚Ð¸Ð²Ð° parallel for">
 				<param name="Local" value="LangGuide\OpenMP\parallelfor.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ðåäóêöèÿ â äèðåêòèâå parallel for">
+				<param name="Name" value="Ð ÐµÐ´ÑƒÐºÑ†Ð¸Ñ Ð² Ð´Ð¸Ñ€ÐµÐºÑ‚Ð¸Ð²Ðµ parallel for">
 				<param name="Local" value="LangGuide\OpenMP\reduction.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïàðàëëåëüíûå ñåêöèè è äèðåêòèâà parallel sections ">
+				<param name="Name" value="ÐŸÐ°Ñ€Ð°Ð»Ð»ÐµÐ»ÑŒÐ½Ñ‹Ðµ ÑÐµÐºÑ†Ð¸Ð¸ Ð¸ Ð´Ð¸Ñ€ÐµÐºÑ‚Ð¸Ð²Ð° parallel sections ">
 				<param name="Local" value="LangGuide\OpenMP\sections.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñèíõðîíèçàöèÿ è äèðåêòèâà critical">
+				<param name="Name" value="Ð¡Ð¸Ð½Ñ…Ñ€Ð¾Ð½Ð¸Ð·Ð°Ñ†Ð¸Ñ Ð¸ Ð´Ð¸Ñ€ÐµÐºÑ‚Ð¸Ð²Ð° critical">
 				<param name="Local" value="LangGuide\OpenMP\sync.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Äèðåêòèâû êîìïèëÿòîðà">
+			<param name="Name" value="Ð”Ð¸Ñ€ÐµÐºÑ‚Ð¸Ð²Ñ‹ ÐºÐ¾Ð¼Ð¿Ð¸Ð»ÑÑ‚Ð¾Ñ€Ð°">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Äèðåêòèâû êîìïèëÿòîðà">
+				<param name="Name" value="Ð”Ð¸Ñ€ÐµÐºÑ‚Ð¸Ð²Ñ‹ ÐºÐ¾Ð¼Ð¿Ð¸Ð»ÑÑ‚Ð¾Ñ€Ð°">
 				<param name="Local" value="LangGuide\CompilerDirectives\index_directives.html">
 				</OBJECT>
 		</UL>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Ñòàíäàðòíûå ìîäóëè">
+		<param name="Name" value="Ð¡Ñ‚Ð°Ð½Ð´Ð°Ñ€Ñ‚Ð½Ñ‹Ðµ Ð¼Ð¾Ð´ÑƒÐ»Ð¸">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ìîäóëü GraphWPF">
+			<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ GraphWPF">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìîäóëü GraphWPF: îáçîð">
+				<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ GraphWPF: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="PABCUnits\GraphWPF\index.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: ãðàôè÷åñêèå ïðèìèòèâû">
+				<param name="Name" value="GraphWPF: Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¸Ðµ Ð¿Ñ€Ð¸Ð¼Ð¸Ñ‚Ð¸Ð²Ñ‹">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF primitives.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: ôóíêöèè äëÿ âûâîäà òåêñòà">
+				<param name="Name" value="GraphWPF: Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ð²Ñ‹Ð²Ð¾Ð´Ð° Ñ‚ÐµÐºÑÑ‚Ð°">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF text functions.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: ôóíêöèè äëÿ âûâîäà ãðàôèêîâ">
+				<param name="Name" value="GraphWPF: Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ð²Ñ‹Ð²Ð¾Ð´Ð° Ð³Ñ€Ð°Ñ„Ð¸ÐºÐ¾Ð²">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF graph functions.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: ôóíêöèè äëÿ âûâîäà èçîáðàæåíèé è âèäåî">
+				<param name="Name" value="GraphWPF: Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ð²Ñ‹Ð²Ð¾Ð´Ð° Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ð¹ Ð¸ Ð²Ð¸Ð´ÐµÐ¾">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF functions for images and video.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: ôóíêöèè äëÿ íàñòðîéêè ñèñòåìû êîîðäèíàò">
+				<param name="Name" value="GraphWPF: Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ ÑÐ¸ÑÑ‚ÐµÐ¼Ñ‹ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF coordinate system functions.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: ïðîöåäóðû ïîêàäðîâîé àíèìàöèè">
+				<param name="Name" value="GraphWPF: Ð¿Ñ€Ð¾Ñ†ÐµÐ´ÑƒÑ€Ñ‹ Ð¿Ð¾ÐºÐ°Ð´Ñ€Ð¾Ð²Ð¾Ð¹ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF FrameBasedAnimation functions.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: âñïîìîãàòåëüíûå ôóíêöèè GraphWPF">
+				<param name="Name" value="GraphWPF: Ð²ÑÐ¿Ð¾Ð¼Ð¾Ð³Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ GraphWPF">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF service functions.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: òèïû ìîäóëÿ GraphWPF">
+				<param name="Name" value="GraphWPF: Ñ‚Ð¸Ð¿Ñ‹ Ð¼Ð¾Ð´ÑƒÐ»Ñ GraphWPF">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF types.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: ïåðåìåííûå ìîäóëÿ GraphWPF">
+				<param name="Name" value="GraphWPF: Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ðµ Ð¼Ð¾Ð´ÑƒÐ»Ñ GraphWPF">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF variables.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: ñîáûòèÿ ìîäóëÿ GraphWPF">
+				<param name="Name" value="GraphWPF: ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ñ Ð¼Ð¾Ð´ÑƒÐ»Ñ GraphWPF">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF events.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: êëàññ BrushType">
+				<param name="Name" value="GraphWPF: ÐºÐ»Ð°ÑÑ BrushType">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\BrushType class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: êëàññ PenType">
+				<param name="Name" value="GraphWPF: ÐºÐ»Ð°ÑÑ PenType">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\PenType class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: êëàññ FontType">
+				<param name="Name" value="GraphWPF: ÐºÐ»Ð°ÑÑ FontType">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\FontType class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: êëàññ GraphWindowType">
+				<param name="Name" value="GraphWPF: ÐºÐ»Ð°ÑÑ GraphWindowType">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF GraphWindowType class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: êëàññ WindowTypeWPF">
+				<param name="Name" value="GraphWPF: ÐºÐ»Ð°ÑÑ WindowTypeWPF">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\WindowTypeWPF class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphWPF: êëàññ WindowType">
+				<param name="Name" value="GraphWPF: ÐºÐ»Ð°ÑÑ WindowType">
 				<param name="Local" value="PABCUnits\GraphWPF\Files\WindowType class.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ìîäóëü WPFObjects">
+			<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ WPFObjects">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìîäóëü WPFObjects: îáçîð">
+				<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ WPFObjects: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="PABCUnits\WPFObjects\index.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Òèïû ìîäóëÿ WPFObjects">
+				<param name="Name" value="Ð¢Ð¸Ð¿Ñ‹ Ð¼Ð¾Ð´ÑƒÐ»Ñ WPFObjects">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\WPFObjects types.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïåðåìåííûå ìîäóëÿ WPFObjects">
+				<param name="Name" value="ÐŸÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ðµ Ð¼Ð¾Ð´ÑƒÐ»Ñ WPFObjects">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\WPFObjects Variables.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñîáûòèÿ ìîäóëÿ WPFObjects">
+				<param name="Name" value="Ð¡Ð¾Ð±Ñ‹Ñ‚Ð¸Ñ Ð¼Ð¾Ð´ÑƒÐ»Ñ WPFObjects">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\WPFObjects events.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: êëàññ ObjectWPF">
+				<param name="Name" value="WPFObjects: ÐºÐ»Ð°ÑÑ ObjectWPF">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class ObjectWPF.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: êëàññ BoundedObjectWPF">
+				<param name="Name" value="WPFObjects: ÐºÐ»Ð°ÑÑ BoundedObjectWPF">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class BoundedObjectWPF.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: êëàññ EllipseWPF">
+				<param name="Name" value="WPFObjects: ÐºÐ»Ð°ÑÑ EllipseWPF">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class EllipseWPF.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: êëàññ CircleWPF">
+				<param name="Name" value="WPFObjects: ÐºÐ»Ð°ÑÑ CircleWPF">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class CircleWPF.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: êëàññ RectangleWPF">
+				<param name="Name" value="WPFObjects: ÐºÐ»Ð°ÑÑ RectangleWPF">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class RectangleWPF.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: êëàññ SquareWPF">
+				<param name="Name" value="WPFObjects: ÐºÐ»Ð°ÑÑ SquareWPF">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class SquareWPF.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: êëàññ RoundRectWPF">
+				<param name="Name" value="WPFObjects: ÐºÐ»Ð°ÑÑ RoundRectWPF">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class RoundRectWPF.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: êëàññ RoundSquareWPF">
+				<param name="Name" value="WPFObjects: ÐºÐ»Ð°ÑÑ RoundSquareWPF">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class RoundSquareWPF.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: êëàññ LineWPF">
+				<param name="Name" value="WPFObjects: ÐºÐ»Ð°ÑÑ LineWPF">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class LineWPF.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: êëàññ RegularPolygonWPF">
+				<param name="Name" value="WPFObjects: ÐºÐ»Ð°ÑÑ RegularPolygonWPF">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class RegularPolygonWPF.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: êëàññ StarWPF">
+				<param name="Name" value="WPFObjects: ÐºÐ»Ð°ÑÑ StarWPF">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class StarWPF.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: êëàññ PolygonWPF">
+				<param name="Name" value="WPFObjects: ÐºÐ»Ð°ÑÑ PolygonWPF">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class PolygonWPF.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: êëàññ PictureWPF">
+				<param name="Name" value="WPFObjects: ÐºÐ»Ð°ÑÑ PictureWPF">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class PictureWPF.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: êëàññ ãðàôè÷åñêîãî îêíà">
+				<param name="Name" value="WPFObjects: ÐºÐ»Ð°ÑÑ Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¾Ð³Ð¾ Ð¾ÐºÐ½Ð°">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class GraphWindowType.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: êëàññ ñïèñêà ãðàôè÷åñêèõ îáúåêòîâ">
+				<param name="Name" value="WPFObjects: ÐºÐ»Ð°ÑÑ ÑÐ¿Ð¸ÑÐºÐ° Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¸Ñ… Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð²">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class List of objects.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WPFObjects: ôóíêöèè äëÿ îïðåäåëåíèÿ ïåðåñå÷åíèÿ">
+				<param name="Name" value="WPFObjects: Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ñ Ð¿ÐµÑ€ÐµÑÐµÑ‡ÐµÐ½Ð¸Ñ">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Intersection functions.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Âñïîìîãàòåëüíûå ôóíêöèè WPFObjects">
+				<param name="Name" value="Ð’ÑÐ¿Ð¾Ð¼Ð¾Ð³Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ WPFObjects">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\WPFObjects functions 1.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ìîäóëü Graph3D">
+			<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ Graph3D">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìîäóëü Graph3D: îáçîð">
+				<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ Graph3D: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="PABCUnits\Graph3D\index.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïåðåìåííûå ìîäóëÿ Graph3D">
+				<param name="Name" value="ÐŸÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ðµ Ð¼Ð¾Ð´ÑƒÐ»Ñ Graph3D">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D variables.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Òèïû ìîäóëÿ Graph3D">
+				<param name="Name" value="Ð¢Ð¸Ð¿Ñ‹ Ð¼Ð¾Ð´ÑƒÐ»Ñ Graph3D">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D types.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñîáûòèÿ ìîäóëÿ Graph3D">
+				<param name="Name" value="Ð¡Ð¾Ð±Ñ‹Ñ‚Ð¸Ñ Ð¼Ð¾Ð´ÑƒÐ»Ñ Graph3D">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D events.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Êîðîòêèå ôóíêöèè ìîäóëÿ Graph3D">
+				<param name="Name" value="ÐšÐ¾Ñ€Ð¾Ñ‚ÐºÐ¸Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð¼Ð¾Ð´ÑƒÐ»Ñ Graph3D">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D short functions.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: ôóíêöèè äëÿ ñîçäàíèÿ 3D-îáúåêòîâ">
+				<param name="Name" value="Graph3D: Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ñ 3D-Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð²">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D functions for creation 3D-objects.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ Object3D">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ Object3D">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D Object3D class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ ObjectWithChildren3D">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ ObjectWithChildren3D">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D ObjectWithChildren3D class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ ObjectWithMaterial3D">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ ObjectWithMaterial3D">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D ObjectWithMaterial3D class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ SphereT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ SphereT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D SphereT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ EllipsoidT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ EllipsoidT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D EllipsoidT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ CubeT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ CubeT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D CubeT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ BoxT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ BoxT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D BoxT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ ArrowT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ ArrowT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D ArrowT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ TruncatedConeT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ TruncatedConeT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TruncatedConeT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ CylinderT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ CylinderT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D CylinderT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ TeapotT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ TeapotT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TeapotT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ CoordinateSystemT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ CoordinateSystemT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D CoordinateSystemT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ BillboardTextT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ BillboardTextT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D BillboardTextT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ TextT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ TextT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TextT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ RectangleT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ RectangleT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D RectangleT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ FileModelT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ FileModelT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D FileModelT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ PipeT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ PipeT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PipeT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ LegoT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ LegoT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D LegoT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ PlatonicAbstractT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ PlatonicAbstractT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PlatonicAbstractT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ IcosahedronT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ IcosahedronT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D IcosahedronT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ DodecahedronT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ DodecahedronT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D DodecahedronT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ TetrahedronT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ TetrahedronT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TetrahedronT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ OctahedronT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ OctahedronT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D OctahedronT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ TriangleT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ TriangleT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TriangleT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ PrismT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ PrismT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PrismT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ PyramidT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ PyramidT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PyramidT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ PrismTWireframe">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ PrismTWireframe">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PrismTWireframe class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ PyramidTWireframe">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ PyramidTWireframe">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PyramidTWireframe class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ SegmentsT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ SegmentsT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D SegmentsT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ TorusT">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ TorusT">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TorusT class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ AnimationBase">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ AnimationBase">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D AnimationBase class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ Materials">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ Materials">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D Materials class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ View3DType">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ View3DType">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D View3DType class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ CameraType">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ CameraType">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D CameraType class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: êëàññ GridLinesType">
+				<param name="Name" value="Graph3D: ÐºÐ»Ð°ÑÑ GridLinesType">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D GridLinesType class.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: ñåðâèñíûå ôóíêöèè">
+				<param name="Name" value="Graph3D: ÑÐµÑ€Ð²Ð¸ÑÐ½Ñ‹Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D service functions.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: ôóíêöèè äëÿ ñîçäàíèÿ ìàòåðèàëîâ Materials">
+				<param name="Name" value="Graph3D: Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ñ Ð¼Ð°Ñ‚ÐµÑ€Ð¸Ð°Ð»Ð¾Ð² Materials">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D Materials functions.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: ôóíêöèè äëÿ ñîçäàíèÿ íåâèçóàëüíûõ îáúåêòîâ">
+				<param name="Name" value="Graph3D: Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ñ Ð½ÐµÐ²Ð¸Ð·ÑƒÐ°Ð»ÑŒÐ½Ñ‹Ñ… Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð²">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D functions for creation non-visual objects.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Graph3D: ôóíêöèè äëÿ îïðåäåëåíèÿ áëèæàéøèõ òî÷åê è îáúåêòîâ">
+				<param name="Name" value="Graph3D: Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ñ Ð±Ð»Ð¸Ð¶Ð°Ð¹ÑˆÐ¸Ñ… Ñ‚Ð¾Ñ‡ÐµÐº Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð²">
 				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D functions for nearest points and objects.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ìîäóëü GraphABC">
+			<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ GraphABC">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: îáçîð">
+				<param name="Name" value="GraphABC: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="PABCUnits\GraphABC\index.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: òèïû è ïåðåìåííûå">
+				<param name="Name" value="GraphABC: Ñ‚Ð¸Ð¿Ñ‹ Ð¸ Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ðµ">
 				<param name="Local" value="PABCUnits\GraphABC\gr_typesvars.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: ãðàôè÷åñêèå ïðèìèòèâû">
+				<param name="Name" value="GraphABC: Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¸Ðµ Ð¿Ñ€Ð¸Ð¼Ð¸Ñ‚Ð¸Ð²Ñ‹">
 				<param name="Local" value="PABCUnits\GraphABC\gr_Prim.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: ôóíêöèè äëÿ ðàáîòû ñ öâåòîì">
+				<param name="Name" value="GraphABC: Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ Ñ†Ð²ÐµÑ‚Ð¾Ð¼">
 				<param name="Local" value="PABCUnits\GraphABC\gr_ColorFun.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: öâåòîâûå êîíñòàíòû">
+				<param name="Name" value="GraphABC: Ñ†Ð²ÐµÑ‚Ð¾Ð²Ñ‹Ðµ ÐºÐ¾Ð½ÑÑ‚Ð°Ð½Ñ‚Ñ‹">
 				<param name="Local" value="PABCUnits\GraphABC\gr_Colors.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: ïîäïðîãðàììû äëÿ ðàáîòû ñ ïåðîì">
+				<param name="Name" value="GraphABC: Ð¿Ð¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ Ð¿ÐµÑ€Ð¾Ð¼">
 				<param name="Local" value="PABCUnits\GraphABC\gr_Pen.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: òåêóùåå ïåðî Pen">
+				<param name="Name" value="GraphABC: Ñ‚ÐµÐºÑƒÑ‰ÐµÐµ Ð¿ÐµÑ€Ð¾ Pen">
 				<param name="Local" value="PABCUnits\GraphABC\gr_PenClass.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: ñòèëè ïåðà">
+				<param name="Name" value="GraphABC: ÑÑ‚Ð¸Ð»Ð¸ Ð¿ÐµÑ€Ð°">
 				<param name="Local" value="PABCUnits\GraphABC\gr_PenDashStyle.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: ïîäïðîãðàììû äëÿ ðàáîòû ñ êèñòüþ">
+				<param name="Name" value="GraphABC: Ð¿Ð¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ ÐºÐ¸ÑÑ‚ÑŒÑŽ">
 				<param name="Local" value="PABCUnits\GraphABC\gr_Brush.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: òåêóùàÿ êèñòü Brush">
+				<param name="Name" value="GraphABC: Ñ‚ÐµÐºÑƒÑ‰Ð°Ñ ÐºÐ¸ÑÑ‚ÑŒ Brush">
 				<param name="Local" value="PABCUnits\GraphABC\gr_BrushClass.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: ñòèëè êèñòè">
+				<param name="Name" value="GraphABC: ÑÑ‚Ð¸Ð»Ð¸ ÐºÐ¸ÑÑ‚Ð¸">
 				<param name="Local" value="PABCUnits\GraphABC\gr_BrushStyle.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: ñòèëè øòðèõîâêè êèñòè">
+				<param name="Name" value="GraphABC: ÑÑ‚Ð¸Ð»Ð¸ ÑˆÑ‚Ñ€Ð¸Ñ…Ð¾Ð²ÐºÐ¸ ÐºÐ¸ÑÑ‚Ð¸">
 				<param name="Local" value="PABCUnits\GraphABC\gr_BrushHatchStyle.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: ïîäïðîãðàììû äëÿ ðàáîòû ñî øðèôòîì">
+				<param name="Name" value="GraphABC: Ð¿Ð¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ ÑÐ¾ ÑˆÑ€Ð¸Ñ„Ñ‚Ð¾Ð¼">
 				<param name="Local" value="PABCUnits\GraphABC\gr_Font.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: òåêóùèé øðèôò Font">
+				<param name="Name" value="GraphABC: Ñ‚ÐµÐºÑƒÑ‰Ð¸Ð¹ ÑˆÑ€Ð¸Ñ„Ñ‚ Font">
 				<param name="Local" value="PABCUnits\GraphABC\gr_FontClass.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: êëàññ Picture ãðàôè÷åñêîãî ðèñóíêà">
+				<param name="Name" value="GraphABC: ÐºÐ»Ð°ÑÑ Picture Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¾Ð³Ð¾ Ñ€Ð¸ÑÑƒÐ½ÐºÐ°">
 				<param name="Local" value="PABCUnits\GraphABC\gr_Picture.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: ïîäïðîãðàììû äëÿ ðàáîòû ñ ãðàôè÷åñêèì îêíîì">
+				<param name="Name" value="GraphABC: Ð¿Ð¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¸Ð¼ Ð¾ÐºÐ½Ð¾Ð¼">
 				<param name="Local" value="PABCUnits\GraphABC\gr_Window.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: îáúåêò ãðàôè÷åñêîãî îêíà Window">
+				<param name="Name" value="GraphABC: Ð¾Ð±ÑŠÐµÐºÑ‚ Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¾Ð³Ð¾ Ð¾ÐºÐ½Ð° Window">
 				<param name="Local" value="PABCUnits\GraphABC\gr_WindowClass.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: ïîäïðîãðàììû äëÿ ðàáîòû ñ êîîðäèíàòàìè ãðàôè÷åñêîãî îêíà">
+				<param name="Name" value="GraphABC: Ð¿Ð¾Ð´Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ð°Ð¼Ð¸ Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¾Ð³Ð¾ Ð¾ÐºÐ½Ð°">
 				<param name="Local" value="PABCUnits\GraphABC\gr_Coordinate.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: îáúåêò Coordinate êîîðäèíàò ãðàôè÷åñêîãî îêíà">
+				<param name="Name" value="GraphABC: Ð¾Ð±ÑŠÐµÐºÑ‚ Coordinate ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚ Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¾Ð³Ð¾ Ð¾ÐºÐ½Ð°">
 				<param name="Local" value="PABCUnits\GraphABC\gr_CoordinateClass.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: áëîêèðîâêà ðèñîâàíèÿ è óñêîðåíèå àíèìàöèè">
+				<param name="Name" value="GraphABC: Ð±Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²ÐºÐ° Ñ€Ð¸ÑÐ¾Ð²Ð°Ð½Ð¸Ñ Ð¸ ÑƒÑÐºÐ¾Ñ€ÐµÐ½Ð¸Ðµ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸">
 				<param name="Local" value="PABCUnits\GraphABC\gr_LockDrawing.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: ðåæèìû ðèñîâàíèÿ">
+				<param name="Name" value="GraphABC: Ñ€ÐµÐ¶Ð¸Ð¼Ñ‹ Ñ€Ð¸ÑÐ¾Ð²Ð°Ð½Ð¸Ñ">
 				<param name="Local" value="PABCUnits\GraphABC\gr_Options.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: ñîáûòèÿ">
+				<param name="Name" value="GraphABC: ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ñ">
 				<param name="Local" value="PABCUnits\GraphABC\gr_events.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: âèðòóàëüíûå êîäû êëàâèø">
+				<param name="Name" value="GraphABC: Ð²Ð¸Ñ€Ñ‚ÑƒÐ°Ð»ÑŒÐ½Ñ‹Ðµ ÐºÐ¾Ð´Ñ‹ ÐºÐ»Ð°Ð²Ð¸Ñˆ">
 				<param name="Local" value="PABCUnits\GraphABC\gr_VK.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GraphABC: Ñòèëè øðèôòà">
+				<param name="Name" value="GraphABC: Ð¡Ñ‚Ð¸Ð»Ð¸ ÑˆÑ€Ð¸Ñ„Ñ‚Ð°">
 				<param name="Local" value="PABCUnits\GraphABC\gr_FontStyle.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ìîäóëü ABCObjects">
+			<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ ABCObjects">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: îáçîð">
+				<param name="Name" value="ABCObjects: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="PABCUnits\ABCObjects\index.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: äèàãðàììà êëàññîâ">
+				<param name="Name" value="ABCObjects: Ð´Ð¸Ð°Ð³Ñ€Ð°Ð¼Ð¼Ð° ÐºÐ»Ð°ÑÑÐ¾Ð²">
 				<param name="Local" value="PABCUnits\ABCObjects\ABCClasses.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êëàññ ObjectABC">
+				<param name="Name" value="ABCObjects: ÐºÐ»Ð°ÑÑ ObjectABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_ObjectABC.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êëàññ BoundedObjectABC">
+				<param name="Name" value="ABCObjects: ÐºÐ»Ð°ÑÑ BoundedObjectABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_BoundedObjectABC.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êëàññ RectangleABC">
+				<param name="Name" value="ABCObjects: ÐºÐ»Ð°ÑÑ RectangleABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_RectangleABC.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êëàññ SquareABC">
+				<param name="Name" value="ABCObjects: ÐºÐ»Ð°ÑÑ SquareABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_SquareABC.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êëàññ EllipseABC">
+				<param name="Name" value="ABCObjects: ÐºÐ»Ð°ÑÑ EllipseABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_EllipseABC.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êëàññ CircleABC">
+				<param name="Name" value="ABCObjects: ÐºÐ»Ð°ÑÑ CircleABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_CircleABC.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êëàññ RoundRectABC">
+				<param name="Name" value="ABCObjects: ÐºÐ»Ð°ÑÑ RoundRectABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_RoundRectABC.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êëàññ RoundSquareABC">
+				<param name="Name" value="ABCObjects: ÐºÐ»Ð°ÑÑ RoundSquareABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_RoundSquareABC.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êëàññ TextABC">
+				<param name="Name" value="ABCObjects: ÐºÐ»Ð°ÑÑ TextABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_TextABC.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êëàññ RegularPolygonABC">
+				<param name="Name" value="ABCObjects: ÐºÐ»Ð°ÑÑ RegularPolygonABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_RegularPolygonABC.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êëàññ StarABC">
+				<param name="Name" value="ABCObjects: ÐºÐ»Ð°ÑÑ StarABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_StarABC.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êëàññ PictureABC">
+				<param name="Name" value="ABCObjects: ÐºÐ»Ð°ÑÑ PictureABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_PictureABC.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êëàññ MultiPictureABC">
+				<param name="Name" value="ABCObjects: ÐºÐ»Ð°ÑÑ MultiPictureABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_MultiPictureABC.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êëàññ BoardABC">
+				<param name="Name" value="ABCObjects: ÐºÐ»Ð°ÑÑ BoardABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_BoardABC.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êëàññ ObjectBoardABC">
+				<param name="Name" value="ABCObjects: ÐºÐ»Ð°ÑÑ ObjectBoardABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_ObjectBoardABC.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: ìóëüòèðèñóíêè">
+				<param name="Name" value="ABCObjects: Ð¼ÑƒÐ»ÑŒÑ‚Ð¸Ñ€Ð¸ÑÑƒÐ½ÐºÐ¸">
 				<param name="Local" value="PABCUnits\ABCObjects\MultiPictureReview.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: ìàññèâ ãðàôè÷åñêèõ îáúåêòîâ Objects">
+				<param name="Name" value="ABCObjects: Ð¼Ð°ÑÑÐ¸Ð² Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¸Ñ… Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð² Objects">
 				<param name="Local" value="PABCUnits\ABCObjects\ObjectsArray.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: ïåðåìåííûå, ïðîöåäóðû è ôóíêöèè ">
+				<param name="Name" value="ABCObjects: Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ðµ, Ð¿Ñ€Ð¾Ñ†ÐµÐ´ÑƒÑ€Ñ‹ Ð¸ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ ">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_Common.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: óñêîðåíèå ïåðåðèñîâêè ãðàôè÷åñêèõ îáúåêòîâ">
+				<param name="Name" value="ABCObjects: ÑƒÑÐºÐ¾Ñ€ÐµÐ½Ð¸Ðµ Ð¿ÐµÑ€ÐµÑ€Ð¸ÑÐ¾Ð²ÐºÐ¸ Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¸Ñ… Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð²">
 				<param name="Local" value="PABCUnits\ABCObjects\FastABCDraw.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñîâìåùåíèå ãðàôè÷åñêîãî âûâîäà ìîäóëåé ABCObjects è GraphABC">
+				<param name="Name" value="Ð¡Ð¾Ð²Ð¼ÐµÑ‰ÐµÐ½Ð¸Ðµ Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¾Ð³Ð¾ Ð²Ñ‹Ð²Ð¾Ð´Ð° Ð¼Ð¾Ð´ÑƒÐ»ÐµÐ¹ ABCObjects Ð¸ GraphABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_WithGraphABC.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ìîäóëü ABCSprites">
+			<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ ABCSprites">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCSprites: îáçîð">
+				<param name="Name" value="ABCSprites: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_ABCSprites.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCSprites: êëàññ SpriteABC">
+				<param name="Name" value="ABCSprites: ÐºÐ»Ð°ÑÑ SpriteABC">
 				<param name="Local" value="PABCUnits\ABCObjects\gabc_SpriteABC.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ìîäóëü Timers">
+			<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ Timers">
 			<param name="Local" value="PABCUnits\Timers\index.html">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Ñðåäñòâà îáó÷åíèÿ â PascalABC.NET">
+		<param name="Name" value="Ð¡Ñ€ÐµÐ´ÑÑ‚Ð²Ð° Ð¾Ð±ÑƒÑ‡ÐµÐ½Ð¸Ñ Ð² PascalABC.NET">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Èñïîëíèòåëè">
+			<param name="Name" value="Ð˜ÑÐ¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»Ð¸">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="×òî òàêîå Èñïîëíèòåëè">
+				<param name="Name" value="Ð§Ñ‚Ð¾ Ñ‚Ð°ÐºÐ¾Ðµ Ð˜ÑÐ¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»Ð¸">
 				<param name="Local" value="ForEducation\Executors\index.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Èñïîëíèòåëü Ðîáîò">
+				<param name="Name" value="Ð˜ÑÐ¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»ÑŒ Ð Ð¾Ð±Ð¾Ñ‚">
 				<param name="Local" value="ForEducation\Executors\robotstart.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Èñïîëíèòåëü ×åðòåæíèê">
+				<param name="Name" value="Ð˜ÑÐ¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»ÑŒ Ð§ÐµÑ€Ñ‚ÐµÐ¶Ð½Ð¸Ðº">
 				<param name="Local" value="ForEducation\Executors\dmstart.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ïðîâåðÿåìûå çàäàíèÿ">
+			<param name="Name" value="ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼Ñ‹Ðµ Ð·Ð°Ð´Ð°Ð½Ð¸Ñ">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="×òî òàêîå ïðîâåðÿåìûå çàäàíèÿ">
+				<param name="Name" value="Ð§Ñ‚Ð¾ Ñ‚Ð°ÐºÐ¾Ðµ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼Ñ‹Ðµ Ð·Ð°Ð´Ð°Ð½Ð¸Ñ">
 				<param name="Local" value="ForEducation\CheckedTasks\index.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Çàäàíèå Begin3 èç ýëåêòðîííîãî çàäà÷íèêà Programming Taskbook">
+				<param name="Name" value="Ð—Ð°Ð´Ð°Ð½Ð¸Ðµ Begin3 Ð¸Ð· ÑÐ»ÐµÐºÑ‚Ñ€Ð¾Ð½Ð½Ð¾Ð³Ð¾ Ð·Ð°Ð´Ð°Ñ‡Ð½Ð¸ÐºÐ° Programming Taskbook">
 				<param name="Local" value="ForEducation\CheckedTasks\checkedtasks1.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Çàäàíèå a1 äëÿ èñïîëíèòåëÿ Ðîáîò">
+				<param name="Name" value="Ð—Ð°Ð´Ð°Ð½Ð¸Ðµ a1 Ð´Ð»Ñ Ð¸ÑÐ¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»Ñ Ð Ð¾Ð±Ð¾Ñ‚">
 				<param name="Local" value="ForEducation\CheckedTasks\checkedtasks2.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Çàäàíèå íà îáðàáîòêó ñòðîê">
+				<param name="Name" value="Ð—Ð°Ð´Ð°Ð½Ð¸Ðµ Ð½Ð° Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÑƒ ÑÑ‚Ñ€Ð¾Ðº">
 				<param name="Local" value="ForEducation\CheckedTasks\ctstring.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Çàäàíèå íà îáðàáîòêó ôàéëîâ">
+				<param name="Name" value="Ð—Ð°Ð´Ð°Ð½Ð¸Ðµ Ð½Ð° Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÑƒ Ñ„Ð°Ð¹Ð»Ð¾Ð²">
 				<param name="Local" value="ForEducation\CheckedTasks\ctfile.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Çàäàíèÿ íà óêàçàòåëè è äèíàìè÷åñêèå ñòðóêòóðû äàííûõ">
+				<param name="Name" value="Ð—Ð°Ð´Ð°Ð½Ð¸Ñ Ð½Ð° ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»Ð¸ Ð¸ Ð´Ð¸Ð½Ð°Ð¼Ð¸Ñ‡ÐµÑÐºÐ¸Ðµ ÑÑ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ñ‹ Ð´Ð°Ð½Ð½Ñ‹Ñ…">
 				<param name="Local" value="ForEducation\CheckedTasks\ctpointer.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Çàäàíèÿ íà îáðàáîòêó äåðåâüåâ">
+				<param name="Name" value="Ð—Ð°Ð´Ð°Ð½Ð¸Ñ Ð½Ð° Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÑƒ Ð´ÐµÑ€ÐµÐ²ÑŒÐµÐ²">
 				<param name="Local" value="ForEducation\CheckedTasks\cttree.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Çàäàíèÿ, ñâÿçàííûå ñ ÅÃÝ ïî èíôîðìàòèêå">
+				<param name="Name" value="Ð—Ð°Ð´Ð°Ð½Ð¸Ñ, ÑÐ²ÑÐ·Ð°Ð½Ð½Ñ‹Ðµ Ñ Ð•Ð“Ð­ Ð¿Ð¾ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ð¸ÐºÐµ">
 				<param name="Local" value="ForEducation\CheckedTasks\ctexam.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ýëåêòðîííûé çàäà÷íèê Programming Taskbook">
+			<param name="Name" value="Ð­Ð»ÐµÐºÑ‚Ñ€Ð¾Ð½Ð½Ñ‹Ð¹ Ð·Ð°Ð´Ð°Ñ‡Ð½Ð¸Ðº Programming Taskbook">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îáùåå îïèñàíèå è ïðîãðàììíûå ìîäóëè">
+				<param name="Name" value="ÐžÐ±Ñ‰ÐµÐµ Ð¾Ð¿Ð¸ÑÐ°Ð½Ð¸Ðµ Ð¸ Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ð½Ñ‹Ðµ Ð¼Ð¾Ð´ÑƒÐ»Ð¸">
 				<param name="Local" value="ForEducation\PT4\About.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ãðóïïû çàäàíèé">
+				<param name="Name" value="Ð“Ñ€ÑƒÐ¿Ð¿Ñ‹ Ð·Ð°Ð´Ð°Ð½Ð¸Ð¹">
 				<param name="Local" value="ForEducation\PT4\Groups.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìîäóëü PT4">
+				<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ PT4">
 				<param name="Local" value="ForEducation\PT4\IO.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñîçäàíèå øàáëîíà ïðîãðàììû">
+				<param name="Name" value="Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ ÑˆÐ°Ð±Ð»Ð¾Ð½Ð° Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹">
 				<param name="Local" value="ForEducation\PT4\Load.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Îêíî çàäà÷íèêà">
+				<param name="Name" value="ÐžÐºÐ½Ð¾ Ð·Ð°Ð´Ð°Ñ‡Ð½Ð¸ÐºÐ°">
 				<param name="Local" value="ForEducation\PT4\Window.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ðàçäåë îòëàäêè">
+				<param name="Name" value="Ð Ð°Ð·Ð´ÐµÐ» Ð¾Ñ‚Ð»Ð°Ð´ÐºÐ¸">
 				<param name="Local" value="ForEducation\PT4\Debug.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïðîñìîòð ðåçóëüòàòîâ">
+				<param name="Name" value="ÐŸÑ€Ð¾ÑÐ¼Ð¾Ñ‚Ñ€ Ñ€ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚Ð¾Ð²">
 				<param name="Local" value="ForEducation\PT4\Results.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Äåìîíñòðàöèîííûé ðåæèì">
+				<param name="Name" value="Ð”ÐµÐ¼Ð¾Ð½ÑÑ‚Ñ€Ð°Ñ†Ð¸Ð¾Ð½Ð½Ñ‹Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼">
 				<param name="Local" value="ForEducation\PT4\Demo.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ìîäóëè êîíñòðóêòîðîâ çàäàíèé">
+			<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»Ð¸ ÐºÐ¾Ð½ÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€Ð¾Ð² Ð·Ð°Ð´Ð°Ð½Ð¸Ð¹">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Êîíñòðóêòîðû ïðîâåðÿåìûõ çàäàíèé: îáçîð">
+				<param name="Name" value="ÐšÐ¾Ð½ÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€Ñ‹ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼Ñ‹Ñ… Ð·Ð°Ð´Ð°Ð½Ð¸Ð¹: Ð¾Ð±Ð·Ð¾Ñ€">
 				<param name="Local" value="ForEducation\MakeModules\index.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìîäóëü RobotTaskMaker">
+				<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ RobotTaskMaker">
 				<param name="Local" value="ForEducation\MakeModules\RobotMake.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñîçäàíèå çàäàíèé äëÿ èñïîëíèòåëÿ Ðîáîò">
+				<param name="Name" value="Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð·Ð°Ð´Ð°Ð½Ð¸Ð¹ Ð´Ð»Ñ Ð¸ÑÐ¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»Ñ Ð Ð¾Ð±Ð¾Ñ‚">
 				<param name="Local" value="ForEducation\MakeModules\RobotMakeCreation.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìîäóëü DMTaskMaker">
+				<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ DMTaskMaker">
 				<param name="Local" value="ForEducation\MakeModules\DMMake.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ñîçäàíèå çàäàíèé äëÿ èñïîëíèòåëÿ ×åðòåæíèê">
+				<param name="Name" value="Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð·Ð°Ð´Ð°Ð½Ð¸Ð¹ Ð´Ð»Ñ Ð¸ÑÐ¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»Ñ Ð§ÐµÑ€Ñ‚ÐµÐ¶Ð½Ð¸Ðº">
 				<param name="Local" value="ForEducation\MakeModules\DMMakeCreation.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìîäóëü PT4TaskMakerNET: îáùåå îïèñàíèå">
+				<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ PT4TaskMakerNET: Ð¾Ð±Ñ‰ÐµÐµ Ð¾Ð¿Ð¸ÑÐ°Ð½Ð¸Ðµ">
 				<param name="Local" value="ForEducation\MakeModules\tmaker_main.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìîäóëü PT4TaskMakerNET: îñíîâíûå êîìïîíåíòû">
+				<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ PT4TaskMakerNET: Ð¾ÑÐ½Ð¾Ð²Ð½Ñ‹Ðµ ÐºÐ¾Ð¼Ð¿Ð¾Ð½ÐµÐ½Ñ‚Ñ‹">
 				<param name="Local" value="ForEducation\MakeModules\tmaker_proc1.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìîäóëü PT4TaskMakerNET: äîïîëíèòåëüíûå êîìïîíåíòû">
+				<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ PT4TaskMakerNET: Ð´Ð¾Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ðµ ÐºÐ¾Ð¼Ð¿Ð¾Ð½ÐµÐ½Ñ‚Ñ‹">
 				<param name="Local" value="ForEducation\MakeModules\tmaker_proc2.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìîäóëü PT4TaskMakerNET: ôîðìàòèðîâàíèå òåêñòà">
+				<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ PT4TaskMakerNET: Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ñ‚ÐµÐºÑÑ‚Ð°">
 				<param name="Local" value="ForEducation\MakeModules\tmaker_format.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìîäóëü PT4TaskMakerNET: ïðèìåðû ðàçðàáîòêè ó÷åáíûõ çàäàíèé">
+				<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ PT4TaskMakerNET: Ð¿Ñ€Ð¸Ð¼ÐµÑ€Ñ‹ Ñ€Ð°Ð·Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ¸ ÑƒÑ‡ÐµÐ±Ð½Ñ‹Ñ… Ð·Ð°Ð´Ð°Ð½Ð¸Ð¹">
 				<param name="Local" value="ForEducation\MakeModules\tmaker_samples.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ìîäóëü PT4TaskMakerNET: ðàçðàáîòêà çàäàíèé, ñâÿçàííûõ ñ ÅÃÝ ïî èíôîðìàòèêå">
+				<param name="Name" value="ÐœÐ¾Ð´ÑƒÐ»ÑŒ PT4TaskMakerNET: Ñ€Ð°Ð·Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ° Ð·Ð°Ð´Ð°Ð½Ð¸Ð¹, ÑÐ²ÑÐ·Ð°Ð½Ð½Ñ‹Ñ… Ñ Ð•Ð“Ð­ Ð¿Ð¾ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ð¸ÐºÐµ">
 				<param name="Local" value="ForEducation\MakeModules\tmaker_exam.html">
 				</OBJECT>
 		</UL>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Óðîêè PascalABC.NET">
+		<param name="Name" value="Ð£Ñ€Ð¾ÐºÐ¸ PascalABC.NET">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ðàáîòà ñ ìîäóëåì ABCObjects">
+			<param name="Name" value="Ð Ð°Ð±Ð¾Ñ‚Ð° Ñ Ð¼Ð¾Ð´ÑƒÐ»ÐµÐ¼ ABCObjects">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: áûñòðîå ââåäåíèå">
+				<param name="Name" value="ABCObjects: Ð±Ñ‹ÑÑ‚Ñ€Ð¾Ðµ Ð²Ð²ÐµÐ´ÐµÐ½Ð¸Ðµ">
 				<param name="Local" value="Tutorials\ABCObjects\QuickStartABCObjects.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ABCObjects: êîíòåéíåðû ãðàôè÷åñêèõ îáúåêòîâ">
+				<param name="Name" value="ABCObjects: ÐºÐ¾Ð½Ñ‚ÐµÐ¹Ð½ÐµÑ€Ñ‹ Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¸Ñ… Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð²">
 				<param name="Local" value="Tutorials\ABCObjects\ABCContainersOverview.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ïðèìåðû">
+			<param name="Name" value="ÐŸÑ€Ð¸Ð¼ÐµÑ€Ñ‹">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ãðàôèêà è àíèìàöèÿ">
+				<param name="Name" value="Ð“Ñ€Ð°Ñ„Ð¸ÐºÐ° Ð¸ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ñ">
 				</OBJECT>
 			<UL>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Àíèìàöèÿ áåç ìåðöàíèÿ">
+					<param name="Name" value="ÐÐ½Ð¸Ð¼Ð°Ñ†Ð¸Ñ Ð±ÐµÐ· Ð¼ÐµÑ€Ñ†Ð°Ð½Ð¸Ñ">
 					<param name="Local" value="Examples\GraphABC\NonBlinkAnim1.html">
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïðîñòåéøèå ñîáûòèÿ">
+				<param name="Name" value="ÐŸÑ€Ð¾ÑÑ‚ÐµÐ¹ÑˆÐ¸Ðµ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ñ">
 				</OBJECT>
 			<UL>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ðèñîâàíèå ìûøüþ â ãðàôè÷åñêîì îêíå">
+					<param name="Name" value="Ð Ð¸ÑÐ¾Ð²Ð°Ð½Ð¸Ðµ Ð¼Ñ‹ÑˆÑŒÑŽ Ð² Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¾Ð¼ Ð¾ÐºÐ½Ðµ">
 					<param name="Local" value="Examples\GraphABCEvents\GEv1.html">
 					</OBJECT>
 				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ïåðåìåùåíèå îêíà ñ ïîìîùüþ êëàâèàòóðû">
+					<param name="Name" value="ÐŸÐµÑ€ÐµÐ¼ÐµÑ‰ÐµÐ½Ð¸Ðµ Ð¾ÐºÐ½Ð° Ñ Ð¿Ð¾Ð¼Ð¾Ñ‰ÑŒÑŽ ÐºÐ»Ð°Ð²Ð¸Ð°Ñ‚ÑƒÑ€Ñ‹">
 					<param name="Local" value="Examples\GraphABCEvents\GEv2.html">
 					</OBJECT>
 			</UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ïðèìåð èñïîëüçîâàíèÿ òàéìåðà">
+				<param name="Name" value="ÐŸÑ€Ð¸Ð¼ÐµÑ€ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ð½Ð¸Ñ Ñ‚Ð°Ð¹Ð¼ÐµÑ€Ð°">
 				<param name="Local" value="Examples\Timers\Timer1.html">
 				</OBJECT>
 		</UL>

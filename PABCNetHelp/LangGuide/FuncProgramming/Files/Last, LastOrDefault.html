@@ -3,25 +3,25 @@
 <param name="Keyword" value="LastOrDefault">
 </object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
 <body>
-<H1>Методы Last, LastOrDefault</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<H1>РњРµС‚РѕРґС‹ Last, LastOrDefault</H1><h2>РћРїРёСЃР°РЅРёРµ РјРµС‚РѕРґРѕРІ</h2><p>РњРµС‚РѕРґС‹ РїСЂРёРІРµРґРµРЅС‹ РґР»СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё <code><b>sequence of</b> T</code>.</p><table>
 <tr><td>
 <code><b>function </b>Last(): T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последний элемент последовательности.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё.
 </td></tr>
 <tr><td>
 <code><b>function </b>Last(predicate: T-&gt;boolean): T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последний элемент последовательности, удовлетворяющий указанному условию.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёР№ СѓРєР°Р·Р°РЅРЅРѕРјСѓ СѓСЃР»РѕРІРёСЋ.
 </td></tr>
 <tr><td>
 <code><b>function </b>LastOrDefault(): T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последний элемент последовательности или значение по умолчанию, если последовательность не содержит элементов.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РёР»Рё Р·РЅР°С‡РµРЅРёРµ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ, РµСЃР»Рё РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РЅРµ СЃРѕРґРµСЂР¶РёС‚ СЌР»РµРјРµРЅС‚РѕРІ.
 </td></tr>
 <tr><td>
 <code><b>function </b>LastOrDefault(predicate: T-&gt;boolean): T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последний элемент последовательности, удовлетворяющий указанному условию, или значение по умолчанию, если ни одного такого элемента не найдено.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёР№ СѓРєР°Р·Р°РЅРЅРѕРјСѓ СѓСЃР»РѕРІРёСЋ, РёР»Рё Р·РЅР°С‡РµРЅРёРµ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ, РµСЃР»Рё РЅРё РѕРґРЅРѕРіРѕ С‚Р°РєРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РЅРµ РЅР°Р№РґРµРЅРѕ.
 </td></tr>
 </table>
-<h2>Пример </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
+<h2>РџСЂРёРјРµСЂ </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
 	a := Arr(1,2,3,4);<br>&nbsp; Println(a.Last); // 4<br>&nbsp; 
 	Println(a.Last(x -&gt; x <strong>mod</strong> 2 = 0); // 4<br>&nbsp; 
 	Println(a.LastOrDefault(x -&gt; x&gt;5); // 0<br><strong>end</strong>.</code></blockquote>
