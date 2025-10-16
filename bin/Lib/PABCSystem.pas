@@ -1896,6 +1896,11 @@ function DegToRad(x: real): real;
 function Atan2(y, x: real): real;
 /// Возвращает гипотенузу треугольника с катетами x,y 
 function Hypot(x, y: real): real;
+/// Возвращает значение на отрезке [a, b] в позиции t ∈ [0, 1]
+///При t=0 — a, при t=1 — b, при t=0.5 — середина между ними
+function Lerp(a, b, t: real): real;
+/// Преобразует x из диапазона [a1,b1] в диапазон [a2,b2] с сохранением относительной позиции
+function Remap(x, a1, b1, a2, b2: real): real;
 
 /// Инициализирует датчик псевдослучайных чисел
 procedure Randomize;
@@ -1911,7 +1916,7 @@ function Random(maxValue: real): real;
 function Random(a, b: integer): integer;
 /// Возвращает случайное вещественное в диапазоне [a,b)
 function Random(a, b: real): real;
-/// Возвращает случайное вещественное в диапазоне [a,b] c количеством значащих цифр после точки, равным digits
+/// Возвращает случайное вещественное в диапазоне [a,b], округленное до digits знаков после десятичной точки
 function RandomReal(a, b: real; digits: integer := 2): real;
 /// Возвращает случайный символ в диапазоне от a до b
 function Random(a, b: char): char;
@@ -2066,8 +2071,6 @@ function Sqrt(c: Complex): Complex;
 function Abs(c: Complex): real;
 /// Возвращает комплексно сопряженное число
 function Conjugate(c: Complex): Complex;
-/// Возвращает косинус комплексного числа
-function Cos(c: Complex): Complex;
 /// Возвращает экспоненту комплексного числа
 function Exp(c: Complex): Complex;
 /// Возвращает натуральный логарифм комплексного числа
@@ -2080,6 +2083,8 @@ function Log10(c: Complex): Complex;
 function Power(c, power: Complex): Complex;
 /// Возвращает синус комплексного числа
 function Sin(c: Complex): Complex;
+/// Возвращает косинус комплексного числа
+function Cos(c: Complex): Complex;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для работы со стандартными множествами # Subroutines for set of T
@@ -2402,10 +2407,11 @@ function Pred(x: boolean): boolean;
 function InRange<T>(val, a, b: T): boolean; where T: IComparable<T>;
 /// Возвращает True, если значение val находится между a и b независимо от порядка a и b
 function Between<T>(val, a, b: T; inclusive: boolean := true): boolean; where T: IComparable<T>;
-/// Возвращает значение, ограниченное диапазоном от bottom до top включительно
+/// Ограничивает значение x диапазоном [bottom, top]
 function Clamp<T>(x,bottom,top: T): T; where T: IComparable<T>;
-/// Меняет местами значения двух переменных
+/// Обменивает местами значения двух переменных
 procedure Swap<T>(var a, b: T);
+
 /// Возвращает True, если достигнут конец строки
 function Eoln: boolean;
 /// Возвращает True, если достигнут конец потока ввода
@@ -2414,7 +2420,7 @@ function Eof: boolean;
 function SeekEof: boolean;
 /// Пропускает пробельные символы, после чего возвращает True, если достигнут конец строки
 function SeekEoln: boolean;
-/// Возвращает аргумены командой строки, с которыми была запущена программа
+/// Возвращает список аргументов командой строки, с которыми была запущена программа
 function CommandLineArgs: array of string;
 
 /// Преобразует объект в строковое представление
@@ -2427,35 +2433,35 @@ function ObjectToString(obj: object): string;
 /// Возвращает 0
 function Low(i: System.Array): integer;
 ///- function High(a: array of T): integer;
-/// Возвращает верхнюю границу динамического массива
+/// Возвращает верхнюю границу массива
 function High(i: System.Array): integer;
 ///- function Length(a: array of T): integer;
-/// Возвращает длину динамического массива
+/// Возвращает длину массива
 function Length(a: System.Array): integer;
 ///- function Length(a: array of T; dim: integer): integer;
-/// Возвращает длину динамического массива по размерности dim
+/// Возвращает длину массива по размерности dim
 function Length(a: System.Array; dim: integer): integer;
 ///- procedure SetLength(var a: array of T; n: integer);
-/// Устанавливает длину одномерного динамического массива. Старое содержимое сохраняется
+/// Устанавливает длину одномерного массива. Старое содержимое сохраняется
 //procedure SetLength<T>(var a: array of T; n: integer);
 ///- procedure SetLength(var a: array [,...,] of T; n1,n2,...: integer);
-/// Устанавливает размеры n-мерного динамического массива. Старое содержимое сохраняется
+/// Устанавливает размеры n-мерного массива. Старое содержимое сохраняется
 //procedure SetLength<T>(var a: array[,...,] of T; n: integer);
 ///- function Copy(a: array of T): array of T;
-/// Создаёт копию динамического массива
+/// Создаёт копию массива
 function Copy(a: System.Array): System.Array;
 
-/// Сортирует динамический массив по возрастанию
+/// Сортирует массив по возрастанию
 procedure Sort<T>(a: array of T);
-/// Сортирует динамический массив по возрастанию
+/// Сортирует массив по возрастанию
 procedure Sort(a: array of string);
-/// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения cmp
+/// Сортирует массив по критерию сортировки, задаваемому функцией сравнения cmp
 procedure Sort<T>(a: array of T; cmp: (T,T)->integer);
-/// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения less
+/// Сортирует массив по критерию сортировки, задаваемому функцией сравнения less
 procedure Sort<T>(a: array of T; less: (T,T)->boolean);
-/// Сортирует динамический массив по ключу
+/// Сортирует массив по ключу
 procedure Sort<T,TKey>(a: array of T; keySelector: T->TKey);
-/// Сортирует динамический массив по ключу
+/// Сортирует массив по ключу
 procedure Sort<T>(a: array of T; keySelector: T->string);
 
 /// Сортирует список по возрастанию
@@ -2471,13 +2477,13 @@ procedure Sort<T,T1>(var l: List<T>; keySelector: T->T1);
 /// Сортирует список по возрастанию по ключу
 procedure Sort<T>(var l: List<T>; keySelector: T->string);
 
-/// Сортирует динамический массив по убыванию
+/// Сортирует массив по убыванию
 procedure SortDescending<T>(a: array of T);
-/// Сортирует динамический массив по убыванию
+/// Сортирует массив по убыванию
 procedure SortDescending(a: array of string);
-/// Сортирует динамический массив по убыванию по ключу
+/// Сортирует массив по убыванию по ключу
 procedure SortDescending<T,T1>(var a: array of T; keySelector: T->T1);
-/// Сортирует динамический массив по убыванию по ключу
+/// Сортирует массив по убыванию по ключу
 procedure SortDescending<T>(var a: array of T; keySelector: T->string);
 /// Сортирует список по убыванию
 procedure SortDescending<T>(l: List<T>);
@@ -2487,9 +2493,9 @@ procedure SortDescending(var l: List<string>);
 procedure SortDescending<T,T1>(var l: List<T>; keySelector: T->T1);
 /// Сортирует список по убыванию по ключу
 procedure SortDescending<T>(var l: List<T>; keySelector: T->string);
-/// Изменяет порядок элементов в динамическом массиве на противоположный
+/// Изменяет порядок элементов в массиве на противоположный
 procedure Reverse<T>(a: array of T);
-/// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины count, начиная с индекса index
+/// Изменяет порядок элементов на противоположный в диапазоне массива длины count, начиная с индекса index
 procedure Reverse<T>(a: array of T; index, count: integer);
 /// Изменяет порядок элементов в списке на противоположный
 procedure Reverse<T>(a: List<T>);
@@ -2499,17 +2505,18 @@ procedure Reverse<T>(a: List<T>; index, count: integer);
 procedure Reverse(var s: string);
 /// Изменяет порядок символов в части строки длины count на противоположный, начиная с индекса index
 procedure Reverse(var s: string; index, count: integer);
-/// Перемешивает динамический массив случайным образом
+/// Случайно перемешивает элементы массива
 procedure Shuffle<T>(a: array of T);
-/// Возвращает, совпадают ли массивы
-function ArrEqual<T>(a, b: array of T): boolean;
-
-/// Сравнивает матрицы на равенство
-function MatrEqual<T>(a, b: array [,] of T): boolean;
-/// Перемешивает список случайным образом
+/// Случайно перемешивает элементы списка
 procedure Shuffle<T>(l: List<T>);
 
-/// Возвращает следующую перестановку в массиве 
+/// Проверяет равенство двух массивов
+function ArrEqual<T>(a, b: array of T): boolean;
+/// Проверяет равенство двух матриц
+function MatrEqual<T>(a, b: array [,] of T): boolean;
+
+
+/// Возвращает следующую перестановку в массиве; возвращает False, если это последняя 
 function NextPermutation(a: array of integer): boolean;
 
 
@@ -2532,7 +2539,9 @@ function Range(c1, c2: char; step: integer): sequence of char;
 function Range(a, b, step: real): sequence of real;
 /// Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей
 function PartitionPoints(a, b: real; n: integer): sequence of real;
-/// Возвращает последовательность указанных элементов
+/// Возвращает n равномерно распределённых точек между a и b включительно (аналог numpy.linspace)
+function Linspace(a, b: real; n: integer): sequence of real;
+/// Возвращает последовательность из указанных элементов
 function Seq<T>(params a: array of T): sequence of T;
 /// Возвращает последовательность из n случайных целых элементов
 function SeqRandom(n: integer := 10; a: integer := 0; b: integer := 100): sequence of integer;
@@ -2576,21 +2585,21 @@ function Zip<T, T1, T2, T3, TRes>(a: sequence of T; b: sequence of T1; c: sequen
 /// Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов
 function Zip<T, T1, T2, T3, T4, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; e: sequence of T4; fun: (T,T1,T2,T3,T4) -> TRes): sequence of TRes;
 
-/// Возвращает декартово произведение последовательностей, проектируя каждую пару на значение
+/// Возвращает все комбинации элементов двух последовательностей, проектируя каждую пару на значение
 function Cartesian<T, T1, TRes>(a: sequence of T; b: sequence of T1; func: (T,T1)->TRes): sequence of TRes;
-/// Возвращает декартово произведение последовательностей, проектируя каждую тройку на значение
+/// Возвращает все комбинации элементов последовательностей, проектируя каждую тройку на значение
 function Cartesian<T, T1, T2, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; func: (T,T1,T2)->TRes): sequence of TRes;
-/// Возвращает декартово произведение последовательностей, проектируя каждую четвёрку на значение
+/// Возвращает все комбинации элементов последовательностей, проектируя каждую четвёрку на значение
 function Cartesian<T, T1, T2, T3, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; func: (T,T1,T2,T3)->TRes): sequence of TRes;
-/// Возвращает декартово произведение последовательностей, проектируя каждую пятёрку на значение
+/// Возвращает все комбинации элементов последовательностей, проектируя каждую пятёрку на значение
 function Cartesian<T, T1, T2, T3, T4, TRes>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; e: sequence of T4; func: (T,T1,T2,T3,T4)->TRes): sequence of TRes;
-/// Возвращает декартово произведение последовательностей в виде последовательности пар
+/// Возвращает все комбинации элементов последовательностей в виде последовательности пар
 function Cartesian<T, T1>(a: sequence of T; b: sequence of T1): sequence of (T, T1);
-/// Возвращает декартово произведение последовательностей в виде последовательности троек
+/// Возвращает все комбинации элементов последовательностей в виде последовательности троек
 function Cartesian<T, T1, T2>(a: sequence of T; b: sequence of T1; c: sequence of T2): sequence of (T, T1, T2);
-/// Возвращает декартово произведение последовательностей в виде последовательности четвёрок
+/// Возвращает все комбинации элементов последовательностей в виде последовательности четвёрок
 function Cartesian<T, T1, T2, T3>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3): sequence of (T, T1, T2, T3);
-/// Возвращает декартово произведение последовательностей в виде последовательности пятёрок
+/// Возвращает все комбинации элементов последовательностей в виде последовательности пятёрок
 function Cartesian<T, T1, T2, T3, T4>(a: sequence of T; b: sequence of T1; c: sequence of T2; d: sequence of T3; e: sequence of T4): sequence of (T, T1, T2, T3, T4);
 
 
@@ -2623,11 +2632,11 @@ function ReadSeqRealWhile(prompt: string; cond: real->boolean): sequence of real
 function ReadSeqStringWhile(prompt: string; cond: string->boolean): sequence of string;
 
 // -----------------------------------------------------
-//>>     Подпрограммы для создания динамических массивов # Subroutines for array of T generation
+//>>     Подпрограммы для создания одномерных массивов # Subroutines for array of T generation
 // -----------------------------------------------------
 /// Возвращает массив, заполненный указанными значениями
 function Arr<T>(params a: array of T): array of T;
-/// Возвращает массив, заполненный значениями из последовательнсти
+/// Возвращает массив, заполненный значениями из последовательности
 function Arr<T>(a: sequence of T): array of T;
 /// Возвращает массив, заполненный диапазоном значений 
 function Arr(a: IntRange): array of integer;
@@ -2687,7 +2696,7 @@ function ReadArrString(prompt: string; n: integer): array of string;
 
 
 // -----------------------------------------------------
-//>>     Подпрограммы для создания двумерных динамических массивов # Subroutines for matrixes 
+//>>     Подпрограммы для создания двумерных массивов # Subroutines for matrixes 
 // -----------------------------------------------------
 /// Возвращает двумерный массив размера m x n, заполненный указанными значениями по строкам
 function Matr<T>(m,n: integer; params data: array of T): array [,] of T;
@@ -2712,9 +2721,9 @@ function MatrByCol<T>(a: sequence of sequence of T): array [,] of T;
 /// Генерирует двумерный массив по столбцам из последовательности
 function MatrByCol<T>(m,n: integer; a: sequence of T): array [,] of T;
 
-/// Возвращает матрицу m на n целых, введенных с клавиатуры
+/// Возвращает двумерный массив размера m x n из целых, введенных с клавиатуры
 function ReadMatrInteger(m, n: integer): array [,] of integer;
-/// Возвращает матрицу m на n вещественных, введенных с клавиатуры
+/// Возвращает двумерный массив размера m x n из вещественных, введенных с клавиатуры
 function ReadMatrReal(m, n: integer): array [,] of real;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
@@ -2796,25 +2805,25 @@ function SSetInt(params a: array of integer): SortedSet<integer>;
 function SSetStr(params a: array of string): SortedSet<string>;
 
 
-/// Возвращает словарь пар элементов (ключ, значение)
+/// Возвращает словарь из набора пар элементов (ключ, значение)
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
-/// Возвращает словарь пар элементов (ключ, значение)
+/// Возвращает словарь из набора пар элементов (ключ, значение), заданных как кортежи
 function Dict<TKey, TVal>(params pairs: array of (TKey, TVal)): Dictionary<TKey, TVal>;
-/// Возвращает словарь пар элементов (ключ, значение), построенный по последовательности пар
+/// Возвращает словарь из последовательности пар элементов (ключ, значение)
 function Dict<TKey, TVal>(pairs: sequence of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
-/// Возвращает словарь пар элементов (ключ, значение), построенный по последовательности пар
+/// Возвращает словарь из последовательности пар элементов (ключ, значение), заданных как кортежи
 function Dict<TKey, TVal>(pairs: sequence of (TKey, TVal)): Dictionary<TKey, TVal>;
-/// Возвращает словарь пар элементов (ключ, значение), построенный по последовательностям ключей и значений
+/// Возвращает словарь словарь из двух последовательностей — ключей и значений
 function Dict<TKey, TVal>(keys: sequence of TKey; values: sequence of TVal): Dictionary<TKey, TVal>; 
 /// Возвращает пару элементов (ключ, значение)
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 /// Возвращает пару элементов (ключ, значение)
 function Pair<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
-/// Возвращает словарь пар элементов (строка, строка)
+/// Возвращает словарь из набора пар элементов (строка, строка)
 function DictStr(params pairs: array of (string, string)): Dictionary<string, string>;
-/// Возвращает словарь пар элементов (строка, целое)
+/// Возвращает словарь из набора пар элементов (строка, целое)
 function DictStrInt(params pairs: array of (string, integer)): Dictionary<string, integer>;
-/// Возвращает словарь пар элементов (целое, целое)
+/// Возвращает словарь из набора пар элементов (целое, целое)
 function DictInt(params pairs: array of (integer, integer)): Dictionary<integer, integer>;
 
 
@@ -3268,10 +3277,10 @@ const
   COUNT_PARAMS_MINFUN_MUSTBE_GREATER0 = 'Количество параметров функции Min должно быть > 1!!Min function must have more than one parameter';
   Format_InvalidString = 'Входная строка имела неверный формат!!Input string was not in a valid format';
   Overflow_Int32 = 'Целочисленное переполнение!!Integer overflow';
-  FOR_STEP_CANNOT_BE_EQUAL0 = 'Шаг цикла for не может быт равен 0!!The step of a for loop cannot be 0';
+  FOR_STEP_CANNOT_BE_EQUAL0 = 'Шаг цикла for не может быть равен 0!!The step of a for loop cannot be 0';
   SEQUENCE_CANNOT_BE_EMPTY = 'Последовательность не может быть пустой!!Sequence cannot be empty';
   ARRAY_CANNOT_BE_EMPTY = 'Массив не может быть пустым!!Array cannot be empty';
-  MIN_CANNOT_BE_GREATER_THAN_MAX = 'CLamp: min не может быть больше чем max!!CLamp: min cannot be greater than max';
+  MIN_CANNOT_BE_GREATER_THAN_MAX = 'Clamp: min не может быть больше чем max!!Clamp: min cannot be greater than max';
 // -----------------------------------------------------
 //                  WINAPI
 // -----------------------------------------------------
@@ -3855,17 +3864,6 @@ begin
 end;
 
 ///--
-{class function TypedSet.operator implicit<T>(s: array of T): TypedSet;
-begin
-  var ts := new TypedSet();
-  foreach key: T in s do
-  begin
-    ts.ht[key] := key;  
-  end;
-  Result := ts; 
-end;}
-
-///--
 function TypedSet.ToString: string;
 var
   i: System.Collections.IEnumerator;
@@ -3921,13 +3919,6 @@ begin
   end;
   result := '[' + result + ']';
 end;
-
-{class function TypedSet.operator implicit<T>(hset: HashSet<T>): TypedSet;
-begin
-  Result := new TypedSet();
-  foreach var x in hset do
-    Result.ht[x] := x;
-end;}
 
 ///--
 function TypedSet.CompareEquals(s: TypedSet): boolean;
@@ -4121,15 +4112,7 @@ end;
 [System.Diagnostics.DebuggerStepThrough]  
 function InSet(obj: object; s: TypedSet): boolean;
 begin
-  {if obj.GetType().IsEnum then 
-  Result := s.ht[obj] <> nil
-  else} 
   Result := (obj <> nil) and s.Contains(obj);
-  {Result := (obj <> nil) and (s.ht[obj] <> nil);
-  if not Result and (obj is TypedSet) then
-  Result := s.Contains(obj as TypedSet);}
-  //if Result = true then
-  // Result := s.IsInDiapason(obj);
 end;
 
 [System.Diagnostics.DebuggerStepThrough]  
@@ -5524,6 +5507,9 @@ begin
     r += h
   end;
 end;
+
+function Linspace(a, b: real; n: integer): sequence of real := PartitionPoints(a, b, n - 1);
+
 
 function Range(c1, c2: char): sequence of char;
 begin
@@ -9534,6 +9520,10 @@ begin
   end
   else Result := 0;
 end;
+
+function Lerp(a, b, t: real): real := a + (b - a) * t;
+
+function Remap(x, a1, b1, a2, b2: real): real := a2 + (x - a1) * (b2 - a2) / (b1 - a1);
 
 
 procedure Randomize;
