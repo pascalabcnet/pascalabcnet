@@ -1018,10 +1018,16 @@ namespace CodeCompletion
             {
                 // в случае операции преобразования типа эта ветка срабатывает
                 if (ss is ElementScope && string.IsNullOrEmpty(ss.si.description) && (ss as ElementScope).sc is TypeScope)
+                {
                     ss.si.description = (ss as ElementScope).sc.Description;
-                else
+                }
+                // к сожалению, при текущей реализации обновлять описание для инстансов функций не представляется возможным
+                // описания типов аргументов составляются неправильно  EVA
+                else if (!(ss is ProcScope procScope) || !procScope.OfTypeInstance)
+                {
                     // обновление описания
                     ss = ss.WithRefreshedDescription();
+                }  
 
                 try
                 {
