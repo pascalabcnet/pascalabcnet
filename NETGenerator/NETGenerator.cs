@@ -184,13 +184,9 @@ namespace PascalABCCompiler.NETGenerator
         private bool has_dereferences = false;
         private bool safe_block = false;
         private int cur_line = 0;
-        private bool tried_with_unmanaged_resources = false;
         private ISymbolDocumentWriter new_doc;
-        private List<LocalBuilder> pinned_variables = new List<LocalBuilder>();
         private bool pabc_rtl_converted = false;
         bool has_unmanaged_resources = false;
-        private Dictionary<ICommonFunctionNode, Tuple<MethodBuilder, MethodBuilder, List<ICommonFunctionNode>>> non_local_variables = 
-            new Dictionary<ICommonFunctionNode, Tuple<MethodBuilder, MethodBuilder, List<ICommonFunctionNode>>>();
 
         private void CheckLocation(SemanticTree.ILocation Location)
         {
@@ -1371,8 +1367,7 @@ namespace PascalABCCompiler.NETGenerator
             FieldBuilder fb = cur_type.DefineField(name, helper.GetTypeReference(type).tp, FieldAttributes.Static | FieldAttributes.Public | FieldAttributes.Literal);
             Type t = helper.GetTypeReference(type).tp;
 
-			// Для инстанцированных generic типов вызов .IsEnum приводит к исключению
-			if (!t.IsConstructedGenericType() && t.IsEnum)
+			if (TypeIsEnum(t))
             {
                 if (!(t is EnumBuilder))
                     fb.SetConstant(Enum.ToObject(t, (constant_value as IEnumConstNode).constant_value));
@@ -4714,9 +4709,8 @@ namespace PascalABCCompiler.NETGenerator
                         il.Emit(OpCodes.Ldloc, lb);
                         TypeInfo ti = helper.GetTypeReference(ElementValues[i].type);
                         PushIntConst(il, i);
-                        if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && 
-                            (ti.tp.IsConstructedGenericType() || !ti.tp.IsEnum)) // инстанцированные генерик типы бросают исключение при вызове .IsEnum
-                                il.Emit(OpCodes.Ldelema, ti.tp);
+                        if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && !TypeIsEnum(ti.tp))
+                            il.Emit(OpCodes.Ldelema, ti.tp);
                         ILGenerator ilb = this.il;
                         this.il = il;
                         ElementValues[i].visit(this);
@@ -8265,6 +8259,9 @@ namespace PascalABCCompiler.NETGenerator
             il.Emit(OpCodes.Stsfld, fb);
         }
 
+        /// <summary>
+        /// Необходимо, тк в особых случаях прямой вызов .IsEnum приводит к исключению
+        /// </summary>
         private bool TypeIsEnum(Type T)
         {
             if (T.IsGenericType || T.IsGenericTypeDefinition || T.IsGenericParameter)
@@ -11005,7 +11002,7 @@ namespace PascalABCCompiler.NETGenerator
                 end_label = if_stack.Pop();
                 in_if = true;
             }
-            System.Collections.Generic.Dictionary<IConstantNode, Label> dict;
+            Dictionary<IConstantNode, Label> dict;
             TmpForLabel[] case_labels = GetCaseSelectors(value, jump_def_label, out dict);
             value.case_expression.visit(this);
             LocalBuilder lb = null;
@@ -11244,7 +11241,7 @@ namespace PascalABCCompiler.NETGenerator
         }
 
         //перевод селекторов case
-        public void ConvertCaseVariantNode(ICaseVariantNode value, Label end_label, System.Collections.Generic.Dictionary<IConstantNode, Label> dict)
+        public void ConvertCaseVariantNode(ICaseVariantNode value, Label end_label, Dictionary<IConstantNode, Label> dict)
         {
             if (save_debug_info)
             {
@@ -11260,11 +11257,11 @@ namespace PascalABCCompiler.NETGenerator
         }
 
         //сбор информации о селекторах (сортировка, группировка и т. д.)
-        private TmpForLabel[] GetCaseSelectors(ISwitchNode value, Label default_label, out System.Collections.Generic.Dictionary<IConstantNode, Label> dict)
+        private TmpForLabel[] GetCaseSelectors(ISwitchNode value, Label default_label, out Dictionary<IConstantNode, Label> dict)
         {
-            System.Collections.Generic.SortedDictionary<int, TmpForCase> sel_list = new System.Collections.Generic.SortedDictionary<int, TmpForCase>();
-            System.Collections.Generic.Dictionary<ICaseRangeNode, IStatementNode> sel_range = new System.Collections.Generic.Dictionary<ICaseRangeNode, IStatementNode>();
-            dict = new System.Collections.Generic.Dictionary<IConstantNode, Label>();
+            SortedDictionary<int, TmpForCase> sel_list = new SortedDictionary<int, TmpForCase>();
+            Dictionary<ICaseRangeNode, IStatementNode> sel_range = new Dictionary<ICaseRangeNode, IStatementNode>();
+            dict = new Dictionary<IConstantNode, Label>();
             //sobiraem informaciju o konstantah v case
             for (int i = 0; i < value.case_variants.Length; i++)
             {
