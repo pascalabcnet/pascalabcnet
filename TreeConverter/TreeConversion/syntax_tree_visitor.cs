@@ -398,6 +398,8 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.read_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.read_procedure_name);
             SystemLibrary.SystemLibInitializer.write_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.write_procedure_name);
             SystemLibrary.SystemLibInitializer.writeln_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.writeln_procedure_name);
+            SystemLibrary.SystemLibInitializer.print_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.print_procedure_name);
+            SystemLibrary.SystemLibInitializer.println_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.println_procedure_name);
             SystemLibrary.SystemLibInitializer.readln_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.readln_procedure_name);
             SystemLibrary.SystemLibInitializer.TextFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.text_file_name_type_name);
             SystemLibrary.SystemLibInitializer.TextFileInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TextFileInitProcedureName);
@@ -492,6 +494,8 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.read_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.read_procedure_name);
             SystemLibrary.SystemLibInitializer.write_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.write_procedure_name);
             SystemLibrary.SystemLibInitializer.writeln_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.writeln_procedure_name);
+            SystemLibrary.SystemLibInitializer.print_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.print_procedure_name);
+            SystemLibrary.SystemLibInitializer.println_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.println_procedure_name);
             SystemLibrary.SystemLibInitializer.readln_procedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.readln_procedure_name);
             SystemLibrary.SystemLibInitializer.TextFileType = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.text_file_name_type_name);
             SystemLibrary.SystemLibInitializer.TextFileInitProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, StringConstants.TextFileInitProcedureName);
@@ -6987,7 +6991,12 @@ namespace PascalABCCompiler.TreeConverter
 
                     return;
                 }
-                else if (SystemLibrary.SystemLibInitializer.write_procedure.Equal(sil) || SystemLibrary.SystemLibInitializer.writeln_procedure.Equal(sil) || SystemLibrary.SystemLibInitializer.StrProcedure.Equal(sil))
+                else if (SystemLibrary.SystemLibInitializer.write_procedure.Equal(sil)
+                    || SystemLibrary.SystemLibInitializer.writeln_procedure.Equal(sil)
+                    || SystemLibrary.SystemLibInitializer.print_procedure.Equal(sil)
+                    || SystemLibrary.SystemLibInitializer.println_procedure.Equal(sil)
+                    || SystemLibrary.SystemLibInitializer.StrProcedure.Equal(sil)
+                    )
                 {
                     is_format_allowed = true;
                 }

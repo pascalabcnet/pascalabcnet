@@ -219,6 +219,8 @@ namespace PascalABCCompiler
         public static string read_procedure_name = "read";
         public static string write_procedure_name = "write";
         public static string writeln_procedure_name = "writeln";
+        public static string print_procedure_name = "print";
+        public static string println_procedure_name = "println";
         public static string readln_procedure_name = "readln";
         public static string text_file_name_type_name = "Text";
         public static string TextFileInitProcedureName = "TextFileInit";

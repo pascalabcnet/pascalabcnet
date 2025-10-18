@@ -11132,12 +11132,16 @@ function Flatten<T>(Self: sequence of sequence of T): sequence of T; extensionme
 function JoinToString<T>(Self: sequence of T; delim: string): string; extensionmethod;
 begin
   var g := Self.GetEnumerator();
-  var sb := new System.Text.StringBuilder('');
+  var sb := new System.Text.StringBuilder();
   if g.MoveNext() then
   begin
-    sb.Append(g.Current.ToString());
-    while g.MoveNext() do 
-      sb.Append(delim + g.Current.ToString());
+    sb.Append(System.Convert.ToString(g.Current));
+    while g.MoveNext() do
+    begin
+      if delim<>'' then 
+        sb.Append(delim);
+      sb.Append(System.Convert.ToString(g.Current));
+    end  
   end;  
   Result := sb.ToString;  
 end;
@@ -11604,7 +11608,9 @@ begin
   Result := maxElement;
 end;
 
-{function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
+{
+// Не помню, почему закомментировал
+function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
 begin
   if count < 0 then
     raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_MUST_BE_GREATER_EQUAL_0));
@@ -11854,7 +11860,7 @@ begin
 end;
 
 /// Табулирует функцию последовательностью
-function Tabulate<T, T1>(Self: sequence of T; F: T->T1): sequence of (T, T1); extensionmethod;
+function Tabulate<T, T1>(Self: sequence of T; f: T->T1): sequence of (T, T1); extensionmethod;
 begin
   Result := Self.Select(x -> (x, f(x)));
 end;
@@ -11877,19 +11883,26 @@ begin
 end;
 
 /// Превращает последовательность в последовательность массивов, содержащих n соседних элементов
-function Nwise<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
+function Windowed<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod;
 begin 
-  var chunk := new Queue<T>(n);
+  if n <= 0 then
+    raise new System.ArgumentException(GetTranslation(PARAMETER_MUST_BE_GREATER_0));
+  
+  var q := new Queue<T>(n);
   foreach var x in Self do 
   begin
-    chunk.Enqueue(x);
-    if chunk.Count = n then 
+    q.Enqueue(x);
+    if q.Count = n then 
     begin
-      yield chunk.ToArray;
-      chunk.Dequeue;
+      yield q.ToArray;
+      q.Dequeue; // step = 1
     end;
   end;   
 end;
+
+/// Превращает последовательность в последовательность массивов, содержащих n соседних элементов
+function Nwise<T>(Self: sequence of T; n: integer): sequence of array of T; extensionmethod := Self.Windowed(n);
+
 
 /// Превращает последовательность в последовательность пар соседних элементов, применяет func к каждой паре полученных элементов и получает новую последовательность 
 function Pairwise<T, Res>(Self: sequence of T; func: (T,T)->Res): sequence of Res; extensionmethod;
@@ -12161,6 +12174,10 @@ end;
 /// Возвращает элементы последовательности, ключи для которых отличаются, используя компоратор по-умолчанию
 function DistinctBy<T, TKey>(Self: sequence of T; by: T->TKey); extensionmethod := Self.DistinctBy(by, nil);
 
+/// Возвращает True, если ни один элемент не удовлетворяет условию
+function None<T>(Self: sequence of T; pred: T->boolean): boolean; extensionmethod :=
+  not Self.Any(pred);
+
 // -----------------------------------------------------
 //>>     Методы расширения списков # Extension methods for List T
 // -----------------------------------------------------
@@ -12383,42 +12400,45 @@ begin
   Result := maxIndex;
 end;
 
-
-/// Заменяет в массиве все вхождения одного значения на другое
 /// Заменяет в списке все вхождения одного значения на другое
-procedure Replace<T>(Self: List<T>; oldValue, newValue: T); extensionmethod;
+function Replace<T>(Self: List<T>; oldValue, newValue: T): List<T>; extensionmethod;
 begin
   for var i := 0 to Self.Count - 1 do
     if Self[i] = oldValue then
       Self[i] := newValue;
+  Result := Self;
 end;
 
 /// Преобразует элементы массива или списка по заданному правилу
-procedure Transform<T>(Self: List<T>; f: T->T); extensionmethod;
+function Transform<T>(Self: List<T>; f: T->T): List<T>; extensionmethod;
 begin
   for var i := 0 to Self.Count - 1 do
     Self[i] := f(Self[i]);
+  Result := Self;
 end;
 
 /// Преобразует элементы массива или списка по заданному правилу
-procedure Transform<T>(Self: List<T>; f: (T,integer)->T); extensionmethod;
+function Transform<T>(Self: List<T>; f: (T,integer)->T): List<T>; extensionmethod;
 begin
   for var i := 0 to Self.Count - 1 do
     Self[i] := f(Self[i],i);
+  Result := Self;
 end;
 
 /// Заполняет элементы списка указанным значением
-procedure Fill<T>(Self: List<T>; x: T); extensionmethod;
+function Fill<T>(Self: List<T>; x: T): List<T>; extensionmethod;
 begin
   for var i := 0 to Self.Count - 1 do
     Self[i] := x;
+  Result := Self;
 end;
 
 /// Заполняет элементы списка значениями, вычисляемыми по некоторому правилу
-procedure Fill<T>(Self: List<T>; f: integer->T); extensionmethod;
+function Fill<T>(Self: List<T>; f: integer->T): List<T>; extensionmethod;
 begin
   for var i := 0 to Self.Count - 1 do
     Self[i] := f(i);
+  Result := Self;
 end;
 
 ///-- 
@@ -12475,6 +12495,15 @@ end;
 function RemoveLast<T>(Self: List<T>): List<T>; extensionmethod;
 begin
   Self.RemoveAt(Self.Count - 1);
+  Result := Self;
+end;
+
+/// Меняет местами элементы списка с индексами i и j
+function Swap<T>(Self: List<T>; i, j: integer): List<T>; extensionmethod;
+begin
+  var tmp := Self[i];
+  Self[i] := Self[j];
+  Self[j] := tmp;
   Result := Self;
 end;
 
@@ -13348,6 +13377,15 @@ begin
   Result := Self;  
 end;
 
+/// Меняет местами элементы массива с индексами i и j
+function Swap<T>(Self: array of T; i, j: integer): array of T; extensionmethod;
+begin
+  var tmp := Self[i];
+  Self[i] := Self[j];
+  Self[j] := tmp;
+  Result := Self;
+end;
+
 {/// Находит первую пару подряд идущих одинаковых элементов и возвращает индекс первого элемента пары. Если не найден, возвращается -1
 function AdjacentFind<T>(Self: array of T; start: integer := 0): integer; extensionmethod;
 begin
@@ -13504,25 +13542,29 @@ begin
     Self[i] := f(i);
 end;
 
-procedure Replace<T>(Self: array of T; oldValue, newValue: T); extensionmethod;
+/// Заменяет в массиве все вхождения одного значения на другое
+function Replace<T>(Self: array of T; oldValue, newValue: T): array of T; extensionmethod;
 begin
   for var i := 0 to Self.Length - 1 do
     if Self[i] = oldValue then
       Self[i] := newValue;
+  Result := Self;  
 end;
 
 /// Преобразует элементы массива по заданному правилу
-procedure Transform<T>(Self: array of T; f: T->T); extensionmethod;
+function Transform<T>(Self: array of T; f: T->T): array of T; extensionmethod;
 begin
   for var i := 0 to Self.Length - 1 do
     Self[i] := f(Self[i]);
+  Result := Self;  
 end;
 
 /// Преобразует элементы массива по заданному правилу
-procedure Transform<T>(Self: array of T; f: (T,integer)->T); extensionmethod;
+function Transform<T>(Self: array of T; f: (T,integer)->T): array of T; extensionmethod;
 begin
   for var i := 0 to Self.Length - 1 do
     Self[i] := f(Self[i],i);
+  Result := Self;  
 end;
 
 /// Выполняет бинарный поиск в отсортированном массиве

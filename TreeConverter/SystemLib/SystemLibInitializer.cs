@@ -235,6 +235,8 @@ namespace PascalABCCompiler.SystemLibrary
         public static UnitDefinitionItem read_procedure;
         public static UnitDefinitionItem write_procedure;
         public static UnitDefinitionItem writeln_procedure;
+        public static UnitDefinitionItem print_procedure;
+        public static UnitDefinitionItem println_procedure;
         public static UnitDefinitionItem readln_procedure;
         public static UnitDefinitionItem readln_from_file_procedure;
         public static UnitDefinitionItem read_short_string_procedure;
