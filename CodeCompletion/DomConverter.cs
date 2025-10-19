@@ -1018,10 +1018,22 @@ namespace CodeCompletion
             {
                 // в случае операции преобразования типа эта ветка срабатывает
                 if (ss is ElementScope && string.IsNullOrEmpty(ss.si.description) && (ss as ElementScope).sc is TypeScope)
+                {
                     ss.si.description = (ss as ElementScope).sc.Description;
+                }
+                // к сожалению, при текущей реализации обновлять описание для инстансов функций не представляется возможным
+                // описания типов аргументов составляются неправильно
+                // обновляем описание для исходной функции EVA
+                else if (ss is ProcScope procScope && procScope.original_function != null)
+                {
+                    // обновление описания
+                    ss = procScope.original_function.WithRefreshedDescription();
+                }
                 else
+                {
                     // обновление описания
                     ss = ss.WithRefreshedDescription();
+                }
 
                 try
                 {
@@ -1060,11 +1072,11 @@ namespace CodeCompletion
                     }
                 }
                 catch (Exception e)
-                    {
+                {
 #if DEBUG
-                        File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+                    File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
 #endif
-                    }
+                }
                 RestoreCurrentUsedAssemblies();
                 string description = ss.si.description;
                 if (description != null)
