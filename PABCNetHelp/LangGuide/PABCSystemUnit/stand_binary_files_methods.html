@@ -20,95 +20,95 @@
 <link rel="StyleSheet" href="../../default.css">
 </head>
 <body>
-<H1>Методы бестиповых двоичных файлов</H1>
-<p>Для бестиповых двоичных файлов <code><strong>file</strong></code> 
-определены следующие методы:</p>
+<H1>РњРµС‚РѕРґС‹ Р±РµСЃС‚РёРїРѕРІС‹С… РґРІРѕРёС‡РЅС‹С… С„Р°Р№Р»РѕРІ</H1>
+<p>Р”Р»СЏ Р±РµСЃС‚РёРїРѕРІС‹С… РґРІРѕРёС‡РЅС‹С… С„Р°Р№Р»РѕРІ <code><strong>file</strong></code> 
+РѕРїСЂРµРґРµР»РµРЅС‹ СЃР»РµРґСѓСЋС‰РёРµ РјРµС‚РѕРґС‹:</p>
 &nbsp;<table border=0 CELLPADDING=5>
 	<tr>
 		<td>
 		<code><strong>procedure</strong> Reset; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает существующий бестиповой файл на чтение и запись
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ Р±РµСЃС‚РёРїРѕРІРѕР№ С„Р°Р№Р» РЅР° С‡С‚РµРЅРёРµ Рё Р·Р°РїРёСЃСЊ
 </td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>procedure</strong> Rewrite; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает существующий бестиповой файл на чтение и запись. Если файл не существовал, он создаётся, если 
-		существовал, он обнуляется</td>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ Р±РµСЃС‚РёРїРѕРІРѕР№ С„Р°Р№Р» РЅР° С‡С‚РµРЅРёРµ Рё Р·Р°РїРёСЃСЊ. Р•СЃР»Рё С„Р°Р№Р» РЅРµ СЃСѓС‰РµСЃС‚РІРѕРІР°Р», РѕРЅ СЃРѕР·РґР°С‘С‚СЃСЏ, РµСЃР»Рё 
+		СЃСѓС‰РµСЃС‚РІРѕРІР°Р», РѕРЅ РѕР±РЅСѓР»СЏРµС‚СЃСЏ</td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>procedure</strong> Reset(en: Encoding); </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает существующий бестиповой файл на чтение и запись в 
-		указанной кодировке
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ Р±РµСЃС‚РёРїРѕРІРѕР№ С„Р°Р№Р» РЅР° С‡С‚РµРЅРёРµ Рё Р·Р°РїРёСЃСЊ РІ 
+		СѓРєР°Р·Р°РЅРЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ
 </td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>procedure</strong> Rewrite(en: Encoding); </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает существующий бестиповой файл на чтение и запись в 
-		указанной кодировке. Если файл не существовал, он создаётся, если 
-		существовал, он обнуляется</td>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ Р±РµСЃС‚РёРїРѕРІРѕР№ С„Р°Р№Р» РЅР° С‡С‚РµРЅРёРµ Рё Р·Р°РїРёСЃСЊ РІ 
+		СѓРєР°Р·Р°РЅРЅРѕР№ РєРѕРґРёСЂРѕРІРєРµ. Р•СЃР»Рё С„Р°Р№Р» РЅРµ СЃСѓС‰РµСЃС‚РІРѕРІР°Р», РѕРЅ СЃРѕР·РґР°С‘С‚СЃСЏ, РµСЃР»Рё 
+		СЃСѓС‰РµСЃС‚РІРѕРІР°Р», РѕРЅ РѕР±РЅСѓР»СЏРµС‚СЃСЏ</td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> Position: int64; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает или 
-		устанавливает текущую позицию файлового указателя в бестиповом файле
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёР»Рё 
+		СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ С„Р°Р№Р»РѕРІРѕРіРѕ СѓРєР°Р·Р°С‚РµР»СЏ РІ Р±РµСЃС‚РёРїРѕРІРѕРј С„Р°Р№Р»Рµ
 </td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> Size: int64; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество байт в бестиповом файле</td>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РІ Р±РµСЃС‚РёРїРѕРІРѕРј С„Р°Р№Р»Рµ</td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>procedure</strong> Seek(n: int64); </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущую позицию файлового указателя в бестиповом 
-		файле на байт с номером n</td>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ С„Р°Р№Р»РѕРІРѕРіРѕ СѓРєР°Р·Р°С‚РµР»СЏ РІ Р±РµСЃС‚РёРїРѕРІРѕРј 
+		С„Р°Р№Р»Рµ РЅР° Р±Р°Р№С‚ СЃ РЅРѕРјРµСЂРѕРј n</td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>procedure</strong> Truncate; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Усекает 
-		бестиповой файл, отбрасывая все элементы с позиции 
-		файлового указателя</tr>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃРµРєР°РµС‚ 
+		Р±РµСЃС‚РёРїРѕРІРѕР№ С„Р°Р№Р», РѕС‚Р±СЂР°СЃС‹РІР°СЏ РІСЃРµ СЌР»РµРјРµРЅС‚С‹ СЃ РїРѕР·РёС†РёРё 
+		С„Р°Р№Р»РѕРІРѕРіРѕ СѓРєР°Р·Р°С‚РµР»СЏ</tr>
 	<tr>
 		<td>
 		<code><strong>procedure</strong> WriteBytes(a: <strong>array of</strong> 
 		byte);</code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает данные из байтового массива в бестиповой файл</tr>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРёСЃС‹РІР°РµС‚ РґР°РЅРЅС‹Рµ РёР· Р±Р°Р№С‚РѕРІРѕРіРѕ РјР°СЃСЃРёРІР° РІ Р±РµСЃС‚РёРїРѕРІРѕР№ С„Р°Р№Р»</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> ReadBytes(count: integer): <strong>array 
 		of</strong> byte; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает указанное количество байтов из бестипового файла в 
-		байтовый массив</tr>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ СѓРєР°Р·Р°РЅРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚РѕРІ РёР· Р±РµСЃС‚РёРїРѕРІРѕРіРѕ С„Р°Р№Р»Р° РІ 
+		Р±Р°Р№С‚РѕРІС‹Р№ РјР°СЃСЃРёРІ</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> ReadInteger: integer; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает целое из бестипового файла</tr>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ С†РµР»РѕРµ РёР· Р±РµСЃС‚РёРїРѕРІРѕРіРѕ С„Р°Р№Р»Р°</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> ReadBoolean: boolean; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает логическое из бестипового файла</tr>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ Р»РѕРіРёС‡РµСЃРєРѕРµ РёР· Р±РµСЃС‚РёРїРѕРІРѕРіРѕ С„Р°Р№Р»Р°</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> ReadByte: byte; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает байт из бестипового файла</tr>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ Р±Р°Р№С‚ РёР· Р±РµСЃС‚РёРїРѕРІРѕРіРѕ С„Р°Р№Р»Р°</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> ReadChar: char; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает символ из бестипового файла</tr>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ СЃРёРјРІРѕР» РёР· Р±РµСЃС‚РёРїРѕРІРѕРіРѕ С„Р°Р№Р»Р°</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> ReadReal: real; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает 
-		вещественное из бестипового файла</tr>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ 
+		РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ РёР· Р±РµСЃС‚РёРїРѕРІРѕРіРѕ С„Р°Р№Р»Р°</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> ReadString: string; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает строку из бестипового файла</tr>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ СЃС‚СЂРѕРєСѓ РёР· Р±РµСЃС‚РёРїРѕРІРѕРіРѕ С„Р°Р№Р»Р°</tr>
 	</table>
 </body></html>

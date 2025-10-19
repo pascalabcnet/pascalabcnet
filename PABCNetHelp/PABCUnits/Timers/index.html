@@ -10,14 +10,14 @@
 </head>
 
 <body>
-<H1>Модуль Timers</H1>
-Модуль <code>Timers</code> <span lang="ru">содержит класс </span><code>Timer</code><span lang="ru">, 
-позволяющий выполнять определенные действия через равные промежутки времени. В 
-конструкторе класса </span><code>Timer</code> <span lang="ru">указывается 
-промежуток времени и имя процедуры без параметров&nbsp; - обработчика события 
-таймера, вызываемой через указанный промежуток времени.</span><p>Класс <code>
+<H1>РњРѕРґСѓР»СЊ Timers</H1>
+РњРѕРґСѓР»СЊ <code>Timers</code> <span lang="ru">СЃРѕРґРµСЂР¶РёС‚ РєР»Р°СЃСЃ </span><code>Timer</code><span lang="ru">, 
+РїРѕР·РІРѕР»СЏСЋС‰РёР№ РІС‹РїРѕР»РЅСЏС‚СЊ РѕРїСЂРµРґРµР»РµРЅРЅС‹Рµ РґРµР№СЃС‚РІРёСЏ С‡РµСЂРµР· СЂР°РІРЅС‹Рµ РїСЂРѕРјРµР¶СѓС‚РєРё РІСЂРµРјРµРЅРё. Р’ 
+РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРµ РєР»Р°СЃСЃР° </span><code>Timer</code> <span lang="ru">СѓРєР°Р·С‹РІР°РµС‚СЃСЏ 
+РїСЂРѕРјРµР¶СѓС‚РѕРє РІСЂРµРјРµРЅРё Рё РёРјСЏ РїСЂРѕС†РµРґСѓСЂС‹ Р±РµР· РїР°СЂР°РјРµС‚СЂРѕРІ&nbsp; - РѕР±СЂР°Р±РѕС‚С‡РёРєР° СЃРѕР±С‹С‚РёСЏ 
+С‚Р°Р№РјРµСЂР°, РІС‹Р·С‹РІР°РµРјРѕР№ С‡РµСЂРµР· СѓРєР°Р·Р°РЅРЅС‹Р№ РїСЂРѕРјРµР¶СѓС‚РѕРє РІСЂРµРјРµРЅРё.</span><p>РљР»Р°СЃСЃ <code>
 Timer</code> 
-имеет следующий интерфейс: </p>
+РёРјРµРµС‚ СЃР»РµРґСѓСЋС‰РёР№ РёРЅС‚РµСЂС„РµР№СЃ: </p>
 <blockquote>
 	<p><code><b>type</b> <br>
 &nbsp;
@@ -30,41 +30,41 @@ Timer</code>
 &nbsp;&nbsp;&nbsp; <b>property</b> Interval: integer<b> read write</b>;<br>
 	&nbsp; <b>end</b>;</code></p>
 </blockquote>
-<p><span lang="ru">Члены</span> класса <code>Timer</code> 
-описаны в следующей таблице:</p>
+<p><span lang="ru">Р§Р»РµРЅС‹</span> РєР»Р°СЃСЃР° <code>Timer</code> 
+РѕРїРёСЃР°РЅС‹ РІ СЃР»РµРґСѓСЋС‰РµР№ С‚Р°Р±Р»РёС†Рµ:</p>
 <table border=0 CELLPADDING=5 id="table1">
 <tr><td>
 <code><b>constructor</b><span lang="ru"> </span>(ms: integer; TimerProc: <b>
 procedure</b>); </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Создает таймер, выполняющий 
-каждые <code>ms</code> миллисекунд действие, содержащееся в процедуре без 
-параметров <code>TimerProc</code><span lang="ru">, называемой обработчиком 
-таймера</span>. Созданный таймер <span lang="ru">необходимо запустить, вызвав 
-метод </span><code>Start</code></td></tr>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; РЎРѕР·РґР°РµС‚ С‚Р°Р№РјРµСЂ, РІС‹РїРѕР»РЅСЏСЋС‰РёР№ 
+РєР°Р¶РґС‹Рµ <code>ms</code> РјРёР»Р»РёСЃРµРєСѓРЅРґ РґРµР№СЃС‚РІРёРµ, СЃРѕРґРµСЂР¶Р°С‰РµРµСЃСЏ РІ РїСЂРѕС†РµРґСѓСЂРµ Р±РµР· 
+РїР°СЂР°РјРµС‚СЂРѕРІ <code>TimerProc</code><span lang="ru">, РЅР°Р·С‹РІР°РµРјРѕР№ РѕР±СЂР°Р±РѕС‚С‡РёРєРѕРј 
+С‚Р°Р№РјРµСЂР°</span>. РЎРѕР·РґР°РЅРЅС‹Р№ С‚Р°Р№РјРµСЂ <span lang="ru">РЅРµРѕР±С…РѕРґРёРјРѕ Р·Р°РїСѓСЃС‚РёС‚СЊ, РІС‹Р·РІР°РІ 
+РјРµС‚РѕРґ </span><code>Start</code></td></tr>
 <tr><td>
 <code><b>procedure</b> Start;</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает таймер</td></tr>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїСѓСЃРєР°РµС‚ С‚Р°Р№РјРµСЂ</td></tr>
 <tr><td>
 <code><b>procedure</b> Stop;</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Останавливаетает таймер
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћСЃС‚Р°РЅР°РІР»РёРІР°РµС‚Р°РµС‚ С‚Р°Р№РјРµСЂ
 </td></tr>
 <tr>
 	<td>
 <code><b>property</b> Enabled: boolean <b>read write</b>;</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span lang="ru">Запущен ли 
-таймер</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span lang="ru">Р—Р°РїСѓС‰РµРЅ Р»Рё 
+С‚Р°Р№РјРµСЂ</span>
 </td>
 </tr>
 <tr>
 	<td>
 <code><b>property</b> Interval: integer<b> read write</b>;</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span lang="ru">Промежуток 
-времени между вызовами обработчика таймера</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span lang="ru">РџСЂРѕРјРµР¶СѓС‚РѕРє 
+РІСЂРµРјРµРЅРё РјРµР¶РґСѓ РІС‹Р·РѕРІР°РјРё РѕР±СЂР°Р±РѕС‚С‡РёРєР° С‚Р°Р№РјРµСЂР°</span>
 </td>
 </tr>
 </table>
-<p><span lang="ru"><a href="../../Examples/Timers/Timer1.html">Пример 
-использования таймера</a>.</span></p>
+<p><span lang="ru"><a href="../../Examples/Timers/Timer1.html">РџСЂРёРјРµСЂ 
+РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ С‚Р°Р№РјРµСЂР°</a>.</span></p>
 </body>
 
 </html>

@@ -8,25 +8,25 @@
 <param name="Keyword" value="ToBack">
 <param name="Keyword" value="ToFront"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Класс списка графических объектов</H1>Класс списка графических объектов. Базовый класс - <code>IEnumerable&lt;ObjectWPF&gt;</code>.
-<table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства класса ObjectsType</font></td></tr>
+</HEAD><body><H1>РљР»Р°СЃСЃ СЃРїРёСЃРєР° РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ</H1>РљР»Р°СЃСЃ СЃРїРёСЃРєР° РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ. Р‘Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ - <code>IEnumerable&lt;ObjectWPF&gt;</code>.
+<table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">РЎРІРѕР№СЃС‚РІР° РєР»Р°СЃСЃР° ObjectsType</font></td></tr>
 
 <tr><tr><td><code><b>property</b> Count: integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество графических объектов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ</td></tr>
 <tr><td><code><b>property</b> Items[i: integer]: ObjectWPF;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает или устанавливает i-тый графический объект</td></tr>
-</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы класса ObjectsType</font></td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёР»Рё СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ i-С‚С‹Р№ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚</td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">РњРµС‚РѕРґС‹ РєР»Р°СЃСЃР° ObjectsType</font></td></tr>
 
 <tr><tr><td><code><b>procedure</b> Clear;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очистить список графических объектов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‡РёСЃС‚РёС‚СЊ СЃРїРёСЃРѕРє РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ</td></tr>
 <tr><td><code><b>procedure</b> DestroyAll(condition: ObjectWPF -&gt; boolean);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удалить все графические объекты, удовлетворяющие условию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґР°Р»РёС‚СЊ РІСЃРµ РіСЂР°С„РёС‡РµСЃРєРёРµ РѕР±СЉРµРєС‚С‹, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёРµ СѓСЃР»РѕРІРёСЋ</td></tr>
 <tr><td><code><b>procedure</b> ToBack(ob: ObjectWPF);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект на задний план</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС‰Р°РµС‚ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚ РЅР° Р·Р°РґРЅРёР№ РїР»Р°РЅ</td></tr>
 <tr><td><code><b>procedure</b> ToFront(ob: ObjectWPF);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект на передний план</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС‰Р°РµС‚ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚ РЅР° РїРµСЂРµРґРЅРёР№ РїР»Р°РЅ</td></tr>
 </tr>
 <tr><tr><td><code><b>function</b> Reverse: IEnumerable&lt;ObjectWPF&gt;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает инвертированный список графических объектов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРІРµСЂС‚РёСЂРѕРІР°РЅРЅС‹Р№ СЃРїРёСЃРѕРє РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ</td></tr>
 </tr></table>
 </body></HTML>

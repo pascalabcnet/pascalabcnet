@@ -36,86 +36,86 @@
 </object></head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title><link rel="StyleSheet" href="../../default.css"><body>
-<H1>Подпрограммы для работы с графическим окном</H1>
-<p>Доступ к свойствам графического окна можно осуществлять как в 
-процедурном, так и в объектно-ориентированном стиле.</p>
-<p>Процедуры и функции для доступа к свойствам окна 
-сгруппированы парами: если <code>Prop</code> - имя 
-свойства кисти, то функция <code>PenProp</code> 
-возвращает значение этого свойства, а процедура <code>SetPenProp(p)</code> 
-устанавливает это свойство:</p>
+<H1>РџРѕРґРїСЂРѕРіСЂР°РјРјС‹ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РіСЂР°С„РёС‡РµСЃРєРёРј РѕРєРЅРѕРј</H1>
+<p>Р”РѕСЃС‚СѓРї Рє СЃРІРѕР№СЃС‚РІР°Рј РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РјРѕР¶РЅРѕ РѕСЃСѓС‰РµСЃС‚РІР»СЏС‚СЊ РєР°Рє РІ 
+РїСЂРѕС†РµРґСѓСЂРЅРѕРј, С‚Р°Рє Рё РІ РѕР±СЉРµРєС‚РЅРѕ-РѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅРѕРј СЃС‚РёР»Рµ.</p>
+<p>РџСЂРѕС†РµРґСѓСЂС‹ Рё С„СѓРЅРєС†РёРё РґР»СЏ РґРѕСЃС‚СѓРїР° Рє СЃРІРѕР№СЃС‚РІР°Рј РѕРєРЅР° 
+СЃРіСЂСѓРїРїРёСЂРѕРІР°РЅС‹ РїР°СЂР°РјРё: РµСЃР»Рё <code>Prop</code> - РёРјСЏ 
+СЃРІРѕР№СЃС‚РІР° РєРёСЃС‚Рё, С‚Рѕ С„СѓРЅРєС†РёСЏ <code>PenProp</code> 
+РІРѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ СЌС‚РѕРіРѕ СЃРІРѕР№СЃС‚РІР°, Р° РїСЂРѕС†РµРґСѓСЂР° <code>SetPenProp(p)</code> 
+СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЌС‚Рѕ СЃРІРѕР№СЃС‚РІРѕ:</p>
 <table border=0 CELLPADDING=5>
 <tr><td>
 <code>
 <b>function</b> WindowWidth: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ширину клиентской части графического окна в пикселах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С€РёСЂРёРЅСѓ РєР»РёРµРЅС‚СЃРєРѕР№ С‡Р°СЃС‚Рё РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РІ РїРёРєСЃРµР»Р°С…
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> WindowHeight: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает высоту клиентской части графического окна в пикселах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІС‹СЃРѕС‚Сѓ РєР»РёРµРЅС‚СЃРєРѕР№ С‡Р°СЃС‚Рё РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РІ РїРёРєСЃРµР»Р°С…
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> WindowLeft: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отступ графического окна от левого края экрана в пикселах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕС‚СЃС‚СѓРї РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РѕС‚ Р»РµРІРѕРіРѕ РєСЂР°СЏ СЌРєСЂР°РЅР° РІ РїРёРєСЃРµР»Р°С…
 </td></tr>
 <tr>
 	<td>
 <code>
 <b>function</b> WindowTop: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отступ графического окна от верхнего края экрана в пикселах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕС‚СЃС‚СѓРї РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РѕС‚ РІРµСЂС…РЅРµРіРѕ РєСЂР°СЏ СЌРєСЂР°РЅР° РІ РїРёРєСЃРµР»Р°С…
 </td>
 </tr>
 <tr><td>
 <code>
 <b>function</b> WindowIsFixedSize: boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если графическо<span lang="ru">е</span> окно имеет 
-фиксированный размер, и False в противном случае&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РіСЂР°С„РёС‡РµСЃРєРѕ<span lang="ru">Рµ</span> РѕРєРЅРѕ РёРјРµРµС‚ 
+С„РёРєСЃРёСЂРѕРІР°РЅРЅС‹Р№ СЂР°Р·РјРµСЂ, Рё False РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ&nbsp;
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SetWindowWidth(w: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает ширину клиентской части графического окна в пикселах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С€РёСЂРёРЅСѓ РєР»РёРµРЅС‚СЃРєРѕР№ С‡Р°СЃС‚Рё РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РІ РїРёРєСЃРµР»Р°С…
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SetWindowHeight(h: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает высоту клиентской части графического окна в пикселах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РІС‹СЃРѕС‚Сѓ РєР»РёРµРЅС‚СЃРєРѕР№ С‡Р°СЃС‚Рё РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РІ РїРёРєСЃРµР»Р°С…
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SetWindowLeft(l: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает отступ графического окна от левого края экрана в пикселах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РѕС‚СЃС‚СѓРї РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РѕС‚ Р»РµРІРѕРіРѕ РєСЂР°СЏ СЌРєСЂР°РЅР° РІ РїРёРєСЃРµР»Р°С…
 </td></tr>
 <tr>
 	<td>
 <code>
 <b>procedure</b> SetWindowTop(t: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает отступ графического окна от верхнего края экрана в пикселах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РѕС‚СЃС‚СѓРї РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РѕС‚ РІРµСЂС…РЅРµРіРѕ РєСЂР°СЏ СЌРєСЂР°РЅР° РІ РїРёРєСЃРµР»Р°С…
 </td>
 </tr>
 <tr><td>
 <code>
 <b>procedure</b> SetWindowIsFixedSize(b: boolean);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает, имеет ли графическое окно фиксированный размер
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚, РёРјРµРµС‚ Р»Рё РіСЂР°С„РёС‡РµСЃРєРѕРµ РѕРєРЅРѕ С„РёРєСЃРёСЂРѕРІР°РЅРЅС‹Р№ СЂР°Р·РјРµСЂ
 </td></tr>
 <tr>
 	<td>
 <code>
 <b>function</b> WindowCaption: string;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает заголовок графического окна
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ Р·Р°РіРѕР»РѕРІРѕРє РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР°
 </td>
 </tr>
 <tr>
@@ -123,7 +123,7 @@
 <code>
 <b>function</b> WindowTitle: string;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает заголовок графического окна
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ Р·Р°РіРѕР»РѕРІРѕРє РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР°
 </td>
 </tr>
 <tr>
@@ -131,7 +131,7 @@
 <code>
 <b>procedure</b> SetWindowCaption(s: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает заголовок графического окна
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ Р·Р°РіРѕР»РѕРІРѕРє РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР°
 </td>
 </tr>
 <tr>
@@ -139,27 +139,27 @@
 <code>
 <b>procedure</b> SetWindowTitle(s: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает заголовок графического окна
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ Р·Р°РіРѕР»РѕРІРѕРє РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР°
 </td>
 </tr>
 <tr><td>
 <code>
 <b>procedure</b> SetWindowSize(w,h: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает размеры клиентской части графического окна в пикселах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЂР°Р·РјРµСЂС‹ РєР»РёРµРЅС‚СЃРєРѕР№ С‡Р°СЃС‚Рё РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РІ РїРёРєСЃРµР»Р°С…
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SetWindowPos(l,t: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает отступ графического окна от левого верхнего края экрана в пикселах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РѕС‚СЃС‚СѓРї РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РѕС‚ Р»РµРІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ РєСЂР°СЏ СЌРєСЂР°РЅР° РІ РїРёРєСЃРµР»Р°С…
 </td></tr>
 <tr>
 	<td>
 <code>
 <b>procedure</b> ClearWindow;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает графическое окно белым цветом
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‡РёС‰Р°РµС‚ РіСЂР°С„РёС‡РµСЃРєРѕРµ РѕРєРЅРѕ Р±РµР»С‹Рј С†РІРµС‚РѕРј
 </td>
 </tr>
 <tr>
@@ -167,85 +167,85 @@
 <code>
 <b>procedure</b> ClearWindow(c: Color);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает графическое окно цветом c
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‡РёС‰Р°РµС‚ РіСЂР°С„РёС‡РµСЃРєРѕРµ РѕРєРЅРѕ С†РІРµС‚РѕРј c
 </td>
 </tr>
 <tr><td>
 <code>
 <b>procedure</b> InitWindow(Left,Top,Width,Height: integer; BackColor: Color := clWhite);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает ширину и высоту клиентской части графического окна в пикселах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С€РёСЂРёРЅСѓ Рё РІС‹СЃРѕС‚Сѓ РєР»РёРµРЅС‚СЃРєРѕР№ С‡Р°СЃС‚Рё РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РІ РїРёРєСЃРµР»Р°С…
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SaveWindow(fname: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сохраняет содержимое графического окна в файл с именем fname
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕС…СЂР°РЅСЏРµС‚ СЃРѕРґРµСЂР¶РёРјРѕРµ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РІ С„Р°Р№Р» СЃ РёРјРµРЅРµРј fname
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> LoadWindow(fname: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Восстанавливает содержимое графического окна из файла с именем fname
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЃРѕРґРµСЂР¶РёРјРѕРµ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РёР· С„Р°Р№Р»Р° СЃ РёРјРµРЅРµРј fname
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> FillWindow(fname: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет содержимое графического окна обоями из файла с именем fname
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ СЃРѕРґРµСЂР¶РёРјРѕРµ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РѕР±РѕСЏРјРё РёР· С„Р°Р№Р»Р° СЃ РёРјРµРЅРµРј fname
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> CloseWindow;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Закрывает графическое окно и завершает приложение
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РєСЂС‹РІР°РµС‚ РіСЂР°С„РёС‡РµСЃРєРѕРµ РѕРєРЅРѕ Рё Р·Р°РІРµСЂС€Р°РµС‚ РїСЂРёР»РѕР¶РµРЅРёРµ
 </td></tr>
 <tr>
 	<td>
 <code>
 <b>procedure</b> CenterWindow;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Центрирует графическое окно по центру экрана
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р¦РµРЅС‚СЂРёСЂСѓРµС‚ РіСЂР°С„РёС‡РµСЃРєРѕРµ РѕРєРЅРѕ РїРѕ С†РµРЅС‚СЂСѓ СЌРєСЂР°РЅР°
 </td>
 </tr>
 <tr><td>
 <code>
 <b>function</b> WindowCenter: Point;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает центр графического окна
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РµРЅС‚СЂ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР°
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> MaximizeWindow;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Максимизирует графическое окно
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњР°РєСЃРёРјРёР·РёСЂСѓРµС‚ РіСЂР°С„РёС‡РµСЃРєРѕРµ РѕРєРЅРѕ
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> MinimizeWindow;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сворачивает графическое окно
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРІРѕСЂР°С‡РёРІР°РµС‚ РіСЂР°С„РёС‡РµСЃРєРѕРµ РѕРєРЅРѕ
 </td></tr>
 <tr>
 	<td>
 <code>
 <b>procedure</b> NormalizeWindow;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает графическое окно к нормальному размеру
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РіСЂР°С„РёС‡РµСЃРєРѕРµ РѕРєРЅРѕ Рє РЅРѕСЂРјР°Р»СЊРЅРѕРјСѓ СЂР°Р·РјРµСЂСѓ
 </td>
 </tr>
 </table>
 <br>
-Кроме того, 
-можно возвращать размеры экрана Screen, а также 
-размеры и положение графического компонента GraphBox, 
-на котором осуществляется рисование:<table border=0 CELLPADDING=5>
+РљСЂРѕРјРµ С‚РѕРіРѕ, 
+РјРѕР¶РЅРѕ РІРѕР·РІСЂР°С‰Р°С‚СЊ СЂР°Р·РјРµСЂС‹ СЌРєСЂР°РЅР° Screen, Р° С‚Р°РєР¶Рµ 
+СЂР°Р·РјРµСЂС‹ Рё РїРѕР»РѕР¶РµРЅРёРµ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РєРѕРјРїРѕРЅРµРЅС‚Р° GraphBox, 
+РЅР° РєРѕС‚РѕСЂРѕРј РѕСЃСѓС‰РµСЃС‚РІР»СЏРµС‚СЃСЏ СЂРёСЃРѕРІР°РЅРёРµ:<table border=0 CELLPADDING=5>
 <tr>
 	<td>
 <code>
 <b>function</b> GraphBoxWidth: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ширину графического компонента в пикселах (по умолчанию совпадает с WindowWidth)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С€РёСЂРёРЅСѓ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РєРѕРјРїРѕРЅРµРЅС‚Р° РІ РїРёРєСЃРµР»Р°С… (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ СЃРѕРІРїР°РґР°РµС‚ СЃ WindowWidth)
 </td>
 </tr>
 <tr>
@@ -253,7 +253,7 @@
 <code>
 <b>function</b> GraphBoxHeight: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает высоту графического компонента в пикселах (по умолчанию совпадает с WindowHeight)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІС‹СЃРѕС‚Сѓ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РєРѕРјРїРѕРЅРµРЅС‚Р° РІ РїРёРєСЃРµР»Р°С… (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ СЃРѕРІРїР°РґР°РµС‚ СЃ WindowHeight)
 </td>
 </tr>
 <tr>
@@ -261,7 +261,7 @@
 <code>
 <b>function</b> GraphBoxLeft: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отступ графического компонента от левого края окна в пикселах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕС‚СЃС‚СѓРї РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РєРѕРјРїРѕРЅРµРЅС‚Р° РѕС‚ Р»РµРІРѕРіРѕ РєСЂР°СЏ РѕРєРЅР° РІ РїРёРєСЃРµР»Р°С…
 </td>
 </tr>
 <tr>
@@ -269,7 +269,7 @@
 <code>
 <b>function</b> GraphBoxTop: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отступ графического компонента от верхнего края окна в пикселах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕС‚СЃС‚СѓРї РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РєРѕРјРїРѕРЅРµРЅС‚Р° РѕС‚ РІРµСЂС…РЅРµРіРѕ РєСЂР°СЏ РѕРєРЅР° РІ РїРёРєСЃРµР»Р°С…
 </td>
 </tr>
 <tr>
@@ -277,7 +277,7 @@
 <code>
 <b>function</b> ScreenWidth: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ширину экрана в пикселях
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С€РёСЂРёРЅСѓ СЌРєСЂР°РЅР° РІ РїРёРєСЃРµР»СЏС…
 </td>
 </tr>
 <tr>
@@ -285,11 +285,11 @@
 <code>
 <b>function</b> ScreenHeight: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает высоту экрана в пикселях
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІС‹СЃРѕС‚Сѓ СЌРєСЂР°РЅР° РІ РїРёРєСЃРµР»СЏС…
 </td>
 </tr>
 </table>
-<p>Можно также изменять свойства графического окна через
-<a href="gr_WindowClass.html">объект
+<p>РњРѕР¶РЅРѕ С‚Р°РєР¶Рµ РёР·РјРµРЅСЏС‚СЊ СЃРІРѕР№СЃС‚РІР° РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° С‡РµСЂРµР·
+<a href="gr_WindowClass.html">РѕР±СЉРµРєС‚
 Window</a></code>.</p>
 </body></html>

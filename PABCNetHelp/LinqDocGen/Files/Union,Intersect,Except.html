@@ -4,31 +4,31 @@
 <param name="Keyword" value="Except">
 </object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
 <body>
-<H1>Методы Union,Intersect,Except</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<H1>РњРµС‚РѕРґС‹ Union,Intersect,Except</H1><h2>РћРїРёСЃР°РЅРёРµ РјРµС‚РѕРґРѕРІ</h2><p>РњРµС‚РѕРґС‹ РїСЂРёРІРµРґРµРЅС‹ РґР»СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё <code><b>sequence of</b> T</code>.</p><table>
 <tr><td>
 <code><b>function </b>Union(second: <b>sequence of</b> T): <b>sequence of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит объединение множеств, представленных двумя последовательностями.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°С…РѕРґРёС‚ РѕР±СЉРµРґРёРЅРµРЅРёРµ РјРЅРѕР¶РµСЃС‚РІ, РїСЂРµРґСЃС‚Р°РІР»РµРЅРЅС‹С… РґРІСѓРјСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЏРјРё.
 </td></tr>
 <tr><td>
 <code><b>function </b>Union(second: <b>sequence of</b> T; comparer: IEqualityComparer&lt;T&gt;): <b>sequence of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит объединение множеств, представленных двумя последовательностями, используя указанный компаратор.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°С…РѕРґРёС‚ РѕР±СЉРµРґРёРЅРµРЅРёРµ РјРЅРѕР¶РµСЃС‚РІ, РїСЂРµРґСЃС‚Р°РІР»РµРЅРЅС‹С… РґРІСѓРјСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЏРјРё, РёСЃРїРѕР»СЊР·СѓСЏ СѓРєР°Р·Р°РЅРЅС‹Р№ РєРѕРјРїР°СЂР°С‚РѕСЂ.
 </td></tr>
 <tr><td>
 <code><b>function </b>Intersect(second: <b>sequence of</b> T): <b>sequence of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит пересечение множеств, представленных двумя последовательностями.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°С…РѕРґРёС‚ РїРµСЂРµСЃРµС‡РµРЅРёРµ РјРЅРѕР¶РµСЃС‚РІ, РїСЂРµРґСЃС‚Р°РІР»РµРЅРЅС‹С… РґРІСѓРјСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЏРјРё.
 </td></tr>
 <tr><td>
 <code><b>function </b>Intersect(second: <b>sequence of</b> T; comparer: IEqualityComparer&lt;T&gt;): <b>sequence of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит пересечение множеств, представленных двумя последовательностями, используя для сравнения значений указанный компаратор.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°С…РѕРґРёС‚ РїРµСЂРµСЃРµС‡РµРЅРёРµ РјРЅРѕР¶РµСЃС‚РІ, РїСЂРµРґСЃС‚Р°РІР»РµРЅРЅС‹С… РґРІСѓРјСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЏРјРё, РёСЃРїРѕР»СЊР·СѓСЏ РґР»СЏ СЃСЂР°РІРЅРµРЅРёСЏ Р·РЅР°С‡РµРЅРёР№ СѓРєР°Р·Р°РЅРЅС‹Р№ РєРѕРјРїР°СЂР°С‚РѕСЂ.
 </td></tr>
 <tr><td>
 <code><b>function </b>Except(second: <b>sequence of</b> T): <b>sequence of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит разность множеств, представленных двумя последовательностями.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°С…РѕРґРёС‚ СЂР°Р·РЅРѕСЃС‚СЊ РјРЅРѕР¶РµСЃС‚РІ, РїСЂРµРґСЃС‚Р°РІР»РµРЅРЅС‹С… РґРІСѓРјСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЏРјРё.
 </td></tr>
 <tr><td>
 <code><b>function </b>Except(second: <b>sequence of</b> T; comparer: IEqualityComparer&lt;T&gt;): <b>sequence of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит разность множеств, представленных двумя последовательностями, используя для сравнения значений указанный компаратор.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°С…РѕРґРёС‚ СЂР°Р·РЅРѕСЃС‚СЊ РјРЅРѕР¶РµСЃС‚РІ, РїСЂРµРґСЃС‚Р°РІР»РµРЅРЅС‹С… РґРІСѓРјСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЏРјРё, РёСЃРїРѕР»СЊР·СѓСЏ РґР»СЏ СЃСЂР°РІРЅРµРЅРёСЏ Р·РЅР°С‡РµРЅРёР№ СѓРєР°Р·Р°РЅРЅС‹Р№ РєРѕРјРїР°СЂР°С‚РѕСЂ.
 </td></tr>
 </table>
-<h2>Пример </h2><blockquote><code></code></blockquote>
+<h2>РџСЂРёРјРµСЂ </h2><blockquote><code></code></blockquote>
 </body>
