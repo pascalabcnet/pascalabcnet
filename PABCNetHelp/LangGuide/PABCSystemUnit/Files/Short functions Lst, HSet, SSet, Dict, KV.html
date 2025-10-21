@@ -19,21 +19,21 @@
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Короткие функции Lst, LLst, HSet, SSet, Dict, KV</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Dict&lt;TKey, TVal&gt;(<b>params</b> pairs: <b>array</b>  <b>of</b> KeyValuePair&lt;TKey, TVal&gt;): Dictionary&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов (ключ, значение)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь из набора пар элементов (ключ, значение)</td></tr>
 <tr><td><code><b>function</b> Dict&lt;TKey, TVal&gt;(<b>params</b> pairs: <b>array</b>  <b>of</b> (TKey, TVal)): Dictionary&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов (ключ, значение)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь из набора пар элементов (ключ, значение), заданных как кортежи</td></tr>
 <tr><td><code><b>function</b> Dict&lt;TKey, TVal&gt;(pairs: <b>sequence </b>  <b>of</b> KeyValuePair&lt;TKey, TVal&gt;): Dictionary&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов (ключ, значение), построенный по последовательности пар</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь из последовательности пар элементов (ключ, значение)</td></tr>
 <tr><td><code><b>function</b> Dict&lt;TKey, TVal&gt;(pairs: <b>sequence </b>  <b>of</b> (TKey, TVal)): Dictionary&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов (ключ, значение), построенный по последовательности пар</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь из последовательности пар элементов (ключ, значение), заданных как кортежи</td></tr>
 <tr><td><code><b>function</b> Dict&lt;TKey, TVal&gt;(keys: <b>sequence </b>  <b>of</b> TKey; values: <b>sequence </b>  <b>of</b> TVal): Dictionary&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов (ключ, значение), построенный по последовательностям ключей и значений</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь словарь из двух последовательностей — ключей и значений</td></tr>
 <tr><td><code><b>function</b> DictInt(<b>params</b> pairs: <b>array</b>  <b>of</b> (integer, integer)): Dictionary&lt;integer, integer&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов (целое, целое)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь из набора пар элементов (целое, целое)</td></tr>
 <tr><td><code><b>function</b> DictStr(<b>params</b> pairs: <b>array</b>  <b>of</b> (string, string)): Dictionary&lt;string, string&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов (строка, строка)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь из набора пар элементов (строка, строка)</td></tr>
 <tr><td><code><b>function</b> DictStrInt(<b>params</b> pairs: <b>array</b>  <b>of</b> (string, integer)): Dictionary&lt;string, integer&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов (строка, целое)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь из набора пар элементов (строка, целое)</td></tr>
 <tr><td><code><b>function</b> HSet&lt;T&gt;(<b>params</b> a: <b>array</b>  <b>of</b> T): HashSet&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество на базе хеш таблицы, заполненное указанными значениями</td></tr>
 <tr><td><code><b>function</b> HSet&lt;T&gt;(a: <b>sequence </b>  <b>of</b> T): HashSet&lt;T&gt;;</code>

@@ -29,10 +29,12 @@
 <param name="Keyword" value="Min">
 <param name="Keyword" value="Permutations">
 <param name="Keyword" value="RandomElement">
+<param name="Keyword" value="Replace">
 <param name="Keyword" value="Shuffle">
 <param name="Keyword" value="Slice">
 <param name="Keyword" value="Sort">
 <param name="Keyword" value="SortDescending">
+<param name="Keyword" value="Swap">
 <param name="Keyword" value="Transform">
 <param name="Keyword" value="расширение"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
@@ -144,9 +146,9 @@
 <tr><td><code><b>function</b> Min(Self: <b>array</b>  <b>of</b> real): real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает минимальный элемент</td></tr>
 <tr><td><code><b>function</b> Permutations&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все перестановки множества элементов, заданного массивом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все перестановки элементов массива</td></tr>
 <tr><td><code><b>function</b> Permutations&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все перестановки множества элементов, заданного последовательностью</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все перестановки элементов последовательности</td></tr>
 <tr><td><code><b>function</b> Permutations&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; m: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все частичные перестановки из n элементов по m</td></tr>
 <tr><td><code><b>function</b> Permutations&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; m: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
@@ -157,6 +159,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все частичные перестановки букв строки по m символов в виде последовательности строк</td></tr>
 <tr><td><code><b>function</b> RandomElement&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный элемент массива</td></tr>
+<tr><td><code><b>function</b> Replace&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; oldValue, newValue: T): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заменяет в массиве все вхождения одного значения на другое</td></tr>
 <tr><td><code><b>function</b> Shuffle&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемешивает элементы массива случайным образом</td></tr>
 <tr><td><code><b>function</b> Slice&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; from, step: integer): <b>array</b>  <b>of</b> T;</code>
@@ -181,9 +185,11 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию по ключу</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию по ключу</td></tr>
-<tr><td><code><b>procedure</b> Transform&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; f: T-&gt;T);</code>
+<tr><td><code><b>function</b> Swap&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; i, j: integer): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет местами элементы массива с индексами i и j</td></tr>
+<tr><td><code><b>function</b> Transform&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; f: T-&gt;T): <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива по заданному правилу</td></tr>
-<tr><td><code><b>procedure</b> Transform&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; f: (T,integer)-&gt;T);</code>
+<tr><td><code><b>function</b> Transform&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; f: (T,integer)-&gt;T): <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива по заданному правилу</td></tr>
 </table>
 </body></HTML>

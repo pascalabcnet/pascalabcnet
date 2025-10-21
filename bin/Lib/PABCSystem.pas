@@ -15074,6 +15074,31 @@ begin
   Result := Self[Random(Self.Length)+1];  
 end;
 
+/// Возвращает количество вхождений подстроки в строку
+function CountOf(Self: string; substring: string; allowOverlap: boolean := false): integer; extensionmethod;
+begin
+  if string.IsNullOrEmpty(substring) then
+    raise new System.ArgumentException('Подстрока не может быть пустой');
+  
+  Result := 0;
+  var index := 0;
+  var substringLength := substring.Length;
+  
+  while true do
+  begin
+    index := Self.IndexOf(substring, index);
+    if index = -1 then
+      break;
+    
+    Result += 1;
+    
+    if allowOverlap then
+      index += 1  // Для пересекающихся вхождений сдвигаем на 1 символ
+    else index += substringLength;  // Для непересекающихся - на длину подстроки
+  end;
+end;
+
+
 ///-- 
 function CreateSliceFromStringInternal(Self: string; from, step, count: integer): string;
 begin

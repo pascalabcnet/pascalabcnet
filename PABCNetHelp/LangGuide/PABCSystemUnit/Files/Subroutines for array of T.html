@@ -14,25 +14,25 @@
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Подпрограммы для работы с динамическими массивами</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> ArrEqual&lt;T&gt;(a, b: <b>array</b>  <b>of</b> T): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает, совпадают ли массивы</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет равенство двух массивов</td></tr>
 <tr><td><code><b>function</b> Copy(a: <b>array</b>  <b>of</b> T): <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создаёт копию динамического массива</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создаёт копию массива</td></tr>
 <tr><td><code><b>function</b> High(a: <b>array</b>  <b>of</b> T): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает верхнюю границу динамического массива</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает верхнюю границу массива</td></tr>
 <tr><td><code><b>function</b> Length(a: <b>array</b>  <b>of</b> T): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает длину динамического массива</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает длину массива</td></tr>
 <tr><td><code><b>function</b> Length(a: <b>array</b>  <b>of</b> T; dim: integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает длину динамического массива по размерности dim</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает длину массива по размерности dim</td></tr>
 <tr><td><code><b>function</b> Low(a: <b>array</b>  <b>of</b> T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 0</td></tr>
 <tr><td><code><b>function</b> MatrEqual&lt;T&gt;(a, b: <b>array</b> [,]  <b>of</b> T): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сравнивает матрицы на равенство</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет равенство двух матриц</td></tr>
 <tr><td><code><b>function</b> NextPermutation(a: <b>array</b>  <b>of</b> integer): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующую перестановку в массиве</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующую перестановку в массиве; возвращает False, если это последняя</td></tr>
 <tr><td><code><b>procedure</b> Reverse&lt;T&gt;(a: <b>array</b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок элементов в динамическом массиве на противоположный</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок элементов в массиве на противоположный</td></tr>
 <tr><td><code><b>procedure</b> Reverse&lt;T&gt;(a: <b>array</b>  <b>of</b> T; index, count: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок элементов на противоположный в диапазоне динамического массива длины count, начиная с индекса index</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок элементов на противоположный в диапазоне массива длины count, начиная с индекса index</td></tr>
 <tr><td><code><b>procedure</b> Reverse&lt;T&gt;(a: List&lt;T&gt;);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок элементов в списке на противоположный</td></tr>
 <tr><td><code><b>procedure</b> Reverse&lt;T&gt;(a: List&lt;T&gt;; index, count: integer);</code>
@@ -42,25 +42,25 @@
 <tr><td><code><b>procedure</b> Reverse(<b>var</b> s: string; index, count: integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок символов в части строки длины count на противоположный, начиная с индекса index</td></tr>
 <tr><td><code><b>procedure</b> SetLength(<b>var</b> a: <b>array</b>  <b>of</b> T; n: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает длину одномерного динамического массива. Старое содержимое сохраняется</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает длину одномерного массива. Старое содержимое сохраняется</td></tr>
 <tr><td><code><b>procedure</b> SetLength(<b>var</b> a: <b>array</b> [,...,]  <b>of</b> T; n1,n2,...: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает размеры n-мерного динамического массива. Старое содержимое сохраняется</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает размеры n-мерного массива. Старое содержимое сохраняется</td></tr>
 <tr><td><code><b>procedure</b> Shuffle&lt;T&gt;(a: <b>array</b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемешивает динамический массив случайным образом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Случайно перемешивает элементы массива</td></tr>
 <tr><td><code><b>procedure</b> Shuffle&lt;T&gt;(l: List&lt;T&gt;);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемешивает список случайным образом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Случайно перемешивает элементы списка</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(a: <b>array</b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по возрастанию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию</td></tr>
 <tr><td><code><b>procedure</b> Sort(a: <b>array</b>  <b>of</b> string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по возрастанию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(a: <b>array</b>  <b>of</b> T; cmp: (T,T)-&gt;integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения cmp</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по критерию сортировки, задаваемому функцией сравнения cmp</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(a: <b>array</b>  <b>of</b> T; less: (T,T)-&gt;boolean);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения less</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по критерию сортировки, задаваемому функцией сравнения less</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T,TKey&gt;(a: <b>array</b>  <b>of</b> T; keySelector: T-&gt;TKey);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по ключу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по ключу</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(a: <b>array</b>  <b>of</b> T; keySelector: T-&gt;string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по ключу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по ключу</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(l: List&lt;T&gt;);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по возрастанию</td></tr>
 <tr><td><code><b>procedure</b> Sort(<b>var</b> l: List&lt;string&gt;);</code>
@@ -74,13 +74,13 @@
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(<b>var</b> l: List&lt;T&gt;; keySelector: T-&gt;string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по возрастанию по ключу</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(a: <b>array</b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по убыванию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию</td></tr>
 <tr><td><code><b>procedure</b> SortDescending(a: <b>array</b>  <b>of</b> string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по убыванию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T,T1&gt;(<b>var</b> a: <b>array</b>  <b>of</b> T; keySelector: T-&gt;T1);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по убыванию по ключу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию по ключу</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(<b>var</b> a: <b>array</b>  <b>of</b> T; keySelector: T-&gt;string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по убыванию по ключу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию по ключу</td></tr>
 <tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(l: List&lt;T&gt;);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по убыванию</td></tr>
 <tr><td><code><b>procedure</b> SortDescending(<b>var</b> l: List&lt;string&gt;);</code>

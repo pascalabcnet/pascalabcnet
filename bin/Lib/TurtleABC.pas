@@ -65,7 +65,7 @@ procedure SetScale(s: real);
 procedure SetOrigin(x,y: real);
 
 /// Рисует точки в целочисленных координатах на всём экране
-procedure DrawCoordPoints;
+procedure DrawCoordPoints(R: integer := 0; DotsColor: GraphABC.Color := Color.Black);
 
 implementation
 
@@ -199,9 +199,8 @@ begin
   GraphABC.MoveTo(Round(screenOriginX),Round(screenOriginY));
 end;
 
-procedure DrawCoordPoints;
+procedure DrawCoordPoints(R: integer; DotsColor: GraphABC.Color);
 begin
-  SetColor(color.Gray);
   var x1 := screenOriginX;
   while x1 >= 0 do
     x1 -= scale;
@@ -223,13 +222,15 @@ begin
     Swap(yy1,yy2);
   
   LockDrawing;
+  Brush.Color := DotsColor;
   for var x := xx1 to xx2 do
   for var y := yy1 to yy2 do
   begin
     var screenX := RealToScreenX(x);
     var screenY := RealToScreenY(y);
-    Brush.Color := Color.Black;
-    PutPixel(screenX,screenY,Color.Black);
+    if R = 0 then 
+      PutPixel(screenX,screenY,DotsColor)
+    else FillCircle(screenX,screenY,R)
   end;
   UnLockDrawing
 end;

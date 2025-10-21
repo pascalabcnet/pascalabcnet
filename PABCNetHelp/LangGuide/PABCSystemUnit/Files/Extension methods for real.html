@@ -15,8 +15,8 @@
 <param name="Keyword" value="TruncBigInteger"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Методы расширения типа real</H1>
-<table border=0 cellpadding=5><tr><td><code><b>function</b> Between(Self: real; a, b: real): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится в диапазоне [a,b]</td></tr>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> Between(Self: real; a, b: real; inclusive: boolean := True): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится между двумя другими</td></tr>
 <tr><td><code><b>function</b> Ceil(Self: real): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает наменьшее целое, большее или равное вещественному числу</td></tr>
 <tr><td><code><b>function</b> Clamp(Self: real; bottom,top: real): real;</code>

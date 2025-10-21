@@ -1902,6 +1902,17 @@ function Lerp(a, b, t: real): real;
 /// Преобразует x из диапазона [a1,b1] в диапазон [a2,b2] с сохранением относительной позиции
 function Remap(x, a1, b1, a2, b2: real): real;
 
+/// Возвращает наибольший общий делитель двух целых чисел
+function GCD(a, b: integer): integer;
+/// Возвращает наибольший общий делитель двух целых чисел
+function GCD(a, b: int64): int64;
+/// Возвращает наибольший общий делитель двух BigInteger
+function GCD(a, b: BigInteger): BigInteger;
+/// Возвращает наименьшее общее кратное двух целых чисел
+function LCM(a, b: int64): int64;
+/// Возвращает наименьшее общее кратное двух BigInteger
+function LCM(a, b: BigInteger): BigInteger;
+
 /// Инициализирует датчик псевдослучайных чисел
 procedure Randomize;
 /// Инициализирует датчик псевдослучайных чисел, используя значение seed. При одном и том же seed генерируются одинаковые псевдослучайные последовательности
@@ -9525,6 +9536,48 @@ function Lerp(a, b, t: real): real := a + (b - a) * t;
 
 function Remap(x, a1, b1, a2, b2: real): real := a2 + (x - a1) * (b2 - a2) / (b1 - a1);
 
+/// Возвращает наибольший общий делитель двух целых чисел
+function GCD(a, b: integer): integer;
+begin
+  var (x, y) := (Abs(a), Abs(b));
+  while y <> 0 do 
+    (x, y) := (y, x mod y);
+  Result := x;
+end;
+
+/// Возвращает наибольший общий делитель двух больших целых чисел
+function GCD(a, b: int64): int64;
+begin
+  var (x, y) := (Abs(a), Abs(b));
+  while y <> 0 do 
+    (x, y) := (y, x mod y);
+  Result := x;
+end;
+
+/// Возвращает наибольший общий делитель двух BigInteger
+function GCD(a, b: BigInteger): BigInteger;
+begin
+  var (x, y) := (Abs(a), Abs(b));
+  while y <> 0 do 
+    (x, y) := (y, x mod y);
+  Result := x;
+end;
+
+/// Возвращает наименьшее общее кратное двух больших целых чисел
+function LCM(a, b: int64): int64;
+begin
+  if (a = 0) or (b = 0) then 
+    Result := 0
+  else Result := Abs(a div GCD(a, b)) * Abs(b);
+end;
+
+/// Возвращает наименьшее общее кратное двух BigInteger
+function LCM(a, b: BigInteger): BigInteger;
+begin
+  if (a = 0) or (b = 0) then 
+    Result := 0
+  else Result := Abs(a div GCD(a, b)) * Abs(b);
+end;
 
 procedure Randomize;
 begin
@@ -13878,7 +13931,7 @@ begin
   Result := True;
 end;
 
-/// Возвращает все перестановки множества элементов, заданного массивом
+/// Возвращает все перестановки элементов массива
 function Permutations<T>(Self: array of T): sequence of array of T; extensionmethod;
 begin
   var a := Self;
@@ -13892,7 +13945,7 @@ begin
   until not NextPermutation(ind);  
 end;
 
-/// Возвращает все перестановки множества элементов, заданного последовательностью
+/// Возвращает все перестановки элементов последовательности
 function Permutations<T>(Self: sequence of T): sequence of array of T; extensionmethod;
 begin
   Result := Self.ToArray.Permutations
@@ -15020,6 +15073,31 @@ function RandomElement(Self: string): char; extensionmethod;
 begin
   Result := Self[Random(Self.Length)+1];  
 end;
+
+/// Возвращает количество вхождений подстроки в строку
+function CountOf(Self: string; substring: string; allowOverlap: boolean := false): integer; extensionmethod;
+begin
+  if string.IsNullOrEmpty(substring) then
+    raise new System.ArgumentException('Подстрока не может быть пустой');
+  
+  Result := 0;
+  var index := 0;
+  var substringLength := substring.Length;
+  
+  while true do
+  begin
+    index := Self.IndexOf(substring, index);
+    if index = -1 then
+      break;
+    
+    Result += 1;
+    
+    if allowOverlap then
+      index += 1  // Для пересекающихся вхождений сдвигаем на 1 символ
+    else index += substringLength;  // Для непересекающихся - на длину подстроки
+  end;
+end;
+
 
 ///-- 
 function CreateSliceFromStringInternal(Self: string; from, step, count: integer): string;

@@ -11,7 +11,7 @@
 <param name="Keyword" value="ReadMatrReal">
 <param name="Keyword" value="Transpose"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Подпрограммы для создания двумерных динамических массивов</H1>
+</HEAD><body><H1>Подпрограммы для создания двумерных массивов</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Matr&lt;T&gt;(m,n: integer; <b>params</b> data: <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный указанными значениями по строкам</td></tr>
 <tr><td><code><b>function</b> Matr&lt;T&gt;(<b>params</b> aa: <b>array</b>  <b>of</b> <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
@@ -43,9 +43,9 @@
 <tr><td><code><b>function</b> MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10; digits: integer := 2): <b>array</b> [,]  <b>of</b> real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями</td></tr>
 <tr><td><code><b>function</b> ReadMatrInteger(m, n: integer): <b>array</b> [,]  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает матрицу m на n целых, введенных с клавиатуры</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n из целых, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadMatrReal(m, n: integer): <b>array</b> [,]  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает матрицу m на n вещественных, введенных с клавиатуры</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n из вещественных, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> Transpose&lt;T&gt;(a: <b>array</b> [,]  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Транспонирует двумерный массив</td></tr>
 </table>

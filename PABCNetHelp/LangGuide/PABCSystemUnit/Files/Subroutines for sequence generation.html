@@ -1,6 +1,7 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="Cartesian">
 <param name="Keyword" value="Iterate">
+<param name="Keyword" value="Linspace">
 <param name="Keyword" value="PartitionPoints">
 <param name="Keyword" value="Range">
 <param name="Keyword" value="ReadSeqInteger">
@@ -20,23 +21,25 @@
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Подпрограммы для генерации последовательностей</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Cartesian&lt;T, T1, TRes&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; func: (T,T1)-&gt;TRes): <b>sequence </b>  <b>of</b> TRes;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей, проектируя каждую пару на значение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов двух последовательностей, проектируя каждую пару на значение</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1, T2, TRes&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; func: (T,T1,T2)-&gt;TRes): <b>sequence </b>  <b>of</b> TRes;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей, проектируя каждую тройку на значение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов последовательностей, проектируя каждую тройку на значение</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1, T2, T3, TRes&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3; func: (T,T1,T2,T3)-&gt;TRes): <b>sequence </b>  <b>of</b> TRes;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей, проектируя каждую четвёрку на значение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов последовательностей, проектируя каждую четвёрку на значение</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1, T2, T3, T4, TRes&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3; e: <b>sequence </b>  <b>of</b> T4; func: (T,T1,T2,T3,T4)-&gt;TRes): <b>sequence </b>  <b>of</b> TRes;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей, проектируя каждую пятёрку на значение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов последовательностей, проектируя каждую пятёрку на значение</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей в виде последовательности пар</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов последовательностей в виде последовательности пар</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1, T2&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2): <b>sequence </b>  <b>of</b> (T, T1, T2);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей в виде последовательности троек</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов последовательностей в виде последовательности троек</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1, T2, T3&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3): <b>sequence </b>  <b>of</b> (T, T1, T2, T3);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей в виде последовательности четвёрок</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов последовательностей в виде последовательности четвёрок</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1, T2, T3, T4&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3; e: <b>sequence </b>  <b>of</b> T4): <b>sequence </b>  <b>of</b> (T, T1, T2, T3, T4);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает декартово произведение последовательностей в виде последовательности пятёрок</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов последовательностей в виде последовательности пятёрок</td></tr>
 <tr><td><code><b>function</b> Iterate&lt;T&gt;(first: T; next: T-&gt;T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом first и функцией next</td></tr>
+<tr><td><code><b>function</b> Linspace(a, b: real; n: integer): <b>sequence </b>  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает n равномерно распределённых точек между a и b включительно (аналог numpy.linspace)</td></tr>
 <tr><td><code><b>function</b> PartitionPoints(a, b: real; n: integer): <b>sequence </b>  <b>of</b> real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей</td></tr>
 <tr><td><code><b>function</b> Range(a, b: integer): <b>sequence </b>  <b>of</b> integer;</code>
@@ -78,7 +81,7 @@
 <tr><td><code><b>function</b> ReadSeqStringWhile(prompt: string; cond: string-&gt;boolean): <b>sequence </b>  <b>of</b> string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность строк, вводимых с клавиатуры пока выполняется определенное условие</td></tr>
 <tr><td><code><b>function</b> Seq&lt;T&gt;(<b>params</b> a: <b>array</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность указанных элементов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из указанных элементов</td></tr>
 <tr><td><code><b>function</b> SeqFill&lt;T&gt;(count: integer; x: T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов x</td></tr>
 <tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; f: integer-&gt;T): <b>sequence </b>  <b>of</b> T;</code>

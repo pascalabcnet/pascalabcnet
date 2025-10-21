@@ -1,5 +1,6 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="Between">
+<param name="Keyword" value="CountOf">
 <param name="Keyword" value="IndicesOf">
 <param name="Keyword" value="InRange">
 <param name="Keyword" value="Inverse">
@@ -30,8 +31,10 @@
 <param name="Keyword" value="TryToReal"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Методы расширения типа string</H1>
-<table border=0 cellpadding=5><tr><td><code><b>function</b> Between(Self: string; a, b: string): boolean;</code>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> Between(Self: string; a, b: string; inclusive: boolean := True): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если строка находится между двумя другими (лексикографическое сравнение)</td></tr>
+<tr><td><code><b>function</b> CountOf(Self: string; substring: string; allowOverlap: boolean := false): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество вхождений подстроки в строку</td></tr>
 <tr><td><code><b>function</b> IndicesOf(Self, SubS: string; overlay: boolean := False): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов вхождений подстроки в основную строкуПараметр overlay определяет, разрешены ли перекрытия вхождений подстрок</td></tr>
 <tr><td><code><b>function</b> InRange(Self: string; a, b: string): boolean;</code>
