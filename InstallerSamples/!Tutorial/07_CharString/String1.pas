@@ -1,12 +1,11 @@
-// Строки. Операция + и оператор +=. Доступ по индексу
-
-var s: string := 'Pascal';
+﻿// Строки. Операция + и оператор +=. Доступ по индексу
 
 begin
-  writeln(s);
+  var s := 'Pascal';
+  Println(s);
   s := s + '.';
-  writeln(s);
+  Println(s);
   s += 'NET';
-  writeln(s);
-  writeln(s[1],' ',s[2],' ',s[3],' ',s[4],' ',s[5],' ',s[6]);
+  Println(s);
+  Println(s[1], s[2], s[3], s[4], s[5], s[6]);
 end.

@@ -1,9 +1,7 @@
-// Стандартные функции UpperCase LowerCase
-var c: char;
-
+﻿// Стандартные функции UpperCase и LowerCase
 begin
-  c := 'д';
-  writelnFormat('Символ {0} в верхнем регистре: {1}',c,UpperCase(c));
+  var c := 'д';
+  Println($'Символ {c} в верхнем регистре: {UpperCase(c)}');
   c := 'F';
-  writelnFormat('Символ {0} в нижнем регистре: {1}',c,LowerCase(c));
+  Println($'Символ {c} в нижнем регистре: {LowerCase(c)}');
 end.

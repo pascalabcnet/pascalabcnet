@@ -1,12 +1,10 @@
-// Строки. Строка может иметь произвольную длину
-var s: string;
-    
+﻿// Строки. Строка может иметь произвольную длину
 begin
-  s := 'abcdefghijklmnopqrstuvwxyz';
-  s := s + Uppercase(s);
-  s += s; 
-  s += s; 
+  var s := 'abcdefghijklmnopqrstuvwxyz';
+  s := s + UpperCase(s);
   s += s;
-  writeln('Длина строки = ',s.Length);
-  writeln('Cтрока: ',s);
+  s += s;
+  s += s;
+  Println('Длина строки =', s.Length);
+  Println('Строка:', s);
 end.

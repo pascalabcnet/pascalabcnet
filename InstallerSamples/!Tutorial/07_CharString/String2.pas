@@ -1,14 +1,14 @@
-// Строки. Процедура SetLength, функция Length и свойство Length 
-
-var s: string;
+﻿// Строки. Процедура SetLength, функция Length и свойство Length 
 
 begin
-  writeln('Length(s) = ',Length(s));
-  SetLength(s,3);
+  var s := '';
+  Println('Length(s) =', s.Length);
+  SetLength(s, 3);
   s[1] := 'N';
   s[2] := 'E';
   s[3] := 'T';
-  writeln(s,'     Length(s) = ',Length(s));
-  for var i:= 1 to s.Length do
-    write(s[i],' ');
+  Println(s, '     Length(s) =', s.Length);
+  for var i := 1 to s.Length do
+    Print(s[i]);
+  Println;
 end.

@@ -1,12 +1,10 @@
-// Строки фиксированной длины. Длина не может быть больше 255
-var 
-  s: string[9];
-  s1: shortstring; // shortstring = string[255]
-  slong: string;
-    
+﻿// Строки фиксированной длины (устарели). Длина не может быть больше 255
+
 begin
-  slong := 'PascalABC.NET';
-  writeln('Cтрока произвольной длины: ',slong);
+  var s: string[9];
+  var s1: shortstring; // shortstring = string[255]
+  var slong := 'PascalABC.NET';
+  Println('Строка произвольной длины:', slong);
   s := slong;
-  writeln('Cтрока фиксированной длины обрезается: ',s);
+  Println('Строка фиксированной длины обрезается:', s);
 end.
