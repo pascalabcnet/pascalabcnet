@@ -3292,6 +3292,7 @@ const
   SEQUENCE_CANNOT_BE_EMPTY = 'Последовательность не может быть пустой!!Sequence cannot be empty';
   ARRAY_CANNOT_BE_EMPTY = 'Массив не может быть пустым!!Array cannot be empty';
   MIN_CANNOT_BE_GREATER_THAN_MAX = 'Clamp: min не может быть больше чем max!!Clamp: min cannot be greater than max';
+  SUBSTRING_CANNOT_BE_EMPTY = 'Подстрока не может быть пустой!!Substring cannot be empty';
 // -----------------------------------------------------
 //                  WINAPI
 // -----------------------------------------------------
@@ -15078,7 +15079,7 @@ end;
 function CountOf(Self: string; substring: string; allowOverlap: boolean := false): integer; extensionmethod;
 begin
   if string.IsNullOrEmpty(substring) then
-    raise new System.ArgumentException('Подстрока не может быть пустой');
+    raise new System.ArgumentException(GetTranslation(SUBSTRING_CANNOT_BE_EMPTY));
   
   Result := 0;
   var index := 0;
@@ -15324,6 +15325,26 @@ begin
     Result := V;
 end;
 
+/// Получает значение по ключу или добавляет новое, если ключ отсутствует
+function GetOrAdd<Key, Value>(Self: IDictionary<Key, Value>; K: Key; valueFactory: Key -> Value): Value; extensionmethod;
+begin
+  if not Self.TryGetValue(K, Result) then
+  begin
+    Result := valueFactory(K);
+    Self[K] := Result;
+  end;
+end;
+
+/// Получает значение по ключу или добавляет значение по умолчанию
+function GetOrAdd<Key, Value>(Self: IDictionary<Key, Value>; K: Key; defaultValue: Value): Value; extensionmethod;
+begin
+  if not Self.TryGetValue(K, Result) then
+  begin
+    Result := defaultValue;
+    Self[K] := Result;
+  end;
+end;
+
 /// Возвращает словарь, сопоставляющий ключу группы количество элементов с данным ключом
 function EachCount<Key,Source>(Self: sequence of System.Linq.IGrouping<Key,Source>): Dictionary<Key,integer>; extensionmethod;
 begin
@@ -15345,12 +15366,14 @@ end;
 /// Возвращает словарь, сопоставляющий элементам последовательности определённые значения
 function Each<Key,Res>(Self: sequence of Key; proj: Key -> Res): Dictionary<Key,Res>; extensionmethod;
 begin
-  Result := Self.GroupBy(x->x).ToDictionary(g -> g.Key, g -> proj(g.Key));
+  Result := Self.ToDictionary(x -> x, x -> proj(x));
 end;
 
 /// Обновляет данные в словаре данными из другого словаря
 procedure Update<TKey, TVal>(Self: Dictionary<TKey, TVal>; update: Dictionary<TKey, TVal>); extensionmethod;
 begin
+  if update = nil then Exit;
+  
   foreach var kv in update do
     Self[kv.Key] := kv.Value;
 end;
@@ -15358,6 +15381,8 @@ end;
 /// Обновляет данные в словаре данными из другого словаря
 procedure operator+=<TKey, TVal>(Self: Dictionary<TKey, TVal>; update: Dictionary<TKey, TVal>); extensionmethod;
 begin
+  if update = nil then Exit;
+  
   foreach var kv in update do
     Self[kv.Key] := kv.Value;
 end;
@@ -15379,6 +15404,8 @@ end;
 /// Удаляет из словаря пары с указанными значениями ключа
 procedure operator-=<Key,Value>(Self: IDictionary<Key,Value>; keys: sequence of Key); extensionmethod;
 begin
+  if keys = nil then Exit;
+  
   foreach var k in keys do
     Self.Remove(k);
 end;
