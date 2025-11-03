@@ -80,6 +80,7 @@ function RAI(n: integer) := ReadArrInteger(n);
 function RAR(n: integer) := ReadArrReal(n);
 
 function Pr(Self: integer): integer; extensionmethod := Self.Print;
+function Pr(Self: int64): int64; extensionmethod := Self.Print;
 function Pr(Self: real): real; extensionmethod := Self.Print;
 function Pr(Self: Biginteger): Biginteger; extensionmethod := Self.Print;
 function Pr(Self: char): char; extensionmethod := Self.Print;
@@ -89,6 +90,7 @@ function Pr(Self: string): string; extensionmethod := Self.Print;
 function Pr<T>(Self: array [,] of T; w: integer := 4): array [,] of T; extensionmethod := Self.Print(w);
 
 function Prln(Self: integer): integer; extensionmethod := Self.Println;
+function Prln(Self: int64): int64; extensionmethod := Self.Println;
 function Prln(Self: real): real; extensionmethod := Self.Println;
 function Prln(Self: Biginteger): Biginteger; extensionmethod := Self.Println;
 function Prln(Self: char): char; extensionmethod := Self.Println;
