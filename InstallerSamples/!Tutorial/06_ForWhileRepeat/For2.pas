@@ -8,7 +8,7 @@ begin
   Println;
   
   Print('Случайные целые от 1 до 99:');
-  for var i := n downto 1 do
+  for var i := 1 to n do
     Print(Random(1, 99));
   Println;
 end.

@@ -3292,6 +3292,7 @@ const
   SEQUENCE_CANNOT_BE_EMPTY = 'Последовательность не может быть пустой!!Sequence cannot be empty';
   ARRAY_CANNOT_BE_EMPTY = 'Массив не может быть пустым!!Array cannot be empty';
   MIN_CANNOT_BE_GREATER_THAN_MAX = 'Clamp: min не может быть больше чем max!!Clamp: min cannot be greater than max';
+  SUBSTRING_CANNOT_BE_EMPTY = 'Подстрока не может быть пустой!!Substring cannot be empty';
 // -----------------------------------------------------
 //                  WINAPI
 // -----------------------------------------------------
@@ -15078,24 +15079,49 @@ end;
 function CountOf(Self: string; substring: string; allowOverlap: boolean := false): integer; extensionmethod;
 begin
   if string.IsNullOrEmpty(substring) then
-    raise new System.ArgumentException('Подстрока не может быть пустой');
+    raise new System.ArgumentException(GetTranslation(SUBSTRING_CANNOT_BE_EMPTY));
   
   Result := 0;
-  var index := 0;
-  var substringLength := substring.Length;
+  var i := 1;
+  var m := substring.Length;
+  var n := Self.Length;
   
-  while true do
+  if (m = 0) or (m > n) then exit;
+  
+  var lastPossible := n - m + 1;
+  
+  while i <= lastPossible do
   begin
-    index := Self.IndexOf(substring, index);
-    if index = -1 then
-      break;
+    var isMatch := True;
+    // Проверяем первый символ до цикла - это частый случай несовпадения
+    if Self[i] <> substring[1] then
+      isMatch := False
+    else
+      for var j := 2 to m do
+        if Self[i + j - 1] <> substring[j] then
+        begin
+          isMatch := False;
+          break;
+        end;
     
-    Result += 1;
-    
-    if allowOverlap then
-      index += 1  // Для пересекающихся вхождений сдвигаем на 1 символ
-    else index += substringLength;  // Для непересекающихся - на длину подстроки
+    if isMatch then
+    begin
+      Result += 1;
+      if allowOverlap then
+        i += 1
+      else i += m;
+    end
+    else i += 1;
   end;
+end;
+
+/// Возвращает количество вхождений символа в строку
+function CountOf(Self: string; c: char): integer; extensionmethod;
+begin
+  Result := 0;
+  for var i:=1 to Self.Length do
+    if Self[i] = c then
+      Result += 1;
 end;
 
 
@@ -15324,6 +15350,26 @@ begin
     Result := V;
 end;
 
+/// Получает значение по ключу или добавляет новое, если ключ отсутствует
+function GetOrAdd<Key, Value>(Self: IDictionary<Key, Value>; K: Key; valueFactory: Key -> Value): Value; extensionmethod;
+begin
+  if not Self.TryGetValue(K, Result) then
+  begin
+    Result := valueFactory(K);
+    Self[K] := Result;
+  end;
+end;
+
+/// Получает значение по ключу или добавляет значение по умолчанию
+function GetOrAdd<Key, Value>(Self: IDictionary<Key, Value>; K: Key; defaultValue: Value): Value; extensionmethod;
+begin
+  if not Self.TryGetValue(K, Result) then
+  begin
+    Result := defaultValue;
+    Self[K] := Result;
+  end;
+end;
+
 /// Возвращает словарь, сопоставляющий ключу группы количество элементов с данным ключом
 function EachCount<Key,Source>(Self: sequence of System.Linq.IGrouping<Key,Source>): Dictionary<Key,integer>; extensionmethod;
 begin
@@ -15345,12 +15391,14 @@ end;
 /// Возвращает словарь, сопоставляющий элементам последовательности определённые значения
 function Each<Key,Res>(Self: sequence of Key; proj: Key -> Res): Dictionary<Key,Res>; extensionmethod;
 begin
-  Result := Self.GroupBy(x->x).ToDictionary(g -> g.Key, g -> proj(g.Key));
+  Result := Self.ToDictionary(x -> x, x -> proj(x));
 end;
 
 /// Обновляет данные в словаре данными из другого словаря
 procedure Update<TKey, TVal>(Self: Dictionary<TKey, TVal>; update: Dictionary<TKey, TVal>); extensionmethod;
 begin
+  if update = nil then Exit;
+  
   foreach var kv in update do
     Self[kv.Key] := kv.Value;
 end;
@@ -15358,6 +15406,8 @@ end;
 /// Обновляет данные в словаре данными из другого словаря
 procedure operator+=<TKey, TVal>(Self: Dictionary<TKey, TVal>; update: Dictionary<TKey, TVal>); extensionmethod;
 begin
+  if update = nil then Exit;
+  
   foreach var kv in update do
     Self[kv.Key] := kv.Value;
 end;
@@ -15379,6 +15429,8 @@ end;
 /// Удаляет из словаря пары с указанными значениями ключа
 procedure operator-=<Key,Value>(Self: IDictionary<Key,Value>; keys: sequence of Key); extensionmethod;
 begin
+  if keys = nil then Exit;
+  
   foreach var k in keys do
     Self.Remove(k);
 end;
@@ -15958,30 +16010,15 @@ function RuntimeDetermineType(T: System.Type): byte;
 begin
   result := 0;
   if T.IsValueType and (T.GetMethod('$Init$') <> nil) then
-  begin
-    result := 1;
-    exit;
-  end;
+    exit(1);
   if T = typeof(string) then
-  begin
-    result := 2;
-    exit;
-  end;
+    exit(2);
   if T = typeof(TypedSet) then
-  begin
-    result := 3;
-    exit;
-  end;
+    exit(3);
   if T = typeof(Text) then
-  begin
-    result := 4;
-    exit;
-  end;
+    exit(4);
   if T = typeof(BinaryFile) then
-  begin
-    result := 5;
-    exit;
-  end;
+    exit(5);
 end;
 
 function RuntimeInitialize(kind: byte; variable: object): object;
@@ -16003,9 +16040,8 @@ begin
 end;
 
 function GetRuntimeSize<T>: integer;
-var
-  val: T;
 begin
+  var val: T;
   result := System.Runtime.InteropServices.Marshal.SizeOf(val);
 end;
 

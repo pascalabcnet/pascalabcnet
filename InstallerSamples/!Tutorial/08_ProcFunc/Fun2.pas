@@ -1,4 +1,4 @@
-// Функция Power
+﻿// Функция Power
 
 function Power(x: real; n: integer): real;
 begin
@@ -7,11 +7,8 @@ begin
     Result *= x;
 end;
 
-var 
-  x: real; 
-  n: integer;
-
 begin
-  x := 2; n := 5;  
-  writelnFormat('{0} в степени {1} = {2}',x,n,Power(x,n));
+  var x: real := 2; 
+  var n: integer := 5;
+  Println($'{x} в степени {n} = {Power(x,n)}');
 end.  

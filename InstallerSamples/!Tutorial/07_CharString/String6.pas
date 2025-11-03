@@ -4,9 +4,9 @@ var
   s1: string := 'NET';
     
 begin
-  Writeln('Исходная строка: ''',s,'''');
+  Writeln('Исходная строка: ''',s,' ''');
   s := s.Trim;
-  Writeln('После вызова s.Trim: ''',s,'''');
+  Writeln('После вызова s.Trim: ''',s,' ''');
   var p := s.IndexOf(s1); // Индексация - с нуля
   WritelnFormat('Позиция подстроки ''{0}'' в строке ''{1}'' равна {2}',s1,s,p);
   s := s.Remove(6,2);

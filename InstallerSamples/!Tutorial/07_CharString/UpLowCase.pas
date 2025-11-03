@@ -1,22 +1,21 @@
-// Использование стандартных функций UpperCase, LowerCase
-var c: char;
+﻿// Использование стандартных функций UpperCase, LowerCase
 
 begin
-  for c:='a' to 'z' do
-    write(UpperCase(c));
-  writeln;
-  for c:='A' to 'Z' do
-    write(LowerCase(c));
-  writeln;
-  for c:='А' to 'Я' do
-    write(UpperCase(c));
-  writeln;
-  for c:='а' to 'я' do
-    write(LowerCase(c));
-  writeln;
+  for var c:='a' to 'z' do
+    Write(UpperCase(c));
+  Writeln;
+  for var c:='A' to 'Z' do
+    Write(LowerCase(c));
+  Writeln;
+  for var c:='А' to 'Я' do
+    Write(UpperCase(c));
+  Writeln;
+  for var c:='а' to 'я' do
+    Write(LowerCase(c));
+  Writeln;
   var s := 'Папа у Васи силён в математике';
   s := UpperCase(s);
-  writeln(s);
+  Writeln(s);
   s := LowerCase(s);
-  writeln(s);
+  Writeln(s);
 end.

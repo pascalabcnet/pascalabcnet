@@ -2,6 +2,7 @@
 <param name="Keyword" value="Each">
 <param name="Keyword" value="EachCount">
 <param name="Keyword" value="Get">
+<param name="Keyword" value="GetOrAdd">
 <param name="Keyword" value="operator">
 <param name="Keyword" value="Update"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
@@ -16,6 +17,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает частотный словарь объектов последовательности</td></tr>
 <tr><td><code><b>function</b> Get&lt;Key, Value&gt;(Self: IDictionary&lt;Key, Value&gt;; K: Key; V: Value := default(Value)): Value;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает в словаре значение, связанное с указанным ключом, а если такого ключа нет, то значение по умолчанию</td></tr>
+<tr><td><code><b>function</b> GetOrAdd&lt;Key, Value&gt;(Self: IDictionary&lt;Key, Value&gt;; K: Key; valueFactory: Key -&gt; Value): Value;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Получает значение по ключу или добавляет новое, если ключ отсутствует</td></tr>
+<tr><td><code><b>function</b> GetOrAdd&lt;Key, Value&gt;(Self: IDictionary&lt;Key, Value&gt;; K: Key; defaultValue: Value): Value;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Получает значение по ключу или добавляет значение по умолчанию</td></tr>
 <tr><td><code><b>function</b> operator-&lt;TKey, TVal&gt;(Self: Dictionary&lt;TKey, TVal&gt;; key: TKey): Dictionary&lt;TKey, TVal&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь, в котором из исходного словаря удален элемент с данным ключом</td></tr>
 <tr><td><code><b>function</b> operator-&lt;TKey, TVal&gt;(Self: Dictionary&lt;TKey, TVal&gt;; keys: <b>sequence </b>  <b>of</b> TKey): Dictionary&lt;TKey, TVal&gt;;</code>

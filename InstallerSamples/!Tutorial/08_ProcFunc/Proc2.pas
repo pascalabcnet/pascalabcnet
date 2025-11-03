@@ -6,17 +6,14 @@ begin
   m := a mod b;
 end;
 
-var 
-  a,b: integer;
-  d,m: integer;
-
 begin
-  a := 7;
-  b := 3;
+  var a := 7;
+  var b := 3;
+  var d,m: integer;
   DivMod(a,b,d,m);
-  writelnFormat('{0} div {1} = {2};  {0} mod {1} = {3}',a,b,d,m);
+  Println($'{a} div {b} = {d};  {a} mod {b} = {m}');
   a := 23;
   b := 5;
   DivMod(a,b,d,m);
-  writelnFormat('{0} div {1} = {2};  {0} mod {1} = {3}',a,b,d,m);
+  Println($'{a} div {b} = {d};  {a} mod {b} = {m}');
 end.  

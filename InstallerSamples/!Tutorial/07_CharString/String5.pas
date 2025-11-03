@@ -4,9 +4,9 @@ var
   s1: string := 'NET';
     
 begin
-  Writeln('Исходная строка: ''',s,'''');
+  Writeln('Исходная строка: ''',s,' ''');
   s := Trim(s);
-  Writeln('После вызова функции Trim: ''',s,'''');
+  Writeln('После вызова функции Trim: ''',s,' ''');
   var p := Pos(s1,s);
   WritelnFormat('Позиция подстроки ''{0}'' в строке ''{1}'' равна {2}',s1,s,p);
   Delete(s,7,2);

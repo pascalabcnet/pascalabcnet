@@ -191,14 +191,8 @@ function MinMax(seq: sequence of BigInteger): (BigInteger, BigInteger);
 /// Возвращает НОД пары чисел
 function НОД(a, b: int64): int64;
 
-/// Возвращает НОД пары чисел
-function GCD(a, b: int64): int64;
-
 /// Возвращает НОК пары чисел
 function НОК(a, b: int64): int64;
-
-/// Возвращает НОК пары чисел
-function LCM(a, b: int64): int64;
 
 /// Возвращает НОД и НОК пары чисел
 function НОДНОК(a, b: int64): (int64, int64);
@@ -665,9 +659,6 @@ begin
   Result := Abs(a)
 end;
 
-/// Возвращает НОД пары чисел
-function GCD(a, b: int64) := НОД(a, b);
-
 /// Возвращает НОК пары чисел
 function НОК(a, b: int64): int64;
 begin
@@ -676,9 +667,6 @@ begin
     (a, b) := (b, a mod b);
   Result := Abs(a1 div a * b1)
 end;
-
-/// Возвращает НОК пары чисел
-function LCM(a, b: int64) := НОК(a, b);
 
 /// Возвращает НОД и НОК пары чисел
 function НОДНОК(a, b: int64): (int64, int64);
