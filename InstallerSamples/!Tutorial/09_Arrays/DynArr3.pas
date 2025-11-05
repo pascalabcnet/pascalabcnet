@@ -1,8 +1,8 @@
-// Использование динамического массива. 
-var a: array of integer;
+﻿// Использование динамического массива 
 
 begin
-  writeln('SetLength при повторном вызове не портит старые элементы:');
+  Println('SetLength при повторном вызове не портит старые элементы:');
+  var a: array of integer;
   SetLength(a,5);
   for var i:=0 to a.Length-1 do
     a[i] := i+1;

@@ -1,8 +1,8 @@
-unit MyA; 
+﻿unit MyA; 
 
 procedure p;
 begin
-  writeln('MyA.p');
+  Println('MyA.p');
 end;
 
 begin
