@@ -12996,6 +12996,10 @@ begin
       yield Self[i, j]
 end;
 
+/// Возвращает по заданному двумерному массиву последовательность его элементов по строкам
+function Elements<T>(Self: array [,] of T): sequence of T; extensionmethod := Self.ElementsByRow;
+
+
 /// Возвращает по заданному двумерному массиву последовательность его элементов по столбцам
 function ElementsByCol<T>(Self: array [,] of T): sequence of T; extensionmethod;
 begin
