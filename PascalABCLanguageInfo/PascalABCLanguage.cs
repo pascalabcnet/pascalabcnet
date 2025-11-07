@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using Languages.Facade;
-using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.SystemLibrary;
 using PascalABCCompiler.TreeConverter;
@@ -14,20 +13,12 @@ namespace Languages.Pascal
     {
 
         public PascalABCLanguage() : base(
-            name: StringConstants.pascalLanguageName,
-            version: "1.2",
-            copyright: "Copyright © 2005-2025 by Ivan Bondarev, Stanislav Mikhalkovich",
 
             languageInformation: new Frontend.Data.PascalABCLanguageInformation(),
             parser: new Frontend.Wrapping.PascalABCNewLanguageParser(),
             docParser: new Frontend.Documentation.PascalDocTagsLanguageParser(),
 
-            syntaxTreeConverters: new List<ISyntaxTreeConverter>() { new Frontend.Converters.StandardSyntaxTreeConverter(), new SyntaxSemanticVisitors.LambdaAnyConverter() },
-            applySyntaxTreeConvertersForIntellisense: false,
-            
-            filesExtensions: new string[] { StringConstants.pascalSourceFileExtension },
-            caseSensitive: false,
-            systemUnitNames: StringConstants.pascalDefaultStandardModules
+            syntaxTreeConverters: new List<ISyntaxTreeConverter>() { new Frontend.Converters.StandardSyntaxTreeConverter(), new SyntaxSemanticVisitors.LambdaAnyConverter() }
             ) { }
 
 

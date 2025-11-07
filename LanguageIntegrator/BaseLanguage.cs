@@ -5,7 +5,6 @@ using PascalABCCompiler.Parsers;
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.TreeConverter;
-using PascalABCCompiler.SyntaxTree;
 
 namespace Languages.Facade
 {
@@ -18,29 +17,27 @@ namespace Languages.Facade
         /// <summary>
         /// Все параметры должны быть не null (и не пустым массивом), кроме IDocParser в случае, если он не требуется
         /// </summary>
-        public BaseLanguage(string name, string version, string copyright, ILanguageInformation languageInformation,
-            IParser parser, IDocParser docParser, List<ISyntaxTreeConverter> syntaxTreeConverters, bool applySyntaxTreeConvertersForIntellisense,
-            string[] filesExtensions, bool caseSensitive, string[] systemUnitNames)
+        public BaseLanguage(ILanguageInformation languageInformation,
+            IParser parser, IDocParser docParser, List<ISyntaxTreeConverter> syntaxTreeConverters)
         {
-            this.Name = name;
-            this.Version = version;
-            this.Copyright = copyright;
             this.LanguageInformation = languageInformation;
             this.Parser = parser;
             this.Parser.LanguageInformation = languageInformation;
             this.DocParser = docParser;
             this.SyntaxTreeConverters = syntaxTreeConverters;
-            this.ApplySyntaxTreeConvertersForIntellisense = applySyntaxTreeConvertersForIntellisense;
-            this.FilesExtensions = filesExtensions;
-            this.CaseSensitive = caseSensitive;
-            this.SystemUnitNames = systemUnitNames;
         }
 
-        public virtual string Name { get; protected set; }
+        public string Name => LanguageInformation.Name;
 
-        public virtual string Version { get; protected set; }
+        public string Version => LanguageInformation.Version;
 
-        public virtual string Copyright { get; protected set; }
+        public string Copyright => LanguageInformation.Copyright;
+
+        public string[] FilesExtensions => LanguageInformation.FilesExtensions;
+
+        public bool CaseSensitive => LanguageInformation.CaseSensitive;
+
+        public string[] SystemUnitNames => LanguageInformation.SystemUnitNames;
 
         public virtual ILanguageInformation LanguageInformation { get; }
 
@@ -50,15 +47,9 @@ namespace Languages.Facade
 
         public virtual List<ISyntaxTreeConverter> SyntaxTreeConverters { get; protected set; }
 
-        public virtual bool ApplySyntaxTreeConvertersForIntellisense { get; protected set; }
+        public bool ApplySyntaxTreeConvertersForIntellisense => LanguageInformation.ApplySyntaxTreeConvertersForIntellisense;
 
         public virtual syntax_tree_visitor SyntaxTreeToSemanticTreeConverter { get; protected set; }
-
-        public virtual string[] FilesExtensions { get; protected set; }
-
-        public virtual bool CaseSensitive { get; protected set; }
-
-        public virtual string[] SystemUnitNames { get; protected set; }
 
         public abstract void SetSemanticConstants();
 
