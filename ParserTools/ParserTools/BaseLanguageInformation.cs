@@ -10,6 +10,18 @@ namespace PascalABCCompiler.Parsers
 {
     public abstract class BaseLanguageInformation : ILanguageInformation
     {
+        public abstract string Name { get; }
+
+        public abstract string Version { get; }
+
+        public abstract string Copyright { get; }
+
+        public abstract bool CaseSensitive { get; }
+
+        public abstract string[] FilesExtensions { get; }
+
+        public abstract string[] SystemUnitNames { get; }
+
         public abstract BaseKeywords KeywordsStorage { get; }
 
         public abstract Dictionary<string, DirectiveInfo> ValidDirectives { get; protected set; }
@@ -32,7 +44,7 @@ namespace PascalABCCompiler.Parsers
         public abstract string ProcedureName { get; }
         public abstract string FunctionName { get; }
 
-        public abstract bool CaseSensitive { get; }
+        public abstract bool ApplySyntaxTreeConvertersForIntellisense { get; }
 
         public abstract bool IncludeDotNetEntities { get; }
 

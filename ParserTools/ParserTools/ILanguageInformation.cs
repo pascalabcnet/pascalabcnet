@@ -11,6 +11,36 @@ namespace PascalABCCompiler.Parsers
 	/// </summary>
 	public interface ILanguageInformation
     {
+        /// <summary>
+        /// Название языка
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// Версия языка
+        /// </summary>
+        string Version { get; }
+
+        /// <summary>
+        /// Авторское право
+        /// </summary>
+        string Copyright { get; }
+
+        /// <summary>
+        /// Чувствительность к регистру
+        /// </summary>
+        bool CaseSensitive { get; }
+
+        /// <summary>
+        /// Расширения файлов, относящиеся к языку
+        /// </summary>
+        string[] FilesExtensions { get; }
+
+        /// <summary>
+        /// Названия системных модулей (стандартной библиотеки и др.)
+        /// </summary>
+        string[] SystemUnitNames { get; }
+
     	/// <summary>
     	/// Получить полное описание элемента (в желтой подсказке)
     	/// </summary>
@@ -140,6 +170,11 @@ namespace PascalABCCompiler.Parsers
 
         int FindParamDelimForIndexer(string descriptionAfterOpeningParenthesis, int number);
 
+        /// <summary>
+        /// Вызывать ли преобразователей синтаксического дерева в работе Intellisense
+        /// </summary>
+        bool ApplySyntaxTreeConvertersForIntellisense { get; }
+
         Dictionary<string, string> SpecialModulesAliases { get; }
 
         BaseKeywords KeywordsStorage
@@ -169,10 +204,6 @@ namespace PascalABCCompiler.Parsers
             get; 
         }
         string ResultVariableName
-        {
-            get;
-        }
-        bool CaseSensitive
         {
             get;
         }

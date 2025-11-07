@@ -9,20 +9,12 @@ namespace Languages.SPython
     public class SPythonLanguage : BaseLanguage
     {
         public SPythonLanguage() : base(
-            name: "SPython",
-            version: "0.0.1",
-            copyright: "Copyright © 2023-2025 by Vladislav Krylov, Egor Movchan",
-
+            
             languageInformation: new Frontend.Data.SPythonLanguageInformation(),
             parser: new SPythonParser.SPythonLanguageParser(),
             docParser: null,
 
-            syntaxTreeConverters: new List<ISyntaxTreeConverter>() { new Frontend.Converters.StandardSyntaxTreeConverter(), new SyntaxSemanticVisitors.LambdaAnyConverter() },
-            applySyntaxTreeConvertersForIntellisense: true,
-
-            filesExtensions: new string[] { ".pys" },
-            caseSensitive: true,
-            systemUnitNames: new string[] { "SPythonSystem", "SPythonHidden", "SPythonSystemPys" }
+            syntaxTreeConverters: new List<ISyntaxTreeConverter>() { new Frontend.Converters.StandardSyntaxTreeConverter(), new SyntaxSemanticVisitors.LambdaAnyConverter() }
             )
         {
             ((SPythonParser.SPythonLanguageParser)Parser).SyntaxTreeConvertersForIntellisense = SyntaxTreeConverters;

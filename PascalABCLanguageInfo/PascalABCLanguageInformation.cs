@@ -16,6 +16,18 @@ namespace Languages.Pascal.Frontend.Data
 {
     public class PascalABCLanguageInformation : BaseLanguageInformation
     {
+        public override string Name => StringConstants.pascalLanguageName;
+
+        public override string Version => "1.2";
+
+        public override string Copyright => "Copyright © 2005-2025 by Ivan Bondarev, Stanislav Mikhalkovich";
+
+        public override string[] FilesExtensions => new string[] { StringConstants.pascalSourceFileExtension };
+
+        public override string[] SystemUnitNames => StringConstants.pascalDefaultStandardModules;
+
+        public override bool ApplySyntaxTreeConvertersForIntellisense => false;
+
         protected IParser Parser
         {
             get
