@@ -29,9 +29,9 @@
 
 <body>
 
-<H1>Стандартные классы исключений</H1>
-<p>Все классы исключений являются потомками класса <code>System.Exception</code>, 
-включающего следующий интерфейс:</p>
+<H1>РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РєР»Р°СЃСЃС‹ РёСЃРєР»СЋС‡РµРЅРёР№</H1>
+<p>Р’СЃРµ РєР»Р°СЃСЃС‹ РёСЃРєР»СЋС‡РµРЅРёР№ СЏРІР»СЏСЋС‚СЃСЏ РїРѕС‚РѕРјРєР°РјРё РєР»Р°СЃСЃР° <code>System.Exception</code>, 
+РІРєР»СЋС‡Р°СЋС‰РµРіРѕ СЃР»РµРґСѓСЋС‰РёР№ РёРЅС‚РµСЂС„РµР№СЃ:</p>
 <blockquote>
 	<p><code><b>type</b> <br>
 &nbsp; Exception =<b> class<br>
@@ -39,47 +39,47 @@
 &nbsp;&nbsp;&nbsp; <b>constructor</b> Create;<br>
 &nbsp;&nbsp;&nbsp; <b>constructor</b> Create(message: <b>string</b>);<br>
 &nbsp;&nbsp;&nbsp; <b>property</b> Message: <b>string</b>; // 
-	только на чтение<br>
+	С‚РѕР»СЊРєРѕ РЅР° С‡С‚РµРЅРёРµ<br>
 &nbsp;&nbsp;&nbsp; <b>property</b> </code><code>StackTrace</code><code>: <b>string</b>; 
-	// только на чтение<br>
+	// С‚РѕР»СЊРєРѕ РЅР° С‡С‚РµРЅРёРµ<br>
 	<b>&nbsp; end</b>;</code></p>
 </blockquote>
-<p>Свойство <code>Message</code> 
-возвращает сообщение, связанное с объектом исключения.</p>
-<p>Свойство <code>StackTrace</code> 
-возвращает стек вызовов подпрограмм на момент генерации исключения.</p>
-<p>Ниже приводятся некоторые классы исключений, определенные в пространстве имен <code>System</code> и 
-являющиеся производными от класса <code>System.SystemException</code>:</p>
+<p>РЎРІРѕР№СЃС‚РІРѕ <code>Message</code> 
+РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРѕРѕР±С‰РµРЅРёРµ, СЃРІСЏР·Р°РЅРЅРѕРµ СЃ РѕР±СЉРµРєС‚РѕРј РёСЃРєР»СЋС‡РµРЅРёСЏ.</p>
+<p>РЎРІРѕР№СЃС‚РІРѕ <code>StackTrace</code> 
+РІРѕР·РІСЂР°С‰Р°РµС‚ СЃС‚РµРє РІС‹Р·РѕРІРѕРІ РїРѕРґРїСЂРѕРіСЂР°РјРј РЅР° РјРѕРјРµРЅС‚ РіРµРЅРµСЂР°С†РёРё РёСЃРєР»СЋС‡РµРЅРёСЏ.</p>
+<p>РќРёР¶Рµ РїСЂРёРІРѕРґСЏС‚СЃСЏ РЅРµРєРѕС‚РѕСЂС‹Рµ РєР»Р°СЃСЃС‹ РёСЃРєР»СЋС‡РµРЅРёР№, РѕРїСЂРµРґРµР»РµРЅРЅС‹Рµ РІ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ РёРјРµРЅ <code>System</code> Рё 
+СЏРІР»СЏСЋС‰РёРµСЃСЏ РїСЂРѕРёР·РІРѕРґРЅС‹РјРё РѕС‚ РєР»Р°СЃСЃР° <code>System.SystemException</code>:</p>
 <blockquote>
-	<p><code>System.OutOfMemoryException</code> - недостаточно 
-	памяти для выполнения программы;<br><code>System.StackOverflowException</code> - переполнение стека (как 
-	правило, при многократных вложенных вызовах подпрограмм);<br>
-	<code>System.AccessViolationException</code> - попытка доступа к защищенной 
-	памяти;<br><code>System.ArgumentException</code> - 
-	неверное значение параметра подпрограммы; <br>
-	<code>System.ArithmeticException</code> - базовый класс всех арифметических 
-	исключений. Наследники:</p>
+	<p><code>System.OutOfMemoryException</code> - РЅРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ 
+	РїР°РјСЏС‚Рё РґР»СЏ РІС‹РїРѕР»РЅРµРЅРёСЏ РїСЂРѕРіСЂР°РјРјС‹;<br><code>System.StackOverflowException</code> - РїРµСЂРµРїРѕР»РЅРµРЅРёРµ СЃС‚РµРєР° (РєР°Рє 
+	РїСЂР°РІРёР»Рѕ, РїСЂРё РјРЅРѕРіРѕРєСЂР°С‚РЅС‹С… РІР»РѕР¶РµРЅРЅС‹С… РІС‹Р·РѕРІР°С… РїРѕРґРїСЂРѕРіСЂР°РјРј);<br>
+	<code>System.AccessViolationException</code> - РїРѕРїС‹С‚РєР° РґРѕСЃС‚СѓРїР° Рє Р·Р°С‰РёС‰РµРЅРЅРѕР№ 
+	РїР°РјСЏС‚Рё;<br><code>System.ArgumentException</code> - 
+	РЅРµРІРµСЂРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РїР°СЂР°РјРµС‚СЂР° РїРѕРґРїСЂРѕРіСЂР°РјРјС‹; <br>
+	<code>System.ArithmeticException</code> - Р±Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ РІСЃРµС… Р°СЂРёС„РјРµС‚РёС‡РµСЃРєРёС… 
+	РёСЃРєР»СЋС‡РµРЅРёР№. РќР°СЃР»РµРґРЅРёРєРё:</p>
 	<blockquote>
-		<p><code>System.DivideByZeroException</code> - целочисленное деление на 
+		<p><code>System.DivideByZeroException</code> - С†РµР»РѕС‡РёСЃР»РµРЅРЅРѕРµ РґРµР»РµРЅРёРµ РЅР° 
 		0;<br>
-		<code>System.OverflowException</code> - переполнение при выполнении 
-		арифметической операции или преобразования типов;</p>
+		<code>System.OverflowException</code> - РїРµСЂРµРїРѕР»РЅРµРЅРёРµ РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё 
+		Р°СЂРёС„РјРµС‚РёС‡РµСЃРєРѕР№ РѕРїРµСЂР°С†РёРё РёР»Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ С‚РёРїРѕРІ;</p>
 	</blockquote>
-	<p><code>System.FormatException</code> - неверный формат параметра 
-	(например, при преобразовании строки в число); <br>
-	<code>System.IndexOutOfRangeException</code> - выход за границы диапазона 
-	изменения индекса массива; <br><code>System.InvalidCastException</code> - 
-	неверное приведение типов; <br><code>System.NullReferenceException</code> - 
-	попытка вызвать метод для нулевого объекта или разыменовать нулевой 
-	указатель;<br><code>System.IO.IOException</code> - 
-	ошибка ввода-вывода. Наследники: </p>
+	<p><code>System.FormatException</code> - РЅРµРІРµСЂРЅС‹Р№ С„РѕСЂРјР°С‚ РїР°СЂР°РјРµС‚СЂР° 
+	(РЅР°РїСЂРёРјРµСЂ, РїСЂРё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРё СЃС‚СЂРѕРєРё РІ С‡РёСЃР»Рѕ); <br>
+	<code>System.IndexOutOfRangeException</code> - РІС‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†С‹ РґРёР°РїР°Р·РѕРЅР° 
+	РёР·РјРµРЅРµРЅРёСЏ РёРЅРґРµРєСЃР° РјР°СЃСЃРёРІР°; <br><code>System.InvalidCastException</code> - 
+	РЅРµРІРµСЂРЅРѕРµ РїСЂРёРІРµРґРµРЅРёРµ С‚РёРїРѕРІ; <br><code>System.NullReferenceException</code> - 
+	РїРѕРїС‹С‚РєР° РІС‹Р·РІР°С‚СЊ РјРµС‚РѕРґ РґР»СЏ РЅСѓР»РµРІРѕРіРѕ РѕР±СЉРµРєС‚Р° РёР»Рё СЂР°Р·С‹РјРµРЅРѕРІР°С‚СЊ РЅСѓР»РµРІРѕР№ 
+	СѓРєР°Р·Р°С‚РµР»СЊ;<br><code>System.IO.IOException</code> - 
+	РѕС€РёР±РєР° РІРІРѕРґР°-РІС‹РІРѕРґР°. РќР°СЃР»РµРґРЅРёРєРё: </p>
 	<blockquote>
 		<p><code>System.IO.IOException.DirectoryNotFoundException</code> - 
-		каталог не найден;<br>
+		РєР°С‚Р°Р»РѕРі РЅРµ РЅР°Р№РґРµРЅ;<br>
 		<code>System.IO.IOException.</code><code>EndOfStreamException</code> - 
-		попытка чтения за концом потока; <br>
+		РїРѕРїС‹С‚РєР° С‡С‚РµРЅРёСЏ Р·Р° РєРѕРЅС†РѕРј РїРѕС‚РѕРєР°; <br>
 		<code>System.IO.IOException.</code><code>FileNotFoundException</code> - 
-		файл не найден.<br>
+		С„Р°Р№Р» РЅРµ РЅР°Р№РґРµРЅ.<br>
 		<br>&nbsp;</code></p>
 	</blockquote>
 </blockquote>

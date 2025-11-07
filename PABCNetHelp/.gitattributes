@@ -1,0 +1,5 @@
+*.html		text working-tree-encoding=CP1251
+
+*.hhp		text working-tree-encoding=CP1251
+*.hhk		text working-tree-encoding=CP1251
+*.hhc		text working-tree-encoding=CP1251

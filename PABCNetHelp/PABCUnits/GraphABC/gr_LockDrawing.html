@@ -6,33 +6,33 @@
 </object></head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title><link rel="StyleSheet" href="../../default.css"><body>
-<H1>Подпрограммы блокировки рисования</H1>
+<H1>РџРѕРґРїСЂРѕРіСЂР°РјРјС‹ Р±Р»РѕРєРёСЂРѕРІРєРё СЂРёСЃРѕРІР°РЅРёСЏ</H1>
 <table border=0 CELLPADDING=5>
 <tr><td>
 <code>
 <b>procedure</b> Redraw;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перерисовывает содержимое графического окна. Вызывается в паре с 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµСЂРёСЃРѕРІС‹РІР°РµС‚ СЃРѕРґРµСЂР¶РёРјРѕРµ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР°. Р’С‹Р·С‹РІР°РµС‚СЃСЏ РІ РїР°СЂРµ СЃ 
 <code>LockDrawing</code>
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> LockDrawing;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Блокирует рисование на графическом окне. Перерисовка графического окна выполняется с помощью 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р‘Р»РѕРєРёСЂСѓРµС‚ СЂРёСЃРѕРІР°РЅРёРµ РЅР° РіСЂР°С„РёС‡РµСЃРєРѕРј РѕРєРЅРµ. РџРµСЂРµСЂРёСЃРѕРІРєР° РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ СЃ РїРѕРјРѕС‰СЊСЋ 
 <code>Redraw</code>
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> UnlockDrawing;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Снимает блокировку рисования на графическом окне и осуществляет его перерисовку
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРЅРёРјР°РµС‚ Р±Р»РѕРєРёСЂРѕРІРєСѓ СЂРёСЃРѕРІР°РЅРёСЏ РЅР° РіСЂР°С„РёС‡РµСЃРєРѕРј РѕРєРЅРµ Рё РѕСЃСѓС‰РµСЃС‚РІР»СЏРµС‚ РµРіРѕ РїРµСЂРµСЂРёСЃРѕРІРєСѓ
 </td></tr>
 </table>
-<p>Блокировка вывода в графическое окно
+<p>Р‘Р»РѕРєРёСЂРѕРІРєР° РІС‹РІРѕРґР° РІ РіСЂР°С„РёС‡РµСЃРєРѕРµ РѕРєРЅРѕ
 <code>
-LockDrawing</code> с последующим вызовом <code>Redraw</code> используется для 
-простейшего создания анимации без мерцания.</p>
-<p><b>Пример.</b> <a href="../../Examples/GraphABC/NonBlinkAnim1.html">Анимация 
-без мерцания</a></p>
+LockDrawing</code> СЃ РїРѕСЃР»РµРґСѓСЋС‰РёРј РІС‹Р·РѕРІРѕРј <code>Redraw</code> РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ 
+РїСЂРѕСЃС‚РµР№С€РµРіРѕ СЃРѕР·РґР°РЅРёСЏ Р°РЅРёРјР°С†РёРё Р±РµР· РјРµСЂС†Р°РЅРёСЏ.</p>
+<p><b>РџСЂРёРјРµСЂ.</b> <a href="../../Examples/GraphABC/NonBlinkAnim1.html">РђРЅРёРјР°С†РёСЏ 
+Р±РµР· РјРµСЂС†Р°РЅРёСЏ</a></p>
 </body></html>

@@ -30,88 +30,88 @@
 <param name="Keyword" value="TryToInteger">
 <param name="Keyword" value="TryToReal"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Методы расширения типа string</H1>
+</HEAD><body><H1>РњРµС‚РѕРґС‹ СЂР°СЃС€РёСЂРµРЅРёСЏ С‚РёРїР° string</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Between(Self: string; a, b: string; inclusive: boolean := True): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если строка находится между двумя другими (лексикографическое сравнение)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True РµСЃР»Рё СЃС‚СЂРѕРєР° РЅР°С…РѕРґРёС‚СЃСЏ РјРµР¶РґСѓ РґРІСѓРјСЏ РґСЂСѓРіРёРјРё (Р»РµРєСЃРёРєРѕРіСЂР°С„РёС‡РµСЃРєРѕРµ СЃСЂР°РІРЅРµРЅРёРµ)</td></tr>
 <tr><td><code><b>function</b> CountOf(Self: string; substring: string; allowOverlap: boolean := false): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество вхождений подстроки в строку</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РІС…РѕР¶РґРµРЅРёР№ РїРѕРґСЃС‚СЂРѕРєРё РІ СЃС‚СЂРѕРєСѓ</td></tr>
 <tr><td><code><b>function</b> CountOf(Self: string; c: char): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество вхождений символа в строку</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РІС…РѕР¶РґРµРЅРёР№ СЃРёРјРІРѕР»Р° РІ СЃС‚СЂРѕРєСѓ</td></tr>
 <tr><td><code><b>function</b> IndicesOf(Self, SubS: string; overlay: boolean := False): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов вхождений подстроки в основную строкуПараметр overlay определяет, разрешены ли перекрытия вхождений подстрок</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРЅРґРµРєСЃРѕРІ РІС…РѕР¶РґРµРЅРёР№ РїРѕРґСЃС‚СЂРѕРєРё РІ РѕСЃРЅРѕРІРЅСѓСЋ СЃС‚СЂРѕРєСѓРџР°СЂР°РјРµС‚СЂ overlay РѕРїСЂРµРґРµР»СЏРµС‚, СЂР°Р·СЂРµС€РµРЅС‹ Р»Рё РїРµСЂРµРєСЂС‹С‚РёСЏ РІС…РѕР¶РґРµРЅРёР№ РїРѕРґСЃС‚СЂРѕРє</td></tr>
 <tr><td><code><b>function</b> InRange(Self: string; a, b: string): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если строка находится в диапазоне [a,b] (лексикографическое сравнение)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True РµСЃР»Рё СЃС‚СЂРѕРєР° РЅР°С…РѕРґРёС‚СЃСЏ РІ РґРёР°РїР°Р·РѕРЅРµ [a,b] (Р»РµРєСЃРёРєРѕРіСЂР°С„РёС‡РµСЃРєРѕРµ СЃСЂР°РІРЅРµРЅРёРµ)</td></tr>
 <tr><td><code><b>function</b> Inverse(Self: string): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает инверсию строки</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРІРµСЂСЃРёСЋ СЃС‚СЂРѕРєРё</td></tr>
 <tr><td><code><b>function</b> IsInteger(Self: string): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если строку можно преобразовать в целое</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True РµСЃР»Рё СЃС‚СЂРѕРєСѓ РјРѕР¶РЅРѕ РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ РІ С†РµР»РѕРµ</td></tr>
 <tr><td><code><b>function</b> IsMatch(Self: string; reg: string; options: RegexOptions := RegexOptions.None): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удовлетворяет ли строка регулярному выражению</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґРѕРІР»РµС‚РІРѕСЂСЏРµС‚ Р»Рё СЃС‚СЂРѕРєР° СЂРµРіСѓР»СЏСЂРЅРѕРјСѓ РІС‹СЂР°Р¶РµРЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> IsReal(Self: string): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если строку можно преобразовать в вещественное</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True РµСЃР»Рё СЃС‚СЂРѕРєСѓ РјРѕР¶РЅРѕ РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ РІ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ</td></tr>
 <tr><td><code><b>function</b> Left(Self: string; length: integer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает подстроку, полученную вырезанием из строки length самых левых символов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕРґСЃС‚СЂРѕРєСѓ, РїРѕР»СѓС‡РµРЅРЅСѓСЋ РІС‹СЂРµР·Р°РЅРёРµРј РёР· СЃС‚СЂРѕРєРё length СЃР°РјС‹С… Р»РµРІС‹С… СЃРёРјРІРѕР»РѕРІ</td></tr>
 <tr><td><code><b>function</b> Matches(Self: string; reg: string; options: RegexOptions := RegexOptions.None): <b>sequence </b>  <b>of</b> Match;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности элементов типа Match</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РС‰РµС‚ РІ СѓРєР°Р·Р°РЅРЅРѕР№ СЃС‚СЂРѕРєРµ РІСЃРµ РІС…РѕР¶РґРµРЅРёСЏ СЂРµРіСѓР»СЏСЂРЅРѕРіРѕ РІС‹СЂР°Р¶РµРЅРёСЏ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РёС… РІ РІРёРґРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё СЌР»РµРјРµРЅС‚РѕРІ С‚РёРїР° Match</td></tr>
 <tr><td><code><b>function</b> MatchValue(Self: string; reg: string; options: RegexOptions := RegexOptions.None): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ищет в указанной строке первое вхождение регулярного выражения и возвращает его в виде строки</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РС‰РµС‚ РІ СѓРєР°Р·Р°РЅРЅРѕР№ СЃС‚СЂРѕРєРµ РїРµСЂРІРѕРµ РІС…РѕР¶РґРµРЅРёРµ СЂРµРіСѓР»СЏСЂРЅРѕРіРѕ РІС‹СЂР°Р¶РµРЅРёСЏ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РµРіРѕ РІ РІРёРґРµ СЃС‚СЂРѕРєРё</td></tr>
 <tr><td><code><b>function</b> MatchValues(Self: string; reg: string; options: RegexOptions := RegexOptions.None): <b>sequence </b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности строк</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РС‰РµС‚ РІ СѓРєР°Р·Р°РЅРЅРѕР№ СЃС‚СЂРѕРєРµ РІСЃРµ РІС…РѕР¶РґРµРЅРёСЏ СЂРµРіСѓР»СЏСЂРЅРѕРіРѕ РІС‹СЂР°Р¶РµРЅРёСЏ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РёС… РІ РІРёРґРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё СЃС‚СЂРѕРє</td></tr>
 <tr><td><code><b>function</b> RandomElement(Self: string): char;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный символ строки</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»СѓС‡Р°Р№РЅС‹Р№ СЃРёРјРІРѕР» СЃС‚СЂРѕРєРё</td></tr>
 <tr><td><code><b>function</b> ReadInteger(Self: string; <b>var</b> from: integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает целое из строки начиная с позиции from и устанавливает from за считанным значением</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ С†РµР»РѕРµ РёР· СЃС‚СЂРѕРєРё РЅР°С‡РёРЅР°СЏ СЃ РїРѕР·РёС†РёРё from Рё СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ from Р·Р° СЃС‡РёС‚Р°РЅРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј</td></tr>
 <tr><td><code><b>function</b> ReadReal(Self: string; <b>var</b> from: integer): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает вещественное из строки начиная с позиции from и устанавливает from за считанным значением</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ РёР· СЃС‚СЂРѕРєРё РЅР°С‡РёРЅР°СЏ СЃ РїРѕР·РёС†РёРё from Рё СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ from Р·Р° СЃС‡РёС‚Р°РЅРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј</td></tr>
 <tr><td><code><b>function</b> ReadWord(Self: string; <b>var</b> from: integer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает слово из строки начиная с позиции from и устанавливает from за считанным значением</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ СЃР»РѕРІРѕ РёР· СЃС‚СЂРѕРєРё РЅР°С‡РёРЅР°СЏ СЃ РїРѕР·РёС†РёРё from Рё СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ from Р·Р° СЃС‡РёС‚Р°РЅРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј</td></tr>
 <tr><td><code><b>function</b> RegexReplace(Self: string; reg, repl: string; options: RegexOptions := RegexOptions.None): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заменяет в указанной строке все вхождения регулярного выражения указанной строкой замены и возвращает преобразованную строку</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РјРµРЅСЏРµС‚ РІ СѓРєР°Р·Р°РЅРЅРѕР№ СЃС‚СЂРѕРєРµ РІСЃРµ РІС…РѕР¶РґРµРЅРёСЏ СЂРµРіСѓР»СЏСЂРЅРѕРіРѕ РІС‹СЂР°Р¶РµРЅРёСЏ СѓРєР°Р·Р°РЅРЅРѕР№ СЃС‚СЂРѕРєРѕР№ Р·Р°РјРµРЅС‹ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРЅСѓСЋ СЃС‚СЂРѕРєСѓ</td></tr>
 <tr><td><code><b>function</b> RegexReplace(Self: string; reg: string; repl: Match-&gt;string; options: RegexOptions := RegexOptions.None): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заменяет в указанной строке все вхождения регулярного выражения указанным преобразованием замены и возвращает преобразованную строку</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РјРµРЅСЏРµС‚ РІ СѓРєР°Р·Р°РЅРЅРѕР№ СЃС‚СЂРѕРєРµ РІСЃРµ РІС…РѕР¶РґРµРЅРёСЏ СЂРµРіСѓР»СЏСЂРЅРѕРіРѕ РІС‹СЂР°Р¶РµРЅРёСЏ СѓРєР°Р·Р°РЅРЅС‹Рј РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµРј Р·Р°РјРµРЅС‹ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРЅСѓСЋ СЃС‚СЂРѕРєСѓ</td></tr>
 <tr><td><code><b>function</b> Remove(Self: string; <b>params</b> targets: <b>array</b>  <b>of</b> string): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет в строке все вхождения указанных строк</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґР°Р»СЏРµС‚ РІ СЃС‚СЂРѕРєРµ РІСЃРµ РІС…РѕР¶РґРµРЅРёСЏ СѓРєР°Р·Р°РЅРЅС‹С… СЃС‚СЂРѕРє</td></tr>
 <tr><td><code><b>function</b> Replace(Self: string; oldStr,newStr: string; count: integer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заменяет count вхождений подстроки oldStr на подстроку newStr в исходной строке</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РјРµРЅСЏРµС‚ count РІС…РѕР¶РґРµРЅРёР№ РїРѕРґСЃС‚СЂРѕРєРё oldStr РЅР° РїРѕРґСЃС‚СЂРѕРєСѓ newStr РІ РёСЃС…РѕРґРЅРѕР№ СЃС‚СЂРѕРєРµ</td></tr>
 <tr><td><code><b>function</b> Right(Self: string; length: integer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает подстроку, полученную вырезанием из строки length самых правых символов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕРґСЃС‚СЂРѕРєСѓ, РїРѕР»СѓС‡РµРЅРЅСѓСЋ РІС‹СЂРµР·Р°РЅРёРµРј РёР· СЃС‚СЂРѕРєРё length СЃР°РјС‹С… РїСЂР°РІС‹С… СЃРёРјРІРѕР»РѕРІ</td></tr>
 <tr><td><code><b>function</b> Slice(Self: string; from, step: integer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает срез строки от индекса from с шагом step</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃСЂРµР· СЃС‚СЂРѕРєРё РѕС‚ РёРЅРґРµРєСЃР° from СЃ С€Р°РіРѕРј step</td></tr>
 <tr><td><code><b>function</b> Slice(Self: string; from, step, count: integer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает срез строки от индекса from с шагом step длины не более count</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃСЂРµР· СЃС‚СЂРѕРєРё РѕС‚ РёРЅРґРµРєСЃР° from СЃ С€Р°РіРѕРј step РґР»РёРЅС‹ РЅРµ Р±РѕР»РµРµ count</td></tr>
 <tr><td><code><b>function</b> ToBigInteger(Self: string): BigInteger;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в BigInteger</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєСѓ РІ BigInteger</td></tr>
 <tr><td><code><b>function</b> ToInteger(Self: string): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в целое</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєСѓ РІ С†РµР»РѕРµ</td></tr>
 <tr><td><code><b>function</b> ToInteger(Self: string; defaultvalue: integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в целоеПри невозможности преобразования возвращается defaultvalue</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєСѓ РІ С†РµР»РѕРµРџСЂРё РЅРµРІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ defaultvalue</td></tr>
 <tr><td><code><b>function</b> ToIntegers(Self: string): <b>array</b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в массив целых</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєСѓ РІ РјР°СЃСЃРёРІ С†РµР»С‹С…</td></tr>
 <tr><td><code><b>function</b> ToIntegers(Self: string; N: integer): <b>array</b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает из строки массив из N целых</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ РёР· СЃС‚СЂРѕРєРё РјР°СЃСЃРёРІ РёР· N С†РµР»С‹С…</td></tr>
 <tr><td><code><b>function</b> ToLines(Self: string): <b>array</b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует многострочную строку в массив строк</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ РјРЅРѕРіРѕСЃС‚СЂРѕС‡РЅСѓСЋ СЃС‚СЂРѕРєСѓ РІ РјР°СЃСЃРёРІ СЃС‚СЂРѕРє</td></tr>
 <tr><td><code><b>function</b> ToReal(Self: string): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в вещественное</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєСѓ РІ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ</td></tr>
 <tr><td><code><b>function</b> ToReal(Self: string; nfi: NumberFormatInfo): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в вещественное</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєСѓ РІ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ</td></tr>
 <tr><td><code><b>function</b> ToReal(Self: string; DecimalSeparator: string): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в вещественное</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєСѓ РІ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ</td></tr>
 <tr><td><code><b>function</b> ToReal(Self: string; defaultvalue: real): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в вещественноеПри невозможности преобразования возвращается defaultvalue</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєСѓ РІ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµРџСЂРё РЅРµРІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ defaultvalue</td></tr>
 <tr><td><code><b>function</b> ToReals(Self: string): <b>array</b>  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в массив вещественных</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєСѓ РІ РјР°СЃСЃРёРІ РІРµС‰РµСЃС‚РІРµРЅРЅС‹С…</td></tr>
 <tr><td><code><b>function</b> ToReals(Self: string; nfi: NumberFormatInfo): <b>array</b>  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в массив вещественных</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєСѓ РІ РјР°СЃСЃРёРІ РІРµС‰РµСЃС‚РІРµРЅРЅС‹С…</td></tr>
 <tr><td><code><b>function</b> ToReals(Self: string; DecimalSeparator: string): <b>array</b>  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в массив вещественных</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєСѓ РІ РјР°СЃСЃРёРІ РІРµС‰РµСЃС‚РІРµРЅРЅС‹С…</td></tr>
 <tr><td><code><b>function</b> ToWords(Self: string; <b>params</b> delim: <b>array</b>  <b>of</b> char): <b>array</b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в массив слов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєСѓ РІ РјР°СЃСЃРёРІ СЃР»РѕРІ</td></tr>
 <tr><td><code><b>function</b> ToWords(Self: string; delims: string := ' '): <b>array</b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в массив слов, используя в качестве разделителей символы из строки delims</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєСѓ РІ РјР°СЃСЃРёРІ СЃР»РѕРІ, РёСЃРїРѕР»СЊР·СѓСЏ РІ РєР°С‡РµСЃС‚РІРµ СЂР°Р·РґРµР»РёС‚РµР»РµР№ СЃРёРјРІРѕР»С‹ РёР· СЃС‚СЂРѕРєРё delims</td></tr>
 <tr><td><code><b>function</b> TryToInteger(Self: string; <b>var</b> value: integer): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в целое и записывает его в value.При невозможности преобразования возвращается False</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєСѓ РІ С†РµР»РѕРµ Рё Р·Р°РїРёСЃС‹РІР°РµС‚ РµРіРѕ РІ value.РџСЂРё РЅРµРІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ False</td></tr>
 <tr><td><code><b>function</b> TryToReal(Self: string; <b>var</b> value: real): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в вещественное и записывает его в value.При невозможности преобразования возвращается False</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєСѓ РІ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ Рё Р·Р°РїРёСЃС‹РІР°РµС‚ РµРіРѕ РІ value.РџСЂРё РЅРµРІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ False</td></tr>
 </table>
 </body></HTML>

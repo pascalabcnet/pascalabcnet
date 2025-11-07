@@ -10,128 +10,128 @@
 </head>
 
 <body>
-<H1>Модуль PT4TaskMakerNET: форматирование текста заданий</H1>
+<H1>РњРѕРґСѓР»СЊ PT4TaskMakerNET: С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ С‚РµРєСЃС‚Р° Р·Р°РґР°РЅРёР№</H1>
 <hr>
-<h2>Общие сведения</h2>
-<p>В конструкторе учебных заданий PT4TaskMaker предусмотрена возможность <i>форматирования</i> текста заданий, а также
-преамбул для группы и ее подгрупп. Форматирование выполняется с помощью набора <i>управляющих последовательностей</i>
-(команд),
-большинство из которых имеет вид <code>\</code><i>символ</i>.
+<h2>РћР±С‰РёРµ СЃРІРµРґРµРЅРёСЏ</h2>
+<p>Р’ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРµ СѓС‡РµР±РЅС‹С… Р·Р°РґР°РЅРёР№ PT4TaskMaker РїСЂРµРґСѓСЃРјРѕС‚СЂРµРЅР° РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ <i>С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ</i> С‚РµРєСЃС‚Р° Р·Р°РґР°РЅРёР№, Р° С‚Р°РєР¶Рµ
+РїСЂРµР°РјР±СѓР» РґР»СЏ РіСЂСѓРїРїС‹ Рё РµРµ РїРѕРґРіСЂСѓРїРї. Р¤РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ СЃ РїРѕРјРѕС‰СЊСЋ РЅР°Р±РѕСЂР° <i>СѓРїСЂР°РІР»СЏСЋС‰РёС… РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№</i>
+(РєРѕРјР°РЅРґ),
+Р±РѕР»СЊС€РёРЅСЃС‚РІРѕ РёР· РєРѕС‚РѕСЂС‹С… РёРјРµРµС‚ РІРёРґ <code>\</code><i>СЃРёРјРІРѕР»</i>.
 </p>
 <p>
-Используя управляющие последовательности, можно выполнять следующие
-действия по форматированию текста в окне задачника:
+РСЃРїРѕР»СЊР·СѓСЏ СѓРїСЂР°РІР»СЏСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё, РјРѕР¶РЅРѕ РІС‹РїРѕР»РЅСЏС‚СЊ СЃР»РµРґСѓСЋС‰РёРµ
+РґРµР№СЃС‚РІРёСЏ РїРѕ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЋ С‚РµРєСЃС‚Р° РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР°:
 </p>
 <ul>
-<li>добавлять в текст специальные символы, в том числе символы шрифта Symbol и буквы западноевропейских языков;
-<li>выделять фрагмент текста полужирным шрифтом;
-<li>использовать в тексте нижние и верхние индексы;
-<li>добавлять в текст задания ссылки на другие задания этой же группы, не указывая при этом название группы (что позволяет
-корректно изменять эти ссылки при включении задания в другие группы);
-<li>добавлять в текст задания элементы, зависящие от текущего языка программирования (в частности,
-обозначения логических констант).
+<li>РґРѕР±Р°РІР»СЏС‚СЊ РІ С‚РµРєСЃС‚ СЃРїРµС†РёР°Р»СЊРЅС‹Рµ СЃРёРјРІРѕР»С‹, РІ С‚РѕРј С‡РёСЃР»Рµ СЃРёРјРІРѕР»С‹ С€СЂРёС„С‚Р° Symbol Рё Р±СѓРєРІС‹ Р·Р°РїР°РґРЅРѕРµРІСЂРѕРїРµР№СЃРєРёС… СЏР·С‹РєРѕРІ;
+<li>РІС‹РґРµР»СЏС‚СЊ С„СЂР°РіРјРµРЅС‚ С‚РµРєСЃС‚Р° РїРѕР»СѓР¶РёСЂРЅС‹Рј С€СЂРёС„С‚РѕРј;
+<li>РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РІ С‚РµРєСЃС‚Рµ РЅРёР¶РЅРёРµ Рё РІРµСЂС…РЅРёРµ РёРЅРґРµРєСЃС‹;
+<li>РґРѕР±Р°РІР»СЏС‚СЊ РІ С‚РµРєСЃС‚ Р·Р°РґР°РЅРёСЏ СЃСЃС‹Р»РєРё РЅР° РґСЂСѓРіРёРµ Р·Р°РґР°РЅРёСЏ СЌС‚РѕР№ Р¶Рµ РіСЂСѓРїРїС‹, РЅРµ СѓРєР°Р·С‹РІР°СЏ РїСЂРё СЌС‚РѕРј РЅР°Р·РІР°РЅРёРµ РіСЂСѓРїРїС‹ (С‡С‚Рѕ РїРѕР·РІРѕР»СЏРµС‚
+РєРѕСЂСЂРµРєС‚РЅРѕ РёР·РјРµРЅСЏС‚СЊ СЌС‚Рё СЃСЃС‹Р»РєРё РїСЂРё РІРєР»СЋС‡РµРЅРёРё Р·Р°РґР°РЅРёСЏ РІ РґСЂСѓРіРёРµ РіСЂСѓРїРїС‹);
+<li>РґРѕР±Р°РІР»СЏС‚СЊ РІ С‚РµРєСЃС‚ Р·Р°РґР°РЅРёСЏ СЌР»РµРјРµРЅС‚С‹, Р·Р°РІРёСЃСЏС‰РёРµ РѕС‚ С‚РµРєСѓС‰РµРіРѕ СЏР·С‹РєР° РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ (РІ С‡Р°СЃС‚РЅРѕСЃС‚Рё,
+РѕР±РѕР·РЅР°С‡РµРЅРёСЏ Р»РѕРіРёС‡РµСЃРєРёС… РєРѕРЅСЃС‚Р°РЅС‚).
 </ul>
-<p>Все описанные выше действия обеспечивают требуемое форматирование текста задания как в окне задачника,
-так и в html-описании данного задания. Аналогичное форматирование (в частности, использование нижних и верхних индексов)
-можно применять и в текстах комментариев, которые выводятся в окне задачника в разделах исходных и результирующих данных.
+<p>Р’СЃРµ РѕРїРёСЃР°РЅРЅС‹Рµ РІС‹С€Рµ РґРµР№СЃС‚РІРёСЏ РѕР±РµСЃРїРµС‡РёРІР°СЋС‚ С‚СЂРµР±СѓРµРјРѕРµ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ С‚РµРєСЃС‚Р° Р·Р°РґР°РЅРёСЏ РєР°Рє РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР°,
+С‚Р°Рє Рё РІ html-РѕРїРёСЃР°РЅРёРё РґР°РЅРЅРѕРіРѕ Р·Р°РґР°РЅРёСЏ. РђРЅР°Р»РѕРіРёС‡РЅРѕРµ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ (РІ С‡Р°СЃС‚РЅРѕСЃС‚Рё, РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РЅРёР¶РЅРёС… Рё РІРµСЂС…РЅРёС… РёРЅРґРµРєСЃРѕРІ)
+РјРѕР¶РЅРѕ РїСЂРёРјРµРЅСЏС‚СЊ Рё РІ С‚РµРєСЃС‚Р°С… РєРѕРјРјРµРЅС‚Р°СЂРёРµРІ, РєРѕС‚РѕСЂС‹Рµ РІС‹РІРѕРґСЏС‚СЃСЏ РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР° РІ СЂР°Р·РґРµР»Р°С… РёСЃС…РѕРґРЅС‹С… Рё СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰РёС… РґР°РЅРЅС‹С….
 </p>
-<p>Кроме того, имеются управляющие последовательности, не влияющие на текст задания в окне задачника, однако
-обеспечивающие дополнительное форматирование этого текста (и текста комментариев для группы и ее подгрупп)
-в html-описании задания или группы заданий. Данные управляющие последовательности позволяют:
+<p>РљСЂРѕРјРµ С‚РѕРіРѕ, РёРјРµСЋС‚СЃСЏ СѓРїСЂР°РІР»СЏСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё, РЅРµ РІР»РёСЏСЋС‰РёРµ РЅР° С‚РµРєСЃС‚ Р·Р°РґР°РЅРёСЏ РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР°, РѕРґРЅР°РєРѕ
+РѕР±РµСЃРїРµС‡РёРІР°СЋС‰РёРµ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕРµ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ СЌС‚РѕРіРѕ С‚РµРєСЃС‚Р° (Рё С‚РµРєСЃС‚Р° РєРѕРјРјРµРЅС‚Р°СЂРёРµРІ РґР»СЏ РіСЂСѓРїРїС‹ Рё РµРµ РїРѕРґРіСЂСѓРїРї)
+РІ html-РѕРїРёСЃР°РЅРёРё Р·Р°РґР°РЅРёСЏ РёР»Рё РіСЂСѓРїРїС‹ Р·Р°РґР°РЅРёР№. Р”Р°РЅРЅС‹Рµ СѓРїСЂР°РІР»СЏСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РїРѕР·РІРѕР»СЏСЋС‚:
 </p>
 <ul>
-<li>выделять имена переменных курсивом;
-<li>использовать более разнообразное выделение фрагментов текста (помимо полужирного начертания можно установить
-курсивное начертание, выделение моноширинным шрифтом и специальное выделение);
-<li>разбивать текст задания и преамбулы на отдельные абзацы;
-<li>устанавливать для требуемых фрагментов текста режим вывода с центрированием или с отступом;
-<li>обеспечивать вывод фрагментов текста в несколько столбцов, с возможностью установки способа выравнивания
-для каждого столбца.
+<li>РІС‹РґРµР»СЏС‚СЊ РёРјРµРЅР° РїРµСЂРµРјРµРЅРЅС‹С… РєСѓСЂСЃРёРІРѕРј;
+<li>РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ Р±РѕР»РµРµ СЂР°Р·РЅРѕРѕР±СЂР°Р·РЅРѕРµ РІС‹РґРµР»РµРЅРёРµ С„СЂР°РіРјРµРЅС‚РѕРІ С‚РµРєСЃС‚Р° (РїРѕРјРёРјРѕ РїРѕР»СѓР¶РёСЂРЅРѕРіРѕ РЅР°С‡РµСЂС‚Р°РЅРёСЏ РјРѕР¶РЅРѕ СѓСЃС‚Р°РЅРѕРІРёС‚СЊ
+РєСѓСЂСЃРёРІРЅРѕРµ РЅР°С‡РµСЂС‚Р°РЅРёРµ, РІС‹РґРµР»РµРЅРёРµ РјРѕРЅРѕС€РёСЂРёРЅРЅС‹Рј С€СЂРёС„С‚РѕРј Рё СЃРїРµС†РёР°Р»СЊРЅРѕРµ РІС‹РґРµР»РµРЅРёРµ);
+<li>СЂР°Р·Р±РёРІР°С‚СЊ С‚РµРєСЃС‚ Р·Р°РґР°РЅРёСЏ Рё РїСЂРµР°РјР±СѓР»С‹ РЅР° РѕС‚РґРµР»СЊРЅС‹Рµ Р°Р±Р·Р°С†С‹;
+<li>СѓСЃС‚Р°РЅР°РІР»РёРІР°С‚СЊ РґР»СЏ С‚СЂРµР±СѓРµРјС‹С… С„СЂР°РіРјРµРЅС‚РѕРІ С‚РµРєСЃС‚Р° СЂРµР¶РёРј РІС‹РІРѕРґР° СЃ С†РµРЅС‚СЂРёСЂРѕРІР°РЅРёРµРј РёР»Рё СЃ РѕС‚СЃС‚СѓРїРѕРј;
+<li>РѕР±РµСЃРїРµС‡РёРІР°С‚СЊ РІС‹РІРѕРґ С„СЂР°РіРјРµРЅС‚РѕРІ С‚РµРєСЃС‚Р° РІ РЅРµСЃРєРѕР»СЊРєРѕ СЃС‚РѕР»Р±С†РѕРІ, СЃ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊСЋ СѓСЃС‚Р°РЅРѕРІРєРё СЃРїРѕСЃРѕР±Р° РІС‹СЂР°РІРЅРёРІР°РЅРёСЏ
+РґР»СЏ РєР°Р¶РґРѕРіРѕ СЃС‚РѕР»Р±С†Р°.
 </ul>
-<p>Напомним, что для вывода на экран html-страницы с описанием задания или группы заданий достаточно вызвать процедуру Task,
-указав в конце ее параметра (имени задания или группы заданий) суффикс <code>#</code>. Кроме того, html-страницы
-с описанием групп заданий можно генерировать с помощью модуля PT4Demo, используя кнопку <img src="images\demo_3.png">
-в окне этого модуля.
+<p>РќР°РїРѕРјРЅРёРј, С‡С‚Рѕ РґР»СЏ РІС‹РІРѕРґР° РЅР° СЌРєСЂР°РЅ html-СЃС‚СЂР°РЅРёС†С‹ СЃ РѕРїРёСЃР°РЅРёРµРј Р·Р°РґР°РЅРёСЏ РёР»Рё РіСЂСѓРїРїС‹ Р·Р°РґР°РЅРёР№ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РІС‹Р·РІР°С‚СЊ РїСЂРѕС†РµРґСѓСЂСѓ Task,
+СѓРєР°Р·Р°РІ РІ РєРѕРЅС†Рµ РµРµ РїР°СЂР°РјРµС‚СЂР° (РёРјРµРЅРё Р·Р°РґР°РЅРёСЏ РёР»Рё РіСЂСѓРїРїС‹ Р·Р°РґР°РЅРёР№) СЃСѓС„С„РёРєСЃ <code>#</code>. РљСЂРѕРјРµ С‚РѕРіРѕ, html-СЃС‚СЂР°РЅРёС†С‹
+СЃ РѕРїРёСЃР°РЅРёРµРј РіСЂСѓРїРї Р·Р°РґР°РЅРёР№ РјРѕР¶РЅРѕ РіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ СЃ РїРѕРјРѕС‰СЊСЋ РјРѕРґСѓР»СЏ PT4Demo, РёСЃРїРѕР»СЊР·СѓСЏ РєРЅРѕРїРєСѓ <img src="images\demo_3.png">
+РІ РѕРєРЅРµ СЌС‚РѕРіРѕ РјРѕРґСѓР»СЏ.
 </p>
 
 
-<h2>Таблица управляющих последовательностей</h2>
-<p>Управляющие последовательности, приведенные в таблице, можно использовать в формулировках
-заданий (параметр S процедуры <a href="tmaker_proc1.html#TaskText">TaskText</a>), комментариях к исходным и результирующим данным
-(параметр Cmt в процедурах групп <a href="tmaker_proc1.html#DataN">Data</a> и <a href="tmaker_proc1.html#ResultN">Result</a>),
-а также в дополнительных описаниях (преамбулах) групп и подгрупп учебных заданий
-(параметр S в процедуре <a href="tmaker_proc1.html#CommentText">CommentText</a>).
+<h2>РўР°Р±Р»РёС†Р° СѓРїСЂР°РІР»СЏСЋС‰РёС… РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№</h2>
+<p>РЈРїСЂР°РІР»СЏСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё, РїСЂРёРІРµРґРµРЅРЅС‹Рµ РІ С‚Р°Р±Р»РёС†Рµ, РјРѕР¶РЅРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РІ С„РѕСЂРјСѓР»РёСЂРѕРІРєР°С…
+Р·Р°РґР°РЅРёР№ (РїР°СЂР°РјРµС‚СЂ S РїСЂРѕС†РµРґСѓСЂС‹ <a href="tmaker_proc1.html#TaskText">TaskText</a>), РєРѕРјРјРµРЅС‚Р°СЂРёСЏС… Рє РёСЃС…РѕРґРЅС‹Рј Рё СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰РёРј РґР°РЅРЅС‹Рј
+(РїР°СЂР°РјРµС‚СЂ Cmt РІ РїСЂРѕС†РµРґСѓСЂР°С… РіСЂСѓРїРї <a href="tmaker_proc1.html#DataN">Data</a> Рё <a href="tmaker_proc1.html#ResultN">Result</a>),
+Р° С‚Р°РєР¶Рµ РІ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С… РѕРїРёСЃР°РЅРёСЏС… (РїСЂРµР°РјР±СѓР»Р°С…) РіСЂСѓРїРї Рё РїРѕРґРіСЂСѓРїРї СѓС‡РµР±РЅС‹С… Р·Р°РґР°РЅРёР№
+(РїР°СЂР°РјРµС‚СЂ S РІ РїСЂРѕС†РµРґСѓСЂРµ <a href="tmaker_proc1.html#CommentText">CommentText</a>).
 </p>
-<p>Управляющие последовательности, использованные в параметрах процедур групп Data и Result, влияют только на представление соответствующих
-комментариев в окне задачника (см. столбец &laquo;Окно задачника&raquo;).
-Управляющие последовательности, использованные в параметре S процедуры CommentText, обеспечивают соответствующее форматирование
-преамбулы к группе заданий и ее подгруппам в тексте html-страницы с описанием группы заданий (см. столбец &laquo;Html-страница&raquo;).
-Управляющие последовательности, использованные в параметре S процедуры TaskText, влияют на вид
-формулировок заданий как в окне задачника, так и в html-описаниях.
+<p>РЈРїСЂР°РІР»СЏСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё, РёСЃРїРѕР»СЊР·РѕРІР°РЅРЅС‹Рµ РІ РїР°СЂР°РјРµС‚СЂР°С… РїСЂРѕС†РµРґСѓСЂ РіСЂСѓРїРї Data Рё Result, РІР»РёСЏСЋС‚ С‚РѕР»СЊРєРѕ РЅР° РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёС…
+РєРѕРјРјРµРЅС‚Р°СЂРёРµРІ РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР° (СЃРј. СЃС‚РѕР»Р±РµС† &laquo;РћРєРЅРѕ Р·Р°РґР°С‡РЅРёРєР°&raquo;).
+РЈРїСЂР°РІР»СЏСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё, РёСЃРїРѕР»СЊР·РѕРІР°РЅРЅС‹Рµ РІ РїР°СЂР°РјРµС‚СЂРµ S РїСЂРѕС†РµРґСѓСЂС‹ CommentText, РѕР±РµСЃРїРµС‡РёРІР°СЋС‚ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРµ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ
+РїСЂРµР°РјР±СѓР»С‹ Рє РіСЂСѓРїРїРµ Р·Р°РґР°РЅРёР№ Рё РµРµ РїРѕРґРіСЂСѓРїРїР°Рј РІ С‚РµРєСЃС‚Рµ html-СЃС‚СЂР°РЅРёС†С‹ СЃ РѕРїРёСЃР°РЅРёРµРј РіСЂСѓРїРїС‹ Р·Р°РґР°РЅРёР№ (СЃРј. СЃС‚РѕР»Р±РµС† &laquo;Html-СЃС‚СЂР°РЅРёС†Р°&raquo;).
+РЈРїСЂР°РІР»СЏСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё, РёСЃРїРѕР»СЊР·РѕРІР°РЅРЅС‹Рµ РІ РїР°СЂР°РјРµС‚СЂРµ S РїСЂРѕС†РµРґСѓСЂС‹ TaskText, РІР»РёСЏСЋС‚ РЅР° РІРёРґ
+С„РѕСЂРјСѓР»РёСЂРѕРІРѕРє Р·Р°РґР°РЅРёР№ РєР°Рє РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР°, С‚Р°Рє Рё РІ html-РѕРїРёСЃР°РЅРёСЏС….
 </p>
-<p>Все последовательности вида <code>\</code><i>символ</i>, не указанные в приведенной ниже таблице, игнорируются как при выводе текста в
-окне задачника, так при его отображения в виде html-страницы.
+<p>Р’СЃРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РІРёРґР° <code>\</code><i>СЃРёРјРІРѕР»</i>, РЅРµ СѓРєР°Р·Р°РЅРЅС‹Рµ РІ РїСЂРёРІРµРґРµРЅРЅРѕР№ РЅРёР¶Рµ С‚Р°Р±Р»РёС†Рµ, РёРіРЅРѕСЂРёСЂСѓСЋС‚СЃСЏ РєР°Рє РїСЂРё РІС‹РІРѕРґРµ С‚РµРєСЃС‚Р° РІ
+РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР°, С‚Р°Рє РїСЂРё РµРіРѕ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РІ РІРёРґРµ html-СЃС‚СЂР°РЅРёС†С‹.
 </p>
-<p>В <i>заголовках подгрупп</i>, указываемых в процедуре <a href="tmaker_proc1.html#CreateTask">CreateTask</a>
-(параметр SubgroupName), а также в
-<i>тексте краткого описания группы</i>, указываемого в процедуре <a href="tmaker_proc1.html#CreateGroup">CreateGroup</a> (параметр GroupDescription),
-управляющие последовательности не обрабатываются. При указании в этих строках управляющих последовательностей
-они дословно воспроизводятся и в окне задачника, и в html-описании.
-Для указания короткого (&#8211;) или длинного (&#8212;) тире в кратких описаниях и заголовках подгрупп можно использовать
-двойные и тройные дефисы соответственно: -- и ---. Начиная с версии задачника 4.10, двойные и тройные дефисы
-в заголовках подгрупп при их отображении в html-описаниях заменяются на короткие и длинные тире.
+<p>Р’ <i>Р·Р°РіРѕР»РѕРІРєР°С… РїРѕРґРіСЂСѓРїРї</i>, СѓРєР°Р·С‹РІР°РµРјС‹С… РІ РїСЂРѕС†РµРґСѓСЂРµ <a href="tmaker_proc1.html#CreateTask">CreateTask</a>
+(РїР°СЂР°РјРµС‚СЂ SubgroupName), Р° С‚Р°РєР¶Рµ РІ
+<i>С‚РµРєСЃС‚Рµ РєСЂР°С‚РєРѕРіРѕ РѕРїРёСЃР°РЅРёСЏ РіСЂСѓРїРїС‹</i>, СѓРєР°Р·С‹РІР°РµРјРѕРіРѕ РІ РїСЂРѕС†РµРґСѓСЂРµ <a href="tmaker_proc1.html#CreateGroup">CreateGroup</a> (РїР°СЂР°РјРµС‚СЂ GroupDescription),
+СѓРїСЂР°РІР»СЏСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РЅРµ РѕР±СЂР°Р±Р°С‚С‹РІР°СЋС‚СЃСЏ. РџСЂРё СѓРєР°Р·Р°РЅРёРё РІ СЌС‚РёС… СЃС‚СЂРѕРєР°С… СѓРїСЂР°РІР»СЏСЋС‰РёС… РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№
+РѕРЅРё РґРѕСЃР»РѕРІРЅРѕ РІРѕСЃРїСЂРѕРёР·РІРѕРґСЏС‚СЃСЏ Рё РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР°, Рё РІ html-РѕРїРёСЃР°РЅРёРё.
+Р”Р»СЏ СѓРєР°Р·Р°РЅРёСЏ РєРѕСЂРѕС‚РєРѕРіРѕ (&#8211;) РёР»Рё РґР»РёРЅРЅРѕРіРѕ (&#8212;) С‚РёСЂРµ РІ РєСЂР°С‚РєРёС… РѕРїРёСЃР°РЅРёСЏС… Рё Р·Р°РіРѕР»РѕРІРєР°С… РїРѕРґРіСЂСѓРїРї РјРѕР¶РЅРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ
+РґРІРѕР№РЅС‹Рµ Рё С‚СЂРѕР№РЅС‹Рµ РґРµС„РёСЃС‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРµРЅРЅРѕ: -- Рё ---. РќР°С‡РёРЅР°СЏ СЃ РІРµСЂСЃРёРё Р·Р°РґР°С‡РЅРёРєР° 4.10, РґРІРѕР№РЅС‹Рµ Рё С‚СЂРѕР№РЅС‹Рµ РґРµС„РёСЃС‹
+РІ Р·Р°РіРѕР»РѕРІРєР°С… РїРѕРґРіСЂСѓРїРї РїСЂРё РёС… РѕС‚РѕР±СЂР°Р¶РµРЅРёРё РІ html-РѕРїРёСЃР°РЅРёСЏС… Р·Р°РјРµРЅСЏСЋС‚СЃСЏ РЅР° РєРѕСЂРѕС‚РєРёРµ Рё РґР»РёРЅРЅС‹Рµ С‚РёСЂРµ.
 </p>
 <p>
 <table border=1 cellpadding=5 cellspacing=0 width=98% align=center bgcolor=#FFFFFF>
 
 <tr align=left valign=middle width=100% bgcolor=#FFFFFF>
 <td align=center valign=middle width=10% bgcolor=#FFFFFF>
-Команда
+РљРѕРјР°РЅРґР°
 </td>
 <td align=center valign=middle width=40% bgcolor=#FFFFFF>
-Описание
+РћРїРёСЃР°РЅРёРµ
 </td>
 <td align=center valign=middle width=15% bgcolor=#FFFFFF>
-Окно задачника
+РћРєРЅРѕ Р·Р°РґР°С‡РЅРёРєР°
 </td>
 <td align=center valign=middle width=35% bgcolor=#FFFFFF>
-Html-страница
+Html-СЃС‚СЂР°РЅРёС†Р°
 </td>
 </tr>
 
 <tr align=left valign=middle width=100% bgcolor=#FFFFFF>
 <td align=left valign=middle width=100% bgcolor=#FFFFFF colspan = 4>
-<b>Ссылки на другие задания данной группы</b>
+<b>РЎСЃС‹Р»РєРё РЅР° РґСЂСѓРіРёРµ Р·Р°РґР°РЅРёСЏ РґР°РЅРЅРѕР№ РіСЂСѓРїРїС‹</b>
 </td>
 </tr>
 
 
 <tr align=left valign=middle width=100% bgcolor=#FFFFFF>
 <td align=center valign=middle width=10% bgcolor=#FFFFFF>
-<code>\</code><i>число</i>
+<code>\</code><i>С‡РёСЃР»Рѕ</i>
 </td>
 <td align=left valign=middle width=90% bgcolor=#FFFFFF  colspan = 3>
-Имя задания
-из текущей группы с номером, меньшим текущего на величину указанного десятичного числа (или <code>*********</code>,
-если результирующий номер оказывается меньшим 1)
+РРјСЏ Р·Р°РґР°РЅРёСЏ
+РёР· С‚РµРєСѓС‰РµР№ РіСЂСѓРїРїС‹ СЃ РЅРѕРјРµСЂРѕРј, РјРµРЅСЊС€РёРј С‚РµРєСѓС‰РµРіРѕ РЅР° РІРµР»РёС‡РёРЅСѓ СѓРєР°Р·Р°РЅРЅРѕРіРѕ РґРµСЃСЏС‚РёС‡РЅРѕРіРѕ С‡РёСЃР»Р° (РёР»Рё <code>*********</code>,
+РµСЃР»Рё СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰РёР№ РЅРѕРјРµСЂ РѕРєР°Р·С‹РІР°РµС‚СЃСЏ РјРµРЅСЊС€РёРј 1)
 </td>
 </tr>
 
 <tr align=left valign=middle width=100% bgcolor=#FFFFFF>
 <td align=center valign=middle width=10% bgcolor=#FFFFFF>
-<code>\0</code><i>число</i>
+<code>\0</code><i>С‡РёСЃР»Рѕ</i>
 </td>
 <td align=left valign=middle width=90% bgcolor=#FFFFFF colspan = 3>
-Имя задания
-из текущей группы с номером, большим текущего на величину указанного десятичного числа
-(или <code>*********</code>,
-если результирующий номер оказывается большим 999)
+РРјСЏ Р·Р°РґР°РЅРёСЏ
+РёР· С‚РµРєСѓС‰РµР№ РіСЂСѓРїРїС‹ СЃ РЅРѕРјРµСЂРѕРј, Р±РѕР»СЊС€РёРј С‚РµРєСѓС‰РµРіРѕ РЅР° РІРµР»РёС‡РёРЅСѓ СѓРєР°Р·Р°РЅРЅРѕРіРѕ РґРµСЃСЏС‚РёС‡РЅРѕРіРѕ С‡РёСЃР»Р°
+(РёР»Рё <code>*********</code>,
+РµСЃР»Рё СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰РёР№ РЅРѕРјРµСЂ РѕРєР°Р·С‹РІР°РµС‚СЃСЏ Р±РѕР»СЊС€РёРј 999)
 </td>
 </tr>
 
 <tr align=left valign=middle width=100% bgcolor=#FFFFFF>
 <td align=left valign=middle width=100% bgcolor=#FFFFFF  colspan = 4>
-<b>Пробелы</b>
+<b>РџСЂРѕР±РµР»С‹</b>
 </td>
 </tr>
 
@@ -140,10 +140,10 @@ Html-страница
 <code>\,</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Малый неразрывный пробел
+РњР°Р»С‹Р№ РЅРµСЂР°Р·СЂС‹РІРЅС‹Р№ РїСЂРѕР±РµР»
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Игнорируется</i>
+<i>РРіРЅРѕСЂРёСЂСѓРµС‚СЃСЏ</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
 <code>&amp;nbsp;</code>
@@ -155,10 +155,10 @@ Html-страница
 <code>\;</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Средний неразрывный пробел
+РЎСЂРµРґРЅРёР№ РЅРµСЂР°Р·СЂС‹РІРЅС‹Р№ РїСЂРѕР±РµР»
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Пробел</i>
+<i>РџСЂРѕР±РµР»</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
 <code>&amp;nbsp;</code>
@@ -170,10 +170,10 @@ Html-страница
 <code>~</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Обычный неразрывный пробел
+РћР±С‹С‡РЅС‹Р№ РЅРµСЂР°Р·СЂС‹РІРЅС‹Р№ РїСЂРѕР±РµР»
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Пробел</i>
+<i>РџСЂРѕР±РµР»</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
 <code>&amp;nbsp;</code>
@@ -185,13 +185,13 @@ Html-страница
 <code>\q</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Большой пробел
+Р‘РѕР»СЊС€РѕР№ РїСЂРѕР±РµР»
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Игнорируется</i>
+<i>РРіРЅРѕСЂРёСЂСѓРµС‚СЃСЏ</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
-<i>Пробел</i><code>&amp;nbsp;</code><i>Пробел</i><code>&amp;nbsp;</code>
+<i>РџСЂРѕР±РµР»</i><code>&amp;nbsp;</code><i>РџСЂРѕР±РµР»</i><code>&amp;nbsp;</code>
 </td>
 </tr>
 
@@ -200,13 +200,13 @@ Html-страница
 <code>\Q</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Двойной большой пробел
+Р”РІРѕР№РЅРѕР№ Р±РѕР»СЊС€РѕР№ РїСЂРѕР±РµР»
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Игнорируется</i>
+<i>РРіРЅРѕСЂРёСЂСѓРµС‚СЃСЏ</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
-<i>2 копии большого пробела</i>
+<i>2 РєРѕРїРёРё Р±РѕР»СЊС€РѕРіРѕ РїСЂРѕР±РµР»Р°</i>
 </td>
 </tr>
 
@@ -214,7 +214,7 @@ Html-страница
 
 <tr align=left valign=middle width=100% bgcolor=#FFFFFF>
 <td align=left valign=middle width=100% bgcolor=#FFFFFF  colspan = 4>
-<a name="Symbols"></a><b>Символы</b>
+<a name="Symbols"></a><b>РЎРёРјРІРѕР»С‹</b>
 </td>
 </tr>
 
@@ -223,7 +223,7 @@ Html-страница
 <code>\\</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Обратная косая черта (\)
+РћР±СЂР°С‚РЅР°СЏ РєРѕСЃР°СЏ С‡РµСЂС‚Р° (\)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>\</code>
@@ -238,7 +238,7 @@ Html-страница
 <code>\&amp;</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Амперсанд (&amp;)
+РђРјРїРµСЂСЃР°РЅРґ (&amp;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>&amp;</code>
@@ -254,7 +254,7 @@ Html-страница
 <code>\{</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Открывающая фигурная скобка ({)
+РћС‚РєСЂС‹РІР°СЋС‰Р°СЏ С„РёРіСѓСЂРЅР°СЏ СЃРєРѕР±РєР° ({)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>{</code>
@@ -269,7 +269,7 @@ Html-страница
 <code>\}</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Закрывающая фигурная скобка (})
+Р—Р°РєСЂС‹РІР°СЋС‰Р°СЏ С„РёРіСѓСЂРЅР°СЏ СЃРєРѕР±РєР° (})
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>}</code>
@@ -284,7 +284,7 @@ Html-страница
 <code>\~</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Символ &laquo;волна&raquo; (~)
+РЎРёРјРІРѕР» &laquo;РІРѕР»РЅР°&raquo; (~)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>~</code>
@@ -299,7 +299,7 @@ Html-страница
 <code>\^</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Символ &laquo;шапочка&raquo; (^)
+РЎРёРјРІРѕР» &laquo;С€Р°РїРѕС‡РєР°&raquo; (^)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>^</code>
@@ -314,7 +314,7 @@ Html-страница
 <code>\_</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Символ подчеркивания (_)
+РЎРёРјРІРѕР» РїРѕРґС‡РµСЂРєРёРІР°РЅРёСЏ (_)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>_</code>
@@ -329,10 +329,10 @@ Html-страница
 <code>\.</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Многоточие (&#8230;)
+РњРЅРѕРіРѕС‚РѕС‡РёРµ (&#8230;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<code>...</code><br><i>(три точки)</i>
+<code>...</code><br><i>(С‚СЂРё С‚РѕС‡РєРё)</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
 <code>&amp;#8230;</code>
@@ -344,7 +344,7 @@ Html-страница
 <code>\=</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Длинное тире (&#8212;)
+Р”Р»РёРЅРЅРѕРµ С‚РёСЂРµ (&#8212;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>&#8212;</code>
@@ -359,7 +359,7 @@ Html-страница
 <code>\:</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Символ диапазона, или короткое тире (&#8211;)
+РЎРёРјРІРѕР» РґРёР°РїР°Р·РѕРЅР°, РёР»Рё РєРѕСЂРѕС‚РєРѕРµ С‚РёСЂРµ (&#8211;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>&#8211;</code>
@@ -374,7 +374,7 @@ Html-страница
 <code>\-</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Символ &laquo;минус&raquo; (&#8722;)
+РЎРёРјРІРѕР» &laquo;РјРёРЅСѓСЃ&raquo; (&#8722;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>&#8722;</code>
@@ -389,7 +389,7 @@ Html-страница
 <code>\&lt;</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Открывающие угловые кавычки (&laquo;)
+РћС‚РєСЂС‹РІР°СЋС‰РёРµ СѓРіР»РѕРІС‹Рµ РєР°РІС‹С‡РєРё (&laquo;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>&#171;</code>
@@ -404,7 +404,7 @@ Html-страница
 <code>\&gt;</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Закрывающие угловые кавычки (&raquo;)
+Р—Р°РєСЂС‹РІР°СЋС‰РёРµ СѓРіР»РѕРІС‹Рµ РєР°РІС‹С‡РєРё (&raquo;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>&#187;</code>
@@ -419,7 +419,7 @@ Html-страница
 <code>\*</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Символ умножения (&#183;)
+РЎРёРјРІРѕР» СѓРјРЅРѕР¶РµРЅРёСЏ (&#183;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>&#183;</code>
@@ -434,7 +434,7 @@ Html-страница
 <code>\+</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Символ &laquo;плюс-минус&raquo; (&#177;)
+РЎРёРјРІРѕР» &laquo;РїР»СЋСЃ-РјРёРЅСѓСЃ&raquo; (&#177;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>&#177;</code>
@@ -449,7 +449,7 @@ Html-страница
 <code>\o</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Символ градуса (&#176;)
+РЎРёРјРІРѕР» РіСЂР°РґСѓСЃР° (&#176;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>&#176;</code>
@@ -464,7 +464,7 @@ Html-страница
 <code>\x</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Символ &laquo;косой крест&raquo; (&#215;)
+РЎРёРјРІРѕР» &laquo;РєРѕСЃРѕР№ РєСЂРµСЃС‚&raquo; (&#215;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>&#215;</code>
@@ -479,7 +479,7 @@ Html-страница
 <code>\a</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Греческая буква &laquo;альфа&raquo; (&#945;)
+Р“СЂРµС‡РµСЃРєР°СЏ Р±СѓРєРІР° &laquo;Р°Р»СЊС„Р°&raquo; (&#945;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &#945;
@@ -494,7 +494,7 @@ Html-страница
 <code>\p</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Греческая буква &laquo;пи&raquo; (&#960;)
+Р“СЂРµС‡РµСЃРєР°СЏ Р±СѓРєРІР° &laquo;РїРё&raquo; (&#960;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &#960;
@@ -509,7 +509,7 @@ Html-страница
 <code>\e</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Греческая буква &laquo;эпсилон&raquo; (&#949;)
+Р“СЂРµС‡РµСЃРєР°СЏ Р±СѓРєРІР° &laquo;СЌРїСЃРёР»РѕРЅ&raquo; (&#949;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &#949;
@@ -524,7 +524,7 @@ Html-страница
 <code>\l</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Символ &laquo;меньше или равно&raquo; (&#8804;)
+РЎРёРјРІРѕР» &laquo;РјРµРЅСЊС€Рµ РёР»Рё СЂР°РІРЅРѕ&raquo; (&#8804;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>&#8804;</code>
@@ -539,7 +539,7 @@ Html-страница
 <code>\g</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Символ &laquo;больше или равно&raquo; (&#8805;)
+РЎРёРјРІРѕР» &laquo;Р±РѕР»СЊС€Рµ РёР»Рё СЂР°РІРЅРѕ&raquo; (&#8805;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>&#8805;</code>
@@ -554,7 +554,7 @@ Html-страница
 <code>\n</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Символ &laquo;не равно&raquo; (&#8800;)
+РЎРёРјРІРѕР» &laquo;РЅРµ СЂР°РІРЅРѕ&raquo; (&#8800;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>&#8800;</code>
@@ -569,7 +569,7 @@ Html-страница
 <code>\X</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Символ &laquo;bullet&raquo; (&#8226;)
+РЎРёРјРІРѕР» &laquo;bullet&raquo; (&#8226;)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>&#8226;</code>
@@ -581,18 +581,18 @@ Html-страница
 
 <tr align=left valign=middle width=100% bgcolor=#FFFFFF>
 <td align=center valign=middle width=10% bgcolor=#FFFFFF>
-<code>\h</code><i>XX</i>, где <i>XX</i> &#151; двузначное 16-ричное число
+<code>\h</code><i>XX</i>, РіРґРµ <i>XX</i> &#151; РґРІСѓР·РЅР°С‡РЅРѕРµ 16-СЂРёС‡РЅРѕРµ С‡РёСЃР»Рѕ
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Символ с кодом <i>XX</i> из второй половины кодовой таблицы для западноевропейских языков
-ANSI Latin-1 (кодовая страница 1252)
+РЎРёРјРІРѕР» СЃ РєРѕРґРѕРј <i>XX</i> РёР· РІС‚РѕСЂРѕР№ РїРѕР»РѕРІРёРЅС‹ РєРѕРґРѕРІРѕР№ С‚Р°Р±Р»РёС†С‹ РґР»СЏ Р·Р°РїР°РґРЅРѕРµРІСЂРѕРїРµР№СЃРєРёС… СЏР·С‹РєРѕРІ
+ANSI Latin-1 (РєРѕРґРѕРІР°СЏ СЃС‚СЂР°РЅРёС†Р° 1252)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Соответствующий символ</i>
+<i>РЎРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ СЃРёРјРІРѕР»</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
 <code>&amp;#</code><i>DDD</i><code>;</code><br>
-<i>(DDD &#151; десятичный код соответствующего символа в кодировке Unicode)</i>
+<i>(DDD &#151; РґРµСЃСЏС‚РёС‡РЅС‹Р№ РєРѕРґ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ СЃРёРјРІРѕР»Р° РІ РєРѕРґРёСЂРѕРІРєРµ Unicode)</i>
 </td>
 </tr>
 
@@ -600,26 +600,26 @@ ANSI Latin-1 (кодовая страница 1252)
 
 <tr align=left valign=middle width=100% bgcolor=#FFFFFF>
 <td align=center valign=middle width=10% bgcolor=#FFFFFF>
-<code>\H</code><i>XX</i>, где <i>XX</i> &#151; двузначное 16-ричное число
+<code>\H</code><i>XX</i>, РіРґРµ <i>XX</i> &#151; РґРІСѓР·РЅР°С‡РЅРѕРµ 16-СЂРёС‡РЅРѕРµ С‡РёСЃР»Рѕ
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Символ с кодом <i>XX</i> Windows-шрифта Symbol
+РЎРёРјРІРѕР» СЃ РєРѕРґРѕРј <i>XX</i> Windows-С€СЂРёС„С‚Р° Symbol
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Соответствующий символ</i>
+<i>РЎРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ СЃРёРјРІРѕР»</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
 <code>&amp;#</code><i>DDD</i><code>;</code><br>
-<i>(DDD &#151; десятичный код соответствующего символа в кодировке Unicode)</i>    <br>
-<i>или</i><br><code>&lt;font face="Symbol"&gt;&amp;#</code><i>DDD</i><code>;&lt;/font&gt;</code><br>
-<i>(DDD &#151; десятичное число, равное 16-ричному числу XX)</i>
+<i>(DDD &#151; РґРµСЃСЏС‚РёС‡РЅС‹Р№ РєРѕРґ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ СЃРёРјРІРѕР»Р° РІ РєРѕРґРёСЂРѕРІРєРµ Unicode)</i>    <br>
+<i>РёР»Рё</i><br><code>&lt;font face="Symbol"&gt;&amp;#</code><i>DDD</i><code>;&lt;/font&gt;</code><br>
+<i>(DDD &#151; РґРµСЃСЏС‚РёС‡РЅРѕРµ С‡РёСЃР»Рѕ, СЂР°РІРЅРѕРµ 16-СЂРёС‡РЅРѕРјСѓ С‡РёСЃР»Сѓ XX)</i>
 </td>
 </tr>
 
 
 <tr align=left valign=middle width=100% bgcolor=#FFFFFF>
 <td align=left valign=middle width=100% bgcolor=#FFFFFF  colspan = 4>
-<b>Элементы текста, зависящие от текущего языка программирования</b>
+<b>Р­Р»РµРјРµРЅС‚С‹ С‚РµРєСЃС‚Р°, Р·Р°РІРёСЃСЏС‰РёРµ РѕС‚ С‚РµРєСѓС‰РµРіРѕ СЏР·С‹РєР° РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ</b>
 </td>
 </tr>
 <tr align=left valign=middle width=100% bgcolor=#FFFFFF>
@@ -627,7 +627,7 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\R</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка начала квадратного корня
+РњРµС‚РєР° РЅР°С‡Р°Р»Р° РєРІР°РґСЂР°С‚РЅРѕРіРѕ РєРѕСЂРЅСЏ
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>Sqrt(</code><br>
@@ -635,7 +635,7 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>sqrt(</code><br>
 <i>(C++, Python, Java)</i><br>
 <code>Sqr(</code><br>
-<i>(Visual Basic версий 5 и&nbsp;6)</i><br>
+<i>(Visual Basic РІРµСЂСЃРёР№ 5 Рё&nbsp;6)</i><br>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
 <code>(</code>
@@ -647,7 +647,7 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\r</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка конца квадратного корня
+РњРµС‚РєР° РєРѕРЅС†Р° РєРІР°РґСЂР°С‚РЅРѕРіРѕ РєРѕСЂРЅСЏ
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 <code>)</code><br>
@@ -662,7 +662,7 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\t</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Логическая константа &laquo;True&raquo;
+Р›РѕРіРёС‡РµСЃРєР°СЏ РєРѕРЅСЃС‚Р°РЅС‚Р° &laquo;True&raquo;
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF colspan=2>
 <code>True</code> <i>(Pascal, PascalABC.NET, Visual Basic, VB.NET, Python)</i><br>
@@ -675,7 +675,7 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\f</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Логическая константа &laquo;False&raquo;
+Р›РѕРіРёС‡РµСЃРєР°СЏ РєРѕРЅСЃС‚Р°РЅС‚Р° &laquo;False&raquo;
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF colspan=2>
 <code>False</code> <i>(Pascal, PascalABC.NET, Visual Basic, VB.NET, Python)</i><br>
@@ -688,7 +688,7 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\N</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Нулевой указатель
+РќСѓР»РµРІРѕР№ СѓРєР°Р·Р°С‚РµР»СЊ
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF colspan=2>
 <code>nil</code> <i>(Pascal)</i><br>
@@ -701,7 +701,7 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\O</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Нулевая ссылка для объекта
+РќСѓР»РµРІР°СЏ СЃСЃС‹Р»РєР° РґР»СЏ РѕР±СЉРµРєС‚Р°
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF colspan=2>
 <code>null</code> <i>(C#, Java)</i><br>
@@ -716,7 +716,7 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\d</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Имя функции для освобождения ресурсов, выделенных объекту
+РРјСЏ С„СѓРЅРєС†РёРё РґР»СЏ РѕСЃРІРѕР±РѕР¶РґРµРЅРёСЏ СЂРµСЃСѓСЂСЃРѕРІ, РІС‹РґРµР»РµРЅРЅС‹С… РѕР±СЉРµРєС‚Сѓ
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF colspan=2>
 <code>Dispose</code> <i>(PascalABC.NET, C#, VB.NET)</i><br>
@@ -726,38 +726,38 @@ ANSI Latin-1 (кодовая страница 1252)
 
 <tr align=left valign=middle width=100% bgcolor=#FFFFFF>
 <td align=left valign=middle width=100% bgcolor=#FFFFFF  colspan = 4>
-<b>Индексы</b>
+<b>РРЅРґРµРєСЃС‹</b>
 </td>
 </tr>
 
 <tr align=left valign=middle width=100% bgcolor=#FFFFFF>
 <td align=center valign=middle width=10% bgcolor=#FFFFFF>
-<code>_</code><i>символ</i>
+<code>_</code><i>СЃРёРјРІРѕР»</i>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Односимвольный нижний индекс
+РћРґРЅРѕСЃРёРјРІРѕР»СЊРЅС‹Р№ РЅРёР¶РЅРёР№ РёРЅРґРµРєСЃ
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Cимвол выводится как нижний индекс</i>
+<i>CРёРјРІРѕР» РІС‹РІРѕРґРёС‚СЃСЏ РєР°Рє РЅРёР¶РЅРёР№ РёРЅРґРµРєСЃ</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
-<code>&lt;sub&gt;</code><i>символ</i><code>&lt;/sub&gt;</code>
+<code>&lt;sub&gt;</code><i>СЃРёРјРІРѕР»</i><code>&lt;/sub&gt;</code>
 
 </td>
 </tr>
 
 <tr align=left valign=middle width=100% bgcolor=#FFFFFF>
 <td align=center valign=middle width=10% bgcolor=#FFFFFF>
-<code>^</code><i>символ</i>
+<code>^</code><i>СЃРёРјРІРѕР»</i>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Односимвольный верхний индекс
+РћРґРЅРѕСЃРёРјРІРѕР»СЊРЅС‹Р№ РІРµСЂС…РЅРёР№ РёРЅРґРµРєСЃ
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Cимвол выводится как верхний индекс</i>
+<i>CРёРјРІРѕР» РІС‹РІРѕРґРёС‚СЃСЏ РєР°Рє РІРµСЂС…РЅРёР№ РёРЅРґРµРєСЃ</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
-<code>&lt;sup&gt;</code><i>символ</i><code>&lt;/sup&gt;</code>
+<code>&lt;sup&gt;</code><i>СЃРёРјРІРѕР»</i><code>&lt;/sup&gt;</code>
 </td>
 </tr>
 
@@ -766,10 +766,10 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>_{</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка начала многосимвольного нижнего индекса
+РњРµС‚РєР° РЅР°С‡Р°Р»Р° РјРЅРѕРіРѕСЃРёРјРІРѕР»СЊРЅРѕРіРѕ РЅРёР¶РЅРµРіРѕ РёРЅРґРµРєСЃР°
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Переход в режим нижнего индекса</i>
+<i>РџРµСЂРµС…РѕРґ РІ СЂРµР¶РёРј РЅРёР¶РЅРµРіРѕ РёРЅРґРµРєСЃР°</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
 <code>&lt;sub&gt;</code>
@@ -781,10 +781,10 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>^{</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка начала многосимвольного верхнего индекса
+РњРµС‚РєР° РЅР°С‡Р°Р»Р° РјРЅРѕРіРѕСЃРёРјРІРѕР»СЊРЅРѕРіРѕ РІРµСЂС…РЅРµРіРѕ РёРЅРґРµРєСЃР°
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Переход в режим верхнего индекса</i>
+<i>РџРµСЂРµС…РѕРґ РІ СЂРµР¶РёРј РІРµСЂС…РЅРµРіРѕ РёРЅРґРµРєСЃР°</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
 <code>&lt;sup&gt;</code>
@@ -796,19 +796,19 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>}</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка конца текущего (верхнего или нижнего) многосимвольного индекса
+РњРµС‚РєР° РєРѕРЅС†Р° С‚РµРєСѓС‰РµРіРѕ (РІРµСЂС…РЅРµРіРѕ РёР»Рё РЅРёР¶РЅРµРіРѕ) РјРЅРѕРіРѕСЃРёРјРІРѕР»СЊРЅРѕРіРѕ РёРЅРґРµРєСЃР°
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Выход из режима индекса</i>
+<i>Р’С‹С…РѕРґ РёР· СЂРµР¶РёРјР° РёРЅРґРµРєСЃР°</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
-<code>&lt;/sub&gt;</code><br><i>или</i><br><code>&lt;/sup&gt;</code>
+<code>&lt;/sub&gt;</code><br><i>РёР»Рё</i><br><code>&lt;/sup&gt;</code>
 </td>
 </tr>
 
 <tr align=left valign=middle width=100% bgcolor=#FFFFFF>
 <td align=left valign=middle width=100% bgcolor=#FFFFFF  colspan = 4>
-<b>Выделение (в окне задачника любой режим выделения приводит к выделению полужирным шрифтом)</b>
+<b>Р’С‹РґРµР»РµРЅРёРµ (РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР° Р»СЋР±РѕР№ СЂРµР¶РёРј РІС‹РґРµР»РµРЅРёСЏ РїСЂРёРІРѕРґРёС‚ Рє РІС‹РґРµР»РµРЅРёСЋ РїРѕР»СѓР¶РёСЂРЅС‹Рј С€СЂРёС„С‚РѕРј)</b>
 </td>
 </tr>
 
@@ -817,10 +817,10 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\B</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка начала полужирного выделения
+РњРµС‚РєР° РЅР°С‡Р°Р»Р° РїРѕР»СѓР¶РёСЂРЅРѕРіРѕ РІС‹РґРµР»РµРЅРёСЏ
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Переход в режим выделения</i>
+<i>РџРµСЂРµС…РѕРґ РІ СЂРµР¶РёРј РІС‹РґРµР»РµРЅРёСЏ</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
 <code>&lt;b&gt;</code>
@@ -832,10 +832,10 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\b</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка конца полужирного выделения
+РњРµС‚РєР° РєРѕРЅС†Р° РїРѕР»СѓР¶РёСЂРЅРѕРіРѕ РІС‹РґРµР»РµРЅРёСЏ
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Выход из режима выделения</i>
+<i>Р’С‹С…РѕРґ РёР· СЂРµР¶РёРјР° РІС‹РґРµР»РµРЅРёСЏ</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
 <code>&lt;/b&gt;</code>
@@ -847,10 +847,10 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\I</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка начала курсивного выделения
+РњРµС‚РєР° РЅР°С‡Р°Р»Р° РєСѓСЂСЃРёРІРЅРѕРіРѕ РІС‹РґРµР»РµРЅРёСЏ
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Переход в режим выделения</i>
+<i>РџРµСЂРµС…РѕРґ РІ СЂРµР¶РёРј РІС‹РґРµР»РµРЅРёСЏ</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
 <code>&lt;i&gt;</code>
@@ -862,10 +862,10 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\i</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка конца курсивного выделения
+РњРµС‚РєР° РєРѕРЅС†Р° РєСѓСЂСЃРёРІРЅРѕРіРѕ РІС‹РґРµР»РµРЅРёСЏ
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Выход из режима выделения</i>
+<i>Р’С‹С…РѕРґ РёР· СЂРµР¶РёРјР° РІС‹РґРµР»РµРЅРёСЏ</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
 <code>&lt;/i&gt;</code>
@@ -877,10 +877,10 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\S</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка начала специального выделения
+РњРµС‚РєР° РЅР°С‡Р°Р»Р° СЃРїРµС†РёР°Р»СЊРЅРѕРіРѕ РІС‹РґРµР»РµРЅРёСЏ
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Переход в режим выделения</i>
+<i>РџРµСЂРµС…РѕРґ РІ СЂРµР¶РёРј РІС‹РґРµР»РµРЅРёСЏ</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
 <code>&lt;span class="ptSpecial"&gt;</code>
@@ -892,10 +892,10 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\s</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка конца специального выделения
+РњРµС‚РєР° РєРѕРЅС†Р° СЃРїРµС†РёР°Р»СЊРЅРѕРіРѕ РІС‹РґРµР»РµРЅРёСЏ
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
-<i>Выход из режима выделения</i>
+<i>Р’С‹С…РѕРґ РёР· СЂРµР¶РёРјР° РІС‹РґРµР»РµРЅРёСЏ</i>
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
 <code>&lt;/span&gt;</code>
@@ -904,7 +904,7 @@ ANSI Latin-1 (кодовая страница 1252)
 
 <tr align=left valign=middle width=100% bgcolor=#FFFFFF>
 <td align=left valign=middle width=100% bgcolor=#FFFFFF  colspan = 4>
-<b>Дополнительное форматирование html-страниц (в окне задачника данные управляющие последовательности игнорируются)</b>
+<b>Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕРµ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ html-СЃС‚СЂР°РЅРёС† (РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР° РґР°РЅРЅС‹Рµ СѓРїСЂР°РІР»СЏСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РёРіРЅРѕСЂРёСЂСѓСЋС‚СЃСЏ)</b>
 </td>
 </tr>
 
@@ -913,7 +913,7 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>{</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка начала выделения переменной
+РњРµС‚РєР° РЅР°С‡Р°Р»Р° РІС‹РґРµР»РµРЅРёСЏ РїРµСЂРµРјРµРЅРЅРѕР№
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &nbsp;
@@ -928,7 +928,7 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>}</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка конца выделения переменной
+РњРµС‚РєР° РєРѕРЅС†Р° РІС‹РґРµР»РµРЅРёСЏ РїРµСЂРµРјРµРЅРЅРѕР№
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &nbsp;
@@ -943,7 +943,7 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\M</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка начала моноширинного текста
+РњРµС‚РєР° РЅР°С‡Р°Р»Р° РјРѕРЅРѕС€РёСЂРёРЅРЅРѕРіРѕ С‚РµРєСЃС‚Р°
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &nbsp;
@@ -958,7 +958,7 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\m</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка конца моноширинного текста
+РњРµС‚РєР° РєРѕРЅС†Р° РјРѕРЅРѕС€РёСЂРёРЅРЅРѕРіРѕ С‚РµРєСЃС‚Р°
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &nbsp;
@@ -973,7 +973,7 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\|</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Разрыв строки
+Р Р°Р·СЂС‹РІ СЃС‚СЂРѕРєРё
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &nbsp;
@@ -988,14 +988,14 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\P</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Начало нового абзаца
+РќР°С‡Р°Р»Рѕ РЅРѕРІРѕРіРѕ Р°Р±Р·Р°С†Р°
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &nbsp;
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
-<i>Завершается предыдущий абзац и создается абзац стиля</i> <code>ptTaskContinue</code> <i>(при использовании в формулировке задания)
-или</i> <code>ptComment</code> <i>(при использовании в тексте преамбулы)</i>
+<i>Р—Р°РІРµСЂС€Р°РµС‚СЃСЏ РїСЂРµРґС‹РґСѓС‰РёР№ Р°Р±Р·Р°С† Рё СЃРѕР·РґР°РµС‚СЃСЏ Р°Р±Р·Р°С† СЃС‚РёР»СЏ</i> <code>ptTaskContinue</code> <i>(РїСЂРё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё РІ С„РѕСЂРјСѓР»РёСЂРѕРІРєРµ Р·Р°РґР°РЅРёСЏ)
+РёР»Рё</i> <code>ptComment</code> <i>(РїСЂРё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё РІ С‚РµРєСЃС‚Рµ РїСЂРµР°РјР±СѓР»С‹)</i>
 </td>
 </tr>
 
@@ -1004,14 +1004,14 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\[</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка начала абзаца с центрированием
+РњРµС‚РєР° РЅР°С‡Р°Р»Р° Р°Р±Р·Р°С†Р° СЃ С†РµРЅС‚СЂРёСЂРѕРІР°РЅРёРµРј
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &nbsp;
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
-<i>Завершается предыдущий абзац и создается абзац стиля</i> <code>ptTaskCenter</code> <i>(при использовании в формулировке задания)
-или</i> <code>ptCommentCenter</code> <i>(при использовании в тексте преамбулы)</i>
+<i>Р—Р°РІРµСЂС€Р°РµС‚СЃСЏ РїСЂРµРґС‹РґСѓС‰РёР№ Р°Р±Р·Р°С† Рё СЃРѕР·РґР°РµС‚СЃСЏ Р°Р±Р·Р°С† СЃС‚РёР»СЏ</i> <code>ptTaskCenter</code> <i>(РїСЂРё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё РІ С„РѕСЂРјСѓР»РёСЂРѕРІРєРµ Р·Р°РґР°РЅРёСЏ)
+РёР»Рё</i> <code>ptCommentCenter</code> <i>(РїСЂРё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё РІ С‚РµРєСЃС‚Рµ РїСЂРµР°РјР±СѓР»С‹)</i>
 </td>
 </tr>
 
@@ -1020,14 +1020,14 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\]</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка конца абзаца с центрированием
+РњРµС‚РєР° РєРѕРЅС†Р° Р°Р±Р·Р°С†Р° СЃ С†РµРЅС‚СЂРёСЂРѕРІР°РЅРёРµРј
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &nbsp;
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
-<i>Завершается предыдущий абзац и создается абзац стиля</i> <code>ptTaskContinue</code> <i>(при использовании в формулировке задания)
-или</i> <code>ptCommentContinue</code> <i>(при использовании в тексте преамбулы)</i>
+<i>Р—Р°РІРµСЂС€Р°РµС‚СЃСЏ РїСЂРµРґС‹РґСѓС‰РёР№ Р°Р±Р·Р°С† Рё СЃРѕР·РґР°РµС‚СЃСЏ Р°Р±Р·Р°С† СЃС‚РёР»СЏ</i> <code>ptTaskContinue</code> <i>(РїСЂРё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё РІ С„РѕСЂРјСѓР»РёСЂРѕРІРєРµ Р·Р°РґР°РЅРёСЏ)
+РёР»Рё</i> <code>ptCommentContinue</code> <i>(РїСЂРё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё РІ С‚РµРєСЃС‚Рµ РїСЂРµР°РјР±СѓР»С‹)</i>
 </td>
 </tr>
 
@@ -1036,14 +1036,14 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\(</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка начала абзаца с отступом
+РњРµС‚РєР° РЅР°С‡Р°Р»Р° Р°Р±Р·Р°С†Р° СЃ РѕС‚СЃС‚СѓРїРѕРј
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &nbsp;
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
-<i>Завершается предыдущий абзац и создается абзац стиля</i> <code>ptTaskQuote</code> <i>(при использовании в формулировке задания)
-или</i> <code>ptCommentQuote</code> <i>(при использовании в тексте преамбулы)</i>
+<i>Р—Р°РІРµСЂС€Р°РµС‚СЃСЏ РїСЂРµРґС‹РґСѓС‰РёР№ Р°Р±Р·Р°С† Рё СЃРѕР·РґР°РµС‚СЃСЏ Р°Р±Р·Р°С† СЃС‚РёР»СЏ</i> <code>ptTaskQuote</code> <i>(РїСЂРё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё РІ С„РѕСЂРјСѓР»РёСЂРѕРІРєРµ Р·Р°РґР°РЅРёСЏ)
+РёР»Рё</i> <code>ptCommentQuote</code> <i>(РїСЂРё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё РІ С‚РµРєСЃС‚Рµ РїСЂРµР°РјР±СѓР»С‹)</i>
 </td>
 </tr>
 
@@ -1052,14 +1052,14 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\)</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка конца абзаца с отступом
+РњРµС‚РєР° РєРѕРЅС†Р° Р°Р±Р·Р°С†Р° СЃ РѕС‚СЃС‚СѓРїРѕРј
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &nbsp;
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
-<i>Завершается предыдущий абзац и создается абзац стиля</i> <code>ptTaskContinue</code> <i>(при использовании в формулировке задания)
-или</i> <code>ptCommentContinue</code> <i>(при использовании в тексте преамбулы)</i>
+<i>Р—Р°РІРµСЂС€Р°РµС‚СЃСЏ РїСЂРµРґС‹РґСѓС‰РёР№ Р°Р±Р·Р°С† Рё СЃРѕР·РґР°РµС‚СЃСЏ Р°Р±Р·Р°С† СЃС‚РёР»СЏ</i> <code>ptTaskContinue</code> <i>(РїСЂРё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё РІ С„РѕСЂРјСѓР»РёСЂРѕРІРєРµ Р·Р°РґР°РЅРёСЏ)
+РёР»Рё</i> <code>ptCommentContinue</code> <i>(РїСЂРё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё РІ С‚РµРєСЃС‚Рµ РїСЂРµР°РјР±СѓР»С‹)</i>
 </td>
 </tr>
 
@@ -1068,9 +1068,9 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\J</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка начала режима выравнивания по столбцам (после нее
-указывается последовательность символов <code>r</code>, <code>l</code>, <code>c</code>, которая
-должна оканчиваться символом <code>&</code>)
+РњРµС‚РєР° РЅР°С‡Р°Р»Р° СЂРµР¶РёРјР° РІС‹СЂР°РІРЅРёРІР°РЅРёСЏ РїРѕ СЃС‚РѕР»Р±С†Р°Рј (РїРѕСЃР»Рµ РЅРµРµ
+СѓРєР°Р·С‹РІР°РµС‚СЃСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЃРёРјРІРѕР»РѕРІ <code>r</code>, <code>l</code>, <code>c</code>, РєРѕС‚РѕСЂР°СЏ
+РґРѕР»Р¶РЅР° РѕРєР°РЅС‡РёРІР°С‚СЊСЃСЏ СЃРёРјРІРѕР»РѕРј <code>&</code>)
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &nbsp;
@@ -1085,7 +1085,7 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>\j</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Метка конца режима выравнивания по столбцам
+РњРµС‚РєР° РєРѕРЅС†Р° СЂРµР¶РёРјР° РІС‹СЂР°РІРЅРёРІР°РЅРёСЏ РїРѕ СЃС‚РѕР»Р±С†Р°Рј
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &nbsp;
@@ -1100,236 +1100,236 @@ ANSI Latin-1 (кодовая страница 1252)
 <code>&</code>
 </td>
 <td align=left valign=middle width=40% bgcolor=#FFFFFF>
-Переход к новому столбцу в режиме выравнивания по столбцам
+РџРµСЂРµС…РѕРґ Рє РЅРѕРІРѕРјСѓ СЃС‚РѕР»Р±С†Сѓ РІ СЂРµР¶РёРјРµ РІС‹СЂР°РІРЅРёРІР°РЅРёСЏ РїРѕ СЃС‚РѕР»Р±С†Р°Рј
 </td>
 <td align=left valign=middle width=15% bgcolor=#FFFFFF>
 &nbsp;
 </td>
 <td align=left valign=middle width=35% bgcolor=#FFFFFF>
-<i>Добавляется тег</i> <code>&lt;td&gt;</code> <i>с соответствующим выравниванием;
-для первого столбца предварительно указывается тег</i> <code>&lt;tr&gt;</code>
+<i>Р”РѕР±Р°РІР»СЏРµС‚СЃСЏ С‚РµРі</i> <code>&lt;td&gt;</code> <i>СЃ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёРј РІС‹СЂР°РІРЅРёРІР°РЅРёРµРј;
+РґР»СЏ РїРµСЂРІРѕРіРѕ СЃС‚РѕР»Р±С†Р° РїСЂРµРґРІР°СЂРёС‚РµР»СЊРЅРѕ СѓРєР°Р·С‹РІР°РµС‚СЃСЏ С‚РµРі</i> <code>&lt;tr&gt;</code>
 </td>
 </tr>
 </table>
 </p>
 
-<h2>Дополнительные сведения об использовании управляющих последовательностей</h2>
+<h2>Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ СЃРІРµРґРµРЅРёСЏ РѕР± РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё СѓРїСЂР°РІР»СЏСЋС‰РёС… РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№</h2>
 
-<p>Необходимость в специальных командах для генерации ссылок на другие задания группы объясняется тем, что любое имеющееся задание может быть
-импортировано в группу с другим именем (с помощью процедуры <a href="tmaker_proc1.html#UseTask">UseTask</a>),
-и поэтому все ссылки на другие задания этой группы также потребуется откорректировать,
-указав в них новое имя группы. Разумеется, в подобной ситуации необходимо переносить в новую группу <i>все</i> задания, содержащие
-ссылки друг на друга.
-Следует заметить, что <i>разность</i> между номерами ссылающихся друг на друга заданий не обязана быть такой же,
-как в исходной группе заданий.
-Если в новой группе задания находятся на другом &laquo;расстоянии&raquo; друг от друга, то
-для указания правильной ссылки достаточно внести
-соответствующую <i>поправку</i> в параметр процедуры UseTask.
+<p>РќРµРѕР±С…РѕРґРёРјРѕСЃС‚СЊ РІ СЃРїРµС†РёР°Р»СЊРЅС‹С… РєРѕРјР°РЅРґР°С… РґР»СЏ РіРµРЅРµСЂР°С†РёРё СЃСЃС‹Р»РѕРє РЅР° РґСЂСѓРіРёРµ Р·Р°РґР°РЅРёСЏ РіСЂСѓРїРїС‹ РѕР±СЉСЏСЃРЅСЏРµС‚СЃСЏ С‚РµРј, С‡С‚Рѕ Р»СЋР±РѕРµ РёРјРµСЋС‰РµРµСЃСЏ Р·Р°РґР°РЅРёРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ
+РёРјРїРѕСЂС‚РёСЂРѕРІР°РЅРѕ РІ РіСЂСѓРїРїСѓ СЃ РґСЂСѓРіРёРј РёРјРµРЅРµРј (СЃ РїРѕРјРѕС‰СЊСЋ РїСЂРѕС†РµРґСѓСЂС‹ <a href="tmaker_proc1.html#UseTask">UseTask</a>),
+Рё РїРѕСЌС‚РѕРјСѓ РІСЃРµ СЃСЃС‹Р»РєРё РЅР° РґСЂСѓРіРёРµ Р·Р°РґР°РЅРёСЏ СЌС‚РѕР№ РіСЂСѓРїРїС‹ С‚Р°РєР¶Рµ РїРѕС‚СЂРµР±СѓРµС‚СЃСЏ РѕС‚РєРѕСЂСЂРµРєС‚РёСЂРѕРІР°С‚СЊ,
+СѓРєР°Р·Р°РІ РІ РЅРёС… РЅРѕРІРѕРµ РёРјСЏ РіСЂСѓРїРїС‹. Р Р°Р·СѓРјРµРµС‚СЃСЏ, РІ РїРѕРґРѕР±РЅРѕР№ СЃРёС‚СѓР°С†РёРё РЅРµРѕР±С…РѕРґРёРјРѕ РїРµСЂРµРЅРѕСЃРёС‚СЊ РІ РЅРѕРІСѓСЋ РіСЂСѓРїРїСѓ <i>РІСЃРµ</i> Р·Р°РґР°РЅРёСЏ, СЃРѕРґРµСЂР¶Р°С‰РёРµ
+СЃСЃС‹Р»РєРё РґСЂСѓРі РЅР° РґСЂСѓРіР°.
+РЎР»РµРґСѓРµС‚ Р·Р°РјРµС‚РёС‚СЊ, С‡С‚Рѕ <i>СЂР°Р·РЅРѕСЃС‚СЊ</i> РјРµР¶РґСѓ РЅРѕРјРµСЂР°РјРё СЃСЃС‹Р»Р°СЋС‰РёС…СЃСЏ РґСЂСѓРі РЅР° РґСЂСѓРіР° Р·Р°РґР°РЅРёР№ РЅРµ РѕР±СЏР·Р°РЅР° Р±С‹С‚СЊ С‚Р°РєРѕР№ Р¶Рµ,
+РєР°Рє РІ РёСЃС…РѕРґРЅРѕР№ РіСЂСѓРїРїРµ Р·Р°РґР°РЅРёР№.
+Р•СЃР»Рё РІ РЅРѕРІРѕР№ РіСЂСѓРїРїРµ Р·Р°РґР°РЅРёСЏ РЅР°С…РѕРґСЏС‚СЃСЏ РЅР° РґСЂСѓРіРѕРј &laquo;СЂР°СЃСЃС‚РѕСЏРЅРёРё&raquo; РґСЂСѓРі РѕС‚ РґСЂСѓРіР°, С‚Рѕ
+РґР»СЏ СѓРєР°Р·Р°РЅРёСЏ РїСЂР°РІРёР»СЊРЅРѕР№ СЃСЃС‹Р»РєРё РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РІРЅРµСЃС‚Рё
+СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰СѓСЋ <i>РїРѕРїСЂР°РІРєСѓ</i> РІ РїР°СЂР°РјРµС‚СЂ РїСЂРѕС†РµРґСѓСЂС‹ UseTask.
 </p>
-<p>Наличие нескольких видов <i>неразрывных пробелов</i>,
-не различающихся в тексте заданий и html-страниц, связано с планируемой
-в дальнейшем возможностью генерации текста заданий в других форматах (в частности, в формате системы TeX, в котором
-данные виды пробелов различаются). Приведем рекомендации по использованию
-неразрывных пробелов:
+<p>РќР°Р»РёС‡РёРµ РЅРµСЃРєРѕР»СЊРєРёС… РІРёРґРѕРІ <i>РЅРµСЂР°Р·СЂС‹РІРЅС‹С… РїСЂРѕР±РµР»РѕРІ</i>,
+РЅРµ СЂР°Р·Р»РёС‡Р°СЋС‰РёС…СЃСЏ РІ С‚РµРєСЃС‚Рµ Р·Р°РґР°РЅРёР№ Рё html-СЃС‚СЂР°РЅРёС†, СЃРІСЏР·Р°РЅРѕ СЃ РїР»Р°РЅРёСЂСѓРµРјРѕР№
+РІ РґР°Р»СЊРЅРµР№С€РµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊСЋ РіРµРЅРµСЂР°С†РёРё С‚РµРєСЃС‚Р° Р·Р°РґР°РЅРёР№ РІ РґСЂСѓРіРёС… С„РѕСЂРјР°С‚Р°С… (РІ С‡Р°СЃС‚РЅРѕСЃС‚Рё, РІ С„РѕСЂРјР°С‚Рµ СЃРёСЃС‚РµРјС‹ TeX, РІ РєРѕС‚РѕСЂРѕРј
+РґР°РЅРЅС‹Рµ РІРёРґС‹ РїСЂРѕР±РµР»РѕРІ СЂР°Р·Р»РёС‡Р°СЋС‚СЃСЏ). РџСЂРёРІРµРґРµРј СЂРµРєРѕРјРµРЅРґР°С†РёРё РїРѕ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЋ
+РЅРµСЂР°Р·СЂС‹РІРЅС‹С… РїСЂРѕР±РµР»РѕРІ:
 </p>
 <code></code><ul>
-<li>вокруг символов <code>=</code>, <code>&lt;</code>, <code>&gt;</code> указывается обычный неразрывный пробел <code>~</code>;
-исключением являются фрагменты текста в скобках вида <code>(>&nbsp;0)</code>, в которых рекомендуется использовать
-малый пробел: <code>(>\,0)</code>;
-<li>неразрывный пробел <code>~</code> указывается также между текстом и переменной: <code>стороны~{a} и~{b}</code>;
-<li>вокруг символов <code>+</code> и <code>&#150;</code> ставится средний пробел <code>\;</code>;
-<li>символы умножения <code>\*</code> и деления <code>/</code> пробелами не обрамляются;
-исключением служит ситуация, когда слева и справа от символа деления указываются прописные буквы; в этом случае желательно использовать
-обрамление малыми пробелами.
+<li>РІРѕРєСЂСѓРі СЃРёРјРІРѕР»РѕРІ <code>=</code>, <code>&lt;</code>, <code>&gt;</code> СѓРєР°Р·С‹РІР°РµС‚СЃСЏ РѕР±С‹С‡РЅС‹Р№ РЅРµСЂР°Р·СЂС‹РІРЅС‹Р№ РїСЂРѕР±РµР» <code>~</code>;
+РёСЃРєР»СЋС‡РµРЅРёРµРј СЏРІР»СЏСЋС‚СЃСЏ С„СЂР°РіРјРµРЅС‚С‹ С‚РµРєСЃС‚Р° РІ СЃРєРѕР±РєР°С… РІРёРґР° <code>(>&nbsp;0)</code>, РІ РєРѕС‚РѕСЂС‹С… СЂРµРєРѕРјРµРЅРґСѓРµС‚СЃСЏ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ
+РјР°Р»С‹Р№ РїСЂРѕР±РµР»: <code>(>\,0)</code>;
+<li>РЅРµСЂР°Р·СЂС‹РІРЅС‹Р№ РїСЂРѕР±РµР» <code>~</code> СѓРєР°Р·С‹РІР°РµС‚СЃСЏ С‚Р°РєР¶Рµ РјРµР¶РґСѓ С‚РµРєСЃС‚РѕРј Рё РїРµСЂРµРјРµРЅРЅРѕР№: <code>СЃС‚РѕСЂРѕРЅС‹~{a} Рё~{b}</code>;
+<li>РІРѕРєСЂСѓРі СЃРёРјРІРѕР»РѕРІ <code>+</code> Рё <code>&#150;</code> СЃС‚Р°РІРёС‚СЃСЏ СЃСЂРµРґРЅРёР№ РїСЂРѕР±РµР» <code>\;</code>;
+<li>СЃРёРјРІРѕР»С‹ СѓРјРЅРѕР¶РµРЅРёСЏ <code>\*</code> Рё РґРµР»РµРЅРёСЏ <code>/</code> РїСЂРѕР±РµР»Р°РјРё РЅРµ РѕР±СЂР°РјР»СЏСЋС‚СЃСЏ;
+РёСЃРєР»СЋС‡РµРЅРёРµРј СЃР»СѓР¶РёС‚ СЃРёС‚СѓР°С†РёСЏ, РєРѕРіРґР° СЃР»РµРІР° Рё СЃРїСЂР°РІР° РѕС‚ СЃРёРјРІРѕР»Р° РґРµР»РµРЅРёСЏ СѓРєР°Р·С‹РІР°СЋС‚СЃСЏ РїСЂРѕРїРёСЃРЅС‹Рµ Р±СѓРєРІС‹; РІ СЌС‚РѕРј СЃР»СѓС‡Р°Рµ Р¶РµР»Р°С‚РµР»СЊРЅРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ
+РѕР±СЂР°РјР»РµРЅРёРµ РјР°Р»С‹РјРё РїСЂРѕР±РµР»Р°РјРё.
 </ul>
-<p>Приведем пример оформления формул (данный пример взят из задания Begin39; обратите внимание
-на выделение переменных с помощью фигурных скобок, а также на команды, обеспечивающие вывод индексов,
-выделение квадратного корня и центрирование формулы):
+<p>РџСЂРёРІРµРґРµРј РїСЂРёРјРµСЂ РѕС„РѕСЂРјР»РµРЅРёСЏ С„РѕСЂРјСѓР» (РґР°РЅРЅС‹Р№ РїСЂРёРјРµСЂ РІР·СЏС‚ РёР· Р·Р°РґР°РЅРёСЏ Begin39; РѕР±СЂР°С‚РёС‚Рµ РІРЅРёРјР°РЅРёРµ
+РЅР° РІС‹РґРµР»РµРЅРёРµ РїРµСЂРµРјРµРЅРЅС‹С… СЃ РїРѕРјРѕС‰СЊСЋ С„РёРіСѓСЂРЅС‹С… СЃРєРѕР±РѕРє, Р° С‚Р°РєР¶Рµ РЅР° РєРѕРјР°РЅРґС‹, РѕР±РµСЃРїРµС‡РёРІР°СЋС‰РёРµ РІС‹РІРѕРґ РёРЅРґРµРєСЃРѕРІ,
+РІС‹РґРµР»РµРЅРёРµ РєРІР°РґСЂР°С‚РЅРѕРіРѕ РєРѕСЂРЅСЏ Рё С†РµРЅС‚СЂРёСЂРѕРІР°РЅРёРµ С„РѕСЂРјСѓР»С‹):
 </p>
-<pre>TaskText('Найти корни \Iквадратного уравнения\i ' +
-  '{A}\*{x}^2\;+\;{B}\*{x}\;+\;{C}~=~0, заданного', 0, 1);
-TaskText('своими коэффициентами~{A}, {B}, {C} ' +
-  '(коэффициент~{A} не равен~0), если известно,', 0, 2);
-TaskText('что дискриминант уравнения положителен. ' +
-  'Вывести вначале меньший, а затем',0,3);
-TaskText('больший из найденных корней. Корни квадратного ' +
-  'уравнения находятся по формуле', 0, 4);
+<pre>TaskText('РќР°Р№С‚Рё РєРѕСЂРЅРё \IРєРІР°РґСЂР°С‚РЅРѕРіРѕ СѓСЂР°РІРЅРµРЅРёСЏ\i ' +
+  '{A}\*{x}^2\;+\;{B}\*{x}\;+\;{C}~=~0, Р·Р°РґР°РЅРЅРѕРіРѕ', 0, 1);
+TaskText('СЃРІРѕРёРјРё РєРѕСЌС„С„РёС†РёРµРЅС‚Р°РјРё~{A}, {B}, {C} ' +
+  '(РєРѕСЌС„С„РёС†РёРµРЅС‚~{A} РЅРµ СЂР°РІРµРЅ~0), РµСЃР»Рё РёР·РІРµСЃС‚РЅРѕ,', 0, 2);
+TaskText('С‡С‚Рѕ РґРёСЃРєСЂРёРјРёРЅР°РЅС‚ СѓСЂР°РІРЅРµРЅРёСЏ РїРѕР»РѕР¶РёС‚РµР»РµРЅ. ' +
+  'Р’С‹РІРµСЃС‚Рё РІРЅР°С‡Р°Р»Рµ РјРµРЅСЊС€РёР№, Р° Р·Р°С‚РµРј',0,3);
+TaskText('Р±РѕР»СЊС€РёР№ РёР· РЅР°Р№РґРµРЅРЅС‹С… РєРѕСЂРЅРµР№. РљРѕСЂРЅРё РєРІР°РґСЂР°С‚РЅРѕРіРѕ ' +
+  'СѓСЂР°РІРЅРµРЅРёСЏ РЅР°С…РѕРґСЏС‚СЃСЏ РїРѕ С„РѕСЂРјСѓР»Рµ', 0, 4);
 TaskText('\[{x}_{1,\,2}~=~(\-{B}\;\+\;\R{D}\r)/(2\*{A}),\] ' +
-  'где {D}~\= \Iдискриминант\i, ' +
-  'равный {B}^2\;\-\;4\*{A}\*{C}.', 0, 5);
+  'РіРґРµ {D}~\= \IРґРёСЃРєСЂРёРјРёРЅР°РЅС‚\i, ' +
+  'СЂР°РІРЅС‹Р№ {B}^2\;\-\;4\*{A}\*{C}.', 0, 5);
 </pre>
-<p>В результате обработки данной формулировки задания в окне задачника будет выведен текст:
+<p>Р’ СЂРµР·СѓР»СЊС‚Р°С‚Рµ РѕР±СЂР°Р±РѕС‚РєРё РґР°РЅРЅРѕР№ С„РѕСЂРјСѓР»РёСЂРѕРІРєРё Р·Р°РґР°РЅРёСЏ РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР° Р±СѓРґРµС‚ РІС‹РІРµРґРµРЅ С‚РµРєСЃС‚:
 </p>
 <p><img border="0" src="images\pt4make15.png"></p>
-<p>В html-описании этот же текст будет отформатирован следующим образом:
+<p>Р’ html-РѕРїРёСЃР°РЅРёРё СЌС‚РѕС‚ Р¶Рµ С‚РµРєСЃС‚ Р±СѓРґРµС‚ РѕС‚С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅ СЃР»РµРґСѓСЋС‰РёРј РѕР±СЂР°Р·РѕРј:
 </p>
 <p><img border="1" src="images\pt4make16.png"></p>
 
-<p>Для указания кавычек в тексте задания следует использовать управляющие последовательности <code>\&lt;</code> и <code>\&gt;</code>.
+<p>Р”Р»СЏ СѓРєР°Р·Р°РЅРёСЏ РєР°РІС‹С‡РµРє РІ С‚РµРєСЃС‚Рµ Р·Р°РґР°РЅРёСЏ СЃР»РµРґСѓРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ СѓРїСЂР°РІР»СЏСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё <code>\&lt;</code> Рё <code>\&gt;</code>.
 </p>
-<p>Управляющие последовательности <code>\t</code>, <code>\f</code>, <code>\N</code>, <code>\O</code>
-для логических констант, нулевых указателей и объектов генерируют текст, зависящий от
-выбранного в данный момент языка программирования.
+<p>РЈРїСЂР°РІР»СЏСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё <code>\t</code>, <code>\f</code>, <code>\N</code>, <code>\O</code>
+РґР»СЏ Р»РѕРіРёС‡РµСЃРєРёС… РєРѕРЅСЃС‚Р°РЅС‚, РЅСѓР»РµРІС‹С… СѓРєР°Р·Р°С‚РµР»РµР№ Рё РѕР±СЉРµРєС‚РѕРІ РіРµРЅРµСЂРёСЂСѓСЋС‚ С‚РµРєСЃС‚, Р·Р°РІРёСЃСЏС‰РёР№ РѕС‚
+РІС‹Р±СЂР°РЅРЅРѕРіРѕ РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ СЏР·С‹РєР° РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ.
 </p>
-<p>Обычные пробелы, указанные после управляющих последовательностей <code>\q</code>, <code>\Q</code>, <code>\P</code>, <code>\[</code>, <code>\(</code>,
-<code>\]</code>, <code>\)</code>, <code>\|</code> и <code>&</code>, учитываются только в тексте задачника
-(и пропускаются в тексте html-страниц).
+<p>РћР±С‹С‡РЅС‹Рµ РїСЂРѕР±РµР»С‹, СѓРєР°Р·Р°РЅРЅС‹Рµ РїРѕСЃР»Рµ СѓРїСЂР°РІР»СЏСЋС‰РёС… РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№ <code>\q</code>, <code>\Q</code>, <code>\P</code>, <code>\[</code>, <code>\(</code>,
+<code>\]</code>, <code>\)</code>, <code>\|</code> Рё <code>&</code>, СѓС‡РёС‚С‹РІР°СЋС‚СЃСЏ С‚РѕР»СЊРєРѕ РІ С‚РµРєСЃС‚Рµ Р·Р°РґР°С‡РЅРёРєР°
+(Рё РїСЂРѕРїСѓСЃРєР°СЋС‚СЃСЏ РІ С‚РµРєСЃС‚Рµ html-СЃС‚СЂР°РЅРёС†).
 </p>
-<p>Режим специального выделения, устанавливаемый парными командами <code>\S</code> и <code>\s</code>,
-в окне задачника приводит к выделению полужирным шрифтом, а в html-описании
-обеспечивает выделение фрагмента текста,
-аналогичное выделению, используемому для <i>имени задания</i> в начале его формулировки
-(в приведенном выше фрагменте html-описания так выделено имя задания &laquo;Begin39&raquo;).
-Данный режим рекомендуется использовать для выделения <i>заголовков</i>, размещаемых в начале абзаца (например,
-если формулировка задания завершается абзацем, содержащим указание, то с помощью специального выделения
-целесообразно выделить текст &laquo;Указание&raquo; в начале этого абзаца).
+<p>Р РµР¶РёРј СЃРїРµС†РёР°Р»СЊРЅРѕРіРѕ РІС‹РґРµР»РµРЅРёСЏ, СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРјС‹Р№ РїР°СЂРЅС‹РјРё РєРѕРјР°РЅРґР°РјРё <code>\S</code> Рё <code>\s</code>,
+РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР° РїСЂРёРІРѕРґРёС‚ Рє РІС‹РґРµР»РµРЅРёСЋ РїРѕР»СѓР¶РёСЂРЅС‹Рј С€СЂРёС„С‚РѕРј, Р° РІ html-РѕРїРёСЃР°РЅРёРё
+РѕР±РµСЃРїРµС‡РёРІР°РµС‚ РІС‹РґРµР»РµРЅРёРµ С„СЂР°РіРјРµРЅС‚Р° С‚РµРєСЃС‚Р°,
+Р°РЅР°Р»РѕРіРёС‡РЅРѕРµ РІС‹РґРµР»РµРЅРёСЋ, РёСЃРїРѕР»СЊР·СѓРµРјРѕРјСѓ РґР»СЏ <i>РёРјРµРЅРё Р·Р°РґР°РЅРёСЏ</i> РІ РЅР°С‡Р°Р»Рµ РµРіРѕ С„РѕСЂРјСѓР»РёСЂРѕРІРєРё
+(РІ РїСЂРёРІРµРґРµРЅРЅРѕРј РІС‹С€Рµ С„СЂР°РіРјРµРЅС‚Рµ html-РѕРїРёСЃР°РЅРёСЏ С‚Р°Рє РІС‹РґРµР»РµРЅРѕ РёРјСЏ Р·Р°РґР°РЅРёСЏ &laquo;Begin39&raquo;).
+Р”Р°РЅРЅС‹Р№ СЂРµР¶РёРј СЂРµРєРѕРјРµРЅРґСѓРµС‚СЃСЏ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґР»СЏ РІС‹РґРµР»РµРЅРёСЏ <i>Р·Р°РіРѕР»РѕРІРєРѕРІ</i>, СЂР°Р·РјРµС‰Р°РµРјС‹С… РІ РЅР°С‡Р°Р»Рµ Р°Р±Р·Р°С†Р° (РЅР°РїСЂРёРјРµСЂ,
+РµСЃР»Рё С„РѕСЂРјСѓР»РёСЂРѕРІРєР° Р·Р°РґР°РЅРёСЏ Р·Р°РІРµСЂС€Р°РµС‚СЃСЏ Р°Р±Р·Р°С†РµРј, СЃРѕРґРµСЂР¶Р°С‰РёРј СѓРєР°Р·Р°РЅРёРµ, С‚Рѕ СЃ РїРѕРјРѕС‰СЊСЋ СЃРїРµС†РёР°Р»СЊРЅРѕРіРѕ РІС‹РґРµР»РµРЅРёСЏ
+С†РµР»РµСЃРѕРѕР±СЂР°Р·РЅРѕ РІС‹РґРµР»РёС‚СЊ С‚РµРєСЃС‚ &laquo;РЈРєР°Р·Р°РЅРёРµ&raquo; РІ РЅР°С‡Р°Р»Рµ СЌС‚РѕРіРѕ Р°Р±Р·Р°С†Р°).
 </p>
-<p>Команды выделения переменной <code>{</code> и <code>}</code> не влияют на ее вид в окне задачника, но
-обеспечивают ее выделение курсивом в тексте html-страницы.
-В индексах команды выделения переменной не учитываются,
-а любые <i>латинские</i> буквы в них автоматически выделяются курсивом.
+<p>РљРѕРјР°РЅРґС‹ РІС‹РґРµР»РµРЅРёСЏ РїРµСЂРµРјРµРЅРЅРѕР№ <code>{</code> Рё <code>}</code> РЅРµ РІР»РёСЏСЋС‚ РЅР° РµРµ РІРёРґ РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР°, РЅРѕ
+РѕР±РµСЃРїРµС‡РёРІР°СЋС‚ РµРµ РІС‹РґРµР»РµРЅРёРµ РєСѓСЂСЃРёРІРѕРј РІ С‚РµРєСЃС‚Рµ html-СЃС‚СЂР°РЅРёС†С‹.
+Р’ РёРЅРґРµРєСЃР°С… РєРѕРјР°РЅРґС‹ РІС‹РґРµР»РµРЅРёСЏ РїРµСЂРµРјРµРЅРЅРѕР№ РЅРµ СѓС‡РёС‚С‹РІР°СЋС‚СЃСЏ,
+Р° Р»СЋР±С‹Рµ <i>Р»Р°С‚РёРЅСЃРєРёРµ</i> Р±СѓРєРІС‹ РІ РЅРёС… Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё РІС‹РґРµР»СЏСЋС‚СЃСЏ РєСѓСЂСЃРёРІРѕРј.
 </p>
-<p>В односимвольных индексах нельзя указывать управляющие последовательности для вывода специальных символов,
-поэтому при необходимости применения в индексах специальных символов следует использовать режим многосимвольных индексов.
-Метки индексов не могут быть вложенными.
-В индексах не допускается использование меток выделения <code>\I</code>, <code>\B</code>, <code>\S</code> и наоборот,
-внутри выделенного текста не допускается указывать индексы.
-</p>
-
-<p>Выделенные фрагменты не могут содержать меток выделения другого вида. Режим индексов и выделения, заданный в
-одной процедуре TaskText или CommentText, не переносится на текст, определяемый при последующих вызовах этих процедур.
-Если в тексте отсутствуют команды завершения текущего режима (индексов или выделения), то режим автоматически завершается
-при достижении конца текста, определяемого в текущей процедуре TaskText или CommentText.
+<p>Р’ РѕРґРЅРѕСЃРёРјРІРѕР»СЊРЅС‹С… РёРЅРґРµРєСЃР°С… РЅРµР»СЊР·СЏ СѓРєР°Р·С‹РІР°С‚СЊ СѓРїСЂР°РІР»СЏСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РґР»СЏ РІС‹РІРѕРґР° СЃРїРµС†РёР°Р»СЊРЅС‹С… СЃРёРјРІРѕР»РѕРІ,
+РїРѕСЌС‚РѕРјСѓ РїСЂРё РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё РїСЂРёРјРµРЅРµРЅРёСЏ РІ РёРЅРґРµРєСЃР°С… СЃРїРµС†РёР°Р»СЊРЅС‹С… СЃРёРјРІРѕР»РѕРІ СЃР»РµРґСѓРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ СЂРµР¶РёРј РјРЅРѕРіРѕСЃРёРјРІРѕР»СЊРЅС‹С… РёРЅРґРµРєСЃРѕРІ.
+РњРµС‚РєРё РёРЅРґРµРєСЃРѕРІ РЅРµ РјРѕРіСѓС‚ Р±С‹С‚СЊ РІР»РѕР¶РµРЅРЅС‹РјРё.
+Р’ РёРЅРґРµРєСЃР°С… РЅРµ РґРѕРїСѓСЃРєР°РµС‚СЃСЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РјРµС‚РѕРє РІС‹РґРµР»РµРЅРёСЏ <code>\I</code>, <code>\B</code>, <code>\S</code> Рё РЅР°РѕР±РѕСЂРѕС‚,
+РІРЅСѓС‚СЂРё РІС‹РґРµР»РµРЅРЅРѕРіРѕ С‚РµРєСЃС‚Р° РЅРµ РґРѕРїСѓСЃРєР°РµС‚СЃСЏ СѓРєР°Р·С‹РІР°С‚СЊ РёРЅРґРµРєСЃС‹.
 </p>
 
-<p>В команде начала режима выравнивания по столбцам символы <code>r</code>, <code>l</code>, <code>c</code> определяют
-<i>способ выравнивания</i> в каждом столбце текста (<code>r</code> &#151; выравнивание по правому краю,
-<code>l</code> &#151; выравнивание по левому краю, <code>c</code> &#151; выравнивание по центру).
-Их количество должно быть равно числу столбцов. В каждом столбце должен быть хотя бы один непробельный символ
-(для пустого столбца достаточно указать малый неразрывный пробел <code>\,</code>).
+<p>Р’С‹РґРµР»РµРЅРЅС‹Рµ С„СЂР°РіРјРµРЅС‚С‹ РЅРµ РјРѕРіСѓС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ РјРµС‚РѕРє РІС‹РґРµР»РµРЅРёСЏ РґСЂСѓРіРѕРіРѕ РІРёРґР°. Р РµР¶РёРј РёРЅРґРµРєСЃРѕРІ Рё РІС‹РґРµР»РµРЅРёСЏ, Р·Р°РґР°РЅРЅС‹Р№ РІ
+РѕРґРЅРѕР№ РїСЂРѕС†РµРґСѓСЂРµ TaskText РёР»Рё CommentText, РЅРµ РїРµСЂРµРЅРѕСЃРёС‚СЃСЏ РЅР° С‚РµРєСЃС‚, РѕРїСЂРµРґРµР»СЏРµРјС‹Р№ РїСЂРё РїРѕСЃР»РµРґСѓСЋС‰РёС… РІС‹Р·РѕРІР°С… СЌС‚РёС… РїСЂРѕС†РµРґСѓСЂ.
+Р•СЃР»Рё РІ С‚РµРєСЃС‚Рµ РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‚ РєРѕРјР°РЅРґС‹ Р·Р°РІРµСЂС€РµРЅРёСЏ С‚РµРєСѓС‰РµРіРѕ СЂРµР¶РёРјР° (РёРЅРґРµРєСЃРѕРІ РёР»Рё РІС‹РґРµР»РµРЅРёСЏ), С‚Рѕ СЂРµР¶РёРј Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё Р·Р°РІРµСЂС€Р°РµС‚СЃСЏ
+РїСЂРё РґРѕСЃС‚РёР¶РµРЅРёРё РєРѕРЅС†Р° С‚РµРєСЃС‚Р°, РѕРїСЂРµРґРµР»СЏРµРјРѕРіРѕ РІ С‚РµРєСѓС‰РµР№ РїСЂРѕС†РµРґСѓСЂРµ TaskText РёР»Рё CommentText.
 </p>
-<p>Ввиду сложности управляющих последовательностей, связанных с выравниванием по столбцам, приведем пример их использования
-(пример взят из задания If26):
+
+<p>Р’ РєРѕРјР°РЅРґРµ РЅР°С‡Р°Р»Р° СЂРµР¶РёРјР° РІС‹СЂР°РІРЅРёРІР°РЅРёСЏ РїРѕ СЃС‚РѕР»Р±С†Р°Рј СЃРёРјРІРѕР»С‹ <code>r</code>, <code>l</code>, <code>c</code> РѕРїСЂРµРґРµР»СЏСЋС‚
+<i>СЃРїРѕСЃРѕР± РІС‹СЂР°РІРЅРёРІР°РЅРёСЏ</i> РІ РєР°Р¶РґРѕРј СЃС‚РѕР»Р±С†Рµ С‚РµРєСЃС‚Р° (<code>r</code> &#151; РІС‹СЂР°РІРЅРёРІР°РЅРёРµ РїРѕ РїСЂР°РІРѕРјСѓ РєСЂР°СЋ,
+<code>l</code> &#151; РІС‹СЂР°РІРЅРёРІР°РЅРёРµ РїРѕ Р»РµРІРѕРјСѓ РєСЂР°СЋ, <code>c</code> &#151; РІС‹СЂР°РІРЅРёРІР°РЅРёРµ РїРѕ С†РµРЅС‚СЂСѓ).
+РС… РєРѕР»РёС‡РµСЃС‚РІРѕ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ СЂР°РІРЅРѕ С‡РёСЃР»Сѓ СЃС‚РѕР»Р±С†РѕРІ. Р’ РєР°Р¶РґРѕРј СЃС‚РѕР»Р±С†Рµ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ РЅРµРїСЂРѕР±РµР»СЊРЅС‹Р№ СЃРёРјРІРѕР»
+(РґР»СЏ РїСѓСЃС‚РѕРіРѕ СЃС‚РѕР»Р±С†Р° РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ СѓРєР°Р·Р°С‚СЊ РјР°Р»С‹Р№ РЅРµСЂР°Р·СЂС‹РІРЅС‹Р№ РїСЂРѕР±РµР» <code>\,</code>).
 </p>
-<pre>TaskText('Для данного вещественного~{x} найти значение ' +
-  'следующей функции~{f},', 0, 1);
-TaskText('принимающей вещественные значения:', 0, 2);
-TaskText('\[\Jrcrl&\,&\,&       \-{x},& если {x}~\l~0,',
+<p>Р’РІРёРґСѓ СЃР»РѕР¶РЅРѕСЃС‚Рё СѓРїСЂР°РІР»СЏСЋС‰РёС… РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№, СЃРІСЏР·Р°РЅРЅС‹С… СЃ РІС‹СЂР°РІРЅРёРІР°РЅРёРµРј РїРѕ СЃС‚РѕР»Р±С†Р°Рј, РїСЂРёРІРµРґРµРј РїСЂРёРјРµСЂ РёС… РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ
+(РїСЂРёРјРµСЂ РІР·СЏС‚ РёР· Р·Р°РґР°РЅРёСЏ If26):
+</p>
+<pre>TaskText('Р”Р»СЏ РґР°РЅРЅРѕРіРѕ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ~{x} РЅР°Р№С‚Рё Р·РЅР°С‡РµРЅРёРµ ' +
+  'СЃР»РµРґСѓСЋС‰РµР№ С„СѓРЅРєС†РёРё~{f},', 0, 1);
+TaskText('РїСЂРёРЅРёРјР°СЋС‰РµР№ РІРµС‰РµСЃС‚РІРµРЅРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ:', 0, 2);
+TaskText('\[\Jrcrl&\,&\,&       \-{x},& РµСЃР»Рё {x}~\l~0,',
   26, 3);
-TaskText('&{f}({x})&~=~&{x}^2,& если 0~&lt;~{x}~&lt;~2,', 26, 4);
-TaskText('&\,&\,&        4,& если {x}~\g~2.\j\]', 26, 5);
+TaskText('&{f}({x})&~=~&{x}^2,& РµСЃР»Рё 0~&lt;~{x}~&lt;~2,', 26, 4);
+TaskText('&\,&\,&        4,& РµСЃР»Рё {x}~\g~2.\j\]', 26, 5);
 </pre>
-<p>В результате обработки данной формулировки задания в окне задачника будет выведен текст:
+<p>Р’ СЂРµР·СѓР»СЊС‚Р°С‚Рµ РѕР±СЂР°Р±РѕС‚РєРё РґР°РЅРЅРѕР№ С„РѕСЂРјСѓР»РёСЂРѕРІРєРё Р·Р°РґР°РЅРёСЏ РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР° Р±СѓРґРµС‚ РІС‹РІРµРґРµРЅ С‚РµРєСЃС‚:
 </p>
 <p><img border="0" src="images\pt4make17.png"></p>
-<p>В html-описании этот же текст будет отформатирован следующим образом:
+<p>Р’ html-РѕРїРёСЃР°РЅРёРё СЌС‚РѕС‚ Р¶Рµ С‚РµРєСЃС‚ Р±СѓРґРµС‚ РѕС‚С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅ СЃР»РµРґСѓСЋС‰РёРј РѕР±СЂР°Р·РѕРј:
 </p>
 <p><img border="1" src="images\pt4make18.png"></p>
-<p>Команду разрыва строки <code>\|</code> можно использовать как в обычном тексте, так и в режиме выделения с отступом или центрированием
-(в режиме выравнивания по столбцам переход на новую строку выполняется автоматически).
-Для более наглядного отображения в html-документе текста, выровненного по столбцам, данный текст рекомендуется
-дополнительно центрировать (как в приведенном выше примере) или использовать для него режим выравнивания с отступом.
+<p>РљРѕРјР°РЅРґСѓ СЂР°Р·СЂС‹РІР° СЃС‚СЂРѕРєРё <code>\|</code> РјРѕР¶РЅРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РєР°Рє РІ РѕР±С‹С‡РЅРѕРј С‚РµРєСЃС‚Рµ, С‚Р°Рє Рё РІ СЂРµР¶РёРјРµ РІС‹РґРµР»РµРЅРёСЏ СЃ РѕС‚СЃС‚СѓРїРѕРј РёР»Рё С†РµРЅС‚СЂРёСЂРѕРІР°РЅРёРµРј
+(РІ СЂРµР¶РёРјРµ РІС‹СЂР°РІРЅРёРІР°РЅРёСЏ РїРѕ СЃС‚РѕР»Р±С†Р°Рј РїРµСЂРµС…РѕРґ РЅР° РЅРѕРІСѓСЋ СЃС‚СЂРѕРєСѓ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё).
+Р”Р»СЏ Р±РѕР»РµРµ РЅР°РіР»СЏРґРЅРѕРіРѕ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РІ html-РґРѕРєСѓРјРµРЅС‚Рµ С‚РµРєСЃС‚Р°, РІС‹СЂРѕРІРЅРµРЅРЅРѕРіРѕ РїРѕ СЃС‚РѕР»Р±С†Р°Рј, РґР°РЅРЅС‹Р№ С‚РµРєСЃС‚ СЂРµРєРѕРјРµРЅРґСѓРµС‚СЃСЏ
+РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ С†РµРЅС‚СЂРёСЂРѕРІР°С‚СЊ (РєР°Рє РІ РїСЂРёРІРµРґРµРЅРЅРѕРј РІС‹С€Рµ РїСЂРёРјРµСЂРµ) РёР»Рё РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґР»СЏ РЅРµРіРѕ СЂРµР¶РёРј РІС‹СЂР°РІРЅРёРІР°РЅРёСЏ СЃ РѕС‚СЃС‚СѓРїРѕРј.
 </p>
-<p>Следует обратить внимание еще на одну особенность формулировок, содержащих
-выравнивание по столбцам: строки с подобным выравниванием, как правило,
-не нужно центрировать в окне задачника. В приведенном примере в трех последних
-вызовах процедуры TaskText в качестве параметра X указывается не
-нулевое значение (означающее центрирование по горизонтали), а число 26 &#151;
-значение позиции по горизонтали, начиная с которой требуется вывести указанную
-строку.
+<p>РЎР»РµРґСѓРµС‚ РѕР±СЂР°С‚РёС‚СЊ РІРЅРёРјР°РЅРёРµ РµС‰Рµ РЅР° РѕРґРЅСѓ РѕСЃРѕР±РµРЅРЅРѕСЃС‚СЊ С„РѕСЂРјСѓР»РёСЂРѕРІРѕРє, СЃРѕРґРµСЂР¶Р°С‰РёС…
+РІС‹СЂР°РІРЅРёРІР°РЅРёРµ РїРѕ СЃС‚РѕР»Р±С†Р°Рј: СЃС‚СЂРѕРєРё СЃ РїРѕРґРѕР±РЅС‹Рј РІС‹СЂР°РІРЅРёРІР°РЅРёРµРј, РєР°Рє РїСЂР°РІРёР»Рѕ,
+РЅРµ РЅСѓР¶РЅРѕ С†РµРЅС‚СЂРёСЂРѕРІР°С‚СЊ РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР°. Р’ РїСЂРёРІРµРґРµРЅРЅРѕРј РїСЂРёРјРµСЂРµ РІ С‚СЂРµС… РїРѕСЃР»РµРґРЅРёС…
+РІС‹Р·РѕРІР°С… РїСЂРѕС†РµРґСѓСЂС‹ TaskText РІ РєР°С‡РµСЃС‚РІРµ РїР°СЂР°РјРµС‚СЂР° X СѓРєР°Р·С‹РІР°РµС‚СЃСЏ РЅРµ
+РЅСѓР»РµРІРѕРµ Р·РЅР°С‡РµРЅРёРµ (РѕР·РЅР°С‡Р°СЋС‰РµРµ С†РµРЅС‚СЂРёСЂРѕРІР°РЅРёРµ РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё), Р° С‡РёСЃР»Рѕ 26 &#151;
+Р·РЅР°С‡РµРЅРёРµ РїРѕР·РёС†РёРё РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё, РЅР°С‡РёРЅР°СЏ СЃ РєРѕС‚РѕСЂРѕР№ С‚СЂРµР±СѓРµС‚СЃСЏ РІС‹РІРµСЃС‚Рё СѓРєР°Р·Р°РЅРЅСѓСЋ
+СЃС‚СЂРѕРєСѓ.
 </p>
-<p>Указанное обстоятельство может затруднить использование для подобных формулировок
-нового варианта процедуры TaskText, появившегося в конструкторе версии 4.11.
-В этом варианте указывается единственный строковый параметр, содержащий
-все строки формулировки, разделенные символами разрыва строки (#13 или #10).
-При разборе этого параметра из каждой строки формулировки удаляются начальные
-и конечные пробелы, причем строки формулировки, оказавшиеся в результате
-пустыми, игнорируются, а все непустые строки выводятся в окне задачника в режиме
-центрирования. Тем не менее, и этот вариант процедуры TaskText позволяет
-обеспечить особое выравнивание требуемых строк в окне задачника. Для этого
-надо добавить некоторое количество вспомогательных начальных или конечных
-пробелов к строке, требующей специального выравнивания, причем первый начальный
-или последний конечный пробел надо <i>экранировать</i> символом \, чтобы не допустить
-его автоматического удаления. Прочие пробелы (следующие за начальным пробелом
-или предшествующие конечному пробелу) экранировать необязательно.
-Приведем пример определения формулировки, в котором
-используется новый вариант процедуры TaskText (следует обратить внимание
-на конечные пробелы, указанные в последних трех строках; в остальном
-текст формулировки не отличается от приведенного выше):
+<p>РЈРєР°Р·Р°РЅРЅРѕРµ РѕР±СЃС‚РѕСЏС‚РµР»СЊСЃС‚РІРѕ РјРѕР¶РµС‚ Р·Р°С‚СЂСѓРґРЅРёС‚СЊ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РґР»СЏ РїРѕРґРѕР±РЅС‹С… С„РѕСЂРјСѓР»РёСЂРѕРІРѕРє
+РЅРѕРІРѕРіРѕ РІР°СЂРёР°РЅС‚Р° РїСЂРѕС†РµРґСѓСЂС‹ TaskText, РїРѕСЏРІРёРІС€РµРіРѕСЃСЏ РІ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРµ РІРµСЂСЃРёРё 4.11.
+Р’ СЌС‚РѕРј РІР°СЂРёР°РЅС‚Рµ СѓРєР°Р·С‹РІР°РµС‚СЃСЏ РµРґРёРЅСЃС‚РІРµРЅРЅС‹Р№ СЃС‚СЂРѕРєРѕРІС‹Р№ РїР°СЂР°РјРµС‚СЂ, СЃРѕРґРµСЂР¶Р°С‰РёР№
+РІСЃРµ СЃС‚СЂРѕРєРё С„РѕСЂРјСѓР»РёСЂРѕРІРєРё, СЂР°Р·РґРµР»РµРЅРЅС‹Рµ СЃРёРјРІРѕР»Р°РјРё СЂР°Р·СЂС‹РІР° СЃС‚СЂРѕРєРё (#13 РёР»Рё #10).
+РџСЂРё СЂР°Р·Р±РѕСЂРµ СЌС‚РѕРіРѕ РїР°СЂР°РјРµС‚СЂР° РёР· РєР°Р¶РґРѕР№ СЃС‚СЂРѕРєРё С„РѕСЂРјСѓР»РёСЂРѕРІРєРё СѓРґР°Р»СЏСЋС‚СЃСЏ РЅР°С‡Р°Р»СЊРЅС‹Рµ
+Рё РєРѕРЅРµС‡РЅС‹Рµ РїСЂРѕР±РµР»С‹, РїСЂРёС‡РµРј СЃС‚СЂРѕРєРё С„РѕСЂРјСѓР»РёСЂРѕРІРєРё, РѕРєР°Р·Р°РІС€РёРµСЃСЏ РІ СЂРµР·СѓР»СЊС‚Р°С‚Рµ
+РїСѓСЃС‚С‹РјРё, РёРіРЅРѕСЂРёСЂСѓСЋС‚СЃСЏ, Р° РІСЃРµ РЅРµРїСѓСЃС‚С‹Рµ СЃС‚СЂРѕРєРё РІС‹РІРѕРґСЏС‚СЃСЏ РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР° РІ СЂРµР¶РёРјРµ
+С†РµРЅС‚СЂРёСЂРѕРІР°РЅРёСЏ. РўРµРј РЅРµ РјРµРЅРµРµ, Рё СЌС‚РѕС‚ РІР°СЂРёР°РЅС‚ РїСЂРѕС†РµРґСѓСЂС‹ TaskText РїРѕР·РІРѕР»СЏРµС‚
+РѕР±РµСЃРїРµС‡РёС‚СЊ РѕСЃРѕР±РѕРµ РІС‹СЂР°РІРЅРёРІР°РЅРёРµ С‚СЂРµР±СѓРµРјС‹С… СЃС‚СЂРѕРє РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР°. Р”Р»СЏ СЌС‚РѕРіРѕ
+РЅР°РґРѕ РґРѕР±Р°РІРёС‚СЊ РЅРµРєРѕС‚РѕСЂРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹С… РЅР°С‡Р°Р»СЊРЅС‹С… РёР»Рё РєРѕРЅРµС‡РЅС‹С…
+РїСЂРѕР±РµР»РѕРІ Рє СЃС‚СЂРѕРєРµ, С‚СЂРµР±СѓСЋС‰РµР№ СЃРїРµС†РёР°Р»СЊРЅРѕРіРѕ РІС‹СЂР°РІРЅРёРІР°РЅРёСЏ, РїСЂРёС‡РµРј РїРµСЂРІС‹Р№ РЅР°С‡Р°Р»СЊРЅС‹Р№
+РёР»Рё РїРѕСЃР»РµРґРЅРёР№ РєРѕРЅРµС‡РЅС‹Р№ РїСЂРѕР±РµР» РЅР°РґРѕ <i>СЌРєСЂР°РЅРёСЂРѕРІР°С‚СЊ</i> СЃРёРјРІРѕР»РѕРј \, С‡С‚РѕР±С‹ РЅРµ РґРѕРїСѓСЃС‚РёС‚СЊ
+РµРіРѕ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРіРѕ СѓРґР°Р»РµРЅРёСЏ. РџСЂРѕС‡РёРµ РїСЂРѕР±РµР»С‹ (СЃР»РµРґСѓСЋС‰РёРµ Р·Р° РЅР°С‡Р°Р»СЊРЅС‹Рј РїСЂРѕР±РµР»РѕРј
+РёР»Рё РїСЂРµРґС€РµСЃС‚РІСѓСЋС‰РёРµ РєРѕРЅРµС‡РЅРѕРјСѓ РїСЂРѕР±РµР»Сѓ) СЌРєСЂР°РЅРёСЂРѕРІР°С‚СЊ РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅРѕ.
+РџСЂРёРІРµРґРµРј РїСЂРёРјРµСЂ РѕРїСЂРµРґРµР»РµРЅРёСЏ С„РѕСЂРјСѓР»РёСЂРѕРІРєРё, РІ РєРѕС‚РѕСЂРѕРј
+РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РЅРѕРІС‹Р№ РІР°СЂРёР°РЅС‚ РїСЂРѕС†РµРґСѓСЂС‹ TaskText (СЃР»РµРґСѓРµС‚ РѕР±СЂР°С‚РёС‚СЊ РІРЅРёРјР°РЅРёРµ
+РЅР° РєРѕРЅРµС‡РЅС‹Рµ РїСЂРѕР±РµР»С‹, СѓРєР°Р·Р°РЅРЅС‹Рµ РІ РїРѕСЃР»РµРґРЅРёС… С‚СЂРµС… СЃС‚СЂРѕРєР°С…; РІ РѕСЃС‚Р°Р»СЊРЅРѕРј
+С‚РµРєСЃС‚ С„РѕСЂРјСѓР»РёСЂРѕРІРєРё РЅРµ РѕС‚Р»РёС‡Р°РµС‚СЃСЏ РѕС‚ РїСЂРёРІРµРґРµРЅРЅРѕРіРѕ РІС‹С€Рµ):
 </p>
-<pre>TaskText('Для данного вещественного~{x} найти значение следующей функции~{f},'#13 +
-'принимающей вещественные значения:'#13 +
-'\[\Jrcrl&\,&\,&       \-{x},& если {x}~\l~0,     \ '#13 +
-'&{f}({x})&~=~&{x}^2,& если 0~&lt;~{x}~&lt;~2, \ '#13 +
-'&\,&\,&        4,& если {x}~\g~2.\j\]     \ ');
+<pre>TaskText('Р”Р»СЏ РґР°РЅРЅРѕРіРѕ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ~{x} РЅР°Р№С‚Рё Р·РЅР°С‡РµРЅРёРµ СЃР»РµРґСѓСЋС‰РµР№ С„СѓРЅРєС†РёРё~{f},'#13 +
+'РїСЂРёРЅРёРјР°СЋС‰РµР№ РІРµС‰РµСЃС‚РІРµРЅРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ:'#13 +
+'\[\Jrcrl&\,&\,&       \-{x},& РµСЃР»Рё {x}~\l~0,     \ '#13 +
+'&{f}({x})&~=~&{x}^2,& РµСЃР»Рё 0~&lt;~{x}~&lt;~2, \ '#13 +
+'&\,&\,&        4,& РµСЃР»Рё {x}~\g~2.\j\]     \ ');
 </pre>
-<p>Управляющая последовательность <code>\P</code> предназначена для разделения абзацев.
-В тексте, отображаемом в окне задачника, данная команда игнорируется (подобно прочим командам, связанным с разделением на абзацы).
-Для нее не предусмотрено парной завершающей команды, поскольку необходимые теги при переходе к новому абзацу
-добавляются в текст html-страницы автоматически. Пробелы после команды <code>\P</code> при генерации html-страницы игнорируются,
-однако они учитываются при отображении текста в окне задачника.
+<p>РЈРїСЂР°РІР»СЏСЋС‰Р°СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ <code>\P</code> РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅР° РґР»СЏ СЂР°Р·РґРµР»РµРЅРёСЏ Р°Р±Р·Р°С†РµРІ.
+Р’ С‚РµРєСЃС‚Рµ, РѕС‚РѕР±СЂР°Р¶Р°РµРјРѕРј РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР°, РґР°РЅРЅР°СЏ РєРѕРјР°РЅРґР° РёРіРЅРѕСЂРёСЂСѓРµС‚СЃСЏ (РїРѕРґРѕР±РЅРѕ РїСЂРѕС‡РёРј РєРѕРјР°РЅРґР°Рј, СЃРІСЏР·Р°РЅРЅС‹Рј СЃ СЂР°Р·РґРµР»РµРЅРёРµРј РЅР° Р°Р±Р·Р°С†С‹).
+Р”Р»СЏ РЅРµРµ РЅРµ РїСЂРµРґСѓСЃРјРѕС‚СЂРµРЅРѕ РїР°СЂРЅРѕР№ Р·Р°РІРµСЂС€Р°СЋС‰РµР№ РєРѕРјР°РЅРґС‹, РїРѕСЃРєРѕР»СЊРєСѓ РЅРµРѕР±С…РѕРґРёРјС‹Рµ С‚РµРіРё РїСЂРё РїРµСЂРµС…РѕРґРµ Рє РЅРѕРІРѕРјСѓ Р°Р±Р·Р°С†Сѓ
+РґРѕР±Р°РІР»СЏСЋС‚СЃСЏ РІ С‚РµРєСЃС‚ html-СЃС‚СЂР°РЅРёС†С‹ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё. РџСЂРѕР±РµР»С‹ РїРѕСЃР»Рµ РєРѕРјР°РЅРґС‹ <code>\P</code> РїСЂРё РіРµРЅРµСЂР°С†РёРё html-СЃС‚СЂР°РЅРёС†С‹ РёРіРЅРѕСЂРёСЂСѓСЋС‚СЃСЏ,
+РѕРґРЅР°РєРѕ РѕРЅРё СѓС‡РёС‚С‹РІР°СЋС‚СЃСЏ РїСЂРё РѕС‚РѕР±СЂР°Р¶РµРЅРёРё С‚РµРєСЃС‚Р° РІ РѕРєРЅРµ Р·Р°РґР°С‡РЅРёРєР°.
 </p>
 
 
-<h2>Генерация специальных символов</h2>
-<p>Используя две &laquo;универсальные&raquo; управляющие последовательности <code>\h</code> и <code>\H</code>,
-можно включать в текст задания или преамбулы специальные символы,
-входящие во вторую половину кодовой таблицы для западноевропейских языков ANSI Latin-1 (команда <code>\h</code>) или
-содержащиеся в Windows-шрифте Symbol (команда <code>\H</code>).
-После имени каждой из этих команд следует указать двузначное шестнадцатеричное число, определяющее
-код требуемого символа; при этом шестнадцатеричные цифры A, B, C, D, E, F можно указывать в любом регистре.
-Если двухсимвольный текст после команд нельзя преобразовать в шестнадцатеричное число или число не является допустимым,
-то команды возвращают символ &laquo;?&raquo; (знак вопроса).
+<h2>Р“РµРЅРµСЂР°С†РёСЏ СЃРїРµС†РёР°Р»СЊРЅС‹С… СЃРёРјРІРѕР»РѕРІ</h2>
+<p>РСЃРїРѕР»СЊР·СѓСЏ РґРІРµ &laquo;СѓРЅРёРІРµСЂСЃР°Р»СЊРЅС‹Рµ&raquo; СѓРїСЂР°РІР»СЏСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё <code>\h</code> Рё <code>\H</code>,
+РјРѕР¶РЅРѕ РІРєР»СЋС‡Р°С‚СЊ РІ С‚РµРєСЃС‚ Р·Р°РґР°РЅРёСЏ РёР»Рё РїСЂРµР°РјР±СѓР»С‹ СЃРїРµС†РёР°Р»СЊРЅС‹Рµ СЃРёРјРІРѕР»С‹,
+РІС…РѕРґСЏС‰РёРµ РІРѕ РІС‚РѕСЂСѓСЋ РїРѕР»РѕРІРёРЅСѓ РєРѕРґРѕРІРѕР№ С‚Р°Р±Р»РёС†С‹ РґР»СЏ Р·Р°РїР°РґРЅРѕРµРІСЂРѕРїРµР№СЃРєРёС… СЏР·С‹РєРѕРІ ANSI Latin-1 (РєРѕРјР°РЅРґР° <code>\h</code>) РёР»Рё
+СЃРѕРґРµСЂР¶Р°С‰РёРµСЃСЏ РІ Windows-С€СЂРёС„С‚Рµ Symbol (РєРѕРјР°РЅРґР° <code>\H</code>).
+РџРѕСЃР»Рµ РёРјРµРЅРё РєР°Р¶РґРѕР№ РёР· СЌС‚РёС… РєРѕРјР°РЅРґ СЃР»РµРґСѓРµС‚ СѓРєР°Р·Р°С‚СЊ РґРІСѓР·РЅР°С‡РЅРѕРµ С€РµСЃС‚РЅР°РґС†Р°С‚РµСЂРёС‡РЅРѕРµ С‡РёСЃР»Рѕ, РѕРїСЂРµРґРµР»СЏСЋС‰РµРµ
+РєРѕРґ С‚СЂРµР±СѓРµРјРѕРіРѕ СЃРёРјРІРѕР»Р°; РїСЂРё СЌС‚РѕРј С€РµСЃС‚РЅР°РґС†Р°С‚РµСЂРёС‡РЅС‹Рµ С†РёС„СЂС‹ A, B, C, D, E, F РјРѕР¶РЅРѕ СѓРєР°Р·С‹РІР°С‚СЊ РІ Р»СЋР±РѕРј СЂРµРіРёСЃС‚СЂРµ.
+Р•СЃР»Рё РґРІСѓС…СЃРёРјРІРѕР»СЊРЅС‹Р№ С‚РµРєСЃС‚ РїРѕСЃР»Рµ РєРѕРјР°РЅРґ РЅРµР»СЊР·СЏ РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ РІ С€РµСЃС‚РЅР°РґС†Р°С‚РµСЂРёС‡РЅРѕРµ С‡РёСЃР»Рѕ РёР»Рё С‡РёСЃР»Рѕ РЅРµ СЏРІР»СЏРµС‚СЃСЏ РґРѕРїСѓСЃС‚РёРјС‹Рј,
+С‚Рѕ РєРѕРјР°РЅРґС‹ РІРѕР·РІСЂР°С‰Р°СЋС‚ СЃРёРјРІРѕР» &laquo;?&raquo; (Р·РЅР°Рє РІРѕРїСЂРѕСЃР°).
 </p>
-<p>В случае команды <code>\h</code> (символы таблицы Latin-1) допустимыми считаются числа из диапазона 128&#150;255, за исключением
-кодов неотображаемых символов, например, кода неразрывного пробела 160 (A0) или &laquo;мягкого&raquo; переноса 173 (AD).
-Символы таблицы Ansi Latin-1 с кодами 128&#150;159 имеют в кодировке Unicode другие значения кодов;
-при генерации html-описаний для этих символов используются их коды в таблице Unicode.
+<p>Р’ СЃР»СѓС‡Р°Рµ РєРѕРјР°РЅРґС‹ <code>\h</code> (СЃРёРјРІРѕР»С‹ С‚Р°Р±Р»РёС†С‹ Latin-1) РґРѕРїСѓСЃС‚РёРјС‹РјРё СЃС‡РёС‚Р°СЋС‚СЃСЏ С‡РёСЃР»Р° РёР· РґРёР°РїР°Р·РѕРЅР° 128&#150;255, Р·Р° РёСЃРєР»СЋС‡РµРЅРёРµРј
+РєРѕРґРѕРІ РЅРµРѕС‚РѕР±СЂР°Р¶Р°РµРјС‹С… СЃРёРјРІРѕР»РѕРІ, РЅР°РїСЂРёРјРµСЂ, РєРѕРґР° РЅРµСЂР°Р·СЂС‹РІРЅРѕРіРѕ РїСЂРѕР±РµР»Р° 160 (A0) РёР»Рё &laquo;РјСЏРіРєРѕРіРѕ&raquo; РїРµСЂРµРЅРѕСЃР° 173 (AD).
+РЎРёРјРІРѕР»С‹ С‚Р°Р±Р»РёС†С‹ Ansi Latin-1 СЃ РєРѕРґР°РјРё 128&#150;159 РёРјРµСЋС‚ РІ РєРѕРґРёСЂРѕРІРєРµ Unicode РґСЂСѓРіРёРµ Р·РЅР°С‡РµРЅРёСЏ РєРѕРґРѕРІ;
+РїСЂРё РіРµРЅРµСЂР°С†РёРё html-РѕРїРёСЃР°РЅРёР№ РґР»СЏ СЌС‚РёС… СЃРёРјРІРѕР»РѕРІ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ РёС… РєРѕРґС‹ РІ С‚Р°Р±Р»РёС†Рµ Unicode.
 </p>
-<p>С помощью команды <code>\H</code> можно получить только <i>часть</i> символов, определенных в Windows-шрифте Symbol.
-Исключены символы, уже присутствующие в таблицах ASCII и ANSI Latin-1 (например, цифры и знаки препинания)
-или имеющие идентичное начертание с символами из этих таблиц (например, заглавные греческие буквы, совпадающие по
-начертанию с латинскими: A, B, E, H, X и т.&nbsp;д.). Кроме того, исключены символы с кодами 230&#150;239 и 243&#150;254,
-представляющие собой фрагменты больших скобок.
+<p>РЎ РїРѕРјРѕС‰СЊСЋ РєРѕРјР°РЅРґС‹ <code>\H</code> РјРѕР¶РЅРѕ РїРѕР»СѓС‡РёС‚СЊ С‚РѕР»СЊРєРѕ <i>С‡Р°СЃС‚СЊ</i> СЃРёРјРІРѕР»РѕРІ, РѕРїСЂРµРґРµР»РµРЅРЅС‹С… РІ Windows-С€СЂРёС„С‚Рµ Symbol.
+РСЃРєР»СЋС‡РµРЅС‹ СЃРёРјРІРѕР»С‹, СѓР¶Рµ РїСЂРёСЃСѓС‚СЃС‚РІСѓСЋС‰РёРµ РІ С‚Р°Р±Р»РёС†Р°С… ASCII Рё ANSI Latin-1 (РЅР°РїСЂРёРјРµСЂ, С†РёС„СЂС‹ Рё Р·РЅР°РєРё РїСЂРµРїРёРЅР°РЅРёСЏ)
+РёР»Рё РёРјРµСЋС‰РёРµ РёРґРµРЅС‚РёС‡РЅРѕРµ РЅР°С‡РµСЂС‚Р°РЅРёРµ СЃ СЃРёРјРІРѕР»Р°РјРё РёР· СЌС‚РёС… С‚Р°Р±Р»РёС† (РЅР°РїСЂРёРјРµСЂ, Р·Р°РіР»Р°РІРЅС‹Рµ РіСЂРµС‡РµСЃРєРёРµ Р±СѓРєРІС‹, СЃРѕРІРїР°РґР°СЋС‰РёРµ РїРѕ
+РЅР°С‡РµСЂС‚Р°РЅРёСЋ СЃ Р»Р°С‚РёРЅСЃРєРёРјРё: A, B, E, H, X Рё С‚.&nbsp;Рґ.). РљСЂРѕРјРµ С‚РѕРіРѕ, РёСЃРєР»СЋС‡РµРЅС‹ СЃРёРјРІРѕР»С‹ СЃ РєРѕРґР°РјРё 230&#150;239 Рё 243&#150;254,
+РїСЂРµРґСЃС‚Р°РІР»СЏСЋС‰РёРµ СЃРѕР±РѕР№ С„СЂР°РіРјРµРЅС‚С‹ Р±РѕР»СЊС€РёС… СЃРєРѕР±РѕРє.
 </p>
-<p>Следует заметить, что для части математических символов нельзя обеспечить их
-правильное отображение в каждом из трех наиболее популярных веб-браузеров (Microsoft Internet Explorer,
-Mozilla Firefox и Opera) без использования средств веб-программирования.
-В браузерах Internet Explorer и Firefox можно подключать шрифты Windows, в том числе
-шрифт Symbol, однако в Opera это сделать нельзя. С другой стороны, в Opera и Firefox для отображения
-всех стандартных математических символов достаточно указать их код в Unicode-кодировке, однако в
-стандартных Windows-шрифтах, используемых браузером Internet Explorer, часть символов с требуемыми кодами отсутствует.
-При реализации команды <code>\H</code> для вывода подобных символов в html-документе был выбран вариант,
-обеспечивающий их правильное отображение в браузере Internet Explorer (и Mozilla Firefox):
-для этого используется Windows-шрифт Symbol. Однако в браузере Opera (и других браузерах, не поддерживающих шрифты Windows)
-<i>данные символы будут отображаться неправильно</i>.
+<p>РЎР»РµРґСѓРµС‚ Р·Р°РјРµС‚РёС‚СЊ, С‡С‚Рѕ РґР»СЏ С‡Р°СЃС‚Рё РјР°С‚РµРјР°С‚РёС‡РµСЃРєРёС… СЃРёРјРІРѕР»РѕРІ РЅРµР»СЊР·СЏ РѕР±РµСЃРїРµС‡РёС‚СЊ РёС…
+РїСЂР°РІРёР»СЊРЅРѕРµ РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ РІ РєР°Р¶РґРѕРј РёР· С‚СЂРµС… РЅР°РёР±РѕР»РµРµ РїРѕРїСѓР»СЏСЂРЅС‹С… РІРµР±-Р±СЂР°СѓР·РµСЂРѕРІ (Microsoft Internet Explorer,
+Mozilla Firefox Рё Opera) Р±РµР· РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ СЃСЂРµРґСЃС‚РІ РІРµР±-РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ.
+Р’ Р±СЂР°СѓР·РµСЂР°С… Internet Explorer Рё Firefox РјРѕР¶РЅРѕ РїРѕРґРєР»СЋС‡Р°С‚СЊ С€СЂРёС„С‚С‹ Windows, РІ С‚РѕРј С‡РёСЃР»Рµ
+С€СЂРёС„С‚ Symbol, РѕРґРЅР°РєРѕ РІ Opera СЌС‚Рѕ СЃРґРµР»Р°С‚СЊ РЅРµР»СЊР·СЏ. РЎ РґСЂСѓРіРѕР№ СЃС‚РѕСЂРѕРЅС‹, РІ Opera Рё Firefox РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ
+РІСЃРµС… СЃС‚Р°РЅРґР°СЂС‚РЅС‹С… РјР°С‚РµРјР°С‚РёС‡РµСЃРєРёС… СЃРёРјРІРѕР»РѕРІ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ СѓРєР°Р·Р°С‚СЊ РёС… РєРѕРґ РІ Unicode-РєРѕРґРёСЂРѕРІРєРµ, РѕРґРЅР°РєРѕ РІ
+СЃС‚Р°РЅРґР°СЂС‚РЅС‹С… Windows-С€СЂРёС„С‚Р°С…, РёСЃРїРѕР»СЊР·СѓРµРјС‹С… Р±СЂР°СѓР·РµСЂРѕРј Internet Explorer, С‡Р°СЃС‚СЊ СЃРёРјРІРѕР»РѕРІ СЃ С‚СЂРµР±СѓРµРјС‹РјРё РєРѕРґР°РјРё РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚.
+РџСЂРё СЂРµР°Р»РёР·Р°С†РёРё РєРѕРјР°РЅРґС‹ <code>\H</code> РґР»СЏ РІС‹РІРѕРґР° РїРѕРґРѕР±РЅС‹С… СЃРёРјРІРѕР»РѕРІ РІ html-РґРѕРєСѓРјРµРЅС‚Рµ Р±С‹Р» РІС‹Р±СЂР°РЅ РІР°СЂРёР°РЅС‚,
+РѕР±РµСЃРїРµС‡РёРІР°СЋС‰РёР№ РёС… РїСЂР°РІРёР»СЊРЅРѕРµ РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ РІ Р±СЂР°СѓР·РµСЂРµ Internet Explorer (Рё Mozilla Firefox):
+РґР»СЏ СЌС‚РѕРіРѕ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ Windows-С€СЂРёС„С‚ Symbol. РћРґРЅР°РєРѕ РІ Р±СЂР°СѓР·РµСЂРµ Opera (Рё РґСЂСѓРіРёС… Р±СЂР°СѓР·РµСЂР°С…, РЅРµ РїРѕРґРґРµСЂР¶РёРІР°СЋС‰РёС… С€СЂРёС„С‚С‹ Windows)
+<i>РґР°РЅРЅС‹Рµ СЃРёРјРІРѕР»С‹ Р±СѓРґСѓС‚ РѕС‚РѕР±СЂР°Р¶Р°С‚СЊСЃСЏ РЅРµРїСЂР°РІРёР»СЊРЅРѕ</i>.
 </p>
-<p><b>Примечание</b>. Для возможности использования Windows-шрифтов в браузере Mozilla Firefox следует установить режим
-&laquo;Разрешить веб-сайтам использовать свои шрифты вместо установленных&raquo;.
-Соответствующий флажок находится в окне &laquo;Шрифты&raquo;, которое можно отобразить с помощью следующей
-последовательности действий: выполнить команду меню &laquo;Инструменты | Настройки...&raquo;, в
-появившемся окне &laquo;Настройки&raquo;
-перейти на вкладку &laquo;Содержимое&raquo; и в разделе &laquo;Шрифты и цвета&raquo; нажать кнопку
-&laquo;Дополнительно...&raquo;.
+<p><b>РџСЂРёРјРµС‡Р°РЅРёРµ</b>. Р”Р»СЏ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ Windows-С€СЂРёС„С‚РѕРІ РІ Р±СЂР°СѓР·РµСЂРµ Mozilla Firefox СЃР»РµРґСѓРµС‚ СѓСЃС‚Р°РЅРѕРІРёС‚СЊ СЂРµР¶РёРј
+&laquo;Р Р°Р·СЂРµС€РёС‚СЊ РІРµР±-СЃР°Р№С‚Р°Рј РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ СЃРІРѕРё С€СЂРёС„С‚С‹ РІРјРµСЃС‚Рѕ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅС‹С…&raquo;.
+РЎРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ С„Р»Р°Р¶РѕРє РЅР°С…РѕРґРёС‚СЃСЏ РІ РѕРєРЅРµ &laquo;РЁСЂРёС„С‚С‹&raquo;, РєРѕС‚РѕСЂРѕРµ РјРѕР¶РЅРѕ РѕС‚РѕР±СЂР°Р·РёС‚СЊ СЃ РїРѕРјРѕС‰СЊСЋ СЃР»РµРґСѓСЋС‰РµР№
+РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РґРµР№СЃС‚РІРёР№: РІС‹РїРѕР»РЅРёС‚СЊ РєРѕРјР°РЅРґСѓ РјРµРЅСЋ &laquo;РРЅСЃС‚СЂСѓРјРµРЅС‚С‹ | РќР°СЃС‚СЂРѕР№РєРё...&raquo;, РІ
+РїРѕСЏРІРёРІС€РµРјСЃСЏ РѕРєРЅРµ &laquo;РќР°СЃС‚СЂРѕР№РєРё&raquo;
+РїРµСЂРµР№С‚Рё РЅР° РІРєР»Р°РґРєСѓ &laquo;РЎРѕРґРµСЂР¶РёРјРѕРµ&raquo; Рё РІ СЂР°Р·РґРµР»Рµ &laquo;РЁСЂРёС„С‚С‹ Рё С†РІРµС‚Р°&raquo; РЅР°Р¶Р°С‚СЊ РєРЅРѕРїРєСѓ
+&laquo;Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ...&raquo;.
 </p>
-<p>С некоторыми часто используемыми специальными символами связаны особые управляющие
-последовательности (см. таблицу управляющих последовательностей, раздел &laquo;<a href="#Symbols">Символы</a>&raquo;).
-Все подобные символы правильно отображаются во всех перечисленных выше браузерах.
+<p>РЎ РЅРµРєРѕС‚РѕСЂС‹РјРё С‡Р°СЃС‚Рѕ РёСЃРїРѕР»СЊР·СѓРµРјС‹РјРё СЃРїРµС†РёР°Р»СЊРЅС‹РјРё СЃРёРјРІРѕР»Р°РјРё СЃРІСЏР·Р°РЅС‹ РѕСЃРѕР±С‹Рµ СѓРїСЂР°РІР»СЏСЋС‰РёРµ
+РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё (СЃРј. С‚Р°Р±Р»РёС†Сѓ СѓРїСЂР°РІР»СЏСЋС‰РёС… РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№, СЂР°Р·РґРµР» &laquo;<a href="#Symbols">РЎРёРјРІРѕР»С‹</a>&raquo;).
+Р’СЃРµ РїРѕРґРѕР±РЅС‹Рµ СЃРёРјРІРѕР»С‹ РїСЂР°РІРёР»СЊРЅРѕ РѕС‚РѕР±СЂР°Р¶Р°СЋС‚СЃСЏ РІРѕ РІСЃРµС… РїРµСЂРµС‡РёСЃР»РµРЅРЅС‹С… РІС‹С€Рµ Р±СЂР°СѓР·РµСЂР°С….
 </p>
-<p>Хотя символ пересечения (&#8745;, код 8745)
-имеется в стандартных Windows-шрифтах, прочие символы, связанные с множествами
-(объединение, вложение, принадлежность и т.&nbsp;д.), в этих шрифтах отсутствуют.
-Для того чтобы все обозначения, связанные с множествами, выглядели в html-документе единообразно,
-для отображения символа пересечения (команда <code>\Hc7</code>)
-используется соответствующий символ из шрифта Symbol.
+<p>РҐРѕС‚СЏ СЃРёРјРІРѕР» РїРµСЂРµСЃРµС‡РµРЅРёСЏ (&#8745;, РєРѕРґ 8745)
+РёРјРµРµС‚СЃСЏ РІ СЃС‚Р°РЅРґР°СЂС‚РЅС‹С… Windows-С€СЂРёС„С‚Р°С…, РїСЂРѕС‡РёРµ СЃРёРјРІРѕР»С‹, СЃРІСЏР·Р°РЅРЅС‹Рµ СЃ РјРЅРѕР¶РµСЃС‚РІР°РјРё
+(РѕР±СЉРµРґРёРЅРµРЅРёРµ, РІР»РѕР¶РµРЅРёРµ, РїСЂРёРЅР°РґР»РµР¶РЅРѕСЃС‚СЊ Рё С‚.&nbsp;Рґ.), РІ СЌС‚РёС… С€СЂРёС„С‚Р°С… РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‚.
+Р”Р»СЏ С‚РѕРіРѕ С‡С‚РѕР±С‹ РІСЃРµ РѕР±РѕР·РЅР°С‡РµРЅРёСЏ, СЃРІСЏР·Р°РЅРЅС‹Рµ СЃ РјРЅРѕР¶РµСЃС‚РІР°РјРё, РІС‹РіР»СЏРґРµР»Рё РІ html-РґРѕРєСѓРјРµРЅС‚Рµ РµРґРёРЅРѕРѕР±СЂР°Р·РЅРѕ,
+РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ СЃРёРјРІРѕР»Р° РїРµСЂРµСЃРµС‡РµРЅРёСЏ (РєРѕРјР°РЅРґР° <code>\Hc7</code>)
+РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ СЃРёРјРІРѕР» РёР· С€СЂРёС„С‚Р° Symbol.
 </p>
-<p>Ниже приводятся таблицы всех символов, которые можно получить с помощью универсальных команд <code>\h</code> и <code>\H</code>.
-Первая таблица содержит символы, генерируемые командой <code>\h</code>, а вторая &#151; символы, генерируемые командой <code>\H</code>.
-Команды из второй таблицы, связанные с теми символами, которые будут неверно отображаться в браузере Opera,
-выделены полужирным шрифтом.
+<p>РќРёР¶Рµ РїСЂРёРІРѕРґСЏС‚СЃСЏ С‚Р°Р±Р»РёС†С‹ РІСЃРµС… СЃРёРјРІРѕР»РѕРІ, РєРѕС‚РѕСЂС‹Рµ РјРѕР¶РЅРѕ РїРѕР»СѓС‡РёС‚СЊ СЃ РїРѕРјРѕС‰СЊСЋ СѓРЅРёРІРµСЂСЃР°Р»СЊРЅС‹С… РєРѕРјР°РЅРґ <code>\h</code> Рё <code>\H</code>.
+РџРµСЂРІР°СЏ С‚Р°Р±Р»РёС†Р° СЃРѕРґРµСЂР¶РёС‚ СЃРёРјРІРѕР»С‹, РіРµРЅРµСЂРёСЂСѓРµРјС‹Рµ РєРѕРјР°РЅРґРѕР№ <code>\h</code>, Р° РІС‚РѕСЂР°СЏ &#151; СЃРёРјРІРѕР»С‹, РіРµРЅРµСЂРёСЂСѓРµРјС‹Рµ РєРѕРјР°РЅРґРѕР№ <code>\H</code>.
+РљРѕРјР°РЅРґС‹ РёР· РІС‚РѕСЂРѕР№ С‚Р°Р±Р»РёС†С‹, СЃРІСЏР·Р°РЅРЅС‹Рµ СЃ С‚РµРјРё СЃРёРјРІРѕР»Р°РјРё, РєРѕС‚РѕСЂС‹Рµ Р±СѓРґСѓС‚ РЅРµРІРµСЂРЅРѕ РѕС‚РѕР±СЂР°Р¶Р°С‚СЊСЃСЏ РІ Р±СЂР°СѓР·РµСЂРµ Opera,
+РІС‹РґРµР»РµРЅС‹ РїРѕР»СѓР¶РёСЂРЅС‹Рј С€СЂРёС„С‚РѕРј.
 </p>
 
-<p>Таблица 1. Символы, генерируемые командой <code>\h</code>
+<p>РўР°Р±Р»РёС†Р° 1. РЎРёРјРІРѕР»С‹, РіРµРЅРµСЂРёСЂСѓРµРјС‹Рµ РєРѕРјР°РЅРґРѕР№ <code>\h</code>
 </p>
 <p>
 <table border=1 cellpadding=5 cellspacing=0 width=98% align=center bgcolor=#FFFFFF>
@@ -1506,7 +1506,7 @@ Mozilla Firefox и Opera) без использования средств веб-программирования.
 </table>
 </p>
 
-<p>Таблица 2. Символы, генерируемые командой <code>\H</code>
+<p>РўР°Р±Р»РёС†Р° 2. РЎРёРјРІРѕР»С‹, РіРµРЅРµСЂРёСЂСѓРµРјС‹Рµ РєРѕРјР°РЅРґРѕР№ <code>\H</code>
 </p>
 <p>
 <table border=1 cellpadding=5 cellspacing=0 width=98% align=center bgcolor=#FFFFFF>
