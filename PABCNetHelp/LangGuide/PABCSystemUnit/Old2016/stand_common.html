@@ -20,27 +20,27 @@
 </object></head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title><link rel="StyleSheet" href="../../default.css"><body>
-<H1>Общие подпрограммы</H1>
+<H1>РћР±С‰РёРµ РїРѕРґРїСЂРѕРіСЂР°РјРјС‹</H1>
 <table border=0 CELLPADDING=5>
 	<tr>
 	<td>
 <code><b>procedure</b> Swap&lt;T&gt;(var a, b: T); </code><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет местами значения двух переменных</td>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРµРЅСЏРµС‚ РјРµСЃС‚Р°РјРё Р·РЅР°С‡РµРЅРёСЏ РґРІСѓС… РїРµСЂРµРјРµРЅРЅС‹С…</td>
 	</tr>
 	<tr>
 		<td>
 	<code>
 	<b>function</b> Milliseconds: integer;</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество миллисекунд с момента начала работы программы</td>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РјРёР»Р»РёСЃРµРєСѓРЅРґ СЃ РјРѕРјРµРЅС‚Р° РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹ РїСЂРѕРіСЂР°РјРјС‹</td>
 	</tr>
 	<tr>
 		<td>
 	<code>
 	<b>function</b> MillisecondsDelta: integer;</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество миллисекунд с момента начала работы программы 
-	или предыдущего вызова функций
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РјРёР»Р»РёСЃРµРєСѓРЅРґ СЃ РјРѕРјРµРЅС‚Р° РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹ РїСЂРѕРіСЂР°РјРјС‹ 
+	РёР»Рё РїСЂРµРґС‹РґСѓС‰РµРіРѕ РІС‹Р·РѕРІР° С„СѓРЅРєС†РёР№
 	<code>
-	Milliseconds</code> или
+	Milliseconds</code> РёР»Рё
 	<code>
 	MillisecondsDelta</code>.</td>
 	</tr>
@@ -48,61 +48,61 @@
 		<td>
 	<code>
 	<b>function</b> Rec&lt;T1,T2,...&gt;(x1: T1; x2: T2, ...): Tuple&lt;T1,T2,...&gt;; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает запись Tuple с соответствующим количеством полей. 
-		Поля именуются соответственно Item1, Item2 и т.д. и получают значения 
-		x1,x2,... Количество полей - от 2 до 6.</td>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ Р·Р°РїРёСЃСЊ Tuple СЃ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёРј РєРѕР»РёС‡РµСЃС‚РІРѕРј РїРѕР»РµР№. 
+		РџРѕР»СЏ РёРјРµРЅСѓСЋС‚СЃСЏ СЃРѕРѕС‚РІРµС‚СЃС‚РІРµРЅРЅРѕ Item1, Item2 Рё С‚.Рґ. Рё РїРѕР»СѓС‡Р°СЋС‚ Р·РЅР°С‡РµРЅРёСЏ 
+		x1,x2,... РљРѕР»РёС‡РµСЃС‚РІРѕ РїРѕР»РµР№ - РѕС‚ 2 РґРѕ 6.</td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> Dict&lt;TKey, TVal&gt;(params pairs: <strong>
 		array of</strong> KeyValuePair&lt;TKey, TVal&gt;): Dictionary&lt;TKey, TVal&gt;;
 		</code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов </td>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РѕРІР°СЂСЊ РїР°СЂ СЌР»РµРјРµРЅС‚РѕРІ </td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> KV&lt;TKey, TVal&gt;(key: TKey; value: TVal): 
 		KeyValuePair&lt;TKey, TVal&gt;; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает пару элементов для использования в функции Dict </td>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїР°СЂСѓ СЌР»РµРјРµРЅС‚РѕРІ РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РІ С„СѓРЅРєС†РёРё Dict </td>
 	</tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Assert(cond: boolean);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит в специальном окне стек вызовов подпрограмм если условие не выполняется
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РІ СЃРїРµС†РёР°Р»СЊРЅРѕРј РѕРєРЅРµ СЃС‚РµРє РІС‹Р·РѕРІРѕРІ РїРѕРґРїСЂРѕРіСЂР°РјРј РµСЃР»Рё СѓСЃР»РѕРІРёРµ РЅРµ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Assert(cond: boolean; mes: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит в специальном окне диагностическое сообщение mes и стек вызовов подпрограмм если условие не выполняется
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РІ СЃРїРµС†РёР°Р»СЊРЅРѕРј РѕРєРЅРµ РґРёР°РіРЅРѕСЃС‚РёС‡РµСЃРєРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ mes Рё СЃС‚РµРє РІС‹Р·РѕРІРѕРІ РїРѕРґРїСЂРѕРіСЂР°РјРј РµСЃР»Рё СѓСЃР»РѕРІРёРµ РЅРµ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ
 </td></tr>
 	<tr>
 		<td>
 <code>
 		<b>procedure</b> Sleep(ms: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Делает паузу на ms миллисекунд
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р”РµР»Р°РµС‚ РїР°СѓР·Сѓ РЅР° ms РјРёР»Р»РёСЃРµРєСѓРЅРґ
 </td>
 	</tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Halt; 
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Завершает работу программы
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РІРµСЂС€Р°РµС‚ СЂР°Р±РѕС‚Сѓ РїСЂРѕРіСЂР°РјРјС‹
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Halt(exitCode: integer); 
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Завершает работу программы, возвращая код ошибки exitCode
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РІРµСЂС€Р°РµС‚ СЂР°Р±РѕС‚Сѓ РїСЂРѕРіСЂР°РјРјС‹, РІРѕР·РІСЂР°С‰Р°СЏ РєРѕРґ РѕС€РёР±РєРё exitCode
 </td></tr>
 <tr>
 	<td>
 <code>
 <b>procedure</b> Exec(filename: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїСѓСЃРєР°РµС‚ РїСЂРѕРіСЂР°РјРјСѓ РёР»Рё РґРѕРєСѓРјРµРЅС‚ СЃ РёРјРµРЅРµРј filename
 </td>
 </tr>
 <tr>
@@ -110,15 +110,15 @@
 <code>
 <b>procedure</b> Exec(filename: string; args: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename и параметрами 
-командной строки args</td>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїСѓСЃРєР°РµС‚ РїСЂРѕРіСЂР°РјРјСѓ РёР»Рё РґРѕРєСѓРјРµРЅС‚ СЃ РёРјРµРЅРµРј filename Рё РїР°СЂР°РјРµС‚СЂР°РјРё 
+РєРѕРјР°РЅРґРЅРѕР№ СЃС‚СЂРѕРєРё args</td>
 </tr>
 <tr>
 	<td>
 <code>
 <b>procedure</b> Execute(filename: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїСѓСЃРєР°РµС‚ РїСЂРѕРіСЂР°РјРјСѓ РёР»Рё РґРѕРєСѓРјРµРЅС‚ СЃ РёРјРµРЅРµРј filename
 </td>
 </tr>
 	<tr>
@@ -127,15 +127,15 @@
 <b>procedure</b> Execute(filename: string; args: 
 string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename и параметрами 
-командной строки args</td>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїСѓСЃРєР°РµС‚ РїСЂРѕРіСЂР°РјРјСѓ РёР»Рё РґРѕРєСѓРјРµРЅС‚ СЃ РёРјРµРЅРµРј filename Рё РїР°СЂР°РјРµС‚СЂР°РјРё 
+РєРѕРјР°РЅРґРЅРѕР№ СЃС‚СЂРѕРєРё args</td>
 	</tr>
 <tr>
 	<td>
 <code>
 <b>function</b> ParamCount: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество параметров командной строки
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РїР°СЂР°РјРµС‚СЂРѕРІ РєРѕРјР°РЅРґРЅРѕР№ СЃС‚СЂРѕРєРё
 </td>
 </tr>
 <tr>
@@ -143,20 +143,20 @@ string);
 <code>
 <b>function</b> ParamStr(i: integer): string;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает i-тый параметр командной строки
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ i-С‚С‹Р№ РїР°СЂР°РјРµС‚СЂ РєРѕРјР°РЅРґРЅРѕР№ СЃС‚СЂРѕРєРё
 </td>
 </tr>
 	<tr>
 	<td>
 <code><b>procedure </b>New&lt;T&gt;(<b>var</b> p: ^T); </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выделяет динамическую память размера <code><b>sizeof</b>(T)</code> и возвращает в переменной p указатель на нее. 
-Тип T должен быть размерным</td>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РґРµР»СЏРµС‚ РґРёРЅР°РјРёС‡РµСЃРєСѓСЋ РїР°РјСЏС‚СЊ СЂР°Р·РјРµСЂР° <code><b>sizeof</b>(T)</code> Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РІ РїРµСЂРµРјРµРЅРЅРѕР№ p СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РЅРµРµ. 
+РўРёРї T РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ СЂР°Р·РјРµСЂРЅС‹Рј</td>
 	</tr>
 	<tr>
 	<td>
 <code><b>procedure </b>Dispose&lt;T&gt;(<b>var</b> p: ^T);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Освобождает динамическую память, на которую указывает 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћСЃРІРѕР±РѕР¶РґР°РµС‚ РґРёРЅР°РјРёС‡РµСЃРєСѓСЋ РїР°РјСЏС‚СЊ, РЅР° РєРѕС‚РѕСЂСѓСЋ СѓРєР°Р·С‹РІР°РµС‚ 
 p</td>
 	</tr>
 <tr>
@@ -164,7 +164,7 @@ p</td>
 <code>
 <b>function</b> GetEXEFileName: string;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возващает имя запущенного .exe-файла
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІР°С‰Р°РµС‚ РёРјСЏ Р·Р°РїСѓС‰РµРЅРЅРѕРіРѕ .exe-С„Р°Р№Р»Р°
 </td>
 </tr>
 <tr>
@@ -172,7 +172,7 @@ p</td>
 <code>
 <b>function</b> PointerToString(p: pointer): string;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует указатель к строковому представлению
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СѓРєР°Р·Р°С‚РµР»СЊ Рє СЃС‚СЂРѕРєРѕРІРѕРјСѓ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЋ
 </td>
 </tr>
 </table>

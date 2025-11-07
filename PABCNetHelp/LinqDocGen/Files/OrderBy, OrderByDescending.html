@@ -3,23 +3,23 @@
 <param name="Keyword" value="OrderByDescending">
 </object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
 <body>
-<H1>Методы OrderBy, OrderByDescending</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<H1>РњРµС‚РѕРґС‹ OrderBy, OrderByDescending</H1><h2>РћРїРёСЃР°РЅРёРµ РјРµС‚РѕРґРѕРІ</h2><p>РњРµС‚РѕРґС‹ РїСЂРёРІРµРґРµРЅС‹ РґР»СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё <code><b>sequence of</b> T</code>.</p><table>
 <tr><td>
 <code><b>function </b>OrderBy&lt;Key&gt;(keySelector: T-&gt;Key): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует элементы последовательности в порядке возрастания ключа и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕСЂС‚РёСЂСѓРµС‚ СЌР»РµРјРµРЅС‚С‹ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РІ РїРѕСЂСЏРґРєРµ РІРѕР·СЂР°СЃС‚Р°РЅРёСЏ РєР»СЋС‡Р° Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅРЅСѓСЋ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ. keySelector - С„СѓРЅРєС†РёСЏ, РїСЂРѕРµРєС‚РёСЂСѓСЋС‰Р°СЏ СЌР»РµРјРµРЅС‚ РЅР° РєР»СЋС‡.
 </td></tr>
 <tr><td>
 <code><b>function </b>OrderBy&lt;Key&gt;(keySelector: T-&gt;Key; comparer: IComparer&lt;Key&gt;): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует элементы последовательности в порядке возрастания с использованием компаратора comparer и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕСЂС‚РёСЂСѓРµС‚ СЌР»РµРјРµРЅС‚С‹ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РІ РїРѕСЂСЏРґРєРµ РІРѕР·СЂР°СЃС‚Р°РЅРёСЏ СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј РєРѕРјРїР°СЂР°С‚РѕСЂР° comparer Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅРЅСѓСЋ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ. keySelector - С„СѓРЅРєС†РёСЏ, РїСЂРѕРµРєС‚РёСЂСѓСЋС‰Р°СЏ СЌР»РµРјРµРЅС‚ РЅР° РєР»СЋС‡.
 </td></tr>
 <tr><td>
 <code><b>function </b>OrderByDescending&lt;Key&gt;(keySelector: T-&gt;Key): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует элементы последовательности в порядке убывания ключа и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕСЂС‚РёСЂСѓРµС‚ СЌР»РµРјРµРЅС‚С‹ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РІ РїРѕСЂСЏРґРєРµ СѓР±С‹РІР°РЅРёСЏ РєР»СЋС‡Р° Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅРЅСѓСЋ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ. keySelector - С„СѓРЅРєС†РёСЏ, РїСЂРѕРµРєС‚РёСЂСѓСЋС‰Р°СЏ СЌР»РµРјРµРЅС‚ РЅР° РєР»СЋС‡.
 </td></tr>
 <tr><td>
 <code><b>function </b>OrderByDescending&lt;Key&gt;(keySelector: T-&gt;Key; comparer: IComparer&lt;Key&gt;): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует элементы последовательности в порядке убывания с использованием компаратора comparer и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕСЂС‚РёСЂСѓРµС‚ СЌР»РµРјРµРЅС‚С‹ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РІ РїРѕСЂСЏРґРєРµ СѓР±С‹РІР°РЅРёСЏ СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј РєРѕРјРїР°СЂР°С‚РѕСЂР° comparer Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅРЅСѓСЋ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ. keySelector - С„СѓРЅРєС†РёСЏ, РїСЂРѕРµРєС‚РёСЂСѓСЋС‰Р°СЏ СЌР»РµРјРµРЅС‚ РЅР° РєР»СЋС‡.
 </td></tr>
 </table>
-<h2>Пример </h2><blockquote><code></code></blockquote>
+<h2>РџСЂРёРјРµСЂ </h2><blockquote><code></code></blockquote>
 </body>

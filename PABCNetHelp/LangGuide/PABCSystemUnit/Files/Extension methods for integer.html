@@ -17,40 +17,40 @@
 <param name="Keyword" value="Times">
 <param name="Keyword" value="To"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Методы расширения типа integer</H1>
+</HEAD><body><H1>РњРµС‚РѕРґС‹ СЂР°СЃС€РёСЂРµРЅРёСЏ С‚РёРїР° integer</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Between(Self: integer; a, b: integer; inclusive: boolean := true): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится между двумя другими</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True РµСЃР»Рё Р·РЅР°С‡РµРЅРёРµ РЅР°С…РѕРґРёС‚СЃСЏ РјРµР¶РґСѓ РґРІСѓРјСЏ РґСЂСѓРіРёРјРё</td></tr>
 <tr><td><code><b>function</b> Clamp(Self: integer; bottom,top: integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, ограниченное диапазоном от bottom до top включительно</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‡РёСЃР»Рѕ, РѕРіСЂР°РЅРёС‡РµРЅРЅРѕРµ РґРёР°РїР°Р·РѕРЅРѕРј РѕС‚ bottom РґРѕ top РІРєР»СЋС‡РёС‚РµР»СЊРЅРѕ</td></tr>
 <tr><td><code><b>function</b> ClampBottom(Self: integer; bottom: integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, ограниченное величиной bottom снизу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‡РёСЃР»Рѕ, РѕРіСЂР°РЅРёС‡РµРЅРЅРѕРµ РІРµР»РёС‡РёРЅРѕР№ bottom СЃРЅРёР·Сѓ</td></tr>
 <tr><td><code><b>function</b> ClampTop(Self: integer; top: integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, ограниченное величиной top сверху</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‡РёСЃР»Рѕ, РѕРіСЂР°РЅРёС‡РµРЅРЅРѕРµ РІРµР»РёС‡РёРЅРѕР№ top СЃРІРµСЂС…Сѓ</td></tr>
 <tr><td><code><b>function</b> Divs(Self,d: integer): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если целое делится на указанное значение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True РµСЃР»Рё С†РµР»РѕРµ РґРµР»РёС‚СЃСЏ РЅР° СѓРєР°Р·Р°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ</td></tr>
 <tr><td><code><b>function</b> DivsAll(Self: integer; <b>params</b> a: <b>array</b>  <b>of</b> integer): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если целое делится на все значения</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True РµСЃР»Рё С†РµР»РѕРµ РґРµР»РёС‚СЃСЏ РЅР° РІСЃРµ Р·РЅР°С‡РµРЅРёСЏ</td></tr>
 <tr><td><code><b>function</b> DivsAny(Self: integer; <b>params</b> a: <b>array</b>  <b>of</b> integer): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если целое делится на одно из значений</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True РµСЃР»Рё С†РµР»РѕРµ РґРµР»РёС‚СЃСЏ РЅР° РѕРґРЅРѕ РёР· Р·РЅР°С‡РµРЅРёР№</td></tr>
 <tr><td><code><b>function</b> Downto(Self: integer; n: integer): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует последовательность целых от текущего значения до n в убывающем порядке</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р“РµРЅРµСЂРёСЂСѓРµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ С†РµР»С‹С… РѕС‚ С‚РµРєСѓС‰РµРіРѕ Р·РЅР°С‡РµРЅРёСЏ РґРѕ n РІ СѓР±С‹РІР°СЋС‰РµРј РїРѕСЂСЏРґРєРµ</td></tr>
 <tr><td><code><b>function</b> InRange(Self: integer; a,b: integer): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится в диапазоне [a,b]</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True РµСЃР»Рё Р·РЅР°С‡РµРЅРёРµ РЅР°С…РѕРґРёС‚СЃСЏ РІ РґРёР°РїР°Р·РѕРЅРµ [a,b]</td></tr>
 <tr><td><code><b>function</b> IsEven(Self: integer): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает, является ли целое четным</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚, СЏРІР»СЏРµС‚СЃСЏ Р»Рё С†РµР»РѕРµ С‡РµС‚РЅС‹Рј</td></tr>
 <tr><td><code><b>function</b> IsOdd(Self: integer): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает, является ли целое нечетным</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚, СЏРІР»СЏРµС‚СЃСЏ Р»Рё С†РµР»РѕРµ РЅРµС‡РµС‚РЅС‹Рј</td></tr>
 <tr><td><code><b>function</b> NotDivs(Self,d: integer): boolean; &gt; 0;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если целое не делится на указанное значение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True РµСЃР»Рё С†РµР»РѕРµ РЅРµ РґРµР»РёС‚СЃСЏ РЅР° СѓРєР°Р·Р°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ</td></tr>
 <tr><td><code><b>function</b> Range(Self: integer): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность чисел от 1 до данного</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ С‡РёСЃРµР» РѕС‚ 1 РґРѕ РґР°РЅРЅРѕРіРѕ</td></tr>
 <tr><td><code><b>function</b> Sqr(Self: integer): int64;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает квадрат числа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРІР°РґСЂР°С‚ С‡РёСЃР»Р°</td></tr>
 <tr><td><code><b>function</b> Sqrt(Self: integer): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает квадратный корень числа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРІР°РґСЂР°С‚РЅС‹Р№ РєРѕСЂРµРЅСЊ С‡РёСЃР»Р°</td></tr>
 <tr><td><code><b>function</b> Times(Self: integer): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность целых 0,1,...n-1</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ С†РµР»С‹С… 0,1,...n-1</td></tr>
 <tr><td><code><b>function</b> To(Self: integer; n: integer): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует последовательность целых от текущего значения до n</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р“РµРЅРµСЂРёСЂСѓРµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ С†РµР»С‹С… РѕС‚ С‚РµРєСѓС‰РµРіРѕ Р·РЅР°С‡РµРЅРёСЏ РґРѕ n</td></tr>
 </table>
 </body></HTML>

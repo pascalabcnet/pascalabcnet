@@ -11,42 +11,42 @@
 <param name="Keyword" value="ReadMatrReal">
 <param name="Keyword" value="Transpose"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Подпрограммы для создания двумерных массивов</H1>
+</HEAD><body><H1>РџРѕРґРїСЂРѕРіСЂР°РјРјС‹ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РґРІСѓРјРµСЂРЅС‹С… РјР°СЃСЃРёРІРѕРІ</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Matr&lt;T&gt;(m,n: integer; <b>params</b> data: <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный указанными значениями по строкам</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ СЂР°Р·РјРµСЂР° m x n, Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ СѓРєР°Р·Р°РЅРЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РїРѕ СЃС‚СЂРѕРєР°Рј</td></tr>
 <tr><td><code><b>function</b> Matr&lt;T&gt;(<b>params</b> aa: <b>array</b>  <b>of</b> <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив, заполненный значениями из одномерных массивов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ, Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ Р·РЅР°С‡РµРЅРёСЏРјРё РёР· РѕРґРЅРѕРјРµСЂРЅС‹С… РјР°СЃСЃРёРІРѕРІ</td></tr>
 <tr><td><code><b>function</b> MatrByCol&lt;T&gt;(a: <b>array</b>  <b>of</b> <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по массиву массивов столбцов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р“РµРЅРµСЂРёСЂСѓРµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ РїРѕ РјР°СЃСЃРёРІСѓ РјР°СЃСЃРёРІРѕРІ СЃС‚РѕР»Р±С†РѕРІ</td></tr>
 <tr><td><code><b>function</b> MatrByCol&lt;T&gt;(a: <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по последовательности массивов столбцов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р“РµРЅРµСЂРёСЂСѓРµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ РїРѕ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РјР°СЃСЃРёРІРѕРІ СЃС‚РѕР»Р±С†РѕРІ</td></tr>
 <tr><td><code><b>function</b> MatrByCol&lt;T&gt;(a: <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по последовательности последовательностей столбцов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р“РµРЅРµСЂРёСЂСѓРµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ РїРѕ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№ СЃС‚РѕР»Р±С†РѕРІ</td></tr>
 <tr><td><code><b>function</b> MatrByCol&lt;T&gt;(m,n: integer; a: <b>sequence </b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по столбцам из последовательности</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р“РµРЅРµСЂРёСЂСѓРµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ РїРѕ СЃС‚РѕР»Р±С†Р°Рј РёР· РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё</td></tr>
 <tr><td><code><b>function</b> MatrByRow&lt;T&gt;(a: <b>array</b>  <b>of</b> <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по массиву массивов строк</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р“РµРЅРµСЂРёСЂСѓРµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ РїРѕ РјР°СЃСЃРёРІСѓ РјР°СЃСЃРёРІРѕРІ СЃС‚СЂРѕРє</td></tr>
 <tr><td><code><b>function</b> MatrByRow&lt;T&gt;(a: <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по последовательности массивов строк</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р“РµРЅРµСЂРёСЂСѓРµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ РїРѕ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РјР°СЃСЃРёРІРѕРІ СЃС‚СЂРѕРє</td></tr>
 <tr><td><code><b>function</b> MatrByRow&lt;T&gt;(a: <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по последовательности последовательностей строк</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р“РµРЅРµСЂРёСЂСѓРµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ РїРѕ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№ СЃС‚СЂРѕРє</td></tr>
 <tr><td><code><b>function</b> MatrByRow&lt;T&gt;(m,n: integer; a: <b>sequence </b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по строкам из последовательности</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р“РµРЅРµСЂРёСЂСѓРµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ РїРѕ СЃС‚СЂРѕРєР°Рј РёР· РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё</td></tr>
 <tr><td><code><b>function</b> MatrFill&lt;T&gt;(m, n: integer; x: T): <b>array</b> [,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный элементами x</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ СЂР°Р·РјРµСЂР° m x n, Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ СЌР»РµРјРµРЅС‚Р°РјРё x</td></tr>
 <tr><td><code><b>function</b> MatrGen&lt;T&gt;(m, n: integer; gen: (integer,integer)-&gt;T): <b>array</b> [,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный элементами gen(i,j)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ СЂР°Р·РјРµСЂР° m x n, Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ СЌР»РµРјРµРЅС‚Р°РјРё gen(i,j)</td></tr>
 <tr><td><code><b>function</b> MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): <b>array</b> [,]  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ СЂР°Р·РјРµСЂР° m x n, Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ СЃР»СѓС‡Р°Р№РЅС‹РјРё С†РµР»С‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё</td></tr>
 <tr><td><code><b>function</b> MatrRandomInteger(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): <b>array</b> [,]  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ СЂР°Р·РјРµСЂР° m x n, Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ СЃР»СѓС‡Р°Р№РЅС‹РјРё С†РµР»С‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё</td></tr>
 <tr><td><code><b>function</b> MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10; digits: integer := 2): <b>array</b> [,]  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ СЂР°Р·РјРµСЂР° m x n, Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ СЃР»СѓС‡Р°Р№РЅС‹РјРё РІРµС‰РµСЃС‚РІРµРЅРЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё</td></tr>
 <tr><td><code><b>function</b> ReadMatrInteger(m, n: integer): <b>array</b> [,]  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n из целых, введенных с клавиатуры</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ СЂР°Р·РјРµСЂР° m x n РёР· С†РµР»С‹С…, РІРІРµРґРµРЅРЅС‹С… СЃ РєР»Р°РІРёР°С‚СѓСЂС‹</td></tr>
 <tr><td><code><b>function</b> ReadMatrReal(m, n: integer): <b>array</b> [,]  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n из вещественных, введенных с клавиатуры</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ СЂР°Р·РјРµСЂР° m x n РёР· РІРµС‰РµСЃС‚РІРµРЅРЅС‹С…, РІРІРµРґРµРЅРЅС‹С… СЃ РєР»Р°РІРёР°С‚СѓСЂС‹</td></tr>
 <tr><td><code><b>function</b> Transpose&lt;T&gt;(a: <b>array</b> [,]  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Транспонирует двумерный массив</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РўСЂР°РЅСЃРїРѕРЅРёСЂСѓРµС‚ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ</td></tr>
 </table>
 </body></HTML>

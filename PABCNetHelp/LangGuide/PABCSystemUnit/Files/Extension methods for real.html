@@ -14,36 +14,36 @@
 <param name="Keyword" value="Trunc">
 <param name="Keyword" value="TruncBigInteger"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Методы расширения типа real</H1>
+</HEAD><body><H1>РњРµС‚РѕРґС‹ СЂР°СЃС€РёСЂРµРЅРёСЏ С‚РёРїР° real</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Between(Self: real; a, b: real; inclusive: boolean := True): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится между двумя другими</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True РµСЃР»Рё Р·РЅР°С‡РµРЅРёРµ РЅР°С…РѕРґРёС‚СЃСЏ РјРµР¶РґСѓ РґРІСѓРјСЏ РґСЂСѓРіРёРјРё</td></tr>
 <tr><td><code><b>function</b> Ceil(Self: real): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает наменьшее целое, большее или равное вещественному числу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РЅР°РјРµРЅСЊС€РµРµ С†РµР»РѕРµ, Р±РѕР»СЊС€РµРµ РёР»Рё СЂР°РІРЅРѕРµ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРјСѓ С‡РёСЃР»Сѓ</td></tr>
 <tr><td><code><b>function</b> Clamp(Self: real; bottom,top: real): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, ограниченное диапазоном от bottom до top включительно</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‡РёСЃР»Рѕ, РѕРіСЂР°РЅРёС‡РµРЅРЅРѕРµ РґРёР°РїР°Р·РѕРЅРѕРј РѕС‚ bottom РґРѕ top РІРєР»СЋС‡РёС‚РµР»СЊРЅРѕ</td></tr>
 <tr><td><code><b>function</b> ClampBottom(Self: real; bottom: real): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, ограниченное величиной bottom снизу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‡РёСЃР»Рѕ, РѕРіСЂР°РЅРёС‡РµРЅРЅРѕРµ РІРµР»РёС‡РёРЅРѕР№ bottom СЃРЅРёР·Сѓ</td></tr>
 <tr><td><code><b>function</b> ClampTop(Self: real; top: real): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, ограниченное величиной top сверху</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‡РёСЃР»Рѕ, РѕРіСЂР°РЅРёС‡РµРЅРЅРѕРµ РІРµР»РёС‡РёРЅРѕР№ top СЃРІРµСЂС…Сѓ</td></tr>
 <tr><td><code><b>function</b> Floor(Self: real): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает наибольшее целое, меньшее или равное вещественному числу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РЅР°РёР±РѕР»СЊС€РµРµ С†РµР»РѕРµ, РјРµРЅСЊС€РµРµ РёР»Рё СЂР°РІРЅРѕРµ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРјСѓ С‡РёСЃР»Сѓ</td></tr>
 <tr><td><code><b>function</b> InRange(Self: real; a,b: real): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится в диапазоне [a, b]</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True РµСЃР»Рё Р·РЅР°С‡РµРЅРёРµ РЅР°С…РѕРґРёС‚СЃСЏ РІ РґРёР°РїР°Р·РѕРЅРµ [a, b]</td></tr>
 <tr><td><code><b>function</b> Round(Self: real): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, округленное до ближайшего целого</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‡РёСЃР»Рѕ, РѕРєСЂСѓРіР»РµРЅРЅРѕРµ РґРѕ Р±Р»РёР¶Р°Р№С€РµРіРѕ С†РµР»РѕРіРѕ</td></tr>
 <tr><td><code><b>function</b> Round(Self: real; digits: integer): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает x, округленное до ближайшего вещественного с digits знаками после десятичной точки</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ x, РѕРєСЂСѓРіР»РµРЅРЅРѕРµ РґРѕ Р±Р»РёР¶Р°Р№С€РµРіРѕ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ СЃ digits Р·РЅР°РєР°РјРё РїРѕСЃР»Рµ РґРµСЃСЏС‚РёС‡РЅРѕР№ С‚РѕС‡РєРё</td></tr>
 <tr><td><code><b>function</b> RoundBigInteger(Self: real): BigInteger;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, округленное до ближайшего длинного целого</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‡РёСЃР»Рѕ, РѕРєСЂСѓРіР»РµРЅРЅРѕРµ РґРѕ Р±Р»РёР¶Р°Р№С€РµРіРѕ РґР»РёРЅРЅРѕРіРѕ С†РµР»РѕРіРѕ</td></tr>
 <tr><td><code><b>function</b> Sqr(Self: real): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает квадрат числа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРІР°РґСЂР°С‚ С‡РёСЃР»Р°</td></tr>
 <tr><td><code><b>function</b> Sqrt(Self: real): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает квадратный корень числа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРІР°РґСЂР°С‚РЅС‹Р№ РєРѕСЂРµРЅСЊ С‡РёСЃР»Р°</td></tr>
 <tr><td><code><b>function</b> ToString(Self: real; frac: integer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает вещественное, отформатированное к строке с frac цифрами после десятичной точки</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ, РѕС‚С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРЅРѕРµ Рє СЃС‚СЂРѕРєРµ СЃ frac С†РёС„СЂР°РјРё РїРѕСЃР»Рµ РґРµСЃСЏС‚РёС‡РЅРѕР№ С‚РѕС‡РєРё</td></tr>
 <tr><td><code><b>function</b> Trunc(Self: real): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает целую часть вещественного числа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РµР»СѓСЋ С‡Р°СЃС‚СЊ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ С‡РёСЃР»Р°</td></tr>
 <tr><td><code><b>function</b> TruncBigInteger(Self: real): BigInteger;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает целую часть вещественного числа как длинное целое</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РµР»СѓСЋ С‡Р°СЃС‚СЊ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ С‡РёСЃР»Р° РєР°Рє РґР»РёРЅРЅРѕРµ С†РµР»РѕРµ</td></tr>
 </table>
 </body></HTML>

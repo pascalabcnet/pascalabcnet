@@ -10,24 +10,24 @@
 </head>
 
 <body>
-<H1>Оператор raise</H1>
-<p>Оператор <b><code>raise</code></b> 
-предназначен для возбуждения исключения и имеет вид:</p>
+<H1>РћРїРµСЂР°С‚РѕСЂ raise</H1>
+<p>РћРїРµСЂР°С‚РѕСЂ <b><code>raise</code></b> 
+РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ РґР»СЏ РІРѕР·Р±СѓР¶РґРµРЅРёСЏ РёСЃРєР»СЋС‡РµРЅРёСЏ Рё РёРјРµРµС‚ РІРёРґ:</p>
 <blockquote>
-	<p><b><code>raise</code></b> <i>объект</i></p>
+	<p><b><code>raise</code></b> <i>РѕР±СЉРµРєС‚</i></p>
 </blockquote>
-<p>Здесь <i>объект</i> 
-- объект класса, производного от <code>Exception</code>. 
-Например:</p>
+<p>Р—РґРµСЃСЊ <i>РѕР±СЉРµРєС‚</i> 
+- РѕР±СЉРµРєС‚ РєР»Р°СЃСЃР°, РїСЂРѕРёР·РІРѕРґРЅРѕРіРѕ РѕС‚ <code>Exception</code>. 
+РќР°РїСЂРёРјРµСЂ:</p>
 <blockquote>
-	<p><code><b>ra</b></code><code><b>ise</b> new Exception('Ошибка');</code></p>
+	<p><code><b>ra</b></code><code><b>ise</b> new Exception('РћС€РёР±РєР°');</code></p>
 </blockquote>
-<p>При возбуждении специфического исключения желательно
-<a href="../ExceptionHandling/userExceptions.html">определить свой тип исключения</a>.&nbsp;
+<p>РџСЂРё РІРѕР·Р±СѓР¶РґРµРЅРёРё СЃРїРµС†РёС„РёС‡РµСЃРєРѕРіРѕ РёСЃРєР»СЋС‡РµРЅРёСЏ Р¶РµР»Р°С‚РµР»СЊРЅРѕ
+<a href="../ExceptionHandling/userExceptions.html">РѕРїСЂРµРґРµР»РёС‚СЊ СЃРІРѕР№ С‚РёРї РёСЃРєР»СЋС‡РµРЅРёСЏ</a>.&nbsp;
 </p>
-<p>Для <a href="../ExceptionHandling/reraise.html">повторной генерации исключения</a> внутри секции <code><b>except</b></code> 
-используется также вызов <code><b>raise</b></code> без 
-параметров:</p>
+<p>Р”Р»СЏ <a href="../ExceptionHandling/reraise.html">РїРѕРІС‚РѕСЂРЅРѕР№ РіРµРЅРµСЂР°С†РёРё РёСЃРєР»СЋС‡РµРЅРёСЏ</a> РІРЅСѓС‚СЂРё СЃРµРєС†РёРё <code><b>except</b></code> 
+РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С‚Р°РєР¶Рµ РІС‹Р·РѕРІ <code><b>raise</b></code> Р±РµР· 
+РїР°СЂР°РјРµС‚СЂРѕРІ:</p>
 <blockquote>
 	<p><code><b>raise</b>;</code></p>
 </blockquote>

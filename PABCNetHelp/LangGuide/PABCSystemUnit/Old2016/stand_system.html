@@ -23,50 +23,50 @@
 </object></head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title><link rel="StyleSheet" href="../../default.css"><body>
-<H1>Подпрограммы для работы с файлами, каталогами и дисками</H1>
+<H1>РџРѕРґРїСЂРѕРіСЂР°РјРјС‹ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ С„Р°Р№Р»Р°РјРё, РєР°С‚Р°Р»РѕРіР°РјРё Рё РґРёСЃРєР°РјРё</H1>
 <table border=0 CELLPADDING=5>
 	<tr>
 		<td>
 		<code><strong>function</strong> ReadLines(path: string): <strong>
 		sequence of</strong> string; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает строки из файла и превращает их в последовательность 
-		строк
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ СЃС‚СЂРѕРєРё РёР· С„Р°Р№Р»Р° Рё РїСЂРµРІСЂР°С‰Р°РµС‚ РёС… РІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ 
+		СЃС‚СЂРѕРє
 </td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> ReadLines(path: string; en: Encoding):
 		<strong>sequence of</strong> string; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает строки из файла с кодировкой en и превращает их в 
-		последовательность строк
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ СЃС‚СЂРѕРєРё РёР· С„Р°Р№Р»Р° СЃ РєРѕРґРёСЂРѕРІРєРѕР№ en Рё РїСЂРµРІСЂР°С‰Р°РµС‚ РёС… РІ 
+		РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЃС‚СЂРѕРє
 </td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> ReadAllLines(path: string): <strong>
 		array of</strong> string; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает строки из файла в массив строк
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ СЃС‚СЂРѕРєРё РёР· С„Р°Р№Р»Р° РІ РјР°СЃСЃРёРІ СЃС‚СЂРѕРє
 </td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> ReadAllLines(path: string; en: 
 		Encoding): <strong>array of</strong> string; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает строки из файла с кодировкой en в массив строк
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ СЃС‚СЂРѕРєРё РёР· С„Р°Р№Р»Р° СЃ РєРѕРґРёСЂРѕРІРєРѕР№ en РІ РјР°СЃСЃРёРІ СЃС‚СЂРѕРє
 </td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> ReadAllText(path: string): string;
 		</code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает содержимое файла в строку
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ СЃРѕРґРµСЂР¶РёРјРѕРµ С„Р°Р№Р»Р° РІ СЃС‚СЂРѕРєСѓ
 </td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> ReadAllText(path: string; en: Encoding): 
 		string; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает содержимое файла с кодировкой en в строку</td>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ СЃРѕРґРµСЂР¶РёРјРѕРµ С„Р°Р№Р»Р° СЃ РєРѕРґРёСЂРѕРІРєРѕР№ en РІ СЃС‚СЂРѕРєСѓ</td>
 	</tr>
 	<tr>
 		<td>
@@ -74,8 +74,8 @@
 		<strong>procedure</strong> WriteLines(path: string; ss: <strong>sequence 
 		of</strong> string);
 </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл, записывает в него строки из 
-		последовательности
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ С„Р°Р№Р», Р·Р°РїРёСЃС‹РІР°РµС‚ РІ РЅРµРіРѕ СЃС‚СЂРѕРєРё РёР· 
+		РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
 </td>
 	</tr>
 	<tr>
@@ -84,8 +84,8 @@
 		<strong>procedure</strong> WriteLines(path: string; ss: <strong>sequence 
 		of</strong> string; en: Encoding);
 </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл с кодировкой en, записывает в него строки из 
-		последовательности
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ С„Р°Р№Р» СЃ РєРѕРґРёСЂРѕРІРєРѕР№ en, Р·Р°РїРёСЃС‹РІР°РµС‚ РІ РЅРµРіРѕ СЃС‚СЂРѕРєРё РёР· 
+		РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
 </td>
 	</tr>
 	<tr>
@@ -94,7 +94,7 @@
 		<strong>procedure</strong> WriteAllLines(path: string; ss: <strong>array 
 		of</strong> string);
 </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл, записывает в него строки из массива
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ С„Р°Р№Р», Р·Р°РїРёСЃС‹РІР°РµС‚ РІ РЅРµРіРѕ СЃС‚СЂРѕРєРё РёР· РјР°СЃСЃРёРІР°
 </td>
 	</tr>
 	<tr>
@@ -103,8 +103,8 @@
 		<strong>procedure</strong> WriteAllLines(path: string; ss: <strong>array 
 		of</strong> string; en: Encoding);
 </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл с кодировкой en, записывает в него строки из 
-		массива
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ С„Р°Р№Р» СЃ РєРѕРґРёСЂРѕРІРєРѕР№ en, Р·Р°РїРёСЃС‹РІР°РµС‚ РІ РЅРµРіРѕ СЃС‚СЂРѕРєРё РёР· 
+		РјР°СЃСЃРёРІР°
 </td>
 	</tr>
 	<tr>
@@ -112,7 +112,7 @@
 		<code>
 		<strong>procedure</strong> WriteAllText(path: string; s: string);
 </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл, записывает в него содержимое строки
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ С„Р°Р№Р», Р·Р°РїРёСЃС‹РІР°РµС‚ РІ РЅРµРіРѕ СЃРѕРґРµСЂР¶РёРјРѕРµ СЃС‚СЂРѕРєРё
 </td>
 	</tr>
 	<tr>
@@ -121,8 +121,8 @@
 		<strong>procedure</strong> WriteAllText(path: string; s: string; en: 
 		Encoding);
 </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл с кодировкой en, записывает в него содержимое 
-		строки
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ С„Р°Р№Р» СЃ РєРѕРґРёСЂРѕРІРєРѕР№ en, Р·Р°РїРёСЃС‹РІР°РµС‚ РІ РЅРµРіРѕ СЃРѕРґРµСЂР¶РёРјРѕРµ 
+		СЃС‚СЂРѕРєРё
 </td>
 	</tr>
 	<tr>
@@ -130,8 +130,8 @@
 		<code><strong>function</strong> EnumerateFiles(path: string; 
 		searchPattern: string := '*.*'): <strong>sequence of</strong> string;
 		</code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен файлов по заданному пути, 
-		соответствующих шаблону поиска
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРјРµРЅ С„Р°Р№Р»РѕРІ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСѓС‚Рё, 
+		СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёС… С€Р°Р±Р»РѕРЅСѓ РїРѕРёСЃРєР°
 </td>
 	</tr>
 	<tr>
@@ -139,122 +139,122 @@
 		<code><strong>function</strong> EnumerateAllFiles(path: string; 
 		searchPattern: string := '*.*'): <strong>sequence of</strong> string;
 		</code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен файлов по заданному пути, 
-		соответствующих шаблону поиска, включая подкаталоги
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРјРµРЅ С„Р°Р№Р»РѕРІ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСѓС‚Рё, 
+		СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёС… С€Р°Р±Р»РѕРЅСѓ РїРѕРёСЃРєР°, РІРєР»СЋС‡Р°СЏ РїРѕРґРєР°С‚Р°Р»РѕРіРё
 </td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> EnumerateDirectories(path: string):
 		<strong>sequence of</strong> string; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен каталогов по заданному пути
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРјРµРЅ РєР°С‚Р°Р»РѕРіРѕРІ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСѓС‚Рё
 </td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> EnumerateAllDirectories(path: string):
 		<strong>sequence of</strong> string; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен каталогов по заданному пути, 
-		включая подкаталоги&nbsp;
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРјРµРЅ РєР°С‚Р°Р»РѕРіРѕРІ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСѓС‚Рё, 
+		РІРєР»СЋС‡Р°СЏ РїРѕРґРєР°С‚Р°Р»РѕРіРё&nbsp;
 </td>
 	</tr>
 <tr><td>
 <code>
 <b>function</b> GetDir: string;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текущий каталог
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСѓС‰РёР№ РєР°С‚Р°Р»РѕРі
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> ChDir(s: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет текущий каталог
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРµРЅСЏРµС‚ С‚РµРєСѓС‰РёР№ РєР°С‚Р°Р»РѕРі
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> MkDir(s: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает каталог
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РєР°С‚Р°Р»РѕРі
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> RmDir(s: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет каталог
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґР°Р»СЏРµС‚ РєР°С‚Р°Р»РѕРі
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> CreateDir(s: string): boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает каталог. Возвращает True, если каталог успешно создан
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РєР°С‚Р°Р»РѕРі. Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РєР°С‚Р°Р»РѕРі СѓСЃРїРµС€РЅРѕ СЃРѕР·РґР°РЅ
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> DeleteFile(s: string): boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет файл. Если файл не может быть удален, то возвращает False
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґР°Р»СЏРµС‚ С„Р°Р№Р». Р•СЃР»Рё С„Р°Р№Р» РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ СѓРґР°Р»РµРЅ, С‚Рѕ РІРѕР·РІСЂР°С‰Р°РµС‚ False
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> GetCurrentDir: string;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текущий каталог
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСѓС‰РёР№ РєР°С‚Р°Р»РѕРі
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> RemoveDir(s: string): boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет каталог. Возвращает True, если каталог успешно удален
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґР°Р»СЏРµС‚ РєР°С‚Р°Р»РѕРі. Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РєР°С‚Р°Р»РѕРі СѓСЃРїРµС€РЅРѕ СѓРґР°Р»РµРЅ
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> RenameFile(name, newname: string): boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переименовывает файл name, давая ему новое имя newname. Возвращает True, если файл успешно переименован
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРёРјРµРЅРѕРІС‹РІР°РµС‚ С„Р°Р№Р» name, РґР°РІР°СЏ РµРјСѓ РЅРѕРІРѕРµ РёРјСЏ newname. Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё С„Р°Р№Р» СѓСЃРїРµС€РЅРѕ РїРµСЂРµРёРјРµРЅРѕРІР°РЅ
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> SetCurrentDir(s: string): boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавивает текущий каталог. Возвращает True, 
-если каталог успешно <span lang="ru">установлен</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІРёРІР°РµС‚ С‚РµРєСѓС‰РёР№ РєР°С‚Р°Р»РѕРі. Р’РѕР·РІСЂР°С‰Р°РµС‚ True, 
+РµСЃР»Рё РєР°С‚Р°Р»РѕРі СѓСЃРїРµС€РЅРѕ <span lang="ru">СѓСЃС‚Р°РЅРѕРІР»РµРЅ</span>
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> ChangeFileNameExtension(name,newext: string): string;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет расширение файла с именем name на newext
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РР·РјРµРЅСЏРµС‚ СЂР°СЃС€РёСЂРµРЅРёРµ С„Р°Р№Р»Р° СЃ РёРјРµРЅРµРј name РЅР° newext
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> FileExists(name: string): boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если файл с именем name существует
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё С„Р°Р№Р» СЃ РёРјРµРЅРµРј name СЃСѓС‰РµСЃС‚РІСѓРµС‚
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> DiskFree(diskname: string): int64;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает свободное место в байтах на диске с именем diskname
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ РІ Р±Р°Р№С‚Р°С… РЅР° РґРёСЃРєРµ СЃ РёРјРµРЅРµРј diskname
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> DiskSize(diskname: string): int64;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает размер в байтах на диске с именем diskname
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЂР°Р·РјРµСЂ РІ Р±Р°Р№С‚Р°С… РЅР° РґРёСЃРєРµ СЃ РёРјРµРЅРµРј diskname
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> DiskFree(disk: integer): int64;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает свободное место в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ РІ Р±Р°Р№С‚Р°С… РЅР° РґРёСЃРєРµ disk. disk=0 - С‚РµРєСѓС‰РёР№ РґРёСЃРє, disk=1 - РґРёСЃРє A: , disk=2 - РґРёСЃРє B: Рё С‚.Рґ.
 </td></tr>
 <tr>
 	<td>
 <code>
 <b>function</b> DiskSize(disk: integer): int64;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает размер в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЂР°Р·РјРµСЂ РІ Р±Р°Р№С‚Р°С… РЅР° РґРёСЃРєРµ disk. disk=0 - С‚РµРєСѓС‰РёР№ РґРёСЃРє, disk=1 - РґРёСЃРє A: , disk=2 - РґРёСЃРє B: Рё С‚.Рґ.
 </td>
 </tr>
 </table>

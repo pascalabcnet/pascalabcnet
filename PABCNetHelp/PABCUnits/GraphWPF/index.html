@@ -10,38 +10,38 @@
 </head>
 
 <body>
-<H1>Модуль GraphWPF: обзор</H1>
-Модуль <code>GraphWPF</code> представляет собой простую 
-графическую библиотеку и предназначен для создания графических и 
-анимационных программ в процедурном и частично в объектном стиле. Рисование 
-осуществляется в специальном &nbsp;<i>графическом окне</i>, 
-возможность рисования в нескольких окнах отсутствует. Кроме этого, в модуле
-<code>GraphWPF</code> определены простейшие события мыши 
-и клавиатуры, позволяющие создавать элементарные событийные приложения. Основная 
-сфера использования модуля <code>GraphWPF</code> - 
-обучение.<p>Модуль <code>GraphWPF</code> основан на графической 
-библиотеке WPF и является современной и усовершенствованной версией устаревшего 
-модуля <code><a href="../GraphABC/index.html">GraphABC</a></code>.</p>
-<p>В модуле <code>GraphWPF</code> определен ряд констант, типов, процедур, 
-функций и классов для рисования в <i>графическом окне</i>. Они подразделяются на 
-следующие группы:</p>
+<H1>РњРѕРґСѓР»СЊ GraphWPF: РѕР±Р·РѕСЂ</H1>
+РњРѕРґСѓР»СЊ <code>GraphWPF</code> РїСЂРµРґСЃС‚Р°РІР»СЏРµС‚ СЃРѕР±РѕР№ РїСЂРѕСЃС‚СѓСЋ 
+РіСЂР°С„РёС‡РµСЃРєСѓСЋ Р±РёР±Р»РёРѕС‚РµРєСѓ Рё РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РіСЂР°С„РёС‡РµСЃРєРёС… Рё 
+Р°РЅРёРјР°С†РёРѕРЅРЅС‹С… РїСЂРѕРіСЂР°РјРј РІ РїСЂРѕС†РµРґСѓСЂРЅРѕРј Рё С‡Р°СЃС‚РёС‡РЅРѕ РІ РѕР±СЉРµРєС‚РЅРѕРј СЃС‚РёР»Рµ. Р РёСЃРѕРІР°РЅРёРµ 
+РѕСЃСѓС‰РµСЃС‚РІР»СЏРµС‚СЃСЏ РІ СЃРїРµС†РёР°Р»СЊРЅРѕРј &nbsp;<i>РіСЂР°С„РёС‡РµСЃРєРѕРј РѕРєРЅРµ</i>, 
+РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ СЂРёСЃРѕРІР°РЅРёСЏ РІ РЅРµСЃРєРѕР»СЊРєРёС… РѕРєРЅР°С… РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚. РљСЂРѕРјРµ СЌС‚РѕРіРѕ, РІ РјРѕРґСѓР»Рµ
+<code>GraphWPF</code> РѕРїСЂРµРґРµР»РµРЅС‹ РїСЂРѕСЃС‚РµР№С€РёРµ СЃРѕР±С‹С‚РёСЏ РјС‹С€Рё 
+Рё РєР»Р°РІРёР°С‚СѓСЂС‹, РїРѕР·РІРѕР»СЏСЋС‰РёРµ СЃРѕР·РґР°РІР°С‚СЊ СЌР»РµРјРµРЅС‚Р°СЂРЅС‹Рµ СЃРѕР±С‹С‚РёР№РЅС‹Рµ РїСЂРёР»РѕР¶РµРЅРёСЏ. РћСЃРЅРѕРІРЅР°СЏ 
+СЃС„РµСЂР° РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РјРѕРґСѓР»СЏ <code>GraphWPF</code> - 
+РѕР±СѓС‡РµРЅРёРµ.<p>РњРѕРґСѓР»СЊ <code>GraphWPF</code> РѕСЃРЅРѕРІР°РЅ РЅР° РіСЂР°С„РёС‡РµСЃРєРѕР№ 
+Р±РёР±Р»РёРѕС‚РµРєРµ WPF Рё СЏРІР»СЏРµС‚СЃСЏ СЃРѕРІСЂРµРјРµРЅРЅРѕР№ Рё СѓСЃРѕРІРµСЂС€РµРЅСЃС‚РІРѕРІР°РЅРЅРѕР№ РІРµСЂСЃРёРµР№ СѓСЃС‚Р°СЂРµРІС€РµРіРѕ 
+РјРѕРґСѓР»СЏ <code><a href="../GraphABC/index.html">GraphABC</a></code>.</p>
+<p>Р’ РјРѕРґСѓР»Рµ <code>GraphWPF</code> РѕРїСЂРµРґРµР»РµРЅ СЂСЏРґ РєРѕРЅСЃС‚Р°РЅС‚, С‚РёРїРѕРІ, РїСЂРѕС†РµРґСѓСЂ, 
+С„СѓРЅРєС†РёР№ Рё РєР»Р°СЃСЃРѕРІ РґР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ РІ <i>РіСЂР°С„РёС‡РµСЃРєРѕРј РѕРєРЅРµ</i>. РћРЅРё РїРѕРґСЂР°Р·РґРµР»СЏСЋС‚СЃСЏ РЅР° 
+СЃР»РµРґСѓСЋС‰РёРµ РіСЂСѓРїРїС‹:</p>
 <ul>
-<li><a href="Files\GraphWPF primitives.html">Графические примитивы</a></li>
-<li><a href="Files\GraphWPF text functions.html">Функции для вывода текста</a></li>
-<li><a href="Files\GraphWPF graph functions.html">Функции для вывода графиков</a></li>
-<li><a href="Files\GraphWPF functions for images and video.html">Функции для вывода изображений и видео</a></li>
-<li><a href="Files\GraphWPF coordinate system functions.html">Функции для настройки системы координат</a></li>
-<li><a href="Files\GraphWPF FrameBasedAnimation functions.html">Процедуры покадровой анимации</a></li>
-<li><a href="Files\GraphWPF service functions.html">Вспомогательные функции GraphWPF</a></li>
-<li><a href="Files\GraphWPF types.html">Типы модуля GraphWPF</a></li>
-<li><a href="Files\GraphWPF variables.html">Переменные модуля GraphWPF</a></li>
-<li><a href="Files\GraphWPF events.html">События модуля GraphWPF</a></li>
-<li><a href="Files\BrushType class.html">Класс BrushType</a></li>
-<li><a href="Files\PenType class.html">Класс PenType</a></li>
-<li><a href="Files\FontType class.html">Класс FontType</a></li>
-<li><a href="Files\WindowType class.html">Класс WindowType</a></li>
-<li><a href="Files\WindowTypeWPF class.html">Класс WindowTypeWPF</a>
-<li><a href="Files\GraphWPF GraphWindowType class.html">Класс GraphWindowType</a></li>
+<li><a href="Files\GraphWPF primitives.html">Р“СЂР°С„РёС‡РµСЃРєРёРµ РїСЂРёРјРёС‚РёРІС‹</a></li>
+<li><a href="Files\GraphWPF text functions.html">Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р°</a></li>
+<li><a href="Files\GraphWPF graph functions.html">Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РіСЂР°С„РёРєРѕРІ</a></li>
+<li><a href="Files\GraphWPF functions for images and video.html">Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РёР·РѕР±СЂР°Р¶РµРЅРёР№ Рё РІРёРґРµРѕ</a></li>
+<li><a href="Files\GraphWPF coordinate system functions.html">Р¤СѓРЅРєС†РёРё РґР»СЏ РЅР°СЃС‚СЂРѕР№РєРё СЃРёСЃС‚РµРјС‹ РєРѕРѕСЂРґРёРЅР°С‚</a></li>
+<li><a href="Files\GraphWPF FrameBasedAnimation functions.html">РџСЂРѕС†РµРґСѓСЂС‹ РїРѕРєР°РґСЂРѕРІРѕР№ Р°РЅРёРјР°С†РёРё</a></li>
+<li><a href="Files\GraphWPF service functions.html">Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё GraphWPF</a></li>
+<li><a href="Files\GraphWPF types.html">РўРёРїС‹ РјРѕРґСѓР»СЏ GraphWPF</a></li>
+<li><a href="Files\GraphWPF variables.html">РџРµСЂРµРјРµРЅРЅС‹Рµ РјРѕРґСѓР»СЏ GraphWPF</a></li>
+<li><a href="Files\GraphWPF events.html">РЎРѕР±С‹С‚РёСЏ РјРѕРґСѓР»СЏ GraphWPF</a></li>
+<li><a href="Files\BrushType class.html">РљР»Р°СЃСЃ BrushType</a></li>
+<li><a href="Files\PenType class.html">РљР»Р°СЃСЃ PenType</a></li>
+<li><a href="Files\FontType class.html">РљР»Р°СЃСЃ FontType</a></li>
+<li><a href="Files\WindowType class.html">РљР»Р°СЃСЃ WindowType</a></li>
+<li><a href="Files\WindowTypeWPF class.html">РљР»Р°СЃСЃ WindowTypeWPF</a>
+<li><a href="Files\GraphWPF GraphWindowType class.html">РљР»Р°СЃСЃ GraphWindowType</a></li>
 </ul>
 <p>&nbsp;</p>
 </body>

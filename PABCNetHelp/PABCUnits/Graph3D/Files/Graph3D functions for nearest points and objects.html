@@ -11,28 +11,28 @@
 <param name="Keyword" value="SystemMouseEventsOff">
 <param name="Keyword" value="SystemMouseEventsOn"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Graph3D: функции для определения ближайших точек и объектов</H1>
+</HEAD><body><H1>Graph3D: С„СѓРЅРєС†РёРё РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ Р±Р»РёР¶Р°Р№С€РёС… С‚РѕС‡РµРє Рё РѕР±СЉРµРєС‚РѕРІ</H1>
 <table border=0 cellpadding=5><tr><td><code><b>procedure</b> BeginFrameBasedAnimationTime(Draw: <b>procedure</b>(dt: real));</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Начинает анимацию, основанную на кадре, и передаёт в каждый обработчик кадра время dt, прошедшее с момента последней перерисовки</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°С‡РёРЅР°РµС‚ Р°РЅРёРјР°С†РёСЋ, РѕСЃРЅРѕРІР°РЅРЅСѓСЋ РЅР° РєР°РґСЂРµ, Рё РїРµСЂРµРґР°С‘С‚ РІ РєР°Р¶РґС‹Р№ РѕР±СЂР°Р±РѕС‚С‡РёРє РєР°РґСЂР° РІСЂРµРјСЏ dt, РїСЂРѕС€РµРґС€РµРµ СЃ РјРѕРјРµРЅС‚Р° РїРѕСЃР»РµРґРЅРµР№ РїРµСЂРµСЂРёСЃРѕРІРєРё</td></tr>
 <tr><td><code><b>function</b> DeserializeObject3D(filename: string): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Десериализует трёхмерный объект из файла</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р”РµСЃРµСЂРёР°Р»РёР·СѓРµС‚ С‚СЂС‘С…РјРµСЂРЅС‹Р№ РѕР±СЉРµРєС‚ РёР· С„Р°Р№Р»Р°</td></tr>
 <tr><td><code><b>procedure</b> EndFrameBasedAnimation;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заканчивает анимацию, основанную на кадре</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РєР°РЅС‡РёРІР°РµС‚ Р°РЅРёРјР°С†РёСЋ, РѕСЃРЅРѕРІР°РЅРЅСѓСЋ РЅР° РєР°РґСЂРµ</td></tr>
 <tr><td><code><b>function</b> FindNearestObject(x, y: real): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ближайший 3D-объект, который пересекает луч, выпущенный из камеры и проходящий через точку (x,y) экрана</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ Р±Р»РёР¶Р°Р№С€РёР№ 3D-РѕР±СЉРµРєС‚, РєРѕС‚РѕСЂС‹Р№ РїРµСЂРµСЃРµРєР°РµС‚ Р»СѓС‡, РІС‹РїСѓС‰РµРЅРЅС‹Р№ РёР· РєР°РјРµСЂС‹ Рё РїСЂРѕС…РѕРґСЏС‰РёР№ С‡РµСЂРµР· С‚РѕС‡РєСѓ (x,y) СЌРєСЂР°РЅР°</td></tr>
 <tr><td><code><b>function</b> FindNearestObjectPoint(x, y: real): Point3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает точку на ближайшем 3D-объекте, который пересекает луч, выпущенный из камеры и проходящий через точку (x,y) экрана. Если пересечения нет, возвращается точка BadPoint</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РѕС‡РєСѓ РЅР° Р±Р»РёР¶Р°Р№С€РµРј 3D-РѕР±СЉРµРєС‚Рµ, РєРѕС‚РѕСЂС‹Р№ РїРµСЂРµСЃРµРєР°РµС‚ Р»СѓС‡, РІС‹РїСѓС‰РµРЅРЅС‹Р№ РёР· РєР°РјРµСЂС‹ Рё РїСЂРѕС…РѕРґСЏС‰РёР№ С‡РµСЂРµР· С‚РѕС‡РєСѓ (x,y) СЌРєСЂР°РЅР°. Р•СЃР»Рё РїРµСЂРµСЃРµС‡РµРЅРёСЏ РЅРµС‚, РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ С‚РѕС‡РєР° BadPoint</td></tr>
 <tr><td><code><b>function</b> NearestPointOnLine(Line: Ray3D; x, y: real): Point3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ближайшую точку на линии Line с лучом, выпущенным из камеры и проходящем через точку (x,y) экрана</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ Р±Р»РёР¶Р°Р№С€СѓСЋ С‚РѕС‡РєСѓ РЅР° Р»РёРЅРёРё Line СЃ Р»СѓС‡РѕРј, РІС‹РїСѓС‰РµРЅРЅС‹Рј РёР· РєР°РјРµСЂС‹ Рё РїСЂРѕС…РѕРґСЏС‰РµРј С‡РµСЂРµР· С‚РѕС‡РєСѓ (x,y) СЌРєСЂР°РЅР°</td></tr>
 <tr><td><code><b>function</b> ParametricTrajectory(a,b: real; N: integer; fun: real-&gt;Point3D): <b>sequence </b>  <b>of</b> Point3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создаёт траекторию в виде массива точек, заданную параметрически. Функция fun отображает параметр t на координаты точки в пространстве</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°С‘С‚ С‚СЂР°РµРєС‚РѕСЂРёСЋ РІ РІРёРґРµ РјР°СЃСЃРёРІР° С‚РѕС‡РµРє, Р·Р°РґР°РЅРЅСѓСЋ РїР°СЂР°РјРµС‚СЂРёС‡РµСЃРєРё. Р¤СѓРЅРєС†РёСЏ fun РѕС‚РѕР±СЂР°Р¶Р°РµС‚ РїР°СЂР°РјРµС‚СЂ t РЅР° РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РѕС‡РєРё РІ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ</td></tr>
 <tr><td><code><b>function</b> PointOnPlane(Plane: Plane3D; x, y: real): Point3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает точку на плоскости Plane, которую пересекает невизуальный луч, выпущенный из камеры и проходящий через точку (x,y) экрана</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РѕС‡РєСѓ РЅР° РїР»РѕСЃРєРѕСЃС‚Рё Plane, РєРѕС‚РѕСЂСѓСЋ РїРµСЂРµСЃРµРєР°РµС‚ РЅРµРІРёР·СѓР°Р»СЊРЅС‹Р№ Р»СѓС‡, РІС‹РїСѓС‰РµРЅРЅС‹Р№ РёР· РєР°РјРµСЂС‹ Рё РїСЂРѕС…РѕРґСЏС‰РёР№ С‡РµСЂРµР· С‚РѕС‡РєСѓ (x,y) СЌРєСЂР°РЅР°</td></tr>
 <tr><td><code><b>procedure</b> SerializeObject3D(filename: string; obj: Object3D);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сериализует трёхмерный объект в файл</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРµСЂРёР°Р»РёР·СѓРµС‚ С‚СЂС‘С…РјРµСЂРЅС‹Р№ РѕР±СЉРµРєС‚ РІ С„Р°Р№Р»</td></tr>
 <tr><td><code><b>procedure</b> SystemMouseEventsOff;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отключить стандартные обработчики событий мыши</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєР»СЋС‡РёС‚СЊ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РѕР±СЂР°Р±РѕС‚С‡РёРєРё СЃРѕР±С‹С‚РёР№ РјС‹С€Рё</td></tr>
 <tr><td><code><b>procedure</b> SystemMouseEventsOn;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Включить стандартные обработчики событий мыши</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РєР»СЋС‡РёС‚СЊ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РѕР±СЂР°Р±РѕС‚С‡РёРєРё СЃРѕР±С‹С‚РёР№ РјС‹С€Рё</td></tr>
 </table>
 </body></HTML>

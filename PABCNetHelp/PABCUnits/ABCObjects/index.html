@@ -10,50 +10,50 @@
 </head>
 
 <body>
-<H1>Модуль ABCObjects: обзор</H1>
-<p>Модуль <code>ABCObjects</code> реализует векторные 
-графические объекты с возможностью масштабирования, наложения друг на 
-друга, создания составных графических объектов и многократного 
-их вложения друг в друга. Каждый векторный графический 
-объект корректно себя перерисовывает при перемещении, изменении размеров и 
-частичном перекрытии другими объектами.</p>
-<p>Модуль <code>ABCObjects</code> предназначен для раннего обучения основам
-объектно-ориентированного программирования, а также для&nbsp; 
-реализации графических и анимационных проектов 
-средней сложности. Он реализован на основе модуля <code>GraphABC</code>.</p>
-<p>На основе модуля <code>ABCObjects</code>&nbsp;созданы модули <code>ABCSprites</code>,
+<H1>РњРѕРґСѓР»СЊ ABCObjects: РѕР±Р·РѕСЂ</H1>
+<p>РњРѕРґСѓР»СЊ <code>ABCObjects</code> СЂРµР°Р»РёР·СѓРµС‚ РІРµРєС‚РѕСЂРЅС‹Рµ 
+РіСЂР°С„РёС‡РµСЃРєРёРµ РѕР±СЉРµРєС‚С‹ СЃ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊСЋ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ, РЅР°Р»РѕР¶РµРЅРёСЏ РґСЂСѓРі РЅР° 
+РґСЂСѓРіР°, СЃРѕР·РґР°РЅРёСЏ СЃРѕСЃС‚Р°РІРЅС‹С… РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ Рё РјРЅРѕРіРѕРєСЂР°С‚РЅРѕРіРѕ 
+РёС… РІР»РѕР¶РµРЅРёСЏ РґСЂСѓРі РІ РґСЂСѓРіР°. РљР°Р¶РґС‹Р№ РІРµРєС‚РѕСЂРЅС‹Р№ РіСЂР°С„РёС‡РµСЃРєРёР№ 
+РѕР±СЉРµРєС‚ РєРѕСЂСЂРµРєС‚РЅРѕ СЃРµР±СЏ РїРµСЂРµСЂРёСЃРѕРІС‹РІР°РµС‚ РїСЂРё РїРµСЂРµРјРµС‰РµРЅРёРё, РёР·РјРµРЅРµРЅРёРё СЂР°Р·РјРµСЂРѕРІ Рё 
+С‡Р°СЃС‚РёС‡РЅРѕРј РїРµСЂРµРєСЂС‹С‚РёРё РґСЂСѓРіРёРјРё РѕР±СЉРµРєС‚Р°РјРё.</p>
+<p>РњРѕРґСѓР»СЊ <code>ABCObjects</code> РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ РґР»СЏ СЂР°РЅРЅРµРіРѕ РѕР±СѓС‡РµРЅРёСЏ РѕСЃРЅРѕРІР°Рј
+РѕР±СЉРµРєС‚РЅРѕ-РѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅРѕРіРѕ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ, Р° С‚Р°РєР¶Рµ РґР»СЏ&nbsp; 
+СЂРµР°Р»РёР·Р°С†РёРё РіСЂР°С„РёС‡РµСЃРєРёС… Рё Р°РЅРёРјР°С†РёРѕРЅРЅС‹С… РїСЂРѕРµРєС‚РѕРІ 
+СЃСЂРµРґРЅРµР№ СЃР»РѕР¶РЅРѕСЃС‚Рё. РћРЅ СЂРµР°Р»РёР·РѕРІР°РЅ РЅР° РѕСЃРЅРѕРІРµ РјРѕРґСѓР»СЏ <code>GraphABC</code>.</p>
+<p>РќР° РѕСЃРЅРѕРІРµ РјРѕРґСѓР»СЏ <code>ABCObjects</code>&nbsp;СЃРѕР·РґР°РЅС‹ РјРѕРґСѓР»Рё <code>ABCSprites</code>,
 <code>ABCButtons</code>, <code>ABCChessObjects</code>,
 <code>ABCHouse</code>, <code>ABCRobots</code>, <code>ABCAdditionalObjects</code>.</p>
-<p>Следующие темы помогут изучить возможности модуля <code>ABCObjects</code>:</p>
+<p>РЎР»РµРґСѓСЋС‰РёРµ С‚РµРјС‹ РїРѕРјРѕРіСѓС‚ РёР·СѓС‡РёС‚СЊ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РјРѕРґСѓР»СЏ <code>ABCObjects</code>:</p>
 <blockquote>
 	<ul>
-		<li><a href="../../Tutorials/ABCObjects/QuickStartABCObjects.html">ABCObjects: быстрое введение</a></li>
-		<li><a href="ABCClasses.html">Диаграмма классов ABCObjects</a> </li>
-		<li>Классы <code><a href="gabc_ObjectABC.html">ObjectABC</a></code>,
+		<li><a href="../../Tutorials/ABCObjects/QuickStartABCObjects.html">ABCObjects: Р±С‹СЃС‚СЂРѕРµ РІРІРµРґРµРЅРёРµ</a></li>
+		<li><a href="ABCClasses.html">Р”РёР°РіСЂР°РјРјР° РєР»Р°СЃСЃРѕРІ ABCObjects</a> </li>
+		<li>РљР»Р°СЃСЃС‹ <code><a href="gabc_ObjectABC.html">ObjectABC</a></code>,
 		<a href="gabc_BoundedObjectABC.html"><code>BoundedObjectABC</code></a></li>
-		<li>Классы <code><a href="gabc_RectangleABC.html">RectangleABC</a></code>, 
+		<li>РљР»Р°СЃСЃС‹ <code><a href="gabc_RectangleABC.html">RectangleABC</a></code>, 
 		<code><a href="gabc_SquareABC.html">SquareABC</a></code>,
 	<code><a href="gabc_EllipseABC.html">EllipseABC</a></code>, <code>
 		<a href="gabc_CircleABC.html">CircleABC</a></code>, <code>
 		<a href="gabc_RoundRectABC.html">RoundRectABC</a></code>, <code>
 		<a href="gabc_RoundSquareABC.html">RoundSquareABC</a></code>, <code>
 		<a href="gabc_TextABC.html">TextABC</a></code> </li>
-		<li>Классы <code><a href="gabc_RegularPolygonABC.html">RegularPolygonABC</a></code>,
+		<li>РљР»Р°СЃСЃС‹ <code><a href="gabc_RegularPolygonABC.html">RegularPolygonABC</a></code>,
 		<code><a href="gabc_StarABC.html">StarABC</a></code></li>
-		<li>Классы <code><a href="gabc_PictureABC.html">PictureABC</a></code>,
+		<li>РљР»Р°СЃСЃС‹ <code><a href="gabc_PictureABC.html">PictureABC</a></code>,
 		<code><a href="gabc_MultiPictureABC.html">MultiPictureABC</a></code></li>
-		<li><a href="MultiPictureReview.html">Мульти<span lang="ru">рисунк</span>и</a></li>
-		<li>Классы <code><a href="gabc_BoardABC.html">BoardABC</a></code>, <code>
+		<li><a href="MultiPictureReview.html">РњСѓР»СЊС‚Рё<span lang="ru">СЂРёСЃСѓРЅРє</span>Рё</a></li>
+		<li>РљР»Р°СЃСЃС‹ <code><a href="gabc_BoardABC.html">BoardABC</a></code>, <code>
 		<a href="gabc_ObjectBoardABC.html">ObectBoardABC</a></code></li>
-		<li><a href="ObjectsArray.html">Массив 
-	графических объектов <code>Objects</code></a> </li>
-		<li>Класс <code><a href="gabc_ContainerABC.html">ContainerABC</a></code></li>
-		<li><a href="../../Tutorials/ABCObjects/ABCContainersOverview.html">Контейнеры графических объектов</a></li>
-		<li><a href="gabc_Common.html"><span lang="ru">Переменные</span>, процедуры и функции модуля 
+		<li><a href="ObjectsArray.html">РњР°СЃСЃРёРІ 
+	РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ <code>Objects</code></a> </li>
+		<li>РљР»Р°СЃСЃ <code><a href="gabc_ContainerABC.html">ContainerABC</a></code></li>
+		<li><a href="../../Tutorials/ABCObjects/ABCContainersOverview.html">РљРѕРЅС‚РµР№РЅРµСЂС‹ РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ</a></li>
+		<li><a href="gabc_Common.html"><span lang="ru">РџРµСЂРµРјРµРЅРЅС‹Рµ</span>, РїСЂРѕС†РµРґСѓСЂС‹ Рё С„СѓРЅРєС†РёРё РјРѕРґСѓР»СЏ 
 		<code>ABCObjects</code></a></li>
-		<li><a href="FastABCDraw.html">Ускорение перерисовки графических объектов</a></li>
-		<li><a href="gabc_WithGraphABC.html">Совмещение графического вывода модулей 
-		<code>ABCObjects</code> и <code>GraphABC</code></a></li>
+		<li><a href="FastABCDraw.html">РЈСЃРєРѕСЂРµРЅРёРµ РїРµСЂРµСЂРёСЃРѕРІРєРё РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ</a></li>
+		<li><a href="gabc_WithGraphABC.html">РЎРѕРІРјРµС‰РµРЅРёРµ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РІС‹РІРѕРґР° РјРѕРґСѓР»РµР№ 
+		<code>ABCObjects</code> Рё <code>GraphABC</code></a></li>
 	</ul>
 </blockquote>
 </body>
