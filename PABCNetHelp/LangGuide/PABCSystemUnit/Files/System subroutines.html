@@ -38,94 +38,94 @@
 <param name="Keyword" value="TypeName">
 <param name="Keyword" value="TypeToTypeName"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Cистемные подпрограммы</H1>
+</HEAD><body><H1>CРёСЃС‚РµРјРЅС‹Рµ РїРѕРґРїСЂРѕРіСЂР°РјРјС‹</H1>
 <table border=0 cellpadding=5><tr><td><code><b>procedure</b> Assert(cond: boolean);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит в специальном окне стек вызовов подпрограмм если условие не выполняется</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РІ СЃРїРµС†РёР°Р»СЊРЅРѕРј РѕРєРЅРµ СЃС‚РµРє РІС‹Р·РѕРІРѕРІ РїРѕРґРїСЂРѕРіСЂР°РјРј РµСЃР»Рё СѓСЃР»РѕРІРёРµ РЅРµ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ</td></tr>
 <tr><td><code><b>procedure</b> Assert(cond: boolean; message: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит в специальном окне диагностическое сообщение и стек вызовов подпрограмм если условие не выполняется</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РІ СЃРїРµС†РёР°Р»СЊРЅРѕРј РѕРєРЅРµ РґРёР°РіРЅРѕСЃС‚РёС‡РµСЃРєРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ Рё СЃС‚РµРє РІС‹Р·РѕРІРѕРІ РїРѕРґРїСЂРѕРіСЂР°РјРј РµСЃР»Рё СѓСЃР»РѕРІРёРµ РЅРµ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ</td></tr>
 <tr><td><code><b>function</b> ChangeFileNameExtension(fileName, newExt: string): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет расширение файла с именем fileName на newExt</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РР·РјРµРЅСЏРµС‚ СЂР°СЃС€РёСЂРµРЅРёРµ С„Р°Р№Р»Р° СЃ РёРјРµРЅРµРј fileName РЅР° newExt</td></tr>
 <tr><td><code><b>procedure</b> ChDir(dirName: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет текущий каталог</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРµРЅСЏРµС‚ С‚РµРєСѓС‰РёР№ РєР°С‚Р°Р»РѕРі</td></tr>
 <tr><td><code><b>function</b> CreateDir(dirName: string): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает каталог. Возвращает True, если каталог успешно создан</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РєР°С‚Р°Р»РѕРі. Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РєР°С‚Р°Р»РѕРі СѓСЃРїРµС€РЅРѕ СЃРѕР·РґР°РЅ</td></tr>
 <tr><td><code><b>function</b> DeleteFile(fileName: string): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет файл. Если файл не может быть удален, то возвращает False</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґР°Р»СЏРµС‚ С„Р°Р№Р». Р•СЃР»Рё С„Р°Р№Р» РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ СѓРґР°Р»РµРЅ, С‚Рѕ РІРѕР·РІСЂР°С‰Р°РµС‚ False</td></tr>
 <tr><td><code><b>function</b> DiskFree(diskName: string): int64;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает свободное место в байтах на диске с именем diskname</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ РІ Р±Р°Р№С‚Р°С… РЅР° РґРёСЃРєРµ СЃ РёРјРµРЅРµРј diskname</td></tr>
 <tr><td><code><b>function</b> DiskFree(disk: integer): int64;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает свободное место в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ РІ Р±Р°Р№С‚Р°С… РЅР° РґРёСЃРєРµ disk. disk=0 - С‚РµРєСѓС‰РёР№ РґРёСЃРє, disk=1 - РґРёСЃРє A: , disk=2 - РґРёСЃРє B: Рё С‚.Рґ.</td></tr>
 <tr><td><code><b>function</b> DiskSize(diskName: string): int64;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает размер в байтах на диске с именем diskname</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЂР°Р·РјРµСЂ РІ Р±Р°Р№С‚Р°С… РЅР° РґРёСЃРєРµ СЃ РёРјРµРЅРµРј diskname</td></tr>
 <tr><td><code><b>function</b> DiskSize(disk: integer): int64;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает размер в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЂР°Р·РјРµСЂ РІ Р±Р°Р№С‚Р°С… РЅР° РґРёСЃРєРµ disk. disk=0 - С‚РµРєСѓС‰РёР№ РґРёСЃРє, disk=1 - РґРёСЃРє A: , disk=2 - РґРёСЃРє B: Рё С‚.Рґ.</td></tr>
 <tr><td><code><b>procedure</b> Dispose&lt;T&gt;(<b>var</b> p: ^T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Освобождает динамическую память, на которую указывает p</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћСЃРІРѕР±РѕР¶РґР°РµС‚ РґРёРЅР°РјРёС‡РµСЃРєСѓСЋ РїР°РјСЏС‚СЊ, РЅР° РєРѕС‚РѕСЂСѓСЋ СѓРєР°Р·С‹РІР°РµС‚ p</td></tr>
 <tr><td><code><b>function</b> EnumerateAllDirectories(path: string): <b>sequence </b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРјРµРЅ РєР°С‚Р°Р»РѕРіРѕРІ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСѓС‚Рё, РІРєР»СЋС‡Р°СЏ РїРѕРґРєР°С‚Р°Р»РѕРіРё</td></tr>
 <tr><td><code><b>function</b> EnumerateAllFiles(path: string; searchPattern: string := '*.*'): <b>sequence </b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска, включая подкаталоги</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРјРµРЅ С„Р°Р№Р»РѕРІ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСѓС‚Рё, СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёС… С€Р°Р±Р»РѕРЅСѓ РїРѕРёСЃРєР°, РІРєР»СЋС‡Р°СЏ РїРѕРґРєР°С‚Р°Р»РѕРіРё</td></tr>
 <tr><td><code><b>function</b> EnumerateDirectories(path: string): <b>sequence </b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен каталогов по заданному пути</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРјРµРЅ РєР°С‚Р°Р»РѕРіРѕРІ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСѓС‚Рё</td></tr>
 <tr><td><code><b>function</b> EnumerateFiles(path: string; searchPattern: string := '*.*'): <b>sequence </b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРјРµРЅ С„Р°Р№Р»РѕРІ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСѓС‚Рё, СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёС… С€Р°Р±Р»РѕРЅСѓ РїРѕРёСЃРєР°</td></tr>
 <tr><td><code><b>procedure</b> Exec(fileName: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем fileName</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїСѓСЃРєР°РµС‚ РїСЂРѕРіСЂР°РјРјСѓ РёР»Рё РґРѕРєСѓРјРµРЅС‚ СЃ РёРјРµРЅРµРј fileName</td></tr>
 <tr><td><code><b>procedure</b> Exec(fileName: string; args: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем fileName и параметрами командной строки args</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїСѓСЃРєР°РµС‚ РїСЂРѕРіСЂР°РјРјСѓ РёР»Рё РґРѕРєСѓРјРµРЅС‚ СЃ РёРјРµРЅРµРј fileName Рё РїР°СЂР°РјРµС‚СЂР°РјРё РєРѕРјР°РЅРґРЅРѕР№ СЃС‚СЂРѕРєРё args</td></tr>
 <tr><td><code><b>procedure</b> Execute(fileName: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем fileName</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїСѓСЃРєР°РµС‚ РїСЂРѕРіСЂР°РјРјСѓ РёР»Рё РґРѕРєСѓРјРµРЅС‚ СЃ РёРјРµРЅРµРј fileName</td></tr>
 <tr><td><code><b>procedure</b> Execute(fileName: string; args: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем fileName и параметрами командной строки args</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїСѓСЃРєР°РµС‚ РїСЂРѕРіСЂР°РјРјСѓ РёР»Рё РґРѕРєСѓРјРµРЅС‚ СЃ РёРјРµРЅРµРј fileName Рё РїР°СЂР°РјРµС‚СЂР°РјРё РєРѕРјР°РЅРґРЅРѕР№ СЃС‚СЂРѕРєРё args</td></tr>
 <tr><td><code><b>function</b> FileExists(fileName: string): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если файл с именем fileName существует</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё С„Р°Р№Р» СЃ РёРјРµРЅРµРј fileName СЃСѓС‰РµСЃС‚РІСѓРµС‚</td></tr>
 <tr><td><code><b>function</b> GetCurrentDir: string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текущий каталог</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСѓС‰РёР№ РєР°С‚Р°Р»РѕРі</td></tr>
 <tr><td><code><b>function</b> GetDir: string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текущий каталог</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСѓС‰РёР№ РєР°С‚Р°Р»РѕРі</td></tr>
 <tr><td><code><b>function</b> GetEXEFileName: string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возващает имя запущенного .exe-файла</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІР°С‰Р°РµС‚ РёРјСЏ Р·Р°РїСѓС‰РµРЅРЅРѕРіРѕ .exe-С„Р°Р№Р»Р°</td></tr>
 <tr><td><code><b>procedure</b> Halt(exitCode: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Завершает работу программы, возвращая код ошибки exitCode</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РІРµСЂС€Р°РµС‚ СЂР°Р±РѕС‚Сѓ РїСЂРѕРіСЂР°РјРјС‹, РІРѕР·РІСЂР°С‰Р°СЏ РєРѕРґ РѕС€РёР±РєРё exitCode</td></tr>
 <tr><td><code><b>procedure</b> Halt;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Завершает работу программы</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РІРµСЂС€Р°РµС‚ СЂР°Р±РѕС‚Сѓ РїСЂРѕРіСЂР°РјРјС‹</td></tr>
 <tr><td><code><b>function</b> Milliseconds: integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество миллисекунд с момента начала работы программы</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РјРёР»Р»РёСЃРµРєСѓРЅРґ СЃ РјРѕРјРµРЅС‚Р° РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹ РїСЂРѕРіСЂР°РјРјС‹</td></tr>
 <tr><td><code><b>function</b> MillisecondsDelta: integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество миллисекунд с момента последнего вызова Milliseconds или MillisecondsDelta или начала программы</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РјРёР»Р»РёСЃРµРєСѓРЅРґ СЃ РјРѕРјРµРЅС‚Р° РїРѕСЃР»РµРґРЅРµРіРѕ РІС‹Р·РѕРІР° Milliseconds РёР»Рё MillisecondsDelta РёР»Рё РЅР°С‡Р°Р»Р° РїСЂРѕРіСЂР°РјРјС‹</td></tr>
 <tr><td><code><b>procedure</b> MkDir(dirName: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает каталог</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РєР°С‚Р°Р»РѕРі</td></tr>
 <tr><td><code><b>procedure</b> New&lt;T&gt;(<b>var</b> p: ^T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выделяет динамическую память размера sizeof(T) и возвращает в переменной p указатель на нее. Тип T должен быть размерным</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РґРµР»СЏРµС‚ РґРёРЅР°РјРёС‡РµСЃРєСѓСЋ РїР°РјСЏС‚СЊ СЂР°Р·РјРµСЂР° sizeof(T) Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РІ РїРµСЂРµРјРµРЅРЅРѕР№ p СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РЅРµРµ. РўРёРї T РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ СЂР°Р·РјРµСЂРЅС‹Рј</td></tr>
 <tr><td><code><b>function</b> NumberFormat(DecimalSeparator: string := '.'; GroupSeparator: string := ',');</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создаёт настройки форматирования числовых значений</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°С‘С‚ РЅР°СЃС‚СЂРѕР№РєРё С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ С‡РёСЃР»РѕРІС‹С… Р·РЅР°С‡РµРЅРёР№</td></tr>
 <tr><td><code><b>function</b> ParamCount: integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество параметров командной строки</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РїР°СЂР°РјРµС‚СЂРѕРІ РєРѕРјР°РЅРґРЅРѕР№ СЃС‚СЂРѕРєРё</td></tr>
 <tr><td><code><b>function</b> ParamStr(i: integer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает i-тый параметр командной строки</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ i-С‚С‹Р№ РїР°СЂР°РјРµС‚СЂ РєРѕРјР°РЅРґРЅРѕР№ СЃС‚СЂРѕРєРё</td></tr>
 <tr><td><code><b>function</b> PascalABCVersion: string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает версию PascalABC.NET</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІРµСЂСЃРёСЋ PascalABC.NET</td></tr>
 <tr><td><code><b>function</b> PointerToString(p: pointer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует указатель к строковому представлению</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СѓРєР°Р·Р°С‚РµР»СЊ Рє СЃС‚СЂРѕРєРѕРІРѕРјСѓ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> RemoveDir(dirName: string): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет каталог. Возвращает True, если каталог успешно удален</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґР°Р»СЏРµС‚ РєР°С‚Р°Р»РѕРі. Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РєР°С‚Р°Р»РѕРі СѓСЃРїРµС€РЅРѕ СѓРґР°Р»РµРЅ</td></tr>
 <tr><td><code><b>function</b> RenameDirectory(dirName, newDirName: string): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переименовывает каталог dirName, давая ему новое имя newDirName. Возвращает True, если каталог успешно переименован</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРёРјРµРЅРѕРІС‹РІР°РµС‚ РєР°С‚Р°Р»РѕРі dirName, РґР°РІР°СЏ РµРјСѓ РЅРѕРІРѕРµ РёРјСЏ newDirName. Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РєР°С‚Р°Р»РѕРі СѓСЃРїРµС€РЅРѕ РїРµСЂРµРёРјРµРЅРѕРІР°РЅ</td></tr>
 <tr><td><code><b>function</b> RenameFile(fileName, newfileName: string): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переименовывает файл fileName, давая ему новое имя newfileName. Возвращает True, если файл успешно переименован</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРёРјРµРЅРѕРІС‹РІР°РµС‚ С„Р°Р№Р» fileName, РґР°РІР°СЏ РµРјСѓ РЅРѕРІРѕРµ РёРјСЏ newfileName. Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё С„Р°Р№Р» СѓСЃРїРµС€РЅРѕ РїРµСЂРµРёРјРµРЅРѕРІР°РЅ</td></tr>
 <tr><td><code><b>procedure</b> RmDir(dirName: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет каталог</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґР°Р»СЏРµС‚ РєР°С‚Р°Р»РѕРі</td></tr>
 <tr><td><code><b>function</b> SetCurrentDir(dirName: string): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущий каталог. Возвращает True, если каталог успешно установлен</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С‚РµРєСѓС‰РёР№ РєР°С‚Р°Р»РѕРі. Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РєР°С‚Р°Р»РѕРі СѓСЃРїРµС€РЅРѕ СѓСЃС‚Р°РЅРѕРІР»РµРЅ</td></tr>
 <tr><td><code><b>procedure</b> SetDecimalSeparator(sep: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает разделитель между целой и дробной частью в вещественных значениях</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЂР°Р·РґРµР»РёС‚РµР»СЊ РјРµР¶РґСѓ С†РµР»РѕР№ Рё РґСЂРѕР±РЅРѕР№ С‡Р°СЃС‚СЊСЋ РІ РІРµС‰РµСЃС‚РІРµРЅРЅС‹С… Р·РЅР°С‡РµРЅРёСЏС…</td></tr>
 <tr><td><code><b>procedure</b> SetNumberFormat(DecimalSeparator: string := '.'; GroupSeparator: string := ',');</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает параметры числового формата</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РїР°СЂР°РјРµС‚СЂС‹ С‡РёСЃР»РѕРІРѕРіРѕ С„РѕСЂРјР°С‚Р°</td></tr>
 <tr><td><code><b>procedure</b> Sleep(ms: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Делает паузу на ms миллисекунд</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р”РµР»Р°РµС‚ РїР°СѓР·Сѓ РЅР° ms РјРёР»Р»РёСЃРµРєСѓРЅРґ</td></tr>
 <tr><td><code><b>function</b> TypeName(obj: object): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку с именем типа объекта</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ СЃ РёРјРµРЅРµРј С‚РёРїР° РѕР±СЉРµРєС‚Р°</td></tr>
 <tr><td><code><b>function</b> TypeToTypeName(t: System.Type): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку с именем данного типа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ СЃ РёРјРµРЅРµРј РґР°РЅРЅРѕРіРѕ С‚РёРїР°</td></tr>
 </table>
 </body></HTML>

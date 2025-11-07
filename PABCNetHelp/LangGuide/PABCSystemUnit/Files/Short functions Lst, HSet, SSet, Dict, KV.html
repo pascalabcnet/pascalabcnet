@@ -17,64 +17,64 @@
 <param name="Keyword" value="SSetInt">
 <param name="Keyword" value="SSetStr"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Короткие функции Lst, LLst, HSet, SSet, Dict, KV</H1>
+</HEAD><body><H1>РљРѕСЂРѕС‚РєРёРµ С„СѓРЅРєС†РёРё Lst, LLst, HSet, SSet, Dict, KV</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Dict&lt;TKey, TVal&gt;(<b>params</b> pairs: <b>array</b>  <b>of</b> KeyValuePair&lt;TKey, TVal&gt;): Dictionary&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь из набора пар элементов (ключ, значение)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РѕРІР°СЂСЊ РёР· РЅР°Р±РѕСЂР° РїР°СЂ СЌР»РµРјРµРЅС‚РѕРІ (РєР»СЋС‡, Р·РЅР°С‡РµРЅРёРµ)</td></tr>
 <tr><td><code><b>function</b> Dict&lt;TKey, TVal&gt;(<b>params</b> pairs: <b>array</b>  <b>of</b> (TKey, TVal)): Dictionary&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь из набора пар элементов (ключ, значение), заданных как кортежи</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РѕРІР°СЂСЊ РёР· РЅР°Р±РѕСЂР° РїР°СЂ СЌР»РµРјРµРЅС‚РѕРІ (РєР»СЋС‡, Р·РЅР°С‡РµРЅРёРµ), Р·Р°РґР°РЅРЅС‹С… РєР°Рє РєРѕСЂС‚РµР¶Рё</td></tr>
 <tr><td><code><b>function</b> Dict&lt;TKey, TVal&gt;(pairs: <b>sequence </b>  <b>of</b> KeyValuePair&lt;TKey, TVal&gt;): Dictionary&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь из последовательности пар элементов (ключ, значение)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РѕРІР°СЂСЊ РёР· РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РїР°СЂ СЌР»РµРјРµРЅС‚РѕРІ (РєР»СЋС‡, Р·РЅР°С‡РµРЅРёРµ)</td></tr>
 <tr><td><code><b>function</b> Dict&lt;TKey, TVal&gt;(pairs: <b>sequence </b>  <b>of</b> (TKey, TVal)): Dictionary&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь из последовательности пар элементов (ключ, значение), заданных как кортежи</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РѕРІР°СЂСЊ РёР· РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РїР°СЂ СЌР»РµРјРµРЅС‚РѕРІ (РєР»СЋС‡, Р·РЅР°С‡РµРЅРёРµ), Р·Р°РґР°РЅРЅС‹С… РєР°Рє РєРѕСЂС‚РµР¶Рё</td></tr>
 <tr><td><code><b>function</b> Dict&lt;TKey, TVal&gt;(keys: <b>sequence </b>  <b>of</b> TKey; values: <b>sequence </b>  <b>of</b> TVal): Dictionary&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь словарь из двух последовательностей — ключей и значений</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РѕРІР°СЂСЊ СЃР»РѕРІР°СЂСЊ РёР· РґРІСѓС… РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№ вЂ” РєР»СЋС‡РµР№ Рё Р·РЅР°С‡РµРЅРёР№</td></tr>
 <tr><td><code><b>function</b> DictInt(<b>params</b> pairs: <b>array</b>  <b>of</b> (integer, integer)): Dictionary&lt;integer, integer&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь из набора пар элементов (целое, целое)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РѕРІР°СЂСЊ РёР· РЅР°Р±РѕСЂР° РїР°СЂ СЌР»РµРјРµРЅС‚РѕРІ (С†РµР»РѕРµ, С†РµР»РѕРµ)</td></tr>
 <tr><td><code><b>function</b> DictStr(<b>params</b> pairs: <b>array</b>  <b>of</b> (string, string)): Dictionary&lt;string, string&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь из набора пар элементов (строка, строка)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РѕРІР°СЂСЊ РёР· РЅР°Р±РѕСЂР° РїР°СЂ СЌР»РµРјРµРЅС‚РѕРІ (СЃС‚СЂРѕРєР°, СЃС‚СЂРѕРєР°)</td></tr>
 <tr><td><code><b>function</b> DictStrInt(<b>params</b> pairs: <b>array</b>  <b>of</b> (string, integer)): Dictionary&lt;string, integer&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь из набора пар элементов (строка, целое)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РѕРІР°СЂСЊ РёР· РЅР°Р±РѕСЂР° РїР°СЂ СЌР»РµРјРµРЅС‚РѕРІ (СЃС‚СЂРѕРєР°, С†РµР»РѕРµ)</td></tr>
 <tr><td><code><b>function</b> HSet&lt;T&gt;(<b>params</b> a: <b>array</b>  <b>of</b> T): HashSet&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество на базе хеш таблицы, заполненное указанными значениями</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРЅРѕР¶РµСЃС‚РІРѕ РЅР° Р±Р°Р·Рµ С…РµС€ С‚Р°Р±Р»РёС†С‹, Р·Р°РїРѕР»РЅРµРЅРЅРѕРµ СѓРєР°Р·Р°РЅРЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё</td></tr>
 <tr><td><code><b>function</b> HSet&lt;T&gt;(a: <b>sequence </b>  <b>of</b> T): HashSet&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество на базе хеш таблицы, заполненное значениями из последовательности</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРЅРѕР¶РµСЃС‚РІРѕ РЅР° Р±Р°Р·Рµ С…РµС€ С‚Р°Р±Р»РёС†С‹, Р·Р°РїРѕР»РЅРµРЅРЅРѕРµ Р·РЅР°С‡РµРЅРёСЏРјРё РёР· РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё</td></tr>
 <tr><td><code><b>function</b> HSet(a: IntRange): HashSet&lt;integer&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество на базе хеш таблицы, заполненное диапазоном значений</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРЅРѕР¶РµСЃС‚РІРѕ РЅР° Р±Р°Р·Рµ С…РµС€ С‚Р°Р±Р»РёС†С‹, Р·Р°РїРѕР»РЅРµРЅРЅРѕРµ РґРёР°РїР°Р·РѕРЅРѕРј Р·РЅР°С‡РµРЅРёР№</td></tr>
 <tr><td><code><b>function</b> HSet(a: CharRange): HashSet&lt;char&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество на базе хеш таблицы, заполненное заполненный диапазоном значений</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРЅРѕР¶РµСЃС‚РІРѕ РЅР° Р±Р°Р·Рµ С…РµС€ С‚Р°Р±Р»РёС†С‹, Р·Р°РїРѕР»РЅРµРЅРЅРѕРµ Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ РґРёР°РїР°Р·РѕРЅРѕРј Р·РЅР°С‡РµРЅРёР№</td></tr>
 <tr><td><code><b>function</b> HSetInt(<b>params</b> a: <b>array</b>  <b>of</b> integer): HashSet&lt;integer&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество на базе хеш таблицы, заполненное целыми значениями</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРЅРѕР¶РµСЃС‚РІРѕ РЅР° Р±Р°Р·Рµ С…РµС€ С‚Р°Р±Р»РёС†С‹, Р·Р°РїРѕР»РЅРµРЅРЅРѕРµ С†РµР»С‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё</td></tr>
 <tr><td><code><b>function</b> HSetStr(<b>params</b> a: <b>array</b>  <b>of</b> string): HashSet&lt;string&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество на базе хеш таблицы, заполненное строковыми значениями</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРЅРѕР¶РµСЃС‚РІРѕ РЅР° Р±Р°Р·Рµ С…РµС€ С‚Р°Р±Р»РёС†С‹, Р·Р°РїРѕР»РЅРµРЅРЅРѕРµ СЃС‚СЂРѕРєРѕРІС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё</td></tr>
 <tr><td><code><b>function</b> KV&lt;TKey, TVal&gt;(key: TKey; value: TVal): KeyValuePair&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает пару элементов (ключ, значение)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїР°СЂСѓ СЌР»РµРјРµРЅС‚РѕРІ (РєР»СЋС‡, Р·РЅР°С‡РµРЅРёРµ)</td></tr>
 <tr><td><code><b>function</b> LLst&lt;T&gt;(<b>params</b> a: <b>array</b>  <b>of</b> T): LinkedList&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двусвязный список, заполненный указанными значениями</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРІСѓСЃРІСЏР·РЅС‹Р№ СЃРїРёСЃРѕРє, Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ СѓРєР°Р·Р°РЅРЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё</td></tr>
 <tr><td><code><b>function</b> LLst&lt;T&gt;(a: <b>sequence </b>  <b>of</b> T): LinkedList&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двусвязный список, заполненный значениями из последовательности</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРІСѓСЃРІСЏР·РЅС‹Р№ СЃРїРёСЃРѕРє, Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ Р·РЅР°С‡РµРЅРёСЏРјРё РёР· РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё</td></tr>
 <tr><td><code><b>function</b> Lst&lt;T&gt;(<b>params</b> a: <b>array</b>  <b>of</b> T): List&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает список, заполненный указанными значениями</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє, Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ СѓРєР°Р·Р°РЅРЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё</td></tr>
 <tr><td><code><b>function</b> Lst&lt;T&gt;(a: <b>sequence </b>  <b>of</b> T): List&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает список, заполненный значениями из последовательности</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє, Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ Р·РЅР°С‡РµРЅРёСЏРјРё РёР· РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё</td></tr>
 <tr><td><code><b>function</b> Lst(a: IntRange): List&lt;integer&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает список, заполненный диапазоном значений</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє, Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ РґРёР°РїР°Р·РѕРЅРѕРј Р·РЅР°С‡РµРЅРёР№</td></tr>
 <tr><td><code><b>function</b> Lst(a: CharRange): List&lt;char&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает список, заполненный диапазоном значений</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє, Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ РґРёР°РїР°Р·РѕРЅРѕРј Р·РЅР°С‡РµРЅРёР№</td></tr>
 <tr><td><code><b>function</b> LstInt(<b>params</b> a: <b>array</b>  <b>of</b> integer): List&lt;integer&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает список, заполненный указанными целыми значениями</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє, Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ СѓРєР°Р·Р°РЅРЅС‹РјРё С†РµР»С‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё</td></tr>
 <tr><td><code><b>function</b> LstStr(<b>params</b> a: <b>array</b>  <b>of</b> string): List&lt;string&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает список, заполненный указанными целыми значениями</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє, Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ СѓРєР°Р·Р°РЅРЅС‹РјРё С†РµР»С‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё</td></tr>
 <tr><td><code><b>function</b> Pair&lt;TKey, TVal&gt;(key: TKey; value: TVal): KeyValuePair&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает пару элементов (ключ, значение)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїР°СЂСѓ СЌР»РµРјРµРЅС‚РѕРІ (РєР»СЋС‡, Р·РЅР°С‡РµРЅРёРµ)</td></tr>
 <tr><td><code><b>function</b> SetOf&lt;T&gt;(<b>params</b> a: <b>array</b>  <b>of</b> T): NewSet&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество, заполненное указанными значениями</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРЅРѕР¶РµСЃС‚РІРѕ, Р·Р°РїРѕР»РЅРµРЅРЅРѕРµ СѓРєР°Р·Р°РЅРЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё</td></tr>
 <tr><td><code><b>function</b> SSet&lt;T&gt;(<b>params</b> a: <b>array</b>  <b>of</b> T): SortedSet&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество на базе бинарного дерева поиска, заполненное указанными значениями</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРЅРѕР¶РµСЃС‚РІРѕ РЅР° Р±Р°Р·Рµ Р±РёРЅР°СЂРЅРѕРіРѕ РґРµСЂРµРІР° РїРѕРёСЃРєР°, Р·Р°РїРѕР»РЅРµРЅРЅРѕРµ СѓРєР°Р·Р°РЅРЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё</td></tr>
 <tr><td><code><b>function</b> SSet&lt;T&gt;(a: <b>sequence </b>  <b>of</b> T): SortedSet&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРЅРѕР¶РµСЃС‚РІРѕ РЅР° Р±Р°Р·Рµ Р±РёРЅР°СЂРЅРѕРіРѕ РґРµСЂРµРІР° РїРѕРёСЃРєР°, Р·Р°РїРѕР»РЅРµРЅРЅРѕРµ Р·РЅР°С‡РµРЅРёСЏРјРё РёР· РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё</td></tr>
 <tr><td><code><b>function</b> SSetInt(<b>params</b> a: <b>array</b>  <b>of</b> integer): SortedSet&lt;integer&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество на базе бинарного дерева поиска, заполненное целыми значениями</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРЅРѕР¶РµСЃС‚РІРѕ РЅР° Р±Р°Р·Рµ Р±РёРЅР°СЂРЅРѕРіРѕ РґРµСЂРµРІР° РїРѕРёСЃРєР°, Р·Р°РїРѕР»РЅРµРЅРЅРѕРµ С†РµР»С‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё</td></tr>
 <tr><td><code><b>function</b> SSetStr(<b>params</b> a: <b>array</b>  <b>of</b> string): SortedSet&lt;string&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество на базе бинарного дерева поиска, заполненное строковыми значениями</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРЅРѕР¶РµСЃС‚РІРѕ РЅР° Р±Р°Р·Рµ Р±РёРЅР°СЂРЅРѕРіРѕ РґРµСЂРµРІР° РїРѕРёСЃРєР°, Р·Р°РїРѕР»РЅРµРЅРЅРѕРµ СЃС‚СЂРѕРєРѕРІС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё</td></tr>
 </table>
 </body></HTML>

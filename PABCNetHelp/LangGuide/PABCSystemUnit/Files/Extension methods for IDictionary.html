@@ -6,34 +6,34 @@
 <param name="Keyword" value="operator">
 <param name="Keyword" value="Update"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Методы расширения словарей</H1>
+</HEAD><body><H1>РњРµС‚РѕРґС‹ СЂР°СЃС€РёСЂРµРЅРёСЏ СЃР»РѕРІР°СЂРµР№</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Each&lt;Key,Source,Res&gt;(Self: <b>sequence </b>  <b>of</b> System.Linq.IGrouping&lt;Key,Source&gt;; grOperation: System.Linq.IGrouping&lt;Key,Source&gt; -&gt; Res): Dictionary&lt;Key,Res&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь, сопоставляющий ключу группы результат групповой операции</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РѕРІР°СЂСЊ, СЃРѕРїРѕСЃС‚Р°РІР»СЏСЋС‰РёР№ РєР»СЋС‡Сѓ РіСЂСѓРїРїС‹ СЂРµР·СѓР»СЊС‚Р°С‚ РіСЂСѓРїРїРѕРІРѕР№ РѕРїРµСЂР°С†РёРё</td></tr>
 <tr><td><code><b>function</b> Each&lt;Key,Res&gt;(Self: <b>sequence </b>  <b>of</b> Key; proj: Key -&gt; Res): Dictionary&lt;Key,Res&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь, сопоставляющий элементам последовательности определённые значения</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РѕРІР°СЂСЊ, СЃРѕРїРѕСЃС‚Р°РІР»СЏСЋС‰РёР№ СЌР»РµРјРµРЅС‚Р°Рј РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РѕРїСЂРµРґРµР»С‘РЅРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ</td></tr>
 <tr><td><code><b>function</b> EachCount&lt;Key,Source&gt;(Self: <b>sequence </b>  <b>of</b> System.Linq.IGrouping&lt;Key,Source&gt;): Dictionary&lt;Key,integer&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь, сопоставляющий ключу группы количество элементов с данным ключом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РѕРІР°СЂСЊ, СЃРѕРїРѕСЃС‚Р°РІР»СЏСЋС‰РёР№ РєР»СЋС‡Сѓ РіСЂСѓРїРїС‹ РєРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ СЃ РґР°РЅРЅС‹Рј РєР»СЋС‡РѕРј</td></tr>
 <tr><td><code><b>function</b> EachCount&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): Dictionary&lt;T,integer&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает частотный словарь объектов последовательности</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‡Р°СЃС‚РѕС‚РЅС‹Р№ СЃР»РѕРІР°СЂСЊ РѕР±СЉРµРєС‚РѕРІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё</td></tr>
 <tr><td><code><b>function</b> Get&lt;Key, Value&gt;(Self: IDictionary&lt;Key, Value&gt;; K: Key; V: Value := default(Value)): Value;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает в словаре значение, связанное с указанным ключом, а если такого ключа нет, то значение по умолчанию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІ СЃР»РѕРІР°СЂРµ Р·РЅР°С‡РµРЅРёРµ, СЃРІСЏР·Р°РЅРЅРѕРµ СЃ СѓРєР°Р·Р°РЅРЅС‹Рј РєР»СЋС‡РѕРј, Р° РµСЃР»Рё С‚Р°РєРѕРіРѕ РєР»СЋС‡Р° РЅРµС‚, С‚Рѕ Р·РЅР°С‡РµРЅРёРµ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> GetOrAdd&lt;Key, Value&gt;(Self: IDictionary&lt;Key, Value&gt;; K: Key; valueFactory: Key -&gt; Value): Value;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Получает значение по ключу или добавляет новое, если ключ отсутствует</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРѕР»СѓС‡Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ РїРѕ РєР»СЋС‡Сѓ РёР»Рё РґРѕР±Р°РІР»СЏРµС‚ РЅРѕРІРѕРµ, РµСЃР»Рё РєР»СЋС‡ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚</td></tr>
 <tr><td><code><b>function</b> GetOrAdd&lt;Key, Value&gt;(Self: IDictionary&lt;Key, Value&gt;; K: Key; defaultValue: Value): Value;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Получает значение по ключу или добавляет значение по умолчанию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРѕР»СѓС‡Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ РїРѕ РєР»СЋС‡Сѓ РёР»Рё РґРѕР±Р°РІР»СЏРµС‚ Р·РЅР°С‡РµРЅРёРµ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> operator-&lt;TKey, TVal&gt;(Self: Dictionary&lt;TKey, TVal&gt;; key: TKey): Dictionary&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь, в котором из исходного словаря удален элемент с данным ключом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РѕРІР°СЂСЊ, РІ РєРѕС‚РѕСЂРѕРј РёР· РёСЃС…РѕРґРЅРѕРіРѕ СЃР»РѕРІР°СЂСЏ СѓРґР°Р»РµРЅ СЌР»РµРјРµРЅС‚ СЃ РґР°РЅРЅС‹Рј РєР»СЋС‡РѕРј</td></tr>
 <tr><td><code><b>function</b> operator-&lt;TKey, TVal&gt;(Self: Dictionary&lt;TKey, TVal&gt;; keys: <b>sequence </b>  <b>of</b> TKey): Dictionary&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь, в котором из исходного словаря удалены все элементы с ключами, задаваемыми вторым операндом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РѕРІР°СЂСЊ, РІ РєРѕС‚РѕСЂРѕРј РёР· РёСЃС…РѕРґРЅРѕРіРѕ СЃР»РѕРІР°СЂСЏ СѓРґР°Р»РµРЅС‹ РІСЃРµ СЌР»РµРјРµРЅС‚С‹ СЃ РєР»СЋС‡Р°РјРё, Р·Р°РґР°РІР°РµРјС‹РјРё РІС‚РѕСЂС‹Рј РѕРїРµСЂР°РЅРґРѕРј</td></tr>
 <tr><td><code><b>function</b> operator+&lt;TKey, TVal&gt;(Self: Dictionary&lt;TKey, TVal&gt;; dict: Dictionary&lt;TKey, TVal&gt;): Dictionary&lt;TKey, TVal&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет данные в двух словарях. Если в обоих имеются одинаковые ключи, то с ключом связывается значение из второго словаря</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±СЉРµРґРёРЅСЏРµС‚ РґР°РЅРЅС‹Рµ РІ РґРІСѓС… СЃР»РѕРІР°СЂСЏС…. Р•СЃР»Рё РІ РѕР±РѕРёС… РёРјРµСЋС‚СЃСЏ РѕРґРёРЅР°РєРѕРІС‹Рµ РєР»СЋС‡Рё, С‚Рѕ СЃ РєР»СЋС‡РѕРј СЃРІСЏР·С‹РІР°РµС‚СЃСЏ Р·РЅР°С‡РµРЅРёРµ РёР· РІС‚РѕСЂРѕРіРѕ СЃР»РѕРІР°СЂСЏ</td></tr>
 <tr><td><code><b>procedure</b> operator+=&lt;TKey, TVal&gt;(Self: Dictionary&lt;TKey, TVal&gt;; update: Dictionary&lt;TKey, TVal&gt;);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обновляет данные в словаре данными из другого словаря</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±РЅРѕРІР»СЏРµС‚ РґР°РЅРЅС‹Рµ РІ СЃР»РѕРІР°СЂРµ РґР°РЅРЅС‹РјРё РёР· РґСЂСѓРіРѕРіРѕ СЃР»РѕРІР°СЂСЏ</td></tr>
 <tr><td><code><b>procedure</b> operator-=&lt;Key,Value&gt;(Self: IDictionary&lt;Key,Value&gt;; k: Key);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет из словаря пары с указанным значением ключа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґР°Р»СЏРµС‚ РёР· СЃР»РѕРІР°СЂСЏ РїР°СЂС‹ СЃ СѓРєР°Р·Р°РЅРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј РєР»СЋС‡Р°</td></tr>
 <tr><td><code><b>procedure</b> operator-=&lt;Key,Value&gt;(Self: IDictionary&lt;Key,Value&gt;; keys: <b>sequence </b>  <b>of</b> Key);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет из словаря пары с указанными значениями ключа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґР°Р»СЏРµС‚ РёР· СЃР»РѕРІР°СЂСЏ РїР°СЂС‹ СЃ СѓРєР°Р·Р°РЅРЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РєР»СЋС‡Р°</td></tr>
 <tr><td><code><b>procedure</b> Update&lt;TKey, TVal&gt;(Self: Dictionary&lt;TKey, TVal&gt;; update: Dictionary&lt;TKey, TVal&gt;);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обновляет данные в словаре данными из другого словаря</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±РЅРѕРІР»СЏРµС‚ РґР°РЅРЅС‹Рµ РІ СЃР»РѕРІР°СЂРµ РґР°РЅРЅС‹РјРё РёР· РґСЂСѓРіРѕРіРѕ СЃР»РѕРІР°СЂСЏ</td></tr>
 </table>
 </body></HTML>

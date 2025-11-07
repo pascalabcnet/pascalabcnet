@@ -18,58 +18,58 @@
 <param name="Keyword" value="Swap">
 <param name="Keyword" value="Transform"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Методы расширения списков</H1>
+</HEAD><body><H1>РњРµС‚РѕРґС‹ СЂР°СЃС€РёСЂРµРЅРёСЏ СЃРїРёСЃРєРѕРІ</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> AdjacentFind&lt;T&gt;(Self: IList&lt;T&gt;; start: integer := 0): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит первую пару подряд идущих одинаковых элементов и возвращает индекс первого элемента пары. Если не найден, возвращается -1</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°С…РѕРґРёС‚ РїРµСЂРІСѓСЋ РїР°СЂСѓ РїРѕРґСЂСЏРґ РёРґСѓС‰РёС… РѕРґРёРЅР°РєРѕРІС‹С… СЌР»РµРјРµРЅС‚РѕРІ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РїР°СЂС‹. Р•СЃР»Рё РЅРµ РЅР°Р№РґРµРЅ, РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ -1</td></tr>
 <tr><td><code><b>function</b> AdjacentFind&lt;T&gt;(Self: IList&lt;T&gt;; eq: (T,T)-&gt;boolean; start: integer := 0): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит первую пару подряд идущих одинаковых элементов, используя функцию сравнения eq, и возвращает индекс первого элемента пары. Если не найден, возвращается -1</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°С…РѕРґРёС‚ РїРµСЂРІСѓСЋ РїР°СЂСѓ РїРѕРґСЂСЏРґ РёРґСѓС‰РёС… РѕРґРёРЅР°РєРѕРІС‹С… СЌР»РµРјРµРЅС‚РѕРІ, РёСЃРїРѕР»СЊР·СѓСЏ С„СѓРЅРєС†РёСЋ СЃСЂР°РІРЅРµРЅРёСЏ eq, Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РїР°СЂС‹. Р•СЃР»Рё РЅРµ РЅР°Р№РґРµРЅ, РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ -1</td></tr>
 <tr><td><code><b>function</b> Fill&lt;T&gt;(Self: List&lt;T&gt;; x: T): List&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет элементы списка указанным значением</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ СЌР»РµРјРµРЅС‚С‹ СЃРїРёСЃРєР° СѓРєР°Р·Р°РЅРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј</td></tr>
 <tr><td><code><b>function</b> Fill&lt;T&gt;(Self: List&lt;T&gt;; f: integer-&gt;T): List&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет элементы списка значениями, вычисляемыми по некоторому правилу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ СЌР»РµРјРµРЅС‚С‹ СЃРїРёСЃРєР° Р·РЅР°С‡РµРЅРёСЏРјРё, РІС‹С‡РёСЃР»СЏРµРјС‹РјРё РїРѕ РЅРµРєРѕС‚РѕСЂРѕРјСѓ РїСЂР°РІРёР»Сѓ</td></tr>
 <tr><td><code><b>function</b> IndexMax&lt;T&gt;(Self: List&lt;T&gt;; index: integer := 0): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого максимального элемента начиная с позиции index</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ РјР°РєСЃРёРјР°Р»СЊРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РЅР°С‡РёРЅР°СЏ СЃ РїРѕР·РёС†РёРё index</td></tr>
 <tr><td><code><b>function</b> IndexMaxBy&lt;T, TKey&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого элемента с максимальным значением ключа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р° СЃ РјР°РєСЃРёРјР°Р»СЊРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј РєР»СЋС‡Р°</td></tr>
 <tr><td><code><b>function</b> IndexMin&lt;T&gt;(Self: List&lt;T&gt;; index: integer := 0): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого минимального элемента начиная с позиции index</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РЅР°С‡РёРЅР°СЏ СЃ РїРѕР·РёС†РёРё index</td></tr>
 <tr><td><code><b>function</b> IndexMinBy&lt;T, TKey&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого элемента с минимальным значением ключа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р° СЃ РјРёРЅРёРјР°Р»СЊРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј РєР»СЋС‡Р°</td></tr>
 <tr><td><code><b>function</b> Indices&lt;T&gt;(Self: List&lt;T&gt;): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов списка</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРЅРґРµРєСЃРѕРІ СЃРїРёСЃРєР°</td></tr>
 <tr><td><code><b>function</b> Indices&lt;T&gt;(Self: List&lt;T&gt;; cond: T-&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов элементов списка, удовлетворяющих условию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРЅРґРµРєСЃРѕРІ СЌР»РµРјРµРЅС‚РѕРІ СЃРїРёСЃРєР°, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёС… СѓСЃР»РѕРІРёСЋ</td></tr>
 <tr><td><code><b>function</b> Indices&lt;T&gt;(Self: List&lt;T&gt;; cond: (T,integer) -&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов элементов списка, удовлетворяющих условию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРЅРґРµРєСЃРѕРІ СЌР»РµРјРµРЅС‚РѕРІ СЃРїРёСЃРєР°, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёС… СѓСЃР»РѕРІРёСЋ</td></tr>
 <tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: List&lt;T&gt;; index: integer): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РІ РґРёР°РїР°Р·РѕРЅРµ [0,index-1]</td></tr>
 <tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: List&lt;T&gt;): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего максимального элемента</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ РјР°РєСЃРёРјР°Р»СЊРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°</td></tr>
 <tr><td><code><b>function</b> LastIndexMaxBy&lt;T, TKey&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего элемента с максимальным значением ключа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ СЌР»РµРјРµРЅС‚Р° СЃ РјР°РєСЃРёРјР°Р»СЊРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј РєР»СЋС‡Р°</td></tr>
 <tr><td><code><b>function</b> LastIndexMin&lt;T&gt;(Self: List&lt;T&gt;; index: integer): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РІ РґРёР°РїР°Р·РѕРЅРµ [0,index-1]</td></tr>
 <tr><td><code><b>function</b> LastIndexMin&lt;T&gt;(Self: List&lt;T&gt;): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°</td></tr>
 <tr><td><code><b>function</b> LastIndexMinBy&lt;T, TKey&gt;(Self: <b>array</b>  <b>of</b> T; keySelector: T -&gt; TKey): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего элемента с минимальным значением ключа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ СЌР»РµРјРµРЅС‚Р° СЃ РјРёРЅРёРјР°Р»СЊРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј РєР»СЋС‡Р°</td></tr>
 <tr><td><code><b>function</b> RandomElement&lt;T&gt;(Self: List&lt;T&gt;): T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный элемент списка</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»СѓС‡Р°Р№РЅС‹Р№ СЌР»РµРјРµРЅС‚ СЃРїРёСЃРєР°</td></tr>
 <tr><td><code><b>function</b> RemoveLast&lt;T&gt;(Self: List&lt;T&gt;): List&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет последний элемент. Если элементов нет, генерирует исключение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґР°Р»СЏРµС‚ РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚. Р•СЃР»Рё СЌР»РµРјРµРЅС‚РѕРІ РЅРµС‚, РіРµРЅРµСЂРёСЂСѓРµС‚ РёСЃРєР»СЋС‡РµРЅРёРµ</td></tr>
 <tr><td><code><b>function</b> Replace&lt;T&gt;(Self: List&lt;T&gt;; oldValue, newValue: T): List&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заменяет в списке все вхождения одного значения на другое</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РјРµРЅСЏРµС‚ РІ СЃРїРёСЃРєРµ РІСЃРµ РІС…РѕР¶РґРµРЅРёСЏ РѕРґРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РЅР° РґСЂСѓРіРѕРµ</td></tr>
 <tr><td><code><b>function</b> Shuffle&lt;T&gt;(Self: List&lt;T&gt;): List&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемешивает элементы списка случайным образом</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРјРµС€РёРІР°РµС‚ СЌР»РµРјРµРЅС‚С‹ СЃРїРёСЃРєР° СЃР»СѓС‡Р°Р№РЅС‹Рј РѕР±СЂР°Р·РѕРј</td></tr>
 <tr><td><code><b>function</b> Slice&lt;T&gt;(Self: List&lt;T&gt;; from, step: integer): List&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает срез списка от индекса from с шагом step</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃСЂРµР· СЃРїРёСЃРєР° РѕС‚ РёРЅРґРµРєСЃР° from СЃ С€Р°РіРѕРј step</td></tr>
 <tr><td><code><b>function</b> Slice&lt;T&gt;(Self: List&lt;T&gt;; from, step, count: integer): List&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает срез списка от индекса from с шагом step длины не более count</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃСЂРµР· СЃРїРёСЃРєР° РѕС‚ РёРЅРґРµРєСЃР° from СЃ С€Р°РіРѕРј step РґР»РёРЅС‹ РЅРµ Р±РѕР»РµРµ count</td></tr>
 <tr><td><code><b>function</b> Swap&lt;T&gt;(Self: List&lt;T&gt;; i, j: integer): List&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет местами элементы списка с индексами i и j</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРµРЅСЏРµС‚ РјРµСЃС‚Р°РјРё СЌР»РµРјРµРЅС‚С‹ СЃРїРёСЃРєР° СЃ РёРЅРґРµРєСЃР°РјРё i Рё j</td></tr>
 <tr><td><code><b>function</b> Transform&lt;T&gt;(Self: List&lt;T&gt;; f: T-&gt;T): List&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива или списка по заданному правилу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЌР»РµРјРµРЅС‚С‹ РјР°СЃСЃРёРІР° РёР»Рё СЃРїРёСЃРєР° РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСЂР°РІРёР»Сѓ</td></tr>
 <tr><td><code><b>function</b> Transform&lt;T&gt;(Self: List&lt;T&gt;; f: (T,integer)-&gt;T): List&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива или списка по заданному правилу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЌР»РµРјРµРЅС‚С‹ РјР°СЃСЃРёРІР° РёР»Рё СЃРїРёСЃРєР° РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСЂР°РІРёР»Сѓ</td></tr>
 </table>
 </body></HTML>

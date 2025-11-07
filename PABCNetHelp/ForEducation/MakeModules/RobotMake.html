@@ -22,12 +22,12 @@
 </head>
 
 <body>
-<H1>Модул<span lang="ru">ь </span>RobotTaskMaker</H1>
+<H1>РњРѕРґСѓР»<span lang="ru">СЊ </span>RobotTaskMaker</H1>
 <hr>
 <table border="0" width="100%" id="table1" style="border-width: 0px" cellpadding="8">
 	<tr height=20pt>
 		<td style="border-style:none; border-width:medium; background-color: #99CCFF">
-		<b><font size="2" color="#800080"><span lang="ru">Типы</span> модуля </font></b>
+		<b><font size="2" color="#800080"><span lang="ru">РўРёРїС‹</span> РјРѕРґСѓР»СЏ </font></b>
 		<font size="2" color="#800080"><b>RobotTaskMaker</b></font></td>
 	</tr>
 </table>
@@ -36,14 +36,14 @@
 	<p><code><b>type</b> TaskProcType<span lang="ru"> </span>=<b><span lang="ru">
 	</span>procedure</b>;</code></p>
 </blockquote>
-<p>Тип процедуры, генерирующей конкретное задание.
-Каждое задание реализуется в виде отдельной процедуры; для связывания этой процедуры
-с именем задания необходимо использовать процедуру <code>RegisterTask</code>, описываемую ниже.
+<p>РўРёРї РїСЂРѕС†РµРґСѓСЂС‹, РіРµРЅРµСЂРёСЂСѓСЋС‰РµР№ РєРѕРЅРєСЂРµС‚РЅРѕРµ Р·Р°РґР°РЅРёРµ.
+РљР°Р¶РґРѕРµ Р·Р°РґР°РЅРёРµ СЂРµР°Р»РёР·СѓРµС‚СЃСЏ РІ РІРёРґРµ РѕС‚РґРµР»СЊРЅРѕР№ РїСЂРѕС†РµРґСѓСЂС‹; РґР»СЏ СЃРІСЏР·С‹РІР°РЅРёСЏ СЌС‚РѕР№ РїСЂРѕС†РµРґСѓСЂС‹
+СЃ РёРјРµРЅРµРј Р·Р°РґР°РЅРёСЏ РЅРµРѕР±С…РѕРґРёРјРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РїСЂРѕС†РµРґСѓСЂСѓ <code>RegisterTask</code>, РѕРїРёСЃС‹РІР°РµРјСѓСЋ РЅРёР¶Рµ.
 </p>
 <table border="0" width="100%" id="table2" style="border-width: 0px" cellpadding="8">
 	<tr height=20pt>
 		<td style="border-style:none; border-width:medium; background-color: #99CCFF">
-		<b><font size="2" color="#800080">Процедуры модуля </font></b>
+		<b><font size="2" color="#800080">РџСЂРѕС†РµРґСѓСЂС‹ РјРѕРґСѓР»СЏ </font></b>
 		<font size="2" color="#800080"><b>RobotTaskMaker</b></font></td>
 	</tr>
 </table>
@@ -51,80 +51,80 @@
 <blockquote>
 	<p><code><b>procedure</b> Field(szx,szy: integer); </code></p>
 </blockquote>
-<p><span lang="ru">Задает поле Робота размера </span><code>szx</code>
-<span lang="ru">на </span><code>szy</code> <span lang="ru">клеток</span>.</p>
+<p><span lang="ru">Р—Р°РґР°РµС‚ РїРѕР»Рµ Р РѕР±РѕС‚Р° СЂР°Р·РјРµСЂР° </span><code>szx</code>
+<span lang="ru">РЅР° </span><code>szy</code> <span lang="ru">РєР»РµС‚РѕРє</span>.</p>
 <blockquote>
 	<p><code><b>procedure</b> HorizontalWall(x,y,len: integer); </code></p>
 </blockquote>
-<p><span lang="ru">Создает горизонтальную стену длины </span><code>len</code><span lang="ru"> 
-и координатами левого верхнего угла (</span><code>x</code>,<span lang="ru">
+<p><span lang="ru">РЎРѕР·РґР°РµС‚ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅСѓСЋ СЃС‚РµРЅСѓ РґР»РёРЅС‹ </span><code>len</code><span lang="ru"> 
+Рё РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё Р»РµРІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ СѓРіР»Р° (</span><code>x</code>,<span lang="ru">
 </span><code>y</code>)<span lang="ru">.</span></p>
 <blockquote>
 	<p><code><b>procedure</b> VerticalWall(x,y,len: integer); </code></p>
 </blockquote>
-<p><span lang="ru">Создает вертикальную стену длины </span><code>len</code><span lang="ru"> 
-и координатами левого верхнего угла (</span><code>x</code>,<span lang="ru">
+<p><span lang="ru">РЎРѕР·РґР°РµС‚ РІРµСЂС‚РёРєР°Р»СЊРЅСѓСЋ СЃС‚РµРЅСѓ РґР»РёРЅС‹ </span><code>len</code><span lang="ru"> 
+Рё РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё Р»РµРІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ СѓРіР»Р° (</span><code>x</code>,<span lang="ru">
 </span><code>y</code>)<span lang="ru">.</span></p>
 <blockquote>
 	<p><code><b>procedure</b> RobotBegin(x,y: integer); </code></p>
 </blockquote>
-<p><span lang="ru">Задает начальное положение Робота в клетке с координатами (</span><code>x</code>,<span lang="ru">
+<p><span lang="ru">Р—Р°РґР°РµС‚ РЅР°С‡Р°Р»СЊРЅРѕРµ РїРѕР»РѕР¶РµРЅРёРµ Р РѕР±РѕС‚Р° РІ РєР»РµС‚РєРµ СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё (</span><code>x</code>,<span lang="ru">
 </span><code>y</code>)<span lang="ru">.</span></p>
 <blockquote>
 	<p><code><b>procedure</b> RobotEnd(x,y: integer); </code></p>
 </blockquote>
-<p><span lang="ru">Задает конечное положение Робота в клетке с координатами (</span><code>x</code>,<span lang="ru">
+<p><span lang="ru">Р—Р°РґР°РµС‚ РєРѕРЅРµС‡РЅРѕРµ РїРѕР»РѕР¶РµРЅРёРµ Р РѕР±РѕС‚Р° РІ РєР»РµС‚РєРµ СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё (</span><code>x</code>,<span lang="ru">
 </span><code>y</code>)<span lang="ru">.</span></p>
 <blockquote>
 	<p><code><b>procedure</b> RobotBeginEnd(x,y,x1,y1: integer); </code></p>
 </blockquote>
-<p><span lang="ru">Задает начальное положение Робота в клетке с координатами (</span><code>x</code>,<span lang="ru">
-</span><code>y</code>)<span lang="ru"> и конечное в клетке с координатами (</span><code>x<span lang="ru">1</span></code>,<span lang="ru">
+<p><span lang="ru">Р—Р°РґР°РµС‚ РЅР°С‡Р°Р»СЊРЅРѕРµ РїРѕР»РѕР¶РµРЅРёРµ Р РѕР±РѕС‚Р° РІ РєР»РµС‚РєРµ СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё (</span><code>x</code>,<span lang="ru">
+</span><code>y</code>)<span lang="ru"> Рё РєРѕРЅРµС‡РЅРѕРµ РІ РєР»РµС‚РєРµ СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё (</span><code>x<span lang="ru">1</span></code>,<span lang="ru">
 </span><code>y<span lang="ru">1</span></code>)<span lang="ru">.</span></p>
 <blockquote>
 	<p><code><b>procedure</b> Tag(x,y: integer); </code></p>
 </blockquote>
-<p><span lang="ru">Помечает клетку (</span><code>x</code>,<span lang="ru">
-</span><code>y</code>)<span lang="ru"> для закрашивания.</span></p>
+<p><span lang="ru">РџРѕРјРµС‡Р°РµС‚ РєР»РµС‚РєСѓ (</span><code>x</code>,<span lang="ru">
+</span><code>y</code>)<span lang="ru"> РґР»СЏ Р·Р°РєСЂР°С€РёРІР°РЅРёСЏ.</span></p>
 <blockquote>
 	<p><code><b>procedure</b> TagRect(x,y,x1,y1: integer); </code></p>
 </blockquote>
-<p><span lang="ru">Помечает прямоугольник из клеток, задаваемый координатами 
-противоположных вершин прямоугольника (</span><code>x</code>,<span lang="ru">
-</span><code>y</code>)<span lang="ru"> и (</span><code>x<span lang="ru">1</span></code>,<span lang="ru">
-</span><code>y<span lang="ru">1</span></code>)<span lang="ru">, для 
-закрашивания.</span></p>
+<p><span lang="ru">РџРѕРјРµС‡Р°РµС‚ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє РёР· РєР»РµС‚РѕРє, Р·Р°РґР°РІР°РµРјС‹Р№ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё 
+РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅС‹С… РІРµСЂС€РёРЅ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР° (</span><code>x</code>,<span lang="ru">
+</span><code>y</code>)<span lang="ru"> Рё (</span><code>x<span lang="ru">1</span></code>,<span lang="ru">
+</span><code>y<span lang="ru">1</span></code>)<span lang="ru">, РґР»СЏ 
+Р·Р°РєСЂР°С€РёРІР°РЅРёСЏ.</span></p>
 <blockquote>
 	<p><code><b>procedure</b> MarkPainted(x,y: integer); </code></p>
 </blockquote>
-<p><span lang="ru">Закрашивает клетку (</span><code>x</code>,<span lang="ru">
-</span><code>y</code>)<span lang="ru"> (в задании некоторые клетки могут быть 
-уже закрашены).</span></p>
+<p><span lang="ru">Р—Р°РєСЂР°С€РёРІР°РµС‚ РєР»РµС‚РєСѓ (</span><code>x</code>,<span lang="ru">
+</span><code>y</code>)<span lang="ru"> (РІ Р·Р°РґР°РЅРёРё РЅРµРєРѕС‚РѕСЂС‹Рµ РєР»РµС‚РєРё РјРѕРіСѓС‚ Р±С‹С‚СЊ 
+СѓР¶Рµ Р·Р°РєСЂР°С€РµРЅС‹).</span></p>
 <blockquote>
 	<p><code><b>procedure</b> TaskText(s: <b>string</b>); </code></p>
 </blockquote>
-<p><span lang="ru">Задает формулировку текста задания в строке </span><code>s</code><span lang="ru">.</span></p>
+<p><span lang="ru">Р—Р°РґР°РµС‚ С„РѕСЂРјСѓР»РёСЂРѕРІРєСѓ С‚РµРєСЃС‚Р° Р·Р°РґР°РЅРёСЏ РІ СЃС‚СЂРѕРєРµ </span><code>s</code><span lang="ru">.</span></p>
 <blockquote>
 <p><code><b>procedure</b> RegisterGroup(name,description,unitname: string; count: integer); </code></p>
 </blockquote>
-<p>Обеспечивает автоматическую регистрацию новой группы заданий в программном модуле <b>PT4Load</b>.
-В результате имя данной группы будет отображаться в окне модуля <b>PT4Load</b> в списке групп, связанных с исполнителем Робот,
-что позволит создать программу-заготовку для выполнения любого задания этой группы.
-В качестве параметров процедуры указывается имя группы <code>name</code>,
-краткое описание группы <code>description</code>,
-имя модуля <code>unitname</code>, в котором описана группа, и количество заданий <code>count</code>.
-Имя группы заданий должно содержать не более 7 символов (цифр и латинских букв) и не должно оканчиваться цифрой,
-количество заданий не должно превышать 999.
-Процедура <code>RegisterGroup</code> должна
-вызываться в секции инициализации модуля, содержащего реализацию новой группы заданий для Робота.
+<p>РћР±РµСЃРїРµС‡РёРІР°РµС‚ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєСѓСЋ СЂРµРіРёСЃС‚СЂР°С†РёСЋ РЅРѕРІРѕР№ РіСЂСѓРїРїС‹ Р·Р°РґР°РЅРёР№ РІ РїСЂРѕРіСЂР°РјРјРЅРѕРј РјРѕРґСѓР»Рµ <b>PT4Load</b>.
+Р’ СЂРµР·СѓР»СЊС‚Р°С‚Рµ РёРјСЏ РґР°РЅРЅРѕР№ РіСЂСѓРїРїС‹ Р±СѓРґРµС‚ РѕС‚РѕР±СЂР°Р¶Р°С‚СЊСЃСЏ РІ РѕРєРЅРµ РјРѕРґСѓР»СЏ <b>PT4Load</b> РІ СЃРїРёСЃРєРµ РіСЂСѓРїРї, СЃРІСЏР·Р°РЅРЅС‹С… СЃ РёСЃРїРѕР»РЅРёС‚РµР»РµРј Р РѕР±РѕС‚,
+С‡С‚Рѕ РїРѕР·РІРѕР»РёС‚ СЃРѕР·РґР°С‚СЊ РїСЂРѕРіСЂР°РјРјСѓ-Р·Р°РіРѕС‚РѕРІРєСѓ РґР»СЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р»СЋР±РѕРіРѕ Р·Р°РґР°РЅРёСЏ СЌС‚РѕР№ РіСЂСѓРїРїС‹.
+Р’ РєР°С‡РµСЃС‚РІРµ РїР°СЂР°РјРµС‚СЂРѕРІ РїСЂРѕС†РµРґСѓСЂС‹ СѓРєР°Р·С‹РІР°РµС‚СЃСЏ РёРјСЏ РіСЂСѓРїРїС‹ <code>name</code>,
+РєСЂР°С‚РєРѕРµ РѕРїРёСЃР°РЅРёРµ РіСЂСѓРїРїС‹ <code>description</code>,
+РёРјСЏ РјРѕРґСѓР»СЏ <code>unitname</code>, РІ РєРѕС‚РѕСЂРѕРј РѕРїРёСЃР°РЅР° РіСЂСѓРїРїР°, Рё РєРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РґР°РЅРёР№ <code>count</code>.
+РРјСЏ РіСЂСѓРїРїС‹ Р·Р°РґР°РЅРёР№ РґРѕР»Р¶РЅРѕ СЃРѕРґРµСЂР¶Р°С‚СЊ РЅРµ Р±РѕР»РµРµ 7 СЃРёРјРІРѕР»РѕРІ (С†РёС„СЂ Рё Р»Р°С‚РёРЅСЃРєРёС… Р±СѓРєРІ) Рё РЅРµ РґРѕР»Р¶РЅРѕ РѕРєР°РЅС‡РёРІР°С‚СЊСЃСЏ С†РёС„СЂРѕР№,
+РєРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РґР°РЅРёР№ РЅРµ РґРѕР»Р¶РЅРѕ РїСЂРµРІС‹С€Р°С‚СЊ 999.
+РџСЂРѕС†РµРґСѓСЂР° <code>RegisterGroup</code> РґРѕР»Р¶РЅР°
+РІС‹Р·С‹РІР°С‚СЊСЃСЏ РІ СЃРµРєС†РёРё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РјРѕРґСѓР»СЏ, СЃРѕРґРµСЂР¶Р°С‰РµРіРѕ СЂРµР°Р»РёР·Р°С†РёСЋ РЅРѕРІРѕР№ РіСЂСѓРїРїС‹ Р·Р°РґР°РЅРёР№ РґР»СЏ Р РѕР±РѕС‚Р°.
 </p>
 <blockquote>
 <p><code><b>procedure</b> RegisterTask(name: string; p: TaskProcType);</code>
 </blockquote>
-<p>Связывает имя задания <code>name</code> с процедурой <code>p</code>, в которой реализовано данное задание.
-Данную процедуру следует вызывать для <i>каждого</i> задания.
-Подобно описанной выше процедуре <code>RegisterGroup</code>, процедура <code>RegisterTask</code> должна вызываться в секции инициализации
-модуля, содержащего реализацию новой группы заданий для Робота. Порядок вызова этих процедур может быть произвольным.
+<p>РЎРІСЏР·С‹РІР°РµС‚ РёРјСЏ Р·Р°РґР°РЅРёСЏ <code>name</code> СЃ РїСЂРѕС†РµРґСѓСЂРѕР№ <code>p</code>, РІ РєРѕС‚РѕСЂРѕР№ СЂРµР°Р»РёР·РѕРІР°РЅРѕ РґР°РЅРЅРѕРµ Р·Р°РґР°РЅРёРµ.
+Р”Р°РЅРЅСѓСЋ РїСЂРѕС†РµРґСѓСЂСѓ СЃР»РµРґСѓРµС‚ РІС‹Р·С‹РІР°С‚СЊ РґР»СЏ <i>РєР°Р¶РґРѕРіРѕ</i> Р·Р°РґР°РЅРёСЏ.
+РџРѕРґРѕР±РЅРѕ РѕРїРёСЃР°РЅРЅРѕР№ РІС‹С€Рµ РїСЂРѕС†РµРґСѓСЂРµ <code>RegisterGroup</code>, РїСЂРѕС†РµРґСѓСЂР° <code>RegisterTask</code> РґРѕР»Р¶РЅР° РІС‹Р·С‹РІР°С‚СЊСЃСЏ РІ СЃРµРєС†РёРё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё
+РјРѕРґСѓР»СЏ, СЃРѕРґРµСЂР¶Р°С‰РµРіРѕ СЂРµР°Р»РёР·Р°С†РёСЋ РЅРѕРІРѕР№ РіСЂСѓРїРїС‹ Р·Р°РґР°РЅРёР№ РґР»СЏ Р РѕР±РѕС‚Р°. РџРѕСЂСЏРґРѕРє РІС‹Р·РѕРІР° СЌС‚РёС… РїСЂРѕС†РµРґСѓСЂ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСЂРѕРёР·РІРѕР»СЊРЅС‹Рј.
 </p>
 </body>
 

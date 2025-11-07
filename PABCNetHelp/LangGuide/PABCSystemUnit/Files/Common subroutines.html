@@ -15,54 +15,54 @@
 <param name="Keyword" value="Succ">
 <param name="Keyword" value="Swap"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Общие подпрограммы</H1>
+</HEAD><body><H1>РћР±С‰РёРµ РїРѕРґРїСЂРѕРіСЂР°РјРјС‹</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Between&lt;T&gt;(val, a, b: T; inclusive: boolean := true): boolean; <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если значение val находится между a и b независимо от порядка a и b</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё Р·РЅР°С‡РµРЅРёРµ val РЅР°С…РѕРґРёС‚СЃСЏ РјРµР¶РґСѓ a Рё b РЅРµР·Р°РІРёСЃРёРјРѕ РѕС‚ РїРѕСЂСЏРґРєР° a Рё b</td></tr>
 <tr><td><code><b>function</b> Clamp&lt;T&gt;(x,bottom,top: T): T; <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ограничивает значение x диапазоном [bottom, top]</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћРіСЂР°РЅРёС‡РёРІР°РµС‚ Р·РЅР°С‡РµРЅРёРµ x РґРёР°РїР°Р·РѕРЅРѕРј [bottom, top]</td></tr>
 <tr><td><code><b>function</b> CommandLineArgs: <b>array</b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает список аргументов командой строки, с которыми была запущена программа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє Р°СЂРіСѓРјРµРЅС‚РѕРІ РєРѕРјР°РЅРґРѕР№ СЃС‚СЂРѕРєРё, СЃ РєРѕС‚РѕСЂС‹РјРё Р±С‹Р»Р° Р·Р°РїСѓС‰РµРЅР° РїСЂРѕРіСЂР°РјРјР°</td></tr>
 <tr><td><code><b>procedure</b> Dec(<b>var</b> i: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает значение переменной i на 1</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРјРµРЅСЊС€Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№ i РЅР° 1</td></tr>
 <tr><td><code><b>procedure</b> Dec(<b>var</b> i: integer; n: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает значение переменной i на n</td></tr>
-<tr><td><code><b>procedure</b> Dec(<b>var</b> e: перечислимый тип);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает значение перечислимого типа на 1</td></tr>
-<tr><td><code><b>procedure</b> Dec(<b>var</b> e: перечислимый тип; n: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает значение перечислимого типа на n</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРјРµРЅСЊС€Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№ i РЅР° n</td></tr>
+<tr><td><code><b>procedure</b> Dec(<b>var</b> e: РїРµСЂРµС‡РёСЃР»РёРјС‹Р№ С‚РёРї);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРјРµРЅСЊС€Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµС‡РёСЃР»РёРјРѕРіРѕ С‚РёРїР° РЅР° 1</td></tr>
+<tr><td><code><b>procedure</b> Dec(<b>var</b> e: РїРµСЂРµС‡РёСЃР»РёРјС‹Р№ С‚РёРї; n: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРјРµРЅСЊС€Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµС‡РёСЃР»РёРјРѕРіРѕ С‚РёРїР° РЅР° n</td></tr>
 <tr><td><code><b>function</b> Eof: boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если достигнут конец потока ввода</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РґРѕСЃС‚РёРіРЅСѓС‚ РєРѕРЅРµС† РїРѕС‚РѕРєР° РІРІРѕРґР°</td></tr>
 <tr><td><code><b>function</b> Eoln: boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если достигнут конец строки</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РґРѕСЃС‚РёРіРЅСѓС‚ РєРѕРЅРµС† СЃС‚СЂРѕРєРё</td></tr>
 <tr><td><code><b>procedure</b> Inc(<b>var</b> i: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает значение переменной i на 1</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРІРµР»РёС‡РёРІР°РµС‚ Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№ i РЅР° 1</td></tr>
 <tr><td><code><b>procedure</b> Inc(<b>var</b> i: integer; n: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает значение переменной i на n</td></tr>
-<tr><td><code><b>procedure</b> Inc(<b>var</b> e: перечислимый тип);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает значение перечислимого типа на 1</td></tr>
-<tr><td><code><b>procedure</b> Inc(<b>var</b> e: перечислимый тип; n: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает значение перечислимого типа на n</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРІРµР»РёС‡РёРІР°РµС‚ Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№ i РЅР° n</td></tr>
+<tr><td><code><b>procedure</b> Inc(<b>var</b> e: РїРµСЂРµС‡РёСЃР»РёРјС‹Р№ С‚РёРї);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРІРµР»РёС‡РёРІР°РµС‚ Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµС‡РёСЃР»РёРјРѕРіРѕ С‚РёРїР° РЅР° 1</td></tr>
+<tr><td><code><b>procedure</b> Inc(<b>var</b> e: РїРµСЂРµС‡РёСЃР»РёРјС‹Р№ С‚РёРї; n: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРІРµР»РёС‡РёРІР°РµС‚ Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµС‡РёСЃР»РёРјРѕРіРѕ С‚РёРїР° РЅР° n</td></tr>
 <tr><td><code><b>function</b> InRange&lt;T&gt;(val, a, b: T): boolean; <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если значение val находится между a и b включительно</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё Р·РЅР°С‡РµРЅРёРµ val РЅР°С…РѕРґРёС‚СЃСЏ РјРµР¶РґСѓ a Рё b РІРєР»СЋС‡РёС‚РµР»СЊРЅРѕ</td></tr>
 <tr><td><code><b>function</b> ObjectToString(obj: object): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует объект в строковое представление</td></tr>
-<tr><td><code><b>function</b> Ord(a: целое): целое;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает порядковый номер значения a</td></tr>
-<tr><td><code><b>function</b> Ord(a: перечислимый тип): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает порядковый номер значения a</td></tr>
-<tr><td><code><b>function</b> Pred(x: целое): целое;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее x значение</td></tr>
-<tr><td><code><b>function</b> Pred(x: перечислимый тип): перечислимый тип;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее x значение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ РѕР±СЉРµРєС‚ РІ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ</td></tr>
+<tr><td><code><b>function</b> Ord(a: С†РµР»РѕРµ): С†РµР»РѕРµ;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЂСЏРґРєРѕРІС‹Р№ РЅРѕРјРµСЂ Р·РЅР°С‡РµРЅРёСЏ a</td></tr>
+<tr><td><code><b>function</b> Ord(a: РїРµСЂРµС‡РёСЃР»РёРјС‹Р№ С‚РёРї): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЂСЏРґРєРѕРІС‹Р№ РЅРѕРјРµСЂ Р·РЅР°С‡РµРЅРёСЏ a</td></tr>
+<tr><td><code><b>function</b> Pred(x: С†РµР»РѕРµ): С†РµР»РѕРµ;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂРµРґС€РµСЃС‚РІСѓСЋС‰РµРµ x Р·РЅР°С‡РµРЅРёРµ</td></tr>
+<tr><td><code><b>function</b> Pred(x: РїРµСЂРµС‡РёСЃР»РёРјС‹Р№ С‚РёРї): РїРµСЂРµС‡РёСЃР»РёРјС‹Р№ С‚РёРї;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂРµРґС€РµСЃС‚РІСѓСЋС‰РµРµ x Р·РЅР°С‡РµРЅРёРµ</td></tr>
 <tr><td><code><b>function</b> SeekEof: boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает пробельные символы, после чего возвращает True, если достигнут конец потока ввода</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРїСѓСЃРєР°РµС‚ РїСЂРѕР±РµР»СЊРЅС‹Рµ СЃРёРјРІРѕР»С‹, РїРѕСЃР»Рµ С‡РµРіРѕ РІРѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РґРѕСЃС‚РёРіРЅСѓС‚ РєРѕРЅРµС† РїРѕС‚РѕРєР° РІРІРѕРґР°</td></tr>
 <tr><td><code><b>function</b> SeekEoln: boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает пробельные символы, после чего возвращает True, если достигнут конец строки</td></tr>
-<tr><td><code><b>function</b> Succ(x: целое): целое;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за x значение</td></tr>
-<tr><td><code><b>function</b> Succ(x: перечислимый тип): перечислимый тип;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за x значение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРїСѓСЃРєР°РµС‚ РїСЂРѕР±РµР»СЊРЅС‹Рµ СЃРёРјРІРѕР»С‹, РїРѕСЃР»Рµ С‡РµРіРѕ РІРѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РґРѕСЃС‚РёРіРЅСѓС‚ РєРѕРЅРµС† СЃС‚СЂРѕРєРё</td></tr>
+<tr><td><code><b>function</b> Succ(x: С†РµР»РѕРµ): С†РµР»РѕРµ;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РµРґСѓСЋС‰РµРµ Р·Р° x Р·РЅР°С‡РµРЅРёРµ</td></tr>
+<tr><td><code><b>function</b> Succ(x: РїРµСЂРµС‡РёСЃР»РёРјС‹Р№ С‚РёРї): РїРµСЂРµС‡РёСЃР»РёРјС‹Р№ С‚РёРї;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РµРґСѓСЋС‰РµРµ Р·Р° x Р·РЅР°С‡РµРЅРёРµ</td></tr>
 <tr><td><code><b>procedure</b> Swap&lt;T&gt;(<b>var</b> a, b: T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обменивает местами значения двух переменных</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±РјРµРЅРёРІР°РµС‚ РјРµСЃС‚Р°РјРё Р·РЅР°С‡РµРЅРёСЏ РґРІСѓС… РїРµСЂРµРјРµРЅРЅС‹С…</td></tr>
 </table>
 </body></HTML>

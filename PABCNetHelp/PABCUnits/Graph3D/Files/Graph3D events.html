@@ -9,24 +9,24 @@
 <param name="Keyword" value="OnMouseUp">
 <param name="Keyword" value="OnMouseWheel"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>События модуля Graph3D</H1>
+</HEAD><body><H1>РЎРѕР±С‹С‚РёСЏ РјРѕРґСѓР»СЏ Graph3D</H1>
 <table border=0 cellpadding=5><tr><td><code>OnDrawFrame: <b>procedure</b>(dt: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие перерисовки графического 3D-окна.Инициализируется процедурой с вещественным параметром dt - временем, прошедшим с момента последнего обновления экрана</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР±С‹С‚РёРµ РїРµСЂРµСЂРёСЃРѕРІРєРё РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ 3D-РѕРєРЅР°.РРЅРёС†РёР°Р»РёР·РёСЂСѓРµС‚СЃСЏ РїСЂРѕС†РµРґСѓСЂРѕР№ СЃ РІРµС‰РµСЃС‚РІРµРЅРЅС‹Рј РїР°СЂР°РјРµС‚СЂРѕРј dt - РІСЂРµРјРµРЅРµРј, РїСЂРѕС€РµРґС€РёРј СЃ РјРѕРјРµРЅС‚Р° РїРѕСЃР»РµРґРЅРµРіРѕ РѕР±РЅРѕРІР»РµРЅРёСЏ СЌРєСЂР°РЅР°</td></tr>
 <tr><td><code>OnKeyDown: <b>procedure</b>(k: Key);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие нажатия клавиши</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР±С‹С‚РёРµ РЅР°Р¶Р°С‚РёСЏ РєР»Р°РІРёС€Рё</td></tr>
 <tr><td><code>OnKeyPress: <b>procedure</b>(ch: char);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие нажатия символьной клавиши</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР±С‹С‚РёРµ РЅР°Р¶Р°С‚РёСЏ СЃРёРјРІРѕР»СЊРЅРѕР№ РєР»Р°РІРёС€Рё</td></tr>
 <tr><td><code>OnKeyUp: <b>procedure</b>(k: Key);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие отжатия клавиши</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР±С‹С‚РёРµ РѕС‚Р¶Р°С‚РёСЏ РєР»Р°РІРёС€Рё</td></tr>
 <tr><td><code>OnMouseDown: <b>procedure</b>(x, y: real; mousebutton: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие нажатия на кнопку мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР±С‹С‚РёРµ РЅР°Р¶Р°С‚РёСЏ РЅР° РєРЅРѕРїРєСѓ РјС‹С€Рё. (x,y) - РєРѕРѕСЂРґРёРЅР°С‚С‹ РєСѓСЂСЃРѕСЂР° РјС‹С€Рё РІ РјРѕРјРµРЅС‚ РЅР°СЃС‚СѓРїР»РµРЅРёСЏ СЃРѕР±С‹С‚РёСЏ, mousebutton = 1, РµСЃР»Рё РЅР°Р¶Р°С‚Р° Р»РµРІР°СЏ РєРЅРѕРїРєР° РјС‹С€Рё, Рё 2, РµСЃР»Рё РЅР°Р¶Р°С‚Р° РїСЂР°РІР°СЏ РєРЅРѕРїРєР° РјС‹С€Рё</td></tr>
 <tr><td><code>OnMouseMove: <b>procedure</b>(x, y: real; mousebutton: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР±С‹С‚РёРµ РїРµСЂРµРјРµС‰РµРЅРёСЏ РјС‹С€Рё. (x,y) - РєРѕРѕСЂРґРёРЅР°С‚С‹ РєСѓСЂСЃРѕСЂР° РјС‹С€Рё РІ РјРѕРјРµРЅС‚ РЅР°СЃС‚СѓРїР»РµРЅРёСЏ СЃРѕР±С‹С‚РёСЏ, mousebutton = 0, РµСЃР»Рё РєРЅРѕРїРєР° РјС‹С€Рё РЅРµ РЅР°Р¶Р°С‚Р°, 1, РµСЃР»Рё РЅР°Р¶Р°С‚Р° Р»РµРІР°СЏ РєРЅРѕРїРєР° РјС‹С€Рё, Рё 2, РµСЃР»Рё РЅР°Р¶Р°С‚Р° РїСЂР°РІР°СЏ РєРЅРѕРїРєР° РјС‹С€Рё</td></tr>
 <tr><td><code>OnMouseUp: <b>procedure</b>(x, y: real; mousebutton: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие отжатия кнопки мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если отжата левая кнопка мыши, и 2, если отжата правая кнопка мыши</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР±С‹С‚РёРµ РѕС‚Р¶Р°С‚РёСЏ РєРЅРѕРїРєРё РјС‹С€Рё. (x,y) - РєРѕРѕСЂРґРёРЅР°С‚С‹ РєСѓСЂСЃРѕСЂР° РјС‹С€Рё РІ РјРѕРјРµРЅС‚ РЅР°СЃС‚СѓРїР»РµРЅРёСЏ СЃРѕР±С‹С‚РёСЏ, mousebutton = 1, РµСЃР»Рё РѕС‚Р¶Р°С‚Р° Р»РµРІР°СЏ РєРЅРѕРїРєР° РјС‹С€Рё, Рё 2, РµСЃР»Рё РѕС‚Р¶Р°С‚Р° РїСЂР°РІР°СЏ РєРЅРѕРїРєР° РјС‹С€Рё</td></tr>
 <tr><td><code>OnMouseWheel: <b>procedure</b>(x, y: real; mousebutton,delta: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие вращения колёсика мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши; delta&lt;0 - колесо мыши вниз, delta&gt;0 - колесо мыши вверх</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР±С‹С‚РёРµ РІСЂР°С‰РµРЅРёСЏ РєРѕР»С‘СЃРёРєР° РјС‹С€Рё. (x,y) - РєРѕРѕСЂРґРёРЅР°С‚С‹ РєСѓСЂСЃРѕСЂР° РјС‹С€Рё РІ РјРѕРјРµРЅС‚ РЅР°СЃС‚СѓРїР»РµРЅРёСЏ СЃРѕР±С‹С‚РёСЏ, mousebutton = 0, РµСЃР»Рё РєРЅРѕРїРєР° РјС‹С€Рё РЅРµ РЅР°Р¶Р°С‚Р°, 1, РµСЃР»Рё РЅР°Р¶Р°С‚Р° Р»РµРІР°СЏ РєРЅРѕРїРєР° РјС‹С€Рё, Рё 2, РµСЃР»Рё РЅР°Р¶Р°С‚Р° РїСЂР°РІР°СЏ РєРЅРѕРїРєР° РјС‹С€Рё; delta&lt;0 - РєРѕР»РµСЃРѕ РјС‹С€Рё РІРЅРёР·, delta&gt;0 - РєРѕР»РµСЃРѕ РјС‹С€Рё РІРІРµСЂС…</td></tr>
 <tr><td><code>OnClose: <b>procedure</b>;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие, происходящее при закрытии основного окна</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР±С‹С‚РёРµ, РїСЂРѕРёСЃС…РѕРґСЏС‰РµРµ РїСЂРё Р·Р°РєСЂС‹С‚РёРё РѕСЃРЅРѕРІРЅРѕРіРѕ РѕРєРЅР°</td></tr>
 </table>
 </body></HTML>
