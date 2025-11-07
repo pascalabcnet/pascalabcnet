@@ -1,4 +1,5 @@
-﻿using PascalABCCompiler.Parsers;
+﻿using PascalABCCompiler;
+using PascalABCCompiler.Parsers;
 using PascalABCCompiler.ParserTools.Directives;
 using PascalABCCompiler.SyntaxTree;
 using System;
@@ -11,6 +12,18 @@ namespace Languages.SPython.Frontend.Data
 {
     internal class SPythonLanguageInformation : BaseLanguageInformation
     {
+        public override string Name => "SPython";
+
+        public override string Version => "0.0.1";
+
+        public override string Copyright => "Copyright © 2023-2025 by Vladislav Krylov, Egor Movchan";
+
+        public override string[] FilesExtensions => new string[] { ".pys" };
+
+        public override string[] SystemUnitNames => new string[] { "SPythonSystem", "SPythonHidden", "SPythonSystemPys" };
+
+        public override bool ApplySyntaxTreeConvertersForIntellisense => true;
+
         public override BaseKeywords KeywordsStorage { get; } = new SPythonParser.SPythonKeywords();
 
         public override Dictionary<string, DirectiveInfo> ValidDirectives { get; protected set; }
