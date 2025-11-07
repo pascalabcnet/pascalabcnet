@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.SyntaxTree;
-using System;
 
 namespace PascalABCCompiler.Parsers
 {
@@ -109,6 +108,7 @@ namespace PascalABCCompiler.Parsers
 
             if (root != null && root is compilation_unit compilationUnit)
             {
+                compilationUnit.Language = LanguageInformation.Name;
                 compilationUnit.file_name = FileName;
                 compilationUnit.compiler_directives = CompilerDirectives;
 

@@ -427,16 +427,14 @@ unit_file
     unit_header interface_part implementation_part initialization_part tkPoint
         { 
 			$$ = new unit_module($1 as unit_name, $2 as interface_node, $3 as implementation_node, 
-			  ($4 as initfinal_part).initialization_sect, ($4 as initfinal_part).finalization_sect, /*$1 as attribute_list*/ null, @$);   
-			($$ as compilation_unit).Language = PascalABCCompiler.StringConstants.pascalLanguageName;                
+			  ($4 as initfinal_part).initialization_sect, ($4 as initfinal_part).finalization_sect, /*$1 as attribute_list*/ null, @$);             
 		}
     | 
     //attribute_declarations 
     unit_header abc_interface_part initialization_part tkPoint
         { 
 			$$ = new unit_module($1 as unit_name, $2 as interface_node, null, 
-			  ($3 as initfinal_part).initialization_sect, ($3 as initfinal_part).finalization_sect, /*$1 as attribute_list*/ null, @$);
-			($$ as compilation_unit).Language = PascalABCCompiler.StringConstants.pascalLanguageName;   
+			  ($3 as initfinal_part).initialization_sect, ($3 as initfinal_part).finalization_sect, /*$1 as attribute_list*/ null, @$); 
         }
     ;
 
