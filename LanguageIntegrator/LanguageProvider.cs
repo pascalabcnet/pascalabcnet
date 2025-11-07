@@ -58,7 +58,7 @@ namespace Languages.Facade
 
             foreach (ILanguage language in Languages)
                 foreach (string langExtension in language.FilesExtensions)
-                    if (langExtension == extension)
+                    if (langExtension.ToLower() == extension)
                         return language;
 
             return null;
