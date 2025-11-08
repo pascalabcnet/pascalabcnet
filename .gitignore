@@ -75,11 +75,16 @@
 **/PascalABCNETLinux.exe
 **/PascalABCNETLinux.exe.config
 
+# SPython plugin
 **/SPythonLanguageInfo.dll
 **/SPythonParser.dll
 **/SPythonParser.dll.config
 **/SPythonStandardTreeConverter.dll
 **/SPythonSyntaxTreeVisitor.dll
+
+# Example language plugin
+**/ExampleLanguageInfo.dll
+**/ExampleLanguageParser.dll
 
 # external .dll files copied to bin
 /bin/AvalonDock.dll

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net40</TargetFramework>
+    
+    <RootNamespace>Languages.Example</RootNamespace>
+    
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\LanguageIntegrator\LanguageIntegrator.csproj" />
+    <ProjectReference Include="..\..\..\ParserTools\ParserTools.csproj" />
+    <ProjectReference Include="..\..\..\SyntaxTree\SyntaxTree.csproj" />
+    <ProjectReference Include="..\ExampleLanguageParser\ExampleLanguageParser.csproj" />
+  </ItemGroup>
+</Project>
