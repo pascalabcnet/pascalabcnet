@@ -590,6 +590,19 @@ namespace PascalABCCompiler.Parsers
             return line;
         }
 
+        private string GetClassKeyword(Type t)
+        {
+            if (t.IsInterface)
+                return "interface";
+            if (t.IsEnum)
+                return "";
+            if (t.IsValueType)
+                return "record";
+            if (t.IsClass)
+                return "class";
+            return "";
+        }
+
         public abstract string GetDescription(IBaseScope scope);
 
         
