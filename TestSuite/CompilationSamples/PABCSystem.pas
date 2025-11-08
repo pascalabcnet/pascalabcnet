@@ -2658,10 +2658,14 @@ function Arr(a: CharRange): array of char;
 function ArrRandom(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
 /// Возвращает массив размера n, заполненный случайными целыми значениями в диапазоне от a до b
 function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
+/// Возвращает массив размера n, заполненный случайными целыми значениями в заданном диапазоне
+function ArrRandomInteger(n: integer; range: IntRange): array of integer;
 /// Возвращает массив размера n, заполненный случайными целыми значениями
 function ArrRandomInteger(n: integer := 10): array of integer;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями в диапазоне от a до b 
 function ArrRandomReal(n: integer; a: real; b: real; digits: integer := 2): array of real;
+/// Возвращает массив размера n, заполненный случайными вещественными значениями в заданном диапазоне
+function ArrRandomReal(n: integer; range: RealRange; digits: integer): array of real;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями
 function ArrRandomReal(n: integer := 10; digits: integer := 2): array of real;
 /// Возвращает массив из count элементов, заполненных значениями gen(i)
@@ -2740,8 +2744,12 @@ function ReadMatrReal(m, n: integer): array [,] of real;
 function MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandomInteger(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
+/// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
+function MatrRandomInteger(m: integer; n: integer; range: IntRange): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
 function MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10; digits: integer := 2): array [,] of real;
+/// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
+function MatrRandomReal(m: integer; n: integer; range: RealRange; digits: integer := 2): array [,] of real;
 /// Возвращает двумерный массив размера m x n, заполненный элементами gen(i,j) 
 function MatrGen<T>(m, n: integer; gen: (integer,integer)->T): array [,] of T;
 /// Возвращает двумерный массив размера m x n, заполненный элементами x 
@@ -5650,6 +5658,8 @@ begin
   Result := ArrRandom(n, a, b);
 end;
 
+function ArrRandomInteger(n: integer; range: IntRange): array of integer := ArrRandom(n,range.Low,range.High);
+
 function ArrRandomInteger(n: integer) := ArrRandomInteger(n,0,100);
 
 function ArrRandomReal(n: integer; a: real; b: real; digits: integer): array of real;
@@ -5658,6 +5668,9 @@ begin
   for var i := 0 to Result.Length - 1 do
     Result[i] := RandomReal(a,b,digits);
 end;
+
+function ArrRandomReal(n: integer; range: RealRange; digits: integer): array of real
+  := ArrRandomReal(n,range.Low,range.High,digits);
 
 function ArrRandomReal(n: integer; digits: integer) := ArrRandomReal(n,0,10,digits);
 
@@ -13324,6 +13337,9 @@ begin
       Result[i, j] := Random(a, b);
 end;
 
+function MatrRandomInteger(m: integer; n: integer; range: IntRange): array [,] of integer
+  := MatrRandomInteger(m,n,range.Low,range.High);
+
 function MatrRandomReal(m: integer; n: integer; a, b: real; digits: integer): array [,] of real;
 begin
   Result := new real[m, n];
@@ -13331,6 +13347,9 @@ begin
     for var j := 0 to Result.ColCount - 1 do
       Result[i, j] := RandomReal(a,b,digits);
 end;
+
+function MatrRandomReal(m: integer; n: integer; range: RealRange; digits: integer): array [,] of real
+  := MatrRandomReal(m,n,range.Low,range.High);
 
 function MatrFill<T>(m, n: integer; x: T): array [,] of T;
 begin

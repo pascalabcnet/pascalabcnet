@@ -144,9 +144,6 @@
     <name value="constr_destr_decl" />
     <name value="inclass_constr_destr_decl" />
     <name value="proc_func_decl" />
-    <name value="proc_func_decl_noclass" />
-    <name value="inclass_proc_func_decl" />
-    <name value="inclass_proc_func_decl_noclass" />
     <name value="simple_fp_sect" />
   </tag>
   <tag value="Операторы">
@@ -211,10 +208,7 @@
     <name value="keyword" />
     <name value="reserved_keyword" />
   </tag>
-  <tag value="ShortFuncDefinition">
-    <name value="proc_func_decl_noclass" />
-    <name value="inclass_proc_func_decl_noclass" />
-  </tag>
+  <tag value="ShortFuncDefinition" />
   <tag value="new_expr" />
   <tag value="TemplateTypeName">
     <name value="func_name_ident" />

@@ -131,8 +131,8 @@
 %type <id> meth_modificator property_modificator 
 %type <ex> optional_property_initialization
 %type <stn> proc_call  
-%type <stn> proc_func_constr_destr_decl proc_func_decl inclass_proc_func_decl inclass_proc_func_decl_noclass constr_destr_decl inclass_constr_destr_decl
-%type <stn> method_decl proc_func_constr_destr_decl_with_attr proc_func_decl_noclass  
+%type <stn> proc_func_constr_destr_decl proc_func_decl inclass_proc_func_decl inclass_proc_func_decl_without_modifiers constr_destr_decl inclass_constr_destr_decl
+%type <stn> method_decl proc_func_constr_destr_decl_with_attr proc_func_decl_without_modifiers  
 %type <td> method_header proc_type_decl procedural_type_kind proc_header procedural_type constr_destr_header proc_func_header 
 %type <td> func_header method_procfunc_header int_func_header int_proc_header
 %type <stn> property_interface
@@ -542,7 +542,7 @@ decl_sect_list_proc_func_only
 			if (GlobalDecls==null) 
 				GlobalDecls = $$ as declarations;
 		}
-	| decl_sect_list_proc_func_only /*attribute_declarations*/ proc_func_decl_noclass
+	| decl_sect_list_proc_func_only /*attribute_declarations*/ proc_func_decl_without_modifiers
 		{
 			var dcl = $1 as declarations;
 			//($2 as procedure_definition).AssignAttrList($2 as attribute_list);
@@ -2417,54 +2417,89 @@ inclass_constr_destr_decl
     ;
 	
 proc_func_decl
-    : proc_func_decl_noclass
+    : proc_func_decl_without_modifiers
 		{ $$ = $1; }
-    | class_or_static proc_func_decl_noclass             
+    | class_or_static proc_func_decl_without_modifiers             
         { 
 			($2 as procedure_definition).proc_header.class_keyword = true;
 			$$ = $2;
 		}
-	| tkAsync proc_func_decl_noclass
+	| tkAsync proc_func_decl_without_modifiers
 		{
 			($2 as procedure_definition).proc_header.IsAsync = true;		
 			$$ = $2; 
 		}
-    | tkAsync class_or_static proc_func_decl_noclass             
+    | tkAsync class_or_static proc_func_decl_without_modifiers             
         { 
         	($3 as procedure_definition).proc_header.IsAsync = true;
 			($3 as procedure_definition).proc_header.class_keyword = true;
 			$$ = $3;
 		}	
-    | class_or_static tkAsync proc_func_decl_noclass             
+    | class_or_static tkAsync proc_func_decl_without_modifiers             
         { 
         	($3 as procedure_definition).proc_header.IsAsync = true;
 			($3 as procedure_definition).proc_header.class_keyword = true;
 			$$ = $3;
 		}	
     ;
+    
+inclass_proc_func_decl
+    : inclass_proc_func_decl_without_modifiers
+		{ 
+            $$ = $1; 
+        }
+    | tkAsync inclass_proc_func_decl_without_modifiers
+		{ 
+			($2 as procedure_definition).proc_header.IsAsync = true;
+            $$ = $2; 
+        }
+    | class_or_static inclass_proc_func_decl_without_modifiers         
+        { 
+		    if (($2 as procedure_definition).proc_header != null)
+		    {
+				($2 as procedure_definition).proc_header.class_keyword = true;
+			}
+			$$ = $2;
+		}
+    | tkAsync class_or_static inclass_proc_func_decl_without_modifiers         
+        { 
+		    if (($3 as procedure_definition).proc_header != null)
+		    {
+				($3 as procedure_definition).proc_header.IsAsync = true;
+				($3 as procedure_definition).proc_header.class_keyword = true;
+			}
+			$$ = $3;
+		}
+    | class_or_static tkAsync inclass_proc_func_decl_without_modifiers         
+        { 
+		    if (($3 as procedure_definition).proc_header != null)
+		    {
+				($3 as procedure_definition).proc_header.IsAsync = true;
+				($3 as procedure_definition).proc_header.class_keyword = true;
+			}
+			$$ = $3;
+		}
+    ;
 
-proc_func_decl_noclass
+proc_func_decl_without_modifiers
     : proc_func_header proc_func_external_block                      
         {
             $$ = new procedure_definition($1 as procedure_header, $2 as proc_block, @$);
         }
-	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign expr_l1 tkSemiColon
+	| proc_func_header tkForward tkSemiColon
+		{
+			$$ = new procedure_definition($1 as procedure_header, null, @$);
+            ($$ as procedure_definition).proc_header.proc_attributes.Add((procedure_attribute)$2, $2.source_context);
+		}
+	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign expr_l1_func_decl_lambda tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $6 as procedure_attributes_list, $2 as method_name, $5 as type_definition, $8, @1.Merge(@6));
 		}
-	| tkFunction func_name fp_list optional_method_modificators1 tkAssign expr_l1 tkSemiColon
+	| tkFunction func_name fp_list optional_method_modificators1 tkAssign expr_l1_func_decl_lambda tkSemiColon
 		{
 			if ($6 is dot_question_node)
 				parserTools.AddErrorFromResource("DOT_QUECTION_IN_SHORT_FUN",@6);
 	
-			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@4));
-		}
-	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign func_decl_lambda tkSemiColon
-		{
-			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $6 as procedure_attributes_list, $2 as method_name, $5 as type_definition, $8, @1.Merge(@6));
-		}
-	| tkFunction func_name fp_list optional_method_modificators1 tkAssign func_decl_lambda tkSemiColon
-		{
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@4));
 		}
 	| tkProcedure proc_name fp_list optional_method_modificators1 tkAssign unlabelled_stmt tkSemiColon
@@ -2473,56 +2508,9 @@ proc_func_decl_noclass
 				parserTools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@6);
 			$$ = SyntaxTreeBuilder.BuildShortProcDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $6 as statement, @1.Merge(@4));
 		}
-	| proc_func_header tkForward tkSemiColon
-		{
-			$$ = new procedure_definition($1 as procedure_header, null, @$);
-            ($$ as procedure_definition).proc_header.proc_attributes.Add((procedure_attribute)$2, $2.source_context);
-		}
-	//| tkConst const_decl                       
-    //    { 
-	//		$$ = new consts_definitions_list($2 as const_definition, @$);
-	//	}
     ;
 
-inclass_proc_func_decl
-    : inclass_proc_func_decl_noclass
-		{ 
-            $$ = $1; 
-        }
-    | tkAsync inclass_proc_func_decl_noclass
-		{ 
-			($2 as procedure_definition).proc_header.IsAsync = true;
-            $$ = $2; 
-        }
-    | class_or_static inclass_proc_func_decl_noclass         
-        { 
-		    if (($2 as procedure_definition).proc_header != null)
-		    {
-				($2 as procedure_definition).proc_header.class_keyword = true;
-			}
-			$$ = $2;
-		}
-    | tkAsync class_or_static inclass_proc_func_decl_noclass         
-        { 
-		    if (($3 as procedure_definition).proc_header != null)
-		    {
-				($3 as procedure_definition).proc_header.IsAsync = true;
-				($3 as procedure_definition).proc_header.class_keyword = true;
-			}
-			$$ = $3;
-		}
-    | class_or_static tkAsync inclass_proc_func_decl_noclass         
-        { 
-		    if (($3 as procedure_definition).proc_header != null)
-		    {
-				($3 as procedure_definition).proc_header.IsAsync = true;
-				($3 as procedure_definition).proc_header.class_keyword = true;
-			}
-			$$ = $3;
-		}
-    ;
-
-inclass_proc_func_decl_noclass
+inclass_proc_func_decl_without_modifiers
     : proc_func_header inclass_block                      
         {
             $$ = new procedure_definition($1 as procedure_header, $2 as proc_block, @$);
@@ -2530,18 +2518,24 @@ inclass_proc_func_decl_noclass
 	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign expr_l1_func_decl_lambda tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $6 as procedure_attributes_list, $2 as method_name, $5 as type_definition, $8, @1.Merge(@6));
-			if (parserTools.buildTreeForFormatter)
+			if (parserTools.buildTreeForFormatter) // это только в inclass надо писать - в обычном proc_func_decl_without_modifiers - не надо! Почему - уже утрачено
 				$$ = new short_func_definition($$ as procedure_definition);
 		}
 	| tkFunction func_name fp_list optional_method_modificators1 tkAssign expr_l1_func_decl_lambda tkSemiColon
 		{
+			if ($6 is dot_question_node)
+				parserTools.AddErrorFromResource("DOT_QUECTION_IN_SHORT_FUN",@6);
+	
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@4));
 			if (parserTools.buildTreeForFormatter)
 				$$ = new short_func_definition($$ as procedure_definition);
 		}
 	| tkProcedure proc_name fp_list optional_method_modificators1 tkAssign unlabelled_stmt tkSemiColon
 		{
-			$$ = SyntaxTreeBuilder.BuildShortProcDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $6 as statement, @1.Merge(@4));
+			if ($6 is empty_statement)
+				parserTools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@6);
+
+            $$ = SyntaxTreeBuilder.BuildShortProcDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $6 as statement, @1.Merge(@4));
 			if (parserTools.buildTreeForFormatter)
 				$$ = new short_func_definition($$ as procedure_definition);
 		}
