@@ -1030,12 +1030,6 @@ namespace Languages.SPython.Frontend.Data
             return null;
         }
 
-        // TODO: Реализовать EVA
-        public override string GetCompiledTypeRepresentation(Type t, MemberInfo mi, ref int line, ref int col)
-        {
-            return "";
-        }
-
         public override string GetDescription(IBaseScope scope)
         {
             switch (scope.Kind)

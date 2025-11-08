@@ -141,7 +141,454 @@ namespace PascalABCCompiler.Parsers
 
         public abstract string GetClassKeyword(class_keyword keyw);
 
-        public abstract string GetCompiledTypeRepresentation(Type t, System.Reflection.MemberInfo mi, ref int line, ref int col);
+        public string GetCompiledTypeRepresentation(Type t, MemberInfo mi, ref int line, ref int col)
+        {
+            StringBuilder sb = new StringBuilder();
+            int ln = 1;
+            if (t.Namespace == "System")
+                sb.AppendLine("unit SystemUnit;");
+            else
+                sb.AppendLine("unit " + t.Namespace.Replace(".", "_") + ";");
+            ln++;
+            sb.AppendLine(); ln++;
+            sb.AppendLine("type "); ln++;
+
+            if (mi == t)
+            {
+                line = ln;
+                col = 1;
+            }
+            string doc = CodeCompletionTools.AssemblyDocCache.GetDocumentation(t);
+            if (!string.IsNullOrEmpty(doc))
+            {
+                doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "  /// ");
+                doc = doc.Replace("<returns>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
+                doc = doc.Replace("<params>", "");
+                doc = doc.Replace("<param>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_PARAMETER"));
+                doc = doc.Replace("</param>", "");
+                sb.AppendLine("  /// " + doc);
+            }
+            if (mi == t)
+            {
+                line = get_line_nr(sb);
+                col = 1;
+            }
+            sb.Append("  ");
+            int ind = t.Name.IndexOf('`');
+            if (ind != -1 || t.IsGenericType)
+            {
+                if (ind != -1)
+                    sb.Append(prepare_member_name(t.Name.Substring(0, ind)));
+                else
+                    sb.Append(t.Name);
+                sb.Append(GenericTypesStartBracket);
+                Type[] gen_args = t.GetGenericArguments();
+                for (int i = 0; i < gen_args.Length; i++)
+                {
+                    sb.Append(gen_args[i].Name);
+                    if (i < gen_args.Length - 1)
+                        sb.Append(", ");
+                }
+                sb.Append(GenericTypesEndBracket);
+            }
+            else
+                sb.Append(prepare_member_name(t.Name));
+            sb.Append(" = " + (t.IsSealed && t.IsAbstract ? "static " : "") + GetClassKeyword(t));
+            bool bracket = false;
+            if (t.IsEnum)
+            {
+                sb.AppendLine(get_enum_constants(t));
+                sb.AppendLine();
+                sb.AppendLine("end.");
+                return sb.ToString();
+            }
+            if (t.BaseType != null && t.BaseType != typeof(object))
+            {
+                sb.Append("(");
+                bracket = true;
+                sb.Append(GetFullTypeName(t.BaseType));
+            }
+            Type[] intfs = t.GetInterfaces();
+            if (intfs.Length > 0)
+                if (!bracket)
+                {
+                    sb.Append("(");
+                    bracket = true;
+                }
+                else
+                    sb.Append(", ");
+            for (int i = 0; i < intfs.Length; i++)
+            {
+                sb.Append(GetFullTypeName(intfs[i]));
+                if (i < intfs.Length - 1)
+                    sb.Append(", ");
+            }
+            if (bracket)
+                sb.Append(")");
+            sb.AppendLine(); ln++;
+            FieldInfo[] fields = t.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            if (fields.Length > 0)
+            {
+                sb.AppendLine("  {$region " + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_FIELDS") + "}");
+                for (int i = 0; i < fields.Length; i++)
+                {
+                    if (fields[i].DeclaringType == t && !fields[i].IsPrivate && !fields[i].IsAssembly)
+                    {
+                        doc = CodeCompletionTools.AssemblyDocCache.GetDocumentation(fields[i]);
+                        if (!string.IsNullOrEmpty(doc))
+                        {
+                            doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "    /// ");
+                            doc = doc.Replace("<returns>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
+                            doc = doc.Replace("<params>", "");
+                            doc = doc.Replace("<param>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_PARAMETER"));
+                            doc = doc.Replace("</param>", "");
+                            sb.AppendLine("    /// " + doc);
+                            ln++;
+                        }
+                        if (fields[i] == mi || fields[i].Name == mi.Name)
+                        {
+                            line = get_line_nr(sb);
+                            col = 3;
+                        }
+                        sb.Append("    ");
+                        sb.Append(GetDescriptionForCompiledField(fields[i]));
+                        sb.AppendLine(); ln++;
+                        sb.AppendLine(); ln++;
+                    }
+                }
+                sb.AppendLine("  {$endregion}");
+                sb.AppendLine();
+            }
+            EventInfo[] events = t.GetEvents(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            if (events.Length > 0)
+            {
+                sb.AppendLine("  {$region " + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EVENTS") + "}");
+                for (int i = 0; i < events.Length; i++)
+                {
+                    if (events[i].DeclaringType != t)
+                        continue;
+                    MethodInfo add_meth = events[i].GetAddMethod(true);
+                    if (add_meth != null && add_meth.DeclaringType == t && !add_meth.IsPrivate && !add_meth.IsAssembly)
+                    {
+                        doc = CodeCompletionTools.AssemblyDocCache.GetDocumentation(events[i]);
+                        if (!string.IsNullOrEmpty(doc))
+                        {
+                            doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "    /// ");
+                            doc = doc.Replace("<returns>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
+                            doc = doc.Replace("<params>", "");
+                            doc = doc.Replace("<param>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_PARAMETER"));
+                            doc = doc.Replace("</param>", "");
+                            sb.AppendLine("    /// " + doc);
+                        }
+
+                        if (events[i] == mi || events[i].Name == mi.Name)
+                        {
+                            line = get_line_nr(sb);
+                            col = 3;
+                        }
+                        sb.Append("    ");
+                        sb.Append(GetDescriptionForCompiledEvent(events[i]));
+                        sb.AppendLine(); ln++;
+                        sb.AppendLine(); ln++;
+                    }
+                }
+                sb.AppendLine("  {$endregion}");
+                sb.AppendLine();
+            }
+            PropertyInfo[] props = t.GetProperties(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            if (props.Length > 0)
+            {
+                sb.AppendLine("  {$region " + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_PROPERTIES") + "}");
+                for (int i = 0; i < props.Length; i++)
+                {
+                    if (props[i].DeclaringType != t)
+                        continue;
+                    MethodInfo get_meth = props[i].GetGetMethod(true);
+                    if (get_meth != null && get_meth.DeclaringType == t && !get_meth.IsPrivate && !get_meth.IsAssembly)
+                    {
+                        doc = CodeCompletionTools.AssemblyDocCache.GetDocumentation(props[i]);
+                        if (!string.IsNullOrEmpty(doc))
+                        {
+                            doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "    /// ");
+                            doc = doc.Replace("<returns>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
+                            doc = doc.Replace("<params>", "");
+                            doc = doc.Replace("<param>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_PARAMETER"));
+                            doc = doc.Replace("</param>", "");
+                            sb.AppendLine("    /// " + doc);
+                        }
+                        if (props[i] == mi || props[i].Name == mi.Name)
+                        {
+                            line = get_line_nr(sb);
+                            col = 3;
+                        }
+                        sb.Append("    ");
+                        sb.Append(GetDescriptionForCompiledProperty(props[i]).Replace("; readonly", " read"));
+                        sb.AppendLine(); ln++;
+                        sb.AppendLine(); ln++;
+                    }
+                }
+                sb.AppendLine("  {$endregion}");
+                sb.AppendLine();
+            }
+
+            ConstructorInfo[] constrs = t.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            if (constrs.Length > 0)
+            {
+                sb.AppendLine("  {$region " + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_CONSTRUCTORS") + "}");
+                for (int i = 0; i < constrs.Length; i++)
+                {
+                    if (constrs[i].DeclaringType == t && !constrs[i].IsPrivate && !constrs[i].IsAssembly)
+                    {
+                        doc = CodeCompletionTools.AssemblyDocCache.GetDocumentation(constrs[i]);
+                        if (!string.IsNullOrEmpty(doc))
+                        {
+                            doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "    /// ");
+                            doc = doc.Replace("<returns>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
+                            doc = doc.Replace("<params>", "");
+                            doc = doc.Replace("<param>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_PARAMETER"));
+                            doc = doc.Replace("</param>", "");
+                            sb.AppendLine("    /// " + doc);
+                        }
+                        if (constrs[i] == mi)
+                        {
+                            line = get_line_nr(sb);
+                            col = 3;
+                        }
+                        sb.Append("    ");
+                        sb.Append(GetDescriptionForCompiledConstructor(constrs[i]));
+                        sb.AppendLine(); ln++;
+                        sb.AppendLine(); ln++;
+                    }
+                }
+                sb.AppendLine("  {$endregion}");
+                sb.AppendLine();
+            }
+            MethodInfo[] meths = t.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            if (meths.Length > 0)
+            {
+                sb.AppendLine("  {$region " + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_METHODS") + "}");
+                for (int i = 0; i < meths.Length; i++)
+                {
+                    if (meths[i].DeclaringType == t && !meths[i].IsPrivate && !meths[i].IsAssembly && !meths[i].Name.StartsWith("get_") && !meths[i].Name.StartsWith("set_") && !meths[i].Name.StartsWith("add_") && !meths[i].Name.StartsWith("remove_"))
+                    {
+                        doc = CodeCompletionTools.AssemblyDocCache.GetDocumentation(meths[i]);
+                        if (!string.IsNullOrEmpty(doc))
+                        {
+                            doc = doc.Trim(' ', '\n', '\t', '\r').Replace(Environment.NewLine, Environment.NewLine + "    /// ");
+                            doc = doc.Replace("<returns>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_RETURN_VALUE"));
+                            doc = doc.Replace("<params>", "");
+                            doc = doc.Replace("<param>", PascalABCCompiler.StringResources.Get("CODE_COMPLETION_PARAMETER"));
+                            doc = doc.Replace("</param>", "");
+                            sb.AppendLine("    /// " + doc);
+                        }
+                        if (meths[i] == mi || (meths[i].Name == mi.Name))
+                        {
+                            line = get_line_nr(sb);
+                            col = 3;
+                        }
+                        sb.Append("    ");
+                        sb.Append(GetDescriptionForCompiledMethod(meths[i]));
+                        sb.AppendLine(); ln++;
+                        sb.AppendLine(); ln++;
+                    }
+                }
+                sb.AppendLine("  {$endregion}");
+                sb.AppendLine();
+            }
+
+            sb.AppendLine("  end;");
+            sb.AppendLine();
+            sb.AppendLine("end.");
+            return sb.ToString();
+        }
+
+        private string GetDescriptionForCompiledField(FieldInfo fi)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (fi.IsPublic)
+                sb.Append("public ");
+            else if (fi.IsFamily)
+                sb.Append("protected ");
+            if (!fi.IsLiteral)
+                if (fi.IsStatic) sb.Append("static ");
+            if (!fi.IsLiteral)
+            {
+                sb.Append(prepare_member_name(fi.Name));
+                sb.Append(" : " + GetFullTypeName(fi.FieldType));
+            }
+            else
+            {
+                var fitype = GetFullTypeName(fi.FieldType);
+                sb.Append("const " + fi.Name + " : " + fitype);
+                sb.Append(" = " + (fitype == "string" ? $"'{fi.GetRawConstantValue().ToString()}'" : fi.GetRawConstantValue().ToString()));
+            }
+            sb.Append(";");
+            return sb.ToString();
+        }
+
+        private string GetDescriptionForCompiledEvent(EventInfo ei)
+        {
+            MethodInfo add_meth = ei.GetAddMethod(true);
+            StringBuilder sb = new StringBuilder();
+            if (add_meth.IsPublic)
+                sb.Append("public ");
+            else if (add_meth.IsFamily)
+                sb.Append("protected ");
+            sb.Append((add_meth.IsStatic ? "static " : "") + "event " + prepare_member_name(ei.Name) + ": " + GetFullTypeName(ei.EventHandlerType) + ";");
+            return sb.ToString();
+        }
+
+        private string GetDescriptionForCompiledProperty(PropertyInfo pi)
+        {
+            StringBuilder sb = new StringBuilder();
+            MethodInfo get_meth = pi.GetGetMethod(true);
+            MethodInfo set_meth = pi.GetSetMethod(true);
+            if (get_meth.IsPublic)
+                sb.Append("public ");
+            else if (get_meth.IsFamily)
+                sb.Append("protected ");
+            if (get_meth.IsStatic) sb.Append("static ");
+            sb.Append("property " + prepare_member_name(pi.Name));
+            ParameterInfo[] prms = get_meth.GetParameters();
+            if (prms.Length > 0)
+            {
+                sb.Append('[');
+                for (int i = 0; i < prms.Length; i++)
+                {
+                    sb.Append(prepare_member_name(prms[i].Name));
+                    sb.Append(": ");
+                    sb.Append(GetFullTypeName(prms[i].ParameterType));
+                    if (i < prms.Length - 1)
+                        sb.Append("; ");
+                }
+                sb.Append(']');
+            }
+            sb.Append(" : " + GetFullTypeName(pi.PropertyType));
+            if (set_meth == null)
+                sb.Append("; readonly");
+            sb.Append(";");
+            return sb.ToString();
+        }
+
+        private string GetDescriptionForCompiledConstructor(ConstructorInfo ci)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (ci.IsPublic)
+                sb.Append("public ");
+            else if (ci.IsFamily)
+                sb.Append("protected ");
+            if (ci.IsStatic)
+                sb.Append("static ");
+            sb.Append("constructor ");
+            //sb.Append(".");
+            //sb.Append("Create");
+            sb.Append('(');
+            ParameterInfo[] pis = ci.GetParameters();
+            for (int i = 0; i < pis.Length; i++)
+            {
+                if (pis[i].ParameterType.IsByRef)
+                    sb.Append("var ");
+                else if (IsParams(pis[i]))
+                    sb.Append("params ");
+                sb.Append(prepare_member_name(pis[i].Name));
+                sb.Append(": ");
+                if (!pis[i].ParameterType.IsByRef)
+                    sb.Append(GetFullTypeName(pis[i].ParameterType));
+                else sb.Append(GetFullTypeName(pis[i].ParameterType.GetElementType()));
+                if (i < pis.Length - 1)
+                    sb.Append(ParameterDelimiter + " ");
+            }
+            sb.Append(')');
+            sb.Append(';');
+            return sb.ToString();
+        }
+
+        private string get_enum_constants(Type t)
+        {
+            FieldInfo[] fields = t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+            bool outoforder = enum_out_of_order(fields);
+            bool is_flags = Attribute.IsDefined(t, typeof(FlagsAttribute));
+            int max_name_len = fields.Max(fi => fi.Name.Length);
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("(");
+            for (int i = 0; i < fields.Length; i++)
+            {
+                if (fields[i].Name != "value__")
+                {
+                    sb.Append(' ', 4);
+                    sb.Append(fields[i].Name);
+                    if (outoforder)
+                    {
+                        if (is_flags) sb.Append(' ', max_name_len - fields[i].Name.Length);
+                        sb.Append(" = ");
+                        if (is_flags)
+                            sb.Append('$' + Convert.ToInt64(fields[i].GetRawConstantValue()).ToString("X"));
+                        else
+                            sb.Append(fields[i].GetRawConstantValue());
+                    }
+                    if (i < fields.Length - 1)
+                        sb.AppendLine(",");
+                    else
+                        sb.AppendLine();
+                }
+            }
+            sb.Append(");");
+
+            return sb.ToString();
+        }
+
+        private bool enum_out_of_order(FieldInfo[] fields) //возвращает true, если значения полей этого enum'а идут не по порядку или не с нуля (IDE issue #117)
+        {
+            for (int i = 0; i < fields.Length; i++)
+            {
+                if (fields[i].Name != "value__")
+                {
+                    object o = fields[i].GetRawConstantValue(); //ошибка была здесь, так как я не знал, что у констант enum'а может быть другой тип помимо int
+                    if (o is byte b1)
+                    {
+                        if (b1 != i - 1) return true;
+                    }
+                    else if (o is sbyte b2)
+                    {
+                        if (b2 != i - 1) return true;
+                    }
+                    else if (o is short b3)
+                    {
+                        if (b3 != i - 1) return true;
+                    }
+                    else if (o is ushort b4)
+                    {
+                        if (b4 != i - 1) return true;
+                    }
+                    else if (o is int b5)
+                    {
+                        if (b5 != i - 1) return true;
+                    }
+                    else if (o is uint b6)
+                    {
+                        return true;
+                    }
+                    else if (o is long b7)
+                    {
+                        return true;
+                    }
+                    else if (o is ulong b8)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private int get_line_nr(StringBuilder sb)
+        {
+            int line = 1;
+            for (int i = 0; i < sb.Length; i++)
+                if (sb[i] == '\n')
+                    line++;
+            return line;
+        }
 
         public abstract string GetDescription(IBaseScope scope);
 
