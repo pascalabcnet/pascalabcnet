@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-L2INHKG
-// DateTime: 08.11.2025 21:38:29
+// DateTime: 08.11.2025 23:08:35
 // UserName: user
 // Input file <ABCPascal.y>
 
@@ -5054,7 +5054,15 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCCompiler.ParserTools
         break;
       case 435: // proc_func_decl_without_modifiers -> proc_func_header, proc_func_external_block
 {
-            CurrentSemanticValue.stn = new procedure_definition(ValueStack[ValueStack.Depth-2].td as procedure_header, ValueStack[ValueStack.Depth-1].stn as proc_block, CurrentLocationSpan);
+            var ph = ValueStack[ValueStack.Depth-2].td as procedure_header;
+            var pal = ph.proc_attributes;
+			var mn = ph.name;
+			if (mn.meth_name is operator_name_ident && mn.class_name == null && 
+                !pal.proc_attributes.Select(p => p.attribute_type).Contains(proc_attribute.attr_extension))
+		    {
+                pal.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_extension));
+            }
+            CurrentSemanticValue.stn = new procedure_definition(ph, ValueStack[ValueStack.Depth-1].stn as proc_block, CurrentLocationSpan);
         }
         break;
       case 436: // proc_func_decl_without_modifiers -> proc_func_header, tkForward, tkSemiColon
@@ -5068,7 +5076,14 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCCompiler.ParserTools
                 //                                     tkAssign, expr_l1_func_decl_lambda, 
                 //                                     tkSemiColon
 {
-			CurrentSemanticValue.stn = SyntaxTreeBuilder.BuildShortFuncDefinition(ValueStack[ValueStack.Depth-7].stn as formal_parameters, ValueStack[ValueStack.Depth-4].stn as procedure_attributes_list, ValueStack[ValueStack.Depth-8].stn as method_name, ValueStack[ValueStack.Depth-5].td as type_definition, ValueStack[ValueStack.Depth-2].ex, LocationStack[LocationStack.Depth-9].Merge(LocationStack[LocationStack.Depth-4]));
+		    var pal = ValueStack[ValueStack.Depth-4].stn as procedure_attributes_list;
+		    var mn = ValueStack[ValueStack.Depth-8].stn as method_name;
+		    if (mn.meth_name is operator_name_ident && mn.class_name == null &&
+                !pal.proc_attributes.Select(p => p.attribute_type).Contains(proc_attribute.attr_extension))
+		    {
+                pal.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_extension));
+            }
+			CurrentSemanticValue.stn = SyntaxTreeBuilder.BuildShortFuncDefinition(ValueStack[ValueStack.Depth-7].stn as formal_parameters, pal, mn, ValueStack[ValueStack.Depth-5].td as type_definition, ValueStack[ValueStack.Depth-2].ex, LocationStack[LocationStack.Depth-9].Merge(LocationStack[LocationStack.Depth-4]));
 		}
         break;
       case 438: // proc_func_decl_without_modifiers -> tkFunction, func_name, fp_list, 
@@ -5077,8 +5092,16 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCCompiler.ParserTools
 {
 			if (ValueStack[ValueStack.Depth-2].ex is dot_question_node)
 				parserTools.AddErrorFromResource("DOT_QUECTION_IN_SHORT_FUN",LocationStack[LocationStack.Depth-2]);
-	
-			CurrentSemanticValue.stn = SyntaxTreeBuilder.BuildShortFuncDefinition(ValueStack[ValueStack.Depth-5].stn as formal_parameters, ValueStack[ValueStack.Depth-4].stn as procedure_attributes_list, ValueStack[ValueStack.Depth-6].stn as method_name, null, ValueStack[ValueStack.Depth-2].ex, LocationStack[LocationStack.Depth-7].Merge(LocationStack[LocationStack.Depth-4]));
+
+		    var pal = ValueStack[ValueStack.Depth-4].stn as procedure_attributes_list;
+		    var mn = ValueStack[ValueStack.Depth-6].stn as method_name;
+		    if (mn.meth_name is operator_name_ident && mn.class_name == null &&
+                !pal.proc_attributes.Select(p => p.attribute_type).Contains(proc_attribute.attr_extension))
+		    {
+                pal.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_extension));
+            }
+
+			CurrentSemanticValue.stn = SyntaxTreeBuilder.BuildShortFuncDefinition(ValueStack[ValueStack.Depth-5].stn as formal_parameters, pal, mn, null, ValueStack[ValueStack.Depth-2].ex, LocationStack[LocationStack.Depth-7].Merge(LocationStack[LocationStack.Depth-4]));
 		}
         break;
       case 439: // proc_func_decl_without_modifiers -> tkProcedure, proc_name, fp_list, 
@@ -5103,7 +5126,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCCompiler.ParserTools
                 //                                             tkSemiColon
 {
 			CurrentSemanticValue.stn = SyntaxTreeBuilder.BuildShortFuncDefinition(ValueStack[ValueStack.Depth-7].stn as formal_parameters, ValueStack[ValueStack.Depth-4].stn as procedure_attributes_list, ValueStack[ValueStack.Depth-8].stn as method_name, ValueStack[ValueStack.Depth-5].td as type_definition, ValueStack[ValueStack.Depth-2].ex, LocationStack[LocationStack.Depth-9].Merge(LocationStack[LocationStack.Depth-4]));
-			if (parserTools.buildTreeForFormatter)
+			if (parserTools.buildTreeForFormatter) // э�?о �?ол�?ко в inclass надо писа�?�? - в об�?�?ном proc_func_decl_without_modifiers - не надо! �?о�?ем�? - �?же �?�?�?а�?ено
 				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
 		}
         break;

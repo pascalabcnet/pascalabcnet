@@ -5,6 +5,7 @@
 <param name="Keyword" value="ColSeq">
 <param name="Keyword" value="ColsSeq">
 <param name="Keyword" value="ConvertAll">
+<param name="Keyword" value="Elements">
 <param name="Keyword" value="ElementsByCol">
 <param name="Keyword" value="ElementsByRow">
 <param name="Keyword" value="ElementsWithIndices">
@@ -44,6 +45,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы двумерного массива и возвращает преобразованный массив</td></tr>
 <tr><td><code><b>function</b> ConvertAll&lt;T, T1&gt;(Self: <b>array</b> [,]  <b>of</b> T; converter: (T,integer,integer)-&gt;T1): <b>array</b> [,]  <b>of</b> T1;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы двумерного массива и возвращает преобразованный массив</td></tr>
+<tr><td><code><b>function</b> Elements&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает по заданному двумерному массиву последовательность его элементов по строкам</td></tr>
 <tr><td><code><b>function</b> ElementsByCol&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает по заданному двумерному массиву последовательность его элементов по столбцам</td></tr>
 <tr><td><code><b>function</b> ElementsByRow&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>

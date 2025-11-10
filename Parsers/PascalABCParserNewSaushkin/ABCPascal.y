@@ -2484,7 +2484,15 @@ inclass_proc_func_decl
 proc_func_decl_without_modifiers
     : proc_func_header proc_func_external_block                      
         {
-            $$ = new procedure_definition($1 as procedure_header, $2 as proc_block, @$);
+            var ph = $1 as procedure_header;
+            var pal = ph.proc_attributes;
+			var mn = ph.name;
+			if (mn.meth_name is operator_name_ident && mn.class_name == null && 
+                !pal.proc_attributes.Select(p => p.attribute_type).Contains(proc_attribute.attr_extension))
+		    {
+                pal.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_extension));
+            }
+            $$ = new procedure_definition(ph, $2 as proc_block, @$);
         }
 	| proc_func_header tkForward tkSemiColon
 		{
@@ -2493,14 +2501,29 @@ proc_func_decl_without_modifiers
 		}
 	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign expr_l1_func_decl_lambda tkSemiColon
 		{
-			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $6 as procedure_attributes_list, $2 as method_name, $5 as type_definition, $8, @1.Merge(@6));
+		    var pal = $6 as procedure_attributes_list;
+		    var mn = $2 as method_name;
+		    if (mn.meth_name is operator_name_ident && mn.class_name == null &&
+                !pal.proc_attributes.Select(p => p.attribute_type).Contains(proc_attribute.attr_extension))
+		    {
+                pal.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_extension));
+            }
+			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, pal, mn, $5 as type_definition, $8, @1.Merge(@6));
 		}
 	| tkFunction func_name fp_list optional_method_modificators1 tkAssign expr_l1_func_decl_lambda tkSemiColon
 		{
 			if ($6 is dot_question_node)
 				parserTools.AddErrorFromResource("DOT_QUECTION_IN_SHORT_FUN",@6);
-	
-			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@4));
+
+		    var pal = $4 as procedure_attributes_list;
+		    var mn = $2 as method_name;
+		    if (mn.meth_name is operator_name_ident && mn.class_name == null &&
+                !pal.proc_attributes.Select(p => p.attribute_type).Contains(proc_attribute.attr_extension))
+		    {
+                pal.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_extension));
+            }
+
+			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, pal, mn, null, $6, @1.Merge(@4));
 		}
 	| tkProcedure proc_name fp_list optional_method_modificators1 tkAssign unlabelled_stmt tkSemiColon
 		{
