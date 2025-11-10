@@ -693,7 +693,7 @@ namespace Languages.Pascal.Frontend.Data
                         sb.Append(GetSimpleDescription(parameters[i]));
                         if (i < parameters.Length - 1)
                         {
-                            sb.Append("; ");
+                            sb.Append(ParameterDelimiter + " ");
                         }
                     }
                     sb.Append(')');
@@ -717,7 +717,7 @@ namespace Languages.Pascal.Frontend.Data
                             sb.Append(GetFullTypeName(pis[i].ParameterType));
                         else sb.Append(GetFullTypeName(pis[i].ParameterType.GetElementType()));
                         if (i < pis.Length - 1)
-                            sb.Append("; ");
+                            sb.Append(ParameterDelimiter + " ");
                     }
                     sb.Append(')');
                 }
@@ -755,7 +755,7 @@ namespace Languages.Pascal.Frontend.Data
                         sb.Append(GetSimpleDescription(parameters[i]));
                         if (i < parameters.Length - 1)
                         {
-                            sb.Append("; ");
+                            sb.Append(ParameterDelimiter + " ");
                         }
                     }
                     sb.Append(')');
@@ -779,7 +779,7 @@ namespace Languages.Pascal.Frontend.Data
                             sb.Append(GetFullTypeName(pis[i].ParameterType));
                         else sb.Append(GetFullTypeName(pis[i].ParameterType.GetElementType()));
                         if (i < pis.Length - 1)
-                            sb.Append("; ");
+                            sb.Append(ParameterDelimiter + " ");
                     }
                     sb.Append(')');
                 }
@@ -2257,7 +2257,7 @@ namespace Languages.Pascal.Frontend.Data
 		
 		private void append_modifiers(StringBuilder sb, IElementScope scope)
 		{
-			if (scope.Is) sb.Append(" ");
+			if (scope.IsVirtual) sb.Append("virtual ");
 			if (scope.IsStatic) sb.Append("static ");
 		}
 		

@@ -459,7 +459,7 @@ namespace PascalABCCompiler.Parsers
                     sb.Append(": ");
                     sb.Append(GetFullTypeName(prms[i].ParameterType));
                     if (i < prms.Length - 1)
-                        sb.Append("; ");
+                        sb.Append(ParameterDelimiter + " ");
                 }
                 sb.Append(']');
             }
@@ -694,7 +694,7 @@ namespace PascalABCCompiler.Parsers
             if (scope.ReturnType != null && !scope.IsConstructor() && !(scope.ReturnType is IProcType && (scope.ReturnType as IProcType).Target == scope))
                 sb.Append(ReturnTypeDelimiter + " " + GetSimpleDescription(scope.ReturnType));
             //if (scope.IsStatic) sb.Append("; static");
-            if (scope.IsVirtual) sb.Append("; ");
+            if (scope.IsVirtual) sb.Append("; virtual");
             else if (scope.IsAbstract) sb.Append("; abstract");
             else if (scope.IsOverride) sb.Append("; override");
             else if (scope.IsReintroduce) sb.Append("; reintroduce");
@@ -779,7 +779,7 @@ namespace PascalABCCompiler.Parsers
 
         private void append_modifiers(StringBuilder sb, IElementScope scope)
         {
-            if (scope.IsVirtual) sb.Append("; ");
+            if (scope.IsVirtual) sb.Append("; virtual");
             if (scope.IsAbstract) sb.Append("; abstract");
             if (scope.IsOverride) sb.Append("; override");
             //if (scope.IsStatic) sb.Append("; static");
@@ -1159,7 +1159,7 @@ namespace PascalABCCompiler.Parsers
                     sb.Append(ReturnTypeDelimiter + " " + ret_inst_type);
             }
             //if (scope.CompiledMethod.IsStatic) sb.Append("; static");
-            if (scope.IsVirtual) sb.Append("; ");
+            if (scope.IsVirtual) sb.Append("; virtual");
             else if (scope.IsAbstract) sb.Append("; abstract");
             //else if (scope.CompiledMethod.IsHideBySig) sb.Append("; reintroduce");
             sb.Append(';');
@@ -1233,7 +1233,7 @@ namespace PascalABCCompiler.Parsers
                 sb.Append(ReturnTypeDelimiter + " " + GetFullTypeName(mi.ReturnType));
             }
             //if (scope.CompiledMethod.IsStatic) sb.Append("; static");
-            if (mi.IsVirtual && !mi.IsFinal) sb.Append("; ");
+            if (mi.IsVirtual && !mi.IsFinal) sb.Append("; virtual");
             else if (mi.IsAbstract) sb.Append("; abstract");
             //else if (scope.CompiledMethod.IsHideBySig) sb.Append("; reintroduce");
             sb.Append(';');
@@ -1285,7 +1285,7 @@ namespace PascalABCCompiler.Parsers
                 sb.Append(": " + inst_type);
             if (acc != null)
                 //if (acc.IsStatic) sb.Append("; static");
-                if (acc.IsVirtual) sb.Append("; ");
+                if (acc.IsVirtual) sb.Append("; virtual");
                 else if (acc.IsAbstract) sb.Append("; abstract");
             if (scope.IsReadOnly) sb.Append("; readonly");
             sb.Append(';');
