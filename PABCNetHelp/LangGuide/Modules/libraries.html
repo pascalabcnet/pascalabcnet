@@ -78,21 +78,17 @@
 <span class="auto-style2"><em>ИмяБиблиотеки</em></span><span class="auto-style1">}</span>. 
 Например:</p>
 <blockquote>
-	<p><span class="auto-style1">{$reference ABC.dll}<br>{$reference ABC1.dll}<br>
-	<br><strong>begin</strong><br>&nbsp; writeln(a.GetType); <br><strong>end</strong>.</span> </p>
+	<p><code>{$reference ABC.dll}<br>{$reference ABC1.dll}<br>
+	<br><strong>begin</strong><br>&nbsp; writeln(a.GetType); <br><strong>end</strong>.</code> </p>
 </blockquote>
 <p>Подключение библиотеки может проводиться в любом месте исходного файла.</p>
 <p>Библиотеки ABC и ABC1 имеют соответственно вид:</p>
 <blockquote>
-	<p class="auto-style1"><strong>library</strong> ABC;</p>
-	<p class="auto-style1"><strong>var</strong> a: integer;</p>
-	<p><span class="auto-style1"><strong>end</strong>.</span> </p>
-</blockquote>
+	<p><code><strong>library</strong> ABC;<strong><br>var</strong> a: integer;<strong><br>end</strong>.</code>
+	</blockquote>
 <p>и</p>
 <blockquote>
-	<p class="auto-style1"><strong>library</strong> ABC1;</p>
-	<p class="auto-style1"><strong>var</strong> a: real;</p>
-	<p><span class="auto-style1"><strong>end</strong>.</span> </p>
+	<p><code><strong>library</strong> ABC1;<strong><br>var</strong> a: real;<strong><br>end</strong>.</code> </p>
 </blockquote>
 <h2>Алгоритм поиска имен в библиотеках </h2>
 <p>В первую очередь имя ищется в исходном модуле, затем в модулях, подключенных 
@@ -103,9 +99,9 @@
 <p>В случае коллизии имен используемое имя можно предварять именем библиотеки с 
 последующей точкой:</p>
 <blockquote>
-	<p><span class="auto-style1">{$reference ABC.dll}<br>{$reference ABC1.dll}<br>
-	<br><strong>begin</strong><br>&nbsp; writeln(ABC1.a.GetType); <br><strong>
-	end</strong>.</span> </p>
+	<p><code>{$reference ABC.dll}<br>{$reference ABC1.dll}<br>
+	<br><strong>begin</strong><br>&nbsp; Println(ABC1.a.GetType); <br><strong>
+	end</strong>.</code> </p>
 </blockquote>
 <p>&nbsp;</p>
 </body>

@@ -38,7 +38,7 @@
 <blockquote>
 	<code><b>procedure</b> PrintSquare(i: integer);<br>
 	<b>begin</b><br>
-&nbsp; writeln(i*i);<br>
+&nbsp; Println(i*i);<br>
 	<b>end</b>;</code></blockquote>
 Тогда при вызове <code>PrintSquare(5*a-b)</code> значение <code>5*a-b</code> будет вычислено и присвоено переменной <code>i</code>, после чего 
 выполнится тело процедуры.<p class="pabcmain">Если параметр передается по ссылке, то при вызове 
@@ -72,9 +72,9 @@
 	</b>&nbsp; Person = <b>record</b><br>
 &nbsp;&nbsp;&nbsp; name: string;<br>
 &nbsp;&nbsp;&nbsp; age,height,weight: integer;<br>
-&nbsp; <b>end</b>;</code><p><code><b>procedure</b> Print(<b>const</b> p: Person);<br>
+&nbsp; <b>end</b>;</code><p><code><b>procedure</b> PrintPupil(<b>const</b> p: Person);<br>
 	<b>begin<br>
-	</b>&nbsp; write(p.name,' ',p.age,' ',p.height,' ',p.weight);<br>
+	</b>&nbsp; Print(p.name,p.age,p.height,p.weight);<br>
 	<b>end</b>;</code></p>
 	<p><code><b>procedure</b> IncAge(<b>var</b> p: Person);<br>
 	<b>begin</b><br>

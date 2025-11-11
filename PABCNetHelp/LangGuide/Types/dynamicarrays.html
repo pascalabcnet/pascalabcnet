@@ -45,13 +45,13 @@
 <p>Данный способ хорош тем, что позволяет совместить описание массива и 
 выделение под него памяти:</p>
 <blockquote>
-	<p><code><b>var</b> <br>&nbsp; a: <b>array of</b> integer := new integer[5];<br>
-&nbsp; b: <b>array</b> [,] <b>of</b> real := new real[4,3]; </code></p>
+	<p><code><b>var</b> a: <b>array of</b> integer := new integer[5];<br>
+	<b>var</b> b: <b>array</b> [,] <b>of</b> real := new real[4,3]; </code></p>
 </blockquote>
 <p>Описание типа можно при этом опускать - тип автовыводится:</p>
 <blockquote>
-	<p><code><b>var</b> <br>&nbsp; a := new integer[5];<br>
-&nbsp; b := new real[4,3]; </code></p>
+	<p><code><b>var</b> a := new integer[5];<br>
+	<b>var</b> b := new real[4,3]; </code></p>
 </blockquote>
 <p>Второй способ выделения памяти под динамический массив использует стандартную процедуру <code>SetLength</code>: </p>
 <blockquote>
@@ -62,6 +62,15 @@
 <p>Процедура <code>SetLength</code> обладает тем преимуществом, что при ее 
 повторном вызове старое содержимое массива сохраняется.</p>
 <h2>Инициализация динамического массива</h2>
+<p>Проще всего инициализировать динамический массив, используя инициализатор [] 
+- при этом выделяется память:</p>
+<blockquote>
+	<p><code><strong>var</strong> a := [1,3,5,7,9];</code></p>
+</blockquote>
+<p>Инициализатор при использовании различных типов выбирает самый общий тип:</p>
+<blockquote>
+	<p><code>[1,3.4,5]; // array of real<br>['a','','fgh'] // array of string</code></p>
+</blockquote>
 <p>Можно инициализировать динамический массив при выделении под него память 
 операцией new:</p>
 <blockquote>
@@ -81,7 +90,7 @@
 <p>При этом происходит выделение памяти под указанное справа количество 
 элементов. </p>
 <p>Инициализация одномерного массива проще всего осуществляется стандартными 
-функциями Seq..., которые выделяют память нужного размера и заполняют массив 
+функциями Arr..., которые выделяют память нужного размера и заполняют массив 
 указанными значениями:</p>
 <blockquote>
 	<p><code><strong>var</strong> a := Arr(1,3,5,7,8);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
@@ -115,21 +124,21 @@
 <p>После выделения памяти ввод динамического массива можно осуществлять 
 традиционно в цикле:</p>
 <blockquote><code><strong>for var</strong> i:=0 <strong>to</strong> a.Length-1 
-	<strong>do</strong><br>&nbsp; read(a[i]);</code></blockquote>
+	<strong>do</strong><br>&nbsp; Read(a[i]);</code></blockquote>
 <p>Ввод динамического массива можно осуществлять 
 с помощью стандартной функции ReadArrInteger:</p>
 <blockquote><code><strong>var</strong> a := ReadArrInteger(10);</code></blockquote>
 <p>При этом под динамический массив выделяется память нужного размера.</p>
 <h2>Вывод динамического массива</h2>
-<p>Процедура write выводит динамический массив, заключая элементы в квадратные 
+<p>Процедура Write выводит динамический массив, заключая элементы в квадратные 
 скобки и разделяя их запятыми:</p>
-<blockquote><code><strong>var </strong> a := Arr(1,3,5,7,9);<strong><br></strong> 
-	writeln(a); // [1,3,5,7,9] </code>&nbsp;<span class="auto-style2"><font size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<blockquote><code><strong>var </strong> a := Arr(1,3,5,7,9);<strong><br></strong>
+	Writeln(a); // [1,3,5,7,9] </code>&nbsp;<span class="auto-style2"><font size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	</font></span></blockquote>
 <p>n-мерный динамический массив выводится так, что каждая размерность 
 заключается в квадратные скобки:.</p>
 <blockquote><code><strong>var </strong> m := new integer[3,3] 
-	((1,2,3),(4,5,6),(7,8,9));<strong><br></strong>writeln(m); // 
+	((1,2,3),(4,5,6),(7,8,9));<strong><br></strong>Writeln(m); // 
 	[[1,2,3],[4,5,6],[7,8,9]] </code></blockquote>
 <p>Динамический массив можно выводить также методом расширения Print или 
 Println:</p>

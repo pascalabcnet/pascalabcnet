@@ -57,21 +57,21 @@
 &nbsp; B =<b> class</b>(A)<br>
 	<b>&nbsp; public<br>
 </b>&nbsp;
-	<b>&nbsp; procedure</b> print;<br>
+	<b>&nbsp; procedure</b> Print;<br>
 &nbsp;&nbsp;&nbsp; <b>begin</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln(a); // верно, т.к. 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Println(a); // верно, т.к. 
 	a - защищенное поле<b><br>
-	</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln(x); // неверно, 
+	</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Println(x); // неверно, 
 	т.к. х - закрытое поле<br>
 &nbsp;&nbsp;&nbsp; <b>end</b>;<br>
 &nbsp; <b>end</b>;<br>
 	...<br>
 	<b>var</b> b1: B := new B(5); <br>
 	...<br>
-	writeln(b1.x); // неверно, т.к. х - закрытое 
-	поле<br>writeln(b1.a); // неверно, т.к. a - 
+	Println(b1.x); // неверно, т.к. х - закрытое 
+	поле<br>Println(b1.a); // неверно, т.к. a - 
 	защищенное поле<br>
-	b1.print; // верно, т.к. print -
+	b1.Print; // верно, т.к. Print -
 	открытый метод</code></blockquote>
 <p>Комментарии по тексту программы описывают верное и неверное в смысле доступа 
 обращение к полям и методам.</p>

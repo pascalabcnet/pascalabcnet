@@ -39,12 +39,12 @@
 <p>Рекомендуется использовать вторую форму условной операции.</p>
 <p><strong>Ограничение</strong>. Вторую форму условной операции нельзя 
 использовать в качестве выражения верхнего уровня в лямбдах. Следующий код 
-ошибочен:</p>
+<strong><em>ошибочен</em></strong>:</p>
 <blockquote>
 	<p><code><b>var</b> l: real -&gt; real := x -&gt; <strong>if</strong> x&lt;0 <strong>
 	then</strong> 0 <strong>else</strong> x;</code></p>
 </blockquote>
-<p>Для решения указанной проблемы можно взять условную операцию в скобки:</p>
+<p>Для решения указанной проблемы нужно <em><strong>взять условную операцию в скобки</strong></em>:</p>
 <blockquote>
 	<p><code><b>var</b> l: real -&gt; real := x -&gt; (<strong>if</strong> x&lt;0 <strong>
 	then</strong> 0 <strong>else</strong> x);</code></p>

@@ -37,13 +37,14 @@
 <img border="0" src="gif/Load.gif" width="16" height="17"> или клавиатурной
 комбинации <b>Shift+Ctrl+L</b>. Приведем текст созданной заготовки:
 </p>
-<blockquote><code><pre><b>uses</b> PT4Exam;
+<blockquote><code><b>uses</b> PT4Exam;
 
-<b>begin</b>
+<b><br><br>begin</b>
+  <br>&nbsp;
   Task('ExamBegin2');
 
-<b>end</b>.
-</pre></code></blockquote>
+<b><br>end</b>.
+</code></blockquote>
 <p>После запуска программы на экране появится <a href="../PT4/window.html">окно задачника</a>:
 </p>
 <blockquote>
@@ -93,33 +94,15 @@
 <p>Приступим к выполнению задания. В данном случае следует использовать алгоритм, не требующий
 применения массивов, поэтому опишем три простые переменные вещественного типа и введем в них исходные данные:
 </p>
-<blockquote><code><pre><b>uses</b> PT4Exam;
-<b>var</b>
-  a, b, c: real;
-<b>begin</b>
+<blockquote><code><b>uses</b> PT4Exam;
+<b><br><br>begin</b> <br>&nbsp;
   Task('ExamBegin2');
-  read(a, b, c);
-<b>end</b>.
-</pre></code></blockquote>
-<p>Мы воспользовались стандартной процедурой ввода <code>read</code>, введя все три исходных числа за один ее вызов.
-Этого же результата мы могли бы добиться и с помощью процедуры <code>readln</code>:
-</p>
-<blockquote><code><pre>readln(a, b, c);
-</pre></code></blockquote>
-<p>Заметим, что использование <i>отдельных</i> процедур <code>readln</code> для ввода каждого числа приведет к ошибочному результату:
-</p>
-<blockquote><code><pre>readln(a);
-readln(b);
-readln(c);
-</pre></code></blockquote>
-<p>В этом случае уже после ввода первого числа произойдет автоматический переход на следующую строку
-с исходными данными. Поэтому оставшиеся в первой строке числа будут пропущены, а поскольку
-во второй строке &laquo;ничего нет&raquo; (входной поток состоит из единственной строки),
-будет выведено сообщение об ошибке &laquo;<i>Input string was not in a correct format</i>&raquo;
-(&laquo;<i>Входная строка имела неверный формат</i>&raquo;).
-</p>
-<p>Приведенный пример показывает, что при организации ввода данных в заданиях групп Exam необходимо учитывать особенности
-стандартных процедур <code>read</code> и <code>readln</code>.
+  <br>&nbsp;
+<b>var</b>
+    (a,b,c) := ReadReal3;
+<b><br>end</b>.
+</code></blockquote>
+<p>Мы воспользовались стандартной функцией ввода <code>ReadReal3</code>, введя все три исходных числа за один ее вызов.
 </p>
 <p>При запуске приведенного выше варианта программы вид окна не изменится, поскольку мы не вывели никаких данных.
 В заданиях групп Exam запуск программы считается ознакомительным до тех пор, пока программа не выведет
@@ -132,22 +115,24 @@ readln(c);
 <p>Реализуем алгоритм нахождения минимального и максимального элемента. Для этого опишем еще две
 переменные <code>min</code> и <code>max</code> типа <code>real</code> и добавим в конец программы следующие операторы:
 </p>
-<blockquote><code><pre><b>if</b> a &lt; b <b>then</b>
-<b>begin</b>
+<blockquote><code><b>if</b> a &lt; b <b>then</b>
+<b><br>begin</b>
+  <br>&nbsp;
   min := a;
-  max := b;
-<b>end</b>
-<b>else</b>
-<b>begin</b>
+  <br>&nbsp; max := b;
+<b><br>end</b>
+<b><br>else</b>
+<b><br>begin</b> <br>&nbsp;
   min := b;
-  max := a;
-<b>end</b>;
-<b>if</b> c &lt; min <b>then</b>
+  <br>&nbsp; max := a;
+<b><br>end</b>;
+<b><br>if</b> c &lt; min <b>then</b> <br>&nbsp;
   min := c
-<b>else</b>
-  <b>if</b> c &gt; max <b>then</b>
+<b><br>else</b>
+  <b>if</b> c &gt; max <b>then</b> <br>&nbsp;
     max := c;
-</pre></code></blockquote>
+
+</code></blockquote>
 <p>Таким образом, для одновременного нахождения минимального и максимального из трех чисел требуется
 не более трех операций сравнения и не более трех операций присваивания.
 </p>
@@ -161,8 +146,7 @@ readln(c);
 <p>Вначале, в качестве примера, организуем вывод, не соответствующий условиям задачи. Для этого добавим в конец программы
 следующий оператор:
 </p>
-<blockquote><code><pre>writeln(min, max);
-</pre></code></blockquote>
+<blockquote><code>Println(min, max); </code></blockquote>
 <p>Приведем вид окна задачника при запуске полученной программы:
 </p>
 
@@ -189,16 +173,12 @@ readln(c);
 </p>
 <p>Для исправления первых двух ошибок достаточно изменить вывод следующим образом:
 </p>
-<blockquote><code><pre>writeln('MIN=', min);
-writeln('MAX=', max);
-</pre></code></blockquote>
+<blockquote><code>Println('MIN=', min); <br>Println('MAX=', max); </code></blockquote>
 <p>Однако в этом случае числа по-прежнему могут содержать неверное число дробных знаков.
 Для исправления этой последней ошибки проще всего использовать
 <i>атрибуты форматирования</i>, начинающиеся с символа &laquo;:&raquo; (двоеточие):
 </p>
-<blockquote><code><pre>writeln('MIN=', min:0:2);
-writeln('MAX=', max:0:2);
-</pre></code></blockquote>
+<blockquote><code>Println('MIN=', min:0:2); <br>Println('MAX=', max:0:2); </code></blockquote>
 <p>Первый атрибут определяет <i>ширину поля вывода</i> (если ширина равна 0, то используется минимально
 необходимое поле вывода). Наличие второго атрибута (допустимого только для вещественных чисел) означает,
 что число надо вывести в формате с фиксированной точкой, причем его значение равно количеству дробных знаков.

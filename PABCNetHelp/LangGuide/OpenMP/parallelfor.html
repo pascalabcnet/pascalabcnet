@@ -73,7 +73,7 @@ span.a
 раньше второй – в первый элемент массива запишется значение из второго, а если 
 позже – то из третьего элемента массива.</p>
 <blockquote>
-	<p><code><b>var</b> a:integer;<br>
+	<p><code><b>var</b> a: integer;<br>
 	<font color="#666666">{$omp parallel for}<br>
 	</font>
 	<b>for</b> <b>var</b> i:=1 <b>to</b> 10 <b>do</b><br>
@@ -93,9 +93,7 @@ span.a
 параллельности. Вычисление различных элементов матрицы происходит независимо, 
 поэтому не надо предусматривать никаких средств синхронизации.</span></p>
 <blockquote>
-	<p><code><b>uses</b> Arrays;<br>
-	<br>
-	<b>procedure</b> ParallelMult(a,b,c: <b>array</b> [,] <b>of</b> real; n: 
+	<p><code><b>procedure</b> ParallelMult(a,b,c: <b>array</b> [,] <b>of</b> real; n: 
 	integer);<br>
 	<b>begin</b><br>
 	<font color="#666666"><span lang="ru">&nbsp; </span>{$omp parallel for }<br>
@@ -127,17 +125,15 @@ span.a
 	<br>
 	<b>begin</b><br>
 	<b><span lang="ru">&nbsp; </span>var</b> a := 
-	Arrays.CreateRandomRealMatrix(n,n);<br>
+	MatrRandomReal(n,n);<br>
 	<b><span lang="ru">&nbsp; </span>var</b> b := 
-	Arrays.CreateRandomRealMatrix(n,n);<br>
+	MatrRandomReal(n,n);<br>
 	<b><span lang="ru">&nbsp; </span>var</b> c := new real[n,n];<br>
 	<span lang="ru">&nbsp; </span>ParallelMult(a,b,c,n);<br>
-	<span lang="ru">&nbsp; </span>writeln('Параллельное перемножение матриц: 
-	',Milliseconds,' миллисекунд');<br>
+	<span lang="ru">&nbsp; </span>Println('Параллельное перемножение матриц:',Milliseconds,'миллисекунд');<br>
 	<b><span lang="ru">&nbsp; </span>var</b> d := Milliseconds;<br>
 	<span lang="ru">&nbsp; </span>Mult(a,b,c,n);<br>
-	<span lang="ru">&nbsp; </span>writeln('Непараллельное перемножение матриц: 
-	',Milliseconds-d,' миллисекунд');<br>
+	<span lang="ru">&nbsp; </span>Println('Непараллельное перемножение матриц:',Milliseconds-d,'миллисекунд');<br>
 	<b>end</b>.</code></p>
 </blockquote>
 </body>

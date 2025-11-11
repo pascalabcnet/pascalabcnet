@@ -91,11 +91,19 @@ value: Complex);<br>&nbsp;&nbsp;&nbsp; <b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&
 	<b>end</b>;<br>&nbsp; <b>end</b>;</code></p>
 </blockquote>
 <p>Можно перегружать операции с помощью <a href="extensionmethods.html">методов расширения</a> - в этом случае при 
-описании подпрограммы не следует писать слово class. Например, так в системном модуле 
+описании подпрограммы не следует писать слово static. Например, так в системном модуле 
 реализовано добавление числа к строке:</p>
 <blockquote>
-	<p><code><strong>function</strong> operator+(str: string; n: 
-	integer): string; <strong>extensionmethod</strong>;<br><strong>begin</strong><br>&nbsp; result := str + 
+	<p><code><strong>function</strong> <strong>operator</strong>+(str: string; n: 
+	integer): string; <strong>extensionmethod</strong>;<br><strong>begin</strong><br>&nbsp; 
+	Result := str + 
+	n.ToString;<br><strong>end</strong>;</code></p>
+</blockquote>
+<p>При перегрузке операций методами расширения ключевое слово <code> <strong>extensionmethod</strong></code> можно не писать:</p>
+<blockquote>
+	<p><code><strong>function</strong> <strong>operator</strong>+(str: string; n: 
+	integer): string;<br><strong>begin</strong><br>&nbsp; 
+	Result := str + 
 	n.ToString;<br><strong>end</strong>;</code></p>
 </blockquote>
 <p>Можно перегружать расширенные операции присваивания +=, -= и т.д.: </p>

@@ -84,13 +84,13 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из указанных элементов</td></tr>
 <tr><td><code><b>function</b> SeqFill&lt;T&gt;(count: integer; x: T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов x</td></tr>
-<tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; f: integer-&gt;T): <b>sequence </b>  <b>of</b> T;</code>
+<tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; f: integer &gt; T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов, заполненных значениями f(i)</td></tr>
 <tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; f: integer-&gt;T; from: integer): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов, заполненных значениями f(i), начиная с i=from</td></tr>
 <tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; first: T; next: T-&gt;T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов, начинающуюся с first, с функцией next перехода от предыдущего к следующему</td></tr>
-<tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; first, second: T; next: (T,T) -&gt;T): <b>sequence </b>  <b>of</b> T;</code>
+<tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; first, second: T; next: (T,T) &gt; T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов, начинающуюся с first и second,с функцией next перехода от двух предыдущих к следующему</td></tr>
 <tr><td><code><b>function</b> SeqRandom(n: integer := 10; a: integer := 0; b: integer := 100): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n случайных целых элементов</td></tr>

@@ -58,7 +58,7 @@
 	Print;<br><b>&nbsp;&nbsp;&nbsp; property</b> Name: string read fName;<br><b>&nbsp;&nbsp;&nbsp; 
 	property</b> Age: integer read fAge;<b><br>&nbsp; end</b>;<br><strong><br>
 	procedure</strong> Person.Print;<br><strong>begin</strong><br>&nbsp; 
-	Writeln($'Имя: {Name} Возраст: {Age}');<br><strong>end</strong>;</code></p>
+	Println($'Имя: {Name} Возраст: {Age}');<br><strong>end</strong>;</code></p>
 </blockquote>
 <p>После слова <code><b>class</b></code> 
 в скобках может быть указано имя класса-предка (см. <A href="inheritance.html">
@@ -115,7 +115,7 @@
 	<b>&nbsp; end</b>;<br>
 	&nbsp; ...<br>
 	<b>var</b> p: Person := new Person('Иванов',20);<br>
-	Writeln(p); // Имя: Иванов&nbsp; Возраст: 20</code></p>
+	Println(p); // Имя: Иванов&nbsp; Возраст: 20</code></p>
 </blockquote>
 <h2>Присваивание и передача в качестве параметров подпрограмм</h2>
 <p>Переменная типа класс является ссылкой и хранит ссылку на объект, создаваемый 
@@ -144,9 +144,9 @@
 значения. </p>
 <blockquote>
 	<p><code><b>var</b> p1 := new Person('Петров',20);<br><b>var</b> p2 := new 
-	Person('Петров',20);<br>writeln(p1=p2); // False<br>
+	Person('Петров',20);<br>Println(p1 = p2); // False<br>
 	p2 := p1; <br>
-	writeln(p1=p2); // True</code></p>
+	Println(p1 = p2); // True</code></p>
 </blockquote>
 <p>Это поведение можно изменить, <A href="operoverloading.html">перегрузив</A> 
 операцию = для класса.</p>

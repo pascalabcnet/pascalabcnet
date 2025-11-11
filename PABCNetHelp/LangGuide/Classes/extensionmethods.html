@@ -25,14 +25,14 @@
 	<strong>end</strong>;<br>
 <br><strong>begin<br></strong>&nbsp; MyPrint(1);<br>&nbsp; 1.MyPrintEx;<br>
 	<strong>end</strong>.</code></blockquote>
-<p>Здесь MyPrint - это обычная процедура с параметром типа integer, MyPrintEx - 
-метод расширения типа integer. При этом при вызове первый параметр MyPrintEx 
-становится объектом, вызывающим MyPrintEx как метод.</p>
+<p>Здесь <code>MyPrint</code> - это обычная процедура с параметром типа integer, MyPrintEx - 
+метод расширения типа integer. При этом при вызове первый параметр <code>MyPrintEx</code> становится объектом, вызывающим
+<code>MyPrintEx</code> как метод.</p>
 <p>Можно расширить тип последовательности, тогда все классы, являющиеся 
-последовательностями (динамические одномерные массивы, списки List&lt;T&gt;, множества 
-HashSet&lt;T&gt; и SortedSet&lt;T&gt;), 
+последовательностями (динамические одномерные массивы, списки <code>List&lt;T&gt;</code>, множества 
+<code>HashSet&lt;T&gt;</code> и <code>SortedSet&lt;T&gt;</code>), 
 получат этот метод. Например, в системном модуле PABCSystem так введен метод 
-расширения ForEach для последовательностей:</p>
+расширения <code>ForEach</code> для последовательностей:</p>
 <blockquote><code><strong>procedure</strong> &amp;ForEach&lt;T&gt;(Self: <strong>sequence 
 	of</strong> T; action: T -&gt; ()); <strong>extensionmethod</strong>;<br>
 	<strong>begin</strong><br>&nbsp; <strong>foreach</strong> x: T <strong>in</strong> 

@@ -12,6 +12,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
 <link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	font-family: Consolas, monospace;
+	font-size: 12pt;
+	color: #000080;
+}
+</style>
 </head>
 
 <body>
@@ -112,11 +119,35 @@
 	<br>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := x;<br>
 	<b>end</b>;</code></p>
-	<p ><code><strong>begin</strong><br>&nbsp; var a := Seq(1,5,3);<br>&nbsp; 
-	writeln(MinElement(a) + Sum(2,3));<br><strong>end</strong>.</code></p>
+	<p ><code><strong>begin</strong><br>&nbsp; <strong>var</strong> a := [1,5,3];<br>&nbsp; 
+	Println(MinElement(a) + Sum(2,3));<br><strong>end</strong>.</code></p>
 </blockquote>
 <p >Если внутри функции не присвоить переменной <code>Result</code> некоторое 
 значение, то функция вернет в результате своего вызова непредсказуемое значение.</p>
+<p >Вместо присваивания Result в теле функции можно вызвать оператор exit с 
+параметром - это приведет к немедленному выходу из функции и возврату значения:</p>
+<blockquote>
+<p ><code><b>function</b> Find&lt;T&gt;(a: <b>
+	array of</b> T; x: T): boolean;<br>
+	<b>begin</b><br>
+&nbsp; <b>foreach</b> <strong>var </strong>y <b>in</b>
+	a <b>do</b><br>
+&nbsp;&nbsp;&nbsp; <b>if</b> y = x <b>then</b> 
+	<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>exit</strong>(True);<br>&nbsp; Result := 
+False;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p >Функция может возвращать кортеж значений:</p>
+<blockquote>
+<p ><code><b>function</b> DivMod(a,b: integer): (integer,integer);<br><strong>
+begin</strong><br>&nbsp; Result := (a <strong>div </strong>b, a <strong>mod</strong> 
+b);<br><strong>e</strong></code><span class="auto-style1"><strong>nd</strong>;</span></p>
+</blockquote>
+<p >При вызове такой функции ее результат обычно распаковывается в переменные</p>
+<blockquote>
+<p ><code><strong>var</strong> (a,b) := DivMod(7,2);</code></p>
+</blockquote>
 <h2 >Упрощенный синтаксис описания подпрограмм</h2>
 <p >В <span lang="en-us">PascalABC.NET </span>имеется упрощенный синтаксис 
 описания однооператорных процедур: </p>
@@ -129,7 +160,9 @@
 </blockquote>
 <p >При этом в ряде случаев для возвращаемого значения функции возможен автовывод типов:</p>
 <blockquote>
-	<p ><code><b>function</b> Add(a,b: real)<span lang="en-us"> := </span>a + b;</code></p>
+	<p ><code><b>function</b> Add(a,b: real)<span lang="en-us"> := </span>a + b;<br><b>function</b> 
+	DivMod(a,b: integer) := (a <strong>div</strong> b, a <strong>mod</strong> 
+	b);</code></p>
 </blockquote>
 </body>
 

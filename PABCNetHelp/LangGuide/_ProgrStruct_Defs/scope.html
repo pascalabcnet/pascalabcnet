@@ -39,10 +39,10 @@
 конструкции. Так, следующий код корректен: </p>
 <blockquote>
 	<p><code><b>var </b>a: <b>array of</b> integer := (3,5,7);<b><br>
-	for</b> i: integer := 1 <b>to</b> 9 <b>do</b> <br>
-&nbsp; write(a[i]); <br>
-	<b>foreach</b> i: integer <b>in</b> a <b>do</b> <br>
-&nbsp; write(i);</code></p>
+	for</b> <strong>var </strong>i := 1 <b>to</b> 9 <b>do</b> <br>
+&nbsp; Print(a[i]); <br>
+	<b>foreach</b> <strong>var </strong>i <b>in</b> a <b>do</b> <br>
+&nbsp; Print(i);</code></p>
 </blockquote>
 <p>
 Идентификатор с тем же именем, определенный во вложенном пространстве имен, <i>скрывает</i> 
@@ -75,14 +75,14 @@
 <a href="../Classes/inherited.html">inherited</a></code></b>:</p>
 <blockquote>
 	<p><code><b>type</b><br>
-&nbsp; A=<b>class</b><br>
+&nbsp; A =<b> class</b><br>
 &nbsp;&nbsp;&nbsp; i: integer;<br>
 &nbsp;&nbsp;&nbsp; <b>procedure</b> p;<br>
 &nbsp;&nbsp;&nbsp; <b>begin</b><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i := 5;<br>
 &nbsp;&nbsp;&nbsp; <b>end</b>;<br>
 &nbsp; <b>end</b>;<br>
-&nbsp; B=<b>class</b>(A)<br>
+&nbsp; B =<b> class</b>(A)<br>
 &nbsp;&nbsp;&nbsp; i: integer;<br>
 &nbsp;&nbsp;&nbsp; <b>procedure</b> p;<br>
 &nbsp;&nbsp;&nbsp; <b>begin</b><br>

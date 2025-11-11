@@ -59,22 +59,19 @@ Stack&lt;integer&gt;</code> - класс списка с элементами т
 </blockquote>
 <p>Использование шаблона класса иллюстрируется ниже:</p>
 <blockquote>
-	<p><code><b>var</b> <br>
-&nbsp; si: Stack&lt;integer&gt;;<br>
-&nbsp; sr: Stack&lt;real&gt;;<br>
-	<b>begin</b><br>
-&nbsp; si := <b>new</b> Stack&lt;integer&gt;;&nbsp; <br>
-&nbsp; sr := <b>new</b> Stack&lt;real&gt;;<br>
+	<p><code><b>begin</b><br>
+	<strong>&nbsp; var </strong>si := <b>new</b> Stack&lt;integer&gt;;&nbsp; <br>
+	<strong>&nbsp; var </strong>sr := <b>new</b> Stack&lt;real&gt;;<br>
 &nbsp; <b>for</b> <span lang="en-us"><b>var</b> </span>i := 1 <b>to</b> 10 <b>do</b><br>
 &nbsp;&nbsp;&nbsp; si.Push(Random(100));<br>
 &nbsp; <b>while</b> <b>not</b> si.IsEmpty <b>do</b><br>
 &nbsp;&nbsp;&nbsp; sr.Push(si.Pop);<br>
 &nbsp; <b>while</b> <b>not</b> sr.IsEmpty <b>do</b><br>
-&nbsp;&nbsp;&nbsp; write(sr.Pop,' ');<br>
+&nbsp;&nbsp;&nbsp; Print(sr.Pop);<br>
 	<b>end</b>.</code></p>
 </blockquote>
 <p>Подстановка конкретного типа-параметра в обобщенный тип называется 
-инстанцированием.</p>
+<strong>инстанцированием</strong>.</p>
 <p>&nbsp;</p>
 </body>
 

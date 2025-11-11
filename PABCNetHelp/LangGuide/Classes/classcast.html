@@ -26,14 +26,10 @@
 	<b> &nbsp; &nbsp; ...<br>
 	</b>&nbsp;&nbsp;&nbsp; <b>procedure</b> IncCourse; <br>
 &nbsp; <b>end</b>;<br>
-	...<br>
-	<b>var <br>
-&nbsp; </b>p: Person;<br>
-&nbsp; s: Student;<br>
-	<b>begin</b><br>
-&nbsp; p := new Student('Иванов',20,3,1); //
+	<b><br>begin</b><br>
+&nbsp; <strong>var </strong>p: Person := new Student('Иванов',20,3,1); //
 	неявное преобразование к типу базового класса<br>
-&nbsp; s := Student(p); // явное 
+&nbsp; <strong>var</strong> s: Student := Student(p); // явное 
 	приведение к типу производного класса <br>
 	<b>end</b>.</code></p>
 </blockquote>

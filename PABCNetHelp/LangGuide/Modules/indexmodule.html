@@ -81,7 +81,7 @@
 	<p><b><code>interface</code></b></p>
 	<p><code><b>uses</b> GraphABC;</code></p>
 	<p><code><b>const</b> Dim = 5;<br>
-	<b>var</b> Colors: <b>array</b> [1..Dim] <b>of</b> integer;</code></p>
+	<b>var</b> Colors: <b>array</b> <b>of</b> integer := new integer[Dim];</code></p>
 	<p><code><b>function</b> RandomColor: integer;<br>
 	<b>procedure</b> FillByRandomColor;</code></p>
 	<p><b><code>implementation</code></b></p>
@@ -91,7 +91,7 @@
 	<b>end</b>;<br>
 	<b>procedure</b> FillByRandomColor;<br>
 	<b>begin</b><br>
-&nbsp; <b>for</b> i: integer := 1 <b>to</b> Dim <b>do</b><br>
+&nbsp; <b>for</b> <strong>var </strong>i := 0 <b>to</b> Dim-1 <b>do</b><br>
 &nbsp;&nbsp;&nbsp; Colors[i] := RandomColor; <br>
 	<b>end</b>;</code></p>
 	<p><code><b>initialization</b><br>

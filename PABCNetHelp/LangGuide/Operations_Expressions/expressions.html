@@ -59,30 +59,25 @@ b=1</code>, то <code>b <b>shl</b> 10=1024</code>, а <code><b>not</b> b=254</c
 операции <code>+</code> (объединение), <code>-</code> 
 (разность) и <code>*</code> (пересечение):</p>
 <blockquote>
-	<p><code><b>var</b> <br>
-&nbsp; s1,s2,s: <b>set</b> <b>of</b> byte;<br>
-	<b>begin<br>
-	</b>&nbsp; s1:=[1..4];<br>
-&nbsp; s2:=[2..5];<br>
-&nbsp; s:=s1+s2; // s=[1..5]<br>
-&nbsp; s:=s1-s2; // s=[1]<br>
-&nbsp; s:=s1*s2; // s=[2..4] </code></p>
+	<p><code><b>var</b> s1,s2,s: <b>set</b> <b>of</b> byte;<br>
+	s1 := [1..4];<br>
+	s2 := [2..5];<br>
+	s := s1 + s2; // s = [1..5]<br>
+	s := s1 - s2; // s = [1]<br>
+	s := s1 * s2; // s = [2..4] </code></p>
 </blockquote>
 <p>К множествам применимы также операции отношения = (равенство), <code>&lt;&gt;</code> 
 (неравенство), &lt;= (вложено) и
 &gt;= (содержит):</p>
 <blockquote>
-	<p><code><b>var</b> <br>
-&nbsp; s1,s2,s: <b>set</b> <b>of</b> byte;<br>
-	&nbsp; b: boolean;<br>
-	<b>begin<br>
-	</b>&nbsp; s1:=[1..4];<br>
-&nbsp; s2:=[2..5];<br>
-&nbsp; s:=[1,2];&nbsp; <br>
-&nbsp; b:=s1=s2; // b=False<br>
-&nbsp; b:=s2&lt;&gt;s; // b=True<br>
-&nbsp; b:=s&lt;=s2; // b=False<br>
-&nbsp; b:=s1&gt;=s; // b=True</code></p>
+	<p><code><b>var</b> s1,s2,s: <b>set</b> <b>of</b> byte;<br>
+	s1 := [1..4];<br>
+	s2 := [2..5];<br>
+	s := [1,2];&nbsp; <br>
+	<strong>var </strong>b := s1=s2; // b = False<br>
+	b := s2 &lt;&gt; s; // b = True<br>
+	b := s &lt;= s2; // b = False<br>
+	b := s1 &gt;= s; // b = True</code></p>
 </blockquote>
 <p>Наконец, операция <code><b>in</b></code>
 определяет, принадлежит ли элемент множеству:</p>
@@ -113,17 +108,17 @@ b=1</code>, то <code>b <b>shl</b> 10=1024</code>, а <code><b>not</b> b=254</c
 Первыми выполняются операции, имеющие высший приоритет. Операции, имеющие 
 одинаковый приоритет, выполняются слева направо.</p>
 <p><b>Таблица приоритетов операций</b></p>
-<table border="0" width="444" id="table1">
+<table border="0" width="544" id="table1">
 	<tr>
 		<td><code>@</code>,
 		<b><code>not</code></b>,
 		<code>^</code>, <code>+</code>, <code>-</code> (унарные), <code>new</code>
 		</td>
-		<td>1 (наивысший)</td>
+		<td style="width: 173px">1 (наивысший)</td>
 	</tr>
 	<tr>
 		<td><code>**</code></td>
-		<td style="width: 142px">2</td>
+		<td style="width: 173px">2</td>
 	</tr>
 	<tr>
 		<td><code>*</code>,
@@ -135,18 +130,18 @@ b=1</code>, то <code>b <b>shl</b> 10=1024</code>, а <code><b>not</b> b=254</c
 		<code><b>shr</b></code>,
 		<code><b>as</b></code>,
 		<code><b>is</b></code></td>
-		<td>3</td>
+		<td style="width: 173px">3</td>
 	</tr>
 	<tr>
 		<td><code>+</code>,
 		<code>-</code> (бинарные),
 		<code><b>or</b></code>,
 		<code><b>xor</b></code> </td>
-		<td>4</td>
+		<td style="width: 173px">4</td>
 	</tr>
 	<tr>
 		<td><code>..</code></td>
-		<td>5</td>
+		<td style="width: 173px">5</td>
 	</tr>
 	<tr>
 		<td><code>=</code>,
@@ -156,11 +151,11 @@ b=1</code>, то <code>b <b>shl</b> 10=1024</code>, а <code><b>not</b> b=254</c
 		<code>&lt;=</code>,
 		<code>&gt;=</code>,
 		<code><b>in</b></code></td>
-		<td>6</td>
+		<td style="width: 173px">6</td>
 	</tr>
 	<tr>
 		<td><code>?: </code>&nbsp;</td>
-		<td>7 (низший)</td>
+		<td style="width: 173px">7 (низший)</td>
 	</tr>
 </table>
 

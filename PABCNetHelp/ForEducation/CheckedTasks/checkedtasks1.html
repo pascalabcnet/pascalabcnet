@@ -58,13 +58,13 @@
 <hr>
 <p><b><font color="#0000FF"><i>Шаг 2.</i> </font></b>Переменные
 <code>a</code> и <code>b</code> 
-считываются из полей ввода, выделенных желтым цветом, с помощью обычной процедуры <code>read</code>. Закроем окно задачника
+считываются из полей ввода, выделенных желтым цветом, с помощью обычной функции <code>
+ReadInteger</code>, <code>ReadReal</code> ... Закроем окно задачника
 и изменим программу следующим образом:
 </p>
 <blockquote>
-        <code><b>uses</b> PT4;<br><b>var </b>a, b: integer;<b><br>
-        begin</b><br>&nbsp;&nbsp;Task('Begin3');<br>
-&nbsp; read(a, b);<br>
+        <code><b>uses</b> PT4;<br><b><br>begin</b><br>&nbsp;&nbsp;Task('Begin3');<br>
+		&nbsp; <b>var (</b>a,b) := ReadInteger2;<br>
         <b>end</b>.</code>
 </blockquote>
 <p>После запуска этого вариант программы окно задачник примет вид:</p>
@@ -86,9 +86,8 @@
 <hr>
 <p><font color="#0000FF"><b><i>Шаг 3.</i> </b></font>Исправим тип исходных данных:</p>
 <blockquote>
-        <code><b>uses</b> PT4;<br><b>var </b>a, b: real;<b><br>
-        begin</b><br>&nbsp;&nbsp;Task('Begin3');<br>
-&nbsp; read(a, b);<br>
+        <code><b>uses</b> PT4;<br><b><br>begin</b><br>&nbsp;&nbsp;Task('Begin3');<br>
+		&nbsp; <b>var (</b>a,b) := ReadReal2;<br>
         <b>end</b>.</code>
 </blockquote>
 <p>Вновь запустим программу:</p>
@@ -106,12 +105,11 @@
 <p><font color="#0000FF"><b><i>Шаг 4.</i> </b></font>Проведем
 вычисления и выведем результирующие данные, но в неверном порядке:</p>
 <blockquote>
-        <code><b>uses</b> PT4;<br><b>var </b>a, b, S, P: real;<b><br>
-        begin</b><br>&nbsp;&nbsp;Task('Begin3');<br>
-&nbsp; read(a, b);<br>
-        &nbsp; S := a * b;<br>
-        &nbsp; P := 2 * (a + b);<br>
-        &nbsp; write(P, S)<br>
+        <code><b>uses</b> PT4;<br><b><br>begin</b><br>&nbsp;&nbsp;Task('Begin3');<br>
+		&nbsp; <b>var (</b>a,b) := ReadReal2;<br>
+        &nbsp; <b>var </b>S := a * b;<br>
+        &nbsp; <b>var </b>P := 2 * (a + b);<br>
+        &nbsp; Print(P, S)<br>
         <b>end</b>.</code>
 </blockquote>
 <p>Вновь запустим программу:</p>
@@ -129,10 +127,12 @@
 <p><font color="#0000FF"><b><i>Шаг 5.</i> </b></font>Исправим
 ошибку:</p>
 <blockquote>
-        <code><b>uses</b> PT4;<br><b>var </b>a, b, S, P: real;<b><br>begin</b><br>&nbsp;&nbsp;Task('Begin3');<br>&nbsp; read(a, b);<br>
-        &nbsp; S := a * b;<br>
-        &nbsp; P := 2 * (a + b);<br>
-        &nbsp; write(S, P)<br><b>end</b>.</code>
+        <code><b>uses</b> PT4;<br><b><br>begin</b><br>&nbsp;&nbsp;Task('Begin3');<br>
+		&nbsp; <b>var (</b>a,b) := ReadReal2;<br>
+        &nbsp; <b>var </b>S := a * b;<br>
+        &nbsp; <b>var </b>P := 2 * (a + b);<br>
+        &nbsp; Print(S, P)<br>
+        <b>end</b>.</code>
 </blockquote>
 <p>После запуска программы увидим следующее окно:</p>
 <blockquote>

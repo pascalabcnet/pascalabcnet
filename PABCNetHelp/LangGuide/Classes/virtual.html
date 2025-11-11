@@ -36,14 +36,14 @@
 &nbsp; public </b><br>
 &nbsp;&nbsp;&nbsp; <b>procedure</b> Print;<br>
 &nbsp;&nbsp;&nbsp; <b>begin</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln('Base');<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Println('Base');<br>
 &nbsp;&nbsp;&nbsp; <b>end</b>;<br>
 &nbsp; <b>end</b>;<br>
 &nbsp; Derived =<b> class</b>(Base)<br>
 	<b>&nbsp; public </b><br>
 &nbsp;&nbsp;&nbsp; <b>procedure</b> Print;<br>
 &nbsp;&nbsp;&nbsp; <b>begin</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln('Derived');<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Println('Derived');<br>
 &nbsp;&nbsp;&nbsp; <b>end</b>;<br>
 &nbsp; <b>end</b>;</code> </p>
 </blockquote>
@@ -79,14 +79,14 @@
 &nbsp; public </b><br>
 &nbsp;&nbsp;&nbsp; <b>procedure</b> Print; <b>virtual</b>;<br>
 &nbsp;&nbsp;&nbsp; <b>begin</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln('Base');<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Println('Base');<br>
 &nbsp;&nbsp;&nbsp; <b>end</b>;<br>
 &nbsp; <b>end</b>;<br>
 &nbsp; Derived =<b> class</b>(Base)<br>
 	<b>&nbsp; public </b><br>
 &nbsp;&nbsp;&nbsp; <b>procedure</b> Print; <b>override</b>;<br>
 &nbsp;&nbsp;&nbsp; <b>begin</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln('Derived');<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Println('Derived');<br>
 &nbsp;&nbsp;&nbsp; <b>end</b>;<br>
 &nbsp; <b>end</b>;</code> </p>
 </blockquote>
@@ -105,7 +105,7 @@ Derived</code> за счет того что решение о вызове ме
 <blockquote>
 	<p><code><b>type</b><br>&nbsp; DerivedTwice1 =<b> class</b>(Derived)<br>
 	<b>&nbsp; public </b><br>&nbsp;&nbsp;&nbsp; <b>procedure</b> Print; </code><code><b>reintroduce</b></code><code>;<br>&nbsp;&nbsp;&nbsp; 
-	<b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln('DerivedTwice1');<br>&nbsp;&nbsp;&nbsp; 
+	<b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Println('DerivedTwice1');<br>&nbsp;&nbsp;&nbsp; 
 	<b>end</b>;<br>&nbsp; <b>end</b>;</code> </p>
 </blockquote>
 <p>Если мы хотим начать новую цепочку виртуальности, то следует использовать и
@@ -114,7 +114,7 @@ Derived</code> за счет того что решение о вызове ме
 	<p><code><b>type</b><br>&nbsp; DerivedTwice2 =<b> class</b>(Derived)<br>
 	<b>&nbsp; public </b><br>&nbsp;&nbsp;&nbsp; <b>procedure</b> Print; </code><code><b>virtual</b>; </code><code>
 	<b>reintroduce</b>;<br>&nbsp;&nbsp;&nbsp; 
-	<b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln('DerivedTwice2');<br>&nbsp;&nbsp;&nbsp; 
+	<b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Println('DerivedTwice2');<br>&nbsp;&nbsp;&nbsp; 
 	<b>end</b>;<br>&nbsp; <b>end</b>;</code> </p>
 </blockquote>
 <p>Если переопределить виртуальную функцию невиртуальной без ключевого слова

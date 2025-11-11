@@ -48,7 +48,7 @@
 <blockquote>
 	<p><code><b>var</b> a: integer := 1;<br>
 	<font color="#666666">{$omp parallel for reduction(+:a)}<br>
-	</font><b>for</b> <b>var</b> i: integer:=1 <b>to</b> 2 <b>do</b><br>
+	</font><b>for</b> <b>var</b> i:=1 <b>to</b> 2 <b>do</b><br>
 	&nbsp; a := a+1;</code></p>
 </blockquote>
 <p>Здесь начальное значение переменной a – единица, для действия + локальные 

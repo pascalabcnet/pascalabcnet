@@ -6,13 +6,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
 <link rel="StyleSheet" href="../../default.css">
-<style type="text/css">
-.auto-style1 {
-	font-family: monospace;
-	font-size: 10pt;
-	color: #000080;
-}
-</style>
 </head>
 <body><H1>Срезы</H1>
 <p>Срез - это набор элементов динамического массива, списка List&lt;T&gt; или строки, 
@@ -34,28 +27,27 @@
 <code>a?[from:to:step]</code>
 </blockquote>
 <p>и содержит копию элементов исходного контейнера в диапазоне [<code>from</code>, 
-<span class="auto-style1">to</span>) с 
-шагом <span class="auto-style1">step</span>. Запись [<span class="auto-style1">from</span>, 
-<span class="auto-style1">to</span>) означает, что элемент с индексом 
-<span class="auto-style1">from</span> включается в 
-диапазон, а элемент с индексом <span class="auto-style1">to</span> - не включается. 
+<code>to</code>) с 
+шагом <code>step</code>. Запись [<code>from</code>, 
+<code>to</code>) означает, что элемент с индексом 
+<code>from</code> включается в 
+диапазон, а элемент с индексом <code>to</code> - не включается. 
 Значения <code>from</code>, 
-<span class="auto-style1">to</span>, <span class="auto-style1">step</span> 
+<code>to</code>, <code>step</code> 
 должны быть целыми.</p>
-<p>Если <span class="auto-style1">step</span> не указывается, то предполагается, что 
-<span class="auto-style1">step</span>=1, т.е. элементы 
+<p>Если <code>step</code> не указывается, то предполагается, что 
+<code>step</code>=1, т.е. элементы 
 расположены непрерывно.</p>
 <p>Тип среза совпадает с типом контейнера: срез элементов массива представляет 
 собой массив, срез строки - строку и срез для List&lt;T&gt; также принадлежит к типу 
 List&lt;T&gt;.</p>
-<p>Для обычных срезов исключение генерируется в следующих случаях. Если индекс <span class="auto-style1">from</span> выходит за границы, то во 
+<p>Для обычных срезов исключение генерируется в следующих случаях. Если индекс <code>from</code> выходит за границы, то во 
 время выполнения программы возникает исключение. Индекс
-<span class="auto-style1">to</span> может выходить за границы на 1, т.е. 
+<code>to</code> может выходить за границы на 1, т.е. 
 находиться в диапазоне [-1..a.Count] для динамических массивов и списков List&lt;T&gt; 
 и в диапазоне [0..s.Length+1] для строк, в противном случае также возникает 
 исключение. </p>
-<p>Если <span class="auto-style1">
-step</span>=0, то для всех видов срезов генерируется исключение.</p>
+<p>Если <code>step</code>=0, то для всех видов срезов генерируется исключение.</p>
 <p>Срезы вида
 <code>a?</code>
 называются <i>безопасными срезами</i> и во всех остальных случаях не генерируют 
@@ -65,30 +57,29 @@ step</span>=0, то для всех видов срезов генерирует
 контейнеру.</p>
 <p>Приведём ряд примеров:</p>
 <blockquote>
-	<p><code><b>var</b> a := Arr(0,1,2,3,4,5,6);<br>Println(a[2:5]); // [2,3,4]<br>
+	<p><code><b>var</b> a array of integer := [0,1,2,3,4,5,6];<br>Println(a[2:5]); // [2,3,4]<br>
 	Println(a[2:a.Length]); // [2,3,4,5,6]<br>Println(a[2:1000]); // Исключение!<br>Println(a?[2:1000]); 
 	// [2,3,4,5,6]<br>Println(a[2:7:2]); // [2,4,6]<br>
 	Println(a[2:0]); // пустой массив<br><b>var</b> s := '0123456';<br>
 	Println(s[2:5]); // 123<br>Println(s[0:2]); // Исключение!<br>Println(s?[0:2]); 
 	// 12<br>Println(s?[-2::2]); // 135<br>Println(s[2:s.Length]); // 12345</code></p>
 </blockquote>
-<p>Шаг <span class="auto-style1">step</span> может быть отрицательным. Например:</p>
+<p>Шаг <code>step</code> может быть отрицательным. Например:</p>
 <blockquote>
 	<p><code><b>var</b> a := Arr(0,1,2,3,4,5,6);<br>Println(a[5:2:-1]); // 
 	[5,4,3]<br>Println(a[2:5:-1]); // пустой массив<br>
 	Println(a[a.Length-1:-1:-2]); // [6,4,2,0]</code></p>
 </blockquote>
-<p>В записи среза выражение <span class="auto-style1">from</span> или выражение
-<span class="auto-style1">to</span> могут быть пропущены, в этом случае в срез 
-попадают все элементы с соответствующей стороны. Если <span class="auto-style1">
-step</span>&gt;0, то пропущенный <span class="auto-style1">from</span> полагается 
-равным индексу первого элемента, пропущенный <span class="auto-style1">to</span> 
+<p>В записи среза выражение <code>from</code> или выражение
+<code>to</code> могут быть пропущены, в этом случае в срез 
+попадают все элементы с соответствующей стороны. Если <code>
+step</code>&gt;0, то пропущенный <code>from</code> полагается 
+равным индексу первого элемента, пропущенный <code>to</code> 
 полагается равным индексу последнего элемента + 1. Если
-<span class="auto-style1">step</span>&lt;0, то пропущенный
-<span class="auto-style1">from</span> полагается равным индексу последнего 
-элемента, а пропущенный <span class="auto-style1">to</span> - индексу первого 
-элемента - 1. </p>
-<p>Например:</p>
+<code>step</code>&lt;0, то пропущенный
+<code>from</code> полагается равным индексу последнего 
+элемента, а пропущенный <code>to</code> - индексу первого 
+элемента - 1. </p><p>Например:</p>
 <blockquote>
 	<p><code><b>var</b> s := '0123456';<br>Println(s[2:]); // 23456<br>
 	Println(s[:4]); // 012<br>Println(s[::-1]); // 6543210</code></p>

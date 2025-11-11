@@ -24,7 +24,7 @@ exit</H1>
 	<p><code>flag := False;<br>
 	<b>for</b> <b>var</b> i:=1 <b>to</b> 10 <b>do</b><br>
 	<b>begin</b><br>
-&nbsp; read(x);<br>
+&nbsp; <strong>var</strong> x := ReadInteger;<br>
 &nbsp; <b>if</b> x&lt;0 <b>then</b> <b>continue</b>; // 
 	пропуск текущей итерации цикла<br>
 &nbsp; <b>if</b> x=5 <b>then</b><br>
@@ -51,6 +51,17 @@ exit</H1>
 </blockquote>
 <p>Вызов <code><b>exit</b></code> в разделе операторов 
 основной программы приводит к ее немедленному завершению.</p>
+<p>Оператор <code><b>exit</b></code> внутри функции может быть вызван с 
+параметром для немедленного возврата значения из функции:</p>
+<blockquote>
+<p><code><b>function</b> Analyze(x: integer): boolean;<br>
+	<b>begin</b><br>
+&nbsp; <b>if</b> x&lt;0 <b>then</b> <br>
+&nbsp;&nbsp;&nbsp; <b>exit</b>(False)<br>
+&nbsp; ...<br>
+	<b>end</b>;</code></p>
+</blockquote>
+	
 <p>Более точно, <code><b>break</b></code>, <code><b>continue</b></code>
 и <code><b>exit</b></code> в <b>
 PascalABC.NET</b> являются операторами вызова специальных внутренних процедур.</p>

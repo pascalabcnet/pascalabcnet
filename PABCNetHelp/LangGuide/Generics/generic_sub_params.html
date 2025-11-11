@@ -16,7 +16,7 @@
 </p>
 <p>Например, <span lang="ru">в классе </span><code>System.Array</code>
 <span lang="ru">имеется несколько статических обобщенных методов с обобщенными 
-подпрограммами в качестве параметров. Так</span>, <code>System.Array.Find</code>
+подпрограммами в качестве параметров. Так</span>, <code>System.Array.FindAll</code>
 <span lang="ru">имеет следующий прототип:</span></p>
 <blockquote>
 	<p><code>System.Array.FindAll&lt;T&gt;(a: <b>array</b> <b>of</b> T; pred: 
@@ -27,11 +27,7 @@
 <code>pred</code><span lang="ru">.</span></p>
 <p><span lang="ru">Приведем пример вызова этой функции:</span></p>
 <blockquote>
-	<p><code><b>function</b> f(x: integer): boolean;<br>
-	<b>begin</b><br>
-&nbsp; Result := ;<br>
-	<b>end</b>;</code></p>
-	<p><code><b>var</b> a := Seq(1,3,6,5,8);<br>
+	<p><code><b>var</b> a := [1,3,6,5,8];<br>
 	<b>var</b> b := System.Array.FindAll(a,x -&gt; x <b>mod</b> 2 = 0);</code></p>
 </blockquote>
 <p><span lang="ru">Здесь возвращается массив </span><code>b</code><span lang="ru">, 

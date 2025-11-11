@@ -27,7 +27,7 @@ protected, атрибуты static, virtual и override для методов. <
 <blockquote>
 	<p><code><b>type </b>AuthorAttribute = <strong>class</strong>(System.Attribute)<br>&nbsp; 
 	<strong>auto</strong> property Name: string;<br>&nbsp; <strong>constructor</strong> (n: string);<br>&nbsp; 
-	<strong>begin</strong><br>&nbsp;&nbsp;&nbsp; name := n;<br>&nbsp; <strong>end</strong>;&nbsp; <strong><br>end</strong>;</code></p>
+	<strong>begin</strong><br>&nbsp;&nbsp;&nbsp; Name := n;<br>&nbsp; <strong>end</strong>;&nbsp; <strong><br>end</strong>;</code></p>
 </blockquote>
 <p>Следует обратить внимание, что класс атрибута принято оканчивать на <code>
 Attribute</code>.</p>
@@ -42,7 +42,7 @@ Attribute</code>.</p>
 <p>Следует обратить внимание, что окончание <code>Attribute</code> можно не 
 указывать.</p>
 <p>Распознать, помечен ли данный класс атрибутом, можно, используя 
-отражение: </p>
+анализ типа: </p>
 <blockquote>
 	<p><code><strong>begin</strong> <br>&nbsp; <strong>var</strong> t := typeof(My);
 	<br>&nbsp; <strong>var</strong> attrs := t.GetCustomAttributes(false); <br>&nbsp;
@@ -51,7 +51,7 @@ Attribute</code>.</p>
 	<strong>then</strong> <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Print(auth.Name);
 	<br><strong>end</strong>.</code></p>
 </blockquote>
-<p>След</p>
+<p>&nbsp;</p>
 </body>
 
 </html>

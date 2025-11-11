@@ -72,6 +72,9 @@ const
   AllDelimiters = ' <>=^`|~$№§!"#%&''()*,+-./:;?@[\]_{}«­·»'#9#10#13;
 //{{{--doc: Конец секции стандартных констант для документации }}} 
 
+// Внутренняя функция для интерполированных строк
+///--
+function __ApplyO2S(obj: object): object;
 
 ///--
 const
@@ -2437,6 +2440,7 @@ function CommandLineArgs: array of string;
 /// Преобразует объект в строковое представление
 function ObjectToString(obj: object): string;
 
+
 // -----------------------------------------------------
 //>>     Подпрограммы для работы с динамическими массивами # Subroutines for array of T
 // -----------------------------------------------------
@@ -2561,14 +2565,14 @@ function SeqRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100):
 /// Возвращает последовательность из n случайных вещественных элементов
 function SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10; digits: integer := 1): sequence of real;
 /// Возвращает последовательность из count элементов, заполненных значениями f(i)
-function SeqGen<T>(count: integer; f: integer->T): sequence of T;
+function SeqGen<T>(count: integer; f: integer → T): sequence of T;
 /// Возвращает последовательность из count элементов, заполненных значениями f(i), начиная с i=from
 function SeqGen<T>(count: integer; f: integer->T; from: integer): sequence of T;
 /// Возвращает последовательность из count элементов, начинающуюся с first, с функцией next перехода от предыдущего к следующему 
 function SeqGen<T>(count: integer; first: T; next: T->T): sequence of T;
 /// Возвращает последовательность из count элементов, начинающуюся с first и second, 
 ///с функцией next перехода от двух предыдущих к следующему 
-function SeqGen<T>(count: integer; first, second: T; next: (T,T) ->T): sequence of T;
+function SeqGen<T>(count: integer; first, second: T; next: (T,T) → T): sequence of T;
 /// Возвращает последовательность элементов с начальным значением first, 
 ///функцией next перехода от предыдущего к следующему и условием pred продолжения последовательности 
 function SeqWhile<T>(first: T; next: T->T; pred: T->boolean): sequence of T;
@@ -5065,6 +5069,13 @@ begin
   var res := new StringBuilder;
   _ObjectToStringHelper(obj, res);
   Result := res.ToString;
+end;
+
+function __ApplyO2S(obj: object): object;
+begin
+  if obj is System.IFormattable then
+    Result := obj
+  else Result := ObjectToString(obj);
 end;
 
 function NumberFormat(DecimalSeparator: string; GroupSeparator: string): NumberFormatInfo;

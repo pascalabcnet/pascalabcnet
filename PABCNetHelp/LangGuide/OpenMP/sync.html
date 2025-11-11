@@ -26,11 +26,11 @@
 <p>Критические секции можно использовать при обращении к общим переменным, чтобы 
 избежать потерь данных.</p>
 <blockquote>
-	<p><code><b>var</b> a:integer:=0;<br>
+	<p><code><b>var</b> a: integer := 0;<br>
 	<font color="#666666">{$omp parallel for}<br>
-	</font><b>for</b> <b>var</b> i:integer:=1 <b>to</b> 100 <b>do</b><br>
-	&nbsp; {$omp critical}<br>
-	&nbsp; a:=a+1;</code></p>
+	</font><b>for</b> <b>var</b> i:=1 <b>to</b> 100 <b>do</b><br>
+	<font color="#666666">&nbsp; {$omp critical}<br>
+	</font>&nbsp; a := a + 1;</code></p>
 </blockquote>
 <p>Здесь критическую секцию можно использовать вместо редукции. Весь оператор 
 <code>a:=a+1</code> выполнится одним потоком и только потом – другим. Однако использование 
@@ -40,13 +40,13 @@
 <p>Но не во всех случаях использование критических секций помогает обеспечить 
 корректную работу параллельных конструкций.</p>
 <blockquote>
-	<p><code><b>var</b> a:integer := 0;<br>
+	<p><code><b>var</b> a: integer := 0;<br>
 	<font color="#666666">{$omp parallel sections}<br>
 	</font><b>begin</b><br>
 	<font color="#666666">&nbsp; {$omp critical}<br>
-	</font>&nbsp; a:=1;<br>
+	</font>&nbsp; a := 1;<br>
 	<font color="#666666">&nbsp; {$omp critical}<br>
-	</font>&nbsp; a:=a+1;<br>
+	</font>&nbsp; a := a+1;<br>
 	<b>end</b>;</code></p>
 </blockquote>
 <p>Значение переменной a зависит от того, в каком порядке выполнятся секции. 

@@ -68,11 +68,10 @@ uses</strong></span>, каждая из которых
 	<code><b>program</b> MyProgram;<br>
 	<b>var</b> <br>
 &nbsp; a,b: integer;<br>
-&nbsp; x: real;<br>
 	<b>begin<br>
-	</b>&nbsp; readln(a,b);<br>
-	&nbsp; x := a/b;<br>
-	&nbsp; writeln(x);<br>
+	</b>&nbsp; (a,b) := ReadInteger2;<br>
+	<strong>&nbsp; var </strong>x := a/b;<br>
+	&nbsp; Println(x);<br>
 	<b>end</b>.</code></blockquote>
 <p>или</p>
 <blockquote>
@@ -80,6 +79,16 @@ uses</strong></span>, каждая из которых
 	<b>begin<br>
 	</b>&nbsp; <strong>var</strong> x := 100;<br>&nbsp; <strong>var</strong> y := 
 	100;<br>&nbsp; <strong>var</strong> r := 50;<br>&nbsp; Circle(x,y,r);<br>
+	<b>end</b>.</code></blockquote>
+<p>Глобальные описания переменных до begin основной программы в основном 
+используются редко и считаются устаревшим стилем. Глобальные описания переменных 
+могут использоваться в учебных программах, в которых несколько процедур 
+используют эти переменные:</p>
+<blockquote>
+	<code><b>uses</b> GraphWPF;<br><br><strong>var</strong> x: integer;<br><br>
+	<strong>procedure</strong> Draw := Circle(x,300,5);<br><br>
+	<b>begin<br>
+	</b>&nbsp; x := 100;<br>&nbsp; Draw;<br>
 	<b>end</b>.</code></blockquote>
 <p>Кроме того, имеется возможность записывать программы без внешнего begin-end. 
 Для этого в начале программы используется префикc ##:</p>
@@ -91,16 +100,10 @@ uses</strong></span>, каждая из которых
 секцию uses и описывать процедуры и функции:</p>
 <blockquote>
 	<code>
-	<div class="language-pascal highlighter-rouge">
-		<div class="highlight">
-			<pre class="highlight"><span class="p">##
-<strong>uses</strong> GraphWPF;</span>
-<span class="k"><strong>function</strong></span> <span class="n">Draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> real<span class="p">)</span> <span class="p">:=</span> Circle(x,y,5)<span class="p">;</span>
-<span class="p">Draw(100,100);</span></pre>
-		</div>
-	</div>
-	</code></blockquote>
-<p>&nbsp;</p>
+	<span class="p">##<br>
+<strong>uses</strong> GraphWPF;</span><br>
+<span class="k"><strong>function</strong></span> <span class="n">Draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> real<span class="p">)</span> <span class="p">:=</span> Circle(x,y,5)<span class="p">;</span><br>
+<span class="p">Draw(100,100);</span></code></blockquote>
 </body>
 
 </html>
