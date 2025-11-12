@@ -13903,6 +13903,12 @@ begin
       yield i;
 end;
 
+/// Возвращает строковое представление массива вещественных чисел с фиксированным количеством знаков после десятичной точки
+function ToString(Self: array of real; digits: integer): string; extensionmethod;
+begin
+  Result := Self.Select(x -> Round(x,digits)).JoinToString;
+end;
+
 function NextCombHelper(ind: array of integer; m,n: integer): boolean;
 begin
   for var i:=m-1 downto 0 do
