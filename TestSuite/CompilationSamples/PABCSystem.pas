@@ -11274,6 +11274,14 @@ begin
     Result *= x;
 end;
 
+/// Возвращает произведение элементов последовательности
+function Product(Self: sequence of int64): int64; extensionmethod;
+begin
+  Result := 1;
+  foreach var x in Self do
+    Result *= x;
+end;
+
 /// Возвращает произведение элементов последовательности, спроектированных на числовое значение
 function Product<T>(Self: sequence of T; f: T->real): real; extensionmethod;
 begin
@@ -13901,6 +13909,12 @@ begin
   for var i := 0 to Self.High do
     if cond(Self[i], i) then
       yield i;
+end;
+
+/// Возвращает строковое представление массива вещественных чисел с фиксированным количеством знаков после десятичной точки
+function ToString(Self: array of real; digits: integer): string; extensionmethod;
+begin
+  Result := Self.Select(x -> Round(x,digits)).JoinToString;
 end;
 
 function NextCombHelper(ind: array of integer; m,n: integer): boolean;

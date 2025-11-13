@@ -35,6 +35,7 @@
 <param name="Keyword" value="Sort">
 <param name="Keyword" value="SortDescending">
 <param name="Keyword" value="Swap">
+<param name="Keyword" value="ToString">
 <param name="Keyword" value="Transform">
 <param name="Keyword" value="расширение"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
@@ -187,6 +188,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по убыванию по ключу</td></tr>
 <tr><td><code><b>function</b> Swap&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; i, j: integer): <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет местами элементы массива с индексами i и j</td></tr>
+<tr><td><code><b>function</b> ToString(Self: <b>array</b>  <b>of</b> real; digits: integer): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строковое представление массива вещественных чисел с фиксированным количеством знаков после десятичной точки</td></tr>
 <tr><td><code><b>function</b> Transform&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; f: T-&gt;T): <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива по заданному правилу</td></tr>
 <tr><td><code><b>function</b> Transform&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; f: (T,integer)-&gt;T): <b>array</b>  <b>of</b> T;</code>

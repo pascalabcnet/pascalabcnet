@@ -11274,6 +11274,14 @@ begin
     Result *= x;
 end;
 
+/// Возвращает произведение элементов последовательности
+function Product(Self: sequence of int64): int64; extensionmethod;
+begin
+  Result := 1;
+  foreach var x in Self do
+    Result *= x;
+end;
+
 /// Возвращает произведение элементов последовательности, спроектированных на числовое значение
 function Product<T>(Self: sequence of T; f: T->real): real; extensionmethod;
 begin
