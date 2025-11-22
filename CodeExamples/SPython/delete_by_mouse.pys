@@ -12,7 +12,7 @@ def DrawStatusText():
         StatusRect.Text = ('Удалено квадратов: ' + str(CurrentDigit-1) 
                         + '\tОшибок: ' + str(Mistakes))
     else: 
-        StatusRect.Text = ('Игра окончена. Время: ' + str(Milliseconds // 1000) 
+        StatusRect.Text = ('Игра окончена. Время: ' + str(Milliseconds() // 1000) 
                         + ' с.\tОшибок: ' + str(Mistakes))
 
 

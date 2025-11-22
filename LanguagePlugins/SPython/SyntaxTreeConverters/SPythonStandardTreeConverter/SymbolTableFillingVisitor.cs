@@ -10,7 +10,7 @@ namespace Languages.SPython.Frontend.Converters
     {
         protected SymbolTable symbolTable;
 
-        public SymbolTableFillingVisitor(Dictionary<string, HashSet<string>> par) {
+        public SymbolTableFillingVisitor(Dictionary<string, Dictionary<string, bool>> par) {
             symbolTable = new SymbolTable(par);
         }
 
@@ -164,18 +164,20 @@ namespace Languages.SPython.Frontend.Converters
 
             if (_from_import_statement.is_star)
             {
-                foreach (string name in symbolTable.ModuleNameToSymbols[module_name])
-                    symbolTable.AddAlias(name, name, module_name);
+                foreach (var kv in symbolTable.ModuleNameToSymbols[module_name])
+                    symbolTable.AddAlias(kv.Key, kv.Value, kv.Key, module_name);
             }
             else
             {
                 foreach (as_statement as_Statement in _from_import_statement.imported_names.as_statements)
                 {
-                    if (!symbolTable.ModuleNameToSymbols[module_name].Contains(as_Statement.real_name.name))
+                    var namesDict = symbolTable.ModuleNameToSymbols[module_name];
+
+                    if (!namesDict.ContainsKey(as_Statement.real_name.name))
                         throw new SPythonSyntaxVisitorError("MODULE_{0}_HAS_NO_NAME_{1}",
                        _from_import_statement.source_context, module_real_name, as_Statement.real_name.name);
 
-                    symbolTable.AddAlias(as_Statement.real_name.name, as_Statement.alias.name, module_name);
+                    symbolTable.AddAlias(as_Statement.real_name.name, namesDict[as_Statement.real_name.name], as_Statement.alias.name, module_name);
                 }
             }
         }
@@ -196,21 +198,23 @@ namespace Languages.SPython.Frontend.Converters
         protected enum NameKind
         {
             // Имя отсутствует в текущем контексте
-            Unknown                 = 0b_0000_0000,
+            Unknown                  = 0b_0000_0000,
             // Ключевые слова языка
-            Keyword                 = 0b_0000_0001,
+            Keyword                  = 0b_0000_0001,
             // Имя глобальной переменной
-            GlobalVariable          = 0b_0000_0010,
+            GlobalVariable           = 0b_0000_0010,
             // Имя глобальной функции
-            GlobalFunction          = 0b_0000_0100,
-            // Имя подключённого модуля или его псевдоним 
-            ModuleAlias             = 0b_0000_1000,
-            // Имя, подключённое из модуля, или его псевдоним 
-            ImportedNameAlias       = 0b_0001_0000,
+            GlobalFunction           = 0b_0000_0100,
+            // Имя подключённого модуля или его псевдоним
+            ModuleAlias              = 0b_0000_1000,
+            // Имя, подключённое из модуля (не переменная или константа), или его псевдоним 
+            ImportedNotVariableAlias = 0b_0001_0000,
+            // Подключенная из модуля константа или переменная
+            ImportedVariableAlias    = 0b_0010_0000,
             // Локальня переменная
-            LocalVariable           = 0b_0010_0000,
+            LocalVariable            = 0b_0100_0000,
             // Имя глобальной forward-объявленной функции 
-            ForwardDeclaredFunction = 0b_0100_0000,
+            ForwardDeclaredFunction  = 0b_1000_0000,
         }
 
         protected class SymbolTable
@@ -230,7 +234,7 @@ namespace Languages.SPython.Frontend.Converters
                     nameTypes.Add(keyword, NameKind.Keyword);
             }
 
-            public SymbolTable(Dictionary<string, HashSet<string>> par)
+            public SymbolTable(Dictionary<string, Dictionary<string, bool>> par)
             {
                 ModuleNameToSymbols = par;
                 FillKeywords();
@@ -275,9 +279,9 @@ namespace Languages.SPython.Frontend.Converters
             private LocalScope localVariables = new LocalScope();
 
             // moduleRealName -> functions and global variables in this module real names
-            private Dictionary<string, HashSet<string>> moduleNameToSymbols;
+            private Dictionary<string, Dictionary<string, bool>> moduleNameToSymbols;
 
-            public Dictionary<string, HashSet<string>> ModuleNameToSymbols
+            public Dictionary<string, Dictionary<string, bool>> ModuleNameToSymbols
             {
                 get => moduleNameToSymbols;
                 set
@@ -289,8 +293,8 @@ namespace Languages.SPython.Frontend.Converters
                 foreach (string standardLibrary in StandardLibraries)
                 {
                     if (moduleNameToSymbols.ContainsKey(standardLibrary))
-                        foreach (string name in moduleNameToSymbols[standardLibrary])
-                            AddAlias(name, name, standardLibrary);
+                        foreach (var kv in moduleNameToSymbols[standardLibrary])
+                            AddAlias(kv.Key, kv.Value, kv.Key, standardLibrary);
                 }
             }
 
@@ -315,10 +319,11 @@ namespace Languages.SPython.Frontend.Converters
             public bool IsVisibleToAssign(string name)
             {
                 NameKind kind = this[name];
-                if (kind == NameKind.Unknown) return false;
+                if (kind == NameKind.Unknown || kind == NameKind.ImportedNotVariableAlias) return false;
+
                 if (!isInFunctionBody) return true;
                 return (kind != NameKind.GlobalVariable &&
-                    kind != NameKind.ImportedNameAlias) ||
+                    kind != NameKind.ImportedVariableAlias) ||
                     NamesAddedByGlobal.Contains(name);
             }
 
@@ -363,12 +368,12 @@ namespace Languages.SPython.Frontend.Converters
                 else nameTypes.Add(name, nameType);
             }
 
-            public void AddAlias(string realName, string alias, string moduleName)
+            public void AddAlias(string realName, bool isVariable, string alias, string moduleName)
             {
                 if (aliasToRealNameAndModuleName.ContainsKey(alias))
                     aliasToRealNameAndModuleName[alias] = Tuple.Create(realName, moduleName);
                 else aliasToRealNameAndModuleName.Add(alias, Tuple.Create(realName, moduleName));
-                AddGlobalName(alias, NameKind.ImportedNameAlias);
+                AddGlobalName(alias, isVariable ? NameKind.ImportedVariableAlias : NameKind.ImportedNotVariableAlias);
             }
 
             public void AddModuleAlias(string realName, string alias)

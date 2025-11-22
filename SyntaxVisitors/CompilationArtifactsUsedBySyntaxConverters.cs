@@ -6,11 +6,11 @@ namespace PascalABCCompiler
 {
     public struct CompilationArtifactsUsedBySyntaxConverters
     {
-        public CompilationArtifactsUsedBySyntaxConverters(Dictionary<string, HashSet<string>> namesFromUsedUnits) 
+        public CompilationArtifactsUsedBySyntaxConverters(Dictionary<string, Dictionary<string, bool>> namesFromUsedUnits) 
         {
             NamesFromUsedUnits = namesFromUsedUnits;
         }
 
-        public Dictionary<string, HashSet<string>> NamesFromUsedUnits { get; }
+        public Dictionary<string, Dictionary<string, bool>> NamesFromUsedUnits { get; }
     }
 }
