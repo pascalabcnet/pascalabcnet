@@ -2718,7 +2718,7 @@ namespace CodeCompletion
                 }
             }
 
-            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense)
+            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense && currentUnitLanguage.LanguageInformation.SyntaxTreeIsConvertedAfterUsedModulesCompilation)
             {
                 var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
 
@@ -3300,7 +3300,7 @@ namespace CodeCompletion
                 }
             }
 
-            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense)
+            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense && currentUnitLanguage.LanguageInformation.SyntaxTreeIsConvertedAfterUsedModulesCompilation)
             {
                 var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
 
