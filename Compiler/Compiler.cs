@@ -141,12 +141,12 @@
 
 #define DEBUG
 
+using Languages.Facade;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.PCU;
 using PascalABCCompiler.SemanticTreeConverters;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.TreeRealization;
-
 using System;
 using System.CodeDom.Compiler;
 using System.Collections;
@@ -154,8 +154,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-
-using Languages.Facade;
 
 namespace PascalABCCompiler
 {
@@ -240,8 +238,10 @@ namespace PascalABCCompiler
 
         /// <summary>
         /// Глобальные имена сущностей из зависимостей интерфейсной части
+        /// Внешний словарь по имени модуля выдает словарь сущностей.
+        /// Внутренний словарь по имени сущности выдает флаг о том, является ли она переменной.
         /// </summary>
-        public Dictionary<string, HashSet<string>> NamesFromUsedUnits { get; } = new Dictionary<string, HashSet<string>>();
+        public Dictionary<string, Dictionary<string, bool>> NamesFromUsedUnits { get; } = new Dictionary<string, Dictionary<string, bool>>();
 
         public UnitState State = UnitState.BeginCompilation;
     }
@@ -3019,11 +3019,14 @@ namespace PascalABCCompiler
 
             //Console.WriteLine("Compiling Interface "+ unitFileName);//DEBUG
 
-            // заполняем currentUnit.NamesFromUsedUnits
-            CollectNamesFromUsedUnits(currentUnit);
-            
-            // конвертация синтаксического дерева с использованием данных из откомпилированных зависимостей
-            ConvertSyntaxTreeAfterUsedModulesCompilation(currentUnit);
+            if (currentUnit.Language.LanguageInformation.SyntaxTreeIsConvertedAfterUsedModulesCompilation)
+            {
+                // заполняем currentUnit.NamesFromUsedUnits
+                CollectNamesFromUsedUnits(currentUnit);
+
+                // конвертация синтаксического дерева с использованием данных из откомпилированных зависимостей
+                ConvertSyntaxTreeAfterUsedModulesCompilation(currentUnit);
+            }
 
             // компилируем интерфейс текущего модуля EVA
             CompileCurrentUnitInterface(unitFileName, currentUnit, docs);
@@ -3115,10 +3118,35 @@ namespace PascalABCCompiler
 
                     string unitName = Path.GetFileNameWithoutExtension(unit.UnitFileName);
 
-                    currentUnit.NamesFromUsedUnits.Add(unitName, new HashSet<string>());
-                    foreach (var names in (unit.SemanticTree as common_unit_node).scope.Symbols.DictCaseSensitive.Skip(1))
+                    currentUnit.NamesFromUsedUnits.Add(unitName, new Dictionary<string, bool>());
+
+                    var unitScope = (unit.SemanticTree as common_unit_node).scope;
+
+                    foreach (var names in unitScope.Symbols.DictCaseSensitive.Skip(1))
                     {
-                        currentUnit.NamesFromUsedUnits[unitName].Add(names.Key);
+                        definition_node symInfo = names.Value.InfoList[0].sym_info;
+                        
+                        // Если достаем из pcu, то надо восстановить полную информацию
+                        if (symInfo is wrapped_definition_node wdn)
+                        {
+                            // У некоторых дубликатов sym_info offset не задан, ищем тот, где задан
+                            symInfo = names.Value.InfoList.Find(si => ((wrapped_definition_node)si.sym_info).offset > 0)?.sym_info;
+
+                            if (symInfo == null)
+                                continue;
+
+                            wdn = (wrapped_definition_node)symInfo;
+
+                            if (wdn.is_synonim)
+                                symInfo = wdn.PCUReader.CreateTypeSynonim(wdn.offset, names.Key);
+                            else
+                                symInfo = wdn.PCUReader.CreateInterfaceMember(wdn.offset, names.Key);
+                        }
+
+                        currentUnit.NamesFromUsedUnits[unitName].Add(names.Key,
+                            symInfo.general_node_type == general_node_type.variable_node
+                            || symInfo.general_node_type == general_node_type.constant_definition
+                            || symInfo.general_node_type == general_node_type.event_node);
                     }
                 }
             }

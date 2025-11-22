@@ -22,6 +22,8 @@ namespace Languages.SPython.Frontend.Data
 
         public override string[] SystemUnitNames => new string[] { "SPythonSystem", "SPythonHidden", "SPythonSystemPys" };
 
+        public override bool SyntaxTreeIsConvertedAfterUsedModulesCompilation => true;
+
         public override bool ApplySyntaxTreeConvertersForIntellisense => true;
 
         public override BaseKeywords KeywordsStorage { get; } = new SPythonParser.SPythonKeywords();

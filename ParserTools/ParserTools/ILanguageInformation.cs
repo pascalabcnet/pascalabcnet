@@ -171,6 +171,11 @@ namespace PascalABCCompiler.Parsers
         int FindParamDelimForIndexer(string descriptionAfterOpeningParenthesis, int number);
 
         /// <summary>
+        /// Нужно ли вызывать конверторы синтаксического дерева, срабатывающие после компиляции зависимостей
+        /// </summary>
+        bool SyntaxTreeIsConvertedAfterUsedModulesCompilation { get; }
+
+        /// <summary>
         /// Вызывать ли преобразователей синтаксического дерева в работе Intellisense
         /// </summary>
         bool ApplySyntaxTreeConvertersForIntellisense { get; }
