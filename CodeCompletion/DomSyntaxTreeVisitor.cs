@@ -2799,7 +2799,6 @@ namespace CodeCompletion
             {
                 return symKind == SymbolKind.Variable
                     || symKind == SymbolKind.Constant
-                    || symKind == SymbolKind.Delegate
                     || symKind == SymbolKind.Event;
             }
 
