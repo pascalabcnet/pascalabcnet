@@ -10,23 +10,37 @@
 
 uses PascalABCCompiler, System.IO, System.Diagnostics;
 
+type
+  LanguageTestsInfo = auto class
+ 
+    languageName: string;
+    languageRootDirName: string;
+    languageExtension: string;
+    commentSymbols: string;
+end;
+
 var
   TestSuiteDir: string;
+  CurrentLanguageInfo: LanguageTestsInfo;
   nogui: boolean;
-  
+
 var
   PathSeparator: string := Path.DirectorySeparatorChar;
+
+const
+  LanguagesTestsInfos = |new LanguageTestsInfo('PascalABC.NET', 'PascalABCTests', '.pas', '//'),
+                         new LanguageTestsInfo('SPython', 'SPythonTests', '.pys', '#')|;
 
 function IsUnix: boolean;
 begin
   Result := (System.Environment.OSVersion.Platform = System.PlatformID.Unix) or (System.Environment.OSVersion.Platform = System.PlatformID.MacOSX);  
 end;
 
-function GetTestSuiteDir: string;
+function GetCurrentTestSuiteDir(languageRootDir : string): string;
 begin
   var dir := Path.GetDirectoryName(GetEXEFileName());
   var ind := dir.LastIndexOf('bin');
-  Result := dir.Substring(0, ind) + 'TestSuite';
+  Result := dir.Substring(0, ind) + 'TestSuite' + PathSeparator + languageRootDir;
 end;
 
 function GetLibDir: string;
@@ -35,24 +49,32 @@ begin
   Result := dir + PathSeparator + 'Lib';
 end;
 
+function GetCodeExamplesDir: string;
+begin
+  var dir := Path.GetDirectoryName(GetEXEFileName());
+  Result := (new DirectoryInfo(dir)).Parent.FullName + PathSeparator + 'CodeExamples' + PathSeparator + CurrentLanguageInfo.languageName;
+end;
+
 procedure CompileErrorTests(withide: boolean);
 begin
   
+  var dir := TestSuiteDir + PathSeparator + 'errors';
+  if not Directory.Exists(dir) then exit;
   
-  
-  var files := Directory.GetFiles(TestSuiteDir + PathSeparator + 'errors', '*.pas');
+  var commentSymbols := CurrentLanguageInfo.commentSymbols;
+  var files := Directory.GetFiles(dir, $'*{CurrentLanguageInfo.languageExtension}');
   for var i := 0 to files.Length - 1 do
   begin
     var comp := new Compiler();
     var content := &File.ReadAllText(files[i]);
-    if content.StartsWith('//winonly') and IsUnix then
+    if content.StartsWith(commentSymbols + 'winonly') and IsUnix then
       continue;
-    if content.StartsWith('//exclude') then
+    if content.StartsWith(commentSymbols + 'exclude') then
       continue;
     var errorMessage := '';
-    if content.StartsWith('//!') then
+    if content.StartsWith(commentSymbols + '!') then
     begin
-      errorMessage := content.Substring(3, content.IndexOf(System.Environment.NewLine)-3).Trim;
+      errorMessage := content.Substring(commentSymbols.Length + 1, content.IndexOf(System.Environment.NewLine) - commentSymbols.Length + 1).Trim;
     end;
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
@@ -78,11 +100,11 @@ begin
           raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
         System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       end;
-      if (errorMessage <> '') and (comp.ErrorsList[comp.ErrorsList.Count-1].Message.Trim <> errorMessage) then
+      if (errorMessage <> '') and (comp.ErrorsList[comp.ErrorsList.Count - 1].Message.Trim <> errorMessage) then
       begin
         if nogui then
-          raise new Exception('Wrong error message in file ' + files[i] + ', should '+errorMessage+', is '+comp.ErrorsList[comp.ErrorsList.Count-1].Message);
-        System.Windows.Forms.MessageBox.Show('Wrong error message in file ' + files[i] + ', should '+errorMessage+', is '+comp.ErrorsList[comp.ErrorsList.Count-1].Message);
+          raise new Exception('Wrong error message in file ' + files[i] + ', should ' + errorMessage + ', is ' + comp.ErrorsList[comp.ErrorsList.Count - 1].Message);
+        System.Windows.Forms.MessageBox.Show('Wrong error message in file ' + files[i] + ', should ' + errorMessage + ', is ' + comp.ErrorsList[comp.ErrorsList.Count - 1].Message);
       end;
     end;
     if i mod 50 = 0 then
@@ -96,15 +118,16 @@ begin
   
   var comp := new Compiler();
   
-  var files := Directory.GetFiles(TestSuiteDir, '*.pas');
+  var commentSymbols := CurrentLanguageInfo.commentSymbols;
+  var files := Directory.GetFiles(TestSuiteDir, $'*{CurrentLanguageInfo.languageExtension}');
   for var i := 0 to files.Length - 1 do
   begin
     if IsUnix then
-      writeln('Compile file '+files[i]);
+      Println('Compile file ' + files[i]);
     var content := &File.ReadAllText(files[i]);
-    if content.StartsWith('//winonly') and IsUnix then
+    if content.StartsWith(commentSymbols + 'winonly') and IsUnix then
       continue;
-    if content.StartsWith('//nopabcrtl') and withdll then
+    if content.StartsWith(commentSymbols + 'nopabcrtl') and withdll then
       continue;
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
@@ -125,21 +148,21 @@ begin
       System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       Halt();
     end;
-    if content.StartsWith('//!') then
+    if content.StartsWith(commentSymbols + '!') then
     begin
-      var warning := content.Substring(3, content.IndexOf(System.Environment.NewLine)-3).Trim;
+      var warning := content.Substring(commentSymbols.Length + 1, content.IndexOf(System.Environment.NewLine) - commentSymbols.Length + 1).Trim;
       if comp.Warnings.Count = 0 then
       begin
         if nogui then
-          raise new Exception('Missing warning in '+files[i]);
-        System.Windows.Forms.MessageBox.Show('Missing warning in '+files[i]);
+          raise new Exception('Missing warning in ' + files[i]);
+        System.Windows.Forms.MessageBox.Show('Missing warning in ' + files[i]);
         Halt();
       end;
       if comp.Warnings[0].Message <> warning then
       begin
         if nogui then
-          raise new Exception('Wrong warning for '+files[i]+': '+comp.Warnings[0].Message);
-        System.Windows.Forms.MessageBox.Show('Wrong warning for '+files[i]+': '+comp.Warnings[0].Message);
+          raise new Exception('Wrong warning for ' + files[i] + ': ' + comp.Warnings[0].Message);
+        System.Windows.Forms.MessageBox.Show('Wrong warning for ' + files[i] + ': ' + comp.Warnings[0].Message);
         Halt();
       end;
     end;
@@ -156,11 +179,15 @@ begin
   
   var comp := new Compiler();
   
-  var files := Directory.GetFiles(TestSuiteDir + PathSeparator + dir, '*.pas');
+  var fullDirName := TestSuiteDir + PathSeparator + dir;
+  if not Directory.Exists(fullDirName) then exit;
+  
+  var commentSymbols := CurrentLanguageInfo.commentSymbols;
+  var files := Directory.GetFiles(fullDirName, $'*{CurrentLanguageInfo.languageExtension}');
   for var i := 0 to files.Length - 1 do
   begin
     var content := &File.ReadAllText(files[i]);
-    if content.StartsWith('//winonly') and IsUnix then
+    if content.StartsWith(commentSymbols + 'winonly') and IsUnix then
       continue;
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
@@ -190,12 +217,16 @@ begin
   var comp := new Compiler();
   // Не пропускать ошибки сохранения PCU, в тесте создания PCU
   comp.InternalDebug.SkipPCUErrors := false;
-  var files := Directory.GetFiles(TestSuiteDir + PathSeparator + 'units', '*.pas');
+  
   var dir := TestSuiteDir + PathSeparator + 'units' + PathSeparator;
+  if not Directory.Exists(dir) then exit;
+  
+  var commentSymbols := CurrentLanguageInfo.commentSymbols;
+  var files := Directory.GetFiles(TestSuiteDir + PathSeparator + 'units', $'*{CurrentLanguageInfo.languageExtension}');
   for var i := 0 to files.Length - 1 do
   begin
     var content := &File.ReadAllText(files[i]);
-    if content.StartsWith('//winonly') and IsUnix then
+    if content.StartsWith(commentSymbols + 'winonly') and IsUnix then
       continue;
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
@@ -221,11 +252,16 @@ begin
   System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
   var comp := new Compiler();
   
-  var files := Directory.GetFiles(TestSuiteDir + PathSeparator + 'usesunits', '*.pas');
+  var dir := TestSuiteDir + PathSeparator + 'usesunits';
+  
+  if not Directory.Exists(dir) then exit;
+  
+  var commentSymbols := CurrentLanguageInfo.commentSymbols;
+  var files := Directory.GetFiles(dir, $'*{CurrentLanguageInfo.languageExtension}');
   for var i := 0 to files.Length - 1 do
   begin
     var content := &File.ReadAllText(files[i]);
-    if content.StartsWith('//winonly') and IsUnix then
+    if content.StartsWith(commentSymbols + 'winonly') and IsUnix then
       continue;
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
@@ -248,7 +284,11 @@ end;
 procedure CopyPCUFiles;
 begin
   System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
-  var files := Directory.GetFiles(TestSuiteDir + PathSeparator + 'units', '*.pcu');
+  
+  var dir := TestSuiteDir + PathSeparator + 'units';
+  if not Directory.Exists(dir) then exit;
+  
+  var files := Directory.GetFiles(dir, '*.pcu');
   
   foreach fname: string in files do
   begin
@@ -263,7 +303,11 @@ begin
   begin
     System.IO.File.Copy(dll, TestSuiteDir + PathSeparator + 'exe' + PathSeparator + Path.GetFileName(dll), true);
   end;
-  var files := Directory.GetFiles(TestSuiteDir + PathSeparator + 'exe', '*.exe');
+  
+  var dir := TestSuiteDir + PathSeparator + 'exe';
+  if not Directory.Exists(dir) then exit;
+  
+  var files := Directory.GetFiles(dir, '*.exe');
   for var i := 0 to files.Length - 1 do
   begin
     //Println(files[i]);
@@ -282,7 +326,7 @@ begin
       p.StandardInput.WriteLine('GO');
 		  //p.StandardInput.AutoFlush := true;
 		  //var p := System.Diagnostics.Process.Start(psi);
-		if nogui then
+    if nogui then
     begin
       var success := p.WaitForExit(60000);
       if not success then
@@ -306,6 +350,7 @@ end;
 
 procedure RunExpressionsExtractTests;
 begin
+  if CurrentLanguageInfo.languageName <> 'PascalABC.NET' then exit;
   CodeCompletion.CodeCompletionTester.Test();  
 end;
 
@@ -341,17 +386,25 @@ end;
 
 procedure RunIntellisenseTests;
 begin
+  var dir := TestSuiteDir + PathSeparator + 'intellisense_tests';
+  if not Directory.Exists(dir) then exit;
+  
   PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO := 'ru';
-  CodeCompletion.CodeCompletionTester.TestIntellisense(TestSuiteDir + PathSeparator + 'intellisense_tests');
+  CodeCompletion.CodeCompletionTester.TestIntellisense(dir);
 end;
 
 procedure RunFormatterTests;
 begin
+  var dir := TestSuiteDir + PathSeparator + 'formatter_tests';
+  if not Directory.Exists(dir) then exit;
+  
   CodeCompletion.FormatterTester.Test();
-  var errors := &File.ReadAllText(TestSuiteDir + PathSeparator + 'formatter_tests' + PathSeparator + 'output' + PathSeparator + 'log.txt');
+  var errors := &File.ReadAllText(dir + PathSeparator + 'output' + PathSeparator + 'log.txt');
   if not string.IsNullOrEmpty(errors) then
   begin
-    System.Windows.Forms.MessageBox.Show(errors + System.Environment.NewLine + 'more info at TestSuite/formatter_tests/output/log.txt');
+    var dirInfo := new DirectoryInfo(TestSuiteDir);
+    
+    System.Windows.Forms.MessageBox.Show(errors + System.Environment.NewLine + $'more info at {dirInfo.Parent.Name}/{dirInfo.Name}/formatter_tests/output/log.txt');
     Halt;
   end;
 end;
@@ -396,7 +449,19 @@ end;
 
 procedure CopyLibFiles;
 begin
-  var files := Directory.GetFiles(GetLibDir(), '*.pas');
+  var files := Directory.GetFiles(GetLibDir(), $'*{CurrentLanguageInfo.languageExtension}');
+  foreach f: string in files do
+  begin
+    &File.Copy(f, TestSuiteDir + PathSeparator + 'CompilationSamples' + PathSeparator + Path.GetFileName(f), true);
+  end;
+end;
+
+procedure CopyCodeExamples;
+begin
+  var dir := GetCodeExamplesDir();
+  if not Directory.Exists(dir) then exit;
+  
+  var files := Directory.GetFiles(dir, $'*{CurrentLanguageInfo.languageExtension}', SearchOption.AllDirectories);
   foreach f: string in files do
   begin
     &File.Copy(f, TestSuiteDir + PathSeparator + 'CompilationSamples' + PathSeparator + Path.GetFileName(f), true);
@@ -408,62 +473,82 @@ begin
   try
     Languages.Integration.LanguageIntegrator.LoadStandardLanguages();
     
-    TestSuiteDir := GetTestSuiteDir;
-    System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
-    if (ParamCount = 2) and (ParamStr(2) = '1') then
-      nogui := true;
-    if (ParamCount = 0) or (ParamStr(1) = '1') then
+    foreach var langTestsInfo in LanguagesTestsInfos do
     begin
-      DeletePCUFiles;
-      ClearExeDir;
-      CompileAllRunTests(false);
-      writeln('Tests to run: '+Milliseconds()+'ms');
-    end;
-    
-    if (ParamCount = 0) or (ParamStr(1) = '2') then
-    begin
-      CopyLibFiles;
-      CompileAllCompilationTests('CompilationSamples', false);
-      writeln('CompilationSamples: '+Milliseconds()+'ms');
-    end;
-    if (ParamCount = 0) or (ParamStr(1) = '3') then
-    begin
-      CompileAllUnits;
-      CopyPCUFiles;
-      CompileAllUsesUnits;
-      CompileErrorTests(false);
-      writeln('Other tests '+Milliseconds()+'ms'+'. Tests compiled successfully ');
-    end;
-    if (ParamCount = 0) or (ParamStr(1) = '4') then
-    begin
-      RunAllTests(false);
-      writeln('Tests run successfully: '+Milliseconds()+'ms');
-      ClearExeDir;
-      DeletePCUFiles;
-    end;
-    if (ParamCount = 0) or (ParamStr(1) = '5') then
-    begin
-      
-        CompileAllRunTests(false, true);
-        writeln('Tests in 32bit mode compiled successfully');
-        RunAllTests(false);
-        writeln('Tests in 32bit run successfully');
-        ClearExeDir;
-        CompileAllRunTests(true);
-        writeln('Tests with pabcrtl compiled successfully');
-        CompileAllCompilationTests('pabcrtl_tests', true);
-    end;
-    if (ParamCount = 0) or (ParamStr(1) = '6') then
-    begin
-      RunAllTests(false);
-      writeln('Tests with pabcrtl run successfully');
+      CurrentLanguageInfo := langTestsInfo;
+      TestSuiteDir := GetCurrentTestSuiteDir(langTestsInfo.languageRootDirName);
       System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
-      RunExpressionsExtractTests;
-      writeln('Intellisense expression tests run successfully');
-      RunIntellisenseTests;
-      writeln('Intellisense tests run successfully');
-      RunFormatterTests;
-      writeln('Formatter tests run successfully');
+      
+      var CurrentLanguageName := CurrentLanguageInfo.languageName;
+      
+      if (ParamCount = 2) and (ParamStr(2) = '1') then
+        nogui := true;
+      if (ParamCount = 0) or (ParamStr(1) = '1') then
+      begin
+        Println($'Compiling {CurrentLanguageName} tests...');
+        DeletePCUFiles;
+        ClearExeDir;
+        CompileAllRunTests(false);
+        Println('Success. Time spent: ' + MillisecondsDelta() + 'ms');
+      end;
+      
+      if (ParamCount = 0) or (ParamStr(1) = '2') then
+      begin
+        Println($'Compiling {CurrentLanguageName} compilation samples...');        
+        CopyLibFiles;
+        CopyCodeExamples;
+        CompileAllCompilationTests('CompilationSamples', false);
+        Println('Success. Time spent: ' + MillisecondsDelta() + 'ms');
+      end;
+      if (ParamCount = 0) or (ParamStr(1) = '3') then
+      begin
+        Println($'Compiling {CurrentLanguageName} tests with multiple units and error throwing tests...');
+        CompileAllUnits;
+        CopyPCUFiles;
+        CompileAllUsesUnits;
+        CompileErrorTests(false);
+        Println('Success. Time spent: ' + MillisecondsDelta() + 'ms');
+      end;
+      if (ParamCount = 0) or (ParamStr(1) = '4') then
+      begin
+        Println($'Running {CurrentLanguageName} tests...');
+        RunAllTests(false);
+        Println('Success. Time spent: ' + MillisecondsDelta() + 'ms');
+        ClearExeDir;
+        DeletePCUFiles;
+      end;
+      if (ParamCount = 0) or (ParamStr(1) = '5') then
+      begin
+        Println($'Compiling {CurrentLanguageName} tests in 32bit mode...');
+        CompileAllRunTests(false, true);
+        Println('Success');
+        Println($'Running {CurrentLanguageName} tests in 32bit mode...');
+        RunAllTests(false);
+        Println('Success');
+        ClearExeDir;
+        Println($'Compiling {CurrentLanguageName} tests with PABCRtl.dll...');
+        CompileAllRunTests(true);
+        Println('Success');
+        Println($'Compiling {CurrentLanguageName} compilation samples with PABCRtl.dll...');
+        CompileAllCompilationTests('pabcrtl_tests', true);
+        Println('Success');
+      end;
+      if (ParamCount = 0) or (ParamStr(1) = '6') then
+      begin
+        Println($'Running {CurrentLanguageName} tests with PABCRtl.dll...');
+        RunAllTests(false);
+        Println('Success');
+        System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
+        Println($'Running {CurrentLanguageName} intellisense expression tests...');
+        RunExpressionsExtractTests;
+        Println('Success');
+        Println($'Running {CurrentLanguageName} basic intellisense tests...');
+        RunIntellisenseTests;
+        Println('Success');
+        Println($'Running {CurrentLanguageName} formatter tests...');
+        RunFormatterTests;
+        Println('Success');
+      end;
     end;
   except
     on e: Exception do
@@ -472,6 +557,6 @@ begin
         raise new Exception(e.ToString());
       assert(false, e.ToString());
     end;
-     
+  
   end;
 end.
