@@ -26,6 +26,8 @@ namespace Languages.Pascal.Frontend.Data
 
         public override string[] SystemUnitNames => StringConstants.pascalDefaultStandardModules;
 
+        public override bool SemanticIntellisenseIsSupported => true;
+
         public override bool ApplySyntaxTreeConvertersForIntellisense => false;
 
         protected IParser Parser

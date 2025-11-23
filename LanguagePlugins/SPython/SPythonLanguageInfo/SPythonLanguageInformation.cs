@@ -1,11 +1,9 @@
-﻿using PascalABCCompiler;
-using PascalABCCompiler.Parsers;
+﻿using PascalABCCompiler.Parsers;
 using PascalABCCompiler.ParserTools.Directives;
 using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace Languages.SPython.Frontend.Data
@@ -21,6 +19,8 @@ namespace Languages.SPython.Frontend.Data
         public override string[] FilesExtensions => new string[] { ".pys" };
 
         public override string[] SystemUnitNames => new string[] { "SPythonSystem", "SPythonHidden", "SPythonSystemPys" };
+
+        public override bool SemanticIntellisenseIsSupported => false;
 
         public override bool ApplySyntaxTreeConvertersForIntellisense => true;
 
@@ -54,7 +54,7 @@ namespace Languages.SPython.Frontend.Data
 
         public override bool AddStandardUnitNamesToUserScope => false;
 
-        public override bool AddStandardNetNamespacesToUserScope => true;
+        public override bool AddStandardNetNamespacesToUserScope => false;
 
         public override bool UsesFunctionsOverlappingSourceContext => true;
 
