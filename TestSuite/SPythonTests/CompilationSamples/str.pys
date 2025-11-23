@@ -1,0 +1,5 @@
+﻿s = '123#4\'#\'' #1212
+s.IndexOf('3').print() #12121
+print(s) #1212
+if True:
+    print(2)
