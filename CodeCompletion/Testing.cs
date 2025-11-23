@@ -1091,7 +1091,7 @@ namespace CodeCompletion
         {
             var dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
             var ind = dir.LastIndexOf("bin");
-            return dir.Substring(0, ind) + "TestSuite";
+            return dir.Substring(0, ind) + @"TestSuite\" + "PascalABCTests";
         }
 
         public static void Test()
