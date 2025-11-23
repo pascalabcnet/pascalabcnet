@@ -3137,9 +3137,8 @@ namespace PascalABCCompiler
 
                             wdn = (wrapped_definition_node)symInfo;
 
-                            if (wdn.is_synonim)
-                                symInfo = wdn.PCUReader.CreateTypeSynonim(wdn.offset, names.Key);
-                            else
+                            // Если это не синоним типа, то восстанавливаем семантическую информацию
+                            if (!wdn.is_synonim)
                                 symInfo = wdn.PCUReader.CreateInterfaceMember(wdn.offset, names.Key);
                         }
 
