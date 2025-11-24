@@ -1701,6 +1701,10 @@ namespace PascalABCCompiler.Parsers
             {
                 keyword = KeywordKind.Raise;
             }
+            else if (KeywordsStorage.KeywordsTreatedAsFunctions.Contains(s))
+            {
+                keyword = KeywordKind.None;
+            }
             else if (IsKeyword(s))
             {
                 keyword = KeywordKind.CommonKeyword;
