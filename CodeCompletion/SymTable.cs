@@ -587,11 +587,6 @@ namespace CodeCompletion
             return "";
         }
 
-        public virtual void MakeSynonimDescription()
-        {
-
-        }
-
         public virtual string GetDescriptionWithoutDoc()
         {
             return si.name;
@@ -2606,13 +2601,6 @@ namespace CodeCompletion
         public virtual bool IsConstructor()
         {
             return is_constructor;
-        }
-
-        // не используется нигде для ProcScope EVA
-        public override void MakeSynonimDescription() 
-        {
-            //aliased = true;
-            si.description = CodeCompletionController.CurrentParser?.LanguageInformation.GetSynonimDescription(this);
         }
 
         //zavershenie opisanija, vyzyvaetsja kogda parametry razobrany
@@ -4817,12 +4805,6 @@ namespace CodeCompletion
             implemented_interfaces.Add(type);
         }
 
-        public override void MakeSynonimDescription()
-        {
-            aliased = true;
-            si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetSynonimDescription(this);
-        }
-
         public virtual bool IsConvertable(TypeScope ts, bool strong = false)
         {
             if (IsEqual(ts))
@@ -4938,6 +4920,10 @@ namespace CodeCompletion
         public override void BuildDescription()
         {
             si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+
+            // Случай делегата
+            if (aliased && this is ProcType)
+                si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetSynonimDescription(this);  
         }
 
         //opisanie, vysvechivaetsja v zheltkom okoshke
