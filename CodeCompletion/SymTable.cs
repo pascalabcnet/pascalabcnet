@@ -4253,11 +4253,20 @@ namespace CodeCompletion
             this.exact = exact;
         }
 
+        private static string GetDescription(TypeScope t)
+        {
+            if (t.Description != null)
+                return t.Description;
+
+            t.BuildDescription();
+            return t.Description;
+        }
+
         private struct ScopeComparer : IEqualityComparer<TypeScope>
         {
             public bool Equals(TypeScope t1, TypeScope t2) => t1.IsEqual(t2);
 
-            public int GetHashCode(TypeScope t) => t.GetDescription().GetHashCode();
+            public int GetHashCode(TypeScope t) => GetDescription(t).GetHashCode();
         }
 
         public bool Equals(InstanceCreationContext otherInfo)
@@ -4270,8 +4279,8 @@ namespace CodeCompletion
 
         public override int GetHashCode()
         {
-            return string.Join("", genericArguments.Select(arg => arg.si != null ? arg.GetDescription() : "")
-                .Concat(new string[] { originalType.GetDescription(), exact.ToString() })).GetHashCode();
+            return string.Join("", genericArguments.Select(arg => arg.si != null ? GetDescription(arg) : "")
+                .Concat(new string[] { GetDescription(originalType), exact.ToString() })).GetHashCode();
         }
     }
 
