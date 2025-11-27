@@ -292,7 +292,8 @@ namespace CodeCompletion
             else
                 System.Diagnostics.Debug.Assert(cond);
 #else
-            throw new Exception(cond + " " + message);
+            if (!cond)
+                throw new Exception(message);
             /*if (message != null)
                 System.Diagnostics.Trace.Assert(cond, message);
             else
