@@ -468,6 +468,15 @@ begin
   end;
 end;
 
+function MsToMinutes(ms: integer) : string;
+begin
+  var minutes := ms div 60000;
+  if minutes > 0 then
+    Result := minutes + 'm ' + Round((ms / 60000 - minutes) * 60) + 's'
+  else
+    Result := Round((ms / 60000 - minutes) * 60) + 's';
+end;
+
 begin
   //DeletePABCSystemPCU;
   try
@@ -489,7 +498,7 @@ begin
         DeletePCUFiles;
         ClearExeDir;
         CompileAllRunTests(false);
-        Println('Success. Time spent: ' + MillisecondsDelta() + 'ms');
+        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
       end;
       
       if (ParamCount = 0) or (ParamStr(1) = '2') then
@@ -498,7 +507,7 @@ begin
         CopyLibFiles;
         CopyCodeExamples;
         CompileAllCompilationTests('CompilationSamples', false);
-        Println('Success. Time spent: ' + MillisecondsDelta() + 'ms');
+        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
       end;
       if (ParamCount = 0) or (ParamStr(1) = '3') then
       begin
@@ -507,13 +516,13 @@ begin
         CopyPCUFiles;
         CompileAllUsesUnits;
         CompileErrorTests(false);
-        Println('Success. Time spent: ' + MillisecondsDelta() + 'ms');
+        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
       end;
       if (ParamCount = 0) or (ParamStr(1) = '4') then
       begin
         Println($'Running {CurrentLanguageName} tests...');
         RunAllTests(false);
-        Println('Success. Time spent: ' + MillisecondsDelta() + 'ms');
+        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
         ClearExeDir;
         DeletePCUFiles;
       end;
@@ -521,33 +530,33 @@ begin
       begin
         Println($'Compiling {CurrentLanguageName} tests in 32bit mode...');
         CompileAllRunTests(false, true);
-        Println('Success');
+        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
         Println($'Running {CurrentLanguageName} tests in 32bit mode...');
         RunAllTests(false);
-        Println('Success');
+        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
         ClearExeDir;
         Println($'Compiling {CurrentLanguageName} tests with PABCRtl.dll...');
         CompileAllRunTests(true);
-        Println('Success');
+        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
         Println($'Compiling {CurrentLanguageName} compilation samples with PABCRtl.dll...');
         CompileAllCompilationTests('pabcrtl_tests', true);
-        Println('Success');
+        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
       end;
       if (ParamCount = 0) or (ParamStr(1) = '6') then
       begin
         Println($'Running {CurrentLanguageName} tests with PABCRtl.dll...');
         RunAllTests(false);
-        Println('Success');
+        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
         System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
         Println($'Running {CurrentLanguageName} intellisense expression tests...');
         RunExpressionsExtractTests;
-        Println('Success');
+        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
         Println($'Running {CurrentLanguageName} basic intellisense tests...');
         RunIntellisenseTests;
-        Println('Success');
+        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
         Println($'Running {CurrentLanguageName} formatter tests...');
         RunFormatterTests;
-        Println('Success');
+        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
       end;
     end;
   except
