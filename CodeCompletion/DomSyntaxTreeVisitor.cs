@@ -2246,8 +2246,9 @@ namespace CodeCompletion
                     //(ret_tn as TypeScope).name = _type_declaration.type_name.name;
                     returned_scope.si.name = _type_declaration.type_name.name;
                     returned_scope.si.description = returned_scope.GetDescription();
-                    if (!(_type_declaration.type_def is class_definition))
-                        returned_scope.MakeSynonimDescription();
+                    // Это мертвый код EVA
+                    //if (!(_type_declaration.type_def is class_definition))
+                    //    returned_scope.MakeSynonimDescription();
                     returned_scope.loc = get_location(_type_declaration);//new location(loc.begin_line_num,loc.begin_column_num,ret_tn.loc.end_line_num,ret_tn.loc.end_column_num,ret_tn.loc.doc);
                     if (_type_declaration.type_def is class_definition)
                     {
@@ -2317,7 +2318,8 @@ namespace CodeCompletion
                 cur_scope.AddName(_type_declaration.type_name.name, returned_scope);
                 if (returned_scope is ProcType)
                 {
-                    returned_scope.MakeSynonimDescription();
+                    ((TypeScope)returned_scope).aliased = true;
+                    returned_scope.BuildDescription();
                 }
                 location loc = get_location(_type_declaration);
                 if (returned_scope.loc == null)

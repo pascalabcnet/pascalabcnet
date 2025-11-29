@@ -587,11 +587,6 @@ namespace CodeCompletion
             return "";
         }
 
-        public virtual void MakeSynonimDescription()
-        {
-
-        }
-
         public virtual string GetDescriptionWithoutDoc()
         {
             return si.name;
@@ -2608,13 +2603,6 @@ namespace CodeCompletion
             return is_constructor;
         }
 
-        // не используется нигде для ProcScope EVA
-        public override void MakeSynonimDescription() 
-        {
-            //aliased = true;
-            si.description = CodeCompletionController.CurrentParser?.LanguageInformation.GetSynonimDescription(this);
-        }
-
         //zavershenie opisanija, vyzyvaetsja kogda parametry razobrany
         public void Complete()
         {
@@ -4265,11 +4253,20 @@ namespace CodeCompletion
             this.exact = exact;
         }
 
+        private static string GetDescription(TypeScope t)
+        {
+            if (t.Description != null)
+                return t.Description;
+
+            t.BuildDescription();
+            return t.Description;
+        }
+
         private struct ScopeComparer : IEqualityComparer<TypeScope>
         {
             public bool Equals(TypeScope t1, TypeScope t2) => t1.IsEqual(t2);
 
-            public int GetHashCode(TypeScope t) => t.GetDescription().GetHashCode();
+            public int GetHashCode(TypeScope t) => GetDescription(t).GetHashCode();
         }
 
         public bool Equals(InstanceCreationContext otherInfo)
@@ -4282,8 +4279,8 @@ namespace CodeCompletion
 
         public override int GetHashCode()
         {
-            return string.Join("", genericArguments.Select(arg => arg.si != null ? arg.GetDescription() : "")
-                .Concat(new string[] { originalType.GetDescription(), exact.ToString() })).GetHashCode();
+            return string.Join("", genericArguments.Select(arg => arg.si != null ? GetDescription(arg) : "")
+                .Concat(new string[] { GetDescription(originalType), exact.ToString() })).GetHashCode();
         }
     }
 
@@ -4817,12 +4814,6 @@ namespace CodeCompletion
             implemented_interfaces.Add(type);
         }
 
-        public override void MakeSynonimDescription()
-        {
-            aliased = true;
-            si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetSynonimDescription(this);
-        }
-
         public virtual bool IsConvertable(TypeScope ts, bool strong = false)
         {
             if (IsEqual(ts))
@@ -4938,6 +4929,10 @@ namespace CodeCompletion
         public override void BuildDescription()
         {
             si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+
+            // Случай делегата
+            if (aliased && this is ProcType)
+                si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetSynonimDescription(this);  
         }
 
         //opisanie, vysvechivaetsja v zheltkom okoshke

@@ -26,8 +26,8 @@ namespace Languages.Pascal.Frontend.Core
             CreateNewKeyword("is", Tokens.tkIs);
             CreateNewKeyword("implicit", Tokens.tkImplicit);
             CreateNewKeyword("explicit", Tokens.tkExplicit);
-            CreateNewKeyword("sizeof", Tokens.tkSizeOf);
-            CreateNewKeyword("typeof", Tokens.tkTypeOf);
+            CreateNewKeyword("sizeof", Tokens.tkSizeOf, treatAsFunction: true);
+            CreateNewKeyword("typeof", Tokens.tkTypeOf, treatAsFunction: true);
             CreateNewKeyword("where", Tokens.tkWhere);
             CreateNewKeyword("array", Tokens.tkArray, isTypeKeyword: true);
             CreateNewKeyword("begin", Tokens.tkBegin);
