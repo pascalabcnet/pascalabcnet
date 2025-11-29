@@ -292,15 +292,17 @@ namespace CodeCompletion
             else
                 System.Diagnostics.Debug.Assert(cond);
 #else
+            //if (!cond)
+            //    throw new Exception(message);
             /*if (message != null)
                 System.Diagnostics.Trace.Assert(cond, message);
             else
                 System.Diagnostics.Trace.Assert(cond);*/
 #endif
-            
+
         }
-    	
-    	/*private static void TestVBNETExpressionExtract()
+
+        /*private static void TestVBNETExpressionExtract()
     	{
     		string s;
     		int off=0;
@@ -334,8 +336,8 @@ namespace CodeCompletion
     		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim(' ','\n','\t')=="(abc)");
     	}*/
-    	
-    	private static void TestExpressionExtract()
+
+        private static void TestExpressionExtract()
     	{
     		string s;
     		int off=0;

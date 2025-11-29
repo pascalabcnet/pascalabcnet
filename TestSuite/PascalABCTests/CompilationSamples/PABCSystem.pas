@@ -11282,7 +11282,7 @@ begin
     Result *= x;
 end;
 
-/// Возвращает произведение элементов последовательности, спроектированных на числовое значение
+/// Возвращает произведение элементов последовательности, спроецированных на числовое значение
 function Product<T>(Self: sequence of T; f: T->real): real; extensionmethod;
 begin
   Result := 1.0;
@@ -11290,7 +11290,7 @@ begin
     Result *= f(x);
 end;
 
-/// Возвращает произведение элементов последовательности, спроектированных на числовое значение
+/// Возвращает произведение элементов последовательности, спроецированных на числовое значение
 function Product<T>(Self: sequence of T; f: T->integer): int64; extensionmethod;
 begin
   Result := 1;
@@ -11298,7 +11298,7 @@ begin
     Result *= f(x);
 end;
 
-/// Возвращает произведение элементов последовательности, спроектированных на числовое значение
+/// Возвращает произведение элементов последовательности, спроецированных на числовое значение
 function Product<T>(Self: sequence of T; f: T->BigInteger): BigInteger; extensionmethod;
 begin
   Result := 1;
@@ -11371,7 +11371,7 @@ begin
   end;
 end;
 
-// Возвращает сумму элементов последовательности, спроектированных на числовое значение - пока не работает для Lst(1,2,3)
+// Возвращает сумму элементов последовательности, спроецированных на числовое значение - пока не работает для Lst(1,2,3)
 {function Sum<T>(Self: sequence of T; f: T->BigInteger): BigInteger; extensionmethod;
 begin
   Result := 0;
@@ -13031,7 +13031,6 @@ end;
 /// Возвращает по заданному двумерному массиву последовательность его элементов по строкам
 function Elements<T>(Self: array [,] of T): sequence of T; extensionmethod := Self.ElementsByRow;
 
-
 /// Возвращает по заданному двумерному массиву последовательность его элементов по столбцам
 function ElementsByCol<T>(Self: array [,] of T): sequence of T; extensionmethod;
 begin
@@ -13168,6 +13167,9 @@ begin
     r += 1;
   end
 end;
+
+/// Создает копию двумерного массива
+function Copy<T>(Self: array [,] of T): array [,] of T; extensionmethod := Self.Clone() as array [,] of T;
 
 // -----------------------------------------------------
 //>>     Фиктивная секция YYY - не удалять! # YYY
@@ -13910,6 +13912,9 @@ begin
     if cond(Self[i], i) then
       yield i;
 end;
+
+/// Создает копию массива
+function Copy<T>(Self: array of T): array of T; extensionmethod := Self.Clone() as array of T;
 
 /// Возвращает строковое представление массива вещественных чисел с фиксированным количеством знаков после десятичной точки
 function ToString(Self: array of real; digits: integer): string; extensionmethod;
