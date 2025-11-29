@@ -2246,8 +2246,9 @@ namespace CodeCompletion
                     //(ret_tn as TypeScope).name = _type_declaration.type_name.name;
                     returned_scope.si.name = _type_declaration.type_name.name;
                     returned_scope.si.description = returned_scope.GetDescription();
-                    if (!(_type_declaration.type_def is class_definition))
-                        returned_scope.MakeSynonimDescription();
+                    // Это мертвый код EVA
+                    //if (!(_type_declaration.type_def is class_definition))
+                    //    returned_scope.MakeSynonimDescription();
                     returned_scope.loc = get_location(_type_declaration);//new location(loc.begin_line_num,loc.begin_column_num,ret_tn.loc.end_line_num,ret_tn.loc.end_column_num,ret_tn.loc.doc);
                     if (_type_declaration.type_def is class_definition)
                     {
@@ -2317,7 +2318,8 @@ namespace CodeCompletion
                 cur_scope.AddName(_type_declaration.type_name.name, returned_scope);
                 if (returned_scope is ProcType)
                 {
-                    returned_scope.MakeSynonimDescription();
+                    ((TypeScope)returned_scope).aliased = true;
+                    returned_scope.BuildDescription();
                 }
                 location loc = get_location(_type_declaration);
                 if (returned_scope.loc == null)
@@ -2718,7 +2720,7 @@ namespace CodeCompletion
                 }
             }
 
-            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense)
+            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense && currentUnitLanguage.LanguageInformation.SyntaxTreeIsConvertedAfterUsedModulesCompilation)
             {
                 var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
 
@@ -2791,36 +2793,48 @@ namespace CodeCompletion
 
         }
 
-        private Dictionary<string, HashSet<string>> CollectNamesFromUsedUnits(SymScope currentUnitScope)
+        private Dictionary<string, Dictionary<string, bool>> CollectNamesFromUsedUnits(SymScope currentUnitScope)
         {
-            var namesFromUsedUnits = new Dictionary<string, HashSet<string>>();
+            var namesFromUsedUnits = new Dictionary<string, Dictionary<string, bool>>();
+
+            bool IsVariableOrConstant(SymbolKind symKind)
+            {
+                return symKind == SymbolKind.Variable
+                    || symKind == SymbolKind.Constant
+                    || symKind == SymbolKind.Event;
+            }
 
             foreach (var unitScope in currentUnitScope.used_units)
             {
 
                 if (unitScope is InterfaceUnitScope interfaceScope)
                 {
-                    namesFromUsedUnits.Add(unitScope.Name, new HashSet<string>());
+                    namesFromUsedUnits.Add(unitScope.Name, new Dictionary<string, bool>());
 
                     foreach (var symbol in unitScope.symbol_table)
                     {
                         var scopesOrScope = ((DictionaryEntry)symbol).Value;
 
                         string name;
+                        bool isVariable;
 
                         if (scopesOrScope is List<SymScope> scopes)
                         {
                             name = scopes[0].Name;
+                            isVariable = IsVariableOrConstant(scopes[0].SymbolInfo.Kind);
                         }
                         else
                         {
-                            name = ((SymScope)scopesOrScope).Name;
+                            var scope = (SymScope)scopesOrScope;
+
+                            name = scope.Name;
+                            isVariable = IsVariableOrConstant(scope.SymbolInfo.Kind);
                         }
 
                         if (name == unitScope.Name)
                             continue;
 
-                        namesFromUsedUnits[unitScope.Name].Add(name);
+                        namesFromUsedUnits[unitScope.Name][name] = isVariable;
                     }
                 }
             }
@@ -3287,7 +3301,7 @@ namespace CodeCompletion
                 }
             }
 
-            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense)
+            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense && currentUnitLanguage.LanguageInformation.SyntaxTreeIsConvertedAfterUsedModulesCompilation)
             {
                 var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
 

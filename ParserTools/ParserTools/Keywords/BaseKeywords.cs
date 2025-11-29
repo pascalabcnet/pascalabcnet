@@ -35,6 +35,11 @@ namespace PascalABCCompiler.Parsers
         public List<string> TypeKeywords { get; set; } = new List<string>();
 
         /// <summary>
+        /// Ключевые слова, которые должны восприниматься как функции при парсинге выражений
+        /// </summary>
+        public HashSet<string> KeywordsTreatedAsFunctions { get; set; }
+
+        /// <summary>
         /// Словарь соответствий ключевых слов их эквивалентам (задается пользователем в специальном файле)
         /// </summary>
         private Dictionary<string, string> keymap = new Dictionary<string, string>();
@@ -83,6 +88,8 @@ namespace PascalABCCompiler.Parsers
 
             KeywordsForIntellisenseSet = new HashSet<string>(stringComparer);
 
+            KeywordsTreatedAsFunctions = new HashSet<string>(stringComparer);
+
             KeywordKinds = new Dictionary<string, KeywordKind>(stringComparer);
         }
 
@@ -102,7 +109,8 @@ namespace PascalABCCompiler.Parsers
                 return GetIdToken();
         }
 
-        public void CreateNewKeyword(string name, Enum token = null, KeywordKind kind = KeywordKind.None, bool isTypeKeyword = false, bool excludedInIntellisense = false)
+        public void CreateNewKeyword(string name, Enum token = null, KeywordKind kind = KeywordKind.None, 
+            bool isTypeKeyword = false, bool excludedInIntellisense = false, bool treatAsFunction = false)
         {
             name = ConvertKeyword(name);
 
@@ -114,6 +122,9 @@ namespace PascalABCCompiler.Parsers
                 KeywordsForIntellisenseList.Add(name);
                 KeywordsForIntellisenseSet.Add(name);
             }
+
+            if (treatAsFunction)
+                KeywordsTreatedAsFunctions.Add(name);
 
             // token null может передаваться, если это ключевое слово исключительно для Intellisense (например, break)
             if (token != null)

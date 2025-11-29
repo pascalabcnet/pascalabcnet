@@ -44,6 +44,8 @@ namespace PascalABCCompiler.Parsers
         public abstract string ProcedureName { get; }
         public abstract string FunctionName { get; }
 
+        public abstract bool SyntaxTreeIsConvertedAfterUsedModulesCompilation { get; }
+
         public abstract bool ApplySyntaxTreeConvertersForIntellisense { get; }
 
         public abstract bool IncludeDotNetEntities { get; }
@@ -1700,6 +1702,10 @@ namespace PascalABCCompiler.Parsers
             else if (s == "raise")
             {
                 keyword = KeywordKind.Raise;
+            }
+            else if (KeywordsStorage.KeywordsTreatedAsFunctions.Contains(s))
+            {
+                keyword = KeywordKind.None;
             }
             else if (IsKeyword(s))
             {

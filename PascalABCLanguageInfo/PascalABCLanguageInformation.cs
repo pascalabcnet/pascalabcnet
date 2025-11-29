@@ -26,6 +26,8 @@ namespace Languages.Pascal.Frontend.Data
 
         public override string[] SystemUnitNames => StringConstants.pascalDefaultStandardModules;
 
+        public override bool SyntaxTreeIsConvertedAfterUsedModulesCompilation => false;
+
         public override bool ApplySyntaxTreeConvertersForIntellisense => false;
 
         protected IParser Parser
