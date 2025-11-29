@@ -7,7 +7,7 @@ namespace Languages.SPython.Frontend.Converters
     {
         public HashSet<string> variablesUsedAsGlobal = new HashSet<string>();
 
-        public NameCorrectVisitor(Dictionary<string, HashSet<string>> namesFromUsedUnits, HashSet<string> definedFunctionsNames) : base(namesFromUsedUnits) 
+        public NameCorrectVisitor(Dictionary<string, Dictionary<string, bool>> namesFromUsedUnits, HashSet<string> definedFunctionsNames) : base(namesFromUsedUnits) 
         {
             foreach (string definedFunctionName in definedFunctionsNames)
             {
@@ -60,7 +60,8 @@ namespace Languages.SPython.Frontend.Converters
                 switch (nameType)
                 {
                     case NameKind.GlobalVariable:
-                    case NameKind.ImportedNameAlias:
+                    case NameKind.ImportedVariableAlias:
+                    case NameKind.ImportedNotVariableAlias:
                         break;
                     case NameKind.Unknown:
                         throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}",
@@ -91,7 +92,8 @@ namespace Languages.SPython.Frontend.Converters
                     id.name = symbolTable.AliasToRealName(id.name);
                     break;
 
-                case NameKind.ImportedNameAlias:
+                case NameKind.ImportedVariableAlias:
+                case NameKind.ImportedNotVariableAlias:
                     _named_type_reference.names.Insert(0, new ident(symbolTable.AliasToModuleName(id.name), id.source_context));
                     _named_type_reference.names[1].name = symbolTable.AliasToRealName(_named_type_reference.names[1].name);
                     break;
@@ -114,7 +116,8 @@ namespace Languages.SPython.Frontend.Converters
             switch (nameKind)
             {
 
-                case NameKind.ImportedNameAlias:
+                case NameKind.ImportedVariableAlias:
+                case NameKind.ImportedNotVariableAlias:
                     _named_type_reference.names.Insert(0, new ident(symbolTable.AliasToModuleName(fullName), _named_type_reference.names[0].source_context));
                     _named_type_reference.names[1].name = symbolTable.AliasToRealName(fullName);
                     break;
@@ -135,7 +138,8 @@ namespace Languages.SPython.Frontend.Converters
                     _ident.name = symbolTable.AliasToRealName(_ident.name);
                     break;
 
-                case NameKind.ImportedNameAlias:
+                case NameKind.ImportedVariableAlias:
+                case NameKind.ImportedNotVariableAlias:
                     Replace(_ident, new dot_node(new ident(symbolTable.AliasToModuleName(_ident.name), sc)
                     , new ident(symbolTable.AliasToRealName(_ident.name), sc), sc));
                     break;

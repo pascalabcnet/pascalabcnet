@@ -2718,7 +2718,7 @@ namespace CodeCompletion
                 }
             }
 
-            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense)
+            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense && currentUnitLanguage.LanguageInformation.SyntaxTreeIsConvertedAfterUsedModulesCompilation)
             {
                 var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
 
@@ -2791,36 +2791,48 @@ namespace CodeCompletion
 
         }
 
-        private Dictionary<string, HashSet<string>> CollectNamesFromUsedUnits(SymScope currentUnitScope)
+        private Dictionary<string, Dictionary<string, bool>> CollectNamesFromUsedUnits(SymScope currentUnitScope)
         {
-            var namesFromUsedUnits = new Dictionary<string, HashSet<string>>();
+            var namesFromUsedUnits = new Dictionary<string, Dictionary<string, bool>>();
+
+            bool IsVariableOrConstant(SymbolKind symKind)
+            {
+                return symKind == SymbolKind.Variable
+                    || symKind == SymbolKind.Constant
+                    || symKind == SymbolKind.Event;
+            }
 
             foreach (var unitScope in currentUnitScope.used_units)
             {
 
                 if (unitScope is InterfaceUnitScope interfaceScope)
                 {
-                    namesFromUsedUnits.Add(unitScope.Name, new HashSet<string>());
+                    namesFromUsedUnits.Add(unitScope.Name, new Dictionary<string, bool>());
 
                     foreach (var symbol in unitScope.symbol_table)
                     {
                         var scopesOrScope = ((DictionaryEntry)symbol).Value;
 
                         string name;
+                        bool isVariable;
 
                         if (scopesOrScope is List<SymScope> scopes)
                         {
                             name = scopes[0].Name;
+                            isVariable = IsVariableOrConstant(scopes[0].SymbolInfo.Kind);
                         }
                         else
                         {
-                            name = ((SymScope)scopesOrScope).Name;
+                            var scope = (SymScope)scopesOrScope;
+
+                            name = scope.Name;
+                            isVariable = IsVariableOrConstant(scope.SymbolInfo.Kind);
                         }
 
                         if (name == unitScope.Name)
                             continue;
 
-                        namesFromUsedUnits[unitScope.Name].Add(name);
+                        namesFromUsedUnits[unitScope.Name][name] = isVariable;
                     }
                 }
             }
@@ -3287,7 +3299,7 @@ namespace CodeCompletion
                 }
             }
 
-            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense)
+            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense && currentUnitLanguage.LanguageInformation.SyntaxTreeIsConvertedAfterUsedModulesCompilation)
             {
                 var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
 
