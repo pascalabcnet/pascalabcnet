@@ -171,6 +171,11 @@ namespace PascalABCCompiler.Parsers
         int FindParamDelimForIndexer(string descriptionAfterOpeningParenthesis, int number);
 
         /// <summary>
+        /// Реализовано ли использование компилятора для Intellisense
+        /// </summary>
+        bool SemanticIntellisenseIsSupported { get; }
+
+        /// <summary>
         /// Вызывать ли преобразователей синтаксического дерева в работе Intellisense
         /// </summary>
         bool ApplySyntaxTreeConvertersForIntellisense { get; }
