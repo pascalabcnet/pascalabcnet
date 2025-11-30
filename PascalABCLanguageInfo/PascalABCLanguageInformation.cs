@@ -152,6 +152,8 @@ namespace Languages.Pascal.Frontend.Data
 
         protected override string IntTypeName => "integer";
 
+        private const string setClassName = "NewSet";
+
         public override bool CaseSensitive
         {
             get
@@ -249,6 +251,15 @@ namespace Languages.Pascal.Frontend.Data
                     //case ScopeKind.Procedure : return GetDescriptionForProcedure(scope as IProcScope);
             }
             return "";
+        }
+
+        protected override string GetSimpleDescriptionForType(ITypeScope scope)
+        {
+            // Замена на отображаемое имя для set (семантический Intellisense находит тип, которым set реализован)
+            if (scope.Name == setClassName)
+                return "set of " + GetTemplateString(scope)?.Replace(GenericTypesStartBracket, "").Replace(GenericTypesEndBracket, "");
+            else
+                return base.GetSimpleDescriptionForType(scope);
         }
 
         private string GetDescriptionForModule(IInterfaceUnitScope scope)
