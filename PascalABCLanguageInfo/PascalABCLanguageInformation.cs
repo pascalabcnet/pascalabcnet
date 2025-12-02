@@ -257,8 +257,8 @@ namespace Languages.Pascal.Frontend.Data
         {
             // Замена на отображаемое имя для set (семантический Intellisense находит тип, которым set реализован)
             if (scope.Name == setClassName && scope.TopScope.Name == StringConstants.pascalSystemUnitName)
-                return "set of " + GetTemplateString(scope)?.Replace(GenericTypesStartBracket, "").Replace(GenericTypesEndBracket, "");
-            
+                return "set of " + GetTemplateStringWithoutBrackets(scope);
+
             return base.GetSimpleDescriptionForType(scope);
         }
 
