@@ -256,10 +256,10 @@ namespace Languages.Pascal.Frontend.Data
         protected override string GetSimpleDescriptionForType(ITypeScope scope)
         {
             // Замена на отображаемое имя для set (семантический Intellisense находит тип, которым set реализован)
-            if (scope.Name == setClassName)
+            if (scope.Name == setClassName && scope.TopScope.Name == StringConstants.pascalSystemUnitName)
                 return "set of " + GetTemplateString(scope)?.Replace(GenericTypesStartBracket, "").Replace(GenericTypesEndBracket, "");
-            else
-                return base.GetSimpleDescriptionForType(scope);
+            
+            return base.GetSimpleDescriptionForType(scope);
         }
 
         private string GetDescriptionForModule(IInterfaceUnitScope scope)
