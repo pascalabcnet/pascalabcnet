@@ -958,13 +958,13 @@ namespace PascalABCCompiler.Parsers
 
         public abstract string GetSimpleDescription(IBaseScope scope);
 
-        protected string GetSimpleDescriptionForType(ITypeScope scope)
+        protected virtual string GetSimpleDescriptionForType(ITypeScope scope)
         {
             string template_str = GetTemplateString(scope);
             if (scope.Name.StartsWith("$"))
                 return scope.Name.Substring(1, scope.Name.Length - 1) + template_str;
             if (!string.IsNullOrEmpty(template_str))
-                return scope.Name.Replace("<>", "") + template_str;
+                return scope.Name.Replace(GenericTypesStartBracket + GenericTypesEndBracket, "") + template_str;
             return scope.Name + template_str;
         }
 
@@ -1589,6 +1589,16 @@ namespace PascalABCCompiler.Parsers
 
         protected string GetTemplateString(ITypeScope scope)
         {
+            var templateString = GetTemplateStringWithoutBrackets(scope);
+
+            if (templateString != null)
+                return GenericTypesStartBracket + templateString + GenericTypesEndBracket;
+
+            return null;
+        }
+
+        protected string GetTemplateStringWithoutBrackets(ITypeScope scope)
+        {
             string[] generic_params = scope.TemplateArguments;
             if (generic_params != null && generic_params.Length > 0)
             {
@@ -1596,27 +1606,23 @@ namespace PascalABCCompiler.Parsers
                 if (gen_insts == null || gen_insts.Length == 0)
                 {
                     System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                    sb.Append(GenericTypesStartBracket);
                     for (int i = 0; i < generic_params.Length; i++)
                     {
                         sb.Append(generic_params[i]);
                         if (i < generic_params.Length - 1)
                             sb.Append(',');
                     }
-                    sb.Append(GenericTypesEndBracket);
                     return sb.ToString();
                 }
                 else
                 {
                     System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                    sb.Append(GenericTypesStartBracket);
                     for (int i = 0; i < gen_insts.Length; i++)
                     {
                         sb.Append(GetSimpleDescriptionWithoutNamespace(gen_insts[i]));
                         if (i < gen_insts.Length - 1)
                             sb.Append(", ");
                     }
-                    sb.Append(GenericTypesEndBracket);
                     return sb.ToString();
                 }
             }
