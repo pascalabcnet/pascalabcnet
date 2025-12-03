@@ -152,8 +152,6 @@ namespace Languages.Pascal.Frontend.Data
 
         protected override string IntTypeName => "integer";
 
-        private const string setClassName = "NewSet";
-
         public override bool CaseSensitive
         {
             get
@@ -256,7 +254,7 @@ namespace Languages.Pascal.Frontend.Data
         protected override string GetSimpleDescriptionForType(ITypeScope scope)
         {
             // Замена на отображаемое имя для set (семантический Intellisense находит тип, которым set реализован)
-            if (scope.Name == setClassName && scope.TopScope.Name == StringConstants.pascalSystemUnitName)
+            if (scope.Name == StringConstants.pascalSetClassName && scope.TopScope.Name == StringConstants.pascalSystemUnitName)
                 return "set of " + GetTemplateStringWithoutBrackets(scope);
 
             return base.GetSimpleDescriptionForType(scope);
