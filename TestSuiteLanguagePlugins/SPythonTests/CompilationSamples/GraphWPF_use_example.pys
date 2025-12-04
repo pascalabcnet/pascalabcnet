@@ -1,0 +1,10 @@
+﻿from GraphWPF import *
+
+color = RandomColor()
+
+def MouseMove(x: float, y: float, mb: int):
+    if mb == 1:
+        FillCircle(x, y, 10, color)
+
+
+OnMouseMove = MouseMove

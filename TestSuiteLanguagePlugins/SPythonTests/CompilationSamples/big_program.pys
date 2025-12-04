@@ -1,0 +1,12 @@
+﻿a = 2
+a = 3
+b = 1 + a
+print(b)
+
+if True:
+   c = 23
+
+
+
+def f():
+    print(a)
