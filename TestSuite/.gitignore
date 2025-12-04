@@ -5,15 +5,15 @@
 *.exe
 *.pdb
 *.xml
-*/exe/*.dll
-*/formatter_tests/output/**/*.pas
-*/formatter_tests/output/log.txt
-*/errors/nunit.framework.dll
+exe/*.dll
+formatter_tests/output/**/*.pas
+formatter_tests/output/log.txt
+errors/nunit.framework.dll
 
 
-*/exe/input.txt
-*/exe/out.txt
-*/exe/test.txt
-*/exe/*.dat
+exe/input.txt
+exe/out.txt
+exe/test.txt
+exe/*.dat
 
 

@@ -28,7 +28,7 @@ var
   PathSeparator: string := Path.DirectorySeparatorChar;
 
 const
-  LanguagesTestsInfos = |new LanguageTestsInfo('PascalABC.NET', 'PascalABCTests', '.pas', '//'),
+  LanguagesTestsInfos = |new LanguageTestsInfo('PascalABC.NET', '', '.pas', '//'),
                          new LanguageTestsInfo('SPython', 'SPythonTests', '.pys', '#')|;
 
 function IsUnix: boolean;
@@ -36,11 +36,12 @@ begin
   Result := (System.Environment.OSVersion.Platform = System.PlatformID.Unix) or (System.Environment.OSVersion.Platform = System.PlatformID.MacOSX);  
 end;
 
-function GetCurrentTestSuiteDir(languageRootDir : string): string;
+function GetCurrentTestSuiteDir(languageName, languageRootDir : string): string;
 begin
-  var dir := Path.GetDirectoryName(GetEXEFileName());
-  var ind := dir.LastIndexOf('bin');
-  Result := dir.Substring(0, ind) + 'TestSuite' + PathSeparator + languageRootDir;
+  var binDir := Path.GetDirectoryName(GetEXEFileName());
+  var ind := binDir.LastIndexOf('bin');
+  var baseTestSuiteDir := languageName = 'PascalABC.NET' ? 'TestSuite' : 'TestSuiteLanguagePlugins';
+  Result := binDir.Substring(0, ind) + baseTestSuiteDir + PathSeparator + languageRootDir;
 end;
 
 function GetLibDir: string;
@@ -485,7 +486,7 @@ begin
     foreach var langTestsInfo in LanguagesTestsInfos do
     begin
       CurrentLanguageInfo := langTestsInfo;
-      TestSuiteDir := GetCurrentTestSuiteDir(langTestsInfo.languageRootDirName);
+      TestSuiteDir := GetCurrentTestSuiteDir(langTestsInfo.languageName, langTestsInfo.languageRootDirName);
       System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
       
       var CurrentLanguageName := CurrentLanguageInfo.languageName;
