@@ -152,7 +152,7 @@ namespace SymbolTable
 	#region Scope,DotNETScope,UnitPartScope,UnitInterfaceScope,UnitImplementationScope,ClassScope элемены таблицы областей видимости
 	//элемент таблицы областей видимости
 	//при создании добавляет себя в vSymbolTable
-	public class Scope:BaseScope
+	public class Scope // :BaseScope
 	{
         public string Name;
         public override string ToString() => Name == ""? GetType().Name : Name;
