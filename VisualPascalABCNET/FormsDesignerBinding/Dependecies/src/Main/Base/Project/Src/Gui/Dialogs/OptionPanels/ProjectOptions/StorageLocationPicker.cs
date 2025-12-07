@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			DependencyProperty.Register("IsUserFile", typeof(bool), typeof(StorageLocationPicker),
 			                            new FrameworkPropertyMetadata(false));
 		
-		internal bool IsUserFile {
+		public bool IsUserFile {
 			get { return (bool)GetValue(IsUserFileProperty); }
 			set { SetValue(IsUserFileProperty, value); }
 		}
