@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			set { SetValue(LocationProperty, value); }
 		}
 		
-		internal static readonly DependencyProperty EllipseBackgroundProperty =
+		public static readonly DependencyProperty EllipseBackgroundProperty =
 			DependencyProperty.Register("EllipseBackground", typeof(Brush), typeof(StorageLocationPicker),
 			                            new FrameworkPropertyMetadata(Brushes.Black));
 		
