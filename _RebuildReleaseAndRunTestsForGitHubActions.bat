@@ -1,4 +1,4 @@
-dotnet build -c Release PascalABCNET.sln
+dotnet build -c Release --no-incremental PascalABCNET.sln
 
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
