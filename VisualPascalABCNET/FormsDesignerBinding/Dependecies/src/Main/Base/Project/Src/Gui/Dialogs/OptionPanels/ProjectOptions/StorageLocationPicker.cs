@@ -33,20 +33,20 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			set { SetValue(LocationProperty, value); }
 		}
 		
-		internal static readonly DependencyProperty EllipseBackgroundProperty =
+		public static readonly DependencyProperty EllipseBackgroundProperty =
 			DependencyProperty.Register("EllipseBackground", typeof(Brush), typeof(StorageLocationPicker),
 			                            new FrameworkPropertyMetadata(Brushes.Black));
 		
-		internal Brush EllipseBackground {
+		public Brush EllipseBackground {
 			get { return (Brush)GetValue(EllipseBackgroundProperty); }
 			set { SetValue(EllipseBackgroundProperty, value); }
 		}
 		
-		internal static readonly DependencyProperty IsUserFileProperty =
+		public static readonly DependencyProperty IsUserFileProperty =
 			DependencyProperty.Register("IsUserFile", typeof(bool), typeof(StorageLocationPicker),
 			                            new FrameworkPropertyMetadata(false));
 		
-		internal bool IsUserFile {
+		public bool IsUserFile {
 			get { return (bool)GetValue(IsUserFileProperty); }
 			set { SetValue(IsUserFileProperty, value); }
 		}
