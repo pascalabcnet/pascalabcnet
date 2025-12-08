@@ -423,6 +423,7 @@ namespace PascalABCCompiler
         public static string ienumerable_auto_type_name = "IEnumerableAutoType"; // SSM 05.07.16 - тип, который определяется на этапе компиляции при первом присваивании
         public static string recort_printable_name_template = "record{0}end";
         public static string set_name = "TypedSet";
+        public const string pascalSetClassName = "NewSet";
         public const string deconstruct_method_name = "deconstruct"; // Есть дубль - если менять здесь, то и в дубле!!
         //public const string is_test_function_name = "__TypeCheckAndAssignForIsMatch";
         //public const string wild_cards_tuple_equal_function_name = "__WildCardsTupleEqual";

@@ -2026,6 +2026,22 @@ namespace PascalABCCompiler.TreeRealization
                         }
                     }
                 }
+                // Замена имени класса множества на set of ...
+                if (is_generic_type_instance
+                    && name.StartsWith(StringConstants.pascalSetClassName)
+                    && Scope.TopScope is SymbolTable.UnitInterfaceScope)
+                {
+                    var topScopeName = Scope.TopScope.Name;
+                    
+                    // Имя имеет вид "unit ModuleName" при перекомпиляции модуля и "ModuleName.pcu" при чтении pcu
+                    if (topScopeName.StartsWith("unit "))
+                        topScopeName = topScopeName.Substring(5);
+                    else
+                        topScopeName = System.IO.Path.GetFileNameWithoutExtension(topScopeName);
+
+                    if (topScopeName == StringConstants.pascalSystemUnitName)
+                        return StringConstants.GetSetTypeName(instance_params[0].PrintableName);
+                }
                 return base.PrintableName;
             }
         }

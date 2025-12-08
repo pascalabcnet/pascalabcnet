@@ -251,6 +251,15 @@ namespace Languages.Pascal.Frontend.Data
             return "";
         }
 
+        protected override string GetSimpleDescriptionForType(ITypeScope scope)
+        {
+            // Замена на отображаемое имя для set (семантический Intellisense находит тип, которым set реализован)
+            if (scope.Name == StringConstants.pascalSetClassName && scope.TopScope.Name == StringConstants.pascalSystemUnitName)
+                return "set of " + GetTemplateStringWithoutBrackets(scope);
+
+            return base.GetSimpleDescriptionForType(scope);
+        }
+
         private string GetDescriptionForModule(IInterfaceUnitScope scope)
         {
             return (scope.IsNamespaceUnit ? "namespace " : "unit ") + scope.Name;
