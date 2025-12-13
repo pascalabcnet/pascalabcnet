@@ -40,7 +40,7 @@ function GetCurrentTestSuiteDir(languageName, languageRootDir : string): string;
 begin
   var binDir := Path.GetDirectoryName(GetEXEFileName());
   var ind := binDir.LastIndexOf('bin');
-  var baseTestSuiteDir := languageName = 'PascalABC.NET' ? 'TestSuite' : 'TestSuiteLanguagePlugins';
+  var baseTestSuiteDir := languageName = 'PascalABC.NET' ? 'TestSuite' : 'TestSuiteAdditionalLanguages';
   Result := binDir.Substring(0, ind) + baseTestSuiteDir + PathSeparator + languageRootDir;
 end;
 
