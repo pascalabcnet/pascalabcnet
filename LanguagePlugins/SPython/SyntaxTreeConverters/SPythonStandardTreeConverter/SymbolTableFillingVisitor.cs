@@ -1,4 +1,5 @@
 ﻿using PascalABCCompiler;
+using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,8 @@ namespace Languages.SPython.Frontend.Converters
     public class SymbolTableFillingVisitor : BaseChangeVisitor
     {
         protected SymbolTable symbolTable;
+
+        private readonly ILanguageInformation languageInformation = Facade.LanguageProvider.Instance.SelectLanguageByName("SPython").LanguageInformation;
 
         public SymbolTableFillingVisitor(Dictionary<string, Dictionary<string, bool>> par) {
             symbolTable = new SymbolTable(par);
@@ -149,8 +152,8 @@ namespace Languages.SPython.Frontend.Converters
             {
                 string real_name = as_Statement.real_name.name;
                 string alias = as_Statement.alias.name;
-                if (SymbolTable.specialModulesAliases.ContainsKey(real_name))
-                    real_name = SymbolTable.specialModulesAliases[real_name];
+                if (languageInformation.SpecialModulesAliases.ContainsKey(real_name))
+                    real_name = languageInformation.SpecialModulesAliases[real_name];
                 symbolTable.AddModuleAlias(real_name, alias);
             }
         }
@@ -159,8 +162,8 @@ namespace Languages.SPython.Frontend.Converters
         {
             string module_real_name = _from_import_statement.module_name.name;
             string module_name = module_real_name;
-            if (SymbolTable.specialModulesAliases.ContainsKey(module_name))
-                module_name = SymbolTable.specialModulesAliases[module_name];
+            if (languageInformation.SpecialModulesAliases.ContainsKey(module_name))
+                module_name = languageInformation.SpecialModulesAliases[module_name];
 
             if (_from_import_statement.is_star)
             {
@@ -220,9 +223,9 @@ namespace Languages.SPython.Frontend.Converters
 
         protected class SymbolTable
         {
-            private HashSet<string> forwardDeclaredFunctions = new HashSet<string>();
+            private readonly HashSet<string> forwardDeclaredFunctions = new HashSet<string>();
 
-            static string[] Keywords = {
+            private readonly string[] Keywords = {
                 "int", "float", "str", "bool", "tuple", // standard types
                 "break", "continue", "exit", "halt",    // standard ops
                 "true", "false",                        // constants
@@ -237,18 +240,14 @@ namespace Languages.SPython.Frontend.Converters
             public SymbolTable(Dictionary<string, Dictionary<string, bool>> par)
             {
                 ModuleNameToSymbols = par;
+                entryScope = new LocalScope();
+                currentScope = entryScope;
                 FillKeywords();
                 AddAliasesFromStandartLibraries();
             }
 
-            public static Dictionary<string, string> specialModulesAliases = new Dictionary<string, string>
-            {
-                { "time", "time1" },
-                { "random", "random1" },
-            };
-
             // names added to current function with global statements
-            private HashSet<string> NamesAddedByGlobal = new HashSet<string>();
+            private readonly HashSet<string> NamesAddedByGlobal = new HashSet<string>();
 
             private bool isInFunctionBody = false;
 
@@ -268,47 +267,33 @@ namespace Languages.SPython.Frontend.Converters
                 }
             }
 
-            // module alias -> module real name
-            private Dictionary<string, string> modulesAliases = new Dictionary<string, string>();
+            private readonly string[] StandardLibraries = Facade.LanguageProvider.Instance.SelectLanguageByName("SPython").SystemUnitNames;
 
-            private List<string> StandardLibraries = new List<string> { "SPythonSystem", "SPythonHidden", "SPythonSystemPys" };
+            private LocalScope currentScope;
 
-            // alias of function or global variable from module -> real name and module real name
-            private Dictionary<string, Tuple<string, string>> aliasToRealNameAndModuleName = new Dictionary<string, Tuple<string, string>>();
-
-            private LocalScope currentScope = new LocalScope();
+            private readonly LocalScope entryScope;
 
             // moduleRealName -> functions and global variables in this module real names
-            private Dictionary<string, Dictionary<string, bool>> moduleNameToSymbols;
-
-            public Dictionary<string, Dictionary<string, bool>> ModuleNameToSymbols
-            {
-                get => moduleNameToSymbols;
-                set
-                { moduleNameToSymbols = value; }
-            }
+            public Dictionary<string, Dictionary<string, bool>> ModuleNameToSymbols { get; set; }
 
             private void AddAliasesFromStandartLibraries()
             {
                 foreach (string standardLibrary in StandardLibraries)
                 {
-                    if (moduleNameToSymbols.ContainsKey(standardLibrary))
-                        foreach (var kv in moduleNameToSymbols[standardLibrary])
+                    if (ModuleNameToSymbols.ContainsKey(standardLibrary))
+                        foreach (var kv in ModuleNameToSymbols[standardLibrary])
                             AddAlias(kv.Key, kv.Value, kv.Key, standardLibrary);
                 }
             }
 
             public string AliasToRealName(string alias)
             {
-                if (modulesAliases.ContainsKey(alias))
-                    return modulesAliases[alias];
-                else
-                    return aliasToRealNameAndModuleName[alias].Item1;
+                return entryScope.GetRealName(alias);
             }
 
             public string AliasToModuleName(string alias)
             {
-                return aliasToRealNameAndModuleName[alias].Item2;
+                return entryScope.GetDeclaredModuleName(alias);
             }
 
             public void MakeVisibleForAssignment(string name)
@@ -361,22 +346,13 @@ namespace Languages.SPython.Frontend.Converters
             }
 
             public void AddAlias(string realName, bool isVariable, string alias, string moduleName)
-            {
-                // убрать
-                if (aliasToRealNameAndModuleName.ContainsKey(alias))
-                    aliasToRealNameAndModuleName[alias] = Tuple.Create(realName, moduleName);
-                else aliasToRealNameAndModuleName.Add(alias, Tuple.Create(realName, moduleName));
-                
-                currentScope.Add(alias, realName, isVariable ? NameKind.ImportedVariableAlias : NameKind.ImportedNotVariableAlias);
+            {                
+                entryScope.Add(alias, realName, isVariable ? NameKind.ImportedVariableAlias : NameKind.ImportedNotVariableAlias, moduleName);
             }
 
             public void AddModuleAlias(string realName, string alias)
             {
-                // убрать
-                if (modulesAliases.ContainsKey(alias))
-                    modulesAliases[alias] = realName;
-                else modulesAliases.Add(alias, realName);
-                currentScope.Add(alias, realName, NameKind.ModuleAlias);
+                entryScope.Add(alias, realName, NameKind.ModuleAlias);
             }
 
             // Возможно рудимент (Выпилить, если не понадобится) 13.12.2025  EVA 
@@ -400,17 +376,19 @@ namespace Languages.SPython.Frontend.Converters
                 return currentScope.IsOutermostScope();
             }
 
-            public class LocalScope
+            private class LocalScope
             {
                 private class SymbolInfo
                 {
                     internal string realName;
                     internal NameKind kind;
+                    internal string declaredModuleName;
 
-                    internal SymbolInfo(string realName, NameKind kind)
+                    internal SymbolInfo(string realName, NameKind kind, string declaredModuleName)
                     {
                         this.realName = realName;
                         this.kind = kind;
+                        this.declaredModuleName = declaredModuleName;
                     }
                 }
 
@@ -437,9 +415,9 @@ namespace Languages.SPython.Frontend.Converters
                     }
                 }*/
 
-                public void Add(string ident, string realName, NameKind kind)
+                public void Add(string ident, string realName, NameKind kind, string declaredModuleName = null)
                 {
-                    symbolsInfos[ident] = new SymbolInfo(realName, kind);
+                    symbolsInfos[ident] = new SymbolInfo(realName, kind, declaredModuleName);
                 }
 
                 public void Add(string ident, NameKind kind)
@@ -464,6 +442,8 @@ namespace Languages.SPython.Frontend.Converters
                 public string GetRealName(string ident) => FindNameRecursive(ident).realName;
 
                 public NameKind GetNameKind(string ident) => FindNameRecursive(ident).kind;
+
+                public string GetDeclaredModuleName(string ident) => FindNameRecursive(ident).declaredModuleName;
 
                 public void ClearScope()
                 {
