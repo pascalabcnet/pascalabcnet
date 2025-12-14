@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using PascalABCCompiler;
+﻿using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
+using System;
+using System.Collections.Generic;
 
 namespace Languages.SPython.Frontend.Converters
 {
@@ -77,7 +77,7 @@ namespace Languages.SPython.Frontend.Converters
             }
             else
             {
-                symbolTable.Add(procedure_name, NameKind.GlobalFunction);
+                symbolTable.AddToParentScope(procedure_name, NameKind.GlobalFunction);
             }
             base.visit(_procedure_header);
         }
@@ -182,17 +182,18 @@ namespace Languages.SPython.Frontend.Converters
             }
         }
 
-        public override void visit(variable_definitions _variable_definitions)
+        // Возможно рудимент (Выпилить, если не понадобится) 13.12.2025  EVA
+/*        public override void visit(variable_definitions _variable_definitions)
         {
             foreach (var_def_statement vds in _variable_definitions.var_definitions)
             {
                 foreach (ident id in vds.vars.idents)
                 {
                     symbolTable.Add(id.name, NameKind.GlobalVariable);
-                    base.visit(_variable_definitions);
                 }
             }
-        }
+            base.visit(_variable_definitions);
+        }*/
 
         [Flags]
         protected enum NameKind
@@ -219,7 +220,6 @@ namespace Languages.SPython.Frontend.Converters
 
         protected class SymbolTable
         {
-            private Dictionary<string, NameKind> nameTypes = new Dictionary<string, NameKind>();
             private HashSet<string> forwardDeclaredFunctions = new HashSet<string>();
 
             static string[] Keywords = {
@@ -231,7 +231,7 @@ namespace Languages.SPython.Frontend.Converters
             private void FillKeywords()
             {
                 foreach (var keyword in Keywords)
-                    nameTypes.Add(keyword, NameKind.Keyword);
+                    currentScope.Add(keyword, NameKind.Keyword);
             }
 
             public SymbolTable(Dictionary<string, Dictionary<string, bool>> par)
@@ -276,7 +276,7 @@ namespace Languages.SPython.Frontend.Converters
             // alias of function or global variable from module -> real name and module real name
             private Dictionary<string, Tuple<string, string>> aliasToRealNameAndModuleName = new Dictionary<string, Tuple<string, string>>();
 
-            private LocalScope localVariables = new LocalScope();
+            private LocalScope currentScope = new LocalScope();
 
             // moduleRealName -> functions and global variables in this module real names
             private Dictionary<string, Dictionary<string, bool>> moduleNameToSymbols;
@@ -330,10 +330,8 @@ namespace Languages.SPython.Frontend.Converters
             public NameKind this[string name]
             {
                 get { 
-                    if (localVariables.Contains(name))
-                        return NameKind.LocalVariable;
-                    if (nameTypes.ContainsKey(name))
-                        return nameTypes[name];
+                    if (currentScope.Contains(name))
+                        return currentScope.GetNameKind(name);
                     if (forwardDeclaredFunctions.Contains(name))
                         return NameKind.ForwardDeclaredFunction;
                     return NameKind.Unknown; 
@@ -345,11 +343,9 @@ namespace Languages.SPython.Frontend.Converters
                 switch (nameType)
                 {
                     case NameKind.LocalVariable:
-                        localVariables.Add(name);
-                        break;
                     case NameKind.GlobalVariable:
                     case NameKind.GlobalFunction:
-                        AddGlobalName(name, nameType);
+                        currentScope.Add(name, nameType);
                         break;
                     case NameKind.ForwardDeclaredFunction:
                         forwardDeclaredFunctions.Add(name);
@@ -359,76 +355,77 @@ namespace Languages.SPython.Frontend.Converters
                 }
             }
 
-            private void AddGlobalName(string name, NameKind nameType)
+            public void AddToParentScope(string name, NameKind nameType)
             {
-                EraseNameAsLocal(name);
-
-                if (nameTypes.ContainsKey(name))
-                    nameTypes[name] = nameType;
-                else nameTypes.Add(name, nameType);
+                currentScope.OuterScope.Add(name, nameType);
             }
 
             public void AddAlias(string realName, bool isVariable, string alias, string moduleName)
             {
+                // убрать
                 if (aliasToRealNameAndModuleName.ContainsKey(alias))
                     aliasToRealNameAndModuleName[alias] = Tuple.Create(realName, moduleName);
                 else aliasToRealNameAndModuleName.Add(alias, Tuple.Create(realName, moduleName));
-                AddGlobalName(alias, isVariable ? NameKind.ImportedVariableAlias : NameKind.ImportedNotVariableAlias);
+                
+                currentScope.Add(alias, realName, isVariable ? NameKind.ImportedVariableAlias : NameKind.ImportedNotVariableAlias);
             }
 
             public void AddModuleAlias(string realName, string alias)
             {
+                // убрать
                 if (modulesAliases.ContainsKey(alias))
                     modulesAliases[alias] = realName;
                 else modulesAliases.Add(alias, realName);
-                AddGlobalName(alias, NameKind.ModuleAlias);
+                currentScope.Add(alias, realName, NameKind.ModuleAlias);
             }
 
-            private void EraseNameAsLocal(string name)
+            // Возможно рудимент (Выпилить, если не понадобится) 13.12.2025  EVA 
+            /*private void EraseNameAsLocal(string name)
             {
                 localVariables.EraseName(name);
-            }
+            }*/
 
             public void OpenLocalScope()
             {
-                localVariables = new LocalScope(localVariables);
+                currentScope = new LocalScope(currentScope);
             }
 
             public void CloseLocalScope()
             {
-                localVariables.ClearScope();
+                currentScope.ClearScope();
             }
 
             public bool IsOutermostScope()
             {
-                return localVariables.IsOutermostScope();
+                return currentScope.IsOutermostScope();
             }
 
             public class LocalScope
             {
-                private LocalScope outerScope;
-                private HashSet<string> symbols = new HashSet<string>();
+                private class SymbolInfo
+                {
+                    internal string realName;
+                    internal NameKind kind;
+
+                    internal SymbolInfo(string realName, NameKind kind)
+                    {
+                        this.realName = realName;
+                        this.kind = kind;
+                    }
+                }
+
+                public LocalScope OuterScope { get; private set; }
+                private Dictionary<string, SymbolInfo> symbolsInfos = new Dictionary<string, SymbolInfo>();
 
                 public LocalScope(LocalScope outerScope = null)
                 {
-                    this.outerScope = outerScope;
+                    this.OuterScope = outerScope;
                 }
 
-                public bool Contains(string name)
-                {
-                    LocalScope curr = this;
+                public bool Contains(string name) => FindNameRecursive(name) != null;
 
-                    while (curr != null)
-                    {
-                        if (curr.symbols.Contains(name))
-                            return true;
-                        curr = curr.outerScope;
-                    }
-
-                    return false;
-                }
-
-                public void EraseName(string name)
+                // Возможно рудимент (Выпилить, если не понадобится) 13.12.2025  EVA
+                /*public void EraseName(string name)
                 {
                     LocalScope curr = this;
 
@@ -438,25 +435,48 @@ namespace Languages.SPython.Frontend.Converters
                         curr.symbols.Remove(name);
                         curr = curr.outerScope;
                     }
+                }*/
+
+                public void Add(string ident, string realName, NameKind kind)
+                {
+                    symbolsInfos[ident] = new SymbolInfo(realName, kind);
                 }
 
-                public void Add(string ident)
+                public void Add(string ident, NameKind kind)
                 {
-                    symbols.Add(ident);
+                    Add(ident, ident, kind);
                 }
+
+                private SymbolInfo FindNameRecursive(string name)
+                {
+                    LocalScope curr = this;
+
+                    while (curr != null)
+                    {
+                        if (curr.symbolsInfos.ContainsKey(name))
+                            return curr.symbolsInfos[name];
+                        curr = curr.OuterScope;
+                    }
+
+                    return null;
+                }
+
+                public string GetRealName(string ident) => FindNameRecursive(ident).realName;
+
+                public NameKind GetNameKind(string ident) => FindNameRecursive(ident).kind;
 
                 public void ClearScope()
                 {
-                    if (outerScope != null)
+                    if (OuterScope != null)
                     {
-                        symbols = outerScope.symbols;
-                        outerScope = outerScope.outerScope;
+                        symbolsInfos = OuterScope.symbolsInfos;
+                        OuterScope = OuterScope.OuterScope;
                     }
                 }
 
                 public bool IsOutermostScope()
                 {
-                    return outerScope.outerScope == null;
+                    return OuterScope.OuterScope == null;
                 }
             }
         }
