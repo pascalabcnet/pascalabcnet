@@ -345,7 +345,7 @@ namespace CodeCompletion
     		int col=0;
     		PascalABCCompiler.Parsers.KeywordKind keyw;
             //LanguageIntegration.LanguageIntegrator.ReloadAllParsers();
-            IParser parser = LanguageProvider.Instance.SelectLanguageByName(StringConstants.pascalLanguageName).Parser;
+            IParser parser = LanguageProvider.Instance.MainLanguage.Parser;
     		
     		string test_str = "System.Console";
     		off = test_str.Length;
@@ -1104,13 +1104,15 @@ namespace CodeCompletion
 			string[] files = Directory.GetFiles(test_dir+@"\input","*.pas");
             StreamWriter log = new StreamWriter(Path.Combine(output_dir, @"log.txt"), false, Encoding.GetEncoding(1251));
             SyntaxTreeComparer stc = new SyntaxTreeComparer();
+
+            // Поддержка только PascalABC.NET пока
+            IParser parser = LanguageProvider.Instance.MainLanguage.Parser;
+
             foreach (string s in files)
             {
                 string Text = new StreamReader(s,System.Text.Encoding.GetEncoding(1251)).ReadToEnd();
                 List<Error> Errors = new List<Error>();
                 List<CompilerWarning> Warnings = new List<CompilerWarning>();
-
-                IParser parser = LanguageProvider.Instance.SelectLanguageByExtension(s).Parser;
 
                 compilation_unit cu = parser.GetCompilationUnitForFormatter(s, Text, Errors, Warnings);
                 if (Errors.Count == 0)

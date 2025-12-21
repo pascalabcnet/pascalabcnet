@@ -23,15 +23,12 @@ ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 
-cd ..\bin
-REM MPGORunner.exe
-TestRunner.exe 1
-TestRunner.exe 2
-TestRunner.exe 3
-TestRunner.exe 4
-TestRunner.exe 5
-TestRunner.exe 6
-cd ..
+cd ..\TestSuite
+REM ..\bin\MPGORunner.exe
+..\bin\TestRunner.exe
+cd ..\TestSuiteAdditionalLanguages\SPythonTests
+..\..\bin\TestRunner.exe
+cd ..\..
 
 GOTO EXIT
 

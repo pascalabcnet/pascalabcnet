@@ -14,9 +14,8 @@ type
   LanguageTestsInfo = auto class
  
     languageName: string;
-    languageRootDirName: string;
-    languageExtension: string;
-    commentSymbols: string;
+    languageExtensions: array of string;
+    commentSymbol: string;
 end;
 
 var
@@ -27,27 +26,36 @@ var
 var
   PathSeparator: string := Path.DirectorySeparatorChar;
 
-const
-  LanguagesTestsInfos = |new LanguageTestsInfo('PascalABC.NET', '', '.pas', '//'),
-                         new LanguageTestsInfo('SPython', 'SPythonTests', '.pys', '#')|;
-
 function IsUnix: boolean;
 begin
   Result := (System.Environment.OSVersion.Platform = System.PlatformID.Unix) or (System.Environment.OSVersion.Platform = System.PlatformID.MacOSX);  
 end;
 
-function GetCurrentTestSuiteDir(languageName, languageRootDir : string): string;
+function GetCurrentLanguageInfo(dir: string): LanguageTestsInfo;
 begin
-  var binDir := Path.GetDirectoryName(GetEXEFileName());
-  var ind := binDir.LastIndexOf('bin');
-  var baseTestSuiteDir := languageName = 'PascalABC.NET' ? 'TestSuite' : 'TestSuiteAdditionalLanguages';
-  Result := binDir.Substring(0, ind) + baseTestSuiteDir + PathSeparator + languageRootDir;
+  var configDict := &File.ReadLines(dir + PathSeparator + 'testsettings.config')
+                           .Select(line -> line.Split([':', ' '], System.StringSplitOptions.RemoveEmptyEntries))
+                           .ToDictionary(arr -> arr[0], arr -> arr[1]);
+    
+  var languageInformation := Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(configDict['languageName']).LanguageInformation;
+    
+  Result := new LanguageTestsInfo(languageInformation.Name, languageInformation.FilesExtensions, languageInformation.CommentSymbol);
+end;
+
+function GetCurrentTestSuiteDir(): string;
+begin
+  Result := System.Environment.CurrentDirectory;
 end;
 
 function GetLibDir: string;
 begin
   var dir := Path.GetDirectoryName(GetEXEFileName());
   Result := dir + PathSeparator + 'Lib';
+end;
+
+function GetFilesByExtensions(path: string; extensions: array of string; searchOption: SearchOption := System.IO.SearchOption.TopDirectoryOnly): array of string;
+begin
+  Result := extensions.SelectMany(ext -> Directory.GetFiles(path, $'*{ext}', searchOption)).ToArray();
 end;
 
 function GetCodeExamplesDir: string;
@@ -62,20 +70,20 @@ begin
   var dir := TestSuiteDir + PathSeparator + 'errors';
   if not Directory.Exists(dir) then exit;
   
-  var commentSymbols := CurrentLanguageInfo.commentSymbols;
-  var files := Directory.GetFiles(dir, $'*{CurrentLanguageInfo.languageExtension}');
+  var commentSymbol := CurrentLanguageInfo.commentSymbol;
+  var files := GetFilesByExtensions(dir, CurrentLanguageInfo.languageExtensions);
   for var i := 0 to files.Length - 1 do
   begin
     var comp := new Compiler();
     var content := &File.ReadAllText(files[i]);
-    if content.StartsWith(commentSymbols + 'winonly') and IsUnix then
+    if content.StartsWith(commentSymbol + 'winonly') and IsUnix then
       continue;
-    if content.StartsWith(commentSymbols + 'exclude') then
+    if content.StartsWith(commentSymbol + 'exclude') then
       continue;
     var errorMessage := '';
-    if content.StartsWith(commentSymbols + '!') then
+    if content.StartsWith(commentSymbol + '!') then
     begin
-      errorMessage := content.Substring(commentSymbols.Length + 1, content.IndexOf(System.Environment.NewLine) - commentSymbols.Length + 1).Trim;
+      errorMessage := content.Substring(commentSymbol.Length + 1, content.IndexOf(System.Environment.NewLine) - commentSymbol.Length + 1).Trim;
     end;
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
@@ -119,16 +127,17 @@ begin
   
   var comp := new Compiler();
   
-  var commentSymbols := CurrentLanguageInfo.commentSymbols;
-  var files := Directory.GetFiles(TestSuiteDir, $'*{CurrentLanguageInfo.languageExtension}');
+  var commentSymbol := CurrentLanguageInfo.commentSymbol;
+  var files := GetFilesByExtensions(TestSuiteDir, CurrentLanguageInfo.languageExtensions);
+
   for var i := 0 to files.Length - 1 do
   begin
     if IsUnix then
       Println('Compile file ' + files[i]);
     var content := &File.ReadAllText(files[i]);
-    if content.StartsWith(commentSymbols + 'winonly') and IsUnix then
+    if content.StartsWith(commentSymbol + 'winonly') and IsUnix then
       continue;
-    if content.StartsWith(commentSymbols + 'nopabcrtl') and withdll then
+    if content.StartsWith(commentSymbol + 'nopabcrtl') and withdll then
       continue;
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
@@ -149,9 +158,9 @@ begin
       System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       Halt();
     end;
-    if content.StartsWith(commentSymbols + '!') then
+    if content.StartsWith(commentSymbol + '!') then
     begin
-      var warning := content.Substring(commentSymbols.Length + 1, content.IndexOf(System.Environment.NewLine) - commentSymbols.Length + 1).Trim;
+      var warning := content.Substring(commentSymbol.Length + 1, content.IndexOf(System.Environment.NewLine) - commentSymbol.Length + 1).Trim;
       if comp.Warnings.Count = 0 then
       begin
         if nogui then
@@ -183,12 +192,12 @@ begin
   var fullDirName := TestSuiteDir + PathSeparator + dir;
   if not Directory.Exists(fullDirName) then exit;
   
-  var commentSymbols := CurrentLanguageInfo.commentSymbols;
-  var files := Directory.GetFiles(fullDirName, $'*{CurrentLanguageInfo.languageExtension}');
+  var commentSymbol := CurrentLanguageInfo.commentSymbol;
+  var files := GetFilesByExtensions(fullDirName, CurrentLanguageInfo.languageExtensions);
   for var i := 0 to files.Length - 1 do
   begin
     var content := &File.ReadAllText(files[i]);
-    if content.StartsWith(commentSymbols + 'winonly') and IsUnix then
+    if content.StartsWith(commentSymbol + 'winonly') and IsUnix then
       continue;
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
@@ -222,12 +231,12 @@ begin
   var dir := TestSuiteDir + PathSeparator + 'units' + PathSeparator;
   if not Directory.Exists(dir) then exit;
   
-  var commentSymbols := CurrentLanguageInfo.commentSymbols;
-  var files := Directory.GetFiles(TestSuiteDir + PathSeparator + 'units', $'*{CurrentLanguageInfo.languageExtension}');
+  var commentSymbol := CurrentLanguageInfo.commentSymbol;
+  var files := GetFilesByExtensions(TestSuiteDir + PathSeparator + 'units', CurrentLanguageInfo.languageExtensions);
   for var i := 0 to files.Length - 1 do
   begin
     var content := &File.ReadAllText(files[i]);
-    if content.StartsWith(commentSymbols + 'winonly') and IsUnix then
+    if content.StartsWith(commentSymbol + 'winonly') and IsUnix then
       continue;
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
@@ -250,19 +259,18 @@ end;
 
 procedure CompileAllUsesUnits;
 begin
-  System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
   var comp := new Compiler();
   
   var dir := TestSuiteDir + PathSeparator + 'usesunits';
   
   if not Directory.Exists(dir) then exit;
   
-  var commentSymbols := CurrentLanguageInfo.commentSymbols;
-  var files := Directory.GetFiles(dir, $'*{CurrentLanguageInfo.languageExtension}');
+  var commentSymbol := CurrentLanguageInfo.commentSymbol;
+  var files := GetFilesByExtensions(dir, CurrentLanguageInfo.languageExtensions);
   for var i := 0 to files.Length - 1 do
   begin
     var content := &File.ReadAllText(files[i]);
-    if content.StartsWith(commentSymbols + 'winonly') and IsUnix then
+    if content.StartsWith(commentSymbol + 'winonly') and IsUnix then
       continue;
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
@@ -283,9 +291,7 @@ begin
 end;
 
 procedure CopyPCUFiles;
-begin
-  System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
-  
+begin  
   var dir := TestSuiteDir + PathSeparator + 'units';
   if not Directory.Exists(dir) then exit;
   
@@ -351,8 +357,9 @@ end;
 
 procedure RunExpressionsExtractTests;
 begin
+  // Пока для других языков не поддерживается
   if CurrentLanguageInfo.languageName <> 'PascalABC.NET' then exit;
-  CodeCompletion.CodeCompletionTester.Test();  
+  CodeCompletion.CodeCompletionTester.Test();
 end;
 
 function GetLineByPos(lines: array of string; pos: integer): integer;
@@ -442,15 +449,15 @@ begin
   ClearDirByPattern(TestSuiteDir + PathSeparator + 'usesunits', '*.pcu');
 end;
 
-procedure DeletePABCSystemPCU;
-begin
-  var dir := Path.Combine(Path.GetDirectoryName(GetEXEFileName()), 'Lib');
-  var pcu := Path.Combine(dir, 'PABCSystem.pcu');
-end;
+//procedure DeletePABCSystemPCU;
+//begin
+//  var dir := Path.Combine(Path.GetDirectoryName(GetEXEFileName()), 'Lib');
+//  var pcu := Path.Combine(dir, 'PABCSystem.pcu');
+//end;
 
 procedure CopyLibFiles;
 begin
-  var files := Directory.GetFiles(GetLibDir(), $'*{CurrentLanguageInfo.languageExtension}');
+  var files := GetFilesByExtensions(GetLibDir(), CurrentLanguageInfo.languageExtensions);
   foreach f: string in files do
   begin
     &File.Copy(f, TestSuiteDir + PathSeparator + 'CompilationSamples' + PathSeparator + Path.GetFileName(f), true);
@@ -462,7 +469,7 @@ begin
   var dir := GetCodeExamplesDir();
   if not Directory.Exists(dir) then exit;
   
-  var files := Directory.GetFiles(dir, $'*{CurrentLanguageInfo.languageExtension}', SearchOption.AllDirectories);
+  var files := GetFilesByExtensions(dir, CurrentLanguageInfo.languageExtensions, SearchOption.AllDirectories);
   foreach f: string in files do
   begin
     &File.Copy(f, TestSuiteDir + PathSeparator + 'CompilationSamples' + PathSeparator + Path.GetFileName(f), true);
@@ -471,11 +478,8 @@ end;
 
 function MsToMinutes(ms: integer) : string;
 begin
-  var minutes := ms div 60000;
-  if minutes > 0 then
-    Result := minutes + 'm ' + Round((ms / 60000 - minutes) * 60) + 's'
-  else
-    Result := Round((ms / 60000 - minutes) * 60) + 's';
+  var span := System.TimeSpan.FromMilliseconds(ms);
+  Result := span.Minutes > 0 ? $'{span.Minutes}m {span.Seconds}s' : $'{span.Seconds}s';
 end;
 
 begin
@@ -483,82 +487,77 @@ begin
   try
     Languages.Integration.LanguageIntegrator.LoadStandardLanguages();
     
-    foreach var langTestsInfo in LanguagesTestsInfos do
+    TestSuiteDir := GetCurrentTestSuiteDir();
+    
+    CurrentLanguageInfo := GetCurrentLanguageInfo(TestSuiteDir);
+    
+    Println($'----- {CurrentLanguageInfo.languageName} тесты -----');
+    if (ParamCount = 2) and (ParamStr(2) = '1') then
+      nogui := true;
+    if (ParamCount = 0) or (ParamStr(1) = '1') then
     begin
-      CurrentLanguageInfo := langTestsInfo;
-      TestSuiteDir := GetCurrentTestSuiteDir(langTestsInfo.languageName, langTestsInfo.languageRootDirName);
-      System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
-      
-      var CurrentLanguageName := CurrentLanguageInfo.languageName;
-      
-      if (ParamCount = 2) and (ParamStr(2) = '1') then
-        nogui := true;
-      if (ParamCount = 0) or (ParamStr(1) = '1') then
-      begin
-        Println($'Compiling {CurrentLanguageName} tests...');
-        DeletePCUFiles;
-        ClearExeDir;
-        CompileAllRunTests(false);
-        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
-      end;
-      
-      if (ParamCount = 0) or (ParamStr(1) = '2') then
-      begin
-        Println($'Compiling {CurrentLanguageName} compilation samples...');        
-        CopyLibFiles;
-        CopyCodeExamples;
-        CompileAllCompilationTests('CompilationSamples', false);
-        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
-      end;
-      if (ParamCount = 0) or (ParamStr(1) = '3') then
-      begin
-        Println($'Compiling {CurrentLanguageName} tests with multiple units and error throwing tests...');
-        CompileAllUnits;
-        CopyPCUFiles;
-        CompileAllUsesUnits;
-        CompileErrorTests(false);
-        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
-      end;
-      if (ParamCount = 0) or (ParamStr(1) = '4') then
-      begin
-        Println($'Running {CurrentLanguageName} tests...');
-        RunAllTests(false);
-        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
-        ClearExeDir;
-        DeletePCUFiles;
-      end;
-      if (ParamCount = 0) or (ParamStr(1) = '5') then
-      begin
-        Println($'Compiling {CurrentLanguageName} tests in 32bit mode...');
-        CompileAllRunTests(false, true);
-        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
-        Println($'Running {CurrentLanguageName} tests in 32bit mode...');
-        RunAllTests(false);
-        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
-        ClearExeDir;
-        Println($'Compiling {CurrentLanguageName} tests with PABCRtl.dll...');
-        CompileAllRunTests(true);
-        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
-        Println($'Compiling {CurrentLanguageName} compilation samples with PABCRtl.dll...');
-        CompileAllCompilationTests('pabcrtl_tests', true);
-        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
-      end;
-      if (ParamCount = 0) or (ParamStr(1) = '6') then
-      begin
-        Println($'Running {CurrentLanguageName} tests with PABCRtl.dll...');
-        RunAllTests(false);
-        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
-        System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
-        Println($'Running {CurrentLanguageName} intellisense expression tests...');
-        RunExpressionsExtractTests;
-        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
-        Println($'Running {CurrentLanguageName} basic intellisense tests...');
-        RunIntellisenseTests;
-        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
-        Println($'Running {CurrentLanguageName} formatter tests...');
-        RunFormatterTests;
-        Println('Success. Time spent: ' + MsToMinutes(MillisecondsDelta()));
-      end;
+      Println('Compiling tests...');
+      DeletePCUFiles;
+      ClearExeDir;
+      CompileAllRunTests(false);
+      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
+    end;
+    
+    if (ParamCount = 0) or (ParamStr(1) = '2') then
+    begin
+      Println('Compiling compilation samples...');        
+      CopyLibFiles;
+      CopyCodeExamples;
+      CompileAllCompilationTests('CompilationSamples', false);
+      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
+    end;
+    if (ParamCount = 0) or (ParamStr(1) = '3') then
+    begin
+      Println('Compiling tests with multiple units and error throwing tests...');
+      CompileAllUnits;
+      CopyPCUFiles;
+      CompileAllUsesUnits;
+      CompileErrorTests(false);
+      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
+    end;
+    if (ParamCount = 0) or (ParamStr(1) = '4') then
+    begin
+      Println('Running tests...');
+      RunAllTests(false);
+      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
+      ClearExeDir;
+      DeletePCUFiles;
+    end;
+    if (ParamCount = 0) or (ParamStr(1) = '5') then
+    begin
+      Println('Compiling tests in 32bit mode...');
+      CompileAllRunTests(false, true);
+      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
+      Println('Running tests in 32bit mode...');
+      RunAllTests(false);
+      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
+      ClearExeDir;
+      Println('Compiling tests with PABCRtl.dll...');
+      CompileAllRunTests(true);
+      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
+      Println('Compiling compilation samples with PABCRtl.dll...');
+      CompileAllCompilationTests('pabcrtl_tests', true);
+      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
+    end;
+    if (ParamCount = 0) or (ParamStr(1) = '6') then
+    begin
+      Println('Running tests with PABCRtl.dll...');
+      RunAllTests(false);
+      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
+      Println('Running intellisense expression tests...');
+      RunExpressionsExtractTests;
+      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
+      Println('Running basic intellisense tests...');
+      RunIntellisenseTests;
+      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
+      Println('Running formatter tests...');
+      RunFormatterTests;
+      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
     end;
   except
     on e: Exception do
