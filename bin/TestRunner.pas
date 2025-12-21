@@ -412,6 +412,8 @@ begin
   begin
     var dirInfo := new DirectoryInfo(TestSuiteDir);
     
+    if nogui then
+      raise new Exception('Formatter tests failed.' + NewLine + errors);
     System.Windows.Forms.MessageBox.Show(errors + System.Environment.NewLine + $'more info at {dirInfo.Parent.Name}/{dirInfo.Name}/formatter_tests/output/log.txt');
     Halt;
   end;
@@ -491,7 +493,9 @@ begin
     
     CurrentLanguageInfo := GetCurrentLanguageInfo(TestSuiteDir);
     
-    Println($'----- {CurrentLanguageInfo.languageName} тесты -----');
+    if (ParamCount = 0) or (ParamStr(1) = '1') then
+      Println($'----- {CurrentLanguageInfo.languageName} тесты -----');
+    
     if (ParamCount = 2) and (ParamStr(2) = '1') then
       nogui := true;
     if (ParamCount = 0) or (ParamStr(1) = '1') then
