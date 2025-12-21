@@ -39,9 +39,20 @@ ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 
 
 cd ..\TestSuite
-..\bin\TestRunner.exe
+..\bin\TestRunner.exe 1
+..\bin\TestRunner.exe 2
+..\bin\TestRunner.exe 3
+..\bin\TestRunner.exe 4
+..\bin\TestRunner.exe 5
+..\bin\TestRunner.exe 6
+
 cd ..\TestSuiteAdditionalLanguages\SPythonTests
-..\..\bin\TestRunner.exe
+..\..\bin\TestRunner.exe 1
+..\..\bin\TestRunner.exe 2
+..\..\bin\TestRunner.exe 3
+..\..\bin\TestRunner.exe 4
+..\..\bin\TestRunner.exe 5
+..\..\bin\TestRunner.exe 6
 
 
 cd ..\..\ReleaseGenerators
