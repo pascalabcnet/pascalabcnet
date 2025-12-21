@@ -42,11 +42,6 @@ begin
   Result := new LanguageTestsInfo(languageInformation.Name, languageInformation.FilesExtensions, languageInformation.CommentSymbol);
 end;
 
-function GetCurrentTestSuiteDir(): string;
-begin
-  Result := System.Environment.CurrentDirectory;
-end;
-
 function GetLibDir: string;
 begin
   var dir := Path.GetDirectoryName(GetEXEFileName());
@@ -489,7 +484,9 @@ begin
   try
     Languages.Integration.LanguageIntegrator.LoadStandardLanguages();
     
-    TestSuiteDir := GetCurrentTestSuiteDir();
+    TestSuiteDir := System.Environment.CurrentDirectory;
+    
+    System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
     
     CurrentLanguageInfo := GetCurrentLanguageInfo(TestSuiteDir);
     
