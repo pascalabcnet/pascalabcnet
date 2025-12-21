@@ -96,6 +96,8 @@ namespace Languages.Pascal.Frontend.Data
             #endregion
         }
 
+        public override string CommentSymbol => "//";
+
         public override string BodyStartBracket
         {
             get

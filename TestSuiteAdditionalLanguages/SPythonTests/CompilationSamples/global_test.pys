@@ -1,0 +1,17 @@
+﻿a = 10
+
+def f():
+    global a
+    a = 2
+    print(a)
+
+
+print(a)
+f()
+print(a)
+if True:
+    print(a)
+    a = 3
+    print(a)
+
+print(a)

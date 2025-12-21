@@ -1,0 +1,18 @@
+﻿# индекс минимального элемента
+def argmin(arr: list[int]) -> int:
+    if len(arr) == 0:
+        return -1
+    res = 0
+    for i in range(1, len(arr)):
+        if arr[i] < arr[res]:
+            res = i
+    return res
+
+
+
+
+print(argmin([1, 2, 3]))
+print(argmin([3, 2, 1]))
+# a = [4,9,16,8,2,15,13,13,15,2,8,16,9,4]
+a = [i ** 2 % 17 for i in range(2, 16)] 
+print(argmin([i ** 2 % 17 for i in range(2, 16)])) 

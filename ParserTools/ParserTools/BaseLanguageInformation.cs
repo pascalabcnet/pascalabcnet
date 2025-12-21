@@ -26,6 +26,8 @@ namespace PascalABCCompiler.Parsers
 
         public abstract Dictionary<string, DirectiveInfo> ValidDirectives { get; protected set; }
 
+        public abstract string CommentSymbol { get; }
+
         public abstract string BodyStartBracket { get; }
 
         public abstract string BodyEndBracket { get; }

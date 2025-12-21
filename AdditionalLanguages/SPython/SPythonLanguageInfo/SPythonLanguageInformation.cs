@@ -30,6 +30,8 @@ namespace Languages.SPython.Frontend.Data
 
         public override Dictionary<string, DirectiveInfo> ValidDirectives { get; protected set; }
 
+        public override string CommentSymbol => "#";
+
         public override string BodyStartBracket => null;
 
         public override string BodyEndBracket => null;
