@@ -53,6 +53,16 @@ namespace Languages.SPython.Frontend.Converters
         private void BuildMainFunction(statement_list _statement_list)
         {
             statement_list mainBody = _statement_list.TypedClone();
+
+            // Нужно поправить это клонирование
+            for (var i = 0; i < _statement_list.Count; i++)
+            {
+                if (_statement_list[i] is assign ass && ass.first_assignment_defines_type)
+                {
+                    ((assign)mainBody[i]).first_assignment_defines_type = true;
+                }
+            }
+
             mainBody.source_context = mainBody.Parent.source_context; // source context для MAIN охватывает весь файл
             procedure_header _procedure_header = new procedure_header(mainFunctionName);
             block _block = new block(null, mainBody, mainBody.source_context);
