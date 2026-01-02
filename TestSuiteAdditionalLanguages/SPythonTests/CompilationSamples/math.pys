@@ -1,6 +1,6 @@
 ﻿import PABCSystem
 
-pi = 3.14
+pi: float = 3.14
 
 def sqrt(x: float) -> float:
     return PABCSystem.sqrt(x)

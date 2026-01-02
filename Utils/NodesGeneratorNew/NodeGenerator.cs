@@ -4055,7 +4055,7 @@ namespace NodeGenerator
 
             generate_abstract_visitor_code();
 
-            generate_hierarchy_visitor_code();
+            // generate_hierarchy_visitor_code();
 
 			sw.Flush();
 			sw.Close();
