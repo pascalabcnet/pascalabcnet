@@ -16,7 +16,7 @@ namespace Languages.SPython.Frontend.Data
 
         public override string Version => "0.0.1";
 
-        public override string Copyright => "Copyright © 2023-2025 by Vladislav Krylov, Egor Movchan";
+        public override string Copyright => "Copyright © 2023-2026 by Vladislav Krylov, Egor Movchan";
 
         public override string[] FilesExtensions => new string[] { ".pys" };
 

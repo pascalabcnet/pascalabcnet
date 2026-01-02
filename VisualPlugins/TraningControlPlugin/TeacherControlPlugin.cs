@@ -27,7 +27,7 @@ namespace VisualPascalABCPlugins
         private PluginGUIItem Item;
         public string Name { get => "Teacher Control Plugin"; }
         public string Version { get => "0.2"; }
-        public string Copyright { get => "Copyright © 2021-2025 by Stanislav Mikhalkovich"; }
+        public string Copyright { get => "Copyright © 2021-2026 by Stanislav Mikhalkovich"; }
 
         public string Login = null;
         public string Password = null;
