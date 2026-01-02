@@ -148,7 +148,9 @@ namespace Languages.Integration
         /// <returns></returns>
         private static ILanguage InstantiateLanguageAndAddToLanguagesList(FileInfo languageFile)
         {
-            Assembly assembly = Assembly.LoadFile(languageFile.FullName);
+            // Assembly assembly = Assembly.LoadFile(languageFile.FullName);
+            // SSM 02.01.2026 Поменял для net 9.0 иначе падение - не загружался PascalABCParser
+            Assembly assembly = Assembly.LoadFrom(languageFile.FullName);
 
             Type[] types = assembly.GetTypes();
 
