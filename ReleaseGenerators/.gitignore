@@ -2,6 +2,7 @@
 
 
 /RebuildStandartModules.exe
+/RebuildStandartModulesSPython.exe
 /Samples/BF/*
 /Samples/PAS/*
 /Samples/PL0/*

@@ -18,7 +18,7 @@ dotnet build -c Release --no-incremental PascalABCNET.sln
 
 cd ReleaseGenerators
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild
-..\bin\pabcnetc RebuildStandartModulesSPython.pas
+..\bin\pabcnetc RebuildStandartModulesSPython.pas /rebuild
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 cd PABCRtl
