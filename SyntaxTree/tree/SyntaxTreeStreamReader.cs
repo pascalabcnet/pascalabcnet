@@ -684,6 +684,7 @@ namespace PascalABCCompiler.SyntaxTree
 			_assign.to = _read_node() as addressed_value;
 			_assign.from = _read_node() as expression;
 			_assign.operator_type = (Operators)br.ReadByte();
+			_assign.first_assignment_defines_type = br.ReadBoolean();
 		}
 
 

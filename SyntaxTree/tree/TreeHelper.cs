@@ -381,11 +381,17 @@ namespace PascalABCCompiler.SyntaxTree
         { }
         public assign(string name, bool value) : this(new ident(name), new bool_const(value))
         { }
+
+        public assign(addressed_value _to, expression _from, Operators _operator_type) : this(_to, _from, _operator_type, false)
+        { }
+
+        public assign(addressed_value _to, expression _from, Operators _operator_type, SourceContext sc) : this(_to, _from, _operator_type, false, sc)
+        { }
+
         public override string ToString()
         {
             return string.Format("{0} {1} {2}", to, OperatorServices.ToString(operator_type, StringConstants.pascalLanguageName), from);
         }
-        public bool first_assignment_defines_type = false;
     }
 
     public partial class bin_expr

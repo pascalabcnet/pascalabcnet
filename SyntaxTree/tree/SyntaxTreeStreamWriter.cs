@@ -180,6 +180,7 @@ namespace PascalABCCompiler.SyntaxTree
 				_assign.from.visit(this);
 			}
 			bw.Write((byte)_assign.operator_type);
+			bw.Write(_assign.first_assignment_defines_type);
 		}
 
 
