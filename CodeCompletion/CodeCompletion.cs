@@ -286,7 +286,7 @@ namespace CodeCompletion
             List<string> Dirs = new List<string>();
             Dirs.AddRange(ddirs);
             if (CodeCompletionController.comp != null)
-                Dirs.AddRange(CodeCompletionController.comp.CompilerOptions.SearchDirectories);
+                Dirs.AddRange(CodeCompletionController.comp.GetCurrentSearchDirectories(currentUnitLanguage));
             // Надо как-то проверять, что мы не в инсталированной версии EVA
             if (CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent) && Directory.Exists(CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]))
                 Dirs.Add(CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]);

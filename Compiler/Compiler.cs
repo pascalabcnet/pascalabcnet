@@ -456,7 +456,7 @@ namespace PascalABCCompiler
                 { "%PABCSYSTEM%", SystemDirectory }
             };
 
-            SearchDirectories = new List<string>() { Path.Combine(SystemDirectory, "Lib") };
+            SearchDirectories = new List<string>();
         }
 
 
@@ -1959,7 +1959,8 @@ namespace PascalABCCompiler
                     fileNameWithPriority = Tuple.Create(resultFileName1, 1);
                 else if (CompilerOptions.OutputDirectory != CompilerOptions.SourceFileDirectory && FindFileWithExtensionInDirs(Path.GetFileName(fileName), out _, currentUnitLanguage, CompilerOptions.OutputDirectory) is string resultFileName2)
                     fileNameWithPriority = Tuple.Create(resultFileName2, 2);
-                else if (FindFileWithExtensionInDirs(fileName, out var dirIndex, currentUnitLanguage, CompilerOptions.SearchDirectories.ToArray()) is string resultFileName3)
+                else if (FindFileWithExtensionInDirs(
+                            fileName, out var dirIndex, currentUnitLanguage, GetCurrentSearchDirectories(currentUnitLanguage)) is string resultFileName3)
                     fileNameWithPriority = Tuple.Create(resultFileName3, 3 + dirIndex);
                 else
                     fileNameWithPriority = null;
@@ -1971,6 +1972,17 @@ namespace PascalABCCompiler
             return fileNameWithPriority?.Item1;
         }
 
+        public string[] GetCurrentSearchDirectories(ILanguage currentUnitLanguage)
+        {
+            return
+                CompilerOptions.SearchDirectories.Concat(LanguageProvider.Languages
+                                        .Where(lang => lang == currentUnitLanguage)
+                                        .Concat(LanguageProvider.Languages.Where(lang => lang != currentUnitLanguage))
+                                        .Select(lang => Path.Combine(CompilerOptions.SystemDirectory, "Lib",
+                                                lang.Name.Replace(StringConstants.pascalLanguageName, "")))) // для PascalABC.NET прямо в Lib, остальные во внутренних папках
+                                        .ToArray();
+        }
+
         public string FindSourceFileName(string fileName, string currentPath, out int folderPriority, ILanguage currentUnitLanguage)
         {
             var cacheKey = Tuple.Create(fileName.ToLower(), currentPath?.ToLower());
@@ -1980,7 +1992,7 @@ namespace PascalABCCompiler
 
 				if (FindSourceFileNameInDirs(fileName, out _, currentUnitLanguage, currentPath) is string resultFileName1)
                     fileNameWithPriority = Tuple.Create(resultFileName1, 1);
-                else if (FindSourceFileNameInDirs(fileName, out var dirIndex, currentUnitLanguage, CompilerOptions.SearchDirectories.ToArray()) is string resultFileName2)
+                else if (FindSourceFileNameInDirs(fileName, out var dirIndex, currentUnitLanguage, GetCurrentSearchDirectories(currentUnitLanguage)) is string resultFileName2)
                     fileNameWithPriority = Tuple.Create(resultFileName2, 3 + dirIndex);
                 else
                     fileNameWithPriority = null;

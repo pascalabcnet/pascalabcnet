@@ -79,6 +79,7 @@ namespace CodeCompletion
             pcu_file.Version = br.ReadInt16();
             pcu_file.Revision = br.ReadInt32();
             pcu_file.CRC = br.ReadInt64();
+            pcu_file.UseRtlDll = br.ReadBoolean();
             pcu_file.IncludeDebugInfo = br.ReadBoolean();
             return true;
         }
@@ -108,7 +109,10 @@ namespace CodeCompletion
                 pcu_file.SourceFileName = br.ReadString();
             else
                 pcu_file.SourceFileName = Path.GetFileNameWithoutExtension(FileName);
-			int num_names = br.ReadInt32();
+
+            pcu_file.languageName = br.ReadString();
+            
+            int num_names = br.ReadInt32();
 			pcu_file.names = new NameRef[num_names];
 			for (int i=0; i<num_names; i++)
 			{
@@ -116,6 +120,7 @@ namespace CodeCompletion
 				pcu_file.names[i].offset = br.ReadInt32();
                 pcu_file.names[i].symbol_kind = (symbol_kind)br.ReadByte();
                 pcu_file.names[i].special_scope = br.ReadByte();
+                pcu_file.names[i].always_restore = br.ReadBoolean();
             }
             //ssyy
             num_names = br.ReadInt32();
@@ -126,6 +131,7 @@ namespace CodeCompletion
                 pcu_file.implementation_names[i].offset = br.ReadInt32();
                 pcu_file.implementation_names[i].symbol_kind = (symbol_kind)br.ReadByte();
                 pcu_file.implementation_names[i].special_scope = br.ReadByte();
+                pcu_file.implementation_names[i].always_restore = br.ReadBoolean();
             }
             //\ssyy
 			int num_incl = br.ReadInt32();
