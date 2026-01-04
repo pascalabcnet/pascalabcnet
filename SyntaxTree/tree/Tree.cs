@@ -910,28 +910,31 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public assign(addressed_value _to,expression _from,Operators _operator_type)
+		public assign(addressed_value _to,expression _from,Operators _operator_type,bool _first_assignment_defines_type)
 		{
 			this._to=_to;
 			this._from=_from;
 			this._operator_type=_operator_type;
+			this._first_assignment_defines_type=_first_assignment_defines_type;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public assign(addressed_value _to,expression _from,Operators _operator_type,SourceContext sc)
+		public assign(addressed_value _to,expression _from,Operators _operator_type,bool _first_assignment_defines_type,SourceContext sc)
 		{
 			this._to=_to;
 			this._from=_from;
 			this._operator_type=_operator_type;
+			this._first_assignment_defines_type=_first_assignment_defines_type;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
 		protected addressed_value _to;
 		protected expression _from;
 		protected Operators _operator_type;
+		protected bool _first_assignment_defines_type;
 
 		///<summary>
 		///Левый операнд оператора присваивания (чему присваивать).
@@ -982,6 +985,21 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///Необходимо ли задать тип переменной равным типу правой части
+		///</summary>
+		public bool first_assignment_defines_type
+		{
+			get
+			{
+				return _first_assignment_defines_type;
+			}
+			set
+			{
+				_first_assignment_defines_type=value;
+			}
+		}
+
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -1006,6 +1024,7 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.from.Parent = copy;
 			}
 			copy.operator_type = operator_type;
+			copy.first_assignment_defines_type = first_assignment_defines_type;
 			return copy;
 		}
 
