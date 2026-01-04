@@ -6653,8 +6653,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 if (!(value.function_code is SemanticTree.IRuntimeManagedMethodBody))
                 {
-                    //ssyy!!! добавил условие для интерфейсов
-                    if (value.function_code != null)
+                    if (value.function_code != null && !value.common_comprehensive_type.IsInterface)
                     {
                         il = methb.GetILGenerator();
                         ConvertLocalVariables(value.var_definition_nodes);

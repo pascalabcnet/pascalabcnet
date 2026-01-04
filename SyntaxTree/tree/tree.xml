@@ -3654,6 +3654,7 @@
       <HelpData Key="assign.assign(ident left,expression ex): this(new ident_list(left),ex,Operators.Assignment)" Value="" />
       <HelpData Key="assign.assign(string left,expression ex): this(new ident(left),ex)" Value="" />
       <HelpData Key="assign.assign(string left,expression ex, SourceContext sc): this(new ident(left),ex,sc)" Value="" />
+      <HelpData Key="assign.first_assignment_defines_type" Value="Для SPython" />
       <HelpData Key="assign.from" Value="Выражение в правой части" />
       <HelpData Key="assign.operator_type" Value="Тип оператора присваивания" />
       <HelpData Key="assign.override string ToString()" Value="" />

@@ -359,13 +359,15 @@ namespace PascalABCCompiler
             pabcnetcProcess.StandardInput.WriteLine(command);
         }
         
+        /*
+         * Не используется!
         void sendObject(int id, object o)
         {
             sendCommand(id);
             MemoryStream ms = new MemoryStream();
             (new BinaryFormatter()).Serialize(ms, o);
             ms.WriteTo(pabcnetcProcess.StandardInput.BaseStream);            
-        }
+        }*/
 
         void sendCompilerOptions()
         {

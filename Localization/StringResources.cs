@@ -491,7 +491,7 @@ namespace PascalABCCompiler
                         if (col != null)
                             foreach (object ob in col)
                                 //не расматриваем формы
-                                if (!(ob is System.Windows.Forms.Form))
+                                if (ob.GetType().FullName != "System.Windows.Forms.Form")
                                     SetTextForAllObjects(ob, prefix);
                     }
                     if (val is IContainer)
@@ -500,7 +500,7 @@ namespace PascalABCCompiler
                         if (cont != null)
                             foreach (object ob in cont.Components)
                                 //не расматриваем формы
-                                if (!(ob is System.Windows.Forms.Form))
+                                if (ob.GetType().FullName != "System.Windows.Forms.Form")
                                     SetTextForAllObjects(ob, prefix);
                     }
                 }

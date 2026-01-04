@@ -18,6 +18,7 @@ mono --aot bin/PascalABCLanguageInfo.dll
 
 cd ReleaseGenerators
 mono ../bin/pabcnetc.exe RebuildStandartModulesMono.pas  /rebuild
+mono ../bin/pabcnetc RebuildStandartModulesSPython.pas /rebuild
 if [ $? -eq 0 ]; then
     if [ $? -eq 0 ]; then
       cd ../TestSuite
