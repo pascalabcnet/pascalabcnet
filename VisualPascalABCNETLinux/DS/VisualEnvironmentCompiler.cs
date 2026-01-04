@@ -1,12 +1,13 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using Languages.Facade;
+using Languages.Integration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using System.IO;
 using VisualPascalABCPlugins;
-using Languages.Integration;
 
 namespace VisualPascalABC
 {
@@ -172,10 +173,10 @@ namespace VisualPascalABC
             if (standartCompiler == null) 
                 return null;
             string Filter = "", AllFilter = "";
-            foreach (PascalABCCompiler.SupportedSourceFile ssf in standartCompiler.SupportedSourceFiles)
+            foreach (ILanguage lang in LanguageProvider.Instance.Languages)
             {
-                Filter = Tools.MakeFilter(Filter, ssf.LanguageName, ssf.Extensions);
-                AllFilter = Tools.MakeAllFilter(AllFilter, ssf.LanguageName, ssf.Extensions);
+                Filter = Tools.MakeFilter(Filter, lang.Name, lang.FilesExtensions);
+                AllFilter = Tools.MakeAllFilter(AllFilter, lang.Name, lang.FilesExtensions);
             }
             Filter += "Программы на C# (*.cs)|*.cs|";
             AllFilter += "*.cs;";
@@ -377,8 +378,9 @@ namespace VisualPascalABC
                         if (!(defaultCompilerType == PascalABCCompiler.CompilerType.Remote) || (standartCompiler.State == PascalABCCompiler.CompilerState.Ready && (remoteCompiler != null && remoteCompiler.State == PascalABCCompiler.CompilerState.Ready)))
                             StartingCompleted = true;
                         AddCompilerTextToCompilerMessages(sender, VECStringResources.Get("SUPPORTED_LANGUAGES") + Environment.NewLine);
-                        foreach (PascalABCCompiler.SupportedSourceFile ssf in standartCompiler.SupportedSourceFiles)
-                            AddCompilerTextToCompilerMessages(sender, string.Format(VECStringResources.Get("CM_LANGUAGE_{0}"), ssf) + Environment.NewLine);
+                        foreach (ILanguage lang in LanguageProvider.Instance.Languages)
+                            AddCompilerTextToCompilerMessages(sender, string.Format(VECStringResources.Get("CM_LANGUAGE_{0}"),
+                                PascalABCCompiler.FormatTools.LanguageAndExtensionsFormatted(lang.Name, lang.FilesExtensions) + Environment.NewLine));
                         if (StartingCompleted)
                         {
                             ChangeVisualEnvironmentState(VisualEnvironmentState.FinishCompilerLoading, standartCompiler);

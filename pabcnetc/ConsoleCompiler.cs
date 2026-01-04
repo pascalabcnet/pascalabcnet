@@ -6,6 +6,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
+using Languages.Facade;
 
 namespace PascalABCCompiler
 {
@@ -370,17 +371,17 @@ namespace PascalABCCompiler
             //GC.Collect();
             WriteColorText(Compiler.Banner + "\nCopyright (c) 2005-2026 by Ivan Bondarev, Stanislav Mikhalkovich\n", ConsoleColor.Green);
             Console.WriteLine("OK {0}ms", (DateTime.Now - ldt).TotalMilliseconds);
-            if (Compiler.SupportedSourceFiles.Length == 0)
+            if (LanguageProvider.Instance.Languages.Count == 0)
                 WriteColorText(StringResourcesGet("ERROR_PARSERS_NOT_FOUND")+Environment.NewLine, ConsoleColor.Red);
             Compiler.InternalDebug.SkipPCUErrors = false;
         }
         public static void ShowConnectedParsers()
         {
-            if (Compiler.SupportedSourceFiles.Length > 0)
+            if (LanguageProvider.Instance.Languages.Count > 0)
             {
                 Console.Write(StringResourcesGet("CONNECTED_PARSERS"));
-                foreach (PascalABCCompiler.SupportedSourceFile ssf in Compiler.SupportedSourceFiles)
-                    Console.Write(ssf+"; ");
+                foreach (ILanguage lang in LanguageProvider.Instance.Languages)
+                    Console.Write(FormatTools.LanguageAndExtensionsFormatted(lang.Name, lang.FilesExtensions)+"; ");
                 Console.WriteLine();
             }
         }

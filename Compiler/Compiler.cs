@@ -643,6 +643,8 @@ namespace PascalABCCompiler
         }
 
         private SupportedSourceFile[] supportedSourceFiles = null;
+        
+        // TODO: убрать, поскольку информация берется из классов языков (ILanguage)
         public SupportedSourceFile[] SupportedSourceFiles
         {
             get { return supportedSourceFiles; }
@@ -802,7 +804,6 @@ namespace PascalABCCompiler
             if (ChangeCompilerState != null)
                 OnChangeCompilerState += ChangeCompilerState;
             
-            supportedSourceFiles = comp.SupportedSourceFiles;
             supportedProjectFiles = comp.SupportedProjectFiles;
 
             // 29.07.2024  EVA
@@ -2009,11 +2010,10 @@ namespace PascalABCCompiler
             var fileNameExtension = Path.GetExtension(fileName);
             var isExtensionEmpty = string.IsNullOrEmpty(fileNameExtension);
 
-            // TODO: ищем сперва для расширения текущего языка  EVA
-
-            foreach (SupportedSourceFile sf in SupportedSourceFiles)
+            // Ищем сначала по расширениям текущего языка, потом по всем остальным
+            foreach (ILanguage lang in new ILanguage[] { currentUnitLanguage }.Concat(LanguageProvider.Languages.Where(l => l != currentUnitLanguage)))
             {
-                foreach (string extension in sf.Extensions)
+                foreach (string extension in lang.FilesExtensions)
                 {
                     if (isExtensionEmpty || fileNameExtension == extension)
                     {
@@ -2022,8 +2022,7 @@ namespace PascalABCCompiler
                             return resultFileName;
                     }
                 }  
-            }
-                
+            }   
 
             foundDirIndex = 0;
             return null;
