@@ -1975,13 +1975,14 @@ namespace PascalABCCompiler
 
         public string[] GetCurrentSearchDirectories(ILanguage currentUnitLanguage)
         {
-            return
-                CompilerOptions.SearchDirectories.Concat(LanguageProvider.Languages
+            var libDirs = LanguageProvider.Languages
                                         .Where(lang => lang == currentUnitLanguage)
                                         .Concat(LanguageProvider.Languages.Where(lang => lang != currentUnitLanguage))
                                         .Select(lang => Path.Combine(CompilerOptions.SystemDirectory, "Lib",
-                                                lang.Name.Replace(StringConstants.pascalLanguageName, "")))) // для PascalABC.NET прямо в Lib, остальные во внутренних папках
-                                        .ToArray();
+                                                lang.Name.Replace(StringConstants.pascalLanguageName, ""))) // для PascalABC.NET прямо в Lib, остальные во внутренних папках
+                                        .Where(dir => Directory.Exists(dir));
+
+            return CompilerOptions.SearchDirectories.Concat(libDirs).ToArray();
         }
 
         public string FindSourceFileName(string fileName, string currentPath, out int folderPriority, ILanguage currentUnitLanguage)
