@@ -280,7 +280,7 @@ namespace CodeCompletion
         }
 
         const string LibSourceDirectoryIdent = "%LIBSOURCEDIRECTORY%";
-        public static string FindSourceFileName(string unit_name, out int found_dir_ind, bool caseSensitiveSearch, params string[] ddirs)
+        public static string FindSourceFileName(string unit_name, out int found_dir_ind, ILanguage currentUnitLanguage, params string[] ddirs)
         {
             // TODO: check error in older version
             List<string> Dirs = new List<string>();
@@ -290,7 +290,7 @@ namespace CodeCompletion
             // Надо как-то проверять, что мы не в инсталированной версии EVA
             if (CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent) && Directory.Exists(CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]))
                 Dirs.Add(CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]);
-            return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, out found_dir_ind, caseSensitiveSearch, Dirs.ToArray());
+            return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, out found_dir_ind, currentUnitLanguage, Dirs.ToArray());
         }
 
         public static CodeCompletionNameHelper Helper
