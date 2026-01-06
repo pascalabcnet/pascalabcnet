@@ -18,7 +18,8 @@ dotnet build -c Release --no-incremental PascalABCNET.sln
 
 cd ReleaseGenerators
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild
-rem ..\bin\pabcnetc RebuildStandartModulesSPython.pas /rebuild
+rem /rebuild здесь пока нельзя
+..\bin\pabcnetc RebuildStandartModulesSPython.pas
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 cd PABCRtl
@@ -34,7 +35,8 @@ ExecHide.exe gacutil.exe /u PABCRtl
 ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild
-rem ..\bin\pabcnetc RebuildStandartModulesSPython.pas /rebuild
+rem /rebuild здесь пока нельзя
+..\bin\pabcnetc RebuildStandartModulesSPython.pas
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 
@@ -47,12 +49,12 @@ cd ..\TestSuite
 ..\bin\TestRunner.exe 6
 
 cd ..\TestSuiteAdditionalLanguages\SPythonTests
-rem ..\..\bin\TestRunner.exe 1
-rem ..\..\bin\TestRunner.exe 2
-rem ..\..\bin\TestRunner.exe 3
-rem ..\..\bin\TestRunner.exe 4
-rem ..\..\bin\TestRunner.exe 5
-rem ..\..\bin\TestRunner.exe 6
+..\..\bin\TestRunner.exe 1
+..\..\bin\TestRunner.exe 2
+..\..\bin\TestRunner.exe 3
+..\..\bin\TestRunner.exe 4
+..\..\bin\TestRunner.exe 5
+..\..\bin\TestRunner.exe 6
 
 
 cd ..\..\ReleaseGenerators
