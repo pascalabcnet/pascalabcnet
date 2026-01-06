@@ -1,103 +1,112 @@
-## Building PascalABC.NET in Windows
-***Run _RegisterHelix.bat on first use to install the HelixToolkit.dll and HelixToolkit.Wpf.dll in GAC***
+# PascalABC.NET
+[Russian](#Описание) | [English](#Description)
 
-_RebuildReleaseAndRunTests.bat builds the project in Release-mode, rebuilds the pas-units and runs tests (run with administrative privileges!).
+## Описание
+Компилятор языка Pascal с множеством расширений и интеграцией с `.NET`
 
-_GenerateAllSetups.bat builds the project in Release-mode, rebuilds the pas-units, runs tests and creates the install package (run with administrative privileges!).
+Проект также включает легковесную IDE
 
-_ReBuildRelease.bat builds the project in Release-mode.
+## Разработка
+### Зависимости
+1. `.NET SDK` \
+https://dotnet.microsoft.com
+2. `Mono` (требуется под Linux / MacOS / etc) \
+https://www.mono-project.com
 
-_ReBuildDebug.bat builds the project in Debug-mode. 
+> [!IMPORTANT]
+> Некоторые репозитории пакетов для Linux-дистрибутивов предоставляют урезанную версию `.NET SDK` с отсутствующим `Microsoft.NET.Sdk.WindowsDesktop`. В данном случае воспользуйтесь установкой SDK с помощью [официальных скриптов](https://learn.microsoft.com/dotnet/core/install/linux-scripted-manual) или обратитесь к дистрибьютору пакета
 
-PascalABC is being developed in Visual Studio Community 2019.
-
-## Building PascalABC.NET in Linux (Ubuntu 22.04)
-Install Mono (http://www.mono-project.com/docs/getting-started/install/linux/)
-```bash
-sudo apt install gnupg ca-certificates
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
-sudo apt update
-sudo apt-get install mono-devel
-sudo apt-get install mono-complete
-sudo apt-get install mono-roslyn
-sudo apt-get install msbuild
+### Подготовка
+На Windows следует запустить `./_RegisterHelixNUnit.bat` с правиами администратора (Не требуется, если Вы уже устанавливали PascalABC.NET)
+### Сборка
+Сборка компилятора и IDE для Windows
+```
+dotnet build PascalABCNET.sln
+```
+Сборка компилятора и IDE для Linux / MacOS / etc
+```
+dotnet build PascalABCNETLinux.sln
+```
+Сборка только компилятора
+```
+dotnet build pabcnetc.sln
 ```
 
-Build the project and run tests.
-```bash
-$ git clone https://github.com/pascalabcnet/pascalabcnet
-$ cd pascalabcnet
-$ sh _RebuildReleaseAndRunTests.sh
+### Тестирование
+Тесты расположены в [TestSuite](./TestSuite). Выполнение тестов осуществляется утилитой `./bin/TestRunner.exe`
+
+### Создание установочных пакетов
+[_GenerateAllSetups.bat](./_GenerateAllSetups.bat) — Создаёт установочный пакет для Windows
+
+[_GenerateLinuxVersion.bat](./_GenerateLinuxVersion.bat) — Создаёт архив для Linux
+
+## Использование
+На Windows
 ```
-
-## Building PascalABC.NET in MacOS
-Download and install Mono from official page. Install the git-client. Run the commands:
-```bash
-$ git clone https://github.com/pascalabcnet/pascalabcnet
-$ cd pascalabcnet
-$ sh _RebuildReleaseAndRunTests.sh
+cd bin
+./PascalABCNET.exe # Запуск IDE
+./pabcnetcclear.exe # Консольный компилятор
+./pabcnetc.exe # Консольный компилятор с интерактивным режимом
 ```
-
-### Run the PascalABC.NET command line compiler
-```bash
-$ cd bin
-$ mono pabcnetc.exe
-or $ mono --debug pabcnetc.exe
+На Linux / MacOS / etc
 ```
-
-## Tests
-Tests are located in the directory "TestSuite". To run the tests execute the file bin/TestRunner.exe
-
------------------------------------------------------------------------------------------------------
-
-## Сборка проекта в Windows
-***Перед первой компиляцией необходимо запустить _RegisterHelix.bat с правами администратора***
-
-_RebuildReleaseAndRunTests.bat собирает проект в Release-режиме, перекомпилирует pas-модули и прогоняет все тесты (запускать с правами администратора).
-
-_GenerateAllSetups.bat собирает инсталлят (запускать с правами администратора).
-
-_ReBuildRelease.bat собирает проект в Release-режиме.
-
-_ReBuildDebug.bat собирает проект в Debug-режиме.
-
-
-Разработка ведется в Visual Studio Community 2019.
-
-## Сборка проекта в Linux (Ubuntu 20.04)
-Установка Mono (http://www.mono-project.com/docs/getting-started/install/linux/)
-```bash
-sudo apt install gnupg ca-certificates
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
-sudo apt update
-sudo apt-get install mono-devel
-sudo apt-get install mono-complete
+cd bin
+mono PascalABCNETLinux.exe # Запуск IDE
+mono pabcnetcclear.exe # Консольный компилятор
+mono pabcnetc.exe # Консольный компилятор с интерактивным режимом
 ```
+___
 
-Сборка проекта и выполение тестов
-```bash
-$ git clone https://github.com/pascalabcnet/pascalabcnet
-$ cd pascalabcnet
-$ sh _RebuildReleaseAndRunTests.sh
+## Description
+Pascal compiler with many extensions and integration with `.NET`
+
+The project also includes a lightweight IDE
+
+## Development
+### Dependencies
+1. `.NET SDK` \
+https://dotnet.microsoft.com
+2. `Mono` (required on Linux / MacOS / etc) \
+https://www.mono-project.com
+
+> [!IMPORTANT] 
+> Some package repositories for Linux distributions provide a stripped-down version `.NET SDK` with missing `Microsoft.NET.Sdk.WindowsDesktop`. In this case, use the [official scripts](https://learn.microsoft.com/dotnet/core/install/linux-scripted-manual)  to install the SDK or contact the package distributor
+
+### Prepare
+On Windows, run `./_RegisterHelixNUnit.bat` with admin permissions (Not required if you have already installed PascalABC.NET)
+### Building
+Build compiler and IDE for Windows
 ```
-
-## Сборка проекта в MacOS
-Скачайте и установите Mono с официального сайта. При необходимости установите git-клиент. Далее выполните команды
-```bash
-$ git clone https://github.com/pascalabcnet/pascalabcnet
-$ cd pascalabcnet
-$ sh _RebuildReleaseAndRunTests.sh
+dotnet build PascalABCNET.sln
 ```
-
-### Запуск
-```bash
-$ cd bin
-$ mono pabcnetc.exe
-или $ mono --debug pabcnetc.exe
+Build compiler and IDE for Linux
 ```
+dotnet build PascalABCNETLinux.sln
+```
+Build only compiler
+```
+dotnet build pabcnetc.sln
+```
+### Testing
+The tests are located in [TestSuite](./TestSuite). Tests are executed by the utility `./bin/TestRunner.exe`
 
-## Тесты
-Тесты расположены в папке TestSuite. Прогон тестов осуществляется программой bin/TestRunner.exe
+### Creating installation packages
+[_GenerateAllSetups.bat](./_GenerateAllSetups.bat) — Creates an installation package for Windows
 
+[_GenerateLinuxVersion.bat](./_GenerateLinuxVersion.bat) — Creates an archive for Linux
+
+## Using
+On Windows
+```
+cd bin
+./PascalABCNET.exe # Run IDE
+./pabcnetcclear.exe # Console compiler
+./pabcnetc.exe # Interactive console compiler
+```
+On Linux / MacOS / etc
+```
+cd bin
+mono PascalABCNETLinux.exe # Run IDE
+mono pabcnetcclear.exe # Console compiler
+mono pabcnetc.exe # Interactive console compiler
+```
