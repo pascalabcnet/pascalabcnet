@@ -19887,6 +19887,12 @@ namespace PascalABCCompiler.TreeConverter
             	AddError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", tn.name);
             }
             List<SymbolInfo> sil = tn.find_in_type(default_constructor_name, context.CurrentScope); //tn.Scope); 
+
+            // SSM 06.01.26 - это позволяет учитывать только конструкторы при наличии других функций Create. К сожалению, этого недостаточно
+            // т.к. всё равно статическая и экземплярная Create не различаются и кидается ошибка при t.Create
+            // Надо это улучшать
+            //sil = sil.FindAll(si => si.sym_info is common_method_node cmn && cmn.is_constructor);
+
             delete_inherited_constructors(ref sil, tn);
             if (sil == null)
                 AddError(loc, "CONSTRUCTOR_NOT_FOUND");
