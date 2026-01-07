@@ -485,7 +485,7 @@ end;
 begin
   //DeletePABCSystemPCU;
   try
-    Languages.Integration.LanguageIntegrator.LoadStandardLanguages();
+    Languages.Integration.LanguageIntegrator.LoadAllLanguages();
     
     TestSuiteDir := System.Environment.CurrentDirectory;
     
