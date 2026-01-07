@@ -59,7 +59,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optimizer", "Optimizer\Opti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCompletion", "CodeCompletion\CodeCompletion.csproj", "{1AB15F6E-C22E-499A-A7ED-54BA7DE5CFA6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LanguagePlugins", "LanguagePlugins", "{BB6973BA-B3A2-4B31-A986-7CB008F22C4F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AdditionalLanguages", "AdditionalLanguages", "{BB6973BA-B3A2-4B31-A986-7CB008F22C4F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Trees", "Trees", "{94EED2FF-0641-4562-8167-CBC280A733AF}"
 EndProject
@@ -117,13 +117,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SPython", "SPython", "{C12F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyntaxTreeConverters", "SyntaxTreeConverters", "{E51C8CE6-9785-4666-9CD2-BADB728933E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonSyntaxTreeVisitor", "LanguagePlugins\SPython\SemanticAnalyzers\SPythonSyntaxTreeVisitor\SPythonSyntaxTreeVisitor.csproj", "{D38A21E0-1D61-4905-82B3-1800E1991D57}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonSyntaxTreeVisitor", "AdditionalLanguages\SPython\SemanticAnalyzers\SPythonSyntaxTreeVisitor\SPythonSyntaxTreeVisitor.csproj", "{D38A21E0-1D61-4905-82B3-1800E1991D57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonStandardTreeConverter", "LanguagePlugins\SPython\SyntaxTreeConverters\SPythonStandardTreeConverter\SPythonStandardTreeConverter.csproj", "{431AA1A0-81B9-4D93-9CB1-219BDF7825C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonStandardTreeConverter", "AdditionalLanguages\SPython\SyntaxTreeConverters\SPythonStandardTreeConverter\SPythonStandardTreeConverter.csproj", "{431AA1A0-81B9-4D93-9CB1-219BDF7825C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonParser", "LanguagePlugins\SPython\SPythonParserKrylovMovchan\SPythonParser.csproj", "{81FE2BAA-D100-4596-A392-F03BBE30F829}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonParser", "AdditionalLanguages\SPython\SPythonParserKrylovMovchan\SPythonParser.csproj", "{81FE2BAA-D100-4596-A392-F03BBE30F829}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonLanguageInfo", "LanguagePlugins\SPython\SPythonLanguageInfo\SPythonLanguageInfo.csproj", "{DFF88E9F-AFB3-4986-84FE-77F8A04CB6F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonLanguageInfo", "AdditionalLanguages\SPython\SPythonLanguageInfo\SPythonLanguageInfo.csproj", "{DFF88E9F-AFB3-4986-84FE-77F8A04CB6F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

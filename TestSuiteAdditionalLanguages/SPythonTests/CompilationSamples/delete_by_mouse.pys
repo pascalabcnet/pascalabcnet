@@ -1,0 +1,42 @@
+﻿from WPFObjects import RectangleWPF, ObjectUnderPoint
+from WPFObjects import Colors, Window, OnMouseDown
+from PABCSystem import Random, Inc, Milliseconds
+
+CountSquares = 10
+StatusRect: RectangleWPF
+CurrentDigit = 1
+Mistakes = 0
+
+def DrawStatusText():
+    if CurrentDigit <= CountSquares:
+        StatusRect.Text = ('Удалено квадратов: ' + str(CurrentDigit-1) 
+                        + '\tОшибок: ' + str(Mistakes))
+    else: 
+        StatusRect.Text = ('Игра окончена. Время: ' + str(Milliseconds() // 1000) 
+                        + ' с.\tОшибок: ' + str(Mistakes))
+
+
+def MyMouseDown(x: float, y: float, mb: int):
+    ob = ObjectUnderPoint(x, y)
+    if ob is RectangleWPF and ob != StatusRect:
+        if ob.Number == CurrentDigit:
+            ob.Destroy()
+            Inc(CurrentDigit)
+            DrawStatusText()
+        else:
+            ob.Color = Colors.Red
+            Inc(Mistakes)
+            DrawStatusText()
+
+
+Window.Title = 'Игра: удали все квадраты по порядку'
+for i in range(1, CountSquares + 1):
+    x = Random(Window.Width - 50)
+    y = Random(Window.Height - 100)
+    ob = new RectangleWPF(x, y, 50, 50, Colors.LightGreen, 1)
+    ob.FontSize = 25
+    ob.Number = i
+StatusRect = new RectangleWPF(0, Window.Height - 40, 
+                              Window.Width, 40, Colors.LightBlue)
+DrawStatusText()
+OnMouseDown = MyMouseDown

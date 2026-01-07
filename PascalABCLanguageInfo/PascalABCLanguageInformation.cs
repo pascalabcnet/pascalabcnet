@@ -20,7 +20,7 @@ namespace Languages.Pascal.Frontend.Data
 
         public override string Version => "1.2";
 
-        public override string Copyright => "Copyright © 2005-2025 by Ivan Bondarev, Stanislav Mikhalkovich";
+        public override string Copyright => "Copyright © 2005-2026 by Ivan Bondarev, Stanislav Mikhalkovich";
 
         public override string[] FilesExtensions => new string[] { StringConstants.pascalSourceFileExtension };
 
@@ -95,6 +95,8 @@ namespace Languages.Pascal.Frontend.Data
             };
             #endregion
         }
+
+        public override string CommentSymbol => "//";
 
         public override string BodyStartBracket
         {

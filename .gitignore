@@ -123,8 +123,6 @@
 
 # Debug-only intellisense problems
 /bin/log.txt
-/TestSuite/formatter_tests/output/log.txt
-
 
 
 # Regenerated before being run by .bat
@@ -136,7 +134,6 @@
 
 # this is added to index at "/bin/lib"
 /ReleaseGenerators/nunit.framework.dll
-/TestSuite/errors/nunit.framework.dll
 
 
 

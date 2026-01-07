@@ -192,6 +192,8 @@ namespace PascalABCCompiler.Parsers
         /// </summary>
         Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; }
 
+        string CommentSymbol { get; }
+
         string BodyStartBracket
         {
             get;
