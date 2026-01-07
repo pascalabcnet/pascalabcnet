@@ -70,7 +70,7 @@ namespace VisualPascalABC
         {
             string sf = PascalABCCompiler.FormatTools.ExtensionsToString(Extensions, "*", ";");
             sf = string.Format(VECStringResources.Get("DIALOGS_PROJECT_FILTER_PART_{0}{1}|{1}|"), Name, sf);
-            if (sf.IndexOf(".pabcproj") >= 0)
+            if (sf.IndexOf(PascalABCCompiler.StringConstants.platformProjectExtension) >= 0)
                 return sf + Filter;
             else
                 return Filter + sf;

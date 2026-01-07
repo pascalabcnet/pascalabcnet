@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.IO;
 using VisualPascalABCPlugins;
 using Languages.Integration;
+using Languages.Facade;
 
 namespace VisualPascalABC
 {
@@ -181,20 +182,23 @@ namespace VisualPascalABC
             AllFilter += "*.cs;";
             return Tools.FinishMakeFilter(Filter, AllFilter);
         }
-        
+
         public string GetProjectFilterForDialogs()
         {
-        	if (standartCompiler == null) 
+            if (standartCompiler == null)
                 return null;
             string Filter = "", AllFilter = "";
-            foreach (PascalABCCompiler.SupportedSourceFile ssf in standartCompiler.SupportedProjectFiles)
+            foreach (ILanguage lang in LanguageProvider.Instance.Languages)
             {
-                Filter = Tools.MakeProjectFilter(Filter, ssf.LanguageName, ssf.Extensions);
-                AllFilter = Tools.MakeAllFilter(AllFilter, ssf.LanguageName, ssf.Extensions);
+                Filter = Tools.MakeProjectFilter(Filter, lang.Name,
+                                                 new string[1] { PascalABCCompiler.StringConstants.platformProjectExtension });
             }
+
+            AllFilter = Tools.MakeAllFilter(AllFilter, PascalABCCompiler.StringConstants.pascalLanguageName,
+                                            new string[1] { PascalABCCompiler.StringConstants.platformProjectExtension });
             return Tools.FinishMakeFilter(Filter, AllFilter);
         }
-        
+
         public string GetAssemblyFilterForDialogs()
         {
         	if (standartCompiler == null) 
