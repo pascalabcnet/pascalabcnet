@@ -639,23 +639,11 @@ namespace PascalABCCompiler
             supportedSourceFiles = LanguageProvider.Languages.Select(language => SupportedSourceFile.Make(language)).ToArray();
         }
 
-        private void SetSupportedProjectFiles()
-        {
-            // проекты только на Паскале пока   EVA
-            supportedProjectFiles = new SupportedSourceFile[] { new SupportedSourceFile(new string[1] { ".pabcproj" }, "PascalABC.NET") };
-        }
-
         private SupportedSourceFile[] supportedSourceFiles = null;
         public SupportedSourceFile[] SupportedSourceFiles
         {
             get { return supportedSourceFiles; }
             set { supportedSourceFiles = value; }
-        }
-
-        private SupportedSourceFile[] supportedProjectFiles = null;
-        public SupportedSourceFile[] SupportedProjectFiles
-        {
-            get { return supportedProjectFiles; }
         }
 
         private CompilationUnitHashTable unitTable = new CompilationUnitHashTable();
@@ -806,7 +794,6 @@ namespace PascalABCCompiler
                 OnChangeCompilerState += ChangeCompilerState;
             
             supportedSourceFiles = comp.SupportedSourceFiles;
-            supportedProjectFiles = comp.SupportedProjectFiles;
 
             // 29.07.2024  EVA
             CompilerOptions = new CompilerOptions();
@@ -843,7 +830,6 @@ namespace PascalABCCompiler
             CodeGeneratorsController = new CodeGenerators.Controller();
 
             SetSupportedSourceFiles();
-            SetSupportedProjectFiles();
 
             semanticTreeConvertersController = new SemanticTreeConvertersController(this);
             semanticTreeConvertersController.ChangeState += semanticTreeConvertersController_ChangeState;

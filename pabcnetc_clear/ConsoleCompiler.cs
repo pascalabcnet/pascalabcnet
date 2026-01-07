@@ -221,7 +221,7 @@ namespace PascalABCCompiler
             outputType = CompilerOptions.OutputType.ConsoleApplicaton;
 
             CompilerOptions co = new CompilerOptions(FileName, outputType);
-            if (FileName.ToLower().EndsWith(".pabcproj"))
+            if (FileName.ToLower().EndsWith(StringConstants.platformProjectExtension))
                 co.ProjectCompiled = true;
             if (n1 == n - 1)
                 //co.OutputDirectory = ""

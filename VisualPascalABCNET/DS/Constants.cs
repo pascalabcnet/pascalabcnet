@@ -32,7 +32,6 @@ namespace VisualPascalABC
         public static string CompletionWindowDeclarationViewWindowFontName = "Tahoma";
         public static string CompletionWindowCodeCompletionListViewFontName = "Tahoma";
         public static string CompletionInsightWindowFontName = "Tahoma";
-		public static string ProjectExtension = ".pabcproj";
         public static bool FileNamesCaseSensetive = false;
 
         static Constants()

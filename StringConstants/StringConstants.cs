@@ -393,6 +393,8 @@ namespace PascalABCCompiler
             pascalLanguageDllName.ToLower()
         };
 
+        public const string platformProjectExtension = ".pabcproj";
+
         public static readonly string[] netSystemLibraries = new[] { "mscorlib.dll", "System.dll", "System.Core.dll", "System.Numerics.dll", "System.Windows.Forms.dll", "System.Drawing.dll" };
 
         public static readonly string[] graph3DDependencies = new[] { "PresentationFramework.dll", "WindowsBase.dll", "PresentationCore.dll", "HelixToolkit.Wpf.dll", "HelixToolkit.dll" };
