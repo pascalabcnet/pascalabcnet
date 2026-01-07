@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using PascalABCCompiler;
+﻿using PascalABCCompiler;
+using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;
+using System;
+using System.Collections.Generic;
 
 namespace Languages.SPython.Frontend.Converters
 {
@@ -9,6 +10,8 @@ namespace Languages.SPython.Frontend.Converters
     public class SymbolTableFillingVisitor : BaseChangeVisitor
     {
         protected SymbolTable symbolTable;
+
+        private readonly ILanguageInformation languageInformation = Facade.LanguageProvider.Instance.SelectLanguageByName("SPython").LanguageInformation;
 
         public SymbolTableFillingVisitor(Dictionary<string, Dictionary<string, bool>> par) {
             symbolTable = new SymbolTable(par);
@@ -77,7 +80,7 @@ namespace Languages.SPython.Frontend.Converters
             }
             else
             {
-                symbolTable.Add(procedure_name, NameKind.GlobalFunction);
+                symbolTable.AddToParentScope(procedure_name, NameKind.GlobalFunction);
             }
             base.visit(_procedure_header);
         }
@@ -149,8 +152,8 @@ namespace Languages.SPython.Frontend.Converters
             {
                 string real_name = as_Statement.real_name.name;
                 string alias = as_Statement.alias.name;
-                if (SymbolTable.specialModulesAliases.ContainsKey(real_name))
-                    real_name = SymbolTable.specialModulesAliases[real_name];
+                if (languageInformation.SpecialModulesAliases.ContainsKey(real_name))
+                    real_name = languageInformation.SpecialModulesAliases[real_name];
                 symbolTable.AddModuleAlias(real_name, alias);
             }
         }
@@ -159,8 +162,8 @@ namespace Languages.SPython.Frontend.Converters
         {
             string module_real_name = _from_import_statement.module_name.name;
             string module_name = module_real_name;
-            if (SymbolTable.specialModulesAliases.ContainsKey(module_name))
-                module_name = SymbolTable.specialModulesAliases[module_name];
+            if (languageInformation.SpecialModulesAliases.ContainsKey(module_name))
+                module_name = languageInformation.SpecialModulesAliases[module_name];
 
             if (_from_import_statement.is_star)
             {
@@ -182,17 +185,18 @@ namespace Languages.SPython.Frontend.Converters
             }
         }
 
-        public override void visit(variable_definitions _variable_definitions)
+        // Возможно рудимент (Выпилить, если не понадобится) 13.12.2025  EVA
+/*        public override void visit(variable_definitions _variable_definitions)
         {
             foreach (var_def_statement vds in _variable_definitions.var_definitions)
             {
                 foreach (ident id in vds.vars.idents)
                 {
                     symbolTable.Add(id.name, NameKind.GlobalVariable);
-                    base.visit(_variable_definitions);
                 }
             }
-        }
+            base.visit(_variable_definitions);
+        }*/
 
         [Flags]
         protected enum NameKind
@@ -219,10 +223,9 @@ namespace Languages.SPython.Frontend.Converters
 
         protected class SymbolTable
         {
-            private Dictionary<string, NameKind> nameTypes = new Dictionary<string, NameKind>();
-            private HashSet<string> forwardDeclaredFunctions = new HashSet<string>();
+            private readonly HashSet<string> forwardDeclaredFunctions = new HashSet<string>();
 
-            static string[] Keywords = {
+            private readonly string[] Keywords = {
                 "int", "float", "str", "bool", "tuple", // standard types
                 "break", "continue", "exit", "halt",    // standard ops
                 "true", "false",                        // constants
@@ -231,24 +234,20 @@ namespace Languages.SPython.Frontend.Converters
             private void FillKeywords()
             {
                 foreach (var keyword in Keywords)
-                    nameTypes.Add(keyword, NameKind.Keyword);
+                    currentScope.Add(keyword, NameKind.Keyword);
             }
 
             public SymbolTable(Dictionary<string, Dictionary<string, bool>> par)
             {
                 ModuleNameToSymbols = par;
+                entryScope = new LocalScope();
+                currentScope = entryScope;
                 FillKeywords();
                 AddAliasesFromStandartLibraries();
             }
 
-            public static Dictionary<string, string> specialModulesAliases = new Dictionary<string, string>
-            {
-                { "time", "time1" },
-                { "random", "random1" },
-            };
-
             // names added to current function with global statements
-            private HashSet<string> NamesAddedByGlobal = new HashSet<string>();
+            private readonly HashSet<string> NamesAddedByGlobal = new HashSet<string>();
 
             private bool isInFunctionBody = false;
 
@@ -268,47 +267,33 @@ namespace Languages.SPython.Frontend.Converters
                 }
             }
 
-            // module alias -> module real name
-            private Dictionary<string, string> modulesAliases = new Dictionary<string, string>();
+            private readonly string[] StandardLibraries = Facade.LanguageProvider.Instance.SelectLanguageByName("SPython").SystemUnitNames;
 
-            private List<string> StandardLibraries = new List<string> { "SPythonSystem", "SPythonHidden", "SPythonSystemPys" };
+            private LocalScope currentScope;
 
-            // alias of function or global variable from module -> real name and module real name
-            private Dictionary<string, Tuple<string, string>> aliasToRealNameAndModuleName = new Dictionary<string, Tuple<string, string>>();
-
-            private LocalScope localVariables = new LocalScope();
+            private readonly LocalScope entryScope;
 
             // moduleRealName -> functions and global variables in this module real names
-            private Dictionary<string, Dictionary<string, bool>> moduleNameToSymbols;
-
-            public Dictionary<string, Dictionary<string, bool>> ModuleNameToSymbols
-            {
-                get => moduleNameToSymbols;
-                set
-                { moduleNameToSymbols = value; }
-            }
+            public Dictionary<string, Dictionary<string, bool>> ModuleNameToSymbols { get; set; }
 
             private void AddAliasesFromStandartLibraries()
             {
                 foreach (string standardLibrary in StandardLibraries)
                 {
-                    if (moduleNameToSymbols.ContainsKey(standardLibrary))
-                        foreach (var kv in moduleNameToSymbols[standardLibrary])
+                    if (ModuleNameToSymbols.ContainsKey(standardLibrary))
+                        foreach (var kv in ModuleNameToSymbols[standardLibrary])
                             AddAlias(kv.Key, kv.Value, kv.Key, standardLibrary);
                 }
             }
 
             public string AliasToRealName(string alias)
             {
-                if (modulesAliases.ContainsKey(alias))
-                    return modulesAliases[alias];
-                else
-                    return aliasToRealNameAndModuleName[alias].Item1;
+                return entryScope.GetRealName(alias);
             }
 
             public string AliasToModuleName(string alias)
             {
-                return aliasToRealNameAndModuleName[alias].Item2;
+                return entryScope.GetDeclaredModuleName(alias);
             }
 
             public void MakeVisibleForAssignment(string name)
@@ -330,10 +315,8 @@ namespace Languages.SPython.Frontend.Converters
             public NameKind this[string name]
             {
                 get { 
-                    if (localVariables.Contains(name))
-                        return NameKind.LocalVariable;
-                    if (nameTypes.ContainsKey(name))
-                        return nameTypes[name];
+                    if (currentScope.Contains(name))
+                        return currentScope.GetNameKind(name);
                     if (forwardDeclaredFunctions.Contains(name))
                         return NameKind.ForwardDeclaredFunction;
                     return NameKind.Unknown; 
@@ -345,11 +328,9 @@ namespace Languages.SPython.Frontend.Converters
                 switch (nameType)
                 {
                     case NameKind.LocalVariable:
-                        localVariables.Add(name);
-                        break;
                     case NameKind.GlobalVariable:
                     case NameKind.GlobalFunction:
-                        AddGlobalName(name, nameType);
+                        currentScope.Add(name, nameType);
                         break;
                     case NameKind.ForwardDeclaredFunction:
                         forwardDeclaredFunctions.Add(name);
@@ -359,76 +340,70 @@ namespace Languages.SPython.Frontend.Converters
                 }
             }
 
-            private void AddGlobalName(string name, NameKind nameType)
+            public void AddToParentScope(string name, NameKind nameType)
             {
-                EraseNameAsLocal(name);
-
-                if (nameTypes.ContainsKey(name))
-                    nameTypes[name] = nameType;
-                else nameTypes.Add(name, nameType);
+                currentScope.OuterScope.Add(name, nameType);
             }
 
             public void AddAlias(string realName, bool isVariable, string alias, string moduleName)
-            {
-                if (aliasToRealNameAndModuleName.ContainsKey(alias))
-                    aliasToRealNameAndModuleName[alias] = Tuple.Create(realName, moduleName);
-                else aliasToRealNameAndModuleName.Add(alias, Tuple.Create(realName, moduleName));
-                AddGlobalName(alias, isVariable ? NameKind.ImportedVariableAlias : NameKind.ImportedNotVariableAlias);
+            {                
+                entryScope.Add(alias, realName, isVariable ? NameKind.ImportedVariableAlias : NameKind.ImportedNotVariableAlias, moduleName);
             }
 
             public void AddModuleAlias(string realName, string alias)
             {
-                if (modulesAliases.ContainsKey(alias))
-                    modulesAliases[alias] = realName;
-                else modulesAliases.Add(alias, realName);
-                AddGlobalName(alias, NameKind.ModuleAlias);
+                entryScope.Add(alias, realName, NameKind.ModuleAlias);
             }
 
-            private void EraseNameAsLocal(string name)
+            // Возможно рудимент (Выпилить, если не понадобится) 13.12.2025  EVA 
+            /*private void EraseNameAsLocal(string name)
             {
                 localVariables.EraseName(name);
-            }
+            }*/
 
             public void OpenLocalScope()
             {
-                localVariables = new LocalScope(localVariables);
+                currentScope = new LocalScope(currentScope);
             }
 
             public void CloseLocalScope()
             {
-                localVariables.ClearScope();
+                currentScope.ClearScope();
             }
 
             public bool IsOutermostScope()
             {
-                return localVariables.IsOutermostScope();
+                return currentScope.IsOutermostScope();
             }
 
-            public class LocalScope
+            private class LocalScope
             {
-                private LocalScope outerScope;
-                private HashSet<string> symbols = new HashSet<string>();
+                private class SymbolInfo
+                {
+                    internal string realName;
+                    internal NameKind kind;
+                    internal string declaredModuleName;
+
+                    internal SymbolInfo(string realName, NameKind kind, string declaredModuleName)
+                    {
+                        this.realName = realName;
+                        this.kind = kind;
+                        this.declaredModuleName = declaredModuleName;
+                    }
+                }
+
+                public LocalScope OuterScope { get; private set; }
+                private Dictionary<string, SymbolInfo> symbolsInfos = new Dictionary<string, SymbolInfo>();
 
                 public LocalScope(LocalScope outerScope = null)
                 {
-                    this.outerScope = outerScope;
+                    this.OuterScope = outerScope;
                 }
 
-                public bool Contains(string name)
-                {
-                    LocalScope curr = this;
+                public bool Contains(string name) => FindNameRecursive(name) != null;
 
-                    while (curr != null)
-                    {
-                        if (curr.symbols.Contains(name))
-                            return true;
-                        curr = curr.outerScope;
-                    }
-
-                    return false;
-                }
-
-                public void EraseName(string name)
+                // Возможно рудимент (Выпилить, если не понадобится) 13.12.2025  EVA
+                /*public void EraseName(string name)
                 {
                     LocalScope curr = this;
 
@@ -438,25 +413,50 @@ namespace Languages.SPython.Frontend.Converters
                         curr.symbols.Remove(name);
                         curr = curr.outerScope;
                     }
+                }*/
+
+                public void Add(string ident, string realName, NameKind kind, string declaredModuleName = null)
+                {
+                    symbolsInfos[ident] = new SymbolInfo(realName, kind, declaredModuleName);
                 }
 
-                public void Add(string ident)
+                public void Add(string ident, NameKind kind)
                 {
-                    symbols.Add(ident);
+                    Add(ident, ident, kind);
                 }
+
+                private SymbolInfo FindNameRecursive(string name)
+                {
+                    LocalScope curr = this;
+
+                    while (curr != null)
+                    {
+                        if (curr.symbolsInfos.ContainsKey(name))
+                            return curr.symbolsInfos[name];
+                        curr = curr.OuterScope;
+                    }
+
+                    return null;
+                }
+
+                public string GetRealName(string ident) => FindNameRecursive(ident).realName;
+
+                public NameKind GetNameKind(string ident) => FindNameRecursive(ident).kind;
+
+                public string GetDeclaredModuleName(string ident) => FindNameRecursive(ident).declaredModuleName;
 
                 public void ClearScope()
                 {
-                    if (outerScope != null)
+                    if (OuterScope != null)
                     {
-                        symbols = outerScope.symbols;
-                        outerScope = outerScope.outerScope;
+                        symbolsInfos = OuterScope.symbolsInfos;
+                        OuterScope = OuterScope.OuterScope;
                     }
                 }
 
                 public bool IsOutermostScope()
                 {
-                    return outerScope.outerScope == null;
+                    return OuterScope.OuterScope == null;
                 }
             }
         }

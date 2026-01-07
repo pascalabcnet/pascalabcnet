@@ -65,13 +65,13 @@
 %right STARSTAR
 %left BINNOT
 
-%type <id> ident dotted_ident func_name_ident type_decl_identifier
-%type <ex> extended_expr expr intellisense_dotted_ident proc_func_call const_value variable optional_condition act_param extended_new_expr new_expr is_expr variable_as_type
+%type <id> ident func_name_ident type_decl_identifier
+%type <ex> extended_expr expr dotted_ident proc_func_call const_value variable optional_condition act_param extended_new_expr new_expr is_expr variable_as_type
 %type <stn> act_param_list optional_act_param_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt pass_stmt
 %type <stn> var_stmt assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif exit_stmt
 %type <stn> expr_list
 %type <stn> stmt_list block
-%type <stn> program param_name form_param_sect form_param_list optional_form_param_list dotted_ident_list
+%type <stn> program param_name form_param_sect form_param_list optional_form_param_list
 %type <stn> ident_as_ident ident_as_ident_list ident_list
 %type <td> proc_func_header type_ref simple_type_identifier template_type 
 %type <stn> import_clause template_type_params template_param_list parts stmt_or_expression expr_mapping_list
@@ -174,11 +174,11 @@ type_decl_identifier
 	;
 
 variable_as_type
-	: intellisense_dotted_ident
+	: dotted_ident
 		{ 
 			$$ = $1;
 		}
-	| intellisense_dotted_ident template_type_params 
+	| dotted_ident template_type_params 
 		{ 
 			$$ = new ident_with_templateparams($1 as addressed_value, $2 as template_param_list, @$);   
 		}
@@ -293,7 +293,7 @@ exit_stmt
 	;
 
 global_stmt
-	: GLOBAL dotted_ident_list
+	: GLOBAL ident_list
 		{
 			$$ = new global_statement($2 as ident_list, @$);
 		}
@@ -306,38 +306,17 @@ ident
 		}
 	;
 
+// этот нетерминал аналог dotted_identifier из ABCPascal.y
 dotted_ident
 	: ident
 		{ 
-			$$ = $1; 
+			$$ = $1;
 		}
 	| dotted_ident DOT ident
-		{ 
-			$$ = new ident($1.name + "." + $3.name, @$); 
-		}
-	;
-
-// этот нетерминал аналог dotted_identifier из ABCPascal.y
-intellisense_dotted_ident
-	: ident
-		{ 
-			$$ = $1; 
-		}
-	| intellisense_dotted_ident DOT ident
 		{ 
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
 		}
 	;
-dotted_ident_list
-    : dotted_ident
-        {
-			$$ = new ident_list($1, @$);
-		}
-    | dotted_ident_list COMMA dotted_ident
-        {
-			$$ = ($1 as ident_list).Add($3, @$);
-		}
-    ;
 
 ident_as_ident
 	: ident AS ident
