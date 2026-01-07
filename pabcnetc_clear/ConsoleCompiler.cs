@@ -28,16 +28,16 @@ namespace PascalABCCompiler
             return StringResources.Get(StringsPrefix + Key);
         }
 
-        public static void ShowConnectedParsers()
+        /*public static void ShowConnectedParsers()
         {
-            if (Compiler.SupportedSourceFiles.Length > 0)
+            if (LanguageProvider.Instance.Languages.Count > 0)
             {
                 Console.Write(StringResourcesGet("CONNECTED_PARSERS"));
-                foreach (PascalABCCompiler.SupportedSourceFile ssf in Compiler.SupportedSourceFiles)
-                    Console.Write(ssf+"; ");
+                foreach (ILanguage lang in LanguageProvider.Instance.Languages)
+                    Console.Write(FormatTools.LanguageAndExtensionsFormatted(lang.Name, lang.FilesExtensions)+"; ");
                 Console.WriteLine();
             }
-        }
+        }*/
 
         public static bool CheckAndSplitDirective(string directive, out string name, out string value)
         {

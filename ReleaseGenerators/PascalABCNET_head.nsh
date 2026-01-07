@@ -108,7 +108,9 @@ SectionEnd
 
 Section
 	${AddDirectory} "$INSTDIR\LibSource"
+  ${AddDirectory} "$INSTDIR\LibSource\SPython"
 	${AddDirectory} "$INSTDIR\Lib"
+  ${AddDirectory} "$INSTDIR\Lib\SPython"
 	${AddDirectory} "$INSTDIR\Highlighting"
 	${AddDirectory} "$INSTDIR\PT4"
 	${AddDirectory} "$INSTDIR\Ico"

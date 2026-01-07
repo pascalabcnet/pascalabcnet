@@ -42,10 +42,13 @@ begin
   Result := new LanguageTestsInfo(languageInformation.Name, languageInformation.FilesExtensions, languageInformation.CommentSymbol);
 end;
 
-function GetLibDir: string;
+function GetLibDir(languageName : string): string;
 begin
   var dir := Path.GetDirectoryName(GetEXEFileName());
-  Result := dir + PathSeparator + 'Lib';
+  if languageName <> 'PascalABC.NET' then
+    Result := dir + PathSeparator + 'Lib' + PathSeparator + languageName
+  else
+    Result := dir + PathSeparator + 'Lib';
 end;
 
 function GetFilesByExtensions(path: string; extensions: array of string; searchOption: SearchOption := System.IO.SearchOption.TopDirectoryOnly): array of string;
@@ -454,7 +457,7 @@ end;
 
 procedure CopyLibFiles;
 begin
-  var files := GetFilesByExtensions(GetLibDir(), CurrentLanguageInfo.languageExtensions);
+  var files := GetFilesByExtensions(GetLibDir(CurrentLanguageInfo.languageName), CurrentLanguageInfo.languageExtensions);
   foreach f: string in files do
   begin
     &File.Copy(f, TestSuiteDir + PathSeparator + 'CompilationSamples' + PathSeparator + Path.GetFileName(f), true);
@@ -482,7 +485,7 @@ end;
 begin
   //DeletePABCSystemPCU;
   try
-    Languages.Integration.LanguageIntegrator.LoadStandardLanguages();
+    Languages.Integration.LanguageIntegrator.LoadAllLanguages();
     
     TestSuiteDir := System.Environment.CurrentDirectory;
     

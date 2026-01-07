@@ -171,7 +171,7 @@ namespace PascalABCCompiler.PCU
 
         public string SourceFileName;
 
-        public bool languageCaseSensitive;
+        public string languageName;
         
         public NameRef[] names; //список имен интерфейсной части модуля
 		public string[] incl_modules; //список подключаемых модулей
@@ -305,7 +305,7 @@ namespace PascalABCCompiler.PCU
             
             GetUsedUnits();//заполняем список полключаемых модулей
 
-            pcu_file.languageCaseSensitive = Unit.Language.CaseSensitive;
+            pcu_file.languageName = Unit.Language.Name;
 
             GetCountOfMembers();//заполняем список имен интерфейсных сущностей
 			WriteUnit();//пишем имя interface_namespace
@@ -439,7 +439,7 @@ namespace PascalABCCompiler.PCU
             if (pcu_file.IncludeDebugInfo)
                 fbw.Write(pcu_file.SourceFileName);
 
-            fbw.Write(pcu_file.languageCaseSensitive);
+            fbw.Write(pcu_file.languageName);
 
             fbw.Write(pcu_file.names.Length);
 			for (int i=0; i<pcu_file.names.Length; i++)

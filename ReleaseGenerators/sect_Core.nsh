@@ -180,13 +180,6 @@
     File ..\bin\Lib\Tasks1Arr.pcu
     File ..\bin\Lib\WPF.pcu
 
-    File ..\bin\Lib\SPythonHidden.pcu
-    File ..\bin\Lib\SPythonSystem.pcu
-    File ..\bin\Lib\time1.pcu
-    File ..\bin\Lib\SPythonSystemPys.pcu
-    File ..\bin\Lib\itertools.pcu
-    File ..\bin\Lib\math.pcu
-
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
     File ..\bin\Lib\HelixToolkit.dll
@@ -280,14 +273,6 @@
     ${AddFile} "Tasks1Arr.pcu"
     ${AddFile} "WPF.pcu"
 
-    ;SPython
-    ${AddFile} "SPythonHidden.pcu"
-    ${AddFile} "SPythonSystem.pcu"
-    ${AddFile} "time1.pcu"
-    ${AddFile} "SPythonSystemPys.pcu"
-    ${AddFile} "itertools.pcu"
-    ${AddFile} "math.pcu"
-
     ${AddFile} "turtle.png"
 
     ${AddFile} "PABCRtl.dll"
@@ -298,6 +283,27 @@
     ${AddFile} "MathNet.Numerics.dll"
     
     ${AddFile} "PABCRtl.pdb"
+
+    ;SPython
+    Delete "$INSTDIR\Lib\SPython\*.pas"
+    Delete "$INSTDIR\Lib\SPython\*.pys"
+    SetOutPath "$INSTDIR\Lib\SPython"
+
+    File ..\bin\Lib\SPython\SPythonHidden.pcu
+    File ..\bin\Lib\SPython\SPythonSystem.pcu
+    File ..\bin\Lib\SPython\SPythonSystemPys.pcu
+    File ..\bin\Lib\SPython\time1.pcu
+    File ..\bin\Lib\SPython\random1.pcu
+    File ..\bin\Lib\SPython\itertools.pcu
+    File ..\bin\Lib\SPython\math.pcu
+
+    ${AddFile} "SPythonHidden.pcu"
+    ${AddFile} "SPythonSystem.pcu"
+    ${AddFile} "SPythonSystemPys.pcu"
+    ${AddFile} "time1.pcu"
+    ${AddFile} "random1.pcu"
+    ${AddFile} "itertools.pcu"
+    ${AddFile} "math.pcu"
 
     SetOutPath "$INSTDIR\Doc"
     File ..\doc\NumLibABC.pdf
@@ -396,15 +402,6 @@
     File ..\bin\Lib\Мозаика.pas
     File ..\bin\Lib\WPF.pas
 
-    ;SPython
-    File ..\bin\Lib\SPythonHidden.pas
-    File ..\bin\Lib\SPythonSystem.pas
-    File ..\bin\Lib\time1.pas
-
-    File ..\bin\Lib\SPythonSystemPys.pys
-    File ..\bin\Lib\itertools.pys
-    File ..\bin\Lib\math.pys
-
     File ..\bin\Lib\__RedirectIOMode.vb
     File ..\bin\Lib\VBSystem.vb
     
@@ -485,19 +482,31 @@
     ${AddFile} "Мозаика.pas"
     ${AddFile} "WPF.pas"
 
+    ${AddFile} "__RedirectIOMode.vb"
+    ${AddFile} "VBSystem.vb"
+    
+
     ;SPython
+    SetOutPath "$INSTDIR\LibSource\SPython"
+
+    File ..\bin\Lib\SPython\SPythonHidden.pas
+    File ..\bin\Lib\SPython\SPythonSystem.pas
+    File ..\bin\Lib\SPython\time1.pas
+
+    File ..\bin\Lib\SPython\SPythonSystemPys.pys
+    File ..\bin\Lib\SPython\random1.pys
+    File ..\bin\Lib\SPython\itertools.pys
+    File ..\bin\Lib\SPython\math.pys
+
     ${AddFile} "SPythonHidden.pas"
     ${AddFile} "SPythonSystem.pas"
     ${AddFile} "time1.pas"
 
     ${AddFile} "SPythonSystemPys.pys"
+    ${AddFile} "random1.pys"
     ${AddFile} "itertools.pys"
     ${AddFile} "math.pys"
 
-
-    ${AddFile} "__RedirectIOMode.vb"
-    ${AddFile} "VBSystem.vb"
-    
     CreateDirectory "$COMMONSTARTMENU\PascalABC.NET"
     CreateDirectory "$SMPROGRAMS\PascalABC.NET"
     Push "OptimizerConversion.dll"

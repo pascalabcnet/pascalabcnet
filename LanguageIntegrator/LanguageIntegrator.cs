@@ -19,72 +19,19 @@ namespace Languages.Integration
         private static readonly LanguageProvider LanguageProvider = LanguageProvider.Instance;
 
         /// <summary>
-        /// Имя директории, содержащей установленные плагины языков программирования
-        /// </summary>
-        private const string languageKitsDirectoryName = "LanguageKits";
-
-        /// <summary>
-        /// Событие, информирующее об успешной загрузке плагина языка
+        /// Событие, информирующее об успешной загрузке языкового пакета
         /// </summary>
         public static event Action<ILanguage> LanguageLoaded;
 
         /// <summary>
-        /// Событие, информирующее об ошибке загрузки плагина языка
+        /// Событие, информирующее об ошибке загрузки языкового пакета
         /// </summary>
         public static event Action<string> LanguageLoadErrorOccured;
 
         /// <summary>
-        /// Возвращает директорию, содержащую комплекты языков (если ее нет, то вернется null)
-        /// </summary>
-        private static DirectoryInfo GetLanguageKitsDirectory()
-        {
-            string binDirectoryPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string languageKitsDirectoryPath = Path.Combine(binDirectoryPath, languageKitsDirectoryName);
-
-            if (Directory.Exists(languageKitsDirectoryPath))
-                return new DirectoryInfo(languageKitsDirectoryPath);
-
-            return null;
-        }
-
-        /// <summary>
-        /// Загружает все языковые комплекты для использования (имя "главной" dll должно заканчиваться на Language)
-        /// </summary>
-        public static void LoadAllLanguageKits()
-        {
-            DirectoryInfo languageKitsDirectory = GetLanguageKitsDirectory();
-
-            if (languageKitsDirectory == null)
-                return;
-
-            foreach (var languageKit in languageKitsDirectory.GetDirectories())
-            {
-                FileInfo[] dllFiles = languageKit.GetFiles();
-                
-                foreach (var dll in dllFiles)
-                {
-                    if (dll.Name.EndsWith("LanguageInfo.dll"))
-                    {
-                        IntegrateLanguageFromAssembly(dll);
-                        break;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Загружает все языки, доступные в системе
+        /// Загружает все языки платформы из папки bin
         /// </summary>
         public static void LoadAllLanguages()
-        {
-            LoadStandardLanguages();
-            LoadAllLanguageKits();
-        }
-
-        /// <summary>
-        /// Загружает стандартные языки платформы из папки bin
-        /// </summary>
-        public static void LoadStandardLanguages()
         {
             string directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
 

@@ -9,6 +9,7 @@ using PascalABCCompiler.Parsers;
 using PascalABCCompiler.Errors;
 using System.IO;
 using Languages.Facade;
+using System.Linq;
 
 namespace CodeCompletion
 {
@@ -280,17 +281,28 @@ namespace CodeCompletion
         }
 
         const string LibSourceDirectoryIdent = "%LIBSOURCEDIRECTORY%";
-        public static string FindSourceFileName(string unit_name, out int found_dir_ind, bool caseSensitiveSearch, params string[] ddirs)
+        public static string FindSourceFileName(string unit_name, out int found_dir_ind, ILanguage currentUnitLanguage, params string[] ddirs)
         {
             // TODO: check error in older version
             List<string> Dirs = new List<string>();
             Dirs.AddRange(ddirs);
             if (CodeCompletionController.comp != null)
-                Dirs.AddRange(CodeCompletionController.comp.CompilerOptions.SearchDirectories);
+                Dirs.AddRange(CodeCompletionController.comp.GetCurrentSearchDirectories(currentUnitLanguage));
             // Надо как-то проверять, что мы не в инсталированной версии EVA
             if (CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent) && Directory.Exists(CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]))
-                Dirs.Add(CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]);
-            return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, out found_dir_ind, caseSensitiveSearch, Dirs.ToArray());
+                Dirs.AddRange(GetLibSourceDirectories(currentUnitLanguage));
+            return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, out found_dir_ind, currentUnitLanguage, Dirs.ToArray());
+        }
+
+        private static string[] GetLibSourceDirectories(ILanguage currentUnitLanguage)
+        {
+            return LanguageProvider.Instance.Languages
+                                        .Where(lang => lang == currentUnitLanguage)
+                                        .Concat(LanguageProvider.Instance.Languages.Where(lang => lang != currentUnitLanguage))
+                                        .Select(lang => Path.Combine(CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent],
+                                                lang.Name.Replace(PascalABCCompiler.StringConstants.pascalLanguageName, ""))) // для PascalABC.NET прямо в LibSource, остальные во внутренних папках
+                                        .Where(dir => Directory.Exists(dir))
+                                        .ToArray();
         }
 
         public static CodeCompletionNameHelper Helper

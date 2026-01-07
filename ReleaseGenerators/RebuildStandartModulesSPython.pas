@@ -1,7 +1,7 @@
 ﻿uses 
   // SPython
   //SPythonSystem, SPythonHidden, 
-  time1,
+  time1, random1,
   SPythonSystemPys, itertools, math
   ;
    
