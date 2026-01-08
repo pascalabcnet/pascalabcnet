@@ -307,7 +307,8 @@ namespace CodeCompletion
             var co = new CompilerOptions();
             co.SavePCU = false;
             co.GenerateCode = false;
-            co.UnitSyntaxTree = cu;
+            if (!currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense)
+                co.UnitSyntaxTree = cu;
             co.SourceFileName = cu.source_context.FileName;
             co.ForIntellisense = true;
             co.SaveDocumentation = false;
@@ -486,6 +487,13 @@ namespace CodeCompletion
                         es.MakeDescription();
                     }
                 }
+            }
+
+            if (_assign.first_assignment_defines_type)
+            {
+                _assign.from.visit(this);
+                var variableScope = (ElementScope)cur_scope.FindName(((ident)_assign.to).name);
+                variableScope.sc = returned_scope;
             }
         }
 
