@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
+using Languages.Facade;
 
 namespace PascalABCCompiler.PCU
 {
@@ -217,10 +218,10 @@ namespace PascalABCCompiler.PCU
             ReadPCUHeader();
         }
 
-        public string GetFullUnitName(string UnitName, bool caseSensitiveSearch)
+        public string GetFullUnitName(string UnitName, ILanguage currentUnitLanguage)
         {
 
-            var FullUnitName = comp.FindPCUFileName(UnitName, dir, out _, caseSensitiveSearch);
+            var FullUnitName = comp.FindPCUFileName(UnitName, dir, out _, currentUnitLanguage);
             if (FullUnitName == null) throw new Errors.FileNotFound(UnitName, null);
 
             return FullUnitName;
@@ -229,25 +230,28 @@ namespace PascalABCCompiler.PCU
         private PCUReader GetPCUReaderForUnitId(int id)
         {
             if (id == -1) return this;
-            string s = GetFullUnitName(pcu_file.incl_modules[id], pcu_file.languageCaseSensitive);
+
+            ILanguage currentUnitLanguage = LanguageProvider.Instance.SelectLanguageByName(pcu_file.languageName);
+
+            string s = GetFullUnitName(pcu_file.incl_modules[id], currentUnitLanguage);
             if ( !units.TryGetValue(s, out var pr) )
             {
                 pr = new PCUReader(this);
-                pr.GetCompilationUnit(s, this.readDebugInfo, pcu_file.languageCaseSensitive);
+                pr.GetCompilationUnit(s, this.readDebugInfo, currentUnitLanguage);
             }
             return pr;
         }
 
         //десериализация модуля
         //читается только шапка PCU и заполняются имена сущностей модуля в таблицу символов
-        public CompilationUnit GetCompilationUnit(string FileName, bool readDebugInfo, bool caseSensitiveSearch)
+        public CompilationUnit GetCompilationUnit(string FileName, bool readDebugInfo, ILanguage currentUnitLanguage)
 		{
             try
             {
                 // Compiler.CombinePath всегда должно быть применено к имени файла, перед тем как кидать его сюда
                 if (!Path.IsPathRooted(FileName)) throw new InvalidOperationException();
 
-                FileName = GetFullUnitName(FileName, caseSensitiveSearch);
+                FileName = GetFullUnitName(FileName, currentUnitLanguage);
                 dir = Path.GetDirectoryName(FileName);
 
                 this.FileName = FileName;
@@ -277,8 +281,9 @@ namespace PascalABCCompiler.PCU
                 ChangeState(this, PCUReaderWriterState.BeginReadTree, unit);
                 cun.scope = new WrappedUnitInterfaceScope(this);
 
-                //TODO сохранить в PCU
-                cun.scope.CaseSensitive = pcu_file.languageCaseSensitive;
+                bool unitLanguageCaseSensitive = LanguageProvider.Instance.SelectLanguageByName(pcu_file.languageName).CaseSensitive;
+
+                cun.scope.CaseSensitive = unitLanguageCaseSensitive;
                 
                 if (string.Compare(unit_name, StringConstants.pascalSystemUnitName, true)==0)
                 	PascalABCCompiler.TreeConverter.syntax_tree_visitor.init_system_module(cun);
@@ -287,8 +292,7 @@ namespace PascalABCCompiler.PCU
                 cun.implementation_scope = new WrappedUnitImplementationScope(this, cun.scope);
                 //\ssyy
 
-                //TODO сохранить в PCU
-                cun.implementation_scope.CaseSensitive = pcu_file.languageCaseSensitive;
+                cun.implementation_scope.CaseSensitive = unitLanguageCaseSensitive;
 
                 string SourceFileName = pcu_file.SourceFileName;
                 if (Path.GetDirectoryName(SourceFileName) == "")
@@ -354,7 +358,10 @@ namespace PascalABCCompiler.PCU
                 need = true;
                 return need;
             }*/
-            if (comp.NeedRecompiled(FileName, pcu_file.incl_modules, this, pcu_file.languageCaseSensitive))
+
+            ILanguage currentUnitLanguage = LanguageProvider.Instance.SelectLanguageByName(pcu_file.languageName);
+
+            if (comp.NeedRecompiled(FileName, pcu_file.incl_modules, this, currentUnitLanguage))
             {
                 //comp.RecompileList.Add(unit_name,unit_name);
                 comp.RecompileList.Add(FileName);
@@ -366,7 +373,7 @@ namespace PascalABCCompiler.PCU
             {
                 //if (pcu_file.incl_modules[i].Contains("$"))
                 //	continue;
-                var used_unit_fname = comp.GetUnitFileName(Path.GetFileNameWithoutExtension(pcu_file.incl_modules[i]), pcu_file.incl_modules[i], dir, new SyntaxTree.SourceContext(0,0,0,0, FileName), pcu_file.languageCaseSensitive);
+                var used_unit_fname = comp.GetUnitFileName(Path.GetFileNameWithoutExtension(pcu_file.incl_modules[i]), pcu_file.incl_modules[i], dir, new SyntaxTree.SourceContext(0,0,0,0, FileName), currentUnitLanguage);
                 if (Path.GetExtension(used_unit_fname) != comp.CompilerOptions.CompiledUnitExtension) return true;
 
                 if ( !units.TryGetValue(used_unit_fname, out var pr) );
@@ -377,7 +384,7 @@ namespace PascalABCCompiler.PCU
                     used_units.Add(used_unit_fname);
                     if (!already_compiled.Contains(used_unit_fname))
                     {
-                        var sub_u = pr.GetCompilationUnit(used_unit_fname, this.readDebugInfo, pcu_file.languageCaseSensitive);
+                        var sub_u = pr.GetCompilationUnit(used_unit_fname, this.readDebugInfo, currentUnitLanguage);
                         if (sub_u == null) return true;
                         this.unit.InterfaceUsedDirectUnits.Add(sub_u.SemanticTree, sub_u);
                         this.unit.InterfaceUsedUnits.AddElement(sub_u.SemanticTree, pcu_file.incl_modules[i]);
@@ -580,7 +587,7 @@ namespace PascalABCCompiler.PCU
             else
                 cur_doc = new document(pcu_file.SourceFileName);
 
-            pcu_file.languageCaseSensitive = br.ReadBoolean();
+            pcu_file.languageName = br.ReadString();
 
             int num_names = br.ReadInt32();
 			pcu_file.names = new NameRef[num_names];
@@ -2490,7 +2497,8 @@ namespace PascalABCCompiler.PCU
             //Добавляем подключенные модули
             for (int i = 0; i < uses_count; i++)
             {
-                if ( units.TryGetValue(GetFullUnitName(pcu_file.incl_modules[i], pcu_file.languageCaseSensitive), out var pcu_r) );
+                if ( units.TryGetValue(GetFullUnitName(pcu_file.incl_modules[i], 
+                    LanguageProvider.Instance.SelectLanguageByName(pcu_file.languageName)), out var pcu_r) );
                 {
                     top_scopes.Add(pcu_r.cun.scope);
                 }
