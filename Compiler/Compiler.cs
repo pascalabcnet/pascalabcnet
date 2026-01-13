@@ -508,39 +508,6 @@ namespace PascalABCCompiler
 #endif
     }
 
-    public class SupportedSourceFile
-    {
-        private readonly string[] extensions;
-
-        public string[] Extensions
-        {
-            get { return extensions; }
-        }
-
-        private readonly string languageName;
-
-        public string LanguageName
-        {
-            get { return languageName; }
-        }
-
-        public SupportedSourceFile(string[] extensions, string lname)
-        {
-            this.extensions = extensions; 
-            languageName = lname;
-        }
-
-        public static SupportedSourceFile Make(ILanguage language)
-        { 
-            return new SupportedSourceFile(language.FilesExtensions, language.Name);
-        }
-        
-        public override string ToString()
-        {
-            return string.Format("{0} ({1})", LanguageName, FormatTools.ExtensionsToString(Extensions, "*", ";"));
-        }
-    }
-
     public delegate void ChangeCompilerStateEventDelegate(ICompiler sender, CompilerState State, string FileName);
 
     public class Compiler : MarshalByRefObject, ICompiler
