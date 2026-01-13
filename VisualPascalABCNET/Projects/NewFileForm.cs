@@ -3,8 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace VisualPascalABC
@@ -65,7 +66,13 @@ namespace VisualPascalABC
 					MessageBox.Show(Form1StringResources.Get("FILE_NAME_EMPTY"), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return;
 				}
-				if (File.Exists(Path.Combine(ProjectFactory.Instance.ProjectDirectory,tbFileName.Text)))
+                if (!Languages.Facade.LanguageProvider.Instance.HasLanguageForExtension(tbFileName.Text))
+                {
+                    e.Cancel = true;
+                    MessageBox.Show(Form1StringResources.Get("INVALID_SOURCE_FILE_EXTENSION"), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                if (File.Exists(Path.Combine(ProjectFactory.Instance.ProjectDirectory,tbFileName.Text)))
 				{
 					e.Cancel = true;
 					MessageBox.Show(string.Format(Form1StringResources.Get("FILE_ALREADY_EXISTS{0}"), tbFileName.Text), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);

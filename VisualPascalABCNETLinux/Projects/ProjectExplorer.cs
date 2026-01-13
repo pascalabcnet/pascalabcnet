@@ -1,13 +1,9 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using Microsoft.Build.BuildEngine;
-using PascalABCCompiler;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace VisualPascalABC
@@ -379,7 +375,7 @@ namespace VisualPascalABC
                 MessageBox.Show(Form1StringResources.Get("INVALID_SOURCE_FILE_NAME"), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (!Languages.Facade.LanguageProvider.Instance.Languages.SelectMany(lang => lang.FilesExtensions).Contains(Path.GetExtension(e.Label)))
+            if (!Languages.Facade.LanguageProvider.Instance.HasLanguageForExtension(e.Label))
             {
                 e.CancelEdit = true;
                 MessageBox.Show(Form1StringResources.Get("INVALID_SOURCE_FILE_EXTENSION"), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);

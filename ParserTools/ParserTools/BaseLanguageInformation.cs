@@ -616,6 +616,8 @@ namespace PascalABCCompiler.Parsers
             return null;
         }
 
+        public abstract string GetUnitTemplate(string unitName);
+
         public string GetFullTypeName(ICompiledTypeScope scope, bool no_alias = true)
         {
             return GetFullTypeName(scope.CompiledType);
