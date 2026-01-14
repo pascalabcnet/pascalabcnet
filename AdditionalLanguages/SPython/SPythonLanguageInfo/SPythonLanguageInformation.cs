@@ -64,11 +64,6 @@ namespace Languages.SPython.Frontend.Data
 
         protected override string IntTypeName => "int";
 
-        public override bool IsParams(string paramDescription)
-        {
-            return paramDescription.TrimStart().StartsWith("params");
-        }
-
         private readonly Dictionary<string, string> renamings = new Dictionary<string, string>
         {
             ["biginteger"] = "bigint"
@@ -1018,22 +1013,6 @@ namespace Languages.SPython.Frontend.Data
             return null;
         }
 
-        // TODO: Реализовать EVA
-        public override string GetArrayDescription(string elementType, int rank)
-        {
-            return "";
-        }
-
-        public override string GetClassKeyword(class_keyword keyw)
-        {
-            switch (keyw)
-            {
-                case class_keyword.Class: return "class";
-                case class_keyword.TemplateClass: return "template class";
-            }
-            return null;
-        }
-
         public override string GetDescription(IBaseScope scope)
         {
             switch (scope.Kind)
@@ -1133,14 +1112,12 @@ namespace Languages.SPython.Frontend.Data
             {
                 case SymbolKind.Class: return "class";
                 case SymbolKind.Enum: return "enum";
+                case SymbolKind.Struct: return "record";
+                case SymbolKind.Type: return "type";
+                case SymbolKind.Interface: return "interface";
                 case SymbolKind.Null: return "None";
             }
             return "";
-        }
-
-        public override string GetShortName(ICompiledConstructorScope scope)
-        {
-            return "create";
         }
 
         public override string GetShortTypeName(Type ctn, bool noalias = true)
@@ -1337,21 +1314,6 @@ namespace Languages.SPython.Frontend.Data
             return null;
         }
 
-        public override string GetStringForChar(char c)
-        {
-            return "'" + c.ToString() + "'";
-        }
-
-        public override string GetStringForSharpChar(int num)
-        {
-            return "#" + num.ToString();
-        }
-
-        public override string GetStringForString(string s)
-        {
-            return "'" + s + "'";
-        }
-
         public override string GetSynonimDescription(ITypeScope scope)
         {
             return "type " + scope.Name + GetGenericString(scope.TemplateArguments) + " = " + scope.Description;
@@ -1368,25 +1330,6 @@ namespace Languages.SPython.Frontend.Data
         public override string GetSynonimDescription(IProcScope scope)
         {
             return "type " + scope.Name + " = " + scope.Description;
-        }
-
-        public override bool IsDefinitionIdentifierAfterKeyword(KeywordKind keyw)
-        {
-            if (keyw == KeywordKind.Function || keyw == KeywordKind.Constructor || keyw == KeywordKind.Punkt)
-                return true;
-            return false;
-        }
-
-        public override bool IsMethodCallParameterSeparator(char key)
-        {
-            return key == ',';
-        }
-
-        public override bool IsTypeAfterKeyword(KeywordKind keyw)
-        {
-            if (keyw == KeywordKind.Colon)
-                return true;
-            return false;
         }
 
         public override KeywordKind TestForKeyword(string Text, int i)

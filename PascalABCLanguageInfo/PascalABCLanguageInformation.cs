@@ -178,6 +178,7 @@ namespace Languages.Pascal.Frontend.Data
 
         public override bool IsParams(string paramDescription)
         {
+            // три точки встречаются в описании некоторых стандартных функций в PABCSystem
             return paramDescription.Contains("...") || paramDescription.TrimStart().StartsWith("params");
         }
 
@@ -265,40 +266,6 @@ namespace Languages.Pascal.Frontend.Data
         private string GetDescriptionForModule(IInterfaceUnitScope scope)
         {
             return (scope.IsNamespaceUnit ? "namespace " : "unit ") + scope.Name;
-        }
-
-
-        public override string GetShortName(ICompiledConstructorScope scope)
-        {
-            return StringConstants.default_constructor_name;
-        }
-
-        public override string GetKeyword(SymbolKind kind)
-        {
-            switch (kind)
-            {
-                case SymbolKind.Class: return "class";
-                case SymbolKind.Enum: return "enum";
-                case SymbolKind.Struct: return "record";
-                case SymbolKind.Type: return "type";
-                case SymbolKind.Interface: return "interface";
-                case SymbolKind.Null: return "nil";
-            }
-            return "";
-        }
-
-        public override string GetArrayDescription(string elementType, int rank)
-        {
-            if (rank == 1)
-                return "array of " + elementType;
-            else
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.Append('[');
-                sb.Append(',', rank - 1);
-                sb.Append(']');
-                return "array" + sb.ToString() + " of " + elementType;
-            }
         }
 
         public override string GetStandardTypeByKeyword(KeywordKind keyw)
@@ -396,20 +363,6 @@ namespace Languages.Pascal.Frontend.Data
             if (ctn.IsNested)
                 return ctn.Name;
             return ctn.FullName;
-        }
-
-        public override string GetClassKeyword(PascalABCCompiler.SyntaxTree.class_keyword keyw)
-        {
-            switch (keyw)
-            {
-                case PascalABCCompiler.SyntaxTree.class_keyword.Class: return "class";
-                case PascalABCCompiler.SyntaxTree.class_keyword.Interface: return "interface";
-                case PascalABCCompiler.SyntaxTree.class_keyword.Record: return "record";
-                case PascalABCCompiler.SyntaxTree.class_keyword.TemplateClass: return "template class";
-                case PascalABCCompiler.SyntaxTree.class_keyword.TemplateRecord: return "template record";
-                case PascalABCCompiler.SyntaxTree.class_keyword.TemplateInterface: return "template interface";
-            }
-            return null;
         }
 
         public override string GetShortTypeName(Type ctn, bool noalias = true)
@@ -652,21 +605,6 @@ namespace Languages.Pascal.Frontend.Data
         private string GetSimpleSynonimDescription(ITypeSynonimScope scope)
         {
             return scope.Name;
-        }
-
-        public override string GetStringForChar(char c)
-        {
-            return "'" + c.ToString() + "'";
-        }
-
-        public override string GetStringForSharpChar(int num)
-        {
-            return "#" + num.ToString();
-        }
-
-        public override string GetStringForString(string s)
-        {
-            return "'" + s + "'";
         }
 
 
@@ -1941,28 +1879,6 @@ namespace Languages.Pascal.Frontend.Data
                 return "";
             //return RemovePossibleKeywords(sb);
             return sb.ToString();
-        }
-
-
-        public override bool IsMethodCallParameterSeparator(char key)
-        {
-            return key == ',';
-        }
-
-
-        public override bool IsDefinitionIdentifierAfterKeyword(KeywordKind keyw)
-        {
-            if (keyw == PascalABCCompiler.Parsers.KeywordKind.Function || keyw == PascalABCCompiler.Parsers.KeywordKind.Constructor || keyw == PascalABCCompiler.Parsers.KeywordKind.Destructor || keyw == PascalABCCompiler.Parsers.KeywordKind.Type || keyw == PascalABCCompiler.Parsers.KeywordKind.Var
-                   || keyw == PascalABCCompiler.Parsers.KeywordKind.Unit || keyw == PascalABCCompiler.Parsers.KeywordKind.Const || keyw == PascalABCCompiler.Parsers.KeywordKind.Program || keyw == PascalABCCompiler.Parsers.KeywordKind.Punkt)
-                return true;
-            return false;
-        }
-
-        public override bool IsTypeAfterKeyword(KeywordKind keyw)
-        {
-            if (keyw == KeywordKind.Colon || keyw == KeywordKind.Of || keyw == KeywordKind.TypeDecl)
-                return true;
-            return false;
         }
 
     }
