@@ -9,26 +9,26 @@
 <param name="Keyword" value="Seek">
 <param name="Keyword" value="Write"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Методы расширения типизированных файлов</H1>
+</HEAD><body><H1>РњРµС‚РѕРґС‹ СЂР°СЃС€РёСЂРµРЅРёСЏ С‚РёРїРёР·РёСЂРѕРІР°РЅРЅС‹С… С„Р°Р№Р»РѕРІ</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Elements&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность элементов открытого типизированного файла</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЌР»РµРјРµРЅС‚РѕРІ РѕС‚РєСЂС‹С‚РѕРіРѕ С‚РёРїРёР·РёСЂРѕРІР°РЅРЅРѕРіРѕ С„Р°Р№Р»Р°</td></tr>
 <tr><td><code><b>function</b> Read&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает и возвращает следующий элемент типизированного файла</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ СЃР»РµРґСѓСЋС‰РёР№ СЌР»РµРјРµРЅС‚ С‚РёРїРёР·РёСЂРѕРІР°РЅРЅРѕРіРѕ С„Р°Р№Р»Р°</td></tr>
 <tr><td><code><b>function</b> Read2&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): (T,T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает и возвращает два следующих элемента типизированного файла в виде кортежа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РґРІР° СЃР»РµРґСѓСЋС‰РёС… СЌР»РµРјРµРЅС‚Р° С‚РёРїРёР·РёСЂРѕРІР°РЅРЅРѕРіРѕ С„Р°Р№Р»Р° РІ РІРёРґРµ РєРѕСЂС‚РµР¶Р°</td></tr>
 <tr><td><code><b>function</b> Read3&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): (T,T,T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает и возвращает три следующих элемента типизированного файла в виде кортежа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ С‚СЂРё СЃР»РµРґСѓСЋС‰РёС… СЌР»РµРјРµРЅС‚Р° С‚РёРїРёР·РёСЂРѕРІР°РЅРЅРѕРіРѕ С„Р°Р№Р»Р° РІ РІРёРґРµ РєРѕСЂС‚РµР¶Р°</td></tr>
 <tr><td><code><b>function</b> ReadElements&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность элементов открытого типизированного файла от текущего элемента до конечного</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЌР»РµРјРµРЅС‚РѕРІ РѕС‚РєСЂС‹С‚РѕРіРѕ С‚РёРїРёР·РёСЂРѕРІР°РЅРЅРѕРіРѕ С„Р°Р№Р»Р° РѕС‚ С‚РµРєСѓС‰РµРіРѕ СЌР»РµРјРµРЅС‚Р° РґРѕ РєРѕРЅРµС‡РЅРѕРіРѕ</td></tr>
 <tr><td><code><b>function</b> ReadElements&lt;T&gt;(fname: string): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает типизированный файл, возвращает последовательность его элементов и закрывает его</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С‚РёРїРёР·РёСЂРѕРІР°РЅРЅС‹Р№ С„Р°Р№Р», РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РµРіРѕ СЌР»РµРјРµРЅС‚РѕРІ Рё Р·Р°РєСЂС‹РІР°РµС‚ РµРіРѕ</td></tr>
 <tr><td><code><b>procedure</b> Reset&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает существующий типизированный файл</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ С‚РёРїРёР·РёСЂРѕРІР°РЅРЅС‹Р№ С„Р°Р№Р»</td></tr>
 <tr><td><code><b>procedure</b> Rewrite&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый или обнуляет существующий типизированный файл</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ РёР»Рё РѕР±РЅСѓР»СЏРµС‚ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ С‚РёРїРёР·РёСЂРѕРІР°РЅРЅС‹Р№ С„Р°Р№Р»</td></tr>
 <tr><td><code><b>function</b> Seek&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T; n: int64):  <b>file</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущую позицию файлового указателя в типизированном файле на элемент с номером n</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ С„Р°Р№Р»РѕРІРѕРіРѕ СѓРєР°Р·Р°С‚РµР»СЏ РІ С‚РёРїРёР·РёСЂРѕРІР°РЅРЅРѕРј С„Р°Р№Р»Рµ РЅР° СЌР»РµРјРµРЅС‚ СЃ РЅРѕРјРµСЂРѕРј n</td></tr>
 <tr><td><code><b>procedure</b> Write&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T; <b>params</b> vals: <b>array</b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает данные в типизированный файл</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРёСЃС‹РІР°РµС‚ РґР°РЅРЅС‹Рµ РІ С‚РёРїРёР·РёСЂРѕРІР°РЅРЅС‹Р№ С„Р°Р№Р»</td></tr>
 </table>
 </body></HTML>

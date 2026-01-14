@@ -6,37 +6,37 @@
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
 <link rel="StyleSheet" href="../../default.css"></head>
-<body><H1>Операции is и as</H1>
-<p>Операция <code><b>is</b></code> предназначена для проверки того, имеет ли 
-классовая переменная указанный динамический тип. 
-Операция <code><b>as</b></code> позволяет безопасно преобразовать переменную 
-одного классового типа к другому классовому типу (в отличие от
-<a href="../Classes/classcast.html">явного приведения классового типа</a>).</p>
-<p>Операция
-<code><b>is</b></code> имеет вид:</p>
+<body><H1>РћРїРµСЂР°С†РёРё is Рё as</H1>
+<p>РћРїРµСЂР°С†РёСЏ <code><b>is</b></code> РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅР° РґР»СЏ РїСЂРѕРІРµСЂРєРё С‚РѕРіРѕ, РёРјРµРµС‚ Р»Рё 
+РєР»Р°СЃСЃРѕРІР°СЏ РїРµСЂРµРјРµРЅРЅР°СЏ СѓРєР°Р·Р°РЅРЅС‹Р№ РґРёРЅР°РјРёС‡РµСЃРєРёР№ С‚РёРї. 
+РћРїРµСЂР°С†РёСЏ <code><b>as</b></code> РїРѕР·РІРѕР»СЏРµС‚ Р±РµР·РѕРїР°СЃРЅРѕ РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ РїРµСЂРµРјРµРЅРЅСѓСЋ 
+РѕРґРЅРѕРіРѕ РєР»Р°СЃСЃРѕРІРѕРіРѕ С‚РёРїР° Рє РґСЂСѓРіРѕРјСѓ РєР»Р°СЃСЃРѕРІРѕРјСѓ С‚РёРїСѓ (РІ РѕС‚Р»РёС‡РёРµ РѕС‚
+<a href="../Classes/classcast.html">СЏРІРЅРѕРіРѕ РїСЂРёРІРµРґРµРЅРёСЏ РєР»Р°СЃСЃРѕРІРѕРіРѕ С‚РёРїР°</a>).</p>
+<p>РћРїРµСЂР°С†РёСЏ
+<code><b>is</b></code> РёРјРµРµС‚ РІРёРґ:</p>
 <blockquote>
 	<p><code>a <b>is</b> </code><i>ClassType</i></p>
 </blockquote>
-<p>и возвращает <code>True</code> если
-<code>a</code> принадлежит к классу <i>ClassType</i>
-или одному из его потомков. </p>
-<p>Например, если <code>Base</code>
-и <code>Derived</code> - классы, причем,
-<code>Derived</code> - потомок <code>Base</code>, 
-переменные b и d имеют соответственно типы <code>Base</code>
-и <code>Derived</code>, то выражения
-<code>b <b>is</b> Base</code> и <code>d <b>is</b> 
-Base</code> возвращают <code>True</code>, 
-а <code>b <b>is</b> Derived</code> - <code>False</code>.</p>
-<p>Операция
-<code><b>as</b></code> имеет вид:</p>
+<p>Рё РІРѕР·РІСЂР°С‰Р°РµС‚ <code>True</code> РµСЃР»Рё
+<code>a</code> РїСЂРёРЅР°РґР»РµР¶РёС‚ Рє РєР»Р°СЃСЃСѓ <i>ClassType</i>
+РёР»Рё РѕРґРЅРѕРјСѓ РёР· РµРіРѕ РїРѕС‚РѕРјРєРѕРІ. </p>
+<p>РќР°РїСЂРёРјРµСЂ, РµСЃР»Рё <code>Base</code>
+Рё <code>Derived</code> - РєР»Р°СЃСЃС‹, РїСЂРёС‡РµРј,
+<code>Derived</code> - РїРѕС‚РѕРјРѕРє <code>Base</code>, 
+РїРµСЂРµРјРµРЅРЅС‹Рµ b Рё d РёРјРµСЋС‚ СЃРѕРѕС‚РІРµС‚СЃС‚РІРµРЅРЅРѕ С‚РёРїС‹ <code>Base</code>
+Рё <code>Derived</code>, С‚Рѕ РІС‹СЂР°Р¶РµРЅРёСЏ
+<code>b <b>is</b> Base</code> Рё <code>d <b>is</b> 
+Base</code> РІРѕР·РІСЂР°С‰Р°СЋС‚ <code>True</code>, 
+Р° <code>b <b>is</b> Derived</code> - <code>False</code>.</p>
+<p>РћРїРµСЂР°С†РёСЏ
+<code><b>as</b></code> РёРјРµРµС‚ РІРёРґ:</p>
 <blockquote>
 	<p><code>a <b>as</b> </code><i>ClassType</i></p>
 </blockquote>
-<p>и возвращает ссылку на объект типа
-<i>ClassType</i> если преобразование возможно, в 
-противном случае возвращает <code><b>nil</b></code>.</p>
-<p>Например, в программе</p>
+<p>Рё РІРѕР·РІСЂР°С‰Р°РµС‚ СЃСЃС‹Р»РєСѓ РЅР° РѕР±СЉРµРєС‚ С‚РёРїР°
+<i>ClassType</i> РµСЃР»Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РІРѕР·РјРѕР¶РЅРѕ, РІ 
+РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ РІРѕР·РІСЂР°С‰Р°РµС‚ <code><b>nil</b></code>.</p>
+<p>РќР°РїСЂРёРјРµСЂ, РІ РїСЂРѕРіСЂР°РјРјРµ</p>
 <blockquote>
 	<p><code><b>type</b> <br>
 	&nbsp; Base = <b>class</b> <b><br>
@@ -49,22 +49,22 @@ Base</code> возвращают <code>True</code>,
 	<p><code><b>var</b> b: Base;</code></p>
 	<p><code><b>begin</b><br>
 	&nbsp; b := new Base;<br>
-	&nbsp; writeln(b <b>i</b><b>s</b> Derived);<br>
+	&nbsp; Println(b <b>i</b><b>s</b> Derived);<br>
 	&nbsp; b := new Derived;<br>
-	&nbsp; writeln(b <b>i</b><b>s</b> Derived);<br>
+	&nbsp; Println(b <b>i</b><b>s</b> Derived);<br>
 	<b>end</b>. </code></p>
 </blockquote>
-<p>первый раз выводится <code>False</code>, 
-второй - <code>True</code>.</p>
-<p>Операции <code><b>is</b></code> и
-<code><b>as</b></code> используются для работы с 
-переменной базового класса, содержащей объект производного класса.</p>
-<p><b>1 способ.</b></p>
+<p>РїРµСЂРІС‹Р№ СЂР°Р· РІС‹РІРѕРґРёС‚СЃСЏ <code>False</code>, 
+РІС‚РѕСЂРѕР№ - <code>True</code>.</p>
+<p>РћРїРµСЂР°С†РёРё <code><b>is</b></code> Рё
+<code><b>as</b></code> РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ 
+РїРµСЂРµРјРµРЅРЅРѕР№ Р±Р°Р·РѕРІРѕРіРѕ РєР»Р°СЃСЃР°, СЃРѕРґРµСЂР¶Р°С‰РµР№ РѕР±СЉРµРєС‚ РїСЂРѕРёР·РІРѕРґРЅРѕРіРѕ РєР»Р°СЃСЃР°.</p>
+<p><b>1 СЃРїРѕСЃРѕР±.</b></p>
 <blockquote>
 	<p><code><b>if</b> b <b>is</b> Derived then <br>
 &nbsp; Derived(b).p;</code></p>
 </blockquote>
-<p><b>2 способ.</b></p>
+<p><b>2 СЃРїРѕСЃРѕР±.</b></p>
 <blockquote>
 	<p><code><b>var</b> d: Derived := b <b>as</b> Derived;<br>
 	d.p;</code></p>

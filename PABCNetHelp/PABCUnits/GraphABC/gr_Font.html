@@ -13,82 +13,82 @@
 </object></head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title><link rel="StyleSheet" href="../../default.css"><body>
-<H1>Подпрограммы для работы со шрифтом</H1>
-<p>Вывод текста осуществляется текущим шрифтом. Доступ к 
-свойствам текущего шрифта можно осуществлять как в процедурном, так и в 
-объектно-ориентированном стиле.</p>
-<p>Процедуры и функции для доступа к свойствам шрифта 
-сгруппированы парами: если <code>Prop</code> - имя 
-свойства пера, то функция <code>PenProp</code> возвращает 
-значение этого свойства, а процедура <code>SetPenProp(p)</code> 
-устанавливает это свойство:</p>
+<H1>РџРѕРґРїСЂРѕРіСЂР°РјРјС‹ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ С€СЂРёС„С‚РѕРј</H1>
+<p>Р’С‹РІРѕРґ С‚РµРєСЃС‚Р° РѕСЃСѓС‰РµСЃС‚РІР»СЏРµС‚СЃСЏ С‚РµРєСѓС‰РёРј С€СЂРёС„С‚РѕРј. Р”РѕСЃС‚СѓРї Рє 
+СЃРІРѕР№СЃС‚РІР°Рј С‚РµРєСѓС‰РµРіРѕ С€СЂРёС„С‚Р° РјРѕР¶РЅРѕ РѕСЃСѓС‰РµСЃС‚РІР»СЏС‚СЊ РєР°Рє РІ РїСЂРѕС†РµРґСѓСЂРЅРѕРј, С‚Р°Рє Рё РІ 
+РѕР±СЉРµРєС‚РЅРѕ-РѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅРѕРј СЃС‚РёР»Рµ.</p>
+<p>РџСЂРѕС†РµРґСѓСЂС‹ Рё С„СѓРЅРєС†РёРё РґР»СЏ РґРѕСЃС‚СѓРїР° Рє СЃРІРѕР№СЃС‚РІР°Рј С€СЂРёС„С‚Р° 
+СЃРіСЂСѓРїРїРёСЂРѕРІР°РЅС‹ РїР°СЂР°РјРё: РµСЃР»Рё <code>Prop</code> - РёРјСЏ 
+СЃРІРѕР№СЃС‚РІР° РїРµСЂР°, С‚Рѕ С„СѓРЅРєС†РёСЏ <code>PenProp</code> РІРѕР·РІСЂР°С‰Р°РµС‚ 
+Р·РЅР°С‡РµРЅРёРµ СЌС‚РѕРіРѕ СЃРІРѕР№СЃС‚РІР°, Р° РїСЂРѕС†РµРґСѓСЂР° <code>SetPenProp(p)</code> 
+СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЌС‚Рѕ СЃРІРѕР№СЃС‚РІРѕ:</p>
 <table border=0 CELLPADDING=5>
 <tr><td>
 <code>
 <b>procedure</b> SetFontSize(size: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает размер текущего шрифта в пунктах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЂР°Р·РјРµСЂ С‚РµРєСѓС‰РµРіРѕ С€СЂРёС„С‚Р° РІ РїСѓРЅРєС‚Р°С…
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> FontSize: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает размер текущего шрифта в пунктах
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЂР°Р·РјРµСЂ С‚РµРєСѓС‰РµРіРѕ С€СЂРёС„С‚Р° РІ РїСѓРЅРєС‚Р°С…
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SetFontName(name: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает имя текущего шрифта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РёРјСЏ С‚РµРєСѓС‰РµРіРѕ С€СЂРёС„С‚Р°
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> FontName: string;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает имя текущего шрифта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРјСЏ С‚РµРєСѓС‰РµРіРѕ С€СЂРёС„С‚Р°
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SetFontColor(c: Color);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает цвет текущего шрифта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С†РІРµС‚ С‚РµРєСѓС‰РµРіРѕ С€СЂРёС„С‚Р°
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> FontColor: Color;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет текущего шрифта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РІРµС‚ С‚РµРєСѓС‰РµРіРѕ С€СЂРёС„С‚Р°
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SetFontStyle(fs: integer);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает стиль текущего шрифта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЃС‚РёР»СЊ С‚РµРєСѓС‰РµРіРѕ С€СЂРёС„С‚Р°
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> FontStyle: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает стиль текущего шрифта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚РёР»СЊ С‚РµРєСѓС‰РµРіРѕ С€СЂРёС„С‚Р°
 </td></tr>
 </table>
-<p>Можно также изменять свойства текущего пера через
-<a href="gr_FontClass.html">объект Font</a></code>.</p>
-<p>Кроме того, для определения ширины и высоты строки при текущих настройках 
-шрифта используются следующие функции:<br>
+<p>РњРѕР¶РЅРѕ С‚Р°РєР¶Рµ РёР·РјРµРЅСЏС‚СЊ СЃРІРѕР№СЃС‚РІР° С‚РµРєСѓС‰РµРіРѕ РїРµСЂР° С‡РµСЂРµР·
+<a href="gr_FontClass.html">РѕР±СЉРµРєС‚ Font</a></code>.</p>
+<p>РљСЂРѕРјРµ С‚РѕРіРѕ, РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ С€РёСЂРёРЅС‹ Рё РІС‹СЃРѕС‚С‹ СЃС‚СЂРѕРєРё РїСЂРё С‚РµРєСѓС‰РёС… РЅР°СЃС‚СЂРѕР№РєР°С… 
+С€СЂРёС„С‚Р° РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ СЃР»РµРґСѓСЋС‰РёРµ С„СѓРЅРєС†РёРё:<br>
 &nbsp;</p>
 <table>
 <tr><td>
 <code>
 <b>function</b> TextWidth(s: string): integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ширину строки s в пикселях при текущих настройках шрифта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С€РёСЂРёРЅСѓ СЃС‚СЂРѕРєРё s РІ РїРёРєСЃРµР»СЏС… РїСЂРё С‚РµРєСѓС‰РёС… РЅР°СЃС‚СЂРѕР№РєР°С… С€СЂРёС„С‚Р°
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> TextHeight(s: string): integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает высоту строки s в пикселях при текущих настройках шрифта
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІС‹СЃРѕС‚Сѓ СЃС‚СЂРѕРєРё s РІ РїРёРєСЃРµР»СЏС… РїСЂРё С‚РµРєСѓС‰РёС… РЅР°СЃС‚СЂРѕР№РєР°С… С€СЂРёС„С‚Р°
 </td></tr>
 </table>
 </body></html>

@@ -72,6 +72,9 @@ const
   AllDelimiters = ' <>=^`|~$№§!"#%&''()*,+-./:;?@[\]_{}«­·»'#9#10#13;
 //{{{--doc: Конец секции стандартных констант для документации }}} 
 
+// Внутренняя функция для интерполированных строк
+///--
+function __ApplyO2S(obj: object): object;
 
 ///--
 const
@@ -2437,6 +2440,7 @@ function CommandLineArgs: array of string;
 /// Преобразует объект в строковое представление
 function ObjectToString(obj: object): string;
 
+
 // -----------------------------------------------------
 //>>     Подпрограммы для работы с динамическими массивами # Subroutines for array of T
 // -----------------------------------------------------
@@ -2561,14 +2565,14 @@ function SeqRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100):
 /// Возвращает последовательность из n случайных вещественных элементов
 function SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10; digits: integer := 1): sequence of real;
 /// Возвращает последовательность из count элементов, заполненных значениями f(i)
-function SeqGen<T>(count: integer; f: integer->T): sequence of T;
+function SeqGen<T>(count: integer; f: integer → T): sequence of T;
 /// Возвращает последовательность из count элементов, заполненных значениями f(i), начиная с i=from
 function SeqGen<T>(count: integer; f: integer->T; from: integer): sequence of T;
 /// Возвращает последовательность из count элементов, начинающуюся с first, с функцией next перехода от предыдущего к следующему 
 function SeqGen<T>(count: integer; first: T; next: T->T): sequence of T;
 /// Возвращает последовательность из count элементов, начинающуюся с first и second, 
 ///с функцией next перехода от двух предыдущих к следующему 
-function SeqGen<T>(count: integer; first, second: T; next: (T,T) ->T): sequence of T;
+function SeqGen<T>(count: integer; first, second: T; next: (T,T) → T): sequence of T;
 /// Возвращает последовательность элементов с начальным значением first, 
 ///функцией next перехода от предыдущего к следующему и условием pred продолжения последовательности 
 function SeqWhile<T>(first: T; next: T->T; pred: T->boolean): sequence of T;
@@ -2658,10 +2662,14 @@ function Arr(a: CharRange): array of char;
 function ArrRandom(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
 /// Возвращает массив размера n, заполненный случайными целыми значениями в диапазоне от a до b
 function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
+/// Возвращает массив размера n, заполненный случайными целыми значениями в заданном диапазоне
+function ArrRandomInteger(n: integer; range: IntRange): array of integer;
 /// Возвращает массив размера n, заполненный случайными целыми значениями
 function ArrRandomInteger(n: integer := 10): array of integer;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями в диапазоне от a до b 
 function ArrRandomReal(n: integer; a: real; b: real; digits: integer := 2): array of real;
+/// Возвращает массив размера n, заполненный случайными вещественными значениями в заданном диапазоне
+function ArrRandomReal(n: integer; range: RealRange; digits: integer): array of real;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями
 function ArrRandomReal(n: integer := 10; digits: integer := 2): array of real;
 /// Возвращает массив из count элементов, заполненных значениями gen(i)
@@ -2740,8 +2748,12 @@ function ReadMatrReal(m, n: integer): array [,] of real;
 function MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandomInteger(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
+/// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
+function MatrRandomInteger(m: integer; n: integer; range: IntRange): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
 function MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10; digits: integer := 2): array [,] of real;
+/// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
+function MatrRandomReal(m: integer; n: integer; range: RealRange; digits: integer := 2): array [,] of real;
 /// Возвращает двумерный массив размера m x n, заполненный элементами gen(i,j) 
 function MatrGen<T>(m, n: integer; gen: (integer,integer)->T): array [,] of T;
 /// Возвращает двумерный массив размера m x n, заполненный элементами x 
@@ -5059,6 +5071,13 @@ begin
   Result := res.ToString;
 end;
 
+function __ApplyO2S(obj: object): object;
+begin
+  if obj is System.IFormattable then
+    Result := obj
+  else Result := ObjectToString(obj);
+end;
+
 function NumberFormat(DecimalSeparator: string; GroupSeparator: string): NumberFormatInfo;
 begin
   var nfi := new NumberFormatInfo;
@@ -5650,6 +5669,8 @@ begin
   Result := ArrRandom(n, a, b);
 end;
 
+function ArrRandomInteger(n: integer; range: IntRange): array of integer := ArrRandom(n,range.Low,range.High);
+
 function ArrRandomInteger(n: integer) := ArrRandomInteger(n,0,100);
 
 function ArrRandomReal(n: integer; a: real; b: real; digits: integer): array of real;
@@ -5658,6 +5679,9 @@ begin
   for var i := 0 to Result.Length - 1 do
     Result[i] := RandomReal(a,b,digits);
 end;
+
+function ArrRandomReal(n: integer; range: RealRange; digits: integer): array of real
+  := ArrRandomReal(n,range.Low,range.High,digits);
 
 function ArrRandomReal(n: integer; digits: integer) := ArrRandomReal(n,0,10,digits);
 
@@ -11250,7 +11274,15 @@ begin
     Result *= x;
 end;
 
-/// Возвращает произведение элементов последовательности, спроектированных на числовое значение
+/// Возвращает произведение элементов последовательности
+function Product(Self: sequence of int64): int64; extensionmethod;
+begin
+  Result := 1;
+  foreach var x in Self do
+    Result *= x;
+end;
+
+/// Возвращает произведение элементов последовательности, спроецированных на числовое значение
 function Product<T>(Self: sequence of T; f: T->real): real; extensionmethod;
 begin
   Result := 1.0;
@@ -11258,7 +11290,7 @@ begin
     Result *= f(x);
 end;
 
-/// Возвращает произведение элементов последовательности, спроектированных на числовое значение
+/// Возвращает произведение элементов последовательности, спроецированных на числовое значение
 function Product<T>(Self: sequence of T; f: T->integer): int64; extensionmethod;
 begin
   Result := 1;
@@ -11266,7 +11298,7 @@ begin
     Result *= f(x);
 end;
 
-/// Возвращает произведение элементов последовательности, спроектированных на числовое значение
+/// Возвращает произведение элементов последовательности, спроецированных на числовое значение
 function Product<T>(Self: sequence of T; f: T->BigInteger): BigInteger; extensionmethod;
 begin
   Result := 1;
@@ -11339,7 +11371,7 @@ begin
   end;
 end;
 
-// Возвращает сумму элементов последовательности, спроектированных на числовое значение - пока не работает для Lst(1,2,3)
+// Возвращает сумму элементов последовательности, спроецированных на числовое значение - пока не работает для Lst(1,2,3)
 {function Sum<T>(Self: sequence of T; f: T->BigInteger): BigInteger; extensionmethod;
 begin
   Result := 0;
@@ -12996,6 +13028,9 @@ begin
       yield Self[i, j]
 end;
 
+/// Возвращает по заданному двумерному массиву последовательность его элементов по строкам
+function Elements<T>(Self: array [,] of T): sequence of T; extensionmethod := Self.ElementsByRow;
+
 /// Возвращает по заданному двумерному массиву последовательность его элементов по столбцам
 function ElementsByCol<T>(Self: array [,] of T): sequence of T; extensionmethod;
 begin
@@ -13132,6 +13167,9 @@ begin
     r += 1;
   end
 end;
+
+/// Создает копию двумерного массива
+function Copy<T>(Self: array [,] of T): array [,] of T; extensionmethod := Self.Clone() as array [,] of T;
 
 // -----------------------------------------------------
 //>>     Фиктивная секция YYY - не удалять! # YYY
@@ -13320,6 +13358,9 @@ begin
       Result[i, j] := Random(a, b);
 end;
 
+function MatrRandomInteger(m: integer; n: integer; range: IntRange): array [,] of integer
+  := MatrRandomInteger(m,n,range.Low,range.High);
+
 function MatrRandomReal(m: integer; n: integer; a, b: real; digits: integer): array [,] of real;
 begin
   Result := new real[m, n];
@@ -13327,6 +13368,9 @@ begin
     for var j := 0 to Result.ColCount - 1 do
       Result[i, j] := RandomReal(a,b,digits);
 end;
+
+function MatrRandomReal(m: integer; n: integer; range: RealRange; digits: integer): array [,] of real
+  := MatrRandomReal(m,n,range.Low,range.High);
 
 function MatrFill<T>(m, n: integer; x: T): array [,] of T;
 begin
@@ -13867,6 +13911,15 @@ begin
   for var i := 0 to Self.High do
     if cond(Self[i], i) then
       yield i;
+end;
+
+/// Создает копию массива
+function Copy<T>(Self: array of T): array of T; extensionmethod := Self.Clone() as array of T;
+
+/// Возвращает строковое представление массива вещественных чисел с фиксированным количеством знаков после десятичной точки
+function ToString(Self: array of real; digits: integer): string; extensionmethod;
+begin
+  Result := Self.Select(x -> Round(x,digits)).JoinToString;
 end;
 
 function NextCombHelper(ind: array of integer; m,n: integer): boolean;

@@ -1,4 +1,4 @@
-﻿// Copyright (©) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 ///Модуль графики
 unit GraphWPF;
@@ -684,37 +684,42 @@ function GetMouseArgs(e: MouseEventArgs): (Point,integer);
 /// Процедура быстрого рисования последовательности команд, использующих DrawingContext
 procedure FastDraw(commands: DrawingContext->());
 
-/// Рисование отрезка с помощью DrawingContext (совместно с FastDraw)
+/// Рисование отрезка с помощью DrawingContext (совместно с FastDraw,DrawOnVisual)
 procedure DrawLineDC(dc: DrawingContext; x,y,x1,y1: real; c: Color; w: real);
-/// Рисование отрезка с помощью DrawingContext (совместно с FastDraw)
+/// Рисование отрезка с помощью DrawingContext (совместно с FastDraw,DrawOnVisual)
 procedure DrawLineDC(dc: DrawingContext; x,y,x1,y1: real; p: GPen);
-/// Рисование эллипса с помощью DrawingContext (совместно с FastDraw)
+/// Рисование эллипса с помощью DrawingContext (совместно с FastDraw,DrawOnVisual)
 procedure DrawEllipseDC(dc: DrawingContext; x,y,rx,ry: real; cbrush,cpen: Color; w: real);
-/// Рисование эллипса с помощью DrawingContext (совместно с FastDraw)
+/// Рисование эллипса с помощью DrawingContext (совместно с FastDraw,DrawOnVisual)
 procedure DrawEllipseDC(dc: DrawingContext; x,y,rx,ry: real; b: GBrush; p: GPen);
-/// Рисование прямоугольника с помощью DrawingContext (совместно с FastDraw)
+/// Рисование прямоугольника с помощью DrawingContext (совместно с FastDraw,DrawOnVisual)
 procedure DrawRectangleDC(dc: DrawingContext; x,y,width,height: real; cbrush,cpen: Color; w: real);
-/// Рисование прямоугольника с помощью DrawingContext (совместно с FastDraw)
+/// Рисование прямоугольника с помощью DrawingContext (совместно с FastDraw,DrawOnVisual)
 procedure DrawRectangleDC(dc: DrawingContext; x,y,width,height: real; b: GBrush; p: GPen);
-/// Рисование полигона с помощью DrawingContext (совместно с FastDraw)
+/// Рисование полигона с помощью DrawingContext (совместно с FastDraw,DrawOnVisual)
 procedure DrawPolygonDC(dc: DrawingContext; pnt: array of Point; cbrush,cpen: Color; w: real);
-/// Рисование полигона с помощью DrawingContext (совместно с FastDraw)
+/// Рисование полигона с помощью DrawingContext (совместно с FastDraw,DrawOnVisual)
 procedure DrawPolygonDC(dc: DrawingContext; pnt: array of Point; b: GBrush; p: GPen);
-/// Рисование ломаной с помощью DrawingContext (совместно с FastDraw)
+/// Рисование ломаной с помощью DrawingContext (совместно с FastDraw,DrawOnVisual)
 procedure DrawPolylineDC(dc: DrawingContext; pnt: array of Point; cpen: Color; w: real);
-/// Рисование ломаной с помощью DrawingContext (совместно с FastDraw)
+/// Рисование ломаной с помощью DrawingContext (совместно с FastDraw,DrawOnVisual)
 procedure DrawPolylineDC(dc: DrawingContext; pnt: array of Point; p: GPen);
-/// Рисование текста с помощью DrawingContext (совместно с FastDraw)
+/// Рисование текста с помощью DrawingContext (совместно с FastDraw,DrawOnVisual)
 procedure TextOutDC(dc: DrawingContext; x,y: real; text: string; align: Alignment := Alignment.LeftTop; angle: real := 0; f: FontOptions := nil);
-/// Рисование текста в прямоугольнике с помощью DrawingContext (совместно с FastDraw)
+/// Рисование текста в прямоугольнике с помощью DrawingContext (совместно с FastDraw,DrawOnVisual)
 procedure DrawTextDC(dc: DrawingContext; x,y,w,h: real; text: string; align: Alignment := Alignment.Center; angle: real := 0; f: FontOptions := nil);
 
-/// Рисование графика с помощью DrawingContext (совместно с FastDraw)
+/// Рисование графика с помощью DrawingContext (совместно с FastDraw,DrawOnVisual)
 procedure DrawGraphDC(dc: DrawingContext; f: real -> real; a, b, min, max, x, y, w, h, XTicks, YTicks: real; title: string := '');
-/// Рисование графика с помощью DrawingContext (совместно с FastDraw)
+/// Рисование графика с помощью DrawingContext (совместно с FastDraw,DrawOnVisual)
 procedure DrawGraphDC(dc: DrawingContext; f: real -> real; a, b, min, max, x, y, w, h: real; title: string := '');
-/// Рисование графика с помощью DrawingContext (совместно с FastDraw)
+/// Рисование графика с помощью DrawingContext (совместно с FastDraw,DrawOnVisual)
 procedure DrawGraphDC(dc: DrawingContext; f: real -> real; a, b: real; x, y, w, h: real; title: string := '');
+/// Рисование изображения с помощью DrawingContext из файла fname в позиции (x,y) (совместно с FastDraw,DrawOnVisual)
+procedure DrawImageDC(dc: DrawingContext; x,y: real; fname: string);
+/// Рисование изображения с помощью DrawingContext из файла fname в позиции (x,y) размера (w,h) (совместно с FastDraw,DrawOnVisual)
+procedure DrawImageDC(dc: DrawingContext; x,y,w,h: real; fname: string);
+
 
 /// Ширина текста (совместно с FastDraw)
 function TextWidthP(text: string): real;
@@ -1158,7 +1163,7 @@ var dpic := new Dictionary<string, BitmapSource>;
 
 function GetBitmapImage(fname: string): BitmapSource;
 begin
-  if not dpic.ContainsKey(fname) then 
+  if fname not in dpic then 
   begin
     var b := new BitmapImage();
     var s := System.IO.File.OpenRead(fname);
@@ -1166,7 +1171,7 @@ begin
     b.CacheOption := BitmapCacheOption.OnLoad;
     b.StreamSource := s;
     b.EndInit();
-    s.Close();    
+    s.Close();
     //dpic[fname] := new BitmapImage(new System.Uri(fname,System.UriKind.Relative));
     dpic[fname] := b;
   end;  
@@ -1271,41 +1276,41 @@ end;
 
 procedure DrawImagePB(x,y: real; b: Bitmap);
 begin
-  var dc := GetDC();
   var img := b.bsource;
+  var dc := GetDC();
   dc.DrawImage(img, Rect(x, y, img.PixelWidth, img.PixelHeight));
   ReleaseDC(dc);
 end;
 
 procedure DrawImageP(x,y: real; fname: string);
 begin
-  var dc := GetDC();
   var img := GetBitmapImage(fname);
+  var dc := GetDC();
   dc.DrawImage(img, Rect(x, y, img.PixelWidth, img.PixelHeight));
   ReleaseDC(dc);
 end;
 
 procedure DrawImageWHPB(x,y,w,h: real; b: Bitmap);
 begin
-  var dc := GetDC();
   var img := b.bsource;
+  var dc := GetDC();
   dc.DrawImage(img, Rect(x, y, w, h));
   ReleaseDC(dc);
 end;
 
 procedure DrawImageWHP(x,y,w,h: real; fname: string);
 begin
-  var dc := GetDC();
   var img := GetBitmapImage(fname);
+  var dc := GetDC();
   dc.DrawImage(img, Rect(x, y, w, h));
   ReleaseDC(dc);
 end;
 
 procedure DrawImageUnscaledP(x,y: real; fname: string);
 begin
-  var dc := GetDC();
   var (scalex,scaley) := ScaleToDevice;
   var img := GetBitmapImage(fname);
+  var dc := GetDC();
   dc.DrawImage(img, Rect(x, y, img.PixelWidth/scalex, img.PixelHeight/scaley));
   ReleaseDC(dc);
 end;
@@ -1345,7 +1350,7 @@ begin
   var context: StreamGeometryContext := geo.Open();
   context.BeginFigure(Pnt(points[0].X,points[0].Y), true, draw_polygon);
   context.PolyLineTo(points.Select(p->Pnt(p.x,p.y)).Skip(1).ToArray(), true, false);
-  context.Close;   
+  context.Close;
   
   dc.DrawGeometry(b, p, geo);
 end;
@@ -1390,7 +1395,7 @@ begin
   if angle1>angle2 then Swap(angle1,angle2);
   if angle2-angle1 >= 360 then
     (angle1,angle2) := (0,360-0.0001);
-  var dc := GetDC();
+  
   var geo := new PathGeometry();
   var f := new PathFigure();
   geo.Figures.Add(f);
@@ -1408,6 +1413,7 @@ begin
     f.Segments.Add(new LineSegment(p1,true));
   end;
   
+  var dc := GetDC();
   dc.DrawGeometry(b,p,geo);
   ReleaseDC(dc);
 end;
@@ -1433,7 +1439,7 @@ begin
   var dc := GetDC();
   dc.DrawLine(p, p1, p2);
   
-  dc.DrawPolygon(Brushes.Black,p,Arr(p2,p3,p4));
+  dc.DrawPolygon(Brushes.Black,p,[p2,p3,p4]);
   ReleaseDC(dc);
 end;
 
@@ -1921,6 +1927,18 @@ begin
   var mi := q.Min(f);
   var ma := q.Max(f);
   DrawGraphDC(dc, f, a, b, mi, ma, x, y, w, h, title);
+end;
+
+procedure DrawImageDC(dc: DrawingContext; x,y: real; fname: string);
+begin
+  var img := GetBitmapImage(fname);
+  dc.DrawImage(img, Rect(x, y, img.PixelWidth, img.PixelHeight));
+end;
+
+procedure DrawImageDC(dc: DrawingContext; x,y,w,h: real; fname: string);
+begin
+  var img := GetBitmapImage(fname);
+  dc.DrawImage(img, Rect(x, y, w, h));
 end;
 
 procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real; title: string)

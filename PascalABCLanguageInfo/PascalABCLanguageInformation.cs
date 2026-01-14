@@ -20,11 +20,13 @@ namespace Languages.Pascal.Frontend.Data
 
         public override string Version => "1.2";
 
-        public override string Copyright => "Copyright © 2005-2025 by Ivan Bondarev, Stanislav Mikhalkovich";
+        public override string Copyright => "Copyright © 2005-2026 by Ivan Bondarev, Stanislav Mikhalkovich";
 
         public override string[] FilesExtensions => new string[] { StringConstants.pascalSourceFileExtension };
 
         public override string[] SystemUnitNames => StringConstants.pascalDefaultStandardModules;
+
+        public override bool SyntaxTreeIsConvertedAfterUsedModulesCompilation => false;
 
         public override bool ApplySyntaxTreeConvertersForIntellisense => false;
 
@@ -93,6 +95,8 @@ namespace Languages.Pascal.Frontend.Data
             };
             #endregion
         }
+
+        public override string CommentSymbol => "//";
 
         public override string BodyStartBracket
         {
@@ -247,6 +251,15 @@ namespace Languages.Pascal.Frontend.Data
                     //case ScopeKind.Procedure : return GetDescriptionForProcedure(scope as IProcScope);
             }
             return "";
+        }
+
+        protected override string GetSimpleDescriptionForType(ITypeScope scope)
+        {
+            // Замена на отображаемое имя для set (семантический Intellisense находит тип, которым set реализован)
+            if (scope.Name == StringConstants.pascalSetClassName && scope.TopScope.Name == StringConstants.pascalSystemUnitName)
+                return "set of " + GetTemplateStringWithoutBrackets(scope);
+
+            return base.GetSimpleDescriptionForType(scope);
         }
 
         private string GetDescriptionForModule(IInterfaceUnitScope scope)
@@ -693,7 +706,7 @@ namespace Languages.Pascal.Frontend.Data
                         sb.Append(GetSimpleDescription(parameters[i]));
                         if (i < parameters.Length - 1)
                         {
-                            sb.Append("; ");
+                            sb.Append(ParameterDelimiter + " ");
                         }
                     }
                     sb.Append(')');
@@ -717,7 +730,7 @@ namespace Languages.Pascal.Frontend.Data
                             sb.Append(GetFullTypeName(pis[i].ParameterType));
                         else sb.Append(GetFullTypeName(pis[i].ParameterType.GetElementType()));
                         if (i < pis.Length - 1)
-                            sb.Append("; ");
+                            sb.Append(ParameterDelimiter + " ");
                     }
                     sb.Append(')');
                 }
@@ -755,7 +768,7 @@ namespace Languages.Pascal.Frontend.Data
                         sb.Append(GetSimpleDescription(parameters[i]));
                         if (i < parameters.Length - 1)
                         {
-                            sb.Append("; ");
+                            sb.Append(ParameterDelimiter + " ");
                         }
                     }
                     sb.Append(')');
@@ -779,7 +792,7 @@ namespace Languages.Pascal.Frontend.Data
                             sb.Append(GetFullTypeName(pis[i].ParameterType));
                         else sb.Append(GetFullTypeName(pis[i].ParameterType.GetElementType()));
                         if (i < pis.Length - 1)
-                            sb.Append("; ");
+                            sb.Append(ParameterDelimiter + " ");
                     }
                     sb.Append(')');
                 }
@@ -2257,7 +2270,7 @@ namespace Languages.Pascal.Frontend.Data
 		
 		private void append_modifiers(StringBuilder sb, IElementScope scope)
 		{
-			if (scope.Is) sb.Append(" ");
+			if (scope.IsVirtual) sb.Append("virtual ");
 			if (scope.IsStatic) sb.Append("static ");
 		}
 		

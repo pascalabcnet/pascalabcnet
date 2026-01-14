@@ -4,6 +4,8 @@ dotnet build -c Release --no-incremental PascalABCNET.sln
 
 cd ReleaseGenerators
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild
+rem /rebuild здесь пока нельзя
+..\bin\pabcnetc RebuildStandartModulesSPython.pas
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 
@@ -20,18 +22,28 @@ ExecHide.exe gacutil.exe /u PABCRtl
 ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild
+rem /rebuild здесь пока нельзя
+..\bin\pabcnetc RebuildStandartModulesSPython.pas
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 
-cd ..\bin
-REM MPGORunner.exe
-TestRunner.exe 1
-TestRunner.exe 2
-TestRunner.exe 3
-TestRunner.exe 4
-TestRunner.exe 5
-TestRunner.exe 6
-cd ..
+cd ..\TestSuite
+REM ..\bin\MPGORunner.exe
+..\bin\TestRunner.exe 1
+..\bin\TestRunner.exe 2
+..\bin\TestRunner.exe 3
+..\bin\TestRunner.exe 4
+..\bin\TestRunner.exe 5
+..\bin\TestRunner.exe 6
+
+cd ..\TestSuiteAdditionalLanguages\SPythonTests
+..\..\bin\TestRunner.exe 1
+..\..\bin\TestRunner.exe 2
+..\..\bin\TestRunner.exe 3
+..\..\bin\TestRunner.exe 4
+..\..\bin\TestRunner.exe 5
+..\..\bin\TestRunner.exe 6
+cd ..\..
 
 GOTO EXIT
 

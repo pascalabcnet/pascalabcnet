@@ -38,13 +38,13 @@ namespace PascalABCCompiler.TreeConverter
 		}
 	}
 
-	public class BaseScope
+	/*public class BaseScope
 	{
-		//public virtual SymbolInfo Find(string name)
-		//{
-		//	return null;
-		//}
-	}
+        public virtual SymbolInfo Find(string name)
+        {
+            return null;
+        }
+    }*/
 
 	//Тип записи в таблице символов.
 	/*public enum name_information_type 

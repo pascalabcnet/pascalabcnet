@@ -13,37 +13,37 @@
 <param name="Keyword" value="Then">
 <param name="Keyword" value="WhenCompleted"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Graph3D: класс AnimationBase</H1>Базовый класс анимации 3D-объектов. Базовый класс - <code>Object</code>.
-<table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы класса AnimationBase</font></td></tr>
+</HEAD><body><H1>Graph3D: РєР»Р°СЃСЃ AnimationBase</H1>Р‘Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ Р°РЅРёРјР°С†РёРё 3D-РѕР±СЉРµРєС‚РѕРІ. Р‘Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ - <code>Object</code>.
+<table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">РњРµС‚РѕРґС‹ РєР»Р°СЃСЃР° AnimationBase</font></td></tr>
 
 <tr><tr><td><code><b>function</b> AccelerationRatio(acceleration: real; deceleration: real := 0): AnimationBase; <b>virtual</b>;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Модификатор анимации, устанавливающий ускорение анимации в начале и замедление анимации в конце</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРѕРґРёС„РёРєР°С‚РѕСЂ Р°РЅРёРјР°С†РёРё, СѓСЃС‚Р°РЅР°РІР»РёРІР°СЋС‰РёР№ СѓСЃРєРѕСЂРµРЅРёРµ Р°РЅРёРјР°С†РёРё РІ РЅР°С‡Р°Р»Рµ Рё Р·Р°РјРµРґР»РµРЅРёРµ Р°РЅРёРјР°С†РёРё РІ РєРѕРЅС†Рµ</td></tr>
 <tr><td><code><b>function</b> AutoReverse: AnimationBase; <b>virtual</b>;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Модификатор анимации, возвращающий объект в исходное положение. Не может быть применен к группе анимаций</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРѕРґРёС„РёРєР°С‚РѕСЂ Р°РЅРёРјР°С†РёРё, РІРѕР·РІСЂР°С‰Р°СЋС‰РёР№ РѕР±СЉРµРєС‚ РІ РёСЃС…РѕРґРЅРѕРµ РїРѕР»РѕР¶РµРЅРёРµ. РќРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСЂРёРјРµРЅРµРЅ Рє РіСЂСѓРїРїРµ Р°РЅРёРјР°С†РёР№</td></tr>
 <tr><td><code><b>function</b> Duration: real; <b>virtual</b>;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает продолжительность анимации</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂРѕРґРѕР»Р¶РёС‚РµР»СЊРЅРѕСЃС‚СЊ Р°РЅРёРјР°С†РёРё</td></tr>
 <tr><td><code><b>function</b> Forever: AnimationBase; <b>virtual</b>;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Модификатор анимации, выполняющий её бесконечно. Не может быть применен к группе анимаций</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРѕРґРёС„РёРєР°С‚РѕСЂ Р°РЅРёРјР°С†РёРё, РІС‹РїРѕР»РЅСЏСЋС‰РёР№ РµС‘ Р±РµСЃРєРѕРЅРµС‡РЅРѕ. РќРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСЂРёРјРµРЅРµРЅ Рє РіСЂСѓРїРїРµ Р°РЅРёРјР°С†РёР№</td></tr>
 <tr><td><code><b>function</b> Then(second: AnimationBase): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Указывает анимацию, выполняющуюся после данной</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРєР°Р·С‹РІР°РµС‚ Р°РЅРёРјР°С†РёСЋ, РІС‹РїРѕР»РЅСЏСЋС‰СѓСЋСЃСЏ РїРѕСЃР»Рµ РґР°РЅРЅРѕР№</td></tr>
 <tr><td><code><b>function</b> WhenCompleted(act: <b>procedure</b>): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает действие по завершению анимации</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РґРµР№СЃС‚РІРёРµ РїРѕ Р·Р°РІРµСЂС€РµРЅРёСЋ Р°РЅРёРјР°С†РёРё</td></tr>
 </tr>
 <tr><tr><td><code><b>procedure</b> Begin; <b>virtual</b>;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Начинает анимацию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РќР°С‡РёРЅР°РµС‚ Р°РЅРёРјР°С†РёСЋ</td></tr>
 <tr><td><code><b>procedure</b> Change(a: AnimationBase);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет анимацию на другую</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРµРЅСЏРµС‚ Р°РЅРёРјР°С†РёСЋ РЅР° РґСЂСѓРіСѓСЋ</td></tr>
 <tr><td><code><b>procedure</b> Pause;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Делает паузу анимации</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р”РµР»Р°РµС‚ РїР°СѓР·Сѓ Р°РЅРёРјР°С†РёРё</td></tr>
 <tr><td><code><b>procedure</b> Remove;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет анимацию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґР°Р»СЏРµС‚ Р°РЅРёРјР°С†РёСЋ</td></tr>
 <tr><td><code><b>procedure</b> Resume;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возобновляет анимацию</td></tr>
-</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Статические методы класса AnimationBase</font></td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РѕР±РЅРѕРІР»СЏРµС‚ Р°РЅРёРјР°С†РёСЋ</td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">РЎС‚Р°С‚РёС‡РµСЃРєРёРµ РјРµС‚РѕРґС‹ РєР»Р°СЃСЃР° AnimationBase</font></td></tr>
 
 <tr><tr><td><code><b>class</b> <b>function</b> Group(<b>params</b> l: <b>array</b>  <b>of</b> AnimationBase);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает группу анимаций, выполняющихся параллельно</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РіСЂСѓРїРїСѓ Р°РЅРёРјР°С†РёР№, РІС‹РїРѕР»РЅСЏСЋС‰РёС…СЃСЏ РїР°СЂР°Р»Р»РµР»СЊРЅРѕ</td></tr>
 <tr><td><code><b>class</b> <b>function</b> Sequence(<b>params</b> l: <b>array</b>  <b>of</b> AnimationBase);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность анимаций, выполняющихся последовательно</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ Р°РЅРёРјР°С†РёР№, РІС‹РїРѕР»РЅСЏСЋС‰РёС…СЃСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ</td></tr>
 </tr></table>
 </body></HTML>

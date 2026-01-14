@@ -26,6 +26,8 @@ namespace PascalABCCompiler.Parsers
 
         public abstract Dictionary<string, DirectiveInfo> ValidDirectives { get; protected set; }
 
+        public abstract string CommentSymbol { get; }
+
         public abstract string BodyStartBracket { get; }
 
         public abstract string BodyEndBracket { get; }
@@ -43,6 +45,8 @@ namespace PascalABCCompiler.Parsers
 
         public abstract string ProcedureName { get; }
         public abstract string FunctionName { get; }
+
+        public abstract bool SyntaxTreeIsConvertedAfterUsedModulesCompilation { get; }
 
         public abstract bool ApplySyntaxTreeConvertersForIntellisense { get; }
 
@@ -459,7 +463,7 @@ namespace PascalABCCompiler.Parsers
                     sb.Append(": ");
                     sb.Append(GetFullTypeName(prms[i].ParameterType));
                     if (i < prms.Length - 1)
-                        sb.Append("; ");
+                        sb.Append(ParameterDelimiter + " ");
                 }
                 sb.Append(']');
             }
@@ -694,7 +698,7 @@ namespace PascalABCCompiler.Parsers
             if (scope.ReturnType != null && !scope.IsConstructor() && !(scope.ReturnType is IProcType && (scope.ReturnType as IProcType).Target == scope))
                 sb.Append(ReturnTypeDelimiter + " " + GetSimpleDescription(scope.ReturnType));
             //if (scope.IsStatic) sb.Append("; static");
-            if (scope.IsVirtual) sb.Append("; ");
+            if (scope.IsVirtual) sb.Append("; virtual");
             else if (scope.IsAbstract) sb.Append("; abstract");
             else if (scope.IsOverride) sb.Append("; override");
             else if (scope.IsReintroduce) sb.Append("; reintroduce");
@@ -779,7 +783,7 @@ namespace PascalABCCompiler.Parsers
 
         private void append_modifiers(StringBuilder sb, IElementScope scope)
         {
-            if (scope.IsVirtual) sb.Append("; ");
+            if (scope.IsVirtual) sb.Append("; virtual");
             if (scope.IsAbstract) sb.Append("; abstract");
             if (scope.IsOverride) sb.Append("; override");
             //if (scope.IsStatic) sb.Append("; static");
@@ -956,13 +960,13 @@ namespace PascalABCCompiler.Parsers
 
         public abstract string GetSimpleDescription(IBaseScope scope);
 
-        protected string GetSimpleDescriptionForType(ITypeScope scope)
+        protected virtual string GetSimpleDescriptionForType(ITypeScope scope)
         {
             string template_str = GetTemplateString(scope);
             if (scope.Name.StartsWith("$"))
                 return scope.Name.Substring(1, scope.Name.Length - 1) + template_str;
             if (!string.IsNullOrEmpty(template_str))
-                return scope.Name.Replace("<>", "") + template_str;
+                return scope.Name.Replace(GenericTypesStartBracket + GenericTypesEndBracket, "") + template_str;
             return scope.Name + template_str;
         }
 
@@ -1159,7 +1163,7 @@ namespace PascalABCCompiler.Parsers
                     sb.Append(ReturnTypeDelimiter + " " + ret_inst_type);
             }
             //if (scope.CompiledMethod.IsStatic) sb.Append("; static");
-            if (scope.IsVirtual) sb.Append("; ");
+            if (scope.IsVirtual) sb.Append("; virtual");
             else if (scope.IsAbstract) sb.Append("; abstract");
             //else if (scope.CompiledMethod.IsHideBySig) sb.Append("; reintroduce");
             sb.Append(';');
@@ -1233,7 +1237,7 @@ namespace PascalABCCompiler.Parsers
                 sb.Append(ReturnTypeDelimiter + " " + GetFullTypeName(mi.ReturnType));
             }
             //if (scope.CompiledMethod.IsStatic) sb.Append("; static");
-            if (mi.IsVirtual && !mi.IsFinal) sb.Append("; ");
+            if (mi.IsVirtual && !mi.IsFinal) sb.Append("; virtual");
             else if (mi.IsAbstract) sb.Append("; abstract");
             //else if (scope.CompiledMethod.IsHideBySig) sb.Append("; reintroduce");
             sb.Append(';');
@@ -1285,7 +1289,7 @@ namespace PascalABCCompiler.Parsers
                 sb.Append(": " + inst_type);
             if (acc != null)
                 //if (acc.IsStatic) sb.Append("; static");
-                if (acc.IsVirtual) sb.Append("; ");
+                if (acc.IsVirtual) sb.Append("; virtual");
                 else if (acc.IsAbstract) sb.Append("; abstract");
             if (scope.IsReadOnly) sb.Append("; readonly");
             sb.Append(';');
@@ -1587,6 +1591,16 @@ namespace PascalABCCompiler.Parsers
 
         protected string GetTemplateString(ITypeScope scope)
         {
+            var templateString = GetTemplateStringWithoutBrackets(scope);
+
+            if (templateString != null)
+                return GenericTypesStartBracket + templateString + GenericTypesEndBracket;
+
+            return null;
+        }
+
+        protected string GetTemplateStringWithoutBrackets(ITypeScope scope)
+        {
             string[] generic_params = scope.TemplateArguments;
             if (generic_params != null && generic_params.Length > 0)
             {
@@ -1594,27 +1608,23 @@ namespace PascalABCCompiler.Parsers
                 if (gen_insts == null || gen_insts.Length == 0)
                 {
                     System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                    sb.Append(GenericTypesStartBracket);
                     for (int i = 0; i < generic_params.Length; i++)
                     {
                         sb.Append(generic_params[i]);
                         if (i < generic_params.Length - 1)
                             sb.Append(',');
                     }
-                    sb.Append(GenericTypesEndBracket);
                     return sb.ToString();
                 }
                 else
                 {
                     System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                    sb.Append(GenericTypesStartBracket);
                     for (int i = 0; i < gen_insts.Length; i++)
                     {
                         sb.Append(GetSimpleDescriptionWithoutNamespace(gen_insts[i]));
                         if (i < gen_insts.Length - 1)
                             sb.Append(", ");
                     }
-                    sb.Append(GenericTypesEndBracket);
                     return sb.ToString();
                 }
             }
@@ -1700,6 +1710,10 @@ namespace PascalABCCompiler.Parsers
             else if (s == "raise")
             {
                 keyword = KeywordKind.Raise;
+            }
+            else if (KeywordsStorage.KeywordsTreatedAsFunctions.Contains(s))
+            {
+                keyword = KeywordKind.None;
             }
             else if (IsKeyword(s))
             {

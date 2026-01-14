@@ -14,86 +14,86 @@
 </object></head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title><link rel="StyleSheet" href="../../default.css"><body>
-<H1>Переменные, процедуры и функции модуля ABCObjects</H1>
+<H1>РџРµСЂРµРјРµРЅРЅС‹Рµ, РїСЂРѕС†РµРґСѓСЂС‹ Рё С„СѓРЅРєС†РёРё РјРѕРґСѓР»СЏ ABCObjects</H1>
 <table border=0 CELLPADDING=5>
 <tr><td>
 <code>
 <b>procedure</b> LockDrawingObjects;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Блокирует рисование графических объектов. Возможна лишь перерисовка всего экрана вместе со всеми графическими объектами на нем вызовом
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р‘Р»РѕРєРёСЂСѓРµС‚ СЂРёСЃРѕРІР°РЅРёРµ РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ. Р’РѕР·РјРѕР¶РЅР° Р»РёС€СЊ РїРµСЂРµСЂРёСЃРѕРІРєР° РІСЃРµРіРѕ СЌРєСЂР°РЅР° РІРјРµСЃС‚Рµ СЃРѕ РІСЃРµРјРё РіСЂР°С„РёС‡РµСЃРєРёРјРё РѕР±СЉРµРєС‚Р°РјРё РЅР° РЅРµРј РІС‹Р·РѕРІРѕРј
 <code>RedrawObjects</code>
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> UnLockDrawingObjects;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разблокирует рисование графических объектов
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р Р°Р·Р±Р»РѕРєРёСЂСѓРµС‚ СЂРёСЃРѕРІР°РЅРёРµ РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> RedrawObjects;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перерисовывает все графическое окно вместе со всеми графическими объектами на нем
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµСЂРёСЃРѕРІС‹РІР°РµС‚ РІСЃРµ РіСЂР°С„РёС‡РµСЃРєРѕРµ РѕРєРЅРѕ РІРјРµСЃС‚Рµ СЃРѕ РІСЃРµРјРё РіСЂР°С„РёС‡РµСЃРєРёРјРё РѕР±СЉРµРєС‚Р°РјРё РЅР° РЅРµРј
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> ToFront(g: ObjectABC);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переносит графический объект 
-<code>g</code> на передний план
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРЅРѕСЃРёС‚ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚ 
+<code>g</code> РЅР° РїРµСЂРµРґРЅРёР№ РїР»Р°РЅ
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> ToBack(g: ObjectABC);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переносит графический объект 
-<code>g</code> на задний план
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРЅРѕСЃРёС‚ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚ 
+<code>g</code> РЅР° Р·Р°РґРЅРёР№ РїР»Р°РЅ
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> ObjectsCount: integer;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Количество графических объектов
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РљРѕР»РёС‡РµСЃС‚РІРѕ РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> ObjectUnderPoint(x,y: integer): ObjectABC;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Графический объект под точкой (<code>x</code>,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р“СЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚ РїРѕРґ С‚РѕС‡РєРѕР№ (<code>x</code>,
 <code>y</code>)
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> ObjectUnderPoint(p: Point): ObjectABC;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Графический объект под точкой 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р“СЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚ РїРѕРґ С‚РѕС‡РєРѕР№ 
 <code>p</code>
 </td></tr>
 <tr><td>
 <code>
 <b>procedure</b> SwapPositions(o1,o2: ObjectABC);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поменять позиции графических 
-объектов <code>o1</code> и <code>o2</code>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРѕРјРµРЅСЏС‚СЊ РїРѕР·РёС†РёРё РіСЂР°С„РёС‡РµСЃРєРёС… 
+РѕР±СЉРµРєС‚РѕРІ <code>o1</code> Рё <code>o2</code>
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> UIElementUnderPoint(x,y: integer): UIElementABC;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Элемент управления <code>ABCObject</code> под точкой (<code>x</code>,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р­Р»РµРјРµРЅС‚ СѓРїСЂР°РІР»РµРЅРёСЏ <code>ABCObject</code> РїРѕРґ С‚РѕС‡РєРѕР№ (<code>x</code>,
 <code>y</code>)
 </td></tr>
 <tr>
 	<td>
 <code><b>var</b> Objects: ObjectsABCArray; </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Массив графических объектов
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњР°СЃСЃРёРІ РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ
 </td>
 </tr>
 <tr>
 	<td>
 <code>
   UIElementABC</code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Класс элемента управления <code>ABCObject</code>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РљР»Р°СЃСЃ СЌР»РµРјРµРЅС‚Р° СѓРїСЂР°РІР»РµРЅРёСЏ <code>ABCObject</code>
 </td>
 </tr>
 </table>

@@ -9,34 +9,30 @@
 </head>
 
 <body>
-<H1>Обобщенные подпрограммы <span lang="ru">в качестве параметров</span></H1>
-<p>Обобщенн<span lang="ru">ая </span>подпрограмм<span lang="ru">а может 
-выступать в качестве формального параметра другой обобщенной подпрограммы.
+<H1>РћР±РѕР±С‰РµРЅРЅС‹Рµ РїРѕРґРїСЂРѕРіСЂР°РјРјС‹ <span lang="ru">РІ РєР°С‡РµСЃС‚РІРµ РїР°СЂР°РјРµС‚СЂРѕРІ</span></H1>
+<p>РћР±РѕР±С‰РµРЅРЅ<span lang="ru">Р°СЏ </span>РїРѕРґРїСЂРѕРіСЂР°РјРј<span lang="ru">Р° РјРѕР¶РµС‚ 
+РІС‹СЃС‚СѓРїР°С‚СЊ РІ РєР°С‡РµСЃС‚РІРµ С„РѕСЂРјР°Р»СЊРЅРѕРіРѕ РїР°СЂР°РјРµС‚СЂР° РґСЂСѓРіРѕР№ РѕР±РѕР±С‰РµРЅРЅРѕР№ РїРѕРґРїСЂРѕРіСЂР°РјРјС‹.
 </span>
 </p>
-<p>Например, <span lang="ru">в классе </span><code>System.Array</code>
-<span lang="ru">имеется несколько статических обобщенных методов с обобщенными 
-подпрограммами в качестве параметров. Так</span>, <code>System.Array.Find</code>
-<span lang="ru">имеет следующий прототип:</span></p>
+<p>РќР°РїСЂРёРјРµСЂ, <span lang="ru">РІ РєР»Р°СЃСЃРµ </span><code>System.Array</code>
+<span lang="ru">РёРјРµРµС‚СЃСЏ РЅРµСЃРєРѕР»СЊРєРѕ СЃС‚Р°С‚РёС‡РµСЃРєРёС… РѕР±РѕР±С‰РµРЅРЅС‹С… РјРµС‚РѕРґРѕРІ СЃ РѕР±РѕР±С‰РµРЅРЅС‹РјРё 
+РїРѕРґРїСЂРѕРіСЂР°РјРјР°РјРё РІ РєР°С‡РµСЃС‚РІРµ РїР°СЂР°РјРµС‚СЂРѕРІ. РўР°Рє</span>, <code>System.Array.FindAll</code>
+<span lang="ru">РёРјРµРµС‚ СЃР»РµРґСѓСЋС‰РёР№ РїСЂРѕС‚РѕС‚РёРї:</span></p>
 <blockquote>
 	<p><code>System.Array.FindAll&lt;T&gt;(a: <b>array</b> <b>of</b> T; pred: 
 	Predicate&lt;T&gt;): <b>array of</b> T;</code></p>
 </blockquote>
-<p><span lang="ru">и возвращает подмассив массива </span><code>a</code><span lang="ru"> 
-элементов </span><code>T</code><span lang="ru">, удовлетворяющих условию </span>
+<p><span lang="ru">Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕРґРјР°СЃСЃРёРІ РјР°СЃСЃРёРІР° </span><code>a</code><span lang="ru"> 
+СЌР»РµРјРµРЅС‚РѕРІ </span><code>T</code><span lang="ru">, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёС… СѓСЃР»РѕРІРёСЋ </span>
 <code>pred</code><span lang="ru">.</span></p>
-<p><span lang="ru">Приведем пример вызова этой функции:</span></p>
+<p><span lang="ru">РџСЂРёРІРµРґРµРј РїСЂРёРјРµСЂ РІС‹Р·РѕРІР° СЌС‚РѕР№ С„СѓРЅРєС†РёРё:</span></p>
 <blockquote>
-	<p><code><b>function</b> f(x: integer): boolean;<br>
-	<b>begin</b><br>
-&nbsp; Result := ;<br>
-	<b>end</b>;</code></p>
-	<p><code><b>var</b> a := Seq(1,3,6,5,8);<br>
+	<p><code><b>var</b> a := [1,3,6,5,8];<br>
 	<b>var</b> b := System.Array.FindAll(a,x -&gt; x <b>mod</b> 2 = 0);</code></p>
 </blockquote>
-<p><span lang="ru">Здесь возвращается массив </span><code>b</code><span lang="ru">, 
-содержащий все четные значения массива </span><code>a</code> <span lang="ru">в 
-том же порядке.</span></p>
+<p><span lang="ru">Р—РґРµСЃСЊ РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ РјР°СЃСЃРёРІ </span><code>b</code><span lang="ru">, 
+СЃРѕРґРµСЂР¶Р°С‰РёР№ РІСЃРµ С‡РµС‚РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РјР°СЃСЃРёРІР° </span><code>a</code> <span lang="ru">РІ 
+С‚РѕРј Р¶Рµ РїРѕСЂСЏРґРєРµ.</span></p>
 </body>
 
 </html>

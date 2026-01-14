@@ -35,6 +35,12 @@ namespace PascalABCCompiler
         
     public class FormatTools
     {
+
+        public static string LanguageAndExtensionsFormatted(string languageName, string[] extensions)
+        {
+            return string.Format("{0} ({1})", languageName, ExtensionsToString(extensions, "*", ";"));
+        }
+
         public static string ExtensionsToString(string[] Extensions,string Mask,string Delimer)
         {
             string res = "";

@@ -1,0 +1,19 @@
+﻿from unit_example import fibonacci as F, factorial as fact
+
+N = 10
+
+fibs = [F(i) for i in range(1, N + 1)]
+print("Последовательность чисел Фибоначчи:")
+i = 0
+for fib_num in fibs:
+    i += 1
+    print('F(' + str(i) + ')\t=', fib_num)
+print()
+
+facts = [fact(i) for i in range(1, N + 1)]
+print("Последовательность факториалов:")
+i = 0
+for fact_num in facts:
+    i += 1
+    print(str(i) + '!\t=', fact_num)
+print()

@@ -9,10 +9,10 @@
 </head>
 
 <body>
-<H1>Реализация нескольких интерфейсов </H1>
-<p>Несколько интерфейсов могут содержать одинаковые методы или 
-свойства. При наследовании от таких интерфейсов такие одинаковые методы или 
-свойства сливаются в один:</p>
+<H1>Р РµР°Р»РёР·Р°С†РёСЏ РЅРµСЃРєРѕР»СЊРєРёС… РёРЅС‚РµСЂС„РµР№СЃРѕРІ </H1>
+<p>РќРµСЃРєРѕР»СЊРєРѕ РёРЅС‚РµСЂС„РµР№СЃРѕРІ РјРѕРіСѓС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ РѕРґРёРЅР°РєРѕРІС‹Рµ РјРµС‚РѕРґС‹ РёР»Рё 
+СЃРІРѕР№СЃС‚РІР°. РџСЂРё РЅР°СЃР»РµРґРѕРІР°РЅРёРё РѕС‚ С‚Р°РєРёС… РёРЅС‚РµСЂС„РµР№СЃРѕРІ С‚Р°РєРёРµ РѕРґРёРЅР°РєРѕРІС‹Рµ РјРµС‚РѕРґС‹ РёР»Рё 
+СЃРІРѕР№СЃС‚РІР° СЃР»РёРІР°СЋС‚СЃСЏ РІ РѕРґРёРЅ:</p>
 <blockquote>
 	<p><code><b>type</b><br>
 &nbsp; IShape = <b>interface</b><br>&nbsp;&nbsp;&nbsp; 
@@ -28,17 +28,17 @@
 	<b>procedure</b> Draw;<br>&nbsp;&nbsp;&nbsp; <strong>begin</strong><br>&nbsp;&nbsp;&nbsp;
 	<strong>end</strong>;<br>&nbsp; <b>end</b>;</code></p>
 </blockquote>
-<p>Чтобы решить проблему с одинаковыми именами в интерфейсах, в .NET классы 
-могут реализовывать методы интерфейсов так называемым <strong>явным</strong> 
-образом, так что вызов метода интерфейса для переменной класса возможен только 
-после явного приведения к типу интерфейса. <span id="nsrTitle">Например:</span></p>
+<p>Р§С‚РѕР±С‹ СЂРµС€РёС‚СЊ РїСЂРѕР±Р»РµРјСѓ СЃ РѕРґРёРЅР°РєРѕРІС‹РјРё РёРјРµРЅР°РјРё РІ РёРЅС‚РµСЂС„РµР№СЃР°С…, РІ .NET РєР»Р°СЃСЃС‹ 
+РјРѕРіСѓС‚ СЂРµР°Р»РёР·РѕРІС‹РІР°С‚СЊ РјРµС‚РѕРґС‹ РёРЅС‚РµСЂС„РµР№СЃРѕРІ С‚Р°Рє РЅР°Р·С‹РІР°РµРјС‹Рј <strong>СЏРІРЅС‹Рј</strong> 
+РѕР±СЂР°Р·РѕРј, С‚Р°Рє С‡С‚Рѕ РІС‹Р·РѕРІ РјРµС‚РѕРґР° РёРЅС‚РµСЂС„РµР№СЃР° РґР»СЏ РїРµСЂРµРјРµРЅРЅРѕР№ РєР»Р°СЃСЃР° РІРѕР·РјРѕР¶РµРЅ С‚РѕР»СЊРєРѕ 
+РїРѕСЃР»Рµ СЏРІРЅРѕРіРѕ РїСЂРёРІРµРґРµРЅРёСЏ Рє С‚РёРїСѓ РёРЅС‚РµСЂС„РµР№СЃР°. <span id="nsrTitle">РќР°РїСЂРёРјРµСЂ:</span></p>
 <blockquote>
 	<p><code><strong>type</strong><br>&nbsp; IWindow = <strong>interface</strong><br>&nbsp;&nbsp;&nbsp; 
 	procedure Menu;<br>&nbsp; <strong>end</strong>;<br>&nbsp; IRestaurant =
 	<strong>interface</strong><br>&nbsp;&nbsp;&nbsp; procedure Menu;<br>&nbsp;
 	<strong>end</strong>;<br>&nbsp; RestaurantSystem = <strong>class</strong>(IWindow,IRestaurant)<br>&nbsp;&nbsp;&nbsp;
 	<strong>public</strong><br>&nbsp;&nbsp;&nbsp; <strong>procedure</strong> 
-	IWindow.Menu; // явная реализация метода интерфейса<br>&nbsp;&nbsp;&nbsp;
+	IWindow.Menu; // СЏРІРЅР°СЏ СЂРµР°Р»РёР·Р°С†РёСЏ РјРµС‚РѕРґР° РёРЅС‚РµСЂС„РµР№СЃР°<br>&nbsp;&nbsp;&nbsp;
 	<strong>begin</strong><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
 	Println('IWindow.Menu');<br>&nbsp;&nbsp;&nbsp; <strong>end</strong>;<br>&nbsp;&nbsp;&nbsp;
 	<strong>procedure</strong> IRestaurant.Menu;<br>&nbsp;&nbsp;&nbsp; <strong>
@@ -46,7 +46,7 @@
 	Println('IRestaurant.Menu');<br>&nbsp;&nbsp;&nbsp; <strong>end</strong>;<br>&nbsp;
 	<strong>end</strong>;<br><br><strong>begin</strong><br>&nbsp; <strong>var</strong> 
 	r := new RestaurantSystem;<br>&nbsp; IWindow(r).Menu; <br>&nbsp; 
-	IRestaurant(r).Menu; <br>&nbsp; r.Menu; // ошибка компиляции!<br><strong>end</strong>. </code>
+	IRestaurant(r).Menu; <br>&nbsp; r.Menu; // РѕС€РёР±РєР° РєРѕРјРїРёР»СЏС†РёРё!<br><strong>end</strong>. </code>
 	&nbsp;</p>
 </blockquote>
 <p>&nbsp;</p>

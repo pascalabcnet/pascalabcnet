@@ -5,6 +5,7 @@
 <param name="Keyword" value="ColSeq">
 <param name="Keyword" value="ColsSeq">
 <param name="Keyword" value="ConvertAll">
+<param name="Keyword" value="Elements">
 <param name="Keyword" value="ElementsByCol">
 <param name="Keyword" value="ElementsByRow">
 <param name="Keyword" value="ElementsWithIndices">
@@ -29,84 +30,86 @@
 <param name="Keyword" value="SwapRows">
 <param name="Keyword" value="Transform"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Методы расширения двумерных динамических массивов</H1>
+</HEAD><body><H1>РњРµС‚РѕРґС‹ СЂР°СЃС€РёСЂРµРЅРёСЏ РґРІСѓРјРµСЂРЅС‹С… РґРёРЅР°РјРёС‡РµСЃРєРёС… РјР°СЃСЃРёРІРѕРІ</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Col&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer): <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-тый столбец двумерного массива</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-С‚С‹Р№ СЃС‚РѕР»Р±РµС† РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР°</td></tr>
 <tr><td><code><b>function</b> ColCount&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Количество столбцов в двумерном массиве</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РљРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚РѕР»Р±С†РѕРІ РІ РґРІСѓРјРµСЂРЅРѕРј РјР°СЃСЃРёРІРµ</td></tr>
 <tr><td><code><b>function</b> Cols&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>array</b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив столбцов двумерного массива</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ СЃС‚РѕР»Р±С†РѕРІ РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР°</td></tr>
 <tr><td><code><b>function</b> ColSeq&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-тый столбец двумерного массива как последовательность</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-С‚С‹Р№ СЃС‚РѕР»Р±РµС† РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° РєР°Рє РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ</td></tr>
 <tr><td><code><b>function</b> ColsSeq&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность столбцов двумерного массива</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЃС‚РѕР»Р±С†РѕРІ РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР°</td></tr>
 <tr><td><code><b>function</b> ConvertAll&lt;T, T1&gt;(Self: <b>array</b> [,]  <b>of</b> T; converter: T-&gt;T1): <b>array</b> [,]  <b>of</b> T1;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы двумерного массива и возвращает преобразованный массив</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЌР»РµРјРµРЅС‚С‹ РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРЅС‹Р№ РјР°СЃСЃРёРІ</td></tr>
 <tr><td><code><b>function</b> ConvertAll&lt;T, T1&gt;(Self: <b>array</b> [,]  <b>of</b> T; converter: (T,integer,integer)-&gt;T1): <b>array</b> [,]  <b>of</b> T1;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы двумерного массива и возвращает преобразованный массив</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЌР»РµРјРµРЅС‚С‹ РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРЅС‹Р№ РјР°СЃСЃРёРІ</td></tr>
+<tr><td><code><b>function</b> Elements&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РґРІСѓРјРµСЂРЅРѕРјСѓ РјР°СЃСЃРёРІСѓ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РµРіРѕ СЌР»РµРјРµРЅС‚РѕРІ РїРѕ СЃС‚СЂРѕРєР°Рј</td></tr>
 <tr><td><code><b>function</b> ElementsByCol&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает по заданному двумерному массиву последовательность его элементов по столбцам</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РґРІСѓРјРµСЂРЅРѕРјСѓ РјР°СЃСЃРёРІСѓ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РµРіРѕ СЌР»РµРјРµРЅС‚РѕРІ РїРѕ СЃС‚РѕР»Р±С†Р°Рј</td></tr>
 <tr><td><code><b>function</b> ElementsByRow&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает по заданному двумерному массиву последовательность его элементов по строкам</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РґРІСѓРјРµСЂРЅРѕРјСѓ РјР°СЃСЃРёРІСѓ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РµРіРѕ СЌР»РµРјРµРЅС‚РѕРІ РїРѕ СЃС‚СЂРѕРєР°Рј</td></tr>
 <tr><td><code><b>function</b> ElementsWithIndices&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> (T, integer, integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает по заданному двумерному массиву последовательность (a[i,j],i,j)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РґРІСѓРјРµСЂРЅРѕРјСѓ РјР°СЃСЃРёРІСѓ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ (a[i,j],i,j)</td></tr>
 <tr><td><code><b>procedure</b> Fill&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; f: (integer,integer) -&gt;T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет элементы двумерного массива значениями, вычисляемыми по некоторому правилу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ СЌР»РµРјРµРЅС‚С‹ РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° Р·РЅР°С‡РµРЅРёСЏРјРё, РІС‹С‡РёСЃР»СЏРµРјС‹РјРё РїРѕ РЅРµРєРѕС‚РѕСЂРѕРјСѓ РїСЂР°РІРёР»Сѓ</td></tr>
 <tr><td><code><b>procedure</b> FillRandom(Self: <b>array</b> [,]  <b>of</b> integer; a,b: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет элементы двумерного массива случайными значениями в диапазоне от a до b</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ СЌР»РµРјРµРЅС‚С‹ РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° СЃР»СѓС‡Р°Р№РЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РІ РґРёР°РїР°Р·РѕРЅРµ РѕС‚ a РґРѕ b</td></tr>
 <tr><td><code><b>procedure</b> FillRandom(Self: <b>array</b> [,]  <b>of</b> real; a,b: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет элементы двумерного массива случайными значениями в диапазоне от a до b</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРѕР»РЅСЏРµС‚ СЌР»РµРјРµРЅС‚С‹ РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° СЃР»СѓС‡Р°Р№РЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РІ РґРёР°РїР°Р·РѕРЅРµ РѕС‚ a РґРѕ b</td></tr>
 <tr><td><code><b>procedure</b> ForEach&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; act: T -&gt; ());</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет действие к каждому элементу двумерного массива</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРёРјРµРЅСЏРµС‚ РґРµР№СЃС‚РІРёРµ Рє РєР°Р¶РґРѕРјСѓ СЌР»РµРјРµРЅС‚Сѓ РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР°</td></tr>
 <tr><td><code><b>procedure</b> ForEach&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; act: (T,integer,integer) -&gt; ());</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет действие к каждому элементу двумерного массива</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРёРјРµРЅСЏРµС‚ РґРµР№СЃС‚РІРёРµ Рє РєР°Р¶РґРѕРјСѓ СЌР»РµРјРµРЅС‚Сѓ РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР°</td></tr>
 <tr><td><code><b>function</b> Indices&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; cond: T -&gt; boolean): <b>sequence </b>  <b>of</b> (integer, integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает по заданному двумерному массиву последовательность индексов элементов, удовлетворяющих заданному условию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РґРІСѓРјРµСЂРЅРѕРјСѓ РјР°СЃСЃРёРІСѓ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРЅРґРµРєСЃРѕРІ СЌР»РµРјРµРЅС‚РѕРІ, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёС… Р·Р°РґР°РЅРЅРѕРјСѓ СѓСЃР»РѕРІРёСЋ</td></tr>
 <tr><td><code><b>function</b> Indices&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; cond: (T,integer,integer) -&gt; boolean): <b>sequence </b>  <b>of</b> (integer, integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает по заданному двумерному массиву последовательность индексов элементов, удовлетворяющих заданному условию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РґРІСѓРјРµСЂРЅРѕРјСѓ РјР°СЃСЃРёРІСѓ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёРЅРґРµРєСЃРѕРІ СЌР»РµРјРµРЅС‚РѕРІ, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёС… Р·Р°РґР°РЅРЅРѕРјСѓ СѓСЃР»РѕРІРёСЋ</td></tr>
 <tr><td><code><b>function</b> MatrEqual&lt;T&gt;(Self,b: array[,]  <b>of</b> T): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Равны ли матрицы</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р Р°РІРЅС‹ Р»Рё РјР°С‚СЂРёС†С‹</td></tr>
 <tr><td><code><b>function</b> MatrSlice&lt;T&gt;(Self: array[,]  <b>of</b> T; RowIndex: <b>array</b>  <b>of</b> integer; ColIndex: <b>array</b>  <b>of</b> integer): array[,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает срез двумерного массива. RowIndex и ColIndex задают срезаемые строки и столбцы</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃСЂРµР· РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР°. RowIndex Рё ColIndex Р·Р°РґР°СЋС‚ СЃСЂРµР·Р°РµРјС‹Рµ СЃС‚СЂРѕРєРё Рё СЃС‚РѕР»Р±С†С‹</td></tr>
 <tr><td><code><b>function</b> MatrSlice&lt;T&gt;(Self: array[,]  <b>of</b> T; FromRow, ToRow, FromCol, ToCol: integer): array[,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает срез двумерного массива между строками FromRow, ToRow и столбцами FromCol, ToCol</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃСЂРµР· РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° РјРµР¶РґСѓ СЃС‚СЂРѕРєР°РјРё FromRow, ToRow Рё СЃС‚РѕР»Р±С†Р°РјРё FromCol, ToCol</td></tr>
 <tr><td><code><b>function</b> operator in&lt;T&gt;(x: T; a: array[,]  <b>of</b> T): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Есть ли элемент в матрице</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р•СЃС‚СЊ Р»Рё СЌР»РµРјРµРЅС‚ РІ РјР°С‚СЂРёС†Рµ</td></tr>
 <tr><td><code><b>function</b> Print&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; w: integer := 4): <b>array</b> [,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вывод двумерного массива, w - ширина поля вывода</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґ РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР°, w - С€РёСЂРёРЅР° РїРѕР»СЏ РІС‹РІРѕРґР°</td></tr>
 <tr><td><code><b>function</b> Print(Self: <b>array</b> [,]  <b>of</b> real; w: integer := 7; f: integer := 2): <b>array</b> [,]  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вывод двумерного вещественного массива по формату :w:f</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґ РґРІСѓРјРµСЂРЅРѕРіРѕ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ РјР°СЃСЃРёРІР° РїРѕ С„РѕСЂРјР°С‚Сѓ :w:f</td></tr>
 <tr><td><code><b>function</b> Println&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; w: integer := 4): <b>array</b> [,]  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вывод двумерного массива и переход на следующую строку, w - ширина поля вывода</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґ РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° Рё РїРµСЂРµС…РѕРґ РЅР° СЃР»РµРґСѓСЋС‰СѓСЋ СЃС‚СЂРѕРєСѓ, w - С€РёСЂРёРЅР° РїРѕР»СЏ РІС‹РІРѕРґР°</td></tr>
 <tr><td><code><b>function</b> Println(Self: <b>array</b> [,]  <b>of</b> real; w: integer := 7; f: integer := 2): <b>array</b> [,]  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вывод двумерного вещественного массива по формату :w:f и переход на следующую строку</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґ РґРІСѓРјРµСЂРЅРѕРіРѕ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ РјР°СЃСЃРёРІР° РїРѕ С„РѕСЂРјР°С‚Сѓ :w:f Рё РїРµСЂРµС…РѕРґ РЅР° СЃР»РµРґСѓСЋС‰СѓСЋ СЃС‚СЂРѕРєСѓ</td></tr>
 <tr><td><code><b>function</b> Row&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer): <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-тая строка двумерного массива</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-С‚Р°СЏ СЃС‚СЂРѕРєР° РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР°</td></tr>
 <tr><td><code><b>function</b> RowCount&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Количество строк в двумерном массиве</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РљРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕРє РІ РґРІСѓРјРµСЂРЅРѕРј РјР°СЃСЃРёРІРµ</td></tr>
 <tr><td><code><b>function</b> Rows&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>array</b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив строк двумерного массива</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ СЃС‚СЂРѕРє РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР°</td></tr>
 <tr><td><code><b>function</b> RowSeq&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-тая строка двумерного массива как последовательность</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-С‚Р°СЏ СЃС‚СЂРѕРєР° РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° РєР°Рє РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ</td></tr>
 <tr><td><code><b>function</b> RowsSeq&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность строк двумерного массива</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЃС‚СЂРѕРє РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР°</td></tr>
 <tr><td><code><b>procedure</b> SetCol&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer; a: <b>array</b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет столбец k двумерного массива на другой столбец</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРµРЅСЏРµС‚ СЃС‚РѕР»Р±РµС† k РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° РЅР° РґСЂСѓРіРѕР№ СЃС‚РѕР»Р±РµС†</td></tr>
 <tr><td><code><b>procedure</b> SetCol&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer; a: <b>sequence </b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет столбец k двумерного массива на другой столбец</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРµРЅСЏРµС‚ СЃС‚РѕР»Р±РµС† k РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° РЅР° РґСЂСѓРіРѕР№ СЃС‚РѕР»Р±РµС†</td></tr>
 <tr><td><code><b>procedure</b> SetRow&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer; a: <b>array</b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет строку k двумерного массива на другую строку</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРµРЅСЏРµС‚ СЃС‚СЂРѕРєСѓ k РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° РЅР° РґСЂСѓРіСѓСЋ СЃС‚СЂРѕРєСѓ</td></tr>
 <tr><td><code><b>procedure</b> SetRow&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer; a: <b>sequence </b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет строку k двумерного массива на другую строку</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРµРЅСЏРµС‚ СЃС‚СЂРѕРєСѓ k РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° РЅР° РґСЂСѓРіСѓСЋ СЃС‚СЂРѕРєСѓ</td></tr>
 <tr><td><code><b>function</b> Size&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): (integer,integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Количество столбцов в двумерном массиве</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РљРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚РѕР»Р±С†РѕРІ РІ РґРІСѓРјРµСЂРЅРѕРј РјР°СЃСЃРёРІРµ</td></tr>
 <tr><td><code><b>procedure</b> SwapCols&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k1, k2: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет местами два столбца двумерного массива с номерами k1 и k2</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРµРЅСЏРµС‚ РјРµСЃС‚Р°РјРё РґРІР° СЃС‚РѕР»Р±С†Р° РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° СЃ РЅРѕРјРµСЂР°РјРё k1 Рё k2</td></tr>
 <tr><td><code><b>procedure</b> SwapRows&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k1, k2: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет местами две строки двумерного массива с номерами k1 и k2</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РњРµРЅСЏРµС‚ РјРµСЃС‚Р°РјРё РґРІРµ СЃС‚СЂРѕРєРё РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° СЃ РЅРѕРјРµСЂР°РјРё k1 Рё k2</td></tr>
 <tr><td><code><b>procedure</b> Transform&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; f: T-&gt;T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы двумерного массива по заданному правилу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЌР»РµРјРµРЅС‚С‹ РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСЂР°РІРёР»Сѓ</td></tr>
 <tr><td><code><b>procedure</b> Transform&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; f: (T,integer,integer)-&gt;T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы двумерного массива по заданному правилу</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЌР»РµРјРµРЅС‚С‹ РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСЂР°РІРёР»Сѓ</td></tr>
 </table>
 </body></HTML>

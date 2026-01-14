@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using Languages.Facade;
 using PascalABCCompiler;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;
@@ -2246,8 +2247,9 @@ namespace CodeCompletion
                     //(ret_tn as TypeScope).name = _type_declaration.type_name.name;
                     returned_scope.si.name = _type_declaration.type_name.name;
                     returned_scope.si.description = returned_scope.GetDescription();
-                    if (!(_type_declaration.type_def is class_definition))
-                        returned_scope.MakeSynonimDescription();
+                    // Это мертвый код EVA
+                    //if (!(_type_declaration.type_def is class_definition))
+                    //    returned_scope.MakeSynonimDescription();
                     returned_scope.loc = get_location(_type_declaration);//new location(loc.begin_line_num,loc.begin_column_num,ret_tn.loc.end_line_num,ret_tn.loc.end_column_num,ret_tn.loc.doc);
                     if (_type_declaration.type_def is class_definition)
                     {
@@ -2317,7 +2319,8 @@ namespace CodeCompletion
                 cur_scope.AddName(_type_declaration.type_name.name, returned_scope);
                 if (returned_scope is ProcType)
                 {
-                    returned_scope.MakeSynonimDescription();
+                    ((TypeScope)returned_scope).aliased = true;
+                    returned_scope.BuildDescription();
                 }
                 location loc = get_location(_type_declaration);
                 if (returned_scope.loc == null)
@@ -2696,14 +2699,14 @@ namespace CodeCompletion
                 {
                     unit_or_namespace s = _interface_node.uses_modules.units[j];
                     CompileUsedUnitOrNamespace(s, Path.GetDirectoryName(_unit_module.file_name),
-                        cur_scope, ns_cache, unl, currentUnitLanguage.CaseSensitive);
+                        cur_scope, ns_cache, unl, currentUnitLanguage);
                 }
             }
 
             // компиляция зависимостей из конструкций import и from import
             if (cur_scope != null && _unit_module.initialization_part != null)
             {
-                CompileImportedDependencies(_unit_module.initialization_part, _unit_module.file_name, ns_cache, usedUnitsNames, currentUnitLanguage.CaseSensitive);
+                CompileImportedDependencies(_unit_module.initialization_part, _unit_module.file_name, ns_cache, usedUnitsNames, currentUnitLanguage);
             }
 
             StringComparer comparer = currentUnitLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
@@ -2714,11 +2717,11 @@ namespace CodeCompletion
                 // Добавление всех стандартных модулей EVA
                 foreach (var standardUnitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
                 {
-                    AddStandardUnit(standardUnitName, currentUnitLanguage.CaseSensitive, currentUnitLanguage.LanguageInformation.AddStandardUnitNamesToUserScope);
+                    AddStandardUnit(standardUnitName, currentUnitLanguage);
                 }
             }
 
-            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense)
+            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense && currentUnitLanguage.LanguageInformation.SyntaxTreeIsConvertedAfterUsedModulesCompilation)
             {
                 var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
 
@@ -2791,36 +2794,48 @@ namespace CodeCompletion
 
         }
 
-        private Dictionary<string, HashSet<string>> CollectNamesFromUsedUnits(SymScope currentUnitScope)
+        private Dictionary<string, Dictionary<string, bool>> CollectNamesFromUsedUnits(SymScope currentUnitScope)
         {
-            var namesFromUsedUnits = new Dictionary<string, HashSet<string>>();
+            var namesFromUsedUnits = new Dictionary<string, Dictionary<string, bool>>();
+
+            bool IsVariableOrConstant(SymbolKind symKind)
+            {
+                return symKind == SymbolKind.Variable
+                    || symKind == SymbolKind.Constant
+                    || symKind == SymbolKind.Event;
+            }
 
             foreach (var unitScope in currentUnitScope.used_units)
             {
 
                 if (unitScope is InterfaceUnitScope interfaceScope)
                 {
-                    namesFromUsedUnits.Add(unitScope.Name, new HashSet<string>());
+                    namesFromUsedUnits.Add(unitScope.Name, new Dictionary<string, bool>());
 
                     foreach (var symbol in unitScope.symbol_table)
                     {
                         var scopesOrScope = ((DictionaryEntry)symbol).Value;
 
                         string name;
+                        bool isVariable;
 
                         if (scopesOrScope is List<SymScope> scopes)
                         {
                             name = scopes[0].Name;
+                            isVariable = IsVariableOrConstant(scopes[0].SymbolInfo.Kind);
                         }
                         else
                         {
-                            name = ((SymScope)scopesOrScope).Name;
+                            var scope = (SymScope)scopesOrScope;
+
+                            name = scope.Name;
+                            isVariable = IsVariableOrConstant(scope.SymbolInfo.Kind);
                         }
 
                         if (name == unitScope.Name)
                             continue;
 
-                        namesFromUsedUnits[unitScope.Name].Add(name);
+                        namesFromUsedUnits[unitScope.Name][name] = isVariable;
                     }
                 }
             }
@@ -2839,14 +2854,14 @@ namespace CodeCompletion
         PascalABCCompiler.TreeRealization.using_namespace_list unl = new PascalABCCompiler.TreeRealization.using_namespace_list();
 		public SymScope cur_scope;
 
-        public static string FindPCUFileName(string UnitName, string curr_path, bool caseSensitiveSearch)
+        public static string FindPCUFileName(string UnitName, string curr_path, Languages.Facade.ILanguage currentUnitLanguage)
         {
-        	return CodeCompletionController.comp.FindPCUFileName(UnitName, curr_path, out _, caseSensitiveSearch);
+        	return CodeCompletionController.comp.FindPCUFileName(UnitName, curr_path, out _, currentUnitLanguage);
         }
         
-        private void AddStandardUnit(string unitName, bool caseSensitiveSearch, bool addStandardUnitNameToCurrentScope)
+        private void AddStandardUnit(string unitName, Languages.Facade.ILanguage currentUnitLanguage)
         {
-            string unitPath = CodeCompletionNameHelper.FindSourceFileName(unitName, out _, caseSensitiveSearch);
+            string unitPath = CodeCompletionNameHelper.FindSourceFileName(unitName, out _, currentUnitLanguage);
             if (unitPath != null)
             {
                 DomConverter dc = CodeCompletionController.comp_modules[unitPath] as DomConverter;
@@ -2866,7 +2881,7 @@ namespace CodeCompletion
                         //get_standart_types(dc.stv);
                         
                         // для SPython, например, не нужно подсказывать стандартные модули в программе, это условие для этого EVA
-                        if (addStandardUnitNameToCurrentScope)
+                        if (currentUnitLanguage.LanguageInformation.AddStandardUnitNamesToUserScope)
                         {
                             entry_scope.AddName(unitName, dc.visitor.entry_scope);
                         }
@@ -2884,7 +2899,7 @@ namespace CodeCompletion
                     dc.visitor.entry_scope.InitAssemblies();
                     entry_scope.AddUsedUnit(dc.visitor.entry_scope);
                     //get_standart_types(dc.stv);
-                    if (addStandardUnitNameToCurrentScope)
+                    if (currentUnitLanguage.LanguageInformation.AddStandardUnitNamesToUserScope)
                     {
                         entry_scope.AddName(unitName, dc.visitor.entry_scope);
                     }
@@ -2893,14 +2908,14 @@ namespace CodeCompletion
         }
 
         private void CompileUsedUnitOrNamespace(unit_or_namespace s, string curr_path,
-            SymScope cur_scope, Hashtable ns_cache, using_namespace_list unl, bool caseSensitiveSearch)
+            SymScope cur_scope, Hashtable ns_cache, using_namespace_list unl, Languages.Facade.ILanguage currentUnitLanguage)
         {
 
             try
             {
                 if (s is uses_unit_in uui)
                 {
-                    string unit_name = CodeCompletionNameHelper.FindSourceFileName(uui.in_file.Value, out _, caseSensitiveSearch, curr_path);
+                    string unit_name = CodeCompletionNameHelper.FindSourceFileName(uui.in_file.Value, out _, currentUnitLanguage, curr_path);
                     if (unit_name == null) throw new InvalidOperationException($"uses '{uui.in_file.Value}';");
                     
                     CompileUnit(unit_name, cur_scope);
@@ -2916,8 +2931,8 @@ namespace CodeCompletion
                         // на случай имен модулей, отличающихся от имен файла  EVA
                         string realName = GetRealNameForModule(usedName);
 
-                        string pcu_unit_name = FindPCUFileName(realName, curr_path, caseSensitiveSearch);
-                        string unit_name = CodeCompletionNameHelper.FindSourceFileName(realName, out _, caseSensitiveSearch, curr_path);
+                        string pcu_unit_name = FindPCUFileName(realName, curr_path, currentUnitLanguage);
+                        string unit_name = CodeCompletionNameHelper.FindSourceFileName(realName, out _, currentUnitLanguage, curr_path);
 
                         /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                             && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
@@ -3018,15 +3033,15 @@ namespace CodeCompletion
         }
 
         private void CompileImportedUnit(string importedName, statement importStatement, as_statement_list asStatementsList, string curr_path,
-            SymScope cur_scope, using_namespace_list unl, bool caseSensitiveSearch)
+            SymScope cur_scope, using_namespace_list unl, ILanguage currentUnitLanguage)
         {
             try
             {
                 // на случай имен модулей, отличающихся от имен файла  EVA
                 string realName = GetRealNameForModule(importedName);
 
-                string pcu_unit_name = FindPCUFileName(realName, curr_path, caseSensitiveSearch);
-                string unit_name = CodeCompletionNameHelper.FindSourceFileName(realName, out _, caseSensitiveSearch, curr_path);
+                string pcu_unit_name = FindPCUFileName(realName, curr_path, currentUnitLanguage);
+                string unit_name = CodeCompletionNameHelper.FindSourceFileName(realName, out _, currentUnitLanguage, curr_path);
 
                 if (unit_name != null)
                 {
@@ -3259,14 +3274,14 @@ namespace CodeCompletion
                 {
                     unit_or_namespace s = _program_module.used_units.units[j];
                     CompileUsedUnitOrNamespace(s, Path.GetDirectoryName(_program_module.file_name),
-                        cur_scope, ns_cache, unl, currentUnitLanguage.CaseSensitive);
+                        cur_scope, ns_cache, unl, currentUnitLanguage);
                 }
             }
 
             // компиляция зависимостей из конструкций import и from import
             if (cur_scope != null && _program_module.program_block.program_code != null)
             {
-                CompileImportedDependencies(_program_module.program_block.program_code, _program_module.file_name, ns_cache, usedUnitsNames, currentUnitLanguage.CaseSensitive);
+                CompileImportedDependencies(_program_module.program_block.program_code, _program_module.file_name, ns_cache, usedUnitsNames, currentUnitLanguage);
             }
 
             StringComparer comparer = currentUnitLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
@@ -3274,7 +3289,7 @@ namespace CodeCompletion
             // Добавление всех стандартных модулей EVA
             foreach (var unitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
             {
-                AddStandardUnit(unitName, currentUnitLanguage.CaseSensitive, currentUnitLanguage.LanguageInformation.AddStandardUnitNamesToUserScope);
+                AddStandardUnit(unitName, currentUnitLanguage);
             }
 
             foreach (string s in namespaces)
@@ -3287,7 +3302,7 @@ namespace CodeCompletion
                 }
             }
 
-            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense)
+            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense && currentUnitLanguage.LanguageInformation.SyntaxTreeIsConvertedAfterUsedModulesCompilation)
             {
                 var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
 
@@ -3336,7 +3351,7 @@ namespace CodeCompletion
             }
         }
 
-        private void CompileImportedDependencies(statement_list statementList, string fileName, Hashtable ns_cache, List<string> usedUnitNames, bool caseSensitiveSearch)
+        private void CompileImportedDependencies(statement_list statementList, string fileName, Hashtable ns_cache, List<string> usedUnitNames, Languages.Facade.ILanguage currentUnitLanguage)
         {
             var importStatements = statementList.list.Where(st => st is import_statement || st is from_import_statement);
 
@@ -3348,7 +3363,7 @@ namespace CodeCompletion
                     {
                         CompileImportedUnit(unitNode.name, import, import.modules_names,
                             Path.GetDirectoryName(fileName),
-                            cur_scope, unl, caseSensitiveSearch);
+                            cur_scope, unl, currentUnitLanguage);
 
                         usedUnitNames.Add(unitNode.name);
                     }
@@ -3357,7 +3372,7 @@ namespace CodeCompletion
                 {
                     CompileImportedUnit(fromImport.module_name.name, fromImport, fromImport.imported_names,
                         Path.GetDirectoryName(fileName),
-                        cur_scope, unl, caseSensitiveSearch);
+                        cur_scope, unl, currentUnitLanguage);
 
                     usedUnitNames.Add(fromImport.module_name.name);
                 }
@@ -5049,7 +5064,7 @@ namespace CodeCompletion
                 {
                     unit_or_namespace s = _implementation_node.uses_modules.units[j];
                     CompileUsedUnitOrNamespace(s, Path.GetDirectoryName(this.cur_unit_file_name),
-                        cur_scope, ns_cache, unl, currentLanguage.CaseSensitive);
+                        cur_scope, ns_cache, unl, currentLanguage);
                 }
             }
             impl_scope = cur_scope;

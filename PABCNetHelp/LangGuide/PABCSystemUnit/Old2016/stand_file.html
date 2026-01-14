@@ -24,62 +24,62 @@
 </object></head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title><link rel="StyleSheet" href="../../default.css"><body>
-<H1>Подпрограммы для работы с файлами через файловые переменные</H1>
+<H1>РџРѕРґРїСЂРѕРіСЂР°РјРјС‹ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ С„Р°Р№Р»Р°РјРё С‡РµСЂРµР· С„Р°Р№Р»РѕРІС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ</H1>
 <table border=0 CELLPADDING=5>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Assign(f: FileType; name: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла name
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРІСЏР·С‹РІР°РµС‚ С„Р°Р№Р»РѕРІСѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ f СЃ РёРјРµРЅРµРј С„Р°Р№Р»Р° name
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> AssignFile(f: FileType; name: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с именем файла name
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎРІСЏР·С‹РІР°РµС‚ С„Р°Р№Р»РѕРІСѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ f СЃ РёРјРµРЅРµРј С„Р°Р№Р»Р° name
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Reset(f: Text);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл f на чтение
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» f РЅР° С‡С‚РµРЅРёРµ
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Reset(f: <b><b>file</b> of</b> T);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает типизированный файл f на чтение и запись
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С‚РёРїРёР·РёСЂРѕРІР°РЅРЅС‹Р№ С„Р°Р№Р» f РЅР° С‡С‚РµРЅРёРµ Рё Р·Р°РїРёСЃСЊ
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Reset(f: <b>file</b>);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает нетипизированный файл f на чтение и запись
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ РЅРµС‚РёРїРёР·РёСЂРѕРІР°РЅРЅС‹Р№ С„Р°Р№Р» f РЅР° С‡С‚РµРЅРёРµ Рё Р·Р°РїРёСЃСЊ
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Rewrite(f: Text);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл f на запись, обнуляя его содержимое. Если файл существовал, он обнуляется
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» f РЅР° Р·Р°РїРёСЃСЊ, РѕР±РЅСѓР»СЏСЏ РµРіРѕ СЃРѕРґРµСЂР¶РёРјРѕРµ. Р•СЃР»Рё С„Р°Р№Р» СЃСѓС‰РµСЃС‚РІРѕРІР°Р», РѕРЅ РѕР±РЅСѓР»СЏРµС‚СЃСЏ
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Rewrite(f: <b><b>file</b> of</b> T);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает типизированный файл f на чтение и запись, обнуляя его содержимое. Если файл существовал, он обнуляется
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С‚РёРїРёР·РёСЂРѕРІР°РЅРЅС‹Р№ С„Р°Р№Р» f РЅР° С‡С‚РµРЅРёРµ Рё Р·Р°РїРёСЃСЊ, РѕР±РЅСѓР»СЏСЏ РµРіРѕ СЃРѕРґРµСЂР¶РёРјРѕРµ. Р•СЃР»Рё С„Р°Р№Р» СЃСѓС‰РµСЃС‚РІРѕРІР°Р», РѕРЅ РѕР±РЅСѓР»СЏРµС‚СЃСЏ
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Rewrite(f: <b>file</b>);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает нетипизированный файл f на чтение и запись, обнуляя его содержимое. Если файл существовал, он обнуляется
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ РЅРµС‚РёРїРёР·РёСЂРѕРІР°РЅРЅС‹Р№ С„Р°Р№Р» f РЅР° С‡С‚РµРЅРёРµ Рё Р·Р°РїРёСЃСЊ, РѕР±РЅСѓР»СЏСЏ РµРіРѕ СЃРѕРґРµСЂР¶РёРјРѕРµ. Р•СЃР»Рё С„Р°Р№Р» СЃСѓС‰РµСЃС‚РІРѕРІР°Р», РѕРЅ РѕР±РЅСѓР»СЏРµС‚СЃСЏ
 </td></tr>
 	<tr>
 		<td>
 <code>
 		<b>procedure</b> Append(f: Text);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый f файл на дополнение
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћС‚РєСЂС‹РІР°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ f С„Р°Р№Р» РЅР° РґРѕРїРѕР»РЅРµРЅРёРµ
 </td>
 	</tr>
 	<tr>
@@ -87,26 +87,26 @@
 <code>
 <b>function</b> OpenRead(fname: string): Text;
 </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fname, открытый на чтение
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» СЃ РёРјРµРЅРµРј fname, РѕС‚РєСЂС‹С‚С‹Р№ РЅР° С‡С‚РµРЅРёРµ
 </td>
 	</tr>
 	<tr>
 		<td>
 <code>
 <b>function</b> OpenWrite(fname: string): Text;</code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fname, открытый на запись
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» СЃ РёРјРµРЅРµРј fname, РѕС‚РєСЂС‹С‚С‹Р№ РЅР° Р·Р°РїРёСЃСЊ
 </td>
 	</tr>
 <tr><td>
 <code>
 <b>function</b> OpenAppend(fname: string): Text;</code><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текстовый файл с именем fname, открытый на дополнение</td></tr>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» СЃ РёРјРµРЅРµРј fname, РѕС‚РєСЂС‹С‚С‹Р№ РЅР° РґРѕРїРѕР»РЅРµРЅРёРµ</td></tr>
 	<tr>
 		<td>
 <code>
 		<b>procedure</b> Close(f: FileType);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Закрывает файл f
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р» f
 </td>
 	</tr>
 	<tr>
@@ -114,98 +114,98 @@
 <code>
 		<b>procedure</b> CloseFile(f: FileType);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Закрывает файл f
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р» f
 </td>
 	</tr>
 <tr><td>
 <code>
 <b>function</b> Eof(f: FileType): boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если достигнут конец файла f
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РґРѕСЃС‚РёРіРЅСѓС‚ РєРѕРЅРµС† С„Р°Р№Р»Р° f
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Flush(f: FileType);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает содержимое буфера файла на диск
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РїРёСЃС‹РІР°РµС‚ СЃРѕРґРµСЂР¶РёРјРѕРµ Р±СѓС„РµСЂР° С„Р°Р№Р»Р° РЅР° РґРёСЃРє
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Erase(f: FileType);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет файл, связанный с файловой переменной f
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґР°Р»СЏРµС‚ С„Р°Р№Р», СЃРІСЏР·Р°РЅРЅС‹Р№ СЃ С„Р°Р№Р»РѕРІРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№ f
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Rename(f: FileType; newname: string);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переименовывает файл, связаный с файловой переменной f, давая ему имя newname
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџРµСЂРµРёРјРµРЅРѕРІС‹РІР°РµС‚ С„Р°Р№Р», СЃРІСЏР·Р°РЅС‹Р№ СЃ С„Р°Р№Р»РѕРІРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№ f, РґР°РІР°СЏ РµРјСѓ РёРјСЏ newname
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> Eoln(f: Text): boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если достигнут конец строки в текстовом файле f
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РґРѕСЃС‚РёРіРЅСѓС‚ РєРѕРЅРµС† СЃС‚СЂРѕРєРё РІ С‚РµРєСЃС‚РѕРІРѕРј С„Р°Р№Р»Рµ f
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> SeekEof(f: Text): boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает пробельные символы, после чего возвращает True, если достигнут конец текстового файла f
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРїСѓСЃРєР°РµС‚ РїСЂРѕР±РµР»СЊРЅС‹Рµ СЃРёРјРІРѕР»С‹, РїРѕСЃР»Рµ С‡РµРіРѕ РІРѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РґРѕСЃС‚РёРіРЅСѓС‚ РєРѕРЅРµС† С‚РµРєСЃС‚РѕРІРѕРіРѕ С„Р°Р№Р»Р° f
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> SeekEoln(f: Text): boolean;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает пробельные символы, после чего возвращает True, если достигнут конец строки в текстовом файле f
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРѕРїСѓСЃРєР°РµС‚ РїСЂРѕР±РµР»СЊРЅС‹Рµ СЃРёРјРІРѕР»С‹, РїРѕСЃР»Рµ С‡РµРіРѕ РІРѕР·РІСЂР°С‰Р°РµС‚ True, РµСЃР»Рё РґРѕСЃС‚РёРіРЅСѓС‚ РєРѕРЅРµС† СЃС‚СЂРѕРєРё РІ С‚РµРєСЃС‚РѕРІРѕРј С„Р°Р№Р»Рµ f
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Truncate(f: <b><b>file</b> of</b> T);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Усекает типизированный файл f, отбрасывая все элементы с позиции файлового указателя
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃРµРєР°РµС‚ С‚РёРїРёР·РёСЂРѕРІР°РЅРЅС‹Р№ С„Р°Р№Р» f, РѕС‚Р±СЂР°СЃС‹РІР°СЏ РІСЃРµ СЌР»РµРјРµРЅС‚С‹ СЃ РїРѕР·РёС†РёРё С„Р°Р№Р»РѕРІРѕРіРѕ СѓРєР°Р·Р°С‚РµР»СЏ
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Truncate(f: <b>file</b>);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Усекает нетипизированный файл f, отбрасывая все элементы с позиции файлового указателя
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃРµРєР°РµС‚ РЅРµС‚РёРїРёР·РёСЂРѕРІР°РЅРЅС‹Р№ С„Р°Р№Р» f, РѕС‚Р±СЂР°СЃС‹РІР°СЏ РІСЃРµ СЌР»РµРјРµРЅС‚С‹ СЃ РїРѕР·РёС†РёРё С„Р°Р№Р»РѕРІРѕРіРѕ СѓРєР°Р·Р°С‚РµР»СЏ
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> FilePos(f: <b><b>file</b> of</b> T): int64;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текущую позицию файлового указателя в типизированном файле f
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ С„Р°Р№Р»РѕРІРѕРіРѕ СѓРєР°Р·Р°С‚РµР»СЏ РІ С‚РёРїРёР·РёСЂРѕРІР°РЅРЅРѕРј С„Р°Р№Р»Рµ f
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> FilePos(f: <b>file</b>): int64;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текущую позицию файлового указателя в нетипизированном файле f
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ С„Р°Р№Р»РѕРІРѕРіРѕ СѓРєР°Р·Р°С‚РµР»СЏ РІ РЅРµС‚РёРїРёР·РёСЂРѕРІР°РЅРЅРѕРј С„Р°Р№Р»Рµ f
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> FileSize(f: <b><b>file</b> of</b> T): int64;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество элементов в типизированном файле f
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ РІ С‚РёРїРёР·РёСЂРѕРІР°РЅРЅРѕРј С„Р°Р№Р»Рµ f
 </td></tr>
 <tr><td>
 <code>
 <b>function</b> FileSize(f: <b>file</b>): int64;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество байт в нетипизированном файле f
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РІ РЅРµС‚РёРїРёР·РёСЂРѕРІР°РЅРЅРѕРј С„Р°Р№Р»Рµ f
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Seek(f: <b><b>file</b> of</b> T; n: int64);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущую позицию файлового указателя в типизированном файле f на элемент с номером n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ С„Р°Р№Р»РѕРІРѕРіРѕ СѓРєР°Р·Р°С‚РµР»СЏ РІ С‚РёРїРёР·РёСЂРѕРІР°РЅРЅРѕРј С„Р°Р№Р»Рµ f РЅР° СЌР»РµРјРµРЅС‚ СЃ РЅРѕРјРµСЂРѕРј n
 </td></tr>
 <tr><td>
 <code>
 <b><b>procedure</b></b> Seek(f: <b>file</b>; n: int64);
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущую позицию файлового указателя в нетипизированном файле f на байт с номером n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ С„Р°Р№Р»РѕРІРѕРіРѕ СѓРєР°Р·Р°С‚РµР»СЏ РІ РЅРµС‚РёРїРёР·РёСЂРѕРІР°РЅРЅРѕРј С„Р°Р№Р»Рµ f РЅР° Р±Р°Р№С‚ СЃ РЅРѕРјРµСЂРѕРј n
 </td></tr>
 </table>
 </body></html>

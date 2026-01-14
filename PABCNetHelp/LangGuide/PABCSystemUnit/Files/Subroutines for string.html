@@ -39,108 +39,108 @@
 <param name="Keyword" value="UpperCase">
 <param name="Keyword" value="Val"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Подпрограммы для работы со строками</H1>
+</HEAD><body><H1>РџРѕРґРїСЂРѕРіСЂР°РјРјС‹ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂРѕРєР°РјРё</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> CompareStr(s1, s2: string): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сравнивает строки. Возвращает значение &lt; 0 если s1&lt;s2, &gt; 0 если s1&gt;s2 и = 0 если s1=s2</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎСЂР°РІРЅРёРІР°РµС‚ СЃС‚СЂРѕРєРё. Р’РѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ &lt; 0 РµСЃР»Рё s1&lt;s2, &gt; 0 РµСЃР»Рё s1&gt;s2 Рё = 0 РµСЃР»Рё s1=s2</td></tr>
 <tr><td><code><b>function</b> Concat(s1,s2,...): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку, являющуюся результатом слияния строк s1,s2,...</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ, СЏРІР»СЏСЋС‰СѓСЋСЃСЏ СЂРµР·СѓР»СЊС‚Р°С‚РѕРј СЃР»РёСЏРЅРёСЏ СЃС‚СЂРѕРє s1,s2,...</td></tr>
 <tr><td><code><b>function</b> Concat(s1, s2: string): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку, являющуюся результатом слияния строк s1 и s2</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ, СЏРІР»СЏСЋС‰СѓСЋСЃСЏ СЂРµР·СѓР»СЊС‚Р°С‚РѕРј СЃР»РёСЏРЅРёСЏ СЃС‚СЂРѕРє s1 Рё s2</td></tr>
 <tr><td><code><b>function</b> Copy(s: string; index, count: integer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает подстроку строки s длины count с позиции index</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕРґСЃС‚СЂРѕРєСѓ СЃС‚СЂРѕРєРё s РґР»РёРЅС‹ count СЃ РїРѕР·РёС†РёРё index</td></tr>
 <tr><td><code><b>procedure</b> Delete(<b>var</b> s: string; index, count: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет из строки s count символов с позиции index</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈРґР°Р»СЏРµС‚ РёР· СЃС‚СЂРѕРєРё s count СЃРёРјРІРѕР»РѕРІ СЃ РїРѕР·РёС†РёРё index</td></tr>
 <tr><td><code><b>function</b> FloatToStr(a: real): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует вещественное число к строковому представлению</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ С‡РёСЃР»Рѕ Рє СЃС‚СЂРѕРєРѕРІРѕРјСѓ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> FloatToStr(a: real; nfi: NumberFormatInfo): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует вещественное число к строковому представлению</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ С‡РёСЃР»Рѕ Рє СЃС‚СЂРѕРєРѕРІРѕРјСѓ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> Format(formatstring: string; <b>params</b> pars: <b>array</b>  <b>of</b> object): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отформатированную строку, построенную по форматной строке и списку форматируемых параметров</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕС‚С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРЅСѓСЋ СЃС‚СЂРѕРєСѓ, РїРѕСЃС‚СЂРѕРµРЅРЅСѓСЋ РїРѕ С„РѕСЂРјР°С‚РЅРѕР№ СЃС‚СЂРѕРєРµ Рё СЃРїРёСЃРєСѓ С„РѕСЂРјР°С‚РёСЂСѓРµРјС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ</td></tr>
 <tr><td><code><b>procedure</b> Insert(subs: string; <b>var</b> s: string; index: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вставляет подстроку subs в строку s с позиции index</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’СЃС‚Р°РІР»СЏРµС‚ РїРѕРґСЃС‚СЂРѕРєСѓ subs РІ СЃС‚СЂРѕРєСѓ s СЃ РїРѕР·РёС†РёРё index</td></tr>
 <tr><td><code><b>function</b> IntToStr(a: integer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует целое число к строковому представлению</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ С†РµР»РѕРµ С‡РёСЃР»Рѕ Рє СЃС‚СЂРѕРєРѕРІРѕРјСѓ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> IntToStr(a: int64): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует целое число к строковому представлению</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ С†РµР»РѕРµ С‡РёСЃР»Рѕ Рє СЃС‚СЂРѕРєРѕРІРѕРјСѓ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> LastPos(subs, s: string): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает позицию последнего вхождения подстроки subs в строке s. Если не найдена, возвращает 0</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕР·РёС†РёСЋ РїРѕСЃР»РµРґРЅРµРіРѕ РІС…РѕР¶РґРµРЅРёСЏ РїРѕРґСЃС‚СЂРѕРєРё subs РІ СЃС‚СЂРѕРєРµ s. Р•СЃР»Рё РЅРµ РЅР°Р№РґРµРЅР°, РІРѕР·РІСЂР°С‰Р°РµС‚ 0</td></tr>
 <tr><td><code><b>function</b> LastPos(subs, s: string; from: integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает позицию последнего вхождения подстроки subs в строке s начиная с позиции from. Если не найдена, возвращает 0</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕР·РёС†РёСЋ РїРѕСЃР»РµРґРЅРµРіРѕ РІС…РѕР¶РґРµРЅРёСЏ РїРѕРґСЃС‚СЂРѕРєРё subs РІ СЃС‚СЂРѕРєРµ s РЅР°С‡РёРЅР°СЏ СЃ РїРѕР·РёС†РёРё from. Р•СЃР»Рё РЅРµ РЅР°Р№РґРµРЅР°, РІРѕР·РІСЂР°С‰Р°РµС‚ 0</td></tr>
 <tr><td><code><b>function</b> LeftStr(s: string; count: integer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает первые count символов строки s</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРµСЂРІС‹Рµ count СЃРёРјРІРѕР»РѕРІ СЃС‚СЂРѕРєРё s</td></tr>
 <tr><td><code><b>function</b> Length(s: string): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает длину строки</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РґР»РёРЅСѓ СЃС‚СЂРѕРєРё</td></tr>
 <tr><td><code><b>function</b> LowerCase(s: string): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку в нижнем регистре</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ РІ РЅРёР¶РЅРµРј СЂРµРіРёСЃС‚СЂРµ</td></tr>
 <tr><td><code><b>function</b> Pos(subs, s: string; from: integer := 1): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает позицию подстроки subs в строке s. Если не найдена, возвращает 0</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕР·РёС†РёСЋ РїРѕРґСЃС‚СЂРѕРєРё subs РІ СЃС‚СЂРѕРєРµ s. Р•СЃР»Рё РЅРµ РЅР°Р№РґРµРЅР°, РІРѕР·РІСЂР°С‰Р°РµС‚ 0</td></tr>
 <tr><td><code><b>function</b> PosEx(subs, s: string; from: integer := 1): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает позицию подстроки subs в строке s начиная с позиции from. Если не найдена, возвращает 0</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕР·РёС†РёСЋ РїРѕРґСЃС‚СЂРѕРєРё subs РІ СЃС‚СЂРѕРєРµ s РЅР°С‡РёРЅР°СЏ СЃ РїРѕР·РёС†РёРё from. Р•СЃР»Рё РЅРµ РЅР°Р№РґРµРЅР°, РІРѕР·РІСЂР°С‰Р°РµС‚ 0</td></tr>
 <tr><td><code><b>function</b> ReadIntegerFromString(s: string; <b>var</b> from: integer): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает целое из строки начиная с позиции from и устанавливает from за считанным значением</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ С†РµР»РѕРµ РёР· СЃС‚СЂРѕРєРё РЅР°С‡РёРЅР°СЏ СЃ РїРѕР·РёС†РёРё from Рё СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ from Р·Р° СЃС‡РёС‚Р°РЅРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј</td></tr>
 <tr><td><code><b>function</b> ReadRealFromString(s: string; <b>var</b> from: integer): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает вещественное из строки начиная с позиции from и устанавливает from за считанным значением</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ РёР· СЃС‚СЂРѕРєРё РЅР°С‡РёРЅР°СЏ СЃ РїРѕР·РёС†РёРё from Рё СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ from Р·Р° СЃС‡РёС‚Р°РЅРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј</td></tr>
 <tr><td><code><b>function</b> ReadWordFromString(s: string; <b>var</b> from: integer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает из строки последовательность символов до пробельного символа начиная с позиции from и устанавливает from за считанным значением</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ РёР· СЃС‚СЂРѕРєРё РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЃРёРјРІРѕР»РѕРІ РґРѕ РїСЂРѕР±РµР»СЊРЅРѕРіРѕ СЃРёРјРІРѕР»Р° РЅР°С‡РёРЅР°СЏ СЃ РїРѕР·РёС†РёРё from Рё СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ from Р·Р° СЃС‡РёС‚Р°РЅРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј</td></tr>
 <tr><td><code><b>function</b> ReverseString(s: string): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает инвертированную строку</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРІРµСЂС‚РёСЂРѕРІР°РЅРЅСѓСЋ СЃС‚СЂРѕРєСѓ</td></tr>
 <tr><td><code><b>function</b> ReverseString(s: string; index,length: integer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает инвертированную строку в диапазоне длины length начиная с индекса index</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРІРµСЂС‚РёСЂРѕРІР°РЅРЅСѓСЋ СЃС‚СЂРѕРєСѓ РІ РґРёР°РїР°Р·РѕРЅРµ РґР»РёРЅС‹ length РЅР°С‡РёРЅР°СЏ СЃ РёРЅРґРµРєСЃР° index</td></tr>
 <tr><td><code><b>function</b> RightStr(s: string; count: integer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последние count символов строки s</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРЅРёРµ count СЃРёРјРІРѕР»РѕРІ СЃС‚СЂРѕРєРё s</td></tr>
 <tr><td><code><b>procedure</b> SetLength(<b>var</b> s: string; n: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает длину строки s равной n</td></tr>
-<tr><td><code><b>procedure</b> Str(i: целое; <b>var</b> s: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует целое значение i к строковому представлению и записывает результат в s</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РґР»РёРЅСѓ СЃС‚СЂРѕРєРё s СЂР°РІРЅРѕР№ n</td></tr>
+<tr><td><code><b>procedure</b> Str(i: С†РµР»РѕРµ; <b>var</b> s: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ С†РµР»РѕРµ Р·РЅР°С‡РµРЅРёРµ i Рє СЃС‚СЂРѕРєРѕРІРѕРјСѓ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЋ Рё Р·Р°РїРёСЃС‹РІР°РµС‚ СЂРµР·СѓР»СЊС‚Р°С‚ РІ s</td></tr>
 <tr><td><code><b>procedure</b> Str(r: real; <b>var</b> s: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует вещественное значение r к строковому представлению и записывает результат в s</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ r Рє СЃС‚СЂРѕРєРѕРІРѕРјСѓ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЋ Рё Р·Р°РїРёСЃС‹РІР°РµС‚ СЂРµР·СѓР»СЊС‚Р°С‚ РІ s</td></tr>
 <tr><td><code><b>procedure</b> Str(r: single; <b>var</b> s: string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует вещественное значение r к строковому представлению и записывает результат в s</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ r Рє СЃС‚СЂРѕРєРѕРІРѕРјСѓ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЋ Рё Р·Р°РїРёСЃС‹РІР°РµС‚ СЂРµР·СѓР»СЊС‚Р°С‚ РІ s</td></tr>
 <tr><td><code><b>function</b> StringIsEmpty(s: string; <b>var</b> from: integer): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если достигнут конец строки или в строке остались только пробельные символы и False в противном случае</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ True РµСЃР»Рё РґРѕСЃС‚РёРіРЅСѓС‚ РєРѕРЅРµС† СЃС‚СЂРѕРєРё РёР»Рё РІ СЃС‚СЂРѕРєРµ РѕСЃС‚Р°Р»РёСЃСЊ С‚РѕР»СЊРєРѕ РїСЂРѕР±РµР»СЊРЅС‹Рµ СЃРёРјРІРѕР»С‹ Рё False РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ</td></tr>
 <tr><td><code><b>function</b> StringOfChar(ch: char; count: integer): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку, состоящую из count символов ch</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ, СЃРѕСЃС‚РѕСЏС‰СѓСЋ РёР· count СЃРёРјРІРѕР»РѕРІ ch</td></tr>
 <tr><td><code><b>function</b> StrToFloat(s: string): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление вещественного числа к числовому значению</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ С‡РёСЃР»Р° Рє С‡РёСЃР»РѕРІРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> StrToFloat(s: string; nfi: NumberFormatInfo): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление вещественного числа к числовому значению</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ С‡РёСЃР»Р° Рє С‡РёСЃР»РѕРІРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> StrToFloat(s: string; DecimalSeparator: string): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление вещественного числа к числовому значению</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ С‡РёСЃР»Р° Рє С‡РёСЃР»РѕРІРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> StrToInt(s: string): integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление целого числа к числовому значению</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ С†РµР»РѕРіРѕ С‡РёСЃР»Р° Рє С‡РёСЃР»РѕРІРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> StrToInt64(s: string): int64;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление целого числа к числовому значению</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ С†РµР»РѕРіРѕ С‡РёСЃР»Р° Рє С‡РёСЃР»РѕРІРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> StrToReal(s: string): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление вещественного числа к числовому значению</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ С‡РёСЃР»Р° Рє С‡РёСЃР»РѕРІРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> StrToReal(s: string; nfi: NumberFormatInfo): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление вещественного числа к числовому значению</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ С‡РёСЃР»Р° Рє С‡РёСЃР»РѕРІРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> StrToReal(s: string; DecimalSeparator: string): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление вещественного числа к числовому значению</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ С‡РёСЃР»Р° Рє С‡РёСЃР»РѕРІРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ</td></tr>
 <tr><td><code><b>function</b> Trim(s: string): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку с удаленными начальными и конечными пробелами</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ СЃ СѓРґР°Р»РµРЅРЅС‹РјРё РЅР°С‡Р°Р»СЊРЅС‹РјРё Рё РєРѕРЅРµС‡РЅС‹РјРё РїСЂРѕР±РµР»Р°РјРё</td></tr>
 <tr><td><code><b>function</b> TrimLeft(s: string): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку с удаленными начальными пробелами</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ СЃ СѓРґР°Р»РµРЅРЅС‹РјРё РЅР°С‡Р°Р»СЊРЅС‹РјРё РїСЂРѕР±РµР»Р°РјРё</td></tr>
 <tr><td><code><b>function</b> TrimRight(s: string): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку с удаленными конечными пробелами</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ СЃ СѓРґР°Р»РµРЅРЅС‹РјРё РєРѕРЅРµС‡РЅС‹РјРё РїСЂРѕР±РµР»Р°РјРё</td></tr>
 <tr><td><code><b>function</b> TryReadIntegerFromString(s: string; <b>var</b> from: integer; <b>var</b> res: integer): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает целое из строки начиная с позиции from и устанавливает from за считанным значением.Возвращает True если считывание удачно и False в противном случае</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ С†РµР»РѕРµ РёР· СЃС‚СЂРѕРєРё РЅР°С‡РёРЅР°СЏ СЃ РїРѕР·РёС†РёРё from Рё СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ from Р·Р° СЃС‡РёС‚Р°РЅРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј.Р’РѕР·РІСЂР°С‰Р°РµС‚ True РµСЃР»Рё СЃС‡РёС‚С‹РІР°РЅРёРµ СѓРґР°С‡РЅРѕ Рё False РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ</td></tr>
 <tr><td><code><b>function</b> TryReadRealFromString(s: string; <b>var</b> from: integer; <b>var</b> res: real): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает вещественное из строки начиная с позиции from и устанавливает from за считанным значением.Возвращает True если считывание удачно и False в противном случае</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‡РёС‚С‹РІР°РµС‚ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ РёР· СЃС‚СЂРѕРєРё РЅР°С‡РёРЅР°СЏ СЃ РїРѕР·РёС†РёРё from Рё СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ from Р·Р° СЃС‡РёС‚Р°РЅРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј.Р’РѕР·РІСЂР°С‰Р°РµС‚ True РµСЃР»Рё СЃС‡РёС‚С‹РІР°РЅРёРµ СѓРґР°С‡РЅРѕ Рё False РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ</td></tr>
 <tr><td><code><b>function</b> TryStrToFloat(s: string; <b>var</b> value: real): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value.При невозможности преобразования возвращается False</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ s РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ С‡РёСЃР»Р° Рє С‡РёСЃР»РѕРІРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ Рё Р·Р°РїРёСЃС‹РІР°РµС‚ РµРіРѕ РІ value.РџСЂРё РЅРµРІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ False</td></tr>
 <tr><td><code><b>function</b> TryStrToFloat(s: string; <b>var</b> value: single): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value.При невозможности преобразования возвращается False</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ s РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ С‡РёСЃР»Р° Рє С‡РёСЃР»РѕРІРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ Рё Р·Р°РїРёСЃС‹РІР°РµС‚ РµРіРѕ РІ value.РџСЂРё РЅРµРІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ False</td></tr>
 <tr><td><code><b>function</b> TryStrToInt(s: string; <b>var</b> value: integer): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s целого числа к числовому значению и записывает его в value.При невозможности преобразования возвращается False</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ s С†РµР»РѕРіРѕ С‡РёСЃР»Р° Рє С‡РёСЃР»РѕРІРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ Рё Р·Р°РїРёСЃС‹РІР°РµС‚ РµРіРѕ РІ value.РџСЂРё РЅРµРІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ False</td></tr>
 <tr><td><code><b>function</b> TryStrToInt64(s: string; <b>var</b> value: int64): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s целого числа к числовому значению и записывает его в value.При невозможности преобразования возвращается False</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ s С†РµР»РѕРіРѕ С‡РёСЃР»Р° Рє С‡РёСЃР»РѕРІРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ Рё Р·Р°РїРёСЃС‹РІР°РµС‚ РµРіРѕ РІ value.РџСЂРё РЅРµРІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ False</td></tr>
 <tr><td><code><b>function</b> TryStrToReal(s: string; <b>var</b> value: real): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value.При невозможности преобразования возвращается False</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ s РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ С‡РёСЃР»Р° Рє С‡РёСЃР»РѕРІРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ Рё Р·Р°РїРёСЃС‹РІР°РµС‚ РµРіРѕ РІ value.РџСЂРё РЅРµРІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ False</td></tr>
 <tr><td><code><b>function</b> TryStrToSingle(s: string; <b>var</b> value: single): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value.При невозможности преобразования возвращается False</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ s РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ С‡РёСЃР»Р° Рє С‡РёСЃР»РѕРІРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ Рё Р·Р°РїРёСЃС‹РІР°РµС‚ РµРіРѕ РІ value.РџСЂРё РЅРµРІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ False</td></tr>
 <tr><td><code><b>function</b> UpperCase(s: string): string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку в верхнем регистре</td></tr>
-<tr><td><code><b>procedure</b> Val(s: string; <b>var</b> value: число; <b>var</b> err: integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s целого или вещественного числа к числовому значению и записывает его в переменную value.Если преобразование успешно, то err=0, иначе err&gt;0</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ РІ РІРµСЂС…РЅРµРј СЂРµРіРёСЃС‚СЂРµ</td></tr>
+<tr><td><code><b>procedure</b> Val(s: string; <b>var</b> value: С‡РёСЃР»Рѕ; <b>var</b> err: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРµРѕР±СЂР°Р·СѓРµС‚ СЃС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ s С†РµР»РѕРіРѕ РёР»Рё РІРµС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ С‡РёСЃР»Р° Рє С‡РёСЃР»РѕРІРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ Рё Р·Р°РїРёСЃС‹РІР°РµС‚ РµРіРѕ РІ РїРµСЂРµРјРµРЅРЅСѓСЋ value.Р•СЃР»Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ СѓСЃРїРµС€РЅРѕ, С‚Рѕ err=0, РёРЅР°С‡Рµ err&gt;0</td></tr>
 </table>
 </body></HTML>

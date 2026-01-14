@@ -292,15 +292,17 @@ namespace CodeCompletion
             else
                 System.Diagnostics.Debug.Assert(cond);
 #else
+            //if (!cond)
+            //    throw new Exception(message);
             /*if (message != null)
                 System.Diagnostics.Trace.Assert(cond, message);
             else
                 System.Diagnostics.Trace.Assert(cond);*/
 #endif
-            
+
         }
-    	
-    	/*private static void TestVBNETExpressionExtract()
+
+        /*private static void TestVBNETExpressionExtract()
     	{
     		string s;
     		int off=0;
@@ -334,8 +336,8 @@ namespace CodeCompletion
     		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim(' ','\n','\t')=="(abc)");
     	}*/
-    	
-    	private static void TestExpressionExtract()
+
+        private static void TestExpressionExtract()
     	{
     		string s;
     		int off=0;
@@ -343,7 +345,7 @@ namespace CodeCompletion
     		int col=0;
     		PascalABCCompiler.Parsers.KeywordKind keyw;
             //LanguageIntegration.LanguageIntegrator.ReloadAllParsers();
-            IParser parser = LanguageProvider.Instance.SelectLanguageByName(StringConstants.pascalLanguageName).Parser;
+            IParser parser = LanguageProvider.Instance.MainLanguage.Parser;
     		
     		string test_str = "System.Console";
     		off = test_str.Length;
@@ -1091,24 +1093,26 @@ namespace CodeCompletion
         {
             var dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
             var ind = dir.LastIndexOf("bin");
-            return dir.Substring(0, ind) + "TestSuite";
+            return Path.Combine(dir.Substring(0, ind - 1), "TestSuite");
         }
 
         public static void Test()
 		{
-            string test_dir = Path.Combine(GetTestSuiteDir(), @"formatter_tests");
-			string output_dir = Path.Combine(test_dir, @"output");
+            string test_dir = Path.Combine(GetTestSuiteDir(), "formatter_tests");
+			string output_dir = Path.Combine(test_dir, "output");
             Directory.CreateDirectory(output_dir);
-			string[] files = Directory.GetFiles(test_dir+@"\input","*.pas");
-            StreamWriter log = new StreamWriter(Path.Combine(output_dir, @"log.txt"), false, Encoding.GetEncoding(1251));
+			string[] files = Directory.GetFiles(Path.Combine(test_dir, "input"), "*.pas");
+            StreamWriter log = new StreamWriter(Path.Combine(output_dir, "log.txt"), false, Encoding.GetEncoding(1251));
             SyntaxTreeComparer stc = new SyntaxTreeComparer();
+
+            // Поддержка только PascalABC.NET пока
+            IParser parser = LanguageProvider.Instance.MainLanguage.Parser;
+
             foreach (string s in files)
             {
                 string Text = new StreamReader(s,System.Text.Encoding.GetEncoding(1251)).ReadToEnd();
                 List<Error> Errors = new List<Error>();
                 List<CompilerWarning> Warnings = new List<CompilerWarning>();
-
-                IParser parser = LanguageProvider.Instance.SelectLanguageByExtension(s).Parser;
 
                 compilation_unit cu = parser.GetCompilationUnitForFormatter(s, Text, Errors, Warnings);
                 if (Errors.Count == 0)
@@ -1149,7 +1153,7 @@ namespace CodeCompletion
                 sr.Close();
                 List<Error> Errors = new List<Error>();
                 List<CompilerWarning> Warnings = new List<CompilerWarning>();
-                compilation_unit cu = LanguageProvider.Instance.SelectLanguageByExtension(s).Parser.GetCompilationUnitForFormatter(s, Text, Errors, Warnings);
+                compilation_unit cu = parser.GetCompilationUnitForFormatter(s, Text, Errors, Warnings);
                 CodeFormatters.CodeFormatter cf = new CodeFormatters.CodeFormatter(2);
                 string Text2 = cf.FormatTree(Text, cu, 1, 1);
                 if (Text.Replace("\r\n","\n") != Text2.Replace("\r\n","\n"))

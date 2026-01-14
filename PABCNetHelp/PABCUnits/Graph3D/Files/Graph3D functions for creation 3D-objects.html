@@ -32,158 +32,158 @@
 <param name="Keyword" value="TruncatedCone">
 <param name="Keyword" value="Tube"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Graph3D: функции для создания 3D-объектов</H1>
+</HEAD><body><H1>Graph3D: С„СѓРЅРєС†РёРё РґР»СЏ СЃРѕР·РґР°РЅРёСЏ 3D-РѕР±СЉРµРєС‚РѕРІ</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Arrow(x, y, z, vx, vy, vz, Diameter, HeadLength: real; m: Material := nil): ArrowT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-стрелку с центром в точке (x, y, z), направлением (vx, vy, vz), диаметра Diameter и длиной наконечника HeadLength</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-СЃС‚СЂРµР»РєСѓ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z), РЅР°РїСЂР°РІР»РµРЅРёРµРј (vx, vy, vz), РґРёР°РјРµС‚СЂР° Diameter Рё РґР»РёРЅРѕР№ РЅР°РєРѕРЅРµС‡РЅРёРєР° HeadLength</td></tr>
 <tr><td><code><b>function</b> Arrow(x, y, z, vx, vy, vz, Diameter: real; m: Material := nil): ArrowT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-стрелку с центром в точке (x, y, z), направлением (vx, vy, vz), диаметра Diameter</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-СЃС‚СЂРµР»РєСѓ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z), РЅР°РїСЂР°РІР»РµРЅРёРµРј (vx, vy, vz), РґРёР°РјРµС‚СЂР° Diameter</td></tr>
 <tr><td><code><b>function</b> Arrow(x, y, z, vx, vy, vz: real; m: Material := nil): ArrowT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-стрелку с центром в точке (x, y, z), направлением (vx, vy, vz)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-СЃС‚СЂРµР»РєСѓ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z), РЅР°РїСЂР°РІР»РµРЅРёРµРј (vx, vy, vz)</td></tr>
 <tr><td><code><b>function</b> Arrow(p: Point3D; v: Vector3D; Diameter, HeadLength: real; m: Material := nil): ArrowT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-стрелку с центром в точке p, направлением p, диаметра Diameter и длиной наконечника HeadLength</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-СЃС‚СЂРµР»РєСѓ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p, РЅР°РїСЂР°РІР»РµРЅРёРµРј p, РґРёР°РјРµС‚СЂР° Diameter Рё РґР»РёРЅРѕР№ РЅР°РєРѕРЅРµС‡РЅРёРєР° HeadLength</td></tr>
 <tr><td><code><b>function</b> Arrow(p: Point3D; v: Vector3D; Diameter: real; m: Material := nil): ArrowT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-стрелку с центром в точке p, направлением p, диаметра Diameter</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-СЃС‚СЂРµР»РєСѓ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p, РЅР°РїСЂР°РІР»РµРЅРёРµРј p, РґРёР°РјРµС‚СЂР° Diameter</td></tr>
 <tr><td><code><b>function</b> Arrow(p: Point3D; v: Vector3D; m: Material := nil): ArrowT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-стрелку с центром в точке p, направлением p</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-СЃС‚СЂРµР»РєСѓ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p, РЅР°РїСЂР°РІР»РµРЅРёРµРј p</td></tr>
 <tr><td><code><b>function</b> BillboardText(x, y, z: real; Text: string; Fontsize: real := 12): BillboardTextT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текст на билборде с центром в точке (x, y, z) с размером шрифта Fontsize</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСЃС‚ РЅР° Р±РёР»Р±РѕСЂРґРµ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z) СЃ СЂР°Р·РјРµСЂРѕРј С€СЂРёС„С‚Р° Fontsize</td></tr>
 <tr><td><code><b>function</b> BillboardText(p: Point3D; Text: string; Fontsize: real := 12): BillboardTextT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текст на билборде с центром в точке p с размером шрифта Fontsize</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСЃС‚ РЅР° Р±РёР»Р±РѕСЂРґРµ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p СЃ СЂР°Р·РјРµСЂРѕРј С€СЂРёС„С‚Р° Fontsize</td></tr>
 <tr><td><code><b>function</b> Box(x, y, z, SizeX, SizeY, SizeZ: real; m: Material := nil): BoxT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает паралеллепипед с центром в точке (x, y, z) и размерами SizeX, SizeY, SizeZ</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїР°СЂР°Р»РµР»Р»РµРїРёРїРµРґ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z) Рё СЂР°Р·РјРµСЂР°РјРё SizeX, SizeY, SizeZ</td></tr>
 <tr><td><code><b>function</b> Box(center: Point3D; sz: Size3D; m: Material := nil): BoxT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает паралеллепипед с центром в точке center и размерами SizeX, SizeY, SizeZ</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїР°СЂР°Р»РµР»Р»РµРїРёРїРµРґ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ center Рё СЂР°Р·РјРµСЂР°РјРё SizeX, SizeY, SizeZ</td></tr>
 <tr><td><code><b>function</b> Cloth(x, y, z, Height, Length, PoleHeight: real; textureName: string): ClothSystemT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимируемый объект из ткани (например, флаг на ветру)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ Р°РЅРёРјРёСЂСѓРµРјС‹Р№ РѕР±СЉРµРєС‚ РёР· С‚РєР°РЅРё (РЅР°РїСЂРёРјРµСЂ, С„Р»Р°Рі РЅР° РІРµС‚СЂСѓ)</td></tr>
 <tr><td><code><b>function</b> Cone(x, y, z, Height, Radius: real; m: Material := nil): TruncatedConeT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает конус с центром основания в точке (x, y, z) высотой Height, радиусом Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕРЅСѓСЃ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ (x, y, z) РІС‹СЃРѕС‚РѕР№ Height, СЂР°РґРёСѓСЃРѕРј Radius</td></tr>
 <tr><td><code><b>function</b> Cone(p: Point3D; Height, Radius: real; m: Material := nil): TruncatedConeT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает конус с центром основания в точке p высотой Height, радиусом Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕРЅСѓСЃ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ p РІС‹СЃРѕС‚РѕР№ Height, СЂР°РґРёСѓСЃРѕРј Radius</td></tr>
 <tr><td><code><b>function</b> CoordinateSystem(ArrowsLength, Diameter: real): CoordinateSystemT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает координатную систему с длиной стрелок ArrowsLength и диаметром стрелок Diameter</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕРѕСЂРґРёРЅР°С‚РЅСѓСЋ СЃРёСЃС‚РµРјСѓ СЃ РґР»РёРЅРѕР№ СЃС‚СЂРµР»РѕРє ArrowsLength Рё РґРёР°РјРµС‚СЂРѕРј СЃС‚СЂРµР»РѕРє Diameter</td></tr>
 <tr><td><code><b>function</b> CoordinateSystem(ArrowsLength: real := 2): CoordinateSystemT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает координатную систему с длиной стрелок ArrowsLength</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕРѕСЂРґРёРЅР°С‚РЅСѓСЋ СЃРёСЃС‚РµРјСѓ СЃ РґР»РёРЅРѕР№ СЃС‚СЂРµР»РѕРє ArrowsLength</td></tr>
 <tr><td><code><b>function</b> Cube(x, y, z, SideLength: real; m: Material := nil): CubeT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает куб с центром в точке (x, y, z) и длиной стороны SideLength</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєСѓР± СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z) Рё РґР»РёРЅРѕР№ СЃС‚РѕСЂРѕРЅС‹ SideLength</td></tr>
 <tr><td><code><b>function</b> Cube(center: Point3D; SideLength: real; m: Material := nil): CubeT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает куб с центром в точке center и длиной стороны SideLength</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РєСѓР± СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ center Рё РґР»РёРЅРѕР№ СЃС‚РѕСЂРѕРЅС‹ SideLength</td></tr>
 <tr><td><code><b>function</b> Cylinder(x, y, z, Height, Radius: real; m: Material := nil): CylinderT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цилиндр с центром основания в точке (x, y, z) высоты Height радиуса Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РёР»РёРЅРґСЂ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ (x, y, z) РІС‹СЃРѕС‚С‹ Height СЂР°РґРёСѓСЃР° Radius</td></tr>
 <tr><td><code><b>function</b> Cylinder(p: Point3D; Height, Radius: real; m: Material := nil): CylinderT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цилиндр с центром основания в точке p высоты Height радиуса Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РёР»РёРЅРґСЂ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ p РІС‹СЃРѕС‚С‹ Height СЂР°РґРёСѓСЃР° Radius</td></tr>
 <tr><td><code><b>function</b> Dodecahedron(x, y, z, Radius: real; m: Material := nil): DodecahedronT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает додекаэдр с центром в точке (x, y, z) и радиусом описанной окружности Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРѕРґРµРєР°СЌРґСЂ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z) Рё СЂР°РґРёСѓСЃРѕРј РѕРїРёСЃР°РЅРЅРѕР№ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё Radius</td></tr>
 <tr><td><code><b>function</b> Dodecahedron(p: Point3D; Radius: real; m: Material := nil): DodecahedronT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает додекаэдр с центром в точке p и радиусом описанной окружности Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРѕРґРµРєР°СЌРґСЂ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p Рё СЂР°РґРёСѓСЃРѕРј РѕРїРёСЃР°РЅРЅРѕР№ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё Radius</td></tr>
 <tr><td><code><b>function</b> Ellipsoid(x, y, z, RadiusX, RadiusY, RadiusZ: real; m: Material := nil): EllipsoidT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает эллипсоид с центром в точке (x, y, z) и радиусами RadiusX, RadiusY, RadiusZ</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЌР»Р»РёРїСЃРѕРёРґ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z) Рё СЂР°РґРёСѓСЃР°РјРё RadiusX, RadiusY, RadiusZ</td></tr>
 <tr><td><code><b>function</b> Ellipsoid(center: Point3D; RadiusX, RadiusY, RadiusZ: real; m: Material := nil): EllipsoidT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает эллипсоид с центром в точке center и радиусами RadiusX, RadiusY, RadiusZ</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЌР»Р»РёРїСЃРѕРёРґ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ center Рё СЂР°РґРёСѓСЃР°РјРё RadiusX, RadiusY, RadiusZ</td></tr>
 <tr><td><code><b>function</b> FileModel3D(x, y, z: real; fname: string; m: Material): FileModelT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Загружает модель из файла в форматах .obj, .3ds, .lwo, .objz, .stl, .off и отображает ее в точке (x, y, z)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РіСЂСѓР¶Р°РµС‚ РјРѕРґРµР»СЊ РёР· С„Р°Р№Р»Р° РІ С„РѕСЂРјР°С‚Р°С… .obj, .3ds, .lwo, .objz, .stl, .off Рё РѕС‚РѕР±СЂР°Р¶Р°РµС‚ РµРµ РІ С‚РѕС‡РєРµ (x, y, z)</td></tr>
 <tr><td><code><b>function</b> FileModel3D(p: Point3D; fname: string; m: Material): FileModelT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Загружает модель из файла в форматах .obj, .3ds, .lwo, .objz, .stl, .off и отображает ее в точке p</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р—Р°РіСЂСѓР¶Р°РµС‚ РјРѕРґРµР»СЊ РёР· С„Р°Р№Р»Р° РІ С„РѕСЂРјР°С‚Р°С… .obj, .3ds, .lwo, .objz, .stl, .off Рё РѕС‚РѕР±СЂР°Р¶Р°РµС‚ РµРµ РІ С‚РѕС‡РєРµ p</td></tr>
 <tr><td><code><b>function</b> Icosahedron(x, y, z, Radius: real; m: Material := nil): IcosahedronT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает икосаэдр с центром в точке (x, y, z) и радиусом описанной окружности Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРєРѕСЃР°СЌРґСЂ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z) Рё СЂР°РґРёСѓСЃРѕРј РѕРїРёСЃР°РЅРЅРѕР№ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё Radius</td></tr>
 <tr><td><code><b>function</b> Icosahedron(p: Point3D; Radius: real; m: Material := nil): IcosahedronT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает икосаэдр с центром в точке p и радиусом описанной окружности Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРєРѕСЃР°СЌРґСЂ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p Рё СЂР°РґРёСѓСЃРѕРј РѕРїРёСЃР°РЅРЅРѕР№ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё Radius</td></tr>
 <tr><td><code><b>function</b> Lego(x, y, z: real; Rows, Columns, Height: integer; m: Material := nil): LegoT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает лего-деталь с центром в точке (x, y, z), размера (Rows, Columns, Height), измеряемом в количестве кирпичиков по каждой размерности</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ Р»РµРіРѕ-РґРµС‚Р°Р»СЊ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z), СЂР°Р·РјРµСЂР° (Rows, Columns, Height), РёР·РјРµСЂСЏРµРјРѕРј РІ РєРѕР»РёС‡РµСЃС‚РІРµ РєРёСЂРїРёС‡РёРєРѕРІ РїРѕ РєР°Р¶РґРѕР№ СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё</td></tr>
 <tr><td><code><b>function</b> Octahedron(x, y, z, Radius: real; m: Material := nil): OctahedronT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает октаэдр с центром в точке (x, y, z) и радиусом описанной окружности Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕРєС‚Р°СЌРґСЂ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z) Рё СЂР°РґРёСѓСЃРѕРј РѕРїРёСЃР°РЅРЅРѕР№ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё Radius</td></tr>
 <tr><td><code><b>function</b> Octahedron(p: Point3D; Radius: real; m: Material := nil): OctahedronT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает октаэдр с центром в точке p и радиусом описанной окружности Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕРєС‚Р°СЌРґСЂ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p Рё СЂР°РґРёСѓСЃРѕРј РѕРїРёСЃР°РЅРЅРѕР№ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё Radius</td></tr>
 <tr><td><code><b>function</b> ParticleSystem(x, y, z: real; textureName: string): ParticleSystemT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает систему частиц с центром в точке (x, y, z), именем текстуры TextureName</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРёСЃС‚РµРјСѓ С‡Р°СЃС‚РёС† СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z), РёРјРµРЅРµРј С‚РµРєСЃС‚СѓСЂС‹ TextureName</td></tr>
 <tr><td><code><b>function</b> Polygon3D(points: <b>sequence </b>  <b>of</b> Point3D; Thickness: real; c: Color): SegmentsT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает замкнутую ломаную, задаваемую последовательностью точек points, толщиной Thickness, заданного цвета</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ Р·Р°РјРєРЅСѓС‚СѓСЋ Р»РѕРјР°РЅСѓСЋ, Р·Р°РґР°РІР°РµРјСѓСЋ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊСЋ С‚РѕС‡РµРє points, С‚РѕР»С‰РёРЅРѕР№ Thickness, Р·Р°РґР°РЅРЅРѕРіРѕ С†РІРµС‚Р°</td></tr>
 <tr><td><code><b>function</b> Polygon3D(points: <b>sequence </b>  <b>of</b> Point3D; Thickness: real := 1.2): SegmentsT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает замкнутую ломаную, задаваемую последовательностью точек points, толщиной Thickness</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ Р·Р°РјРєРЅСѓС‚СѓСЋ Р»РѕРјР°РЅСѓСЋ, Р·Р°РґР°РІР°РµРјСѓСЋ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊСЋ С‚РѕС‡РµРє points, С‚РѕР»С‰РёРЅРѕР№ Thickness</td></tr>
 <tr><td><code><b>function</b> Polyline3D(points: <b>sequence </b>  <b>of</b> Point3D; Thickness: real; c: Color): SegmentsT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ломаную, задаваемую последовательностью точек points, толщиной Thickness, заданного цвета</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ Р»РѕРјР°РЅСѓСЋ, Р·Р°РґР°РІР°РµРјСѓСЋ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊСЋ С‚РѕС‡РµРє points, С‚РѕР»С‰РёРЅРѕР№ Thickness, Р·Р°РґР°РЅРЅРѕРіРѕ С†РІРµС‚Р°</td></tr>
 <tr><td><code><b>function</b> Polyline3D(points: <b>sequence </b>  <b>of</b> Point3D; Thickness: real := 1.2): SegmentsT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ломаную, задаваемую последовательностью точек points, толщиной Thickness</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ Р»РѕРјР°РЅСѓСЋ, Р·Р°РґР°РІР°РµРјСѓСЋ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊСЋ С‚РѕС‡РµРє points, С‚РѕР»С‰РёРЅРѕР№ Thickness</td></tr>
 <tr><td><code><b>function</b> Prism(x, y, z: real; Sides: integer; Height, Radius: real; m: Material := nil): PrismT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает правильную призму с центром основания в точке (x, y, z), количеством сторон Sides, высотой Height и радиусом Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂР°РІРёР»СЊРЅСѓСЋ РїСЂРёР·РјСѓ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ (x, y, z), РєРѕР»РёС‡РµСЃС‚РІРѕРј СЃС‚РѕСЂРѕРЅ Sides, РІС‹СЃРѕС‚РѕР№ Height Рё СЂР°РґРёСѓСЃРѕРј Radius</td></tr>
 <tr><td><code><b>function</b> Prism(p: Point3D; Sides: integer; Height, Radius: real; m: Material := nil): PrismT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает правильную призму с центром основания в точке p, количеством сторон Sides, высотой Height и радиусом Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂР°РІРёР»СЊРЅСѓСЋ РїСЂРёР·РјСѓ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ p, РєРѕР»РёС‡РµСЃС‚РІРѕРј СЃС‚РѕСЂРѕРЅ Sides, РІС‹СЃРѕС‚РѕР№ Height Рё СЂР°РґРёСѓСЃРѕРј Radius</td></tr>
 <tr><td><code><b>function</b> PrismWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PrismTWireFrame;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает проволочную правильную призму с центром основания в точке (x, y, z), количеством сторон Sides, высотой Height, радиусом Radius и толщиной проволоки Thickness</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂРѕРІРѕР»РѕС‡РЅСѓСЋ РїСЂР°РІРёР»СЊРЅСѓСЋ РїСЂРёР·РјСѓ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ (x, y, z), РєРѕР»РёС‡РµСЃС‚РІРѕРј СЃС‚РѕСЂРѕРЅ Sides, РІС‹СЃРѕС‚РѕР№ Height, СЂР°РґРёСѓСЃРѕРј Radius Рё С‚РѕР»С‰РёРЅРѕР№ РїСЂРѕРІРѕР»РѕРєРё Thickness</td></tr>
 <tr><td><code><b>function</b> PrismWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real := 1.2): PrismTWireFrame;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает проволочную правильную призму с центром основания в точке (x, y, z), количеством сторон Sides, высотой Height, радиусом Radius и толщиной проволоки Thickness</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂРѕРІРѕР»РѕС‡РЅСѓСЋ РїСЂР°РІРёР»СЊРЅСѓСЋ РїСЂРёР·РјСѓ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ (x, y, z), РєРѕР»РёС‡РµСЃС‚РІРѕРј СЃС‚РѕСЂРѕРЅ Sides, РІС‹СЃРѕС‚РѕР№ Height, СЂР°РґРёСѓСЃРѕРј Radius Рё С‚РѕР»С‰РёРЅРѕР№ РїСЂРѕРІРѕР»РѕРєРё Thickness</td></tr>
 <tr><td><code><b>function</b> PrismWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PrismTWireFrame;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает проволочную правильную призму с центром основания в точке p, количеством сторон Sides, высотой Height, радиусом Radius и толщиной проволоки Thickness</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂРѕРІРѕР»РѕС‡РЅСѓСЋ РїСЂР°РІРёР»СЊРЅСѓСЋ РїСЂРёР·РјСѓ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ p, РєРѕР»РёС‡РµСЃС‚РІРѕРј СЃС‚РѕСЂРѕРЅ Sides, РІС‹СЃРѕС‚РѕР№ Height, СЂР°РґРёСѓСЃРѕРј Radius Рё С‚РѕР»С‰РёРЅРѕР№ РїСЂРѕРІРѕР»РѕРєРё Thickness</td></tr>
 <tr><td><code><b>function</b> PrismWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real := 1.2): PrismTWireFrame;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает проволочную правильную призму с центром основания в точке p, количеством сторон Sides, высотой Height, радиусом Radius и толщиной проволоки Thickness</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂРѕРІРѕР»РѕС‡РЅСѓСЋ РїСЂР°РІРёР»СЊРЅСѓСЋ РїСЂРёР·РјСѓ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ p, РєРѕР»РёС‡РµСЃС‚РІРѕРј СЃС‚РѕСЂРѕРЅ Sides, РІС‹СЃРѕС‚РѕР№ Height, СЂР°РґРёСѓСЃРѕРј Radius Рё С‚РѕР»С‰РёРЅРѕР№ РїСЂРѕРІРѕР»РѕРєРё Thickness</td></tr>
 <tr><td><code><b>function</b> Pyramid(x, y, z: real; Sides: integer; Height, Radius: real; m: Material := nil): PyramidT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает правильную пирамиду с центром основания в точке (x, y, z), количеством сторон Sides, высотой Height и радиусом Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂР°РІРёР»СЊРЅСѓСЋ РїРёСЂР°РјРёРґСѓ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ (x, y, z), РєРѕР»РёС‡РµСЃС‚РІРѕРј СЃС‚РѕСЂРѕРЅ Sides, РІС‹СЃРѕС‚РѕР№ Height Рё СЂР°РґРёСѓСЃРѕРј Radius</td></tr>
 <tr><td><code><b>function</b> Pyramid(p: Point3D; Sides: integer; Height, Radius: real; m: Material := nil): PyramidT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает правильную пирамиду с центром основания в точке p, количеством сторон Sides, высотой Height и радиусом Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂР°РІРёР»СЊРЅСѓСЋ РїРёСЂР°РјРёРґСѓ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ p, РєРѕР»РёС‡РµСЃС‚РІРѕРј СЃС‚РѕСЂРѕРЅ Sides, РІС‹СЃРѕС‚РѕР№ Height Рё СЂР°РґРёСѓСЃРѕРј Radius</td></tr>
 <tr><td><code><b>function</b> PyramidWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PyramidTWireFrame;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает проволочную правильную пирамиду с центром основания в точке (x, y, z), количеством сторон Sides, высотой Height и радиусом Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂРѕРІРѕР»РѕС‡РЅСѓСЋ РїСЂР°РІРёР»СЊРЅСѓСЋ РїРёСЂР°РјРёРґСѓ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ (x, y, z), РєРѕР»РёС‡РµСЃС‚РІРѕРј СЃС‚РѕСЂРѕРЅ Sides, РІС‹СЃРѕС‚РѕР№ Height Рё СЂР°РґРёСѓСЃРѕРј Radius</td></tr>
 <tr><td><code><b>function</b> PyramidWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real := 1.2): PyramidTWireFrame;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает проволочную правильную пирамиду с центром основания в точке (x, y, z), количеством сторон Sides, высотой Height и радиусом Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂРѕРІРѕР»РѕС‡РЅСѓСЋ РїСЂР°РІРёР»СЊРЅСѓСЋ РїРёСЂР°РјРёРґСѓ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ (x, y, z), РєРѕР»РёС‡РµСЃС‚РІРѕРј СЃС‚РѕСЂРѕРЅ Sides, РІС‹СЃРѕС‚РѕР№ Height Рё СЂР°РґРёСѓСЃРѕРј Radius</td></tr>
 <tr><td><code><b>function</b> PyramidWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PyramidTWireFrame;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает проволочную правильную пирамиду с центром основания в точке p, количеством сторон Sides, высотой Height и радиусом Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂРѕРІРѕР»РѕС‡РЅСѓСЋ РїСЂР°РІРёР»СЊРЅСѓСЋ РїРёСЂР°РјРёРґСѓ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ p, РєРѕР»РёС‡РµСЃС‚РІРѕРј СЃС‚РѕСЂРѕРЅ Sides, РІС‹СЃРѕС‚РѕР№ Height Рё СЂР°РґРёСѓСЃРѕРј Radius</td></tr>
 <tr><td><code><b>function</b> PyramidWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real := 1.2): PyramidTWireFrame;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает проволочную правильную пирамиду с центром основания в точке p, количеством сторон Sides, высотой Height и радиусом Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂРѕРІРѕР»РѕС‡РЅСѓСЋ РїСЂР°РІРёР»СЊРЅСѓСЋ РїРёСЂР°РјРёРґСѓ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ p, РєРѕР»РёС‡РµСЃС‚РІРѕРј СЃС‚РѕСЂРѕРЅ Sides, РІС‹СЃРѕС‚РѕР№ Height Рё СЂР°РґРёСѓСЃРѕРј Radius</td></tr>
 <tr><td><code><b>function</b> Rectangle3D(x, y, z, Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := nil): RectangleT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-прямоугольник с центром в точке (x, y, z) длины Length, ширины Width, нормалью Normal и направлением длины LengthDirection</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z) РґР»РёРЅС‹ Length, С€РёСЂРёРЅС‹ Width, РЅРѕСЂРјР°Р»СЊСЋ Normal Рё РЅР°РїСЂР°РІР»РµРЅРёРµРј РґР»РёРЅС‹ LengthDirection</td></tr>
 <tr><td><code><b>function</b> Rectangle3D(p: Point3D; Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := nil): RectangleT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-прямоугольник с центром в точке p длины Length, ширины Width, нормалью Normal и направлением длины LengthDirection</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p РґР»РёРЅС‹ Length, С€РёСЂРёРЅС‹ Width, РЅРѕСЂРјР°Р»СЊСЋ Normal Рё РЅР°РїСЂР°РІР»РµРЅРёРµРј РґР»РёРЅС‹ LengthDirection</td></tr>
 <tr><td><code><b>function</b> Rectangle3D(x, y, z, Length, Width: real; Normal: Vector3D; m: Material := nil): RectangleT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-прямоугольник с центром в точке (x, y, z) длины Length, ширины Width, нормалью Normal</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z) РґР»РёРЅС‹ Length, С€РёСЂРёРЅС‹ Width, РЅРѕСЂРјР°Р»СЊСЋ Normal</td></tr>
 <tr><td><code><b>function</b> Rectangle3D(x, y, z, Length, Width: real; m: Material := nil): RectangleT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-прямоугольник с центром в точке (x, y, z) длины Length, ширины Width</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z) РґР»РёРЅС‹ Length, С€РёСЂРёРЅС‹ Width</td></tr>
 <tr><td><code><b>function</b> Rectangle3D(p: Point3D; Length, Width: real; Normal: Vector3D; m: Material := nil): RectangleT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-прямоугольник с центром в точке p длины Length, ширины Width, нормалью Normal</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p РґР»РёРЅС‹ Length, С€РёСЂРёРЅС‹ Width, РЅРѕСЂРјР°Р»СЊСЋ Normal</td></tr>
 <tr><td><code><b>function</b> Rectangle3D(p: Point3D; Length, Width: real; m: Material := nil): RectangleT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-прямоугольник с центром в точке p длины Length, ширины Width</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p РґР»РёРЅС‹ Length, С€РёСЂРёРЅС‹ Width</td></tr>
 <tr><td><code><b>function</b> Segment3D(p1, p2: Point3D; Thickness: real; c: Color): SegmentsT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отрезок из точки p1 в точку p2 толщиной Thickness заданного цвета</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕС‚СЂРµР·РѕРє РёР· С‚РѕС‡РєРё p1 РІ С‚РѕС‡РєСѓ p2 С‚РѕР»С‰РёРЅРѕР№ Thickness Р·Р°РґР°РЅРЅРѕРіРѕ С†РІРµС‚Р°</td></tr>
 <tr><td><code><b>function</b> Segment3D(p1, p2: Point3D; Thickness: real := 1.2): SegmentsT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отрезок из точки p1 в точку p2 толщиной Thickness заданного цвета</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕС‚СЂРµР·РѕРє РёР· С‚РѕС‡РєРё p1 РІ С‚РѕС‡РєСѓ p2 С‚РѕР»С‰РёРЅРѕР№ Thickness Р·Р°РґР°РЅРЅРѕРіРѕ С†РІРµС‚Р°</td></tr>
 <tr><td><code><b>function</b> Segments3D(points: <b>sequence </b>  <b>of</b> Point3D; Thickness: real; c: Color): SegmentsT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает набор отрезков, задаваемых последовательностью точек points, толщиной Thickness, заданного цвета. Количество точек должно быть четным</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РЅР°Р±РѕСЂ РѕС‚СЂРµР·РєРѕРІ, Р·Р°РґР°РІР°РµРјС‹С… РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊСЋ С‚РѕС‡РµРє points, С‚РѕР»С‰РёРЅРѕР№ Thickness, Р·Р°РґР°РЅРЅРѕРіРѕ С†РІРµС‚Р°. РљРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ С‡РµС‚РЅС‹Рј</td></tr>
 <tr><td><code><b>function</b> Segments3D(points: <b>sequence </b>  <b>of</b> Point3D; Thickness: real := 1.2): SegmentsT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает набор отрезков, задаваемых последовательностью точек points, толщиной Thickness. Количество точек должно быть четным</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РЅР°Р±РѕСЂ РѕС‚СЂРµР·РєРѕРІ, Р·Р°РґР°РІР°РµРјС‹С… РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊСЋ С‚РѕС‡РµРє points, С‚РѕР»С‰РёРЅРѕР№ Thickness. РљРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ С‡РµС‚РЅС‹Рј</td></tr>
 <tr><td><code><b>function</b> Sphere(x, y, z, Radius: real; m: Material := nil): SphereT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает сферу с центром в точке (x, y, z) радиуса Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС„РµСЂСѓ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z) СЂР°РґРёСѓСЃР° Radius</td></tr>
 <tr><td><code><b>function</b> Sphere(center: Point3D; Radius: real; m: Material := nil): SphereT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает сферу с центром в точке center радиуса Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС„РµСЂСѓ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ center СЂР°РґРёСѓСЃР° Radius</td></tr>
 <tr><td><code><b>function</b> Teapot(x, y, z: real; c: Material := nil): TeapotT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает чайник с центром в точке (x, y, z)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‡Р°Р№РЅРёРє СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z)</td></tr>
 <tr><td><code><b>function</b> Teapot(p: Point3D; c: Material := nil): TeapotT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает чайник с центром в точке p</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‡Р°Р№РЅРёРє СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p</td></tr>
 <tr><td><code><b>function</b> Tetrahedron(x, y, z, Radius: real; m: Material := nil): TetrahedronT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает тетраэдр с центром в точке (x, y, z) и радиусом описанной окружности Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµС‚СЂР°СЌРґСЂ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z) Рё СЂР°РґРёСѓСЃРѕРј РѕРїРёСЃР°РЅРЅРѕР№ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё Radius</td></tr>
 <tr><td><code><b>function</b> Tetrahedron(p: Point3D; Radius: real; m: Material := nil): TetrahedronT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает тетраэдр с центром в точке p и радиусом описанной окружности Radius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµС‚СЂР°СЌРґСЂ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p Рё СЂР°РґРёСѓСЃРѕРј РѕРїРёСЃР°РЅРЅРѕР№ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё Radius</td></tr>
 <tr><td><code><b>function</b> Text3D(x, y, z: real; Text: string; Height: real; FontName: string; c: Color): TextT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-текст с центром в точке (x, y, z) с высотой Height, именем шрифта FontName заданного цвета</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-С‚РµРєСЃС‚ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z) СЃ РІС‹СЃРѕС‚РѕР№ Height, РёРјРµРЅРµРј С€СЂРёС„С‚Р° FontName Р·Р°РґР°РЅРЅРѕРіРѕ С†РІРµС‚Р°</td></tr>
 <tr><td><code><b>function</b> Text3D(x, y, z: real; Text: string; Height: real; FontName: string := 'Arial'): TextT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-текст с центром в точке (x, y, z) с высотой Height, именем шрифта FontName</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-С‚РµРєСЃС‚ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z) СЃ РІС‹СЃРѕС‚РѕР№ Height, РёРјРµРЅРµРј С€СЂРёС„С‚Р° FontName</td></tr>
 <tr><td><code><b>function</b> Text3D(p: Point3D; Text: string; Height: real; FontName: string; c: Color): TextT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-текст с центром в точке p с высотой Height, именем шрифта FontName заданного цвета</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-С‚РµРєСЃС‚ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p СЃ РІС‹СЃРѕС‚РѕР№ Height, РёРјРµРЅРµРј С€СЂРёС„С‚Р° FontName Р·Р°РґР°РЅРЅРѕРіРѕ С†РІРµС‚Р°</td></tr>
 <tr><td><code><b>function</b> Text3D(p: Point3D; Text: string; Height: real; FontName: string := 'Arial'): TextT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-текст с центром в точке p с высотой Height, именем шрифта FontName</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-С‚РµРєСЃС‚ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p СЃ РІС‹СЃРѕС‚РѕР№ Height, РёРјРµРЅРµРј С€СЂРёС„С‚Р° FontName</td></tr>
 <tr><td><code><b>function</b> Text3D(x, y, z: real; Text: string; Height: real; c: Color): TextT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-текст с центром в точке (x, y, z) с высотой Height заданного цвета</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-С‚РµРєСЃС‚ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z) СЃ РІС‹СЃРѕС‚РѕР№ Height Р·Р°РґР°РЅРЅРѕРіРѕ С†РІРµС‚Р°</td></tr>
 <tr><td><code><b>function</b> Text3D(p: Point3D; Text: string; Height: real; c: Color): TextT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-текст с центром в точке p с высотой Height заданного цвета</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ 3D-С‚РµРєСЃС‚ СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p СЃ РІС‹СЃРѕС‚РѕР№ Height Р·Р°РґР°РЅРЅРѕРіРѕ С†РІРµС‚Р°</td></tr>
 <tr><td><code><b>function</b> Torus(x, y, z, Diameter, TubeDiameter: real; m: Material := nil): TorusT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает тор (бублик) с центром в точке (x, y, z), диаметром Diameter и диаметром трубы TubeDiameter</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РѕСЂ (Р±СѓР±Р»РёРє) СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ (x, y, z), РґРёР°РјРµС‚СЂРѕРј Diameter Рё РґРёР°РјРµС‚СЂРѕРј С‚СЂСѓР±С‹ TubeDiameter</td></tr>
 <tr><td><code><b>function</b> Torus(p: Point3D; Diameter, TubeDiameter: real; m: Material := nil): TorusT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает тор (бублик) с центром в точке p, диаметром Diameter и диаметром трубы TubeDiameter</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РѕСЂ (Р±СѓР±Р»РёРє) СЃ С†РµРЅС‚СЂРѕРј РІ С‚РѕС‡РєРµ p, РґРёР°РјРµС‚СЂРѕРј Diameter Рё РґРёР°РјРµС‚СЂРѕРј С‚СЂСѓР±С‹ TubeDiameter</td></tr>
 <tr><td><code><b>function</b> Triangle(p1, p2, p3: Point3D; m: Material := nil): TriangleT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает треугольник, соединяющий точки p1, p2, p3</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚СЂРµСѓРіРѕР»СЊРЅРёРє, СЃРѕРµРґРёРЅСЏСЋС‰РёР№ С‚РѕС‡РєРё p1, p2, p3</td></tr>
 <tr><td><code><b>function</b> TruncatedCone(x, y, z, Height, Radius, TopRadius: real; m: Material := nil): TruncatedConeT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает усеченный конус с центром основания в точке (x, y, z) высоты Height, радиуса основания Radius, верхнего радиуса TopRadius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СѓСЃРµС‡РµРЅРЅС‹Р№ РєРѕРЅСѓСЃ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ (x, y, z) РІС‹СЃРѕС‚С‹ Height, СЂР°РґРёСѓСЃР° РѕСЃРЅРѕРІР°РЅРёСЏ Radius, РІРµСЂС…РЅРµРіРѕ СЂР°РґРёСѓСЃР° TopRadius</td></tr>
 <tr><td><code><b>function</b> TruncatedCone(p: Point3D; Height, Radius, TopRadius: real; m: Material := nil): TruncatedConeT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает усеченный конус с центром основания в точке p высоты Height, радиуса основания Radius, верхнего радиуса TopRadius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СѓСЃРµС‡РµРЅРЅС‹Р№ РєРѕРЅСѓСЃ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ p РІС‹СЃРѕС‚С‹ Height, СЂР°РґРёСѓСЃР° РѕСЃРЅРѕРІР°РЅРёСЏ Radius, РІРµСЂС…РЅРµРіРѕ СЂР°РґРёСѓСЃР° TopRadius</td></tr>
 <tr><td><code><b>function</b> Tube(x, y, z, Height, Radius, InnerRadius: real; m: Material := nil): PipeT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает трубу с центром основания в точке (x, y, z) высотой Height, радиусом Radius и внутренним радиусом InnerRadius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚СЂСѓР±Сѓ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ (x, y, z) РІС‹СЃРѕС‚РѕР№ Height, СЂР°РґРёСѓСЃРѕРј Radius Рё РІРЅСѓС‚СЂРµРЅРЅРёРј СЂР°РґРёСѓСЃРѕРј InnerRadius</td></tr>
 <tr><td><code><b>function</b> Tube(p: Point3D; Height, Radius, InnerRadius: real; m: Material := nil): PipeT;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает трубу с центром основания в точке p высотой Height, радиусом Radius и внутренним радиусом InnerRadius</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚СЂСѓР±Сѓ СЃ С†РµРЅС‚СЂРѕРј РѕСЃРЅРѕРІР°РЅРёСЏ РІ С‚РѕС‡РєРµ p РІС‹СЃРѕС‚РѕР№ Height, СЂР°РґРёСѓСЃРѕРј Radius Рё РІРЅСѓС‚СЂРµРЅРЅРёРј СЂР°РґРёСѓСЃРѕРј InnerRadius</td></tr>
 </table>
 </body></HTML>

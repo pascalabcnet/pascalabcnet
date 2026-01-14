@@ -19,104 +19,104 @@
 <param name="Keyword" value="SeqWhile">
 <param name="Keyword" value="Zip"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
-</HEAD><body><H1>Подпрограммы для генерации последовательностей</H1>
+</HEAD><body><H1>РџРѕРґРїСЂРѕРіСЂР°РјРјС‹ РґР»СЏ РіРµРЅРµСЂР°С†РёРё РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Cartesian&lt;T, T1, TRes&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; func: (T,T1)-&gt;TRes): <b>sequence </b>  <b>of</b> TRes;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов двух последовательностей, проектируя каждую пару на значение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ РєРѕРјР±РёРЅР°С†РёРё СЌР»РµРјРµРЅС‚РѕРІ РґРІСѓС… РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№, РїСЂРѕРµРєС‚РёСЂСѓСЏ РєР°Р¶РґСѓСЋ РїР°СЂСѓ РЅР° Р·РЅР°С‡РµРЅРёРµ</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1, T2, TRes&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; func: (T,T1,T2)-&gt;TRes): <b>sequence </b>  <b>of</b> TRes;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов последовательностей, проектируя каждую тройку на значение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ РєРѕРјР±РёРЅР°С†РёРё СЌР»РµРјРµРЅС‚РѕРІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№, РїСЂРѕРµРєС‚РёСЂСѓСЏ РєР°Р¶РґСѓСЋ С‚СЂРѕР№РєСѓ РЅР° Р·РЅР°С‡РµРЅРёРµ</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1, T2, T3, TRes&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3; func: (T,T1,T2,T3)-&gt;TRes): <b>sequence </b>  <b>of</b> TRes;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов последовательностей, проектируя каждую четвёрку на значение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ РєРѕРјР±РёРЅР°С†РёРё СЌР»РµРјРµРЅС‚РѕРІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№, РїСЂРѕРµРєС‚РёСЂСѓСЏ РєР°Р¶РґСѓСЋ С‡РµС‚РІС‘СЂРєСѓ РЅР° Р·РЅР°С‡РµРЅРёРµ</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1, T2, T3, T4, TRes&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3; e: <b>sequence </b>  <b>of</b> T4; func: (T,T1,T2,T3,T4)-&gt;TRes): <b>sequence </b>  <b>of</b> TRes;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов последовательностей, проектируя каждую пятёрку на значение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ РєРѕРјР±РёРЅР°С†РёРё СЌР»РµРјРµРЅС‚РѕРІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№, РїСЂРѕРµРєС‚РёСЂСѓСЏ РєР°Р¶РґСѓСЋ РїСЏС‚С‘СЂРєСѓ РЅР° Р·РЅР°С‡РµРЅРёРµ</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов последовательностей в виде последовательности пар</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ РєРѕРјР±РёРЅР°С†РёРё СЌР»РµРјРµРЅС‚РѕРІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№ РІ РІРёРґРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РїР°СЂ</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1, T2&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2): <b>sequence </b>  <b>of</b> (T, T1, T2);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов последовательностей в виде последовательности троек</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ РєРѕРјР±РёРЅР°С†РёРё СЌР»РµРјРµРЅС‚РѕРІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№ РІ РІРёРґРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё С‚СЂРѕРµРє</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1, T2, T3&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3): <b>sequence </b>  <b>of</b> (T, T1, T2, T3);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов последовательностей в виде последовательности четвёрок</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ РєРѕРјР±РёРЅР°С†РёРё СЌР»РµРјРµРЅС‚РѕРІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№ РІ РІРёРґРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё С‡РµС‚РІС‘СЂРѕРє</td></tr>
 <tr><td><code><b>function</b> Cartesian&lt;T, T1, T2, T3, T4&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3; e: <b>sequence </b>  <b>of</b> T4): <b>sequence </b>  <b>of</b> (T, T1, T2, T3, T4);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все комбинации элементов последовательностей в виде последовательности пятёрок</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ РєРѕРјР±РёРЅР°С†РёРё СЌР»РµРјРµРЅС‚РѕРІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№ РІ РІРёРґРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РїСЏС‚С‘СЂРѕРє</td></tr>
 <tr><td><code><b>function</b> Iterate&lt;T&gt;(first: T; next: T-&gt;T): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом first и функцией next</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ Р±РµСЃРєРѕРЅРµС‡РЅСѓСЋ СЂРµРєСѓСЂСЂРµРЅС‚РЅСѓСЋ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЌР»РµРјРµРЅС‚РѕРІ, Р·Р°РґР°РІР°РµРјСѓСЋ РЅР°С‡Р°Р»СЊРЅС‹Рј СЌР»РµРјРµРЅС‚РѕРј first Рё С„СѓРЅРєС†РёРµР№ next</td></tr>
 <tr><td><code><b>function</b> Linspace(a, b: real; n: integer): <b>sequence </b>  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает n равномерно распределённых точек между a и b включительно (аналог numpy.linspace)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ n СЂР°РІРЅРѕРјРµСЂРЅРѕ СЂР°СЃРїСЂРµРґРµР»С‘РЅРЅС‹С… С‚РѕС‡РµРє РјРµР¶РґСѓ a Рё b РІРєР»СЋС‡РёС‚РµР»СЊРЅРѕ (Р°РЅР°Р»РѕРі numpy.linspace)</td></tr>
 <tr><td><code><b>function</b> PartitionPoints(a, b: real; n: integer): <b>sequence </b>  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РІРµС‰РµСЃС‚РІРµРЅРЅС‹С… РІ С‚РѕС‡РєР°С… СЂР°Р·Р±РёРµРЅРёСЏ РѕС‚СЂРµР·РєР° [a,b] РЅР° n СЂР°РІРЅС‹С… С‡Р°СЃС‚РµР№</td></tr>
 <tr><td><code><b>function</b> Range(a, b: integer): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность целых от a до b</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ С†РµР»С‹С… РѕС‚ a РґРѕ b</td></tr>
 <tr><td><code><b>function</b> Range(a, b, step: integer): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность целых от a до b с шагом step</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ С†РµР»С‹С… РѕС‚ a РґРѕ b СЃ С€Р°РіРѕРј step</td></tr>
 <tr><td><code><b>function</b> Range(a, b: BigInteger): <b>sequence </b>  <b>of</b> BigInteger;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность длинных целых от a до b</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РґР»РёРЅРЅС‹С… С†РµР»С‹С… РѕС‚ a РґРѕ b</td></tr>
 <tr><td><code><b>function</b> Range(a, b, step: BigInteger): <b>sequence </b>  <b>of</b> BigInteger;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность длинных целых от a до b с шагом step</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РґР»РёРЅРЅС‹С… С†РµР»С‹С… РѕС‚ a РґРѕ b СЃ С€Р°РіРѕРј step</td></tr>
 <tr><td><code><b>function</b> Range(c1, c2: char): <b>sequence </b>  <b>of</b> char;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность символов от c1 до c2</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЃРёРјРІРѕР»РѕРІ РѕС‚ c1 РґРѕ c2</td></tr>
 <tr><td><code><b>function</b> Range(c1, c2: char; step: integer): <b>sequence </b>  <b>of</b> char;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность символов от c1 до c2 с шагом step</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЃРёРјРІРѕР»РѕРІ РѕС‚ c1 РґРѕ c2 СЃ С€Р°РіРѕРј step</td></tr>
 <tr><td><code><b>function</b> Range(a, b, step: real): <b>sequence </b>  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность вещественных от a до b с шагом step</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РІРµС‰РµСЃС‚РІРµРЅРЅС‹С… РѕС‚ a РґРѕ b СЃ С€Р°РіРѕРј step</td></tr>
 <tr><td><code><b>function</b> ReadSeqInteger(n: integer): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n целых, введенных с клавиатуры</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· n С†РµР»С‹С…, РІРІРµРґРµРЅРЅС‹С… СЃ РєР»Р°РІРёР°С‚СѓСЂС‹</td></tr>
 <tr><td><code><b>function</b> ReadSeqInteger(prompt: string; n: integer): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность из n целых, введенных с клавиатуры</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РїСЂРёРіР»Р°С€РµРЅРёРµ Рє РІРІРѕРґСѓ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· n С†РµР»С‹С…, РІРІРµРґРµРЅРЅС‹С… СЃ РєР»Р°РІРёР°С‚СѓСЂС‹</td></tr>
 <tr><td><code><b>function</b> ReadSeqIntegerWhile(cond: integer-&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность целых, вводимых с клавиатуры пока выполняется определенное условие</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ С†РµР»С‹С…, РІРІРѕРґРёРјС‹С… СЃ РєР»Р°РІРёР°С‚СѓСЂС‹ РїРѕРєР° РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РѕРїСЂРµРґРµР»РµРЅРЅРѕРµ СѓСЃР»РѕРІРёРµ</td></tr>
 <tr><td><code><b>function</b> ReadSeqIntegerWhile(prompt: string; cond: integer-&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность целых, вводимых с клавиатуры пока выполняется определенное условие</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РїСЂРёРіР»Р°С€РµРЅРёРµ Рє РІРІРѕРґСѓ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ С†РµР»С‹С…, РІРІРѕРґРёРјС‹С… СЃ РєР»Р°РІРёР°С‚СѓСЂС‹ РїРѕРєР° РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РѕРїСЂРµРґРµР»РµРЅРЅРѕРµ СѓСЃР»РѕРІРёРµ</td></tr>
 <tr><td><code><b>function</b> ReadSeqReal(n: integer): <b>sequence </b>  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n вещественных, введенных с клавиатуры</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· n РІРµС‰РµСЃС‚РІРµРЅРЅС‹С…, РІРІРµРґРµРЅРЅС‹С… СЃ РєР»Р°РІРёР°С‚СѓСЂС‹</td></tr>
 <tr><td><code><b>function</b> ReadSeqReal(prompt: string; n: integer): <b>sequence </b>  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность из n вещественных, введенных с клавиатуры</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РїСЂРёРіР»Р°С€РµРЅРёРµ Рє РІРІРѕРґСѓ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· n РІРµС‰РµСЃС‚РІРµРЅРЅС‹С…, РІРІРµРґРµРЅРЅС‹С… СЃ РєР»Р°РІРёР°С‚СѓСЂС‹</td></tr>
 <tr><td><code><b>function</b> ReadSeqRealWhile(cond: real-&gt;boolean): <b>sequence </b>  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность вещественных, вводимых с клавиатуры пока выполняется определенное условие</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РІРµС‰РµСЃС‚РІРµРЅРЅС‹С…, РІРІРѕРґРёРјС‹С… СЃ РєР»Р°РІРёР°С‚СѓСЂС‹ РїРѕРєР° РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РѕРїСЂРµРґРµР»РµРЅРЅРѕРµ СѓСЃР»РѕРІРёРµ</td></tr>
 <tr><td><code><b>function</b> ReadSeqRealWhile(prompt: string; cond: real-&gt;boolean): <b>sequence </b>  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность вещественных, вводимых с клавиатуры пока выполняется определенное условие</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РїСЂРёРіР»Р°С€РµРЅРёРµ Рє РІРІРѕРґСѓ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РІРµС‰РµСЃС‚РІРµРЅРЅС‹С…, РІРІРѕРґРёРјС‹С… СЃ РєР»Р°РІРёР°С‚СѓСЂС‹ РїРѕРєР° РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РѕРїСЂРµРґРµР»РµРЅРЅРѕРµ СѓСЃР»РѕРІРёРµ</td></tr>
 <tr><td><code><b>function</b> ReadSeqString(n: integer): <b>sequence </b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n строк, введенных с клавиатуры</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· n СЃС‚СЂРѕРє, РІРІРµРґРµРЅРЅС‹С… СЃ РєР»Р°РІРёР°С‚СѓСЂС‹</td></tr>
 <tr><td><code><b>function</b> ReadSeqString(prompt: string; n: integer): <b>sequence </b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность из n строк, введенных с клавиатуры</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РїСЂРёРіР»Р°С€РµРЅРёРµ Рє РІРІРѕРґСѓ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· n СЃС‚СЂРѕРє, РІРІРµРґРµРЅРЅС‹С… СЃ РєР»Р°РІРёР°С‚СѓСЂС‹</td></tr>
 <tr><td><code><b>function</b> ReadSeqStringWhile(cond: string-&gt;boolean): <b>sequence </b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность строк, вводимых с клавиатуры пока выполняется определенное условие</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЃС‚СЂРѕРє, РІРІРѕРґРёРјС‹С… СЃ РєР»Р°РІРёР°С‚СѓСЂС‹ РїРѕРєР° РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РѕРїСЂРµРґРµР»РµРЅРЅРѕРµ СѓСЃР»РѕРІРёРµ</td></tr>
 <tr><td><code><b>function</b> ReadSeqStringWhile(prompt: string; cond: string-&gt;boolean): <b>sequence </b>  <b>of</b> string;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность строк, вводимых с клавиатуры пока выполняется определенное условие</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‹РІРѕРґРёС‚ РїСЂРёРіР»Р°С€РµРЅРёРµ Рє РІРІРѕРґСѓ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЃС‚СЂРѕРє, РІРІРѕРґРёРјС‹С… СЃ РєР»Р°РІРёР°С‚СѓСЂС‹ РїРѕРєР° РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РѕРїСЂРµРґРµР»РµРЅРЅРѕРµ СѓСЃР»РѕРІРёРµ</td></tr>
 <tr><td><code><b>function</b> Seq&lt;T&gt;(<b>params</b> a: <b>array</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из указанных элементов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· СѓРєР°Р·Р°РЅРЅС‹С… СЌР»РµРјРµРЅС‚РѕРІ</td></tr>
 <tr><td><code><b>function</b> SeqFill&lt;T&gt;(count: integer; x: T): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов x</td></tr>
-<tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; f: integer-&gt;T): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов, заполненных значениями f(i)</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· count СЌР»РµРјРµРЅС‚РѕРІ x</td></tr>
+<tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; f: integer &gt; T): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· count СЌР»РµРјРµРЅС‚РѕРІ, Р·Р°РїРѕР»РЅРµРЅРЅС‹С… Р·РЅР°С‡РµРЅРёСЏРјРё f(i)</td></tr>
 <tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; f: integer-&gt;T; from: integer): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов, заполненных значениями f(i), начиная с i=from</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· count СЌР»РµРјРµРЅС‚РѕРІ, Р·Р°РїРѕР»РЅРµРЅРЅС‹С… Р·РЅР°С‡РµРЅРёСЏРјРё f(i), РЅР°С‡РёРЅР°СЏ СЃ i=from</td></tr>
 <tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; first: T; next: T-&gt;T): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов, начинающуюся с first, с функцией next перехода от предыдущего к следующему</td></tr>
-<tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; first, second: T; next: (T,T) -&gt;T): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов, начинающуюся с first и second,с функцией next перехода от двух предыдущих к следующему</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· count СЌР»РµРјРµРЅС‚РѕРІ, РЅР°С‡РёРЅР°СЋС‰СѓСЋСЃСЏ СЃ first, СЃ С„СѓРЅРєС†РёРµР№ next РїРµСЂРµС…РѕРґР° РѕС‚ РїСЂРµРґС‹РґСѓС‰РµРіРѕ Рє СЃР»РµРґСѓСЋС‰РµРјСѓ</td></tr>
+<tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; first, second: T; next: (T,T) &gt; T): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· count СЌР»РµРјРµРЅС‚РѕРІ, РЅР°С‡РёРЅР°СЋС‰СѓСЋСЃСЏ СЃ first Рё second,СЃ С„СѓРЅРєС†РёРµР№ next РїРµСЂРµС…РѕРґР° РѕС‚ РґРІСѓС… РїСЂРµРґС‹РґСѓС‰РёС… Рє СЃР»РµРґСѓСЋС‰РµРјСѓ</td></tr>
 <tr><td><code><b>function</b> SeqRandom(n: integer := 10; a: integer := 0; b: integer := 100): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n случайных целых элементов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· n СЃР»СѓС‡Р°Р№РЅС‹С… С†РµР»С‹С… СЌР»РµРјРµРЅС‚РѕРІ</td></tr>
 <tr><td><code><b>function</b> SeqRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n случайных целых элементов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· n СЃР»СѓС‡Р°Р№РЅС‹С… С†РµР»С‹С… СЌР»РµРјРµРЅС‚РѕРІ</td></tr>
 <tr><td><code><b>function</b> SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10; digits: integer := 1): <b>sequence </b>  <b>of</b> real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n случайных вещественных элементов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РёР· n СЃР»СѓС‡Р°Р№РЅС‹С… РІРµС‰РµСЃС‚РІРµРЅРЅС‹С… СЌР»РµРјРµРЅС‚РѕРІ</td></tr>
 <tr><td><code><b>function</b> SeqWhile&lt;T&gt;(first: T; next: T-&gt;T; pred: T-&gt;boolean): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность элементов с начальным значением first,функцией next перехода от предыдущего к следующему и условием pred продолжения последовательности</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЌР»РµРјРµРЅС‚РѕРІ СЃ РЅР°С‡Р°Р»СЊРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј first,С„СѓРЅРєС†РёРµР№ next РїРµСЂРµС…РѕРґР° РѕС‚ РїСЂРµРґС‹РґСѓС‰РµРіРѕ Рє СЃР»РµРґСѓСЋС‰РµРјСѓ Рё СѓСЃР»РѕРІРёРµРј pred РїСЂРѕРґРѕР»Р¶РµРЅРёСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё</td></tr>
 <tr><td><code><b>function</b> SeqWhile&lt;T&gt;(first, second: T; next: (T,T) -&gt;T; pred: T-&gt;boolean): <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность элементов, начинающуюся с first и second,с функцией next перехода от двух предыдущих к следующему и условием pred продолжения последовательности</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЌР»РµРјРµРЅС‚РѕРІ, РЅР°С‡РёРЅР°СЋС‰СѓСЋСЃСЏ СЃ first Рё second,СЃ С„СѓРЅРєС†РёРµР№ next РїРµСЂРµС…РѕРґР° РѕС‚ РґРІСѓС… РїСЂРµРґС‹РґСѓС‰РёС… Рє СЃР»РµРґСѓСЋС‰РµРјСѓ Рё СѓСЃР»РѕРІРёРµРј pred РїСЂРѕРґРѕР»Р¶РµРЅРёСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё</td></tr>
 <tr><td><code><b>function</b> Zip&lt;T, T1&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности в последовательность двухэлементных кортежей</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±СЉРµРґРёРЅСЏРµС‚ РґРІРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РґРІСѓС…СЌР»РµРјРµРЅС‚РЅС‹С… РєРѕСЂС‚РµР¶РµР№</td></tr>
 <tr><td><code><b>function</b> Zip&lt;T, T1, T2&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2): <b>sequence </b>  <b>of</b> (T, T1, T2);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет три последовательности в последовательность трехэлементных кортежей</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±СЉРµРґРёРЅСЏРµС‚ С‚СЂРё РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ С‚СЂРµС…СЌР»РµРјРµРЅС‚РЅС‹С… РєРѕСЂС‚РµР¶РµР№</td></tr>
 <tr><td><code><b>function</b> Zip&lt;T, T1, T2, T3&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3): <b>sequence </b>  <b>of</b> (T, T1, T2, T3);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет четыре последовательности в последовательность четырехэлементных кортежей</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±СЉРµРґРёРЅСЏРµС‚ С‡РµС‚С‹СЂРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ С‡РµС‚С‹СЂРµС…СЌР»РµРјРµРЅС‚РЅС‹С… РєРѕСЂС‚РµР¶РµР№</td></tr>
 <tr><td><code><b>function</b> Zip&lt;T, T1, T2, T3, T4&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3; e: <b>sequence </b>  <b>of</b> T4): <b>sequence </b>  <b>of</b> (T, T1, T2, T3, T4);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет пять последовательностей в последовательность пятиэлементных кортежей</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РћР±СЉРµРґРёРЅСЏРµС‚ РїСЏС‚СЊ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№ РІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РїСЏС‚РёСЌР»РµРјРµРЅС‚РЅС‹С… РєРѕСЂС‚РµР¶РµР№</td></tr>
 <tr><td><code><b>function</b> Zip&lt;T, T1, TRes&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; fun: (T,T1) -&gt; TRes): <b>sequence </b>  <b>of</b> TRes;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРёРјРµРЅСЏРµС‚ СѓРєР°Р·Р°РЅРЅСѓСЋ С„СѓРЅРєС†РёСЋ Рє СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёРј СЌР»РµРјРµРЅС‚Р°Рј РєРѕСЂС‚РµР¶РµР№, РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ</td></tr>
 <tr><td><code><b>function</b> Zip&lt;T, T1, T2, TRes&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; fun: (T,T1,T2) -&gt; TRes): <b>sequence </b>  <b>of</b> TRes;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРёРјРµРЅСЏРµС‚ СѓРєР°Р·Р°РЅРЅСѓСЋ С„СѓРЅРєС†РёСЋ Рє СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёРј СЌР»РµРјРµРЅС‚Р°Рј РєРѕСЂС‚РµР¶РµР№, РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ</td></tr>
 <tr><td><code><b>function</b> Zip&lt;T, T1, T2, T3, TRes&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3; fun: (T,T1,T2,T3) -&gt; TRes): <b>sequence </b>  <b>of</b> TRes;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРёРјРµРЅСЏРµС‚ СѓРєР°Р·Р°РЅРЅСѓСЋ С„СѓРЅРєС†РёСЋ Рє СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёРј СЌР»РµРјРµРЅС‚Р°Рј РєРѕСЂС‚РµР¶РµР№, РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ</td></tr>
 <tr><td><code><b>function</b> Zip&lt;T, T1, T2, T3, T4, TRes&gt;(a: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; c: <b>sequence </b>  <b>of</b> T2; d: <b>sequence </b>  <b>of</b> T3; e: <b>sequence </b>  <b>of</b> T4; fun: (T,T1,T2,T3,T4) -&gt; TRes): <b>sequence </b>  <b>of</b> TRes;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет указанную функцию к соответствующим элементам кортежей, возвращает последовательность результатов</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РџСЂРёРјРµРЅСЏРµС‚ СѓРєР°Р·Р°РЅРЅСѓСЋ С„СѓРЅРєС†РёСЋ Рє СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёРј СЌР»РµРјРµРЅС‚Р°Рј РєРѕСЂС‚РµР¶РµР№, РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ</td></tr>
 </table>
 </body></HTML>

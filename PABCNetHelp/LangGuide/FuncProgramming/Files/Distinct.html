@@ -2,17 +2,17 @@
 <param name="Keyword" value="Distinct">
 </object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
 <body>
-<H1>Метод Distinct</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<H1>РњРµС‚РѕРґ Distinct</H1><h2>РћРїРёСЃР°РЅРёРµ РјРµС‚РѕРґРѕРІ</h2><p>РњРµС‚РѕРґС‹ РїСЂРёРІРµРґРµРЅС‹ РґР»СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё <code><b>sequence of</b> T</code>.</p><table>
 <tr><td>
 <code><b>function </b>Distinct(): <b>sequence of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает различающиеся элементы последовательности.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЂР°Р·Р»РёС‡Р°СЋС‰РёРµСЃСЏ СЌР»РµРјРµРЅС‚С‹ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё.
 </td></tr>
 <tr><td>
 <code><b>function </b>Distinct(comparer: IEqualityComparer&lt;T&gt;): <b>sequence of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает различающиеся элементы последовательности, используя для сравнения значений компаратор comparer.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’РѕР·РІСЂР°С‰Р°РµС‚ СЂР°Р·Р»РёС‡Р°СЋС‰РёРµСЃСЏ СЌР»РµРјРµРЅС‚С‹ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё, РёСЃРїРѕР»СЊР·СѓСЏ РґР»СЏ СЃСЂР°РІРЅРµРЅРёСЏ Р·РЅР°С‡РµРЅРёР№ РєРѕРјРїР°СЂР°С‚РѕСЂ comparer.
 </td></tr>
 </table>
-<h2>Пример </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
+<h2>РџСЂРёРјРµСЂ </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
 	a := Arr('aaa','bbb','ccc','aaa','ccc');<br>&nbsp; a.Distinct.Println; // 
 	aaa bbb ccc<br><strong>end</strong>.</code></blockquote>
 </body>

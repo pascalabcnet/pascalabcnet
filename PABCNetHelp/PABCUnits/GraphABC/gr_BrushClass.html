@@ -11,17 +11,17 @@
 </object></head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title><link rel="StyleSheet" href="../../default.css"><body>
-<H1>Текущая графическая кисть Brush</H1>
-<p>Объект текущей кисти возвращается функцией
-<code>Brush</code> и имеет тип
+<H1>РўРµРєСѓС‰Р°СЏ РіСЂР°С„РёС‡РµСЃРєР°СЏ РєРёСЃС‚СЊ Brush</H1>
+<p>РћР±СЉРµРєС‚ С‚РµРєСѓС‰РµР№ РєРёСЃС‚Рё РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ С„СѓРЅРєС†РёРµР№
+<code>Brush</code> Рё РёРјРµРµС‚ С‚РёРї
 <code>
   GraphABC</code><code>Brush</code>:</p>
 <blockquote>
 	<p><code><b>function</b> </code><code>Brush</code><code>: 
 	GraphABC</code><code>Brush</code><code>;</code></p>
 </blockquote>
-<p>Класс <code>GraphABC</code><code>Brush</code> 
-имеет следующий интерфейс: </p>
+<p>РљР»Р°СЃСЃ <code>GraphABC</code><code>Brush</code> 
+РёРјРµРµС‚ СЃР»РµРґСѓСЋС‰РёР№ РёРЅС‚РµСЂС„РµР№СЃ: </p>
 <blockquote>
 	<p><code><b>type</b> <br>
 &nbsp;
@@ -34,34 +34,34 @@
 	&nbsp;&nbsp;&nbsp; <b>property</b> GradientSecondColor: GraphABC.Color;<br>
 	&nbsp; <b>end</b>;</code></p>
 </blockquote>
-<p>Свойства класса <code>GraphABC</code><code>Brush</code> 
-описаны в следующей таблице:</p>
+<p>РЎРІРѕР№СЃС‚РІР° РєР»Р°СЃСЃР° <code>GraphABC</code><code>Brush</code> 
+РѕРїРёСЃР°РЅС‹ РІ СЃР»РµРґСѓСЋС‰РµР№ С‚Р°Р±Р»РёС†Рµ:</p>
 <table border=0 CELLPADDING=5>
 <tr><td>
 <code>
     <b>property</b> 
     NETBrush: System.Drawing.Brush;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Текущая кисть .NET
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РўРµРєСѓС‰Р°СЏ РєРёСЃС‚СЊ .NET
 </td></tr>
 <tr><td>
 <code>
     <b>property</b> Color: GraphABC.Color;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет кисти
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р¦РІРµС‚ РєРёСЃС‚Рё
 </td></tr>
 <tr><td>
 <code>
     <b>property</b> Style: <a href="gr_BrushStyle.html">BrushStyleType</a>;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Стиль кисти
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЎС‚РёР»СЊ РєРёСЃС‚Рё
 </td></tr>
 <tr>
 	<td>
 <code>
     <b>property</b> Hatch: <a href="gr_BrushHatchStyle.html">HatchStyle</a>;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Штриховка кисти
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РЁС‚СЂРёС…РѕРІРєР° РєРёСЃС‚Рё
 </td>
 </tr>
 <tr>
@@ -69,21 +69,21 @@
 <code>
     <b>property</b> HatchBackgroundColor: GraphABC.Color;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет заднего плана штриховой кисти
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р¦РІРµС‚ Р·Р°РґРЅРµРіРѕ РїР»Р°РЅР° С€С‚СЂРёС…РѕРІРѕР№ РєРёСЃС‚Рё
 </td>
 </tr>
 <tr><td>
 <code>
     <b>property</b> GradientSecondColor: GraphABC.Color;
 </code><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Второй цвет градиентной кисти</td></tr>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’С‚РѕСЂРѕР№ С†РІРµС‚ РіСЂР°РґРёРµРЅС‚РЅРѕР№ РєРёСЃС‚Рё</td></tr>
 </table>
-<p><b>Пример.</b></p>
+<p><b>РџСЂРёРјРµСЂ.</b></p>
 <blockquote>
 	<p><code>Brush.Color := clRed;<br>
 	Brush.Style := bsHatch;<br>
 	Brush.Hatch := bhBackwardDiagonal;</code></p>
 </blockquote>
-<p>Кроме того, можно изменять свойства текущей кисти, используя 
-соответствующие <a href="gr_Brush.html">процедуры и функции</a>.</p>
+<p>РљСЂРѕРјРµ С‚РѕРіРѕ, РјРѕР¶РЅРѕ РёР·РјРµРЅСЏС‚СЊ СЃРІРѕР№СЃС‚РІР° С‚РµРєСѓС‰РµР№ РєРёСЃС‚Рё, РёСЃРїРѕР»СЊР·СѓСЏ 
+СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёРµ <a href="gr_Brush.html">РїСЂРѕС†РµРґСѓСЂС‹ Рё С„СѓРЅРєС†РёРё</a>.</p>
 </body></html>

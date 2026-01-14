@@ -6,6 +6,7 @@ using PascalABCCompiler.TreeConverter;
 using System.Collections.Generic;
 using SymbolTable;
 using System.Reflection;
+using PascalABCCompiler.TreeRealization;
 
 namespace PascalABCCompiler.TreeRealization
 {
@@ -152,7 +153,7 @@ namespace SymbolTable
 	#region Scope,DotNETScope,UnitPartScope,UnitInterfaceScope,UnitImplementationScope,ClassScope элемены таблицы областей видимости
 	//элемент таблицы областей видимости
 	//при создании добавляет себя в vSymbolTable
-	public class Scope:BaseScope
+	public class Scope // :BaseScope
 	{
         public string Name;
         public override string ToString() => Name == ""? GetType().Name : Name;
@@ -928,6 +929,8 @@ namespace SymbolTable
                 (((to.symbol_kind == symbol_kind.sk_none) && (add.symbol_kind == symbol_kind.sk_none)) && (to.scope == add.scope))
                 ||
                 ((to.symbol_kind == symbol_kind.sk_overload_function) && (add.symbol_kind == symbol_kind.sk_overload_function))
+                //|| // SSM 06.01.26 пробую разрешить конструктор вместе с функцией Create. Увы - select_function слаба - она только по параметрам пытается определить, а параметры у конструктора и функции Create одни и те же
+                //((to.symbol_kind == symbol_kind.sk_overload_function) && (add.sym_info is common_method_node cmn) && cmn.is_constructor)
                 ||
                 ((to.symbol_kind == symbol_kind.sk_overload_procedure) && (add.symbol_kind == symbol_kind.sk_overload_procedure))
                 || to.sym_info != add.sym_info && (to.sym_info is PascalABCCompiler.TreeRealization.function_node || to.symbol_kind == symbol_kind.sk_overload_function) && add.sym_info is PascalABCCompiler.TreeRealization.function_node 

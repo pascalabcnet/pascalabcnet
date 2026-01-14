@@ -235,8 +235,8 @@ namespace VisualPascalABCPlugins
         {
         	CodeCompletion.CodeCompletionTester.Test();
             
-            CodeCompletion.CodeCompletionTester.TestIntellisense(Path.Combine(@"c:\Work\Miks\_PABCNETGitHub\pascalabcnet\TestSuite", "intellisense_tests"));
-            CodeCompletion.CodeCompletionTester.TestRename(@"c:\Work\Miks\_PABCNETGitHub\pascalabcnet\TestSuite\refactoring_tests\rename_tests");
+            CodeCompletion.CodeCompletionTester.TestIntellisense(Path.Combine(Path.Combine(Environment.CurrentDirectory, ".." + Path.DirectorySeparatorChar + "TestSuite"), "intellisense_tests"));
+            CodeCompletion.CodeCompletionTester.TestRename(Path.Combine(Path.Combine(Environment.CurrentDirectory, ".." + Path.DirectorySeparatorChar + "TestSuite"), Path.Combine("refactoring_tests","rename_tests")));
             MessageBox.Show("Done");
         }
         

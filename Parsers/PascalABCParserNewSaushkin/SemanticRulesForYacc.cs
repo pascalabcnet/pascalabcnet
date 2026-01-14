@@ -521,7 +521,15 @@ namespace Languages.Pascal.Frontend.Core
                     }
                     expr.source_context.begin_position.line_num = str.source_context.begin_position.line_num;
                     expr.source_context.end_position.line_num = str.source_context.end_position.line_num;
-                    mc.parameters.Add(expr);
+
+                    method_call applyO2S = new method_call();
+                    applyO2S.dereferencing_value = new ident("__ApplyO2S", expr.source_context);
+                    applyO2S.parameters = new expression_list();
+                    applyO2S.parameters.Add(expr);
+                    applyO2S.source_context = expr.source_context;
+
+                    //mc.parameters.Add(expr);
+                    mc.parameters.Add(applyO2S);  // добавляем обернутое выражение
                 }
 
                 mc.source_context = str.source_context;
