@@ -192,6 +192,9 @@ namespace PascalABCCompiler.Parsers
         /// </summary>
         Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; }
 
+        /// <summary>
+        /// Обозначение однострочного комментария (используется в TestRunner)
+        /// </summary>
         string CommentSymbol { get; }
 
         string BodyStartBracket
