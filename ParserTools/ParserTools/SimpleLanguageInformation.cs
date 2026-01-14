@@ -25,6 +25,13 @@ namespace PascalABCCompiler.Parsers
 
         public override string ReturnTypeDelimiter => ":";
 
+        public override string ProcedureName => "procedure";
+
+        public override string FunctionName => "function";
+
+        // Важно переопределить для корректной работы TestRunner
+        public override string CommentSymbol => "//";
+
         public override bool SyntaxTreeIsConvertedAfterUsedModulesCompilation => false;
 
         public override bool ApplySyntaxTreeConvertersForIntellisense => false;
