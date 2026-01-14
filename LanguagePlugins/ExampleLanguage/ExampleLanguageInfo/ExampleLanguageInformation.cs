@@ -47,9 +47,13 @@ namespace Languages.Example.Frontend.Data
 
         protected override string IntTypeName => "int";
 
+        public override string CommentSymbol => "//";
+
         public override bool CaseSensitive => true;
 
         public override bool IncludeDotNetEntities => true;
+
+        public override bool SyntaxTreeIsConvertedAfterUsedModulesCompilation => false;
 
         public override bool AddStandardUnitNamesToUserScope => true;
 
