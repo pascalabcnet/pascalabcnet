@@ -613,12 +613,19 @@ namespace VisualPascalABC
             //    MainForm.VisualEnvironmentCompiler.Compiler.ParsersController.Compile(
             //    file_name, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
             string text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName, PascalABCCompiler.SourceFileOperation.GetText) as string;
+
+            var currentParser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName)?.Parser;
+
+            if (currentParser == null || !currentParser.LanguageInformation.SupportsIntellisense)
+                return;
+
             PascalABCCompiler.SyntaxTree.compilation_unit cu =
-                Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName)?.Parser.GetCompilationUnitForFormatter(
+                currentParser.GetCompilationUnitForFormatter(
                 VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName,
                text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
                 Errors,
                 new List<PascalABCCompiler.Errors.CompilerWarning>());
+
             if (Errors.Count == 0)
             {
                 string formattedText = cf.FormatTree(text, cu, textArea.Caret.Line + 1, textArea.Caret.Column + 1);

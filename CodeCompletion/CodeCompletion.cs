@@ -66,6 +66,14 @@ namespace CodeCompletion
                 return currentLanguage?.Parser;
 			}
 		}
+
+        /// <summary>
+        /// Поддерживается ли Intellisense для текущего языка
+        /// </summary>
+        public static bool IntellisenseAvailable()
+        {
+            return CurrentParser != null && CurrentParser.LanguageInformation.SupportsIntellisense;
+        }
         
         public DomConverter Compile(string FileName, string Text)
         {

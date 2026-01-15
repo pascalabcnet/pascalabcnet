@@ -22,6 +22,8 @@ namespace PascalABCCompiler.Parsers
 
         public abstract string[] SystemUnitNames { get; }
 
+        public virtual bool SupportsIntellisense => true;
+
         public abstract BaseKeywords KeywordsStorage { get; }
 
         public abstract Dictionary<string, DirectiveInfo> ValidDirectives { get; protected set; }
