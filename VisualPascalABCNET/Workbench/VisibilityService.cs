@@ -100,17 +100,14 @@ namespace VisualPascalABC
             set { miNavigForw.Enabled = tsNavigForw.Enabled = value; }
         }
 
-        // дубликат функции ниже
-        public void SetDebugButtonsEnabled2(bool Enabled)
+        public void SetDebugButtonsEnabled(bool Enabled)
         {
             if (!Enabled || CodeCompletion.CodeCompletionController.IntellisenseAvailable())
             {
                 StepIntoButton.Enabled = StepOverButton.Enabled = StartDebugButton.Enabled =
-                mDEBUGSTARTToolStripMenuItem.Enabled = mSTEPOVERToolStripMenuItem.Enabled = mSTEPINToolStripMenuItem.Enabled = Enabled;
+                mDEBUGSTARTToolStripMenuItem.Enabled = mSTEPOVERToolStripMenuItem.Enabled = 
+                mSTEPINToolStripMenuItem.Enabled = mRUNTOCURToolStripMenuItem.Enabled = Enabled;
             }
-            
-            mRUNTOCURToolStripMenuItem.Enabled = Enabled;
-
             //toolStrip1.Refresh();
         }
 
@@ -418,7 +415,7 @@ namespace VisualPascalABC
             this.mDEBUGSTARTToolStripMenuItem.Text = Form1StringResources.Get("M_DEBUGSTART");
         }
 
-        public void SetStartDebugDisabled()
+        public void SetStartDebugAndRunDisabled()
         {
             this.mDEBUGSTARTToolStripMenuItem.Enabled = false;
             this.StartDebugButton.Enabled = false;
@@ -438,7 +435,7 @@ namespace VisualPascalABC
         /// <summary>
         /// Активирует кнопки для Debug только в случае, если Intellisense доступен
         /// </summary>
-        public void SetStartDebugEnabled()
+        public void SetStartDebugAndRunEnabled()
         {
             if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
             {
@@ -532,17 +529,18 @@ namespace VisualPascalABC
         }
 
         /// <summary>
-        /// Активировать/Деактивировать все кнопки, относящиеся к дебагу, в том числе кнопку запуска. 
-        /// ВАЖНО: если Intellisense не поддерживается, то активация не произойдет
+        /// Активировать/Деактивировать все кнопки, относящиеся к дебагу и кнопки запуска. 
+        /// ВАЖНО: если Intellisense не поддерживается, то активация кнопок дебага не произойдет
         /// </summary>
         // Здесь в том числе активируюется кнопка запуска, нужен рефакторинг EVA
-        public void SetDebugButtonsEnabled(bool val)
+        public void SetDebugAndRunButtonsEnabled(bool val)
         {
             if (val)
             {
                 this.mDEBUGSTOPToolStripMenuItem.Enabled = false;
                 this.mDEBUGSTARTToolStripMenuItem.Enabled = false;
                 this.StepOutButton.Enabled = false;
+                this.mSTEPToolStripMenuItem.Enabled = false;
 
                 if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
                 {
@@ -553,10 +551,9 @@ namespace VisualPascalABC
                     this.mDEBUGSTARTToolStripMenuItem.Enabled = true;
                     this.mSTEPINToolStripMenuItem.Enabled = true;
                     this.mSTEPOVERToolStripMenuItem.Enabled = true;
+                    this.mRUNTOCURToolStripMenuItem.Enabled = true;
                 }
 
-                this.mSTEPToolStripMenuItem.Enabled = false;
-                this.mRUNTOCURToolStripMenuItem.Enabled = true;
                 this.miRun.Enabled = true;
                 this.StartButton.Enabled = true;
             }

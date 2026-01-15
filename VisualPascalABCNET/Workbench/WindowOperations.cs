@@ -445,7 +445,7 @@ namespace VisualPascalABC
                 if (!debug)
                 {
                     SetCompilingButtonsEnabled(!run && VisualEnvironmentCompiler.compilerLoaded);
-                    SetDebugButtonsEnabled(!run && VisualEnvironmentCompiler.compilerLoaded);
+                    SetDebugAndRunButtonsEnabled(!run && VisualEnvironmentCompiler.compilerLoaded);
                 }
                 else
                 {

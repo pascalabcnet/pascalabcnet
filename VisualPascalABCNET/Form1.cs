@@ -260,7 +260,7 @@ namespace VisualPascalABC
             	InitForm();
                 this.StepOutButton.Visible = false;
                 PlayPauseButtonsVisibleInPanel = PlayPauseButtonsVisibleInPanel;
-                SetDebugButtonsEnabled(false);
+                SetDebugAndRunButtonsEnabled(false);
             }
             
             AddOwnedForm(CompilerForm1 = new CompilerForm());
@@ -335,7 +335,7 @@ namespace VisualPascalABC
 
             RunManager RunnerManager = (WorkbenchServiceFactory.RunService as WorkbenchRunService).RunnerManager;
             VisualEnvironmentCompiler = new VisualEnvironmentCompiler(
-                this.BeginInvoke, SetCompilingButtonsEnabled, SetDebugButtonsEnabled2, SetStateText,
+                this.BeginInvoke, SetCompilingButtonsEnabled, SetDebugButtonsEnabled, SetStateText,
                 AddTextToCompilerMessagesSync, miPlugins, toolStrip1,
                 ExecuteSourceLocationAction, ExecuteVisualEnvironmentCompilerAction, ErrorsManager, RunnerManager,
                 WorkbenchServiceFactory.DebuggerManager, UserOptions, WorkbenchStorage.StandartDirectories, OpenDocuments, this);
@@ -404,7 +404,7 @@ namespace VisualPascalABC
             }
             SetStopEnabled(false);
             CompilingButtonsEnabled = CloseButtonsEnabled = SaveAllButtonsEnabled = SaveButtonsEnabled = false;
-            SetDebugButtonsEnabled2(false);
+            SetDebugButtonsEnabled(false);
             SetCompilingButtonsEnabled(false);
 
             HelpFileName = PascalABCCompiler.Tools.ReplaceAllKeys(Constants.HelpFileName, WorkbenchStorage.StandartDirectories);
