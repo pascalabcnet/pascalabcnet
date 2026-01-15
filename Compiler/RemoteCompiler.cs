@@ -549,8 +549,9 @@ namespace PascalABCCompiler
                 throw new NotSupportedException();
             }
         }
-        
-        public PascalABCCompiler.SyntaxTree.compilation_unit ParseText(string FileName, string Text, List<PascalABCCompiler.Errors.Error> ErrorList, List<CompilerWarning> Warnings)
+
+        // SSM 2026 Исключил это из ICompiler
+        /*public PascalABCCompiler.SyntaxTree.compilation_unit ParseText(string FileName, string Text, List<PascalABCCompiler.Errors.Error> ErrorList, List<CompilerWarning> Warnings)
         {
             throw new NotSupportedException();
         }
@@ -558,7 +559,7 @@ namespace PascalABCCompiler
         public string GetSourceFileText(string FileName)
         {
             throw new NotSupportedException();
-        }
+        }*/
 
         public PascalABCCompiler.SemanticTreeConverters.SemanticTreeConvertersController SemanticTreeConvertersController
         {
