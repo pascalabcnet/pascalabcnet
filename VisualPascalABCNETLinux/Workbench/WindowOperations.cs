@@ -410,8 +410,19 @@ namespace VisualPascalABC
                 CurrentWebBrowserControl = null;
                 SetFocusToEditor();
             }
+
+            CodeCompletion.CodeCompletionController.SetLanguage(CurrentCodeFileDocument.FileName);
+
+            bool intellisenseAvailable = CodeCompletion.CodeCompletionController.IntellisenseAvailable();
+
+            SetFormatButtonsEnabled(intellisenseAvailable);
+
+            if (!intellisenseAvailable)
+                SetDebugButtonsEnabled(false); // активация кнопок произойдет ниже, если возможно
+
             if (BakSelectedTab == CurrentCodeFileDocument)
                 return;
+
             LastSelectedTab = BakSelectedTab;
             BakSelectedTab = CurrentCodeFileDocument;
 
@@ -432,8 +443,6 @@ namespace VisualPascalABC
                 OutputWindow.outputTextBox = OutputTextBoxs[CurrentCodeFileDocument];
             }
 
-            CodeCompletion.CodeCompletionController.SetLanguage(CurrentCodeFileDocument.FileName);
-
             SetFocusToEditor();
             bool run = WorkbenchServiceFactory.RunService.IsRun(CurrentEXEFileName);
             WorkbenchServiceFactory.DebuggerManager.SetAsPossibleDebugPage(CurrentCodeFileDocument);
@@ -448,7 +457,7 @@ namespace VisualPascalABC
                 if (!debug)
                 {
                     SetCompilingButtonsEnabled(!run && VisualEnvironmentCompiler.compilerLoaded);
-                    SetDebugButtonsEnabled(!run && VisualEnvironmentCompiler.compilerLoaded);
+                    SetDebugAndRunButtonsEnabled(!run && VisualEnvironmentCompiler.compilerLoaded);
                 }
                 else
                 {

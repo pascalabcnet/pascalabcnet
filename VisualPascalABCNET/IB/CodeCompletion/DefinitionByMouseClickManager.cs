@@ -3,13 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace VisualPascalABC
 {
@@ -19,11 +15,17 @@ namespace VisualPascalABC
 
         public static void DefinitionByMouseClickManager_TextAreaMouseMove(object sender, MouseEventArgs e)
         {
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable())
+                return;
+
             makeWordUnderline(sender, e);
         }
 
         public static void DefinitionByMouseClickManager_TextAreaMouseDown(object sender, EventArgs e)
         {
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable())
+                return;
+
             TextArea textArea = (TextArea)sender;
             if (Control.ModifierKeys == Keys.Control && textArea.SelectionManager.SelectionCollection.Count == 0)
             {

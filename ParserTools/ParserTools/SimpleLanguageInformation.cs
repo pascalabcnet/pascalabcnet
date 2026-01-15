@@ -1,5 +1,4 @@
 ﻿using PascalABCCompiler.ParserTools.Directives;
-using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;
 
@@ -7,6 +6,8 @@ namespace PascalABCCompiler.Parsers
 {
     public abstract class SimpleLanguageInformation : BaseLanguageInformation
     {
+        public override bool SupportsIntellisense => false;
+
         public override Dictionary<string, DirectiveInfo> ValidDirectives { get; protected set; }
 
         public override string BodyStartBracket => null;

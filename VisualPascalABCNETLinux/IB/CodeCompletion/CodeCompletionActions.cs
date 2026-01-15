@@ -20,7 +20,7 @@ namespace VisualPascalABC
 
         public static void Rename(TextArea textArea)
         {
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return;
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return;
             IDocument doc = textArea.Document;
             string textContent = doc.TextContent;
             ccp = new CodeCompletionProvider();
@@ -60,7 +60,7 @@ namespace VisualPascalABC
 
         public static void RenameUnit(string FileName, string new_val)
         {
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return;
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return;
             ccp = new CodeCompletionProvider();
             IDocument doc = null;
             CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
@@ -118,10 +118,9 @@ namespace VisualPascalABC
 
         public static List<Position> GetDefinitionPosition(TextArea textArea, bool only_check)
         {
-            IParser parser = CodeCompletion.CodeCompletionController.CurrentParser;
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return new List<Position>();
 
-            if (parser == null)
-                return new List<Position>();
+            IParser parser = CodeCompletion.CodeCompletionController.CurrentParser;
 
             IDocument doc = textArea.Document;
             string textContent = doc.TextContent;
@@ -155,7 +154,7 @@ namespace VisualPascalABC
 
         public static List<Position> GetRealizationPosition(TextArea textArea)
         {
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return new List<Position>();
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return new List<Position>();
             IDocument doc = textArea.Document;
             string textContent = doc.TextContent;
             ccp = new CodeCompletionProvider();
@@ -169,7 +168,7 @@ namespace VisualPascalABC
 
         public static List<SymbolsViewerSymbol> FindReferences(TextArea textArea)
         {
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return new List<SymbolsViewerSymbol>();
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return new List<SymbolsViewerSymbol>();
             ccp = new CodeCompletionProvider();
             string full_expr;
             string expressionResult = FindFullExpression(textArea.Document.TextContent, textArea, out ccp.keyword, out full_expr);
@@ -178,7 +177,7 @@ namespace VisualPascalABC
 
         public static void GotoRealization(TextArea textArea)
         {
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return;
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return;
             position = GetRealizationPosition(textArea);
             if (position == null || position.Count == 0) return;
             if (position.Count == 1)
@@ -207,7 +206,7 @@ namespace VisualPascalABC
 
         public static bool CanGoTo(TextArea textArea)
         {
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return false;
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return false;
             List<Position> poses = GetDefinitionPosition(textArea, true);
             if (poses == null || poses.Count == 0) return false;
             foreach (Position pos in poses)
@@ -220,7 +219,7 @@ namespace VisualPascalABC
 
         public static bool CanGoToRealization(TextArea textArea)
         {
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return false;
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return false;
             List<Position> poses = GetRealizationPosition(textArea);
             if (poses == null || poses.Count == 0) return false;
             foreach (Position pos in poses)
@@ -235,7 +234,7 @@ namespace VisualPascalABC
         {
             try
             {
-                if (CodeCompletion.CodeCompletionController.CurrentParser == null) return false;
+                if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return false;
                 ccp = new CodeCompletionProvider();
                 string full_expr;
                 string expressionResult = FindFullExpression(textArea.Document.TextContent, textArea, out ccp.keyword, out full_expr);
@@ -256,7 +255,7 @@ namespace VisualPascalABC
         {
             try
             {
-                if (CodeCompletion.CodeCompletionController.CurrentParser == null) return false;
+                if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return false;
                 ccp = new CodeCompletionProvider();
                 Position pos = new Position();
                 //string text = "procedure Test(a : integer);\n begin \n x := 1; \n end;";//ccp.GetRealizationTextToAdd(out pos);
@@ -273,7 +272,7 @@ namespace VisualPascalABC
         {
             try
             {
-                if (CodeCompletion.CodeCompletionController.CurrentParser == null) return;
+                if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return;
                 ccp = new CodeCompletionProvider();
                 Position pos = new Position();
                 //string text = "procedure Test(a : integer);\n begin \n x := 1; \n end;";//ccp.GetRealizationTextToAdd(out pos);
@@ -296,7 +295,7 @@ namespace VisualPascalABC
         private static TextArea _textArea;
         public static void GenerateOverridableMethods(TextArea textArea)
         {
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return;
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return;
             ccp = new CodeCompletionProvider();
             _textArea = textArea;
             int off = textArea.Caret.Offset;
@@ -326,7 +325,7 @@ namespace VisualPascalABC
 
         public static void GenerateClassOrMethodRealization(TextArea textArea)
         {
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return;
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return;
             ccp = new CodeCompletionProvider();
             Position pos = new Position();
             //string text = "procedure Test(a : integer);\n begin \n x := 1; \n end;";//ccp.GetRealizationTextToAdd(out pos);
@@ -456,7 +455,7 @@ namespace VisualPascalABC
 
         public static bool GenerateCommentTemplate(TextArea textArea)
         {
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return false;
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return false;
             ccp = new CodeCompletionProvider();
             //if (!should_insert_comment(textArea))
             //	return false;
@@ -503,7 +502,7 @@ namespace VisualPascalABC
 
         public static void GotoDefinition(TextArea _textArea)
         {
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return;
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return;
             position = GetDefinitionPosition(_textArea, false);
             if (position == null) return;
             if (position.Count == 1)
@@ -541,7 +540,7 @@ namespace VisualPascalABC
             keyw = PascalABCCompiler.Parsers.KeywordKind.None;
             string expr_without_brackets = null;
             full_expr = null;
-            if (CodeCompletion.CodeCompletionController.CurrentParser != null)
+            if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
             {
                 full_expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(_textArea.Caret.Offset, Text, _textArea.Caret.Line, _textArea.Caret.Column, out keyw, out expr_without_brackets);
                 return expr_without_brackets;
@@ -613,12 +612,19 @@ namespace VisualPascalABC
             //    MainForm.VisualEnvironmentCompiler.Compiler.ParsersController.Compile(
             //    file_name, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
             string text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName, PascalABCCompiler.SourceFileOperation.GetText) as string;
+
+            var currentParser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName)?.Parser;
+
+            if (currentParser == null || !currentParser.LanguageInformation.SupportsIntellisense)
+                return;
+
             PascalABCCompiler.SyntaxTree.compilation_unit cu =
-                Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName)?.Parser.GetCompilationUnitForFormatter(
+                currentParser.GetCompilationUnitForFormatter(
                 VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName,
                text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
                 Errors,
                 new List<PascalABCCompiler.Errors.CompilerWarning>());
+
             if (Errors.Count == 0)
             {
                 string formattedText = cf.FormatTree(text, cu, textArea.Caret.Line + 1, textArea.Caret.Column + 1);

@@ -41,6 +41,11 @@ namespace PascalABCCompiler.Parsers
         /// </summary>
         string[] SystemUnitNames { get; }
 
+        /// <summary>
+        /// Реализована ли поддержка Intellisense
+        /// </summary>
+        bool SupportsIntellisense { get; }
+
     	/// <summary>
     	/// Получить полное описание элемента (в желтой подсказке)
     	/// </summary>
