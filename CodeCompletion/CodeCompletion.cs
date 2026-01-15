@@ -260,14 +260,14 @@ namespace CodeCompletion
 
         public PascalABCCompiler.Parsers.KeywordKind GetKeywordKind(string name)
         {
-            if (CodeCompletionController.CurrentParser != null)
+            if (CodeCompletionController.IntellisenseAvailable())
             	return CodeCompletionController.CurrentParser.LanguageInformation.GetKeywordKind(name);
             return PascalABCCompiler.Parsers.KeywordKind.None;
         }
 
         public bool IsKeyword(string name)
         {
-            if (CodeCompletionController.CurrentParser != null)
+            if (CodeCompletionController.IntellisenseAvailable())
             {
                 return CodeCompletionController.CurrentParser.LanguageInformation.IsKeyword(name);
             }
@@ -276,15 +276,15 @@ namespace CodeCompletion
 
         public List<string> GetKeywords()
         {
-            if (CodeCompletionController.CurrentParser != null)
-            	return CodeCompletionController.CurrentParser.LanguageInformation.KeywordsStorage.KeywordsForIntellisenseList;
+            if (CodeCompletionController.IntellisenseAvailable())
+                return CodeCompletionController.CurrentParser.LanguageInformation.KeywordsStorage.KeywordsForIntellisenseList;
             return new List<string>();
         }
 
         public List<string> GetTypeKeywords()
         {
-            if (CodeCompletionController.CurrentParser != null)
-            	return CodeCompletionController.CurrentParser.LanguageInformation.KeywordsStorage.TypeKeywords;
+            if (CodeCompletionController.IntellisenseAvailable())
+                return CodeCompletionController.CurrentParser.LanguageInformation.KeywordsStorage.TypeKeywords;
             return new List<string>();
         }
 

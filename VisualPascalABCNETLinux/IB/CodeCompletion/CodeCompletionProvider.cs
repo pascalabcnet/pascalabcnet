@@ -295,7 +295,7 @@ namespace VisualPascalABC
 
         public string FindExpression(int off, string Text, int line, int col)
         {
-            if (CodeCompletion.CodeCompletionController.CurrentParser != null)
+            if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
                 return CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpression(off, Text, line, col, out keyword);
             return null;
         }
