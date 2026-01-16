@@ -127,9 +127,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonLanguageInfo", "Addi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExampleLanguage", "ExampleLanguage", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleLanguageParser", "LanguagePlugins\ExampleLanguage\ExampleLanguageParser\ExampleLanguageParser.csproj", "{270E0E2A-7D41-4AAE-A9DE-2B5DD5097A96}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleLanguageParser", "AdditionalLanguages\ExampleLanguage\ExampleLanguageParser\ExampleLanguageParser.csproj", "{270E0E2A-7D41-4AAE-A9DE-2B5DD5097A96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleLanguageInfo", "LanguagePlugins\ExampleLanguage\ExampleLanguageInfo\ExampleLanguageInfo.csproj", "{ACC12917-7A4B-4822-8ADE-DB2C83A2B908}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleLanguageInfo", "AdditionalLanguages\ExampleLanguage\ExampleLanguageInfo\ExampleLanguageInfo.csproj", "{ACC12917-7A4B-4822-8ADE-DB2C83A2B908}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
