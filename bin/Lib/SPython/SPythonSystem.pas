@@ -634,7 +634,7 @@ function float(x: integer): real := PABCSystem.Floor(x);
 
 function range(s: integer; e: integer; step: integer): sequence of integer;
 begin
-  Result := PABCSystem.Range(s, e - 1, step);
+  Result := PABCSystem.Range(s, e - PABCSystem.Sign(step), step);
 end;
 
 function range(s: integer; e: integer): sequence of integer;

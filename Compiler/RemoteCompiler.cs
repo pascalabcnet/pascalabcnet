@@ -88,7 +88,7 @@ namespace PascalABCCompiler
         public const int sendCommandStartNumber = 100;
         public volatile CompilerState compilerState = CompilerState.Reloading; // PVS 01/2022 volatile
         Encoding inputEncoding = System.Text.Encoding.UTF8;
-        bool compilationSatarted = false;
+        bool compilationStarted = false;
 
         public int MaxProcessMemoryMB
         {
@@ -213,9 +213,9 @@ namespace PascalABCCompiler
 
         void ChangeCompilerState(CompilerState State, string FileName)
         {
-            if (State == CompilerState.Ready && compilationSatarted)
+            if (State == CompilerState.Ready && compilationStarted)
             {
-                compilationSatarted = false;
+                compilationStarted = false;
                 if (CheckProcessMemory())
                     return;
             }
@@ -224,7 +224,7 @@ namespace PascalABCCompiler
                 OnChangeCompilerState(this, State, FileName);
         }
 
-        void stopCompiler()
+        /*void stopCompiler()
         {
             try
             {
@@ -243,6 +243,31 @@ namespace PascalABCCompiler
                 pabcnetcProcess = null;
                 remoteCompilerWorkingSet = 0;
             }
+        }*/
+
+        // SSM 09/01/26 - по совету DeepSeek добавил WaitForExit(10) и Dispose() чтобы освободить ресурсы
+        void stopCompiler()
+        {
+            try
+            {
+                if (pabcnetcProcess != null && !pabcnetcProcess.HasExited)
+                {
+                    pabcnetcProcess.EnableRaisingEvents = false;
+
+                    if (pabcnetcStreamReader != null)
+                        pabcnetcStreamReader.Remove(inputId);
+
+                    pabcnetcProcess.Kill();
+                    pabcnetcProcess.WaitForExit(10);
+                    pabcnetcProcess.Dispose(); // ← ЕДИНСТВЕННОЕ ДОБАВЛЕНИЕ
+                }
+            }
+            catch
+            {
+            }
+
+            pabcnetcProcess = null;
+            remoteCompilerWorkingSet = 0;
         }
 
 
@@ -403,18 +428,19 @@ namespace PascalABCCompiler
 
         }
 
-        public delegate void EnvorimentIdleDelegate();
-        public event EnvorimentIdleDelegate EnvorimentIdle;
+        public delegate void EnvironmentIdleDelegate();
+        public event EnvironmentIdleDelegate EnvironmentIdle;
 
         void waitCompilerReloading()
         {
             while (compilerReloading)
             {
                 Thread.Sleep(5);
-                if (EnvorimentIdle != null)
-                    EnvorimentIdle();
+                if (EnvironmentIdle != null)
+                    EnvironmentIdle();
             }
         }
+
 
         public string Compile()
         {
@@ -423,14 +449,36 @@ namespace PascalABCCompiler
 
             //sendObject(ConsoleCompilerConstants.InternalDebug, internalDebug);
             //sendObject(ConsoleCompilerConstants.CompilerOptions, compilerOptions);
+
             waitCompilerReloading();
 
             sendCompilerOptions();
             compilerState = CompilerState.CompilationStarting;
-            compilationSatarted = true;
+            compilationStarted = true;
             sendCommand(ConsoleCompilerConstants.CommandCompile);
+
+            const int timeoutSeconds = 30;
+            DateTime startTime = DateTime.Now;
+            int checkCounter = 0;
+
             while (compilerState != CompilerState.Ready)
-                Thread.Sleep(5);
+            {
+                if (checkCounter++ % 50 == 0) // 1000ms / 20ms = 50 - чтобы не вызывать дорогую DateTime.Now
+                {
+                    if ((DateTime.Now - startTime).TotalSeconds > timeoutSeconds)
+                    {
+                        // ТАЙМАУТ! Компилятор не ответил за 30 секунд
+                        errorsList.Add(new RemoteCompilerInternalError(
+                            $"Таймаут компиляции ({timeoutSeconds} секунд). " +
+                            "Компилятор не отвечает."));
+
+                        Reload(); // Перезапускаем компилятор (он вероятно завис)
+                        return null;
+                    }
+                }
+                Thread.Sleep(20); // SSM 09.01.26 - изменил - было 5 мс - большая нагрузка на систему
+            }
+
             if (errorsList.Count > 0)
                 return null;
             return compilerOptions.OutputFileName;
@@ -463,7 +511,7 @@ namespace PascalABCCompiler
             warnings.Clear();
             waitCompilerReloading();
             sendCompilerOptions();
-            compilationSatarted = true;
+            compilationStarted = true;
             sendCommand(ConsoleCompilerConstants.CommandCompile);
         }
 
@@ -485,8 +533,9 @@ namespace PascalABCCompiler
                 sourceFilesProvider = value;
             }
         }
-        
-        public PascalABCCompiler.SyntaxTree.compilation_unit ParseText(string FileName, string Text, List<PascalABCCompiler.Errors.Error> ErrorList, List<CompilerWarning> Warnings)
+
+        // SSM 2026 Исключил это из ICompiler
+        /*public PascalABCCompiler.SyntaxTree.compilation_unit ParseText(string FileName, string Text, List<PascalABCCompiler.Errors.Error> ErrorList, List<CompilerWarning> Warnings)
         {
             throw new NotSupportedException();
         }
@@ -494,7 +543,7 @@ namespace PascalABCCompiler
         public string GetSourceFileText(string FileName)
         {
             throw new NotSupportedException();
-        }
+        }*/
 
         public PascalABCCompiler.SemanticTreeConverters.SemanticTreeConvertersController SemanticTreeConvertersController
         {

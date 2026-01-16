@@ -30,10 +30,10 @@ namespace PascalABCCompiler
             get;
         }
 
-        SemanticTree.IProgramNode SemanticTree
+        /*SemanticTree.IProgramNode SemanticTree
         {
             get;
-        }
+        }*/
 
         uint LinesCompiled
         {
@@ -99,9 +99,11 @@ namespace PascalABCCompiler
 
         void AddWarnings(List<CompilerWarning> WarningList);
 
-        SyntaxTree.compilation_unit ParseText(string FileName, string Text, List<Error> ErrorList, List<CompilerWarning> Warnings);
+        // Не нужно это в интерфейсе! Этого нет в RemoteCompiler!
+        // SyntaxTree.compilation_unit ParseText(string FileName, string Text, List<Error> ErrorList, List<CompilerWarning> Warnings);
 
-        string GetSourceFileText(string FileName);
+        // Не нужно это в интерфейсе! Этого нет в RemoteCompiler!
+        // string GetSourceFileText(string FileName);
 
         CompilerType CompilerType
         {
