@@ -30,8 +30,6 @@ namespace PascalABCCompiler.Parsers
         statement GetStatement(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings);
 
         expression GetTypeAsExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings);
-
-        void Reset();
     }
 
     
