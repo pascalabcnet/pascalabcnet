@@ -1,9 +1,14 @@
-﻿using PascalABCCompiler.ParserTools.Directives;
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using PascalABCCompiler.ParserTools.Directives;
 using System;
 using System.Collections.Generic;
 
 namespace PascalABCCompiler.Parsers
 {
+    /// <summary>
+    /// Базовый класс для информации о языке без поддержки Intellisense
+    /// </summary>
     public abstract class SimpleLanguageInformation : BaseLanguageInformation
     {
         public override bool SupportsIntellisense => false;
@@ -77,7 +82,6 @@ namespace PascalABCCompiler.Parsers
             throw new NotImplementedException();
         }
 
-        // TODO: Проверить работу
         public override string GetDescription(IBaseScope scope)
         {
             throw new NotImplementedException();
