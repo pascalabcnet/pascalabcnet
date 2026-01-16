@@ -95,7 +95,7 @@ namespace SPythonParser
 
         protected override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text, bool compilingNotMainProgram)
         {
-            return Parse(Text, FileName, compilingNotMainProgram);
+            return Parse(Text, FileName, compilingNotMainProgram: compilingNotMainProgram);
         }
 
         protected override syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text)
