@@ -1,20 +1,16 @@
 ﻿using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using Languages.Example.Frontend.Core;
 
 namespace Languages.Example.Frontend.Wrapping
 {
-    public class ExampleLanguageParser : BaseParser
+    public class ExampleLanguageParser : SimpleParser
     {
 
         protected override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, bool compilingNotMainProgram, List<string> DefinesList = null)
         {
-            Errors.Clear();
-            Warnings.Clear();
-
             syntax_tree_node root = Parse(Text, FileName, false, compilingNotMainProgram, DefinesList);
 
             if (Errors.Count > 0)
@@ -38,31 +34,6 @@ namespace Languages.Example.Frontend.Wrapping
                     parserTools.AddErrorFromResource("UNEXPECTED_SYNTAX_ERROR", null);
 
             return parser.root;
-        }
-
-        protected override syntax_tree_node BuildTreeInExprMode(string FileName, string Text)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text, bool compilingNotMainProgram)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override syntax_tree_node BuildTreeInStatementMode(string FileName, string Text)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override syntax_tree_node BuildTreeInTypeExprMode(string FileName, string Text)
-        {
-            throw new NotImplementedException();
         }
     }
 }
