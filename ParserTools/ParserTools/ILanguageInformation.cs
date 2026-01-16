@@ -126,6 +126,12 @@ namespace PascalABCCompiler.Parsers
     	string FindOnlyIdentifier(int off, string Text, int line, int col, ref string name);
     	string FindPattern(int off, string Text, out bool is_pattern);
     	string GetDocumentTemplate(string lineText, string Text, int line, int col, int pos);
+
+        /// <summary>
+        /// Получить минимальный шаблон для модуля с именем unitName
+        /// </summary>
+        string GetUnitTemplate(string unitName);
+
     	/// <summary>
     	/// Проверить на ключевое слово
     	/// </summary>

@@ -66,6 +66,8 @@ namespace VisualPascalABC
             CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
             string text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText) as string;
             PascalABCCompiler.SyntaxTree.compilation_unit cu = controller.ParseOnlySyntaxTree(FileName, text);
+            if (cu == null)
+                return;
             PascalABCCompiler.SyntaxTree.ident unitName = null;
             if (cu is PascalABCCompiler.SyntaxTree.unit_module)
             {

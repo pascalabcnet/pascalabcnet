@@ -1,14 +1,12 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Windows.Forms;
-using System.Runtime.InteropServices;
 //using ICSharpCode.FormsDesigner;
 using PascalABCCompiler;
+using PascalABCCompiler.Parsers;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace VisualPascalABC
 {
@@ -100,15 +98,12 @@ namespace VisualPascalABC
 				ProjectExplorerWindow.AddSourceFile(fi,false);
 				string full_file_name = Path.Combine(Path.GetDirectoryName(ProjectFactory.Instance.CurrentProject.Path),frm.FileName);
                 StreamWriter sw = File.CreateText(full_file_name);
+
+                ILanguageInformation languageInfo = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(frm.FileName).LanguageInformation;
+
                 if (frm.GetFileFilter() == FileType.Unit)
                 {
-                    sw.WriteLine("unit " + Path.GetFileNameWithoutExtension(frm.FileName) + ";");
-                    sw.WriteLine();
-                    sw.WriteLine("interface");
-                    sw.WriteLine();
-                    sw.WriteLine("implementation");
-                    sw.WriteLine();
-                    sw.Write("end.");
+                    sw.Write(languageInfo.GetUnitTemplate(Path.GetFileNameWithoutExtension(frm.FileName)));
                 }
                 else
                 {

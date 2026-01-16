@@ -534,22 +534,6 @@ namespace PascalABCCompiler
             }
         }
 
-        public SupportedSourceFile[] SupportedSourceFiles
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
-		
-        public SupportedSourceFile[] SupportedProjectFiles
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
-
         // SSM 2026 Исключил это из ICompiler
         /*public PascalABCCompiler.SyntaxTree.compilation_unit ParseText(string FileName, string Text, List<PascalABCCompiler.Errors.Error> ErrorList, List<CompilerWarning> Warnings)
         {

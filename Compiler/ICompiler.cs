@@ -50,11 +50,6 @@ namespace PascalABCCompiler
         {
             get;
         }
-		
-        SupportedSourceFile[] SupportedProjectFiles
-        {
-        	get;
-        }
         
         CompilerOptions CompilerOptions
         {
