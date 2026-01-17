@@ -95,7 +95,7 @@ namespace VisualPascalABC
                 case "string":
                     return false;
             }
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return false;
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return false;
             List<Position> poses = CodeCompletionActionsManager.GetDefinitionPosition(CurrentSyntaxEditor.TextEditor.ActiveTextAreaControl.TextArea, true);
             if (poses == null || poses.Count == 0) return false;
             foreach (Position pos in poses)

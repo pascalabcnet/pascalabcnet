@@ -41,6 +41,11 @@ namespace PascalABCCompiler.Parsers
         /// </summary>
         string[] SystemUnitNames { get; }
 
+        /// <summary>
+        /// Реализована ли поддержка Intellisense
+        /// </summary>
+        bool SupportsIntellisense { get; }
+
     	/// <summary>
     	/// Получить полное описание элемента (в желтой подсказке)
     	/// </summary>
@@ -198,6 +203,9 @@ namespace PascalABCCompiler.Parsers
         /// </summary>
         Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; }
 
+        /// <summary>
+        /// Обозначение однострочного комментария (используется в TestRunner)
+        /// </summary>
         string CommentSymbol { get; }
 
         string BodyStartBracket

@@ -100,18 +100,18 @@ namespace VisualPascalABC
             set { miNavigForw.Enabled = tsNavigForw.Enabled = value; }
         }
 
-        public void SetDedugButtonsEnabled(bool Enabled)
+        public void SetDebugButtonsEnabled(bool Enabled)
         {
-            if (!DebuggerVisible)
-                return;
-
-            StepIntoButton.Enabled = StepOverButton.Enabled = StartDebugButton.Enabled =
-            mDEBUGSTARTToolStripMenuItem.Enabled = mSTEPOVERToolStripMenuItem.Enabled = mSTEPINToolStripMenuItem.Enabled = mRUNTOCURToolStripMenuItem.Enabled = Enabled;
-
+            if (!Enabled || CodeCompletion.CodeCompletionController.IntellisenseAvailable())
+            {
+                StepIntoButton.Enabled = StepOverButton.Enabled = StartDebugButton.Enabled =
+                mDEBUGSTARTToolStripMenuItem.Enabled = mSTEPOVERToolStripMenuItem.Enabled =
+                mSTEPINToolStripMenuItem.Enabled = mRUNTOCURToolStripMenuItem.Enabled = Enabled;
+            }
             //toolStrip1.Refresh();
         }
 
-        
+
 
         bool BottomDockContentVisible
         {
@@ -417,7 +417,7 @@ namespace VisualPascalABC
             this.mDEBUGSTARTToolStripMenuItem.Text = Form1StringResources.Get("M_DEBUGSTART");
         }
 
-        public void SetStartDebugDisabled()
+        public void SetStartDebugAndRunDisabled()
         {
             this.mDEBUGSTARTToolStripMenuItem.Enabled = false;
             this.StartDebugButton.Enabled = false;
@@ -434,16 +434,23 @@ namespace VisualPascalABC
             SaveDebugContext();
         }
 
-        public void SetStartDebugEnabled()
+        /// <summary>
+        /// Активирует кнопки для Debug только в случае, если Intellisense доступен
+        /// </summary>
+        public void SetStartDebugAndRunEnabled()
         {
-            this.mDEBUGSTARTToolStripMenuItem.Enabled = true;
-            this.StartDebugButton.Enabled = true;
-            this.mSTEPINToolStripMenuItem.Enabled = true;
-            this.StepIntoButton.Enabled = true;
-            this.mSTEPOVERToolStripMenuItem.Enabled = true;
-            this.StepOverButton.Enabled = true;
-            this.mRUNTOCURToolStripMenuItem.Enabled = true;
-            this.mSTEPToolStripMenuItem.Enabled = true;
+            if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
+            {
+                this.mDEBUGSTARTToolStripMenuItem.Enabled = true;
+                this.StartDebugButton.Enabled = true;
+                this.mSTEPINToolStripMenuItem.Enabled = true;
+                this.StepIntoButton.Enabled = true;
+                this.mSTEPOVERToolStripMenuItem.Enabled = true;
+                this.StepOverButton.Enabled = true;
+                this.mRUNTOCURToolStripMenuItem.Enabled = true;
+                this.mSTEPToolStripMenuItem.Enabled = true;
+            }
+
             this.miRun.Enabled = true;
             this.StartButton.Enabled = true;
             ChangeDebugButtons(false);
@@ -518,7 +525,20 @@ namespace VisualPascalABC
             }
         }
 
-        public void SetDebugButtonsEnabled(bool val)
+        /// <summary>
+        ///  Активировать/Деактивировать все кнопки, относящиеся к форматированию кода
+        /// </summary>
+        private void SetFormatButtonsEnabled(bool enabled)
+        {
+            tsFormat.Enabled = mFORMATToolStripMenuItem.Enabled = cmFormat.Enabled = enabled;
+        }
+
+        /// <summary>
+        /// Активировать/Деактивировать все кнопки, относящиеся к дебагу и кнопки запуска. 
+        /// ВАЖНО: если Intellisense не поддерживается, то активация кнопок дебага не произойдет
+        /// </summary>
+        // Здесь в том числе активируюется кнопка запуска, нужен рефакторинг EVA
+        public void SetDebugAndRunButtonsEnabled(bool val)
         {
             if (!DebuggerVisible)
                 return;
@@ -526,16 +546,21 @@ namespace VisualPascalABC
             {
                 this.mDEBUGSTOPToolStripMenuItem.Enabled = false;
                 this.mDEBUGSTARTToolStripMenuItem.Enabled = false;
-                this.StartDebugButton.Enabled = true;
-                this.StopDebugButton.Enabled = true;
                 this.StepOutButton.Enabled = false;
-                this.StepOverButton.Enabled = true;
-                this.StepIntoButton.Enabled = true;
-                this.mDEBUGSTARTToolStripMenuItem.Enabled = true;
-                this.mSTEPINToolStripMenuItem.Enabled = true;
-                this.mSTEPOVERToolStripMenuItem.Enabled = true;
                 this.mSTEPToolStripMenuItem.Enabled = false;
-                this.mRUNTOCURToolStripMenuItem.Enabled = true;
+
+                if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
+                {
+                    this.StartDebugButton.Enabled = true;
+                    this.StopDebugButton.Enabled = true;
+                    this.StepOverButton.Enabled = true;
+                    this.StepIntoButton.Enabled = true;
+                    this.mDEBUGSTARTToolStripMenuItem.Enabled = true;
+                    this.mSTEPINToolStripMenuItem.Enabled = true;
+                    this.mSTEPOVERToolStripMenuItem.Enabled = true;
+                    this.mRUNTOCURToolStripMenuItem.Enabled = true;
+                }
+
                 this.miRun.Enabled = true;
                 this.StartButton.Enabled = true;
             }

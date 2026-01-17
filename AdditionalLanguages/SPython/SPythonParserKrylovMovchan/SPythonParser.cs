@@ -14,31 +14,12 @@ namespace SPythonParser
     {
         public List<ISyntaxTreeConverter> SyntaxTreeConvertersForIntellisense { get; set; }
 
-        public override void Reset()
-        {
-            CompilerDirectives = new List<compiler_directive>();
-
-            Errors.Clear();
-        }
-
-        protected override void PreBuildTree(string FileName)
-        {
-            CompilerDirectives = new List<compiler_directive>();
-
-        }
-
         protected override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, bool compilingNotMainProgram, List<string> DefinesList = null)
         {
-            Errors.Clear();
-            Warnings.Clear();
-
             syntax_tree_node root = Parse(Text, FileName, false, compilingNotMainProgram, DefinesList);
 
             if (Errors.Count > 0)
                 return null;
-
-            if (root != null && root is compilation_unit)
-                (root as compilation_unit).file_name = FileName;
 
             return root;
         }
@@ -114,15 +95,11 @@ namespace SPythonParser
 
         protected override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text, bool compilingNotMainProgram)
         {
-            Errors.Clear();
-            
-            return Parse(Text, FileName, compilingNotMainProgram);
+            return Parse(Text, FileName, compilingNotMainProgram: compilingNotMainProgram);
         }
 
         protected override syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text)
         {
-            Errors.Clear();
-            
             return Parse(Text, FileName, true);
         }
 
