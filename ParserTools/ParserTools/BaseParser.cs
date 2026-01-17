@@ -71,8 +71,11 @@ namespace PascalABCCompiler.Parsers
 
         private void InitializeBeforeParsing(List<Error> Errors, List<CompilerWarning> Warnings)
         {
+            Errors.Clear();
+            Warnings.Clear();
             this.Errors = Errors;
             this.Warnings = Warnings;
+            this.CompilerDirectives = new List<compiler_directive>();
         }
 
         protected virtual syntax_tree_node BuildTree(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode ParseMode, bool compilingNotMainProgram, List<string> DefinesList = null)
@@ -133,11 +136,6 @@ namespace PascalABCCompiler.Parsers
         protected abstract syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text);
 
         protected abstract syntax_tree_node BuildTreeInStatementMode(string FileName, string Text);
-
-        public virtual void Reset()
-        {
-            // если нужно - переопределяйте
-        }        
 
     }
 }

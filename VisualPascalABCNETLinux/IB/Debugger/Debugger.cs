@@ -541,7 +541,7 @@ namespace VisualPascalABC
                 workbench.WidgetController.SetDebugTabsVisible(true);
                 workbench.WidgetController.SetPlayButtonsVisible(true);
                 workbench.WidgetController.SetDebugStopEnabled();//e.Process.LogMessage += messageEventProc;
-                workbench.WidgetController.SetStartDebugDisabled();
+                workbench.WidgetController.SetStartDebugAndRunDisabled();
                 workbench.WidgetController.ChangeStartDebugNameOnContinue();
                 workbench.WidgetController.EnableCodeCompletionToolTips(false);
                 workbench.WidgetController.SetAddExprMenuVisible(true);
@@ -642,7 +642,7 @@ namespace VisualPascalABC
             if (evaluator != null)
                 evaluator.SetCurrentMonoFrame(monoDebuggerSession, stackFrame);
             JumpToCurrentLine();
-            workbench.WidgetController.SetStartDebugEnabled();
+            workbench.WidgetController.SetStartDebugAndRunEnabled();
             WorkbenchServiceFactory.DebuggerOperationsService.RefreshPad(new FunctionItem(stackFrame).SubItems);
         }
 
@@ -662,7 +662,7 @@ namespace VisualPascalABC
             if (evaluator != null)
                 evaluator.SetCurrentMonoFrame(monoDebuggerSession, stackFrame);
             JumpToCurrentLine();
-            workbench.WidgetController.SetStartDebugEnabled();
+            workbench.WidgetController.SetStartDebugAndRunEnabled();
         }
 
         Function currentFunction;
@@ -785,7 +785,7 @@ namespace VisualPascalABC
         
         private void debuggedProcess_Expired(object sender, EventArgs e)
         {
-            workbench.WidgetController.SetStartDebugEnabled();
+            workbench.WidgetController.SetStartDebugAndRunEnabled();
         }
 
         private void debuggedProcess_ExceptionThrown(object sender, ExceptionEventArgs e)
@@ -894,7 +894,7 @@ namespace VisualPascalABC
             workbench.WidgetController.SetDebugTabsVisible(true);
             workbench.WidgetController.SetPlayButtonsVisible(true);
             workbench.WidgetController.SetDebugStopEnabled();//e.Process.LogMessage += messageEventProc;
-            workbench.WidgetController.SetStartDebugDisabled();
+            workbench.WidgetController.SetStartDebugAndRunDisabled();
             workbench.WidgetController.ChangeStartDebugNameOnContinue();
             workbench.WidgetController.EnableCodeCompletionToolTips(false);
             workbench.WidgetController.SetAddExprMenuVisible(true);
@@ -2011,7 +2011,7 @@ namespace VisualPascalABC
         {
             try
             {
-                workbench.WidgetController.SetStartDebugEnabled();
+                workbench.WidgetController.SetStartDebugAndRunEnabled();
                 dbg.Processes[0].Terminate();
             }
             catch (System.Exception e)
@@ -2027,7 +2027,7 @@ namespace VisualPascalABC
         {
             try
             {
-                workbench.WidgetController.SetStartDebugEnabled();
+                workbench.WidgetController.SetStartDebugAndRunEnabled();
                 dbg.Processes[0].Break();
             }
             catch (System.Exception e)
@@ -2093,7 +2093,7 @@ namespace VisualPascalABC
         {
             try
             {
-                workbench.WidgetController.SetStartDebugDisabled();
+                workbench.WidgetController.SetStartDebugAndRunDisabled();
                 
                 CurrentLineBookmark.Remove();
                 monoDebuggerSession.NextLine();
@@ -2114,7 +2114,7 @@ namespace VisualPascalABC
         {
             try
             {
-                workbench.WidgetController.SetStartDebugDisabled();
+                workbench.WidgetController.SetStartDebugAndRunDisabled();
                 monoDebuggerSession.Continue();
                 CurrentLineBookmark.Remove();
             }
@@ -2134,7 +2134,7 @@ namespace VisualPascalABC
         {
             try
             {
-                workbench.WidgetController.SetStartDebugDisabled();
+                workbench.WidgetController.SetStartDebugAndRunDisabled();
                 stepin_stmt = monoDebuggerSession.ActiveThread.Backtrace.GetFrame(0).SourceLocation;
                 monoDebuggerSession.StepLine();
                 CurrentLineBookmark.Remove();
@@ -2157,7 +2157,7 @@ namespace VisualPascalABC
             {
                 if (IsRunning)
                 {
-                    workbench.WidgetController.SetStartDebugDisabled();
+                    workbench.WidgetController.SetStartDebugAndRunDisabled();
                     monoDebuggerSession.StepOut();
                     CurrentLineBookmark.Remove();
                 }
@@ -2177,7 +2177,7 @@ namespace VisualPascalABC
             {
                 //cur_brpt = dbg.AddBreakpoint(new SourcecodeSegment((frm.CurrentTabPage.ag as CodeFileDocumentControl).file_name,(frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Line + 1,(frm.CurrentTabPage.Tag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column + 1,
                   //  (frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column+100), true);
-                workbench.WidgetController.SetStartDebugDisabled();
+                workbench.WidgetController.SetStartDebugAndRunDisabled();
                 currentBreakpoint = monoDebuggerSession.Breakpoints.Add(WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.FileName, WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Line + 1);
                 AddGoToBreakPoint(currentBreakpoint);
                 Status = DebugStatus.None;

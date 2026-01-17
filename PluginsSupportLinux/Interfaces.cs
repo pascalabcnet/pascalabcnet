@@ -348,8 +348,8 @@ namespace VisualPascalABCPlugins
 
     public interface IWidgetStatusContoller
     {
-        void SetStartDebugEnabled();
-        void SetStartDebugDisabled();
+        void SetStartDebugAndRunEnabled();
+        void SetStartDebugAndRunDisabled();
         void SetDebugStopDisabled();
         void SetDebugStopEnabled();
         void SetAddExprMenuVisible(bool val);
@@ -359,7 +359,7 @@ namespace VisualPascalABCPlugins
         void SetPlayButtonsVisible(bool val);
         void SetStopEnabled(bool enabled);
         void SetCompilingButtonsEnabled(bool Enabled);
-        void SetDebugButtonsEnabled(bool val);
+        void SetDebugAndRunButtonsEnabled(bool val);
         void SetOptionsEnabled(bool val);
         bool CompilingButtonsEnabled { get; set; }
         void EnableCodeCompletionToolTips(bool val);

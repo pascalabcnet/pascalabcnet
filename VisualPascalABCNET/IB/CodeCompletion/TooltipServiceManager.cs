@@ -118,7 +118,7 @@ namespace VisualPascalABC
         {
             if (!VisualPABCSingleton.MainForm.UserOptions.CodeCompletionHint)
                 return;
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null)
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable())
                 return;
             try
             {

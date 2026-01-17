@@ -28,7 +28,7 @@ namespace VisualPascalABC
         {
             Workbench.WidgetController.SetStopEnabled(true);
             Workbench.WidgetController.SetCompilingButtonsEnabled(false);
-            Workbench.WidgetController.SetDebugButtonsEnabled(false);
+            Workbench.WidgetController.SetDebugAndRunButtonsEnabled(false);
             Workbench.WidgetController.SetOptionsEnabled(false);
         }
 
@@ -36,7 +36,7 @@ namespace VisualPascalABC
         {
             Workbench.WidgetController.SetStopEnabled(false);
             Workbench.WidgetController.SetCompilingButtonsEnabled(true);
-            Workbench.WidgetController.SetDebugButtonsEnabled(true);
+            Workbench.WidgetController.SetDebugAndRunButtonsEnabled(true);
             Workbench.WidgetController.SetOptionsEnabled(true);
         }
 
