@@ -2851,7 +2851,7 @@ namespace PascalABCCompiler.PCU
             else
             {
                 bw.Write((byte)1);
-                bw.Write(Path.GetFileName(tclass.cur_document.file_name));
+                bw.Write(Path.GetFileName(tclass.cur_document));
             }
             SyntaxTree.SyntaxTreeStreamWriter stw = new SyntaxTree.SyntaxTreeStreamWriter();
             stw.bw = bw;

@@ -461,7 +461,7 @@ namespace PascalABCCompiler.TreeConverter
 			ctn.const_defs.AddElement(cdn2);
 
 			common_method_node get_func = new common_method_node(StringConstants.get_val_pascal_array_name,
-			                                                     element_type, /*loc*/new location(0xFFFFFF, 0, 0xFFFFFF, 0, loc.doc), ctn, SemanticTree.polymorphic_state.ps_common, SemanticTree.field_access_level.fal_private,
+			                                                     element_type, /*loc*/new location(0xFFFFFF, 0, 0xFFFFFF, 0, loc.file_name), ctn, SemanticTree.polymorphic_state.ps_common, SemanticTree.field_access_level.fal_private,
 			                                                     convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope, "get " + name));
 			common_parameter get_param = new common_parameter(StringConstants.unary_param_name,
 			                                                  oti_indexer.lower_value.type, SemanticTree.parameter_type.value, get_func, concrete_parameter_type.cpt_none,
@@ -481,12 +481,12 @@ namespace PascalABCCompiler.TreeConverter
 
 			expression_node index_expr = new simple_array_indexing(cfr1, sub_expr, element_type, loc);
 
-			statement_node sn = new return_node(index_expr, /*loc*/new location(0xFFFFFF, 0, 0xFFFFFF, 0, loc.doc));
+			statement_node sn = new return_node(index_expr, /*loc*/new location(0xFFFFFF, 0, 0xFFFFFF, 0, loc.file_name));
 
 			get_func.function_code = sn;
 
 			common_method_node set_func = new common_method_node(StringConstants.set_val_pascal_array_name,
-			                                                     null, /*loc*/new location(0xFFFFFF, 0, 0xFFFFFF, 0, loc.doc), ctn, SemanticTree.polymorphic_state.ps_common, SemanticTree.field_access_level.fal_private,
+			                                                     null, /*loc*/new location(0xFFFFFF, 0, 0xFFFFFF, 0, loc.file_name), ctn, SemanticTree.polymorphic_state.ps_common, SemanticTree.field_access_level.fal_private,
 			                                                     convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope, "set " + name));
 			common_parameter set_ind = new common_parameter(StringConstants.left_param_name,
 			                                                oti_indexer.lower_value.type, SemanticTree.parameter_type.value, set_func, concrete_parameter_type.cpt_none,
@@ -522,7 +522,7 @@ namespace PascalABCCompiler.TreeConverter
 
 			function_node assign = (function_node)si.sym_info;
 			statement_node assign_call = convertion_data_and_alghoritms.create_simple_function_call(assign,
-			                                                                                        /*loc*/new location(0xFFFFFF, 0, 0xFFFFFF, 0, loc.doc), index_expr2, val_ref);
+			                                                                                        /*loc*/new location(0xFFFFFF, 0, 0xFFFFFF, 0, loc.file_name), index_expr2, val_ref);
 
 			set_func.function_code = assign_call;
 

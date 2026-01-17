@@ -242,7 +242,7 @@ namespace CodeCompletion
             SymScope ss = visitor.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
             if (ss == null) return null;
             List<ProcScope> meths = new List<ProcScope>();
-            pos.file_name = this.visitor.doc.file_name;
+            pos.file_name = this.visitor.doc_name;
             SetCurrentUsedAssemblies();
             if (ss is TypeScope && (ss as TypeScope).kind == SymbolKind.Class)
             {
@@ -306,7 +306,7 @@ namespace CodeCompletion
                 SymScope ss = visitor.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
                 if (ss == null) return null;
                 List<ProcScope> meths = new List<ProcScope>();
-                pos.file_name = this.visitor.doc.file_name;
+                pos.file_name = this.visitor.doc_name;
                 SetCurrentUsedAssemblies();
                 if (ss is TypeScope && ((ss as TypeScope).kind == SymbolKind.Class || (ss as TypeScope).kind == SymbolKind.Struct))
                 {
@@ -730,7 +730,7 @@ namespace CodeCompletion
                         {
                             pos.line = ss.loc.begin_line_num;
                             pos.column = ss.loc.begin_column_num;
-                            pos.file_name = ss.loc.doc.file_name;
+                            pos.file_name = ss.loc.file_name;
                             poses.Add(pos);
                         }  
                     }
@@ -741,7 +741,7 @@ namespace CodeCompletion
                         {
                             pos.line = ss.loc.begin_line_num;
                             pos.column = ss.loc.begin_column_num;
-                            pos.file_name = ss.loc.doc.file_name;
+                            pos.file_name = ss.loc.file_name;
                             poses.Add(pos);
                         }
                     }
@@ -949,7 +949,7 @@ namespace CodeCompletion
                     ProcRealization pr = (ss as ProcScope).procRealization;
                     pos.line = pr.loc.begin_line_num;
                     pos.column = pr.loc.begin_column_num;
-                    pos.file_name = pr.loc.doc.file_name;
+                    pos.file_name = pr.loc.file_name;
                     poses.Add(pos);
                     if (on_proc) break;
                     //ss = (ss as ProcScope).nextProc;

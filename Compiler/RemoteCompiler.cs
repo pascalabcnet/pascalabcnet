@@ -59,7 +59,7 @@ namespace PascalABCCompiler
             get
             {
                 if(loc!=null)
-                    return new SourceLocation(loc.doc.file_name, loc.begin_line_num, loc.begin_column_num, loc.end_line_num, loc.end_column_num);
+                    return new SourceLocation(loc.file_name, loc.begin_line_num, loc.begin_column_num, loc.end_line_num, loc.end_column_num);
                 else
                     return null;
             }
@@ -157,9 +157,9 @@ namespace PascalABCCompiler
                         loc = new location(
                             Convert.ToInt32(args[1]), Convert.ToInt32(args[2]),
                             Convert.ToInt32(args[3]), Convert.ToInt32(args[4]),
-                            new document(args[5]));
+                            args[5]);
                     if (args.Length == 2)
-                        loc = new location(0,0,0,0,new document(args[1]));
+                        loc = new location(0,0,0,0,args[1]);
                     switch(command)
                     {
                         case ConsoleCompilerConstants.Error:

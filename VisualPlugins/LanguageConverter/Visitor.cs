@@ -946,7 +946,7 @@ namespace VisualPascalABCPlugins
             // перед входом в блок ув. отступ
             //SemanticNodeConverter.SourceTextBuilder.TextFormatter.Indents.BlockBodyIncrement();
             mainNamespace = value.main_function.comprehensive_namespace;
-            string outdir = System.IO.Path.GetDirectoryName(mainNamespace.Location.document.file_name);
+            string outdir = System.IO.Path.GetDirectoryName(mainNamespace.Location.file_name);
             foreach (ICommonNamespaceNode nodeNamespace in value.namespaces)
             {
                 nodeNamespace.visit(this);
@@ -957,7 +957,7 @@ namespace VisualPascalABCPlugins
                     bodyBlock.Append(System.Environment.NewLine);
                 string name = nodeNamespace.namespace_name.Replace('$', 'S');
                 if (name == "")
-                    name = System.IO.Path.GetFileNameWithoutExtension(mainNamespace.Location.document.file_name);
+                    name = System.IO.Path.GetFileNameWithoutExtension(mainNamespace.Location.file_name);
                 SaveTextInFile(outdir + "\\" +name+".cs", currNamespace, false);
                 nmspaceFiles.Add(outdir + "\\" + name + ".cs");
             }

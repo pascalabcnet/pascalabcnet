@@ -35,7 +35,7 @@ namespace PascalABCCompiler.TreeConverter
             get
             {
                 if (loc != null)
-                    return new SourceLocation(loc.doc.file_name, loc.begin_line_num, loc.begin_column_num, loc.end_line_num, loc.end_column_num);
+                    return new SourceLocation(loc.file_name, loc.begin_line_num, loc.begin_column_num, loc.end_line_num, loc.end_column_num);
                 else
                     return null;
             }

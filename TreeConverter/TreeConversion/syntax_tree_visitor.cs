@@ -70,7 +70,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public returner ret;
 
-        internal document current_document;
+        internal string current_document;
 
         public compilation_context context;
         private bool var_def_statement_converting;
@@ -151,7 +151,7 @@ namespace PascalABCCompiler.TreeConverter
 
             using_list.Clear();
 
-            current_document = new document(initializationData.syntaxUnit.file_name);
+            current_document = initializationData.syntaxUnit.file_name;
 
             ErrorsList = initializationData.errorsList;
             WarningsList = initializationData.warningsList;
@@ -712,7 +712,7 @@ namespace PascalABCCompiler.TreeConverter
 
         }
 
-        public PascalABCCompiler.TreeRealization.document CurrentDocument
+        public string CurrentDocument
         {
             get
             {
@@ -741,11 +741,11 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return null;
             }
-            document d = current_document;
-            if (tns.FileName != null && (d == null || d.file_name != tns.FileName))
-                d = new document(tns.FileName);
+            string file_name = current_document;
+            if (tns.FileName != null && (file_name == null || file_name != tns.FileName))
+                file_name = tns.FileName;
             return new location(tns.begin_position.line_num, tns.begin_position.column_num,
-                tns.end_position.line_num, tns.end_position.column_num, d);
+                tns.end_position.line_num, tns.end_position.column_num, file_name);
         }
         public location get_right_location(SyntaxTree.syntax_tree_node tn)
         {
@@ -763,11 +763,11 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return null;
             }
-            document d = current_document;
+            string file_name = current_document;
             if (tn.source_context.FileName != null)
-                d = new document(tn.source_context.FileName);
+                file_name = tn.source_context.FileName;
             return new location(tn.source_context.begin_position.line_num, tn.source_context.begin_position.column_num,
-                tn.source_context.end_position.line_num, tn.source_context.end_position.column_num, d);
+                tn.source_context.end_position.line_num, tn.source_context.end_position.column_num, file_name);
         }
 
         public common_unit_node CompiledUnit
@@ -3628,7 +3628,7 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             constant_definition_node ncd = si.FirstOrDefault().sym_info as constant_definition_node;
                             if (_enum_type_definition.source_context != null && ncd.type.location != null && ncd.type.location.begin_line_num == _enum_type_definition.source_context.begin_position.line_num
-                                && ncd.type.location.begin_column_num == _enum_type_definition.source_context.begin_position.column_num && ncd.type.location.doc.file_name == _enum_type_definition.source_context.FileName)
+                                && ncd.type.location.begin_column_num == _enum_type_definition.source_context.begin_position.column_num && ncd.type.location.file_name == _enum_type_definition.source_context.FileName)
                             {
                                 return_value(ncd.type);
                                 return;
@@ -11506,7 +11506,7 @@ namespace PascalABCCompiler.TreeConverter
 
             SymbolTable.Scope[] used_units = build_referenced_units(ReferencedUnits,true);
 
-            _compiled_unit.scope = convertion_data_and_alghoritms.symbol_table.CreateUnitInterfaceScope(used_units, namespace_name == ""? System.IO.Path.GetFileName(CurrentDocument.file_name) : namespace_name);
+            _compiled_unit.scope = convertion_data_and_alghoritms.symbol_table.CreateUnitInterfaceScope(used_units, namespace_name == ""? System.IO.Path.GetFileName(CurrentDocument) : namespace_name);
 
             common_namespace_node cnsn = context.create_namespace(namespace_name, _compiled_unit, _compiled_unit.scope, loc);
             cnsn.is_main = true;
@@ -19689,7 +19689,7 @@ namespace PascalABCCompiler.TreeConverter
             bool current_record_created = _record_created;
             _record_created = false;
             SemanticTree.field_access_level current_fal = context.get_field_access_level();
-            document current_doc = current_document;
+            string current_doc = current_document;
             current_document = tc.cur_document;
             bool current_body_exists = body_exists;
             body_exists = false;

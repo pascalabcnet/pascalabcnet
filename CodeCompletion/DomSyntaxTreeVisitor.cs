@@ -886,7 +886,7 @@ namespace CodeCompletion
             }
         }
 		
-        public document doc;
+        public string doc_name;
 
         public location get_location(SourceContext sc)
         {
@@ -895,7 +895,7 @@ namespace CodeCompletion
                 return null;
             }
             return new location(sc.begin_position.line_num, sc.begin_position.column_num,
-                sc.end_position.line_num, sc.end_position.column_num, doc);
+                sc.end_position.line_num, sc.end_position.column_num, doc_name);
         }
 
 
@@ -906,7 +906,7 @@ namespace CodeCompletion
 				return null;
 			}
 			return new location(tn.source_context.begin_position.line_num,tn.source_context.begin_position.column_num,
-				tn.source_context.end_position.line_num,tn.source_context.end_position.column_num,doc);
+				tn.source_context.end_position.line_num,tn.source_context.end_position.column_num,doc_name);
 		}
         
         public override void visit(declaration _declaration)
@@ -2273,7 +2273,7 @@ namespace CodeCompletion
                             key = "static " + key;
                         if (key != null && returned_scope.body_loc != null)
                         {
-                            returned_scope.head_loc = new location(returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num, returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num + key.Length, doc);
+                            returned_scope.head_loc = new location(returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num, returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num + key.Length, doc_name);
                         }
                         if ((cl_def.attribute & class_attribute.Partial) == class_attribute.Partial)
                         {
@@ -2308,7 +2308,7 @@ namespace CodeCompletion
                     if (_type_declaration.type_def is enum_type_definition && ts.loc.begin_line_num != ts.loc.end_line_num)
                     {
                         location loc = get_location(_type_declaration.type_def);
-                        ts.head_loc = new location(loc.begin_line_num, loc.begin_column_num, loc.begin_line_num, loc.begin_column_num, doc);
+                        ts.head_loc = new location(loc.begin_line_num, loc.begin_column_num, loc.begin_line_num, loc.begin_column_num, doc_name);
                         ts.body_loc = loc;
                     }
                     cur_scope.AddName(_type_declaration.type_name.name, ts);
@@ -2629,7 +2629,7 @@ namespace CodeCompletion
                 }
             ns_cache = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
 
-            doc = new document(_unit_module.file_name);
+            doc_name = _unit_module.file_name;
 
             cur_scope.head_loc = get_location(_unit_module.unit_name);
             cur_scope.file_name = _unit_module.file_name;
@@ -3236,7 +3236,7 @@ namespace CodeCompletion
                     }
                 }
 
-            doc = new document(_program_module.file_name);
+            doc_name = _program_module.file_name;
             cur_scope.loc = get_location(_program_module);
             cur_scope.file_name = _program_module.file_name;
             entry_scope = cur_scope;
@@ -3353,8 +3353,8 @@ namespace CodeCompletion
                 cur_scope.body_loc = new location(left_line_num,
                                                   left_column_num,
                                                   right_line_num, right_column_num,
-                                                 doc);
-                cur_scope.loc = new location(cur_scope.loc.begin_line_num, cur_scope.loc.begin_column_num, right_line_num, right_column_num, doc);
+                                                 doc_name);
+                cur_scope.loc = new location(cur_scope.loc.begin_line_num, cur_scope.loc.begin_column_num, right_line_num, right_column_num, doc_name);
                 _program_module.program_block.program_code.visit(this);
             }
         }
@@ -5236,7 +5236,7 @@ namespace CodeCompletion
             if (_exception_handler.statements.source_context != null)
                 stmt_scope.loc = new location(stmt_scope.loc.begin_line_num, stmt_scope.loc.begin_column_num,
                                               _exception_handler.statements.source_context.end_position.line_num,
-                                              _exception_handler.statements.source_context.end_position.column_num, stmt_scope.loc.doc);
+                                              _exception_handler.statements.source_context.end_position.column_num, stmt_scope.loc.file_name);
             returned_scope = null;
             if (_exception_handler.variable == null) return;
             if (_exception_handler.type_name != null)
