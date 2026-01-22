@@ -91,11 +91,24 @@ function !format(val: real; fmt: string): string;
 
 //function any<T>(seq: sequence of T): boolean;
 
-// Standard Math functions
+//------------------------------------
+//     Standard Math functions
+//------------------------------------
 
+/// Возвращает абсолютное значение числа
 function abs(x: integer): integer;
-
+/// Возвращает абсолютное значение числа
 function abs(x: real): real;
+
+/// Возвращает результат и остаток от целочисленного деления 
+function divmod(a,b: integer): (integer,integer);
+
+/// Возвращает x в степени y
+function pow(x,y: real): real;
+/// Возвращает x в целой степени n
+function pow(x: real; n: integer): real;
+/// Возвращает x в целой степени n
+function pow(x: BigInteger; n: integer): BigInteger;
 
 // function floor(x: real): real;
 
@@ -651,9 +664,22 @@ end;
 
 //function any<T>(seq: sequence of T): boolean := seq.Any(x -> x);
 
-function abs(x: integer): integer := if x >= 0 then x else -x;
+//------------------------------------
+//     Standard Math functions
+//------------------------------------
 
+function abs(x: integer): integer := if x >= 0 then x else -x;
 function abs(x: real): real := PABCSystem.Abs(x);
+
+function divmod(a,b: integer): (integer,integer) 
+  := (a div b, a mod b);
+// divmod вещественный аналог надо реализовать на питоне бы
+
+function pow(x,y: real): real := PABCSystem.Power(x,y);
+
+function pow(x: real; n: integer): real := PABCSystem.Power(x,n);
+
+function pow(x: BigInteger; n: integer): BigInteger := PABCSystem.Power(x,n);
 
 function len<T>(lst: list<T>): integer := lst.!count;
 function len<T>(st: &set<T>): integer := st.!count;
