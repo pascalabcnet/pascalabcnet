@@ -126,12 +126,12 @@ namespace VisualPascalABC
         private string construct_header(string meth, CodeCompletion.ProcScope ps, int tabCount)
         {
             //if (CodeCompletion.CodeCompletionController.currentParser != null)
-            return CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ConstructHeader(meth, ps, tabCount);
+            return CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.ConstructHeader(meth, ps, tabCount);
         }
 
         private string construct_header(CodeCompletion.ProcRealization ps, int tabCount)
         {
-            return CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ConstructHeader(ps, tabCount);
+            return CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.ConstructHeader(ps, tabCount);
         }
 
         public CodeCompletion.SymScope FindScopeByLocation(string fileName, int line, int col)
@@ -296,7 +296,7 @@ namespace VisualPascalABC
         public string FindExpression(int off, string Text, int line, int col)
         {
             if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
-                return CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpression(off, Text, line, col, out keyword);
+                return CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.FindExpression(off, Text, line, col, out keyword);
             return null;
         }
 
@@ -325,7 +325,7 @@ namespace VisualPascalABC
             try
             {
 
-                ILanguageInformation languageInformation = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation;
+                ILanguageInformation languageInformation = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation;
 
                 List<string> keywords;
 
@@ -359,7 +359,7 @@ namespace VisualPascalABC
 
                 if (symInfos != null)
                 {
-                    bool languageCaseSensitive = LanguageProvider.Instance.SelectLanguageByExtension(FileName).CaseSensitive;
+                    bool languageCaseSensitive = languageInformation.CaseSensitive;
 
                     languageInformation.RenameOrExcludeSpecialNames(symInfos);
 

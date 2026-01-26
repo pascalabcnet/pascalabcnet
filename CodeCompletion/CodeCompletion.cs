@@ -58,12 +58,11 @@ namespace CodeCompletion
             pabcNamespaces.Clear();
         }
 		
-        // нужно переделать на использование ILanguage  EVA
-		public static IParser CurrentParser
+		public static ILanguage CurrentLanguage
 		{
 			get
 			{
-                return currentLanguage?.Parser;
+                return currentLanguage;
 			}
 		}
 
@@ -72,7 +71,7 @@ namespace CodeCompletion
         /// </summary>
         public static bool IntellisenseAvailable()
         {
-            return CurrentParser != null && CurrentParser.LanguageInformation.SupportsIntellisense;
+            return CurrentLanguage != null && CurrentLanguage.LanguageInformation.SupportsIntellisense;
         }
         
         public DomConverter Compile(string FileName, string Text)
@@ -261,7 +260,7 @@ namespace CodeCompletion
         public PascalABCCompiler.Parsers.KeywordKind GetKeywordKind(string name)
         {
             if (CodeCompletionController.IntellisenseAvailable())
-            	return CodeCompletionController.CurrentParser.LanguageInformation.GetKeywordKind(name);
+            	return CodeCompletionController.CurrentLanguage.LanguageInformation.GetKeywordKind(name);
             return PascalABCCompiler.Parsers.KeywordKind.None;
         }
 
@@ -269,7 +268,7 @@ namespace CodeCompletion
         {
             if (CodeCompletionController.IntellisenseAvailable())
             {
-                return CodeCompletionController.CurrentParser.LanguageInformation.IsKeyword(name);
+                return CodeCompletionController.CurrentLanguage.LanguageInformation.IsKeyword(name);
             }
             return false;
         }
@@ -277,14 +276,14 @@ namespace CodeCompletion
         public List<string> GetKeywords()
         {
             if (CodeCompletionController.IntellisenseAvailable())
-                return CodeCompletionController.CurrentParser.LanguageInformation.KeywordsStorage.KeywordsForIntellisenseList;
+                return CodeCompletionController.CurrentLanguage.LanguageInformation.KeywordsStorage.KeywordsForIntellisenseList;
             return new List<string>();
         }
 
         public List<string> GetTypeKeywords()
         {
             if (CodeCompletionController.IntellisenseAvailable())
-                return CodeCompletionController.CurrentParser.LanguageInformation.KeywordsStorage.TypeKeywords;
+                return CodeCompletionController.CurrentLanguage.LanguageInformation.KeywordsStorage.TypeKeywords;
             return new List<string>();
         }
 

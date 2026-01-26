@@ -121,8 +121,6 @@ namespace VisualPascalABC
 
             if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return new List<Position>();
 
-            IParser parser = CodeCompletion.CodeCompletionController.CurrentParser;
-
             IDocument doc = textArea.Document;
             string textContent = doc.TextContent;
             ccp = new CodeCompletionProvider();
@@ -134,7 +132,7 @@ namespace VisualPascalABC
             
             
             // Проверка, что компилируем Паскаль временно  EVA 10.11.2024
-            if (parser == Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(StringConstants.pascalLanguageName).Parser)
+            if (CodeCompletion.CodeCompletionController.CurrentLanguage == Languages.Facade.LanguageProvider.Instance.MainLanguage)
             {
                 if (expressionResult != full_expr && full_expr.StartsWith("("))
                     return new List<Position>();
@@ -461,7 +459,7 @@ namespace VisualPascalABC
             //if (!should_insert_comment(textArea))
             //	return false;
             string lineText = get_next_line(textArea);
-            string addit = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.GetDocumentTemplate(
+            string addit = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.GetDocumentTemplate(
                 lineText, textArea.Document.TextContent, textArea.Caret.Line, textArea.Caret.Column, textArea.Caret.Offset);
             if (addit == null)
                 return false;
@@ -543,7 +541,7 @@ namespace VisualPascalABC
             full_expr = null;
             if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
             {
-                full_expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(_textArea.Caret.Offset, Text, _textArea.Caret.Line, _textArea.Caret.Column, out keyw, out expr_without_brackets);
+                full_expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.FindExpressionFromAnyPosition(_textArea.Caret.Offset, Text, _textArea.Caret.Line, _textArea.Caret.Column, out keyw, out expr_without_brackets);
                 return expr_without_brackets;
             }
             return null;
@@ -551,7 +549,7 @@ namespace VisualPascalABC
 
         private static string FindOnlyIdent(string Text, TextArea _textArea, ref string name)
         {
-            return CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindOnlyIdentifier(_textArea.Caret.Offset, Text, _textArea.Caret.Line, _textArea.Caret.Column, ref name);
+            return CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.FindOnlyIdentifier(_textArea.Caret.Offset, Text, _textArea.Caret.Line, _textArea.Caret.Column, ref name);
         }
 
 
@@ -747,7 +745,7 @@ namespace VisualPascalABC
                 
                 CodeCompletionProvider completionDataProvider = new CodeCompletionProvider();
 
-                completionDataProvider.preSelection = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindPattern(off, text, out var is_pattern);
+                completionDataProvider.preSelection = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.FindPattern(off, text, out var is_pattern);
 
                 codeCompletionWindow = PABCNETCodeCompletionWindow.ShowCompletionWindow(
                     VisualPABCSingleton.MainForm,					// The parent window for the completion window

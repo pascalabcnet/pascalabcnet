@@ -1466,7 +1466,7 @@ namespace VisualPascalABC
             {
                 sb.Insert(0, '.');
                 PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
-                string s = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.
+                string s = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.
                     FindExpression(i, text, 0, 0, out keyw);
                 if (s != null)
                 {

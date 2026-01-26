@@ -224,7 +224,7 @@ namespace CodeCompletion
                         if (elem == null || !(elem is ProcScope))
                         {
                             int pos = 0;
-                            string full_name = CodeCompletionController.CurrentParser.LanguageInformation.ConstructOverridedMethodHeader(procs[i], out pos);
+                            string full_name = CodeCompletionController.CurrentLanguage.LanguageInformation.ConstructOverridedMethodHeader(procs[i], out pos);
                             SymInfo si = new SymInfo(full_name.Substring(pos), procs[i].si.kind, full_name);
                             si.acc_mod = procs[i].si.acc_mod;
                             meths.Add(si);
@@ -605,7 +605,7 @@ namespace CodeCompletion
                             }
 
                         }
-                        string s = CodeCompletionController.CurrentParser.LanguageInformation.GetSimpleDescriptionWithoutNamespace((si as ElementScope).sc as PascalABCCompiler.Parsers.ITypeScope);
+                        string s = CodeCompletionController.CurrentLanguage.LanguageInformation.GetSimpleDescriptionWithoutNamespace((si as ElementScope).sc as PascalABCCompiler.Parsers.ITypeScope);
                         if (s != out_si.name)
                             out_si.addit_name = s;
                     }
@@ -765,7 +765,7 @@ namespace CodeCompletion
                             pos.metadata_type = MetadataType.Class;
                         if (!only_check)
                         {
-                            pos.metadata = CodeCompletionController.CurrentParser.LanguageInformation.GetCompiledTypeRepresentation(cs.CompiledType, cs.CompiledType, ref pos.line, ref pos.column);
+                            pos.metadata = CodeCompletionController.CurrentLanguage.LanguageInformation.GetCompiledTypeRepresentation(cs.CompiledType, cs.CompiledType, ref pos.line, ref pos.column);
                             Type t = cs.CompiledType;
                             int lines = 0;
                             int ind = pos.metadata.IndexOf('\n');
@@ -787,7 +787,7 @@ namespace CodeCompletion
                         pos.metadata_title = prepare_file_name(cfs.CompiledField.DeclaringType.Name);
                         if (!only_check)
                         {
-                            pos.metadata = CodeCompletionController.CurrentParser.LanguageInformation.GetCompiledTypeRepresentation(cfs.CompiledField.DeclaringType, cfs.CompiledField, ref pos.line, ref pos.column);
+                            pos.metadata = CodeCompletionController.CurrentLanguage.LanguageInformation.GetCompiledTypeRepresentation(cfs.CompiledField.DeclaringType, cfs.CompiledField, ref pos.line, ref pos.column);
                             Type t = cfs.CompiledField.DeclaringType;
                             int lines = 0;
                             int ind = pos.metadata.IndexOf('\n');
@@ -809,7 +809,7 @@ namespace CodeCompletion
                         pos.metadata_type = MetadataType.Method;
                         if (!only_check)
                         {
-                            pos.metadata = CodeCompletionController.CurrentParser.LanguageInformation.GetCompiledTypeRepresentation(cms.CompiledMethod.DeclaringType, cms.CompiledMethod, ref pos.line, ref pos.column);
+                            pos.metadata = CodeCompletionController.CurrentLanguage.LanguageInformation.GetCompiledTypeRepresentation(cms.CompiledMethod.DeclaringType, cms.CompiledMethod, ref pos.line, ref pos.column);
                             Type t = cms.CompiledMethod.DeclaringType;
                             int lines = 0;
                             int ind = pos.metadata.IndexOf('\n');
@@ -829,7 +829,7 @@ namespace CodeCompletion
                         pos.metadata_type = MetadataType.Property;
                         if (!only_check)
                         {
-                            pos.metadata = CodeCompletionController.CurrentParser.LanguageInformation.GetCompiledTypeRepresentation((ss as CompiledPropertyScope).CompiledProperty.DeclaringType, (ss as CompiledPropertyScope).CompiledProperty, ref pos.line, ref pos.column);
+                            pos.metadata = CodeCompletionController.CurrentLanguage.LanguageInformation.GetCompiledTypeRepresentation((ss as CompiledPropertyScope).CompiledProperty.DeclaringType, (ss as CompiledPropertyScope).CompiledProperty, ref pos.line, ref pos.column);
                             Type t = cps.CompiledProperty.DeclaringType;
                             int lines = 0;
                             int ind = pos.metadata.IndexOf('\n');
@@ -849,7 +849,7 @@ namespace CodeCompletion
                         pos.metadata_type = MetadataType.Constructor;
                         if (!only_check)
                         {
-                            pos.metadata = CodeCompletionController.CurrentParser.LanguageInformation.GetCompiledTypeRepresentation(ccs.CompiledConstructor.DeclaringType, ccs.CompiledConstructor, ref pos.line, ref pos.column);
+                            pos.metadata = CodeCompletionController.CurrentLanguage.LanguageInformation.GetCompiledTypeRepresentation(ccs.CompiledConstructor.DeclaringType, ccs.CompiledConstructor, ref pos.line, ref pos.column);
                             Type t = ccs.CompiledConstructor.DeclaringType;
                             int lines = 0;
                             int ind = pos.metadata.IndexOf('\n');
@@ -869,7 +869,7 @@ namespace CodeCompletion
                         pos.metadata_type = MetadataType.Event;
                         if (!only_check)
                         {
-                            pos.metadata = CodeCompletionController.CurrentParser.LanguageInformation.GetCompiledTypeRepresentation(ces.CompiledEvent.DeclaringType, ces.CompiledEvent, ref pos.line, ref pos.column);
+                            pos.metadata = CodeCompletionController.CurrentLanguage.LanguageInformation.GetCompiledTypeRepresentation(ces.CompiledEvent.DeclaringType, ces.CompiledEvent, ref pos.line, ref pos.column);
                             Type t = ces.CompiledEvent.DeclaringType;
                             int lines = 0;
                             int ind = pos.metadata.IndexOf('\n');
@@ -1113,7 +1113,7 @@ namespace CodeCompletion
                 if (ps.is_constructor)
                     si = new ElementScope(ps.declaringType);
             }
-            string[] description = CodeCompletionController.CurrentParser.LanguageInformation.GetIndexerString(si);
+            string[] description = CodeCompletionController.CurrentLanguage.LanguageInformation.GetIndexerString(si);
             if (description != null)
                 for (int i = 0; i < description.Length; i++)
                 {

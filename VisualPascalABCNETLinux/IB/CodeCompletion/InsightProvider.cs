@@ -32,7 +32,7 @@ namespace VisualPascalABC
         private string FindExpression(int off, string Text, int line, int col)
         {
             if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
-                return CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionForMethod(off, Text, line, col, pressed_key, ref num_param);
+                return CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.FindExpressionForMethod(off, Text, line, col, pressed_key, ref num_param);
             return null;
         }
 
@@ -42,7 +42,7 @@ namespace VisualPascalABC
             {
                 if (setupOnlyOnce && this.textArea != null)
                 {
-                    if (CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.IsMethodCallParameterSeparator(pressed_key))
+                    if (CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.IsMethodCallParameterSeparator(pressed_key))
                     {
                         FindExpression(textArea.Caret.Offset, textArea.Document.TextContent.Substring(0, textArea.Caret.Offset),
                                               textArea.Caret.Line, textArea.Caret.Column);
@@ -71,9 +71,9 @@ namespace VisualPascalABC
                 if (dconv != null)
                 {
                     //if (pressed_key == '(' || pressed_key == ',')
-                    if (CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.IsOpenBracketForMethodCall(pressed_key) || CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.IsMethodCallParameterSeparator(pressed_key))
+                    if (CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.IsOpenBracketForMethodCall(pressed_key) || CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.IsMethodCallParameterSeparator(pressed_key))
                         methods = dconv.GetNameOfMethod(e, expr, line, col, num_param, ref defaultIndex, cur_param_num, out param_count);
-                    else if (CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.IsOpenBracketForIndex(pressed_key))
+                    else if (CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.IsOpenBracketForIndex(pressed_key))
                         methods = dconv.GetIndex(e, line, col);
                 }
             }

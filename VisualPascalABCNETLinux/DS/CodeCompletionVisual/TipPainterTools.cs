@@ -66,7 +66,7 @@ namespace ICSharpCode.TextEditor.Util
                     if (param_num == -1)
                         return;
 
-                    var languageInfo = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation;
+                    var languageInfo = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation;
 
                     int startIndex = basicDescription.IndexOf("(", basicDescription.IndexOf("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION")) + 1) + 1;
 

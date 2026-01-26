@@ -140,7 +140,7 @@ namespace CodeCompletion
                     shouldPositions.Add(new Position(line + 1, col + 1, 0, 0, null));
                     string expr_without_brackets = null;
                     PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
-                    string full_expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+                    string full_expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
                     List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
                     var errors = new List<PascalABCCompiler.Errors.Error>();
                     expression expr = parser.GetExpression("test" + System.IO.Path.GetExtension(FileName), full_expr, errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
@@ -160,7 +160,7 @@ namespace CodeCompletion
                     shouldPositions.Add(new Position(line + 1, col, 0, 0, null));
                     string expr_without_brackets = null;
                     PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
-                    string full_expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+                    string full_expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
                     List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
                     var errors = new List<PascalABCCompiler.Errors.Error>();
                     expression expr = parser.GetExpression("test" + System.IO.Path.GetExtension(FileName), full_expr, errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
@@ -239,7 +239,7 @@ namespace CodeCompletion
         {
             string expr_without_brackets = null;
             PascalABCCompiler.Parsers.KeywordKind keyw;
-            var expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+            var expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
             if (expr == null)
               expr = expr_without_brackets;
             var errors = new List<PascalABCCompiler.Errors.Error>();
@@ -253,7 +253,7 @@ namespace CodeCompletion
         {
             string expr_without_brackets = null;
             PascalABCCompiler.Parsers.KeywordKind keyw;
-            var expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+            var expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
             if (expr == null)
                 expr = expr_without_brackets;
             var errors = new List<PascalABCCompiler.Errors.Error>();
@@ -270,7 +270,7 @@ namespace CodeCompletion
         {
             string expr_without_brackets = null;
             PascalABCCompiler.Parsers.KeywordKind keyw;
-            var expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+            var expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
             if (expr == null)
                 expr = expr_without_brackets;
             var errors = new List<PascalABCCompiler.Errors.Error>();

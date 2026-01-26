@@ -29,7 +29,7 @@ namespace VisualPascalABC
 
             //string expr = FindFullExpression(doc.TextContent, seg.Offset + logicPos.X,e.LogicalPosition.Line,e.LogicalPosition.Column);
 
-            IParser parser = CodeCompletion.CodeCompletionController.CurrentParser;
+            IParser parser = CodeCompletion.CodeCompletionController.CurrentLanguage.Parser;
 
             string expr = parser.LanguageInformation.FindExpressionFromAnyPosition(
                 lineSegment.Offset + logicPos.X, doc.TextContent, e.LogicalPosition.Line, e.LogicalPosition.Column, out var keyw, out var exprWithoutBrackets);
