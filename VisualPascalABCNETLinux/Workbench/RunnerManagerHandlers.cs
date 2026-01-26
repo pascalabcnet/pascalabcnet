@@ -36,7 +36,8 @@ namespace VisualPascalABC
         {
             Workbench.WidgetController.SetStopEnabled(false);
             Workbench.WidgetController.SetCompilingAndRunButtonsEnabled(true);
-            Workbench.WidgetController.SetDebugButtonsEnabled(true);
+            if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
+                Workbench.WidgetController.SetDebugButtonsEnabled(true);
             Workbench.WidgetController.SetOptionsEnabled(true);
         }
 

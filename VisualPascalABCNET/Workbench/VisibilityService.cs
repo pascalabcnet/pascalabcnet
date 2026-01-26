@@ -101,17 +101,13 @@ namespace VisualPascalABC
         }
 
         /// <summary>
-        /// Активировать/Деактивировать все кнопки, относящиеся к дебагу. 
-        /// ВАЖНО: если Intellisense не поддерживается, то активация кнопок дебага не произойдет
+        /// Активировать/Деактивировать все кнопки, относящиеся к дебагу.
         /// </summary>
         public void SetDebugButtonsEnabled(bool Enabled)
         {
-            if (!Enabled || CodeCompletion.CodeCompletionController.IntellisenseAvailable())
-            {
-                StepIntoButton.Enabled = StepOverButton.Enabled = StartDebugButton.Enabled =
-                mDEBUGSTARTToolStripMenuItem.Enabled = mSTEPOVERToolStripMenuItem.Enabled = 
-                mSTEPINToolStripMenuItem.Enabled = mRUNTOCURToolStripMenuItem.Enabled = Enabled;
-            }
+            StepIntoButton.Enabled = StepOverButton.Enabled = StartDebugButton.Enabled =
+            mDEBUGSTARTToolStripMenuItem.Enabled = mSTEPOVERToolStripMenuItem.Enabled =
+            mSTEPINToolStripMenuItem.Enabled = mRUNTOCURToolStripMenuItem.Enabled = Enabled;
             //toolStrip1.Refresh();
         }
 
@@ -435,21 +431,18 @@ namespace VisualPascalABC
         }
 
         /// <summary>
-        /// Активирует кнопки для Debug только в случае, если Intellisense доступен
+        /// Активирует кнопки для Debug и запуска программы
         /// </summary>
         public void SetStartDebugAndRunEnabled()
         {
-            if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
-            {
-                this.mDEBUGSTARTToolStripMenuItem.Enabled = true;
-                this.StartDebugButton.Enabled = true;
-                this.mSTEPINToolStripMenuItem.Enabled = true;
-                this.StepIntoButton.Enabled = true;
-                this.mSTEPOVERToolStripMenuItem.Enabled = true;
-                this.StepOverButton.Enabled = true;
-                this.mRUNTOCURToolStripMenuItem.Enabled = true;
-                this.mSTEPToolStripMenuItem.Enabled = true;
-            }
+            this.mDEBUGSTARTToolStripMenuItem.Enabled = true;
+            this.StartDebugButton.Enabled = true;
+            this.mSTEPINToolStripMenuItem.Enabled = true;
+            this.StepIntoButton.Enabled = true;
+            this.mSTEPOVERToolStripMenuItem.Enabled = true;
+            this.StepOverButton.Enabled = true;
+            this.mRUNTOCURToolStripMenuItem.Enabled = true;
+            this.mSTEPToolStripMenuItem.Enabled = true;
 
             this.miRun.Enabled = true;
             this.StartButton.Enabled = true;
