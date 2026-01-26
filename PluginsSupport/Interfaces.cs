@@ -372,10 +372,10 @@ namespace VisualPascalABCPlugins
         void SetDebugPausedDisabled();
         void SetPlayButtonsVisible(bool val);
         void SetStopEnabled(bool enabled);
-        void SetCompilingButtonsEnabled(bool Enabled);
-        void SetDebugAndRunButtonsEnabled(bool val);
+        void SetCompilingAndRunButtonsEnabled(bool Enabled);
+        void SetDebugButtonsEnabled(bool val);
         void SetOptionsEnabled(bool val);
-        bool CompilingButtonsEnabled { get; set; }
+        bool CompilingAndRunButtonsEnabled { get; set; }
         void EnableCodeCompletionToolTips(bool val);
         void ChangeContinueDebugNameOnStart();
         void ChangeStartDebugNameOnContinue();
