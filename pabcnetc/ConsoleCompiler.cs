@@ -278,7 +278,7 @@ namespace PascalABCCompiler
                 Console.WriteLine(msg);
             DateTime ldt = DateTime.Now;
             CompilerOptions co = new CompilerOptions(FileName, outputType);
-            if (FileName.ToLower().EndsWith(".pabcproj"))
+            if (FileName.ToLower().EndsWith(StringConstants.platformProjectExtension))
                 co.ProjectCompiled = true;
             if (OutputDirectory != "")
                 co.OutputDirectory=OutputDirectory;

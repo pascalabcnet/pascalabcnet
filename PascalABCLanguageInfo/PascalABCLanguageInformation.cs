@@ -805,6 +805,21 @@ namespace Languages.Pascal.Frontend.Data
             return "";
         }
 
+        public override string GetUnitTemplate(string unitName)
+        {
+            var sb = new StringBuilder();
+            
+            sb.AppendLine("unit " + unitName + ";");
+            sb.AppendLine();
+            sb.AppendLine("interface");
+            sb.AppendLine();
+            sb.AppendLine("implementation");
+            sb.AppendLine();
+            sb.Append("end.");
+
+            return sb.ToString();
+        }
+
         public override string ConstructHeader(string meth, IProcScope scope, int tabCount)
         {
             int i = 0;

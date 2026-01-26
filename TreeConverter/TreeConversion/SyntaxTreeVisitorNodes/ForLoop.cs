@@ -32,7 +32,7 @@ namespace PascalABCCompiler.TreeConverter
                             //в конце за счет флага вернем состояние обратно и сгенерируем и параллельную ветку тоже
                         }
                         else
-                            WarningsList.Add(new OMP_BuildigError(new Exception("Переменная параллельного цикла должна быть определена в заголовке цикла"), new location(_for_node.source_context.begin_position.line_num, _for_node.source_context.begin_position.column_num, _for_node.source_context.end_position.line_num, _for_node.source_context.end_position.column_num, new document(_for_node.source_context.FileName))));
+                            WarningsList.Add(new OMP_BuildigError(new Exception("Переменная параллельного цикла должна быть определена в заголовке цикла"), new location(_for_node.source_context.begin_position.line_num, _for_node.source_context.begin_position.column_num, _for_node.source_context.end_position.line_num, _for_node.source_context.end_position.column_num, _for_node.source_context.FileName)));
                     }
                     else //уже генерируем одну из веток
                         //если это параллельная ветка - последовательную генерировать не будем

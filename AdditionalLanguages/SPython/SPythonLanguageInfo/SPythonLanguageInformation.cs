@@ -103,6 +103,11 @@ namespace Languages.SPython.Frontend.Data
             }
         }
 
+        public override string GetUnitTemplate(string unitName)
+        {
+            return "#unit " + unitName + Environment.NewLine;
+        }
+
         public override string ConstructHeader(string meth, IProcScope scope, int tabCount)
         {
             throw new NotImplementedException();

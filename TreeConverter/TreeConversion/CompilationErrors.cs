@@ -73,7 +73,7 @@ namespace PascalABCCompiler.TreeConverter
         public string loc_to_string(ILocation loc)
         {
             if (loc == null) return "Undefined location(!)";
-            string res = "File:  " + loc.document.file_name;
+            string res = "File:  " + loc.file_name;
             res += "  line:  " + loc.begin_line_num.ToString();
             res += "  column:  " + loc.begin_column_num.ToString();
             return res;
@@ -2649,12 +2649,12 @@ namespace PascalABCCompiler.TreeConverter
         string message = "NOT_SUPPORTED_BY_THIS_VERSION_OF_COMPILER";
 
         public NotSupportedError(location loc)
-            :base(loc.document.file_name)
+            :base(loc.document)
         {
             _loc = loc;
         }
         public NotSupportedError(location loc, string msg)
-            : base(loc.document.file_name)
+            : base(loc.document)
         {
             _loc = loc;
             message = msg;

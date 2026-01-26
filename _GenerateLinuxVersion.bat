@@ -109,7 +109,6 @@ copy bin\Lib\SF.pcu Release\PascalABCNETLinux\Lib\SF.pcu
 copy bin\Lib\Speech.pcu Release\PascalABCNETLinux\Lib\Speech.pcu
 copy bin\Lib\Tasks.pcu Release\PascalABCNETLinux\Lib\Tasks.pcu
 copy bin\Lib\Timers.pcu Release\PascalABCNETLinux\Lib\Timers.pcu
-copy bin\Lib\Turtle.pcu Release\PascalABCNETLinux\Lib\Turtle.pcu
 copy bin\Lib\TurtleABC.pcu Release\PascalABCNETLinux\Lib\TurtleABC.pcu
 
 copy bin\Lib\ABCDatabases.pas Release\PascalABCNETLinux\LibSource\ABCDatabases.pas
@@ -145,7 +144,6 @@ copy bin\Lib\Sounds.pas Release\PascalABCNETLinux\LibSource\Sounds.pas
 copy bin\Lib\Speech.pas Release\PascalABCNETLinux\LibSource\Speech.pas
 copy bin\Lib\Tasks.pas Release\PascalABCNETLinux\LibSource\Tasks.pas
 copy bin\Lib\Timers.pas Release\PascalABCNETLinux\LibSource\Timers.pas
-copy bin\Lib\Turtle.pas Release\PascalABCNETLinux\LibSource\Turtle.pas
 copy bin\Lib\TurtleABC.pas Release\PascalABCNETLinux\LibSource\TurtleABC.pas
 copy bin\Lib\TwoPanelsWindow.pas Release\PascalABCNETLinux\LibSource\TwoPanelsWindow.pas
 copy bin\Lib\XLSX.pas Release\PascalABCNETLinux\LibSource\XLSX.pas

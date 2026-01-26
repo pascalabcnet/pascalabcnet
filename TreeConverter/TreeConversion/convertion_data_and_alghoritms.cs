@@ -158,7 +158,7 @@ namespace PascalABCCompiler.TreeConverter
 			{
 				return null;
 			}
-            document doc = _stv.CurrentDocument;
+            string doc = _stv.CurrentDocument;
             location loc=null;
             //DarkStar changed
             //В PCU не сохраняются location некоторых конструкций, например
@@ -177,7 +177,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return null;
             }
-            document d = new document(l.document.file_name);
+            string d = l.file_name;
             if (d == null)
                 d = syntax_tree_visitor.CurrentDocument;
 

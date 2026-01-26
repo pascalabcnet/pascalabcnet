@@ -1,0 +1,8 @@
+﻿import PABCSystem as pabc
+from PABCSystem import AllDelimiters as delims
+
+def f():
+  print(delims)
+
+f()
+print(pabc.Range(0, 1))

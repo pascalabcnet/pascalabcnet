@@ -193,15 +193,15 @@ namespace PascalABCCompiler.NETGenerator
             if (Location != null)
             {
                 ISymbolDocumentWriter temp_doc = null;
-                if (sym_docs.ContainsKey(Location.document.file_name))
+                if (sym_docs.ContainsKey(Location.file_name))
                 {
-                    temp_doc = sym_docs[Location.document.file_name];
+                    temp_doc = sym_docs[Location.file_name];
                 }
                 else
                 if (save_debug_info) // иногда вызывается MarkSequencePoint при save_debug_info = false
                 {
-                    temp_doc = mb.DefineDocument(Location.document.file_name, SymDocumentType.Text, SymLanguageType.Pascal, SymLanguageVendor.Microsoft);
-                    sym_docs.Add(Location.document.file_name, temp_doc);
+                    temp_doc = mb.DefineDocument(Location.file_name, SymDocumentType.Text, SymLanguageType.Pascal, SymLanguageVendor.Microsoft);
+                    sym_docs.Add(Location.file_name, temp_doc);
                 }
                 if (temp_doc != doc)
                 {
@@ -671,7 +671,7 @@ namespace PascalABCCompiler.NETGenerator
             }
             catch (Exception ex)
             {
-                throw new TreeConverter.SaveAssemblyError(ex.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));
+                throw new TreeConverter.SaveAssemblyError(ex.Message, new TreeRealization.location(0, 0, 0, 0, SourceFileName));
             }
         }
 
@@ -817,7 +817,7 @@ namespace PascalABCCompiler.NETGenerator
                     string cnns_document_file_name = null;
                     if (cnns[iii].Location != null)
                     {
-                        cnns_document_file_name = cnns[iii].Location.document.file_name;
+                        cnns_document_file_name = cnns[iii].Location.file_name;
                         doc = mb.DefineDocument(cnns_document_file_name, SymDocumentType.Text, SymLanguageType.Pascal, SymLanguageVendor.Microsoft);
                     }
                     else
@@ -825,7 +825,7 @@ namespace PascalABCCompiler.NETGenerator
                     if (cnns_document_file_name != null && !sym_docs.ContainsKey(cnns_document_file_name))
                         sym_docs.Add(cnns_document_file_name, doc);//сохраняем его в таблице документов
                 }
-                first_doc = sym_docs[cnns[0].Location == null ? SourceFileName : cnns[0].Location.document.file_name];
+                first_doc = sym_docs[cnns[0].Location == null ? SourceFileName : cnns[0].Location.file_name];
 
                 if (p.main_function != null)
                 {
@@ -842,7 +842,7 @@ namespace PascalABCCompiler.NETGenerator
             //Переводим заголовки типов
             for (int iii = 0; iii < cnns.Length; iii++)
             {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.file_name];
                 bool is_main_namespace = cnns[iii].namespace_name == "" && comp_opt.target != TargetType.Dll || comp_opt.target == TargetType.Dll && cnns[iii].namespace_name == "";
                 ICommonNamespaceNode cnn = cnns[iii];
                 // SSM 07.02.20
@@ -946,7 +946,7 @@ namespace PascalABCCompiler.NETGenerator
             }
             for (int iii = 0; iii < cnns.Length; iii++)
             {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.file_name];
                 cur_type = NamespacesTypes[cnns[iii]];
                 cur_unit_type = NamespacesTypes[cnns[iii]];
                 MethodBuilder mb = cur_unit_type.DefineMethod("$static_init$", MethodAttributes.Public | MethodAttributes.Static);
@@ -962,7 +962,7 @@ namespace PascalABCCompiler.NETGenerator
 
             for (int iii = 0; iii < cnns.Length; iii++)
             {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.file_name];
                 cur_type = NamespacesTypes[cnns[iii]];
                 cur_unit_type = NamespacesTypes[cnns[iii]];
                 ConvertFunctionHeaders(cnns[iii].functions, false);
@@ -976,7 +976,7 @@ namespace PascalABCCompiler.NETGenerator
 
             for (int iii = 0; iii < cnns.Length; iii++)
             {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.file_name];
                 cur_type = NamespacesTypes[cnns[iii]];
                 cur_unit_type = NamespacesTypes[cnns[iii]];
                 ConvertFunctionHeaders(cnns[iii].functions, true);
@@ -1010,7 +1010,7 @@ namespace PascalABCCompiler.NETGenerator
             //Переводим заголовки всего остального (процедур, переменных)
             for (int iii = 0; iii < cnns.Length; iii++)
             {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.file_name];
                 bool is_main_namespace = iii == cnns.Length - 1 && comp_opt.target != TargetType.Dll;
                 ICommonNamespaceNode cnn = cnns[iii];
                 string tmp_unit_name = cur_unit;
@@ -1061,7 +1061,7 @@ namespace PascalABCCompiler.NETGenerator
 
             for (int iii = 0; iii < cnns.Length; iii++)
             {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.file_name];
                 cur_type = NamespacesTypes[cnns[iii]];
                 cur_unit_type = NamespacesTypes[cnns[iii]];
                 //генерим инциализацию для полей
@@ -1086,7 +1086,7 @@ namespace PascalABCCompiler.NETGenerator
             //переводим реализации
             for (int iii = 0; iii < cnns.Length; iii++)
             {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.file_name];
                 bool is_main_namespace = iii == 0 && comp_opt.target != TargetType.Dll;
                 ICommonNamespaceNode cnn = cnns[iii];
                 string tmp_unit_name = cur_unit;
@@ -1111,7 +1111,7 @@ namespace PascalABCCompiler.NETGenerator
             }
             for (int iii = 0; iii < cnns.Length; iii++)
             {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.file_name];
                 cur_type = NamespacesTypes[cnns[iii]];
                 cur_unit_type = NamespacesTypes[cnns[iii]];
                 //вставляем ret в int_meth
@@ -1277,18 +1277,18 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 catch (System.Runtime.InteropServices.COMException e)
                 {
-                    throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));
+                    throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, SourceFileName));
                 }
                 catch (System.IO.IOException e)
                 {
                     if (tries < num_try_save)
                     {
                         if (has_unmanaged_resources)
-                            throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));   
+                            throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, SourceFileName));   
                         tries++;
                     }
                     else
-                        throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));
+                        throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, SourceFileName));
                 }
             }
             while (not_done);
@@ -1470,7 +1470,7 @@ namespace PascalABCCompiler.NETGenerator
                         {
                             SemanticTree.ICommonTypeNode ctn = helper.GetTypeNodeByTypeBuilder(types[i]);
                             if (ctn != null)
-                                throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                                throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
                         }
                     }
                         
@@ -1542,7 +1542,7 @@ namespace PascalABCCompiler.NETGenerator
                                             }
                                             catch (TypeLoadException ex2)
                                             {
-                                                throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                                                throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
                                             }
                                         }
                                     }
@@ -1555,7 +1555,7 @@ namespace PascalABCCompiler.NETGenerator
                                 continue;
                             }
                         }
-                        throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                        throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
                     }
                     else
                         throw ex;
@@ -1583,7 +1583,7 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     SemanticTree.ICommonTypeNode ctn = helper.GetTypeNodeByTypeBuilder(failed_types[i]);
                     if (ctn != null)
-                        throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                        throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
                     else
                         throw ex;
                 }
@@ -1760,7 +1760,7 @@ namespace PascalABCCompiler.NETGenerator
             catch (ArgumentException ex)
             {
                 if (ex.Message.IndexOf("fullname") != -1)
-                    throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace("System.ArgumentException: ", ""), t.Location.document.file_name, t.Location.begin_line_num, t.Location.begin_column_num);
+                    throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace("System.ArgumentException: ", ""), t.Location.file_name, t.Location.begin_line_num, t.Location.begin_column_num);
                 throw ex;
             }
             
@@ -2149,7 +2149,7 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 catch (ArgumentException ex)
                 {
-                    throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace("System.ArgumentException: ", ""), attrs[i].Location.document.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
+                    throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace("System.ArgumentException: ", ""), attrs[i].Location.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
                 }
             }
         }
@@ -2184,7 +2184,7 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 catch (ArgumentException ex)
                 {
-                    throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace("System.ArgumentException: ", ""), attrs[i].Location.document.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
+                    throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace("System.ArgumentException: ", ""), attrs[i].Location.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
                 }
             }
         }
@@ -2205,7 +2205,7 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 catch (ArgumentException ex)
                 {
-                    throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace("System.ArgumentException: ", ""), attrs[i].Location.document.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
+                    throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace("System.ArgumentException: ", ""), attrs[i].Location.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
                 }
             }
         }
@@ -2233,7 +2233,7 @@ namespace PascalABCCompiler.NETGenerator
                     }
                     catch(ArgumentException ex)
                     {
-                        throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace(", переданный для DefineUnmanagedMarshal,",""), attrs[i].Location.document.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
+                        throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace(", переданный для DefineUnmanagedMarshal,",""), attrs[i].Location.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
                     }
                     else
                     {

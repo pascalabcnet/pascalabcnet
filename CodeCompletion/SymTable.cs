@@ -597,7 +597,7 @@ namespace CodeCompletion
             Position pos = new Position();
             if (loc != null)
             {
-                pos.file_name = loc.doc.file_name;
+                pos.file_name = loc.file_name;
                 pos.line = loc.begin_line_num;
                 pos.column = loc.begin_column_num;
                 pos.end_line = loc.end_line_num;
@@ -611,7 +611,7 @@ namespace CodeCompletion
             Position pos = new Position();
             if (head_loc != null)
             {
-                pos.file_name = head_loc.doc.file_name;
+                pos.file_name = head_loc.file_name;
                 pos.line = head_loc.begin_line_num;
                 pos.column = head_loc.begin_column_num;
                 pos.end_line = head_loc.end_line_num;
@@ -625,7 +625,7 @@ namespace CodeCompletion
             Position pos = new Position();
             if (body_loc != null)
             {
-                pos.file_name = body_loc.doc.file_name;
+                pos.file_name = body_loc.file_name;
                 pos.line = body_loc.begin_line_num;
                 pos.column = body_loc.begin_column_num;
                 pos.end_line = body_loc.end_line_num;
@@ -780,7 +780,7 @@ namespace CodeCompletion
             if (res == null && ts != null && ts.predef_loc != null && IsInScope(ts.predef_loc, line, column))
                 res = this;
             foreach (SymScope ss in members)
-                if (this != ss && this.topScope != ss && ss.loc != null && (loc == null || loc != null && loc.doc != null && ss.loc.doc.file_name == loc.doc.file_name))
+                if (this != ss && this.topScope != ss && ss.loc != null && (loc == null || loc != null && loc.file_name != null && ss.loc.file_name == loc.file_name))
                 {
                     if (IsInScope(ss.loc, line, column))
                     {
@@ -879,7 +879,7 @@ namespace CodeCompletion
                 {
                     if (ss.loc != null && loc != null)
                     {
-                        if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0)
+                        if (string.Compare(ss.loc.file_name, loc.file_name, true) == 0)
                         {
                             if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                             {
@@ -910,7 +910,7 @@ namespace CodeCompletion
                     //    continue;
                     if (ss.loc != null && loc != null)
                     {
-                        if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0)
+                        if (string.Compare(ss.loc.file_name, loc.file_name, true) == 0)
                         {
                             if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                             {
@@ -1005,7 +1005,7 @@ namespace CodeCompletion
                 }
                 if (ss.loc != null && loc != null && check_for_def && cur_line != -1 && cur_col != -1)
                 {
-                    if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0 && this != ss)
+                    if (string.Compare(ss.loc.file_name, loc.file_name, true) == 0 && this != ss)
                     {
                         if (IsClassMember(ss) || IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num) ||
                             ts != null && ts.predef_loc != null && IsAfterDefinition(ts.predef_loc.begin_line_num, ts.predef_loc.begin_column_num))
@@ -1024,7 +1024,7 @@ namespace CodeCompletion
                     if (string.Compare(ss.si.name, name, !CodeCompletionController.CurrentLanguage.LanguageInformation.CaseSensitive) == 0)
                         if (ss.loc != null && loc != null && check_for_def && cur_line != -1 && cur_col != -1)
                         {
-                            if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, !CodeCompletionController.CurrentLanguage.LanguageInformation.CaseSensitive) == 0 && this != ss)
+                            if (string.Compare(ss.loc.file_name, loc.file_name, !CodeCompletionController.CurrentLanguage.LanguageInformation.CaseSensitive) == 0 && this != ss)
                             {
                                 if (IsClassMember(ss) || IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                                 {
@@ -1054,7 +1054,7 @@ namespace CodeCompletion
                 foreach (SymScope ss in tmp_names)
                     if (ss.loc != null && loc != null && check_for_def && cur_line != -1 && cur_col != -1)
                     {
-                        if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0 && this != ss)
+                        if (string.Compare(ss.loc.file_name, loc.file_name, true) == 0 && this != ss)
                         {
                             if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                             {
@@ -1071,7 +1071,7 @@ namespace CodeCompletion
                     if (string.Compare(ss.si.name, name, !CodeCompletionController.CurrentLanguage.LanguageInformation.CaseSensitive) == 0)
                         if (ss.loc != null && loc != null && check_for_def && cur_line != -1 && cur_col != -1)
                         {
-                            if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0 && this != ss && ss.topScope != this)
+                            if (string.Compare(ss.loc.file_name, loc.file_name, true) == 0 && this != ss && ss.topScope != this)
                             {
                                 if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                                 {
@@ -2677,7 +2677,7 @@ namespace CodeCompletion
                 {
                     if (ss.loc != null && loc != null)
                     {
-                        if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0)
+                        if (string.Compare(ss.loc.file_name, loc.file_name, true) == 0)
                         {
                             if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                             {
@@ -2704,7 +2704,7 @@ namespace CodeCompletion
                 {
                     if (ss.loc != null && loc != null)
                     {
-                        if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0)
+                        if (string.Compare(ss.loc.file_name, loc.file_name, true) == 0)
                         {
                             if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                             {
