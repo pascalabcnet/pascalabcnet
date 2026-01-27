@@ -101,15 +101,14 @@ namespace VisualPascalABC
         {
             lock (o)
             {
-                bool attachdbg = CodeCompletion.CodeCompletionController.IntellisenseAvailable()
-                    && forDebugging || startWithGoto || needFirstBreakpoint; //|| WorkbenchServiceFactory.DebuggerManager.HasBreakpoints();
+                bool attachdbg = forDebugging || startWithGoto || needFirstBreakpoint; //|| WorkbenchServiceFactory.DebuggerManager.HasBreakpoints();
                 bool fictive_attach = false;
                 BuildService.CompilerOptions.UseDllForSystemUnits = false;
                 BuildService.CompilerOptions.OutputFileType = PascalABCCompiler.CompilerOptions.OutputType.ConsoleApplicaton;
                 if (ProjectFactory.Instance.ProjectLoaded)
                     tabPage = DocumentService.GetTabPageForMainFile();
                 if (attachdbg && !Workbench.UserOptions.AlwaysAttachDebuggerAtStart)
-                    fictive_attach = !startWithGoto && !needFirstBreakpoint && !DebuggerManager.HasBreakpoints();
+                    fictive_attach = !startWithGoto && !needFirstBreakpoint && !DebuggerManager.HasBreakpoints() || !CodeCompletion.CodeCompletionController.IntellisenseAvailable();
                 WorkbenchServiceFactory.OperationsService.ClearOutputTextBoxForTabPage(tabPage);
                 Workbench.ErrorsListWindow.ClearErrorList();
                 //DesignerService.GenerateAllDesignersCode();
