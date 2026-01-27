@@ -87,7 +87,8 @@ namespace VisualPascalABC
                 }
                 //CloseButtonsEnabled = OpenDocuments.Count > 1;
                 ChangedSelectedTab();
-                if (FileName != null) // SS 09.08.08
+                if (FileName != null // SS 09.08.08
+                    && CodeCompletion.CodeCompletionController.IntellisenseAvailable()) 
                     WorkbenchServiceFactory.CodeCompletionParserController.RegisterFileForParsing(FileName);
 
             }

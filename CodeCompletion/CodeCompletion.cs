@@ -47,6 +47,11 @@ namespace CodeCompletion
 		// static string cur_ext = ".pas";
         private static ILanguage currentLanguage;
 
+        /// <summary>
+        /// Запоминает язык текущего открытого файла.
+        /// Если язык файла не поддерживается в системе, то ошибка не выбрасывается,
+        /// текущему языку присваивается null.
+        /// </summary>
 		public static void SetLanguage(string fileName)
 		{
             currentLanguage = LanguageProvider.SelectLanguageByExtensionSafe(fileName);
