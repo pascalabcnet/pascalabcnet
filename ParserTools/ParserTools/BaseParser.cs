@@ -8,11 +8,11 @@ namespace PascalABCCompiler.Parsers
 {
     public abstract class BaseParser : IParser
     {
-        public List<Error> Errors { get; protected set; } = new List<Error>();
+        protected List<Error> Errors = new List<Error>();
 
-        public List<CompilerWarning> Warnings { get; protected set; } = new List<CompilerWarning>();
+        protected List<CompilerWarning> Warnings = new List<CompilerWarning>();
 
-        public List<compiler_directive> CompilerDirectives { get; protected set; } = new List<compiler_directive>();
+        protected List<compiler_directive> CompilerDirectives = new List<compiler_directive>();
 
         public ILanguageInformation LanguageInformation { get; set; }
 
