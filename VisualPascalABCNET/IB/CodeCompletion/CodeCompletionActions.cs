@@ -461,7 +461,7 @@ namespace VisualPascalABC
             //if (!should_insert_comment(textArea))
             //	return false;
             string lineText = get_next_line(textArea);
-            string addit = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.GetDocumentTemplate(
+            string addit = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.GetDocumentTemplate(
                 lineText, textArea.Document.TextContent, textArea.Caret.Line, textArea.Caret.Column, textArea.Caret.Offset);
             if (addit == null)
                 return false;
@@ -543,7 +543,7 @@ namespace VisualPascalABC
             full_expr = null;
             if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
             {
-                full_expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.FindExpressionFromAnyPosition(_textArea.Caret.Offset, Text, _textArea.Caret.Line, _textArea.Caret.Column, out keyw, out expr_without_brackets);
+                full_expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(_textArea.Caret.Offset, Text, _textArea.Caret.Line, _textArea.Caret.Column, out keyw, out expr_without_brackets);
                 return expr_without_brackets;
             }
             return null;
@@ -551,7 +551,7 @@ namespace VisualPascalABC
 
         private static string FindOnlyIdent(string Text, TextArea _textArea, ref string name)
         {
-            return CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.FindOnlyIdentifier(_textArea.Caret.Offset, Text, _textArea.Caret.Line, _textArea.Caret.Column, ref name);
+            return CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindOnlyIdentifier(_textArea.Caret.Offset, Text, _textArea.Caret.Line, _textArea.Caret.Column, ref name);
         }
 
 
@@ -684,7 +684,7 @@ namespace VisualPascalABC
     {
         public override void Execute(TextArea textArea)
         {
-            if (WorkbenchServiceFactory.DebuggerManager.IsRunning)
+            if (WorkbenchServiceFactory.DebuggerManager.IsRunning || !CodeCompletion.CodeCompletionController.IntellisenseAvailable())
                 return;
             WorkbenchServiceFactory.Workbench.ErrorsListWindow.ClearErrorList();
             VisualPABCSingleton.MainForm.CurrentCodeFileDocument.DeselectAll();
@@ -695,13 +695,8 @@ namespace VisualPascalABC
             //    file_name, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
             string text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName, PascalABCCompiler.SourceFileOperation.GetText) as string;
 
-            var currentParser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName)?.Parser;
-
-            if (currentParser == null || !currentParser.LanguageInformation.SupportsIntellisense)
-                return;
-
             PascalABCCompiler.SyntaxTree.compilation_unit cu =
-                currentParser.GetCompilationUnitForFormatter(
+                CodeCompletion.CodeCompletionController.CurrentLanguage.Parser.GetCompilationUnitForFormatter(
                 VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName,
                text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
                 Errors,
@@ -747,7 +742,7 @@ namespace VisualPascalABC
                 
                 CodeCompletionProvider completionDataProvider = new CodeCompletionProvider();
 
-                completionDataProvider.preSelection = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.FindPattern(off, text, out var is_pattern);
+                completionDataProvider.preSelection = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindPattern(off, text, out var is_pattern);
 
                 codeCompletionWindow = PABCNETCodeCompletionWindow.ShowCompletionWindow(
                     VisualPABCSingleton.MainForm,					// The parent window for the completion window

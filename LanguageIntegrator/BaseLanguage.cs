@@ -13,14 +13,16 @@ namespace Languages.Facade
     /// </summary>
     public abstract class BaseLanguage : ILanguage
     {
-
         /// <summary>
-        /// Все параметры должны быть не null (и не пустым массивом), кроме IDocParser в случае, если он не требуется
+        /// Все параметры должны быть не null (и не пустым массивом),
+        /// кроме IDocParser и ILanguageIntellisenseSupport в случае, если они не требуются
         /// </summary>
-        public BaseLanguage(ILanguageInformation languageInformation,
+        public BaseLanguage(ILanguageInformation languageInformation, ILanguageIntellisenseSupport languageIntellisenseSupport,
             IParser parser, IDocParser docParser, List<ISyntaxTreeConverter> syntaxTreeConverters)
         {
             this.LanguageInformation = languageInformation;
+            this.LanguageIntellisenseSupport = languageIntellisenseSupport;
+            this.LanguageIntellisenseSupport.LanguageInformation = languageInformation;
             this.Parser = parser;
             this.Parser.LanguageInformation = languageInformation;
             this.DocParser = docParser;
@@ -39,17 +41,17 @@ namespace Languages.Facade
 
         public string[] SystemUnitNames => LanguageInformation.SystemUnitNames;
 
-        public virtual ILanguageInformation LanguageInformation { get; }
+        public ILanguageInformation LanguageInformation { get; }
 
-        public virtual IParser Parser { get; protected set; }
+        public ILanguageIntellisenseSupport LanguageIntellisenseSupport { get; }
 
-        public virtual IDocParser DocParser { get; protected set; }
+        public IParser Parser { get; protected set; }
 
-        public virtual List<ISyntaxTreeConverter> SyntaxTreeConverters { get; protected set; }
+        public IDocParser DocParser { get; protected set; }
 
-        public bool ApplySyntaxTreeConvertersForIntellisense => LanguageInformation.ApplySyntaxTreeConvertersForIntellisense;
+        public List<ISyntaxTreeConverter> SyntaxTreeConverters { get; protected set; }
 
-        public virtual syntax_tree_visitor SyntaxTreeToSemanticTreeConverter { get; protected set; }
+        public syntax_tree_visitor SyntaxTreeToSemanticTreeConverter { get; protected set; }
 
         public abstract void SetSemanticConstants();
 

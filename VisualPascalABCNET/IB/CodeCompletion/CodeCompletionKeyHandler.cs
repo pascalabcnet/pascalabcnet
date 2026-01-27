@@ -190,7 +190,7 @@ namespace VisualPascalABC
                 if (VisualPABCSingleton.MainForm.UserOptions.CodeCompletionDot)
                 {
                     PascalABCCompiler.Parsers.KeywordKind keyw = KeywordChecker.TestForKeyword(editor.Document.TextContent, editor.ActiveTextAreaControl.TextArea.Caret.Offset - 1);
-                    if (CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.IsDefinitionIdentifierAfterKeyword(keyw))
+                    if (CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.IsDefinitionIdentifierAfterKeyword(keyw))
                         return false;
 
                     // если не первый символ выражения (предыдущий тоже буква или "_"), то не открываем новое окно

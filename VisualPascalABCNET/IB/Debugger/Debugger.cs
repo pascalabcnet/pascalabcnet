@@ -304,7 +304,7 @@ namespace VisualPascalABC
         public bool IsRunning = false;
         public string ExeFileName;
 		public bool ShowDebugTabs=true;
-		public PascalABCCompiler.Parsers.IParser parser = null;
+		public Languages.Facade.ILanguage language = null;
 		EventHandler<EventArgs> debuggerStateEvent;
 		
         public DebugHelper()
@@ -465,7 +465,7 @@ namespace VisualPascalABC
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             CurrentLine = 0;
-            this.parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(FullFileName)?.Parser;
+            this.language = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(FullFileName);
             this.PrevFullFileName = FullFileName;
             AssemblyHelper.LoadAssembly(fileName);
         	dbg.ProcessStarted += debugProcessStarted;
@@ -666,7 +666,7 @@ namespace VisualPascalABC
             workbench.ServiceContainer.EditorService.SetEditorDisabled(false);
             //RemoveMarker(frm.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Document);
             evaluator = null;
-            parser= null;
+            language= null;
             FileName = null;
             handle = 0;
             ExeFileName = null;
@@ -1239,7 +1239,7 @@ namespace VisualPascalABC
             {
                 sb.Insert(0, '.');
                 PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
-                string s = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageInformation.
+                string s = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.
                     FindExpression(i, text, 0, 0, out keyw);
                 if (s != null)
                 {
