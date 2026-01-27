@@ -17,6 +17,7 @@ namespace Languages.Example
         public ExampleLanguage() : base(
 
             languageInformation: new Frontend.Data.ExampleLanguageInformation(),
+            languageIntellisenseSupport: null,
             parser: new Frontend.Wrapping.ExampleLanguageParser(),
             docParser: null,
 
