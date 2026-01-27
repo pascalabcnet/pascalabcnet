@@ -2,9 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using PascalABCCompiler.Parsers;
-using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTreeConverters;
+using PascalABCCompiler.SystemLibrary;
 using PascalABCCompiler.TreeConverter;
+using System.Collections.Generic;
 
 namespace Languages.Facade
 {
@@ -54,7 +55,25 @@ namespace Languages.Facade
 
         public syntax_tree_visitor SyntaxTreeToSemanticTreeConverter { get; protected set; }
 
-        public abstract void SetSemanticConstants();
+        public virtual void SetSemanticConstants()
+        {
+            SemanticRulesConstants.ClassBaseType = SystemLibrary.object_type;
+            SemanticRulesConstants.StructBaseType = SystemLibrary.value_type;
+            SemanticRulesConstants.AddResultVariable = true;
+            SemanticRulesConstants.ZeroBasedStrings = true;
+            SemanticRulesConstants.FastStrings = false;
+            SemanticRulesConstants.InitStringAsEmptyString = true;
+            SemanticRulesConstants.UseDivisionAssignmentOperatorsForIntegerTypes = false;
+            SemanticRulesConstants.ManyVariablesOneInitializator = false;
+            SemanticRulesConstants.OrderIndependedMethodNames = true;
+            SemanticRulesConstants.OrderIndependedFunctionNames = false;
+            SemanticRulesConstants.OrderIndependedTypeNames = false;
+            SemanticRulesConstants.EnableExitProcedure = true;
+            SemanticRulesConstants.StrongPointersTypeCheckForDotNet = true;
+            SemanticRulesConstants.AllowChangeLoopVariable = false;
+            SemanticRulesConstants.AllowGlobalVisibilityForPABCDll = true;
+            SemanticRulesConstants.AllowMethodCallsWithoutParentheses = false;
+        }
 
         public abstract void SetSyntaxTreeToSemanticTreeConverter();
     }
