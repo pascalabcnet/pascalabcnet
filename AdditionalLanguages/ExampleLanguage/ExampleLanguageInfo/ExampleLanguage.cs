@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using Languages.Facade;
 using PascalABCCompiler.SyntaxTreeConverters;
-using PascalABCCompiler.SystemLibrary;
-using PascalABCCompiler.TreeConverter;
 
 namespace Languages.Example
 {
@@ -24,26 +22,6 @@ namespace Languages.Example
             syntaxTreeConverters: new List<ISyntaxTreeConverter>() { new DefaultSyntaxTreeConverter() }
             )
         { }
-
-        public override void SetSemanticConstants()
-        {
-            SemanticRulesConstants.ClassBaseType = SystemLibrary.object_type;
-            SemanticRulesConstants.StructBaseType = SystemLibrary.value_type;
-            SemanticRulesConstants.AddResultVariable = true;
-            SemanticRulesConstants.ZeroBasedStrings = true;
-            SemanticRulesConstants.FastStrings = false;
-            SemanticRulesConstants.InitStringAsEmptyString = true;
-            SemanticRulesConstants.UseDivisionAssignmentOperatorsForIntegerTypes = false;
-            SemanticRulesConstants.ManyVariablesOneInitializator = false;
-            SemanticRulesConstants.OrderIndependedMethodNames = true;
-            SemanticRulesConstants.OrderIndependedFunctionNames = false;
-            SemanticRulesConstants.OrderIndependedTypeNames = false;
-            SemanticRulesConstants.EnableExitProcedure = true;
-            SemanticRulesConstants.StrongPointersTypeCheckForDotNet = true;
-            SemanticRulesConstants.AllowChangeLoopVariable = false;
-            SemanticRulesConstants.AllowGlobalVisibilityForPABCDll = true;
-            SemanticRulesConstants.AllowMethodCallsWithoutParentheses = false;
-        }
 
         public override void SetSyntaxTreeToSemanticTreeConverter()
         {
