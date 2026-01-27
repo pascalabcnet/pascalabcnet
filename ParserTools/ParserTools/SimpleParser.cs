@@ -6,7 +6,7 @@ using PascalABCCompiler.SyntaxTree;
 namespace PascalABCCompiler.Parsers
 {
     /// <summary>
-    /// Базовый класс для парсера без поддержки Intellisense
+    /// Базовый класс для парсера без поддержки построения частей дерева и построения дерева с пропуском ошибок (Special mode)
     /// </summary>
     public abstract class SimpleParser : BaseParser
     {
