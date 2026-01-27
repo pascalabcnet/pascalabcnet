@@ -22,7 +22,8 @@ namespace Languages.Facade
         {
             this.LanguageInformation = languageInformation;
             this.LanguageIntellisenseSupport = languageIntellisenseSupport;
-            this.LanguageIntellisenseSupport.LanguageInformation = languageInformation;
+            if (this.LanguageIntellisenseSupport != null)
+                this.LanguageIntellisenseSupport.LanguageInformation = languageInformation;
             this.Parser = parser;
             this.Parser.LanguageInformation = languageInformation;
             this.DocParser = docParser;
