@@ -33,7 +33,7 @@ namespace PascalABCCompiler.TreeRealization
         /// <summary>
         /// Документ, в котором расположен этот фрагмент кода.
         /// </summary>
-		private document _doc;
+		private string _file_name;
 
         /// <summary>
         /// Конструктор класса.
@@ -43,13 +43,13 @@ namespace PascalABCCompiler.TreeRealization
         /// <param name="end_line_num">Номер строки конца фрагмента кода (нумерация начинается с 1).</param>
         /// <param name="end_column_num">Номер колонки конца фрагмента кода (нумерация начинается с 1)</param>
         /// <param name="doc">Документ, в котором расположен этот фрагмент кода.</param>
-		public location(int begin_line_num, int begin_column_num,int end_line_num,int end_column_num,document doc)
+		public location(int begin_line_num, int begin_column_num,int end_line_num,int end_column_num,string file_name)
 		{
 			_begin_line_num=begin_line_num;
 			_begin_column_num=begin_column_num;
 			_end_line_num=end_line_num;
 			_end_column_num=end_column_num;
-			_doc=doc;
+			_file_name=file_name;
 		}
 
         /// <summary>
@@ -115,26 +115,26 @@ namespace PascalABCCompiler.TreeRealization
         /// <summary>
         /// Документ, в котором расположен этот фрагмент кода.
         /// </summary>
-		public document doc
+		public string file_name
 		{
 			get
 			{
-				return _doc;
+				return _file_name;
 			}
 			set
 			{
-				_doc = value;
+				_file_name = value;
 			}
 		}
 
         /// <summary>
         /// Документ, в котором расположен этот фрагмент кода.
         /// </summary>
-		public SemanticTree.IDocument document
+		public string document
 		{
 			get
 			{
-				return _doc;
+				return _file_name;
 			}
 		}
 
@@ -142,7 +142,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             if (loc == null)
                 return null;
-            return new SyntaxTree.SourceContext(loc.begin_line_num, loc.begin_column_num, loc.end_line_num, loc.end_column_num, loc.document != null ? loc.document.file_name : null);
+            return new SyntaxTree.SourceContext(loc.begin_line_num, loc.begin_column_num, loc.end_line_num, loc.end_column_num, loc.document != null ? loc.file_name : null);
         }
 
 		public override string ToString()

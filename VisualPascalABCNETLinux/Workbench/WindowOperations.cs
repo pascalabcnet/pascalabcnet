@@ -456,16 +456,16 @@ namespace VisualPascalABC
             if (VisualEnvironmentCompiler != null)
                 if (!debug)
                 {
-                    SetCompilingButtonsEnabled(!run && VisualEnvironmentCompiler.compilerLoaded);
-                    SetDebugAndRunButtonsEnabled(!run && VisualEnvironmentCompiler.compilerLoaded);
+                    SetCompilingAndRunButtonsEnabled(!run && VisualEnvironmentCompiler.compilerLoaded);
+                    SetDebugButtonsEnabled(intellisenseAvailable && !run && VisualEnvironmentCompiler.compilerLoaded);
                 }
                 else
                 {
-                    SetCompilingButtonsEnabled(!debug);
+                    SetCompilingAndRunButtonsEnabled(!debug);
                     SetDebugButtonsAsByDebug();
                 }
             else
-                SetCompilingButtonsEnabled(false);
+                SetCompilingAndRunButtonsEnabled(false);
             SaveButtonsEnabled = CurrentCodeFileDocument.DocumentChanged;
             UpdateUndoRedoEnabled();
             UpdateCutCopyButtonsEnabled();

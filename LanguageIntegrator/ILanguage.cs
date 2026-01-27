@@ -30,6 +30,8 @@ namespace Languages.Facade
 
         ILanguageInformation LanguageInformation { get; }
 
+        ILanguageIntellisenseSupport LanguageIntellisenseSupport { get; }
+
         /// <summary>
         /// Основной парсер языка
         /// </summary>
@@ -44,11 +46,6 @@ namespace Languages.Facade
         /// Постпреобразования синтаксического дерева (синтаксический сахар и др.)
         /// </summary>
         List<ISyntaxTreeConverter> SyntaxTreeConverters { get; }
-
-        /// <summary>
-        /// Вызывать ли преобразователей синтаксического дерева в работе Intellisense
-        /// </summary>
-        bool ApplySyntaxTreeConvertersForIntellisense { get; }
 
         /// <summary>
         /// Преобразователь из синтаксического дерева в семантическое

@@ -11258,6 +11258,15 @@ begin
   end;
 end;
 
+/// Возвращает первый элемент, удовлетворяющий условию, или значение по умолчанию, если ни одного такого элемента не найдено
+function FirstOrDefault<T>(self: sequence of T; pred: T -> boolean; defaultValue: T): T; extensionmethod;
+begin
+  foreach var item in self do
+    if pred(item) then
+      Exit(item);
+  Result := defaultValue;
+end;
+
 /// Возвращает произведение элементов последовательности
 function Product(Self: sequence of real): real; extensionmethod;
 begin

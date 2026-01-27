@@ -508,39 +508,6 @@ namespace PascalABCCompiler
 #endif
     }
 
-    public class SupportedSourceFile
-    {
-        private readonly string[] extensions;
-
-        public string[] Extensions
-        {
-            get { return extensions; }
-        }
-
-        private readonly string languageName;
-
-        public string LanguageName
-        {
-            get { return languageName; }
-        }
-
-        public SupportedSourceFile(string[] extensions, string lname)
-        {
-            this.extensions = extensions; 
-            languageName = lname;
-        }
-
-        public static SupportedSourceFile Make(ILanguage language)
-        { 
-            return new SupportedSourceFile(language.FilesExtensions, language.Name);
-        }
-        
-        public override string ToString()
-        {
-            return string.Format("{0} ({1})", LanguageName, FormatTools.ExtensionsToString(Extensions, "*", ";"));
-        }
-    }
-
     public delegate void ChangeCompilerStateEventDelegate(ICompiler sender, CompilerState State, string FileName);
 
     public class Compiler : MarshalByRefObject, ICompiler
@@ -629,19 +596,6 @@ namespace PascalABCCompiler
         public CompilerState State
         {
             get { return state; }
-        }
-
-
-        private void SetSupportedProjectFiles()
-        {
-            // проекты только на Паскале пока   EVA
-            supportedProjectFiles = new SupportedSourceFile[] { new SupportedSourceFile(new string[1] { ".pabcproj" }, "PascalABC.NET") };
-        }
-
-        private SupportedSourceFile[] supportedProjectFiles = null;
-        public SupportedSourceFile[] SupportedProjectFiles
-        {
-            get { return supportedProjectFiles; }
         }
 
         private CompilationUnitHashTable unitTable = new CompilationUnitHashTable();
@@ -790,8 +744,6 @@ namespace PascalABCCompiler
             
             if (ChangeCompilerState != null)
                 OnChangeCompilerState += ChangeCompilerState;
-            
-            supportedProjectFiles = comp.SupportedProjectFiles;
 
             // 29.07.2024  EVA
             CompilerOptions = new CompilerOptions();
@@ -826,8 +778,6 @@ namespace PascalABCCompiler
 
             SyntaxTreeToSemanticTreeConverter = new TreeConverter.SyntaxTreeToSemanticTreeConverter();
             CodeGeneratorsController = new CodeGenerators.Controller();
-
-            SetSupportedProjectFiles();
 
             semanticTreeConvertersController = new SemanticTreeConvertersController(this);
             semanticTreeConvertersController.ChangeState += semanticTreeConvertersController_ChangeState;
@@ -872,7 +822,7 @@ namespace PascalABCCompiler
                             directives.Add(cd.name, new List<compiler_directive>());
                         // TODO: сделать проверку на дубликаты централизованной (в другом месте)  EVA
                         else if (cd.name.Equals("mainresource", StringComparison.CurrentCultureIgnoreCase))
-                            throw new DuplicateDirective(cd.location.doc.file_name, "mainresource", cd.location);
+                            throw new DuplicateDirective(cd.location.file_name, "mainresource", cd.location);
                         directives[cd.name].Insert(0, cd);
                     }
                 }
@@ -915,7 +865,7 @@ namespace PascalABCCompiler
                 return null;
             }
             return new TreeRealization.location(tn.source_context.begin_position.line_num, tn.source_context.begin_position.column_num,
-                tn.source_context.end_position.line_num, tn.source_context.end_position.column_num, new TreeRealization.document(FileName));
+                tn.source_context.end_position.line_num, tn.source_context.end_position.column_num, FileName);
         }
 
         public void StartCompile()
@@ -1284,14 +1234,14 @@ namespace PascalABCCompiler
                     compilerDirectives.ContainsKey(StringConstants.compiler_directive_description_string) ||
                     compilerDirectives.ContainsKey(StringConstants.compiler_directive_copyright_string))
                 {
-                    ErrorsList.Add(new MainResourceNotAllowed(compilerDirectivesList[0].location.doc.file_name, compilerDirectivesList[0].location));
+                    ErrorsList.Add(new MainResourceNotAllowed(compilerDirectivesList[0].location.file_name, compilerDirectivesList[0].location));
                 }
                 TryThrowInvalidPath(compilerDirectivesList[0].directive, compilerDirectivesList[0].location);
                 // Тут не обязательно нормализовывать путь
                 // И если он слишком длинный - File.Exists вернёт false
                 netCompilerOptions.MainResourceFileName = Path.Combine(Path.GetDirectoryName(compilerDirectivesList[0].source_file), compilerDirectivesList[0].directive);
                 if (!File.Exists(netCompilerOptions.MainResourceFileName))
-                    ErrorsList.Add(new ResourceFileNotFound(compilerDirectivesList[0].location.doc.file_name, compilerDirectivesList[0].directive, compilerDirectivesList[0].location));
+                    ErrorsList.Add(new ResourceFileNotFound(compilerDirectivesList[0].location.file_name, compilerDirectivesList[0].directive, compilerDirectivesList[0].location));
             }
 
         }
@@ -1776,7 +1726,7 @@ namespace PascalABCCompiler
                     if (File.Exists(resourceFileName))
                         ResourceFiles.Add(resourceFileName);
                     else
-                        ErrorsList.Add(new ResourceFileNotFound(cd.location.doc.file_name, cd.directive, cd.location));
+                        ErrorsList.Add(new ResourceFileNotFound(cd.location.file_name, cd.directive, cd.location));
 
                 }
             }

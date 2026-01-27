@@ -109,7 +109,7 @@ namespace PascalABCCompiler.SemanticTree
 		}
 
 		//Документ, в котором определен данный элемент дерева.
-		IDocument document
+		string file_name
 		{
 			get;
 		}

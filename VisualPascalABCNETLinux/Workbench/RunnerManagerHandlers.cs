@@ -27,16 +27,17 @@ namespace VisualPascalABC
         void ButtonsEnableDisable_RunStart()
         {
             Workbench.WidgetController.SetStopEnabled(true);
-            Workbench.WidgetController.SetCompilingButtonsEnabled(false);
-            Workbench.WidgetController.SetDebugAndRunButtonsEnabled(false);
+            Workbench.WidgetController.SetCompilingAndRunButtonsEnabled(false);
+            Workbench.WidgetController.SetDebugButtonsEnabled(false);
             Workbench.WidgetController.SetOptionsEnabled(false);
         }
 
         void ButtonsEnableDisable_RunStop()
         {
             Workbench.WidgetController.SetStopEnabled(false);
-            Workbench.WidgetController.SetCompilingButtonsEnabled(true);
-            Workbench.WidgetController.SetDebugAndRunButtonsEnabled(true);
+            Workbench.WidgetController.SetCompilingAndRunButtonsEnabled(true);
+            if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
+                Workbench.WidgetController.SetDebugButtonsEnabled(true);
             Workbench.WidgetController.SetOptionsEnabled(true);
         }
 

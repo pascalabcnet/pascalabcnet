@@ -717,8 +717,8 @@ namespace VisualPascalABC
                         }
                         else
                             if (val.IsNull)
-                                if (WorkbenchServiceFactory.DebuggerManager.parser != null)
-                                    return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Null);
+                                if (WorkbenchServiceFactory.DebuggerManager.language != null)
+                                    return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Null);
                                 else
                                     return "nil";
                             else

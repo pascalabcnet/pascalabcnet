@@ -1,4 +1,5 @@
-﻿using PascalABCCompiler.ParserTools.Directives;
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;
@@ -8,27 +9,9 @@ using System.Text;
 
 namespace PascalABCCompiler.Parsers
 {
-    public abstract class BaseLanguageInformation : ILanguageInformation
+    public abstract class BaseLanguageIntellisenseSupport : ILanguageIntellisenseSupport
     {
-        public abstract string Name { get; }
-
-        public abstract string Version { get; }
-
-        public abstract string Copyright { get; }
-
-        public abstract bool CaseSensitive { get; }
-
-        public abstract string[] FilesExtensions { get; }
-
-        public abstract string[] SystemUnitNames { get; }
-
-        public virtual bool SupportsIntellisense => true;
-
-        public abstract BaseKeywords KeywordsStorage { get; }
-
-        public abstract Dictionary<string, DirectiveInfo> ValidDirectives { get; protected set; }
-
-        public abstract string CommentSymbol { get; }
+        public ILanguageInformation LanguageInformation { get; set; }
 
         public abstract string BodyStartBracket { get; }
 
@@ -48,8 +31,6 @@ namespace PascalABCCompiler.Parsers
         public abstract string ProcedureName { get; }
         public abstract string FunctionName { get; }
 
-        public abstract bool SyntaxTreeIsConvertedAfterUsedModulesCompilation { get; }
-
         public abstract bool ApplySyntaxTreeConvertersForIntellisense { get; }
 
         public abstract bool IncludeDotNetEntities { get; }
@@ -59,8 +40,6 @@ namespace PascalABCCompiler.Parsers
         public abstract bool AddStandardNetNamespacesToUserScope { get; }
 
         public abstract bool UsesFunctionsOverlappingSourceContext { get; }
-
-        public virtual Dictionary<string, string> SpecialModulesAliases => null;
 
         protected abstract string IntTypeName { get; }
 
@@ -653,12 +632,14 @@ namespace PascalABCCompiler.Parsers
 
         public abstract string GetDescription(IBaseScope scope);
 
-        
+
         // поменять на abstract EVA
         public virtual string GetDocumentTemplate(string lineText, string Text, int line, int col, int pos)
         {
             return null;
         }
+
+        public abstract string GetUnitTemplate(string unitName);
 
         public string GetFullTypeName(ICompiledTypeScope scope, bool no_alias = true)
         {
@@ -962,7 +943,7 @@ namespace PascalABCCompiler.Parsers
 
         public KeywordKind GetKeywordKind(string name)
         {
-            if (KeywordsStorage.KeywordKinds.TryGetValue(name, out var kind))
+            if (LanguageInformation.KeywordsStorage.KeywordKinds.TryGetValue(name, out var kind))
                 return kind;
             else
                 return KeywordKind.None;
@@ -1477,9 +1458,9 @@ namespace PascalABCCompiler.Parsers
                 return sc.Name + (((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>") && sc.Name != "class") ? "<>" : "") + ".";
             }
 
-            if (sc is IInterfaceUnitScope && SpecialModulesAliases != null)
+            if (sc is IInterfaceUnitScope && LanguageInformation.SpecialModulesAliases != null)
             {
-                var p = SpecialModulesAliases.FirstOrDefault(kv => kv.Value == sc.Name);
+                var p = LanguageInformation.SpecialModulesAliases.FirstOrDefault(kv => kv.Value == sc.Name);
 
                 if (!p.Equals(default(KeyValuePair<string, string>)))
                     return p.Key + ".";
@@ -1498,9 +1479,9 @@ namespace PascalABCCompiler.Parsers
                 return sc.Name + (((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>")) ? "<>" : "");
             }
 
-            if (sc is IInterfaceUnitScope && SpecialModulesAliases != null)
+            if (sc is IInterfaceUnitScope && LanguageInformation.SpecialModulesAliases != null)
             {
-                var p = SpecialModulesAliases.FirstOrDefault(kv => kv.Value == sc.Name);
+                var p = LanguageInformation.SpecialModulesAliases.FirstOrDefault(kv => kv.Value == sc.Name);
 
                 if (!p.Equals(default(KeyValuePair<string, string>)))
                     return p.Key + ".";
@@ -1696,7 +1677,7 @@ namespace PascalABCCompiler.Parsers
 
         public bool IsKeyword(string value)
         {
-            return KeywordsStorage.KeywordsForIntellisenseSet.Contains(value);
+            return LanguageInformation.KeywordsStorage.KeywordsForIntellisenseSet.Contains(value);
         }
 
         public virtual bool IsMethodCallParameterSeparator(char key)
@@ -1780,7 +1761,7 @@ namespace PascalABCCompiler.Parsers
             {
                 keyword = KeywordKind.Raise;
             }
-            else if (KeywordsStorage.KeywordsTreatedAsFunctions.Contains(s))
+            else if (LanguageInformation.KeywordsStorage.KeywordsTreatedAsFunctions.Contains(s))
             {
                 keyword = KeywordKind.None;
             }

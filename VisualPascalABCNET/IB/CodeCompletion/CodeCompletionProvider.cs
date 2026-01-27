@@ -125,12 +125,12 @@ namespace VisualPascalABC
         private string construct_header(string meth, CodeCompletion.ProcScope ps, int tabCount)
         {
             //if (CodeCompletion.CodeCompletionController.currentParser != null)
-            return CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ConstructHeader(meth, ps, tabCount);
+            return CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.ConstructHeader(meth, ps, tabCount);
         }
 
         private string construct_header(CodeCompletion.ProcRealization ps, int tabCount)
         {
-            return CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ConstructHeader(ps, tabCount);
+            return CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.ConstructHeader(ps, tabCount);
         }
 
         public CodeCompletion.SymScope FindScopeByLocation(string fileName, int line, int col)
@@ -295,7 +295,7 @@ namespace VisualPascalABC
         public string FindExpression(int off, string Text, int line, int col)
         {
             if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
-                return CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpression(off, Text, line, col, out keyword);
+                return CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindExpression(off, Text, line, col, out keyword);
             return null;
         }
 
@@ -324,14 +324,14 @@ namespace VisualPascalABC
             try
             {
 
-                ILanguageInformation languageInformation = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation;
+                ILanguage currentLanguage = CodeCompletion.CodeCompletionController.CurrentLanguage;
 
                 List<string> keywords;
 
                 bool isTypeAfterKeyword = false;
 
                 // если по смыслу должен вводиться тип данных
-                if (languageInformation.IsTypeAfterKeyword(keyw))
+                if (currentLanguage.LanguageIntellisenseSupport.IsTypeAfterKeyword(keyw))
                 {
                     keywords = CodeCompletion.CodeCompletionNameHelper.Helper.GetTypeKeywords();
                     isTypeAfterKeyword = true;
@@ -344,7 +344,7 @@ namespace VisualPascalABC
                 bool isNamespaceAfterKeyword = false;
 
                 // конструкция типа "uses"
-                if (languageInformation.IsNamespaceAfterKeyword(keyw))
+                if (currentLanguage.LanguageIntellisenseSupport.IsNamespaceAfterKeyword(keyw))
                 {
                     isNamespaceAfterKeyword = true;
                 }
@@ -358,11 +358,9 @@ namespace VisualPascalABC
 
                 if (symInfos != null)
                 {
-                    bool languageCaseSensitive = LanguageProvider.Instance.SelectLanguageByExtension(FileName).CaseSensitive;
+                    currentLanguage.LanguageIntellisenseSupport.RenameOrExcludeSpecialNames(symInfos);
 
-                    languageInformation.RenameOrExcludeSpecialNames(symInfos);
-
-                    AddCompletionDatasByFirstForSymInfos(resultList, charTyped, symInfos, languageCaseSensitive);
+                    AddCompletionDatasByFirstForSymInfos(resultList, charTyped, symInfos, currentLanguage.CaseSensitive);
                     
                     //resultList.Sort();
                     //defaultCompletionElement = resultList[0] as DefaultCompletionData;
@@ -506,7 +504,7 @@ namespace VisualPascalABC
                 };
 
                 string expressionText = GetExpressionTextForCompletionData(off, text, line, col,
-                    currentLanguage.LanguageInformation, in context, out var insidePatternWithDots, out var ctrlOrShiftSpaceAfterDot, out var pattern);
+                    currentLanguage.LanguageIntellisenseSupport, in context, out var insidePatternWithDots, out var ctrlOrShiftSpaceAfterDot, out var pattern);
 
                 // добавляем ключевые слова в случае "ctrl + space", нажатых в "пустом" месте
                 if (!ctrlOrShiftSpaceAfterDot && context.ctrlSpace && string.IsNullOrEmpty(pattern))
@@ -537,7 +535,7 @@ namespace VisualPascalABC
 
                 if (symInfos != null)
                 {
-                    currentLanguage.LanguageInformation.RenameOrExcludeSpecialNames(symInfos);
+                    currentLanguage.LanguageIntellisenseSupport.RenameOrExcludeSpecialNames(symInfos);
 
                     AddCompletionDatasForSymInfos(resultList, currentLanguage.CaseSensitive, symInfos, selectedSymInfo, lastUsedMember);
                 }
@@ -689,7 +687,7 @@ namespace VisualPascalABC
         /// <summary>
         /// Получение текста выражения, введенного пользователем перед нажатием "триггерной" клавиши
         /// </summary>
-        private string GetExpressionTextForCompletionData(int off, string text, int line, int col, ILanguageInformation languageInformation, in ActionContext context, out bool insidePatternWithDots, out bool ctrlOrShiftSpaceAfterDot, out string pattern)
+        private string GetExpressionTextForCompletionData(int off, string text, int line, int col, ILanguageIntellisenseSupport languageIntellisenseSupport, in ActionContext context, out bool insidePatternWithDots, out bool ctrlOrShiftSpaceAfterDot, out string pattern)
         {
 
             string expressionText = null;
@@ -700,7 +698,7 @@ namespace VisualPascalABC
             if (context.ctrlSpace || context.shiftSpace)
             {
 
-                pattern = languageInformation.FindPattern(off, text, out var isPattern);
+                pattern = languageIntellisenseSupport.FindPattern(off, text, out var isPattern);
 
                 // в конце выражения точка
                 if (!isPattern && text[off - 1] == '.')
@@ -718,7 +716,7 @@ namespace VisualPascalABC
             }
             else if (context.spaceAfterNew)
             {
-                expressionText = languageInformation.SkipNew(off - 1, text, ref keyword);
+                expressionText = languageIntellisenseSupport.SkipNew(off - 1, text, ref keyword);
             }
             else if (context.dotPressed) // keywordKind != KeywordKind.Uses
             {

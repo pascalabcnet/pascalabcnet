@@ -101,7 +101,8 @@ namespace VisualPascalABC
         {
             lock (o)
             {
-                bool attachdbg = forDebugging || startWithGoto || needFirstBreakpoint; //|| WorkbenchServiceFactory.DebuggerManager.HasBreakpoints();
+                bool attachdbg = CodeCompletion.CodeCompletionController.IntellisenseAvailable()
+                    && forDebugging || startWithGoto || needFirstBreakpoint; //|| WorkbenchServiceFactory.DebuggerManager.HasBreakpoints();
                 bool fictive_attach = false;
                 BuildService.CompilerOptions.UseDllForSystemUnits = false;
                 BuildService.CompilerOptions.OutputFileType = PascalABCCompiler.CompilerOptions.OutputType.ConsoleApplicaton;

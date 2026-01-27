@@ -103,7 +103,7 @@ namespace VisualPascalABC
 			string[] file_name = e.Data.GetData(DataFormats.FileDrop) as string[];
 			if (file_name != null && file_name.Length>0)
 			{
-				if (string.Compare(System.IO.Path.GetExtension(file_name[0]),Constants.ProjectExtension,true)==0)
+				if (string.Compare(System.IO.Path.GetExtension(file_name[0]), PascalABCCompiler.StringConstants.platformProjectExtension,true)==0)
                     WorkbenchServiceFactory.ProjectService.OpenProject(file_name[0]);
 				else
                     WorkbenchServiceFactory.FileService.OpenFile(file_name[0], null);

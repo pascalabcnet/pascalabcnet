@@ -150,7 +150,7 @@ namespace PascalABCCompiler.TreeRealization
         private SyntaxTree.type_declaration _type_decl; //Синтаксическое дерево шаблона
         private string _name;                           //Имя шаблона
         private common_namespace_node _cnn;             //Пространство, где описан шаблон
-        private document _doc;                          //Документ, т.е. файл, где описан шаблон
+        private string _file_name;                          //Документ, т.е. файл, где описан шаблон
         private using_namespace_list _unl;              //Список подключенных к _cnn пространств
         private using_namespace_list _unl2 = null;      //То же для пространства внешних методов
         private bool _ForwardDeclarationOnly = false;   //true, если пока есть только предописание
@@ -219,11 +219,11 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
-        public document cur_document
+        public string cur_document
         {
             get
             {
-                return _doc;
+                return _file_name;
             }
         }
 
@@ -279,12 +279,12 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
-        public template_class(SyntaxTree.type_declaration type_decl, string name,common_namespace_node cnn,/*common_type_node ctn,location loc,*/document doc,using_namespace_list unl)
+        public template_class(SyntaxTree.type_declaration type_decl, string name,common_namespace_node cnn,/*common_type_node ctn,location loc,*/string file_name,using_namespace_list unl)
         {
             _cnn = cnn;
             _type_decl = type_decl;
             _name = name;
-            _doc = doc;
+            _file_name = file_name;
             
             //(ssyy) using - список, по-видимому, можно только копировать, т.к. Николай его периодически чистит.
             _unl = new using_namespace_list();

@@ -317,7 +317,8 @@ namespace VisualPascalABC
             	InitForm();
                 this.StepOutButton.Visible = false;
                 PlayPauseButtonsVisibleInPanel = PlayPauseButtonsVisibleInPanel;
-                SetDebugAndRunButtonsEnabled(false);
+                SetDebugButtonsEnabled(false);
+                SetRunButtonsEnabled(false);
             }
 
             // Для Linux сделать все Debug-кнопки неактивными
@@ -408,7 +409,7 @@ namespace VisualPascalABC
 
             RunManager RunnerManager = (WorkbenchServiceFactory.RunService as WorkbenchRunService).RunnerManager;
             VisualEnvironmentCompiler = new VisualEnvironmentCompiler(
-                this.BeginInvoke, SetCompilingButtonsEnabled, SetDebugButtonsEnabled, SetStateText,
+                this.BeginInvoke, SetCompilingAndRunButtonsEnabled, SetDebugButtonsEnabled, SetStateText,
                 AddTextToCompilerMessagesSync, miPlugins, toolStrip1,
                 ExecuteSourceLocationAction, ExecuteVisualEnvironmentCompilerAction, ErrorsManager, RunnerManager,
                 WorkbenchServiceFactory.DebuggerManager, UserOptions, WorkbenchStorage.StandartDirectories, OpenDocuments, this);
@@ -480,23 +481,23 @@ namespace VisualPascalABC
             init = true;
             foreach (string FileName in VisualPascalABCProgram.CommandLineArgs)
             {
-                if (Path.GetExtension(FileName) == ".pabcproj")
+                if (Path.GetExtension(FileName) == PascalABCCompiler.StringConstants.platformProjectExtension)
                     WorkbenchServiceFactory.ProjectService.OpenProject(FileName);
                 else
                     WorkbenchServiceFactory.FileService.OpenFile(FileName, null);
             }
             if (FileNameToWait != null)
             {
-                if (Path.GetExtension(FileNameToWait) == ".pabcproj")
+                if (Path.GetExtension(FileNameToWait) == PascalABCCompiler.StringConstants.platformProjectExtension)
                     WorkbenchServiceFactory.ProjectService.OpenProject(FileNameToWait);
                 else
                     WorkbenchServiceFactory.FileService.OpenFile(FileNameToWait, null);
             }
             SetStopEnabled(false);
-            CompilingButtonsEnabled = CloseButtonsEnabled = SaveAllButtonsEnabled = SaveButtonsEnabled = false;
+            CompilingAndRunButtonsEnabled = CloseButtonsEnabled = SaveAllButtonsEnabled = SaveButtonsEnabled = false;
             if (DebuggerVisible)
                 SetDebugButtonsEnabled(false);
-            SetCompilingButtonsEnabled(false);
+            SetCompilingAndRunButtonsEnabled(false);
 
             HelpFileName = PascalABCCompiler.Tools.ReplaceAllKeys(Constants.HelpFileName, WorkbenchStorage.StandartDirectories);
             DotNetHelpFileName = PascalABCCompiler.Tools.ReplaceAllKeys(Constants.DotNetHelpFileName, WorkbenchStorage.StandartDirectories);
@@ -1355,7 +1356,7 @@ namespace VisualPascalABC
 						//MessageBox.Show(cds.cbData.ToString());
                         if (init)
                         {
-                            if (System.IO.Path.GetExtension(file_name) != ".pabcproj")
+                            if (System.IO.Path.GetExtension(file_name) != PascalABCCompiler.StringConstants.platformProjectExtension)
                                 WorkbenchServiceFactory.FileService.OpenFile(file_name, null);
                             else
                                 WorkbenchServiceFactory.ProjectService.OpenProject(file_name);

@@ -66,11 +66,11 @@ namespace ICSharpCode.TextEditor.Util
                     if (param_num == -1)
                         return;
 
-                    var languageInfo = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation;
+                    var languageIntellisenseSupport = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport;
 
                     int startIndex = basicDescription.IndexOf("(", basicDescription.IndexOf("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION")) + 1) + 1;
 
-                    int paranthesisIndex = languageInfo.FindClosingParenthesis(basicDescription.Substring(startIndex), ')');
+                    int paranthesisIndex = languageIntellisenseSupport.FindClosingParenthesis(basicDescription.Substring(startIndex), ')');
 
                     if (paranthesisIndex == -1)
                         return;
@@ -83,7 +83,7 @@ namespace ICSharpCode.TextEditor.Util
 
                         if (bold_beg != 0)
                         {
-                            int paramDelimIndex = languageInfo.FindParamDelim(basicDescription.Substring(bold_beg), 1);
+                            int paramDelimIndex = languageIntellisenseSupport.FindParamDelim(basicDescription.Substring(bold_beg), 1);
 
                             if (paramDelimIndex == -1)
                             {
@@ -104,7 +104,7 @@ namespace ICSharpCode.TextEditor.Util
                             {
                                 string paramDescription = basicDescription.Substring(startIndex, paranthesisIndex);
 
-                                if (languageInfo.IsParams(paramDescription))
+                                if (languageIntellisenseSupport.IsParams(paramDescription))
                                 {
                                     bold_beg = startIndex;
                                     bold_len = paranthesisIndex;
@@ -114,15 +114,15 @@ namespace ICSharpCode.TextEditor.Util
                             {
                                 string descriptionAfterBracket = basicDescription.Substring(startIndex);
 
-                                int paramDelimIndex = languageInfo.FindParamDelim(descriptionAfterBracket, paramsCount - 1);
+                                int paramDelimIndex = languageIntellisenseSupport.FindParamDelim(descriptionAfterBracket, paramsCount - 1);
 
                                 if (paramDelimIndex != -1)
                                 {
-                                    int paramDelimLength = languageInfo.ParameterDelimiter.Length;
+                                    int paramDelimLength = languageIntellisenseSupport.ParameterDelimiter.Length;
 
                                     string paramDescription = descriptionAfterBracket.Substring(paramDelimIndex + paramDelimLength, paranthesisIndex - paramDelimIndex - paramDelimLength);
 
-                                    if (languageInfo.IsParams(paramDescription))
+                                    if (languageIntellisenseSupport.IsParams(paramDescription))
                                     {
                                         bold_beg = paramDelimIndex + startIndex + paramDelimLength;
                                         bold_len = end_sk - bold_beg;
@@ -132,12 +132,12 @@ namespace ICSharpCode.TextEditor.Util
                         }
                         else
                         {
-                            int paramDelimIndex = languageInfo.FindParamDelim(basicDescription.Substring(startIndex), param_num - 1);
+                            int paramDelimIndex = languageIntellisenseSupport.FindParamDelim(basicDescription.Substring(startIndex), param_num - 1);
 
                             if (paramDelimIndex != -1)
                             {
-                                bold_beg = paramDelimIndex + startIndex + languageInfo.ParameterDelimiter.Length;
-                                int secondParamDelimIndex = languageInfo.FindParamDelim(basicDescription.Substring(startIndex), param_num);
+                                bold_beg = paramDelimIndex + startIndex + languageIntellisenseSupport.ParameterDelimiter.Length;
+                                int secondParamDelimIndex = languageIntellisenseSupport.FindParamDelim(basicDescription.Substring(startIndex), param_num);
 
                                 if (secondParamDelimIndex == -1)
                                 {

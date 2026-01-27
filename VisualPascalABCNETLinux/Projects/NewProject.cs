@@ -60,7 +60,7 @@ namespace VisualPascalABC
 		{
 			get
 			{
-				return System.IO.Path.Combine(tbProjectDir.Text,ProjectName+".pabcproj");
+				return System.IO.Path.Combine(tbProjectDir.Text,ProjectName+PascalABCCompiler.StringConstants.platformProjectExtension);
 			}
 		}
 		

@@ -1777,7 +1777,7 @@ function Sign(x: real): integer;
 ///--
 function Sign(x: BigInteger): integer;
 ///-function Abs(x: число): число;
-/// Возвращает модуль числа x
+/// Возвращает модуль числа
 function Abs(x: shortint): shortint;
 ///--
 function Abs(x: smallint): smallint;
@@ -11256,6 +11256,15 @@ begin
     action(x, i);
     i += 1;
   end;
+end;
+
+/// Возвращает первый элемент, удовлетворяющий условию, или значение по умолчанию, если ни одного такого элемента не найдено
+function FirstOrDefault<T>(self: sequence of T; pred: T -> boolean; defaultValue: T): T; extensionmethod;
+begin
+  foreach var item in self do
+    if pred(item) then
+      Exit(item);
+  Result := defaultValue;
 end;
 
 /// Возвращает произведение элементов последовательности

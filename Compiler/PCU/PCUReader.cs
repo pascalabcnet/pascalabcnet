@@ -37,7 +37,7 @@ namespace PascalABCCompiler.PCU
 		private PCUFile pcu_file = new PCUFile();
 		private CompilationUnit unit;
         private common_unit_node cun;
-		private document cur_doc;
+		private string cur_doc_name;
 		private string unit_name;
 		private string dir;
         private int start_pos;//смещение относительно начала PCU-файла, по которому находятся описание всех сущностей модуля
@@ -301,7 +301,7 @@ namespace PascalABCCompiler.PCU
                     if (!File.Exists(SourceFileName))
                         SourceFileName = Path.Combine(Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(FileName)),"LibSource"), pcu_file.SourceFileName);
                 }
-                cur_doc = new document(SourceFileName);
+                cur_doc_name = SourceFileName;
 
                 AddNamespaces();
                 AddInterfaceNames();
@@ -583,9 +583,9 @@ namespace PascalABCCompiler.PCU
             else
                 pcu_file.SourceFileName = Path.GetFileNameWithoutExtension(FileName);
             if (Path.GetDirectoryName(pcu_file.SourceFileName) == "")
-                cur_doc = new document(Path.Combine(Path.GetDirectoryName(FileName), pcu_file.SourceFileName));
+                cur_doc_name = Path.Combine(Path.GetDirectoryName(FileName), pcu_file.SourceFileName);
             else
-                cur_doc = new document(pcu_file.SourceFileName);
+                cur_doc_name = pcu_file.SourceFileName;
 
             pcu_file.languageName = br.ReadString();
 
@@ -1060,7 +1060,7 @@ namespace PascalABCCompiler.PCU
             {
                 if (readDebugInfo)
                 {
-                    location loc = new location(br.ReadInt32(), br.ReadInt32(), br.ReadInt32(), br.ReadInt32(), cur_doc);
+                    location loc = new location(br.ReadInt32(), br.ReadInt32(), br.ReadInt32(), br.ReadInt32(), cur_doc_name);
                     if (loc.begin_column_num == -1)
                         return null;
                     else
@@ -2389,10 +2389,10 @@ namespace PascalABCCompiler.PCU
                     unl2.AddElement(new using_namespace(br.ReadString()));
                 }
             }
-            document doc = null;
+            string doc = null;
             if (br.ReadByte() == 1)
             {
-                doc = new document(Path.Combine(Path.GetDirectoryName(cur_doc.file_name),br.ReadString()));
+                doc = Path.Combine(Path.GetDirectoryName(cur_doc_name),br.ReadString());
             }
 
             SyntaxTree.SyntaxTreeStreamReader str = new SyntaxTree.SyntaxTreeStreamReader();

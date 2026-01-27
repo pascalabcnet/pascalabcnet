@@ -275,7 +275,7 @@ namespace PascalABCCompiler.Errors
                     return sourceLocation;
                 if (Location != null)
                 {
-                    return new SourceLocation(Location.document.file_name,
+                    return new SourceLocation(Location.file_name,
                         Location.begin_line_num, Location.begin_column_num, Location.end_line_num, Location.end_column_num);
                 }
                 return null;

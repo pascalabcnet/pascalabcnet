@@ -19,7 +19,6 @@ namespace CodeCompletion
 
         public Dictionary<syntax_tree_node, string> docs = new Dictionary<syntax_tree_node, string>();
 		// static bool parsers_loaded=false;
-		public IParser Parser;
 
         static CodeCompletionController()
         {
@@ -58,12 +57,11 @@ namespace CodeCompletion
             pabcNamespaces.Clear();
         }
 		
-        // нужно переделать на использование ILanguage  EVA
-		public static IParser CurrentParser
+		public static ILanguage CurrentLanguage
 		{
 			get
 			{
-                return currentLanguage?.Parser;
+                return currentLanguage;
 			}
 		}
 
@@ -72,7 +70,7 @@ namespace CodeCompletion
         /// </summary>
         public static bool IntellisenseAvailable()
         {
-            return CurrentParser != null && CurrentParser.LanguageInformation.SupportsIntellisense;
+            return CurrentLanguage != null && CurrentLanguage.LanguageIntellisenseSupport != null;
         }
         
         public DomConverter Compile(string FileName, string Text)
@@ -83,11 +81,9 @@ namespace CodeCompletion
 
             ILanguage currentLanguage = LanguageProvider.SelectLanguageByExtension(FileName);
 
-            Parser = currentLanguage.Parser;
-
             try
             {
-                cu = Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal, false);
+                cu = currentLanguage.Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal, false);
                 
                 ErrorsList.Clear();
 
@@ -125,7 +121,7 @@ namespace CodeCompletion
                     string tmp = ParsersHelper.GetModifiedProgramm(Text);
                     if (tmp != null)
                     {
-                        cu = Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Special, false);
+                        cu = currentLanguage.Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Special, false);
                     }
 
                     ErrorsList.Clear();
@@ -187,11 +183,9 @@ namespace CodeCompletion
             if (currentLanguage == null)
                 return dconv;
             
-            Parser = currentLanguage.Parser;
-            
             if (Text != null)
             {
-                cu = Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal, true);
+                cu = currentLanguage.Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal, true);
             }
             ErrorsList.Clear();
             Warnings.Clear();
@@ -220,7 +214,7 @@ namespace CodeCompletion
                     string tmp = ParsersHelper.GetModifiedProgramm(Text);
                     if (tmp != null)
                     {
-                        cu = Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Special, true);
+                        cu = currentLanguage.Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Special, true);
                     }
 
                     ErrorsList.Clear();
@@ -261,7 +255,7 @@ namespace CodeCompletion
         public PascalABCCompiler.Parsers.KeywordKind GetKeywordKind(string name)
         {
             if (CodeCompletionController.IntellisenseAvailable())
-            	return CodeCompletionController.CurrentParser.LanguageInformation.GetKeywordKind(name);
+            	return CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.GetKeywordKind(name);
             return PascalABCCompiler.Parsers.KeywordKind.None;
         }
 
@@ -269,7 +263,7 @@ namespace CodeCompletion
         {
             if (CodeCompletionController.IntellisenseAvailable())
             {
-                return CodeCompletionController.CurrentParser.LanguageInformation.IsKeyword(name);
+                return CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.IsKeyword(name);
             }
             return false;
         }
@@ -277,14 +271,14 @@ namespace CodeCompletion
         public List<string> GetKeywords()
         {
             if (CodeCompletionController.IntellisenseAvailable())
-                return CodeCompletionController.CurrentParser.LanguageInformation.KeywordsStorage.KeywordsForIntellisenseList;
+                return CodeCompletionController.CurrentLanguage.LanguageInformation.KeywordsStorage.KeywordsForIntellisenseList;
             return new List<string>();
         }
 
         public List<string> GetTypeKeywords()
         {
             if (CodeCompletionController.IntellisenseAvailable())
-                return CodeCompletionController.CurrentParser.LanguageInformation.KeywordsStorage.TypeKeywords;
+                return CodeCompletionController.CurrentLanguage.LanguageInformation.KeywordsStorage.TypeKeywords;
             return new List<string>();
         }
 

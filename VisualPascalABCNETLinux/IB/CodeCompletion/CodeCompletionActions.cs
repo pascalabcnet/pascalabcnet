@@ -66,6 +66,8 @@ namespace VisualPascalABC
             CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
             string text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText) as string;
             PascalABCCompiler.SyntaxTree.compilation_unit cu = controller.ParseOnlySyntaxTree(FileName, text);
+            if (cu == null)
+                return;
             PascalABCCompiler.SyntaxTree.ident unitName = null;
             if (cu is PascalABCCompiler.SyntaxTree.unit_module)
             {
@@ -120,8 +122,6 @@ namespace VisualPascalABC
         {
             if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return new List<Position>();
 
-            IParser parser = CodeCompletion.CodeCompletionController.CurrentParser;
-
             IDocument doc = textArea.Document;
             string textContent = doc.TextContent;
             ccp = new CodeCompletionProvider();
@@ -133,7 +133,7 @@ namespace VisualPascalABC
 
 
             // Проверка, что компилируем Паскаль временно  EVA 10.11.2024
-            if (parser == Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(StringConstants.pascalLanguageName).Parser)
+            if (CodeCompletion.CodeCompletionController.CurrentLanguage == Languages.Facade.LanguageProvider.Instance.MainLanguage)
             {
                 if (expressionResult != full_expr && full_expr.StartsWith("("))
                     return new List<Position>();
@@ -460,7 +460,7 @@ namespace VisualPascalABC
             //if (!should_insert_comment(textArea))
             //	return false;
             string lineText = get_next_line(textArea);
-            string addit = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.GetDocumentTemplate(
+            string addit = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.GetDocumentTemplate(
                 lineText, textArea.Document.TextContent, textArea.Caret.Line, textArea.Caret.Column, textArea.Caret.Offset);
             if (addit == null)
                 return false;
@@ -542,7 +542,7 @@ namespace VisualPascalABC
             full_expr = null;
             if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
             {
-                full_expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(_textArea.Caret.Offset, Text, _textArea.Caret.Line, _textArea.Caret.Column, out keyw, out expr_without_brackets);
+                full_expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(_textArea.Caret.Offset, Text, _textArea.Caret.Line, _textArea.Caret.Column, out keyw, out expr_without_brackets);
                 return expr_without_brackets;
             }
             return null;
@@ -550,7 +550,7 @@ namespace VisualPascalABC
 
         private static string FindOnlyIdent(string Text, TextArea _textArea, ref string name)
         {
-            return CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindOnlyIdentifier(_textArea.Caret.Offset, Text, _textArea.Caret.Line, _textArea.Caret.Column, ref name);
+            return CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindOnlyIdentifier(_textArea.Caret.Offset, Text, _textArea.Caret.Line, _textArea.Caret.Column, ref name);
         }
 
 
@@ -602,7 +602,7 @@ namespace VisualPascalABC
     {
         public override void Execute(TextArea textArea)
         {
-            if (WorkbenchServiceFactory.DebuggerManager.IsRunning)
+            if (WorkbenchServiceFactory.DebuggerManager.IsRunning || !CodeCompletion.CodeCompletionController.IntellisenseAvailable())
                 return;
             WorkbenchServiceFactory.Workbench.ErrorsListWindow.ClearErrorList();
             VisualPABCSingleton.MainForm.CurrentCodeFileDocument.DeselectAll();
@@ -613,13 +613,8 @@ namespace VisualPascalABC
             //    file_name, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
             string text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName, PascalABCCompiler.SourceFileOperation.GetText) as string;
 
-            var currentParser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName)?.Parser;
-
-            if (currentParser == null || !currentParser.LanguageInformation.SupportsIntellisense)
-                return;
-
             PascalABCCompiler.SyntaxTree.compilation_unit cu =
-                currentParser.GetCompilationUnitForFormatter(
+                CodeCompletion.CodeCompletionController.CurrentLanguage.Parser.GetCompilationUnitForFormatter(
                 VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName,
                text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
                 Errors,
@@ -686,7 +681,7 @@ namespace VisualPascalABC
                     }
                 if (!WorkbenchServiceFactory.Workbench.UserOptions.CodeCompletionDot)
                     return;
-                if (CodeCompletion.CodeCompletionController.CurrentParser == null) return;
+                if (CodeCompletion.CodeCompletionController.CurrentLanguage == null) return;
                 CodeCompletionProvider completionDataProvider = new CodeCompletionProvider();
 
                 bool is_pattern = false;
@@ -694,7 +689,7 @@ namespace VisualPascalABC
 
                 is_begin = true;
 
-                completionDataProvider.preSelection = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindPattern(off, text, out is_pattern);
+                completionDataProvider.preSelection = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindPattern(off, text, out is_pattern);
 
                 if (!is_pattern && off > 0 && text[off - 1] == '.')
                     key = '_';//was '$'
