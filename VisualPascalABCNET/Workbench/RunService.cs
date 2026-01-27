@@ -119,7 +119,7 @@ namespace VisualPascalABC
                 if (ProjectFactory.Instance.ProjectLoaded)
                     tabPage = DocumentService.GetTabPageForMainFile();
                 if (attachdbg && !Workbench.UserOptions.AlwaysAttachDebuggerAtStart)
-                    fictive_attach = !startWithGoto && !needFirstBreakpoint && !DebuggerManager.HasBreakpoints();
+                    fictive_attach = !startWithGoto && !needFirstBreakpoint && !DebuggerManager.HasBreakpoints() || !CodeCompletion.CodeCompletionController.IntellisenseAvailable();
                 WorkbenchServiceFactory.OperationsService.ClearOutputTextBoxForTabPage(tabPage);
                 Workbench.ErrorsListWindow.ClearErrorList();
                 DesignerService.GenerateAllDesignersCode();

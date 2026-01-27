@@ -6,10 +6,10 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace PascalABCCompiler.Parsers
 {
-	/// <summary>
-	/// Интерфейс, предоставляющий информацию интеллисенсу
-	/// </summary>
-	public interface ILanguageInformation
+    /// <summary>
+    /// Информация о языке
+    /// </summary>
+    public interface ILanguageInformation
     {
         /// <summary>
         /// Название языка
@@ -40,6 +40,43 @@ namespace PascalABCCompiler.Parsers
         /// Названия системных модулей (стандартной библиотеки и др.)
         /// </summary>
         string[] SystemUnitNames { get; }
+
+        /// <summary>
+        /// Нужно ли вызывать конверторы синтаксического дерева, срабатывающие после компиляции зависимостей
+        /// </summary>
+        bool SyntaxTreeIsConvertedAfterUsedModulesCompilation { get; }
+
+        /// <summary>
+        /// Класс с информацией о ключевых словах языка
+        /// </summary>
+        BaseKeywords KeywordsStorage
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Данные о всех поддерживаемых директивах компилятора
+        /// </summary>
+        Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; }
+
+        /// <summary>
+        /// Обозначение однострочного комментария (используется в TestRunner)
+        /// </summary>
+        string CommentSymbol { get; }
+
+        /// <summary>
+        /// Имена стандартных модулей, которые не совпадают с именами их файлов.
+        /// Можно задавать null.
+        /// </summary>
+        Dictionary<string, string> SpecialModulesAliases { get; }
+    }
+
+	/// <summary>
+	/// Интерфейс, предоставляющий информацию интеллисенсу
+	/// </summary>
+	public interface ILanguageIntellisenseSupport
+    {
+        ILanguageInformation LanguageInformation { get; set; }
 
     	/// <summary>
     	/// Получить полное описание элемента (в желтой подсказке)
@@ -177,28 +214,9 @@ namespace PascalABCCompiler.Parsers
         int FindParamDelimForIndexer(string descriptionAfterOpeningParenthesis, int number);
 
         /// <summary>
-        /// Нужно ли вызывать конверторы синтаксического дерева, срабатывающие после компиляции зависимостей
-        /// </summary>
-        bool SyntaxTreeIsConvertedAfterUsedModulesCompilation { get; }
-
-        /// <summary>
         /// Вызывать ли преобразователей синтаксического дерева в работе Intellisense
         /// </summary>
         bool ApplySyntaxTreeConvertersForIntellisense { get; }
-
-        Dictionary<string, string> SpecialModulesAliases { get; }
-
-        BaseKeywords KeywordsStorage
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Данные о всех поддерживаемых директивах компилятора
-        /// </summary>
-        Dictionary<string, ParserTools.Directives.DirectiveInfo> ValidDirectives { get; }
-
-        string CommentSymbol { get; }
 
         string BodyStartBracket
         {

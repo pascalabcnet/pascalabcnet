@@ -55,7 +55,7 @@ namespace VisualPascalABC
         public string Compile(PascalABCCompiler.IProjectInfo project, bool rebuild, string RuntimeServicesModule, bool ForRun, bool RunWithEnvironment)
         {
             ProjectService.SaveProject();
-            Workbench.WidgetController.CompilingButtonsEnabled = false;
+            Workbench.WidgetController.CompilingAndRunButtonsEnabled = false;
             Workbench.CompilerConsoleWindow.ClearConsole();
             CompilerOptions1.SourceFileName = project.Path;
             CompilerOptions1.OutputDirectory = project.OutputDirectory;
@@ -98,7 +98,7 @@ namespace VisualPascalABC
 
         public string Compile(string FileName, bool rebuild, string RuntimeServicesModule, bool ForRun, bool RunWithEnvironment)
         {
-            Workbench.WidgetController.CompilingButtonsEnabled = false;
+            Workbench.WidgetController.CompilingAndRunButtonsEnabled = false;
 
             var UserOptions = Workbench.UserOptions;
 

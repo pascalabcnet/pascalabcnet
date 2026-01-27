@@ -132,8 +132,8 @@ namespace VisualPascalABC
         public static string WrapTypeName(DebugType type)
         {
             if (type.IsArray)
-                if (WorkbenchServiceFactory.DebuggerManager.parser != null)
-                    return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetArrayDescription(WrapTypeName(type.GetElementType()), type.GetArrayRank());
+                if (WorkbenchServiceFactory.DebuggerManager.language != null)
+                    return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetArrayDescription(WrapTypeName(type.GetElementType()), type.GetArrayRank());
                 else
                     return "array of " + WrapTypeName(type.GetElementType());
             return internalWrapTypeName(type.FullName);
@@ -192,23 +192,23 @@ namespace VisualPascalABC
 
         private static string internalWrapTypeName(string name)
         {
-            if (WorkbenchServiceFactory.DebuggerManager.parser != null)
+            if (WorkbenchServiceFactory.DebuggerManager.language != null)
                 switch (name)
                 {
-                    case "System.Boolean": return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetShortTypeName(typeof(bool));
-                    case "System.Int32": return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetShortTypeName(typeof(int));
-                    case "System.Byte": return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetShortTypeName(typeof(byte));
-                    case "System.Double": return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetShortTypeName(typeof(double));
-                    case "System.String": return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetShortTypeName(typeof(string));
-                    case "System.Char": return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetShortTypeName(typeof(char));
-                    case "System.SByte": return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetShortTypeName(typeof(sbyte));
-                    case "System.Int16": return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetShortTypeName(typeof(short));
-                    case "System.UInt16": return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetShortTypeName(typeof(ushort));
-                    case "System.UInt32": return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetShortTypeName(typeof(uint));
-                    case "System.Int64": return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetShortTypeName(typeof(long));
-                    case "System.UInt64": return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetShortTypeName(typeof(ulong));
-                    case "System.Float32": return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetShortTypeName(typeof(float));
-                    case "System.IntPtr": return WorkbenchServiceFactory.DebuggerManager.parser.LanguageInformation.GetShortTypeName(Type.GetType("System.Void*"));
+                    case "System.Boolean": return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetShortTypeName(typeof(bool));
+                    case "System.Int32": return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetShortTypeName(typeof(int));
+                    case "System.Byte": return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetShortTypeName(typeof(byte));
+                    case "System.Double": return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetShortTypeName(typeof(double));
+                    case "System.String": return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetShortTypeName(typeof(string));
+                    case "System.Char": return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetShortTypeName(typeof(char));
+                    case "System.SByte": return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetShortTypeName(typeof(sbyte));
+                    case "System.Int16": return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetShortTypeName(typeof(short));
+                    case "System.UInt16": return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetShortTypeName(typeof(ushort));
+                    case "System.UInt32": return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetShortTypeName(typeof(uint));
+                    case "System.Int64": return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetShortTypeName(typeof(long));
+                    case "System.UInt64": return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetShortTypeName(typeof(ulong));
+                    case "System.Float32": return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetShortTypeName(typeof(float));
+                    case "System.IntPtr": return WorkbenchServiceFactory.DebuggerManager.language.LanguageIntellisenseSupport.GetShortTypeName(Type.GetType("System.Void*"));
                     default: return name;
                 }
             else

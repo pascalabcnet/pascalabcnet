@@ -1,4 +1,5 @@
-﻿using PascalABCCompiler.ParserTools.Directives;
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;
@@ -8,25 +9,9 @@ using System.Text;
 
 namespace PascalABCCompiler.Parsers
 {
-    public abstract class BaseLanguageInformation : ILanguageInformation
+    public abstract class BaseLanguageIntellisenseSupport : ILanguageIntellisenseSupport
     {
-        public abstract string Name { get; }
-
-        public abstract string Version { get; }
-
-        public abstract string Copyright { get; }
-
-        public abstract bool CaseSensitive { get; }
-
-        public abstract string[] FilesExtensions { get; }
-
-        public abstract string[] SystemUnitNames { get; }
-
-        public abstract BaseKeywords KeywordsStorage { get; }
-
-        public abstract Dictionary<string, DirectiveInfo> ValidDirectives { get; protected set; }
-
-        public abstract string CommentSymbol { get; }
+        public ILanguageInformation LanguageInformation { get; set; }
 
         public abstract string BodyStartBracket { get; }
 
@@ -46,8 +31,6 @@ namespace PascalABCCompiler.Parsers
         public abstract string ProcedureName { get; }
         public abstract string FunctionName { get; }
 
-        public abstract bool SyntaxTreeIsConvertedAfterUsedModulesCompilation { get; }
-
         public abstract bool ApplySyntaxTreeConvertersForIntellisense { get; }
 
         public abstract bool IncludeDotNetEntities { get; }
@@ -58,11 +41,12 @@ namespace PascalABCCompiler.Parsers
 
         public abstract bool UsesFunctionsOverlappingSourceContext { get; }
 
-        public virtual Dictionary<string, string> SpecialModulesAliases => null;
-
         protected abstract string IntTypeName { get; }
 
-        public abstract bool IsParams(string paramDescription);
+        public virtual bool IsParams(string paramDescription)
+        {
+            return paramDescription.TrimStart().StartsWith("params");
+        }
 
         public virtual void RenameOrExcludeSpecialNames(SymInfo[] symInfos) { }
 
@@ -141,9 +125,48 @@ namespace PascalABCCompiler.Parsers
             return null;
         }
 
-        public abstract string GetArrayDescription(string elementType, int rank);
+        public virtual string GetArrayDescription(string elementType, int rank)
+        {
+            if (rank == 1)
+                return "array of " + elementType;
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append('[');
+                for (int i = 0; i < rank - 1; i++)
+                    sb.Append(DelimiterInIndexer);
+                sb.Append(']');
+                return "array" + sb.ToString() + " of " + elementType;
+            }
+        }
 
-        public abstract string GetClassKeyword(class_keyword keyw);
+        public virtual string GetClassKeyword(class_keyword keyw)
+        {
+            switch (keyw)
+            {
+                case class_keyword.Class: return "class";
+                case class_keyword.Interface: return "interface";
+                case class_keyword.Record: return "record";
+                case class_keyword.TemplateClass: return "template class";
+                case class_keyword.TemplateRecord: return "template record";
+                case class_keyword.TemplateInterface: return "template interface";
+            }
+            return null;
+        }
+
+        public virtual string GetKeyword(SymbolKind kind)
+        {
+            switch (kind)
+            {
+                case SymbolKind.Class: return "class";
+                case SymbolKind.Enum: return "enum";
+                case SymbolKind.Struct: return "record";
+                case SymbolKind.Type: return "type";
+                case SymbolKind.Interface: return "interface";
+                case SymbolKind.Null: return "nil";
+            }
+            return "";
+        }
 
         public string GetCompiledTypeRepresentation(Type t, MemberInfo mi, ref int line, ref int col)
         {
@@ -609,7 +632,7 @@ namespace PascalABCCompiler.Parsers
 
         public abstract string GetDescription(IBaseScope scope);
 
-        
+
         // поменять на abstract EVA
         public virtual string GetDocumentTemplate(string lineText, string Text, int line, int col, int pos)
         {
@@ -918,14 +941,17 @@ namespace PascalABCCompiler.Parsers
             return "string" + "[" + scope.Length + "]";
         }
 
-        public abstract string GetKeyword(SymbolKind kind);
-
         public KeywordKind GetKeywordKind(string name)
         {
-            if (KeywordsStorage.KeywordKinds.TryGetValue(name, out var kind))
+            if (LanguageInformation.KeywordsStorage.KeywordKinds.TryGetValue(name, out var kind))
                 return kind;
             else
                 return KeywordKind.None;
+        }
+
+        public virtual string GetShortName(ICompiledConstructorScope scope)
+        {
+            return StringConstants.default_constructor_name;
         }
 
         public string GetShortName(ICompiledTypeScope scope)
@@ -947,7 +973,6 @@ namespace PascalABCCompiler.Parsers
             return GetShortTypeName(scope.CompiledMethod);
         }
 
-        public abstract string GetShortName(ICompiledConstructorScope scope);
 
         public string GetShortName(IProcScope scope)
         {
@@ -1433,9 +1458,9 @@ namespace PascalABCCompiler.Parsers
                 return sc.Name + (((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>") && sc.Name != "class") ? "<>" : "") + ".";
             }
 
-            if (sc is IInterfaceUnitScope && SpecialModulesAliases != null)
+            if (sc is IInterfaceUnitScope && LanguageInformation.SpecialModulesAliases != null)
             {
-                var p = SpecialModulesAliases.FirstOrDefault(kv => kv.Value == sc.Name);
+                var p = LanguageInformation.SpecialModulesAliases.FirstOrDefault(kv => kv.Value == sc.Name);
 
                 if (!p.Equals(default(KeyValuePair<string, string>)))
                     return p.Key + ".";
@@ -1454,9 +1479,9 @@ namespace PascalABCCompiler.Parsers
                 return sc.Name + (((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>")) ? "<>" : "");
             }
 
-            if (sc is IInterfaceUnitScope && SpecialModulesAliases != null)
+            if (sc is IInterfaceUnitScope && LanguageInformation.SpecialModulesAliases != null)
             {
-                var p = SpecialModulesAliases.FirstOrDefault(kv => kv.Value == sc.Name);
+                var p = LanguageInformation.SpecialModulesAliases.FirstOrDefault(kv => kv.Value == sc.Name);
 
                 if (!p.Equals(default(KeyValuePair<string, string>)))
                     return p.Key + ".";
@@ -1579,11 +1604,20 @@ namespace PascalABCCompiler.Parsers
 
         public abstract string GetStandardTypeByKeyword(KeywordKind keyw);
 
-        public abstract string GetStringForChar(char c);
+        public virtual string GetStringForChar(char c)
+        {
+            return "'" + c.ToString() + "'";
+        }
 
-        public abstract string GetStringForSharpChar(int num);
+        public virtual string GetStringForSharpChar(int num)
+        {
+            return "#" + num.ToString();
+        }
 
-        public abstract string GetStringForString(string s);
+        public virtual string GetStringForString(string s)
+        {
+            return "'" + s + "'";
+        }
 
         public abstract string GetSynonimDescription(ITypeScope scope);
 
@@ -1633,14 +1667,23 @@ namespace PascalABCCompiler.Parsers
             return null;
         }
 
-        public abstract bool IsDefinitionIdentifierAfterKeyword(KeywordKind keyw);
+        public virtual bool IsDefinitionIdentifierAfterKeyword(KeywordKind keyw)
+        {
+            if (keyw == PascalABCCompiler.Parsers.KeywordKind.Function || keyw == PascalABCCompiler.Parsers.KeywordKind.Constructor || keyw == PascalABCCompiler.Parsers.KeywordKind.Destructor || keyw == PascalABCCompiler.Parsers.KeywordKind.Type || keyw == PascalABCCompiler.Parsers.KeywordKind.Var
+                   || keyw == PascalABCCompiler.Parsers.KeywordKind.Unit || keyw == PascalABCCompiler.Parsers.KeywordKind.Const || keyw == PascalABCCompiler.Parsers.KeywordKind.Program || keyw == PascalABCCompiler.Parsers.KeywordKind.Punkt)
+                return true;
+            return false;
+        }
 
         public bool IsKeyword(string value)
         {
-            return KeywordsStorage.KeywordsForIntellisenseSet.Contains(value);
+            return LanguageInformation.KeywordsStorage.KeywordsForIntellisenseSet.Contains(value);
         }
 
-        public abstract bool IsMethodCallParameterSeparator(char key);
+        public virtual bool IsMethodCallParameterSeparator(char key)
+        {
+            return key == ',';
+        }
 
         public virtual bool IsNamespaceAfterKeyword(KeywordKind keyw)
         {
@@ -1657,7 +1700,12 @@ namespace PascalABCCompiler.Parsers
             return key == '(';
         }
 
-        public abstract bool IsTypeAfterKeyword(KeywordKind keyw);
+        public virtual bool IsTypeAfterKeyword(KeywordKind keyw)
+        {
+            if (keyw == KeywordKind.Colon || keyw == KeywordKind.Of || keyw == KeywordKind.TypeDecl)
+                return true;
+            return false;
+        }
 
         // перенести реализацию сюда EVA
         public virtual string SkipNew(int off, string Text, ref KeywordKind keyw)
@@ -1713,7 +1761,7 @@ namespace PascalABCCompiler.Parsers
             {
                 keyword = KeywordKind.Raise;
             }
-            else if (KeywordsStorage.KeywordsTreatedAsFunctions.Contains(s))
+            else if (LanguageInformation.KeywordsStorage.KeywordsTreatedAsFunctions.Contains(s))
             {
                 keyword = KeywordKind.None;
             }

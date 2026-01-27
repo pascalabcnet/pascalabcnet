@@ -64,7 +64,7 @@ namespace VisualPascalABC
         {
             if (!WorkbenchServiceFactory.Workbench.UserOptions.AllowCodeCompletion || !VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
                 return false;
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null) return false;
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return false;
             if (codeCompletionWindow != null)
             {
                 // If completion window is open and wants to handle the key, don't let the text area
@@ -93,8 +93,6 @@ namespace VisualPascalABC
             }
             if (key == '.')
             {
-                if (CodeCompletion.CodeCompletionController.CurrentParser == null)
-                    return false;
                 if (!string.IsNullOrEmpty(WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.SelectionManager.SelectedText))
                 {
                     WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Position = WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].StartPosition;
@@ -124,7 +122,6 @@ namespace VisualPascalABC
             }
             else if (key == '(' || key == '[' || key == ',')
             {
-                if (CodeCompletion.CodeCompletionController.CurrentParser == null) return false;
                 if (VisualPABCSingleton.MainForm.UserOptions.CodeCompletionParams)
                 {
                     ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider idp = new DefaultInsightDataProvider(-1, false, key);
@@ -147,7 +144,6 @@ namespace VisualPascalABC
             }
             else if (key == ' ')
             {
-                if (CodeCompletion.CodeCompletionController.CurrentParser == null) return false;
                 if (VisualPABCSingleton.MainForm.UserOptions.CodeCompletionDot)
                 {
                     PascalABCCompiler.Parsers.KeywordKind keyw = KeywordChecker.TestForKeyword(editor.Document.TextContent, editor.ActiveTextAreaControl.TextArea.Caret.Offset - 1);
@@ -173,7 +169,7 @@ namespace VisualPascalABC
             }
             else if (key == '\n')
             {
-                if (VisualPABCSingleton.MainForm.UserOptions.AllowCodeCompletion && CodeCompletion.CodeCompletionController.CurrentParser != null)
+                if (VisualPABCSingleton.MainForm.UserOptions.AllowCodeCompletion)
                 {
                     try
                     {
@@ -194,9 +190,8 @@ namespace VisualPascalABC
             {
                 if (VisualPABCSingleton.MainForm.UserOptions.CodeCompletionDot)
                 {
-                    if (CodeCompletion.CodeCompletionController.CurrentParser == null) return false;
                     PascalABCCompiler.Parsers.KeywordKind keyw = KeywordChecker.TestForKeyword(editor.Document.TextContent, editor.ActiveTextAreaControl.TextArea.Caret.Offset - 1);
-                    if (CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.IsDefinitionIdentifierAfterKeyword(keyw))
+                    if (CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.IsDefinitionIdentifierAfterKeyword(keyw))
                         return false;
 
                     // если не первый символ выражения (предыдущий тоже буква или "_"), то не открываем новое окно

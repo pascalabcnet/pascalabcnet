@@ -304,7 +304,7 @@ namespace VisualPascalABC
         public bool IsRunning = false;
         public string ExeFileName;
 		public bool ShowDebugTabs=true;
-		public PascalABCCompiler.Parsers.IParser parser = null;
+		public Languages.Facade.ILanguage language = null;
 		EventHandler<EventArgs> debuggerStateEvent;
 		
         public DebugHelper()
@@ -465,7 +465,7 @@ namespace VisualPascalABC
             this.FullFileName = Path.Combine(Path.GetDirectoryName(fileName), this.FileName);
             this.ExeFileName = fileName;
             CurrentLine = 0;
-            this.parser = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(FullFileName)?.Parser;
+            this.language = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(FullFileName);
             this.PrevFullFileName = FullFileName;
             AssemblyHelper.LoadAssembly(fileName);
         	dbg.ProcessStarted += debugProcessStarted;
@@ -534,7 +534,7 @@ namespace VisualPascalABC
             //ChangeLocalVars(e.Process);
             //if (e.Process.IsPaused)
             WorkbenchServiceFactory.DebuggerOperationsService.RefreshPad(new FunctionItem(e.Process.SelectedFunction).SubItems);
-            workbench.WidgetController.SetStartDebugEnabled();
+            workbench.WidgetController.SetStartDebugAndRunEnabled();
             if (currentFunction != e.Process.SelectedFunction)
             {
                 if (WorkbenchServiceFactory.Workbench.DisassemblyWindow.IsVisible)
@@ -601,7 +601,7 @@ namespace VisualPascalABC
         
         private void debuggedProcess_Expired(object sender, EventArgs e)
         {
-            workbench.WidgetController.SetStartDebugEnabled();
+            workbench.WidgetController.SetStartDebugAndRunEnabled();
         }
 
         private void debuggedProcess_ExceptionThrown(object sender, ExceptionEventArgs e)
@@ -666,7 +666,7 @@ namespace VisualPascalABC
             workbench.ServiceContainer.EditorService.SetEditorDisabled(false);
             //RemoveMarker(frm.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Document);
             evaluator = null;
-            parser= null;
+            language= null;
             FileName = null;
             handle = 0;
             ExeFileName = null;
@@ -694,7 +694,7 @@ namespace VisualPascalABC
             workbench.WidgetController.SetDebugTabsVisible(true);
             workbench.WidgetController.SetPlayButtonsVisible(true);
             workbench.WidgetController.SetDebugStopEnabled();//e.Process.LogMessage += messageEventProc;
-            workbench.WidgetController.SetStartDebugDisabled();
+            workbench.WidgetController.SetStartDebugAndRunDisabled();
             workbench.WidgetController.ChangeStartDebugNameOnContinue();
             workbench.WidgetController.EnableCodeCompletionToolTips(false);
             workbench.WidgetController.SetAddExprMenuVisible(true);
@@ -1239,7 +1239,7 @@ namespace VisualPascalABC
             {
                 sb.Insert(0, '.');
                 PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
-                string s = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.
+                string s = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.
                     FindExpression(i, text, 0, 0, out keyw);
                 if (s != null)
                 {
@@ -1598,7 +1598,7 @@ namespace VisualPascalABC
         {
             try
             {
-                workbench.WidgetController.SetStartDebugEnabled();
+                workbench.WidgetController.SetStartDebugAndRunEnabled();
                 dbg.Processes[0].Terminate();
             }
             catch (System.Exception e)
@@ -1614,7 +1614,7 @@ namespace VisualPascalABC
         {
             try
             {
-                workbench.WidgetController.SetStartDebugEnabled();
+                workbench.WidgetController.SetStartDebugAndRunEnabled();
                 dbg.Processes[0].Break();
             }
             catch (System.Exception e)
@@ -1680,7 +1680,7 @@ namespace VisualPascalABC
         {
             try
             {
-                workbench.WidgetController.SetStartDebugDisabled();
+                workbench.WidgetController.SetStartDebugAndRunDisabled();
                 if (debuggedProcess.SelectedFunction.Name == ".cctor")
                 {
                     var sequencePoints = debuggedProcess.SelectedFunction.symMethod.SequencePoints;
@@ -1708,7 +1708,7 @@ namespace VisualPascalABC
         {
             try
             {
-                workbench.WidgetController.SetStartDebugDisabled();
+                workbench.WidgetController.SetStartDebugAndRunDisabled();
                 dbg.Processes[0].Continue();
                 CurrentLineBookmark.Remove();
             }
@@ -1725,7 +1725,7 @@ namespace VisualPascalABC
         {
             try
             {
-                workbench.WidgetController.SetStartDebugDisabled();
+                workbench.WidgetController.SetStartDebugAndRunDisabled();
                 stepin_stmt = dbg.Processes[0].NextStatement;
                 dbg.Processes[0].StepInto();
                 CurrentLineBookmark.Remove();
@@ -1745,7 +1745,7 @@ namespace VisualPascalABC
             {
                 if (IsRunning)
                 {
-                    workbench.WidgetController.SetStartDebugDisabled();
+                    workbench.WidgetController.SetStartDebugAndRunDisabled();
                     dbg.Processes[0].StepOut();
                     CurrentLineBookmark.Remove();
                 }
@@ -1765,7 +1765,7 @@ namespace VisualPascalABC
             {
                 //cur_brpt = dbg.AddBreakpoint(new SourcecodeSegment((frm.CurrentTabPage.ag as CodeFileDocumentControl).file_name,(frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Line + 1,(frm.CurrentTabPage.Tag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column + 1,
                   //  (frm.CurrentTabPage.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.Caret.Column+100), true);
-                workbench.WidgetController.SetStartDebugDisabled();
+                workbench.WidgetController.SetStartDebugAndRunDisabled();
                 currentBreakpoint = dbg.AddBreakpoint(WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.FileName, WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Line + 1);
                 AddGoToBreakPoint(currentBreakpoint);
                 Status = DebugStatus.None;

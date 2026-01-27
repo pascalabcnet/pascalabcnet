@@ -8,11 +8,11 @@ namespace PascalABCCompiler.Parsers
 {
     public abstract class BaseParser : IParser
     {
-        public List<Error> Errors { get; protected set; } = new List<Error>();
+        protected List<Error> Errors = new List<Error>();
 
-        public List<CompilerWarning> Warnings { get; protected set; } = new List<CompilerWarning>();
+        protected List<CompilerWarning> Warnings = new List<CompilerWarning>();
 
-        public List<compiler_directive> CompilerDirectives { get; protected set; } = new List<compiler_directive>();
+        protected List<compiler_directive> CompilerDirectives = new List<compiler_directive>();
 
         public ILanguageInformation LanguageInformation { get; set; }
 
@@ -71,8 +71,11 @@ namespace PascalABCCompiler.Parsers
 
         private void InitializeBeforeParsing(List<Error> Errors, List<CompilerWarning> Warnings)
         {
+            Errors.Clear();
+            Warnings.Clear();
             this.Errors = Errors;
             this.Warnings = Warnings;
+            this.CompilerDirectives = new List<compiler_directive>();
         }
 
         protected virtual syntax_tree_node BuildTree(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode ParseMode, bool compilingNotMainProgram, List<string> DefinesList = null)
@@ -133,11 +136,6 @@ namespace PascalABCCompiler.Parsers
         protected abstract syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text);
 
         protected abstract syntax_tree_node BuildTreeInStatementMode(string FileName, string Text);
-
-        public virtual void Reset()
-        {
-            // если нужно - переопределяйте
-        }        
 
     }
 }

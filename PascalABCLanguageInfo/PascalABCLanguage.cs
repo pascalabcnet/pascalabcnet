@@ -15,6 +15,7 @@ namespace Languages.Pascal
         public PascalABCLanguage() : base(
 
             languageInformation: new Frontend.Data.PascalABCLanguageInformation(),
+            languageIntellisenseSupport: new Frontend.Data.PascalABCIntellisenseSupport(),
             parser: new Frontend.Wrapping.PascalABCNewLanguageParser(),
             docParser: new Frontend.Documentation.PascalDocTagsLanguageParser(),
 

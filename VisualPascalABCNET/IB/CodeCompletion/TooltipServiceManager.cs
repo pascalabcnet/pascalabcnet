@@ -8,7 +8,6 @@ using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using PascalABCCompiler.Parsers;
 
 namespace VisualPascalABC
 {
@@ -29,9 +28,9 @@ namespace VisualPascalABC
 
             //string expr = FindFullExpression(doc.TextContent, seg.Offset + logicPos.X,e.LogicalPosition.Line,e.LogicalPosition.Column);
 
-            IParser parser = CodeCompletion.CodeCompletionController.CurrentParser;
+            var currentLanguage = CodeCompletion.CodeCompletionController.CurrentLanguage;
 
-            string expr = parser.LanguageInformation.FindExpressionFromAnyPosition(
+            string expr = currentLanguage.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(
                 lineSegment.Offset + logicPos.X, doc.TextContent, e.LogicalPosition.Line, e.LogicalPosition.Column, out var keyw, out var exprWithoutBrackets);
             
             // пока непонятно, когда такое может быть  EVA
@@ -44,25 +43,25 @@ namespace VisualPascalABC
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
             List<PascalABCCompiler.Errors.CompilerWarning> Warnings = new List<PascalABCCompiler.Errors.CompilerWarning>();
 
-            PascalABCCompiler.SyntaxTree.expression expressionTree = parser.GetExpression("test" + Path.GetExtension(fileName), 
+            PascalABCCompiler.SyntaxTree.expression expressionTree = currentLanguage.Parser.GetExpression("test" + Path.GetExtension(fileName), 
                 expr, Errors, Warnings);
 
             // Пока добавили проверку, что анализируем Паскаль  EVA
-            if (Errors.Count > 0 && parser == Languages.Facade.LanguageProvider.Instance.MainLanguage.Parser)
+            if (Errors.Count > 0 && currentLanguage == Languages.Facade.LanguageProvider.Instance.MainLanguage)
             {
                 string s = expr.TrimStart();
                 if (s.Length > 0 && s[0] == '^')
                 {
                     Errors.Clear();
                     exprWithoutBrackets = exprWithoutBrackets.TrimStart().Substring(1);
-                    expressionTree = parser.GetExpression("test" + Path.GetExtension(fileName), s.Substring(1), Errors, Warnings);
+                    expressionTree = currentLanguage.Parser.GetExpression("test" + Path.GetExtension(fileName), s.Substring(1), Errors, Warnings);
                 }
             }
 
             List<PascalABCCompiler.Errors.Error> Errors2 = new List<PascalABCCompiler.Errors.Error>();
             
             // проверка для выражения без скобок
-            PascalABCCompiler.SyntaxTree.expression expressionTree2 = parser.GetExpression("test" + Path.GetExtension(fileName), exprWithoutBrackets, Errors2, Warnings);
+            PascalABCCompiler.SyntaxTree.expression expressionTree2 = currentLanguage.Parser.GetExpression("test" + Path.GetExtension(fileName), exprWithoutBrackets, Errors2, Warnings);
 
             // если не получается, то сразу возврат
             if (expressionTree2 == null || Errors2.Count > 0)
@@ -118,7 +117,7 @@ namespace VisualPascalABC
         {
             if (!VisualPABCSingleton.MainForm.UserOptions.CodeCompletionHint)
                 return;
-            if (CodeCompletion.CodeCompletionController.CurrentParser == null)
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable())
                 return;
             try
             {

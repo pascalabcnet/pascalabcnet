@@ -19,11 +19,17 @@ namespace VisualPascalABC
 
         public static void DefinitionByMouseClickManager_TextAreaMouseMove(object sender, MouseEventArgs e)
         {
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable())
+                return;
+
             makeWordUnderline(sender, e);
         }
 
         public static void DefinitionByMouseClickManager_TextAreaMouseDown(object sender, EventArgs e)
         {
+            if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable())
+                return;
+
             TextArea textArea = (TextArea)sender;
             if (Control.ModifierKeys == Keys.Control && textArea.SelectionManager.SelectionCollection.Count == 0)
             {
