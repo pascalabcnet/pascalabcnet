@@ -6,6 +6,7 @@
 <param name="Keyword" value="Cartesian">
 <param name="Keyword" value="CountOf">
 <param name="Keyword" value="DistinctBy">
+<param name="Keyword" value="FirstOrDefault">
 <param name="Keyword" value="Flatten">
 <param name="Keyword" value="ForEach">
 <param name="Keyword" value="Incremental">
@@ -85,6 +86,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает элементы последовательности, ключи для которых отличаются, используя компоратор comp</td></tr>
 <tr><td><code><b>function</b> DistinctBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; by: T-&gt;TKey);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает элементы последовательности, ключи для которых отличаются, используя компоратор по-умолчанию</td></tr>
+<tr><td><code><b>function</b> FirstOrDefault&lt;T&gt;(self: <b>sequence </b>  <b>of</b> T; pred: T -&gt; boolean; defaultValue: T): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает первый элемент, удовлетворяющий условию, или значение по умолчанию, если ни одного такого элемента не найдено</td></tr>
 <tr><td><code><b>function</b> Flatten&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует последовательность последовательностей в плоскую последовательность</td></tr>
 <tr><td><code><b>procedure</b> ForEach&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; action: T -&gt; ());</code>
@@ -194,11 +197,11 @@
 <tr><td><code><b>function</b> Product(Self: <b>sequence </b>  <b>of</b> int64): int64;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает произведение элементов последовательности</td></tr>
 <tr><td><code><b>function</b> Product&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; f: T-&gt;real): real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает произведение элементов последовательности, спроектированных на числовое значение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает произведение элементов последовательности, спроецированных на числовое значение</td></tr>
 <tr><td><code><b>function</b> Product&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; f: T-&gt;integer): int64;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает произведение элементов последовательности, спроектированных на числовое значение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает произведение элементов последовательности, спроецированных на числовое значение</td></tr>
 <tr><td><code><b>function</b> Product&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; f: T-&gt;BigInteger): BigInteger;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает произведение элементов последовательности, спроектированных на числовое значение</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает произведение элементов последовательности, спроецированных на числовое значение</td></tr>
 <tr><td><code><b>function</b> Product(Self: <b>sequence </b>  <b>of</b> BigInteger): BigInteger;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает произведение элементов последовательности</td></tr>
 <tr><td><code><b>function</b> Scan&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; func: (T,T) -&gt; T): <b>sequence </b>  <b>of</b> T;</code>
