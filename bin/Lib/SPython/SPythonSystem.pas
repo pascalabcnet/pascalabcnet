@@ -44,7 +44,9 @@ type kwargs_gen<T> = class
     end;
 
 function all(s: sequence of boolean): boolean;
+function all(s: sequence of integer): boolean;
 function any(s: sequence of boolean): boolean;
+function any(s: sequence of integer): boolean;
 
 function enumerate<T>(s: sequence of T; start: integer := 0): sequence of (integer,T);
 function filter<T>(cond: T -> boolean; s: sequence of T): sequence of T;
@@ -87,10 +89,6 @@ function !format(obj: object; fmt: string): string;
 function !format(i: integer; fmt: string): string;
 
 function !format(val: real; fmt: string): string;
-
-//function all<T>(seq: sequence of T): boolean;
-
-//function any<T>(seq: sequence of T): boolean;
 
 //------------------------------------
 //     Standard Math functions
@@ -503,9 +501,9 @@ function len(s: string): integer;
 
 function sorted<T>(lst: list<T>): list<T>;
 
-function sum(lst: sequence of integer): integer;
-
-function sum(lst: sequence of real): real;
+function sum(s: sequence of boolean): integer;
+function sum(s: sequence of integer): integer;
+function sum(s: sequence of real): real;
 
 function !assign<T>(var a: T; b: T): T;
 
@@ -663,10 +661,6 @@ begin
   Result := PABCSystem.Range(0, e - 1);
 end;
 
-//function all<T>(seq: sequence of T): boolean := seq.All(x -> x);
-
-//function any<T>(seq: sequence of T): boolean := seq.Any(x -> x);
-
 //------------------------------------
 //     Standard Math functions
 //------------------------------------
@@ -697,8 +691,9 @@ begin
   Result := newList;
 end;
 
-function sum(lst: sequence of integer): integer := lst.sum();
-function sum(lst: sequence of real): real := lst.sum();
+function sum(s: sequence of boolean): integer := s.Select(x -> Convert.ToInt32(x)).Sum();
+function sum(s: sequence of integer): integer := s.Sum();
+function sum(s: sequence of real): real := s.Sum();
 
 function !assign<T>(var a: T; b: T): T;
 begin
@@ -825,6 +820,8 @@ begin
     end;
 end;
 
+function all(s: sequence of integer): boolean := all(s.Select(x -> Convert.ToBoolean(x)));
+
 function any(s: sequence of boolean): boolean;
 begin
   Result := false;
@@ -835,6 +832,8 @@ begin
       break;
     end;
 end;
+
+function any(s: sequence of integer): boolean := any(s.Select(x -> Convert.ToBoolean(x)));
 
 ///-
 function ToDictionary<T, U>(Self: sequence of System.Tuple<T, U>): dict<T, U>; extensionmethod;
