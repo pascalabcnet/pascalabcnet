@@ -71,17 +71,6 @@ namespace Languages.Pascal.Frontend.Wrapping
     /// </summary>
     public class PascalABCNewLanguageParser : BaseParser
     {
-        
-        public override void Reset()
-        {
-            CompilerDirectives = new List<compiler_directive>();
-            Errors.Clear();
-        }
-
-        protected override void PreBuildTree(string FileName)
-        {
-            CompilerDirectives = new List<compiler_directive>();
-        }
 
         private syntax_tree_node Parse(string Text, string fileName, bool buildTreeForFormatter = false, List<string> definesList = null)
         {
@@ -115,8 +104,6 @@ namespace Languages.Pascal.Frontend.Wrapping
 
         protected override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, bool compilingNotMainProgram, List<string> DefinesList = null)
         {
-            Errors.Clear();
-            Warnings.Clear();
             syntax_tree_node root = Parse(Text, FileName, false, DefinesList);
 
             if (Errors.Count > 0)
@@ -163,14 +150,12 @@ namespace Languages.Pascal.Frontend.Wrapping
 
         protected override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text, bool compilingNotMainProgram)
         {
-            Errors.Clear();
             syntax_tree_node root = Parse(Text, FileName);
             return root;
         }
 
         protected override syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text)
         {
-            Errors.Clear();
             syntax_tree_node root = Parse(Text, FileName, true);
             return root;
         }

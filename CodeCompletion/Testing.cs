@@ -140,7 +140,7 @@ namespace CodeCompletion
                     shouldPositions.Add(new Position(line + 1, col + 1, 0, 0, null));
                     string expr_without_brackets = null;
                     PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
-                    string full_expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+                    string full_expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
                     List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
                     var errors = new List<PascalABCCompiler.Errors.Error>();
                     expression expr = parser.GetExpression("test" + System.IO.Path.GetExtension(FileName), full_expr, errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
@@ -160,7 +160,7 @@ namespace CodeCompletion
                     shouldPositions.Add(new Position(line + 1, col, 0, 0, null));
                     string expr_without_brackets = null;
                     PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
-                    string full_expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+                    string full_expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
                     List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
                     var errors = new List<PascalABCCompiler.Errors.Error>();
                     expression expr = parser.GetExpression("test" + System.IO.Path.GetExtension(FileName), full_expr, errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
@@ -239,7 +239,7 @@ namespace CodeCompletion
         {
             string expr_without_brackets = null;
             PascalABCCompiler.Parsers.KeywordKind keyw;
-            var expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+            var expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
             if (expr == null)
               expr = expr_without_brackets;
             var errors = new List<PascalABCCompiler.Errors.Error>();
@@ -253,7 +253,7 @@ namespace CodeCompletion
         {
             string expr_without_brackets = null;
             PascalABCCompiler.Parsers.KeywordKind keyw;
-            var expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+            var expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
             if (expr == null)
                 expr = expr_without_brackets;
             var errors = new List<PascalABCCompiler.Errors.Error>();
@@ -270,7 +270,7 @@ namespace CodeCompletion
         {
             string expr_without_brackets = null;
             PascalABCCompiler.Parsers.KeywordKind keyw;
-            var expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+            var expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
             if (expr == null)
                 expr = expr_without_brackets;
             var errors = new List<PascalABCCompiler.Errors.Error>();
@@ -345,266 +345,266 @@ namespace CodeCompletion
     		int col=0;
     		PascalABCCompiler.Parsers.KeywordKind keyw;
             //LanguageIntegration.LanguageIntegrator.ReloadAllParsers();
-            IParser parser = LanguageProvider.Instance.MainLanguage.Parser;
+            var languageIntellisenseSupport = LanguageProvider.Instance.MainLanguage.LanguageIntellisenseSupport;
     		
     		string test_str = "System.Console";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "System(2+3,-Test34).Console";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "(a+b*c-e)";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "a[2,3+b[2-3*b(2*Test-&var,nil)]][56,89,(44)]";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "begin test";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim(' ','\n','\t')=="test");
     		
     		test_str = "begin test[4]";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim(' ','\n','\t')=="test[4]");
     		
     		test_str = "begin sin(2)";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim(' ','\n','\t')=="sin(2)");
     		
     		test_str = "repeat test";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim(' ','\n','\t')=="test");
     		
     		test_str = "while test";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim(' ','\n','\t')=="test");
     		
     		test_str = "Test(new Text2, new Text3(2,3),inherited Create).a[new Text3]";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "Test[new Text2, new Text3(2,3),inherited Create].a[new Text3]";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "Str(a:2)";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "Str(a:2:5)";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "&Begin.&Var.&else.&for";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "a[s<5]";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "a[s>5]";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "a(s<5)";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "a(s>5)";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "ab{2 hsdjsdh 'ddd'}";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "TClass&<integer>.abc";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "TClass&<integer>";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "Test[new {dsdsdsd} Text2, new Text3{sdsd}(2,{''''''} 3),inherited {zez snj }Create]{...}.a{^^}[new Text3]";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "begin \n \t\t \n bb     \t";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="bb");
     		
     		test_str = "Test\n[new {dsdsdsd\n} Text2, new \t Text3(2,{''''''} 3),inherited {zez snj }Create]{...}.a{^^}[new Text3]";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "test//abcd\ntest.abcd";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="test.abcd");
     		
     		test_str = "test(2,3) < ppp";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="ppp");
     		
     		test_str = "test(2,3) + ppp";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="ppp");
     		
     		test_str = "test(2,3) * ppp";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="ppp");
     		
     		test_str = "test(2,3) div ppp";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="ppp");
     		
     		test_str = "test(2,3) - ppp";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="ppp");
     		
     		test_str = "test(2,3) shl ppp";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="ppp");
     		
     		test_str = "(s as string)";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s==test_str);
     		
     		test_str = "begin (s as string)";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="(s as string)");
     		
     		test_str = "test(2,3) shr ppp";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="ppp");
     		
     		test_str = "test(2,3) > ppp";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="ppp");
     		
     		test_str = "test(2,3) or ppp";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="ppp");
     		
     		test_str = "test(2,3) and ppp";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="ppp");
     		
     		test_str = "test(2,3) xor ppp";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="ppp");
     		
     		test_str = "test(2,3) mod ppp";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="ppp");
     		
     		test_str = "typeof(char)";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')==test_str);
     		
     		test_str = "sizeof(char)";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpression(off,test_str,line,col,out keyw);
+    		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')==test_str);
 
             test_str = "()->(obj as string).Trim";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            s = languageIntellisenseSupport.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == "(obj as string).Trim");
 
             test_str = "Seq(0)\n.f1//комментарий\n.Print";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            s = languageIntellisenseSupport.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == "Seq(0)\n.f1\n.Print");
 
             test_str = "$'is {a}'";
             off = test_str.Length-2;
-            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            s = languageIntellisenseSupport.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == "a");
 
             test_str = "seq1.Where(i ->(i = 1) or (i = 2)).JoinIntoString";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            s = languageIntellisenseSupport.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == "seq1.Where(i ->(i = 1) or (i = 2)).JoinIntoString");
 
             test_str = "$'{f1(s0)}'";
             off = test_str.Length - 3;
-            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            s = languageIntellisenseSupport.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == "s0");
 
             test_str = "f1&<byte>\n.ToString";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            s = languageIntellisenseSupport.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == test_str);
             
             test_str = "a[2:]";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            s = languageIntellisenseSupport.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == test_str);
 
             test_str = "' '' '";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            s = languageIntellisenseSupport.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == test_str);
 
             test_str = "' '' '' '";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            s = languageIntellisenseSupport.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == test_str);
 
             test_str = "' ' '";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            s = languageIntellisenseSupport.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == "");
 
             test_str = "(2..4)";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            s = languageIntellisenseSupport.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == test_str);
 
 
@@ -613,228 +613,228 @@ namespace CodeCompletion
     		//testirovanie nazhatija skobki
     		test_str = "writeln";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		assert(num_param==0);
     		
     		test_str = "Console.WriteLine";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		assert(num_param==0);
     		
     		test_str = "begin writeln";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s.Trim('\n',' ','\t') == "writeln");
     		assert(num_param==0);
     		
     		test_str = "Console{dsdsdsd}.WriteLine{''''''sds}";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		assert(num_param==0);
     		
     		test_str = "test(2,3).mmm";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		assert(num_param==0);
     		
     		test_str = "test[2<3].a";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		assert(num_param==0);
     		
     		test_str = "test[2>3].a";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		assert(num_param==0);
     		
     		test_str = "test[2>3] .a";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		assert(num_param==0);
     		
     		test_str = "23 < test";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s.Trim('\n',' ','\t') == "test");
     		assert(num_param==0);
     		
     		test_str = "23 > test";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s.Trim('\n',' ','\t') == "test");
     		assert(num_param==0);
     		
     		test_str = "(a<b) + test";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s.Trim('\n',' ','\t') == "test");
     		assert(num_param==0);
     		
     		test_str = "test2[sin(2,3),cos(2)]";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		
     		test_str = "sin{sdsd}(2,3).ttt";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		assert(num_param==0);
     		
     		test_str = "new System.Collections.Generic.List<integer>";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		assert(num_param==0);
     		
     		test_str = "TClass&<T>.bbb";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		assert(num_param==0);
 
             test_str = "()->(obj as string).Trim";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            s = languageIntellisenseSupport.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s == "(obj as string).Trim");
             assert(num_param == 0);
 
             test_str = "test; \n  sin";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "sin");
     		assert(num_param==0);
     		
     		test_str = "new TClass";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		assert(num_param==0);
     		
     		test_str = "Proc1({}2+3,'aasd',Proc2(a[34,{}2],new TClass(f('ssd')))).zzz";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		assert(num_param==0);
     		
     		test_str = "'abc'.tostring('aa','bb{()').ggg";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		assert(num_param==0);
     		
     		test_str = "Test([],[1,2,3],{cdsds} \tsin";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "{cdsds} \tsin");
     		assert(num_param==0);
     		
     		test_str = "test(2+3,aa.bb";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == "aa.bb");
     		
     		test_str = "test(2<3).bb";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		assert(num_param==0);
     		
     		test_str = "sin(new TClass<integer>,TClass&<real>).pp";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
     		assert(num_param==0);
     		
     		test_str = "raise new TClass";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "new TClass");
     		assert(num_param==0);
     		
     		test_str = "begin test(2)";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "test(2)");
     		assert(num_param==0);
     		
     		test_str = "//aaaa\nConsole.WriteLine";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "Console.WriteLine");
     		assert(num_param==0);
 
             test_str = "System.Math.DivRem";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            s = languageIntellisenseSupport.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s.Trim(' ', '\n', '\t') == "System.Math.DivRem");
             assert(num_param == 0);
 
             test_str = "seq1.Where(i ->(i = 1) or (i = 2)).JoinIntoString";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            s = languageIntellisenseSupport.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s.Trim('\n', ' ', '\t') == "seq1.Where(i ->(i = 1) or (i = 2)).JoinIntoString");
 
             test_str = "seq1.Where(i ->(i = '1') or (i = '2')).JoinIntoString";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            s = languageIntellisenseSupport.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s.Trim('\n', ' ', '\t') == "seq1.Where(i ->(i = '1') or (i = '2')).JoinIntoString");
 
             test_str = "f1&<array of byte>";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            s = languageIntellisenseSupport.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s.Trim('\n', ' ', '\t') == "f1&<array of byte>");
 
             test_str = "f1&<sequence of byte>";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            s = languageIntellisenseSupport.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s.Trim('\n', ' ', '\t') == "f1&<sequence of byte>");
 
             test_str = "&var.&uses.&procedure";
     		off = test_str.Length;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
 
             test_str = "s.OrderBy";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            s = languageIntellisenseSupport.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s == test_str);
 
             test_str = "f1&<byte>\n.ToString";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            s = languageIntellisenseSupport.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s.Trim('\n', ' ', '\t') == "f1&<byte>\n.ToString");
 
             test_str = "begin ''.PadLeft";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            s = languageIntellisenseSupport.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s.Trim('\n', ' ', '\t') == "''.PadLeft");
 
             test_str = "begin var s := ''.PadLeft";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            s = languageIntellisenseSupport.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s.Trim('\n', ' ', '\t') == "''.PadLeft");
 
             test_str = "begin \n var s := ''.PadLeft";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            s = languageIntellisenseSupport.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s.Trim('\n', ' ', '\t') == "''.PadLeft");
 
             test_str = "writeln(23);\n ''.PadLeft";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            s = languageIntellisenseSupport.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s.Trim('\n', ' ', '\t') == "''.PadLeft");
 
             test_str = "writeln(23);\n ''.PadLeft(2).ToString";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            s = languageIntellisenseSupport.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s.Trim('\n', ' ', '\t') == "''.PadLeft(2).ToString");
 
 
@@ -843,129 +843,129 @@ namespace CodeCompletion
             test_str = ";test(3,aa.bb";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s == "test");
     		assert(num_param == 3);
     		
     		test_str = ";test(a[2,3,4],sin(2+3),aa.bb";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s == "test");
     		assert(num_param == 4);
     		
     		test_str = "Console.WriteLine(a[2,3,4]{ds},[1,2+3,5,'aa)'],sin(2+3,4+f(3)),aa.bb,(23)";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s == "Console.WriteLine");
     		assert(num_param == 6);
     		
     		test_str = "Console.WriteLine(new TClass(2,3";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s == "new TClass");
     		assert(num_param == 3);
     		
     		test_str = "Console.WriteLine(new{} TClass(2+f(2,[]),3";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s == "new{} TClass");
     		assert(num_param == 3);
     		
     		test_str = "begin \n\t sin(";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "sin");
     		assert(num_param == 2);
     		
     		test_str = "sin(2)";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "");
     		
     		test_str = "begin f(2)+sin(2,3,4)";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "");
     		
     		test_str = ";\n [sin(f(3)),a[3]";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "");
     		
     		test_str = ";\n (sin)";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "");
     		
     		test_str = "max(2<3";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "max");
     		assert(num_param == 2);
     		
     		test_str = "max(2>3";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "max");
     		assert(num_param == 2);
     		
     		test_str = "max(Test&<integer>(2,3)";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "max");
     		assert(num_param == 2);
     		
     		test_str = "new TextABC(60,110,110,'Hello!',RGB(x";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "RGB");
     		assert(num_param == 2);
     		
     		test_str = "new TextABC(60,110,110,'Hello!',new RGB(x";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "new RGB");
     		assert(num_param == 2);
     		
     		test_str = "new TextABC(new RGB(x";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "new RGB");
     		assert(num_param == 2);
     		
     		test_str = "new TextABC(new RGB(x,(2)";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "new RGB");
     		assert(num_param == 3);
     		
     		test_str = "new TextABC(new RGB(x(2)";
     		off = test_str.Length;
     		num_param = 1;
-    		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
+    		s = languageIntellisenseSupport.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "new RGB");
     		assert(num_param == 2);
 
             test_str = "Power(10 div 2";
             off = test_str.Length;
             num_param = 1;
-            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, ',', ref num_param);
+            s = languageIntellisenseSupport.FindExpressionForMethod(off, test_str, line, col, ',', ref num_param);
             assert(s.Trim(' ', '\n', '\t') == "Power");
             assert(num_param == 2);
 
@@ -975,77 +975,77 @@ namespace CodeCompletion
     		//mouse hover
     		test_str = "sin(2)";
     		off = 1;
-    		s = parser.LanguageInformation.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
+    		s = languageIntellisenseSupport.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
     		assert(s.Trim('\n',' ','\t')=="sin(2)");
     		
     		test_str = "sin(2,3,4)";
     		off = 1;
-    		s = parser.LanguageInformation.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
+    		s = languageIntellisenseSupport.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
     		assert(s.Trim('\n',' ','\t')=="sin(2,3,4)");
     		
     		test_str = "sin {sdsd'} (2,3,4)";
     		off = 1;
-    		s = parser.LanguageInformation.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
+    		s = languageIntellisenseSupport.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
     		assert(s.Trim('\n',' ','\t')==test_str);
     		
     		test_str = "sin (df,'3)+2','{')";
     		off = 1;
-    		s = parser.LanguageInformation.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
+    		s = languageIntellisenseSupport.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
     		assert(s.Trim('\n',' ','\t')==test_str);
     		
     		test_str = "cos()";
     		off = 1;
-    		s = parser.LanguageInformation.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
+    		s = languageIntellisenseSupport.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
     		assert(s.Trim('\n',' ','\t')==test_str);
     		
     		test_str = "cos{()}";
     		off = 1;
-    		s = parser.LanguageInformation.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
+    		s = languageIntellisenseSupport.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
     		assert(s.Trim('\n',' ','\t')=="cos");
     		
     		test_str = "cos//()";
     		off = 1;
-    		s = parser.LanguageInformation.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
+    		s = languageIntellisenseSupport.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
     		assert(s.Trim('\n',' ','\t')=="cos");
     		
     		test_str = "cos(//)";
     		off = 1;
-    		s = parser.LanguageInformation.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
+    		s = languageIntellisenseSupport.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
     		assert(s.Trim('\n',' ','\t')=="cos");
     		
     		test_str = "cos('//')";
     		off = 1;
-    		s = parser.LanguageInformation.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
+    		s = languageIntellisenseSupport.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
     		assert(s.Trim('\n',' ','\t')==test_str);
     		
     		test_str = "cos({//})";
     		off = 1;
-    		s = parser.LanguageInformation.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
+    		s = languageIntellisenseSupport.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
     		assert(s.Trim('\n',' ','\t')==test_str);
     		
     		test_str = "cos(Math.Cos(x)+1)";
     		off = 1;
-    		s = parser.LanguageInformation.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
+    		s = languageIntellisenseSupport.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
     		assert(s.Trim('\n',' ','\t')==test_str);
 
             test_str = "new t1<byte>(2)";
             off = 5;
-            s = parser.LanguageInformation.FindExpressionFromAnyPosition(off, test_str, line, col, out keyw, out str);
+            s = languageIntellisenseSupport.FindExpressionFromAnyPosition(off, test_str, line, col, out keyw, out str);
             assert(s.Trim('\n', ' ', '\t') == "new t1<byte>(2)");
 
             test_str = "new t1<List<byte>>(2)";
             off = 5;
-            s = parser.LanguageInformation.FindExpressionFromAnyPosition(off, test_str, line, col, out keyw, out str);
+            s = languageIntellisenseSupport.FindExpressionFromAnyPosition(off, test_str, line, col, out keyw, out str);
             assert(s.Trim('\n', ' ', '\t') == "new t1<List<byte>>(2)");
 
             test_str = "t1&<byte>.x";
             off = test_str.Length;
-            s = parser.LanguageInformation.FindExpressionFromAnyPosition(off, test_str, line, col, out keyw, out str);
+            s = languageIntellisenseSupport.FindExpressionFromAnyPosition(off, test_str, line, col, out keyw, out str);
             assert(s.Trim('\n', ' ', '\t') == "t1&<byte>.x");
 
             test_str = "Arr(0).Select&<integer,ft>";
             off = 8;
-            s = parser.LanguageInformation.FindExpressionFromAnyPosition(off, test_str, line, col, out keyw, out str);
+            s = languageIntellisenseSupport.FindExpressionFromAnyPosition(off, test_str, line, col, out keyw, out str);
             assert(s.Trim('\n', ' ', '\t') == "Arr(0).Select&<integer,ft>");
 
             //----
@@ -1055,7 +1055,7 @@ namespace CodeCompletion
             StreamWriter sw = new StreamWriter("mscorlib.txt");
             foreach (Type t in types)
             {
-                sw.WriteLine(parser.LanguageInformation.GetCompiledTypeRepresentation(t, t, ref i, ref j));
+                sw.WriteLine(languageIntellisenseSupport.GetCompiledTypeRepresentation(t, t, ref i, ref j));
             }
             
             sw.Close();
@@ -1063,7 +1063,7 @@ namespace CodeCompletion
             sw = new StreamWriter(typeof(System.Diagnostics.Process).Assembly.ManifestModule.ScopeName+".txt");
             foreach (Type t in types)
             {
-                sw.WriteLine(parser.LanguageInformation.GetCompiledTypeRepresentation(t, t, ref i, ref j));
+                sw.WriteLine(languageIntellisenseSupport.GetCompiledTypeRepresentation(t, t, ref i, ref j));
             }
 
             sw.Close();
@@ -1072,7 +1072,7 @@ namespace CodeCompletion
             sw = new StreamWriter(typeof(System.Data.Constraint).Assembly.ManifestModule.ScopeName + ".txt");
             foreach (Type t in types)
             {
-                sw.WriteLine(parser.LanguageInformation.GetCompiledTypeRepresentation(t, t, ref i, ref j));
+                sw.WriteLine(languageIntellisenseSupport.GetCompiledTypeRepresentation(t, t, ref i, ref j));
             }
 
             sw.Close();
@@ -1081,7 +1081,7 @@ namespace CodeCompletion
             sw = new StreamWriter(typeof(System.Xml.XmlDocument).Assembly.ManifestModule.ScopeName + ".txt");
             foreach (Type t in types)
             {
-                sw.WriteLine(parser.LanguageInformation.GetCompiledTypeRepresentation(t, t, ref i, ref j));
+                sw.WriteLine(languageIntellisenseSupport.GetCompiledTypeRepresentation(t, t, ref i, ref j));
             }
             sw.Close();
     	}

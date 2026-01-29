@@ -22,10 +22,10 @@ namespace VisualPascalABC
         internal List<DockContent> BottomDockContent = new List<DockContent>();
         List<DockContent> VisibleBottomContent = new List<DockContent>();
 
-        public bool CompilingButtonsEnabled
+        public bool CompilingAndRunButtonsEnabled
         {
             get { return miRun.Enabled; }
-            set { SetCompilingButtonsEnabled(value); }
+            set { SetCompilingAndRunButtonsEnabled(value); }
         }
 
         bool SaveButtonsEnabled
@@ -100,15 +100,16 @@ namespace VisualPascalABC
             set { miNavigForw.Enabled = tsNavigForw.Enabled = value; }
         }
 
-        public void SetDedugButtonsEnabled(bool Enabled)
+        /// <summary>
+        /// Активировать/Деактивировать все кнопки, относящиеся к дебагу.
+        /// </summary>
+        public void SetDebugButtonsEnabled(bool Enabled)
         {
             StepIntoButton.Enabled = StepOverButton.Enabled = StartDebugButton.Enabled =
-            mDEBUGSTARTToolStripMenuItem.Enabled = mSTEPOVERToolStripMenuItem.Enabled = mSTEPINToolStripMenuItem.Enabled = mRUNTOCURToolStripMenuItem.Enabled = Enabled;
-
+            mDEBUGSTARTToolStripMenuItem.Enabled = mSTEPOVERToolStripMenuItem.Enabled =
+            mSTEPINToolStripMenuItem.Enabled = mRUNTOCURToolStripMenuItem.Enabled = Enabled;
             //toolStrip1.Refresh();
         }
-
-        
 
         bool BottomDockContentVisible
         {
@@ -317,7 +318,7 @@ namespace VisualPascalABC
             }
         }
 
-        public void SetCompilingButtonsEnabled(bool Enabled)
+        public void SetCompilingAndRunButtonsEnabled(bool Enabled)
         {
             if (Enabled)
             {
@@ -388,7 +389,7 @@ namespace VisualPascalABC
 
         public void SetDebugStopEnabled()
         {
-            SetCompilingButtonsEnabled(false);
+            SetCompilingAndRunButtonsEnabled(false);
             this.mDEBUGSTOPToolStripMenuItem.Enabled = true;
             this.mDEBUGENDToolStripMenuItem.Enabled = true;
             this.mSTEPToolStripMenuItem.Enabled = true;
@@ -412,7 +413,7 @@ namespace VisualPascalABC
             this.mDEBUGSTARTToolStripMenuItem.Text = Form1StringResources.Get("M_DEBUGSTART");
         }
 
-        public void SetStartDebugDisabled()
+        public void SetStartDebugAndRunDisabled()
         {
             this.mDEBUGSTARTToolStripMenuItem.Enabled = false;
             this.StartDebugButton.Enabled = false;
@@ -429,7 +430,10 @@ namespace VisualPascalABC
             SaveDebugContext();
         }
 
-        public void SetStartDebugEnabled()
+        /// <summary>
+        /// Активирует кнопки для Debug и запуска программы
+        /// </summary>
+        public void SetStartDebugAndRunEnabled()
         {
             this.mDEBUGSTARTToolStripMenuItem.Enabled = true;
             this.StartDebugButton.Enabled = true;
@@ -439,6 +443,7 @@ namespace VisualPascalABC
             this.StepOverButton.Enabled = true;
             this.mRUNTOCURToolStripMenuItem.Enabled = true;
             this.mSTEPToolStripMenuItem.Enabled = true;
+
             this.miRun.Enabled = true;
             this.StartButton.Enabled = true;
             ChangeDebugButtons(false);
@@ -453,7 +458,7 @@ namespace VisualPascalABC
             this.StepOutButton.Enabled = false;
             if (!(clicked_stop_debug_in_menu && WorkbenchServiceFactory.RunService.IsRun() && debuggedPage != ActiveCodeFileDocument))
             {
-                SetCompilingButtonsEnabled(true);
+                SetCompilingAndRunButtonsEnabled(true);
                 this.stopButton.Enabled = false;
                 this.miStop.Enabled = false;
             }
@@ -510,42 +515,17 @@ namespace VisualPascalABC
             }
         }
 
-        public void SetDebugButtonsEnabled(bool val)
+        /// <summary>
+        ///  Активировать/Деактивировать все кнопки, относящиеся к форматированию кода
+        /// </summary>
+        private void SetFormatButtonsEnabled(bool enabled)
         {
-            if (val)
-            {
-                this.mDEBUGSTOPToolStripMenuItem.Enabled = false;
-                this.mDEBUGSTARTToolStripMenuItem.Enabled = false;
-                this.StartDebugButton.Enabled = true;
-                this.StopDebugButton.Enabled = true;
-                this.StepOutButton.Enabled = false;
-                this.StepOverButton.Enabled = true;
-                this.StepIntoButton.Enabled = true;
-                this.mDEBUGSTARTToolStripMenuItem.Enabled = true;
-                this.mSTEPINToolStripMenuItem.Enabled = true;
-                this.mSTEPOVERToolStripMenuItem.Enabled = true;
-                this.mSTEPToolStripMenuItem.Enabled = false;
-                this.mRUNTOCURToolStripMenuItem.Enabled = true;
-                this.miRun.Enabled = true;
-                this.StartButton.Enabled = true;
-            }
-            else
-            {
-                this.mDEBUGSTOPToolStripMenuItem.Enabled = false;
-                this.mSTEPToolStripMenuItem.Enabled = false;
-                this.StartDebugButton.Enabled = false;
-                this.StopDebugButton.Enabled = false;
-                this.StepOutButton.Enabled = false;
-                this.StepOverButton.Enabled = false;
-                this.StepIntoButton.Enabled = false;
-                this.mDEBUGSTARTToolStripMenuItem.Enabled = false;
-                this.mSTEPINToolStripMenuItem.Enabled = false;
-                this.mSTEPOVERToolStripMenuItem.Enabled = false;
-                this.mRUNTOCURToolStripMenuItem.Enabled = false;
-                this.mSTEPToolStripMenuItem.Enabled = false;
-                this.miRun.Enabled = false;
-                this.StartButton.Enabled = false;
-            }
+            tsFormat.Enabled = mFORMATToolStripMenuItem.Enabled = cmFormat.Enabled = enabled;
+        }
+
+        private void SetRunButtonsEnabled(bool enabled)
+        {
+            miRun.Enabled = StartButton.Enabled = enabled;
         }
 
         bool mDEBUGSTOPToolStripMenuItem_Enabled;

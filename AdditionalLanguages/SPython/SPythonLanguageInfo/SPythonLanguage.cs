@@ -11,6 +11,7 @@ namespace Languages.SPython
         public SPythonLanguage() : base(
             
             languageInformation: new Frontend.Data.SPythonLanguageInformation(),
+            languageIntellisenseSupport: new Frontend.Data.SPythonIntellisenseSupport(),
             parser: new SPythonParser.SPythonLanguageParser(),
             docParser: null,
 

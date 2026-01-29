@@ -99,11 +99,11 @@ namespace VisualPascalABC
 				string full_file_name = Path.Combine(Path.GetDirectoryName(ProjectFactory.Instance.CurrentProject.Path),frm.FileName);
                 StreamWriter sw = File.CreateText(full_file_name);
 
-                ILanguageInformation languageInfo = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(frm.FileName).LanguageInformation;
+                var languageIntellisenseSupport = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtension(frm.FileName).LanguageIntellisenseSupport;
 
                 if (frm.GetFileFilter() == FileType.Unit)
                 {
-                    sw.Write(languageInfo.GetUnitTemplate(Path.GetFileNameWithoutExtension(frm.FileName)));
+                    sw.Write(languageIntellisenseSupport.GetUnitTemplate(Path.GetFileNameWithoutExtension(frm.FileName)));
                 }
                 else
                 {

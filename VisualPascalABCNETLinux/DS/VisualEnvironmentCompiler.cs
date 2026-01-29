@@ -34,7 +34,7 @@ namespace VisualPascalABC
         private System.Threading.Thread MainProgramThread = System.Threading.Thread.CurrentThread;
         private System.Threading.Thread StartingThread;
         public delegate void SetFlagDelegate(bool flag);
-        private SetFlagDelegate SetCompilingButtonsEnabled;
+        private SetFlagDelegate SetCompilingAndRunButtonsEnabled;
         private SetFlagDelegate SetDebugButtonsEnabled;
         public delegate void SetTextDelegate(string text);
         public delegate string ConvertUnitText(string FileName, string text); // Это пока только для шифрованного Tasks. В остальных случаях он нулевой 
@@ -67,7 +67,7 @@ namespace VisualPascalABC
         Dictionary<string, CodeFileDocumentControl> OpenDocuments;
 
         public VisualEnvironmentCompiler(InvokeDegegate beginInvoke, 
-            SetFlagDelegate setCompilingButtonsEnabled, SetFlagDelegate setCompilingDebugEnabled, SetTextDelegate setStateText, 
+            SetFlagDelegate setCompilingAndRunButtonsEnabled, SetFlagDelegate setCompilingDebugEnabled, SetTextDelegate setStateText, 
             SetTextDelegate addTextToCompilerMessages, ToolStripMenuItem pluginsMenuItem, 
             ToolStrip pluginsToolStrip, ExecuteSourceLocationActionDelegate ExecuteSLAction, 
             ExecuteVisualEnvironmentCompilerActionDelegate ExecuteVECAction,
@@ -77,7 +77,7 @@ namespace VisualPascalABC
             this.StandartDirectories = StandartDirectories;
             this.ErrorsManager = ErrorsManager;
             this.ChangeVisualEnvironmentState += onChangeVisualEnvironmentState;
-            SetCompilingButtonsEnabled = setCompilingButtonsEnabled;
+            SetCompilingAndRunButtonsEnabled = setCompilingAndRunButtonsEnabled;
             SetDebugButtonsEnabled = setCompilingDebugEnabled;
             SetStateText = setStateText;
             AddTextToCompilerMessages = addTextToCompilerMessages;
@@ -351,7 +351,7 @@ namespace VisualPascalABC
             {
                 case PascalABCCompiler.CompilerState.CompilationStarting:
                     RusName = VECStringResources.Get("STATE_START_COMPILING_ASSEMBLY{0}");
-                    SetCompilingButtonsEnabled(false);
+                    SetCompilingAndRunButtonsEnabled(false);
                     ParsedFiles.Clear();
                     break;
                 case PascalABCCompiler.CompilerState.BeginCompileFile: RusName = VECStringResources.Get("STATE_BEGINCOMPILEFILE{0}"); break;
@@ -397,21 +397,22 @@ namespace VisualPascalABC
                             //if (!ThreadPool.QueueUserWorkItem(new WaitCallback(LoadPlugins)))
                             //    LoadPlugins(null);
                             
-                            SetCompilingButtonsEnabled(true);
-                            SetDebugButtonsEnabled(true);
+                            SetCompilingAndRunButtonsEnabled(true);
+                            if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
+                                SetDebugButtonsEnabled(true);
                         }
                     }
                     else
                     {
                         if (Compiler == sender)
                         {
-                            SetCompilingButtonsEnabled(true); 
+                            SetCompilingAndRunButtonsEnabled(true); 
                         }
                     }
                     break;
                 case PascalABCCompiler.CompilerState.Reloading:
                     if (Compiler == sender)
-                        SetCompilingButtonsEnabled(false);
+                        SetCompilingAndRunButtonsEnabled(false);
                     RusName = VECStringResources.Get("STATE_RELOADING");
                     break;
                 case PascalABCCompiler.CompilerState.CompilationFinished:

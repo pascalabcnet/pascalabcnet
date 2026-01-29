@@ -462,7 +462,7 @@ namespace VisualPascalABC
 
         void tsIntellisense_DropDownOpened(object sender, EventArgs e)
         {
-            if (UserOptions.AllowCodeCompletion)
+            if (UserOptions.AllowCodeCompletion && CodeCompletion.CodeCompletionController.IntellisenseAvailable())
             {
                 //GotoAction ga = new GotoAction();
                 TextArea ta = CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea;
@@ -470,21 +470,50 @@ namespace VisualPascalABC
                 this.tsGotoRealization.Enabled = CodeCompletionActionsManager.CanGoToRealization(ta);
                 this.tsFindAllReferences.Enabled = CodeCompletionActionsManager.CanFindReferences(ta);
                 //this.cmFindAllReferences.Enabled = ga.CanFindReferences(ta);
-        		this.miGenerateRealization.Enabled = CodeCompletionActionsManager.CanGenerateRealization(ta);
+                this.miGenerateRealization.Enabled = CodeCompletionActionsManager.CanGenerateRealization(ta);
+            }
+            else
+            {
+                DisableIntellisenseDropDownOptions();
             }
         }
 
         private void OpeningContextMenu(object sender, CancelEventArgs args)
         {
-        	GotoAction ga = new GotoAction();
-            TextArea ta = CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea;
-        	this.cmGotoDefinition.Enabled = CodeCompletionActionsManager.CanGoTo(ta);
-        	this.cmGotoRealization.Enabled = CodeCompletionActionsManager.CanGoToRealization(ta);
-        	this.cmFindAllReferences.Enabled = CodeCompletionActionsManager.CanFindReferences(ta);
-        	this.cmGenerateRealization.Enabled = CodeCompletionActionsManager.CanGenerateRealization(ta);
-        	this.cmRename.Enabled = CodeCompletionActionsManager.CanGoTo(ta);
-       }
-        
+            if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
+            {
+                // GotoAction ga = new GotoAction();
+                TextArea ta = CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea;
+
+                this.cmGotoDefinition.Enabled = CodeCompletionActionsManager.CanGoTo(ta);
+                this.cmGotoRealization.Enabled = CodeCompletionActionsManager.CanGoToRealization(ta);
+                this.cmFindAllReferences.Enabled = CodeCompletionActionsManager.CanFindReferences(ta);
+                this.cmGenerateRealization.Enabled = CodeCompletionActionsManager.CanGenerateRealization(ta);
+                this.cmRename.Enabled = CodeCompletionActionsManager.CanGoTo(ta);
+            }
+            else
+            {
+                DisableIntellisenseContextMenuOptions();
+            }
+        }
+
+        private void DisableIntellisenseContextMenuOptions()
+        {
+            this.cmGotoDefinition.Enabled = false;
+            this.cmGotoRealization.Enabled = false;
+            this.cmFindAllReferences.Enabled = false;
+            this.cmGenerateRealization.Enabled = false;
+            this.cmRename.Enabled = false;
+        }
+
+        private void DisableIntellisenseDropDownOptions()
+        {
+            this.tsGotoDefinition.Enabled = false;
+            this.tsGotoRealization.Enabled = false;
+            this.tsFindAllReferences.Enabled = false;
+            this.miGenerateRealization.Enabled = false;
+        }
+
         private void ClosingContextMenu(object sender, CancelEventArgs args)
         {
         	this.cmRename.Enabled = true;

@@ -308,7 +308,7 @@ namespace CodeCompletion
             var co = new CompilerOptions();
             co.SavePCU = false;
             co.GenerateCode = false;
-            if (!currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense)
+            if (!currentUnitLanguage.LanguageIntellisenseSupport.ApplySyntaxTreeConvertersForIntellisense)
                 co.UnitSyntaxTree = cu;
             co.SourceFileName = cu.source_context.FileName;
             co.ForIntellisense = true;
@@ -474,9 +474,9 @@ namespace CodeCompletion
             else if (has_lambdas(_assign.from))
                 _assign.from.visit(this);
             else if (_assign.to is ident && cur_scope != null && cur_scope.Name.StartsWith("<>lambda")
-                && (_assign.to as ident).name.Equals(currentUnitLanguage.LanguageInformation.ResultVariableName, currentUnitLanguage.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
+                && (_assign.to as ident).name.Equals(currentUnitLanguage.LanguageIntellisenseSupport.ResultVariableName, currentUnitLanguage.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
             {
-                var sc = cur_scope.FindNameOnlyInThisType(currentUnitLanguage.LanguageInformation.ResultVariableName);
+                var sc = cur_scope.FindNameOnlyInThisType(currentUnitLanguage.LanguageIntellisenseSupport.ResultVariableName);
                 if (sc is ElementScope)
                 {
                     ElementScope es = sc as ElementScope;
@@ -935,7 +935,7 @@ namespace CodeCompletion
         {
             returned_scope = TypeTable.string_type;//entry_scope.FindName(StringConstants.string_type_name);
             //cnst_val.prim_val = "'"+_string_const.Value+"'";
-        	cnst_val.prim_val = this.converter.controller.Parser.LanguageInformation.GetStringForString(_string_const.Value);
+        	cnst_val.prim_val = currentUnitLanguage.LanguageIntellisenseSupport.GetStringForString(_string_const.Value);
         }
 
         public override void visit(expression_list _expression_list)
@@ -2094,7 +2094,7 @@ namespace CodeCompletion
 
             returned_scope = ps;
            
-            var resultName = currentUnitLanguage.LanguageInformation.ResultVariableName;
+            var resultName = currentUnitLanguage.LanguageIntellisenseSupport.ResultVariableName;
             if (resultName != null)
             {
                 ps.AddName(resultName, new ElementScope(new SymInfo(resultName, SymbolKind.Variable, resultName), ps.return_type, ps));
@@ -2170,7 +2170,7 @@ namespace CodeCompletion
                             if (bl.program_code.subnodes.Count == 1)
                             {
                                 var ass = bl.program_code.subnodes[0] as assign;
-                                if (ass != null && ass.to is ident && (ass.to as ident).name.Equals(currentUnitLanguage.LanguageInformation.ResultVariableName, currentUnitLanguage.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
+                                if (ass != null && ass.to is ident && (ass.to as ident).name.Equals(currentUnitLanguage.LanguageIntellisenseSupport.ResultVariableName, currentUnitLanguage.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
                                 {
                                     if (!(ass.from is nil_const))
                                     {
@@ -2262,7 +2262,7 @@ namespace CodeCompletion
                     if (_type_declaration.type_def is class_definition)
                     {
                         class_definition cl_def = _type_declaration.type_def as class_definition;
-                        string key = this.converter.controller.Parser.LanguageInformation.GetClassKeyword(cl_def.keyword);
+                        string key = currentUnitLanguage.LanguageIntellisenseSupport.GetClassKeyword(cl_def.keyword);
                         if (cl_def.attribute == class_attribute.Auto)
                             key = "auto " + key;
                         else if ((cl_def.attribute & class_attribute.Abstract) == class_attribute.Abstract)
@@ -2528,7 +2528,7 @@ namespace CodeCompletion
             var languageUsingStandardUnit = Languages.Facade.LanguageProvider.Instance.Languages.Find(lang => lang.SystemUnitNames.Contains(unitName));
 
             // Пока что добавили возможость грубо отключить добавление NET пространств имен по умолчанию здесь (второе условие нужно, чтобы в стандартные модули языка они тоже не добавлялись) EVA
-            if (currentUnitLanguage.LanguageInformation.AddStandardNetNamespacesToUserScope && (languageUsingStandardUnit?.LanguageInformation.AddStandardNetNamespacesToUserScope ?? true))
+            if (currentUnitLanguage.LanguageIntellisenseSupport.AddStandardNetNamespacesToUserScope && (languageUsingStandardUnit?.LanguageIntellisenseSupport.AddStandardNetNamespacesToUserScope ?? true))
                 namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(_as));
             
             InterfaceUnitScope unit_scope = null;
@@ -2661,7 +2661,7 @@ namespace CodeCompletion
             {
                 // добавление стандартных типов можно делать в отдельный фиктивный модуль, как в основном компиляторе
                 // это позволит работать директиве DisableStandardUnits, а также не будет засорять сам стандартный модуль типами EVA
-                add_standart_types(entry_scope, language.LanguageInformation);
+                add_standart_types(entry_scope, language.LanguageIntellisenseSupport);
 
                 if (language == Languages.Facade.LanguageProvider.Instance.MainLanguage)
                 {
@@ -2684,7 +2684,7 @@ namespace CodeCompletion
                 }
             }
 
-            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense)
+            if (currentUnitLanguage.LanguageIntellisenseSupport.ApplySyntaxTreeConvertersForIntellisense)
             {
                 foreach (ISyntaxTreeConverter converter in currentUnitLanguage.SyntaxTreeConverters)
                 {
@@ -2729,7 +2729,8 @@ namespace CodeCompletion
                 }
             }
 
-            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense && currentUnitLanguage.LanguageInformation.SyntaxTreeIsConvertedAfterUsedModulesCompilation)
+            if (currentUnitLanguage.LanguageIntellisenseSupport.ApplySyntaxTreeConvertersForIntellisense 
+                && currentUnitLanguage.LanguageInformation.SyntaxTreeIsConvertedAfterUsedModulesCompilation)
             {
                 var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
 
@@ -2889,7 +2890,7 @@ namespace CodeCompletion
                         //get_standart_types(dc.stv);
                         
                         // для SPython, например, не нужно подсказывать стандартные модули в программе, это условие для этого EVA
-                        if (currentUnitLanguage.LanguageInformation.AddStandardUnitNamesToUserScope)
+                        if (currentUnitLanguage.LanguageIntellisenseSupport.AddStandardUnitNamesToUserScope)
                         {
                             entry_scope.AddName(unitName, dc.visitor.entry_scope);
                         }
@@ -2907,7 +2908,7 @@ namespace CodeCompletion
                     dc.visitor.entry_scope.InitAssemblies();
                     entry_scope.AddUsedUnit(dc.visitor.entry_scope);
                     //get_standart_types(dc.stv);
-                    if (currentUnitLanguage.LanguageInformation.AddStandardUnitNamesToUserScope)
+                    if (currentUnitLanguage.LanguageIntellisenseSupport.AddStandardUnitNamesToUserScope)
                     {
                         entry_scope.AddName(unitName, dc.visitor.entry_scope);
                     }
@@ -3153,7 +3154,7 @@ namespace CodeCompletion
             currentUnitLanguage = Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(_program_module.Language);
 
             // Пока что добавили возможость грубо отключить добавление NET пространств имен по умолчанию здесь EVA
-            if (currentUnitLanguage.LanguageInformation.AddStandardNetNamespacesToUserScope)
+            if (currentUnitLanguage.LanguageIntellisenseSupport.AddStandardNetNamespacesToUserScope)
                 namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(_as));
             
             //List<Scope> netScopes = new List<Scope>();
@@ -3261,7 +3262,7 @@ namespace CodeCompletion
                 }
             }
 
-            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense)
+            if (currentUnitLanguage.LanguageIntellisenseSupport.ApplySyntaxTreeConvertersForIntellisense)
             {
                 foreach (ISyntaxTreeConverter converter in currentUnitLanguage.SyntaxTreeConverters)
                 {
@@ -3310,7 +3311,8 @@ namespace CodeCompletion
                 }
             }
 
-            if (currentUnitLanguage.ApplySyntaxTreeConvertersForIntellisense && currentUnitLanguage.LanguageInformation.SyntaxTreeIsConvertedAfterUsedModulesCompilation)
+            if (currentUnitLanguage.LanguageIntellisenseSupport.ApplySyntaxTreeConvertersForIntellisense 
+                && currentUnitLanguage.LanguageInformation.SyntaxTreeIsConvertedAfterUsedModulesCompilation)
             {
                 var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
 
@@ -3387,7 +3389,7 @@ namespace CodeCompletion
             }
         }
 
-        private void add_standart_types(SymScope cur_scope, ILanguageInformation languageInfo)
+        private void add_standart_types(SymScope cur_scope, ILanguageIntellisenseSupport languageIntellisenseSupport)
         {
 
             var standardTypesData = new List<Tuple<PascalABCCompiler.Parsers.KeywordKind, CompiledScope>>()
@@ -3415,7 +3417,7 @@ namespace CodeCompletion
                 var keywordKind = data.Item1;
                 var type = data.Item2;
 
-                var type_name = languageInfo.GetStandardTypeByKeyword(keywordKind);
+                var type_name = languageIntellisenseSupport.GetStandardTypeByKeyword(keywordKind);
 
                 if (type_name != null)
                 {
@@ -4647,7 +4649,7 @@ namespace CodeCompletion
         {
             returned_scope = TypeTable.char_type;//entry_scope.FindName(StringConstants.char_type_name);
             if (in_kav)
-            	cnst_val.prim_val = this.converter.controller.Parser.LanguageInformation.GetStringForChar(_char_const.cconst);
+            	cnst_val.prim_val = currentUnitLanguage.LanguageIntellisenseSupport.GetStringForChar(_char_const.cconst);
             //cnst_val.prim_val = "'"+_char_const.cconst.ToString()+"'";
             else cnst_val.prim_val = _char_const.cconst;
         }
@@ -4660,7 +4662,7 @@ namespace CodeCompletion
         public override void visit(sharp_char_const _sharp_char_const)
         {
             returned_scope = TypeTable.char_type;//entry_scope.FindName(StringConstants.char_type_name);
-            cnst_val.prim_val = this.converter.controller.Parser.LanguageInformation.GetStringForSharpChar(_sharp_char_const.char_num);
+            cnst_val.prim_val = currentUnitLanguage.LanguageIntellisenseSupport.GetStringForSharpChar(_sharp_char_const.char_num);
         }
 		
         private bool in_kav=true;
@@ -5788,7 +5790,7 @@ namespace CodeCompletion
             TypeScope saved_return_type = ps.return_type;
             if (!disable_lambda_compilation)
             {
-                string resultName = currentUnitLanguage.LanguageInformation.ResultVariableName;
+                string resultName = currentUnitLanguage.LanguageIntellisenseSupport.ResultVariableName;
                 if (awaitedProcType != null)
                 {
                     var invokeMeth = awaitedProcType.FindNameOnlyInType("Invoke") as ProcScope;

@@ -54,8 +54,8 @@ namespace VisualPascalABC
     {
     	public static PascalABCCompiler.Parsers.KeywordKind TestForKeyword(string Text, int i)
         {
-            if (CodeCompletion.CodeCompletionController.CurrentParser != null && CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation !=null)
-        	    return CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.TestForKeyword(Text, i);
+            if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
+        	    return CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.TestForKeyword(Text, i);
         	return PascalABCCompiler.Parsers.KeywordKind.None;
         } 
         

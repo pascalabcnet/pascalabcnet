@@ -3,22 +3,12 @@
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Errors;
-using System;
 
 namespace PascalABCCompiler.Parsers
 {
     public enum ParseMode { Normal, Expression, Statement, Special, ForFormatter, TypeAsExpression };
     public interface IParser
     {
-        List<Error> Errors { get; }
-
-        List<CompilerWarning> Warnings { get; }
-
-        List<compiler_directive> CompilerDirectives
-        {
-            get;
-        }
-
         ILanguageInformation LanguageInformation { get; set; }
 
         compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, bool compilingNotMainProgram, List<string> DefinesList = null);
@@ -30,8 +20,6 @@ namespace PascalABCCompiler.Parsers
         statement GetStatement(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings);
 
         expression GetTypeAsExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings);
-
-        void Reset();
     }
 
     

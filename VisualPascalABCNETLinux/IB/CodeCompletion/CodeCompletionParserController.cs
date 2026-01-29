@@ -76,11 +76,7 @@ namespace VisualPascalABC
 
         public void RegisterFileForParsing(string FileName)
         {
-            if (Languages.Facade.LanguageProvider.Instance.HasLanguageForExtension(FileName))
-            {
-                filesToParse[FileName] = true;
-                CodeCompletion.CodeCompletionController.SetLanguage(FileName);
-            }
+            filesToParse[FileName] = true;
         }
 
         public void CloseFile(string FileName)
