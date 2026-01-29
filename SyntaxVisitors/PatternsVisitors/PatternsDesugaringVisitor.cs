@@ -625,7 +625,7 @@ namespace SyntaxVisitors.PatternsVisitors
             }
 
             var deconstructCall = new procedure_call();
-            deconstructCall.func_name = SubtreeCreator.CreateMethodCall(DeconstructMethodName, castVariableName.name, parameters.Select(x => x.identifier).ToArray());
+            deconstructCall.func_name = SubtreeCreator.CreateMethodCallWithQualifier(DeconstructMethodName, castVariableName.name, parameters.Select(x => x.identifier).ToArray());
             desugarResult.DeconstructCall = deconstructCall;
 
             return desugarResult;

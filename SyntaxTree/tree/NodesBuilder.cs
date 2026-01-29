@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PascalABCCompiler.SyntaxTree
 {
@@ -11,7 +10,7 @@ namespace PascalABCCompiler.SyntaxTree
     /// <summary>
     /// Класс для генерации новых узлов синтаксического дерева
     /// </summary>
-    public class SyntaxTreeNodesConstructor
+    public static class SyntaxTreeNodesConstructor
     {
         public static var_statement CreateVarStatementNode(string idName, type_definition varType, expression initValue)
         {
@@ -97,7 +96,7 @@ namespace PascalABCCompiler.SyntaxTree
     }
     #endregion
 
-    public class SubtreeCreator
+    public static class SubtreeCreator
     {
         /// <summary>
         /// Создать var-выражение
@@ -264,10 +263,10 @@ namespace PascalABCCompiler.SyntaxTree
         /// <returns></returns>
         public static method_call CreateSystemFunctionCall(string funcName, params expression[] exprList)
         {
-            return CreateMethodCall(funcName, "PABCSystem", exprList);
+            return CreateMethodCallWithQualifier(funcName, "PABCSystem", exprList);
         }
 
-        public static method_call CreateMethodCall(string funcName, string qualifier, params expression[] exprList)
+        public static method_call CreateMethodCallWithQualifier(string funcName, string qualifier, params expression[] exprList)
         {
             var methodCall = CreateMethodCall(funcName, exprList);
             methodCall.dereferencing_value = new dot_node(new ident(qualifier), new ident(funcName));
@@ -283,9 +282,26 @@ namespace PascalABCCompiler.SyntaxTree
 
         private static method_call CreateMethodCall(string methodName, params expression[] exprList)
         {
+            return CreateMethodCall(methodName, null, exprList);
+        }
+
+        public static method_call CreateMethodCall(string methodName, SourceContext sc, expression_list expr_list)
+        {
             SyntaxTree.method_call mc = new SyntaxTree.method_call();
-            mc.dereferencing_value = new ident(methodName);
+            mc.source_context = sc;
+            mc.dereferencing_value = new ident(methodName, sc);
+            mc.parameters = expr_list;
+
+            return mc;
+        }
+
+        public static method_call CreateMethodCall(string methodName, SourceContext sc, params expression[] exprList)
+        {
+            SyntaxTree.method_call mc = new SyntaxTree.method_call();
+            mc.source_context = sc;
+            mc.dereferencing_value = new ident(methodName, sc);
             SyntaxTree.expression_list exl = new PascalABCCompiler.SyntaxTree.expression_list();
+            exl.source_context = sc;
             foreach (expression x in exprList)
                 exl.Add(x);
             mc.parameters = exl;
@@ -352,7 +368,7 @@ namespace PascalABCCompiler.SyntaxTree
             return res;
         }
     }
-    public class SyntaxTreeBuilder
+    public static class SyntaxTreeBuilder
     {
         public static SourceContext BuildGenSC = new SourceContext(0, 777777, 0, 0, 0, 0);
 
