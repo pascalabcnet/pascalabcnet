@@ -171,6 +171,16 @@ namespace PascalABCCompiler.TreeConverter
             context.syntax_tree_visitor = this;
         }
 
+        /// <summary>
+        /// Можно переопределять для добавления действий перед конвертацией интерфейсной и имплементационной частей
+        /// </summary>
+        public virtual void BeforeCompilationActions() { }
+
+        /// <summary>
+        /// Можно переопределять для добавления действий после конвертации интерфейсной и имплементационной частей
+        /// </summary>
+        public virtual void PostCompilationActions() { }
+
         public List<TreeRealization.var_definition_node> CompiledVariables => compiledVariables;
 
         public string UniqueNumStr()
