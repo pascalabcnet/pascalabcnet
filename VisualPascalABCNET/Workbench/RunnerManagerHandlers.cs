@@ -156,19 +156,45 @@ namespace VisualPascalABC
 
         void WaitCallback_DeleteEXEAndPDB(object state)
         {
-            //int i = 0;
             string fileName = (string)state;
-            //while (i < 20) // 20 раз пытаться удалять! Это сильно!
-            //{
-            try
+
+            if (Workbench.UserOptions.DeleteEXEAfterExecute)
             {
-                if (Workbench.UserOptions.DeleteEXEAfterExecute && File.Exists(fileName))
-                    File.Delete(fileName);
-            }
-            catch
-            {
-                WorkbenchServiceFactory.OperationsService.AddTextToCompilerMessagesSync("Не удалось удалить EXE-файл");
-            }
+                bool deleted = false;
+                for (int i = 0; i < 20; i++)
+                {
+                    try
+                    {
+                        // Пытаемся удалить файл - не проверяем, есть ли он
+                        File.Delete(fileName);
+                        deleted = true;
+                        break; // Файл удален - выходим из цикла
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        // Файла уже нет - считаем успехом
+                        deleted = true;
+                        break;
+                    }
+                    catch (DirectoryNotFoundException)
+                    {
+                        // Директории нет - файла тоже нет
+                        deleted = true;
+                        break;
+                    }
+                    catch (Exception)
+                    {
+                        // Файл занят - ждем 10 мс и пробуем снова
+                        System.Threading.Thread.Sleep(10);
+                    }
+                }
+                if (!deleted)
+                {
+                    WorkbenchServiceFactory.OperationsService.AddTextToCompilerMessagesSync(
+                        "Не удалось удалить EXE-файл\n");
+                }
+            }    
+
             try
             {
                 if (Workbench.UserOptions.DeletePDBAfterExecute)
