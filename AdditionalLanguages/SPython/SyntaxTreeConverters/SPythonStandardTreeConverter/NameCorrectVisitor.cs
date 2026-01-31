@@ -109,12 +109,19 @@ namespace Languages.SPython.Frontend.Converters
             named_type_reference _named_type_reference = _template_type_reference.name;
             string name = _named_type_reference.names[0].name;
 
-            string fullName = name + $"`{_template_type_reference.params_list.Count}";
+            string fullName = _named_type_reference.names.Count == 1 ? name + $"`{_template_type_reference.params_list.Count}" : name;
+
+            // пока нет обертки над System.Tuple<...> tuple в стандартной библиотеке это статический класс, а не шаблонный
+            if (fullName.StartsWith("tuple`"))
+                return;
 
             NameKind nameKind = symbolTable[fullName];
 
             switch (nameKind)
             {
+                case NameKind.ModuleAlias:
+                    _named_type_reference.names[0].name = symbolTable.AliasToRealName(fullName);
+                    break;
 
                 case NameKind.ImportedVariableAlias:
                 case NameKind.ImportedNotVariableAlias:

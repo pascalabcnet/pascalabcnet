@@ -1,5 +1,6 @@
 ﻿from PABCSystem import Object as obj, Write as pas_print
 from SPythonSystem import range, len
+from SPythonHidden import *
 
 def print(*args: obj, **kwargs: str):
     sep: str = ' '
@@ -17,5 +18,11 @@ def print(*args: obj, **kwargs: str):
         pas_print(args[len(args) - 1])
     pas_print(end)
     
-#def divmod(a: int, b: int) -> (int,int) 
-#  := (a // b, a % b);
+def divmod(a: int, b: int) -> tuple[int, int]:
+  return (a // b, a % b)
+  
+def divmod(a: float, b: float) -> tuple[float, float]:
+  return (a // b, a % b)
+  
+def divmod(a: bigint, b: bigint) -> tuple[bigint, bigint]:
+  return (a // b, a % b)

@@ -226,7 +226,7 @@ namespace Languages.SPython.Frontend.Converters
             private readonly HashSet<string> forwardDeclaredFunctions = new HashSet<string>();
 
             private readonly string[] Keywords = {
-                "int", "float", "str", "bool", "tuple", // standard types
+                "int", "float", "str", "bool", // standard types
                 "break", "continue", "exit", "halt",    // standard ops
                 "true", "false",                        // constants
             };
