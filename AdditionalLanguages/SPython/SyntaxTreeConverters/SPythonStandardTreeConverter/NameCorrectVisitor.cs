@@ -7,7 +7,7 @@ namespace Languages.SPython.Frontend.Converters
     {
         public HashSet<string> variablesUsedAsGlobal = new HashSet<string>();
 
-        public NameCorrectVisitor(Dictionary<string, Dictionary<string, bool>> namesFromUsedUnits, HashSet<string> definedFunctionsNames) : base(namesFromUsedUnits) 
+        public NameCorrectVisitor(string unitName, Dictionary<string, Dictionary<string, bool>> namesFromUsedUnits, HashSet<string> definedFunctionsNames) : base(unitName, namesFromUsedUnits) 
         {
             foreach (string definedFunctionName in definedFunctionsNames)
             {

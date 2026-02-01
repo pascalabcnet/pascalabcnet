@@ -2714,7 +2714,7 @@ namespace CodeCompletion
             // компиляция зависимостей из конструкций import и from import
             if (cur_scope != null && _unit_module.initialization_part != null)
             {
-                CompileImportedDependencies(_unit_module.initialization_part, _unit_module.file_name, ns_cache, usedUnitsNames, currentUnitLanguage);
+                CompileImportedDependencies(_unit_module.initialization_part, _unit_module.file_name, ns_cache, currentUnitLanguage);
             }
 
             StringComparer comparer = currentUnitLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
@@ -3290,7 +3290,7 @@ namespace CodeCompletion
             // компиляция зависимостей из конструкций import и from import
             if (cur_scope != null && _program_module.program_block.program_code != null)
             {
-                CompileImportedDependencies(_program_module.program_block.program_code, _program_module.file_name, ns_cache, usedUnitsNames, currentUnitLanguage);
+                CompileImportedDependencies(_program_module.program_block.program_code, _program_module.file_name, ns_cache, currentUnitLanguage);
             }
 
             StringComparer comparer = currentUnitLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
@@ -3361,7 +3361,7 @@ namespace CodeCompletion
             }
         }
 
-        private void CompileImportedDependencies(statement_list statementList, string fileName, Hashtable ns_cache, List<string> usedUnitNames, Languages.Facade.ILanguage currentUnitLanguage)
+        private void CompileImportedDependencies(statement_list statementList, string fileName, Hashtable ns_cache, Languages.Facade.ILanguage currentUnitLanguage)
         {
             var importStatements = statementList.list.Where(st => st is import_statement || st is from_import_statement);
 
@@ -3374,8 +3374,6 @@ namespace CodeCompletion
                         CompileImportedUnit(unitNode.name, import, import.modules_names,
                             Path.GetDirectoryName(fileName),
                             cur_scope, unl, currentUnitLanguage);
-
-                        usedUnitNames.Add(unitNode.name);
                     }
                 }
                 else if (importStatement is from_import_statement fromImport)
@@ -3383,8 +3381,6 @@ namespace CodeCompletion
                     CompileImportedUnit(fromImport.module_name.name, fromImport, fromImport.imported_names,
                         Path.GetDirectoryName(fileName),
                         cur_scope, unl, currentUnitLanguage);
-
-                    usedUnitNames.Add(fromImport.module_name.name);
                 }
             }
         }

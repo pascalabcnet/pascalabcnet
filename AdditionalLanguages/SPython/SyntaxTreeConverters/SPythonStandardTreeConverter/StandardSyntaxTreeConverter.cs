@@ -75,7 +75,8 @@ namespace Languages.SPython.Frontend.Converters
 
             // проверка корректности имён, разрешение неоднозначности
             // сохранение множества переменных, использующихся как глобальные в ncv.variablesUsedAsGlobal
-            var ncv = new NameCorrectVisitor(compilationArtifacts.NamesFromUsedUnits, ffv.definedFunctionsNames);
+            var ncv = new NameCorrectVisitor(System.IO.Path.GetFileNameWithoutExtension(((compilation_unit)root).file_name),
+                compilationArtifacts.NamesFromUsedUnits, ffv.definedFunctionsNames);
 
             if (!new TryCatchDecorator(ncv, forIntellisense).ProcessNode(root))
                 return root;

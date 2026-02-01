@@ -14,8 +14,8 @@ namespace Languages.SPython.Frontend.Converters
 
         private readonly ILanguageInformation languageInformation = Facade.LanguageProvider.Instance.SelectLanguageByName("SPython").LanguageInformation;
 
-        public SymbolTableFillingVisitor(Dictionary<string, Dictionary<string, bool>> par) {
-            symbolTable = new SymbolTable(par);
+        public SymbolTableFillingVisitor(string unitName, Dictionary<string, Dictionary<string, bool>> par) {
+            symbolTable = new SymbolTable(unitName, par);
         }
 
         // нужны методы из BaseChangeVisitor, но порядок обхода из WalkingVisitorNew
@@ -231,7 +231,7 @@ namespace Languages.SPython.Frontend.Converters
             private readonly HashSet<string> forwardDeclaredFunctions = new HashSet<string>();
 
             private readonly string[] Keywords = {
-                "int", "float", "str", "bool", // standard types
+                "int", "float", "str", "bool", "bigint", // standard types
                 "break", "continue", "exit", "halt",    // standard ops
                 "true", "false",                        // constants
             };
@@ -242,13 +242,15 @@ namespace Languages.SPython.Frontend.Converters
                     currentScope.Add(keyword, NameKind.Keyword);
             }
 
-            public SymbolTable(Dictionary<string, Dictionary<string, bool>> par)
+            public SymbolTable(string unitName, Dictionary<string, Dictionary<string, bool>> par)
             {
                 ModuleNameToSymbols = par;
                 entryScope = new LocalScope();
                 currentScope = entryScope;
                 FillKeywords();
-                AddAliasesFromStandartLibraries();
+
+                if (!StandardLibraries.Contains(unitName))
+                    AddAliasesFromStandartLibraries();
             }
 
             // names added to current function with global statements
