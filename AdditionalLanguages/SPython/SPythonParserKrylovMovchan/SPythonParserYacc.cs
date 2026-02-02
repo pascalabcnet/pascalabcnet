@@ -1041,12 +1041,16 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 78: // expr -> expr, AND, expr
 { 
-			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+			CurrentSemanticValue.ex = new bin_expr(SubtreeCreator.CreateMethodCall("bool", ValueStack[ValueStack.Depth-3].ex.source_context, ValueStack[ValueStack.Depth-3].ex),
+			                  SubtreeCreator.CreateMethodCall("bool", ValueStack[ValueStack.Depth-1].ex.source_context, ValueStack[ValueStack.Depth-1].ex),
+							  ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
 		}
         break;
       case 79: // expr -> expr, OR, expr
 { 
-			CurrentSemanticValue.ex = new bin_expr(ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+			CurrentSemanticValue.ex = new bin_expr(SubtreeCreator.CreateMethodCall("bool", ValueStack[ValueStack.Depth-3].ex.source_context, ValueStack[ValueStack.Depth-3].ex),
+			                  SubtreeCreator.CreateMethodCall("bool", ValueStack[ValueStack.Depth-1].ex.source_context, ValueStack[ValueStack.Depth-1].ex),
+							  ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
 		}
         break;
       case 80: // expr -> expr, SLASHSLASH, expr
@@ -1086,9 +1090,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 87: // expr -> expr, STARSTAR, expr
 {
-			addressed_value method_name = new ident("!pow", CurrentLocationSpan);
-			expression_list el = new expression_list(new List<expression> { ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex }, CurrentLocationSpan);
-			CurrentSemanticValue.ex = new method_call(method_name, el, CurrentLocationSpan);
+			CurrentSemanticValue.ex = SubtreeCreator.CreateMethodCall("!pow", CurrentLocationSpan, ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex);
 		}
         break;
       case 88: // expr -> expr, IN, expr
@@ -1114,7 +1116,7 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 92: // expr -> NOT, expr
 { 
-			CurrentSemanticValue.ex = new un_expr(ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
+			CurrentSemanticValue.ex = new un_expr(SubtreeCreator.CreateMethodCall("bool", ValueStack[ValueStack.Depth-1].ex.source_context, ValueStack[ValueStack.Depth-1].ex), ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan);
 		}
         break;
       case 93: // expr -> BINNOT, expr
@@ -1355,12 +1357,12 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 137: // variable -> LBRACKET, generator_object, RBRACKET
 {
-			CurrentSemanticValue.ex = new method_call(new ident("list", ValueStack[ValueStack.Depth-2].ex.source_context), new expression_list(ValueStack[ValueStack.Depth-2].ex, ValueStack[ValueStack.Depth-2].ex.source_context), ValueStack[ValueStack.Depth-2].ex.source_context);
+			CurrentSemanticValue.ex = SubtreeCreator.CreateMethodCall("list", ValueStack[ValueStack.Depth-2].ex.source_context, ValueStack[ValueStack.Depth-2].ex);
 		}
         break;
       case 138: // variable -> LBRACE, generator_object, RBRACE
 {
-			CurrentSemanticValue.ex = new method_call(new ident("set", ValueStack[ValueStack.Depth-2].ex.source_context), new expression_list(ValueStack[ValueStack.Depth-2].ex, ValueStack[ValueStack.Depth-2].ex.source_context), ValueStack[ValueStack.Depth-2].ex.source_context);
+			CurrentSemanticValue.ex = SubtreeCreator.CreateMethodCall("set", ValueStack[ValueStack.Depth-2].ex.source_context, ValueStack[ValueStack.Depth-2].ex);
 		}
         break;
       case 139: // variable -> LBRACE, generator_object_for_dict, RBRACE
@@ -1394,29 +1396,29 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
         break;
       case 144: // dict_constant -> LBRACE, expr_mapping_list, RBRACE
 {
-			CurrentSemanticValue.ex = new method_call(new ident("dict", CurrentLocationSpan), ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);
+			CurrentSemanticValue.ex = SubtreeCreator.CreateMethodCall("dict", CurrentLocationSpan, (expression_list)ValueStack[ValueStack.Depth-2].stn);
 		}
         break;
       case 145: // dict_constant -> LBRACE, RBRACE
 {
-			CurrentSemanticValue.ex = new method_call(new ident("!empty_dict", CurrentLocationSpan), null, CurrentLocationSpan);
+			CurrentSemanticValue.ex = SubtreeCreator.CreateMethodCall("!empty_dict", CurrentLocationSpan);
 		}
         break;
       case 146: // set_constant -> LBRACE, expr_list, RBRACE
 {
 			var acn = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, '|', CurrentLocationSpan);
-			CurrentSemanticValue.ex = new method_call(new ident("set", CurrentLocationSpan), new expression_list(acn, CurrentLocationSpan), CurrentLocationSpan);
+			CurrentSemanticValue.ex = SubtreeCreator.CreateMethodCall("set", CurrentLocationSpan, acn);
 		}
         break;
       case 147: // list_constant -> LBRACKET, expr_list, RBRACKET
 {
 			var acn = new array_const_new(ValueStack[ValueStack.Depth-2].stn as expression_list, '|', CurrentLocationSpan);
-			CurrentSemanticValue.ex = new method_call(new ident("list", CurrentLocationSpan), new expression_list(acn, CurrentLocationSpan), CurrentLocationSpan);
+			CurrentSemanticValue.ex = SubtreeCreator.CreateMethodCall("list", CurrentLocationSpan, acn);
 		}
         break;
       case 148: // list_constant -> LBRACKET, RBRACKET
 {
-			CurrentSemanticValue.ex = new method_call(new ident("!empty_list", CurrentLocationSpan), null, CurrentLocationSpan);
+			CurrentSemanticValue.ex = SubtreeCreator.CreateMethodCall("!empty_list", CurrentLocationSpan);
 		}
         break;
       case 149: // optional_condition -> /* empty */

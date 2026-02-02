@@ -317,6 +317,26 @@ namespace PascalABCCompiler.TreeRealization
             	generated_type_intersections.Add(tn);
             }
 		}
+
+        /// <summary>
+        /// Удаляет узел пересечения текущего типа и типа tn.
+        /// Возвращает удаленный узел (или null).
+        /// </summary>
+        public type_intersection_node remove_intersection_node(type_node tn, bool is_generated = false)
+        {
+            var intersection = get_type_intersection(tn);
+
+            if (intersection != null)
+            {
+                type_intersections.Remove(tn);
+
+                if (is_generated)
+                    generated_type_intersections.Remove(tn);
+            }
+
+            return intersection;
+        }
+
         public void clear_generated_intersections()
         {
             if (generated_type_intersections == null || type_intersections == null)

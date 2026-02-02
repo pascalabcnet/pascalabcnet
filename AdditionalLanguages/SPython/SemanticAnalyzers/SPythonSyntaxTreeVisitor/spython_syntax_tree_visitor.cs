@@ -5,8 +5,6 @@ using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SystemLibrary;
 using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
-using PascalABCCompiler.Errors;
-using System.ComponentModel.Design;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +27,52 @@ namespace SPythonSyntaxTreeVisitor
             contextChanger = mainSyntaxTreeVisitor.contextChanger;
 
             OnLeave = RunAdditionalChecks;
+        }
+
+        type_intersection_node boolToIntIntersectionPrev;
+
+        type_intersection_node intToBoolIntersectionPrev;
+
+        public override void BeforeCompilationActions()
+        {
+            base.BeforeCompilationActions();
+
+            UpdateStandardTypes();
+        }
+
+        public override void PostCompilationActions()
+        {
+            base.PostCompilationActions();
+
+            RestoreStandardTypes();
+        }
+
+        private void UpdateStandardTypes()
+        {
+            // Неявное преобразование из int в bool и из bool в int
+
+            boolToIntIntersectionPrev = SystemLibrary.bool_type.remove_intersection_node(SystemLibrary.integer_type);
+
+            intToBoolIntersectionPrev = SystemLibrary.integer_type.remove_intersection_node(SystemLibrary.bool_type);
+
+            var newIntersection = new type_intersection_node(type_compare.less_type);
+
+            newIntersection.this_to_another = new type_conversion(new basic_function_node(basic_function_type.booltoi, SystemLibrary.integer_type, false), false);
+
+            newIntersection.another_to_this = new type_conversion(new basic_function_node(basic_function_type.itobool, SystemLibrary.bool_type, false), false);
+
+            SystemLibrary.bool_type.add_intersection_node(SystemLibrary.integer_type, newIntersection, false);
+        }
+
+        private void RestoreStandardTypes()
+        {
+            SystemLibrary.bool_type.remove_intersection_node(SystemLibrary.integer_type);
+
+            if (boolToIntIntersectionPrev != null)
+                SystemLibrary.bool_type.add_intersection_node(SystemLibrary.integer_type, boolToIntIntersectionPrev, false);
+
+            if (intToBoolIntersectionPrev != null)
+                SystemLibrary.integer_type.add_intersection_node(SystemLibrary.bool_type, intToBoolIntersectionPrev, false);
         }
 
         private void RunAdditionalChecks(syntax_tree_node node)
