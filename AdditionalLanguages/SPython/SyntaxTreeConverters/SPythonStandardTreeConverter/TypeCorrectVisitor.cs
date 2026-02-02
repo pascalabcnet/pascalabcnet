@@ -23,7 +23,7 @@ namespace Languages.SPython.Frontend.Converters
                     throw new SPythonSyntaxVisitorError("LONG_TUPLE_TYPENAME",
                        ttr.source_context, cnt);
                 }
-                ttr.name.names[index].name += cnt;
+                ttr.name.names[index].name = "!tuple" + cnt;
             }
 
             base.visit(ttr);

@@ -107,6 +107,7 @@ namespace PascalABCCompiler
         public static readonly string uint_type_name = "longword";//cardinal
         public static readonly string long_type_name = "int64";//int64
         public static readonly string ulong_type_name = "uint64";
+        public static readonly string biginteger_type_name = "BigInteger";
         //public static readonly string decimal_type_name = "decimal";
         public static readonly string real_type_name = "real";
         public static readonly string float_type_name = "single";

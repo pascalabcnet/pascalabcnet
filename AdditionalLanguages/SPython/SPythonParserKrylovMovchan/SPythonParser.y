@@ -62,11 +62,13 @@
 %left SHL SHR
 %left PLUS MINUS
 %left STAR DIVIDE SLASHSLASH PERCENTAGE
-%right STARSTAR
+%right UMINUS UPLUS
 %left BINNOT
+%right STARSTAR
+
 
 %type <id> ident func_name_ident type_decl_identifier
-%type <ex> extended_expr expr dotted_ident proc_func_call const_value variable optional_condition act_param extended_new_expr new_expr is_expr variable_as_type
+%type <ex> extended_expr expr dotted_ident proc_func_call const_value variable optional_condition act_param new_expr is_expr variable_as_type
 %type <stn> act_param_list optional_act_param_list proc_func_decl return_stmt break_stmt continue_stmt global_stmt pass_stmt
 %type <stn> var_stmt assign_stmt if_stmt stmt proc_func_call_stmt while_stmt for_stmt optional_else optional_elif exit_stmt
 %type <stn> expr_list
@@ -77,7 +79,7 @@
 %type <stn> import_clause template_type_params template_param_list parts stmt_or_expression expr_mapping_list
 %type <ob> optional_semicolon end_of_line variable_list
 %type <op> assign_type
-%type <ex> expr_mapping 
+%type <ex> expr_mapping
 %type <ex> list_constant set_constant dict_constant generator_object generator_object_for_dict
 %type <ex> tuple_expr assign_right_part turbo_tuple_expr
 
@@ -143,24 +145,15 @@ parts
 extended_expr
 	: expr
 		{ 
-			$$ = $1; 
-		}
-	| extended_new_expr
-		{ 
-			$$ = $1; 
-		}
-	;
-
-extended_new_expr
-	: new_expr
-		{ 
 			$$ = $1;
 		}
+	// вызов конструктора без скобочек
 	| NEW type_ref
 		{
 			$$ = new new_expr($2, null, false, null, @$);
 		}
 	;
+	
 
 type_decl_identifier
     : ident
@@ -557,7 +550,11 @@ expr
 			// $$ = new bin_expr($1, $4, Operators.NotIn, @$); 
 			$$ = new un_expr(new bin_expr($1, $4, Operators.In, @$),Operators.LogicalNOT,@$);
 		}
-	| MINUS	expr
+	| PLUS expr %prec UPLUS
+		{
+			$$ = new un_expr($2, $1.type, @$);
+		}
+	| MINUS	expr %prec UMINUS
 		{ 
 			$$ = new un_expr($2, $1.type, @$); 
 		}
@@ -956,7 +953,7 @@ type_ref
 		}
 	| template_type
 		{ 
-			$$ = $1; 
+			$$ = $1;
 		}
 	;
 
