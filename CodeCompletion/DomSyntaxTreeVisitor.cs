@@ -2692,6 +2692,8 @@ namespace CodeCompletion
                 }
             }
 
+            // Далее импортирумые пользовательские модули компилируются в обратном порядке, стандартные модули в порядке описания
+
             List<string> usedUnitsNames = new List<string>();
 
             interface_node _interface_node = _unit_module.interface_part;
@@ -2725,7 +2727,7 @@ namespace CodeCompletion
             if (!currentUnitLanguage.SystemUnitNames.Contains(Path.GetFileNameWithoutExtension(_unit_module.file_name)))
             {
                 // Добавление всех стандартных модулей EVA
-                foreach (var standardUnitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer).Reverse())
+                foreach (var standardUnitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
                 {
                     AddStandardUnit(standardUnitName, currentUnitLanguage);
                 }
@@ -3278,6 +3280,8 @@ namespace CodeCompletion
                 }
             }
 
+            // Далее импортирумые пользовательские модули компилируются в обратном порядке, стандартные модули в порядке описания
+
             List<string> usedUnitsNames = new List<string>();
 
             if (_program_module.used_units != null)
@@ -3306,7 +3310,7 @@ namespace CodeCompletion
             StringComparer comparer = currentUnitLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
 
             // Добавление всех стандартных модулей EVA
-            foreach (var unitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer).Reverse())
+            foreach (var unitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
             {
                 AddStandardUnit(unitName, currentUnitLanguage);
             }
