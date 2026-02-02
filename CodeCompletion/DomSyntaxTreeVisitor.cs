@@ -2698,7 +2698,9 @@ namespace CodeCompletion
 
             if (_interface_node.uses_modules != null)
             {
-                usedUnitsNames = _interface_node.uses_modules.units.Select(unit => unit.name.idents[0].name).ToList();
+                usedUnitsNames = _interface_node.uses_modules.units
+                    .Where(unit => unit.name.idents.Count == 1)
+                    .Select(unit => unit.name.idents[0].name).ToList();
 
                 (cur_scope as InterfaceUnitScope).uses_source_range = get_location(_interface_node.uses_modules);
 
@@ -2714,7 +2716,7 @@ namespace CodeCompletion
             // компиляция зависимостей из конструкций import и from import
             if (cur_scope != null && _unit_module.initialization_part != null)
             {
-                CompileImportedDependencies(_unit_module.initialization_part, _unit_module.file_name, ns_cache, currentUnitLanguage);
+                CompileImportedDependencies(_unit_module.initialization_part, cur_scope, _unit_module.file_name, ns_cache, currentUnitLanguage);
             }
 
             StringComparer comparer = currentUnitLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
@@ -2723,7 +2725,7 @@ namespace CodeCompletion
             if (!currentUnitLanguage.SystemUnitNames.Contains(Path.GetFileNameWithoutExtension(_unit_module.file_name)))
             {
                 // Добавление всех стандартных модулей EVA
-                foreach (var standardUnitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
+                foreach (var standardUnitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer).Reverse())
                 {
                     AddStandardUnit(standardUnitName, currentUnitLanguage);
                 }
@@ -3046,6 +3048,8 @@ namespace CodeCompletion
         {
             try
             {
+                var comparer = currentUnitLanguage.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+
                 // на случай имен модулей, отличающихся от имен файла  EVA
                 string realName = GetRealNameForModule(importedName);
 
@@ -3060,7 +3064,7 @@ namespace CodeCompletion
                     if (dc.visitor != null)
                     {
                         dc.visitor.entry_scope.InitAssemblies();
-                        AddImportedNamesToCurScope(importStatement, asStatementsList, cur_scope, importedName, dc.visitor.entry_scope);
+                        AddImportedNamesToCurScope(importStatement, asStatementsList, cur_scope, importedName, dc.visitor.entry_scope, comparer);
                     }
                 }
                 else
@@ -3072,7 +3076,7 @@ namespace CodeCompletion
                         IntellisensePCUReader pcu_rdr = new IntellisensePCUReader();
                         SymScope ss = pcu_rdr.GetUnit(unit_name);
                         UnitDocCache.Load(ss, unit_name);
-                        AddImportedNamesToCurScope(importStatement, asStatementsList, cur_scope, importedName, ss);
+                        AddImportedNamesToCurScope(importStatement, asStatementsList, cur_scope, importedName, ss, comparer);
                     }
                 }
 
@@ -3086,17 +3090,17 @@ namespace CodeCompletion
             }
         }
 
-        private static void AddImportedNamesToCurScope(statement importStatement, as_statement_list asStatementsList, SymScope currentScope, string importedModuleName, SymScope importedModuleScope)
+        private static void AddImportedNamesToCurScope(statement importStatement, as_statement_list asStatementsList, SymScope currentScope, string importedModuleName, SymScope importedModuleScope, StringComparison comparer)
         {
-            int fictiveUnitIndex = currentScope.used_units.FindIndex(unit => unit.Name == importedModuleName);
-
-            SymScope fictiveUnit = fictiveUnitIndex > -1 ? currentScope.used_units[fictiveUnitIndex] : null;
-
             if (importStatement is import_statement import)
             {
+                int fictiveUnitIndex = currentScope.used_units.FindIndex(unit => unit.Name.Equals(importedModuleName + "?ModuleName", comparer));
+
+                SymScope fictiveUnit = fictiveUnitIndex > -1 ? currentScope.used_units[fictiveUnitIndex] : null;
+
                 if (fictiveUnit == null)
                 {
-                    fictiveUnit = new InterfaceUnitScope(new SymInfo(importedModuleName, SymbolKind.Namespace, ""), null);    
+                    fictiveUnit = new InterfaceUnitScope(new SymInfo(importedModuleName + "?ModuleName", SymbolKind.Namespace, ""), null);    
                     currentScope.AddUsedUnit(fictiveUnit);
                 }
 
@@ -3112,6 +3116,10 @@ namespace CodeCompletion
             }
             else if (importStatement is from_import_statement fromImport)
             {
+                int fictiveUnitIndex = currentScope.used_units.FindIndex(unit => unit.Name.Equals(importedModuleName, comparer));
+
+                SymScope fictiveUnit = fictiveUnitIndex > -1 ? currentScope.used_units[fictiveUnitIndex] : null;
+
                 if (fromImport.is_star)
                 {
                     if (fictiveUnit != null)
@@ -3274,7 +3282,9 @@ namespace CodeCompletion
 
             if (_program_module.used_units != null)
             {
-                usedUnitsNames = _program_module.used_units.units.Select(unit => unit.name.idents[0].name).ToList();
+                usedUnitsNames = _program_module.used_units.units
+                    .Where(unit => unit.name.idents.Count == 1)
+                    .Select(unit => unit.name.idents[0].name).ToList();
 
                 unit_scope.uses_source_range = get_location(_program_module.used_units);
 
@@ -3290,13 +3300,13 @@ namespace CodeCompletion
             // компиляция зависимостей из конструкций import и from import
             if (cur_scope != null && _program_module.program_block.program_code != null)
             {
-                CompileImportedDependencies(_program_module.program_block.program_code, _program_module.file_name, ns_cache, currentUnitLanguage);
+                CompileImportedDependencies(_program_module.program_block.program_code, cur_scope, _program_module.file_name, ns_cache, currentUnitLanguage);
             }
 
             StringComparer comparer = currentUnitLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
 
             // Добавление всех стандартных модулей EVA
-            foreach (var unitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer))
+            foreach (var unitName in currentUnitLanguage.SystemUnitNames.Except(usedUnitsNames, comparer).Reverse())
             {
                 AddStandardUnit(unitName, currentUnitLanguage);
             }
@@ -3361,7 +3371,7 @@ namespace CodeCompletion
             }
         }
 
-        private void CompileImportedDependencies(statement_list statementList, string fileName, Hashtable ns_cache, Languages.Facade.ILanguage currentUnitLanguage)
+        private void CompileImportedDependencies(statement_list statementList, SymScope cur_scope, string fileName, Hashtable ns_cache, Languages.Facade.ILanguage currentUnitLanguage)
         {
             var importStatements = statementList.list.Where(st => st is import_statement || st is from_import_statement);
 
@@ -3378,9 +3388,16 @@ namespace CodeCompletion
                 }
                 else if (importStatement is from_import_statement fromImport)
                 {
-                    CompileImportedUnit(fromImport.module_name.name, fromImport, fromImport.imported_names,
-                        Path.GetDirectoryName(fileName),
-                        cur_scope, unl, currentUnitLanguage);
+                    var comparer = currentUnitLanguage.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
+
+                    // Стандартные модули подсоединятся автоматически (import в другой ветке в любом случае нужен)
+                    if (currentUnitLanguage.SystemUnitNames.Contains(cur_scope.Name, comparer)
+                        || !currentUnitLanguage.SystemUnitNames.Contains(fromImport.module_name.name, comparer))
+                    {
+                        CompileImportedUnit(fromImport.module_name.name, fromImport, fromImport.imported_names,
+                            Path.GetDirectoryName(fileName),
+                            cur_scope, unl, currentUnitLanguage);
+                    }
                 }
             }
         }
