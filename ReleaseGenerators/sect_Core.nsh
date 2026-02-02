@@ -179,6 +179,8 @@
     File ..\bin\Lib\Tasks1Loops.pcu
     File ..\bin\Lib\Tasks1Arr.pcu
     File ..\bin\Lib\WPF.pcu
+    File ..\bin\Lib\DataFrameABC.pcu
+    File ..\bin\Lib\DataFrameABCCore.pcu
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
@@ -272,6 +274,8 @@
     ${AddFile} "Tasks1Loops.pcu"
     ${AddFile} "Tasks1Arr.pcu"
     ${AddFile} "WPF.pcu"
+    ${AddFile} "DataFrameABC.pcu"
+    ${AddFile} "DataFrameABCCore.pcu"
 
     ${AddFile} "turtle.png"
 
@@ -401,6 +405,9 @@
     File ..\bin\Lib\XLSX.pas
     File ..\bin\Lib\Мозаика.pas
     File ..\bin\Lib\WPF.pas
+    File ..\bin\Lib\DataFrameABC.pas
+    File ..\bin\Lib\DataFrameABCCore.pas
+
 
     File ..\bin\Lib\__RedirectIOMode.vb
     File ..\bin\Lib\VBSystem.vb
@@ -481,6 +488,8 @@
     ${AddFile} "XLSX.pas"
     ${AddFile} "Мозаика.pas"
     ${AddFile} "WPF.pas"
+    ${AddFile} "DataFrameABC.pas"
+    ${AddFile} "DataFrameABCCore.pas"
 
     ${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"

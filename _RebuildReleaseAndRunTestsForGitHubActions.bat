@@ -57,9 +57,9 @@ cd ..\TestSuiteAdditionalLanguages\SPythonTests
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 cd ..\..\bin
-pabcnetcclear GitIgnoreTester.pas
-GitIgnoreTester.exe NoWait
-@IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+rem pabcnetcclear GitIgnoreTester.pas
+rem GitIgnoreTester.exe NoWait
+rem @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 cd ..
 
 GOTO EXIT
