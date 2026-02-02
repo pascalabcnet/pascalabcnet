@@ -7,7 +7,7 @@ namespace Languages.SPython.Frontend.Converters
     {
         public HashSet<string> variablesUsedAsGlobal = new HashSet<string>();
 
-        public NameCorrectVisitor(Dictionary<string, Dictionary<string, bool>> namesFromUsedUnits, HashSet<string> definedFunctionsNames) : base(namesFromUsedUnits) 
+        public NameCorrectVisitor(string unitName, Dictionary<string, Dictionary<string, bool>> namesFromUsedUnits, HashSet<string> definedFunctionsNames) : base(unitName, namesFromUsedUnits) 
         {
             foreach (string definedFunctionName in definedFunctionsNames)
             {
@@ -104,22 +104,31 @@ namespace Languages.SPython.Frontend.Converters
             }
         }
 
+        // функция нужна для классов list, dict и set из-за наличия одноименных функций в другом модуле
         public override void visit(template_type_reference _template_type_reference)
         {
             named_type_reference _named_type_reference = _template_type_reference.name;
-            string name = _named_type_reference.names[0].name;
+            string name = _named_type_reference.names[0].name + '`';
 
-            string fullName = name + $"`{_template_type_reference.params_list.Count}";
+            NameKind nameKind = symbolTable[name];
 
-            NameKind nameKind = symbolTable[fullName];
+            // синонимы типов без '`'
+            if (nameKind == NameKind.Unknown)
+            {
+                name = name.TrimEnd('`');
+                nameKind = symbolTable[name];
+            }
 
             switch (nameKind)
             {
+                case NameKind.ModuleAlias:
+                    _named_type_reference.names[0].name = symbolTable.AliasToRealName(name);
+                    break;
 
                 case NameKind.ImportedVariableAlias:
                 case NameKind.ImportedNotVariableAlias:
-                    _named_type_reference.names.Insert(0, new ident(symbolTable.AliasToModuleName(fullName), _named_type_reference.names[0].source_context));
-                    _named_type_reference.names[1].name = symbolTable.AliasToRealName(fullName);
+                    _named_type_reference.names.Insert(0, new ident(symbolTable.AliasToModuleName(name), _named_type_reference.names[0].source_context));
+                    _named_type_reference.names[1].name = symbolTable.AliasToRealName(name);
                     break;
 
                 case NameKind.Unknown:

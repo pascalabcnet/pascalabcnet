@@ -3,6 +3,7 @@ using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Languages.SPython.Frontend.Converters
 {
@@ -13,8 +14,8 @@ namespace Languages.SPython.Frontend.Converters
 
         private readonly ILanguageInformation languageInformation = Facade.LanguageProvider.Instance.SelectLanguageByName("SPython").LanguageInformation;
 
-        public SymbolTableFillingVisitor(Dictionary<string, Dictionary<string, bool>> par) {
-            symbolTable = new SymbolTable(par);
+        public SymbolTableFillingVisitor(string unitName, Dictionary<string, Dictionary<string, bool>> par) {
+            symbolTable = new SymbolTable(unitName, par);
         }
 
         // нужны методы из BaseChangeVisitor, но порядок обхода из WalkingVisitorNew
@@ -169,18 +170,22 @@ namespace Languages.SPython.Frontend.Converters
             {
                 foreach (var kv in symbolTable.ModuleNameToSymbols[module_name])
                     symbolTable.AddAlias(kv.Key, kv.Value, kv.Key, module_name);
-            }
+                }
             else
             {
                 foreach (as_statement as_Statement in _from_import_statement.imported_names.as_statements)
                 {
                     var namesDict = symbolTable.ModuleNameToSymbols[module_name];
 
-                    if (!namesDict.ContainsKey(as_Statement.real_name.name))
+                    // Учитываем, что в именах может быть обозначение шаблонности
+                    var foundName = namesDict.FirstOrDefault(kv => !kv.Key.Contains('`') && kv.Key == as_Statement.real_name.name
+                                             || kv.Key.Contains('`') && kv.Key.Substring(0, kv.Key.IndexOf('`')) == as_Statement.real_name.name).Key;
+
+                    if (foundName == null)
                         throw new SPythonSyntaxVisitorError("MODULE_{0}_HAS_NO_NAME_{1}",
                        _from_import_statement.source_context, module_real_name, as_Statement.real_name.name);
 
-                    symbolTable.AddAlias(as_Statement.real_name.name, namesDict[as_Statement.real_name.name], as_Statement.alias.name, module_name);
+                    symbolTable.AddAlias(as_Statement.real_name.name, namesDict[foundName], as_Statement.alias.name, module_name);
                 }
             }
         }
@@ -226,7 +231,7 @@ namespace Languages.SPython.Frontend.Converters
             private readonly HashSet<string> forwardDeclaredFunctions = new HashSet<string>();
 
             private readonly string[] Keywords = {
-                "int", "float", "str", "bool", "tuple", // standard types
+                "int", "float", "str", "bool", "bigint", // standard types
                 "break", "continue", "exit", "halt",    // standard ops
                 "true", "false",                        // constants
             };
@@ -237,13 +242,15 @@ namespace Languages.SPython.Frontend.Converters
                     currentScope.Add(keyword, NameKind.Keyword);
             }
 
-            public SymbolTable(Dictionary<string, Dictionary<string, bool>> par)
+            public SymbolTable(string unitName, Dictionary<string, Dictionary<string, bool>> par)
             {
                 ModuleNameToSymbols = par;
                 entryScope = new LocalScope();
                 currentScope = entryScope;
                 FillKeywords();
-                AddAliasesFromStandartLibraries();
+
+                if (!StandardLibraries.Contains(unitName))
+                    AddAliasesFromStandartLibraries();
             }
 
             // names added to current function with global statements
@@ -346,7 +353,18 @@ namespace Languages.SPython.Frontend.Converters
             }
 
             public void AddAlias(string realName, bool isVariable, string alias, string moduleName)
-            {                
+            {
+                // оставляем только обозначение шаблонности
+                if (alias.Contains("`"))
+                {
+                    alias = alias.Substring(0, alias.IndexOf('`') + 1);
+                }
+                // в realName не должно быть обозначения шаблонности, потому что оно пойдет в синтаксический узел
+                if (realName.Contains("`"))
+                {
+                    realName = realName.Substring(0, realName.IndexOf('`'));
+                }
+
                 entryScope.Add(alias, realName, isVariable ? NameKind.ImportedVariableAlias : NameKind.ImportedNotVariableAlias, moduleName);
             }
 

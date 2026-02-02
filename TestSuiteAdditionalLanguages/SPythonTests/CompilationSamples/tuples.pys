@@ -1,0 +1,9 @@
+﻿# Использование кортежей
+
+a,b = divmod(-7, 3)
+temp = divmod(-7, 3)
+t: tuple[int, int] = divmod(-7, 3)
+t1: tuple[int] = tuple.Create(0) # из одного эл-та пока так
+
+print(a == t.Item1)
+print(b == t.Item2)
