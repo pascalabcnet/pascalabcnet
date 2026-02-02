@@ -559,6 +559,8 @@ procedure ConvertStringsToNumbersInOutputList;
 procedure FlattenOutput;
 /// Очистить выходной список от пробелов, возникающих в методах расширения типа a.Print. Очень редко очищать не надо при решении задач на символы с пробелами
 procedure ClearOutputListFromSpaces;
+/// Очистить выходной список от строк, содержащих только пробельные символы
+procedure ClearOutputListFromEmptyStrings;
 /// Отфильтровать в выходном списке только числа
 procedure FilterOnlyNumbers;
 /// Отфильтровать в выходном списке только числа и логические
@@ -2231,9 +2233,14 @@ var OutputListIsClearedFromSpaces := False;
 procedure ClearOutputListFromSpaces;
 begin
   if OutputListIsClearedFromSpaces then exit;
-  OutputList := OutputList.Where(s -> (not (s is string)) or ((s as string) <> ' ')).ToList;
+  OutputList := OutputList.Where(s -> (not (s is string)) or (string(s) <> ' ')).ToList;
   OutputList := OutputList.Where(s -> (not (s is char)) or ((char(s)) <> ' ')).ToList;
   OutputListIsClearedFromSpaces := True;
+end;
+
+procedure ClearOutputListFromEmptyStrings;
+begin
+  OutputList := OutputList.Where(ob -> not (ob is string) or (string(ob).Trim <> '')).ToList;
 end;
 
 procedure FilterOnlyNumbers;

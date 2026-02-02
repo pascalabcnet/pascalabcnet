@@ -1777,7 +1777,7 @@ function Sign(x: real): integer;
 ///--
 function Sign(x: BigInteger): integer;
 ///-function Abs(x: число): число;
-/// Возвращает модуль числа x
+/// Возвращает модуль числа
 function Abs(x: shortint): shortint;
 ///--
 function Abs(x: smallint): smallint;
