@@ -57,7 +57,11 @@ namespace PascalABCCompiler.TreeConverter
 
             syntaxTreeVisitor.DirectivesToNodesLinks = CompilerDirectivesToSyntaxTreeNodesLinker.BuildLinks(initializationData.syntaxUnit, initializationData.errorsList);  //MikhailoMMX добавил передачу списка ошибок (02.10.10)
 
+            syntaxTreeVisitor.BeforeCompilationActions();
+
             syntaxTreeVisitor.ProcessNode(initializationData.syntaxUnit);
+
+            syntaxTreeVisitor.PostCompilationActions();
 
             CompiledVariables.AddRange(syntaxTreeVisitor.CompiledVariables);
 
@@ -75,9 +79,13 @@ namespace PascalABCCompiler.TreeConverter
             foreach (SyntaxTree.compiler_directive cd in initializationData.syntaxUnit.compiler_directives)
                 cd.visit(syntaxTreeVisitor);
 
-            syntaxTreeVisitor.visit_implementation(initializationData.syntaxUnit as SyntaxTree.unit_module);
-            CompiledVariables.AddRange(syntaxTreeVisitor.CompiledVariables);
+            syntaxTreeVisitor.BeforeCompilationActions();
 
+            syntaxTreeVisitor.visit_implementation(initializationData.syntaxUnit as SyntaxTree.unit_module);
+
+            syntaxTreeVisitor.PostCompilationActions();
+
+            CompiledVariables.AddRange(syntaxTreeVisitor.CompiledVariables);
         }
 
         public void Reset()

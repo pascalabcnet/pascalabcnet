@@ -1,0 +1,16 @@
+﻿# int to bool and bool to int implicit conversion
+
+a: int = True
+b: bool = 5
+
+if 10:
+  print((1 > 0) + 1)
+
+while 0:
+  print('Infinite loop')
+
+print(bool(1))
+print(filter(bool, [0, 1, 2]))
+
+print(all([0, 1, 3]))
+print(sum([True, False, True]))

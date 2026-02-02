@@ -506,11 +506,15 @@ expr
 		}
 	| expr AND 			expr
 		{ 
-			$$ = new bin_expr($1, $3, $2.type, @$); 
+			$$ = new bin_expr(SubtreeCreator.CreateMethodCall("bool", $1.source_context, $1),
+			                  SubtreeCreator.CreateMethodCall("bool", $3.source_context, $3),
+							  $2.type, @$); 
 		}
 	| expr OR 			expr
 		{ 
-			$$ = new bin_expr($1, $3, $2.type, @$); 
+			$$ = new bin_expr(SubtreeCreator.CreateMethodCall("bool", $1.source_context, $1),
+			                  SubtreeCreator.CreateMethodCall("bool", $3.source_context, $3),
+							  $2.type, @$); 
 		}
 	| expr SLASHSLASH	expr
 		{ 
@@ -542,9 +546,7 @@ expr
 		}
 	| expr STARSTAR		expr
 		{
-			addressed_value method_name = new ident("!pow", @$);
-			expression_list el = new expression_list(new List<expression> { $1, $3 }, @$);
-			$$ = new method_call(method_name, el, @$);
+			$$ = SubtreeCreator.CreateMethodCall("!pow", @$, $1, $3);
 		}
 	| expr IN			expr
 		{
@@ -561,7 +563,7 @@ expr
 		}
 	| NOT	expr
 		{ 
-			$$ = new un_expr($2, $1.type, @$); 
+			$$ = new un_expr(SubtreeCreator.CreateMethodCall("bool", $2.source_context, $2), $1.type, @$);
 		}
 	| BINNOT expr
 		{ 
@@ -817,12 +819,12 @@ variable
 	// list generator
 	| LBRACKET generator_object RBRACKET
 		{
-			$$ = new method_call(new ident("list", $2.source_context), new expression_list($2, $2.source_context), $2.source_context);
+			$$ = SubtreeCreator.CreateMethodCall("list", $2.source_context, $2);
 		}
 	// set generator
 	| LBRACE generator_object RBRACE
 		{
-			$$ = new method_call(new ident("set", $2.source_context), new expression_list($2, $2.source_context), $2.source_context);
+			$$ = SubtreeCreator.CreateMethodCall("set", $2.source_context, $2);
 		}
 	// dict generator
 	| LBRACE generator_object_for_dict RBRACE
@@ -862,11 +864,11 @@ generator_object_for_dict
 dict_constant
 	: LBRACE expr_mapping_list RBRACE
 		{
-			$$ = new method_call(new ident("dict", @$), $2 as expression_list, @$);
+			$$ = SubtreeCreator.CreateMethodCall("dict", @$, (expression_list)$2);
 		}
 	| LBRACE RBRACE
 		{
-			$$ = new method_call(new ident("!empty_dict", @$), null, @$);
+			$$ = SubtreeCreator.CreateMethodCall("!empty_dict", @$);
 		}
 	;
 
@@ -874,7 +876,7 @@ set_constant
 	: LBRACE expr_list RBRACE
 		{
 			var acn = new array_const_new($2 as expression_list, '|', @$);
-			$$ = new method_call(new ident("set", @$), new expression_list(acn, @$), @$);
+			$$ = SubtreeCreator.CreateMethodCall("set", @$, acn);
 		}
 	;
 
@@ -882,11 +884,11 @@ list_constant
 	: LBRACKET expr_list RBRACKET
 		{
 			var acn = new array_const_new($2 as expression_list, '|', @$);
-			$$ = new method_call(new ident("list", @$), new expression_list(acn, @$), @$);
+			$$ = SubtreeCreator.CreateMethodCall("list", @$, acn);
 		}
 	| LBRACKET RBRACKET
 		{
-			$$ = new method_call(new ident("!empty_list", @$), null, @$);
+			$$ = SubtreeCreator.CreateMethodCall("!empty_list", @$);
 		}
 	;
 
