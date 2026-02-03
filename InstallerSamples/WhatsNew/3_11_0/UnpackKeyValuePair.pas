@@ -1,4 +1,5 @@
-﻿begin
+﻿// 3.11. Распаковка KeyValuePair
+begin
   var t := 2 to 3.5;
   var (a,b) := t;
   Println(a,b);
