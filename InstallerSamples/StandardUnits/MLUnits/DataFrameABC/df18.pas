@@ -1,4 +1,4 @@
-﻿// Left Join
+﻿// Сортировка
 uses DataFrameABC;
 
 begin
