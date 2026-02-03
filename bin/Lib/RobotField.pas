@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit RobotField;
 
@@ -1094,10 +1094,11 @@ begin
     if RobField.TaskName = '' then
       labelExState.Text := 'Робот: Работа окончена'
     else 
-      begin   
-        tableLayoutPanel1.BackColor := LabelBadEndColor;
-        labelExState.BackColor := LabelBadEndColor;
-        tableLayoutPanelBottom.BackColor := LabelBadEndColor;
+      begin
+        // Не исправлять цвета!!! 
+        //tableLayoutPanel1.BackColor := LabelBadEndColor;
+        //labelExState.BackColor := LabelBadEndColor;
+        //tableLayoutPanelBottom.BackColor := LabelBadEndColor;
         labelExState.Text := 'Робот: Работа окончена, задание не выполнено';
       end;  
 end;

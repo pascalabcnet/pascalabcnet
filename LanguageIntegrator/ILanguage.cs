@@ -64,6 +64,7 @@ namespace Languages.Facade
 
         /// <summary>
         /// Названия системных модулей (стандартной библиотеки и др.)
+        /// Компилируются в порядке добавления в список
         /// </summary>
         string[] SystemUnitNames { get; }
 

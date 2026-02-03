@@ -775,10 +775,10 @@ namespace CodeCompletion
             if (members == null) return null;
             //if (loc != null && loc.begin_line_num <= line && loc.end_line_num >= line && loc.begin_column_num <= column && loc.end_column_num >= column)
             if (IsInScope(loc, line, column))
-                res = this;
+                minScope = res = this;
             TypeScope ts = this as TypeScope;
             if (res == null && ts != null && ts.predef_loc != null && IsInScope(ts.predef_loc, line, column))
-                res = this;
+                minScope = res = this;
             foreach (SymScope ss in members)
                 if (this != ss && this.topScope != ss && ss.loc != null && (loc == null || loc != null && loc.file_name != null && ss.loc.file_name == loc.file_name))
                 {

@@ -7,9 +7,17 @@ uses SPythonSystem;
 
 function !Floor(x : real) : integer;
 
-function !FloorDiv(x: real; y: real): integer;
+function !Div(x: integer; y: integer): integer;
 
-function !FloorMod(x: real; y: real): real;
+function !Div(x: BigInteger; y: BigInteger): BigInteger;
+
+function !Div(x: real; y: real): real;
+
+function !Mod(x: integer; y: integer): integer;
+
+function !Mod(x: BigInteger; y: BigInteger): BigInteger;
+
+function !Mod(x: real; y: real): real;
 
 type !UnknownType = class
 end;
@@ -46,8 +54,26 @@ function dict<TKey, TVal>(seqOfPairs: sequence of (TKey, TVal)): dict<TKey, TVal
 
 function !Floor(x : real) : integer := PABCSystem.Floor(x); 
 
-function !FloorDiv(x: real; y: real): integer := PABCSystem.Floor(x / y);
+function !Div(x: integer; y: integer): integer;
+begin
+  Result := x div y;
+  if ((x < 0) xor (y < 0)) and (x mod y <> 0) then
+    Result -= 1;
+end;
 
-function !FloorMod(x: real; y: real): real := x - PABCSystem.Floor(x / y) * y;
+function !Div(x: BigInteger; y: BigInteger): BigInteger;
+begin
+  Result := x div y;
+  if ((x < 0) xor (y < 0)) and (x mod y <> 0) then
+    Result -= 1;
+end;
+
+function !Div(x: real; y: real): real := System.Math.Floor(x / y);
+
+function !Mod(x: integer; y: integer): integer := x - !Div(x, y) * y;
+
+function !Mod(x: BigInteger; y: BigInteger): BigInteger := x - !Div(x, y) * y;
+
+function !Mod(x: real; y: real): real := x - PABCSystem.Floor(x / y) * y;
 
 end.
