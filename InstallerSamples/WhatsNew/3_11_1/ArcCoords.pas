@@ -1,7 +1,8 @@
-﻿// Использование DrawArc и ATan2 (3.11.1)
+﻿// 3.11.1. Использование DrawArc и ATan2. Обработчик SetMouseDown
 uses Coords;
 
 begin
+  Window.Title := 'Щелкните правой кнопкой мыши';
   SetMouseDown((x,y,mb) -> begin
     if mb <> 2 then exit;
     var xr := ScreenToRealX(x);

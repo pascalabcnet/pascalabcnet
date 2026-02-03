@@ -1,10 +1,10 @@
-﻿uses TurtleABC;
+﻿// 3.11.1. Пример использования нового модуля TurtleABC
+uses TurtleABC;
 
 begin
   Mark;
   SetScale(4);
   SetOrigin(5,-35);
-  //SetOrigin(-20,-50);
   Mark; 
   SetColor(Color.Blue);
   Down;

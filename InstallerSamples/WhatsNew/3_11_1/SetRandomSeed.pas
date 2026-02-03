@@ -1,4 +1,4 @@
-﻿// SetRandomSeed - синоним Randomize с более понятным названием
+﻿// 3.11.1. SetRandomSeed - синоним Randomize с более понятным названием
 
 begin
   loop 10 do
