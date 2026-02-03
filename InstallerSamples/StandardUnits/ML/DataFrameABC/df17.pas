@@ -1,4 +1,4 @@
-﻿// Left Join
+﻿// Full Join
 uses DataFrameABC;
 
 begin
