@@ -1,4 +1,5 @@
-﻿function FastPower(a: real; n: integer): real;
+﻿// 3.11 - exit(param)
+function FastPower(a: real; n: integer): real;
 begin
   if n = 0 then exit(1); // a^0 = 1
   if n = 1 then exit(a); // a^1 = a

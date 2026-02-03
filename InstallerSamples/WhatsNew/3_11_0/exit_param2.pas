@@ -1,4 +1,5 @@
-﻿function IsPrime(n: integer): boolean;
+﻿// 3.11 - exit(param)
+function IsPrime(n: integer): boolean;
 begin
   if n < 2 then exit(False);
   for var i:=2 to n.Sqrt.Trunc do

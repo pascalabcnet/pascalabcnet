@@ -1,4 +1,5 @@
-﻿function fff: integer;
+﻿// 3.11 - exit(param)
+function fff: integer;
 begin
   exit(3)
 end;

@@ -1,4 +1,5 @@
-﻿begin
+﻿// 3.11 - exit(param)
+begin
   var IsPrime: integer → boolean := n → begin
     if n < 2 then exit(False);
     for var i:=2 to n.Sqrt.Trunc do

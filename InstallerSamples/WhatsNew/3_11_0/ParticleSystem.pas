@@ -1,4 +1,5 @@
-﻿uses Graph3D;
+﻿// 3.11. ParticleSystem
+uses Graph3D;
 
 begin
   View3D.BackgroundColor := Colors.Black;

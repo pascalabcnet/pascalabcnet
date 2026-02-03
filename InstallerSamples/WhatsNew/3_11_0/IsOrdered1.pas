@@ -1,4 +1,5 @@
-﻿type
+﻿// 3.11 - IsOrdered
+type
   Player = auto class
     Name: string; Points: integer;
   end;  

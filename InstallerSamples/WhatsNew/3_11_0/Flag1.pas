@@ -1,4 +1,5 @@
-﻿uses Graph3D;
+﻿// 3.11. Cloth - анимируемый объект из ткани
+uses Graph3D;
 
 begin  
   Window.Caption := 'Развевающийся флаг';
