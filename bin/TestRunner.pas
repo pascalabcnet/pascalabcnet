@@ -42,15 +42,6 @@ begin
   Result := new LanguageTestsInfo(languageInformation.Name, languageInformation.FilesExtensions, languageInformation.CommentSymbol);
 end;
 
-function GetLibDir(languageName : string): string;
-begin
-  var dir := Path.GetDirectoryName(GetEXEFileName());
-  if languageName <> 'PascalABC.NET' then
-    Result := dir + PathSeparator + 'Lib' + PathSeparator + languageName
-  else
-    Result := dir + PathSeparator + 'Lib';
-end;
-
 function GetFilesByExtensions(path: string; extensions: array of string; searchOption: SearchOption := System.IO.SearchOption.TopDirectoryOnly): array of string;
 begin
   Result := extensions.SelectMany(ext -> Directory.GetFiles(path, $'*{ext}', searchOption)).ToArray();
@@ -455,24 +446,23 @@ end;
 //  var pcu := Path.Combine(dir, 'PABCSystem.pcu');
 //end;
 
-procedure CopyLibFiles;
-begin
-  var files := GetFilesByExtensions(GetLibDir(CurrentLanguageInfo.languageName), CurrentLanguageInfo.languageExtensions);
-  foreach f: string in files do
-  begin
-    &File.Copy(f, TestSuiteDir + PathSeparator + 'CompilationSamples' + PathSeparator + Path.GetFileName(f), true);
-  end;
-end;
-
+/// Копирует всю папку CodeExamples в TestSuite (если такая уже есть, то предварительно удаляет её)
 procedure CopyCodeExamples;
 begin
   var dir := GetCodeExamplesDir();
   if not Directory.Exists(dir) then exit;
   
   var files := GetFilesByExtensions(dir, CurrentLanguageInfo.languageExtensions, SearchOption.AllDirectories);
+  var destinationDir := TestSuiteDir + PathSeparator + 'CodeExamples' + PathSeparator;
+  
+  if Directory.Exists(destinationDir) then 
+    Directory.Delete(destinationDir, True);
+  
+  Directory.CreateDirectory(destinationDir);
+ 
   foreach f: string in files do
   begin
-    &File.Copy(f, TestSuiteDir + PathSeparator + 'CompilationSamples' + PathSeparator + Path.GetFileName(f), true);
+    &File.Copy(f, destinationDir + Path.GetFileName(f), true);
   end;
 end;
 
@@ -509,9 +499,9 @@ begin
     
     if (ParamCount = 0) or (ParamStr(1) = '2') then
     begin
-      Println('Compiling compilation samples...');        
-      CopyLibFiles;
+      Println('Compiling compilation samples...');
       CopyCodeExamples;
+      CompileAllCompilationTests('CodeExamples', false);
       CompileAllCompilationTests('CompilationSamples', false);
       Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
     end;
