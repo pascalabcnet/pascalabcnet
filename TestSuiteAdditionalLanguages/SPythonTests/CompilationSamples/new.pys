@@ -1,9 +1,0 @@
-﻿a = [1, 2, 3]
-a.append(4)
-a.insert(4, 2)
-b = a.copy()
-b.reverse()
-print(b)
-print(a)
-print(a.count(2))
-print(a.pop(1))
