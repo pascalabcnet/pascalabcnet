@@ -73,7 +73,7 @@ namespace DockSample.Customization
 		private const int _ToolWindowTabSeperatorGapTop = 3;
 		private const int _ToolWindowTabSeperatorGapBottom = 3;
 
-		private const int _DocumentTabMaxWidth = 200;
+		private const int _DocumentTabMaxWidth = 400;
 		private const int _DocumentButtonGapTop = 5;
 		private const int _DocumentButtonGapBottom = 5;
 		private const int _DocumentButtonGapBetween = 0;

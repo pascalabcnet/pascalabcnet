@@ -42,7 +42,7 @@ type
     
     // Join методы
     function CreateInnerJoinResult(other: DataFrame; leftKeyIdx, rightKeyIdx: array of integer): DataFrame;
-    procedure AddColumnClone(src: Column);
+    procedure AddColumnSchema(src: Column); // это сервисный метод добавления схемы - не данных! и только для join!
     procedure AppendJoinedRow(leftCur, rightCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer);
     procedure AppendLeftOnlyRow(leftCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer);
     procedure AppendRightOnlyRow(rightCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer; leftColumnCount: integer);
@@ -73,6 +73,11 @@ type
     function BuildJoinKey(cur: DataFrameCursor; layout: JoinKeyLayout; var hasNA: boolean): JoinKey;
     
     procedure AssertSchemaConsistent; // Проверка инвариантов в Debug
+    
+  public
+    /// Добавляет в DataFrame столбец-представление (view),
+    /// использующий те же данные, что и исходный столбец
+    procedure AddColumnView(src: Column);
   public
     /// Создает пустой DataFrame
     constructor Create;
@@ -83,6 +88,8 @@ type
     function ColumnCount: integer;
     /// Возвращает массив имен всех столбцов
     function ColumnNames: array of string;
+    /// Возвращает тип столбца по номеру
+    function GetColumnType(colIndex: integer): ColumnType;
     /// Возвращает индекс столбца по имени
     function ColumnIndex(name: string): integer;
     
@@ -115,6 +122,10 @@ type
     function Mean(colIndex: integer): real; 
     /// Вычисляет среднее значение в столбце по имени
     function Mean(colName: string): real; 
+    /// Вычисляет медиану по валидным (non-NA) значениям столбца по индексу
+    function Median(colIndex: integer): real;
+    /// Вычисляет медиану по валидным (non-NA) значениям столбца по имени
+    function Median(colName: string): real;
     /// Находит минимальное значение в столбце по индексу
     function Min(colIndex: integer): real; 
     /// Находит минимальное значение в столбце по имени
@@ -149,7 +160,7 @@ type
     /// Возвращает статистику по нескольким столбцам по индексам
     function Describe(colIndices: array of integer): Dictionary<integer, DescribeStats>; 
     /// Возвращает статистику по всем числовым столбцам
-    function Describe: Dictionary<string, DescribeStats>; 
+    function DescribeAll: Dictionary<string, DescribeStats>; 
     
     /// Группирует данные по одному столбцу по индексу
     function GroupBy(colIndex: integer): IGroupByContext; 
@@ -203,6 +214,10 @@ type
     /// Добавляет вычисляемый булев столбец
     function WithColumnBool(name: string; f: DataFrameCursor -> boolean): DataFrame;
     
+    /// Заменяет существующий числовой столбец, пересчитывая его по функции от курсора
+    /// Пропущенные значения (NA) сохраняются
+    function ReplaceColumnFloat(colName: string; f: DataFrameCursor -> real): DataFrame;
+    
     /// Соединяет с другим DataFrame по нескольким ключам
     function Join(other: DataFrame; keys: array of string; kind: JoinKind := jkInner): DataFrame; 
     /// Соединяет с другим DataFrame по одному ключу
@@ -218,6 +233,10 @@ type
     procedure PrintPreview(maxRows: integer; headRows: integer := -1; decimals: integer := 3);
     /// Выводит предпросмотр DataFrame и переходит на новую строку
     procedure PrintlnPreview(maxRows: integer; headRows: integer := -1; decimals: integer := 3);
+    /// Выводит схему датафрейма
+    procedure PrintSchema;
+    /// Выводит размер датафрейма, его схему и количество не NA-значений для каждого столбца
+    procedure PrintInfo;
 
     /// Загружает DataFrame из CSV файла
     static function FromCsv(filename: string): DataFrame;
@@ -241,6 +260,43 @@ type
     /// Возвращает DataFrame с полной статистикой всех числовых столбцов по группам
     function DescribeAll: DataFrame;
   end; 
+  
+type
+/// Прикладные статистические методы для анализа и подготовки табличных данных.
+/// Используется совместно с DataFrame для разведочного анализа данных (EDA) и задач машинного обучения
+Statistics = static class
+public
+  /// Коэффициент корреляции Пирсона между двумя числовыми столбцами
+  /// Пропущенные значения (NA) игнорируются попарно
+  static function Correlation(df: DataFrame; colX, colY: string): real;
+
+  /// Матрица корреляций Пирсона для всех числовых столбцов DataFrame
+  /// Первый столбец содержит имена признаков
+  static function CorrelationMatrix(df: DataFrame): DataFrame;
+
+  /// Стандартизует числовой столбец: (x - mean) / std
+  /// Пропущенные значения (NA) сохраняются
+  static function Standardize(df: DataFrame; colName: string): DataFrame;
+  
+  /// Стандартизует все числовые столбцы: (x - mean) / std
+  static function StandardizeAll(df: DataFrame): DataFrame;
+
+  /// Нормализует числовой столбец в диапазон [0, 1]
+  /// Пропущенные значения (NA) сохраняются
+  static function Normalize(df: DataFrame; colName: string): DataFrame;
+  
+  /// Нормализует все числовые столбцы в диапазон [0, 1]
+  /// Пропущенные значения (NA) сохраняются
+  static function NormalizeAll(df: DataFrame): DataFrame;  
+
+  /// p-квантиль числового столбца (0 ≤ p ≤ 1) — граница, ниже которой находится p·100% валидных значений
+  /// Пропущенные значения (NA) игнорируются
+  static function Quantile(df: DataFrame; colName: string; p: real): real;
+
+  /// Медиана числового столбца
+  /// Эквивалентна Quantile(..., 0.5)
+  static function Median(df: DataFrame; colName: string): real;
+end;  
  
 type
   /// Статический класс для загрузки данных из CSV файлов
@@ -405,22 +461,22 @@ begin
 
   // ключевые столбцы (слева)
   for var i := 0 to leftKeyIdx.Length - 1 do
-    Result.AddColumnClone(columns[leftKeyIdx[i]]);
+    Result.AddColumnSchema(columns[leftKeyIdx[i]]);
 
   // остальные столбцы слева
   for var j := 0 to columns.Count - 1 do
     if not leftKeyIdx.Contains(j) then
-      Result.AddColumnClone(columns[j]);
+      Result.AddColumnSchema(columns[j]);
 
   // остальные столбцы справа
   for var j := 0 to other.columns.Count - 1 do
     if not rightKeyIdx.Contains(j) then
-      Result.AddColumnClone(other.columns[j]);
+      Result.AddColumnSchema(other.columns[j]);
     
   Result.RebuildColumnIndex;  
 end;
 
-procedure DataFrame.AddColumnClone(src: Column);
+procedure DataFrame.AddColumnSchema(src: Column);
 begin
   case src.Info.ColType of
     ctInt:   AddIntColumn(src.Info.Name, new integer[0], nil, src.Info.IsCategorical);
@@ -1148,6 +1204,11 @@ begin
     Result[i] := columns[i].Info.Name;
 end;
 
+function DataFrame.GetColumnType(colIndex: integer): ColumnType;
+begin
+  Result := columns[colIndex].Info.ColType
+end;
+
 function DataFrame.RowCount: integer;
 begin
   if columns.Count = 0 then
@@ -1293,9 +1354,21 @@ begin
   Result := if c = 0 then 0.0 else s / c;
 end;
 
+
 function DataFrame.Mean(colName: string): real
   := Mean(ColumnIndex(colName));
   
+function DataFrame.Median(colIndex: integer): real;
+begin
+  CheckColumnIndex(colIndex);
+  Result := Statistics.Median(Self, ColumnNames[colIndex]);
+end; 
+
+function DataFrame.Median(colName: string): real;
+begin
+  Result := Statistics.Median(Self, colName);
+end;
+
 function DataFrame.Min(colIndex: integer): real;
 begin
   CheckColumnIndex(colIndex);
@@ -1566,7 +1639,7 @@ begin
   Result := res;
 end;
 
-function DataFrame.Describe: Dictionary<string, DescribeStats>;
+function DataFrame.DescribeAll: Dictionary<string, DescribeStats>;
 begin
   var res := new Dictionary<string, DescribeStats>;
 
@@ -2296,7 +2369,49 @@ begin
   AssertSchemaConsistent;
 end;
 
-procedure DataFrame.PrintPreview(maxRows: integer; headRows: integer; decimals: integer);
+function DataFrame.ReplaceColumnFloat(colName: string; f: DataFrameCursor -> real): DataFrame;
+begin
+  var colIndex := ColumnIndex(colName);
+  var rowCount := RowCount;
+
+  var data := new real[rowCount];
+  var valid: array of boolean := nil;
+
+  var cur := GetCursor;
+  var row := 0;
+  while cur.MoveNext do
+  begin
+    try
+      data[row] := f(cur);
+      if valid <> nil then valid[row] := true;
+    except
+      on e: Exception do
+      begin
+        data[row] := 0.0;
+        if valid = nil then
+        begin
+          valid := new boolean[rowCount];
+          for var j := 0 to row - 1 do valid[j] := true;
+        end;
+        valid[row] := false;
+      end;
+    end;
+    row += 1;
+  end;
+
+  var res := new DataFrame;
+  for var i := 0 to columns.Count - 1 do
+    if i <> colIndex then
+      res.AddColumnView(columns[i])
+    else
+      res.AddFloatColumn(colName, data, valid);
+
+  Result := res;
+  Result.AssertSchemaConsistent;
+end;
+
+
+{ procedure DataFrame.PrintPreview(maxRows: integer; headRows: integer; decimals: integer);
 begin
   var colCount := columns.Count;
   if colCount = 0 then exit;
@@ -2409,6 +2524,179 @@ begin
         PABCSystem.Print(FormatValue(j).PadRight(widths[j] + 2));
       PABCSystem.Println;
     end;
+end;}
+
+procedure DataFrame.PrintPreview(maxRows: integer; headRows: integer; decimals: integer);
+begin
+  var colCount := columns.Count;
+  if colCount = 0 then exit;
+
+  var rowCount := RowCount;
+  if rowCount = 0 then exit;
+
+  if maxRows < 1 then exit;
+
+  if rowCount <= maxRows then
+    headRows := rowCount
+  else
+  begin
+    if headRows = -1 then
+      headRows := (maxRows + 1) div 2;
+    if headRows < 0 then headRows := 0;
+    if headRows > maxRows then headRows := maxRows;
+  end;
+
+  var tailRows := maxRows - headRows;
+  if tailRows < 0 then tailRows := 0;
+  if tailRows > rowCount - headRows then
+    tailRows := rowCount - headRows;
+
+  // --- ширины ---
+  var widths := new integer[colCount];      // для не-float
+  var intWidth := new integer[colCount];    // целая часть float (со знаком)
+  var hasFloat := new boolean[colCount];
+
+  for var j := 0 to colCount - 1 do
+  begin
+    widths[j] := columns[j].Info.Name.Length;
+    if columns[j].Info.ColType = ctFloat then
+      hasFloat[j] := true;
+  end;
+
+  var cursor := GetCursor;
+
+  // --- сканирование строк ---
+  var ScanRow: integer -> () := row ->
+  begin
+    cursor.MoveTo(row);
+    for var j := 0 to colCount - 1 do
+    begin
+      if not cursor.IsValid(j) then
+      begin
+        if widths[j] < 2 then widths[j] := 2; // 'NA'
+        continue;
+      end;
+
+      case columns[j].Info.ColType of
+        ctInt:
+        begin
+          var s := cursor.Int(j).ToString;
+          if s.Length > widths[j] then widths[j] := s.Length;
+        end;
+
+        ctFloat:
+        begin
+          var v := cursor.Float(j);
+          var absInt := Abs(Trunc(v));
+          var len := absInt.ToString.Length;
+          if v < 0 then len += 1; // знак
+          if len > intWidth[j] then intWidth[j] := len;
+        end;
+
+        ctStr:
+        begin
+          var s := cursor.Str(j);
+          if s.Length > widths[j] then widths[j] := s.Length;
+        end;
+
+        ctBool:
+        begin
+          var s := cursor.Bool(j).ToString;
+          if s.Length > widths[j] then widths[j] := s.Length;
+        end;
+      end;
+    end;
+  end;
+
+  for var i := 0 to headRows - 1 do
+    ScanRow(i);
+
+  if rowCount > headRows then
+    for var i := rowCount - tailRows to rowCount - 1 do
+      if i >= headRows then
+        ScanRow(i);
+
+  // --- заголовки ---
+  for var j := 0 to colCount - 1 do
+  begin
+    var w :=
+      if columns[j].Info.ColType = ctFloat
+      then intWidth[j] + 1 + decimals
+      else widths[j];
+    PABCSystem.Print(columns[j].Info.Name.PadLeft(w) + '  ');
+  end;
+  PABCSystem.Println;
+
+  // --- форматирование значения ---
+  var FormatValue: integer -> string := j ->
+  begin
+    if not cursor.IsValid(j) then
+    begin
+      if columns[j].Info.ColType = ctFloat then
+        Result := 'NA'.PadLeft(intWidth[j] + 1 + decimals)
+      else
+        Result := 'NA';
+      exit;
+    end;
+
+    case columns[j].Info.ColType of
+      ctInt:
+        Result := cursor.Int(j).ToString.PadLeft(widths[j]);
+
+      ctFloat:
+      begin
+        var s := cursor.Float(j).ToString('F' + decimals);
+        var p := s.IndexOf('.');
+        var left := s.Substring(0, p);
+        var right := s.Substring(p + 1);
+        Result :=
+          left.PadLeft(intWidth[j]) + '.' + right;
+      end;
+
+      ctStr:
+        Result := cursor.Str(j).PadLeft(widths[j]);
+
+      ctBool:
+        Result := cursor.Bool(j).ToString.PadLeft(widths[j]);
+    end;
+  end;
+
+  // --- печать head ---
+  for var i := 0 to headRows - 1 do
+  begin
+    cursor.MoveTo(i);
+    for var j := 0 to colCount - 1 do
+      PABCSystem.Print(FormatValue(j) + '  ');
+    PABCSystem.Println;
+  end;
+
+  // --- многоточие ---
+// 4. многоточие
+  if headRows + tailRows < rowCount then
+  begin
+    for var j := 0 to colCount - 1 do
+    begin
+      var w: integer;
+  
+      if columns[j].Info.ColType = ctFloat then
+        w := PABCSystem.Max(widths[j], intWidth[j] + 1 + decimals)
+      else
+        w := widths[j];
+  
+      PABCSystem.Print($'…'.PadLeft(w) + '  ');
+    end;
+    PABCSystem.Println;
+  end;
+
+  // --- печать tail ---
+  for var i := rowCount - tailRows to rowCount - 1 do
+    if i >= headRows then
+    begin
+      cursor.MoveTo(i);
+      for var j := 0 to colCount - 1 do
+        PABCSystem.Print(FormatValue(j) + '  ');
+      PABCSystem.Println;
+    end;
 end;
 
 procedure DataFrame.PrintlnPreview(maxRows: integer; headRows: integer; decimals: integer);
@@ -2427,6 +2715,41 @@ begin
   Print(decimals);
   PABCSystem.Println;
 end;
+
+procedure DataFrame.PrintSchema;
+begin
+  var nameWidth := ColumnNames.Max(s -> s.Length);
+  var typeWidth := 6; // Int / Float / Bool
+
+  for var i := 0 to ColumnCount - 1 do
+  begin
+    var name := ColumnNames[i].PadRight(nameWidth);
+    var typ := GetColumnType(i).ToString.Replace('ct','').PadRight(typeWidth);
+    PABCSystem.Println($'{name} : {typ}');
+  end;
+end;
+
+procedure DataFrame.PrintInfo;
+begin
+  PABCSystem.Println($'Rows    : {RowCount}');
+  PABCSystem.Println($'Columns : {ColumnCount}');
+
+  var nameWidth := ColumnNames.Max(s -> s.Length);
+  var typeWidth := 6; // Int / Float / Bool
+  var infoWidth := nameWidth + 3 + typeWidth + 12;
+
+  PABCSystem.Println('=' * infoWidth);
+
+  for var i := 0 to ColumnCount - 1 do
+  begin
+    var name := ColumnNames[i].PadRight(nameWidth);
+    var typ := GetColumnType(i).ToString.Replace('ct','').PadRight(typeWidth);
+    var cnt := Count(i);
+    PABCSystem.Println($'{name} : {typ} ({cnt} non-NA)');
+  end;
+end;
+
+
 
 procedure DataFrame.AssertSchemaConsistent;
 begin
@@ -2473,6 +2796,19 @@ begin
 
   {$ENDIF}
 end;
+
+/// Добавляет в DataFrame столбец-представление (view),
+/// использующий те же данные, что и исходный столбец
+procedure DataFrame.AddColumnView(src: Column);
+begin
+  case src.Info.ColType of
+    ctInt:   AddIntColumn(src.Info.Name, IntColumn(src).Data, IntColumn(src).IsValid, src.Info.IsCategorical);
+    ctFloat: AddFloatColumn(src.Info.Name, FloatColumn(src).Data, FloatColumn(src).IsValid);
+    ctStr:   AddStrColumn(src.Info.Name, StrColumn(src).Data, StrColumn(src).IsValid, src.Info.IsCategorical);
+    ctBool:  AddBoolColumn(src.Info.Name, BoolColumn(src).Data, BoolColumn(src).IsValid);
+  end;
+end;
+
 
 static function DataFrame.FromCsv(filename: string): DataFrame;
 begin
@@ -3004,6 +3340,282 @@ begin
     end;
 
   Result := res;
+end;
+
+//-----------------------------
+//          Statistics
+//-----------------------------
+
+static function Statistics.Correlation(df: DataFrame; colX, colY: string): real;
+begin
+  var ix := df.ColumnIndex(colX);
+  var iy := df.ColumnIndex(colY);
+
+  var mx := df.Mean(ix);
+  var my := df.Mean(iy);
+  var sx := df.Std(ix);
+  var sy := df.Std(iy);
+
+  if (sx = 0) or (sy = 0) then
+    raise new Exception('Zero variance in correlation');
+
+  var cur := df.GetCursor;
+  var sum := 0.0;
+  var cnt := 0;
+
+  while cur.MoveNext do
+    if cur.IsValid(ix) and cur.IsValid(iy) then
+    begin
+      sum += (cur.Float(ix) - mx) * (cur.Float(iy) - my);
+      cnt += 1;
+    end;
+
+  if cnt = 0 then
+    raise new Exception('No valid pairs for correlation');
+
+  Result := sum / (cnt * sx * sy);
+end;
+
+static function Statistics.CorrelationMatrix(df: DataFrame): DataFrame;
+begin
+  var names := new List<string>;
+
+  // выбираем только числовые столбцы
+  for var i := 0 to df.ColumnCount - 1 do
+    if df.GetColumnType(i) in [ColumnType.ctInt, ColumnType.ctFloat] then
+      names.Add(df.ColumnNames[i]);
+
+  var n := names.Count;
+  if n = 0 then
+    raise new Exception('No numeric columns for correlation matrix');
+
+  var res := new DataFrame;
+
+  // первый столбец — имена признаков
+  res.AddStrColumn('Feature', names.ToArray, nil, true);
+
+  // остальные столбцы — корреляции
+  for var j := 0 to n - 1 do
+  begin
+    var data := new real[n];
+
+    for var i := 0 to n - 1 do
+      if i = j then
+        data[i] := 1.0
+      else
+        data[i] := Correlation(df, names[i], names[j]);
+
+    res.AddFloatColumn(names[j], data, nil);
+  end;
+
+  Result := res;
+end;
+
+static function Statistics.Standardize(df: DataFrame; colName: string): DataFrame;
+begin
+  var idx := df.ColumnIndex(colName);
+  var mean := df.Mean(idx);
+  var std := df.Std(idx);
+
+  if std = 0 then
+    raise new Exception('Zero standard deviation');
+
+  Result := df.ReplaceColumnFloat(colName, cur ->
+  begin
+    if not cur.IsValid(idx) then
+      raise new Exception;
+    Result := (cur.Float(idx) - mean) / std;
+  end);
+end;
+
+static function Statistics.StandardizeAll(df: DataFrame): DataFrame;
+begin
+  var res := new DataFrame;
+  var cur := df.GetCursor;
+
+  // 1. заранее считаем mean/std для всех числовых столбцов
+  var means := new real[df.ColumnCount];
+  var stds  := new real[df.ColumnCount];
+  var isNumeric := new boolean[df.ColumnCount];
+
+  for var i := 0 to df.ColumnCount - 1 do
+  begin
+    var t := df.GetColumnType(i);
+    if t in [ColumnType.ctInt, ColumnType.ctFloat] then
+    begin
+      means[i] := df.Mean(i);
+      stds[i] := df.Std(i);
+      if stds[i] = 0 then
+        raise new Exception($'Zero std in column {df.ColumnNames[i]}');
+      isNumeric[i] := true;
+    end;
+  end;
+
+  // 2. создаём схему результата
+  for var i := 0 to df.ColumnCount - 1 do
+  begin
+    if isNumeric[i] then
+      res.AddFloatColumn(df.ColumnNames[i], new real[df.RowCount], nil)
+    else
+      res.AddColumnView(df.columns[i]); // private helper
+  end;
+
+  // 3. заполняем данные
+  var row := 0;
+  while cur.MoveNext do
+  begin
+    for var i := 0 to df.ColumnCount - 1 do
+    begin
+      if not isNumeric[i] then continue;
+  
+      var col := FloatColumn(res.columns[i]);
+  
+      if cur.IsValid(i) then
+      begin
+        col.Data[row] := (cur.Float(i) - means[i]) / stds[i];
+        if col.IsValid <> nil then
+          col.IsValid[row] := true;
+      end
+      else
+      begin
+        // первый NA → создаём IsValid
+        if col.IsValid = nil then
+        begin
+          col.IsValid := new boolean[df.RowCount];
+          for var r := 0 to row - 1 do
+            col.IsValid[r] := true;
+        end;
+        col.IsValid[row] := false;
+      end;
+    end;
+    row += 1;
+  end;
+  
+  Result := res;
+end;
+
+static function Statistics.Normalize(df: DataFrame; colName: string): DataFrame;
+begin
+  var idx := df.ColumnIndex(colName);
+  var (mn, mx) := df.MinMax(idx);
+
+  if mn = mx then
+    raise new Exception('Zero range in normalization');
+
+  Result := df.ReplaceColumnFloat(colName, cur ->
+  begin
+    if not cur.IsValid(idx) then
+      raise new Exception;
+    Result := (cur.Float(idx) - mn) / (mx - mn);
+  end);
+end;
+
+static function Statistics.NormalizeAll(df: DataFrame): DataFrame;
+begin
+  var res := new DataFrame;
+  var cur := df.GetCursor;
+
+  // 1. заранее считаем min/max для всех числовых столбцов
+  var mins := new real[df.ColumnCount];
+  var maxs := new real[df.ColumnCount];
+  var isNumeric := new boolean[df.ColumnCount];
+
+  for var i := 0 to df.ColumnCount - 1 do
+  begin
+    var t := df.GetColumnType(i);
+    if t in [ColumnType.ctInt, ColumnType.ctFloat] then
+    begin
+      var (mn, mx) := df.MinMax(i);
+      if mn = mx then
+        raise new Exception($'Zero range in column {df.ColumnNames[i]}');
+      mins[i] := mn;
+      maxs[i] := mx;
+      isNumeric[i] := true;
+    end;
+  end;
+
+  // 2. создаём схему результата
+  for var i := 0 to df.ColumnCount - 1 do
+  begin
+    if isNumeric[i] then
+      res.AddFloatColumn(df.ColumnNames[i], new real[df.RowCount], nil)
+    else
+      res.AddColumnView(df.columns[i]); // private helper
+  end;
+
+  // 3. заполняем данные
+  var row := 0;
+  while cur.MoveNext do
+  begin
+    for var i := 0 to df.ColumnCount - 1 do
+    begin
+      if not isNumeric[i] then continue;
+
+      var col := FloatColumn(res.columns[i]);
+
+      if cur.IsValid(i) then
+      begin
+        col.Data[row] := (cur.Float(i) - mins[i]) / (maxs[i] - mins[i]);
+        if col.IsValid <> nil then
+          col.IsValid[row] := true;
+      end
+      else
+      begin
+        // первый NA → создаём IsValid
+        if col.IsValid = nil then
+        begin
+          col.IsValid := new boolean[df.RowCount];
+          for var r := 0 to row - 1 do
+            col.IsValid[r] := true;
+        end;
+        col.IsValid[row] := false;
+      end;
+    end;
+    row += 1;
+  end;
+
+  Result := res;
+end;
+
+static function Statistics.Quantile(df: DataFrame; colName: string; p: real): real;
+begin
+  if (p < 0) or (p > 1) then
+    raise new Exception('Quantile p must be in [0,1]');
+
+  var idx := df.ColumnIndex(colName);
+  var values := new List<real>;
+
+  var cur := df.GetCursor;
+  while cur.MoveNext do
+    if cur.IsValid(idx) then
+      values.Add(cur.Float(idx));
+
+  if values.Count = 0 then
+    raise new Exception('No valid values for quantile');
+
+  values.Sort;
+
+  var n := values.Count;
+  if n = 1 then
+  begin
+    Result := values[0];
+    exit;
+  end;
+
+  // позиция квантиля
+  var pos := p * (n - 1);
+  var i := Floor(pos);
+  var frac := pos - i;
+
+  if i + 1 < n then
+    Result := values[i] * (1 - frac) + values[i + 1] * frac
+  else
+    Result := values[i];
+end;
+
+static function Statistics.Median(df: DataFrame; colName: string): real;
+begin
+  Result := Quantile(df, colName, 0.5);
 end;
 
 //-----------------------------

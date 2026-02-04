@@ -110,6 +110,8 @@ copy bin\Lib\Speech.pcu Release\PascalABCNETLinux\Lib\Speech.pcu
 copy bin\Lib\Tasks.pcu Release\PascalABCNETLinux\Lib\Tasks.pcu
 copy bin\Lib\Timers.pcu Release\PascalABCNETLinux\Lib\Timers.pcu
 copy bin\Lib\TurtleABC.pcu Release\PascalABCNETLinux\Lib\TurtleABC.pcu
+copy bin\Lib\DataFrameABC.pcu Release\PascalABCNETLinux\LibSource\DataFrameABC.pcu
+copy bin\Lib\DataFrameABCCore.pcu Release\PascalABCNETLinux\LibSource\DataFrameABCCore.pcu
 
 copy bin\Lib\ABCDatabases.pas Release\PascalABCNETLinux\LibSource\ABCDatabases.pas
 copy bin\Lib\BBCMicrobit.pas Release\PascalABCNETLinux\LibSource\BBCMicrobit.pas
@@ -151,6 +153,8 @@ copy bin\Lib\__RedirectIOMode.pas Release\PascalABCNETLinux\LibSource\__Redirect
 copy bin\Lib\__RunMode.pas Release\PascalABCNETLinux\LibSource\__RunMode.pas
 copy bin\Lib\Робот.pas Release\PascalABCNETLinux\LibSource\Робот.pas
 copy bin\Lib\Чертежник.pas Release\PascalABCNETLinux\LibSource\Чертежник.pas
+copy bin\Lib\DataFrameABC.pas Release\PascalABCNETLinux\LibSource\DataFrameABC.pas
+copy bin\Lib\DataFrameABCCore.pas Release\PascalABCNETLinux\LibSource\DataFrameABCCore.pas
 
 copy bin\Lng\Eng\.LanguageName Release\PascalABCNETLinux\Lng\Eng\.LanguageName
 copy bin\Lng\Eng\AspectsTree.dat Release\PascalABCNETLinux\Lng\Eng\AspectsTree.dat

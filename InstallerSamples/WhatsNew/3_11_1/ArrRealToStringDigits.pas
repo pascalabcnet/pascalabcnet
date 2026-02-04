@@ -2,5 +2,8 @@
 begin
   var a := ArrRandomReal(5);
   var s := a.ToString(1);
-  Print(s);
+  Println(s);
+  var r: real := 3.14;
+  s := r.ToString(1);
+  Println(s);
 end.

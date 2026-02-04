@@ -1,7 +1,6 @@
-﻿// Загрузка и просмотр данных
+﻿// Выбор столбцов (Select)
 uses DataFrameABC;
 
-// Выбор столбцов (Select)
 begin
   var df := DataFrame.FromCsvText('''
   name,age,score

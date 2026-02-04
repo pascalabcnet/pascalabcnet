@@ -108,7 +108,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
         private const int _DocumentStripGapTop = -1;
         private const int _DocumentStripGapBottom = 1;
-		private const int _DocumentTabMaxWidth = 300;
+		private const int _DocumentTabMaxWidth = 500;
 		private const int _DocumentButtonGapTop = 4;
 		private const int _DocumentButtonGapBottom = 4;
 		private const int _DocumentButtonGapBetween = 0;
