@@ -2616,6 +2616,24 @@ begin
       if i >= headRows then
         ScanRow(i);
 
+  // --- нормализация ширин (табличная детерминированность) ---
+  for var j := 0 to colCount - 1 do
+  begin
+    // "NA" должно влезать всегда
+    if columns[j].Info.ColType = ctFloat then
+    begin
+      var w := intWidth[j] + 1 + decimals;
+      if w < 2 then
+        intWidth[j] := 2 - 1 - decimals; // чтобы итоговая ширина была >= 2
+    end
+    else
+    begin
+      if widths[j] < 2 then
+        widths[j] := 2;
+    end;
+  end;
+  
+
   // --- заголовки ---
   for var j := 0 to colCount - 1 do
   begin
@@ -2635,7 +2653,7 @@ begin
       if columns[j].Info.ColType = ctFloat then
         Result := 'NA'.PadLeft(intWidth[j] + 1 + decimals)
       else
-        Result := 'NA';
+        Result := 'NA'.PadLeft(widths[j]);
       exit;
     end;
 
@@ -3622,8 +3640,357 @@ end;
 //          CSVLoader
 //-----------------------------
 
-static function CSVLoader.LoadFromLines(lines: sequence of string; delimiter: char; hasHeader: boolean; missingValues: array of string; strict: boolean; 
-  schema: Dictionary<string, ColumnType>): DataFrame;
+
+{procedure ScanFields(line: string; delimiter: char;
+  starts, lens: array of integer; var actualCount: integer);
+begin
+  var j := 1;
+  var col := 0;
+  var n := line.Length;
+
+  starts[0] := 1;
+
+  while j <= n do
+  begin
+    if line[j] = delimiter then
+    begin
+      if col < starts.Length then
+        lens[col] := j - starts[col];
+      col += 1;
+      if col < starts.Length then
+        starts[col] := j + 1;
+    end;
+    j += 1;
+  end;
+
+  if col < starts.Length then
+    lens[col] := n - starts[col] + 1;
+
+  for var k := col + 1 to starts.Length - 1 do
+    lens[k] := 0;
+
+  actualCount := col + 1;
+end;}
+
+procedure ScanFieldsQuoted(
+  line: string; delimiter: char;
+  starts, lens: array of integer;
+  var actualCount: integer;
+  var unclosedQuote: boolean);
+begin
+  var n := line.Length;
+  var i := 1;
+  var col := 0;
+
+  var inQuotes := False;
+  var quotedField := False;
+
+  starts[0] := 1;
+
+  while i <= n do
+  begin
+    var ch := line[i];
+
+    if inQuotes then
+    begin
+      // экранированная кавычка ""
+      if (ch = '"') and (i < n) and (line[i+1] = '"') then
+      begin
+        i += 2;
+        continue;
+      end;
+
+      // закрывающая кавычка
+      if ch = '"' then
+      begin
+        inQuotes := False;
+        i += 1;
+        continue;
+      end;
+    end
+    else
+    begin
+      // начало quoted-поля (только если это первый символ поля)
+      if (ch = '"') and (i = starts[col]) then
+      begin
+        inQuotes := True;
+        quotedField := True;
+        starts[col] := i + 1; // значение начинается после "
+        i += 1;
+        continue;
+      end;
+
+      // разделитель вне кавычек
+      if ch = delimiter then
+      begin
+        if col < starts.Length then
+        begin
+          if quotedField then
+            lens[col] := (i - 1) - starts[col]   // до закрывающей "
+          else
+            lens[col] := i - starts[col];
+        end;
+
+        col += 1;
+        quotedField := False;
+
+        if col < starts.Length then
+          starts[col] := i + 1;
+
+        i += 1;
+        continue;
+      end;
+    end;
+
+    i += 1;
+  end;
+
+  // последний столбец
+  if col < starts.Length then
+  begin
+    if quotedField then
+      lens[col] := i - 1 - starts[col]
+    else
+      lens[col] := i - starts[col];
+  end;
+
+  // недостающие столбцы → пустые
+  for var k := col + 1 to starts.Length - 1 do
+    lens[k] := 0;
+
+  actualCount := col + 1;
+  unclosedQuote := inQuotes;
+end;
+
+
+function IsMissingRange(s: string; start, len: integer): boolean;
+begin
+  // empty
+  if len = 0 then
+    exit(True);
+
+  // NA
+  if (len = 2) and
+     (s[start] = 'N') and (s[start+1] = 'A') then
+    exit(True);
+
+  // NaN
+  if (len = 3) and
+     (s[start] = 'N') and (s[start+1] = 'a') and (s[start+2] = 'N') then
+    exit(True);
+
+  // null
+  if (len = 4) and
+     (s[start] = 'n') and (s[start+1] = 'u') and
+     (s[start+2] = 'l') and (s[start+3] = 'l') then
+    exit(True);
+
+  Result := False;
+end;
+
+function TryStrToInt(s: string; start, len: integer; var value: integer): boolean;
+begin
+  Result := False;
+  if len = 0 then exit;
+
+  var j := start;
+  var endp := start + len - 1;
+
+  // leading spaces
+  while (j <= endp) and char.IsWhiteSpace(s[j]) do
+    j += 1;
+  if j > endp then exit;
+
+  // sign
+  var sign := 1;
+  if s[j] = '-' then
+  begin
+    sign := -1;
+    j += 1;
+  end
+  else if s[j] = '+' then
+    j += 1;
+
+  if j > endp then exit;
+
+  // first digit
+  var c := integer(s[j]);
+  if (c < 48) or (c > 57) then exit;
+
+  var res := c - 48;
+  j += 1;
+
+  // remaining digits
+  while j <= endp do
+  begin
+    c := integer(s[j]);
+    if (c < 48) or (c > 57) then break;
+
+    // overflow check: res * 10 + digit <= Int32.MaxValue
+    if res > 214748364 then exit;
+
+    res := res * 10 + (c - 48);
+    j += 1;
+  end;
+
+  // trailing spaces
+  while (j <= endp) and char.IsWhiteSpace(s[j]) do
+    j += 1;
+  if j <= endp then exit;
+
+  if sign = -1 then
+    res := -res;
+
+  value := res;
+  Result := True;
+end;
+
+function TryStrToReal(s: string; start, len: integer; var value: real): boolean;
+begin
+  Result := False;
+  if len = 0 then exit;
+
+  var j := start;
+  var endp := start + len - 1;
+
+  // leading spaces
+  while (j <= endp) and char.IsWhiteSpace(s[j]) do
+    j += 1;
+  if j > endp then exit;
+
+  // sign
+  var sign := 1.0;
+  if s[j] = '-' then
+  begin
+    sign := -1.0;
+    j += 1;
+  end
+  else if s[j] = '+' then
+    j += 1;
+  if j > endp then exit;
+
+  // integer part
+  var intPart := 0.0;
+  var hasDigits := False;
+  while j <= endp do
+  begin
+    var c := integer(s[j]);
+    if (c < 48) or (c > 57) then break;
+    hasDigits := True;
+    intPart := intPart * 10.0 + (c - 48);
+    j += 1;
+  end;
+
+  // fractional part
+  var fracPart := 0.0;
+  var scale := 1.0;
+  if (j <= endp) and (s[j] = '.') then
+  begin
+    j += 1;
+    while j <= endp do
+    begin
+      var c := integer(s[j]);
+      if (c < 48) or (c > 57) then break;
+      hasDigits := True;
+      scale *= 0.1;
+      fracPart += (c - 48) * scale;
+      j += 1;
+    end;
+  end;
+
+  if not hasDigits then exit;
+
+  var res := intPart + fracPart;
+
+  // exponent
+  if (j <= endp) and ((s[j] = 'e') or (s[j] = 'E')) then
+  begin
+    j += 1;
+    if j > endp then exit;
+
+    var expSign := 1;
+    if s[j] = '-' then
+    begin
+      expSign := -1;
+      j += 1;
+    end
+    else if s[j] = '+' then
+      j += 1;
+    if j > endp then exit;
+
+    var exp := 0;
+    var hasExp := False;
+    while j <= endp do
+    begin
+      var c := integer(s[j]);
+      if (c < 48) or (c > 57) then break;
+      hasExp := True;
+      exp := exp * 10 + (c - 48);
+      j += 1;
+    end;
+    if not hasExp then exit;
+
+    res := res * Power(10.0, expSign * exp);
+  end;
+
+  // trailing spaces
+  while (j <= endp) and char.IsWhiteSpace(s[j]) do
+    j += 1;
+  if j <= endp then exit;
+
+  value := sign * res;
+  Result := True;
+end;
+
+function TryStrToBoolStrictRange(s: string; start, len: integer; var value: boolean): boolean;
+begin
+  Result := False;
+  if len = 0 then exit;
+
+  var j := start;
+  var endp := start + len - 1;
+
+  // leading spaces
+  while (j <= endp) and char.IsWhiteSpace(s[j]) do
+    j += 1;
+  if j > endp then exit;
+
+  var rem := endp - j + 1;
+
+  // true
+  if (rem = 4) and (s[j] = 't') and (s[j+1] = 'r') and (s[j+2] = 'u') and (s[j+3] = 'e') then
+  begin value := True; exit(True) end;
+
+  // True
+  if (rem = 4) and (s[j] = 'T') and (s[j+1] = 'r') and (s[j+2] = 'u') and (s[j+3] = 'e') then
+  begin value := True; exit(True) end;
+
+  // yes
+  if (rem = 3) and (s[j] = 'y') and (s[j+1] = 'e') and (s[j+2] = 's') then
+  begin value := True; exit(True) end;
+
+  // false
+  if (rem = 5) and (s[j] = 'f') and (s[j+1] = 'a') and
+     (s[j+2] = 'l') and (s[j+3] = 's') and (s[j+4] = 'e') then
+  begin value := False; exit(True) end;
+
+  // False
+  if (rem = 5) and (s[j] = 'F') and (s[j+1] = 'a') and
+     (s[j+2] = 'l') and (s[j+3] = 's') and (s[j+4] = 'e') then
+  begin value := False; exit(True) end;
+
+  // no
+  if (rem = 2) and (s[j] = 'n') and (s[j+1] = 'o') then
+  begin value := False; exit(True) end;
+
+  // No
+  if (rem = 2) and (s[j] = 'N') and (s[j+1] = 'o') then
+  begin value := False; exit(True) end;
+end;
+
+
+static function CSVLoader.LoadFromLines(lines: sequence of string; delimiter: char; hasHeader: boolean; 
+  missingValues: array of string; strict: boolean; schema: Dictionary<string, ColumnType>): DataFrame;
 begin
   // ---------- missing values ----------
   var missing: HashSet<string>;
@@ -3632,19 +3999,22 @@ begin
   else
     missing := new HashSet<string>(missingValues);
 
-  var IsMissing: string -> boolean := s -> missing.Contains(s);
-
   // ---------- PASS 1: headers + infer ----------
+  var linesArray := lines.ToArray;
+
   var headers: array of string := nil;
   var colCount := 0;
-  var rowCount := 0;
+  var rowCount := linesArray.Count;
   
   var canBool, canInt, canFloat: array of boolean;
   (canBool, canInt, canFloat) := (nil, nil, nil);
   
+  var inferLimit := 1000; // Для определения типа считываем максимум 1000 строк
+
   var first := true;
-  foreach var line in lines do
+  foreach var line in linesArray index inferRead do
   begin
+    if inferRead >= inferLimit then break;
     if first then
     begin
       var parts := line.Split(delimiter);
@@ -3664,9 +4034,9 @@ begin
       end;
   
       // инициализация инференса
-      canBool := ArrGen(colCount, i -> true);
-      canInt := ArrGen(colCount, i -> true);
-      canFloat := ArrGen(colCount, i -> true);
+      canBool  := [True] * colCount;
+      canInt   := [True] * colCount;
+      canFloat := [True] * colCount;
   
       // ===== schema override (ИМЕННО ЗДЕСЬ) =====
       if schema <> nil then
@@ -3699,27 +4069,25 @@ begin
     for var j := 0 to colCount - 1 do
     begin
       var s := if j < parts.Length then parts[j] else '';
-      if IsMissing(s) then continue;
+      if s in missing then continue;
   
       // если тип зафиксирован схемой — инференс не делаем
       if (schema <> nil) and schema.ContainsKey(headers[j]) then
         continue;
   
-      var sl := s.ToLower;
+      var sl := s{.ToLower};
   
-      if not ((sl = 'true') or (sl = 'false') or (sl = 'yes') or (sl = 'no')) then
+      if not ((sl = 'true') or (sl = 'false') or (sl = 'True') or (sl = 'False') or (sl = 'yes') or (sl = 'no')) then
         canBool[j] := false;
   
       var iv: integer;
-      if not integer.TryParse(s, iv) then
+      if not TryStrToInt(s, iv) then
         canInt[j] := false;
   
       var fv: real;
-      if not real.TryParse(s, fv) then
+      if not TryStrToReal(s, fv) then
         canFloat[j] := false;
     end;
-  
-    rowCount += 1;
   end;
   
   if headers = nil then
@@ -3749,9 +4117,12 @@ begin
   end;
 
   // ---------- PASS 2: fill ----------
+  var starts := new integer[colCount]; // Для разбиения строки на части вместо lines.Split
+  var lens   := new integer[colCount];
+  
   var row := 0;
   first := true;
-  foreach var line in lines do
+  foreach var line in linesArray do
   begin
     if first then
     begin
@@ -3759,40 +4130,61 @@ begin
       if hasHeader then continue;
     end;
   
-    var parts := line.Split(delimiter);
-  
-    if parts.Length <> colCount then
+    var actualCount: integer;
+    var unclosedQuote: boolean;
+
+    ScanFieldsQuoted(line, delimiter, starts, lens, actualCount, unclosedQuote);
+
+    if unclosedQuote then
+    begin
       if strict then
-        raise new Exception($'CSV format error: expected {colCount} columns, got {parts.Length}');
+        raise new Exception('CSV format error: unclosed quote');
+    
+      for var j := 0 to colCount - 1 do
+        valid[j][row] := false;
+    
+      row += 1;
+      continue;
+    end;
+    
+    if (actualCount <> colCount) and strict then
+      raise new Exception($'CSV format error: expected {colCount} columns, got {actualCount}');
   
     for var j := 0 to colCount - 1 do
     begin
-      var s := if j < parts.Length then parts[j] else '';
-  
-      if IsMissing(s) then
+      if missingValues = nil then
       begin
-        valid[j][row] := false;
-        continue;
+        if IsMissingRange(line, starts[j], lens[j]) then
+        begin
+          valid[j][row] := false;
+          continue;
+        end;
+      end
+      else
+      begin
+        // Тут не очень хорошо - если missingValues заполнено, то материализуем строку - так она и дальше материализуется!
+        var s := if lens[j] > 0 then line.Substring(starts[j]-1, lens[j]) else '';
+        if s in missing then
+        begin
+          valid[j][row] := false;
+          continue;
+        end;
       end;
-  
+      
       // ----- BOOL -----
       if canBool[j] then
       begin
-        var sl := s.ToLower;
-        if (sl = 'true') or (sl = 'yes') then
+        var bv: boolean;
+        if TryStrToBoolStrictRange(line, starts[j], lens[j], bv) then
         begin
-          boolData[j][row] := true;
-          valid[j][row] := true;
-        end
-        else if (sl = 'false') or (sl = 'no') then
-        begin
-          boolData[j][row] := false;
+          boolData[j][row] := bv;
           valid[j][row] := true;
         end
         else
         begin
           if strict then
-            raise new Exception($'Invalid bool "{s}" in column {headers[j]}');
+            raise new Exception(
+              $'Invalid bool "{line.Substring(starts[j]-1, lens[j])}" in column {headers[j]}');
           valid[j][row] := false;
         end;
       end
@@ -3801,7 +4193,7 @@ begin
       else if canInt[j] then
       begin
         var iv: integer;
-        if integer.TryParse(s, iv) then
+        if TryStrToInt(line, starts[j], lens[j], iv) then
         begin
           intData[j][row] := iv;
           valid[j][row] := true;
@@ -3809,7 +4201,10 @@ begin
         else
         begin
           if strict then
+          begin  
+            var s := if lens[j] > 0 then line.Substring(starts[j]-1, lens[j]) else '';
             raise new Exception($'Invalid int "{s}" in column {headers[j]}');
+          end;  
           valid[j][row] := false;
         end;
       end
@@ -3818,7 +4213,7 @@ begin
       else if canFloat[j] then
       begin
         var fv: real;
-        if real.TryParse(s, fv) then
+        if TryStrToReal(line, starts[j], lens[j], fv) then
         begin
           floatData[j][row] := fv;
           valid[j][row] := true;
@@ -3826,7 +4221,10 @@ begin
         else
         begin
           if strict then
+          begin  
+            var s := if lens[j] > 0 then line.Substring(starts[j]-1, lens[j]) else '';
             raise new Exception($'Invalid float "{s}" in column {headers[j]}');
+          end;  
           valid[j][row] := false;
         end;
       end
@@ -3834,6 +4232,7 @@ begin
       // ----- STRING -----
       else
       begin
+        var s := if lens[j] > 0 then line.Substring(starts[j]-1, lens[j]) else '';
         strData[j][row] := s;
         valid[j][row] := true;
       end;

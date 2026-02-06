@@ -10445,10 +10445,7 @@ begin
   while (j <= s.Length) and char.IsWhiteSpace(s[j]) do
     j += 1;
   if (j > s.Length) then 
-  begin
-    Result := False;
-    exit
-  end;  
+    exit(False);
   var sign := 0;  
   if s[j] = '-' then
   begin
@@ -10461,16 +10458,11 @@ begin
     j += 1;
   end;
   if (j > s.Length) then 
-  begin
-    Result := False;
-    exit
-  end;  
+    exit(False);
+
   var c := integer(s[j]);
   if (c < 48) or (c > 57) then
-  begin
-    Result := False;
-    exit
-  end;  
+    exit(False);
   Res := c - 48;
   j += 1;  
   while j <= s.Length do
@@ -10481,31 +10473,22 @@ begin
     if c < 48 then
       break;
     if Res > 214748364 then
-    begin
-      Result := False;
-      exit
-    end;  
+      exit(False);
     Res := Res * 10 + (c - 48);
     j += 1;
   end;
   if Res < 0 then 
     if (Res = -2147483648) and (sign = -1) then
-      exit
-    else 
-    begin
-      Result := False;
-      exit
-    end;  
+      exit(True)
+    else exit(False);
   if sign = -1 then
     Res := -Res;
   while (j <= s.Length) and char.IsWhiteSpace(s[j]) do
     j += 1;
   if j <= s.Length then  
-  begin
-    Result := False;
-    exit
-  end;  
+    exit(False);
   value := Res;
+  Result := True;
 end;
 
 function StrToInt64(s: string) := Convert.ToInt64(s); 
