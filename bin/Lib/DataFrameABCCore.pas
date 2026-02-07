@@ -11,6 +11,48 @@ type
   
   ColumnType = (ctInt, ctFloat, ctStr, ctBool);
   
+  /// Неизменяемое описание структуры столбцов DataFrame
+  DataFrameSchema = sealed class
+  private
+    fNames: array of string;
+    fTypes: array of ColumnType;
+    fIsCategorical: array of boolean;
+    fIndexByName: Dictionary<string, integer>;
+    
+    class function BuildIndex(names: array of string): Dictionary<string, integer>;
+  public
+    property ColumnCount: integer read fNames.Length;
+    property Names: array of string read fNames;
+    property Types: array of ColumnType read fTypes;
+    property IsCategorical: array of boolean read fIsCategorical;
+
+    function IndexOf(name: string): integer;
+    function HasColumn(name: string): boolean;
+
+    function ColumnTypeAt(i: integer): ColumnType;
+    function IsCategoricalAt(i: integer): boolean;
+    function NameAt(i: integer): string;
+
+    constructor Create(names: array of string; types: array of ColumnType;
+      isCategorical: array of boolean := nil);
+
+    { --- schema operations (immutable) --- }
+    function Select(indices: array of integer): DataFrameSchema;
+    function Drop(indices: array of integer): DataFrameSchema;
+    function Rename(oldName, newName: string): DataFrameSchema;
+    function WithCategorical(name: string; value: boolean := True): DataFrameSchema;
+
+    { --- join helpers --- }
+    class function Merge(
+      left, right: DataFrameSchema;
+      leftKeys, rightKeys: array of integer;
+      rightPrefix: string
+    ): DataFrameSchema;
+
+    { --- debug --- }
+    procedure AssertConsistent;
+  end;
+  
   ColumnInfo = auto class
     Name: string;
     ColType: ColumnType;
@@ -36,6 +78,8 @@ type
     Data: array of integer;     // Данные столбца
     IsValid: array of boolean;  // Флаги валидности (может быть nil)
   public
+    constructor Create; begin end;
+    constructor Create(name: string; isCategorical: boolean);
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
@@ -49,6 +93,8 @@ type
     Data: array of real;        // Данные столбца
     IsValid: array of boolean;  // Флаги валидности
   public  
+    constructor Create; begin end;
+    constructor Create(name: string);
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
@@ -61,7 +107,9 @@ type
   StrColumn = class(Column)
     Data: array of string;      // Данные столбца
     IsValid: array of boolean;  // Флаги валидности
-  public  
+  public
+    constructor Create; begin end;
+    constructor Create(name: string; isCategorical: boolean);
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
@@ -75,6 +123,8 @@ type
     Data: array of boolean;     // Данные столбца
     IsValid: array of boolean;  // Флаги валидности
   public  
+    constructor Create; begin end;
+    constructor Create(name: string);
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
@@ -111,7 +161,8 @@ type
     pos: integer;
     rowCnt: integer;
     colCnt: integer;
-    colIndexByName: Dictionary<string, integer>;
+    fSchema: DataFrameSchema;
+    
     intAcc: array of IntAccessor;
     floatAcc: array of FloatAccessor;
     strAcc: array of StrAccessor;
@@ -119,7 +170,7 @@ type
     validAcc: array of ValidAccessor;
   public
     /// Создает курсор для указанных столбцов
-    constructor Create(cols: array of Column; colIndexByName: Dictionary<string, integer>);
+    constructor Create(cols: array of Column; schema: DataFrameSchema);
     /// Возвращает количество столбцов
     function ColumnCount: integer := colCnt;
     /// Возвращает количество строк
@@ -200,8 +251,198 @@ begin
 end;
 
 //-----------------------------
+//       DataFrameSchema
+//-----------------------------
+class function DataFrameSchema.BuildIndex(names: array of string): Dictionary<string, integer>;
+begin
+  Result := new Dictionary<string, integer>;
+  for var i := 0 to names.Length - 1 do
+  begin
+    if Result.ContainsKey(names[i]) then
+      raise new System.ArgumentException($'Duplicate column name "{names[i]}"');
+    Result.Add(names[i], i);
+  end;
+end;
+
+constructor DataFrameSchema.Create(names: array of string; types: array of ColumnType;
+  isCategorical: array of boolean);
+begin
+  if names = nil then raise new System.ArgumentException('names is nil');
+  if types = nil then raise new System.ArgumentException('types is nil');
+  if names.Length <> types.Length then
+    raise new System.ArgumentException('names and types length mismatch');
+  if (isCategorical <> nil) and (isCategorical.Length <> names.Length) then
+    raise new System.ArgumentException('isCategorical length mismatch');
+
+  fNames := Copy(names);
+  fTypes := Copy(types);
+  fIsCategorical := if isCategorical = nil then nil else Copy(isCategorical);
+  fIndexByName := BuildIndex(fNames);
+
+  AssertConsistent;
+end;
+
+function DataFrameSchema.IndexOf(name: string): integer;
+begin
+  if not fIndexByName.ContainsKey(name) then
+    raise new System.ArgumentException($'Column "{name}" does not exist');
+  Result := fIndexByName[name];
+end;
+
+function DataFrameSchema.HasColumn(name: string): boolean :=
+  fIndexByName.ContainsKey(name);
+
+function DataFrameSchema.NameAt(i: integer): string;
+begin
+  if (i < 0) or (i >= ColumnCount) then
+    raise new System.ArgumentOutOfRangeException('i');
+  Result := fNames[i];
+end;
+
+function DataFrameSchema.ColumnTypeAt(i: integer): ColumnType;
+begin
+  if (i < 0) or (i >= ColumnCount) then
+    raise new System.ArgumentOutOfRangeException('i');
+  Result := fTypes[i];
+end;
+
+function DataFrameSchema.IsCategoricalAt(i: integer): boolean;
+begin
+  if (i < 0) or (i >= ColumnCount) then
+    raise new System.ArgumentOutOfRangeException('i');
+  if fIsCategorical = nil then
+    Result := false
+  else
+    Result := fIsCategorical[i];
+end;
+
+function DataFrameSchema.Select(indices: array of integer): DataFrameSchema;
+begin
+  if indices = nil then raise new System.ArgumentException('indices is nil');
+
+  var n := indices.Length;
+  var names := new string[n];
+  var types := new ColumnType[n];
+  var cats := if fIsCategorical = nil then nil else new boolean[n];
+
+  for var i := 0 to n - 1 do
+  begin
+    var k := indices[i];
+    if (k < 0) or (k >= ColumnCount) then
+      raise new System.ArgumentOutOfRangeException('indices');
+    names[i] := fNames[k];
+    types[i] := fTypes[k];
+    if cats <> nil then cats[i] := fIsCategorical[k];
+  end;
+
+  Result := new DataFrameSchema(names, types, cats);
+end;
+
+function DataFrameSchema.Drop(indices: array of integer): DataFrameSchema;
+begin
+  if indices = nil then raise new System.ArgumentException('indices is nil');
+
+  var drop := new boolean[ColumnCount];
+  foreach var i in indices do
+  begin
+    if (i < 0) or (i >= ColumnCount) then
+      raise new System.ArgumentOutOfRangeException('indices');
+    drop[i] := true;
+  end;
+
+  var keep := new List<integer>;
+  for var i := 0 to ColumnCount - 1 do
+    if not drop[i] then
+      keep.Add(i);
+
+  Result := Select(keep.ToArray);
+end;
+
+function DataFrameSchema.Rename(oldName, newName: string): DataFrameSchema;
+begin
+  if not HasColumn(oldName) then
+    raise new System.ArgumentException($'Column "{oldName}" does not exist');
+  if HasColumn(newName) then
+    raise new System.ArgumentException($'Column "{newName}" already exists');
+
+  var names := Copy(fNames);
+  names[IndexOf(oldName)] := newName;
+
+  Result := new DataFrameSchema(names, fTypes, fIsCategorical);
+end;
+
+function DataFrameSchema.WithCategorical(name: string; value: boolean): DataFrameSchema;
+begin
+  if not HasColumn(name) then
+    raise new System.ArgumentException($'Column "{name}" does not exist');
+
+  var cats := if fIsCategorical = nil then new boolean[ColumnCount] else Copy(fIsCategorical);
+  cats[IndexOf(name)] := value;
+
+  Result := new DataFrameSchema(fNames, fTypes, cats);
+end;
+
+class function DataFrameSchema.Merge(left, right: DataFrameSchema;
+  leftKeys, rightKeys: array of integer; rightPrefix: string): DataFrameSchema;
+begin
+  if left = nil then raise new System.ArgumentException('left is nil');
+  if right = nil then raise new System.ArgumentException('right is nil');
+  if leftKeys.Length <> rightKeys.Length then
+    raise new System.ArgumentException('join keys length mismatch');
+
+  var skip := new boolean[right.ColumnCount];
+  foreach var i in rightKeys do
+  begin
+    if (i < 0) or (i >= right.ColumnCount) then
+      raise new System.ArgumentOutOfRangeException('rightKeys');
+    skip[i] := true;
+  end;
+
+  var names := new List<string>;
+  var types := new List<ColumnType>;
+  var cats := new List<boolean>;
+
+  for var i := 0 to left.ColumnCount - 1 do
+  begin
+    names.Add(left.NameAt(i));
+    types.Add(left.ColumnTypeAt(i));
+    cats.Add(left.IsCategoricalAt(i));
+  end;
+
+  for var i := 0 to right.ColumnCount - 1 do
+    if not skip[i] then
+    begin
+      var name := right.NameAt(i);
+      if left.HasColumn(name) then name := rightPrefix + name;
+      names.Add(name);
+      types.Add(right.ColumnTypeAt(i));
+      cats.Add(right.IsCategoricalAt(i));
+    end;
+
+  Result := new DataFrameSchema(names.ToArray, types.ToArray, cats.ToArray);
+end;
+
+procedure DataFrameSchema.AssertConsistent;
+begin
+  Assert(fNames.Length = fTypes.Length);
+  if fIsCategorical <> nil then Assert(fIsCategorical.Length = fNames.Length);
+  Assert(fIndexByName.Count = fNames.Length);
+end;
+
+
+
+//-----------------------------
 //           Columns
 //-----------------------------
+
+constructor IntColumn.Create(name: string; isCategorical: boolean);
+begin
+  inherited Create;
+  Info := new ColumnInfo(name, ctInt, isCategorical);
+
+  Data := new integer[0];
+  IsValid := nil;
+end;
 
 procedure IntColumn.AppendInvalid;
 begin
@@ -225,6 +466,14 @@ begin
     if IsValid <> nil then IsValid := IsValid + [true];
   end
   else AppendInvalid; 
+end;
+
+constructor FloatColumn.Create(name: string);
+begin
+  inherited Create;
+  Info := new ColumnInfo(name, ctFloat, false);
+  Data := new real[0];
+  IsValid := nil;
 end;
 
 procedure FloatColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
@@ -251,6 +500,15 @@ begin
   IsValid := IsValid + [false];
 end;
 
+constructor StrColumn.Create(name: string; isCategorical: boolean);
+begin
+  inherited Create;
+  Info := new ColumnInfo(name, ctStr, isCategorical);
+
+  Data := new string[0];
+  IsValid := nil;
+end;
+
 procedure StrColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
 begin
   if cur.IsValid(colIndex) then
@@ -273,6 +531,15 @@ begin
   end;
 
   IsValid := IsValid + [false];
+end;
+
+constructor BoolColumn.Create(name: string);
+begin
+  inherited Create;
+  Info := new ColumnInfo(name, ctBool, false);
+
+  Data := new boolean[0];
+  IsValid := nil;
 end;
 
 procedure BoolColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
@@ -349,14 +616,14 @@ end;
 //       DataFrameCursor
 //-----------------------------
 
-constructor DataFrameCursor.Create(cols: array of Column; colIndexByName: Dictionary<string, integer>);
+constructor DataFrameCursor.Create(cols: array of Column; schema: DataFrameSchema);
 begin
   pos := -1;
-  self.colIndexByName := colIndexByName;
+  self.fSchema := schema;
 
   if cols.Length = 0 then rowCnt := 0
   else
-    case cols[0].Info.ColType of
+    case fSchema.ColumnTypeAt(0) of
       ctInt:   rowCnt := IntColumn(cols[0]).Data.Length;
       ctFloat: rowCnt := FloatColumn(cols[0]).Data.Length;
       ctStr:   rowCnt := StrColumn(cols[0]).Data.Length;
@@ -376,52 +643,57 @@ begin
   begin
     var col := cols[i];
 
-    // IsValid
-    if col is IntColumn then
-    begin
-      var c := IntColumn(col);
-      if c.IsValid = nil then
-        validAcc[i] := pos -> true
-      else
-        validAcc[i] := pos -> c.IsValid[pos];
-
-      intAcc[i] := pos -> c.Data[pos];
-      floatAcc[i] := pos -> c.Data[pos];
-    end
-    else if col is FloatColumn then
-    begin
-      var c := FloatColumn(col);
-      if c.IsValid = nil then
-        validAcc[i] := pos -> true
-      else
-        validAcc[i] := pos -> c.IsValid[pos];
-
-      floatAcc[i] := pos -> c.Data[pos];
-      intAcc[i] := NotInt;
-    end
-    else if col is StrColumn then
-    begin
-      var c := StrColumn(col);
-      if c.IsValid = nil then
-        validAcc[i] := pos -> true
-      else
-        validAcc[i] := pos -> c.IsValid[pos];
-
-      strAcc[i] := pos -> c.Data[pos];
-    end
-    else if col is BoolColumn then
-    begin
-      var c := BoolColumn(col);
-      if c.IsValid = nil then
-        validAcc[i] := pos -> true
-      else
-        validAcc[i] := pos -> c.IsValid[pos];
-
-      boolAcc[i] := pos -> c.Data[pos];
-    end
+    case fSchema.ColumnTypeAt(i) of
+      ctInt:
+      begin
+        var c := IntColumn(col);
+        if c.IsValid = nil then
+          validAcc[i] := pos -> true
+        else
+          validAcc[i] := pos -> c.IsValid[pos];
+    
+        intAcc[i] := pos -> c.Data[pos];
+        floatAcc[i] := pos -> c.Data[pos];
+      end;
+    
+      ctFloat:
+      begin
+        var c := FloatColumn(col);
+        if c.IsValid = nil then
+          validAcc[i] := pos -> true
+        else
+          validAcc[i] := pos -> c.IsValid[pos];
+    
+        floatAcc[i] := pos -> c.Data[pos];
+        intAcc[i] := NotInt;
+      end;
+    
+      ctStr:
+      begin
+        var c := StrColumn(col);
+        if c.IsValid = nil then
+          validAcc[i] := pos -> true
+        else
+          validAcc[i] := pos -> c.IsValid[pos];
+    
+        strAcc[i] := pos -> c.Data[pos];
+      end;
+    
+      ctBool:
+      begin
+        var c := BoolColumn(col);
+        if c.IsValid = nil then
+          validAcc[i] := pos -> true
+        else
+          validAcc[i] := pos -> c.IsValid[pos];
+    
+        boolAcc[i] := pos -> c.Data[pos];
+      end;
+    
     else raise new Exception('Unknown column type');
+    end;
   end;
-end;
+end;  
 
 function DataFrameCursor.MoveNext: boolean;
 begin
@@ -436,7 +708,7 @@ function DataFrameCursor.IsValid(i: integer): boolean :=
   
 function DataFrameCursor.IsValid(name: string): boolean;
 begin
-  Result := IsValid(colIndexByName[name]);
+  Result := IsValid(fSchema.IndexOf(name));
 end;  
 
 function DataFrameCursor.Int(i: integer): integer :=
@@ -453,22 +725,22 @@ function DataFrameCursor.Bool(i: integer): boolean :=
   
 function DataFrameCursor.Int(name: string): integer;
 begin
-  Result := Int(colIndexByName[name]);
+  Result := Int(fSchema.IndexOf(name));
 end;
 
 function DataFrameCursor.Float(name: string): real;
 begin
-  Result := Float(colIndexByName[name]);
+  Result := Float(fSchema.IndexOf(name));
 end;
 
 function DataFrameCursor.Str(name: string): string;
 begin
-  Result := Str(colIndexByName[name]);
+  Result := Str(fSchema.IndexOf(name));
 end;
 
 function DataFrameCursor.Bool(name: string): boolean;
 begin
-  Result := Bool(colIndexByName[name]);
+  Result := Bool(fSchema.IndexOf(name));
 end;  
   
 procedure DataFrameCursor.MoveTo(p: integer);

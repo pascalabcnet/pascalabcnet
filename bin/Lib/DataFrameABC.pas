@@ -1,7 +1,8 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+// DataFrameABC v.1.1
 
-/// Стандартный модуль для работы с табличными данными (датасетами)
+/// Стандартный модуль для работы с табличными данными (датасетами) 
 /// !! DataFrame module for tabular data processing
 unit DataFrameABC;
 
@@ -34,20 +35,19 @@ type
   DataFrame = class
   private
     columns: List<Column>;
-    columnIndexByName: Dictionary<string, integer>;
-    
-    procedure RebuildColumnIndex;
-    function GetColumnIndex(name: string): integer;
-    function ResolveKeyIndices(keys: array of string): array of integer;
+    fschema: DataFrameSchema;
+
+    procedure RebuildSchema;
     
     // Join методы
-    function CreateInnerJoinResult(other: DataFrame; leftKeyIdx, rightKeyIdx: array of integer): DataFrame;
-    procedure AddColumnSchema(src: Column); // это сервисный метод добавления схемы - не данных! и только для join!
+    
     procedure AppendJoinedRow(leftCur, rightCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer);
     procedure AppendLeftOnlyRow(leftCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer);
     procedure AppendRightOnlyRow(rightCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer; leftColumnCount: integer);
     
     // Single key методы
+    {function DataFrame.JoinInnerSingleKey(other: DataFrame; leftKey, rightKey: integer;
+      resultSchema: DataFrameSchema): DataFrame;}
     function JoinInnerSingleKey(other: DataFrame; key: string): DataFrame;
     function JoinInnerSingleKeyInt(other: DataFrame; leftKey, rightKey: integer): DataFrame;
     function JoinInnerSingleKeyFloat(other: DataFrame; leftKey, rightKey: integer): DataFrame;
@@ -59,6 +59,9 @@ type
     function LeftJoinSingleKeyFloat(other: DataFrame; leftKey, rightKey: integer): DataFrame;
     function LeftJoinSingleKeyStr(other: DataFrame; leftKey, rightKey: integer): DataFrame;
     function LeftJoinSingleKeyBool(other: DataFrame; leftKey, rightKey: integer): DataFrame;
+    
+    function ReorderBySchema(schema: DataFrameSchema): DataFrame;
+    function RightJoinViaSchema(other: DataFrame; keys: array of string): DataFrame;
     
     function FullJoinSingleKey(other: DataFrame; key: string): DataFrame;
     
@@ -74,11 +77,22 @@ type
     
     procedure AssertSchemaConsistent; // Проверка инвариантов в Debug
     
+    constructor Create(cols: List<Column>; schema: DataFrameSchema);
+    
+    function BuildJoinSchema(right: DataFrame; leftKeys, rightKeys: array of integer; 
+      rightPrefix: string): DataFrameSchema;
+    function BuildJoinSchema(right: DataFrame; leftKeys, rightKeys: array of string): DataFrameSchema;
+
+    function CreateEmptyBySchema(schema: DataFrameSchema): DataFrame;
+    
   public
+    /// Схема DataFrame (имена/типы/categorical), не содержит данных
+    property Schema: DataFrameSchema read fschema;
+
     /// Добавляет в DataFrame столбец-представление (view),
     /// использующий те же данные, что и исходный столбец
     procedure AddColumnView(src: Column);
-  public
+
     /// Создает пустой DataFrame
     constructor Create;
     
@@ -86,8 +100,6 @@ type
     function RowCount: integer;
     /// Возвращает количество столбцов в DataFrame
     function ColumnCount: integer;
-    /// Возвращает массив имен всех столбцов
-    function ColumnNames: array of string;
     /// Возвращает тип столбца по номеру
     function GetColumnType(colIndex: integer): ColumnType;
     /// Возвращает индекс столбца по имени
@@ -360,25 +372,22 @@ type
 constructor DataFrame.Create;
 begin
   columns := [];
+  fschema := new DataFrameSchema([], []);
 end;
 
-function DataFrame.GetColumnIndex(name: string): integer;
+constructor DataFrame.Create(cols: List<Column>; schema: DataFrameSchema);
 begin
-  if columnIndexByName.ContainsKey(name) then
-    Result := columnIndexByName[name]
-  else
-    Result := -1;
-end;
+  if cols = nil then
+    raise new System.ArgumentException('cols is nil');
+  if schema = nil then
+    raise new System.ArgumentException('schema is nil');
+  if cols.Count <> schema.ColumnCount then
+    raise new System.ArgumentException('Columns count and schema mismatch');
 
-function DataFrame.ResolveKeyIndices(keys: array of string): array of integer;
-begin
-  Result := new integer[keys.Length];
-  for var i := 0 to keys.Length - 1 do
-  begin
-    if not columnIndexByName.ContainsKey(keys[i]) then
-      raise new Exception('Column not found: ' + keys[i]);
-    Result[i] := columnIndexByName[keys[i]];
-  end;
+  self.columns := cols;
+  self.fSchema := schema;
+
+  RebuildSchema;
 end;
 
 function DataFrame.BuildJoinKey(cur: DataFrameCursor; layout: JoinKeyLayout; var hasNA: boolean): JoinKey;
@@ -452,37 +461,6 @@ begin
       Result[key] := new List<integer>;
 
     Result[key].Add(cur.Position);
-  end;
-end;
-
-function DataFrame.CreateInnerJoinResult(other: DataFrame; leftKeyIdx, rightKeyIdx: array of integer): DataFrame;
-begin
-  Result := new DataFrame;
-
-  // ключевые столбцы (слева)
-  for var i := 0 to leftKeyIdx.Length - 1 do
-    Result.AddColumnSchema(columns[leftKeyIdx[i]]);
-
-  // остальные столбцы слева
-  for var j := 0 to columns.Count - 1 do
-    if not leftKeyIdx.Contains(j) then
-      Result.AddColumnSchema(columns[j]);
-
-  // остальные столбцы справа
-  for var j := 0 to other.columns.Count - 1 do
-    if not rightKeyIdx.Contains(j) then
-      Result.AddColumnSchema(other.columns[j]);
-    
-  Result.RebuildColumnIndex;  
-end;
-
-procedure DataFrame.AddColumnSchema(src: Column);
-begin
-  case src.Info.ColType of
-    ctInt:   AddIntColumn(src.Info.Name, new integer[0], nil, src.Info.IsCategorical);
-    ctFloat: AddFloatColumn(src.Info.Name, new real[0], nil);
-    ctStr:   AddStrColumn(src.Info.Name, new string[0], nil, src.Info.IsCategorical);
-    ctBool:  AddBoolColumn(src.Info.Name, new boolean[0], nil);
   end;
 end;
 
@@ -572,26 +550,26 @@ end;
 
 function DataFrame.LeftJoinSingleKey(other: DataFrame; key: string): DataFrame;
 begin
-  var leftKey := ResolveKeyIndices([key])[0];
-  var rightKey := other.ResolveKeyIndices([key])[0];
+  // 1. индексы ключей — через Schema
+  var leftKey := fSchema.IndexOf(key);
+  var rightKey := other.fSchema.IndexOf(key);
 
-  var lt := columns[leftKey].Info.ColType;
-  var rt := other.columns[rightKey].Info.ColType;
+  // 2. проверка типов ключей — через Schema
+  var lt := fSchema.ColumnTypeAt(leftKey);
+  var rt := other.fSchema.ColumnTypeAt(rightKey);
 
   if lt <> rt then
     raise new Exception('Join key types mismatch');
 
+  // 3. типоспецифичный алгоритм (КАК РАНЬШЕ)
   case lt of
-    ctInt:
-      Result := LeftJoinSingleKeyInt(other, leftKey, rightKey);
-    ctFloat:
-      Result := LeftJoinSingleKeyFloat(other, leftKey, rightKey);
-    ctStr:
-      Result := LeftJoinSingleKeyStr(other, leftKey, rightKey);
-    ctBool:
-      Result := LeftJoinSingleKeyBool(other, leftKey, rightKey);
+    ctInt:   Result := LeftJoinSingleKeyInt(other, leftKey, rightKey);
+    ctFloat: Result := LeftJoinSingleKeyFloat(other, leftKey, rightKey);
+    ctStr:   Result := LeftJoinSingleKeyStr(other, leftKey, rightKey);
+    ctBool:  Result := LeftJoinSingleKeyBool(other, leftKey, rightKey);
   end;
 end;
+
 
 
 function DataFrame.LeftJoinSingleKeyInt(other: DataFrame; leftKey, rightKey: integer): DataFrame;
@@ -609,7 +587,16 @@ begin
     index[k].Add(rcur.Position);
   end;
 
-  var res := CreateInnerJoinResult(other, [leftKey], [rightKey]);
+  //=== Заменяем на Schema
+  var schema := DataFrameSchema.Merge(
+    fSchema,
+    other.fSchema,
+    [leftKey],
+    [rightKey],
+    'right_'
+  );
+  var res := CreateEmptyBySchema(schema);
+  //=== 
 
   var lcur := GetCursor;
   while lcur.MoveNext do
@@ -652,7 +639,16 @@ begin
     index[k].Add(rcur.Position);
   end;
 
-  var res := CreateInnerJoinResult(other, [leftKey], [rightKey]);
+  //=== 
+  var schema := DataFrameSchema.Merge(
+    fSchema,
+    other.fSchema,
+    [leftKey],
+    [rightKey],
+    'right_'
+  );
+  var res := CreateEmptyBySchema(schema);
+  //=== 
 
   var lcur := GetCursor;
   while lcur.MoveNext do
@@ -693,7 +689,16 @@ begin
     index[k].Add(rcur.Position);
   end;
 
-  var res := CreateInnerJoinResult(other, [leftKey], [rightKey]);
+  //=== 
+  var schema := DataFrameSchema.Merge(
+    fSchema,
+    other.fSchema,
+    [leftKey],
+    [rightKey],
+    'right_'
+  );
+  var res := CreateEmptyBySchema(schema);
+  //=== 
 
   var lcur := GetCursor;
   while lcur.MoveNext do
@@ -734,7 +739,16 @@ begin
     index[k].Add(rcur.Position);
   end;
 
-  var res := CreateInnerJoinResult(other, [leftKey], [rightKey]);
+  //=== 
+  var schema := DataFrameSchema.Merge(
+    fSchema,
+    other.fSchema,
+    [leftKey],
+    [rightKey],
+    'right_'
+  );
+  var res := CreateEmptyBySchema(schema);
+  //=== 
 
   var lcur := GetCursor;
   while lcur.MoveNext do
@@ -763,15 +777,42 @@ end;
 
 function DataFrame.LeftJoinMultiKey(other: DataFrame; keys: array of string): DataFrame;
 begin
-  var leftKeyIdx := ResolveKeyIndices(keys);
-  var rightKeyIdx := other.ResolveKeyIndices(keys);
+  // 1. индексы ключей — через Schema
+  var n := keys.Length;
+  var leftKeyIdx := new integer[n];
+  var rightKeyIdx := new integer[n];
 
+  for var i := 0 to n - 1 do
+  begin
+    leftKeyIdx[i] := fSchema.IndexOf(keys[i]);
+    rightKeyIdx[i] := other.fSchema.IndexOf(keys[i]);
+  end;
+
+  // 2. проверка типов ключей — через Schema
+  for var i := 0 to n - 1 do
+    if fSchema.ColumnTypeAt(leftKeyIdx[i]) <>
+       other.fSchema.ColumnTypeAt(rightKeyIdx[i]) then
+      raise new Exception('Join key types mismatch');
+
+  // 3. layout'ы (как раньше)
   var leftLayout := BuildJoinKeyLayout(leftKeyIdx);
   var rightLayout := other.BuildJoinKeyLayout(rightKeyIdx);
 
+  // 4. hash index по правой таблице
   var hash := other.BuildHashIndex(rightLayout);
-  var res := CreateInnerJoinResult(other, leftKeyIdx, rightKeyIdx);
 
+  // 5. создаём результат 
+  var schema := DataFrameSchema.Merge(
+    fSchema,
+    other.fSchema,
+    leftKeyIdx,
+    rightKeyIdx,
+    'right_'
+  );
+  var res := CreateEmptyBySchema(schema);
+  //=== 
+
+  // 6. probe
   var lcur := GetCursor;
   var rcur := other.GetCursor;
 
@@ -795,11 +836,41 @@ begin
   Result := res;
 end;
 
+function DataFrame.ReorderBySchema(schema: DataFrameSchema): DataFrame;
+begin
+  var cols := new Column[schema.ColumnCount];
+
+  for var i := 0 to schema.ColumnCount - 1 do
+    cols[i] := columns[fSchema.IndexOf(schema.Names[i])];
+
+  Result := new DataFrame(cols.ToList, schema);
+end;
+
+function DataFrame.RightJoinViaSchema(other: DataFrame; keys: array of string): DataFrame;
+begin
+  // 1. Схема в порядке Self + other
+  var schema := Self.BuildJoinSchema(other, keys, keys);
+
+  // 2. Строки берём из перевёрнутого left join
+  var tmp := other.LeftJoinMultiKey(Self, keys);
+
+  // 3. ПЕРЕСОБИРАЕМ колонки по схеме
+  Result := tmp.ReorderBySchema(schema);
+end;
+
+
+
 function DataFrame.FullJoinSingleKey(other: DataFrame; key: string): DataFrame;
 begin
   // 1. Индексы ключей
-  var leftKeyIdx  := ResolveKeyIndices([key]);
-  var rightKeyIdx := other.ResolveKeyIndices([key]);
+  var li := fSchema.IndexOf(key);
+  var ri := other.fSchema.IndexOf(key);
+  
+  if (li < 0) or (ri < 0) then
+    raise new Exception($'Join key "{key}" not found');
+  
+  var leftKeyIdx  := [li];
+  var rightKeyIdx := [ri];
 
   // 2. Layout'ы ключей
   var leftLayout  := BuildJoinKeyLayout(leftKeyIdx);
@@ -809,7 +880,15 @@ begin
   var hash := other.BuildHashIndex(rightLayout);
 
   // 4. Результат (схема такая же, как у inner/left)
-  var res := CreateInnerJoinResult(other, leftKeyIdx, rightKeyIdx);
+  var schema := DataFrameSchema.Merge(
+    fSchema,
+    other.fSchema,
+    leftKeyIdx,
+    rightKeyIdx,
+    'right_'
+  );
+  var res := CreateEmptyBySchema(schema);
+  //=== 
 
   // 5. Курсоры
   var leftCur  := Self.GetCursor;
@@ -862,9 +941,15 @@ end;
 
 function DataFrame.FullJoinMultiKey(other: DataFrame; keys: array of string): DataFrame;
 begin
-  // 1. Индексы ключей (ОТЛИЧИЕ №1)
-  var leftKeyIdx  := ResolveKeyIndices(keys);
-  var rightKeyIdx := other.ResolveKeyIndices(keys);
+  // 1. Индексы ключей 
+  var leftKeyIdx  := new integer[keys.Length];
+  var rightKeyIdx := new integer[keys.Length];
+  
+  for var i := 0 to keys.Length - 1 do
+  begin
+    leftKeyIdx[i]  := fSchema.IndexOf(keys[i]);
+    rightKeyIdx[i] := other.fSchema.IndexOf(keys[i]);
+  end;
 
   // 2. Layout'ы ключей (ОТЛИЧИЕ №2)
   var leftLayout  := BuildJoinKeyLayout(leftKeyIdx);
@@ -874,7 +959,15 @@ begin
   var hash := other.BuildHashIndex(rightLayout);
 
   // 4. Результат
-  var res := CreateInnerJoinResult(other, leftKeyIdx, rightKeyIdx);
+  var schema := DataFrameSchema.Merge(
+    fSchema,
+    other.fSchema,
+    leftKeyIdx,
+    rightKeyIdx,
+    'right_'
+  );
+  var res := CreateEmptyBySchema(schema);
+  //=== 
 
   // 5. Курсоры
   var leftCur  := Self.GetCursor;
@@ -925,13 +1018,35 @@ begin
   Result := res;
 end;
 
+{function DataFrame.JoinInnerSingleKey(other: DataFrame; leftKey, rightKey: integer;
+  resultSchema: DataFrameSchema): DataFrame;
+begin
+  // типы ключей — ТОЛЬКО из Schema
+  var lt := fSchema.ColumnTypeAt(leftKey);
+  var rt := other.fSchema.ColumnTypeAt(rightKey);
+
+  if lt <> rt then
+    raise new Exception('Join key types mismatch');
+
+  case lt of
+    ctInt:
+      Result := JoinInnerSingleKeyInt(other, leftKey, rightKey, resultSchema);
+    ctFloat:
+      Result := JoinInnerSingleKeyFloat(other, leftKey, rightKey, resultSchema);
+    ctStr:
+      Result := JoinInnerSingleKeyStr(other, leftKey, rightKey, resultSchema);
+    ctBool:
+      Result := JoinInnerSingleKeyBool(other, leftKey, rightKey, resultSchema);
+  end;
+end;}
+
 function DataFrame.JoinInnerSingleKey(other: DataFrame; key: string): DataFrame;
 begin
-  var leftKey := ResolveKeyIndices([key])[0];
-  var rightKey := other.ResolveKeyIndices([key])[0];
+  var leftKey := fSchema.IndexOf(key);
+  var rightKey := other.fSchema.IndexOf(key);
 
-  var lt := columns[leftKey].Info.ColType;
-  var rt := other.columns[rightKey].Info.ColType;
+  var lt := fSchema.ColumnTypeAt(leftKey);
+  var rt := other.fSchema.ColumnTypeAt(rightKey);
 
   if lt <> rt then
     raise new Exception('Join key types mismatch');
@@ -959,7 +1074,16 @@ begin
     index[k].Add(rcur.Position);
   end;
 
-  var res := CreateInnerJoinResult(other, [leftKey], [rightKey]);
+  //=== 
+  var schema := DataFrameSchema.Merge(
+    fSchema,
+    other.fSchema,
+    [leftKey],
+    [rightKey],
+    'right_'
+  );
+  var res := CreateEmptyBySchema(schema);
+  //=== 
 
   var lcur := GetCursor;
   while lcur.MoveNext do
@@ -994,8 +1118,17 @@ begin
     index[k].Add(rcur.Position);
   end;
 
-  var res := CreateInnerJoinResult(other, [leftKey], [rightKey]);
-
+  //=== 
+  var schema := DataFrameSchema.Merge(
+    fSchema,
+    other.fSchema,
+    [leftKey],
+    [rightKey],
+    'right_'
+  );
+  var res := CreateEmptyBySchema(schema);
+  //=== 
+  
   var lcur := GetCursor;
   while lcur.MoveNext do
   begin
@@ -1029,8 +1162,17 @@ begin
     index[k].Add(rcur.Position);
   end;
 
-  var res := CreateInnerJoinResult(other, [leftKey], [rightKey]);
-
+  //=== 
+  var schema := DataFrameSchema.Merge(
+    fSchema,
+    other.fSchema,
+    [leftKey],
+    [rightKey],
+    'right_'
+  );
+  var res := CreateEmptyBySchema(schema);
+  //=== 
+  
   var lcur := GetCursor;
   while lcur.MoveNext do
   begin
@@ -1064,8 +1206,17 @@ begin
     index[k].Add(rcur.Position);
   end;
 
-  var res := CreateInnerJoinResult(other, [leftKey], [rightKey]);
-
+  //=== 
+  var schema := DataFrameSchema.Merge(
+    fSchema,
+    other.fSchema,
+    [leftKey],
+    [rightKey],
+    'right_'
+  );
+  var res := CreateEmptyBySchema(schema);
+  //=== 
+  
   var lcur := GetCursor;
   while lcur.MoveNext do
   begin
@@ -1086,21 +1237,42 @@ end;
 
 function DataFrame.JoinInnerMultiKey(other: DataFrame; keys: array of string): DataFrame;
 begin
-  // 1. разрешаем индексы ключей
-  var leftKeyIdx := ResolveKeyIndices(keys);
-  var rightKeyIdx := other.ResolveKeyIndices(keys);
+  // 1. индексы ключей — через Schema
+  var n := keys.Length;
+  var leftKeyIdx := new integer[n];
+  var rightKeyIdx := new integer[n];
 
-  // 2. строим layout'ы
+  for var i := 0 to n - 1 do
+  begin
+    leftKeyIdx[i] := fSchema.IndexOf(keys[i]);
+    rightKeyIdx[i] := other.fSchema.IndexOf(keys[i]);
+  end;
+
+  // 2. проверка типов ключей — через Schema
+  for var i := 0 to n - 1 do
+    if fSchema.ColumnTypeAt(leftKeyIdx[i]) <>
+       other.fSchema.ColumnTypeAt(rightKeyIdx[i]) then
+      raise new Exception('Join key types mismatch');
+
+  // 3. строим layout'ы
   var leftLayout := BuildJoinKeyLayout(leftKeyIdx);
   var rightLayout := other.BuildJoinKeyLayout(rightKeyIdx);
 
-  // 3. hash index по правой таблице
+  // 4. hash index по правой таблице
   var hash := other.BuildHashIndex(rightLayout);
 
-  // 4. создаём результат
-  var res := CreateInnerJoinResult(other, leftKeyIdx, rightKeyIdx);
-
-  // 5. probe
+  // 5. создаём результат 
+  var schema := DataFrameSchema.Merge(
+    fSchema,
+    other.fSchema,
+    leftKeyIdx,
+    rightKeyIdx,
+    'right_'
+  );
+  var res := CreateEmptyBySchema(schema);
+  //=== 
+  
+  // 6. probe
   var lcur := GetCursor;
   var rcur := other.GetCursor;
 
@@ -1122,7 +1294,6 @@ begin
   Result := res;
 end;
 
-
 function DataFrame.BuildJoinKeyLayout(keyIndices: array of integer): JoinKeyLayout;
 begin
   Result.ColIndices := keyIndices;
@@ -1133,6 +1304,11 @@ end;
 
 function DataFrame.Join(other: DataFrame; keys: array of string; kind: JoinKind): DataFrame;
 begin
+  /// NOTE:
+  /// Join result structure is fully defined by DataFrameSchema.
+  /// Any post-hoc column reordering (Select, Rename) inside Join
+  /// is deprecated and must not be used.
+  
   if kind = jkInner then
     if keys.Length = 1 then
       exit(JoinInnerSingleKey(other, keys[0]))
@@ -1146,15 +1322,7 @@ begin
       exit(LeftJoinMultiKey(other, keys));
 
   if kind = jkRight then
-  begin
-    // 1. Меняем фреймы местами
-    var tmp := other.Join(Self, keys, jkLeft);
-
-    // 2. Приводим порядок столбцов
-    var cols := Self.ColumnNames + other.ColumnNames;
-
-    exit(tmp.Select(cols));
-  end;
+    exit(RightJoinViaSchema(other, keys));
   
   if kind = jkFull then
     if keys.Length = 1 then
@@ -1190,18 +1358,29 @@ begin
   AssertSchemaConsistent;
 end;
 
-procedure DataFrame.RebuildColumnIndex;
+procedure DataFrame.RebuildSchema;
 begin
-  columnIndexByName := new Dictionary<string, integer>;
-  for var i := 0 to columns.Count - 1 do
-    columnIndexByName[columns[i].Info.Name] := i;
-end;
+  var n := columns.Count;
+  var names := new string[n];
+  var types := new ColumnType[n];
+  var anyCat := false;
 
-function DataFrame.ColumnNames: array of string;
-begin
-  Result := new string[columns.Count];
-  for var i := 0 to columns.Count - 1 do
-    Result[i] := columns[i].Info.Name;
+  for var i := 0 to n - 1 do
+  begin
+    var info := columns[i].Info;
+    names[i] := info.Name;
+    types[i] := info.ColType;
+    if info.IsCategorical then anyCat := true;
+  end;
+
+  if not anyCat then
+    fschema := new DataFrameSchema(names, types)
+  else
+  begin
+    var cats := new boolean[n];
+    for var i := 0 to n - 1 do cats[i] := columns[i].Info.IsCategorical;
+    fschema := new DataFrameSchema(names, types, cats);
+  end;
 end;
 
 function DataFrame.GetColumnType(colIndex: integer): ColumnType;
@@ -1227,7 +1406,7 @@ begin
 end;
 
 function DataFrame.GetCursor: DataFrameCursor :=
-  new DataFrameCursor(columns.ToArray,columnIndexByName);
+  new DataFrameCursor(columns.ToArray,fSchema);
   
 function DataFrame.GetIntColumn(name: string): array of integer;
 begin
@@ -1250,7 +1429,7 @@ begin
   c.Data := data;
   c.IsValid := valid;
   columns.Add(c);
-  RebuildColumnIndex;
+  RebuildSchema;
 end;
 
 procedure DataFrame.AddFloatColumn(name: string; data: array of real; valid: array of boolean);
@@ -1264,7 +1443,7 @@ begin
   c.IsValid := valid;
 
   columns.Add(c);
-  RebuildColumnIndex;
+  RebuildSchema;
 end;
 
 procedure DataFrame.AddStrColumn(name: string; data: array of string; valid: array of boolean; isCategorical: boolean);
@@ -1278,7 +1457,7 @@ begin
   c.IsValid := valid;
 
   columns.Add(c);
-  RebuildColumnIndex;
+  RebuildSchema;
 end;
 
 procedure DataFrame.AddBoolColumn(name: string; data: array of boolean; valid: array of boolean);
@@ -1292,7 +1471,7 @@ begin
   c.IsValid := valid;
 
   columns.Add(c);
-  RebuildColumnIndex;
+  RebuildSchema;
 end;
 
 
@@ -1361,7 +1540,7 @@ function DataFrame.Mean(colName: string): real
 function DataFrame.Median(colIndex: integer): real;
 begin
   CheckColumnIndex(colIndex);
-  Result := Statistics.Median(Self, ColumnNames[colIndex]);
+  Result := Statistics.Median(Self, fSchema.Names[colIndex]);
 end; 
 
 function DataFrame.Median(colName: string): real;
@@ -1951,7 +2130,7 @@ begin
 end;
 
 
-function DataFrame.Select(colIndices: array of integer): DataFrame;
+{function DataFrame.Select(colIndices: array of integer): DataFrame;
 begin
   var res := new DataFrame;
 
@@ -2010,58 +2189,45 @@ begin
   Result := res;
 
   AssertSchemaConsistent;
+end;}
+
+function DataFrame.Select(colIndices: array of integer): DataFrame;
+begin
+  foreach var i in colIndices do
+    CheckColumnIndex(i);
+
+  var newSchema := fSchema.Select(colIndices);
+  var newColumns := new List<Column>;
+
+  foreach var i in colIndices do
+    newColumns.Add(columns[i]);
+
+  Result := new DataFrame(newColumns, newSchema);
 end;
 
 function DataFrame.Select(colNames: array of string): DataFrame;
 begin
-  Result := Select(colNames.Select(n -> ColumnIndex(n)).ToArray);
+  var indices := new integer[colNames.Length];
+
+  for var i := 0 to colNames.Length - 1 do
+    indices[i] := fSchema.IndexOf(colNames[i]);
+
+  Result := Select(indices);
 end;
+
 
 function DataFrame.Rename(colIndex: integer; newName: string): DataFrame;
 begin
   CheckColumnIndex(colIndex);
-  
-  var oldName := columns[colIndex].Info.Name;
-  if (newName <> oldName) and columnIndexByName.ContainsKey(newName) then
-    raise new Exception($'Column "{newName}" already exists');
-  var res := new DataFrame;
 
-  for var i := 0 to columns.Count - 1 do
-  begin
-    var col := columns[i];
-    var name := if i = colIndex then newName else col.Info.Name;
+  var oldName := fSchema.NameAt(colIndex);
+  if oldName = newName then
+    exit(Self);
 
-    case col.Info.ColType of
-      ctInt:
-      begin
-        var c := IntColumn(col);
-        res.AddIntColumn(name, c.Data, c.IsValid, c.Info.IsCategorical);
-      end;
-
-      ctStr:
-      begin
-        var c := StrColumn(col);
-        res.AddStrColumn(name, c.Data, c.IsValid, c.Info.IsCategorical);
-      end;
-
-      ctFloat:
-      begin
-        var c := FloatColumn(col);
-        res.AddFloatColumn(name, c.Data, c.IsValid);
-      end;
-
-      ctBool:
-      begin
-        var c := BoolColumn(col);
-        res.AddBoolColumn(name, c.Data, c.IsValid);
-      end;
-    end;
-  end;
-
-  Result := res;
-
-  AssertSchemaConsistent;
+  var newSchema := fSchema.Rename(oldName, newName);
+  Result := new DataFrame(columns, newSchema);
 end;
+
 
 function DataFrame.Rename(oldName, newName: string): DataFrame;
 begin
@@ -2115,33 +2281,86 @@ end;
 
 function DataFrame.Drop(colIndices: array of integer): DataFrame;
 begin
-  // проверяем индексы
   foreach var i in colIndices do
     CheckColumnIndex(i);
 
-  // помечаем удаляемые столбцы
   var drop := new boolean[columns.Count];
   foreach var i in colIndices do
     drop[i] := true;
 
-  // собираем список оставшихся
   var keep := new List<integer>;
   for var i := 0 to columns.Count - 1 do
     if not drop[i] then
       keep.Add(i);
 
-  // переиспользуем Select
   Result := Select(keep.ToArray);
 end;
 
 function DataFrame.Drop(colNames: array of string): DataFrame;
 begin
-  Result := Drop(colNames.Select(n -> ColumnIndex(n)).ToArray);
+  var indices := new integer[colNames.Length];
+
+  for var i := 0 to colNames.Length - 1 do
+    indices[i] := fSchema.IndexOf(colNames[i]);
+
+  Result := Drop(indices);
+end;
+
+function DataFrame.BuildJoinSchema(right: DataFrame; leftKeys, rightKeys: array of integer;
+  rightPrefix: string): DataFrameSchema;
+begin
+  Result := DataFrameSchema.Merge(
+    fSchema,
+    right.fSchema,
+    leftKeys,
+    rightKeys,
+    rightPrefix
+  );
+end;
+
+function DataFrame.BuildJoinSchema(right: DataFrame; leftKeys, rightKeys: array of string): DataFrameSchema;
+begin
+  var leftIdx := new integer[leftKeys.Length];
+  var rightIdx := new integer[rightKeys.Length];
+
+  for var i := 0 to leftKeys.Length - 1 do
+  begin
+    leftIdx[i] := fSchema.IndexOf(leftKeys[i]);
+    rightIdx[i] := right.fSchema.IndexOf(rightKeys[i]);
+  end;
+
+  Result := BuildJoinSchema(
+    right,
+    leftIdx,
+    rightIdx,
+    'right_'
+  );
+end;
+
+function DataFrame.CreateEmptyBySchema(schema: DataFrameSchema): DataFrame;
+begin
+  var cols := new List<Column>;
+
+  for var i := 0 to schema.ColumnCount - 1 do
+  begin
+    case schema.Types[i] of
+      ctInt:
+        cols.Add(new IntColumn(schema.Names[i], schema.IsCategorical[i]));
+      ctFloat:
+        cols.Add(new FloatColumn(schema.Names[i]));
+      ctStr:
+        cols.Add(new StrColumn(schema.Names[i], schema.IsCategorical[i]));
+      ctBool:
+        cols.Add(new BoolColumn(schema.Names[i]));
+    end;
+  end;
+
+  Result := new DataFrame(cols, schema);
 end;
 
 function DataFrame.WithColumnInt(name: string; f: DataFrameCursor -> integer): DataFrame;
 begin
-  if columnIndexByName.ContainsKey(name) then
+  if fSchema.HasColumn(name) then
     raise new Exception($'Column "{name}" already exists');
   
   var res := new DataFrame;
@@ -2218,7 +2437,7 @@ end;
 
 function DataFrame.WithColumnFloat(name: string; f: DataFrameCursor -> real): DataFrame;
 begin
-  if columnIndexByName.ContainsKey(name) then
+  if fSchema.HasColumn(name) then
     raise new Exception($'Column "{name}" already exists');
   
   var res := new DataFrame;
@@ -2269,7 +2488,7 @@ end;
 
 function DataFrame.WithColumnStr(name: string; f: DataFrameCursor -> string): DataFrame;
 begin
-  if columnIndexByName.ContainsKey(name) then
+  if fSchema.HasColumn(name) then
     raise new Exception($'Column "{name}" already exists');
   
   var res := new DataFrame;
@@ -2320,7 +2539,7 @@ end;
 
 function DataFrame.WithColumnBool(name: string; f: DataFrameCursor -> boolean): DataFrame;
 begin
-  if columnIndexByName.ContainsKey(name) then
+  if fSchema.HasColumn(name) then
     raise new Exception($'Column "{name}" already exists');
   
   var res := new DataFrame;
@@ -2528,6 +2747,7 @@ end;}
 
 procedure DataFrame.PrintPreview(maxRows: integer; headRows: integer; decimals: integer);
 begin
+  var ColumnSeparator := ' ';
   var colCount := columns.Count;
   if colCount = 0 then exit;
 
@@ -2641,7 +2861,7 @@ begin
       if columns[j].Info.ColType = ctFloat
       then intWidth[j] + 1 + decimals
       else widths[j];
-    PABCSystem.Print(columns[j].Info.Name.PadLeft(w) + '  ');
+    PABCSystem.Print(columns[j].Info.Name.PadLeft(w) + ColumnSeparator);
   end;
   PABCSystem.Println;
 
@@ -2684,7 +2904,7 @@ begin
   begin
     cursor.MoveTo(i);
     for var j := 0 to colCount - 1 do
-      PABCSystem.Print(FormatValue(j) + '  ');
+      PABCSystem.Print(FormatValue(j) + ColumnSeparator);
     PABCSystem.Println;
   end;
 
@@ -2701,7 +2921,7 @@ begin
       else
         w := widths[j];
   
-      PABCSystem.Print($'…'.PadLeft(w) + '  ');
+      PABCSystem.Print($'…'.PadLeft(w) + ColumnSeparator);
     end;
     PABCSystem.Println;
   end;
@@ -2712,7 +2932,7 @@ begin
     begin
       cursor.MoveTo(i);
       for var j := 0 to colCount - 1 do
-        PABCSystem.Print(FormatValue(j) + '  ');
+        PABCSystem.Print(FormatValue(j) + ColumnSeparator);
       PABCSystem.Println;
     end;
 end;
@@ -2736,12 +2956,12 @@ end;
 
 procedure DataFrame.PrintSchema;
 begin
-  var nameWidth := ColumnNames.Max(s -> s.Length);
+  var nameWidth := fSchema.Names.Max(s -> s.Length);
   var typeWidth := 6; // Int / Float / Bool
 
   for var i := 0 to ColumnCount - 1 do
   begin
-    var name := ColumnNames[i].PadRight(nameWidth);
+    var name := fSchema.Names[i].PadRight(nameWidth);
     var typ := GetColumnType(i).ToString.Replace('ct','').PadRight(typeWidth);
     PABCSystem.Println($'{name} : {typ}');
   end;
@@ -2752,7 +2972,7 @@ begin
   PABCSystem.Println($'Rows    : {RowCount}');
   PABCSystem.Println($'Columns : {ColumnCount}');
 
-  var nameWidth := ColumnNames.Max(s -> s.Length);
+  var nameWidth := fSchema.Names.Max(s -> s.Length);
   var typeWidth := 6; // Int / Float / Bool
   var infoWidth := nameWidth + 3 + typeWidth + 12;
 
@@ -2760,7 +2980,7 @@ begin
 
   for var i := 0 to ColumnCount - 1 do
   begin
-    var name := ColumnNames[i].PadRight(nameWidth);
+    var name := fSchema.Names[i].PadRight(nameWidth);
     var typ := GetColumnType(i).ToString.Replace('ct','').PadRight(typeWidth);
     var cnt := Count(i);
     PABCSystem.Println($'{name} : {typ} ({cnt} non-NA)');
@@ -2773,14 +2993,6 @@ procedure DataFrame.AssertSchemaConsistent;
 begin
   {$IFDEF Test}
 
-  // --- 0. пустой DataFrame ---
-  if columns.Count = 0 then
-  begin
-    if columnIndexByName.Count <> 0 then
-      raise new Exception('Schema inconsistent: no columns but columnIndexByName not empty');
-    exit;
-  end;
-
   // --- 1. одинаковая RowCount у всех столбцов ---
   var rc := columns[0].RowCount;
   for var i := 1 to columns.Count - 1 do
@@ -2789,26 +3001,26 @@ begin
         $'Schema inconsistent: column "{columns[i].Info.Name}" has RowCount={columns[i].RowCount}, expected {rc}'
       );
 
-  // --- 2. columnIndexByName.Count = columns.Count ---
-  if columnIndexByName.Count <> columns.Count then
+  // --- 2. fschema.ColumnCount = columns.Count ---
+  if fschema.ColumnCount <> columns.Count then
     raise new Exception(
-      $'Schema inconsistent: columnIndexByName.Count={columnIndexByName.Count}, columns.Count={columns.Count}'
-    );
+      $'Schema inconsistent: ColumnCount={fschema.ColumnCount}, columns.Count={columns.Count}'
+  );
 
   // --- 3. имена уникальны и корректно индексированы ---
   for var i := 0 to columns.Count - 1 do
   begin
     var name := columns[i].Info.Name;
 
-    if not columnIndexByName.ContainsKey(name) then
+    if not fSchema.HasColumn(name) then
       raise new Exception(
-        $'Schema inconsistent: column "{name}" missing in columnIndexByName'
+        $'Schema inconsistent: column "{name}" missing in schema'
       );
-
-    var idx := columnIndexByName[name];
+      
+    var idx := GetColumnIndex(name);
     if idx <> i then
       raise new Exception(
-        $'Schema inconsistent: columnIndexByName["{name}"]={idx}, expected {i}'
+        $'Schema inconsistent: GetColumnIndex("{name}")={idx}, expected {i}'
       );
   end;
 
@@ -3401,7 +3613,7 @@ begin
   // выбираем только числовые столбцы
   for var i := 0 to df.ColumnCount - 1 do
     if df.GetColumnType(i) in [ColumnType.ctInt, ColumnType.ctFloat] then
-      names.Add(df.ColumnNames[i]);
+      names.Add(df.fSchema.Names[i]);
 
   var n := names.Count;
   if n = 0 then
@@ -3464,7 +3676,7 @@ begin
       means[i] := df.Mean(i);
       stds[i] := df.Std(i);
       if stds[i] = 0 then
-        raise new Exception($'Zero std in column {df.ColumnNames[i]}');
+        raise new Exception($'Zero std in column {df.fSchema.Names[i]}');
       isNumeric[i] := true;
     end;
   end;
@@ -3473,7 +3685,7 @@ begin
   for var i := 0 to df.ColumnCount - 1 do
   begin
     if isNumeric[i] then
-      res.AddFloatColumn(df.ColumnNames[i], new real[df.RowCount], nil)
+      res.AddFloatColumn(df.fSchema.Names[i], new real[df.RowCount], nil)
     else
       res.AddColumnView(df.columns[i]); // private helper
   end;
@@ -3545,7 +3757,7 @@ begin
     begin
       var (mn, mx) := df.MinMax(i);
       if mn = mx then
-        raise new Exception($'Zero range in column {df.ColumnNames[i]}');
+        raise new Exception($'Zero range in column {df.fSchema.Names[i]}');
       mins[i] := mn;
       maxs[i] := mx;
       isNumeric[i] := true;
@@ -3556,7 +3768,7 @@ begin
   for var i := 0 to df.ColumnCount - 1 do
   begin
     if isNumeric[i] then
-      res.AddFloatColumn(df.ColumnNames[i], new real[df.RowCount], nil)
+      res.AddFloatColumn(df.fSchema.Names[i], new real[df.RowCount], nil)
     else
       res.AddColumnView(df.columns[i]); // private helper
   end;
@@ -3999,12 +4211,25 @@ begin
   else
     missing := new HashSet<string>(missingValues);
 
+  var raw := lines.ToArray;
+  
+  // исключаем пустые строки в начале и конце
+  var l := 0;
+  while (l < raw.Length) and (raw[l].Trim = '') do
+    l += 1;
+  
+  var r := raw.Length;
+  while (r > l) and (raw[r-1].Trim = '') do
+    r -= 1;
+  
+  var linesArray := raw[l:r];
+  
   // ---------- PASS 1: headers + infer ----------
-  var linesArray := lines.ToArray;
-
   var headers: array of string := nil;
   var colCount := 0;
   var rowCount := linesArray.Count;
+  if hasHeader then
+    rowCount -= 1;
   
   var canBool, canInt, canFloat: array of boolean;
   (canBool, canInt, canFloat) := (nil, nil, nil);
