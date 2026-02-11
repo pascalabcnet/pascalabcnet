@@ -86,7 +86,7 @@ type
     function CreateEmptyBySchema(schema: DataFrameSchema): DataFrame;
     
   public
-    /// Схема DataFrame (имена/типы/categorical), не содержит данных
+    /// Схема DataFrame: имена, типы и признаки категориальности
     property Schema: DataFrameSchema read fschema;
 
     /// Добавляет в DataFrame столбец-представление (view),
@@ -114,7 +114,7 @@ type
     procedure AddFloatColumn(name: string; data: array of real; valid: array of boolean);
     /// Добавляет строковый столбец
     procedure AddStrColumn(name: string; data: array of string; valid: array of boolean; isCategorical: boolean := true);
-    /// Добавляет булев столбец
+    /// Добавляет столбец логических значений
     procedure AddBoolColumn(name: string; data: array of boolean; valid: array of boolean);
     
     /// Возвращает данные целочисленного столбца по имени
@@ -122,132 +122,137 @@ type
     /// Возвращает данные вещественного столбца по имени
     function GetFloatColumn(name: string): array of real;
     
-    /// Вычисляет сумму значений в столбце по индексу
+    /// Вычисляет сумму значений столбца по индексу
     function Sum(colIndex: integer): real; 
-    /// Вычисляет сумму значений в столбце по имени
+    /// Вычисляет сумму значений столбца по имени
     function Sum(colName: string): real; 
     /// Подсчитывает количество валидных значений в столбце по индексу
     function Count(colIndex: integer): integer; 
     /// Подсчитывает количество валидных значений в столбце по имени
     function Count(colName: string): integer; 
-    /// Вычисляет среднее значение в столбце по индексу
+    /// Вычисляет среднее значение столбца по индексу
     function Mean(colIndex: integer): real; 
-    /// Вычисляет среднее значение в столбце по имени
+    /// Вычисляет среднее значение столбца по имени
     function Mean(colName: string): real; 
     /// Вычисляет медиану по валидным (non-NA) значениям столбца по индексу
     function Median(colIndex: integer): real;
     /// Вычисляет медиану по валидным (non-NA) значениям столбца по имени
     function Median(colName: string): real;
-    /// Находит минимальное значение в столбце по индексу
+    /// Находит минимальное значение столбца по индексу
     function Min(colIndex: integer): real; 
-    /// Находит минимальное значение в столбце по имени
+    /// Находит минимальное значение столбца по имени
     function Min(colName: string): real; 
-    /// Находит максимальное значение в столбце по индексу
+    /// Находит максимальное значение столбца по индексу
     function Max(colIndex: integer): real;
-    /// Находит максимальное значение в столбце по имени
+    /// Находит максимальное значение столбца по имени
     function Max(colName: string): real;
-    /// Находит минимальное и максимальное значения в столбце по индексу
+    /// Находит минимальное и максимальное значения столбца по индексу
     function MinMax(colIndex: integer): (real, real); 
-    /// Находит минимальное и максимальное значения в столбце по имени
+    /// Находит минимальное и максимальное значения столбца по имени
     function MinMax(colName: string): (real, real); 
-    /// Вычисляет дисперсию значений в столбце по индексу
+    /// Вычисляет дисперсию значений столбца по индексу
     function Variance(colIndex: integer): real; 
-    /// Вычисляет дисперсию значений в столбце по имени
+    /// Вычисляет дисперсию значений столбца по имени
     function Variance(colName: string): real; 
-    /// Вычисляет стандартное отклонение в столбце по индексу
+    /// Вычисляет стандартное отклонение столбца по индексу
     function Std(colIndex: integer): real; 
-    /// Вычисляет стандартное отклонение в столбце по имени
+    /// Вычисляет стандартное отклонение столбца по имени
     function Std(colName: string): real; 
-    /// Вычисляет среднее и дисперсию в столбце по индексу
+    /// Вычисляет среднее и дисперсию столбца по индексу
     function MeanVariance(colIndex: integer): (real, real); 
-    /// Вычисляет среднее и дисперсию в столбце по имени
+    /// Вычисляет среднее и дисперсию столбца по имени
     function MeanVariance(colName: string): (real, real); 
     
-    /// Возвращает полную статистику по столбцу по индексу
+    /// Возвращает статистику столбца по индексу
     function Describe(colIndex: integer): DescribeStats; 
-    /// Возвращает полную статистику по столбцу по имени
+    /// Возвращает статистику столбца по имени
     function Describe(colName: string): DescribeStats; 
     /// Возвращает статистику по нескольким столбцам по именам
     function Describe(colNames: array of string): Dictionary<string, DescribeStats>; 
     /// Возвращает статистику по нескольким столбцам по индексам
     function Describe(colIndices: array of integer): Dictionary<integer, DescribeStats>; 
-    /// Возвращает статистику по всем числовым столбцам
+    /// Возвращает статистику по всем числовым столбц ам
     function DescribeAll: Dictionary<string, DescribeStats>; 
     
-    /// Группирует данные по одному столбцу по индексу
+    /// Группирует данные по столбцу по индексу
     function GroupBy(colIndex: integer): IGroupByContext; 
-    /// Группирует данные по одному столбцу по имени
+    /// Группирует данные по столбцу по имени
     function GroupBy(colName: string): IGroupByContext; 
     /// Группирует данные по нескольким столбцам по индексам
     function GroupBy(colIndices: array of integer): IGroupByContext; 
     /// Группирует данные по нескольким столбцам по именам
     function GroupBy(colNames: array of string): IGroupByContext; 
     
-    /// Возвращает первые n строк DataFrame
+    /// Возвращает первые n строк 
     function Head(n: integer): DataFrame;
-    /// Возвращает последние n строк DataFrame
+    /// Возвращает последние n строк 
     function Tail(n: integer): DataFrame;
     
     /// Фильтрует строки по предикату
     function Filter(pred: CursorPredicate): DataFrame;
-    /// Выбирает указанные столбцы по индексам (семантика view)
+    /// Выбирает столбцы по индексам
     function Select(colIndices: array of integer): DataFrame; 
-    /// Выбирает указанные столбцы по именам
+    /// Выбирает столбцы по именам
     function Select(colNames: array of string): DataFrame; 
-    /// Сортирует DataFrame по одному столбцу по индексу
+    /// Сортирует по столбцу по индексу
     function SortBy(colIndex: integer; descending: boolean := false): DataFrame; 
-    /// Сортирует DataFrame по одному столбцу по имени
+    /// Сортирует по столбцу по имени
     function SortBy(colName: string; descending: boolean := false): DataFrame; 
-    /// Сортирует DataFrame по нескольким столбцам по индексам
+    /// Сортирует по нескольким столбцам по индексам
     function SortBy(colIndices: array of integer; descending: array of boolean): DataFrame; 
-    /// Сортирует DataFrame по нескольким столбцам по именам
+    /// Сортирует по нескольким столбцам по именам
     function SortBy(colNames: array of string; descending: array of boolean): DataFrame; 
     
-    /// Удаляет указанные столбцы по индексам
+    /// Удаляет столбцы по индексам
     function Drop(colIndices: array of integer): DataFrame; 
-    /// Удаляет указанные столбцы по именам
+    /// Удаляет столбцы по именам
     function Drop(colNames: array of string): DataFrame; 
     
     /// Переименовывает столбец по индексу
     function Rename(colIndex: integer; newName: string): DataFrame; 
-    /// Переименовывает столбец по старому имени
+    /// Переименовывает столбец по имени
     function Rename(oldName, newName: string): DataFrame; 
     /// Переименовывает несколько столбцов
     function Rename(pairs: array of (string, string)): DataFrame; 
     
-    /// Добавляет вычисляемый столбец целых чисел
+    /// Добавляет вычисляемый целочисленный столбец
     function WithColumnInt(name: string; f: DataFrameCursor -> integer): DataFrame;
-    /// Добавляет вычисляемый столбец целых чисел (сокращенная версия)
+    /// Добавляет вычисляемый целочисленный столбец
     function WithColumn(name: string; f: DataFrameCursor -> integer): DataFrame := WithColumnInt(name, f);
-    /// Добавляет вычисляемый столбец вещественных чисел
+    /// Добавляет вычисляемый вещественный столбец
     function WithColumnFloat(name: string; f: DataFrameCursor -> real): DataFrame;
     /// Добавляет вычисляемый строковый столбец
     function WithColumnStr(name: string; f: DataFrameCursor -> string): DataFrame;
-    /// Добавляет вычисляемый булев столбец
+    /// Добавляет вычисляемый логический столбец
     function WithColumnBool(name: string; f: DataFrameCursor -> boolean): DataFrame;
     
     /// Заменяет существующий числовой столбец, пересчитывая его по функции от курсора
     /// Пропущенные значения (NA) сохраняются
     function ReplaceColumnFloat(colName: string; f: DataFrameCursor -> real): DataFrame;
+    /// Заменяет существующий числовой столбец, пересчитывая его по функции от курсора
+    /// Пропущенные значения (NA) сохраняются
+    function ReplaceColumnInt(colName: string; f: DataFrameCursor -> integer): DataFrame;
     
-    /// Соединяет с другим DataFrame по нескольким ключам
-    function Join(other: DataFrame; keys: array of string; kind: JoinKind := jkInner): DataFrame; 
+    function AddDerivedIntColumn(name: string; f: DataFrameCursor -> integer): DataFrame;
+    
     /// Соединяет с другим DataFrame по одному ключу
     function Join(other: DataFrame; key: string; kind: JoinKind := jkInner): DataFrame; 
+    /// Соединяет с другим DataFrame по нескольким ключам
+    function Join(other: DataFrame; keys: array of string; kind: JoinKind := jkInner): DataFrame; 
     /// Соединяет с другим DataFrame по разным именам ключей
     function Join(other: DataFrame; leftKeys, rightKeys: array of string; kind: JoinKind := jkInner): DataFrame; 
     
-    /// Выводит DataFrame в консоль с ограниченным количеством строк
+    /// Выводит DataFrame 
     procedure Print(decimals: integer := 3);
-    /// Выводит DataFrame в консоль и переходит на новую строку
+    /// Выводит DataFrame и переходит на новую строку
     procedure Println(decimals: integer := 3);
-    /// Выводит предпросмотр DataFrame с настройкой отображаемых строк
+    /// Выводит DataFrame с настраиваемым числом строк 
     procedure PrintPreview(maxRows: integer; headRows: integer := -1; decimals: integer := 3);
-    /// Выводит предпросмотр DataFrame и переходит на новую строку
+    /// Выводит DataFrame с настраиваемым числом строк и переходит на новую строку
     procedure PrintlnPreview(maxRows: integer; headRows: integer := -1; decimals: integer := 3);
     /// Выводит схему датафрейма
     procedure PrintSchema;
-    /// Выводит размер датафрейма, его схему и количество не NA-значений для каждого столбца
+    /// Выводит размер, схему и количество валидных значений 
     procedure PrintInfo;
 
     /// Загружает DataFrame из CSV файла
@@ -274,41 +279,41 @@ type
   end; 
   
 type
-/// Прикладные статистические методы для анализа и подготовки табличных данных.
-/// Используется совместно с DataFrame для разведочного анализа данных (EDA) и задач машинного обучения
-Statistics = static class
-public
-  /// Коэффициент корреляции Пирсона между двумя числовыми столбцами
-  /// Пропущенные значения (NA) игнорируются попарно
-  static function Correlation(df: DataFrame; colX, colY: string): real;
-
-  /// Матрица корреляций Пирсона для всех числовых столбцов DataFrame
-  /// Первый столбец содержит имена признаков
-  static function CorrelationMatrix(df: DataFrame): DataFrame;
-
-  /// Стандартизует числовой столбец: (x - mean) / std
-  /// Пропущенные значения (NA) сохраняются
-  static function Standardize(df: DataFrame; colName: string): DataFrame;
+/// Статистические методы для анализа табличных данных
+/// Используются совместно с DataFrame для анализа и подготовки данных
+  Statistics = static class
+  public
+    /// Коэффициент корреляции Пирсона между двумя числовыми столбцами
+    /// Пропущенные значения (NA) игнорируются попарно
+    static function Correlation(df: DataFrame; colX, colY: string): real;
   
-  /// Стандартизует все числовые столбцы: (x - mean) / std
-  static function StandardizeAll(df: DataFrame): DataFrame;
-
-  /// Нормализует числовой столбец в диапазон [0, 1]
-  /// Пропущенные значения (NA) сохраняются
-  static function Normalize(df: DataFrame; colName: string): DataFrame;
+    /// Матрица корреляций Пирсона для всех числовых столбцов 
+    /// Первый столбец содержит имена признаков
+    static function CorrelationMatrix(df: DataFrame): DataFrame;
   
-  /// Нормализует все числовые столбцы в диапазон [0, 1]
-  /// Пропущенные значения (NA) сохраняются
-  static function NormalizeAll(df: DataFrame): DataFrame;  
-
-  /// p-квантиль числового столбца (0 ≤ p ≤ 1) — граница, ниже которой находится p·100% валидных значений
-  /// Пропущенные значения (NA) игнорируются
-  static function Quantile(df: DataFrame; colName: string; p: real): real;
-
-  /// Медиана числового столбца
-  /// Эквивалентна Quantile(..., 0.5)
-  static function Median(df: DataFrame; colName: string): real;
-end;  
+    /// Стандартизует числовой столбец: (x - mean) / std
+    /// Пропущенные значения (NA) сохраняются
+    static function Standardize(df: DataFrame; colName: string): DataFrame;
+    
+    /// Стандартизует все числовые столбцы: (x - mean) / std
+    static function StandardizeAll(df: DataFrame): DataFrame;
+  
+    /// Нормализует числовой столбец в диапазон [0, 1]
+    /// Пропущенные значения (NA) сохраняются
+    static function Normalize(df: DataFrame; colName: string): DataFrame;
+    
+    /// Нормализует все числовые столбцы в диапазон [0, 1]
+    /// Пропущенные значения (NA) сохраняются
+    static function NormalizeAll(df: DataFrame): DataFrame;  
+  
+    /// Вычисляет p-квантиль числового столбца (0 ≤ p ≤ 1)
+    /// Пропущенные значения (NA) игнорируются
+    static function Quantile(df: DataFrame; colName: string; p: real): real;
+  
+    /// Вычисляет медиану числового столбца
+    /// Эквивалентна Quantile(..., 0.5)
+    static function Median(df: DataFrame; colName: string): real;
+  end;  
  
 type
   /// Статический класс для загрузки данных из CSV файлов
@@ -2629,121 +2634,91 @@ begin
   Result.AssertSchemaConsistent;
 end;
 
-
-{ procedure DataFrame.PrintPreview(maxRows: integer; headRows: integer; decimals: integer);
+function DataFrame.ReplaceColumnInt(colName: string; f: DataFrameCursor -> integer): DataFrame;
 begin
-  var colCount := columns.Count;
-  if colCount = 0 then exit;
+  var colIndex := ColumnIndex(colName);
+  var rowCount := RowCount;
+
+  var data := new integer[rowCount];
+  var valid: array of boolean := nil;
+
+  var cur := GetCursor;
+  var row := 0;
+  while cur.MoveNext do
+  begin
+    try
+      data[row] := f(cur);
+      if valid <> nil then valid[row] := true;
+    except
+      on e: Exception do
+      begin
+        data[row] := 0;
+        if valid = nil then
+        begin
+          valid := new boolean[rowCount];
+          for var j := 0 to row - 1 do valid[j] := true;
+        end;
+        valid[row] := false;
+      end;
+    end;
+    row += 1;
+  end;
+
+  var res := new DataFrame;
+  for var i := 0 to columns.Count - 1 do
+    if i <> colIndex then
+      res.AddColumnView(columns[i])
+    else
+      res.AddIntColumn(colName, data, valid);
+
+  Result := res;
+  Result.AssertSchemaConsistent;
+end;
+
+function DataFrame.AddDerivedIntColumn(
+  name: string;
+  f: DataFrameCursor -> integer
+): DataFrame;
+begin
+  if Schema.HasColumn(name) then
+    raise new Exception($'Column "{name}" already exists');
 
   var rowCount := RowCount;
-  if rowCount = 0 then exit;
+  var data := new integer[rowCount];
+  var valid: array of boolean := nil;
 
-  // вычисляем head / tail
-  if maxRows < 1 then exit;
-
-  if rowCount <= maxRows then
-    headRows := rowCount
-  else
+  var cur := GetCursor;
+  var row := 0;
+  while cur.MoveNext do
   begin
-    if headRows = -1 then
-      headRows := (maxRows + 1) div 2;
-
-    if headRows < 0 then headRows := 0;
-    if headRows > maxRows then headRows := maxRows;
-  end;
-
-  var tailRows := maxRows - headRows;
-  if tailRows < 0 then tailRows := 0;
-  if tailRows > rowCount - headRows then
-    tailRows := rowCount - headRows;
-
-  // 1. вычисляем ширины столбцов
-  var widths := new integer[colCount];
-
-  // ширины по заголовкам
-  for var j := 0 to colCount - 1 do
-    widths[j] := columns[j].Info.Name.Length;
-
-  var cursor := GetCursor;
-
-  // ScanRow перемещает cursor
-  var ScanRow: integer -> () := row ->
-  begin
-    cursor.MoveTo(row);
-    for var j := 0 to colCount - 1 do
-    begin
-      var s: string;
-
-      if not cursor.IsValid(j) then
-        s := 'NA'
-      else
-        case columns[j].Info.ColType of
-          ctInt:   s := cursor.Int(j).ToString;
-          ctFloat: s := cursor.Float(j).ToString('F' + decimals);
-          ctStr:   s := cursor.Str(j);
-          ctBool:  s := cursor.Bool(j).ToString;
+    try
+      data[row] := f(cur);
+      if valid <> nil then valid[row] := true;
+    except
+      on e: Exception do
+      begin
+        data[row] := 0;
+        if valid = nil then
+        begin
+          valid := new boolean[rowCount];
+          for var j := 0 to row - 1 do valid[j] := true;
         end;
-
-      if s.Length > widths[j] then
-        widths[j] := s.Length;
-    end;
-  end;
-  
-  var FormatValue: (integer) -> string := j ->
-  begin
-    if not cursor.IsValid(j) then
-      Result := 'NA'
-    else
-      case columns[j].Info.ColType of
-        ctInt:   Result := cursor.Int(j).ToString;
-        ctFloat: Result := cursor.Float(j).ToString('F' + decimals);
-        ctStr:   Result := cursor.Str(j);
-        ctBool:  Result := cursor.Bool(j).ToString;
+        valid[row] := false;
       end;
-  end;
-
-  // сканируем head
-  for var i := 0 to headRows - 1 do
-    ScanRow(i);
-
-  // сканируем tail
-  if rowCount > headRows then
-    for var i := rowCount - tailRows to rowCount - 1 do
-      if i >= headRows then
-        ScanRow(i);
-
-  // 2. печать заголовков
-  for var j := 0 to colCount - 1 do
-    PABCSystem.Print(columns[j].Info.Name.PadRight(widths[j] + 2));
-  PABCSystem.Println;
-
-  // 3. печать head
-  for var i := 0 to headRows - 1 do
-  begin
-    cursor.MoveTo(i);
-    for var j := 0 to colCount - 1 do
-      PABCSystem.Print(FormatValue(j).PadRight(widths[j] + 2));
-    PABCSystem.Println;
-  end;
-
-  // 4. многоточие
-  if headRows + tailRows < rowCount then
-  begin
-    for var j := 0 to colCount - 1 do
-      PABCSystem.Print('...'.PadRight(widths[j] + 2));
-    PABCSystem.Println;
-  end;
-
-  // 5. печать tail
-  for var i := rowCount - tailRows to rowCount - 1 do
-    if i >= headRows then
-    begin
-      cursor.MoveTo(i);
-      for var j := 0 to colCount - 1 do
-        PABCSystem.Print(FormatValue(j).PadRight(widths[j] + 2));
-      PABCSystem.Println;
     end;
-end;}
+    row += 1;
+  end;
+
+  var res := new DataFrame;
+  for var i := 0 to columns.Count - 1 do
+    res.AddColumnView(columns[i]);
+
+  res.AddIntColumn(name, data, valid);
+
+  Result := res;
+  Result.AssertSchemaConsistent;
+end;
+
 
 procedure DataFrame.PrintPreview(maxRows: integer; headRows: integer; decimals: integer);
 begin

@@ -181,6 +181,8 @@
     File ..\bin\Lib\WPF.pcu
     File ..\bin\Lib\DataFrameABC.pcu
     File ..\bin\Lib\DataFrameABCCore.pcu
+    File ..\bin\Lib\LinearAlgebraML.pcu
+    File ..\bin\Lib\PreprocessorABC.pcu
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
@@ -276,6 +278,8 @@
     ${AddFile} "WPF.pcu"
     ${AddFile} "DataFrameABC.pcu"
     ${AddFile} "DataFrameABCCore.pcu"
+    ${AddFile} "LinearAlgebraML.pcu"
+    ${AddFile} "PreprocessorABC.pcu"
 
     ${AddFile} "turtle.png"
 
@@ -407,6 +411,8 @@
     File ..\bin\Lib\WPF.pas
     File ..\bin\Lib\DataFrameABC.pas
     File ..\bin\Lib\DataFrameABCCore.pas
+    File ..\bin\Lib\LinearAlgebraML.pas
+    File ..\bin\Lib\PreprocessorABC.pas
 
 
     File ..\bin\Lib\__RedirectIOMode.vb
@@ -490,6 +496,8 @@
     ${AddFile} "WPF.pas"
     ${AddFile} "DataFrameABC.pas"
     ${AddFile} "DataFrameABCCore.pas"
+    ${AddFile} "LinearAlgebraML.pas"
+    ${AddFile} "PreprocessorABC.pas"
 
     ${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"

@@ -20,7 +20,7 @@ uses
    BBCMicroBit, School, SF, TwoPanelsWindow, NUnitABC, PlotWPF, XLSX, LightPT, Tasks, Мозаика,
    TasksArr, TasksMatr, TasksStr, Tasks1Begin, Tasks1BoolIfCase, Tasks1Loops, Tasks1Arr,
    WPF,
-   DataFrameABC, DataFrameABCCore
+   DataFrameABC, DataFrameABCCore, LinearAlgebraML, PreprocessorABC
    ;
    
 begin

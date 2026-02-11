@@ -110,8 +110,10 @@ copy bin\Lib\Speech.pcu Release\PascalABCNETLinux\Lib\Speech.pcu
 copy bin\Lib\Tasks.pcu Release\PascalABCNETLinux\Lib\Tasks.pcu
 copy bin\Lib\Timers.pcu Release\PascalABCNETLinux\Lib\Timers.pcu
 copy bin\Lib\TurtleABC.pcu Release\PascalABCNETLinux\Lib\TurtleABC.pcu
-copy bin\Lib\DataFrameABC.pcu Release\PascalABCNETLinux\LibSource\DataFrameABC.pcu
-copy bin\Lib\DataFrameABCCore.pcu Release\PascalABCNETLinux\LibSource\DataFrameABCCore.pcu
+copy bin\Lib\DataFrameABC.pcu Release\PascalABCNETLinux\Lib\DataFrameABC.pcu
+copy bin\Lib\DataFrameABCCore.pcu Release\PascalABCNETLinux\Lib\DataFrameABCCore.pcu
+copy bin\Lib\LinearAlgebraML.pcu Release\PascalABCNETLinux\Lib\LinearAlgebraML.pcu
+copy bin\Lib\PreprocessorABC.pcu Release\PascalABCNETLinux\Lib\PreprocessorABC.pcu
 
 copy bin\Lib\ABCDatabases.pas Release\PascalABCNETLinux\LibSource\ABCDatabases.pas
 copy bin\Lib\BBCMicrobit.pas Release\PascalABCNETLinux\LibSource\BBCMicrobit.pas
@@ -155,6 +157,8 @@ copy bin\Lib\Робот.pas Release\PascalABCNETLinux\LibSource\Робот.pas
 copy bin\Lib\Чертежник.pas Release\PascalABCNETLinux\LibSource\Чертежник.pas
 copy bin\Lib\DataFrameABC.pas Release\PascalABCNETLinux\LibSource\DataFrameABC.pas
 copy bin\Lib\DataFrameABCCore.pas Release\PascalABCNETLinux\LibSource\DataFrameABCCore.pas
+copy bin\Lib\LinearAlgebraML.pas Release\PascalABCNETLinux\LibSource\LinearAlgebraML.pas
+copy bin\Lib\PreprocessorABC.pas Release\PascalABCNETLinux\LibSource\PreprocessorABC.pas
 
 copy bin\Lng\Eng\.LanguageName Release\PascalABCNETLinux\Lng\Eng\.LanguageName
 copy bin\Lng\Eng\AspectsTree.dat Release\PascalABCNETLinux\Lng\Eng\AspectsTree.dat
