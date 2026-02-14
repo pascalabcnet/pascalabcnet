@@ -3,7 +3,7 @@
 a,b = divmod(-7, 3)
 temp = divmod(-7, 3)
 t: tuple[int, int] = divmod(-7, 3)
-t1: tuple[int] = tuple.Create(0) # из одного эл-та пока так
+t1: tuple[int, int, int, int] = (1, 2, 3, 4)
 
 print(a == t.Item1)
 print(b == t.Item2)
