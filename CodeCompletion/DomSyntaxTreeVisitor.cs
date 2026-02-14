@@ -2530,7 +2530,7 @@ namespace CodeCompletion
             // Пока что добавили возможость грубо отключить добавление NET пространств имен по умолчанию здесь (второе условие нужно, чтобы в стандартные модули языка они тоже не добавлялись) EVA
             if (currentUnitLanguage.LanguageIntellisenseSupport.AddStandardNetNamespacesToUserScope && (languageUsingStandardUnit?.LanguageIntellisenseSupport.AddStandardNetNamespacesToUserScope ?? true))
                 namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(_as));
-            
+
             InterfaceUnitScope unit_scope = null;
             bool existed_ns = false;
             is_namespace = _unit_module.unit_name.HeaderKeyword == UnitHeaderKeyword.Namespace;
@@ -2654,20 +2654,8 @@ namespace CodeCompletion
                     }
                 }
 
-            // считаем основной модуль идущим первым в списке EVA
-            var language = Languages.Facade.LanguageProvider.Instance.Languages.Find(lang => lang.SystemUnitNames.First() == unitName);
-
-            if (language != null)
-            {
-                // добавление стандартных типов можно делать в отдельный фиктивный модуль, как в основном компиляторе
-                // это позволит работать директиве DisableStandardUnits, а также не будет засорять сам стандартный модуль типами EVA
-                add_standart_types(entry_scope, language.LanguageIntellisenseSupport);
-
-                if (language == Languages.Facade.LanguageProvider.Instance.MainLanguage)
-                {
-                    AddPascalStandardProcedures();
-                }
-            }
+            // Добавляем стандартные имена языка  EVA
+            AddStandardNamesFictiveUnitAsUsedUnit(cur_scope);
 
             CodeCompletionController.comp_modules[_unit_module.file_name] = this.converter;
 
@@ -2733,7 +2721,7 @@ namespace CodeCompletion
                 }
             }
 
-            if (currentUnitLanguage.LanguageIntellisenseSupport.ApplySyntaxTreeConvertersForIntellisense 
+            if (currentUnitLanguage.LanguageIntellisenseSupport.ApplySyntaxTreeConvertersForIntellisense
                 && currentUnitLanguage.LanguageInformation.SyntaxTreeIsConvertedAfterUsedModulesCompilation)
             {
                 var namesFromUsedUnits = CollectNamesFromUsedUnits(cur_scope);
@@ -2745,7 +2733,7 @@ namespace CodeCompletion
                     _unit_module = (unit_module)converter.ConvertAfterUsedModulesCompilation(_unit_module, true, in artifacts);
                 }
             }
-            
+
 
             DateTime start_time = DateTime.Now;
 
@@ -2805,6 +2793,23 @@ namespace CodeCompletion
                 cur_scope = tmp;
             }
 
+        }
+
+        /// <summary>
+        /// Добавление в scopeToAdd использования фиктивного модуля со стандартными именами языка
+        /// </summary>
+        private void AddStandardNamesFictiveUnitAsUsedUnit(SymScope scopeToAdd)
+        {
+            var standardNamesUnit = new InterfaceUnitScope(new SymInfo(StringConstants.fictiveStandardNamesUnitName, SymbolKind.Namespace, ""), null);
+
+            add_standart_types(standardNamesUnit, currentUnitLanguage.LanguageIntellisenseSupport);
+
+            if (currentUnitLanguage == Languages.Facade.LanguageProvider.Instance.MainLanguage)
+            {
+                AddPascalStandardProcedures(standardNamesUnit);
+            }
+
+            scopeToAdd.AddUsedUnit(standardNamesUnit);
         }
 
         private Dictionary<string, Dictionary<string, bool>> CollectNamesFromUsedUnits(SymScope currentUnitScope)
@@ -3272,6 +3277,9 @@ namespace CodeCompletion
                 }
             }
 
+            // Добавляем стандартные имена языка  EVA
+            AddStandardNamesFictiveUnitAsUsedUnit(cur_scope);
+
             if (currentUnitLanguage.LanguageIntellisenseSupport.ApplySyntaxTreeConvertersForIntellisense)
             {
                 foreach (ISyntaxTreeConverter converter in currentUnitLanguage.SyntaxTreeConverters)
@@ -3445,28 +3453,28 @@ namespace CodeCompletion
             }
         }
 
-        public void AddPascalStandardProcedures()
+        public void AddPascalStandardProcedures(SymScope scopeToAdd)
         {
             ProcScope ps = new ProcScope(StringConstants.set_length_procedure_name, null);
             ps.AddParameter(new ElementScope(new SymInfo("arr", SymbolKind.Parameter, "arr"), new ArrayScope(), null, ps));
             ps.parameters[0].param_kind = parametr_kind.var_parametr;
             ps.AddParameter(new ElementScope(new SymInfo("length", SymbolKind.Parameter, "length"), TypeTable.int_type, null, ps));
             ps.Complete();
-            cur_scope.AddName(StringConstants.set_length_procedure_name, ps);
-            cur_scope.AddName(StringConstants.true_const_name, new ElementScope(new SymInfo(StringConstants.true_const_name, SymbolKind.Constant, StringConstants.true_const_name), TypeTable.bool_type, true, null));
-            cur_scope.AddName(StringConstants.false_const_name, new ElementScope(new SymInfo(StringConstants.false_const_name, SymbolKind.Constant, StringConstants.false_const_name), TypeTable.bool_type, false, null));
+            scopeToAdd.AddName(StringConstants.set_length_procedure_name, ps);
+            scopeToAdd.AddName(StringConstants.true_const_name, new ElementScope(new SymInfo(StringConstants.true_const_name, SymbolKind.Constant, StringConstants.true_const_name), TypeTable.bool_type, true, null));
+            scopeToAdd.AddName(StringConstants.false_const_name, new ElementScope(new SymInfo(StringConstants.false_const_name, SymbolKind.Constant, StringConstants.false_const_name), TypeTable.bool_type, false, null));
             ps = new ProcScope(StringConstants.new_procedure_name, null);
             ElementScope prm = new ElementScope(new SymInfo("p", SymbolKind.Parameter, "p"), TypeTable.ptr_type, null, ps);
             prm.param_kind = parametr_kind.var_parametr;
             ps.AddParameter(prm);
             ps.Complete();
-            cur_scope.AddName(StringConstants.new_procedure_name, ps);
+            scopeToAdd.AddName(StringConstants.new_procedure_name, ps);
             ps = new ProcScope(StringConstants.dispose_procedure_name, null);
             prm = new ElementScope(new SymInfo("p", SymbolKind.Parameter, "p"), TypeTable.ptr_type, null, ps);
             prm.param_kind = parametr_kind.var_parametr;
             ps.AddParameter(prm);
             ps.Complete();
-            cur_scope.AddName(StringConstants.dispose_procedure_name, ps);
+            scopeToAdd.AddName(StringConstants.dispose_procedure_name, ps);
 
             ps = new ProcScope(StringConstants.IncProcedure, null);
             prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.int16_type, null, ps);
@@ -3474,7 +3482,7 @@ namespace CodeCompletion
             ps.AddParameter(prm);
             ps.Complete();
             ps.si.not_include = true;
-            cur_scope.AddName(StringConstants.IncProcedure, ps);
+            scopeToAdd.AddName(StringConstants.IncProcedure, ps);
 
             ps = new ProcScope(StringConstants.IncProcedure, null);
             prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.uint16_type, null, ps);
@@ -3482,7 +3490,7 @@ namespace CodeCompletion
             ps.AddParameter(prm);
             ps.Complete();
             ps.si.not_include = true;
-            cur_scope.AddName(StringConstants.IncProcedure, ps);
+            scopeToAdd.AddName(StringConstants.IncProcedure, ps);
 
             ps = new ProcScope(StringConstants.IncProcedure, null);
             prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.sbyte_type, null, ps);
@@ -3490,7 +3498,7 @@ namespace CodeCompletion
             ps.AddParameter(prm);
             ps.Complete();
             ps.si.not_include = true;
-            cur_scope.AddName(StringConstants.IncProcedure, ps);
+            scopeToAdd.AddName(StringConstants.IncProcedure, ps);
 
             ps = new ProcScope(StringConstants.IncProcedure, null);
             prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.int64_type, null, ps);
@@ -3498,7 +3506,7 @@ namespace CodeCompletion
             ps.AddParameter(prm);
             ps.Complete();
             ps.si.not_include = true;
-            cur_scope.AddName(StringConstants.IncProcedure, ps);
+            scopeToAdd.AddName(StringConstants.IncProcedure, ps);
 
             ps = new ProcScope(StringConstants.IncProcedure, null);
             prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.uint64_type, null, ps);
@@ -3506,7 +3514,7 @@ namespace CodeCompletion
             ps.AddParameter(prm);
             ps.Complete();
             ps.si.not_include = true;
-            cur_scope.AddName(StringConstants.IncProcedure, ps);
+            scopeToAdd.AddName(StringConstants.IncProcedure, ps);
 
             ps = new ProcScope(StringConstants.IncProcedure, null);
             prm = new ElementScope(new SymInfo("i", SymbolKind.Parameter, "i"), TypeTable.uint32_type, null, ps);
@@ -3514,7 +3522,7 @@ namespace CodeCompletion
             ps.AddParameter(prm);
             ps.Complete();
             ps.si.not_include = true;
-            cur_scope.AddName(StringConstants.IncProcedure, ps);
+            scopeToAdd.AddName(StringConstants.IncProcedure, ps);
         }
 
         public override void visit(hex_constant _hex_constant)

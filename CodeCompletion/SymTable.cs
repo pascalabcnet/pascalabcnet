@@ -534,8 +534,9 @@ namespace CodeCompletion
 
         public void AddUsedUnit(SymScope unit)
         {
-            if (this.si.name != StringConstants.pascalSystemUnitName || unit is NamespaceScope)
-                used_units.Add(unit);
+            // Убрал условие  EVA 14.02.2026
+            // if (this.si.name != StringConstants.pascalSystemUnitName || unit is NamespaceScope)
+            used_units.Add(unit);
         }
 
         public virtual string GetFullName()

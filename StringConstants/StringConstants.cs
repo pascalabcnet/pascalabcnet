@@ -412,6 +412,8 @@ namespace PascalABCCompiler
             }
         }
 
+        public const string fictiveStandardNamesUnitName = "?StandardNamesUnit";
+
         public static readonly string new_array_procedure_name = "__new_array";
 
         public static readonly string new_procedure_name = "new";
