@@ -44,9 +44,9 @@ namespace Languages.SPython.Frontend.Converters
 
             // Выносим выражения с лямбдами из заголовка foreach + считаем максимум 10 вложенных лямбд
             // украл из паскаля
-            StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New.ProcessNode(root);
-            new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as compilation_unit).ProcessNode(root);
-            FindOnExceptVarsAndApplyRenameVisitor.New.ProcessNode(root);
+            new TryCatchDecorator(StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New, forIntellisense).ProcessNode(root);
+            new TryCatchDecorator(new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as compilation_unit), forIntellisense).ProcessNode(root);
+            new TryCatchDecorator(FindOnExceptVarsAndApplyRenameVisitor.New, forIntellisense).ProcessNode(root);
 
             // дешугаризация составных сравнительных операций (e.g. a == b == c)
             new TryCatchDecorator(new CompoundComparisonDesugarVisitor(), forIntellisense).ProcessNode(root);
@@ -66,7 +66,7 @@ namespace Languages.SPython.Frontend.Converters
             // на
             // variable_name = str(single_length_string)
             // чтобы при выведении типа правильно вывел str, а не char
-            new AssignmentCharAsStringVisitor().ProcessNode(root);
+            new TryCatchDecorator(new AssignmentCharAsStringVisitor(), forIntellisense).ProcessNode(root);
 
             // Сохраняет множество имён функций, которые объявлены в программе для NameCorrectVisitor
             var ffv = new FindFunctionsNamesVisitor();
@@ -75,14 +75,14 @@ namespace Languages.SPython.Frontend.Converters
 
             // проверка корректности имён, разрешение неоднозначности
             // сохранение множества переменных, использующихся как глобальные в ncv.variablesUsedAsGlobal
-            var ncv = new NameCorrectVisitor(System.IO.Path.GetFileNameWithoutExtension(((compilation_unit)root).file_name),
+            var ncv = new NameCorrectVisitor(System.IO.Path.GetFileNameWithoutExtension(((compilation_unit)root).file_name), forIntellisense,
                 compilationArtifacts.NamesFromUsedUnits, ffv.definedFunctionsNames);
 
-            if (!new TryCatchDecorator(ncv, forIntellisense).ProcessNode(root))
-                return root;
+            new TryCatchDecorator(ncv, forIntellisense).ProcessNode(root);
 
             // замена типов из SPython на типы из PascalABC.NET
-            new TryCatchDecorator(new TypeCorrectVisitor(forIntellisense), forIntellisense).ProcessNode(root);
+            if (!forIntellisense)
+                new TypeCorrectVisitor().ProcessNode(root);
 
             // вынос forward объявлений для всех функций в начало
             new TryCatchDecorator(new AddForwardDeclarationsVisitor(), forIntellisense).ProcessNode(root);
