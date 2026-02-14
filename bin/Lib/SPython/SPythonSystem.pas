@@ -17,7 +17,7 @@ function input(): string;
 
 function input(s: string): string;
 
-///-
+///--
 type kwargs_gen<T> = class
       public !kwargs: Dictionary<string, T>
         := new Dictionary<string, T>();
@@ -559,6 +559,7 @@ type
     !tuple6<T1, T2, T3, T4, T5, T6> = System.Tuple<T1, T2, T3, T4, T5, T6>;
     !tuple7<T1, T2, T3, T4, T5, T6, T7> = System.Tuple<T1, T2, T3, T4, T5, T6, T7>;
     
+    ///--
     empty_list = class
     class function operator implicit<T>(x: empty_list): list<T>; 
     begin
@@ -566,6 +567,7 @@ type
     end;
     end;
     
+    ///--
     empty_set = class
     class function operator implicit<T>(x: empty_set): &set<T>; 
     begin
@@ -573,6 +575,7 @@ type
     end;
     end;
     
+    ///--
     empty_dict = class
     class function operator implicit<K, V>(x: empty_dict): dict<K, V>; 
     begin
