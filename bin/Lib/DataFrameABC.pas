@@ -27,6 +27,11 @@ type
   /// Статистическая информация о числовом столбце
   DescribeStats = DataFrameABCCore.DescribeStats;
   
+  IntColumn = DataFrameABCCore.IntColumn;
+  FloatColumn = DataFrameABCCore.FloatColumn;
+  BoolColumn = DataFrameABCCore.BoolColumn;
+  StrColumn = DataFrameABCCore.StrColumn;
+  
   IGroupByContext = interface;
   
 /// Класс для работы с табличными данными (датасетами).
@@ -85,9 +90,13 @@ type
 
     function CreateEmptyBySchema(schema: DataFrameSchema): DataFrame;
     
+    function GetColumnIndex(name: string): integer;
+    function GetColumn(name: string): Column;
   public
     /// Схема DataFrame: имена, типы и признаки категориальности
     property Schema: DataFrameSchema read fschema;
+    
+    property Item[name: string]: Column read GetColumn; default;
 
     /// Добавляет в DataFrame столбец-представление (view),
     /// использующий те же данные, что и исходный столбец
@@ -109,13 +118,13 @@ type
     function GetCursor: DataFrameCursor;
     
     /// Добавляет столбец целых чисел
-    procedure AddIntColumn(name: string; data: array of integer; valid: array of boolean; isCategorical: boolean := false);
+    procedure AddIntColumn(name: string; data: array of integer; valid: array of boolean := nil; isCategorical: boolean := false);
     /// Добавляет столбец вещественных чисел
-    procedure AddFloatColumn(name: string; data: array of real; valid: array of boolean);
+    procedure AddFloatColumn(name: string; data: array of real; valid: array of boolean := nil);
     /// Добавляет строковый столбец
-    procedure AddStrColumn(name: string; data: array of string; valid: array of boolean; isCategorical: boolean := true);
+    procedure AddStrColumn(name: string; data: array of string; valid: array of boolean := nil; isCategorical: boolean := true);
     /// Добавляет столбец логических значений
-    procedure AddBoolColumn(name: string; data: array of boolean; valid: array of boolean);
+    procedure AddBoolColumn(name: string; data: array of boolean; valid: array of boolean := nil);
     
     /// Возвращает данные целочисленного столбца по имени
     function GetIntColumn(name: string): array of integer;
@@ -171,7 +180,7 @@ type
     function Describe(colNames: array of string): Dictionary<string, DescribeStats>; 
     /// Возвращает статистику по нескольким столбцам по индексам
     function Describe(colIndices: array of integer): Dictionary<integer, DescribeStats>; 
-    /// Возвращает статистику по всем числовым столбц ам
+    /// Возвращает статистику по всем числовым столбцам
     function DescribeAll: Dictionary<string, DescribeStats>; 
     
     /// Группирует данные по столбцу по индексу
@@ -1429,10 +1438,22 @@ end;
 
 procedure DataFrame.AddIntColumn(name: string; data: array of integer; valid: array of boolean; isCategorical: boolean);
 begin
+  if (columns.Count > 0) and (data.Length <> RowCount) then
+    raise new Exception('Row count mismatch');
+
   var c := new IntColumn;
   c.Info := new ColumnInfo(name, ctInt, isCategorical);
   c.Data := data;
-  c.IsValid := valid;
+
+  if valid = nil then
+    c.IsValid := [True] * data.Length
+  else
+  begin
+    if valid.Length <> data.Length then
+      raise new Exception('AddIntColumn: data and valid length mismatch');
+    c.IsValid := valid;
+  end;
+
   columns.Add(c);
   RebuildSchema;
 end;
@@ -1443,9 +1464,17 @@ begin
     raise new Exception('Row count mismatch');
 
   var c := new FloatColumn;
-  c.Info := new ColumnInfo(name, ctFloat, false);
+  c.Info := new ColumnInfo(name, ctFloat, False);
   c.Data := data;
-  c.IsValid := valid;
+
+  if valid = nil then
+    c.IsValid := [True] * data.Length
+  else
+  begin
+    if valid.Length <> data.Length then
+      raise new Exception('AddFloatColumn: data and valid length mismatch');
+    c.IsValid := valid;
+  end;
 
   columns.Add(c);
   RebuildSchema;
@@ -1459,7 +1488,15 @@ begin
   var c := new StrColumn;
   c.Info := new ColumnInfo(name, ctStr, isCategorical);
   c.Data := data;
-  c.IsValid := valid;
+
+  if valid = nil then
+    c.IsValid := [True] * data.Length
+  else
+  begin
+    if valid.Length <> data.Length then
+      raise new Exception('AddStrColumn: data and valid length mismatch');
+    c.IsValid := valid;
+  end;
 
   columns.Add(c);
   RebuildSchema;
@@ -1471,9 +1508,17 @@ begin
     raise new Exception('Row count mismatch');
 
   var c := new BoolColumn;
-  c.Info := new ColumnInfo(name, ctBool, false);
+  c.Info := new ColumnInfo(name, ctBool, False);
   c.Data := data;
-  c.IsValid := valid;
+
+  if valid = nil then
+    c.IsValid := [True] * data.Length
+  else
+  begin
+    if valid.Length <> data.Length then
+      raise new Exception('AddBoolColumn: data and valid length mismatch');
+    c.IsValid := valid;
+  end;
 
   columns.Add(c);
   RebuildSchema;
@@ -2363,6 +2408,17 @@ begin
   Result := new DataFrame(cols, schema);
 end;
 
+function DataFrame.GetColumnIndex(name: string): integer;
+begin
+  Result := fschema.IndexOf(name);  // если у вас есть такой метод
+end;
+
+function DataFrame.GetColumn(name: string): Column;
+begin
+  var idx := GetColumnIndex(name);
+  Result := columns[idx];
+end;
+
 function DataFrame.WithColumnInt(name: string; f: DataFrameCursor -> integer): DataFrame;
 begin
   if fSchema.HasColumn(name) then
@@ -2966,7 +3022,7 @@ end;
 
 procedure DataFrame.AssertSchemaConsistent;
 begin
-  {$IFDEF Test}
+  {$IFNDEF Test}
 
   // --- 1. одинаковая RowCount у всех столбцов ---
   var rc := columns[0].RowCount;
@@ -2981,7 +3037,7 @@ begin
     raise new Exception(
       $'Schema inconsistent: ColumnCount={fschema.ColumnCount}, columns.Count={columns.Count}'
   );
-
+  
   // --- 3. имена уникальны и корректно индексированы ---
   for var i := 0 to columns.Count - 1 do
   begin

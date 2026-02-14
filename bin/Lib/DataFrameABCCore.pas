@@ -65,6 +65,8 @@ type
   Column = abstract class
     Info: ColumnInfo;
   public
+    /// Пытается извлечь i-тое данное из столбца как числовое если это возможно
+    function TryGetNumericValue(i: integer; var value: real): boolean; virtual; abstract;
     /// Возвращает количество строк в столбце
     function RowCount: integer; virtual; abstract;
     /// Добавляет невалидное (NA) значение в конец столбца
@@ -80,6 +82,8 @@ type
   public
     constructor Create; begin end;
     constructor Create(name: string; isCategorical: boolean);
+    
+    function TryGetNumericValue(i: integer; var value: real): boolean; override;
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
@@ -95,6 +99,8 @@ type
   public  
     constructor Create; begin end;
     constructor Create(name: string);
+    
+    function TryGetNumericValue(i: integer; var value: real): boolean; override;
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
@@ -110,6 +116,7 @@ type
   public
     constructor Create; begin end;
     constructor Create(name: string; isCategorical: boolean);
+    function TryGetNumericValue(i: integer; var value: real): boolean; override;
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
@@ -125,6 +132,7 @@ type
   public  
     constructor Create; begin end;
     constructor Create(name: string);
+    function TryGetNumericValue(i: integer; var value: real): boolean; override;
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
@@ -468,6 +476,15 @@ begin
   else AppendInvalid; 
 end;
 
+function IntColumn.TryGetNumericValue(i: integer; var value: real): boolean;
+begin
+  if not IsValid[i] then
+    exit(false);
+
+  value := Data[i];
+  exit(true);
+end;
+
 constructor FloatColumn.Create(name: string);
 begin
   inherited Create;
@@ -498,6 +515,15 @@ begin
   end;
 
   IsValid := IsValid + [false];
+end;
+
+function FloatColumn.TryGetNumericValue(i: integer; var value: real): boolean;
+begin
+  if not IsValid[i] then
+    exit(false);
+
+  value := Data[i];
+  exit(true);
 end;
 
 constructor StrColumn.Create(name: string; isCategorical: boolean);
@@ -531,6 +557,24 @@ begin
   end;
 
   IsValid := IsValid + [false];
+end;
+
+function StrColumn.TryGetNumericValue(i: integer; var value: real): boolean;
+begin
+  exit(false);
+end;
+
+function BoolColumn.TryGetNumericValue(i: integer; var value: real): boolean;
+begin
+  if not IsValid[i] then
+    exit(false);
+
+  if Data[i] then
+    value := 1.0
+  else
+    value := 0.0;
+
+  exit(true);
 end;
 
 constructor BoolColumn.Create(name: string);

@@ -27,24 +27,37 @@ type
     static function operator *(v: Vector; alpha: real): Vector;
     static function operator /(v: Vector; alpha: real): Vector;
     
-    // Dot product
-    static function operator *(a, b: Vector): real;
-    
     static function operator +=(a: Vector; b: Vector): Vector;
     static function operator -=(a: Vector; b: Vector): Vector;
     static function operator *=(a: Vector; alpha: real): Vector;
     
+    static function operator +(v: Vector; c: real): Vector;
+    static function operator +(c: real; v: Vector): Vector;
+    
     static function operator implicit(a: array of real): Vector := new Vector(a);
     static function operator implicit(a: array of integer): Vector := new Vector(a);
 
+    // ---------- Векторные функции ----------
+    /// Применить функцию ко всем элементам вектора
+    function Apply(f: real -> real): Vector;
+    function Sqrt: Vector;
+    function Exp: Vector := Apply(PABCSystem.Exp);
+    function Ln: Vector := Apply(PABCSystem.Ln);
+    function Abs: Vector := Apply(PABCSystem.Abs);    
+    
     // ---------- Основные методы ----------
     function Sum: real;
     function Mean: real;
     function Norm2: real;
     function Norm: real;
+    function Max: real;
+    function Min: real;
+    /// Скалярное произведение
+    function Dot(b: Vector): real;
 
     // ---------- Сервисные методы ----------
-    function ToString: string; override := $'{data}';
+    function ToString: string; override := $'{data.Select(x -> x.ToString(''G3''))}';
+    function ToString(digits: integer): string := $'{data.Select(x -> x.ToString(''G''+digits))}';
     procedure Print := data.Print;
     procedure Println := data.Println;
   end;
@@ -69,6 +82,23 @@ type
     
     function Clone: Matrix;
     
+    function ColumnSums: Vector;
+    function RowSums: Vector;
+    function ColumnMeans: Vector;
+    function RowMeans: Vector;
+    function ColumnVariances: Vector;
+    function RowVariances: Vector;
+    function ColumnStd: Vector;
+    function RowStd: Vector;
+    function ColumnMins: Vector;
+    function ColumnMaxs: Vector;
+    function RowMins: Vector;
+    function RowMaxs: Vector;   
+    
+    function FrobeniusNorm: real;
+    procedure AddScaledIdentity(lambda: real);
+
+    
     static function operator implicit(a: array [,] of real): Matrix := new Matrix(a);
     static function operator implicit(a: array of array of real): Matrix := new Matrix(Matr(a));
     static function operator implicit(a: array of array of integer): Matrix := new Matrix(Matr(a.ConvertAll(x -> x.ConvertAll(y -> real(y)))));
@@ -89,6 +119,10 @@ type
     static function operator *=(A: Matrix; alpha: real): Matrix;
     
     // ---------- Основные методы ----------
+    
+    function RowCount: integer := data.RowCount;
+    function ColCount: integer := data.ColCount;
+    
     /// Возвращает транспонированную матрицу Aᵀ
     function Transpose: Matrix;
     /// Проверяет, является ли матрица симметричной с заданным допуском.
@@ -129,6 +163,9 @@ type
     // ---------- Статические методы ----------
     /// Возвращает единичную матрицу размера n
     static function Identity(n: integer): Matrix;
+    /// Возвращает внешнее произведение двух векторов
+    static function OuterProduct(a, b: Vector): Matrix;
+    
   end;
 
 /// Решает систему линейных уравнений A * x = b с помощью LU-разложения с частичным выбором главного элемента.
@@ -247,16 +284,16 @@ begin
     Result.data[i] := a.data[i] - b.data[i];
 end;
 
-static function Vector.operator *(alpha: real; v: Vector): Vector;
-begin
-  Result := v * alpha;
-end;
-
 static function Vector.operator *(v: Vector; alpha: real): Vector;
 begin
   Result := new Vector(v.Length);
   for var i := 0 to v.Length - 1 do
     Result.data[i] := alpha * v.data[i];
+end;
+
+static function Vector.operator *(alpha: real; v: Vector): Vector;
+begin
+  Result := v * alpha;
 end;
 
 static function Vector.operator /(v: Vector; alpha: real): Vector;
@@ -267,15 +304,6 @@ begin
   var inv := 1.0 / alpha;
   for var i := 0 to v.Length - 1 do
     Result.data[i] := v.data[i] * inv;
-end;
-
-static function Vector.operator *(a, b: Vector): real;
-begin
-  CheckSameLength(a, b);
-  var s := 0.0;
-  for var i := 0 to a.Length - 1 do
-    s += a.data[i] * b.data[i];
-  Result := s;
 end;
 
 static function Vector.operator +=(a, b: Vector): Vector;
@@ -301,6 +329,20 @@ begin
   Result := a;
 end;
 
+static function Vector.operator +(v: Vector; c: real): Vector;
+begin
+  Result := new Vector(v.Length);
+  for var i := 0 to v.Length - 1 do
+    Result[i] := v[i] + c;
+end;
+
+static function Vector.operator +(c: real; v: Vector): Vector;
+begin
+  Result := v + c;
+end;
+
+function Vector.Sqrt: Vector := Apply(PABCSystem.Sqrt);
+
 function Vector.Sum: real;
 begin
   var s := 0.0;
@@ -317,13 +359,33 @@ end;
 
 function Vector.Norm2: real;
 begin
-  Result := Self * Self;
+  Result := Self.Dot(Self);
 end;
 
-function Vector.Norm: real;
+function Vector.Norm: real := PABCSystem.Sqrt(Norm2);
+
+function Vector.Max: real := data.Max;
+
+function Vector.Min: real := data.Min;
+
+function Vector.Dot(b: Vector): real;
 begin
-  Result := Sqrt(Norm2);
+  if Length <> b.Length then
+    raise new Exception('Dimension mismatch in Dot');
+
+  var s := 0.0;
+  for var i := 0 to Length - 1 do
+    s += self[i] * b[i];
+  Result := s;
 end;
+
+function Vector.Apply(f: real -> real): Vector;
+begin
+  Result := new Vector(Length);
+  for var i := 0 to Length - 1 do
+    Result[i] := f(self[i]);
+end;
+
 
 //-----------------------------
 //           Matrix
@@ -347,6 +409,175 @@ begin
   Result := new Matrix(data);
 end;
 
+function Matrix.ColumnSums: Vector;
+begin
+  var n := RowCount;
+  var p := ColCount;
+  Result := new Vector(p);
+
+  for var j := 0 to p - 1 do
+    for var i := 0 to n - 1 do
+      Result[j] += data[i, j];
+end;
+
+function Matrix.ColumnMeans: Vector;
+begin
+  var n := RowCount;
+  if n = 0 then 
+    exit( new Vector(ColCount) );
+  Result := ColumnSums / n;
+end;
+
+function Matrix.RowSums: Vector;
+begin
+  var n := RowCount;
+  var p := ColCount;
+  Result := new Vector(n);
+
+  for var i := 0 to n - 1 do
+    for var j := 0 to p - 1 do
+      Result[i] += data[i, j];
+end;
+
+function Matrix.RowMeans: Vector;
+begin
+  var p := ColCount;
+  if p = 0 then
+    exit (new Vector(RowCount));
+  Result := RowSums / p;
+end;
+
+function Matrix.ColumnVariances: Vector;
+begin
+  var n := RowCount;
+  if n = 0 then
+    exit (new Vector(ColCount));
+
+  var means := ColumnMeans;
+  var p := ColCount;
+  Result := new Vector(p);
+
+  for var j := 0 to p - 1 do
+    for var i := 0 to n - 1 do
+    begin
+      var d := data[i, j] - means[j];
+      Result[j] += d * d;
+    end;
+
+  Result := Result / n;
+end;
+
+function Matrix.ColumnStd: Vector;
+begin
+  Result := ColumnVariances.Sqrt;
+end;
+
+function Matrix.RowVariances: Vector;
+begin
+  var p := ColCount;
+  if p = 0 then
+    exit (new Vector(RowCount));
+
+  var means := RowMeans;
+  var n := RowCount;
+  Result := new Vector(n);
+
+  for var i := 0 to n - 1 do
+    for var j := 0 to p - 1 do
+    begin
+      var d := data[i, j] - means[i];
+      Result[i] += d * d;
+    end;
+
+  Result := Result / p;
+end;
+
+function Matrix.RowStd: Vector;
+begin
+  Result := RowVariances.Sqrt;
+end;
+
+function Matrix.ColumnMins: Vector;
+begin
+  var n := RowCount;
+  var p := ColCount;
+  Result := new Vector(p);
+
+  for var j := 0 to p - 1 do
+  begin
+    Result[j] := data[0, j];
+
+    for var i := 1 to n - 1 do
+      if data[i, j] < Result[j] then
+        Result[j] := data[i, j];
+  end;
+end;
+
+function Matrix.ColumnMaxs: Vector;
+begin
+  var n := RowCount;
+  var p := ColCount;
+  Result := new Vector(p);
+
+  for var j := 0 to p - 1 do
+  begin
+    Result[j] := data[0, j];
+
+    for var i := 1 to n - 1 do
+      if data[i, j] > Result[j] then
+        Result[j] := data[i, j];
+  end;
+end;
+
+function Matrix.RowMins: Vector;
+begin
+  var n := RowCount;
+  var p := ColCount;
+  Result := new Vector(n);
+
+  for var i := 0 to n - 1 do
+  begin
+    Result[i] := data[i, 0];
+
+    for var j := 1 to p - 1 do
+      if data[i, j] < Result[i] then
+        Result[i] := data[i, j];
+  end;
+end;
+
+function Matrix.RowMaxs: Vector;
+begin
+  var n := RowCount;
+  var p := ColCount;
+  Result := new Vector(n);
+
+  for var i := 0 to n - 1 do
+  begin
+    Result[i] := data[i, 0];
+
+    for var j := 1 to p - 1 do
+      if data[i, j] > Result[i] then
+        Result[i] := data[i, j];
+  end;
+end;
+
+
+function Matrix.FrobeniusNorm: real;
+begin
+  var s := 0.0;
+  for var i := 0 to RowCount - 1 do
+    for var j := 0 to ColCount - 1 do
+      s += data[i, j] * data[i, j];
+  Result := PABCSystem.Sqrt(s);
+end;
+
+procedure Matrix.AddScaledIdentity(lambda: real);
+begin
+  var n := RowCount;
+  for var i := 0 to n - 1 do
+    data[i, i] += lambda;
+end;
+
 static procedure Matrix.CheckSameSize(A, B: Matrix);
 begin
   if (A.Rows <> B.Rows) or (A.Cols <> B.Cols) then
@@ -367,6 +598,8 @@ begin
     raise new ArgumentException(
     $'Matrix-vector size mismatch: {A.Rows}x{A.Cols} * {x.Length}');
 end;
+
+
 
 static function Matrix.operator +(A, B: Matrix): Matrix;
 begin
@@ -486,6 +719,17 @@ begin
   Result := new Matrix(n, n);
   for var i := 0 to n - 1 do
     Result[i, i] := 1.0;
+end;
+
+static function Matrix.OuterProduct(a, b: Vector): Matrix;
+begin
+  var m := a.Length;
+  var n := b.Length;
+  Result := new Matrix(m, n);
+  
+  for var i := 0 to m - 1 do
+    for var j := 0 to n - 1 do
+      Result[i, j] := a[i] * b[j];
 end;
 
 function Matrix.IsSymmetric(tol: real): boolean;

@@ -183,6 +183,11 @@
     File ..\bin\Lib\DataFrameABCCore.pcu
     File ..\bin\Lib\LinearAlgebraML.pcu
     File ..\bin\Lib\PreprocessorABC.pcu
+    File ..\bin\Lib\MetricsABC.pcu
+    File ..\bin\Lib\MLABC.pcu
+    File ..\bin\Lib\MLCoreABC.pcu
+    File ..\bin\Lib\MLModelsABC.pcu
+    File ..\bin\Lib\ValidationML.pcu
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
@@ -280,6 +285,12 @@
     ${AddFile} "DataFrameABCCore.pcu"
     ${AddFile} "LinearAlgebraML.pcu"
     ${AddFile} "PreprocessorABC.pcu"
+    ${AddFile} "MetricsABC.pcu"
+    ${AddFile} "MLABC.pcu"
+    ${AddFile} "MLCoreABC.pcu"
+    ${AddFile} "MLModelsABC.pcu"
+    ${AddFile} "ValidationML.pcu"
+
 
     ${AddFile} "turtle.png"
 
@@ -413,6 +424,11 @@
     File ..\bin\Lib\DataFrameABCCore.pas
     File ..\bin\Lib\LinearAlgebraML.pas
     File ..\bin\Lib\PreprocessorABC.pas
+    File ..\bin\Lib\MetricsABC.pas
+    File ..\bin\Lib\MLABC.pas
+    File ..\bin\Lib\MLCoreABC.pas
+    File ..\bin\Lib\MLModelsABC.pas
+    File ..\bin\Lib\ValidationML.pas
 
 
     File ..\bin\Lib\__RedirectIOMode.vb
@@ -498,6 +514,11 @@
     ${AddFile} "DataFrameABCCore.pas"
     ${AddFile} "LinearAlgebraML.pas"
     ${AddFile} "PreprocessorABC.pas"
+    ${AddFile} "MetricsABC.pas"
+    ${AddFile} "MLABC.pas"
+    ${AddFile} "MLCoreABC.pas"
+    ${AddFile} "MLModelsABC.pas"
+    ${AddFile} "ValidationML.pas"
 
     ${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"

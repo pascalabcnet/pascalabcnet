@@ -40,7 +40,7 @@ type
 /// При Fit вычисляет среднее значение и стандартное отклонение столбцов.
 /// Применяет преобразование: x' = (x - mean) / std.
 /// Пропущенные значения (NA) сохраняются.
-  StandardScaler = class(IPreprocessor)
+  DataStandardScaler = class(IPreprocessor)
   private
     cols: array of string;
     means: array of real;
@@ -61,7 +61,7 @@ type
 /// При Fit вычисляет минимальное и максимальное значения столбцов
 /// Применяет преобразование: x' = (x - min) / (max - min)
 /// Пропущенные значения (NA) сохраняются
-  MinMaxScaler = class(IPreprocessor)
+  DataMinMaxScaler = class(IPreprocessor)
   private
     cols: array of string;
     mins: array of real;
@@ -153,18 +153,18 @@ type
 
   
 type
-/// Pipeline (конвейер) шагов подготовки данных.
-/// Выполняет шаги последовательно с семантикой Fit / Transform.  Pipeline = class
-  Pipeline = class
+/// DataPipeline (конвейер) шагов подготовки данных.
+/// Выполняет шаги последовательно с семантикой Fit / Transform.  
+  DataPipeline = class
   private
     steps: List<IPreprocessor>;
     fitted: boolean;
   public
     constructor;
     /// Добавляет шаг в конец pipeline
-    function Add(p: IPreprocessor): Pipeline;
+    function Add(p: IPreprocessor): DataPipeline;
     /// Обучает все шаги pipeline на DataFrame
-    function Fit(df: DataFrame): Pipeline;
+    function Fit(df: DataFrame): DataPipeline;
     /// Применяет обученный pipeline к DataFrame
     function Transform(df: DataFrame): DataFrame;
     /// Выполняет Fit и Transform последовательно
@@ -177,7 +177,7 @@ implementation
 //        StandardScaler
 //-----------------------------
 
-constructor StandardScaler.Create(params columns: array of string);
+constructor DataStandardScaler.Create(params columns: array of string);
 begin
   if (columns = nil) or (columns.Length = 0) then
     raise new ArgumentException('StandardScaler: columns not specified');
@@ -186,7 +186,7 @@ begin
   fitted := false;
 end;
 
-function StandardScaler.Fit(df: DataFrame): IPreprocessor;
+function DataStandardScaler.Fit(df: DataFrame): IPreprocessor;
 begin
   var n := cols.Length;
   SetLength(means, n);
@@ -230,7 +230,7 @@ begin
   Result := Self;
 end;
 
-function StandardScaler.Transform(df: DataFrame): DataFrame;
+function DataStandardScaler.Transform(df: DataFrame): DataFrame;
 begin
   if not fitted then
     raise new Exception('StandardScaler: not fitted');
@@ -256,7 +256,7 @@ begin
   Result := res;
 end;
 
-function StandardScaler.FitTransform(df: DataFrame): DataFrame;
+function DataStandardScaler.FitTransform(df: DataFrame): DataFrame;
 begin
   Fit(df);
   Result := Transform(df);
@@ -266,7 +266,7 @@ end;
 //        MinMaxScaler
 //-----------------------------
 
-constructor MinMaxScaler.Create(params columns: array of string);
+constructor DataMinMaxScaler.Create(params columns: array of string);
 begin
   if (columns = nil) or (columns.Length = 0) then
     raise new ArgumentException('MinMaxScaler: columns not specified');
@@ -275,7 +275,7 @@ begin
   fitted := false;
 end;
 
-function MinMaxScaler.Fit(df: DataFrame): IPreprocessor;
+function DataMinMaxScaler.Fit(df: DataFrame): IPreprocessor;
 begin
   var n := cols.Length;
   SetLength(mins, n);
@@ -326,7 +326,7 @@ begin
   Result := Self;
 end;
 
-function MinMaxScaler.Transform(df: DataFrame): DataFrame;
+function DataMinMaxScaler.Transform(df: DataFrame): DataFrame;
 begin
   if not fitted then
     raise new Exception('MinMaxScaler: not fitted');
@@ -353,7 +353,7 @@ begin
   Result := res;
 end;
 
-function MinMaxScaler.FitTransform(df: DataFrame): DataFrame;
+function DataMinMaxScaler.FitTransform(df: DataFrame): DataFrame;
 begin
   Fit(df);
   Result := Transform(df);
@@ -678,13 +678,13 @@ end;
 //          Pipeline
 //-----------------------------
 
-constructor Pipeline.Create;
+constructor DataPipeline.Create;
 begin
   steps := new List<IPreprocessor>;
   fitted := false;
 end;
 
-function Pipeline.Add(p: IPreprocessor): Pipeline;
+function DataPipeline.Add(p: IPreprocessor): DataPipeline;
 begin
   if fitted then
     raise new Exception('Cannot add step after Fit');
@@ -693,7 +693,7 @@ begin
   Result := Self;
 end;
 
-function Pipeline.Fit(df: DataFrame): Pipeline;
+function DataPipeline.Fit(df: DataFrame): DataPipeline;
 begin
   var current := df;
 
@@ -707,7 +707,7 @@ begin
   Result := Self;
 end;
 
-function Pipeline.Transform(df: DataFrame): DataFrame;
+function DataPipeline.Transform(df: DataFrame): DataFrame;
 begin
   if not fitted then
     raise new Exception('Pipeline is not fitted');
@@ -719,7 +719,7 @@ begin
   Result := current;
 end;
 
-function Pipeline.FitTransform(df: DataFrame): DataFrame;
+function DataPipeline.FitTransform(df: DataFrame): DataFrame;
 begin
   Fit(df);
   Result := Transform(df);
