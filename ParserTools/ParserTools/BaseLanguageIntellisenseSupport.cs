@@ -1980,6 +1980,9 @@ namespace PascalABCCompiler.Parsers
                 i++;
             }
 
+            if (count > 0)
+                return -1;
+
             return i;
         }
 
