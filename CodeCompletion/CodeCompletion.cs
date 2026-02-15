@@ -296,9 +296,15 @@ namespace CodeCompletion
             if (CodeCompletionController.comp != null)
                 Dirs.AddRange(CodeCompletionController.comp.GetCurrentSearchDirectories(currentUnitLanguage));
             // Надо как-то проверять, что мы не в инсталированной версии EVA
-            if (CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent) && Directory.Exists(CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]))
+            if (MainLibSourceDirectoryExists())
                 Dirs.AddRange(GetLibSourceDirectories(currentUnitLanguage));
             return CodeCompletionController.comp.FindSourceFileNameInDirs(unit_name, out found_dir_ind, currentUnitLanguage, Dirs.ToArray());
+        }
+
+        public static bool MainLibSourceDirectoryExists()
+        {
+            return CodeCompletionController.StandartDirectories.ContainsKey(LibSourceDirectoryIdent) 
+                && Directory.Exists(CodeCompletionController.StandartDirectories[LibSourceDirectoryIdent]);
         }
 
         private static string[] GetLibSourceDirectories(ILanguage currentUnitLanguage)
