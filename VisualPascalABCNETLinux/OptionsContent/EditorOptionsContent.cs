@@ -20,18 +20,7 @@ namespace VisualPascalABC.OptionsContent
             this.MainForm = MainForm;
             InitializeComponent();
             PascalABCCompiler.StringResources.SetTextForAllObjects(this, strprefix);
-            cbEditorFontSize.Items.Add(8);
-            cbEditorFontSize.Items.Add(10);
-            cbEditorFontSize.Items.Add(12);
-            cbEditorFontSize.Items.Add(14);
-            cbEditorFontSize.Items.Add(16);
-            cbEditorFontSize.Items.Add(18);
-            cbEditorFontSize.Items.Add(20);
-            cbEditorFontSize.Items.Add(22);
-            cbEditorFontSize.Items.Add(24);
-            cbEditorFontSize.Items.Add(28);
-            cbEditorFontSize.Items.Add(32);
-
+            cbEditorFontSize.Items.AddRange(new object[] {8,9,10,11,12,13,14,15,16,18,20,22,24,28,32});
         }
         /*private void AddcbErrorPosItem(SourceLocationAction sl, string Name)
         {
