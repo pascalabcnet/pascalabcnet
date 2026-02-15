@@ -15,19 +15,23 @@ type
   Vector = LinearAlgebraML.Vector;
   Matrix = LinearAlgebraML.Matrix;
   Validation = ValidationML.Validation;
-  LinearRegression = MLModelsABC.LinearRegression;
-  LogisticRegression = MLModelsABC.LogisticRegression;
   ConfusionMatrix = MetricsABC.ConfusionMatrix;
   Metrics = MetricsABC.Metrics;
-  Activations = MLModelsABC.Activations;
-  Pipeline = MLModelsABC.Pipeline;
   DataPipeline = PreprocessorABC.DataPipeline;
   DataStandardScaler = PreprocessorABC.DataStandardScaler;
-  StandardScaler = MLModelsABC.StandardScaler;
   DataFrame = DataFrameABC.DataFrame;
   Statistics = DataFrameABC.Statistics;
   CsvLoader = DataFrameABC.CsvLoader;
 
+  StandardScaler = MLModelsABC.StandardScaler;
+  Activations = MLModelsABC.Activations;
+  Pipeline = MLModelsABC.Pipeline;
+  
+  LinearRegression = MLModelsABC.LinearRegression;
+  LogisticRegression = MLModelsABC.LogisticRegression;
+  RidgeRegression = MLModelsABC.RidgeRegression;
+  ElasticNet = ElasticNet;
+  
 implementation
 
 function ToMatrix(Self: DataFrame; colNames: array of string): Matrix; extensionmethod;

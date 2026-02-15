@@ -6,6 +6,7 @@ uses MLCoreABC;
 uses LinearAlgebraML;
 
 type
+{$region Activations}
 /// Активационные функции для моделей
   Activations = static class
   public  
@@ -40,10 +41,16 @@ type
     /// Формула: softmax(x_i) = e^{x_i} / Σ e^{x_j}.
     static function Softmax(v: Vector): Vector;
   end; 
+{$endregion Activations}
+  
+{$region Models}
   
   IModel = MLCoreABC.IModel;
+
 /// Линейная регрессионная модель
 /// Предсказывает числовое значение по линейной комбинации признаков
+/// Используется в задачах регрессии при отсутствии сильной
+/// мультиколлинеарности и когда число признаков существенно меньше числа объектов.
   LinearRegression = class(IRegressor)
   private
     fCoef: Vector;
@@ -82,6 +89,8 @@ type
   /// Предсказывает вероятность принадлежности объекта к классу 1
   /// на основе линейной комбинации признаков и сигмоидной функции.
   /// Поддерживает L2-регуляризацию.
+  /// Используется в задачах бинарной классификации,
+  /// когда требуется вероятностный вывод и интерпретируемые коэффициенты.
   LogisticRegression = class(IClassifier)
   private
     fCoef: Vector;
@@ -129,7 +138,107 @@ type
     /// После вызова Fit значение становится true.
     property IsFitted: boolean read fFitted;
   end;
+    
+/// Линейная регрессионная модель с L2-регуляризацией (Ridge).
+/// Минимизирует функцию:
+///     ||y - (Xβ + b)||² + λ ||β||².
+/// Устойчива к мультиколлинеарности и плохо обусловленным данным.
+/// Используется при коррелированных признаках
+/// и в задачах, где важна численная стабильность решения.
+  RidgeRegression = class(IRegressor)
+  private
+    fLambda: real;
+    fCoef: Vector;
+    fIntercept: real;
+    fFitted: boolean;
+  public
+    /// Создаёт модель Ridge-регрессии.
+    /// lambda — коэффициент L2-регуляризации (0 — обычная линейная регрессия).
+    constructor Create(lambda: real := 1.0);
+  
+    /// Обучает модель на числовых данных.
+    /// X — матрица m × n (m объектов, n признаков).
+    /// y — вектор длины m с непрерывными значениями.
+    /// Выполняется центрирование признаков и целевой переменной.
+    function Fit(X: Matrix; y: Vector): IModel;
+  
+    /// Предсказывает непрерывные значения для объектов X.
+    /// Результат — вектор длины m.
+    function Predict(X: Matrix): Vector;
+  
+    /// Вектор коэффициентов модели (веса признаков).
+    /// Длина равна числу признаков.
+    /// Доступен после обучения (Fit).
+    property Coefficients: Vector read fCoef;
+  
+    /// Свободный член модели (смещение, bias).
+    /// Не подвергается регуляризации.
+    property Intercept: real read fIntercept;
+  
+    /// Коэффициент L2-регуляризации.
+    property Lambda: real read fLambda;
+  
+    /// Показывает, была ли модель обучена.
+    /// После вызова Fit значение становится true.
+    property IsFitted: boolean read fFitted;
+  end;
+  
+/// Линейная регрессионная модель ElasticNet.
+/// Минимизирует функцию:
+///     ||y - (Xβ + b)||² + λ1 ||β||₁ + λ2 ||β||².
+/// Объединяет L1-регуляризацию (разреженность, отбор признаков)
+/// и L2-регуляризацию (численная устойчивость).
+/// Используется при большом числе признаков, особенно если признаки коррелированы.
+/// Обучение выполняется методом покоординатного спуска 
+  ElasticNet = class(IRegressor)
+  private
+    fLambda1: real;   // L1
+    fLambda2: real;   // L2
+    fMaxIter: integer;
+    fTol: real;
 
+    fCoef: Vector;
+    fIntercept: real;
+    fFitted: boolean;
+    /// Применяет оператор мягкого порога:
+    /// soft(z, γ) = sign(z) * max(|z| - γ, 0).
+    /// Используется для реализации L1-регуляризации.
+    function SoftThreshold(z, gamma: real): real;
+  public
+    /// Создаёт модель ElasticNet.
+    /// lambda1 — коэффициент L1-регуляризации (>= 0).
+    /// lambda2 — коэффициент L2-регуляризации (>= 0).
+    /// maxIter — максимальное число итераций coordinate descent.
+    /// tol — критерий остановки по изменению коэффициентов.
+    constructor Create(lambda1, lambda2: real; maxIter: integer := 1000; tol: real := 1e-6);
+  
+    /// Обучает модель на числовых данных.
+    /// X — матрица m × n (m объектов, n признаков).
+    /// y — вектор длины m с непрерывными значениями.
+    /// Выполняется центрирование признаков и целевой переменной.
+    function Fit(X: Matrix; y: Vector): IModel;
+  
+    /// Предсказывает непрерывные значения для объектов X.
+    /// Результат — вектор длины m.
+    function Predict(X: Matrix): Vector;
+  
+    /// Вектор коэффициентов модели (веса признаков).
+    /// Длина равна числу признаков.
+    /// Доступен после обучения (Fit).
+    property Coefficients: Vector read fCoef;
+  
+    /// Свободный член модели (смещение, bias).
+    /// Не подвергается регуляризации.
+    property Intercept: real read fIntercept;
+  
+    /// Показывает, была ли модель обучена.
+    /// После вызова Fit значение становится true.
+    property IsFitted: boolean read fFitted;
+  end;
+
+{$endregion Models}
+
+{$region Pipeline}
   /// Конвейер машинного обучения (Pipeline).
   /// Объединяет несколько шагов подготовки данных и модель
   /// в единую последовательность обработки.
@@ -172,7 +281,9 @@ type
     /// Показывает, был ли пайплайн обучен (вызван метод Fit).
     property IsFitted: boolean read fFitted;
   end;
+{$endregion Pipeline}
   
+{$region Transformers}
   /// Стандартизирует признаки: вычитает среднее
   /// и делит на стандартное отклонение по каждому столбцу.
   /// Используется для приведения признаков к сопоставимому масштабу.
@@ -231,9 +342,12 @@ type
     /// Признак того, что преобразование обучено.
     property IsFitted: boolean read fFitted;
   end;
+{$endregion Transformers}
   
   
 implementation  
+
+uses System;
 
 //-----------------------------
 //       LinearRegression
@@ -270,7 +384,7 @@ begin
  
   // 4. Ridge regularization
   if flambda > 0 then
-    XtX := XtX + flambda * Matrix.Identity(p);
+    XtX := XtX + Matrix.Identity(p) * flambda;
 
   // 5. Solve
   fcoef := Solve(XtX, XtY);
@@ -382,6 +496,160 @@ function LogisticRegression.Predict(X: Matrix): Vector;
 begin
   Result := Predict(X, 0.5);
 end;
+
+//-----------------------------
+//          RidgeRegression 
+//-----------------------------
+
+constructor RidgeRegression.Create(lambda: real);
+begin
+  if lambda < 0 then
+    raise new ArgumentException('lambda must be >= 0');
+  fLambda := lambda;
+  fFitted := false;
+end;
+
+function RidgeRegression.Fit(X: Matrix; y: Vector): IModel;
+begin
+  if X.RowCount <> y.Length then
+    raise new ArgumentException('X and y size mismatch');
+
+  var n := X.RowCount;
+  var p := X.ColCount;
+
+  // Means
+  var muX := X.ColumnMeans;
+  var muY := y.Mean;
+
+  // Centered copies
+  var Xc := X.Clone;
+  var yc := y.Clone;
+
+  for var j := 0 to p - 1 do
+    for var i := 0 to n - 1 do
+      Xc[i, j] -= muX[j];
+
+  for var i := 0 to n - 1 do
+    yc[i] -= muY;
+
+  // Ridge solution
+  fCoef := SolveRidge(Xc, yc, fLambda);
+
+  // Intercept (NOT regularized)
+  fIntercept := muY - muX.Dot(fCoef);
+
+  fFitted := true;
+  Result := Self;
+end;
+
+function RidgeRegression.Predict(X: Matrix): Vector;
+begin
+  if not fFitted then
+    raise new InvalidOperationException('Model is not fitted');
+
+  Result := X * fCoef;
+  for var i := 0 to Result.Length - 1 do
+    Result[i] += fIntercept;
+end;
+
+constructor ElasticNet.Create(lambda1, lambda2: real; maxIter: integer; tol: real);
+begin
+  if (lambda1 < 0) or (lambda2 < 0) then
+    raise new ArgumentException('lambda must be >= 0');
+
+  fLambda1 := lambda1;
+  fLambda2 := lambda2;
+  fMaxIter := maxIter;
+  fTol := tol;
+  fFitted := false;
+end;
+
+function ElasticNet.SoftThreshold(z, gamma: real): real;
+begin
+  if z > gamma then
+    exit(z - gamma)
+  else if z < -gamma then
+    exit(z + gamma)
+  else
+    exit(0.0);
+end;
+
+function ElasticNet.Fit(X: Matrix; y: Vector): IModel;
+begin
+  if X.RowCount <> y.Length then
+    raise new ArgumentException('X and y size mismatch');
+
+  // Loss(β) = ||y - (Xβ + b)||² + λ1||β||1 + λ2||β||2²
+
+  var n := X.RowCount;
+  var p := X.ColCount;
+
+  var muX := X.ColumnMeans;
+  var muY := y.Mean;
+
+  var Xc := X.Clone;
+  var yc := y.Clone;
+
+  for var j := 0 to p - 1 do
+    for var i := 0 to n - 1 do
+      Xc[i,j] -= muX[j];
+
+  for var i := 0 to n - 1 do
+    yc[i] -= muY;
+
+  fCoef := new Vector(p);
+  var residual := yc.Clone;   // initial residual = yc (since β=0)
+
+  for var iter := 0 to fMaxIter - 1 do
+  begin
+    var maxChange := 0.0;
+
+    for var j := 0 to p - 1 do
+    begin
+      var oldBeta := fCoef[j];
+
+      var rho := 0.0;
+      var zj := 0.0;
+
+      for var i := 0 to n - 1 do
+      begin
+        rho += Xc[i,j] * (residual[i] + Xc[i,j] * oldBeta);
+        zj += Xc[i,j] * Xc[i,j];
+      end;
+
+      var newBeta := SoftThreshold(rho, fLambda1) / (zj + fLambda2);
+      var delta := newBeta - oldBeta;
+
+      if Abs(delta) > 0 then
+        for var i := 0 to n - 1 do
+          residual[i] -= Xc[i,j] * delta;
+
+      if Abs(delta) > maxChange then
+        maxChange := Abs(delta);
+
+      fCoef[j] := newBeta;
+    end;
+
+    if maxChange < fTol then
+      break;
+  end;
+
+  fIntercept := muY - muX.Dot(fCoef);
+  fFitted := true;
+
+  Result := Self;
+end;
+
+function ElasticNet.Predict(X: Matrix): Vector;
+begin
+  if not fFitted then
+    raise new InvalidOperationException('Model is not fitted');
+
+  Result := X * fCoef;
+  for var i := 0 to Result.Length - 1 do
+    Result[i] += fIntercept;
+end;
+
 
 //-----------------------------
 //          Pipeline 

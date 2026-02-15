@@ -44,8 +44,34 @@ type
     static function StratifiedCrossValidate(model: IModel; X: Matrix; y: Vector;
       k: integer; metric: (Vector,Vector) -> real; seed: integer := 0): real;  
   end;
+  
+/// Класс для подбора гиперпараметров методом перебора по сетке (Grid Search).
+/// Для каждого значения параметра выполняется k-кратная кросс-валидация.
+/// Выбирается параметр, дающий наилучшее среднее значение метрики.
+/// Используется для настройки регуляризации и других гиперпараметров моделей.
+  GridSearch = static class
+  public
+    /// Выполняет подбор гиперпараметра по заданной сетке значений.
+    /// modelFactory — функция создания модели по значению параметра.
+    /// paramValues — набор тестируемых значений гиперпараметра.
+    /// X, y — обучающие данные.
+    /// k — число фолдов в кросс-валидации.
+    /// metric — функция оценки качества (yTrue, yPred) → real.
+    /// Возвращает кортеж (лучший параметр, лучшее среднее значение метрики).
+    class function Search<T>(
+      modelFactory: real -> IModel;
+      paramValues: array of real;
+      X: Matrix; y: Vector;
+      k: integer;
+      metric: (Vector, Vector) -> real
+    ): (real, real); where T: IModel;
+  end;
 
 implementation
+
+//-----------------------------
+//         Validation
+//-----------------------------
 
 static function Validation.TrainTestSplit(X: Matrix; y: Vector;
   testRatio: real; seed: integer): (Matrix, Matrix, Vector, Vector);
@@ -265,6 +291,80 @@ begin
   Result := total / folds;
 end;
 
+//-----------------------------
+//         GridSearch
+//-----------------------------
+
+class function GridSearch.Search<T>(
+  modelFactory: real -> IModel;
+  paramValues: array of real;
+  X: Matrix; y: Vector;
+  k: integer;
+  metric: (Vector, Vector) -> real
+): (real, real); where T: IModel;
+begin
+  var bestParam := 0.0;
+  var bestScore := -1e308;
+
+  var n := X.RowCount;
+  var foldSize := n div k;
+
+  foreach var param in paramValues do
+  begin
+    var totalScore := 0.0;
+
+    for var fold := 0 to k - 1 do
+    begin
+      var startIdx := fold * foldSize;
+      var endIdx := if fold = k - 1 then n - 1 else (startIdx + foldSize - 1);
+
+      var trainCount := n - (endIdx - startIdx + 1);
+      var testCount := endIdx - startIdx + 1;
+
+      var Xtrain := new Matrix(trainCount, X.ColCount);
+      var ytrain := new Vector(trainCount);
+      var Xtest := new Matrix(testCount, X.ColCount);
+      var ytest := new Vector(testCount);
+
+      var ti := 0;
+      var si := 0;
+
+      for var i := 0 to n - 1 do
+      begin
+        if (i >= startIdx) and (i <= endIdx) then
+        begin
+          for var j := 0 to X.ColCount - 1 do
+            Xtest[si,j] := X[i,j];
+          ytest[si] := y[i];
+          si += 1;
+        end
+        else
+        begin
+          for var j := 0 to X.ColCount - 1 do
+            Xtrain[ti,j] := X[i,j];
+          ytrain[ti] := y[i];
+          ti += 1;
+        end;
+      end;
+
+      var model := modelFactory(param);
+      model.Fit(Xtrain, ytrain);
+
+      var pred := model.Predict(Xtest);
+      totalScore += metric(ytest, pred);
+    end;
+
+    var avgScore := totalScore / k;
+
+    if avgScore > bestScore then
+    begin
+      bestScore := avgScore;
+      bestParam := param;
+    end;
+  end;
+
+  Result := (bestParam, bestScore);
+end;
 
 
 end.
