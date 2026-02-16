@@ -121,6 +121,10 @@ namespace ICSharpCode.TextEditor.Util
                                 {
                                     int paramDelimLength = languageIntellisenseSupport.ParameterDelimiter.Length;
 
+                                    // Проверка на всякий случай, чтобы не возникало ошибки с отрицательным length в Substring  EVA
+                                    if (paranthesisIndex - paramDelimLength < paramDelimLength)
+                                        return;
+
                                     string paramDescription = descriptionAfterBracket.Substring(paramDelimIndex + paramDelimLength, paranthesisIndex - paramDelimIndex - paramDelimLength);
 
                                     if (languageIntellisenseSupport.IsParams(paramDescription))
