@@ -127,8 +127,8 @@ type
     static function operator *(A: Matrix; x: Vector): Vector;
     static function operator *(A, B: Matrix): Matrix;
     
-    static function operator *(alpha: real; A: Matrix): Matrix;
-    static function operator *(A: Matrix; alpha: real): Matrix;
+    //static function operator *(alpha: real; A: Matrix): Matrix;
+    //static function operator *(A: Matrix; alpha: real): Matrix;
     
     // ---------- in-place operators ----------
     static function operator +=(A, B: Matrix): Matrix;
@@ -784,18 +784,30 @@ begin
       Result.data[i, j] := A.data[i, j] - B.data[i, j];
 end;
 
-static function Matrix.operator *(alpha: real; A: Matrix): Matrix;
-begin
-  Result := A * alpha;
-end;
-
-static function Matrix.operator *(A: Matrix; alpha: real): Matrix;
+function operator *(A: Matrix; alpha: real): Matrix; extensionmethod;
 begin
   Result := new Matrix(A.Rows, A.Cols);
   for var i := 0 to A.Rows - 1 do
     for var j := 0 to A.Cols - 1 do
       Result.data[i, j] := alpha * A.data[i, j];
 end;
+
+function operator *(alpha: real; A: Matrix): Matrix; extensionmethod;
+begin
+  Result := A * alpha;
+end;
+
+function operator *(A: Matrix; alpha: integer): Matrix; extensionmethod;
+begin
+  Result := A * real(alpha);
+end;
+
+function operator *(alpha: integer; A: Matrix): Matrix; extensionmethod;
+begin
+  Result := real(alpha) * A;
+end;
+
+
 
 static function Matrix.operator *(A: Matrix; x: Vector): Vector;
 begin
