@@ -48,6 +48,17 @@ type
     function Transform(X: Matrix): Matrix;
   end;
   
+  /// Интерфейс преобразования признаков с учётом целевой переменной.
+  /// Используется для методов отбора признаков и других процедур,
+  /// в которых при обучении требуется вектор целевых значений.
+  ISupervisedTransformer = interface(ITransformer)
+    /// Обучает преобразование на данных с использованием
+    /// как признаков X, так и целевой переменной y.
+    /// Запоминает необходимые параметры,
+    /// которые будут использоваться при Transform.
+    function Fit(X: Matrix; y: Vector): ISupervisedTransformer;
+  end;
+  
 implementation  
 
 end.

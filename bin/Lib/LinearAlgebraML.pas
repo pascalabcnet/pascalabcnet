@@ -5,7 +5,6 @@ interface
 type
   Vector = class
   private
-    
     static procedure CheckSameLength(const a, b: Vector);
     static procedure CheckNonEmpty(const v: Vector); 
     procedure SetData(i: integer; value: real) := data[i] := value;
@@ -93,7 +92,25 @@ type
     function ColumnMins: Vector;
     function ColumnMaxs: Vector;
     function RowMins: Vector;
-    function RowMaxs: Vector;   
+    function RowMaxs: Vector;
+    
+    function RowSum(i: integer): real;
+    function RowMean(i: integer): real;
+    function RowVariance(i: integer): real;
+    function RowStd(i: integer): real;
+    function RowMin(i: integer): real;
+    function RowMax(i: integer): real;
+    function RowArgMin(i: integer): integer;
+    function RowArgMax(i: integer): integer;
+    
+    function ColumnSum(j: integer): real;
+    function ColumnMean(j: integer): real;
+    function ColumnVariance(j: integer): real;
+    function ColumnStd(j: integer): real;
+    function ColumnMin(j: integer): real;
+    function ColumnMax(j: integer): real;
+    function ColumnArgMin(j: integer): integer;
+    function ColumnArgMax(j: integer): integer;
     
     function FrobeniusNorm: real;
     procedure AddScaledIdentity(lambda: real);
@@ -559,6 +576,154 @@ begin
       if data[i, j] > Result[i] then
         Result[i] := data[i, j];
   end;
+end;
+
+function Matrix.RowArgMin(i: integer): integer;
+begin
+  var minVal := data[i,0];
+  var arg := 0;
+
+  for var j := 1 to ColCount - 1 do
+    if data[i,j] < minVal then
+    begin
+      minVal := data[i,j];
+      arg := j;
+    end;
+
+  Result := arg;
+end;
+
+function Matrix.RowMin(i: integer): real;
+begin
+  Result := data[i, RowArgMin(i)];
+end;
+
+function Matrix.RowArgMax(i: integer): integer;
+begin
+  var maxVal := data[i,0];
+  var arg := 0;
+
+  for var j := 1 to ColCount - 1 do
+    if data[i,j] > maxVal then
+    begin
+      maxVal := data[i,j];
+      arg := j;
+    end;
+
+  Result := arg;
+end;
+
+function Matrix.RowMax(i: integer): real;
+begin
+  Result := data[i, RowArgMax(i)];
+end;
+
+function Matrix.RowSum(i: integer): real;
+begin
+  var sum := 0.0;
+
+  for var j := 0 to ColCount - 1 do
+    sum += data[i,j];
+
+  Result := sum;
+end;
+
+function Matrix.RowMean(i: integer): real;
+begin
+  Result := RowSum(i) / ColCount;
+end;
+
+function Matrix.RowVariance(i: integer): real;
+begin
+  var mean := RowMean(i);
+  var sum := 0.0;
+
+  for var j := 0 to ColCount - 1 do
+  begin
+    var d := data[i,j] - mean;
+    sum += d * d;
+  end;
+
+  Result := sum / ColCount;
+end;
+
+function Matrix.RowStd(i: integer): real;
+begin
+  Result := Sqrt(RowVariance(i));
+end;
+
+function Matrix.ColumnArgMin(j: integer): integer;
+begin
+  var minVal := data[0,j];
+  var arg := 0;
+
+  for var i := 1 to RowCount - 1 do
+    if data[i,j] < minVal then
+    begin
+      minVal := data[i,j];
+      arg := i;
+    end;
+
+  Result := arg;
+end;
+
+function Matrix.ColumnMin(j: integer): real;
+begin
+  Result := data[ColumnArgMin(j), j];
+end;
+
+function Matrix.ColumnArgMax(j: integer): integer;
+begin
+  var maxVal := data[0,j];
+  var arg := 0;
+
+  for var i := 1 to RowCount - 1 do
+    if data[i,j] > maxVal then
+    begin
+      maxVal := data[i,j];
+      arg := i;
+    end;
+
+  Result := arg;
+end;
+
+function Matrix.ColumnMax(j: integer): real;
+begin
+  Result := data[ColumnArgMax(j), j];
+end;
+
+function Matrix.ColumnSum(j: integer): real;
+begin
+  var sum := 0.0;
+
+  for var i := 0 to RowCount - 1 do
+    sum += data[i,j];
+
+  Result := sum;
+end;
+
+function Matrix.ColumnMean(j: integer): real;
+begin
+  Result := ColumnSum(j) / RowCount;
+end;
+
+function Matrix.ColumnVariance(j: integer): real;
+begin
+  var mean := ColumnMean(j);
+  var sum := 0.0;
+
+  for var i := 0 to RowCount - 1 do
+  begin
+    var d := data[i,j] - mean;
+    sum += d * d;
+  end;
+
+  Result := sum / RowCount;
+end;
+
+function Matrix.ColumnStd(j: integer): real;
+begin
+  Result := Sqrt(ColumnVariance(j));
 end;
 
 

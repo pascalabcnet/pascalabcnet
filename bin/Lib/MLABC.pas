@@ -24,13 +24,20 @@ type
   CsvLoader = DataFrameABC.CsvLoader;
 
   StandardScaler = MLModelsABC.StandardScaler;
+  PCATransformer = MLModelsABC.PCATransformer;
+  MinMaxScaler = MLModelsABC.MinMaxScaler;
+  VarianceThreshold = MLModelsABC.VarianceThreshold;
+  SelectKBest = MLModelsABC.SelectKBest;
+  FeatureScore = MLModelsABC.FeatureScore;
+  
   Activations = MLModelsABC.Activations;
   Pipeline = MLModelsABC.Pipeline;
   
   LinearRegression = MLModelsABC.LinearRegression;
   LogisticRegression = MLModelsABC.LogisticRegression;
   RidgeRegression = MLModelsABC.RidgeRegression;
-  ElasticNet = ElasticNet;
+  ElasticNet = MLModelsABC.ElasticNet;
+  MulticlassLogisticRegression = MLModelsABC.MulticlassLogisticRegression;
   
 implementation
 
