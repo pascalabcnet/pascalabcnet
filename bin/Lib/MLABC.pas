@@ -9,7 +9,8 @@ uses ValidationML;
 uses MLModelsABC;
 uses MetricsABC;
 uses PreprocessorABC;
-USES DataFrameABC;
+uses DataFrameABC;
+uses MLExceptions;
 
 type 
   Vector = LinearAlgebraML.Vector;
@@ -41,6 +42,11 @@ type
   RidgeRegression = MLModelsABC.RidgeRegression;
   ElasticNet = MLModelsABC.ElasticNet;
   MulticlassLogisticRegression = MLModelsABC.MulticlassLogisticRegression;
+  
+  MLException = MLExceptions.MLException;
+  MLArgumentException = MLExceptions.MLArgumentException;
+  MLNotFittedException = MLExceptions.MLNotFittedException;
+  MLDimensionException = MLExceptions.MLDimensionException;
   
 implementation
 

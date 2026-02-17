@@ -10,7 +10,8 @@
    Collections, Arrays, Core, ClientServer, Countries,
    ABCDatabases,
    School, SF, TurtleABC,
-   DataFrameABC, DataFrameABCCore, LinearAlgebraML, PreprocessorABC
+   DataFrameABC, DataFrameABCCore, LinearAlgebraML, PreprocessorABC,
+   MetricsABC, MLABC, MLCoreABC, MLModelsABC, ValidationML, MLExceptions
    ;
    
 begin

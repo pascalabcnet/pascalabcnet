@@ -70,7 +70,12 @@ type
 
 implementation
 
-uses System;
+uses MLExceptions;
+
+const
+  ER_DIM_MISMATCH_TRAIN_TEST =
+    'Несоответствие размерностей в TrainTestSplit: X.RowCount={0}, y.Length={1}!!' +
+    'Dimension mismatch in TrainTestSplit: X.RowCount={0}, y.Length={1}';
 
 //-----------------------------
 //         Validation
@@ -80,7 +85,7 @@ static function Validation.TrainTestSplit(X: Matrix; y: Vector;
   testRatio: real; seed: integer): (Matrix, Matrix, Vector, Vector);
 begin
   if X.RowCount <> y.Length then
-    raise new Exception('Dimension mismatch in TrainTestSplit');
+    DimensionError(ER_DIM_MISMATCH_TRAIN_TEST, X.RowCount, y.Length);
 
   if (testRatio <= 0) or (testRatio >= 1) then
     raise new Exception('testRatio must be in (0,1)');
@@ -309,7 +314,7 @@ class function GridSearch.Search<T>(
 ): (real, real, T); where T: IModel;
 begin
   if paramValues.Length = 0 then
-    raise new ArgumentException('paramValues is empty');
+    raise new System.ArgumentException('paramValues is empty');
 
   var bestParam := paramValues[0];
   var bestScore := -1e308;

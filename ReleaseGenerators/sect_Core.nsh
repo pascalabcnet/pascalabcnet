@@ -188,6 +188,8 @@
     File ..\bin\Lib\MLCoreABC.pcu
     File ..\bin\Lib\MLModelsABC.pcu
     File ..\bin\Lib\ValidationML.pcu
+    File ..\bin\Lib\MLExceptions.pcu
+
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
@@ -290,6 +292,7 @@
     ${AddFile} "MLCoreABC.pcu"
     ${AddFile} "MLModelsABC.pcu"
     ${AddFile} "ValidationML.pcu"
+    ${AddFile} "MLExceptions.pcu"
 
 
     ${AddFile} "turtle.png"
@@ -429,7 +432,7 @@
     File ..\bin\Lib\MLCoreABC.pas
     File ..\bin\Lib\MLModelsABC.pas
     File ..\bin\Lib\ValidationML.pas
-
+    File ..\bin\Lib\MLExceptions.pas
 
     File ..\bin\Lib\__RedirectIOMode.vb
     File ..\bin\Lib\VBSystem.vb
@@ -519,6 +522,7 @@
     ${AddFile} "MLCoreABC.pas"
     ${AddFile} "MLModelsABC.pas"
     ${AddFile} "ValidationML.pas"
+    ${AddFile} "MLExceptions.pas"
 
     ${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"

@@ -3139,48 +3139,6 @@ type
   end;
 
 
-{type
-  ///--
-  __TypeclassRestrictedFunctionAttribute = class(Attribute)
-  public
-    constructor;
-    begin
-    end;
-  end;
-  
-  
-  ///--
-  __TypeclassGenericParameterAttribute = class(Attribute)
-  public
-    constructor(instanceName: string);
-    begin
-    end;
-  end;
-  
-  ///--
-  __TypeclassAttribute = class(Attribute)
-  public
-    constructor(typeclassName: string);
-    begin
-    end;
-  end;
-
-  ///--
-  __TypeclassMemberAttribute = class(Attribute)
-  public
-    constructor;
-    begin
-    end;
-  end;
-  
-  ///--
-  __TypeclassInstanceAttribute = class(Attribute)
-  public
-    constructor(instanceName: string);
-    begin
-    end;
-  end;}
-  
 type 
 // Смысл полей Num, Width и Fmt соответствует
 // атрибутам форматирования {Num,Width:Fmt}.
@@ -3237,6 +3195,8 @@ type
     constructor Create;
   end;
 
+/// Функция для перевода сообщений об ошибках
+function GetTranslation(message: string): string;
   
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
@@ -3330,6 +3290,7 @@ begin
     Result := 'ru';
 end;
 
+// Делаю публичной
 function GetTranslation(message: string): string;
 begin
   var cur_locale := GetCurrentLocale();
