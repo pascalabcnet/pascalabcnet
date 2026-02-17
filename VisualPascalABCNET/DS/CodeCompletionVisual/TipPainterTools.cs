@@ -69,41 +69,22 @@ namespace ICSharpCode.TextEditor.Util
 
                     var languageIntellisenseSupport = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport;
 
-                    // ИЗМЕНЕНО НАЧАЛО
-                    int extensionIndex = basicDescription.IndexOf("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION"));
-                    if (extensionIndex == -1)
-                        return;
+                    int startIndex = basicDescription.IndexOf("(", basicDescription.IndexOf("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION")) + 1) + 1;
 
-                    int startIndex = basicDescription.IndexOf("(", extensionIndex + 1);
-                    if (startIndex == -1)
-                        return;
-
-                    startIndex++;
-
-                    if (startIndex >= basicDescription.Length)
-                        return;
-
-                    string substringFromStart = basicDescription.Substring(startIndex);
-                    int paranthesisIndex = languageIntellisenseSupport.FindClosingParenthesis(substringFromStart, ')');
+                    int paranthesisIndex = languageIntellisenseSupport.FindClosingParenthesis(basicDescription.Substring(startIndex), ')');
 
                     if (paranthesisIndex == -1)
                         return;
 
                     int end_sk = paranthesisIndex + startIndex;
 
-                    if (end_sk > basicDescription.Length)
-                        return;
-                    // ИЗМЕНЕНО КОНЕЦ
-
                     if (param_num == 1)
                     {
-                        // ИЗМЕНЕНО НАЧАЛО
                         bold_beg = startIndex;
 
-                        if (bold_beg != 0 && bold_beg < basicDescription.Length)
+                        if (bold_beg != 0)
                         {
-                            string remainingText = basicDescription.Substring(bold_beg);
-                            int paramDelimIndex = languageIntellisenseSupport.FindParamDelim(remainingText, 1);
+                            int paramDelimIndex = languageIntellisenseSupport.FindParamDelim(basicDescription.Substring(bold_beg), 1);
 
                             if (paramDelimIndex == -1)
                             {
@@ -113,34 +94,25 @@ namespace ICSharpCode.TextEditor.Util
                             {
                                 bold_len = paramDelimIndex;
                             }
-
-                            if (bold_len < 0)
-                                bold_len = 0;
                         }
-                        // ИЗМЕНЕНО КОНЕЦ
                     }
                     else
                     {
+                        // Здесь учтется случай последнего параметра типа params EVA
                         if (param_num > paramsCount)
                         {
                             if (paramsCount == 1)
                             {
-                                // ИЗМЕНЕНО НАЧАЛО
-                                if (startIndex < basicDescription.Length && paranthesisIndex > 0)
-                                {
-                                    string paramDescription = basicDescription.Substring(startIndex, paranthesisIndex);
+                                string paramDescription = basicDescription.Substring(startIndex, paranthesisIndex);
 
-                                    if (languageIntellisenseSupport.IsParams(paramDescription))
-                                    {
-                                        bold_beg = startIndex;
-                                        bold_len = paranthesisIndex;
-                                    }
+                                if (languageIntellisenseSupport.IsParams(paramDescription))
+                                {
+                                    bold_beg = startIndex;
+                                    bold_len = paranthesisIndex;
                                 }
-                                // ИЗМЕНЕНО КОНЕЦ
                             }
                             else
                             {
-                                // ИЗМЕНЕНО НАЧАЛО
                                 string descriptionAfterBracket = basicDescription.Substring(startIndex);
 
                                 int paramDelimIndex = languageIntellisenseSupport.FindParamDelim(descriptionAfterBracket, paramsCount - 1);
@@ -149,181 +121,46 @@ namespace ICSharpCode.TextEditor.Util
                                 {
                                     int paramDelimLength = languageIntellisenseSupport.ParameterDelimiter.Length;
 
-                                    int length = paranthesisIndex - paramDelimIndex - paramDelimLength;
+                                    // Проверка на всякий случай, чтобы не возникало ошибки с отрицательным length в Substring  EVA
+                                    if (paranthesisIndex - paramDelimLength < paramDelimLength)
+                                        return;
 
-                                    if (paramDelimIndex + paramDelimLength <= descriptionAfterBracket.Length &&
-                                        length >= 0 &&
-                                        paramDelimIndex + paramDelimLength + length <= descriptionAfterBracket.Length)
+                                    string paramDescription = descriptionAfterBracket.Substring(paramDelimIndex + paramDelimLength, paranthesisIndex - paramDelimIndex - paramDelimLength);
+
+                                    if (languageIntellisenseSupport.IsParams(paramDescription))
                                     {
-                                        string paramDescription = descriptionAfterBracket.Substring(
-                                            paramDelimIndex + paramDelimLength,
-                                            length);
-
-                                        if (languageIntellisenseSupport.IsParams(paramDescription))
-                                        {
-                                            bold_beg = paramDelimIndex + startIndex + paramDelimLength;
-                                            bold_len = end_sk - bold_beg;
-
-                                            if (bold_len < 0)
-                                                bold_len = 0;
-                                        }
+                                        bold_beg = paramDelimIndex + startIndex + paramDelimLength;
+                                        bold_len = end_sk - bold_beg;
                                     }
                                 }
-                                // ИЗМЕНЕНО КОНЕЦ
                             }
                         }
                         else
                         {
-                            // ИЗМЕНЕНО НАЧАЛО
                             int paramDelimIndex = languageIntellisenseSupport.FindParamDelim(basicDescription.Substring(startIndex), param_num - 1);
 
                             if (paramDelimIndex != -1)
                             {
-                                int paramDelimLength = languageIntellisenseSupport.ParameterDelimiter.Length;
-                                bold_beg = paramDelimIndex + startIndex + paramDelimLength;
+                                bold_beg = paramDelimIndex + startIndex + languageIntellisenseSupport.ParameterDelimiter.Length;
+                                int secondParamDelimIndex = languageIntellisenseSupport.FindParamDelim(basicDescription.Substring(startIndex), param_num);
 
-                                if (bold_beg < basicDescription.Length)
+                                if (secondParamDelimIndex == -1)
                                 {
-                                    int secondParamDelimIndex = languageIntellisenseSupport.FindParamDelim(basicDescription.Substring(startIndex), param_num);
-
-                                    if (secondParamDelimIndex == -1)
-                                    {
-                                        bold_len = end_sk - bold_beg;
-                                    }
-                                    else
-                                    {
-                                        bold_len = secondParamDelimIndex + startIndex - bold_beg;
-                                    }
-
-                                    if (bold_len < 0)
-                                        bold_len = 0;
+                                    bold_len = end_sk - bold_beg;
+                                }
+                                else
+                                {
+                                    bold_len = secondParamDelimIndex + startIndex - bold_beg;
                                 }
                             }
-                            // ИЗМЕНЕНО КОНЕЦ
                         }
                     }
                 }
             }
         }
-
-        /*        private static void GetToolipParts(string description, int param_num, int paramsCount, out string basicDescription, out string documentation, out int bold_beg, out int bold_len)
-                {
-                    basicDescription = null;
-                    documentation = null;
-                    bold_beg = 0;
-                    bold_len = 0;
-                    if (IsVisibleText(description))
-                    {
-                        string[] splitDescription = description.Split(new char[] { '\n' }, 2);
-
-                        if (splitDescription.Length > 0)
-                        {
-                            if (splitDescription.Length > 1)
-                            {
-                                documentation = splitDescription[1].Trim();
-                            }
-
-                            basicDescription = splitDescription[0];
-
-                            if (param_num == -1)
-                                return;
-
-                            var languageIntellisenseSupport = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport;
-
-                            int startIndex = basicDescription.IndexOf("(", basicDescription.IndexOf("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION")) + 1) + 1;
-
-                            int paranthesisIndex = languageIntellisenseSupport.FindClosingParenthesis(basicDescription.Substring(startIndex), ')');
-
-                            if (paranthesisIndex == -1)
-                                return;
-
-                            int end_sk = paranthesisIndex + startIndex;
-
-                            if (param_num == 1)
-                            {
-                                bold_beg = startIndex;
-
-                                if (bold_beg != 0)
-                                {
-                                    int paramDelimIndex = languageIntellisenseSupport.FindParamDelim(basicDescription.Substring(bold_beg), 1);
-
-                                    if (paramDelimIndex == -1)
-                                    {
-                                        bold_len = end_sk - bold_beg;
-                                    }
-                                    else
-                                    {
-                                        bold_len = paramDelimIndex;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // Здесь учтется случай последнего параметра типа params EVA
-                                if (param_num > paramsCount)
-                                {
-                                    if (paramsCount == 1)
-                                    {
-                                        string paramDescription = basicDescription.Substring(startIndex, paranthesisIndex);
-
-                                        if (languageIntellisenseSupport.IsParams(paramDescription))
-                                        {
-                                            bold_beg = startIndex;
-                                            bold_len = paranthesisIndex;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        string descriptionAfterBracket = basicDescription.Substring(startIndex);
-
-                                        int paramDelimIndex = languageIntellisenseSupport.FindParamDelim(descriptionAfterBracket, paramsCount - 1);
-
-                                        if (paramDelimIndex != -1)
-                                        {
-                                            int paramDelimLength = languageIntellisenseSupport.ParameterDelimiter.Length;
-
-                                            // Проверка на всякий случай, чтобы не возникало ошибки с отрицательным length в Substring  EVA
-                                            if (paranthesisIndex - paramDelimLength < paramDelimLength)
-                                                return;
-
-                                            string paramDescription = descriptionAfterBracket.Substring(paramDelimIndex + paramDelimLength, paranthesisIndex - paramDelimIndex - paramDelimLength);
-
-                                            if (languageIntellisenseSupport.IsParams(paramDescription))
-                                            {
-                                                bold_beg = paramDelimIndex + startIndex + paramDelimLength;
-                                                bold_len = end_sk - bold_beg;
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    int paramDelimIndex = languageIntellisenseSupport.FindParamDelim(basicDescription.Substring(startIndex), param_num - 1);
-
-                                    if (paramDelimIndex != -1)
-                                    {
-                                        bold_beg = paramDelimIndex + startIndex + languageIntellisenseSupport.ParameterDelimiter.Length;
-                                        int secondParamDelimIndex = languageIntellisenseSupport.FindParamDelim(basicDescription.Substring(startIndex), param_num);
-
-                                        if (secondParamDelimIndex == -1)
-                                        {
-                                            bold_len = end_sk - bold_beg;
-                                        }
-                                        else
-                                        {
-                                            bold_len = secondParamDelimIndex + startIndex - bold_beg;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }*/
-
-
-
-        // btw. I know it's ugly.
-        public static Rectangle DrawingRectangle1;
+		
+		// btw. I know it's ugly.
+		public static Rectangle DrawingRectangle1;
 		public static Rectangle DrawingRectangle2;
 
         public static Size GetDrawingSizeDrawHelpTip(Control control,
