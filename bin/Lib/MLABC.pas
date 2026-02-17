@@ -29,6 +29,9 @@ type
   VarianceThreshold = MLModelsABC.VarianceThreshold;
   SelectKBest = MLModelsABC.SelectKBest;
   FeatureScore = MLModelsABC.FeatureScore;
+  Normalizer = MLModelsABC.Normalizer;
+  
+  NormType = MLModelsABC.NormType;
   
   Activations = MLModelsABC.Activations;
   Pipeline = MLModelsABC.Pipeline;

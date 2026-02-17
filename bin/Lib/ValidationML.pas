@@ -57,17 +57,20 @@ type
     /// X, y — обучающие данные.
     /// k — число фолдов в кросс-валидации.
     /// metric — функция оценки качества (yTrue, yPred) → real.
-    /// Возвращает кортеж (лучший параметр, лучшее среднее значение метрики).
-    class function Search<T>(
-      modelFactory: real -> IModel;
-      paramValues: array of real;
-      X: Matrix; y: Vector;
-      k: integer;
-      metric: (Vector, Vector) -> real
-    ): (real, real); where T: IModel;
+    /// Возвращает кортеж (лучший параметр, лучшее среднее значение метрики,
+    ///   модель, обученная на всём датасете с лучшим параметром).
+  class function Search<T>(
+    modelFactory: real -> T;
+    paramValues: array of real;
+    X: Matrix; y: Vector;
+    k: integer;
+    metric: (Vector, Vector) -> real
+  ): (real, real, T); where T: IModel;
   end;
 
 implementation
+
+uses System;
 
 //-----------------------------
 //         Validation
@@ -235,7 +238,8 @@ begin
       yte[i] := y[r];
     end;
 
-    var m := model.Fit(Xtr, ytr);
+    var m := model.Clone();
+    m.Fit(Xtr, ytr);
     var pred := m.Predict(Xte);
 
     total += metric(yte, pred);
@@ -281,7 +285,8 @@ begin
       yte[i] := y[r];
     end;
 
-    var m := model.Fit(Xtr, ytr);
+    var m := model.Clone();
+    m.Fit(Xtr, ytr);
     var pred := m.Predict(Xte);
 
     total += metric(yte, pred);
@@ -296,65 +301,23 @@ end;
 //-----------------------------
 
 class function GridSearch.Search<T>(
-  modelFactory: real -> IModel;
+  modelFactory: real -> T;
   paramValues: array of real;
   X: Matrix; y: Vector;
   k: integer;
   metric: (Vector, Vector) -> real
-): (real, real); where T: IModel;
+): (real, real, T); where T: IModel;
 begin
-  var bestParam := 0.0;
-  var bestScore := -1e308;
+  if paramValues.Length = 0 then
+    raise new ArgumentException('paramValues is empty');
 
-  var n := X.RowCount;
-  var foldSize := n div k;
+  var bestParam := paramValues[0];
+  var bestScore := -1e308;
 
   foreach var param in paramValues do
   begin
-    var totalScore := 0.0;
-
-    for var fold := 0 to k - 1 do
-    begin
-      var startIdx := fold * foldSize;
-      var endIdx := if fold = k - 1 then n - 1 else (startIdx + foldSize - 1);
-
-      var trainCount := n - (endIdx - startIdx + 1);
-      var testCount := endIdx - startIdx + 1;
-
-      var Xtrain := new Matrix(trainCount, X.ColCount);
-      var ytrain := new Vector(trainCount);
-      var Xtest := new Matrix(testCount, X.ColCount);
-      var ytest := new Vector(testCount);
-
-      var ti := 0;
-      var si := 0;
-
-      for var i := 0 to n - 1 do
-      begin
-        if (i >= startIdx) and (i <= endIdx) then
-        begin
-          for var j := 0 to X.ColCount - 1 do
-            Xtest[si,j] := X[i,j];
-          ytest[si] := y[i];
-          si += 1;
-        end
-        else
-        begin
-          for var j := 0 to X.ColCount - 1 do
-            Xtrain[ti,j] := X[i,j];
-          ytrain[ti] := y[i];
-          ti += 1;
-        end;
-      end;
-
-      var model := modelFactory(param);
-      model.Fit(Xtrain, ytrain);
-
-      var pred := model.Predict(Xtest);
-      totalScore += metric(ytest, pred);
-    end;
-
-    var avgScore := totalScore / k;
+    var model := modelFactory(param);
+    var avgScore := Validation.CrossValidate(model, X, y, k, metric);
 
     if avgScore > bestScore then
     begin
@@ -363,8 +326,12 @@ begin
     end;
   end;
 
-  Result := (bestParam, bestScore);
+  var bestModel := modelFactory(bestParam);
+  bestModel.Fit(X, y);
+
+  Result := (bestParam, bestScore, bestModel);
 end;
+
 
 
 end.

@@ -47,18 +47,17 @@ type
   
   IModel = MLCoreABC.IModel;
 
-/// Линейная регрессионная модель
+/// Линейная регрессионная модель (метод наименьших квадратов).
 /// Предсказывает числовое значение по линейной комбинации признаков
-/// Используется в задачах регрессии при отсутствии сильной
+/// Используется в задачах регрессии при отсутствии выраженной
 /// мультиколлинеарности и когда число признаков существенно меньше числа объектов.
   LinearRegression = class(IRegressor)
   private
     fCoef: Vector;
     fIntercept: real;
-    fLambda: real;
     fFitted: boolean;
   public
-    constructor Create(lambda: real := 0.0);
+    constructor Create();
 
     /// Обучает модель на числовых данных
     /// X — матрица m × n (m объектов, n признаков)
@@ -83,6 +82,10 @@ type
 /// После вызова Fit значение становится true.
 /// Используется для проверки корректности вызова Predict.
     property IsFitted: boolean read fFitted;
+    
+    function ToString: string; override;
+    
+    function Clone: IModel;
   end;  
   
   /// Логистическая регрессионная модель для бинарной классификации.
@@ -137,6 +140,10 @@ type
     /// Показывает, была ли модель обучена.
     /// После вызова Fit значение становится true.
     property IsFitted: boolean read fFitted;
+    
+    function ToString: string; override;
+    
+    function Clone: IModel;
   end;
     
 /// Линейная регрессионная модель с L2-регуляризацией (Ridge).
@@ -181,6 +188,10 @@ type
     /// Показывает, была ли модель обучена.
     /// После вызова Fit значение становится true.
     property IsFitted: boolean read fFitted;
+    
+    function ToString: string; override;
+    
+    function Clone: IModel;
   end;
   
 /// Линейная регрессионная модель ElasticNet.
@@ -234,7 +245,11 @@ type
     /// Показывает, была ли модель обучена.
     /// После вызова Fit значение становится true.
     property IsFitted: boolean read fFitted;
-    end;
+    
+    function ToString: string; override;
+    
+    function Clone: IModel;
+  end;
     
 /// Многоклассовая логистическая регрессия (Softmax).
 /// Предсказывает вероятности принадлежности к каждому классу
@@ -267,6 +282,10 @@ type
     function Predict(X: Matrix): Vector;
   
     property IsFitted: boolean read fFitted;
+    
+    function ToString: string; override;
+    
+    function Clone: IModel;
   end;
 
 
@@ -299,12 +318,12 @@ type
     /// Модель должна быть установлена через SetModel.
     constructor Create;
 
-    /// Строит конвейер машинного обучения.
-    ///   model — модель, обучаемая после применения всех преобразователей.
-    ///   transformers — последовательность преобразователей признаков,
-    /// применяемых к данным перед обучением модели.
+    /// Строит конвейер машинного обучения из последовательности шагов.
+    /// Шаги указываются в порядке выполнения:
+    ///   сначала преобразователи, затем модель.
+    /// Последний шаг обязан быть моделью (IModel).
     /// Возвращает сконструированный конвейер.
-    static function Build(model: IModel; params transformers: array of ITransformer): Pipeline;
+    static function Build(params steps: array of IPipeStep): Pipeline;
     
     /// Устанавливает или заменяет модель.
     function SetModel(m: IModel): Pipeline;
@@ -326,6 +345,10 @@ type
   
     /// Показывает, был ли пайплайн обучен (вызван метод Fit).
     property IsFitted: boolean read fFitted;
+    
+    function ToString: string; override;
+    
+    function Clone: IModel;
   end;
 {$endregion Pipeline}
   
@@ -353,6 +376,10 @@ type
   
     /// Признак того, что преобразование обучено.
     property IsFitted: boolean read fFitted;
+
+    function ToString: string; override;
+    
+    function Clone: ITransformer;
   end;
   
 /// Масштабирует признаки в заданный диапазон
@@ -387,6 +414,10 @@ type
   
     /// Признак того, что преобразование обучено.
     property IsFitted: boolean read fFitted;
+
+    function ToString: string; override;
+    
+    function Clone: ITransformer;
   end;
   
   /// Трансформер главных компонент (PCA).
@@ -417,6 +448,9 @@ type
     property Components: Matrix read fComponents;
     property Mean: Vector read fMean;
     property IsFitted: boolean read fFitted;
+
+    function ToString: string; override;
+    function Clone: ITransformer;    
   end;
   
 /// Трансформер, удаляющий признаки с малой дисперсией.
@@ -444,6 +478,9 @@ type
   
     /// Показывает, был ли выполнен Fit.
     property IsFitted: boolean read fFitted;
+
+    function ToString: string; override;
+    function Clone: ITransformer;
   end;
   
   /// Тип критерия оценки признаков для SelectKBest.
@@ -481,7 +518,7 @@ type
 /// и оставляет k признаков с наибольшим значением score.
 /// Может использовать встроенные критерии
 /// или пользовательскую функцию оценки.
-  SelectKBest = class(ITransformer)
+  SelectKBest = class(ISupervisedTransformer)
   private
     fK: integer;
     fScoreType: FeatureScore;
@@ -520,6 +557,9 @@ type
   
     /// Показывает, был ли выполнен Fit.
     property IsFitted: boolean read fFitted;
+
+    function ToString: string; override;
+    function Clone: ITransformer;
   end;
   
   /// Тип нормы для нормализации строк.
@@ -542,6 +582,9 @@ type
     function Transform(X: Matrix): Matrix;
   
     property IsFitted: boolean read fFitted;
+
+    function ToString: string; override;
+    function Clone: ITransformer;
   end;
   
 
@@ -556,16 +599,14 @@ uses System;
 //       LinearRegression
 //-----------------------------
 
-constructor LinearRegression.Create(lambda: real);
+constructor LinearRegression.Create();
 begin
-  self.flambda := lambda;
   ffitted := false;
 end;
 
 function LinearRegression.Fit(X: Matrix; y: Vector): IModel;
 begin
   var n := X.RowCount;
-  var p := X.ColCount;
 
   if n = 0 then
     raise new Exception('Empty dataset');
@@ -585,14 +626,10 @@ begin
   XtX := XtX - n * Matrix.OuterProduct(meanX, meanX);
   XtY := XtY - n * meanX * meanY;
  
-  // 4. Ridge regularization
-  if flambda > 0 then
-    XtX := XtX + Matrix.Identity(p) * flambda;
-
-  // 5. Solve
+  // 4. Solve
   fcoef := Solve(XtX, XtY);
 
-  // 6. Intercept
+  // 5. Intercept
   fintercept := meanY - meanX.Dot(fcoef);
 
   ffitted := true;
@@ -609,6 +646,17 @@ begin
 
   Result := X * fcoef + intercept;
 end;
+
+function LinearRegression.ToString: string;
+begin
+  Result := 'LinearRegression'
+end;
+
+function LinearRegression.Clone: IModel;
+begin
+  Result := new LinearRegression();
+end;
+
 
 //-----------------------------
 //       Activations
@@ -700,6 +748,18 @@ begin
   Result := Predict(X, 0.5);
 end;
 
+function LogisticRegression.ToString: string;
+begin
+  Result := 'LogisticRegression(lambda=' + fLambda +
+    ', lr=' + fLearningRate + ', epochs=' + fEpochs + ')';
+end;
+
+function LogisticRegression.Clone: IModel;
+begin
+  Result := new LogisticRegression(fLambda, fLearningRate, fEpochs);
+end;
+
+
 //-----------------------------
 //          RidgeRegression 
 //-----------------------------
@@ -754,6 +814,21 @@ begin
   for var i := 0 to Result.Length - 1 do
     Result[i] += fIntercept;
 end;
+
+function RidgeRegression.ToString: string;
+begin
+  Result := 'RidgeRegression(lambda=' + fLambda + ')';
+end;
+
+function RidgeRegression.Clone: IModel;
+begin
+  Result := new RidgeRegression(fLambda);
+end;
+
+
+//-----------------------------
+//          ElasticNet 
+//-----------------------------
 
 constructor ElasticNet.Create(lambda1, lambda2: real; maxIter: integer; tol: real);
 begin
@@ -853,6 +928,24 @@ begin
     Result[i] += fIntercept;
 end;
 
+function ElasticNet.ToString: string;
+begin
+  Result :=
+    'ElasticNet(lambda1=' + fLambda1 +
+    ', lambda2=' + fLambda2 +
+    ', maxIter=' + fMaxIter +
+    ', tol=' + fTol + ')';
+end;
+
+function ElasticNet.Clone: IModel;
+begin
+  Result := new ElasticNet(fLambda1, fLambda2, fMaxIter, fTol);
+end;
+
+//-----------------------------
+// MulticlassLogisticRegression 
+//-----------------------------
+
 constructor MulticlassLogisticRegression.Create(lambda: real; lr: real; epochs: integer);
 begin
   fLambda := lambda;
@@ -940,7 +1033,6 @@ begin
   end;
 end;
 
-
 function MulticlassLogisticRegression.PredictProbaMatrix(X: Matrix): Matrix;
 begin
   if not fFitted then
@@ -984,6 +1076,20 @@ begin
     Result[i] := P.RowArgMax(i);
 end;
 
+function MulticlassLogisticRegression.ToString: string;
+begin
+  Result :=
+    'MulticlassLogisticRegression(lambda=' + fLambda +
+    ', lr=' + fLearningRate +
+    ', epochs=' + fEpochs + ')';
+end;
+
+function MulticlassLogisticRegression.Clone: IModel;
+begin
+  Result := new MulticlassLogisticRegression(fLambda, fLearningRate, fEpochs);
+end;
+
+
 //-----------------------------
 //          Pipeline 
 //-----------------------------
@@ -1004,12 +1110,31 @@ begin
   fModel := model;
 end;
 
-static function Pipeline.Build(model: IModel; transformers: array of ITransformer): Pipeline;
+class function Pipeline.Build(params steps: array of IPipeStep): Pipeline;
 begin
-  Result := new Pipeline(model);
+  if (steps = nil) or (Length(steps) = 0) then
+    raise new ArgumentException('Pipeline requires at least one step');
 
-  foreach var t in transformers do
-    Result.Add(t);
+  // последний шаг должен быть моделью
+  var last := steps[High(steps)];
+
+  if not (last is IModel) then
+    raise new ArgumentException('Last step must be a model (IModel)');
+
+  var pipe := new Pipeline(last as IModel);
+
+  // все шаги кроме последнего должны быть преобразователями
+  for var i := 0 to High(steps) - 1 do
+  begin
+    var step := steps[i];
+
+    if not (step is ITransformer) then
+      raise new ArgumentException('All steps except the last must be transformers');
+
+    pipe.Add(step as ITransformer);
+  end;
+
+  Result := pipe;
 end;
 
 function Pipeline.Add(t: ITransformer): Pipeline;
@@ -1087,6 +1212,40 @@ begin
   Result := (fModel as IProbabilisticClassifier).PredictProba(Xt);
 end;
 
+function Pipeline.ToString: string;
+begin
+  var sb := 'Pipeline (' +
+            (if fFitted then 'trained' else 'not trained') + '):' + NewLine;
+
+  var idx := 1;
+
+  foreach var t in fTransformers do
+  begin
+    sb += '  [' + idx + '] ' + t.ToString + NewLine;
+    idx += 1;
+  end;
+
+  if fModel <> nil then
+    sb += '  [' + idx + '] ' + fModel.ToString;
+
+  Result := sb;
+end;
+
+function Pipeline.Clone: IModel;
+begin
+  if fModel = nil then
+    raise new InvalidOperationException('Pipeline has no model');
+
+  var p := new Pipeline;
+
+  foreach var t in fTransformers do
+    p.Add(t.Clone);
+
+  p.SetModel(fModel.Clone);
+
+  Result := p;
+end;
+
 //-----------------------------
 //        StandardScaler
 //-----------------------------
@@ -1123,6 +1282,17 @@ begin
     end;
   end;
 end;
+
+function StandardScaler.ToString: string;
+begin
+  Result := 'StandardScaler';
+end;
+
+function StandardScaler.Clone: ITransformer;
+begin
+  Result := new StandardScaler();
+end;
+
 
 //-----------------------------
 //       MinMaxScaler
@@ -1174,6 +1344,17 @@ begin
   end;
 end;
 
+function MinMaxScaler.ToString: string;
+begin
+  Result := 'MinMaxScaler(min=' + fRangeMin + ', max=' + fRangeMax + ')';
+end;
+
+function MinMaxScaler.Clone: ITransformer;
+begin
+  Result := new MinMaxScaler(fRangeMin, fRangeMax);
+end;
+
+
 //-----------------------------
 //        PCATransformer
 //-----------------------------
@@ -1222,6 +1403,16 @@ begin
   Result := Xc * fComponents;
 end;
 
+function PCATransformer.ToString: string;
+begin
+  Result := 'PCATransformer(k=' + fK + ')';
+end;
+
+function PCATransformer.Clone: ITransformer;
+begin
+  Result := new PCATransformer(fK);
+end;
+
 //-----------------------------
 //      VarianceThreshold
 //-----------------------------
@@ -1266,6 +1457,16 @@ begin
       R[i,c] := X[i, fSelected[c]];
 
   Result := R;
+end;
+
+function VarianceThreshold.ToString: string;
+begin
+  Result := 'VarianceThreshold(threshold=' + fThreshold + ')';
+end;
+
+function VarianceThreshold.Clone: ITransformer;
+begin
+  Result := new VarianceThreshold(fThreshold);
 end;
 
 //-----------------------------
@@ -1490,6 +1691,26 @@ begin
   Result := R;
 end;
 
+function SelectKBest.ToString: string;
+begin
+  var scoreStr :=
+    if fScoreFunc <> nil then
+      'custom'
+    else
+      fScoreType.ToString;
+
+  Result := 'SelectKBest(k=' + fK + ', score=' + scoreStr + ')';
+end;
+
+function SelectKBest.Clone: ITransformer;
+begin
+  if fScoreFunc <> nil then
+    Result := new SelectKBest(fK, fScoreFunc)
+  else
+    Result := new SelectKBest(fK, fScoreType);
+end;
+
+
 //-----------------------------
 //         Normalizer 
 //-----------------------------
@@ -1544,6 +1765,15 @@ begin
   Result := R;
 end;
 
+function Normalizer.ToString: string;
+begin
+  Result :=
+    'Normalizer(norm=' + fNormType.ToString + ')';
+end;
 
-  
+function Normalizer.Clone: ITransformer;
+begin
+  Result := new Normalizer(fNormType);
+end;
+    
 end.

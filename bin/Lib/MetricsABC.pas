@@ -49,6 +49,30 @@ type
     /// 0.5 — случайная модель,
     /// 1 — идеальная модель.
     static function AUC(yTrue, yProb: Vector): real;
+    
+    /// Доля правильных предсказаний.
+    /// Показывает, какая часть объектов классифицирована верно.
+    /// Удобна, когда классы примерно сбалансированы.
+    /// Пример: Accuracy = 0.9 означает 90% правильных ответов.
+    static function Accuracy(yTrue, yPred: Vector): real;
+
+    /// Точность (Precision) для положительного класса (1).
+    /// Среди всех объектов, которые модель предсказала как 1,
+    /// показывает долю действительно принадлежащих этому классу.
+    /// Важна, когда критичны ложные положительные результаты («ложные тревоги»).
+    static function Precision(yTrue, yPred: Vector): real;
+
+    /// Полнота (Recall) для положительного класса (1).
+    /// Среди всех объектов, которые в действительности равны 1,
+    /// показывает долю правильно найденных моделью.
+    /// Важна, когда нежелательны пропуски положительных случаев (например, заболеваний).
+    static function Recall(yTrue, yPred: Vector): real;
+
+    /// F1-мера.
+    /// Объединённая метрика, учитывающая и Precision, и Recall одновременно.
+    /// Высока только тогда, когда и Precision, и Recall высоки.
+    /// Используется, когда классы сильно различаются по количеству элементов
+    static function F1(yTrue, yPred: Vector): real;
   end;
   
 type  
@@ -266,6 +290,27 @@ begin
 
   Result := area;
 end;
+
+static function Metrics.Accuracy(yTrue, yPred: Vector): real;
+begin
+  Result := ConfusionMatrix.Create(yTrue, yPred).Accuracy;
+end;
+
+static function Metrics.Precision(yTrue, yPred: Vector): real;
+begin
+  Result := ConfusionMatrix.Create(yTrue, yPred).Precision;
+end;
+
+static function Metrics.Recall(yTrue, yPred: Vector): real;
+begin
+  Result := ConfusionMatrix.Create(yTrue, yPred).Recall;
+end;
+
+static function Metrics.F1(yTrue, yPred: Vector): real;
+begin
+  Result := ConfusionMatrix.Create(yTrue, yPred).F1;
+end;
+
 
 //-----------------------------
 //        ConfusionMatrix
