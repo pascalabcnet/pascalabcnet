@@ -76,6 +76,18 @@ const
   ER_DIM_MISMATCH_TRAIN_TEST =
     'Несоответствие размерностей в TrainTestSplit: X.RowCount={0}, y.Length={1}!!' +
     'Dimension mismatch in TrainTestSplit: X.RowCount={0}, y.Length={1}';
+  ER_TEST_RATIO_INVALID =
+    'Параметр testRatio должен быть в интервале (0,1), получено {0}!!' +
+    'Parameter testRatio must be in (0,1), got {0}';  
+  ER_K_INVALID =
+    'Некорректное значение k в KFold: k={0}, n={1}!!' +
+    'Invalid k in KFold: k={0}, n={1}';  
+  ER_K_INVALID_STRATIFIED =
+    'Некорректное значение k в StratifiedKFold: k={0}, n={1}!!' +
+    'Invalid k in StratifiedKFold: k={0}, n={1}';  
+  ER_STRATIFIED_LABELS_INVALID =
+    'StratifiedKFold поддерживает только метки 0/1!!' +
+    'StratifiedKFold supports only 0/1 labels';  
 
 //-----------------------------
 //         Validation
@@ -88,7 +100,7 @@ begin
     DimensionError(ER_DIM_MISMATCH_TRAIN_TEST, X.RowCount, y.Length);
 
   if (testRatio <= 0) or (testRatio >= 1) then
-    raise new Exception('testRatio must be in (0,1)');
+    ArgumentError(ER_TEST_RATIO_INVALID, testRatio);
 
   var n := X.RowCount;
   var p := X.ColCount;
@@ -137,7 +149,7 @@ static function Validation.KFold(n, k: integer; seed: integer):
   sequence of (array of integer, array of integer);
 begin
   if (k < 2) or (k > n) then
-    raise new Exception('Invalid k in KFold');
+    ArgumentError(ER_K_INVALID, k, n);
 
   var rnd := new System.Random(seed);
   var idx := (0..n-1).OrderBy(i -> rnd.Next).ToArray;
@@ -163,7 +175,7 @@ static function Validation.StratifiedKFold(y: Vector; k: integer;
 begin
   var n := y.Length;
   if (k < 2) or (k > n) then
-    raise new Exception('Invalid k in StratifiedKFold');
+    ArgumentError(ER_K_INVALID_STRATIFIED, k, n);
 
   var rnd := new System.Random(seed);
 
@@ -178,7 +190,7 @@ begin
     .ToArray;
 
   if idx0.Length + idx1.Length <> n then
-    raise new Exception('StratifiedKFold supports only 0/1 labels');
+    ArgumentError(ER_STRATIFIED_LABELS_INVALID);
 
   var base0 := idx0.Length div k;
   var extra0 := idx0.Length mod k;
@@ -213,7 +225,7 @@ static function Validation.CrossValidate(model: IModel; X: Matrix; y: Vector;
   k: integer; metric: (Vector,Vector) -> real; seed: integer): real;
 begin
   if X.RowCount <> y.Length then
-    raise new Exception('Dimension mismatch in CrossValidate');
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
   var total := 0.0;
   var folds := 0;
@@ -260,7 +272,7 @@ static function Validation.StratifiedCrossValidate(
 ): real;
 begin
   if X.RowCount <> y.Length then
-    raise new Exception('Dimension mismatch in StratifiedCrossValidate');
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
   var total := 0.0;
   var folds := 0;
@@ -314,7 +326,7 @@ class function GridSearch.Search<T>(
 ): (real, real, T); where T: IModel;
 begin
   if paramValues.Length = 0 then
-    raise new System.ArgumentException('paramValues is empty');
+    ArgumentError(ER_PARAM_VALUES_EMPTY);
 
   var bestParam := paramValues[0];
   var bestScore := -1e308;

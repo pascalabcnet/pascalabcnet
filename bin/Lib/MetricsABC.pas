@@ -138,6 +138,8 @@ type
   
 implementation  
 
+uses MLExceptions;
+
 //-----------------------------
 //           Metrics
 //-----------------------------
@@ -145,7 +147,7 @@ implementation
 static function Metrics.MSE(yTrue, yPred: Vector): real;
 begin
   if yTrue.Length <> yPred.Length then
-    raise new Exception('Dimension mismatch in MSE');
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yPred.Length);
 
   var n := yTrue.Length;
   var s := 0.0;
@@ -162,7 +164,7 @@ end;
 static function Metrics.MAE(yTrue, yPred: Vector): real;
 begin
   if yTrue.Length <> yPred.Length then
-    raise new Exception('Dimension mismatch in MAE');
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yPred.Length);
 
   var n := yTrue.Length;
   var s := 0.0;
@@ -176,7 +178,7 @@ end;
 static function Metrics.R2(yTrue, yPred: Vector): real;
 begin
   if yTrue.Length <> yPred.Length then
-    raise new Exception('Dimension mismatch in R2');
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yPred.Length);
 
   var n := yTrue.Length;
   var meanY := yTrue.Mean;
@@ -202,7 +204,7 @@ end;
 static function Metrics.LogLoss(yTrue, yProb: Vector): real;
 begin
   if yTrue.Length <> yProb.Length then
-    raise new Exception('Dimension mismatch in LogLoss');
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yProb.Length);
 
   var n := yTrue.Length;
   var eps := 1e-15;
@@ -224,7 +226,7 @@ end;
 static function Metrics.ROC(yTrue, yProb: Vector): (Vector, Vector);
 begin
   if yTrue.Length <> yProb.Length then
-    raise new Exception('Dimension mismatch in ROC');
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yProb.Length);
 
   var n := yTrue.Length;
 
@@ -319,7 +321,7 @@ end;
 constructor ConfusionMatrix.Create(yTrue, yPred: Vector);
 begin
   if yTrue.Length <> yPred.Length then
-    raise new Exception('Dimension mismatch in ConfusionMatrix');
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yPred.Length);
 
   for var i := 0 to yTrue.Length - 1 do
   begin

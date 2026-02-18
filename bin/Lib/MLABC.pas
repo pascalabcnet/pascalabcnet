@@ -50,6 +50,13 @@ type
   
 implementation
 
+const
+  ER_TO_MATRIX_NO_COLUMNS =
+    'ToMatrix: не указаны столбцы!!ToMatrix: no columns specified';
+  ER_TO_VECTOR_NON_NUMERIC =
+    'ToVector: столбец "{0}" содержит нечисловые или NA значения!!' +
+    'ToVector: column "{0}" contains non-numeric or NA values';  
+
 function ToMatrix(Self: DataFrame; colNames: array of string): Matrix; extensionmethod;
 begin
   var df := Self;
@@ -57,7 +64,7 @@ begin
   var p := colNames.Length;
 
   if p = 0 then
-    raise new Exception('ToMatrix: no columns specified');
+    ArgumentError(ER_TO_MATRIX_NO_COLUMNS);
 
   Result := new Matrix(n, p);
 
@@ -92,9 +99,7 @@ begin
     var value: real;
 
     if not col.TryGetNumericValue(i, value) then
-      raise new Exception(
-        'ToVector: column "' + colName +
-        '" contains non-numeric or NA values');
+      ArgumentError(ER_TO_VECTOR_NON_NUMERIC, colName);
 
     Result[i] := value;
   end;

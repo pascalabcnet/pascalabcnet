@@ -593,8 +593,34 @@ type
   
 implementation  
 
-uses System;
+uses MLExceptions;
 
+const
+  ER_PIPELINE_NO_STEPS =
+    'Pipeline должен содержать хотя бы один шаг!!Pipeline requires at least one step';
+  ER_PIPELINE_LAST_NOT_MODEL =
+    'Последний шаг Pipeline должен быть моделью (IModel)!!Last step must be a model (IModel)';
+  ER_PIPELINE_INVALID_STEP_ORDER =
+    'Все шаги, кроме последнего, должны быть трансформерами!!All steps except the last must be transformers';
+  ER_TRANSFORMER_NULL =
+    'Трансформер не может быть nil!!Transformer cannot be nil';
+  ER_PROBA_NOT_SUPPORTED =
+    'Модель не поддерживает предсказание вероятностей!!Model does not support probability prediction';
+  ER_RANGE_INVALID =
+    'rangeMax должен быть больше rangeMin!!rangeMax must be greater than rangeMin';
+  ER_K_MUST_BE_POSITIVE =
+    'Параметр k должен быть > 0!!Parameter k must be > 0';
+  ER_K_EXCEEDS_FEATURES =
+    'k превышает число признаков!!k exceeds feature count';  
+  ER_THRESHOLD_NEGATIVE =
+    'Порог threshold должен быть >= 0!!threshold must be >= 0';  
+  ER_CHI_SQUARE_NEGATIVE =
+    'ChiSquare требует неотрицательные признаки!!ChiSquare requires non-negative features';
+  ER_UNKNOWN_FEATURE_SCORE =
+    'Неизвестный тип FeatureScore!!Unknown FeatureScore type';
+  ER_SELECTKBEST_FIT_INVALID =
+    'Для SelectKBest необходимо вызывать Fit(X, y)!!SelectKBest requires Fit(X, y)';
+  
 //-----------------------------
 //       LinearRegression
 //-----------------------------
@@ -609,9 +635,9 @@ begin
   var n := X.RowCount;
 
   if n = 0 then
-    raise new Exception('Empty dataset');
+    ArgumentError(ER_EMPTY_DATASET);
   if y.Length <> n then
-    raise new Exception('Dimension mismatch in Fit');
+    DimensionError(ER_DIM_MISMATCH, y.Length, n);
 
   // 1. Means
   var meanX := X.ColumnMeans;
@@ -639,10 +665,10 @@ end;
 function LinearRegression.Predict(X: Matrix): Vector;
 begin
   if not ffitted then
-    raise new Exception('Model not fitted');
+    NotFittedError(ER_FIT_NOT_CALLED);
 
   if X.ColCount <> fcoef.Length then
-    raise new Exception('Dimension mismatch in Predict');
+    DimensionError(ER_DIM_MISMATCH, X.ColCount, fCoef.Length);
 
   Result := X * fcoef + intercept;
 end;
@@ -696,7 +722,7 @@ begin
   var p := X.ColCount;
 
   if y.Length <> n then
-    raise new Exception('Dimension mismatch in Fit');
+    DimensionError(ER_DIM_MISMATCH, y.Length, n);
 
   fCoef := new Vector(p);
   fIntercept := 0.0;
@@ -726,7 +752,7 @@ end;
 function LogisticRegression.PredictProba(X: Matrix): Vector;
 begin
   if not fFitted then
-    raise new Exception('Model not fitted');
+    NotFittedError(ER_FIT_NOT_CALLED);
 
   Result := Activations.Sigmoid(X * fCoef + fIntercept);
 end;
@@ -767,7 +793,7 @@ end;
 constructor RidgeRegression.Create(lambda: real);
 begin
   if lambda < 0 then
-    raise new ArgumentException('lambda must be >= 0');
+    ArgumentError(ER_LAMBDA_NEGATIVE, lambda);
   fLambda := lambda;
   fFitted := false;
 end;
@@ -775,7 +801,7 @@ end;
 function RidgeRegression.Fit(X: Matrix; y: Vector): IModel;
 begin
   if X.RowCount <> y.Length then
-    raise new ArgumentException('X and y size mismatch');
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
   var n := X.RowCount;
   var p := X.ColCount;
@@ -808,7 +834,7 @@ end;
 function RidgeRegression.Predict(X: Matrix): Vector;
 begin
   if not fFitted then
-    raise new InvalidOperationException('Model is not fitted');
+    NotFittedError(ER_FIT_NOT_CALLED);
 
   Result := X * fCoef;
   for var i := 0 to Result.Length - 1 do
@@ -833,7 +859,7 @@ end;
 constructor ElasticNet.Create(lambda1, lambda2: real; maxIter: integer; tol: real);
 begin
   if (lambda1 < 0) or (lambda2 < 0) then
-    raise new ArgumentException('lambda must be >= 0');
+    ArgumentError(ER_LAMBDA_NEGATIVE);
 
   fLambda1 := lambda1;
   fLambda2 := lambda2;
@@ -855,7 +881,7 @@ end;
 function ElasticNet.Fit(X: Matrix; y: Vector): IModel;
 begin
   if X.RowCount <> y.Length then
-    raise new ArgumentException('X and y size mismatch');
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
   // Loss(β) = ||y - (Xβ + b)||² + λ1||β||1 + λ2||β||2²
 
@@ -921,7 +947,7 @@ end;
 function ElasticNet.Predict(X: Matrix): Vector;
 begin
   if not fFitted then
-    raise new InvalidOperationException('Model is not fitted');
+    NotFittedError(ER_FIT_NOT_CALLED);
 
   Result := X * fCoef;
   for var i := 0 to Result.Length - 1 do
@@ -1036,7 +1062,7 @@ end;
 function MulticlassLogisticRegression.PredictProbaMatrix(X: Matrix): Matrix;
 begin
   if not fFitted then
-    raise new Exception('Model not fitted');
+    NotFittedError(ER_FIT_NOT_CALLED);
 
   var m := X.RowCount;
 
@@ -1106,20 +1132,20 @@ constructor Pipeline.Create(model: IModel);
 begin
   Create;
   if model = nil then
-    raise new ArgumentException('Model cannot be nil');
+    ArgumentError(ER_MODEL_NULL);
   fModel := model;
 end;
 
 class function Pipeline.Build(params steps: array of IPipeStep): Pipeline;
 begin
   if (steps = nil) or (Length(steps) = 0) then
-    raise new ArgumentException('Pipeline requires at least one step');
+    ArgumentError(ER_PIPELINE_NO_STEPS);
 
   // последний шаг должен быть моделью
   var last := steps[High(steps)];
 
   if not (last is IModel) then
-    raise new ArgumentException('Last step must be a model (IModel)');
+    ArgumentError(ER_PIPELINE_LAST_NOT_MODEL);
 
   var pipe := new Pipeline(last as IModel);
 
@@ -1129,7 +1155,7 @@ begin
     var step := steps[i];
 
     if not (step is ITransformer) then
-      raise new ArgumentException('All steps except the last must be transformers');
+      ArgumentError(ER_PIPELINE_INVALID_STEP_ORDER);
 
     pipe.Add(step as ITransformer);
   end;
@@ -1140,7 +1166,7 @@ end;
 function Pipeline.Add(t: ITransformer): Pipeline;
 begin
   if t = nil then
-    raise new ArgumentException('Transformer cannot be nil');
+    ArgumentError(ER_TRANSFORMER_NULL);
 
   fTransformers.Add(t);
   Result := Self;
@@ -1149,7 +1175,7 @@ end;
 function Pipeline.SetModel(m: IModel): Pipeline;
 begin
   if m = nil then
-    raise new ArgumentException('Model cannot be nil');
+    ArgumentError(ER_TRANSFORMER_NULL);
 
   fModel := m;
   Result := Self;
@@ -1158,7 +1184,7 @@ end;
 function Pipeline.Fit(X: Matrix; y: Vector): IModel;
 begin
   if fModel = nil then
-    raise new Exception('Model is not set');
+    ArgumentError(ER_MODEL_NULL);
 
   var Xt := X;
 
@@ -1180,7 +1206,7 @@ end;
 function Pipeline.Transform(X: Matrix): Matrix;
 begin
   if not fFitted then
-    raise new Exception('Pipeline not fitted');
+    NotFittedError(ER_FIT_NOT_CALLED);
 
   var Xt := X;
 
@@ -1193,7 +1219,7 @@ end;
 function Pipeline.Predict(X: Matrix): Vector;
 begin
   if not fFitted then
-    raise new Exception('Pipeline not fitted');
+    NotFittedError(ER_FIT_NOT_CALLED);
 
   var Xt := Transform(X);
   Result := fModel.Predict(Xt);
@@ -1202,10 +1228,10 @@ end;
 function Pipeline.PredictProba(X: Matrix): Vector;
 begin
   if not fFitted then
-    raise new Exception('Pipeline not fitted');
+    NotFittedError(ER_FIT_NOT_CALLED);
 
   if not (fModel is IProbabilisticClassifier) then
-    raise new Exception('Model does not support probability prediction');
+    Error(ER_PROBA_NOT_SUPPORTED);
 
   var Xt := Transform(X);
 
@@ -1234,7 +1260,7 @@ end;
 function Pipeline.Clone: IModel;
 begin
   if fModel = nil then
-    raise new InvalidOperationException('Pipeline has no model');
+    ArgumentError(ER_MODEL_NULL);
 
   var p := new Pipeline;
 
@@ -1262,7 +1288,7 @@ end;
 function StandardScaler.Transform(X: Matrix): Matrix;
 begin
   if not fFitted then
-    raise new Exception('StandardScaler not fitted');
+    Error(ER_PROBA_NOT_SUPPORTED);
 
   var n := X.RowCount;
   var p := X.ColCount;
@@ -1301,7 +1327,7 @@ end;
 constructor MinMaxScaler.Create(rangeMin: real; rangeMax: real);
 begin
   if rangeMax <= rangeMin then
-    raise new Exception('rangeMax must be greater than rangeMin');
+    ArgumentError(ER_RANGE_INVALID);
 
   fRangeMin := rangeMin;
   fRangeMax := rangeMax;
@@ -1320,7 +1346,7 @@ end;
 function MinMaxScaler.Transform(X: Matrix): Matrix;
 begin
   if not fFitted then
-    raise new Exception('MinMaxScaler is not fitted');
+    NotFittedError(ER_FIT_NOT_CALLED);
 
   var n := X.RowCount;
   var p := X.ColCount;
@@ -1362,7 +1388,7 @@ end;
 constructor PCATransformer.Create(k: integer);
 begin
   if k <= 0 then
-    raise new ArgumentException('k must be > 0');
+    ArgumentError(ER_K_MUST_BE_POSITIVE);
 
   fK := k;
   fFitted := false;
@@ -1371,7 +1397,7 @@ end;
 function PCATransformer.Fit(X: Matrix): ITransformer;
 begin
   if fK > X.ColCount then
-    raise new ArgumentException('k exceeds feature count');
+    ArgumentError(ER_K_EXCEEDS_FEATURES);
 
   fMean := X.ColumnMeans;
 
@@ -1392,7 +1418,7 @@ end;
 function PCATransformer.Transform(X: Matrix): Matrix;
 begin
   if not fFitted then
-    raise new InvalidOperationException('PCA not fitted');
+    NotFittedError(ER_FIT_NOT_CALLED);
 
   var Xc := X.Clone;
 
@@ -1420,7 +1446,7 @@ end;
 constructor VarianceThreshold.Create(threshold: real);
 begin
   if threshold < 0 then
-    raise new ArgumentException('threshold must be >= 0');
+    ArgumentError(ER_THRESHOLD_NEGATIVE);
 
   fThreshold := threshold;
   fFitted := false;
@@ -1445,7 +1471,7 @@ end;
 function VarianceThreshold.Transform(X: Matrix): Matrix;
 begin
   if not fFitted then
-    raise new InvalidOperationException('VarianceThreshold not fitted');
+    NotFittedError(ER_FIT_NOT_CALLED);
 
   var n := X.RowCount;
   var k := fSelected.Length;
@@ -1476,7 +1502,7 @@ end;
 constructor SelectKBest.Create(k: integer; score: FeatureScore);
 begin
   if k <= 0 then
-    raise new ArgumentException('k must be > 0');
+    ArgumentError(ER_K_MUST_BE_POSITIVE);
 
   fK := k;
   fScoreType := score;
@@ -1487,7 +1513,7 @@ end;
 constructor SelectKBest.Create(k: integer; scoreFunc: (Vector, Vector) -> real);
 begin
   if k <= 0 then
-    raise new ArgumentException('k must be > 0');
+    ArgumentError(ER_K_MUST_BE_POSITIVE);
 
   fK := k;
   fScoreFunc := scoreFunc;
@@ -1589,7 +1615,7 @@ begin
   begin
     var v := feature[i];
     if v < 0 then
-      raise new ArgumentException('ChiSquare requires non-negative features');
+      ArgumentError(ER_CHI_SQUARE_NEGATIVE);
 
     total += v;
 
@@ -1630,7 +1656,7 @@ begin
     FeatureScore.AnovaF: Result := ComputeAnovaF(feature, y);
     FeatureScore.ChiSquare: Result := ComputeChiSquare(feature, y);
   else
-    raise new InvalidOperationException('Unknown FeatureScore type');
+    Error(ER_UNKNOWN_FEATURE_SCORE);
   end;
 end;
 
@@ -1671,13 +1697,13 @@ end;
 function SelectKBest.Fit(X: Matrix): ITransformer;
 begin
   Result := nil;
-  raise new InvalidOperationException('Target variable is required');
+  ArgumentError(ER_SELECTKBEST_FIT_INVALID);
 end;
 
 function SelectKBest.Transform(X: Matrix): Matrix;
 begin
   if not fFitted then
-    raise new InvalidOperationException('SelectKBest not fitted');
+    NotFittedError(ER_FIT_NOT_CALLED);
 
   var n := X.RowCount;
   var k := fSelected.Length;
@@ -1731,7 +1757,7 @@ end;
 function Normalizer.Transform(X: Matrix): Matrix;
 begin
   if not fFitted then
-    raise new InvalidOperationException('Normalizer not fitted');
+    NotFittedError(ER_FIT_NOT_CALLED);
 
   var n := X.RowCount;
   var p := X.ColCount;

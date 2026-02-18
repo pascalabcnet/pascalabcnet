@@ -173,6 +173,14 @@ type
 
 implementation
 
+uses MLExceptions;
+
+const
+  ER_SCALER_NO_COLUMNS =
+    'StandardScaler: столбцы не указаны!!StandardScaler: columns not specified';
+  ER_SCALER_COLUMN_NOT_NUMERIC =
+    'StandardScaler: столбец "{0}" не является числовым!!StandardScaler: column "{0}" is not numeric';  
+
 //-----------------------------
 //        StandardScaler
 //-----------------------------
@@ -180,7 +188,7 @@ implementation
 constructor DataStandardScaler.Create(params columns: array of string);
 begin
   if (columns = nil) or (columns.Length = 0) then
-    raise new ArgumentException('StandardScaler: columns not specified');
+    ArgumentError(ER_SCALER_NO_COLUMNS);
 
   cols := columns;
   fitted := false;
@@ -199,7 +207,7 @@ begin
 
     var ct := df.Schema.ColumnTypeAt(idx);
     if not (ct in [ColumnType.ctInt, ColumnType.ctFloat]) then
-      raise new Exception($'StandardScaler: column "{colName}" is not numeric');
+      Error(ER_SCALER_COLUMN_NOT_NUMERIC, colName);
 
     var sum := 0.0;
     var sum2 := 0.0;
@@ -710,7 +718,7 @@ end;
 function DataPipeline.Transform(df: DataFrame): DataFrame;
 begin
   if not fitted then
-    raise new Exception('Pipeline is not fitted');
+    NotFittedError(ER_FIT_NOT_CALLED);NotFittedError(ER_FIT_NOT_CALLED);
 
   var current := df;
   foreach var step in steps do

@@ -347,6 +347,89 @@ type
 
 implementation
 
+uses MLExceptions;
+
+const
+  ER_COLS_NULL =
+    'cols не может быть nil!!cols cannot be nil';
+  ER_SCHEMA_NULL =
+    'schema не может быть nil!!schema cannot be nil';
+  ER_COLS_SCHEMA_MISMATCH =
+    'Количество столбцов не совпадает со схемой!!Columns count and schema mismatch';
+  ER_JOIN_KEY_TYPE_MISMATCH =
+    'Типы ключей соединения не совпадают!!Join key types mismatch';
+  ER_JOIN_KEY_NOT_FOUND =
+    'Ключ соединения "{0}" не найден!!Join key "{0}" not found';  
+  ER_JOIN_KIND_NOT_IMPLEMENTED =
+    'Тип соединения не реализован!!Join kind not implemented';
+  ER_JOIN_KEYS_LENGTH_MISMATCH =
+    'leftKeys и rightKeys должны иметь одинаковую длину!!leftKeys and rightKeys must have the same length';
+  ER_COLUMN_NOT_FOUND =
+    'Столбец "{0}" не найден!!Column not found: {0}';
+  ER_ADD_COLUMN_ROW_MISMATCH =
+    'Несоответствие числа строк при добавлении столбца!!Row count mismatch when adding column';  
+  ER_COLUMN_VALID_LENGTH_MISMATCH =
+    'Длины data и valid не совпадают при добавлении столбца!!Data and valid length mismatch when adding column';
+  ER_COLUMN_INDEX_OUT_OF_RANGE =
+    'Индекс столбца {0} вне диапазона [0..{1})!!Column index {0} out of range [0..{1})';
+  ER_NO_VALID_VALUES_COLUMN =
+    'Нет допустимых значений в столбце {0}!!No valid values in column {0}';
+  ER_SORTBY_LENGTH_MISMATCH =
+    'SortBy: длины colIndices и descending не совпадают!!SortBy: colIndices and descending length mismatch';
+  ER_UNKNOWN_COLUMN_TYPE =
+    'Неизвестный тип столбца!!Unknown column type';
+  ER_COLUMN_ALREADY_EXISTS =
+    'Столбец "{0}" уже существует!!Column "{0}" already exists';
+  ER_SCHEMA_INCONSISTENT =
+    'Несогласованная схема: столбец "{0}" имеет RowCount={1}, ожидалось {2}!!' +
+    'Schema inconsistent: column "{0}" has RowCount={1}, expected {2}';
+  ER_SCHEMA_COLUMNCOUNT_MISMATCH =
+    'Несогласованная схема: ColumnCount={0}, columns.Count={1}!!' +
+    'Schema inconsistent: ColumnCount={0}, columns.Count={1}';
+  ER_SCHEMA_COLUMN_MISSING =
+    'Несогласованная схема: столбец "{0}" отсутствует в схеме!!' +
+    'Schema inconsistent: column "{0}" missing in schema';
+  ER_SCHEMA_COLUMN_INDEX_INCONSISTENT =
+    'Несогласованная схема: GetColumnIndex("{0}")={1}, ожидалось {2}!!' +
+    'Schema inconsistent: GetColumnIndex("{0}")={1}, expected {2}';
+  ER_COLUMN_NOT_NUMERIC =
+    'Столбец не является числовым!!Column is not numeric';
+  ER_GROUPBY_UNSUPPORTED_KEY_TYPE =
+    'Неподдерживаемый тип ключа GroupBy: {0}!!Unsupported GroupBy key type: {0}';
+  ER_ZERO_VARIANCE =
+    'Нулевая дисперсия при вычислении корреляции!!Zero variance in correlation';
+  ER_NO_VALID_PAIRS =
+    'Нет допустимых пар для вычисления корреляции!!No valid pairs for correlation';
+  ER_NO_NUMERIC_COLUMNS =
+    'Нет числовых столбцов для матрицы корреляции!!No numeric columns for correlation matrix';
+  ER_ZERO_STD_STANDARDIZE =
+    'Нулевое стандартное отклонение при вызове Standardize!!Zero standard deviation in Standardize';
+  ER_INVALID_VALUE_IN_COLUMN =
+    'Недопустимое значение в столбце "{0}"!!' +
+    'Invalid value in column "{0}"';
+  ER_ZERO_STD_COLUMN =
+    'Нулевое стандартное отклонение в столбце "{0}" при StandardizeAll!!' +
+    'Zero standard deviation in column "{0}" in StandardizeAll';
+  ER_ZERO_RANGE =
+    'Нулевой диапазон при нормализации!!Zero range in normalization';
+  ER_ZERO_RANGE_COLUMN =
+    'Нулевой диапазон в столбце "{0}"!!Zero range in column "{0}"';
+  ER_QUANTILE_P_INVALID =
+    'Параметр p должен быть в диапазоне [0,1]!!Quantile p must be in [0,1]';
+  ER_NO_VALID_VALUES_QUANTILE =
+    'Нет допустимых значений для вычисления квантиля!!No valid values for quantile';
+  ER_CSV_COLUMN_COUNT_MISMATCH =
+    'Ошибка формата CSV: ожидалось {0} столбцов, получено {1}!!' +
+    'CSV format error: expected {0} columns, got {1}';
+  ER_EMPTY_CSV =
+    'CSV-файл пуст!!Empty CSV';
+  ER_CSV_UNCLOSED_QUOTE =
+    'Ошибка формата CSV: незакрытая кавычка!!CSV format error: unclosed quote';
+  ER_CSV_INVALID_BOOL =
+    'Некорректное логическое значение "{0}" в столбце "{1}"!!' +
+    'Invalid bool "{0}" in column "{1}"';
+
+
 type
   /// Класс для группировки данных
   GroupByContext = class(IGroupByContext)
@@ -392,11 +475,11 @@ end;
 constructor DataFrame.Create(cols: List<Column>; schema: DataFrameSchema);
 begin
   if cols = nil then
-    raise new System.ArgumentException('cols is nil');
+    ArgumentNullError(ER_COLS_NULL);
   if schema = nil then
-    raise new System.ArgumentException('schema is nil');
+    ArgumentNullError(ER_SCHEMA_NULL);
   if cols.Count <> schema.ColumnCount then
-    raise new System.ArgumentException('Columns count and schema mismatch');
+    ArgumentError(ER_COLS_SCHEMA_MISMATCH);
 
   self.columns := cols;
   self.fSchema := schema;
@@ -573,7 +656,7 @@ begin
   var rt := other.fSchema.ColumnTypeAt(rightKey);
 
   if lt <> rt then
-    raise new Exception('Join key types mismatch');
+    Error(ER_JOIN_KEY_TYPE_MISMATCH);
 
   // 3. типоспецифичный алгоритм (КАК РАНЬШЕ)
   case lt of
@@ -804,9 +887,8 @@ begin
 
   // 2. проверка типов ключей — через Schema
   for var i := 0 to n - 1 do
-    if fSchema.ColumnTypeAt(leftKeyIdx[i]) <>
-       other.fSchema.ColumnTypeAt(rightKeyIdx[i]) then
-      raise new Exception('Join key types mismatch');
+    if fSchema.ColumnTypeAt(leftKeyIdx[i]) <> other.fSchema.ColumnTypeAt(rightKeyIdx[i]) then
+      Error(ER_JOIN_KEY_TYPE_MISMATCH);
 
   // 3. layout'ы (как раньше)
   var leftLayout := BuildJoinKeyLayout(leftKeyIdx);
@@ -881,7 +963,7 @@ begin
   var ri := other.fSchema.IndexOf(key);
   
   if (li < 0) or (ri < 0) then
-    raise new Exception($'Join key "{key}" not found');
+    Error(ER_JOIN_KEY_NOT_FOUND, key);
   
   var leftKeyIdx  := [li];
   var rightKeyIdx := [ri];
@@ -1032,28 +1114,6 @@ begin
   Result := res;
 end;
 
-{function DataFrame.JoinInnerSingleKey(other: DataFrame; leftKey, rightKey: integer;
-  resultSchema: DataFrameSchema): DataFrame;
-begin
-  // типы ключей — ТОЛЬКО из Schema
-  var lt := fSchema.ColumnTypeAt(leftKey);
-  var rt := other.fSchema.ColumnTypeAt(rightKey);
-
-  if lt <> rt then
-    raise new Exception('Join key types mismatch');
-
-  case lt of
-    ctInt:
-      Result := JoinInnerSingleKeyInt(other, leftKey, rightKey, resultSchema);
-    ctFloat:
-      Result := JoinInnerSingleKeyFloat(other, leftKey, rightKey, resultSchema);
-    ctStr:
-      Result := JoinInnerSingleKeyStr(other, leftKey, rightKey, resultSchema);
-    ctBool:
-      Result := JoinInnerSingleKeyBool(other, leftKey, rightKey, resultSchema);
-  end;
-end;}
-
 function DataFrame.JoinInnerSingleKey(other: DataFrame; key: string): DataFrame;
 begin
   var leftKey := fSchema.IndexOf(key);
@@ -1063,7 +1123,7 @@ begin
   var rt := other.fSchema.ColumnTypeAt(rightKey);
 
   if lt <> rt then
-    raise new Exception('Join key types mismatch');
+    Error(ER_JOIN_KEY_TYPE_MISMATCH);
 
   case lt of
     ctInt:   Result := JoinInnerSingleKeyInt(other, leftKey, rightKey);
@@ -1264,9 +1324,8 @@ begin
 
   // 2. проверка типов ключей — через Schema
   for var i := 0 to n - 1 do
-    if fSchema.ColumnTypeAt(leftKeyIdx[i]) <>
-       other.fSchema.ColumnTypeAt(rightKeyIdx[i]) then
-      raise new Exception('Join key types mismatch');
+    if fSchema.ColumnTypeAt(leftKeyIdx[i]) <> other.fSchema.ColumnTypeAt(rightKeyIdx[i]) then
+      Error(ER_JOIN_KEY_TYPE_MISMATCH);
 
   // 3. строим layout'ы
   var leftLayout := BuildJoinKeyLayout(leftKeyIdx);
@@ -1344,7 +1403,7 @@ begin
     else
       exit(FullJoinMultiKey(other, keys));
 
-  raise new Exception('Join kind not implemented');
+  Error(ER_JOIN_KIND_NOT_IMPLEMENTED);
 end;
 
 function DataFrame.Join(other: DataFrame; key: string; kind: JoinKind): DataFrame;
@@ -1355,7 +1414,7 @@ end;
 function DataFrame.Join(other: DataFrame; leftKeys, rightKeys: array of string; kind: JoinKind): DataFrame;
 begin
   if leftKeys.Length <> rightKeys.Length then
-    raise new Exception('leftKeys and rightKeys must have the same length');
+    ArgumentError(ER_JOIN_KEYS_LENGTH_MISMATCH);
 
   // временно переименовываем столбцы справа
   var tmp := other;
@@ -1416,7 +1475,7 @@ begin
   for var i := 0 to columns.Count - 1 do
     if columns[i].Info.Name = name then
       exit(i);
-  raise new Exception('Column not found: ' + name);
+  Error(ER_COLUMN_NOT_FOUND, name);
 end;
 
 function DataFrame.GetCursor: DataFrameCursor :=
@@ -1439,7 +1498,7 @@ end;
 procedure DataFrame.AddIntColumn(name: string; data: array of integer; valid: array of boolean; isCategorical: boolean);
 begin
   if (columns.Count > 0) and (data.Length <> RowCount) then
-    raise new Exception('Row count mismatch');
+    DimensionError(ER_ADD_COLUMN_ROW_MISMATCH);
 
   var c := new IntColumn;
   c.Info := new ColumnInfo(name, ctInt, isCategorical);
@@ -1450,7 +1509,7 @@ begin
   else
   begin
     if valid.Length <> data.Length then
-      raise new Exception('AddIntColumn: data and valid length mismatch');
+      DimensionError(ER_COLUMN_VALID_LENGTH_MISMATCH);;
     c.IsValid := valid;
   end;
 
@@ -1461,7 +1520,7 @@ end;
 procedure DataFrame.AddFloatColumn(name: string; data: array of real; valid: array of boolean);
 begin
   if (columns.Count > 0) and (data.Length <> RowCount) then
-    raise new Exception('Row count mismatch');
+    DimensionError(ER_ADD_COLUMN_ROW_MISMATCH);
 
   var c := new FloatColumn;
   c.Info := new ColumnInfo(name, ctFloat, False);
@@ -1472,7 +1531,7 @@ begin
   else
   begin
     if valid.Length <> data.Length then
-      raise new Exception('AddFloatColumn: data and valid length mismatch');
+      DimensionError(ER_COLUMN_VALID_LENGTH_MISMATCH);
     c.IsValid := valid;
   end;
 
@@ -1483,7 +1542,7 @@ end;
 procedure DataFrame.AddStrColumn(name: string; data: array of string; valid: array of boolean; isCategorical: boolean);
 begin
   if (columns.Count > 0) and (data.Length <> RowCount) then
-    raise new Exception('Row count mismatch');
+    DimensionError(ER_ADD_COLUMN_ROW_MISMATCH);
 
   var c := new StrColumn;
   c.Info := new ColumnInfo(name, ctStr, isCategorical);
@@ -1494,7 +1553,7 @@ begin
   else
   begin
     if valid.Length <> data.Length then
-      raise new Exception('AddStrColumn: data and valid length mismatch');
+      DimensionError(ER_COLUMN_VALID_LENGTH_MISMATCH);
     c.IsValid := valid;
   end;
 
@@ -1505,7 +1564,7 @@ end;
 procedure DataFrame.AddBoolColumn(name: string; data: array of boolean; valid: array of boolean);
 begin
   if (columns.Count > 0) and (data.Length <> RowCount) then
-    raise new Exception('Row count mismatch');
+    DimensionError(ER_ADD_COLUMN_ROW_MISMATCH);
 
   var c := new BoolColumn;
   c.Info := new ColumnInfo(name, ctBool, False);
@@ -1516,7 +1575,7 @@ begin
   else
   begin
     if valid.Length <> data.Length then
-      raise new Exception('AddBoolColumn: data and valid length mismatch');
+      DimensionError(ER_COLUMN_VALID_LENGTH_MISMATCH);
     c.IsValid := valid;
   end;
 
@@ -1528,7 +1587,7 @@ end;
 procedure DataFrame.CheckColumnIndex(colIndex: integer);
 begin
   if (colIndex < 0) or (colIndex >= ColumnCount) then
-    raise new Exception('Column index out of range');
+    ArgumentOutOfRangeError(ER_COLUMN_INDEX_OUT_OF_RANGE, colIndex, ColumnCount);
 end;
 
 function DataFrame.Sum(colIndex: integer): real;
@@ -1620,7 +1679,7 @@ begin
     end;
 
   if not has then
-    raise new Exception('Min: no valid values');
+    Error(ER_NO_VALID_VALUES_COLUMN, colIndex);
 
   Result := m;
 end;
@@ -1650,7 +1709,7 @@ begin
     end;
 
   if not has then
-    raise new Exception('Max: no valid values');
+    Error(ER_NO_VALID_VALUES_COLUMN, colIndex);
 
   Result := m;
 end;
@@ -1684,7 +1743,7 @@ begin
     end;
 
   if not has then
-    raise new Exception('MinMax: no valid values');
+    Error(ER_NO_VALID_VALUES_COLUMN, colIndex);
 
   Result := (mn, mx);
 end;
@@ -1974,7 +2033,7 @@ type
 function DataFrame.SortBy(colIndices: array of integer; descending: array of boolean): DataFrame;
 begin
   if colIndices.Length <> descending.Length then
-    raise new Exception('SortBy: length mismatch');
+    ArgumentError(ER_SORTBY_LENGTH_MISMATCH);
 
   foreach var c in colIndices do
     CheckColumnIndex(c);
@@ -2172,7 +2231,7 @@ begin
       res.AddBoolColumn(src.Info.Name, data, valid);
     end
     else
-      raise new Exception('Unknown column type');
+      Error(ER_UNKNOWN_COLUMN_TYPE);
   end;
 
   Result := res;
@@ -2422,7 +2481,7 @@ end;
 function DataFrame.WithColumnInt(name: string; f: DataFrameCursor -> integer): DataFrame;
 begin
   if fSchema.HasColumn(name) then
-    raise new Exception($'Column "{name}" already exists');
+    ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
   
   var res := new DataFrame;
 
@@ -2499,7 +2558,7 @@ end;
 function DataFrame.WithColumnFloat(name: string; f: DataFrameCursor -> real): DataFrame;
 begin
   if fSchema.HasColumn(name) then
-    raise new Exception($'Column "{name}" already exists');
+    ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
   
   var res := new DataFrame;
 
@@ -2550,7 +2609,7 @@ end;
 function DataFrame.WithColumnStr(name: string; f: DataFrameCursor -> string): DataFrame;
 begin
   if fSchema.HasColumn(name) then
-    raise new Exception($'Column "{name}" already exists');
+    ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
   
   var res := new DataFrame;
 
@@ -2601,7 +2660,7 @@ end;
 function DataFrame.WithColumnBool(name: string; f: DataFrameCursor -> boolean): DataFrame;
 begin
   if fSchema.HasColumn(name) then
-    raise new Exception($'Column "{name}" already exists');
+    ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
   
   var res := new DataFrame;
 
@@ -2737,7 +2796,7 @@ function DataFrame.AddDerivedIntColumn(
 ): DataFrame;
 begin
   if Schema.HasColumn(name) then
-    raise new Exception($'Column "{name}" already exists');
+    ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
 
   var rowCount := RowCount;
   var data := new integer[rowCount];
@@ -3028,15 +3087,11 @@ begin
   var rc := columns[0].RowCount;
   for var i := 1 to columns.Count - 1 do
     if columns[i].RowCount <> rc then
-      raise new Exception(
-        $'Schema inconsistent: column "{columns[i].Info.Name}" has RowCount={columns[i].RowCount}, expected {rc}'
-      );
+      Error(ER_SCHEMA_INCONSISTENT, columns[i].Info.Name, columns[i].RowCount, rc);
 
   // --- 2. fschema.ColumnCount = columns.Count ---
   if fschema.ColumnCount <> columns.Count then
-    raise new Exception(
-      $'Schema inconsistent: ColumnCount={fschema.ColumnCount}, columns.Count={columns.Count}'
-  );
+    Error(ER_SCHEMA_COLUMNCOUNT_MISMATCH, fSchema.ColumnCount, columns.Count);
   
   // --- 3. имена уникальны и корректно индексированы ---
   for var i := 0 to columns.Count - 1 do
@@ -3044,15 +3099,11 @@ begin
     var name := columns[i].Info.Name;
 
     if not fSchema.HasColumn(name) then
-      raise new Exception(
-        $'Schema inconsistent: column "{name}" missing in schema'
-      );
+      Error(ER_SCHEMA_COLUMN_MISSING, name);
       
     var idx := GetColumnIndex(name);
     if idx <> i then
-      raise new Exception(
-        $'Schema inconsistent: GetColumnIndex("{name}")={idx}, expected {i}'
-      );
+      Error(ER_SCHEMA_COLUMN_INDEX_INCONSISTENT, name, idx, i);
   end;
 
   {$ENDIF}
@@ -3113,7 +3164,7 @@ begin
     isInt := false;
   end
   else
-    raise new Exception('Column is not numeric');
+    Error(ER_COLUMN_NOT_NUMERIC);
 end;
 
 constructor GroupByContext.Create(df: DataFrame; keyCols: array of integer);
@@ -3137,7 +3188,7 @@ begin
       case df.columns[keyColumn].Info.ColType of
         ctInt: key := cursor.Int(keyColumn);
         ctStr: key := cursor.Str(keyColumn);
-        else raise new Exception('Unsupported GroupBy key type');
+        else Error(ER_GROUPBY_UNSUPPORTED_KEY_TYPE, df.columns[keyColumn].Info.ColType);
       end;
 
       if not groups1.ContainsKey(key) then
@@ -3171,7 +3222,7 @@ begin
         case df.columns[c].Info.ColType of
           ctInt: key[i] := cursor.Int(c);
           ctStr: key[i] := cursor.Str(c);
-          else raise new Exception('Unsupported GroupBy key type');
+          else Error(ER_GROUPBY_UNSUPPORTED_KEY_TYPE, df.columns[c].Info.ColType);
         end;
       end;
 
@@ -3618,7 +3669,7 @@ begin
   var sy := df.Std(iy);
 
   if (sx = 0) or (sy = 0) then
-    raise new Exception('Zero variance in correlation');
+    Error(ER_ZERO_VARIANCE);
 
   var cur := df.GetCursor;
   var sum := 0.0;
@@ -3632,7 +3683,7 @@ begin
     end;
 
   if cnt = 0 then
-    raise new Exception('No valid pairs for correlation');
+    Error(ER_NO_VALID_PAIRS);
 
   Result := sum / (cnt * sx * sy);
 end;
@@ -3648,7 +3699,7 @@ begin
 
   var n := names.Count;
   if n = 0 then
-    raise new Exception('No numeric columns for correlation matrix');
+    Error(ER_NO_NUMERIC_COLUMNS);
 
   var res := new DataFrame;
 
@@ -3679,12 +3730,12 @@ begin
   var std := df.Std(idx);
 
   if std = 0 then
-    raise new Exception('Zero standard deviation');
+    Error(ER_ZERO_STD_STANDARDIZE);
 
   Result := df.ReplaceColumnFloat(colName, cur ->
   begin
     if not cur.IsValid(idx) then
-      raise new Exception;
+      Error(ER_INVALID_VALUE_IN_COLUMN, colName);
     Result := (cur.Float(idx) - mean) / std;
   end);
 end;
@@ -3707,7 +3758,7 @@ begin
       means[i] := df.Mean(i);
       stds[i] := df.Std(i);
       if stds[i] = 0 then
-        raise new Exception($'Zero std in column {df.fSchema.Names[i]}');
+        Error(ER_ZERO_STD_COLUMN, df.fSchema.Names[i]);
       isNumeric[i] := true;
     end;
   end;
@@ -3761,12 +3812,12 @@ begin
   var (mn, mx) := df.MinMax(idx);
 
   if mn = mx then
-    raise new Exception('Zero range in normalization');
+    Error(ER_ZERO_RANGE);
 
   Result := df.ReplaceColumnFloat(colName, cur ->
   begin
     if not cur.IsValid(idx) then
-      raise new Exception;
+      Error(ER_INVALID_VALUE_IN_COLUMN, colName);
     Result := (cur.Float(idx) - mn) / (mx - mn);
   end);
 end;
@@ -3788,7 +3839,7 @@ begin
     begin
       var (mn, mx) := df.MinMax(i);
       if mn = mx then
-        raise new Exception($'Zero range in column {df.fSchema.Names[i]}');
+        Error(ER_ZERO_RANGE_COLUMN, df.fSchema.Names[i]);
       mins[i] := mn;
       maxs[i] := mx;
       isNumeric[i] := true;
@@ -3841,7 +3892,7 @@ end;
 static function Statistics.Quantile(df: DataFrame; colName: string; p: real): real;
 begin
   if (p < 0) or (p > 1) then
-    raise new Exception('Quantile p must be in [0,1]');
+    ArgumentError(ER_QUANTILE_P_INVALID);
 
   var idx := df.ColumnIndex(colName);
   var values := new List<real>;
@@ -3852,7 +3903,7 @@ begin
       values.Add(cur.Float(idx));
 
   if values.Count = 0 then
-    raise new Exception('No valid values for quantile');
+    Error(ER_NO_VALID_VALUES_QUANTILE);
 
   values.Sort;
 
@@ -4320,7 +4371,7 @@ begin
   
     if parts.Length <> colCount then
       if strict then
-        raise new Exception($'CSV format error: expected {colCount} columns, got {parts.Length}');
+        Error(ER_CSV_COLUMN_COUNT_MISMATCH, colCount, parts.Length);
   
     for var j := 0 to colCount - 1 do
     begin
@@ -4347,7 +4398,7 @@ begin
   end;
   
   if headers = nil then
-    raise new Exception('Empty CSV');
+    Error(ER_EMPTY_CSV);
 
   // ---------- PASS 2: allocate ----------
   var df := new DataFrame;
@@ -4394,7 +4445,7 @@ begin
     if unclosedQuote then
     begin
       if strict then
-        raise new Exception('CSV format error: unclosed quote');
+        Error(ER_CSV_UNCLOSED_QUOTE);
     
       for var j := 0 to colCount - 1 do
         valid[j][row] := false;
@@ -4404,7 +4455,7 @@ begin
     end;
     
     if (actualCount <> colCount) and strict then
-      raise new Exception($'CSV format error: expected {colCount} columns, got {actualCount}');
+      Error(ER_CSV_COLUMN_COUNT_MISMATCH, colCount, actualCount);
   
     for var j := 0 to colCount - 1 do
     begin
@@ -4439,8 +4490,7 @@ begin
         else
         begin
           if strict then
-            raise new Exception(
-              $'Invalid bool "{line.Substring(starts[j]-1, lens[j])}" in column {headers[j]}');
+            Error(ER_CSV_INVALID_BOOL, line.Substring(starts[j]-1, lens[j]), headers[j]);
           valid[j][row] := false;
         end;
       end
