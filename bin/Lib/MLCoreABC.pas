@@ -16,6 +16,11 @@ type
     function Predict(X: Matrix): Vector;
     function Clone: IModel;
   end;
+  
+  /// Интерфейс древовидной модели машинного обучения
+  ITreeModel = interface(IModel)
+    function FeatureImportances: Vector;
+  end;
 
   /// Интерфейс классификатора.
   /// Наследуется от IModel.

@@ -249,13 +249,30 @@ type
     Threshold: real;
   end;
   
-  DecisionTreeBase = abstract class
+  ISplitCriterion = interface
+    function Impurity(y: Vector): real;
+  end;
+  
+  GiniCriterion = class(ISplitCriterion)
+  public
+    function Impurity(y: Vector): real;
+  end;
+
+  VarianceCriterion = class(ISplitCriterion)
+  public
+    function Impurity(y: Vector): real;
+  end;
+  
+  DecisionTreeBase = abstract class(ITreeModel)
   protected
     fRoot: DecisionTreeNode;
     fMaxDepth: integer;
     fMinSamplesSplit: integer;
     fMinSamplesLeaf: integer;
     fFitted: boolean;
+    fCriterion: ISplitCriterion;
+    fFeatureImportances: Vector;
+    fRandomSeed: integer;
   
     function BuildTree(X: Matrix; y: Vector; indices: array of integer; depth: integer): DecisionTreeNode;
   
@@ -265,13 +282,19 @@ type
     
     function LeafNode(value: real): DecisionTreeNode;
   
-    function NodeImpurity(y: Vector; indices: array of integer): real; virtual; abstract;
-    
     procedure CopyBaseState(dest: DecisionTreeBase);
+    
+    function GetFeatureSubset(nFeatures: integer): array of integer; virtual;
+
   public
-    constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2;
-      minSamplesLeaf: integer := 1);
+    constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2; minSamplesLeaf: integer := 1);
   
+    function FeatureImportances: Vector;
+    
+    function Fit(X: Matrix; y: Vector): IModel; virtual; abstract;
+    function Predict(X: Matrix): Vector; virtual; abstract;
+    function Clone: IModel; virtual; abstract;
+
     function IsFitted: boolean;
   end;
   
@@ -283,34 +306,34 @@ type
 
     function PredictOne(x: Vector): integer;
     function MajorityClass(y: Vector; indices: array of integer): integer;
-    function Gini(y: Vector; indices: array of integer): real;
+    //function Gini(y: Vector; indices: array of integer): real;
     
   public
-    constructor Create(maxDepth: integer := 10;
-                       minSamplesSplit: integer := 2;
-                       minSamplesLeaf: integer := 1);
+    constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2; minSamplesLeaf: integer := 1);
 
-    function Fit(X: Matrix; y: Vector): IModel;
-    function Predict(X: Matrix): Vector;
-    function Clone: IModel;
+    function Fit(X: Matrix; y: Vector): IModel; override;
+    function Predict(X: Matrix): Vector; override;
+    function Clone: IModel; override;
 
   protected  
     function LeafValue(y: Vector; indices: array of integer): real; override;
-    function NodeImpurity(y: Vector; indices: array of integer): real; override;
+    //function NodeImpurity(y: Vector; indices: array of integer): real; override;
   end;
   
   DecisionTreeRegressor = class(DecisionTreeBase, IRegressor)
   protected
     function LeafValue(y: Vector; indices: array of integer): real; override;
-    function NodeImpurity(y: Vector; indices: array of integer): real; override;
+    //function NodeImpurity(y: Vector; indices: array of integer): real; override;
   
   private
     function PredictOne(x: Vector): real;
   
   public
-    function Fit(X: Matrix; y: Vector): IModel;
-    function Predict(X: Matrix): Vector;
-    function Clone: IModel;
+    constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2; minSamplesLeaf: integer := 1);
+    
+    function Fit(X: Matrix; y: Vector): IModel; override;
+    function Predict(X: Matrix): Vector; override;
+    function Clone: IModel; override;
   end;
 
 
@@ -1221,6 +1244,47 @@ begin
   Result := m;
 end;
 
+function GiniCriterion.Impurity(y: Vector): real;
+begin
+  if y.Length = 0 then exit(0.0);
+
+  var counts := Dict&<integer,integer>;
+  foreach var v in y.data do
+  begin
+    var c := integer(v);
+    if counts.ContainsKey(c) then
+      counts[c] += 1
+    else
+      counts[c] := 1;
+  end;
+
+  var n := y.Length;
+  var sumsq := 0.0;
+
+  foreach var kv in counts do
+  begin
+    var p := kv.Value / n;
+    sumsq += p * p;
+  end;
+
+  Result := 1.0 - sumsq;
+end;
+
+function VarianceCriterion.Impurity(y: Vector): real;
+begin
+  if y.Length = 0 then exit(0.0);
+
+  var mean := y.Mean;
+  var s := 0.0;
+
+  foreach var v in y.data do
+  begin
+    var d := v - mean;
+    s += d*d;
+  end;
+
+  Result := s / y.Length;
+end;
 
 function LeafClass(c: integer): DecisionTreeNode;
 begin
@@ -1268,16 +1332,12 @@ begin
   Result := n;
 end;
 
-
-constructor DecisionTreeBase.Create(
-  maxDepth: integer;
-  minSamplesSplit: integer;
-  minSamplesLeaf: integer
-);
+constructor DecisionTreeBase.Create(maxDepth: integer; minSamplesSplit: integer; minSamplesLeaf: integer);
 begin
   fMaxDepth := maxDepth;
   fMinSamplesSplit := minSamplesSplit;
   fMinSamplesLeaf := minSamplesLeaf;
+  fRandomSeed := 0;
 end;
 
 procedure DecisionTreeBase.CopyBaseState(dest: DecisionTreeBase);
@@ -1289,6 +1349,18 @@ begin
 
   if fRoot <> nil then
     dest.fRoot := fRoot.Clone;
+end;
+
+function DecisionTreeBase.GetFeatureSubset(nFeatures: integer): array of integer;
+begin
+  Result := new integer[nFeatures];
+  for var i := 0 to nFeatures-1 do
+    Result[i] := i;
+end;
+
+function DecisionTreeBase.FeatureImportances: Vector;
+begin
+  Result := fFeatureImportances.Clone;
 end;
 
 function DecisionTreeBase.IsFitted: boolean;
@@ -1316,7 +1388,7 @@ begin
     exit(LeafNode(LeafValue(y, indices)));
 
   // Если узел уже чистый
-  if NodeImpurity(y, indices) = 0.0 then
+  if fCriterion.Impurity(y.SubvectorBy(indices)) = 0.0 then
     exit(LeafNode(LeafValue(y, indices)));
 
   // Поиск лучшего разбиения
@@ -1365,8 +1437,17 @@ begin
   var bestThreshold := 0.0;
 
   var n := indices.Length;
+  
+  var parentImp := fCriterion.Impurity(y.SubvectorBy(indices));
 
-  for var j := 0 to X.Cols - 1 do
+  var bestLeftImp := 0.0;
+  var bestRightImp := 0.0;
+  var bestLeftCount := 0;
+  var bestRightCount := 0;
+
+  var features := GetFeatureSubset(X.Cols);
+
+  foreach var j in features do
   begin
     // --- собрать пары (value, rowIndex)
     var pairs: array of (real, integer);
@@ -1407,8 +1488,8 @@ begin
       var leftArr := left.ToArray;
       var rightArr := right.ToArray;
 
-      var leftImp := NodeImpurity(y, leftArr);
-      var rightImp := NodeImpurity(y, rightArr);
+      var leftImp := fCriterion.Impurity(y.SubvectorBy(leftArr));
+      var rightImp := fCriterion.Impurity(y.SubvectorBy(rightArr));
 
       var weighted :=
         (leftArr.Length / n) * leftImp +
@@ -1416,6 +1497,11 @@ begin
 
       if weighted < bestScore then
       begin
+        bestLeftImp := leftImp;
+        bestRightImp := rightImp;
+        bestLeftCount := leftArr.Length;
+        bestRightCount := rightArr.Length;
+        
         bestScore := weighted;
         bestFeature := j;
         bestThreshold := threshold;
@@ -1430,6 +1516,16 @@ begin
         end;
       end;
     end;
+  end;
+  
+  if bestFeature <> -1 then
+  begin
+    var wl := bestLeftCount / n;
+    var wr := bestRightCount / n;
+  
+    var gain := parentImp - wl * bestLeftImp - wr * bestRightImp;
+  
+    fFeatureImportances[bestFeature] += gain;
   end;
 
   Result.Found := bestFeature <> -1;
@@ -1479,7 +1575,7 @@ begin
   Result := bestClass;
 end;
 
-function DecisionTreeClassifier.Gini(y: Vector; indices: array of integer): real;
+{function DecisionTreeClassifier.Gini(y: Vector; indices: array of integer): real;
 begin
   var counts := new integer[fClassCount];
 
@@ -1496,14 +1592,12 @@ begin
   end;
 
   Result := 1.0 - sum;
-end;
+end;}
 
-constructor DecisionTreeClassifier.Create(maxDepth: integer;
-  minSamplesSplit: integer; minSamplesLeaf: integer);
+constructor DecisionTreeClassifier.Create(maxDepth: integer; minSamplesSplit: integer; minSamplesLeaf: integer);
 begin
-  fMaxDepth := maxDepth;
-  fMinSamplesSplit := minSamplesSplit;
-  fMinSamplesLeaf := minSamplesLeaf;
+  inherited Create(maxDepth, minSamplesSplit, minSamplesLeaf);
+  fCriterion := new GiniCriterion;
 end;
 
 function DecisionTreeClassifier.Fit(X: Matrix; y: Vector): IModel;
@@ -1513,6 +1607,11 @@ begin
 
   if X.Rows = 0 then
     ArgumentError(ER_EMPTY_DATASET);
+  
+  if fRandomSeed <> 0 then
+    Randomize(fRandomSeed);
+  
+  fFeatureImportances := new Vector(X.Cols);
 
   // --- 1. Найти уникальные классы
   var unique := new HashSet<integer>;
@@ -1547,6 +1646,11 @@ begin
 
   // --- 5. Построить дерево
   fRoot := BuildTree(X, yEncoded, indices, 0);
+  
+  var s := fFeatureImportances.Sum;
+  if s > 0 then
+    for var i := 0 to fFeatureImportances.Length-1 do
+      fFeatureImportances[i] /= s;
 
   fFitted := true;
 
@@ -1605,9 +1709,10 @@ begin
   Result := MajorityClass(y, indices);
 end;
 
-function DecisionTreeClassifier.NodeImpurity(y: Vector; indices: array of integer): real;
+constructor DecisionTreeRegressor.Create(maxDepth: integer; minSamplesSplit: integer; minSamplesLeaf: integer);
 begin
-  Result := Gini(y, indices);
+  inherited Create(maxDepth, minSamplesSplit, minSamplesLeaf);
+  fCriterion := new VarianceCriterion;
 end;
 
 function DecisionTreeRegressor.LeafValue(y: Vector; indices: array of integer): real;
@@ -1619,7 +1724,7 @@ begin
   Result := sum / indices.Length;
 end;
 
-function DecisionTreeRegressor.NodeImpurity(y: Vector; indices: array of integer): real;
+{function DecisionTreeRegressor.NodeImpurity(y: Vector; indices: array of integer): real;
 begin
   var sum := 0.0;
   var sqSum := 0.0;
@@ -1634,7 +1739,7 @@ begin
 
   var mean := sum / n;
   Result := (sqSum / n) - mean * mean;
-end;
+end;}
 
 function DecisionTreeRegressor.Fit(X: Matrix; y: Vector): IModel;
 begin
@@ -1643,12 +1748,23 @@ begin
 
   if X.Rows = 0 then
     ArgumentError(ER_EMPTY_DATASET);
+  
+  if fRandomSeed <> 0 then
+    Randomize(fRandomSeed);
+  
+  fFeatureImportances := new Vector(X.Cols);
 
   var indices := new integer[X.Rows];
   for var i := 0 to X.Rows - 1 do
     indices[i] := i;
 
   fRoot := BuildTree(X, y, indices, 0);
+  
+  var s := fFeatureImportances.Sum;
+  if s > 0 then
+    for var i := 0 to fFeatureImportances.Length-1 do
+      fFeatureImportances[i] /= s;
+  
   fFitted := true;
 
   Result := Self;

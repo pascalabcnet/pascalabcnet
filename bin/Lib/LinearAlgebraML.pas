@@ -53,12 +53,14 @@ type
     function Min: real;
     /// Скалярное произведение
     function Dot(b: Vector): real;
-
+    
     // ---------- Сервисные методы ----------
     function ToString: string; override := $'{data.Select(x -> x.ToString(''G3''))}';
     function ToString(digits: integer): string := $'{data.Select(x -> x.ToString(''G''+digits))}';
     procedure Print := data.Print;
     procedure Println := data.Println;
+    
+    function SubvectorBy(indices: array of integer): Vector;
   end;
   
   Matrix = class
@@ -447,6 +449,17 @@ begin
   Result := new Vector(Length);
   for var i := 0 to Length - 1 do
     Result[i] := f(self[i]);
+end;
+
+function Vector.SubvectorBy(indices: array of integer): Vector;
+begin
+  var n := indices.Length;
+  var resultVec := new Vector(n);
+
+  for var i := 0 to n - 1 do
+    resultVec[i] := self[indices[i]];
+
+  Result := resultVec;
 end;
 
 
