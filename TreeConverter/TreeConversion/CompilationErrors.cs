@@ -3185,8 +3185,8 @@ namespace PascalABCCompiler.TreeConverter
             if (cfn is common_method_node && (cfn as common_method_node).is_constructor)
                 return StringResources.Get("CONSTRUCTOR_PREDEFINITION_WITHOUT_DEFINITION");
             if (cfn.return_value_type == null)
-                return StringResources.Get("PROCEDURE_PREDEFINITION_WITHOUT_DEFINITION");
-            return StringResources.Get("FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                return string.Format(StringResources.Get("PROCEDURE_PREDEFINITION_{0}_WITHOUT_DEFINITION"),cfn.name);
+            return string.Format(StringResources.Get("FUNCTION_PREDEFINITION_{0}_WITHOUT_DEFINITION"), cfn.name);
         }
     }
 

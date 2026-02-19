@@ -259,7 +259,18 @@ const
     'Индекс {0} вне диапазона [0..{1})!!Index {0} out of range [0..{1})';
   ER_INDICES_NULL =
     'indices не может быть nil!!indices is nil';
-
+  ER_LEFT_SCHEMA_NULL =
+    'Left schema не может быть nil!!Left schema cannot be nil';
+  ER_RIGHT_SCHEMA_NULL =
+    'Right schema не может быть nil!!Right schema cannot be nil';
+  ER_JOIN_KEYS_LENGTH_MISMATCH =
+    'Длины leftKeys и rightKeys не совпадают!!join keys length mismatch';
+  ER_UNKNOWN_COLUMN_TYPE =
+    'Неизвестный тип столбца!!Unknown column type';
+  ER_ROW_INDEX_OUT_OF_RANGE =
+    'Индекс строки {0} вне диапазона [0..{1})!!' +
+    'Row index {0} out of range [0..{1})';  
+    
 //-----------------------------
 //      Сервисные функции
 //-----------------------------
@@ -370,7 +381,7 @@ begin
   begin
     var k := indices[i];
     if (k < 0) or (k >= ColumnCount) then
-      raise new System.ArgumentOutOfRangeException('indices');
+      ArgumentOutOfRangeError(ER_INDEX_OUT_OF_RANGE, k, ColumnCount);
     names[i] := fNames[k];
     types[i] := fTypes[k];
     if cats <> nil then cats[i] := fIsCategorical[k];
@@ -416,7 +427,7 @@ end;
 function DataFrameSchema.WithCategorical(name: string; value: boolean): DataFrameSchema;
 begin
   if not HasColumn(name) then
-    raise new System.ArgumentException($'Column "{name}" does not exist');
+    ArgumentError(ER_COLUMN_NOT_EXISTS, name);
 
   var cats := if fIsCategorical = nil then new boolean[ColumnCount] else Copy(fIsCategorical);
   cats[IndexOf(name)] := value;
@@ -428,17 +439,17 @@ class function DataFrameSchema.Merge(left, right: DataFrameSchema;
   leftKeys, rightKeys: array of integer; rightPrefix: string): DataFrameSchema;
 begin
   if left = nil then 
-    raise new System.ArgumentException('left is nil');
+    ArgumentNullError(ER_LEFT_SCHEMA_NULL);
   if right = nil then 
-    raise new System.ArgumentException('right is nil');
+    ArgumentNullError(ER_RIGHT_SCHEMA_NULL);
   if leftKeys.Length <> rightKeys.Length then
-    raise new System.ArgumentException('join keys length mismatch');
+    ArgumentError(ER_JOIN_KEYS_LENGTH_MISMATCH);
 
   var skip := new boolean[right.ColumnCount];
   foreach var i in rightKeys do
   begin
     if (i < 0) or (i >= right.ColumnCount) then
-      raise new System.ArgumentOutOfRangeException('rightKeys');
+      ArgumentOutOfRangeError(ER_INDEX_OUT_OF_RANGE, i, right.ColumnCount);
     skip[i] := true;
   end;
 
@@ -770,7 +781,7 @@ begin
         boolAcc[i] := pos -> c.Data[pos];
       end;
     
-    else raise new Exception('Unknown column type');
+    else Error(ER_UNKNOWN_COLUMN_TYPE);
     end;
   end;
 end;  
@@ -826,7 +837,7 @@ end;
 procedure DataFrameCursor.MoveTo(p: integer);
 begin
   if (p < 0) or (p >= rowCnt) then
-    raise new Exception('Cursor.MoveTo: index out of range');
+    ArgumentOutOfRangeError(ER_ROW_INDEX_OUT_OF_RANGE, p, rowCnt);
 
   pos := p;
 end;  

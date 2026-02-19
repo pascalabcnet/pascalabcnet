@@ -88,64 +88,6 @@ type
     function Clone: IModel;
   end;  
   
-  /// Логистическая регрессионная модель для бинарной классификации.
-  /// Предсказывает вероятность принадлежности объекта к классу 1
-  /// на основе линейной комбинации признаков и сигмоидной функции.
-  /// Поддерживает L2-регуляризацию.
-  /// Используется в задачах бинарной классификации,
-  /// когда требуется вероятностный вывод и интерпретируемые коэффициенты.
-  LogisticRegression = class(IClassifier)
-  private
-    fCoef: Vector;
-    fIntercept: real;
-    fLambda: real;
-    fLearningRate: real;
-    fEpochs: integer;
-    fFitted: boolean;
-  public
-    /// Создаёт модель логистической регрессии.
-    /// lambda — коэффициент L2-регуляризации (0 — без регуляризации).
-    /// lr — шаг градиентного спуска.
-    /// epochs — число итераций обучения.
-    constructor Create(lambda: real := 0.0; lr: real := 0.1; epochs: integer := 1000);
-  
-    /// Обучает модель на числовых данных.
-    /// X — матрица m × n (m объектов, n признаков).
-    /// y — вектор длины m, содержащий метки классов (0 или 1).
-    function Fit(X: Matrix; y: Vector): IModel;
-  
-    /// Возвращает вероятность принадлежности к положительному классу (1)
-    /// для каждого объекта.
-    /// Результат — вектор длины m со значениями в диапазоне (0, 1).
-    function PredictProba(X: Matrix): Vector;
-  
-    /// Выполняет бинарную классификацию с порогом 0.5.
-    /// Возвращает вектор из 0 и 1.
-    function Predict(X: Matrix): Vector;
-  
-    /// Выполняет бинарную классификацию с заданным порогом.
-    /// threshold — значение в диапазоне (0, 1).
-    /// Если вероятность ≥ threshold, возвращается 1, иначе 0.
-    function Predict(X: Matrix; threshold: real): Vector;
-  
-    /// Вектор коэффициентов модели (веса признаков).
-    /// Длина равна числу признаков.
-    /// Доступен после обучения (Fit).
-    property Coefficients: Vector read fCoef;
-  
-    /// Свободный член модели (смещение, bias).
-    /// Добавляется к линейной комбинации признаков.
-    property Intercept: real read fIntercept;
-  
-    /// Показывает, была ли модель обучена.
-    /// После вызова Fit значение становится true.
-    property IsFitted: boolean read fFitted;
-    
-    function ToString: string; override;
-    
-    function Clone: IModel;
-  end;
-    
 /// Линейная регрессионная модель с L2-регуляризацией (Ridge).
 /// Минимизирует функцию:
 ///     ||y - (Xβ + b)||² + λ ||β||².
@@ -251,12 +193,13 @@ type
     function Clone: IModel;
   end;
     
-/// Многоклассовая логистическая регрессия (Softmax).
-/// Предсказывает вероятности принадлежности к каждому классу
-/// на основе линейной комбинации признаков и softmax-функции.
-/// Использует кросс-энтропийную функцию потерь.
-/// Поддерживает L2-регуляризацию.
-  MulticlassLogisticRegression = class(IProbabilisticClassifier)
+/// Логистическая регрессия.
+/// Поддерживает бинарную и многоклассовую классификацию.
+/// Для нескольких классов используется softmax,
+/// для двух классов — частный случай softmax.
+/// Оптимизация выполняется по кросс-энтропийной функции потерь
+/// с поддержкой L2-регуляризации.
+  LogisticRegression = class(IProbabilisticClassifier)
   private
     fW: Matrix;      // p x k
     fIntercept: Vector; // k
@@ -265,6 +208,8 @@ type
     fEpochs: integer;
     fFitted: boolean;
     fClassCount: integer;
+    fClassToIndex: Dictionary<integer, integer>;
+    fIndexToClass: array of integer;
   public
     /// lambda — коэффициент L2-регуляризации.
     /// lr — шаг градиентного спуска.
@@ -273,10 +218,8 @@ type
   
     function Fit(X: Matrix; y: Vector): IModel;
   
-    function PredictProba(X: Matrix): Vector;
-
     /// Возвращает матрицу вероятностей (m x k).
-    function PredictProbaMatrix(X: Matrix): Matrix;
+    function PredictProba(X: Matrix): Matrix;
   
     /// Возвращает вектор предсказанных классов.
     function Predict(X: Matrix): Vector;
@@ -285,6 +228,101 @@ type
     
     function ToString: string; override;
     
+    function Clone: IModel;
+  end;
+  
+  DecisionTreeNode = class
+  public
+    IsLeaf: boolean;
+    FeatureIndex: integer;
+    Threshold: real;
+    Left: DecisionTreeNode;
+    Right: DecisionTreeNode;
+    ClassValue: integer;
+    Value: real;
+    
+    function Clone: DecisionTreeNode;
+  end;
+  
+  SplitResult = record
+    Found: boolean;
+    Feature: integer;
+    Threshold: real;
+  end;
+  
+  DecisionTreeBase = abstract class
+  protected
+    fRoot: DecisionTreeNode;
+    fMaxDepth: integer;
+    fMinSamplesSplit: integer;
+    fMinSamplesLeaf: integer;
+    fFitted: boolean;
+  
+    function BuildTree(
+      X: Matrix; y: Vector;
+      indices: array of integer;
+      depth: integer
+    ): DecisionTreeNode;
+  
+    function FindBestSplit(
+      X: Matrix; y: Vector;
+      indices: array of integer
+    ): SplitResult;
+  
+    function LeafValue(
+      y: Vector; indices: array of integer
+    ): real; virtual; abstract;
+    
+    function LeafNode(value: real): DecisionTreeNode;
+  
+    function NodeImpurity(y: Vector; indices: array of integer): real; virtual; abstract;
+    
+    procedure CopyBaseState(dest: DecisionTreeBase);
+  public
+    constructor Create(
+      maxDepth: integer := 10;
+      minSamplesSplit: integer := 2;
+      minSamplesLeaf: integer := 1
+    );
+  
+    function IsFitted: boolean;
+  end;
+  
+  DecisionTreeClassifier = class(DecisionTreeBase, IClassifier)
+  private
+    fClassToIndex: Dictionary<integer, integer>;
+    fIndexToClass: array of integer;
+    fClassCount: integer;
+
+    function PredictOne(x: Vector): integer;
+    function MajorityClass(y: Vector; indices: array of integer): integer;
+    function Gini(y: Vector; indices: array of integer): real;
+    
+  public
+    constructor Create(maxDepth: integer := 10;
+                       minSamplesSplit: integer := 2;
+                       minSamplesLeaf: integer := 1);
+
+    function Fit(X: Matrix; y: Vector): IModel;
+    function Predict(X: Matrix): Vector;
+    function Clone: IModel;
+
+  protected  
+    function LeafValue(y: Vector; indices: array of integer): real; override;
+    function NodeImpurity(y: Vector; indices: array of integer): real; override;
+  end;
+  
+  DecisionTreeRegressor = class(DecisionTreeBase, IRegressor)
+  protected
+    function LeafValue(y: Vector; indices: array of integer): real; override;
+    function NodeImpurity(y: Vector; indices: array of integer): real; override;
+  
+  private
+    function PredictOne(x: Vector): real;
+  
+  public
+    function Fit(X: Matrix; y: Vector): IModel;
+    function Predict(X: Matrix): Vector;
     function Clone: IModel;
   end;
 
@@ -340,8 +378,9 @@ type
     /// Делает предсказание
     function Predict(X: Matrix): Vector;
   
-    /// Возвращает вероятности (если модель поддерживает)
-    function PredictProba(X: Matrix): Vector;
+    /// Возвращает матрицу вероятностей (m x k)
+    /// для вероятностной модели в конце пайплайна.
+    function PredictProba(X: Matrix): Matrix;
   
     /// Показывает, был ли пайплайн обучен (вызван метод Fit).
     property IsFitted: boolean read fFitted;
@@ -595,6 +634,7 @@ implementation
 
 uses MLExceptions;
 
+{$region ErrConstants}
 const
   ER_PIPELINE_NO_STEPS =
     'Pipeline должен содержать хотя бы один шаг!!Pipeline requires at least one step';
@@ -620,6 +660,7 @@ const
     'Неизвестный тип FeatureScore!!Unknown FeatureScore type';
   ER_SELECTKBEST_FIT_INVALID =
     'Для SelectKBest необходимо вызывать Fit(X, y)!!SelectKBest requires Fit(X, y)';
+{$endregion ErrConstants}  
   
 //-----------------------------
 //       LinearRegression
@@ -680,9 +721,17 @@ end;
 
 function LinearRegression.Clone: IModel;
 begin
-  Result := new LinearRegression();
-end;
+  var m := new LinearRegression;
 
+  m.fFitted := fFitted;
+
+  if fCoef <> nil then
+    m.fCoef := fCoef.Clone;
+
+  m.fIntercept := fIntercept;
+
+  Result := m;
+end;
 
 //-----------------------------
 //       Activations
@@ -708,7 +757,7 @@ end;
 //       LogisticRegression
 //-----------------------------
 
-constructor LogisticRegression.Create(lambda: real; lr: real; epochs: integer);
+(*constructor LogisticRegression.Create(lambda: real; lr: real; epochs: integer);
 begin
   fLambda := lambda;
   fLearningRate := lr;
@@ -783,7 +832,7 @@ end;
 function LogisticRegression.Clone: IModel;
 begin
   Result := new LogisticRegression(fLambda, fLearningRate, fEpochs);
-end;
+end;*)
 
 
 //-----------------------------
@@ -848,7 +897,16 @@ end;
 
 function RidgeRegression.Clone: IModel;
 begin
-  Result := new RidgeRegression(fLambda);
+  var m := new RidgeRegression(fLambda);
+
+  m.fFitted := fFitted;
+
+  if fCoef <> nil then
+    m.fCoef := fCoef.Clone;
+
+  m.fIntercept := fIntercept;
+
+  Result := m;
 end;
 
 
@@ -965,14 +1023,23 @@ end;
 
 function ElasticNet.Clone: IModel;
 begin
-  Result := new ElasticNet(fLambda1, fLambda2, fMaxIter, fTol);
+  var m := new ElasticNet(fLambda1, fLambda2, fMaxIter, fTol);
+
+  m.fFitted := fFitted;
+
+  if fCoef <> nil then
+    m.fCoef := fCoef.Clone;
+
+  m.fIntercept := fIntercept;
+
+  Result := m;
 end;
 
 //-----------------------------
 // MulticlassLogisticRegression 
 //-----------------------------
 
-constructor MulticlassLogisticRegression.Create(lambda: real; lr: real; epochs: integer);
+constructor LogisticRegression.Create(lambda: real; lr: real; epochs: integer);
 begin
   fLambda := lambda;
   fLearningRate := lr;
@@ -980,37 +1047,53 @@ begin
   fFitted := false;
 end;
 
-function MulticlassLogisticRegression.Fit(X: Matrix; y: Vector): IModel;
+function LogisticRegression.Fit(X: Matrix; y: Vector): IModel;
 begin
+  if X.RowCount <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+
   var m := X.RowCount;
   var p := X.ColCount;
 
-  // число классов
-  fClassCount := Round(y.Max) + 1;
+  // --- internal encoding
+  var unique := y.data.Select(v -> integer(v)).Distinct.ToArray;
 
-  // инициализация параметров
+  fClassCount := unique.Length;
+
+  fClassToIndex := new Dictionary<integer, integer>;
+  SetLength(fIndexToClass, fClassCount);
+
+  for var i := 0 to fClassCount - 1 do
+  begin
+    fClassToIndex[unique[i]] := i;
+    fIndexToClass[i] := unique[i];
+  end;
+
+  var yEncoded := new Vector(m);
+  for var i := 0 to m - 1 do
+    yEncoded[i] := fClassToIndex[integer(y[i])];
+
+  // --- init
   fW := new Matrix(p, fClassCount);
   fIntercept := new Vector(fClassCount);
 
-  // one-hot матрица
+  // --- one-hot
   var YoneHot := new Matrix(m, fClassCount);
   for var i := 0 to m - 1 do
-    YoneHot[i, Round(y[i])] := 1.0;
+    YoneHot[i, integer(yEncoded[i])] := 1.0;
 
   for var epoch := 1 to fEpochs do
   begin
-    // Z = XW + b
     var Z := X * fW;
 
     for var i := 0 to m - 1 do
       for var k := 0 to fClassCount - 1 do
         Z[i,k] += fIntercept[k];
 
-    // softmax
+    // softmax (оставляем твою версию)
     for var i := 0 to m - 1 do
     begin
       var maxVal := Z.RowMax(i);
-
       var sumExp := 0.0;
 
       for var k := 0 to fClassCount - 1 do
@@ -1023,21 +1106,19 @@ begin
         Z[i,k] /= sumExp;
     end;
 
-    var PP := Z;
+    var diff := Z - YoneHot;
 
-    // градиенты
-    var diff := PP - YoneHot;                // m x k
-    var gradW := X.Transpose * diff;  // p x k
+    var gradW := X.Transpose * diff;
+    gradW *= 1.0 / m;                     // ВАЖНО
 
-    // L2 регуляризация (только веса)
     if fLambda <> 0 then
       gradW += fLambda * fW;
 
-    // обновление
     fW -= fLearningRate * gradW;
 
-    // градиент по intercept
     var gradB := diff.ColumnSums;
+    gradB *= 1.0 / m;                     // ВАЖНО
+
     fIntercept -= fLearningRate * gradB;
   end;
 
@@ -1045,8 +1126,11 @@ begin
   Result := Self;
 end;
 
-function MulticlassLogisticRegression.PredictProba(X: Matrix): Vector;
+{function LogisticRegression.PredictProba(X: Matrix): Vector;
 begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
   var P := PredictProbaMatrix(X);
 
   var m := P.RowCount;
@@ -1057,9 +1141,9 @@ begin
     var k := P.RowArgMax(i);
     Result[i] := P[i, k];
   end;
-end;
+end;}
 
-function MulticlassLogisticRegression.PredictProbaMatrix(X: Matrix): Matrix;
+function LogisticRegression.PredictProba(X: Matrix): Matrix;
 begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
@@ -1091,29 +1175,539 @@ begin
   Result := Z;
 end;
 
-function MulticlassLogisticRegression.Predict(X: Matrix): Vector;
+function LogisticRegression.Predict(X: Matrix): Vector;
 begin
-  var P := PredictProbaMatrix(X);
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  var P := PredictProba(X);
 
   var m := P.RowCount;
   Result := new Vector(m);
 
   for var i := 0 to m - 1 do
-    Result[i] := P.RowArgMax(i);
+  begin
+    var internalIdx := P.RowArgMax(i);
+    Result[i] := fIndexToClass[internalIdx];
+  end;
 end;
 
-function MulticlassLogisticRegression.ToString: string;
+function LogisticRegression.ToString: string;
 begin
   Result :=
-    'MulticlassLogisticRegression(lambda=' + fLambda +
+    'LogisticRegression(lambda=' + fLambda +
     ', lr=' + fLearningRate +
     ', epochs=' + fEpochs + ')';
 end;
 
-function MulticlassLogisticRegression.Clone: IModel;
+function LogisticRegression.Clone: IModel;
 begin
-  Result := new MulticlassLogisticRegression(fLambda, fLearningRate, fEpochs);
+  var m := new LogisticRegression(
+    fLambda,
+    fLearningRate,
+    fEpochs
+  );
+
+  m.fFitted := fFitted;
+  m.fClassCount := fClassCount;
+
+  if fW <> nil then
+    m.fW := fW.Clone;
+
+  if fIntercept <> nil then
+    m.fIntercept := fIntercept.Clone;
+
+  if fClassToIndex <> nil then
+  begin
+    m.fClassToIndex := new Dictionary<integer, integer>;
+    foreach var kv in fClassToIndex do
+      m.fClassToIndex[kv.Key] := kv.Value;
+  end;
+
+  if fIndexToClass <> nil then
+  begin
+    SetLength(m.fIndexToClass, Length(fIndexToClass));
+    for var i := 0 to Length(fIndexToClass) - 1 do
+      m.fIndexToClass[i] := fIndexToClass[i];
+  end;
+
+  Result := m;
 end;
+
+
+function LeafClass(c: integer): DecisionTreeNode;
+begin
+  var n := new DecisionTreeNode;
+  n.IsLeaf := true;
+  n.ClassValue := c;
+  Result := n;
+end;
+
+function LeafValue(v: real): DecisionTreeNode;
+begin
+  var n := new DecisionTreeNode;
+  n.IsLeaf := true;
+  n.Value := v;
+  Result := n;
+end;
+
+function SplitNode(feature: integer; threshold: real;
+                   leftNode, rightNode: DecisionTreeNode): DecisionTreeNode;
+begin
+  var n := new DecisionTreeNode;
+  n.IsLeaf := false;
+  n.FeatureIndex := feature;
+  n.Threshold := threshold;
+  n.Left := leftNode;
+  n.Right := rightNode;
+  Result := n;
+end;
+
+function DecisionTreeNode.Clone: DecisionTreeNode;
+begin
+  var n := new DecisionTreeNode;
+
+  n.IsLeaf := IsLeaf;
+  n.FeatureIndex := FeatureIndex;
+  n.Threshold := Threshold;
+  n.ClassValue := ClassValue;
+  n.Value := Value;
+
+  if Left <> nil then
+    n.Left := Left.Clone;
+
+  if Right <> nil then
+    n.Right := Right.Clone;
+
+  Result := n;
+end;
+
+
+constructor DecisionTreeBase.Create(
+  maxDepth: integer;
+  minSamplesSplit: integer;
+  minSamplesLeaf: integer
+);
+begin
+  fMaxDepth := maxDepth;
+  fMinSamplesSplit := minSamplesSplit;
+  fMinSamplesLeaf := minSamplesLeaf;
+end;
+
+procedure DecisionTreeBase.CopyBaseState(dest: DecisionTreeBase);
+begin
+  dest.fMaxDepth := fMaxDepth;
+  dest.fMinSamplesSplit := fMinSamplesSplit;
+  dest.fMinSamplesLeaf := fMinSamplesLeaf;
+  dest.fFitted := fFitted;
+
+  if fRoot <> nil then
+    dest.fRoot := fRoot.Clone;
+end;
+
+function DecisionTreeBase.IsFitted: boolean;
+begin
+  Result := fFitted;
+end;
+
+function DecisionTreeBase.LeafNode(value: real): DecisionTreeNode;
+begin
+  var n := new DecisionTreeNode;
+  n.IsLeaf := true;
+  n.Value := value;
+  Result := n;
+end;
+
+function DecisionTreeBase.BuildTree(X: Matrix; y: Vector;
+  indices: array of integer; depth: integer): DecisionTreeNode;
+begin
+  // Ограничение глубины
+  if depth >= fMaxDepth then
+    exit(LeafNode(LeafValue(y, indices)));
+
+  // Минимальное число объектов
+  if indices.Length < fMinSamplesSplit then
+    exit(LeafNode(LeafValue(y, indices)));
+
+  // Если узел уже чистый
+  if NodeImpurity(y, indices) = 0.0 then
+    exit(LeafNode(LeafValue(y, indices)));
+
+  // Поиск лучшего разбиения
+  var split := FindBestSplit(X, y, indices);
+
+  if not split.Found then
+    exit(LeafNode(LeafValue(y, indices)));
+
+  // Разделение индексов
+  var left := new List<integer>;
+  var right := new List<integer>;
+
+  foreach var i in indices do
+    if X[i, split.Feature] <= split.Threshold then
+      left.Add(i)
+    else
+      right.Add(i);
+
+  // Проверка минимального размера листа
+  if (left.Count < fMinSamplesLeaf) or
+     (right.Count < fMinSamplesLeaf) then
+    exit(LeafNode(LeafValue(y, indices)));
+
+  // Рекурсия
+  var leftNode :=
+    BuildTree(X, y, left.ToArray, depth + 1);
+
+  var rightNode :=
+    BuildTree(X, y, right.ToArray, depth + 1);
+
+  // Создание split-узла
+  var node := new DecisionTreeNode;
+  node.IsLeaf := false;
+  node.FeatureIndex := split.Feature;
+  node.Threshold := split.Threshold;
+  node.Left := leftNode;
+  node.Right := rightNode;
+
+  Result := node;
+end;
+
+function DecisionTreeBase.FindBestSplit(X: Matrix; y: Vector; indices: array of integer): SplitResult;
+begin
+  var bestScore := 1e308;
+  var bestFeature := -1;
+  var bestThreshold := 0.0;
+
+  var n := indices.Length;
+
+  for var j := 0 to X.Cols - 1 do
+  begin
+    // --- собрать пары (value, rowIndex)
+    var pairs: array of (real, integer);
+    SetLength(pairs, n);
+
+    for var k := 0 to n - 1 do
+    begin
+      var idx := indices[k];
+      pairs[k] := (X[idx, j], idx);
+    end;
+
+    // --- сортировка по значению признака
+    pairs.Sort(p -> p.Item1);
+
+    for var k := 1 to n - 1 do
+    begin
+      var v1 := pairs[k-1].Item1;
+      var v2 := pairs[k].Item1;
+
+      if v1 = v2 then
+        continue;
+
+      var threshold := (v1 + v2) / 2.0;
+
+      var left := new List<integer>;
+      var right := new List<integer>;
+
+      for var t := 0 to n - 1 do
+        if pairs[t].Item1 <= threshold then
+          left.Add(pairs[t].Item2)
+        else
+          right.Add(pairs[t].Item2);
+
+      if (left.Count < fMinSamplesLeaf) or
+         (right.Count < fMinSamplesLeaf) then
+        continue;
+
+      var leftArr := left.ToArray;
+      var rightArr := right.ToArray;
+
+      var leftImp := NodeImpurity(y, leftArr);
+      var rightImp := NodeImpurity(y, rightArr);
+
+      var weighted :=
+        (leftArr.Length / n) * leftImp +
+        (rightArr.Length / n) * rightImp;
+
+      if weighted < bestScore then
+      begin
+        bestScore := weighted;
+        bestFeature := j;
+        bestThreshold := threshold;
+
+        // early stop — идеально чистое разбиение
+        if bestScore = 0.0 then
+        begin
+          Result.Found := true;
+          Result.Feature := bestFeature;
+          Result.Threshold := bestThreshold;
+          exit;
+        end;
+      end;
+    end;
+  end;
+
+  Result.Found := bestFeature <> -1;
+  Result.Feature := bestFeature;
+  Result.Threshold := bestThreshold;
+end;
+
+
+function DecisionTreeClassifier.PredictOne(x: Vector): integer;
+begin
+  var node := fRoot;
+
+  while not node.IsLeaf do
+  begin
+    if x[node.FeatureIndex] <= node.Threshold then
+      node := node.Left
+    else
+      node := node.Right;
+  end;
+
+  Result := integer(node.Value); // internal class index
+end;
+
+
+function DecisionTreeClassifier.MajorityClass(y: Vector; indices: array of integer): integer;
+begin
+  var counts := new integer[fClassCount];
+
+  // Подсчёт частот
+  foreach var i in indices do
+  begin
+    var c := integer(y[i]);
+    counts[c] += 1;
+  end;
+
+  // Поиск максимума
+  var bestClass := 0;
+  var bestCount := -1;
+
+  for var c := 0 to fClassCount - 1 do
+    if counts[c] > bestCount then
+    begin
+      bestCount := counts[c];
+      bestClass := c;
+    end;
+
+  Result := bestClass;
+end;
+
+function DecisionTreeClassifier.Gini(y: Vector; indices: array of integer): real;
+begin
+  var counts := new integer[fClassCount];
+
+  foreach var i in indices do
+    counts[integer(y[i])] += 1;
+
+  var n := indices.Length;
+  var sum := 0.0;
+
+  for var c := 0 to fClassCount - 1 do
+  begin
+    var p := counts[c] / n;
+    sum += p * p;
+  end;
+
+  Result := 1.0 - sum;
+end;
+
+constructor DecisionTreeClassifier.Create(maxDepth: integer;
+  minSamplesSplit: integer; minSamplesLeaf: integer);
+begin
+  fMaxDepth := maxDepth;
+  fMinSamplesSplit := minSamplesSplit;
+  fMinSamplesLeaf := minSamplesLeaf;
+end;
+
+function DecisionTreeClassifier.Fit(X: Matrix; y: Vector): IModel;
+begin
+  if X.Rows <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.Rows, y.Length);
+
+  if X.Rows = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
+  // --- 1. Найти уникальные классы
+  var unique := new HashSet<integer>;
+
+  for var i := 0 to y.Length - 1 do
+    unique.Add(integer(y[i]));
+
+  fClassCount := unique.Count;
+
+  // --- 2. Создать массив index -> original class
+  SetLength(fIndexToClass, fClassCount);
+  fClassToIndex := new Dictionary<integer, integer>;
+
+  var idx := 0;
+  foreach var c in unique do
+  begin
+    fIndexToClass[idx] := c;
+    fClassToIndex[c] := idx;
+    idx += 1;
+  end;
+
+  // --- 3. Создать закодированный y
+  var yEncoded := new Vector(y.Length);
+
+  for var i := 0 to y.Length - 1 do
+    yEncoded[i] := fClassToIndex[integer(y[i])];
+
+  // --- 4. Создать массив индексов строк
+  var indices := new integer[X.Rows];
+  for var i := 0 to X.Rows - 1 do
+    indices[i] := i;
+
+  // --- 5. Построить дерево
+  fRoot := BuildTree(X, yEncoded, indices, 0);
+
+  fFitted := true;
+
+  Result := Self;
+end;
+
+function DecisionTreeClassifier.Predict(X: Matrix): Vector;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);;
+
+  var n := X.Rows;
+  Result := new Vector(n);
+
+  for var i := 0 to n - 1 do
+  begin
+    var row := X.GetRow(i);
+    var internalClass := PredictOne(row);
+
+    // вернуть оригинальную метку
+    Result[i] := fIndexToClass[internalClass];
+  end;
+end;
+
+function DecisionTreeClassifier.Clone: IModel;
+begin
+  var m := new DecisionTreeClassifier(
+    fMaxDepth,
+    fMinSamplesSplit,
+    fMinSamplesLeaf
+  );
+
+  CopyBaseState(m);
+
+  m.fClassCount := fClassCount;
+
+  if fClassToIndex <> nil then
+  begin
+    m.fClassToIndex := new Dictionary<integer, integer>;
+    foreach var kv in fClassToIndex do
+      m.fClassToIndex[kv.Key] := kv.Value;
+  end;
+
+  if fIndexToClass <> nil then
+  begin
+    SetLength(m.fIndexToClass, Length(fIndexToClass));
+    for var i := 0 to Length(fIndexToClass) - 1 do
+      m.fIndexToClass[i] := fIndexToClass[i];
+  end;
+
+  Result := m;
+end;
+
+function DecisionTreeClassifier.LeafValue(y: Vector; indices: array of integer): real;
+begin
+  Result := MajorityClass(y, indices);
+end;
+
+function DecisionTreeClassifier.NodeImpurity(y: Vector; indices: array of integer): real;
+begin
+  Result := Gini(y, indices);
+end;
+
+function DecisionTreeRegressor.LeafValue(y: Vector; indices: array of integer): real;
+begin
+  var sum := 0.0;
+  foreach var i in indices do
+    sum += y[i];
+
+  Result := sum / indices.Length;
+end;
+
+function DecisionTreeRegressor.NodeImpurity(y: Vector; indices: array of integer): real;
+begin
+  var sum := 0.0;
+  var sqSum := 0.0;
+  var n := indices.Length;
+
+  foreach var i in indices do
+  begin
+    var v := y[i];
+    sum += v;
+    sqSum += v * v;
+  end;
+
+  var mean := sum / n;
+  Result := (sqSum / n) - mean * mean;
+end;
+
+function DecisionTreeRegressor.Fit(X: Matrix; y: Vector): IModel;
+begin
+  if X.Rows <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.Rows, y.Length);
+
+  if X.Rows = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
+  var indices := new integer[X.Rows];
+  for var i := 0 to X.Rows - 1 do
+    indices[i] := i;
+
+  fRoot := BuildTree(X, y, indices, 0);
+  fFitted := true;
+
+  Result := Self;
+end;
+
+function DecisionTreeRegressor.PredictOne(x: Vector): real;
+begin
+  var node := fRoot;
+
+  while not node.IsLeaf do
+  begin
+    if x[node.FeatureIndex] <= node.Threshold then
+      node := node.Left
+    else
+      node := node.Right;
+  end;
+
+  Result := node.Value;
+end;
+
+function DecisionTreeRegressor.Predict(X: Matrix): Vector;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  var n := X.Rows;
+  Result := new Vector(n);
+
+  for var i := 0 to n - 1 do
+    Result[i] := PredictOne(X.GetRow(i));
+end;
+
+function DecisionTreeRegressor.Clone: IModel;
+begin
+  var m := new DecisionTreeRegressor(
+    fMaxDepth,
+    fMinSamplesSplit,
+    fMinSamplesLeaf
+  );
+
+  CopyBaseState(m);
+
+  Result := m;
+end;
+
 
 
 //-----------------------------
@@ -1175,7 +1769,7 @@ end;
 function Pipeline.SetModel(m: IModel): Pipeline;
 begin
   if m = nil then
-    ArgumentError(ER_TRANSFORMER_NULL);
+    ArgumentError(ER_MODEL_NULL);
 
   fModel := m;
   Result := Self;
@@ -1225,7 +1819,7 @@ begin
   Result := fModel.Predict(Xt);
 end;
 
-function Pipeline.PredictProba(X: Matrix): Vector;
+function Pipeline.PredictProba(X: Matrix): Matrix;
 begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
@@ -1235,7 +1829,8 @@ begin
 
   var Xt := Transform(X);
 
-  Result := (fModel as IProbabilisticClassifier).PredictProba(Xt);
+  Result := (fModel as IProbabilisticClassifier)
+              .PredictProba(Xt);
 end;
 
 function Pipeline.ToString: string;
@@ -1288,7 +1883,7 @@ end;
 function StandardScaler.Transform(X: Matrix): Matrix;
 begin
   if not fFitted then
-    Error(ER_PROBA_NOT_SUPPORTED);
+    NotFittedError(ER_FIT_NOT_CALLED);
 
   var n := X.RowCount;
   var p := X.ColCount;
@@ -1316,9 +1911,12 @@ end;
 
 function StandardScaler.Clone: ITransformer;
 begin
-  Result := new StandardScaler();
+  var s := new StandardScaler;
+  s.fMean := fMean.Clone;
+  s.fStd := fStd.Clone;
+  s.fFitted := fFitted;
+  Result := s;
 end;
-
 
 //-----------------------------
 //       MinMaxScaler
@@ -1377,9 +1975,14 @@ end;
 
 function MinMaxScaler.Clone: ITransformer;
 begin
-  Result := new MinMaxScaler(fRangeMin, fRangeMax);
+  var s := new MinMaxScaler;
+  s.fMin := fMin.Clone;
+  s.fMax := fMax.Clone;
+  s.fFitted := fFitted;
+  s.fRangeMin := fRangeMin;
+  s.fRangeMax := fRangeMax;
+  Result := s;
 end;
-
 
 //-----------------------------
 //        PCATransformer
@@ -1436,7 +2039,11 @@ end;
 
 function PCATransformer.Clone: ITransformer;
 begin
-  Result := new PCATransformer(fK);
+  var t := new PCATransformer(fK);
+  t.fComponents := fComponents.Clone;
+  t.fMean := fMean.Clone;
+  t.fFitted := fFitted;
+  Result := t;
 end;
 
 //-----------------------------
@@ -1492,7 +2099,10 @@ end;
 
 function VarianceThreshold.Clone: ITransformer;
 begin
-  Result := new VarianceThreshold(fThreshold);
+  var t := new VarianceThreshold(fThreshold);
+  t.fSelected := Copy(fSelected);
+  t.fFitted := fFitted;
+  Result := t;
 end;
 
 //-----------------------------
@@ -1730,12 +2340,12 @@ end;
 
 function SelectKBest.Clone: ITransformer;
 begin
-  if fScoreFunc <> nil then
-    Result := new SelectKBest(fK, fScoreFunc)
-  else
-    Result := new SelectKBest(fK, fScoreType);
+  var t := new SelectKBest(fK, fScoreType);
+  t.fScoreFunc := fScoreFunc;
+  t.fSelected := Copy(fSelected);
+  t.fFitted := fFitted;
+  Result := t;
 end;
-
 
 //-----------------------------
 //         Normalizer 
@@ -1799,7 +2409,10 @@ end;
 
 function Normalizer.Clone: ITransformer;
 begin
-  Result := new Normalizer(fNormType);
+  var t := new Normalizer(fNormType);
+  t.fFitted := fFitted;
+  Result := t;
 end;
+
     
 end.

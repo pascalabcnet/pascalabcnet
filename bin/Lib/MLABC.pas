@@ -41,10 +41,10 @@ type
   LogisticRegression = MLModelsABC.LogisticRegression;
   RidgeRegression = MLModelsABC.RidgeRegression;
   ElasticNet = MLModelsABC.ElasticNet;
-  MulticlassLogisticRegression = MLModelsABC.MulticlassLogisticRegression;
-  
+  DecisionTreeClassifier = MLModelsABC.DecisionTreeClassifier;
+  DecisionTreeRegressor = MLModelsABC.DecisionTreeRegressor;
+
   MLException = MLExceptions.MLException;
-  MLArgumentException = MLExceptions.MLArgumentException;
   MLNotFittedException = MLExceptions.MLNotFittedException;
   MLDimensionException = MLExceptions.MLDimensionException;
   

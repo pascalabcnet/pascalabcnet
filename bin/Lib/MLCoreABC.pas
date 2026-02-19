@@ -32,7 +32,7 @@ type
   /// вместо только итогового решения.
   IProbabilisticClassifier = interface(IClassifier)
     /// Возвращает вероятность принадлежности к положительному классу для каждого объекта.
-    function PredictProba(X: Matrix): Vector;
+    function PredictProba(X: Matrix): Matrix;
   end;
 
   /// Интерфейс регрессионной модели.
