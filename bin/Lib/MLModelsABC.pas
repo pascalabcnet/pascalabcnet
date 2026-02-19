@@ -238,8 +238,7 @@ type
     Threshold: real;
     Left: DecisionTreeNode;
     Right: DecisionTreeNode;
-    ClassValue: integer;
-    Value: real;
+    LeafValue: real;
     
     function Clone: DecisionTreeNode;
   end;
@@ -258,20 +257,11 @@ type
     fMinSamplesLeaf: integer;
     fFitted: boolean;
   
-    function BuildTree(
-      X: Matrix; y: Vector;
-      indices: array of integer;
-      depth: integer
-    ): DecisionTreeNode;
+    function BuildTree(X: Matrix; y: Vector; indices: array of integer; depth: integer): DecisionTreeNode;
   
-    function FindBestSplit(
-      X: Matrix; y: Vector;
-      indices: array of integer
-    ): SplitResult;
+    function FindBestSplit(X: Matrix; y: Vector; indices: array of integer): SplitResult;
   
-    function LeafValue(
-      y: Vector; indices: array of integer
-    ): real; virtual; abstract;
+    function LeafValue(y: Vector; indices: array of integer): real; virtual; abstract;
     
     function LeafNode(value: real): DecisionTreeNode;
   
@@ -279,11 +269,8 @@ type
     
     procedure CopyBaseState(dest: DecisionTreeBase);
   public
-    constructor Create(
-      maxDepth: integer := 10;
-      minSamplesSplit: integer := 2;
-      minSamplesLeaf: integer := 1
-    );
+    constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2;
+      minSamplesLeaf: integer := 1);
   
     function IsFitted: boolean;
   end;
@@ -1239,7 +1226,7 @@ function LeafClass(c: integer): DecisionTreeNode;
 begin
   var n := new DecisionTreeNode;
   n.IsLeaf := true;
-  n.ClassValue := c;
+  n.LeafValue := c;
   Result := n;
 end;
 
@@ -1247,7 +1234,7 @@ function LeafValue(v: real): DecisionTreeNode;
 begin
   var n := new DecisionTreeNode;
   n.IsLeaf := true;
-  n.Value := v;
+  n.LeafValue := v;
   Result := n;
 end;
 
@@ -1270,8 +1257,7 @@ begin
   n.IsLeaf := IsLeaf;
   n.FeatureIndex := FeatureIndex;
   n.Threshold := Threshold;
-  n.ClassValue := ClassValue;
-  n.Value := Value;
+  n.LeafValue := LeafValue;
 
   if Left <> nil then
     n.Left := Left.Clone;
@@ -1314,7 +1300,7 @@ function DecisionTreeBase.LeafNode(value: real): DecisionTreeNode;
 begin
   var n := new DecisionTreeNode;
   n.IsLeaf := true;
-  n.Value := value;
+  n.LeafValue := value;
   Result := n;
 end;
 
@@ -1464,7 +1450,7 @@ begin
       node := node.Right;
   end;
 
-  Result := integer(node.Value); // internal class index
+  Result := integer(node.LeafValue); // internal class index
 end;
 
 
@@ -1680,7 +1666,7 @@ begin
       node := node.Right;
   end;
 
-  Result := node.Value;
+  Result := node.LeafValue;
 end;
 
 function DecisionTreeRegressor.Predict(X: Matrix): Vector;
