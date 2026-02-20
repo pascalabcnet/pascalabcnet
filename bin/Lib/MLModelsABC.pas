@@ -263,6 +263,9 @@ type
     function Impurity(y: Vector): real;
   end;
   
+//============================  
+//    DecisionTreeBase
+//============================  
   DecisionTreeBase = abstract class(ITreeModel)
   protected
     fRoot: DecisionTreeNode;
@@ -273,17 +276,21 @@ type
     fCriterion: ISplitCriterion;
     fFeatureImportances: Vector;
     fRandomSeed: integer;
+    fMaxFeatures := 0;
   
     function BuildTree(X: Matrix; y: Vector; indices: array of integer; depth: integer): DecisionTreeNode;
   
-    function FindBestSplit(X: Matrix; y: Vector; indices: array of integer): SplitResult;
+    function FindBestSplit0(X: Matrix; y: Vector; indices: array of integer): SplitResult;
+    function FindBestSplitReg(X: Matrix; y: Vector; indices: array of integer): SplitResult;
+    function FindBestSplitCls(X: Matrix; y: Vector; indices: array of integer; classCount: integer): SplitResult;
+    
+    function FindBestSplit(X: Matrix; y: Vector; indices: array of integer): SplitResult; virtual; abstract;
+    function IsPure(y: Vector; indices: array of integer): boolean; virtual;
+// --------------------------    
   
     function LeafValue(y: Vector; indices: array of integer): real; virtual; abstract;
-    
     function LeafNode(value: real): DecisionTreeNode;
-  
     procedure CopyBaseState(dest: DecisionTreeBase);
-    
     function GetFeatureSubset(nFeatures: integer): array of integer; virtual;
 
   public
@@ -297,7 +304,10 @@ type
 
     function IsFitted: boolean;
   end;
-  
+
+//============================  
+//   DecisionTreeClassifier  
+//============================  
   DecisionTreeClassifier = class(DecisionTreeBase, IClassifier)
   private
     fClassToIndex: Dictionary<integer, integer>;
@@ -306,28 +316,36 @@ type
 
     function PredictOne(x: Vector): integer;
     function MajorityClass(y: Vector; indices: array of integer): integer;
-    //function Gini(y: Vector; indices: array of integer): real;
     
+  protected  
+    function LeafValue(y: Vector; indices: array of integer): real; override;
+    
+    function FindBestSplit(X: Matrix; y: Vector; indices: array of integer): SplitResult; override;
+    begin
+      Result := FindBestSplitCls(X, y, indices, fClassCount);
+    end;
+
   public
     constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2; minSamplesLeaf: integer := 1);
 
     function Fit(X: Matrix; y: Vector): IModel; override;
     function Predict(X: Matrix): Vector; override;
     function Clone: IModel; override;
-
-  protected  
-    function LeafValue(y: Vector; indices: array of integer): real; override;
-    //function NodeImpurity(y: Vector; indices: array of integer): real; override;
   end;
   
+//============================  
+//   DecisionTreeRegressor  
+//============================  
   DecisionTreeRegressor = class(DecisionTreeBase, IRegressor)
-  protected
-    function LeafValue(y: Vector; indices: array of integer): real; override;
-    //function NodeImpurity(y: Vector; indices: array of integer): real; override;
-  
   private
     function PredictOne(x: Vector): real;
   
+  protected
+    function LeafValue(y: Vector; indices: array of integer): real; override;
+
+    function FindBestSplit(X: Matrix; y: Vector; indices: array of integer): SplitResult; override;
+    function IsPure(y: Vector; indices: array of integer): boolean; override;
+    
   public
     constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2; minSamplesLeaf: integer := 1);
     
@@ -335,7 +353,85 @@ type
     function Predict(X: Matrix): Vector; override;
     function Clone: IModel; override;
   end;
+  
+  TMaxFeaturesMode = (
+    /// m = p
+    AllFeatures,      
+    /// m = sqrt(p)
+    SqrtFeatures,   
+    /// m = log2(p)
+    Log2Features,
+    /// m = p/2
+    HalfFeatures     
+  );
+  
+//============================  
+//   RandomForestRegressor  
+//============================  
+// RandomForest = bagging + feature-subset
+//   bagging = Делаем bootstrap-выборку (случайно с возвращением)
+//   feature-subset = в каждом дереве - случайные признаки
+//   RandomForest снижает корреляцию между деревьями, что хорошо
 
+  RandomForestBase = abstract class(IModel)
+  protected
+    fNTrees: integer;
+    fMaxDepth: integer;
+    fMinSamplesSplit: integer;
+    fMinSamplesLeaf: integer;
+    fMaxFeaturesMode: TMaxFeaturesMode;
+    fFitted: boolean;
+  
+    function ComputeMaxFeatures(p: integer): integer;
+    procedure BootstrapSample(X: Matrix; y: Vector; var Xb: Matrix; var yb: Vector);
+  public
+    constructor Create(
+      nTrees: integer;
+      maxDepth: integer;
+      minSamplesSplit: integer;
+      minSamplesLeaf: integer;
+      maxFeatures: TMaxFeaturesMode);
+  
+    function Fit(X: Matrix; y: Vector): IModel; virtual; abstract;
+    function Predict(X: Matrix): Vector; virtual; abstract;
+    function Clone: IModel; virtual; abstract;
+    
+    function FeatureImportances: Vector; virtual; abstract;
+  end;  
+  
+  RandomForestRegressor = class(RandomForestBase, IModel)
+  private
+    fTrees: array of DecisionTreeRegressor;
+  public
+    constructor Create(nTrees: integer := 100; 
+      maxDepth: integer := integer.MaxValue;
+      minSamplesSplit: integer := 2; 
+      minSamplesLeaf: integer := 1;
+      maxFeaturesMode: TMaxFeaturesMode := TMaxFeaturesMode.HalfFeatures);
+
+    function Fit(X: Matrix; y: Vector): IModel; override;
+    function Predict(X: Matrix): Vector; override;
+    function Clone: IModel; override;
+    
+    function FeatureImportances: Vector; override;
+  end;
+
+  RandomForestClassifier = class(RandomForestBase, IClassifier)
+  private
+    fTrees: array of DecisionTreeClassifier;
+  public
+    constructor Create(nTrees: integer := 100; 
+      maxDepth: integer := integer.MaxValue;
+      minSamplesSplit: integer := 2;
+      minSamplesLeaf: integer := 1;
+      maxFeaturesMode: TMaxFeaturesMode := TMaxFeaturesMode.SqrtFeatures);
+  
+    function Fit(X: Matrix; y: Vector): IModel; override;
+    function Predict(X: Matrix): Vector; override;
+    function Clone: IModel; override;
+    
+    function FeatureImportances: Vector; override;
+  end;
 
 {$endregion Models}
 
@@ -1353,9 +1449,28 @@ end;
 
 function DecisionTreeBase.GetFeatureSubset(nFeatures: integer): array of integer;
 begin
-  Result := new integer[nFeatures];
+  if (fMaxFeatures = 0) or (fMaxFeatures >= nFeatures) then
+  begin
+    Result := new integer[nFeatures];
+    for var i := 0 to nFeatures-1 do
+      Result[i] := i;
+    exit;
+  end;
+
+  var all := new List<integer>;
   for var i := 0 to nFeatures-1 do
-    Result[i] := i;
+    all.Add(i);
+
+  var subset := new integer[fMaxFeatures];
+
+  for var k := 0 to fMaxFeatures-1 do
+  begin
+    var idx := Random(all.Count);
+    subset[k] := all[idx];
+    all.RemoveAt(idx);
+  end;
+
+  Result := subset;
 end;
 
 function DecisionTreeBase.FeatureImportances: Vector;
@@ -1388,8 +1503,10 @@ begin
     exit(LeafNode(LeafValue(y, indices)));
 
   // Если узел уже чистый
-  if fCriterion.Impurity(y.SubvectorBy(indices)) = 0.0 then
+  if IsPure(y, indices) then
     exit(LeafNode(LeafValue(y, indices)));
+  
+  var parentImp := fCriterion.Impurity(y.SubvectorBy(indices));
 
   // Поиск лучшего разбиения
   var split := FindBestSplit(X, y, indices);
@@ -1411,13 +1528,26 @@ begin
   if (left.Count < fMinSamplesLeaf) or
      (right.Count < fMinSamplesLeaf) then
     exit(LeafNode(LeafValue(y, indices)));
+     
+  var leftArr := left.ToArray;
+  var rightArr := right.ToArray;
+  
+  var leftImp := fCriterion.Impurity(y.SubvectorBy(leftArr));
+  var rightImp := fCriterion.Impurity(y.SubvectorBy(rightArr));
+  
+  var n := indices.Length;
+  
+  var delta :=
+    parentImp
+    - (leftArr.Length / n) * leftImp
+    - (rightArr.Length / n) * rightImp;
+  
+  if delta > 0 then
+    fFeatureImportances[split.Feature] += delta;     
 
   // Рекурсия
-  var leftNode :=
-    BuildTree(X, y, left.ToArray, depth + 1);
-
-  var rightNode :=
-    BuildTree(X, y, right.ToArray, depth + 1);
+  var leftNode := BuildTree(X, y, left.ToArray, depth + 1);
+  var rightNode := BuildTree(X, y, right.ToArray, depth + 1);
 
   // Создание split-узла
   var node := new DecisionTreeNode;
@@ -1430,21 +1560,34 @@ begin
   Result := node;
 end;
 
-function DecisionTreeBase.FindBestSplit(X: Matrix; y: Vector; indices: array of integer): SplitResult;
+function DecisionTreeBase.FindBestSplit0(X: Matrix; y: Vector; indices: array of integer): SplitResult;
 begin
   var bestScore := 1e308;
   var bestFeature := -1;
   var bestThreshold := 0.0;
 
   var n := indices.Length;
-  
-  var parentImp := fCriterion.Impurity(y.SubvectorBy(indices));
+  if n < 2 then
+  begin
+    Result.Found := false;
+    exit;
+  end;
 
-  var bestLeftImp := 0.0;
-  var bestRightImp := 0.0;
-  var bestLeftCount := 0;
-  var bestRightCount := 0;
+  // parent impurity (для feature importance)
+  var sumAll := 0.0;
+  var sumSqAll := 0.0;
 
+  for var i := 0 to n-1 do
+  begin
+    var v := y[indices[i]];
+    sumAll += v;
+    sumSqAll += v*v;
+  end;
+
+  var parentMean := sumAll / n;
+  var parentVar := (sumSqAll / n) - parentMean*parentMean;
+
+  // --- перебор признаков
   var features := GetFeatureSubset(X.Cols);
 
   foreach var j in features do
@@ -1453,86 +1596,213 @@ begin
     var pairs: array of (real, integer);
     SetLength(pairs, n);
 
-    for var k := 0 to n - 1 do
+    for var k := 0 to n-1 do
     begin
       var idx := indices[k];
-      pairs[k] := (X[idx, j], idx);
+      pairs[k] := (X[idx,j], idx);
     end;
 
-    // --- сортировка по значению признака
+    // сортировка
     pairs.Sort(p -> p.Item1);
 
-    for var k := 1 to n - 1 do
+    // подготовить y в этом порядке
+    var ySorted := new real[n];
+    for var k := 0 to n-1 do
+      ySorted[k] := y[pairs[k].Item2];
+
+    var leftCount := 0;
+    var leftSum := 0.0;
+    var leftSumSq := 0.0;
+
+    // идем по возможным split-позициям
+    for var k := 1 to n-1 do
     begin
-      var v1 := pairs[k-1].Item1;
-      var v2 := pairs[k].Item1;
+      // переносим элемент k-1 влево
+      var v := ySorted[k-1];
+      leftCount += 1;
+      leftSum += v;
+      leftSumSq += v*v;
 
-      if v1 = v2 then
+      var rightCount := n - leftCount;
+
+      if (leftCount < fMinSamplesLeaf) or
+         (rightCount < fMinSamplesLeaf) then
         continue;
 
-      var threshold := (v1 + v2) / 2.0;
+      var x1 := pairs[k-1].Item1;
+      var x2 := pairs[k].Item1;
 
-      var left := new List<integer>;
-      var right := new List<integer>;
-
-      for var t := 0 to n - 1 do
-        if pairs[t].Item1 <= threshold then
-          left.Add(pairs[t].Item2)
-        else
-          right.Add(pairs[t].Item2);
-
-      if (left.Count < fMinSamplesLeaf) or
-         (right.Count < fMinSamplesLeaf) then
+      if x1 = x2 then
         continue;
 
-      var leftArr := left.ToArray;
-      var rightArr := right.ToArray;
+      var rightSum := sumAll - leftSum;
+      var rightSumSq := sumSqAll - leftSumSq;
 
-      var leftImp := fCriterion.Impurity(y.SubvectorBy(leftArr));
-      var rightImp := fCriterion.Impurity(y.SubvectorBy(rightArr));
+      var leftMean := leftSum / leftCount;
+      var rightMean := rightSum / rightCount;
+
+      var leftVar := (leftSumSq / leftCount) - leftMean*leftMean;
+      var rightVar := (rightSumSq / rightCount) - rightMean*rightMean;
 
       var weighted :=
-        (leftArr.Length / n) * leftImp +
-        (rightArr.Length / n) * rightImp;
+        (leftCount / n) * leftVar +
+        (rightCount / n) * rightVar;
 
       if weighted < bestScore then
       begin
-        bestLeftImp := leftImp;
-        bestRightImp := rightImp;
-        bestLeftCount := leftArr.Length;
-        bestRightCount := rightArr.Length;
-        
         bestScore := weighted;
         bestFeature := j;
-        bestThreshold := threshold;
+        bestThreshold := (x1 + x2) / 2.0;
 
-        // early stop — идеально чистое разбиение
         if bestScore = 0.0 then
-        begin
-          Result.Found := true;
-          Result.Feature := bestFeature;
-          Result.Threshold := bestThreshold;
-          exit;
-        end;
+          break;
       end;
     end;
   end;
-  
+
+  Result.Found := bestFeature <> -1;
+  Result.Feature := bestFeature;
+  Result.Threshold := bestThreshold;
+
+  // --- feature importance (optional)
   if bestFeature <> -1 then
   begin
-    var wl := bestLeftCount / n;
-    var wr := bestRightCount / n;
-  
-    var gain := parentImp - wl * bestLeftImp - wr * bestRightImp;
-  
-    fFeatureImportances[bestFeature] += gain;
+    var gain := parentVar - bestScore;
+    if gain > 0 then
+      fFeatureImportances[bestFeature] += gain;
+  end;
+end;
+
+function DecisionTreeBase.FindBestSplitCls(X: Matrix; y: Vector; indices: array of integer; classCount: integer): SplitResult;
+begin
+  Result := FindBestSplit0(X, y, indices);
+end;
+
+function DecisionTreeBase.IsPure(y: Vector; indices: array of integer): boolean;
+begin
+  Result := fCriterion.Impurity(y.SubvectorBy(indices)) = 0.0;
+end;
+
+function DecisionTreeBase.FindBestSplitReg(X: Matrix; y: Vector; indices: array of integer): SplitResult;
+begin
+  var bestScore := 1e308;
+  var bestFeature := -1;
+  var bestThreshold := 0.0;
+
+  var n := indices.Length;
+  if n < 2 then
+  begin
+    Result.Found := false;
+    exit;
+  end;
+
+  // --- parent sums
+  var sumAll := 0.0;
+  var sumSqAll := 0.0;
+
+  for var i := 0 to n-1 do
+  begin
+    var v := y[indices[i]];
+    sumAll += v;
+    sumSqAll += v*v;
+  end;
+
+  // ===============================
+  // ЛЯМБДА ОБРАБОТКИ ПРИЗНАКА
+  // ===============================
+
+  var ProcessFeature: integer -> () := j ->
+  begin
+    var pairs: array of (real, integer);
+    SetLength(pairs, n);
+
+    for var i := 0 to n-1 do
+    begin
+      var idx := indices[i];
+      pairs[i] := (X[idx,j], idx);
+    end;
+
+    pairs.Sort(p -> p.Item1);
+
+    var leftCount := 0;
+    var leftSum := 0.0;
+    var leftSumSq := 0.0;
+
+    for var i := 1 to n-1 do
+    begin
+      var v := y[pairs[i-1].Item2];
+
+      leftCount += 1;
+      leftSum += v;
+      leftSumSq += v*v;
+
+      var rightCount := n - leftCount;
+
+      if (leftCount < fMinSamplesLeaf) or
+         (rightCount < fMinSamplesLeaf) then
+        continue;
+
+      var x1 := pairs[i-1].Item1;
+      var x2 := pairs[i].Item1;
+
+      if x1 = x2 then
+        continue;
+
+      var rightSum := sumAll - leftSum;
+      var rightSumSq := sumSqAll - leftSumSq;
+
+      var leftMean := leftSum / leftCount;
+      var rightMean := rightSum / rightCount;
+
+      var leftVar := (leftSumSq / leftCount) - leftMean*leftMean;
+      var rightVar := (rightSumSq / rightCount) - rightMean*rightMean;
+
+      var weighted :=
+        (leftCount / n) * leftVar +
+        (rightCount / n) * rightVar;
+
+      if weighted < bestScore then
+      begin
+        bestScore := weighted;
+        bestFeature := j;
+        bestThreshold := (x1 + x2) / 2.0;
+      end;
+    end;
+  end;
+
+  var p := X.Cols;
+
+  // ===============================
+  // FEATURE LOOP WITH SUBSET
+  // ===============================
+
+  if (fMaxFeatures <= 0) or (fMaxFeatures >= p) then
+  begin
+    for var j := 0 to p-1 do
+      ProcessFeature(j);
+  end
+  else
+  begin
+    var feat := new integer[p];
+    for var i := 0 to p-1 do
+      feat[i] := i;
+
+    for var i := 0 to fMaxFeatures-1 do
+    begin
+      var r := i + Random(p - i);
+      var tmp := feat[i];
+      feat[i] := feat[r];
+      feat[r] := tmp;
+    end;
+
+    for var k := 0 to fMaxFeatures-1 do
+      ProcessFeature(feat[k]);
   end;
 
   Result.Found := bestFeature <> -1;
   Result.Feature := bestFeature;
   Result.Threshold := bestThreshold;
 end;
-
 
 function DecisionTreeClassifier.PredictOne(x: Vector): integer;
 begin
@@ -1546,7 +1816,7 @@ begin
       node := node.Right;
   end;
 
-  Result := integer(node.LeafValue); // internal class index
+  Result := fIndexToClass[integer(node.LeafValue)]; // internal class index
 end;
 
 
@@ -1724,22 +1994,19 @@ begin
   Result := sum / indices.Length;
 end;
 
-{function DecisionTreeRegressor.NodeImpurity(y: Vector; indices: array of integer): real;
+function DecisionTreeRegressor.FindBestSplit(X: Matrix; y: Vector; indices: array of integer): SplitResult; 
 begin
-  var sum := 0.0;
-  var sqSum := 0.0;
-  var n := indices.Length;
+  Result := FindBestSplitReg(X, y, indices);
+end;
 
-  foreach var i in indices do
-  begin
-    var v := y[i];
-    sum += v;
-    sqSum += v * v;
-  end;
-
-  var mean := sum / n;
-  Result := (sqSum / n) - mean * mean;
-end;}
+function DecisionTreeRegressor.IsPure(y: Vector; indices: array of integer): boolean;
+begin
+  var first := y[indices[0]];
+  for var i := 1 to indices.Length-1 do
+    if y[indices[i]] <> first then
+      exit(false);
+  Result := true;
+end;
 
 function DecisionTreeRegressor.Fit(X: Matrix; y: Vector): IModel;
 begin
@@ -1808,6 +2075,283 @@ begin
   CopyBaseState(m);
 
   Result := m;
+end;
+
+//-----------------------------
+//      RandomForestBase 
+//-----------------------------
+
+constructor RandomForestBase.Create(
+  nTrees: integer;
+  maxDepth: integer;
+  minSamplesSplit: integer;
+  minSamplesLeaf: integer;
+  maxFeatures: TMaxFeaturesMode);
+begin
+  fNTrees := nTrees;
+  fMaxDepth := maxDepth;
+  fMinSamplesSplit := minSamplesSplit;
+  fMinSamplesLeaf := minSamplesLeaf;
+  fMaxFeaturesMode := maxFeatures;
+  fFitted := false;
+end;
+
+function RandomForestBase.ComputeMaxFeatures(p: integer): integer;
+begin
+  case fMaxFeaturesMode of
+    AllFeatures:  Result := p;
+    SqrtFeatures: Result := integer(Sqrt(p));
+    Log2Features: Result := integer(Log2(p));
+    HalfFeatures: Result := p div 2;
+  end;
+end;
+
+procedure RandomForestBase.BootstrapSample(X: Matrix; y: Vector;
+  var Xb: Matrix; var yb: Vector);
+begin
+  var n := X.Rows;
+  var p := X.Cols;
+
+  Xb := new Matrix(n, p);
+  yb := new Vector(n);
+
+  for var i := 0 to n - 1 do
+  begin
+    var idx := Random(n);
+
+    for var j := 0 to p - 1 do
+      Xb[i,j] := X[idx,j];
+
+    yb[i] := y[idx];
+  end;
+end;
+
+//-----------------------------
+//     RandomForestRegressor 
+//-----------------------------
+
+constructor RandomForestRegressor.Create(nTrees: integer; maxDepth: integer;
+  minSamplesSplit: integer; minSamplesLeaf: integer;
+  maxFeaturesMode: TMaxFeaturesMode);
+begin
+  inherited Create(nTrees,maxDepth,minSamplesSplit,minSamplesLeaf,maxFeaturesMode)
+end;
+
+function RandomForestRegressor.Fit(X: Matrix; y: Vector): IModel;
+begin
+  if X.Rows <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.Rows, y.Length);
+
+  if X.Rows = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
+  SetLength(fTrees, fNTrees);
+
+  for var t := 0 to fNTrees - 1 do
+  begin
+    var Xb: Matrix;
+    var yb: Vector;
+
+    BootstrapSample(X, y, Xb, yb);
+
+    var tree := new DecisionTreeRegressor(
+      fMaxDepth,
+      fMinSamplesSplit,
+      fMinSamplesLeaf
+    );
+    
+    var p := X.Cols;
+    var m := ComputeMaxFeatures(p);
+        
+    tree.fMaxFeatures := m; 
+    tree.Fit(Xb, yb);
+    fTrees[t] := tree;
+  end;
+
+  fFitted := true;
+  Result := Self;
+end;
+
+function RandomForestRegressor.Predict(X: Matrix): Vector;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  var n := X.Rows;
+  var resultVec := new Vector(n);
+
+  for var t := 0 to fTrees.Length - 1 do
+  begin
+    var pred := fTrees[t].Predict(X);
+    for var i := 0 to n - 1 do
+      resultVec[i] += pred[i];
+  end;
+
+  for var i := 0 to n - 1 do
+    resultVec[i] /= fTrees.Length;
+
+  Result := resultVec;
+end;
+
+function RandomForestRegressor.Clone: IModel;
+begin
+  var rf := new RandomForestRegressor(
+    fNTrees,
+    fMaxDepth,
+    fMinSamplesSplit,
+    fMinSamplesLeaf
+  );
+
+  rf.fFitted := fFitted;
+
+  SetLength(rf.fTrees, fTrees.Length);
+  for var i := 0 to fTrees.Length - 1 do
+    rf.fTrees[i] := DecisionTreeRegressor(fTrees[i].Clone);
+
+  Result := rf;
+end;
+
+function RandomForestRegressor.FeatureImportances: Vector;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  var p := fTrees[0].FeatureImportances.Length;
+  var resultVec := new Vector(p);
+
+  for var t := 0 to fTrees.Length - 1 do
+    resultVec += fTrees[t].FeatureImportances;
+
+  resultVec *= 1.0 / fTrees.Length;
+
+  Result := resultVec;
+end;
+
+//-----------------------------
+//     RandomForestClassifier 
+//-----------------------------
+constructor RandomForestClassifier.Create(nTrees: integer; 
+  maxDepth: integer; minSamplesSplit: integer; minSamplesLeaf: integer;
+  maxFeaturesMode: TMaxFeaturesMode);
+begin
+  inherited Create(nTrees,maxDepth,minSamplesSplit,minSamplesLeaf,maxFeaturesMode);
+end;
+
+function RandomForestClassifier.Fit(X: Matrix; y: Vector): IModel;
+begin
+  if X.Rows <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.Rows, y.Length);
+
+  if X.Rows = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
+  SetLength(fTrees, fNTrees);
+
+  var p := X.Cols;
+
+  for var t := 0 to fNTrees-1 do
+  begin
+    var Xb: Matrix;
+    var yb: Vector;
+    
+    BootstrapSample(X, y, Xb, yb);
+
+    var tree := new DecisionTreeClassifier(
+      fMaxDepth,
+      fMinSamplesSplit,
+      fMinSamplesLeaf
+    );
+    
+    var m := ComputeMaxFeatures(p);
+    
+    // классический RF для классификации - Sqrt(p)
+    tree.fMaxFeatures := m; 
+
+    tree.Fit(Xb, yb);
+    fTrees[t] := tree;
+  end;
+
+  fFitted := true;
+  Result := Self;
+end;
+
+function RandomForestClassifier.Predict(X: Matrix): Vector;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  var n := X.Rows;
+  var p := X.Cols;
+  var resultVec := new Vector(n);
+
+  for var i := 0 to n-1 do
+  begin
+    var votes := new Dictionary<integer, integer>;
+
+    // сформировать вектор строки один раз
+    var row := new Vector(p);
+    for var j := 0 to p-1 do
+      row[j] := X[i,j];
+
+    for var t := 0 to fTrees.Length-1 do
+    begin
+      var cls := integer(fTrees[t].PredictOne(row));
+
+      if not votes.ContainsKey(cls) then
+        votes[cls] := 0;
+
+      votes[cls] += 1;
+    end;
+
+    var bestClass := 0;
+    var bestCount := -1;
+
+    foreach var kv in votes do
+      if kv.Value > bestCount then
+      begin
+        bestCount := kv.Value;
+        bestClass := kv.Key;
+      end;
+
+    resultVec[i] := bestClass;
+  end;
+
+  Result := resultVec;
+end;
+
+function RandomForestClassifier.Clone: IModel;
+begin
+  var rf := new RandomForestClassifier(
+    fNTrees,
+    fMaxDepth,
+    fMinSamplesSplit,
+    fMinSamplesLeaf
+  );
+
+  rf.fFitted := fFitted;
+
+  SetLength(rf.fTrees, fTrees.Length);
+
+  for var i := 0 to fTrees.Length-1 do
+    rf.fTrees[i] := DecisionTreeClassifier(fTrees[i].Clone);
+
+  Result := rf;
+end;
+
+function RandomForestClassifier.FeatureImportances: Vector;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  var p := fTrees[0].FeatureImportances.Length;
+  var resultVec := new Vector(p);
+
+  for var t := 0 to fTrees.Length - 1 do
+    resultVec += fTrees[t].FeatureImportances;
+
+  resultVec *= 1.0 / fTrees.Length;
+
+  Result := resultVec;
 end;
 
 

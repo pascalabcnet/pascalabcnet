@@ -43,6 +43,9 @@ type
   ElasticNet = MLModelsABC.ElasticNet;
   DecisionTreeClassifier = MLModelsABC.DecisionTreeClassifier;
   DecisionTreeRegressor = MLModelsABC.DecisionTreeRegressor;
+  RandomForestRegressor = MLModelsABC.RandomForestRegressor;
+  RandomForestClassifier = MLModelsABC.RandomForestClassifier;
+  TMaxFeaturesMode = MLModelsABC.TMaxFeaturesMode;
 
   MLException = MLExceptions.MLException;
   MLNotFittedException = MLExceptions.MLNotFittedException;
