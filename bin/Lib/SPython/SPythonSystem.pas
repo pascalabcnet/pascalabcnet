@@ -17,7 +17,7 @@ function input(): string;
 
 function input(s: string): string;
 
-///-
+///--
 type kwargs_gen<T> = class
       public !kwargs: Dictionary<string, T>
         := new Dictionary<string, T>();
@@ -550,8 +550,8 @@ function !CreateTuple<T1, T2, T3, T4, T5, T6, T7>(
 
 type 
     biginteger = PABCSystem.BigInteger;
-    tuple = System.Tuple;
-    !tuple1<T> = System.Tuple<T>;
+    // tuple = System.Tuple;
+    tuple<T> = System.Tuple<T>;
     !tuple2<T1, T2> = System.Tuple<T1, T2>;
     !tuple3<T1, T2, T3> = System.Tuple<T1, T2, T3>;
     !tuple4<T1, T2, T3, T4> = System.Tuple<T1, T2, T3, T4>;
@@ -559,6 +559,7 @@ type
     !tuple6<T1, T2, T3, T4, T5, T6> = System.Tuple<T1, T2, T3, T4, T5, T6>;
     !tuple7<T1, T2, T3, T4, T5, T6, T7> = System.Tuple<T1, T2, T3, T4, T5, T6, T7>;
     
+    ///--
     empty_list = class
     class function operator implicit<T>(x: empty_list): list<T>; 
     begin
@@ -566,6 +567,7 @@ type
     end;
     end;
     
+    ///--
     empty_set = class
     class function operator implicit<T>(x: empty_set): &set<T>; 
     begin
@@ -573,6 +575,7 @@ type
     end;
     end;
     
+    ///--
     empty_dict = class
     class function operator implicit<K, V>(x: empty_dict): dict<K, V>; 
     begin
@@ -776,7 +779,7 @@ function get_values<K, V>(dct: Dictionary<K, V>):= dct.values;
 
 // TUPLES BEGIN
 
-function !CreateTuple<T>(v: T): System.Tuple<T> := Tuple.Create(v);
+function !CreateTuple<T>(v: T): System.Tuple<T> := System.Tuple.Create(v);
 
 function !CreateTuple<T1, T2>(
     v1: T1; v2: T2
