@@ -277,6 +277,7 @@ type
     fFeatureImportances: Vector;
     fRandomSeed: integer;
     fMaxFeatures := 0;
+    fRowIndices: array of integer := nil;
   
     function BuildTree(X: Matrix; y: Vector; indices: array of integer; depth: integer): DecisionTreeNode;
   
@@ -292,7 +293,8 @@ type
     function LeafNode(value: real): DecisionTreeNode;
     procedure CopyBaseState(dest: DecisionTreeBase);
     function GetFeatureSubset(nFeatures: integer): array of integer; virtual;
-
+    
+    procedure SetRowIndices(rows: array of integer);
   public
     constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2; minSamplesLeaf: integer := 1);
   
@@ -431,6 +433,36 @@ type
     function Clone: IModel; override;
     
     function FeatureImportances: Vector; override;
+  end;
+  
+  GradientBoostingRegressor = class(IRegressor)
+  private
+    fNEstimators: integer;
+    fLearningRate: real;
+    fMaxDepth: integer;
+    fMinSamplesSplit: integer;
+    fMinSamplesLeaf: integer;
+    fSubsample: real;
+    fRandomSeed: integer;
+
+    fEstimators: List<DecisionTreeRegressor>;
+    fInitValue: real;
+    fFitted: boolean;
+    fFeatureCount: integer;
+
+  public
+    constructor Create(
+      nEstimators: integer := 100;
+      learningRate: real := 0.1;
+      maxDepth: integer := 3;
+      minSamplesSplit: integer := 2;
+      minSamplesLeaf: integer := 1;
+      subsample: real := 1.0;
+      randomSeed: integer := 42);
+
+    function Fit(X: Matrix; y: Vector): IModel;
+    function Predict(X: Matrix): Vector;
+    function Clone: IModel;
   end;
 
 {$endregion Models}
@@ -766,6 +798,23 @@ const
     'Неизвестный тип FeatureScore!!Unknown FeatureScore type';
   ER_SELECTKBEST_FIT_INVALID =
     'Для SelectKBest необходимо вызывать Fit(X, y)!!SelectKBest requires Fit(X, y)';
+  ER_FIT_NOT_CALLED =
+    'Необходимо вызвать Fit перед Predict!!Fit must be called before Predict';
+  ER_X_NULL =
+    'X не может быть nil!!X cannot be nil';
+  ER_Y_NULL =
+    'y не может быть nil!!y cannot be nil';
+  ER_XY_SIZE_MISMATCH =
+    'Размерности X и y не согласованы!!X and y size mismatch';
+  ER_FEATURE_COUNT_MISMATCH =
+    'Число признаков не совпадает!!Feature count mismatch';
+  ER_N_ESTIMATORS_NOT_POSITIVE =
+    'Параметр nEstimators должен быть > 0!!nEstimators must be > 0';
+  ER_LEARNING_RATE_NOT_POSITIVE =
+    'Параметр learningRate должен быть > 0!!learningRate must be > 0';
+  ER_SUBSAMPLE_OUT_OF_RANGE =
+    'Параметр subsample должен быть в диапазоне (0, 1]!!subsample must be in (0, 1]';  
+    
 {$endregion ErrConstants}  
   
 //-----------------------------
@@ -1473,6 +1522,14 @@ begin
   Result := subset;
 end;
 
+procedure DecisionTreeBase.SetRowIndices(rows: array of integer);
+begin
+  if Length(rows) = 0 then
+    ArgumentError('Row subset cannot be empty!!Row subset cannot be empty');
+
+  fRowIndices := Copy(rows);
+end;
+
 function DecisionTreeBase.FeatureImportances: Vector;
 begin
   Result := fFeatureImportances.Clone;
@@ -1979,6 +2036,8 @@ begin
   Result := MajorityClass(y, indices);
 end;
 
+// DecisionTreeRegressor
+
 constructor DecisionTreeRegressor.Create(maxDepth: integer; minSamplesSplit: integer; minSamplesLeaf: integer);
 begin
   inherited Create(maxDepth, minSamplesSplit, minSamplesLeaf);
@@ -2021,18 +2080,28 @@ begin
   
   fFeatureImportances := new Vector(X.Cols);
 
-  var indices := new integer[X.Rows];
-  for var i := 0 to X.Rows - 1 do
-    indices[i] := i;
+  var indices: array of integer;
+
+  // 🔹 Ключевое изменение
+  if fRowIndices = nil then
+  begin
+    SetLength(indices, X.Rows);
+    for var i := 0 to X.Rows - 1 do
+      indices[i] := i;
+  end
+  else
+    indices := fRowIndices;
 
   fRoot := BuildTree(X, y, indices, 0);
   
   var s := fFeatureImportances.Sum;
   if s > 0 then
-    for var i := 0 to fFeatureImportances.Length-1 do
+    for var i := 0 to fFeatureImportances.Length - 1 do
       fFeatureImportances[i] /= s;
   
   fFitted := true;
+  
+  fRowIndices := nil;
 
   Result := Self;
 end;
@@ -2076,6 +2145,7 @@ begin
 
   Result := m;
 end;
+
 
 //-----------------------------
 //      RandomForestBase 
@@ -2354,6 +2424,153 @@ begin
   Result := resultVec;
 end;
 
+//-----------------------------
+//  GradientBoostingRegressor 
+//-----------------------------
+constructor GradientBoostingRegressor.Create(
+  nEstimators: integer;
+  learningRate: real;
+  maxDepth: integer;
+  minSamplesSplit: integer;
+  minSamplesLeaf: integer;
+  subsample: real;
+  randomSeed: integer);
+begin
+  if nEstimators <= 0 then
+    ArgumentOutOfRangeError(ER_N_ESTIMATORS_NOT_POSITIVE);
+
+  if learningRate <= 0 then
+    ArgumentOutOfRangeError(ER_LEARNING_RATE_NOT_POSITIVE);
+
+  if (subsample <= 0) or (subsample > 1) then
+    ArgumentOutOfRangeError(ER_SUBSAMPLE_OUT_OF_RANGE);
+
+  fNEstimators := nEstimators;
+  fLearningRate := learningRate;
+  fMaxDepth := maxDepth;
+  fMinSamplesSplit := minSamplesSplit;
+  fMinSamplesLeaf := minSamplesLeaf;
+  fSubsample := subsample;
+  fRandomSeed := randomSeed;
+
+  fEstimators := new List<DecisionTreeRegressor>;
+  fFitted := false;
+end;
+
+function GradientBoostingRegressor.Fit(X: Matrix; y: Vector): IModel;
+begin
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if y = nil then
+    ArgumentNullError(ER_Y_NULL);
+
+  if X.Rows <> y.Length then
+    DimensionError(ER_XY_SIZE_MISMATCH);
+
+  if X.Rows = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
+  fEstimators.Clear;
+  fFeatureCount := X.Cols;
+
+  var n := y.Length;
+
+  // F0 = mean(y)
+  var sum := 0.0;
+  for var i := 0 to n - 1 do
+    sum += y[i];
+  fInitValue := sum / n;
+
+  var yPred := new Vector(n);
+  for var i := 0 to n - 1 do
+    yPred[i] := fInitValue;
+
+  Randomize(fRandomSeed);
+
+  for var m := 0 to fNEstimators - 1 do
+  begin
+    // residuals
+    var r := new Vector(n);
+    for var i := 0 to n - 1 do
+      r[i] := y[i] - yPred[i];
+
+    var tree := new DecisionTreeRegressor(
+      fMaxDepth,
+      fMinSamplesSplit,
+      fMinSamplesLeaf);
+
+    // subsample (без копирования X)
+    if fSubsample < 1.0 then
+    begin
+      var k := Round(n * fSubsample);
+      var indices := new integer[k];
+      for var i := 0 to k - 1 do
+        indices[i] := Random(n);
+
+      tree.SetRowIndices(indices);
+    end;
+
+    tree.Fit(X, r);
+    fEstimators.Add(tree);
+
+    // update prediction
+    var delta := tree.Predict(X);
+    for var i := 0 to n - 1 do
+      yPred[i] += fLearningRate * delta[i];
+  end;
+
+  fFitted := true;
+  Result := Self;
+end;
+
+function GradientBoostingRegressor.Predict(X: Matrix): Vector;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if X.Cols <> fFeatureCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH);
+
+  var n := X.Rows;
+  var yPred := new Vector(n);
+
+  for var i := 0 to n - 1 do
+    yPred[i] := fInitValue;
+
+  foreach var tree in fEstimators do
+  begin
+    var delta := tree.Predict(X);
+    for var i := 0 to n - 1 do
+      yPred[i] += fLearningRate * delta[i];
+  end;
+
+  Result := yPred;
+end;
+
+function GradientBoostingRegressor.Clone: IModel;
+begin
+  var copy := new GradientBoostingRegressor(
+    fNEstimators,
+    fLearningRate,
+    fMaxDepth,
+    fMinSamplesSplit,
+    fMinSamplesLeaf,
+    fSubsample,
+    fRandomSeed);
+
+  copy.fInitValue := fInitValue;
+  copy.fFeatureCount := fFeatureCount;
+  copy.fFitted := fFitted;
+
+  foreach var tree in fEstimators do
+    copy.fEstimators.Add(tree.Clone as DecisionTreeRegressor);
+
+  Result := copy;
+end;
 
 
 //-----------------------------

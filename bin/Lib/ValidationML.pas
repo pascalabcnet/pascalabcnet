@@ -2,7 +2,7 @@
 
 interface
 
-uses LinearAlgebraML, MLModelsABC;
+uses LinearAlgebraML, MLCoreABC;
 
 type
   Validation = static class
