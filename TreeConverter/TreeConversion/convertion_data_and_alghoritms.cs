@@ -3083,7 +3083,7 @@ namespace PascalABCCompiler.TreeConverter
                     return AddError<function_node>(err_out);
                 return list[0];
             }
-            else
+            else // здесь логика именованных аргументов
             {
                 var indexOfFirstNamedArgumentSem = indexOfFirstNamedArgument + params_inc;
 

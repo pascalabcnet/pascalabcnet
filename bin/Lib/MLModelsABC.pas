@@ -495,6 +495,75 @@ type
     property ValLossHistory: List<real> read fValLossHistory;
     property BestIteration: integer read fBestIteration;
   end;
+  
+  TGBCLoss = (LogLoss);
+  
+  type
+  GradientBoostingClassifier = class(IProbabilisticClassifier)
+  private
+    // hyperparams
+    fNEstimators: integer;
+    fLearningRate: real;
+    fMaxDepth: integer;
+    fMinSamplesSplit: integer;
+    fMinSamplesLeaf: integer;
+    fSubsample: real;
+    fRandomSeed: integer;
+    fEarlyStoppingPatience: integer;
+
+    // fitted state
+    fFitted: boolean;
+    fFeatureCount: integer;
+
+    fClassCount: integer;
+    fClasses: array of integer;          // реальные метки классов (unique)
+    fClassIndex: Dictionary<integer,integer>; // label -> 0..K-1
+
+    // [m][k] дерево для класса k на итерации m
+    fEstimators: List<array of DecisionTreeRegressor>;
+
+    // init logits (как минимум нули; позже можно log-prior)
+    fInitLogits: array of real; // длины K
+
+    // diagnostics
+    fTrainLossHistory: List<real>;
+    fValLossHistory: List<real>;
+    fBestIteration: integer;
+    fBestValLoss: real;
+
+  private
+    function FitInternal(XTrain: Matrix; yTrain: Vector; XVal: Matrix; yVal: Vector; useValidation: boolean): IModel;
+
+    procedure BuildClassMapping(y: Vector);
+    function EncodeLabels(y: Vector): array of integer;
+
+    procedure SoftmaxRow(var logits: array of real; var probs: array of real);
+    procedure SoftmaxMatrix(logits: Matrix; probs: Matrix);
+
+    function ComputeLogLoss(yEncoded: array of integer; probs: Matrix): real;
+  public
+    constructor Create(
+      nEstimators: integer := 200;
+      learningRate: real := 0.05;
+      maxDepth: integer := 3;
+      minSamplesSplit: integer := 2;
+      minSamplesLeaf: integer := 1;
+      subsample: real := 1.0;
+      randomSeed: integer := 42;
+      earlyStoppingPatience: integer := 20);
+
+    function Fit(X: Matrix; y: Vector): IModel;
+    function FitWithValidation(XTrain: Matrix; yTrain: Vector; XVal: Matrix; yVal: Vector): IModel;
+
+    function Predict(X: Matrix): Vector;
+    function PredictProba(X: Matrix): Matrix;
+
+    function Clone: IModel;
+
+    property TrainLossHistory: List<real> read fTrainLossHistory;
+    property ValLossHistory: List<real> read fValLossHistory;
+    property BestIteration: integer read fBestIteration;
+  end;
 
 {$endregion Models}
 
@@ -844,7 +913,18 @@ const
   ER_LEARNING_RATE_NOT_POSITIVE =
     'Параметр learningRate должен быть > 0!!learningRate must be > 0';
   ER_SUBSAMPLE_OUT_OF_RANGE =
-    'Параметр subsample должен быть в диапазоне (0, 1]!!subsample must be in (0, 1]';  
+    'Параметр subsample должен быть в диапазоне (0, 1]!!subsample must be in (0, 1]'; 
+  ER_LABELS_NOT_INTEGER =
+    'Метки классов должны быть целыми!!Class labels must be integers'; 
+  ER_N_ESTIMATORS_INVALID =
+    'nEstimators должен быть > 0!!nEstimators must be > 0';
+  ER_LEARNING_RATE_INVALID =
+    'learningRate должен быть > 0!!learningRate must be > 0';
+  ER_MAX_DEPTH_INVALID =
+    'maxDepth должен быть > 0!!maxDepth must be > 0';
+  ER_SUBSAMPLE_INVALID =
+    'subsample должен быть > 0!!subsample must be > 0';    
+    
     
 {$endregion ErrConstants}  
   
@@ -1242,7 +1322,21 @@ begin
   var p := X.ColCount;
 
   // --- internal encoding
-  var unique := y.data.Select(v -> integer(v)).Distinct.ToArray;
+  var classes := new HashSet<integer>;
+  
+  for var i := 0 to y.Length - 1 do
+  begin
+    var r := y[i];
+    var ir := Round(r);
+  
+    if Abs(r - ir) > 1e-12 then
+      ArgumentError(ER_LABELS_NOT_INTEGER);
+  
+    classes.Add(ir);
+  end;
+  
+  var unique := classes.ToArray;
+  &Array.Sort(unique);
 
   fClassCount := unique.Length;
 
@@ -1255,18 +1349,27 @@ begin
     fIndexToClass[i] := unique[i];
   end;
 
+  // --- encode labels
   var yEncoded := new Vector(m);
+  
   for var i := 0 to m - 1 do
-    yEncoded[i] := fClassToIndex[integer(y[i])];
-
+  begin
+    var ir := Round(y[i]);          // безопасно после проверки
+    yEncoded[i] := fClassToIndex[ir];
+  end;
+  
   // --- init
   fW := new Matrix(p, fClassCount);
   fIntercept := new Vector(fClassCount);
-
+  
   // --- one-hot
   var YoneHot := new Matrix(m, fClassCount);
+  
   for var i := 0 to m - 1 do
-    YoneHot[i, integer(yEncoded[i])] := 1.0;
+  begin
+    var cls := Round(yEncoded[i]);  // индекс класса 0..K-1
+    YoneHot[i, cls] := 1.0;
+  end;
 
   for var epoch := 1 to fEpochs do
   begin
@@ -1311,23 +1414,6 @@ begin
   fFitted := true;
   Result := Self;
 end;
-
-{function LogisticRegression.PredictProba(X: Matrix): Vector;
-begin
-  if not fFitted then
-    NotFittedError(ER_FIT_NOT_CALLED);
-
-  var P := PredictProbaMatrix(X);
-
-  var m := P.RowCount;
-  Result := new Vector(m);
-
-  for var i := 0 to m - 1 do
-  begin
-    var k := P.RowArgMax(i);
-    Result[i] := P[i, k];
-  end;
-end;}
 
 function LogisticRegression.PredictProba(X: Matrix): Matrix;
 begin
@@ -1971,31 +2057,39 @@ begin
   
   fFeatureImportances := new Vector(X.Cols);
 
-  // --- 1. Найти уникальные классы
-  var unique := new HashSet<integer>;
-
+  // --- 1. Найти уникальные классы (с проверкой целочисленности)
+  var classes := new HashSet<integer>;
+  
   for var i := 0 to y.Length - 1 do
-    unique.Add(integer(y[i]));
-
-  fClassCount := unique.Count;
-
-  // --- 2. Создать массив index -> original class
-  SetLength(fIndexToClass, fClassCount);
-  fClassToIndex := new Dictionary<integer, integer>;
-
-  var idx := 0;
-  foreach var c in unique do
   begin
-    fIndexToClass[idx] := c;
-    fClassToIndex[c] := idx;
-    idx += 1;
+    var r := y[i];
+    var ir := Round(r);
+  
+    if Abs(r - ir) > 1e-12 then
+      ArgumentError(ER_LABELS_NOT_INTEGER);
+  
+    classes.Add(ir);
   end;
-
+  
+  fClassCount := classes.Count;
+  
+  // --- 2. Отсортировать классы для детерминизма
+  fIndexToClass := classes.ToArray;
+  &Array.Sort(fIndexToClass);
+  
+  fClassToIndex := new Dictionary<integer, integer>;
+  
+  for var idx := 0 to fClassCount - 1 do
+    fClassToIndex[fIndexToClass[idx]] := idx;
+  
   // --- 3. Создать закодированный y
   var yEncoded := new Vector(y.Length);
-
+  
   for var i := 0 to y.Length - 1 do
-    yEncoded[i] := fClassToIndex[integer(y[i])];
+  begin
+    var ir := Round(y[i]); // безопасно после проверки
+    yEncoded[i] := fClassToIndex[ir];
+  end;
 
   // --- 4. Создать массив индексов строк
   var indices := new integer[X.Rows];
@@ -2768,6 +2862,500 @@ begin
 
   Result := copy;
 end;
+
+//-----------------------------
+// GradientBoostingClassifier 
+//-----------------------------
+
+function GradientBoostingClassifier.FitInternal(
+  XTrain: Matrix; yTrain: Vector;
+  XVal: Matrix; yVal: Vector;
+  useValidation: boolean): IModel;
+begin
+  // --- checks
+  if XTrain = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if yTrain = nil then
+    ArgumentNullError(ER_Y_NULL);
+
+  if XTrain.Rows <> yTrain.Length then
+    DimensionError(ER_XY_SIZE_MISMATCH);
+
+  if XTrain.Rows = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
+  if useValidation then
+  begin
+    if XVal = nil then
+      ArgumentNullError(ER_X_NULL);
+
+    if yVal = nil then
+      ArgumentNullError(ER_Y_NULL);
+
+    if XVal.Rows <> yVal.Length then
+      DimensionError(ER_XY_SIZE_MISMATCH);
+
+    if XVal.Cols <> XTrain.Cols then
+      DimensionError(ER_FEATURE_COUNT_MISMATCH);
+  end;
+
+  // --- reset state
+  fEstimators.Clear;
+  fTrainLossHistory.Clear;
+  fValLossHistory.Clear;
+
+  fFeatureCount := XTrain.Cols;
+  fBestIteration := -1;
+  fBestValLoss := real.PositiveInfinity;
+  fFitted := false;
+
+  // --- mapping
+  BuildClassMapping(yTrain);
+  var yEncoded := EncodeLabels(yTrain);
+
+  var nTrain := XTrain.Rows;
+  var classCount := fClassCount;
+  
+  // --- compute class priors
+  fInitLogits := new real[classCount];
+  
+  var counts := new integer[classCount];
+  
+  for var i := 0 to nTrain - 1 do
+    counts[yEncoded[i]] += 1;
+  
+  for var cls := 0 to classCount - 1 do
+  begin
+    var pi := counts[cls] / nTrain;
+  
+    if pi <= 0 then
+      fInitLogits[cls] := -20.0   // защита от log(0)
+    else
+      fInitLogits[cls] := Ln(pi);
+  end;
+  
+  // --- init logits
+  var logitsTrain := new Matrix(nTrain, classCount);
+  
+  for var i := 0 to nTrain - 1 do
+    for var cls := 0 to classCount - 1 do
+      logitsTrain[i, cls] := fInitLogits[cls];
+    
+  for var i := 0 to nTrain - 1 do
+    for var cls := 0 to classCount - 1 do
+      logitsTrain[i, cls] := fInitLogits[cls];
+
+  var logitsVal: Matrix := nil;
+  var yValEncoded: array of integer;
+
+  if useValidation then
+  begin
+    logitsVal := new Matrix(XVal.Rows, classCount);
+    yValEncoded := EncodeLabels(yVal);
+  
+    // --- инициализация log-prior
+    for var i := 0 to XVal.Rows - 1 do
+      for var cls := 0 to classCount - 1 do
+        logitsVal[i, cls] := fInitLogits[cls];
+  end;
+
+  // --- RNG
+  Randomize(fRandomSeed);
+
+  var noImprove := 0;
+
+  // --- boosting loop
+  for var iter := 0 to fNEstimators - 1 do
+  begin
+    // --- compute probabilities (train)
+    var probsTrain := new Matrix(nTrain, classCount);
+    SoftmaxMatrix(logitsTrain, probsTrain);
+
+    // --- compute residuals
+    var residuals := new Matrix(nTrain, classCount);
+
+    for var i := 0 to nTrain - 1 do
+      for var cls := 0 to classCount - 1 do
+      begin
+        var yik := 0.0;
+        if yEncoded[i] = cls then
+          yik := 1.0;
+
+        residuals[i, cls] := yik - probsTrain[i, cls];
+      end;
+
+    // --- train trees
+    var trees := new DecisionTreeRegressor[classCount];
+
+    for var cls := 0 to classCount - 1 do
+    begin
+      var rvec := new Vector(nTrain);
+      for var i := 0 to nTrain - 1 do
+        rvec[i] := residuals[i, cls];
+
+      var tree := new DecisionTreeRegressor(
+        fMaxDepth,
+        fMinSamplesSplit,
+        fMinSamplesLeaf
+      );
+
+      tree.Fit(XTrain, rvec);
+      trees[cls] := tree;
+
+      var deltaTrain := tree.Predict(XTrain);
+
+      for var i := 0 to nTrain - 1 do
+        logitsTrain[i, cls] += fLearningRate * deltaTrain[i];
+
+      if useValidation then
+      begin
+        var deltaVal := tree.Predict(XVal);
+        for var i := 0 to XVal.Rows - 1 do
+          logitsVal[i, cls] += fLearningRate * deltaVal[i];
+      end;
+    end;
+
+    fEstimators.Add(trees);
+
+    // --- compute loss
+    SoftmaxMatrix(logitsTrain, probsTrain);
+    var trainLoss := ComputeLogLoss(yEncoded, probsTrain);
+    fTrainLossHistory.Add(trainLoss);
+
+    var scoreLoss := trainLoss;
+
+    if useValidation then
+    begin
+      var probsVal := new Matrix(XVal.Rows, classCount);
+      SoftmaxMatrix(logitsVal, probsVal);
+
+      var valLoss := ComputeLogLoss(yValEncoded, probsVal);
+      fValLossHistory.Add(valLoss);
+
+      scoreLoss := valLoss;
+    end;
+
+    // --- early stopping
+    if fEarlyStoppingPatience > 0 then
+    begin
+      if fBestValLoss - scoreLoss > MinImprovement then
+      begin
+        fBestValLoss := scoreLoss;
+        fBestIteration := iter;
+        noImprove := 0;
+      end
+      else
+      begin
+        noImprove += 1;
+        if noImprove >= fEarlyStoppingPatience then
+          break;
+      end;
+    end;
+  end;
+
+  // --- cut trees after best iteration
+  if (fEarlyStoppingPatience > 0) and (fBestIteration >= 0) then
+  begin
+    var keep := fBestIteration + 1;
+    if fEstimators.Count > keep then
+      fEstimators.RemoveRange(keep, fEstimators.Count - keep);
+  end;
+
+  fFitted := true;
+  Result := Self;
+end;
+
+procedure GradientBoostingClassifier.BuildClassMapping(y: Vector);
+begin
+  var classes := new HashSet<integer>;
+
+  for var i := 0 to y.Length - 1 do
+  begin
+    var r := y[i];
+    var ir := Round(r);
+
+    if Abs(r - ir) > 1e-12 then
+      ArgumentError(ER_LABELS_NOT_INTEGER);
+
+    classes.Add(ir);
+  end;
+
+  fClasses := classes.ToArray;
+  &Array.Sort(fClasses);
+
+  fClassCount := fClasses.Length;
+
+  fClassIndex := new Dictionary<integer, integer>;
+  for var cls := 0 to fClassCount - 1 do
+    fClassIndex[fClasses[cls]] := cls;
+end;
+
+function GradientBoostingClassifier.EncodeLabels(y: Vector): array of integer;
+begin
+  var n := y.Length;
+  Result := new integer[n];
+
+  for var i := 0 to n - 1 do
+  begin
+    var ir := Round(y[i]);
+    Result[i] := fClassIndex[ir];
+  end;
+end;
+
+procedure GradientBoostingClassifier.SoftmaxRow(
+  var logits: array of real;
+  var probs: array of real);
+begin
+  var classCount := Length(logits);
+
+  var maxLogit := logits[0];
+  for var cls := 1 to classCount - 1 do
+    if logits[cls] > maxLogit then
+      maxLogit := logits[cls];
+
+  var sumExp := 0.0;
+
+  for var cls := 0 to classCount - 1 do
+  begin
+    var e := Exp(logits[cls] - maxLogit);
+    probs[cls] := e;
+    sumExp += e;
+  end;
+
+  for var cls := 0 to classCount - 1 do
+    probs[cls] /= sumExp;
+end;
+
+procedure GradientBoostingClassifier.SoftmaxMatrix(
+  logits: Matrix;
+  probs: Matrix);
+begin
+  var nSamples := logits.Rows;
+  var classCount := logits.Cols;
+
+  for var i := 0 to nSamples - 1 do
+  begin
+    var rowLogits := new real[classCount];
+    var rowProbs  := new real[classCount];
+
+    for var cls := 0 to classCount - 1 do
+      rowLogits[cls] := logits[i, cls];
+
+    SoftmaxRow(rowLogits, rowProbs);
+
+    for var cls := 0 to classCount - 1 do
+      probs[i, cls] := rowProbs[cls];
+  end;
+end;
+
+function GradientBoostingClassifier.ComputeLogLoss(
+  yEncoded: array of integer;
+  probs: Matrix): real;
+begin
+  var n := Length(yEncoded);
+  var eps := 1e-15;
+
+  var loss := 0.0;
+
+  for var i := 0 to n - 1 do
+  begin
+    var cls := yEncoded[i];
+    var p := probs[i, cls];
+
+    if p < eps then
+      p := eps;
+
+    loss -= Ln(p);
+  end;
+
+  Result := loss / n;
+end;
+
+constructor GradientBoostingClassifier.Create(
+  nEstimators: integer;
+  learningRate: real;
+  maxDepth: integer;
+  minSamplesSplit: integer;
+  minSamplesLeaf: integer;
+  subsample: real;
+  randomSeed: integer;
+  earlyStoppingPatience: integer);
+begin
+  if nEstimators <= 0 then
+    ArgumentError(ER_N_ESTIMATORS_INVALID);
+
+  if learningRate <= 0 then
+    ArgumentError(ER_LEARNING_RATE_INVALID);
+
+  if maxDepth <= 0 then
+    ArgumentError(ER_MAX_DEPTH_INVALID);
+
+  if subsample <= 0 then
+    ArgumentError(ER_SUBSAMPLE_INVALID);
+
+  fNEstimators := nEstimators;
+  fLearningRate := learningRate;
+  fMaxDepth := maxDepth;
+  fMinSamplesSplit := minSamplesSplit;
+  fMinSamplesLeaf := minSamplesLeaf;
+  fSubsample := subsample;
+  fRandomSeed := randomSeed;
+  fEarlyStoppingPatience := earlyStoppingPatience;
+
+  fEstimators := new List<array of DecisionTreeRegressor>;
+  fTrainLossHistory := new List<real>;
+  fValLossHistory := new List<real>;
+
+  fFitted := false;
+  fFeatureCount := 0;
+  fClassCount := 0;
+
+  fBestIteration := -1;
+  fBestValLoss := real.PositiveInfinity;
+end;
+
+
+function GradientBoostingClassifier.PredictProba(X: Matrix): Matrix;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  var nSamples := X.Rows;
+  var classCount := fClassCount;
+
+  var logits := new Matrix(nSamples, classCount);
+
+  // --- накопление логитов от всех итераций
+  foreach var trees in fEstimators do
+  begin
+    for var cls := 0 to classCount - 1 do
+    begin
+      var delta := trees[cls].Predict(X);
+
+      for var i := 0 to nSamples - 1 do
+        logits[i, cls] += fLearningRate * delta[i];
+    end;
+  end;
+
+  // --- softmax
+  var probs := new Matrix(nSamples, classCount);
+
+  for var i := 0 to nSamples - 1 do
+  begin
+    var rowLogits := new real[classCount];
+    var rowProbs  := new real[classCount];
+
+    for var cls := 0 to classCount - 1 do
+      rowLogits[cls] := logits[i, cls];
+
+    SoftmaxRow(rowLogits, rowProbs);
+
+    for var cls := 0 to classCount - 1 do
+      probs[i, cls] := rowProbs[cls];
+  end;
+
+  Result := probs;
+end;
+
+function GradientBoostingClassifier.Clone: IModel;
+begin
+  var model := new GradientBoostingClassifier(
+    fNEstimators,
+    fLearningRate,
+    fMaxDepth,
+    fMinSamplesSplit,
+    fMinSamplesLeaf,
+    fSubsample,
+    fRandomSeed,
+    fEarlyStoppingPatience
+  );
+
+  // --- fitted state
+  model.fFitted := fFitted;
+  model.fFeatureCount := fFeatureCount;
+  model.fClassCount := fClassCount;
+
+  // --- classes
+  if fClasses <> nil then
+  begin
+    SetLength(model.fClasses, Length(fClasses));
+    for var i := 0 to Length(fClasses) - 1 do
+      model.fClasses[i] := fClasses[i];
+  end;
+
+  if fClassIndex <> nil then
+  begin
+    model.fClassIndex := new Dictionary<integer, integer>;
+    foreach var kv in fClassIndex do
+      model.fClassIndex.Add(kv.Key, kv.Value);
+  end;
+
+  // --- estimators (deep copy)
+  foreach var trees in fEstimators do
+  begin
+    var newTrees := new DecisionTreeRegressor[Length(trees)];
+
+    for var cls := 0 to Length(trees) - 1 do
+      newTrees[cls] := trees[cls].Clone as DecisionTreeRegressor;
+
+    model.fEstimators.Add(newTrees);
+  end;
+
+  // --- history
+  foreach var v in fTrainLossHistory do
+    model.fTrainLossHistory.Add(v);
+
+  foreach var v in fValLossHistory do
+    model.fValLossHistory.Add(v);
+
+  model.fBestIteration := fBestIteration;
+  model.fBestValLoss := fBestValLoss;
+
+  Result := model;
+end;
+
+function GradientBoostingClassifier.Fit(X: Matrix; y: Vector): IModel;
+begin
+  Result := FitInternal(X, y, nil, nil, false);
+end;
+
+function GradientBoostingClassifier.FitWithValidation(
+  XTrain: Matrix; yTrain: Vector;
+  XVal: Matrix; yVal: Vector): IModel;
+begin
+  Result := FitInternal(XTrain, yTrain, XVal, yVal, true);
+end;
+
+function GradientBoostingClassifier.Predict(X: Matrix): Vector;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  var probs := PredictProba(X);
+
+  var nSamples := X.Rows;
+  var classCount := fClassCount;
+
+  Result := new Vector(nSamples);
+
+  for var i := 0 to nSamples - 1 do
+  begin
+    var bestClassIndex := 0;
+    var bestValue := probs[i, 0];
+
+    for var cls := 1 to classCount - 1 do
+      if probs[i, cls] > bestValue then
+      begin
+        bestValue := probs[i, cls];
+        bestClassIndex := cls;
+      end;
+
+    // возвращаем оригинальную метку
+    Result[i] := fClasses[bestClassIndex];
+  end;
+end;
+
 
 
 //-----------------------------

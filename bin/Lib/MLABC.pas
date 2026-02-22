@@ -47,6 +47,7 @@ type
   RandomForestRegressor = MLModelsABC.RandomForestRegressor;
   RandomForestClassifier = MLModelsABC.RandomForestClassifier;
   GradientBoostingRegressor = MLModelsABC.GradientBoostingRegressor;
+  GradientBoostingClassifier = MLModelsABC.GradientBoostingClassifier;
   
   TGBLoss = MLModelsABC.TGBLoss;
   TMaxFeaturesMode = MLModelsABC.TMaxFeaturesMode;
