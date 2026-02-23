@@ -20111,7 +20111,9 @@ namespace PascalABCCompiler.TreeConverter
 
                 else
                 {
-                    fnn = convertion_data_and_alghoritms.select_function(exprs, sil, loc);
+                    List<SyntaxTree.expression> syntax_nodes_parameters = lambdas_info?.Item2;
+                    // SSM 23/02/26 - передаю в select_function чтобы можно было обработать именованные аргументы
+                    fnn = convertion_data_and_alghoritms.select_function(exprs, sil, loc, syntax_nodes_parameters);
                 }
             }
             catch (NoFunctionWithSameParametresNum e)

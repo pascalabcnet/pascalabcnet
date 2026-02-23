@@ -494,6 +494,9 @@ type
     property TrainLossHistory: List<real> read fTrainLossHistory;
     property ValLossHistory: List<real> read fValLossHistory;
     property BestIteration: integer read fBestIteration;
+    
+    function PredictStage(X: Matrix; m: integer): Vector;
+    function StagedPredict(X: Matrix): sequence of Vector;
   end;
   
   TGBCLoss = (LogLoss);
@@ -2842,6 +2845,53 @@ begin
   Result := yPred;
 end;
 
+function GradientBoostingRegressor.PredictStage(X: Matrix; m: integer): Vector;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if X.Cols <> fFeatureCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH);
+
+  var totalTrees := fEstimators.Count;
+
+  if (m < 0) or (m > totalTrees) then
+    ArgumentOutOfRangeError(
+      'Stage m must be in range [0, {0}]!!Stage m must be in range [0, {0}]',
+      totalTrees
+    );
+
+  var n := X.Rows;
+  var yPred := new Vector(n);
+
+  // --- F0
+  for var i := 0 to n - 1 do
+    yPred[i] := fInitValue;  // mean(y)
+
+  // --- add first m trees
+  for var t := 0 to m - 1 do
+  begin
+    var delta := fEstimators[t].Predict(X);
+
+    for var i := 0 to n - 1 do
+      yPred[i] += fLearningRate * delta[i];
+  end;
+
+  Result := yPred;
+end;
+
+function GradientBoostingRegressor.StagedPredict(X: Matrix): sequence of Vector;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  for var m := 1 to fEstimators.Count do
+    yield PredictStage(X, m);
+end;
+
 function GradientBoostingRegressor.Clone: IModel;
 begin
   var copy := new GradientBoostingRegressor(
@@ -2941,10 +2991,6 @@ begin
   for var i := 0 to nTrain - 1 do
     for var cls := 0 to classCount - 1 do
       logitsTrain[i, cls] := fInitLogits[cls];
-    
-  for var i := 0 to nTrain - 1 do
-    for var cls := 0 to classCount - 1 do
-      logitsTrain[i, cls] := fInitLogits[cls];
 
   var logitsVal: Matrix := nil;
   var yValEncoded: array of integer;
@@ -2984,6 +3030,22 @@ begin
 
         residuals[i, cls] := yik - probsTrain[i, cls];
       end;
+      
+    // добавление
+    // --- subsample rows
+    var useSubsample := fSubsample < 1.0;
+    var subIndices: array of integer := nil;
+    
+    if useSubsample then
+    begin
+      var subCount := Round(fSubsample * nTrain);
+      if subCount < 1 then
+        subCount := 1;
+    
+      SetLength(subIndices, subCount);
+      for var i := 0 to subCount - 1 do
+        subIndices[i] := Random(nTrain);
+    end;
 
     // --- train trees
     var trees := new DecisionTreeRegressor[classCount];
@@ -2999,6 +3061,10 @@ begin
         fMinSamplesSplit,
         fMinSamplesLeaf
       );
+      
+      // добавление. Тренировка по идее будет происходить по строкам в subIndices
+      if useSubsample then
+        tree.SetRowIndices(subIndices);
 
       tree.Fit(XTrain, rvec);
       trees[cls] := tree;
