@@ -340,6 +340,8 @@ type
 //============================  
   DecisionTreeRegressor = class(DecisionTreeBase, IRegressor)
   private
+    fLeafL2: real;
+  
     function PredictOne(x: Vector): real;
   
   protected
@@ -349,7 +351,8 @@ type
     function IsPure(y: Vector; indices: array of integer): boolean; override;
     
   public
-    constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2; minSamplesLeaf: integer := 1);
+    constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2; minSamplesLeaf: integer := 1;
+      leafL2: real := 0.0);
     
     function Fit(X: Matrix; y: Vector): IModel; override;
     function Predict(X: Matrix): Vector; override;
@@ -434,8 +437,36 @@ type
     
     function FeatureImportances: Vector; override;
   end;
+
+{ Gradient Boosting v1.0 — Freeze Checklist
+
+  GradientBoostingRegressor
+✔ SquaredError
+✔ Huber
+✔ Quantile
+✔ L2 regularization в листьях
+✔ Subsample (stochastic boosting)
+✔ Validation early stopping
+✔ OOB early stopping
+✔ Train / Val / OOB history
+✔ Staged prediction
+✔ Feature importance
+✔ Clone
+
+  GradientBoostingClassifier
+✔ Multiclass softmax
+✔ Корректное class mapping
+✔ LogLoss
+✔ Subsample
+✔ Validation early stopping
+✔ OOB early stopping
+✔ History
+✔ Staged prediction
+✔ Feature importance
+✔ Clone
+}
   
-  TGBLoss = (SquaredError, Huber);
+  TGBLoss = (SquaredError, Huber, Quantile);
   
   GradientBoostingRegressor = class(IRegressor)
   private
@@ -464,12 +495,25 @@ type
     fValLossHistory: List<real>;
     fBestValLoss: real;
     
+    fFeatureImportances: Vector;
+    
+    fQuantileAlpha: real;
+    
+    fLeafL2: real;
+    fUseOOBEarlyStopping: boolean;
+    
+    fOOBLossHistory: List<real>;
+    
     function ComputeTrainLoss(y, yPred: Vector): real;
     procedure ComputePseudoResiduals(y, yPred: Vector; r: Vector);
     
     function FitInternal(XTrain: Matrix; yTrain: Vector;
       XVal: Matrix; yVal: Vector; useValidation: boolean): IModel;
-    
+      
+    function ComputeQuantile(y: Vector; alpha: real): real;
+
+    function ComputeTrainLossMasked(yTrue, yPred: Vector; mask: array of boolean): real;
+  
   public
     constructor Create(
       nEstimators: integer := 100;
@@ -481,7 +525,10 @@ type
       randomSeed: integer := 42;
       loss: TGBLoss := TGBLoss.SquaredError;
       huberDelta: real := 1.0;
-      earlyStoppingPatience: integer := 0      
+      earlyStoppingPatience: integer := 0;
+      quantileAlpha: real := 0.5;
+      leafL2: real := 0.0;
+      useOOBEarlyStopping: boolean := false
       );
 
     function Fit(X: Matrix; y: Vector): IModel;
@@ -494,14 +541,18 @@ type
     property TrainLossHistory: List<real> read fTrainLossHistory;
     property ValLossHistory: List<real> read fValLossHistory;
     property BestIteration: integer read fBestIteration;
+    property OOBLossHistory: List<real> read fOOBLossHistory;
     
     function PredictStage(X: Matrix; m: integer): Vector;
     function StagedPredict(X: Matrix): sequence of Vector;
+    
+    function TreeCount: integer := fEstimators.Count;
+    
+    function FeatureImportances: Vector;
   end;
-  
+
   TGBCLoss = (LogLoss);
   
-  type
   GradientBoostingClassifier = class(IProbabilisticClassifier)
   private
     // hyperparams
@@ -533,6 +584,10 @@ type
     fValLossHistory: List<real>;
     fBestIteration: integer;
     fBestValLoss: real;
+    
+    fFeatureImportances: Vector;
+    
+    fOOBLossHistory: List<real>;
 
   private
     function FitInternal(XTrain: Matrix; yTrain: Vector; XVal: Matrix; yVal: Vector; useValidation: boolean): IModel;
@@ -544,6 +599,10 @@ type
     procedure SoftmaxMatrix(logits: Matrix; probs: Matrix);
 
     function ComputeLogLoss(yEncoded: array of integer; probs: Matrix): real;
+    
+    function ComputeLogLossMasked(yEncoded: array of integer; logits: Matrix;
+      mask: array of boolean): real;
+  
   public
     constructor Create(
       nEstimators: integer := 200;
@@ -566,6 +625,14 @@ type
     property TrainLossHistory: List<real> read fTrainLossHistory;
     property ValLossHistory: List<real> read fValLossHistory;
     property BestIteration: integer read fBestIteration;
+    property OOBLossHistory: List<real> read fOOBLossHistory;
+    
+    function PredictStageProba(X: Matrix; m: integer): Matrix;
+    function PredictStage(X: Matrix; m: integer): Vector;
+    
+    function TreeCount: integer := fEstimators.Count;
+
+    function FeatureImportances: Vector;
   end;
 
 {$endregion Models}
@@ -2166,19 +2233,26 @@ end;
 
 // DecisionTreeRegressor
 
-constructor DecisionTreeRegressor.Create(maxDepth: integer; minSamplesSplit: integer; minSamplesLeaf: integer);
+constructor DecisionTreeRegressor.Create(maxDepth: integer; minSamplesSplit: integer; 
+  minSamplesLeaf: integer; leafL2: real);
 begin
   inherited Create(maxDepth, minSamplesSplit, minSamplesLeaf);
   fCriterion := new VarianceCriterion;
+  fLeafL2 := leafL2;
 end;
 
 function DecisionTreeRegressor.LeafValue(y: Vector; indices: array of integer): real;
 begin
   var sum := 0.0;
+  var n := indices.Length;
+
   foreach var i in indices do
     sum += y[i];
 
-  Result := sum / indices.Length;
+  if fLeafL2 > 0 then
+    Result := sum / (n + fLeafL2)
+  else
+    Result := sum / n;
 end;
 
 function DecisionTreeRegressor.FindBestSplit(X: Matrix; y: Vector; indices: array of integer): SplitResult; 
@@ -2565,7 +2639,10 @@ constructor GradientBoostingRegressor.Create(
   randomSeed: integer;
   loss: TGBLoss;
   huberDelta: real;
-  earlyStoppingPatience: integer);
+  earlyStoppingPatience: integer;
+  quantileAlpha: real;
+  leafL2: real;
+  useOOBEarlyStopping: boolean);
 begin
   if nEstimators <= 0 then
     ArgumentOutOfRangeError(ER_N_ESTIMATORS_NOT_POSITIVE);
@@ -2600,61 +2677,166 @@ begin
   
   fTrainLossHistory := new List<real>;
   fValLossHistory := new List<real>;
+  
+  fquantileAlpha := quantileAlpha;
+  
+  fLeafL2 := leafL2;
+  fUseOOBEarlyStopping := useOOBEarlyStopping;
+  
+  fOOBLossHistory := new List<real>;
 end;
 
 function GradientBoostingRegressor.ComputeTrainLoss(y, yPred: Vector): real;
 begin
   var n := y.Length;
-  var loss := 0.0;
+  var sum := 0.0;
 
-  if fLoss = TGBLoss.SquaredError then
-  begin
-    for var i := 0 to n - 1 do
-    begin
-      var d := y[i] - yPred[i];
-      loss += d * d;
-    end;
-    Result := loss / n;
-    exit;
+  case fLoss of
+
+    TGBLoss.SquaredError:
+      for var i := 0 to n - 1 do
+      begin
+        var e := y[i] - yPred[i];
+        sum += 0.5 * e * e;
+      end;
+
+    TGBLoss.Huber:
+      for var i := 0 to n - 1 do
+      begin
+        var e := y[i] - yPred[i];
+        var ae := Abs(e);
+
+        if ae <= fHuberDelta then
+          sum += 0.5 * e * e
+        else
+          sum += fHuberDelta * (ae - 0.5 * fHuberDelta);
+      end;
+
+    TGBLoss.Quantile:
+      for var i := 0 to n - 1 do
+      begin
+        var r := y[i] - yPred[i];
+
+        if r >= 0 then
+          sum += fQuantileAlpha * r
+        else
+          sum += (fQuantileAlpha - 1.0) * r;
+      end;
   end;
 
-  // Huber
-  var delta := fHuberDelta;
-  for var i := 0 to n - 1 do
-  begin
-    var d := y[i] - yPred[i];
-    var ad := Abs(d);
-    if ad <= delta then
-      loss += 0.5 * d * d
-    else
-      loss += delta * (ad - 0.5 * delta);
-  end;
-
-  Result := loss / n;
+  Result := sum / n;
 end;
 
-procedure GradientBoostingRegressor.ComputePseudoResiduals(y, yPred: Vector; r: Vector);
+procedure GradientBoostingRegressor.ComputePseudoResiduals(
+  y, yPred: Vector; r: Vector);
 begin
   var n := y.Length;
 
-  if fLoss = TGBLoss.SquaredError then
-  begin
-    for var i := 0 to n - 1 do
-      r[i] := y[i] - yPred[i];
-    exit;
+  case fLoss of
+
+    TGBLoss.SquaredError:
+      for var i := 0 to n - 1 do
+        r[i] := y[i] - yPred[i];
+
+    TGBLoss.Huber:
+      for var i := 0 to n - 1 do
+      begin
+        var e := y[i] - yPred[i];
+
+        if Abs(e) <= fHuberDelta then
+          r[i] := e
+        else
+          r[i] := fHuberDelta * Sign(e);
+      end;
+
+    TGBLoss.Quantile:
+      for var i := 0 to n - 1 do
+      begin
+        var diff := y[i] - yPred[i];
+
+        if diff > 0 then
+          r[i] := fQuantileAlpha
+        else
+          r[i] := fQuantileAlpha - 1.0;
+      end;
+
+  end;
+end;
+
+function GradientBoostingRegressor.ComputeQuantile(y: Vector; alpha: real): real;
+begin
+  var n := y.Length;
+
+  if (alpha <= 0) or (alpha >= 1) then
+    ArgumentOutOfRangeError(
+      'Quantile alpha must be in (0,1)!!Quantile alpha must be in (0,1)'
+    );
+
+  // копируем данные
+  var data := new real[n];
+  for var i := 0 to n - 1 do
+    data[i] := y[i];
+
+  // сортировка
+  &Array.Sort(data);
+
+  // индекс квантиля
+  var k := Floor(alpha * (n - 1));
+
+  Result := data[k];
+end;
+
+function GradientBoostingRegressor.ComputeTrainLossMasked(yTrue, yPred: Vector;
+  mask: array of boolean): real;
+begin
+  var n := yTrue.Length;
+  var sum := 0.0;
+  var count := 0;
+
+  case fLoss of
+
+    TGBLoss.SquaredError:
+      for var i := 0 to n - 1 do
+        if mask[i] then
+        begin
+          var e := yTrue[i] - yPred[i];
+          sum += 0.5 * e * e;
+          count += 1;
+        end;
+
+    TGBLoss.Huber:
+      for var i := 0 to n - 1 do
+        if mask[i] then
+        begin
+          var e := yTrue[i] - yPred[i];
+          var ae := Abs(e);
+
+          if ae <= fHuberDelta then
+            sum += 0.5 * e * e
+          else
+            sum += fHuberDelta * (ae - 0.5 * fHuberDelta);
+
+          count += 1;
+        end;
+
+    TGBLoss.Quantile:
+      for var i := 0 to n - 1 do
+        if mask[i] then
+        begin
+          var e := yTrue[i] - yPred[i];
+          if e > 0 then
+            sum += fQuantileAlpha * e
+          else
+            sum += (fQuantileAlpha - 1.0) * e;
+          count += 1;
+        end;
+
   end;
 
-  // Huber: псевдо-остатки = антиградиент
-  var delta := fHuberDelta;
-  for var i := 0 to n - 1 do
-  begin
-    var d := y[i] - yPred[i];
-    var ad := Abs(d);
-    if ad <= delta then
-      r[i] := d
-    else
-      r[i] := delta * Sign(d);
-  end;
+  if count = 0 then
+    exit(real.PositiveInfinity);
+
+  Result := sum / count;
 end;
 
 const MinImprovement = 1e-12;
@@ -2699,6 +2881,7 @@ begin
   end;
 
   // --- init state ---
+  fOOBLossHistory.Clear;
   fEstimators.Clear;
   fFeatureCount := XTrain.Cols;
 
@@ -2711,16 +2894,30 @@ begin
 
   var noImprove := 0;
 
-  // --- F0 = mean(yTrain) ---
+  // --- F0 ---
+  case fLoss of
+    TGBLoss.Quantile:
+      fInitValue := ComputeQuantile(yTrain, fQuantileAlpha);
+    else
+      fInitValue := yTrain.Average;
+  end;
+
   var nTrain := yTrain.Length;
-  var sum := 0.0;
-  for var i := 0 to nTrain - 1 do
-    sum += yTrain[i];
-  fInitValue := sum / nTrain;
 
   var yPredTrain := new Vector(nTrain);
   for var i := 0 to nTrain - 1 do
     yPredTrain[i] := fInitValue;
+
+  // --- OOB state (used only if: subsample<1, no validation, and patience>0) ---
+  var useSubsample := fSubsample < 1.0;
+  var useOOB := (not useValidation) and useSubsample and (fEarlyStoppingPatience > 0);
+
+  var yPredOOB := new Vector(nTrain);
+  var oobCount := new integer[nTrain];
+
+  if useOOB then
+    for var i := 0 to nTrain - 1 do
+      yPredOOB[i] := fInitValue;
 
   var yPredVal: Vector := nil;
   if useValidation then
@@ -2743,28 +2940,63 @@ begin
     var tree := new DecisionTreeRegressor(
       fMaxDepth,
       fMinSamplesSplit,
-      fMinSamplesLeaf
+      fMinSamplesLeaf,
+      fLeafL2
     );
 
-    if fSubsample < 1.0 then
+    // --- subsample rows (and keep indices) ---
+    var rows: array of integer := nil;
+    var used: array of boolean := nil;
+
+    if useSubsample then
     begin
       var k := Round(nTrain * fSubsample);
       if k < 1 then k := 1;
 
-      var rows := new integer[k];
+      rows := new integer[k];
       for var i := 0 to k - 1 do
         rows[i] := Random(nTrain);
 
       tree.SetRowIndices(rows);
+
+      if useOOB then
+      begin
+        used := new boolean[nTrain];
+        for var i := 0 to k - 1 do
+          used[rows[i]] := true;
+      end;
     end;
 
     tree.Fit(XTrain, r);
     fEstimators.Add(tree);
 
-    // update TRAIN prediction
+    // predict delta on all rows once
     var deltaTrain := tree.Predict(XTrain);
-    for var i := 0 to nTrain - 1 do
-      yPredTrain[i] += fLearningRate * deltaTrain[i];
+
+    // --- update TRAIN prediction ---
+    if useSubsample then
+    begin
+      // update only sampled rows
+      for var i := 0 to rows.Length - 1 do
+      begin
+        var idx := rows[i];
+        yPredTrain[idx] += fLearningRate * deltaTrain[idx];
+      end;
+    end
+    else
+    begin
+      for var i := 0 to nTrain - 1 do
+        yPredTrain[i] += fLearningRate * deltaTrain[i];
+    end;
+
+    // --- OOB update ---
+    if useOOB then
+      for var i := 0 to nTrain - 1 do
+        if not used[i] then
+        begin
+          yPredOOB[i] += fLearningRate * deltaTrain[i];
+          oobCount[i] += 1;
+        end;
 
     // update VAL prediction (if used)
     if useValidation then
@@ -2778,15 +3010,37 @@ begin
     var trainLoss := ComputeTrainLoss(yTrain, yPredTrain);
     fTrainLossHistory.Add(trainLoss);
 
-    var scoreLoss: real; // this is what we early-stop on
+    var scoreLoss := trainLoss;
+
     if useValidation then
     begin
       var valLoss := ComputeTrainLoss(yVal, yPredVal);
       fValLossHistory.Add(valLoss);
       scoreLoss := valLoss;
     end
-    else
-      scoreLoss := trainLoss;
+    else if useOOB then
+    begin
+      var mask := new boolean[nTrain];
+      var cnt := 0;
+    
+      for var i := 0 to nTrain - 1 do
+      begin
+        mask[i] := oobCount[i] > 0;
+        if mask[i] then
+          cnt += 1;
+      end;
+    
+      if cnt >= Max(1, nTrain div 10) then
+      begin
+        scoreLoss := ComputeTrainLossMasked(yTrain, yPredOOB, mask);
+        fOOBLossHistory.Add(scoreLoss);   // ← добавили историю
+      end
+      else
+      begin
+        scoreLoss := trainLoss;
+        fOOBLossHistory.Add(real.NaN);    // чтобы длины совпадали
+      end;
+    end;
 
     // early stopping
     if fEarlyStoppingPatience > 0 then
@@ -2810,10 +3064,20 @@ begin
   if (fEarlyStoppingPatience > 0) and (fBestIteration >= 0) then
   begin
     var keep := fBestIteration + 1;
+  
     if fEstimators.Count > keep then
       fEstimators.RemoveRange(keep, fEstimators.Count - keep);
+  
+    if fOOBLossHistory.Count > keep then
+      fOOBLossHistory.RemoveRange(keep, fOOBLossHistory.Count - keep);
+  
+    if fTrainLossHistory.Count > keep then
+      fTrainLossHistory.RemoveRange(keep, fTrainLossHistory.Count - keep);
+  
+    if fValLossHistory.Count > keep then
+      fValLossHistory.RemoveRange(keep, fValLossHistory.Count - keep);
   end;
-
+  
   fFitted := true;
   Result := Self;
 end;
@@ -2892,25 +3156,92 @@ begin
     yield PredictStage(X, m);
 end;
 
+function GradientBoostingRegressor.FeatureImportances: Vector;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  if fFeatureImportances <> nil then
+    exit(fFeatureImportances);
+
+  var importances := new Vector(fFeatureCount);
+
+  foreach var tree in fEstimators do
+  begin
+    var imp := tree.FeatureImportances;
+
+    for var j := 0 to fFeatureCount - 1 do
+      importances[j] += imp[j];
+  end;
+
+  // нормализация
+  var s := importances.Sum;
+  if s > 0 then
+    for var j := 0 to fFeatureCount - 1 do
+      importances[j] /= s;
+
+  fFeatureImportances := importances;
+
+  Result := fFeatureImportances;
+end;
+
 function GradientBoostingRegressor.Clone: IModel;
 begin
-  var copy := new GradientBoostingRegressor(
+  var c := new GradientBoostingRegressor(
     fNEstimators,
     fLearningRate,
     fMaxDepth,
     fMinSamplesSplit,
     fMinSamplesLeaf,
     fSubsample,
-    fRandomSeed);
+    fRandomSeed,
+    fLoss,
+    fHuberDelta,
+    fEarlyStoppingPatience,
+    fQuantileAlpha,
+    fLeafL2,
+    fUseOOBEarlyStopping
+  );
 
-  copy.fInitValue := fInitValue;
-  copy.fFeatureCount := fFeatureCount;
-  copy.fFitted := fFitted;
+  // --- fitted state
+  c.fFitted := fFitted;
+  c.fFeatureCount := fFeatureCount;
+  c.fInitValue := fInitValue;
 
-  foreach var tree in fEstimators do
-    copy.fEstimators.Add(tree.Clone as DecisionTreeRegressor);
+  // --- best/iters
+  c.fBestIteration := fBestIteration;
+  c.fBestTrainLoss := fBestTrainLoss;
+  c.fBestValLoss := fBestValLoss;
 
-  Result := copy;
+  // --- estimators (deep)
+  c.fEstimators.Clear;
+  foreach var t in fEstimators do
+    c.fEstimators.Add(DecisionTreeRegressor(t.Clone));
+
+  // --- histories (deep copy values)
+  c.fTrainLossHistory.Clear;
+  foreach var v in fTrainLossHistory do
+    c.fTrainLossHistory.Add(v);
+
+  c.fValLossHistory.Clear;
+  foreach var v in fValLossHistory do
+    c.fValLossHistory.Add(v);
+
+  c.fOOBLossHistory.Clear;
+  foreach var v in fOOBLossHistory do
+    c.fOOBLossHistory.Add(v);
+
+  // --- feature importances (deep)
+  if fFeatureImportances <> nil then
+  begin
+    c.fFeatureImportances := new Vector(fFeatureImportances.Length);
+    for var i := 0 to fFeatureImportances.Length - 1 do
+      c.fFeatureImportances[i] := fFeatureImportances[i];
+  end
+  else
+    c.fFeatureImportances := nil;
+
+  Result := c;
 end;
 
 //-----------------------------
@@ -2951,6 +3282,7 @@ begin
   end;
 
   // --- reset state
+  fOOBLossHistory.Clear;
   fEstimators.Clear;
   fTrainLossHistory.Clear;
   fValLossHistory.Clear;
@@ -2991,6 +3323,25 @@ begin
   for var i := 0 to nTrain - 1 do
     for var cls := 0 to classCount - 1 do
       logitsTrain[i, cls] := fInitLogits[cls];
+    
+  // --- OOB init 
+  var useOOB := (not useValidation) and (fSubsample < 1.0);
+  
+  var logitsOOB: Matrix := nil;
+  var oobCount: array of integer;
+  
+  if useOOB then
+  begin
+    logitsOOB := new Matrix(nTrain, classCount);
+    SetLength(oobCount, nTrain);
+  
+    for var i := 0 to nTrain - 1 do
+    begin
+      oobCount[i] := 0;
+      for var cls := 0 to classCount - 1 do
+        logitsOOB[i, cls] := fInitLogits[cls];
+    end;
+  end;
 
   var logitsVal: Matrix := nil;
   var yValEncoded: array of integer;
@@ -3046,6 +3397,25 @@ begin
       for var i := 0 to subCount - 1 do
         subIndices[i] := Random(nTrain);
     end;
+    
+    // inBag
+    var inBag: array of boolean := nil;
+    
+    if useOOB then
+    begin
+      SetLength(inBag, nTrain);
+    
+      if useSubsample then
+      begin
+        for var i := 0 to subIndices.Length - 1 do
+          inBag[subIndices[i]] := true;
+      end
+      else
+      begin
+        for var i := 0 to nTrain - 1 do
+          inBag[i] := true;
+      end;
+    end;
 
     // --- train trees
     var trees := new DecisionTreeRegressor[classCount];
@@ -3074,6 +3444,18 @@ begin
       for var i := 0 to nTrain - 1 do
         logitsTrain[i, cls] += fLearningRate * deltaTrain[i];
 
+      // --- OOB update ---
+      if useOOB then
+      begin
+        for var i := 0 to nTrain - 1 do
+          if not inBag[i] then
+          begin
+            logitsOOB[i, cls] += fLearningRate * deltaTrain[i];
+            oobCount[i] += 1;
+          end;
+      end;
+      
+      // --- VALIDATION update ---
       if useValidation then
       begin
         var deltaVal := tree.Predict(XVal);
@@ -3095,11 +3477,31 @@ begin
     begin
       var probsVal := new Matrix(XVal.Rows, classCount);
       SoftmaxMatrix(logitsVal, probsVal);
-
+    
       var valLoss := ComputeLogLoss(yValEncoded, probsVal);
       fValLossHistory.Add(valLoss);
-
+    
       scoreLoss := valLoss;
+    end
+    else if useOOB then
+    begin
+      var mask := new boolean[nTrain];
+      var cnt := 0;
+    
+      for var i := 0 to nTrain - 1 do
+      begin
+        mask[i] := oobCount[i] > 0;
+        if mask[i] then
+          cnt += 1;
+      end;
+    
+      if cnt >= Max(1, nTrain div 10) then
+      begin
+        scoreLoss := ComputeLogLossMasked(yEncoded, logitsOOB, mask);
+        fOOBLossHistory.Add(scoreLoss);
+      end
+      else
+        scoreLoss := trainLoss;
     end;
 
     // --- early stopping
@@ -3126,6 +3528,8 @@ begin
     var keep := fBestIteration + 1;
     if fEstimators.Count > keep then
       fEstimators.RemoveRange(keep, fEstimators.Count - keep);
+    if fOOBLossHistory.Count > keep then
+      fOOBLossHistory.RemoveRange(keep, fOOBLossHistory.Count - keep);
   end;
 
   fFitted := true;
@@ -3238,6 +3642,45 @@ begin
   Result := loss / n;
 end;
 
+function GradientBoostingClassifier.ComputeLogLossMasked(
+  yEncoded: array of integer;
+  logits: Matrix;
+  mask: array of boolean): real;
+begin
+  var n := logits.Rows;
+  var k := logits.Cols;
+
+  var rowLogits := new real[k];
+  var rowProbs := new real[k];
+
+  var sum := 0.0;
+  var cnt := 0;
+
+  for var i := 0 to n - 1 do
+    if mask[i] then
+    begin
+      for var cls := 0 to k - 1 do
+        rowLogits[cls] := logits[i, cls];
+
+      SoftmaxRow(rowLogits, rowProbs);
+
+      var yi := yEncoded[i];
+      var p := rowProbs[yi];
+
+      // защита от log(0)
+      if p < 1e-15 then
+        p := 1e-15;
+
+      sum += -Ln(p);
+      cnt += 1;
+    end;
+
+  if cnt = 0 then
+    exit(real.PositiveInfinity);
+
+  Result := sum / cnt;
+end;
+
 constructor GradientBoostingClassifier.Create(
   nEstimators: integer;
   learningRate: real;
@@ -3279,6 +3722,8 @@ begin
 
   fBestIteration := -1;
   fBestValLoss := real.PositiveInfinity;
+  
+  fOOBLossHistory := new List<real>;
 end;
 
 
@@ -3291,6 +3736,10 @@ begin
   var classCount := fClassCount;
 
   var logits := new Matrix(nSamples, classCount);
+  // --- F0
+  for var i := 0 to nSamples - 1 do
+    for var cls := 0 to classCount - 1 do
+      logits[i, cls] := fInitLogits[cls];
 
   // --- накопление логитов от всех итераций
   foreach var trees in fEstimators do
@@ -3324,9 +3773,116 @@ begin
   Result := probs;
 end;
 
+function GradientBoostingClassifier.PredictStageProba(
+  X: Matrix; m: integer): Matrix;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if X.Cols <> fFeatureCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH);
+
+  var total := fEstimators.Count;
+
+  if (m < 0) or (m > total) then
+    ArgumentOutOfRangeError(
+      'Stage m must be in range [0, {0}]!!Stage m must be in range [0, {0}]',
+      total
+    );
+
+  var n := X.Rows;
+  var k := fClassCount;
+
+  var logits := new Matrix(n, k);
+
+  // --- F0
+  for var i := 0 to n - 1 do
+    for var cls := 0 to k - 1 do
+      logits[i, cls] := fInitLogits[cls];
+
+  // --- add first m boosting stages
+  for var t := 0 to m - 1 do
+  begin
+    var trees := fEstimators[t];
+
+    for var cls := 0 to k - 1 do
+    begin
+      var delta := trees[cls].Predict(X);
+
+      for var i := 0 to n - 1 do
+        logits[i, cls] += fLearningRate * delta[i];
+    end;
+  end;
+
+  var probs := new Matrix(n, k);
+  SoftmaxMatrix(logits, probs);
+
+  Result := probs;
+end;
+
+function GradientBoostingClassifier.PredictStage(X: Matrix; m: integer): Vector;
+begin
+  var probs := PredictStageProba(X, m);
+
+  var n := probs.Rows;
+  var resultVec := new Vector(n);
+
+  for var i := 0 to n - 1 do
+  begin
+    var best := 0;
+    var bestVal := probs[i,0];
+
+    for var cls := 1 to probs.Cols - 1 do
+      if probs[i,cls] > bestVal then
+      begin
+        bestVal := probs[i,cls];
+        best := cls;
+      end;
+
+    resultVec[i] := fClasses[best];
+  end;
+
+  Result := resultVec;
+end;
+
+function GradientBoostingClassifier.FeatureImportances: Vector;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  if fFeatureImportances <> nil then
+    exit(fFeatureImportances);
+
+  var importances := new Vector(fFeatureCount);
+
+  foreach var trees in fEstimators do
+  begin
+    for var cls := 0 to fClassCount - 1 do
+    begin
+      var imp := trees[cls].FeatureImportances;
+
+      for var j := 0 to fFeatureCount - 1 do
+        importances[j] += imp[j];
+    end;
+  end;
+
+  // нормализация
+  var s := importances.Sum;
+  if s > 0 then
+    for var j := 0 to fFeatureCount - 1 do
+      importances[j] /= s;
+
+  fFeatureImportances := importances;
+
+  Result := fFeatureImportances;
+end;
+
 function GradientBoostingClassifier.Clone: IModel;
 begin
-  var model := new GradientBoostingClassifier(
+  var c := new GradientBoostingClassifier(
     fNEstimators,
     fLearningRate,
     fMaxDepth,
@@ -3338,47 +3894,77 @@ begin
   );
 
   // --- fitted state
-  model.fFitted := fFitted;
-  model.fFeatureCount := fFeatureCount;
-  model.fClassCount := fClassCount;
+  c.fFitted := fFitted;
+  c.fFeatureCount := fFeatureCount;
 
-  // --- classes
+  // --- class mapping (deep)
+  c.fClassCount := fClassCount;
+
   if fClasses <> nil then
   begin
-    SetLength(model.fClasses, Length(fClasses));
+    SetLength(c.fClasses, Length(fClasses));
     for var i := 0 to Length(fClasses) - 1 do
-      model.fClasses[i] := fClasses[i];
-  end;
+      c.fClasses[i] := fClasses[i];
+  end
+  else
+    c.fClasses := nil;
 
+  c.fClassIndex := new Dictionary<integer, integer>;
   if fClassIndex <> nil then
-  begin
-    model.fClassIndex := new Dictionary<integer, integer>;
     foreach var kv in fClassIndex do
-      model.fClassIndex.Add(kv.Key, kv.Value);
-  end;
+      c.fClassIndex[kv.Key] := kv.Value;
 
-  // --- estimators (deep copy)
-  foreach var trees in fEstimators do
+  // --- init logits (deep)
+  if fInitLogits <> nil then
   begin
-    var newTrees := new DecisionTreeRegressor[Length(trees)];
+    SetLength(c.fInitLogits, Length(fInitLogits));
+    for var i := 0 to Length(fInitLogits) - 1 do
+      c.fInitLogits[i] := fInitLogits[i];
+  end
+  else
+    c.fInitLogits := nil;
 
-    for var cls := 0 to Length(trees) - 1 do
-      newTrees[cls] := trees[cls].Clone as DecisionTreeRegressor;
+  // --- best/iters
+  c.fBestIteration := fBestIteration;
+  c.fBestValLoss := fBestValLoss;
 
-    model.fEstimators.Add(newTrees);
+  // --- estimators (deep): List<array of DecisionTreeRegressor>
+  c.fEstimators.Clear;
+  foreach var arr in fEstimators do
+  begin
+    var k := Length(arr);
+    var arr2 := new DecisionTreeRegressor[k];
+
+    for var cls := 0 to k - 1 do
+      arr2[cls] := DecisionTreeRegressor(arr[cls].Clone);
+
+    c.fEstimators.Add(arr2);
   end;
 
-  // --- history
+  // --- histories
+  c.fTrainLossHistory.Clear;
   foreach var v in fTrainLossHistory do
-    model.fTrainLossHistory.Add(v);
+    c.fTrainLossHistory.Add(v);
 
+  c.fValLossHistory.Clear;
   foreach var v in fValLossHistory do
-    model.fValLossHistory.Add(v);
+    c.fValLossHistory.Add(v);
 
-  model.fBestIteration := fBestIteration;
-  model.fBestValLoss := fBestValLoss;
+  c.fOOBLossHistory.Clear;
+  foreach var v in fOOBLossHistory do
+    c.fOOBLossHistory.Add(v);
 
-  Result := model;
+  // --- feature importances (deep)
+  if fFeatureImportances <> nil then
+  begin
+    c.fFeatureImportances := new Vector(fFeatureImportances.Length);
+    for var i := 0 to fFeatureImportances.Length - 1 do
+      c.fFeatureImportances[i] := fFeatureImportances[i];
+  end
+  else
+    c.fFeatureImportances := nil;
+
+  Result := c;
 end;
 
 function GradientBoostingClassifier.Fit(X: Matrix; y: Vector): IModel;

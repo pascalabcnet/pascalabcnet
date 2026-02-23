@@ -46,6 +46,7 @@ type
     
     // ---------- Основные методы ----------
     function Sum: real;
+    function Average: real;
     function Mean: real;
     function Norm2: real;
     function Norm: real;
@@ -414,6 +415,14 @@ begin
   for var i := 0 to Length - 1 do
     s += data[i];
   Result := s;
+end;
+
+function Vector.Average: real;
+begin
+  if Length = 0 then
+    ArgumentError('Vector is empty');
+
+  Result := Sum / Length;
 end;
 
 function Vector.Mean: real;
