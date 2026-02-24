@@ -216,6 +216,11 @@ type
     /// epochs — число итераций обучения.
     constructor Create(lambda: real := 0.0; lr: real := 0.1; epochs: integer := 1000);
   
+/// Обучает модель логистической регрессии.
+/// X — матрица признаков.
+/// y — вектор меток классов (целочисленные значения).
+/// Возвращает обученную модель.
+/// После вызова IsFitted становится true.
     function Fit(X: Matrix; y: Vector): IModel;
   
     /// Возвращает матрицу вероятностей (m x k).
@@ -224,10 +229,14 @@ type
     /// Возвращает вектор предсказанных классов.
     function Predict(X: Matrix): Vector;
   
+/// Показывает, была ли модель обучена.
+/// Если false — вызов Predict или PredictProba приведет к ошибке.
     property IsFitted: boolean read fFitted;
     
+/// Возвращает строковое представление модели.
     function ToString: string; override;
     
+/// Создает глубокую копию модели.
     function Clone: IModel;
   end;
   
@@ -240,32 +249,56 @@ type
     Right: DecisionTreeNode;
     LeafValue: real;
     
+/// Создает глубокую копию узла вместе со всеми подузлами
     function Clone: DecisionTreeNode;
   end;
   
+/// Результат поиска лучшего разбиения узла дерева.
   SplitResult = record
+/// Found = true, если допустимое разбиение найдено.
     Found: boolean;
+/// Feature — индекс признака, по которому делается split.
     Feature: integer;
+/// Threshold — пороговое значение признака.
     Threshold: real;
   end;
   
+/// Интерфейс критерия разбиения узла дерева.
+/// Определяет функцию нечистоты (impurity), которая используется для оценки качества разбиения.
   ISplitCriterion = interface
+/// Вычисляет нечистоту для вектора целевых значений y.
+/// Чем меньше значение — тем "чище" узел.
     function Impurity(y: Vector): real;
   end;
   
+/// Критерий Джини.
+/// Используется в классификации.
+/// Минимизирует Gini-нечистоту, что приводит к более однородным по классам листьям.
   GiniCriterion = class(ISplitCriterion)
   public
+/// Вычисляет Gini impurity для текущего набора y.  
     function Impurity(y: Vector): real;
   end;
 
+/// Критерий дисперсии.
+/// Используется в регрессии.
+/// Минимизирует внутригрупповую дисперсию значений целевой переменной.
   VarianceCriterion = class(ISplitCriterion)
   public
+  /// Вычисляет дисперсию значений y.
+  /// Чем меньше дисперсия — тем лучше узел.
     function Impurity(y: Vector): real;
   end;
   
 //============================  
 //    DecisionTreeBase
 //============================  
+/// Базовый абстрактный класс дерева решений.
+/// Реализует общую логику построения структуры дерева:
+/// рекурсивное разбиение, контроль глубины,
+/// минимального числа объектов и расчет важности признаков.
+/// Конкретная логика вычисления значения листа
+/// и критерия разбиения задается в наследниках.
   DecisionTreeBase = abstract class(ITreeModel)
   protected
     fRoot: DecisionTreeNode;
@@ -296,20 +329,45 @@ type
     
     procedure SetRowIndices(rows: array of integer);
   public
+/// Создает дерево решений.
+/// maxDepth — максимальная глубина дерева.
+/// minSamplesSplit — минимальное число объектов для разбиения узла.
+/// minSamplesLeaf — минимальное число объектов в листе.
     constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2; minSamplesLeaf: integer := 1);
   
+/// Возвращает вектор важности признаков.
+/// Важность вычисляется как суммарное уменьшение
+/// нечистоты (impurity reduction) по всем разбиениям.
+/// Значения нормированы так, что сумма равна 1.
     function FeatureImportances: Vector;
     
+/// Обучает дерево решений.
+/// X — матрица признаков.
+/// y — целевая переменная.
+/// Реализация зависит от типа дерева (регрессия или классификация).
     function Fit(X: Matrix; y: Vector): IModel; virtual; abstract;
+
+/// Выполняет предсказание для матрицы X.
+/// Возвращает вектор прогнозов.
+/// Для регрессии — вещественные значения.
+/// Для классификации — метки классов.
     function Predict(X: Matrix): Vector; virtual; abstract;
+
+/// Создает глубокую копию дерева.
+/// Копируется структура узлов, параметры и обученное состояние.    
     function Clone: IModel; virtual; abstract;
 
+/// Возвращает true, если дерево обучено.
+/// Если false — Predict вызовет ошибку.
     function IsFitted: boolean;
   end;
 
 //============================  
 //   DecisionTreeClassifier  
 //============================  
+/// Дерево решений для задачи классификации.
+/// Использует критерий нечистоты (обычно Gini) для выбора оптимальных разбиений.
+/// В листьях хранится наиболее частый класс.
   DecisionTreeClassifier = class(DecisionTreeBase, IClassifier)
   private
     fClassToIndex: Dictionary<integer, integer>;
@@ -328,16 +386,38 @@ type
     end;
 
   public
+/// Создает классификационное дерево.
+/// maxDepth — максимальная глубина дерева.
+/// minSamplesSplit — минимальное число объектов для разбиения узла.
+/// minSamplesLeaf — минимальное число объектов в листе.
     constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2; minSamplesLeaf: integer := 1);
 
+/// Обучает классификационное дерево.
+/// X — матрица признаков.
+/// y — вектор целевых меток (целые значения).
+/// Строит структуру дерева путем минимизации нечистоты в узлах.
     function Fit(X: Matrix; y: Vector): IModel; override;
+    
+/// Выполняет предсказание меток классов для X.
+/// Для каждого объекта возвращается класс, соответствующий листу дерева.
     function Predict(X: Matrix): Vector; override;
+    
+/// Создает глубокую копию дерева классификации.
+/// Копируется структура узлов, параметры и обученное состояние.
     function Clone: IModel; override;
+
+/// Возвращает строковое представление модели.
+    function ToString: string; override;
   end;
   
 //============================  
 //   DecisionTreeRegressor  
 //============================  
+/// Дерево решений для задачи регрессии.
+/// Наследуется от DecisionTreeBase.
+/// Использует критерий дисперсии для выбора разбиений.
+/// В листьях хранится среднее значение целевой переменной.
+/// Поддерживает L2-регуляризацию значения листа (leafL2).
   DecisionTreeRegressor = class(DecisionTreeBase, IRegressor)
   private
     fLeafL2: real;
@@ -345,28 +425,60 @@ type
     function PredictOne(x: Vector): real;
   
   protected
+/// Вычисляет значение листа для набора индексов.
+/// В регрессии это среднее целевой переменной
+/// с учетом L2-регуляризации (если leafL2 > 0).
     function LeafValue(y: Vector; indices: array of integer): real; override;
-
+/// Ищет лучшее разбиение узла по всем признакам и возможным порогам.
+/// Критерий — максимальное уменьшение дисперсии.
     function FindBestSplit(X: Matrix; y: Vector; indices: array of integer): SplitResult; override;
+/// Проверяет, является ли узел "чистым".
+/// Для регрессии это означает, что все значения y одинаковы
+/// или разбиение больше не имеет смысла.
     function IsPure(y: Vector; indices: array of integer): boolean; override;
     
   public
+/// Создает регрессионное дерево.
+/// maxDepth — максимальная глубина.
+/// minSamplesSplit — минимальное число объектов для разбиения.
+/// minSamplesLeaf — минимальное число объектов в листе.
+/// leafL2 — коэффициент L2-регуляризации значения листа.
     constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2; minSamplesLeaf: integer := 1;
       leafL2: real := 0.0);
     
+/// Обучает регрессионное дерево.
+/// X — матрица признаков.
+/// y — вещественная целевая переменная.
     function Fit(X: Matrix; y: Vector): IModel; override;
+
+/// Выполняет предсказание для всех объектов X.
+/// Возвращает вектор вещественных значений.
     function Predict(X: Matrix): Vector; override;
+
+/// Создает глубокую копию дерева регрессии.
+/// Копируется структура узлов, параметры и обученное состояние.
     function Clone: IModel; override;
+    
+/// Возвращает строковое представление модели.
+    function ToString: string; override;
   end;
-  
+
+/// Режим выбора числа признаков при поиске разбиения.
+/// Определяет, сколько признаков m из общего числа p
+/// будет случайно выбрано для рассмотрения в узле.
+/// Используется в Random Forest и других ансамблях
+/// для увеличения разнообразия деревьев.  
   TMaxFeaturesMode = (
-    /// m = p
+/// Использовать все признаки: m = p
     AllFeatures,      
-    /// m = sqrt(p)
-    SqrtFeatures,   
-    /// m = log2(p)
+/// Использовать квадратный корень от числа признаков: m = sqrt(p)
+/// Типичный выбор для классификации.
+    SqrtFeatures,
+/// Использовать log2 от числа признаков: m = log2(p)
+/// Более агрессивное ограничение признаков.
     Log2Features,
-    /// m = p/2
+/// Использовать половину признаков: m = p / 2
+/// Компромисс между скоростью и разнообразием.
     HalfFeatures     
   );
   
@@ -378,6 +490,12 @@ type
 //   feature-subset = в каждом дереве - случайные признаки
 //   RandomForest снижает корреляцию между деревьями, что хорошо
 
+/// Базовый абстрактный класс случайного леса.
+/// Реализует ансамбль из множества независимых деревьев,
+/// обученных на случайных подвыборках данных
+/// и случайных подмножествах признаков.
+/// Конкретная логика агрегирования предсказаний
+/// определяется в наследниках (регрессия или классификация).
   RandomForestBase = abstract class(IModel)
   protected
     fNTrees: integer;
@@ -390,56 +508,125 @@ type
     function ComputeMaxFeatures(p: integer): integer;
     procedure BootstrapSample(X: Matrix; y: Vector; var Xb: Matrix; var yb: Vector);
   public
+/// Создает случайный лес.
+/// nTrees — число деревьев в ансамбле.
+/// maxDepth — максимальная глубина каждого дерева.
+/// minSamplesSplit — минимальное число объектов для разбиения узла.
+/// minSamplesLeaf — минимальное число объектов в листе.
+/// maxFeatures — режим выбора числа признаков, рассматриваемых при поиске разбиения.
     constructor Create(
       nTrees: integer;
       maxDepth: integer;
       minSamplesSplit: integer;
       minSamplesLeaf: integer;
       maxFeatures: TMaxFeaturesMode);
-  
+
+/// Обучает ансамбль деревьев на данных X и y.
+/// Для каждого дерева используется bootstrap-подвыборка
+/// и случайное подмножество признаков.  
     function Fit(X: Matrix; y: Vector): IModel; virtual; abstract;
+
+/// Выполняет предсказание для матрицы X.
+/// В регрессии — усреднение предсказаний деревьев.
+/// В классификации — голосование (majority vote) или усреднение вероятностей.    
     function Predict(X: Matrix): Vector; virtual; abstract;
+
+/// Создает глубокую копию случайного леса.
+/// Копируются все деревья и параметры ансамбля.
     function Clone: IModel; virtual; abstract;
     
+/// Возвращает вектор важности признаков.
+/// Обычно вычисляется как средняя важность по всем деревьям ансамбля.
     function FeatureImportances: Vector; virtual; abstract;
   end;  
   
+/// Случайный лес для задачи регрессии.
+/// Строит ансамбль регрессионных деревьев,
+/// обученных на bootstrap-подвыборках данных и случайных подмножествах признаков.
+/// Итоговое предсказание — среднее значение по всем деревьям ансамбля.
   RandomForestRegressor = class(RandomForestBase, IModel)
   private
     fTrees: array of DecisionTreeRegressor;
   public
+/// Создает регрессионный случайный лес.
+/// nTrees — число деревьев в ансамбле.
+/// maxDepth — максимальная глубина деревьев.
+/// minSamplesSplit — минимальное число объектов для разбиения узла.
+/// minSamplesLeaf — минимальное число объектов в листе.
+/// maxFeaturesMode — режим выбора числа признаков, рассматриваемых при поиске разбиения.
     constructor Create(nTrees: integer := 100; 
       maxDepth: integer := integer.MaxValue;
       minSamplesSplit: integer := 2; 
       minSamplesLeaf: integer := 1;
       maxFeaturesMode: TMaxFeaturesMode := TMaxFeaturesMode.HalfFeatures);
 
+/// Обучает случайный лес на данных X и y.
+/// Для каждого дерева используется bootstrap-выборка.
+/// Возвращает обученную модель.
     function Fit(X: Matrix; y: Vector): IModel; override;
+
+/// Выполняет предсказание для X.
+/// Итоговое значение — среднее предсказаний всех деревьев ансамбля.
     function Predict(X: Matrix): Vector; override;
+
+/// Создает глубокую копию случайного леса.
+/// Копируются все деревья и параметры модели.
     function Clone: IModel; override;
     
+/// Возвращает усредненную важность признаков по всем деревьям ансамбля.
+/// Значения нормированы так, что сумма равна 1.
     function FeatureImportances: Vector; override;
+
+/// Возвращает строковое представление модели.
+    function ToString: string; override;
   end;
 
+/// Случайный лес для задачи классификации.
+/// Наследуется от RandomForestBase и реализует интерфейс IClassifier.
+/// Строит ансамбль классификационных деревьев, обученных на bootstrap-подвыборках 
+///   объектов и случайных подмножествах признаков.
+/// Итоговое предсказание формируется голосованием деревьев или агрегацией вероятностей классов.
   RandomForestClassifier = class(RandomForestBase, IClassifier)
   private
     fTrees: array of DecisionTreeClassifier;
   public
+/// Создает классификационный случайный лес.
+/// nTrees — число деревьев в ансамбле.
+/// maxDepth — максимальная глубина каждого дерева.
+/// minSamplesSplit — минимальное число объектов для разбиения узла.
+/// minSamplesLeaf — минимальное число объектов в листе.
+/// maxFeaturesMode — режим выбора числа признаков при поиске разбиения, по умолчанию используется sqrt(p), 
+///   что является стандартом для классификации.
     constructor Create(nTrees: integer := 100; 
       maxDepth: integer := integer.MaxValue;
       minSamplesSplit: integer := 2;
       minSamplesLeaf: integer := 1;
       maxFeaturesMode: TMaxFeaturesMode := TMaxFeaturesMode.SqrtFeatures);
   
+/// Обучает случайный лес на данных X и y.
+/// Для каждого дерева используется bootstrap-выборка обучающих объектов.
+/// В каждом узле рассматривается случайное подмножество признаков согласно maxFeaturesMode.
+/// Возвращает обученную модель.
     function Fit(X: Matrix; y: Vector): IModel; override;
+
+/// Выполняет предсказание меток классов для матрицы X.
+/// Для каждого объекта агрегируются предсказания всех деревьев.
+/// Итоговый класс определяется большинством голосов или максимальной суммарной вероятностью.
     function Predict(X: Matrix): Vector; override;
+
+/// Создает глубокую копию случайного леса классификации.
+/// Копируются все деревья, параметры ансамбля и обученное состояние модели.
     function Clone: IModel; override;
     
+/// Возвращает усредненную важность признаков по всем деревьям ансамбля.
+/// Важность рассчитывается как суммарное уменьшение нечистоты, нормированное так, что сумма равна 1.
     function FeatureImportances: Vector; override;
+
+/// Возвращает строковое представление модели.
+    function ToString: string; override;
   end;
-
+  
 { Gradient Boosting v1.0 — Freeze Checklist
-
   GradientBoostingRegressor
 ✔ SquaredError
 ✔ Huber
@@ -465,9 +652,19 @@ type
 ✔ Feature importance
 ✔ Clone
 }
-  
+
+/// Тип функции потерь для GradientBoostingRegressor.
+/// SquaredError — классическая L2 (MSE).
+/// Huber — робастная loss: квадратичная около нуля и линейная на хвостах.
+/// Quantile — квантильная регрессия (асимметричная L1).    
   TGBLoss = (SquaredError, Huber, Quantile);
   
+/// Gradient Boosting Regressor.
+/// Реализует градиентный бустинг над деревьями решений.
+/// Каждая новая модель обучается на псевдо-остатках предыдущей.
+/// Поддерживает разные loss-функции, subsample (stochastic boosting),
+/// early stopping (validation или OOB),
+/// L2-регуляризацию в листьях и staged prediction.
   GradientBoostingRegressor = class(IRegressor)
   private
     fNEstimators: integer;
@@ -515,6 +712,20 @@ type
     function ComputeTrainLossMasked(yTrue, yPred: Vector; mask: array of boolean): real;
   
   public
+/// Создает новый GradientBoostingRegressor.
+/// nEstimators — число деревьев (итераций бустинга).
+/// learningRate — коэффициент shrinkage.
+/// maxDepth — максимальная глубина дерева.
+/// minSamplesSplit — минимальное число объектов для split.
+/// minSamplesLeaf — минимальное число объектов в листе.
+/// subsample — доля выборки на каждой итерации (0..1].
+/// randomSeed — зерно генератора случайных чисел.
+/// loss — функция потерь.
+/// huberDelta — параметр Huber loss.
+/// earlyStoppingPatience — число итераций без улучшения до остановки.
+/// quantileAlpha — уровень квантили для Quantile loss.
+/// leafL2 — L2-регуляризация значения листа.
+/// useOOBEarlyStopping — использовать OOB loss для ранней остановки.
     constructor Create(
       nEstimators: integer := 100;
       learningRate: real := 0.1;
@@ -531,28 +742,65 @@ type
       useOOBEarlyStopping: boolean := false
       );
 
+/// Обучает модель на всей обучающей выборке.
+/// Если включен early stopping и subsample < 1,
+/// может использоваться OOB loss.
+/// Возвращает обученную модель.
     function Fit(X: Matrix; y: Vector): IModel;
+/// Предсказывает значения целевой переменной.
+/// Используются все обученные деревья.
     function Predict(X: Matrix): Vector;
+/// Создает глубокую копию модели.
+/// Копируются все деревья и внутреннее состояние.
     function Clone: IModel;
     
+/// Обучает модель с использованием отдельной validation-выборки.
+/// Early stopping (если включен) происходит по validation loss.
     function FitWithValidation(XTrain: Matrix; yTrain: Vector;
       XVal: Matrix; yVal: Vector): IModel;
-    
+
+/// История значения функции потерь на обучающей выборке.
+/// Один элемент на итерацию бустинга.    
     property TrainLossHistory: List<real> read fTrainLossHistory;
+/// История значения функции потерь на validation-выборке.
     property ValLossHistory: List<real> read fValLossHistory;
+/// Индекс итерации с лучшим значением функции потерь
+/// (validation или OOB в зависимости от режима).
     property BestIteration: integer read fBestIteration;
+/// История OOB loss (если включен OOB early stopping).
     property OOBLossHistory: List<real> read fOOBLossHistory;
     
+/// Предсказание по первым m итерациям бустинга.
+/// m может быть от 0 до TreeCount.
+/// Используется для анализа обучения и переобучения.
     function PredictStage(X: Matrix; m: integer): Vector;
+/// Возвращает последовательность предсказаний
+/// после каждой итерации бустинга.
+/// Удобно для построения learning curve.
     function StagedPredict(X: Matrix): sequence of Vector;
     
+/// Возвращает текущее количество деревьев в ансамбле.
     function TreeCount: integer := fEstimators.Count;
-    
+
+/// Возвращает нормированные importance признаков.
+/// Значения суммируются по всем деревьям и нормируются к 1.    
     function FeatureImportances: Vector;
+    
+/// Возвращает строковое представление модели.
+    function ToString: string; override;
   end;
 
+/// Тип функции потерь для классификатора.
+/// В текущей версии используется только LogLoss
+/// (многоклассовая кросс-энтропия).
   TGBCLoss = (LogLoss);
   
+/// Gradient Boosting Classifier.
+/// Реализует многоклассовый градиентный бустинг с использованием softmax и LogLoss.
+/// На каждой итерации обучается по одному дереву
+///   для каждого класса (one-vs-all в логит-пространстве).
+/// Поддерживает subsample, validation early stopping,
+///   OOB early stopping и staged prediction.  
   GradientBoostingClassifier = class(IProbabilisticClassifier)
   private
     // hyperparams
@@ -604,6 +852,15 @@ type
       mask: array of boolean): real;
   
   public
+/// Создает новый GradientBoostingClassifier.
+/// nEstimators — число итераций бустинга.
+/// learningRate — коэффициент shrinkage.
+/// maxDepth — максимальная глубина деревьев.
+/// minSamplesSplit — минимальное число объектов для split.
+/// minSamplesLeaf — минимальное число объектов в листе.
+/// subsample — доля обучающей выборки на каждой итерации.
+/// randomSeed — зерно генератора случайных чисел.
+/// earlyStoppingPatience — число итераций без улучшения до ранней остановки.
     constructor Create(
       nEstimators: integer := 200;
       learningRate: real := 0.05;
@@ -614,25 +871,58 @@ type
       randomSeed: integer := 42;
       earlyStoppingPatience: integer := 20);
 
+/// Обучает классификатор на всей обучающей выборке.
+/// Если включен early stopping и subsample < 1,
+/// может использоваться OOB loss.
+/// Возвращает обученную модель.
     function Fit(X: Matrix; y: Vector): IModel;
+    
+/// Обучает классификатор с использованием validation-набора.
+/// Если включен early stopping, он основан на validation loss.
     function FitWithValidation(XTrain: Matrix; yTrain: Vector; XVal: Matrix; yVal: Vector): IModel;
 
+/// Предсказывает метки классов.
+/// Возвращает исходные значения классов, а не внутренние индексы.
     function Predict(X: Matrix): Vector;
+    
+/// Возвращает вероятности принадлежности к каждому классу.
+/// Размер результата: [nSamples x nClasses].
+/// Вероятности получаются через softmax.
     function PredictProba(X: Matrix): Matrix;
 
+/// Создает глубокую копию классификатора.
+/// Копируются все деревья и внутреннее состояние.
     function Clone: IModel;
 
+/// История значения LogLoss на обучающей выборке.
+/// Один элемент на итерацию бустинга.
     property TrainLossHistory: List<real> read fTrainLossHistory;
+/// История LogLoss на validation-наборе.
     property ValLossHistory: List<real> read fValLossHistory;
+/// Индекс итерации с лучшим значением функции потерь (validation или OOB).
     property BestIteration: integer read fBestIteration;
+/// История OOB LogLoss (если включен OOB early stopping).
     property OOBLossHistory: List<real> read fOOBLossHistory;
     
+/// Возвращает вероятности после первых m итераций бустинга.
+/// m может быть от 0 до TreeCount.
+/// Используется для анализа обучения.
     function PredictStageProba(X: Matrix; m: integer): Matrix;
+    
+/// Предсказывает классы по первым m итерациям бустинга.
+/// Удобно для построения learning curve.
     function PredictStage(X: Matrix; m: integer): Vector;
     
+/// Текущее количество деревьев в ансамбле.
     function TreeCount: integer := fEstimators.Count;
 
+/// Нормированные importance признаков.
+/// Рассчитываются как суммарное уменьшение impurity
+/// по всем деревьям и нормируются к 1.
     function FeatureImportances: Vector;
+    
+/// Возвращает строковое представление модели.
+    function ToString: string; override;
   end;
 
 {$endregion Models}
@@ -905,7 +1195,11 @@ type
     /// Показывает, был ли выполнен Fit.
     property IsFitted: boolean read fFitted;
 
+/// Возвращает строковое представление трансформера
     function ToString: string; override;
+
+/// Создает глубокую копию.
+/// Копируются параметры и внутреннее состояние.
     function Clone: ITransformer;
   end;
   
@@ -923,14 +1217,29 @@ type
     fNormType: NormType;
     fFitted: boolean;
   public
+/// Создает нормализатор.
+/// norm — тип нормы, используемой для масштабирования строки признаков.
+/// По умолчанию используется L2-норма.
     constructor Create(norm: NormType := NormType.L2);
   
+/// Подготавливает трансформер к работе.
+/// Для Normalizer этап обучения может быть формальным, так как параметры не накапливаются.
     function Fit(X: Matrix): ITransformer;
+
+/// Применяет нормализацию к матрице X.
+/// Каждая строка масштабируется так, чтобы ее норма соответствовала выбранному типу.
+/// Возвращает новую матрицу с нормализованными объектами.
     function Transform(X: Matrix): Matrix;
   
+/// Показывает, был ли вызван метод Fit.
+/// Если False, вызов Transform может привести к ошибке.
     property IsFitted: boolean read fFitted;
 
+/// Возвращает строковое представление трансформера
     function ToString: string; override;
+    
+/// Создает глубокую копию нормализатора.
+/// Копируются параметры и внутреннее состояние.
     function Clone: ITransformer;
   end;
   
@@ -1678,6 +1987,14 @@ begin
   dest.fMinSamplesSplit := fMinSamplesSplit;
   dest.fMinSamplesLeaf := fMinSamplesLeaf;
   dest.fFitted := fFitted;
+  dest.fRandomSeed := fRandomSeed;
+  dest.fMaxFeatures := fMaxFeatures;
+
+  if fCriterion <> nil then
+    dest.fCriterion := fCriterion; // можно так, если критерий stateless
+
+  if fFeatureImportances <> nil then
+    dest.fFeatureImportances := fFeatureImportances.Clone;
 
   if fRoot <> nil then
     dest.fRoot := fRoot.Clone;
@@ -2231,6 +2548,16 @@ begin
   Result := MajorityClass(y, indices);
 end;
 
+function DecisionTreeClassifier.ToString: string;
+begin
+  Result :=
+    $'DecisionTreeClassifier(' +
+    $'maxDepth={fMaxDepth}, ' +
+    $'minSamplesSplit={fMinSamplesSplit}, ' +
+    $'minSamplesLeaf={fMinSamplesLeaf}' +
+    ')';
+end;
+
 // DecisionTreeRegressor
 
 constructor DecisionTreeRegressor.Create(maxDepth: integer; minSamplesSplit: integer; 
@@ -2340,12 +2667,28 @@ begin
   var m := new DecisionTreeRegressor(
     fMaxDepth,
     fMinSamplesSplit,
-    fMinSamplesLeaf
+    fMinSamplesLeaf,
+    fLeafL2
   );
 
   CopyBaseState(m);
 
   Result := m;
+end;
+
+function DecisionTreeRegressor.ToString: string;
+begin
+  var s :=
+    $'DecisionTreeRegressor(maxDepth={fMaxDepth}, ' +
+    $'minSamplesSplit={fMinSamplesSplit}, ' +
+    $'minSamplesLeaf={fMinSamplesLeaf}';
+
+  if fLeafL2 <> 0.0 then
+    s += $', leafL2={fLeafL2}';
+
+  s += ')';
+
+  Result := s;
 end;
 
 
@@ -2499,9 +2842,26 @@ begin
   Result := resultVec;
 end;
 
+function RandomForestRegressor.ToString: string;
+begin
+  var depthStr :=
+    if fMaxDepth = integer.MaxValue then '∞'
+    else fMaxDepth.ToString;
+
+  Result :=
+    $'RandomForestRegressor(' +
+    $'nTrees={fNTrees}, ' +
+    $'maxDepth={depthStr}, ' +
+    $'minSamplesSplit={fMinSamplesSplit}, ' +
+    $'minSamplesLeaf={fMinSamplesLeaf}, ' +
+    $'maxFeatures={fMaxFeaturesMode}' +
+    ')';
+end;
+
 //-----------------------------
 //     RandomForestClassifier 
 //-----------------------------
+
 constructor RandomForestClassifier.Create(nTrees: integer; 
   maxDepth: integer; minSamplesSplit: integer; minSamplesLeaf: integer;
   maxFeaturesMode: TMaxFeaturesMode);
@@ -2624,6 +2984,22 @@ begin
   resultVec *= 1.0 / fTrees.Length;
 
   Result := resultVec;
+end;
+
+function RandomForestClassifier.ToString: string;
+begin
+  var depthStr :=
+    if fMaxDepth = integer.MaxValue then '∞'
+    else fMaxDepth.ToString;
+
+  Result :=
+    $'RandomForestClassifier(' +
+    $'nTrees={fNTrees}, ' +
+    $'maxDepth={depthStr}, ' +
+    $'minSamplesSplit={fMinSamplesSplit}, ' +
+    $'minSamplesLeaf={fMinSamplesLeaf}, ' +
+    $'maxFeatures={fMaxFeaturesMode}' +
+    ')';
 end;
 
 //-----------------------------
@@ -3185,63 +3561,57 @@ begin
   Result := fFeatureImportances;
 end;
 
+function GradientBoostingRegressor.ToString: string;
+begin
+  var s :=
+    $'GradientBoostingRegressor(' +
+    $'n={fNEstimators}, ' +
+    $'lr={fLearningRate}, ' +
+    $'maxDepth={fMaxDepth}, ' +
+    $'loss={fLoss}';
+
+  if fSubsample <> 1.0 then
+    s += $', subs={fSubsample}';
+
+  if fEarlyStoppingPatience > 0 then
+    s += $', earlyStop={fEarlyStoppingPatience}';
+
+  if fLoss = TGBLoss.Huber then
+    s += $', delta={fHuberDelta}';
+
+  if fLoss = TGBLoss.Quantile then
+    s += $', alpha={fQuantileAlpha}';
+
+  if fLeafL2 <> 0.0 then
+    s += $', leafL2={fLeafL2}';
+
+  if fUseOOBEarlyStopping then
+    s += ', OOB=true';
+
+  s += ')';
+
+  Result := s;
+end;
+
 function GradientBoostingRegressor.Clone: IModel;
 begin
-  var c := new GradientBoostingRegressor(
+  var copy := new GradientBoostingRegressor(
     fNEstimators,
     fLearningRate,
     fMaxDepth,
     fMinSamplesSplit,
     fMinSamplesLeaf,
     fSubsample,
-    fRandomSeed,
-    fLoss,
-    fHuberDelta,
-    fEarlyStoppingPatience,
-    fQuantileAlpha,
-    fLeafL2,
-    fUseOOBEarlyStopping
-  );
+    fRandomSeed);
 
-  // --- fitted state
-  c.fFitted := fFitted;
-  c.fFeatureCount := fFeatureCount;
-  c.fInitValue := fInitValue;
+  copy.fInitValue := fInitValue;
+  copy.fFeatureCount := fFeatureCount;
+  copy.fFitted := fFitted;
 
-  // --- best/iters
-  c.fBestIteration := fBestIteration;
-  c.fBestTrainLoss := fBestTrainLoss;
-  c.fBestValLoss := fBestValLoss;
+  foreach var tree in fEstimators do
+    copy.fEstimators.Add(tree.Clone as DecisionTreeRegressor);
 
-  // --- estimators (deep)
-  c.fEstimators.Clear;
-  foreach var t in fEstimators do
-    c.fEstimators.Add(DecisionTreeRegressor(t.Clone));
-
-  // --- histories (deep copy values)
-  c.fTrainLossHistory.Clear;
-  foreach var v in fTrainLossHistory do
-    c.fTrainLossHistory.Add(v);
-
-  c.fValLossHistory.Clear;
-  foreach var v in fValLossHistory do
-    c.fValLossHistory.Add(v);
-
-  c.fOOBLossHistory.Clear;
-  foreach var v in fOOBLossHistory do
-    c.fOOBLossHistory.Add(v);
-
-  // --- feature importances (deep)
-  if fFeatureImportances <> nil then
-  begin
-    c.fFeatureImportances := new Vector(fFeatureImportances.Length);
-    for var i := 0 to fFeatureImportances.Length - 1 do
-      c.fFeatureImportances[i] := fFeatureImportances[i];
-  end
-  else
-    c.fFeatureImportances := nil;
-
-  Result := c;
+  Result := copy;
 end;
 
 //-----------------------------
@@ -3880,9 +4250,28 @@ begin
   Result := fFeatureImportances;
 end;
 
+function GradientBoostingClassifier.ToString: string;
+begin
+  var s :=
+    $'GradientBoostingClassifier(' +
+    $'n={fNEstimators}, ' +
+    $'lr={fLearningRate}, ' +
+    $'maxDepth={fMaxDepth}';
+
+  if fSubsample <> 1.0 then
+    s += $', subs={fSubsample}';
+
+  if fEarlyStoppingPatience > 0 then
+    s += $', earlyStop={fEarlyStoppingPatience}';
+
+  s += ')';
+
+  Result := s;
+end;
+
 function GradientBoostingClassifier.Clone: IModel;
 begin
-  var c := new GradientBoostingClassifier(
+  var model := new GradientBoostingClassifier(
     fNEstimators,
     fLearningRate,
     fMaxDepth,
@@ -3894,77 +4283,47 @@ begin
   );
 
   // --- fitted state
-  c.fFitted := fFitted;
-  c.fFeatureCount := fFeatureCount;
+  model.fFitted := fFitted;
+  model.fFeatureCount := fFeatureCount;
+  model.fClassCount := fClassCount;
 
-  // --- class mapping (deep)
-  c.fClassCount := fClassCount;
-
+  // --- classes
   if fClasses <> nil then
   begin
-    SetLength(c.fClasses, Length(fClasses));
+    SetLength(model.fClasses, Length(fClasses));
     for var i := 0 to Length(fClasses) - 1 do
-      c.fClasses[i] := fClasses[i];
-  end
-  else
-    c.fClasses := nil;
-
-  c.fClassIndex := new Dictionary<integer, integer>;
-  if fClassIndex <> nil then
-    foreach var kv in fClassIndex do
-      c.fClassIndex[kv.Key] := kv.Value;
-
-  // --- init logits (deep)
-  if fInitLogits <> nil then
-  begin
-    SetLength(c.fInitLogits, Length(fInitLogits));
-    for var i := 0 to Length(fInitLogits) - 1 do
-      c.fInitLogits[i] := fInitLogits[i];
-  end
-  else
-    c.fInitLogits := nil;
-
-  // --- best/iters
-  c.fBestIteration := fBestIteration;
-  c.fBestValLoss := fBestValLoss;
-
-  // --- estimators (deep): List<array of DecisionTreeRegressor>
-  c.fEstimators.Clear;
-  foreach var arr in fEstimators do
-  begin
-    var k := Length(arr);
-    var arr2 := new DecisionTreeRegressor[k];
-
-    for var cls := 0 to k - 1 do
-      arr2[cls] := DecisionTreeRegressor(arr[cls].Clone);
-
-    c.fEstimators.Add(arr2);
+      model.fClasses[i] := fClasses[i];
   end;
 
-  // --- histories
-  c.fTrainLossHistory.Clear;
-  foreach var v in fTrainLossHistory do
-    c.fTrainLossHistory.Add(v);
-
-  c.fValLossHistory.Clear;
-  foreach var v in fValLossHistory do
-    c.fValLossHistory.Add(v);
-
-  c.fOOBLossHistory.Clear;
-  foreach var v in fOOBLossHistory do
-    c.fOOBLossHistory.Add(v);
-
-  // --- feature importances (deep)
-  if fFeatureImportances <> nil then
+  if fClassIndex <> nil then
   begin
-    c.fFeatureImportances := new Vector(fFeatureImportances.Length);
-    for var i := 0 to fFeatureImportances.Length - 1 do
-      c.fFeatureImportances[i] := fFeatureImportances[i];
-  end
-  else
-    c.fFeatureImportances := nil;
+    model.fClassIndex := new Dictionary<integer, integer>;
+    foreach var kv in fClassIndex do
+      model.fClassIndex.Add(kv.Key, kv.Value);
+  end;
 
-  Result := c;
+  // --- estimators (deep copy)
+  foreach var trees in fEstimators do
+  begin
+    var newTrees := new DecisionTreeRegressor[Length(trees)];
+
+    for var cls := 0 to Length(trees) - 1 do
+      newTrees[cls] := trees[cls].Clone as DecisionTreeRegressor;
+
+    model.fEstimators.Add(newTrees);
+  end;
+
+  // --- history
+  foreach var v in fTrainLossHistory do
+    model.fTrainLossHistory.Add(v);
+
+  foreach var v in fValLossHistory do
+    model.fValLossHistory.Add(v);
+
+  model.fBestIteration := fBestIteration;
+  model.fBestValLoss := fBestValLoss;
+
+  Result := model;
 end;
 
 function GradientBoostingClassifier.Fit(X: Matrix; y: Vector): IModel;
