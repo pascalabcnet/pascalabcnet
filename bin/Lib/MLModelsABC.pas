@@ -940,6 +940,84 @@ type
     function ToString: string; override;
   end;
 
+//-----------------------------
+//             KNN
+//-----------------------------
+  
+  Neighbor = record
+    dist: double;
+    idx: integer;
+  end;
+ 
+  KNNWeighting = (Uniform, Distance);
+ 
+  KNNBase = abstract class(IModel)
+  protected
+    // ==== train state ====
+    fXTrain: Matrix;
+    fK: integer;
+    fIsFitted: boolean;
+    
+    fWeighting: KNNWeighting;
+
+    // ==== work buffers ====
+    fNeighbors: array of Neighbor;
+
+    // ==== common methods ====
+    procedure CheckFitted;
+    procedure ValidatePredictInput(X: Matrix);
+
+    function SquaredL2(trainRow: integer; XTest: Matrix; testRow: integer): double;
+
+    procedure QuickSelect(k: integer);
+    function Partition(left, right: integer): integer;
+
+  public
+    constructor Create(k: integer; weighting: KNNWeighting := KNNWeighting.Uniform);
+
+    function Fit(X: Matrix; y: Vector): IModel; virtual; abstract;
+    function Predict(X: Matrix): Vector; virtual; abstract;
+
+    function Clone: IModel; virtual; abstract;
+  end;
+  
+  KNNClassifier = class(KNNBase, IProbabilisticClassifier)
+  private
+    // ==== classification state ====
+    fYEnc: array of integer;
+    fClasses: array of double;
+    fClassCount: integer;
+
+    // ==== voting buffers ====
+    fVotes: array of double;
+    fMark: array of integer;
+    fTouched: array of integer;
+    fEpoch: integer;
+
+    procedure EncodeClasses(y: Vector);
+
+  public
+    constructor Create(k: integer; weighting: KNNWeighting := KNNWeighting.Uniform);
+
+    function Fit(X: Matrix; y: Vector): IModel; override;
+    function Predict(X: Matrix): Vector; override;
+    function PredictProba(X: Matrix): Matrix;
+    function GetClasses: array of double;
+
+    function Clone: IModel; override;
+  end;
+  
+  KNNRegressor = class(KNNBase, IRegressor)
+  private
+    fYTrain: Vector;
+
+  public
+    constructor Create(k: integer; weighting: KNNWeighting := KNNWeighting.Uniform);
+
+    function Fit(X: Matrix; y: Vector): IModel; override;
+    function Predict(X: Matrix): Vector; override;
+    function Clone: IModel; override;
+  end;
 {$endregion Models}
 
 {$region Pipeline}
@@ -1315,8 +1393,13 @@ const
   ER_MAX_DEPTH_INVALID =
     'maxDepth должен быть > 0!!maxDepth must be > 0';
   ER_SUBSAMPLE_INVALID =
-    'subsample должен быть > 0!!subsample must be > 0';    
-    
+    'subsample должен быть > 0!!subsample must be > 0'; 
+  ER_NAN_IN_Y =
+    'y содержит NaN!!y contains NaN';  
+  ER_NAN_IN_X =  
+    'x содержит NaN!!x contains NaN';  
+  ER_K_EXCEEDS_SAMPLES =
+    'k превышает число обучающих объектов!!k exceeds number of training samples';  
     
 {$endregion ErrConstants}  
   
@@ -4478,12 +4561,546 @@ begin
   end;
 end;
 
+//-----------------------------
+//          KNNBase 
+//-----------------------------
 
+constructor KNNBase.Create(k: integer; weighting: KNNWeighting);
+begin
+  if k < 1 then
+    ArgumentOutOfRangeError(ER_K_MUST_BE_POSITIVE);
+
+  fK := k;
+  fWeighting := weighting;
+  fIsFitted := False;
+end;
+
+procedure KNNBase.CheckFitted;
+begin
+  if not fIsFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+end;
+
+procedure KNNBase.ValidatePredictInput(X: Matrix);
+begin
+  if X.ColCount <> fXTrain.ColCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH);
+end;
+
+function KNNBase.SquaredL2(trainRow: integer; XTest: Matrix; testRow: integer): double;
+begin
+  var sum := 0.0;
+  var d := fXTrain.ColCount;
+
+  for var j := 0 to d - 1 do
+  begin
+    var diff := fXTrain[trainRow, j] - XTest[testRow, j];
+    sum += diff * diff;
+  end;
+
+  exit(sum);
+end;
+
+// QuickSelect(fK - 1); - так вызываем
+
+procedure KNNBase.QuickSelect(k: integer);
+begin
+  var left := 0;
+  var right := fNeighbors.Length - 1;
+
+  while true do
+  begin
+    var pivotIndex := Partition(left, right);
+
+    if pivotIndex = k then
+      exit
+    else if pivotIndex > k then
+      right := pivotIndex - 1
+    else
+      left := pivotIndex + 1;
+  end;
+end;
+
+function KNNBase.Partition(left, right: integer): integer;
+begin
+  var pivot := fNeighbors[(left + right) div 2].dist;
+
+  var i := left;
+  var j := right;
+
+  while true do
+  begin
+    while fNeighbors[i].dist < pivot do i += 1;
+    while fNeighbors[j].dist > pivot do j -= 1;
+
+    if i >= j then
+      exit(j);
+
+    Swap(fNeighbors[i], fNeighbors[j]);
+    
+    i += 1;
+    j -= 1;
+  end;
+end;
+
+//-----------------------------
+//        KNNClassifier 
+//-----------------------------
+
+constructor KNNClassifier.Create(k: integer; weighting: KNNWeighting);
+begin
+  inherited Create(k, weighting);
+end;
+
+procedure KNNClassifier.EncodeClasses(y: Vector);
+begin
+  var n := y.Length;
+
+  // собрать уникальные значения
+  var hs := new HashSet<double>;
+  for var i := 0 to n - 1 do
+  begin
+    var v := y[i];
+    if double.IsNaN(v) then
+      ArgumentError(ER_NAN_IN_Y);
+    hs.Add(v);
+  end;
+
+  fClasses := hs.ToArray;
+  &Array.Sort(fClasses);
+
+  fClassCount := fClasses.Length;
+
+  // построить map label -> index
+  var dict := new Dictionary<double, integer>;
+  for var i := 0 to fClassCount - 1 do
+    dict[fClasses[i]] := i;
+
+  SetLength(fYEnc, n);
+
+  for var i := 0 to n - 1 do
+    fYEnc[i] := dict[y[i]];
+end;
+
+function KNNClassifier.Fit(X: Matrix; y: Vector): IModel;
+begin
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if y = nil then
+    ArgumentNullError(ER_Y_NULL);
+
+  if X.RowCount <> y.Length then
+    DimensionError(ER_XY_SIZE_MISMATCH);
+
+  if fK > X.RowCount then
+    ArgumentOutOfRangeError(ER_K_EXCEEDS_SAMPLES);
+
+  // проверить NaN в X
+  for var i := 0 to X.RowCount - 1 do
+    for var j := 0 to X.ColCount - 1 do
+      if double.IsNaN(X[i,j]) then
+        ArgumentError(ER_NAN_IN_X);
+
+  // копия train data
+  fXTrain := X.Clone;  // предполагаем, что Clone делает глубокую копию
+
+  // кодирование классов
+  EncodeClasses(y);
+
+  var n := fXTrain.RowCount;
+  var C := fClassCount;
+
+  // выделение буферов
+  SetLength(fNeighbors, n);
+
+  SetLength(fVotes, C);
+  SetLength(fMark, C);
+  SetLength(fTouched, C);
+  fEpoch := 0;
+
+  fIsFitted := true;
+
+  exit(self);
+end;
+
+function KNNClassifier.GetClasses: array of double;
+begin
+  Result := fClasses;
+end;
+
+function KNNClassifier.Clone: IModel;
+begin
+  var clone := new KNNClassifier(fK, fWeighting);
+
+  if fIsFitted then
+  begin
+    clone.fXTrain := fXTrain.Clone;
+    clone.fClasses := fClasses.Clone as array of double;
+    clone.fYEnc := fYEnc.Clone as array of integer;
+
+    clone.fClassCount := fClassCount;
+
+    SetLength(clone.fNeighbors, fNeighbors.Length);
+    SetLength(clone.fVotes, fVotes.Length);
+    SetLength(clone.fMark, fMark.Length);
+    SetLength(clone.fTouched, fTouched.Length);
+
+    clone.fEpoch := 0;
+    clone.fIsFitted := true;
+  end;
+
+  Result := clone;
+end;
+
+function KNNClassifier.Predict(X: Matrix): Vector;
+begin
+  if not fIsFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  ValidatePredictInput(X);
+
+  var m := X.RowCount;
+  var n := fXTrain.RowCount;
+
+  Result := new Vector(m);
+
+  for var i := 0 to m - 1 do
+  begin
+    // заполнить расстояния
+    for var t := 0 to n - 1 do
+    begin
+      fNeighbors[t].dist := SquaredL2(t, X, i);
+      fNeighbors[t].idx := t;
+    end;
+
+    // выбрать k ближайших
+    QuickSelect(fK - 1);
+
+    // exact match: если среди k ближайших есть dist=0, возвращаем его класс
+    var exactCls := -1;
+    for var t := 0 to fK - 1 do
+      if fNeighbors[t].dist = 0 then
+      begin
+        exactCls := fYEnc[fNeighbors[t].idx];
+        break;
+      end;
+
+    if exactCls <> -1 then
+    begin
+      Result[i] := fClasses[exactCls];
+      continue;
+    end;
+
+    // voting (stamping)
+    fEpoch += 1;
+    var touchCount := 0;
+
+    if fWeighting = Uniform then
+    begin
+      for var t := 0 to fK - 1 do
+      begin
+        var trainIdx := fNeighbors[t].idx;
+        var cls := fYEnc[trainIdx];
+
+        if fMark[cls] <> fEpoch then
+        begin
+          fMark[cls] := fEpoch;
+          fVotes[cls] := 0.0;
+          fTouched[touchCount] := cls;
+          touchCount += 1;
+        end;
+
+        fVotes[cls] += 1.0;
+      end;
+    end
+    else
+    begin
+      // weighted: веса 1 / dist (dist = squared distance)
+      for var t := 0 to fK - 1 do
+      begin
+        var trainIdx := fNeighbors[t].idx;
+        var cls := fYEnc[trainIdx];
+        var dist := fNeighbors[t].dist;
+
+        if fMark[cls] <> fEpoch then
+        begin
+          fMark[cls] := fEpoch;
+          fVotes[cls] := 0.0;
+          fTouched[touchCount] := cls;
+          touchCount += 1;
+        end;
+
+        var w := 1.0 / dist;
+        fVotes[cls] += w;
+      end;
+    end;
+
+    // argmax только по touched
+    var bestCls := fTouched[0];
+    var bestVotes := fVotes[bestCls];
+
+    for var k2 := 1 to touchCount - 1 do
+    begin
+      var cls := fTouched[k2];
+      var v := fVotes[cls];
+
+      if (v > bestVotes) or ((v = bestVotes) and (cls < bestCls)) then
+      begin
+        bestCls := cls;
+        bestVotes := v;
+      end;
+    end;
+
+    Result[i] := fClasses[bestCls];
+  end;
+end;
+
+function KNNClassifier.PredictProba(X: Matrix): Matrix;
+begin
+  if not fIsFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  ValidatePredictInput(X);
+
+  var m := X.RowCount;
+  var n := fXTrain.RowCount;
+
+  Result := new Matrix(m, fClassCount); // предполагаем нулевую инициализацию
+
+  for var i := 0 to m - 1 do
+  begin
+    // заполнить расстояния
+    for var t := 0 to n - 1 do
+    begin
+      fNeighbors[t].dist := SquaredL2(t, X, i);
+      fNeighbors[t].idx := t;
+    end;
+
+    // выбрать k ближайших
+    QuickSelect(fK - 1);
+
+    // exact match: если среди k ближайших есть dist=0, вероятность 1 у его класса
+    var exactCls := -1;
+    for var t := 0 to fK - 1 do
+      if fNeighbors[t].dist = 0 then
+      begin
+        exactCls := fYEnc[fNeighbors[t].idx];
+        break;
+      end;
+
+    if exactCls <> -1 then
+    begin
+      Result[i, exactCls] := 1.0;
+      continue;
+    end;
+
+    // voting (stamping)
+    fEpoch += 1;
+    var touchCount := 0;
+
+    if fWeighting = Uniform then
+    begin
+      for var t := 0 to fK - 1 do
+      begin
+        var trainIdx := fNeighbors[t].idx;
+        var cls := fYEnc[trainIdx];
+
+        if fMark[cls] <> fEpoch then
+        begin
+          fMark[cls] := fEpoch;
+          fVotes[cls] := 0.0;
+          fTouched[touchCount] := cls;
+          touchCount += 1;
+        end;
+
+        fVotes[cls] += 1.0;
+      end;
+
+      // нормализация: сумма = k
+      for var k2 := 0 to touchCount - 1 do
+      begin
+        var cls := fTouched[k2];
+        Result[i, cls] := fVotes[cls] / fK;
+      end;
+    end
+    else
+    begin
+      var sumW := 0.0;
+
+      for var t := 0 to fK - 1 do
+      begin
+        var trainIdx := fNeighbors[t].idx;
+        var cls := fYEnc[trainIdx];
+        var dist := fNeighbors[t].dist;
+
+        if fMark[cls] <> fEpoch then
+        begin
+          fMark[cls] := fEpoch;
+          fVotes[cls] := 0.0;
+          fTouched[touchCount] := cls;
+          touchCount += 1;
+        end;
+
+        var w := 1.0 / dist;
+        fVotes[cls] += w;
+        sumW += w;
+      end;
+
+      // нормализация: сумма = sumW
+      for var k2 := 0 to touchCount - 1 do
+      begin
+        var cls := fTouched[k2];
+        Result[i, cls] := fVotes[cls] / sumW;
+      end;
+    end;
+  end;
+end;
+
+//-----------------------------
+//        KNNRegressor 
+//-----------------------------
+
+constructor KNNRegressor.Create(k: integer; weighting: KNNWeighting);
+begin
+  inherited Create(k, weighting);
+end;
+
+function KNNRegressor.Fit(X: Matrix; y: Vector): IModel;
+begin
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if y = nil then
+    ArgumentNullError(ER_Y_NULL);
+
+  if X.RowCount <> y.Length then
+    DimensionError(ER_XY_SIZE_MISMATCH);
+
+  if fK > X.RowCount then
+    ArgumentOutOfRangeError(ER_K_EXCEEDS_SAMPLES);
+
+  // Проверка NaN в X
+  for var i := 0 to X.RowCount - 1 do
+    for var j := 0 to X.ColCount - 1 do
+      if double.IsNaN(X[i,j]) then
+        ArgumentError(ER_NAN_IN_X);
+
+  // Проверка NaN в y
+  for var i := 0 to y.Length - 1 do
+    if double.IsNaN(y[i]) then
+      ArgumentError(ER_NAN_IN_Y);
+
+  fXTrain := X.Clone;
+  fYTrain := y.Clone;
+
+  var n := fXTrain.RowCount;
+  SetLength(fNeighbors, n);
+
+  fIsFitted := True;
+
+  Result := Self;
+end;
+
+function KNNRegressor.Predict(X: Matrix): Vector;
+begin
+  if not fIsFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  ValidatePredictInput(X);
+
+  var m := X.RowCount;
+  var n := fXTrain.RowCount;
+
+  Result := new Vector(m);
+
+  for var i := 0 to m - 1 do
+  begin
+    // заполнить расстояния
+    for var t := 0 to n - 1 do
+    begin
+      fNeighbors[t].dist := SquaredL2(t, X, i);
+      fNeighbors[t].idx := t;
+    end;
+
+    // выбрать k ближайших (первые k элементов, порядок произвольный)
+    QuickSelect(fK - 1);
+
+    // exact match: ищем dist=0 среди k ближайших
+    var exactIdx := -1;
+    for var t := 0 to fK - 1 do
+      if fNeighbors[t].dist = 0 then
+      begin
+        exactIdx := fNeighbors[t].idx;
+        break;
+      end;
+
+    if exactIdx <> -1 then
+    begin
+      Result[i] := fYTrain[exactIdx];
+      continue;
+    end;
+
+    if fWeighting = KNNWeighting.Uniform then
+    begin
+      // среднее по k
+      var sum := 0.0;
+      for var t := 0 to fK - 1 do
+        sum += fYTrain[fNeighbors[t].idx];
+
+      Result[i] := sum / fK;
+    end
+    else
+    begin
+      // weighted: веса 1 / dist (dist = squared distance)
+      var sumW := 0.0;
+      var sumWY := 0.0;
+
+      for var t := 0 to fK - 1 do
+      begin
+        var idx := fNeighbors[t].idx;
+        var dist := fNeighbors[t].dist;
+
+        // dist=0 здесь уже не встречается из-за exact-match выше
+        var w := 1.0 / dist;
+        sumW += w;
+        sumWY += w * fYTrain[idx];
+      end;
+
+      Result[i] := sumWY / sumW;
+    end;
+  end;
+end;
+
+function KNNRegressor.Clone: IModel;
+begin
+  var clone := new KNNRegressor(fK, fWeighting);
+
+  if fIsFitted then
+  begin
+    clone.fXTrain := fXTrain.Clone;
+    clone.fYTrain := fYTrain.Clone;
+
+    SetLength(clone.fNeighbors, fNeighbors.Length);
+
+    clone.fIsFitted := True;
+  end;
+
+  Result := clone;
+end;
 
 //-----------------------------
 //          Pipeline 
 //-----------------------------
-
 
 constructor Pipeline.Create;
 begin

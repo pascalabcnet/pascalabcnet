@@ -77,7 +77,7 @@ type
     property Cols: integer read data.GetLength(1);
     
     property Item[i, j: integer]: real
-    read data[i, j] write SetData; default;
+      read data[i, j] write SetData; default;
     
     constructor Create(r, c: integer);
     constructor Create(values: array[,] of real);

@@ -48,7 +48,10 @@ type
   RandomForestClassifier = MLModelsABC.RandomForestClassifier;
   GradientBoostingRegressor = MLModelsABC.GradientBoostingRegressor;
   GradientBoostingClassifier = MLModelsABC.GradientBoostingClassifier;
+  KNNClassifier = MLModelsABC.KNNClassifier;
+  KNNRegressor = MLModelsABC.KNNRegressor;
   
+  KNNWeighting = MLModelsABC.KNNWeighting;
   TGBLoss = MLModelsABC.TGBLoss;
   TMaxFeaturesMode = MLModelsABC.TMaxFeaturesMode;
 
