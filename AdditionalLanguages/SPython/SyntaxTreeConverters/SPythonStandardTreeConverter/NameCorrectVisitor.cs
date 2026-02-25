@@ -7,8 +7,11 @@ namespace Languages.SPython.Frontend.Converters
     {
         public HashSet<string> variablesUsedAsGlobal = new HashSet<string>();
 
-        public NameCorrectVisitor(string unitName, Dictionary<string, Dictionary<string, bool>> namesFromUsedUnits, HashSet<string> definedFunctionsNames) : base(unitName, namesFromUsedUnits) 
+        private readonly bool forIntellisense;
+
+        public NameCorrectVisitor(string unitName, bool forIntellisense, Dictionary<string, Dictionary<string, bool>> namesFromUsedUnits, HashSet<string> definedFunctionsNames) : base(unitName, namesFromUsedUnits) 
         {
+            this.forIntellisense = forIntellisense;
             foreach (string definedFunctionName in definedFunctionsNames)
             {
                 symbolTable.Add(definedFunctionName, NameKind.ForwardDeclaredFunction);
@@ -54,21 +57,24 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(global_statement _global_statement)
         {
-            foreach (ident _ident in _global_statement.idents.idents)
+            if (!forIntellisense)
             {
-                NameKind nameType = symbolTable[_ident.name];
-                switch (nameType)
+                foreach (ident _ident in _global_statement.idents.idents)
                 {
-                    case NameKind.GlobalVariable:
-                    case NameKind.ImportedVariableAlias:
-                    case NameKind.ImportedNotVariableAlias:
-                        break;
-                    case NameKind.Unknown:
-                        throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}",
-                        _ident.source_context, _ident.name);
-                    default:
-                        throw new SPythonSyntaxVisitorError("SCOPE_CONTAINS_NAME_{0}",
-                        _ident.source_context, _ident.name);
+                    NameKind nameType = symbolTable[_ident.name];
+                    switch (nameType)
+                    {
+                        case NameKind.GlobalVariable:
+                        case NameKind.ImportedVariableAlias:
+                        case NameKind.ImportedNotVariableAlias:
+                            break;
+                        case NameKind.Unknown:
+                            throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}",
+                            _ident.source_context, _ident.name);
+                        default:
+                            throw new SPythonSyntaxVisitorError("SCOPE_CONTAINS_NAME_{0}",
+                            _ident.source_context, _ident.name);
+                    }
                 }
             }
 
@@ -77,6 +83,9 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(named_type_reference _named_type_reference)
         {
+            if (forIntellisense)
+                return;
+
             ident id = _named_type_reference.names[0];
             string name = id.name;
 
@@ -107,6 +116,9 @@ namespace Languages.SPython.Frontend.Converters
         // функция нужна для классов list, dict и set из-за наличия одноименных функций в другом модуле
         public override void visit(template_type_reference _template_type_reference)
         {
+            if (forIntellisense)
+                return;
+
             named_type_reference _named_type_reference = _template_type_reference.name;
             string name = _named_type_reference.names[0].name + '`';
 
@@ -144,11 +156,17 @@ namespace Languages.SPython.Frontend.Converters
             switch (nameKind)
             {
                 case NameKind.ModuleAlias:
+                    if (forIntellisense)
+                        break;
+
                     _ident.name = symbolTable.AliasToRealName(_ident.name);
                     break;
 
                 case NameKind.ImportedVariableAlias:
                 case NameKind.ImportedNotVariableAlias:
+                    if (forIntellisense)
+                        break;
+
                     Replace(_ident, new dot_node(new ident(symbolTable.AliasToModuleName(_ident.name), sc)
                     , new ident(symbolTable.AliasToRealName(_ident.name), sc), sc));
                     break;
@@ -160,12 +178,18 @@ namespace Languages.SPython.Frontend.Converters
                     break;
 
                 case NameKind.ForwardDeclaredFunction:
+                    if (forIntellisense)
+                        break;
+
                     if (!symbolTable.IsInFunctionBody)
                         throw new SPythonSyntaxVisitorError("FUNCTION_{0}_USED_BEFORE_DECLARATION",
                                                             sc, _ident.name);
                     break;
 
                 case NameKind.Unknown:
+                    if (forIntellisense)
+                        break;
+
                     throw new SPythonSyntaxVisitorError("UNKNOWN_NAME_{0}", 
                                                         sc, _ident.name);
             }
@@ -219,7 +243,8 @@ namespace Languages.SPython.Frontend.Converters
                     else
                         symbolTable.Add(_ident.name, NameKind.LocalVariable);
 
-                    CheckInitializationWithEmptyCollection(_assign);
+                    if (!forIntellisense)
+                        CheckInitializationWithEmptyCollection(_assign);
 
                     var _var_statement = SyntaxTreeBuilder.BuildVarStatementNodeFromAssignNode(_assign);
 

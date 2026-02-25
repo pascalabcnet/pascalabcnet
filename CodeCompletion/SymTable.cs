@@ -534,8 +534,9 @@ namespace CodeCompletion
 
         public void AddUsedUnit(SymScope unit)
         {
-            if (this.si.name != StringConstants.pascalSystemUnitName || unit is NamespaceScope)
-                used_units.Add(unit);
+            // Убрал условие  EVA 14.02.2026
+            // if (this.si.name != StringConstants.pascalSystemUnitName || unit is NamespaceScope)
+            used_units.Add(unit);
         }
 
         public virtual string GetFullName()
@@ -1814,9 +1815,9 @@ namespace CodeCompletion
             this.def_proc = def_proc;
             this.top_mod_scope = top_mod_scope;
             def_proc.procRealization = this;
-            if (def_proc != null)
-                this.topScope = def_proc.topScope;
+            this.topScope = def_proc.topScope;
             this.si = new SymInfo(def_proc.si.name, def_proc.si.kind, def_proc.si.description);
+            this.documentation = def_proc.documentation;
         }
 
         public override ScopeKind Kind
