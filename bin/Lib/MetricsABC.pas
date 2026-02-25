@@ -49,6 +49,30 @@ type
     /// 0.5 — случайная модель,
     /// 1 — идеальная модель.
     static function AUC(yTrue, yProb: Vector): real;
+    
+    /// Доля правильных предсказаний.
+    /// Показывает, какая часть объектов классифицирована верно.
+    /// Удобна, когда классы примерно сбалансированы.
+    /// Пример: Accuracy = 0.9 означает 90% правильных ответов.
+    static function Accuracy(yTrue, yPred: Vector): real;
+
+    /// Точность (Precision) для положительного класса (1).
+    /// Среди всех объектов, которые модель предсказала как 1,
+    /// показывает долю действительно принадлежащих этому классу.
+    /// Важна, когда критичны ложные положительные результаты («ложные тревоги»).
+    static function Precision(yTrue, yPred: Vector): real;
+
+    /// Полнота (Recall) для положительного класса (1).
+    /// Среди всех объектов, которые в действительности равны 1,
+    /// показывает долю правильно найденных моделью.
+    /// Важна, когда нежелательны пропуски положительных случаев (например, заболеваний).
+    static function Recall(yTrue, yPred: Vector): real;
+
+    /// F1-мера.
+    /// Объединённая метрика, учитывающая и Precision, и Recall одновременно.
+    /// Высока только тогда, когда и Precision, и Recall высоки.
+    /// Используется, когда классы сильно различаются по количеству элементов
+    static function F1(yTrue, yPred: Vector): real;
   end;
   
 type  
@@ -114,6 +138,8 @@ type
   
 implementation  
 
+uses MLExceptions;
+
 //-----------------------------
 //           Metrics
 //-----------------------------
@@ -121,7 +147,7 @@ implementation
 static function Metrics.MSE(yTrue, yPred: Vector): real;
 begin
   if yTrue.Length <> yPred.Length then
-    raise new Exception('Dimension mismatch in MSE');
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yPred.Length);
 
   var n := yTrue.Length;
   var s := 0.0;
@@ -138,7 +164,7 @@ end;
 static function Metrics.MAE(yTrue, yPred: Vector): real;
 begin
   if yTrue.Length <> yPred.Length then
-    raise new Exception('Dimension mismatch in MAE');
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yPred.Length);
 
   var n := yTrue.Length;
   var s := 0.0;
@@ -152,7 +178,7 @@ end;
 static function Metrics.R2(yTrue, yPred: Vector): real;
 begin
   if yTrue.Length <> yPred.Length then
-    raise new Exception('Dimension mismatch in R2');
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yPred.Length);
 
   var n := yTrue.Length;
   var meanY := yTrue.Mean;
@@ -178,7 +204,7 @@ end;
 static function Metrics.LogLoss(yTrue, yProb: Vector): real;
 begin
   if yTrue.Length <> yProb.Length then
-    raise new Exception('Dimension mismatch in LogLoss');
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yProb.Length);
 
   var n := yTrue.Length;
   var eps := 1e-15;
@@ -200,7 +226,7 @@ end;
 static function Metrics.ROC(yTrue, yProb: Vector): (Vector, Vector);
 begin
   if yTrue.Length <> yProb.Length then
-    raise new Exception('Dimension mismatch in ROC');
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yProb.Length);
 
   var n := yTrue.Length;
 
@@ -267,6 +293,27 @@ begin
   Result := area;
 end;
 
+static function Metrics.Accuracy(yTrue, yPred: Vector): real;
+begin
+  Result := ConfusionMatrix.Create(yTrue, yPred).Accuracy;
+end;
+
+static function Metrics.Precision(yTrue, yPred: Vector): real;
+begin
+  Result := ConfusionMatrix.Create(yTrue, yPred).Precision;
+end;
+
+static function Metrics.Recall(yTrue, yPred: Vector): real;
+begin
+  Result := ConfusionMatrix.Create(yTrue, yPred).Recall;
+end;
+
+static function Metrics.F1(yTrue, yPred: Vector): real;
+begin
+  Result := ConfusionMatrix.Create(yTrue, yPred).F1;
+end;
+
+
 //-----------------------------
 //        ConfusionMatrix
 //-----------------------------
@@ -274,7 +321,7 @@ end;
 constructor ConfusionMatrix.Create(yTrue, yPred: Vector);
 begin
   if yTrue.Length <> yPred.Length then
-    raise new Exception('Dimension mismatch in ConfusionMatrix');
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yPred.Length);
 
   for var i := 0 to yTrue.Length - 1 do
   begin

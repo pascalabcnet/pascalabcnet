@@ -230,6 +230,47 @@ type
   
 implementation
 
+uses MLExceptions;
+
+const
+  ER_COLUMN_NOT_INT =
+    'Столбец не является Int!!Column is not Int';
+  ER_COLUMN_NOT_FLOAT =
+    'Столбец не является Float!!Column is not Float';
+  ER_COLUMN_NOT_STR =
+    'Столбец не является Str!!Column is not Str';
+  ER_COLUMN_NOT_BOOL =
+    'Столбец не является Bool!!Column is not Bool';
+  ER_DUPLICATE_COLUMN_NAME =
+    'Повторяющееся имя столбца "{0}"!!Duplicate column name "{0}"';
+  ER_NAMES_NULL =
+    'names не может быть nil!!names is nil';
+  ER_TYPES_NULL =
+    'types не может быть nil!!types is nil';
+  ER_NAMES_TYPES_LENGTH_MISMATCH =
+    'Длины names и types не совпадают!!names and types length mismatch';
+  ER_ISCATEGORICAL_LENGTH_MISMATCH =
+    'Длина isCategorical не совпадает с names!!isCategorical length mismatch';
+  ER_COLUMN_NOT_EXISTS =
+    'Столбец "{0}" не существует!!Column "{0}" does not exist';
+  ER_COLUMN_ALREADY_EXISTS =
+    'Столбец "{0}" уже существует!!Column "{0}" already exists';
+  ER_INDEX_OUT_OF_RANGE =
+    'Индекс {0} вне диапазона [0..{1})!!Index {0} out of range [0..{1})';
+  ER_INDICES_NULL =
+    'indices не может быть nil!!indices is nil';
+  ER_LEFT_SCHEMA_NULL =
+    'Left schema не может быть nil!!Left schema cannot be nil';
+  ER_RIGHT_SCHEMA_NULL =
+    'Right schema не может быть nil!!Right schema cannot be nil';
+  ER_JOIN_KEYS_LENGTH_MISMATCH =
+    'Длины leftKeys и rightKeys не совпадают!!join keys length mismatch';
+  ER_UNKNOWN_COLUMN_TYPE =
+    'Неизвестный тип столбца!!Unknown column type';
+  ER_ROW_INDEX_OUT_OF_RANGE =
+    'Индекс строки {0} вне диапазона [0..{1})!!' +
+    'Row index {0} out of range [0..{1})';  
+    
 //-----------------------------
 //      Сервисные функции
 //-----------------------------
@@ -237,25 +278,25 @@ implementation
 function NotInt(pos: integer): integer;
 begin
   Result := 0;
-  raise new Exception('Column is not Int');
+  Error(ER_COLUMN_NOT_INT);
 end;
 
 function NotFloat(pos: integer): real;
 begin
   Result := 0;
-  raise new Exception('Column is not Float');
+  Error(ER_COLUMN_NOT_FLOAT);
 end;
 
 function NotStr(pos: integer): string;
 begin
   Result := nil;
-  raise new Exception('Column is not Str');
+  Error(ER_COLUMN_NOT_STR);
 end;
 
 function NotBool(pos: integer): boolean;
 begin
   Result := False;
-  raise new Exception('Column is not Bool');
+  Error(ER_COLUMN_NOT_BOOL);
 end;
 
 //-----------------------------
@@ -267,7 +308,7 @@ begin
   for var i := 0 to names.Length - 1 do
   begin
     if Result.ContainsKey(names[i]) then
-      raise new System.ArgumentException($'Duplicate column name "{names[i]}"');
+      ArgumentError(ER_DUPLICATE_COLUMN_NAME, names[i]);
     Result.Add(names[i], i);
   end;
 end;
@@ -275,12 +316,14 @@ end;
 constructor DataFrameSchema.Create(names: array of string; types: array of ColumnType;
   isCategorical: array of boolean);
 begin
-  if names = nil then raise new System.ArgumentException('names is nil');
-  if types = nil then raise new System.ArgumentException('types is nil');
+  if names = nil then 
+    ArgumentNullError(ER_NAMES_NULL);
+  if types = nil then 
+    ArgumentNullError(ER_TYPES_NULL);
   if names.Length <> types.Length then
-    raise new System.ArgumentException('names and types length mismatch');
+    ArgumentError(ER_NAMES_TYPES_LENGTH_MISMATCH);
   if (isCategorical <> nil) and (isCategorical.Length <> names.Length) then
-    raise new System.ArgumentException('isCategorical length mismatch');
+    ArgumentError(ER_ISCATEGORICAL_LENGTH_MISMATCH);
 
   fNames := Copy(names);
   fTypes := Copy(types);
@@ -293,7 +336,7 @@ end;
 function DataFrameSchema.IndexOf(name: string): integer;
 begin
   if not fIndexByName.ContainsKey(name) then
-    raise new System.ArgumentException($'Column "{name}" does not exist');
+    ArgumentError(ER_COLUMN_NOT_EXISTS, name);
   Result := fIndexByName[name];
 end;
 
@@ -303,21 +346,21 @@ function DataFrameSchema.HasColumn(name: string): boolean :=
 function DataFrameSchema.NameAt(i: integer): string;
 begin
   if (i < 0) or (i >= ColumnCount) then
-    raise new System.ArgumentOutOfRangeException('i');
+    ArgumentOutOfRangeError(ER_INDEX_OUT_OF_RANGE, i, ColumnCount);
   Result := fNames[i];
 end;
 
 function DataFrameSchema.ColumnTypeAt(i: integer): ColumnType;
 begin
   if (i < 0) or (i >= ColumnCount) then
-    raise new System.ArgumentOutOfRangeException('i');
+    ArgumentOutOfRangeError(ER_INDEX_OUT_OF_RANGE, i, ColumnCount);
   Result := fTypes[i];
 end;
 
 function DataFrameSchema.IsCategoricalAt(i: integer): boolean;
 begin
   if (i < 0) or (i >= ColumnCount) then
-    raise new System.ArgumentOutOfRangeException('i');
+    ArgumentOutOfRangeError(ER_INDEX_OUT_OF_RANGE, i, ColumnCount);
   if fIsCategorical = nil then
     Result := false
   else
@@ -326,7 +369,8 @@ end;
 
 function DataFrameSchema.Select(indices: array of integer): DataFrameSchema;
 begin
-  if indices = nil then raise new System.ArgumentException('indices is nil');
+  if indices = nil then 
+    ArgumentNullError(ER_INDICES_NULL);
 
   var n := indices.Length;
   var names := new string[n];
@@ -337,7 +381,7 @@ begin
   begin
     var k := indices[i];
     if (k < 0) or (k >= ColumnCount) then
-      raise new System.ArgumentOutOfRangeException('indices');
+      ArgumentOutOfRangeError(ER_INDEX_OUT_OF_RANGE, k, ColumnCount);
     names[i] := fNames[k];
     types[i] := fTypes[k];
     if cats <> nil then cats[i] := fIsCategorical[k];
@@ -348,13 +392,14 @@ end;
 
 function DataFrameSchema.Drop(indices: array of integer): DataFrameSchema;
 begin
-  if indices = nil then raise new System.ArgumentException('indices is nil');
+  if indices = nil then 
+    ArgumentNullError(ER_INDICES_NULL);
 
   var drop := new boolean[ColumnCount];
   foreach var i in indices do
   begin
     if (i < 0) or (i >= ColumnCount) then
-      raise new System.ArgumentOutOfRangeException('indices');
+      ArgumentOutOfRangeError(ER_INDEX_OUT_OF_RANGE, i, ColumnCount);
     drop[i] := true;
   end;
 
@@ -369,9 +414,9 @@ end;
 function DataFrameSchema.Rename(oldName, newName: string): DataFrameSchema;
 begin
   if not HasColumn(oldName) then
-    raise new System.ArgumentException($'Column "{oldName}" does not exist');
+    ArgumentError(ER_COLUMN_NOT_EXISTS, oldName);
   if HasColumn(newName) then
-    raise new System.ArgumentException($'Column "{newName}" already exists');
+    ArgumentError(ER_COLUMN_ALREADY_EXISTS, newName);
 
   var names := Copy(fNames);
   names[IndexOf(oldName)] := newName;
@@ -382,7 +427,7 @@ end;
 function DataFrameSchema.WithCategorical(name: string; value: boolean): DataFrameSchema;
 begin
   if not HasColumn(name) then
-    raise new System.ArgumentException($'Column "{name}" does not exist');
+    ArgumentError(ER_COLUMN_NOT_EXISTS, name);
 
   var cats := if fIsCategorical = nil then new boolean[ColumnCount] else Copy(fIsCategorical);
   cats[IndexOf(name)] := value;
@@ -393,16 +438,18 @@ end;
 class function DataFrameSchema.Merge(left, right: DataFrameSchema;
   leftKeys, rightKeys: array of integer; rightPrefix: string): DataFrameSchema;
 begin
-  if left = nil then raise new System.ArgumentException('left is nil');
-  if right = nil then raise new System.ArgumentException('right is nil');
+  if left = nil then 
+    ArgumentNullError(ER_LEFT_SCHEMA_NULL);
+  if right = nil then 
+    ArgumentNullError(ER_RIGHT_SCHEMA_NULL);
   if leftKeys.Length <> rightKeys.Length then
-    raise new System.ArgumentException('join keys length mismatch');
+    ArgumentError(ER_JOIN_KEYS_LENGTH_MISMATCH);
 
   var skip := new boolean[right.ColumnCount];
   foreach var i in rightKeys do
   begin
     if (i < 0) or (i >= right.ColumnCount) then
-      raise new System.ArgumentOutOfRangeException('rightKeys');
+      ArgumentOutOfRangeError(ER_INDEX_OUT_OF_RANGE, i, right.ColumnCount);
     skip[i] := true;
   end;
 
@@ -734,7 +781,7 @@ begin
         boolAcc[i] := pos -> c.Data[pos];
       end;
     
-    else raise new Exception('Unknown column type');
+    else Error(ER_UNKNOWN_COLUMN_TYPE);
     end;
   end;
 end;  
@@ -790,7 +837,7 @@ end;
 procedure DataFrameCursor.MoveTo(p: integer);
 begin
   if (p < 0) or (p >= rowCnt) then
-    raise new Exception('Cursor.MoveTo: index out of range');
+    ArgumentOutOfRangeError(ER_ROW_INDEX_OUT_OF_RANGE, p, rowCnt);
 
   pos := p;
 end;  

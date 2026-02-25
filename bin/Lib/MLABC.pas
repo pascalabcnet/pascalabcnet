@@ -9,26 +9,63 @@ uses ValidationML;
 uses MLModelsABC;
 uses MetricsABC;
 uses PreprocessorABC;
-USES DataFrameABC;
+uses DataFrameABC;
+uses MLExceptions;
+uses InspectionML;
 
 type 
   Vector = LinearAlgebraML.Vector;
   Matrix = LinearAlgebraML.Matrix;
   Validation = ValidationML.Validation;
-  LinearRegression = MLModelsABC.LinearRegression;
-  LogisticRegression = MLModelsABC.LogisticRegression;
   ConfusionMatrix = MetricsABC.ConfusionMatrix;
   Metrics = MetricsABC.Metrics;
-  Activations = MLModelsABC.Activations;
-  Pipeline = MLModelsABC.Pipeline;
   DataPipeline = PreprocessorABC.DataPipeline;
   DataStandardScaler = PreprocessorABC.DataStandardScaler;
-  StandardScaler = MLModelsABC.StandardScaler;
   DataFrame = DataFrameABC.DataFrame;
   Statistics = DataFrameABC.Statistics;
   CsvLoader = DataFrameABC.CsvLoader;
 
+  StandardScaler = MLModelsABC.StandardScaler;
+  PCATransformer = MLModelsABC.PCATransformer;
+  MinMaxScaler = MLModelsABC.MinMaxScaler;
+  VarianceThreshold = MLModelsABC.VarianceThreshold;
+  SelectKBest = MLModelsABC.SelectKBest;
+  FeatureScore = MLModelsABC.FeatureScore;
+  Normalizer = MLModelsABC.Normalizer;
+  
+  NormType = MLModelsABC.NormType;
+  
+  Activations = MLModelsABC.Activations;
+  Pipeline = MLModelsABC.Pipeline;
+  
+  LinearRegression = MLModelsABC.LinearRegression;
+  LogisticRegression = MLModelsABC.LogisticRegression;
+  RidgeRegression = MLModelsABC.RidgeRegression;
+  ElasticNet = MLModelsABC.ElasticNet;
+  DecisionTreeClassifier = MLModelsABC.DecisionTreeClassifier;
+  DecisionTreeRegressor = MLModelsABC.DecisionTreeRegressor;
+  RandomForestRegressor = MLModelsABC.RandomForestRegressor;
+  RandomForestClassifier = MLModelsABC.RandomForestClassifier;
+  GradientBoostingRegressor = MLModelsABC.GradientBoostingRegressor;
+  GradientBoostingClassifier = MLModelsABC.GradientBoostingClassifier;
+  
+  TGBLoss = MLModelsABC.TGBLoss;
+  TMaxFeaturesMode = MLModelsABC.TMaxFeaturesMode;
+
+  MLException = MLExceptions.MLException;
+  MLNotFittedException = MLExceptions.MLNotFittedException;
+  MLDimensionException = MLExceptions.MLDimensionException;
+  
+  Inspection = InspectionML.Inspection;
+  
 implementation
+
+const
+  ER_TO_MATRIX_NO_COLUMNS =
+    'ToMatrix: не указаны столбцы!!ToMatrix: no columns specified';
+  ER_TO_VECTOR_NON_NUMERIC =
+    'ToVector: столбец "{0}" содержит нечисловые или NA значения!!' +
+    'ToVector: column "{0}" contains non-numeric or NA values';  
 
 function ToMatrix(Self: DataFrame; colNames: array of string): Matrix; extensionmethod;
 begin
@@ -37,7 +74,7 @@ begin
   var p := colNames.Length;
 
   if p = 0 then
-    raise new Exception('ToMatrix: no columns specified');
+    ArgumentError(ER_TO_MATRIX_NO_COLUMNS);
 
   Result := new Matrix(n, p);
 
@@ -72,9 +109,7 @@ begin
     var value: real;
 
     if not col.TryGetNumericValue(i, value) then
-      raise new Exception(
-        'ToVector: column "' + colName +
-        '" contains non-numeric or NA values');
+      ArgumentError(ER_TO_VECTOR_NON_NUMERIC, colName);
 
     Result[i] := value;
   end;

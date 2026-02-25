@@ -84,7 +84,7 @@
 %type <stn> exception_handler  
 %type <stn> exception_handler_list  
 %type <stn> exception_identifier  
-%type <stn> typed_const_list1 typed_const_list optional_expr_list optional_expr_list_func_param elem_list optional_expr_list_with_bracket expr_list expr_list_func_param const_elem_list1 /*const_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
+%type <stn> typed_const_list1 typed_const_list optional_expr_list optional_expr_list_func_param elem_list optional_expr_list_with_bracket optional_expr_list_func_param_with_bracket expr_list expr_list_func_param const_elem_list1 /*const_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_or_unpacked_list
 // %type <stn> expr_l1_list
 %type <stn> enumeration_id_list  
@@ -3523,7 +3523,7 @@ optional_array_initializer
     ;
 
 new_expr
-    : tkNew simple_or_template_type_reference optional_expr_list_with_bracket
+    : tkNew simple_or_template_type_reference optional_expr_list_func_param_with_bracket
         {
 			$$ = new new_expr($2, $3 as expression_list, false, null, @$);
         }      
@@ -3614,6 +3614,13 @@ optional_expr_list_with_bracket
     |  tkRoundOpen optional_expr_list tkRoundClose    
         { $$ = $2; }
     ;
+    
+optional_expr_list_func_param_with_bracket
+    :
+		{ $$ = null; }
+    |  tkRoundOpen optional_expr_list_func_param tkRoundClose    
+        { $$ = $2; }
+    ;    
 
 relop_expr
     : simple_expr

@@ -399,7 +399,9 @@ namespace VisualPascalABC
                 SetFocusToEditor();
             }
 
-            CodeCompletion.CodeCompletionController.SetLanguage(CurrentCodeFileDocument.FileName);
+            // В Linux версии это в начале работы
+            if (CurrentCodeFileDocument != null)
+                CodeCompletion.CodeCompletionController.SetLanguage(CurrentCodeFileDocument.FileName);
 
             bool intellisenseAvailable = CodeCompletion.CodeCompletionController.IntellisenseAvailable();
 

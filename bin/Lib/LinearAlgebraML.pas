@@ -5,7 +5,6 @@ interface
 type
   Vector = class
   private
-    
     static procedure CheckSameLength(const a, b: Vector);
     static procedure CheckNonEmpty(const v: Vector); 
     procedure SetData(i: integer; value: real) := data[i] := value;
@@ -47,6 +46,7 @@ type
     
     // ---------- Основные методы ----------
     function Sum: real;
+    function Average: real;
     function Mean: real;
     function Norm2: real;
     function Norm: real;
@@ -54,12 +54,14 @@ type
     function Min: real;
     /// Скалярное произведение
     function Dot(b: Vector): real;
-
+    
     // ---------- Сервисные методы ----------
     function ToString: string; override := $'{data.Select(x -> x.ToString(''G3''))}';
     function ToString(digits: integer): string := $'{data.Select(x -> x.ToString(''G''+digits))}';
     procedure Print := data.Print;
     procedure Println := data.Println;
+    
+    function SubvectorBy(indices: array of integer): Vector;
   end;
   
   Matrix = class
@@ -93,7 +95,25 @@ type
     function ColumnMins: Vector;
     function ColumnMaxs: Vector;
     function RowMins: Vector;
-    function RowMaxs: Vector;   
+    function RowMaxs: Vector;
+    
+    function RowSum(i: integer): real;
+    function RowMean(i: integer): real;
+    function RowVariance(i: integer): real;
+    function RowStd(i: integer): real;
+    function RowMin(i: integer): real;
+    function RowMax(i: integer): real;
+    function RowArgMin(i: integer): integer;
+    function RowArgMax(i: integer): integer;
+    
+    function ColumnSum(j: integer): real;
+    function ColumnMean(j: integer): real;
+    function ColumnVariance(j: integer): real;
+    function ColumnStd(j: integer): real;
+    function ColumnMin(j: integer): real;
+    function ColumnMax(j: integer): real;
+    function ColumnArgMin(j: integer): integer;
+    function ColumnArgMax(j: integer): integer;
     
     function FrobeniusNorm: real;
     procedure AddScaledIdentity(lambda: real);
@@ -110,8 +130,8 @@ type
     static function operator *(A: Matrix; x: Vector): Vector;
     static function operator *(A, B: Matrix): Matrix;
     
-    static function operator *(alpha: real; A: Matrix): Matrix;
-    static function operator *(A: Matrix; alpha: real): Matrix;
+    //static function operator *(alpha: real; A: Matrix): Matrix;
+    //static function operator *(A: Matrix; alpha: real): Matrix;
     
     // ---------- in-place operators ----------
     static function operator +=(A, B: Matrix): Matrix;
@@ -223,7 +243,54 @@ function SolveRidge(A: Matrix; b: Vector; lambda: real := 0): Vector;
 
 implementation
 
-uses System;
+uses MLExceptions;
+
+const
+  ER_VECTOR_LENGTH_NEGATIVE =
+    'Длина вектора должна быть неотрицательной!!Vector length must be non-negative';
+  ER_VALUES_NULL =
+    'values не может быть nil!!values cannot be nil';
+  ER_VECTOR_LENGTH_MISMATCH =
+    'Несоответствие длины векторов: {0} и {1}!!Vector length mismatch: {0} vs {1}';
+  ER_VECTOR_EMPTY =
+    'Вектор пуст!!Vector is empty';
+  ER_VECTOR_DIVIDE_BY_ZERO =
+    'Деление на ноль при делении вектора на скаляр!!Division by zero in Vector / scalar';
+  ER_DIM_MISMATCH =
+    'Несоответствие размерностей: {0} и {1}!!Dimension mismatch: {0} and {1}';
+  ER_MATRIX_SIZE_NEGATIVE =
+    'Размеры матрицы должны быть неотрицательными!!Matrix size must be non-negative';
+  ER_MATRIX_SIZE_MISMATCH =
+    'Несоответствие размеров матриц: {0}x{1} и {2}x{3}!!' +
+    'Matrix size mismatch: {0}x{1} vs {2}x{3}';
+  ER_MATRIX_MUL_SIZE_MISMATCH =
+    'Несоответствие размеров при умножении матриц: {0}x{1} * {2}x{3}!!' +
+    'Matrix multiply size mismatch: {0}x{1} * {2}x{3}';
+  ER_MATRIX_VECTOR_SIZE_MISMATCH =
+    'Несоответствие размеров при умножении матрицы на вектор: {0}x{1} * {2}!!' +
+    'Matrix-vector size mismatch: {0}x{1} * {2}';
+  ER_ROW_INDEX_OUT_OF_RANGE =
+    'Индекс строки {0} вне диапазона [0..{1})!!Row index {0} out of range [0..{1})';
+  ER_COL_INDEX_OUT_OF_RANGE =
+    'Индекс столбца {0} вне диапазона [0..{1})!!Column index {0} out of range [0..{1})';
+  ER_MATRIX_NOT_SQUARE =
+    'Матрица должна быть квадратной!!Matrix must be square';
+  ER_MATRIX_NOT_SYMMETRIC =
+    'Матрица должна быть симметричной!!Matrix must be symmetric';
+  ER_PCA_K_INVALID =
+    'k должно быть >= 1!!k must be >= 1';
+  ER_PCA_K_TOO_LARGE =
+    'k не может превышать число признаков!!k cannot exceed number of features';
+  ER_PCA_NEED_TWO_SAMPLES =
+    'Требуется как минимум два объекта!!At least two samples required';
+  ER_CHOLESKY_NOT_SQUARE =
+    'Матрица должна быть квадратной для Cholesky!!Matrix must be square for Cholesky';
+  ER_MATRIX_NOT_SPD =
+    'Матрица не является положительно определённой (SPD)!!Matrix is not SPD';
+  ER_MATRIX_SINGULAR =
+    'Матрица вырождена!!Matrix is singular';
+  ER_VECTOR_SIZE_MISMATCH =
+    'Несоответствие длины вектора: {0} и {1}!!Vector size mismatch: {0} and {1}';
 
 //-----------------------------
 //           Vector
@@ -232,21 +299,21 @@ uses System;
 constructor Vector.Create(n: integer);
 begin
   if n < 0 then
-    raise new ArgumentOutOfRangeException('n', 'Vector length must be non-negative');
+    ArgumentOutOfRangeError(ER_VECTOR_LENGTH_NEGATIVE);
   data := new real[n];
 end;
 
 constructor Vector.Create(values: array of real);
 begin
   if values = nil then
-    raise new ArgumentNullException('values');
+    ArgumentNullError(ER_VALUES_NULL);
   data := Copy(values);
 end;
 
 constructor Vector.Create(values: array of integer);
 begin
   if values = nil then
-    raise new ArgumentNullException('values');
+    ArgumentNullError(ER_VALUES_NULL);
   data := values.Select(x -> real(x)).ToArray;
 end;
 
@@ -258,14 +325,13 @@ end;
 static procedure Vector.CheckSameLength(a, b: Vector);
 begin
   if a.Length <> b.Length then
-    raise new ArgumentException(
-    $'Vector length mismatch: {a.Length} vs {b.Length}');
+    ArgumentError(ER_VECTOR_LENGTH_MISMATCH, a.Length, b.Length);
 end;
 
 static procedure Vector.CheckNonEmpty(v: Vector);
 begin
   if v.Length = 0 then
-    raise new ArgumentException('Vector is empty');
+    ArgumentError(ER_VECTOR_EMPTY);
 end;
 
 static function Vector.operator +(a, b: Vector): Vector;
@@ -299,7 +365,7 @@ end;
 static function Vector.operator /(v: Vector; alpha: real): Vector;
 begin
   if alpha = 0.0 then
-    raise new DivideByZeroException('Division by zero in Vector / scalar');
+    raise new System.DivideByZeroException(GetTranslation(ER_VECTOR_DIVIDE_BY_ZERO));
   Result := new Vector(v.Length);
   var inv := 1.0 / alpha;
   for var i := 0 to v.Length - 1 do
@@ -351,6 +417,14 @@ begin
   Result := s;
 end;
 
+function Vector.Average: real;
+begin
+  if Length = 0 then
+    ArgumentError('Vector is empty');
+
+  Result := Sum / Length;
+end;
+
 function Vector.Mean: real;
 begin
   CheckNonEmpty(Self);
@@ -371,7 +445,7 @@ function Vector.Min: real := data.Min;
 function Vector.Dot(b: Vector): real;
 begin
   if Length <> b.Length then
-    raise new Exception('Dimension mismatch in Dot');
+    DimensionError(ER_DIM_MISMATCH, Length, b.Length);
 
   var s := 0.0;
   for var i := 0 to Length - 1 do
@@ -386,6 +460,17 @@ begin
     Result[i] := f(self[i]);
 end;
 
+function Vector.SubvectorBy(indices: array of integer): Vector;
+begin
+  var n := indices.Length;
+  var resultVec := new Vector(n);
+
+  for var i := 0 to n - 1 do
+    resultVec[i] := self[indices[i]];
+
+  Result := resultVec;
+end;
+
 
 //-----------------------------
 //           Matrix
@@ -393,14 +478,14 @@ end;
 constructor Matrix.Create(r, c: integer);
 begin
   if (r < 0) or (c < 0) then
-    raise new ArgumentOutOfRangeException('Matrix size must be non-negative');
+    ArgumentOutOfRangeError(ER_MATRIX_SIZE_NEGATIVE);
   data := new real[r, c];
 end;
 
 constructor Matrix.Create(values: array[,] of real);
 begin
   if values = nil then
-    raise new ArgumentNullException('values');
+    ArgumentNullError(ER_VALUES_NULL);
   data := Copy(values);
 end;
 
@@ -561,6 +646,154 @@ begin
   end;
 end;
 
+function Matrix.RowArgMin(i: integer): integer;
+begin
+  var minVal := data[i,0];
+  var arg := 0;
+
+  for var j := 1 to ColCount - 1 do
+    if data[i,j] < minVal then
+    begin
+      minVal := data[i,j];
+      arg := j;
+    end;
+
+  Result := arg;
+end;
+
+function Matrix.RowMin(i: integer): real;
+begin
+  Result := data[i, RowArgMin(i)];
+end;
+
+function Matrix.RowArgMax(i: integer): integer;
+begin
+  var maxVal := data[i,0];
+  var arg := 0;
+
+  for var j := 1 to ColCount - 1 do
+    if data[i,j] > maxVal then
+    begin
+      maxVal := data[i,j];
+      arg := j;
+    end;
+
+  Result := arg;
+end;
+
+function Matrix.RowMax(i: integer): real;
+begin
+  Result := data[i, RowArgMax(i)];
+end;
+
+function Matrix.RowSum(i: integer): real;
+begin
+  var sum := 0.0;
+
+  for var j := 0 to ColCount - 1 do
+    sum += data[i,j];
+
+  Result := sum;
+end;
+
+function Matrix.RowMean(i: integer): real;
+begin
+  Result := RowSum(i) / ColCount;
+end;
+
+function Matrix.RowVariance(i: integer): real;
+begin
+  var mean := RowMean(i);
+  var sum := 0.0;
+
+  for var j := 0 to ColCount - 1 do
+  begin
+    var d := data[i,j] - mean;
+    sum += d * d;
+  end;
+
+  Result := sum / ColCount;
+end;
+
+function Matrix.RowStd(i: integer): real;
+begin
+  Result := Sqrt(RowVariance(i));
+end;
+
+function Matrix.ColumnArgMin(j: integer): integer;
+begin
+  var minVal := data[0,j];
+  var arg := 0;
+
+  for var i := 1 to RowCount - 1 do
+    if data[i,j] < minVal then
+    begin
+      minVal := data[i,j];
+      arg := i;
+    end;
+
+  Result := arg;
+end;
+
+function Matrix.ColumnMin(j: integer): real;
+begin
+  Result := data[ColumnArgMin(j), j];
+end;
+
+function Matrix.ColumnArgMax(j: integer): integer;
+begin
+  var maxVal := data[0,j];
+  var arg := 0;
+
+  for var i := 1 to RowCount - 1 do
+    if data[i,j] > maxVal then
+    begin
+      maxVal := data[i,j];
+      arg := i;
+    end;
+
+  Result := arg;
+end;
+
+function Matrix.ColumnMax(j: integer): real;
+begin
+  Result := data[ColumnArgMax(j), j];
+end;
+
+function Matrix.ColumnSum(j: integer): real;
+begin
+  var sum := 0.0;
+
+  for var i := 0 to RowCount - 1 do
+    sum += data[i,j];
+
+  Result := sum;
+end;
+
+function Matrix.ColumnMean(j: integer): real;
+begin
+  Result := ColumnSum(j) / RowCount;
+end;
+
+function Matrix.ColumnVariance(j: integer): real;
+begin
+  var mean := ColumnMean(j);
+  var sum := 0.0;
+
+  for var i := 0 to RowCount - 1 do
+  begin
+    var d := data[i,j] - mean;
+    sum += d * d;
+  end;
+
+  Result := sum / RowCount;
+end;
+
+function Matrix.ColumnStd(j: integer): real;
+begin
+  Result := Sqrt(ColumnVariance(j));
+end;
+
 
 function Matrix.FrobeniusNorm: real;
 begin
@@ -581,22 +814,19 @@ end;
 static procedure Matrix.CheckSameSize(A, B: Matrix);
 begin
   if (A.Rows <> B.Rows) or (A.Cols <> B.Cols) then
-    raise new ArgumentException(
-    $'Matrix size mismatch: {A.Rows}x{A.Cols} vs {B.Rows}x{B.Cols}');
+    DimensionError(ER_MATRIX_SIZE_MISMATCH, A.Rows, A.Cols, B.Rows, B.Cols);
 end;
 
 static procedure Matrix.CheckMulSize(A, B: Matrix);
 begin
   if A.Cols <> B.Rows then
-    raise new ArgumentException(
-    $'Matrix multiply size mismatch: {A.Rows}x{A.Cols} * {B.Rows}x{B.Cols}');
+    DimensionError(ER_MATRIX_MUL_SIZE_MISMATCH, A.Rows, A.Cols, B.Rows, B.Cols);
 end;
 
 static procedure Matrix.CheckVecSize(A: Matrix; x: Vector);
 begin
   if A.Cols <> x.Length then
-    raise new ArgumentException(
-    $'Matrix-vector size mismatch: {A.Rows}x{A.Cols} * {x.Length}');
+    DimensionError(ER_MATRIX_VECTOR_SIZE_MISMATCH, A.Rows, A.Cols, x.Length);
 end;
 
 
@@ -619,18 +849,30 @@ begin
       Result.data[i, j] := A.data[i, j] - B.data[i, j];
 end;
 
-static function Matrix.operator *(alpha: real; A: Matrix): Matrix;
-begin
-  Result := A * alpha;
-end;
-
-static function Matrix.operator *(A: Matrix; alpha: real): Matrix;
+function operator *(A: Matrix; alpha: real): Matrix; extensionmethod;
 begin
   Result := new Matrix(A.Rows, A.Cols);
   for var i := 0 to A.Rows - 1 do
     for var j := 0 to A.Cols - 1 do
       Result.data[i, j] := alpha * A.data[i, j];
 end;
+
+function operator *(alpha: real; A: Matrix): Matrix; extensionmethod;
+begin
+  Result := A * alpha;
+end;
+
+function operator *(A: Matrix; alpha: integer): Matrix; extensionmethod;
+begin
+  Result := A * real(alpha);
+end;
+
+function operator *(alpha: integer; A: Matrix): Matrix; extensionmethod;
+begin
+  Result := real(alpha) * A;
+end;
+
+
 
 static function Matrix.operator *(A: Matrix; x: Vector): Vector;
 begin
@@ -696,7 +938,7 @@ end;
 function Matrix.GetRow(i: integer): Vector;
 begin
   if (i < 0) or (i >= Rows) then
-    raise new ArgumentOutOfRangeException('i');
+    ArgumentOutOfRangeError(ER_ROW_INDEX_OUT_OF_RANGE, i, Rows);
   Result := new Vector(Cols);
   for var j := 0 to Cols - 1 do
     Result[j] := data[i, j];
@@ -705,7 +947,7 @@ end;
 function Matrix.GetCol(j: integer): Vector;
 begin
   if (j < 0) or (j >= Cols) then
-    raise new ArgumentOutOfRangeException('j');
+    ArgumentOutOfRangeError(ER_COL_INDEX_OUT_OF_RANGE, j, Cols);
   Result := new Vector(Rows);
   for var i := 0 to Rows - 1 do
     Result[i] := data[i, j];
@@ -714,7 +956,7 @@ end;
 static function Matrix.Identity(n: integer): Matrix;
 begin
   if n < 0 then
-    raise new ArgumentOutOfRangeException('n', 'Matrix size must be non-negative');
+    ArgumentOutOfRangeError(ER_MATRIX_SIZE_NEGATIVE);
   
   Result := new Matrix(n, n);
   for var i := 0 to n - 1 do
@@ -754,10 +996,10 @@ end;
 function Matrix.EigenSymmetric(tol: real; maxIter: integer): (Vector, Matrix);
 begin
   if Rows <> Cols then
-    raise new ArgumentException('Matrix must be square');
+    ArgumentError(ER_MATRIX_NOT_SQUARE);
   
   if not IsSymmetric(tol) then
-    raise new ArgumentException('Matrix must be symmetric');
+    ArgumentError(ER_MATRIX_NOT_SYMMETRIC);
   
   var n := Rows;
   
@@ -898,13 +1140,13 @@ begin
   var n := Cols;
 
   if k < 1 then
-    raise new ArgumentException('k must be >= 1');
+    ArgumentError(ER_PCA_K_INVALID);
 
   if k > n then
-    raise new ArgumentException('k cannot exceed number of features');
+    ArgumentError(ER_PCA_K_TOO_LARGE);
 
   if m < 2 then
-    raise new ArgumentException('At least two samples required');
+    ArgumentError(ER_PCA_NEED_TWO_SAMPLES);
 
   // --- Центрирование
   var Xc := Clone;
@@ -959,7 +1201,7 @@ end;
 function Cholesky(A: Matrix): Matrix;
 begin
   if A.Rows <> A.Cols then
-    raise new ArgumentException('Matrix must be square for Cholesky');
+    ArgumentError(ER_CHOLESKY_NOT_SQUARE);
   
   var n := A.Rows;
   var L := new Matrix(n, n);
@@ -974,7 +1216,7 @@ begin
       if i = j then
       begin
         if s <= 0.0 then
-          raise new InvalidOperationException('Matrix is not SPD');
+          Error(ER_MATRIX_NOT_SPD);
         L[i, i] := Sqrt(s);
       end
       else
@@ -988,7 +1230,7 @@ end;
 function LUDecompose(A: Matrix): (Matrix, array of integer);
 begin
   if A.Rows <> A.Cols then
-    raise new ArgumentException('Matrix must be square for LU');
+    ArgumentError(ER_MATRIX_NOT_SQUARE);
   
   var n := A.Rows;
   var LU := A.Clone;
@@ -1010,7 +1252,7 @@ begin
       end;
     
     if maxVal = 0.0 then
-      raise new InvalidOperationException('Matrix is singular');
+      Error(ER_MATRIX_SINGULAR);
     
     if maxRow <> k then
     begin
@@ -1103,10 +1345,10 @@ end;
 function Solve(A: Matrix; b: Vector): Vector;
 begin
   if A.Rows <> A.Cols then
-    raise new ArgumentException('Matrix A must be square');
+    ArgumentError(ER_MATRIX_NOT_SQUARE);
   
   if b.Length <> A.Rows then
-    raise new ArgumentException('Vector size mismatch in Solve');
+    DimensionError(ER_VECTOR_SIZE_MISMATCH, b.Length, A.Rows);
   
   var (LU, p) := LUDecompose(A);
   var pb := Permute(b, p);
@@ -1117,10 +1359,10 @@ end;
 function SolveSPD(A: Matrix; b: Vector): Vector;
 begin
   if A.Rows <> A.Cols then
-    raise new ArgumentException('Matrix A must be square');
+    ArgumentError(ER_MATRIX_NOT_SQUARE);
   
   if b.Length <> A.Rows then
-    raise new ArgumentException('Vector size mismatch in SolveSPD');
+    DimensionError(ER_VECTOR_SIZE_MISMATCH, b.Length, A.Rows);
   
   var L := Cholesky(A);
   var y := SolveLowerTriangular(L, b);
@@ -1139,13 +1381,13 @@ end;
 function SolveRidge(A: Matrix; b: Vector; lambda: real): Vector;
 begin
   if lambda < 0.0 then
-    raise new ArgumentException('lambda must be >= 0');
+    ArgumentError(ER_LAMBDA_NEGATIVE);
   
   var m := A.Rows;
   var n := A.Cols;
   
   if b.Length <> m then
-    raise new ArgumentException('Vector length mismatch in SolveRidge');
+    DimensionError(ER_VECTOR_SIZE_MISMATCH, b.Length, m);
   
   // ------------------------------------------------------------
   // 1. Compute AtA = A^T * A

@@ -5,10 +5,21 @@ interface
 uses LinearAlgebraML;
 
 type
+  /// Базовый интерфейс шага конвейера машинного обучения.
+  /// Используется для объединения преобразователей и моделей
+  /// в единую последовательность выполнения внутри Pipeline.
+  IPipeStep = interface end;
+
   /// Базовый интерфейс модели машинного обучения
-  IModel = interface
+  IModel = interface(IPipeStep)
     function Fit(X: Matrix; y: Vector): IModel;
     function Predict(X: Matrix): Vector;
+    function Clone: IModel;
+  end;
+  
+  /// Интерфейс древовидной модели машинного обучения
+  ITreeModel = interface(IModel)
+    function FeatureImportances: Vector;
   end;
 
   /// Интерфейс классификатора.
@@ -26,7 +37,7 @@ type
   /// вместо только итогового решения.
   IProbabilisticClassifier = interface(IClassifier)
     /// Возвращает вероятность принадлежности к положительному классу для каждого объекта.
-    function PredictProba(X: Matrix): Vector;
+    function PredictProba(X: Matrix): Matrix;
   end;
 
   /// Интерфейс регрессионной модели.
@@ -34,11 +45,11 @@ type
   /// Предназначен для моделей, предсказывающих числовые значения.
   IRegressor = interface(IModel)
   end;
-
+  
   /// Базовый интерфейс преобразования признаков.
   /// Используется для масштабирования, отбора,
   /// уменьшения размерности и других преобразований данных.
-  ITransformer = interface
+  ITransformer = interface(IPipeStep)
     /// Обучает преобразование на данных.
     /// Запоминает необходимые параметры,
     /// которые будут использоваться при Transform.
@@ -46,6 +57,18 @@ type
     /// Применяет обученное преобразование к данным.
     /// Возвращает новую матрицу признаков.
     function Transform(X: Matrix): Matrix;
+    function Clone: ITransformer;
+  end;
+  
+  /// Интерфейс преобразования признаков с учётом целевой переменной.
+  /// Используется для методов отбора признаков и других процедур,
+  /// в которых при обучении требуется вектор целевых значений.
+  ISupervisedTransformer = interface(ITransformer)
+    /// Обучает преобразование на данных с использованием
+    /// как признаков X, так и целевой переменной y.
+    /// Запоминает необходимые параметры,
+    /// которые будут использоваться при Transform.
+    function Fit(X: Matrix; y: Vector): ITransformer;
   end;
   
 implementation  

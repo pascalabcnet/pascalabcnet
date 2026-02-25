@@ -51,7 +51,13 @@ namespace CodeCompletion
             {
                 if (CodeCompletionController.comp == null)
                     return;
-                string[] files = Directory.GetFiles(Path.Combine(CodeCompletionController.comp.CompilerOptions.SystemDirectory, "Lib"), "*.pas");
+
+                var dirName = "Lib";
+
+                if (CodeCompletionNameHelper.MainLibSourceDirectoryExists())
+                    dirName = "LibSource";
+
+                string[] files = Directory.GetFiles(Path.Combine(CodeCompletionController.comp.CompilerOptions.SystemDirectory, dirName), $"*{StringConstants.pascalSourceFileExtension}");
                 standard_units = new SymInfo[files.Length];
                 int i = 0;
                 foreach (string s in files)

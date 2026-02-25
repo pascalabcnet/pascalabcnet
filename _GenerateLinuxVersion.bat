@@ -114,6 +114,11 @@ copy bin\Lib\DataFrameABC.pcu Release\PascalABCNETLinux\Lib\DataFrameABC.pcu
 copy bin\Lib\DataFrameABCCore.pcu Release\PascalABCNETLinux\Lib\DataFrameABCCore.pcu
 copy bin\Lib\LinearAlgebraML.pcu Release\PascalABCNETLinux\Lib\LinearAlgebraML.pcu
 copy bin\Lib\PreprocessorABC.pcu Release\PascalABCNETLinux\Lib\PreprocessorABC.pcu
+copy bin\Lib\MetricsABC.pcu Release\PascalABCNETLinux\Lib\MetricsABC.pcu
+copy bin\Lib\MLABC.pcu Release\PascalABCNETLinux\Lib\MLABC.pcu
+copy bin\Lib\MLCoreABC.pcu Release\PascalABCNETLinux\Lib\MLCoreABC.pcu
+copy bin\Lib\MLModelsABC.pcu Release\PascalABCNETLinux\Lib\MLModelsABC.pcu
+copy bin\Lib\ValidationML.pcu Release\PascalABCNETLinux\Lib\ValidationML.pcu
 
 copy bin\Lib\ABCDatabases.pas Release\PascalABCNETLinux\LibSource\ABCDatabases.pas
 copy bin\Lib\BBCMicrobit.pas Release\PascalABCNETLinux\LibSource\BBCMicrobit.pas
@@ -159,6 +164,11 @@ copy bin\Lib\DataFrameABC.pas Release\PascalABCNETLinux\LibSource\DataFrameABC.p
 copy bin\Lib\DataFrameABCCore.pas Release\PascalABCNETLinux\LibSource\DataFrameABCCore.pas
 copy bin\Lib\LinearAlgebraML.pas Release\PascalABCNETLinux\LibSource\LinearAlgebraML.pas
 copy bin\Lib\PreprocessorABC.pas Release\PascalABCNETLinux\LibSource\PreprocessorABC.pas
+copy bin\Lib\MetricsABC.pas Release\PascalABCNETLinux\LibSource\MetricsABC.pas
+copy bin\Lib\MLABC.pas Release\PascalABCNETLinux\LibSource\MLABC.pas
+copy bin\Lib\MLCoreABC.pas Release\PascalABCNETLinux\LibSource\MLCoreABC.pas
+copy bin\Lib\MLModelsABC.pas Release\PascalABCNETLinux\LibSource\MLModelsABC.pas
+copy bin\Lib\ValidationML.pas Release\PascalABCNETLinux\LibSource\ValidationML.pas
 
 copy bin\Lng\Eng\.LanguageName Release\PascalABCNETLinux\Lng\Eng\.LanguageName
 copy bin\Lng\Eng\AspectsTree.dat Release\PascalABCNETLinux\Lng\Eng\AspectsTree.dat
