@@ -190,6 +190,7 @@
     File ..\bin\Lib\ValidationML.pcu
     File ..\bin\Lib\MLExceptions.pcu
     File ..\bin\Lib\InspectionML.pcu
+    File ..\bin\Lib\MLPipelineABC.pcu
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
@@ -294,6 +295,7 @@
     ${AddFile} "ValidationML.pcu"
     ${AddFile} "MLExceptions.pcu"
     ${AddFile} "InspectionML.pcu"
+    ${AddFile} "MLPipelineABC.pcu"
 
 
     ${AddFile} "turtle.png"
@@ -435,6 +437,7 @@
     File ..\bin\Lib\ValidationML.pas
     File ..\bin\Lib\MLExceptions.pas
     File ..\bin\Lib\InspectionML.pas
+    File ..\bin\Lib\MLPipelineABC.pas
 
     File ..\bin\Lib\__RedirectIOMode.vb
     File ..\bin\Lib\VBSystem.vb
@@ -526,6 +529,8 @@
     ${AddFile} "ValidationML.pas"
     ${AddFile} "MLExceptions.pas"
     ${AddFile} "InspectionML.pas"
+    ${AddFile} "MLPipelineABC.pas"
+
 
     ${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"

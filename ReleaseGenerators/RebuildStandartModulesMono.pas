@@ -11,7 +11,7 @@
    ABCDatabases,
    School, SF, TurtleABC,
    DataFrameABC, DataFrameABCCore, LinearAlgebraML, PreprocessorABC,
-   MetricsABC, MLABC, MLCoreABC, MLModelsABC, ValidationML, MLExceptions, InspectionML
+   MetricsABC, MLABC, MLCoreABC, MLModelsABC, ValidationML, MLExceptions, InspectionML, MLPipelineABC
    ;
    
 begin

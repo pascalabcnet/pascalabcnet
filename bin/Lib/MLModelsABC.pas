@@ -223,6 +223,9 @@ type
     /// Возвращает матрицу вероятностей (m x k).
     function PredictProba(X: Matrix): Matrix;
   
+    /// Возвращает массив меток классов в порядке столбцов PredictProba.
+    function GetClasses: array of real;
+
     /// Возвращает вектор предсказанных классов.
     function Predict(X: Matrix): Vector;
   
@@ -905,6 +908,8 @@ type
 /// Вероятности получаются через softmax.
     function PredictProba(X: Matrix): Matrix;
 
+    function GetClasses: array of real;
+
 /// Создает глубокую копию классификатора.
 /// Копируются все деревья и внутреннее состояние.
     function Clone: IModel;
@@ -949,8 +954,14 @@ type
     idx: integer;
   end;
  
+/// Режим взвешивания в алгоритме k ближайших соседей.
+/// Uniform — равномерное голосование/усреднение.
+/// Distance — веса обратно пропорциональны расстоянию (1 / dist)
   KNNWeighting = (Uniform, Distance);
  
+/// Базовый абстрактный класс для алгоритма k ближайших соседей (kNN).
+/// Реализует общий механизм поиска k ближайших объектов,
+/// но не определяет способ агрегации (классификация или регрессия)
   KNNBase = abstract class(IModel)
   protected
     // ==== train state ====
@@ -973,14 +984,26 @@ type
     function Partition(left, right: integer): integer;
 
   public
+    /// Создаёт модель kNN.
+    /// k — число ближайших соседей (k > 0).
+    /// weighting — режим взвешивания соседей
     constructor Create(k: integer; weighting: KNNWeighting := KNNWeighting.Uniform);
-
+    
+    /// Обучает модель на матрице признаков X и целевом векторе y.
+    /// Возвращает текущий экземпляр модели
     function Fit(X: Matrix; y: Vector): IModel; virtual; abstract;
+    
+    /// Выполняет предсказание для матрицы признаков X.
+    /// Возвращает вектор предсказанных значений или меток
     function Predict(X: Matrix): Vector; virtual; abstract;
-
+    
+    /// Создаёт глубокую копию модели
     function Clone: IModel; virtual; abstract;
   end;
   
+  /// Классификатор на основе алгоритма k ближайших соседей (kNN).
+  /// Поддерживает равномерное (Uniform) и взвешенное по расстоянию (Distance) голосование.
+  /// Реализует вероятностные предсказания через PredictProba
   KNNClassifier = class(KNNBase, IProbabilisticClassifier)
   private
     // ==== classification state ====
@@ -997,27 +1020,57 @@ type
     procedure EncodeClasses(y: Vector);
 
   public
+    /// Создаёт классификатор kNN.
+    /// k — число ближайших соседей (k > 0).
+    /// weighting — режим взвешивания голосов соседей
     constructor Create(k: integer; weighting: KNNWeighting := KNNWeighting.Uniform);
-
+    
+    /// Обучает модель на матрице признаков X и векторе меток y.
+    /// Метки классов могут быть произвольными числами.
+    /// Возвращает текущий экземпляр модели
     function Fit(X: Matrix; y: Vector): IModel; override;
+    
+    /// Выполняет предсказание меток классов для объектов X.
+    /// Возвращает вектор предсказанных меток
     function Predict(X: Matrix): Vector; override;
+    
+    /// Возвращает матрицу вероятностей размера (nSamples × nClasses).
+    /// Столбцы соответствуют классам в порядке, возвращаемом GetClasses()
     function PredictProba(X: Matrix): Matrix;
-    function GetClasses: array of double;
-
+    
+    /// Возвращает массив меток классов в порядке столбцов PredictProba
+    function GetClasses: array of real;
+    
+    /// Создаёт глубокую копию классификатора
     function Clone: IModel; override;
   end;
   
+  /// Регрессор на основе алгоритма k ближайших соседей (kNN).
+  /// Поддерживает равномерное (Uniform) усреднение и взвешенное по расстоянию (Distance) усреднение.
+  /// Предсказание вычисляется как среднее (или взвешенное среднее) значений целевой переменной
+  /// по k ближайшим обучающим объектам
   KNNRegressor = class(KNNBase, IRegressor)
   private
     fYTrain: Vector;
 
   public
+    /// Создаёт регрессор kNN.
+    /// k — число ближайших соседей (k > 0).
+    /// weighting — режим взвешивания вкладов соседей
     constructor Create(k: integer; weighting: KNNWeighting := KNNWeighting.Uniform);
-
+    
+    /// Обучает модель на матрице признаков X и целевом векторе y.
+    /// Возвращает текущий экземпляр модели
     function Fit(X: Matrix; y: Vector): IModel; override;
+    
+    /// Выполняет предсказание числовых значений для объектов X.
+    /// Возвращает вектор предсказанных значений
     function Predict(X: Matrix): Vector; override;
+    
+    /// Создаёт глубокую копию регрессора
     function Clone: IModel; override;
   end;
+  
 {$endregion Models}
 
 {$region Pipeline}
@@ -1032,7 +1085,7 @@ type
 ///
 /// Обеспечивает единый интерфейс Fit / Predict
 /// и воспроизводимость полного процесса обучения
-  Pipeline = class(IModel)
+  Pipeline = class(IModel, IProbabilisticClassifier)
   private
     fTransformers: List<ITransformer>;
     fModel: IModel;
@@ -1052,7 +1105,7 @@ type
     ///   сначала преобразователи, затем модель.
     /// Последний шаг обязан быть моделью (IModel).
     /// Возвращает сконструированный конвейер.
-    static function Build(params steps: array of IPipeStep): Pipeline;
+    static function Build(params steps: array of IPipelineStep): Pipeline;
     
     /// Устанавливает или заменяет модель.
     function SetModel(m: IModel): Pipeline;
@@ -1072,6 +1125,8 @@ type
     /// Возвращает матрицу вероятностей (m x k)
     /// для вероятностной модели в конце пайплайна.
     function PredictProba(X: Matrix): Matrix;
+    
+    function GetClasses: array of real;
   
     /// Показывает, был ли пайплайн обучен (вызван метод Fit).
     property IsFitted: boolean read fFitted;
@@ -1080,6 +1135,7 @@ type
     
     function Clone: IModel;
   end;
+  
 {$endregion Pipeline}
   
 {$region Transformers}
@@ -1920,6 +1976,13 @@ begin
   end;
 
   Result := Z;
+end;
+
+function LogisticRegression.GetClasses: array of real;
+begin
+  SetLength(Result, fClassCount);
+  for var i := 0 to fClassCount - 1 do
+    Result[i] := fIndexToClass[i];
 end;
 
 function LogisticRegression.Predict(X: Matrix): Vector;
@@ -4328,6 +4391,13 @@ begin
   Result := probs;
 end;
 
+function GradientBoostingClassifier.GetClasses: array of real;
+begin
+  SetLength(Result, fClassCount);
+  for var i := 0 to fClassCount - 1 do
+    Result[i] := fClasses[i];
+end;
+
 function GradientBoostingClassifier.PredictStageProba(
   X: Matrix; m: integer): Matrix;
 begin
@@ -4724,7 +4794,7 @@ begin
   exit(self);
 end;
 
-function KNNClassifier.GetClasses: array of double;
+function KNNClassifier.GetClasses: array of real;
 begin
   Result := fClasses;
 end;
@@ -5117,7 +5187,7 @@ begin
   fModel := model;
 end;
 
-class function Pipeline.Build(params steps: array of IPipeStep): Pipeline;
+class function Pipeline.Build(params steps: array of IPipelineStep): Pipeline;
 begin
   if (steps = nil) or (Length(steps) = 0) then
     ArgumentError(ER_PIPELINE_NO_STEPS);
@@ -5220,6 +5290,14 @@ begin
               .PredictProba(Xt);
 end;
 
+function Pipeline.GetClasses: array of real;
+begin
+  if not (fModel is IProbabilisticClassifier) then
+    ArgumentError(ER_PROBA_NOT_SUPPORTED);
+
+  Result := (fModel as IProbabilisticClassifier).GetClasses;
+end;
+
 function Pipeline.ToString: string;
 begin
   var sb := 'Pipeline (' +
@@ -5250,6 +5328,8 @@ begin
     p.Add(t.Clone);
 
   p.SetModel(fModel.Clone);
+  
+  p.fFitted := fFitted;
 
   Result := p;
 end;

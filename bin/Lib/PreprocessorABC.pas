@@ -22,11 +22,12 @@ interface
 
 uses DataFrameABC;
 uses System;
+uses MLCoreABC;
 
 type
 /// Базовый интерфейс шагов подготовки данных.
 /// Определяет семантику операций Fit и Transform
-  IPreprocessor = interface
+  IPreprocessor = interface(IDataStep)
     /// Анализирует DataFrame и и сохраняет параметры шага
     function Fit(df: DataFrame): IPreprocessor;
     /// Применяет сохранённые параметры к DataFrame.
@@ -36,50 +37,6 @@ type
     function FitTransform(df: DataFrame): DataFrame;
   end;
 
-/// Приводит числовые столбцы к нулевому среднему и единичному стандартному отклонению.
-/// При Fit вычисляет среднее значение и стандартное отклонение столбцов.
-/// Применяет преобразование: x' = (x - mean) / std.
-/// Пропущенные значения (NA) сохраняются.
-  DataStandardScaler = class(IPreprocessor)
-  private
-    cols: array of string;
-    means: array of real;
-    stds: array of real;
-    fitted: boolean;
-  public
-    /// Создаёт StandardScaler для указанных числовых столбцов.
-    constructor Create(params columns: array of string);
-    /// Вычисляет среднее значение и стандартное отклонение для каждого столбца.
-    function Fit(df: DataFrame): IPreprocessor;
-    /// Возвращает DataFrame со стандартизованными числовыми столбцами.
-    function Transform(df: DataFrame): DataFrame;
-    /// Последовательно выполняет Fit и Transform.
-    function FitTransform(df: DataFrame): DataFrame;
-  end;
-  
-/// Приводит числовые столбцы к заданному диапазону значений
-/// При Fit вычисляет минимальное и максимальное значения столбцов
-/// Применяет преобразование: x' = (x - min) / (max - min)
-/// Пропущенные значения (NA) сохраняются
-  DataMinMaxScaler = class(IPreprocessor)
-  private
-    cols: array of string;
-    mins: array of real;
-    maxs: array of real;
-    fitted: boolean;
-  public
-    /// Создаёт MinMaxScaler для указанных столбцов
-    constructor Create(params columns: array of string);
-  
-    /// Вычисляет минимальные и максимальные значения столбцов
-    function Fit(df: DataFrame): IPreprocessor;
-    /// Применяет масштабирование к DataFrame
-    /// Возвращает новый DataFrame
-    function Transform(df: DataFrame): DataFrame;
-    /// Последовательно выполняет Fit и Transform.
-    function FitTransform(df: DataFrame): DataFrame;
-  end;
-  
 /// Кодирует строковый категориальный столбец в числовые значения
 /// Категории фиксируются при Fit
 /// Работает только со строковыми столбцами
@@ -150,26 +107,51 @@ type
     /// Выполняет Fit и Transform последовательно
     function FitTransform(df: DataFrame): DataFrame;
   end;
-
   
-type
-/// DataPipeline (конвейер) шагов подготовки данных.
-/// Выполняет шаги последовательно с семантикой Fit / Transform.  
-  DataPipeline = class
+{/// Приводит числовые столбцы к нулевому среднему и единичному стандартному отклонению.
+/// При Fit вычисляет среднее значение и стандартное отклонение столбцов.
+/// Применяет преобразование: x' = (x - mean) / std.
+/// Пропущенные значения (NA) сохраняются.
+  DataStandardScaler = class(IPreprocessor)
   private
-    steps: List<IPreprocessor>;
+    cols: array of string;
+    means: array of real;
+    stds: array of real;
     fitted: boolean;
   public
-    constructor;
-    /// Добавляет шаг в конец pipeline
-    function Add(p: IPreprocessor): DataPipeline;
-    /// Обучает все шаги pipeline на DataFrame
-    function Fit(df: DataFrame): DataPipeline;
-    /// Применяет обученный pipeline к DataFrame
+    /// Создаёт StandardScaler для указанных числовых столбцов.
+    constructor Create(params columns: array of string);
+    /// Вычисляет среднее значение и стандартное отклонение для каждого столбца.
+    function Fit(df: DataFrame): IPreprocessor;
+    /// Возвращает DataFrame со стандартизованными числовыми столбцами.
     function Transform(df: DataFrame): DataFrame;
-    /// Выполняет Fit и Transform последовательно
+    /// Последовательно выполняет Fit и Transform.
     function FitTransform(df: DataFrame): DataFrame;
   end;
+  
+/// Приводит числовые столбцы к заданному диапазону значений
+/// При Fit вычисляет минимальное и максимальное значения столбцов
+/// Применяет преобразование: x' = (x - min) / (max - min)
+/// Пропущенные значения (NA) сохраняются
+  DataMinMaxScaler = class(IPreprocessor)
+  private
+    cols: array of string;
+    mins: array of real;
+    maxs: array of real;
+    fitted: boolean;
+  public
+    /// Создаёт MinMaxScaler для указанных столбцов
+    constructor Create(params columns: array of string);
+  
+    /// Вычисляет минимальные и максимальные значения столбцов
+    function Fit(df: DataFrame): IPreprocessor;
+    /// Применяет масштабирование к DataFrame
+    /// Возвращает новый DataFrame
+    function Transform(df: DataFrame): DataFrame;
+    /// Последовательно выполняет Fit и Transform.
+    function FitTransform(df: DataFrame): DataFrame;
+  end;}
+    
 
 implementation
 
@@ -233,14 +215,12 @@ const
   ER_IMPUTER_CONSTANT_TYPE_MISMATCH =
     'Imputer(constant): несоответствие типа значения для столбца "{0}"!!' +
     'Imputer(constant): value type mismatch for column "{0}"';
-  ER_PIPELINE_MODIFY_AFTER_FIT =
-    'Нельзя добавлять шаг после вызова Fit()!!Cannot add step after Fit';
-
+  
 //-----------------------------
 //        StandardScaler
 //-----------------------------
 
-constructor DataStandardScaler.Create(params columns: array of string);
+{constructor DataStandardScaler.Create(params columns: array of string);
 begin
   if (columns = nil) or (columns.Length = 0) then
     ArgumentError(ER_SCALER_NO_COLUMNS);
@@ -420,7 +400,7 @@ function DataMinMaxScaler.FitTransform(df: DataFrame): DataFrame;
 begin
   Fit(df);
   Result := Transform(df);
-end;
+end;}
 
 //-----------------------------
 //        LabelEncoder
@@ -728,57 +708,6 @@ begin
 end;
 
 function Imputer.FitTransform(df: DataFrame): DataFrame;
-begin
-  Fit(df);
-  Result := Transform(df);
-end;
-
-//-----------------------------
-//          Pipeline
-//-----------------------------
-
-constructor DataPipeline.Create;
-begin
-  steps := new List<IPreprocessor>;
-  fitted := false;
-end;
-
-function DataPipeline.Add(p: IPreprocessor): DataPipeline;
-begin
-  if fitted then
-    Error(ER_PIPELINE_MODIFY_AFTER_FIT);
-
-  steps.Add(p);
-  Result := Self;
-end;
-
-function DataPipeline.Fit(df: DataFrame): DataPipeline;
-begin
-  var current := df;
-
-  for var i := 0 to steps.Count - 1 do
-  begin
-    steps[i] := steps[i].Fit(current);
-    current := steps[i].Transform(current);
-  end;
-
-  fitted := true;
-  Result := Self;
-end;
-
-function DataPipeline.Transform(df: DataFrame): DataFrame;
-begin
-  if not fitted then
-    NotFittedError(ER_FIT_NOT_CALLED);
-
-  var current := df;
-  foreach var step in steps do
-    current := step.Transform(current);
-
-  Result := current;
-end;
-
-function DataPipeline.FitTransform(df: DataFrame): DataFrame;
 begin
   Fit(df);
   Result := Transform(df);

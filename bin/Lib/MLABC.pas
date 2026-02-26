@@ -6,24 +6,31 @@ interface
 
 uses LinearAlgebraML;
 uses ValidationML;
+uses MLCoreABC;
 uses MLModelsABC;
 uses MetricsABC;
 uses PreprocessorABC;
 uses DataFrameABC;
 uses MLExceptions;
 uses InspectionML;
+uses MLPipelineABC;
 
 type 
   Vector = LinearAlgebraML.Vector;
   Matrix = LinearAlgebraML.Matrix;
+  
   Validation = ValidationML.Validation;
+  
   ConfusionMatrix = MetricsABC.ConfusionMatrix;
   Metrics = MetricsABC.Metrics;
-  DataPipeline = PreprocessorABC.DataPipeline;
-  DataStandardScaler = PreprocessorABC.DataStandardScaler;
+  
+  DataPipeline = MLPipelineABC.DataPipeline;
+  
   DataFrame = DataFrameABC.DataFrame;
   Statistics = DataFrameABC.Statistics;
   CsvLoader = DataFrameABC.CsvLoader;
+  
+  IProbabilisticClassifier = MLCoreABC.IProbabilisticClassifier;
 
   StandardScaler = MLModelsABC.StandardScaler;
   PCATransformer = MLModelsABC.PCATransformer;
@@ -62,61 +69,6 @@ type
   Inspection = InspectionML.Inspection;
   
 implementation
-
-const
-  ER_TO_MATRIX_NO_COLUMNS =
-    'ToMatrix: не указаны столбцы!!ToMatrix: no columns specified';
-  ER_TO_VECTOR_NON_NUMERIC =
-    'ToVector: столбец "{0}" содержит нечисловые или NA значения!!' +
-    'ToVector: column "{0}" contains non-numeric or NA values';  
-
-function ToMatrix(Self: DataFrame; colNames: array of string): Matrix; extensionmethod;
-begin
-  var df := Self;
-  var n := df.RowCount;
-  var p := colNames.Length;
-
-  if p = 0 then
-    ArgumentError(ER_TO_MATRIX_NO_COLUMNS);
-
-  Result := new Matrix(n, p);
-
-  for var j := 0 to p - 1 do
-  begin
-    var col := df[colNames[j]];
-
-    for var i := 0 to n - 1 do
-    begin
-      var value: real;
-
-      if not col.TryGetNumericValue(i, value) then
-        raise new Exception(
-          'ToMatrix: column "' + colNames[j] +
-          '" contains non-numeric or NA values');
-
-      Result[i,j] := value;
-    end;
-  end;
-end;
-
-function ToVector(Self: DataFrame; colName: string): Vector; extensionmethod;
-begin
-  var df := Self;
-  var n := df.RowCount;
-  Result := new Vector(n);
-
-  var col := df[colName];
-
-  for var i := 0 to n - 1 do
-  begin
-    var value: real;
-
-    if not col.TryGetNumericValue(i, value) then
-      ArgumentError(ER_TO_VECTOR_NON_NUMERIC, colName);
-
-    Result[i] := value;
-  end;
-end;
 
     
 end.

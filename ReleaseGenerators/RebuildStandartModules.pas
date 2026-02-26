@@ -21,7 +21,7 @@ uses
    TasksArr, TasksMatr, TasksStr, Tasks1Begin, Tasks1BoolIfCase, Tasks1Loops, Tasks1Arr,
    WPF,
    DataFrameABC, DataFrameABCCore, LinearAlgebraML, PreprocessorABC,
-   MetricsABC, MLABC, MLCoreABC, MLModelsABC, ValidationML, MLExceptions, InspectionML
+   MetricsABC, MLABC, MLCoreABC, MLModelsABC, ValidationML, MLExceptions, InspectionML, MLPipelineABC
    ;
    
 begin
