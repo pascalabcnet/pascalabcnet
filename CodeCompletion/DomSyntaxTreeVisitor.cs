@@ -4391,18 +4391,27 @@ namespace CodeCompletion
                 }
                     
             }
-                
+            
+            var baseScope = returned_scope as TypeScope;
+
+            // Если это интерфейс, то базовый класс задаем равным null
+            if (_class_definition.keyword == class_keyword.Interface)
+                baseScope = null;
+            // Если наследников нет или первым наследником указан интерфейс, то базовый класс задаем равным object   EVA
+            else if (baseScope == null || baseScope.ElemKind == SymbolKind.Interface)
+                baseScope = TypeTable.obj_type;
+
             if (ss == null || !(ss.members != null && ss.members.Count == 0) && !parse_only_class_headers && !parse_only_method_bodies)
             {
                 if (_class_definition.keyword == class_keyword.Record)
                 {
-                    ss = new TypeScope(SymbolKind.Struct, cur_scope, returned_scope);
+                    ss = new TypeScope(SymbolKind.Struct, cur_scope, baseScope);
                     if (cur_type_name == null)
                         cur_type_name = "$record";
                 }
                 else if (_class_definition.keyword == class_keyword.Class)
                 {
-                    ss = new TypeScope(SymbolKind.Class, cur_scope, returned_scope);
+                    ss = new TypeScope(SymbolKind.Class, cur_scope, baseScope);
                     if ((_class_definition.attribute & class_attribute.Sealed) == class_attribute.Sealed)
                         ss.is_final = true;
                     if ((_class_definition.attribute & class_attribute.Abstract) == class_attribute.Abstract)
@@ -4412,17 +4421,17 @@ namespace CodeCompletion
                 }
                 else if (_class_definition.keyword == class_keyword.Interface || _class_definition.keyword == class_keyword.TemplateInterface)
                 {
-                    ss = new TypeScope(SymbolKind.Interface, cur_scope, returned_scope);
+                    ss = new TypeScope(SymbolKind.Interface, cur_scope, baseScope);
                     if (cur_type_name == null) cur_type_name = "$interface";
                 }
                 else if (_class_definition.keyword == class_keyword.TemplateClass)
                 {
-                    ss = new TypeScope(SymbolKind.Class, cur_scope, returned_scope);
+                    ss = new TypeScope(SymbolKind.Class, cur_scope, baseScope);
                     if (cur_type_name == null) cur_type_name = "$class";
                 }
                 else if (_class_definition.keyword == class_keyword.TemplateRecord)
                 {
-                    ss = new TypeScope(SymbolKind.Struct, cur_scope, returned_scope);
+                    ss = new TypeScope(SymbolKind.Struct, cur_scope, baseScope);
                     if (cur_type_name == null) cur_type_name = "$record";
                 }
                 if (ss != null)
@@ -4436,13 +4445,11 @@ namespace CodeCompletion
             }
             else
             {
-                ss.baseScope = returned_scope as TypeScope;
+                ss.baseScope = baseScope;
                 if ((_class_definition.attribute & class_attribute.Sealed) == class_attribute.Sealed)
                     ss.is_final = true;
                 if ((_class_definition.attribute & class_attribute.Abstract) == class_attribute.Abstract)
                     ss.is_abstract = true;
-                if (ss.baseScope == null)
-                    ss.baseScope = TypeTable.obj_type;
             }
             if ((_class_definition.attribute & class_attribute.Static) == class_attribute.Static)
             {
@@ -4450,20 +4457,15 @@ namespace CodeCompletion
                 ss.si.is_static = true;
             }
                 
-            int num = 0;
-            if (_class_definition.keyword != class_keyword.Interface)
-                num = 1;
-            else
-                ss.baseScope = null;
             if (parse_only_class_headers)
             {
                 returned_scope = ss;
                 return;
             }
                 
-            if (_class_definition.class_parents != null && _class_definition.class_parents.types.Count > num)
+            if (_class_definition.class_parents != null)
             {
-                for (int i = num; i < _class_definition.class_parents.types.Count; i++)
+                for (int i = 0; i < _class_definition.class_parents.types.Count; i++)
                 {
                     _class_definition.class_parents.types[i].visit(this);
                     if (returned_scope != null && returned_scope is TypeScope && has_cyclic_inheritance(returned_scope as TypeScope))
