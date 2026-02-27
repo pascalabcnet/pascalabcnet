@@ -441,13 +441,12 @@ namespace CodeCompletion
                     else
                         tmp_ts = tmp_ts.baseScope;
                 }
-                if (ts.implemented_interfaces != null && !(ts is ArrayScope && (!(ts as ArrayScope).is_dynamic_arr || (ts as ArrayScope).Rank > 1)))
+
+                var implementedInterfaces = ts.GetAllImplementedInterfaces();
+
+                if (implementedInterfaces != null)
                 {
-                    List<TypeScope> implemented_interfaces = new List<TypeScope>();
-                    implemented_interfaces.AddRange(ts.implemented_interfaces);
-                    if (ts is ArrayScope)
-                        implemented_interfaces.Add((ts as ArrayScope).ilist);
-                    foreach (TypeScope int_ts in implemented_interfaces)
+                    foreach (TypeScope int_ts in implementedInterfaces)
                     {
                         TypeScope int_ts2 = int_ts;
                         if (int_ts is CompiledScope && (int_ts as CompiledScope).CompiledType.IsGenericType && !(int_ts as CompiledScope).CompiledType.IsGenericTypeDefinition)
@@ -467,7 +466,7 @@ namespace CodeCompletion
                                 if (t.GenericTypeDefinition == int_ts2.GenericTypeDefinition || t.IsEqual(int_ts2) ||
                                         (t is ArrayScope && int_ts2.IsArray && t.Rank == int_ts2.Rank) ||
                                         (int_ts2 is ArrayScope && t.IsArray && int_ts2.Rank == t.Rank) ||
-                                        t is FileScope && int_ts2 is FileScope && 
+                                        t is FileScope && int_ts2 is FileScope &&
                                         ((t as FileScope).elementType == null) == ((int_ts2 as FileScope).elementType == null))
                                 {
                                     var meth_list = extension_methods[t];
@@ -479,11 +478,9 @@ namespace CodeCompletion
                                     //break;
                                 }
                             }
-
                         }
                     }
                 }
-                
             }
             if (this.used_units != null)
                 for (int i = 0; i < this.used_units.Count; i++)
@@ -3338,6 +3335,11 @@ namespace CodeCompletion
             return actType.GetNamesAsInObject();
         }
 
+        public override List<TypeScope> GetAllImplementedInterfaces()
+        {
+            return actType.GetAllImplementedInterfaces();
+        }
+
         public override TypeScope[] GetIndexers()
         {
             return actType.GetIndexers();
@@ -3528,6 +3530,11 @@ namespace CodeCompletion
         public override SymInfo[] GetNamesAsInObject()
         {
             return actType.GetNamesAsInObject();
+        }
+
+        public override List<TypeScope> GetAllImplementedInterfaces()
+        {
+            return actType.GetAllImplementedInterfaces();
         }
 
         public override TypeScope[] GetIndexers()
@@ -3773,6 +3780,14 @@ namespace CodeCompletion
                 return syms.ToArray();
             }
             return new SymInfo[0];
+        }
+
+        public override List<TypeScope> GetAllImplementedInterfaces()
+        {
+            if (!is_dynamic_arr && !IsMultiDynArray)
+                return new List<TypeScope>();
+            
+            return base.GetAllImplementedInterfaces();
         }
 
         public override List<SymScope> FindOverloadNamesOnlyInType(string name)
@@ -4567,6 +4582,45 @@ namespace CodeCompletion
                 foreach (TypeScope t in implemented_interfaces)
                     procs.AddRange(t.GetAbstractMethods());
             return procs;
+        }
+
+        /// <summary>
+        /// Возвращает все реализуемые интерфейсы (включая интерфейсы, реализуемые классами предками и базовые интерфейсы для реализуемых интерфейсов).
+        /// Если реализуемых интерфейсов нет, то возвращается пустой список
+        /// </summary>
+        public virtual List<TypeScope> GetAllImplementedInterfaces()
+        {
+            var implementedInterfaces = new List<TypeScope>();
+
+            if (implemented_interfaces != null)
+                implementedInterfaces.AddRange(implemented_interfaces);
+
+            if (baseScope != null)
+            {
+                var recursiveInterfaces = baseScope.GetAllImplementedInterfaces();
+
+                foreach (var _interface in recursiveInterfaces)
+                {
+                    if (!implementedInterfaces.Contains(_interface))
+                        implementedInterfaces.Add(_interface);
+                }
+            }
+
+            if (implemented_interfaces != null)
+            {
+                foreach (var _interface in implemented_interfaces)
+                {
+                    var recursiveInterfaces = _interface.GetAllImplementedInterfaces();
+
+                    foreach (var interface2 in recursiveInterfaces)
+                    {
+                        if (!implementedInterfaces.Contains(interface2))
+                            implementedInterfaces.Add(interface2);
+                    }
+                }
+            }
+
+            return implementedInterfaces;
         }
 
         public virtual List<ProcScope> GetMethods()
@@ -6207,6 +6261,15 @@ namespace CodeCompletion
                             break;
                     }
             return syms;
+        }
+
+        public override List<TypeScope> GetAllImplementedInterfaces()
+        {
+            // Здесь все сразу записаны в поле, поскольку так работает GetInterfaces() из .NET
+            if (implemented_interfaces != null)
+                return implemented_interfaces.ToList();
+            
+            return new List<TypeScope>();
         }
 
         private void AddIndexers()
