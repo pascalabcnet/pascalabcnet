@@ -187,16 +187,16 @@ begin
   if fFitted then
     Error(ER_PIPELINE_MODIFY_AFTER_FIT);
 
-  if step is IDataStep then
+  if step is IPreprocessor then // Data Step
   begin
     if (fMatrixSteps.Count > 0) or (fModel <> nil) then
       ArgumentError(ER_DATAPIPE_DF_AFTER_MATRIX);
-
+  
     fDataSteps.Add(step as IPreprocessor);
     exit(Self);
   end;
 
-  if step is IMatrixStep then
+  if step is ITransformer then // Matrix Step
   begin
     if step is IModel then
     begin
@@ -270,7 +270,7 @@ begin
   end;
 
   // 5) Модель
-  fModel.Fit(X, y);
+  fModel := fModel.Fit(X, y);
 
   fFitted := true;
   Result := Self;

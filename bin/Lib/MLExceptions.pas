@@ -15,6 +15,8 @@ const
     'Метод Fit() не вызван!!Fit() must be called first';
   ER_MODEL_NULL =
     'Модель не может быть nil!!Model cannot be nil';
+  ER_SELECTKBEST_K_INVALID =
+    'Параметр k в SelectKBest должен быть >= 1. Передано: {0}.!!SelectKBest parameter k must be >= 1. Given: {0}.';  
 
 type
   /// Базовое исключение ML-библиотеки

@@ -51,14 +51,14 @@ begin
   if scoreFunc = nil then
     ArgumentNullError(ER_SCORE_FUNC_NULL);
 
-  if X.Rows <> y.Length then
-    DimensionError(ER_DIM_MISMATCH, X.Rows, y.Length);
+  if X.RowCount <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
   var baselinePred := model.Predict(X);
   var baselineScore := scoreFunc(y, baselinePred);
 
-  var n := X.Rows;
-  var p := X.Cols;
+  var n := X.RowCount;
+  var p := X.ColCount;
 
   var resultVec := new Vector(p);
   var rng := new System.Random(seed);

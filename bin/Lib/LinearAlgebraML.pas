@@ -73,8 +73,8 @@ type
     procedure SetData(i, j: integer; value: real) := data[i, j] := value;
   public
     data: array[,] of real;
-    property Rows: integer read data.GetLength(0);
-    property Cols: integer read data.GetLength(1);
+    property RowCount: integer read data.RowCount;
+    property ColCount: integer read data.ColCount;
     
     property Item[i, j: integer]: real
       read data[i, j] write SetData; default;
@@ -139,9 +139,6 @@ type
     static function operator *=(A: Matrix; alpha: real): Matrix;
     
     // ---------- Основные методы ----------
-    
-    function RowCount: integer := data.RowCount;
-    function ColCount: integer := data.ColCount;
     
     /// Возвращает транспонированную матрицу Aᵀ
     function Transpose: Matrix;
@@ -241,6 +238,8 @@ function SolveAuto(A: Matrix; b: Vector): Vector;
 /// Входные A и b изменяются. Возвращаемый вектор x имеет длину n.
 function SolveRidge(A: Matrix; b: Vector; lambda: real := 0): Vector;
 
+function SolveLeastSquaresQR(A: Matrix; b: Vector): Vector;
+
 implementation
 
 uses MLExceptions;
@@ -291,7 +290,11 @@ const
     'Матрица вырождена!!Matrix is singular';
   ER_VECTOR_SIZE_MISMATCH =
     'Несоответствие длины вектора: {0} и {1}!!Vector size mismatch: {0} and {1}';
-
+  ER_QR_REQUIRES_M_GE_N =
+    'Для QR-разложения требуется m >= n!!QR decomposition requires m >= n';
+  ER_SINGULAR_MATRIX =
+    'Матрица вырождена или плохо обусловлена!!Matrix is singular or ill-conditioned';
+  
 //-----------------------------
 //           Vector
 //-----------------------------
@@ -813,20 +816,20 @@ end;
 
 static procedure Matrix.CheckSameSize(A, B: Matrix);
 begin
-  if (A.Rows <> B.Rows) or (A.Cols <> B.Cols) then
-    DimensionError(ER_MATRIX_SIZE_MISMATCH, A.Rows, A.Cols, B.Rows, B.Cols);
+  if (A.RowCount <> B.RowCount) or (A.ColCount <> B.ColCount) then
+    DimensionError(ER_MATRIX_SIZE_MISMATCH, A.RowCount, A.ColCount, B.RowCount, B.ColCount);
 end;
 
 static procedure Matrix.CheckMulSize(A, B: Matrix);
 begin
-  if A.Cols <> B.Rows then
-    DimensionError(ER_MATRIX_MUL_SIZE_MISMATCH, A.Rows, A.Cols, B.Rows, B.Cols);
+  if A.ColCount <> B.RowCount then
+    DimensionError(ER_MATRIX_MUL_SIZE_MISMATCH, A.RowCount, A.ColCount, B.RowCount, B.ColCount);
 end;
 
 static procedure Matrix.CheckVecSize(A: Matrix; x: Vector);
 begin
-  if A.Cols <> x.Length then
-    DimensionError(ER_MATRIX_VECTOR_SIZE_MISMATCH, A.Rows, A.Cols, x.Length);
+  if A.ColCount <> x.Length then
+    DimensionError(ER_MATRIX_VECTOR_SIZE_MISMATCH, A.RowCount, A.ColCount, x.Length);
 end;
 
 
@@ -834,26 +837,26 @@ end;
 static function Matrix.operator +(A, B: Matrix): Matrix;
 begin
   CheckSameSize(A, B);
-  Result := new Matrix(A.Rows, A.Cols);
-  for var i := 0 to A.Rows - 1 do
-    for var j := 0 to A.Cols - 1 do
+  Result := new Matrix(A.RowCount, A.ColCount);
+  for var i := 0 to A.RowCount - 1 do
+    for var j := 0 to A.ColCount - 1 do
       Result.data[i, j] := A.data[i, j] + B.data[i, j];
 end;
 
 static function Matrix.operator -(A, B: Matrix): Matrix;
 begin
   CheckSameSize(A, B);
-  Result := new Matrix(A.Rows, A.Cols);
-  for var i := 0 to A.Rows - 1 do
-    for var j := 0 to A.Cols - 1 do
+  Result := new Matrix(A.RowCount, A.ColCount);
+  for var i := 0 to A.RowCount - 1 do
+    for var j := 0 to A.ColCount - 1 do
       Result.data[i, j] := A.data[i, j] - B.data[i, j];
 end;
 
 function operator *(A: Matrix; alpha: real): Matrix; extensionmethod;
 begin
-  Result := new Matrix(A.Rows, A.Cols);
-  for var i := 0 to A.Rows - 1 do
-    for var j := 0 to A.Cols - 1 do
+  Result := new Matrix(A.RowCount, A.ColCount);
+  for var i := 0 to A.RowCount - 1 do
+    for var j := 0 to A.ColCount - 1 do
       Result.data[i, j] := alpha * A.data[i, j];
 end;
 
@@ -877,11 +880,11 @@ end;
 static function Matrix.operator *(A: Matrix; x: Vector): Vector;
 begin
   CheckVecSize(A, x);
-  Result := new Vector(A.Rows);
-  for var i := 0 to A.Rows - 1 do
+  Result := new Vector(A.RowCount);
+  for var i := 0 to A.RowCount - 1 do
   begin
     var s := 0.0;
-    for var j := 0 to A.Cols - 1 do
+    for var j := 0 to A.ColCount - 1 do
       s += A.data[i, j] * x[j];
     Result[i] := s;
   end;
@@ -890,13 +893,13 @@ end;
 static function Matrix.operator *(A, B: Matrix): Matrix;
 begin
   CheckMulSize(A, B);
-  Result := new Matrix(A.Rows, B.Cols);
-  for var i := 0 to A.Rows - 1 do
-    for var k := 0 to A.Cols - 1 do
+  Result := new Matrix(A.RowCount, B.ColCount);
+  for var i := 0 to A.RowCount - 1 do
+    for var k := 0 to A.ColCount - 1 do
     begin
       var aik := A.data[i, k];
       if aik <> 0.0 then
-        for var j := 0 to B.Cols - 1 do
+        for var j := 0 to B.ColCount - 1 do
           Result.data[i, j] += aik * B.data[k, j];
     end;
 end;
@@ -904,8 +907,8 @@ end;
 static function Matrix.operator +=(A, B: Matrix): Matrix;
 begin
   CheckSameSize(A, B);
-  for var i := 0 to A.Rows - 1 do
-    for var j := 0 to A.Cols - 1 do
+  for var i := 0 to A.RowCount - 1 do
+    for var j := 0 to A.ColCount - 1 do
       A.data[i, j] += B.data[i, j];
   Result := A;
 end;
@@ -913,43 +916,43 @@ end;
 static function Matrix.operator -=(A, B: Matrix): Matrix;
 begin
   CheckSameSize(A, B);
-  for var i := 0 to A.Rows - 1 do
-    for var j := 0 to A.Cols - 1 do
+  for var i := 0 to A.RowCount - 1 do
+    for var j := 0 to A.ColCount - 1 do
       A.data[i, j] -= B.data[i, j];
   Result := A;
 end;
 
 static function Matrix.operator *=(A: Matrix; alpha: real): Matrix;
 begin
-  for var i := 0 to A.Rows - 1 do
-    for var j := 0 to A.Cols - 1 do
+  for var i := 0 to A.RowCount - 1 do
+    for var j := 0 to A.ColCount - 1 do
       A.data[i, j] *= alpha;
   Result := A;
 end;
 
 function Matrix.Transpose: Matrix;
 begin
-  Result := new Matrix(Cols, Rows);
-  for var i := 0 to Rows - 1 do
-    for var j := 0 to Cols - 1 do
+  Result := new Matrix(ColCount, RowCount);
+  for var i := 0 to RowCount - 1 do
+    for var j := 0 to ColCount - 1 do
       Result.data[j, i] := data[i, j];
 end;
 
 function Matrix.GetRow(i: integer): Vector;
 begin
-  if (i < 0) or (i >= Rows) then
-    ArgumentOutOfRangeError(ER_ROW_INDEX_OUT_OF_RANGE, i, Rows);
-  Result := new Vector(Cols);
-  for var j := 0 to Cols - 1 do
+  if (i < 0) or (i >= RowCount) then
+    ArgumentOutOfRangeError(ER_ROW_INDEX_OUT_OF_RANGE, i, RowCount);
+  Result := new Vector(ColCount);
+  for var j := 0 to ColCount - 1 do
     Result[j] := data[i, j];
 end;
 
 function Matrix.GetCol(j: integer): Vector;
 begin
-  if (j < 0) or (j >= Cols) then
-    ArgumentOutOfRangeError(ER_COL_INDEX_OUT_OF_RANGE, j, Cols);
-  Result := new Vector(Rows);
-  for var i := 0 to Rows - 1 do
+  if (j < 0) or (j >= ColCount) then
+    ArgumentOutOfRangeError(ER_COL_INDEX_OUT_OF_RANGE, j, ColCount);
+  Result := new Vector(RowCount);
+  for var i := 0 to RowCount - 1 do
     Result[i] := data[i, j];
 end;
 
@@ -976,14 +979,14 @@ end;
 
 function Matrix.IsSymmetric(tol: real): boolean;
 begin
-  if Rows <> Cols then
+  if RowCount <> ColCount then
   begin
     Result := false;
     exit;
   end;
   
-  for var i := 0 to Rows - 1 do
-    for var j := i + 1 to Cols - 1 do
+  for var i := 0 to RowCount - 1 do
+    for var j := i + 1 to ColCount - 1 do
       if Abs(data[i, j] - data[j, i]) > tol then
       begin
         Result := false;
@@ -995,13 +998,13 @@ end;
 
 function Matrix.EigenSymmetric(tol: real; maxIter: integer): (Vector, Matrix);
 begin
-  if Rows <> Cols then
+  if RowCount <> ColCount then
     ArgumentError(ER_MATRIX_NOT_SQUARE);
   
   if not IsSymmetric(tol) then
     ArgumentError(ER_MATRIX_NOT_SYMMETRIC);
   
-  var n := Rows;
+  var n := RowCount;
   
   var M := Clone;
   var V := Matrix.Identity(n);
@@ -1136,8 +1139,8 @@ end;
 
 function Matrix.PCA(k: integer): (Matrix, Vector);
 begin
-  var m := Rows;
-  var n := Cols;
+  var m := RowCount;
+  var n := ColCount;
 
   if k < 1 then
     ArgumentError(ER_PCA_K_INVALID);
@@ -1200,10 +1203,10 @@ end;
 // Helper
 function Cholesky(A: Matrix): Matrix;
 begin
-  if A.Rows <> A.Cols then
+  if A.RowCount <> A.ColCount then
     ArgumentError(ER_CHOLESKY_NOT_SQUARE);
   
-  var n := A.Rows;
+  var n := A.RowCount;
   var L := new Matrix(n, n);
   
   for var i := 0 to n - 1 do
@@ -1229,10 +1232,10 @@ end;
 // Helper
 function LUDecompose(A: Matrix): (Matrix, array of integer);
 begin
-  if A.Rows <> A.Cols then
+  if A.RowCount <> A.ColCount then
     ArgumentError(ER_MATRIX_NOT_SQUARE);
   
-  var n := A.Rows;
+  var n := A.RowCount;
   var LU := A.Clone;
   var p := new integer[n];
   
@@ -1294,7 +1297,7 @@ end;
 // Helper
 function SolveLowerTriangularUnit(LU: Matrix; b: Vector): Vector;
 begin
-  var n := LU.Rows;
+  var n := LU.RowCount;
   var y := new Vector(n);
   
   for var i := 0 to n - 1 do
@@ -1310,7 +1313,7 @@ end;
 
 function SolveLowerTriangular(L: Matrix; b: Vector): Vector;
 begin
-  var n := L.Rows;
+  var n := L.RowCount;
   var y := new Vector(n);
   
   for var i := 0 to n - 1 do
@@ -1328,7 +1331,7 @@ end;
 // Helper
 function SolveUpperTriangular(U: Matrix; y: Vector): Vector;
 begin
-  var n := U.Rows;
+  var n := U.RowCount;
   var x := new Vector(n);
   
   for var i := n - 1 downto 0 do
@@ -1344,11 +1347,11 @@ end;
 
 function Solve(A: Matrix; b: Vector): Vector;
 begin
-  if A.Rows <> A.Cols then
+  if A.RowCount <> A.ColCount then
     ArgumentError(ER_MATRIX_NOT_SQUARE);
   
-  if b.Length <> A.Rows then
-    DimensionError(ER_VECTOR_SIZE_MISMATCH, b.Length, A.Rows);
+  if b.Length <> A.RowCount then
+    DimensionError(ER_VECTOR_SIZE_MISMATCH, b.Length, A.RowCount);
   
   var (LU, p) := LUDecompose(A);
   var pb := Permute(b, p);
@@ -1358,11 +1361,11 @@ end;
 
 function SolveSPD(A: Matrix; b: Vector): Vector;
 begin
-  if A.Rows <> A.Cols then
+  if A.RowCount <> A.ColCount then
     ArgumentError(ER_MATRIX_NOT_SQUARE);
   
-  if b.Length <> A.Rows then
-    DimensionError(ER_VECTOR_SIZE_MISMATCH, b.Length, A.Rows);
+  if b.Length <> A.RowCount then
+    DimensionError(ER_VECTOR_SIZE_MISMATCH, b.Length, A.RowCount);
   
   var L := Cholesky(A);
   var y := SolveLowerTriangular(L, b);
@@ -1383,8 +1386,8 @@ begin
   if lambda < 0.0 then
     ArgumentError(ER_LAMBDA_NEGATIVE);
   
-  var m := A.Rows;
-  var n := A.Cols;
+  var m := A.RowCount;
+  var n := A.ColCount;
   
   if b.Length <> m then
     DimensionError(ER_VECTOR_SIZE_MISMATCH, b.Length, m);
@@ -1430,6 +1433,89 @@ begin
 end;
 
 
+function SolveLeastSquaresQR(A: Matrix; b: Vector): Vector;
+begin
+  if A.RowCount <> b.Length then
+    DimensionError(ER_DIM_MISMATCH, A.RowCount, b.Length);
+
+  var m := A.RowCount;
+  var n := A.ColCount;
+
+  if m < n then
+    ArgumentError(ER_QR_REQUIRES_M_GE_N);
+
+  var R := A.Clone;
+  var y := b.Clone;
+
+  for var k := 0 to n - 1 do
+  begin
+    // ---- вычислить норму столбца k начиная с строки k
+    var normx := 0.0;
+    for var i := k to m - 1 do
+      normx += R[i,k] * R[i,k];
+
+    normx := Sqrt(normx);
+
+    if normx = 0 then
+      continue;
+
+    // ---- знак для устойчивости
+    if R[k,k] >= 0 then
+      normx := -normx;
+
+    // ---- построить Householder-вектор v
+    var beta := 1.0 / (normx * R[k,k] - normx * normx);
+
+    R[k,k] -= normx;
+
+    // ---- применить отражение к R
+    for var j := k + 1 to n - 1 do
+    begin
+      var s := 0.0;
+      for var i := k to m - 1 do
+        s += R[i,k] * R[i,j];
+
+      s *= beta;
+
+      for var i := k to m - 1 do
+        R[i,j] -= s * R[i,k];
+    end;
+
+    // ---- применить отражение к y
+    var sy := 0.0;
+    for var i := k to m - 1 do
+      sy += R[i,k] * y[i];
+
+    sy *= beta;
+
+    for var i := k to m - 1 do
+      y[i] -= sy * R[i,k];
+
+    // ---- восстановить диагональный элемент
+    R[k,k] := normx;
+
+    for var i := k + 1 to m - 1 do
+      R[i,k] := 0.0;
+  end;
+
+  // ---- Back substitution (решаем R[0:n,0:n] * x = y[0:n])
+  var x := new Vector(n);
+
+  for var i := n - 1 downto 0 do
+  begin
+    var sum := y[i];
+
+    for var j := i + 1 to n - 1 do
+      sum -= R[i,j] * x[j];
+
+    if Abs(R[i,i]) < 1e-14 then
+      ArgumentError(ER_SINGULAR_MATRIX);
+
+    x[i] := sum / R[i,i];
+  end;
+
+  Result := x;
+end;
 
 
 end.

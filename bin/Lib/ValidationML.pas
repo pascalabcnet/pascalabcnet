@@ -9,40 +9,44 @@ type
   public
     /// Делит данные на обучающую и тестовую выборки.
     /// testRatio — доля объектов, попадающих в тестовую выборку (по умолчанию 0.2).
-    /// Перемешивает объекты перед разбиением.
-    /// Возвращает (X_train, X_test, y_train, y_test).
+    /// Перед разбиением объекты перемешиваются.
+    /// Возвращает кортеж (X_train, X_test, y_train, y_test).
     static function TrainTestSplit(X: Matrix; y: Vector;
-      testRatio: real := 0.2; seed: integer := 0): (Matrix, Matrix, Vector, Vector);
+      testRatio: real := 0.2; seed: integer := -1): (Matrix, Matrix, Vector, Vector);
 
     /// Разбивает индексы объектов на k непересекающихся частей (fold).
-    /// На каждом шаге одна часть используется как тестовая, остальные — как обучающая.
-    /// Применяется для k-fold кросс-валидации.
+    /// На каждом шаге одна часть используется как тестовая, остальные — как обучающая выборка.
+    /// Используется для k-fold кросс-валидации.
     /// Возвращает последовательность пар (trainIdx, testIdx).
-    static function KFold(n, k: integer; seed: integer := 0):
+    static function KFold(n, k: integer; seed: integer := -1):
       sequence of (array of integer, array of integer);
     
-    /// Разбивает данные на k частей с сохранением пропорций классов.
-    /// В каждой части сохраняется примерно то же соотношение
-    /// объектов разных классов, что и во всей выборке.
-    /// Рекомендуется для задач классификации,
-    /// особенно при неравномерном распределении классов.
-    /// Возвращает последовательность пар (trainIdx, testIdx).
+/// Разбивает данные на k частей (k-fold) с сохранением пропорций классов
+/// (стратифицированная k-fold кросс-валидация).
+/// В каждой части доля объектов каждого класса
+/// максимально близка к их доле во всей выборке
+/// (разница не превышает одного объекта на класс).
+/// Рекомендуется для задач классификации,
+/// особенно при несбалансированных классах.
+/// Возвращает последовательность пар (trainIdx, testIdx)
     static function StratifiedKFold(y: Vector; k: integer;
-      seed: integer := 0): sequence of (array of integer, array of integer);
+      seed: integer := -1): sequence of (array of integer, array of integer);
   
     /// Выполняет k-fold кросс-валидацию модели.
-    /// На каждом шаге модель обучается на обучающей части и оценивается на тестовой.
-    /// metric — функция качества (например, Accuracy или MSE).
+    /// На каждом шаге модель обучается на обучающей части и оценивается на соответствующей тестовой части.
+    /// metric — функция качества, принимающая (y_true, y_pred)
+    ///   и возвращающая значение метрики (например, Accuracy или MSE).
     /// Возвращает среднее значение метрики по всем частям.
     static function CrossValidate(model: IModel; X: Matrix; y: Vector;
-      k: integer; metric: (Vector,Vector) -> real; seed: integer := 0): real;
+      k: integer; metric: (Vector,Vector) -> real; seed: integer := -1): real;
     
-    /// Выполняет k-fold кросс-валидацию с сохранением пропорций классов.
-    /// Использует StratifiedKFold для разбиения данных.
-    /// Подходит для задач классификации.
-    /// Возвращает среднее значение метрики по всем частям.
+    /// Выполняет стратифицированную k-fold кросс-валидацию модели.
+    /// Разбиение данных выполняется методом StratifiedKFold
+    ///     с сохранением пропорций классов в каждой части.
+    /// Рекомендуется для задач классификации, особенно при несбалансированных классах.
+    /// Возвращает среднее значение метрики по k разбиениям.
     static function StratifiedCrossValidate(model: IModel; X: Matrix; y: Vector;
-      k: integer; metric: (Vector,Vector) -> real; seed: integer := 0): real;  
+      k: integer; metric: (Vector,Vector) -> real; seed: integer := -1): real;  
   end;
   
 /// Класс для подбора гиперпараметров методом перебора по сетке (Grid Search).
@@ -105,13 +109,17 @@ begin
   var n := X.RowCount;
   var p := X.ColCount;
 
-  var rnd := new System.Random(seed);
+  var rnd := if seed >= 0 then
+    new System.Random(seed)
+  else
+    new System.Random;
 
   // Перемешанные индексы
   var idx := (0..n-1).ToArray;
   idx := idx.OrderBy(i -> rnd.Next).ToArray;
 
-  var testSize := Round(n * testRatio);
+  var rawSize := Round(n * testRatio);
+  var testSize := Max(1, Min(n - 1, rawSize));
   var trainSize := n - testSize;
 
   var X_train := new Matrix(trainSize, p);
@@ -151,70 +159,144 @@ begin
   if (k < 2) or (k > n) then
     ArgumentError(ER_K_INVALID, k, n);
 
-  var rnd := new System.Random(seed);
-  var idx := (0..n-1).OrderBy(i -> rnd.Next).ToArray;
+  var rnd := if seed >= 0 then
+    new System.Random(seed)
+  else
+    new System.Random;
+
+  // --- 1. Создаём массив индексов 0..n-1
+  var idx := new integer[n];
+  for var i := 0 to n - 1 do
+    idx[i] := i;
+
+  // --- 2. Fisher–Yates shuffle (in-place, O(n))
+  for var i := n - 1 downto 1 do
+  begin
+    var j := rnd.Next(i + 1);
+    var tmp := idx[i];
+    idx[i] := idx[j];
+    idx[j] := tmp;
+  end;
 
   var baseSize := n div k;
   var extra := n mod k;
   var start := 0;
 
+  // --- 3. Формируем фолды
   for var fold := 0 to k - 1 do
   begin
-    var size := baseSize + (if fold < extra then 1 else 0);
+    var size := baseSize + Ord(fold < extra);
 
-    var testIdx := idx.Skip(start).Take(size).ToArray;
-    var trainIdx := idx.Take(start).Concat(idx.Skip(start + size)).ToArray;
+    // --- test indices
+    var testIdx := new integer[size];
+    System.Array.Copy(idx, start, testIdx, 0, size);
+
+    // --- train indices
+    var trainSize := n - size;
+    var trainIdx := new integer[trainSize];
+
+    // левая часть
+    if start > 0 then
+      System.Array.Copy(idx, 0, trainIdx, 0, start);
+
+    // правая часть
+    var tailCount := n - (start + size);
+    if tailCount > 0 then
+      System.Array.Copy(idx, start + size, trainIdx, start, tailCount);
 
     yield (trainIdx, testIdx);
+
     start += size;
   end;
 end;
 
-static function Validation.StratifiedKFold(y: Vector; k: integer;
-  seed: integer): sequence of (array of integer, array of integer);
+static function Validation.StratifiedKFold(y: Vector; k: integer; seed: integer):
+  sequence of (array of integer, array of integer);
 begin
   var n := y.Length;
   if (k < 2) or (k > n) then
     ArgumentError(ER_K_INVALID_STRATIFIED, k, n);
 
-  var rnd := new System.Random(seed);
+  var rnd :=
+    if seed >= 0 then new System.Random(seed)
+    else new System.Random;
 
-  var idx0 := (0..n-1)
-    .Where(i -> y[i] = 0)
-    .OrderBy(i -> rnd.Next)
-    .ToArray;
+  // 1) Собираем индексы по классам за один проход
+  var classMap := new Dictionary<integer, List<integer>>();
+  for var i := 0 to n - 1 do
+  begin
+    var v := y[i];
+    var cls := integer(v);
 
-  var idx1 := (0..n-1)
-    .Where(i -> y[i] = 1)
-    .OrderBy(i -> rnd.Next)
-    .ToArray;
+    // Валидация: метки должны быть целыми (хотя тип double)
+    if Abs(v - cls) > 1e-12 then
+      ArgumentError(ER_STRATIFIED_LABELS_INVALID);
 
-  if idx0.Length + idx1.Length <> n then
-    ArgumentError(ER_STRATIFIED_LABELS_INVALID);
+    var lst: List<integer>;
+    if classMap.TryGetValue(cls, lst) then
+      lst.Add(i)
+    else
+    begin
+      lst := new List<integer>;
+      lst.Add(i);
+      classMap.Add(cls, lst);
+    end;
+  end;
 
-  var base0 := idx0.Length div k;
-  var extra0 := idx0.Length mod k;
+  // 2) Подготавливаем контейнеры фолдов
+  var folds := new List<integer>[k];
+  for var f := 0 to k - 1 do
+    folds[f] := new List<integer>;
 
-  var base1 := idx1.Length div k;
-  var extra1 := idx1.Length mod k;
+  // 3) Для каждого класса: shuffle + равномерно раскладываем по k фолдам
+  foreach var pair in classMap do
+  begin
+    var indices := pair.Value;
+    var m := indices.Count;
 
+    // Fisher–Yates shuffle in-place
+    for var i := m - 1 downto 1 do
+    begin
+      var j := rnd.Next(i + 1);
+      var tmp := indices[i];
+      indices[i] := indices[j];
+      indices[j] := tmp;
+    end;
+
+    // Равномерное распределение (разница размеров ≤ 1)
+    var baseSize := m div k;
+    var extra := m mod k;
+    var start := 0;
+
+    for var fold := 0 to k - 1 do
+    begin
+      var size := baseSize + Ord(fold < extra);
+      for var t := 0 to size - 1 do
+        folds[fold].Add(indices[start + t]);
+      start += size;
+    end;
+  end;
+
+  // 4) Возвращаем (trainIdx, testIdx) для каждого фолда
   for var fold := 0 to k - 1 do
   begin
-    var start0 := fold * base0 + Min(fold, extra0);
-    var size0 := base0 + (if fold < extra0 then 1 else 0);
+    var testIdx := folds[fold].ToArray();
 
-    var start1 := fold * base1 + Min(fold, extra1);
-    var size1 := base1 + (if fold < extra1 then 1 else 0);
+    // boolean-mask вместо Contains -> O(n)
+    var mask := new boolean[n];
+    foreach var id in testIdx do
+      mask[id] := true;
 
-    var testIdx :=
-      idx0.Skip(start0).Take(size0)
-          .Concat(idx1.Skip(start1).Take(size1))
-          .ToArray;
+    var trainSize := n - testIdx.Length;
+    var trainIdx := new integer[trainSize];
+    var p := 0;
 
-    var trainIdx :=
-      (0..n-1)
-        .Where(i -> not testIdx.Contains(i))
-        .ToArray;
+    for var i := 0 to n - 1 do
+      if not mask[i] then
+      begin
+        trainIdx[p] := i;
+        p += 1;
+      end;
 
     yield (trainIdx, testIdx);
   end;

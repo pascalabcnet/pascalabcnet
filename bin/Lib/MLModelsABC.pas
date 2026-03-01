@@ -140,6 +140,8 @@ type
 ///   и L2-регуляризацию (численная устойчивость).
 /// Используется при большом числе признаков, особенно если признаки коррелированы.
 /// Обучение выполняется методом покоординатного спуска 
+/// ВАЖНО: Модель чувствительна к масштабу признаков.
+/// Всегда используйте StandardScaler в Pipeline перед ElasticNet.
   ElasticNet = class(IRegressor)
   private
     fLambda1: real;   // L1
@@ -207,6 +209,10 @@ type
     fClassCount: integer;
     fClassToIndex: Dictionary<integer, integer>;
     fIndexToClass: array of integer;
+    
+    fTol: real := 1e-6;
+    fCheckConvergence: boolean := true;
+    fMinImprovement: real := 1e-8;
   public
     /// lambda — коэффициент L2-регуляризации.
     /// lr — шаг градиентного спуска.
@@ -261,6 +267,20 @@ type
     Feature: integer;
 /// Threshold — пороговое значение признака.
     Threshold: real;
+    
+    static function Invalid: SplitResult;
+    begin
+      Result.Found := false;
+      Result.Feature := -1;
+      Result.Threshold := 0.0;
+    end;
+  
+    static function Create(feature: integer; threshold: real): SplitResult;
+    begin
+      Result.Found := true;
+      Result.Feature := feature;
+      Result.Threshold := threshold;
+    end;
   end;
   
 /// Интерфейс критерия разбиения узла дерева.
@@ -268,16 +288,21 @@ type
   ISplitCriterion = interface
 /// Вычисляет нечистоту для вектора целевых значений y.
 /// Чем меньше значение — тем "чище" узел.
-    function Impurity(y: Vector): real;
+    function Impurity(y: Vector; indices: array of integer): real;
   end;
   
 /// Критерий Джини.
 /// Используется в классификации.
 /// Минимизирует Gini-нечистоту, что приводит к более однородным по классам листьям
   GiniCriterion = class(ISplitCriterion)
+  private
+    fClassCount: integer;
   public
-/// Вычисляет Gini impurity для текущего набора y.  
-    function Impurity(y: Vector): real;
+    constructor Create(classCount: integer);
+    begin
+      fClassCount := classCount;
+    end;
+    function Impurity(y: Vector; indices: array of integer): real;
   end;
 
 /// Критерий дисперсии.
@@ -287,7 +312,7 @@ type
   public
   /// Вычисляет дисперсию значений y.
   /// Чем меньше дисперсия — тем лучше узел.
-    function Impurity(y: Vector): real;
+    function Impurity(y: Vector; indices: array of integer): real;
   end;
   
 //============================  
@@ -308,7 +333,7 @@ type
     fCriterion: ISplitCriterion;
     fFeatureImportances: Vector;
     fRandomSeed: integer;
-    fMaxFeatures := 0;
+    fMaxFeatures: integer := 0;
     fRowIndices: array of integer := nil;
     
     fRng: System.Random;
@@ -316,9 +341,7 @@ type
   
     function BuildTree(X: Matrix; y: Vector; indices: array of integer; depth: integer): DecisionTreeNode;
   
-    function FindBestSplit0(X: Matrix; y: Vector; indices: array of integer): SplitResult;
-    function FindBestSplitReg(X: Matrix; y: Vector; indices: array of integer): SplitResult;
-    function FindBestSplitCls(X: Matrix; y: Vector; indices: array of integer; classCount: integer): SplitResult;
+    //function FindBestSplit0(X: Matrix; y: Vector; indices: array of integer): SplitResult;
     
     function FindBestSplit(X: Matrix; y: Vector; indices: array of integer): SplitResult; virtual; abstract;
     function IsPure(y: Vector; indices: array of integer): boolean; virtual;
@@ -376,16 +399,13 @@ type
     fIndexToClass: array of integer;
     fClassCount: integer;
 
-    function PredictOne(x: Vector): integer;
+    function PredictOne(X: Matrix; rowIndex: integer): integer;
     function MajorityClass(y: Vector; indices: array of integer): integer;
     
   protected  
     function LeafValue(y: Vector; indices: array of integer): real; override;
     
     function FindBestSplit(X: Matrix; y: Vector; indices: array of integer): SplitResult; override;
-    begin
-      Result := FindBestSplitCls(X, y, indices, fClassCount);
-    end;
 
   public
 /// Создает классификационное дерево:
@@ -410,6 +430,10 @@ type
 
 /// Возвращает строковое представление модели.
     function ToString: string; override;
+    
+    function ClassCount: integer := fClassCount;
+    
+    function IndexToClass: array of integer := Copy(fIndexToClass);
   end;
   
 //============================  
@@ -424,13 +448,16 @@ type
   private
     fLeafL2: real;
   
-    function PredictOne(x: Vector): real;
+    function PredictOne(X: Matrix; rowIndex: integer): real;
   
   protected
 /// Вычисляет значение листа для набора индексов.
 /// В регрессии это среднее целевой переменной
 /// с учетом L2-регуляризации (если leafL2 > 0).
     function LeafValue(y: Vector; indices: array of integer): real; override;
+    
+    function FindBestSplitReg(X: Matrix; y: Vector; indices: array of integer): SplitResult;
+    
 /// Ищет лучшее разбиение узла по всем признакам и возможным порогам.
 /// Критерий — максимальное уменьшение дисперсии.
     function FindBestSplit(X: Matrix; y: Vector; indices: array of integer): SplitResult; override;
@@ -511,7 +538,9 @@ type
     fUserProvidedSeed: boolean;
   
     function ComputeMaxFeatures(p: integer): integer;
-    procedure BootstrapSample(X: Matrix; y: Vector; var Xb: Matrix; var yb: Vector);
+    
+    procedure BootstrapRowIndices(n: integer; var rows: array of integer);
+
   public
 /// Создает случайный лес.
 ///   • nTrees — число деревьев в ансамбле.
@@ -593,9 +622,11 @@ type
 /// Строит ансамбль классификационных деревьев, обученных на  
 ///   bootstrap-подвыборках объектов и случайных подмножествах признаков.
 /// Итоговое предсказание формируется голосованием деревьев или агрегацией вероятностей классов
-  RandomForestClassifier = class(RandomForestBase, IClassifier)
+  RandomForestClassifier = class(RandomForestBase, IClassifier, IProbabilisticClassifier)
   private
     fTrees: array of DecisionTreeClassifier;
+    fIndexToClass: array of integer;
+    fClassCount: integer;
   public
 /// Создает классификационный случайный лес:
 ///   • nTrees — число деревьев в ансамбле.
@@ -621,6 +652,8 @@ type
 /// Для каждого объекта агрегируются предсказания всех деревьев.
 /// Итоговый класс определяется большинством голосов или максимальной суммарной вероятностью.
     function Predict(X: Matrix): Vector; override;
+    
+    function PredictProba(X: Matrix): Matrix;
 
 /// Создает глубокую копию случайного леса классификации.
 /// Копируются все деревья, параметры ансамбля и обученное состояние модели.
@@ -632,6 +665,8 @@ type
 
 /// Возвращает строковое представление модели.
     function ToString: string; override;
+    
+    function GetClasses: array of real;
   end;
   
 { Gradient Boosting v1.0 — Freeze Checklist
@@ -700,7 +735,7 @@ type
     fBestIteration: integer;
     
     fValLossHistory: List<real>;
-    fBestValLoss: real;
+    fBestScoreLoss: real;
     
     fFeatureImportances: Vector;
     
@@ -975,7 +1010,6 @@ type
     fNeighbors: array of Neighbor;
 
     // ==== common methods ====
-    procedure CheckFitted;
     procedure ValidatePredictInput(X: Matrix);
 
     function SquaredL2(trainRow: integer; XTest: Matrix; testRow: integer): double;
@@ -1004,6 +1038,8 @@ type
   /// Классификатор на основе алгоритма k ближайших соседей (kNN).
   /// Поддерживает равномерное (Uniform) и взвешенное по расстоянию (Distance) голосование.
   /// Реализует вероятностные предсказания через PredictProba
+  /// ВАЖНО: KNN чувствителен к масштабу признаков.
+  /// Всегда используйте StandardScaler или MinMaxScaler в Pipeline перед KNN.
   KNNClassifier = class(KNNBase, IProbabilisticClassifier)
   private
     // ==== classification state ====
@@ -1313,7 +1349,9 @@ type
     function ComputeScore(feature: Vector; y: Vector): real;
     function ComputeCorrelation(x: Vector; y: Vector): real;
     function ComputeFRegression(feature: Vector; y: Vector): real;
+    // Multiclass version
     function ComputeAnovaF(feature: Vector; y: Vector): real;
+    // Multiclass version
     function ComputeChiSquare(feature: Vector; y: Vector): real;
   public
     /// Создаёт трансформер с использованием встроенного критерия:
@@ -1392,7 +1430,11 @@ type
   
 
 {$endregion Transformers}
+
   
+var 
+  /// Проверять ли входные данные моделей на NaN, Inf 
+  ValidateFiniteInputs := true;  
   
 implementation  
 
@@ -1455,9 +1497,132 @@ const
   ER_NAN_IN_X =  
     'x содержит NaN!!x contains NaN';  
   ER_K_EXCEEDS_SAMPLES =
-    'k превышает число обучающих объектов!!k exceeds number of training samples';  
-    
+    'k превышает число обучающих объектов!!k exceeds number of training samples';
+  ER_MAX_DEPTH_TOO_LARGE =
+    'maxDepth слишком велик {0}. Возможен переполнение стека!!' +
+    'maxDepth is too large {0}. It may cause stack overflow';
+  ER_LOGISTIC_DIVERGED =
+    'Обучение LogisticRegression расходится. Уменьшите learningRate.' +
+    'LogisticRegression training diverged. Reduce learningRate.';
+  ER_LOGISTIC_SOFTMAX_ZERO =
+    'Softmax дал нулевую сумму экспонент. Уменьшите learningRate.' +
+    'Softmax produced zero sum of exponentials. Reduce learningRate.';
+  ER_LOGISTIC_INVALID_LOSS =
+    'Функция потерь стала NaN или Infinity. Обучение прервано.' +
+    'Loss became NaN or Infinity. Training stopped.';
+  ER_ELASTICNET_DIVERGED =
+    'ElasticNet расходится. Увеличьте регуляризацию или уменьшите tol.' +
+    'ElasticNet diverged. Increase regularization or reduce tol.';
+  ER_ELASTICNET_INVALID_LOSS =
+    'Функция потерь ElasticNet стала NaN или Infinity.' +
+    'ElasticNet loss became NaN or Infinity.';
+  ER_TRAINING_DATA_CONTAINS_NAN =
+    'Обучающие данные содержат NaN. Обработайте пропуски до вызова Fit.!!' +
+    'Training data contains NaN. Please handle missing values before calling Fit.';
+  ER_TRAINING_DATA_CONTAINS_INF =
+    'Обучающие данные содержат Infinity. Проверьте данные на выбросы.!!' +
+    'Training data contains Infinity. Please check for extreme values.';
+  ER_PREDICTION_DATA_CONTAINS_NAN =
+    'Данные для предсказания содержат NaN. Обработайте пропуски до вызова Predict.!!' +
+    'Prediction data contains NaN. Please handle missing values before calling Predict.';
+  ER_PREDICTION_DATA_CONTAINS_INF =
+    'Данные для предсказания содержат Infinity. Проверьте данные на выбросы.!!' +
+    'Prediction data contains Infinity. Please check for extreme values.';  
+  ER_MAXITER_INVALID =
+    'maxIter должен быть положительным. Получено {0}.!!' +
+    'maxIter must be positive. Received {0}.';
+  ER_TOL_INVALID =
+    'tol должен быть положительным. Получено {0}.!!' +
+    'tol must be positive. Received {0}.';
+  ER_EPOCHS_INVALID =
+    'epochs должен быть положительным. Получено {0}.!!' +
+    'epochs must be positive. Received {0}.';
+  ER_MINSAMPLESSPLIT_INVALID =
+    'minSamplesSplit должен быть ≥ 2. Получено {0}.!!' +
+    'minSamplesSplit must be ≥ 2. Received {0}.';
+  ER_MINSAMPLESLEAF_INVALID =
+    'minSamplesLeaf должен быть ≥ 1. Получено {0}.!!' +
+    'minSamplesLeaf must be ≥ 1. Received {0}.';
+  ER_L2_NEGATIVE =
+    'L2-регуляризация листа не может быть отрицательной. Получено {0}.!!' +
+    'Leaf L2 regularization cannot be negative. Received {0}.';
+  ER_NTREES_INVALID =
+    'Число деревьев должно быть положительным. Получено {0}.!!' +
+    'Number of trees must be positive. Received {0}.';
+  ER_MODEL_NOT_INITIALIZED =
+    'Модель не инициализирована или не содержит деревьев.!!' +
+    'Model is not initialized or contains no trees.';
+  ER_NESTIMATORS_INVALID =
+    'nEstimators должен быть положительным. Получено {0}.!!' +
+    'nEstimators must be positive. Received {0}.';
+  ER_STAGE_OUT_OF_RANGE =
+    'Stage m должен быть в диапазоне [0, {1}]. Получено {0}.!!' +
+    'Stage m must be in range [0, {1}]. Received {0}.';
+  ER_PIPELINE_STEP_NULL =
+    'Шаг Pipeline с индексом {0} равен nil.!!' +
+    'Pipeline step at index {0} is nil.';
+  ER_PIPELINE_TRANSFORM_RETURNED_NULL =
+    'Шаг Pipeline вернул nil из Transform. Проверьте реализацию трансформера.!!' +
+    'Pipeline step returned nil from Transform. Check transformer implementation.';
+  
 {$endregion ErrConstants}  
+
+//-----------------------------
+//     Проверка на NuN/Inf
+//-----------------------------
+
+procedure CheckXForFit(X: Matrix);
+begin
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  for var i := 0 to X.RowCount - 1 do
+  for var j := 0 to X.ColCount - 1 do
+  begin
+    var v := X[i,j];
+
+    if double.IsNaN(v) then
+      ArgumentError(ER_TRAINING_DATA_CONTAINS_NAN);
+
+    if double.IsInfinity(v) then
+      ArgumentError(ER_TRAINING_DATA_CONTAINS_INF);
+  end;
+end;
+
+procedure CheckXForPredict(X: Matrix);
+begin
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  for var i := 0 to X.RowCount - 1 do
+    for var j := 0 to X.ColCount - 1 do
+    begin
+      var v := X[i,j];
+
+      if double.IsNaN(v) then
+        ArgumentError(ER_PREDICTION_DATA_CONTAINS_NAN);
+
+      if double.IsInfinity(v) then
+        ArgumentError(ER_PREDICTION_DATA_CONTAINS_INF);
+    end;
+end;
+
+procedure CheckYForFit(y: Vector);
+begin
+  if y = nil then
+    ArgumentNullError(ER_Y_NULL);
+
+  for var i := 0 to y.Length - 1 do
+  begin
+    var v := y[i];
+
+    if double.IsNaN(v) then
+      ArgumentError(ER_TRAINING_DATA_CONTAINS_NAN);
+
+    if double.IsInfinity(v) then
+      ArgumentError(ER_TRAINING_DATA_CONTAINS_INF);
+  end;
+end;
   
 //-----------------------------
 //       LinearRegression
@@ -1470,30 +1635,41 @@ end;
 
 function LinearRegression.Fit(X: Matrix; y: Vector): IModel;
 begin
-  var n := X.RowCount;
+  if ValidateFiniteInputs then
+  begin
+    CheckXForFit(X);
+    CheckYForFit(y);
+  end;
+  
+  var m := X.RowCount;
 
-  if n = 0 then
+  if m = 0 then
     ArgumentError(ER_EMPTY_DATASET);
-  if y.Length <> n then
-    DimensionError(ER_DIM_MISMATCH, y.Length, n);
 
-  // 1. Means
+  if y.Length <> m then
+    DimensionError(ER_DIM_MISMATCH, y.Length, m);
+
+  var n := X.ColCount;
+
+  // --- means
   var meanX := X.ColumnMeans;
   var meanY := y.Mean;
 
-  // 2. XtX and XtY
-  var Xt := X.Transpose;
-  var XtX := Xt * X;
-  var XtY := Xt * y;
+  // --- center X
+  var Xc := new Matrix(m, n);
+  for var i := 0 to m - 1 do
+    for var j := 0 to n - 1 do
+      Xc[i,j] := X[i,j] - meanX[j];
 
-  // 3. Centering correction
-  XtX := XtX - n * Matrix.OuterProduct(meanX, meanX);
-  XtY := XtY - n * meanX * meanY;
- 
-  // 4. Solve
-  fcoef := Solve(XtX, XtY);
+  // --- center y
+  var yc := new Vector(m);
+  for var i := 0 to m - 1 do
+    yc[i] := y[i] - meanY;
 
-  // 5. Intercept
+  // --- solve via QR
+  fcoef := SolveLeastSquaresQR(Xc, yc);
+
+  // --- intercept
   fintercept := meanY - meanX.Dot(fcoef);
 
   ffitted := true;
@@ -1504,11 +1680,14 @@ function LinearRegression.Predict(X: Matrix): Vector;
 begin
   if not ffitted then
     NotFittedError(ER_FIT_NOT_CALLED);
+  
+  if ValidateFiniteInputs then
+    CheckXForPredict(X);
 
   if X.ColCount <> fcoef.Length then
     DimensionError(ER_DIM_MISMATCH, X.ColCount, fCoef.Length);
 
-  Result := X * fcoef + intercept;
+  Result := X * fcoef + fIntercept;
 end;
 
 function LinearRegression.ToString: string;
@@ -1542,95 +1721,36 @@ static function Activations.ReLU(v: Vector): Vector := v.Apply(x -> (if x > 0 th
 
 static function Activations.Softmax(v: Vector): Vector;
 begin
+  var n := v.Length;
+  var resultVec := new Vector(n);
+
+  if n = 0 then
+    exit(resultVec);
+
   var maxVal := v.Max;
-  var shifted := v.Apply(x -> Exp(x - maxVal));
-  var sumExp := shifted.Sum;
-  if sumExp = 0 then
-    exit(new Vector(v.Length));
-  Result := shifted / sumExp;
-end;
 
-//-----------------------------
-//       LogisticRegression
-//-----------------------------
+  var sumExp := 0.0;
 
-(*constructor LogisticRegression.Create(lambda: real; lr: real; epochs: integer);
-begin
-  fLambda := lambda;
-  fLearningRate := lr;
-  fEpochs := epochs;
-  fFitted := false;
-end;
-
-function LogisticRegression.Fit(X: Matrix; y: Vector): IModel;
-begin
-  var n := X.RowCount;
-  var p := X.ColCount;
-
-  if y.Length <> n then
-    DimensionError(ER_DIM_MISMATCH, y.Length, n);
-
-  fCoef := new Vector(p);
-  fIntercept := 0.0;
-
-  for var epoch := 1 to fEpochs do
+  for var i := 0 to n - 1 do
   begin
-    var z := X * fCoef + fIntercept;
-    var yHat := Activations.Sigmoid(z);
-
-    var error := yHat - y;
-
-    var gradW := (X.Transpose * error) / n;
-
-    if fLambda > 0 then
-      gradW := gradW + fLambda * fCoef;
-
-    var gradB := error.Sum / n;
-
-    fCoef := fCoef - fLearningRate * gradW;
-    fIntercept -= fLearningRate * gradB;
+    var e := Exp(v[i] - maxVal);
+    resultVec[i] := e;
+    sumExp += e;
   end;
 
-  fFitted := true;
-  Result := Self;
+  if sumExp <= 0 then
+  begin
+    var uniform := 1.0 / n;
+    for var i := 0 to n - 1 do
+      resultVec[i] := uniform;
+    exit(resultVec);
+  end;
+
+  for var i := 0 to n - 1 do
+    resultVec[i] /= sumExp;
+
+  Result := resultVec;
 end;
-
-function LogisticRegression.PredictProba(X: Matrix): Vector;
-begin
-  if not fFitted then
-    NotFittedError(ER_FIT_NOT_CALLED);
-
-  Result := Activations.Sigmoid(X * fCoef + fIntercept);
-end;
-
-function LogisticRegression.Predict(X: Matrix; threshold: real): Vector;
-begin
-  var p := PredictProba(X);
-  Result := new Vector(p.Length);
-
-  for var i := 0 to p.Length - 1 do
-    if p[i] >= threshold then
-      Result[i] := 1.0
-    else
-      Result[i] := 0.0;
-end;
-
-function LogisticRegression.Predict(X: Matrix): Vector;
-begin
-  Result := Predict(X, 0.5);
-end;
-
-function LogisticRegression.ToString: string;
-begin
-  Result := 'LogisticRegression(lambda=' + fLambda +
-    ', lr=' + fLearningRate + ', epochs=' + fEpochs + ')';
-end;
-
-function LogisticRegression.Clone: IModel;
-begin
-  Result := new LogisticRegression(fLambda, fLearningRate, fEpochs);
-end;*)
-
 
 //-----------------------------
 //          RidgeRegression 
@@ -1646,6 +1766,15 @@ end;
 
 function RidgeRegression.Fit(X: Matrix; y: Vector): IModel;
 begin
+  if ValidateFiniteInputs then
+  begin
+    CheckXForFit(X);
+    CheckYForFit(y);
+  end;
+
+  if X.RowCount = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
@@ -1682,7 +1811,17 @@ begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if ValidateFiniteInputs then
+    CheckXForPredict(X);
+
+  if X.ColCount <> fCoef.Length then
+    DimensionError(ER_DIM_MISMATCH, X.ColCount, fCoef.Length);
+
   Result := X * fCoef;
+
   for var i := 0 to Result.Length - 1 do
     Result[i] += fIntercept;
 end;
@@ -1735,10 +1874,32 @@ end;
 
 function ElasticNet.Fit(X: Matrix; y: Vector): IModel;
 begin
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if y = nil then
+    ArgumentNullError(ER_Y_NULL);
+
+  if ValidateFiniteInputs then
+  begin
+    CheckXForFit(X);
+    CheckYForFit(y);
+  end;
+
+  if X.RowCount = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
-  // Loss(β) = ||y - (Xβ + b)||² + λ1||β||1 + λ2||β||2²
+  if (fLambda1 < 0) or (fLambda2 < 0) then
+    ArgumentOutOfRangeError(ER_LAMBDA_NEGATIVE);
+
+  if fMaxIter <= 0 then
+    ArgumentOutOfRangeError(ER_MAXITER_INVALID, fMaxIter);
+
+  if fTol <= 0 then
+    ArgumentOutOfRangeError(ER_TOL_INVALID, fTol);
 
   var n := X.RowCount;
   var p := X.ColCount;
@@ -1757,7 +1918,9 @@ begin
     yc[i] -= muY;
 
   fCoef := new Vector(p);
-  var residual := yc.Clone;   // initial residual = yc (since β=0)
+  var residual := yc.Clone;   // since β = 0
+
+  var prevLoss := real.PositiveInfinity;
 
   for var iter := 0 to fMaxIter - 1 do
   begin
@@ -1789,6 +1952,37 @@ begin
       fCoef[j] := newBeta;
     end;
 
+    // --- cheap divergence guard
+    if double.IsNaN(maxChange) or double.IsInfinity(maxChange) then
+      ArgumentError(ER_ELASTICNET_DIVERGED);
+
+    // --- каждые 10 итераций проверяем loss
+    if iter mod 10 = 0 then
+    begin
+      var rss := 0.0;
+      for var i := 0 to n - 1 do
+        rss += residual[i] * residual[i];
+
+      var l1 := 0.0;
+      var l2 := 0.0;
+
+      for var j := 0 to p - 1 do
+      begin
+        l1 += Abs(fCoef[j]);
+        l2 += fCoef[j] * fCoef[j];
+      end;
+
+      var currentLoss := rss + fLambda1 * l1 + fLambda2 * l2;
+
+      if double.IsNaN(currentLoss) or double.IsInfinity(currentLoss) then
+        ArgumentError(ER_ELASTICNET_INVALID_LOSS);
+
+      if Abs(prevLoss - currentLoss) < fTol then
+        break;
+
+      prevLoss := currentLoss;
+    end;
+
     if maxChange < fTol then
       break;
   end;
@@ -1804,7 +1998,17 @@ begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if ValidateFiniteInputs then
+    CheckXForPredict(X);
+
+  if X.ColCount <> fCoef.Length then
+    DimensionError(ER_DIM_MISMATCH, X.ColCount, fCoef.Length);
+
   Result := X * fCoef;
+
   for var i := 0 to Result.Length - 1 do
     Result[i] += fIntercept;
 end;
@@ -1833,7 +2037,7 @@ begin
 end;
 
 //-----------------------------
-// MulticlassLogisticRegression 
+//     LogisticRegression 
 //-----------------------------
 
 constructor LogisticRegression.Create(lambda: real; lr: real; epochs: integer);
@@ -1846,9 +2050,33 @@ end;
 
 function LogisticRegression.Fit(X: Matrix; y: Vector): IModel;
 begin
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if y = nil then
+    ArgumentNullError(ER_Y_NULL);
+
+  if ValidateFiniteInputs then
+  begin
+    CheckXForFit(X);
+    CheckYForFit(y);
+  end;
+
+  if X.RowCount = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
+  if fLearningRate <= 0 then
+    ArgumentOutOfRangeError(ER_LEARNING_RATE_INVALID, fLearningRate);
+
+  if fEpochs <= 0 then
+    ArgumentOutOfRangeError(ER_EPOCHS_INVALID, fEpochs);
+
+  if fLambda < 0 then
+    ArgumentOutOfRangeError(ER_LAMBDA_NEGATIVE, fLambda);
+  
   var m := X.RowCount;
   var p := X.ColCount;
 
@@ -1881,36 +2109,29 @@ begin
   end;
 
   // --- encode labels
-  var yEncoded := new Vector(m);
-  
+  var yEncoded := new integer[m];
   for var i := 0 to m - 1 do
-  begin
-    var ir := Round(y[i]);          // безопасно после проверки
-    yEncoded[i] := fClassToIndex[ir];
-  end;
-  
+    yEncoded[i] := fClassToIndex[Round(y[i])];
+
   // --- init
   fW := new Matrix(p, fClassCount);
   fIntercept := new Vector(fClassCount);
-  
-  // --- one-hot
-  var YoneHot := new Matrix(m, fClassCount);
-  
-  for var i := 0 to m - 1 do
-  begin
-    var cls := Round(yEncoded[i]);  // индекс класса 0..K-1
-    YoneHot[i, cls] := 1.0;
-  end;
 
+  var prevLoss := real.PositiveInfinity;
+
+  // --- training loop
   for var epoch := 1 to fEpochs do
   begin
     var Z := X * fW;
 
+    // + intercept
     for var i := 0 to m - 1 do
       for var k := 0 to fClassCount - 1 do
         Z[i,k] += fIntercept[k];
 
-    // softmax (оставляем твою версию)
+    // --- stable softmax + loss accumulation
+    var loss := 0.0;
+
     for var i := 0 to m - 1 do
     begin
       var maxVal := Z.RowMax(i);
@@ -1922,23 +2143,75 @@ begin
         sumExp += Z[i,k];
       end;
 
+      if sumExp <= 0 then
+        ArgumentError(ER_LOGISTIC_SOFTMAX_ZERO);
+
       for var k := 0 to fClassCount - 1 do
         Z[i,k] /= sumExp;
+
+      var yi := yEncoded[i];
+      var prob := Z[i, yi];
+
+      if prob <= 0 then
+        prob := 1e-300;
+
+      loss -= Ln(prob);
     end;
 
-    var diff := Z - YoneHot;
+    loss /= m;
 
-    var gradW := X.Transpose * diff;
-    gradW *= 1.0 / m;                     // ВАЖНО
+    // --- L2 penalty
+    if fLambda <> 0 then
+    begin
+      var l2 := 0.0;
+      for var j := 0 to p - 1 do
+        for var k := 0 to fClassCount - 1 do
+          l2 += fW[j,k] * fW[j,k];
+
+      loss += 0.5 * fLambda * l2;
+    end;
+
+    // --- divergence check
+    if double.IsNaN(loss) or double.IsInfinity(loss) then
+      ArgumentError(ER_LOGISTIC_INVALID_LOSS);
+
+    // --- convergence check
+    if fCheckConvergence then
+    begin
+      if Abs(prevLoss - loss) < fTol then
+        break;
+
+      prevLoss := loss;
+    end;
+
+    // --- gradient
+    var gradW := new Matrix(p, fClassCount);
+    var gradB := new Vector(fClassCount);
+
+    for var i := 0 to m - 1 do
+    begin
+      var yi := yEncoded[i];
+
+      for var k := 0 to fClassCount - 1 do
+      begin
+        var diff := Z[i,k];
+        if k = yi then
+          diff -= 1.0;
+
+        gradB[k] += diff;
+
+        for var j := 0 to p - 1 do
+          gradW[j,k] += X[i,j] * diff;
+      end;
+    end;
+
+    gradW *= 1.0 / m;
+    gradB *= 1.0 / m;
 
     if fLambda <> 0 then
       gradW += fLambda * fW;
 
     fW -= fLearningRate * gradW;
-
-    var gradB := diff.ColumnSums;
-    gradB *= 1.0 / m;                     // ВАЖНО
-
     fIntercept -= fLearningRate * gradB;
   end;
 
@@ -1950,6 +2223,15 @@ function LogisticRegression.PredictProba(X: Matrix): Matrix;
 begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
+
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if ValidateFiniteInputs then
+    CheckXForPredict(X);
+
+  if X.ColCount <> fW.RowCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH, X.ColCount, fW.RowCount);
 
   var m := X.RowCount;
 
@@ -2044,46 +2326,45 @@ begin
   Result := m;
 end;
 
-function GiniCriterion.Impurity(y: Vector): real;
+function GiniCriterion.Impurity(y: Vector; indices: array of integer): real;
 begin
-  if y.Length = 0 then exit(0.0);
+  var n := indices.Length;
+  if n = 0 then exit(0.0);
 
-  var counts := Dict&<integer,integer>;
-  foreach var v in y.data do
-  begin
-    var c := integer(v);
-    if counts.ContainsKey(c) then
-      counts[c] += 1
-    else
-      counts[c] := 1;
-  end;
+  var counts := new integer[fClassCount];
 
-  var n := y.Length;
+  foreach var i in indices do
+    counts[Round(y[i])] += 1;
+
   var sumsq := 0.0;
 
-  foreach var kv in counts do
-  begin
-    var p := kv.Value / n;
-    sumsq += p * p;
-  end;
+  for var c := 0 to fClassCount - 1 do
+    if counts[c] > 0 then
+    begin
+      var p := counts[c] / n;
+      sumsq += p * p;
+    end;
 
   Result := 1.0 - sumsq;
 end;
 
-function VarianceCriterion.Impurity(y: Vector): real;
+function VarianceCriterion.Impurity(y: Vector; indices: array of integer): real;
 begin
-  if y.Length = 0 then exit(0.0);
+  var n := indices.Length;
+  if n = 0 then exit(0.0);
 
-  var mean := y.Mean;
-  var s := 0.0;
+  var sum := 0.0;
+  var sumsq := 0.0;
 
-  foreach var v in y.data do
+  foreach var i in indices do
   begin
-    var d := v - mean;
-    s += d*d;
+    var v := y[i];
+    sum += v;
+    sumsq += v * v;
   end;
 
-  Result := s / y.Length;
+  var mean := sum / n;
+  Result := (sumsq / n) - mean * mean;
 end;
 
 function LeafClass(c: integer): DecisionTreeNode;
@@ -2132,8 +2413,13 @@ begin
   Result := n;
 end;
 
+const MAX_ALLOWED_TREE_DEPTH = 1000;
+
 constructor DecisionTreeBase.Create(maxDepth: integer; minSamplesSplit: integer; minSamplesLeaf: integer; seed: integer);
 begin
+  if maxDepth > MAX_ALLOWED_TREE_DEPTH then
+    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, maxDepth);
+  
   fMaxDepth := maxDepth;
   fMinSamplesSplit := minSamplesSplit;
   fMinSamplesLeaf := minSamplesLeaf;
@@ -2230,7 +2516,7 @@ function DecisionTreeBase.BuildTree(X: Matrix; y: Vector;
   indices: array of integer; depth: integer): DecisionTreeNode;
 begin
   // Ограничение глубины
-  if depth >= fMaxDepth then
+  if (fMaxDepth > 0) and (depth >= fMaxDepth) then
     exit(LeafNode(LeafValue(y, indices)));
 
   // Минимальное число объектов
@@ -2241,7 +2527,7 @@ begin
   if IsPure(y, indices) then
     exit(LeafNode(LeafValue(y, indices)));
   
-  var parentImp := fCriterion.Impurity(y.SubvectorBy(indices));
+  var parentImp := fCriterion.Impurity(y, indices);
 
   // Поиск лучшего разбиения
   var split := FindBestSplit(X, y, indices);
@@ -2267,8 +2553,8 @@ begin
   var leftArr := left.ToArray;
   var rightArr := right.ToArray;
   
-  var leftImp := fCriterion.Impurity(y.SubvectorBy(leftArr));
-  var rightImp := fCriterion.Impurity(y.SubvectorBy(rightArr));
+  var leftImp := fCriterion.Impurity(y, leftArr);
+  var rightImp := fCriterion.Impurity(y, rightArr);
   
   var n := indices.Length;
   
@@ -2281,8 +2567,8 @@ begin
     fFeatureImportances[split.Feature] += delta;     
 
   // Рекурсия
-  var leftNode := BuildTree(X, y, left.ToArray, depth + 1);
-  var rightNode := BuildTree(X, y, right.ToArray, depth + 1);
+  var leftNode := BuildTree(X, y, leftArr, depth + 1);
+  var rightNode := BuildTree(X, y, rightArr, depth + 1);
 
   // Создание split-узла
   var node := new DecisionTreeNode;
@@ -2295,130 +2581,14 @@ begin
   Result := node;
 end;
 
-function DecisionTreeBase.FindBestSplit0(X: Matrix; y: Vector; indices: array of integer): SplitResult;
-begin
-  var bestScore := 1e308;
-  var bestFeature := -1;
-  var bestThreshold := 0.0;
-
-  var n := indices.Length;
-  if n < 2 then
-  begin
-    Result.Found := false;
-    exit;
-  end;
-
-  // parent impurity (для feature importance)
-  var sumAll := 0.0;
-  var sumSqAll := 0.0;
-
-  for var i := 0 to n-1 do
-  begin
-    var v := y[indices[i]];
-    sumAll += v;
-    sumSqAll += v*v;
-  end;
-
-  var parentMean := sumAll / n;
-  var parentVar := (sumSqAll / n) - parentMean*parentMean;
-
-  // --- перебор признаков
-  var features := GetFeatureSubset(X.Cols);
-
-  foreach var j in features do
-  begin
-    // --- собрать пары (value, rowIndex)
-    var pairs: array of (real, integer);
-    SetLength(pairs, n);
-
-    for var k := 0 to n-1 do
-    begin
-      var idx := indices[k];
-      pairs[k] := (X[idx,j], idx);
-    end;
-
-    // сортировка
-    pairs.Sort(p -> p.Item1);
-
-    // подготовить y в этом порядке
-    var ySorted := new real[n];
-    for var k := 0 to n-1 do
-      ySorted[k] := y[pairs[k].Item2];
-
-    var leftCount := 0;
-    var leftSum := 0.0;
-    var leftSumSq := 0.0;
-
-    // идем по возможным split-позициям
-    for var k := 1 to n-1 do
-    begin
-      // переносим элемент k-1 влево
-      var v := ySorted[k-1];
-      leftCount += 1;
-      leftSum += v;
-      leftSumSq += v*v;
-
-      var rightCount := n - leftCount;
-
-      if (leftCount < fMinSamplesLeaf) or
-         (rightCount < fMinSamplesLeaf) then
-        continue;
-
-      var x1 := pairs[k-1].Item1;
-      var x2 := pairs[k].Item1;
-
-      if x1 = x2 then
-        continue;
-
-      var rightSum := sumAll - leftSum;
-      var rightSumSq := sumSqAll - leftSumSq;
-
-      var leftMean := leftSum / leftCount;
-      var rightMean := rightSum / rightCount;
-
-      var leftVar := (leftSumSq / leftCount) - leftMean*leftMean;
-      var rightVar := (rightSumSq / rightCount) - rightMean*rightMean;
-
-      var weighted :=
-        (leftCount / n) * leftVar +
-        (rightCount / n) * rightVar;
-
-      if weighted < bestScore then
-      begin
-        bestScore := weighted;
-        bestFeature := j;
-        bestThreshold := (x1 + x2) / 2.0;
-
-        if bestScore = 0.0 then
-          break;
-      end;
-    end;
-  end;
-
-  Result.Found := bestFeature <> -1;
-  Result.Feature := bestFeature;
-  Result.Threshold := bestThreshold;
-
-  // --- feature importance (optional)
-  if bestFeature <> -1 then
-  begin
-    var gain := parentVar - bestScore;
-    if gain > 0 then
-      fFeatureImportances[bestFeature] += gain;
-  end;
-end;
-
-function DecisionTreeBase.FindBestSplitCls(X: Matrix; y: Vector; indices: array of integer; classCount: integer): SplitResult;
-begin
-  Result := FindBestSplit0(X, y, indices);
-end;
+const EPS = 1e-12;
 
 function DecisionTreeBase.IsPure(y: Vector; indices: array of integer): boolean;
 begin
-  Result := fCriterion.Impurity(y.SubvectorBy(indices)) = 0.0;
+  Result := fCriterion.Impurity(y, indices) < EPS;
 end;
 
-function DecisionTreeBase.FindBestSplitReg(X: Matrix; y: Vector; indices: array of integer): SplitResult;
+function DecisionTreeRegressor.FindBestSplitReg(X: Matrix; y: Vector; indices: array of integer): SplitResult;
 begin
   var bestScore := 1e308;
   var bestFeature := -1;
@@ -2505,7 +2675,7 @@ begin
     end;
   end;
 
-  var p := X.Cols;
+  var p := X.ColCount;
 
   // ===============================
   // FEATURE LOOP WITH SUBSET
@@ -2539,21 +2709,140 @@ begin
   Result.Threshold := bestThreshold;
 end;
 
-function DecisionTreeClassifier.PredictOne(x: Vector): integer;
+//==============================
+//    DecisionTreeClassifier
+//==============================
+
+function DecisionTreeClassifier.FindBestSplit(X: Matrix; y: Vector; indices: array of integer): SplitResult;
+begin
+  var n := indices.Length;
+  if n <= 1 then
+    exit(SplitResult.Invalid);
+
+  var p := X.ColCount;
+
+  var bestFeature := -1;
+  var bestThreshold := 0.0;
+  var bestScore := real.MaxValue;
+
+  // --- формируем список признаков и (при необходимости) выбираем подмножество без повторов
+  var feat := new integer[p];
+  for var i := 0 to p - 1 do
+    feat[i] := i;
+
+  var m := fMaxFeatures;
+  if (m <= 0) or (m > p) then
+    m := p;
+
+  // partial Fisher–Yates: рандомизируем первые m позиций
+  for var i := 0 to m - 1 do
+  begin
+    var j := fRng.Next(i, p);
+    var tmp := feat[i];
+    feat[i] := feat[j];
+    feat[j] := tmp;
+  end;
+
+  // --- перебираем только feat[0..m-1]
+  for var fi := 0 to m - 1 do
+  begin
+    var feature := feat[fi];
+
+    // пары (value, label) по текущему признаку
+    var values := new real[n];
+    var labels := new integer[n];
+
+    for var i := 0 to n - 1 do
+    begin
+      var row := indices[i];
+      values[i] := X[row, feature];
+      
+      labels[i] := Round(y[row]);
+    end;
+
+    // сортируем по values, а labels переставляются синхронно
+    System.Array.Sort(values, labels);
+
+    var rightCounts := new integer[fClassCount];
+    for var i := 0 to n - 1 do
+      rightCounts[labels[i]] += 1;
+
+    var leftCounts := new integer[fClassCount];
+
+    var leftSize := 0;
+    var rightSize := n;
+
+    for var i := 0 to n - 2 do
+    begin
+      var cls := labels[i];
+
+      leftCounts[cls] += 1;
+      rightCounts[cls] -= 1;
+
+      leftSize += 1;
+      rightSize -= 1;
+
+      if values[i] = values[i + 1] then
+        continue;
+
+      if (leftSize < fMinSamplesLeaf) or (rightSize < fMinSamplesLeaf) then
+        continue;
+
+      // gini(left)
+      var giniLeft := 1.0;
+      for var c := 0 to fClassCount - 1 do
+      begin
+        if leftCounts[c] > 0 then
+        begin
+          var q := leftCounts[c] / leftSize;
+          giniLeft -= q * q;
+        end;
+      end;
+
+      // gini(right)
+      var giniRight := 1.0;
+      for var c := 0 to fClassCount - 1 do
+      begin
+        if rightCounts[c] > 0 then
+        begin
+          var q := rightCounts[c] / rightSize;
+          giniRight -= q * q;
+        end;
+      end;
+
+      var weighted :=
+        (leftSize / n) * giniLeft +
+        (rightSize / n) * giniRight;
+
+      if weighted < bestScore then
+      begin
+        bestScore := weighted;
+        bestFeature := feature;
+        bestThreshold := (values[i] + values[i + 1]) * 0.5;
+      end;
+    end;
+  end;
+
+  if bestFeature = -1 then
+    exit(SplitResult.Invalid);
+
+  Result := SplitResult.Create(bestFeature, bestThreshold);
+end;
+
+function DecisionTreeClassifier.PredictOne(X: Matrix; rowIndex: integer): integer;
 begin
   var node := fRoot;
 
   while not node.IsLeaf do
   begin
-    if x[node.FeatureIndex] <= node.Threshold then
+    if X[rowIndex, node.FeatureIndex] <= node.Threshold then
       node := node.Left
     else
       node := node.Right;
   end;
 
-  Result := fIndexToClass[integer(node.LeafValue)]; // internal class index
+  Result := integer(node.LeafValue);  // внутренний индекс
 end;
-
 
 function DecisionTreeClassifier.MajorityClass(y: Vector; indices: array of integer): integer;
 begin
@@ -2562,7 +2851,7 @@ begin
   // Подсчёт частот
   foreach var i in indices do
   begin
-    var c := integer(y[i]);
+    var c := Round(y[i]);
     counts[c] += 1;
   end;
 
@@ -2583,18 +2872,42 @@ end;
 constructor DecisionTreeClassifier.Create(maxDepth: integer; minSamplesSplit: integer; minSamplesLeaf: integer; seed: integer);
 begin
   inherited Create(maxDepth, minSamplesSplit, minSamplesLeaf, seed);
-  fCriterion := new GiniCriterion;
 end;
 
 function DecisionTreeClassifier.Fit(X: Matrix; y: Vector): IModel;
 begin
-  if X.Rows <> y.Length then
-    DimensionError(ER_DIM_MISMATCH, X.Rows, y.Length);
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
 
-  if X.Rows = 0 then
+  if y = nil then
+    ArgumentNullError(ER_Y_NULL);
+
+  if ValidateFiniteInputs then
+  begin
+    CheckXForFit(X);
+    CheckYForFit(y);
+  end;
+
+  if X.RowCount = 0 then
     ArgumentError(ER_EMPTY_DATASET);
+
+  if X.RowCount <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+
+  if fMinSamplesSplit < 2 then
+    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
+
+  if fMinSamplesLeaf < 1 then
+    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
+
+  if (fMaxDepth < 0) then
+    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
+
+  if fMaxDepth > 10000 then
+    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
   
-  fFeatureImportances := new Vector(X.Cols);
+  
+  fFeatureImportances := new Vector(X.ColCount);
 
   // --- 1. Найти уникальные классы (с проверкой целочисленности)
   var classes := new HashSet<integer>;
@@ -2621,6 +2934,8 @@ begin
   for var idx := 0 to fClassCount - 1 do
     fClassToIndex[fIndexToClass[idx]] := idx;
   
+  fCriterion := new GiniCriterion(fClassCount);
+  
   // --- 3. Создать закодированный y
   var yEncoded := new Vector(y.Length);
   
@@ -2631,12 +2946,21 @@ begin
   end;
 
   // --- 4. Создать массив индексов строк
-  var indices := new integer[X.Rows];
-  for var i := 0 to X.Rows - 1 do
-    indices[i] := i;
+  var indices: array of integer;
+
+  if fRowIndices <> nil then
+    indices := fRowIndices
+  else
+  begin
+    indices := new integer[X.RowCount];
+    for var i := 0 to X.RowCount - 1 do
+      indices[i] := i;
+  end;
 
   // --- 5. Построить дерево
   fRoot := BuildTree(X, yEncoded, indices, 0);
+  // Сбросить подмножество строк (не должно протекать на следующий Fit)
+  fRowIndices := nil;
   
   var s := fFeatureImportances.Sum;
   if s > 0 then
@@ -2651,17 +2975,23 @@ end;
 function DecisionTreeClassifier.Predict(X: Matrix): Vector;
 begin
   if not fFitted then
-    NotFittedError(ER_FIT_NOT_CALLED);;
+    NotFittedError(ER_FIT_NOT_CALLED);
 
-  var n := X.Rows;
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if ValidateFiniteInputs then
+    CheckXForPredict(X);
+
+  if X.ColCount <> fFeatureImportances.Length then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH, X.ColCount, fFeatureImportances.Length);
+
+  var n := X.RowCount;
   Result := new Vector(n);
 
   for var i := 0 to n - 1 do
   begin
-    var row := X.GetRow(i);
-    var internalClass := PredictOne(row);
-
-    // вернуть оригинальную метку
+    var internalClass := PredictOne(X, i);
     Result[i] := fIndexToClass[internalClass];
   end;
 end;
@@ -2750,21 +3080,48 @@ end;
 
 function DecisionTreeRegressor.Fit(X: Matrix; y: Vector): IModel;
 begin
-  if X.Rows <> y.Length then
-    DimensionError(ER_DIM_MISMATCH, X.Rows, y.Length);
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
 
-  if X.Rows = 0 then
+  if y = nil then
+    ArgumentNullError(ER_Y_NULL);
+
+  if ValidateFiniteInputs then
+  begin
+    CheckXForFit(X);
+    CheckYForFit(y);
+  end;
+
+  if X.RowCount = 0 then
     ArgumentError(ER_EMPTY_DATASET);
+
+  if X.RowCount <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+
+  if fMinSamplesSplit < 2 then
+    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
+
+  if fMinSamplesLeaf < 1 then
+    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
+
+  if fLeafL2 < 0 then
+    ArgumentOutOfRangeError(ER_L2_NEGATIVE, fLeafL2);
+
+  if fMaxDepth < 0 then
+    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
+
+  if fMaxDepth > 10000 then
+    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
   
-  fFeatureImportances := new Vector(X.Cols);
+  fFeatureImportances := new Vector(X.ColCount);
 
   var indices: array of integer;
 
   // 🔹 Ключевое изменение
   if fRowIndices = nil then
   begin
-    SetLength(indices, X.Rows);
-    for var i := 0 to X.Rows - 1 do
+    SetLength(indices, X.RowCount);
+    for var i := 0 to X.RowCount - 1 do
       indices[i] := i;
   end
   else
@@ -2784,19 +3141,19 @@ begin
   Result := Self;
 end;
 
-function DecisionTreeRegressor.PredictOne(x: Vector): real;
+function DecisionTreeRegressor.PredictOne(X: Matrix; rowIndex: integer): real;
 begin
   var node := fRoot;
 
   while not node.IsLeaf do
   begin
-    if x[node.FeatureIndex] <= node.Threshold then
+    if X[rowIndex, node.FeatureIndex] <= node.Threshold then
       node := node.Left
     else
       node := node.Right;
   end;
 
-  Result := node.LeafValue;
+  Result := node.LeafValue;  // для регрессии это уже real
 end;
 
 function DecisionTreeRegressor.Predict(X: Matrix): Vector;
@@ -2804,11 +3161,22 @@ begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
-  var n := X.Rows;
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if ValidateFiniteInputs then
+    CheckXForPredict(X);
+
+  if X.ColCount <> fFeatureImportances.Length then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH,
+                   X.ColCount,
+                   fFeatureImportances.Length);
+
+  var n := X.RowCount;
   Result := new Vector(n);
 
   for var i := 0 to n - 1 do
-    Result[i] := PredictOne(X.GetRow(i));
+    Result[i] := PredictOne(X, i);
 end;
 
 function DecisionTreeRegressor.Clone: IModel;
@@ -2884,24 +3252,11 @@ begin
   end;
 end;
 
-procedure RandomForestBase.BootstrapSample(X: Matrix; y: Vector;
-  var Xb: Matrix; var yb: Vector);
+procedure RandomForestBase.BootstrapRowIndices(n: integer; var rows: array of integer);
 begin
-  var n := X.Rows;
-  var p := X.Cols;
-
-  Xb := new Matrix(n, p);
-  yb := new Vector(n);
-
+  SetLength(rows, n);
   for var i := 0 to n - 1 do
-  begin
-    var idx := fRng.Next(n);
-
-    for var j := 0 to p - 1 do
-      Xb[i,j] := X[idx,j];
-
-    yb[i] := y[idx];
-  end;
+    rows[i] := fRng.Next(n);
 end;
 
 //-----------------------------
@@ -2917,39 +3272,66 @@ end;
 
 function RandomForestRegressor.Fit(X: Matrix; y: Vector): IModel;
 begin
-  if X.Rows <> y.Length then
-    DimensionError(ER_DIM_MISMATCH, X.Rows, y.Length);
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
 
-  if X.Rows = 0 then
+  if y = nil then
+    ArgumentNullError(ER_Y_NULL);
+
+  if ValidateFiniteInputs then
+  begin
+    CheckXForFit(X);
+    CheckYForFit(y);
+  end;
+
+  if X.RowCount = 0 then
     ArgumentError(ER_EMPTY_DATASET);
+
+  if X.RowCount <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+
+  if fNTrees <= 0 then
+    ArgumentOutOfRangeError(ER_NTREES_INVALID, fNTrees);
+
+  if fMinSamplesSplit < 2 then
+    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
+
+  if fMinSamplesLeaf < 1 then
+    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
+
+  if fMaxDepth < 0 then
+    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
+
+  if fMaxDepth > 10000 then
+    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
 
   SetLength(fTrees, fNTrees);
 
   for var t := 0 to fNTrees - 1 do
   begin
-    var Xb: Matrix;
-    var yb: Vector;
-
-    BootstrapSample(X, y, Xb, yb);
-
     var treeSeed := fRng.Next(integer.MaxValue);
-    
+  
     var tree := new DecisionTreeRegressor(
       fMaxDepth,
       fMinSamplesSplit,
       fMinSamplesLeaf,
       treeSeed
     );
-    
-    var p := X.Cols;
+  
+    var p := X.ColCount;
     var m := ComputeMaxFeatures(p);
-        
-    tree.fMaxFeatures := m; 
-    tree.Fit(Xb, yb);
+    tree.fMaxFeatures := m;
+  
+    var rows: array of integer;
+    BootstrapRowIndices(X.RowCount, rows);
+  
+    tree.SetRowIndices(rows);
+    tree.Fit(X, y);
+  
     fTrees[t] := tree;
   end;
-
-  fFitted := true;
+  
+    fFitted := true;
   Result := Self;
 end;
 
@@ -2958,18 +3340,24 @@ begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
-  var n := X.Rows;
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if ValidateFiniteInputs then
+    CheckXForPredict(X);
+
+  var n := X.RowCount;
   var resultVec := new Vector(n);
 
-  for var t := 0 to fTrees.Length - 1 do
-  begin
-    var pred := fTrees[t].Predict(X);
-    for var i := 0 to n - 1 do
-      resultVec[i] += pred[i];
-  end;
-
   for var i := 0 to n - 1 do
-    resultVec[i] /= fTrees.Length;
+  begin
+    var s := 0.0;
+
+    for var t := 0 to fTrees.Length - 1 do
+      s += fTrees[t].PredictOne(X, i);
+
+    resultVec[i] := s / fTrees.Length;
+  end;
 
   Result := resultVec;
 end;
@@ -3047,38 +3435,68 @@ end;
 
 function RandomForestClassifier.Fit(X: Matrix; y: Vector): IModel;
 begin
-  if X.Rows <> y.Length then
-    DimensionError(ER_DIM_MISMATCH, X.Rows, y.Length);
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
 
-  if X.Rows = 0 then
+  if y = nil then
+    ArgumentNullError(ER_Y_NULL);
+
+  if ValidateFiniteInputs then
+  begin
+    CheckXForFit(X);
+    CheckYForFit(y);
+  end;
+
+  if X.RowCount = 0 then
     ArgumentError(ER_EMPTY_DATASET);
 
+  if X.RowCount <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+
+  if fNTrees <= 0 then
+    ArgumentOutOfRangeError(ER_NTREES_INVALID, fNTrees);
+
+  if fMinSamplesSplit < 2 then
+    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
+
+  if fMinSamplesLeaf < 1 then
+    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
+
+  if fMaxDepth < 0 then
+    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
+
+  if fMaxDepth > MAX_ALLOWED_TREE_DEPTH then
+    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
+  
   SetLength(fTrees, fNTrees);
 
-  var p := X.Cols;
-
-  for var t := 0 to fNTrees-1 do
+  for var t := 0 to fNTrees - 1 do
   begin
-    var Xb: Matrix;
-    var yb: Vector;
-    
-    BootstrapSample(X, y, Xb, yb);
-
     var treeSeed := fRng.Next(integer.MaxValue);
-
+  
     var tree := new DecisionTreeClassifier(
       fMaxDepth,
       fMinSamplesSplit,
       fMinSamplesLeaf,
       treeSeed
     );
-    
+  
+    var p := X.ColCount;
     var m := ComputeMaxFeatures(p);
+    tree.fMaxFeatures := m;
+  
+    var rows: array of integer;
+    BootstrapRowIndices(X.RowCount, rows);
+  
+    tree.SetRowIndices(rows);
+    tree.Fit(X, y);
     
-    // классический RF для классификации - Sqrt(p)
-    tree.fMaxFeatures := m; 
-
-    tree.Fit(Xb, yb);
+    if t = 0 then // скопировать на первой итерации
+    begin
+      fClassCount := tree.ClassCount;
+      fIndexToClass := tree.IndexToClass;
+    end;
+  
     fTrees[t] := tree;
   end;
 
@@ -3091,43 +3509,91 @@ begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
-  var n := X.Rows;
-  var p := X.Cols;
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if ValidateFiniteInputs then
+    CheckXForPredict(X);
+
+  var n := X.RowCount;
+  var treeCount := fTrees.Length;
+
+  if treeCount = 0 then
+    Error(ER_MODEL_NOT_INITIALIZED);
+  
   var resultVec := new Vector(n);
+  var counts := new integer[fClassCount];
 
-  for var i := 0 to n-1 do
+  for var i := 0 to n - 1 do
   begin
-    var votes := new Dictionary<integer, integer>;
+    // обнулить счётчики
+    for var c := 0 to fClassCount - 1 do
+      counts[c] := 0;
 
-    // сформировать вектор строки один раз
-    var row := new Vector(p);
-    for var j := 0 to p-1 do
-      row[j] := X[i,j];
-
-    for var t := 0 to fTrees.Length-1 do
+    // голосование
+    for var t := 0 to treeCount - 1 do
     begin
-      var cls := integer(fTrees[t].PredictOne(row));
-
-      if not votes.ContainsKey(cls) then
-        votes[cls] := 0;
-
-      votes[cls] += 1;
+      var cls := fTrees[t].PredictOne(X, i); // внутренний индекс 0..K-1
+      counts[cls] += 1;
     end;
 
+    // argmax
     var bestClass := 0;
     var bestCount := -1;
 
-    foreach var kv in votes do
-      if kv.Value > bestCount then
+    for var c := 0 to fClassCount - 1 do
+      if counts[c] > bestCount then
       begin
-        bestCount := kv.Value;
-        bestClass := kv.Key;
+        bestCount := counts[c];
+        bestClass := c;
       end;
 
-    resultVec[i] := bestClass;
+    // вернуть исходную метку
+    resultVec[i] := fIndexToClass[bestClass];
   end;
 
   Result := resultVec;
+end;
+
+function RandomForestClassifier.PredictProba(X: Matrix): Matrix;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if ValidateFiniteInputs then
+    CheckXForPredict(X);
+
+  var n := X.RowCount;
+  var treeCount := fTrees.Length;
+
+  if treeCount = 0 then
+    Error(ER_MODEL_NOT_INITIALIZED);
+
+  var resultMat := new Matrix(n, fClassCount);
+  var counts := new integer[fClassCount];
+
+  for var i := 0 to n - 1 do
+  begin
+    // обнулить счётчики
+    for var c := 0 to fClassCount - 1 do
+      counts[c] := 0;
+
+    // голосование
+    for var t := 0 to treeCount - 1 do
+    begin
+      var cls := fTrees[t].PredictOne(X, i); // внутренний индекс
+      counts[cls] += 1;
+    end;
+
+    // нормализация → вероятности
+    for var c := 0 to fClassCount - 1 do
+      resultMat[i, c] := counts[c] / treeCount;
+  end;
+
+  Result := resultMat;
 end;
 
 function RandomForestClassifier.Clone: IModel;
@@ -3189,6 +3655,14 @@ begin
     $'maxFeatures={fMaxFeaturesMode}' +
     seedPart +
     ')';
+end;
+
+function RandomForestClassifier.GetClasses: array of real;
+begin
+  Result := new real[fClassCount];
+
+  for var i := 0 to fClassCount - 1 do
+    Result[i] := fIndexToClass[i];
 end;
 
 //-----------------------------
@@ -3437,39 +3911,80 @@ function GradientBoostingRegressor.FitInternal(
   XVal: Matrix; yVal: Vector;
   useValidation: boolean): IModel;
 begin
-  // --- checks ---
-  if XTrain = nil then ArgumentNullError(ER_X_NULL);
-  if yTrain = nil then ArgumentNullError(ER_Y_NULL);
+  // --- null checks ---
+  if XTrain = nil then
+    ArgumentNullError(ER_X_NULL);
 
-  if XTrain.Rows <> yTrain.Length then
-    DimensionError(ER_XY_SIZE_MISMATCH);
+  if yTrain = nil then
+    ArgumentNullError(ER_Y_NULL);
 
-  if XTrain.Rows = 0 then
+  // --- finite checks ---
+  if ValidateFiniteInputs then
+  begin
+    CheckXForFit(XTrain);
+    CheckYForFit(yTrain);
+  end;
+
+  // --- shape checks ---
+  if XTrain.RowCount = 0 then
     ArgumentError(ER_EMPTY_DATASET);
+
+  if XTrain.RowCount <> yTrain.Length then
+    DimensionError(ER_XY_SIZE_MISMATCH);
 
   if useValidation then
   begin
-    if XVal = nil then ArgumentNullError(ER_X_NULL);
-    if yVal = nil then ArgumentNullError(ER_Y_NULL);
+    if XVal = nil then
+      ArgumentNullError(ER_X_NULL);
 
-    if XVal.Rows <> yVal.Length then
+    if yVal = nil then
+      ArgumentNullError(ER_Y_NULL);
+
+    if ValidateFiniteInputs then
+    begin
+      CheckXForPredict(XVal);
+      CheckYForFit(yVal);
+    end;
+
+    if XVal.RowCount <> yVal.Length then
       DimensionError(ER_XY_SIZE_MISMATCH);
 
-    if XVal.Cols <> XTrain.Cols then
+    if XVal.ColCount <> XTrain.ColCount then
       DimensionError(ER_FEATURE_COUNT_MISMATCH);
   end;
+
+  // --- hyperparameter checks ---
+  if fNEstimators <= 0 then
+    ArgumentOutOfRangeError(ER_NESTIMATORS_INVALID, fNEstimators);
+
+  if fLearningRate <= 0 then
+    ArgumentOutOfRangeError(ER_LEARNING_RATE_INVALID, fLearningRate);
+
+  if (fSubsample <= 0.0) or (fSubsample > 1.0) then
+    ArgumentOutOfRangeError(ER_SUBSAMPLE_INVALID, fSubsample);
+
+  if fMinSamplesSplit < 2 then
+    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
+
+  if fMinSamplesLeaf < 1 then
+    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
+
+  if fMaxDepth < 0 then
+    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
+
+  if fMaxDepth > MAX_ALLOWED_TREE_DEPTH then
+    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
 
   // --- init state ---
   fOOBLossHistory.Clear;
   fEstimators.Clear;
-  fFeatureCount := XTrain.Cols;
+  fFeatureCount := XTrain.ColCount;
 
   fTrainLossHistory.Clear;
   fValLossHistory.Clear;
 
   fBestIteration := -1;
-  fBestTrainLoss := real.PositiveInfinity;
-  fBestValLoss := real.PositiveInfinity;
+  fBestScoreLoss := real.PositiveInfinity;
 
   var noImprove := 0;
 
@@ -3487,16 +4002,16 @@ begin
   for var i := 0 to nTrain - 1 do
     yPredTrain[i] := fInitValue;
 
-  // --- OOB state (used only if: subsample<1, no validation, and patience>0) ---
+  // --- OOB logic ---
   var useSubsample := fSubsample < 1.0;
-  var useOOB := (not useValidation) and useSubsample and (fEarlyStoppingPatience > 0);
+  var useOOB :=
+      (not useValidation) and
+      useSubsample and
+      (fEarlyStoppingPatience > 0) and
+      fUseOOBEarlyStopping;
 
-  var yPredOOB := new Vector(nTrain);
-  var oobCount := new integer[nTrain];
-
-  if useOOB then
-    for var i := 0 to nTrain - 1 do
-      yPredOOB[i] := fInitValue;
+  var oobSum := new Vector(nTrain);      // сумма вкладов OOB-деревьев
+  var oobCount := new integer[nTrain];   // сколько раз объект был OOB
 
   var yPredVal: Vector := nil;
   if useValidation then
@@ -3510,12 +4025,12 @@ begin
   // --- boosting loop ---
   for var m := 0 to fNEstimators - 1 do
   begin
-    // pseudo-residuals on TRAIN only
+    // 1. residuals
     var r := new Vector(nTrain);
     ComputePseudoResiduals(yTrain, yPredTrain, r);
 
     var stageSeed := fRng.Next(integer.MaxValue);
-    
+
     var tree := new DecisionTreeRegressor(
       fMaxDepth,
       fMinSamplesSplit,
@@ -3524,18 +4039,32 @@ begin
       stageSeed
     );
 
-    // --- subsample rows (and keep indices) ---
+    // --- subsample ---
     var rows: array of integer := nil;
     var used: array of boolean := nil;
 
     if useSubsample then
     begin
-      var k := Round(nTrain * fSubsample);
+      var k := Floor(nTrain * fSubsample);
       if k < 1 then k := 1;
+      if k > nTrain then k := nTrain;
+
+      var all := new integer[nTrain];
+      for var i := 0 to nTrain - 1 do
+        all[i] := i;
+
+      // partial Fisher–Yates
+      for var i := 0 to k - 1 do
+      begin
+        var j := i + fRng.Next(nTrain - i);
+        var tmp := all[i];
+        all[i] := all[j];
+        all[j] := tmp;
+      end;
 
       rows := new integer[k];
       for var i := 0 to k - 1 do
-        rows[i] := fRng.Next(nTrain);
+        rows[i] := all[i];
 
       tree.SetRowIndices(rows);
 
@@ -3550,13 +4079,11 @@ begin
     tree.Fit(XTrain, r);
     fEstimators.Add(tree);
 
-    // predict delta on all rows once
     var deltaTrain := tree.Predict(XTrain);
 
-    // --- update TRAIN prediction ---
+    // --- update TRAIN ---
     if useSubsample then
     begin
-      // update only sampled rows
       for var i := 0 to rows.Length - 1 do
       begin
         var idx := rows[i];
@@ -3569,16 +4096,18 @@ begin
         yPredTrain[i] += fLearningRate * deltaTrain[i];
     end;
 
-    // --- OOB update ---
+    // --- update OOB ---
     if useOOB then
+    begin
       for var i := 0 to nTrain - 1 do
         if not used[i] then
         begin
-          yPredOOB[i] += fLearningRate * deltaTrain[i];
+          oobSum[i] += fLearningRate * deltaTrain[i];
           oobCount[i] += 1;
         end;
+    end;
 
-    // update VAL prediction (if used)
+    // --- update VAL ---
     if useValidation then
     begin
       var deltaVal := tree.Predict(XVal);
@@ -3586,7 +4115,7 @@ begin
         yPredVal[i] += fLearningRate * deltaVal[i];
     end;
 
-    // losses
+    // --- losses ---
     var trainLoss := ComputeTrainLoss(yTrain, yPredTrain);
     fTrainLossHistory.Add(trainLoss);
 
@@ -3601,33 +4130,41 @@ begin
     else if useOOB then
     begin
       var mask := new boolean[nTrain];
+      var yPredOOB := new Vector(nTrain);
+
       var cnt := 0;
-    
+
       for var i := 0 to nTrain - 1 do
       begin
-        mask[i] := oobCount[i] > 0;
-        if mask[i] then
+        if oobCount[i] > 0 then
+        begin
+          mask[i] := true;
+          yPredOOB[i] :=
+              fInitValue + oobSum[i] / oobCount[i];
           cnt += 1;
+        end
+        else
+          mask[i] := false;
       end;
-    
+
       if cnt >= Max(1, nTrain div 10) then
       begin
         scoreLoss := ComputeTrainLossMasked(yTrain, yPredOOB, mask);
-        fOOBLossHistory.Add(scoreLoss);   // ← добавили историю
+        fOOBLossHistory.Add(scoreLoss);
       end
       else
       begin
         scoreLoss := trainLoss;
-        fOOBLossHistory.Add(real.NaN);    // чтобы длины совпадали
+        fOOBLossHistory.Add(real.NaN);
       end;
     end;
 
-    // early stopping
+    // --- early stopping ---
     if fEarlyStoppingPatience > 0 then
     begin
-      if (fBestValLoss - scoreLoss > MinImprovement) then
+      if (fBestScoreLoss - scoreLoss > MinImprovement) then
       begin
-        fBestValLoss := scoreLoss;
+        fBestScoreLoss := scoreLoss;
         fBestIteration := m;
         noImprove := 0;
       end
@@ -3640,24 +4177,24 @@ begin
     end;
   end;
 
-  // if stopping enabled: cut trees after best iteration
+  // --- cut estimators ---
   if (fEarlyStoppingPatience > 0) and (fBestIteration >= 0) then
   begin
     var keep := fBestIteration + 1;
-  
+
     if fEstimators.Count > keep then
       fEstimators.RemoveRange(keep, fEstimators.Count - keep);
-  
+
     if fOOBLossHistory.Count > keep then
       fOOBLossHistory.RemoveRange(keep, fOOBLossHistory.Count - keep);
-  
+
     if fTrainLossHistory.Count > keep then
       fTrainLossHistory.RemoveRange(keep, fTrainLossHistory.Count - keep);
-  
+
     if fValLossHistory.Count > keep then
       fValLossHistory.RemoveRange(keep, fValLossHistory.Count - keep);
   end;
-  
+
   fFitted := true;
   Result := Self;
 end;
@@ -3670,10 +4207,13 @@ begin
   if X = nil then
     ArgumentNullError(ER_X_NULL);
 
-  if X.Cols <> fFeatureCount then
+  if ValidateFiniteInputs then
+    CheckXForPredict(X);
+
+  if X.ColCount <> fFeatureCount then
     DimensionError(ER_FEATURE_COUNT_MISMATCH);
 
-  var n := X.Rows;
+  var n := X.RowCount;
   var yPred := new Vector(n);
 
   for var i := 0 to n - 1 do
@@ -3697,25 +4237,25 @@ begin
   if X = nil then
     ArgumentNullError(ER_X_NULL);
 
-  if X.Cols <> fFeatureCount then
+  if ValidateFiniteInputs then
+    CheckXForPredict(X);
+
+  if X.ColCount <> fFeatureCount then
     DimensionError(ER_FEATURE_COUNT_MISMATCH);
 
   var totalTrees := fEstimators.Count;
 
   if (m < 0) or (m > totalTrees) then
-    ArgumentOutOfRangeError(
-      'Stage m must be in range [0, {0}]!!Stage m must be in range [0, {0}]',
-      totalTrees
-    );
+    ArgumentOutOfRangeError(ER_STAGE_OUT_OF_RANGE, m, totalTrees);
 
-  var n := X.Rows;
+  var n := X.RowCount;
   var yPred := new Vector(n);
 
-  // --- F0
+  // F0
   for var i := 0 to n - 1 do
-    yPred[i] := fInitValue;  // mean(y)
+    yPred[i] := fInitValue;
 
-  // --- add first m trees
+  // добавить первые m деревьев
   for var t := 0 to m - 1 do
   begin
     var delta := fEstimators[t].Predict(X);
@@ -3823,7 +4363,7 @@ begin
   // --- best iteration state ---
   copy.fBestIteration := fBestIteration;
   copy.fBestTrainLoss := fBestTrainLoss;
-  copy.fBestValLoss := fBestValLoss;
+  copy.fBestScoreLoss := fBestScoreLoss;
 
   // --- loss configuration ---
   copy.fLoss := fLoss;
@@ -3860,18 +4400,26 @@ function GradientBoostingClassifier.FitInternal(
   XVal: Matrix; yVal: Vector;
   useValidation: boolean): IModel;
 begin
-  // --- checks
+  // --- null checks ---
   if XTrain = nil then
     ArgumentNullError(ER_X_NULL);
 
   if yTrain = nil then
     ArgumentNullError(ER_Y_NULL);
 
-  if XTrain.Rows <> yTrain.Length then
-    DimensionError(ER_XY_SIZE_MISMATCH);
+  // --- finite checks ---
+  if ValidateFiniteInputs then
+  begin
+    CheckXForFit(XTrain);
+    CheckYForFit(yTrain);
+  end;
 
-  if XTrain.Rows = 0 then
+  // --- shape checks ---
+  if XTrain.RowCount = 0 then
     ArgumentError(ER_EMPTY_DATASET);
+
+  if XTrain.RowCount <> yTrain.Length then
+    DimensionError(ER_XY_SIZE_MISMATCH);
 
   if useValidation then
   begin
@@ -3881,12 +4429,40 @@ begin
     if yVal = nil then
       ArgumentNullError(ER_Y_NULL);
 
-    if XVal.Rows <> yVal.Length then
+    if ValidateFiniteInputs then
+    begin
+      CheckXForPredict(XVal);
+      CheckYForFit(yVal);
+    end;
+
+    if XVal.RowCount <> yVal.Length then
       DimensionError(ER_XY_SIZE_MISMATCH);
 
-    if XVal.Cols <> XTrain.Cols then
+    if XVal.ColCount <> XTrain.ColCount then
       DimensionError(ER_FEATURE_COUNT_MISMATCH);
   end;
+
+  // --- hyperparameter checks ---
+  if fNEstimators <= 0 then
+    ArgumentOutOfRangeError(ER_NESTIMATORS_INVALID, fNEstimators);
+
+  if fLearningRate <= 0 then
+    ArgumentOutOfRangeError(ER_LEARNING_RATE_INVALID, fLearningRate);
+
+  if (fSubsample <= 0.0) or (fSubsample > 1.0) then
+    ArgumentOutOfRangeError(ER_SUBSAMPLE_INVALID, fSubsample);
+
+  if fMinSamplesSplit < 2 then
+    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
+
+  if fMinSamplesLeaf < 1 then
+    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
+
+  if fMaxDepth < 0 then
+    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
+
+  if fMaxDepth > MAX_ALLOWED_TREE_DEPTH then
+    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
 
   // --- reset state
   fOOBLossHistory.Clear;
@@ -3894,7 +4470,7 @@ begin
   fTrainLossHistory.Clear;
   fValLossHistory.Clear;
 
-  fFeatureCount := XTrain.Cols;
+  fFeatureCount := XTrain.ColCount;
   fBestIteration := -1;
   fBestValLoss := real.PositiveInfinity;
   fFitted := false;
@@ -3903,7 +4479,7 @@ begin
   BuildClassMapping(yTrain);
   var yEncoded := EncodeLabels(yTrain);
 
-  var nTrain := XTrain.Rows;
+  var nTrain := XTrain.RowCount;
   var classCount := fClassCount;
   
   // --- compute class priors
@@ -3955,11 +4531,11 @@ begin
 
   if useValidation then
   begin
-    logitsVal := new Matrix(XVal.Rows, classCount);
+    logitsVal := new Matrix(XVal.RowCount, classCount);
     yValEncoded := EncodeLabels(yVal);
   
     // --- инициализация log-prior
-    for var i := 0 to XVal.Rows - 1 do
+    for var i := 0 to XVal.RowCount - 1 do
       for var cls := 0 to classCount - 1 do
         logitsVal[i, cls] := fInitLogits[cls];
   end;
@@ -3990,17 +4566,6 @@ begin
     // --- subsample rows
     var useSubsample := fSubsample < 1.0;
     var subIndices: array of integer := nil;
-    
-    if useSubsample then
-    begin
-      var subCount := Round(fSubsample * nTrain);
-      if subCount < 1 then
-        subCount := 1;
-    
-      SetLength(subIndices, subCount);
-      for var i := 0 to subCount - 1 do
-        subIndices[i] := fRng.Next(nTrain);
-    end;
     
     // inBag
     var inBag: array of boolean := nil;
@@ -4066,7 +4631,7 @@ begin
       if useValidation then
       begin
         var deltaVal := tree.Predict(XVal);
-        for var i := 0 to XVal.Rows - 1 do
+        for var i := 0 to XVal.RowCount - 1 do
           logitsVal[i, cls] += fLearningRate * deltaVal[i];
       end;
     end;
@@ -4082,7 +4647,7 @@ begin
 
     if useValidation then
     begin
-      var probsVal := new Matrix(XVal.Rows, classCount);
+      var probsVal := new Matrix(XVal.RowCount, classCount);
       SoftmaxMatrix(logitsVal, probsVal);
     
       var valLoss := ComputeLogLoss(yValEncoded, probsVal);
@@ -4208,8 +4773,8 @@ procedure GradientBoostingClassifier.SoftmaxMatrix(
   logits: Matrix;
   probs: Matrix);
 begin
-  var nSamples := logits.Rows;
-  var classCount := logits.Cols;
+  var nSamples := logits.RowCount;
+  var classCount := logits.ColCount;
 
   for var i := 0 to nSamples - 1 do
   begin
@@ -4226,9 +4791,7 @@ begin
   end;
 end;
 
-function GradientBoostingClassifier.ComputeLogLoss(
-  yEncoded: array of integer;
-  probs: Matrix): real;
+function GradientBoostingClassifier.ComputeLogLoss(yEncoded: array of integer; probs: Matrix): real;
 begin
   var n := Length(yEncoded);
   var eps := 1e-15;
@@ -4254,8 +4817,8 @@ function GradientBoostingClassifier.ComputeLogLossMasked(
   logits: Matrix;
   mask: array of boolean): real;
 begin
-  var n := logits.Rows;
-  var k := logits.Cols;
+  var n := logits.RowCount;
+  var k := logits.ColCount;
 
   var rowLogits := new real[k];
   var rowProbs := new real[k];
@@ -4350,7 +4913,16 @@ begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
-  var nSamples := X.Rows;
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if ValidateFiniteInputs then
+    CheckXForPredict(X);
+
+  if X.ColCount <> fFeatureCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH);
+  
+  var nSamples := X.RowCount;
   var classCount := fClassCount;
 
   var logits := new Matrix(nSamples, classCount);
@@ -4407,18 +4979,18 @@ begin
   if X = nil then
     ArgumentNullError(ER_X_NULL);
 
-  if X.Cols <> fFeatureCount then
+  if ValidateFiniteInputs then
+    CheckXForPredict(X);
+
+  if X.ColCount <> fFeatureCount then
     DimensionError(ER_FEATURE_COUNT_MISMATCH);
 
   var total := fEstimators.Count;
 
   if (m < 0) or (m > total) then
-    ArgumentOutOfRangeError(
-      'Stage m must be in range [0, {0}]!!Stage m must be in range [0, {0}]',
-      total
-    );
+    ArgumentOutOfRangeError(ER_STAGE_OUT_OF_RANGE, m, total);
 
-  var n := X.Rows;
+  var n := X.RowCount;
   var k := fClassCount;
 
   var logits := new Matrix(n, k);
@@ -4452,7 +5024,7 @@ function GradientBoostingClassifier.PredictStage(X: Matrix; m: integer): Vector;
 begin
   var probs := PredictStageProba(X, m);
 
-  var n := probs.Rows;
+  var n := probs.RowCount;
   var resultVec := new Vector(n);
 
   for var i := 0 to n - 1 do
@@ -4460,7 +5032,7 @@ begin
     var best := 0;
     var bestVal := probs[i,0];
 
-    for var cls := 1 to probs.Cols - 1 do
+    for var cls := 1 to probs.ColCount - 1 do
       if probs[i,cls] > bestVal then
       begin
         bestVal := probs[i,cls];
@@ -4609,7 +5181,7 @@ begin
 
   var probs := PredictProba(X);
 
-  var nSamples := X.Rows;
+  var nSamples := X.RowCount;
   var classCount := fClassCount;
 
   Result := new Vector(nSamples);
@@ -4645,14 +5217,14 @@ begin
   fIsFitted := False;
 end;
 
-procedure KNNBase.CheckFitted;
-begin
-  if not fIsFitted then
-    NotFittedError(ER_FIT_NOT_CALLED);
-end;
-
 procedure KNNBase.ValidatePredictInput(X: Matrix);
 begin
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if ValidateFiniteInputs then
+    CheckXForPredict(X);
+
   if X.ColCount <> fXTrain.ColCount then
     DimensionError(ER_FEATURE_COUNT_MISMATCH);
 end;
@@ -4717,6 +5289,8 @@ end;
 //        KNNClassifier 
 //-----------------------------
 
+const KNN_EPS = 1e-12;
+
 constructor KNNClassifier.Create(k: integer; weighting: KNNWeighting);
 begin
   inherited Create(k, weighting);
@@ -4763,14 +5337,17 @@ begin
   if X.RowCount <> y.Length then
     DimensionError(ER_XY_SIZE_MISMATCH);
 
+  if X.RowCount = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
   if fK > X.RowCount then
     ArgumentOutOfRangeError(ER_K_EXCEEDS_SAMPLES);
 
-  // проверить NaN в X
-  for var i := 0 to X.RowCount - 1 do
-    for var j := 0 to X.ColCount - 1 do
-      if double.IsNaN(X[i,j]) then
-        ArgumentError(ER_NAN_IN_X);
+  if ValidateFiniteInputs then
+  begin
+    CheckXForFit(X);
+    CheckYForFit(y);
+  end;
 
   // копия train data
   fXTrain := X.Clone;  // предполагаем, что Clone делает глубокую копию
@@ -4853,7 +5430,7 @@ begin
     // exact match: если среди k ближайших есть dist=0, возвращаем его класс
     var exactCls := -1;
     for var t := 0 to fK - 1 do
-      if fNeighbors[t].dist = 0 then
+      if fNeighbors[t].dist < KNN_EPS then
       begin
         exactCls := fYEnc[fNeighbors[t].idx];
         break;
@@ -4904,9 +5481,24 @@ begin
           touchCount += 1;
         end;
 
-        var w := 1.0 / dist;
-        fVotes[cls] += w;
+        if dist < KNN_EPS then
+        begin
+          // считаем как exact match
+          exactCls := cls;
+          break;
+        end
+        else
+        begin
+          var w := 1.0 / Sqrt(dist);
+          fVotes[cls] += w;
+        end;
       end;
+    end;
+    
+    if exactCls <> -1 then
+    begin
+      Result[i] := fClasses[exactCls];
+      continue;
     end;
 
     // argmax только по touched
@@ -4934,9 +5526,6 @@ begin
   if not fIsFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
-  if X = nil then
-    ArgumentNullError(ER_X_NULL);
-
   ValidatePredictInput(X);
 
   var m := X.RowCount;
@@ -4959,7 +5548,7 @@ begin
     // exact match: если среди k ближайших есть dist=0, вероятность 1 у его класса
     var exactCls := -1;
     for var t := 0 to fK - 1 do
-      if fNeighbors[t].dist = 0 then
+      if fNeighbors[t].dist < KNN_EPS then
       begin
         exactCls := fYEnc[fNeighbors[t].idx];
         break;
@@ -5003,13 +5592,19 @@ begin
     else
     begin
       var sumW := 0.0;
-
+    
       for var t := 0 to fK - 1 do
       begin
         var trainIdx := fNeighbors[t].idx;
         var cls := fYEnc[trainIdx];
         var dist := fNeighbors[t].dist;
-
+    
+        if dist < KNN_EPS then
+        begin
+          exactCls := cls;
+          break;
+        end;
+    
         if fMark[cls] <> fEpoch then
         begin
           fMark[cls] := fEpoch;
@@ -5017,18 +5612,37 @@ begin
           fTouched[touchCount] := cls;
           touchCount += 1;
         end;
-
-        var w := 1.0 / dist;
+    
+        var w := 1.0 / Sqrt(dist);   // согласовано с Predict
         fVotes[cls] += w;
         sumW += w;
       end;
-
-      // нормализация: сумма = sumW
-      for var k2 := 0 to touchCount - 1 do
+    
+      // 🔴 ОБЯЗАТЕЛЬНО проверить exact снова
+    
+      if exactCls <> -1 then
       begin
-        var cls := fTouched[k2];
-        Result[i, cls] := fVotes[cls] / sumW;
+        Result[i, exactCls] := 1.0;
+        continue;
       end;
+    
+      // нормализация
+      if sumW > 0 then
+        for var k2 := 0 to touchCount - 1 do
+        begin
+          var cls := fTouched[k2];
+          Result[i, cls] := fVotes[cls] / sumW;
+        end
+      else
+      begin
+        // fallback — равномерное распределение
+        var uniform := 1.0 / fK;
+        for var k2 := 0 to touchCount - 1 do
+        begin
+          var cls := fTouched[k2];
+          Result[i, cls] := uniform;
+        end;
+      end;  
     end;
   end;
 end;
@@ -5053,19 +5667,17 @@ begin
   if X.RowCount <> y.Length then
     DimensionError(ER_XY_SIZE_MISMATCH);
 
+  if X.RowCount = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
   if fK > X.RowCount then
     ArgumentOutOfRangeError(ER_K_EXCEEDS_SAMPLES);
 
-  // Проверка NaN в X
-  for var i := 0 to X.RowCount - 1 do
-    for var j := 0 to X.ColCount - 1 do
-      if double.IsNaN(X[i,j]) then
-        ArgumentError(ER_NAN_IN_X);
-
-  // Проверка NaN в y
-  for var i := 0 to y.Length - 1 do
-    if double.IsNaN(y[i]) then
-      ArgumentError(ER_NAN_IN_Y);
+  if ValidateFiniteInputs then
+  begin
+    CheckXForFit(X);
+    CheckYForFit(y);
+  end;
 
   fXTrain := X.Clone;
   fYTrain := y.Clone;
@@ -5073,8 +5685,7 @@ begin
   var n := fXTrain.RowCount;
   SetLength(fNeighbors, n);
 
-  fIsFitted := True;
-
+  fIsFitted := true;
   Result := Self;
 end;
 
@@ -5082,9 +5693,6 @@ function KNNRegressor.Predict(X: Matrix): Vector;
 begin
   if not fIsFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
-
-  if X = nil then
-    ArgumentNullError(ER_X_NULL);
 
   ValidatePredictInput(X);
 
@@ -5095,20 +5703,20 @@ begin
 
   for var i := 0 to m - 1 do
   begin
-    // заполнить расстояния
+    // --- вычисление расстояний
     for var t := 0 to n - 1 do
     begin
       fNeighbors[t].dist := SquaredL2(t, X, i);
       fNeighbors[t].idx := t;
     end;
 
-    // выбрать k ближайших (первые k элементов, порядок произвольный)
+    // --- выбрать k ближайших
     QuickSelect(fK - 1);
 
-    // exact match: ищем dist=0 среди k ближайших
+    // --- exact match
     var exactIdx := -1;
     for var t := 0 to fK - 1 do
-      if fNeighbors[t].dist = 0 then
+      if fNeighbors[t].dist < KNN_EPS then
       begin
         exactIdx := fNeighbors[t].idx;
         break;
@@ -5120,10 +5728,11 @@ begin
       continue;
     end;
 
+    // --- uniform weighting
     if fWeighting = KNNWeighting.Uniform then
     begin
-      // среднее по k
       var sum := 0.0;
+
       for var t := 0 to fK - 1 do
         sum += fYTrain[fNeighbors[t].idx];
 
@@ -5131,22 +5740,46 @@ begin
     end
     else
     begin
-      // weighted: веса 1 / dist (dist = squared distance)
+      // --- distance weighting
       var sumW := 0.0;
       var sumWY := 0.0;
+      var exactFound := false;
+      var exactValue := 0.0;
 
       for var t := 0 to fK - 1 do
       begin
         var idx := fNeighbors[t].idx;
         var dist := fNeighbors[t].dist;
 
-        // dist=0 здесь уже не встречается из-за exact-match выше
-        var w := 1.0 / dist;
+        if dist < KNN_EPS then
+        begin
+          exactFound := true;
+          exactValue := fYTrain[idx];
+          break;
+        end;
+
+        var w := 1.0 / Sqrt(dist);
         sumW += w;
         sumWY += w * fYTrain[idx];
       end;
 
-      Result[i] := sumWY / sumW;
+      if exactFound then
+      begin
+        Result[i] := exactValue;
+        continue;
+      end;
+
+      if sumW > 0 then
+        Result[i] := sumWY / sumW
+      else
+      begin
+        // fallback — обычное среднее
+        var sum := 0.0;
+        for var t := 0 to fK - 1 do
+          sum += fYTrain[fNeighbors[t].idx];
+
+        Result[i] := sum / fK;
+      end;
     end;
   end;
 end;
@@ -5192,18 +5825,24 @@ begin
   if (steps = nil) or (Length(steps) = 0) then
     ArgumentError(ER_PIPELINE_NO_STEPS);
 
-  // последний шаг должен быть моделью
+  // последний шаг
   var last := steps[High(steps)];
+
+  if last = nil then
+    ArgumentError(ER_PIPELINE_STEP_NULL, High(steps));
 
   if not (last is IModel) then
     ArgumentError(ER_PIPELINE_LAST_NOT_MODEL);
 
   var pipe := new Pipeline(last as IModel);
 
-  // все шаги кроме последнего должны быть преобразователями
+  // все шаги кроме последнего — трансформеры
   for var i := 0 to High(steps) - 1 do
   begin
     var step := steps[i];
+
+    if step = nil then
+      ArgumentError(ER_PIPELINE_STEP_NULL, i);
 
     if not (step is ITransformer) then
       ArgumentError(ER_PIPELINE_INVALID_STEP_ORDER);
@@ -5237,15 +5876,34 @@ begin
   if fModel = nil then
     ArgumentError(ER_MODEL_NULL);
 
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if y = nil then
+    ArgumentNullError(ER_Y_NULL);
+
+  if X.RowCount <> y.Length then
+    DimensionError(ER_XY_SIZE_MISMATCH);
+
+  if X.RowCount = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
   var Xt := X;
 
   foreach var t in fTransformers do
   begin
+    if t = nil then
+      ArgumentError(ER_PIPELINE_STEP_NULL);
+
     if t is ISupervisedTransformer (var sup) then
       sup.Fit(Xt, y)
-    else t.Fit(Xt);
+    else
+      t.Fit(Xt);
 
     Xt := t.Transform(Xt);
+
+    if Xt = nil then
+      ArgumentError(ER_PIPELINE_TRANSFORM_RETURNED_NULL);
   end;
 
   fModel.Fit(Xt, y);
@@ -5259,10 +5917,21 @@ begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
   var Xt := X;
 
   foreach var t in fTransformers do
+  begin
+    if t = nil then
+      ArgumentError(ER_PIPELINE_STEP_NULL);
+
     Xt := t.Transform(Xt);
+
+    if Xt = nil then
+      ArgumentError(ER_PIPELINE_TRANSFORM_RETURNED_NULL);
+  end;
 
   Result := Xt;
 end;
@@ -5271,6 +5940,9 @@ function Pipeline.Predict(X: Matrix): Vector;
 begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
+
+  if fModel = nil then
+    ArgumentError(ER_MODEL_NULL);
 
   var Xt := Transform(X);
   Result := fModel.Predict(Xt);
@@ -5281,8 +5953,11 @@ begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
+  if fModel = nil then
+    ArgumentError(ER_MODEL_NULL);
+
   if not (fModel is IProbabilisticClassifier) then
-    Error(ER_PROBA_NOT_SUPPORTED);
+    ArgumentError(ER_PROBA_NOT_SUPPORTED);
 
   var Xt := Transform(X);
 
@@ -5635,94 +6310,140 @@ end;
 
 function SelectKBest.ComputeAnovaF(feature: Vector; y: Vector): real;
 begin
-  var mean0 := 0.0;
-  var mean1 := 0.0;
-  var n0 := 0;
-  var n1 := 0;
-
-  for var i := 0 to y.Length - 1 do
-    if y[i] = 0 then
-    begin
-      mean0 += feature[i];
-      n0 += 1;
-    end
-    else
-    begin
-      mean1 += feature[i];
-      n1 += 1;
-    end;
-
-  if (n0 = 0) or (n1 = 0) then
+  var n := feature.Length;
+  if n = 0 then
     exit(0.0);
 
-  mean0 /= n0;
-  mean1 /= n1;
-
-  var grandMean := feature.Mean;
-
-  var ssBetween :=
-    n0 * Sqr(mean0 - grandMean) +
-    n1 * Sqr(mean1 - grandMean);
-
-  var ssWithin := 0.0;
+  // --- построение отображения классов ---
+  var classToIndex := new Dictionary<integer, integer>;
+  var uniqueClasses := new List<integer>;
 
   for var i := 0 to y.Length - 1 do
-    if y[i] = 0 then
-      ssWithin += Sqr(feature[i] - mean0)
-    else
-      ssWithin += Sqr(feature[i] - mean1);
+  begin
+    var cls := Round(y[i]);
+    if not classToIndex.ContainsKey(cls) then
+    begin
+      classToIndex[cls] := uniqueClasses.Count;
+      uniqueClasses.Add(cls);
+    end;
+  end;
+
+  var classCount := uniqueClasses.Count;
+  if classCount < 2 then
+    exit(0.0);
+
+  var counts := new integer[classCount];
+  var means := new real[classCount];
+
+  // --- глобальное среднее ---
+  var globalMean := feature.Mean;
+
+  // --- накопление по классам ---
+  for var i := 0 to n - 1 do
+  begin
+    var classIdx := classToIndex[Round(y[i])];
+    counts[classIdx] += 1;
+    means[classIdx] += feature[i];
+  end;
+
+  for var classIdx := 0 to classCount - 1 do
+    if counts[classIdx] > 0 then
+      means[classIdx] /= counts[classIdx];
+
+  // --- SS_between ---
+  var ssBetween := 0.0;
+  for var classIdx := 0 to classCount - 1 do
+    if counts[classIdx] > 0 then
+    begin
+      var diff := means[classIdx] - globalMean;
+      ssBetween += counts[classIdx] * diff * diff;
+    end;
+
+  // --- SS_within ---
+  var ssWithin := 0.0;
+  for var i := 0 to n - 1 do
+  begin
+    var classIdx := classToIndex[Round(y[i])];
+    var diff := feature[i] - means[classIdx];
+    ssWithin += diff * diff;
+  end;
 
   if ssWithin = 0 then
-    exit(1e308);
+    exit(0.0);
 
-  Result := (ssBetween) / (ssWithin / (y.Length - 2));
+  var msBetween := ssBetween / (classCount - 1);
+  var msWithin := ssWithin / (n - classCount);
+
+  if msWithin = 0 then
+    exit(0.0);
+
+  Result := msBetween / msWithin;
 end;
 
 function SelectKBest.ComputeChiSquare(feature: Vector; y: Vector): real;
 begin
-  var n := y.Length;
+  var n := feature.Length;
+  if n = 0 then
+    exit(0.0);
 
-  var sum0 := 0.0;
-  var sum1 := 0.0;
-  var total := 0.0;
-  var n0 := 0;
-  var n1 := 0;
-
+  // --- проверка неотрицательности ---
   for var i := 0 to n - 1 do
-  begin
-    var v := feature[i];
-    if v < 0 then
+    if feature[i] < 0 then
       ArgumentError(ER_CHI_SQUARE_NEGATIVE);
 
-    total += v;
+  // --- построение отображения классов ---
+  var classToIndex := new Dictionary<integer, integer>;
+  var uniqueClasses := new List<integer>;
 
-    if y[i] = 0 then
+  for var i := 0 to y.Length - 1 do
+  begin
+    var cls := Round(y[i]);
+    if not classToIndex.ContainsKey(cls) then
     begin
-      sum0 += v;
-      n0 += 1;
-    end
-    else
-    begin
-      sum1 += v;
-      n1 += 1;
+      classToIndex[cls] := uniqueClasses.Count;
+      uniqueClasses.Add(cls);
     end;
   end;
 
-  if (n0 = 0) or (n1 = 0) or (total = 0) then
+  var classCount := uniqueClasses.Count;
+  if classCount < 2 then
     exit(0.0);
 
-  var expected0 := total * n0 / n;
-  var expected1 := total * n1 / n;
+  var counts := new integer[classCount];
+  var observedSums := new real[classCount];
 
-  var chi := 0.0;
+  var totalSum := 0.0;
 
-  if expected0 > 0 then
-    chi += Sqr(sum0 - expected0) / expected0;
+  for var i := 0 to n - 1 do
+  begin
+    var classIdx := classToIndex[Round(y[i])];
+    counts[classIdx] += 1;
+    observedSums[classIdx] += feature[i];
+    totalSum += feature[i];
+  end;
 
-  if expected1 > 0 then
-    chi += Sqr(sum1 - expected1) / expected1;
+  if totalSum = 0 then
+    exit(0.0);
 
-  Result := chi;
+  var globalMean := totalSum / n;
+
+  var chiSquare := 0.0;
+
+  for var classIdx := 0 to classCount - 1 do
+  begin
+    if counts[classIdx] = 0 then
+      continue;
+
+    var expected := counts[classIdx] * globalMean;
+
+    if expected > 0 then
+    begin
+      var diff := observedSums[classIdx] - expected;
+      chiSquare += diff * diff / expected;
+    end;
+  end;
+
+  Result := chiSquare;
 end;
 
 function SelectKBest.ComputeScore(feature: Vector; y: Vector): real;
@@ -5739,6 +6460,15 @@ end;
 
 function SelectKBest.Fit(X: Matrix; y: Vector): ITransformer;
 begin
+  if X.RowCount <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+  
+  if X.RowCount = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+  
+  if fK <= 0 then
+    ArgumentError(ER_SELECTKBEST_K_INVALID, fK);
+     
   var p := X.ColCount;
 
   var scores: array of (real, integer);
@@ -5754,7 +6484,7 @@ begin
       if fScoreFunc <> nil then
         fScoreFunc(col, y)
       else
-        ComputeCorrelation(col, y);
+        ComputeScore(col, y);
 
     scores[j] := (s, j);
   end;
