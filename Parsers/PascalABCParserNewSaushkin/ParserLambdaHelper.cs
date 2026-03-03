@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System.Collections.Generic;
+using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
 namespace Languages.Pascal.Frontend.Core
@@ -9,7 +10,6 @@ namespace Languages.Pascal.Frontend.Core
     {
         private int lambda_num = 0;
         public List<function_lambda_definition> lambdaDefinitions;
-        public static string lambdaPrefix = "<>lambda";
 
         public ParserLambdaHelper()
         {
@@ -19,12 +19,12 @@ namespace Languages.Pascal.Frontend.Core
         public string CreateLambdaName()
         {
             lambda_num++;
-            return lambdaPrefix + lambda_num.ToString();
+            return StringConstants.lambdaPrefix + lambda_num.ToString();
         }
 
         public bool IsLambdaName(ident id)
         {
-            return id.name.StartsWith(lambdaPrefix);
+            return id.name.StartsWith(StringConstants.lambdaPrefix);
         }
     }
 }

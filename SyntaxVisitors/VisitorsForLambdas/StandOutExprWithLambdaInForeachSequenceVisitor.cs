@@ -20,13 +20,10 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             }
         }
 
-        private int GenIdNum = 0;
-
         //private ident_list ClassTemplateArgsOrNull = null; // если мы - в обобщенном классе, то это - его обобщенные параметры
         public ident GenIdentName()
         {
-            GenIdNum++;
-            return new ident("$GenContFE" + GenIdNum.ToString());
+            return new ident(CoreUtils.GeneratedNamesManager.GenerateName("$GenContFE"));
         }
 
         public override void visit(foreach_stmt fe)

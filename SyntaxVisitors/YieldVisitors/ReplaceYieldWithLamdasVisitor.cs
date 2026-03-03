@@ -14,12 +14,10 @@ namespace SyntaxVisitors
 {
     public class ReplaceYieldExprByVarVisitor : BaseChangeVisitor
     {
-        private int _Num = 0;
 
         private ident NewVarName()
         {
-            ++_Num;
-            return new ident("$yieldExprVar$" + _Num);
+            return new ident(PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("$yieldExprVar$"));
         }
 
         public static ReplaceYieldExprByVarVisitor New

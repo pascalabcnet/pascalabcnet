@@ -15,7 +15,6 @@ namespace PascalABCCompiler.TreeConverter
 {
 	public class type_constructor
 	{
-		private int pascal_arrays_num = 0;
 
 		convertion_data_and_alghoritms convertion_data_and_alghoritms;
 
@@ -405,8 +404,7 @@ namespace PascalABCCompiler.TreeConverter
 
 		private string get_pascal_array_name()
 		{
-			pascal_arrays_num++;
-			return (StringConstants.pascal_array_name + pascal_arrays_num.ToString());
+			return CoreUtils.GeneratedNamesManager.GenerateName(StringConstants.pascal_array_name);
 		}
 
 		private type_node create_array_type(ordinal_type_interface oti_indexer, type_node element_type,common_namespace_node _cmn, location loc)
@@ -2036,7 +2034,6 @@ namespace PascalABCCompiler.TreeConverter
 
 		public void reset()
 		{
-			pascal_arrays_num = 0;
 			//TODO: Что лучше Clear или создать новую?
 			pascal_arrays.Clear();
 			pascal_diap.Clear();

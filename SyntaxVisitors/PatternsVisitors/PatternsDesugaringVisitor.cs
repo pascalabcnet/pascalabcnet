@@ -208,12 +208,9 @@ namespace SyntaxVisitors.PatternsVisitors
             typeChecks.Clear(); // SSM исправление ошибки #2276
         }
 
-        private int num = 0;
-
-        public string GenerateNewName(string name)
+        private string GenerateNewName(string name)
         {
-            num += 1;
-            return "$RenIsVarYield" + num + "$" + name;
+            return PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("$RenIsVarYield", "$" + name);
         }
 
         public override void visit(procedure_definition pd)

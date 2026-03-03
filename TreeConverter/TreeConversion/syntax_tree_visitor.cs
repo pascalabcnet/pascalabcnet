@@ -108,8 +108,6 @@ namespace PascalABCCompiler.TreeConverter
         public ParallelPosition CurrentParallelPosition = ParallelPosition.Outside;
         #endregion
 
-        private int num = 0;
-
         public void InitializeForCompilingInterface(InitializationDataForCompilingInterface initializationData)
         {
             //convertion_data_and_alghoritms.__i = 0;
@@ -169,6 +167,9 @@ namespace PascalABCCompiler.TreeConverter
             convertion_data_and_alghoritms.syntax_tree_visitor = this;
             ret.syntax_tree_visitor = this;
             context.syntax_tree_visitor = this;
+
+            // очистка счетчиков сгенерированных переменных
+            CoreUtils.GeneratedNamesManager.Reset();
         }
 
         /// <summary>
@@ -182,12 +183,6 @@ namespace PascalABCCompiler.TreeConverter
         public virtual void PostCompilationActions() { }
 
         public List<TreeRealization.var_definition_node> CompiledVariables => compiledVariables;
-
-        public string UniqueNumStr()
-        {
-            num++;
-            return num.ToString();
-        }
 
         internal Errors.Error LastError()
         {
@@ -2051,7 +2046,7 @@ namespace PascalABCCompiler.TreeConverter
             	type_node filter_type = compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(StringConstants.ExceptionName));
             	expression_node current_catch_excep = create_constructor_call(filter_type, new expressions_list(), null);
                 local_block_variable_reference lvr = null;
-                local_block_variable tmp_var = context.add_var_definition(context.BuildName("$try_temp" + UniqueNumStr()), null, SystemLibrary.SystemLibrary.bool_type, null) as local_block_variable;
+                local_block_variable tmp_var = context.add_var_definition(context.BuildName(CoreUtils.GeneratedNamesManager.GenerateName("$try_temp")), null, SystemLibrary.SystemLibrary.bool_type, null) as local_block_variable;
                 statements_list stm = new statements_list(null);
                 SyntaxTree.try_handler_finally try_hndlr_finally = _try_stmt.handler as SyntaxTree.try_handler_finally;
                 context.enter_code_block_without_bind();
@@ -9317,7 +9312,7 @@ namespace PascalABCCompiler.TreeConverter
 				case semantic_node_type.compiled_constructor_call:
 				case semantic_node_type.common_constructor_call:
 				case semantic_node_type.compiled_static_method_call:
-					return convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(StringConstants.GetTempVariableName(), sl, expr.type, expr), sl);
+					return convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(GetTempVariableName(), sl, expr.type, expr), sl);
 				case semantic_node_type.class_field_reference:
 					(expr as class_field_reference).obj = create_with_expression((expr as class_field_reference).obj);
 					return expr;
@@ -9333,14 +9328,20 @@ namespace PascalABCCompiler.TreeConverter
 					(expr as dereference_node).deref_expr = create_with_expression((expr as dereference_node).deref_expr);
 					return expr;
 				case semantic_node_type.basic_function_call:
-					return convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(StringConstants.GetTempVariableName(), sl, expr.type, expr), sl);
+					return convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(GetTempVariableName(), sl, expr.type, expr), sl);
 				case semantic_node_type.as_node:
-					return convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(StringConstants.GetTempVariableName(), sl, expr.type, expr), sl);
+					return convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(GetTempVariableName(), sl, expr.type, expr), sl);
 			}
 			return expr;
 		}
 		
-		public override void visit(SyntaxTree.with_statement _with_statement)
+        private string GetTempVariableName()
+        {
+            return CoreUtils.GeneratedNamesManager.GenerateName("$TV", "$");
+        }
+
+
+        public override void visit(SyntaxTree.with_statement _with_statement)
         {
             context.WithSection = true;
             List<SymbolTable.Scope> Withs = new List<SymbolTable.Scope>();
@@ -9374,7 +9375,7 @@ namespace PascalABCCompiler.TreeConverter
                 	{
                     	location sl = get_location(s_expr);
                     	if (expr.type.type_special_kind != SemanticTree.type_special_kind.record)
-                    	vr = convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(StringConstants.GetTempVariableName(), sl, expr.type, expr), sl);
+                    	vr = convertion_data_and_alghoritms.CreateVariableReference(context.add_var_definition(GetTempVariableName(), sl, expr.type, expr), sl);
                     	else
                     		expr = create_with_expression(expr);
                 	}
@@ -19207,11 +19208,9 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        private int GenIdNum = 0;
         public ident GenIdentName()
         {
-            GenIdNum++;
-            return new ident("$GenId" + GenIdNum.ToString());
+            return new ident(CoreUtils.GeneratedNamesManager.GenerateName("$GenId"));
         }
 
         public override void visit(SyntaxTree.addressed_value_funcname _addressed_value_funcname)

@@ -54,7 +54,7 @@ namespace Languages.SPython.Frontend.Converters
             return root;
         }
 
-        public override syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts)
+        protected override syntax_tree_node ApplyConversionsAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts)
         {
             // украл из паскаля, нужны для работы 'for i1, i2 in expr' (работает с кортежными присваиваниями)
             var binder = new BindCollectLightSymInfo(root as compilation_unit);

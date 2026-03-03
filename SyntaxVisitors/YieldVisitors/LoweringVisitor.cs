@@ -35,30 +35,23 @@ namespace SyntaxVisitors
             get { return new LoweringVisitor(); }
         }
 
-        private int _varnum = 0;
-        private int _foreachCollectionNum = 0;
-        private int _enumeratorNum = 0;
-
         private VarNames NewVarNames(ident name)
         {
-            _varnum++;
             return new VarNames()
             {
-                VarName = "$" + name.name + _varnum,
-                VarEndName = "<>varLV" + _varnum
+                VarName = PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("$" + name.name),
+                VarEndName = PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("<>varLV")
             };
         }
 
         private ident NewEnumeratorName()
         {
-            ++_enumeratorNum;
-            return "$enumerator$" + _enumeratorNum;
+            return PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("$enumerator$");
         }
 
         private ident NewForeachCollectionName()
         {
-            ++_foreachCollectionNum;
-            return "$coll$" + _foreachCollectionNum;
+            return PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("$coll$");
         }
 
         public static void Accept(procedure_definition pd)

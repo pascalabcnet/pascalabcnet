@@ -14,12 +14,10 @@ namespace SyntaxVisitors
 {
     public class LoweringYieldSequenceVisitor : BaseChangeVisitor
     {
-        private int _Num = 0;
 
         private ident NewVarName()
         {
-            ++_Num;
-            return new ident("$yieldSeqForeachVar$" + _Num);
+            return new ident(PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("$yieldSeqForeachVar$"));
         }
 
         public static LoweringYieldSequenceVisitor New

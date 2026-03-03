@@ -1,12 +1,11 @@
 ﻿using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
-using System.Collections.Generic;
+using PascalABCCompiler.CoreUtils;
 
 namespace Languages.SPython.Frontend.Converters
 {
     internal class GeneratorObjectDesugarVisitor : BaseChangeVisitor
     {
-        private ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
         private syntax_tree_node root;
         private bool replaceRoot = false;
         private syntax_tree_node lastDesugaredNode = null;
@@ -45,7 +44,7 @@ namespace Languages.SPython.Frontend.Converters
                 sl = new statement_list(new assign(StringConstants.result_var_name, _generator_object._condition, _generator_object._condition.source_context), _generator_object._condition.source_context); //!
                 sl.expr_lambda_body = true;
                 lambda = new function_lambda_definition(
-                lambdaHelper.CreateLambdaName(), formalPars,
+                CreateLambdaName(), formalPars,
                 new lambda_inferred_type(new lambda_any_type_node_syntax(), _generator_object._ident.source_context), sl, _generator_object.source_context);
 
                 mc = new method_call(dn as addressed_value, new expression_list(lambda as expression), _generator_object.source_context);
@@ -63,7 +62,7 @@ namespace Languages.SPython.Frontend.Converters
             sl.expr_lambda_body = true;
 
             lambda = new function_lambda_definition(
-                lambdaHelper.CreateLambdaName(), formalPars,
+                CreateLambdaName(), formalPars,
                 new lambda_inferred_type(new lambda_any_type_node_syntax(), _generator_object._ident.source_context), sl, _generator_object.source_context);
 
 
@@ -77,28 +76,10 @@ namespace Languages.SPython.Frontend.Converters
                 lastDesugaredNode = replaceTo;
             }
         }
-    }
 
-    public class ParserLambdaHelper
-    {
-        private int lambda_num = 0;
-        public List<function_lambda_definition> lambdaDefinitions;
-        public static string lambdaPrefix = "<>lambda";
-
-        public ParserLambdaHelper()
+        private string CreateLambdaName()
         {
-            lambdaDefinitions = new List<function_lambda_definition>();
-        }
-
-        public string CreateLambdaName()
-        {
-            lambda_num++;
-            return lambdaPrefix + lambda_num.ToString();
-        }
-
-        public bool IsLambdaName(ident id)
-        {
-            return id.name.StartsWith(lambdaPrefix);
+            return GeneratedNamesManager.GenerateName(StringConstants.lambdaPrefix);
         }
     }
 }

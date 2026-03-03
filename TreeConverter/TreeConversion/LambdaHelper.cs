@@ -49,27 +49,23 @@ namespace PascalABCCompiler.TreeConverter
 
     public class LambdaHelper
     {
-        public static string lambdaPrefix = "<>lambda";
         private const string nonPublicMembersNamePrefix = "<>nonPublic";
         private const string auxiliaryLambdaSuffix = "_$$$auxiliaryFuncName";
         private const string auxVarNamePrefix = "$$$auxVar$$$<>";
-        private static int auxCounter = 0;
-        private static int nonPublicMembersNameCounter = 0;
-        private static int auxVarCounter = 0;
 
         public static string GetAuxVarName()
         {
-            return auxVarNamePrefix + auxVarCounter++;
+            return CoreUtils.GeneratedNamesManager.GenerateName(auxVarNamePrefix);
         }
 
         public static string GetAuxiliaryLambdaName(string lambdaName)
         {
-            return lambdaName + auxiliaryLambdaSuffix + auxCounter++;
+            return CoreUtils.GeneratedNamesManager.GenerateName(lambdaName + auxiliaryLambdaSuffix);
         }
 
         public static string GetNameForNonPublicMember(string memberName)
         {
-            return nonPublicMembersNamePrefix + memberName + nonPublicMembersNameCounter++;
+            return CoreUtils.GeneratedNamesManager.GenerateName(nonPublicMembersNamePrefix + memberName);
         }
 
         public static string GetLambdaNamePartWithoutGenerics(string name)
@@ -181,9 +177,9 @@ namespace PascalABCCompiler.TreeConverter
             captureCheck = false;
             processingLambdaParametersForTypeInference = 0;
             StatementListStackStack.Clear();
-            auxCounter = 0;
-            nonPublicMembersNameCounter = 0;
-            auxVarCounter = 0;
+            // auxCounter = 0;
+            // nonPublicMembersNameCounter = 0;
+            // auxVarCounter = 0;
         }
         public static bool captureCheck = false;
         public static List<SymbolInfo> capturedVariables = new List<SymbolInfo>();

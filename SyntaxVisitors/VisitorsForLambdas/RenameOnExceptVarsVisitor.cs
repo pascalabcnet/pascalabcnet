@@ -46,11 +46,9 @@ namespace SyntaxVisitors
                 ProcessNode(dn.right);
         }
 
-        private static int num = 0;
         private static string GetNewVariableName(string name)
         {
-            num++;
-            return "$Rename_"+name+num.ToString();
+            return PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("$Rename_" + name);
         }
     }
 

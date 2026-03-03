@@ -11,12 +11,6 @@ namespace PascalABCCompiler
     {
         public static Dictionary<string, string> oper_names = new Dictionary<string, string>();
 
-        static int tvnc = 0;
-        public static string GetTempVariableName()
-        {
-            return "$TV" + (tvnc++).ToString() + "$";
-        }
-
         static StringConstants()
         {
             oper_names[plus_name] = "op_Addition";
@@ -512,5 +506,7 @@ namespace PascalABCCompiler
         public const string yieldHelperMethodPrefix = "<yield_helper";
 
         #endregion
+
+        public const string lambdaPrefix = "<>lambda";
     }
 }

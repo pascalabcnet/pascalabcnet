@@ -39,12 +39,10 @@ namespace SyntaxVisitors
 
     public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor
     {
-        int clnum = 0;
 
         public string NewYieldClassName()
         {
-            clnum++;
-            return "clyield#" + clnum.ToString();
+            return PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("clyield#");
         }
 
         public FindMainIdentsVisitor mids; // захваченные переменные процедуры по всем её yield 

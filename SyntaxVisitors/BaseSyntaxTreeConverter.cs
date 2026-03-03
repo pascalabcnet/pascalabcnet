@@ -2,8 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using PascalABCCompiler.SyntaxTree;
-using System;
-using System.Collections.Generic;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
 {
@@ -14,6 +12,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
         public syntax_tree_node Convert(syntax_tree_node root, bool forIntellisense)
         {
+            // очистка счетчиков сгенерированных переменных
+            CoreUtils.GeneratedNamesManager.Reset();
+
             // Прошивание ссылками на Parent nodes. Должно идти первым
             // FillParentNodeVisitor расположен в SyntaxTree/tree как базовый визитор, отвечающий за построение дерева
             //FillParentNodeVisitor.New.ProcessNode(root); // почему-то перепрошивает не всё. А следующий вызов - всё
@@ -24,7 +25,15 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
         protected abstract syntax_tree_node ApplyConversions(syntax_tree_node root, bool forIntellisense);
 
-        public virtual syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts) => root;
+        public syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts) {
+
+            // очистка счетчиков сгенерированных переменных
+            CoreUtils.GeneratedNamesManager.Reset();
+
+            return ApplyConversionsAfterUsedModulesCompilation(root, forIntellisense, in compilationArtifacts);
+        }
+
+        protected virtual syntax_tree_node ApplyConversionsAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts) => root;
     }
 
 

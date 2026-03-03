@@ -28,11 +28,9 @@ namespace SyntaxVisitors
             New.ProcessNode(pd);
         }
 
-        int ynum = 0;
-        public string CreateNameForLambdaInYield()
+        private string CreateNameForLambdaInYield()
         {
-            ynum += 1;
-            return "@RenLamInYield" + ynum + "$";
+            return PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("@RenLamInYield", "$");
         }
 
         public override void visit(yield_node yn)
