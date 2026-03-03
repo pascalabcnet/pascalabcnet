@@ -5032,7 +5032,7 @@ namespace PascalABCCompiler.SystemLibrary
             {
                 static_compiled_variable_reference cvr = parameters[0] as static_compiled_variable_reference;
                 if (cvr.var.IsLiteral)
-                    left = new enum_const_node((int)cvr.var.compiled_field.GetRawConstantValue(), parameters[0].type, parameters[0].location);
+                    left = new enum_const_node(Convert.ToInt32(cvr.var.compiled_field.GetRawConstantValue()), parameters[0].type, parameters[0].location);
             }
             if (left == null)
                 return null;
@@ -5041,7 +5041,7 @@ namespace PascalABCCompiler.SystemLibrary
             {
                 static_compiled_variable_reference cvr = parameters[1] as static_compiled_variable_reference;
                 if (cvr.var.IsLiteral)
-                    right = new enum_const_node((int)cvr.var.compiled_field.GetRawConstantValue(), parameters[1].type, parameters[1].location);
+                    right = new enum_const_node(Convert.ToInt32(cvr.var.compiled_field.GetRawConstantValue()), parameters[1].type, parameters[1].location);
             }
             if (right == null)
                 return null;
@@ -5056,7 +5056,7 @@ namespace PascalABCCompiler.SystemLibrary
             {
                 static_compiled_variable_reference cvr = parameters[0] as static_compiled_variable_reference;
                 if (cvr.var.IsLiteral)
-                    left = new enum_const_node((int)cvr.var.compiled_field.GetRawConstantValue(), parameters[0].type, parameters[0].location);
+                    left = new enum_const_node(Convert.ToInt32(cvr.var.compiled_field.GetRawConstantValue()), parameters[0].type, parameters[0].location);
             }
             if (left == null)
                 return null;
@@ -5065,7 +5065,7 @@ namespace PascalABCCompiler.SystemLibrary
             {
                 static_compiled_variable_reference cvr = parameters[1] as static_compiled_variable_reference;
                 if (cvr.var.IsLiteral)
-                    right = new enum_const_node((int)cvr.var.compiled_field.GetRawConstantValue(), parameters[1].type, parameters[1].location);
+                    right = new enum_const_node(Convert.ToInt32(cvr.var.compiled_field.GetRawConstantValue()), parameters[1].type, parameters[1].location);
             }
             if (right == null)
                 return null;
@@ -5079,7 +5079,7 @@ namespace PascalABCCompiler.SystemLibrary
             {
                 static_compiled_variable_reference cvr = parameters[0] as static_compiled_variable_reference;
                 if (cvr.var.IsLiteral)
-                    left = new enum_const_node((int)cvr.var.compiled_field.GetRawConstantValue(), parameters[0].type, parameters[0].location);
+                    left = new enum_const_node(Convert.ToInt32(cvr.var.compiled_field.GetRawConstantValue()), parameters[0].type, parameters[0].location);
             }
             if (left == null)
                 return null;
@@ -5088,7 +5088,7 @@ namespace PascalABCCompiler.SystemLibrary
             {
                 static_compiled_variable_reference cvr = parameters[1] as static_compiled_variable_reference;
                 if (cvr.var.IsLiteral)
-                    right = new enum_const_node((int)cvr.var.compiled_field.GetRawConstantValue(), parameters[1].type, parameters[1].location);
+                    right = new enum_const_node(Convert.ToInt32(cvr.var.compiled_field.GetRawConstantValue()), parameters[1].type, parameters[1].location);
             }
             if (right == null)
                 return null;
