@@ -108,50 +108,6 @@ type
     function FitTransform(df: DataFrame): DataFrame;
   end;
   
-{/// Приводит числовые столбцы к нулевому среднему и единичному стандартному отклонению.
-/// При Fit вычисляет среднее значение и стандартное отклонение столбцов.
-/// Применяет преобразование: x' = (x - mean) / std.
-/// Пропущенные значения (NA) сохраняются.
-  DataStandardScaler = class(IPreprocessor)
-  private
-    cols: array of string;
-    means: array of real;
-    stds: array of real;
-    fitted: boolean;
-  public
-    /// Создаёт StandardScaler для указанных числовых столбцов.
-    constructor Create(params columns: array of string);
-    /// Вычисляет среднее значение и стандартное отклонение для каждого столбца.
-    function Fit(df: DataFrame): IPreprocessor;
-    /// Возвращает DataFrame со стандартизованными числовыми столбцами.
-    function Transform(df: DataFrame): DataFrame;
-    /// Последовательно выполняет Fit и Transform.
-    function FitTransform(df: DataFrame): DataFrame;
-  end;
-  
-/// Приводит числовые столбцы к заданному диапазону значений
-/// При Fit вычисляет минимальное и максимальное значения столбцов
-/// Применяет преобразование: x' = (x - min) / (max - min)
-/// Пропущенные значения (NA) сохраняются
-  DataMinMaxScaler = class(IPreprocessor)
-  private
-    cols: array of string;
-    mins: array of real;
-    maxs: array of real;
-    fitted: boolean;
-  public
-    /// Создаёт MinMaxScaler для указанных столбцов
-    constructor Create(params columns: array of string);
-  
-    /// Вычисляет минимальные и максимальные значения столбцов
-    function Fit(df: DataFrame): IPreprocessor;
-    /// Применяет масштабирование к DataFrame
-    /// Возвращает новый DataFrame
-    function Transform(df: DataFrame): DataFrame;
-    /// Последовательно выполняет Fit и Transform.
-    function FitTransform(df: DataFrame): DataFrame;
-  end;}
-    
 
 implementation
 

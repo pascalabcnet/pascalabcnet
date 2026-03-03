@@ -2520,10 +2520,21 @@ procedure Reverse<T>(a: List<T>; index, count: integer);
 procedure Reverse(var s: string);
 /// Изменяет порядок символов в части строки длины count на противоположный, начиная с индекса index
 procedure Reverse(var s: string; index, count: integer);
-/// Случайно перемешивает элементы массива
+/// Перемешивает элементы массива случайным образом.
+/// Используется классический алгоритм перемешивания Фишера–Йетса
 procedure Shuffle<T>(a: array of T);
-/// Случайно перемешивает элементы списка
+/// Перемешивает элементы массива случайным образом
+/// с использованием заданного генератора случайных чисел.
+/// Используется классический алгоритм перемешивания Фишера–Йетса
+procedure Shuffle<T>(a: array of T; rnd: System.Random);
+/// Перемешивает элементы списка случайным образом.
+/// Используется классический алгоритм перемешивания Фишера–Йетса.
 procedure Shuffle<T>(l: List<T>);
+/// Перемешивает элементы списка случайным образом
+/// с использованием заданного генератора случайных чисел.
+/// Используется классический алгоритм перемешивания Фишера–Йетса.
+procedure Shuffle<T>(l: List<T>; rnd: System.Random);
+
 
 /// Проверяет равенство двух массивов
 function ArrEqual<T>(a, b: array of T): boolean;
@@ -3219,7 +3230,7 @@ implementation
 function NewSet<T>.ToString: string := $'{ObjectToString(hs)}';
 
 var
-  rnd: System.Random;
+  rnd: System.Random; // глобальный генератор случайных чисел
   nfi: NumberFormatInfo;
   StartTime: DateTime;// Для Milliseconds
   
@@ -9997,21 +10008,46 @@ begin
   s := new string(cc);
 end;
 
+procedure Shuffle<T>(a: array of T; rnd: System.Random);
+begin
+  if a = nil then
+    raise new System.ArgumentNullException('a');
+
+  if rnd = nil then
+    raise new System.ArgumentNullException('rnd');
+
+  for var i := a.Length - 1 downto 1 do
+  begin
+    var j := rnd.Next(i + 1);
+    Swap(a[i], a[j]);
+  end;
+end;
+
+procedure Shuffle<T>(l: List<T>; rnd: System.Random);
+begin
+  if l = nil then
+    raise new System.ArgumentNullException('l');
+
+  if rnd = nil then
+    raise new System.ArgumentNullException('rnd');
+
+  for var i := l.Count - 1 downto 1 do
+  begin
+    var j := rnd.Next(i + 1);
+    var tmp := l[i];
+    l[i] := l[j];
+    l[j] := tmp;
+  end;
+end;
+
 procedure Shuffle<T>(a: array of T);
 begin
-  for var i := a.Length - 1 downto 1 do
-    Swap(a[i], a[Random(i + 1)]);
+  Shuffle(a, rnd);
 end;
 
 procedure Shuffle<T>(l: List<T>);
 begin
-  for var i := l.Count - 1 downto 1 do
-  begin
-    var ind := Random(i + 1);
-    var v := l[i];
-    l[i] := l[ind];
-    l[ind] := v;
-  end;
+  Shuffle(l, rnd);
 end;
 
 // -----------------------------------------------------
@@ -12249,14 +12285,16 @@ end;
 /// Перемешивает элементы списка случайным образом
 function Shuffle<T>(Self: List<T>): List<T>; extensionmethod;
 begin
-  for var i := Self.Count - 1 downto 1 do
-  begin
-    var r := Random(i + 1);
-    var v := Self[i];
-    Self[i] := Self[r];
-    Self[r] := v;
-  end;
-  Result := Self;  
+  Shuffle(Self, rnd);
+  Result := Self;
+end;
+
+/// Перемешивает элементы списка случайным образом
+/// с использованием заданного генератора случайных чисел.
+function Shuffle<T>(Self: List<T>; rnd: System.Random): List<T>; extensionmethod;
+begin
+  Shuffle(Self, rnd);
+  Result := Self;
 end;
 
 /// Находит первую пару подряд идущих одинаковых элементов и возвращает индекс первого элемента пары. Если не найден, возвращается -1
@@ -13421,11 +13459,21 @@ begin
 end;
 
 /// Перемешивает элементы массива случайным образом
+/// с использованием глобального генератора случайных чисел.
+/// Используется классический алгоритм перемешивания Фишера–Йетса
 function Shuffle<T>(Self: array of T): array of T; extensionmethod;
 begin
-  for var i := Self.Length - 1 downto 1 do
-    Swap(Self[i], Self[Random(i + 1)]);
+  Shuffle(Self, rnd);
   Result := Self;  
+end;
+
+/// Перемешивает элементы массива случайным образом
+/// с использованием заданного генератора случайных чисел.
+/// Используется классический алгоритм перемешивания Фишера–Йетса
+function Shuffle<T>(Self: array of T; rnd: System.Random): array of T; extensionmethod;
+begin
+  Shuffle(Self, rnd);
+  Result := Self;
 end;
 
 /// Меняет местами элементы массива с индексами i и j

@@ -68,7 +68,8 @@ type
     paramValues: array of real;
     X: Matrix; y: Vector;
     k: integer;
-    metric: (Vector, Vector) -> real
+    metric: (Vector, Vector) -> real;
+    maximize: boolean := True
   ): (real, real, T); where T: IModel;
   end;
 
@@ -91,7 +92,9 @@ const
     'Invalid k in StratifiedKFold: k={0}, n={1}';  
   ER_STRATIFIED_LABELS_INVALID =
     'StratifiedKFold поддерживает только метки 0/1!!' +
-    'StratifiedKFold supports only 0/1 labels';  
+    'StratifiedKFold supports only 0/1 labels';
+  ER_INVALID_VALUE =
+    'Некорректное значение параметра {0}!!Invalid value for parameter {0}';  
 
 //-----------------------------
 //         Validation
@@ -100,26 +103,34 @@ const
 static function Validation.TrainTestSplit(X: Matrix; y: Vector;
   testRatio: real; seed: integer): (Matrix, Matrix, Vector, Vector);
 begin
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+
+  if y = nil then
+    ArgumentNullError(ER_ARG_NULL, 'y');
+
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH_TRAIN_TEST, X.RowCount, y.Length);
 
-  if (testRatio <= 0) or (testRatio >= 1) then
+  if (testRatio <= 0.0) or (testRatio >= 1.0) then
     ArgumentError(ER_TEST_RATIO_INVALID, testRatio);
 
   var n := X.RowCount;
   var p := X.ColCount;
 
-  var rnd := if seed >= 0 then
-    new System.Random(seed)
-  else
-    new System.Random;
+  if n < 2 then
+    ArgumentError(ER_EMPTY_DATA, 'TrainTestSplit');
 
-  // Перемешанные индексы
-  var idx := (0..n-1).ToArray;
-  idx := idx.OrderBy(i -> rnd.Next).ToArray;
+  var actualSeed := if seed >= 0 then seed else System.Environment.TickCount and integer.MaxValue;
+  var rnd := new System.Random(actualSeed);
+
+  var idx := Arr(0..n-1);
+
+  // --- 2. Перемешивание через стандартный Shuffle
+  idx.Shuffle(rnd);
 
   var rawSize := Round(n * testRatio);
-  var testSize := Max(1, Min(n - 1, rawSize));
+  var testSize := rawSize.Clamp(1, n - 1);
   var trainSize := n - testSize;
 
   var X_train := new Matrix(trainSize, p);
@@ -128,25 +139,19 @@ begin
   var y_train := new Vector(trainSize);
   var y_test  := new Vector(testSize);
 
-  // Заполняем train
   for var i := 0 to trainSize - 1 do
   begin
     var row := idx[i];
-
     for var j := 0 to p - 1 do
       X_train[i,j] := X[row,j];
-
     y_train[i] := y[row];
   end;
 
-  // Заполняем test
   for var i := 0 to testSize - 1 do
   begin
     var row := idx[trainSize + i];
-
     for var j := 0 to p - 1 do
       X_test[i,j] := X[row,j];
-
     y_test[i] := y[row];
   end;
 
@@ -156,27 +161,22 @@ end;
 static function Validation.KFold(n, k: integer; seed: integer):
   sequence of (array of integer, array of integer);
 begin
+  if n <= 0 then
+    ArgumentError(ER_EMPTY_DATA, 'KFold');
+
   if (k < 2) or (k > n) then
     ArgumentError(ER_K_INVALID, k, n);
 
-  var rnd := if seed >= 0 then
-    new System.Random(seed)
-  else
-    new System.Random;
+  var actualSeed := if seed >= 0 then seed
+                    else System.Environment.TickCount and integer.MaxValue;
 
-  // --- 1. Создаём массив индексов 0..n-1
-  var idx := new integer[n];
-  for var i := 0 to n - 1 do
-    idx[i] := i;
+  var rnd := new System.Random(actualSeed);
 
-  // --- 2. Fisher–Yates shuffle (in-place, O(n))
-  for var i := n - 1 downto 1 do
-  begin
-    var j := rnd.Next(i + 1);
-    var tmp := idx[i];
-    idx[i] := idx[j];
-    idx[j] := tmp;
-  end;
+  // --- 1. Индексы 0..n-1
+  var idx := Arr(0..n-1);
+
+  // --- 2. Перемешивание через стандартный Shuffle
+  idx.Shuffle(rnd);
 
   var baseSize := n div k;
   var extra := n mod k;
@@ -187,19 +187,15 @@ begin
   begin
     var size := baseSize + Ord(fold < extra);
 
-    // --- test indices
     var testIdx := new integer[size];
     System.Array.Copy(idx, start, testIdx, 0, size);
 
-    // --- train indices
     var trainSize := n - size;
     var trainIdx := new integer[trainSize];
 
-    // левая часть
     if start > 0 then
       System.Array.Copy(idx, 0, trainIdx, 0, start);
 
-    // правая часть
     var tailCount := n - (start + size);
     if tailCount > 0 then
       System.Array.Copy(idx, start + size, trainIdx, start, tailCount);
@@ -213,22 +209,30 @@ end;
 static function Validation.StratifiedKFold(y: Vector; k: integer; seed: integer):
   sequence of (array of integer, array of integer);
 begin
+  if y = nil then
+    ArgumentNullError(ER_ARG_NULL, 'y');
+
   var n := y.Length;
+
+  if n <= 0 then
+    ArgumentError(ER_EMPTY_DATA, 'StratifiedKFold');
+
   if (k < 2) or (k > n) then
     ArgumentError(ER_K_INVALID_STRATIFIED, k, n);
 
-  var rnd :=
-    if seed >= 0 then new System.Random(seed)
-    else new System.Random;
+  var actualSeed := if seed >= 0 then seed
+                    else System.Environment.TickCount and integer.MaxValue;
 
-  // 1) Собираем индексы по классам за один проход
+  var rnd := new System.Random(actualSeed);
+
+  // --- 1. Индексы по классам
   var classMap := new Dictionary<integer, List<integer>>();
+
   for var i := 0 to n - 1 do
   begin
     var v := y[i];
     var cls := integer(v);
 
-    // Валидация: метки должны быть целыми (хотя тип double)
     if Abs(v - cls) > 1e-12 then
       ArgumentError(ER_STRATIFIED_LABELS_INVALID);
 
@@ -243,27 +247,18 @@ begin
     end;
   end;
 
-  // 2) Подготавливаем контейнеры фолдов
+  // --- 2. Контейнеры фолдов
   var folds := new List<integer>[k];
   for var f := 0 to k - 1 do
     folds[f] := new List<integer>;
 
-  // 3) Для каждого класса: shuffle + равномерно раскладываем по k фолдам
+  // --- 3. Для каждого класса: shuffle + равномерное распределение
   foreach var pair in classMap do
   begin
     var indices := pair.Value;
+    indices.Shuffle(rnd);
+
     var m := indices.Count;
-
-    // Fisher–Yates shuffle in-place
-    for var i := m - 1 downto 1 do
-    begin
-      var j := rnd.Next(i + 1);
-      var tmp := indices[i];
-      indices[i] := indices[j];
-      indices[j] := tmp;
-    end;
-
-    // Равномерное распределение (разница размеров ≤ 1)
     var baseSize := m div k;
     var extra := m mod k;
     var start := 0;
@@ -277,18 +272,16 @@ begin
     end;
   end;
 
-  // 4) Возвращаем (trainIdx, testIdx) для каждого фолда
+  // --- 4. Формирование train/test
   for var fold := 0 to k - 1 do
   begin
-    var testIdx := folds[fold].ToArray();
+    var testIdx := folds[fold].ToArray;
 
-    // boolean-mask вместо Contains -> O(n)
     var mask := new boolean[n];
     foreach var id in testIdx do
       mask[id] := true;
 
-    var trainSize := n - testIdx.Length;
-    var trainIdx := new integer[trainSize];
+    var trainIdx := new integer[n - testIdx.Length];
     var p := 0;
 
     for var i := 0 to n - 1 do
@@ -303,11 +296,31 @@ begin
 end;
 
 
-static function Validation.CrossValidate(model: IModel; X: Matrix; y: Vector;
-  k: integer; metric: (Vector,Vector) -> real; seed: integer): real;
+static function Validation.CrossValidate(
+  model: IModel; 
+  X: Matrix; 
+  y: Vector;
+  k: integer; 
+  metric: (Vector,Vector) -> real; 
+  seed: integer): real;
 begin
+  if model = nil then
+    ArgumentNullError(ER_ARG_NULL, 'model');
+
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+
+  if y = nil then
+    ArgumentNullError(ER_ARG_NULL, 'y');
+
+  if metric = nil then
+    ArgumentNullError(ER_ARG_NULL, 'metric');
+
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+
+  if (k < 2) or (k > X.RowCount) then
+    ArgumentError(ER_K_INVALID, k, X.RowCount);
 
   var total := 0.0;
   var folds := 0;
@@ -339,22 +352,44 @@ begin
 
     var m := model.Clone();
     m.Fit(Xtr, ytr);
+
     var pred := m.Predict(Xte);
 
     total += metric(yte, pred);
     folds += 1;
   end;
 
+  if folds = 0 then
+    ArgumentError(ER_EMPTY_DATA, 'CrossValidate');
+
   Result := total / folds;
 end;
 
 static function Validation.StratifiedCrossValidate(
-  model: IModel; X: Matrix; y: Vector;
-  k: integer; metric: (Vector,Vector) -> real; seed: integer
-): real;
+  model: IModel; 
+  X: Matrix; 
+  y: Vector;
+  k: integer; 
+  metric: (Vector,Vector) -> real; 
+  seed: integer): real;
 begin
+  if model = nil then
+    ArgumentNullError(ER_ARG_NULL, 'model');
+
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+
+  if y = nil then
+    ArgumentNullError(ER_ARG_NULL, 'y');
+
+  if metric = nil then
+    ArgumentNullError(ER_ARG_NULL, 'metric');
+
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+
+  if (k < 2) or (k > X.RowCount) then
+    ArgumentError(ER_K_INVALID_STRATIFIED, k, X.RowCount);
 
   var total := 0.0;
   var folds := 0;
@@ -386,11 +421,15 @@ begin
 
     var m := model.Clone();
     m.Fit(Xtr, ytr);
+
     var pred := m.Predict(Xte);
 
     total += metric(yte, pred);
     folds += 1;
   end;
+
+  if folds = 0 then
+    ArgumentError(ER_EMPTY_DATA, 'StratifiedCrossValidate');
 
   Result := total / folds;
 end;
@@ -402,23 +441,51 @@ end;
 class function GridSearch.Search<T>(
   modelFactory: real -> T;
   paramValues: array of real;
-  X: Matrix; y: Vector;
+  X: Matrix; 
+  y: Vector;
   k: integer;
-  metric: (Vector, Vector) -> real
+  metric: (Vector, Vector) -> real;
+  maximize: boolean
 ): (real, real, T); where T: IModel;
 begin
+  if modelFactory = nil then
+    ArgumentNullError(ER_ARG_NULL, 'modelFactory');
+
+  if paramValues = nil then
+    ArgumentNullError(ER_ARG_NULL, 'paramValues');
+
   if paramValues.Length = 0 then
     ArgumentError(ER_PARAM_VALUES_EMPTY);
 
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+
+  if y = nil then
+    ArgumentNullError(ER_ARG_NULL, 'y');
+
+  if metric = nil then
+    ArgumentNullError(ER_ARG_NULL, 'metric');
+
+  if X.RowCount <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+
   var bestParam := paramValues[0];
-  var bestScore := -1e308;
+  var bestScore := 
+    if maximize then -1e308 else 1e308;
 
   foreach var param in paramValues do
   begin
     var model := modelFactory(param);
     var avgScore := Validation.CrossValidate(model, X, y, k, metric);
 
-    if avgScore > bestScore then
+    if double.IsNaN(avgScore) or double.IsInfinity(avgScore) then
+      ArgumentError(ER_INVALID_VALUE, 'avgScore');
+
+    var better :=
+      (maximize and (avgScore > bestScore)) or
+      (not maximize and (avgScore < bestScore));
+
+    if better then
     begin
       bestScore := avgScore;
       bestParam := param;

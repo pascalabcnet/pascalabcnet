@@ -491,6 +491,7 @@ type
 /// Возвращает строковое представление модели.
     function ToString: string; override;
   end;
+  
 
 /// Режим выбора числа признаков при поиске разбиения.
 /// Определяет, сколько признаков m из общего числа p
@@ -536,6 +537,12 @@ type
     fRandomSeed: integer;
     fRng: System.Random;
     fUserProvidedSeed: boolean;
+    
+    fFeatureCount: integer;
+    
+    fUseOOB: boolean;
+    fOOBScore: real;
+    fHasOOBScore: boolean;
   
     function ComputeMaxFeatures(p: integer): integer;
     
@@ -554,6 +561,7 @@ type
       minSamplesSplit: integer;
       minSamplesLeaf: integer;
       maxFeatures: TMaxFeaturesMode;
+      useOOB: boolean := False;
       seed: integer := -1);
 
 /// Обучает ансамбль деревьев на данных X и y.
@@ -573,6 +581,14 @@ type
 /// Возвращает вектор важности признаков.
 /// Обычно вычисляется как средняя важность по всем деревьям ансамбля.
     function FeatureImportances: Vector; virtual; abstract;
+    
+/// Возвращает Out-Of-Bag (OOB) оценку качества модели.
+/// OOB-оценка вычисляется на объектах, не вошедших в bootstrap-выборки деревьев.
+/// • Для регрессии — среднеквадратичная ошибка (MSE).
+/// • Для классификации — доля правильно классифицированных объектов (Accuracy).
+/// Требует включённого режима computeOOB при создании модели.
+/// Бросает исключение, если OOB не включён или модель не обучена
+    function OOBScore: real;
   end;  
   
 /// Случайный лес для задачи регрессии.
@@ -594,6 +610,7 @@ type
       minSamplesSplit: integer := 2; 
       minSamplesLeaf: integer := 1;
       maxFeaturesMode: TMaxFeaturesMode := TMaxFeaturesMode.HalfFeatures;
+      computeOOB: boolean := False;
       seed: integer := -1);
 
 /// Обучает случайный лес на данных X и y.
@@ -626,6 +643,7 @@ type
   private
     fTrees: array of DecisionTreeClassifier;
     fIndexToClass: array of integer;
+    fClassToIndex: Dictionary<integer, integer>;
     fClassCount: integer;
   public
 /// Создает классификационный случайный лес:
@@ -640,6 +658,7 @@ type
       minSamplesSplit: integer := 2;
       minSamplesLeaf: integer := 1;
       maxFeaturesMode: TMaxFeaturesMode := TMaxFeaturesMode.SqrtFeatures;
+      computeOOB: boolean := False;
       seed: integer := -1);
   
 /// Обучает случайный лес на данных X и y.
@@ -782,7 +801,6 @@ type
       minSamplesSplit: integer := 2;
       minSamplesLeaf: integer := 1;
       subsample: real := 1.0;
-      randomSeed: integer := 42;
       loss: TGBLoss := TGBLoss.SquaredError;
       huberDelta: real := 1.0;
       earlyStoppingPatience: integer := 0;
@@ -881,7 +899,7 @@ type
     fTrainLossHistory: List<real>;
     fValLossHistory: List<real>;
     fBestIteration: integer;
-    fBestValLoss: real;
+    fBestScoreLoss: real;
     
     fFeatureImportances: Vector;
     
@@ -1182,6 +1200,7 @@ type
   private
     fMean: Vector;
     fStd: Vector;
+    fFeatureCount: integer;
     fFitted: boolean;
   public
     /// Вычисляет среднее и стандартное отклонение по каждому признаку.
@@ -1211,6 +1230,7 @@ type
   private
     fMin: Vector;
     fMax: Vector;
+    fFeatureCount: integer;
     fFitted: boolean;
     fRangeMin: real;
     fRangeMax: real;
@@ -1253,6 +1273,7 @@ type
     fK: integer;
     fComponents: Matrix;   // W
     fMean: Vector;         // μ
+    fFeatureCount: integer;
     fFitted: boolean;
   public
     /// Создаёт PCA-трансформер:
@@ -1282,6 +1303,7 @@ type
   private
     fThreshold: real;
     fSelected: array of integer;
+    fFeatureCount: integer;
     fFitted: boolean;
   
   public
@@ -1344,6 +1366,7 @@ type
     fScoreType: FeatureScore;
     fScoreFunc: (Vector, Vector) -> real;
     fSelected: array of integer;
+    fFeatureCount: integer;
     fFitted: boolean;
     
     function ComputeScore(feature: Vector; y: Vector): real;
@@ -1400,6 +1423,7 @@ type
   Normalizer = class(ITransformer)
   private
     fNormType: NormType;
+    fFeatureCount: integer;
     fFitted: boolean;
   public
 /// Создает нормализатор:
@@ -1564,7 +1588,52 @@ const
   ER_PIPELINE_TRANSFORM_RETURNED_NULL =
     'Шаг Pipeline вернул nil из Transform. Проверьте реализацию трансформера.!!' +
     'Pipeline step returned nil from Transform. Check transformer implementation.';
-  
+  ER_K_INVALID =
+    'Параметр k должен быть положительным: {0}.!!' +
+    'Parameter k must be positive: {0}.';  
+  ER_THRESHOLD_INVALID =
+    'Порог дисперсии должен быть >= 0: {0}.!!' +
+    'Variance threshold must be >= 0: {0}.';
+  ER_ALL_FEATURES_REMOVED =
+    'Все признаки удалены VarianceThreshold. Уменьшите порог.!!' +
+    'All features were removed by VarianceThreshold. Decrease the threshold.';    
+  ER_TRAINING_DIVERGED =
+    'Обучение разошлось. Попробуйте уменьшить learning rate.!!' +
+    'Training diverged. Try reducing the learning rate.';  
+  ER_LABEL_INDEX_INVALID =
+    'Некорректный индекс класса при вычислении loss.!!' +
+    'Invalid class index during loss computation.';
+  ER_SOFTMAX_EMPTY =
+    'Softmax получил пустой вектор.!!' +
+    'Softmax received empty vector.';
+  ER_LOGISTIC_NEED_AT_LEAST_TWO_CLASSES =
+    'Для LogisticRegression нужно минимум 2 класса.!!' +
+    'LogisticRegression requires at least 2 classes.';
+  ER_MIN_SAMPLES_SPLIT_INVALID =
+    'minSamplesSplit должно быть >= 2 ({0}).!!' +
+    'minSamplesSplit must be >= 2 ({0}).';
+  ER_MIN_SAMPLES_LEAF_INVALID =
+    'minSamplesLeaf должно быть >= 1 ({0}).!!' +
+    'minSamplesLeaf must be >= 1 ({0}).';
+  ER_HUBER_DELTA_INVALID =
+    'huberDelta должно быть > 0 ({0}).!!' +
+    'huberDelta must be > 0 ({0}).';
+  ER_EARLY_STOPPING_INVALID =
+    'earlyStoppingPatience должно быть >= 0 ({0}).!!' +
+    'earlyStoppingPatience must be >= 0 ({0}).';
+  ER_QUANTILE_ALPHA_INVALID =
+    'quantileAlpha должно быть в (0,1) ({0}).!!' +
+    'quantileAlpha must be in (0,1) ({0}).';
+  ER_LEAFL2_INVALID =
+    'leafL2 должно быть >= 0 ({0}).!!' +
+    'leafL2 must be >= 0 ({0}).'; 
+  ER_MIN_LEAF_GE_SPLIT =
+    'minSamplesLeaf ({0}) должно быть меньше minSamplesSplit ({1}).!!' +
+    'minSamplesLeaf ({0}) must be less than minSamplesSplit ({1}).';
+  ER_OOB_NOT_ENABLED =
+    'OOB score не включен для этой модели. Установите computeOOB = true в конструкторе.!!' +
+    'OOB score is not enabled for this model. Set computeOOB = true in the constructor.';    
+    
 {$endregion ErrConstants}  
 
 //-----------------------------
@@ -1853,7 +1922,13 @@ end;
 constructor ElasticNet.Create(lambda1, lambda2: real; maxIter: integer; tol: real);
 begin
   if (lambda1 < 0) or (lambda2 < 0) then
-    ArgumentError(ER_LAMBDA_NEGATIVE);
+    ArgumentOutOfRangeError(ER_LAMBDA_NEGATIVE);
+
+  if maxIter <= 0 then
+    ArgumentOutOfRangeError(ER_MAXITER_INVALID, maxIter);
+
+  if tol <= 0 then
+    ArgumentOutOfRangeError(ER_TOL_INVALID, tol);
 
   fLambda1 := lambda1;
   fLambda2 := lambda2;
@@ -1939,17 +2014,22 @@ begin
         zj += Xc[i,j] * Xc[i,j];
       end;
 
-      var newBeta := SoftThreshold(rho, fLambda1) / (zj + fLambda2);
-      var delta := newBeta - oldBeta;
+      var denom := zj + fLambda2;
 
-      if Abs(delta) > 0 then
-        for var i := 0 to n - 1 do
-          residual[i] -= Xc[i,j] * delta;
-
-      if Abs(delta) > maxChange then
-        maxChange := Abs(delta);
-
-      fCoef[j] := newBeta;
+      if denom > 0 then
+      begin
+        var newBeta := SoftThreshold(rho, fLambda1) / denom;
+        var delta := newBeta - oldBeta;
+      
+        if delta <> 0 then
+          for var i := 0 to n - 1 do
+            residual[i] -= Xc[i,j] * delta;
+      
+        if Abs(delta) > maxChange then
+          maxChange := Abs(delta);
+      
+        fCoef[j] := newBeta;
+      end;
     end;
 
     // --- cheap divergence guard
@@ -1972,7 +2052,7 @@ begin
         l2 += fCoef[j] * fCoef[j];
       end;
 
-      var currentLoss := rss + fLambda1 * l1 + fLambda2 * l2;
+      var currentLoss := rss / n + fLambda1*l1 + fLambda2*l2;
 
       if double.IsNaN(currentLoss) or double.IsInfinity(currentLoss) then
         ArgumentError(ER_ELASTICNET_INVALID_LOSS);
@@ -2077,6 +2157,9 @@ begin
   if fLambda < 0 then
     ArgumentOutOfRangeError(ER_LAMBDA_NEGATIVE, fLambda);
   
+  if fCheckConvergence and (fTol <= 0) then
+    ArgumentOutOfRangeError(ER_TOL_INVALID, fTol);
+  
   var m := X.RowCount;
   var p := X.ColCount;
 
@@ -2099,6 +2182,9 @@ begin
 
   fClassCount := unique.Length;
 
+  if fClassCount < 2 then
+    ArgumentError(ER_LOGISTIC_NEED_AT_LEAST_TWO_CLASSES);
+
   fClassToIndex := new Dictionary<integer, integer>;
   SetLength(fIndexToClass, fClassCount);
 
@@ -2111,7 +2197,15 @@ begin
   // --- encode labels
   var yEncoded := new integer[m];
   for var i := 0 to m - 1 do
-    yEncoded[i] := fClassToIndex[Round(y[i])];
+  begin
+    var r := y[i];
+    var ir := Round(r);
+  
+    if Abs(r - ir) > 1e-12 then
+      ArgumentError(ER_LABELS_NOT_INTEGER);
+  
+    yEncoded[i] := fClassToIndex[ir];
+  end;
 
   // --- init
   fW := new Matrix(p, fClassCount);
@@ -2144,17 +2238,24 @@ begin
       end;
 
       if sumExp <= 0 then
-        ArgumentError(ER_LOGISTIC_SOFTMAX_ZERO);
-
-      for var k := 0 to fClassCount - 1 do
-        Z[i,k] /= sumExp;
-
+      begin
+        // численно вырожденный случай → равномерное распределение
+        for var k := 0 to fClassCount - 1 do
+          Z[i,k] := 1.0 / fClassCount;
+      end
+      else
+      begin
+        for var k := 0 to fClassCount - 1 do
+          Z[i,k] /= sumExp;
+      end;
+      
       var yi := yEncoded[i];
       var prob := Z[i, yi];
-
-      if prob <= 0 then
+      
+      // защита от log(0)
+      if prob < 1e-300 then
         prob := 1e-300;
-
+      
       loss -= Ln(prob);
     end;
 
@@ -2329,42 +2430,63 @@ end;
 function GiniCriterion.Impurity(y: Vector; indices: array of integer): real;
 begin
   var n := indices.Length;
-  if n = 0 then exit(0.0);
+  if n = 0 then
+    exit(0.0);
 
   var counts := new integer[fClassCount];
 
-  foreach var i in indices do
-    counts[Round(y[i])] += 1;
+  foreach var idx in indices do
+  begin
+    var cls := Round(y[idx]);
+
+    if (cls < 0) or (cls >= fClassCount) then
+      ArgumentError(ER_LABEL_INDEX_INVALID);
+
+    counts[cls] += 1;
+  end;
 
   var sumsq := 0.0;
 
   for var c := 0 to fClassCount - 1 do
+  begin
     if counts[c] > 0 then
     begin
       var p := counts[c] / n;
       sumsq += p * p;
     end;
+  end;
 
-  Result := 1.0 - sumsq;
+  var g := 1.0 - sumsq;
+
+  if g < 0 then
+    g := 0.0;   // защита от отрицательных из-за округления
+
+  Result := g;
 end;
 
 function VarianceCriterion.Impurity(y: Vector; indices: array of integer): real;
 begin
   var n := indices.Length;
-  if n = 0 then exit(0.0);
+  if n = 0 then
+    exit(0.0);
 
   var sum := 0.0;
   var sumsq := 0.0;
 
-  foreach var i in indices do
+  foreach var idx in indices do
   begin
-    var v := y[i];
+    var v := y[idx];
     sum += v;
     sumsq += v * v;
   end;
 
   var mean := sum / n;
-  Result := (sumsq / n) - mean * mean;
+  var varValue := (sumsq / n) - mean * mean;
+
+  if varValue < 0 then
+    varValue := 0.0;   // защита от FP-ошибок
+
+  Result := varValue;
 end;
 
 function LeafClass(c: integer): DecisionTreeNode;
@@ -2415,15 +2537,36 @@ end;
 
 const MAX_ALLOWED_TREE_DEPTH = 1000;
 
-constructor DecisionTreeBase.Create(maxDepth: integer; minSamplesSplit: integer; minSamplesLeaf: integer; seed: integer);
+constructor DecisionTreeBase.Create(
+  maxDepth: integer;
+  minSamplesSplit: integer;
+  minSamplesLeaf: integer;
+  seed: integer);
 begin
+  if maxDepth <= 0 then
+    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, maxDepth);
+
   if maxDepth > MAX_ALLOWED_TREE_DEPTH then
-    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, maxDepth);
-  
+    ArgumentOutOfRangeError(ER_MAX_DEPTH_TOO_LARGE, maxDepth);
+
+  if minSamplesSplit < 2 then
+    ArgumentOutOfRangeError(ER_MIN_SAMPLES_SPLIT_INVALID, minSamplesSplit);
+
+  if minSamplesLeaf < 1 then
+    ArgumentOutOfRangeError(ER_MIN_SAMPLES_LEAF_INVALID, minSamplesLeaf);
+
+  if minSamplesLeaf >= minSamplesSplit then
+    ArgumentOutOfRangeError(
+      ER_MIN_LEAF_GE_SPLIT,
+      minSamplesLeaf, minSamplesSplit
+    );
+
+  // --- parameters valid → assign
+
   fMaxDepth := maxDepth;
   fMinSamplesSplit := minSamplesSplit;
   fMinSamplesLeaf := minSamplesLeaf;
-  
+
   if seed < 0 then
   begin
     fUserProvidedSeed := false;
@@ -2496,6 +2639,12 @@ end;
 
 function DecisionTreeBase.FeatureImportances: Vector;
 begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  if fFeatureImportances = nil then
+    exit(new Vector(0));
+
   Result := fFeatureImportances.Clone;
 end;
 
@@ -2515,27 +2664,25 @@ end;
 function DecisionTreeBase.BuildTree(X: Matrix; y: Vector;
   indices: array of integer; depth: integer): DecisionTreeNode;
 begin
-  // Ограничение глубины
   if (fMaxDepth > 0) and (depth >= fMaxDepth) then
     exit(LeafNode(LeafValue(y, indices)));
 
-  // Минимальное число объектов
   if indices.Length < fMinSamplesSplit then
     exit(LeafNode(LeafValue(y, indices)));
 
-  // Если узел уже чистый
   if IsPure(y, indices) then
     exit(LeafNode(LeafValue(y, indices)));
-  
+
   var parentImp := fCriterion.Impurity(y, indices);
 
-  // Поиск лучшего разбиения
+  if double.IsNaN(parentImp) or double.IsInfinity(parentImp) then
+    exit(LeafNode(LeafValue(y, indices)));
+
   var split := FindBestSplit(X, y, indices);
 
   if not split.Found then
     exit(LeafNode(LeafValue(y, indices)));
 
-  // Разделение индексов
   var left := new List<integer>;
   var right := new List<integer>;
 
@@ -2545,32 +2692,39 @@ begin
     else
       right.Add(i);
 
-  // Проверка минимального размера листа
   if (left.Count < fMinSamplesLeaf) or
      (right.Count < fMinSamplesLeaf) then
     exit(LeafNode(LeafValue(y, indices)));
-     
+
   var leftArr := left.ToArray;
   var rightArr := right.ToArray;
-  
+
   var leftImp := fCriterion.Impurity(y, leftArr);
   var rightImp := fCriterion.Impurity(y, rightArr);
-  
-  var n := indices.Length;
-  
-  var delta :=
-    parentImp
-    - (leftArr.Length / n) * leftImp
-    - (rightArr.Length / n) * rightImp;
-  
-  if delta > 0 then
-    fFeatureImportances[split.Feature] += delta;     
 
-  // Рекурсия
+  var n := indices.Length;
+
+  var weighted :=
+    (real(leftArr.Length) / n) * leftImp +
+    (real(rightArr.Length) / n) * rightImp;
+
+  var delta := parentImp - weighted;
+
+  if double.IsNaN(delta) or double.IsInfinity(delta) then
+    exit(LeafNode(LeafValue(y, indices)));
+
+  if delta < 0 then
+    delta := 0.0;
+
+  // КЛЮЧЕВОЙ PRODUCTION-ФИЛЬТР
+  if delta <= 0 then
+    exit(LeafNode(LeafValue(y, indices)));
+
+  fFeatureImportances[split.Feature] += delta;
+
   var leftNode := BuildTree(X, y, leftArr, depth + 1);
   var rightNode := BuildTree(X, y, rightArr, depth + 1);
 
-  // Создание split-узла
   var node := new DecisionTreeNode;
   node.IsLeaf := false;
   node.FeatureIndex := split.Feature;
@@ -2590,7 +2744,7 @@ end;
 
 function DecisionTreeRegressor.FindBestSplitReg(X: Matrix; y: Vector; indices: array of integer): SplitResult;
 begin
-  var bestScore := 1e308;
+  var bestScore := real.PositiveInfinity;
   var bestFeature := -1;
   var bestThreshold := 0.0;
 
@@ -2611,10 +2765,6 @@ begin
     sumAll += v;
     sumSqAll += v*v;
   end;
-
-  // ===============================
-  // ЛЯМБДА ОБРАБОТКИ ПРИЗНАКА
-  // ===============================
 
   var ProcessFeature: integer -> () := j ->
   begin
@@ -2662,24 +2812,26 @@ begin
       var leftVar := (leftSumSq / leftCount) - leftMean*leftMean;
       var rightVar := (rightSumSq / rightCount) - rightMean*rightMean;
 
+      if leftVar < 0 then leftVar := 0.0;
+      if rightVar < 0 then rightVar := 0.0;
+
       var weighted :=
-        (leftCount / n) * leftVar +
-        (rightCount / n) * rightVar;
+        (real(leftCount) / n) * leftVar +
+        (real(rightCount) / n) * rightVar;
+
+      if double.IsNaN(weighted) or double.IsInfinity(weighted) then
+        continue;
 
       if weighted < bestScore then
       begin
         bestScore := weighted;
         bestFeature := j;
-        bestThreshold := (x1 + x2) / 2.0;
+        bestThreshold := (x1 + x2) * 0.5;
       end;
     end;
   end;
 
   var p := X.ColCount;
-
-  // ===============================
-  // FEATURE LOOP WITH SUBSET
-  // ===============================
 
   if (fMaxFeatures <= 0) or (fMaxFeatures >= p) then
   begin
@@ -2723,9 +2875,8 @@ begin
 
   var bestFeature := -1;
   var bestThreshold := 0.0;
-  var bestScore := real.MaxValue;
+  var bestScore := real.PositiveInfinity;
 
-  // --- формируем список признаков и (при необходимости) выбираем подмножество без повторов
   var feat := new integer[p];
   for var i := 0 to p - 1 do
     feat[i] := i;
@@ -2734,7 +2885,7 @@ begin
   if (m <= 0) or (m > p) then
     m := p;
 
-  // partial Fisher–Yates: рандомизируем первые m позиций
+  // partial Fisher–Yates
   for var i := 0 to m - 1 do
   begin
     var j := fRng.Next(i, p);
@@ -2743,12 +2894,10 @@ begin
     feat[j] := tmp;
   end;
 
-  // --- перебираем только feat[0..m-1]
   for var fi := 0 to m - 1 do
   begin
     var feature := feat[fi];
 
-    // пары (value, label) по текущему признаку
     var values := new real[n];
     var labels := new integer[n];
 
@@ -2756,11 +2905,15 @@ begin
     begin
       var row := indices[i];
       values[i] := X[row, feature];
-      
-      labels[i] := Round(y[row]);
+
+      var cls := Round(y[row]);
+
+      if (cls < 0) or (cls >= fClassCount) then
+        ArgumentError(ER_LABEL_INDEX_INVALID);
+
+      labels[i] := cls;
     end;
 
-    // сортируем по values, а labels переставляются синхронно
     System.Array.Sort(values, labels);
 
     var rightCounts := new integer[fClassCount];
@@ -2788,31 +2941,42 @@ begin
       if (leftSize < fMinSamplesLeaf) or (rightSize < fMinSamplesLeaf) then
         continue;
 
-      // gini(left)
+      // ----- GINI LEFT -----
       var giniLeft := 1.0;
+
       for var c := 0 to fClassCount - 1 do
       begin
         if leftCounts[c] > 0 then
         begin
-          var q := leftCounts[c] / leftSize;
+          var q := leftCounts[c] / real(leftSize);
           giniLeft -= q * q;
         end;
       end;
 
-      // gini(right)
+      if giniLeft < 0 then
+        giniLeft := 0.0;
+
+      // ----- GINI RIGHT -----
       var giniRight := 1.0;
+
       for var c := 0 to fClassCount - 1 do
       begin
         if rightCounts[c] > 0 then
         begin
-          var q := rightCounts[c] / rightSize;
+          var q := rightCounts[c] / real(rightSize);
           giniRight -= q * q;
         end;
       end;
 
+      if giniRight < 0 then
+        giniRight := 0.0;
+
       var weighted :=
-        (leftSize / n) * giniLeft +
-        (rightSize / n) * giniRight;
+        (real(leftSize) / n) * giniLeft +
+        (real(rightSize) / n) * giniRight;
+
+      if double.IsNaN(weighted) then
+        continue;
 
       if weighted < bestScore then
       begin
@@ -3001,11 +3165,16 @@ begin
   var m := new DecisionTreeClassifier(
     fMaxDepth,
     fMinSamplesSplit,
-    fMinSamplesLeaf
+    fMinSamplesLeaf,
+    fRandomSeed
   );
 
+  // --- базовое состояние (глубокое копирование дерева!)
   CopyBaseState(m);
 
+  m.fMaxFeatures := fMaxFeatures;
+
+  // --- классы
   m.fClassCount := fClassCount;
 
   if fClassToIndex <> nil then
@@ -3046,22 +3215,42 @@ constructor DecisionTreeRegressor.Create(maxDepth: integer; minSamplesSplit: int
   minSamplesLeaf: integer; leafL2: real; seed: integer);
 begin
   inherited Create(maxDepth, minSamplesSplit, minSamplesLeaf, seed);
+  
+  if leafL2 < 0 then
+    ArgumentOutOfRangeError(ER_LEAFL2_INVALID, leafL2);
+  
   fCriterion := new VarianceCriterion;
   fLeafL2 := leafL2;
 end;
 
 function DecisionTreeRegressor.LeafValue(y: Vector; indices: array of integer): real;
 begin
-  var sum := 0.0;
   var n := indices.Length;
 
-  foreach var i in indices do
-    sum += y[i];
+  if n = 0 then
+    exit(0.0);  // безопасный fallback, не должен происходить
+
+  if fLeafL2 < 0 then
+    ArgumentOutOfRangeError(ER_LEAFL2_INVALID, fLeafL2);
+
+  var sum := 0.0;
+
+  foreach var idx in indices do
+    sum += y[idx];
+
+  var denom: real;
 
   if fLeafL2 > 0 then
-    Result := sum / (n + fLeafL2)
+    denom := n + fLeafL2
   else
-    Result := sum / n;
+    denom := n;
+
+  var value := sum / denom;
+
+  if double.IsNaN(value) or double.IsInfinity(value) then
+    value := 0.0;  // защита от численного выброса
+
+  Result := value;
 end;
 
 function DecisionTreeRegressor.FindBestSplit(X: Matrix; y: Vector; indices: array of integer): SplitResult; 
@@ -3185,10 +3374,13 @@ begin
     fMaxDepth,
     fMinSamplesSplit,
     fMinSamplesLeaf,
-    fLeafL2
+    fLeafL2,
+    fRandomSeed
   );
 
   CopyBaseState(m);
+  
+  m.fLeafL2 := fLeafL2;  
 
   Result := m;
 end;
@@ -3219,14 +3411,35 @@ constructor RandomForestBase.Create(
   minSamplesSplit: integer;
   minSamplesLeaf: integer;
   maxFeatures: TMaxFeaturesMode;
+  useOOB: boolean;
   seed: integer);
 begin
+  if nTrees <= 0 then 
+    ArgumentOutOfRangeError(ER_NTREES_INVALID, nTrees);
+
+  if maxDepth <= 0 then
+    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, maxDepth);
+
+  if minSamplesSplit < 2 then
+    ArgumentOutOfRangeError(ER_MIN_SAMPLES_SPLIT_INVALID, minSamplesSplit);
+
+  if minSamplesLeaf < 1 then
+    ArgumentOutOfRangeError(ER_MIN_SAMPLES_LEAF_INVALID, minSamplesLeaf);
+  
+  if minSamplesLeaf >= minSamplesSplit then
+    ArgumentOutOfRangeError(ER_MIN_LEAF_GE_SPLIT, minSamplesLeaf, minSamplesSplit);
+    
   fNTrees := nTrees;
   fMaxDepth := maxDepth;
   fMinSamplesSplit := minSamplesSplit;
   fMinSamplesLeaf := minSamplesLeaf;
   fMaxFeaturesMode := maxFeatures;
   fFitted := false;
+  
+  fFeatureCount := 0;
+  
+  fUseOOB := useOOB;
+  fOOBScore := real.NaN;
   
   if seed < 0 then
   begin
@@ -3240,6 +3453,17 @@ begin
   end;
 
   fRng := new System.Random(fRandomSeed);
+end;
+
+function RandomForestBase.OOBScore: real;
+begin
+  if not fUseOOB then
+    Error(ER_OOB_NOT_ENABLED);
+
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  Result := fOOBScore;
 end;
 
 function RandomForestBase.ComputeMaxFeatures(p: integer): integer;
@@ -3262,12 +3486,11 @@ end;
 //-----------------------------
 //     RandomForestRegressor 
 //-----------------------------
-
 constructor RandomForestRegressor.Create(nTrees: integer; maxDepth: integer;
   minSamplesSplit: integer; minSamplesLeaf: integer;
-  maxFeaturesMode: TMaxFeaturesMode; seed: integer);
+  maxFeaturesMode: TMaxFeaturesMode; computeOOB: boolean; seed: integer);
 begin
-  inherited Create(nTrees,maxDepth,minSamplesSplit,minSamplesLeaf,maxFeaturesMode,seed)
+  inherited Create(nTrees,maxDepth,minSamplesSplit,minSamplesLeaf,maxFeaturesMode,computeOOB,seed)
 end;
 
 function RandomForestRegressor.Fit(X: Matrix; y: Vector): IModel;
@@ -3299,39 +3522,109 @@ begin
   if fMinSamplesLeaf < 1 then
     ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
 
+  if fMinSamplesLeaf >= fMinSamplesSplit then
+    ArgumentError(ER_MIN_LEAF_GE_SPLIT, fMinSamplesLeaf, fMinSamplesSplit);
+
   if fMaxDepth < 0 then
     ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
 
-  if fMaxDepth > 10000 then
+  if fMaxDepth > MAX_ALLOWED_TREE_DEPTH then
     ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
 
+  var n := X.RowCount;
+  var p := X.ColCount;
+
+  fFeatureCount := p;
+
   SetLength(fTrees, fNTrees);
+
+  // --- OOB buffers (regression) ---
+  var oobSum: Vector := nil;
+  var oobCnt: array of integer := nil;
+
+  if fUseOOB then
+  begin
+    oobSum := new Vector(n);
+    oobCnt := new integer[n];
+  end;
 
   for var t := 0 to fNTrees - 1 do
   begin
     var treeSeed := fRng.Next(integer.MaxValue);
-  
+
     var tree := new DecisionTreeRegressor(
       fMaxDepth,
       fMinSamplesSplit,
       fMinSamplesLeaf,
+      0.0,          // leafL2 если нужно — подставь своё поле
       treeSeed
     );
-  
-    var p := X.ColCount;
-    var m := ComputeMaxFeatures(p);
-    tree.fMaxFeatures := m;
-  
+
+    var mfeat := ComputeMaxFeatures(p);
+    tree.fMaxFeatures := mfeat;
+
     var rows: array of integer;
-    BootstrapRowIndices(X.RowCount, rows);
-  
+    BootstrapRowIndices(n, rows);
+
     tree.SetRowIndices(rows);
     tree.Fit(X, y);
-  
+
+    // --- OOB accumulate ---
+    if fUseOOB then
+    begin
+      var inBag := new boolean[n];
+      for var i := 0 to rows.Length - 1 do
+        inBag[rows[i]] := true;
+
+      for var i := 0 to n - 1 do
+        if not inBag[i] then
+        begin
+          oobSum[i] += tree.PredictOne(X, i);
+          oobCnt[i] += 1;
+        end;
+    end;
+
     fTrees[t] := tree;
   end;
-  
-    fFitted := true;
+
+  // --- finalize OOB score: R^2 ---
+  fHasOOBScore := false;
+  fOOBScore := real.NaN;
+
+  if fUseOOB then
+  begin
+    var meanY := y.Mean;
+
+    var sse := 0.0;
+    var sst := 0.0;
+    var cnt := 0;
+
+    for var i := 0 to n - 1 do
+      if oobCnt[i] > 0 then
+      begin
+        var yhat := oobSum[i] / oobCnt[i];
+        var e := y[i] - yhat;
+        sse += e * e;
+
+        var d := y[i] - meanY;
+        sst += d * d;
+
+        cnt += 1;
+      end;
+
+    // если OOB почти нет — просто помечаем как недоступно
+    if cnt >= Max(1, n div 10) then
+    begin
+      if sst <= 0 then
+        fOOBScore := 0.0
+      else
+        fOOBScore := 1.0 - (sse / sst);
+
+      fHasOOBScore := true;
+    end;
+  end;
+
+  fFitted := true;
   Result := Self;
 end;
 
@@ -3345,6 +3638,9 @@ begin
 
   if ValidateFiniteInputs then
     CheckXForPredict(X);
+  
+  if X.ColCount <> fFeatureCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH, X.ColCount, fFeatureCount);
 
   var n := X.RowCount;
   var resultVec := new Vector(n);
@@ -3370,12 +3666,20 @@ begin
     fMinSamplesSplit,
     fMinSamplesLeaf,
     fMaxFeaturesMode,
+    fUseOOB,
     fRandomSeed
   );
 
   rf.fUserProvidedSeed := fUserProvidedSeed;
   rf.fFitted := fFitted;
 
+  rf.fFeatureCount := fFeatureCount;
+
+  // --- OOB ---
+  rf.fOOBScore := fOOBScore;
+  rf.fHasOOBScore := fHasOOBScore;
+
+  // --- trees ---
   SetLength(rf.fTrees, fTrees.Length);
   for var i := 0 to fTrees.Length - 1 do
     rf.fTrees[i] := DecisionTreeRegressor(fTrees[i].Clone);
@@ -3428,9 +3732,9 @@ end;
 
 constructor RandomForestClassifier.Create(nTrees: integer; 
   maxDepth: integer; minSamplesSplit: integer; minSamplesLeaf: integer;
-  maxFeaturesMode: TMaxFeaturesMode; seed: integer);
+  maxFeaturesMode: TMaxFeaturesMode; computeOOB: boolean; seed: integer);
 begin
-  inherited Create(nTrees,maxDepth,minSamplesSplit,minSamplesLeaf,maxFeaturesMode,seed);
+  inherited Create(nTrees,maxDepth,minSamplesSplit,minSamplesLeaf,maxFeaturesMode,computeOOB,seed);
 end;
 
 function RandomForestClassifier.Fit(X: Matrix; y: Vector): IModel;
@@ -3462,42 +3766,133 @@ begin
   if fMinSamplesLeaf < 1 then
     ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
 
+  if fMinSamplesLeaf >= fMinSamplesSplit then
+    ArgumentError(ER_MIN_LEAF_GE_SPLIT, fMinSamplesLeaf, fMinSamplesSplit);
+
   if fMaxDepth < 0 then
     ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
 
   if fMaxDepth > MAX_ALLOWED_TREE_DEPTH then
     ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
-  
+
+  var n := X.RowCount;
+  var p := X.ColCount;
+
+  fFeatureCount := p;
+
   SetLength(fTrees, fNTrees);
+
+  // сброс
+  fClassCount := 0;
+  fIndexToClass := nil;
+  fClassToIndex := nil;
+
+  // --- OOB buffers (classification) ---
+  var yEnc: array of integer := nil;
+  var oobVotes: array[,] of integer := nil;
+  var oobCnt: array of integer := nil;
 
   for var t := 0 to fNTrees - 1 do
   begin
     var treeSeed := fRng.Next(integer.MaxValue);
-  
+
     var tree := new DecisionTreeClassifier(
       fMaxDepth,
       fMinSamplesSplit,
       fMinSamplesLeaf,
       treeSeed
     );
-  
-    var p := X.ColCount;
-    var m := ComputeMaxFeatures(p);
-    tree.fMaxFeatures := m;
-  
+
+    var mfeat := ComputeMaxFeatures(p);
+    tree.fMaxFeatures := mfeat;
+
     var rows: array of integer;
-    BootstrapRowIndices(X.RowCount, rows);
-  
+    BootstrapRowIndices(n, rows);
+
     tree.SetRowIndices(rows);
     tree.Fit(X, y);
-    
-    if t = 0 then // скопировать на первой итерации
+
+    if t = 0 then
     begin
+      // classes фиксируем по первому дереву
       fClassCount := tree.ClassCount;
       fIndexToClass := tree.IndexToClass;
+
+      fClassToIndex := new Dictionary<integer, integer>;
+      for var k := 0 to fClassCount - 1 do
+        fClassToIndex[fIndexToClass[k]] := k;
+
+      // encode y в internal индексы (ОБОСНОВАННО: y должен быть целочисленным, как у дерева)
+      SetLength(yEnc, n);
+      for var i := 0 to n - 1 do
+      begin
+        var r := y[i];
+        var ir := Round(r);
+        if Abs(r - ir) > 1e-12 then
+          ArgumentError(ER_LABELS_NOT_INTEGER);
+
+        yEnc[i] := fClassToIndex[ir];
+      end;
+
+      if fUseOOB then
+      begin
+        oobVotes := new integer[n, fClassCount];
+        oobCnt := new integer[n];
+      end;
     end;
-  
+
+    // --- OOB accumulate ---
+    if fUseOOB then
+    begin
+      var inBag := new boolean[n];
+      for var i := 0 to rows.Length - 1 do
+        inBag[rows[i]] := true;
+
+      for var i := 0 to n - 1 do
+        if not inBag[i] then
+        begin
+          var cls := tree.PredictOne(X, i); // internal index 0..K-1
+          oobVotes[i, cls] += 1;
+          oobCnt[i] += 1;
+        end;
+    end;
+
     fTrees[t] := tree;
+  end;
+
+  // --- finalize OOB score: accuracy ---
+  fHasOOBScore := false;
+  fOOBScore := real.NaN;
+
+  if fUseOOB then
+  begin
+    var correct := 0;
+    var cnt := 0;
+
+    for var i := 0 to n - 1 do
+      if oobCnt[i] > 0 then
+      begin
+        // argmax по oobVotes[i,*]
+        var bestK := 0;
+        var bestV := oobVotes[i, 0];
+        for var k := 1 to fClassCount - 1 do
+          if oobVotes[i, k] > bestV then
+          begin
+            bestV := oobVotes[i, k];
+            bestK := k;
+          end;
+
+        if bestK = yEnc[i] then
+          correct += 1;
+
+        cnt += 1;
+      end;
+
+    if cnt >= Max(1, n div 10) then
+    begin
+      fOOBScore := correct / cnt;
+      fHasOOBScore := true;
+    end;
   end;
 
   fFitted := true;
@@ -3515,40 +3910,47 @@ begin
   if ValidateFiniteInputs then
     CheckXForPredict(X);
 
+  if X.ColCount <> fFeatureCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH, X.ColCount, fFeatureCount);
+
   var n := X.RowCount;
   var treeCount := fTrees.Length;
 
   if treeCount = 0 then
     Error(ER_MODEL_NOT_INITIALIZED);
+
+  if fClassCount <= 0 then
+    Error(ER_MODEL_NOT_INITIALIZED);
   
+
   var resultVec := new Vector(n);
   var counts := new integer[fClassCount];
 
   for var i := 0 to n - 1 do
   begin
-    // обнулить счётчики
     for var c := 0 to fClassCount - 1 do
       counts[c] := 0;
 
-    // голосование
     for var t := 0 to treeCount - 1 do
     begin
-      var cls := fTrees[t].PredictOne(X, i); // внутренний индекс 0..K-1
+      var cls := fTrees[t].PredictOne(X, i);
+
+      if (cls < 0) or (cls >= fClassCount) then
+        ArgumentError(ER_LABEL_INDEX_INVALID);
+
       counts[cls] += 1;
     end;
 
-    // argmax
     var bestClass := 0;
-    var bestCount := -1;
+    var bestCount := counts[0];
 
-    for var c := 0 to fClassCount - 1 do
+    for var c := 1 to fClassCount - 1 do
       if counts[c] > bestCount then
       begin
         bestCount := counts[c];
         bestClass := c;
       end;
 
-    // вернуть исходную метку
     resultVec[i] := fIndexToClass[bestClass];
   end;
 
@@ -3566,10 +3968,16 @@ begin
   if ValidateFiniteInputs then
     CheckXForPredict(X);
 
+  if X.ColCount <> fFeatureCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH, X.ColCount, fFeatureCount);
+
   var n := X.RowCount;
   var treeCount := fTrees.Length;
 
   if treeCount = 0 then
+    Error(ER_MODEL_NOT_INITIALIZED);
+
+  if fClassCount <= 0 then
     Error(ER_MODEL_NOT_INITIALIZED);
 
   var resultMat := new Matrix(n, fClassCount);
@@ -3577,18 +3985,19 @@ begin
 
   for var i := 0 to n - 1 do
   begin
-    // обнулить счётчики
     for var c := 0 to fClassCount - 1 do
       counts[c] := 0;
 
-    // голосование
     for var t := 0 to treeCount - 1 do
     begin
-      var cls := fTrees[t].PredictOne(X, i); // внутренний индекс
+      var cls := fTrees[t].PredictOne(X, i);
+
+      if (cls < 0) or (cls >= fClassCount) then
+        ArgumentError(ER_LABEL_INDEX_INVALID);
+
       counts[cls] += 1;
     end;
 
-    // нормализация → вероятности
     for var c := 0 to fClassCount - 1 do
       resultMat[i, c] := counts[c] / treeCount;
   end;
@@ -3604,15 +4013,35 @@ begin
     fMinSamplesSplit,
     fMinSamplesLeaf,
     fMaxFeaturesMode,
+    fUseOOB,
     fRandomSeed
   );
 
   rf.fUserProvidedSeed := fUserProvidedSeed;
   rf.fFitted := fFitted;
 
-  SetLength(rf.fTrees, fTrees.Length);
+  rf.fFeatureCount := fFeatureCount;
 
-  for var i := 0 to fTrees.Length-1 do
+  // --- classes ---
+  rf.fClassCount := fClassCount;
+
+  if fIndexToClass <> nil then
+    rf.fIndexToClass := Copy(fIndexToClass);
+
+  if fClassToIndex <> nil then
+  begin
+    rf.fClassToIndex := new Dictionary<integer, integer>;
+    foreach var kv in fClassToIndex do
+      rf.fClassToIndex.Add(kv.Key, kv.Value);
+  end;
+
+  // --- OOB ---
+  rf.fOOBScore := fOOBScore;
+  rf.fHasOOBScore := fHasOOBScore;
+
+  // --- trees ---
+  SetLength(rf.fTrees, fTrees.Length);
+  for var i := 0 to fTrees.Length - 1 do
     rf.fTrees[i] := DecisionTreeClassifier(fTrees[i].Clone);
 
   Result := rf;
@@ -3675,14 +4104,13 @@ constructor GradientBoostingRegressor.Create(
   minSamplesSplit: integer;
   minSamplesLeaf: integer;
   subsample: real;
-  randomSeed: integer;
   loss: TGBLoss;
   huberDelta: real;
   earlyStoppingPatience: integer;
   quantileAlpha: real;
   leafL2: real;
   useOOBEarlyStopping: boolean;
-  seed: integer);
+  seed: integer); 
 begin
   if nEstimators <= 0 then
     ArgumentOutOfRangeError(ER_N_ESTIMATORS_NOT_POSITIVE);
@@ -3692,6 +4120,15 @@ begin
 
   if (subsample <= 0) or (subsample > 1) then
     ArgumentOutOfRangeError(ER_SUBSAMPLE_OUT_OF_RANGE);
+  
+  if maxDepth <= 0 then
+    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, maxDepth);
+  
+  if minSamplesSplit < 2 then
+    ArgumentOutOfRangeError(ER_MIN_SAMPLES_SPLIT_INVALID, minSamplesSplit);
+  
+  if minSamplesLeaf < 1 then
+    ArgumentOutOfRangeError(ER_MIN_SAMPLES_LEAF_INVALID, minSamplesLeaf);
 
   fNEstimators := nEstimators;
   fLearningRate := learningRate;
@@ -3699,7 +4136,6 @@ begin
   fMinSamplesSplit := minSamplesSplit;
   fMinSamplesLeaf := minSamplesLeaf;
   fSubsample := subsample;
-  fRandomSeed := randomSeed;
 
   fEstimators := new List<DecisionTreeRegressor>;
   fFitted := false;
@@ -3719,10 +4155,16 @@ begin
   
 // -------------  
   if huberDelta <= 0 then
-    ArgumentOutOfRangeError('huberDelta must be > 0!!huberDelta must be > 0');
+    ArgumentOutOfRangeError(ER_HUBER_DELTA_INVALID, huberDelta);
   
   if earlyStoppingPatience < 0 then
-    ArgumentOutOfRangeError('earlyStoppingPatience must be >= 0!!earlyStoppingPatience must be >= 0');
+    ArgumentOutOfRangeError(ER_EARLY_STOPPING_INVALID, earlyStoppingPatience);
+  
+  if (quantileAlpha <= 0) or (quantileAlpha >= 1) then
+    ArgumentOutOfRangeError(ER_QUANTILE_ALPHA_INVALID, quantileAlpha);
+  
+  if leafL2 < 0 then
+    ArgumentOutOfRangeError(ER_LEAFL2_INVALID, leafL2);
   
   fLoss := loss;
   fHuberDelta := huberDelta;
@@ -3739,9 +4181,14 @@ begin
   fOOBLossHistory := new List<real>;
 end;
 
-function GradientBoostingRegressor.ComputeTrainLoss(y, yPred: Vector): real;
+function GradientBoostingRegressor.ComputeTrainLoss(
+  y, yPred: Vector): real;
 begin
   var n := y.Length;
+
+  if n = 0 then
+    exit(0.0);
+
   var sum := 0.0;
 
   case fLoss of
@@ -3777,7 +4224,12 @@ begin
       end;
   end;
 
-  Result := sum / n;
+  var loss := sum / n;
+
+  if double.IsNaN(loss) or double.IsInfinity(loss) then
+    ArgumentError(ER_TRAINING_DIVERGED);
+
+  Result := loss;
 end;
 
 procedure GradientBoostingRegressor.ComputePseudoResiduals(
@@ -4241,7 +4693,7 @@ begin
     CheckXForPredict(X);
 
   if X.ColCount <> fFeatureCount then
-    DimensionError(ER_FEATURE_COUNT_MISMATCH);
+    DimensionError(ER_FEATURE_COUNT_MISMATCH, X.ColCount, fFeatureCount);
 
   var totalTrees := fEstimators.Count;
 
@@ -4251,17 +4703,25 @@ begin
   var n := X.RowCount;
   var yPred := new Vector(n);
 
-  // F0
   for var i := 0 to n - 1 do
     yPred[i] := fInitValue;
 
-  // добавить первые m деревьев
   for var t := 0 to m - 1 do
   begin
     var delta := fEstimators[t].Predict(X);
 
+    if delta.Length <> n then
+      DimensionError(ER_XY_SIZE_MISMATCH, delta.Length, n);
+
     for var i := 0 to n - 1 do
-      yPred[i] += fLearningRate * delta[i];
+    begin
+      var v := yPred[i] + fLearningRate * delta[i];
+
+      if double.IsNaN(v) or double.IsInfinity(v) then
+        ArgumentError(ER_TRAINING_DIVERGED);
+
+      yPred[i] := v;
+    end;
   end;
 
   Result := yPred;
@@ -4272,8 +4732,40 @@ begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
-  for var m := 1 to fEstimators.Count do
-    yield PredictStage(X, m);
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if ValidateFiniteInputs then
+    CheckXForPredict(X);
+
+  if X.ColCount <> fFeatureCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH, X.ColCount, fFeatureCount);
+
+  var n := X.RowCount;
+  var yPred := new Vector(n);
+
+  for var i := 0 to n - 1 do
+    yPred[i] := fInitValue;
+
+  for var t := 0 to fEstimators.Count - 1 do
+  begin
+    var delta := fEstimators[t].Predict(X);
+
+    if delta.Length <> n then
+      DimensionError(ER_XY_SIZE_MISMATCH, delta.Length, n);
+
+    for var i := 0 to n - 1 do
+    begin
+      var v := yPred[i] + fLearningRate * delta[i];
+
+      if double.IsNaN(v) or double.IsInfinity(v) then
+        ArgumentError(ER_TRAINING_DIVERGED);
+
+      yPred[i] := v;
+    end;
+
+    yield yPred.Clone;   // ВАЖНО: clone!
+  end;
 end;
 
 function GradientBoostingRegressor.FeatureImportances: Vector;
@@ -4282,7 +4774,7 @@ begin
     NotFittedError(ER_FIT_NOT_CALLED);
 
   if fFeatureImportances <> nil then
-    exit(fFeatureImportances);
+    exit(fFeatureImportances.Clone);   // НЕ отдаём внутренний кэш
 
   var importances := new Vector(fFeatureCount);
 
@@ -4290,19 +4782,35 @@ begin
   begin
     var imp := tree.FeatureImportances;
 
+    if imp = nil then
+      continue;
+
+    if imp.Length <> fFeatureCount then
+      DimensionError(ER_FEATURE_COUNT_MISMATCH, imp.Length, fFeatureCount);
+
     for var j := 0 to fFeatureCount - 1 do
-      importances[j] += imp[j];
+    begin
+      var v := imp[j];
+
+      if double.IsNaN(v) or double.IsInfinity(v) then
+        ArgumentError(ER_TRAINING_DIVERGED);
+
+      importances[j] += v;
+    end;
   end;
 
-  // нормализация
   var s := importances.Sum;
-  if s > 0 then
+
+  if double.IsNaN(s) or double.IsInfinity(s) then
+    ArgumentError(ER_TRAINING_DIVERGED);
+
+  if Abs(s) > 1e-15 then
     for var j := 0 to fFeatureCount - 1 do
       importances[j] /= s;
 
   fFeatureImportances := importances;
 
-  Result := fFeatureImportances;
+  Result := fFeatureImportances.Clone;   // безопасный возврат
 end;
 
 function GradientBoostingRegressor.ToString: string;
@@ -4349,7 +4857,7 @@ begin
     fMinSamplesSplit,
     fMinSamplesLeaf,
     fSubsample,
-    fRandomSeed
+    seed := fRandomSeed
   );
 
   // --- seed policy ---
@@ -4472,7 +4980,7 @@ begin
 
   fFeatureCount := XTrain.ColCount;
   fBestIteration := -1;
-  fBestValLoss := real.PositiveInfinity;
+  fBestScoreLoss := real.PositiveInfinity;
   fFitted := false;
 
   // --- mapping
@@ -4679,9 +5187,9 @@ begin
     // --- early stopping
     if fEarlyStoppingPatience > 0 then
     begin
-      if fBestValLoss - scoreLoss > MinImprovement then
+      if fBestScoreLoss - scoreLoss > MinImprovement then
       begin
-        fBestValLoss := scoreLoss;
+        fBestScoreLoss := scoreLoss;
         fBestIteration := iter;
         noImprove := 0;
       end
@@ -4751,6 +5259,22 @@ procedure GradientBoostingClassifier.SoftmaxRow(
 begin
   var classCount := Length(logits);
 
+  if classCount = 0 then
+    ArgumentError(ER_SOFTMAX_EMPTY);
+
+  if Length(probs) <> classCount then
+    DimensionError(ER_XY_SIZE_MISMATCH, Length(probs), classCount);
+
+  // --- проверка входных логитов
+  for var cls := 0 to classCount - 1 do
+  begin
+    var v := logits[cls];
+
+    if double.IsNaN(v) or double.IsInfinity(v) then
+      ArgumentError(ER_TRAINING_DIVERGED);
+  end;
+
+  // --- max trick
   var maxLogit := logits[0];
   for var cls := 1 to classCount - 1 do
     if logits[cls] > maxLogit then
@@ -4760,13 +5284,41 @@ begin
 
   for var cls := 0 to classCount - 1 do
   begin
-    var e := Exp(logits[cls] - maxLogit);
+    var shifted := logits[cls] - maxLogit;
+    var e := Exp(shifted);
+
+    if double.IsNaN(e) or double.IsInfinity(e) then
+      ArgumentError(ER_TRAINING_DIVERGED);
+
     probs[cls] := e;
     sumExp += e;
   end;
 
+  if double.IsNaN(sumExp) or double.IsInfinity(sumExp) then
+    ArgumentError(ER_TRAINING_DIVERGED);
+
+  if sumExp <= 0 then
+  begin
+    var uniform := 1.0 / classCount;
+    for var cls := 0 to classCount - 1 do
+      probs[cls] := uniform;
+    exit;
+  end;
+
+  var inv := 1.0 / sumExp;
+
   for var cls := 0 to classCount - 1 do
-    probs[cls] /= sumExp;
+  begin
+    var p := probs[cls] * inv;
+
+    // clamp для полной численной безопасности
+    if p < 0 then
+      p := 0.0
+    else if p > 1 then
+      p := 1.0;
+
+    probs[cls] := p;
+  end;
 end;
 
 procedure GradientBoostingClassifier.SoftmaxMatrix(
@@ -4791,25 +5343,53 @@ begin
   end;
 end;
 
-function GradientBoostingClassifier.ComputeLogLoss(yEncoded: array of integer; probs: Matrix): real;
+function GradientBoostingClassifier.ComputeLogLoss(
+  yEncoded: array of integer;
+  probs: Matrix): real;
 begin
   var n := Length(yEncoded);
-  var eps := 1e-15;
 
+  if n = 0 then
+    exit(0.0);
+
+  if probs = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if probs.RowCount <> n then
+    DimensionError(ER_XY_SIZE_MISMATCH, probs.RowCount, n);
+
+  var eps := 1e-12;
   var loss := 0.0;
 
   for var i := 0 to n - 1 do
   begin
     var cls := yEncoded[i];
+
+    if (cls < 0) or (cls >= probs.ColCount) then
+      ArgumentError(ER_LABEL_INDEX_INVALID);
+
     var p := probs[i, cls];
 
+    if double.IsNaN(p) or double.IsInfinity(p) then
+      ArgumentError(ER_TRAINING_DIVERGED);
+
     if p < eps then
-      p := eps;
+      p := eps
+    else if p > 1 - eps then
+      p := 1 - eps;
 
     loss -= Ln(p);
   end;
 
-  Result := loss / n;
+  var resultLoss := loss / n;
+
+  if resultLoss < 0 then
+    resultLoss := 0.0;
+
+  if double.IsNaN(resultLoss) or double.IsInfinity(resultLoss) then
+    ArgumentError(ER_TRAINING_DIVERGED);
+
+  Result := resultLoss;
 end;
 
 function GradientBoostingClassifier.ComputeLogLossMasked(
@@ -4817,38 +5397,69 @@ function GradientBoostingClassifier.ComputeLogLossMasked(
   logits: Matrix;
   mask: array of boolean): real;
 begin
+  if logits = nil then
+    ArgumentNullError(ER_X_NULL);
+
   var n := logits.RowCount;
   var k := logits.ColCount;
+
+  if k = 0 then
+    ArgumentError(ER_SOFTMAX_EMPTY);
+
+  if Length(yEncoded) <> n then
+    DimensionError(ER_XY_SIZE_MISMATCH, Length(yEncoded), n);
+
+  if Length(mask) <> n then
+    DimensionError(ER_XY_SIZE_MISMATCH, Length(mask), n);
 
   var rowLogits := new real[k];
   var rowProbs := new real[k];
 
   var sum := 0.0;
   var cnt := 0;
+  var eps := 1e-12;
 
   for var i := 0 to n - 1 do
-    if mask[i] then
-    begin
-      for var cls := 0 to k - 1 do
-        rowLogits[cls] := logits[i, cls];
+  begin
+    if not mask[i] then
+      continue;
 
-      SoftmaxRow(rowLogits, rowProbs);
+    for var cls := 0 to k - 1 do
+      rowLogits[cls] := logits[i, cls];
 
-      var yi := yEncoded[i];
-      var p := rowProbs[yi];
+    SoftmaxRow(rowLogits, rowProbs);
 
-      // защита от log(0)
-      if p < 1e-15 then
-        p := 1e-15;
+    var yi := yEncoded[i];
 
-      sum += -Ln(p);
-      cnt += 1;
-    end;
+    if (yi < 0) or (yi >= k) then
+      ArgumentError(ER_LABEL_INDEX_INVALID);
+
+    var p := rowProbs[yi];
+
+    if double.IsNaN(p) or double.IsInfinity(p) then
+      ArgumentError(ER_TRAINING_DIVERGED);
+
+    if p < eps then
+      p := eps
+    else if p > 1 - eps then
+      p := 1 - eps;
+
+    sum -= Ln(p);
+    cnt += 1;
+  end;
 
   if cnt = 0 then
-    exit(real.PositiveInfinity);
+    exit(real.PositiveInfinity);  // корректно для OOB
 
-  Result := sum / cnt;
+  var loss := sum / cnt;
+
+  if loss < 0 then
+    loss := 0.0;
+
+  if double.IsNaN(loss) or double.IsInfinity(loss) then
+    ArgumentError(ER_TRAINING_DIVERGED);
+
+  Result := loss;
 end;
 
 constructor GradientBoostingClassifier.Create(
@@ -4862,16 +5473,25 @@ constructor GradientBoostingClassifier.Create(
   seed: integer);
 begin
   if nEstimators <= 0 then
-    ArgumentError(ER_N_ESTIMATORS_INVALID);
-
+  ArgumentOutOfRangeError(ER_N_ESTIMATORS_INVALID, nEstimators);
+  
   if learningRate <= 0 then
-    ArgumentError(ER_LEARNING_RATE_INVALID);
-
+    ArgumentOutOfRangeError(ER_LEARNING_RATE_INVALID, learningRate);
+  
   if maxDepth <= 0 then
-    ArgumentError(ER_MAX_DEPTH_INVALID);
-
-  if subsample <= 0 then
-    ArgumentError(ER_SUBSAMPLE_INVALID);
+    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, maxDepth);
+  
+  if minSamplesSplit < 2 then
+    ArgumentOutOfRangeError(ER_MIN_SAMPLES_SPLIT_INVALID, minSamplesSplit);
+  
+  if minSamplesLeaf < 1 then
+    ArgumentOutOfRangeError(ER_MIN_SAMPLES_LEAF_INVALID, minSamplesLeaf);
+  
+  if (subsample <= 0) or (subsample > 1) then
+    ArgumentOutOfRangeError(ER_SUBSAMPLE_OUT_OF_RANGE, subsample);
+  
+  if earlyStoppingPatience < 0 then
+    ArgumentOutOfRangeError(ER_EARLY_STOPPING_INVALID, earlyStoppingPatience);
 
   fNEstimators := nEstimators;
   fLearningRate := learningRate;
@@ -4890,7 +5510,7 @@ begin
   fClassCount := 0;
 
   fBestIteration := -1;
-  fBestValLoss := real.PositiveInfinity;
+  fBestScoreLoss := real.PositiveInfinity;
   
   fOOBLossHistory := new List<real>;
   
@@ -4921,19 +5541,19 @@ begin
 
   if X.ColCount <> fFeatureCount then
     DimensionError(ER_FEATURE_COUNT_MISMATCH);
-  
+
   var nSamples := X.RowCount;
   var classCount := fClassCount;
 
   var logits := new Matrix(nSamples, classCount);
+
   // --- F0
   for var i := 0 to nSamples - 1 do
     for var cls := 0 to classCount - 1 do
       logits[i, cls] := fInitLogits[cls];
 
-  // --- накопление логитов от всех итераций
+  // --- накопление логитов
   foreach var trees in fEstimators do
-  begin
     for var cls := 0 to classCount - 1 do
     begin
       var delta := trees[cls].Predict(X);
@@ -4941,23 +5561,37 @@ begin
       for var i := 0 to nSamples - 1 do
         logits[i, cls] += fLearningRate * delta[i];
     end;
-  end;
 
-  // --- softmax
   var probs := new Matrix(nSamples, classCount);
 
+  // --- устойчивый softmax
   for var i := 0 to nSamples - 1 do
   begin
-    var rowLogits := new real[classCount];
-    var rowProbs  := new real[classCount];
+    var maxVal := logits[i,0];
+    for var cls := 1 to classCount - 1 do
+      if logits[i,cls] > maxVal then
+        maxVal := logits[i,cls];
+
+    var sumExp := 0.0;
 
     for var cls := 0 to classCount - 1 do
-      rowLogits[cls] := logits[i, cls];
+    begin
+      probs[i,cls] := Exp(logits[i,cls] - maxVal);
+      sumExp += probs[i,cls];
+    end;
 
-    SoftmaxRow(rowLogits, rowProbs);
-
-    for var cls := 0 to classCount - 1 do
-      probs[i, cls] := rowProbs[cls];
+    if Abs(sumExp) < 1e-12 then
+    begin
+      // численно вырожденный случай
+      var uniform := 1.0 / classCount;
+      for var cls := 0 to classCount - 1 do
+        probs[i,cls] := uniform;
+    end
+    else
+    begin
+      for var cls := 0 to classCount - 1 do
+        probs[i,cls] /= sumExp;
+    end;
   end;
 
   Result := probs;
@@ -5157,7 +5791,7 @@ begin
     model.fOOBLossHistory.Add(v);
 
   model.fBestIteration := fBestIteration;
-  model.fBestValLoss := fBestValLoss;
+  model.fBestScoreLoss := fBestScoreLoss;
 
   Result := model;
 end;
@@ -6015,11 +6649,24 @@ end;
 
 function StandardScaler.Fit(X: Matrix): ITransformer;
 begin
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if X.RowCount = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
+  fFeatureCount := X.ColCount;
+
   fMean := X.ColumnMeans;
   fStd := X.ColumnStd;
 
+  // защита от нулевой дисперсии
+  for var j := 0 to fStd.Length - 1 do
+    if Abs(fStd[j]) < 1e-12 then
+      fStd[j] := 1.0;
+
   fFitted := true;
-  Result := self;
+  Result := Self;
 end;
 
 function StandardScaler.Transform(X: Matrix): Matrix;
@@ -6027,23 +6674,20 @@ begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if X.ColCount <> fFeatureCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH);
+
   var n := X.RowCount;
   var p := X.ColCount;
 
   Result := new Matrix(n, p);
 
-  for var j := 0 to p - 1 do
-  begin
-    var mean := fMean[j];
-    var std := fStd[j];
-
-    for var i := 0 to n - 1 do
-    begin
-      if std <> 0 then
-        Result[i,j] := (X[i,j] - mean) / std
-      else Result[i,j] := 0.0;
-    end;
-  end;
+  for var i := 0 to n - 1 do
+    for var j := 0 to p - 1 do
+      Result[i,j] := (X[i,j] - fMean[j]) / fStd[j];
 end;
 
 function StandardScaler.ToString: string;
@@ -6076,17 +6720,36 @@ end;
 
 function MinMaxScaler.Fit(X: Matrix): ITransformer;
 begin
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if X.RowCount = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
+  fFeatureCount := X.ColCount;
+
   fMin := X.ColumnMins;
   fMax := X.ColumnMaxs;
 
+  // защита от константных признаков
+  for var j := 0 to fMin.Length - 1 do
+    if Abs(fMax[j] - fMin[j]) < 1e-12 then
+      fMax[j] := fMin[j] + 1.0;
+
   fFitted := true;
-  Result := self;
+  Result := Self;
 end;
 
 function MinMaxScaler.Transform(X: Matrix): Matrix;
 begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
+
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if X.ColCount <> fFeatureCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH);
 
   var n := X.RowCount;
   var p := X.ColCount;
@@ -6101,11 +6764,17 @@ begin
     var maxVal := fMax[j];
     var denom := maxVal - minVal;
 
-    for var i := 0 to n - 1 do
+    if Abs(denom) < 1e-12 then
     begin
-      if denom <> 0 then
-        Result[i,j] := fRangeMin + (X[i,j] - minVal) / denom * scale
-      else Result[i,j] := fRangeMin;  // если столбец константный
+      // Константный столбец → всё = fRangeMin
+      for var i := 0 to n - 1 do
+        Result[i,j] := fRangeMin;
+    end
+    else
+    begin
+      for var i := 0 to n - 1 do
+        Result[i,j] :=
+          fRangeMin + (X[i,j] - minVal) / denom * scale;
     end;
   end;
 end;
@@ -6141,9 +6810,21 @@ end;
 
 function PCATransformer.Fit(X: Matrix): ITransformer;
 begin
-  if fK > X.ColCount then
-    ArgumentError(ER_K_EXCEEDS_FEATURES);
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
 
+  if X.RowCount = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
+  if fK <= 0 then
+    ArgumentOutOfRangeError(ER_K_INVALID, fK);
+
+  if fK > X.ColCount then
+    ArgumentOutOfRangeError(ER_K_EXCEEDS_FEATURES, fK);
+
+  fFeatureCount := X.ColCount;
+
+  // --- центрирование
   fMean := X.ColumnMeans;
 
   var Xc := X.Clone;
@@ -6152,11 +6833,12 @@ begin
     for var i := 0 to X.RowCount - 1 do
       Xc[i,j] -= fMean[j];
 
-  var (W, xxx) := Xc.PCA(fK);
+  // --- PCA
+  var (W, variances) := Xc.PCA(fK);
 
   fComponents := W;
-  fFitted := true;
 
+  fFitted := true;
   Result := Self;
 end;
 
@@ -6165,11 +6847,21 @@ begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
-  var Xc := X.Clone;
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
 
-  for var j := 0 to X.ColCount - 1 do
-    for var i := 0 to X.RowCount - 1 do
-      Xc[i,j] -= fMean[j];
+  if X.ColCount <> fFeatureCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH);
+
+  var n := X.RowCount;
+  var p := X.ColCount;
+
+  // Центрирование без лишнего Clone
+  var Xc := new Matrix(n, p);
+
+  for var j := 0 to p - 1 do
+    for var i := 0 to n - 1 do
+      Xc[i,j] := X[i,j] - fMean[j];
 
   Result := Xc * fComponents;
 end;
@@ -6203,6 +6895,17 @@ end;
 
 function VarianceThreshold.Fit(X: Matrix): ITransformer;
 begin
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if X.RowCount = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
+  if fThreshold < 0 then
+    ArgumentOutOfRangeError(ER_THRESHOLD_INVALID, fThreshold);
+
+  fFeatureCount := X.ColCount;
+
   var vars := X.ColumnVariances;
 
   var tmp := new List<integer>;
@@ -6210,6 +6913,9 @@ begin
   for var j := 0 to X.ColCount - 1 do
     if vars[j] >= fThreshold then
       tmp.Add(j);
+
+  if tmp.Count = 0 then
+    ArgumentError(ER_ALL_FEATURES_REMOVED);
 
   fSelected := tmp.ToArray;
   fFitted := true;
@@ -6221,6 +6927,15 @@ function VarianceThreshold.Transform(X: Matrix): Matrix;
 begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
+
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if X.ColCount <> fFeatureCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH);
+
+  if fSelected = nil then
+    Error(ER_MODEL_NOT_INITIALIZED);
 
   var n := X.RowCount;
   var k := fSelected.Length;
@@ -6317,64 +7032,74 @@ begin
   // --- построение отображения классов ---
   var classToIndex := new Dictionary<integer, integer>;
   var uniqueClasses := new List<integer>;
+  var yEncoded := new integer[n];
 
-  for var i := 0 to y.Length - 1 do
+  for var i := 0 to n - 1 do
   begin
-    var cls := Round(y[i]);
-    if not classToIndex.ContainsKey(cls) then
+    var r := y[i];
+    var ir := Round(r);
+
+    if Abs(r - ir) > 1e-12 then
+      ArgumentError(ER_LABELS_NOT_INTEGER);
+
+    if not classToIndex.ContainsKey(ir) then
     begin
-      classToIndex[cls] := uniqueClasses.Count;
-      uniqueClasses.Add(cls);
+      classToIndex[ir] := uniqueClasses.Count;
+      uniqueClasses.Add(ir);
     end;
+
+    yEncoded[i] := classToIndex[ir];
   end;
 
   var classCount := uniqueClasses.Count;
   if classCount < 2 then
     exit(0.0);
 
+  if n <= classCount then
+    exit(0.0);
+
   var counts := new integer[classCount];
   var means := new real[classCount];
 
-  // --- глобальное среднее ---
   var globalMean := feature.Mean;
 
-  // --- накопление по классам ---
+  // --- накопление ---
   for var i := 0 to n - 1 do
   begin
-    var classIdx := classToIndex[Round(y[i])];
+    var classIdx := yEncoded[i];
     counts[classIdx] += 1;
     means[classIdx] += feature[i];
   end;
 
-  for var classIdx := 0 to classCount - 1 do
-    if counts[classIdx] > 0 then
-      means[classIdx] /= counts[classIdx];
+  for var c := 0 to classCount - 1 do
+    if counts[c] > 0 then
+      means[c] /= counts[c];
 
   // --- SS_between ---
   var ssBetween := 0.0;
-  for var classIdx := 0 to classCount - 1 do
-    if counts[classIdx] > 0 then
+  for var c := 0 to classCount - 1 do
+    if counts[c] > 0 then
     begin
-      var diff := means[classIdx] - globalMean;
-      ssBetween += counts[classIdx] * diff * diff;
+      var diff := means[c] - globalMean;
+      ssBetween += counts[c] * diff * diff;
     end;
 
   // --- SS_within ---
   var ssWithin := 0.0;
   for var i := 0 to n - 1 do
   begin
-    var classIdx := classToIndex[Round(y[i])];
+    var classIdx := yEncoded[i];
     var diff := feature[i] - means[classIdx];
     ssWithin += diff * diff;
   end;
 
-  if ssWithin = 0 then
+  if Abs(ssWithin) < 1e-12 then
     exit(0.0);
 
   var msBetween := ssBetween / (classCount - 1);
   var msWithin := ssWithin / (n - classCount);
 
-  if msWithin = 0 then
+  if Abs(msWithin) < 1e-12 then
     exit(0.0);
 
   Result := msBetween / msWithin;
@@ -6386,6 +7111,9 @@ begin
   if n = 0 then
     exit(0.0);
 
+  if y.Length <> n then
+    DimensionError(ER_DIM_MISMATCH, y.Length, n);
+
   // --- проверка неотрицательности ---
   for var i := 0 to n - 1 do
     if feature[i] < 0 then
@@ -6394,15 +7122,23 @@ begin
   // --- построение отображения классов ---
   var classToIndex := new Dictionary<integer, integer>;
   var uniqueClasses := new List<integer>;
+  var yEncoded := new integer[n];
 
-  for var i := 0 to y.Length - 1 do
+  for var i := 0 to n - 1 do
   begin
-    var cls := Round(y[i]);
-    if not classToIndex.ContainsKey(cls) then
+    var r := y[i];
+    var ir := Round(r);
+
+    if Abs(r - ir) > 1e-12 then
+      ArgumentError(ER_LABELS_NOT_INTEGER);
+
+    if not classToIndex.ContainsKey(ir) then
     begin
-      classToIndex[cls] := uniqueClasses.Count;
-      uniqueClasses.Add(cls);
+      classToIndex[ir] := uniqueClasses.Count;
+      uniqueClasses.Add(ir);
     end;
+
+    yEncoded[i] := classToIndex[ir];
   end;
 
   var classCount := uniqueClasses.Count;
@@ -6411,34 +7147,33 @@ begin
 
   var counts := new integer[classCount];
   var observedSums := new real[classCount];
-
   var totalSum := 0.0;
 
   for var i := 0 to n - 1 do
   begin
-    var classIdx := classToIndex[Round(y[i])];
+    var classIdx := yEncoded[i];
     counts[classIdx] += 1;
     observedSums[classIdx] += feature[i];
     totalSum += feature[i];
   end;
 
-  if totalSum = 0 then
+  if Abs(totalSum) < 1e-12 then
     exit(0.0);
 
   var globalMean := totalSum / n;
 
   var chiSquare := 0.0;
 
-  for var classIdx := 0 to classCount - 1 do
+  for var c := 0 to classCount - 1 do
   begin
-    if counts[classIdx] = 0 then
+    if counts[c] = 0 then
       continue;
 
-    var expected := counts[classIdx] * globalMean;
+    var expected := counts[c] * globalMean;
 
-    if expected > 0 then
+    if Abs(expected) > 1e-12 then
     begin
-      var diff := observedSums[classIdx] - expected;
+      var diff := observedSums[c] - expected;
       chiSquare += diff * diff / expected;
     end;
   end;
@@ -6460,15 +7195,23 @@ end;
 
 function SelectKBest.Fit(X: Matrix; y: Vector): ITransformer;
 begin
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if y = nil then
+    ArgumentNullError(ER_Y_NULL);
+
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
-  
+
   if X.RowCount = 0 then
     ArgumentError(ER_EMPTY_DATASET);
-  
+
   if fK <= 0 then
-    ArgumentError(ER_SELECTKBEST_K_INVALID, fK);
-     
+    ArgumentOutOfRangeError(ER_SELECTKBEST_K_INVALID, fK);
+
+  fFeatureCount := X.ColCount;
+
   var p := X.ColCount;
 
   var scores: array of (real, integer);
@@ -6477,6 +7220,7 @@ begin
   for var j := 0 to p - 1 do
   begin
     var col := new Vector(X.RowCount);
+
     for var i := 0 to X.RowCount - 1 do
       col[i] := X[i,j];
 
@@ -6486,16 +7230,24 @@ begin
       else
         ComputeScore(col, y);
 
+    if double.IsNaN(s) or double.IsInfinity(s) then
+      s := real.NegativeInfinity;
+
     scores[j] := (s, j);
   end;
 
-  scores := scores.OrderByDescending(t -> t.Item1).ToArray;
+  scores := scores
+              .OrderByDescending(t -> t.Item1)
+              .ToArray;
 
   var k := Min(fK, p);
   SetLength(fSelected, k);
 
   for var i := 0 to k - 1 do
     fSelected[i] := scores[i].Item2;
+
+  if k = 0 then
+    ArgumentError(ER_ALL_FEATURES_REMOVED);
 
   fFitted := true;
   Result := Self;
@@ -6511,6 +7263,15 @@ function SelectKBest.Transform(X: Matrix): Matrix;
 begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
+
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if X.ColCount <> fFeatureCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH);
+
+  if fSelected = nil then
+    Error(ER_MODEL_NOT_INITIALIZED);
 
   var n := X.RowCount;
   var k := fSelected.Length;
@@ -6556,7 +7317,14 @@ end;
 
 function Normalizer.Fit(X: Matrix): ITransformer;
 begin
-  // Нормализация не требует обучения
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if X.RowCount = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
+  fFeatureCount := X.ColCount;
+
   fFitted := true;
   Result := Self;
 end;
@@ -6565,6 +7333,12 @@ function Normalizer.Transform(X: Matrix): Matrix;
 begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
+
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if X.ColCount <> fFeatureCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH);
 
   var n := X.RowCount;
   var p := X.ColCount;
@@ -6588,8 +7362,11 @@ begin
     if fNormType = NormType.L2 then
       norm := Sqrt(norm);
 
-    if norm = 0 then
+    if Abs(norm) < 1e-12 then
+    begin
+      // нулевая строка — оставляем нулями
       continue;
+    end;
 
     for var j := 0 to p - 1 do
       R[i,j] := X[i,j] / norm;

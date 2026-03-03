@@ -4,7 +4,7 @@ interface
 
 const
   ER_DIM_MISMATCH =
-  'Несоответствие размерностей: {0} и {1}!!Dimension mismatch: {0} and {1}';  
+    'Несоответствие размерностей: {0} и {1}!!Dimension mismatch: {0} and {1}';  
   ER_PARAM_VALUES_EMPTY =
     'Список paramValues пуст!!paramValues is empty';
   ER_EMPTY_DATASET =
@@ -17,7 +17,11 @@ const
     'Модель не может быть nil!!Model cannot be nil';
   ER_SELECTKBEST_K_INVALID =
     'Параметр k в SelectKBest должен быть >= 1. Передано: {0}.!!SelectKBest parameter k must be >= 1. Given: {0}.';  
-
+  ER_ARG_NULL =
+    'Аргумент {0} равен nil!!Argument {0} is null';
+  ER_EMPTY_DATA =
+    'Пустой набор данных для {0}!!Empty dataset for {0}';
+  
 type
   /// Базовое исключение ML-библиотеки
   MLException = class(Exception);
