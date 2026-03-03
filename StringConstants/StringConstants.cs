@@ -500,5 +500,17 @@ namespace PascalABCCompiler
         public static string ObjectType = "Object";
         public static string StringType = "string";
         public static string config_variable_name = "__CONFIG__";
+
+        #region YIELD NAMES
+
+        public const string yieldCurrent = "<>2__current";
+        public const string yieldState = "<>1__state";
+        public const string yieldLabelStatePrefix = "lbstate#";
+
+        public const string yieldSelf = "<>4__self";
+
+        public const string yieldHelperMethodPrefix = "<yield_helper";
+
+        #endregion
     }
 }

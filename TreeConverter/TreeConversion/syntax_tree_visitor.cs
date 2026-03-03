@@ -17423,7 +17423,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
 
                 //LambdaHelper.InferTypesFromVarStmt(tn, _var_def_statement.inital_value as SyntaxTree.function_lambda_definition, this);  //lroman//
-                if (tn.IsStatic && _var_def_statement.vars.idents[0].name != YieldHelpers.YieldConsts.Self) // SSM 10/07/19 fix #1639 в статическом классе можно только фиктивное поле с именем YieldHelpers.YieldConsts.Self описать - для того чтобы посмотреть на семантике его тип!!! 
+                if (tn.IsStatic && _var_def_statement.vars.idents[0].name != yieldSelf) // SSM 10/07/19 fix #1639 в статическом классе можно только фиктивное поле с именем StringConstants.yieldSelf описать - для того чтобы посмотреть на семантике его тип!!! 
                     AddError(get_location(_var_def_statement), "VARIABLES_OF_STATIC_CLASS_NOT_ALLOWED");
                 var fld1 = _var_def_statement.inital_value as SyntaxTree.function_lambda_definition;
                 if (fld1 != null)
@@ -21938,7 +21938,7 @@ namespace PascalABCCompiler.TreeConverter
         private bool CheckUnknownIdentNeedsClassCapture(SyntaxTree.yield_unknown_ident _unk, out bool isStaticIdent)
         {
 
-            string Consts__Self = YieldHelpers.YieldConsts.Self;
+            string Consts__Self = yieldSelf;
 
             // Find semantic class containing iterator (yield-method) with unknown ident
             var iteratorContainingClass = context._ctn.fields.Where(f => f.name == Consts__Self).FirstOrDefault()?.type;
@@ -22004,9 +22004,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return new dot_node(unk.ClassName, unk.UnknownID);
             }
-            string Consts__Self = YieldHelpers.YieldConsts.Self;
 
-            return new dot_node(new dot_node(new ident("self"), new ident(Consts__Self)), unk.UnknownID);
+            return new dot_node(new dot_node(new ident("self"), new ident(yieldSelf)), unk.UnknownID);
         }
 
         private SyntaxTree.addressed_value_funcname ProcessUnknownIdent(yield_unknown_ident unk)
