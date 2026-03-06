@@ -806,7 +806,7 @@ namespace PascalABCCompiler.TreeConverter
 
         private string get_temp_arr_name()
         {
-            return CoreUtils.GeneratedNamesManager.GenerateName("$intarr");
+            return syntax_tree_visitor.GeneratedNamesManager.GenerateName("$intarr");
         }
 
         //проверки на константные параметры

@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using PascalABCCompiler;
+using PascalABCCompiler.CoreUtils;
+using PascalABCCompiler.Errors;
+using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using PascalABCCompiler.Errors;
-using PascalABCCompiler;
-using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors
 {
@@ -30,33 +30,37 @@ namespace SyntaxVisitors
 
     public class LoweringVisitor : BaseChangeVisitor
     {
-        public static LoweringVisitor New
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        private LoweringVisitor(GeneratedNamesManager generatedNamesManager)
         {
-            get { return new LoweringVisitor(); }
+            this.generatedNamesManager = generatedNamesManager;
         }
+
+        public static LoweringVisitor Create(GeneratedNamesManager generatedNamesManager) => new LoweringVisitor(generatedNamesManager);
 
         private VarNames NewVarNames(ident name)
         {
             return new VarNames()
             {
-                VarName = PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("$" + name.name),
-                VarEndName = PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("<>varLV")
+                VarName = generatedNamesManager.GenerateName("$" + name.name),
+                VarEndName = generatedNamesManager.GenerateName("<>varLV")
             };
         }
 
         private ident NewEnumeratorName()
         {
-            return PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("$enumerator$");
+            return generatedNamesManager.GenerateName("$enumerator$");
         }
 
         private ident NewForeachCollectionName()
         {
-            return PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("$coll$");
+            return generatedNamesManager.GenerateName("$coll$");
         }
 
-        public static void Accept(procedure_definition pd)
+        public static void Accept(procedure_definition pd, GeneratedNamesManager generatedNamesManager)
         {
-            New.ProcessNode(pd);
+            Create(generatedNamesManager).ProcessNode(pd);
         }
 
         public override void Enter(syntax_tree_node st)

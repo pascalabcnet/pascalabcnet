@@ -6,6 +6,7 @@ using System.Linq;
 using PascalABCCompiler.TreeRealization;
 using System.Collections.Generic;
 using System.Collections;
+using PascalABCCompiler.CoreUtils;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -1600,10 +1601,10 @@ namespace PascalABCCompiler.TreeConverter
 
         /****************************modified***********************/
 
-        public common_type_node create_record_type(location def_loc, string name)
+        public common_type_node create_record_type(location def_loc, string name, GeneratedNamesManager generatedNamesManager)
         {
             if (name == null)
-                name = CoreUtils.GeneratedNamesManager.GenerateName("$record$");
+                name = generatedNamesManager.GenerateName("$record$");
             SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null, "record " + name);
             common_type_node tctn = new common_type_node(name, SemanticTree.type_access_level.tal_public, _cmn,
                 scope, def_loc);
@@ -1640,11 +1641,11 @@ namespace PascalABCCompiler.TreeConverter
             var_defs = var_defs_stack.Pop();
         }
 
-        public string BuildName(string name)
+        public string BuildName(string name, GeneratedNamesManager generatedNamesManager)
         {
             if (converting_block() == block_type.function_block)
             {
-                return CoreUtils.GeneratedNamesManager.GenerateName(name + "$");
+                return generatedNamesManager.GenerateName(name + "$");
             }
             else
             {
@@ -1945,7 +1946,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public string get_delegate_type_name()
         {
-            return CoreUtils.GeneratedNamesManager.GenerateName(StringConstants.delegate_type_name_template);
+            return syntax_tree_visitor.GeneratedNamesManager.GenerateName(StringConstants.delegate_type_name_template);
         }
 
 		public var_definition_node create_for_temp_variable(type_node type,location loc)
@@ -2071,10 +2072,10 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibrary.make_generated_type_conversion(SystemLibrary.SystemLibrary.uint64_type,tctn,type_compare.greater_type,PascalABCCompiler.SemanticTree.basic_function_type.ultoi,false);
 		}
 		
-        public common_type_node create_enum_type(string name, location def_loc)
+        public common_type_node create_enum_type(string name, location def_loc, GeneratedNamesManager generatedNamesManager)
         {
             if (name == null)
-                name = CoreUtils.GeneratedNamesManager.GenerateName("$enum$");
+                name = generatedNamesManager.GenerateName("$enum$");
             SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null, "enum_type " + name);
             common_type_node tctn = new common_type_node(name, SemanticTree.type_access_level.tal_public, _cmn,
                 scope, def_loc);

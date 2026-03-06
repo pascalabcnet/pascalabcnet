@@ -1,8 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using PascalABCCompiler.CoreUtils;
 using PascalABCCompiler.SyntaxTree;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
@@ -12,18 +11,20 @@ namespace PascalABCCompiler.SyntaxTreeConverters
     // Второе предназначение - переименовать все переменные, совпадающие по имени с типом T обобщенного класса, в котором находится метод, содержащий лямбду
     public class StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor : BaseChangeVisitor
     {
-        public static StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor New
+        private readonly GeneratedNamesManager generatedNamesManager;
+        private StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor(GeneratedNamesManager generatedNamesManager)
         {
-            get
-            {
-                return new StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor();
-            }
+            this.generatedNamesManager = generatedNamesManager;
         }
+
+
+        public static StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor Create(GeneratedNamesManager generatedNamesManager)
+            => new StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor(generatedNamesManager);
 
         //private ident_list ClassTemplateArgsOrNull = null; // если мы - в обобщенном классе, то это - его обобщенные параметры
         public ident GenIdentName()
         {
-            return new ident(CoreUtils.GeneratedNamesManager.GenerateName("$GenContFE"));
+            return new ident(generatedNamesManager.GenerateName("$GenContFE"));
         }
 
         public override void visit(foreach_stmt fe)

@@ -9,10 +9,12 @@ namespace Languages.SPython.Frontend.Converters
         private syntax_tree_node root;
         private bool replaceRoot = false;
         private syntax_tree_node lastDesugaredNode = null;
+        private readonly GeneratedNamesManager generatedNamesManager;
 
-        public GeneratorObjectDesugarVisitor(syntax_tree_node root)
+        public GeneratorObjectDesugarVisitor(syntax_tree_node root, GeneratedNamesManager generatedNamesManager)
         {
             this.root = root;
+            this.generatedNamesManager = generatedNamesManager;
         }
 
         public syntax_tree_node UpdatedRoot()
@@ -79,7 +81,7 @@ namespace Languages.SPython.Frontend.Converters
 
         private string CreateLambdaName()
         {
-            return GeneratedNamesManager.GenerateName(StringConstants.lambdaPrefix);
+            return generatedNamesManager.GenerateName(StringConstants.lambdaPrefix);
         }
     }
 }

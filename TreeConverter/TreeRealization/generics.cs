@@ -768,7 +768,7 @@ namespace PascalABCCompiler.TreeRealization
                 var lambdaName = lambda_syntax_node.lambda_name;
                 var fl = lambda_syntax_node.lambda_visit_mode;
                 lambda_syntax_node.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing;
-                var aux_name = LambdaHelper.GetAuxiliaryLambdaName(lambda_syntax_node.lambda_name);
+                var aux_name = LambdaHelper.GetAuxiliaryLambdaName(lambda_syntax_node.lambda_name, visitor.GeneratedNamesManager);
                 lambda_syntax_node.lambda_name = aux_name;
 
                 try

@@ -1,16 +1,13 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
-using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
+using PascalABCCompiler.CoreUtils;
 
 namespace SyntaxVisitors
 {
@@ -39,10 +36,11 @@ namespace SyntaxVisitors
 
     public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor
     {
+        private readonly GeneratedNamesManager generatedNamesManager;
 
         public string NewYieldClassName()
         {
-            return PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("clyield#");
+            return generatedNamesManager.GenerateName("clyield#");
         }
 
         public FindMainIdentsVisitor mids; // захваченные переменные процедуры по всем её yield 
@@ -51,14 +49,12 @@ namespace SyntaxVisitors
 
         public bool hasYields = false;
 
-        public static ProcessYieldCapturedVarsVisitor New
-        {
-            get { return new ProcessYieldCapturedVarsVisitor(); }
-        }
+        public static ProcessYieldCapturedVarsVisitor Create(GeneratedNamesManager generatedNamesManager) => new ProcessYieldCapturedVarsVisitor(generatedNamesManager);
 
-        public ProcessYieldCapturedVarsVisitor()
+        private ProcessYieldCapturedVarsVisitor(GeneratedNamesManager generatedNamesManager)
         {
             //PrintInfo = false; 
+            this.generatedNamesManager = generatedNamesManager;
         }
 
         /*public override void Enter(syntax_tree_node st)
@@ -978,16 +974,16 @@ namespace SyntaxVisitors
                     Enumerable.Empty<string>()));
             pd.visit(checkVarRedefVisitor);
             */
-
+            var generatedNamesManager = new GeneratedNamesManager();
             
             // SSM 21/06 - Выносим yield x -> x
-            CapturedLambdaInYieldVisitor.Accept(pd);
+            CapturedLambdaInYieldVisitor.Accept(pd, generatedNamesManager);
 
             // Выносим выражение из yield в отдельную переменную
-            ReplaceYieldExprByVarVisitor.Accept(pd);
+            ReplaceYieldExprByVarVisitor.Accept(pd, generatedNamesManager);
 
             // Раскрываем операторы yield sequence. На семантике они не существуют
-            LoweringYieldSequenceVisitor.Accept(pd);
+            LoweringYieldSequenceVisitor.Accept(pd, generatedNamesManager);
 
             // frninja 31/05/16 - добавляем метод-хелпер, возьмет на себя проверку разных ошибок уже существующим бэкендом
             CreateErrorCheckerHelper(pd); // SSM 14/07/16 - переставил до переименования переменных чтобы отлавливались ошибки одинаковых имен в разных пространствах имен
@@ -1010,7 +1006,7 @@ namespace SyntaxVisitors
             }
 
             // Теперь lowering
-            LoweringVisitor.Accept(pd);
+            LoweringVisitor.Accept(pd, generatedNamesManager);
 
             // frninja 13/04/16 - убираем лишние begin..end
             DeleteRedundantBeginEnds.Accept(pd);

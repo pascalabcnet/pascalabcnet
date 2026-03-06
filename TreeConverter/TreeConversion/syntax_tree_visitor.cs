@@ -28,6 +28,7 @@ using TreeConverter.LambdaExpressions;
 using PascalABCCompiler.TreeConverter.TreeConversion;
 using System.Reflection;
 using PascalABCCompiler.SemanticTree;
+using PascalABCCompiler.CoreUtils;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -108,6 +109,10 @@ namespace PascalABCCompiler.TreeConverter
         public ParallelPosition CurrentParallelPosition = ParallelPosition.Outside;
         #endregion
 
+        private GeneratedNamesManager generatedNamesManager;
+
+        public GeneratedNamesManager GeneratedNamesManager => generatedNamesManager;
+
         public void InitializeForCompilingInterface(InitializationDataForCompilingInterface initializationData)
         {
             //convertion_data_and_alghoritms.__i = 0;
@@ -168,8 +173,8 @@ namespace PascalABCCompiler.TreeConverter
             ret.syntax_tree_visitor = this;
             context.syntax_tree_visitor = this;
 
-            // очистка счетчиков сгенерированных переменных
-            CoreUtils.GeneratedNamesManager.Reset();
+            // Новые счетчики для сгенерированных переменных
+            generatedNamesManager = new GeneratedNamesManager();
         }
 
         /// <summary>
@@ -2046,7 +2051,7 @@ namespace PascalABCCompiler.TreeConverter
             	type_node filter_type = compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(StringConstants.ExceptionName));
             	expression_node current_catch_excep = create_constructor_call(filter_type, new expressions_list(), null);
                 local_block_variable_reference lvr = null;
-                local_block_variable tmp_var = context.add_var_definition(context.BuildName(CoreUtils.GeneratedNamesManager.GenerateName("$try_temp")), null, SystemLibrary.SystemLibrary.bool_type, null) as local_block_variable;
+                local_block_variable tmp_var = context.add_var_definition(context.BuildName(generatedNamesManager.GenerateName("$try_temp"), generatedNamesManager), null, SystemLibrary.SystemLibrary.bool_type, null) as local_block_variable;
                 statements_list stm = new statements_list(null);
                 SyntaxTree.try_handler_finally try_hndlr_finally = _try_stmt.handler as SyntaxTree.try_handler_finally;
                 context.enter_code_block_without_bind();
@@ -2965,7 +2970,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
 
                     lambdaProcessingState = LambdaProcessingState.ClosuresProcessingPhase;
-                    CapturedVariablesSubstitutionsManager.Substitute(this, _block.defs, _block.program_code);
+                    CapturedVariablesSubstitutionsManager.Substitute(this, _block.defs, _block.program_code, generatedNamesManager);
                     
                     lambdaProcessingState = LambdaProcessingState.FinishPhase;
 
@@ -3700,7 +3705,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 cnsts.Add(cdn);
             }
-            common_type_node ctn = context.create_enum_type(null, get_location(_enum_type_definition)); //_enum_type_definition.values
+            common_type_node ctn = context.create_enum_type(null, get_location(_enum_type_definition), generatedNamesManager); //_enum_type_definition.values
             num = 0;
             foreach (constant_definition_node cdn in cnsts)
             {
@@ -3902,7 +3907,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else
                 {
-                    converted_type = context.create_record_type(get_location(_class_definition), record_type_name);
+                    converted_type = context.create_record_type(get_location(_class_definition), record_type_name, generatedNamesManager);
                     if (record_is_generic)
                     {
                         context.create_generic_indicator(converted_type);
@@ -6057,7 +6062,7 @@ namespace PascalABCCompiler.TreeConverter
                                                                     realrestype = restype.real_type;
                                                                 LambdaHelper.InferTypesFromVarStmt(fnn.parameters[exprCounter].type, fld, this);
                                                                 fld.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing; //lroman
-                                                                fld.lambda_name = LambdaHelper.GetAuxiliaryLambdaName(lambdaName); // поправляю имя. Думаю, назад возвращать не надо. ПРОВЕРИТЬ!
+                                                                fld.lambda_name = LambdaHelper.GetAuxiliaryLambdaName(lambdaName, generatedNamesManager); // поправляю имя. Думаю, назад возвращать не надо. ПРОВЕРИТЬ!
 
                                                                 //contextChanger.SaveContextAndUpToNearestDefSect();
                                                                 try
@@ -6547,7 +6552,7 @@ namespace PascalABCCompiler.TreeConverter
                                                                     realrestype = restype.real_type;
                                                                 LambdaHelper.InferTypesFromVarStmt(fnn.parameters[exprCounter].type, fld, this);
                                                                 fld.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing; //lroman
-                                                                fld.lambda_name = LambdaHelper.GetAuxiliaryLambdaName(lambdaName); // поправляю имя. Думаю, назад возвращать не надо. ПРОВЕРИТЬ!
+                                                                fld.lambda_name = LambdaHelper.GetAuxiliaryLambdaName(lambdaName, generatedNamesManager); // поправляю имя. Думаю, назад возвращать не надо. ПРОВЕРИТЬ!
 
                                                                 //contextChanger.SaveContextAndUpToNearestDefSect();
                                                                 try
@@ -6809,7 +6814,7 @@ namespace PascalABCCompiler.TreeConverter
                                                         realrestype = restype.real_type;
                                                     LambdaHelper.InferTypesFromVarStmt(fnn.parameters[exprCounter].type, fld, this);
                                                     fld.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing; //lroman
-                                                    fld.lambda_name = LambdaHelper.GetAuxiliaryLambdaName(lambdaName); // поправляю имя. Думаю, назад возвращать не надо. ПРОВЕРИТЬ!
+                                                    fld.lambda_name = LambdaHelper.GetAuxiliaryLambdaName(lambdaName, generatedNamesManager); // поправляю имя. Думаю, назад возвращать не надо. ПРОВЕРИТЬ!
 
                                                     //contextChanger.SaveContextAndUpToNearestDefSect();
                                                     try
@@ -7762,7 +7767,7 @@ namespace PascalABCCompiler.TreeConverter
                                                 AddError(err);
                                         }
                                         fld.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing; //lroman
-                                        fld.lambda_name = LambdaHelper.GetAuxiliaryLambdaName(lambdaName); // поправляю имя. Думаю, назад возвращать не надо. ПРОВЕРИТЬ!
+                                        fld.lambda_name = LambdaHelper.GetAuxiliaryLambdaName(lambdaName, generatedNamesManager); // поправляю имя. Думаю, назад возвращать не надо. ПРОВЕРИТЬ!
 
                                         //contextChanger.SaveContextAndUpToNearestDefSect();
                                         try
@@ -9337,7 +9342,7 @@ namespace PascalABCCompiler.TreeConverter
 		
         private string GetTempVariableName()
         {
-            return CoreUtils.GeneratedNamesManager.GenerateName("$TV", "$");
+            return generatedNamesManager.GenerateName("$TV", "$");
         }
 
 
@@ -12432,7 +12437,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else
                 {
-                    tn.SetName(context.BuildName(name));
+                    tn.SetName(context.BuildName(name, generatedNamesManager));
                 }
                 if (_type_declaration.attributes != null)
                 if (_type_declaration.type_def is SyntaxTree.enum_type_definition)
@@ -12577,7 +12582,7 @@ namespace PascalABCCompiler.TreeConverter
                 is_direct_type_decl = false;
                 record_type_name = null;
                 record_is_generic = false;
-                tn.SetName(context.BuildName(name));
+                tn.SetName(context.BuildName(name, generatedNamesManager));
                 return;
             }
 
@@ -15239,7 +15244,7 @@ namespace PascalABCCompiler.TreeConverter
                 internal_interface ii = ind_types[i].get_internal_interface(internal_interface_kind.ordinal_interface);
                 ordinal_type_interface oti_ind = (ordinal_type_interface)ii;
                 elem_type = convertion_data_and_alghoritms.type_constructor.get_array_type(oti_ind, elem_type,
-                    context.converted_namespace, get_location(_array_type));
+                    context.converted_namespace, get_location(_array_type), generatedNamesManager);
             }
             return_value(elem_type);
         }
@@ -19210,7 +19215,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public ident GenIdentName()
         {
-            return new ident(CoreUtils.GeneratedNamesManager.GenerateName("$GenId"));
+            return new ident(generatedNamesManager.GenerateName("$GenId"));
         }
 
         public override void visit(SyntaxTree.addressed_value_funcname _addressed_value_funcname)
@@ -19740,7 +19745,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (cl_def.keyword == SyntaxTree.class_keyword.Record)
                 {
-                    ctn = context.create_record_type(get_location(tc.type_dec.type_name), inst_name);
+                    ctn = context.create_record_type(get_location(tc.type_dec.type_name), inst_name, generatedNamesManager);
                 }
                 else
                 {
@@ -19998,7 +20003,7 @@ namespace PascalABCCompiler.TreeConverter
                                         LambdaHelper.InferTypesFromVarStmt(fn.parameters[exprCounter].type, fld, this);
                                         fld.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing;
                                             //lroman
-                                        fld.lambda_name = LambdaHelper.GetAuxiliaryLambdaName(lambdaName);
+                                        fld.lambda_name = LambdaHelper.GetAuxiliaryLambdaName(lambdaName, generatedNamesManager);
                                             // поправляю имя. Думаю, назад возвращать не надо. ПРОВЕРИТЬ!
 
                                         //contextChanger.SaveContextAndUpToNearestDefSect();

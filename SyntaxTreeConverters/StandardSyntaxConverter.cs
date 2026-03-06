@@ -15,6 +15,8 @@ namespace Languages.Pascal.Frontend.Converters
         
         protected override syntax_tree_node ApplyConversions(syntax_tree_node root, bool forIntellisense)
         {
+            var generatedNamesManager = new PascalABCCompiler.CoreUtils.GeneratedNamesManager();
+
             ExitParamVisitor.New.ProcessNode(root);
 
             var binder = new BindCollectLightSymInfo(root as compilation_unit);
@@ -35,9 +37,9 @@ namespace Languages.Pascal.Frontend.Converters
             UnnamedRecordsCheckVisitor.New.ProcessNode(root);
 
             // Выносим выражения с лямбдами из заголовка foreach + считаем максимум 10 вложенных лямбд
-            StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New.ProcessNode(root);
+            StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.Create(generatedNamesManager).ProcessNode(root);
             new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as compilation_unit).ProcessNode(root); 
-            FindOnExceptVarsAndApplyRenameVisitor.New.ProcessNode(root);
+            FindOnExceptVarsAndApplyRenameVisitor.Create(generatedNamesManager).ProcessNode(root);
 
             // loop
             LoopDesugarVisitor.New.ProcessNode(root);
@@ -71,7 +73,7 @@ namespace Languages.Pascal.Frontend.Converters
             // Patterns
             // SingleDeconstructChecker.New.ProcessNode(root); // SSM 21.10.18 - пока разрешил множественные деконструкторы. Если будут проблемы - запретить
             ExtendedIsDesugaringVisitor.New.ProcessNode(root); // Десахаризация расширенного is, который используется в сложных логических выражениях
-            PatternsDesugaringVisitor.New.ProcessNode(root);  // Обязательно в этом порядке.
+            PatternsDesugaringVisitor.Create(generatedNamesManager).ProcessNode(root);  // Обязательно в этом порядке.
 #if DEBUG
             //new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
             // TestAssignIsDefVisitor.New.ProcessNode(root);
@@ -83,9 +85,9 @@ namespace Languages.Pascal.Frontend.Converters
             // Всё, связанное с yield
             CapturedNamesHelper.Reset();
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
-            ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
+            ProcessYieldCapturedVarsVisitor.Create(generatedNamesManager).ProcessNode(root);
 
-            CacheFunctionVisitor.New.ProcessNode(root);
+            CacheFunctionVisitor.Create(generatedNamesManager).ProcessNode(root);
 
             ToExprVisitor.New.ProcessNode(root);
 

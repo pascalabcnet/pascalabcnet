@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
+using PascalABCCompiler.CoreUtils;
 using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors.SugarVisitors
 {
     public class CacheFunctionVisitor : BaseChangeVisitor
     {
-        private static string GenerateNewName(string prefix)
+
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        private CacheFunctionVisitor(GeneratedNamesManager generatedNamesManager)
         {
-            return PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName(prefix);
+            this.generatedNamesManager = generatedNamesManager;
         }
 
-        public static CacheFunctionVisitor New
+        public static CacheFunctionVisitor Create(GeneratedNamesManager generatedNamesManager) => new CacheFunctionVisitor(generatedNamesManager);
+
+        private string GenerateNewName(string prefix)
         {
-            get { return new CacheFunctionVisitor(); }
+            return generatedNamesManager.GenerateName(prefix);
         }
 
         public override void visit(simple_attribute_list al)

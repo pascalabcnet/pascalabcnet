@@ -3,23 +3,18 @@
 using System.Collections.Generic;
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.CoreUtils;
 
 namespace Languages.Pascal.Frontend.Core
 {
     public class ParserLambdaHelper
     {
-        private int lambda_num = 0;
-        public List<function_lambda_definition> lambdaDefinitions;
-
-        public ParserLambdaHelper()
-        {
-            lambdaDefinitions = new List<function_lambda_definition>();
-        }
+        private readonly GeneratedNamesManager generatedNamesManager = new GeneratedNamesManager();
+        public List<function_lambda_definition> lambdaDefinitions = new List<function_lambda_definition>();
 
         public string CreateLambdaName()
         {
-            lambda_num++;
-            return StringConstants.lambdaPrefix + lambda_num.ToString();
+            return generatedNamesManager.GenerateName(StringConstants.lambdaPrefix);
         }
 
         public bool IsLambdaName(ident id)

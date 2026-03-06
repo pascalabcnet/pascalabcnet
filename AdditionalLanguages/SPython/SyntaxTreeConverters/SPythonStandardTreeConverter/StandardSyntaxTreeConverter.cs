@@ -5,6 +5,7 @@ using PascalABCCompiler.SyntaxTreeConverters;
 using SyntaxVisitors;
 using SyntaxVisitors.SugarVisitors;
 using System;
+using PascalABCCompiler.CoreUtils;
 
 namespace Languages.SPython.Frontend.Converters
 {
@@ -14,6 +15,8 @@ namespace Languages.SPython.Frontend.Converters
 
         protected override syntax_tree_node ApplyConversions(syntax_tree_node root, bool forIntellisense)
         {
+            var generatedNamesManager = new GeneratedNamesManager();
+
             // кидает ошибки за использование
             // неподдерживаемых конструкций языка
             if (!forIntellisense)
@@ -40,13 +43,13 @@ namespace Languages.SPython.Frontend.Converters
 
             // замена генерации последовательностей на Select.Where
             // (не работает из-за лямбд (скорее всего), если переместить в ConvertAfterUsedModulesCompilation)
-            new TryCatchDecorator(new GeneratorObjectDesugarVisitor(root), forIntellisense).ProcessNode(root);
+            new TryCatchDecorator(new GeneratorObjectDesugarVisitor(root, generatedNamesManager), forIntellisense).ProcessNode(root);
 
             // Выносим выражения с лямбдами из заголовка foreach + считаем максимум 10 вложенных лямбд
             // украл из паскаля
-            new TryCatchDecorator(StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New, forIntellisense).ProcessNode(root);
+            new TryCatchDecorator(StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.Create(generatedNamesManager), forIntellisense).ProcessNode(root);
             new TryCatchDecorator(new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as compilation_unit), forIntellisense).ProcessNode(root);
-            new TryCatchDecorator(FindOnExceptVarsAndApplyRenameVisitor.New, forIntellisense).ProcessNode(root);
+            new TryCatchDecorator(FindOnExceptVarsAndApplyRenameVisitor.Create(generatedNamesManager), forIntellisense).ProcessNode(root);
 
             // дешугаризация составных сравнительных операций (e.g. a == b == c)
             new TryCatchDecorator(new CompoundComparisonDesugarVisitor(), forIntellisense).ProcessNode(root);

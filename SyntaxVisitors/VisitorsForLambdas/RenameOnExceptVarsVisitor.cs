@@ -1,12 +1,8 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using PascalABCCompiler;
+using System.Collections.Generic;
+using PascalABCCompiler.CoreUtils;
 using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors
@@ -16,8 +12,12 @@ namespace SyntaxVisitors
     {
         public string NameForRename = null;
         public string NewName = null;
-        public RenameOnExceptVarsVisitor()
+
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        public RenameOnExceptVarsVisitor(GeneratedNamesManager generatedNamesManager)
         {
+            this.generatedNamesManager = generatedNamesManager;
         }
 
         public void Rename(exception_handler eh)
@@ -46,24 +46,29 @@ namespace SyntaxVisitors
                 ProcessNode(dn.right);
         }
 
-        private static string GetNewVariableName(string name)
+        private string GetNewVariableName(string name)
         {
-            return PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("$Rename_" + name);
+            return generatedNamesManager.GenerateName("$Rename_" + name);
         }
     }
 
     public class FindOnExceptVarsAndApplyRenameVisitor : BaseChangeVisitor
     {
-        public static FindOnExceptVarsAndApplyRenameVisitor New
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        private FindOnExceptVarsAndApplyRenameVisitor(GeneratedNamesManager generatedNamesManager)
         {
-            get { return new FindOnExceptVarsAndApplyRenameVisitor();  }
+            this.generatedNamesManager = generatedNamesManager;
         }
+
+        public static FindOnExceptVarsAndApplyRenameVisitor Create(GeneratedNamesManager generatedNamesManager) => new FindOnExceptVarsAndApplyRenameVisitor(generatedNamesManager);
+        
         public override void visit(exception_handler eh)
         {
             if (eh.variable != null)
             {
                 // Вначале переименовать везде кроме как в заголовке, потом добавить в блок операторов переприсваивание
-                var vis = new RenameOnExceptVarsVisitor();
+                var vis = new RenameOnExceptVarsVisitor(generatedNamesManager);
                 vis.Rename(eh);
 
                 var vs = new var_statement(new ident(vis.NewName/*, eh.statements.source_context*/), new ident(vis.NameForRename, eh.variable.source_context)/*, eh.statements.source_context*/);

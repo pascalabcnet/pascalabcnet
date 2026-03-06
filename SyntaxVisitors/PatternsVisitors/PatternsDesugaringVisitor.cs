@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
+using PascalABCCompiler.CoreUtils;
 using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors.PatternsVisitors
@@ -108,7 +108,14 @@ namespace SyntaxVisitors.PatternsVisitors
         //const matching
         private List<statement> typeChecks = new List<statement>();
 
-        public static PatternsDesugaringVisitor New => new PatternsDesugaringVisitor();
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        private PatternsDesugaringVisitor(GeneratedNamesManager generatedNamesManager)
+        {
+            this.generatedNamesManager = generatedNamesManager;
+        }
+
+        public static PatternsDesugaringVisitor Create(GeneratedNamesManager generatedNamesManager) => new PatternsDesugaringVisitor(generatedNamesManager);
 
         public override void visit(match_with matchWith)
         {
@@ -210,7 +217,7 @@ namespace SyntaxVisitors.PatternsVisitors
 
         private string GenerateNewName(string name)
         {
-            return PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("$RenIsVarYield", "$" + name);
+            return generatedNamesManager.GenerateName("$RenIsVarYield", "$" + name);
         }
 
         public override void visit(procedure_definition pd)

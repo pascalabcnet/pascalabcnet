@@ -7,6 +7,7 @@ using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.SyntaxTree;
 using TreeConverter.LambdaExpressions;
 using static PascalABCCompiler.StringConstants;
+using PascalABCCompiler.CoreUtils;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -53,19 +54,19 @@ namespace PascalABCCompiler.TreeConverter
         private const string auxiliaryLambdaSuffix = "_$$$auxiliaryFuncName";
         private const string auxVarNamePrefix = "$$$auxVar$$$<>";
 
-        public static string GetAuxVarName()
+        public static string GetAuxVarName(GeneratedNamesManager generatedNamesManager)
         {
-            return CoreUtils.GeneratedNamesManager.GenerateName(auxVarNamePrefix);
+            return generatedNamesManager.GenerateName(auxVarNamePrefix);
         }
 
-        public static string GetAuxiliaryLambdaName(string lambdaName)
+        public static string GetAuxiliaryLambdaName(string lambdaName, GeneratedNamesManager generatedNamesManager)
         {
-            return CoreUtils.GeneratedNamesManager.GenerateName(lambdaName + auxiliaryLambdaSuffix);
+            return generatedNamesManager.GenerateName(lambdaName + auxiliaryLambdaSuffix);
         }
 
-        public static string GetNameForNonPublicMember(string memberName)
+        public static string GetNameForNonPublicMember(string memberName, GeneratedNamesManager generatedNamesManager)
         {
-            return CoreUtils.GeneratedNamesManager.GenerateName(nonPublicMembersNamePrefix + memberName);
+            return generatedNamesManager.GenerateName(nonPublicMembersNamePrefix + memberName);
         }
 
         public static string GetLambdaNamePartWithoutGenerics(string name)

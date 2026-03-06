@@ -9,25 +9,29 @@ using System.Threading.Tasks;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.CoreUtils;
 
 namespace SyntaxVisitors
 {
     public class LoweringYieldSequenceVisitor : BaseChangeVisitor
     {
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        private LoweringYieldSequenceVisitor(GeneratedNamesManager generatedNamesManager)
+        {
+            this.generatedNamesManager = generatedNamesManager;
+        }
 
         private ident NewVarName()
         {
-            return new ident(PascalABCCompiler.CoreUtils.GeneratedNamesManager.GenerateName("$yieldSeqForeachVar$"));
+            return new ident(generatedNamesManager.GenerateName("$yieldSeqForeachVar$"));
         }
 
-        public static LoweringYieldSequenceVisitor New
-        {
-            get { return new LoweringYieldSequenceVisitor(); }
-        }
+        public static LoweringYieldSequenceVisitor Create(GeneratedNamesManager generatedNamesManager) => new LoweringYieldSequenceVisitor(generatedNamesManager);
 
-        public static void Accept(procedure_definition pd)
+        public static void Accept(procedure_definition pd, GeneratedNamesManager generatedNamesManager)
         {
-            New.ProcessNode(pd);
+            Create(generatedNamesManager).ProcessNode(pd);
         }
 
         public override void visit(yield_sequence_node yn)
