@@ -19548,6 +19548,12 @@ namespace PascalABCCompiler.TreeConverter
             if (!_template_type_reference.name.names[last_num - 1].name.Contains(StringConstants.generic_params_infix)) // SSM 26.03.14
                 _template_type_reference.name.names[last_num - 1].name += StringConstants.generic_params_infix + tcount;
             sil = context.find_definition_node(_template_type_reference.name, loc);
+
+            // Временное исправление для однообразной записи синонимов типов в pcu, пока не реализована обработка
+            // объявления обобщенных синонимов типов в visit(type_declaration)    EVA 07.03.2026
+            if (type_synonym_instancing)
+                _template_type_reference.name.names[last_num - 1].name = temp_name;
+
             if (sil != null)
             {
                 type_node rez_type = sil?.FirstOrDefault().sym_info as type_node;
