@@ -247,7 +247,7 @@ namespace SyntaxVisitors
             if (!b)
                 return;
 
-            var gtAfter = goto_statement.New;
+            var gtAfter = GenerateGoto();
             var lbAfter = new labeled_statement(gtAfter.label);
 
             if ((object)ifn.else_body == null)
@@ -263,7 +263,7 @@ namespace SyntaxVisitors
             }
             else
             {
-                var gtAlt = goto_statement.New;
+                var gtAlt = GenerateGoto();
                 var lbAlt = new labeled_statement(gtAlt.label, ifn.else_body);
 
                 var if0 = new if_node(un_expr.Not(ifn.condition), gtAlt);
@@ -283,8 +283,8 @@ namespace SyntaxVisitors
             if (!b)
                 return;
 
-            var gotoContinue = goto_statement.New;
-            var gotoBreak = goto_statement.New;
+            var gotoContinue = GenerateGoto();
+            var gotoBreak = GenerateGoto();
 
             ReplaceBreakContinueWithGotoLabelVisitor replaceBreakContinueVis = new ReplaceBreakContinueWithGotoLabelVisitor(gotoContinue, gotoBreak);
             rn.statements.visit(replaceBreakContinueVis);
@@ -312,8 +312,8 @@ namespace SyntaxVisitors
             if (!b)
                 return;
 
-            var gotoBreak = goto_statement.New;
-            var gotoContinue = goto_statement.New;
+            var gotoBreak = GenerateGoto();
+            var gotoContinue = GenerateGoto();
 
             ReplaceBreakContinueWithGotoLabelVisitor replaceBreakContinueVis = new ReplaceBreakContinueWithGotoLabelVisitor(gotoContinue, gotoBreak);
             wn.statements.visit(replaceBreakContinueVis);
@@ -347,9 +347,9 @@ namespace SyntaxVisitors
             if (!b)
                 return;
 
-            var gotoContinue = goto_statement.New;
-            var gotoBreak = goto_statement.New;
-            var gotoStart = goto_statement.New;
+            var gotoContinue = GenerateGoto();
+            var gotoBreak = GenerateGoto();
+            var gotoStart = GenerateGoto();
 
             ReplaceBreakContinueWithGotoLabelVisitor replaceBreakContinueVis = new ReplaceBreakContinueWithGotoLabelVisitor(gotoContinue, gotoBreak);
             fn.statements.visit(replaceBreakContinueVis);
@@ -432,6 +432,12 @@ namespace SyntaxVisitors
             block bl = listNodes.FindLast(x => x is block) as block;
 
             bl.defs.Add(new label_definitions(gotoContinue.label, gotoBreak.label, gotoStart.label));
+        }
+
+
+        private goto_statement GenerateGoto()
+        {
+            return new goto_statement(generatedNamesManager.GenerateName("lb#"));
         }
 
         /*

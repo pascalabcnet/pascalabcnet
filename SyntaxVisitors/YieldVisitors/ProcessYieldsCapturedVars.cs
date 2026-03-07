@@ -16,21 +16,14 @@ namespace SyntaxVisitors
     {
         public enum ReservedNum { StateField = 1, CurrentField = 2, MethodFormalParam = 3, MethodSelf = 4, MethodLocalVariable = 5 }
 
-        public static int CurrentLocalVariableNum = 0;
-
-        public static void Reset()
-        {
-            CurrentLocalVariableNum = 0;
-        }
-
         public static string MakeCapturedFormalParameterName(string formalParamName)
         {
             return string.Format("<>{0}__{1}", ReservedNum.MethodFormalParam, formalParamName);
         }
 
-        public static string MakeCapturedLocalName(string localName)
+        public static string MakeCapturedLocalName(string localName, GeneratedNamesManager generatedNamesManager)
         {
-            return string.Format("<{0}>{1}__{2}", localName, ReservedNum.MethodLocalVariable, ++CurrentLocalVariableNum);
+            return generatedNamesManager.GenerateName($"<{localName}>{ReservedNum.MethodLocalVariable}__");
         }
     }
 
@@ -555,11 +548,11 @@ namespace SyntaxVisitors
             }
         }
 
-        private void CreateCapturedLocalsNamesMap(ISet<string> localsNames, IDictionary<string, string> capturedLocalsNamesMap)
+        private void CreateCapturedLocalsNamesMap(ISet<string> localsNames, IDictionary<string, string> capturedLocalsNamesMap, GeneratedNamesManager generatedNamesManager)
         {
             foreach (var localName in localsNames)
             {
-                capturedLocalsNamesMap.Add(localName, CapturedNamesHelper.MakeCapturedLocalName(localName));
+                capturedLocalsNamesMap.Add(localName, CapturedNamesHelper.MakeCapturedLocalName(localName, generatedNamesManager));
             }
         }
 
@@ -775,10 +768,12 @@ namespace SyntaxVisitors
         /// <param className="deletedLocals">Коллекция удаленных локальных переменных</param>
         /// <param className="capturedLocalsNamesMap">Построенное отображение имен локальных переменных в захваченные имена</param>
         /// <param className="capturedFormalParamsNamesMap">Построенное отображение имен формальных параметров в захваченные имена</param>
+        /// <param className="generatedNamesManager">Хранилище счетчиков сгенерированных переменных</param>
         private void ReplaceCapturedVariables(procedure_definition pd,
             IEnumerable<var_def_statement> deletedLocals,
             out IDictionary<string, string> capturedLocalsNamesMap,
-            out IDictionary<string, string> capturedFormalParamsNamesMap)
+            out IDictionary<string, string> capturedFormalParamsNamesMap,
+            GeneratedNamesManager generatedNamesManager)
         {
             // Структуры данных под классификацию имен в методе
 
@@ -818,7 +813,7 @@ namespace SyntaxVisitors
             // Строим отображения для имён захваченных локальных переменных и формальных параметров
 
             // Create maps :: idName -> captureName
-            CreateCapturedLocalsNamesMap(CollectedLocalsNames, capturedLocalsNamesMap);
+            CreateCapturedLocalsNamesMap(CollectedLocalsNames, capturedLocalsNamesMap, generatedNamesManager);
             CreateCapturedFormalParamsNamesMap(CollectedFormalParamsNames, capturedFormalParamsNamesMap);
 
             // Выполняем замену захват имён в теле метода
@@ -974,7 +969,6 @@ namespace SyntaxVisitors
                     Enumerable.Empty<string>()));
             pd.visit(checkVarRedefVisitor);
             */
-            var generatedNamesManager = new GeneratedNamesManager();
             
             // SSM 21/06 - Выносим yield x -> x
             CapturedLambdaInYieldVisitor.Accept(pd, generatedNamesManager);
@@ -1028,7 +1022,7 @@ namespace SyntaxVisitors
             // Выполняем захват имён
             IDictionary<string, string> CapturedLocalsNamesMap;
             IDictionary<string, string> CapturedFormalParamsNamesMap;
-            ReplaceCapturedVariables(pd, dld.LocalDeletedDefs, out CapturedLocalsNamesMap, out CapturedFormalParamsNamesMap);
+            ReplaceCapturedVariables(pd, dld.LocalDeletedDefs, out CapturedLocalsNamesMap, out CapturedFormalParamsNamesMap, generatedNamesManager);
 
             //mids.vars.Except(dld.LocalDeletedDefsNames); // параметры остались. Их тоже надо исключать - они и так будут обработаны
             // В результате работы в mids.vars что-то осталось. Это не локальные переменные и с ними непонятно что делать

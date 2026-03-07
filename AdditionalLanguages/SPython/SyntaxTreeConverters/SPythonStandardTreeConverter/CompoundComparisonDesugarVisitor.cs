@@ -1,5 +1,6 @@
 ﻿using PascalABCCompiler.SyntaxTree;
 using System.Collections.Generic;
+using PascalABCCompiler.CoreUtils;
 
 namespace Languages.SPython.Frontend.Converters
 {
@@ -7,7 +8,12 @@ namespace Languages.SPython.Frontend.Converters
     {
         private int curr_sl_index;
 
-        public CompoundComparisonDesugarVisitor() { }
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        public CompoundComparisonDesugarVisitor(GeneratedNamesManager generatedNamesManager) 
+        {
+            this.generatedNamesManager = generatedNamesManager;
+        }
 
         public override void visit(statement_list sl)
         {
@@ -46,13 +52,10 @@ namespace Languages.SPython.Frontend.Converters
             return (_bin_expr.left is bin_expr left) && IsComparison(_bin_expr) && IsComparison(left);
         }
 
-        private int createdIdentsCounter = 0;
 
         private string NewIdentName()
         {
-            string result = '%' + createdIdentsCounter.ToString();
-            createdIdentsCounter++;
-            return result;
+            return generatedNamesManager.GenerateName("%");
         }
 
         public override void visit(bin_expr _bin_expr)

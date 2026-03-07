@@ -1240,7 +1240,7 @@ namespace PascalABCCompiler.TreeConverter
                                 SyntaxTree.expression ex = new SyntaxTree.new_expr(rettype,el);
                                 sl.Add(new SyntaxTree.assign(StringConstants.result_var_name, ex));
                                 // Определим функцию преобразования на внешнем уровне
-                                var fun = BuildSimpleFunctionOneParameter("_conv" + UniqueString(), "x",
+                                var fun = BuildSimpleFunctionOneParameter(syntax_tree_visitor.GeneratedNamesManager.GenerateName("_conv"), "x",
                                     new SyntaxTree.semantic_type_node(factparams[i].type),
                                     rettype,
                                     sl

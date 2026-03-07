@@ -94,12 +94,6 @@ namespace SyntaxVisitors.PatternsVisitors
         private const string GeneratedVisitElseBranchVariableName = "<>visitElseBranch";
         private const string GeneratedMatchExprVariableName = "<>matchExprVariable";
 
-        private int generalVariableCounter = 0;
-        private int successVariableCounter = 0;
-        private int labelVariableCounter = 0;
-        private static int deconstructParamVariableCounter = 0;
-        private int matchExprVariableCounter = 0;
-
         private if_node _previousIf;
         private statement desugaredMatchWith;
         private List<if_node> processedIfNodes = new List<if_node>();
@@ -579,13 +573,13 @@ namespace SyntaxVisitors.PatternsVisitors
             return indexerCall;
         }
 
-        private ident NewGeneralName(SourceContext sc) => new ident(GeneratedPatternNamePrefix + "GenVar" + generalVariableCounter++, sc);
+        private ident NewGeneralName(SourceContext sc) => new ident(generatedNamesManager.GenerateName(GeneratedPatternNamePrefix + "GenVar"), sc);
 
-        private ident NewSuccessName(SourceContext sc) => new ident(GeneratedPatternNamePrefix + "Success" + successVariableCounter++, sc);
+        private ident NewSuccessName(SourceContext sc) => new ident(generatedNamesManager.GenerateName(GeneratedPatternNamePrefix + "Success"), sc);
 
-        private ident NewEndIfName(SourceContext sc) => new ident(GeneratedPatternNamePrefix + "EndIf" + labelVariableCounter++, sc);
+        // private ident NewEndIfName(SourceContext sc) => new ident(GeneratedPatternNamePrefix + "EndIf" + labelVariableCounter++, sc);
 
-        private bool IsGenerated(string name) => name.StartsWith(GeneratedPatternNamePrefix);
+        // private bool IsGenerated(string name) => name.StartsWith(GeneratedPatternNamePrefix);
 
         private void AddDefaultCase(statement_list statements)
         {
@@ -1182,12 +1176,12 @@ namespace SyntaxVisitors.PatternsVisitors
 
         private string NewDeconstructParamId()
         {
-            return GeneratedPatternNamePrefix + "DeconstructParam" + deconstructParamVariableCounter++.ToString();
+            return generatedNamesManager.GenerateName(GeneratedPatternNamePrefix + "DeconstructParam");
         }
 
         private string NewMatchExprVariableId()
         {
-            return GeneratedMatchExprVariableName + "matchExprVariableCounter" + deconstructParamVariableCounter++.ToString();
+            return generatedNamesManager.GenerateName(GeneratedMatchExprVariableName + "matchExprVariableCounter");
         }
     }
 }

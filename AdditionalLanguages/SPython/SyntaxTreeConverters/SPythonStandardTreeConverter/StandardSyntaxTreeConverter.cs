@@ -52,17 +52,19 @@ namespace Languages.SPython.Frontend.Converters
             new TryCatchDecorator(FindOnExceptVarsAndApplyRenameVisitor.Create(generatedNamesManager), forIntellisense).ProcessNode(root);
 
             // дешугаризация составных сравнительных операций (e.g. a == b == c)
-            new TryCatchDecorator(new CompoundComparisonDesugarVisitor(), forIntellisense).ProcessNode(root);
+            new TryCatchDecorator(new CompoundComparisonDesugarVisitor(generatedNamesManager), forIntellisense).ProcessNode(root);
 
             return root;
         }
 
         protected override syntax_tree_node ApplyConversionsAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts)
         {
+            var generatedNamesManager = new GeneratedNamesManager();
+
             // украл из паскаля, нужны для работы 'for i1, i2 in expr' (работает с кортежными присваиваниями)
             var binder = new BindCollectLightSymInfo(root as compilation_unit);
             new TryCatchDecorator(binder, forIntellisense).ProcessNode(root);
-            new TryCatchDecorator(new NewAssignTuplesDesugarVisitor(binder), forIntellisense).ProcessNode(root);
+            new TryCatchDecorator(new NewAssignTuplesDesugarVisitor(binder, generatedNamesManager), forIntellisense).ProcessNode(root);
 
             // Заменяет 
             // variable_name = single_length_string

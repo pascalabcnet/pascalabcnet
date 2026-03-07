@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using PascalABCCompiler.CoreUtils;
 
 using PascalABCCompiler.SyntaxTree;
 
@@ -9,25 +10,21 @@ namespace SyntaxVisitors.SugarVisitors
 {
     public class DoubleQuestionDesugarVisitor : BaseChangeVisitor
     {
-        public static DoubleQuestionDesugarVisitor New
+        /*private readonly GeneratedNamesManager generatedNamesManager;
+
+        public DoubleQuestionDesugarVisitor(GeneratedNamesManager generatedNamesManager)
         {
-            get { return new DoubleQuestionDesugarVisitor(); }
+            this.generatedNamesManager = generatedNamesManager;
         }
 
-        private int num = 0;
+        public static DoubleQuestionDesugarVisitor Create(GeneratedNamesManager generatedNamesManager) => new DoubleQuestionDesugarVisitor(generatedNamesManager);
 
-        public string UniqueNumStr()
-        {
-            num++;
-            return num.ToString();
-        }
-
-        /*public override void visit(double_question_node dqn)
+        public override void visit(double_question_node dqn)
         {
             var st = dqn.Parent;
             while (!(st is statement))
                 st = st.Parent;
-            var tname = "#temp" + UniqueNumStr();
+            var tname = generatedNamesManager.GenerateName("#temp");
             var tt = new var_statement(new ident(tname, dqn.source_context), dqn.left, dqn.source_context);
             tt.var_def.Parent = tt;
             var l = new List<statement>();

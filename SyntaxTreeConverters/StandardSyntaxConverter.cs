@@ -31,7 +31,7 @@ namespace Languages.Pascal.Frontend.Converters
             NewRangeDesugarAndFindHasYieldVisitor.New.ProcessNode(root);
 
             // Распаковка параметров в лямбдах
-            UnpackLambdaParametersVisitor.New.ProcessNode(root);
+            UnpackLambdaParametersVisitor.Create(generatedNamesManager).ProcessNode(root);
 
             // Unnamed Records перенёс сюда
             UnnamedRecordsCheckVisitor.New.ProcessNode(root);
@@ -42,13 +42,13 @@ namespace Languages.Pascal.Frontend.Converters
             FindOnExceptVarsAndApplyRenameVisitor.Create(generatedNamesManager).ProcessNode(root);
 
             // loop
-            LoopDesugarVisitor.New.ProcessNode(root);
+            LoopDesugarVisitor.Create(generatedNamesManager).ProcessNode(root);
 #if DEBUG
             //new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
 #endif
             bool optimize_tuple_assign = true;
             // tuple_node
-            TupleVisitor.Create(optimize_tuple_assign).ProcessNode(root);
+            TupleVisitor.Create(optimize_tuple_assign, generatedNamesManager).ProcessNode(root);
 
             // index 
             IndexVisitor.New.ProcessNode(root);
@@ -60,15 +60,16 @@ namespace Languages.Pascal.Frontend.Converters
             // теперь коллизия с (a[1:6], a[6:11]):= (a[6:11], a[1:6]);
             // assign_tuple и assign_var_tuple
             if (!optimize_tuple_assign)
-                AssignTuplesDesugarVisitor.New.ProcessNode(root); // теперь это - на семантике
+                AssignTuplesDesugarVisitor.Create(generatedNamesManager).ProcessNode(root); // теперь это - на семантике
             else 
-                NewAssignTuplesDesugarVisitor.Create(binder).ProcessNode(root);
+                NewAssignTuplesDesugarVisitor.Create(binder, generatedNamesManager).ProcessNode(root);
 
             // question_point_desugar_visitor
-            QuestionPointDesugarVisitor.New.ProcessNode(root);
+            QuestionPointDesugarVisitor.Create(generatedNamesManager).ProcessNode(root);
 
             // double_question_desugar_visitor
-            DoubleQuestionDesugarVisitor.New.ProcessNode(root);
+            // Закомментировал, потому что cейчас он ничего не делает  EVA 08.03.2026
+            // DoubleQuestionDesugarVisitor.New.ProcessNode(root); 
 
             // Patterns
             // SingleDeconstructChecker.New.ProcessNode(root); // SSM 21.10.18 - пока разрешил множественные деконструкторы. Если будут проблемы - запретить
@@ -80,10 +81,9 @@ namespace Languages.Pascal.Frontend.Converters
 #endif
 
             // simple_property
-            PropertyDesugarVisitor.New.ProcessNode(root);
+            PropertyDesugarVisitor.Create(generatedNamesManager).ProcessNode(root);
 
             // Всё, связанное с yield
-            CapturedNamesHelper.Reset();
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
             ProcessYieldCapturedVarsVisitor.Create(generatedNamesManager).ProcessNode(root);
 
