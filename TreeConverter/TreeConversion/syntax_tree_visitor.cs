@@ -173,8 +173,8 @@ namespace PascalABCCompiler.TreeConverter
             ret.syntax_tree_visitor = this;
             context.syntax_tree_visitor = this;
 
-            // Новые счетчики для сгенерированных переменных
-            generatedNamesManager = new GeneratedNamesManager();
+            // Счетчики для сгенерированных переменных
+            generatedNamesManager = initializationData.generatedNamesManager;
         }
 
         /// <summary>
