@@ -12,7 +12,7 @@ namespace TreeConverter.LambdaExpressions.Closure
         public static void Substitute(syntax_tree_visitor _visitor, declarations decls, statement_list _statementList, GeneratedNamesManager generatedNamesManager)
         {
             var tree = new CapturedVariablesTreeBuilder(_visitor, generatedNamesManager).BuildTree(_statementList);
-            var substs = new CapturedVariablesSubstitutionClassGenerator(tree.RootNode).GenerateSubstitutions();
+            var substs = new CapturedVariablesSubstitutionClassGenerator(tree.RootNode, generatedNamesManager).GenerateSubstitutions();
             new CapturedVariablesSubstitutor(tree.IdentsReferences, substs.GeneratedScopeClassesInfo, substs.LambdasToBeAddedAsMethods, substs.SubstitutionsInfo, tree.CapturedVarsNodesDictionary, substs.ConvertingClassNonPublicMembersMapping, _visitor, generatedNamesManager)
                 .Substitute(_statementList);
 

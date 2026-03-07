@@ -274,7 +274,6 @@ namespace PascalABCCompiler.TreeConverter
             #region MikhailoMMX, реинициализация класса OpenMP
             OpenMP.InternalReset();
             #endregion
-            CapturedVariablesSubstitutionClassGenerator.Reset();
 
             ResetSelfFields();
         }
