@@ -5,9 +5,10 @@
 //В этом файле присутсвует существенное дублирование кода(~500строк). 
 //TODO Разобраться и избавиться от дублирования
 
-using System;
 
+using PascalABCCompiler.CoreUtils;
 using PascalABCCompiler.TreeRealization;
+
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +16,6 @@ namespace PascalABCCompiler.TreeConverter
 {
 	public class type_constructor
 	{
-		private int pascal_arrays_num = 0;
 
 		convertion_data_and_alghoritms convertion_data_and_alghoritms;
 
@@ -403,13 +403,12 @@ namespace PascalABCCompiler.TreeConverter
 			cmn_sub_assign.parameters.AddElement(cp42);
 		}
 
-		private string get_pascal_array_name()
+		private string get_pascal_array_name(GeneratedNamesManager generatedNamesManager)
 		{
-			pascal_arrays_num++;
-			return (StringConstants.pascal_array_name + pascal_arrays_num.ToString());
+			return generatedNamesManager.GenerateName(StringConstants.pascal_array_name);
 		}
 
-		private type_node create_array_type(ordinal_type_interface oti_indexer, type_node element_type,common_namespace_node _cmn, location loc)
+		private type_node create_array_type(ordinal_type_interface oti_indexer, type_node element_type,common_namespace_node _cmn, location loc, GeneratedNamesManager generatedNamesManager)
 		{
 			int arr_length = oti_indexer.ordinal_type_to_int(oti_indexer.upper_value) -
 				oti_indexer.ordinal_type_to_int(oti_indexer.lower_value) + 1;
@@ -428,7 +427,7 @@ namespace PascalABCCompiler.TreeConverter
 			{
 				top_scope = _cmn.scope;
 			}
-			string name = get_pascal_array_name();
+			string name = get_pascal_array_name(generatedNamesManager);
 			//if (_cmn.namespace_name != null)
 			//    name = _cmn.namespace_name + name;
 			common_type_node ctn = new common_type_node(null, name, SemanticTree.type_access_level.tal_public,
@@ -1828,7 +1827,7 @@ namespace PascalABCCompiler.TreeConverter
 		private System.Collections.Generic.Dictionary<ordinal_type_interface, System.Collections.Generic.Dictionary<type_node, type_node>> pascal_arrays =
 			new System.Collections.Generic.Dictionary<ordinal_type_interface, System.Collections.Generic.Dictionary<type_node, type_node>>();
 
-		public type_node get_array_type(ordinal_type_interface oti_indexer, type_node element_type,common_namespace_node _cmn,location loc)
+		public type_node get_array_type(ordinal_type_interface oti_indexer, type_node element_type,common_namespace_node _cmn,location loc, GeneratedNamesManager generatedNamesManager)
 		{
 			/*
             System.Collections.Generic.Dictionary<type_node, type_node> ht;
@@ -1849,7 +1848,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             return tn;
 			 */
-			type_node ret = create_array_type(oti_indexer, element_type, _cmn, loc);
+			type_node ret = create_array_type(oti_indexer, element_type, _cmn, loc, generatedNamesManager);
 			return ret;
 		}
 		
@@ -2036,7 +2035,6 @@ namespace PascalABCCompiler.TreeConverter
 
 		public void reset()
 		{
-			pascal_arrays_num = 0;
 			//TODO: Что лучше Clear или создать новую?
 			pascal_arrays.Clear();
 			pascal_diap.Clear();

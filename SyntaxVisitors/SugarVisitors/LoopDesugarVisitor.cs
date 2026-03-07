@@ -1,29 +1,23 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.CoreUtils;
 
 namespace SyntaxVisitors.SugarVisitors
 {
     // Попробую сюда включить десахаризацию for с шагом
     public class LoopDesugarVisitor : BaseChangeVisitor
     {
-        public static LoopDesugarVisitor New
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        private LoopDesugarVisitor(GeneratedNamesManager generatedNamesManager)
         {
-            get { return new LoopDesugarVisitor(); }
+            this.generatedNamesManager = generatedNamesManager;
         }
 
-        private int num = 0;
-
-        public string UniqueNumStr()
-        {
-            num++;
-            return num.ToString();
-        }
+        public static LoopDesugarVisitor Create(GeneratedNamesManager generatedNamesManager) => new LoopDesugarVisitor(generatedNamesManager); 
 
         public override void visit(loop_stmt loop)
         {
@@ -31,7 +25,7 @@ namespace SyntaxVisitors.SugarVisitors
             var sl = new statement_list();
             sl.Add(new semantic_check_sugared_statement_node(typeof(loop_stmt), new List<syntax_tree_node> { loop.count }, loop.source_context));
 
-            var tname = "#loop_var" + UniqueNumStr();
+            var tname = generatedNamesManager.GenerateName("#loop_var");
             var fn = new for_node(new ident(tname), new int32_const(1), loop.count, loop.stmt, loop.source_context);
             sl.Add(fn);
 
@@ -52,15 +46,14 @@ namespace SyntaxVisitors.SugarVisitors
                 // * Можно на константу 0 проверить
                 // * семантика - a, b - ожидался порядковый тип
                 // семантика - b приводится к типу a
-                var un = UniqueNumStr();
-                var a = new ident("#a" + un, fn.initial_value.source_context);
-                var b = new ident("#b" + un, fn.finish_value.source_context);
-                var oa = new ident("#oa" + un, a.source_context);
-                var ob = new ident("#ob" + un, b.source_context);
-                var h = new ident("#h" + un, fn.increment_value.source_context);
-                var n = new ident("#n" + un, a.source_context);
+                var a = new ident(generatedNamesManager.GenerateName("#a"), fn.initial_value.source_context);
+                var b = new ident(generatedNamesManager.GenerateName("#b"), fn.finish_value.source_context);
+                var oa = new ident(generatedNamesManager.GenerateName("#oa"), a.source_context);
+                var ob = new ident(generatedNamesManager.GenerateName("#ob"), b.source_context);
+                var h = new ident(generatedNamesManager.GenerateName("#h"), fn.increment_value.source_context);
+                var n = new ident(generatedNamesManager.GenerateName("#n"), a.source_context);
                 var i = fn.loop_variable; //new ident(iname, a.source_context);
-                var j = new ident("#j" + un, a.source_context);
+                var j = new ident(generatedNamesManager.GenerateName("#j"), a.source_context);
                 var avar = new var_statement(a, fn.initial_value, fn.initial_value.source_context);
                 var bvar = new var_statement(b, fn.finish_value, fn.finish_value.source_context);
                 var hvar = new var_statement(h, "integer", fn.increment_value, fn.increment_value.source_context);

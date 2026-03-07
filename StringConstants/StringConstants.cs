@@ -11,12 +11,6 @@ namespace PascalABCCompiler
     {
         public static Dictionary<string, string> oper_names = new Dictionary<string, string>();
 
-        static int tvnc = 0;
-        public static string GetTempVariableName()
-        {
-            return "$TV" + (tvnc++).ToString() + "$";
-        }
-
         static StringConstants()
         {
             oper_names[plus_name] = "op_Addition";
@@ -500,5 +494,19 @@ namespace PascalABCCompiler
         public static string ObjectType = "Object";
         public static string StringType = "string";
         public static string config_variable_name = "__CONFIG__";
+
+        #region YIELD NAMES
+
+        public const string yieldCurrent = "<>2__current";
+        public const string yieldState = "<>1__state";
+        public const string yieldLabelStatePrefix = "lbstate#";
+
+        public const string yieldSelf = "<>4__self";
+
+        public const string yieldHelperMethodPrefix = "<yield_helper";
+
+        #endregion
+
+        public const string lambdaPrefix = "<>lambda";
     }
 }

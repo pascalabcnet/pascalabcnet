@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using PascalABCCompiler.SyntaxTree;
 
@@ -19,12 +16,12 @@ namespace SyntaxVisitors.SugarVisitors
             get { return new ToExprVisitor(); }
         }
 
-        private int num = 0;
-        public string UniqueName()
-        {
-            num++;
-            return "#let_expr_vis"+num.ToString();
-        }
+        //private int num = 0;
+        //public string UniqueName()
+        //{
+        //    num++;
+        //    return "#let_expr_vis"+num.ToString();
+        //}
 
         public override void visit(to_expr to_ex)
         {

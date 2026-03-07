@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.CoreUtils;
 
 namespace AssignTupleDesugarAlgorithm
 {
@@ -123,9 +123,8 @@ namespace AssignTupleDesugarAlgorithm
 
     public class TempSymbol : Symbol
     {
-        private static int counter = 0;
-        private static string getTempPrefix => "<tup_opt>" + counter++;
-        public TempSymbol() : base(new ident(getTempPrefix), null)
+        public TempSymbol(GeneratedNamesManager generatedNamesManager) 
+            : base(new ident(generatedNamesManager.GenerateName("<tup_opt>")), null)
         {
             type = Type.LOCAL;
         }

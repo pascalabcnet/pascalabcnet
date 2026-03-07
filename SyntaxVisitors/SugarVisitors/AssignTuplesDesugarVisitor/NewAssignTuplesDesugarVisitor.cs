@@ -2,28 +2,32 @@
 using PascalABCCompiler.SyntaxTree;
 using System.Collections.Generic;
 using System.Linq;
+using PascalABCCompiler.CoreUtils;
 
 namespace SyntaxVisitors.SugarVisitors
 {
     public class NewAssignTuplesDesugarVisitor : AssignTuplesDesugarVisitor
     {
 
-        private BindCollectLightSymInfo binder;
+        private readonly BindCollectLightSymInfo binder;
+
+        private readonly GeneratedNamesManager generatedNamesManager;
 
     
-        public static NewAssignTuplesDesugarVisitor Create(BindCollectLightSymInfo binder)
+        public static NewAssignTuplesDesugarVisitor Create(BindCollectLightSymInfo binder, GeneratedNamesManager generatedNamesManager)
         {
-            return new NewAssignTuplesDesugarVisitor(binder);
+            return new NewAssignTuplesDesugarVisitor(binder, generatedNamesManager);
         }
 
-        public NewAssignTuplesDesugarVisitor(BindCollectLightSymInfo binder)
+        public NewAssignTuplesDesugarVisitor(BindCollectLightSymInfo binder, GeneratedNamesManager generatedNamesManager) : base(generatedNamesManager)
         {
-            this.binder = binder; 
+            this.binder = binder;
+            this.generatedNamesManager = generatedNamesManager;
         }
 
         List<statement> desugar(tuple_node tn, addressed_value_list vars)
         {
-            var order = Assign.getAssignOrder(tn, vars, binder);
+            var order = Assign.getAssignOrder(tn, vars, binder, generatedNamesManager);
             var assigns = new List<statement>();
             foreach (var a in order)
             {

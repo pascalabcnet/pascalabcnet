@@ -7,6 +7,7 @@ using PascalABCCompiler.SemanticTree;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeRealization;
 using static PascalABCCompiler.StringConstants;
+using PascalABCCompiler.CoreUtils;
 
 namespace TreeConverter.LambdaExpressions.Closure
 {
@@ -17,16 +18,11 @@ namespace TreeConverter.LambdaExpressions.Closure
         private readonly List<CapturedVariablesTreeNodeLambdaScope> _lambdasToBeAddedAsMethods;
         private const string GeneratedClassPrefix = "<>local_variables_class_";
         private const string GeneratedUpperClassPrefix = "<>local_variables_class_UPPER_";
-        private static int _generatedClassCounter; 
-        private static int _generatedUpperClassCounter;
         private readonly Dictionary<SubstitutionKey, dot_node> _substitutions;
         private readonly List<LambdaReferencesSubstitutionInfo> _lambdaIdReferences = new List<LambdaReferencesSubstitutionInfo>(); 
-        private readonly List<RewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariableInfo> _rewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariableInfo = new List<RewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariableInfo>(); 
-        public static void Reset()
-        {
-            _generatedClassCounter = 0;
-            _generatedUpperClassCounter = 0;
-        }
+        private readonly List<RewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariableInfo> _rewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariableInfo = new List<RewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariableInfo>();
+
+        private readonly GeneratedNamesManager generatedNamesManager;
 
         public class VariableSubstitutionsInfo
         {
@@ -57,7 +53,6 @@ namespace TreeConverter.LambdaExpressions.Closure
         public class ScopeClassDefinition
         {
             private const string GeneratedSubstitutingFieldPrefix = "<>local_variables_"; //это поле для того, чтобы заменять в текущем блоке, где захватывались переменные, левую часть dot_node
-            private static int _generatedSubstitutingFieldCounter;
 
             public List<CapturedVariablesTreeNodeLambdaScope> NestedLambdas { get; set; }
 
@@ -79,7 +74,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 get {
                     return _generatedSubstitutingFieldName ??
                            (_generatedSubstitutingFieldName =
-                            GeneratedSubstitutingFieldPrefix + _generatedSubstitutingFieldCounter++);
+                            generatedNamesManager.GenerateName(GeneratedSubstitutingFieldPrefix));
                 }
             }
 
@@ -90,7 +85,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 {
                     return _generatedUpperClassFieldName ??
                            (_generatedUpperClassFieldName =
-                            GeneratedUpperClassPrefix + _generatedUpperClassCounter++);
+                            generatedNamesManager.GenerateName(GeneratedUpperClassPrefix));
                 }
             }
 
@@ -123,9 +118,12 @@ namespace TreeConverter.LambdaExpressions.Closure
 
             public CapturedVariablesTreeNode CorrespondingTreeNode { get; private set; }
 
+            private readonly GeneratedNamesManager generatedNamesManager;
+
             public ScopeClassDefinition(syntax_tree_node syntaxTreeNode,
                                         type_declaration classDeclaration,
                                         CapturedVariablesTreeNode correspondingTreeNode,
+                                        GeneratedNamesManager generatedNamesManager,
                                         string generatedSubstitutingFieldName = null)
             {
                 CorrespondingSyntaxTreeNode = syntaxTreeNode;
@@ -133,6 +131,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 _generatedSubstitutingFieldName = generatedSubstitutingFieldName;
                 CorrespondingTreeNode = correspondingTreeNode;
                 NestedLambdas = new List<CapturedVariablesTreeNodeLambdaScope>();
+                this.generatedNamesManager = generatedNamesManager;
             }
         }
 
@@ -151,19 +150,20 @@ namespace TreeConverter.LambdaExpressions.Closure
             public syntax_tree_node NodeWithVarDecl { get; set; }
         }
 
-        public CapturedVariablesSubstitutionClassGenerator(CapturedVariablesTreeNode capturedVariablesRootTreeNode)
+        public CapturedVariablesSubstitutionClassGenerator(CapturedVariablesTreeNode capturedVariablesRootTreeNode, GeneratedNamesManager generatedNamesManager)
         {
             _capturedVariablesRootTreeNode = capturedVariablesRootTreeNode;
             _capturedVarsClassDefs = new Dictionary<int, ScopeClassDefinition>();
             _substitutions = new Dictionary<SubstitutionKey, dot_node>();
             _lambdasToBeAddedAsMethods = new List<CapturedVariablesTreeNodeLambdaScope>();
+            this.generatedNamesManager = generatedNamesManager;
         }
 
         private string GeneratedClassName
         {
             get
             {
-                return GeneratedClassPrefix + _generatedClassCounter++;
+                return generatedNamesManager.GenerateName(GeneratedClassPrefix);
             }
         }
 
@@ -303,7 +303,8 @@ namespace TreeConverter.LambdaExpressions.Closure
                                                            new ScopeClassDefinition(
                                                                nextNodeWhereVarsAreCaptured.CorrespondingSyntaxTreeNode,
                                                                typeDeclaration,
-                                                               nextNodeWhereVarsAreCaptured));
+                                                               nextNodeWhereVarsAreCaptured,
+                                                               generatedNamesManager));
                             }
 
                             var nextNodeWhereVarsAreCapturedClass =
@@ -488,7 +489,8 @@ namespace TreeConverter.LambdaExpressions.Closure
                                                    new ScopeClassDefinition(
                                                        scope.CorrespondingSyntaxTreeNode,
                                                        typeDeclaration,
-                                                       scope));
+                                                       scope,
+                                                       generatedNamesManager));
                     }
 
                     var substKey = new SubstitutionKey(varName, symbolInfo.SyntaxTreeNodeWithVarDeclaration,
@@ -686,6 +688,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                                                    new ScopeClassDefinition(currentNode.CorrespondingSyntaxTreeNode,
                                                                             typeDeclaration,
                                                                             currentNode,
+                                                                            generatedNamesManager,
                                                                             PascalABCCompiler.StringConstants.self_word));
                     }
                 }
@@ -698,7 +701,8 @@ namespace TreeConverter.LambdaExpressions.Closure
                         _capturedVarsClassDefs.Add(currentNode.ScopeIndex,
                                                    new ScopeClassDefinition(currentNode.CorrespondingSyntaxTreeNode,
                                                                             typeDeclaration,
-                                                                            currentNode));
+                                                                            currentNode,
+                                                                            generatedNamesManager));
                     }
 
                    

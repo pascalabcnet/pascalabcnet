@@ -11,9 +11,11 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\CoreUtils\Utils.csproj" />
     <ProjectReference Include="..\..\..\..\Errors\Errors.csproj" />
     <ProjectReference Include="..\..\..\..\LanguageIntegrator\LanguageIntegrator.csproj" />
     <ProjectReference Include="..\..\..\..\Localization\Localization.csproj" />
+    <ProjectReference Include="..\..\..\..\StringConstants\StringConstants.csproj" />
     <ProjectReference Include="..\..\..\..\SyntaxTree\SyntaxTree.csproj" />
     <ProjectReference Include="..\..\..\..\SyntaxVisitors\SyntaxVisitors.csproj" />
   </ItemGroup>
