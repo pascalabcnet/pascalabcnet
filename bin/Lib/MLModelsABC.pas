@@ -1,4 +1,16 @@
-﻿unit MLModelsABC;
+﻿/// Модуль моделей машинного обучения и матричных преобразований.
+///
+/// Содержит:
+/// • функции активации
+/// • модели: LinearRegression, LogisticRegression, ElasticNet,
+///   kNN, DecisionTree, RandomForest, GradientBoosting,
+///   KMeans, DBSCAN
+/// • трансформеры признаков (StandardScaler, PCA и др.)
+/// • Pipeline для объединения преобразований и модели.
+///
+/// Все алгоритмы работают с числовыми данными:
+/// X — Matrix (объекты × признаки), y — Vector (целевая переменная).
+unit MLModelsABC;
 
 interface
 
@@ -1356,7 +1368,7 @@ type
     /// Обучает преобразования и модель
     function Fit(X: Matrix; y: Vector): IModel;
   
-    /// Применяет только преобразования (без модели)
+    /// Применяет только преобразования (без модели)constructor Create;
     function Transform(X: Matrix): Matrix;
   
     /// Делает предсказание
@@ -1390,6 +1402,10 @@ type
     fFeatureCount: integer;
     fFitted: boolean;
   public
+    /// Создаёт StandardScaler.
+    /// Параметры масштабирования (среднее и стандартное отклонение)
+    ///   вычисляются при вызове Fit.
+    constructor Create(); begin end;
     /// Вычисляет среднее и стандартное отклонение по каждому признаку.
     function Fit(X: Matrix): ITransformer;
   
@@ -1425,20 +1441,16 @@ type
     /// Создаёт MinMaxScaler с диапазоном [rangeMin, rangeMax].
     /// По умолчанию масштабирование выполняется к [0, 1]
     constructor Create(rangeMin: real := 0.0; rangeMax: real := 1.0);
-    /// Вычисляет минимальные и максимальные значения
-    /// по каждому признаку.
+    /// Вычисляет минимальные и максимальные значения по каждому признаку.
     function Fit(X: Matrix): ITransformer;
   
-    /// Применяет линейное масштабирование признаков
-    /// к диапазону [0, 1].
+    /// Применяет линейное масштабирование признаков к диапазону [0, 1].
     function Transform(X: Matrix): Matrix;
   
-    /// Минимальные значения признаков,
-    /// вычисленные при обучении.
+    /// Минимальные значения признаков, вычисленные при обучении.
     property Min: Vector read fMin;
   
-    /// Максимальные значения признаков,
-    /// вычисленные при обучении.
+    /// Максимальные значения признаков, вычисленные при обучении.
     property Max: Vector read fMax;
   
     /// Признак того, что преобразование обучено.
@@ -1451,7 +1463,7 @@ type
   
   /// Трансформер главных компонент (PCA).
   /// Выполняет уменьшение размерности путём проекции данных
-  /// на первые k главных компонент.
+  ///   на первые k главных компонент.
   /// На этапе Fit вычисляет главные компоненты ковариационной матрицы.
   /// На этапе Transform проецирует данные:
   ///     Z = (X - μ) · W
@@ -1494,7 +1506,9 @@ type
     fFitted: boolean;
   
   public
-    /// threshold — минимальная допустимая дисперсия (>= 0)
+    /// Создаёт VarianceThreshold:
+    ///   • threshold — минимально допустимая дисперсия признака.
+    /// Столбцы с Var(X_j) < threshold удаляются.
     constructor Create(threshold: real := 0.0);
   
     /// Вычисляет дисперсии признаков и запоминает индексы
@@ -1564,12 +1578,12 @@ type
     // Multiclass version
     function ComputeChiSquare(feature: Vector; y: Vector): real;
   public
-    /// Создаёт трансформер с использованием встроенного критерия:
+    /// Создаёт трансформер SelectKBest с использованием встроенного критерия:
     ///   • k — число отбираемых признаков.
     ///   • score — тип критерия (например, Correlation)
     constructor Create(k: integer; score: FeatureScore := FeatureScore.Correlation);
   
-    /// Создаёт трансформер с пользовательской функцией оценки:
+    /// Создаёт трансформер SelectKBest с пользовательской функцией оценки:
     ///   • scoreFunc — функция (feature, y) → real
     constructor Create(k: integer; scoreFunc: (Vector, Vector) -> real);
 

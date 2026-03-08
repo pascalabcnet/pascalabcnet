@@ -1,4 +1,13 @@
-﻿unit MetricsABC;
+﻿/// Метрики качества моделей машинного обучения.
+///
+/// Содержит метрики для:
+/// • регрессии (MSE, RMSE, MAE, R2)
+/// • классификации (Accuracy, Precision, Recall, F1 и др.)
+/// • вероятностных моделей (LogLoss, ROC, AUC)
+/// • кластеризации (Silhouette, Calinski–Harabasz, Davies–Bouldin, ARI)
+///
+/// Также включает класс ConfusionMatrix для анализа результатов классификации.
+unit MetricsABC;
 
 interface
 

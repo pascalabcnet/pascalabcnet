@@ -14,6 +14,7 @@ uses DataFrameABC;
 uses MLExceptions;
 uses InspectionML;
 uses MLPipelineABC;
+uses MLDatasets;
 
 type 
   Vector = LinearAlgebraML.Vector;
@@ -75,6 +76,8 @@ type
   OneHotEncoder = PreprocessorABC.OneHotEncoder;
   ImputeStrategy = PreprocessorABC.ImputeStrategy;
   Imputer = PreprocessorABC.Imputer;
+  
+  Datasets = MLDatasets.Datasets;
   
 implementation
 

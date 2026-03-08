@@ -7,13 +7,24 @@ uses DataFrameABC, LinearAlgebraML;
 type
   Datasets = static class
   public
-    // --- synthetic datasets (Matrix + Vector)
+    // --- Синтетические датасеты (Matrix + Vector)
     
-    /// Генерирует k кластеров (blobs) для задач классификации и кластеризации
+    /// Генерирует синтетический датасет из нескольких гауссовых кластеров.
+    /// Возвращает матрицу признаков X и вектор меток кластеров y.
+    ///
+    /// Параметры:
+    /// • n — количество объектов (точек)
+    /// • centers — число кластеров
+    /// • clusterStd — стандартное отклонение точек внутри кластера
+    /// • nFeatures — число признаков (размерность пространства)
+    /// • seed — значение генератора случайных чисел (seed < 0 → случайный)
     static function MakeBlobs(
       n: integer := 300;
       centers: integer := 3;
-      seed: integer := 1): (Matrix, Vector);
+      clusterStd: real := 1.0;
+      nFeatures: integer := 2;
+      seed: integer := -1
+    ): (Matrix, Vector);
     
     /// Генерирует датасет "две луны" для демонстрации нелинейной классификации и кластеризации
     static function MakeMoons(
@@ -40,7 +51,7 @@ type
       seed: integer := 1): (Matrix, Vector);
     
     
-    // --- DataFrame datasets (реалистичные таблицы)
+    // --- DataFrame датасеты (реалистичные таблицы, считываемые из csv)
     
     /// Датасет цен на квартиры (задача регрессии)
     static function RussianHousing: DataFrame;
@@ -64,12 +75,71 @@ type
 
 implementation
 
-static function Datasets.MakeBlobs(
-      n: integer ;
-      centers: integer ;
-      seed: integer): (Matrix, Vector);
+uses MLExceptions;
+
+const
+  ER_PARAM_GT_ZERO =
+    'Параметр {0} должен быть > 0!!Parameter {0} must be > 0';
+
+function Normal(rnd: System.Random): real;
 begin
-  Result := nil;
+  var u1 := rnd.NextDouble;
+  var u2 := rnd.NextDouble;
+  Result := Sqrt(-2 * Ln(u1)) * Cos(2 * Pi * u2);
+end;
+
+/// Генерирует синтетический датасет из нескольких гауссовых кластеров.
+/// Возвращает матрицу признаков X и вектор меток кластеров y.
+///
+/// Параметры:
+/// • n — количество объектов (точек)
+/// • centers — число кластеров
+/// • clusterStd — стандартное отклонение точек внутри кластера
+/// • nFeatures — число признаков (размерность пространства)
+/// • seed — значение генератора случайных чисел (seed < 0 → случайный)
+static function Datasets.MakeBlobs(
+  n: integer; centers: integer;
+  clusterStd: real; nFeatures: integer; seed: integer): (Matrix, Vector);
+begin
+  if n <= 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'n');
+  
+  if centers <= 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'centers');
+  
+  if clusterStd <= 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'clusterStd');
+  
+  if nFeatures <= 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'nFeatures');
+
+  var actualSeed :=
+    if seed >= 0 then seed
+    else System.Environment.TickCount and integer.MaxValue;
+
+  var rnd := new System.Random(actualSeed);
+
+  var X := new Matrix(n, nFeatures);
+  var y := new Vector(n);
+
+  // --- генерируем центры кластеров
+  var centersM := new Matrix(centers, nFeatures);
+
+  for var c := 0 to centers - 1 do
+    for var j := 0 to nFeatures - 1 do
+      centersM[c,j] := rnd.NextDouble * 20 - 10;
+
+  // --- генерация точек
+  for var i := 0 to n - 1 do
+  begin
+    var c := rnd.Next(centers);
+    y[i] := c;
+
+    for var j := 0 to nFeatures - 1 do
+      X[i,j] := centersM[c,j] + clusterStd * Normal(rnd);
+  end;
+
+  Result := (X, y);
 end;
 
 static function Datasets.MakeMoons(

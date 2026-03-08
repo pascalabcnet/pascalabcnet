@@ -121,6 +121,9 @@ type
     static procedure Limits(xmin,xmax,ymin,ymax: real);
     static procedure XLim(xmin,xmax: real);
     static procedure YLim(ymin,ymax: real);
+    static procedure Title(s: string);
+    static procedure XLabel(s: string);
+    static procedure YLabel(s: string);
     
     static procedure Clear;
     
@@ -498,6 +501,30 @@ begin
   begin
     rootChart.PlotOriginY := ymin;
     rootChart.PlotHeight := ymax - ymin;
+  end);
+end;
+
+static procedure Plot.Title(s: string);
+begin
+  RunUI(() ->
+  begin
+    rootChart.Title := s;
+  end);
+end;
+
+static procedure Plot.XLabel(s: string);
+begin
+  RunUI(() ->
+  begin
+    rootChart.BottomTitle := s;
+  end);
+end;
+
+static procedure Plot.YLabel(s: string);
+begin
+  RunUI(() ->
+  begin
+    rootChart.LeftTitle := s;
   end);
 end;
 
