@@ -937,7 +937,7 @@ begin
   var cols := new Column[schema.ColumnCount];
 
   for var i := 0 to schema.ColumnCount - 1 do
-    cols[i] := columns[fSchema.IndexOf(schema.Names[i])];
+    cols[i] := columns[fSchema.IndexOf(schema.ColumnNames[i])];
 
   Result := new DataFrame(cols.ToList, schema);
 end;
@@ -1649,7 +1649,7 @@ function DataFrame.Mean(colName: string): real
 function DataFrame.Median(colIndex: integer): real;
 begin
   CheckColumnIndex(colIndex);
-  Result := Statistics.Median(Self, fSchema.Names[colIndex]);
+  Result := Statistics.Median(Self, fSchema.ColumnNames[colIndex]);
 end; 
 
 function DataFrame.Median(colName: string): real;
@@ -2454,13 +2454,13 @@ begin
   begin
     case schema.Types[i] of
       ctInt:
-        cols.Add(new IntColumn(schema.Names[i], schema.IsCategorical[i]));
+        cols.Add(new IntColumn(schema.ColumnNames[i], schema.IsCategorical[i]));
       ctFloat:
-        cols.Add(new FloatColumn(schema.Names[i]));
+        cols.Add(new FloatColumn(schema.ColumnNames[i]));
       ctStr:
-        cols.Add(new StrColumn(schema.Names[i], schema.IsCategorical[i]));
+        cols.Add(new StrColumn(schema.ColumnNames[i], schema.IsCategorical[i]));
       ctBool:
-        cols.Add(new BoolColumn(schema.Names[i]));
+        cols.Add(new BoolColumn(schema.ColumnNames[i]));
     end;
   end;
 
@@ -3046,12 +3046,12 @@ end;
 
 procedure DataFrame.PrintSchema;
 begin
-  var nameWidth := fSchema.Names.Max(s -> s.Length);
+  var nameWidth := fSchema.ColumnNames.Max(s -> s.Length);
   var typeWidth := 6; // Int / Float / Bool
 
   for var i := 0 to ColumnCount - 1 do
   begin
-    var name := fSchema.Names[i].PadRight(nameWidth);
+    var name := fSchema.ColumnNames[i].PadRight(nameWidth);
     var typ := GetColumnType(i).ToString.Replace('ct','').PadRight(typeWidth);
     PABCSystem.Println($'{name} : {typ}');
   end;
@@ -3062,7 +3062,7 @@ begin
   PABCSystem.Println($'Rows    : {RowCount}');
   PABCSystem.Println($'Columns : {ColumnCount}');
 
-  var nameWidth := fSchema.Names.Max(s -> s.Length);
+  var nameWidth := fSchema.ColumnNames.Max(s -> s.Length);
   var typeWidth := 6; // Int / Float / Bool
   var infoWidth := nameWidth + 3 + typeWidth + 12;
 
@@ -3070,7 +3070,7 @@ begin
 
   for var i := 0 to ColumnCount - 1 do
   begin
-    var name := fSchema.Names[i].PadRight(nameWidth);
+    var name := fSchema.ColumnNames[i].PadRight(nameWidth);
     var typ := GetColumnType(i).ToString.Replace('ct','').PadRight(typeWidth);
     var cnt := Count(i);
     PABCSystem.Println($'{name} : {typ} ({cnt} non-NA)');
@@ -3695,7 +3695,7 @@ begin
   // выбираем только числовые столбцы
   for var i := 0 to df.ColumnCount - 1 do
     if df.GetColumnType(i) in [ColumnType.ctInt, ColumnType.ctFloat] then
-      names.Add(df.fSchema.Names[i]);
+      names.Add(df.fSchema.ColumnNames[i]);
 
   var n := names.Count;
   if n = 0 then
@@ -3758,7 +3758,7 @@ begin
       means[i] := df.Mean(i);
       stds[i] := df.Std(i);
       if stds[i] = 0 then
-        Error(ER_ZERO_STD_COLUMN, df.fSchema.Names[i]);
+        Error(ER_ZERO_STD_COLUMN, df.fSchema.ColumnNames[i]);
       isNumeric[i] := true;
     end;
   end;
@@ -3767,7 +3767,7 @@ begin
   for var i := 0 to df.ColumnCount - 1 do
   begin
     if isNumeric[i] then
-      res.AddFloatColumn(df.fSchema.Names[i], new real[df.RowCount], nil)
+      res.AddFloatColumn(df.fSchema.ColumnNames[i], new real[df.RowCount], nil)
     else
       res.AddColumnView(df.columns[i]); // private helper
   end;
@@ -3839,7 +3839,7 @@ begin
     begin
       var (mn, mx) := df.MinMax(i);
       if mn = mx then
-        Error(ER_ZERO_RANGE_COLUMN, df.fSchema.Names[i]);
+        Error(ER_ZERO_RANGE_COLUMN, df.fSchema.ColumnNames[i]);
       mins[i] := mn;
       maxs[i] := mx;
       isNumeric[i] := true;
@@ -3850,7 +3850,7 @@ begin
   for var i := 0 to df.ColumnCount - 1 do
   begin
     if isNumeric[i] then
-      res.AddFloatColumn(df.fSchema.Names[i], new real[df.RowCount], nil)
+      res.AddFloatColumn(df.fSchema.ColumnNames[i], new real[df.RowCount], nil)
     else
       res.AddColumnView(df.columns[i]); // private helper
   end;

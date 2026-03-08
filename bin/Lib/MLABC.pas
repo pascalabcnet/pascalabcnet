@@ -57,6 +57,8 @@ type
   GradientBoostingClassifier = MLModelsABC.GradientBoostingClassifier;
   KNNClassifier = MLModelsABC.KNNClassifier;
   KNNRegressor = MLModelsABC.KNNRegressor;
+  KMeans = MLModelsABC.KMeans;
+  DBSCAN = MLModelsABC.DBSCAN;
   
   KNNWeighting = MLModelsABC.KNNWeighting;
   TGBLoss = MLModelsABC.TGBLoss;
@@ -67,6 +69,12 @@ type
   MLDimensionException = MLExceptions.MLDimensionException;
   
   Inspection = InspectionML.Inspection;
+  
+  IPreprocessor = PreprocessorABC.IPreprocessor;
+  LabelEncoder = PreprocessorABC.LabelEncoder;
+  OneHotEncoder = PreprocessorABC.OneHotEncoder;
+  ImputeStrategy = PreprocessorABC.ImputeStrategy;
+  Imputer = PreprocessorABC.Imputer;
   
 implementation
 

@@ -28,6 +28,22 @@ type
     function Clone: IModel;
   end;
   
+  /// Интерфейс модели без учителя (Unsupervised Model).
+  /// Наследуется от базового интерфейса IModel.
+  /// Предназначен для алгоритмов, обучающихся только по признакам X
+  /// без использования целевых значений (y)
+  IUnsupervisedModel = interface(IModel)
+    procedure Fit(X: Matrix);
+  end;
+
+  /// Интерфейс алгоритма кластеризации.
+  /// Наследуется от IUnsupervisedModel.
+  /// Предназначен для моделей, разбивающих объекты на кластеры
+  /// и возвращающих индекс кластера для каждого объекта
+  IClusterer = interface(IUnsupervisedModel)
+    function Predict(X: Matrix): Vector;
+  end;
+  
   /// Интерфейс древовидной модели машинного обучения
   ITreeModel = interface(IModel)
     function FeatureImportances: Vector;
@@ -35,8 +51,7 @@ type
 
   /// Интерфейс классификатора.
   /// Наследуется от IModel.
-  /// Предназначен для моделей, выполняющих классификацию
-  /// (предсказание меток классов).
+  /// Предназначен для моделей, выполняющих классификацию (предсказание меток классов).
   IClassifier = interface(IModel)
   end;
   

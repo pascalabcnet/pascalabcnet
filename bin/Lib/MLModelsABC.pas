@@ -213,6 +213,9 @@ type
     fTol: real := 1e-6;
     fCheckConvergence: boolean := true;
     fMinImprovement: real := 1e-8;
+    
+    function GetWeights: Matrix;
+    function GetIntercept: Vector;
   public
     /// lambda — коэффициент L2-регуляризации.
     /// lr — шаг градиентного спуска.
@@ -244,6 +247,12 @@ type
     
 /// Создает глубокую копию модели.
     function Clone: IModel;
+    
+    /// Матрица коэффициентов модели (p × k).
+    property Weights: Matrix read GetWeights;
+    
+    /// Вектор свободных членов (bias) для каждого класса.
+    property Intercept: Vector read GetIntercept;
   end;
   
   DecisionTreeNode = class
@@ -1099,6 +1108,7 @@ type
     function Clone: IModel; override;
   end;
   
+  
   /// Регрессор на основе алгоритма k ближайших соседей (kNN).
   /// Поддерживает равномерное (Uniform) усреднение и взвешенное по расстоянию (Distance) усреднение.
   /// Предсказание вычисляется как среднее (или взвешенное среднее) значений целевой переменной
@@ -1124,6 +1134,125 @@ type
     /// Создаёт глубокую копию регрессора
     function Clone: IModel; override;
   end;
+  
+  
+  /// Модель кластеризации методом k-средних (KMeans).
+  /// Разбивает объекты на k кластеров на основе евклидова расстояния.
+  /// Реализует алгоритм без учителя
+  KMeans = class(IClusterer)
+  private
+    fNClusters: integer;
+    fMaxIter: integer;
+    fTol: real;
+    fNInit: integer;
+    fSeed: integer;
+
+    fIsFitted: boolean;
+    fFeatureCount: integer;
+
+    fCenters: Matrix;
+    fInertia: real;
+    fIterations: integer;
+    fHasConverged: boolean;
+    
+    function RunSingle(X: Matrix; rnd: System.Random): (Matrix, real, integer, boolean);
+  public
+    /// Создаёт модель KMeans.
+    /// nClusters — количество кластеров.
+    /// maxIter — максимальное число итераций.
+    /// tol — порог сходимости.
+    /// nInit — количество независимых запусков.
+    /// seed — значение генератора случайных чисел
+    constructor Create(
+      nClusters: integer;
+      maxIter: integer := 300;
+      tol: real := 1e-4;
+      nInit: integer := 10;
+      seed: integer := -1
+    );
+
+    /// Обучает модель по матрице признаков X.
+    /// Выполняет nInit запусков и выбирает решение с минимальной инерцией.
+    procedure Fit(X: Matrix);
+    
+    function Fit(X: Matrix; y: Vector): IModel;
+
+    /// Возвращает индекс кластера для каждого объекта из X.
+    /// Требует предварительного вызова Fit.
+    function Predict(X: Matrix): Vector;
+
+    /// Выполняет обучение и сразу возвращает метки кластеров.
+    function FitPredict(X: Matrix): Vector;
+
+    /// Создаёт глубокую копию модели.
+    function Clone: IModel;
+
+    /// Количество кластеров.
+    property NClusters: integer read fNClusters;
+    /// Максимальное число итераций.
+    property MaxIter: integer read fMaxIter;
+    /// Порог сходимости.
+    property Tol: real read fTol;
+    /// Количество запусков алгоритма.
+    property NInit: integer read fNInit;
+    /// Используемый seed.
+    property Seed: integer read fSeed;
+    /// Матрица центроидов (k × p).
+    property ClusterCenters: Matrix read fCenters;
+    /// Значение инерции (сумма квадратов расстояний до центроидов).
+    property Inertia: real read fInertia;
+    /// Число выполненных итераций.
+    property Iterations: integer read fIterations;
+    /// Признак сходимости алгоритма.
+    property HasConverged: boolean read fHasConverged;
+    /// Число признаков модели.
+    property FeatureCount: integer read fFeatureCount;
+  end;
+  
+
+  DBSCAN = class(IClusterer)
+  private
+    fEps: real;
+    fMinSamples: integer;
+    fSeed: integer;
+  
+    fIsFitted: boolean;
+    fFeatureCount: integer;
+  
+    fLabels: Vector;
+    fClusterCount: integer;
+  
+    function RegionQuery(X: Matrix; i: integer; neighbors: List<integer>): integer;
+  
+  public
+    /// Создаёт модель DBSCAN.
+    /// eps — радиус соседства.
+    /// minSamples — минимальное число точек в eps-окрестности.
+    /// seed — параметр для совместимости API.
+    constructor Create(
+      eps: real;
+      minSamples: integer := 5;
+      seed: integer := -1
+    );
+  
+    /// Обучает модель на матрице признаков.
+    procedure Fit(X: Matrix);
+  
+    /// Совместимость с интерфейсом IModel.
+    function Fit(X: Matrix; y: Vector): IModel;
+  
+    /// Возвращает метки кластеров.
+    function Predict(X: Matrix): Vector;
+  
+    /// Возвращает метки после обучения.
+    function FitPredict(X: Matrix): Vector;
+  
+    /// Копия модели.
+    function Clone: IModel;
+  
+    property Labels: Vector read fLabels;
+    property ClusterCount: integer read fClusterCount;
+  end;  
   
 {$endregion Models}
 
@@ -1153,6 +1282,63 @@ type
     /// Создаёт пустой пайплайн (конвейер машинного обучения).
     /// Модель должна быть установлена через SetModel.
     constructor Create;
+    
+{
+    // Pipeline.Build используется, когда данные уже представлены
+    // в виде числовой матрицы признаков X и вектора целевой переменной y.
+    // В этом случае DataFrame и препроцессоры уровня таблицы не требуются.
+    //
+    // Типичные ситуации:
+    //  • экспериментирование с ML-алгоритмами
+    //  • сравнение моделей
+    //  • кросс-валидация
+    //  • подбор гиперпараметров
+    //  • тестирование моделей
+    //
+    // Pipeline объединяет несколько матричных преобразований (ITransformer)
+    // и модель (IModel) в единый объект, который можно обучать и использовать
+    // для предсказаний.
+    //
+    // В отличие от этого, DataPipeline.Build используется,
+    // когда исходные данные представлены в виде DataFrame
+    // и требуется выполнить препроцессинг таблицы
+    // (Imputer, OneHotEncoder, LabelEncoder и др.)
+    // перед преобразованием данных в Matrix/Vector.
+    
+    var pipe1 :=
+      Pipeline.Build(
+        new StandardScaler,
+        new LogisticRegression
+      );
+    
+    var pipe2 :=
+      Pipeline.Build(
+        new StandardScaler,
+        new PCATransformer(2),
+        new LogisticRegression
+      );
+    
+    var score1 :=
+      Validation.CrossValidate(
+        pipe1,
+        X,
+        y,
+        5,
+        Metrics.Accuracy
+      );
+    
+    var score2 :=
+      Validation.CrossValidate(
+        pipe2,
+        X,
+        y,
+        5,
+        Metrics.Accuracy
+      );
+    
+    Println('Scaler + LogisticRegression = ', score1);
+    Println('Scaler + PCA + LogisticRegression = ', score2);
+}    
 
     /// Строит конвейер машинного обучения из последовательности шагов.
     /// Шаги указываются в порядке выполнения:
@@ -1193,6 +1379,7 @@ type
 {$endregion Pipeline}
   
 {$region Transformers}
+
 /// Стандартизирует признаки: вычитает среднее
 ///   и делит на стандартное отклонение по каждому столбцу.
 /// Используется для приведения признаков к сопоставимому масштабу
@@ -1632,8 +1819,16 @@ const
     'minSamplesLeaf ({0}) must be less than minSamplesSplit ({1}).';
   ER_OOB_NOT_ENABLED =
     'OOB score не включен для этой модели. Установите computeOOB = true в конструкторе.!!' +
-    'OOB score is not enabled for this model. Set computeOOB = true in the constructor.';    
-    
+    'OOB score is not enabled for this model. Set computeOOB = true in the constructor.';
+  ER_NINIT_INVALID =
+    'Некорректное значение nInit: {0}. Должно быть не меньше 1!!Invalid nInit value: {0}. Must be at least 1';    
+  ER_INVALID_VALUE_AT =
+    'Некорректное значение в {0} на позиции {1}!!Invalid value in {0} at index {1}';
+  ER_EPS_INVALID =
+    'eps должен быть положительным!!eps must be positive';
+  ER_MINSAMPLES_INVALID =
+    'minSamples должен быть >= 1!!minSamples must be >= 1';    
+  
 {$endregion ErrConstants}  
 
 //-----------------------------
@@ -2425,6 +2620,22 @@ begin
   end;
 
   Result := m;
+end;
+
+function LogisticRegression.GetWeights: Matrix;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  Result := fW;
+end;
+
+function LogisticRegression.GetIntercept: Vector;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  Result := fIntercept;
 end;
 
 function GiniCriterion.Impurity(y: Vector; indices: array of integer): real;
@@ -6433,6 +6644,478 @@ begin
   end;
 
   Result := clone;
+end;
+
+//-----------------------------
+//           KMeans 
+//-----------------------------
+
+constructor KMeans.Create(
+  nClusters: integer;
+  maxIter: integer;
+  tol: real;
+  nInit: integer;
+  seed: integer
+);
+begin
+  if nClusters < 1 then
+    ArgumentOutOfRangeError(ER_K_INVALID, nClusters);
+
+  if maxIter < 1 then
+    ArgumentOutOfRangeError(ER_MAXITER_INVALID, maxIter);
+
+  if tol <= 0 then
+    ArgumentOutOfRangeError(ER_TOL_INVALID, tol);
+
+  if nInit < 1 then
+    ArgumentOutOfRangeError(ER_NINIT_INVALID, nInit);
+
+  fNClusters := nClusters;
+  fMaxIter := maxIter;
+  fTol := tol;
+  fNInit := nInit;
+  fSeed := seed;
+
+  fIsFitted := False;
+  fFeatureCount := 0;
+
+  fCenters := nil;
+  fInertia := 0.0;
+  fIterations := 0;
+  fHasConverged := False;
+end;
+
+function KMeans.RunSingle(X: Matrix; rnd: System.Random): (Matrix, real, integer, boolean);
+begin
+  var n := X.RowCount;
+  var p := X.ColCount;
+  var k := fNClusters;
+
+  // --- 1. Инициализация центроидов (случайные строки X)
+
+  var idx := Arr(0..n-1);
+  idx.Shuffle(rnd);
+
+  var centers := new Matrix(k, p);
+
+  for var c := 0 to k - 1 do
+  begin
+    var r := idx[c];
+    for var j := 0 to p - 1 do
+      centers[c,j] := X[r,j];
+  end;
+
+  var inertia := 0.0;
+  var converged := False;
+  var iterations := 0;
+
+  // --- 2. Основной цикл
+  for var iter := 1 to fMaxIter do
+  begin
+    iterations := iter;
+
+    // Assignment + накопление сумм
+    var counts := new integer[k];
+    var sums := new Matrix(k, p);
+
+    inertia := 0.0;
+
+    for var i := 0 to n - 1 do
+    begin
+      var bestC := 0;
+      var bestDist := double.MaxValue;
+
+      for var c := 0 to k - 1 do
+      begin
+        var dist := 0.0;
+
+        for var j := 0 to p - 1 do
+        begin
+          var xij := X[i,j];
+          if double.IsNaN(xij) or double.IsInfinity(xij) then
+            ArgumentError(ER_INVALID_VALUE_AT, 'X', i);
+          
+          var cj := centers[c,j];
+          if double.IsNaN(cj) or double.IsInfinity(cj) then
+            ArgumentError(ER_INVALID_VALUE_AT, 'Centers', c);
+          
+          var d := xij - cj;
+          dist += d * d;
+        end;
+
+        if dist < bestDist then
+        begin
+          bestDist := dist;
+          bestC := c;
+        end;
+      end;
+
+      inertia += bestDist;
+
+      counts[bestC] += 1;
+
+      for var j := 0 to p - 1 do
+        sums[bestC,j] += X[i,j];
+    end;
+
+    // --- 3. Пересчёт центроидов
+    var maxShift := 0.0;
+
+    for var c := 0 to k - 1 do
+    begin
+      if counts[c] = 0 then
+      begin
+        // Пустой кластер — переинициализация случайной точкой
+        var r := rnd.Next(n);
+        for var j := 0 to p - 1 do
+          centers[c,j] := X[r,j];
+        continue;
+      end;
+
+      for var j := 0 to p - 1 do
+      begin
+        var newVal := sums[c,j] / counts[c];
+        var shift := Abs(newVal - centers[c,j]);
+
+        if shift > maxShift then
+          maxShift := shift;
+
+        centers[c,j] := newVal;
+      end;
+    end;
+
+    if maxShift < fTol then
+    begin
+      converged := True;
+      break;
+    end;
+  end;
+
+  Result := (centers, inertia, iterations, converged);
+end;
+
+procedure KMeans.Fit(X: Matrix);
+begin
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+
+  var n := X.RowCount;
+  var p := X.ColCount;
+
+  if n = 0 then
+    ArgumentError(ER_EMPTY_DATA, 'KMeans');
+
+  if p = 0 then
+    ArgumentError(ER_EMPTY_DATA, 'KMeans');
+
+  if fNClusters > n then
+    ArgumentOutOfRangeError(ER_K_INVALID, fNClusters);
+
+  fFeatureCount := p;
+
+  var actualSeed :=
+    if fSeed >= 0 then fSeed
+    else System.Environment.TickCount and integer.MaxValue;
+
+  var rndBase := new System.Random(actualSeed);
+
+  var bestInertia := 1e308;
+  var bestCenters: Matrix := nil;
+  var bestIterations := 0;
+  var bestConverged := False;
+
+  for var run := 1 to fNInit do
+  begin
+    var runSeed := rndBase.Next;
+    var rnd := new System.Random(runSeed);
+
+    var (centers, inertia, iters, converged) := RunSingle(X, rnd);
+
+    if inertia < bestInertia then
+    begin
+      bestInertia := inertia;
+      bestCenters := centers;
+      bestIterations := iters;
+      bestConverged := converged;
+    end;
+  end;
+
+  fCenters := bestCenters;
+  fInertia := bestInertia;
+  fIterations := bestIterations;
+  fHasConverged := bestConverged;
+  fIsFitted := True;
+end;
+
+function KMeans.Fit(X: Matrix; y: Vector): IModel;
+begin
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+
+  if y <> nil then
+    if X.RowCount <> y.Length then
+      DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+
+  Fit(X);
+
+  Result := Self;
+end;
+
+function KMeans.Predict(X: Matrix): Vector;
+begin
+  if not fIsFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+  
+  if X.ColCount <> fFeatureCount then
+    DimensionError(ER_DIM_MISMATCH, X.ColCount, fFeatureCount);
+
+  var n := X.RowCount;
+  var p := X.ColCount;
+  var k := fNClusters;
+
+  Result := new Vector(n);
+
+  for var i := 0 to n - 1 do
+  begin
+    var bestC := 0;
+    var bestDist := 1e308;
+
+    for var c := 0 to k - 1 do
+    begin
+      var dist := 0.0;
+
+      for var j := 0 to p - 1 do
+      begin
+        var xij := X[i,j];
+        if double.IsNaN(xij) or double.IsInfinity(xij) then
+          ArgumentError(ER_INVALID_VALUE_AT, 'X', i);
+        
+        var cj := fCenters[c,j];
+        if double.IsNaN(cj) or double.IsInfinity(cj) then
+          ArgumentError(ER_INVALID_VALUE_AT, 'Centers', c);
+        
+        var d := xij - cj;
+        dist += d * d;
+      end;
+
+      if dist < bestDist then
+      begin
+        bestDist := dist;
+        bestC := c;
+      end;
+    end;
+
+    Result[i] := bestC; // 0..k-1
+  end;
+end;
+
+function KMeans.FitPredict(X: Matrix): Vector;
+begin
+  Fit(X);
+  Result := Predict(X);
+end;
+
+function KMeans.Clone: IModel;
+begin
+  var km := new KMeans(
+    fNClusters,
+    fMaxIter,
+    fTol,
+    fNInit,
+    fSeed
+  );
+
+  km.fIsFitted := fIsFitted;
+  km.fFeatureCount := fFeatureCount;
+  km.fInertia := fInertia;
+  km.fIterations := fIterations;
+  km.fHasConverged := fHasConverged;
+
+  if fCenters <> nil then
+  begin
+    var k := fCenters.RowCount;
+    var p := fCenters.ColCount;
+    km.fCenters := new Matrix(k, p);
+
+    for var i := 0 to k - 1 do
+      for var j := 0 to p - 1 do
+        km.fCenters[i,j] := fCenters[i,j];
+  end;
+
+  Result := km;
+end;
+
+//-----------------------------
+//           DBSCAN 
+//-----------------------------
+
+constructor DBSCAN.Create(
+  eps: real;
+  minSamples: integer;
+  seed: integer
+);
+begin
+  if eps <= 0 then
+    ArgumentOutOfRangeError(ER_EPS_INVALID, eps);
+
+  if minSamples < 1 then
+    ArgumentOutOfRangeError(ER_MINSAMPLES_INVALID, minSamples);
+
+  fEps := eps;
+  fMinSamples := minSamples;
+  fSeed := seed;
+
+  fIsFitted := False;
+end;
+
+function DBSCAN.RegionQuery(X: Matrix; i: integer; neighbors: List<integer>): integer;
+begin
+  var n := X.RowCount;
+  var p := X.ColCount;
+
+  var eps2 := fEps * fEps;
+
+  neighbors.Clear;
+
+  for var j := 0 to n-1 do
+  begin
+    var dist := 0.0;
+
+    for var k := 0 to p-1 do
+    begin
+      var d := X[i,k] - X[j,k];
+      dist += d*d;
+    end;
+
+    if dist <= eps2 then
+      neighbors.Add(j);
+  end;
+
+  Result := neighbors.Count;
+end;
+
+procedure DBSCAN.Fit(X: Matrix);
+begin
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+
+  var n := X.RowCount;
+  var p := X.ColCount;
+
+  if n = 0 then
+    ArgumentError(ER_EMPTY_DATA, 'DBSCAN');
+
+  fFeatureCount := p;
+
+  var labels := new integer[n];
+
+  for var i := 0 to n-1 do
+    labels[i] := -1; // noise
+
+  var visited := new boolean[n];
+
+  var neighbors := new List<integer>;
+  var queue := new Queue<integer>;
+
+  var clusterId := 0;
+
+  for var i := 0 to n-1 do
+  begin
+    if visited[i] then
+      continue;
+
+    visited[i] := True;
+
+    var count := RegionQuery(X, i, neighbors);
+
+    if count < fMinSamples then
+      continue;
+
+    labels[i] := clusterId;
+
+    queue.Clear;
+
+    foreach var j in neighbors do
+      queue.Enqueue(j);
+
+    while queue.Count > 0 do
+    begin
+      var q := queue.Dequeue;
+
+      if not visited[q] then
+      begin
+        visited[q] := True;
+
+        var count2 := RegionQuery(X, q, neighbors);
+
+        if count2 >= fMinSamples then
+          foreach var t in neighbors do
+            queue.Enqueue(t);
+      end;
+
+      if labels[q] = -1 then
+        labels[q] := clusterId;
+    end;
+
+    clusterId += 1;
+  end;
+
+  fClusterCount := clusterId;
+
+  fLabels := new Vector(n);
+
+  for var i := 0 to n-1 do
+    fLabels[i] := labels[i];
+
+  fIsFitted := True;
+end;
+
+function DBSCAN.Fit(X: Matrix; y: Vector): IModel;
+begin
+  if y <> nil then
+    if X.RowCount <> y.Length then
+      DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+
+  Fit(X);
+
+  Result := Self;
+end;
+
+function DBSCAN.Predict(X: Matrix): Vector;
+begin
+  if not fIsFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  Result := fLabels;
+end;
+
+function DBSCAN.FitPredict(X: Matrix): Vector;
+begin
+  Fit(X);
+  Result := fLabels;
+end;
+
+function DBSCAN.Clone: IModel;
+begin
+  var m := new DBSCAN(fEps, fMinSamples, fSeed);
+
+  m.fIsFitted := fIsFitted;
+  m.fFeatureCount := fFeatureCount;
+  m.fClusterCount := fClusterCount;
+
+  if fLabels <> nil then
+  begin
+    var n := fLabels.Length;
+    m.fLabels := new Vector(n);
+
+    for var i := 0 to n-1 do
+      m.fLabels[i] := fLabels[i];
+  end;
+
+  Result := m;
 end;
 
 //-----------------------------

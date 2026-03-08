@@ -19,6 +19,8 @@ type
     
     function Clone: Vector;
     
+    function ToArray: array of real;
+    
     static function operator +(a, b: Vector): Vector;
     static function operator -(a, b: Vector): Vector;
     
@@ -81,6 +83,9 @@ type
     
     constructor Create(r, c: integer);
     constructor Create(values: array[,] of real);
+    
+    function ToArray2D: array[,] of real;
+    function RowToArray(r: integer): array of real;
     
     function Clone: Matrix;
     
@@ -320,6 +325,11 @@ begin
   data := values.Select(x -> real(x)).ToArray;
 end;
 
+function Vector.ToArray: array of real;
+begin
+  Result := Copy(data);
+end;
+
 function Vector.Clone: Vector;
 begin
   Result := new Vector(data);
@@ -490,6 +500,16 @@ begin
   if values = nil then
     ArgumentNullError(ER_VALUES_NULL);
   data := Copy(values);
+end;
+
+function Matrix.ToArray2D: array[,] of real;
+begin
+  Result := Copy(data);
+end;
+
+function Matrix.RowToArray(r: integer): array of real;
+begin
+  Result := data.Row(r);
 end;
 
 function Matrix.Clone: Matrix;

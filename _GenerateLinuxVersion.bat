@@ -122,6 +122,9 @@ copy bin\Lib\ValidationML.pcu Release\PascalABCNETLinux\Lib\ValidationML.pcu
 copy bin\Lib\MLExceptions.pcu Release\PascalABCNETLinux\Lib\MLExceptions.pcu
 copy bin\Lib\InspectionML.pcu Release\PascalABCNETLinux\Lib\InspectionML.pcu
 copy bin\Lib\MLPipelineABC.pcu Release\PascalABCNETLinux\Lib\MLPipelineABC.pcu
+copy bin\Lib\MLPipelineABC.pcu Release\PascalABCNETLinux\Lib\MLDatasets.pcu
+copy bin\Lib\MLPipelineABC.pcu Release\PascalABCNETLinux\Lib\PlotML.pcu
+
 
 copy bin\Lib\ABCDatabases.pas Release\PascalABCNETLinux\LibSource\ABCDatabases.pas
 copy bin\Lib\BBCMicrobit.pas Release\PascalABCNETLinux\LibSource\BBCMicrobit.pas
@@ -175,6 +178,8 @@ copy bin\Lib\ValidationML.pas Release\PascalABCNETLinux\LibSource\ValidationML.p
 copy bin\Lib\MLExceptions.pas Release\PascalABCNETLinux\LibSource\MLExceptions.pas
 copy bin\Lib\InspectionML.pas Release\PascalABCNETLinux\LibSource\InspectionML.pas
 copy bin\Lib\MLPipelineABC.pas Release\PascalABCNETLinux\LibSource\MLPipelineABC.pas
+copy bin\Lib\MLPipelineABC.pas Release\PascalABCNETLinux\LibSource\MLDatasets.pas
+copy bin\Lib\MLPipelineABC.pas Release\PascalABCNETLinux\LibSource\PlotML.pas
 
 
 copy bin\Lng\Eng\.LanguageName Release\PascalABCNETLinux\Lng\Eng\.LanguageName
