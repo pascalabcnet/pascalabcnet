@@ -4,8 +4,7 @@ dotnet build -c Release --no-incremental PascalABCNET.sln
 
 cd ReleaseGenerators
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild
-rem /rebuild здесь пока нельзя
-..\bin\pabcnetc RebuildStandartModulesSPython.pas
+..\bin\pabcnetc RebuildStandartModulesSPython.pas /rebuild
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 
@@ -22,8 +21,7 @@ ExecHide.exe gacutil.exe /u PABCRtl
 ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild
-rem /rebuild здесь пока нельзя
-..\bin\pabcnetc RebuildStandartModulesSPython.pas
+..\bin\pabcnetc RebuildStandartModulesSPython.pas /rebuild
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 
