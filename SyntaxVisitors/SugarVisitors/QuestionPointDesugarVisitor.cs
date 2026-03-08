@@ -1,20 +1,22 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
+using PascalABCCompiler.CoreUtils;
 using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors.SugarVisitors
 {
     public class QuestionPointDesugarVisitor : BaseChangeVisitor
     {
-        public static QuestionPointDesugarVisitor New
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        private QuestionPointDesugarVisitor(GeneratedNamesManager generatedNamesManager)
         {
-            get { return new QuestionPointDesugarVisitor(); }
+            this.generatedNamesManager = generatedNamesManager;
         }
+
+        public static QuestionPointDesugarVisitor Create(GeneratedNamesManager generatedNamesManager) => new QuestionPointDesugarVisitor(generatedNamesManager);
 
 
         public question_colon_expression ConvertToQCE(dot_question_node dqn)
@@ -117,14 +119,6 @@ namespace SyntaxVisitors.SugarVisitors
             }
         }
 
-        private int num = 0;
-
-        public string UniqueNumStr()
-        {
-            num++;
-            return num.ToString();
-        }
-
 
         /*public question_colon_expression ConvertToQCE1(dot_question_node dqn)
         {
@@ -162,7 +156,7 @@ namespace SyntaxVisitors.SugarVisitors
                 st = st.Parent;
             if (st == null)
                 throw new SyntaxVisitorError("?._CANNOT_BE_IN_THIS_CONTEXT", dqn.source_context);
-            var tname = "#dqn_temp" + UniqueNumStr();
+            var tname = generatedNamesManager.GenerateName("#dqn_temp");
 
             dot_question_node rif = null;
             var qce = ConvertToQCE1(dqn, tname);

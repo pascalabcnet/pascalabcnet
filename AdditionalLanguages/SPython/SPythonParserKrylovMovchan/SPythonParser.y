@@ -5,7 +5,6 @@
     // public int max_errors = 10;
 	public SPythonParserTools parserTools;
     public List<compiler_directive> CompilerDirectives;
-	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	public bool is_unit_to_be_parsed = false;
 
 	public SPythonGPPGParser(AbstractScanner<ValueType, LexLocation> scanner, SPythonParserTools parserTools,

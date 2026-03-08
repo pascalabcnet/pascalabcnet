@@ -1037,22 +1037,9 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class goto_statement
     {
-        static int lbnum = 0;
-
-        static public string newLabelName()
-        {
-            lbnum++;
-            return "lb#" + lbnum.ToString();
-        }
-
         public override string ToString()
         {
             return "goto " + label;
-        }
-
-        public static goto_statement New
-        {
-            get { return new goto_statement(newLabelName()); }
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections;
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.CoreUtils;
 
 namespace PascalABCCompiler.TreeConverter.TreeConversion
 {
@@ -31,6 +32,8 @@ namespace PascalABCCompiler.TreeConverter.TreeConversion
         
         public readonly bool forIntellisense;
 
+        public readonly GeneratedNamesManager generatedNamesManager;
+
         public InitializationDataForCompilingInterface(
             
             Errors.SyntaxError parserError, 
@@ -43,7 +46,8 @@ namespace PascalABCCompiler.TreeConverter.TreeConversion
             Dictionary<syntax_tree_node, string> docs, 
             bool debug, 
             bool debugging, 
-            bool forIntellisense
+            bool forIntellisense,
+            GeneratedNamesManager generatedNamesManager
             
             )
         {
@@ -58,6 +62,7 @@ namespace PascalABCCompiler.TreeConverter.TreeConversion
             this.debug = debug;
             this.debugging = debugging;
             this.forIntellisense = forIntellisense;
+            this.generatedNamesManager = generatedNamesManager;
         }
     }
 
@@ -81,12 +86,13 @@ namespace PascalABCCompiler.TreeConverter.TreeConversion
             TreeRealization.common_unit_node semanticUnit,
             List<Errors.Error> errorsList, 
             List<Errors.CompilerWarning> warningsList, 
-            Dictionary<syntax_tree_node, string> docs, 
+            Dictionary<syntax_tree_node, string> docs,
             bool debug, 
             bool debugging, 
-            bool forIntellisense
+            bool forIntellisense,
+            GeneratedNamesManager generatedNamesManager
             
-            ) : base(parserError, badNodes, usedUnits, interfaceNamespaces, syntaxUnit, errorsList, warningsList, docs, debug, debugging, forIntellisense)
+            ) : base(parserError, badNodes, usedUnits, interfaceNamespaces, syntaxUnit, errorsList, warningsList, docs, debug, debugging, forIntellisense, generatedNamesManager)
         {
             this.implementationNamespaces = implementationNamespaces;
             this.semanticUnit = semanticUnit;

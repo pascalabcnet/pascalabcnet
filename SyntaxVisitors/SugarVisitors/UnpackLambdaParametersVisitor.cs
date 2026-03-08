@@ -1,32 +1,26 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
+using PascalABCCompiler.CoreUtils;
 using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors.SugarVisitors
 {
     public class UnpackLambdaParametersVisitor : BaseChangeVisitor
     {
-        public static UnpackLambdaParametersVisitor New
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        private UnpackLambdaParametersVisitor(GeneratedNamesManager generatedNamesManager)
         {
-            get { return new UnpackLambdaParametersVisitor(); }
+            this.generatedNamesManager = generatedNamesManager;
         }
 
-        private static int num = 0;
-
-        public static string UniqueNumStr()
-        {
-            num++;
-            return num.ToString();
-        }
+        public static UnpackLambdaParametersVisitor Create(GeneratedNamesManager generatedNamesManager) => new UnpackLambdaParametersVisitor(generatedNamesManager);
 
         public ident CreateIdent(SourceContext sc)
         {
-            return new ident("#fpl" + UniqueNumStr(), sc);
+            return new ident(generatedNamesManager.GenerateName("#fpl"), sc);
         }
 
         public void CreateUnpackedListOfAssignments(unpacked_list_of_ident_or_list ll, List<statement> res, ident prevname, SourceContext sc)

@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using PascalABCCompiler;
+using PascalABCCompiler.CoreUtils;
+using PascalABCCompiler.Errors;
+using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using PascalABCCompiler.Errors;
-using PascalABCCompiler;
-using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors
 {
@@ -30,40 +30,37 @@ namespace SyntaxVisitors
 
     public class LoweringVisitor : BaseChangeVisitor
     {
-        public static LoweringVisitor New
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        private LoweringVisitor(GeneratedNamesManager generatedNamesManager)
         {
-            get { return new LoweringVisitor(); }
+            this.generatedNamesManager = generatedNamesManager;
         }
 
-        private int _varnum = 0;
-        private int _foreachCollectionNum = 0;
-        private int _enumeratorNum = 0;
+        public static LoweringVisitor Create(GeneratedNamesManager generatedNamesManager) => new LoweringVisitor(generatedNamesManager);
 
         private VarNames NewVarNames(ident name)
         {
-            _varnum++;
             return new VarNames()
             {
-                VarName = "$" + name.name + _varnum,
-                VarEndName = "<>varLV" + _varnum
+                VarName = generatedNamesManager.GenerateName("$" + name.name),
+                VarEndName = generatedNamesManager.GenerateName("<>varLV")
             };
         }
 
         private ident NewEnumeratorName()
         {
-            ++_enumeratorNum;
-            return "$enumerator$" + _enumeratorNum;
+            return generatedNamesManager.GenerateName("$enumerator$");
         }
 
         private ident NewForeachCollectionName()
         {
-            ++_foreachCollectionNum;
-            return "$coll$" + _foreachCollectionNum;
+            return generatedNamesManager.GenerateName("$coll$");
         }
 
-        public static void Accept(procedure_definition pd)
+        public static void Accept(procedure_definition pd, GeneratedNamesManager generatedNamesManager)
         {
-            New.ProcessNode(pd);
+            Create(generatedNamesManager).ProcessNode(pd);
         }
 
         public override void Enter(syntax_tree_node st)
@@ -250,7 +247,7 @@ namespace SyntaxVisitors
             if (!b)
                 return;
 
-            var gtAfter = goto_statement.New;
+            var gtAfter = GenerateGoto();
             var lbAfter = new labeled_statement(gtAfter.label);
 
             if ((object)ifn.else_body == null)
@@ -266,7 +263,7 @@ namespace SyntaxVisitors
             }
             else
             {
-                var gtAlt = goto_statement.New;
+                var gtAlt = GenerateGoto();
                 var lbAlt = new labeled_statement(gtAlt.label, ifn.else_body);
 
                 var if0 = new if_node(un_expr.Not(ifn.condition), gtAlt);
@@ -286,8 +283,8 @@ namespace SyntaxVisitors
             if (!b)
                 return;
 
-            var gotoContinue = goto_statement.New;
-            var gotoBreak = goto_statement.New;
+            var gotoContinue = GenerateGoto();
+            var gotoBreak = GenerateGoto();
 
             ReplaceBreakContinueWithGotoLabelVisitor replaceBreakContinueVis = new ReplaceBreakContinueWithGotoLabelVisitor(gotoContinue, gotoBreak);
             rn.statements.visit(replaceBreakContinueVis);
@@ -315,8 +312,8 @@ namespace SyntaxVisitors
             if (!b)
                 return;
 
-            var gotoBreak = goto_statement.New;
-            var gotoContinue = goto_statement.New;
+            var gotoBreak = GenerateGoto();
+            var gotoContinue = GenerateGoto();
 
             ReplaceBreakContinueWithGotoLabelVisitor replaceBreakContinueVis = new ReplaceBreakContinueWithGotoLabelVisitor(gotoContinue, gotoBreak);
             wn.statements.visit(replaceBreakContinueVis);
@@ -350,9 +347,9 @@ namespace SyntaxVisitors
             if (!b)
                 return;
 
-            var gotoContinue = goto_statement.New;
-            var gotoBreak = goto_statement.New;
-            var gotoStart = goto_statement.New;
+            var gotoContinue = GenerateGoto();
+            var gotoBreak = GenerateGoto();
+            var gotoStart = GenerateGoto();
 
             ReplaceBreakContinueWithGotoLabelVisitor replaceBreakContinueVis = new ReplaceBreakContinueWithGotoLabelVisitor(gotoContinue, gotoBreak);
             fn.statements.visit(replaceBreakContinueVis);
@@ -435,6 +432,12 @@ namespace SyntaxVisitors
             block bl = listNodes.FindLast(x => x is block) as block;
 
             bl.defs.Add(new label_definitions(gotoContinue.label, gotoBreak.label, gotoStart.label));
+        }
+
+
+        private goto_statement GenerateGoto()
+        {
+            return new goto_statement(generatedNamesManager.GenerateName("lb#"));
         }
 
         /*

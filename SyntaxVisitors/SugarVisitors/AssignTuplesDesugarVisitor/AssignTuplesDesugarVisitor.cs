@@ -1,28 +1,23 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
+using PascalABCCompiler.CoreUtils;
 using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors.SugarVisitors
 {
     public class AssignTuplesDesugarVisitor : BaseChangeVisitor
     {
-        public static AssignTuplesDesugarVisitor New
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        protected AssignTuplesDesugarVisitor(GeneratedNamesManager generatedNamesManager)
         {
-            get { return new AssignTuplesDesugarVisitor(); }
+            this.generatedNamesManager = generatedNamesManager;
         }
 
-        private int num = 0;
-
-        public string UniqueNumStr()
-        {
-            num++;
-            return num.ToString();
-        }
+        public static AssignTuplesDesugarVisitor Create(GeneratedNamesManager generatedNamesManager) => new AssignTuplesDesugarVisitor(generatedNamesManager);
 
         public override void visit(assign_tuple asstup)
         {
@@ -30,7 +25,7 @@ namespace SyntaxVisitors.SugarVisitors
             var sl = new List<statement>();
             sl.Add(new semantic_check_sugared_statement_node(typeof(assign_tuple), new List<syntax_tree_node> { asstup.vars, asstup.expr }, asstup.source_context)); // Это нужно для проверок на этапе преобразования в семантику
 
-            var tname = "#temp_var" + UniqueNumStr();
+            var tname = generatedNamesManager.GenerateName("#temp_var");
             var tt = new var_statement(new ident(tname, asstup.expr.source_context), asstup.expr, asstup.expr.source_context);
             sl.Add(tt);
 
@@ -73,7 +68,7 @@ namespace SyntaxVisitors.SugarVisitors
         }
         public override void visit(assign_var_tuple assvartup)
         {
-            var tname = "#temp_var" + UniqueNumStr();
+            var tname = generatedNamesManager.GenerateName("#temp_var");
             if (assvartup.Parent is declarations ds) // А когда это происходит??? 
             {
                 var ld = new List<declaration>();
@@ -127,7 +122,7 @@ namespace SyntaxVisitors.SugarVisitors
             // Их надо найти и сделать несколько секций variable_definitions - без семантических проверок.
             // Каждую var_tuple_def_statement надо заменить на assign_var_tuple - одну на секцию variable_definitions
             // А потом оставшаяся часть визитора сделает семантические проверки 
-            var tname = "#temp_var" + UniqueNumStr();
+            var tname = generatedNamesManager.GenerateName("#temp_var");
             var vd = new List<var_def_statement>();
             //vd.Add(new semantic_check_sugared_var_def_statement_node(typeof(assign_var_tuple), new List<syntax_tree_node> { vtd.vars, vtd.inital_value }, vtd.source_context)); // Это нужно для проверок на этапе преобразования в семантику
             var tt1 = new var_def_statement(new ident(tname, vtd.inital_value.source_context), vtd.inital_value, vtd.inital_value.source_context);

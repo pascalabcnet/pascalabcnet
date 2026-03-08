@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using PascalABCCompiler.CoreUtils;
 
 namespace AssignTupleDesugarAlgorithm
 {
@@ -84,7 +85,7 @@ namespace AssignTupleDesugarAlgorithm
         public bool EnsureThatEveryVertexHasOneOrZeroInEdge() =>
             vertexes.All(vert => GetInEdgesForVertex(vert).Count <= 1);
 
-        internal List<Edge> GetAssignOrder()
+        internal List<Edge> GetAssignOrder(GeneratedNamesManager generatedNamesManager)
         {
             List<Edge> assignOrder = new List<Edge>();
             assignOrder.AddRange(assignFirst);
@@ -108,7 +109,7 @@ namespace AssignTupleDesugarAlgorithm
                 Edge edge_to_cut = GetInEdgesForVertex(cut_place).First();
 
                 SymbolNode temp_assign_from = edge_to_cut.from;
-                SymbolNode temp_vertex = new TempSymbolNode(new TempSymbol());
+                SymbolNode temp_vertex = new TempSymbolNode(new TempSymbol(generatedNamesManager));
 
                 assignOrder.Add(new Edge(temp_assign_from, temp_vertex));
                 assignLast.Add(new Edge(temp_vertex, cut_place));

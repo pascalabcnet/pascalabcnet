@@ -243,6 +243,11 @@ namespace PascalABCCompiler
         /// </summary>
         public Dictionary<string, Dictionary<string, bool>> NamesFromUsedUnits { get; } = new Dictionary<string, Dictionary<string, bool>>();
 
+        /// <summary>
+        /// Объект, хранящий счетчики сгенерированных имен для текущего модуля (используется на семантике)
+        /// </summary>
+        public CoreUtils.GeneratedNamesManager GeneratedNamesManager { get; } = new CoreUtils.GeneratedNamesManager();
+
         public UnitState State = UnitState.BeginCompilation;
     }
 
@@ -3153,7 +3158,8 @@ namespace PascalABCCompiler
                         docs,
                         CompilerOptions.Debug,
                         CompilerOptions.ForDebugging,
-                        CompilerOptions.ForIntellisense
+                        CompilerOptions.ForIntellisense,
+                        currentUnit.GeneratedNamesManager
                         );
 
                     SyntaxTreeToSemanticTreeConverter.CompileImplementation(currentUnit.Language, data, CompiledVariables);
@@ -3246,7 +3252,8 @@ namespace PascalABCCompiler
                         docs,
                         CompilerOptions.Debug,
                         CompilerOptions.ForDebugging,
-                        CompilerOptions.ForIntellisense
+                        CompilerOptions.ForIntellisense,
+                        currentUnit.GeneratedNamesManager
                         );
                     
                     currentUnit.SemanticTree = SyntaxTreeToSemanticTreeConverter.CompileInterface(currentUnit.Language, data, CompiledVariables);

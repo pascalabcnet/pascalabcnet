@@ -2,8 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using PascalABCCompiler.SyntaxTree;
-using System;
-using System.Collections.Generic;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
 {
@@ -24,7 +22,12 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
         protected abstract syntax_tree_node ApplyConversions(syntax_tree_node root, bool forIntellisense);
 
-        public virtual syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts) => root;
+        public syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts) {
+
+            return ApplyConversionsAfterUsedModulesCompilation(root, forIntellisense, in compilationArtifacts);
+        }
+
+        protected virtual syntax_tree_node ApplyConversionsAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts) => root;
     }
 
 

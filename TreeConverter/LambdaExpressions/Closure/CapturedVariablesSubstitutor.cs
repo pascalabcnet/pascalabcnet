@@ -10,6 +10,7 @@ using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
 using array_const = PascalABCCompiler.SyntaxTree.array_const;
 using for_node = PascalABCCompiler.SyntaxTree.for_node;
+using PascalABCCompiler.CoreUtils;
 
 namespace TreeConverter.LambdaExpressions.Closure
 {
@@ -82,13 +83,16 @@ namespace TreeConverter.LambdaExpressions.Closure
         private readonly List<CapturedVariablesTreeNodeLambdaScope> _lambdasToBeAddedAsMethods;
         private readonly Dictionary<string, Tuple<string, class_field, semantic_node>> _mappingForNonPublicFieldsOfClass;
 
+        private readonly GeneratedNamesManager _generatedNamesManager;
+
         public CapturedVariablesSubstitutor(Dictionary<SubstitutionKey, List<ident>> identsReferences,
                                             Dictionary<int, CapturedVariablesSubstitutionClassGenerator.ScopeClassDefinition> generatedScopeClassesInfo,
                                             List<CapturedVariablesTreeNodeLambdaScope> lambdasToBeAddedAsMethods,
                                             Dictionary<SubstitutionKey, dot_node> substitutionsInfo,
                                             Dictionary<int, CapturedVariablesTreeNode> capturedVarsTreeNodesDictionary,
                                             Dictionary<string, Tuple<string, class_field, semantic_node>> mappingForNonPublicFieldsOfClass,
-                                            syntax_tree_visitor visitor)
+                                            syntax_tree_visitor visitor,
+                                            GeneratedNamesManager generatedNamesManager)
         {
             _identsReferences = identsReferences;
             _generatedScopeClassesInfo = generatedScopeClassesInfo;
@@ -97,6 +101,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             _lambdasToBeAddedAsMethods = lambdasToBeAddedAsMethods;
             _mappingForNonPublicFieldsOfClass = mappingForNonPublicFieldsOfClass;
             _visitor = visitor;
+            _generatedNamesManager = generatedNamesManager;
         }
 
         public override void visit(function_lambda_definition fld)
@@ -595,7 +600,7 @@ namespace TreeConverter.LambdaExpressions.Closure
 
                                     if (initVal is array_const)
                                     {
-                                        auxVarName = LambdaHelper.GetAuxVarName();
+                                        auxVarName = LambdaHelper.GetAuxVarName(_generatedNamesManager);
                                         var newVarDefStmt = new var_def_statement(new ident_list(new ident(auxVarName)), varStatement.var_def.vars_type)
                                         {
                                             inital_value = initVal
