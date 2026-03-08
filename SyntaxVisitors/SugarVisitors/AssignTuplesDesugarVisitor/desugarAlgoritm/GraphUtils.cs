@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PascalABCCompiler.CoreUtils;
 
 
 namespace AssignTupleDesugarAlgorithm
@@ -83,7 +84,7 @@ namespace AssignTupleDesugarAlgorithm
 
         }
 
-        public static AssignGraph createAssignGraph(List<Symbol> left, List<Symbol> right)
+        public static AssignGraph createAssignGraph(List<Symbol> left, List<Symbol> right, GeneratedNamesManager generatedNamesManager)
         {
             if (right.Count < left.Count) throw new Exception("AAAA");
 
@@ -112,13 +113,13 @@ namespace AssignTupleDesugarAlgorithm
             {
                 if (toFirst)
                 {
-                    var temp_symbol = new TempSymbol();
+                    var temp_symbol = new TempSymbol(generatedNamesManager);
                     assign_first.Add(new Edge(new SymbolNode(right[i]), new TempSymbolNode(temp_symbol)));
                     right[i] = temp_symbol;
                 }
                 else
                 {
-                    var temp_s = new TempSymbol();
+                    var temp_s = new TempSymbol(generatedNamesManager);
                     assign_last.Add(new Edge(new TempSymbolNode(temp_s), new SymbolNode(left[i])));
                     left[i] = temp_s;
                 }
@@ -132,7 +133,7 @@ namespace AssignTupleDesugarAlgorithm
                     || left[i].type == Symbol.Type.POINTER)
                 {
                     var res = new AssignGraph();
-                    res.assignFirst = make2n(left, right);
+                    res.assignFirst = make2n(left, right, generatedNamesManager);
                     return res;
                 }
                 else
@@ -364,14 +365,14 @@ namespace AssignTupleDesugarAlgorithm
             return graph;
         }
         
-        private static List<Edge> make2n(List<Symbol> left, List<Symbol> right)
+        private static List<Edge> make2n(List<Symbol> left, List<Symbol> right, GeneratedNamesManager generatedNamesManager)
         {
             var temps = new List<SymbolNode>();
             var res = new List<Edge>();
             
             for(int i = 0; i < right.Count; i++)
             {
-                var to = new SymbolNode(new TempSymbol());
+                var to = new SymbolNode(new TempSymbol(generatedNamesManager));
                 var from = new SymbolNode(right[i]); 
                 temps.Add(to);
                 res.Add(new Edge(from, to));

@@ -1,23 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
+using PascalABCCompiler.CoreUtils;
 using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors.SugarVisitors
 {
     public class CacheFunctionVisitor : BaseChangeVisitor
     {
-        private static int num = 0;
-        public static string UniqueNumStr()
+
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        private CacheFunctionVisitor(GeneratedNamesManager generatedNamesManager)
         {
-            num++;
-            return num.ToString();
+            this.generatedNamesManager = generatedNamesManager;
         }
-        public static CacheFunctionVisitor New
+
+        public static CacheFunctionVisitor Create(GeneratedNamesManager generatedNamesManager) => new CacheFunctionVisitor(generatedNamesManager);
+
+        private string GenerateNewName(string prefix)
         {
-            get { return new CacheFunctionVisitor(); }
+            return generatedNamesManager.GenerateName(prefix);
         }
 
         public override void visit(simple_attribute_list al)
@@ -74,7 +77,7 @@ namespace SyntaxVisitors.SugarVisitors
                 var pp = pd.proc_header.parameters.params_list.SelectMany(tp => tp.idents.idents.Select(id => Tuple.Create(id, tp.vars_type))).ToArray();
 
                 // var @tpar := Tuple.Create(все параметры)
-                var tupleIdent = new ident("@tpar" + UniqueNumStr());
+                var tupleIdent = new ident(GenerateNewName("@tpar"));
                 // SSM 08.05.22 - один параметр не надо оборачивать в кортеж
 
                 // SSM 09.05.22 - для реализации кортежа используется ValueTuple если он определен
@@ -119,7 +122,7 @@ namespace SyntaxVisitors.SugarVisitors
                 var new_ex = new new_expr(ttr_dict, new expression_list());
                 var sug_ex = new sugared_expression(ttp, new_ex, new_ex.source_context); // семантическая проверка выражения
 
-                var dictIdent = new ident("@" + pd.proc_header.name.ToString() + "DictCache" + UniqueNumStr());
+                var dictIdent = new ident(GenerateNewName("@" + pd.proc_header.name.ToString() + "DictCache"));
                 var vsglobal = new var_statement(dictIdent, sug_ex);
 
                 var declarations = pd.Parent as declarations;

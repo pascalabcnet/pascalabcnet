@@ -1,18 +1,19 @@
 ﻿using PascalABCCompiler.SyntaxTree;
-using System;
+using PascalABCCompiler.CoreUtils;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 
 namespace SyntaxVisitors.SugarVisitors
 {
     public class PropertyDesugarVisitor : BaseChangeVisitor
     {
-        public static PropertyDesugarVisitor New
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        private PropertyDesugarVisitor(GeneratedNamesManager generatedNamesManager)
         {
-            get { return new PropertyDesugarVisitor(); }
+            this.generatedNamesManager = generatedNamesManager;
         }
+
+        public static PropertyDesugarVisitor Create(GeneratedNamesManager generatedNamesManager) => new PropertyDesugarVisitor(generatedNamesManager);
 
         public override void visit(class_members _class_members)
         {
@@ -211,11 +212,9 @@ namespace SyntaxVisitors.SugarVisitors
         }
 
         //random id generator
-        private int postfix = 0;
         public ident NewId(string prefix, SourceContext sc = null)
         {
-            postfix++;
-            return new ident(prefix + postfix.ToString(), sc);
+            return new ident(generatedNamesManager.GenerateName(prefix), sc);
         }
 
     }

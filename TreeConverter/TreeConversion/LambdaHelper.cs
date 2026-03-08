@@ -7,6 +7,7 @@ using PascalABCCompiler.TreeRealization;
 using PascalABCCompiler.SyntaxTree;
 using TreeConverter.LambdaExpressions;
 using static PascalABCCompiler.StringConstants;
+using PascalABCCompiler.CoreUtils;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -49,27 +50,23 @@ namespace PascalABCCompiler.TreeConverter
 
     public class LambdaHelper
     {
-        public static string lambdaPrefix = "<>lambda";
         private const string nonPublicMembersNamePrefix = "<>nonPublic";
         private const string auxiliaryLambdaSuffix = "_$$$auxiliaryFuncName";
         private const string auxVarNamePrefix = "$$$auxVar$$$<>";
-        private static int auxCounter = 0;
-        private static int nonPublicMembersNameCounter = 0;
-        private static int auxVarCounter = 0;
 
-        public static string GetAuxVarName()
+        public static string GetAuxVarName(GeneratedNamesManager generatedNamesManager)
         {
-            return auxVarNamePrefix + auxVarCounter++;
+            return generatedNamesManager.GenerateName(auxVarNamePrefix);
         }
 
-        public static string GetAuxiliaryLambdaName(string lambdaName)
+        public static string GetAuxiliaryLambdaName(string lambdaName, GeneratedNamesManager generatedNamesManager)
         {
-            return lambdaName + auxiliaryLambdaSuffix + auxCounter++;
+            return generatedNamesManager.GenerateName(lambdaName + auxiliaryLambdaSuffix);
         }
 
-        public static string GetNameForNonPublicMember(string memberName)
+        public static string GetNameForNonPublicMember(string memberName, GeneratedNamesManager generatedNamesManager)
         {
-            return nonPublicMembersNamePrefix + memberName + nonPublicMembersNameCounter++;
+            return generatedNamesManager.GenerateName(nonPublicMembersNamePrefix + memberName);
         }
 
         public static string GetLambdaNamePartWithoutGenerics(string name)
@@ -181,9 +178,9 @@ namespace PascalABCCompiler.TreeConverter
             captureCheck = false;
             processingLambdaParametersForTypeInference = 0;
             StatementListStackStack.Clear();
-            auxCounter = 0;
-            nonPublicMembersNameCounter = 0;
-            auxVarCounter = 0;
+            // auxCounter = 0;
+            // nonPublicMembersNameCounter = 0;
+            // auxVarCounter = 0;
         }
         public static bool captureCheck = false;
         public static List<SymbolInfo> capturedVariables = new List<SymbolInfo>();

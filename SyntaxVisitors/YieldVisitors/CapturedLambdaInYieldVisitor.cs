@@ -1,38 +1,30 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using PascalABCCompiler;
+using PascalABCCompiler.CoreUtils;
 using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors
 {
     public class CapturedLambdaInYieldVisitor : BaseChangeVisitor
     {
+        private readonly GeneratedNamesManager generatedNamesManager;
 
-        public CapturedLambdaInYieldVisitor()
+        private CapturedLambdaInYieldVisitor(GeneratedNamesManager generatedNamesManager)
         {
+            this.generatedNamesManager = generatedNamesManager;
         }
 
-        public static CapturedLambdaInYieldVisitor New
+        public static CapturedLambdaInYieldVisitor Create(GeneratedNamesManager generatedNamesManager) => new CapturedLambdaInYieldVisitor(generatedNamesManager);
+
+        public static void Accept(procedure_definition pd, GeneratedNamesManager generatedNamesManager)
         {
-            get { return new CapturedLambdaInYieldVisitor(); }
+            Create(generatedNamesManager).ProcessNode(pd);
         }
 
-        public static void Accept(procedure_definition pd)
+        private string CreateNameForLambdaInYield()
         {
-            New.ProcessNode(pd);
-        }
-
-        int ynum = 0;
-        public string CreateNameForLambdaInYield()
-        {
-            ynum += 1;
-            return "@RenLamInYield" + ynum + "$";
+            return generatedNamesManager.GenerateName("@RenLamInYield", "$");
         }
 
         public override void visit(yield_node yn)

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using PascalABCCompiler.CoreUtils;
 using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors.SugarVisitors
@@ -16,17 +16,19 @@ namespace SyntaxVisitors.SugarVisitors
     {
         public bool optimize_tuple_assign;
 
-        public TupleVisitor(bool optimize_tup_opt)
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        public TupleVisitor(bool optimize_tup_opt, GeneratedNamesManager generatedNamesManager)
         {
             optimize_tuple_assign = optimize_tup_opt;
+            this.generatedNamesManager = generatedNamesManager;
         }
 
-        public static TupleVisitor Create(bool optimize_tup_opt) => new TupleVisitor(optimize_tup_opt);
-        private int num = 0;
-        public string UniqueName()
+        public static TupleVisitor Create(bool optimize_tup_opt, GeneratedNamesManager generatedNamesManager) => new TupleVisitor(optimize_tup_opt, generatedNamesManager);
+
+        private string UniqueName()
         {
-            num++;
-            return "#tup_vis"+num.ToString();
+            return generatedNamesManager.GenerateName("#tup_vis");
         }
 
         public override void visit(read_accessor_name wn)

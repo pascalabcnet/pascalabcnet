@@ -22,6 +22,5 @@
     <ProjectReference Include="..\Localization\Localization.csproj" />
     <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj" />
     <ProjectReference Include="..\SemanticTree\SemanticTree.csproj" />
-    <ProjectReference Include="..\ParserTools\ParserTools.csproj" />
   </ItemGroup>
 </Project>

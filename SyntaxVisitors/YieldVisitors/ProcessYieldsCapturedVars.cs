@@ -1,50 +1,39 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
-using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
-
-using PascalABCCompiler.YieldHelpers;
+using PascalABCCompiler.CoreUtils;
 
 namespace SyntaxVisitors
 {
 
     public static class CapturedNamesHelper
     {
-        public static int CurrentLocalVariableNum = 0;
-
-        public static void Reset()
-        {
-            CurrentLocalVariableNum = 0;
-        }
+        public enum ReservedNum { StateField = 1, CurrentField = 2, MethodFormalParam = 3, MethodSelf = 4, MethodLocalVariable = 5 }
 
         public static string MakeCapturedFormalParameterName(string formalParamName)
         {
-            return string.Format("<>{0}__{1}", YieldConsts.ReservedNum.MethodFormalParam, formalParamName);
+            return string.Format("<>{0}__{1}", ReservedNum.MethodFormalParam, formalParamName);
         }
 
-        public static string MakeCapturedLocalName(string localName)
+        public static string MakeCapturedLocalName(string localName, GeneratedNamesManager generatedNamesManager)
         {
-            return string.Format("<{0}>{1}__{2}", localName, YieldConsts.ReservedNum.MethodLocalVariable, ++CurrentLocalVariableNum);
+            return generatedNamesManager.GenerateName($"<{localName}>{ReservedNum.MethodLocalVariable}__");
         }
     }
 
     public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor
     {
-        int clnum = 0;
+        private readonly GeneratedNamesManager generatedNamesManager;
 
         public string NewYieldClassName()
         {
-            clnum++;
-            return "clyield#" + clnum.ToString();
+            return generatedNamesManager.GenerateName("clyield#");
         }
 
         public FindMainIdentsVisitor mids; // захваченные переменные процедуры по всем её yield 
@@ -53,14 +42,12 @@ namespace SyntaxVisitors
 
         public bool hasYields = false;
 
-        public static ProcessYieldCapturedVarsVisitor New
-        {
-            get { return new ProcessYieldCapturedVarsVisitor(); }
-        }
+        public static ProcessYieldCapturedVarsVisitor Create(GeneratedNamesManager generatedNamesManager) => new ProcessYieldCapturedVarsVisitor(generatedNamesManager);
 
-        public ProcessYieldCapturedVarsVisitor()
+        private ProcessYieldCapturedVarsVisitor(GeneratedNamesManager generatedNamesManager)
         {
             //PrintInfo = false; 
+            this.generatedNamesManager = generatedNamesManager;
         }
 
         /*public override void Enter(syntax_tree_node st)
@@ -164,7 +151,7 @@ namespace SyntaxVisitors
                 // frninja 20/04/16 - поддержка шаблонных классов
                 var iteratorClassRef = CreateClassReference(iteratorClassName);
 
-                cm.Add(new var_def_statement(YieldConsts.Self, iteratorClassRef));
+                cm.Add(new var_def_statement(StringConstants.yieldSelf, iteratorClassRef));
             }
 
             var GetEnumeratorBody = new statement_list();
@@ -173,12 +160,12 @@ namespace SyntaxVisitors
             ResetBody.Add(nsex);
 
             // Системные поля и методы для реализации интерфейса IEnumerable
-            cm.Add(new var_def_statement(YieldConsts.State, "integer"),
-                new var_def_statement(YieldConsts.Current, stels),
+            cm.Add(new var_def_statement(StringConstants.yieldState, "integer"),
+                new var_def_statement(StringConstants.yieldCurrent, stels),
                 procedure_definition.EmptyDefaultConstructor,
                 new procedure_definition("Reset", ResetBody),
                 new procedure_definition("MoveNext", "boolean", pd.proc_body),
-                new procedure_definition("System.Collections.IEnumerator.get_Current", "object", new assign("Result", YieldConsts.Current)),
+                new procedure_definition("System.Collections.IEnumerator.get_Current", "object", new assign("Result", StringConstants.yieldCurrent)),
                 //new procedure_definition("System.Collections.IEnumerable.GetEnumerator", "System.Collections.IEnumerator", new assign("Result", "Self"))
                 new procedure_definition("System.Collections.IEnumerable.GetEnumerator", "System.Collections.IEnumerator", GetEnumeratorBody)
                 );
@@ -210,7 +197,7 @@ namespace SyntaxVisitors
             // frninja 08/12/15 - захват self
             if (iteratorClassName != null && !pd.proc_header.class_keyword)
             {
-                stl.Add(new assign(new dot_node("$res", YieldConsts.Self), new ident("self")));
+                stl.Add(new assign(new dot_node("$res", StringConstants.yieldSelf), new ident("self")));
             }
 
             stl.Add(new assign("Result", "$res"));
@@ -262,7 +249,7 @@ namespace SyntaxVisitors
 
             var cm1 = cm.Add( //class_members.Public.Add(
                 //procedure_definition.EmptyDefaultConstructor,
-                new procedure_definition(new function_header("get_Current", stels), new assign("Result", YieldConsts.Current)),
+                new procedure_definition(new function_header("get_Current", stels), new assign("Result", StringConstants.yieldCurrent)),
                 new procedure_definition(new function_header("GetEnumerator", IEnumeratorT), GetEnumeratorBody),
                 new procedure_definition("Dispose")
             );
@@ -292,7 +279,7 @@ namespace SyntaxVisitors
             // Переприсваивание self 
             if (iteratorClassName != null && !pd.proc_header.class_keyword)
             {
-                stl1.Add(new assign(new dot_node("$res", YieldConsts.Self), new ident(YieldConsts.Self)));
+                stl1.Add(new assign(new dot_node("$res", StringConstants.yieldSelf), new ident(StringConstants.yieldSelf)));
             }
 
             stl1.Add(new assign("Result", "$res"));
@@ -561,11 +548,11 @@ namespace SyntaxVisitors
             }
         }
 
-        private void CreateCapturedLocalsNamesMap(ISet<string> localsNames, IDictionary<string, string> capturedLocalsNamesMap)
+        private void CreateCapturedLocalsNamesMap(ISet<string> localsNames, IDictionary<string, string> capturedLocalsNamesMap, GeneratedNamesManager generatedNamesManager)
         {
             foreach (var localName in localsNames)
             {
-                capturedLocalsNamesMap.Add(localName, CapturedNamesHelper.MakeCapturedLocalName(localName));
+                capturedLocalsNamesMap.Add(localName, CapturedNamesHelper.MakeCapturedLocalName(localName, generatedNamesManager));
             }
         }
 
@@ -656,7 +643,7 @@ namespace SyntaxVisitors
 
 
             // Добавляем в класс метод с обертками для локальных переменных
-            pdCloned.proc_header.name.meth_name = new ident(YieldConsts.YieldHelperMethodPrefix + "_error_checkerr>" + pd.proc_header.name.meth_name.name,
+            pdCloned.proc_header.name.meth_name = new ident(StringConstants.yieldHelperMethodPrefix + "_error_checkerr>" + pd.proc_header.name.meth_name.name,
                 // frninja 05/06/16 - фиксим source_context
                 pd.proc_header.name.meth_name.source_context); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
             //pdCloned.is_yield_helper = true;
@@ -692,7 +679,7 @@ namespace SyntaxVisitors
             localsClonesCollection = localsTypeDetectorHelperVisitor.LocalDeletedDefs.ToArray();
 
             // Добавляем в класс метод с обертками для локальных переменных
-            pdCloned.proc_header.name.meth_name = new ident(YieldConsts.YieldHelperMethodPrefix+ "_locals_type_detector>" + pd.proc_header.name.meth_name.name,
+            pdCloned.proc_header.name.meth_name = new ident(StringConstants.yieldHelperMethodPrefix+ "_locals_type_detector>" + pd.proc_header.name.meth_name.name,
                 // frninja 05/06/16 - фиксим source_context
                 pd.proc_header.name.meth_name.source_context); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
 
@@ -781,10 +768,12 @@ namespace SyntaxVisitors
         /// <param className="deletedLocals">Коллекция удаленных локальных переменных</param>
         /// <param className="capturedLocalsNamesMap">Построенное отображение имен локальных переменных в захваченные имена</param>
         /// <param className="capturedFormalParamsNamesMap">Построенное отображение имен формальных параметров в захваченные имена</param>
+        /// <param className="generatedNamesManager">Хранилище счетчиков сгенерированных переменных</param>
         private void ReplaceCapturedVariables(procedure_definition pd,
             IEnumerable<var_def_statement> deletedLocals,
             out IDictionary<string, string> capturedLocalsNamesMap,
-            out IDictionary<string, string> capturedFormalParamsNamesMap)
+            out IDictionary<string, string> capturedFormalParamsNamesMap,
+            GeneratedNamesManager generatedNamesManager)
         {
             // Структуры данных под классификацию имен в методе
 
@@ -824,7 +813,7 @@ namespace SyntaxVisitors
             // Строим отображения для имён захваченных локальных переменных и формальных параметров
 
             // Create maps :: idName -> captureName
-            CreateCapturedLocalsNamesMap(CollectedLocalsNames, capturedLocalsNamesMap);
+            CreateCapturedLocalsNamesMap(CollectedLocalsNames, capturedLocalsNamesMap, generatedNamesManager);
             CreateCapturedFormalParamsNamesMap(CollectedFormalParamsNames, capturedFormalParamsNamesMap);
 
             // Выполняем замену захват имён в теле метода
@@ -980,16 +969,15 @@ namespace SyntaxVisitors
                     Enumerable.Empty<string>()));
             pd.visit(checkVarRedefVisitor);
             */
-
             
             // SSM 21/06 - Выносим yield x -> x
-            CapturedLambdaInYieldVisitor.Accept(pd);
+            CapturedLambdaInYieldVisitor.Accept(pd, generatedNamesManager);
 
             // Выносим выражение из yield в отдельную переменную
-            ReplaceYieldExprByVarVisitor.Accept(pd);
+            ReplaceYieldExprByVarVisitor.Accept(pd, generatedNamesManager);
 
             // Раскрываем операторы yield sequence. На семантике они не существуют
-            LoweringYieldSequenceVisitor.Accept(pd);
+            LoweringYieldSequenceVisitor.Accept(pd, generatedNamesManager);
 
             // frninja 31/05/16 - добавляем метод-хелпер, возьмет на себя проверку разных ошибок уже существующим бэкендом
             CreateErrorCheckerHelper(pd); // SSM 14/07/16 - переставил до переименования переменных чтобы отлавливались ошибки одинаковых имен в разных пространствах имен
@@ -1012,7 +1000,7 @@ namespace SyntaxVisitors
             }
 
             // Теперь lowering
-            LoweringVisitor.Accept(pd);
+            LoweringVisitor.Accept(pd, generatedNamesManager);
 
             // frninja 13/04/16 - убираем лишние begin..end
             DeleteRedundantBeginEnds.Accept(pd);
@@ -1034,7 +1022,7 @@ namespace SyntaxVisitors
             // Выполняем захват имён
             IDictionary<string, string> CapturedLocalsNamesMap;
             IDictionary<string, string> CapturedFormalParamsNamesMap;
-            ReplaceCapturedVariables(pd, dld.LocalDeletedDefs, out CapturedLocalsNamesMap, out CapturedFormalParamsNamesMap);
+            ReplaceCapturedVariables(pd, dld.LocalDeletedDefs, out CapturedLocalsNamesMap, out CapturedFormalParamsNamesMap, generatedNamesManager);
 
             //mids.vars.Except(dld.LocalDeletedDefsNames); // параметры остались. Их тоже надо исключать - они и так будут обработаны
             // В результате работы в mids.vars что-то осталось. Это не локальные переменные и с ними непонятно что делать
@@ -1178,11 +1166,11 @@ namespace SyntaxVisitors
                 var yn = st as yield_node;
                 curState += 1;
                 res.AddMany(
-                    new assign(YieldConsts.Current, yn.ex, yn.source_context),
-                    new assign(YieldConsts.State, curState),
+                    new assign(StringConstants.yieldCurrent, yn.ex, yn.source_context),
+                    new assign(StringConstants.yieldState, curState),
                     new assign("Result", true),
                     new procedure_call("exit"),
-                    new labeled_statement(YieldConsts.LabelStatePrefix+curState.ToString())
+                    new labeled_statement(StringConstants.yieldLabelStatePrefix+curState.ToString())
                 );
             }
             else if (st is labeled_statement)
@@ -1199,7 +1187,7 @@ namespace SyntaxVisitors
 
         public void Transform()
         {
-            res.Add(new labeled_statement(YieldConsts.LabelStatePrefix+curState.ToString()));
+            res.Add(new labeled_statement(StringConstants.yieldLabelStatePrefix+curState.ToString()));
 
             foreach (var st in stl.subnodes)
                 Process(st);
@@ -1209,10 +1197,10 @@ namespace SyntaxVisitors
             var idl = new ident_list(idseq.ToList());
             defs.Add(new label_definitions(idl));
 
-            statement ifgoto = new goto_statement(YieldConsts.LabelStatePrefix + curState.ToString());
+            statement ifgoto = new goto_statement(StringConstants.yieldLabelStatePrefix + curState.ToString());
             for (var i = curState - 1; i >= 0; i--)
-                ifgoto = new if_node(new bin_expr(new ident(YieldConsts.State), new int32_const(i), Operators.Equal),
-                    new goto_statement(YieldConsts.LabelStatePrefix + i.ToString()),
+                ifgoto = new if_node(new bin_expr(new ident(StringConstants.yieldState), new int32_const(i), Operators.Equal),
+                    new goto_statement(StringConstants.yieldLabelStatePrefix + i.ToString()),
                     ifgoto
                     );
             res.AddFirst(ifgoto);

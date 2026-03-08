@@ -372,16 +372,10 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public static SourceContext BuildGenSC = new SourceContext(0, 777777, 0, 0, 0, 0);
 
-        private static int GenIdNum = 0;
-        public static string UniqueString()
-        {
-            GenIdNum++;
-            return GenIdNum.ToString();
-        }
-        public static ident GenIdentName()
-        {
-            return new ident("$GenId" + UniqueString());
-        }
+        //public static ident GenIdentName()
+        //{
+        //    return new ident("$GenId" + UniqueString());
+        //}
 
         public static type_definition BuildSimpleType(string name)
         {
