@@ -5745,16 +5745,30 @@ namespace PascalABCCompiler.TreeConverter
                         semantic_node sn = convert_semantic_strong(_dot_node.left);
 
                         // SSM 17/07/21 учёт ZeroBasedStrings в семантике срезов строк
-                        if (SemanticRulesConstants.ZeroBasedStrings
-                            && (sn as expression_node)?.type is compiled_type_node ctn && ctn.compiled_type == typeof(string)
-                            && _dot_node.right is ident id0 
-                            )
+                        if (SemanticRulesConstants.ZeroBasedStrings && _dot_node.right is ident id0)
                         {
-                            if (id0.name.ToLower() == "systemslice" 
-                                || id0.name.ToLower() == "systemslicequestion"
-                                || id0.name.ToLower() == "systemsliceassignment"
+                            var functionName = id0.name.ToLower();
+                            if (functionName == "systemslice"
+                                || functionName == "systemslicequestion"
+                                || functionName == "systemsliceassignment"
                                 )
-                              id0.name += "0"; // SystemSlice0
+                            {
+                                Type returningType = null;
+                                // Нода с известным типом
+                                if ((sn as expression_node)?.type is compiled_type_node ctn)
+                                {
+                                    returningType = ctn.compiled_type;
+                                }
+                                // Делегат с известным возвращаемым типом
+                                else if ((sn as typed_expression)?.type is delegated_methods dm)
+                                {
+                                    returningType = (dm.empty_param_method?.ret_type as compiled_type_node)?.compiled_type;
+                                }
+                                if (returningType == typeof(string))
+                                {
+                                    id0.name += "0"; // SystemSlice0
+                                }
+                            }
                         }
 
                         // SSM 04/09/21 учёт ZeroBasedStrings в s[^1]
