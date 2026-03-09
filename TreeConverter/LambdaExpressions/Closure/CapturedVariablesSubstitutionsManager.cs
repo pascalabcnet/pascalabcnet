@@ -3,16 +3,17 @@
 using System.Linq;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeConverter;
+using PascalABCCompiler.CoreUtils;
 
 namespace TreeConverter.LambdaExpressions.Closure
 {
     class CapturedVariablesSubstitutionsManager
     {
-        public static void Substitute(syntax_tree_visitor _visitor, declarations decls, statement_list _statementList)
+        public static void Substitute(syntax_tree_visitor _visitor, declarations decls, statement_list _statementList, GeneratedNamesManager generatedNamesManager)
         {
-            var tree = new CapturedVariablesTreeBuilder(_visitor).BuildTree(_statementList);
-            var substs = new CapturedVariablesSubstitutionClassGenerator(tree.RootNode).GenerateSubstitutions();
-            new CapturedVariablesSubstitutor(tree.IdentsReferences, substs.GeneratedScopeClassesInfo, substs.LambdasToBeAddedAsMethods, substs.SubstitutionsInfo, tree.CapturedVarsNodesDictionary, substs.ConvertingClassNonPublicMembersMapping, _visitor)
+            var tree = new CapturedVariablesTreeBuilder(_visitor, generatedNamesManager).BuildTree(_statementList);
+            var substs = new CapturedVariablesSubstitutionClassGenerator(tree.RootNode, generatedNamesManager).GenerateSubstitutions();
+            new CapturedVariablesSubstitutor(tree.IdentsReferences, substs.GeneratedScopeClassesInfo, substs.LambdasToBeAddedAsMethods, substs.SubstitutionsInfo, tree.CapturedVarsNodesDictionary, substs.ConvertingClassNonPublicMembersMapping, _visitor, generatedNamesManager)
                 .Substitute(_statementList);
 
             if (_visitor.context.converting_block() == block_type.function_block && tree.ProcedureScope != null)

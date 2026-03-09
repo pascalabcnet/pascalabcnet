@@ -66,7 +66,7 @@ copy bin\template.pct Release\PascalABCNETLinux\template.pct
 copy bin\TreeConverter.dll Release\PascalABCNETLinux\TreeConverter.dll
 copy bin\WeifenLuo.WinFormsUI.Docking.ThemeVS2005Linux.dll Release\PascalABCNETLinux\WeifenLuo.WinFormsUI.Docking.ThemeVS2005Linux.dll
 copy bin\WeifenLuo.WinFormsUI.DockingLinux.dll Release\PascalABCNETLinux\WeifenLuo.WinFormsUI.DockingLinux.dll
-copy bin\YieldHelpers.dll Release\PascalABCNETLinux\YieldHelpers.dll
+copy bin\Utils.dll Release\PascalABCNETLinux\Utils.dll
 copy bin\LambdaAnySynToSemConverter.dll Release\PascalABCNETLinux\LambdaAnySynToSemConverter.dll
 copy bin\TeacherControlPlugin.dll Release\PascalABCNETLinux\TeacherControlPlugin.dll
 copy bin\Highlighting\PascalABCNET.xshd Release\PascalABCNETLinux\Highlighting\PascalABCNET.xshd
@@ -119,6 +119,12 @@ copy bin\Lib\MLABC.pcu Release\PascalABCNETLinux\Lib\MLABC.pcu
 copy bin\Lib\MLCoreABC.pcu Release\PascalABCNETLinux\Lib\MLCoreABC.pcu
 copy bin\Lib\MLModelsABC.pcu Release\PascalABCNETLinux\Lib\MLModelsABC.pcu
 copy bin\Lib\ValidationML.pcu Release\PascalABCNETLinux\Lib\ValidationML.pcu
+copy bin\Lib\MLExceptions.pcu Release\PascalABCNETLinux\Lib\MLExceptions.pcu
+copy bin\Lib\InspectionML.pcu Release\PascalABCNETLinux\Lib\InspectionML.pcu
+copy bin\Lib\MLPipelineABC.pcu Release\PascalABCNETLinux\Lib\MLPipelineABC.pcu
+copy bin\Lib\MLPipelineABC.pcu Release\PascalABCNETLinux\Lib\MLDatasets.pcu
+copy bin\Lib\MLPipelineABC.pcu Release\PascalABCNETLinux\Lib\PlotML.pcu
+
 
 copy bin\Lib\ABCDatabases.pas Release\PascalABCNETLinux\LibSource\ABCDatabases.pas
 copy bin\Lib\BBCMicrobit.pas Release\PascalABCNETLinux\LibSource\BBCMicrobit.pas
@@ -169,6 +175,12 @@ copy bin\Lib\MLABC.pas Release\PascalABCNETLinux\LibSource\MLABC.pas
 copy bin\Lib\MLCoreABC.pas Release\PascalABCNETLinux\LibSource\MLCoreABC.pas
 copy bin\Lib\MLModelsABC.pas Release\PascalABCNETLinux\LibSource\MLModelsABC.pas
 copy bin\Lib\ValidationML.pas Release\PascalABCNETLinux\LibSource\ValidationML.pas
+copy bin\Lib\MLExceptions.pas Release\PascalABCNETLinux\LibSource\MLExceptions.pas
+copy bin\Lib\InspectionML.pas Release\PascalABCNETLinux\LibSource\InspectionML.pas
+copy bin\Lib\MLPipelineABC.pas Release\PascalABCNETLinux\LibSource\MLPipelineABC.pas
+copy bin\Lib\MLPipelineABC.pas Release\PascalABCNETLinux\LibSource\MLDatasets.pas
+copy bin\Lib\MLPipelineABC.pas Release\PascalABCNETLinux\LibSource\PlotML.pas
+
 
 copy bin\Lng\Eng\.LanguageName Release\PascalABCNETLinux\Lng\Eng\.LanguageName
 copy bin\Lng\Eng\AspectsTree.dat Release\PascalABCNETLinux\Lng\Eng\AspectsTree.dat

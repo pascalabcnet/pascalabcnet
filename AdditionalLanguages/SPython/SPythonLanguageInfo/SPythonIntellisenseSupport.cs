@@ -1026,7 +1026,7 @@ namespace Languages.SPython.Frontend.Data
                     case TypeCode.Double: return "float";
                     case TypeCode.Boolean: return "bool";
                     case TypeCode.String: return "str";
-                    case TypeCode.Char: return "char";
+                    case TypeCode.Char: return "str";
                 }
                 /*if (ctn.IsPointer)
                     if (ctn.FullName == "System.Void*")
@@ -1106,7 +1106,7 @@ namespace Languages.SPython.Frontend.Data
                     case TypeCode.Double: return "float";
                     case TypeCode.Boolean: return "bool";
                     case TypeCode.String: return "str";
-                    case TypeCode.Char: return "char";
+                    case TypeCode.Char: return "str";
                 }
                 /*if (ctn.IsPointer)
                     if (ctn.FullName == "System.Void*")
@@ -1280,7 +1280,6 @@ namespace Languages.SPython.Frontend.Data
             {
                 case KeywordKind.IntType: return "int";
                 case KeywordKind.DoubleType: return "float";
-                case KeywordKind.CharType: return "char";
                 case KeywordKind.BoolType: return "bool";
                 case KeywordKind.StringType: return "str";
             }

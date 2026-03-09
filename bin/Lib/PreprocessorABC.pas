@@ -22,11 +22,12 @@ interface
 
 uses DataFrameABC;
 uses System;
+uses MLCoreABC;
 
 type
 /// Базовый интерфейс шагов подготовки данных.
 /// Определяет семантику операций Fit и Transform
-  IPreprocessor = interface
+  IPreprocessor = interface(IDataStep)
     /// Анализирует DataFrame и и сохраняет параметры шага
     function Fit(df: DataFrame): IPreprocessor;
     /// Применяет сохранённые параметры к DataFrame.
@@ -36,58 +37,14 @@ type
     function FitTransform(df: DataFrame): DataFrame;
   end;
 
-/// Приводит числовые столбцы к нулевому среднему и единичному стандартному отклонению.
-/// При Fit вычисляет среднее значение и стандартное отклонение столбцов.
-/// Применяет преобразование: x' = (x - mean) / std.
-/// Пропущенные значения (NA) сохраняются.
-  DataStandardScaler = class(IPreprocessor)
-  private
-    cols: array of string;
-    means: array of real;
-    stds: array of real;
-    fitted: boolean;
-  public
-    /// Создаёт StandardScaler для указанных числовых столбцов.
-    constructor Create(params columns: array of string);
-    /// Вычисляет среднее значение и стандартное отклонение для каждого столбца.
-    function Fit(df: DataFrame): IPreprocessor;
-    /// Возвращает DataFrame со стандартизованными числовыми столбцами.
-    function Transform(df: DataFrame): DataFrame;
-    /// Последовательно выполняет Fit и Transform.
-    function FitTransform(df: DataFrame): DataFrame;
-  end;
-  
-/// Приводит числовые столбцы к заданному диапазону значений
-/// При Fit вычисляет минимальное и максимальное значения столбцов
-/// Применяет преобразование: x' = (x - min) / (max - min)
-/// Пропущенные значения (NA) сохраняются
-  DataMinMaxScaler = class(IPreprocessor)
-  private
-    cols: array of string;
-    mins: array of real;
-    maxs: array of real;
-    fitted: boolean;
-  public
-    /// Создаёт MinMaxScaler для указанных столбцов
-    constructor Create(params columns: array of string);
-  
-    /// Вычисляет минимальные и максимальные значения столбцов
-    function Fit(df: DataFrame): IPreprocessor;
-    /// Применяет масштабирование к DataFrame
-    /// Возвращает новый DataFrame
-    function Transform(df: DataFrame): DataFrame;
-    /// Последовательно выполняет Fit и Transform.
-    function FitTransform(df: DataFrame): DataFrame;
-  end;
-  
 /// Кодирует строковый категориальный столбец в числовые значения
 /// Категории фиксируются при Fit
 /// Работает только со строковыми столбцами
-  LabelEncoder = class(IPreprocessor)
-  private
-    col: string;
-    mapping: Dictionary<string, integer>;
-    fitted: boolean;
+    LabelEncoder = class(IPreprocessor)
+    private
+      col: string;
+      mapping: Dictionary<string, integer>;
+      fitted: boolean;
   public
     /// Создаёт LabelEncoder для указанного столбца
     constructor Create(column: string);
@@ -99,11 +56,13 @@ type
     function Transform(df: DataFrame): DataFrame;
     /// Выполняет Fit и Transform последовательно
     function FitTransform(df: DataFrame): DataFrame;
+    
+    function ToString: string; override;
   end;
 
 /// Кодирует строковый категориальный столбец в набор бинарных (one-hot) столбцов
 /// Категории фиксируются при Fit
-/// Неизвестные категории приводят к ошибке
+/// Неизвестные категории кодируются нулями
 /// Пропущенные значения (NA) кодируются нулями
   OneHotEncoder = class(IPreprocessor)
   private
@@ -122,6 +81,8 @@ type
     function Transform(df: DataFrame): DataFrame;
     /// Выполняет Fit и Transform последовательно
     function FitTransform(df: DataFrame): DataFrame;
+    
+    function ToString: string; override;
   end;
 
   ImputeStrategy = (isMean, isConstant);
@@ -137,10 +98,12 @@ type
     means: array of real;
     fitted: boolean;
   public
+    /// Создаёт Imputer с заполнением средним значением
+    constructor Create(params columns: array of string);
     /// Создаёт Imputer с заданной стратегией заполнения
     constructor Create(strategy: ImputeStrategy; params columns: array of string);
     /// Создаёт Imputer с константной стратегией заполнения
-    constructor Create(strategy: ImputeStrategy; value: object; params columns: array of string);
+    constructor Create(value: object; params columns: array of string);
   
     /// Вычисляет значения для заполнения пропусков
     function Fit(df: DataFrame): IPreprocessor;
@@ -149,27 +112,10 @@ type
     function Transform(df: DataFrame): DataFrame;
     /// Выполняет Fit и Transform последовательно
     function FitTransform(df: DataFrame): DataFrame;
+    
+    function ToString: string; override;
   end;
-
   
-type
-/// DataPipeline (конвейер) шагов подготовки данных.
-/// Выполняет шаги последовательно с семантикой Fit / Transform.  
-  DataPipeline = class
-  private
-    steps: List<IPreprocessor>;
-    fitted: boolean;
-  public
-    constructor;
-    /// Добавляет шаг в конец pipeline
-    function Add(p: IPreprocessor): DataPipeline;
-    /// Обучает все шаги pipeline на DataFrame
-    function Fit(df: DataFrame): DataPipeline;
-    /// Применяет обученный pipeline к DataFrame
-    function Transform(df: DataFrame): DataFrame;
-    /// Выполняет Fit и Transform последовательно
-    function FitTransform(df: DataFrame): DataFrame;
-  end;
 
 implementation
 
@@ -233,195 +179,11 @@ const
   ER_IMPUTER_CONSTANT_TYPE_MISMATCH =
     'Imputer(constant): несоответствие типа значения для столбца "{0}"!!' +
     'Imputer(constant): value type mismatch for column "{0}"';
-  ER_PIPELINE_MODIFY_AFTER_FIT =
-    'Нельзя добавлять шаг после вызова Fit()!!Cannot add step after Fit';
-
-//-----------------------------
-//        StandardScaler
-//-----------------------------
-
-constructor DataStandardScaler.Create(params columns: array of string);
-begin
-  if (columns = nil) or (columns.Length = 0) then
-    ArgumentError(ER_SCALER_NO_COLUMNS);
-
-  cols := columns;
-  fitted := false;
-end;
-
-function DataStandardScaler.Fit(df: DataFrame): IPreprocessor;
-begin
-  var n := cols.Length;
-  SetLength(means, n);
-  SetLength(stds, n);
-
-  for var i := 0 to n - 1 do
-  begin
-    var colName := cols[i];
-    var idx := df.Schema.IndexOf(colName);
-
-    var ct := df.Schema.ColumnTypeAt(idx);
-    if not (ct in [ColumnType.ctInt, ColumnType.ctFloat]) then
-      Error(ER_SCALER_COLUMN_NOT_NUMERIC, colName);
-
-    var sum := 0.0;
-    var sum2 := 0.0;
-    var cnt := 0;
-
-    var cur := df.GetCursor;
-    while cur.MoveNext do
-    begin
-      if not cur.IsValid(idx) then continue;
-      var x := cur.Float(idx);
-      sum += x;
-      sum2 += x * x;
-      cnt += 1;
-    end;
-
-    if cnt = 0 then
-      Error(ER_SCALER_NO_VALID_VALUES, colName);
-
-    means[i] := sum / cnt;
-    var v := sum2 / cnt - means[i] * means[i];
-    stds[i] := Sqrt(v);
-
-    if stds[i] = 0 then
-      Error(ER_SCALER_ZERO_VARIANCE, colName);
-  end;
-
-  fitted := true;
-  Result := Self;
-end;
-
-function DataStandardScaler.Transform(df: DataFrame): DataFrame;
-begin
-  if not fitted then
-    NotFittedError(ER_FIT_NOT_CALLED);
-
-  var res := df;
-
-  for var i := 0 to cols.Length - 1 do
-  begin
-    var colName := cols[i];
-    var idx := df.Schema.IndexOf(colName);
-    var mean := means[i];
-    var std  := stds[i];
-
-    res := res.ReplaceColumnFloat(
-      colName,
-      c ->
-        (if c.IsValid(idx)
-        then (c.Float(idx) - mean) / std
-        else real.NaN)
-    );
-  end;
-
-  Result := res;
-end;
-
-function DataStandardScaler.FitTransform(df: DataFrame): DataFrame;
-begin
-  Fit(df);
-  Result := Transform(df);
-end;
-
-//-----------------------------
-//        MinMaxScaler
-//-----------------------------
-
-constructor DataMinMaxScaler.Create(params columns: array of string);
-begin
-  if (columns = nil) or (columns.Length = 0) then
-    ArgumentError(ER_MINMAX_NO_COLUMNS);
-
-  cols := columns;
-  fitted := false;
-end;
-
-function DataMinMaxScaler.Fit(df: DataFrame): IPreprocessor;
-begin
-  var n := cols.Length;
-  SetLength(mins, n);
-  SetLength(maxs, n);
-
-  for var i := 0 to n - 1 do
-  begin
-    var colName := cols[i];
-    var idx := df.Schema.IndexOf(colName);
-
-    var ct := df.Schema.ColumnTypeAt(idx);
-    if not (ct in [ColumnType.ctInt, ColumnType.ctFloat]) then
-      Error(ER_MINMAX_COLUMN_NOT_NUMERIC, colName);
-
-    var first := true;
-    var minv, maxv: real;
-
-    var cur := df.GetCursor;
-    while cur.MoveNext do
-    begin
-      if not cur.IsValid(idx) then continue;
-      var x := cur.Float(idx);
-
-      if first then
-      begin
-        minv := x;
-        maxv := x;
-        first := false;
-      end
-      else
-      begin
-        if x < minv then minv := x;
-        if x > maxv then maxv := x;
-      end;
-    end;
-
-    if first then
-      Error(ER_MINMAX_NO_VALID_VALUES, colName);
-
-    if minv = maxv then
-      Error(ER_MINMAX_CONSTANT_COLUMN, colName);
-
-    mins[i] := minv;
-    maxs[i] := maxv;
-  end;
-
-  fitted := true;
-  Result := Self;
-end;
-
-function DataMinMaxScaler.Transform(df: DataFrame): DataFrame;
-begin
-  if not fitted then
-    NotFittedError(ER_FIT_NOT_CALLED);
-
-  var res := df;
-
-  for var i := 0 to cols.Length - 1 do
-  begin
-    var colName := cols[i];
-    var idx := df.Schema.IndexOf(colName);
-    var minv := mins[i];
-    var maxv := maxs[i];
-    var scale := maxv - minv;
-
-    res := res.ReplaceColumnFloat(
-      colName,
-      c ->
-        (if c.IsValid(idx)
-        then (c.Float(idx) - minv) / scale
-        else real.NaN)
-    );
-  end;
-
-  Result := res;
-end;
-
-function DataMinMaxScaler.FitTransform(df: DataFrame): DataFrame;
-begin
-  Fit(df);
-  Result := Transform(df);
-end;
-
+  ER_ONEHOT_EMPTY_COLUMN =
+    'Столбец "{0}" не содержит категориальных значений!!Column "{0}" contains no categorical values';  
+  ER_COLUMN_NOT_FOUND =
+    'Столбец "{0}" не найден!!Column "{0}" not found';    
+  
 //-----------------------------
 //        LabelEncoder
 //-----------------------------
@@ -491,6 +253,11 @@ begin
   Result := Transform(df);
 end;
 
+function LabelEncoder.ToString: string;
+begin
+  Result := 'LabelEncoder(' + col + ')';
+end;
+
 //-----------------------------
 //        OneHotEncoder
 //-----------------------------
@@ -523,6 +290,9 @@ begin
       values.Add(s);
     end;
   end;
+  
+  if values.Count = 0 then
+    Error(ER_ONEHOT_EMPTY_COLUMN, col);
 
   categories := values.ToArray;
   fitted := true;
@@ -535,22 +305,14 @@ begin
     NotFittedError(ER_FIT_NOT_CALLED);
 
   var srcIdx := df.Schema.IndexOf(col);
+  if srcIdx < 0 then
+    ArgumentError(ER_COLUMN_NOT_FOUND, col);
+  
   var catCount := categories.Length;
 
-  // === ШАГ 1. Проверка на unseen категории ===
-  var cur := df.GetCursor;
-  while cur.MoveNext do
-  begin
-    if not cur.IsValid(srcIdx) then continue;
-
-    var s := cur.Str(srcIdx);
-    if not indexByValue.ContainsKey(s) then
-      Error(ER_ONEHOT_UNSEEN_CATEGORY, s);
-  end;
-
-  // === ШАГ 2. Генерация one-hot столбцов ===
   var res := df;
 
+  // === Генерация one-hot столбцов ===
   for var j := 0 to catCount - 1 do
   begin
     var catIdx := j;
@@ -564,7 +326,17 @@ begin
         exit;
       end;
 
-      if indexByValue[c.Str(srcIdx)] = catIdx then
+      var s := c.Str(srcIdx);
+
+      var idx: integer;
+      if not indexByValue.TryGetValue(s, idx) then
+      begin
+        // неизвестная категория → все нули
+        Result := 0;
+        exit;
+      end;
+
+      if idx = catIdx then
         Result := 1
       else
         Result := 0;
@@ -573,18 +345,21 @@ begin
     res := res.AddDerivedIntColumn(newName, Encode);
   end;
 
-  // === ШАГ 3. Удаление исходного столбца ===
+  // === удаление исходного столбца ===
   res := res.Drop([srcIdx]);
 
   Result := res;
 end;
 
-
-
 function OneHotEncoder.FitTransform(df: DataFrame): DataFrame;
 begin
   Fit(df);
   Result := Transform(df);
+end;
+
+function OneHotEncoder.ToString: string;
+begin
+  Result := 'OneHotEncoder(column=' + col + ')';
 end;
 
 //-----------------------------
@@ -605,15 +380,17 @@ begin
   fitted := false;
 end;
 
-constructor Imputer.Create(strategy: ImputeStrategy; value: object; params columns: array of string);
+constructor Imputer.Create(params columns: array of string);
 begin
-  if strategy <> isConstant then
-    ArgumentError(ER_IMPUTER_INVALID_STRATEGY_CONSTANT);
+  Create(ImputeStrategy.isMean, columns);
+end;
 
+constructor Imputer.Create(value: object; params columns: array of string);
+begin
   if (columns = nil) or (columns.Length = 0) then
     ArgumentError(ER_IMPUTER_NO_COLUMNS);
 
-  self.strategy := strategy;
+  self.strategy := ImputeStrategy.isConstant;
   self.cols := columns;
 
   // одна и та же константа для всех столбцов
@@ -733,56 +510,18 @@ begin
   Result := Transform(df);
 end;
 
-//-----------------------------
-//          Pipeline
-//-----------------------------
-
-constructor DataPipeline.Create;
+function Imputer.ToString: string;
 begin
-  steps := new List<IPreprocessor>;
-  fitted := false;
-end;
+  var colsStr := '[' + cols.JoinToString(', ') + ']';
 
-function DataPipeline.Add(p: IPreprocessor): DataPipeline;
-begin
-  if fitted then
-    Error(ER_PIPELINE_MODIFY_AFTER_FIT);
+  case strategy of
+    isMean:
+      Result := 'Imputer(strategy=mean, columns=' + colsStr + ')';
 
-  steps.Add(p);
-  Result := Self;
-end;
-
-function DataPipeline.Fit(df: DataFrame): DataPipeline;
-begin
-  var current := df;
-
-  for var i := 0 to steps.Count - 1 do
-  begin
-    steps[i] := steps[i].Fit(current);
-    current := steps[i].Transform(current);
+    isConstant:
+      Result := 'Imputer(strategy=constant, value=' +
+                constants[0].ToString + ', columns=' + colsStr + ')';
   end;
-
-  fitted := true;
-  Result := Self;
 end;
-
-function DataPipeline.Transform(df: DataFrame): DataFrame;
-begin
-  if not fitted then
-    NotFittedError(ER_FIT_NOT_CALLED);
-
-  var current := df;
-  foreach var step in steps do
-    current := step.Transform(current);
-
-  Result := current;
-end;
-
-function DataPipeline.FitTransform(df: DataFrame): DataFrame;
-begin
-  Fit(df);
-  Result := Transform(df);
-end;
-
 
 end.

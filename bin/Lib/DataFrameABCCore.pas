@@ -22,7 +22,7 @@ type
     class function BuildIndex(names: array of string): Dictionary<string, integer>;
   public
     property ColumnCount: integer read fNames.Length;
-    property Names: array of string read fNames;
+    property ColumnNames: array of string read fNames;
     property Types: array of ColumnType read fTypes;
     property IsCategorical: array of boolean read fIsCategorical;
 

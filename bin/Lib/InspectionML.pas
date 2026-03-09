@@ -32,33 +32,45 @@ type
     /// падение выбранной метрики качества модели.
     /// Работает с любой реализацией IModel.
     static function PermutationImportance(model: IModel; X: Matrix; y: Vector;
-      scoreFunc: (Vector, Vector) -> real): Vector;
+      scoreFunc: (Vector, Vector) -> real; seed: integer := 0): Vector;
   end;  
 
 implementation
 
+uses MLExceptions;
+
+const
+  ER_SCORE_FUNC_NULL = 'scoreFunc не может быть nil!!scoreFunc cannot be nil';
+
 static function Inspection.PermutationImportance(model: IModel; X: Matrix; y: Vector;
-  scoreFunc: (Vector, Vector) -> real): Vector;
+  scoreFunc: (Vector, Vector) -> real; seed: integer): Vector;
 begin
-  if X.Rows <> y.Length then
-    raise new Exception('PermutationImportance: dimension mismatch');
+  if model = nil then
+    ArgumentNullError(ER_MODEL_NULL);
+
+  if scoreFunc = nil then
+    ArgumentNullError(ER_SCORE_FUNC_NULL);
+
+  if X.RowCount <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
   var baselinePred := model.Predict(X);
   var baselineScore := scoreFunc(y, baselinePred);
 
-  var n := X.Rows;
-  var p := X.Cols;
+  var n := X.RowCount;
+  var p := X.ColCount;
 
   var resultVec := new Vector(p);
+  var rng := new System.Random(seed);
 
   for var j := 0 to p-1 do
   begin
     var Xperm := X.Clone;
 
-    // Fisher–Yates shuffle столбца j
+    // Fisher–Yates shuffle столбца j (детерминированно через seed)
     for var i := n-1 downto 1 do
     begin
-      var k := Random(i+1);
+      var k := rng.Next(i+1);
       var tmp := Xperm[i,j];
       Xperm[i,j] := Xperm[k,j];
       Xperm[k,j] := tmp;

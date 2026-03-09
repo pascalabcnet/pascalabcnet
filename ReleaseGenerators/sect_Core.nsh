@@ -14,7 +14,7 @@
     File "..\bin\SyntaxTree.dll"
     File "..\bin\SyntaxTreeConverters.dll"
     File "..\bin\SyntaxVisitors.dll"
-    File "..\bin\YieldHelpers.dll"
+    File "..\bin\Utils.dll"
     File "..\bin\ICSharpCode.NRefactory.dll"
     File "..\bin\TreeConverter.dll"
     File "..\bin\OptimizerConversion.dll"
@@ -81,7 +81,7 @@
     ${AddFile} "SemanticTree.dll"
     ${AddFile} "SyntaxTree.dll"
     ${AddFile} "SyntaxTreeConverters.dll"
-    ${AddFile} "YieldHelpers.dll"
+    ${AddFile} "Utils.dll"
     ${AddFile} "SyntaxVisitors.dll"
     ${AddFile} "ICSharpCode.NRefactory.dll"
     ${AddFile} "TreeConverter.dll"
@@ -190,6 +190,9 @@
     File ..\bin\Lib\ValidationML.pcu
     File ..\bin\Lib\MLExceptions.pcu
     File ..\bin\Lib\InspectionML.pcu
+    File ..\bin\Lib\MLPipelineABC.pcu
+    File ..\bin\Lib\PlotML.pcu
+    File ..\bin\Lib\MLDatasets.pcu
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
@@ -294,6 +297,9 @@
     ${AddFile} "ValidationML.pcu"
     ${AddFile} "MLExceptions.pcu"
     ${AddFile} "InspectionML.pcu"
+    ${AddFile} "MLPipelineABC.pcu"
+    ${AddFile} "PlotML.pcu"
+    ${AddFile} "MLDatasets.pcu"
 
 
     ${AddFile} "turtle.png"
@@ -435,6 +441,10 @@
     File ..\bin\Lib\ValidationML.pas
     File ..\bin\Lib\MLExceptions.pas
     File ..\bin\Lib\InspectionML.pas
+    File ..\bin\Lib\MLPipelineABC.pas
+    File ..\bin\Lib\PlotML.pas
+    File ..\bin\Lib\MLDatasets.pas
+
 
     File ..\bin\Lib\__RedirectIOMode.vb
     File ..\bin\Lib\VBSystem.vb
@@ -526,6 +536,9 @@
     ${AddFile} "ValidationML.pas"
     ${AddFile} "MLExceptions.pas"
     ${AddFile} "InspectionML.pas"
+    ${AddFile} "MLPipelineABC.pas"
+    ${AddFile} "PlotML.pas"
+    ${AddFile} "MLDatasets.pas"
 
     ${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"

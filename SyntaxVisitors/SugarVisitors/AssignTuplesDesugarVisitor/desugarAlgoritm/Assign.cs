@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.CoreUtils;
 
 namespace AssignTupleDesugarAlgorithm
 {
@@ -14,7 +15,7 @@ namespace AssignTupleDesugarAlgorithm
             this.from = from;
         }
 
-        public static List<Assign> getAssignOrder(tuple_node tn, addressed_value_list vars, BindCollectLightSymInfo binder)
+        public static List<Assign> getAssignOrder(tuple_node tn, addressed_value_list vars, BindCollectLightSymInfo binder, GeneratedNamesManager generatedNamesManager)
         {
             var left = new List<Symbol>();
             var right = new List<Symbol>();
@@ -33,9 +34,9 @@ namespace AssignTupleDesugarAlgorithm
             }
 
       
-            var graph = GraphUtils.createAssignGraph(left, right);
+            var graph = GraphUtils.createAssignGraph(left, right, generatedNamesManager);
             //graph.drawGraph();
-            var order = graph.GetAssignOrder();
+            var order = graph.GetAssignOrder(generatedNamesManager);
             return order.Select(elem => new Assign(to: elem.to.symbol, from: elem.from.symbol)).ToList();
         }
 
