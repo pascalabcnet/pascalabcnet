@@ -112,6 +112,9 @@ type
       color: ColorWPF? := nil; thickness: real := 2; legend: string := nil);
     static procedure Points(x, y: array of real; 
       color: ColorWPF? := nil; size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
+    static procedure Points(x, y: array of real;
+      labels: array of integer; color: ColorWPF? := nil; size: real := 6; marker: MarkerType := MarkerType.Circle);
+      
     static procedure Heatmap(m: array[,] of real);  
     
     static function Grid(rows,cols: integer): Figure;
@@ -124,6 +127,7 @@ type
     static procedure Title(s: string);
     static procedure XLabel(s: string);
     static procedure YLabel(s: string);
+    static procedure SetLabels(title: string := ''; xlabel: string := ''; ylabel: string := '');
     
     static procedure Clear;
     
@@ -528,6 +532,21 @@ begin
   end);
 end;
 
+static procedure Plot.SetLabels(title: string; xlabel: string; ylabel: string);
+begin
+  RunUI(() ->
+  begin
+    if title <> '' then
+      rootChart.Title := title;
+
+    if xlabel <> '' then
+      rootChart.BottomTitle := xlabel;
+
+    if ylabel <> '' then
+      rootChart.LeftTitle := ylabel;
+  end);
+end;
+
 static procedure Plot.Clear;
 begin
   RunUI(() ->
@@ -671,6 +690,28 @@ begin
 
     DrawPoints(rootChart, x, y, clr, size, marker, legend);
   end);
+end;
+
+static procedure Plot.Points(x, y: array of real; labels: array of integer;
+  color: ColorWPF?; size: real; marker: MarkerType);
+begin
+  if (x = nil) or (y = nil) or (labels = nil) then
+    raise new System.ArgumentNullException;
+
+  if (x.Length <> y.Length) or (x.Length <> labels.Length) then
+    raise new System.ArgumentException('Points: array sizes mismatch');
+
+  var k := labels.Max + 1;
+
+  for var c := 0 to k-1 do
+  begin
+    var ind := labels.Indices(v -> v = c).ToArray;
+
+    var xs := ind.ConvertAll(i -> x[i]);
+    var ys := ind.ConvertAll(i -> y[i]);
+
+    Points(xs, ys, color, size, marker, 'cluster ' + c);
+  end;
 end;
 
 static procedure Plot.Heatmap(m: array[,] of real);

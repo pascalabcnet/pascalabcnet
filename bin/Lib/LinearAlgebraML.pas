@@ -99,6 +99,9 @@ type
     
     function Clone: Matrix;
     
+    function Row(i: integer) := data.Row(i);
+    function Col(j: integer) := data.Col(j);
+
     function ColumnSums: Vector;
     function RowSums: Vector;
     function ColumnMeans: Vector;

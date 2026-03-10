@@ -1653,13 +1653,22 @@ type
     function Clone: ITransformer;
   end;
   
-
 {$endregion Transformers}
+
+
+{$region Utility functions}
+/// Преобразует вектор меток классов в массив целых.
+/// Предполагается, что значения y являются целыми
+/// (0,1,2,...) и могут содержать небольшие
+/// численные ошибки, поэтому используется Round.
+function LabelsToInts(y: Vector): array of integer;
+
+{$endregion Utility functions}
 
   
 var 
   /// Проверять ли входные данные моделей на NaN, Inf 
-  ValidateFiniteInputs := true;  
+  ValidateFiniteInputs := True;  
   
 implementation  
 
@@ -8083,6 +8092,11 @@ begin
   var t := new Normalizer(fNormType);
   t.fFitted := fFitted;
   Result := t;
+end;
+
+function LabelsToInts(y: Vector): array of integer;
+begin
+  Result := ArrGen(y.Length, i -> Round(y[i]));
 end;
 
     
