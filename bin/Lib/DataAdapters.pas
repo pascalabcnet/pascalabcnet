@@ -12,7 +12,21 @@ uses LinearAlgebraML;
 ///   возможные небольшие численные ошибки 
 function LabelsToInts(y: Vector): array of integer;
 
+/// Кодирует строковые метки классов в целочисленные индексы.
+/// Каждому уникальному значению присваивается номер 0,1,2,...
+/// Порядок кодирования соответствует порядку первого появления меток.
+/// Используется при обучении моделей и визуализации.
 function EncodeLabels(labels: array of string): array of integer;
+
+/// Преобразует целочисленные индексы классов обратно в строковые метки.
+/// Массив classes задаёт соответствие: classes[i] — имя класса с индексом i.
+/// Используется для получения текстовых предсказаний моделей.
+function DecodeLabels(y: array of integer; classes: array of string): array of string;
+
+/// Возвращает список уникальных меток классов.
+/// Порядок соответствует первому появлению значений во входном массиве.
+/// Используется для определения множества классов в задаче классификации.
+function UniqueLabels(labels: array of string): array of string;
   
 implementation
 
@@ -105,6 +119,21 @@ begin
 
     Result[i] := value;
   end;
+end;
+
+function DecodeLabels(y: array of integer; classes: array of string): array of string;
+begin
+  var res := new string[y.Length];
+
+  for var i := 0 to y.Length-1 do
+    res[i] := classes[y[i]];
+
+  Result := res;
+end;
+
+function UniqueLabels(labels: array of string): array of string;
+begin
+  Result := labels.Distinct.ToArray;
 end;
 
 end.
