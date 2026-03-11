@@ -67,7 +67,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonLanguageInfo", "Addi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonParser", "AdditionalLanguages\SPython\SPythonParserKrylovMovchan\SPythonParser.csproj", "{CEEEDB1E-B0E1-283E-13C3-BFE73FE8A446}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "CoreUtils\Utils.csproj", "{EB7AFD92-6376-05DF-B47D-0BF77A4EAC43}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PABCCoreUtils", "CoreUtils\PABCCoreUtils.csproj", "{EB7AFD92-6376-05DF-B47D-0BF77A4EAC43}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

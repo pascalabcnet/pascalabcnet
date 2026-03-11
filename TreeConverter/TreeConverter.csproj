@@ -22,6 +22,6 @@
     <ProjectReference Include="..\SemanticTree\SemanticTree.csproj" />
     <ProjectReference Include="..\StringConstants\StringConstants.csproj" />
     <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj" />
-    <ProjectReference Include="..\CoreUtils\Utils.csproj" />
+    <ProjectReference Include="..\CoreUtils\PABCCoreUtils.csproj" />
   </ItemGroup>
 </Project>
