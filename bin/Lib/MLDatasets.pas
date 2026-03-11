@@ -262,12 +262,27 @@ begin
   Result := Data.ToMatrix(Features);
 end;
 
-function Dataset.ToY(): Vector;
+function Dataset.ToY: Vector;
 begin
-  if Task = Clustering then
-    ArgumentError(ER_DATASET_NO_TARGET);
-
-  Result := Data.ToVector(Target);
+  var t := Data.GetColumnType(Target);
+  case t of
+    ColumnType.ctInt:
+      Result := new Vector(Data.GetIntColumn(Target));
+    ColumnType.ctFloat:
+      Result := Data.ToVector(Target);
+    ColumnType.ctStr:
+      Result := new Vector(EncodeLabels(Data.GetStrColumn(Target)));
+    ColumnType.ctBool:
+      begin
+        var b := Data.GetBoolColumn(Target);
+        var v := new Vector(b.Length);
+        
+        for var i := 0 to b.Length - 1 do
+          v[i] := if b[i] then 1.0 else 0.0;
+        
+        Result := v;
+      end;
+  end;
 end;
 
 function Dataset.ToXY(): (Matrix, Vector);

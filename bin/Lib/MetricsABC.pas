@@ -523,7 +523,27 @@ end;
 
 static function Metrics.Accuracy(yTrue, yPred: Vector): real;
 begin
-  Result := ConfusionMatrix.Create(yTrue, yPred).Accuracy;
+  if yTrue = nil then
+    ArgumentNullError(ER_ARG_NULL, 'yTrue');
+
+  if yPred = nil then
+    ArgumentNullError(ER_ARG_NULL, 'yPred');
+
+  var n := yTrue.Length;
+
+  if n <> yPred.Length then
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yPred.Length);
+
+  if n = 0 then
+    ArgumentError(ER_EMPTY_DATA, 'Accuracy');
+
+  var correct := 0;
+
+  for var i := 0 to n - 1 do
+    if yTrue[i] = yPred[i] then
+      correct += 1;
+
+  Result := correct / n;
 end;
 
 static function Metrics.Precision(yTrue, yPred: Vector): real;

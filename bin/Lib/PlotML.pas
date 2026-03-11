@@ -25,7 +25,10 @@ type
   BrushWPF = System.Windows.Media.SolidColorBrush;
   Colors = System.Windows.Media.Colors;
   ColorWPF = System.Windows.Media.Color;
-
+  
+const DefaultColor = default(ColorWPF);
+  
+type
   MarkerType = (Circle, Box, Triangle, Diamond, Cross);
 
   Palettes = static class
@@ -60,13 +63,18 @@ type
   public
     constructor Create(g: GridWPF; r,c: integer);
 
-    procedure LineGraph(x, y: array of real; color: ColorWPF? := nil; 
+    procedure LineGraph(x, y: array of real; color: ColorWPF := DefaultColor; 
       thickness: real := 2; legend: string := nil);
       
-    procedure Points(x, y: array of real; color: ColorWPF? := nil; 
+    procedure Points(x, y: array of real; color: ColorWPF := DefaultColor; 
       size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
       
+    procedure Points(x, y: array of real; labels: array of integer;
+      size: real := 6; marker: MarkerType := MarkerType.Circle);  
+      
     procedure Heatmap(m: array[,] of real);
+    
+    procedure Text(s: string; x: real := 0.5; y: real := 0.5);
     
     procedure SetPalette(name: string);
     procedure Title(s: string);
@@ -99,6 +107,8 @@ type
     
     static procedure DrawLine(chart: ChartWPF; x, y: array of real;
       color: ColorWPF; thickness: real; legend: string);
+      
+    static procedure DrawText(chart: ChartWPF; s: string; x, y: real);  
   
     static procedure DrawPoints(chart: ChartWPF; x, y: array of real;
       color: ColorWPF; size: real; marker: MarkerType; legend: string);
@@ -109,11 +119,11 @@ type
     static procedure AddSeries(chart: ChartWPF; series: UIElement);
 
     static procedure LineGraph(x, y: array of real;
-      color: ColorWPF? := nil; thickness: real := 2; legend: string := nil);
+      color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
     static procedure Points(x, y: array of real; 
-      color: ColorWPF? := nil; size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
+      color: ColorWPF := DefaultColor; size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
     static procedure Points(x, y: array of real;
-      labels: array of integer; color: ColorWPF? := nil; size: real := 6; marker: MarkerType := MarkerType.Circle);
+      labels: array of integer; color: ColorWPF := DefaultColor; size: real := 6; marker: MarkerType := MarkerType.Circle);
       
     static procedure Heatmap(m: array[,] of real);  
     
@@ -418,30 +428,57 @@ begin
   parentGrid.Children.Add(chart);
 end;
 
-procedure Cell.LineGraph(x, y: array of real; color: ColorWPF?; 
+procedure Cell.LineGraph(x, y: array of real; color: ColorWPF; 
   thickness: real; legend: string);
 begin
   Plot.RunUI(() ->
   begin
     EnsureChart;
 
-    var clr := if color.HasValue then color.Value else NextColor;
+    var clr := if color<>DefaultColor then color else NextColor;
 
     Plot.DrawLine(chart, x, y, clr, thickness, legend);
   end);
 end;
 
-procedure Cell.Points(x, y: array of real; color: ColorWPF?;
+procedure Cell.Points(x, y: array of real; color: ColorWPF;
   size: real; marker: MarkerType; legend: string);
 begin
   Plot.RunUI(() ->
   begin
     EnsureChart;
 
-    var clr := if color.HasValue then color.Value else NextColor;
+    var clr := if color<>DefaultColor then color else NextColor;
 
     Plot.DrawPoints(chart, x, y, clr, size, marker, legend);
   end);
+end;
+
+procedure Cell.Points(x, y: array of real; labels: array of integer;
+  size: real; marker: MarkerType);
+begin
+  if (x = nil) or (y = nil) or (labels = nil) then
+    raise new System.ArgumentNullException;
+
+  if (x.Length <> y.Length) or (x.Length <> labels.Length) then
+    raise new System.ArgumentException('Points: array sizes mismatch');
+
+  var classes := labels.Distinct.ToArray;
+  &Array.Sort(classes);
+
+  var pal := CurrentPalette;
+
+  foreach var c in classes do
+  begin
+    var ind := labels.Indices(v -> v = c).ToArray;
+
+    var xs := ind.ConvertAll(i -> x[i]);
+    var ys := ind.ConvertAll(i -> y[i]);
+
+    var clr := pal.Colors[c mod pal.Colors.Length];
+
+    self.Points(xs, ys, clr, size, marker, nil);
+  end;
 end;
 
 procedure Cell.Heatmap(m: array[,] of real);
@@ -450,6 +487,16 @@ begin
   begin
     EnsureChart;
     Plot.DrawHeatmap(chart, m);
+  end);
+end;
+
+procedure Cell.Text(s: string; x: real; y: real);
+begin
+  Plot.RunUI(() ->
+  begin
+    EnsureChart;
+
+    Plot.DrawText(chart, s, x, y);
   end);
 end;
 
@@ -628,6 +675,25 @@ begin
   AddSeries(chart, g);
 end;
 
+static procedure Plot.DrawText(chart: ChartWPF; s: string; x, y: real);
+begin
+  var tb := new System.Windows.Controls.TextBlock;
+  tb.Text := s;
+  tb.FontSize := 14;
+  tb.FontWeight := System.Windows.FontWeights.Bold;
+
+  tb.HorizontalAlignment := System.Windows.HorizontalAlignment.Center;
+  tb.VerticalAlignment := System.Windows.VerticalAlignment.Center;
+
+  var grid := chart.Parent as System.Windows.Controls.Grid;
+  if grid <> nil then
+  begin
+    tb.HorizontalAlignment := System.Windows.HorizontalAlignment.Center;
+    tb.VerticalAlignment := System.Windows.VerticalAlignment.Center;
+    grid.Children.Add(tb);
+  end;
+end;
+
 static procedure Plot.DrawPoints(chart: ChartWPF; x, y: array of real;
   color: ColorWPF; size: real; marker: MarkerType; legend: string);
 begin
@@ -671,29 +737,29 @@ begin
 end;
 
 class procedure Plot.LineGraph(x, y: array of real;
-  color: ColorWPF?; thickness: real; legend: string);
+  color: ColorWPF; thickness: real; legend: string);
 begin
   RunUI(() ->
   begin
-    var clr := if color.HasValue then color.Value else NextRootColor;
+    var clr := if color<>DefaultColor then color else NextRootColor;
 
     DrawLine(rootChart, x, y, clr, thickness, legend);
   end);
 end;
 
 static procedure Plot.Points(x, y: array of real; 
-  color: ColorWPF?; size: real; marker: MarkerType; legend: string);
+  color: ColorWPF; size: real; marker: MarkerType; legend: string);
 begin
   RunUI(() ->
   begin
-    var clr := if color.HasValue then color.Value else NextRootColor;
+    var clr := if color<>DefaultColor then color else NextRootColor;
 
     DrawPoints(rootChart, x, y, clr, size, marker, legend);
   end);
 end;
 
 static procedure Plot.Points(x, y: array of real; labels: array of integer;
-  color: ColorWPF?; size: real; marker: MarkerType);
+  color: ColorWPF; size: real; marker: MarkerType);
 begin
   if (x = nil) or (y = nil) or (labels = nil) then
     raise new System.ArgumentNullException;
@@ -701,16 +767,24 @@ begin
   if (x.Length <> y.Length) or (x.Length <> labels.Length) then
     raise new System.ArgumentException('Points: array sizes mismatch');
 
-  var k := labels.Max + 1;
+  var classes := labels.Distinct.ToArray;
+  &Array.Sort(classes);
 
-  for var c := 0 to k-1 do
+  var pal := CurrentPalette;
+
+  foreach var c in classes do
   begin
     var ind := labels.Indices(v -> v = c).ToArray;
 
     var xs := ind.ConvertAll(i -> x[i]);
     var ys := ind.ConvertAll(i -> y[i]);
 
-    Points(xs, ys, color, size, marker, 'cluster ' + c);
+    var clr :=
+      if color<>DefaultColor
+      then color
+      else pal.Colors[c mod pal.Colors.Length];
+
+    Points(xs, ys, clr, size, marker, nil);
   end;
 end;
 

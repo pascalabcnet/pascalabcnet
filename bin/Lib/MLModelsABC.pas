@@ -430,7 +430,7 @@ type
 
   public
 /// Создает классификационное дерево:
-///   • maxDepth — максимальная глубина дерева.
+///   • maxDepth — максимальная глубина дерева (-1 означает без ограничения).
 ///   • minSamplesSplit — минимальное число объектов для разбиения узла.
 ///   • minSamplesLeaf — минимальное число объектов в листе
     constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2; minSamplesLeaf: integer := 1; seed: integer := -1);
@@ -489,7 +489,7 @@ type
     
   public
 /// Создает регрессионное дерево:
-///   • maxDepth — максимальная глубина.
+///   • maxDepth — максимальная глубина (-1 означает без ограничения).
 ///   • minSamplesSplit — минимальное число объектов для разбиения.
 ///   • minSamplesLeaf — минимальное число объектов в листе.
 ///   • leafL2 — коэффициент L2-регуляризации значения листа
@@ -622,12 +622,12 @@ type
   public
 /// Создает регрессионный случайный лес:
 ///   • nTrees — число деревьев в ансамбле.
-///   • maxDepth — максимальная глубина деревьев.
+///   • maxDepth — максимальная глубина деревьев (-1 означает без ограничения).
 ///   • minSamplesSplit — минимальное число объектов для разбиения узла.
 ///   • minSamplesLeaf — минимальное число объектов в листе.
 ///   • maxFeaturesMode — режим выбора числа признаков, рассматриваемых при поиске разбиения
     constructor Create(nTrees: integer := 100; 
-      maxDepth: integer := integer.MaxValue;
+      maxDepth: integer := -1;
       minSamplesSplit: integer := 2; 
       minSamplesLeaf: integer := 1;
       maxFeaturesMode: TMaxFeaturesMode := TMaxFeaturesMode.HalfFeatures;
@@ -669,13 +669,13 @@ type
   public
 /// Создает классификационный случайный лес:
 ///   • nTrees — число деревьев в ансамбле.
-///   • maxDepth — максимальная глубина каждого дерева.
+///   • maxDepth — максимальная глубина каждого дерева (-1 означает без ограничения).
 ///   • minSamplesSplit — минимальное число объектов для разбиения узла.
 ///   • minSamplesLeaf — минимальное число объектов в листе.
 ///   • maxFeaturesMode — режим выбора числа признаков при поиске разбиения, по умолчанию используется sqrt(p), 
 ///     что является стандартом для классификации
     constructor Create(nTrees: integer := 100; 
-      maxDepth: integer := integer.MaxValue;
+      maxDepth: integer := -1;
       minSamplesSplit: integer := 2;
       minSamplesLeaf: integer := 1;
       maxFeaturesMode: TMaxFeaturesMode := TMaxFeaturesMode.SqrtFeatures;
@@ -2777,7 +2777,7 @@ constructor DecisionTreeBase.Create(
   minSamplesLeaf: integer;
   seed: integer);
 begin
-  if maxDepth <= 0 then
+  if maxDepth < -1 then
     ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, maxDepth);
 
   if maxDepth > MAX_ALLOWED_TREE_DEPTH then
@@ -2898,7 +2898,7 @@ end;
 function DecisionTreeBase.BuildTree(X: Matrix; y: Vector;
   indices: array of integer; depth: integer): DecisionTreeNode;
 begin
-  if (fMaxDepth > 0) and (depth >= fMaxDepth) then
+  if (fMaxDepth >= 0) and (depth >= fMaxDepth) then
     exit(LeafNode(LeafValue(y, indices)));
 
   if indices.Length < fMinSamplesSplit then
@@ -3298,7 +3298,7 @@ begin
   if fMinSamplesLeaf < 1 then
     ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
 
-  if (fMaxDepth < 0) then
+  if fMaxDepth < -1 then
     ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
 
   if fMaxDepth > 10000 then
@@ -3530,7 +3530,7 @@ begin
   if fLeafL2 < 0 then
     ArgumentOutOfRangeError(ER_L2_NEGATIVE, fLeafL2);
 
-  if fMaxDepth < 0 then
+  if fMaxDepth < -1 then
     ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
 
   if fMaxDepth > 10000 then
@@ -3651,7 +3651,7 @@ begin
   if nTrees <= 0 then 
     ArgumentOutOfRangeError(ER_NTREES_INVALID, nTrees);
 
-  if maxDepth <= 0 then
+  if maxDepth < -1 then
     ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, maxDepth);
 
   if minSamplesSplit < 2 then
@@ -3759,7 +3759,7 @@ begin
   if fMinSamplesLeaf >= fMinSamplesSplit then
     ArgumentError(ER_MIN_LEAF_GE_SPLIT, fMinSamplesLeaf, fMinSamplesSplit);
 
-  if fMaxDepth < 0 then
+  if fMaxDepth < -1 then
     ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
 
   if fMaxDepth > MAX_ALLOWED_TREE_DEPTH then
@@ -3940,7 +3940,7 @@ end;
 function RandomForestRegressor.ToString: string;
 begin
   var depthStr :=
-    if fMaxDepth = integer.MaxValue then '∞'
+    if fMaxDepth = -1 then '∞'
     else fMaxDepth.ToString;
 
   var seedPart :=
@@ -4003,7 +4003,7 @@ begin
   if fMinSamplesLeaf >= fMinSamplesSplit then
     ArgumentError(ER_MIN_LEAF_GE_SPLIT, fMinSamplesLeaf, fMinSamplesSplit);
 
-  if fMaxDepth < 0 then
+  if fMaxDepth < -1 then
     ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
 
   if fMaxDepth > MAX_ALLOWED_TREE_DEPTH then
@@ -4274,9 +4274,12 @@ begin
   rf.fHasOOBScore := fHasOOBScore;
 
   // --- trees ---
-  SetLength(rf.fTrees, fTrees.Length);
-  for var i := 0 to fTrees.Length - 1 do
-    rf.fTrees[i] := DecisionTreeClassifier(fTrees[i].Clone);
+  if fTrees <> nil then
+  begin
+    SetLength(rf.fTrees, fTrees.Length);
+    for var i := 0 to fTrees.Length - 1 do
+      rf.fTrees[i] := DecisionTreeClassifier(fTrees[i].Clone);
+  end;  
 
   Result := rf;
 end;
@@ -4300,7 +4303,7 @@ end;
 function RandomForestClassifier.ToString: string;
 begin
   var depthStr :=
-    if fMaxDepth = integer.MaxValue then '∞'
+    if fMaxDepth = -1 then '∞'
     else fMaxDepth.ToString;
 
   var seedPart :=

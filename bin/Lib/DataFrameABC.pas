@@ -111,6 +111,8 @@ type
     function ColumnCount: integer;
     /// Возвращает тип столбца по номеру
     function GetColumnType(colIndex: integer): ColumnType;
+    /// Возвращает тип столбца по имени
+    function GetColumnType(name: string): ColumnType := GetColumnType(ColumnIndex(name));
     /// Возвращает индекс столбца по имени
     function ColumnIndex(name: string): integer;
     
