@@ -114,8 +114,23 @@ type
     /// Возвращает индекс столбца по имени
     function ColumnIndex(name: string): integer;
     
+    function HasColumn(name: string): boolean;
+   
     /// Создает курсор для итерации по строкам
     function GetCursor: DataFrameCursor;
+    
+    /// Разбивает таблицу на обучающую и тестовую выборки.
+    /// 
+    /// Строки случайным образом перемешиваются и делятся на две части:
+    /// train и test. Доля тестовой выборки задаётся параметром testRatio.
+    /// 
+    /// testRatio = 0.2 означает, что 20% строк попадут в тестовую выборку.
+    /// 
+    /// Если seed >= 0, разбиение будет детерминированным.
+    /// Если seed = -1, используется случайная инициализация генератора.
+    /// 
+    /// Возвращает кортеж (trainDataFrame, testDataFrame).
+    function TrainTestSplit(testRatio: real := 0.2; seed: integer := -1): (DataFrame, DataFrame);
     
     /// Добавляет столбец целых чисел
     procedure AddIntColumn(name: string; data: array of integer; valid: array of boolean := nil; isCategorical: boolean := false);
@@ -130,6 +145,10 @@ type
     function GetIntColumn(name: string): array of integer;
     /// Возвращает данные вещественного столбца по имени
     function GetFloatColumn(name: string): array of real;
+    /// Возвращает данные строкового столбца по имени
+    function GetStrColumn(name: string): array of string;
+    /// Возвращает данные логического столбца по имени
+    function GetBoolColumn(name: string): array of boolean;
     
     /// Вычисляет сумму значений столбца по индексу
     function Sum(colIndex: integer): real; 
@@ -428,7 +447,9 @@ const
   ER_CSV_INVALID_BOOL =
     'Некорректное логическое значение "{0}" в столбце "{1}"!!' +
     'Invalid bool "{0}" in column "{1}"';
-
+  ER_TEST_RATIO_INVALID =
+    'Некорректное значение testRatio = {0}. Ожидается число в диапазоне (0, 1).' +
+    'Invalid testRatio = {0}. Expected value in range (0, 1).';
 
 type
   /// Класс для группировки данных
@@ -1478,6 +1499,11 @@ begin
   Error(ER_COLUMN_NOT_FOUND, name);
 end;
 
+function DataFrame.HasColumn(name: string): boolean;
+begin
+  Result := fSchema.HasColumn(name);
+end;
+
 function DataFrame.GetCursor: DataFrameCursor :=
   new DataFrameCursor(columns.ToArray,fSchema);
   
@@ -1493,6 +1519,67 @@ begin
   var i := ColumnIndex(name);
   var c := FloatColumn(columns[i]);
   Result := c.Data;
+end;
+
+function DataFrame.GetStrColumn(name: string): array of string;
+begin
+  var i := ColumnIndex(name);
+  var c := StrColumn(columns[i]);
+  Result := c.Data;
+end;
+
+function DataFrame.GetBoolColumn(name: string): array of boolean;
+begin
+  var i := ColumnIndex(name);
+  var c := BoolColumn(columns[i]);
+  Result := c.Data;
+end;
+
+function DataFrame.TrainTestSplit(testRatio: real; seed: integer): (DataFrame, DataFrame);
+begin
+  if Self = nil then
+    ArgumentNullError(ER_ARG_NULL, 'DataFrame');
+
+  if (testRatio <= 0.0) or (testRatio >= 1.0) then
+    ArgumentError(ER_TEST_RATIO_INVALID, testRatio);
+
+  var n := RowCount;
+
+  if n < 2 then
+    ArgumentError(ER_EMPTY_DATA, 'TrainTestSplit');
+
+  var actualSeed := if seed >= 0 then seed else System.Environment.TickCount and integer.MaxValue;
+  var rnd := new System.Random(actualSeed);
+
+  var idx := Arr(0..n-1);
+  idx.Shuffle(rnd);
+
+  var rawSize := Round(n * testRatio);
+  var testSize := rawSize.Clamp(1, n - 1);
+
+  // --- маркер тестовых строк
+  var isTest := new boolean[n];
+
+  for var i := 0 to testSize - 1 do
+    isTest[idx[i]] := true;
+
+  var trainDf := new DataFrame;
+  var testDf  := new DataFrame;
+
+  var cur := GetCursor;
+  var row := 0;
+
+  while cur.MoveNext do
+  begin
+    if isTest[row] then
+      testDf.AppendRowFromCursor(self, cur)
+    else
+      trainDf.AppendRowFromCursor(self, cur);
+
+    row += 1;
+  end;
+
+  Result := (trainDf, testDf);
 end;
 
 procedure DataFrame.AddIntColumn(name: string; data: array of integer; valid: array of boolean; isCategorical: boolean);
@@ -1531,7 +1618,7 @@ begin
   else
   begin
     if valid.Length <> data.Length then
-      DimensionError(ER_COLUMN_VALID_LENGTH_MISMATCH);
+            DimensionError(ER_COLUMN_VALID_LENGTH_MISMATCH);
     c.IsValid := valid;
   end;
 
@@ -2835,7 +2922,7 @@ begin
 end;
 
 
-procedure DataFrame.PrintPreview(maxRows: integer; headRows: integer; decimals: integer);
+{procedure DataFrame.PrintPreview(maxRows: integer; headRows: integer; decimals: integer);
 begin
   var ColumnSeparator := ' ';
   var colCount := columns.Count;
@@ -3025,6 +3112,179 @@ begin
         PABCSystem.Print(FormatValue(j) + ColumnSeparator);
       PABCSystem.Println;
     end;
+end;}
+
+procedure DataFrame.PrintPreview(maxRows: integer; headRows: integer; decimals: integer);
+begin
+  var colCount := columns.Count;
+  if colCount = 0 then exit;
+
+  var rowCount := RowCount;
+  if rowCount = 0 then exit;
+
+  if maxRows < 1 then exit;
+  if decimals < 0 then decimals := 0;
+
+  if rowCount <= maxRows then
+    headRows := rowCount
+  else
+  begin
+    if headRows = -1 then
+      headRows := (maxRows + 1) div 2;
+
+    if headRows < 0 then headRows := 0;
+    if headRows > maxRows then headRows := maxRows;
+  end;
+
+  var tailRows := maxRows - headRows;
+
+  if tailRows < 0 then
+    tailRows := 0;
+
+  if tailRows > rowCount - headRows then
+    tailRows := rowCount - headRows;
+
+  var widths := new integer[colCount];
+
+  // --- начальная ширина = длина заголовка ---
+  for var j := 0 to colCount - 1 do
+  begin
+    widths[j] := columns[j].Info.Name.Length;
+    if widths[j] < 2 then
+      widths[j] := 2;
+  end;
+
+  var cursor := GetCursor;
+
+  // --- scan head ---
+  for var i := 0 to headRows - 1 do
+  begin
+    cursor.MoveTo(i);
+
+    for var j := 0 to colCount - 1 do
+    begin
+      var s: string;
+
+      if not cursor.IsValid(j) then
+        s := 'NA'
+      else
+        case columns[j].Info.ColType of
+          ctInt:   s := cursor.Int(j).ToString;
+          ctFloat: s := cursor.Float(j).ToString('F' + decimals);
+          ctStr:   s := cursor.Str(j);
+          ctBool:  s := cursor.Bool(j).ToString;
+        end;
+
+      if s.Length > widths[j] then
+        widths[j] := s.Length;
+    end;
+  end;
+
+  // --- scan tail ---
+  if rowCount > headRows then
+    for var i := rowCount - tailRows to rowCount - 1 do
+      if i >= headRows then
+      begin
+        cursor.MoveTo(i);
+
+        for var j := 0 to colCount - 1 do
+        begin
+          var s: string;
+
+          if not cursor.IsValid(j) then
+            s := 'NA'
+          else
+            case columns[j].Info.ColType of
+              ctInt:   s := cursor.Int(j).ToString;
+              ctFloat: s := cursor.Float(j).ToString('F' + decimals);
+              ctStr:   s := cursor.Str(j);
+              ctBool:  s := cursor.Bool(j).ToString;
+            end;
+
+          if s.Length > widths[j] then
+            widths[j] := s.Length;
+        end;
+      end;
+
+  // --- header ---
+  for var j := 0 to colCount - 1 do
+  begin
+    PABCSystem.Print(columns[j].Info.Name.PadLeft(widths[j]));
+    if j < colCount - 1 then
+      Write(' ');
+  end;
+
+  PABCSystem.Println;
+
+  // --- head rows ---
+  for var i := 0 to headRows - 1 do
+  begin
+    cursor.MoveTo(i);
+
+    for var j := 0 to colCount - 1 do
+    begin
+      var s: string;
+
+      if not cursor.IsValid(j) then
+        s := 'NA'
+      else
+        case columns[j].Info.ColType of
+          ctInt:   s := cursor.Int(j).ToString;
+          ctFloat: s := cursor.Float(j).ToString('F' + decimals);
+          ctStr:   s := cursor.Str(j);
+          ctBool:  s := cursor.Bool(j).ToString;
+        end;
+
+      PABCSystem.Print(s.PadLeft(widths[j]));
+
+      if j < colCount - 1 then
+        Write(' ');
+    end;
+
+    PABCSystem.Println;
+  end;
+
+  // --- ellipsis ---
+  if headRows + tailRows < rowCount then
+  begin
+    for var j := 0 to colCount - 1 do
+    begin
+      PABCSystem.Print($'…'.PadLeft(widths[j]));
+      if j < colCount - 1 then
+        Write(' ');
+    end;
+
+    PABCSystem.Println;
+  end;
+
+  // --- tail rows ---
+  for var i := rowCount - tailRows to rowCount - 1 do
+    if i >= headRows then
+    begin
+      cursor.MoveTo(i);
+
+      for var j := 0 to colCount - 1 do
+      begin
+        var s: string;
+
+        if not cursor.IsValid(j) then
+          s := 'NA'
+        else
+          case columns[j].Info.ColType of
+            ctInt:   s := cursor.Int(j).ToString;
+            ctFloat: s := cursor.Float(j).ToString('F' + decimals);
+            ctStr:   s := cursor.Str(j);
+            ctBool:  s := cursor.Bool(j).ToString;
+          end;
+
+        PABCSystem.Print(s.PadLeft(widths[j]));
+
+        if j < colCount - 1 then
+          Write(' ');
+      end;
+
+      PABCSystem.Println;
+    end;
 end;
 
 procedure DataFrame.PrintlnPreview(maxRows: integer; headRows: integer; decimals: integer);
@@ -3035,7 +3295,7 @@ end;
 
 procedure DataFrame.Print(decimals: integer);
 begin
-  PrintPreview(20, 10, decimals);
+  PrintPreview(10, 5, decimals);
 end;
 
 procedure DataFrame.Println(decimals: integer);
@@ -3933,7 +4193,6 @@ end;
 //-----------------------------
 //          CSVLoader
 //-----------------------------
-
 
 {procedure ScanFields(line: string; delimiter: char;
   starts, lens: array of integer; var actualCount: integer);

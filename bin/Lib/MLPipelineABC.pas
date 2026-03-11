@@ -161,6 +161,7 @@ type
 implementation
 
 uses MLExceptions;
+uses DataAdapters;
 
 const
   ER_PIPELINE_MODIFY_AFTER_FIT =
@@ -202,52 +203,6 @@ const
   ER_DATAPIPE_DUPLICATE_FEATURE =
     'Повторяющийся признак: {0}!!Duplicate feature: {0}';    
     
-function ToMatrix(Self: DataFrame; colNames: array of string): Matrix; extensionmethod;
-begin
-  var df := Self;
-  var n := df.RowCount;
-  var p := colNames.Length;
-
-  if p = 0 then
-    ArgumentError(ER_TO_MATRIX_NO_COLUMNS);
-
-  Result := new Matrix(n, p);
-
-  for var j := 0 to p - 1 do
-  begin
-    var col := df[colNames[j]];
-
-    for var i := 0 to n - 1 do
-    begin
-      var value: real;
-
-      if not col.TryGetNumericValue(i, value) then
-        ArgumentError(ER_TO_MATRIX_NON_NUMERIC, colNames[j]);
-
-      Result[i,j] := value;
-    end;
-  end;
-end;
-
-function ToVector(Self: DataFrame; colName: string): Vector; extensionmethod;
-begin
-  var df := Self;
-  var n := df.RowCount;
-  Result := new Vector(n);
-
-  var col := df[colName];
-
-  for var i := 0 to n - 1 do
-  begin
-    var value: real;
-
-    if not col.TryGetNumericValue(i, value) then
-      ArgumentError(ER_TO_VECTOR_NON_NUMERIC, colName);
-
-    Result[i] := value;
-  end;
-end;
-
 //-----------------------------
 //        DataPipeline
 //-----------------------------

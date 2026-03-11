@@ -12,7 +12,7 @@
    School, SF, TurtleABC,
    DataFrameABC, DataFrameABCCore, LinearAlgebraML, PreprocessorABC,
    MetricsABC, MLABC, MLCoreABC, MLModelsABC, ValidationML, MLExceptions, InspectionML, MLPipelineABC,
-   PlotML, MLDatasets
+   PlotML, MLDatasets, DataAdapters
    ;
    
 begin

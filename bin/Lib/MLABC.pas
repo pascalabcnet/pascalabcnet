@@ -15,6 +15,7 @@ uses MLExceptions;
 uses InspectionML;
 uses MLPipelineABC;
 uses MLDatasets;
+uses DataAdapters;
 
 type 
   Vector = LinearAlgebraML.Vector;
@@ -79,21 +80,17 @@ type
   
   Datasets = MLDatasets.Datasets;
   
-/// Преобразует вектор меток классов в массив целых чисел.
-/// Используется при визуализации и других задачах,
-///   где метки должны быть представлены как 0,1,2,...
-/// Значения округляются функцией Round, чтобы устранить
-///   возможные небольшие численные ошибки 
-function LabelsToInts(y: Vector): array of integer;
+  function LabelsToInts(y: Vector): array of integer;
+  function EncodeLabels(labels: array of string): array of integer;
+
   
 implementation
-  
+
 function LabelsToInts(y: Vector): array of integer;
 begin
-  if y = nil then
-    ArgumentNullError(ER_ARG_NULL, 'y');
-
-  Result := ArrGen(y.Length, i -> Round(y[i]));
+  Result := DataAdapters.LabelsToInts(y);
 end;
-    
+
+function EncodeLabels(labels: array of string): array of integer := DataAdapters.EncodeLabels(labels);
+  
 end.
