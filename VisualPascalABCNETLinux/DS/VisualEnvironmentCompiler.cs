@@ -8,8 +8,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using VisualPascalABCPlugins;
-using Languages.Integration;
-using Languages.Facade;
+using PascalABCCompiler.CoreUtils;
 
 namespace VisualPascalABC
 {
@@ -239,7 +238,7 @@ namespace VisualPascalABC
         }
 
         
-        public object SourceFilesProvider(string FileName, PascalABCCompiler.SourceFileOperation FileOperation)
+        public object SourceFilesProvider(string FileName, SourceFileOperation FileOperation)
         {
 
 
@@ -251,22 +250,22 @@ namespace VisualPascalABC
             
             switch (FileOperation)
             {
-                case PascalABCCompiler.SourceFileOperation.GetText:
+                case SourceFileOperation.GetText:
                     if (tp != null)
                         return ed.Document.TextContent;
                     if (!File.Exists(FileName))
                         return null;
-                    string Text = PascalABCCompiler.FileReader.ReadFileContent(FileName, null);
+                    string Text = FileReader.ReadFileContent(FileName, null);
                     return Text;
-                case PascalABCCompiler.SourceFileOperation.Exists:
+                case SourceFileOperation.Exists:
                     if (tp != null)
                         return true;
                     return File.Exists(FileName);
-                case PascalABCCompiler.SourceFileOperation.GetLastWriteTime:
+                case SourceFileOperation.GetLastWriteTime:
                     if (tp != null)
                         return tp.ModifyDateTime;
                     return File.GetLastWriteTime(FileName);
-                case PascalABCCompiler.SourceFileOperation.FileEncoding:
+                case SourceFileOperation.FileEncoding:
                     return DefaultFileEncoding;
             }
             return null;

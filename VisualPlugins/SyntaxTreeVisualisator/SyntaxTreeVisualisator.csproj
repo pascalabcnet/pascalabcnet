@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\CompilerTools\CompilerTools.csproj" />
     <ProjectReference Include="..\..\Compiler\Compiler.csproj" />
+    <ProjectReference Include="..\..\CoreUtils\PABCCoreUtils.csproj" />
     <ProjectReference Include="..\..\Errors\Errors.csproj" />
     <ProjectReference Include="..\..\LanguageIntegrator\LanguageIntegrator.csproj" />
     <ProjectReference Include="..\..\Localization\Localization.csproj" />

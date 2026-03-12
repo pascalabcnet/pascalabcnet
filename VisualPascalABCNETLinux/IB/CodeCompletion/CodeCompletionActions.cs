@@ -10,6 +10,7 @@ using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using PascalABCCompiler;
 using PascalABCCompiler.Parsers;
+using PascalABCCompiler.CoreUtils;
 
 namespace VisualPascalABC
 {
@@ -64,7 +65,7 @@ namespace VisualPascalABC
             ccp = new CodeCompletionProvider();
             IDocument doc = null;
             CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
-            string text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText) as string;
+            string text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(FileName, SourceFileOperation.GetText) as string;
             PascalABCCompiler.SyntaxTree.compilation_unit cu = controller.ParseOnlySyntaxTree(FileName, text);
             if (cu == null)
                 return;
@@ -210,7 +211,7 @@ namespace VisualPascalABC
             List<Position> poses = GetDefinitionPosition(textArea, true);
             if (poses == null || poses.Count == 0) return false;
             foreach (Position pos in poses)
-                if (pos.from_metadata || pos.file_name != null && (bool)WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(pos.file_name, PascalABCCompiler.SourceFileOperation.Exists))
+                if (pos.from_metadata || pos.file_name != null && (bool)WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(pos.file_name, SourceFileOperation.Exists))
                     return true;
             return false;
             //string file_name = GetDefinitionPosition(textArea).file_name;
@@ -223,7 +224,7 @@ namespace VisualPascalABC
             List<Position> poses = GetRealizationPosition(textArea);
             if (poses == null || poses.Count == 0) return false;
             foreach (Position pos in poses)
-                if (pos.file_name != null && (bool)WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(pos.file_name, PascalABCCompiler.SourceFileOperation.Exists))
+                if (pos.file_name != null && (bool)WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(pos.file_name, SourceFileOperation.Exists))
                     return true;
             return false;
             //        	string file_name = GetRealizationPosition(textArea).file_name;
@@ -611,7 +612,7 @@ namespace VisualPascalABC
             //PascalABCCompiler.SyntaxTree.syntax_tree_node sn =
             //    MainForm.VisualEnvironmentCompiler.Compiler.ParsersController.Compile(
             //    file_name, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
-            string text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName, PascalABCCompiler.SourceFileOperation.GetText) as string;
+            string text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName, SourceFileOperation.GetText) as string;
 
             PascalABCCompiler.SyntaxTree.compilation_unit cu =
                 CodeCompletion.CodeCompletionController.CurrentLanguage.Parser.GetCompilationUnitForFormatter(

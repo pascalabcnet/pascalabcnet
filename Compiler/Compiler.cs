@@ -147,6 +147,7 @@ using PascalABCCompiler.PCU;
 using PascalABCCompiler.SemanticTreeConverters;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.TreeRealization;
+using PascalABCCompiler.CoreUtils;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections;

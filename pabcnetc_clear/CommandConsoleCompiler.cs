@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using PascalABCCompiler.CoreUtils;
 
 namespace PascalABCCompiler
 {
@@ -69,7 +70,7 @@ namespace PascalABCCompiler
                     /*TextReader tr = new StreamReader(file_name, System.Text.Encoding.GetEncoding(1251));
                     text = tr.ReadToEnd();
                     tr.Close();*/
-                    text = PascalABCCompiler.FileReader.ReadFileContent(FileName, null);
+                    text = FileReader.ReadFileContent(FileName, null);
                     return text;
                 case SourceFileOperation.Exists:
                     if (SourceFiles.ContainsKey(fn))

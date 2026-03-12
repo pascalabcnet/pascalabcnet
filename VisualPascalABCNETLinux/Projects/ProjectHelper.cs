@@ -1,13 +1,9 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
 using System.IO;
-using System.Text;
-using PascalABCCompiler;
+
+using PascalABCCompiler.CoreUtils;
 
 namespace VisualPascalABC
 {
@@ -162,7 +158,7 @@ namespace VisualPascalABC
         
         public void AddNamespaceFileReference(string fileName)
         {
-            var text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(currentProject.main_file, PascalABCCompiler.SourceFileOperation.GetText) as string;
+            var text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(currentProject.main_file, SourceFileOperation.GetText) as string;
             text = "{$includenamespace " + Path.GetFileName(fileName) + "}"+Environment.NewLine + text;
             var doc = WorkbenchServiceFactory.DocumentService.GetDocument(currentProject.main_file);
             if (doc != null)
@@ -177,13 +173,13 @@ namespace VisualPascalABC
         
         public bool hasNamespaceFileReference(string fileName)
         {
-            var text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(currentProject.main_file, PascalABCCompiler.SourceFileOperation.GetText) as string;
+            var text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(currentProject.main_file, SourceFileOperation.GetText) as string;
             return text.IndexOf("{$includenamespace " + Path.GetFileName(fileName) + "}") != -1;
         }
 
         public void RemoveNamespaceFileReference(string fileName)
         {
-            var text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(currentProject.main_file, PascalABCCompiler.SourceFileOperation.GetText) as string;
+            var text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(currentProject.main_file, SourceFileOperation.GetText) as string;
             text = text.Replace("{$includenamespace " + Path.GetFileName(fileName) + "}" + Environment.NewLine, "");
             var doc = WorkbenchServiceFactory.DocumentService.GetDocument(currentProject.main_file);
             if (doc != null)

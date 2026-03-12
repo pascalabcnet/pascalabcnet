@@ -1,10 +1,7 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System.IO;
+﻿using System.IO;
 
-namespace PascalABCCompiler
+namespace PascalABCCompiler.CoreUtils
 {
-
     public enum SourceFileOperation
     {
         GetText, GetLastWriteTime, Exists, FileEncoding
@@ -33,4 +30,3 @@ namespace PascalABCCompiler
         }
     }
 }
-
