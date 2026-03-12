@@ -810,6 +810,7 @@
     <ProjectReference Include="../pabcnetc/PABCNETC.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\CoreUtils\PABCCoreUtils.csproj" />
   </ItemGroup>
   
   <ItemGroup>

@@ -686,6 +686,7 @@
     <ProjectReference Include="../SyntaxTree/SyntaxTree.csproj" />
     <ProjectReference Include="../TreeConverter/TreeConverter.csproj" />
     <ProjectReference Include="../SyntaxVisitors/SyntaxVisitors.csproj" />
+    <ProjectReference Include="..\CoreUtils\PABCCoreUtils.csproj" />
     <ProjectReference Include="FormsDesignerBinding/Dependecies/src/Main/Base/Project/ICSharpCode.SharpDevelop.csproj" />
     <ProjectReference Include="FormsDesignerBinding/Dependecies/src/Main/Core/Project/ICSharpCode.Core.csproj" />
     <ProjectReference Include="FormsDesignerBinding/Dependecies/src/Main/ICSharpCode.Core.Presentation/ICSharpCode.Core.Presentation.csproj" />

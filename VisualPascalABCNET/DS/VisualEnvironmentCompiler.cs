@@ -396,7 +396,7 @@ namespace VisualPascalABC
                         AddCompilerTextToCompilerMessages(sender, VECStringResources.Get("SUPPORTED_LANGUAGES") + Environment.NewLine);
                         foreach (ILanguage lang in LanguageProvider.Instance.Languages)
                             AddCompilerTextToCompilerMessages(sender, string.Format(VECStringResources.Get("CM_LANGUAGE_{0}"), 
-                                PascalABCCompiler.FormatTools.LanguageAndExtensionsFormatted(lang.Name, lang.FilesExtensions) + Environment.NewLine));
+                                PascalABCCompiler.CoreUtils.FormatTools.LanguageAndExtensionsFormatted(lang.Name, lang.FilesExtensions) + Environment.NewLine));
                         if (StartingCompleted)
                         {
                             ChangeVisualEnvironmentState(VisualEnvironmentState.FinishCompilerLoading, standartCompiler);
