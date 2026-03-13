@@ -8,9 +8,7 @@ using System.IO;
 using System.Threading;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.TreeRealization;
-using System.Runtime.Serialization.Formatters;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Data;
+using PascalABCCompiler.CoreUtils;
 
 namespace PascalABCCompiler
 {

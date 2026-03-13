@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CompilerTools\CompilerTools.csproj" />
     <ProjectReference Include="..\Compiler\Compiler.csproj" />
+    <ProjectReference Include="..\CoreUtils\PABCCoreUtils.csproj" />
     <ProjectReference Include="..\Errors\Errors.csproj" />
     <ProjectReference Include="..\ICSharpCode.TextEditorLinux\ICSharpCode.TextEditorLinux.csproj" />
     <ProjectReference Include="..\ParserTools\ParserTools.csproj" />

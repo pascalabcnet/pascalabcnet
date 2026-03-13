@@ -11,7 +11,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\CoreUtils\Utils.csproj" />
+    <ProjectReference Include="..\..\..\..\CoreUtils\PABCCoreUtils.csproj" />
     <ProjectReference Include="..\..\..\..\Errors\Errors.csproj" />
     <ProjectReference Include="..\..\..\..\LanguageIntegrator\LanguageIntegrator.csproj" />
     <ProjectReference Include="..\..\..\..\Localization\Localization.csproj" />

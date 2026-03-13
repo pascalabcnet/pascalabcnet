@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+// Данный проект не зависит от других проектов
+using System.Collections.Generic;
 
 namespace PascalABCCompiler.CoreUtils
 {

@@ -129,7 +129,7 @@ namespace VisualPascalABCPlugins
         string Compile(PascalABCCompiler.CompilerOptions CompilerOptions);
         void StartCompile(PascalABCCompiler.CompilerOptions CompilerOptions);
 
-        object SourceFilesProvider(string FileName, PascalABCCompiler.SourceFileOperation FileOperation);
+        object SourceFilesProvider(string FileName, PascalABCCompiler.CoreUtils.SourceFileOperation FileOperation);
         InvokeDegegate BeginInvoke
         {
             get;

@@ -23,6 +23,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\CoreUtils\PABCCoreUtils.csproj" />
     <ProjectReference Include="..\Localization\Localization.csproj" />
     <ProjectReference Include="..\Compiler\Compiler.csproj" />
     <ProjectReference Include="..\CompilerTools\CompilerTools.csproj" />
