@@ -3208,6 +3208,12 @@ type
 
 /// Функция для перевода сообщений об ошибках
 function GetTranslation(message: string): string;
+
+const __PascalABCDir = 'меняется на этапе компиляции';
+
+/// Возвращает каталог запуска PascalABC.NET
+/// (каталог, содержащий PascalABCNET.exe или консольный компилятор)
+function PascalABCDirectory: string;
   
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
@@ -3310,6 +3316,58 @@ begin
     Result := arr[1]
   else
     Result := arr[0]
+end;
+
+function ReadPascalABCRegistry(rootName: string): string;
+begin
+  Result := nil;
+
+  try
+    var t := System.Type.GetType('Microsoft.Win32.Registry, mscorlib');
+    if t = nil then exit;
+
+    var root := t.GetProperty(rootName).GetValue(nil,nil);
+    if root = nil then exit;
+
+    var openSubKey := root.GetType.GetMethod('OpenSubKey');
+    var key := openSubKey.Invoke(root, new object[]('Software\PascalABC.NET'));
+    if key = nil then exit;
+
+    var getValue := key.GetType.GetMethod('GetValue');
+    var v := getValue.Invoke(key, new object[]('InstallDir'));
+
+    if v <> nil then
+      Result := v.ToString;
+  except
+  end;
+end;
+
+function PascalABCDirectory: string;
+begin
+  // --- переменная окружения пользователя
+  Result := System.Environment.GetEnvironmentVariable(
+    'PASCALABCNET_DIR',
+    System.EnvironmentVariableTarget.User
+  );
+
+  // --- переменная окружения системы
+  if Result = nil then
+    Result := System.Environment.GetEnvironmentVariable(
+      'PASCALABCNET_DIR',
+      System.EnvironmentVariableTarget.Machine
+    );
+
+  // --- реестр HKLM
+  if Result = nil then
+    Result := ReadPascalABCRegistry('LocalMachine');
+
+  // --- реестр HKCU
+  if Result = nil then
+    Result := ReadPascalABCRegistry('CurrentUser');
+
+  // --- нормализация пути
+  if (Result <> nil) and not Result.EndsWith('\') then
+    Result := Result + '\';
 end;
 
 constructor ZeroStepException.Create;

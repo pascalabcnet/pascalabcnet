@@ -1,4 +1,14 @@
-﻿unit LinearAlgebraML;
+﻿/// Линейная алгебра для алгоритмов машинного обучения.
+///
+/// Содержит типы Vector и Matrix и численные методы,
+/// используемые в моделях ML:
+/// решение систем линейных уравнений, least squares,
+/// ridge-регрессия и специализированные методы
+/// для симметричных положительно определённых матриц.
+///
+/// Модуль предназначен для внутреннего использования
+/// в ML-алгоритмах и оптимизирован для задач обучения моделей.
+unit LinearAlgebraML;
 
 interface
 
@@ -18,6 +28,8 @@ type
     constructor Create(values: array of integer);
     
     function Clone: Vector;
+    
+    function ToArray: array of real;
     
     static function operator +(a, b: Vector): Vector;
     static function operator -(a, b: Vector): Vector;
@@ -82,8 +94,14 @@ type
     constructor Create(r, c: integer);
     constructor Create(values: array[,] of real);
     
+    function ToArray2D: array[,] of real;
+    function RowToArray(r: integer): array of real;
+    
     function Clone: Matrix;
     
+    function Row(i: integer) := data.Row(i);
+    function Col(j: integer) := data.Col(j);
+
     function ColumnSums: Vector;
     function RowSums: Vector;
     function ColumnMeans: Vector;
@@ -238,6 +256,16 @@ function SolveAuto(A: Matrix; b: Vector): Vector;
 /// Входные A и b изменяются. Возвращаемый вектор x имеет длину n.
 function SolveRidge(A: Matrix; b: Vector; lambda: real := 0): Vector;
 
+/// Решает задачу наименьших квадратов для системы A * x ≈ b.
+///
+/// Используется QR-разложение матрицы A.
+/// Подходит для переопределённых систем (число строк больше числа столбцов).
+///
+/// Временная сложность: O(m * n²), где
+/// m — число строк A,
+/// n — число столбцов A.
+///
+/// Вызывает исключение, если размеры A и b не согласованы.
 function SolveLeastSquaresQR(A: Matrix; b: Vector): Vector;
 
 implementation
@@ -318,6 +346,11 @@ begin
   if values = nil then
     ArgumentNullError(ER_VALUES_NULL);
   data := values.Select(x -> real(x)).ToArray;
+end;
+
+function Vector.ToArray: array of real;
+begin
+  Result := Copy(data);
 end;
 
 function Vector.Clone: Vector;
@@ -490,6 +523,16 @@ begin
   if values = nil then
     ArgumentNullError(ER_VALUES_NULL);
   data := Copy(values);
+end;
+
+function Matrix.ToArray2D: array[,] of real;
+begin
+  Result := Copy(data);
+end;
+
+function Matrix.RowToArray(r: integer): array of real;
+begin
+  Result := data.Row(r);
 end;
 
 function Matrix.Clone: Matrix;

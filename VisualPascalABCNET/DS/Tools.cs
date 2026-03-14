@@ -56,7 +56,7 @@ namespace VisualPascalABC
 
         public static string MakeFilter(string Filter, string Name, string[] Extensions)
         {
-            string sf = PascalABCCompiler.FormatTools.ExtensionsToString(Extensions, "*", ";");
+            string sf = PascalABCCompiler.CoreUtils.FormatTools.ExtensionsToString(Extensions, "*", ";");
             sf = string.Format(VECStringResources.Get("DIALOGS_FILTER_PART_{0}{1}|{1}|"), Name, sf);
             if (sf.IndexOf(StringConstants.pascalSourceFileExtension) >= 0)
                 return sf + Filter;
@@ -67,7 +67,7 @@ namespace VisualPascalABC
         
         public static string MakeProjectFilter(string Filter, string Name, string[] Extensions)
         {
-            string sf = PascalABCCompiler.FormatTools.ExtensionsToString(Extensions, "*", ";");
+            string sf = PascalABCCompiler.CoreUtils.FormatTools.ExtensionsToString(Extensions, "*", ";");
             sf = string.Format(VECStringResources.Get("DIALOGS_PROJECT_FILTER_PART_{0}{1}|{1}|"), Name, sf);
             if (sf.IndexOf(StringConstants.platformProjectExtension) >= 0)
                 return sf + Filter;
@@ -78,7 +78,7 @@ namespace VisualPascalABC
         
         public static string MakeAllFilter(string AllFilter, string Name, string[] Extensions)
         {
-            string sf = PascalABCCompiler.FormatTools.ExtensionsToString(Extensions, "*", ";");
+            string sf = PascalABCCompiler.CoreUtils.FormatTools.ExtensionsToString(Extensions, "*", ";");
             sf += ";";
             if (sf.IndexOf(".pas;") >= 0)
                 return sf + AllFilter;

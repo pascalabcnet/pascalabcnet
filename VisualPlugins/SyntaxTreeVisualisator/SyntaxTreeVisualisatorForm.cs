@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using PascalABCCompiler.Errors;
 using System.IO;
 using Languages.Facade;
+using PascalABCCompiler.CoreUtils;
 
 namespace VisualPascalABCPlugins
 {
@@ -200,7 +201,7 @@ namespace VisualPascalABCPlugins
         private void tsParse_Click(object sender, EventArgs e)
         {
             string FileName = (string)VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.GetCurrentSourceFileName, null);
-            string FileText = (string)VisualEnvironmentCompiler.Compiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText);
+            string FileText = (string)VisualEnvironmentCompiler.Compiler.SourceFilesProvider(FileName, SourceFileOperation.GetText);
             List<Error> Errors=new List<Error>();
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
             //PascalABCCompiler.SyntaxTree.syntax_tree_node sn = VisualEnvironmentCompiler.Compiler.ParsersController.Compile(file_name, FileText, Errors, PascalABCCompiler.ParserTools.ParseMode.Expression);
@@ -235,14 +236,14 @@ namespace VisualPascalABCPlugins
         PascalABCCompiler.SyntaxTree.syntax_tree_node ParseCurrent(List<Error> Errors)
         {
             string FileName = (string)VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.GetCurrentSourceFileName, null);
-            string FileText = (string)VisualEnvironmentCompiler.StandartCompiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText);
+            string FileText = (string)VisualEnvironmentCompiler.StandartCompiler.SourceFilesProvider(FileName, SourceFileOperation.GetText);
             return LanguageProvider.Instance.SelectLanguageByExtensionSafe(FileName)?.Parser.GetCompilationUnit(FileName, FileText, Errors, new List<CompilerWarning>(), PascalABCCompiler.Parsers.ParseMode.Normal, false);
         }
 
         PascalABCCompiler.SyntaxTree.documentation_comment_list ParseCurrentDocs()
         {
             string FileName = (string)VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.GetCurrentSourceFileName, null);
-            string FileText = (string)VisualEnvironmentCompiler.StandartCompiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText);
+            string FileText = (string)VisualEnvironmentCompiler.StandartCompiler.SourceFilesProvider(FileName, SourceFileOperation.GetText);
             return LanguageProvider.Instance.SelectLanguageByExtensionSafe(FileName)?.DocParser.BuildTree(FileText);
         }
 

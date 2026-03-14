@@ -63,7 +63,6 @@ namespace PascalABCCompiler.TreeConverter
 			symtab.Clear();
             _type_constructor.reset();
             statement_list_stack.clear();
-            arr_nums = 0;
             //_current_operation_kind = special_operation_kind.none;
 		}
 
@@ -726,7 +725,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public expression_node explicit_convert_type(expression_node from, type_node to)
         {
-            if (from is base_function_call bfc && bfc.function.name.StartsWith(LambdaHelper.lambdaPrefix))
+            if (from is base_function_call bfc && bfc.function.name.StartsWith(StringConstants.lambdaPrefix))
             {
                 AddError(from.location, "EXPLICIT_CASTS_FOR_LAMBDA_EXPRESSIONS_ARE_FORBIDDEN");
             }
@@ -805,11 +804,9 @@ namespace PascalABCCompiler.TreeConverter
 
         }
 
-        private int arr_nums = 0;
         private string get_temp_arr_name()
         {
-            arr_nums++;
-            return ("$intarr"+arr_nums);
+            return syntax_tree_visitor.GeneratedNamesManager.GenerateName("$intarr");
         }
 
         //проверки на константные параметры
@@ -1243,7 +1240,7 @@ namespace PascalABCCompiler.TreeConverter
                                 SyntaxTree.expression ex = new SyntaxTree.new_expr(rettype,el);
                                 sl.Add(new SyntaxTree.assign(StringConstants.result_var_name, ex));
                                 // Определим функцию преобразования на внешнем уровне
-                                var fun = BuildSimpleFunctionOneParameter("_conv" + UniqueString(), "x",
+                                var fun = BuildSimpleFunctionOneParameter(syntax_tree_visitor.GeneratedNamesManager.GenerateName("_conv"), "x",
                                     new SyntaxTree.semantic_type_node(factparams[i].type),
                                     rettype,
                                     sl

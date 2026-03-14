@@ -3016,6 +3016,15 @@ namespace PascalABCCompiler.PCU
             br.ReadInt32();//namespace
             type_node cnst_type = GetTypeReference();
             constant_node en = (constant_node)CreateExpressionWithOffset();
+
+            // SSM 10.03.26 Вклиниваемся сюда и подменяем значение константы __PascalABCDir.
+            // Для стандартных модулей, откомпилированных в pcu, это всё равно работать не будет
+            /*if (name == "__PascalABCDir")
+            {
+                var value = System.AppDomain.CurrentDomain.BaseDirectory;
+                en = new string_const_node(value, en.location);
+            }*/
+
             en.type = cnst_type;
             location loc = ReadDebugInfo();
             ncd = new namespace_constant_definition(name, en, loc, cun.namespaces[(is_interface)?0:1]);

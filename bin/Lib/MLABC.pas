@@ -14,6 +14,8 @@ uses DataFrameABC;
 uses MLExceptions;
 uses InspectionML;
 uses MLPipelineABC;
+uses MLDatasets;
+uses DataAdapters;
 
 type 
   Vector = LinearAlgebraML.Vector;
@@ -57,6 +59,8 @@ type
   GradientBoostingClassifier = MLModelsABC.GradientBoostingClassifier;
   KNNClassifier = MLModelsABC.KNNClassifier;
   KNNRegressor = MLModelsABC.KNNRegressor;
+  KMeans = MLModelsABC.KMeans;
+  DBSCAN = MLModelsABC.DBSCAN;
   
   KNNWeighting = MLModelsABC.KNNWeighting;
   TGBLoss = MLModelsABC.TGBLoss;
@@ -68,7 +72,25 @@ type
   
   Inspection = InspectionML.Inspection;
   
+  IPreprocessor = PreprocessorABC.IPreprocessor;
+  LabelEncoder = PreprocessorABC.LabelEncoder;
+  OneHotEncoder = PreprocessorABC.OneHotEncoder;
+  ImputeStrategy = PreprocessorABC.ImputeStrategy;
+  Imputer = PreprocessorABC.Imputer;
+  
+  Datasets = MLDatasets.Datasets;
+  
+  function LabelsToInts(y: Vector): array of integer;
+  function EncodeLabels(labels: array of string): array of integer;
+
+  
 implementation
 
-    
+function LabelsToInts(y: Vector): array of integer;
+begin
+  Result := DataAdapters.LabelsToInts(y);
+end;
+
+function EncodeLabels(labels: array of string): array of integer := DataAdapters.EncodeLabels(labels);
+  
 end.

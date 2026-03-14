@@ -43,6 +43,82 @@ type
     /// Запрещено добавлять шаги после вызова Fit/FitTransform.
     function Add(step: IPipelineStep): DataPipeline;
     
+    { // Примеры использования препроцессоров и моделей в DataPipeline.
+    // Препроцессоры работают на уровне DataFrame.
+    // После них Pipeline автоматически преобразует данные в Matrix/Vector.
+    // Далее выполняются матричные трансформеры и модель.
+    
+    // ------------------------------------------------------------
+    // Пример 1. Классификация с категориальным целевым признаком
+    var pipe :=
+      DataPipeline.Build(
+        'species',
+        ['length','width'],
+        new LabelEncoder('species'),   // DataFrame-препроцессор (строки → числа)
+        new StandardScaler,            // матричный трансформер
+        new LogisticRegression         // модель
+      );
+    
+    // ------------------------------------------------------------
+    // Пример 2. Регрессия с пропущенными значениями и категориальным признаком
+    var pipe :=
+      DataPipeline.Build(
+        'price',
+        ['area','floor','district'],
+        new Imputer('area'),           // DataFrame-препроцессор (заполнение NA)
+        new OneHotEncoder('district'), // DataFrame-препроцессор
+        new RandomForestRegressor      // модель
+      );
+    
+    // ------------------------------------------------------------
+    // Пример 3. Сложный pipeline
+    var pipe :=
+      DataPipeline.Build(
+        'target',
+        ['f1','f2','f3','category'],
+        new Imputer('f2'),             // DataFrame-препроцессор
+        new OneHotEncoder('category'), // DataFrame-препроцессор
+        new StandardScaler,            // матричный трансформер
+        new PCATransformer(2),         // матричный трансформер
+        new GradientBoostingRegressor  // модель
+      );
+      
+    // ------------------------------------------------------------
+    // Пример 4. Классификация без Pipeline
+    var df := Datasets.Flowers;
+    
+    var enc := new LabelEncoder('species');
+    df := enc.FitTransform(df);        // DataFrame уровень
+    
+    var (X,y) := df.ToXY(['length','width'],'species');
+    
+    var scaler := new StandardScaler;
+    X := scaler.FitTransform(X);       // Matrix уровень
+    
+    var model := new LogisticRegression;
+    model.Fit(X,y);
+    
+    // Pipeline.Build используется, когда данные уже представлены
+    // в виде числовой матрицы признаков X и вектора целевой переменной y.
+    // В этом случае DataFrame и препроцессоры уровня таблицы не требуются.
+    //
+    // Типичные ситуации:
+    //  • экспериментирование с ML-алгоритмами
+    //  • сравнение моделей
+    //  • кросс-валидация
+    //  • подбор гиперпараметров
+    //  • тестирование моделей
+    
+    // Пример 5. Pipeline на матричном уровне
+    var pipe :=
+      Pipeline.Build(
+        new StandardScaler,
+        new PCATransformer(2),
+        new LogisticRegression
+      );
+    
+      }
+    
     /// Строит конвейер из последовательности шагов.
     /// target и features используются только в режиме с моделью (когда в шагах присутствует IModel).
     /// Шаги должны удовлетворять порядку: DataFrame* → Matrix* → Model.
@@ -78,11 +154,14 @@ type
     
     /// Признак того, что был вызван Fit или FitTransform.
     property IsFitted: boolean read fFitted;
+    
+    function ToString: string; override;
   end;
   
 implementation
 
 uses MLExceptions;
+uses DataAdapters;
 
 const
   ER_PIPELINE_MODIFY_AFTER_FIT =
@@ -110,61 +189,20 @@ const
     'Имя целевой переменной не задано!!Target column name is not specified';
   ER_FEATURES_EMPTY =
     'Список признаков пуст!!Feature list must not be empty';
+  ER_FEATURE_EMPTY =
+    'Имя признака не может быть пустым!!Feature name cannot be empty';
   ER_DATAPIPE_TARGET_IN_FEATURES =
-    'Целевая переменная не должна входить в список признаков!!Target column must not be included in feature list';    
+    'Целевая переменная "{0}" не должна входить в список признаков!!Target variable "{0}" must not appear in feature list';  
   ER_TO_MATRIX_NON_NUMERIC =
     'Столбец "{0}" содержит нечисловые или NA значения!!Column "{0}" contains non-numeric or NA values';
   ER_DATAPIPE_TARGET_NOT_FOUND =
     'Целевой столбец "{0}" не найден!!Target column "{0}" not found';
   ER_DATAPIPE_FEATURE_NOT_FOUND =
-    'Столбец признака "{0}" не найден!!Feature column "{0}" not found';
+    'Признак "{0}" не найден в DataFrame. Доступные столбцы: {1}!!'+
+    'Feature "{0}" not found in DataFrame. Available columns: {1}';
+  ER_DATAPIPE_DUPLICATE_FEATURE =
+    'Повторяющийся признак: {0}!!Duplicate feature: {0}';    
     
-function ToMatrix(Self: DataFrame; colNames: array of string): Matrix; extensionmethod;
-begin
-  var df := Self;
-  var n := df.RowCount;
-  var p := colNames.Length;
-
-  if p = 0 then
-    ArgumentError(ER_TO_MATRIX_NO_COLUMNS);
-
-  Result := new Matrix(n, p);
-
-  for var j := 0 to p - 1 do
-  begin
-    var col := df[colNames[j]];
-
-    for var i := 0 to n - 1 do
-    begin
-      var value: real;
-
-      if not col.TryGetNumericValue(i, value) then
-        ArgumentError(ER_TO_MATRIX_NON_NUMERIC, colNames[j]);
-
-      Result[i,j] := value;
-    end;
-  end;
-end;
-
-function ToVector(Self: DataFrame; colName: string): Vector; extensionmethod;
-begin
-  var df := Self;
-  var n := df.RowCount;
-  Result := new Vector(n);
-
-  var col := df[colName];
-
-  for var i := 0 to n - 1 do
-  begin
-    var value: real;
-
-    if not col.TryGetNumericValue(i, value) then
-      ArgumentError(ER_TO_VECTOR_NON_NUMERIC, colName);
-
-    Result[i] := value;
-  end;
-end;
-
 //-----------------------------
 //        DataPipeline
 //-----------------------------
@@ -187,26 +225,19 @@ begin
   if fFitted then
     Error(ER_PIPELINE_MODIFY_AFTER_FIT);
 
-  if step is IPreprocessor then // Data Step
+  // --- DataFrame step
+  if step is IPreprocessor then
   begin
     if (fMatrixSteps.Count > 0) or (fModel <> nil) then
       ArgumentError(ER_DATAPIPE_DF_AFTER_MATRIX);
-  
+
     fDataSteps.Add(step as IPreprocessor);
     exit(Self);
   end;
 
-  if step is ITransformer then // Matrix Step
+  // --- Matrix transformer
+  if step is ITransformer then
   begin
-    if step is IModel then
-    begin
-      if fModel <> nil then
-        ArgumentError(ER_PIPELINE_MULTIPLE_MODELS);
-
-      fModel := step as IModel;
-      exit(Self);
-    end;
-
     if fModel <> nil then
       ArgumentError(ER_DATAPIPE_MATRIX_AFTER_MODEL);
 
@@ -214,13 +245,45 @@ begin
     exit(Self);
   end;
 
-  ArgumentError(ER_DATAPIPE_UNKNOWN_STEP);
+  // --- Model (обязательно последний шаг)
+  if step is IModel then
+  begin
+    if fModel <> nil then
+      ArgumentError(ER_PIPELINE_MULTIPLE_MODELS);
+
+    fModel := step as IModel;
+    exit(Self);
+  end;
+
+  ArgumentError(ER_DATAPIPE_UNKNOWN_STEP + ' ' + step.ToString);
   Result := Self;
-end;  
+end;
 
 class function DataPipeline.Build(target: string;
   features: array of string; params steps: array of IPipelineStep): DataPipeline;
 begin
+  if (target = nil) or (target = '') then
+    ArgumentError(ER_TARGET_EMPTY);
+
+  if (features = nil) or (features.Length = 0) then
+    ArgumentError(ER_FEATURES_EMPTY);
+
+  var seen := new HashSet<string>;
+
+  foreach var f in features do
+  begin
+    if (f = nil) or (f = '') then
+      ArgumentError(ER_FEATURE_EMPTY);
+
+    if f = target then
+      ArgumentError(ER_DATAPIPE_TARGET_IN_FEATURES, target);
+
+    if seen.Contains(f) then
+      ArgumentError(ER_DATAPIPE_DUPLICATE_FEATURE, f);
+
+    seen.Add(f);
+  end;
+
   var p := new DataPipeline;
   p.fTarget := target;
   p.fFeatures := features;
@@ -233,6 +296,9 @@ end;
 
 function DataPipeline.Fit(df: DataFrame): DataPipeline;
 begin
+  if fModel = nil then
+    Error(ER_MODEL_NULL);
+  
   var current := df;
 
   // 1) DataFrame слой (с сохранением fitted-объектов)
@@ -355,18 +421,66 @@ begin
   if (fFeatures = nil) or (Length(fFeatures) = 0) then
     ArgumentError(ER_FEATURES_EMPTY);
 
+  // target не должен входить в features
   for var i := 0 to High(fFeatures) do
     if fFeatures[i] = fTarget then
       ArgumentError(ER_DATAPIPE_TARGET_IN_FEATURES);
 
+  // проверка существования target
   if not df.Schema.HasColumn(fTarget) then
-    ArgumentError(ER_DATAPIPE_TARGET_NOT_FOUND, fTarget);
+  begin
+    var cols := df.Schema.ColumnNames.JoinToString(', ');
+    ArgumentError(ER_DATAPIPE_TARGET_NOT_FOUND, fTarget, cols);
+  end;
+
+  var seen := new HashSet<string>;
 
   for var i := 0 to High(fFeatures) do
-    if not df.Schema.HasColumn(fFeatures[i]) then
-      ArgumentError(ER_DATAPIPE_FEATURE_NOT_FOUND, fFeatures[i]);
+  begin
+    var f := fFeatures[i];
+
+    if f = '' then
+      ArgumentError(ER_FEATURE_EMPTY);
+
+    if not df.Schema.HasColumn(f) then
+    begin
+      var cols := df.Schema.ColumnNames.JoinToString(', ');
+      ArgumentError(ER_DATAPIPE_FEATURE_NOT_FOUND, f, cols);
+    end;
+
+    if seen.Contains(f) then
+      ArgumentError(ER_DATAPIPE_DUPLICATE_FEATURE, f);
+
+    seen.Add(f);
+  end;
 end;
 
+function DataPipeline.ToString: string;
+begin
+  var sb := 'DataPipeline (' +
+            (if fFitted then 'trained' else 'not trained') + '):' + NewLine;
 
+  sb += '  Target: ' + fTarget + NewLine;
+  sb += '  Features: ' + fFeatures.JoinToString(', ') + NewLine;
+
+  var idx := 1;
+
+  foreach var s in fDataSteps do
+  begin
+    sb += '  [' + idx + '] ' + s.ToString + NewLine;
+    idx += 1;
+  end;
+
+  foreach var t in fMatrixSteps do
+  begin
+    sb += '  [' + idx + '] ' + t.ToString + NewLine;
+    idx += 1;
+  end;
+
+  if fModel <> nil then
+    sb += '  [' + idx + '] ' + fModel.ToString;
+
+  Result := sb;
+end;
 
 end.

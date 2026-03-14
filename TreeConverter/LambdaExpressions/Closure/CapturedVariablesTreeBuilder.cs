@@ -8,6 +8,7 @@ using PascalABCCompiler.SemanticTree;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
+using PascalABCCompiler.CoreUtils;
 
 namespace TreeConverter.LambdaExpressions.Closure
 {
@@ -22,6 +23,7 @@ namespace TreeConverter.LambdaExpressions.Closure
         private CapturedVariablesTreeNodeClassScope _classScope;
         private CapturedVariablesTreeNodeProcedureScope _procedureScope;
         private List<CapturedVariablesTreeNode.CapturedSymbolInfo> _pendingCapturedSymbols = new List<CapturedVariablesTreeNode.CapturedSymbolInfo>();
+        private readonly GeneratedNamesManager _generatedNamesManager;
 
         public class CapturedVariablesInfo
         {
@@ -57,11 +59,12 @@ namespace TreeConverter.LambdaExpressions.Closure
                 return _currentLambdaScopeNodeStack.Count > 0;
             }
         }
-        public CapturedVariablesTreeBuilder(syntax_tree_visitor visitor)
+        public CapturedVariablesTreeBuilder(syntax_tree_visitor visitor, GeneratedNamesManager generatedNamesManager)
         {
             _visitor = visitor;
             _scopesCapturedVarsNodesDictionary = new Dictionary<int, CapturedVariablesTreeNode>();
             _identsReferences = new Dictionary<SubstitutionKey, List<ident>>();
+            _generatedNamesManager = generatedNamesManager;
         }
 
         public override void visit(semantic_check_sugared_statement_node sn)
@@ -454,7 +457,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                     {
                         if (!clScope.NonPublicMembersNamesMapping.ContainsKey(idName))
                         {
-                            var name = LambdaHelper.GetNameForNonPublicMember(idName);
+                            var name = LambdaHelper.GetNameForNonPublicMember(idName, _generatedNamesManager);
                             var semClassField = (class_field) si.sym_info;
                             var pn = new common_property_node(name, _visitor.context._ctn, null, field_access_level.fal_public, semClassField.polymorphic_state);
                             pn.internal_property_type = _visitor.convert_strong(id).type;

@@ -4,7 +4,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-V3E9T2U
-// DateTime: 31.01.2026 19:25:57
+// DateTime: 03.03.2026 17:10:12
 // UserName: alex
 // Input file <SPythonParser.y>
 
@@ -67,7 +67,6 @@ public partial class SPythonGPPGParser: ShiftReduceParser<ValueType, LexLocation
     // public int max_errors = 10;
 	public SPythonParserTools parserTools;
     public List<compiler_directive> CompilerDirectives;
-	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	public bool is_unit_to_be_parsed = false;
 
 	public SPythonGPPGParser(AbstractScanner<ValueType, LexLocation> scanner, SPythonParserTools parserTools,

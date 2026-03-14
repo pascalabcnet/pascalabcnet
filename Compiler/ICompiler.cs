@@ -1,10 +1,7 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using System.Collections.Generic;
-using System.Text;
 using PascalABCCompiler.SemanticTreeConverters;
-using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.Errors;
 
 ///В разработке DarkStar
@@ -82,7 +79,7 @@ namespace PascalABCCompiler
             get;
         }
 
-        SourceFilesProviderDelegate SourceFilesProvider
+        PascalABCCompiler.CoreUtils.SourceFilesProviderDelegate SourceFilesProvider
         {
             get; set;
         }

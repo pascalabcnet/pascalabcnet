@@ -9,6 +9,7 @@ using VisualPascalABCPlugins;
 using System.Threading;
 using Languages.Integration;
 using Languages.Facade;
+using PascalABCCompiler.CoreUtils;
 
 namespace VisualPascalABC
 {
@@ -239,7 +240,7 @@ namespace VisualPascalABC
         }
 
         
-        public object SourceFilesProvider(string FileName, PascalABCCompiler.SourceFileOperation FileOperation)
+        public object SourceFilesProvider(string FileName, SourceFileOperation FileOperation)
         {
 
 
@@ -251,7 +252,7 @@ namespace VisualPascalABC
             
             switch (FileOperation)
             {
-                case PascalABCCompiler.SourceFileOperation.GetText:
+                case SourceFileOperation.GetText:
                     if (tp != null)
                     {
                         string Text1 = ed.Document.TextContent;
@@ -265,19 +266,19 @@ namespace VisualPascalABC
                     /*TextReader tr = new StreamReader(file_name, System.Text.Encoding.GetEncoding(1251));
                     string Text = tr.ReadToEnd();
                     tr.Close();*/
-                    string Text = PascalABCCompiler.FileReader.ReadFileContent(FileName, null);
+                    string Text = FileReader.ReadFileContent(FileName, null);
                     if (ConvertUnitTextProperty != null)
                         Text = ConvertUnitTextProperty(FileName, Text);
                     return Text;
-                case PascalABCCompiler.SourceFileOperation.Exists:
+                case SourceFileOperation.Exists:
                     if (tp != null)
                         return true;
                     return File.Exists(FileName);
-                case PascalABCCompiler.SourceFileOperation.GetLastWriteTime:
+                case SourceFileOperation.GetLastWriteTime:
                     if (tp != null)
                         return tp.ModifyDateTime;
                     return File.GetLastWriteTime(FileName);
-                case PascalABCCompiler.SourceFileOperation.FileEncoding:
+                case SourceFileOperation.FileEncoding:
                     return DefaultFileEncoding;
             }
             return null;
@@ -396,7 +397,7 @@ namespace VisualPascalABC
                         AddCompilerTextToCompilerMessages(sender, VECStringResources.Get("SUPPORTED_LANGUAGES") + Environment.NewLine);
                         foreach (ILanguage lang in LanguageProvider.Instance.Languages)
                             AddCompilerTextToCompilerMessages(sender, string.Format(VECStringResources.Get("CM_LANGUAGE_{0}"), 
-                                PascalABCCompiler.FormatTools.LanguageAndExtensionsFormatted(lang.Name, lang.FilesExtensions) + Environment.NewLine));
+                                PascalABCCompiler.CoreUtils.FormatTools.LanguageAndExtensionsFormatted(lang.Name, lang.FilesExtensions) + Environment.NewLine));
                         if (StartingCompleted)
                         {
                             ChangeVisualEnvironmentState(VisualEnvironmentState.FinishCompilerLoading, standartCompiler);

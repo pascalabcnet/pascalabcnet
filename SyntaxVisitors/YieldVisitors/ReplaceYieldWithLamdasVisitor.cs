@@ -1,35 +1,29 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using PascalABCCompiler.Errors;
-using PascalABCCompiler;
+using PascalABCCompiler.CoreUtils;
 using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors
 {
     public class ReplaceYieldExprByVarVisitor : BaseChangeVisitor
     {
-        private int _Num = 0;
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        private ReplaceYieldExprByVarVisitor(GeneratedNamesManager generatedNamesManager)
+        {
+            this.generatedNamesManager = generatedNamesManager;
+        }
 
         private ident NewVarName()
         {
-            ++_Num;
-            return new ident("$yieldExprVar$" + _Num);
+            return new ident(generatedNamesManager.GenerateName("$yieldExprVar$"));
         }
 
-        public static ReplaceYieldExprByVarVisitor New
-        {
-            get { return new ReplaceYieldExprByVarVisitor(); }
-        }
+        public static ReplaceYieldExprByVarVisitor Create(GeneratedNamesManager generatedNamesManager) => new ReplaceYieldExprByVarVisitor(generatedNamesManager);
 
-        public static void Accept(procedure_definition pd)
+        public static void Accept(procedure_definition pd, GeneratedNamesManager generatedNamesManager)
         {
-            New.ProcessNode(pd);
+            Create(generatedNamesManager).ProcessNode(pd);
         }
 
         public override void visit(yield_node yn)

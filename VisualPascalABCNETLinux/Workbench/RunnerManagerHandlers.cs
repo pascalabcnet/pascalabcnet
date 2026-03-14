@@ -123,7 +123,7 @@ namespace VisualPascalABC
                     if (Workbench.UserOptions.SkipStakTraceItemIfSourceFileInSystemDirectory && 
                         StackTraceItem.SourceFileName.StartsWith(WorkbenchServiceFactory.BuildService.CompilerOptions.SystemDirectory))
                         continue;
-                    if (!(bool)Workbench.VisualEnvironmentCompiler.SourceFilesProvider(StackTraceItem.SourceFileName, PascalABCCompiler.SourceFileOperation.Exists))
+                    if (!(bool)Workbench.VisualEnvironmentCompiler.SourceFilesProvider(StackTraceItem.SourceFileName, PascalABCCompiler.CoreUtils.SourceFileOperation.Exists))
                     {
                         string fn = Path.Combine(WorkbenchStorage.LibSourceDirectory, Path.GetFileName(StackTraceItem.SourceFileName));
                         if (File.Exists(fn))

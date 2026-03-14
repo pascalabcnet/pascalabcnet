@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
+using PascalABCCompiler.CoreUtils;
 using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors.PatternsVisitors
@@ -94,12 +94,6 @@ namespace SyntaxVisitors.PatternsVisitors
         private const string GeneratedVisitElseBranchVariableName = "<>visitElseBranch";
         private const string GeneratedMatchExprVariableName = "<>matchExprVariable";
 
-        private int generalVariableCounter = 0;
-        private int successVariableCounter = 0;
-        private int labelVariableCounter = 0;
-        private static int deconstructParamVariableCounter = 0;
-        private int matchExprVariableCounter = 0;
-
         private if_node _previousIf;
         private statement desugaredMatchWith;
         private List<if_node> processedIfNodes = new List<if_node>();
@@ -108,7 +102,14 @@ namespace SyntaxVisitors.PatternsVisitors
         //const matching
         private List<statement> typeChecks = new List<statement>();
 
-        public static PatternsDesugaringVisitor New => new PatternsDesugaringVisitor();
+        private readonly GeneratedNamesManager generatedNamesManager;
+
+        private PatternsDesugaringVisitor(GeneratedNamesManager generatedNamesManager)
+        {
+            this.generatedNamesManager = generatedNamesManager;
+        }
+
+        public static PatternsDesugaringVisitor Create(GeneratedNamesManager generatedNamesManager) => new PatternsDesugaringVisitor(generatedNamesManager);
 
         public override void visit(match_with matchWith)
         {
@@ -208,12 +209,9 @@ namespace SyntaxVisitors.PatternsVisitors
             typeChecks.Clear(); // SSM исправление ошибки #2276
         }
 
-        private int num = 0;
-
-        public string GenerateNewName(string name)
+        private string GenerateNewName(string name)
         {
-            num += 1;
-            return "$RenIsVarYield" + num + "$" + name;
+            return generatedNamesManager.GenerateName("$RenIsVarYield", "$" + name);
         }
 
         public override void visit(procedure_definition pd)
@@ -575,13 +573,13 @@ namespace SyntaxVisitors.PatternsVisitors
             return indexerCall;
         }
 
-        private ident NewGeneralName(SourceContext sc) => new ident(GeneratedPatternNamePrefix + "GenVar" + generalVariableCounter++, sc);
+        private ident NewGeneralName(SourceContext sc) => new ident(generatedNamesManager.GenerateName(GeneratedPatternNamePrefix + "GenVar"), sc);
 
-        private ident NewSuccessName(SourceContext sc) => new ident(GeneratedPatternNamePrefix + "Success" + successVariableCounter++, sc);
+        private ident NewSuccessName(SourceContext sc) => new ident(generatedNamesManager.GenerateName(GeneratedPatternNamePrefix + "Success"), sc);
 
-        private ident NewEndIfName(SourceContext sc) => new ident(GeneratedPatternNamePrefix + "EndIf" + labelVariableCounter++, sc);
+        // private ident NewEndIfName(SourceContext sc) => new ident(GeneratedPatternNamePrefix + "EndIf" + labelVariableCounter++, sc);
 
-        private bool IsGenerated(string name) => name.StartsWith(GeneratedPatternNamePrefix);
+        // private bool IsGenerated(string name) => name.StartsWith(GeneratedPatternNamePrefix);
 
         private void AddDefaultCase(statement_list statements)
         {
@@ -1178,12 +1176,12 @@ namespace SyntaxVisitors.PatternsVisitors
 
         private string NewDeconstructParamId()
         {
-            return GeneratedPatternNamePrefix + "DeconstructParam" + deconstructParamVariableCounter++.ToString();
+            return generatedNamesManager.GenerateName(GeneratedPatternNamePrefix + "DeconstructParam");
         }
 
         private string NewMatchExprVariableId()
         {
-            return GeneratedMatchExprVariableName + "matchExprVariableCounter" + deconstructParamVariableCounter++.ToString();
+            return generatedNamesManager.GenerateName(GeneratedMatchExprVariableName + "matchExprVariableCounter");
         }
     }
 }

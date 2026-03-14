@@ -65,7 +65,7 @@
 **/TestPlugin.dll
 **/TreeConverter.dll
 **/VBNETParser.dll
-**/YieldHelpers.dll
+**/PABCCoreUtils.dll
 **/pabcnetc.exe
 **/pabcnetc.exe.config
 **/pabcnetcclear.exe

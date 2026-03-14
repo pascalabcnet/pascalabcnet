@@ -15,6 +15,8 @@ namespace Languages.Pascal.Frontend.Converters
         
         protected override syntax_tree_node ApplyConversions(syntax_tree_node root, bool forIntellisense)
         {
+            var generatedNamesManager = new PascalABCCompiler.CoreUtils.GeneratedNamesManager();
+
             ExitParamVisitor.New.ProcessNode(root);
 
             var binder = new BindCollectLightSymInfo(root as compilation_unit);
@@ -29,24 +31,24 @@ namespace Languages.Pascal.Frontend.Converters
             NewRangeDesugarAndFindHasYieldVisitor.New.ProcessNode(root);
 
             // Распаковка параметров в лямбдах
-            UnpackLambdaParametersVisitor.New.ProcessNode(root);
+            UnpackLambdaParametersVisitor.Create(generatedNamesManager).ProcessNode(root);
 
             // Unnamed Records перенёс сюда
             UnnamedRecordsCheckVisitor.New.ProcessNode(root);
 
             // Выносим выражения с лямбдами из заголовка foreach + считаем максимум 10 вложенных лямбд
-            StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New.ProcessNode(root);
+            StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.Create(generatedNamesManager).ProcessNode(root);
             new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as compilation_unit).ProcessNode(root); 
-            FindOnExceptVarsAndApplyRenameVisitor.New.ProcessNode(root);
+            FindOnExceptVarsAndApplyRenameVisitor.Create(generatedNamesManager).ProcessNode(root);
 
             // loop
-            LoopDesugarVisitor.New.ProcessNode(root);
+            LoopDesugarVisitor.Create(generatedNamesManager).ProcessNode(root);
 #if DEBUG
             //new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
 #endif
             bool optimize_tuple_assign = true;
             // tuple_node
-            TupleVisitor.Create(optimize_tuple_assign).ProcessNode(root);
+            TupleVisitor.Create(optimize_tuple_assign, generatedNamesManager).ProcessNode(root);
 
             // index 
             IndexVisitor.New.ProcessNode(root);
@@ -58,34 +60,34 @@ namespace Languages.Pascal.Frontend.Converters
             // теперь коллизия с (a[1:6], a[6:11]):= (a[6:11], a[1:6]);
             // assign_tuple и assign_var_tuple
             if (!optimize_tuple_assign)
-                AssignTuplesDesugarVisitor.New.ProcessNode(root); // теперь это - на семантике
+                AssignTuplesDesugarVisitor.Create(generatedNamesManager).ProcessNode(root); // теперь это - на семантике
             else 
-                NewAssignTuplesDesugarVisitor.Create(binder).ProcessNode(root);
+                NewAssignTuplesDesugarVisitor.Create(binder, generatedNamesManager).ProcessNode(root);
 
             // question_point_desugar_visitor
-            QuestionPointDesugarVisitor.New.ProcessNode(root);
+            QuestionPointDesugarVisitor.Create(generatedNamesManager).ProcessNode(root);
 
             // double_question_desugar_visitor
-            DoubleQuestionDesugarVisitor.New.ProcessNode(root);
+            // Закомментировал, потому что cейчас он ничего не делает  EVA 08.03.2026
+            // DoubleQuestionDesugarVisitor.New.ProcessNode(root); 
 
             // Patterns
             // SingleDeconstructChecker.New.ProcessNode(root); // SSM 21.10.18 - пока разрешил множественные деконструкторы. Если будут проблемы - запретить
             ExtendedIsDesugaringVisitor.New.ProcessNode(root); // Десахаризация расширенного is, который используется в сложных логических выражениях
-            PatternsDesugaringVisitor.New.ProcessNode(root);  // Обязательно в этом порядке.
+            PatternsDesugaringVisitor.Create(generatedNamesManager).ProcessNode(root);  // Обязательно в этом порядке.
 #if DEBUG
             //new SimplePrettyPrinterVisitor("D:/out.txt").ProcessNode(root);
             // TestAssignIsDefVisitor.New.ProcessNode(root);
 #endif
 
             // simple_property
-            PropertyDesugarVisitor.New.ProcessNode(root);
+            PropertyDesugarVisitor.Create(generatedNamesManager).ProcessNode(root);
 
             // Всё, связанное с yield
-            CapturedNamesHelper.Reset();
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
-            ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
+            ProcessYieldCapturedVarsVisitor.Create(generatedNamesManager).ProcessNode(root);
 
-            CacheFunctionVisitor.New.ProcessNode(root);
+            CacheFunctionVisitor.Create(generatedNamesManager).ProcessNode(root);
 
             ToExprVisitor.New.ProcessNode(root);
 

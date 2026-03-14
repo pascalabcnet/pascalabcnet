@@ -6,6 +6,10 @@
   File "Files\Databases\*.txt"  
   File "Files\Words\*.txt"  
 
+  SetOutPath "$INSTDIR\Files\Datasets"
+  File "Files\Datasets\*.csv"  
+  File "Files\Datasets\*.meta"  
+
   SetOutPath "$INSTDIR\Files\Images"
   File "Files\Images\*.png"  
 SectionEnd

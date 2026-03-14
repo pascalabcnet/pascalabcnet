@@ -24,7 +24,17 @@
   Delete "$INSTDIR\gacutil.exe.config"
   Delete "$INSTDIR\gacutlrc.dll"
   Delete "$INSTDIR\ExecHide.exe"
+  
   WriteRegStr HKCU "${REGDIR}" "${INSTALLDIRREGKEY}" "$INSTDIR"
+  SetRegView 64
+  WriteRegStr HKLM "${REGDIR}" "${INSTALLDIRREGKEY}" "$INSTDIR"
+
+  ; переменная окружения
+  WriteRegExpandStr HKCU "Environment" "PASCALABCNET_DIR" "$INSTDIR\"
+
+  ; уведомить систему, чтобы новые процессы увидели переменную
+  System::Call 'user32::SendMessageTimeoutA(i 0xffff,i ${WM_SETTINGCHANGE},i 0,t "Environment",i 0,i 1000,*i .r0)'
+
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\PascalABCNET" \
                  "DisplayName" "PascalABC.NET"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\PascalABCNET" \

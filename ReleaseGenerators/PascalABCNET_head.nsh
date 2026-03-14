@@ -3,7 +3,7 @@
 !include PascalABCNET_version.nsh
 
 !define REGDIR "Software\PascalABC.NET"
-!define INSTALLDIRREGKEY "Install Directory"
+!define INSTALLDIRREGKEY "InstallDir"
 !define UninstLog "uninstall.log"
 
 InstType $(DESC_Common)

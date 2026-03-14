@@ -259,7 +259,7 @@ namespace VisualPascalABC
                     foreach (string FileName in CodeCompletionParserController.filesToParse.Keys)
                     {
                         CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
-                        string text = VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText) as string;
+                        string text = VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.SourceFilesProvider(FileName, PascalABCCompiler.CoreUtils.SourceFileOperation.GetText) as string;
                         PascalABCCompiler.SyntaxTree.compilation_unit cu = controller.ParseOnlySyntaxTree(FileName, text);
                         if (cu != null)
                         {

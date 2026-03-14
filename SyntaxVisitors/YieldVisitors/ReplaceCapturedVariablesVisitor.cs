@@ -1,15 +1,10 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
-using PascalABCCompiler.YieldHelpers;
 
 namespace SyntaxVisitors
 {
@@ -89,7 +84,7 @@ namespace SyntaxVisitors
             // frninja 31/03/16 - фикс селфа для extensionmethod
             if (idName == "self" && !CollectedFormalParams.Contains(idName))
             {
-                var newSelf = new dot_node(new ident("self"), new ident(YieldConsts.Self));
+                var newSelf = new dot_node(new ident("self"), new ident(StringConstants.yieldSelf));
                 Replace(id, newSelf);
                 return;
             }
@@ -161,7 +156,7 @@ namespace SyntaxVisitors
         public override void visit(dot_node dn)
         {
             var rid = dn.right as ident;
-            if ((object)rid != null && rid.name != YieldConsts.Self)
+            if ((object)rid != null && rid.name != StringConstants.yieldSelf)
                 ProcessNode(dn.left);
 
             // Most nested

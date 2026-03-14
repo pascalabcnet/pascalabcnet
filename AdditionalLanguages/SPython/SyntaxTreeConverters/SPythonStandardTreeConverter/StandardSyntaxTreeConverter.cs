@@ -5,6 +5,7 @@ using PascalABCCompiler.SyntaxTreeConverters;
 using SyntaxVisitors;
 using SyntaxVisitors.SugarVisitors;
 using System;
+using PascalABCCompiler.CoreUtils;
 
 namespace Languages.SPython.Frontend.Converters
 {
@@ -14,6 +15,8 @@ namespace Languages.SPython.Frontend.Converters
 
         protected override syntax_tree_node ApplyConversions(syntax_tree_node root, bool forIntellisense)
         {
+            var generatedNamesManager = new GeneratedNamesManager();
+
             // кидает ошибки за использование
             // неподдерживаемых конструкций языка
             if (!forIntellisense)
@@ -40,26 +43,28 @@ namespace Languages.SPython.Frontend.Converters
 
             // замена генерации последовательностей на Select.Where
             // (не работает из-за лямбд (скорее всего), если переместить в ConvertAfterUsedModulesCompilation)
-            new TryCatchDecorator(new GeneratorObjectDesugarVisitor(root), forIntellisense).ProcessNode(root);
+            new TryCatchDecorator(new GeneratorObjectDesugarVisitor(root, generatedNamesManager), forIntellisense).ProcessNode(root);
 
             // Выносим выражения с лямбдами из заголовка foreach + считаем максимум 10 вложенных лямбд
             // украл из паскаля
-            new TryCatchDecorator(StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.New, forIntellisense).ProcessNode(root);
+            new TryCatchDecorator(StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.Create(generatedNamesManager), forIntellisense).ProcessNode(root);
             new TryCatchDecorator(new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as compilation_unit), forIntellisense).ProcessNode(root);
-            new TryCatchDecorator(FindOnExceptVarsAndApplyRenameVisitor.New, forIntellisense).ProcessNode(root);
+            new TryCatchDecorator(FindOnExceptVarsAndApplyRenameVisitor.Create(generatedNamesManager), forIntellisense).ProcessNode(root);
 
             // дешугаризация составных сравнительных операций (e.g. a == b == c)
-            new TryCatchDecorator(new CompoundComparisonDesugarVisitor(), forIntellisense).ProcessNode(root);
+            new TryCatchDecorator(new CompoundComparisonDesugarVisitor(generatedNamesManager), forIntellisense).ProcessNode(root);
 
             return root;
         }
 
-        public override syntax_tree_node ConvertAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts)
+        protected override syntax_tree_node ApplyConversionsAfterUsedModulesCompilation(syntax_tree_node root, bool forIntellisense, in CompilationArtifactsUsedBySyntaxConverters compilationArtifacts)
         {
+            var generatedNamesManager = new GeneratedNamesManager();
+
             // украл из паскаля, нужны для работы 'for i1, i2 in expr' (работает с кортежными присваиваниями)
             var binder = new BindCollectLightSymInfo(root as compilation_unit);
             new TryCatchDecorator(binder, forIntellisense).ProcessNode(root);
-            new TryCatchDecorator(new NewAssignTuplesDesugarVisitor(binder), forIntellisense).ProcessNode(root);
+            new TryCatchDecorator(new NewAssignTuplesDesugarVisitor(binder, generatedNamesManager), forIntellisense).ProcessNode(root);
 
             // Заменяет 
             // variable_name = single_length_string
