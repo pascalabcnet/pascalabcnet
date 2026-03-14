@@ -21,7 +21,7 @@ mono ../bin/pabcnetc.exe RebuildStandartModulesMono.pas  /rebuild
 
 # Удаляем pcu для SPython модулей, чтобы не применять /rebuild
 rm -f ../bin/Lib/SPython/*.pcu
-mono ../bin/pabcnetc RebuildStandartModulesSPython.pas   /rebuild
+mono ../bin/pabcnetc RebuildStandartModulesSPython.pas
 if [ $? -eq 0 ]; then
     if [ $? -eq 0 ]; then
       cd ../TestSuite
