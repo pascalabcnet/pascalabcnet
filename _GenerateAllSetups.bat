@@ -18,7 +18,11 @@ dotnet build -c Release --no-incremental PascalABCNET.sln
 
 cd ReleaseGenerators
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild
-..\bin\pabcnetc RebuildStandartModulesSPython.pas /rebuild
+
+rem Удаляем pcu для SPython модулей, чтобы не применять /rebuild
+del "..\bin\Lib\SPython\*.pcu" /q
+..\bin\pabcnetc RebuildStandartModulesSPython.pas
+
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 cd PABCRtl
@@ -34,7 +38,11 @@ ExecHide.exe gacutil.exe /u PABCRtl
 ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild
-..\bin\pabcnetc RebuildStandartModulesSPython.pas /rebuild
+
+rem Удаляем pcu для SPython модулей, чтобы не применять /rebuild
+del "..\bin\Lib\SPython\*.pcu" /q
+..\bin\pabcnetc RebuildStandartModulesSPython.pas
+
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 

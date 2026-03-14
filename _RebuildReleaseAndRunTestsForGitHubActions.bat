@@ -4,7 +4,11 @@ dotnet build -c Release PascalABCNET.sln
 
 cd ReleaseGenerators
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild /noconsole
-..\bin\pabcnetc RebuildStandartModulesSPython.pas /rebuild /noconsole
+
+rem Удаляем pcu для SPython модулей, чтобы не применять /rebuild
+del "..\bin\Lib\SPython\*.pcu" /q
+..\bin\pabcnetc RebuildStandartModulesSPython.pas /noconsole
+
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 
@@ -21,7 +25,11 @@ ExecHide.exe gacutil.exe /u PABCRtl
 ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild /noconsole
-..\bin\pabcnetc RebuildStandartModulesSPython.pas /rebuild /noconsole
+
+rem Удаляем pcu для SPython модулей, чтобы не применять /rebuild
+del "..\bin\Lib\SPython\*.pcu" /q
+..\bin\pabcnetc RebuildStandartModulesSPython.pas /noconsole
+
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 
