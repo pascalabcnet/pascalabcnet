@@ -35,6 +35,10 @@ type
 
     constructor Create(names: array of string; types: array of ColumnType;
       isCategorical: array of boolean := nil);
+      
+    procedure Print;
+    
+    procedure Println;
 
     { --- schema operations (immutable) --- }
     function Select(indices: array of integer): DataFrameSchema;
@@ -56,7 +60,7 @@ type
   ColumnInfo = auto class
     Name: string;
     ColType: ColumnType;
-    IsCategorical: boolean;
+    //IsCategorical: boolean;
   end;
   
   DataFrameCursor = class;
@@ -81,8 +85,9 @@ type
     IsValid: array of boolean;  // Флаги валидности (может быть nil)
   public
     constructor Create; begin end;
-    constructor Create(name: string; isCategorical: boolean);
-    
+    constructor Create(name: string);
+    constructor Create(name: string; data: array of integer;
+      valid: array of boolean := nil);
     function TryGetNumericValue(i: integer; var value: real): boolean; override;
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
@@ -99,7 +104,8 @@ type
   public  
     constructor Create; begin end;
     constructor Create(name: string);
-    
+    constructor Create(name: string; data: array of real;
+      valid: array of boolean := nil);
     function TryGetNumericValue(i: integer; var value: real): boolean; override;
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
@@ -115,7 +121,9 @@ type
     IsValid: array of boolean;  // Флаги валидности
   public
     constructor Create; begin end;
-    constructor Create(name: string; isCategorical: boolean);
+    constructor Create(name: string);
+    constructor Create(name: string; data: array of string;
+      valid: array of boolean := nil);
     function TryGetNumericValue(i: integer; var value: real): boolean; override;
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
@@ -132,6 +140,8 @@ type
   public  
     constructor Create; begin end;
     constructor Create(name: string);
+    constructor Create(name: string; data: array of boolean;
+      valid: array of boolean := nil);
     function TryGetNumericValue(i: integer; var value: real): boolean; override;
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
@@ -327,11 +337,54 @@ begin
 
   fNames := Copy(names);
   fTypes := Copy(types);
-  fIsCategorical := if isCategorical = nil then nil else Copy(isCategorical);
+
+  fIsCategorical := 
+    if isCategorical = nil then 
+      new boolean[names.Length] 
+    else 
+      Copy(isCategorical);
+
   fIndexByName := BuildIndex(fNames);
 
   AssertConsistent;
 end;
+
+procedure DataFrameSchema.Print;
+begin
+  if fNames.Length = 0 then
+  begin
+    PABCSystem.Println('Schema: <empty>');
+    exit;
+  end;
+  
+  var maxName := fNames.Max(n -> n.Length);
+
+  for var i := 0 to ColumnCount-1 do
+  begin
+    var name := fNames[i].PadRight(maxName);
+
+    var t: string;
+
+    case fTypes[i] of
+      ctInt:   t := 'int';
+      ctFloat: t := 'float';
+      ctStr:   t := 'string';
+      ctBool:  t := 'bool';
+    end;
+
+    if fIsCategorical[i] then
+      PABCSystem.Println(name, ':', t, '(categorical)')
+    else
+      PABCSystem.Println(name, ':', t);
+  end;
+end;
+
+procedure DataFrameSchema.Println;
+begin
+  Print;
+  PABCSystem.Println
+end;
+
 
 function DataFrameSchema.IndexOf(name: string): integer;
 begin
@@ -490,10 +543,21 @@ end;
 //           Columns
 //-----------------------------
 
-constructor IntColumn.Create(name: string; isCategorical: boolean);
+constructor IntColumn.Create(name: string; data: array of integer;
+  valid: array of boolean);
 begin
   inherited Create;
-  Info := new ColumnInfo(name, ctInt, isCategorical);
+  Info := new ColumnInfo(name, ctInt);
+
+  Data := data;
+  IsValid := valid;
+end;
+
+
+constructor IntColumn.Create(name: string);
+begin
+  inherited Create;
+  Info := new ColumnInfo(name, ctInt);
 
   Data := new integer[0];
   IsValid := nil;
@@ -518,7 +582,8 @@ begin
   if cur.IsValid(colIndex) then
   begin
     Data := Data + [cur.Int(colIndex)];
-    if IsValid <> nil then IsValid := IsValid + [true];
+    if IsValid <> nil then 
+      IsValid := IsValid + [true];
   end
   else AppendInvalid; 
 end;
@@ -532,20 +597,32 @@ begin
   exit(true);
 end;
 
+constructor FloatColumn.Create(name: string; data: array of real;
+  valid: array of boolean);
+begin
+  inherited Create;
+  Info := new ColumnInfo(name, ctFloat);
+
+  Data := data;
+  IsValid := valid;
+end;
+
 constructor FloatColumn.Create(name: string);
 begin
   inherited Create;
-  Info := new ColumnInfo(name, ctFloat, false);
+  Info := new ColumnInfo(name, ctFloat);
   Data := new real[0];
   IsValid := nil;
 end;
+
 
 procedure FloatColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
 begin
   if cur.IsValid(colIndex) then
   begin
     Data := Data + [cur.Float(colIndex)];
-    if IsValid <> nil then IsValid := IsValid + [true];
+    if IsValid <> nil then 
+      IsValid := IsValid + [true];
   end
   else AppendInvalid;
 end;
@@ -573,10 +650,20 @@ begin
   exit(true);
 end;
 
-constructor StrColumn.Create(name: string; isCategorical: boolean);
+constructor StrColumn.Create(name: string; data: array of string;
+  valid: array of boolean);
 begin
   inherited Create;
-  Info := new ColumnInfo(name, ctStr, isCategorical);
+  Info := new ColumnInfo(name, ctStr);
+
+  Data := data;
+  IsValid := valid;
+end;
+
+constructor StrColumn.Create(name: string);
+begin
+  inherited Create;
+  Info := new ColumnInfo(name, ctStr);
 
   Data := new string[0];
   IsValid := nil;
@@ -587,7 +674,8 @@ begin
   if cur.IsValid(colIndex) then
   begin
     Data := Data + [cur.Str(colIndex)];
-    if IsValid <> nil then IsValid := IsValid + [true];
+    if IsValid <> nil then 
+      IsValid := IsValid + [true];
   end
   else AppendInvalid;
 end;
@@ -624,10 +712,20 @@ begin
   exit(true);
 end;
 
+constructor BoolColumn.Create(name: string; data: array of boolean;
+  valid: array of boolean);
+begin
+  inherited Create;
+  Info := new ColumnInfo(name, ctBool);
+
+  Data := data;
+  IsValid := valid;
+end;
+
 constructor BoolColumn.Create(name: string);
 begin
   inherited Create;
-  Info := new ColumnInfo(name, ctBool, false);
+  Info := new ColumnInfo(name, ctBool);
 
   Data := new boolean[0];
   IsValid := nil;
@@ -638,7 +736,8 @@ begin
   if cur.IsValid(colIndex) then
   begin
     Data := Data + [cur.Bool(colIndex)];
-    if IsValid <> nil then IsValid := IsValid + [true];
+    if IsValid <> nil then 
+      IsValid := IsValid + [true];
   end
   else AppendInvalid;
 end;

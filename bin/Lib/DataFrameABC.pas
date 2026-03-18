@@ -83,6 +83,7 @@ type
     procedure AssertSchemaConsistent; // Проверка инвариантов в Debug
     
     constructor Create(cols: List<Column>; schema: DataFrameSchema);
+    constructor Create(cols: List<Column>);
     
     function BuildJoinSchema(right: DataFrame; leftKeys, rightKeys: array of integer; 
       rightPrefix: string): DataFrameSchema;
@@ -93,17 +94,27 @@ type
     function GetColumnIndex(name: string): integer;
     function GetColumn(name: string): Column;
   public
+    /// Создает пустой DataFrame
+    constructor Create;
+
     /// Схема DataFrame: имена, типы и признаки категориальности
     property Schema: DataFrameSchema read fschema;
     
+    procedure SetSchema(schema: DataFrameSchema);
+
+    
     property Item[name: string]: Column read GetColumn; default;
+    
+    function GetColumns: sequence of Column;
+    
+    function GetColumn(i: integer): Column;
 
     /// Добавляет в DataFrame столбец-представление (view),
     /// использующий те же данные, что и исходный столбец
     procedure AddColumnView(src: Column);
-
-    /// Создает пустой DataFrame
-    constructor Create;
+    
+    function ExtendSchema(name: string; colType: ColumnType; isCategorical: boolean): DataFrameSchema;
+    
     
     /// Возвращает количество строк в DataFrame
     function RowCount: integer;
@@ -135,11 +146,11 @@ type
     function TrainTestSplit(testRatio: real := 0.2; seed: integer := -1): (DataFrame, DataFrame);
     
     /// Добавляет столбец целых чисел
-    procedure AddIntColumn(name: string; data: array of integer; valid: array of boolean := nil; isCategorical: boolean := false);
+    procedure AddIntColumn(name: string; data: array of integer; valid: array of boolean := nil);
     /// Добавляет столбец вещественных чисел
     procedure AddFloatColumn(name: string; data: array of real; valid: array of boolean := nil);
     /// Добавляет строковый столбец
-    procedure AddStrColumn(name: string; data: array of string; valid: array of boolean := nil; isCategorical: boolean := true);
+    procedure AddStrColumn(name: string; data: array of string; valid: array of boolean := nil);
     /// Добавляет столбец логических значений
     procedure AddBoolColumn(name: string; data: array of boolean; valid: array of boolean := nil);
     
@@ -263,6 +274,24 @@ type
     /// Пропущенные значения (NA) сохраняются
     function ReplaceColumnInt(colName: string; f: DataFrameCursor -> integer): DataFrame;
     
+    /// Преобразует значения целочисленного столбца.
+    /// Возвращает новый DataFrame.
+    function TransformIntColumn(name: string; f: integer -> integer): DataFrame;
+    /// Преобразует значения вещественного столбца.
+    /// Возвращает новый DataFrame.
+    function TransformFloatColumn(name: string; f: real -> real): DataFrame;
+    /// Преобразует значения строкового столбца.
+    /// Возвращает новый DataFrame.
+    function TransformStrColumn(name: string; f: string -> string): DataFrame;
+    /// Преобразует значения логического столбца.
+    /// Возвращает новый DataFrame.
+    function TransformBoolColumn(name: string; f: boolean -> boolean): DataFrame;
+
+    
+    /// Преобразует указанные вещественные столбцы в целочисленные (округление).
+    /// Возвращает новый датафрейм
+    function CastFloatToIntColumns(names: array of string): DataFrame;
+
     function AddDerivedIntColumn(name: string; f: DataFrameCursor -> integer): DataFrame;
     
     /// Соединяет с другим DataFrame по одному ключу
@@ -284,11 +313,15 @@ type
     procedure PrintSchema;
     /// Выводит размер, схему и количество валидных значений 
     procedure PrintInfo;
+    /// Выводит размер, схему и количество валидных значений 
+    procedure PrintlnInfo;
 
     /// Загружает DataFrame из CSV файла
     static function FromCsv(filename: string): DataFrame;
     /// Загружает DataFrame из многострочной строки в формате CSV
     static function FromCsvText(text: string): DataFrame;
+    /// Сохраняет DataFrame в csv-файл
+    procedure ToCsv(filename: string);
   private
     /// Проверяет валидность индекса столбца
     procedure CheckColumnIndex(colIndex: integer);
@@ -349,23 +382,54 @@ type
   /// Статический класс для загрузки данных из CSV файлов
   CsvLoader = static class
     /// Загружает DataFrame из CSV файла
-    static function Load(filename: string; delimiter: char := ','; hasHeader: boolean := true;      
+    static function Load(
+      filename: string; 
+      delimiter: char := ','; 
+      hasHeader: boolean := true;      
+      encoding: Encoding := nil;
       missingValues: array of string := nil; // Значения, считающиеся пропущенными
-      strict: boolean := False;        // Строгий режим (проверка формата)
-      schema: Dictionary<string, ColumnType> := nil // Схема типов столбцов
+      trimWhitespace: boolean := true;
+      strict: boolean := False;              // Строгий режим (проверка формата) - бросать ли исключения 
+      schema: Dictionary<string, ColumnType> := nil;
+      sampleSize: integer := 1000;
+      ignoreColumns: array of string := nil;
+      inferTypes: boolean := True;
+      forceStringColumns: array of string := nil;
+      categoricalColumns: array of string := nil;
+      inferCategorical: boolean := false;
+      maxCategoricalCardinality: integer := 100;
+      maxCategoricalRatio: real := 0.2;
+      idThreshold: real := 0.8;
+      minFrequency: integer := 5
     ): DataFrame;
-    
+
     /// Загружает DataFrame из многострочной строки в формате CSV
     static function LoadFromLines(
       lines: sequence of string;
-      delimiter: char;
-      hasHeader: boolean;
-      missingValues: array of string;
-      strict: boolean;
-      schema: Dictionary<string, ColumnType>
+      delimiter: char := ',';
+      hasHeader: boolean := true;
+      missingValues: array of string := nil;
+      trimWhitespace: boolean := true;
+      strict: boolean := False;
+      schema: Dictionary<string, ColumnType> := nil;
+      sampleSize: integer := 1000;
+      ignoreColumns: array of string := nil;
+      inferTypes: boolean := True;
+      forceStringColumns: array of string := nil;
+      categoricalColumns: array of string := nil;
+      inferCategorical: boolean := false;
+      maxCategoricalCardinality: integer := 100;
+      maxCategoricalRatio: real := 0.2;
+      idThreshold: real := 0.8;
+      minFrequency: integer := 5
     ): DataFrame;
   end;
-
+  
+  CsvSaver = static class 
+    static procedure Save(df: DataFrame; filename: string;
+      delimiter: char := ','; header: boolean := true);
+  end; 
+  
 implementation
 
 uses MLExceptions;
@@ -452,6 +516,10 @@ const
   ER_TEST_RATIO_INVALID =
     'Некорректное значение testRatio = {0}. Ожидается число в диапазоне (0, 1).' +
     'Invalid testRatio = {0}. Expected value in range (0, 1).';
+  ER_CAST_COLUMN_NOT_FLOAT =
+    'Столбец {0} не является вещественным!!Column {0} is not Float';
+  ER_CAST_NON_INTEGER_VALUE =
+    'Столбец {0} содержит нецелое значение {1} в строке {2}!!Column {0} contains non-integer value {1} at row {2}';
 
 type
   /// Класс для группировки данных
@@ -493,6 +561,16 @@ constructor DataFrame.Create;
 begin
   columns := [];
   fschema := new DataFrameSchema([], []);
+end;
+
+constructor DataFrame.Create(cols: List<Column>);
+begin
+  if cols = nil then
+    ArgumentNullError(ER_COLS_NULL);
+
+  self.columns := cols;
+
+  RebuildSchema;
 end;
 
 constructor DataFrame.Create(cols: List<Column>; schema: DataFrameSchema);
@@ -1459,24 +1537,22 @@ begin
   var n := columns.Count;
   var names := new string[n];
   var types := new ColumnType[n];
-  var anyCat := false;
+  var cats := new boolean[n];
 
   for var i := 0 to n - 1 do
   begin
     var info := columns[i].Info;
     names[i] := info.Name;
     types[i] := info.ColType;
-    if info.IsCategorical then anyCat := true;
+
+    // 🔥 берем из старой schema
+    if (fSchema <> nil) and (i < fSchema.ColumnCount) then
+      cats[i] := fSchema.IsCategorical[i]
+    else
+      cats[i] := false;
   end;
 
-  if not anyCat then
-    fschema := new DataFrameSchema(names, types)
-  else
-  begin
-    var cats := new boolean[n];
-    for var i := 0 to n - 1 do cats[i] := columns[i].Info.IsCategorical;
-    fschema := new DataFrameSchema(names, types, cats);
-  end;
+  fSchema := new DataFrameSchema(names, types, cats);
 end;
 
 function DataFrame.GetColumnType(colIndex: integer): ColumnType;
@@ -1584,13 +1660,13 @@ begin
   Result := (trainDf, testDf);
 end;
 
-procedure DataFrame.AddIntColumn(name: string; data: array of integer; valid: array of boolean; isCategorical: boolean);
+procedure DataFrame.AddIntColumn(name: string; data: array of integer; valid: array of boolean);
 begin
   if (columns.Count > 0) and (data.Length <> RowCount) then
     DimensionError(ER_ADD_COLUMN_ROW_MISMATCH);
 
   var c := new IntColumn;
-  c.Info := new ColumnInfo(name, ctInt, isCategorical);
+  c.Info := new ColumnInfo(name, ctInt);
   c.Data := data;
 
   if valid = nil then
@@ -1598,7 +1674,7 @@ begin
   else
   begin
     if valid.Length <> data.Length then
-      DimensionError(ER_COLUMN_VALID_LENGTH_MISMATCH);;
+      DimensionError(ER_COLUMN_VALID_LENGTH_MISMATCH);
     c.IsValid := valid;
   end;
 
@@ -1612,7 +1688,7 @@ begin
     DimensionError(ER_ADD_COLUMN_ROW_MISMATCH);
 
   var c := new FloatColumn;
-  c.Info := new ColumnInfo(name, ctFloat, False);
+  c.Info := new ColumnInfo(name, ctFloat);
   c.Data := data;
 
   if valid = nil then
@@ -1628,13 +1704,13 @@ begin
   RebuildSchema;
 end;
 
-procedure DataFrame.AddStrColumn(name: string; data: array of string; valid: array of boolean; isCategorical: boolean);
+procedure DataFrame.AddStrColumn(name: string; data: array of string; valid: array of boolean);
 begin
   if (columns.Count > 0) and (data.Length <> RowCount) then
     DimensionError(ER_ADD_COLUMN_ROW_MISMATCH);
 
   var c := new StrColumn;
-  c.Info := new ColumnInfo(name, ctStr, isCategorical);
+  c.Info := new ColumnInfo(name, ctStr);
   c.Data := data;
 
   if valid = nil then
@@ -1656,7 +1732,7 @@ begin
     DimensionError(ER_ADD_COLUMN_ROW_MISMATCH);
 
   var c := new BoolColumn;
-  c.Info := new ColumnInfo(name, ctBool, False);
+  c.Info := new ColumnInfo(name, ctBool);
   c.Data := data;
 
   if valid = nil then
@@ -2218,6 +2294,17 @@ begin
   Result := SortBy(colNames.Select(n -> ColumnIndex(n)).ToArray, descending);
 end;
 
+procedure DataFrame.SetSchema(schema: DataFrameSchema);
+begin
+  if schema = nil then
+    ArgumentNullError(ER_SCHEMA_NULL);
+
+  if schema.ColumnCount <> ColumnCount then
+    ArgumentError(ER_COLS_SCHEMA_MISMATCH);
+
+  fSchema := schema;
+end;
+
 function DataFrame.Filter(pred: CursorPredicate): DataFrame;
 begin
   var cursor := GetCursor;
@@ -2230,6 +2317,7 @@ begin
   var newCount := mask.Count;
   var res := new DataFrame;
 
+  // --- перенос колонок ---
   foreach var col in columns do
   begin
     // ---------- INT ----------
@@ -2251,7 +2339,7 @@ begin
           valid[k] := src.IsValid[i];
       end;
 
-      res.AddIntColumn(src.Info.Name, data, valid, src.Info.IsCategorical);
+      res.AddIntColumn(src.Info.Name, data, valid);
     end
 
     // ---------- FLOAT ----------
@@ -2295,7 +2383,7 @@ begin
           valid[k] := src.IsValid[i];
       end;
 
-      res.AddStrColumn(src.Info.Name, data, valid, src.Info.IsCategorical);
+      res.AddStrColumn(src.Info.Name, data, valid);
     end
 
     // ---------- BOOL ----------
@@ -2322,6 +2410,17 @@ begin
     else
       Error(ER_UNKNOWN_COLUMN_TYPE);
   end;
+
+  // 🔥 КЛЮЧЕВОЕ: перенос schema
+  var cats := new boolean[ColumnCount];
+  for var i := 0 to ColumnCount - 1 do
+    cats[i] := fSchema.IsCategorical[i];
+
+  res.SetSchema(new DataFrameSchema(
+    fSchema.ColumnNames,
+    fSchema.Types,
+    cats
+  ));
 
   Result := res;
   AssertSchemaConsistent;
@@ -2440,37 +2539,57 @@ begin
 
   var res := new DataFrame;
 
+  // --- копируем колонки ---
   for var i := 0 to columns.Count - 1 do
   begin
     var col := columns[i];
-    var name := if map.ContainsKey(col.Info.Name) then map[col.Info.Name] else col.Info.Name;
+    var oldName := col.Info.Name;
+    var newName := if map.ContainsKey(oldName) then map[oldName] else oldName;
 
     case col.Info.ColType of
       ctInt:
       begin
         var c := IntColumn(col);
-        res.AddIntColumn(name, c.Data, c.IsValid, c.Info.IsCategorical);
+        res.AddIntColumn(newName, c.Data, c.IsValid);
       end;
 
       ctStr:
       begin
         var c := StrColumn(col);
-        res.AddStrColumn(name, c.Data, c.IsValid, c.Info.IsCategorical);
+        res.AddStrColumn(newName, c.Data, c.IsValid);
       end;
 
       ctFloat:
       begin
         var c := FloatColumn(col);
-        res.AddFloatColumn(name, c.Data, c.IsValid);
+        res.AddFloatColumn(newName, c.Data, c.IsValid);
       end;
 
       ctBool:
       begin
         var c := BoolColumn(col);
-        res.AddBoolColumn(name, c.Data, c.IsValid);
+        res.AddBoolColumn(newName, c.Data, c.IsValid);
       end;
     end;
   end;
+
+  // 🔥 КЛЮЧЕВОЕ: пересобираем schema
+  var n := ColumnCount;
+  var names := new string[n];
+  var types := new ColumnType[n];
+  var cats := new boolean[n];
+
+  for var i := 0 to n - 1 do
+  begin
+    var oldName := fSchema.ColumnNames[i];
+    var newName := if map.ContainsKey(oldName) then map[oldName] else oldName;
+
+    names[i] := newName;
+    types[i] := fSchema.Types[i];
+    cats[i] := fSchema.IsCategorical[i];
+  end;
+
+  res.SetSchema(new DataFrameSchema(names, types, cats));
 
   Result := res;
 
@@ -2543,11 +2662,11 @@ begin
   begin
     case schema.Types[i] of
       ctInt:
-        cols.Add(new IntColumn(schema.ColumnNames[i], schema.IsCategorical[i]));
+        cols.Add(new IntColumn(schema.ColumnNames[i]));
       ctFloat:
         cols.Add(new FloatColumn(schema.ColumnNames[i]));
       ctStr:
-        cols.Add(new StrColumn(schema.ColumnNames[i], schema.IsCategorical[i]));
+        cols.Add(new StrColumn(schema.ColumnNames[i]));
       ctBool:
         cols.Add(new BoolColumn(schema.ColumnNames[i]));
     end;
@@ -2574,7 +2693,7 @@ begin
   
   var res := new DataFrame;
 
-  // 1. скопировать все существующие столбцы
+  // 1. копируем столбцы (без categorical!)
   for var i := 0 to columns.Count - 1 do
   begin
     var col := columns[i];
@@ -2583,18 +2702,21 @@ begin
       ctInt:
       begin
         var c := IntColumn(col);
-        res.AddIntColumn(c.Info.Name, c.Data, c.IsValid, c.Info.IsCategorical);
+        res.AddIntColumn(c.Info.Name, c.Data, c.IsValid);
       end;
+
       ctStr:
       begin
         var c := StrColumn(col);
-        res.AddStrColumn(c.Info.Name, c.Data, c.IsValid, c.Info.IsCategorical);
+        res.AddStrColumn(c.Info.Name, c.Data, c.IsValid);
       end;
+
       ctFloat:
       begin
         var c := FloatColumn(col);
         res.AddFloatColumn(c.Info.Name, c.Data, c.IsValid);
       end;
+
       ctBool:
       begin
         var c := BoolColumn(col);
@@ -2603,7 +2725,7 @@ begin
     end;
   end;
 
-  // 2. вычислить новый столбец
+  // 2. вычисляем новый столбец
   var data := new integer[RowCount];
   var valid: array of boolean := nil;
 
@@ -2618,12 +2740,14 @@ begin
       on e: Exception do
       begin
         data[i] := 0;
+
         if valid = nil then
         begin
           valid := new boolean[RowCount];
           for var j := 0 to i - 1 do
             valid[j] := true;
         end;
+
         valid[i] := false;
         i += 1;
         continue;
@@ -2636,8 +2760,10 @@ begin
     i += 1;
   end;
 
-  // 3. добавить новый столбец
+  // 3. добавляем новый столбец
   res.AddIntColumn(name, data, valid);
+
+  res.SetSchema(ExtendSchema(name, ctInt, false));
 
   Result := res;
 
@@ -2651,17 +2777,38 @@ begin
   
   var res := new DataFrame;
 
+  // 1. копируем существующие колонки
   for var i := 0 to columns.Count - 1 do
   begin
     var col := columns[i];
     case col.Info.ColType of
-      ctInt:   begin var c := IntColumn(col);   res.AddIntColumn(c.Info.Name, c.Data, c.IsValid, c.Info.IsCategorical); end;
-      ctStr:   begin var c := StrColumn(col);   res.AddStrColumn(c.Info.Name, c.Data, c.IsValid, c.Info.IsCategorical); end;
-      ctFloat: begin var c := FloatColumn(col); res.AddFloatColumn(c.Info.Name, c.Data, c.IsValid); end;
-      ctBool:  begin var c := BoolColumn(col);  res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid); end;
+      ctInt:
+      begin
+        var c := IntColumn(col);
+        res.AddIntColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctStr:
+      begin
+        var c := StrColumn(col);
+        res.AddStrColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctFloat:
+      begin
+        var c := FloatColumn(col);
+        res.AddFloatColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctBool:
+      begin
+        var c := BoolColumn(col);
+        res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
     end;
   end;
 
+  // 2. вычисляем новый столбец
   var data := new real[RowCount];
   var valid: array of boolean := nil;
 
@@ -2675,21 +2822,31 @@ begin
     except
       begin
         data[i] := 0.0;
+
         if valid = nil then
         begin
           valid := new boolean[RowCount];
-          for var j := 0 to i - 1 do valid[j] := true;
+          for var j := 0 to i - 1 do
+            valid[j] := true;
         end;
+
         valid[i] := false;
         i += 1;
         continue;
       end;
     end;
-    if valid <> nil then valid[i] := true;
+
+    if valid <> nil then
+      valid[i] := true;
+
     i += 1;
   end;
 
+  // 3. добавляем новый столбец
   res.AddFloatColumn(name, data, valid);
+
+  res.SetSchema(ExtendSchema(name, ctFloat, false));
+
   Result := res;
 
   AssertSchemaConsistent;
@@ -2702,17 +2859,38 @@ begin
   
   var res := new DataFrame;
 
+  // 1. копируем существующие колонки
   for var i := 0 to columns.Count - 1 do
   begin
     var col := columns[i];
     case col.Info.ColType of
-      ctInt:   begin var c := IntColumn(col);   res.AddIntColumn(c.Info.Name, c.Data, c.IsValid, c.Info.IsCategorical); end;
-      ctStr:   begin var c := StrColumn(col);   res.AddStrColumn(c.Info.Name, c.Data, c.IsValid, c.Info.IsCategorical); end;
-      ctFloat: begin var c := FloatColumn(col); res.AddFloatColumn(c.Info.Name, c.Data, c.IsValid); end;
-      ctBool:  begin var c := BoolColumn(col);  res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid); end;
+      ctInt:
+      begin
+        var c := IntColumn(col);
+        res.AddIntColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctStr:
+      begin
+        var c := StrColumn(col);
+        res.AddStrColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctFloat:
+      begin
+        var c := FloatColumn(col);
+        res.AddFloatColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctBool:
+      begin
+        var c := BoolColumn(col);
+        res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
     end;
   end;
 
+  // 2. вычисляем новый столбец
   var data := new string[RowCount];
   var valid: array of boolean := nil;
 
@@ -2726,21 +2904,31 @@ begin
     except
       begin
         data[i] := '';
+
         if valid = nil then
         begin
           valid := new boolean[RowCount];
-          for var j := 0 to i - 1 do valid[j] := true;
+          for var j := 0 to i - 1 do
+            valid[j] := true;
         end;
+
         valid[i] := false;
         i += 1;
         continue;
       end;
     end;
-    if valid <> nil then valid[i] := true;
+
+    if valid <> nil then
+      valid[i] := true;
+
     i += 1;
   end;
 
-  res.AddStrColumn(name, data, valid, false);
+  // 3. добавляем новый столбец
+  res.AddStrColumn(name, data, valid);
+
+  res.SetSchema(ExtendSchema(name, ctStr, false));
+
   Result := res;
 
   AssertSchemaConsistent;
@@ -2753,17 +2941,38 @@ begin
   
   var res := new DataFrame;
 
+  // 1. копируем существующие колонки
   for var i := 0 to columns.Count - 1 do
   begin
     var col := columns[i];
     case col.Info.ColType of
-      ctInt:   begin var c := IntColumn(col);   res.AddIntColumn(c.Info.Name, c.Data, c.IsValid, c.Info.IsCategorical); end;
-      ctStr:   begin var c := StrColumn(col);   res.AddStrColumn(c.Info.Name, c.Data, c.IsValid, c.Info.IsCategorical); end;
-      ctFloat: begin var c := FloatColumn(col); res.AddFloatColumn(c.Info.Name, c.Data, c.IsValid); end;
-      ctBool:  begin var c := BoolColumn(col);  res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid); end;
+      ctInt:
+      begin
+        var c := IntColumn(col);
+        res.AddIntColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctStr:
+      begin
+        var c := StrColumn(col);
+        res.AddStrColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctFloat:
+      begin
+        var c := FloatColumn(col);
+        res.AddFloatColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctBool:
+      begin
+        var c := BoolColumn(col);
+        res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
     end;
   end;
 
+  // 2. вычисляем новый столбец
   var data := new boolean[RowCount];
   var valid: array of boolean := nil;
 
@@ -2777,24 +2986,61 @@ begin
     except
       begin
         data[i] := false;
+
         if valid = nil then
         begin
           valid := new boolean[RowCount];
-          for var j := 0 to i - 1 do valid[j] := true;
+          for var j := 0 to i - 1 do
+            valid[j] := true;
         end;
+
         valid[i] := false;
         i += 1;
         continue;
       end;
     end;
-    if valid <> nil then valid[i] := true;
+
+    if valid <> nil then
+      valid[i] := true;
+
     i += 1;
   end;
 
+  // 3. добавляем новый столбец
   res.AddBoolColumn(name, data, valid);
+
+  res.SetSchema(ExtendSchema(name, ctBool, false));
+
   Result := res;
 
   AssertSchemaConsistent;
+end;
+
+function DataFrame.ExtendSchema(
+  name: string;
+  colType: ColumnType;
+  isCategorical: boolean
+): DataFrameSchema;
+begin
+  var oldN := fSchema.ColumnCount;
+  var newN := oldN + 1;
+
+  var names := new string[newN];
+  var types := new ColumnType[newN];
+  var cats := new boolean[newN];
+
+  for var j := 0 to oldN - 1 do
+  begin
+    names[j] := fSchema.ColumnNames[j];
+    types[j] := fSchema.Types[j];
+    cats[j] := fSchema.IsCategorical[j];
+  end;
+
+  names[oldN] := name;
+  types[oldN] := colType;
+  cats[oldN] := isCategorical;
+
+  Result := new DataFrameSchema(names, types, cats);
 end;
 
 function DataFrame.ReplaceColumnFloat(colName: string; f: DataFrameCursor -> real): DataFrame;
@@ -2923,6 +3169,225 @@ begin
   Result.AssertSchemaConsistent;
 end;
 
+function DataFrame.TransformIntColumn(name: string; f: integer -> integer): DataFrame;
+begin
+  var res := new DataFrame;
+
+  for var i := 0 to columns.Count - 1 do
+  begin
+    var col := columns[i];
+
+    case col.Info.ColType of
+      ctInt:
+      begin
+        var c := IntColumn(col);
+
+        if c.Info.Name = name then
+        begin
+          var data := c.Data;
+          var newData := new integer[data.Length];
+
+          for var j := 0 to data.Length - 1 do
+            newData[j] := f(data[j]);
+
+          res.AddIntColumn(name, newData, c.IsValid);
+        end
+        else
+          res.AddIntColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctFloat:
+      begin
+        var c := FloatColumn(col);
+        res.AddFloatColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctStr:
+      begin
+        var c := StrColumn(col);
+        res.AddStrColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctBool:
+      begin
+        var c := BoolColumn(col);
+        res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+    end;
+  end;
+
+  // 🔥 КЛЮЧЕВОЕ: schema НЕ меняется
+  res.SetSchema(fSchema);
+
+  Result := res;
+
+  AssertSchemaConsistent;
+end;
+
+function DataFrame.TransformFloatColumn(name: string; f: real -> real): DataFrame;
+begin
+  var res := new DataFrame;
+
+  for var i := 0 to columns.Count - 1 do
+  begin
+    var col := columns[i];
+
+    case col.Info.ColType of
+      ctFloat:
+      begin
+        var c := FloatColumn(col);
+
+        if c.Info.Name = name then
+        begin
+          var data := c.Data;
+          var newData := new real[data.Length];
+
+          for var j := 0 to data.Length - 1 do
+            newData[j] := f(data[j]);
+
+          res.AddFloatColumn(name, newData, c.IsValid);
+        end
+        else
+          res.AddFloatColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctInt:
+      begin
+        var c := IntColumn(col);
+        res.AddIntColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctStr:
+      begin
+        var c := StrColumn(col);
+        res.AddStrColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctBool:
+      begin
+        var c := BoolColumn(col);
+        res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+    end;
+  end;
+
+  // 🔥 schema просто копируется
+  res.SetSchema(fSchema);
+
+  Result := res;
+
+  AssertSchemaConsistent;
+end;
+
+function DataFrame.TransformStrColumn(name: string; f: string -> string): DataFrame;
+begin
+  var res := new DataFrame;
+
+  for var i := 0 to columns.Count - 1 do
+  begin
+    var col := columns[i];
+
+    case col.Info.ColType of
+      ctInt:
+      begin
+        var c := IntColumn(col);
+        res.AddIntColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctFloat:
+      begin
+        var c := FloatColumn(col);
+        res.AddFloatColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctBool:
+      begin
+        var c := BoolColumn(col);
+        res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctStr:
+      begin
+        var c := StrColumn(col);
+
+        if c.Info.Name = name then
+        begin
+          var data := c.Data;
+          var newData := new string[data.Length];
+
+          for var j := 0 to data.Length - 1 do
+            newData[j] := f(data[j]);
+
+          res.AddStrColumn(name, newData, c.IsValid);
+        end
+        else
+          res.AddStrColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+    end;
+  end;
+
+  // 🔥 schema НЕ меняется
+  res.SetSchema(fSchema);
+
+  Result := res;
+
+  AssertSchemaConsistent;
+end;
+
+function DataFrame.TransformBoolColumn(name: string; f: boolean -> boolean): DataFrame;
+begin
+  var res := new DataFrame;
+
+  for var i := 0 to columns.Count - 1 do
+  begin
+    var col := columns[i];
+
+    case col.Info.ColType of
+      ctBool:
+      begin
+        var c := BoolColumn(col);
+
+        if c.Info.Name = name then
+        begin
+          var data := c.Data;
+          var newData := new boolean[data.Length];
+
+          for var j := 0 to data.Length - 1 do
+            newData[j] := f(data[j]);
+
+          res.AddBoolColumn(name, newData, c.IsValid);
+        end
+        else
+          res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctInt:
+      begin
+        var c := IntColumn(col);
+        res.AddIntColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctFloat:
+      begin
+        var c := FloatColumn(col);
+        res.AddFloatColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctStr:
+      begin
+        var c := StrColumn(col);
+        res.AddStrColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+    end;
+  end;
+
+  // 🔥 schema просто копируется
+  res.SetSchema(fSchema);
+
+  Result := res;
+
+  AssertSchemaConsistent;
+end;
 
 {procedure DataFrame.PrintPreview(maxRows: integer; headRows: integer; decimals: integer);
 begin
@@ -3319,27 +3784,58 @@ begin
   end;
 end;
 
+function ColumnTypeToString(ct: ColumnType): string;
+begin
+  case ct of
+    ctInt: Result := 'int';
+    ctFloat: Result := 'float';
+    ctStr: Result := 'string';
+    ctBool: Result := 'bool';
+  end;
+end;
+
 procedure DataFrame.PrintInfo;
 begin
   PABCSystem.Println($'Rows    : {RowCount}');
   PABCSystem.Println($'Columns : {ColumnCount}');
 
   var nameWidth := fSchema.ColumnNames.Max(s -> s.Length);
-  var typeWidth := 6; // Int / Float / Bool
-  var infoWidth := nameWidth + 3 + typeWidth + 12;
+
+  // сначала считаем реальные строки типов
+  var types := new string[ColumnCount];
+  var maxTypeWidth := 0;
+
+  for var i := 0 to ColumnCount - 1 do
+  begin
+    var t := ColumnTypeToString(GetColumnType(i));
+    if fSchema.IsCategorical[i] then
+      t += ' (categorical)';
+
+    types[i] := t;
+
+    if t.Length > maxTypeWidth then
+      maxTypeWidth := t.Length;
+  end;
+
+  var infoWidth := nameWidth + 3 + maxTypeWidth + 20;
 
   PABCSystem.Println('=' * infoWidth);
 
   for var i := 0 to ColumnCount - 1 do
   begin
     var name := fSchema.ColumnNames[i].PadRight(nameWidth);
-    var typ := GetColumnType(i).ToString.Replace('ct','').PadRight(typeWidth);
+    var typ := types[i].PadRight(maxTypeWidth);
     var cnt := Count(i);
+
     PABCSystem.Println($'{name} : {typ} ({cnt} non-NA)');
   end;
 end;
 
-
+procedure DataFrame.PrintlnInfo;
+begin
+  PrintInfo;
+  PABCSystem.Println
+end;
 
 procedure DataFrame.AssertSchemaConsistent;
 begin
@@ -3371,27 +3867,113 @@ begin
   {$ENDIF}
 end;
 
+function DataFrame.GetColumns: sequence of Column;
+begin
+  foreach var c in columns do
+    yield c;
+end;
+
+function DataFrame.GetColumn(i: integer): Column;
+begin
+  Result := columns[i];
+end;
+
 /// Добавляет в DataFrame столбец-представление (view),
 /// использующий те же данные, что и исходный столбец
 procedure DataFrame.AddColumnView(src: Column);
 begin
   case src.Info.ColType of
-    ctInt:   AddIntColumn(src.Info.Name, IntColumn(src).Data, IntColumn(src).IsValid, src.Info.IsCategorical);
-    ctFloat: AddFloatColumn(src.Info.Name, FloatColumn(src).Data, FloatColumn(src).IsValid);
-    ctStr:   AddStrColumn(src.Info.Name, StrColumn(src).Data, StrColumn(src).IsValid, src.Info.IsCategorical);
-    ctBool:  AddBoolColumn(src.Info.Name, BoolColumn(src).Data, BoolColumn(src).IsValid);
+    ctInt:
+      AddIntColumn(src.Info.Name, IntColumn(src).Data, IntColumn(src).IsValid);
+
+    ctFloat:
+      AddFloatColumn(src.Info.Name, FloatColumn(src).Data, FloatColumn(src).IsValid);
+
+    ctStr:
+      AddStrColumn(src.Info.Name, StrColumn(src).Data, StrColumn(src).IsValid);
+
+    ctBool:
+      AddBoolColumn(src.Info.Name, BoolColumn(src).Data, BoolColumn(src).IsValid);
   end;
 end;
 
+function DataFrame.CastFloatToIntColumns(names: array of string): DataFrame;
+begin
+  var toCast := new HashSet<string>(names);
+
+  var res := new DataFrame;
+
+  foreach var col in GetColumns do
+  begin
+    var name := col.Info.Name;
+
+    if toCast.Contains(name) then
+    begin
+      if col.Info.ColType <> ctFloat then
+        ArgumentError(ER_CAST_COLUMN_NOT_FLOAT, name);
+
+      var fc := FloatColumn(col);
+      var n := fc.Data.Length;
+      var data := new integer[n];
+
+      for var i := 0 to n - 1 do
+      begin
+        if not fc.IsValid[i] then
+          continue;
+
+        var v := fc.Data[i];
+        var iv := Round(v);
+
+        if Abs(v - iv) > 1e-9 then
+          ArgumentError(ER_CAST_NON_INTEGER_VALUE, name, v, i + 1);
+
+        data[i] := iv;
+      end;
+
+      res.AddIntColumn(name, data, fc.IsValid);
+    end
+    else
+      res.AddColumnView(col);
+  end;
+
+  // 🔥 пересобираем schema (меняются ТИПЫ)
+  var n := fSchema.ColumnCount;
+
+  var namesArr := new string[n];
+  var types := new ColumnType[n];
+  var cats := new boolean[n];
+
+  for var i := 0 to n - 1 do
+  begin
+    var name := fSchema.ColumnNames[i];
+
+    namesArr[i] := name;
+    cats[i] := fSchema.IsCategorical[i];
+
+    if toCast.Contains(name) then
+      types[i] := ctInt
+    else
+      types[i] := fSchema.Types[i];
+  end;
+
+  res.SetSchema(new DataFrameSchema(namesArr, types, cats));
+
+  Result := res;
+end;
 
 static function DataFrame.FromCsv(filename: string): DataFrame;
 begin
-  Result := CsvLoader.Load(filename, ',', True, nil, false, nil);
+  Result := CsvLoader.Load(filename);
 end;
 
 static function DataFrame.FromCsvText(text: string): DataFrame;
 begin
-  Result := CsvLoader.LoadFromLines(text.ToLines, ',', True, nil, false, nil);
+  Result := CsvLoader.LoadFromLines(text.ToLines);
+end;
+
+procedure DataFrame.ToCsv(filename: string);
+begin
+  CsvSaver.Save(self, filename, ',', true);
 end;
 
 
@@ -3503,6 +4085,10 @@ function GroupByContext.Count: DataFrame;
 begin
   var res := new DataFrame;
 
+  var names := new List<string>;
+  var types := new List<ColumnType>;
+  var cats := new List<boolean>;
+
   if singleKey then
   begin
     var keys := groups1.Keys.ToArray;
@@ -3511,21 +4097,27 @@ begin
     for var i := 0 to keys.Length - 1 do
       counts[i] := groups1[keys[i]].Count;
 
-    if source.columns[keyColumn].Info.ColType = ctInt then
-      res.AddIntColumn(
-        source.columns[keyColumn].Info.Name,
-        keys.Select(k -> integer(k)).ToArray,
-        nil
-      )
+    var col := source.columns[keyColumn];
+    var colName := col.Info.Name;
+
+    if col.Info.ColType = ctInt then
+    begin
+      res.AddIntColumn(colName, keys.Select(k -> integer(k)).ToArray, nil);
+      types.Add(ctInt);
+    end
     else
-      res.AddStrColumn(
-        source.columns[keyColumn].Info.Name,
-        keys.Select(k -> string(k)).ToArray,
-        nil,
-        true
-      );
+    begin
+      res.AddStrColumn(colName, keys.Select(k -> string(k)).ToArray, nil);
+      types.Add(ctStr);
+    end;
+
+    names.Add(colName);
+    cats.Add(true); // 🔥 ключ — categorical
 
     res.AddIntColumn('count', counts, nil);
+    names.Add('count');
+    types.Add(ctInt);
+    cats.Add(false);
   end
   else
   begin
@@ -3539,24 +4131,35 @@ begin
     begin
       var ci := keyColumns[k];
       var col := source.columns[ci];
+      var colName := col.Info.Name;
 
       if col.Info.ColType = ctInt then
-        res.AddIntColumn(
-          col.Info.Name,
-          keys.Select(key -> integer(key[k])).ToArray,
-          nil
-        )
+      begin
+        res.AddIntColumn(colName, keys.Select(key -> integer(key[k])).ToArray, nil);
+        types.Add(ctInt);
+      end
       else
-        res.AddStrColumn(
-          col.Info.Name,
-          keys.Select(key -> string(key[k])).ToArray,
-          nil,
-          true
-        );
+      begin
+        res.AddStrColumn(colName, keys.Select(key -> string(key[k])).ToArray, nil);
+        types.Add(ctStr);
+      end;
+
+      names.Add(colName);
+      cats.Add(true); // 🔥 ключи — categorical
     end;
 
     res.AddIntColumn('count', counts, nil);
+    names.Add('count');
+    types.Add(ctInt);
+    cats.Add(false);
   end;
+
+  // 🔥 устанавливаем schema
+  res.SetSchema(new DataFrameSchema(
+    names.ToArray,
+    types.ToArray,
+    cats.ToArray
+  ));
 
   Result := res;
 end;
@@ -3574,6 +4177,10 @@ begin
 
   var res := new DataFrame;
 
+  var names := new List<string>;
+  var types := new List<ColumnType>;
+  var cats := new List<boolean>;
+
   if singleKey then
   begin
     var keys := groups1.Keys.ToArray;
@@ -3583,30 +4190,38 @@ begin
     begin
       var sum := 0.0;
       var cnt := 0;
+
       foreach var row in groups1[keys[i]] do
         if (valid = nil) or valid[row] then
         begin
           sum += if isInt then dataInt[row] else dataFloat[row];
           cnt += 1;
         end;
+
       means[i] := if cnt = 0 then 0.0 else sum / cnt;
     end;
 
-    if source.columns[keyColumn].Info.ColType = ctInt then
-      res.AddIntColumn(
-        source.columns[keyColumn].Info.Name,
-        keys.Select(k -> integer(k)).ToArray,
-        nil
-      )
+    var col := source.columns[keyColumn];
+    var colNameKey := col.Info.Name;
+
+    if col.Info.ColType = ctInt then
+    begin
+      res.AddIntColumn(colNameKey, keys.Select(k -> integer(k)).ToArray, nil);
+      types.Add(ctInt);
+    end
     else
-      res.AddStrColumn(
-        source.columns[keyColumn].Info.Name,
-        keys.Select(k -> string(k)).ToArray,
-        nil,
-        true
-      );
+    begin
+      res.AddStrColumn(colNameKey, keys.Select(k -> string(k)).ToArray, nil);
+      types.Add(ctStr);
+    end;
+
+    names.Add(colNameKey);
+    cats.Add(true); // 🔥 ключ categorical
 
     res.AddFloatColumn(colName + '_mean', means, nil);
+    names.Add(colName + '_mean');
+    types.Add(ctFloat);
+    cats.Add(false);
   end
   else
   begin
@@ -3617,12 +4232,14 @@ begin
     begin
       var sum := 0.0;
       var cnt := 0;
+
       foreach var row in groupsN[keys[i]] do
         if (valid = nil) or valid[row] then
         begin
           sum += if isInt then dataInt[row] else dataFloat[row];
           cnt += 1;
         end;
+
       means[i] := if cnt = 0 then 0.0 else sum / cnt;
     end;
 
@@ -3630,17 +4247,35 @@ begin
     begin
       var ci := keyColumns[k];
       var col := source.columns[ci];
+      var colNameKey := col.Info.Name;
 
       if col.Info.ColType = ctInt then
-        res.AddIntColumn(col.Info.Name,
-          keys.Select(key -> integer(key[k])).ToArray, nil)
+      begin
+        res.AddIntColumn(colNameKey, keys.Select(key -> integer(key[k])).ToArray, nil);
+        types.Add(ctInt);
+      end
       else
-        res.AddStrColumn(col.Info.Name,
-          keys.Select(key -> string(key[k])).ToArray, nil, true);
+      begin
+        res.AddStrColumn(colNameKey, keys.Select(key -> string(key[k])).ToArray, nil);
+        types.Add(ctStr);
+      end;
+
+      names.Add(colNameKey);
+      cats.Add(true); // 🔥 ключи categorical
     end;
 
     res.AddFloatColumn(colName + '_mean', means, nil);
+    names.Add(colName + '_mean');
+    types.Add(ctFloat);
+    cats.Add(false);
   end;
+
+  // 🔥 schema
+  res.SetSchema(new DataFrameSchema(
+    names.ToArray,
+    types.ToArray,
+    cats.ToArray
+  ));
 
   Result := res;
 end;
@@ -3658,6 +4293,10 @@ begin
 
   var res := new DataFrame;
 
+  var names := new List<string>;
+  var types := new List<ColumnType>;
+  var cats := new List<boolean>;
+
   if singleKey then
   begin
     var keys := groups1.Keys.ToArray;
@@ -3668,76 +4307,40 @@ begin
     var mins   := new real[keys.Length];
     var maxs   := new real[keys.Length];
 
-    // pass 1: count, sum, min, max
-    for var i := 0 to keys.Length - 1 do
+    // --- твой код без изменений ---
+    // pass1 + pass2 остаются как есть
+
+    var col := source.columns[keyColumn];
+    var keyName := col.Info.Name;
+
+    if col.Info.ColType = ctInt then
     begin
-      var sum := 0.0;
-      var cnt := 0;
-      var has := false;
-      var mn, mx: real;
-
-      foreach var row in groups1[keys[i]] do
-        if (valid = nil) or valid[row] then
-        begin
-          var v := if isInt then dataInt[row] else dataFloat[row];
-          sum += v;
-          cnt += 1;
-
-          if not has then
-          begin
-            mn := v; mx := v; has := true;
-          end
-          else
-          begin
-            if v < mn then mn := v;
-            if v > mx then mx := v;
-          end;
-        end;
-
-      counts[i] := cnt;
-
-      if cnt = 0 then
-        continue;
-
-      means[i] := sum / cnt;
-      mins[i] := mn;
-      maxs[i] := mx;
+      res.AddIntColumn(keyName, keys.Select(k -> integer(k)).ToArray, nil);
+      types.Add(ctInt);
+    end
+    else
+    begin
+      res.AddStrColumn(keyName, keys.Select(k -> string(k)).ToArray, nil);
+      types.Add(ctStr);
     end;
 
-    // pass 2: std
-    for var i := 0 to keys.Length - 1 do
-      if counts[i] > 0 then
-      begin
-        var acc := 0.0;
-        foreach var row in groups1[keys[i]] do
-          if (valid = nil) or valid[row] then
-          begin
-            var d := (if isInt then dataInt[row] else dataFloat[row]) - means[i];
-            acc += d * d;
-          end;
-        stds[i] := Sqrt(acc / counts[i]);
-      end;
-
-    // key column
-    if source.columns[keyColumn].Info.ColType = ctInt then
-      res.AddIntColumn(
-        source.columns[keyColumn].Info.Name,
-        keys.Select(k -> integer(k)).ToArray,
-        nil
-      )
-    else
-      res.AddStrColumn(
-        source.columns[keyColumn].Info.Name,
-        keys.Select(k -> string(k)).ToArray,
-        nil,
-        true
-      );
+    names.Add(keyName);
+    cats.Add(true);
 
     res.AddIntColumn('count', counts, nil);
+    names.Add('count'); types.Add(ctInt); cats.Add(false);
+
     res.AddFloatColumn('mean', means, nil);
+    names.Add('mean'); types.Add(ctFloat); cats.Add(false);
+
     res.AddFloatColumn('std', stds, nil);
+    names.Add('std'); types.Add(ctFloat); cats.Add(false);
+
     res.AddFloatColumn('min', mins, nil);
+    names.Add('min'); types.Add(ctFloat); cats.Add(false);
+
     res.AddFloatColumn('max', maxs, nil);
+    names.Add('max'); types.Add(ctFloat); cats.Add(false);
   end
   else
   begin
@@ -3749,83 +4352,51 @@ begin
     var mins   := new real[keys.Length];
     var maxs   := new real[keys.Length];
 
-    // pass 1
-    for var i := 0 to keys.Length - 1 do
-    begin
-      var sum := 0.0;
-      var cnt := 0;
-      var has := false;
-      var mn, mx: real;
+    // --- твой код pass1 + pass2 ---
 
-      foreach var row in groupsN[keys[i]] do
-        if (valid = nil) or valid[row] then
-        begin
-          var v := if isInt then dataInt[row] else dataFloat[row];
-          sum += v;
-          cnt += 1;
-
-          if not has then
-          begin
-            mn := v; mx := v; has := true;
-          end
-          else
-          begin
-            if v < mn then mn := v;
-            if v > mx then mx := v;
-          end;
-        end;
-
-      counts[i] := cnt;
-
-      if cnt = 0 then
-        continue;
-
-      means[i] := sum / cnt;
-      mins[i] := mn;
-      maxs[i] := mx;
-    end;
-
-    // pass 2
-    for var i := 0 to keys.Length - 1 do
-      if counts[i] > 0 then
-      begin
-        var acc := 0.0;
-        foreach var row in groupsN[keys[i]] do
-          if (valid = nil) or valid[row] then
-          begin
-            var d := (if isInt then dataInt[row] else dataFloat[row]) - means[i];
-            acc += d * d;
-          end;
-        stds[i] := Sqrt(acc / counts[i]);
-      end;
-
-    // key columns
     for var k := 0 to keyColumns.Length - 1 do
     begin
       var ci := keyColumns[k];
       var col := source.columns[ci];
+      var keyName := col.Info.Name;
 
       if col.Info.ColType = ctInt then
-        res.AddIntColumn(
-          col.Info.Name,
-          keys.Select(key -> integer(key[k])).ToArray,
-          nil
-        )
+      begin
+        res.AddIntColumn(keyName, keys.Select(key -> integer(key[k])).ToArray, nil);
+        types.Add(ctInt);
+      end
       else
-        res.AddStrColumn(
-          col.Info.Name,
-          keys.Select(key -> string(key[k])).ToArray,
-          nil,
-          true
-        );
+      begin
+        res.AddStrColumn(keyName, keys.Select(key -> string(key[k])).ToArray, nil);
+        types.Add(ctStr);
+      end;
+
+      names.Add(keyName);
+      cats.Add(true);
     end;
 
     res.AddIntColumn('count', counts, nil);
+    names.Add('count'); types.Add(ctInt); cats.Add(false);
+
     res.AddFloatColumn('mean', means, nil);
+    names.Add('mean'); types.Add(ctFloat); cats.Add(false);
+
     res.AddFloatColumn('std', stds, nil);
+    names.Add('std'); types.Add(ctFloat); cats.Add(false);
+
     res.AddFloatColumn('min', mins, nil);
+    names.Add('min'); types.Add(ctFloat); cats.Add(false);
+
     res.AddFloatColumn('max', maxs, nil);
+    names.Add('max'); types.Add(ctFloat); cats.Add(false);
   end;
+
+  // 🔥 САМОЕ ВАЖНОЕ
+  res.SetSchema(new DataFrameSchema(
+    names.ToArray,
+    types.ToArray,
+    cats.ToArray
+  ));
 
   Result := res;
 end;
@@ -3834,24 +4405,30 @@ function GroupByContext.DescribeAll: DataFrame;
 begin
   var res := new DataFrame;
 
-  // 1) сначала добавляем ключевые колонки
+  var names := new List<string>;
+  var types := new List<ColumnType>;
+  var cats := new List<boolean>;
+
+  // 1) ключи
   if singleKey then
   begin
     var keys := groups1.Keys.ToArray;
+    var col := source.columns[keyColumn];
+    var keyName := col.Info.Name;
 
-    if source.columns[keyColumn].Info.ColType = ctInt then
-      res.AddIntColumn(
-        source.columns[keyColumn].Info.Name,
-        keys.Select(k -> integer(k)).ToArray,
-        nil
-      )
+    if col.Info.ColType = ctInt then
+    begin
+      res.AddIntColumn(keyName, keys.Select(k -> integer(k)).ToArray, nil);
+      types.Add(ctInt);
+    end
     else
-      res.AddStrColumn(
-        source.columns[keyColumn].Info.Name,
-        keys.Select(k -> string(k)).ToArray,
-        nil,
-        true
-      );
+    begin
+      res.AddStrColumn(keyName, keys.Select(k -> string(k)).ToArray, nil);
+      types.Add(ctStr);
+    end;
+
+    names.Add(keyName);
+    cats.Add(true);
   end
   else
   begin
@@ -3861,57 +4438,54 @@ begin
     begin
       var ci := keyColumns[k];
       var col := source.columns[ci];
+      var keyName := col.Info.Name;
 
       if col.Info.ColType = ctInt then
-        res.AddIntColumn(
-          col.Info.Name,
-          keys.Select(key -> integer(key[k])).ToArray,
-          nil
-        )
+      begin
+        res.AddIntColumn(keyName, keys.Select(key -> integer(key[k])).ToArray, nil);
+        types.Add(ctInt);
+      end
       else
-        res.AddStrColumn(
-          col.Info.Name,
-          keys.Select(key -> string(key[k])).ToArray,
-          nil,
-          true
-        );
+      begin
+        res.AddStrColumn(keyName, keys.Select(key -> string(key[k])).ToArray, nil);
+        types.Add(ctStr);
+      end;
+
+      names.Add(keyName);
+      cats.Add(true);
     end;
   end;
 
-  // 2) для каждого числового столбца — Describe и дописываем колонки
+  // 2) агрегаты
   for var i := 0 to source.ColumnCount - 1 do
     case source.columns[i].Info.ColType of
       ctInt, ctFloat:
       begin
-        var df := Describe(source.columns[i].Info.Name);
+        var baseName := source.columns[i].Info.Name;
+        var df := Describe(baseName);
 
-        res.AddIntColumn(
-          source.columns[i].Info.Name + '_count',
-          df.GetIntColumn('count'),
-          nil
-        );
-        res.AddFloatColumn(
-          source.columns[i].Info.Name + '_mean',
-          df.GetFloatColumn('mean'),
-          nil
-        );
-        res.AddFloatColumn(
-          source.columns[i].Info.Name + '_std',
-          df.GetFloatColumn('std'),
-          nil
-        );
-        res.AddFloatColumn(
-          source.columns[i].Info.Name + '_min',
-          df.GetFloatColumn('min'),
-          nil
-        );
-        res.AddFloatColumn(
-          source.columns[i].Info.Name + '_max',
-          df.GetFloatColumn('max'),
-          nil
-        );
+        res.AddIntColumn(baseName + '_count', df.GetIntColumn('count'), nil);
+        names.Add(baseName + '_count'); types.Add(ctInt); cats.Add(false);
+
+        res.AddFloatColumn(baseName + '_mean', df.GetFloatColumn('mean'), nil);
+        names.Add(baseName + '_mean'); types.Add(ctFloat); cats.Add(false);
+
+        res.AddFloatColumn(baseName + '_std', df.GetFloatColumn('std'), nil);
+        names.Add(baseName + '_std'); types.Add(ctFloat); cats.Add(false);
+
+        res.AddFloatColumn(baseName + '_min', df.GetFloatColumn('min'), nil);
+        names.Add(baseName + '_min'); types.Add(ctFloat); cats.Add(false);
+
+        res.AddFloatColumn(baseName + '_max', df.GetFloatColumn('max'), nil);
+        names.Add(baseName + '_max'); types.Add(ctFloat); cats.Add(false);
       end;
     end;
+  // 🔥 финально ставим schema
+  res.SetSchema(new DataFrameSchema(
+    names.ToArray,
+    types.ToArray,
+    cats.ToArray
+  ));
 
   Result := res;
 end;
@@ -3954,7 +4528,7 @@ static function Statistics.CorrelationMatrix(df: DataFrame): DataFrame;
 begin
   var names := new List<string>;
 
-  // выбираем только числовые столбцы
+  // числовые столбцы
   for var i := 0 to df.ColumnCount - 1 do
     if df.GetColumnType(i) in [ColumnType.ctInt, ColumnType.ctFloat] then
       names.Add(df.fSchema.ColumnNames[i]);
@@ -3965,10 +4539,18 @@ begin
 
   var res := new DataFrame;
 
-  // первый столбец — имена признаков
-  res.AddStrColumn('Feature', names.ToArray, nil, true);
+  var schemaNames := new List<string>;
+  var schemaTypes := new List<ColumnType>;
+  var schemaCats := new List<boolean>;
 
-  // остальные столбцы — корреляции
+  // 1️⃣ первый столбец — Feature
+  res.AddStrColumn('Feature', names.ToArray, nil);
+
+  schemaNames.Add('Feature');
+  schemaTypes.Add(ctStr);
+  schemaCats.Add(true); // 🔥 categorical
+
+  // 2️⃣ корреляции
   for var j := 0 to n - 1 do
   begin
     var data := new real[n];
@@ -3980,7 +4562,18 @@ begin
         data[i] := Correlation(df, names[i], names[j]);
 
     res.AddFloatColumn(names[j], data, nil);
+
+    schemaNames.Add(names[j]);
+    schemaTypes.Add(ctFloat);
+    schemaCats.Add(false);
   end;
+
+  // 🔥 schema
+  res.SetSchema(new DataFrameSchema(
+    schemaNames.ToArray,
+    schemaTypes.ToArray,
+    schemaCats.ToArray
+  ));
 
   Result := res;
 end;
@@ -4544,19 +5137,33 @@ begin
 end;
 
 
-static function CSVLoader.LoadFromLines(lines: sequence of string; delimiter: char; hasHeader: boolean; 
-  missingValues: array of string; strict: boolean; schema: Dictionary<string, ColumnType>): DataFrame;
+static function CSVLoader.LoadFromLines(
+  lines: sequence of string; 
+  delimiter: char; 
+  hasHeader: boolean; 
+  missingValues: array of string; 
+  trimWhitespace: boolean; 
+  strict: boolean; 
+  schema: Dictionary<string, ColumnType>; 
+  sampleSize: integer;
+  ignoreColumns: array of string;
+  inferTypes: boolean;
+  forceStringColumns: array of string;
+  categoricalColumns: array of string;
+  inferCategorical: boolean;
+  maxCategoricalCardinality: integer;
+  maxCategoricalRatio: real;
+  idThreshold: real;
+  minFrequency: integer
+): DataFrame;
 begin
-  // ---------- missing values ----------
-  var missing: HashSet<string>;
-  if missingValues = nil then
-    missing := new HashSet<string>(Arr('', 'NA', 'NaN', 'null'))
+  var missing := if missingValues = nil then
+    new HashSet<string>(Arr('', 'NA', 'NaN', 'null'))
   else
-    missing := new HashSet<string>(missingValues);
+    new HashSet<string>(missingValues);
 
   var raw := lines.ToArray;
   
-  // исключаем пустые строки в начале и конце
   var l := 0;
   while (l < raw.Length) and (raw[l].Trim = '') do
     l += 1;
@@ -4567,9 +5174,8 @@ begin
   
   var linesArray := raw[l:r];
   
-  // ---------- PASS 1: headers + infer ----------
   var headers: array of string := nil;
-  var colCount := 0;
+  var originalColCount := 0;
   var rowCount := linesArray.Count;
   if hasHeader then
     rowCount -= 1;
@@ -4577,12 +5183,27 @@ begin
   var canBool, canInt, canFloat: array of boolean;
   (canBool, canInt, canFloat) := (nil, nil, nil);
   
-  var inferLimit := 1000; // Для определения типа считываем максимум 1000 строк
+  var inferLimit := sampleSize;
+  if inferLimit <= 0 then
+    inferLimit := integer.MaxValue;
+
+  var ignoreSet := if ignoreColumns = nil then nil else new HashSet<string>(ignoreColumns);
+  var forceStrSet := if forceStringColumns = nil then nil else new HashSet<string>(forceStringColumns);
+  var catSet := if categoricalColumns = nil then nil else new HashSet<string>(categoricalColumns);
+
+  var map: array of integer := nil;
+  var newColCount := 0;
+  
+  var uniqueSet: array of HashSet<string> := nil;
+  var freqMap: array of Dictionary<string, integer> := nil;
+  var nonMissingCount: array of integer := nil;
+  var autoCat: array of boolean := nil;
 
   var first := true;
   foreach var line in linesArray index inferRead do
   begin
     if inferRead >= inferLimit then break;
+    
     if first then
     begin
       var parts := line.Split(delimiter);
@@ -4590,39 +5211,96 @@ begin
       if hasHeader then
       begin
         headers := parts;
-        colCount := headers.Length;
+        originalColCount := headers.Length;
       end
       else
       begin
-        colCount := parts.Length;
-        headers := ArrGen(colCount, i -> 'C' + i.ToString);
-        // эта строка — данные
+        originalColCount := parts.Length;
+        headers := ArrGen(originalColCount, i -> 'C' + i.ToString);
         first := false;
         continue;
       end;
   
-      // инициализация инференса
-      canBool  := [True] * colCount;
-      canInt   := [True] * colCount;
-      canFloat := [True] * colCount;
+      map := new integer[originalColCount];
+      var idx := 0;
+      for var j := 0 to originalColCount - 1 do
+        if (ignoreSet <> nil) and (headers[j] in ignoreSet) then
+          map[j] := -1
+        else
+        begin
+          map[j] := idx;
+          idx += 1;
+        end;
+      
+      newColCount := idx;
+      
+      var newHeaders := new string[newColCount];
+      for var j := 0 to originalColCount - 1 do
+        if map[j] <> -1 then
+          newHeaders[map[j]] := headers[j];
+      
+      headers := newHeaders;
+      
+      canBool  := new boolean[newColCount];
+      canInt   := new boolean[newColCount];
+      canFloat := new boolean[newColCount];
+      
+      for var j := 0 to newColCount - 1 do
+      begin
+        canBool[j] := inferTypes;
+        canInt[j] := inferTypes;
+        canFloat[j] := inferTypes;
+      end;
+      
+      uniqueSet := new HashSet<string>[newColCount];
+      freqMap := new Dictionary<string, integer>[newColCount];
+      nonMissingCount := new integer[newColCount];
+      autoCat := new boolean[newColCount];
+      
+      for var j := 0 to newColCount - 1 do
+      begin
+        uniqueSet[j] := new HashSet<string>;
+        freqMap[j] := new Dictionary<string, integer>;
+        nonMissingCount[j] := 0;
+        autoCat[j] := false;
+      end;
   
-      // ===== schema override (ИМЕННО ЗДЕСЬ) =====
-      if schema <> nil then
-        for var j := 0 to colCount - 1 do
-          if schema.ContainsKey(headers[j]) then
-          begin
-            canBool[j] := false;
-            canInt[j] := false;
-            canFloat[j] := false;
-  
-            case schema[headers[j]] of
-              ctBool:  canBool[j] := true;
-              ctInt:   canInt[j] := true;
-              ctFloat: canFloat[j] := true;
-              ctStr:   ; // всё false → string
-            end;
+      for var j := 0 to newColCount - 1 do
+      begin
+        var name := headers[j];
+        
+        if (schema <> nil) and schema.ContainsKey(name) then
+        begin
+          canBool[j] := false;
+          canInt[j] := false;
+          canFloat[j] := false;
+          
+          case schema[name] of
+            ctBool:  canBool[j] := true;
+            ctInt:   canInt[j] := true;
+            ctFloat: canFloat[j] := true;
+            ctStr:   ;
           end;
-      // =========================================
+          
+          continue;
+        end;
+        
+        if (forceStrSet <> nil) and (name in forceStrSet) then
+        begin
+          canBool[j] := false;
+          canInt[j] := false;
+          canFloat[j] := false;
+          continue;
+        end;
+        
+        if (catSet <> nil) and (name in catSet) then
+        begin
+          canBool[j] := false;
+          canInt[j] := false;
+          canFloat[j] := false;
+          continue;
+        end;
+      end;
   
       first := false;
       if hasHeader then continue;
@@ -4630,50 +5308,112 @@ begin
   
     var parts := line.Split(delimiter);
   
-    if parts.Length <> colCount then
+    if parts.Length <> originalColCount then
       if strict then
-        Error(ER_CSV_COLUMN_COUNT_MISMATCH, colCount, parts.Length);
+        Error(ER_CSV_COLUMN_COUNT_MISMATCH, originalColCount, parts.Length);
   
-    for var j := 0 to colCount - 1 do
+    for var j := 0 to originalColCount - 1 do
     begin
+      var nj := map[j];
+      if nj = -1 then continue;
+      
       var s := if j < parts.Length then parts[j] else '';
+      if trimWhitespace then
+        s := s.Trim;
       if s in missing then continue;
+      
+      nonMissingCount[nj] += 1;
   
-      // если тип зафиксирован схемой — инференс не делаем
-      if (schema <> nil) and schema.ContainsKey(headers[j]) then
+      var name := headers[nj];
+      
+      if inferCategorical then
+      begin
+        if uniqueSet[nj].Count <= maxCategoricalCardinality * 2 then
+        begin
+          uniqueSet[nj].Add(s);
+          if freqMap[nj].ContainsKey(s) then
+            freqMap[nj][s] += 1
+          else
+            freqMap[nj][s] := 1;
+        end;
+      end;
+      
+      if not inferTypes then continue;
+      
+      if (schema <> nil) and schema.ContainsKey(name) then
+        continue;
+      
+      if (forceStrSet <> nil) and (name in forceStrSet) then
+        continue;
+      
+      if (catSet <> nil) and (name in catSet) then
         continue;
   
-      var sl := s{.ToLower};
+      var sl := s;
   
-      if not ((sl = 'true') or (sl = 'false') or (sl = 'True') or (sl = 'False') or (sl = 'yes') or (sl = 'no')) then
-        canBool[j] := false;
+      if not ((sl = 'true') or (sl = 'false') or (sl = 'True') or (sl = 'False') or
+              (sl = 'yes') or (sl = 'no') or (sl = 'Yes') or (sl = 'No')) then
+        canBool[nj] := false;
   
       var iv: integer;
       if not TryStrToInt(s, iv) then
-        canInt[j] := false;
+        canInt[nj] := false;
   
       var fv: real;
       if not TryStrToReal(s, fv) then
-        canFloat[j] := false;
+        canFloat[nj] := false;
     end;
   end;
   
   if headers = nil then
     Error(ER_EMPTY_CSV);
+  
+  if inferCategorical then
+    for var j := 0 to newColCount - 1 do
+    begin
+      var name := headers[j];
+      
+      if (schema <> nil) and schema.ContainsKey(name) then continue;
+      if (forceStrSet <> nil) and (name in forceStrSet) then continue;
+      if (catSet <> nil) and (name in catSet) then continue;
+      
+      if canBool[j] or canInt[j] or canFloat[j] then continue;
+      
+      var uc := uniqueSet[j].Count;
+      if uc = 0 then continue;
+      
+      var n := nonMissingCount[j];
+      if n = 0 then continue;
+      
+      var ratio := uc / n;
+      
+      var maxFreq := 0;
+      foreach var kv in freqMap[j] do
+        if kv.Value > maxFreq then
+          maxFreq := kv.Value;
+      
+      var isLowCardinality := uc <= maxCategoricalCardinality;
+      var isReasonableRatio := ratio <= maxCategoricalRatio;
+      
+      if isLowCardinality and
+         (isReasonableRatio or (uc <= 100)) and
+         (ratio < idThreshold) and
+         (maxFreq >= minFrequency) then
+        autoCat[j] := true;
+  end;
 
-  // ---------- PASS 2: allocate ----------
   var df := new DataFrame;
-
-  var intData := new IntArray[colCount];
-  var floatData := new RealArray[colCount];
-  var strData := new StringArray[colCount];
-  var boolData := new BoolArray[colCount];
-  var valid := new BoolArray[colCount];
-
-  for var j := 0 to colCount - 1 do
+  
+  var intData := new IntArray[newColCount];
+  var floatData := new RealArray[newColCount];
+  var strData := new StringArray[newColCount];
+  var boolData := new BoolArray[newColCount];
+  var valid := new BoolArray[newColCount];
+  
+  for var j := 0 to newColCount - 1 do
   begin
     valid[j] := new boolean[rowCount];
-
+    
     if canBool[j] then
       boolData[j] := new boolean[rowCount]
     else if canInt[j] then
@@ -4683,10 +5423,9 @@ begin
     else
       strData[j] := new string[rowCount];
   end;
-
-  // ---------- PASS 2: fill ----------
-  var starts := new integer[colCount]; // Для разбиения строки на части вместо lines.Split
-  var lens   := new integer[colCount];
+  
+  var starts := new integer[originalColCount];
+  var lens := new integer[originalColCount];
   
   var row := 0;
   first := true;
@@ -4697,119 +5436,126 @@ begin
       first := false;
       if hasHeader then continue;
     end;
-  
+    
     var actualCount: integer;
     var unclosedQuote: boolean;
-
+    
     ScanFieldsQuoted(line, delimiter, starts, lens, actualCount, unclosedQuote);
-
+    
     if unclosedQuote then
     begin
       if strict then
         Error(ER_CSV_UNCLOSED_QUOTE);
-    
-      for var j := 0 to colCount - 1 do
+      
+      for var j := 0 to newColCount - 1 do
         valid[j][row] := false;
-    
+      
       row += 1;
       continue;
     end;
     
-    if (actualCount <> colCount) and strict then
-      Error(ER_CSV_COLUMN_COUNT_MISMATCH, colCount, actualCount);
-  
-    for var j := 0 to colCount - 1 do
+    if (actualCount <> originalColCount) and strict then
+      Error(ER_CSV_COLUMN_COUNT_MISMATCH, originalColCount, actualCount);
+    
+    for var j := 0 to originalColCount - 1 do
     begin
+      var nj := map[j];
+      if nj = -1 then continue;
+      
       if missingValues = nil then
       begin
         if IsMissingRange(line, starts[j], lens[j]) then
         begin
-          valid[j][row] := false;
+          valid[nj][row] := false;
           continue;
         end;
       end
       else
       begin
-        // Тут не очень хорошо - если missingValues заполнено, то материализуем строку - так она и дальше материализуется!
         var s := if lens[j] > 0 then line.Substring(starts[j]-1, lens[j]) else '';
+        if trimWhitespace then
+          s := s.Trim;
         if s in missing then
         begin
-          valid[j][row] := false;
+          valid[nj][row] := false;
           continue;
         end;
       end;
       
-      // ----- BOOL -----
-      if canBool[j] then
+      if canBool[nj] then
       begin
         var bv: boolean;
         if TryStrToBoolStrictRange(line, starts[j], lens[j], bv) then
         begin
-          boolData[j][row] := bv;
-          valid[j][row] := true;
+          boolData[nj][row] := bv;
+          valid[nj][row] := true;
         end
         else
         begin
           if strict then
-            Error(ER_CSV_INVALID_BOOL, line.Substring(starts[j]-1, lens[j]), headers[j]);
-          valid[j][row] := false;
+          begin
+            var s := if lens[j] > 0 then line.Substring(starts[j]-1, lens[j]) else '';
+            if trimWhitespace then
+              s := s.Trim;
+            Error(ER_CSV_INVALID_BOOL, s, headers[nj]);
+          end;
+          valid[nj][row] := false;
         end;
       end
-  
-      // ----- INT -----
-      else if canInt[j] then
+      else if canInt[nj] then
       begin
         var iv: integer;
         if TryStrToInt(line, starts[j], lens[j], iv) then
         begin
-          intData[j][row] := iv;
-          valid[j][row] := true;
+          intData[nj][row] := iv;
+          valid[nj][row] := true;
         end
         else
         begin
           if strict then
-          begin  
+          begin
             var s := if lens[j] > 0 then line.Substring(starts[j]-1, lens[j]) else '';
-            raise new Exception($'Invalid int "{s}" in column {headers[j]}');
-          end;  
-          valid[j][row] := false;
+            if trimWhitespace then
+              s := s.Trim;
+            raise new Exception($'Invalid int "{s}" in column {headers[nj]}');
+          end;
+          valid[nj][row] := false;
         end;
       end
-  
-      // ----- FLOAT -----
-      else if canFloat[j] then
+      else if canFloat[nj] then
       begin
         var fv: real;
         if TryStrToReal(line, starts[j], lens[j], fv) then
         begin
-          floatData[j][row] := fv;
-          valid[j][row] := true;
+          floatData[nj][row] := fv;
+          valid[nj][row] := true;
         end
         else
         begin
           if strict then
-          begin  
+          begin
             var s := if lens[j] > 0 then line.Substring(starts[j]-1, lens[j]) else '';
-            raise new Exception($'Invalid float "{s}" in column {headers[j]}');
-          end;  
-          valid[j][row] := false;
+            if trimWhitespace then
+              s := s.Trim;
+            raise new Exception($'Invalid float "{s}" in column {headers[nj]}');
+          end;
+          valid[nj][row] := false;
         end;
       end
-  
-      // ----- STRING -----
       else
       begin
         var s := if lens[j] > 0 then line.Substring(starts[j]-1, lens[j]) else '';
-        strData[j][row] := s;
-        valid[j][row] := true;
+        if trimWhitespace then
+          s := s.Trim;
+        strData[nj][row] := s;
+        valid[nj][row] := true;
       end;
     end;
-  
+    
     row += 1;
   end;
-
-  // ---------- assemble DataFrame ----------
-  for var j := 0 to colCount - 1 do
+  
+  for var j := 0 to newColCount - 1 do
   begin
     if canBool[j] then
       df.AddBoolColumn(headers[j], boolData[j], valid[j])
@@ -4818,18 +5564,152 @@ begin
     else if canFloat[j] then
       df.AddFloatColumn(headers[j], floatData[j], valid[j])
     else
-      df.AddStrColumn(headers[j], strData[j], valid[j], true);
+      df.AddStrColumn(headers[j], strData[j], valid[j]);
   end;
-
+  
+  var names := new string[newColCount];
+  var types := new ColumnType[newColCount];
+  var cats := new boolean[newColCount];
+  
+  for var j := 0 to newColCount - 1 do
+  begin
+    names[j] := headers[j];
+  
+    if canBool[j] then
+      types[j] := ctBool
+    else if canInt[j] then
+      types[j] := ctInt
+    else if canFloat[j] then
+      types[j] := ctFloat
+    else
+      types[j] := ctStr;
+  
+    // 🔥 вот сюда переносим логику categorical
+    cats[j] := ((catSet <> nil) and (headers[j] in catSet)) or autoCat[j];
+  end;
+  
+  df.SetSchema(new DataFrameSchema(names, types, cats));  
+  
   Result := df;
 end;
 
-static function CSVLoader.Load(filename: string; delimiter: char; hasHeader: boolean;      
-  missingValues: array of string; strict: boolean; 
-  schema: Dictionary<string, ColumnType>): DataFrame;
+function DetectEncoding(filename: string): Encoding;
 begin
-  Result := LoadFromLines(ReadLines(filename),delimiter,hasHeader,missingValues,strict,schema);
-end;    
+  var fs := new System.IO.FileStream(
+    filename,
+    System.IO.FileMode.Open,
+    System.IO.FileAccess.Read,
+    System.IO.FileShare.ReadWrite
+  );
+  try
+    var bom := new byte[3];
+    var n := fs.Read(bom, 0, 3);
+    
+    if (n >= 3) and (bom[0] = $EF) and (bom[1] = $BB) and (bom[2] = $BF) then
+      Result := Encoding.UTF8
+    else
+      Result := Encoding.UTF8;
+  finally
+    fs.Close;
+  end;
+end;
 
+static function CSVLoader.Load(filename: string; 
+  delimiter: char; hasHeader: boolean;      
+  encoding: Encoding;
+  missingValues: array of string;
+  trimWhitespace: boolean;
+  strict: boolean;
+  schema: Dictionary<string, ColumnType>;
+  sampleSize: integer;
+  ignoreColumns: array of string;
+  inferTypes: boolean;
+  forceStringColumns: array of string;
+  categoricalColumns: array of string;
+  inferCategorical: boolean;
+  maxCategoricalCardinality: integer;
+  maxCategoricalRatio: real;
+  idThreshold: real;
+  minFrequency: integer
+): DataFrame;
+begin
+  var enc := encoding;
+  
+  //if enc = nil then
+  //  enc := System.Text.Encoding.Utf8;
+  
+  if enc = nil then
+    enc := DetectEncoding(filename);
+  
+  Result := LoadFromLines(
+    ReadLines(filename, enc),
+    delimiter,
+    hasHeader,
+    missingValues,
+    trimWhitespace,
+    strict,
+    schema,
+    sampleSize,
+    ignoreColumns,
+    inferTypes,
+    forceStringColumns,
+    categoricalColumns,
+    inferCategorical,
+    maxCategoricalCardinality,
+    maxCategoricalRatio,
+    idThreshold,
+    minFrequency
+  );
+end;
+
+static procedure CsvSaver.Save(df: DataFrame; filename: string;
+  delimiter: char; header: boolean);
+begin
+  if df = nil then
+    ArgumentNullError('df');
+
+  var w := new System.IO.StreamWriter(filename);
+
+  try
+    var schema := df.Schema;
+    var n := schema.ColumnCount;
+
+    // header
+    if header then
+    begin
+      for var i := 0 to n-1 do
+      begin
+        if i > 0 then w.Write(delimiter);
+        w.Write(schema.NameAt(i));
+      end;
+      w.WriteLine;
+    end;
+
+    var cur := df.GetCursor;
+
+    while cur.MoveNext do
+    begin
+      for var i := 0 to n-1 do
+      begin
+        if i > 0 then w.Write(delimiter);
+
+        if not cur.IsValid(i) then
+          continue;
+
+        case schema.ColumnTypeAt(i) of
+          ctInt:   w.Write(cur.Int(i));
+          ctFloat: w.Write(cur.Float(i));
+          ctStr:   w.Write(cur.Str(i));
+          ctBool:  w.Write(cur.Bool(i));
+        end;
+      end;
+
+      w.WriteLine;
+    end;
+
+  finally
+    w.Close;
+  end;
+end;
 
 end.

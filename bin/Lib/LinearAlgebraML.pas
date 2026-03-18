@@ -15,13 +15,14 @@ interface
 type
   Vector = class
   private
+    fdata: array of real;
     static procedure CheckSameLength(const a, b: Vector);
     static procedure CheckNonEmpty(const v: Vector); 
-    procedure SetData(i: integer; value: real) := data[i] := value;
+    procedure SetData(i: integer; value: real) := fdata[i] := value;
   public
-    data: array of real;
-    property Length: integer read data.Length;
-    property Item[i: integer]: real read data[i] write SetData; default;
+    property Data: array of real read fdata;
+    property Length: integer read fdata.Length;
+    property Item[i: integer]: real read fdata[i] write SetData; default;
     
     constructor Create(n: integer);
     constructor Create(values: array of real);
@@ -68,28 +69,30 @@ type
     function Dot(b: Vector): real;
     
     // ---------- Сервисные методы ----------
-    function ToString: string; override := $'{data.Select(x -> x.ToString(''G3''))}';
-    function ToString(digits: integer): string := $'{data.Select(x -> x.ToString(''G''+digits))}';
-    procedure Print := data.Print;
-    procedure Println := data.Println;
+    function ToString: string; override := $'{fdata.Select(x -> x.ToString(''G3''))}';
+    function ToString(digits: integer): string := $'{fdata.Select(x -> x.ToString(''G''+digits))}';
+    procedure Print := fdata.Print;
+    procedure Println := fdata.Println;
     
     function SubvectorBy(indices: array of integer): Vector;
   end;
   
   Matrix = class
   private
+    fdata: array[,] of real;
+
     static procedure CheckSameSize(A, B: Matrix);
     static procedure CheckMulSize(A, B: Matrix);
     static procedure CheckVecSize(A: Matrix; x: Vector);
     
-    procedure SetData(i, j: integer; value: real) := data[i, j] := value;
+    procedure SetData(i, j: integer; value: real) := fdata[i, j] := value;
   public
-    data: array[,] of real;
-    property RowCount: integer read data.RowCount;
-    property ColCount: integer read data.ColCount;
+    property RowCount: integer read fdata.RowCount;
+    property ColCount: integer read fdata.ColCount;
+    property Data: array[,] of real read fdata;
     
     property Item[i, j: integer]: real
-      read data[i, j] write SetData; default;
+      read fdata[i, j] write SetData; default;
     
     constructor Create(r, c: integer);
     constructor Create(values: array[,] of real);
@@ -99,8 +102,8 @@ type
     
     function Clone: Matrix;
     
-    function Row(i: integer) := data.Row(i);
-    function Col(j: integer) := data.Col(j);
+    function Row(i: integer): array of real := fdata.Row(i);
+    function Col(j: integer): array of real := fdata.Col(j);
 
     function ColumnSums: Vector;
     function RowSums: Vector;
@@ -188,9 +191,9 @@ type
     function PCA(k: integer): (Matrix, Vector);
     
     // ---------- Сервисные методы ----------
-    function ToString: string; override := $'{data}';
-    procedure Print := data.Print;
-    procedure Println := data.Println;
+    function ToString: string; override := $'{fdata}';
+    procedure Print := fdata.Print;
+    procedure Println := fdata.Println;
     
     function GetRow(i: integer): Vector;
     function GetCol(j: integer): Vector;
@@ -331,31 +334,31 @@ constructor Vector.Create(n: integer);
 begin
   if n < 0 then
     ArgumentOutOfRangeError(ER_VECTOR_LENGTH_NEGATIVE);
-  data := new real[n];
+  fdata := new real[n];
 end;
 
 constructor Vector.Create(values: array of real);
 begin
   if values = nil then
     ArgumentNullError(ER_VALUES_NULL);
-  data := Copy(values);
+  fdata := Copy(values);
 end;
 
 constructor Vector.Create(values: array of integer);
 begin
   if values = nil then
     ArgumentNullError(ER_VALUES_NULL);
-  data := values.Select(x -> real(x)).ToArray;
+  fdata := values.Select(x -> real(x)).ToArray;
 end;
 
 function Vector.ToArray: array of real;
 begin
-  Result := Copy(data);
+  Result := Copy(fdata);
 end;
 
 function Vector.Clone: Vector;
 begin
-  Result := new Vector(data);
+  Result := new Vector(fdata);
 end;
 
 static procedure Vector.CheckSameLength(a, b: Vector);
@@ -375,7 +378,7 @@ begin
   CheckSameLength(a, b);
   Result := new Vector(a.Length);
   for var i := 0 to a.Length - 1 do
-    Result.data[i] := a.data[i] + b.data[i];
+    Result.fdata[i] := a.fdata[i] + b.fdata[i];
 end;
 
 static function Vector.operator -(a, b: Vector): Vector;
@@ -383,14 +386,14 @@ begin
   CheckSameLength(a, b);
   Result := new Vector(a.Length);
   for var i := 0 to a.Length - 1 do
-    Result.data[i] := a.data[i] - b.data[i];
+    Result.fdata[i] := a.fdata[i] - b.fdata[i];
 end;
 
 static function Vector.operator *(v: Vector; alpha: real): Vector;
 begin
   Result := new Vector(v.Length);
   for var i := 0 to v.Length - 1 do
-    Result.data[i] := alpha * v.data[i];
+    Result.fdata[i] := alpha * v.fdata[i];
 end;
 
 static function Vector.operator *(alpha: real; v: Vector): Vector;
@@ -405,14 +408,14 @@ begin
   Result := new Vector(v.Length);
   var inv := 1.0 / alpha;
   for var i := 0 to v.Length - 1 do
-    Result.data[i] := v.data[i] * inv;
+    Result.fdata[i] := v.fdata[i] * inv;
 end;
 
 static function Vector.operator +=(a, b: Vector): Vector;
 begin
   CheckSameLength(a, b);
   for var i := 0 to a.Length - 1 do
-    a.data[i] += b.data[i];
+    a.fdata[i] += b.fdata[i];
   Result := a;
 end;
 
@@ -420,14 +423,14 @@ static function Vector.operator -=(a, b: Vector): Vector;
 begin
   CheckSameLength(a, b);
   for var i := 0 to a.Length - 1 do
-    a.data[i] -= b.data[i];
+    a.fdata[i] -= b.fdata[i];
   Result := a;
 end;
 
 static function Vector.operator *=(a: Vector; alpha: real): Vector;
 begin
   for var i := 0 to a.Length - 1 do
-    a.data[i] *= alpha;
+    a.fdata[i] *= alpha;
   Result := a;
 end;
 
@@ -449,7 +452,7 @@ function Vector.Sum: real;
 begin
   var s := 0.0;
   for var i := 0 to Length - 1 do
-    s += data[i];
+    s += fdata[i];
   Result := s;
 end;
 
@@ -474,9 +477,9 @@ end;
 
 function Vector.Norm: real := PABCSystem.Sqrt(Norm2);
 
-function Vector.Max: real := data.Max;
+function Vector.Max: real := fdata.Max;
 
-function Vector.Min: real := data.Min;
+function Vector.Min: real := fdata.Min;
 
 function Vector.Dot(b: Vector): real;
 begin
@@ -515,29 +518,29 @@ constructor Matrix.Create(r, c: integer);
 begin
   if (r < 0) or (c < 0) then
     ArgumentOutOfRangeError(ER_MATRIX_SIZE_NEGATIVE);
-  data := new real[r, c];
+  fdata := new real[r, c];
 end;
 
 constructor Matrix.Create(values: array[,] of real);
 begin
   if values = nil then
     ArgumentNullError(ER_VALUES_NULL);
-  data := Copy(values);
+  fdata := Copy(values);
 end;
 
 function Matrix.ToArray2D: array[,] of real;
 begin
-  Result := Copy(data);
+  Result := Copy(fdata);
 end;
 
 function Matrix.RowToArray(r: integer): array of real;
 begin
-  Result := data.Row(r);
+  Result := fdata.Row(r);
 end;
 
 function Matrix.Clone: Matrix;
 begin
-  Result := new Matrix(data);
+  Result := new Matrix(fdata);
 end;
 
 function Matrix.ColumnSums: Vector;
@@ -548,7 +551,7 @@ begin
 
   for var j := 0 to p - 1 do
     for var i := 0 to n - 1 do
-      Result[j] += data[i, j];
+      Result[j] += fdata[i, j];
 end;
 
 function Matrix.ColumnMeans: Vector;
@@ -567,7 +570,7 @@ begin
 
   for var i := 0 to n - 1 do
     for var j := 0 to p - 1 do
-      Result[i] += data[i, j];
+      Result[i] += fdata[i, j];
 end;
 
 function Matrix.RowMeans: Vector;
@@ -591,7 +594,7 @@ begin
   for var j := 0 to p - 1 do
     for var i := 0 to n - 1 do
     begin
-      var d := data[i, j] - means[j];
+      var d := fdata[i, j] - means[j];
       Result[j] += d * d;
     end;
 
@@ -616,7 +619,7 @@ begin
   for var i := 0 to n - 1 do
     for var j := 0 to p - 1 do
     begin
-      var d := data[i, j] - means[i];
+      var d := fdata[i, j] - means[i];
       Result[i] += d * d;
     end;
 
@@ -636,11 +639,11 @@ begin
 
   for var j := 0 to p - 1 do
   begin
-    Result[j] := data[0, j];
+    Result[j] := fdata[0, j];
 
     for var i := 1 to n - 1 do
-      if data[i, j] < Result[j] then
-        Result[j] := data[i, j];
+      if fdata[i, j] < Result[j] then
+        Result[j] := fdata[i, j];
   end;
 end;
 
@@ -652,11 +655,11 @@ begin
 
   for var j := 0 to p - 1 do
   begin
-    Result[j] := data[0, j];
+    Result[j] := fdata[0, j];
 
     for var i := 1 to n - 1 do
-      if data[i, j] > Result[j] then
-        Result[j] := data[i, j];
+      if fdata[i, j] > Result[j] then
+        Result[j] := fdata[i, j];
   end;
 end;
 
@@ -668,11 +671,11 @@ begin
 
   for var i := 0 to n - 1 do
   begin
-    Result[i] := data[i, 0];
+    Result[i] := fdata[i, 0];
 
     for var j := 1 to p - 1 do
-      if data[i, j] < Result[i] then
-        Result[i] := data[i, j];
+      if fdata[i, j] < Result[i] then
+        Result[i] := fdata[i, j];
   end;
 end;
 
@@ -684,23 +687,23 @@ begin
 
   for var i := 0 to n - 1 do
   begin
-    Result[i] := data[i, 0];
+    Result[i] := fdata[i, 0];
 
     for var j := 1 to p - 1 do
-      if data[i, j] > Result[i] then
-        Result[i] := data[i, j];
+      if fdata[i, j] > Result[i] then
+        Result[i] := fdata[i, j];
   end;
 end;
 
 function Matrix.RowArgMin(i: integer): integer;
 begin
-  var minVal := data[i,0];
+  var minVal := fdata[i,0];
   var arg := 0;
 
   for var j := 1 to ColCount - 1 do
-    if data[i,j] < minVal then
+    if fdata[i,j] < minVal then
     begin
-      minVal := data[i,j];
+      minVal := fdata[i,j];
       arg := j;
     end;
 
@@ -709,18 +712,18 @@ end;
 
 function Matrix.RowMin(i: integer): real;
 begin
-  Result := data[i, RowArgMin(i)];
+  Result := fdata[i, RowArgMin(i)];
 end;
 
 function Matrix.RowArgMax(i: integer): integer;
 begin
-  var maxVal := data[i,0];
+  var maxVal := fdata[i,0];
   var arg := 0;
 
   for var j := 1 to ColCount - 1 do
-    if data[i,j] > maxVal then
+    if fdata[i,j] > maxVal then
     begin
-      maxVal := data[i,j];
+      maxVal := fdata[i,j];
       arg := j;
     end;
 
@@ -729,7 +732,7 @@ end;
 
 function Matrix.RowMax(i: integer): real;
 begin
-  Result := data[i, RowArgMax(i)];
+  Result := fdata[i, RowArgMax(i)];
 end;
 
 function Matrix.RowSum(i: integer): real;
@@ -737,7 +740,7 @@ begin
   var sum := 0.0;
 
   for var j := 0 to ColCount - 1 do
-    sum += data[i,j];
+    sum += fdata[i,j];
 
   Result := sum;
 end;
@@ -754,7 +757,7 @@ begin
 
   for var j := 0 to ColCount - 1 do
   begin
-    var d := data[i,j] - mean;
+    var d := fdata[i,j] - mean;
     sum += d * d;
   end;
 
@@ -768,13 +771,13 @@ end;
 
 function Matrix.ColumnArgMin(j: integer): integer;
 begin
-  var minVal := data[0,j];
+  var minVal := fdata[0,j];
   var arg := 0;
 
   for var i := 1 to RowCount - 1 do
-    if data[i,j] < minVal then
+    if fdata[i,j] < minVal then
     begin
-      minVal := data[i,j];
+      minVal := fdata[i,j];
       arg := i;
     end;
 
@@ -783,18 +786,18 @@ end;
 
 function Matrix.ColumnMin(j: integer): real;
 begin
-  Result := data[ColumnArgMin(j), j];
+  Result := fdata[ColumnArgMin(j), j];
 end;
 
 function Matrix.ColumnArgMax(j: integer): integer;
 begin
-  var maxVal := data[0,j];
+  var maxVal := fdata[0,j];
   var arg := 0;
 
   for var i := 1 to RowCount - 1 do
-    if data[i,j] > maxVal then
+    if fdata[i,j] > maxVal then
     begin
-      maxVal := data[i,j];
+      maxVal := fdata[i,j];
       arg := i;
     end;
 
@@ -803,7 +806,7 @@ end;
 
 function Matrix.ColumnMax(j: integer): real;
 begin
-  Result := data[ColumnArgMax(j), j];
+  Result := fdata[ColumnArgMax(j), j];
 end;
 
 function Matrix.ColumnSum(j: integer): real;
@@ -811,7 +814,7 @@ begin
   var sum := 0.0;
 
   for var i := 0 to RowCount - 1 do
-    sum += data[i,j];
+    sum += fdata[i,j];
 
   Result := sum;
 end;
@@ -828,7 +831,7 @@ begin
 
   for var i := 0 to RowCount - 1 do
   begin
-    var d := data[i,j] - mean;
+    var d := fdata[i,j] - mean;
     sum += d * d;
   end;
 
@@ -846,7 +849,7 @@ begin
   var s := 0.0;
   for var i := 0 to RowCount - 1 do
     for var j := 0 to ColCount - 1 do
-      s += data[i, j] * data[i, j];
+      s += fdata[i, j] * fdata[i, j];
   Result := PABCSystem.Sqrt(s);
 end;
 
@@ -854,7 +857,7 @@ procedure Matrix.AddScaledIdentity(lambda: real);
 begin
   var n := RowCount;
   for var i := 0 to n - 1 do
-    data[i, i] += lambda;
+    fdata[i, i] += lambda;
 end;
 
 static procedure Matrix.CheckSameSize(A, B: Matrix);
@@ -883,7 +886,7 @@ begin
   Result := new Matrix(A.RowCount, A.ColCount);
   for var i := 0 to A.RowCount - 1 do
     for var j := 0 to A.ColCount - 1 do
-      Result.data[i, j] := A.data[i, j] + B.data[i, j];
+      Result.fdata[i, j] := A.fdata[i, j] + B.fdata[i, j];
 end;
 
 static function Matrix.operator -(A, B: Matrix): Matrix;
@@ -892,7 +895,7 @@ begin
   Result := new Matrix(A.RowCount, A.ColCount);
   for var i := 0 to A.RowCount - 1 do
     for var j := 0 to A.ColCount - 1 do
-      Result.data[i, j] := A.data[i, j] - B.data[i, j];
+      Result.fdata[i, j] := A.fdata[i, j] - B.fdata[i, j];
 end;
 
 function operator *(A: Matrix; alpha: real): Matrix; extensionmethod;
@@ -900,7 +903,7 @@ begin
   Result := new Matrix(A.RowCount, A.ColCount);
   for var i := 0 to A.RowCount - 1 do
     for var j := 0 to A.ColCount - 1 do
-      Result.data[i, j] := alpha * A.data[i, j];
+      Result.fdata[i, j] := alpha * A.fdata[i, j];
 end;
 
 function operator *(alpha: real; A: Matrix): Matrix; extensionmethod;
@@ -928,7 +931,7 @@ begin
   begin
     var s := 0.0;
     for var j := 0 to A.ColCount - 1 do
-      s += A.data[i, j] * x[j];
+      s += A.fdata[i, j] * x[j];
     Result[i] := s;
   end;
 end;
@@ -940,10 +943,10 @@ begin
   for var i := 0 to A.RowCount - 1 do
     for var k := 0 to A.ColCount - 1 do
     begin
-      var aik := A.data[i, k];
+      var aik := A.fdata[i, k];
       if aik <> 0.0 then
         for var j := 0 to B.ColCount - 1 do
-          Result.data[i, j] += aik * B.data[k, j];
+          Result.fdata[i, j] += aik * B.fdata[k, j];
     end;
 end;
 
@@ -952,7 +955,7 @@ begin
   CheckSameSize(A, B);
   for var i := 0 to A.RowCount - 1 do
     for var j := 0 to A.ColCount - 1 do
-      A.data[i, j] += B.data[i, j];
+      A.fdata[i, j] += B.fdata[i, j];
   Result := A;
 end;
 
@@ -961,7 +964,7 @@ begin
   CheckSameSize(A, B);
   for var i := 0 to A.RowCount - 1 do
     for var j := 0 to A.ColCount - 1 do
-      A.data[i, j] -= B.data[i, j];
+      A.fdata[i, j] -= B.fdata[i, j];
   Result := A;
 end;
 
@@ -969,7 +972,7 @@ static function Matrix.operator *=(A: Matrix; alpha: real): Matrix;
 begin
   for var i := 0 to A.RowCount - 1 do
     for var j := 0 to A.ColCount - 1 do
-      A.data[i, j] *= alpha;
+      A.fdata[i, j] *= alpha;
   Result := A;
 end;
 
@@ -978,7 +981,7 @@ begin
   Result := new Matrix(ColCount, RowCount);
   for var i := 0 to RowCount - 1 do
     for var j := 0 to ColCount - 1 do
-      Result.data[j, i] := data[i, j];
+      Result.fdata[j, i] := fdata[i, j];
 end;
 
 function Matrix.GetRow(i: integer): Vector;
@@ -987,7 +990,7 @@ begin
     ArgumentOutOfRangeError(ER_ROW_INDEX_OUT_OF_RANGE, i, RowCount);
   Result := new Vector(ColCount);
   for var j := 0 to ColCount - 1 do
-    Result[j] := data[i, j];
+    Result[j] := fdata[i, j];
 end;
 
 function Matrix.GetCol(j: integer): Vector;
@@ -996,7 +999,7 @@ begin
     ArgumentOutOfRangeError(ER_COL_INDEX_OUT_OF_RANGE, j, ColCount);
   Result := new Vector(RowCount);
   for var i := 0 to RowCount - 1 do
-    Result[i] := data[i, j];
+    Result[i] := fdata[i, j];
 end;
 
 static function Matrix.Identity(n: integer): Matrix;
@@ -1030,7 +1033,7 @@ begin
   
   for var i := 0 to RowCount - 1 do
     for var j := i + 1 to ColCount - 1 do
-      if Abs(data[i, j] - data[j, i]) > tol then
+      if Abs(fdata[i, j] - fdata[j, i]) > tol then
       begin
         Result := false;
         exit;
@@ -1496,20 +1499,22 @@ begin
     var normx := 0.0;
     for var i := k to m - 1 do
       normx += R[i,k] * R[i,k];
-
+    
     normx := Sqrt(normx);
-
+    
     if normx = 0 then
       continue;
-
-    // ---- знак для устойчивости
+    
     if R[k,k] >= 0 then
       normx := -normx;
-
-    // ---- построить Householder-вектор v
-    var beta := 1.0 / (normx * R[k,k] - normx * normx);
-
+    
     R[k,k] -= normx;
+    
+    var vnorm2 := 0.0;
+    for var i := k to m - 1 do
+      vnorm2 += R[i,k] * R[i,k];
+    
+    var beta := 2.0 / vnorm2;
 
     // ---- применить отражение к R
     for var j := k + 1 to n - 1 do

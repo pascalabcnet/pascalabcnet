@@ -295,7 +295,6 @@ begin
   end;
 end;
 
-
 static function Validation.CrossValidate(
   model: IModel; 
   X: Matrix; 

@@ -7,10 +7,10 @@ begin
   Println('Task: ', ds.Task);
   Println;
 
-  Println('Rows:', ds.Data.RowCount);
+  Println('Rows:', ds.RowCount);
   Println('Features:', ds.Features.Length);
   Println;
 
   Println('Head:');
-  ds.Data.Print;
+  ds.Head.Print;
 end.

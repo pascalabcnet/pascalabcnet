@@ -14,7 +14,7 @@ begin
   ds.ClassCounts.PrintLines;
   Println;
   
-  ds.Classes.PrintLines(c -> ds.ClassName(c));
+  ds.Classes.PrintLines(cvalue -> ds.ClassName(cvalue));
   Println;
   
   ds.ClassCounts.PrintLines(kv -> ds.ClassName(kv.Key) + ' → ' + kv.Value);

@@ -95,6 +95,8 @@ type
     function ToString: string; override;
     
     function Clone: IModel;
+    
+    function Name: string := Self.GetType.Name;
   end;  
   
 /// Линейная регрессионная модель с L2-регуляризацией (Ridge).
@@ -143,6 +145,8 @@ type
     function ToString: string; override;
     
     function Clone: IModel;
+    
+    function Name: string := Self.GetType.Name;
   end;
   
 /// Линейная регрессионная модель ElasticNet.
@@ -202,6 +206,8 @@ type
     function ToString: string; override;
     
     function Clone: IModel;
+    
+    function Name: string := Self.GetType.Name;
   end;
     
 /// Логистическая регрессия.
@@ -265,6 +271,8 @@ type
     
     /// Вектор свободных членов (bias) для каждого класса.
     property Intercept: Vector read GetIntercept;
+    
+    function Name: string := Self.GetType.Name;
   end;
   
   DecisionTreeNode = class
@@ -406,6 +414,8 @@ type
 /// Возвращает true, если дерево обучено.
 /// Если false — Predict вызовет ошибку.
     function IsFitted: boolean;
+    
+    function Name: string := Self.GetType.Name;
   end;
 
 //============================  
@@ -455,6 +465,8 @@ type
     function ClassCount: integer := fClassCount;
     
     function IndexToClass: array of integer := Copy(fIndexToClass);
+    
+    function Name: string := Self.GetType.Name;
   end;
   
 //============================  
@@ -511,6 +523,8 @@ type
     
 /// Возвращает строковое представление модели.
     function ToString: string; override;
+    
+    function Name: string := Self.GetType.Name;
   end;
   
 
@@ -610,13 +624,15 @@ type
 /// Требует включённого режима computeOOB при создании модели.
 /// Бросает исключение, если OOB не включён или модель не обучена
     function OOBScore: real;
+    
+    function Name: string := Self.GetType.Name;
   end;  
   
 /// Случайный лес для задачи регрессии.
 /// Строит ансамбль регрессионных деревьев,
 /// обученных на bootstrap-подвыборках данных и случайных подмножествах признаков.
 /// Итоговое предсказание — среднее значение по всем деревьям ансамбля
-  RandomForestRegressor = class(RandomForestBase, IModel)
+  RandomForestRegressor = class(RandomForestBase, IRegressor)
   private
     fTrees: array of DecisionTreeRegressor;
   public
@@ -707,6 +723,8 @@ type
     function ToString: string; override;
     
     function GetClasses: array of real;
+    
+    function Name: string := Self.GetType.Name;
   end;
   
 { Gradient Boosting v1.0 — Freeze Checklist
@@ -876,6 +894,8 @@ type
     
 /// Возвращает строковое представление модели.
     function ToString: string; override;
+    
+    function Name: string := Self.GetType.Name;
   end;
 
 /// Тип функции потерь для классификатора.
@@ -1017,6 +1037,8 @@ type
     
 /// Возвращает строковое представление модели.
     function ToString: string; override;
+    
+    function Name: string := Self.GetType.Name;
   end;
 
 //-----------------------------
@@ -1072,6 +1094,8 @@ type
     
     /// Создаёт глубокую копию модели
     function Clone: IModel; virtual; abstract;
+    
+    function Name: string := Self.GetType.Name;
   end;
   
   /// Классификатор на основе алгоритма k ближайших соседей (kNN).
@@ -1118,6 +1142,8 @@ type
     
     /// Создаёт глубокую копию классификатора
     function Clone: IModel; override;
+    
+    function Name: string := Self.GetType.Name;
   end;
   
   
@@ -1145,6 +1171,8 @@ type
     
     /// Создаёт глубокую копию регрессора
     function Clone: IModel; override;
+    
+    function Name: string := Self.GetType.Name;
   end;
   
   
@@ -1219,6 +1247,8 @@ type
     property HasConverged: boolean read fHasConverged;
     /// Число признаков модели.
     property FeatureCount: integer read fFeatureCount;
+    
+    function Name: string := Self.GetType.Name;
   end;
   
 
@@ -1264,6 +1294,8 @@ type
   
     property Labels: Vector read fLabels;
     property ClusterCount: integer read fClusterCount;
+    
+    function Name: string := Self.GetType.Name;
   end;  
   
 {$endregion Models}
@@ -1386,6 +1418,8 @@ type
     function ToString: string; override;
     
     function Clone: IModel;
+    
+    function Name: string := Self.GetType.Name;
   end;
   
 {$endregion Pipeline}
@@ -3906,17 +3940,18 @@ begin
 
   rf.fUserProvidedSeed := fUserProvidedSeed;
   rf.fFitted := fFitted;
-
   rf.fFeatureCount := fFeatureCount;
 
-  // --- OOB ---
   rf.fOOBScore := fOOBScore;
   rf.fHasOOBScore := fHasOOBScore;
 
   // --- trees ---
-  SetLength(rf.fTrees, fTrees.Length);
-  for var i := 0 to fTrees.Length - 1 do
-    rf.fTrees[i] := DecisionTreeRegressor(fTrees[i].Clone);
+  if fTrees <> nil then
+  begin
+    SetLength(rf.fTrees, fTrees.Length);
+    for var i := 0 to fTrees.Length - 1 do
+      rf.fTrees[i] := DecisionTreeRegressor(fTrees[i].Clone);
+  end;
 
   Result := rf;
 end;

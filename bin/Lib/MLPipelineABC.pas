@@ -27,6 +27,7 @@ type
 
     fTarget: string;
     fFeatures: array of string;
+    fFinalFeatures: array of string;
 
     fFitted: boolean;
 
@@ -201,7 +202,13 @@ const
     'Признак "{0}" не найден в DataFrame. Доступные столбцы: {1}!!'+
     'Feature "{0}" not found in DataFrame. Available columns: {1}';
   ER_DATAPIPE_DUPLICATE_FEATURE =
-    'Повторяющийся признак: {0}!!Duplicate feature: {0}';    
+    'Повторяющийся признак: {0}!!Duplicate feature: {0}'; 
+  ER_PIPELINE_FINALFEATURES =
+    'Внутренняя ошибка pipeline: итоговый набор признаков не определён. Возможно, Fit не был выполнен корректно!!Pipeline internal error: final feature set is not defined. Fit may not have been executed correctly';    
+  ER_PIPELINE_TARGET_REMOVED =
+    'Целевая переменная "{0}" была удалена на этапе preprocessing pipeline!!Target column "{0}" was removed during pipeline preprocessing';  
+  ER_PIPELINE_NO_FEATURES =
+    'После preprocessing pipeline не осталось признаков для обучения модели!!No features remain after pipeline preprocessing';    
     
 //-----------------------------
 //        DataPipeline
@@ -298,44 +305,62 @@ function DataPipeline.Fit(df: DataFrame): DataPipeline;
 begin
   if fModel = nil then
     Error(ER_MODEL_NULL);
-  
+
   var current := df;
 
-  // 1) DataFrame слой (с сохранением fitted-объектов)
+  // --- 0) Проверка входной схемы
+  ValidateSchema(current);
+
+  // --- 1) DataFrame шаги
   for var i := 0 to fDataSteps.Count - 1 do
   begin
     fDataSteps[i] := fDataSteps[i].Fit(current);
     current := fDataSteps[i].Transform(current);
   end;
 
-  // DF-only режим
-  if fModel = nil then
+  // --- target должен остаться
+  if not current.HasColumn(fTarget) then
+    ArgumentError(ER_PIPELINE_TARGET_REMOVED, fTarget);
+
+  // --- 2) вычислить финальные признаки
+  var feats := new List<string>;
+
+  foreach var f in fFeatures do
   begin
-    fFitted := true;
-    exit(Self);
+    if current.HasColumn(f) then
+    begin
+      feats.Add(f);
+      continue;
+    end;
+
+    // искать производные признаки (OneHotEncoder)
+    foreach var c in current.Schema.ColumnNames do
+      if c.StartsWith(f + '_') then
+        feats.Add(c);
   end;
 
-  // 2) Проверка схемы
-  ValidateSchema(current);
+  if feats.Count = 0 then
+    ArgumentError(ER_PIPELINE_NO_FEATURES);
 
-  // 3) Split
-  var X := current.ToMatrix(fFeatures);
+  fFinalFeatures := feats.ToArray;
+
+  var X := current.ToMatrix(fFinalFeatures);
   var y := current.ToVector(fTarget);
 
-  // 4) Matrix слой (с сохранением fitted-объектов)
+  // --- 3) Matrix transformers
   for var i := 0 to fMatrixSteps.Count - 1 do
   begin
     var t := fMatrixSteps[i];
-  
-    if t is ISupervisedTransformer (var sup) then
+
+    if t is ISupervisedTransformer(var sup) then
       fMatrixSteps[i] := sup.Fit(X, y)
     else
       fMatrixSteps[i] := t.Fit(X);
-  
+
     X := fMatrixSteps[i].Transform(X);
   end;
 
-  // 5) Модель
+  // --- 4) модель
   fModel := fModel.Fit(X, y);
 
   fFitted := true;
@@ -380,7 +405,11 @@ begin
     ArgumentError(ER_MODEL_NULL);
 
   var current := Transform(df);
-  var X := current.ToMatrix(fFeatures);
+  
+  if fFinalFeatures = nil then
+    Error(ER_PIPELINE_FINALFEATURES);
+
+  var X := current.ToMatrix(fFinalFeatures);
 
   foreach var t in fMatrixSteps do
     X := t.Transform(X);
@@ -397,7 +426,11 @@ begin
     Error(ER_PROBA_NOT_SUPPORTED);
 
   var current := Transform(df);
-  var X := current.ToMatrix(fFeatures);
+  
+  if fFinalFeatures = nil then
+    Error(ER_PIPELINE_FINALFEATURES);
+  
+  var X := current.ToMatrix(fFinalFeatures);
 
   foreach var t in fMatrixSteps do
     X := t.Transform(X);

@@ -18,14 +18,21 @@ type
   /// Предоставляет удобные методы для получения матриц признаков
   /// и целевых значений для обучения моделей
   Dataset = class
+  private    
+   function ValueLabel(feature, value: string): string;
+   function CloneMeta(df: DataFrame): Dataset;
   public
     Name: string;
     Data: DataFrame;
     Features: array of string;
     Target: string;
     Task: TaskType;
+    
+    FeatureLabels: Dictionary<string,string>;
+    ValueLabels: Dictionary<string,Dictionary<string,string>>;
+    Description: string;
 
-    /// Возвращает матрицу признаков X.
+    {/// Возвращает матрицу признаков X.
     /// Используются столбцы, указанные в Features.
     function ToX: Matrix;
   
@@ -38,7 +45,7 @@ type
   
     /// Возвращает (X, y), где y преобразован в целочисленные метки классов.
     /// Используется для задач классификации.
-    function ToXYInt: (Matrix, array of integer);
+    function ToXYInt: (Matrix, array of integer);}
   
     /// Возвращает true, если датасет относится к задаче с учителем
     /// (classification или regression).
@@ -53,6 +60,14 @@ type
   
     /// Возвращает краткое описание датасета (метаданные).
     function Describe: DataFrame;
+    
+    procedure Info;
+    
+    function Classes: array of string;
+    function ClassCounts: Dictionary<string,integer>;
+    function ClassName(value: string): string;
+    
+    function RowCount: integer := Data.RowCount;
   end;
 
   /// Набор генераторов и загрузчиков датасетов для задач машинного обучения.
@@ -61,6 +76,7 @@ type
   /// Используется в примерах, экспериментах и демонстрациях алгоритмов ML
   Datasets = static class
   public
+    static Language: string := 'ru';
     // --- Синтетические датасеты (Matrix + Vector)
     
     /// Генерирует синтетический датасет из нескольких гауссовых кластеров.
@@ -191,7 +207,7 @@ type
     static function Iris: Dataset;
     
     /// Датасет цен на квартиры (задача регрессии)
-    static function RussianHousing: Dataset;
+    static function MoscowHousing: Dataset;
     
     /// Датасет результатов экзамена студентов (классификация)
     static function StudentExam: Dataset;
@@ -217,6 +233,7 @@ implementation
 
 uses MLExceptions;
 uses DataAdapters;
+uses DataFrameABCCore;
 
 const
   ER_PARAM_GT_ZERO =
@@ -245,6 +262,22 @@ const
     'Признак "{0}" не найден в датасете!!Feature column "{0}" not found in dataset';
   ER_DATASET_FEATURE_EQUALS_TARGET =
     'Признак "{0}" совпадает с целевой переменной!!Feature "{0}" equals target column';
+  ER_CLASSES_ONLY_CLASSIFICATION =
+    'Classes доступны только для задач классификации!!Classes are only available for classification datasets';
+  ER_VALUECOUNTS_ONLY_CLASSIFICATION =
+    'ValueCounts доступны только для задач классификации!!ValueCounts are only available for classification datasets';    
+    
+  C_DATASET      = 'Датасет: {0}!!Dataset: {0}';
+  C_DESCRIPTION  = 'Описание:!!Description:';
+  C_TASK         = 'Задача: {0}!!Task: {0}';
+  C_ROWS         = 'Строк: {0}!!Rows: {0}';
+  C_FEATURES     = 'Признаков: {0}!!Features: {0}';
+  C_TARGET       = 'Цель: {0}!!Target: {0}';
+  C_NAME         = 'Имя: {0}!!Name: {0}';
+  C_SOURCE       = 'Источник: {0}!!Source: {0}';
+  C_URL          = 'Ссылка: {0}!!URL: {0}';
+  C_CLASSES      = 'Классов: {0}!!Classes: {0}';
+  C_FEATURE_LIST = 'Признаки:!!Features:';
     
 function Normal(rnd: System.Random): real;
 begin
@@ -253,81 +286,60 @@ begin
   Result := Sqrt(-2 * Ln(u1)) * Cos(2 * Pi * u2);
 end;
 
+function Tr(s: string): string;
+begin
+  var p := s.IndexOf('!!');
+
+  if p < 0 then
+    exit(s);
+
+  if Datasets.Language = 'ru' then
+    Result := s.Substring(0, p)
+  else
+    Result := s.Substring(p + 2);
+end;
+
+procedure PrintTr(s: string; params args: array of object);
+begin
+  Print(Format(Tr(s), args));
+end;
+
+procedure PrintlnTr(s: string; params args: array of object);
+begin
+  Println(Format(Tr(s), args));
+end;
+
 //-----------------------------
 //          Dataset
 //-----------------------------
-
-function Dataset.ToX(): Matrix;
-begin
-  Result := Data.ToMatrix(Features);
-end;
-
-function Dataset.ToY: Vector;
-begin
-  var t := Data.GetColumnType(Target);
-  case t of
-    ColumnType.ctInt:
-      Result := new Vector(Data.GetIntColumn(Target));
-    ColumnType.ctFloat:
-      Result := Data.ToVector(Target);
-    ColumnType.ctStr:
-      Result := new Vector(EncodeLabels(Data.GetStrColumn(Target)));
-    ColumnType.ctBool:
-      begin
-        var b := Data.GetBoolColumn(Target);
-        var v := new Vector(b.Length);
-        
-        for var i := 0 to b.Length - 1 do
-          v[i] := if b[i] then 1.0 else 0.0;
-        
-        Result := v;
-      end;
-  end;
-end;
-
-function Dataset.ToXY(): (Matrix, Vector);
-begin
-  Result := (ToX, ToY);
-end;
-
-function Dataset.ToXYInt: (Matrix, array of integer);
-begin
-  if Task <> Classification then
-    ArgumentError(ER_DATASET_NO_TARGET);
-
-  var X := ToX;
-
-  var labels := Data.GetStrColumn(Target);
-  var y := EncodeLabels(labels);
-
-  Result := (X, y);
-end;
 
 function Dataset.IsSupervised: boolean;
 begin
   Result := Task <> Clustering;
 end;
 
+function Dataset.CloneMeta(df: DataFrame): Dataset;
+begin
+  Result := new Dataset;
+
+  Result.Name := Name;
+  Result.Data := df;
+
+  Result.Features := Features;
+  Result.Target := Target;
+  Result.Task := Task;
+
+  Result.Description := Description;
+  Result.FeatureLabels := FeatureLabels;
+  Result.ValueLabels := ValueLabels;
+end;
+
 function Dataset.TrainTestSplit(testRatio: real; seed: integer): (Dataset, Dataset);
 begin
-  if Self = nil then
-    ArgumentNullError(ER_ARG_NULL, 'Dataset');
-
   var (trainDf, testDf) := Data.TrainTestSplit(testRatio, seed);
 
-  var trainDs := new Dataset;
-  trainDs.Name := Name;
-  trainDs.Data := trainDf;
-  trainDs.Features := Features;
-  trainDs.Target := Target;
-  trainDs.Task := Task;
-
-  var testDs := new Dataset;
-  testDs.Name := Name;
-  testDs.Data := testDf;
-  testDs.Features := Features;
-  testDs.Target := Target;
-  testDs.Task := Task;
+  var trainDs := CloneMeta(trainDf);
+  var testDs := CloneMeta(testDf);
 
   Result := (trainDs, testDs);
 end;
@@ -368,11 +380,89 @@ begin
   var valid := ArrFill(props.Length, true);
 
   var df := new DataFrame;
-  df.AddStrColumn('Property', props, valid, true);
-  df.AddStrColumn('Value', values, valid, false);
+  df.AddStrColumn('Property', props, valid);
+  df.AddStrColumn('Value', values, valid);
+  
+  var names := Arr('Property', 'Value');
+  var types := Arr(ColumnType.ctStr, ColumnType.ctStr);
+  var cats  := Arr(true, false);
+  
+  df.SetSchema(new DataFrameSchema(names, types, cats));
 
   Result := df;
 end;
+
+procedure Dataset.Info;
+begin
+  PrintlnTr(C_DATASET, Name);
+  Println;
+
+  if (Description <> nil) and (Description <> '') then
+  begin
+    Println(Tr(C_DESCRIPTION));
+    Println(Description);
+    Println;
+  end;
+
+  PrintlnTr(C_TASK, Task);
+  PrintlnTr(C_ROWS, Data.RowCount);
+  PrintlnTr(C_FEATURES, Features.Length);
+
+  if (Target <> nil) and (Target <> '') then
+    PrintlnTr(C_TARGET, Target);
+
+  Println;
+
+  var maxLen := Features.Max(f -> f.Length);
+  
+  foreach var f in Features do
+  begin
+    var pad := new string(' ', maxLen - f.Length);
+    Println(f, pad, '→', FeatureLabels[f]);
+  end;
+end;
+
+function Dataset.Classes: array of string;
+begin
+  if Task <> TaskType.Classification then
+    ArgumentError(ER_CLASSES_ONLY_CLASSIFICATION);
+
+  Result := Data.GetStrColumn(Target).Distinct.ToArray;
+end;
+
+function Dataset.ClassCounts: Dictionary<string,integer>;
+begin
+  if Task <> TaskType.Classification then
+    ArgumentError(ER_VALUECOUNTS_ONLY_CLASSIFICATION);
+
+  var labels := Data.GetStrColumn(Target);
+
+  var dict := new Dictionary<string,integer>;
+
+  foreach var v in labels do
+    if dict.ContainsKey(v) then
+      dict[v] += 1
+    else
+      dict[v] := 1;
+
+  Result := dict;
+end;
+
+function Dataset.ValueLabel(feature, value: string): string;
+begin
+  if (ValueLabels <> nil) and
+     ValueLabels.ContainsKey(feature) and
+     ValueLabels[feature].ContainsKey(value) then
+    Result := ValueLabels[feature][value]
+  else
+    Result := value;
+end;
+
+function Dataset.ClassName(value: string): string;
+begin
+  Result := ValueLabel(Target, value);
+end;
+
 
 //-----------------------------
 //          Datasets
@@ -712,10 +802,53 @@ begin
 
   ds.Name := name;
   ds.Data := df;
+  
+  // --- description
+  ds.Description := '';
+  
+  var dkey := 'description.' + Language;
+  
+  if meta.ContainsKey(dkey) then
+    ds.Description := meta[dkey]
+  else if meta.ContainsKey('description.en') then
+    ds.Description := meta['description.en'];
 
   ds.Task := ParseTask(meta['task']);
   ds.Target := meta['target'];
   ds.Features := ParseFeatures(meta);
+  
+  ds.FeatureLabels := [];
+  foreach var f in ds.Features do
+  begin
+    var key := 'feature.' + f + '.' + Datasets.Language;
+  
+    if meta.ContainsKey(key) then
+      ds.FeatureLabels[f] := meta[key]
+    else
+      ds.FeatureLabels[f] := f;
+  end;
+  
+  ds.ValueLabels := [];
+  foreach var k in meta.Keys do
+  if k.StartsWith('value.') then
+  begin
+    var parts := k.Split('.');
+
+    if parts.Length <> 4 then
+      continue;
+
+    var feature := parts[1];
+    var value := parts[2];
+    var lang := parts[3];
+
+    if lang <> Datasets.Language then
+      continue;
+
+    if not ds.ValueLabels.ContainsKey(feature) then
+      ds.ValueLabels[feature] := new Dictionary<string,string>;
+
+    ds.ValueLabels[feature][value] := meta[k];
+  end;
   
   // --- проверка target
   if (ds.Target <> nil) and not df.HasColumn(ds.Target) then
@@ -738,9 +871,9 @@ begin
   Result := Load('Iris');
 end;
 
-static function Datasets.RussianHousing: Dataset;
+static function Datasets.MoscowHousing: Dataset;
 begin
-  Result := nil;
+  Result := Load('moscow_housing');
 end;
 
 static function Datasets.StudentExam: Dataset;
@@ -778,7 +911,7 @@ begin
 
   var dict := new Dictionary<string,string>;
 
-  foreach var line in ReadLines(path) do
+  foreach var line in ReadLines(path, System.Text.Encoding.UTF8) do
   begin
     var s := line.Trim;
 

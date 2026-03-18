@@ -21,6 +21,8 @@ const
     'Аргумент {0} равен nil!!Argument {0} is null';
   ER_EMPTY_DATA =
     'Пустой набор данных для {0}!!Empty dataset for {0}';
+  ER_COLUMN_NOT_FOUND =
+    'В DataFrame отсутствует столбец "{0}"!!DataFrame does not contain column "{0}"';  
   
 type
   /// Базовое исключение ML-библиотеки

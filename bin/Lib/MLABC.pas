@@ -11,6 +11,7 @@ uses MLModelsABC;
 uses MetricsABC;
 uses PreprocessorABC;
 uses DataFrameABC;
+uses DataFrameABCCore;
 uses MLExceptions;
 uses InspectionML;
 uses MLPipelineABC;
@@ -29,10 +30,14 @@ type
   DataPipeline = MLPipelineABC.DataPipeline;
   
   DataFrame = DataFrameABC.DataFrame;
+  DataFrameCursor = DataFrameABCCore.DataFrameCursor;
+  
   Statistics = DataFrameABC.Statistics;
   CsvLoader = DataFrameABC.CsvLoader;
+  JoinKind = DataFrameABC.JoinKind;
   
   IProbabilisticClassifier = MLCoreABC.IProbabilisticClassifier;
+  IRegressor = MLCoreABC.IRegressor;
 
   StandardScaler = MLModelsABC.StandardScaler;
   PCATransformer = MLModelsABC.PCATransformer;
@@ -79,6 +84,8 @@ type
   Imputer = PreprocessorABC.Imputer;
   
   Datasets = MLDatasets.Datasets;
+  
+  IModel = MLCoreABC.IModel;
   
   function LabelsToInts(y: Vector): array of integer;
   function EncodeLabels(labels: array of string): array of integer;

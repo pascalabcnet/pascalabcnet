@@ -320,26 +320,22 @@ begin
 
     var Encode: DataFrameCursor -> integer := c ->
     begin
-      if not c.IsValid(srcIdx) then
+      if not c.IsValid(col) then
       begin
         Result := 0;
         exit;
       end;
-
-      var s := c.Str(srcIdx);
-
+    
+      var s := c.Str(col);
+    
       var idx: integer;
       if not indexByValue.TryGetValue(s, idx) then
       begin
-        // неизвестная категория → все нули
         Result := 0;
         exit;
       end;
-
-      if idx = catIdx then
-        Result := 1
-      else
-        Result := 0;
+    
+      Result := Ord(idx = catIdx);
     end;
 
     res := res.AddDerivedIntColumn(newName, Encode);

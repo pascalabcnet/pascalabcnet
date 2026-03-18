@@ -26,6 +26,7 @@ type
     function Fit(X: Matrix; y: Vector): IModel;
     function Predict(X: Matrix): Vector;
     function Clone: IModel;
+    function Name: string;
   end;
   
   /// Интерфейс модели без учителя (Unsupervised Model).
