@@ -537,8 +537,6 @@ begin
   Assert(fIndexByName.Count = fNames.Length);
 end;
 
-
-
 //-----------------------------
 //           Columns
 //-----------------------------

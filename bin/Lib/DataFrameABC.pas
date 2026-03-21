@@ -101,7 +101,8 @@ type
     property Schema: DataFrameSchema read fschema;
     
     procedure SetSchema(schema: DataFrameSchema);
-
+    
+    function SetCategorical(names: array of string): DataFrame;
     
     property Item[name: string]: Column read GetColumn; default;
     
@@ -2303,6 +2304,31 @@ begin
     ArgumentError(ER_COLS_SCHEMA_MISMATCH);
 
   fSchema := schema;
+end;
+
+function DataFrame.SetCategorical(names: array of string): DataFrame;
+begin
+  var n := fSchema.ColumnCount;
+
+  var cats := new boolean[n];
+
+  // копируем старые значения
+  for var i := 0 to n - 1 do
+    cats[i] := fSchema.IsCategorical[i];
+
+  // применяем новые
+  foreach var name in names do
+    cats[fSchema.IndexOf(name)] := true;
+
+  // создаём НОВУЮ schema
+  var newSchema := new DataFrameSchema(
+    fSchema.ColumnNames,
+    fSchema.Types,
+    cats
+  );
+
+  // создаём новый DataFrame (columns не копируем!)
+  Result := new DataFrame(columns, newSchema);
 end;
 
 function DataFrame.Filter(pred: CursorPredicate): DataFrame;

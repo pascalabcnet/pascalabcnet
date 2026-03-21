@@ -32,20 +32,20 @@ type
     static function StratifiedKFold(y: Vector; k: integer;
       seed: integer := -1): sequence of (array of integer, array of integer);
   
-    /// Выполняет k-fold кросс-валидацию модели.
+    /// Выполняет k-fold кросс-валидацию модели с учителем.
     /// На каждом шаге модель обучается на обучающей части и оценивается на соответствующей тестовой части.
     /// metric — функция качества, принимающая (y_true, y_pred)
     ///   и возвращающая значение метрики (например, Accuracy или MSE).
     /// Возвращает среднее значение метрики по всем частям.
-    static function CrossValidate(model: IModel; X: Matrix; y: Vector;
+    static function CrossValidate(model: ISupervisedModel; X: Matrix; y: Vector;
       k: integer; metric: (Vector,Vector) -> real; seed: integer := -1): real;
     
-    /// Выполняет стратифицированную k-fold кросс-валидацию модели.
+    /// Выполняет стратифицированную k-fold кросс-валидацию модели с учителем.
     /// Разбиение данных выполняется методом StratifiedKFold
     ///     с сохранением пропорций классов в каждой части.
     /// Рекомендуется для задач классификации, особенно при несбалансированных классах.
     /// Возвращает среднее значение метрики по k разбиениям.
-    static function StratifiedCrossValidate(model: IModel; X: Matrix; y: Vector;
+    static function StratifiedCrossValidate(model: ISupervisedModel; X: Matrix; y: Vector;
       k: integer; metric: (Vector,Vector) -> real; seed: integer := -1): real;  
   end;
   
@@ -70,7 +70,7 @@ type
     k: integer;
     metric: (Vector, Vector) -> real;
     maximize: boolean := True
-  ): (real, real, T); where T: IModel;
+  ): (real, real, T); where T: class,ISupervisedModel;
   end;
 
 implementation
@@ -91,11 +91,14 @@ const
     'Некорректное значение k в StratifiedKFold: k={0}, n={1}!!' +
     'Invalid k in StratifiedKFold: k={0}, n={1}';  
   ER_STRATIFIED_LABELS_INVALID =
-    'StratifiedKFold поддерживает только метки 0/1!!' +
-    'StratifiedKFold supports only 0/1 labels';
+    'StratifiedKFold поддерживает только целочисленные метки классов!!' +
+    'StratifiedKFold supports only integer class labels';
   ER_INVALID_VALUE =
-    'Некорректное значение параметра {0}!!Invalid value for parameter {0}';  
-
+    'Некорректное значение параметра {0}!!Invalid value for parameter {0}';
+  ER_DATASET_TOO_SMALL =
+    'Для {0} требуется как минимум 2 объекта!!' +
+    'At least 2 samples are required for {0}';    
+    
 //-----------------------------
 //         Validation
 //-----------------------------
@@ -119,7 +122,7 @@ begin
   var p := X.ColCount;
 
   if n < 2 then
-    ArgumentError(ER_EMPTY_DATA, 'TrainTestSplit');
+    ArgumentError(ER_DATASET_TOO_SMALL, 'TrainTestSplit');
 
   var actualSeed := if seed >= 0 then seed else System.Environment.TickCount and integer.MaxValue;
   var rnd := new System.Random(actualSeed);
@@ -296,7 +299,7 @@ begin
 end;
 
 static function Validation.CrossValidate(
-  model: IModel; 
+  model: ISupervisedModel; 
   X: Matrix; 
   y: Vector;
   k: integer; 
@@ -349,8 +352,8 @@ begin
       yte[i] := y[r];
     end;
 
-    var m := model.Clone();
-    m.Fit(Xtr, ytr);
+    var m := model.Clone() as ISupervisedModel;
+    m := m.Fit(Xtr, ytr);
 
     var pred := m.Predict(Xte);
 
@@ -365,7 +368,7 @@ begin
 end;
 
 static function Validation.StratifiedCrossValidate(
-  model: IModel; 
+  model: ISupervisedModel; 
   X: Matrix; 
   y: Vector;
   k: integer; 
@@ -418,8 +421,8 @@ begin
       yte[i] := y[r];
     end;
 
-    var m := model.Clone();
-    m.Fit(Xtr, ytr);
+    var m := model.Clone() as ISupervisedModel;
+    m := m.Fit(Xtr, ytr);
 
     var pred := m.Predict(Xte);
 
@@ -445,7 +448,7 @@ class function GridSearch.Search<T>(
   k: integer;
   metric: (Vector, Vector) -> real;
   maximize: boolean
-): (real, real, T); where T: IModel;
+): (real, real, T); where T: class,ISupervisedModel;
 begin
   if modelFactory = nil then
     ArgumentNullError(ER_ARG_NULL, 'modelFactory');
@@ -475,6 +478,8 @@ begin
   foreach var param in paramValues do
   begin
     var model := modelFactory(param);
+    if model = nil then
+      ArgumentError(ER_MODEL_NULL);
     var avgScore := Validation.CrossValidate(model, X, y, k, metric);
 
     if double.IsNaN(avgScore) or double.IsInfinity(avgScore) then
@@ -492,7 +497,10 @@ begin
   end;
 
   var bestModel := modelFactory(bestParam);
-  bestModel.Fit(X, y);
+  if bestModel = nil then
+    ArgumentError(ER_MODEL_NULL);
+  
+  bestModel := bestModel.Fit(X, y) as T;
 
   Result := (bestParam, bestScore, bestModel);
 end;

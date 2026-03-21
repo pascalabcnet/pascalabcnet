@@ -32,21 +32,6 @@ type
     ValueLabels: Dictionary<string,Dictionary<string,string>>;
     Description: string;
 
-    {/// Возвращает матрицу признаков X.
-    /// Используются столбцы, указанные в Features.
-    function ToX: Matrix;
-  
-    /// Возвращает вектор целевой переменной y.
-    /// Доступно только для задач с учителем.
-    function ToY: Vector;
-  
-    /// Возвращает пару (X, y) для обучения модели.
-    function ToXY: (Matrix, Vector);
-  
-    /// Возвращает (X, y), где y преобразован в целочисленные метки классов.
-    /// Используется для задач классификации.
-    function ToXYInt: (Matrix, array of integer);}
-  
     /// Возвращает true, если датасет относится к задаче с учителем
     /// (classification или regression).
     function IsSupervised: boolean;
@@ -68,6 +53,10 @@ type
     function ClassName(value: string): string;
     
     function RowCount: integer := Data.RowCount;
+    
+    function GetFeatureColumns: array of string;
+    
+    function HasTarget: boolean;
   end;
 
   /// Набор генераторов и загрузчиков датасетов для задач машинного обучения.
@@ -208,6 +197,9 @@ type
     
     /// Датасет цен на квартиры (задача регрессии)
     static function MoscowHousing: Dataset;
+
+    /// Датасет российских городов (задача кластеризации)
+    static function RussianCities: Dataset;
     
     /// Датасет результатов экзамена студентов (классификация)
     static function StudentExam: Dataset;
@@ -266,6 +258,8 @@ const
     'Classes доступны только для задач классификации!!Classes are only available for classification datasets';
   ER_VALUECOUNTS_ONLY_CLASSIFICATION =
     'ValueCounts доступны только для задач классификации!!ValueCounts are only available for classification datasets';    
+  ER_DATASET_TARGET_MISSING =
+    'Target обязателен для задач обучения с учителем!!Target is required for supervised learning datasets';    
     
   C_DATASET      = 'Датасет: {0}!!Dataset: {0}';
   C_DESCRIPTION  = 'Описание:!!Description:';
@@ -461,6 +455,23 @@ end;
 function Dataset.ClassName(value: string): string;
 begin
   Result := ValueLabel(Target, value);
+end;
+
+function Dataset.GetFeatureColumns: array of string;
+begin
+  if (Features <> nil) and (Features.Length > 0) then
+    Result := Features
+  else if Target <> nil then
+    Result := Data.Schema.ColumnNames
+      .Where(c -> c <> Target)
+      .ToArray
+  else
+    Result := Data.Schema.ColumnNames;
+end;
+
+function Dataset.HasTarget: boolean;
+begin
+  Result := (Target <> nil) and (Target <> '');
 end;
 
 
@@ -814,7 +825,17 @@ begin
     ds.Description := meta['description.en'];
 
   ds.Task := ParseTask(meta['task']);
-  ds.Target := meta['target'];
+  
+  if ds.Task in [TaskType.Regression, TaskType.Classification] then
+  begin
+    if not meta.ContainsKey('target') then
+      ArgumentError(ER_DATASET_TARGET_MISSING, name);
+  
+    ds.Target := meta['target'];
+  end
+  else
+    ds.Target := nil;
+    
   ds.Features := ParseFeatures(meta);
   
   ds.FeatureLabels := [];
@@ -873,7 +894,25 @@ end;
 
 static function Datasets.MoscowHousing: Dataset;
 begin
-  Result := Load('moscow_housing');
+  var ds := Load('moscow_housing');
+
+  ds.Data := ds.Data.SetCategorical([
+    'renovation'
+  ]);
+
+  Result := ds;
+end;
+
+static function Datasets.RussianCities: Dataset;
+begin
+  var ds := Load('russian_cities');
+
+  ds.Data := ds.Data.SetCategorical([
+    'region_name',
+    'federal_district'
+  ]);
+
+  Result := ds;
 end;
 
 static function Datasets.StudentExam: Dataset;

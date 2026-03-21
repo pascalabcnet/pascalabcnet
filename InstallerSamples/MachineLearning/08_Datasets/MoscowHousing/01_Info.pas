@@ -5,10 +5,11 @@ begin
   
   var ds := Datasets.MoscowHousing;
   ds.Info;
+  var df := ds.Data;
   
   Println;
   Println('Первые строки:');
   ds.Head.Println(1);
   
-  ds.Data.Schema.Print
+  df.Schema.Println
 end.

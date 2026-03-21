@@ -40,11 +40,11 @@ type
 /// Кодирует строковый категориальный столбец в числовые значения
 /// Категории фиксируются при Fit
 /// Работает только со строковыми столбцами
-    LabelEncoder = class(IPreprocessor)
-    private
-      col: string;
-      mapping: Dictionary<string, integer>;
-      fitted: boolean;
+  LabelEncoder = class(IPreprocessor)
+  private
+    col: string;
+    mapping: Dictionary<string, integer>;
+    fitted: boolean;
   public
     /// Создаёт LabelEncoder для указанного столбца
     constructor Create(column: string);

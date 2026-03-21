@@ -14,19 +14,29 @@ type
 /// Интерфейс шага конвейера, работающего в числовом (матричном) пространстве.
 /// Реализуется трансформерами и моделями, которые принимают на вход Matrix и Vector
 /// и используются в Matrix-уровне Pipeline
-  IMatrixStep = interface(IPipelineStep) end;
+  IMatrixStep = interface(IPipelineStep) 
+  end;
   
 /// Интерфейс шага конвейера, работающего на уровне DataFrame.
 /// Реализуется препроцессорами, которые выполняют преобразования табличных данных
 ///   до перехода в числовое (Matrix) представление
-  IDataStep = interface(IPipelineStep) end;
+  IDataStep = interface(IPipelineStep) 
+  end;
 
   /// Базовый интерфейс модели машинного обучения
   IModel = interface(IMatrixStep)
-    function Fit(X: Matrix; y: Vector): IModel;
     function Predict(X: Matrix): Vector;
     function Clone: IModel;
     function Name: string;
+    property IsFitted: boolean read;
+  end;
+  
+  /// Интерфейс модели с учителем (Supervised Model).
+  /// Наследуется от базового интерфейса IModel.
+  /// Предназначен для алгоритмов, обучающихся по признакам X
+  /// с использованием целевых значений (y)
+  ISupervisedModel = interface(IModel)
+    function Fit(X: Matrix; y: Vector): ISupervisedModel;
   end;
   
   /// Интерфейс модели без учителя (Unsupervised Model).
@@ -34,7 +44,7 @@ type
   /// Предназначен для алгоритмов, обучающихся только по признакам X
   /// без использования целевых значений (y)
   IUnsupervisedModel = interface(IModel)
-    procedure Fit(X: Matrix);
+    function Fit(X: Matrix): IUnsupervisedModel;
   end;
 
   /// Интерфейс алгоритма кластеризации.
@@ -42,18 +52,17 @@ type
   /// Предназначен для моделей, разбивающих объекты на кластеры
   /// и возвращающих индекс кластера для каждого объекта
   IClusterer = interface(IUnsupervisedModel)
-    function Predict(X: Matrix): Vector;
   end;
   
   /// Интерфейс древовидной модели машинного обучения
-  ITreeModel = interface(IModel)
+  ITreeModel = interface(ISupervisedModel)
     function FeatureImportances: Vector;
   end;
 
   /// Интерфейс классификатора.
   /// Наследуется от IModel.
   /// Предназначен для моделей, выполняющих классификацию (предсказание меток классов).
-  IClassifier = interface(IModel)
+  IClassifier = interface(ISupervisedModel)
   end;
   
   /// Интерфейс классификатора, возвращающего вероятности.
@@ -74,17 +83,13 @@ type
   /// Интерфейс регрессионной модели.
   /// Наследуется от IModel.
   /// Предназначен для моделей, предсказывающих числовые значения.
-  IRegressor = interface(IModel)
+  IRegressor = interface(ISupervisedModel)
   end;
   
   /// Базовый интерфейс преобразования признаков.
   /// Используется для масштабирования, отбора,
-  /// уменьшения размерности и других преобразований данных.
+  /// уменьшения размерности и других преобразований данных
   ITransformer = interface(IMatrixStep)
-    /// Обучает преобразование на данных.
-    /// Запоминает необходимые параметры,
-    /// которые будут использоваться при Transform.
-    function Fit(X: Matrix): ITransformer;
     /// Применяет обученное преобразование к данным.
     /// Возвращает новую матрицу признаков.
     function Transform(X: Matrix): Matrix;
@@ -93,13 +98,21 @@ type
   
   /// Интерфейс преобразования признаков с учётом целевой переменной.
   /// Используется для методов отбора признаков и других процедур,
-  /// в которых при обучении требуется вектор целевых значений.
+  /// в которых при обучении требуется вектор целевых значений
   ISupervisedTransformer = interface(ITransformer)
     /// Обучает преобразование на данных с использованием
     /// как признаков X, так и целевой переменной y.
-    /// Запоминает необходимые параметры,
-    /// которые будут использоваться при Transform.
-    function Fit(X: Matrix; y: Vector): ITransformer;
+    /// Запоминает необходимые параметры, которые будут использоваться при Transform.
+    function Fit(X: Matrix; y: Vector): ISupervisedTransformer;
+  end;
+  
+  /// Интерфейс преобразования признаков без учёта целевой переменной.
+  /// Используется для методов отбора признаков и других процедур,
+  /// в которых при обучении не требуется вектор целевых значений
+  IUnsupervisedTransformer = interface(ITransformer)
+    /// Обучает преобразование на данных с использованием признаков X
+    /// Запоминает необходимые параметры, которые будут использоваться при Transform.
+    function Fit(X: Matrix): IUnsupervisedTransformer;
   end;
   
 implementation  
