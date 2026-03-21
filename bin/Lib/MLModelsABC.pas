@@ -1241,6 +1241,10 @@ type
     /// Возвращает индекс кластера для каждого объекта из X.
     /// Требует предварительного вызова Fit.
     function Predict(X: Matrix): Vector;
+    
+    /// Возвращает индекс кластера для каждого объекта из X.
+    /// Требует предварительного вызова Fit.
+    function PredictLabels(X: Matrix): array of integer;
 
     /// Выполняет обучение и сразу возвращает метки кластеров.
     function FitPredict(X: Matrix): Vector;
@@ -1284,7 +1288,7 @@ type
     fFitted: boolean;
     fFeatureCount: integer;
   
-    fLabels: Vector;
+    fLabels: array of integer;
     fClusterCount: integer;
   
     function RegionQuery(X: Matrix; i: integer; neighbors: List<integer>): integer;
@@ -1305,14 +1309,17 @@ type
   
     /// Возвращает метки кластеров.
     function Predict(X: Matrix): Vector;
-  
+    
+    /// Возвращает метки кластеров.
+    function PredictLabels(X: Matrix): array of integer;
+
     /// Возвращает метки после обучения.
-    function FitPredict(X: Matrix): Vector;
-  
+    function FitPredict(X: Matrix): array of integer;
+    
     /// Копия модели.
     function Clone: IModel;
   
-    property Labels: Vector read fLabels;
+    property Labels: array of integer read fLabels;
     property ClusterCount: integer read fClusterCount;
     
     function Name: string := Self.GetType.Name;
@@ -1938,6 +1945,8 @@ const
   ER_MODEL_NOT_UNSUPERVISED =
     'Модель (тип: {0}) не является моделью без учителя!!' +
     'Model (type: {0}) is not an unsupervised model';
+  ER_DBSCAN_PREDICT_ONLY_TRAIN_DATA =
+    'DBSCAN: Predict поддерживается только для обучающей выборки!!DBSCAN: Predict is only supported for training data';  
   
 {$endregion ErrConstants}  
 
@@ -6986,7 +6995,7 @@ begin
   Result := Self;
 end;
 
-function KMeans.Predict(X: Matrix): Vector;
+function KMeans.PredictLabels(X: Matrix): array of integer;
 begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
@@ -7001,7 +7010,7 @@ begin
   var p := X.ColCount;
   var k := fNClusters;
 
-  Result := new Vector(n);
+  SetLength(Result, n);
 
   for var i := 0 to n - 1 do
   begin
@@ -7035,6 +7044,17 @@ begin
 
     Result[i] := bestC; // 0..k-1
   end;
+end;
+
+function KMeans.Predict(X: Matrix): Vector;
+begin
+  var labels := PredictLabels(X);
+
+  var n := Length(labels);
+  Result := new Vector(n);
+
+  for var i := 0 to n - 1 do
+    Result[i] := labels[i];
 end;
 
 function KMeans.FitPredict(X: Matrix): Vector;
@@ -7137,7 +7157,7 @@ begin
 
   var labels := new integer[n];
 
-  for var i := 0 to n-1 do
+  for var i := 0 to n - 1 do
     labels[i] := -1; // noise
 
   var visited := new boolean[n];
@@ -7147,7 +7167,7 @@ begin
 
   var clusterId := 0;
 
-  for var i := 0 to n-1 do
+  for var i := 0 to n - 1 do
   begin
     if visited[i] then
       continue;
@@ -7189,14 +7209,9 @@ begin
   end;
 
   fClusterCount := clusterId;
-
-  fLabels := new Vector(n);
-
-  for var i := 0 to n-1 do
-    fLabels[i] := labels[i];
-
+  fLabels := labels;
   fFitted := True;
-  
+
   Result := Self;
 end;
 
@@ -7205,13 +7220,32 @@ begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
-  Result := fLabels;
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+
+  // честная защита: Predict работает только для той же выборки
+  if X.RowCount <> Length(fLabels) then
+    ArgumentError(ER_DBSCAN_PREDICT_ONLY_TRAIN_DATA);
+
+  var n := Length(fLabels);
+  Result := new Vector(n);
+
+  for var i := 0 to n - 1 do
+    Result[i] := fLabels[i];
 end;
 
-function DBSCAN.FitPredict(X: Matrix): Vector;
+function DBSCAN.PredictLabels(X: Matrix): array of integer;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  Result := Copy(fLabels);
+end;
+
+function DBSCAN.FitPredict(X: Matrix): array of integer;
 begin
   Fit(X);
-  Result := fLabels;
+  Result := PredictLabels(X);
 end;
 
 function DBSCAN.Clone: IModel;
@@ -7224,10 +7258,10 @@ begin
 
   if fLabels <> nil then
   begin
-    var n := fLabels.Length;
-    m.fLabels := new Vector(n);
+    var n := Length(fLabels);
+    SetLength(m.fLabels, n);
 
-    for var i := 0 to n-1 do
+    for var i := 0 to n - 1 do
       m.fLabels[i] := fLabels[i];
   end;
 

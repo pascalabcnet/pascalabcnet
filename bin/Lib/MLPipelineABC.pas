@@ -8,15 +8,21 @@ uses DataFrameABC;
 uses LinearAlgebraML;
 
 type
-/// DataPipeline — конвейер подготовки данных и обучения модели на DataFrame.
+  /// DataPipeline — конвейер подготовки данных и обучения модели с учителем на DataFrame.
+  /// 
   /// Поддерживает два уровня шагов:
   ///   • DataFrame-уровень: IPreprocessor (Fit/Transform над DataFrame)
-  ///   • Matrix-уровень: ITransformer + IModel (после преобразования DataFrame → Matrix/Vector)
+  ///   • Matrix-уровень: ITransformer / ISupervisedTransformer и IModel
+  ///     (после преобразования DataFrame → Matrix/Vector)
   ///
   /// Правила порядка шагов:
   ///   • Сначала идут только DataFrame-шаги (IPreprocessor).
-  ///   • Затем — матричные шаги (ITransformer).
+  ///   • Затем — матричные шаги (ITransformer / ISupervisedTransformer).
   ///   • Модель (IModel) добавляется последней и может быть только одна.
+  ///
+  /// В режиме с моделью используются:
+  ///   • features — признаки;
+  ///   • target — целевая переменная.
   ///
   /// Если модель не добавлена, DataPipeline работает как чистый DF-конвейер (Fit/Transform/FitTransform)  
   DataPipeline = class
@@ -161,7 +167,23 @@ type
     function ToString: string; override;
   end;
   
-  
+  /// UDataPipeline — конвейер подготовки данных и обучения модели без учителя на DataFrame.
+  /// 
+  /// Поддерживает два уровня шагов:
+  ///   • DataFrame-уровень: IPreprocessor (Fit/Transform над DataFrame)
+  ///   • Matrix-уровень: IUnsupervisedTransformer и IUnsupervisedModel
+  ///     (после преобразования DataFrame → Matrix)
+  ///
+  /// Правила порядка шагов:
+  ///   • Сначала идут только DataFrame-шаги (IPreprocessor).
+  ///   • Затем — матричные шаги (IUnsupervisedTransformer).
+  ///   • Модель (IUnsupervisedModel) добавляется последней и может быть только одна.
+  ///
+  /// В конвейере используются:
+  ///   • features — признаки (целевая переменная отсутствует).
+  ///
+  /// Если модель не добавлена, UDataPipeline работает как чистый DF-конвейер
+  /// (Fit/Transform/FitTransform)
   UDataPipeline = class
   private
     fDataSteps: List<IPreprocessor>;
@@ -174,6 +196,8 @@ type
     fFitted: boolean;
   
     procedure ValidateSchema(df: DataFrame);
+    procedure ValidateNumericFeatures(df: DataFrame);
+    function TransformToMatrix(df: DataFrame): Matrix;
   public
     /// Создаёт пустой конвейер
     constructor Create;
@@ -198,9 +222,31 @@ type
     /// Выполняет Fit и Transform за один проход для DataFrame-режима.
     /// Недоступен, если конвейер содержит модель (IModel).
     function FitTransform(df: DataFrame): DataFrame;
+    
+    /// Обучает конвейер и сразу возвращает метки кластеров.
+    /// 
+    /// Эквивалентно последовательному вызову:
+    ///   Fit(df) → PredictLabels(df)
+    /// 
+    /// Используется для задач кластеризации, где нет разделения на train/test.
+    /// 
+    /// Доступен только если:
+    ///   • конвейер содержит модель кластеризации (IClusterer).
+    function FitPredict(df: DataFrame): array of integer;
   
     /// Делает предсказание модели для объектов из DataFrame.
     function Predict(df: DataFrame): Vector;
+    
+    /// Возвращает метки кластеров для объектов из DataFrame.
+    /// 
+    /// Выполняет последовательные преобразования данных (DataFrame и матричные шаги),
+    /// затем применяет обученную модель кластеризации.
+    /// 
+    /// Доступен только если:
+    ///   • конвейер содержит модель (IModel);
+    ///   • модель поддерживает кластеризацию (IClusterer);
+    ///   • конвейер был обучен (Fit).
+    function PredictLabels(df: DataFrame): array of integer;
   
     /// Признак того, что был вызван Fit или FitTransform.
     property IsFitted: boolean read fFitted;
@@ -276,6 +322,10 @@ const
   ER_MODEL_NOT_UNSUPERVISED =
     'Модель (тип: {0}) не является моделью без учителя!!' +
     'Model (type: {0}) is not an unsupervised model';
+  ER_PIPELINE_FEATURE_NOT_NUMERIC =
+    'Признак "{0}" имеет тип {1} и должен быть числовым!!Feature "{0}" has type {1} but must be numeric';    
+  ER_MODEL_NOT_CLUSTERER =
+    'Модель "{0}" не является алгоритмом кластеризации!!Model "{0}" is not a clustering algorithm';    
     
 //-----------------------------
 //        DataPipeline
@@ -789,7 +839,87 @@ begin
   Result := current;
 end;
 
+function UDataPipeline.FitPredict(df: DataFrame): array of integer;
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+
+  if fModel = nil then
+    ArgumentError(ER_MODEL_NULL);
+
+  if not (fModel is IClusterer) then
+    ArgumentError(ER_MODEL_NOT_CLUSTERER, fModel.GetType.Name);
+
+  Fit(df);
+  Result := PredictLabels(df);
+end;
+
+procedure UDataPipeline.ValidateNumericFeatures(df: DataFrame);
+begin
+  if fFinalFeatures = nil then
+    Error(ER_PIPELINE_FINALFEATURES);
+
+  var schema := df.Schema;
+
+  foreach var f in fFinalFeatures do
+  begin
+    var idx := schema.IndexOf(f);
+
+    if idx < 0 then
+      ArgumentError(ER_PIPELINE_FEATURE_NOT_FOUND, f);
+
+    var t := schema.ColumnTypeAt(idx);
+
+    if (t <> ColumnType.ctInt) and (t <> ColumnType.ctFloat) then
+      ArgumentError(ER_PIPELINE_FEATURE_NOT_NUMERIC, f, t.ToString);
+  end;
+end;
+
+function UDataPipeline.TransformToMatrix(df: DataFrame): Matrix;
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  var current := Transform(df);
+
+  ValidateNumericFeatures(current);
+
+  var X := current.ToMatrix(fFinalFeatures);
+
+  foreach var t in fMatrixSteps do
+    X := t.Transform(X);
+
+  Result := X;
+end;
+
 function UDataPipeline.Predict(df: DataFrame): Vector;
+begin
+  if fModel = nil then
+    ArgumentError(ER_MODEL_NULL);
+
+  var X := TransformToMatrix(df);
+
+  Result := fModel.Predict(X);
+end;
+
+function UDataPipeline.PredictLabels(df: DataFrame): array of integer;
+begin
+  if fModel = nil then
+    ArgumentError(ER_MODEL_NULL);
+
+  if not (fModel is IClusterer) then
+    ArgumentError(ER_MODEL_NOT_CLUSTERER, fModel.GetType.Name);
+
+  var cl := fModel as IClusterer;
+
+  var X := TransformToMatrix(df);
+
+  Result := cl.PredictLabels(X);
+end;
+
+{function UDataPipeline.Predict(df: DataFrame): Vector;
 begin
   if df = nil then
     ArgumentNullError(ER_ARG_NULL, 'df');
@@ -814,7 +944,7 @@ begin
     X := t.Transform(X);
 
   Result := fModel.Predict(X);
-end;
+end;}
 
 procedure UDataPipeline.ValidateSchema(df: DataFrame);
 begin

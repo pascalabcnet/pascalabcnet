@@ -52,6 +52,7 @@ type
   /// Предназначен для моделей, разбивающих объекты на кластеры
   /// и возвращающих индекс кластера для каждого объекта
   IClusterer = interface(IUnsupervisedModel)
+    function PredictLabels(X: Matrix): array of integer;
   end;
   
   /// Интерфейс древовидной модели машинного обучения
