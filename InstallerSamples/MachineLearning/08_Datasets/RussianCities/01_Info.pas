@@ -1,5 +1,5 @@
 ﻿uses MLABC;
-
+ 
 begin
   var ds := Datasets.RussianCities;
   
@@ -7,4 +7,6 @@ begin
 
   df.Schema.Println;
   df.PrintlnInfo;
+  
+  df.PrintlnPreview(20);
 end.

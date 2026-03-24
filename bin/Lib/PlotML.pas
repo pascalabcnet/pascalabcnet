@@ -36,21 +36,33 @@ const DefaultColor = default(ColorWPF);
 type
   MarkerType = (Circle, Box, Triangle, Diamond, Cross);
 
-  Palettes = static class
-  public
-    const &Default = 'default';
-    const Dark     = 'dark';
-    const Pastel   = 'pastel';
-    const Bright   = 'bright';
-    const Muted    = 'muted';
-  end;
-
   Palette = class
   public
     Colors: array of Color;
     constructor Create(params c: array of Color);
   end;
-
+  
+  PaletteWPF = Palette;
+  
+  Palettes = static class
+  private
+    static paletteDict: Dictionary<string, Palette>;
+    
+    static constructor;
+    static procedure InitPalettes;
+  
+  public
+    static function &Default: Palette;
+    static function Pastel: Palette;
+    static function Dark: Palette;
+    static function Bright: Palette;
+    static function Muted: Palette;
+  
+    static procedure Register(name: string; p: Palette);
+    
+    static function Get(name: string): Palette;
+  end;
+  
   Figure = class;
 
   Cell = class
@@ -64,7 +76,8 @@ type
 
     function NextColor: Color;
     procedure EnsureChart;
-
+    
+    procedure SetTitle(s: string);
   public
     constructor Create(g: GridWPF; r,c: integer);
 
@@ -86,13 +99,17 @@ type
     procedure Points(x, y: Vector; labels: array of integer;
       size: real := 6; marker: MarkerType := MarkerType.Circle);
     procedure Hist(x: Vector; bins: integer := 0;
-      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil);   
+      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil);
+      
+    //procedure Surface(labels: array of integer; nx, ny: integer; xmin, xmax, ymin, ymax: real; pal: PlotML.Palette := nil);
+    
+    procedure Surface(x1, x2: array of real; nx, ny: integer; f: Matrix -> array of integer; pal: PlotML.Palette := nil);      
+      
     procedure Heatmap(m: Matrix);
     
     procedure Text(s: string; x: real := 0.5; y: real := 0.5);
     
-    procedure SetPalette(name: string);
-    procedure Title(s: string);
+    procedure SetPalette(p: PaletteWPF);
     procedure XLabel(s: string);
     procedure YLabel(s: string);
     
@@ -101,6 +118,8 @@ type
     procedure YLim(ymin,ymax: real);
     
     procedure Clear;
+    
+    property Title: string write SetTitle;
   end;
 
   Figure = class
@@ -132,7 +151,13 @@ type
     
     static procedure DrawHist(chart: ChartWPF; x: array of real;
       bins: integer; color: ColorWPF; alpha: real; legend: string);
-
+      
+    static procedure DrawSurface(chart: ChartWPF; labels: array of integer; 
+      nx, ny: integer; xmin, xmax, ymin, ymax: real; pal: Palette);
+      
+    static function MakeGrid(xmin, xmax, ymin, ymax: real; nx, ny: integer): Matrix;
+      
+    static procedure SetTitle(s: string);
   public
     static procedure AddSeries(chart: ChartWPF; series: UIElement);
 
@@ -150,11 +175,14 @@ type
 
     static procedure PairPlot(X: array[,] of real; labels: array of integer; names: array of string);
     
-    static procedure Heatmap(m: array[,] of real);  
+    static procedure Heatmap(m: array[,] of real);
+    
+    static procedure Surface(labels: array of integer; nx, ny: integer; xmin, xmax, ymin, ymax: real; pal: PlotML.Palette := nil);
 
-// с матрицами - векторами      
-// --- Vector overloads
+    static procedure Surface(x1, x2: array of real; nx, ny: integer; f: Matrix -> array of integer; pal: PlotML.Palette := nil);
 
+// с матрицами - векторами   
+   
     static procedure LineGraph(x, y: Vector;
       color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil) 
       := LineGraph(x.Data, y.Data, color, thickness, legend);
@@ -180,14 +208,13 @@ type
     
     static function Grid(rows,cols: integer): Figure;
 
-    static procedure SetPalette(name: string);
+    static procedure SetPalette(p: PaletteWPF);
     
     static procedure EnsureAxes(chart: ChartWPF);
    
     static procedure Limits(xmin,xmax,ymin,ymax: real);
     static procedure XLim(xmin,xmax: real);
     static procedure YLim(ymin,ymax: real);
-    static procedure Title(s: string);
     static procedure XLabel(s: string);
     static procedure YLabel(s: string);
     static procedure SetLabels(title: string := ''; xlabel: string := ''; ylabel: string := '');
@@ -195,6 +222,8 @@ type
     static procedure Clear;
     
     static procedure Save(filename: string);
+    
+    static property Title: string write SetTitle;
   end;
 
   HistogramPlot = class(PlotWPF)
@@ -217,6 +246,14 @@ type
     property Description: string read fDescription write fDescription;
     property MaxCount: integer read fMaxCount;
   end;
+  
+  SurfacePlot = class(PlotWPF)
+  private
+    fRects: List<Polygon> := new List<Polygon>;
+  public
+    procedure SetData(labels: array of integer;
+      nx, ny: integer; xmin, xmax, ymin, ymax: real; pal: Palette);
+  end;
 
 implementation
 
@@ -232,50 +269,31 @@ var
   currentPalette: Palette;
   rootPaletteIndex: integer := 0;
   
-function CreateMarker(t: MarkerType): InteractiveDataDisplay.WPF.ColorSizeMarker;
-begin
-  case t of
-    MarkerType.Circle:   Result := new CircleMarker;
-    MarkerType.Box:      Result := new BoxMarker;
-    MarkerType.Triangle: Result := new TriangleMarker;
-    MarkerType.Diamond:  Result := new DiamondMarker;
-    MarkerType.Cross:    Result := new CrossMarker;
-  end;
-end;
-  
-function NextRootColor: ColorWPF;
-begin
-  var c := currentPalette.Colors[
-    rootPaletteIndex mod currentPalette.Colors.Length
-  ];
+static function Palettes.&Default: Palette := paletteDict['default'];
+static function Palettes.Pastel: Palette := paletteDict['pastel'];
+static function Palettes.Dark: Palette := paletteDict['dark'];
+static function Palettes.Bright: Palette := paletteDict['bright'];
+static function Palettes.Muted: Palette := paletteDict['muted'];
 
-  rootPaletteIndex += 1;
-  Result := c;
+static constructor Palettes.Create;
+begin
+  InitPalettes
 end;
 
-function MakeHistogram(data: array of real; bins: integer): (array of real, array of real);
+static procedure Palettes.Register(name: string; p: Palette);
 begin
-  var xmin := data.Min;
-  var xmax := data.Max;
-  
-  var h := (xmax-xmin)/bins;
-  
-  var counts := new real[bins];
-  
-  foreach var v in data do
-  begin
-    var k := integer((v-xmin)/h);
-    if k=bins then k := bins-1;
-    counts[k] += 1;
-  end;
-  
-  var xs := ArrGen(bins, i -> xmin + (i+0.5)*h);
-  
-  Result := (xs,counts);
+  paletteDict[name] := p;
 end;
 
-procedure InitPalettes;
+static function Palettes.Get(name: string): Palette;
 begin
+  Result := paletteDict[name];
+end;
+
+static procedure Palettes.InitPalettes;
+begin
+  if paletteDict <> nil then exit;
+  
   paletteDict := new Dictionary<string,Palette>;
 
   paletteDict['default'] := new Palette(
@@ -333,6 +351,50 @@ begin
   
   currentPalette := paletteDict['default'];
 end;
+  
+function CreateMarker(t: MarkerType): InteractiveDataDisplay.WPF.ColorSizeMarker;
+begin
+  case t of
+    MarkerType.Circle:   Result := new CircleMarker;
+    MarkerType.Box:      Result := new BoxMarker;
+    MarkerType.Triangle: Result := new TriangleMarker;
+    MarkerType.Diamond:  Result := new DiamondMarker;
+    MarkerType.Cross:    Result := new CrossMarker;
+  end;
+end;
+  
+function NextRootColor: ColorWPF;
+begin
+  var c := currentPalette.Colors[
+    rootPaletteIndex mod currentPalette.Colors.Length
+  ];
+
+  rootPaletteIndex += 1;
+  Result := c;
+end;
+
+function MakeHistogram(data: array of real; bins: integer): (array of real, array of real);
+begin
+  var xmin := data.Min;
+  var xmax := data.Max;
+  
+  var h := (xmax-xmin)/bins;
+  
+  var counts := new real[bins];
+  
+  foreach var v in data do
+  begin
+    var k := integer((v-xmin)/h);
+    if k=bins then k := bins-1;
+    counts[k] += 1;
+  end;
+  
+  var xs := ArrGen(bins, i -> xmin + (i+0.5)*h);
+  
+  Result := (xs,counts);
+end;
+
+
 
 procedure InitUI;
 begin
@@ -363,7 +425,7 @@ begin
 
     uiDispatcher := Dispatcher.CurrentDispatcher;
 
-    InitPalettes;
+    Palettes.InitPalettes;
 
     win.Show;
 
@@ -401,16 +463,15 @@ begin
   Result := c;
 end;
 
-procedure Cell.SetPalette(name: string);
+procedure Cell.SetPalette(p: PaletteWPF);
 begin
-  if paletteDict.ContainsKey(name) then
-  begin
-    palette := paletteDict[name];
-    paletteIndex := 0;
-  end;
+  if p = nil then exit;
+
+  palette := p;
+  paletteIndex := 0;
 end;
 
-procedure Cell.Title(s: string);
+procedure Cell.SetTitle(s: string);
 begin
   Plot.RunUI(() ->
   begin
@@ -542,7 +603,7 @@ begin
   var classes := labels.Distinct.ToArray;
   &Array.Sort(classes);
 
-  var pal := CurrentPalette;
+  var pal := palette;
 
   foreach var c in classes do
   begin
@@ -671,7 +732,7 @@ end;
 
 var gridMode := false;
 
-static procedure Plot.Title(s: string);
+static procedure Plot.SetTitle(s: string);
 begin
   RunUI(() ->
   begin
@@ -970,12 +1031,13 @@ begin
   Result := fig;
 end;
 
-static procedure Plot.SetPalette(name: string);
+static procedure Plot.SetPalette(p: PaletteWPF);
 begin
   RunUI(() ->
   begin
-    if name in paletteDict then
-      currentPalette := paletteDict[name];
+    if p = nil then exit;
+
+    currentPalette := p;
   end);
 end;
 
@@ -1233,7 +1295,139 @@ begin
   end;
   
   fMaxCount := counts.Max;
-end;  
+end;
+
+procedure SurfacePlot.SetData(labels: array of integer;
+  nx, ny: integer; xmin, xmax, ymin, ymax: real; pal: Palette);
+begin
+  Children.Clear;
+
+  var dx := (xmax - xmin) / nx;
+  var dy := (ymax - ymin) / ny;
+
+  var k := 0;
+
+  for var iy := 0 to ny - 1 do
+  for var ix := 0 to nx - 1 do
+  begin
+    var lab := labels[k];
+    k += 1;
+
+    var clr := pal.Colors[Abs(lab) mod pal.Colors.Length];
+    var brush := new SolidColorBrush(clr);
+
+    var x0 := xmin + ix * dx;
+    var y0 := ymin + iy * dy;
+
+    var eps := dx * 0.01;
+
+    var x1 := x0 + dx + eps;
+    var y1 := y0 + dy + eps;
+
+    var poly := new Polygon;
+
+    var pts := new PointCollection;
+    pts.Add(new Point(x0, y0));
+    pts.Add(new Point(x0, y1));
+    pts.Add(new Point(x1, y1));
+    pts.Add(new Point(x1, y0));
+
+    PlotWPF.SetPoints(poly, pts);
+
+    poly.Fill := brush;
+    poly.StrokeThickness := 0;
+
+    Children.Add(poly);
+  end;
+end;
+
+static procedure Plot.DrawSurface(chart: ChartWPF;
+  labels: array of integer; nx, ny: integer;
+  xmin, xmax, ymin, ymax: real;
+  pal: Palette);
+begin
+  EnsureAxes(chart);
+
+  var s := new SurfacePlot;
+  s.SetData(labels, nx, ny, xmin, xmax, ymin, ymax, pal);
+
+  AddSeries(chart, s);
+end;
+
+static function Plot.MakeGrid(xmin, xmax, ymin, ymax: real; nx, ny: integer): Matrix;
+begin
+  Result := new Matrix(nx * ny, 2);
+  
+  var k := 0;
+  for var iy := 0 to ny - 1 do
+  begin
+    var y := ymin + (ymax - ymin) * iy / (ny - 1);
+    for var ix := 0 to nx - 1 do
+    begin
+      var x := xmin + (xmax - xmin) * ix / (nx - 1);
+      Result[k, 0] := x;
+      Result[k, 1] := y;
+      k += 1;
+    end;
+  end;
+end;
+
+{procedure Cell.Surface(labels: array of integer; nx, ny: integer; xmin, xmax, ymin, ymax: real; pal: PlotML.Palette);
+begin
+  Plot.RunUI(() ->
+  begin
+    EnsureChart;
+    var usePal := if pal <> nil then pal else palette;
+    Plot.DrawSurface(chart, labels, nx, ny, xmin, xmax, ymin, ymax, usePal);
+  end);
+end;}
+
+procedure Cell.Surface(x1, x2: array of real; nx, ny: integer; f: Matrix -> array of integer; pal: PlotML.Palette);
+begin
+  Plot.RunUI(() ->
+  begin
+    EnsureChart;
+
+    var xmin := x1.Min - 0.5;
+    var xmax := x1.Max + 0.5;
+    var ymin := x2.Min - 0.5;
+    var ymax := x2.Max + 0.5;
+
+    var G := Plot.MakeGrid(xmin, xmax, ymin, ymax, nx, ny);
+    var labels := f(G);
+    
+    var usePal := if pal <> nil then pal else palette;
+
+    Plot.DrawSurface(chart, labels, nx, ny, xmin, xmax, ymin, ymax, usePal);
+  end);
+end;
+
+static procedure Plot.Surface(labels: array of integer; nx, ny: integer; xmin, xmax, ymin, ymax: real; pal: PlotML.Palette);
+begin
+  RunUI(() ->
+  begin
+    var usePal := if pal <> nil then pal else CurrentPalette;
+    DrawSurface(rootChart, labels, nx, ny, xmin, xmax, ymin, ymax, usePal);
+  end);
+end;
+
+static procedure Plot.Surface(x1, x2: array of real; nx, ny: integer; f: Matrix -> array of integer; pal: PlotML.Palette);
+begin
+  RunUI(() ->
+  begin
+    var xmin := x1.Min - 0.5;
+    var xmax := x1.Max + 0.5;
+    var ymin := x2.Min - 0.5;
+    var ymax := x2.Max + 0.5;
+
+    var G := MakeGrid(xmin, xmax, ymin, ymax, nx, ny);
+    var labels := f(G);
+    
+    var usePal := if pal <> nil then pal else CurrentPalette;
+
+    DrawSurface(rootChart, labels, nx, ny, xmin, xmax, ymin, ymax, usePal);
+  end);
+end;
 
 initialization
   InitUI;

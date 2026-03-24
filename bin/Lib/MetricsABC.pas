@@ -15,7 +15,7 @@ uses LinearAlgebraML;
 
 type
   /// Метрики оценки качества моделей машинного обучения
-  /// для задач регрессии и классификации.
+  /// для задач регрессии, классификации и кластеризации
   Metrics = static class
   public
     /// Среднеквадратичная ошибка (MSE).
@@ -49,7 +49,7 @@ type
     /// Сильно штрафует уверенные, но ошибочные прогнозы.
     /// Используется для моделей, возвращающих вероятности
     /// (например, LogisticRegression).
-    static function LogLoss(yTrue, yProb: Vector): real;
+    static function LogLoss(yTrue, yPred: Vector): real;
   
     // ---- ROC / AUC ----
   
@@ -57,19 +57,31 @@ type
     /// Возвращает кортеж из двух векторов:
     /// FPR (доля ложных положительных)
     /// и TPR (доля истинно положительных).
-    static function ROC(yTrue, yProb: Vector): (Vector, Vector);
+    static function ROC(yTrue, yPred: Vector): (Vector, Vector);
   
     /// Площадь под ROC-кривой (AUC).
     /// Значение от 0 до 1.
     /// 0.5 — случайная модель,
     /// 1 — идеальная модель.
-    static function AUC(yTrue, yProb: Vector): real;
+    static function AUC(yTrue, yPred: Vector): real;
     
     /// Доля правильных предсказаний.
     /// Показывает, какая часть объектов классифицирована верно.
     /// Удобна, когда классы примерно сбалансированы.
     /// Пример: Accuracy = 0.9 означает 90% правильных ответов.
     static function Accuracy(yTrue, yPred: Vector): real;
+    
+    /// Доля правильных предсказаний.
+    /// Показывает, какая часть объектов классифицирована верно.
+    /// Удобна, когда классы примерно сбалансированы.
+    /// Пример: Accuracy = 0.9 означает 90% правильных ответов.
+    static function Accuracy(yTrue, yPred: array of integer): real;
+    
+    /// Доля правильных предсказаний.
+    /// Показывает, какая часть объектов классифицирована верно.
+    /// Удобна, когда классы примерно сбалансированы.
+    /// Пример: Accuracy = 0.9 означает 90% правильных ответов.
+    static function Accuracy(yTrue: Vector; yPred: array of integer): real;
 
     /// Точность (Precision) для положительного класса (1).
     /// Среди всех объектов, которые модель предсказала как 1,
@@ -203,6 +215,166 @@ type
     function BalancedAccuracy: real;
   end;
   
+  /// Метрики для оценки качества классификационных моделей
+  /// Используются когда целевая переменная является категорией (классом)
+  /// (например, определение вида цветка, спам/не спам, диагноз пациента)
+  ClassificationMetrics = static class
+  public
+    /// Доля правильных предсказаний (Accuracy)
+    /// Accuracy = (TP + TN) / (TP + TN + FP + FN)
+    /// Показывает долю верно классифицированных объектов
+    /// Удобна когда классы примерно сбалансированы
+    static function Accuracy(yTrue, yPred: Vector): real := Metrics.Accuracy(yTrue, yPred);
+    
+    /// Доля правильных предсказаний (Accuracy)
+    /// Accuracy = (TP + TN) / (TP + TN + FP + FN)
+    /// Показывает долю верно классифицированных объектов
+    /// Удобна когда классы примерно сбалансированы
+    static function Accuracy(yTrue, yPred: array of integer): real := Metrics.Accuracy(yTrue, yPred);
+    
+    /// Доля правильных предсказаний (Accuracy)
+    /// Accuracy = (TP + TN) / (TP + TN + FP + FN)
+    /// Показывает долю верно классифицированных объектов
+    /// Удобна когда классы примерно сбалансированы
+    static function Accuracy(yTrue: Vector; yPred: array of integer): real := Metrics.Accuracy(yTrue, yPred);
+    
+    /// Точность (Precision) для положительного класса (1)
+    /// Precision = TP / (TP + FP)
+    /// Среди всех предсказанных положительных объектов показывает долю истинно положительных
+    /// Важна когда критичны ложные положительные результаты ("ложные тревоги")
+    static function Precision(yTrue, yPred: Vector): real := Metrics.Precision(yTrue, yPred);
+    
+    /// Полнота (Recall) для положительного класса (1)
+    /// Recall = TP / (TP + FN)
+    /// Среди всех истинно положительных объектов показывает долю правильно найденных
+    /// Важна когда нежелательны пропуски положительных случаев (например, заболеваний)
+    static function Recall(yTrue, yPred: Vector): real := Metrics.Recall(yTrue, yPred);
+    
+    /// F1-мера
+    /// F1 = 2 * (Precision * Recall) / (Precision + Recall)
+    /// Гармоническое среднее точности и полноты
+    /// Высока только когда оба показателя высоки
+    /// Особенно полезна при несбалансированных классах
+    static function F1(yTrue, yPred: Vector): real := Metrics.F1(yTrue, yPred);
+    
+    /// Специфичность (Specificity / True Negative Rate)
+    /// Specificity = TN / (TN + FP)
+    /// Доля правильно предсказанных отрицательных объектов
+    /// Показывает способность модели корректно распознавать отрицательный класс
+    static function Specificity(yTrue, yPred: Vector): real := Metrics.Specificity(yTrue, yPred);
+    
+    /// Сбалансированная точность (Balanced Accuracy)
+    /// Balanced Accuracy = (Recall + Specificity) / 2
+    /// Среднее арифметическое полноты и специфичности
+    /// Устойчива к дисбалансу классов
+    static function BalancedAccuracy(yTrue, yPred: Vector): real := Metrics.BalancedAccuracy(yTrue, yPred);
+    
+    /// Логарифмическая функция потерь (LogLoss)
+    /// LogLoss = - (1/n) * Σ [yTrue * log(yProb) + (1 - yTrue) * log(1 - yProb)]
+    /// Оценивает качество вероятностных предсказаний
+    /// Сильно штрафует уверенные, но ошибочные прогнозы
+    /// Чем меньше значение, тем лучше модель
+    static function LogLoss(yTrue, yPred: Vector): real := Metrics.LogLoss(yTrue, yPred); 
+    
+    /// Построение ROC-кривой
+    /// Возвращает кортеж из двух векторов: FPR (ложноположительные) и TPR (истинноположительные)
+    /// Используется для визуализации качества бинарной классификации
+    static function ROC(yTrue, yPred: Vector): (Vector, Vector) := Metrics.ROC(yTrue, yPred); 
+    
+    /// Площадь под ROC-кривой (AUC)
+    /// Значение от 0 до 1:
+    ///   1.0 — идеальная модель
+    ///   0.5 — случайная модель
+    ///   <0.5 — модель хуже случайной
+    static function AUC(yTrue, yPred: Vector): real := Metrics.AUC(yTrue, yPred); 
+  end;  
+  
+  /// Метрики для оценки качества регрессионных моделей
+  /// Используются когда целевая переменная является непрерывным числом
+  /// (например, предсказание цены дома, температуры, возраста)
+  RegressionMetrics = static class
+  public
+    /// Среднеквадратичная ошибка (MSE)
+    /// MSE = (1/n) * Σ (yTrue - yPred)^2
+    /// Чувствительна к большим отклонениям и выбросам
+    /// Чем меньше значение, тем лучше модель
+    static function MSE(yTrue, yPred: Vector): real := Metrics.MSE(yTrue, yPred);  
+    
+    /// Корень из среднеквадратичной ошибки (RMSE)
+    /// RMSE = √MSE
+    /// Измеряется в тех же единицах, что и целевая переменная
+    /// Чем меньше значение, тем лучше модель
+    static function RMSE(yTrue, yPred: Vector): real := Metrics.RMSE(yTrue, yPred);  
+    
+    /// Средняя абсолютная ошибка (MAE)
+    /// MAE = (1/n) * Σ |yTrue - yPred|
+    /// Менее чувствительна к выбросам, чем MSE
+    /// Чем меньше значение, тем лучше модель
+    static function MAE(yTrue, yPred: Vector): real := Metrics.MAE(yTrue, yPred);   
+    
+    /// Коэффициент детерминации (R²)
+    /// R² = 1 - SS_res / SS_tot
+    /// Показывает долю дисперсии, объяснённую моделью
+    /// Значения:
+    ///   1.0 — идеальная модель
+    ///   0.0 — модель не лучше среднего
+    ///   <0  — модель хуже простого среднего
+    static function R2(yTrue, yPred: Vector): real := Metrics.R2(yTrue, yPred);  
+  end;
+  
+  /// Метрики для оценки качества кластеризации
+  /// Используются когда нужно оценить, насколько хорошо объекты сгруппированы в кластеры
+  /// Делятся на:
+  ///   - внутренние (без эталонных меток) — оценивают компактность и разделимость
+  ///   - внешние (с эталонными метками) — сравнивают с правильным разбиением
+  ClusteringMetrics = static class
+  public
+    // ========== ВНУТРЕННИЕ МЕТРИКИ (без эталонных меток) ==========
+    
+    /// Вычисляет силуэт (Silhouette) для каждой точки
+    /// Для каждой строки матрицы X возвращает значение s(i) в диапазоне [-1, 1]
+    ///   s(i) ≈ 1  — точка хорошо сгруппирована в своём кластере
+    ///   s(i) ≈ 0  — точка находится на границе между кластерами
+    ///   s(i) < 0  — точка, вероятно, попала не в свой кластер
+    /// Требует как минимум 2 различных кластера
+    /// Сложность O(n²) — для умеренных размеров данных
+    static function SilhouetteSamples(X: Matrix; labels: Vector): Vector := Metrics.SilhouetteSamples(x, labels);  
+    
+    /// Вычисляет средний силуэт (Silhouette Score)
+    /// Возвращает среднее значение Silhouette по всем точкам
+    /// Чем ближе к 1 — тем лучше разделены кластеры
+    /// Значение около 0 означает пересечение кластеров
+    /// Отрицательное значение указывает на возможную ошибку кластеризации
+    static function SilhouetteScore(X: Matrix; labels: Vector): real := Metrics.SilhouetteScore(x, labels);  
+    
+    /// Индекс Калински–Харабаса (Calinski–Harabasz Index)
+    /// Возвращает отношение межкластерной дисперсии к внутрикластерной дисперсии
+    /// Чем больше значение — тем лучше разделены кластеры
+    /// Требует как минимум 2 кластера и n > k
+    /// Сложность O(n·p)
+    static function CalinskiHarabaszScore(X: Matrix; labels: Vector): real := Metrics.CalinskiHarabaszScore(x, labels);
+    
+    /// Индекс Дэвиса–Булдина (Davies–Bouldin Index)
+    /// Чем меньше значение — тем лучше разделены кластеры
+    /// Минимальное значение 0 (идеальное разделение)
+    /// Требует минимум 2 кластера
+    /// Сложность O(n·p + k²·p)
+    static function DaviesBouldinScore(X: Matrix; labels: Vector): real := Metrics.DaviesBouldinScore(x, labels);
+    
+    // ========== ВНЕШНИЕ МЕТРИКИ (с эталонными метками) ==========
+    
+    /// Скорректированный индекс Рэнда (Adjusted Rand Index, ARI)
+    /// Сравнивает предсказанные кластеры с истинными метками
+    /// Основан на анализе всех пар объектов:
+    ///   проверяет, совпадает ли решение алгоритма и истинная разметка
+    ///   в вопросе "находятся ли две точки в одном кластере"
+    /// Значения:
+    ///   1.0 — идеальное совпадение кластеризации и истинных меток
+    ///   0.0 — случайное разбиение
+    ///   <0  — хуже случайного
+    static function AdjustedRandIndex(yTrue, yPred: Vector): real := Metrics.AdjustedRandIndex(yTrue, yPred);
+  end;
+
 implementation  
 
 uses MLExceptions;
@@ -362,18 +534,18 @@ begin
   Result := 1 - ssRes / ssTot;
 end;
 
-static function Metrics.LogLoss(yTrue, yProb: Vector): real;
+static function Metrics.LogLoss(yTrue, yPred: Vector): real;
 begin
   if yTrue = nil then
     ArgumentNullError(ER_ARG_NULL, 'yTrue');
 
-  if yProb = nil then
+  if yPred = nil then
     ArgumentNullError(ER_ARG_NULL, 'yProb');
 
   var n := yTrue.Length;
 
-  if n <> yProb.Length then
-    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yProb.Length);
+  if n <> yPred.Length then
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yPred.Length);
 
   if n = 0 then
     ArgumentError(ER_EMPTY_DATA, 'LogLoss');
@@ -384,13 +556,13 @@ begin
   for var i := 0 to n - 1 do
   begin
     var yt := yTrue[i];
-    var p := yProb[i];
+    var p := yPred[i];
 
     if double.IsNaN(yt) or double.IsInfinity(yt) then
       ArgumentError(ER_INVALID_VALUE, 'yTrue', i);
 
     if double.IsNaN(p) or double.IsInfinity(p) then
-      ArgumentError(ER_INVALID_VALUE, 'yProb', i);
+      ArgumentError(ER_INVALID_VALUE, 'yPred', i);
 
     if (yt <> 0.0) and (yt <> 1.0) then
       ArgumentError(ER_INVALID_CLASS_LABEL, yt);
@@ -404,18 +576,18 @@ begin
   Result := -s / n;
 end;
 
-static function Metrics.ROC(yTrue, yProb: Vector): (Vector, Vector);
+static function Metrics.ROC(yTrue, yPred: Vector): (Vector, Vector);
 begin
   if yTrue = nil then
     ArgumentNullError(ER_ARG_NULL, 'yTrue');
 
-  if yProb = nil then
-    ArgumentNullError(ER_ARG_NULL, 'yProb');
+  if yPred = nil then
+    ArgumentNullError(ER_ARG_NULL, 'yPred');
 
   var n := yTrue.Length;
 
-  if n <> yProb.Length then
-    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yProb.Length);
+  if n <> yPred.Length then
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yPred.Length);
 
   if n = 0 then
     ArgumentError(ER_EMPTY_DATA, 'ROC');
@@ -426,13 +598,13 @@ begin
   for var i := 0 to n - 1 do
   begin
     var yt := yTrue[i];
-    var p := yProb[i];
+    var p := yPred[i];
 
     if double.IsNaN(yt) or double.IsInfinity(yt) then
       ArgumentError(ER_INVALID_VALUE, 'yTrue', i);
 
     if double.IsNaN(p) or double.IsInfinity(p) then
-      ArgumentError(ER_INVALID_VALUE, 'yProb', i);
+      ArgumentError(ER_INVALID_VALUE, 'yPred', i);
 
     if (yt <> 0.0) and (yt <> 1.0) then
       ArgumentError(ER_INVALID_CLASS_LABEL, yt);
@@ -448,7 +620,7 @@ begin
 
   var idx :=
     (0..n-1)
-      .OrderByDescending(i -> yProb[i])
+      .OrderByDescending(i -> yPred[i])
       .ToArray;
 
   var tp := 0;
@@ -477,23 +649,23 @@ begin
              new Vector(tprList.ToArray));
 end;
 
-static function Metrics.AUC(yTrue, yProb: Vector): real;
+static function Metrics.AUC(yTrue, yPred: Vector): real;
 begin
   if yTrue = nil then
     ArgumentNullError(ER_ARG_NULL, 'yTrue');
 
-  if yProb = nil then
-    ArgumentNullError(ER_ARG_NULL, 'yProb');
+  if yPred = nil then
+    ArgumentNullError(ER_ARG_NULL, 'yPred');
 
   var n := yTrue.Length;
 
-  if n <> yProb.Length then
-    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yProb.Length);
+  if n <> yPred.Length then
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yPred.Length);
 
   if n = 0 then
     ArgumentError(ER_EMPTY_DATA, 'AUC');
 
-  var (fpr, tpr) := ROC(yTrue, yProb);
+  var (fpr, tpr) := ROC(yTrue, yPred);
 
   if fpr.Length <> tpr.Length then
     DimensionError(ER_DIM_MISMATCH, fpr.Length, tpr.Length);
@@ -541,6 +713,55 @@ begin
 
   for var i := 0 to n - 1 do
     if yTrue[i] = yPred[i] then
+      correct += 1;
+
+  Result := correct / n;
+end;
+
+static function Metrics.Accuracy(yTrue, yPred: array of integer): real;
+begin
+  if yTrue = nil then
+    ArgumentNullError(ER_ARG_NULL, 'yTrue');
+
+  if yPred = nil then
+    ArgumentNullError(ER_ARG_NULL, 'yPred');
+
+  var n := yTrue.Length;
+
+  if n <> yPred.Length then
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yPred.Length);
+
+  if n = 0 then
+    ArgumentError(ER_EMPTY_DATA, 'Accuracy');
+
+  var correct := 0;
+
+  for var i := 0 to n - 1 do
+    if yTrue[i] = yPred[i] then
+      correct += 1;
+
+  Result := correct / n;
+end;
+
+static function Metrics.Accuracy(yTrue: Vector; yPred: array of integer): real;
+begin
+  if yTrue = nil then
+    ArgumentNullError(ER_ARG_NULL, 'yTrue');
+
+  var data := yTrue.Data;
+
+  var n := data.Length;
+
+  if n <> yPred.Length then
+    DimensionError(ER_DIM_MISMATCH, n, yPred.Length);
+
+  if n = 0 then
+    ArgumentError(ER_EMPTY_DATA, 'Accuracy');
+
+  var correct := 0;
+
+  for var i := 0 to n - 1 do
+    if integer(data[i]) = yPred[i] then
       correct += 1;
 
   Result := correct / n;

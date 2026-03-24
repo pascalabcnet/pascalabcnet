@@ -31,6 +31,7 @@ type
     function Clone: Vector;
     
     function ToArray: array of real;
+    function ToIntArray: array of integer;
     
     static function operator +(a, b: Vector): Vector;
     static function operator -(a, b: Vector): Vector;
@@ -354,6 +355,14 @@ end;
 function Vector.ToArray: array of real;
 begin
   Result := Copy(fdata);
+end;
+
+function Vector.ToIntArray: array of integer;
+begin
+  Result := new integer[Length];
+  
+  for var i := 0 to Length - 1 do
+    Result[i] := integer(Data[i]);
 end;
 
 function Vector.Clone: Vector;

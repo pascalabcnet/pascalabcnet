@@ -64,6 +64,8 @@ type
   /// Наследуется от IModel.
   /// Предназначен для моделей, выполняющих классификацию (предсказание меток классов).
   IClassifier = interface(ISupervisedModel)
+    /// Возвращает метки классов
+    function PredictLabels(X: Matrix): array of integer;
   end;
   
   /// Интерфейс классификатора, возвращающего вероятности.

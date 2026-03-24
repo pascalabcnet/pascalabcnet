@@ -68,23 +68,32 @@ type
     static Language: string := 'ru';
     // --- Синтетические датасеты (Matrix + Vector)
     
-    /// Генерирует синтетический датасет из нескольких гауссовых кластеров.
-    /// Возвращает матрицу признаков X и вектор меток кластеров y.
+    /// Генерирует синтетический датасет из гауссовых кластеров.
+    /// Каждый кластер задаётся центром и разбросом. Используется для задач кластеризации и классификации.
     ///
     /// Параметры:
-    /// • n — количество объектов (точек)
+    /// • n — число объектов
     /// • centers — число кластеров
-    /// • clusterStd — стандартное отклонение точек внутри кластера
-    /// • nFeatures — число признаков (размерность пространства)
-    /// • seed — значение генератора случайных чисел (seed < 0 → случайный)
+    /// • nFeatures — размерность пространства
+    /// • clusterStd — базовое стандартное отклонение
+    /// • clusterStdVar — разброс std между кластерами (0 → одинаковые)
+    /// • centerBox — диапазон генерации центров [-centerBox, centerBox]
+    /// • classBalance — равномерность кластеров (0..1, 1 = равномерно)
+    /// • noisePoints — число шумовых точек (outliers)
+    /// • shuffle — перемешивание
+    /// • seed — генератор (seed < 0 → случайный)
     static function MakeBlobs(
       n: integer := 300;
       centers: integer := 3;
-      clusterStd: real := 1.0;
       nFeatures: integer := 2;
+      clusterStd: real := 1.0;
+      clusterStdVar: real := 0.0;
+      centerBox: real := 5.0;
+      classBalance: real := 1.0;
+      noisePoints: integer := 0;
       shuffle: boolean := true;
       seed: integer := -1): (Matrix, Vector);
-    
+      
     /// Генерирует синтетический датасет «две луны» (two interleaving moons),
     /// часто используемый для демонстрации алгоритмов классификации и кластеризации.
     /// Возвращает матрицу признаков X (n × 2) и вектор меток классов y (0 или 1).
@@ -99,45 +108,57 @@ type
       shuffle: boolean := true;
       seed: integer := -1): (Matrix, Vector);
     
-    /// Генерирует синтетический датасет для задачи линейной регрессии.
-    /// Данные создаются по модели y = Xβ + ε, где X — матрица признаков,
-    /// β — случайный вектор коэффициентов, ε — гауссовский шум.
+    /// Генерирует синтетический датасет для задачи регрессии.
+    /// Данные создаются по модели y = Xβ + f(X) + ε, где:
+    /// X — матрица признаков,
+    /// β — вектор коэффициентов (часть признаков может быть неинформативной),
+    /// f(X) — добавочная нелинейная компонента,
+    /// ε — гауссовский шум.
     /// Возвращает матрицу признаков X (n × nFeatures) и вектор целевой переменной y.
     ///
     /// • n — число объектов.
-    /// • nFeatures — число признаков.
-    /// • noise — стандартное отклонение гауссовского шума, добавляемого к y.
+    /// • nFeatures — общее число признаков.
+    /// • nInformative — число информативных признаков (остальные имеют нулевые коэффициенты).
+    /// • noise — стандартное отклонение гауссовского шума.
+    /// • coefScale — масштаб коэффициентов β.
+    /// • bias — свободный член (смещение).
+    /// • nonlinearStrength — коэффициент нелинейной компоненты (например, квадрат первого признака).
     /// • shuffle — перемешивать ли порядок объектов.
     /// • seed — значение генератора случайных чисел (-1 означает использовать текущее время).
     static function MakeRegression(
       n: integer := 300;
       nFeatures: integer := 10;
+      nInformative: integer := 5;
       noise: real := 0.1;
+      coefScale: real := 1.0;
+      bias: real := 0.0;
+      nonlinearStrength: real := 0.0;
       shuffle: boolean := true;
-      seed: integer := -1): (Matrix, Vector);
+      seed: integer := -1): (Matrix, Vector);      
     
     /// Генерирует синтетический датасет из двух концентрических окружностей.
-    /// Используется для демонстрации задач классификации и кластеризации,
-    /// где граница разделения является нелинейной.
+    /// Используется для демонстрации задач классификации и кластеризации, в которых граница разделения является нелинейной.
     ///
-    /// Датасет состоит из двух классов:
-    /// внешний круг (класс 0) и внутренний круг (класс 1).
-    /// При добавлении шума точки отклоняются от идеальной окружности.
+    /// Датасет состоит из двух классов: внешний круг (класс 0) и внутренний круг (класс 1)
+    ///
+    /// Параметры позволяют управлять сложностью задачи:
+    /// • noise — отклонение точек от идеальной окружности
+    /// • factor — отношение радиусов внутреннего и внешнего круга
+    /// • classBalance — доля объектов внутреннего круга
+    /// • flipProb — вероятность случайной инверсии метки
+    /// • scale — общий масштаб (радиус внешнего круга)
     ///
     /// Полезен для демонстрации:
-    /// • преимуществ нелинейных моделей (RandomForest, GradientBoosting, kNN)
-    /// • работы DBSCAN и спектральной кластеризации
-    /// • ограничений линейных моделей (LogisticRegression, LinearSVM).
-    ///
-    /// • n — число объектов.
-    /// • noise — стандартное отклонение гауссовского шума, добавляемого к координатам.
-    /// • factor — отношение радиуса внутреннего круга к внешнему (0 < factor < 1).
-    /// • shuffle — перемешивать ли порядок объектов.
-    /// • seed — значение генератора случайных чисел (-1 означает использовать текущее время)
+    /// • ограничений линейных моделей (LogisticRegression, LinearSVM)
+    /// • преимуществ нелинейных моделей (DecisionTree, RandomForest, kNN)
+    /// • методов кластеризации (DBSCAN, Spectral Clustering)
     static function MakeCircles(
       n: integer := 300;
       noise: real := 0.05;
       factor: real := 0.5;
+      classBalance: real := 0.5;
+      flipProb: real := 0.0;
+      scale: real := 1.0;
       shuffle: boolean := true;
       seed: integer := -1): (Matrix, Vector);
     
@@ -159,7 +180,32 @@ type
       turns: real := 3.0;
       radius: real := 1.0;
       shuffle: boolean := true;
-      seed: integer := -1): (Matrix, Vector);    
+      seed: integer := -1): (Matrix, Vector);
+
+    /// Генерирует синтетический датасет для задачи классификации.
+    /// Формирует линейно (или почти линейно) разделимые классы с контролируемым шумом.
+    ///
+    /// • n — число объектов.
+    /// • nFeatures — общее число признаков.
+    /// • nInformative — число информативных признаков.
+    /// • nRedundant — число линейно зависимых признаков.
+    /// • noise — уровень шума в модели.
+    /// • classSep — расстояние между классами.
+    /// • flipProb — вероятность случайной смены метки (label noise).
+    /// • classBalance — доля класса 1 (0..1).
+    /// • shuffle — перемешивание объектов.
+    /// • seed — генератор случайных чисел (-1 → авто)
+    static function MakeClassification(
+      n: integer := 300;
+      nFeatures: integer := 10;
+      nInformative: integer := 5;
+      nRedundant: integer := 2;
+      noise: real := 0.1;
+      classSep: real := 1.0;
+      flipProb: real := 0.0;
+      classBalance: real := 0.5;
+      shuffle: boolean := true;
+      seed: integer := -1): (Matrix, Vector);      
     
     /// Загружает датасет по имени.
     ///
@@ -259,7 +305,13 @@ const
   ER_VALUECOUNTS_ONLY_CLASSIFICATION =
     'ValueCounts доступны только для задач классификации!!ValueCounts are only available for classification datasets';    
   ER_DATASET_TARGET_MISSING =
-    'Target обязателен для задач обучения с учителем!!Target is required for supervised learning datasets';    
+    'Target обязателен для задач обучения с учителем!!Target is required for supervised learning datasets'; 
+  ER_PARAM_LE =
+    'Параметр {0} должен быть <= допустимого максимума!!Parameter {0} must be <= the allowed maximum value';
+  ER_PARAM_RANGE_01 =
+    'Параметр {0} должен быть в диапазоне (0, 1)!!Parameter {0} must be in range (0, 1)';   
+  ER_PARAM_LT =
+    'Параметр {0} должен быть меньше допустимого значения!!Parameter {0} must be less than allowed value';    
     
   C_DATASET      = 'Датасет: {0}!!Dataset: {0}';
   C_DESCRIPTION  = 'Описание:!!Description:';
@@ -480,9 +532,10 @@ end;
 //-----------------------------
 
 static function Datasets.MakeBlobs(
-  n: integer; centers: integer;
-  clusterStd: real; nFeatures: integer;
-  shuffle: boolean; seed: integer): (Matrix, Vector);
+  n, centers, nFeatures: integer;
+  clusterStd, clusterStdVar, centerBox, classBalance: real;
+  noisePoints: integer; shuffle: boolean;
+  seed: integer): (Matrix, Vector);
 begin
   if n <= 0 then
     ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'n');
@@ -490,43 +543,115 @@ begin
   if centers <= 0 then
     ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'centers');
   
-  if clusterStd <= 0 then
-    ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'clusterStd');
-  
   if nFeatures <= 0 then
     ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'nFeatures');
   
+  if clusterStd <= 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'clusterStd');
+  
+  if clusterStdVar < 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GE_ZERO, 'clusterStdVar');
+  
+  if centerBox <= 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'centerBox');
+  
+  if (classBalance <= 0) or (classBalance > 1) then
+    ArgumentOutOfRangeError(ER_PARAM_RANGE_01, 'classBalance');
+  
+  if noisePoints < 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GE_ZERO, 'noisePoints');
+  
+  if noisePoints >= n then
+    ArgumentOutOfRangeError(ER_PARAM_LT, 'noisePoints');
+  
   var actualSeed :=
-  if seed >= 0 then seed
-  else System.Environment.TickCount and integer.MaxValue;
+    if seed >= 0 then seed
+    else System.Environment.TickCount and integer.MaxValue;
   
   var rnd := new System.Random(actualSeed);
   
   var X := new Matrix(n, nFeatures);
   var y := new Vector(n);
   
-  // --- генерируем центры кластеров
+  // --- центры
   var centersM := new Matrix(centers, nFeatures);
   
   for var c := 0 to centers - 1 do
     for var j := 0 to nFeatures - 1 do
-      centersM[c, j] := rnd.NextDouble * 20 - 10;
+      centersM[c, j] := (rnd.NextDouble * 2 - 1) * centerBox;
   
-  // --- индексы строк
+  // --- std по кластерам
+  var stds := new real[centers];
+  
+  for var c := 0 to centers - 1 do
+    stds[c] := clusterStd * (1 + clusterStdVar * (2 * rnd.NextDouble - 1));
+  
+  // --- вероятности кластеров
+  var probs := new real[centers];
+  
+  if classBalance = 1 then
+  begin
+    for var c := 0 to centers - 1 do
+      probs[c] := 1.0 / centers;
+  end
+  else
+  begin
+    var sum := 0.0;
+    
+    for var c := 0 to centers - 1 do
+    begin
+      var p := Power(rnd.NextDouble, 1 / classBalance);
+      probs[c] := p;
+      sum += p;
+    end;
+    
+    for var c := 0 to centers - 1 do
+      probs[c] /= sum;
+  end;
+  
+  // --- CDF
+  var cdf := new real[centers];
+  cdf[0] := probs[0];
+  
+  for var c := 1 to centers - 1 do
+    cdf[c] := cdf[c-1] + probs[c];
+  
+  // --- индексы
   var idx := Arr(0..n - 1);
   if shuffle then
     PABCSystem.Shuffle(idx, rnd);
   
-  // --- генерация точек
-  for var i := 0 to n - 1 do
+  var mainCount := n - noisePoints;
+  
+  // --- генерация
+  for var i := 0 to mainCount - 1 do
   begin
     var row := idx[i];
     
-    var c := rnd.Next(centers);
+    // --- выбор кластера (inline вместо функции)
+    var r := rnd.NextDouble;
+    var c := 0;
+    
+    while (c < centers - 1) and (r > cdf[c]) do
+      c += 1;
+    
     y[row] := c;
     
+    var std := stds[c];
+    
     for var j := 0 to nFeatures - 1 do
-      X[row, j] := centersM[c, j] + clusterStd * Normal(rnd);
+      X[row, j] := centersM[c, j] + std * Normal(rnd);
+  end;
+  
+  // --- шум
+  for var i := mainCount to n - 1 do
+  begin
+    var row := idx[i];
+    
+    y[row] := -1;
+    
+    for var j := 0 to nFeatures - 1 do
+      X[row, j] := (rnd.NextDouble * 2 - 1) * centerBox;
   end;
   
   Result := (X, y);
@@ -601,7 +726,11 @@ end;
 static function Datasets.MakeRegression(
   n: integer;
   nFeatures: integer;
+  nInformative: integer;
   noise: real;
+  coefScale: real;
+  bias: real;
+  nonlinearStrength: real;
   shuffle: boolean;
   seed: integer): (Matrix, Vector);
 begin
@@ -611,22 +740,36 @@ begin
   if nFeatures <= 0 then
     ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'nFeatures');
   
+  if nInformative < 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GE_ZERO, 'nInformative');
+  
+  if nInformative > nFeatures then
+    nInformative := nFeatures;
+  
   if noise < 0 then
     ArgumentOutOfRangeError(ER_PARAM_GE_ZERO, 'noise');
   
-  var actualSeed :=
-  if seed >= 0 then seed
-  else System.Environment.TickCount and integer.MaxValue;
+  if coefScale <= 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'coefScale');
   
+  var actualSeed :=
+    if seed >= 0 then seed
+    else System.Environment.TickCount and integer.MaxValue;
+    
+    
   var rnd := new System.Random(actualSeed);
   
   var X := new Matrix(n, nFeatures);
   var y := new Vector(n);
   
-  // --- истинные коэффициенты β
+  // --- коэффициенты
   var beta := new Vector(nFeatures);
+  
   for var j := 0 to nFeatures - 1 do
-    beta[j] := Normal(rnd);
+    if j < nInformative then
+      beta[j] := coefScale * Normal(rnd)
+    else
+      beta[j] := 0.0;
   
   var idx := Arr(0..n - 1);
   if shuffle then
@@ -637,7 +780,7 @@ begin
   begin
     var row := idx[i];
     
-    var s := 0.0;
+    var s := bias;
     
     for var j := 0 to nFeatures - 1 do
     begin
@@ -646,75 +789,91 @@ begin
       s += xx * beta[j];
     end;
     
+    // --- добавляем нелинейность (по первому признаку)
+    if nonlinearStrength <> 0 then
+    begin
+      var x0 := X[row, 0];
+      s += nonlinearStrength * x0 * x0;
+    end;
+    
+    // --- шум
     y[row] := s + noise * Normal(rnd);
   end;
   
   Result := (X, y);
 end;
 
-static function Datasets.MakeCircles(n: integer; noise: real;
-  factor: real; shuffle: boolean; seed: integer): (Matrix, Vector);
+static function Datasets.MakeCircles(
+  n: integer;
+  noise, factor, classBalance, flipProb, scale: real;
+  shuffle: boolean;
+  seed: integer): (Matrix, Vector);
 begin
   if n <= 0 then
     ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'n');
-  
+
   if noise < 0 then
     ArgumentOutOfRangeError(ER_PARAM_GE_ZERO, 'noise');
-  
+
   if (factor <= 0) or (factor >= 1) then
-    ArgumentOutOfRangeError(ER_PARAM_BETWEEN_01, 'factor');
-  
+    ArgumentOutOfRangeError(ER_PARAM_RANGE_01, 'factor');
+
+  if (classBalance <= 0) or (classBalance >= 1) then
+    ArgumentOutOfRangeError(ER_PARAM_RANGE_01, 'classBalance');
+
+  if flipProb < 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GE_ZERO, 'flipProb');
+
+  if scale <= 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'scale');
+
   var actualSeed :=
-  if seed >= 0 then seed
-  else System.Environment.TickCount and integer.MaxValue;
-  
+    if seed >= 0 then seed
+    else System.Environment.TickCount and integer.MaxValue;
+
   var rnd := new System.Random(actualSeed);
-  
+
   var X := new Matrix(n, 2);
   var y := new Vector(n);
-  
-  var idx := Arr(0..n - 1);
+
+  var idx := Arr(0..n-1);
   if shuffle then
     PABCSystem.Shuffle(idx, rnd);
-  
-  var half := n div 2;
-  
-  // --- внешний круг
-  for var i := 0 to half - 1 do
+
+  for var i := 0 to n - 1 do
   begin
     var row := idx[i];
-    var t := 2*Pi*i/half + 0.1*Normal(rnd);
-    
-    y[row] := 0;
-    
-    X[row, 0] := Cos(t);
-    X[row, 1] := Sin(t);
-    
-    if noise > 0 then
-    begin
-      X[row, 0] += noise * Normal(rnd);
-      X[row, 1] += noise * Normal(rnd);
-    end;
+
+    // --- класс
+    var label1 := Ord(rnd.NextDouble < classBalance);
+
+    // --- радиус
+    var r :=
+      if label1 = 1 then
+        scale * factor
+      else
+        scale;
+
+    // --- угол
+    var angle := 2 * Pi * rnd.NextDouble;
+
+    var xx := r * Cos(angle);
+    var yv := r * Sin(angle);
+
+    // --- шум
+    xx += noise * Normal(rnd);
+    yv += noise * Normal(rnd);
+
+    X[row, 0] := xx;
+    X[row, 1] := yv;
+
+    // --- flip labels
+    if rnd.NextDouble < flipProb then
+      label1 := 1 - label1;
+
+    y[row] := label1;
   end;
-  
-  // --- внутренний круг
-  for var i := half to n - 1 do
-  begin
-    var row := idx[i];
-    var t := 2*Pi*(i-half)/half + 0.1*Normal(rnd);
-    
-    y[row] := 1;
-    
-    X[row, 0] := factor * Cos(t);
-    X[row, 1] := factor * Sin(t);
-    
-    if noise > 0 then
-    begin
-      X[row, 0] += noise * Normal(rnd);
-      X[row, 1] += noise * Normal(rnd);
-    end;
-  end;
-  
+
   Result := (X, y);
 end;
 
@@ -772,6 +931,107 @@ begin
     end;
   end;
 
+  Result := (X, y);
+end;
+
+static function Datasets.MakeClassification(
+  n, nFeatures, nInformative, nRedundant: integer;
+  noise, classSep, flipProb, classBalance: real;
+  shuffle: boolean;
+  seed: integer): (Matrix, Vector);
+begin
+  if n <= 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'n');
+
+  if nFeatures <= 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'nFeatures');
+
+  if nInformative <= 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'nInformative');
+
+  if nInformative > nFeatures then
+    ArgumentOutOfRangeError(ER_PARAM_LE, 'nInformative');
+
+  if nRedundant < 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GE_ZERO, 'nRedundant');
+
+  if nInformative + nRedundant > nFeatures then
+    ArgumentOutOfRangeError(ER_PARAM_LE, 'nRedundant');
+
+  if noise < 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GE_ZERO, 'noise');
+
+  if classSep <= 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GT_ZERO, 'classSep');
+
+  if (classBalance <= 0) or (classBalance >= 1) then
+    ArgumentOutOfRangeError(ER_PARAM_RANGE_01, 'classBalance');
+
+  if flipProb < 0 then
+    ArgumentOutOfRangeError(ER_PARAM_GE_ZERO, 'flipProb');
+
+  var actualSeed :=
+    if seed >= 0 then seed
+    else System.Environment.TickCount and integer.MaxValue;
+
+  var rnd := new System.Random(actualSeed);
+
+  var X := new Matrix(n, nFeatures);
+  var y := new Vector(n);
+  
+  // --- направление разделения классов
+  var center := new Vector(nInformative);
+  for var j := 0 to nInformative - 1 do
+    center[j] := Normal(rnd);
+  
+  // --- нормализуем направление, чтобы classSep имел предсказуемый смысл
+  var norm := 0.0;
+  for var j := 0 to nInformative - 1 do
+    norm += center[j] * center[j];
+  norm := Sqrt(norm);
+  
+  if norm > 0 then
+    for var j := 0 to nInformative - 1 do
+      center[j] := center[j] / norm;
+  
+  // --- индексы
+  var idx := Arr(0..n-1);
+  if shuffle then
+    PABCSystem.Shuffle(idx, rnd);
+  
+  for var i := 0 to n - 1 do
+  begin
+    var row := idx[i];
+  
+    // --- сначала выбираем класс
+    var label1 := Ord(rnd.NextDouble < classBalance);
+    var sign := if label1 = 1 then 1.0 else -1.0;
+  
+    // --- информативные признаки:
+    // два класса имеют разные центры вдоль направления center
+    for var j := 0 to nInformative - 1 do
+      X[row, j] := Normal(rnd) + sign * classSep * center[j] + noise * Normal(rnd);
+  
+    // --- редундантные признаки: линейные комбинации информативных
+    for var j := 0 to nRedundant - 1 do
+    begin
+      var s := 0.0;
+      for var k := 0 to nInformative - 1 do
+        s += Normal(rnd) * X[row, k];
+      X[row, nInformative + j] := s / nInformative;
+    end;
+  
+    // --- шумовые признаки
+    for var j := nInformative + nRedundant to nFeatures - 1 do
+      X[row, j] := Normal(rnd);
+  
+    // --- шум в метках
+    if rnd.NextDouble < flipProb then
+      label1 := 1 - label1;
+  
+    y[row] := label1;
+  end;
+  
   Result := (X, y);
 end;
 

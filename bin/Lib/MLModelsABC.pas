@@ -253,8 +253,17 @@ type
     /// Возвращает массив меток классов в порядке столбцов PredictProba.
     function GetClasses: array of real;
 
-    /// Возвращает вектор предсказанных классов.
+    /// Возвращает предсказанные классы для объектов из X.
+    /// Результат — вектор значений, где каждый элемент соответствует классу объекта.
+    /// Порядок элементов соответствует строкам матрицы X.
+    /// Требует предварительного вызова Fit.
     function Predict(X: Matrix): Vector;
+    
+    /// Возвращает предсказанные метки классов для объектов из X.
+    /// Каждый элемент результата — индекс класса (целое число).
+    /// Порядок элементов соответствует строкам матрицы X.
+    /// Требует предварительного вызова Fit.
+    function PredictLabels(X: Matrix): array of integer;
   
 /// Показывает, была ли модель обучена.
 /// Если false — вызов Predict или PredictProba приведет к ошибке.
@@ -468,6 +477,12 @@ type
 /// Выполняет предсказание меток классов для X.
 /// Для каждого объекта возвращается класс, соответствующий листу дерева.
     function Predict(X: Matrix): Vector; override;
+    
+    /// Возвращает предсказанные метки классов для объектов из X.
+    /// Каждый элемент результата — индекс класса (целое число).
+    /// Порядок элементов соответствует строкам матрицы X.
+    /// Требует предварительного вызова Fit.
+    function PredictLabels(X: Matrix): array of integer;
     
 /// Создает глубокую копию дерева классификации.
 /// Копируется структура узлов, параметры и обученное состояние.
@@ -724,6 +739,12 @@ type
 /// Для каждого объекта агрегируются предсказания всех деревьев.
 /// Итоговый класс определяется большинством голосов или максимальной суммарной вероятностью.
     function Predict(X: Matrix): Vector; override;
+    
+    /// Возвращает предсказанные метки классов для объектов из X.
+    /// Каждый элемент результата — индекс класса (целое число).
+    /// Порядок элементов соответствует строкам матрицы X.
+    /// Требует предварительного вызова Fit.
+    function PredictLabels(X: Matrix): array of integer;
     
     function PredictProba(X: Matrix): Matrix;
 
@@ -1016,11 +1037,13 @@ type
 /// Возвращает исходные значения классов, а не внутренние индексы.
     function Predict(X: Matrix): Vector;
     
+    function PredictLabels(X: Matrix): array of integer;
+
 /// Возвращает вероятности принадлежности к каждому классу.
 /// Размер результата: [nSamples x nClasses].
 /// Вероятности получаются через softmax.
     function PredictProba(X: Matrix): Matrix;
-
+    
     function GetClasses: array of real;
 
 /// Создает глубокую копию классификатора.
@@ -1155,6 +1178,8 @@ type
     /// Выполняет предсказание меток классов для объектов X.
     /// Возвращает вектор предсказанных меток
     function Predict(X: Matrix): Vector; override;
+    
+    function PredictLabels(X: Matrix): array of integer;
     
     /// Возвращает матрицу вероятностей размера (nSamples × nClasses).
     /// Столбцы соответствуют классам в порядке, возвращаемом GetClasses()
@@ -2699,6 +2724,16 @@ begin
   end;
 end;
 
+function LogisticRegression.PredictLabels(X: Matrix): array of integer;
+begin
+  var v := Predict(X);
+  
+  Result := new integer[v.Length];
+  
+  for var i := 0 to v.Length - 1 do
+    Result[i] := integer(v[i]);
+end;
+
 function LogisticRegression.ToString: string;
 begin
   Result :=
@@ -3513,6 +3548,16 @@ begin
   end;
 end;
 
+function DecisionTreeClassifier.PredictLabels(X: Matrix): array of integer;
+begin
+  var v := Predict(X);
+  
+  Result := new integer[v.Length];
+  
+  for var i := 0 to v.Length - 1 do
+    Result[i] := integer(v[i]);
+end;
+
 function DecisionTreeClassifier.Clone: IModel;
 begin
   var m := new DecisionTreeClassifier(
@@ -4309,6 +4354,16 @@ begin
   end;
 
   Result := resultVec;
+end;
+
+function RandomForestClassifier.PredictLabels(X: Matrix): array of integer;
+begin
+  var v := Predict(X);
+  
+  Result := new integer[v.Length];
+  
+  for var i := 0 to v.Length - 1 do
+    Result[i] := integer(v[i]);
 end;
 
 function RandomForestClassifier.PredictProba(X: Matrix): Matrix;
@@ -6194,6 +6249,16 @@ begin
   end;
 end;
 
+function GradientBoostingClassifier.PredictLabels(X: Matrix): array of integer;
+begin
+  var v := Predict(X);
+  
+  Result := new integer[v.Length];
+  
+  for var i := 0 to v.Length - 1 do
+    Result[i] := integer(v[i]);
+end;
+
 //-----------------------------
 //          KNNBase 
 //-----------------------------
@@ -6510,6 +6575,16 @@ begin
 
     Result[i] := fClasses[bestCls];
   end;
+end;
+
+function KNNClassifier.PredictLabels(X: Matrix): array of integer;
+begin
+  var v := Predict(X);
+  
+  Result := new integer[v.Length];
+  
+  for var i := 0 to v.Length - 1 do
+    Result[i] := integer(v[i]);
 end;
 
 function KNNClassifier.PredictProba(X: Matrix): Matrix;

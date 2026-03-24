@@ -24,8 +24,11 @@ type
   
   Validation = ValidationML.Validation;
   
-  ConfusionMatrix = MetricsABC.ConfusionMatrix;
   Metrics = MetricsABC.Metrics;
+  ClassificationMetrics = MetricsABC.ClassificationMetrics;
+  RegressionMetrics = MetricsABC.RegressionMetrics;
+  ClusteringMetrics = MetricsABC.ClusteringMetrics;
+  ConfusionMatrix = MetricsABC.ConfusionMatrix;
   
   DataPipeline = MLPipelineABC.DataPipeline;
   
