@@ -15,6 +15,7 @@ begin
       target,
       features,
       new OneHotEncoder('renovation'),
+      new StandardScaler,
       new LinearRegression
     );
 

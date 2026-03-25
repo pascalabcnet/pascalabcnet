@@ -1276,6 +1276,9 @@ type
 
     /// Создаёт глубокую копию модели.
     function Clone: IModel;
+    
+    /// Количество кластеров
+    function ClustersCount: integer;
 
     /// Количество кластеров.
     property NClusters: integer read fNClusters;
@@ -1345,7 +1348,9 @@ type
     function Clone: IModel;
   
     property Labels: array of integer read fLabels;
-    property ClusterCount: integer read fClusterCount;
+    
+    /// Количество кластеров, найденное моделью
+    function ClustersCount: integer; 
     
     function Name: string := Self.GetType.Name;
     
@@ -1972,6 +1977,8 @@ const
     'Model (type: {0}) is not an unsupervised model';
   ER_DBSCAN_PREDICT_ONLY_TRAIN_DATA =
     'DBSCAN: Predict поддерживается только для обучающей выборки!!DBSCAN: Predict is only supported for training data';  
+  ER_MODEL_NOT_FITTED =
+    'Модель "{0}" не обучена. Сначала вызовите Fit()|Model "{0}" is not fitted. Call Fit() first';
   
 {$endregion ErrConstants}  
 
@@ -7168,6 +7175,14 @@ begin
   Result := km;
 end;
 
+function KMeans.ClustersCount: integer;
+begin
+  if not fFitted then
+    ArgumentError(ER_MODEL_NOT_FITTED, 'KMeans');
+
+  Result := fCenters.RowCount;
+end;
+
 //-----------------------------
 //           DBSCAN 
 //-----------------------------
@@ -7342,6 +7357,8 @@ begin
 
   Result := m;
 end;
+
+function DBSCAN.ClustersCount: integer := fClusterCount;
 
 //-----------------------------
 //          Pipeline 

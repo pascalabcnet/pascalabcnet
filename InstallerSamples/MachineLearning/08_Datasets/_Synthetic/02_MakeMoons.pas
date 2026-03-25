@@ -9,7 +9,7 @@ begin
     seed := 1
   );
 
-  Plot.Title('MakeMoons синтетический датасет');
+  Plot.Title :='MakeMoons синтетический датасет';
 
   Plot.Points(X.Col(0), X.Col(1), LabelsToInts(y), size := 4);
 end.

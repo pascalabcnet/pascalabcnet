@@ -238,7 +238,9 @@ type
     ///
     /// Пример:
     ///   var ds := Datasets.Iris;
-    ///   var (X,y) := ds.ToXYInt;
+    ///   var df := ds.Data;
+    ///   var X := df.ToMatrix(ds.Features);
+    ///   var y := df.EncodeLabels(ds.Target);
     static function Iris: Dataset;
     
     /// Датасет цен на квартиры (задача регрессии)
@@ -648,7 +650,7 @@ begin
   begin
     var row := idx[i];
     
-    y[row] := -1;
+    y[row] := rnd.Next(centers);
     
     for var j := 0 to nFeatures - 1 do
       X[row, j] := (rnd.NextDouble * 2 - 1) * centerBox;
