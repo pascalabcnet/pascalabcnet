@@ -981,7 +981,11 @@ namespace PascalABCCompiler.TreeConverter
                         if (cfn.is_generic_function || !syntax_tree_visitor.context.has_nested_functions && syntax_tree_visitor.context.converted_func_stack.size == 1)
                         {
                             vdn = syntax_tree_visitor.context.add_var_definition(get_temp_arr_name(), loc);
-                            
+
+                            // Очистка добавленной переменной по аналогии с последующими ветками условия, чтобы не засорять семантическое дерево и pcu  
+                            // Вообще эта реализация требует рефакторинга  EVA 26.03.2026
+                            if (syntax_tree_visitor.context.CurrentScope is SymbolTable.BlockScope)
+                                syntax_tree_visitor.context.CurrentStatementList.local_variables.Remove((local_block_variable)vdn);
                         }
                         else if (syntax_tree_visitor.context.converted_type != null)
                         {
