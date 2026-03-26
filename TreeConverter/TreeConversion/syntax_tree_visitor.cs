@@ -664,6 +664,9 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        /// <summary>
+        /// Очистка переменных перед компиляцией интерфейсной или имплементационной части модуля
+        /// </summary>
         private void ResetBeforeModuleCompilation()
         {
             context.ResetBeforeModuleCompilation();

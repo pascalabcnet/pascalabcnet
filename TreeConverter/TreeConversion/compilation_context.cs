@@ -292,7 +292,10 @@ namespace PascalABCCompiler.TreeConverter
             }
             return false;
         }
-        
+
+        /// <summary>
+        /// Очистка переменных перед компиляцией интерфейсной или имплементационной части модуля
+        /// </summary>
         public void ResetBeforeModuleCompilation()
         {
             // Эти кэши нужно очищать перед компиляцией модуля, потому что иначе 
