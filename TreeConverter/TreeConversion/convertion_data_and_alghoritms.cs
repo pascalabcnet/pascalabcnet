@@ -985,7 +985,7 @@ namespace PascalABCCompiler.TreeConverter
                             // Очистка добавленной переменной по аналогии с последующими ветками условия, чтобы не засорять семантическое дерево и pcu  
                             // Вообще эта реализация требует рефакторинга  EVA 26.03.2026
                             if (syntax_tree_visitor.context.CurrentScope is SymbolTable.BlockScope)
-                                syntax_tree_visitor.context.CurrentStatementList.local_variables.Remove((local_block_variable)vdn);
+                                ((local_block_variable)vdn).block.local_variables.Remove((local_block_variable)vdn);
                         }
                         else if (syntax_tree_visitor.context.converted_type != null)
                         {
