@@ -322,6 +322,7 @@ namespace PascalABCCompiler.TreeConverter
             type_stack.Clear();
             clear_special_local_vars();
             _scope_stack.Clear();
+            ShortStringTypes.Clear();
             _compiled_tn = null;
             _explicit_interface_type = null;
             _ctt = null;
