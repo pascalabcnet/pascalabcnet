@@ -128,6 +128,7 @@
 # Regenerated before being run by .bat
 #TODO remove this from index
 #/bin/TestRunner.exe
+/bin/PCUDiffTester.exe
 /bin/GitIgnoreTester.exe
 
 
