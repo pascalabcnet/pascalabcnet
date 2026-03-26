@@ -293,6 +293,16 @@ namespace PascalABCCompiler.TreeConverter
             return false;
         }
         
+        public void ResetBeforeModuleCompilation()
+        {
+            // Эти кэши нужно очищать перед компиляцией модуля, потому что иначе 
+            // в pcu файлы будет записываться разное кол-во типов оттуда в зависимости от того,
+            // использовались ли они в других модулях, которые компилировались ранее    EVA 26.03.2026
+            TypedFiles.Clear();
+            ShortStringTypes.Clear();
+            TypedSets.Clear();
+        }
+
         public void reset()
         {
             //CurrentHandlerList = null; // SSM 29/03/22 - не сработало
@@ -310,9 +320,6 @@ namespace PascalABCCompiler.TreeConverter
             type_stack.Clear();
             clear_special_local_vars();
             _scope_stack.Clear();
-            TypedFiles.Clear();
-            ShortStringTypes.Clear();
-            TypedSets.Clear();
             _compiled_tn = null;
             _explicit_interface_type = null;
             _ctt = null;

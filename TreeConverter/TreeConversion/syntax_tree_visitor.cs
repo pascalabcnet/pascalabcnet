@@ -180,7 +180,10 @@ namespace PascalABCCompiler.TreeConverter
         /// <summary>
         /// Можно переопределять для добавления действий перед конвертацией интерфейсной и имплементационной частей
         /// </summary>
-        public virtual void BeforeCompilationActions() { }
+        public virtual void BeforeCompilationActions()
+        {
+            ResetBeforeModuleCompilation();
+        }
 
         /// <summary>
         /// Можно переопределять для добавления действий после конвертации интерфейсной и имплементационной частей
@@ -659,6 +662,11 @@ namespace PascalABCCompiler.TreeConverter
                 //SystemLibrary.SystemLibInitializer.read_procedure = new SystemLibrary.UnitDefinitionItem(unit, StringConstants.read_procedure_name);
                 //SystemLibrary.SystemLibInitializer.readln_procedure = new SystemLibrary.UnitDefinitionItem(unit, StringConstants.readln_procedure_name);
             }
+        }
+
+        private void ResetBeforeModuleCompilation()
+        {
+            context.ResetBeforeModuleCompilation();
         }
 
         public void Reset()
