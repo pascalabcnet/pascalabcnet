@@ -299,7 +299,6 @@ namespace PascalABCCompiler.TreeConverter
             // в pcu файлы будет записываться разное кол-во типов оттуда в зависимости от того,
             // использовались ли они в других модулях, которые компилировались ранее    EVA 26.03.2026
             TypedFiles.Clear();
-            ShortStringTypes.Clear();
             TypedSets.Clear();
         }
 
