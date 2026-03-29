@@ -536,6 +536,54 @@ namespace CodeCompletion
             used_units.Add(unit);
         }
 
+        /// <summary>
+        /// Получить массив всех транзитивно используемых модулей (ислючая пр-ва имен)
+        /// </summary>
+        public SymScope[] GetRealUsedUnitsTransitive()
+        {
+            var usedUnits = new List<SymScope>();
+
+            if (used_units != null)
+            {
+                usedUnits.AddRange(used_units.Where(unit => unit.file_name != null));
+            }
+
+            if (this is InterfaceUnitScope interfaceScope && interfaceScope.impl_scope != null)
+            {
+                foreach (var recursiveUsedUnit in interfaceScope.impl_scope.GetRealUsedUnitsTransitive())
+                {
+                    if (recursiveUsedUnit == this)
+                        continue;
+
+                    if (usedUnits.FirstOrDefault(unit => unit.file_name == recursiveUsedUnit.file_name) == null)
+                    {
+                        usedUnits.Add(recursiveUsedUnit);
+                    }
+                }
+            }
+
+            if (used_units != null)
+            {
+                foreach (var usedUnit in used_units)
+                {
+                    var recursiveUsedUnits = usedUnit.GetRealUsedUnitsTransitive();
+
+                    foreach (var recursiveUsedUnit in recursiveUsedUnits)
+                    {
+                        if (recursiveUsedUnit == this)
+                            continue;
+
+                        if (usedUnits.FirstOrDefault(unit => unit.file_name == recursiveUsedUnit.file_name) == null)
+                        {
+                            usedUnits.Add(recursiveUsedUnit);
+                        }
+                    }
+                }
+            }
+
+            return usedUnits.ToArray();
+        }
+
         public virtual string GetFullName()
         {
             return si.name;
