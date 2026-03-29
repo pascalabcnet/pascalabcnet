@@ -168,11 +168,10 @@ namespace VisualPascalABC
                         if (dc.is_compiled)
                         {
                             //CodeCompletion.CodeCompletionController.comp_modules.Remove(file_name);
-                            if (tmp != null && tmp.visitor.entry_scope != null)
+                            if (tmp != null)
                             {
-                                tmp.visitor.entry_scope.Clear();
-                                if (tmp.visitor.cur_scope != null)
-                                    tmp.visitor.cur_scope.Clear();
+                                tmp.visitor.entry_scope?.Clear();
+                                tmp.visitor.cur_scope?.Clear();
                             }
                             CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                             recomp_files[FileName] = FileName;
@@ -207,11 +206,18 @@ namespace VisualPascalABC
                             }
                             if (ss != null)
                             {
-                                for (int i = 0; i < ss.used_units.Count; i++)
+                                var usedUnitsTransitive = ss.GetRealUsedUnitsTransitive();
+
+                                for (int i = 0; i < usedUnitsTransitive.Length; i++)
                                 {
-                                    string s = ss.used_units[i].file_name;
-                                    if (s != null && filesToParse.ContainsKey(s) && recomp_files.ContainsKey(s))
+                                    string usedUnitFileName = usedUnitsTransitive[i].file_name;
+                                    // Если какая-то из зависимостей была перекомпилирована
+                                    if (filesToParse.ContainsKey(usedUnitFileName) && recomp_files.ContainsKey(usedUnitFileName))
                                     {
+                                        // Помечаем нужные модули для будущей перекомпиляции
+                                        InvalidateDependenentModules(usedUnitsTransitive, usedUnitFileName, filesToParse, FileName);
+
+                                        // Перекомпилируем текущий модуль
                                         is_comp = true;
                                         CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
                                         string text = visualEnvironmentCompiler.SourceFilesProvider(FileName, SourceFileOperation.GetText) as string;
@@ -230,7 +236,6 @@ namespace VisualPascalABC
                                             }*/
                                             CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                                             recomp_files[FileName] = FileName;
-                                            ss.used_units[i] = dc.visitor.entry_scope;
                                             if (ParseInformationUpdated != null)
                                                 ParseInformationUpdated(dc.visitor.entry_scope, FileName);
                                         }
@@ -251,6 +256,59 @@ namespace VisualPascalABC
             }
             catch (Exception) { }
 
+        }
+
+        /// <summary>
+        /// Помечает модули из candidateModulesToCheck и watchedFiles для будущей перекомпиляции, если они завивисимы от модуля с именем recompiledDependencyName
+        /// </summary>
+        private void InvalidateDependenentModules(CodeCompletion.SymScope[] candidateModulesToCheck, string recompiledDependencyName, Dictionary<string, bool> watchedFiles, string currentFileForRecompiling)
+        {
+            // Скоупы модулей, соответствующих watchedFiles
+            var compiledWatchedScopes = watchedFiles.Where(watchedFile => watchedFile.Key != currentFileForRecompiling)
+                                                    .Select(watchedFile => CodeCompletion.CodeCompletionController.comp_modules[watchedFile.Key])
+                                                    .SelectMany(converter => converter is CodeCompletion.DomConverter dc ?
+                                                                             new CodeCompletion.SymScope[] { dc.visitor.entry_scope, dc.visitor.impl_scope }
+                                                                             : Enumerable.Empty<CodeCompletion.SymScope>())
+                                                    .Where(sc => sc != null);
+
+            var scopesToCheck = compiledWatchedScopes.Concat(candidateModulesToCheck).Distinct();
+
+            foreach (var scope in scopesToCheck)
+            {
+                string scopeFileName = scope.file_name;
+
+                if (scope is CodeCompletion.ImplementationUnitScope)
+                    scopeFileName = ((CodeCompletion.SymScope)scope.TopScope).file_name;
+
+                if (scopeFileName == recompiledDependencyName)
+                    continue;
+
+                var usedUnitsForUnit = scope.GetRealUsedUnitsTransitive();
+
+                // Если в зависимостях скоупа есть recompiledDependency
+                if (usedUnitsForUnit.FirstOrDefault(u => u.file_name == recompiledDependencyName) != null)
+                {
+                    var unitOldConverter = CodeCompletion.CodeCompletionController.comp_modules[scopeFileName];
+
+                    if (unitOldConverter != null)
+                    {
+                        var oldConverter = (CodeCompletion.DomConverter)unitOldConverter;
+
+                        // Помечаем для перекомпиляции
+                        if (watchedFiles.ContainsKey(scopeFileName))
+                        {
+                            watchedFiles[scopeFileName] = true;
+                        }
+                        else
+                        {
+                            CodeCompletion.CodeCompletionController.comp_modules.Remove(scopeFileName);
+
+                            oldConverter.visitor.entry_scope?.Clear();
+                            oldConverter.visitor.cur_scope?.Clear();
+                        }
+                    }
+                }
+            }
         }
 
         public bool IsParsing()

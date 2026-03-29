@@ -163,11 +163,10 @@ namespace VisualPascalABC
                         if (dc.is_compiled)
                         {
                             //CodeCompletion.CodeCompletionController.comp_modules.Remove(file_name);
-                            if (tmp != null && tmp.visitor.entry_scope != null)
+                            if (tmp != null)
                             {
-                                tmp.visitor.entry_scope.Clear();
-                                if (tmp.visitor.cur_scope != null)
-                                    tmp.visitor.cur_scope.Clear();
+                                tmp.visitor.entry_scope?.Clear();
+                                tmp.visitor.cur_scope?.Clear();
                             }
                             CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                             recomp_files[FileName] = FileName;
@@ -297,13 +296,10 @@ namespace VisualPascalABC
                         }
                         else
                         {
-                            CodeCompletion.CodeCompletionController.comp_modules[scopeFileName] = null;
+                            CodeCompletion.CodeCompletionController.comp_modules.Remove(scopeFileName);
 
-                            if (oldConverter.visitor.entry_scope != null)
-                            {
-                                oldConverter.visitor.entry_scope.Clear();
-                                oldConverter.visitor.cur_scope?.Clear();
-                            }
+                            oldConverter.visitor.entry_scope?.Clear();
+                            oldConverter.visitor.cur_scope?.Clear();
                         }
                     }
                 }
