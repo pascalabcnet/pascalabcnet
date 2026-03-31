@@ -16,7 +16,7 @@ type
   private
     fNames: array of string;
     fTypes: array of ColumnType;
-    fIsCategorical: array of boolean;
+    fCategoricalFlags: array of boolean;
     fIndexByName: Dictionary<string, integer>;
     
     class function BuildIndex(names: array of string): Dictionary<string, integer>;
@@ -24,13 +24,17 @@ type
     property ColumnCount: integer read fNames.Length;
     property ColumnNames: array of string read fNames;
     property Types: array of ColumnType read fTypes;
-    property IsCategorical: array of boolean read fIsCategorical;
+    property CategoricalFlags: array of boolean read fCategoricalFlags;
 
     function IndexOf(name: string): integer;
     function HasColumn(name: string): boolean;
 
     function ColumnTypeAt(i: integer): ColumnType;
     function IsCategoricalAt(i: integer): boolean;
+    
+    function GetColumnType(name: string): ColumnType;
+    function IsCategorical(name: string): boolean;
+    
     function NameAt(i: integer): string;
 
     constructor Create(names: array of string; types: array of ColumnType;
@@ -338,7 +342,7 @@ begin
   fNames := Copy(names);
   fTypes := Copy(types);
 
-  fIsCategorical := 
+  fCategoricalFlags := 
     if isCategorical = nil then 
       new boolean[names.Length] 
     else 
@@ -372,7 +376,7 @@ begin
       ctBool:  t := 'bool';
     end;
 
-    if fIsCategorical[i] then
+    if fCategoricalFlags[i] then
       PABCSystem.Println(name, ':', t, '(categorical)')
     else
       PABCSystem.Println(name, ':', t);
@@ -414,10 +418,20 @@ function DataFrameSchema.IsCategoricalAt(i: integer): boolean;
 begin
   if (i < 0) or (i >= ColumnCount) then
     ArgumentOutOfRangeError(ER_INDEX_OUT_OF_RANGE, i, ColumnCount);
-  if fIsCategorical = nil then
+  if fCategoricalFlags = nil then
     Result := false
   else
-    Result := fIsCategorical[i];
+    Result := fCategoricalFlags[i];
+end;
+
+function DataFrameSchema.GetColumnType(name: string): ColumnType;
+begin
+  Result := ColumnTypeAt(IndexOf(name));
+end;
+
+function DataFrameSchema.IsCategorical(name: string): boolean;
+begin
+  Result := IsCategoricalAt(IndexOf(name));
 end;
 
 function DataFrameSchema.Select(indices: array of integer): DataFrameSchema;
@@ -428,7 +442,7 @@ begin
   var n := indices.Length;
   var names := new string[n];
   var types := new ColumnType[n];
-  var cats := if fIsCategorical = nil then nil else new boolean[n];
+  var cats := if fCategoricalFlags = nil then nil else new boolean[n];
 
   for var i := 0 to n - 1 do
   begin
@@ -437,7 +451,7 @@ begin
       ArgumentOutOfRangeError(ER_INDEX_OUT_OF_RANGE, k, ColumnCount);
     names[i] := fNames[k];
     types[i] := fTypes[k];
-    if cats <> nil then cats[i] := fIsCategorical[k];
+    if cats <> nil then cats[i] := fCategoricalFlags[k];
   end;
 
   Result := new DataFrameSchema(names, types, cats);
@@ -474,7 +488,7 @@ begin
   var names := Copy(fNames);
   names[IndexOf(oldName)] := newName;
 
-  Result := new DataFrameSchema(names, fTypes, fIsCategorical);
+  Result := new DataFrameSchema(names, fTypes, fCategoricalFlags);
 end;
 
 function DataFrameSchema.WithCategorical(name: string; value: boolean): DataFrameSchema;
@@ -482,7 +496,7 @@ begin
   if not HasColumn(name) then
     ArgumentError(ER_COLUMN_NOT_EXISTS, name);
 
-  var cats := if fIsCategorical = nil then new boolean[ColumnCount] else Copy(fIsCategorical);
+  var cats := if fCategoricalFlags = nil then new boolean[ColumnCount] else Copy(fCategoricalFlags);
   cats[IndexOf(name)] := value;
 
   Result := new DataFrameSchema(fNames, fTypes, cats);
@@ -533,7 +547,7 @@ end;
 procedure DataFrameSchema.AssertConsistent;
 begin
   Assert(fNames.Length = fTypes.Length);
-  if fIsCategorical <> nil then Assert(fIsCategorical.Length = fNames.Length);
+  if fCategoricalFlags <> nil then Assert(fCategoricalFlags.Length = fNames.Length);
   Assert(fIndexByName.Count = fNames.Length);
 end;
 

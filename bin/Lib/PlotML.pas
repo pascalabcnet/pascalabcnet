@@ -1057,59 +1057,6 @@ begin
   Result := counts;
 end;
 
-{class procedure Plot.PairPlot(X: array[,] of real; labels: array of integer; names: array of string);
-begin
-  var n := names.Length;
-  var fig := Plot.Grid(n,n);
-
-  var bins := Round(Sqrt(X.GetLength(0))); //20;
-
-  // Диапазоны признаков
-  var xmin := new real[n];
-  var xmax := new real[n];
-
-  // Верхние границы для гистограмм
-  var histYMax := new real[n];
-
-  for var j := 0 to n-1 do
-  begin
-    var col := X.Col(j);
-
-    xmin[j] := Floor(col.Min);
-    xmax[j] := Ceil(col.Max);
-
-    var counts := HistogramCounts(col, bins, xmin[j], xmax[j]);
-    histYMax[j] := counts.Max * 1.1;
-  end;
-
-  for var i := 0 to n-1 do
-  for var j := 0 to n-1 do
-  begin
-    var ax := fig[i,j];
-
-    if i = j then
-    begin
-      ax.Hist(X.Col(i), bins := bins);
-
-      ax.XLim(xmin[j], xmax[j]);
-      ax.YLim(0, histYMax[j]);
-    end
-    else
-    begin
-      ax.Points(X.Col(j), X.Col(i), labels, size := 3);
-
-      ax.XLim(xmin[j], xmax[j]);
-      ax.YLim(xmin[i], xmax[i]);
-    end;
-    
-    if i = n-1 then
-      ax.XLabel(names[j]);
-
-    if j = 0 then
-      ax.YLabel(names[i]);
-  end;
-end;}
-
 class procedure Plot.PairPlot(X: array[,] of real; labels: array of integer; names: array of string);
 begin
   var n := names.Length;

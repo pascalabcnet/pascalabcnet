@@ -1151,7 +1151,13 @@ end;
 
 static function Datasets.Iris: Dataset;
 begin
-  Result := Load('Iris');
+  var ds := Load('Iris');
+
+  ds.Data := ds.Data.SetCategorical([
+    'species'
+  ]);
+
+  Result := ds;
 end;
 
 static function Datasets.MoscowHousing: Dataset;

@@ -23,7 +23,7 @@ const
     'Пустой набор данных для {0}!!Empty dataset for {0}';
   ER_COLUMN_NOT_FOUND =
     'В DataFrame отсутствует столбец "{0}"!!DataFrame does not contain column "{0}"';  
-  
+    
 type
   /// Базовое исключение ML-библиотеки
   MLException = class(Exception);

@@ -232,6 +232,8 @@ type
     fCheckConvergence: boolean := true;
     fMinImprovement: real := 1e-8;
     
+    fClassLabels: array of string; // В каждой модели классификации
+    
     function GetWeights: Matrix;
     function GetIntercept: Vector;
   public
@@ -282,6 +284,10 @@ type
     property Intercept: Vector read GetIntercept;
     
     function Name: string := Self.GetType.Name;
+    
+    procedure SetClassLabels(classes: array of string);
+    
+    function GetClassLabels: array of string;
   end;
   
   DecisionTreeNode = class
@@ -452,6 +458,8 @@ type
     fClassToIndex: Dictionary<integer, integer>;
     fIndexToClass: array of integer;
     fClassCount: integer;
+    
+    fClassLabels: array of string;
 
     function PredictOne(X: Matrix; rowIndex: integer): integer;
     function MajorityClass(y: Vector; indices: array of integer): integer;
@@ -496,6 +504,10 @@ type
     function IndexToClass: array of integer := Copy(fIndexToClass);
     
     function Name: string := Self.GetType.Name;
+    
+    procedure SetClassLabels(classes: array of string);
+    
+    function GetClassLabels: array of string;
   end;
   
 //============================  
@@ -713,6 +725,7 @@ type
     fIndexToClass: array of integer;
     fClassToIndex: Dictionary<integer, integer>;
     fClassCount: integer;
+    fClassLabels: array of string;
   public
 /// Создает классификационный случайный лес:
 ///   • nTrees — число деревьев в ансамбле.
@@ -762,6 +775,10 @@ type
     function GetClasses: array of real;
     
     function Name: string := Self.GetType.Name;
+    
+    procedure SetClassLabels(classes: array of string);
+    
+    function GetClassLabels: array of string;
   end;
   
 { Gradient Boosting v1.0 — Freeze Checklist
@@ -988,6 +1005,8 @@ type
     fRandomSeed: integer;
     fRng: System.Random;
     fUserProvidedSeed: boolean;
+    
+    fClassLabels: array of string;
 
   private
     function FitInternal(XTrain: Matrix; yTrain: Vector; XVal: Matrix; yVal: Vector; useValidation: boolean)
@@ -1083,6 +1102,10 @@ type
     function Name: string := Self.GetType.Name;
     
     property IsFitted: boolean read fFitted;
+    
+    procedure SetClassLabels(classes: array of string);
+
+    function GetClassLabels: array of string;
   end;
 
 //-----------------------------
@@ -1155,6 +1178,7 @@ type
     fYEnc: array of integer;
     fClasses: array of double;
     fClassCount: integer;
+    fClassLabels: array of string;
 
     // ==== voting buffers ====
     fVotes: array of double;
@@ -1192,6 +1216,10 @@ type
     function Clone: IModel; override;
     
     function Name: string := Self.GetType.Name;
+    
+    procedure SetClassLabels(classes: array of string);
+
+    function GetClassLabels: array of string;
   end;
   
   
@@ -1979,6 +2007,10 @@ const
     'DBSCAN: Predict поддерживается только для обучающей выборки!!DBSCAN: Predict is only supported for training data';  
   ER_MODEL_NOT_FITTED =
     'Модель "{0}" не обучена. Сначала вызовите Fit()|Model "{0}" is not fitted. Call Fit() first';
+  ER_DBSCAN_PREDICT_NEW_DATA =
+    'DBSCAN не поддерживает предсказание для новых данных!!DBSCAN does not support prediction for new data';
+  ER_CLASSES_NOT_AVAILABLE =
+    'Метки классов недоступны. Убедитесь, что модель обучена и метки установлены!!Class labels are not available. Ensure the model is fitted and class labels are set';  
   
 {$endregion ErrConstants}  
 
@@ -2799,6 +2831,19 @@ begin
   Result := fIntercept;
 end;
 
+procedure LogisticRegression.SetClassLabels(classes: array of string);
+begin
+  fClassLabels := Copy(classes);
+end;
+
+function LogisticRegression.GetClassLabels: array of string;
+begin
+  if fClassLabels = nil then
+    ArgumentError(ER_CLASSES_NOT_AVAILABLE);
+
+  Result := fClassLabels;
+end;
+
 function GiniCriterion.Impurity(y: Vector; indices: array of integer): real;
 begin
   var n := indices.Length;
@@ -3612,6 +3657,19 @@ begin
     $'minSamplesSplit={fMinSamplesSplit}, ' +
     $'minSamplesLeaf={fMinSamplesLeaf}' +
     ')';
+end;
+
+procedure DecisionTreeClassifier.SetClassLabels(classes: array of string);
+begin
+  fClassLabels := Copy(classes);
+end;
+
+function DecisionTreeClassifier.GetClassLabels: array of string;
+begin
+  if fClassLabels = nil then
+    ArgumentError(ER_CLASSES_NOT_AVAILABLE);
+
+  Result := fClassLabels;
 end;
 
 // DecisionTreeRegressor
@@ -4511,6 +4569,19 @@ begin
 
   for var i := 0 to fClassCount - 1 do
     Result[i] := fIndexToClass[i];
+end;
+
+procedure RandomForestClassifier.SetClassLabels(classes: array of string);
+begin
+  fClassLabels := Copy(classes);
+end;
+
+function RandomForestClassifier.GetClassLabels: array of string;
+begin
+  if fClassLabels = nil then
+    ArgumentError(ER_CLASSES_NOT_AVAILABLE);
+
+  Result := fClassLabels;
 end;
 
 //-----------------------------
@@ -6266,6 +6337,19 @@ begin
     Result[i] := integer(v[i]);
 end;
 
+procedure GradientBoostingClassifier.SetClassLabels(classes: array of string);
+begin
+  fClassLabels := Copy(classes);
+end;
+
+function GradientBoostingClassifier.GetClassLabels: array of string;
+begin
+  if fClassLabels = nil then
+    ArgumentError(ER_CLASSES_NOT_AVAILABLE);
+
+  Result := fClassLabels;
+end;
+
 //-----------------------------
 //          KNNBase 
 //-----------------------------
@@ -6719,6 +6803,20 @@ begin
     end;
   end;
 end;
+
+procedure KNNClassifier.SetClassLabels(classes: array of string);
+begin
+  fClassLabels := Copy(classes);
+end;
+
+function KNNClassifier.GetClassLabels: array of string;
+begin
+  if fClassLabels = nil then
+    ArgumentError(ER_CLASSES_NOT_AVAILABLE);
+
+  Result := fClassLabels;
+end;    
+
 
 //-----------------------------
 //        KNNRegressor 
@@ -7326,8 +7424,14 @@ end;
 
 function DBSCAN.PredictLabels(X: Matrix): array of integer;
 begin
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
+
+  if X.RowCount <> Length(fLabels) then
+    ArgumentError(ER_DBSCAN_PREDICT_NEW_DATA);
 
   Result := Copy(fLabels);
 end;

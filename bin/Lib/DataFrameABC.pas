@@ -104,6 +104,8 @@ type
     
     function SetCategorical(names: array of string): DataFrame;
     
+    function IsCategorical(name: string): boolean; 
+    
     property Item[name: string]: Column read GetColumn; default;
     
     function GetColumns: sequence of Column;
@@ -1548,7 +1550,7 @@ begin
 
     // 🔥 берем из старой schema
     if (fSchema <> nil) and (i < fSchema.ColumnCount) then
-      cats[i] := fSchema.IsCategorical[i]
+      cats[i] := fSchema.CategoricalFlags[i]
     else
       cats[i] := false;
   end;
@@ -2314,7 +2316,7 @@ begin
 
   // копируем старые значения
   for var i := 0 to n - 1 do
-    cats[i] := fSchema.IsCategorical[i];
+    cats[i] := fSchema.CategoricalFlags[i];
 
   // применяем новые
   foreach var name in names do
@@ -2329,6 +2331,17 @@ begin
 
   // создаём новый DataFrame (columns не копируем!)
   Result := new DataFrame(columns, newSchema);
+end;
+
+function DataFrame.IsCategorical(name: string): boolean;
+begin
+  if name = nil then
+    ArgumentNullError(ER_ARG_NULL, 'name');
+
+  if not HasColumn(name) then
+    ArgumentError(ER_COLUMN_NOT_FOUND, name);
+
+  Result := Schema.IsCategorical(name);
 end;
 
 function DataFrame.Filter(pred: CursorPredicate): DataFrame;
@@ -2440,7 +2453,7 @@ begin
   // 🔥 КЛЮЧЕВОЕ: перенос schema
   var cats := new boolean[ColumnCount];
   for var i := 0 to ColumnCount - 1 do
-    cats[i] := fSchema.IsCategorical[i];
+    cats[i] := fSchema.CategoricalFlags[i];
 
   res.SetSchema(new DataFrameSchema(
     fSchema.ColumnNames,
@@ -2612,7 +2625,7 @@ begin
 
     names[i] := newName;
     types[i] := fSchema.Types[i];
-    cats[i] := fSchema.IsCategorical[i];
+    cats[i] := fSchema.CategoricalFlags[i];
   end;
 
   res.SetSchema(new DataFrameSchema(names, types, cats));
@@ -3059,7 +3072,7 @@ begin
   begin
     names[j] := fSchema.ColumnNames[j];
     types[j] := fSchema.Types[j];
-    cats[j] := fSchema.IsCategorical[j];
+    cats[j] := fSchema.CategoricalFlags[j];
   end;
 
   names[oldN] := name;
@@ -3834,7 +3847,7 @@ begin
   for var i := 0 to ColumnCount - 1 do
   begin
     var t := ColumnTypeToString(GetColumnType(i));
-    if fSchema.IsCategorical[i] then
+    if fSchema.CategoricalFlags[i] then
       t += ' (categorical)';
 
     types[i] := t;
@@ -3974,7 +3987,7 @@ begin
     var name := fSchema.ColumnNames[i];
 
     namesArr[i] := name;
-    cats[i] := fSchema.IsCategorical[i];
+    cats[i] := fSchema.CategoricalFlags[i];
 
     if toCast.Contains(name) then
       types[i] := ctInt

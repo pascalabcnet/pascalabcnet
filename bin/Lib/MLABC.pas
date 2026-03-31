@@ -89,8 +89,11 @@ type
   Datasets = MLDatasets.Datasets;
   
   IModel = MLCoreABC.IModel;
+  ISupervisedModel = MLCoreABC.ISupervisedModel;
+  IUnSupervisedModel = MLCoreABC.IUnSupervisedModel;
   UPipeline = MLModelsABC.UPipeline;
   UDataPipeline = MLPipelineABC.UDataPipeline;
+  TaskKind = MLPipelineABC.TaskKind;
   
   function LabelsToInts(y: Vector): array of integer;
   function EncodeLabels(labels: array of string): array of integer;

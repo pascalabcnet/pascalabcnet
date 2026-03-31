@@ -37,9 +37,11 @@ type
     function FitTransform(df: DataFrame): DataFrame;
   end;
 
-/// Кодирует строковый категориальный столбец в числовые значения
-/// Категории фиксируются при Fit
-/// Работает только со строковыми столбцами
+/// Кодирует строковый категориальный столбец в целочисленные индексы (0,1,2,...).
+/// Соответствие значений и индексов фиксируется при вызове Fit
+/// в порядке первого появления категорий.
+/// Работает только со строковыми столбцами и предназначен для признаков.
+/// Не должен применяться к целевому столбцу (target).
   LabelEncoder = class(IPreprocessor)
   private
     col: string;
@@ -58,6 +60,8 @@ type
     function FitTransform(df: DataFrame): DataFrame;
     
     function ToString: string; override;
+    
+    property ColumnName: string read col;
   end;
 
 /// Кодирует строковый категориальный столбец в набор бинарных (one-hot) столбцов
@@ -199,6 +203,12 @@ end;
 
 function LabelEncoder.Fit(df: DataFrame): IPreprocessor;
 begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  
+  if not df.HasColumn(col) then
+    ArgumentError(ER_COLUMN_NOT_FOUND, col);
+
   var idx := df.Schema.IndexOf(col);
 
   if df.Schema.ColumnTypeAt(idx) <> ColumnType.ctStr then
@@ -245,6 +255,8 @@ begin
         Result := mapping[s];
       end
   );
+  
+  Result := Result.SetCategorical([col]);
 end;
 
 function LabelEncoder.FitTransform(df: DataFrame): DataFrame;

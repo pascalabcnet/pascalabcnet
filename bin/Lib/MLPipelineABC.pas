@@ -7,6 +7,9 @@ uses PreprocessorABC;
 uses DataFrameABC;
 uses LinearAlgebraML;
 
+type 
+  TaskKind = (tkRegression, tkClassification);
+
 type
   /// DataPipeline — конвейер подготовки данных и обучения модели с учителем на DataFrame.
   /// 
@@ -30,6 +33,7 @@ type
     fDataSteps: List<IPreprocessor>;
     fMatrixSteps: List<ITransformer>;
     fModel: IModel;
+    fTask: TaskKind;
 
     fTarget: string;
     fFeatures: array of string;
@@ -93,17 +97,23 @@ type
     // ------------------------------------------------------------
     // Пример 4. Классификация без Pipeline
     var df := Datasets.Flowers;
+
+    // --- Encode target (DataFrame уровень)
+    df := df.SetCategorical(['species']);
     
-    var enc := new LabelEncoder('species');
-    df := enc.FitTransform(df);        // DataFrame уровень
+    var labels := df.EncodeLabels('species');
     
-    var (X,y) := df.ToXY(['length','width'],'species');
+    // --- X, y
+    var X := df.ToMatrix(['length','width']);
+    var y := new Vector(labels);
     
+    // --- Matrix уровень
     var scaler := new StandardScaler;
-    X := scaler.FitTransform(X);       // Matrix уровень
+    X := scaler.FitTransform(X);
     
+    // --- Модель
     var model := new LogisticRegression;
-    model.Fit(X,y);
+    model.Fit(X, y);
     
     // Pipeline.Build используется, когда данные уже представлены
     // в виде числовой матрицы признаков X и вектора целевой переменной y.
@@ -128,11 +138,16 @@ type
     
     /// Строит конвейер из шагов обработки данных и модели.
     /// 
-    /// Используется в задачах с учителем (с target).
+    /// Используется в задачах с учителем (с target). 
+    /// task задает тип модели - регрессия или классификация
     /// Шаги выполняются последовательно:
     /// DataFrame-преобразования → (при необходимости) матричные шаги → модель.
-    static function Build(target: string; features: array of string;
-      params steps: array of IPipelineStep): DataPipeline;
+    static function Build(
+      task: TaskKind;
+      target: string; 
+      features: array of string;
+      params steps: array of IPipelineStep
+    ): DataPipeline;
       
     /// Обучает конвейер на DataFrame.
     /// Семантика:
@@ -157,9 +172,10 @@ type
     /// Доступен только если конечная модель поддерживает IProbabilisticClassifier.
     function PredictProba(df: DataFrame): Matrix;
     
-    /// Возвращает список классов в порядке столбцов PredictProba.
-    /// Доступен только если конечная модель поддерживает IProbabilisticClassifier.
-    function GetClasses: array of real;
+    /// Возвращает метки классов в порядке кодирования (0,1,2,...),
+    /// используемом при EncodeLabels.
+    /// Доступен только для задач классификации после Fit.
+    function GetClassLabels: array of string;
     
     /// Признак того, что был вызван Fit или FitTransform.
     property IsFitted: boolean read fFitted;
@@ -326,7 +342,14 @@ const
     'Признак "{0}" имеет тип {1} и должен быть числовым!!Feature "{0}" has type {1} but must be numeric';    
   ER_MODEL_NOT_CLUSTERER =
     'Модель "{0}" не является алгоритмом кластеризации!!Model "{0}" is not a clustering algorithm';    
-    
+  ER_NOT_CLASSIFICATION = 
+    'Операция доступна только для задач классификации!!Operation is only available for classification tasks';
+  ER_CLASSES_NOT_AVAILABLE = 
+    'Метки классов недоступны. Убедитесь, что конвейер обучен и задача — классификация!!Class labels are not available. Ensure the pipeline is fitted and the task is classification';  
+  ER_LABELENCODER_TARGET_NOT_ALLOWED =
+    'LabelEncoder нельзя применять к целевому столбцу. Используйте EncodeLabels!!LabelEncoder cannot be applied to the target column. Use EncodeLabels instead';
+  ER_ENCODELABELS_NOT_CATEGORICAL =
+    'Целевой столбец должен быть категориальным для задач классификации!!Target column must be categorical for classification tasks';
 //-----------------------------
 //        DataPipeline
 //-----------------------------
@@ -358,6 +381,10 @@ begin
     fDataSteps.Add(step as IPreprocessor);
     exit(Self);
   end;
+  
+  if step is LabelEncoder(var enc) then
+    if enc.ColumnName = fTarget then
+      ArgumentError(ER_LABELENCODER_TARGET_NOT_ALLOWED, fTarget);
 
   // --- Matrix transformer
   if step is ITransformer then
@@ -383,15 +410,19 @@ begin
   Result := Self;
 end;
 
-class function DataPipeline.Build(target: string;
-  features: array of string; params steps: array of IPipelineStep): DataPipeline;
+class function DataPipeline.Build(
+  task: TaskKind;
+  target: string;
+  features: array of string; 
+  params steps: array of IPipelineStep
+): DataPipeline;
 begin
   if (target = nil) or (target = '') then
     ArgumentError(ER_TARGET_EMPTY);
 
   if (features = nil) or (features.Length = 0) then
     ArgumentError(ER_FEATURES_EMPTY);
-
+  
   var seen := new HashSet<string>;
 
   foreach var f in features do
@@ -410,10 +441,12 @@ begin
 
   var p := new DataPipeline;
   p.fTarget := target;
-  p.fFeatures := features;
+  p.fFeatures := Copy(features);
+  p.fTask := task;
 
-  for var i := 0 to High(steps) do
-    p.Add(steps[i]);
+  if steps <> nil then
+    for var i := 0 to High(steps) do
+      p.Add(steps[i]);
 
   Result := p;
 end;
@@ -465,7 +498,20 @@ begin
   fFinalFeatures := feats.ToArray;
 
   var X := current.ToMatrix(fFinalFeatures);
-  var y := current.ToVector(fTarget);
+  
+  var classes: array of string;  
+  var y: Vector;
+  
+  case fTask of
+    tkRegression:
+      y := current.ToVector(fTarget);
+  
+    tkClassification:
+      begin
+        var labels := current.EncodeLabels(fTarget, classes);
+        y := new Vector(labels);
+      end;
+  end;
   
   if X.RowCount <> y.Length then
     DimensionError(ER_XY_SIZE_MISMATCH, X.RowCount, y.Length);
@@ -488,6 +534,10 @@ begin
   if fModel is ISupervisedModel(var supModel) then
     fModel := supModel.Fit(X, y)
   else ArgumentError(ER_MODEL_NOT_SUPERVISED, fModel.GetType.Name);
+  
+  if fTask = tkClassification then
+    if fModel is IClassifier(var cls) then
+      cls.SetClassLabels(classes);  
 
   fFitted := true;
   Result := Self;
@@ -568,6 +618,13 @@ begin
   if fFinalFeatures = nil then
     Error(ER_PIPELINE_FINALFEATURES);
   
+  if fTask <> tkClassification then
+    ArgumentError(ER_NOT_CLASSIFICATION);
+  
+  for var i := 0 to High(fFinalFeatures) do
+    if not current.HasColumn(fFinalFeatures[i]) then
+      ArgumentError(ER_PIPELINE_FEATURE_NOT_FOUND, fFinalFeatures[i]);
+  
   var X := current.ToMatrix(fFinalFeatures);
 
   foreach var t in fMatrixSteps do
@@ -576,14 +633,19 @@ begin
   Result := (fModel as IProbabilisticClassifier).PredictProba(X);
 end;
 
-function DataPipeline.GetClasses: array of real;
+function DataPipeline.GetClassLabels: array of string;
 begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
-  if not (fModel is IProbabilisticClassifier) then
-    ArgumentError(ER_PROBA_NOT_SUPPORTED);
 
-  Result := (fModel as IProbabilisticClassifier).GetClasses;
+  if fTask <> tkClassification then
+    ArgumentError(ER_NOT_CLASSIFICATION);
+
+  var cls := fModel as IClassifier;
+  if cls = nil then
+    ArgumentError(ER_CLASSES_NOT_AVAILABLE);
+
+  Result := cls.GetClassLabels;
 end;
 
 procedure DataPipeline.ValidateSchema(df: DataFrame);
@@ -605,7 +667,11 @@ begin
     var cols := df.Schema.ColumnNames.JoinToString(', ');
     ArgumentError(ER_DATAPIPE_TARGET_NOT_FOUND, fTarget, cols);
   end;
-
+  
+  if fTask = tkClassification then
+    if not df.IsCategorical(fTarget) then
+      ArgumentError(ER_ENCODELABELS_NOT_CATEGORICAL, fTarget);
+  
   var seen := new HashSet<string>;
 
   for var i := 0 to High(fFeatures) do
