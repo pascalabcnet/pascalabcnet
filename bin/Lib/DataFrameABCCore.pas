@@ -69,7 +69,14 @@ type
   
   DataFrameCursor = class;
   
-  /// Абстрактный базовый класс столбца
+  /// Базовый класс столбца.
+  /// 
+  /// Столбцы являются неизменяемыми (immutable) после создания.
+  /// Массивы данных (Data, IsValid) не должны изменяться после передачи
+  /// в DataFrame через Add*Column.
+  /// 
+  /// Любые операции (Filter, TakeRows, GroupBy и др.) создают новые столбцы,
+  /// не модифицируя существующие
   Column = abstract class
     Info: ColumnInfo;
   public
@@ -78,13 +85,14 @@ type
     /// Возвращает количество строк в столбце
     function RowCount: integer; virtual; abstract;
     /// Добавляет невалидное (NA) значение в конец столбца
-    procedure AppendInvalid; virtual; abstract;
+    //procedure AppendInvalid; virtual; abstract;
     /// Добавляет значение из курсора в указанной позиции
-    procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); virtual; abstract;
+    //procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); virtual; abstract;
   end;
   
   /// Столбец целых чисел
   IntColumn = class(Column)
+    // ⚠️ Data и IsValid считаются immutable после создания
     Data: array of integer;     // Данные столбца
     IsValid: array of boolean;  // Флаги валидности (может быть nil)
   public
@@ -96,9 +104,16 @@ type
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
-    procedure AppendInvalid; override;
+    /// ⚠ УСТАРЕВШИЙ МЕТОД.
+    /// Не должен использоваться в новом коде.
+    /// Сохраняется только для обратной совместимости.
+    //procedure AppendInvalid; override;
     /// Добавляет значение из курсора в указанной позиции
-    procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
+    /// ⚠ УСТАРЕВШИЙ МЕТОД.
+    /// Использует неэффективное поэлементное добавление (O(n²)).
+    /// Не должен использоваться в новом коде.
+    /// Сохраняется только для обратной совместимости.
+    //procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
   end;
   
   /// Столбец вещественных чисел
@@ -114,9 +129,9 @@ type
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
-    procedure AppendInvalid; override;
+    //procedure AppendInvalid; override;
     /// Добавляет значение из курсора в указанной позиции
-    procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
+    //procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
   end;
 
   /// Столбец строк
@@ -132,9 +147,9 @@ type
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
-    procedure AppendInvalid; override;
+    //procedure AppendInvalid; override;
     /// Добавляет значение из курсора в указанной позиции
-    procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
+    //procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
   end;
 
   /// Столбец булевых значений
@@ -150,9 +165,9 @@ type
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
-    procedure AppendInvalid; override;
+    //procedure AppendInvalid; override;
     /// Добавляет значение из курсора в указанной позиции
-    procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
+    //procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
   end;
   
   // Accessor типы для курсора
@@ -575,7 +590,7 @@ begin
   IsValid := nil;
 end;
 
-procedure IntColumn.AppendInvalid;
+{procedure IntColumn.AppendInvalid;
 begin
   Data := Data + [0];
 
@@ -587,9 +602,9 @@ begin
   end;
 
   IsValid := IsValid + [false];
-end;
+end;}
 
-procedure IntColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
+{procedure IntColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
 begin
   if cur.IsValid(colIndex) then
   begin
@@ -598,7 +613,7 @@ begin
       IsValid := IsValid + [true];
   end
   else AppendInvalid; 
-end;
+end;}
 
 function IntColumn.TryGetNumericValue(i: integer; var value: real): boolean;
 begin
@@ -628,7 +643,7 @@ begin
 end;
 
 
-procedure FloatColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
+{procedure FloatColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
 begin
   if cur.IsValid(colIndex) then
   begin
@@ -637,9 +652,9 @@ begin
       IsValid := IsValid + [true];
   end
   else AppendInvalid;
-end;
+end;}
 
-procedure FloatColumn.AppendInvalid;
+{procedure FloatColumn.AppendInvalid;
 begin
   Data := Data + [0.0];
 
@@ -651,7 +666,7 @@ begin
   end;
 
   IsValid := IsValid + [false];
-end;
+end;}
 
 function FloatColumn.TryGetNumericValue(i: integer; var value: real): boolean;
 begin
@@ -681,7 +696,7 @@ begin
   IsValid := nil;
 end;
 
-procedure StrColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
+{procedure StrColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
 begin
   if cur.IsValid(colIndex) then
   begin
@@ -690,9 +705,9 @@ begin
       IsValid := IsValid + [true];
   end
   else AppendInvalid;
-end;
+end;}
 
-procedure StrColumn.AppendInvalid;
+{procedure StrColumn.AppendInvalid;
 begin
   Data := Data + [''];
 
@@ -704,7 +719,7 @@ begin
   end;
 
   IsValid := IsValid + [false];
-end;
+end;}
 
 function StrColumn.TryGetNumericValue(i: integer; var value: real): boolean;
 begin
@@ -743,7 +758,7 @@ begin
   IsValid := nil;
 end;
 
-procedure BoolColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
+{procedure BoolColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
 begin
   if cur.IsValid(colIndex) then
   begin
@@ -752,9 +767,9 @@ begin
       IsValid := IsValid + [true];
   end
   else AppendInvalid;
-end;
+end;}
 
-procedure BoolColumn.AppendInvalid;
+{procedure BoolColumn.AppendInvalid;
 begin
   Data := Data + [false];
 
@@ -766,7 +781,7 @@ begin
   end;
 
   IsValid := IsValid + [false];
-end;
+end;}
 
 //-----------------------------
 //           JoinKey

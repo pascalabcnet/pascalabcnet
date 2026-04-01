@@ -106,6 +106,12 @@ const
   akCount = AggregationKind.akCount;
   akSum = AggregationKind.akSum;
   akStd = AggregationKind.akStd;
+  
+  /// Внутреннее соединение
+  jkInner = JoinKind.jkInner;
+  jkLeft = JoinKind.jkLeft;
+  jkRight = JoinKind.jkRight;
+  jkFull = JoinKind.jkFull;
 
   function LabelsToInts(y: Vector): array of integer;
   function EncodeLabels(labels: array of string): array of integer;

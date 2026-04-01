@@ -46,9 +46,9 @@ type
     
     // Join методы
     
-    procedure AppendJoinedRow(leftCur, rightCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer);
-    procedure AppendLeftOnlyRow(leftCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer);
-    procedure AppendRightOnlyRow(rightCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer; leftColumnCount: integer);
+    //procedure AppendJoinedRow(leftCur, rightCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer);
+    //procedure AppendLeftOnlyRow(leftCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer);
+    //procedure AppendRightOnlyRow(rightCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer; leftColumnCount: integer);
     
     // Single key методы
     {function DataFrame.JoinInnerSingleKey(other: DataFrame; leftKey, rightKey: integer;
@@ -154,6 +154,9 @@ type
     procedure AddFloatColumn(name: string; data: array of real; valid: array of boolean := nil);
     /// Добавляет строковый столбец
     procedure AddStrColumn(name: string; data: array of string; valid: array of boolean := nil);
+    /// Добавляет строковый столбец
+    procedure AddStrColumn(name: string; data: array of char; valid: array of boolean := nil);
+
     /// Добавляет столбец логических значений
     procedure AddBoolColumn(name: string; data: array of boolean; valid: array of boolean := nil);
     
@@ -331,7 +334,7 @@ type
     /// Проверяет валидность индекса столбца
     procedure CheckColumnIndex(colIndex: integer);
     /// Добавляет строку из курсора
-    procedure AppendRowFromCursor(src: DataFrame; cur: DataFrameCursor);
+    //procedure AppendRowFromCursor(src: DataFrame; cur: DataFrameCursor);
   end;
   
   /// Тип операции группировки
@@ -607,44 +610,31 @@ type
   public
     /// Создает контекст группировки для указанных столбцов
     constructor Create(df: DataFrame; keyCols: array of integer);
-
     /// Возвращает DataFrame с количеством строк в каждой группе
     function Count: DataFrame;
-
     /// Возвращает DataFrame со средними значениями указанного столбца по группам
     function Mean(colName: string): DataFrame;
-    
     /// Возвращает сумму значений указанного столбца по группам
     function Sum(colName: string): DataFrame;
-    
     /// Возвращает минимальные значения указанного столбца по группам
     function Min(colName: string): DataFrame;
-    
     /// Возвращает максимальные значения указанного столбца по группам
     function Max(colName: string): DataFrame;
-    
     /// Возвращает стандартное отклонение указанного столбца по группам
     function Std(colName: string): DataFrame;
-    
     /// Возвращает средние значения указанных столбцов по группам
     function Mean(colNames: array of string): DataFrame;
-    
     /// Возвращает суммы указанных столбцов по группам
     function Sum(colNames: array of string): DataFrame;
-    
     /// Возвращает минимумы указанных столбцов по группам
     function Min(colNames: array of string): DataFrame;
-    
     /// Возвращает максимумы указанных столбцов по группам
     function Max(colNames: array of string): DataFrame;
-    
     /// Возвращает стандартные отклонения указанных столбцов по группам
     function Std(colNames: array of string): DataFrame;
-    
-    /// Возвращает DataFrame, содержащий строки групп,
-    /// для которых предикат возвращает true
+    /// Возвращает DataFrame, содержащий строки групп, для которых предикат возвращает true
     function Filter(pred: Func<GroupView, boolean>): DataFrame;    
-   
+
     function Aggregate(colName: string; kinds: array of AggregationKind): DataFrame;
     
     function Aggregate(colNames: array of string; kinds: array of AggregationKind): DataFrame;
@@ -656,6 +646,278 @@ type
     /// Возвращает DataFrame с полной статистикой всех числовых столбцов по группам
     function DescribeAll: DataFrame;
   end;
+  
+//-----------------------------
+//        Внешние хелперы
+//-----------------------------
+
+procedure BuildMergedIntKeyColumnFromFullJoin(
+  res: DataFrame;
+  name: string;
+  leftCol: IntColumn;
+  rightCol: IntColumn;
+  leftIdx, rightIdx: array of integer
+);
+begin
+  var n := leftIdx.Length;
+  var data := new integer[n];
+  var valid := new boolean[n];
+
+  for var i := 0 to n - 1 do
+  begin
+    var li := leftIdx[i];
+    var ri := rightIdx[i];
+
+    if li >= 0 then
+    begin
+      data[i] := leftCol.Data[li];
+      valid[i] := if leftCol.IsValid = nil then true else leftCol.IsValid[li];
+    end
+    else if ri >= 0 then
+    begin
+      data[i] := rightCol.Data[ri];
+      valid[i] := if rightCol.IsValid = nil then true else rightCol.IsValid[ri];
+    end
+    else
+    begin
+      data[i] := 0;
+      valid[i] := false;
+    end;
+  end;
+
+  res.AddIntColumn(name, data, valid);
+end;
+
+procedure BuildMergedFloatKeyColumnFromFullJoin(
+  res: DataFrame;
+  name: string;
+  leftCol: FloatColumn;
+  rightCol: FloatColumn;
+  leftIdx, rightIdx: array of integer
+);
+begin
+  var n := leftIdx.Length;
+  var data := new real[n];
+  var valid := new boolean[n];
+
+  for var i := 0 to n - 1 do
+  begin
+    var li := leftIdx[i];
+    var ri := rightIdx[i];
+
+    if li >= 0 then
+    begin
+      data[i] := leftCol.Data[li];
+      valid[i] := if leftCol.IsValid = nil then true else leftCol.IsValid[li];
+    end
+    else if ri >= 0 then
+    begin
+      data[i] := rightCol.Data[ri];
+      valid[i] := if rightCol.IsValid = nil then true else rightCol.IsValid[ri];
+    end
+    else
+    begin
+      data[i] := 0.0;
+      valid[i] := false;
+    end;
+  end;
+
+  res.AddFloatColumn(name, data, valid);
+end;
+
+procedure BuildMergedStrKeyColumnFromFullJoin(
+  res: DataFrame;
+  name: string;
+  leftCol: StrColumn;
+  rightCol: StrColumn;
+  leftIdx, rightIdx: array of integer
+);
+begin
+  var n := leftIdx.Length;
+  var data := new string[n];
+  var valid := new boolean[n];
+
+  for var i := 0 to n - 1 do
+  begin
+    var li := leftIdx[i];
+    var ri := rightIdx[i];
+
+    if li >= 0 then
+    begin
+      data[i] := leftCol.Data[li];
+      valid[i] := if leftCol.IsValid = nil then true else leftCol.IsValid[li];
+    end
+    else if ri >= 0 then
+    begin
+      data[i] := rightCol.Data[ri];
+      valid[i] := if rightCol.IsValid = nil then true else rightCol.IsValid[ri];
+    end
+    else
+    begin
+      data[i] := '';
+      valid[i] := false;
+    end;
+  end;
+
+  res.AddStrColumn(name, data, valid);
+end;
+
+procedure BuildMergedBoolKeyColumnFromFullJoin(
+  res: DataFrame;
+  name: string;
+  leftCol: BoolColumn;
+  rightCol: BoolColumn;
+  leftIdx, rightIdx: array of integer
+);
+begin
+  var n := leftIdx.Length;
+  var data := new boolean[n];
+  var valid := new boolean[n];
+
+  for var i := 0 to n - 1 do
+  begin
+    var li := leftIdx[i];
+    var ri := rightIdx[i];
+
+    if li >= 0 then
+    begin
+      data[i] := leftCol.Data[li];
+      valid[i] := if leftCol.IsValid = nil then true else leftCol.IsValid[li];
+    end
+    else if ri >= 0 then
+    begin
+      data[i] := rightCol.Data[ri];
+      valid[i] := if rightCol.IsValid = nil then true else rightCol.IsValid[ri];
+    end
+    else
+    begin
+      data[i] := false;
+      valid[i] := false;
+    end;
+  end;
+
+  res.AddBoolColumn(name, data, valid);
+end;
+  
+procedure BuildIntColumnFromJoin(
+  res: DataFrame;
+  name: string;
+  src: IntColumn;
+  idx: array of integer
+);
+begin
+  var n := idx.Length;
+  var data := new integer[n];
+  var valid := new boolean[n];
+
+  for var i := 0 to n - 1 do
+  begin
+    var j := idx[i];
+
+    if j < 0 then
+    begin
+      data[i] := 0;
+      valid[i] := false;
+    end
+    else
+    begin
+      data[i] := src.Data[j];
+      valid[i] := if src.IsValid = nil then true else src.IsValid[j];
+    end;
+  end;
+
+  res.AddIntColumn(name, data, valid);
+end;
+
+procedure BuildFloatColumnFromJoin(
+  res: DataFrame;
+  name: string;
+  src: FloatColumn;
+  idx: array of integer
+);
+begin
+  var n := idx.Length;
+  var data := new real[n];
+  var valid := new boolean[n];
+
+  for var i := 0 to n - 1 do
+  begin
+    var j := idx[i];
+
+    if j < 0 then
+    begin
+      data[i] := 0.0;
+      valid[i] := false;
+    end
+    else
+    begin
+      data[i] := src.Data[j];
+      valid[i] := if src.IsValid = nil then true else src.IsValid[j];
+    end;
+  end;
+
+  res.AddFloatColumn(name, data, valid);
+end;
+
+procedure BuildStrColumnFromJoin(
+  res: DataFrame;
+  name: string;
+  src: StrColumn;
+  idx: array of integer
+);
+begin
+  var n := idx.Length;
+  var data := new string[n];
+  var valid := new boolean[n];
+
+  for var i := 0 to n - 1 do
+  begin
+    var j := idx[i];
+
+    if j < 0 then
+    begin
+      data[i] := '';
+      valid[i] := false;
+    end
+    else
+    begin
+      data[i] := src.Data[j];
+      valid[i] := if src.IsValid = nil then true else src.IsValid[j];
+    end;
+  end;
+
+  res.AddStrColumn(name, data, valid);
+end;
+
+procedure BuildBoolColumnFromJoin(
+  res: DataFrame;
+  name: string;
+  src: BoolColumn;
+  idx: array of integer
+);
+begin
+  var n := idx.Length;
+  var data := new boolean[n];
+  var valid := new boolean[n];
+
+  for var i := 0 to n - 1 do
+  begin
+    var j := idx[i];
+
+    if j < 0 then
+    begin
+      data[i] := false;
+      valid[i] := false;
+    end
+    else
+    begin
+      data[i] := src.Data[j];
+      valid[i] := if src.IsValid = nil then true else src.IsValid[j];
+    end;
+  end;
+
+  res.AddBoolColumn(name, data, valid);
+end;
 
 //-----------------------------
 //          DataFrame
@@ -766,7 +1028,7 @@ begin
   end;
 end;
 
-procedure DataFrame.AppendJoinedRow(leftCur, rightCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer);
+{procedure DataFrame.AppendJoinedRow(leftCur, rightCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer);
 begin
   var col := 0;
 
@@ -847,7 +1109,7 @@ begin
       columns[col].AppendFromCursor(rightCur, j);
       col += 1;
     end;
-end;
+end;}
 
 
 function DataFrame.LeftJoinSingleKey(other: DataFrame; key: string): DataFrame;
@@ -872,24 +1134,89 @@ begin
   end;
 end;
 
-
+procedure BuildColumnFromJoin(res: DataFrame; name: string; col: Column; idx: array of integer);
+begin
+  case col.Info.ColType of
+    ctInt:
+      BuildIntColumnFromJoin(res, name, IntColumn(col), idx);
+    ctFloat:
+      BuildFloatColumnFromJoin(res, name, FloatColumn(col), idx);
+    ctStr:
+      BuildStrColumnFromJoin(res, name, StrColumn(col), idx);
+    ctBool:
+      BuildBoolColumnFromJoin(res, name, BoolColumn(col), idx);
+    else
+      Error(ER_UNSUPPORTED_COLUMN_TYPE, col.Info.ColType);
+  end;
+end;
 
 function DataFrame.LeftJoinSingleKeyInt(other: DataFrame; leftKey, rightKey: integer): DataFrame;
 begin
   var index := new Dictionary<integer, List<integer>>;
 
+  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
-  begin
-    if not rcur.IsValid(rightKey) then continue;
-    var k := rcur.Int(rightKey);
+    if rcur.IsValid(rightKey) then
+    begin
+      var k := rcur.Int(rightKey);
 
-    if not index.ContainsKey(k) then
-      index[k] := new List<integer>;
-    index[k].Add(rcur.Position);
+      var lst: List<integer>;
+      if not index.TryGetValue(k, lst) then
+      begin
+        lst := new List<integer>;
+        index[k] := lst;
+      end;
+
+      lst.Add(rcur.Position);
+    end;
+
+  // --- collect index pairs
+  var leftIdx  := new List<integer>;
+  var rightIdx := new List<integer>;
+
+  var lcur := GetCursor;
+  while lcur.MoveNext do
+  begin
+    var lpos := lcur.Position;
+
+    if not lcur.IsValid(leftKey) then
+    begin
+      leftIdx.Add(lpos);
+      rightIdx.Add(-1);
+      continue;
+    end;
+
+    var k := lcur.Int(leftKey);
+
+    if index.ContainsKey(k) then
+      foreach var rpos in index[k] do
+      begin
+        leftIdx.Add(lpos);
+        rightIdx.Add(rpos);
+      end
+    else
+    begin
+      leftIdx.Add(lpos);
+      rightIdx.Add(-1);
+    end;
   end;
 
-  //=== Заменяем на Schema
+  var leftArr  := leftIdx.ToArray;
+  var rightArr := rightIdx.ToArray;
+
+  var res := new DataFrame;
+
+  // --- left columns
+  for var ci := 0 to ColumnCount - 1 do
+    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
+
+  // --- right columns (exclude key)
+  for var ci := 0 to other.ColumnCount - 1 do
+    if ci <> rightKey then
+      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
+
+  // --- schema
   var schema := DataFrameSchema.Merge(
     fSchema,
     other.fSchema,
@@ -897,31 +1224,7 @@ begin
     [rightKey],
     'right_'
   );
-  var res := CreateEmptyBySchema(schema);
-  //=== 
-
-  var lcur := GetCursor;
-  while lcur.MoveNext do
-  begin
-    if not lcur.IsValid(leftKey) then
-    begin
-      res.AppendLeftOnlyRow(lcur, [leftKey], [rightKey]);
-      continue;
-    end;
-
-    var k := lcur.Int(leftKey);
-
-    if index.ContainsKey(k) then
-    begin
-      foreach var rpos in index[k] do
-      begin
-        rcur.MoveTo(rpos);
-        res.AppendJoinedRow(lcur, rcur, [leftKey], [rightKey]);
-      end;
-    end
-    else
-      res.AppendLeftOnlyRow(lcur, [leftKey], [rightKey]);
-  end;
+  res.SetSchema(schema);
 
   Result := res;
 end;
@@ -930,34 +1233,36 @@ function DataFrame.LeftJoinSingleKeyFloat(other: DataFrame; leftKey, rightKey: i
 begin
   var index := new Dictionary<real, List<integer>>;
 
+  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
-  begin
-    if not rcur.IsValid(rightKey) then continue;
-    var k := rcur.Float(rightKey);
+    if rcur.IsValid(rightKey) then
+    begin
+      var k := rcur.Float(rightKey);
 
-    if not index.ContainsKey(k) then
-      index[k] := new List<integer>;
-    index[k].Add(rcur.Position);
-  end;
+      var lst: List<integer>;
+      if not index.TryGetValue(k, lst) then
+      begin
+        lst := new List<integer>;
+        index[k] := lst;
+      end;
 
-  //=== 
-  var schema := DataFrameSchema.Merge(
-    fSchema,
-    other.fSchema,
-    [leftKey],
-    [rightKey],
-    'right_'
-  );
-  var res := CreateEmptyBySchema(schema);
-  //=== 
+      lst.Add(rcur.Position);
+    end;
+
+  // --- collect index pairs
+  var leftIdx  := new List<integer>;
+  var rightIdx := new List<integer>;
 
   var lcur := GetCursor;
   while lcur.MoveNext do
   begin
+    var lpos := lcur.Position;
+
     if not lcur.IsValid(leftKey) then
     begin
-      res.AppendLeftOnlyRow(lcur, [leftKey], [rightKey]);
+      leftIdx.Add(lpos);
+      rightIdx.Add(-1);
       continue;
     end;
 
@@ -966,12 +1271,39 @@ begin
     if index.ContainsKey(k) then
       foreach var rpos in index[k] do
       begin
-        rcur.MoveTo(rpos);
-        res.AppendJoinedRow(lcur, rcur, [leftKey], [rightKey]);
+        leftIdx.Add(lpos);
+        rightIdx.Add(rpos);
       end
     else
-      res.AppendLeftOnlyRow(lcur, [leftKey], [rightKey]);
+    begin
+      leftIdx.Add(lpos);
+      rightIdx.Add(-1);
+    end;
   end;
+
+  var leftArr  := leftIdx.ToArray;
+  var rightArr := rightIdx.ToArray;
+
+  var res := new DataFrame;
+
+  // --- left columns
+  for var ci := 0 to ColumnCount - 1 do
+    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
+
+  // --- right columns (exclude key)
+  for var ci := 0 to other.ColumnCount - 1 do
+    if ci <> rightKey then
+      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
+
+  // --- schema
+  var schema := DataFrameSchema.Merge(
+    fSchema,
+    other.fSchema,
+    [leftKey],
+    [rightKey],
+    'right_'
+  );
+  res.SetSchema(schema);
 
   Result := res;
 end;
@@ -980,34 +1312,36 @@ function DataFrame.LeftJoinSingleKeyStr(other: DataFrame; leftKey, rightKey: int
 begin
   var index := new Dictionary<string, List<integer>>;
 
+  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
-  begin
-    if not rcur.IsValid(rightKey) then continue;
-    var k := rcur.Str(rightKey);
+    if rcur.IsValid(rightKey) then
+    begin
+      var k := rcur.Str(rightKey);
 
-    if not index.ContainsKey(k) then
-      index[k] := new List<integer>;
-    index[k].Add(rcur.Position);
-  end;
+      var lst: List<integer>;
+      if not index.TryGetValue(k, lst) then
+      begin
+        lst := new List<integer>;
+        index[k] := lst;
+      end;
 
-  //=== 
-  var schema := DataFrameSchema.Merge(
-    fSchema,
-    other.fSchema,
-    [leftKey],
-    [rightKey],
-    'right_'
-  );
-  var res := CreateEmptyBySchema(schema);
-  //=== 
+      lst.Add(rcur.Position);
+    end;
+
+  // --- collect index pairs
+  var leftIdx  := new List<integer>;
+  var rightIdx := new List<integer>;
 
   var lcur := GetCursor;
   while lcur.MoveNext do
   begin
+    var lpos := lcur.Position;
+
     if not lcur.IsValid(leftKey) then
     begin
-      res.AppendLeftOnlyRow(lcur, [leftKey], [rightKey]);
+      leftIdx.Add(lpos);
+      rightIdx.Add(-1);
       continue;
     end;
 
@@ -1016,12 +1350,39 @@ begin
     if index.ContainsKey(k) then
       foreach var rpos in index[k] do
       begin
-        rcur.MoveTo(rpos);
-        res.AppendJoinedRow(lcur, rcur, [leftKey], [rightKey]);
+        leftIdx.Add(lpos);
+        rightIdx.Add(rpos);
       end
     else
-      res.AppendLeftOnlyRow(lcur, [leftKey], [rightKey]);
+    begin
+      leftIdx.Add(lpos);
+      rightIdx.Add(-1);
+    end;
   end;
+
+  var leftArr  := leftIdx.ToArray;
+  var rightArr := rightIdx.ToArray;
+
+  var res := new DataFrame;
+
+  // --- left columns
+  for var ci := 0 to ColumnCount - 1 do
+    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
+
+  // --- right columns (exclude key)
+  for var ci := 0 to other.ColumnCount - 1 do
+    if ci <> rightKey then
+      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
+
+  // --- schema
+  var schema := DataFrameSchema.Merge(
+    fSchema,
+    other.fSchema,
+    [leftKey],
+    [rightKey],
+    'right_'
+  );
+  res.SetSchema(schema);
 
   Result := res;
 end;
@@ -1030,34 +1391,36 @@ function DataFrame.LeftJoinSingleKeyBool(other: DataFrame; leftKey, rightKey: in
 begin
   var index := new Dictionary<boolean, List<integer>>;
 
+  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
-  begin
-    if not rcur.IsValid(rightKey) then continue;
-    var k := rcur.Bool(rightKey);
+    if rcur.IsValid(rightKey) then
+    begin
+      var k := rcur.Bool(rightKey);
 
-    if not index.ContainsKey(k) then
-      index[k] := new List<integer>;
-    index[k].Add(rcur.Position);
-  end;
+      var lst: List<integer>;
+      if not index.TryGetValue(k, lst) then
+      begin
+        lst := new List<integer>;
+        index[k] := lst;
+      end;
 
-  //=== 
-  var schema := DataFrameSchema.Merge(
-    fSchema,
-    other.fSchema,
-    [leftKey],
-    [rightKey],
-    'right_'
-  );
-  var res := CreateEmptyBySchema(schema);
-  //=== 
+      lst.Add(rcur.Position);
+    end;
+
+  // --- collect index pairs
+  var leftIdx  := new List<integer>;
+  var rightIdx := new List<integer>;
 
   var lcur := GetCursor;
   while lcur.MoveNext do
   begin
+    var lpos := lcur.Position;
+
     if not lcur.IsValid(leftKey) then
     begin
-      res.AppendLeftOnlyRow(lcur, [leftKey], [rightKey]);
+      leftIdx.Add(lpos);
+      rightIdx.Add(-1);
       continue;
     end;
 
@@ -1066,16 +1429,42 @@ begin
     if index.ContainsKey(k) then
       foreach var rpos in index[k] do
       begin
-        rcur.MoveTo(rpos);
-        res.AppendJoinedRow(lcur, rcur, [leftKey], [rightKey]);
+        leftIdx.Add(lpos);
+        rightIdx.Add(rpos);
       end
     else
-      res.AppendLeftOnlyRow(lcur, [leftKey], [rightKey]);
+    begin
+      leftIdx.Add(lpos);
+      rightIdx.Add(-1);
+    end;
   end;
+
+  var leftArr  := leftIdx.ToArray;
+  var rightArr := rightIdx.ToArray;
+
+  var res := new DataFrame;
+
+  // --- left columns
+  for var ci := 0 to ColumnCount - 1 do
+    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
+
+  // --- right columns (exclude key)
+  for var ci := 0 to other.ColumnCount - 1 do
+    if ci <> rightKey then
+      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
+
+  // --- schema
+  var schema := DataFrameSchema.Merge(
+    fSchema,
+    other.fSchema,
+    [leftKey],
+    [rightKey],
+    'right_'
+  );
+  res.SetSchema(schema);
 
   Result := res;
 end;
-
 
 function DataFrame.LeftJoinMultiKey(other: DataFrame; keys: array of string): DataFrame;
 begin
@@ -1110,30 +1499,51 @@ begin
     rightKeyIdx,
     'right_'
   );
-  var res := CreateEmptyBySchema(schema);
   //=== 
 
   // 6. probe
+  var leftIdx  := new List<integer>;
+  var rightIdx := new List<integer>;
+  
   var lcur := GetCursor;
-  var rcur := other.GetCursor;
-
+  
   while lcur.MoveNext do
   begin
+    var lpos := lcur.Position;
+  
     var hasNA := false;
     var key := BuildJoinKey(lcur, leftLayout, hasNA);
-
+  
     if (not hasNA) and hash.ContainsKey(key) then
-    begin
       foreach var rpos in hash[key] do
       begin
-        rcur.MoveTo(rpos);
-        res.AppendJoinedRow(lcur, rcur, leftKeyIdx, rightKeyIdx);
-      end;
-    end
+        leftIdx.Add(lpos);
+        rightIdx.Add(rpos);
+      end
     else
-      res.AppendLeftOnlyRow(lcur, leftKeyIdx, rightKeyIdx);
+    begin
+      leftIdx.Add(lpos);
+      rightIdx.Add(-1);
+    end;
   end;
 
+  var leftArr  := leftIdx.ToArray;
+  var rightArr := rightIdx.ToArray;
+  
+  var res := new DataFrame;
+  
+  // --- left columns
+  for var ci := 0 to ColumnCount - 1 do
+    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
+  
+  // --- right columns (exclude keys)
+  for var ci := 0 to other.ColumnCount - 1 do
+    if not rightKeyIdx.Contains(ci) then
+      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
+  
+  // --- schema
+  res.SetSchema(schema);
+  
   Result := res;
 end;
 
@@ -1159,11 +1569,9 @@ begin
   Result := tmp.ReorderBySchema(schema);
 end;
 
-
-
 function DataFrame.FullJoinSingleKey(other: DataFrame; key: string): DataFrame;
 begin
-  // 1. Индексы ключей
+  // --- 1. индексы ключей
   var li := fSchema.IndexOf(key);
   var ri := other.fSchema.IndexOf(key);
   
@@ -1173,14 +1581,14 @@ begin
   var leftKeyIdx  := [li];
   var rightKeyIdx := [ri];
 
-  // 2. Layout'ы ключей
+  // --- 2. layout
   var leftLayout  := BuildJoinKeyLayout(leftKeyIdx);
   var rightLayout := other.BuildJoinKeyLayout(rightKeyIdx);
 
-  // 3. Hash-индекс по right
+  // --- 3. hash index (right)
   var hash := other.BuildHashIndex(rightLayout);
 
-  // 4. Результат (схема такая же, как у inner/left)
+  // --- 4. схема
   var schema := DataFrameSchema.Merge(
     fSchema,
     other.fSchema,
@@ -1188,61 +1596,127 @@ begin
     rightKeyIdx,
     'right_'
   );
-  var res := CreateEmptyBySchema(schema);
-  //=== 
 
-  // 5. Курсоры
-  var leftCur  := Self.GetCursor;
-  var rightCur := other.GetCursor;
+  // --- 5. индексы результата
+  var leftIdx  := new List<integer>;
+  var rightIdx := new List<integer>;
 
-  // 6. Отметка использованных строк right
   var rightUsed := new boolean[other.RowCount];
 
-  // 7. Основной проход по left
+  var leftCur := GetCursor;
+
+  // --- 6. проход по left
   while leftCur.MoveNext do
   begin
+    var lpos := leftCur.Position;
+
     var hasNA := false;
     var lk := BuildJoinKey(leftCur, leftLayout, hasNA);
 
     if hasNA then
     begin
-      res.AppendLeftOnlyRow(leftCur, leftKeyIdx, rightKeyIdx);
+      leftIdx.Add(lpos);
+      rightIdx.Add(-1);
       continue;
     end;
 
     var rows: List<integer>;
     if hash.TryGetValue(lk, rows) then
-    begin
       foreach var r in rows do
       begin
-        rightCur.MoveTo(r);
-        res.AppendJoinedRow(leftCur, rightCur, leftKeyIdx, rightKeyIdx);
+        leftIdx.Add(lpos);
+        rightIdx.Add(r);
         rightUsed[r] := true;
-      end;
-    end
+      end
     else
-      res.AppendLeftOnlyRow(leftCur, leftKeyIdx, rightKeyIdx);
+    begin
+      leftIdx.Add(lpos);
+      rightIdx.Add(-1);
+    end;
   end;
 
-  // 8. Дописываем строки, которые есть только в right
+  // --- 7. строки только справа
   for var r := 0 to other.RowCount - 1 do
     if not rightUsed[r] then
     begin
-      rightCur.MoveTo(r);
-      res.AppendRightOnlyRow(
-        rightCur,
-        leftKeyIdx,
-        rightKeyIdx,
-        leftCur.ColumnCount
-      );
+      leftIdx.Add(-1);
+      rightIdx.Add(r);
     end;
+
+  var leftArr  := leftIdx.ToArray;
+  var rightArr := rightIdx.ToArray;
+
+  var res := new DataFrame;
+
+  // --- 8. left колонки
+  for var ci := 0 to ColumnCount - 1 do
+  begin
+    var col := columns[ci];
+    var name := col.Info.Name;
+  
+    if ci = li then
+      case col.Info.ColType of
+        ctInt:
+          BuildMergedIntKeyColumnFromFullJoin(
+            res,
+            name,
+            IntColumn(col),
+            IntColumn(other.columns[ri]),
+            leftArr,
+            rightArr
+          );
+  
+        ctFloat:
+          BuildMergedFloatKeyColumnFromFullJoin(
+            res,
+            name,
+            FloatColumn(col),
+            FloatColumn(other.columns[ri]),
+            leftArr,
+            rightArr
+          );
+  
+        ctStr:
+          BuildMergedStrKeyColumnFromFullJoin(
+            res,
+            name,
+            StrColumn(col),
+            StrColumn(other.columns[ri]),
+            leftArr,
+            rightArr
+          );
+  
+        ctBool:
+          BuildMergedBoolKeyColumnFromFullJoin(
+            res,
+            name,
+            BoolColumn(col),
+            BoolColumn(other.columns[ri]),
+            leftArr,
+            rightArr
+          );
+  
+        else
+          Error(ER_UNSUPPORTED_COLUMN_TYPE, col.Info.ColType);
+      end
+    else
+      BuildColumnFromJoin(res, name, col, leftArr);
+  end;
+
+  // --- 9. right колонки (без ключа)
+  for var ci := 0 to other.ColumnCount - 1 do
+    if ci <> ri then
+      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
+
+  // --- 10. схема
+  res.SetSchema(schema);
 
   Result := res;
 end;
 
 function DataFrame.FullJoinMultiKey(other: DataFrame; keys: array of string): DataFrame;
 begin
-  // 1. Индексы ключей 
+  // --- 1. индексы ключей
   var leftKeyIdx  := new integer[keys.Length];
   var rightKeyIdx := new integer[keys.Length];
   
@@ -1252,14 +1726,14 @@ begin
     rightKeyIdx[i] := other.fSchema.IndexOf(keys[i]);
   end;
 
-  // 2. Layout'ы ключей (ОТЛИЧИЕ №2)
+  // --- 2. layout
   var leftLayout  := BuildJoinKeyLayout(leftKeyIdx);
   var rightLayout := other.BuildJoinKeyLayout(rightKeyIdx);
 
-  // 3. Hash-индекс по right (без изменений)
+  // --- 3. hash index (right)
   var hash := other.BuildHashIndex(rightLayout);
 
-  // 4. Результат
+  // --- 4. схема
   var schema := DataFrameSchema.Merge(
     fSchema,
     other.fSchema,
@@ -1267,54 +1741,117 @@ begin
     rightKeyIdx,
     'right_'
   );
-  var res := CreateEmptyBySchema(schema);
-  //=== 
 
-  // 5. Курсоры
-  var leftCur  := Self.GetCursor;
-  var rightCur := other.GetCursor;
-
-  // 6. Учёт использованных строк right
+  // --- 5. индексы результата
+  var leftIdx  := new List<integer>;
+  var rightIdx := new List<integer>;
   var rightUsed := new boolean[other.RowCount];
 
-  // 7. Основной проход по left
+  var leftCur := GetCursor;
+
+  // --- 6. проход по left
   while leftCur.MoveNext do
   begin
+    var lpos := leftCur.Position;
+
     var hasNA := false;
     var lk := BuildJoinKey(leftCur, leftLayout, hasNA);
 
     if hasNA then
     begin
-      res.AppendLeftOnlyRow(leftCur, leftKeyIdx, rightKeyIdx);
+      leftIdx.Add(lpos);
+      rightIdx.Add(-1);
       continue;
     end;
 
     var rows: List<integer>;
     if hash.TryGetValue(lk, rows) then
-    begin
       foreach var r in rows do
       begin
-        rightCur.MoveTo(r);
-        res.AppendJoinedRow(leftCur, rightCur, leftKeyIdx, rightKeyIdx);
+        leftIdx.Add(lpos);
+        rightIdx.Add(r);
         rightUsed[r] := true;
-      end;
-    end
+      end
     else
-      res.AppendLeftOnlyRow(leftCur, leftKeyIdx, rightKeyIdx);
+    begin
+      leftIdx.Add(lpos);
+      rightIdx.Add(-1);
+    end;
   end;
 
-  // 8. Right-only строки
+  // --- 7. строки только справа
   for var r := 0 to other.RowCount - 1 do
     if not rightUsed[r] then
     begin
-      rightCur.MoveTo(r);
-      res.AppendRightOnlyRow(
-        rightCur,
-        leftKeyIdx,
-        rightKeyIdx,
-        leftCur.ColumnCount
-      );
+      leftIdx.Add(-1);
+      rightIdx.Add(r);
     end;
+
+  var leftArr  := leftIdx.ToArray;
+  var rightArr := rightIdx.ToArray;
+
+  var res := new DataFrame;
+
+  // --- 8. left колонки
+  for var ci := 0 to ColumnCount - 1 do
+  begin
+    var col := columns[ci];
+    var name := col.Info.Name;
+  
+    var keyPos := leftKeyIdx.IndexOf(ci);
+  
+    if keyPos >= 0 then
+    begin
+      var ri := rightKeyIdx[keyPos];
+  
+      case col.Info.ColType of
+        ctInt:
+          BuildMergedIntKeyColumnFromFullJoin(
+            res, name,
+            IntColumn(col),
+            IntColumn(other.columns[ri]),
+            leftArr, rightArr
+          );
+  
+        ctFloat:
+          BuildMergedFloatKeyColumnFromFullJoin(
+            res, name,
+            FloatColumn(col),
+            FloatColumn(other.columns[ri]),
+            leftArr, rightArr
+          );
+  
+        ctStr:
+          BuildMergedStrKeyColumnFromFullJoin(
+            res, name,
+            StrColumn(col),
+            StrColumn(other.columns[ri]),
+            leftArr, rightArr
+          );
+  
+        ctBool:
+          BuildMergedBoolKeyColumnFromFullJoin(
+            res, name,
+            BoolColumn(col),
+            BoolColumn(other.columns[ri]),
+            leftArr, rightArr
+          );
+  
+        else
+          Error(ER_UNSUPPORTED_COLUMN_TYPE, col.Info.ColType);
+      end;
+    end
+    else
+      BuildColumnFromJoin(res, name, col, leftArr);
+  end;
+
+  // --- 9. right колонки (без ключей)
+  for var ci := 0 to other.ColumnCount - 1 do
+    if not rightKeyIdx.Contains(ci) then
+      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
+
+  // --- 10. схема
+  res.SetSchema(schema);
 
   Result := res;
 end;
@@ -1342,18 +1879,60 @@ function DataFrame.JoinInnerSingleKeyInt(other: DataFrame; leftKey, rightKey: in
 begin
   var index := new Dictionary<integer, List<integer>>;
 
+  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
-  begin
-    if not rcur.IsValid(rightKey) then continue;
-    var k := rcur.Int(rightKey);
+    if rcur.IsValid(rightKey) then
+    begin
+      var k := rcur.Int(rightKey);
 
-    if not index.ContainsKey(k) then
-      index[k] := new List<integer>;
-    index[k].Add(rcur.Position);
+      var lst: List<integer>;
+      if not index.TryGetValue(k, lst) then
+      begin
+        lst := new List<integer>;
+        index[k] := lst;
+      end;
+
+      lst.Add(rcur.Position);
+    end;
+
+  // --- collect index pairs (только совпадения!)
+  var leftIdx  := new List<integer>;
+  var rightIdx := new List<integer>;
+
+  var lcur := GetCursor;
+  while lcur.MoveNext do
+  begin
+    if not lcur.IsValid(leftKey) then
+      continue;
+
+    var lpos := lcur.Position;
+    var k := lcur.Int(leftKey);
+
+    var rows: List<integer>;
+    if index.TryGetValue(k, rows) then
+      foreach var rpos in rows do
+      begin
+        leftIdx.Add(lpos);
+        rightIdx.Add(rpos);
+      end;
   end;
 
-  //=== 
+  var leftArr  := leftIdx.ToArray;
+  var rightArr := rightIdx.ToArray;
+
+  var res := new DataFrame;
+
+  // --- left columns
+  for var ci := 0 to ColumnCount - 1 do
+    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
+
+  // --- right columns (exclude key)
+  for var ci := 0 to other.ColumnCount - 1 do
+    if ci <> rightKey then
+      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
+
+  // --- schema
   var schema := DataFrameSchema.Merge(
     fSchema,
     other.fSchema,
@@ -1361,23 +1940,7 @@ begin
     [rightKey],
     'right_'
   );
-  var res := CreateEmptyBySchema(schema);
-  //=== 
-
-  var lcur := GetCursor;
-  while lcur.MoveNext do
-  begin
-    if not lcur.IsValid(leftKey) then continue;
-    var k := lcur.Int(leftKey);
-
-    if not index.ContainsKey(k) then continue;
-
-    foreach var rpos in index[k] do
-    begin
-      rcur.MoveTo(rpos);
-      res.AppendJoinedRow(lcur, rcur, [leftKey], [rightKey]);
-    end;
-  end;
+  res.SetSchema(schema);
 
   Result := res;
 end;
@@ -1386,18 +1949,60 @@ function DataFrame.JoinInnerSingleKeyFloat(other: DataFrame; leftKey, rightKey: 
 begin
   var index := new Dictionary<real, List<integer>>;
 
+  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
-  begin
-    if not rcur.IsValid(rightKey) then continue;
-    var k := rcur.Float(rightKey);
+    if rcur.IsValid(rightKey) then
+    begin
+      var k := rcur.Float(rightKey);
 
-    if not index.ContainsKey(k) then
-      index[k] := new List<integer>;
-    index[k].Add(rcur.Position);
+      var lst: List<integer>;
+      if not index.TryGetValue(k, lst) then
+      begin
+        lst := new List<integer>;
+        index[k] := lst;
+      end;
+
+      lst.Add(rcur.Position);
+    end;
+
+  // --- collect index pairs (только совпадения)
+  var leftIdx  := new List<integer>;
+  var rightIdx := new List<integer>;
+
+  var lcur := GetCursor;
+  while lcur.MoveNext do
+  begin
+    if not lcur.IsValid(leftKey) then
+      continue;
+
+    var lpos := lcur.Position;
+    var k := lcur.Float(leftKey);
+
+    var rows: List<integer>;
+    if index.TryGetValue(k, rows) then
+      foreach var rpos in rows do
+      begin
+        leftIdx.Add(lpos);
+        rightIdx.Add(rpos);
+      end;
   end;
 
-  //=== 
+  var leftArr  := leftIdx.ToArray;
+  var rightArr := rightIdx.ToArray;
+
+  var res := new DataFrame;
+
+  // --- left columns
+  for var ci := 0 to ColumnCount - 1 do
+    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
+
+  // --- right columns (exclude key)
+  for var ci := 0 to other.ColumnCount - 1 do
+    if ci <> rightKey then
+      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
+
+  // --- schema
   var schema := DataFrameSchema.Merge(
     fSchema,
     other.fSchema,
@@ -1405,23 +2010,7 @@ begin
     [rightKey],
     'right_'
   );
-  var res := CreateEmptyBySchema(schema);
-  //=== 
-  
-  var lcur := GetCursor;
-  while lcur.MoveNext do
-  begin
-    if not lcur.IsValid(leftKey) then continue;
-    var k := lcur.Float(leftKey);
-
-    if not index.ContainsKey(k) then continue;
-
-    foreach var rpos in index[k] do
-    begin
-      rcur.MoveTo(rpos);
-      res.AppendJoinedRow(lcur, rcur, [leftKey], [rightKey]);
-    end;
-  end;
+  res.SetSchema(schema);
 
   Result := res;
 end;
@@ -1430,18 +2019,60 @@ function DataFrame.JoinInnerSingleKeyStr(other: DataFrame; leftKey, rightKey: in
 begin
   var index := new Dictionary<string, List<integer>>;
 
+  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
-  begin
-    if not rcur.IsValid(rightKey) then continue;
-    var k := rcur.Str(rightKey);
+    if rcur.IsValid(rightKey) then
+    begin
+      var k := rcur.Str(rightKey);
 
-    if not index.ContainsKey(k) then
-      index[k] := new List<integer>;
-    index[k].Add(rcur.Position);
+      var lst: List<integer>;
+      if not index.TryGetValue(k, lst) then
+      begin
+        lst := new List<integer>;
+        index[k] := lst;
+      end;
+
+      lst.Add(rcur.Position);
+    end;
+
+  // --- collect index pairs (only matches)
+  var leftIdx  := new List<integer>;
+  var rightIdx := new List<integer>;
+
+  var lcur := GetCursor;
+  while lcur.MoveNext do
+  begin
+    if not lcur.IsValid(leftKey) then
+      continue;
+
+    var lpos := lcur.Position;
+    var k := lcur.Str(leftKey);
+
+    var rows: List<integer>;
+    if index.TryGetValue(k, rows) then
+      foreach var rpos in rows do
+      begin
+        leftIdx.Add(lpos);
+        rightIdx.Add(rpos);
+      end;
   end;
 
-  //=== 
+  var leftArr  := leftIdx.ToArray;
+  var rightArr := rightIdx.ToArray;
+
+  var res := new DataFrame;
+
+  // --- left columns
+  for var ci := 0 to ColumnCount - 1 do
+    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
+
+  // --- right columns (exclude key)
+  for var ci := 0 to other.ColumnCount - 1 do
+    if ci <> rightKey then
+      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
+
+  // --- schema
   var schema := DataFrameSchema.Merge(
     fSchema,
     other.fSchema,
@@ -1449,23 +2080,7 @@ begin
     [rightKey],
     'right_'
   );
-  var res := CreateEmptyBySchema(schema);
-  //=== 
-  
-  var lcur := GetCursor;
-  while lcur.MoveNext do
-  begin
-    if not lcur.IsValid(leftKey) then continue;
-    var k := lcur.Str(leftKey);
-
-    if not index.ContainsKey(k) then continue;
-
-    foreach var rpos in index[k] do
-    begin
-      rcur.MoveTo(rpos);
-      res.AppendJoinedRow(lcur, rcur, [leftKey], [rightKey]);
-    end;
-  end;
+  res.SetSchema(schema);
 
   Result := res;
 end;
@@ -1474,18 +2089,60 @@ function DataFrame.JoinInnerSingleKeyBool(other: DataFrame; leftKey, rightKey: i
 begin
   var index := new Dictionary<boolean, List<integer>>;
 
+  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
-  begin
-    if not rcur.IsValid(rightKey) then continue;
-    var k := rcur.Bool(rightKey);
+    if rcur.IsValid(rightKey) then
+    begin
+      var k := rcur.Bool(rightKey);
 
-    if not index.ContainsKey(k) then
-      index[k] := new List<integer>;
-    index[k].Add(rcur.Position);
+      var lst: List<integer>;
+      if not index.TryGetValue(k, lst) then
+      begin
+        lst := new List<integer>;
+        index[k] := lst;
+      end;
+
+      lst.Add(rcur.Position);
+    end;
+
+  // --- collect index pairs (only matches)
+  var leftIdx  := new List<integer>;
+  var rightIdx := new List<integer>;
+
+  var lcur := GetCursor;
+  while lcur.MoveNext do
+  begin
+    if not lcur.IsValid(leftKey) then
+      continue;
+
+    var lpos := lcur.Position;
+    var k := lcur.Bool(leftKey);
+
+    var rows: List<integer>;
+    if index.TryGetValue(k, rows) then
+      foreach var rpos in rows do
+      begin
+        leftIdx.Add(lpos);
+        rightIdx.Add(rpos);
+      end;
   end;
 
-  //=== 
+  var leftArr  := leftIdx.ToArray;
+  var rightArr := rightIdx.ToArray;
+
+  var res := new DataFrame;
+
+  // --- left columns
+  for var ci := 0 to ColumnCount - 1 do
+    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
+
+  // --- right columns (exclude key)
+  for var ci := 0 to other.ColumnCount - 1 do
+    if ci <> rightKey then
+      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
+
+  // --- schema
   var schema := DataFrameSchema.Merge(
     fSchema,
     other.fSchema,
@@ -1493,30 +2150,14 @@ begin
     [rightKey],
     'right_'
   );
-  var res := CreateEmptyBySchema(schema);
-  //=== 
-  
-  var lcur := GetCursor;
-  while lcur.MoveNext do
-  begin
-    if not lcur.IsValid(leftKey) then continue;
-    var k := lcur.Bool(leftKey);
-
-    if not index.ContainsKey(k) then continue;
-
-    foreach var rpos in index[k] do
-    begin
-      rcur.MoveTo(rpos);
-      res.AppendJoinedRow(lcur, rcur, [leftKey], [rightKey]);
-    end;
-  end;
+  res.SetSchema(schema);
 
   Result := res;
 end;
 
 function DataFrame.JoinInnerMultiKey(other: DataFrame; keys: array of string): DataFrame;
 begin
-  // 1. индексы ключей — через Schema
+  // --- 1. индексы ключей
   var n := keys.Length;
   var leftKeyIdx := new integer[n];
   var rightKeyIdx := new integer[n];
@@ -1527,19 +2168,58 @@ begin
     rightKeyIdx[i] := other.fSchema.IndexOf(keys[i]);
   end;
 
-  // 2. проверка типов ключей — через Schema
+  // --- 2. проверка типов
   for var i := 0 to n - 1 do
     if fSchema.ColumnTypeAt(leftKeyIdx[i]) <> other.fSchema.ColumnTypeAt(rightKeyIdx[i]) then
       Error(ER_JOIN_KEY_TYPE_MISMATCH);
 
-  // 3. строим layout'ы
-  var leftLayout := BuildJoinKeyLayout(leftKeyIdx);
+  // --- 3. layout
+  var leftLayout  := BuildJoinKeyLayout(leftKeyIdx);
   var rightLayout := other.BuildJoinKeyLayout(rightKeyIdx);
 
-  // 4. hash index по правой таблице
+  // --- 4. hash index (right)
   var hash := other.BuildHashIndex(rightLayout);
 
-  // 5. создаём результат 
+  // --- 5. сбор индексов (только совпадения)
+  var leftIdx  := new List<integer>;
+  var rightIdx := new List<integer>;
+
+  var lcur := GetCursor;
+
+  while lcur.MoveNext do
+  begin
+    var hasNA := false;
+    var key := BuildJoinKey(lcur, leftLayout, hasNA);
+
+    if hasNA then
+      continue;
+
+    var lpos := lcur.Position;
+
+    var rows: List<integer>;
+    if hash.TryGetValue(key, rows) then
+      foreach var rpos in rows do
+      begin
+        leftIdx.Add(lpos);
+        rightIdx.Add(rpos);
+      end;
+  end;
+
+  var leftArr  := leftIdx.ToArray;
+  var rightArr := rightIdx.ToArray;
+
+  var res := new DataFrame;
+
+  // --- left columns
+  for var ci := 0 to ColumnCount - 1 do
+    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
+
+  // --- right columns (exclude keys)
+  for var ci := 0 to other.ColumnCount - 1 do
+    if not rightKeyIdx.Contains(ci) then
+      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
+
+  // --- schema
   var schema := DataFrameSchema.Merge(
     fSchema,
     other.fSchema,
@@ -1547,27 +2227,7 @@ begin
     rightKeyIdx,
     'right_'
   );
-  var res := CreateEmptyBySchema(schema);
-  //=== 
-  
-  // 6. probe
-  var lcur := GetCursor;
-  var rcur := other.GetCursor;
-
-  while lcur.MoveNext do
-  begin
-    var hasNA := false;
-    var key := BuildJoinKey(lcur, leftLayout, hasNA);
-    if hasNA then continue;
-
-    if not hash.ContainsKey(key) then continue;
-
-    foreach var rpos in hash[key] do
-    begin
-      rcur.MoveTo(rpos);
-      res.AppendJoinedRow(lcur, rcur, leftKeyIdx, rightKeyIdx);
-    end;
-  end;
+  res.SetSchema(schema);
 
   Result := res;
 end;
@@ -1717,52 +2377,6 @@ begin
   Result := c.Data;
 end;
 
-{function DataFrame.TrainTestSplit(testRatio: real; seed: integer): (DataFrame, DataFrame);
-begin
-  if Self = nil then
-    ArgumentNullError(ER_ARG_NULL, 'DataFrame');
-
-  if (testRatio <= 0.0) or (testRatio >= 1.0) then
-    ArgumentError(ER_TEST_RATIO_INVALID, testRatio);
-
-  var n := RowCount;
-
-  if n < 2 then
-    ArgumentError(ER_EMPTY_DATA, 'TrainTestSplit');
-
-  var actualSeed := if seed >= 0 then seed else System.Environment.TickCount and integer.MaxValue;
-  var rnd := new System.Random(actualSeed);
-
-  var idx := Arr(0..n-1);
-  idx.Shuffle(rnd);
-
-  var rawSize := Round(n * testRatio);
-  var testSize := rawSize.Clamp(1, n - 1);
-
-  // --- маркер тестовых строк
-  var isTest := new boolean[n];
-
-  for var i := 0 to testSize - 1 do
-    isTest[idx[i]] := true;
-
-  var trainDf := new DataFrame;
-  var testDf  := new DataFrame;
-
-  var cur := GetCursor;
-  var row := 0;
-
-  while cur.MoveNext do
-  begin
-    if isTest[row] then
-      testDf.AppendRowFromCursor(self, cur)
-    else
-      trainDf.AppendRowFromCursor(self, cur);
-
-    row += 1;
-  end;
-
-  Result := (trainDf, testDf);
-end;}
 
 function DataFrame.TrainTestSplit(testRatio: real; shuffle: boolean; seed: integer): (DataFrame, DataFrame);
 begin
@@ -1882,6 +2496,12 @@ begin
 
   columns.Add(c);
   RebuildSchema;
+end;
+
+procedure DataFrame.AddStrColumn(name: string; data: array of char; valid: array of boolean);
+begin
+  var dataS: array of string := data.Select(c -> string(c)).ToArray;
+  AddStrColumn(name, dataS, valid);
 end;
 
 procedure DataFrame.AddBoolColumn(name: string; data: array of boolean; valid: array of boolean);
@@ -2286,7 +2906,7 @@ begin
   Result := GroupBy(colNames.Select(n -> ColumnIndex(n)).ToArray);
 end;
 
-procedure DataFrame.AppendRowFromCursor(src: DataFrame; cur: DataFrameCursor);
+{procedure DataFrame.AppendRowFromCursor(src: DataFrame; cur: DataFrameCursor);
 begin
   // 1. если DataFrame пуст — копируем структуру
   if columns.Count = 0 then
@@ -2303,43 +2923,28 @@ begin
   // 2. добавляем текущую строку
   for var j := 0 to columns.Count - 1 do
     columns[j].AppendFromCursor(cur, j);
-end;
+end;}
 
 function DataFrame.Head(n: integer): DataFrame;
 begin
-  var res := new DataFrame;
   if n <= 0 then
-    exit(res);
+    exit(new DataFrame);
 
-  var cur := GetCursor;
-  var cnt := 0;
+  var k := PABCSystem.Min(n, RowCount);
 
-  while cur.MoveNext do
-  begin
-    if cnt = n then
-      break;
-
-    res.AppendRowFromCursor(self, cur);
-    cnt += 1;
-  end;
-
-  Result := res;
+  Result := TakeRows(Arr(0..k-1));
 end;
 
 function DataFrame.Tail(n: integer): DataFrame;
 begin
-  var res := new DataFrame;
-  if n <= 0 then exit(res);
+  if n <= 0 then
+    exit(new DataFrame);
 
   var total := RowCount;
-  var start := PABCSystem.Max(0, total - n);
+  var k := PABCSystem.Min(n, total);
+  var start := total - k;
 
-  var cur := GetCursor;
-  while cur.MoveNext do
-    if cur.Position >= start then
-      res.AppendRowFromCursor(self, cur);
-
-  Result := res;
+  Result := TakeRows(Arr(start..total-1));
 end;
 
 type
@@ -2425,16 +3030,12 @@ begin
   end);
   
     // ---------- 3. собираем результат ----------
-    var res := new DataFrame;
-    cur := GetCursor;
-
-  foreach var k in keys do
-  begin
-    cur.MoveTo(k.Row);
-    res.AppendRowFromCursor(self, cur);
-  end;
-
-  Result := res;
+  var idx := new integer[keys.Count];
+  
+  for var i := 0 to keys.Count - 1 do
+    idx[i] := keys[i].Row;
+  
+  Result := TakeRows(idx);
 end;
 
 function DataFrame.SortBy(colIndex: integer; descending: boolean): DataFrame;
@@ -2619,68 +3220,6 @@ begin
   Result := res;
   AssertSchemaConsistent;
 end;
-
-
-{function DataFrame.Select(colIndices: array of integer): DataFrame;
-begin
-  var res := new DataFrame;
-
-  foreach var i in colIndices do
-    CheckColumnIndex(i);
-
-  foreach var i in colIndices do
-  begin
-    var col := columns[i];
-
-    case col.Info.ColType of
-      ctInt:
-      begin
-        var c := IntColumn(col);
-        res.AddIntColumn(
-          c.Info.Name,
-          c.Data,
-          c.IsValid,
-          c.Info.IsCategorical
-        );
-      end;
-
-      ctStr:
-      begin
-        var c := StrColumn(col);
-        res.AddStrColumn(
-          c.Info.Name,
-          c.Data,
-          c.IsValid,
-          c.Info.IsCategorical
-        );
-      end;
-
-      ctFloat:
-      begin
-        var c := FloatColumn(col);
-        res.AddFloatColumn(
-          c.Info.Name,
-          c.Data,
-          c.IsValid
-        );
-      end;
-
-      ctBool:
-      begin
-        var c := BoolColumn(col);
-        res.AddBoolColumn(
-          c.Info.Name,
-          c.Data,
-          c.IsValid
-        );
-      end;
-    end;
-  end;
-
-  Result := res;
-
-  AssertSchemaConsistent;
-end;}
 
 function DataFrame.Select(colIndices: array of integer): DataFrame;
 begin
