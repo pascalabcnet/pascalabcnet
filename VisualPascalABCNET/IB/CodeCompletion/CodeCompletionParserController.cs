@@ -143,99 +143,58 @@ namespace VisualPascalABC
         {
             try
             {
-                Dictionary<string, string> recomp_files = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                HashSet<string> recomp_files = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 bool is_comp = false;
                 foreach (string FileName in filesToParse.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
                 {
 
                     if (filesToParse[FileName])
                     {
+                        // Попытка компиляции была
+                        filesToParse[FileName] = false;
+
                         is_comp = true;
-                        CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
                         string text = visualEnvironmentCompiler.SourceFilesProvider(FileName, SourceFileOperation.GetText) as string;
                         if (string.IsNullOrEmpty(text))
                             text = "begin end.";
-                        CodeCompletion.DomConverter tmp = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
-                        long cur_mem = Environment.WorkingSet;
-                        CodeCompletion.DomConverter dc = controller.Compile(FileName, text);
-                        mem_delta += Environment.WorkingSet - cur_mem;
-                        filesToParse[FileName] = false;
-                        if (dc.is_compiled)
+
+                        if (CompileWatchedFile(FileName, text, true))
                         {
-                            //CodeCompletion.CodeCompletionController.comp_modules.Remove(file_name);
-                            if (tmp != null)
-                            {
-                                tmp.visitor.entry_scope?.Clear();
-                                tmp.visitor.cur_scope?.Clear();
-                            }
-                            CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
-                            recomp_files[FileName] = FileName;
-                            filesToParse[FileName] = false;
-                            if (ParseInformationUpdated != null)
-                                ParseInformationUpdated(dc.visitor.entry_scope, FileName);
+                            // успешная компиляция
+                            recomp_files.Add(FileName);
                         }
-                        else if (CodeCompletion.CodeCompletionController.comp_modules[FileName] == null)
-                            CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                     }
                 }
                 foreach (string FileName in filesToParse.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
                 {
                     CodeCompletion.DomConverter dc = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
-                    CodeCompletion.SymScope ss = null;
+                    
                     if (dc != null)
                     {
-                        if (dc.visitor.entry_scope != null) ss = dc.visitor.entry_scope;
-                        else if (dc.visitor.impl_scope != null) ss = dc.visitor.impl_scope;
-                        int j = 0;
-                        while (j < 2)
+                        CodeCompletion.SymScope watchedUnitScope = dc.visitor.entry_scope;
+                        if (watchedUnitScope != null)
                         {
-                            if (j == 0)
-                            {
-                                ss = dc.visitor.entry_scope;
-                                j++;
-                            }
-                            else
-                            {
-                                ss = dc.visitor.impl_scope;
-                                j++;
-                            }
-                            if (ss != null)
-                            {
-                                var usedUnitsTransitive = ss.GetRealUsedUnitsTransitive();
+                            var usedUnitsTransitive = watchedUnitScope.GetRealUsedUnitsTransitive();
 
-                                for (int i = 0; i < usedUnitsTransitive.Length; i++)
+                            for (int i = 0; i < usedUnitsTransitive.Length; i++)
+                            {
+                                string usedUnitFileName = usedUnitsTransitive[i].file_name;
+                                
+                                // Если какая-то из зависимостей была перекомпилирована
+                                if (recomp_files.Contains(usedUnitFileName))
                                 {
-                                    string usedUnitFileName = usedUnitsTransitive[i].file_name;
-                                    // Если какая-то из зависимостей была перекомпилирована
-                                    if (filesToParse.ContainsKey(usedUnitFileName) && recomp_files.ContainsKey(usedUnitFileName))
-                                    {
-                                        // Помечаем нужные модули для будущей перекомпиляции
-                                        InvalidateDependenentModules(usedUnitsTransitive, usedUnitFileName, filesToParse, FileName);
+                                    // Помечаем нужные модули для будущей перекомпиляции
+                                    InvalidateDependentModules(usedUnitsTransitive, usedUnitFileName, filesToParse, FileName);
 
-                                        // Перекомпилируем текущий модуль
-                                        is_comp = true;
-                                        CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
-                                        string text = visualEnvironmentCompiler.SourceFilesProvider(FileName, SourceFileOperation.GetText) as string;
-                                        CodeCompletion.DomConverter tmp = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
-                                        long cur_mem = Environment.WorkingSet;
-                                        dc = controller.Compile(FileName, text);
-                                        mem_delta += Environment.WorkingSet - cur_mem;
-                                        filesToParse[FileName] = false;
-                                        CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
-                                        if (dc.is_compiled)
-                                        {
-                                            /*if (tmp != null && tmp.stv.entry_scope != null)
-                                            {
-                                                tmp.stv.entry_scope.Clear();
-                                                if (tmp.stv.cur_scope != null) tmp.stv.cur_scope.Clear();
-                                            }*/
-                                            CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
-                                            recomp_files[FileName] = FileName;
-                                            if (ParseInformationUpdated != null)
-                                                ParseInformationUpdated(dc.visitor.entry_scope, FileName);
-                                        }
-                                        else if (CodeCompletion.CodeCompletionController.comp_modules[FileName] == null)
-                                            CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
+                                    // Перекомпилируем текущий модуль
+                                    is_comp = true;
+                                    string text = visualEnvironmentCompiler.SourceFilesProvider(FileName, SourceFileOperation.GetText) as string;
+
+                                    // Здесь третий параметр false, потому что старые данные компиляции еще могут пригодиться до новой перекомпиляции  EVA
+                                    if (CompileWatchedFile(FileName, text, false))
+                                    {
+                                        // успешная компиляция
+                                        recomp_files.Add(FileName);
                                     }
                                 }
                             }
@@ -254,9 +213,41 @@ namespace VisualPascalABC
         }
 
         /// <summary>
+        /// Вызов компиляции (интеллисенсом) файла с именем fileName и содержимым fileText.
+        /// Возвращает true, если компиляция была успешна, false в противном случае.
+        /// </summary>
+        private bool CompileWatchedFile(string fileName, string fileText, bool clearOldScope)
+        {
+            bool success = false;
+
+            CodeCompletion.DomConverter tmp = CodeCompletion.CodeCompletionController.comp_modules[fileName] as CodeCompletion.DomConverter;
+            long cur_mem = Environment.WorkingSet;
+            CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
+            CodeCompletion.DomConverter dc = controller.Compile(fileName, fileText);
+            mem_delta += Environment.WorkingSet - cur_mem;
+            
+            if (dc.is_compiled)
+            {
+                if (clearOldScope && tmp != null)
+                {
+                    tmp.visitor.entry_scope?.Clear();
+                    tmp.visitor.cur_scope?.Clear();
+                }
+                CodeCompletion.CodeCompletionController.comp_modules[fileName] = dc;
+
+                success = true;
+                ParseInformationUpdated?.Invoke(dc.visitor.entry_scope, fileName);
+            }
+            else if (tmp == null)
+                CodeCompletion.CodeCompletionController.comp_modules[fileName] = dc;
+
+            return success;
+        }
+
+        /// <summary>
         /// Помечает модули из candidateModulesToCheck и watchedFiles для будущей перекомпиляции, если они завивисимы от модуля с именем recompiledDependencyName
         /// </summary>
-        private void InvalidateDependenentModules(CodeCompletion.SymScope[] candidateModulesToCheck, string recompiledDependencyName, Dictionary<string, bool> watchedFiles, string currentFileForRecompiling)
+        private void InvalidateDependentModules(CodeCompletion.SymScope[] candidateModulesToCheck, string recompiledDependencyName, Dictionary<string, bool> watchedFiles, string currentFileForRecompiling)
         {
             // Скоупы модулей, соответствующих watchedFiles
             var compiledWatchedScopes = watchedFiles.Where(watchedFile => watchedFile.Key != currentFileForRecompiling)

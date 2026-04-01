@@ -537,9 +537,10 @@ namespace CodeCompletion
         }
 
         /// <summary>
-        /// Получить массив всех транзитивно используемых модулей (ислючая пр-ва имен)
+        /// Получить массив всех транзитивно используемых модулей (ислючая пр-ва имен).
+        /// По умолчанию для InterfaceUnitScope ищутся и зависимости реализации тоже.
         /// </summary>
-        public SymScope[] GetRealUsedUnitsTransitive()
+        public SymScope[] GetRealUsedUnitsTransitive(bool includeImplementationDependenciesForUnit = true)
         {
             var usedUnits = new List<SymScope>();
 
@@ -548,9 +549,9 @@ namespace CodeCompletion
                 usedUnits.AddRange(used_units.Where(unit => unit.file_name != null));
             }
 
-            if (this is InterfaceUnitScope interfaceScope && interfaceScope.impl_scope != null)
+            if (this is InterfaceUnitScope interfaceScope && includeImplementationDependenciesForUnit && interfaceScope.impl_scope != null)
             {
-                foreach (var recursiveUsedUnit in interfaceScope.impl_scope.GetRealUsedUnitsTransitive())
+                foreach (var recursiveUsedUnit in interfaceScope.impl_scope.GetRealUsedUnitsTransitive(true))
                 {
                     if (recursiveUsedUnit == this)
                         continue;
@@ -566,7 +567,7 @@ namespace CodeCompletion
             {
                 foreach (var usedUnit in used_units)
                 {
-                    var recursiveUsedUnits = usedUnit.GetRealUsedUnitsTransitive();
+                    var recursiveUsedUnits = usedUnit.GetRealUsedUnitsTransitive(includeImplementationDependenciesForUnit);
 
                     foreach (var recursiveUsedUnit in recursiveUsedUnits)
                     {
