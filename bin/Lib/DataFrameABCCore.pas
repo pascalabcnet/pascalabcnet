@@ -64,7 +64,7 @@ type
   ColumnInfo = auto class
     Name: string;
     ColType: ColumnType;
-    //IsCategorical: boolean;
+    //IsCategorical: boolean; - мы убрали это отсюда - только Schema - источник истины!
   end;
   
   DataFrameCursor = class;

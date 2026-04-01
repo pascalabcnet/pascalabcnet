@@ -25,6 +25,13 @@ function EncodeLabels(labels: array of string): array of integer;
 /// Используется при обучении моделей и визуализации
 function EncodeLabels(labels: array of string; var classes: array of string): array of integer;
 
+/// Преобразует строковые метки классов в целочисленные индексы
+///   с использованием заранее заданного массива classes (mapping).
+/// classes должен быть получен из EncodeLabels.
+/// Если встречается неизвестная метка — выбрасывается исключение.
+/// Используется для применения кодирования к тестовым данным (Transform).
+function TransformLabels(labels: array of string; classes: array of string): array of integer;
+
 /// Преобразует целочисленные индексы классов обратно в строковые метки.
 /// Массив classes задаёт соответствие: classes[i] — имя класса с индексом i.
 /// Используется для получения текстовых предсказаний моделей.
@@ -53,6 +60,8 @@ const
     'Столбец "{0}" должен быть категориальным для EncodeLabels!!Column "{0}" must be categorical for EncodeLabels';
   ER_ENCODELABELS_UNSUPPORTED_TYPE =
     'Неподдерживаемый тип столбца "{0}" для EncodeLabels!!Unsupported column type "{0}" for EncodeLabels';
+  ER_UNKNOWN_CLASS_IN_TRANSFORM =
+    'Неизвестное значение класса "{0}" при преобразовании меток!!Unknown class value "{0}" in TransformLabels';
   
 function LabelsToInts(y: Vector): array of integer;
 begin
@@ -87,6 +96,30 @@ begin
     res[i] := map[labels[i]];
 
   classes := classList.ToArray;
+  Result := res;
+end;
+
+function TransformLabels(labels: array of string; classes: array of string): array of integer;
+begin
+  if labels = nil then
+    ArgumentNullError(ER_ARG_NULL, 'labels');
+
+  var map := new Dictionary<string, integer>;
+  for var i := 0 to classes.Length - 1 do
+    map[classes[i]] := i;
+
+  var res := new integer[labels.Length];
+
+  for var i := 0 to labels.Length - 1 do
+  begin
+    var lbl := labels[i];
+
+    if not map.ContainsKey(lbl) then
+      Error('Unknown class in test');
+
+    res[i] := map[lbl];
+  end;
+
   Result := res;
 end;
 
@@ -271,6 +304,121 @@ begin
     else
       ArgumentError(ER_ENCODELABELS_UNSUPPORTED_TYPE, target);
   end;
+end;
+
+/// Преобразует строковые метки целевого столбца в целочисленные индексы (0,1,2,...)
+/// с использованием заданного массива classes (mapping индекс → метка).
+/// classes должен быть получен ранее с помощью EncodeLabels.
+/// При обнаружении неизвестного значения выбрасывается исключение.
+/// Используется для применения кодирования к тестовым данным (Transform).
+function TransformLabels(Self: DataFrame; target: string; classes: array of string): array of integer; extensionmethod;
+begin
+  if Self = nil then
+    ArgumentNullError(ER_ARG_NULL, 'Self');
+
+  if target = nil then
+    ArgumentNullError(ER_ARG_NULL, 'target');
+
+  if classes = nil then
+    ArgumentNullError(ER_ARG_NULL, 'classes');
+
+  if not Self.HasColumn(target) then
+    ArgumentError(ER_COLUMN_NOT_FOUND, target);
+
+  if not Self.IsCategorical(target) then
+    ArgumentError(ER_ENCODELABELS_NOT_CATEGORICAL, target);
+
+  // --- строим mapping
+  var map := new Dictionary<string, integer>;
+  for var i := 0 to classes.Length - 1 do
+    map[classes[i]] := i;
+
+  case Self.GetColumnType(target) of
+
+    ColumnType.ctStr:
+      begin
+        var data := Self.GetStrColumn(target).ToArray;
+        var res := new integer[data.Length];
+
+        for var i := 0 to data.Length - 1 do
+        begin
+          var lbl := data[i];
+
+          if not map.ContainsKey(lbl) then
+            Error(ER_UNKNOWN_CLASS_IN_TRANSFORM, lbl);
+
+          res[i] := map[lbl];
+        end;
+
+        Result := res;
+      end;
+
+    ColumnType.ctInt:
+      begin
+        var data := Self.GetIntColumn(target).ToArray;
+        var res := new integer[data.Length];
+
+        for var i := 0 to data.Length - 1 do
+        begin
+          var lbl := data[i].ToString;
+
+          if not map.ContainsKey(lbl) then
+            Error('Unknown class in TransformLabels');
+
+          res[i] := map[lbl];
+        end;
+
+        Result := res;
+      end;
+
+    else
+      ArgumentError(ER_ENCODELABELS_UNSUPPORTED_TYPE, target);
+  end;
+end;
+
+/// Преобразует значения целочисленного категориального столбца
+/// в плотные индексы (0,1,2,...) с использованием заданного массива classes.
+/// classes должен быть получен ранее с помощью EncodeLabelsInt.
+/// При обнаружении неизвестного значения выбрасывается исключение.
+function TransformLabelsInt(Self: DataFrame; target: string; classes: array of integer): array of integer; extensionmethod;
+begin
+  if Self = nil then
+    ArgumentNullError(ER_ARG_NULL, 'Self');
+
+  if target = nil then
+    ArgumentNullError(ER_ARG_NULL, 'target');
+
+  if classes = nil then
+    ArgumentNullError(ER_ARG_NULL, 'classes');
+
+  if not Self.HasColumn(target) then
+    ArgumentError(ER_COLUMN_NOT_FOUND, target);
+
+  if not Self.IsCategorical(target) then
+    ArgumentError(ER_ENCODELABELS_NOT_CATEGORICAL, target);
+
+  if Self.GetColumnType(target) <> ColumnType.ctInt then
+    ArgumentError(ER_ENCODELABELS_UNSUPPORTED_TYPE, target);
+
+  // --- mapping: значение → индекс
+  var map := new Dictionary<integer, integer>;
+  for var i := 0 to classes.Length - 1 do
+    map[classes[i]] := i;
+
+  var data := Self.GetIntColumn(target).ToArray;
+  var res := new integer[data.Length];
+
+  for var i := 0 to data.Length - 1 do
+  begin
+    var v := data[i];
+
+    if not map.ContainsKey(v) then
+      Error(ER_UNKNOWN_CLASS_IN_TRANSFORM, v);
+
+    res[i] := map[v];
+  end;
+
+  Result := res;
 end;
 
 /// Кодирует значения целочисленного категориального столбца DataFrame

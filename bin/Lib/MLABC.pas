@@ -38,6 +38,7 @@ type
   Statistics = DataFrameABC.Statistics;
   CsvLoader = DataFrameABC.CsvLoader;
   JoinKind = DataFrameABC.JoinKind;
+  GroupView = DataFrameABC.GroupView;
   
   IProbabilisticClassifier = MLCoreABC.IProbabilisticClassifier;
   IRegressor = MLCoreABC.IRegressor;
@@ -87,6 +88,7 @@ type
   Imputer = PreprocessorABC.Imputer;
   
   Datasets = MLDatasets.Datasets;
+  Dataset = MLDatasets.Dataset;
   
   IModel = MLCoreABC.IModel;
   ISupervisedModel = MLCoreABC.ISupervisedModel;
@@ -95,6 +97,16 @@ type
   UDataPipeline = MLPipelineABC.UDataPipeline;
   TaskKind = MLPipelineABC.TaskKind;
   
+  AggregationKind = DataFrameABC.AggregationKind;
+  
+const
+  akMean = AggregationKind.akMean;
+  akMin = AggregationKind.akMin;
+  akMax = AggregationKind.akMax;
+  akCount = AggregationKind.akCount;
+  akSum = AggregationKind.akSum;
+  akStd = AggregationKind.akStd;
+
   function LabelsToInts(y: Vector): array of integer;
   function EncodeLabels(labels: array of string): array of integer;
 

@@ -146,7 +146,7 @@ type
     /// Если seed = -1, используется случайная инициализация генератора.
     /// 
     /// Возвращает кортеж (trainDataFrame, testDataFrame).
-    function TrainTestSplit(testRatio: real := 0.2; seed: integer := -1): (DataFrame, DataFrame);
+    function TrainTestSplit(testRatio: real := 0.2; shuffle: boolean := true; seed: integer := -1): (DataFrame, DataFrame);
     
     /// Добавляет столбец целых чисел
     procedure AddIntColumn(name: string; data: array of integer; valid: array of boolean := nil);
@@ -290,6 +290,8 @@ type
     /// Возвращает новый DataFrame.
     function TransformBoolColumn(name: string; f: boolean -> boolean): DataFrame;
 
+    /// Возвращает новый DataFrame со строками с заданными номерами из исходного DataFrame
+    function TakeRows(indices: array of integer): DataFrame;
     
     /// Преобразует указанные вещественные столбцы в целочисленные (округление).
     /// Возвращает новый датафрейм
@@ -332,17 +334,61 @@ type
     procedure AppendRowFromCursor(src: DataFrame; cur: DataFrameCursor);
   end;
   
+  /// Тип операции группировки
+  AggregationKind = (akCount, akSum, akMean, akStd, akMin, akMax);
+  
+  GroupView = class
+  private
+    source: DataFrame;
+    indices: List<integer>;
+  public
+    constructor Create(df: DataFrame; idxs: List<integer>);
+  
+    function Count: integer;
+    function Sum(colName: string): real;
+    function Mean(colName: string): real;
+    function Min(colName: string): real;
+    function Max(colName: string): real;
+  end;
+  
   /// Интерфейс для группировки данных
   IGroupByContext = interface
     /// Возвращает DataFrame с количеством строк в каждой группе
     function Count: DataFrame;
     /// Возвращает DataFrame со средними значениями указанного столбца по группам
     function Mean(colName: string): DataFrame;
+    /// Возвращает DataFrame со средними значениями указанных столбцов по группам
+    function Mean(colNames: array of string): DataFrame;
+    /// Возвращает сумму значений указанного столбца по группам
+    function Sum(colName: string): DataFrame;
+    /// Возвращает сумму значений указанных столбцов по группам
+    function Sum(colNames: array of string): DataFrame;
+    /// Возвращает минимальные значения указанного столбца по группам
+    function Min(colName: string): DataFrame;
+    /// Возвращает минимальные значения указанных столбцов по группам
+    function Min(colNames: array of string): DataFrame;
+    /// Возвращает максимальные значения указанного столбца по группам
+    function Max(colName: string): DataFrame;
+    /// Возвращает максимальные значения указанных столбцов по группам
+    function Max(colNames: array of string): DataFrame;
+    /// Возвращает стандартное отклонение указанного столбца по группам
+    function Std(colName: string): DataFrame;
+    /// Возвращает стандартное отклонение указанных столбцов по группам
+    function Std(colNames: array of string): DataFrame;
+    /// Универсальная агрегация для одной колонки
+    function Aggregate(colName: string; kinds: array of AggregationKind): DataFrame;
+    /// Универсальная агрегация для нескольких колонок
+    function Aggregate(colNames: array of string; kinds: array of AggregationKind): DataFrame;
+    
+    function Aggregate(map: Dictionary<string, array of AggregationKind>): DataFrame;
+    
     /// Возвращает DataFrame с полной статистикой указанного столбца по группам
     function Describe(colName: string): DataFrame;
     /// Возвращает DataFrame с полной статистикой всех числовых столбцов по группам
     function DescribeAll: DataFrame;
-  end; 
+    /// Фильтрация групп по пользовательскому условию
+    function Filter(pred: Func<GroupView, boolean>): DataFrame;
+  end;
   
 type
 /// Статистические методы для анализа табличных данных
@@ -523,8 +569,31 @@ const
     'Столбец {0} не является вещественным!!Column {0} is not Float';
   ER_CAST_NON_INTEGER_VALUE =
     'Столбец {0} содержит нецелое значение {1} в строке {2}!!Column {0} contains non-integer value {1} at row {2}';
-
+  ER_FEATURES_EMPTY = 
+    'Список признаков пуст!!Feature list is empty';
+  ER_AGGREGATIONS_EMPTY = 
+    'Список агрегатов пуст!!Aggregation list is empty';
+  ER_COLUMN_OUT_OF_RANGE = 
+    'Индекс столбца вне диапазона!!Column index is out of range';
+  ER_AGG_COLUMN_DUPLICATE = 
+    'Дублирующееся имя агрегированной колонки!!Duplicate aggregated column name';
+  ER_ROW_INDEX_OUT_OF_RANGE = 
+    'Индекс строки вне диапазона!!Row index is out of range';
+  ER_UNSUPPORTED_COLUMN_TYPE = 
+    'Неподдерживаемый тип столбца!!Unsupported column type';
+    
 type
+  GroupKey = class
+  private
+    fValues: array of object;
+  public
+    constructor Create(values: array of object);
+    function Equals(obj: object): boolean; override;
+    function GetHashCode: integer; override;
+  
+    property Values: array of object read fValues;
+  end;
+  
   /// Класс для группировки данных
   GroupByContext = class(IGroupByContext)
   private
@@ -533,23 +602,55 @@ type
     keyColumn: integer;
     groups1: Dictionary<object, List<integer>>;
     keyColumns: array of integer;
-    groupsN: Dictionary<array of object, List<integer>>;
-    
-    procedure GetNumericColumn(
-      colIndex: integer;
-      var dataInt: array of integer;
-      var dataFloat: array of real;
-      var valid: array of boolean;
-      var isInt: boolean
-    );
+    groupsN: Dictionary<GroupKey, List<integer>>;
     
   public
     /// Создает контекст группировки для указанных столбцов
     constructor Create(df: DataFrame; keyCols: array of integer);
+
     /// Возвращает DataFrame с количеством строк в каждой группе
     function Count: DataFrame;
+
     /// Возвращает DataFrame со средними значениями указанного столбца по группам
     function Mean(colName: string): DataFrame;
+    
+    /// Возвращает сумму значений указанного столбца по группам
+    function Sum(colName: string): DataFrame;
+    
+    /// Возвращает минимальные значения указанного столбца по группам
+    function Min(colName: string): DataFrame;
+    
+    /// Возвращает максимальные значения указанного столбца по группам
+    function Max(colName: string): DataFrame;
+    
+    /// Возвращает стандартное отклонение указанного столбца по группам
+    function Std(colName: string): DataFrame;
+    
+    /// Возвращает средние значения указанных столбцов по группам
+    function Mean(colNames: array of string): DataFrame;
+    
+    /// Возвращает суммы указанных столбцов по группам
+    function Sum(colNames: array of string): DataFrame;
+    
+    /// Возвращает минимумы указанных столбцов по группам
+    function Min(colNames: array of string): DataFrame;
+    
+    /// Возвращает максимумы указанных столбцов по группам
+    function Max(colNames: array of string): DataFrame;
+    
+    /// Возвращает стандартные отклонения указанных столбцов по группам
+    function Std(colNames: array of string): DataFrame;
+    
+    /// Возвращает DataFrame, содержащий строки групп,
+    /// для которых предикат возвращает true
+    function Filter(pred: Func<GroupView, boolean>): DataFrame;    
+   
+    function Aggregate(colName: string; kinds: array of AggregationKind): DataFrame;
+    
+    function Aggregate(colNames: array of string; kinds: array of AggregationKind): DataFrame;
+    
+    function Aggregate(map: Dictionary<string, array of AggregationKind>): DataFrame;
+
     /// Возвращает DataFrame с полной статистикой указанного столбца по группам
     function Describe(colName: string): DataFrame;
     /// Возвращает DataFrame с полной статистикой всех числовых столбцов по группам
@@ -1616,7 +1717,7 @@ begin
   Result := c.Data;
 end;
 
-function DataFrame.TrainTestSplit(testRatio: real; seed: integer): (DataFrame, DataFrame);
+{function DataFrame.TrainTestSplit(testRatio: real; seed: integer): (DataFrame, DataFrame);
 begin
   if Self = nil then
     ArgumentNullError(ER_ARG_NULL, 'DataFrame');
@@ -1659,6 +1760,60 @@ begin
 
     row += 1;
   end;
+
+  Result := (trainDf, testDf);
+end;}
+
+function DataFrame.TrainTestSplit(testRatio: real; shuffle: boolean; seed: integer): (DataFrame, DataFrame);
+begin
+  if Self = nil then
+    ArgumentNullError(ER_ARG_NULL, 'DataFrame');
+
+  if (testRatio <= 0.0) or (testRatio >= 1.0) then
+    ArgumentError(ER_TEST_RATIO_INVALID, testRatio);
+
+  var n := RowCount;
+
+  if n < 2 then
+    ArgumentError(ER_EMPTY_DATA, 'TrainTestSplit');
+
+  var idx := Arr(0..n - 1);
+
+  if shuffle then
+  begin
+    var actualSeed := if seed >= 0 then seed else System.Environment.TickCount and integer.MaxValue;
+    var rnd := new System.Random(actualSeed);
+    idx.Shuffle(rnd);
+  end;
+
+  var rawSize := Round(n * testRatio);
+  var testSize := rawSize.Clamp(1, n - 1);
+  var trainSize := n - testSize;
+
+  var testIdx := new integer[testSize];
+  var trainIdx := new integer[trainSize];
+
+  if shuffle then
+  begin
+    // как раньше
+    for var i := 0 to testSize - 1 do
+      testIdx[i] := idx[i];
+
+    for var i := 0 to trainSize - 1 do
+      trainIdx[i] := idx[testSize + i];
+  end
+  else
+  begin
+    // сохраняем порядок
+    for var i := 0 to trainSize - 1 do
+      trainIdx[i] := idx[i];
+
+    for var i := 0 to testSize - 1 do
+      testIdx[i] := idx[trainSize + i];
+  end;
+
+  var trainDf := TakeRows(trainIdx);
+  var testDf := TakeRows(testIdx);
 
   Result := (trainDf, testDf);
 end;
@@ -3428,197 +3583,167 @@ begin
   AssertSchemaConsistent;
 end;
 
-{procedure DataFrame.PrintPreview(maxRows: integer; headRows: integer; decimals: integer);
+function DataFrame.TakeRows(indices: array of integer): DataFrame;
 begin
-  var ColumnSeparator := ' ';
-  var colCount := columns.Count;
-  if colCount = 0 then exit;
+  if indices = nil then
+    ArgumentNullError(ER_ARG_NULL, 'indices');
 
-  var rowCount := RowCount;
-  if rowCount = 0 then exit;
+  var k := indices.Length;
+  var res := new DataFrame;
 
-  if maxRows < 1 then exit;
+  var names := new List<string>;
+  var types := new List<ColumnType>;
+  var cats := new List<boolean>;
 
-  if rowCount <= maxRows then
-    headRows := rowCount
-  else
+  for var ci := 0 to ColumnCount - 1 do
   begin
-    if headRows = -1 then
-      headRows := (maxRows + 1) div 2;
-    if headRows < 0 then headRows := 0;
-    if headRows > maxRows then headRows := maxRows;
-  end;
+    var col := columns[ci];
+    var name := col.Info.Name;
+    var colType := col.Info.ColType;
 
-  var tailRows := maxRows - headRows;
-  if tailRows < 0 then tailRows := 0;
-  if tailRows > rowCount - headRows then
-    tailRows := rowCount - headRows;
+    case colType of
 
-  // --- ширины ---
-  var widths := new integer[colCount];      // для не-float
-  var intWidth := new integer[colCount];    // целая часть float (со знаком)
-  var hasFloat := new boolean[colCount];
-
-  for var j := 0 to colCount - 1 do
-  begin
-    widths[j] := columns[j].Info.Name.Length;
-    if columns[j].Info.ColType = ctFloat then
-      hasFloat[j] := true;
-  end;
-
-  var cursor := GetCursor;
-
-  // --- сканирование строк ---
-  var ScanRow: integer -> () := row ->
-  begin
-    cursor.MoveTo(row);
-    for var j := 0 to colCount - 1 do
-    begin
-      if not cursor.IsValid(j) then
-      begin
-        if widths[j] < 2 then widths[j] := 2; // 'NA'
-        continue;
-      end;
-
-      case columns[j].Info.ColType of
-        ctInt:
-        begin
-          var s := cursor.Int(j).ToString;
-          if s.Length > widths[j] then widths[j] := s.Length;
-        end;
-
-        ctFloat:
-        begin
-          var v := cursor.Float(j);
-          var absInt := Abs(Trunc(v));
-          var len := absInt.ToString.Length;
-          if v < 0 then len += 1; // знак
-          if len > intWidth[j] then intWidth[j] := len;
-        end;
-
-        ctStr:
-        begin
-          var s := cursor.Str(j);
-          if s.Length > widths[j] then widths[j] := s.Length;
-        end;
-
-        ctBool:
-        begin
-          var s := cursor.Bool(j).ToString;
-          if s.Length > widths[j] then widths[j] := s.Length;
-        end;
-      end;
-    end;
-  end;
-
-  for var i := 0 to headRows - 1 do
-    ScanRow(i);
-
-  if rowCount > headRows then
-    for var i := rowCount - tailRows to rowCount - 1 do
-      if i >= headRows then
-        ScanRow(i);
-
-  // --- нормализация ширин (табличная детерминированность) ---
-  for var j := 0 to colCount - 1 do
-  begin
-    // "NA" должно влезать всегда
-    if columns[j].Info.ColType = ctFloat then
-    begin
-      var w := intWidth[j] + 1 + decimals;
-      if w < 2 then
-        intWidth[j] := 2 - 1 - decimals; // чтобы итоговая ширина была >= 2
-    end
-    else
-    begin
-      if widths[j] < 2 then
-        widths[j] := 2;
-    end;
-  end;
-  
-
-  // --- заголовки ---
-  for var j := 0 to colCount - 1 do
-  begin
-    var w :=
-      if columns[j].Info.ColType = ctFloat
-      then intWidth[j] + 1 + decimals
-      else widths[j];
-    PABCSystem.Print(columns[j].Info.Name.PadLeft(w) + ColumnSeparator);
-  end;
-  PABCSystem.Println;
-
-  // --- форматирование значения ---
-  var FormatValue: integer -> string := j ->
-  begin
-    if not cursor.IsValid(j) then
-    begin
-      if columns[j].Info.ColType = ctFloat then
-        Result := 'NA'.PadLeft(intWidth[j] + 1 + decimals)
-      else
-        Result := 'NA'.PadLeft(widths[j]);
-      exit;
-    end;
-
-    case columns[j].Info.ColType of
       ctInt:
-        Result := cursor.Int(j).ToString.PadLeft(widths[j]);
+      begin
+        var src := IntColumn(col);
+        var data := new integer[k];
+        var validSrc := src.IsValid;
+        var validDst: array of boolean := nil;
+
+        if validSrc <> nil then
+          validDst := new boolean[k];
+
+        for var j := 0 to k - 1 do
+        begin
+          var i := indices[j];
+
+          if (i < 0) or (i >= RowCount) then
+            ArgumentError(ER_ROW_INDEX_OUT_OF_RANGE, i);
+
+          if validSrc = nil then
+            data[j] := src.Data[i]
+          else if validSrc[i] then
+          begin
+            data[j] := src.Data[i];
+            validDst[j] := true;
+          end
+          else
+            validDst[j] := false;
+        end;
+
+        res.AddIntColumn(name, data, validDst);
+      end;
 
       ctFloat:
       begin
-        var s := cursor.Float(j).ToString('F' + decimals);
-        var p := s.IndexOf('.');
-        var left := s.Substring(0, p);
-        var right := s.Substring(p + 1);
-        Result :=
-          left.PadLeft(intWidth[j]) + '.' + right;
+        var src := FloatColumn(col);
+        var data := new real[k];
+        var validSrc := src.IsValid;
+        var validDst: array of boolean := nil;
+
+        if validSrc <> nil then
+          validDst := new boolean[k];
+
+        for var j := 0 to k - 1 do
+        begin
+          var i := indices[j];
+
+          if (i < 0) or (i >= RowCount) then
+            ArgumentError(ER_ROW_INDEX_OUT_OF_RANGE, i);
+
+          if validSrc = nil then
+            data[j] := src.Data[i]
+          else if validSrc[i] then
+          begin
+            data[j] := src.Data[i];
+            validDst[j] := true;
+          end
+          else
+            validDst[j] := false;
+        end;
+
+        res.AddFloatColumn(name, data, validDst);
       end;
 
       ctStr:
-        Result := cursor.Str(j).PadLeft(widths[j]);
+      begin
+        var src := StrColumn(col);
+        var data := new string[k];
+        var validSrc := src.IsValid;
+        var validDst: array of boolean := nil;
+
+        if validSrc <> nil then
+          validDst := new boolean[k];
+
+        for var j := 0 to k - 1 do
+        begin
+          var i := indices[j];
+
+          if (i < 0) or (i >= RowCount) then
+            ArgumentError(ER_ROW_INDEX_OUT_OF_RANGE, i);
+
+          if validSrc = nil then
+            data[j] := src.Data[i]
+          else if validSrc[i] then
+          begin
+            data[j] := src.Data[i];
+            validDst[j] := true;
+          end
+          else
+            validDst[j] := false;
+        end;
+
+        res.AddStrColumn(name, data, validDst);
+      end;
 
       ctBool:
-        Result := cursor.Bool(j).ToString.PadLeft(widths[j]);
-    end;
-  end;
+      begin
+        var src := BoolColumn(col);
+        var data := new boolean[k];
+        var validSrc := src.IsValid;
+        var validDst: array of boolean := nil;
 
-  // --- печать head ---
-  for var i := 0 to headRows - 1 do
-  begin
-    cursor.MoveTo(i);
-    for var j := 0 to colCount - 1 do
-      PABCSystem.Print(FormatValue(j) + ColumnSeparator);
-    PABCSystem.Println;
-  end;
+        if validSrc <> nil then
+          validDst := new boolean[k];
 
-  // --- многоточие ---
-// 4. многоточие
-  if headRows + tailRows < rowCount then
-  begin
-    for var j := 0 to colCount - 1 do
-    begin
-      var w: integer;
-  
-      if columns[j].Info.ColType = ctFloat then
-        w := PABCSystem.Max(widths[j], intWidth[j] + 1 + decimals)
+        for var j := 0 to k - 1 do
+        begin
+          var i := indices[j];
+
+          if (i < 0) or (i >= RowCount) then
+            ArgumentError(ER_ROW_INDEX_OUT_OF_RANGE, i);
+
+          if validSrc = nil then
+            data[j] := src.Data[i]
+          else if validSrc[i] then
+          begin
+            data[j] := src.Data[i];
+            validDst[j] := true;
+          end
+          else
+            validDst[j] := false;
+        end;
+
+        res.AddBoolColumn(name, data, validDst);
+      end;
+
       else
-        w := widths[j];
-  
-      PABCSystem.Print($'…'.PadLeft(w) + ColumnSeparator);
+        Error(ER_UNSUPPORTED_COLUMN_TYPE, colType);
     end;
-    PABCSystem.Println;
+
+    names.Add(name);
+    types.Add(colType);
+    cats.Add(IsCategorical(col.Info.Name));
   end;
 
-  // --- печать tail ---
-  for var i := rowCount - tailRows to rowCount - 1 do
-    if i >= headRows then
-    begin
-      cursor.MoveTo(i);
-      for var j := 0 to colCount - 1 do
-        PABCSystem.Print(FormatValue(j) + ColumnSeparator);
-      PABCSystem.Println;
-    end;
-end;}
+  res.SetSchema(new DataFrameSchema(
+    names.ToArray,
+    types.ToArray,
+    cats.ToArray
+  ));
+
+  Result := res;
+end;
 
 procedure DataFrame.PrintPreview(maxRows: integer; headRows: integer; decimals: integer);
 begin
@@ -4017,10 +4142,81 @@ end;
 
 
 //-----------------------------
-//        GroupByContext
+//           GroupKey
 //-----------------------------
 
-procedure GroupByContext.GetNumericColumn(
+constructor GroupKey.Create(values: array of object);
+begin
+  if values = nil then
+    ArgumentNullError(ER_ARG_NULL, 'values');
+
+  fValues := Copy(values);
+end;
+
+function GroupKey.Equals(obj: object): boolean;
+begin
+  if obj = nil then
+  begin
+    Result := false;
+    exit;
+  end;
+
+  var other := obj as GroupKey;
+  if other = nil then
+  begin
+    Result := false;
+    exit;
+  end;
+
+  if fValues.Length <> other.fValues.Length then
+  begin
+    Result := false;
+    exit;
+  end;
+
+  for var i := 0 to fValues.Length - 1 do
+  begin
+    var a := fValues[i];
+    var b := other.fValues[i];
+
+    if a = nil then
+    begin
+      if b <> nil then
+      begin
+        Result := false;
+        exit;
+      end;
+    end
+    else if not a.Equals(b) then
+    begin
+      Result := false;
+      exit;
+    end;
+  end;
+
+  Result := true;
+end;
+
+function GroupKey.GetHashCode: integer;
+begin
+  var h := 17;
+
+  for var i := 0 to fValues.Length - 1 do
+  begin
+    var x := fValues[i];
+    var xh := if x = nil then 0 else x.GetHashCode;
+    h := h * 31 + xh;
+  end;
+
+  Result := h;
+end;
+
+//-----------------------------
+//          GroupView
+//-----------------------------
+
+procedure GetNumericColumn(
+  df: DataFrame;
   colIndex: integer;
   var dataInt: array of integer;
   var dataFloat: array of real;
@@ -4028,7 +4224,10 @@ procedure GroupByContext.GetNumericColumn(
   var isInt: boolean
 );
 begin
-  var col := source.columns[colIndex];
+  if (colIndex < 0) or (colIndex >= df.ColumnCount) then
+    ArgumentError(ER_COLUMN_OUT_OF_RANGE, colIndex);
+  
+  var col := df.columns[colIndex];
 
   if col is IntColumn then
   begin
@@ -4050,9 +4249,148 @@ begin
     Error(ER_COLUMN_NOT_NUMERIC);
 end;
 
+constructor GroupView.Create(df: DataFrame; idxs: List<integer>);
+begin
+  source := df;
+  indices := idxs;
+end;
+
+function GroupView.Count: integer;
+begin
+  Result := indices.Count;
+end;
+
+function GroupView.Sum(colName: string): real;
+begin
+  var ci := source.ColumnIndex(colName);
+
+  var dataInt: array of integer;
+  var dataFloat: array of real;
+  var valid: array of boolean;
+  var isInt: boolean;
+
+  // используем ТВОЙ helper
+  GetNumericColumn(source, ci, dataInt, dataFloat, valid, isInt);
+
+  var s := 0.0;
+
+  for var j := 0 to indices.Count - 1 do
+  begin
+    var i := indices[j];
+
+    if (valid <> nil) and not valid[i] then
+      continue;
+
+    s += if isInt then dataInt[i] else dataFloat[i];
+  end;
+
+  Result := s;
+end;
+
+function GroupView.Mean(colName: string): real;
+begin
+  var ci := source.ColumnIndex(colName);
+
+  var dataInt: array of integer;
+  var dataFloat: array of real;
+  var valid: array of boolean;
+  var isInt: boolean;
+
+  GetNumericColumn(source, ci, dataInt, dataFloat, valid, isInt);
+
+  var s := 0.0;
+  var cnt := 0;
+
+  for var j := 0 to indices.Count - 1 do
+  begin
+    var i := indices[j];
+
+    if (valid <> nil) and not valid[i] then
+      continue;
+
+    s += if isInt then dataInt[i] else dataFloat[i];
+    cnt += 1;
+  end;
+
+  Result := if cnt = 0 then 0.0 else s / cnt;
+end;
+
+function GroupView.Min(colName: string): real;
+begin
+  var ci := source.ColumnIndex(colName);
+
+  var dataInt: array of integer;
+  var dataFloat: array of real;
+  var valid: array of boolean;
+  var isInt: boolean;
+
+  GetNumericColumn(source, ci, dataInt, dataFloat, valid, isInt);
+
+  var m := real.MaxValue;
+  var has := false;
+
+  for var j := 0 to indices.Count - 1 do
+  begin
+    var i := indices[j];
+
+    if (valid <> nil) and not valid[i] then
+      continue;
+
+    var v := if isInt then dataInt[i] else dataFloat[i];
+
+    if not has or (v < m) then
+    begin
+      m := v;
+      has := true;
+    end;
+  end;
+
+  Result := if has then m else 0.0;
+end;
+
+function GroupView.Max(colName: string): real;
+begin
+  var ci := source.ColumnIndex(colName);
+
+  var dataInt: array of integer;
+  var dataFloat: array of real;
+  var valid: array of boolean;
+  var isInt: boolean;
+
+  GetNumericColumn(source, ci, dataInt, dataFloat, valid, isInt);
+
+  var m := real.MinValue;
+  var has := false;
+
+  for var j := 0 to indices.Count - 1 do
+  begin
+    var i := indices[j];
+
+    if (valid <> nil) and not valid[i] then
+      continue;
+
+    var v := if isInt then dataInt[i] else dataFloat[i];
+
+    if not has or (v > m) then
+    begin
+      m := v;
+      has := true;
+    end;
+  end;
+
+  Result := if has then m else 0.0;
+end;
+
+//-----------------------------
+//        GroupByContext
+//-----------------------------
+
 constructor GroupByContext.Create(df: DataFrame; keyCols: array of integer);
 begin
   source := df;
+  
+  if (keyCols = nil) or (keyCols.Length = 0) then
+    ArgumentError(ER_FEATURES_EMPTY);
 
   if keyCols.Length = 1 then
   begin
@@ -4074,25 +4412,28 @@ begin
         else Error(ER_GROUPBY_UNSUPPORTED_KEY_TYPE, df.columns[keyColumn].Info.ColType);
       end;
 
-      if not groups1.ContainsKey(key) then
-        groups1[key] := new List<integer>;
+      var lst: List<integer>;
+      if not groups1.TryGetValue(key, lst) then
+      begin
+        lst := new List<integer>;
+        groups1[key] := lst;
+      end;
 
-      groups1[key].Add(cursor.Position);
+      lst.Add(cursor.Position);
     end;
   end
   else
   begin
-    // multi-key
     singleKey := false;
-    keyColumns := keyCols;
-    groupsN := new Dictionary<array of object, List<integer>>;
-
+    keyColumns := Copy(keyCols);
+    groupsN := new Dictionary<GroupKey, List<integer>>;
+  
     var cursor := df.GetCursor;
     while cursor.MoveNext do
     begin
-      var key := new object[keyColumns.Length];
+      var values := new object[keyColumns.Length];
       var ok := true;
-
+  
       for var i := 0 to keyColumns.Length - 1 do
       begin
         var c := keyColumns[i];
@@ -4101,21 +4442,27 @@ begin
           ok := false;
           break;
         end;
-
+  
         case df.columns[c].Info.ColType of
-          ctInt: key[i] := cursor.Int(c);
-          ctStr: key[i] := cursor.Str(c);
+          ctInt: values[i] := cursor.Int(c);
+          ctStr: values[i] := cursor.Str(c);
           else Error(ER_GROUPBY_UNSUPPORTED_KEY_TYPE, df.columns[c].Info.ColType);
         end;
       end;
-
+  
       if not ok then
         continue;
-
-      if not groupsN.ContainsKey(key) then
-        groupsN[key] := new List<integer>;
-
-      groupsN[key].Add(cursor.Position);
+  
+      var key := new GroupKey(values);
+  
+      var lst: List<integer>;
+      if not groupsN.TryGetValue(key, lst) then
+      begin
+        lst := new List<integer>;
+        groupsN[key] := lst;
+      end;
+      
+      lst.Add(cursor.Position);
     end;
   end;
 end;
@@ -4130,28 +4477,28 @@ begin
 
   if singleKey then
   begin
-    var keys := groups1.Keys.ToArray;
+    var keys := groups1.Select(kvp -> kvp.Key).ToArray;
     var counts := new integer[keys.Length];
 
     for var i := 0 to keys.Length - 1 do
       counts[i] := groups1[keys[i]].Count;
 
     var col := source.columns[keyColumn];
-    var colName := col.Info.Name;
+    var keyName := col.Info.Name;
 
     if col.Info.ColType = ctInt then
     begin
-      res.AddIntColumn(colName, keys.Select(k -> integer(k)).ToArray, nil);
+      res.AddIntColumn(keyName, keys.Select(k -> integer(k)).ToArray, nil);
       types.Add(ctInt);
     end
     else
     begin
-      res.AddStrColumn(colName, keys.Select(k -> string(k)).ToArray, nil);
+      res.AddStrColumn(keyName, keys.Select(k -> string(k)).ToArray, nil);
       types.Add(ctStr);
     end;
 
-    names.Add(colName);
-    cats.Add(true); // 🔥 ключ — categorical
+    names.Add(keyName);
+    cats.Add(true); // ключ — categorical
 
     res.AddIntColumn('count', counts, nil);
     names.Add('count');
@@ -4160,7 +4507,7 @@ begin
   end
   else
   begin
-    var keys := groupsN.Keys.ToArray;
+    var keys := groupsN.Select(kvp -> kvp.Key).ToArray;
     var counts := new integer[keys.Length];
 
     for var i := 0 to keys.Length - 1 do
@@ -4174,12 +4521,12 @@ begin
 
       if col.Info.ColType = ctInt then
       begin
-        res.AddIntColumn(colName, keys.Select(key -> integer(key[k])).ToArray, nil);
+        res.AddIntColumn(colName, keys.Select(key -> integer(key.Values[k])).ToArray, nil);
         types.Add(ctInt);
       end
       else
       begin
-        res.AddStrColumn(colName, keys.Select(key -> string(key[k])).ToArray, nil);
+        res.AddStrColumn(colName, keys.Select(key -> string(key.Values[k])).ToArray, nil);
         types.Add(ctStr);
       end;
 
@@ -4205,319 +4552,315 @@ end;
 
 function GroupByContext.Mean(colName: string): DataFrame;
 begin
-  var colIndex := source.ColumnIndex(colName);
+  Result := Aggregate([colName], [akMean]);
+end;
 
-  var dataInt: array of integer;
-  var dataFloat: array of real;
-  var valid: array of boolean;
-  var isInt: boolean;
+function GroupByContext.Sum(colName: string): DataFrame;
+begin
+  Result := Aggregate([colName], [akSum]);
+end;
 
-  GetNumericColumn(colIndex, dataInt, dataFloat, valid, isInt);
+function GroupByContext.Min(colName: string): DataFrame;
+begin
+  Result := Aggregate([colName], [akMin]);
+end;
 
-  var res := new DataFrame;
+function GroupByContext.Max(colName: string): DataFrame;
+begin
+  Result := Aggregate([colName], [akMax]);
+end;
 
-  var names := new List<string>;
-  var types := new List<ColumnType>;
-  var cats := new List<boolean>;
+function GroupByContext.Std(colName: string): DataFrame;
+begin
+  Result := Aggregate([colName], [akStd]);
+end;
+
+function GroupByContext.Mean(colNames: array of string): DataFrame;
+begin
+  Result := Aggregate(colNames, [akMean]);
+end;
+
+function GroupByContext.Sum(colNames: array of string): DataFrame;
+begin
+  Result := Aggregate(colNames, [akSum]);
+end;
+
+function GroupByContext.Min(colNames: array of string): DataFrame;
+begin
+  Result := Aggregate(colNames, [akMin]);
+end;
+
+function GroupByContext.Max(colNames: array of string): DataFrame;
+begin
+  Result := Aggregate(colNames, [akMax]);
+end;
+
+function GroupByContext.Std(colNames: array of string): DataFrame;
+begin
+  Result := Aggregate(colNames, [akStd]);
+end;
+
+function GroupByContext.Filter(pred: Func<GroupView, boolean>): DataFrame;
+begin
+  if pred = nil then
+    ArgumentNullError(ER_ARG_NULL, 'pred');
+
+  var selected := new List<integer>;
 
   if singleKey then
   begin
-    var keys := groups1.Keys.ToArray;
-    var means := new real[keys.Length];
+    var keys := groups1.Select(kvp -> kvp.Key).ToArray;
 
     for var i := 0 to keys.Length - 1 do
     begin
-      var sum := 0.0;
-      var cnt := 0;
+      var idxs := groups1[keys[i]];
+      var g := new GroupView(source, idxs);
 
-      foreach var row in groups1[keys[i]] do
-        if (valid = nil) or valid[row] then
-        begin
-          sum += if isInt then dataInt[row] else dataFloat[row];
-          cnt += 1;
-        end;
-
-      means[i] := if cnt = 0 then 0.0 else sum / cnt;
+      if pred(g) then
+        selected.AddRange(idxs);
     end;
-
-    var col := source.columns[keyColumn];
-    var colNameKey := col.Info.Name;
-
-    if col.Info.ColType = ctInt then
-    begin
-      res.AddIntColumn(colNameKey, keys.Select(k -> integer(k)).ToArray, nil);
-      types.Add(ctInt);
-    end
-    else
-    begin
-      res.AddStrColumn(colNameKey, keys.Select(k -> string(k)).ToArray, nil);
-      types.Add(ctStr);
-    end;
-
-    names.Add(colNameKey);
-    cats.Add(true); // 🔥 ключ categorical
-
-    res.AddFloatColumn(colName + '_mean', means, nil);
-    names.Add(colName + '_mean');
-    types.Add(ctFloat);
-    cats.Add(false);
   end
   else
   begin
-    var keys := groupsN.Keys.ToArray;
-    var means := new real[keys.Length];
+    var keys := groupsN.Select(kvp -> kvp.Key).ToArray;
 
     for var i := 0 to keys.Length - 1 do
     begin
-      var sum := 0.0;
-      var cnt := 0;
+      var idxs := groupsN[keys[i]];
+      var g := new GroupView(source, idxs);
 
-      foreach var row in groupsN[keys[i]] do
-        if (valid = nil) or valid[row] then
-        begin
-          sum += if isInt then dataInt[row] else dataFloat[row];
-          cnt += 1;
-        end;
-
-      means[i] := if cnt = 0 then 0.0 else sum / cnt;
+      if pred(g) then
+        selected.AddRange(idxs);
     end;
-
-    for var k := 0 to keyColumns.Length - 1 do
-    begin
-      var ci := keyColumns[k];
-      var col := source.columns[ci];
-      var colNameKey := col.Info.Name;
-
-      if col.Info.ColType = ctInt then
-      begin
-        res.AddIntColumn(colNameKey, keys.Select(key -> integer(key[k])).ToArray, nil);
-        types.Add(ctInt);
-      end
-      else
-      begin
-        res.AddStrColumn(colNameKey, keys.Select(key -> string(key[k])).ToArray, nil);
-        types.Add(ctStr);
-      end;
-
-      names.Add(colNameKey);
-      cats.Add(true); // 🔥 ключи categorical
-    end;
-
-    res.AddFloatColumn(colName + '_mean', means, nil);
-    names.Add(colName + '_mean');
-    types.Add(ctFloat);
-    cats.Add(false);
   end;
 
-  // 🔥 schema
-  res.SetSchema(new DataFrameSchema(
-    names.ToArray,
-    types.ToArray,
-    cats.ToArray
-  ));
-
-  Result := res;
-end;
-
-procedure UpdateGroupStatsHelper(
-  g: integer;
-  idxs: List<integer>;
-  valid: array of boolean;
-  dataInt: array of integer;
-  dataFloat: array of real;
-  isInt: boolean;
-  var counts: array of integer;
-  var sums: array of real;
-  var mins: array of real;
-  var maxs: array of real
-);
-begin
-  for var j := 0 to idxs.Count-1 do
-  begin
-    var i := idxs[j];
-    if not valid[i] then continue;
-
-    var v := if isInt then dataInt[i] else dataFloat[i];
-
-    counts[g] += 1;
-    sums[g] += v;
-
-    if v < mins[g] then mins[g] := v;
-    if v > maxs[g] then maxs[g] := v;
-  end;
-end;
-
-procedure UpdateGroupStdHelper(
-  g: integer;
-  idxs: List<integer>;
-  valid: array of boolean;
-  dataInt: array of integer;
-  dataFloat: array of real;
-  isInt: boolean;
-  means: array of real;
-  var sumsq: array of real
-);
-begin
-  for var j := 0 to idxs.Count-1 do
-  begin
-    var i := idxs[j];
-    if not valid[i] then continue;
-
-    var v := if isInt then dataInt[i] else dataFloat[i];
-    var d := v - means[g];
-
-    sumsq[g] += d*d;
-  end;
-end;
-
-procedure ComputeAllStatsHelper(
-  groups: Dictionary<object, List<integer>>;
-  n: integer;
-  valid: array of boolean;
-  dataInt: array of integer;
-  dataFloat: array of real;
-  isInt: boolean;
-  var counts: array of integer;
-  var means: array of real;
-  var stds: array of real;
-  var mins: array of real;
-  var maxs: array of real
-);
-begin
-  var keys := groups.Keys.ToArray;
-
-  var sums := new real[n];
-  var sumsq := new real[n];
-
-  for var i := 0 to n-1 do
-  begin
-    mins[i] := real.MaxValue;
-    maxs[i] := real.MinValue;
-  end;
-
-  // PASS 1
-  for var g := 0 to n-1 do
-  begin
-    var idxs := groups[keys[g]];
-    UpdateGroupStatsHelper(g, idxs, valid, dataInt, dataFloat, isInt,
-      counts, sums, mins, maxs);
-  end;
-
-  // mean
-  for var i := 0 to n-1 do
-    if counts[i] > 0 then
-      means[i] := sums[i] / counts[i];
-
-  // PASS 2
-  for var g := 0 to n-1 do
-  begin
-    var idxs := groups[keys[g]];
-    UpdateGroupStdHelper(g, idxs, valid, dataInt, dataFloat, isInt,
-      means, sumsq);
-  end;
-
-  for var i := 0 to n-1 do
-    if counts[i] > 1 then
-      stds[i] := Sqrt(sumsq[i] / (counts[i] - 1));
-end;
-
-procedure ComputeAllStatsHelper(
-  groups: Dictionary<array of object, List<integer>>;
-  n: integer;
-  valid: array of boolean;
-  dataInt: array of integer;
-  dataFloat: array of real;
-  isInt: boolean;
-  var counts: array of integer;
-  var means: array of real;
-  var stds: array of real;
-  var mins: array of real;
-  var maxs: array of real
-);
-begin
-  var keys := groups.Keys.ToArray;
-
-  var sums := new real[n];
-  var sumsq := new real[n];
-
-  for var i := 0 to n - 1 do
-  begin
-    mins[i] := real.MaxValue;
-    maxs[i] := real.MinValue;
-  end;
-
-  // PASS 1
-  for var g := 0 to n - 1 do
-  begin
-    var idxs := groups[keys[g]];
-    UpdateGroupStatsHelper(g, idxs, valid, dataInt, dataFloat, isInt,
-      counts, sums, mins, maxs);
-  end;
-
-  // mean
-  for var i := 0 to n - 1 do
-    if counts[i] > 0 then
-      means[i] := sums[i] / counts[i];
-
-  // PASS 2
-  for var g := 0 to n - 1 do
-  begin
-    var idxs := groups[keys[g]];
-    UpdateGroupStdHelper(g, idxs, valid, dataInt, dataFloat, isInt,
-      means, sumsq);
-  end;
-
-  for var i := 0 to n - 1 do
-    if counts[i] > 1 then
-      stds[i] := Sqrt(sumsq[i] / (counts[i] - 1));
-end;
-
-procedure AddDescribeStatsColumnsHelper(
-  res: DataFrame;
-  counts: array of integer;
-  means, stds, mins, maxs: array of real;
-  names: List<string>;
-  types: List<ColumnType>;
-  cats: List<boolean>
-);
-begin
-  res.AddIntColumn('count', counts, nil);
-  names.Add('count');
-  types.Add(ctInt);
-  cats.Add(false);
-
-  res.AddFloatColumn('mean', means, nil);
-  names.Add('mean');
-  types.Add(ctFloat);
-  cats.Add(false);
-
-  res.AddFloatColumn('std', stds, nil);
-  names.Add('std');
-  types.Add(ctFloat);
-  cats.Add(false);
-
-  res.AddFloatColumn('min', mins, nil);
-  names.Add('min');
-  types.Add(ctFloat);
-  cats.Add(false);
-
-  res.AddFloatColumn('max', maxs, nil);
-  names.Add('max');
-  types.Add(ctFloat);
-  cats.Add(false);
+  // важно: порядок строк сохраняется как в исходных группах
+  Result := source.TakeRows(selected.ToArray);
 end;
 
 function GroupByContext.Describe(colName: string): DataFrame;
 begin
-  var colIndex := source.ColumnIndex(colName);
+  Result := Aggregate(
+    [colName],
+    [akCount, akMean, akStd, akMin, akMax]
+  );
+end;
 
-  var dataInt: array of integer;
-  var dataFloat: array of real;
-  var valid: array of boolean;
-  var isInt: boolean;
+function GroupByContext.DescribeAll: DataFrame;
+begin
+  var cols := new List<string>;
 
-  GetNumericColumn(colIndex, dataInt, dataFloat, valid, isInt);
+  // собираем все числовые колонки
+  for var i := 0 to source.ColumnCount - 1 do
+    case source.columns[i].Info.ColType of
+      ctInt, ctFloat:
+        cols.Add(source.columns[i].Info.Name);
+    end;
 
+  if cols.Count = 0 then
+    ArgumentError(ER_FEATURES_EMPTY);
+
+  Result := Aggregate(
+    cols.ToArray,
+    [akCount, akMean, akStd, akMin, akMax]
+  );
+end;
+
+function GroupByContext.Aggregate(colName: string; kinds: array of AggregationKind): DataFrame;
+begin
+  Result := Aggregate([colName], kinds);
+end;
+
+function GroupByContext.Aggregate(colNames: array of string; kinds: array of AggregationKind): DataFrame;
+begin
+  if (colNames = nil) or (colNames.Length = 0) then
+    ArgumentError(ER_FEATURES_EMPTY);
+
+  if (kinds = nil) or (kinds.Length = 0) then
+    ArgumentError(ER_AGGREGATIONS_EMPTY);
+
+  var m := colNames.Length;
+  var n := if singleKey then groups1.Count else groupsN.Count;
+
+  // ----------------------------
+  // 1. Какие агрегаты реально нужны
+  // ----------------------------
+  var needCount := false;
+  var needSum := false;
+  var needMean := false;
+  var needStd := false;
+  var needMin := false;
+  var needMax := false;
+
+  foreach var kind in kinds do
+    case kind of
+      akCount: needCount := true;
+      akSum:   needSum := true;
+      akMean:  needMean := true;
+      akStd:   needStd := true;
+      akMin:   needMin := true;
+      akMax:   needMax := true;
+    end;
+
+  if needMean then
+  begin
+    needCount := true;
+    needSum := true;
+  end;
+
+  var needSumSq := needStd;
+  if needStd then
+  begin
+    needCount := true;
+    needSum := true;
+  end;
+
+  // ----------------------------
+  // 2. Подготовка ссылок на колонки
+  // ----------------------------
+  var colIndices := new integer[m];
+  var colsInt := new List<array of integer>;
+  var colsFloat := new List<array of real>;
+  var colsValid := new List<array of boolean>;
+  var colsIsInt := new boolean[m];
+
+  for var c := 0 to m - 1 do
+  begin
+    var ci := source.ColumnIndex(colNames[c]);
+    colIndices[c] := ci;
+
+    var dataInt: array of integer;
+    var dataFloat: array of real;
+    var valid: array of boolean;
+    var isInt: boolean;
+
+    GetNumericColumn(source, ci, dataInt, dataFloat, valid, isInt);
+
+    colsInt.Add(dataInt);
+    colsFloat.Add(dataFloat);
+    colsValid.Add(valid);
+    colsIsInt[c] := isInt;
+  end;
+
+  // ----------------------------
+  // 3. Ключи групп — вычисляем один раз
+  // ----------------------------
+  var keys1: array of object := nil;
+  var keysN: array of GroupKey := nil;
+
+  if singleKey then
+    keys1 := groups1.Keys.ToArray
+  else
+    keysN := groupsN.Keys.ToArray;
+
+  // ----------------------------
+  // 4. Аллокации только под нужные агрегаты
+  // ----------------------------
+  var counts := new List<array of integer>;
+  var sums := new List<array of real>;
+  var sumsq := new List<array of real>;
+  var mins := new List<array of real>;
+  var maxs := new List<array of real>;
+
+  for var c := 0 to m - 1 do
+  begin
+    if needCount then counts.Add(new integer[n]) else counts.Add(nil);
+    if needSum then sums.Add(new real[n]) else sums.Add(nil);
+    if needSumSq then sumsq.Add(new real[n]) else sumsq.Add(nil);
+    if needMin then
+    begin
+      var arr := new real[n];
+      for var g := 0 to n - 1 do
+        arr[g] := real.MaxValue;
+      mins.Add(arr);
+    end
+    else mins.Add(nil);
+
+    if needMax then
+    begin
+      var arr := new real[n];
+      for var g := 0 to n - 1 do
+        arr[g] := real.MinValue;
+      maxs.Add(arr);
+    end
+    else maxs.Add(nil);
+  end;
+
+  // ----------------------------
+  // 5. Один проход по группам
+  // ----------------------------
+  if singleKey then
+  begin
+    for var g := 0 to n - 1 do
+    begin
+      var idxs := groups1[keys1[g]];
+
+      for var j := 0 to idxs.Count - 1 do
+      begin
+        var row := idxs[j];
+
+        for var c := 0 to m - 1 do
+        begin
+          var validArr := colsValid[c];
+          if (validArr <> nil) and not validArr[row] then
+            continue;
+
+          var v := if colsIsInt[c] then colsInt[c][row] else colsFloat[c][row];
+
+          if needCount then counts[c][g] += 1;
+          if needSum then sums[c][g] += v;
+          if needSumSq then sumsq[c][g] += v * v;
+
+          if needMin and (v < mins[c][g]) then mins[c][g] := v;
+          if needMax and (v > maxs[c][g]) then maxs[c][g] := v;
+        end;
+      end;
+    end;
+  end
+  else
+  begin
+    for var g := 0 to n - 1 do
+    begin
+      var idxs := groupsN[keysN[g]];
+
+      for var j := 0 to idxs.Count - 1 do
+      begin
+        var row := idxs[j];
+
+        for var c := 0 to m - 1 do
+        begin
+          var validArr := colsValid[c];
+          if (validArr <> nil) and not validArr[row] then
+            continue;
+
+          var v := if colsIsInt[c] then colsInt[c][row] else colsFloat[c][row];
+
+          if needCount then counts[c][g] += 1;
+          if needSum then sums[c][g] += v;
+          if needSumSq then sumsq[c][g] += v * v;
+
+          if needMin and (v < mins[c][g]) then mins[c][g] := v;
+          if needMax and (v > maxs[c][g]) then maxs[c][g] := v;
+        end;
+      end;
+    end;
+  end;
+
+  // ----------------------------
+  // 6. Пустые группы: min/max делаем 0.0
+  // ----------------------------
+  if needMin or needMax then
+    for var c := 0 to m - 1 do
+      for var g := 0 to n - 1 do
+        if needCount and (counts[c][g] = 0) then
+        begin
+          if needMin then mins[c][g] := 0.0;
+          if needMax then maxs[c][g] := 0.0;
+        end;
+
+  // ----------------------------
+  // 7. Формируем результат: сначала ключи
+  // ----------------------------
   var res := new DataFrame;
 
   var names := new List<string>;
@@ -4526,51 +4869,20 @@ begin
 
   if singleKey then
   begin
-    var n := groups1.Count;
-
-    var counts := new integer[n];
-    var means := new real[n];
-    var stds := new real[n];
-    var mins := new real[n];
-    var maxs := new real[n];
-
-    ComputeAllStatsHelper(groups1, n, valid, dataInt, dataFloat, isInt,
-      counts, means, stds, mins, maxs);
-
-    // ключи в правильном порядке
-    var keys := groups1.Select(kvp -> kvp.Key).ToArray;
-
     var col := source.columns[keyColumn];
     var keyName := col.Info.Name;
 
     if col.Info.ColType = ctInt then
-      res.AddIntColumn(keyName, keys.Select(k -> integer(k)).ToArray, nil)
+      res.AddIntColumn(keyName, keys1.Select(k -> integer(k)).ToArray, nil)
     else
-      res.AddStrColumn(keyName, keys.Select(k -> string(k)).ToArray, nil);
+      res.AddStrColumn(keyName, keys1.Select(k -> string(k)).ToArray, nil);
 
     names.Add(keyName);
     types.Add(col.Info.ColType);
     cats.Add(true);
-
-    AddDescribeStatsColumnsHelper(res, counts, means, stds, mins, maxs,
-      names, types, cats);
   end
   else
   begin
-    var n := groupsN.Count;
-
-    var counts := new integer[n];
-    var means := new real[n];
-    var stds := new real[n];
-    var mins := new real[n];
-    var maxs := new real[n];
-
-    ComputeAllStatsHelper(groupsN, n, valid, dataInt, dataFloat, isInt,
-      counts, means, stds, mins, maxs);
-
-    // ключи в правильном порядке
-    var keys := groupsN.Select(kvp -> kvp.Key).ToArray;
-
     for var k := 0 to keyColumns.Length - 1 do
     begin
       var ci := keyColumns[k];
@@ -4578,19 +4890,98 @@ begin
       var keyName := col.Info.Name;
 
       if col.Info.ColType = ctInt then
-        res.AddIntColumn(keyName, keys.Select(key -> integer(key[k])).ToArray, nil)
+        res.AddIntColumn(keyName, keysN.Select(key -> integer(key.Values[k])).ToArray, nil)
       else
-        res.AddStrColumn(keyName, keys.Select(key -> string(key[k])).ToArray, nil);
+        res.AddStrColumn(keyName, keysN.Select(key -> string(key.Values[k])).ToArray, nil);
 
       names.Add(keyName);
       types.Add(col.Info.ColType);
       cats.Add(true);
     end;
-
-    AddDescribeStatsColumnsHelper(res, counts, means, stds, mins, maxs,
-      names, types, cats);
   end;
 
+  // ----------------------------
+  // 8. Добавляем агрегаты
+  // Порядок: по колонкам, внутри — в порядке kinds
+  // ----------------------------
+  var usedNames := new HashSet<string>;
+
+  // сначала добавляем ключи (они уже в names)
+  foreach var nme in names do
+    usedNames.Add(nme);
+  
+  for var c := 0 to m - 1 do
+  begin
+    var baseName := colNames[c];
+  
+    foreach var kind in kinds do
+    begin
+      var colNameAgg := '';
+  
+      case kind of
+        akCount: colNameAgg := baseName + '_count';
+        akSum:   colNameAgg := baseName + '_sum';
+        akMean:  colNameAgg := baseName + '_mean';
+        akStd:   colNameAgg := baseName + '_std';
+        akMin:   colNameAgg := baseName + '_min';
+        akMax:   colNameAgg := baseName + '_max';
+      end;
+  
+      // проверка уникальности
+      if usedNames.Contains(colNameAgg) then
+        ArgumentError(ER_AGG_COLUMN_DUPLICATE, colNameAgg);
+  
+      usedNames.Add(colNameAgg);
+  
+      // добавление данных
+      case kind of
+        akCount:
+          res.AddIntColumn(colNameAgg, counts[c], nil);
+  
+        akSum:
+          res.AddFloatColumn(colNameAgg, sums[c], nil);
+  
+        akMean:
+        begin
+          var arr := new real[n];
+          for var g := 0 to n - 1 do
+            arr[g] := if counts[c][g] = 0 then 0.0 else sums[c][g] / counts[c][g];
+          res.AddFloatColumn(colNameAgg, arr, nil);
+        end;
+  
+        akStd:
+        begin
+          var arr := new real[n];
+          for var g := 0 to n - 1 do
+            if counts[c][g] <= 1 then
+              arr[g] := 0.0
+            else
+              arr[g] := Sqrt((sumsq[c][g] - sums[c][g] * sums[c][g] / counts[c][g]) / (counts[c][g] - 1));
+          res.AddFloatColumn(colNameAgg, arr, nil);
+        end;
+  
+        akMin:
+          res.AddFloatColumn(colNameAgg, mins[c], nil);
+  
+        akMax:
+          res.AddFloatColumn(colNameAgg, maxs[c], nil);
+      end;
+  
+      // метаданные
+      names.Add(colNameAgg);
+  
+      if kind = akCount then
+        types.Add(ctInt)
+      else
+        types.Add(ctFloat);
+  
+      cats.Add(false);
+    end;
+  end;
+
+  // ----------------------------
+  // 9. Schema
+  // ----------------------------
   res.SetSchema(new DataFrameSchema(
     names.ToArray,
     types.ToArray,
@@ -4600,92 +4991,63 @@ begin
   Result := res;
 end;
 
-// TODO: Optimize DescribeAll to single-pass implementation
-function GroupByContext.DescribeAll: DataFrame;
+function GroupByContext.Aggregate(map: Dictionary<string, array of AggregationKind>): DataFrame;
 begin
-  var res := new DataFrame;
+  if (map = nil) or (map.Count = 0) then
+    ArgumentError(ER_AGGREGATIONS_EMPTY);
 
-  var names := new List<string>;
-  var types := new List<ColumnType>;
-  var cats := new List<boolean>;
+  var first := true;
+  var res: DataFrame := nil;
 
-  // 1) ключи
-  if singleKey then
+  foreach var kvp in map do
   begin
-    var keys := groups1.Select(kvp -> kvp.Key).ToArray;
-    var col := source.columns[keyColumn];
-    var keyName := col.Info.Name;
+    var col := kvp.Key;
+    var kinds := kvp.Value;
 
-    if col.Info.ColType = ctInt then
+    var df := Aggregate([col], kinds);
+
+    if first then
     begin
-      res.AddIntColumn(keyName, keys.Select(k -> integer(k)).ToArray, nil);
-      types.Add(ctInt);
+      res := df;
+      first := false;
     end
     else
     begin
-      res.AddStrColumn(keyName, keys.Select(k -> string(k)).ToArray, nil);
-      types.Add(ctStr);
-    end;
-
-    names.Add(keyName);
-    cats.Add(true);
-  end
-  else
-  begin
-    var keys := groupsN.Select(kvp -> kvp.Key).ToArray;
-
-    for var k := 0 to keyColumns.Length - 1 do
-    begin
-      var ci := keyColumns[k];
-      var col := source.columns[ci];
-      var keyName := col.Info.Name;
-
-      if col.Info.ColType = ctInt then
+      // добавляем только агрегатные колонки (пропускаем ключи)
+      for var ci := 0 to df.ColumnCount - 1 do
       begin
-        res.AddIntColumn(keyName, keys.Select(key -> integer(key[k])).ToArray, nil);
-        types.Add(ctInt);
-      end
-      else
-      begin
-        res.AddStrColumn(keyName, keys.Select(key -> string(key[k])).ToArray, nil);
-        types.Add(ctStr);
+        var name := df.columns[ci].Info.Name;
+
+        // ключи пропускаем (они уже есть в res)
+        var exists := false;
+        
+        for var k := 0 to res.ColumnCount - 1 do
+          if res.columns[k].Info.Name = name then
+          begin
+            exists := true;
+            break;
+          end;
+        
+        if not exists then
+        begin
+          var col1 := df.columns[ci];
+        
+          case col1.Info.ColType of
+            ctInt:
+              res.AddIntColumn(name, IntColumn(col1).Data, IntColumn(col1).IsValid);
+            ctFloat:
+              res.AddFloatColumn(name, FloatColumn(col1).Data, FloatColumn(col1).IsValid);
+            ctStr:
+              res.AddStrColumn(name, StrColumn(col1).Data, StrColumn(col1).IsValid);
+            ctBool:
+              res.AddBoolColumn(name, BoolColumn(col1).Data, BoolColumn(col1).IsValid);
+            else
+              Error(ER_UNSUPPORTED_COLUMN_TYPE, col1.Info.ColType);
+          end;
+        end;
       end;
-
-      names.Add(keyName);
-      cats.Add(true);
     end;
   end;
-
-  // 2) агрегаты
-  for var i := 0 to source.ColumnCount - 1 do
-    case source.columns[i].Info.ColType of
-      ctInt, ctFloat:
-      begin
-        var baseName := source.columns[i].Info.Name;
-        var df := Describe(baseName);
-
-        res.AddIntColumn(baseName + '_count', df.GetIntColumn('count'), nil);
-        names.Add(baseName + '_count'); types.Add(ctInt); cats.Add(false);
-
-        res.AddFloatColumn(baseName + '_mean', df.GetFloatColumn('mean'), nil);
-        names.Add(baseName + '_mean'); types.Add(ctFloat); cats.Add(false);
-
-        res.AddFloatColumn(baseName + '_std', df.GetFloatColumn('std'), nil);
-        names.Add(baseName + '_std'); types.Add(ctFloat); cats.Add(false);
-
-        res.AddFloatColumn(baseName + '_min', df.GetFloatColumn('min'), nil);
-        names.Add(baseName + '_min'); types.Add(ctFloat); cats.Add(false);
-
-        res.AddFloatColumn(baseName + '_max', df.GetFloatColumn('max'), nil);
-        names.Add(baseName + '_max'); types.Add(ctFloat); cats.Add(false);
-      end;
-    end;
-  // 🔥 финально ставим schema
-  res.SetSchema(new DataFrameSchema(
-    names.ToArray,
-    types.ToArray,
-    cats.ToArray
-  ));
 
   Result := res;
 end;

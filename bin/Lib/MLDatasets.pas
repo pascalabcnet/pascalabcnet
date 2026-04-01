@@ -37,8 +37,18 @@ type
     function IsSupervised: boolean;
   
     /// Разбивает датасет на обучающую и тестовую части.
-    /// testRatio — доля тестовой выборки.
-    function TrainTestSplit(testRatio: real := 0.2; seed: integer := -1): (Dataset, Dataset);
+    /// testRatio — доля тестовой выборки (0 < testRatio < 1).
+    /// shuffle — перемешивать ли строки перед разбиением.
+    /// seed — начальное значение генератора случайных чисел (для воспроизводимости).
+    /// Возвращает два датасета: (train, test).
+    function TrainTestSplit(testRatio: real := 0.2; shuffle: boolean := True; seed: integer := -1): (Dataset, Dataset);
+    
+    /// Выполняет стратифицированное разбиение датасета на обучающую и тестовую части.
+    /// Сохраняет распределение значений целевой переменной в обеих выборках.
+    /// testRatio — доля тестовой выборки (0 < testRatio < 1).
+    /// seed — начальное значение генератора случайных чисел (для воспроизводимости).
+    /// Возвращает два датасета: (train, test).
+    function StratifiedTrainTestSplit(testRatio: real := 0.2; seed: integer := -1): (Dataset, Dataset);
   
     /// Возвращает первые n строк таблицы данных.
     function Head(n: integer := 5): DataFrame;
@@ -314,7 +324,13 @@ const
     'Параметр {0} должен быть в диапазоне (0, 1)!!Parameter {0} must be in range (0, 1)';   
   ER_PARAM_LT =
     'Параметр {0} должен быть меньше допустимого значения!!Parameter {0} must be less than allowed value';    
-    
+  ER_TEST_RATIO_INVALID = 
+    'Некорректное значение testRatio (должно быть между 0 и 1)!!Invalid testRatio (must be between 0 and 1)';
+  ER_GROUPBY_UNSUPPORTED_KEY_TYPE = 
+    'Неподдерживаемый тип ключа для группировки!!Unsupported key type for grouping';
+  ER_STRATIFIED_ONLY_FOR_CLASSIFICATION =
+    'Стратифицированное разбиение доступно только для задач классификации!!Stratified split is only for classification tasks';
+  
   C_DATASET      = 'Датасет: {0}!!Dataset: {0}';
   C_DESCRIPTION  = 'Описание:!!Description:';
   C_TASK         = 'Задача: {0}!!Task: {0}';
@@ -373,18 +389,120 @@ begin
   Result.Name := Name;
   Result.Data := df;
 
-  Result.Features := Features;
+  Result.Features := Copy(Features);
   Result.Target := Target;
   Result.Task := Task;
 
   Result.Description := Description;
-  Result.FeatureLabels := FeatureLabels;
-  Result.ValueLabels := ValueLabels;
+
+  Result.FeatureLabels := new Dictionary<string,string>(FeatureLabels);
+
+  Result.ValueLabels := new Dictionary<string, Dictionary<string,string>>;
+  foreach var kvp in ValueLabels do
+    Result.ValueLabels[kvp.Key] := new Dictionary<string,string>(kvp.Value);
 end;
 
-function Dataset.TrainTestSplit(testRatio: real; seed: integer): (Dataset, Dataset);
+function Dataset.TrainTestSplit(testRatio: real; shuffle: boolean; seed: integer): (Dataset, Dataset);
 begin
-  var (trainDf, testDf) := Data.TrainTestSplit(testRatio, seed);
+  var (trainDf, testDf) := Data.TrainTestSplit(testRatio, shuffle, seed);
+
+  var trainDs := CloneMeta(trainDf);
+  var testDs := CloneMeta(testDf);
+
+  Result := (trainDs, testDs);
+end;
+
+function Dataset.StratifiedTrainTestSplit(testRatio: real; seed: integer): (Dataset, Dataset);
+begin
+  if Data = nil then
+    ArgumentNullError(ER_ARG_NULL, 'Data');
+  
+  if (testRatio <= 0.0) or (testRatio >= 1.0) then
+    ArgumentError(ER_TEST_RATIO_INVALID, testRatio);
+  
+  if Task <> Classification then
+    Error(ER_STRATIFIED_ONLY_FOR_CLASSIFICATION);
+
+  var n := Data.RowCount;
+  if n < 2 then
+    ArgumentError(ER_EMPTY_DATA, 'StratifiedTrainTestSplit');
+
+  var actualSeed := if seed >= 0 then seed else System.Environment.TickCount and integer.MaxValue;
+  var rnd := new System.Random(actualSeed);
+
+  // --- target column
+  var ci := Data.ColumnIndex(Target);
+  var col := Data.GetColumn(ci);
+
+  var groups := new Dictionary<object, List<integer>>;
+
+  // --- группировка по target
+  case col.Info.ColType of
+
+    ctInt:
+    begin
+      var data := IntColumn(col).Data;
+
+      for var i := 0 to n - 1 do
+      begin
+        var key: object := data[i];
+
+        var lst: List<integer>;
+        if not groups.TryGetValue(key, lst) then
+        begin
+          lst := new List<integer>;
+          groups[key] := lst;
+        end;
+
+        lst.Add(i);
+      end;
+    end;
+
+    ctStr:
+    begin
+      var data := StrColumn(col).Data;
+
+      for var i := 0 to n - 1 do
+      begin
+        var key: object := data[i];
+
+        var lst: List<integer>;
+        if not groups.TryGetValue(key, lst) then
+        begin
+          lst := new List<integer>;
+          groups[key] := lst;
+        end;
+
+        lst.Add(i);
+      end;
+    end;
+
+    else
+      Error(ER_GROUPBY_UNSUPPORTED_KEY_TYPE, col.Info.ColType);
+  end;
+
+  var trainIdx := new List<integer>;
+  var testIdx := new List<integer>;
+
+  // --- split внутри каждой группы
+  foreach var kvp in groups do
+  begin
+    var arr := kvp.Value.ToArray;
+    arr.Shuffle(rnd);
+
+    var m := arr.Length;
+    var rawSize := Round(m * testRatio);
+    var testSize := rawSize.Clamp(1, m - 1);
+
+    for var i := 0 to testSize - 1 do
+      testIdx.Add(arr[i]);
+
+    for var i := testSize to m - 1 do
+      trainIdx.Add(arr[i]);
+  end;
+
+  var trainDf := Data.TakeRows(trainIdx.ToArray);
+  var testDf := Data.TakeRows(testIdx.ToArray);
 
   var trainDs := CloneMeta(trainDf);
   var testDs := CloneMeta(testDf);
