@@ -278,8 +278,6 @@ namespace VisualPascalABC
 
                     if (unitOldConverter != null)
                     {
-                        var oldConverter = (CodeCompletion.DomConverter)unitOldConverter;
-
                         // Помечаем для перекомпиляции
                         if (watchedFiles.ContainsKey(scopeFileName))
                         {
@@ -288,9 +286,6 @@ namespace VisualPascalABC
                         else
                         {
                             CodeCompletion.CodeCompletionController.comp_modules.Remove(scopeFileName);
-
-                            oldConverter.visitor.entry_scope?.Clear();
-                            oldConverter.visitor.cur_scope?.Clear();
                         }
                     }
                 }
