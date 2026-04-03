@@ -536,6 +536,55 @@ namespace CodeCompletion
             used_units.Add(unit);
         }
 
+        /// <summary>
+        /// Получить массив всех транзитивно используемых модулей (ислючая пр-ва имен).
+        /// По умолчанию для InterfaceUnitScope ищутся и зависимости реализации тоже.
+        /// </summary>
+        public SymScope[] GetRealUsedUnitsTransitive(bool includeImplementationDependenciesForUnit = true)
+        {
+            var usedUnits = new List<SymScope>();
+
+            if (used_units != null)
+            {
+                usedUnits.AddRange(used_units.Where(unit => unit.file_name != null));
+            }
+
+            if (this is InterfaceUnitScope interfaceScope && includeImplementationDependenciesForUnit && interfaceScope.impl_scope != null)
+            {
+                foreach (var recursiveUsedUnit in interfaceScope.impl_scope.GetRealUsedUnitsTransitive(true))
+                {
+                    if (recursiveUsedUnit == this)
+                        continue;
+
+                    if (usedUnits.FirstOrDefault(unit => unit.file_name == recursiveUsedUnit.file_name) == null)
+                    {
+                        usedUnits.Add(recursiveUsedUnit);
+                    }
+                }
+            }
+
+            if (used_units != null)
+            {
+                foreach (var usedUnit in used_units)
+                {
+                    var recursiveUsedUnits = usedUnit.GetRealUsedUnitsTransitive(includeImplementationDependenciesForUnit);
+
+                    foreach (var recursiveUsedUnit in recursiveUsedUnits)
+                    {
+                        if (recursiveUsedUnit == this)
+                            continue;
+
+                        if (usedUnits.FirstOrDefault(unit => unit.file_name == recursiveUsedUnit.file_name) == null)
+                        {
+                            usedUnits.Add(recursiveUsedUnit);
+                        }
+                    }
+                }
+            }
+
+            return usedUnits.ToArray();
+        }
+
         public virtual string GetFullName()
         {
             return si.name;
