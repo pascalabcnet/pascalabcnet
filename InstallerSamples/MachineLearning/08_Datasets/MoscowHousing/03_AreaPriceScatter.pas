@@ -11,5 +11,5 @@ begin
 
   Plot.XLabel('Площадь (м²)');
   Plot.YLabel('Цена (руб)');
-  Plot.Title('Цена квартиры vs площадь');
+  Plot.Title := 'Цена квартиры vs площадь';
 end.

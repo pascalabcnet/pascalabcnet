@@ -919,6 +919,55 @@ begin
   res.AddBoolColumn(name, data, valid);
 end;
 
+procedure BuildColumnFromJoin(res: DataFrame; name: string; col: Column; idx: array of integer);
+begin
+  case col.Info.ColType of
+    ctInt:
+      BuildIntColumnFromJoin(res, name, IntColumn(col), idx);
+    ctFloat:
+      BuildFloatColumnFromJoin(res, name, FloatColumn(col), idx);
+    ctStr:
+      BuildStrColumnFromJoin(res, name, StrColumn(col), idx);
+    ctBool:
+      BuildBoolColumnFromJoin(res, name, BoolColumn(col), idx);
+    else
+      Error(ER_UNSUPPORTED_COLUMN_TYPE, col.Info.ColType);
+  end;
+end;
+
+function BuildLeftJoinResult(
+  Self, other: DataFrame;
+  leftIdx, rightIdx: List<integer>;
+  leftKey, rightKey: integer
+): DataFrame;
+begin
+  var leftArr  := leftIdx.ToArray;
+  var rightArr := rightIdx.ToArray;
+
+  var res := new DataFrame;
+
+  // --- left columns (всегда берём из left)
+  for var ci := 0 to Self.ColumnCount - 1 do
+    BuildColumnFromJoin(res, Self.columns[ci].Info.Name, Self.columns[ci], leftArr);
+
+  // --- right columns (учитывают -1)
+  for var ci := 0 to other.ColumnCount - 1 do
+    if ci <> rightKey then
+      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
+
+  var schema := DataFrameSchema.Merge(
+    Self.fSchema,
+    other.fSchema,
+    [leftKey],
+    [rightKey],
+    'right_'
+  );
+
+  res.SetSchema(schema);
+
+  Result := res;
+end;
+
 //-----------------------------
 //          DataFrame
 //-----------------------------
@@ -1028,90 +1077,6 @@ begin
   end;
 end;
 
-{procedure DataFrame.AppendJoinedRow(leftCur, rightCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer);
-begin
-  var col := 0;
-
-  // 1. ключи (из left)
-  for var i := 0 to leftKeyIdx.Length - 1 do
-  begin
-    columns[col].AppendFromCursor(leftCur, leftKeyIdx[i]);
-    col += 1;
-  end;
-
-  // 2. остальные столбцы слева
-  for var j := 0 to leftCur.ColumnCount - 1 do
-    if not leftKeyIdx.Contains(j) then
-    begin
-      columns[col].AppendFromCursor(leftCur, j);
-      col += 1;
-    end;
-
-  // 3. остальные столбцы справа
-  for var j := 0 to rightCur.ColumnCount - 1 do
-    if not rightKeyIdx.Contains(j) then
-    begin
-      columns[col].AppendFromCursor(rightCur, j);
-      col += 1;
-    end;
-end;
-
-procedure DataFrame.AppendLeftOnlyRow(leftCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer);
-begin
-  var col := 0;
-
-  // ключи (из left)
-  for var i := 0 to leftKeyIdx.Length - 1 do
-  begin
-    columns[col].AppendFromCursor(leftCur, leftKeyIdx[i]);
-    col += 1;
-  end;
-
-  // остальные столбцы слева
-  for var j := 0 to leftCur.ColumnCount - 1 do
-    if not leftKeyIdx.Contains(j) then
-    begin
-      columns[col].AppendFromCursor(leftCur, j);
-      col += 1;
-    end;
-
-  while col < columns.Count do
-  begin
-    columns[col].AppendInvalid;
-    col += 1;
-  end;
-end;
-
-procedure DataFrame.AppendRightOnlyRow(rightCur: DataFrameCursor; leftKeyIdx, rightKeyIdx: array of integer;
-  leftColumnCount: integer);
-begin
-  var col := 0;
-
-  // ключи (из right)
-  for var i := 0 to rightKeyIdx.Length - 1 do
-  begin
-    columns[col].AppendFromCursor(rightCur, rightKeyIdx[i]);
-    col += 1;
-  end;
-
-  // остальные столбцы слева → NA
-  for var j := 0 to leftColumnCount - 1 do
-    if not leftKeyIdx.Contains(j) then
-    begin
-      columns[col].AppendInvalid;
-      col += 1;
-    end;
-
-  // остальные столбцы справа
-  for var j := 0 to rightCur.ColumnCount - 1 do
-    if not rightKeyIdx.Contains(j) then
-    begin
-      columns[col].AppendFromCursor(rightCur, j);
-      col += 1;
-    end;
-end;}
-
-
 function DataFrame.LeftJoinSingleKey(other: DataFrame; key: string): DataFrame;
 begin
   // 1. индексы ключей — через Schema
@@ -1134,27 +1099,10 @@ begin
   end;
 end;
 
-procedure BuildColumnFromJoin(res: DataFrame; name: string; col: Column; idx: array of integer);
-begin
-  case col.Info.ColType of
-    ctInt:
-      BuildIntColumnFromJoin(res, name, IntColumn(col), idx);
-    ctFloat:
-      BuildFloatColumnFromJoin(res, name, FloatColumn(col), idx);
-    ctStr:
-      BuildStrColumnFromJoin(res, name, StrColumn(col), idx);
-    ctBool:
-      BuildBoolColumnFromJoin(res, name, BoolColumn(col), idx);
-    else
-      Error(ER_UNSUPPORTED_COLUMN_TYPE, col.Info.ColType);
-  end;
-end;
-
 function DataFrame.LeftJoinSingleKeyInt(other: DataFrame; leftKey, rightKey: integer): DataFrame;
 begin
   var index := new Dictionary<integer, List<integer>>;
 
-  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
     if rcur.IsValid(rightKey) then
@@ -1171,7 +1119,6 @@ begin
       lst.Add(rcur.Position);
     end;
 
-  // --- collect index pairs
   var leftIdx  := new List<integer>;
   var rightIdx := new List<integer>;
 
@@ -1190,10 +1137,10 @@ begin
     var k := lcur.Int(leftKey);
 
     if index.ContainsKey(k) then
-      foreach var rpos in index[k] do
+      foreach var r in index[k] do
       begin
         leftIdx.Add(lpos);
-        rightIdx.Add(rpos);
+        rightIdx.Add(r);
       end
     else
     begin
@@ -1202,38 +1149,13 @@ begin
     end;
   end;
 
-  var leftArr  := leftIdx.ToArray;
-  var rightArr := rightIdx.ToArray;
-
-  var res := new DataFrame;
-
-  // --- left columns
-  for var ci := 0 to ColumnCount - 1 do
-    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
-
-  // --- right columns (exclude key)
-  for var ci := 0 to other.ColumnCount - 1 do
-    if ci <> rightKey then
-      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
-
-  // --- schema
-  var schema := DataFrameSchema.Merge(
-    fSchema,
-    other.fSchema,
-    [leftKey],
-    [rightKey],
-    'right_'
-  );
-  res.SetSchema(schema);
-
-  Result := res;
+  Result := BuildLeftJoinResult(Self, other, leftIdx, rightIdx, leftKey, rightKey);
 end;
 
 function DataFrame.LeftJoinSingleKeyFloat(other: DataFrame; leftKey, rightKey: integer): DataFrame;
 begin
   var index := new Dictionary<real, List<integer>>;
 
-  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
     if rcur.IsValid(rightKey) then
@@ -1250,7 +1172,6 @@ begin
       lst.Add(rcur.Position);
     end;
 
-  // --- collect index pairs
   var leftIdx  := new List<integer>;
   var rightIdx := new List<integer>;
 
@@ -1269,10 +1190,10 @@ begin
     var k := lcur.Float(leftKey);
 
     if index.ContainsKey(k) then
-      foreach var rpos in index[k] do
+      foreach var r in index[k] do
       begin
         leftIdx.Add(lpos);
-        rightIdx.Add(rpos);
+        rightIdx.Add(r);
       end
     else
     begin
@@ -1281,38 +1202,13 @@ begin
     end;
   end;
 
-  var leftArr  := leftIdx.ToArray;
-  var rightArr := rightIdx.ToArray;
-
-  var res := new DataFrame;
-
-  // --- left columns
-  for var ci := 0 to ColumnCount - 1 do
-    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
-
-  // --- right columns (exclude key)
-  for var ci := 0 to other.ColumnCount - 1 do
-    if ci <> rightKey then
-      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
-
-  // --- schema
-  var schema := DataFrameSchema.Merge(
-    fSchema,
-    other.fSchema,
-    [leftKey],
-    [rightKey],
-    'right_'
-  );
-  res.SetSchema(schema);
-
-  Result := res;
+  Result := BuildLeftJoinResult(Self, other, leftIdx, rightIdx, leftKey, rightKey);
 end;
 
 function DataFrame.LeftJoinSingleKeyStr(other: DataFrame; leftKey, rightKey: integer): DataFrame;
 begin
   var index := new Dictionary<string, List<integer>>;
 
-  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
     if rcur.IsValid(rightKey) then
@@ -1329,7 +1225,6 @@ begin
       lst.Add(rcur.Position);
     end;
 
-  // --- collect index pairs
   var leftIdx  := new List<integer>;
   var rightIdx := new List<integer>;
 
@@ -1348,10 +1243,10 @@ begin
     var k := lcur.Str(leftKey);
 
     if index.ContainsKey(k) then
-      foreach var rpos in index[k] do
+      foreach var r in index[k] do
       begin
         leftIdx.Add(lpos);
-        rightIdx.Add(rpos);
+        rightIdx.Add(r);
       end
     else
     begin
@@ -1360,38 +1255,13 @@ begin
     end;
   end;
 
-  var leftArr  := leftIdx.ToArray;
-  var rightArr := rightIdx.ToArray;
-
-  var res := new DataFrame;
-
-  // --- left columns
-  for var ci := 0 to ColumnCount - 1 do
-    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
-
-  // --- right columns (exclude key)
-  for var ci := 0 to other.ColumnCount - 1 do
-    if ci <> rightKey then
-      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
-
-  // --- schema
-  var schema := DataFrameSchema.Merge(
-    fSchema,
-    other.fSchema,
-    [leftKey],
-    [rightKey],
-    'right_'
-  );
-  res.SetSchema(schema);
-
-  Result := res;
+  Result := BuildLeftJoinResult(Self, other, leftIdx, rightIdx, leftKey, rightKey);
 end;
 
 function DataFrame.LeftJoinSingleKeyBool(other: DataFrame; leftKey, rightKey: integer): DataFrame;
 begin
   var index := new Dictionary<boolean, List<integer>>;
 
-  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
     if rcur.IsValid(rightKey) then
@@ -1408,7 +1278,6 @@ begin
       lst.Add(rcur.Position);
     end;
 
-  // --- collect index pairs
   var leftIdx  := new List<integer>;
   var rightIdx := new List<integer>;
 
@@ -1427,10 +1296,10 @@ begin
     var k := lcur.Bool(leftKey);
 
     if index.ContainsKey(k) then
-      foreach var rpos in index[k] do
+      foreach var r in index[k] do
       begin
         leftIdx.Add(lpos);
-        rightIdx.Add(rpos);
+        rightIdx.Add(r);
       end
     else
     begin
@@ -1439,31 +1308,7 @@ begin
     end;
   end;
 
-  var leftArr  := leftIdx.ToArray;
-  var rightArr := rightIdx.ToArray;
-
-  var res := new DataFrame;
-
-  // --- left columns
-  for var ci := 0 to ColumnCount - 1 do
-    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
-
-  // --- right columns (exclude key)
-  for var ci := 0 to other.ColumnCount - 1 do
-    if ci <> rightKey then
-      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
-
-  // --- schema
-  var schema := DataFrameSchema.Merge(
-    fSchema,
-    other.fSchema,
-    [leftKey],
-    [rightKey],
-    'right_'
-  );
-  res.SetSchema(schema);
-
-  Result := res;
+  Result := BuildLeftJoinResult(Self, other, leftIdx, rightIdx, leftKey, rightKey);
 end;
 
 function DataFrame.LeftJoinMultiKey(other: DataFrame; keys: array of string): DataFrame;
@@ -1875,11 +1720,44 @@ begin
   end;
 end;
 
+// Helper для следующих 4 функций
+function BuildJoinResult(
+  Self, other: DataFrame;
+  leftIdx, rightIdx: List<integer>;
+  leftKey, rightKey: integer
+): DataFrame;
+begin
+  var leftArr  := leftIdx.ToArray;
+  var rightArr := rightIdx.ToArray;
+
+  var res := new DataFrame;
+
+  // --- left columns
+  for var ci := 0 to Self.ColumnCount - 1 do
+    BuildColumnFromJoin(res, Self.columns[ci].Info.Name, Self.columns[ci], leftArr);
+
+  // --- right columns (exclude key)
+  for var ci := 0 to other.ColumnCount - 1 do
+    if ci <> rightKey then
+      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
+
+  var schema := DataFrameSchema.Merge(
+    Self.fSchema,
+    other.fSchema,
+    [leftKey],
+    [rightKey],
+    'right_'
+  );
+
+  res.SetSchema(schema);
+
+  Result := res;
+end;
+
 function DataFrame.JoinInnerSingleKeyInt(other: DataFrame; leftKey, rightKey: integer): DataFrame;
 begin
   var index := new Dictionary<integer, List<integer>>;
 
-  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
     if rcur.IsValid(rightKey) then
@@ -1896,60 +1774,31 @@ begin
       lst.Add(rcur.Position);
     end;
 
-  // --- collect index pairs (только совпадения!)
   var leftIdx  := new List<integer>;
   var rightIdx := new List<integer>;
 
   var lcur := GetCursor;
   while lcur.MoveNext do
-  begin
-    if not lcur.IsValid(leftKey) then
-      continue;
+    if lcur.IsValid(leftKey) then
+    begin
+      var k := lcur.Int(leftKey);
 
-    var lpos := lcur.Position;
-    var k := lcur.Int(leftKey);
+      var rows: List<integer>;
+      if index.TryGetValue(k, rows) then
+        foreach var r in rows do
+        begin
+          leftIdx.Add(lcur.Position);
+          rightIdx.Add(r);
+        end;
+    end;
 
-    var rows: List<integer>;
-    if index.TryGetValue(k, rows) then
-      foreach var rpos in rows do
-      begin
-        leftIdx.Add(lpos);
-        rightIdx.Add(rpos);
-      end;
-  end;
-
-  var leftArr  := leftIdx.ToArray;
-  var rightArr := rightIdx.ToArray;
-
-  var res := new DataFrame;
-
-  // --- left columns
-  for var ci := 0 to ColumnCount - 1 do
-    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
-
-  // --- right columns (exclude key)
-  for var ci := 0 to other.ColumnCount - 1 do
-    if ci <> rightKey then
-      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
-
-  // --- schema
-  var schema := DataFrameSchema.Merge(
-    fSchema,
-    other.fSchema,
-    [leftKey],
-    [rightKey],
-    'right_'
-  );
-  res.SetSchema(schema);
-
-  Result := res;
+  Result := BuildJoinResult(Self, other, leftIdx, rightIdx, leftKey, rightKey);
 end;
 
 function DataFrame.JoinInnerSingleKeyFloat(other: DataFrame; leftKey, rightKey: integer): DataFrame;
 begin
   var index := new Dictionary<real, List<integer>>;
 
-  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
     if rcur.IsValid(rightKey) then
@@ -1966,60 +1815,31 @@ begin
       lst.Add(rcur.Position);
     end;
 
-  // --- collect index pairs (только совпадения)
   var leftIdx  := new List<integer>;
   var rightIdx := new List<integer>;
 
   var lcur := GetCursor;
   while lcur.MoveNext do
-  begin
-    if not lcur.IsValid(leftKey) then
-      continue;
+    if lcur.IsValid(leftKey) then
+    begin
+      var k := lcur.Float(leftKey);
 
-    var lpos := lcur.Position;
-    var k := lcur.Float(leftKey);
+      var rows: List<integer>;
+      if index.TryGetValue(k, rows) then
+        foreach var r in rows do
+        begin
+          leftIdx.Add(lcur.Position);
+          rightIdx.Add(r);
+        end;
+    end;
 
-    var rows: List<integer>;
-    if index.TryGetValue(k, rows) then
-      foreach var rpos in rows do
-      begin
-        leftIdx.Add(lpos);
-        rightIdx.Add(rpos);
-      end;
-  end;
-
-  var leftArr  := leftIdx.ToArray;
-  var rightArr := rightIdx.ToArray;
-
-  var res := new DataFrame;
-
-  // --- left columns
-  for var ci := 0 to ColumnCount - 1 do
-    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
-
-  // --- right columns (exclude key)
-  for var ci := 0 to other.ColumnCount - 1 do
-    if ci <> rightKey then
-      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
-
-  // --- schema
-  var schema := DataFrameSchema.Merge(
-    fSchema,
-    other.fSchema,
-    [leftKey],
-    [rightKey],
-    'right_'
-  );
-  res.SetSchema(schema);
-
-  Result := res;
+  Result := BuildJoinResult(Self, other, leftIdx, rightIdx, leftKey, rightKey);
 end;
 
 function DataFrame.JoinInnerSingleKeyStr(other: DataFrame; leftKey, rightKey: integer): DataFrame;
 begin
   var index := new Dictionary<string, List<integer>>;
 
-  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
     if rcur.IsValid(rightKey) then
@@ -2036,60 +1856,31 @@ begin
       lst.Add(rcur.Position);
     end;
 
-  // --- collect index pairs (only matches)
   var leftIdx  := new List<integer>;
   var rightIdx := new List<integer>;
 
   var lcur := GetCursor;
   while lcur.MoveNext do
-  begin
-    if not lcur.IsValid(leftKey) then
-      continue;
+    if lcur.IsValid(leftKey) then
+    begin
+      var k := lcur.Str(leftKey);
 
-    var lpos := lcur.Position;
-    var k := lcur.Str(leftKey);
+      var rows: List<integer>;
+      if index.TryGetValue(k, rows) then
+        foreach var r in rows do
+        begin
+          leftIdx.Add(lcur.Position);
+          rightIdx.Add(r);
+        end;
+    end;
 
-    var rows: List<integer>;
-    if index.TryGetValue(k, rows) then
-      foreach var rpos in rows do
-      begin
-        leftIdx.Add(lpos);
-        rightIdx.Add(rpos);
-      end;
-  end;
-
-  var leftArr  := leftIdx.ToArray;
-  var rightArr := rightIdx.ToArray;
-
-  var res := new DataFrame;
-
-  // --- left columns
-  for var ci := 0 to ColumnCount - 1 do
-    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
-
-  // --- right columns (exclude key)
-  for var ci := 0 to other.ColumnCount - 1 do
-    if ci <> rightKey then
-      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
-
-  // --- schema
-  var schema := DataFrameSchema.Merge(
-    fSchema,
-    other.fSchema,
-    [leftKey],
-    [rightKey],
-    'right_'
-  );
-  res.SetSchema(schema);
-
-  Result := res;
+  Result := BuildJoinResult(Self, other, leftIdx, rightIdx, leftKey, rightKey);
 end;
 
 function DataFrame.JoinInnerSingleKeyBool(other: DataFrame; leftKey, rightKey: integer): DataFrame;
 begin
   var index := new Dictionary<boolean, List<integer>>;
 
-  // --- build index (right)
   var rcur := other.GetCursor;
   while rcur.MoveNext do
     if rcur.IsValid(rightKey) then
@@ -2106,53 +1897,25 @@ begin
       lst.Add(rcur.Position);
     end;
 
-  // --- collect index pairs (only matches)
   var leftIdx  := new List<integer>;
   var rightIdx := new List<integer>;
 
   var lcur := GetCursor;
   while lcur.MoveNext do
-  begin
-    if not lcur.IsValid(leftKey) then
-      continue;
+    if lcur.IsValid(leftKey) then
+    begin
+      var k := lcur.Bool(leftKey);
 
-    var lpos := lcur.Position;
-    var k := lcur.Bool(leftKey);
+      var rows: List<integer>;
+      if index.TryGetValue(k, rows) then
+        foreach var r in rows do
+        begin
+          leftIdx.Add(lcur.Position);
+          rightIdx.Add(r);
+        end;
+    end;
 
-    var rows: List<integer>;
-    if index.TryGetValue(k, rows) then
-      foreach var rpos in rows do
-      begin
-        leftIdx.Add(lpos);
-        rightIdx.Add(rpos);
-      end;
-  end;
-
-  var leftArr  := leftIdx.ToArray;
-  var rightArr := rightIdx.ToArray;
-
-  var res := new DataFrame;
-
-  // --- left columns
-  for var ci := 0 to ColumnCount - 1 do
-    BuildColumnFromJoin(res, columns[ci].Info.Name, columns[ci], leftArr);
-
-  // --- right columns (exclude key)
-  for var ci := 0 to other.ColumnCount - 1 do
-    if ci <> rightKey then
-      BuildColumnFromJoin(res, 'right_' + other.columns[ci].Info.Name, other.columns[ci], rightArr);
-
-  // --- schema
-  var schema := DataFrameSchema.Merge(
-    fSchema,
-    other.fSchema,
-    [leftKey],
-    [rightKey],
-    'right_'
-  );
-  res.SetSchema(schema);
-
-  Result := res;
+  Result := BuildJoinResult(Self, other, leftIdx, rightIdx, leftKey, rightKey);
 end;
 
 function DataFrame.JoinInnerMultiKey(other: DataFrame; keys: array of string): DataFrame;

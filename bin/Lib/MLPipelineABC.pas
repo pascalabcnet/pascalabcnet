@@ -366,11 +366,19 @@ end;
 
 function DataPipeline.Add(step: IPipelineStep): DataPipeline;
 begin
+  // --- global invariants
   if step = nil then
     ArgumentError(ER_PIPELINE_STEP_NULL);
 
   if fFitted then
     Error(ER_PIPELINE_MODIFY_AFTER_FIT);
+
+  // --- target protection
+  // NOTE: Only built-in LabelEncoder is restricted for target.
+  // Custom preprocessors are not checked.
+  if step is LabelEncoder(var enc) then
+    if enc.ColumnName = fTarget then
+      ArgumentError(ER_LABELENCODER_TARGET_NOT_ALLOWED, fTarget);
 
   // --- DataFrame step
   if step is IPreprocessor then
@@ -382,10 +390,6 @@ begin
     exit(Self);
   end;
   
-  if step is LabelEncoder(var enc) then
-    if enc.ColumnName = fTarget then
-      ArgumentError(ER_LABELENCODER_TARGET_NOT_ALLOWED, fTarget);
-
   // --- Matrix transformer
   if step is ITransformer then
   begin
