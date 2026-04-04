@@ -3073,15 +3073,16 @@ namespace PascalABCCompiler
 
                     var unitScope = (unit.SemanticTree as common_unit_node).scope;
 
-                    foreach (var names in unitScope.Symbols.DictCaseSensitive.Skip(1))
+                    // Skip(1) для пропуска имени самого скоупа
+                    foreach (var symbolInfos in unitScope.GetAllSymbolInfos().Skip(1))
                     {
-                        definition_node symInfo = names.Value.InfoList[0].sym_info;
+                        definition_node symInfo = symbolInfos.InfoList[0].sym_info;
                         
                         // Если достаем из pcu, то надо восстановить полную информацию
                         if (symInfo is wrapped_definition_node wdn)
                         {
                             // У некоторых дубликатов sym_info offset не задан, ищем тот, где задан
-                            symInfo = names.Value.InfoList.Find(si => ((wrapped_definition_node)si.sym_info).offset > 0)?.sym_info;
+                            symInfo = symbolInfos.InfoList.Find(si => ((wrapped_definition_node)si.sym_info).offset > 0)?.sym_info;
 
                             if (symInfo == null)
                                 continue;
@@ -3090,10 +3091,10 @@ namespace PascalABCCompiler
 
                             // Если это не синоним типа, то восстанавливаем семантическую информацию
                             if (!wdn.is_synonim)
-                                symInfo = wdn.PCUReader.CreateInterfaceMember(wdn.offset, names.Key);
+                                symInfo = wdn.PCUReader.CreateInterfaceMember(wdn.offset, symbolInfos.Name);
                         }
 
-                        currentUnit.NamesFromUsedUnits[unitName].Add(names.Key,
+                        currentUnit.NamesFromUsedUnits[unitName].Add(symbolInfos.Name,
                             symInfo.general_node_type == general_node_type.variable_node
                             || symInfo.general_node_type == general_node_type.constant_definition
                             || symInfo.general_node_type == general_node_type.event_node);

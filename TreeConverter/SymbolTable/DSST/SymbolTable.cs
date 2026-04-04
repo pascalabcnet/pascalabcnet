@@ -184,9 +184,10 @@ namespace SymbolTable
             ScopeNum = SymbolTable.GetNewScopeNum();
             SymbolTable.ScopeTable.Add(this);
 
+            // TODO: настроить задание регистрозависимости получше  EVA
             CaseSensitive = SemanticRulesConstants.SymbolTableCaseSensitive;
 
-            Symbols = new SymbolsDictionary();
+            Symbols = new SymbolsDictionary(CaseSensitive);
             InternalScopes = new List<Scope>();              
 		}
         public Scope(DSSymbolTable vSymbolTable, Scope TopScope, bool CaseSensitive)
@@ -204,7 +205,7 @@ namespace SymbolTable
 
             this.CaseSensitive = CaseSensitive;
 
-            Symbols = new SymbolsDictionary();
+            Symbols = new SymbolsDictionary(CaseSensitive);
             InternalScopes = new List<Scope>();
         }
 
@@ -246,6 +247,11 @@ namespace SymbolTable
 		{
 			SymbolTable.Add(this, Name, Inf);
 		}
+
+        /// <summary>
+        /// Получить информацию обо всех символах скоупа
+        /// </summary>
+        public HashTableNode[] GetAllSymbolInfos() => Symbols.GetAllSymbolInfos();
 	}
 
     public class BlockScope : Scope
@@ -721,7 +727,7 @@ namespace SymbolTable
         {
             Inf.scope = InScope;
             // if (!InScope.CaseSensitive) Name = Name.ToLower();
-            var hn = InScope.Symbols.Add(Name, InScope.CaseSensitive, Inf);//ЗДЕСЬ ВОЗНИКАЕТ НЕДЕТЕРМЕНИРОВАННАЯ ОШИБКА - SSM 07.10.17 - странный комментарий. Вроде всё нормально.
+            var hn = InScope.Symbols.Add(Name, Inf);//ЗДЕСЬ ВОЗНИКАЕТ НЕДЕТЕРМЕНИРОВАННАЯ ОШИБКА - SSM 07.10.17 - странный комментарий. Вроде всё нормально.
             // SSM 07.10.17 - переделал внутреннее представление HashTable на основе Dictionary
             //if (hn == null)
             //    throw new Exception("Попытка добавить уже добавленное имя " + Name + " в HashTable. Обратитесь к разработчикам");
