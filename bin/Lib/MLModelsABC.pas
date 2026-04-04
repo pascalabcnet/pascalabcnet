@@ -3937,6 +3937,8 @@ begin
     Log2Features: Result := integer(Log2(p));
     HalfFeatures: Result := p div 2;
   end;
+  if Result < 1 then
+    Result := 1;
 end;
 
 procedure RandomForestBase.BootstrapRowIndices(n: integer; var rows: array of integer);

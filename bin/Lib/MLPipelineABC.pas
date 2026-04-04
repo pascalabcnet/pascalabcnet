@@ -350,6 +350,11 @@ const
     'LabelEncoder нельзя применять к целевому столбцу. Используйте EncodeLabels!!LabelEncoder cannot be applied to the target column. Use EncodeLabels instead';
   ER_ENCODELABELS_NOT_CATEGORICAL =
     'Целевой столбец должен быть категориальным для задач классификации!!Target column must be categorical for classification tasks';
+  ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED =
+    'Преобразование целевой переменной "{0}" запрещено в DataPipeline!!' +
+    'Transformation of target variable "{0}" is not allowed in DataPipeline';    
+    
+    
 //-----------------------------
 //        DataPipeline
 //-----------------------------
@@ -374,11 +379,17 @@ begin
     Error(ER_PIPELINE_MODIFY_AFTER_FIT);
 
   // --- target protection
-  // NOTE: Only built-in LabelEncoder is restricted for target.
-  // Custom preprocessors are not checked.
-  if step is LabelEncoder(var enc) then
-    if enc.ColumnName = fTarget then
-      ArgumentError(ER_LABELENCODER_TARGET_NOT_ALLOWED, fTarget);
+  // Любой шаг DataFrame, привязанный к одной или нескольким колонкам,
+  // не должен затрагивать целевую переменную (target).
+  // Проверка выполняется через интерфейсы IColumnBoundStep / IColumnsBoundStep
+  // без привязки к конкретным классам.  
+  if step is IColumnBoundStep(var cstep) then
+    if cstep.ColumnName = fTarget then
+      ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
+  
+  if step is IColumnsBoundStep(var mstep) then
+    if fTarget in mstep.Columns then
+      ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
 
   // --- DataFrame step
   if step is IPreprocessor then

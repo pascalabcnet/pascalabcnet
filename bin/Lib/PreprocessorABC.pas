@@ -42,7 +42,7 @@ type
 /// в порядке первого появления категорий.
 /// Работает только со строковыми столбцами и предназначен для признаков.
 /// Не должен применяться к целевому столбцу (target).
-  LabelEncoder = class(IPreprocessor)
+  LabelEncoder = class(IPreprocessor, IColumnBoundStep)
   private
     col: string;
     mapping: Dictionary<string, integer>;
@@ -68,7 +68,7 @@ type
 /// Категории фиксируются при Fit
 /// Неизвестные категории кодируются нулями
 /// Пропущенные значения (NA) кодируются нулями
-  OneHotEncoder = class(IPreprocessor)
+  OneHotEncoder = class(IPreprocessor, IColumnBoundStep)
   private
     col: string;
     categories: array of string;
@@ -87,6 +87,8 @@ type
     function FitTransform(df: DataFrame): DataFrame;
     
     function ToString: string; override;
+    
+    property ColumnName: string read col;
   end;
 
   ImputeStrategy = (isMean, isConstant);
@@ -94,7 +96,7 @@ type
 /// Заполняет пропущенные значения (NA) в числовых столбцах
 /// Поддерживает стратегии isMean и isConstant
 /// Работает только с Int и Float столбцами
-  Imputer = class(IPreprocessor)
+  Imputer = class(IPreprocessor, IColumnsBoundStep)
   private
     cols: array of string;
     strategy: ImputeStrategy;
@@ -118,6 +120,8 @@ type
     function FitTransform(df: DataFrame): DataFrame;
     
     function ToString: string; override;
+    
+    property Columns: array of string read cols;
   end;
   
 
