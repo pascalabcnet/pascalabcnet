@@ -152,9 +152,6 @@ type
     static function operator *(A: Matrix; x: Vector): Vector;
     static function operator *(A, B: Matrix): Matrix;
     
-    //static function operator *(alpha: real; A: Matrix): Matrix;
-    //static function operator *(A: Matrix; alpha: real): Matrix;
-    
     // ---------- in-place operators ----------
     static function operator +=(A, B: Matrix): Matrix;
     static function operator -=(A, B: Matrix): Matrix;

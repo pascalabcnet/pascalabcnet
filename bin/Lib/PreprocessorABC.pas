@@ -91,7 +91,7 @@ type
     property ColumnName: string read col;
   end;
 
-  ImputeStrategy = (isMean, isConstant);
+  ImputeStrategy = (isMean, isConstant, isMedian);
 
 /// Заполняет пропущенные значения (NA) в числовых столбцах
 /// Поддерживает стратегии isMean и isConstant
@@ -102,6 +102,7 @@ type
     strategy: ImputeStrategy;
     constants: array of object;
     means: array of real;
+    medians: array of real;
     fitted: boolean;
   public
     /// Создаёт Imputer с заполнением средним значением
@@ -189,8 +190,10 @@ const
     'Imputer(constant): value type mismatch for column "{0}"';
   ER_ONEHOT_EMPTY_COLUMN =
     'Столбец "{0}" не содержит категориальных значений!!Column "{0}" contains no categorical values';  
-  ER_COLUMN_NOT_FOUND =
-    'Столбец "{0}" не найден!!Column "{0}" not found';    
+  ER_IMPUTER_CONSTANTS_INVALID =
+    'Массив констант не задан или имеет неверный размер!!Constants array is null or has invalid length';
+  ER_IMPUTER_STRATEGY_NOT_SUPPORTED =
+    'Стратегия импутации {0} не поддерживается!!Imputation strategy {0} is not supported';
   
 //-----------------------------
 //        LabelEncoder
@@ -288,7 +291,13 @@ end;
 
 function OneHotEncoder.Fit(df: DataFrame): IPreprocessor;
 begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  
   var idx := df.Schema.IndexOf(col);
+  if idx < 0 then
+    Error(ER_COLUMN_NOT_FOUND, col);
+
   if df.Schema.ColumnTypeAt(idx) <> ColumnType.ctStr then
     Error(ER_ONEHOT_NOT_STRING, col);
 
@@ -299,8 +308,11 @@ begin
   while cur.MoveNext do
   begin
     if not cur.IsValid(idx) then continue;
+
     var s := cur.Str(idx);
-    if not indexByValue.ContainsKey(s) then
+
+    var dummy: integer;
+    if not indexByValue.TryGetValue(s, dummy) then
     begin
       indexByValue[s] := values.Count;
       values.Add(s);
@@ -380,9 +392,6 @@ end;
 
 constructor Imputer.Create(strategy: ImputeStrategy; params columns: array of string);
 begin
-  if strategy <> isMean then
-    ArgumentError(ER_IMPUTER_INVALID_STRATEGY_MEAN);
-
   if (columns = nil) or (columns.Length = 0) then
     ArgumentError(ER_IMPUTER_NO_COLUMNS);
 
@@ -415,35 +424,79 @@ end;
 
 function Imputer.Fit(df: DataFrame): IPreprocessor;
 begin
-  if strategy = isMean then
-  begin
-    SetLength(means, cols.Length);
-
-    for var i := 0 to cols.Length - 1 do
+  case strategy of
+    isMean:
     begin
-      var name := cols[i];
-      var idx := df.Schema.IndexOf(name);
-      var ct := df.Schema.ColumnTypeAt(idx);
+      SetLength(means, cols.Length);
 
-      if not (ct in [ColumnType.ctInt, ColumnType.ctFloat]) then
-        Error(ER_IMPUTER_COLUMN_NOT_NUMERIC, name);
+      for var i := 0 to cols.Length - 1 do
+      begin
+        var name := cols[i];
+        var idx := df.Schema.IndexOf(name);
+        var ct := df.Schema.ColumnTypeAt(idx);
 
-      var sum := 0.0;
-      var cnt := 0;
+        if not (ct in [ColumnType.ctInt, ColumnType.ctFloat]) then
+          Error(ER_IMPUTER_COLUMN_NOT_NUMERIC, name);
 
-      var cur := df.GetCursor;
-      while cur.MoveNext do
-        if cur.IsValid(idx) then
-        begin
-          sum += cur.Float(idx);
-          cnt += 1;
-        end;
+        var sum := 0.0;
+        var cnt := 0;
 
-      if cnt = 0 then
-        Error(ER_IMPUTER_NO_VALID_VALUES, name);
+        var cur := df.GetCursor;
+        while cur.MoveNext do
+          if cur.IsValid(idx) then
+          begin
+            sum += cur.Float(idx);
+            cnt += 1;
+          end;
 
-      means[i] := sum / cnt;
+        if cnt = 0 then
+          Error(ER_IMPUTER_NO_VALID_VALUES, name);
+
+        means[i] := sum / cnt;
+      end;
     end;
+
+    isConstant:
+    begin
+      // ничего делать не нужно
+    end;
+    
+    isMedian:
+    begin
+      SetLength(medians, cols.Length);
+    
+      for var i := 0 to cols.Length - 1 do
+      begin
+        var name := cols[i];
+        var idx := df.Schema.IndexOf(name);
+        var ct := df.Schema.ColumnTypeAt(idx);
+    
+        if not (ct in [ColumnType.ctInt, ColumnType.ctFloat]) then
+          Error(ER_IMPUTER_COLUMN_NOT_NUMERIC, name);
+    
+        // --- собираем значения
+        var values := new List<real>;
+    
+        var cur := df.GetCursor;
+        while cur.MoveNext do
+          if cur.IsValid(idx) then
+            values.Add(cur.Float(idx));
+    
+        if values.Count = 0 then
+          Error(ER_IMPUTER_NO_VALID_VALUES, name);
+    
+        // --- сортируем
+        values.Sort;
+    
+        // --- медиана
+        var n := values.Count;
+        if n mod 2 = 1 then
+          medians[i] := values[n div 2]
+        else
+          medians[i] := (values[n div 2 - 1] + values[n div 2]) / 2.0;
+      end;
+    end;    
+    
   end;
 
   fitted := true;
@@ -454,6 +507,11 @@ function Imputer.Transform(df: DataFrame): DataFrame;
 begin
   if not fitted then
     NotFittedError(ER_FIT_NOT_CALLED);
+
+  // --- проверка constants
+  if (strategy = isConstant) and 
+     ((constants = nil) or (constants.Length <> cols.Length)) then
+    Error(ER_IMPUTER_CONSTANTS_INVALID);
 
   var res := df;
 
@@ -466,50 +524,65 @@ begin
     if not (ct in [ColumnType.ctInt, ColumnType.ctFloat]) then
       Error(ER_IMPUTER_COLUMN_NOT_NUMERIC, name);
 
-    if strategy = isMean then
-    begin
-      var m := means[i];
-      res := res.ReplaceColumnFloat(
-        name,
-        c -> (if c.IsValid(idx) then c.Float(idx) else m)
-      );
-    end
-    else
-    begin
-      var v := constants[i];
-      if v = nil then
-        Error(ER_IMPUTER_CONSTANT_VALUE_NULL, name);
-
-      if ct = ColumnType.ctInt then
+    case strategy of
+      isMean:
       begin
-        var k: integer;
-        try
-          k := integer(v);
-        except
-          on e: Exception do
-            Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
-        end;
-
-        res := res.ReplaceColumnInt(
-          name,
-          c -> (if c.IsValid(idx) then c.Int(idx) else k)
-        );
-      end
-      else
-      begin
-        var r: real;
-        try
-          r := real(v);
-        except
-          on e: Exception do
-            Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
-        end;
-
+        var m := means[i];
         res := res.ReplaceColumnFloat(
           name,
-          c -> (if c.IsValid(idx) then c.Float(idx) else r)
+          c -> (if c.IsValid(idx) then c.Float(idx) else m)
         );
       end;
+
+      isConstant:
+      begin
+        var v := constants[i];
+        if v = nil then
+          Error(ER_IMPUTER_CONSTANT_VALUE_NULL, name);
+
+        if ct = ColumnType.ctInt then
+        begin
+          var k: integer;
+          try
+            k := integer(v);
+          except
+            on e: Exception do
+              Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
+          end;
+
+          res := res.ReplaceColumnInt(
+            name,
+            c -> (if c.IsValid(idx) then c.Int(idx) else k)
+          );
+        end
+        else // ctFloat
+        begin
+          var r: real;
+          try
+            r := real(v);
+          except
+            on e: Exception do
+              Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
+          end;
+
+          res := res.ReplaceColumnFloat(
+            name,
+            c -> (if c.IsValid(idx) then c.Float(idx) else r)
+          );
+        end;
+      end;
+      
+      isMedian:
+      begin
+        var m := medians[i];
+        res := res.ReplaceColumnFloat(
+          name,
+          c -> (if c.IsValid(idx) then c.Float(idx) else m)
+        );
+      end;      
+
+      else
+        Error(ER_IMPUTER_STRATEGY_NOT_SUPPORTED, strategy);
     end;
   end;
 
@@ -530,9 +603,23 @@ begin
     isMean:
       Result := 'Imputer(strategy=mean, columns=' + colsStr + ')';
 
+    isMedian:
+      Result := 'Imputer(strategy=median, columns=' + colsStr + ')';
+
     isConstant:
+    begin
+      var valStr :=
+        if (constants <> nil) and (constants.Length > 0) and (constants[0] <> nil) then
+          constants[0].ToString
+        else
+          'null';
+
       Result := 'Imputer(strategy=constant, value=' +
-                constants[0].ToString + ', columns=' + colsStr + ')';
+                valStr + ', columns=' + colsStr + ')';
+    end;
+
+    else
+      Result := 'Imputer(strategy=unknown, columns=' + colsStr + ')';
   end;
 end;
 

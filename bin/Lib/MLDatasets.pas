@@ -18,20 +18,20 @@ type
   /// Предоставляет удобные методы для получения матриц признаков
   /// и целевых значений для обучения моделей
   Dataset = class
-  private    
-   function ValueLabel(feature, value: string): string;
-   function CloneMeta(df: DataFrame): Dataset;
+  private
+    function ValueLabel(feature, value: string): string;
+    function CloneMeta(df: DataFrame): Dataset;
   public
-    Name: string;
-    Data: DataFrame;
-    Features: array of string;
-    Target: string;
-    Task: TaskType;
-    
     FeatureLabels: Dictionary<string,string>;
     ValueLabels: Dictionary<string,Dictionary<string,string>>;
     Description: string;
 
+    auto property Name: string;
+    auto property Data: DataFrame;
+    auto property Features: array of string;
+    auto property Target: string;
+    auto property Task: TaskType;
+    
     /// Возвращает true, если датасет относится к задаче с учителем
     /// (classification или regression).
     function IsSupervised: boolean;

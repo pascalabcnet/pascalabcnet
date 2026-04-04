@@ -1271,6 +1271,10 @@ type
     fIterations: integer;
     fHasConverged: boolean;
     
+    fRandomSeed: integer;
+    fUserProvidedSeed: boolean;
+    fRng: System.Random;
+    
     function RunSingle(X: Matrix; rnd: System.Random): (Matrix, real, integer, boolean);
   public
     /// Создаёт модель KMeans.
@@ -1361,9 +1365,6 @@ type
     /// Обучает модель на матрице признаков.
     function Fit(X: Matrix): IUnsupervisedModel;
   
-    /// Возвращает метки кластеров.
-    function Predict(X: Matrix): Vector;
-    
     /// Возвращает метки кластеров.
     function PredictLabels(X: Matrix): array of integer;
 
@@ -3042,16 +3043,24 @@ begin
   dest.fMaxFeatures := fMaxFeatures;
   
   dest.fUserProvidedSeed := fUserProvidedSeed;
-  dest.fRng := new System.Random(fRandomSeed);
 
+  if fUserProvidedSeed then
+    dest.fRng := new System.Random(fRandomSeed)
+  else
+    dest.fRng := new System.Random;
+
+  // MUST be stateless
   if fCriterion <> nil then
-    dest.fCriterion := fCriterion; // можно так, если критерий stateless
+    dest.fCriterion := fCriterion;
 
   if fFeatureImportances <> nil then
     dest.fFeatureImportances := fFeatureImportances.Clone;
 
   if fRoot <> nil then
     dest.fRoot := fRoot.Clone;
+
+  if fRowIndices <> nil then
+    dest.fRowIndices := Copy(fRowIndices);
 end;
 
 function DecisionTreeBase.GetFeatureSubset(nFeatures: integer): array of integer;
@@ -3613,10 +3622,7 @@ begin
     fRandomSeed
   );
 
-  // --- базовое состояние (глубокое копирование дерева!)
   CopyBaseState(m);
-
-  m.fMaxFeatures := fMaxFeatures;
 
   // --- классы
   m.fClassCount := fClassCount;
@@ -3825,8 +3831,6 @@ begin
 
   CopyBaseState(m);
   
-  m.fLeafL2 := fLeafL2;  
-
   Result := m;
 end;
 
@@ -4099,7 +4103,15 @@ begin
     fRandomSeed
   );
 
+  // --- seed ---
+  rf.fRandomSeed := fRandomSeed;
   rf.fUserProvidedSeed := fUserProvidedSeed;
+
+  if fUserProvidedSeed then
+    rf.fRng := new System.Random(fRandomSeed)
+  else
+    rf.fRng := new System.Random;
+
   rf.fFitted := fFitted;
   rf.fFeatureCount := fFeatureCount;
 
@@ -4439,9 +4451,16 @@ begin
     fRandomSeed
   );
 
+  // --- seed ---
+  rf.fRandomSeed := fRandomSeed;
   rf.fUserProvidedSeed := fUserProvidedSeed;
-  rf.fFitted := fFitted;
 
+  if fUserProvidedSeed then
+    rf.fRng := new System.Random(fRandomSeed)
+  else
+    rf.fRng := new System.Random;
+
+  rf.fFitted := fFitted;
   rf.fFeatureCount := fFeatureCount;
 
   // --- classes ---
@@ -4467,7 +4486,7 @@ begin
     SetLength(rf.fTrees, fTrees.Length);
     for var i := 0 to fTrees.Length - 1 do
       rf.fTrees[i] := DecisionTreeClassifier(fTrees[i].Clone);
-  end;  
+  end;
 
   Result := rf;
 end;
@@ -5301,31 +5320,35 @@ begin
     fMinSamplesSplit,
     fMinSamplesLeaf,
     fSubsample,
-    seed := fRandomSeed
+    fLoss,
+    fHuberDelta,
+    fEarlyStoppingPatience,
+    fQuantileAlpha,
+    fLeafL2,
+    fUseOOBEarlyStopping,
+    fRandomSeed
   );
 
-  // --- seed policy ---
+  // --- seed ---
+  copy.fRandomSeed := fRandomSeed;
   copy.fUserProvidedSeed := fUserProvidedSeed;
+
+  if fUserProvidedSeed then
+    copy.fRng := new System.Random(fRandomSeed)
+  else
+    copy.fRng := new System.Random;
 
   // --- basic state ---
   copy.fInitValue := fInitValue;
   copy.fFeatureCount := fFeatureCount;
   copy.fFitted := fFitted;
 
-  // --- best iteration state ---
+  // --- best iteration ---
   copy.fBestIteration := fBestIteration;
   copy.fBestTrainLoss := fBestTrainLoss;
   copy.fBestScoreLoss := fBestScoreLoss;
 
-  // --- loss configuration ---
-  copy.fLoss := fLoss;
-  copy.fHuberDelta := fHuberDelta;
-  copy.fQuantileAlpha := fQuantileAlpha;
-  copy.fLeafL2 := fLeafL2;
-  copy.fEarlyStoppingPatience := fEarlyStoppingPatience;
-  copy.fUseOOBEarlyStopping := fUseOOBEarlyStopping;
-
-  // --- deep copy histories ---
+  // --- histories ---
   copy.fTrainLossHistory.Clear;
   copy.fTrainLossHistory.AddRange(fTrainLossHistory);
 
@@ -5335,7 +5358,7 @@ begin
   copy.fOOBLossHistory.Clear;
   copy.fOOBLossHistory.AddRange(fOOBLossHistory);
 
-  // --- deep copy trees ---
+  // --- estimators ---
   copy.fEstimators.Clear;
   foreach var tree in fEstimators do
     copy.fEstimators.Add(tree.Clone as DecisionTreeRegressor);
@@ -6174,8 +6197,14 @@ begin
     fRandomSeed
   );
 
-  // --- seed policy ---
+  // --- seed ---
+  model.fRandomSeed := fRandomSeed;
   model.fUserProvidedSeed := fUserProvidedSeed;
+
+  if fUserProvidedSeed then
+    model.fRng := new System.Random(fRandomSeed)
+  else
+    model.fRng := new System.Random;
 
   // --- fitted state ---
   model.fFitted := fFitted;
@@ -6197,26 +6226,19 @@ begin
       model.fClassIndex.Add(kv.Key, kv.Value);
   end;
 
-  // --- estimators (deep copy) ---
+  // --- estimators ---
   foreach var trees in fEstimators do
   begin
     var newTrees := new DecisionTreeRegressor[Length(trees)];
-
     for var cls := 0 to Length(trees) - 1 do
       newTrees[cls] := trees[cls].Clone as DecisionTreeRegressor;
-
     model.fEstimators.Add(newTrees);
   end;
 
   // --- histories ---
-  foreach var v in fTrainLossHistory do
-    model.fTrainLossHistory.Add(v);
-
-  foreach var v in fValLossHistory do
-    model.fValLossHistory.Add(v);
-
-  foreach var v in fOOBLossHistory do
-    model.fOOBLossHistory.Add(v);
+  foreach var v in fTrainLossHistory do model.fTrainLossHistory.Add(v);
+  foreach var v in fValLossHistory do model.fValLossHistory.Add(v);
+  foreach var v in fOOBLossHistory do model.fOOBLossHistory.Add(v);
 
   model.fBestIteration := fBestIteration;
   model.fBestScoreLoss := fBestScoreLoss;
@@ -6938,8 +6960,17 @@ begin
   fMaxIter := maxIter;
   fTol := tol;
   fNInit := nInit;
-  fSeed := seed;
 
+  // --- seed (единый стиль)
+  fRandomSeed := seed;
+  fUserProvidedSeed := seed >= 0;
+
+  if fUserProvidedSeed then
+    fRng := new System.Random(seed)
+  else
+    fRng := new System.Random;
+
+  // --- state
   fFitted := False;
   fFeatureCount := 0;
 
@@ -7077,11 +7108,8 @@ begin
 
   fFeatureCount := p;
 
-  var actualSeed :=
-    if fSeed >= 0 then fSeed
-    else System.Environment.TickCount and integer.MaxValue;
-
-  var rndBase := new System.Random(actualSeed);
+  // --- базовый RNG (уже создан в конструкторе)
+  var rndBase := fRng;
 
   var bestInertia := 1e308;
   var bestCenters: Matrix := nil;
@@ -7090,7 +7118,8 @@ begin
 
   for var run := 1 to fNInit do
   begin
-    var runSeed := rndBase.Next;
+    // --- независимый RNG для каждого запуска
+    var runSeed := rndBase.Next(integer.MaxValue);
     var rnd := new System.Random(runSeed);
 
     var (centers, inertia, iters, converged) := RunSingle(X, rnd);
@@ -7109,7 +7138,7 @@ begin
   fIterations := bestIterations;
   fHasConverged := bestConverged;
   fFitted := True;
-  
+
   Result := Self;
 end;
 
@@ -7188,25 +7217,28 @@ begin
     fMaxIter,
     fTol,
     fNInit,
-    fSeed
+    fRandomSeed
   );
 
+  // --- seed ---
+  km.fRandomSeed := fRandomSeed;
+  km.fUserProvidedSeed := fUserProvidedSeed;
+
+  if fUserProvidedSeed then
+    km.fRng := new System.Random(fRandomSeed)
+  else
+    km.fRng := new System.Random;
+
+  // --- state ---
   km.fFitted := fFitted;
   km.fFeatureCount := fFeatureCount;
   km.fInertia := fInertia;
   km.fIterations := fIterations;
   km.fHasConverged := fHasConverged;
 
+  // --- centers ---
   if fCenters <> nil then
-  begin
-    var k := fCenters.RowCount;
-    var p := fCenters.ColCount;
-    km.fCenters := new Matrix(k, p);
-
-    for var i := 0 to k - 1 do
-      for var j := 0 to p - 1 do
-        km.fCenters[i,j] := fCenters[i,j];
-  end;
+    km.fCenters := fCenters.Clone;
 
   Result := km;
 end;
@@ -7337,25 +7369,6 @@ begin
   fFitted := True;
 
   Result := Self;
-end;
-
-function DBSCAN.Predict(X: Matrix): Vector;
-begin
-  if not fFitted then
-    NotFittedError(ER_FIT_NOT_CALLED);
-
-  if X = nil then
-    ArgumentNullError(ER_ARG_NULL, 'X');
-
-  // честная защита: Predict работает только для той же выборки
-  if X.RowCount <> Length(fLabels) then
-    ArgumentError(ER_DBSCAN_PREDICT_ONLY_TRAIN_DATA);
-
-  var n := Length(fLabels);
-  Result := new Vector(n);
-
-  for var i := 0 to n - 1 do
-    Result[i] := fLabels[i];
 end;
 
 function DBSCAN.PredictLabels(X: Matrix): array of integer;

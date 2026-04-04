@@ -56,22 +56,26 @@ type
   GridSearch = static class
   public
     /// Выполняет подбор гиперпараметра по заданной сетке значений.
-    /// modelFactory — функция создания модели по значению параметра.
-    /// paramValues — набор тестируемых значений гиперпараметра.
-    /// X, y — обучающие данные.
-    /// k — число фолдов в кросс-валидации.
-    /// metric — функция оценки качества (yTrue, yPred) → real.
-    /// Возвращает кортеж (лучший параметр, лучшее среднее значение метрики,
-    ///   модель, обученная на всём датасете с лучшим параметром).
-  class function Search<T>(
-    modelFactory: real -> T;
-    paramValues: array of real;
-    X: Matrix; y: Vector;
-    k: integer;
-    metric: (Vector, Vector) -> real;
-    maximize: boolean := True;
-    seed: integer := -1
-  ): (real, real, T); where T: class,ISupervisedModel;
+    /// • modelFactory — функция создания модели по значению параметра (P -> T).
+    /// • paramValues — набор тестируемых значений гиперпараметра типа P.
+    /// • X, y — обучающие данные.
+    /// • k — число фолдов в кросс-валидации.
+    /// • metric — функция оценки качества (yTrue, yPred) → real.
+    /// • maximize — если true, максимизируется метрика; иначе минимизируется.
+    /// • seed — seed для разбиения на фолды (для воспроизводимости).
+    /// Возвращает кортеж:
+    /// • лучший параметр,
+    /// • лучшее среднее значение метрики,
+    /// • модель, обученная на всём датасете с лучшим параметром
+    class function Search<T, P>(
+      modelFactory: P -> T;
+      paramValues: array of P;
+      X: Matrix; y: Vector;
+      k: integer;
+      metric: (Vector, Vector) -> real;
+      maximize: boolean := True;
+      seed: integer := -1
+    ): (P, real, T); where T: class, ISupervisedModel;
   end;
 
 implementation
@@ -171,15 +175,15 @@ begin
   if (k < 2) or (k > n) then
     ArgumentError(ER_K_INVALID, k, n);
 
-  var actualSeed := if seed >= 0 then seed
-                    else System.Environment.TickCount and integer.MaxValue;
-
-  var rnd := new System.Random(actualSeed);
+  // --- RNG (без дублирования логики seed)
+  var rnd :=
+    if seed >= 0 then new System.Random(seed)
+    else new System.Random;
 
   // --- 1. Индексы 0..n-1
   var idx := Arr(0..n-1);
 
-  // --- 2. Перемешивание через стандартный Shuffle
+  // --- 2. Перемешивание
   idx.Shuffle(rnd);
 
   var baseSize := n div k;
@@ -224,10 +228,9 @@ begin
   if (k < 2) or (k > n) then
     ArgumentError(ER_K_INVALID_STRATIFIED, k, n);
 
-  var actualSeed := if seed >= 0 then seed
-                    else System.Environment.TickCount and integer.MaxValue;
-
-  var rnd := new System.Random(actualSeed);
+  var rnd :=
+    if seed >= 0 then new System.Random(seed)
+    else new System.Random;
 
   // --- 1. Индексы по классам
   var classMap := new Dictionary<integer, List<integer>>();
@@ -235,7 +238,7 @@ begin
   for var i := 0 to n - 1 do
   begin
     var v := y[i];
-    var cls := integer(v);
+    var cls := Round(v);
 
     if Abs(v - cls) > 1e-12 then
       ArgumentError(ER_STRATIFIED_LABELS_INVALID);
@@ -328,8 +331,12 @@ begin
   var total := 0.0;
   var folds := 0;
   var p := X.ColCount;
+  
+  var baseSeed :=
+    if seed >= 0 then seed
+    else System.Environment.TickCount and integer.MaxValue;
 
-  foreach var (trainIdx, testIdx) in KFold(X.RowCount, k, seed) do
+  foreach var (trainIdx, testIdx) in KFold(X.RowCount, k, baseSeed) do
   begin
     var Xtr := new Matrix(trainIdx.Length, p);
     var ytr := new Vector(trainIdx.Length);
@@ -398,7 +405,11 @@ begin
   var folds := 0;
   var p := X.ColCount;
 
-  foreach var (trainIdx, testIdx) in StratifiedKFold(y, k, seed) do
+  var baseSeed :=
+    if seed >= 0 then seed
+    else System.Environment.TickCount and integer.MaxValue;
+
+  foreach var (trainIdx, testIdx) in StratifiedKFold(y, k, baseSeed) do
   begin
     var Xtr := new Matrix(trainIdx.Length, p);
     var ytr := new Vector(trainIdx.Length);
@@ -441,16 +452,16 @@ end;
 //         GridSearch
 //-----------------------------
 
-class function GridSearch.Search<T>(
-  modelFactory: real -> T;
-  paramValues: array of real;
+class function GridSearch.Search<T, P>(
+  modelFactory: P -> T;
+  paramValues: array of P;
   X: Matrix; 
   y: Vector;
   k: integer;
   metric: (Vector, Vector) -> real;
   maximize: boolean;
   seed: integer
-): (real, real, T); where T: class,ISupervisedModel;
+): (P, real, T); where T: class, ISupervisedModel;
 begin
   if modelFactory = nil then
     ArgumentNullError(ER_ARG_NULL, 'modelFactory');
@@ -474,15 +485,20 @@ begin
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
   var bestParam := paramValues[0];
-  var bestScore := 
+  var bestScore :=
     if maximize then -1e308 else 1e308;
+
+  var baseSeed :=
+    if seed >= 0 then seed
+    else System.Environment.TickCount and integer.MaxValue;
 
   foreach var param in paramValues do
   begin
     var model := modelFactory(param);
     if model = nil then
       ArgumentError(ER_MODEL_NULL);
-    var avgScore := Validation.CrossValidate(model, X, y, k, metric, seed);
+
+    var avgScore := Validation.CrossValidate(model, X, y, k, metric, baseSeed);
 
     if double.IsNaN(avgScore) or double.IsInfinity(avgScore) then
       ArgumentError(ER_INVALID_VALUE, 'avgScore');
@@ -501,7 +517,7 @@ begin
   var bestModel := modelFactory(bestParam);
   if bestModel = nil then
     ArgumentError(ER_MODEL_NULL);
-  
+
   bestModel := bestModel.Fit(X, y) as T;
 
   Result := (bestParam, bestScore, bestModel);

@@ -504,8 +504,6 @@ const
     'Тип соединения не реализован!!Join kind not implemented';
   ER_JOIN_KEYS_LENGTH_MISMATCH =
     'leftKeys и rightKeys должны иметь одинаковую длину!!leftKeys and rightKeys must have the same length';
-  ER_COLUMN_NOT_FOUND =
-    'Столбец "{0}" не найден!!Column not found: {0}';
   ER_ADD_COLUMN_ROW_MISMATCH =
     'Несоответствие числа строк при добавлении столбца!!Row count mismatch when adding column';  
   ER_COLUMN_VALID_LENGTH_MISMATCH =

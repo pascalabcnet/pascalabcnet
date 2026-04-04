@@ -1,4 +1,10 @@
-﻿unit PlotML;
+﻿/// Модуль визуализации на базе InteractiveDataDisplay (WPF).
+/// ВАЖНО:
+/// • Требует Windows и WPF.
+/// • Использует GAC-сборку InteractiveDataDisplay.WPF.
+/// • Не поддерживается на Linux/macOS и в .NET Core без дополнительной настройки.
+/// Рекомендуется использовать только в desktop-сценариях.
+unit PlotML;
 
 {$reference %GAC%\InteractiveDataDisplay.WPF.dll}
 {$reference 'PresentationFramework.dll'}

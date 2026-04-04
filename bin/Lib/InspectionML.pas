@@ -45,7 +45,7 @@ type
   ///   Вектор важностей признаков длины nFeatures.
   ///   Чем больше значение, тем сильнее признак влияет на качество модели
     static function PermutationImportance(model: IPredictiveModel; X: Matrix; y: Vector;
-      scoreFunc: (Vector, Vector) -> real; seed: integer := 0): Vector;
+      scoreFunc: (Vector, Vector) -> real; nRepeats: integer := 5; seed: integer := 0): Vector;
   end;  
 
 implementation
@@ -53,10 +53,20 @@ implementation
 uses MLExceptions;
 
 const
-  ER_SCORE_FUNC_NULL = 'scoreFunc не может быть nil!!scoreFunc cannot be nil';
+  ER_SCORE_FUNC_NULL = 
+    'scoreFunc не может быть nil!!scoreFunc cannot be nil';
+  ER_ARG_OUT_OF_RANGE =
+    'Аргумент {0} имеет недопустимое значение {1}!!Argument {0} has invalid value {1}';
 
-static function Inspection.PermutationImportance(model: IPredictiveModel; X: Matrix; y: Vector;
-  scoreFunc: (Vector, Vector) -> real; seed: integer): Vector;
+
+static function Inspection.PermutationImportance(
+  model: IPredictiveModel; 
+  X: Matrix; 
+  y: Vector;
+  scoreFunc: (Vector, Vector) -> real; 
+  nRepeats: integer;
+  seed: integer  
+): Vector;
 begin
   if model = nil then
     ArgumentNullError(ER_MODEL_NULL);
@@ -67,6 +77,9 @@ begin
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
+  if nRepeats < 1 then
+    ArgumentOutOfRangeError(ER_ARG_OUT_OF_RANGE, 'nRepeats', nRepeats);
+
   var baselinePred := model.Predict(X);
   var baselineScore := scoreFunc(y, baselinePred);
 
@@ -74,25 +87,38 @@ begin
   var p := X.ColCount;
 
   var resultVec := new Vector(p);
-  var rng := new System.Random(seed);
 
-  for var j := 0 to p-1 do
+  for var j := 0 to p - 1 do
   begin
-    var Xperm := X.Clone;
+    var acc := 0.0;
 
-    // Fisher–Yates shuffle столбца j (детерминированно через seed)
-    for var i := n-1 downto 1 do
+    for var r := 0 to nRepeats - 1 do
     begin
-      var k := rng.Next(i+1);
-      var tmp := Xperm[i,j];
-      Xperm[i,j] := Xperm[k,j];
-      Xperm[k,j] := tmp;
+      var Xperm := X.Clone;
+
+      // --- seed для каждого (признак, повтор)
+      var runSeed :=
+        if seed >= 0 then seed + j * 100000 + r
+        else System.Environment.TickCount and integer.MaxValue;
+
+      var rnd := new System.Random(runSeed);
+
+      // --- shuffle столбца j
+      for var i := n - 1 downto 1 do
+      begin
+        var k := rnd.Next(i + 1);
+        var tmp := Xperm[i,j];
+        Xperm[i,j] := Xperm[k,j];
+        Xperm[k,j] := tmp;
+      end;
+
+      var permPred := model.Predict(Xperm);
+      var permScore := scoreFunc(y, permPred);
+
+      acc += (baselineScore - permScore);
     end;
 
-    var permPred := model.Predict(Xperm);
-    var permScore := scoreFunc(y, permPred);
-
-    resultVec[j] := baselineScore - permScore;
+    resultVec[j] := acc / nRepeats;
   end;
 
   Result := resultVec;

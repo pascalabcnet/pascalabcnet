@@ -62,6 +62,8 @@ const
     'Неподдерживаемый тип столбца "{0}" для EncodeLabels!!Unsupported column type "{0}" for EncodeLabels';
   ER_UNKNOWN_CLASS_IN_TRANSFORM =
     'Неизвестное значение класса "{0}" при преобразовании меток!!Unknown class value "{0}" in TransformLabels';
+  ER_LABEL_INDEX_OUT_OF_RANGE =
+    'Индекс метки {0} вне диапазона [0, {1})!!Label index {0} is out of range [0, {1})';
   
 function LabelsToInts(y: Vector): array of integer;
 begin
@@ -115,7 +117,7 @@ begin
     var lbl := labels[i];
 
     if not map.ContainsKey(lbl) then
-      Error('Unknown class in test');
+      Error(ER_UNKNOWN_CLASS_IN_TRANSFORM, lbl);
 
     res[i] := map[lbl];
   end;
@@ -363,7 +365,7 @@ begin
           var lbl := data[i].ToString;
 
           if not map.ContainsKey(lbl) then
-            Error('Unknown class in TransformLabels');
+            Error(ER_UNKNOWN_CLASS_IN_TRANSFORM, lbl);
 
           res[i] := map[lbl];
         end;
@@ -453,8 +455,15 @@ function DecodeLabels(y: array of integer; classes: array of string): array of s
 begin
   var res := new string[y.Length];
 
-  for var i := 0 to y.Length-1 do
-    res[i] := classes[y[i]];
+  for var i := 0 to y.Length - 1 do
+  begin
+    var idx := y[i];
+  
+    if (idx < 0) or (idx >= classes.Length) then
+      Error(ER_LABEL_INDEX_OUT_OF_RANGE, idx, classes.Length);
+  
+    res[i] := classes[idx];
+  end;
 
   Result := res;
 end;
