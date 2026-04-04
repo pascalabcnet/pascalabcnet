@@ -719,7 +719,7 @@ type
 /// Строит ансамбль классификационных деревьев, обученных на  
 ///   bootstrap-подвыборках объектов и случайных подмножествах признаков.
 /// Итоговое предсказание формируется голосованием деревьев или агрегацией вероятностей классов
-  RandomForestClassifier = class(RandomForestBase, IClassifier, IProbabilisticClassifier)
+  RandomForestClassifier = class(RandomForestBase, IProbabilisticClassifier)
   private
     fTrees: array of DecisionTreeClassifier;
     fIndexToClass: array of integer;
@@ -1125,7 +1125,7 @@ type
 /// Базовый абстрактный класс для алгоритма k ближайших соседей (kNN).
 /// Реализует общий механизм поиска k ближайших объектов,
 /// но не определяет способ агрегации (классификация или регрессия)
-  KNNBase = abstract class(IModel)
+  KNNBase = abstract class(IPredictiveModel)
   protected
     // ==== train state ====
     fXTrain: Matrix;
@@ -1255,7 +1255,7 @@ type
   /// Модель кластеризации методом k-средних (KMeans).
   /// Разбивает объекты на k кластеров на основе евклидова расстояния.
   /// Реализует алгоритм без учителя
-  KMeans = class(IClusterer)
+  KMeans = class(IPredictiveClusterer)
   private
     fNClusters: integer;
     fMaxIter: integer;
@@ -1300,7 +1300,7 @@ type
     function PredictLabels(X: Matrix): array of integer;
 
     /// Выполняет обучение и сразу возвращает метки кластеров.
-    function FitPredict(X: Matrix): Vector;
+    function FitPredict(X: Matrix): array of integer;
 
     /// Создаёт глубокую копию модели.
     function Clone: IModel;
@@ -1405,13 +1405,13 @@ type
   Pipeline = class(ISupervisedModel)
   private
     fTransformers: List<ITransformer>;
-    fModel: IModel;
+    fModel: ISupervisedModel;
     fFitted: boolean;
   public
     /// Создаёт конвейер машинного обучения для заданной модели:
     ///   • model — модель, которая будет обучена
     ///     после последовательного применения всех преобразователей.
-    constructor Create(model: IModel);
+    constructor Create(model: ISupervisedModel);
     
     /// Создаёт пустой пайплайн (конвейер машинного обучения).
     /// Модель должна быть установлена через SetModel.
@@ -1482,7 +1482,7 @@ type
     static function Build(params steps: array of IPipelineStep): Pipeline;
     
     /// Устанавливает или заменяет модель.
-    function SetModel(m: IModel): Pipeline;
+    function SetModel(m: ISupervisedModel): Pipeline;
   
     /// Добавляет преобразование в конец пайплайна
     function Add(t: ITransformer): Pipeline;
@@ -1501,8 +1501,6 @@ type
     /// для вероятностной модели в конце пайплайна.
     function PredictProba(X: Matrix): Matrix;
     
-    function GetClasses: array of real;
-  
     /// Показывает, был ли пайплайн обучен (вызван метод Fit).
     property IsFitted: boolean read fFitted;
     
@@ -2011,6 +2009,16 @@ const
     'DBSCAN не поддерживает предсказание для новых данных!!DBSCAN does not support prediction for new data';
   ER_CLASSES_NOT_AVAILABLE =
     'Метки классов недоступны. Убедитесь, что модель обучена и метки установлены!!Class labels are not available. Ensure the model is fitted and class labels are set';  
+  ER_PIPELINE_LAST_NOT_SUPERVISED_MODEL = 
+    'Последний шаг Pipeline должен быть supervised-моделью!!' +
+    'Last Pipeline step must be a supervised model';
+  ER_INTERNAL_INVALID_MODEL_CLONE =
+    'Внутренняя ошибка: Clone модели вернул несовместимый тип!!' +
+    'Internal error: model Clone returned incompatible type';
+  ER_PREDICT_NOT_SUPPORTED =
+    'Модель не поддерживает Predict для данного типа алгоритма!!' +
+    'Model does not support Predict for this type of algorithm';  
+    
   
 {$endregion ErrConstants}  
 
@@ -7239,10 +7247,10 @@ begin
     Result[i] := labels[i];
 end;
 
-function KMeans.FitPredict(X: Matrix): Vector;
+function KMeans.FitPredict(X: Matrix): array of integer;
 begin
   Fit(X);
-  Result := Predict(X);
+  Result := PredictLabels(X);
 end;
 
 function KMeans.Clone: IModel;
@@ -7477,7 +7485,7 @@ begin
   fFitted := false;
 end;
 
-constructor Pipeline.Create(model: IModel);
+constructor Pipeline.Create(model: ISupervisedModel);
 begin
   Create;
   if model = nil then
@@ -7496,10 +7504,10 @@ begin
   if last = nil then
     ArgumentError(ER_PIPELINE_STEP_NULL, High(steps));
 
-  if not (last is IModel) then
-    ArgumentError(ER_PIPELINE_LAST_NOT_MODEL);
+  if not (last is ISupervisedModel) then
+    ArgumentError(ER_PIPELINE_LAST_NOT_SUPERVISED_MODEL);
 
-  var pipe := new Pipeline(last as IModel);
+  var pipe := new Pipeline(last as ISupervisedModel);
 
   // все шаги кроме последнего — трансформеры
   for var i := 0 to High(steps) - 1 do
@@ -7527,7 +7535,7 @@ begin
   Result := Self;
 end;
 
-function Pipeline.SetModel(m: IModel): Pipeline;
+function Pipeline.SetModel(m: ISupervisedModel): Pipeline;
 begin
   if m = nil then
     ArgumentError(ER_MODEL_NULL);
@@ -7637,14 +7645,6 @@ begin
               .PredictProba(Xt);
 end;
 
-function Pipeline.GetClasses: array of real;
-begin
-  if not (fModel is IProbabilisticClassifier) then
-    ArgumentError(ER_PROBA_NOT_SUPPORTED);
-
-  Result := (fModel as IProbabilisticClassifier).GetClasses;
-end;
-
 function Pipeline.ToString: string;
 begin
   var sb := 'Pipeline (' +
@@ -7674,7 +7674,12 @@ begin
   foreach var t in fTransformers do
     p.Add(t.Clone);
 
-  p.SetModel(fModel.Clone);
+  var m := fModel.Clone;
+
+  if not (m is ISupervisedModel) then
+    Error(ER_INTERNAL_INVALID_MODEL_CLONE);
+  
+  p.SetModel(m as ISupervisedModel);
   
   p.fFitted := fFitted;
 
@@ -7822,7 +7827,10 @@ begin
 
   var Xt := Transform(X);
 
-  Result := (fModel as IUnsupervisedModel).Predict(Xt);
+  if not (fModel is IPredictiveModel) then
+    Error(ER_PREDICT_NOT_SUPPORTED);
+  
+  Result := (fModel as IPredictiveModel).Predict(Xt);
 end;
 
 function UPipeline.ToString: string;

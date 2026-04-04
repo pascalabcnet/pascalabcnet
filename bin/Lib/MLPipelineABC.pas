@@ -32,7 +32,7 @@ type
   private
     fDataSteps: List<IPreprocessor>;
     fMatrixSteps: List<ITransformer>;
-    fModel: IModel;
+    fModel: ISupervisedModel;
     fTask: TaskKind;
 
     fTarget: string;
@@ -50,7 +50,7 @@ type
     /// Принимает:
     ///   • IPreprocessor (DataFrame-уровень)
     ///   • ITransformer (Matrix-уровень)
-    ///   • IModel (модель, должна быть последней)
+    ///   • ISupervisedModel (модель, должна быть последней)
     /// Запрещено добавлять шаги после вызова Fit/FitTransform.
     function Add(step: IPipelineStep): DataPipeline;
     
@@ -204,7 +204,7 @@ type
   private
     fDataSteps: List<IPreprocessor>;
     fMatrixSteps: List<ITransformer>;
-    fModel: IModel;
+    fModel: IUnsupervisedModel;
   
     fFeatures: array of string;
     fFinalFeatures: array of string;
@@ -222,7 +222,7 @@ type
     /// Принимает:
     ///   • IPreprocessor (DataFrame-уровень)
     ///   • ITransformer (Matrix-уровень)
-    ///   • IModel (модель, должна быть последней)
+    ///   • IUnsupervisedModel (модель, должна быть последней)
     function Add(step: IPipelineStep): UDataPipeline;
   
     /// Строит unsupervised-конвейер из шагов обработки данных и модели.
@@ -353,8 +353,27 @@ const
   ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED =
     'Преобразование целевой переменной "{0}" запрещено в DataPipeline!!' +
     'Transformation of target variable "{0}" is not allowed in DataPipeline';    
-    
-    
+  ER_DATAPIPE_INVALID_TASK =
+    'DataPipeline поддерживает только классификацию и регрессию!!' +
+    'DataPipeline supports classification and regression only';  
+  ER_PREDICT_NOT_SUPPORTED =
+    'Модель не поддерживает операцию Predict!!' +
+    'Model does not support Predict operation';
+  ER_PIPELINE_NO_STEPS =
+    'Pipeline не содержит шагов!!' +
+    'Pipeline must contain at least one step';  
+  ER_PIPELINE_LAST_NOT_UNSUPERVISED_MODEL =
+    'Последний шаг Pipeline должен быть unsupervised-моделью!!' +
+    'Last Pipeline step must be an unsupervised model';  
+  ER_PIPELINE_INVALID_STEP_ORDER =
+    'Неверный порядок шагов в Pipeline: модель должна быть последней!!' +
+    'Invalid pipeline step order: model must be the last step';
+  ER_PIPELINE_LAST_NOT_SUPERVISED_MODEL =
+    'Последний шаг Pipeline должен быть supervised-моделью!!' +
+    'Last Pipeline step must be a supervised model';
+  ER_MODEL_NOT_CLASSIFIER =
+    'Модель не является классификатором!!' +
+    'Model is not a classifier';
 //-----------------------------
 //        DataPipeline
 //-----------------------------
@@ -412,12 +431,12 @@ begin
   end;
 
   // --- Model (обязательно последний шаг)
-  if step is IModel then
+  if step is ISupervisedModel then
   begin
     if fModel <> nil then
       ArgumentError(ER_PIPELINE_MULTIPLE_MODELS);
 
-    fModel := step as IModel;
+    fModel := step as ISupervisedModel;
     exit(Self);
   end;
 
@@ -432,6 +451,9 @@ class function DataPipeline.Build(
   params steps: array of IPipelineStep
 ): DataPipeline;
 begin
+  if not (task in [TaskKind.tkClassification, TaskKind.tkRegression]) then
+    ArgumentError(ER_DATAPIPE_INVALID_TASK);
+
   if (target = nil) or (target = '') then
     ArgumentError(ER_TARGET_EMPTY);
 
@@ -454,14 +476,48 @@ begin
     seen.Add(f);
   end;
 
+  if (steps = nil) or (Length(steps) = 0) then
+    ArgumentError(ER_PIPELINE_NO_STEPS);
+
+  var last := steps[High(steps)];
+
+  if last = nil then
+    ArgumentError(ER_PIPELINE_STEP_NULL, High(steps));
+
+  if not (last is ISupervisedModel) then
+    ArgumentError(ER_PIPELINE_LAST_NOT_SUPERVISED_MODEL);
+  
+  var modelFound := false;
+
+  for var i := 0 to High(steps) do
+  begin
+    if steps[i] is ISupervisedModel then
+    begin
+      if modelFound then
+        ArgumentError(ER_PIPELINE_MULTIPLE_MODELS);
+  
+      modelFound := true;
+    end;
+  end;
+
+  for var i := 0 to High(steps) - 1 do
+  begin
+    var step := steps[i];
+
+    if step = nil then
+      ArgumentError(ER_PIPELINE_STEP_NULL, i);
+
+    if step is ISupervisedModel then
+      ArgumentError(ER_PIPELINE_INVALID_STEP_ORDER);
+  end;
+
   var p := new DataPipeline;
   p.fTarget := target;
   p.fFeatures := Copy(features);
   p.fTask := task;
 
-  if steps <> nil then
-    for var i := 0 to High(steps) do
-      p.Add(steps[i]);
+  for var i := 0 to High(steps) do
+    p.Add(steps[i]);
 
   Result := p;
 end;
@@ -546,13 +602,15 @@ begin
   end;
   
   // --- 4) модель
-  if fModel is ISupervisedModel(var supModel) then
-    fModel := supModel.Fit(X, y)
-  else ArgumentError(ER_MODEL_NOT_SUPERVISED, fModel.GetType.Name);
+  fModel := fModel.Fit(X, y);
   
   if fTask = tkClassification then
+  begin
     if fModel is IClassifier(var cls) then
-      cls.SetClassLabels(classes);  
+      cls.SetClassLabels(classes)
+    else
+      Error(ER_MODEL_NOT_CLASSIFIER);
+  end;
 
   fFitted := true;
   Result := Self;
@@ -614,8 +672,11 @@ begin
 
   foreach var t in fMatrixSteps do
     X := t.Transform(X);
+  
+  if not (fModel is IPredictiveModel) then
+    Error(ER_PREDICT_NOT_SUPPORTED);
 
-  Result := fModel.Predict(X);
+  Result := (fModel as IPredictiveModel).Predict(X);
 end;
 
 function DataPipeline.PredictProba(df: DataFrame): Matrix;
@@ -625,6 +686,9 @@ begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
+  if fTask <> tkClassification then
+    ArgumentError(ER_NOT_CLASSIFICATION);
+  
   if not (fModel is IProbabilisticClassifier) then
     ArgumentError(ER_PROBA_NOT_SUPPORTED);
 
@@ -632,9 +696,6 @@ begin
   
   if fFinalFeatures = nil then
     Error(ER_PIPELINE_FINALFEATURES);
-  
-  if fTask <> tkClassification then
-    ArgumentError(ER_NOT_CLASSIFICATION);
   
   for var i := 0 to High(fFinalFeatures) do
     if not current.HasColumn(fFinalFeatures[i]) then
@@ -779,12 +840,12 @@ begin
   end;
 
   // --- Model (обязательно последний шаг)
-  if step is IModel then
+  if step is IUnsupervisedModel then
   begin
     if fModel <> nil then
       ArgumentError(ER_PIPELINE_MULTIPLE_MODELS);
 
-    fModel := step as IModel;
+    fModel := step as IUnsupervisedModel;
     exit(Self);
   end;
 
@@ -811,8 +872,30 @@ begin
     seen.Add(f);
   end;
 
+  if (steps = nil) or (Length(steps) = 0) then
+    ArgumentError(ER_PIPELINE_NO_STEPS);
+
+  var last := steps[High(steps)];
+
+  if last = nil then
+    ArgumentError(ER_PIPELINE_STEP_NULL, High(steps));
+
+  if not (last is IUnsupervisedModel) then
+    ArgumentError(ER_PIPELINE_LAST_NOT_UNSUPERVISED_MODEL);
+
+  for var i := 0 to High(steps) - 1 do
+  begin
+    var step := steps[i];
+
+    if step = nil then
+      ArgumentError(ER_PIPELINE_STEP_NULL, i);
+
+    if step is IUnsupervisedModel then
+      ArgumentError(ER_PIPELINE_INVALID_STEP_ORDER);
+  end;
+
   var p := new UDataPipeline;
-  p.fFeatures := features;
+  p.fFeatures := Copy(features);
 
   for var i := 0 to High(steps) do
     p.Add(steps[i]);
@@ -878,10 +961,7 @@ begin
   end;
 
   // --- 4) модель
-  if fModel is IUnsupervisedModel(var unsupModel) then
-    fModel := unsupModel.Fit(X)
-  else
-    ArgumentError(ER_MODEL_NOT_UNSUPERVISED, fModel.GetType.Name);
+  fModel := fModel.Fit(X);
 
   fFitted := true;
   Result := Self;
@@ -931,8 +1011,62 @@ begin
   if not (fModel is IClusterer) then
     ArgumentError(ER_MODEL_NOT_CLUSTERER, fModel.GetType.Name);
 
-  Fit(df);
-  Result := PredictLabels(df);
+  var current := df;
+
+  // --- 0) Проверка входной схемы
+  ValidateSchema(current);
+
+  // --- 1) DataFrame шаги
+  for var i := 0 to fDataSteps.Count - 1 do
+  begin
+    fDataSteps[i] := fDataSteps[i].Fit(current);
+    current := fDataSteps[i].Transform(current);
+  end;
+
+  // --- 2) вычислить финальные признаки
+  var feats := new List<string>;
+
+  foreach var f in fFeatures do
+  begin
+    if current.HasColumn(f) then
+    begin
+      feats.Add(f);
+      continue;
+    end;
+
+    // искать производные признаки (например, OneHotEncoder)
+    foreach var c in current.Schema.ColumnNames do
+      if c.StartsWith(f + '_') then
+        if not feats.Contains(c) then
+          feats.Add(c);
+  end;
+
+  if feats.Count = 0 then
+    ArgumentError(ER_PIPELINE_NO_FEATURES);
+
+  fFinalFeatures := feats.ToArray;
+
+  var X := current.ToMatrix(fFinalFeatures);
+
+  // --- 3) Matrix transformers
+  for var i := 0 to fMatrixSteps.Count - 1 do
+  begin
+    var t := fMatrixSteps[i];
+
+    if not (t is IUnsupervisedTransformer) then
+      ArgumentError(ER_MATRIXSTEP_NO_FIT, i, t.GetType.Name);
+
+    var unsup := t as IUnsupervisedTransformer;
+    fMatrixSteps[i] := unsup.Fit(X);
+
+    X := fMatrixSteps[i].Transform(X);
+  end;
+
+  // --- 4) модель
+  var cl := fModel as IClusterer;
+  Result := cl.FitPredict(X);
+
+  fFitted := true;
 end;
 
 procedure UDataPipeline.ValidateNumericFeatures(df: DataFrame);
@@ -967,6 +1101,13 @@ begin
 
   ValidateNumericFeatures(current);
 
+  if fFinalFeatures = nil then
+    Error(ER_PIPELINE_FINALFEATURES);
+  
+  for var i := 0 to High(fFinalFeatures) do
+    if not current.HasColumn(fFinalFeatures[i]) then
+      ArgumentError(ER_PIPELINE_FEATURE_NOT_FOUND, fFinalFeatures[i]);
+  
   var X := current.ToMatrix(fFinalFeatures);
 
   foreach var t in fMatrixSteps do
@@ -977,55 +1118,43 @@ end;
 
 function UDataPipeline.Predict(df: DataFrame): Vector;
 begin
-  if fModel = nil then
-    ArgumentError(ER_MODEL_NULL);
-
-  var X := TransformToMatrix(df);
-
-  Result := fModel.Predict(X);
-end;
-
-function UDataPipeline.PredictLabels(df: DataFrame): array of integer;
-begin
-  if fModel = nil then
-    ArgumentError(ER_MODEL_NULL);
-
-  if not (fModel is IClusterer) then
-    ArgumentError(ER_MODEL_NOT_CLUSTERER, fModel.GetType.Name);
-
-  var cl := fModel as IClusterer;
-
-  var X := TransformToMatrix(df);
-
-  Result := cl.PredictLabels(X);
-end;
-
-{function UDataPipeline.Predict(df: DataFrame): Vector;
-begin
   if df = nil then
     ArgumentNullError(ER_ARG_NULL, 'df');
+
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
   if fModel = nil then
     ArgumentError(ER_MODEL_NULL);
 
-  var current := Transform(df);
+  var X := TransformToMatrix(df);
 
-  if fFinalFeatures = nil then
-    Error(ER_PIPELINE_FINALFEATURES);
+  if not (fModel is IPredictiveModel) then
+    Error(ER_PREDICT_NOT_SUPPORTED);
 
-  for var i := 0 to High(fFinalFeatures) do
-    if not current.HasColumn(fFinalFeatures[i]) then
-      ArgumentError(ER_PIPELINE_FEATURE_NOT_FOUND, fFinalFeatures[i]);
+  Result := (fModel as IPredictiveModel).Predict(X);
+end;
 
-  var X := current.ToMatrix(fFinalFeatures);
+function UDataPipeline.PredictLabels(df: DataFrame): array of integer;
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
 
-  foreach var t in fMatrixSteps do
-    X := t.Transform(X);
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
 
-  Result := fModel.Predict(X);
-end;}
+  if fModel = nil then
+    ArgumentError(ER_MODEL_NULL);
+
+  if not (fModel is IPredictiveClusterer) then
+    Error(ER_PREDICT_NOT_SUPPORTED);
+
+  var cl := fModel as IPredictiveClusterer;
+
+  var X := TransformToMatrix(df);
+
+  Result := cl.PredictLabels(X);
+end;
 
 procedure UDataPipeline.ValidateSchema(df: DataFrame);
 begin
