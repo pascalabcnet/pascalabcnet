@@ -6,13 +6,13 @@ def sqrt(x: float) -> float:
     return PABCSystem.sqrt(x)
 
 def trunc(x: float) -> int:
-    return PABCSystem.trunc(x)
+    return PABCSystem.Trunc(x)
 
 def floor(x: float) -> int:
-    return PABCSystem.floor(x)
+    return PABCSystem.Floor(x)
     
 def ceil(x: float) -> int:
-    return PABCSystem.ceil(x)
+    return PABCSystem.Ceil(x)
 
 def log(x: float) -> float:
     return PABCSystem.Log(x)
@@ -30,55 +30,55 @@ def log(x: float, base: int) -> float:
     return PABCSystem.LogN(base, x)
 
 def exp(x: float) -> float:
-    return PABCSystem.exp(x)
+    return PABCSystem.Exp(x)
 
 def expm1(x: float) -> float:
-    return PABCSystem.exp(x - 1)
+    return PABCSystem.Exp(x - 1)
 
 def exp2(x: float) -> float:
-    return PABCSystem.exp(log(2) * x)
+    return PABCSystem.Exp(log(2) * x)
 
 def sin(x: float) -> float:
-    return PABCSystem.sin(x)
+    return PABCSystem.Sin(x)
 
 def sinh(x: float) -> float:
-    return PABCSystem.sinh(x)
+    return PABCSystem.Sinh(x)
 
 def cos(x: float) -> float:
-    return PABCSystem.cos(x)
+    return PABCSystem.Cos(x)
 
 def cosh(x: float) -> float:
-    return PABCSystem.cosh(x)
+    return PABCSystem.Cosh(x)
 
 def tan(x: float) -> float:
-    return PABCSystem.tan(x)
+    return PABCSystem.Tan(x)
     
 def tanh(x: float) -> float:
-    return PABCSystem.tanh(x)
+    return PABCSystem.Tanh(x)
     
 def acos(x: float) -> float:
-    return PABCSystem.arccos(x)
+    return PABCSystem.ArcCos(x)
 
 def asin(x: float) -> float:
-    return PABCSystem.arcsin(x)
+    return PABCSystem.ArcSin(x)
 
 def atan(x: float) -> float:
-    return PABCSystem.arctan(x)
+    return PABCSystem.ArcTan(x)
 
 def atan2(y: float, x: float) -> float:
-    return PABCSystem.arctan(y / x)
+    return PABCSystem.ArcTan(y / x)
 
 def pow(x: float, y: int) -> float:
-    return PABCSystem.power(x, y)
+    return PABCSystem.Power(x, y)
 
 def cbrt(x: float) -> float:
     return pow(x, 1/3)
 
 def fabs(x: float) -> float:
-    return PABCSystem.abs(x)
+    return PABCSystem.Abs(x)
 
 def pow(x: float, y: float) -> float:
-    return PABCSystem.power(x, y)
+    return PABCSystem.Power(x, y)
 
 def isqrt(x: int) -> int:
     return floor(sqrt(x))

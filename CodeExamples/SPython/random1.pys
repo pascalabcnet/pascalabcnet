@@ -2,7 +2,7 @@
 import PABCSystem
 
 def random() -> float:
-    return PABCSystem.random()
+    return PABCSystem.Random()
     
 def randint(a: int, b: int) -> int:
-    return PABCSystem.random(a, b)
+    return PABCSystem.Random(a, b)
