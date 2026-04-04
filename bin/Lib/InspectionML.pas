@@ -27,11 +27,24 @@ uses MLCoreABC, LinearAlgebraML;
 type
   Inspection = static class
   public
-    /// PermutationImportance — оценка важности признаков методом перестановок.
-    /// Для каждого признака случайно перемешивает его столбец и измеряет
-    /// падение выбранной метрики качества модели.
-    /// Работает с любой реализацией IModel.
-    static function PermutationImportance(model: IModel; X: Matrix; y: Vector;
+  /// PermutationImportance — оценка важности признаков методом перестановок.
+  /// 
+  /// Для каждого признака случайно перемешивает соответствующий столбец
+  /// и измеряет снижение качества модели по заданной функции scoreFunc.
+  /// 
+  /// Требует модель, поддерживающую предсказания (IPredictiveModel).
+  /// 
+  /// Параметры:
+  ///   • model — обученная модель, реализующая IPredictiveModel;
+  ///   • X — матрица признаков (nSamples × nFeatures);
+  ///   • y — вектор истинных значений;
+  ///   • scoreFunc — функция оценки качества (например, MSE, Accuracy);
+  ///   • seed — начальное значение генератора случайных чисел.
+  /// 
+  /// Возвращает:
+  ///   Вектор важностей признаков длины nFeatures.
+  ///   Чем больше значение, тем сильнее признак влияет на качество модели
+    static function PermutationImportance(model: IPredictiveModel; X: Matrix; y: Vector;
       scoreFunc: (Vector, Vector) -> real; seed: integer := 0): Vector;
   end;  
 
@@ -42,7 +55,7 @@ uses MLExceptions;
 const
   ER_SCORE_FUNC_NULL = 'scoreFunc не может быть nil!!scoreFunc cannot be nil';
 
-static function Inspection.PermutationImportance(model: IModel; X: Matrix; y: Vector;
+static function Inspection.PermutationImportance(model: IPredictiveModel; X: Matrix; y: Vector;
   scoreFunc: (Vector, Vector) -> real; seed: integer): Vector;
 begin
   if model = nil then

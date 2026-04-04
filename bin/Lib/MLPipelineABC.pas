@@ -11,6 +11,28 @@ type
   TaskKind = (tkRegression, tkClassification);
 
 type
+  PipelineBase = abstract class
+  protected
+    fDataSteps: List<IPreprocessor>;
+    fMatrixSteps: List<ITransformer>;
+    fFeatures: array of string;
+    fFinalFeatures: array of string;
+    fFitted: boolean;
+
+    procedure ValidateSchema(df: DataFrame); virtual; abstract;
+
+    function PrepareMatrix(df: DataFrame; var current: DataFrame): Matrix;
+    
+    function FitTransformMatrix(var X: Matrix; y: Vector := nil): Matrix;
+    
+    function TransformMatrix(X: Matrix): Matrix;
+  public
+    constructor Create;
+    
+    /// Признак того, что был вызван Fit или FitTransform.
+    property IsFitted: boolean read fFitted;
+  end;
+  
   /// DataPipeline — конвейер подготовки данных и обучения модели с учителем на DataFrame.
   /// 
   /// Поддерживает два уровня шагов:
@@ -28,20 +50,19 @@ type
   ///   • target — целевая переменная.
   ///
   /// Если модель не добавлена, DataPipeline работает как чистый DF-конвейер (Fit/Transform/FitTransform)  
-  DataPipeline = class
+  DataPipeline = class(PipelineBase)
   private
-    fDataSteps: List<IPreprocessor>;
-    fMatrixSteps: List<ITransformer>;
     fModel: ISupervisedModel;
     fTask: TaskKind;
-
     fTarget: string;
-    fFeatures: array of string;
-    fFinalFeatures: array of string;
 
-    fFitted: boolean;
-
-    procedure ValidateSchema(df: DataFrame);
+    // fDataSteps: List<IPreprocessor>;
+    // fMatrixSteps: List<ITransformer>;
+    // fFeatures: array of string;
+    // fFinalFeatures: array of string;
+    // fFitted: boolean;
+  protected
+    procedure ValidateSchema(df: DataFrame); override;
   public
     /// Создаёт пустой конвейер
     constructor Create;
@@ -177,9 +198,6 @@ type
     /// Доступен только для задач классификации после Fit.
     function GetClassLabels: array of string;
     
-    /// Признак того, что был вызван Fit или FitTransform.
-    property IsFitted: boolean read fFitted;
-    
     function ToString: string; override;
   end;
   
@@ -200,20 +218,21 @@ type
   ///
   /// Если модель не добавлена, UDataPipeline работает как чистый DF-конвейер
   /// (Fit/Transform/FitTransform)
-  UDataPipeline = class
+  UDataPipeline = class(PipelineBase)
   private
-    fDataSteps: List<IPreprocessor>;
-    fMatrixSteps: List<ITransformer>;
+    //fDataSteps: List<IPreprocessor>;
+    //fMatrixSteps: List<ITransformer>;
     fModel: IUnsupervisedModel;
   
-    fFeatures: array of string;
-    fFinalFeatures: array of string;
+    //fFeatures: array of string;
+    //fFinalFeatures: array of string;
   
-    fFitted: boolean;
+    //fFitted: boolean;
   
-    procedure ValidateSchema(df: DataFrame);
     procedure ValidateNumericFeatures(df: DataFrame);
     function TransformToMatrix(df: DataFrame): Matrix;
+  protected  
+    procedure ValidateSchema(df: DataFrame); override;
   public
     /// Создаёт пустой конвейер
     constructor Create;
@@ -241,8 +260,9 @@ type
     
     /// Обучает конвейер и сразу возвращает метки кластеров.
     /// 
-    /// Эквивалентно последовательному вызову:
-    ///   Fit(df) → PredictLabels(df)
+    /// Выполняет полный pipeline:
+    ///   DataFrame-преобразования → построение матрицы признаков →
+    ///   матричные трансформеры → FitPredict модели.
     /// 
     /// Используется для задач кластеризации, где нет разделения на train/test.
     /// 
@@ -263,9 +283,6 @@ type
     ///   • модель поддерживает кластеризацию (IClusterer);
     ///   • конвейер был обучен (Fit).
     function PredictLabels(df: DataFrame): array of integer;
-  
-    /// Признак того, что был вызван Fit или FitTransform.
-    property IsFitted: boolean read fFitted;
   
     function ToString: string; override;
   end;  
@@ -374,6 +391,98 @@ const
   ER_MODEL_NOT_CLASSIFIER =
     'Модель не является классификатором!!' +
     'Model is not a classifier';
+
+//-----------------------------
+//        DataPipeline
+//-----------------------------
+
+constructor PipelineBase.Create;
+begin
+  fDataSteps := new List<IPreprocessor>;
+  fMatrixSteps := new List<ITransformer>;
+  fFeatures := nil;
+  fFitted := false;
+end;
+
+function PipelineBase.PrepareMatrix(df: DataFrame; var current: DataFrame): Matrix;
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+
+  current := df;
+
+  // --- schema
+  ValidateSchema(current);
+
+  // --- DataFrame steps
+  for var i := 0 to fDataSteps.Count - 1 do
+  begin
+    fDataSteps[i] := fDataSteps[i].Fit(current);
+    current := fDataSteps[i].Transform(current);
+  end;
+
+  // --- features
+  var feats := new List<string>;
+
+  foreach var f in fFeatures do
+  begin
+    if current.HasColumn(f) then
+    begin
+      feats.Add(f);
+      continue;
+    end;
+
+    foreach var c in current.Schema.ColumnNames do
+      if c.StartsWith(f + '_') then
+        if not feats.Contains(c) then
+          feats.Add(c);
+  end;
+
+  if feats.Count = 0 then
+    ArgumentError(ER_PIPELINE_NO_FEATURES);
+
+  fFinalFeatures := feats.ToArray;
+
+  Result := current.ToMatrix(fFinalFeatures);
+end;
+
+function PipelineBase.FitTransformMatrix(var X: Matrix; y: Vector): Matrix;
+begin
+  for var i := 0 to fMatrixSteps.Count - 1 do
+  begin
+    var t := fMatrixSteps[i];
+
+    if y <> nil then
+    begin
+      if t is ISupervisedTransformer(var sup) then
+        fMatrixSteps[i] := sup.Fit(X, y)
+      else if t is IUnsupervisedTransformer(var unsup) then
+        fMatrixSteps[i] := unsup.Fit(X)
+      else
+        ArgumentError(ER_MATRIXSTEP_NO_FIT, i);
+    end
+    else
+    begin
+      if t is IUnsupervisedTransformer(var unsup) then
+        fMatrixSteps[i] := unsup.Fit(X)
+      else
+        ArgumentError(ER_MATRIXSTEP_NO_FIT, i);
+    end;
+
+    X := fMatrixSteps[i].Transform(X);
+  end;
+
+  Result := X;
+end;
+
+function PipelineBase.TransformMatrix(X: Matrix): Matrix;
+begin
+  foreach var t in fMatrixSteps do
+    X := t.Transform(X);
+
+  Result := X;
+end;
+
 //-----------------------------
 //        DataPipeline
 //-----------------------------
@@ -588,18 +697,7 @@ begin
     DimensionError(ER_XY_SIZE_MISMATCH, X.RowCount, y.Length);
 
   // --- 3) Matrix transformers
-  for var i := 0 to fMatrixSteps.Count - 1 do
-  begin
-    var t := fMatrixSteps[i];
-  
-    if t is ISupervisedTransformer(var sup) then
-      fMatrixSteps[i] := sup.Fit(X, y)
-    else if t is IUnsupervisedTransformer(var unsup) then
-      fMatrixSteps[i] := unsup.Fit(X)
-    else ArgumentError(ER_MATRIXSTEP_NO_FIT, i);
-  
-    X := fMatrixSteps[i].Transform(X);
-  end;
+  X := FitTransformMatrix(X, y);
   
   // --- 4) модель
   fModel := fModel.Fit(X, y);
@@ -670,8 +768,7 @@ begin
 
   var X := current.ToMatrix(fFinalFeatures);
 
-  foreach var t in fMatrixSteps do
-    X := t.Transform(X);
+  X := TransformMatrix(X);
   
   if not (fModel is IPredictiveModel) then
     Error(ER_PREDICT_NOT_SUPPORTED);
@@ -703,8 +800,7 @@ begin
   
   var X := current.ToMatrix(fFinalFeatures);
 
-  foreach var t in fMatrixSteps do
-    X := t.Transform(X);
+  X := TransformMatrix(X);
 
   Result := (fModel as IProbabilisticClassifier).PredictProba(X);
 end;
@@ -948,17 +1044,7 @@ begin
   var X := current.ToMatrix(fFinalFeatures);
 
   // --- 3) Matrix transformers
-  for var i := 0 to fMatrixSteps.Count - 1 do
-  begin
-    var t := fMatrixSteps[i];
-
-    if t is IUnsupervisedTransformer(var unsup) then
-      fMatrixSteps[i] := unsup.Fit(X)
-    else
-      ArgumentError(ER_MATRIXSTEP_NO_FIT, i, t.GetType.Name);
-
-    X := fMatrixSteps[i].Transform(X);
-  end;
+  X := FitTransformMatrix(X);
 
   // --- 4) модель
   fModel := fModel.Fit(X);
@@ -1049,18 +1135,7 @@ begin
   var X := current.ToMatrix(fFinalFeatures);
 
   // --- 3) Matrix transformers
-  for var i := 0 to fMatrixSteps.Count - 1 do
-  begin
-    var t := fMatrixSteps[i];
-
-    if not (t is IUnsupervisedTransformer) then
-      ArgumentError(ER_MATRIXSTEP_NO_FIT, i, t.GetType.Name);
-
-    var unsup := t as IUnsupervisedTransformer;
-    fMatrixSteps[i] := unsup.Fit(X);
-
-    X := fMatrixSteps[i].Transform(X);
-  end;
+  X := FitTransformMatrix(X);
 
   // --- 4) модель
   var cl := fModel as IClusterer;
@@ -1110,8 +1185,7 @@ begin
   
   var X := current.ToMatrix(fFinalFeatures);
 
-  foreach var t in fMatrixSteps do
-    X := t.Transform(X);
+  X := TransformMatrix(X);
 
   Result := X;
 end;
