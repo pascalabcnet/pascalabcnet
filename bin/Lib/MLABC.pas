@@ -92,7 +92,7 @@ type
   
   IModel = MLCoreABC.IModel;
   ISupervisedModel = MLCoreABC.ISupervisedModel;
-  IUnSupervisedModel = MLCoreABC.IUnSupervisedModel;
+  IUnsupervisedModel = MLCoreABC.IUnsupervisedModel;
   UPipeline = MLModelsABC.UPipeline;
   UDataPipeline = MLPipelineABC.UDataPipeline;
   TaskKind = MLPipelineABC.TaskKind;

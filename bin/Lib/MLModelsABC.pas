@@ -1013,7 +1013,7 @@ type
       : ISupervisedModel;
 
     procedure BuildClassMapping(y: Vector);
-    function EncodeLabels(y: Vector): array of integer;
+    function ApplyLabelEncoding(y: Vector): array of integer;
 
     procedure SoftmaxRow(var logits: array of real; var probs: array of real);
     procedure SoftmaxMatrix(logits: Matrix; probs: Matrix);
@@ -1339,7 +1339,6 @@ type
   private
     fEps: real;
     fMinSamples: integer;
-    fSeed: integer;
   
     fFitted: boolean;
     fFeatureCount: integer;
@@ -1356,8 +1355,7 @@ type
     /// seed — параметр для совместимости API.
     constructor Create(
       eps: real;
-      minSamples: integer := 5;
-      seed: integer := -1
+      minSamples: integer := 5
     );
   
     /// Обучает модель на матрице признаков.
@@ -3506,18 +3504,6 @@ begin
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
-  if fMinSamplesSplit < 2 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
-
-  if fMinSamplesLeaf < 1 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
-
-  if fMaxDepth < -1 then
-    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
-
-  if fMaxDepth > 10000 then
-    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
-  
   
   fFeatureImportances := new Vector(X.ColCount);
 
@@ -3758,21 +3744,9 @@ begin
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
-  if fMinSamplesSplit < 2 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
-
-  if fMinSamplesLeaf < 1 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
-
   if fLeafL2 < 0 then
     ArgumentOutOfRangeError(ER_L2_NEGATIVE, fLeafL2);
 
-  if fMaxDepth < -1 then
-    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
-
-  if fMaxDepth > 10000 then
-    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
-  
   fFeatureImportances := new Vector(X.ColCount);
 
   var indices: array of integer;
@@ -3985,24 +3959,6 @@ begin
 
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
-
-  if fNTrees <= 0 then
-    ArgumentOutOfRangeError(ER_NTREES_INVALID, fNTrees);
-
-  if fMinSamplesSplit < 2 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
-
-  if fMinSamplesLeaf < 1 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
-
-  if fMinSamplesLeaf >= fMinSamplesSplit then
-    ArgumentError(ER_MIN_LEAF_GE_SPLIT, fMinSamplesLeaf, fMinSamplesSplit);
-
-  if fMaxDepth < -1 then
-    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
-
-  if fMaxDepth > MAX_ALLOWED_TREE_DEPTH then
-    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
 
   var n := X.RowCount;
   var p := X.ColCount;
@@ -4230,24 +4186,6 @@ begin
 
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
-
-  if fNTrees <= 0 then
-    ArgumentOutOfRangeError(ER_NTREES_INVALID, fNTrees);
-
-  if fMinSamplesSplit < 2 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
-
-  if fMinSamplesLeaf < 1 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
-
-  if fMinSamplesLeaf >= fMinSamplesSplit then
-    ArgumentError(ER_MIN_LEAF_GE_SPLIT, fMinSamplesLeaf, fMinSamplesSplit);
-
-  if fMaxDepth < -1 then
-    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
-
-  if fMaxDepth > MAX_ALLOWED_TREE_DEPTH then
-    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
 
   var n := X.RowCount;
   var p := X.ColCount;
@@ -4595,6 +4533,51 @@ begin
 end;
 
 //-----------------------------
+//      Helper GBC GBR
+//-----------------------------
+
+function BuildSubsampleIndices(nTrain: integer; subsample: real; rng: System.Random): array of integer;
+begin
+  if nTrain <= 0 then
+    ArgumentOutOfRangeError(ER_EMPTY_DATASET);
+
+  if (subsample <= 0.0) or (subsample > 1.0) then
+    ArgumentOutOfRangeError(ER_SUBSAMPLE_INVALID, subsample);
+
+  var k := Floor(nTrain * subsample);
+  if k < 1 then
+    k := 1;
+  if k > nTrain then
+    k := nTrain;
+
+  // если берём всё — можно быстро вернуть [0..nTrain-1]
+  if k = nTrain then
+  begin
+    Result := new integer[nTrain];
+    for var i := 0 to nTrain - 1 do
+      Result[i] := i;
+    exit;
+  end;
+
+  var all := new integer[nTrain];
+  for var i := 0 to nTrain - 1 do
+    all[i] := i;
+
+  // partial Fisher–Yates (без повторений)
+  for var i := 0 to k - 1 do
+  begin
+    var j := i + rng.Next(nTrain - i);
+    var tmp := all[i];
+    all[i] := all[j];
+    all[j] := tmp;
+  end;
+
+  Result := new integer[k];
+  for var i := 0 to k - 1 do
+    Result[i] := all[i];
+end;
+
+//-----------------------------
 //  GradientBoostingRegressor 
 //-----------------------------
 constructor GradientBoostingRegressor.Create(
@@ -4629,6 +4612,9 @@ begin
   
   if minSamplesLeaf < 1 then
     ArgumentOutOfRangeError(ER_MIN_SAMPLES_LEAF_INVALID, minSamplesLeaf);
+  
+  if maxDepth > MAX_ALLOWED_TREE_DEPTH then
+    ArgumentOutOfRangeError(ER_MAX_DEPTH_TOO_LARGE, maxDepth);
 
   fNEstimators := nEstimators;
   fLearningRate := learningRate;
@@ -4905,28 +4891,6 @@ begin
       DimensionError(ER_FEATURE_COUNT_MISMATCH);
   end;
 
-  // --- hyperparameter checks ---
-  if fNEstimators <= 0 then
-    ArgumentOutOfRangeError(ER_NESTIMATORS_INVALID, fNEstimators);
-
-  if fLearningRate <= 0 then
-    ArgumentOutOfRangeError(ER_LEARNING_RATE_INVALID, fLearningRate);
-
-  if (fSubsample <= 0.0) or (fSubsample > 1.0) then
-    ArgumentOutOfRangeError(ER_SUBSAMPLE_INVALID, fSubsample);
-
-  if fMinSamplesSplit < 2 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
-
-  if fMinSamplesLeaf < 1 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
-
-  if fMaxDepth < 0 then
-    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
-
-  if fMaxDepth > MAX_ALLOWED_TREE_DEPTH then
-    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
-
   // --- init state ---
   fOOBLossHistory.Clear;
   fEstimators.Clear;
@@ -4994,40 +4958,20 @@ begin
     // --- subsample ---
     var rows: array of integer := nil;
     var used: array of boolean := nil;
-
+    
     if useSubsample then
     begin
-      var k := Floor(nTrain * fSubsample);
-      if k < 1 then k := 1;
-      if k > nTrain then k := nTrain;
-
-      var all := new integer[nTrain];
-      for var i := 0 to nTrain - 1 do
-        all[i] := i;
-
-      // partial Fisher–Yates
-      for var i := 0 to k - 1 do
-      begin
-        var j := i + fRng.Next(nTrain - i);
-        var tmp := all[i];
-        all[i] := all[j];
-        all[j] := tmp;
-      end;
-
-      rows := new integer[k];
-      for var i := 0 to k - 1 do
-        rows[i] := all[i];
-
+      rows := BuildSubsampleIndices(nTrain, fSubsample, fRng);
       tree.SetRowIndices(rows);
-
+    
       if useOOB then
       begin
         used := new boolean[nTrain];
-        for var i := 0 to k - 1 do
+        for var i := 0 to rows.Length - 1 do
           used[rows[i]] := true;
       end;
     end;
-
+    
     tree.Fit(XTrain, r);
     fEstimators.Add(tree);
 
@@ -5399,6 +5343,7 @@ begin
   Result := copy;
 end;
 
+
 //-----------------------------
 // GradientBoostingClassifier 
 //-----------------------------
@@ -5450,28 +5395,6 @@ begin
       DimensionError(ER_FEATURE_COUNT_MISMATCH);
   end;
 
-  // --- hyperparameter checks ---
-  if fNEstimators <= 0 then
-    ArgumentOutOfRangeError(ER_NESTIMATORS_INVALID, fNEstimators);
-
-  if fLearningRate <= 0 then
-    ArgumentOutOfRangeError(ER_LEARNING_RATE_INVALID, fLearningRate);
-
-  if (fSubsample <= 0.0) or (fSubsample > 1.0) then
-    ArgumentOutOfRangeError(ER_SUBSAMPLE_INVALID, fSubsample);
-
-  if fMinSamplesSplit < 2 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
-
-  if fMinSamplesLeaf < 1 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
-
-  if fMaxDepth < 0 then
-    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
-
-  if fMaxDepth > MAX_ALLOWED_TREE_DEPTH then
-    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
-
   // --- reset state
   fOOBLossHistory.Clear;
   fEstimators.Clear;
@@ -5485,7 +5408,7 @@ begin
 
   // --- mapping
   BuildClassMapping(yTrain);
-  var yEncoded := EncodeLabels(yTrain);
+  var yEncoded := ApplyLabelEncoding(yTrain);
 
   var nTrain := XTrain.RowCount;
   var classCount := fClassCount;
@@ -5540,7 +5463,7 @@ begin
   if useValidation then
   begin
     logitsVal := new Matrix(XVal.RowCount, classCount);
-    yValEncoded := EncodeLabels(yVal);
+    yValEncoded := ApplyLabelEncoding(yVal);
   
     // --- инициализация log-prior
     for var i := 0 to XVal.RowCount - 1 do
@@ -5577,6 +5500,11 @@ begin
     
     // inBag
     var inBag: array of boolean := nil;
+    
+    if useSubsample then
+    begin
+      subIndices := BuildSubsampleIndices(nTrain, fSubsample, fRng);
+    end;
     
     if useOOB then
     begin
@@ -5741,7 +5669,7 @@ begin
     fClassIndex[fClasses[cls]] := cls;
 end;
 
-function GradientBoostingClassifier.EncodeLabels(y: Vector): array of integer;
+function GradientBoostingClassifier.ApplyLabelEncoding(y: Vector): array of integer;
 begin
   var n := y.Length;
   Result := new integer[n];
@@ -7297,8 +7225,7 @@ end;
 
 constructor DBSCAN.Create(
   eps: real;
-  minSamples: integer;
-  seed: integer
+  minSamples: integer
 );
 begin
   if eps <= 0 then
@@ -7309,7 +7236,6 @@ begin
 
   fEps := eps;
   fMinSamples := minSamples;
-  fSeed := seed;
 
   fFitted := False;
 end;
@@ -7454,7 +7380,7 @@ end;
 
 function DBSCAN.Clone: IModel;
 begin
-  var m := new DBSCAN(fEps, fMinSamples, fSeed);
+  var m := new DBSCAN(fEps, fMinSamples);
 
   m.fFitted := fFitted;
   m.fFeatureCount := fFeatureCount;

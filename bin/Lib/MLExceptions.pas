@@ -23,7 +23,9 @@ const
     'Пустой набор данных для {0}!!Empty dataset for {0}';
   ER_COLUMN_NOT_FOUND =
     'В DataFrame отсутствует столбец "{0}"!!DataFrame does not contain column "{0}"';  
-    
+  ER_NOT_IMPLEMENTED = 
+    'Метод {0} не реализован!!Method {0} is not implemented';
+  
 type
   /// Базовое исключение ML-библиотеки
   MLException = class(Exception);
@@ -33,6 +35,8 @@ type
 
   /// Несоответствие размерностей
   MLDimensionException = class(MLException);
+  
+  MLNotImplementedException = class(MLException);
 
 procedure Error(msg: string; params args: array of object);
 procedure ArgumentError(msg: string; params args: array of object);
@@ -40,6 +44,7 @@ procedure NotFittedError(msg: string; params args: array of object);
 procedure DimensionError(msg: string; params args: array of object);
 procedure ArgumentNullError(msg: string; params args: array of object);
 procedure ArgumentOutOfRangeError(msg: string; params args: array of object);
+procedure NotImplementedError(msg: string; params args: array of object);
 
 implementation
 
@@ -82,5 +87,11 @@ procedure ArgumentOutOfRangeError(msg: string; params args: array of object);
 begin
   raise new System.ArgumentOutOfRangeException(FormatSafe(msg, args));
 end;
+
+procedure NotImplementedError(msg: string; params args: array of object);
+begin
+  raise new MLNotImplementedException(FormatSafe(msg, args));
+end;
+  
 
 end.

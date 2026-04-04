@@ -10,7 +10,7 @@ interface
 
 uses DataFrameABCCore;
 
-const DataFrameVersion = '1.0';
+const DataFrameVersion = '1.1';
 
 // Реэкспортируем публичные типы для удобства
 type
@@ -93,6 +93,9 @@ type
     
     function GetColumnIndex(name: string): integer;
     function GetColumn(name: string): Column;
+    
+    function CloneWithCopiedColumns: DataFrame;
+    static procedure EnsureValidArray(var valid: array of boolean; rowCount, filledCount: integer);
   public
     /// Создает пустой DataFrame
     constructor Create;
@@ -2475,7 +2478,7 @@ begin
       cnt += 1;
     end;
 
-  if cnt = 0 then
+  if cnt <= 1 then
     exit(0.0);
 
   var mean := sum / cnt;
@@ -2491,7 +2494,7 @@ begin
       acc += d * d;
     end;
 
-  Result := acc / cnt;
+  Result := acc / (cnt - 1);
 end;
 
 function DataFrame.Variance(colName: string): real
@@ -3182,14 +3185,10 @@ begin
   Result := columns[idx];
 end;
 
-function DataFrame.WithColumnInt(name: string; f: DataFrameCursor -> integer): DataFrame;
+function DataFrame.CloneWithCopiedColumns: DataFrame;
 begin
-  if fSchema.HasColumn(name) then
-    ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
-  
-  var res := new DataFrame;
+  Result := new DataFrame;
 
-  // 1. копируем столбцы (без categorical!)
   for var i := 0 to columns.Count - 1 do
   begin
     var col := columns[i];
@@ -3198,30 +3197,47 @@ begin
       ctInt:
       begin
         var c := IntColumn(col);
-        res.AddIntColumn(c.Info.Name, c.Data, c.IsValid);
+        Result.AddIntColumn(c.Info.Name, c.Data, c.IsValid);
       end;
 
       ctStr:
       begin
         var c := StrColumn(col);
-        res.AddStrColumn(c.Info.Name, c.Data, c.IsValid);
+        Result.AddStrColumn(c.Info.Name, c.Data, c.IsValid);
       end;
 
       ctFloat:
       begin
         var c := FloatColumn(col);
-        res.AddFloatColumn(c.Info.Name, c.Data, c.IsValid);
+        Result.AddFloatColumn(c.Info.Name, c.Data, c.IsValid);
       end;
 
       ctBool:
       begin
         var c := BoolColumn(col);
-        res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid);
+        Result.AddBoolColumn(c.Info.Name, c.Data, c.IsValid);
       end;
     end;
   end;
+end;
 
-  // 2. вычисляем новый столбец
+static procedure DataFrame.EnsureValidArray(var valid: array of boolean; rowCount, filledCount: integer);
+begin
+  if valid = nil then
+  begin
+    valid := new boolean[rowCount];
+    for var j := 0 to filledCount - 1 do
+      valid[j] := true;
+  end;
+end;
+
+function DataFrame.WithColumnInt(name: string; f: DataFrameCursor -> integer): DataFrame;
+begin
+  if fSchema.HasColumn(name) then
+    ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
+
+  var res := CloneWithCopiedColumns;
+
   var data := new integer[RowCount];
   var valid: array of boolean := nil;
 
@@ -3236,14 +3252,7 @@ begin
       on e: Exception do
       begin
         data[i] := 0;
-
-        if valid = nil then
-        begin
-          valid := new boolean[RowCount];
-          for var j := 0 to i - 1 do
-            valid[j] := true;
-        end;
-
+        EnsureValidArray(valid, RowCount, i);
         valid[i] := false;
         i += 1;
         continue;
@@ -3256,13 +3265,10 @@ begin
     i += 1;
   end;
 
-  // 3. добавляем новый столбец
   res.AddIntColumn(name, data, valid);
-
   res.SetSchema(ExtendSchema(name, ctInt, false));
 
   Result := res;
-
   AssertSchemaConsistent;
 end;
 
@@ -3270,41 +3276,9 @@ function DataFrame.WithColumnFloat(name: string; f: DataFrameCursor -> real): Da
 begin
   if fSchema.HasColumn(name) then
     ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
-  
-  var res := new DataFrame;
 
-  // 1. копируем существующие колонки
-  for var i := 0 to columns.Count - 1 do
-  begin
-    var col := columns[i];
-    case col.Info.ColType of
-      ctInt:
-      begin
-        var c := IntColumn(col);
-        res.AddIntColumn(c.Info.Name, c.Data, c.IsValid);
-      end;
+  var res := CloneWithCopiedColumns;
 
-      ctStr:
-      begin
-        var c := StrColumn(col);
-        res.AddStrColumn(c.Info.Name, c.Data, c.IsValid);
-      end;
-
-      ctFloat:
-      begin
-        var c := FloatColumn(col);
-        res.AddFloatColumn(c.Info.Name, c.Data, c.IsValid);
-      end;
-
-      ctBool:
-      begin
-        var c := BoolColumn(col);
-        res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid);
-      end;
-    end;
-  end;
-
-  // 2. вычисляем новый столбец
   var data := new real[RowCount];
   var valid: array of boolean := nil;
 
@@ -3316,16 +3290,10 @@ begin
     try
       data[i] := f(cur);
     except
+      on e: Exception do
       begin
         data[i] := 0.0;
-
-        if valid = nil then
-        begin
-          valid := new boolean[RowCount];
-          for var j := 0 to i - 1 do
-            valid[j] := true;
-        end;
-
+        EnsureValidArray(valid, RowCount, i);
         valid[i] := false;
         i += 1;
         continue;
@@ -3338,13 +3306,10 @@ begin
     i += 1;
   end;
 
-  // 3. добавляем новый столбец
   res.AddFloatColumn(name, data, valid);
-
   res.SetSchema(ExtendSchema(name, ctFloat, false));
 
   Result := res;
-
   AssertSchemaConsistent;
 end;
 
@@ -3352,41 +3317,9 @@ function DataFrame.WithColumnStr(name: string; f: DataFrameCursor -> string): Da
 begin
   if fSchema.HasColumn(name) then
     ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
-  
-  var res := new DataFrame;
 
-  // 1. копируем существующие колонки
-  for var i := 0 to columns.Count - 1 do
-  begin
-    var col := columns[i];
-    case col.Info.ColType of
-      ctInt:
-      begin
-        var c := IntColumn(col);
-        res.AddIntColumn(c.Info.Name, c.Data, c.IsValid);
-      end;
+  var res := CloneWithCopiedColumns;
 
-      ctStr:
-      begin
-        var c := StrColumn(col);
-        res.AddStrColumn(c.Info.Name, c.Data, c.IsValid);
-      end;
-
-      ctFloat:
-      begin
-        var c := FloatColumn(col);
-        res.AddFloatColumn(c.Info.Name, c.Data, c.IsValid);
-      end;
-
-      ctBool:
-      begin
-        var c := BoolColumn(col);
-        res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid);
-      end;
-    end;
-  end;
-
-  // 2. вычисляем новый столбец
   var data := new string[RowCount];
   var valid: array of boolean := nil;
 
@@ -3398,16 +3331,10 @@ begin
     try
       data[i] := f(cur);
     except
+      on e: Exception do
       begin
-        data[i] := '';
-
-        if valid = nil then
-        begin
-          valid := new boolean[RowCount];
-          for var j := 0 to i - 1 do
-            valid[j] := true;
-        end;
-
+        data[i] := nil;
+        EnsureValidArray(valid, RowCount, i);
         valid[i] := false;
         i += 1;
         continue;
@@ -3420,13 +3347,10 @@ begin
     i += 1;
   end;
 
-  // 3. добавляем новый столбец
   res.AddStrColumn(name, data, valid);
-
   res.SetSchema(ExtendSchema(name, ctStr, false));
 
   Result := res;
-
   AssertSchemaConsistent;
 end;
 
@@ -3434,41 +3358,9 @@ function DataFrame.WithColumnBool(name: string; f: DataFrameCursor -> boolean): 
 begin
   if fSchema.HasColumn(name) then
     ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
-  
-  var res := new DataFrame;
 
-  // 1. копируем существующие колонки
-  for var i := 0 to columns.Count - 1 do
-  begin
-    var col := columns[i];
-    case col.Info.ColType of
-      ctInt:
-      begin
-        var c := IntColumn(col);
-        res.AddIntColumn(c.Info.Name, c.Data, c.IsValid);
-      end;
+  var res := CloneWithCopiedColumns;
 
-      ctStr:
-      begin
-        var c := StrColumn(col);
-        res.AddStrColumn(c.Info.Name, c.Data, c.IsValid);
-      end;
-
-      ctFloat:
-      begin
-        var c := FloatColumn(col);
-        res.AddFloatColumn(c.Info.Name, c.Data, c.IsValid);
-      end;
-
-      ctBool:
-      begin
-        var c := BoolColumn(col);
-        res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid);
-      end;
-    end;
-  end;
-
-  // 2. вычисляем новый столбец
   var data := new boolean[RowCount];
   var valid: array of boolean := nil;
 
@@ -3480,16 +3372,10 @@ begin
     try
       data[i] := f(cur);
     except
+      on e: Exception do
       begin
         data[i] := false;
-
-        if valid = nil then
-        begin
-          valid := new boolean[RowCount];
-          for var j := 0 to i - 1 do
-            valid[j] := true;
-        end;
-
+        EnsureValidArray(valid, RowCount, i);
         valid[i] := false;
         i += 1;
         continue;
@@ -3502,13 +3388,10 @@ begin
     i += 1;
   end;
 
-  // 3. добавляем новый столбец
   res.AddBoolColumn(name, data, valid);
-
   res.SetSchema(ExtendSchema(name, ctBool, false));
 
   Result := res;
-
   AssertSchemaConsistent;
 end;
 
@@ -3549,27 +3432,56 @@ begin
 
   var cur := GetCursor;
   var row := 0;
+
   while cur.MoveNext do
   begin
+    // --- NA: обрабатываем явно, без исключений
+    if not cur.IsValid(colIndex) then
+    begin
+      data[row] := 0.0;
+
+      if valid = nil then
+      begin
+        valid := new boolean[rowCount];
+        for var j := 0 to row - 1 do
+          valid[j] := true;
+      end;
+
+      valid[row] := false;
+      row += 1;
+      continue;
+    end;
+
+    // --- вычисление
     try
       data[row] := f(cur);
-      if valid <> nil then valid[row] := true;
     except
       on e: Exception do
       begin
         data[row] := 0.0;
+
         if valid = nil then
         begin
           valid := new boolean[rowCount];
-          for var j := 0 to row - 1 do valid[j] := true;
+          for var j := 0 to row - 1 do
+            valid[j] := true;
         end;
+
         valid[row] := false;
+        row += 1;
+        continue;
       end;
     end;
+
+    if valid <> nil then
+      valid[row] := true;
+
     row += 1;
   end;
 
+  // --- сборка результата
   var res := new DataFrame;
+
   for var i := 0 to columns.Count - 1 do
     if i <> colIndex then
       res.AddColumnView(columns[i])
@@ -5452,11 +5364,8 @@ begin
     Error(ER_ZERO_STD_STANDARDIZE);
 
   Result := df.ReplaceColumnFloat(colName, cur ->
-  begin
-    if not cur.IsValid(idx) then
-      Error(ER_INVALID_VALUE_IN_COLUMN, colName);
-    Result := (cur.Float(idx) - mean) / std;
-  end);
+    (cur.Float(idx) - mean) / std
+  );
 end;
 
 static function Statistics.StandardizeAll(df: DataFrame): DataFrame;
@@ -5652,37 +5561,6 @@ end;
 //-----------------------------
 //          CSVLoader
 //-----------------------------
-
-{procedure ScanFields(line: string; delimiter: char;
-  starts, lens: array of integer; var actualCount: integer);
-begin
-  var j := 1;
-  var col := 0;
-  var n := line.Length;
-
-  starts[0] := 1;
-
-  while j <= n do
-  begin
-    if line[j] = delimiter then
-    begin
-      if col < starts.Length then
-        lens[col] := j - starts[col];
-      col += 1;
-      if col < starts.Length then
-        starts[col] := j + 1;
-    end;
-    j += 1;
-  end;
-
-  if col < starts.Length then
-    lens[col] := n - starts[col] + 1;
-
-  for var k := col + 1 to starts.Length - 1 do
-    lens[k] := 0;
-
-  actualCount := col + 1;
-end;}
 
 procedure ScanFieldsQuoted(
   line: string; delimiter: char;
@@ -6466,13 +6344,34 @@ begin
     System.IO.FileShare.ReadWrite
   );
   try
+    // --- BOM check
     var bom := new byte[3];
     var n := fs.Read(bom, 0, 3);
-    
+
+    // UTF-8 BOM
     if (n >= 3) and (bom[0] = $EF) and (bom[1] = $BB) and (bom[2] = $BF) then
-      Result := Encoding.UTF8
-    else
-      Result := Encoding.UTF8;
+      exit(Encoding.UTF8);
+
+    // --- reset position
+    fs.Position := 0;
+
+    // --- read small chunk
+    var bufferSize := 4096;
+    var buffer := new byte[bufferSize];
+    var readBytes := fs.Read(buffer, 0, bufferSize);
+
+    // --- strict UTF-8 check
+    try
+      var utf8 := new System.Text.UTF8Encoding(false, true); // strict
+      utf8.GetString(buffer, 0, readBytes);
+      exit(Encoding.UTF8);
+    except
+      // not UTF-8
+    end;
+
+    // --- fallback
+    Result := Encoding.Default;
+
   finally
     fs.Close;
   end;

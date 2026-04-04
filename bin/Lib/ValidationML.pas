@@ -69,7 +69,8 @@ type
     X: Matrix; y: Vector;
     k: integer;
     metric: (Vector, Vector) -> real;
-    maximize: boolean := True
+    maximize: boolean := True;
+    seed: integer := -1
   ): (real, real, T); where T: class,ISupervisedModel;
   end;
 
@@ -447,7 +448,8 @@ class function GridSearch.Search<T>(
   y: Vector;
   k: integer;
   metric: (Vector, Vector) -> real;
-  maximize: boolean
+  maximize: boolean;
+  seed: integer
 ): (real, real, T); where T: class,ISupervisedModel;
 begin
   if modelFactory = nil then
@@ -480,7 +482,7 @@ begin
     var model := modelFactory(param);
     if model = nil then
       ArgumentError(ER_MODEL_NULL);
-    var avgScore := Validation.CrossValidate(model, X, y, k, metric);
+    var avgScore := Validation.CrossValidate(model, X, y, k, metric, seed);
 
     if double.IsNaN(avgScore) or double.IsInfinity(avgScore) then
       ArgumentError(ER_INVALID_VALUE, 'avgScore');

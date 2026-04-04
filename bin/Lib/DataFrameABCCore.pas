@@ -789,7 +789,14 @@ end;}
 
 function JoinKey.Equals(oth: object): boolean;
 begin
-  var other: JoinKey := JoinKey(oth);
+  if oth = nil then
+    exit(false);
+
+  if not (oth is JoinKey) then
+    exit(false);
+
+  var other := JoinKey(oth);
+
   if Ints.Length <> other.Ints.Length then exit(false);
   if Floats.Length <> other.Floats.Length then exit(false);
   if Strs.Length <> other.Strs.Length then exit(false);

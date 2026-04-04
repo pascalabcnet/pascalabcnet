@@ -1303,26 +1303,31 @@ end;
 
 static function Datasets.StudentExam: Dataset;
 begin
+  NotImplementedError(ER_NOT_IMPLEMENTED, 'Datasets.StudentExam');
   Result := nil;
 end;
 
 static function Datasets.BankClients: Dataset;
 begin
+  NotImplementedError(ER_NOT_IMPLEMENTED, 'Datasets.BankClients');
   Result := nil;
 end;
 
 static function Datasets.TaxiTrips: Dataset;
 begin
+  NotImplementedError(ER_NOT_IMPLEMENTED, 'Datasets.TaxiTrips');
   Result := nil;
 end;
 
 static function Datasets.MoscowTransport: Dataset;
 begin
+  NotImplementedError(ER_NOT_IMPLEMENTED, 'Datasets.MoscowTransport');
   Result := nil;
 end;
 
 static function Datasets.OnlineShopping: Dataset;
 begin
+  NotImplementedError(ER_NOT_IMPLEMENTED, 'Datasets.OnlineShopping');
   Result := nil;
 end;
 

@@ -101,8 +101,6 @@ type
     procedure Hist(x: Vector; bins: integer := 0;
       color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil);
       
-    //procedure Surface(labels: array of integer; nx, ny: integer; xmin, xmax, ymin, ymax: real; pal: PlotML.Palette := nil);
-    
     procedure Surface(x1, x2: array of real; nx, ny: integer; f: Matrix -> array of integer; pal: PlotML.Palette := nil);      
       
     procedure Heatmap(m: Matrix);
@@ -1318,16 +1316,6 @@ begin
     end;
   end;
 end;
-
-{procedure Cell.Surface(labels: array of integer; nx, ny: integer; xmin, xmax, ymin, ymax: real; pal: PlotML.Palette);
-begin
-  Plot.RunUI(() ->
-  begin
-    EnsureChart;
-    var usePal := if pal <> nil then pal else palette;
-    Plot.DrawSurface(chart, labels, nx, ny, xmin, xmax, ymin, ymax, usePal);
-  end);
-end;}
 
 procedure Cell.Surface(x1, x2: array of real; nx, ny: integer; f: Matrix -> array of integer; pal: PlotML.Palette);
 begin
