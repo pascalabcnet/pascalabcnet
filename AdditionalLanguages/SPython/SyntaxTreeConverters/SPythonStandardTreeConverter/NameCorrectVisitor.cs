@@ -9,7 +9,7 @@ namespace Languages.SPython.Frontend.Converters
 
         private readonly bool forIntellisense;
 
-        public NameCorrectVisitor(string unitName, bool forIntellisense, Dictionary<string, Dictionary<string, bool>> namesFromUsedUnits, HashSet<string> definedFunctionsNames) : base(unitName, namesFromUsedUnits) 
+        public NameCorrectVisitor(string unitName, bool forIntellisense, Dictionary<string, Dictionary<string, bool>> namesFromUsedUnits, HashSet<string> definedFunctionsNames) : base(unitName, forIntellisense, namesFromUsedUnits) 
         {
             this.forIntellisense = forIntellisense;
             foreach (string definedFunctionName in definedFunctionsNames)
