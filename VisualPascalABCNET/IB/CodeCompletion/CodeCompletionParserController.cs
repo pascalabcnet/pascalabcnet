@@ -165,42 +165,46 @@ namespace VisualPascalABC
                         }
                     }
                 }
-                foreach (string FileName in filesToParse.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
+                if (recomp_files.Count > 0)
                 {
-                    CodeCompletion.DomConverter dc = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
-                    
-                    if (dc != null)
+                    foreach (string FileName in filesToParse.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
                     {
-                        CodeCompletion.SymScope watchedUnitScope = dc.visitor.entry_scope;
-                        if (watchedUnitScope != null)
+                        CodeCompletion.DomConverter dc = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
+
+                        if (dc != null)
                         {
-                            var usedUnitsTransitive = watchedUnitScope.GetRealUsedUnitsTransitive();
-
-                            for (int i = 0; i < usedUnitsTransitive.Length; i++)
+                            CodeCompletion.SymScope watchedUnitScope = dc.visitor.entry_scope;
+                            if (watchedUnitScope != null)
                             {
-                                string usedUnitFileName = usedUnitsTransitive[i].file_name;
-                                
-                                // Если какая-то из зависимостей была перекомпилирована
-                                if (recomp_files.Contains(usedUnitFileName))
+                                var usedUnitsTransitive = watchedUnitScope.GetRealUsedUnitsTransitive();
+
+                                for (int i = 0; i < usedUnitsTransitive.Length; i++)
                                 {
-                                    // Помечаем нужные модули для будущей перекомпиляции
-                                    InvalidateDependentModules(usedUnitsTransitive, usedUnitFileName, filesToParse, FileName);
+                                    string usedUnitFileName = usedUnitsTransitive[i].file_name;
 
-                                    // Перекомпилируем текущий модуль
-                                    is_comp = true;
-                                    string text = visualEnvironmentCompiler.SourceFilesProvider(FileName, SourceFileOperation.GetText) as string;
-
-                                    // Здесь третий параметр false, потому что старые данные компиляции еще могут пригодиться до новой перекомпиляции  EVA
-                                    if (CompileWatchedFile(FileName, text, false))
+                                    // Если какая-то из зависимостей была перекомпилирована
+                                    if (recomp_files.Contains(usedUnitFileName))
                                     {
-                                        // успешная компиляция
-                                        recomp_files.Add(FileName);
+                                        // Помечаем нужные модули для будущей перекомпиляции
+                                        InvalidateDependentModules(usedUnitsTransitive, usedUnitFileName, filesToParse, FileName);
+
+                                        // Перекомпилируем текущий модуль
+                                        is_comp = true;
+                                        string text = visualEnvironmentCompiler.SourceFilesProvider(FileName, SourceFileOperation.GetText) as string;
+
+                                        // Здесь третий параметр false, потому что старые данные компиляции еще могут пригодиться до новой перекомпиляции  EVA
+                                        if (CompileWatchedFile(FileName, text, false))
+                                        {
+                                            // успешная компиляция
+                                            recomp_files.Add(FileName);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+                
                 if (is_comp && mem_delta > 20000000 /*&& mem_delta > 10000000*/)
                 //postavil delta dlja pamjati, posle kototoj delaetsja sborka musora
                 {

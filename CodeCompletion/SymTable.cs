@@ -542,47 +542,41 @@ namespace CodeCompletion
         /// </summary>
         public SymScope[] GetRealUsedUnitsTransitive(bool includeImplementationDependenciesForUnit = true)
         {
-            var usedUnits = new List<SymScope>();
+            var unitsList = new List<SymScope>();
 
-            if (used_units != null)
-            {
-                usedUnits.AddRange(used_units.Where(unit => unit.file_name != null));
-            }
+            HashSet<SymScope> visited = new HashSet<SymScope>();
 
-            if (this is InterfaceUnitScope interfaceScope && includeImplementationDependenciesForUnit && interfaceScope.impl_scope != null)
+            void CollectUnitsHelper(SymScope currentScope)
             {
-                foreach (var recursiveUsedUnit in interfaceScope.impl_scope.GetRealUsedUnitsTransitive(true))
+                IEnumerable<SymScope> usedUnitsLocal = currentScope.used_units?.Where(unit => unit.file_name != null);
+
+                foreach (var unit in usedUnitsLocal)
                 {
-                    if (recursiveUsedUnit == this)
-                        continue;
+                    if (unitsList.Find(u => u.file_name == unit.file_name) == null)
+                        unitsList.Add(unit);
+                }
 
-                    if (usedUnits.FirstOrDefault(unit => unit.file_name == recursiveUsedUnit.file_name) == null)
+                if (currentScope is InterfaceUnitScope interfaceScope && includeImplementationDependenciesForUnit && interfaceScope.impl_scope != null)
+                {
+                    CollectUnitsHelper(interfaceScope.impl_scope);
+                }
+
+                foreach (var unit in usedUnitsLocal)
+                {
+                    if (!visited.Contains(unit))
                     {
-                        usedUnits.Add(recursiveUsedUnit);
+                        visited.Add(unit);
+                        CollectUnitsHelper(unit);
                     }
                 }
             }
 
-            if (used_units != null)
-            {
-                foreach (var usedUnit in used_units)
-                {
-                    var recursiveUsedUnits = usedUnit.GetRealUsedUnitsTransitive(includeImplementationDependenciesForUnit);
+            visited.Add(this);
+            CollectUnitsHelper(this);
 
-                    foreach (var recursiveUsedUnit in recursiveUsedUnits)
-                    {
-                        if (recursiveUsedUnit == this)
-                            continue;
+            unitsList.Remove(this);
 
-                        if (usedUnits.FirstOrDefault(unit => unit.file_name == recursiveUsedUnit.file_name) == null)
-                        {
-                            usedUnits.Add(recursiveUsedUnit);
-                        }
-                    }
-                }
-            }
-
-            return usedUnits.ToArray();
+            return unitsList.ToArray();
         }
 
         public virtual string GetFullName()
