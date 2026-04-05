@@ -184,7 +184,6 @@ namespace SymbolTable
             ScopeNum = SymbolTable.GetNewScopeNum();
             SymbolTable.ScopeTable.Add(this);
 
-            // TODO: настроить задание регистрозависимости получше  EVA
             CaseSensitive = SemanticRulesConstants.SymbolTableCaseSensitive;
 
             Symbols = new SymbolsDictionary(CaseSensitive);
@@ -603,8 +602,6 @@ namespace SymbolTable
 	{
 		public List<Scope> ScopeTable;
 
-        internal bool CaseSensitive;
-
         private Scope CurrentScope;
         private int ScopeIndex = -1;
 
@@ -649,9 +646,8 @@ namespace SymbolTable
         }*/
 
         #region DSSymbolTable(int hash_size,bool case_sensitive)
-        public DSSymbolTable(int hash_size,bool case_sensitive)
+        public DSSymbolTable(int hash_size)
 		{
-            CaseSensitive = case_sensitive;
             Clear();
         }
 		#endregion
@@ -1303,8 +1299,7 @@ namespace SymbolTable
     }
     public class TreeConverterSymbolTable:DSSymbolTable
 	{
-		public TreeConverterSymbolTable(bool case_sensitive):base(SymbolTableConstants.HashTable_StartSize,case_sensitive){}
-		public TreeConverterSymbolTable():base(SymbolTableConstants.HashTable_StartSize,false){}
+		public TreeConverterSymbolTable():base(SymbolTableConstants.HashTable_StartSize){}
 	}
     public class SymbolTableController
     {
