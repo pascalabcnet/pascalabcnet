@@ -279,11 +279,13 @@ namespace PascalABCCompiler.PCU
                     return null; // return comp.RecompileUnit(file_name);
                 }
                 ChangeState(this, PCUReaderWriterState.BeginReadTree, unit);
+
+                var unitLanguage = LanguageProvider.Instance.SelectLanguageByName(pcu_file.languageName);
+
+                // Задаем регистрозависимость таблицы символов для правильного добавления и поиска
+                SemanticRulesConstants.SymbolTableCaseSensitive = unitLanguage.CaseSensitive;
+
                 cun.scope = new WrappedUnitInterfaceScope(this);
-
-                bool unitLanguageCaseSensitive = LanguageProvider.Instance.SelectLanguageByName(pcu_file.languageName).CaseSensitive;
-
-                cun.scope.CaseSensitive = unitLanguageCaseSensitive;
                 
                 if (string.Compare(unit_name, StringConstants.pascalSystemUnitName, true)==0)
                 	PascalABCCompiler.TreeConverter.syntax_tree_visitor.init_system_module(cun);
@@ -291,8 +293,6 @@ namespace PascalABCCompiler.PCU
                 //Создаём область видимости для implementation - части
                 cun.implementation_scope = new WrappedUnitImplementationScope(this, cun.scope);
                 //\ssyy
-
-                cun.implementation_scope.CaseSensitive = unitLanguageCaseSensitive;
 
                 string SourceFileName = pcu_file.SourceFileName;
                 if (Path.GetDirectoryName(SourceFileName) == "")

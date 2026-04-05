@@ -159,8 +159,6 @@ namespace PascalABCCompiler.TreeConverter
             ErrorsList = initializationData.errorsList;
             WarningsList = initializationData.warningsList;
 
-            SymbolTable.CaseSensitive = SemanticRulesConstants.SymbolTableCaseSensitive;
-
             this.debug = initializationData.debug;
             this.debugging = initializationData.debugging;
             this.for_intellisense = initializationData.forIntellisense;

@@ -6,7 +6,7 @@ using PascalABCCompiler.TreeConverter;
 using System.Collections.Generic;
 using SymbolTable;
 using System.Reflection;
-using PascalABCCompiler.TreeRealization;
+using static PascalABCCompiler.TreeConverter.SemanticRulesConstants;
 
 namespace PascalABCCompiler.TreeRealization
 {
@@ -186,7 +186,7 @@ namespace SymbolTable
 
             CaseSensitive = SemanticRulesConstants.SymbolTableCaseSensitive;
 
-            Symbols = new SymbolsDictionary();
+            Symbols = new SymbolsDictionary(CaseSensitive);
             InternalScopes = new List<Scope>();              
 		}
         public Scope(DSSymbolTable vSymbolTable, Scope TopScope, bool CaseSensitive)
@@ -204,7 +204,7 @@ namespace SymbolTable
 
             this.CaseSensitive = CaseSensitive;
 
-            Symbols = new SymbolsDictionary();
+            Symbols = new SymbolsDictionary(CaseSensitive);
             InternalScopes = new List<Scope>();
         }
 
@@ -245,7 +245,13 @@ namespace SymbolTable
         public void AddSymbol(string Name, SymbolInfo Inf)
 		{
 			SymbolTable.Add(this, Name, Inf);
+            Inf.Name = Name;
 		}
+
+        /// <summary>
+        /// Получить информацию обо всех символах скоупа
+        /// </summary>
+        public HashTableNode[] GetAllSymbolInfos() => Symbols.GetAllSymbolInfos();
 	}
 
     public class BlockScope : Scope
@@ -596,8 +602,6 @@ namespace SymbolTable
 	{
 		public List<Scope> ScopeTable;
 
-        internal bool CaseSensitive;
-
         private Scope CurrentScope;
         private int ScopeIndex = -1;
 
@@ -642,9 +646,8 @@ namespace SymbolTable
         }*/
 
         #region DSSymbolTable(int hash_size,bool case_sensitive)
-        public DSSymbolTable(int hash_size,bool case_sensitive)
+        public DSSymbolTable(int hash_size)
 		{
-            CaseSensitive = case_sensitive;
             Clear();
         }
 		#endregion
@@ -721,7 +724,7 @@ namespace SymbolTable
         {
             Inf.scope = InScope;
             // if (!InScope.CaseSensitive) Name = Name.ToLower();
-            var hn = InScope.Symbols.Add(Name, InScope.CaseSensitive, Inf);//ЗДЕСЬ ВОЗНИКАЕТ НЕДЕТЕРМЕНИРОВАННАЯ ОШИБКА - SSM 07.10.17 - странный комментарий. Вроде всё нормально.
+            var hn = InScope.Symbols.Add(Name, Inf);//ЗДЕСЬ ВОЗНИКАЕТ НЕДЕТЕРМЕНИРОВАННАЯ ОШИБКА - SSM 07.10.17 - странный комментарий. Вроде всё нормально.
             // SSM 07.10.17 - переделал внутреннее представление HashTable на основе Dictionary
             //if (hn == null)
             //    throw new Exception("Попытка добавить уже добавленное имя " + Name + " в HashTable. Обратитесь к разработчикам");
@@ -745,10 +748,13 @@ namespace SymbolTable
                 scope.TopScope.InternalScopes.Remove(scope);
         }
 
+        // Пока что считаем, что caseaSensitiveSearch совпадает с SymbolTableCaseSensitive  EVA
+        public List<SymbolInfo> FindOnlyInScope(Scope scope, string Name, bool FindInUpperBlocks) => FindOnlyInScope(scope, Name, FindInUpperBlocks, SymbolTableCaseSensitive);
+
         //Этот метод ищет ТОЛЬКО В УКАЗАННОЙ ОВ, и не смотрит есть ли имя выше.
         //Если это ОВ типа UnitImplementationScope то имя ищется также и
         //в верней ОВ, которая типа UnitInterfaceScope
-        public List<SymbolInfo> FindOnlyInScope(Scope scope, string Name, bool FindInUpperBlocks)
+        public List<SymbolInfo> FindOnlyInScope(Scope scope, string Name, bool FindInUpperBlocks, bool caseSensitiveSearch)
         {
             // if (!scope.CaseSensitive) Name = Name.ToLower();
             CurrentScope = null;
@@ -770,13 +776,13 @@ namespace SymbolTable
                     //мы в ImplementationPart?
                     if (CurrentArea is UnitImplementationScope)
                     {
-                        tn = CurrentArea.Symbols.Find(Name, scope.CaseSensitive);
+                        tn = CurrentArea.Symbols.Find(Name, caseSensitiveSearch);
                         if (tn != null) //что-то нашли!
                             AddToSymbolInfo(tn.InfoList, Result);
                         CurrentArea = CurrentArea.TopScope;
                     }
                     //сейча мы в InterfacePart
-                    tn = CurrentArea.Symbols.Find(Name, scope.CaseSensitive);
+                    tn = CurrentArea.Symbols.Find(Name, caseSensitiveSearch);
                     if (tn != null) //что-то нашли!
                         AddToSymbolInfo(tn.InfoList, Result);
 
@@ -785,20 +791,20 @@ namespace SymbolTable
                 }
                 if (CurrentArea is WithScope)//мы очутились в With
                 {
-                    tn = CurrentArea.Symbols.Find(Name, scope.CaseSensitive);
+                    tn = CurrentArea.Symbols.Find(Name, caseSensitiveSearch);
                     if (tn != null) //что-то нашли!
                         AddToSymbolInfo(tn.InfoList, Result);
 
                     if (Result.Count() > 0) //если что-то нашли то заканчиваем
                         return Result;
 
-                    FindAllInAreaList(Name, (CurrentArea as WithScope).WithScopes, true, true, Result, scope.CaseSensitive);
+                    FindAllInAreaList(Name, (CurrentArea as WithScope).WithScopes, true, true, Result, caseSensitiveSearch);
                     if (Result.Count() > 0) //если что-то нашли то заканчиваем
                         return Result;
                 }
                 else
                 {
-                    tn = CurrentArea.Symbols.Find(Name, scope.CaseSensitive);
+                    tn = CurrentArea.Symbols.Find(Name, caseSensitiveSearch);
                     if (tn != null) //что-то нашли!
                     {
                         AddToSymbolInfo(tn.InfoList, Result);
@@ -811,12 +817,12 @@ namespace SymbolTable
 
             return null;
         }
-        private void FindAllInClass(string name, Scope ClassArea, bool OnlyInThisClass, List<SymbolInfo> Result, bool fromCaseSensitive)
+        private void FindAllInClass(string name, Scope ClassArea, bool OnlyInThisClass, List<SymbolInfo> Result, bool caseSensitiveSearch)
         {
             HashTableNode tn;
             Scope ar = ClassArea;
 
-            if ((tn = ar.Symbols.Find(name, fromCaseSensitive)) != null)
+            if ((tn = ar.Symbols.Find(name, caseSensitiveSearch)) != null)
                 AddToSymbolInfo(tn.InfoList, Result);
 
             if (ar is DotNETScope)
@@ -832,7 +838,7 @@ namespace SymbolTable
             { 
                 while (cl.BaseClassScope != null)
                 {
-                    tn = cl.BaseClassScope.Symbols.Find(name, fromCaseSensitive); // SSM 30/06/20 - надо исключать generis-параметры из поиска - их не существует в производном классе!!!
+                    tn = cl.BaseClassScope.Symbols.Find(name, caseSensitiveSearch); // SSM 30/06/20 - надо исключать generis-параметры из поиска - их не существует в производном классе!!!
                     if (tn != null)
                     {
                         if (tn.InfoList[0].sym_info is PascalABCCompiler.TreeRealization.common_type_node cctt && cctt.is_generic_parameter)
@@ -964,11 +970,11 @@ namespace SymbolTable
                     to.AddRange(sil);
         }
 
-        private void FindAllInAreaList(string name, Scope[] arr, bool need, List<SymbolInfo> Result, bool fromCaseSensitive)
+        private void FindAllInAreaList(string name, Scope[] arr, bool need, List<SymbolInfo> Result, bool caseSensitiveSearch)
         {
-            FindAllInAreaList(name, arr, false, need, Result, fromCaseSensitive);
+            FindAllInAreaList(name, arr, false, need, Result, caseSensitiveSearch);
         }
-        public void FindAllInAreaList(string name, Scope[] arr, bool StopIfFind, bool NotOnlyInNetScopes, List<SymbolInfo> Result, bool fromCaseSensitive)
+        public void FindAllInAreaList(string name, Scope[] arr, bool StopIfFind, bool NotOnlyInNetScopes, List<SymbolInfo> Result, bool caseSensitiveSearch)
         {
             if (arr == null) return;
 
@@ -1002,7 +1008,7 @@ namespace SymbolTable
                 else
                 if (NotOnlyInNetScopes && sc != null)
                 {
-                    var tn = sc.Symbols.Find(name, fromCaseSensitive);
+                    var tn = sc.Symbols.Find(name, caseSensitiveSearch);
                     if (tn != null)
                     {
                         AddToSymbolInfo(tn.InfoList, Result);
@@ -1038,7 +1044,12 @@ namespace SymbolTable
         {
             return FindAll(scope, Name, true, true, null);
         }
+
+        // Пока что считаем, что caseaSensitiveSearch совпадает с SymbolTableCaseSensitive  EVA
         private List<SymbolInfo> FindAll(Scope scope, string Name, bool OnlyInType, bool OnlyInThisClass, Scope FromScope)
+            => FindAll(scope, Name, OnlyInType, OnlyInThisClass, FromScope, SymbolTableCaseSensitive);
+
+        private List<SymbolInfo> FindAll(Scope scope, string Name, bool OnlyInType, bool OnlyInThisClass, Scope FromScope, bool caseSensitiveSearch)
         {
             if (OnlyInType && !(scope is ClassScope) && !(scope is SymbolTable.DotNETScope)) return null;
             //if (!CaseSensitive) Name=Name.ToLower();
@@ -1074,7 +1085,7 @@ namespace SymbolTable
                 if (scope != null)
                 {
                     var a = (scope as UnitInterfaceScope).TopScopeArray.Where(x => x is PascalABCCompiler.NetHelper.NetScope).ToArray();
-                    FindAllInAreaList(Name, a, true, Result, scope.CaseSensitive);
+                    FindAllInAreaList(Name, a, true, Result, caseSensitiveSearch);
                 }
 
                 if (Result.Count > 0)
@@ -1097,30 +1108,30 @@ namespace SymbolTable
                         if (CurrentArea is UnitImplementationScope)
                         {
                             used_units = (CurrentArea as UnitImplementationScope).TopScopeArray;
-                            tn = CurrentArea.Symbols.Find(Name, scope.CaseSensitive);
+                            tn = CurrentArea.Symbols.Find(Name, caseSensitiveSearch);
                             if (tn != null) //что-то нашли!
                                 AddToSymbolInfo(tn.InfoList, Result);
                             CurrentArea = CurrentArea.TopScope;
                         }
                         //сейча мы в InterfacePart
-                        tn = CurrentArea.Symbols.Find(Name, scope.CaseSensitive);
+                        tn = CurrentArea.Symbols.Find(Name, caseSensitiveSearch);
                         if (tn != null) //что-то нашли!
                             AddToSymbolInfo(tn.InfoList, Result);
                         //смотрим в модулях
-                        FindAllInAreaList(Name, used_units, true, Result, scope.CaseSensitive);
-                        FindAllInAreaList(Name, (CurrentArea as UnitInterfaceScope).TopScopeArray, true, Result, scope.CaseSensitive);
+                        FindAllInAreaList(Name, used_units, true, Result, caseSensitiveSearch);
+                        FindAllInAreaList(Name, (CurrentArea as UnitInterfaceScope).TopScopeArray, true, Result, caseSensitiveSearch);
 
                         return Result.Count > 0 ? Result : null;
                     }
                     else
                     if (CurrentArea is IInterfaceScope)
                     {
-                        FindAllInClass(Name, CurrentArea, OnlyInThisClass, Result, scope.CaseSensitive);
+                        FindAllInClass(Name, CurrentArea, OnlyInThisClass, Result, caseSensitiveSearch);
 
                         //if (Result.Count > 0) //если что-то нашли то заканчиваем
                         //    return Result;
 
-                        FindAllInAreaList(Name, (CurrentArea as IInterfaceScope).TopInterfaceScopeArray, true, Result, scope.CaseSensitive);
+                        FindAllInAreaList(Name, (CurrentArea as IInterfaceScope).TopInterfaceScopeArray, true, Result, caseSensitiveSearch);
 
                         if (Result.Count > 0 || OnlyInType) //если что-то нашли то заканчиваем
                             return Result.Count > 0 ? Result : null;
@@ -1128,7 +1139,7 @@ namespace SymbolTable
                     else
                     if (CurrentArea is ClassScope)//мы очутились в классе
                     {
-                        FindAllInClass(Name, CurrentArea, OnlyInThisClass, Result, scope.CaseSensitive);//надо сделать поиск по его предкам
+                        FindAllInClass(Name, CurrentArea, OnlyInThisClass, Result, caseSensitiveSearch);//надо сделать поиск по его предкам
 
                         if (Result.Count > 0 || OnlyInType) //если что-то нашли то заканчиваем
                             return Result.Count > 0 ? Result : null;
@@ -1137,7 +1148,7 @@ namespace SymbolTable
                     else
                     if (CurrentArea is WithScope)//мы очутились в With
                     {
-                        tn = CurrentArea.Symbols.Find(Name, scope.CaseSensitive);
+                        tn = CurrentArea.Symbols.Find(Name, caseSensitiveSearch);
                         if (tn != null) //что-то нашли!
                             AddToSymbolInfo(tn.InfoList, Result);
                         if (Result.Count > 0) //если что-то нашли то заканчиваем
@@ -1146,7 +1157,7 @@ namespace SymbolTable
                         if (wscopes != null)
                             foreach (Scope wsc in wscopes)
                             {
-                                FindAllInClass(Name, wsc, OnlyInThisClass, Result, scope.CaseSensitive);//надо сделать поиск по его предкам                    
+                                FindAllInClass(Name, wsc, OnlyInThisClass, Result, caseSensitiveSearch);//надо сделать поиск по его предкам                    
 
                                 if (Result.Count > 0) //если что-то нашли то заканчиваем
                                     return Result;
@@ -1154,7 +1165,7 @@ namespace SymbolTable
                     }
                     else
                     {
-                        tn = CurrentArea.Symbols.Find(Name, scope.CaseSensitive);
+                        tn = CurrentArea.Symbols.Find(Name, caseSensitiveSearch);
                         if (tn != null) //что-то нашли!
                         {
                             AddToSymbolInfo(tn.InfoList, Result);
@@ -1167,7 +1178,7 @@ namespace SymbolTable
                             var currentLambdaDefScope = (CurrentArea as ClassMethodScope).CurrentLambdaDefScope;
                             if (currentLambdaDefScope != null)
                             {
-                                var defScopeRes = FindAll(currentLambdaDefScope, Name, OnlyInType, OnlyInThisClass, currentLambdaDefScope);
+                                var defScopeRes = FindAll(currentLambdaDefScope, Name, OnlyInType, OnlyInThisClass, currentLambdaDefScope, caseSensitiveSearch);
 
                                 if (defScopeRes != null && defScopeRes.Count > 0)
                                 {
@@ -1176,7 +1187,7 @@ namespace SymbolTable
                             }
                             // aab 26.04.19 end
 
-                            FindAllInClass(Name, (CurrentArea as ClassMethodScope).TopScope, OnlyInThisClass, Result, scope.CaseSensitive);//надо сделать поиск по его классу
+                            FindAllInClass(Name, (CurrentArea as ClassMethodScope).TopScope, OnlyInThisClass, Result, caseSensitiveSearch);//надо сделать поиск по его классу
 
 
                             if (Result.Count > 0) //если что-то нашли то заканчиваем
@@ -1200,7 +1211,7 @@ namespace SymbolTable
             Scope NextUnitArea = null;
             //\ssyy
             Scope an;
-            tn = Area.Symbols.Find(Name, scope.CaseSensitive);
+            tn = Area.Symbols.Find(Name, caseSensitiveSearch);
             while (Area != null)
             {
                 an = Area;
@@ -1209,7 +1220,7 @@ namespace SymbolTable
                     if (tn == null)
                         AddToSymbolInfo(Result, (DotNETScope)an, Name);
                     else
-                        FindAllInClass(Name, Area, false, Result, scope.CaseSensitive);
+                        FindAllInClass(Name, Area, false, Result, caseSensitiveSearch);
                 }
                 if (Result.Count > 0)
                     return Result;
@@ -1217,18 +1228,18 @@ namespace SymbolTable
                 {
                     if (an is UnitImplementationScope)
                     {
-                        FindAllInAreaList(Name, (an as UnitImplementationScope).TopScopeArray, true, Result, scope.CaseSensitive);
+                        FindAllInAreaList(Name, (an as UnitImplementationScope).TopScopeArray, true, Result, caseSensitiveSearch);
                         an = an.TopScope;
                     }
 
-                    FindAllInAreaList(Name, (an as UnitInterfaceScope).TopScopeArray, false, Result, scope.CaseSensitive);
+                    FindAllInAreaList(Name, (an as UnitInterfaceScope).TopScopeArray, false, Result, caseSensitiveSearch);
 
                     if (Result.Count > 0)
                         return Result;
                 }
                 if (an is WithScope)//мы очутились в Width
                 {
-                    FindAllInAreaList(Name, (an as WithScope).WithScopes, true, false, Result, scope.CaseSensitive);
+                    FindAllInAreaList(Name, (an as WithScope).WithScopes, true, false, Result, caseSensitiveSearch);
 
                     if (Result.Count > 0) //если что-то нашли то заканчиваем
                         return Result;
@@ -1251,7 +1262,7 @@ namespace SymbolTable
                     //В предках ничего не нашли, ищем по интерфейсам...
                     if (IntScope != null)
                     {
-                        FindAllInAreaList(Name, IntScope.TopInterfaceScopeArray, false, Result, scope.CaseSensitive);
+                        FindAllInAreaList(Name, IntScope.TopInterfaceScopeArray, false, Result, caseSensitiveSearch);
                         if (Result.Count > 0) //если что-то нашли то заканчиваем
                             return Result;
 
@@ -1296,8 +1307,7 @@ namespace SymbolTable
     }
     public class TreeConverterSymbolTable:DSSymbolTable
 	{
-		public TreeConverterSymbolTable(bool case_sensitive):base(SymbolTableConstants.HashTable_StartSize,case_sensitive){}
-		public TreeConverterSymbolTable():base(SymbolTableConstants.HashTable_StartSize,false){}
+		public TreeConverterSymbolTable():base(SymbolTableConstants.HashTable_StartSize){}
 	}
     public class SymbolTableController
     {
