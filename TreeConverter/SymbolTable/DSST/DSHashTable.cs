@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SymbolTable
 {
@@ -16,6 +17,10 @@ namespace SymbolTable
 
         private readonly Dictionary<string, HashTableNode> namesToInfos;
 
+        // Заполняется как регистронезависимый словарь для случая, когда основной словарь регистрозависим
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly Dictionary<string, HashTableNode> namesToInfosHelper;
+
         private readonly bool caseSensitive;
 
         /// <summary>
@@ -26,6 +31,9 @@ namespace SymbolTable
             var stringComparer = caseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
 
             namesToInfos = new Dictionary<string, HashTableNode>(stringComparer);
+
+            if (caseSensitive)
+                namesToInfosHelper = new Dictionary<string, HashTableNode>(StringComparer.OrdinalIgnoreCase);
 
             this.caseSensitive = caseSensitive;
         }
@@ -48,13 +56,26 @@ namespace SymbolTable
         /// </summary>
         public HashTableNode Add(string name, PascalABCCompiler.TreeConverter.SymbolInfo info)
         {
-            bool exists = namesToInfos.TryGetValue(name, out var node);
+            var node = AddToSymbolsDict(namesToInfos, name, info);
+
+            if (caseSensitive)
+                AddToSymbolsDict(namesToInfosHelper, name, info);
+
+            return node;
+        }
+
+        /// <summary>
+        /// Добавить информацию info о символе с именем name в словарь dict
+        /// </summary>
+        private HashTableNode AddToSymbolsDict(Dictionary<string, HashTableNode> dict, string name, PascalABCCompiler.TreeConverter.SymbolInfo info)
+        {
+            bool exists = dict.TryGetValue(name, out var node);
 
             if (!exists)
             {
                 node = new HashTableNode(name);
 
-                namesToInfos[name] = node;
+                dict[name] = node;
             }
 
             node.InfoList.Add(info);
@@ -68,12 +89,34 @@ namespace SymbolTable
         /// </summary>
         public HashTableNode Find(string name, bool caseSensitiveSearch)
         {
-            namesToInfos.TryGetValue(name, out var node);
+            HashTableNode node;
 
-            // Дополнительная проверка для случая, когда нужен регистрозависимый поиск в регистронезависимом словаре
-            if (caseSensitiveSearch && !caseSensitive && node?.Name != name)
-                node = null;
-            
+            // Если ищем регистрозависимо в регистронезависимом
+            if (caseSensitiveSearch && !caseSensitive)
+            {
+                namesToInfos.TryGetValue(name, out node);
+
+                // Если есть точные совпадения, то надо взять только их
+                if (node != null && node.InfoList.Find(info => info.Name == name) != null)
+                {
+                    var nodeToReturn = new HashTableNode(name);
+
+                    nodeToReturn.InfoList.AddRange(node.InfoList.Where(info => info.Name == name));
+
+                    return nodeToReturn;
+                }
+            }
+            // Если ищем регистронезависимо в регистрозависимом, то пользуемся вспомогательным словарем
+            else if (!caseSensitiveSearch && caseSensitive)
+            {
+                namesToInfosHelper.TryGetValue(name, out node);
+            }
+            // В остальных случаях пользуемся основным словарем
+            else
+            {
+                namesToInfos.TryGetValue(name, out node);
+            }
+
             return node;
         }
 

@@ -246,6 +246,7 @@ namespace SymbolTable
         public void AddSymbol(string Name, SymbolInfo Inf)
 		{
 			SymbolTable.Add(this, Name, Inf);
+            Inf.Name = Name;
 		}
 
         /// <summary>

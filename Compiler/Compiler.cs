@@ -3076,28 +3076,41 @@ namespace PascalABCCompiler
                     // Skip(1) для пропуска имени самого скоупа
                     foreach (var symbolInfos in unitScope.GetAllSymbolInfos().Skip(1))
                     {
-                        definition_node symInfo = symbolInfos.InfoList[0].sym_info;
-                        
-                        // Если достаем из pcu, то надо восстановить полную информацию
-                        if (symInfo is wrapped_definition_node wdn)
+                        // Составляем список отличающихся по регистру в имени символов из InfoList
+                        var distinctNames = new List<TreeConverter.SymbolInfo>();
+
+                        foreach (var symInfo in symbolInfos.InfoList)
                         {
-                            // У некоторых дубликатов sym_info offset не задан, ищем тот, где задан
-                            symInfo = symbolInfos.InfoList.Find(si => ((wrapped_definition_node)si.sym_info).offset > 0)?.sym_info;
-
-                            if (symInfo == null)
-                                continue;
-
-                            wdn = (wrapped_definition_node)symInfo;
-
-                            // Если это не синоним типа, то восстанавливаем семантическую информацию
-                            if (!wdn.is_synonim)
-                                symInfo = wdn.PCUReader.CreateInterfaceMember(wdn.offset, symbolInfos.Name);
+                            if (distinctNames.Find(info => info.Name == symInfo.Name) == null)
+                                distinctNames.Add(symInfo);
                         }
 
-                        currentUnit.NamesFromUsedUnits[unitName].Add(symbolInfos.Name,
-                            symInfo.general_node_type == general_node_type.variable_node
-                            || symInfo.general_node_type == general_node_type.constant_definition
-                            || symInfo.general_node_type == general_node_type.event_node);
+                        foreach (var symInfo in distinctNames)
+                        {
+                            var node = symInfo.sym_info;
+
+                            // Если достаем из pcu, то надо восстановить полную информацию
+                            if (node is wrapped_definition_node wdn)
+                            {
+                                // У некоторых дубликатов sym_info offset не задан, ищем тот, где задан
+                                node = symbolInfos.InfoList.Find(si => si.Name == symInfo.Name
+                                                                 && ((wrapped_definition_node)si.sym_info).offset > 0)?.sym_info;
+
+                                if (node == null)
+                                    continue;
+
+                                wdn = (wrapped_definition_node)node;
+
+                                // Если это не синоним типа, то восстанавливаем семантическую информацию
+                                if (!wdn.is_synonim)
+                                    node = wdn.PCUReader.CreateInterfaceMember(wdn.offset, symInfo.Name);
+                            }
+
+                            currentUnit.NamesFromUsedUnits[unitName].Add(symInfo.Name,
+                                node.general_node_type == general_node_type.variable_node
+                                || node.general_node_type == general_node_type.constant_definition
+                                || node.general_node_type == general_node_type.event_node);
+                        }
                     }
                 }
             }

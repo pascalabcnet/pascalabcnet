@@ -122,6 +122,8 @@ namespace PascalABCCompiler.TreeConverter
     {
         public override string ToString() => sym_info.ToString();
 
+        public string Name { get; set; }
+
         //private readonly name_information_type _name_information_type;
         private definition_node _sym_info;
 
@@ -182,6 +184,7 @@ namespace PascalABCCompiler.TreeConverter
         public SymbolInfo copy()
         {
             SymbolInfo si = new SymbolInfo();
+            si.Name = Name;
             si._access_level = this.access_level;
             si._sym_info = this._sym_info;
             si._symbol_kind = this._symbol_kind;
