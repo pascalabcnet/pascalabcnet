@@ -3,7 +3,7 @@
 pi = 3.14159265358979
 
 def sqrt(x: float) -> float:
-    return PABCSystem.sqrt(x)
+    return PABCSystem.Sqrt(x)
 
 def trunc(x: float) -> int:
     return PABCSystem.Trunc(x)
