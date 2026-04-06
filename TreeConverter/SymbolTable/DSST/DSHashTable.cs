@@ -57,20 +57,17 @@ namespace SymbolTable
             // Если ищем регистрозависимо
             if (caseSensitiveSearch)
             {
-                namesToInfos.TryGetValue(name, out var node);
-
-                // Если есть точные совпадения, то надо взять только их
-                if (node?.InfoList.Find(info => info.Name == name) != null)
+                if (namesToInfos.TryGetValue(name, out var node))
                 {
-                    return node.InfoList.Where(info => info.Name == name);
+                    // Если есть точные совпадения, то надо взять только их
+                    return node.InfoList.Where(info => info.Name == name).DefaultIfEmpty();
                 }
             }
             // Если ищем регистронезависимо
             else
             {
-                namesToInfos.TryGetValue(name, out var node);
-
-                return node?.InfoList;
+                if (namesToInfos.TryGetValue(name, out var node))
+                    return node.InfoList;
             }
 
             return null;
