@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using PascalABCCompiler.TreeConverter;
 
 namespace SymbolTable
 {
@@ -33,7 +34,7 @@ namespace SymbolTable
         /// <summary>
         /// Добавить информацию info о символе с именем name
         /// </summary>
-        public HashTableNode Add(string name, PascalABCCompiler.TreeConverter.SymbolInfo info)
+        public void Add(string name, SymbolInfo info)
         {
             bool exists = namesToInfos.TryGetValue(name, out var node);
 
@@ -45,36 +46,34 @@ namespace SymbolTable
             }
 
             node.InfoList.Add(info);
-
-            return node;
         }
 
         /// <summary>
         /// Найти информацию о символе с именем name.
         /// caseSensitiveSearch определяет регистрозависимость поиска
         /// </summary>
-        public HashTableNode Find(string name, bool caseSensitiveSearch)
+        public IEnumerable<SymbolInfo> Find(string name, bool caseSensitiveSearch)
         {
-            HashTableNode node;
-
             // Если ищем регистрозависимо
             if (caseSensitiveSearch)
             {
-                namesToInfos.TryGetValue(name, out node);
+                namesToInfos.TryGetValue(name, out var node);
 
                 // Если есть точные совпадения, то надо взять только их
-                if (node != null && node.InfoList.Find(info => info.Name == name) != null)
+                if (node?.InfoList.Find(info => info.Name == name) != null)
                 {
-                    return new HashTableNode(node.InfoList.Where(info => info.Name == name).ToList());
+                    return node.InfoList.Where(info => info.Name == name);
                 }
             }
             // Если ищем регистронезависимо
             else
             {
-                namesToInfos.TryGetValue(name, out node);
+                namesToInfos.TryGetValue(name, out var node);
+
+                return node?.InfoList;
             }
 
-            return node;
+            return null;
         }
 
         /// <summary>
