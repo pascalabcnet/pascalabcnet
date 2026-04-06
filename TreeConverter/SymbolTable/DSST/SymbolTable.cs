@@ -186,7 +186,7 @@ namespace SymbolTable
 
             CaseSensitive = SemanticRulesConstants.SymbolTableCaseSensitive;
 
-            Symbols = new SymbolsDictionary(CaseSensitive);
+            Symbols = new SymbolsDictionary();
             InternalScopes = new List<Scope>();              
 		}
         public Scope(DSSymbolTable vSymbolTable, Scope TopScope, bool CaseSensitive)
@@ -204,7 +204,7 @@ namespace SymbolTable
 
             this.CaseSensitive = CaseSensitive;
 
-            Symbols = new SymbolsDictionary(CaseSensitive);
+            Symbols = new SymbolsDictionary();
             InternalScopes = new List<Scope>();
         }
 
@@ -478,13 +478,17 @@ namespace SymbolTable
     #region HashTableNode элемент хеш-таблицы
     public class HashTableNode
     {
-        public string Name;
         public List<SymbolInfo> InfoList;
-        public HashTableNode(string name)
+        public HashTableNode()
         {
-            Name = name;
             InfoList = new List<SymbolInfo>(SymbolTableConstants.InfoList_StartSize);
         }
+
+        public HashTableNode(List<SymbolInfo> infoList)
+        {
+            InfoList = infoList;
+        }
+
         public override string ToString()
         {
             System.Text.StringBuilder str = new System.Text.StringBuilder();
