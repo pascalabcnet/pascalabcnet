@@ -251,7 +251,7 @@ namespace SymbolTable
         /// <summary>
         /// Получить информацию обо всех символах скоупа
         /// </summary>
-        public HashTableNode[] GetAllSymbolInfos() => Symbols.GetAllSymbolInfos();
+        public IEnumerable<HashTableNode> GetAllSymbolInfos() => Symbols.GetAllSymbolInfos();
 	}
 
     public class BlockScope : Scope

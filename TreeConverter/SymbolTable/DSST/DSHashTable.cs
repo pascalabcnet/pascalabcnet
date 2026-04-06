@@ -60,7 +60,10 @@ namespace SymbolTable
                 if (namesToInfos.TryGetValue(name, out var node))
                 {
                     // Если есть точные совпадения, то надо взять только их
-                    return node.InfoList.Where(info => info.Name == name).DefaultIfEmpty();
+                    var infos = node.InfoList.Where(info => info.Name == name);
+
+                    if (infos.Any())
+                        return infos;
                 }
             }
             // Если ищем регистронезависимо
@@ -76,6 +79,6 @@ namespace SymbolTable
         /// <summary>
         /// Получить информацию обо всех сохраненных символах
         /// </summary>
-        public HashTableNode[] GetAllSymbolInfos() => namesToInfos.Values.ToArray();
+        public IEnumerable<HashTableNode> GetAllSymbolInfos() => namesToInfos.Values;
     }
 }
