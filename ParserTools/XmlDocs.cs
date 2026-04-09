@@ -17,7 +17,7 @@ namespace CodeCompletionTools
 
         public static string Load(Assembly a, string path)
         {
-            if (!ht.ContainsKey(a)) return null;
+            if (ht.ContainsKey(a)) return null;
             string dir;
             if (string.IsNullOrEmpty(a.Location))
             	dir = path;

@@ -232,6 +232,8 @@ type
     fCheckConvergence: boolean := true;
     fMinImprovement: real := 1e-8;
     
+    fClassLabels: array of string; // В каждой модели классификации
+    
     function GetWeights: Matrix;
     function GetIntercept: Vector;
   public
@@ -282,6 +284,10 @@ type
     property Intercept: Vector read GetIntercept;
     
     function Name: string := Self.GetType.Name;
+    
+    procedure SetClassLabels(classes: array of string);
+    
+    function GetClassLabels: array of string;
   end;
   
   DecisionTreeNode = class
@@ -410,7 +416,8 @@ type
 ///   • maxDepth — максимальная глубина дерева.
 ///   • minSamplesSplit — минимальное число объектов для разбиения узла.
 ///   • minSamplesLeaf — минимальное число объектов в листе
-    constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2; minSamplesLeaf: integer := 1; seed: integer := -1);
+    constructor Create(maxDepth: integer; minSamplesSplit: integer; minSamplesLeaf: integer; 
+      criterion: ISplitCriterion; seed: integer);
   
 /// Возвращает вектор важности признаков.
 /// Важность вычисляется как суммарное уменьшение
@@ -452,6 +459,8 @@ type
     fClassToIndex: Dictionary<integer, integer>;
     fIndexToClass: array of integer;
     fClassCount: integer;
+    
+    fClassLabels: array of string;
 
     function PredictOne(X: Matrix; rowIndex: integer): integer;
     function MajorityClass(y: Vector; indices: array of integer): integer;
@@ -466,7 +475,8 @@ type
 ///   • maxDepth — максимальная глубина дерева (-1 означает без ограничения).
 ///   • minSamplesSplit — минимальное число объектов для разбиения узла.
 ///   • minSamplesLeaf — минимальное число объектов в листе
-    constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2; minSamplesLeaf: integer := 1; seed: integer := -1);
+    constructor Create(maxDepth: integer := 10; minSamplesSplit: integer := 2; minSamplesLeaf: integer := 1; 
+      criterion: ISplitCriterion := nil; seed: integer := -1);
 
 /// Обучает классификационное дерево.
 /// X — матрица признаков.
@@ -496,6 +506,10 @@ type
     function IndexToClass: array of integer := Copy(fIndexToClass);
     
     function Name: string := Self.GetType.Name;
+    
+    procedure SetClassLabels(classes: array of string);
+    
+    function GetClassLabels: array of string;
   end;
   
 //============================  
@@ -707,12 +721,13 @@ type
 /// Строит ансамбль классификационных деревьев, обученных на  
 ///   bootstrap-подвыборках объектов и случайных подмножествах признаков.
 /// Итоговое предсказание формируется голосованием деревьев или агрегацией вероятностей классов
-  RandomForestClassifier = class(RandomForestBase, IClassifier, IProbabilisticClassifier)
+  RandomForestClassifier = class(RandomForestBase, IProbabilisticClassifier)
   private
     fTrees: array of DecisionTreeClassifier;
     fIndexToClass: array of integer;
     fClassToIndex: Dictionary<integer, integer>;
     fClassCount: integer;
+    fClassLabels: array of string;
   public
 /// Создает классификационный случайный лес:
 ///   • nTrees — число деревьев в ансамбле.
@@ -762,6 +777,10 @@ type
     function GetClasses: array of real;
     
     function Name: string := Self.GetType.Name;
+    
+    procedure SetClassLabels(classes: array of string);
+    
+    function GetClassLabels: array of string;
   end;
   
 { Gradient Boosting v1.0 — Freeze Checklist
@@ -886,8 +905,11 @@ type
       seed: integer := -1
       );
 
-/// Обучает модель на всей обучающей выборке.
-/// Если включен early stopping и subsample < 1, может использоваться OOB loss.
+/// Обучает модель градиентного бустинга на обучающей выборке.
+/// Обучение выполняется без early stopping.
+/// Для предотвращения переобучения используйте FitWithValidation.
+/// Early stopping работает только при наличии валидационной выборки
+/// и параметре earlyStoppingPatience > 0.
 /// Возвращает обученную модель.
     function Fit(X: Matrix; y: Vector): ISupervisedModel;
 /// Предсказывает значения целевой переменной.
@@ -897,10 +919,12 @@ type
 /// Копируются все деревья и внутреннее состояние.
     function Clone: IModel;
     
-/// Обучает модель с использованием отдельной validation-выборки.
-/// Early stopping (если включен) происходит по validation loss.
-    function FitWithValidation(XTrain: Matrix; yTrain: Vector;
-      XVal: Matrix; yVal: Vector): IModel;
+/// Обучает модель градиентного бустинга с использованием валидационной выборки.
+/// Поддерживает early stopping:
+/// обучение останавливается, если метрика не улучшается
+/// в течение earlyStoppingPatience итераций.
+/// Возвращает обученную модель.
+    function FitWithValidation(XTrain: Matrix; yTrain: Vector; XVal: Matrix; yVal: Vector): ISupervisedModel;
 
 /// История значения функции потерь на обучающей выборке.
 /// Один элемент на итерацию бустинга.    
@@ -988,13 +1012,15 @@ type
     fRandomSeed: integer;
     fRng: System.Random;
     fUserProvidedSeed: boolean;
+    
+    fClassLabels: array of string;
 
   private
     function FitInternal(XTrain: Matrix; yTrain: Vector; XVal: Matrix; yVal: Vector; useValidation: boolean)
       : ISupervisedModel;
 
     procedure BuildClassMapping(y: Vector);
-    function EncodeLabels(y: Vector): array of integer;
+    function ApplyLabelEncoding(y: Vector): array of integer;
 
     procedure SoftmaxRow(var logits: array of real; var probs: array of real);
     procedure SoftmaxMatrix(logits: Matrix; probs: Matrix);
@@ -1024,14 +1050,19 @@ type
       earlyStoppingPatience: integer := 20;
       seed: integer := -1);
 
-/// Обучает классификатор на всей обучающей выборке.
-/// Если включен early stopping и subsample < 1, то может использоваться OOB loss.
+/// Обучает модель градиентного бустинга на обучающей выборке.
+/// Обучение выполняется без early stopping.
+/// Для предотвращения переобучения используйте FitWithValidation.
+/// Early stopping работает только при наличии валидационной выборки
+/// и параметре earlyStoppingPatience > 0.
 /// Возвращает обученную модель.
     function Fit(X: Matrix; y: Vector): ISupervisedModel;
     
-/// Обучает классификатор с использованием validation-набора.
-/// Если включен early stopping, он основан на validation loss.
-    function FitWithValidation(XTrain: Matrix; yTrain: Vector; XVal: Matrix; yVal: Vector): IModel;
+/// Обучает модель градиентного бустинга с использованием валидационной выборки.
+/// Поддерживает early stopping:
+///   обучение останавливается, если метрика не улучшается в течение earlyStoppingPatience итераций.
+/// Возвращает обученную модель.
+    function FitWithValidation(XTrain: Matrix; yTrain: Vector; XVal: Matrix; yVal: Vector): ISupervisedModel;
 
 /// Предсказывает метки классов.
 /// Возвращает исходные значения классов, а не внутренние индексы.
@@ -1083,6 +1114,10 @@ type
     function Name: string := Self.GetType.Name;
     
     property IsFitted: boolean read fFitted;
+    
+    procedure SetClassLabels(classes: array of string);
+
+    function GetClassLabels: array of string;
   end;
 
 //-----------------------------
@@ -1102,7 +1137,7 @@ type
 /// Базовый абстрактный класс для алгоритма k ближайших соседей (kNN).
 /// Реализует общий механизм поиска k ближайших объектов,
 /// но не определяет способ агрегации (классификация или регрессия)
-  KNNBase = abstract class(IModel)
+  KNNBase = abstract class(IPredictiveModel)
   protected
     // ==== train state ====
     fXTrain: Matrix;
@@ -1155,6 +1190,7 @@ type
     fYEnc: array of integer;
     fClasses: array of double;
     fClassCount: integer;
+    fClassLabels: array of string;
 
     // ==== voting buffers ====
     fVotes: array of double;
@@ -1192,6 +1228,10 @@ type
     function Clone: IModel; override;
     
     function Name: string := Self.GetType.Name;
+    
+    procedure SetClassLabels(classes: array of string);
+
+    function GetClassLabels: array of string;
   end;
   
   
@@ -1227,7 +1267,7 @@ type
   /// Модель кластеризации методом k-средних (KMeans).
   /// Разбивает объекты на k кластеров на основе евклидова расстояния.
   /// Реализует алгоритм без учителя
-  KMeans = class(IClusterer)
+  KMeans = class(IPredictiveClusterer)
   private
     fNClusters: integer;
     fMaxIter: integer;
@@ -1242,6 +1282,10 @@ type
     fInertia: real;
     fIterations: integer;
     fHasConverged: boolean;
+    
+    fRandomSeed: integer;
+    fUserProvidedSeed: boolean;
+    fRng: System.Random;
     
     function RunSingle(X: Matrix; rnd: System.Random): (Matrix, real, integer, boolean);
   public
@@ -1272,7 +1316,7 @@ type
     function PredictLabels(X: Matrix): array of integer;
 
     /// Выполняет обучение и сразу возвращает метки кластеров.
-    function FitPredict(X: Matrix): Vector;
+    function FitPredict(X: Matrix): array of integer;
 
     /// Создаёт глубокую копию модели.
     function Clone: IModel;
@@ -1311,7 +1355,6 @@ type
   private
     fEps: real;
     fMinSamples: integer;
-    fSeed: integer;
   
     fFitted: boolean;
     fFeatureCount: integer;
@@ -1328,16 +1371,12 @@ type
     /// seed — параметр для совместимости API.
     constructor Create(
       eps: real;
-      minSamples: integer := 5;
-      seed: integer := -1
+      minSamples: integer := 5
     );
   
     /// Обучает модель на матрице признаков.
     function Fit(X: Matrix): IUnsupervisedModel;
   
-    /// Возвращает метки кластеров.
-    function Predict(X: Matrix): Vector;
-    
     /// Возвращает метки кластеров.
     function PredictLabels(X: Matrix): array of integer;
 
@@ -1377,13 +1416,13 @@ type
   Pipeline = class(ISupervisedModel)
   private
     fTransformers: List<ITransformer>;
-    fModel: IModel;
+    fModel: ISupervisedModel;
     fFitted: boolean;
   public
     /// Создаёт конвейер машинного обучения для заданной модели:
     ///   • model — модель, которая будет обучена
     ///     после последовательного применения всех преобразователей.
-    constructor Create(model: IModel);
+    constructor Create(model: ISupervisedModel);
     
     /// Создаёт пустой пайплайн (конвейер машинного обучения).
     /// Модель должна быть установлена через SetModel.
@@ -1454,7 +1493,7 @@ type
     static function Build(params steps: array of IPipelineStep): Pipeline;
     
     /// Устанавливает или заменяет модель.
-    function SetModel(m: IModel): Pipeline;
+    function SetModel(m: ISupervisedModel): Pipeline;
   
     /// Добавляет преобразование в конец пайплайна
     function Add(t: ITransformer): Pipeline;
@@ -1473,8 +1512,6 @@ type
     /// для вероятностной модели в конце пайплайна.
     function PredictProba(X: Matrix): Matrix;
     
-    function GetClasses: array of real;
-  
     /// Показывает, был ли пайплайн обучен (вызван метод Fit).
     property IsFitted: boolean read fFitted;
     
@@ -1774,11 +1811,7 @@ type
 
 
 {$region Utility functions}
-/// Преобразует вектор меток классов в массив целых.
-/// Предполагается, что значения y являются целыми
-/// (0,1,2,...) и могут содержать небольшие
-/// численные ошибки, поэтому используется Round.
-function LabelsToInts(y: Vector): array of integer;
+
 
 {$endregion Utility functions}
 
@@ -1979,6 +2012,20 @@ const
     'DBSCAN: Predict поддерживается только для обучающей выборки!!DBSCAN: Predict is only supported for training data';  
   ER_MODEL_NOT_FITTED =
     'Модель "{0}" не обучена. Сначала вызовите Fit()|Model "{0}" is not fitted. Call Fit() first';
+  ER_DBSCAN_PREDICT_NEW_DATA =
+    'DBSCAN не поддерживает предсказание для новых данных!!DBSCAN does not support prediction for new data';
+  ER_CLASSES_NOT_AVAILABLE =
+    'Метки классов недоступны. Убедитесь, что модель обучена и метки установлены!!Class labels are not available. Ensure the model is fitted and class labels are set';  
+  ER_PIPELINE_LAST_NOT_SUPERVISED_MODEL = 
+    'Последний шаг Pipeline должен быть supervised-моделью!!' +
+    'Last Pipeline step must be a supervised model';
+  ER_INTERNAL_INVALID_MODEL_CLONE =
+    'Внутренняя ошибка: Clone модели вернул несовместимый тип!!' +
+    'Internal error: model Clone returned incompatible type';
+  ER_PREDICT_NOT_SUPPORTED =
+    'Модель не поддерживает Predict для данного типа алгоритма!!' +
+    'Model does not support Predict for this type of algorithm';  
+    
   
 {$endregion ErrConstants}  
 
@@ -2799,6 +2846,19 @@ begin
   Result := fIntercept;
 end;
 
+procedure LogisticRegression.SetClassLabels(classes: array of string);
+begin
+  fClassLabels := Copy(classes);
+end;
+
+function LogisticRegression.GetClassLabels: array of string;
+begin
+  if fClassLabels = nil then
+    ArgumentError(ER_CLASSES_NOT_AVAILABLE);
+
+  Result := fClassLabels;
+end;
+
 function GiniCriterion.Impurity(y: Vector; indices: array of integer): real;
 begin
   var n := indices.Length;
@@ -2941,6 +3001,7 @@ constructor DecisionTreeBase.Create(
   maxDepth: integer;
   minSamplesSplit: integer;
   minSamplesLeaf: integer;
+  criterion: ISplitCriterion;
   seed: integer);
 begin
   if maxDepth < -1 then
@@ -2966,6 +3027,7 @@ begin
   fMaxDepth := maxDepth;
   fMinSamplesSplit := minSamplesSplit;
   fMinSamplesLeaf := minSamplesLeaf;
+  fCriterion := criterion;
 
   if seed < 0 then
   begin
@@ -2991,16 +3053,24 @@ begin
   dest.fMaxFeatures := fMaxFeatures;
   
   dest.fUserProvidedSeed := fUserProvidedSeed;
-  dest.fRng := new System.Random(fRandomSeed);
 
+  if fUserProvidedSeed then
+    dest.fRng := new System.Random(fRandomSeed)
+  else
+    dest.fRng := new System.Random;
+
+  // MUST be stateless
   if fCriterion <> nil then
-    dest.fCriterion := fCriterion; // можно так, если критерий stateless
+    dest.fCriterion := fCriterion;
 
   if fFeatureImportances <> nil then
     dest.fFeatureImportances := fFeatureImportances.Clone;
 
   if fRoot <> nil then
     dest.fRoot := fRoot.Clone;
+
+  if fRowIndices <> nil then
+    dest.fRowIndices := Copy(fRowIndices);
 end;
 
 function DecisionTreeBase.GetFeatureSubset(nFeatures: integer): array of integer;
@@ -3428,9 +3498,12 @@ begin
   Result := bestClass;
 end;
 
-constructor DecisionTreeClassifier.Create(maxDepth: integer; minSamplesSplit: integer; minSamplesLeaf: integer; seed: integer);
+constructor DecisionTreeClassifier.Create(maxDepth: integer; minSamplesSplit: integer; minSamplesLeaf: integer; 
+  criterion: ISplitCriterion; seed: integer);
 begin
-  inherited Create(maxDepth, minSamplesSplit, minSamplesLeaf, seed);
+  inherited Create(maxDepth, minSamplesSplit, minSamplesLeaf, 
+    (if criterion = nil then new GiniCriterion else criterion), 
+    seed);
 end;
 
 function DecisionTreeClassifier.Fit(X: Matrix; y: Vector): ISupervisedModel;
@@ -3453,18 +3526,6 @@ begin
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
-  if fMinSamplesSplit < 2 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
-
-  if fMinSamplesLeaf < 1 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
-
-  if fMaxDepth < -1 then
-    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
-
-  if fMaxDepth > 10000 then
-    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
-  
   
   fFeatureImportances := new Vector(X.ColCount);
 
@@ -3571,13 +3632,11 @@ begin
     fMaxDepth,
     fMinSamplesSplit,
     fMinSamplesLeaf,
+    fCriterion,
     fRandomSeed
   );
 
-  // --- базовое состояние (глубокое копирование дерева!)
   CopyBaseState(m);
-
-  m.fMaxFeatures := fMaxFeatures;
 
   // --- классы
   m.fClassCount := fClassCount;
@@ -3614,17 +3673,40 @@ begin
     ')';
 end;
 
+procedure DecisionTreeClassifier.SetClassLabels(classes: array of string);
+begin
+  fClassLabels := Copy(classes);
+end;
+
+function DecisionTreeClassifier.GetClassLabels: array of string;
+begin
+  if fClassLabels = nil then
+    ArgumentError(ER_CLASSES_NOT_AVAILABLE);
+
+  Result := fClassLabels;
+end;
+
 // DecisionTreeRegressor
 
-constructor DecisionTreeRegressor.Create(maxDepth: integer; minSamplesSplit: integer; 
-  minSamplesLeaf: integer; leafL2: real; seed: integer);
+constructor DecisionTreeRegressor.Create(
+  maxDepth: integer; 
+  minSamplesSplit: integer; 
+  minSamplesLeaf: integer; 
+  leafL2: real; 
+  seed: integer
+);
 begin
-  inherited Create(maxDepth, minSamplesSplit, minSamplesLeaf, seed);
-  
+  inherited Create(
+    maxDepth,
+    minSamplesSplit,
+    minSamplesLeaf,
+    new VarianceCriterion,
+    seed
+  );
+
   if leafL2 < 0 then
     ArgumentOutOfRangeError(ER_LEAFL2_INVALID, leafL2);
-  
-  fCriterion := new VarianceCriterion;
+
   fLeafL2 := leafL2;
 end;
 
@@ -3692,21 +3774,9 @@ begin
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
-  if fMinSamplesSplit < 2 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
-
-  if fMinSamplesLeaf < 1 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
-
   if fLeafL2 < 0 then
     ArgumentOutOfRangeError(ER_L2_NEGATIVE, fLeafL2);
 
-  if fMaxDepth < -1 then
-    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
-
-  if fMaxDepth > 10000 then
-    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
-  
   fFeatureImportances := new Vector(X.ColCount);
 
   var indices: array of integer;
@@ -3785,8 +3855,6 @@ begin
 
   CopyBaseState(m);
   
-  m.fLeafL2 := fLeafL2;  
-
   Result := m;
 end;
 
@@ -3879,6 +3947,8 @@ begin
     Log2Features: Result := integer(Log2(p));
     HalfFeatures: Result := p div 2;
   end;
+  if Result < 1 then
+    Result := 1;
 end;
 
 procedure RandomForestBase.BootstrapRowIndices(n: integer; var rows: array of integer);
@@ -3917,24 +3987,6 @@ begin
 
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
-
-  if fNTrees <= 0 then
-    ArgumentOutOfRangeError(ER_NTREES_INVALID, fNTrees);
-
-  if fMinSamplesSplit < 2 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
-
-  if fMinSamplesLeaf < 1 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
-
-  if fMinSamplesLeaf >= fMinSamplesSplit then
-    ArgumentError(ER_MIN_LEAF_GE_SPLIT, fMinSamplesLeaf, fMinSamplesSplit);
-
-  if fMaxDepth < -1 then
-    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
-
-  if fMaxDepth > MAX_ALLOWED_TREE_DEPTH then
-    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
 
   var n := X.RowCount;
   var p := X.ColCount;
@@ -4075,7 +4127,15 @@ begin
     fRandomSeed
   );
 
+  // --- seed ---
+  rf.fRandomSeed := fRandomSeed;
   rf.fUserProvidedSeed := fUserProvidedSeed;
+
+  if fUserProvidedSeed then
+    rf.fRng := new System.Random(fRandomSeed)
+  else
+    rf.fRng := new System.Random;
+
   rf.fFitted := fFitted;
   rf.fFeatureCount := fFeatureCount;
 
@@ -4163,24 +4223,6 @@ begin
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
-  if fNTrees <= 0 then
-    ArgumentOutOfRangeError(ER_NTREES_INVALID, fNTrees);
-
-  if fMinSamplesSplit < 2 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
-
-  if fMinSamplesLeaf < 1 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
-
-  if fMinSamplesLeaf >= fMinSamplesSplit then
-    ArgumentError(ER_MIN_LEAF_GE_SPLIT, fMinSamplesLeaf, fMinSamplesSplit);
-
-  if fMaxDepth < -1 then
-    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
-
-  if fMaxDepth > MAX_ALLOWED_TREE_DEPTH then
-    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
-
   var n := X.RowCount;
   var p := X.ColCount;
 
@@ -4206,6 +4248,7 @@ begin
       fMaxDepth,
       fMinSamplesSplit,
       fMinSamplesLeaf,
+      nil,
       treeSeed
     );
 
@@ -4433,9 +4476,16 @@ begin
     fRandomSeed
   );
 
+  // --- seed ---
+  rf.fRandomSeed := fRandomSeed;
   rf.fUserProvidedSeed := fUserProvidedSeed;
-  rf.fFitted := fFitted;
 
+  if fUserProvidedSeed then
+    rf.fRng := new System.Random(fRandomSeed)
+  else
+    rf.fRng := new System.Random;
+
+  rf.fFitted := fFitted;
   rf.fFeatureCount := fFeatureCount;
 
   // --- classes ---
@@ -4461,7 +4511,7 @@ begin
     SetLength(rf.fTrees, fTrees.Length);
     for var i := 0 to fTrees.Length - 1 do
       rf.fTrees[i] := DecisionTreeClassifier(fTrees[i].Clone);
-  end;  
+  end;
 
   Result := rf;
 end;
@@ -4513,6 +4563,64 @@ begin
     Result[i] := fIndexToClass[i];
 end;
 
+procedure RandomForestClassifier.SetClassLabels(classes: array of string);
+begin
+  fClassLabels := Copy(classes);
+end;
+
+function RandomForestClassifier.GetClassLabels: array of string;
+begin
+  if fClassLabels = nil then
+    ArgumentError(ER_CLASSES_NOT_AVAILABLE);
+
+  Result := fClassLabels;
+end;
+
+//-----------------------------
+//      Helper GBC GBR
+//-----------------------------
+
+function BuildSubsampleIndices(nTrain: integer; subsample: real; rng: System.Random): array of integer;
+begin
+  if nTrain <= 0 then
+    ArgumentOutOfRangeError(ER_EMPTY_DATASET);
+
+  if (subsample <= 0.0) or (subsample > 1.0) then
+    ArgumentOutOfRangeError(ER_SUBSAMPLE_INVALID, subsample);
+
+  var k := Floor(nTrain * subsample);
+  if k < 1 then
+    k := 1;
+  if k > nTrain then
+    k := nTrain;
+
+  // если берём всё — можно быстро вернуть [0..nTrain-1]
+  if k = nTrain then
+  begin
+    Result := new integer[nTrain];
+    for var i := 0 to nTrain - 1 do
+      Result[i] := i;
+    exit;
+  end;
+
+  var all := new integer[nTrain];
+  for var i := 0 to nTrain - 1 do
+    all[i] := i;
+
+  // partial Fisher–Yates (без повторений)
+  for var i := 0 to k - 1 do
+  begin
+    var j := i + rng.Next(nTrain - i);
+    var tmp := all[i];
+    all[i] := all[j];
+    all[j] := tmp;
+  end;
+
+  Result := new integer[k];
+  for var i := 0 to k - 1 do
+    Result[i] := all[i];
+end;
+
 //-----------------------------
 //  GradientBoostingRegressor 
 //-----------------------------
@@ -4548,6 +4656,9 @@ begin
   
   if minSamplesLeaf < 1 then
     ArgumentOutOfRangeError(ER_MIN_SAMPLES_LEAF_INVALID, minSamplesLeaf);
+  
+  if maxDepth > MAX_ALLOWED_TREE_DEPTH then
+    ArgumentOutOfRangeError(ER_MAX_DEPTH_TOO_LARGE, maxDepth);
 
   fNEstimators := nEstimators;
   fLearningRate := learningRate;
@@ -4772,7 +4883,7 @@ end;
 
 function GradientBoostingRegressor.FitWithValidation(
   XTrain: Matrix; yTrain: Vector;
-  XVal: Matrix; yVal: Vector): IModel;
+  XVal: Matrix; yVal: Vector): ISupervisedModel;
 begin
   Result := FitInternal(XTrain, yTrain, XVal, yVal, true);
 end;
@@ -4823,28 +4934,6 @@ begin
     if XVal.ColCount <> XTrain.ColCount then
       DimensionError(ER_FEATURE_COUNT_MISMATCH);
   end;
-
-  // --- hyperparameter checks ---
-  if fNEstimators <= 0 then
-    ArgumentOutOfRangeError(ER_NESTIMATORS_INVALID, fNEstimators);
-
-  if fLearningRate <= 0 then
-    ArgumentOutOfRangeError(ER_LEARNING_RATE_INVALID, fLearningRate);
-
-  if (fSubsample <= 0.0) or (fSubsample > 1.0) then
-    ArgumentOutOfRangeError(ER_SUBSAMPLE_INVALID, fSubsample);
-
-  if fMinSamplesSplit < 2 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
-
-  if fMinSamplesLeaf < 1 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
-
-  if fMaxDepth < 0 then
-    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
-
-  if fMaxDepth > MAX_ALLOWED_TREE_DEPTH then
-    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
 
   // --- init state ---
   fOOBLossHistory.Clear;
@@ -4913,40 +5002,20 @@ begin
     // --- subsample ---
     var rows: array of integer := nil;
     var used: array of boolean := nil;
-
+    
     if useSubsample then
     begin
-      var k := Floor(nTrain * fSubsample);
-      if k < 1 then k := 1;
-      if k > nTrain then k := nTrain;
-
-      var all := new integer[nTrain];
-      for var i := 0 to nTrain - 1 do
-        all[i] := i;
-
-      // partial Fisher–Yates
-      for var i := 0 to k - 1 do
-      begin
-        var j := i + fRng.Next(nTrain - i);
-        var tmp := all[i];
-        all[i] := all[j];
-        all[j] := tmp;
-      end;
-
-      rows := new integer[k];
-      for var i := 0 to k - 1 do
-        rows[i] := all[i];
-
+      rows := BuildSubsampleIndices(nTrain, fSubsample, fRng);
       tree.SetRowIndices(rows);
-
+    
       if useOOB then
       begin
         used := new boolean[nTrain];
-        for var i := 0 to k - 1 do
+        for var i := 0 to rows.Length - 1 do
           used[rows[i]] := true;
       end;
     end;
-
+    
     tree.Fit(XTrain, r);
     fEstimators.Add(tree);
 
@@ -5276,31 +5345,35 @@ begin
     fMinSamplesSplit,
     fMinSamplesLeaf,
     fSubsample,
-    seed := fRandomSeed
+    fLoss,
+    fHuberDelta,
+    fEarlyStoppingPatience,
+    fQuantileAlpha,
+    fLeafL2,
+    fUseOOBEarlyStopping,
+    fRandomSeed
   );
 
-  // --- seed policy ---
+  // --- seed ---
+  copy.fRandomSeed := fRandomSeed;
   copy.fUserProvidedSeed := fUserProvidedSeed;
+
+  if fUserProvidedSeed then
+    copy.fRng := new System.Random(fRandomSeed)
+  else
+    copy.fRng := new System.Random;
 
   // --- basic state ---
   copy.fInitValue := fInitValue;
   copy.fFeatureCount := fFeatureCount;
   copy.fFitted := fFitted;
 
-  // --- best iteration state ---
+  // --- best iteration ---
   copy.fBestIteration := fBestIteration;
   copy.fBestTrainLoss := fBestTrainLoss;
   copy.fBestScoreLoss := fBestScoreLoss;
 
-  // --- loss configuration ---
-  copy.fLoss := fLoss;
-  copy.fHuberDelta := fHuberDelta;
-  copy.fQuantileAlpha := fQuantileAlpha;
-  copy.fLeafL2 := fLeafL2;
-  copy.fEarlyStoppingPatience := fEarlyStoppingPatience;
-  copy.fUseOOBEarlyStopping := fUseOOBEarlyStopping;
-
-  // --- deep copy histories ---
+  // --- histories ---
   copy.fTrainLossHistory.Clear;
   copy.fTrainLossHistory.AddRange(fTrainLossHistory);
 
@@ -5310,13 +5383,14 @@ begin
   copy.fOOBLossHistory.Clear;
   copy.fOOBLossHistory.AddRange(fOOBLossHistory);
 
-  // --- deep copy trees ---
+  // --- estimators ---
   copy.fEstimators.Clear;
   foreach var tree in fEstimators do
     copy.fEstimators.Add(tree.Clone as DecisionTreeRegressor);
 
   Result := copy;
 end;
+
 
 //-----------------------------
 // GradientBoostingClassifier 
@@ -5369,28 +5443,6 @@ begin
       DimensionError(ER_FEATURE_COUNT_MISMATCH);
   end;
 
-  // --- hyperparameter checks ---
-  if fNEstimators <= 0 then
-    ArgumentOutOfRangeError(ER_NESTIMATORS_INVALID, fNEstimators);
-
-  if fLearningRate <= 0 then
-    ArgumentOutOfRangeError(ER_LEARNING_RATE_INVALID, fLearningRate);
-
-  if (fSubsample <= 0.0) or (fSubsample > 1.0) then
-    ArgumentOutOfRangeError(ER_SUBSAMPLE_INVALID, fSubsample);
-
-  if fMinSamplesSplit < 2 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESSPLIT_INVALID, fMinSamplesSplit);
-
-  if fMinSamplesLeaf < 1 then
-    ArgumentOutOfRangeError(ER_MINSAMPLESLEAF_INVALID, fMinSamplesLeaf);
-
-  if fMaxDepth < 0 then
-    ArgumentOutOfRangeError(ER_MAX_DEPTH_INVALID, fMaxDepth);
-
-  if fMaxDepth > MAX_ALLOWED_TREE_DEPTH then
-    ArgumentError(ER_MAX_DEPTH_TOO_LARGE, fMaxDepth);
-
   // --- reset state
   fOOBLossHistory.Clear;
   fEstimators.Clear;
@@ -5404,7 +5456,7 @@ begin
 
   // --- mapping
   BuildClassMapping(yTrain);
-  var yEncoded := EncodeLabels(yTrain);
+  var yEncoded := ApplyLabelEncoding(yTrain);
 
   var nTrain := XTrain.RowCount;
   var classCount := fClassCount;
@@ -5459,7 +5511,7 @@ begin
   if useValidation then
   begin
     logitsVal := new Matrix(XVal.RowCount, classCount);
-    yValEncoded := EncodeLabels(yVal);
+    yValEncoded := ApplyLabelEncoding(yVal);
   
     // --- инициализация log-prior
     for var i := 0 to XVal.RowCount - 1 do
@@ -5496,6 +5548,11 @@ begin
     
     // inBag
     var inBag: array of boolean := nil;
+    
+    if useSubsample then
+    begin
+      subIndices := BuildSubsampleIndices(nTrain, fSubsample, fRng);
+    end;
     
     if useOOB then
     begin
@@ -5660,7 +5717,7 @@ begin
     fClassIndex[fClasses[cls]] := cls;
 end;
 
-function GradientBoostingClassifier.EncodeLabels(y: Vector): array of integer;
+function GradientBoostingClassifier.ApplyLabelEncoding(y: Vector): array of integer;
 begin
   var n := y.Length;
   Result := new integer[n];
@@ -6165,8 +6222,14 @@ begin
     fRandomSeed
   );
 
-  // --- seed policy ---
+  // --- seed ---
+  model.fRandomSeed := fRandomSeed;
   model.fUserProvidedSeed := fUserProvidedSeed;
+
+  if fUserProvidedSeed then
+    model.fRng := new System.Random(fRandomSeed)
+  else
+    model.fRng := new System.Random;
 
   // --- fitted state ---
   model.fFitted := fFitted;
@@ -6188,26 +6251,19 @@ begin
       model.fClassIndex.Add(kv.Key, kv.Value);
   end;
 
-  // --- estimators (deep copy) ---
+  // --- estimators ---
   foreach var trees in fEstimators do
   begin
     var newTrees := new DecisionTreeRegressor[Length(trees)];
-
     for var cls := 0 to Length(trees) - 1 do
       newTrees[cls] := trees[cls].Clone as DecisionTreeRegressor;
-
     model.fEstimators.Add(newTrees);
   end;
 
   // --- histories ---
-  foreach var v in fTrainLossHistory do
-    model.fTrainLossHistory.Add(v);
-
-  foreach var v in fValLossHistory do
-    model.fValLossHistory.Add(v);
-
-  foreach var v in fOOBLossHistory do
-    model.fOOBLossHistory.Add(v);
+  foreach var v in fTrainLossHistory do model.fTrainLossHistory.Add(v);
+  foreach var v in fValLossHistory do model.fValLossHistory.Add(v);
+  foreach var v in fOOBLossHistory do model.fOOBLossHistory.Add(v);
 
   model.fBestIteration := fBestIteration;
   model.fBestScoreLoss := fBestScoreLoss;
@@ -6222,7 +6278,7 @@ end;
 
 function GradientBoostingClassifier.FitWithValidation(
   XTrain: Matrix; yTrain: Vector;
-  XVal: Matrix; yVal: Vector): IModel;
+  XVal: Matrix; yVal: Vector): ISupervisedModel;
 begin
   Result := FitInternal(XTrain, yTrain, XVal, yVal, true);
 end;
@@ -6264,6 +6320,19 @@ begin
   
   for var i := 0 to v.Length - 1 do
     Result[i] := integer(v[i]);
+end;
+
+procedure GradientBoostingClassifier.SetClassLabels(classes: array of string);
+begin
+  fClassLabels := Copy(classes);
+end;
+
+function GradientBoostingClassifier.GetClassLabels: array of string;
+begin
+  if fClassLabels = nil then
+    ArgumentError(ER_CLASSES_NOT_AVAILABLE);
+
+  Result := fClassLabels;
 end;
 
 //-----------------------------
@@ -6720,6 +6789,20 @@ begin
   end;
 end;
 
+procedure KNNClassifier.SetClassLabels(classes: array of string);
+begin
+  fClassLabels := Copy(classes);
+end;
+
+function KNNClassifier.GetClassLabels: array of string;
+begin
+  if fClassLabels = nil then
+    ArgumentError(ER_CLASSES_NOT_AVAILABLE);
+
+  Result := fClassLabels;
+end;    
+
+
 //-----------------------------
 //        KNNRegressor 
 //-----------------------------
@@ -6902,8 +6985,17 @@ begin
   fMaxIter := maxIter;
   fTol := tol;
   fNInit := nInit;
-  fSeed := seed;
 
+  // --- seed (единый стиль)
+  fRandomSeed := seed;
+  fUserProvidedSeed := seed >= 0;
+
+  if fUserProvidedSeed then
+    fRng := new System.Random(seed)
+  else
+    fRng := new System.Random;
+
+  // --- state
   fFitted := False;
   fFeatureCount := 0;
 
@@ -7041,11 +7133,8 @@ begin
 
   fFeatureCount := p;
 
-  var actualSeed :=
-    if fSeed >= 0 then fSeed
-    else System.Environment.TickCount and integer.MaxValue;
-
-  var rndBase := new System.Random(actualSeed);
+  // --- базовый RNG (уже создан в конструкторе)
+  var rndBase := fRng;
 
   var bestInertia := 1e308;
   var bestCenters: Matrix := nil;
@@ -7054,7 +7143,8 @@ begin
 
   for var run := 1 to fNInit do
   begin
-    var runSeed := rndBase.Next;
+    // --- независимый RNG для каждого запуска
+    var runSeed := rndBase.Next(integer.MaxValue);
     var rnd := new System.Random(runSeed);
 
     var (centers, inertia, iters, converged) := RunSingle(X, rnd);
@@ -7073,7 +7163,7 @@ begin
   fIterations := bestIterations;
   fHasConverged := bestConverged;
   fFitted := True;
-  
+
   Result := Self;
 end;
 
@@ -7139,10 +7229,10 @@ begin
     Result[i] := labels[i];
 end;
 
-function KMeans.FitPredict(X: Matrix): Vector;
+function KMeans.FitPredict(X: Matrix): array of integer;
 begin
   Fit(X);
-  Result := Predict(X);
+  Result := PredictLabels(X);
 end;
 
 function KMeans.Clone: IModel;
@@ -7152,25 +7242,28 @@ begin
     fMaxIter,
     fTol,
     fNInit,
-    fSeed
+    fRandomSeed
   );
 
+  // --- seed ---
+  km.fRandomSeed := fRandomSeed;
+  km.fUserProvidedSeed := fUserProvidedSeed;
+
+  if fUserProvidedSeed then
+    km.fRng := new System.Random(fRandomSeed)
+  else
+    km.fRng := new System.Random;
+
+  // --- state ---
   km.fFitted := fFitted;
   km.fFeatureCount := fFeatureCount;
   km.fInertia := fInertia;
   km.fIterations := fIterations;
   km.fHasConverged := fHasConverged;
 
+  // --- centers ---
   if fCenters <> nil then
-  begin
-    var k := fCenters.RowCount;
-    var p := fCenters.ColCount;
-    km.fCenters := new Matrix(k, p);
-
-    for var i := 0 to k - 1 do
-      for var j := 0 to p - 1 do
-        km.fCenters[i,j] := fCenters[i,j];
-  end;
+    km.fCenters := fCenters.Clone;
 
   Result := km;
 end;
@@ -7189,8 +7282,7 @@ end;
 
 constructor DBSCAN.Create(
   eps: real;
-  minSamples: integer;
-  seed: integer
+  minSamples: integer
 );
 begin
   if eps <= 0 then
@@ -7201,7 +7293,6 @@ begin
 
   fEps := eps;
   fMinSamples := minSamples;
-  fSeed := seed;
 
   fFitted := False;
 end;
@@ -7305,29 +7396,16 @@ begin
   Result := Self;
 end;
 
-function DBSCAN.Predict(X: Matrix): Vector;
+function DBSCAN.PredictLabels(X: Matrix): array of integer;
 begin
-  if not fFitted then
-    NotFittedError(ER_FIT_NOT_CALLED);
-
   if X = nil then
     ArgumentNullError(ER_ARG_NULL, 'X');
 
-  // честная защита: Predict работает только для той же выборки
-  if X.RowCount <> Length(fLabels) then
-    ArgumentError(ER_DBSCAN_PREDICT_ONLY_TRAIN_DATA);
-
-  var n := Length(fLabels);
-  Result := new Vector(n);
-
-  for var i := 0 to n - 1 do
-    Result[i] := fLabels[i];
-end;
-
-function DBSCAN.PredictLabels(X: Matrix): array of integer;
-begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
+
+  if X.RowCount <> Length(fLabels) then
+    ArgumentError(ER_DBSCAN_PREDICT_NEW_DATA);
 
   Result := Copy(fLabels);
 end;
@@ -7340,7 +7418,7 @@ end;
 
 function DBSCAN.Clone: IModel;
 begin
-  var m := new DBSCAN(fEps, fMinSamples, fSeed);
+  var m := new DBSCAN(fEps, fMinSamples);
 
   m.fFitted := fFitted;
   m.fFeatureCount := fFeatureCount;
@@ -7371,7 +7449,7 @@ begin
   fFitted := false;
 end;
 
-constructor Pipeline.Create(model: IModel);
+constructor Pipeline.Create(model: ISupervisedModel);
 begin
   Create;
   if model = nil then
@@ -7390,10 +7468,10 @@ begin
   if last = nil then
     ArgumentError(ER_PIPELINE_STEP_NULL, High(steps));
 
-  if not (last is IModel) then
-    ArgumentError(ER_PIPELINE_LAST_NOT_MODEL);
+  if not (last is ISupervisedModel) then
+    ArgumentError(ER_PIPELINE_LAST_NOT_SUPERVISED_MODEL);
 
-  var pipe := new Pipeline(last as IModel);
+  var pipe := new Pipeline(last as ISupervisedModel);
 
   // все шаги кроме последнего — трансформеры
   for var i := 0 to High(steps) - 1 do
@@ -7421,7 +7499,7 @@ begin
   Result := Self;
 end;
 
-function Pipeline.SetModel(m: IModel): Pipeline;
+function Pipeline.SetModel(m: ISupervisedModel): Pipeline;
 begin
   if m = nil then
     ArgumentError(ER_MODEL_NULL);
@@ -7531,14 +7609,6 @@ begin
               .PredictProba(Xt);
 end;
 
-function Pipeline.GetClasses: array of real;
-begin
-  if not (fModel is IProbabilisticClassifier) then
-    ArgumentError(ER_PROBA_NOT_SUPPORTED);
-
-  Result := (fModel as IProbabilisticClassifier).GetClasses;
-end;
-
 function Pipeline.ToString: string;
 begin
   var sb := 'Pipeline (' +
@@ -7568,7 +7638,12 @@ begin
   foreach var t in fTransformers do
     p.Add(t.Clone);
 
-  p.SetModel(fModel.Clone);
+  var m := fModel.Clone;
+
+  if not (m is ISupervisedModel) then
+    Error(ER_INTERNAL_INVALID_MODEL_CLONE);
+  
+  p.SetModel(m as ISupervisedModel);
   
   p.fFitted := fFitted;
 
@@ -7716,7 +7791,10 @@ begin
 
   var Xt := Transform(X);
 
-  Result := (fModel as IUnsupervisedModel).Predict(Xt);
+  if not (fModel is IPredictiveModel) then
+    Error(ER_PREDICT_NOT_SUPPORTED);
+  
+  Result := (fModel as IPredictiveModel).Predict(Xt);
 end;
 
 function UPipeline.ToString: string;
@@ -8503,11 +8581,6 @@ begin
   t.fFitted := fFitted;
   t.fFeatureCount := fFeatureCount;
   Result := t;
-end;
-
-function LabelsToInts(y: Vector): array of integer;
-begin
-  Result := ArrGen(y.Length, i -> Round(y[i]));
 end;
 
     

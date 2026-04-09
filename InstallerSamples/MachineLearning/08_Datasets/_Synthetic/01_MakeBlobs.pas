@@ -11,7 +11,7 @@ begin
     seed := 1
   );
 
-  Plot.Title('MakeBlobs синтетический датасет');
+  Plot.Title := 'MakeBlobs синтетический датасет';
     
   var xs := X.Col(0);
   var ys := X.Col(1);

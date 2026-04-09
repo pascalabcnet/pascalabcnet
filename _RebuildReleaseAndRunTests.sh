@@ -18,7 +18,9 @@ mono --aot bin/PascalABCLanguageInfo.dll
 
 cd ReleaseGenerators
 mono ../bin/pabcnetc.exe RebuildStandartModulesMono.pas  /rebuild
-# /rebuild здесь пока нельзя
+
+# Удаляем pcu для SPython модулей, чтобы не применять /rebuild
+rm -f ../bin/Lib/SPython/*.pcu
 mono ../bin/pabcnetc RebuildStandartModulesSPython.pas
 if [ $? -eq 0 ]; then
     if [ $? -eq 0 ]; then

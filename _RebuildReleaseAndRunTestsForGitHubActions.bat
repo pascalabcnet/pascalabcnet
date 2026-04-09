@@ -11,8 +11,10 @@ PcuDiffTester.exe
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 cd ../ReleaseGenerators
-rem /rebuild здесь пока нельзя
+rem Удаляем pcu для SPython модулей, чтобы не применять /rebuild
+del "..\bin\Lib\SPython\*.pcu" /q
 ..\bin\pabcnetc RebuildStandartModulesSPython.pas /noconsole
+
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 
@@ -29,8 +31,11 @@ ExecHide.exe gacutil.exe /u PABCRtl
 ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild /noconsole
-rem /rebuild здесь пока нельзя
+
+rem Удаляем pcu для SPython модулей, чтобы не применять /rebuild
+del "..\bin\Lib\SPython\*.pcu" /q
 ..\bin\pabcnetc RebuildStandartModulesSPython.pas /noconsole
+
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 

@@ -194,6 +194,7 @@
     File ..\bin\Lib\PlotML.pcu
     File ..\bin\Lib\MLDatasets.pcu
     File ..\bin\Lib\DataAdapters.pcu
+    File ..\bin\Lib\MLUtilsABC.pcu
 
 
     File ..\bin\Lib\PABCRtl.dll
@@ -303,6 +304,7 @@
     ${AddFile} "PlotML.pcu"
     ${AddFile} "MLDatasets.pcu"
     ${AddFile} "DataAdapters.pcu"
+    ${AddFile} "MLUtilsABC.pcu"
 
 
     ${AddFile} "turtle.png"
@@ -448,6 +450,7 @@
     File ..\bin\Lib\PlotML.pas
     File ..\bin\Lib\MLDatasets.pas
     File ..\bin\Lib\DataAdapters.pas
+    File ..\bin\Lib\MLUtilsABC.pas
 
 
     File ..\bin\Lib\__RedirectIOMode.vb
@@ -544,6 +547,7 @@
     ${AddFile} "PlotML.pas"
     ${AddFile} "MLDatasets.pas"
     ${AddFile} "DataAdapters.pas"
+    ${AddFile} "MLUtilsABC.pas"
 
 
     ${AddFile} "__RedirectIOMode.vb"

@@ -16,7 +16,7 @@ type
   private
     fNames: array of string;
     fTypes: array of ColumnType;
-    fIsCategorical: array of boolean;
+    fCategoricalFlags: array of boolean;
     fIndexByName: Dictionary<string, integer>;
     
     class function BuildIndex(names: array of string): Dictionary<string, integer>;
@@ -24,13 +24,17 @@ type
     property ColumnCount: integer read fNames.Length;
     property ColumnNames: array of string read fNames;
     property Types: array of ColumnType read fTypes;
-    property IsCategorical: array of boolean read fIsCategorical;
+    property CategoricalFlags: array of boolean read fCategoricalFlags;
 
     function IndexOf(name: string): integer;
     function HasColumn(name: string): boolean;
 
     function ColumnTypeAt(i: integer): ColumnType;
     function IsCategoricalAt(i: integer): boolean;
+    
+    function GetColumnType(name: string): ColumnType;
+    function IsCategorical(name: string): boolean;
+    
     function NameAt(i: integer): string;
 
     constructor Create(names: array of string; types: array of ColumnType;
@@ -60,12 +64,19 @@ type
   ColumnInfo = auto class
     Name: string;
     ColType: ColumnType;
-    //IsCategorical: boolean;
+    //IsCategorical: boolean; - мы убрали это отсюда - только Schema - источник истины!
   end;
   
   DataFrameCursor = class;
   
-  /// Абстрактный базовый класс столбца
+  /// Базовый класс столбца.
+  /// 
+  /// Столбцы являются неизменяемыми (immutable) после создания.
+  /// Массивы данных (Data, IsValid) не должны изменяться после передачи
+  /// в DataFrame через Add*Column.
+  /// 
+  /// Любые операции (Filter, TakeRows, GroupBy и др.) создают новые столбцы,
+  /// не модифицируя существующие
   Column = abstract class
     Info: ColumnInfo;
   public
@@ -74,13 +85,14 @@ type
     /// Возвращает количество строк в столбце
     function RowCount: integer; virtual; abstract;
     /// Добавляет невалидное (NA) значение в конец столбца
-    procedure AppendInvalid; virtual; abstract;
+    //procedure AppendInvalid; virtual; abstract;
     /// Добавляет значение из курсора в указанной позиции
-    procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); virtual; abstract;
+    //procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); virtual; abstract;
   end;
   
   /// Столбец целых чисел
   IntColumn = class(Column)
+    // ⚠️ Data и IsValid считаются immutable после создания
     Data: array of integer;     // Данные столбца
     IsValid: array of boolean;  // Флаги валидности (может быть nil)
   public
@@ -92,9 +104,16 @@ type
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
-    procedure AppendInvalid; override;
+    /// ⚠ УСТАРЕВШИЙ МЕТОД.
+    /// Не должен использоваться в новом коде.
+    /// Сохраняется только для обратной совместимости.
+    //procedure AppendInvalid; override;
     /// Добавляет значение из курсора в указанной позиции
-    procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
+    /// ⚠ УСТАРЕВШИЙ МЕТОД.
+    /// Использует неэффективное поэлементное добавление (O(n²)).
+    /// Не должен использоваться в новом коде.
+    /// Сохраняется только для обратной совместимости.
+    //procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
   end;
   
   /// Столбец вещественных чисел
@@ -110,9 +129,9 @@ type
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
-    procedure AppendInvalid; override;
+    //procedure AppendInvalid; override;
     /// Добавляет значение из курсора в указанной позиции
-    procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
+    //procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
   end;
 
   /// Столбец строк
@@ -128,9 +147,9 @@ type
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
-    procedure AppendInvalid; override;
+    //procedure AppendInvalid; override;
     /// Добавляет значение из курсора в указанной позиции
-    procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
+    //procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
   end;
 
   /// Столбец булевых значений
@@ -146,9 +165,9 @@ type
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
     /// Добавляет невалидное (NA) значение в конец столбца
-    procedure AppendInvalid; override;
+    //procedure AppendInvalid; override;
     /// Добавляет значение из курсора в указанной позиции
-    procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
+    //procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
   end;
   
   // Accessor типы для курсора
@@ -338,7 +357,7 @@ begin
   fNames := Copy(names);
   fTypes := Copy(types);
 
-  fIsCategorical := 
+  fCategoricalFlags := 
     if isCategorical = nil then 
       new boolean[names.Length] 
     else 
@@ -372,7 +391,7 @@ begin
       ctBool:  t := 'bool';
     end;
 
-    if fIsCategorical[i] then
+    if fCategoricalFlags[i] then
       PABCSystem.Println(name, ':', t, '(categorical)')
     else
       PABCSystem.Println(name, ':', t);
@@ -414,10 +433,20 @@ function DataFrameSchema.IsCategoricalAt(i: integer): boolean;
 begin
   if (i < 0) or (i >= ColumnCount) then
     ArgumentOutOfRangeError(ER_INDEX_OUT_OF_RANGE, i, ColumnCount);
-  if fIsCategorical = nil then
+  if fCategoricalFlags = nil then
     Result := false
   else
-    Result := fIsCategorical[i];
+    Result := fCategoricalFlags[i];
+end;
+
+function DataFrameSchema.GetColumnType(name: string): ColumnType;
+begin
+  Result := ColumnTypeAt(IndexOf(name));
+end;
+
+function DataFrameSchema.IsCategorical(name: string): boolean;
+begin
+  Result := IsCategoricalAt(IndexOf(name));
 end;
 
 function DataFrameSchema.Select(indices: array of integer): DataFrameSchema;
@@ -428,7 +457,7 @@ begin
   var n := indices.Length;
   var names := new string[n];
   var types := new ColumnType[n];
-  var cats := if fIsCategorical = nil then nil else new boolean[n];
+  var cats := if fCategoricalFlags = nil then nil else new boolean[n];
 
   for var i := 0 to n - 1 do
   begin
@@ -437,7 +466,7 @@ begin
       ArgumentOutOfRangeError(ER_INDEX_OUT_OF_RANGE, k, ColumnCount);
     names[i] := fNames[k];
     types[i] := fTypes[k];
-    if cats <> nil then cats[i] := fIsCategorical[k];
+    if cats <> nil then cats[i] := fCategoricalFlags[k];
   end;
 
   Result := new DataFrameSchema(names, types, cats);
@@ -474,7 +503,7 @@ begin
   var names := Copy(fNames);
   names[IndexOf(oldName)] := newName;
 
-  Result := new DataFrameSchema(names, fTypes, fIsCategorical);
+  Result := new DataFrameSchema(names, fTypes, fCategoricalFlags);
 end;
 
 function DataFrameSchema.WithCategorical(name: string; value: boolean): DataFrameSchema;
@@ -482,7 +511,7 @@ begin
   if not HasColumn(name) then
     ArgumentError(ER_COLUMN_NOT_EXISTS, name);
 
-  var cats := if fIsCategorical = nil then new boolean[ColumnCount] else Copy(fIsCategorical);
+  var cats := if fCategoricalFlags = nil then new boolean[ColumnCount] else Copy(fCategoricalFlags);
   cats[IndexOf(name)] := value;
 
   Result := new DataFrameSchema(fNames, fTypes, cats);
@@ -533,7 +562,7 @@ end;
 procedure DataFrameSchema.AssertConsistent;
 begin
   Assert(fNames.Length = fTypes.Length);
-  if fIsCategorical <> nil then Assert(fIsCategorical.Length = fNames.Length);
+  if fCategoricalFlags <> nil then Assert(fCategoricalFlags.Length = fNames.Length);
   Assert(fIndexByName.Count = fNames.Length);
 end;
 
@@ -561,7 +590,7 @@ begin
   IsValid := nil;
 end;
 
-procedure IntColumn.AppendInvalid;
+{procedure IntColumn.AppendInvalid;
 begin
   Data := Data + [0];
 
@@ -573,9 +602,9 @@ begin
   end;
 
   IsValid := IsValid + [false];
-end;
+end;}
 
-procedure IntColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
+{procedure IntColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
 begin
   if cur.IsValid(colIndex) then
   begin
@@ -584,7 +613,7 @@ begin
       IsValid := IsValid + [true];
   end
   else AppendInvalid; 
-end;
+end;}
 
 function IntColumn.TryGetNumericValue(i: integer; var value: real): boolean;
 begin
@@ -614,7 +643,7 @@ begin
 end;
 
 
-procedure FloatColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
+{procedure FloatColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
 begin
   if cur.IsValid(colIndex) then
   begin
@@ -623,9 +652,9 @@ begin
       IsValid := IsValid + [true];
   end
   else AppendInvalid;
-end;
+end;}
 
-procedure FloatColumn.AppendInvalid;
+{procedure FloatColumn.AppendInvalid;
 begin
   Data := Data + [0.0];
 
@@ -637,7 +666,7 @@ begin
   end;
 
   IsValid := IsValid + [false];
-end;
+end;}
 
 function FloatColumn.TryGetNumericValue(i: integer; var value: real): boolean;
 begin
@@ -667,7 +696,7 @@ begin
   IsValid := nil;
 end;
 
-procedure StrColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
+{procedure StrColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
 begin
   if cur.IsValid(colIndex) then
   begin
@@ -676,9 +705,9 @@ begin
       IsValid := IsValid + [true];
   end
   else AppendInvalid;
-end;
+end;}
 
-procedure StrColumn.AppendInvalid;
+{procedure StrColumn.AppendInvalid;
 begin
   Data := Data + [''];
 
@@ -690,7 +719,7 @@ begin
   end;
 
   IsValid := IsValid + [false];
-end;
+end;}
 
 function StrColumn.TryGetNumericValue(i: integer; var value: real): boolean;
 begin
@@ -729,7 +758,7 @@ begin
   IsValid := nil;
 end;
 
-procedure BoolColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
+{procedure BoolColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
 begin
   if cur.IsValid(colIndex) then
   begin
@@ -738,9 +767,9 @@ begin
       IsValid := IsValid + [true];
   end
   else AppendInvalid;
-end;
+end;}
 
-procedure BoolColumn.AppendInvalid;
+{procedure BoolColumn.AppendInvalid;
 begin
   Data := Data + [false];
 
@@ -752,7 +781,7 @@ begin
   end;
 
   IsValid := IsValid + [false];
-end;
+end;}
 
 //-----------------------------
 //           JoinKey
@@ -760,7 +789,14 @@ end;
 
 function JoinKey.Equals(oth: object): boolean;
 begin
-  var other: JoinKey := JoinKey(oth);
+  if oth = nil then
+    exit(false);
+
+  if not (oth is JoinKey) then
+    exit(false);
+
+  var other := JoinKey(oth);
+
   if Ints.Length <> other.Ints.Length then exit(false);
   if Floats.Length <> other.Floats.Length then exit(false);
   if Strs.Length <> other.Strs.Length then exit(false);

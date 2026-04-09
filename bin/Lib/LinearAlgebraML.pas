@@ -152,9 +152,6 @@ type
     static function operator *(A: Matrix; x: Vector): Vector;
     static function operator *(A, B: Matrix): Matrix;
     
-    //static function operator *(alpha: real; A: Matrix): Matrix;
-    //static function operator *(A: Matrix; alpha: real): Matrix;
-    
     // ---------- in-place operators ----------
     static function operator +=(A, B: Matrix): Matrix;
     static function operator -=(A, B: Matrix): Matrix;
@@ -327,6 +324,9 @@ const
   ER_SINGULAR_MATRIX =
     'Матрица вырождена или плохо обусловлена!!Matrix is singular or ill-conditioned';
   
+type
+  MLNotSPDException = class(MLException);
+    
 //-----------------------------
 //           Vector
 //-----------------------------
@@ -1254,7 +1254,6 @@ begin
 end;
 
 
-
 // Helper
 function Cholesky(A: Matrix): Matrix;
 begin
@@ -1274,7 +1273,7 @@ begin
       if i = j then
       begin
         if s <= 0.0 then
-          Error(ER_MATRIX_NOT_SPD);
+          raise new MLNotSPDException('Матрица не является положительно определённой (SPD)');
         L[i, i] := Sqrt(s);
       end
       else
@@ -1423,6 +1422,7 @@ begin
     DimensionError(ER_VECTOR_SIZE_MISMATCH, b.Length, A.RowCount);
   
   var L := Cholesky(A);
+
   var y := SolveLowerTriangular(L, b);
   Result := SolveUpperTriangular(L.Transpose, y);
 end;
@@ -1432,7 +1432,8 @@ begin
   try
     Result := SolveSPD(A, b);
   except
-    Result := Solve(A, b);
+    on e: MLNotSPDException do
+      Result := Solve(A, b);
   end;
 end;
 

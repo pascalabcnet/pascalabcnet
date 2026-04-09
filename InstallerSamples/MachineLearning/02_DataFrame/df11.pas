@@ -12,5 +12,8 @@ begin
   Kat,21,NA
   ''');
   
-  df.Describe.PrintLines;
+  var dfs := df.Describe('age');
+  Println(dfs.Count,dfs.Max,dfs.Min,dfs.Mean,dfs.Std);
+  dfs := df.Describe('score');
+  Println(dfs.Count,dfs.Max,dfs.Min,dfs.Mean,dfs.Std);
 end.

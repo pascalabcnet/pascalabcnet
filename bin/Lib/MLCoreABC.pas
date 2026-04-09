@@ -17,25 +17,55 @@ type
   IMatrixStep = interface(IPipelineStep) 
   end;
   
-/// Интерфейс шага конвейера, работающего на уровне DataFrame.
-/// Реализуется препроцессорами, которые выполняют преобразования табличных данных
-///   до перехода в числовое (Matrix) представление
+  /// Интерфейс шага конвейера, работающего на уровне DataFrame.
+  /// Реализуется препроцессорами, которые выполняют преобразования табличных данных
+  ///   до перехода в числовое (Matrix) представление
   IDataStep = interface(IPipelineStep) 
+  end;
+
+  /// Интерфейс шага конвейера, привязанного к одной колонке DataFrame.
+  /// Используется для препроцессоров, выполняющих преобразование конкретной колонки
+  /// (например, кодирование категориальных признаков).
+  /// Позволяет DataPipeline централизованно контролировать операции над колонками
+  /// (в частности, запрещать изменение целевой переменной).  
+  IColumnBoundStep = interface
+    /// Имя колонки, к которой применяется преобразование.
+    /// Должно соответствовать существующей колонке DataFrame.
+    /// Используется для валидации (например, запрет преобразования target).
+    property ColumnName: string read;
+  end;
+  
+  /// Интерфейс шага конвейера, работающего с несколькими колонками DataFrame.
+  /// Используется для препроцессоров, выполняющих преобразования над набором колонок
+  /// (например, заполнение пропусков, масштабирование или кодирование нескольких признаков).
+  /// Позволяет DataPipeline контролировать операции над колонками
+  /// (в частности, предотвращать изменение целевой переменной).
+  IColumnsBoundStep = interface
+    /// Список колонок, к которым применяется преобразование.
+    /// Каждое имя должно соответствовать существующей колонке DataFrame.
+    /// Используется для валидации (например, запрет преобразования target).
+    property Columns: array of string read;
   end;
 
   /// Базовый интерфейс модели машинного обучения
   IModel = interface(IMatrixStep)
-    function Predict(X: Matrix): Vector;
+    // function Predict(X: Matrix): Vector; // вынес в IPredictiveModel
     function Clone: IModel;
     function Name: string;
     property IsFitted: boolean read;
+  end;
+  
+  /// Модель, реализующая отображение X → y (или аналогичный результат).
+  /// Поддерживает предсказание для новых данных
+  IPredictiveModel = interface(IModel)
+    function Predict(X: Matrix): Vector;
   end;
   
   /// Интерфейс модели с учителем (Supervised Model).
   /// Наследуется от базового интерфейса IModel.
   /// Предназначен для алгоритмов, обучающихся по признакам X
   /// с использованием целевых значений (y)
-  ISupervisedModel = interface(IModel)
+  ISupervisedModel = interface(IPredictiveModel)
     function Fit(X: Matrix; y: Vector): ISupervisedModel;
   end;
   
@@ -47,13 +77,29 @@ type
     function Fit(X: Matrix): IUnsupervisedModel;
   end;
 
-  /// Интерфейс алгоритма кластеризации.
-  /// Наследуется от IUnsupervisedModel.
+  /// Интерфейс алгоритма кластеризации (unsupervised learning).
   /// Предназначен для моделей, разбивающих объекты на кластеры
-  /// и возвращающих индекс кластера для каждого объекта
+  /// без использования целевой переменной.
+  /// Основной сценарий использования — FitPredict, возвращающий
+  /// индекс кластера для каждого объекта обучающей выборки
   IClusterer = interface(IUnsupervisedModel)
-    function PredictLabels(X: Matrix): array of integer;
+    // function PredictLabels(X: Matrix): array of integer;
+    
+    /// Выполняет кластеризацию данных и возвращает массив индексов кластеров
+    /// (0,1,2,...) для каждого объекта. Значение -1 может использоваться
+    /// для обозначения шума (например, в DBSCAN).
+    function FitPredict(X: Matrix): array of integer;
   end;
+  
+  /// Интерфейс кластеризатора, поддерживающего предсказание для новых данных.
+  /// Используется для алгоритмов, задающих явное отображение X → cluster
+  /// (например, KMeans через ближайший центр кластера)
+  IPredictiveClusterer = interface(IClusterer, IPredictiveModel)
+    /// Возвращает индекс кластера для каждого объекта из X
+    /// без повторного обучения модели.
+    /// Требует предварительного вызова Fit или FitPredict.
+    function PredictLabels(X: Matrix): array of integer;
+  end;  
   
   /// Интерфейс древовидной модели машинного обучения
   ITreeModel = interface(ISupervisedModel)
@@ -64,8 +110,13 @@ type
   /// Наследуется от IModel.
   /// Предназначен для моделей, выполняющих классификацию (предсказание меток классов).
   IClassifier = interface(ISupervisedModel)
-    /// Возвращает метки классов
+    /// Возвращает индексы классов (0,1,2,...)
     function PredictLabels(X: Matrix): array of integer;
+    
+    /// Возвращает метки классов в порядке кодирования
+    function GetClassLabels: array of string;
+    
+    procedure SetClassLabels(classes: array of string);
   end;
   
   /// Интерфейс классификатора, возвращающего вероятности.
@@ -78,9 +129,6 @@ type
     /// Возвращает матрицу вероятностей размера (nSamples × nClasses).
     /// Столбцы соответствуют классам в порядке внутреннего кодирования модели
     function PredictProba(X: Matrix): Matrix;
-    
-    /// Возвращает массив меток классов в порядке столбцов PredictProba.
-    function GetClasses: array of real;
   end;
 
   /// Интерфейс регрессионной модели.

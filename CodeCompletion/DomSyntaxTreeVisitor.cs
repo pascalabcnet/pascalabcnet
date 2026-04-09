@@ -3107,7 +3107,11 @@ namespace CodeCompletion
 
                 if (fictiveUnit == null)
                 {
-                    fictiveUnit = new InterfaceUnitScope(new SymInfo(importedModuleName + "?ModuleName", SymbolKind.Namespace, ""), null);    
+                    fictiveUnit = new InterfaceUnitScope(new SymInfo(importedModuleName + "?ModuleName", SymbolKind.Namespace, ""), null);
+                    // TODO: настроить копирование   EVA
+                    fictiveUnit.file_name = importedModuleScope.file_name;
+                    fictiveUnit.used_units = importedModuleScope.used_units;
+                    ((InterfaceUnitScope)fictiveUnit).impl_scope = ((InterfaceUnitScope)importedModuleScope).impl_scope;
                     currentScope.AddUsedUnit(fictiveUnit);
                 }
 
@@ -3139,6 +3143,10 @@ namespace CodeCompletion
                     if (fictiveUnit == null)
                     {
                         fictiveUnit = new InterfaceUnitScope(new SymInfo(importedModuleName, SymbolKind.Namespace, ""), null);
+                        // TODO: настроить копирование   EVA
+                        fictiveUnit.file_name = importedModuleScope.file_name;
+                        fictiveUnit.used_units = importedModuleScope.used_units;
+                        ((InterfaceUnitScope)fictiveUnit).impl_scope = ((InterfaceUnitScope)importedModuleScope).impl_scope;
                         currentScope.AddUsedUnit(fictiveUnit);
                     }
                     

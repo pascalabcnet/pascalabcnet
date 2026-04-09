@@ -31,28 +31,28 @@ namespace Languages.SPython.Frontend.Converters
             // name bin_bit_op= expr
             // на
             // name = name bin_bit_op (expr)
-            new TryCatchDecorator(new BitwiseAssignmentDesugarVisitor(), forIntellisense).ProcessNode(root);
+            new BitwiseAssignmentDesugarVisitor().ProcessNode(root);
 
             // замена return;       на { exit(); }
             // замена return expr;  на { result := expr; exit(); }
-            new TryCatchDecorator(new ReturnDesugarVisitor(), forIntellisense).ProcessNode(root);
+            new ReturnDesugarVisitor().ProcessNode(root);
 
             // замена вызова функции map(func, sequence)
             // на func(element) for element in sequence
-            new TryCatchDecorator(new MapDesugarVisitor(), forIntellisense).ProcessNode(root);
+            new MapDesugarVisitor().ProcessNode(root);
 
             // замена генерации последовательностей на Select.Where
-            // (не работает из-за лямбд (скорее всего), если переместить в ConvertAfterUsedModulesCompilation)
-            new TryCatchDecorator(new GeneratorObjectDesugarVisitor(root, generatedNamesManager), forIntellisense).ProcessNode(root);
+            // (не работает из-за лямбд (скорее всего), если переместить в ApplyConversionsAfterUsedModulesCompilation)
+            new GeneratorObjectDesugarVisitor(root, generatedNamesManager).ProcessNode(root);
 
             // Выносим выражения с лямбдами из заголовка foreach + считаем максимум 10 вложенных лямбд
             // украл из паскаля
             new TryCatchDecorator(StandOutExprWithLambdaInForeachSequenceAndNestedLambdasVisitor.Create(generatedNamesManager), forIntellisense).ProcessNode(root);
-            new TryCatchDecorator(new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as compilation_unit), forIntellisense).ProcessNode(root);
-            new TryCatchDecorator(FindOnExceptVarsAndApplyRenameVisitor.Create(generatedNamesManager), forIntellisense).ProcessNode(root);
+            new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer(root as compilation_unit).ProcessNode(root);
+            FindOnExceptVarsAndApplyRenameVisitor.Create(generatedNamesManager).ProcessNode(root);
 
             // дешугаризация составных сравнительных операций (e.g. a == b == c)
-            new TryCatchDecorator(new CompoundComparisonDesugarVisitor(generatedNamesManager), forIntellisense).ProcessNode(root);
+            new CompoundComparisonDesugarVisitor(generatedNamesManager).ProcessNode(root);
 
             return root;
         }
@@ -63,7 +63,7 @@ namespace Languages.SPython.Frontend.Converters
 
             // украл из паскаля, нужны для работы 'for i1, i2 in expr' (работает с кортежными присваиваниями)
             var binder = new BindCollectLightSymInfo(root as compilation_unit);
-            new TryCatchDecorator(binder, forIntellisense).ProcessNode(root);
+            binder.ProcessNode(root);
             new TryCatchDecorator(new NewAssignTuplesDesugarVisitor(binder, generatedNamesManager), forIntellisense).ProcessNode(root);
 
             // Заменяет 
@@ -71,26 +71,26 @@ namespace Languages.SPython.Frontend.Converters
             // на
             // variable_name = str(single_length_string)
             // чтобы при выведении типа правильно вывел str, а не char
-            new TryCatchDecorator(new AssignmentCharAsStringVisitor(), forIntellisense).ProcessNode(root);
+            new AssignmentCharAsStringVisitor().ProcessNode(root);
 
             // Сохраняет множество имён функций, которые объявлены в программе для NameCorrectVisitor
             var ffv = new FindFunctionsNamesVisitor();
             
-            new TryCatchDecorator(ffv, forIntellisense).ProcessNode(root);
+            ffv.ProcessNode(root);
 
             // проверка корректности имён, разрешение неоднозначности
             // сохранение множества переменных, использующихся как глобальные в ncv.variablesUsedAsGlobal
             var ncv = new NameCorrectVisitor(System.IO.Path.GetFileNameWithoutExtension(((compilation_unit)root).file_name), forIntellisense,
                 compilationArtifacts.NamesFromUsedUnits, ffv.definedFunctionsNames);
 
-            new TryCatchDecorator(ncv, forIntellisense).ProcessNode(root);
+            ncv.ProcessNode(root);
 
             // замена типов из SPython на типы из PascalABC.NET
             if (!forIntellisense)
                 new TypeCorrectVisitor().ProcessNode(root);
 
             // вынос forward объявлений для всех функций в начало
-            new TryCatchDecorator(new AddForwardDeclarationsVisitor(), forIntellisense).ProcessNode(root);
+            new AddForwardDeclarationsVisitor().ProcessNode(root);
 
             // выполняет генерацию кода для функций с kwarg-аргументами
             new TryCatchDecorator(new KwargsFunctionDesugarVisitor(), forIntellisense).ProcessNode(root);
@@ -100,7 +100,7 @@ namespace Languages.SPython.Frontend.Converters
 
             // выносит объявлений переменных из ncv.variablesUsedAsGlobal на глобальный уровень
             // (в модулях все переменные, объявленные на глобальном уровне являются глобальными)
-            new TryCatchDecorator(new RetainUsedGlobalVariablesVisitor(ncv.variablesUsedAsGlobal), forIntellisense).ProcessNode(root);
+            new RetainUsedGlobalVariablesVisitor(ncv.variablesUsedAsGlobal).ProcessNode(root);
 
             // удаление специфичных синтаксических узлов Spython'a перед конвертацией в семантическое дерево
             if (!forIntellisense)
@@ -113,15 +113,15 @@ namespace Languages.SPython.Frontend.Converters
             // 3) объявление функции %%MAIN%%, содержащей компилируемую программу
             // 4) объявления функций, объявленных в программе
             // 5) begin %%MAIN%%() end.
-            new TryCatchDecorator(new TreeNodesRearrangementVisitor(), forIntellisense).ProcessNode(root);
+            new TreeNodesRearrangementVisitor().ProcessNode(root);
 
             return root;
         }
 
         private class TryCatchDecorator
         {
-            private WalkingVisitorNew internalVisitor;
-            private bool forIntellisense;
+            private readonly WalkingVisitorNew internalVisitor;
+            private readonly bool forIntellisense;
 
             public TryCatchDecorator(WalkingVisitorNew internalVisitor, bool forIntellisense)
             {

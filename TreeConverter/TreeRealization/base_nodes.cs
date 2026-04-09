@@ -334,6 +334,14 @@ namespace PascalABCCompiler.TreeRealization
 				return this.conversion_type;
 			}
 		}
+
+        /// <summary>
+        /// Возвращает поверхностную копию объекта
+        /// </summary>
+        public expression_node ShallowCopy()
+        {
+            return (expression_node)this.MemberwiseClone();
+        }
 	}
 
     [Serializable]

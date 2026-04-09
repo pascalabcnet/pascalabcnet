@@ -8,10 +8,11 @@ begin
 
   var target := 'price';
 
-  var (trainDf, testDf) := df.TrainTestSplit(0.2, 42);
+  var (trainDf, testDf) := df.TrainTestSplit(0.2, seed := 42);
 
   var pipe :=
     DataPipeline.Build(
+      TaskKind.tkRegression,
       target,
       features,
       new OneHotEncoder('renovation'),

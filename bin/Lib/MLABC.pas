@@ -17,6 +17,7 @@ uses InspectionML;
 uses MLPipelineABC;
 uses MLDatasets;
 uses DataAdapters;
+uses MLUtilsABC;
 
 type 
   Vector = LinearAlgebraML.Vector;
@@ -38,6 +39,7 @@ type
   Statistics = DataFrameABC.Statistics;
   CsvLoader = DataFrameABC.CsvLoader;
   JoinKind = DataFrameABC.JoinKind;
+  GroupView = DataFrameABC.GroupView;
   
   IProbabilisticClassifier = MLCoreABC.IProbabilisticClassifier;
   IRegressor = MLCoreABC.IRegressor;
@@ -87,11 +89,31 @@ type
   Imputer = PreprocessorABC.Imputer;
   
   Datasets = MLDatasets.Datasets;
+  Dataset = MLDatasets.Dataset;
   
   IModel = MLCoreABC.IModel;
+  ISupervisedModel = MLCoreABC.ISupervisedModel;
+  IUnsupervisedModel = MLCoreABC.IUnsupervisedModel;
   UPipeline = MLModelsABC.UPipeline;
   UDataPipeline = MLPipelineABC.UDataPipeline;
+  TaskKind = MLPipelineABC.TaskKind;
   
+  AggregationKind = DataFrameABC.AggregationKind;
+  
+const
+  akMean = AggregationKind.akMean;
+  akMin = AggregationKind.akMin;
+  akMax = AggregationKind.akMax;
+  akCount = AggregationKind.akCount;
+  akSum = AggregationKind.akSum;
+  akStd = AggregationKind.akStd;
+  
+  /// Внутреннее соединение
+  jkInner = JoinKind.jkInner;
+  jkLeft = JoinKind.jkLeft;
+  jkRight = JoinKind.jkRight;
+  jkFull = JoinKind.jkFull;
+
   function LabelsToInts(y: Vector): array of integer;
   function EncodeLabels(labels: array of string): array of integer;
 
@@ -100,7 +122,7 @@ implementation
 
 function LabelsToInts(y: Vector): array of integer;
 begin
-  Result := DataAdapters.LabelsToInts(y);
+  Result := MLUtilsABC.LabelsToInts(y);
 end;
 
 function EncodeLabels(labels: array of string): array of integer := DataAdapters.EncodeLabels(labels);

@@ -9,11 +9,11 @@ begin
   var logPrice := price.Data.Select(x -> Ln(x)).ToArray;
 
   var fig := Plot.Grid(1,2);
-  Plot.Title('Распределение цен на квартиры в Москве');
+  Plot.Title := 'Распределение цен на квартиры в Москве';
 
   fig[0,0].Hist(price.Data, bins := 40);
-  fig[0,0].Title('Цена');
+  fig[0,0].Title := 'Цена';
 
   fig[0,1].Hist(logPrice, bins := 40);
-  fig[0,1].Title('log(Цена)');
+  fig[0,1].Title := 'log(Цена)';
 end.

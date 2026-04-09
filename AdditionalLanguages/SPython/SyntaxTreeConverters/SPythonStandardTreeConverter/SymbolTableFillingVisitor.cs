@@ -14,8 +14,11 @@ namespace Languages.SPython.Frontend.Converters
 
         private readonly ILanguageInformation languageInformation = Facade.LanguageProvider.Instance.SelectLanguageByName("SPython").LanguageInformation;
 
-        public SymbolTableFillingVisitor(string unitName, Dictionary<string, Dictionary<string, bool>> par) {
+        private readonly bool forIntellisense;
+
+        public SymbolTableFillingVisitor(string unitName, bool forIntellisense, Dictionary<string, Dictionary<string, bool>> par) {
             symbolTable = new SymbolTable(unitName, par);
+            this.forIntellisense = forIntellisense;
         }
 
         // нужны методы из BaseChangeVisitor, но порядок обхода из WalkingVisitorNew
@@ -149,6 +152,9 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(import_statement _import_statement)
         {
+            if (forIntellisense)
+                return;
+
             foreach (as_statement as_Statement in _import_statement.modules_names.as_statements)
             {
                 string real_name = as_Statement.real_name.name;
@@ -161,6 +167,9 @@ namespace Languages.SPython.Frontend.Converters
 
         public override void visit(from_import_statement _from_import_statement)
         {
+            if (forIntellisense)
+                return;
+
             string module_real_name = _from_import_statement.module_name.name;
             string module_name = module_real_name;
             if (languageInformation.SpecialModulesAliases.ContainsKey(module_name))

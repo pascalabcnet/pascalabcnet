@@ -2665,15 +2665,15 @@ namespace PascalABCCompiler.TreeRealization
                     generic_convertions.determine_type(par.type, _instance_params, true, orig_gen_params),
                     par.parameter_type, this,
                     (par.parameter_type == SemanticTree.parameter_type.var) ? concrete_parameter_type.cpt_var : concrete_parameter_type.cpt_none,
-                    par.default_value, null);
+                    par.default_value?.ShallowCopy(), null);
                 cpar.inital_value = par.inital_value;
-                cpar.default_value = par.default_value;
                 if (cpar.default_value is default_operator_node)
                     (cpar.default_value as default_operator_node).type = generic_convertions.determine_type(cpar.default_value.type, _instance_params, true, orig_gen_params);
-                else if (cpar.default_value is default_operator_node_as_constant)
+                else if (cpar.default_value is default_operator_node_as_constant def_oper_as_constant)
                 {
-                    (cpar.default_value as default_operator_node_as_constant).type = generic_convertions.determine_type(cpar.default_value.type, _instance_params, true, orig_gen_params);
-                    (cpar.default_value as default_operator_node_as_constant).default_operator.type = (cpar.default_value as default_operator_node_as_constant).type;
+                    def_oper_as_constant.type = generic_convertions.determine_type(cpar.default_value.type, _instance_params, true, orig_gen_params);
+                    def_oper_as_constant.default_operator = (default_operator_node)def_oper_as_constant.default_operator.ShallowCopy(); // ShallowCopy здесь и выше, чтобы не портить исходный тип шаблона EVA 26.03.2026
+                    def_oper_as_constant.default_operator.type = def_oper_as_constant.type;
                 }
                     
                 cpar.intrenal_is_params = par.is_params;

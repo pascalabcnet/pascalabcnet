@@ -536,6 +536,49 @@ namespace CodeCompletion
             used_units.Add(unit);
         }
 
+        /// <summary>
+        /// Получить массив всех транзитивно используемых модулей (ислючая пр-ва имен).
+        /// По умолчанию для InterfaceUnitScope ищутся и зависимости реализации тоже.
+        /// </summary>
+        public SymScope[] GetRealUsedUnitsTransitive(bool includeImplementationDependenciesForUnit = true)
+        {
+            var unitsList = new List<SymScope>();
+
+            HashSet<SymScope> visited = new HashSet<SymScope>();
+
+            void CollectUnitsHelper(SymScope currentScope)
+            {
+                IEnumerable<SymScope> usedUnitsLocal = currentScope.used_units?.Where(unit => unit.file_name != null);
+
+                foreach (var unit in usedUnitsLocal)
+                {
+                    if (unitsList.Find(u => u.file_name == unit.file_name) == null)
+                        unitsList.Add(unit);
+                }
+
+                if (currentScope is InterfaceUnitScope interfaceScope && includeImplementationDependenciesForUnit && interfaceScope.impl_scope != null)
+                {
+                    CollectUnitsHelper(interfaceScope.impl_scope);
+                }
+
+                foreach (var unit in usedUnitsLocal)
+                {
+                    if (!visited.Contains(unit))
+                    {
+                        visited.Add(unit);
+                        CollectUnitsHelper(unit);
+                    }
+                }
+            }
+
+            visited.Add(this);
+            CollectUnitsHelper(this);
+
+            unitsList.Remove(this);
+
+            return unitsList.ToArray();
+        }
+
         public virtual string GetFullName()
         {
             return si.name;

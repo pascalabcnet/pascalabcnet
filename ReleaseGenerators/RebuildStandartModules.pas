@@ -22,7 +22,7 @@ uses
    WPF,
    DataFrameABC, DataFrameABCCore, LinearAlgebraML, PreprocessorABC,
    MetricsABC, MLABC, MLCoreABC, MLModelsABC, ValidationML, MLExceptions, InspectionML, MLPipelineABC,
-   PlotML, MLDatasets, DataAdapters
+   PlotML, MLDatasets, DataAdapters, MLUtilsABC
    ;
    
 begin

@@ -34,6 +34,17 @@ type
     /// Менее чувствительна к выбросам, чем MSE.
     static function MAE(yTrue, yPred: Vector): real;
     
+    /// Средняя абсолютная процентная ошибка (MAPE).
+    /// MAPE = (1/n) * Σ |(yTrue - yPred) / yTrue|.
+    /// Значения yTrue = 0 игнорируются.
+    /// Удобна для интерпретации в процентах.
+    static function MAPE(yTrue, yPred: Vector): real;
+    
+    /// Медианная абсолютная ошибка (MedianAE).
+    /// MedianAE = median(|yTrue - yPred|).
+    /// Устойчива к выбросам.
+    static function MedianAE(yTrue, yPred: Vector): real;
+    
     /// Коэффициент детерминации (R²).
     /// R2 = 1 - SS_res / SS_tot.
     /// Показывает долю объяснённой дисперсии.
@@ -312,6 +323,17 @@ type
     /// Чем меньше значение, тем лучше модель
     static function MAE(yTrue, yPred: Vector): real := Metrics.MAE(yTrue, yPred);   
     
+    /// Средняя абсолютная процентная ошибка (MAPE).
+    /// MAPE = (1/n) * Σ |(yTrue - yPred) / yTrue|.
+    /// Значения yTrue = 0 игнорируются.
+    /// Удобна для интерпретации в процентах.
+    static function MAPE(yTrue, yPred: Vector): real := Metrics.MAPE(yTrue, yPred);
+    
+    /// Медианная абсолютная ошибка (MedianAE).
+    /// MedianAE = median(|yTrue - yPred|).
+    /// Устойчива к выбросам.
+    static function MedianAE(yTrue, yPred: Vector): real := Metrics.MedianAE(yTrue, yPred);   
+    
     /// Коэффициент детерминации (R²)
     /// R² = 1 - SS_res / SS_tot
     /// Показывает долю дисперсии, объяснённую моделью
@@ -398,6 +420,10 @@ const
     'Для Calinski–Harabasz требуется n > k!!Calinski–Harabasz requires n > k';
   ER_LABELS_MUST_BE_INTEGERS =
     'Метки кластеров должны быть целыми числами!!Cluster labels must be integers';    
+  ER_MAPE_ALL_ZERO_TARGET =
+    'Все значения целевой переменной равны нулю — MAPE не определена!!All target values are zero — MAPE is undefined';
+
+
 //-----------------------------
 //           Metrics
 //-----------------------------
@@ -476,6 +502,66 @@ begin
   end;
 
   Result := s / n;
+end;
+
+static function Metrics.MAPE(yTrue, yPred: Vector): real;
+begin
+  if yTrue = nil then
+    ArgumentNullError(ER_ARG_NULL, 'yTrue');
+
+  if yPred = nil then
+    ArgumentNullError(ER_ARG_NULL, 'yPred');
+
+  if yTrue.Length <> yPred.Length then
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yPred.Length);
+
+  var sum := 0.0;
+  var cnt := 0;
+
+  for var i := 0 to yTrue.Length - 1 do
+  begin
+    var y := yTrue[i];
+    var yp := yPred[i];
+
+    if y = 0.0 then continue;
+
+    sum += Abs((y - yp) / y);
+    cnt += 1;
+  end;
+
+  if cnt = 0 then
+    Error(ER_MAPE_ALL_ZERO_TARGET);
+
+  Result := sum / cnt;
+end;
+
+static function Metrics.MedianAE(yTrue, yPred: Vector): real;
+begin
+  if yTrue = nil then
+    ArgumentNullError(ER_ARG_NULL, 'yTrue');
+
+  if yPred = nil then
+    ArgumentNullError(ER_ARG_NULL, 'yPred');
+
+  if yTrue.Length <> yPred.Length then
+    DimensionError(ER_DIM_MISMATCH, yTrue.Length, yPred.Length);
+
+  var n := yTrue.Length;
+  if n = 0 then
+    ArgumentError(ER_EMPTY_DATA, 'MedianAbsoluteError');
+
+  var errors := new real[n];
+
+  for var i := 0 to n - 1 do
+    errors[i] := Abs(yTrue[i] - yPred[i]);
+
+  // сортировка
+  &Array.Sort(errors);
+
+  if n mod 2 = 1 then
+    Result := errors[n div 2]
+  else
+    Result := (errors[n div 2 - 1] + errors[n div 2]) / 2.0;
 end;
 
 static function Metrics.R2(yTrue, yPred: Vector): real;

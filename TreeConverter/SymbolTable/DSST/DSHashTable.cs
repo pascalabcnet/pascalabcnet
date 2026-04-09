@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using PascalABCCompiler.TreeConverter;
 
 namespace SymbolTable
 {
@@ -12,106 +13,72 @@ namespace SymbolTable
     /// </summary>
     public class SymbolsDictionary
     {
-        public override string ToString() => dictCaseInsensitive.SkipWhile(x => x.Key != "").Skip(1).JoinIntoString(Environment.NewLine);
+        public override string ToString() => namesToInfos.SkipWhile(x => x.Key != "").Skip(1).JoinIntoString(Environment.NewLine);
 
-        private Dictionary<string, HashTableNode> dictCaseSensitive;
+        // Регистронезависимый словарь символов
+        private readonly Dictionary<string, HashTableNode> namesToInfos = new Dictionary<string, HashTableNode>(StringComparer.OrdinalIgnoreCase);
 
-        public Dictionary<string, HashTableNode> DictCaseSensitive
-        {
-            get
-            {
-                if (dictCaseSensitive.Count == 0)
-                {
-                    dictCaseSensitive = new Dictionary<string, HashTableNode>(dictCaseInsensitive);
-                }
+        //public SymbolsDictionary(int start_size)
+        //{
+        //    dictCaseInsensitive = new Dictionary<string, HashTableNode>(start_size, StringComparer.OrdinalIgnoreCase);
+        //}
 
-                return dictCaseSensitive;
-            }
-        }
-
-        private Dictionary<string, HashTableNode> dictCaseInsensitive;
-
-        public SymbolsDictionary()
-        {
-            dictCaseSensitive = new Dictionary<string, HashTableNode>();
-
-            dictCaseInsensitive = new Dictionary<string, HashTableNode>(StringComparer.OrdinalIgnoreCase);
-        }
-
-        public SymbolsDictionary(int start_size)
-        {
-            dictCaseInsensitive = new Dictionary<string, HashTableNode>(start_size, StringComparer.OrdinalIgnoreCase);
-        }
-
+        /// <summary>
+        /// Очистка сохраненных символов
+        /// </summary>
         public void ClearTable()
         {
-            dictCaseSensitive.Clear();
-
-            dictCaseInsensitive.Clear();
+            namesToInfos.Clear();
         }
 
-        public HashTableNode Add(string name, bool toCaseSensitive, PascalABCCompiler.TreeConverter.SymbolInfo info)
+        /// <summary>
+        /// Добавить информацию info о символе с именем name
+        /// </summary>
+        public void Add(string name, SymbolInfo info)
         {
-            HashTableNode node;
+            bool exists = namesToInfos.TryGetValue(name, out var node);
 
-            if (toCaseSensitive)
+            if (!exists)
             {
-                bool exists = dictCaseSensitive.TryGetValue(name, out node);
+                node = new HashTableNode();
 
-                if (!exists)
-                {
-                    node = new HashTableNode(name);
-
-                    dictCaseSensitive[name] = node;
-
-                    bool existsInInsensitive = dictCaseInsensitive.TryGetValue(name, out var node2);
-
-                    if (existsInInsensitive)
-                    {
-                        node2.InfoList.Add(info);
-                    }
-                    else
-                    {
-                        var nodeCopy = new HashTableNode(name);
-
-                        nodeCopy.InfoList.Add(info);
-
-                        dictCaseInsensitive[name] = nodeCopy;
-                    }
-                }
-            }
-            else
-            {
-                bool exists = dictCaseInsensitive.TryGetValue(name, out node);
-
-                if (!exists)
-                {
-                    node = new HashTableNode(name);
-
-                    dictCaseInsensitive[name] = node;
-                }
+                namesToInfos[name] = node;
             }
 
             node.InfoList.Add(info);
-
-            return node;
         }
 
-        public HashTableNode Find(string name, bool inCaseSensitive)
+        /// <summary>
+        /// Найти информацию о символе с именем name.
+        /// caseSensitiveSearch определяет регистрозависимость поиска
+        /// </summary>
+        public IEnumerable<SymbolInfo> Find(string name, bool caseSensitiveSearch)
         {
-            HashTableNode node;
-            
-            if (inCaseSensitive)
+            // Если ищем регистрозависимо
+            if (caseSensitiveSearch)
             {
+                if (namesToInfos.TryGetValue(name, out var node))
+                {
+                    // Если есть точные совпадения, то надо взять только их
+                    var infos = node.InfoList.Where(info => info.Name == name);
 
-                DictCaseSensitive.TryGetValue(name, out node);
+                    if (infos.Any())
+                        return infos;
+                }
             }
+            // Если ищем регистронезависимо
             else
             {
-                dictCaseInsensitive.TryGetValue(name, out node);
+                if (namesToInfos.TryGetValue(name, out var node))
+                    return node.InfoList;
             }
-            
-            return node;
+
+            return null;
         }
+
+        /// <summary>
+        /// Получить информацию обо всех сохраненных символах
+        /// </summary>
+        public IEnumerable<HashTableNode> GetAllSymbolInfos() => namesToInfos.Values;
     }
 }

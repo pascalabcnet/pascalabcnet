@@ -1,0 +1,5 @@
+﻿from case_sensitive_names_search_helper import *
+from PABCSystem import Assert
+
+Assert(FUNC(0) == 'integer')
+Assert(func(0.0) == 'real')
