@@ -2314,6 +2314,11 @@ namespace CodeCompletion
                     cur_scope.AddName(_type_declaration.type_name.name, ts);
                     if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_type_declaration))
                         ts.AddDocumentation(this.converter.controller.docs[_type_declaration]);
+
+                    // Если своей документации нет, то используем документацию типа, синонимом которого являемся
+                    // В случае загрузки документации не из исходника нужен будет дополнительный механизм  EVA
+                    if (!ts.si.has_doc && returned_scope.si.has_doc)
+                        ts.AddDocumentation(returned_scope.documentation);
                 }
 
             }
