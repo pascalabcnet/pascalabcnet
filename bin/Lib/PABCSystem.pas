@@ -11731,7 +11731,7 @@ begin
   begin
     var currentElement := enumerator.Current;
     var currentKey := keySelector(currentElement);
-    if comp.Compare(currentKey,maxKey) > 0 then
+    if comp.Compare(currentKey,maxKey) >= 0 then
     begin
       maxKey := currentKey;
       maxElement := currentElement; 
