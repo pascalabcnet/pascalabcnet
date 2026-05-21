@@ -12,7 +12,7 @@ namespace PascalABCCompiler.TreeConverter.TreeConversion
     {
         public readonly Errors.SyntaxError parserError;
 
-        public readonly Hashtable badNodes;
+        public readonly HashSet<SyntaxTree.syntax_tree_node> badNodes;
 
         public readonly TreeRealization.unit_node_list usedUnits;
 
@@ -37,7 +37,7 @@ namespace PascalABCCompiler.TreeConverter.TreeConversion
         public InitializationDataForCompilingInterface(
             
             Errors.SyntaxError parserError, 
-            Hashtable badNodes, 
+            HashSet<SyntaxTree.syntax_tree_node> badNodes, 
             TreeRealization.unit_node_list usedUnits, 
             TreeRealization.using_namespace_list interfaceNamespaces, 
             compilation_unit syntaxUnit, 
@@ -78,7 +78,7 @@ namespace PascalABCCompiler.TreeConverter.TreeConversion
         public InitializationDataForCompilingImplementation(
             
             Errors.SyntaxError parserError, 
-            Hashtable badNodes, 
+            HashSet<SyntaxTree.syntax_tree_node> badNodes, 
             TreeRealization.unit_node_list usedUnits, 
             TreeRealization.using_namespace_list interfaceNamespaces, 
             TreeRealization.using_namespace_list implementationNamespaces,

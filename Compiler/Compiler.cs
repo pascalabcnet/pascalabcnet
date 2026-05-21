@@ -566,7 +566,7 @@ namespace PascalABCCompiler
             }
         }
 
-        private Hashtable BadNodesInSyntaxTree = new Hashtable();
+        private HashSet<SyntaxTree.syntax_tree_node> BadNodesInSyntaxTree = new HashSet<SyntaxTree.syntax_tree_node>();
 
         program_node semanticTree = null;
         public SemanticTree.IProgramNode SemanticTree
@@ -3505,7 +3505,7 @@ namespace PascalABCCompiler
                 currentUnit.syntax_error = errorsList[0] as SyntaxError;
                 foreach (Error er in errorsList)
                     if (er is SyntaxError && (er as SyntaxError).bad_node != null)
-                        BadNodesInSyntaxTree[(er as SyntaxError).bad_node] = er;
+                        BadNodesInSyntaxTree.Add((er as SyntaxError).bad_node);
             }
         }
 

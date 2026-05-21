@@ -4,7 +4,6 @@
 using PascalABCCompiler.CoreUtils;
 using PascalABCCompiler.TreeRealization;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -36,7 +35,7 @@ namespace PascalABCCompiler.TreeConverter
     	public statement_node_stack cycles_stack;
         public int num_of_for_cycles;
         public SemanticTree.field_access_level _fal;
-        public System.Collections.Hashtable member_decls;
+        public Dictionary<SyntaxTree.declaration, definition_node> member_decls;
         public List<common_type_node> types_predefined;
         public Stack<common_type_node> type_stack; // Для вложенных типов
         public statement_list_stack stlist_stack;
@@ -127,7 +126,7 @@ namespace PascalABCCompiler.TreeConverter
     	    _cycles_stack = new statement_node_stack();
             _num_of_for_cycles = 0;
             _fal = SemanticTree.field_access_level.fal_private;
-            member_decls = new Hashtable();
+            member_decls = new Dictionary<SyntaxTree.declaration, definition_node>();
             _types_predefined = new List<common_type_node>();
             syntax_tree_visitor.ret.return_value(null);
             // _type_stack = new Stack<common_type_node>(); 
@@ -250,7 +249,7 @@ namespace PascalABCCompiler.TreeConverter
         private static compilation_context _instance;
 
         private Dictionary<common_namespace_node, Dictionary<string, template_class>> compiled_tc_cache = new Dictionary<common_namespace_node, Dictionary<string, template_class>>();
-        internal System.Collections.Hashtable member_decls = new System.Collections.Hashtable();
+        internal Dictionary<SyntaxTree.declaration, definition_node> member_decls = new Dictionary<SyntaxTree.declaration, definition_node>();
         internal bool namespace_converted = false;
 
         public compilation_context(convertion_data_and_alghoritms convertion_data_and_alghoritms, syntax_tree_visitor syntax_tree_visitor)
@@ -430,12 +429,16 @@ namespace PascalABCCompiler.TreeConverter
         
         public common_function_node get_method_to_realize(SyntaxTree.declaration dc)
         {
-        	return member_decls[dc] as common_function_node;
+            member_decls.TryGetValue(dc, out var result);
+
+            return result as common_function_node;
         }
 
         public common_type_node get_type_to_realize(SyntaxTree.declaration dc)
         {
-            return member_decls[dc] as common_type_node;
+            member_decls.TryGetValue(dc, out var result);
+
+            return result as common_type_node;
         }
 
         public void add_method_header(SyntaxTree.declaration dc, definition_node dn)

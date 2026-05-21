@@ -2,9 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
-using System.Text;
 using PascalABCCompiler.TreeRealization;
-using System.Collections;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -104,7 +102,7 @@ namespace PascalABCCompiler.TreeConverter
         public List<var_definition_node> current_var_defs;
         public Stack<code_block> block_stack;
         public statement_node_stack cycle_stack;
-        public Hashtable current_member_decls;
+        public Dictionary<SyntaxTree.declaration, definition_node> current_member_decls;
         public common_function_node_stack function_node_stack;
         public SymbolInfo current_last_created_function;
         public bool SemanticRulesThrowErrorWithoutSave;
@@ -122,7 +120,7 @@ namespace PascalABCCompiler.TreeConverter
             cycle_stack = syntax_tree_visitor.context.CyclesStack;
             syntax_tree_visitor.context.CyclesStack = new statement_node_stack();
             current_member_decls = syntax_tree_visitor.context.member_decls;
-            syntax_tree_visitor.context.member_decls = new Hashtable();
+            syntax_tree_visitor.context.member_decls = new Dictionary<SyntaxTree.declaration, definition_node>();
             function_node_stack = syntax_tree_visitor.context.func_stack;
             syntax_tree_visitor.context.func_stack = new common_function_node_stack();
             current_last_created_function = syntax_tree_visitor.context.last_created_function;

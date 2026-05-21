@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using PascalABCCompiler.SemanticTree;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -286,9 +285,9 @@ namespace PascalABCCompiler.NetHelper
 	
 	public static class NetHelper {
         private static Dictionary<string, Type> namespaces;
-        private static Hashtable types;
+        private static Dictionary<string, object> types;
         private static Dictionary<string, FoundInfo> type_search_cache;
-		private static Hashtable compiled_pascal_types;
+		private static Dictionary<string, object> compiled_pascal_types;
 		/*private static Hashtable methods;
 		private static Hashtable properties;
 		private static Hashtable fields;*/
@@ -298,7 +297,7 @@ namespace PascalABCCompiler.NetHelper
 		private static Dictionary<Type, Dictionary<string, List<MemberInfo>>> members;
 		//private static Hashtable meth_nodes;
 		private static Dictionary<PropertyInfo, compiled_property_node> prop_nodes;
-		private static Hashtable field_nodes;
+		private static Dictionary<MemberInfo, definition_node> field_nodes;
         private static Dictionary<ConstructorInfo, compiled_constructor_node> constr_nodes;
 		private static HashSet<Type> stand_types;
         private static Dictionary<Assembly, Dictionary<int, Type>> type_handles;
@@ -487,7 +486,7 @@ namespace PascalABCCompiler.NetHelper
                     TypeInfo ti = new TypeInfo(t, t.FullName);
                     types[t.FullName] = ti;
                     string short_name = t.Name;
-                    object o2 = types[short_name];
+                    types.TryGetValue(short_name, out object o2);
 
                     if (o2 == null)
                         types[short_name] = ti;
@@ -870,8 +869,8 @@ namespace PascalABCCompiler.NetHelper
             //interfaces = new Hashtable();
             //\ssyy-
             //types = new Hashtable(1024, CaseInsensitiveHashCodeProvider.Default, CaseInsensitiveComparer.Default);
-            types = new Hashtable(8096, StringComparer.CurrentCultureIgnoreCase);
-            compiled_pascal_types = new Hashtable(1024, StringComparer.CurrentCultureIgnoreCase);
+            types = new Dictionary<string, object>(8096, StringComparer.CurrentCultureIgnoreCase);
+            compiled_pascal_types = new Dictionary<string, object>(1024, StringComparer.CurrentCultureIgnoreCase);
             namespaces = new Dictionary<string, Type>(1024, StringComparer.CurrentCultureIgnoreCase);
             ass_name_cache = new Dictionary<string, Assembly>(1024, StringComparer.CurrentCultureIgnoreCase);
             assm_full_paths = new Dictionary<Assembly, string>();
@@ -884,7 +883,7 @@ namespace PascalABCCompiler.NetHelper
             assemblies = new HashSet<Assembly>();
             //meth_nodes = new Hashtable();
             prop_nodes = new Dictionary<PropertyInfo,compiled_property_node>();
-            field_nodes = new Hashtable();
+            field_nodes = new Dictionary<MemberInfo, definition_node>();
             constr_nodes = new Dictionary<ConstructorInfo, compiled_constructor_node>();
             stand_types = new HashSet<Type>();
             type_handles = new Dictionary<Assembly, Dictionary<int, Type>>();
@@ -1716,9 +1715,11 @@ namespace PascalABCCompiler.NetHelper
 
 		public static compiled_variable_definition GetFieldNode(FieldInfo pi)
 		{
-            compiled_variable_definition cpn = field_nodes[pi] as compiled_variable_definition;
-			if (cpn != null) 
+            compiled_variable_definition cpn;
+			if ( field_nodes.TryGetValue(pi, out var existingNode) ) 
 			{
+                cpn = (compiled_variable_definition)existingNode;
+
 				if (cpn.type is compiled_type_node)
 				return cpn;
 				if (PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.CompiledUnit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
@@ -1840,12 +1841,13 @@ namespace PascalABCCompiler.NetHelper
         }
         public static compiled_class_constant_definition GetConstantFieldNode(FieldInfo fi)
         {
-            compiled_class_constant_definition cccd = field_nodes[fi] as compiled_class_constant_definition;
-            if (cccd != null) return cccd;
+            if ( field_nodes.TryGetValue(fi, out var existingNode) )
+                return (compiled_class_constant_definition)existingNode;
+
             constant_node cn = CreateConstantNode(fi.GetRawConstantValue());
             if (cn == null)
                 return null;
-            cccd = new compiled_class_constant_definition(fi, cn);
+            var cccd = new compiled_class_constant_definition(fi, cn);
             field_nodes[fi] = cccd;
             return cccd;
         }
@@ -1865,12 +1867,10 @@ namespace PascalABCCompiler.NetHelper
 
         public static compiled_event GetEvent(EventInfo ei)
         {
-            compiled_event ce = field_nodes[ei] as compiled_event;
-            if (ce != null)
-            {
-                return ce;
-            }
-            ce = new compiled_event(ei);
+            if ( field_nodes.TryGetValue(ei, out var existingNode) )
+                return (compiled_event)existingNode;
+
+            var ce = new compiled_event(ei);
             field_nodes[ei] = ce;
             return ce;
         }
@@ -1958,8 +1958,8 @@ namespace PascalABCCompiler.NetHelper
                 if (ti != null)
                     return ti.type;
             }
-			TypeInfo t = (TypeInfo)types[name];
-			if (t != null)
+
+			if (types.TryGetValue(name, out var temp) && temp is TypeInfo t)
             {
                 fi = new FoundInfo(true, t);
                 type_search_cache[name] = fi;
@@ -1981,8 +1981,7 @@ namespace PascalABCCompiler.NetHelper
 
         public static template_class FindCompiledTemplateType(string name)
         {
-            object o = compiled_pascal_types[name];
-            if (o != null)
+            if ( compiled_pascal_types.TryGetValue(name, out object o) )
             {
                 template_class tc = o as template_class;
                 if (tc == null && PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.CompiledUnit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
@@ -2003,8 +2002,7 @@ namespace PascalABCCompiler.NetHelper
 
         public static type_node FindCompiledPascalType(string name)
         {
-            object o = compiled_pascal_types[name];
-            if (o != null)
+            if ( compiled_pascal_types.TryGetValue(name, out object o) )
             {
                 type_node tn = o as type_node;
                 if (tn == null && PascalABCCompiler.TreeConverter.compilation_context.instance != null && PascalABCCompiler.TreeConverter.compilation_context.instance.syntax_tree_visitor.CompiledUnit != null && PascalABCCompiler.TreeConverter.compilation_context.instance.converted_namespace != null)
@@ -2062,7 +2060,7 @@ namespace PascalABCCompiler.NetHelper
                     if (cur_used_assemblies.Contains(ti.type.Assembly))
                         return ti.type;
             }
-            object o = types[name];
+            types.TryGetValue(name, out object o);
             if (o == null)
             {
                 type_search_cache[name] = new FoundInfo(false);
@@ -2151,7 +2149,7 @@ namespace PascalABCCompiler.NetHelper
             }
             for (int i = 0; i < _unar.Count; i++)
             {
-                o = types[_unar[i].namespace_name + "." + name];
+                types.TryGetValue(_unar[i].namespace_name + "." + name, out o);
                 if (o == null)
                     continue;
                 if (o is TypeInfo)
@@ -2179,8 +2177,9 @@ namespace PascalABCCompiler.NetHelper
 		
 		public static Type FindTypeOrCreate(string name)
 		{
-			TypeInfo ti = types[name] as TypeInfo;
-			if (ti != null /*&& cur_used_assemblies.ContainsKey(t.Assembly)*/) return ti.type;
+            types.TryGetValue(name, out var tempTI);
+
+			if (tempTI is TypeInfo ti /*&& cur_used_assemblies.ContainsKey(t.Assembly)*/) return ti.type;
 			//ivan added - runtime types adding
 			Type t = Type.GetType(name, false, true);
             if (t == null)
@@ -2222,8 +2221,8 @@ namespace PascalABCCompiler.NetHelper
 				return typs;
 			foreach (string s in types.Keys)
 			{
-				TypeInfo ti = types[s] as TypeInfo;
-				if (ti != null)
+                types.TryGetValue(name, out var tempTI);
+				if (tempTI is TypeInfo ti)
 				if (string.Compare(ti.type.Namespace,name, true) == 0)
 				{
 					lst.Add(ti.type);

@@ -717,7 +717,7 @@ namespace PascalABCCompiler.TreeConverter
                 convertion_data_and_alghoritms.parser_error = value;
             }
         }
-        public System.Collections.Hashtable BadNodesInSyntaxTree
+        public HashSet<SyntaxTree.syntax_tree_node> BadNodesInSyntaxTree
         {
             get
             {
@@ -19741,8 +19741,8 @@ namespace PascalABCCompiler.TreeConverter
             SemanticTree.field_access_level curr_fal = context.get_field_access_level();
             List<var_definition_node> current_var_defs = context.var_defs;
             context.var_defs = new List<var_definition_node>();
-            Hashtable current_member_decls = context.member_decls;
-            context.member_decls = new Hashtable();
+            Dictionary<SyntaxTree.declaration, definition_node> current_member_decls = context.member_decls;
+            context.member_decls = new Dictionary<declaration, definition_node>();
             //подменяем using-список 
             using_namespace_list current_using_list = new using_namespace_list();
             foreach (using_namespace un in using_list)

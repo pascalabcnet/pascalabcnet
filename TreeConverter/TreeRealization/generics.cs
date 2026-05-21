@@ -232,14 +232,18 @@ namespace PascalABCCompiler.TreeRealization
         public static List<SemanticTree.IGenericFunctionInstance> all_function_instances =
             new List<SemanticTree.IGenericFunctionInstance>();
 
-        public static Hashtable generic_instances = new Hashtable();
+        public static Dictionary<definition_node, object> generic_instances =
+            new Dictionary<definition_node, object>();
 
         public static syntax_tree_visitor visitor;
 
         public static List<generic_type_instance_info> get_type_instances(type_node original_generic_type)
         {
-            List<generic_type_instance_info> instances = generic_instances[original_generic_type] as List<generic_type_instance_info>;
-            if (instances == null)
+            List<generic_type_instance_info> instances;
+            
+            if ( generic_instances.TryGetValue(original_generic_type, out var temp) )
+                instances = (List<generic_type_instance_info>)temp;
+            else
             {
                 instances = new List<generic_type_instance_info>();
                 generic_instances.Add(original_generic_type, instances);
@@ -249,14 +253,17 @@ namespace PascalABCCompiler.TreeRealization
 
         public static void remove_type_instances(type_node original_generic_type)
         {
-            if (generic_instances[original_generic_type] != null)
+            if (generic_instances.ContainsKey(original_generic_type))
                 generic_instances.Remove(original_generic_type);
         }
 
         public static List<generic_function_instance_info> get_function_instances(function_node original_generic_function)
         {
-            List<generic_function_instance_info> instances = generic_instances[original_generic_function] as List<generic_function_instance_info>;
-            if (instances == null)
+            List<generic_function_instance_info> instances;
+            
+            if ( generic_instances.TryGetValue(original_generic_function, out var temp) )
+                instances = (List<generic_function_instance_info>)temp;
+            else
             {
                 instances = new List<generic_function_instance_info>();
                 generic_instances.Add(original_generic_function, instances);

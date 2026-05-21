@@ -126,7 +126,7 @@ namespace PascalABCCompiler.TreeConverter
                 _parser_error = value;
             }
 		}
-        public System.Collections.Hashtable bad_nodes_in_syntax_tree;
+        public HashSet<SyntaxTree.syntax_tree_node> bad_nodes_in_syntax_tree;
 
 		public SymbolTable.TreeConverterSymbolTable symbol_table
 		{
@@ -3330,7 +3330,7 @@ namespace PascalABCCompiler.TreeConverter
 			{
 				return;
 			}
-			if (bad_nodes_in_syntax_tree[tn]!=null)
+			if ( bad_nodes_in_syntax_tree.Contains(tn) )
 			{
 				AddError(new ParserError(_parser_error,_stv.get_location(tn)));
 			}
