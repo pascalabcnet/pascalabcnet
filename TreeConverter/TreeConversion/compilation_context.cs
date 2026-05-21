@@ -20,7 +20,6 @@ namespace PascalABCCompiler.TreeConverter
         public common_namespace_node cmn; // текущий namespace
         public common_type_node ctn;      // текущий разбираемый тип
         public common_function_node_stack func_stack;
-		public lambda_stack lambda_stack; 
         public Stack<code_block> block_stack;
         public Dictionary<int, short_string_type_node> ShortStringTypes;
         public List<var_definition_node> var_defs;
@@ -60,7 +59,7 @@ namespace PascalABCCompiler.TreeConverter
         // Из любого блока на глобальный уровень. Обнуляется _ctn.
         public void SaveContextAndUpToGlobalLevel() 
         {
-            if (!func_stack.Empty || SavedContext == null)
+            if (func_stack.Count > 0 || SavedContext == null)
                 SaveContextAndUpFromAllFunctionDefs();
             SavedContext.ctn = _ctn;
             _ctn = null;
@@ -68,7 +67,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public void SaveContextAndUpFromAllFunctionDefs()
         {
-            if (!convertion_data_and_alghoritms.statement_list_stack.Empty || SavedContext == null)
+            if (convertion_data_and_alghoritms.statement_list_stack.Count > 0 || SavedContext == null)
                 SaveContextAndUpToNearestDefSect();
             SavedContext.func_stack = func_stack;
             func_stack = new common_function_node_stack();
@@ -173,7 +172,7 @@ namespace PascalABCCompiler.TreeConverter
 		public common_namespace_node _cmn;
         //TODO: Можно сделать возможность объявления вложенных типов.
 		public common_type_node _ctn; // SSM - пытаюсь выходить из класса и входить заново
-		private common_function_node_stack _func_stack=new common_function_node_stack();
+		private common_function_node_stack _func_stack = new common_function_node_stack();
         private type_node _explicit_interface_type;
         internal bool WithSection = false;
         internal Dictionary<SymbolTable.Scope, expression_node> WithVariables = new Dictionary<SymbolTable.Scope, expression_node>();
@@ -311,11 +310,11 @@ namespace PascalABCCompiler.TreeConverter
             //CurrentHandlerListStack = new Stack<List<string>>(); // SSM 29/03/22 - не сработало
             _cmn = null;
             _ctn = null;
-            _func_stack.clear();
+            _func_stack.Clear();
             var_defs.Clear();
             _main_procedure = null;
             _last_created_function = null;
-            _cycles_stack.clear();
+            _cycles_stack.Clear();
             _num_of_for_cycles = 0;
             _fal = SemanticTree.field_access_level.fal_private;
             var_defs_stack.Clear();
@@ -377,9 +376,9 @@ namespace PascalABCCompiler.TreeConverter
         {
             get
             {
-                if (!syntax_tree_visitor.convertion_data_and_alghoritms.statement_list_stack.Empty)
+                if (syntax_tree_visitor.convertion_data_and_alghoritms.statement_list_stack.Count > 0)
                 {
-                    SymbolTable.Scope sc = syntax_tree_visitor.convertion_data_and_alghoritms.statement_list_stack.top().Scope;
+                    SymbolTable.Scope sc = syntax_tree_visitor.convertion_data_and_alghoritms.statement_list_stack.Peek().Scope;
                     if (sc != null)
                     {
                         if (top_function != null && LambdaHelper.IsLambdaName(top_function.name)) //lroman
@@ -426,7 +425,7 @@ namespace PascalABCCompiler.TreeConverter
 		
         public void push_function(common_function_node fn)
         {
-        	_func_stack.push(fn);
+        	_func_stack.Push(fn);
         }
         
         public common_function_node get_method_to_realize(SyntaxTree.declaration dc)
@@ -510,7 +509,7 @@ namespace PascalABCCompiler.TreeConverter
         
         public void pop_top_function()
         {
-            _func_stack.pop();
+            _func_stack.Pop();
         }
 
         private List<common_type_node> _types_predefined = new List<common_type_node>();
@@ -641,11 +640,11 @@ namespace PascalABCCompiler.TreeConverter
 		{
 			get
 			{
-				if (_func_stack.size==0)
+				if (_func_stack.Count==0)
 				{
 					return null;
 				}
-				return (_func_stack.top());
+				return _func_stack.Peek();
 			}
 		}
 
@@ -765,7 +764,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public bool func_stack_size_is_one()
         {
-            return (_func_stack.size == 1);
+            return (_func_stack.Count == 1);
         }
 
 		public block_type converting_block()
@@ -775,7 +774,7 @@ namespace PascalABCCompiler.TreeConverter
             if (_ctn != null && top_function!=null && _ctn.defined_in_scope == top_function.scope)
                 return block_type.type_block;
 			
-            if (_func_stack.size!=0)
+            if (_func_stack.Count!=0)
 			{
 				return block_type.function_block;
 			}
@@ -1201,10 +1200,10 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (converting_block() == block_type.function_block)
                 {
-                    var top_func = func_stack.top();
+                    var top_func = func_stack.Peek();
                     if (top_func.name == lambda_name)
                     {
-                        _func_stack.pop();
+                        _func_stack.Pop();
                     }
                 }
             }
@@ -1233,7 +1232,7 @@ namespace PascalABCCompiler.TreeConverter
         //lroman//
         public common_function_node create_lambda_function(string name, location def_loc, bool add_symbol_info, SymbolTable.Scope topScope)
         {
-            var func_stack_as_array = _func_stack.CloneInternalStack().ToList();
+            var func_stack_as_array = _func_stack.ToList();
 
             var nestedFunc = func_stack_as_array.FirstOrDefault(func => func is common_in_function_function_node);
             if (nestedFunc != null)
@@ -1279,7 +1278,7 @@ namespace PascalABCCompiler.TreeConverter
                 cfn = cnfnn;
             }
 
-            _func_stack.push(cfn);
+            _func_stack.Push(cfn);
             return cfn;
         }
         //\lroman//
@@ -1300,7 +1299,7 @@ namespace PascalABCCompiler.TreeConverter
 			{
 				case block_type.function_block:
 				{
-                    common_function_node top_func = _func_stack.top();
+                    common_function_node top_func = _func_stack.Peek();
                     SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateScope(top_func.scope, "function " + name);
 					common_in_function_function_node ciffn =new common_in_function_function_node(name,def_loc,top_func,scope);
 					top_func.functions_nodes_list.AddElement(ciffn);
@@ -1374,7 +1373,7 @@ namespace PascalABCCompiler.TreeConverter
 					break;
 				}
 			}
-			_func_stack.push(cfn);
+			_func_stack.Push(cfn);
 			return cfn;
 		}
 
@@ -1668,8 +1667,8 @@ namespace PascalABCCompiler.TreeConverter
         {
             get
             {
-                if (!syntax_tree_visitor.convertion_data_and_alghoritms.statement_list_stack.Empty)
-                    return syntax_tree_visitor.convertion_data_and_alghoritms.statement_list_stack.top();
+                if (syntax_tree_visitor.convertion_data_and_alghoritms.statement_list_stack.Count > 0)
+                    return syntax_tree_visitor.convertion_data_and_alghoritms.statement_list_stack.Peek();
                 return null;
             }
         }
@@ -1837,7 +1836,7 @@ namespace PascalABCCompiler.TreeConverter
 			{
 				case block_type.function_block:
 				{
-                    common_function_node top_func = _func_stack.top();
+                    common_function_node top_func = _func_stack.Peek();
 					local_variable lv=new local_variable(name,tn,top_func,loc);
 					vdn=lv;
 					top_func.var_definition_nodes_list.AddElement(lv);
@@ -1881,7 +1880,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 case block_type.function_block:
                     {
-                        common_function_node top_func = _func_stack.top();
+                        common_function_node top_func = _func_stack.Peek();
                         top_func.label_nodes_list.Add(lab);
                         top_func.scope.AddSymbol(name, new SymbolInfo(lab));
                         break;
@@ -1974,7 +1973,7 @@ namespace PascalABCCompiler.TreeConverter
 			{
 				case block_type.function_block:
 				{
-                    common_function_node top_func = _func_stack.top();
+                    common_function_node top_func = _func_stack.Peek();
 					local_variable lv=new local_variable(name,type,top_func,loc);
 					vdn=lv;
 					top_func.var_definition_nodes_list.AddElement(lv);
@@ -2009,7 +2008,7 @@ namespace PascalABCCompiler.TreeConverter
 				throw new CompilerInternalError("Parameters can be defined with functions only");
 			}
 #endif
-            common_function_node top_func = _func_stack.top();
+            common_function_node top_func = _func_stack.Peek();
 			common_parameter cp=new common_parameter(name,pt,top_func,cpt,loc);
 			top_func.parameters.AddElement(cp);
 			top_func.scope.AddSymbol(name,new SymbolInfo(cp));
@@ -2026,7 +2025,7 @@ namespace PascalABCCompiler.TreeConverter
 			{
 				case block_type.function_block:
 				{
-                    common_function_node top_func = _func_stack.top();
+                    common_function_node top_func = _func_stack.Peek();
                     function_constant_definition fcd = new function_constant_definition(name, loc, top_func);
 					top_func.scope.AddSymbol(name,new SymbolInfo(fcd));
                     top_func.constants.AddElement(fcd);
@@ -2340,7 +2339,7 @@ namespace PascalABCCompiler.TreeConverter
 			{
 				case block_type.function_block:
 				{
-                    common_function_node top_func = _func_stack.top();
+                    common_function_node top_func = _func_stack.Peek();
                     location loc;
                     if (top_func.function_code == null)
                     {
@@ -2381,7 +2380,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                     }
                     check_predefinition_defined();
-					_func_stack.pop();
+					_func_stack.Pop();
 					break;
 				}
 				case block_type.type_block:
@@ -2545,7 +2544,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             int num_of_defaults = default_params.Count-1;
-            if (default_params.Count > 0 && converted_func_stack.size == 1)
+            if (default_params.Count > 0 && converted_func_stack.Count == 1)
                 while (num_of_defaults >= 0)
                 {
 
@@ -2607,7 +2606,7 @@ namespace PascalABCCompiler.TreeConverter
 
 		private void close_function_params_without_body()
 		{
-			check_function_not_exists(_func_stack.top());
+			check_function_not_exists(_func_stack.Peek());
 		}
 
         /// <summary>
@@ -2616,7 +2615,7 @@ namespace PascalABCCompiler.TreeConverter
         /// <returns></returns>
 		private bool close_function_params_with_body()
 		{
-			return check_unique_or_predefined(_func_stack.top());
+			return check_unique_or_predefined(_func_stack.Peek());
 		}
 		
 		private List<string> CurrentHandlerList=null;
@@ -3093,7 +3092,7 @@ namespace PascalABCCompiler.TreeConverter
 			{
 				case block_type.function_block:
 				{
-					foreach(common_function_node cfn in _func_stack.top().functions_nodes_list)
+					foreach(common_function_node cfn in _func_stack.Peek().functions_nodes_list)
 					{
 						if (cfn.function_code==null)
 						{
@@ -3101,7 +3100,7 @@ namespace PascalABCCompiler.TreeConverter
                             AddError(new FunctionPredefinitionWithoutDefinition(cfn, cfn.loc));
 						}
 					}
-                    check_labels(_func_stack.top().label_nodes_list);
+                    check_labels(_func_stack.Peek().label_nodes_list);
                     break;
 				}
 				case block_type.namespace_block:
@@ -3205,7 +3204,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             List<SymbolInfo> si_list = null;
             bool in_unit = false;
-            if (_func_stack.size <= 1)
+            if (_func_stack.Count <= 1)
             {
                 if (_explicit_interface_type != null)
                 {
@@ -3264,9 +3263,9 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                common_function_node temp = _func_stack.pop();
-                si_list = _func_stack.top().scope.FindOnlyInScope(fn.name);
-                _func_stack.push(temp);
+                common_function_node temp = _func_stack.Pop();
+                si_list = _func_stack.Peek().scope.FindOnlyInScope(fn.name);
+                _func_stack.Push(temp);
             }
             bool predef_find = false;
             int overloads = 0;
@@ -3413,7 +3412,7 @@ namespace PascalABCCompiler.TreeConverter
                         last_created_function.symbol_kind = symbol_kind.sk_overload_function;
                     }
 
-                    common_function_node cfn11 = _func_stack.pop();
+                    common_function_node cfn11 = _func_stack.Pop();
                     compar.scope = cfn11.scope;
 
                     common_method_node cmnode = compar as common_method_node;
@@ -3432,8 +3431,8 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         case block_type.function_block:
                             {
-                                _func_stack.top().functions_nodes_list.remove((common_in_function_function_node)fn);
-                                siint = _func_stack.top().scope.FindOnlyInScope(fn.name);
+                                _func_stack.Peek().functions_nodes_list.remove((common_in_function_function_node)fn);
+                                siint = _func_stack.Peek().scope.FindOnlyInScope(fn.name);
                                 break;
                             }
                         case block_type.namespace_block:
@@ -3547,7 +3546,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                     }
 
-                    _func_stack.push(compar);
+                    _func_stack.Push(compar);
                     compar.attributes.AddRange(fn.attributes);
                     //si_list.sym_info=fn;
                     break;
@@ -3563,7 +3562,7 @@ namespace PascalABCCompiler.TreeConverter
 		private void check_function_not_exists(common_function_node fn)
 		{
 			List<SymbolInfo> sil=null;
-			if (_func_stack.size<=1)
+			if (_func_stack.Count<=1)
 			{
 				if (_ctn!=null)
 				{
@@ -3576,9 +3575,9 @@ namespace PascalABCCompiler.TreeConverter
 			}
 			else
 			{
-				common_function_node temp=_func_stack.pop();
-				sil=_func_stack.top().scope.FindOnlyInScope(fn.name);
-				_func_stack.push(temp);
+				common_function_node temp=_func_stack.Pop();
+				sil=_func_stack.Peek().scope.FindOnlyInScope(fn.name);
+				_func_stack.Push(temp);
 			}
             if(sil != null)
 			    foreach(SymbolInfo si in sil)
@@ -3673,7 +3672,7 @@ namespace PascalABCCompiler.TreeConverter
 				{
 					case block_type.function_block:
 					{
-						return _func_stack.top().function_code;
+						return _func_stack.Peek().function_code;
 					}
 					case block_type.type_block:
 					{
@@ -3692,7 +3691,7 @@ namespace PascalABCCompiler.TreeConverter
 				{
 					case block_type.function_block:
 					{
-						_func_stack.top().function_code=value;
+						_func_stack.Peek().function_code=value;
 						break;
 					}
 					case block_type.type_block:
@@ -3716,7 +3715,7 @@ namespace PascalABCCompiler.TreeConverter
 				{
 					case block_type.function_block:
 					{
-						return _func_stack.top().cycles_stack;
+						return _func_stack.Peek().cycles_stack;
 					}
 					case block_type.type_block:
 					{
@@ -4043,13 +4042,13 @@ namespace PascalABCCompiler.TreeConverter
 
         public void enter_in_cycle(statement_node stmt)
         {
-            cycle_stack.push(stmt);
+            cycle_stack.Push(stmt);
             disable_finally_control_break_check = true;
         }
 
         public void leave_cycle()
         {
-            cycle_stack.pop();
+            cycle_stack.Pop();
             disable_finally_control_break_check = false;
         }
 

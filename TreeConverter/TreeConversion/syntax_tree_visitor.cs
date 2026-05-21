@@ -1881,7 +1881,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return null;
             }
-            if (context.cycle_stack.Empty)
+            if (context.cycle_stack.Count == 0)
             {
                 AddError(new BreakStatementWithoutComprehensiveCycle(call_location));
             }
@@ -1889,7 +1889,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 AddError(call_location, "EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK");
             }
-            statement_node sn = context.cycle_stack.top();
+            statement_node sn = context.cycle_stack.Peek();
             switch (sn.semantic_node_type)
             {
                 case semantic_node_type.while_node:
@@ -1922,7 +1922,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return null;
             }
-            if (context.cycle_stack.Empty)
+            if (context.cycle_stack.Count == 0)
             {
                 AddError(new ContinueStatementWithoutComprehensiveCycle(call_location));
             }
@@ -1930,7 +1930,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 AddError(call_location, "EXIT_BREAK_CONTINUE_IN_FINALLY_BLOCK");
             }
-            statement_node sn = context.cycle_stack.top();
+            statement_node sn = context.cycle_stack.Peek();
             switch (sn.semantic_node_type)
             {
                 case semantic_node_type.while_node:
@@ -2025,7 +2025,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         statement_node stm = convert_strong(eh.statements);
                         context.leave_code_block();
-                        sl = convertion_data_and_alghoritms.statement_list_stack.pop();
+                        sl = convertion_data_and_alghoritms.statement_list_stack.Pop();
                         if (sl.statements.Count > 0 || sl.local_variables.Count > 0)
                         {
                             sl.statements.AddElement(stm);
@@ -2808,7 +2808,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
-            if (context.converting_block() == block_type.function_block && context.converted_func_stack.size == 1)
+            if (context.converting_block() == block_type.function_block && context.converted_func_stack.Count == 1)
             {
                 if (_block.defs != null)
                     foreach (declaration decl in _block.defs.defs)
@@ -2821,7 +2821,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
             }
             weak_node_test_and_visit(_block.defs);
-            if (context.converting_block() == block_type.function_block && context.converted_func_stack.size == 1)
+            if (context.converting_block() == block_type.function_block && context.converted_func_stack.Count == 1)
                 context.has_nested_functions = false;
             //ssyy добавил генерацию вызова конструктора предка без параметров
             if (context.converting_block() == block_type.function_block)
@@ -2941,7 +2941,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (context.converting_block() == block_type.function_block)
                     {
-                        if (context.func_stack.top().functions_nodes_list.Count > 0)
+                        if (context.func_stack.Peek().functions_nodes_list.Count > 0)
                         {
                             AddError(new LambdasNotAllowedWhenNestedSubprogrammesAreUsed(get_location(lambdaSearcher.FoundLambda)));
                         }
@@ -2956,9 +2956,9 @@ namespace PascalABCCompiler.TreeConverter
                         l.goto_statements.Clear();
                         l.comprehensive_code_block = null;
                     }
-                    if (context.func_stack.size > 0)
+                    if (context.func_stack.Count > 0)
                     {
-                        var fun = context.func_stack.top();
+                        var fun = context.func_stack.Peek();
                         foreach (var l in fun.label_nodes_list)
                         {
                             l.goto_statements.Clear();
@@ -9142,8 +9142,8 @@ namespace PascalABCCompiler.TreeConverter
                         first_iteration = false;
                         continue;
                     }
-                    if (last_call != null && convertion_data_and_alghoritms.statement_list_stack.size > 0)
-                        convertion_data_and_alghoritms.statement_list_stack.top().statements.AddElement(last_call);
+                    if (last_call != null && convertion_data_and_alghoritms.statement_list_stack.Count > 0)
+                        convertion_data_and_alghoritms.statement_list_stack.Peek().statements.AddElement(last_call);
                     expression_node en = convert_strong(ex);
                     check_on_loop_variable(en);
                     //if (en.type == null)
@@ -9260,8 +9260,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (!readln_string_file)
                 {
-                    if (last_call != null && convertion_data_and_alghoritms.statement_list_stack.size > 0)
-                        convertion_data_and_alghoritms.statement_list_stack.top().statements.AddElement(last_call);
+                    if (last_call != null && convertion_data_and_alghoritms.statement_list_stack.Count > 0)
+                        convertion_data_and_alghoritms.statement_list_stack.Peek().statements.AddElement(last_call);
                     exl.Clear();
 
                     if (read_from_file)
@@ -11990,7 +11990,7 @@ namespace PascalABCCompiler.TreeConverter
             assign_doc_info(cdn,_typed_const_definition);
             check_for_type_allowed(tn,get_location(_typed_const_definition.const_type));
             check_using_static_class(tn, get_location(_typed_const_definition.const_type));
-            if (context.converted_type != null && context.converted_func_stack.Empty)
+            if (context.converted_type != null && context.converted_func_stack.Count == 0)
             	if (!constant_in_class_valid(tn))//proverka na primitivnost konstanty v klasse
                     AddError(get_location(_typed_const_definition), "CLASS_CONSTANT_CAN_HAVE_ONLY_PRIMITIVE_VALUE");
             if (tn is common_type_node)
@@ -12055,7 +12055,7 @@ namespace PascalABCCompiler.TreeConverter
             cdn.const_value = convert_strong_to_constant_node(_simple_const_definition.const_value);
             cdn.const_value.SetType(DeduceType(cdn.const_value.type, cdn.const_value.location));
             assign_doc_info(cdn,_simple_const_definition);
-            if (context.converted_type != null && context.converted_func_stack.Empty)
+            if (context.converted_type != null && context.converted_func_stack.Count == 0)
             	if (!constant_in_class_valid(cdn.const_value.type))
                     AddError(get_location(_simple_const_definition), "CLASS_CONSTANT_CAN_HAVE_ONLY_PRIMITIVE_VALUE");
 
@@ -12436,7 +12436,7 @@ namespace PascalABCCompiler.TreeConverter
                     tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.array_kind)// ||
                     /*tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.set_type*/
                 {
-                	if (context.converted_func_stack.Empty)
+                	if (context.converted_func_stack.Count == 0)
                 	{
                 		type_synonym ts = new type_synonym(name, tn, loc);
                 		assign_doc_info(ts,_type_declaration);
@@ -13585,7 +13585,7 @@ namespace PascalABCCompiler.TreeConverter
             var proc_name = _procedure_definition.proc_header != null && _procedure_definition.proc_header.name != null
                                 ? _procedure_definition.proc_header.name.meth_name
                                 : null;
-            if (_procedure_definition.proc_header.attributes != null && context.converted_func_stack.size >= 1)
+            if (_procedure_definition.proc_header.attributes != null && context.converted_func_stack.Count >= 1)
                 AddError(get_location(_procedure_definition.proc_header), "ATTRIBUTES_FOR_NESTED_FUNCTIONS_NOT_ALLOWED");
             if (context.top_function != null && context.top_function.generic_params != null && !LambdaHelper.IsLambdaName(proc_name) && !(_procedure_definition.proc_header is SyntaxTree.constructor))
                 AddError(get_location(_procedure_definition.proc_header), "NESTED_FUNCTIONS_IN_GENERIC_FUNCTIONS_NOT_ALLOWED");
@@ -13651,7 +13651,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             //\ssyy
-            if (context.converted_type != null && context.converted_type.IsStatic && !_procedure_definition.proc_header.class_keyword && context.func_stack.Empty)
+            if (context.converted_type != null && context.converted_type.IsStatic && !_procedure_definition.proc_header.class_keyword && context.func_stack.Count == 0)
                 AddError(get_location(_procedure_definition), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
             if (_procedure_definition.proc_body == null)
             {
@@ -16410,7 +16410,7 @@ namespace PascalABCCompiler.TreeConverter
             statement_node then_st = convert_strong(_if_node.then_body);
             context.leave_code_block();
 
-            sl = convertion_data_and_alghoritms.statement_list_stack.pop();
+            sl = convertion_data_and_alghoritms.statement_list_stack.Pop();
             if (sl.statements.Count > 0 || sl.local_variables.Count > 0)
             {
                 sl.statements.AddElement(then_st);
@@ -16429,7 +16429,7 @@ namespace PascalABCCompiler.TreeConverter
 
             if (_if_node.else_body != null)
             {
-                sl = convertion_data_and_alghoritms.statement_list_stack.pop();
+                sl = convertion_data_and_alghoritms.statement_list_stack.Pop();
                 if (sl.statements.Count > 0 || sl.local_variables.Count > 0)
                 {
                     sl.statements.AddElement(else_st);
@@ -16462,7 +16462,7 @@ namespace PascalABCCompiler.TreeConverter
             statement_node st = convert_strong(_while_node.statements);
             context.leave_code_block();
 
-            sl = convertion_data_and_alghoritms.statement_list_stack.pop();
+            sl = convertion_data_and_alghoritms.statement_list_stack.Pop();
             if (sl.statements.Count > 0 || sl.local_variables.Count > 0)
             {
                 sl.statements.AddElement(st);
@@ -16486,7 +16486,7 @@ namespace PascalABCCompiler.TreeConverter
 
             statement_node st = convert_strong(_repeat_node.statements);
 
-            sl = convertion_data_and_alghoritms.statement_list_stack.pop();
+            sl = convertion_data_and_alghoritms.statement_list_stack.Pop();
             //if (!(st is statements_list))
             if (sl.statements.Count > 0 || sl.local_variables.Count > 0)
             {
@@ -17888,7 +17888,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 AddError(get_location(ident), "NO_BASE_CLASS_DEFINED_BUT_INHERITED_MEET");
             }
-            common_method_node cmn = context.converted_func_stack.first() as common_method_node;
+            common_method_node cmn = context.converted_func_stack.Last() as common_method_node;
             if (cmn == null)
             {
                 AddError(get_location(ident), "NAME_IN_BASE_CLASS_MUST_BE_METHOD");
@@ -17945,7 +17945,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             string name = ident.name;
             if (string.IsNullOrEmpty(name))
-                name = context.converted_func_stack.first().name;
+                name = context.converted_func_stack.Last().name;
             List<SymbolInfo> sil = context.converted_type.base_type.find_in_type(name, context.CurrentScope);
             if (sil == null)
             {
@@ -18081,8 +18081,8 @@ namespace PascalABCCompiler.TreeConverter
             location loc = get_location(_ident);
             function_node fn = sil.FirstOrDefault().sym_info as function_node;
             base_function_call bfc = null;
-            common_function_node cfn = context.converted_func_stack.first();
-            int depth = context.converted_func_stack.size-1;
+            common_function_node cfn = context.converted_func_stack.Last();
+            int depth = context.converted_func_stack.Count-1;
             if (!constr)
             {
             	if (fn.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
@@ -18547,7 +18547,7 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             base_function_call bfc = stl.statements[0] as basic_function_call;
                             if (bfc.type != null && bfc.type.name.Contains("<>local_variables_class") && (semantic_statement is compiled_constructor_call || semantic_statement is common_constructor_call)
-                                && !context.converted_func_stack.Empty && context.converted_func_stack.top() is common_method_node && (context.converted_func_stack.top() as common_method_node).is_constructor)
+                                && context.converted_func_stack.Count > 0 && context.converted_func_stack.Peek() is common_method_node && (context.converted_func_stack.Peek() as common_method_node).is_constructor)
                                 stl.statements.AddElementFirst(semantic_statement);
                             else
                                 stl.statements.AddElement(semantic_statement);
@@ -18616,7 +18616,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (for_intellisense)
                     {
-                        if (syntax_statement is assign && !(context.converted_func_stack.top() != null && context.converted_func_stack.top().return_value_type is undefined_type) 
+                        if (syntax_statement is assign && !(context.converted_func_stack.FirstOrDefault() != null && context.converted_func_stack.Peek().return_value_type is undefined_type) 
                             || syntax_statement is procedure_call || syntax_statement is raise_statement)
                         {
                            
@@ -18632,7 +18632,7 @@ namespace PascalABCCompiler.TreeConverter
                             base_function_call bfc = stl.statements[0] as basic_function_call;
                             if (bfc.type != null && bfc.type.name.Contains("<>local_variables_class") && 
                                 (semantic_statement is compiled_constructor_call && !(semantic_statement as compiled_constructor_call).new_obj_awaited() || semantic_statement is common_constructor_call && !(semantic_statement as common_constructor_call).new_obj_awaited()) 
-                                && !context.converted_func_stack.Empty && context.converted_func_stack.top() is common_method_node && (context.converted_func_stack.top() as common_method_node).is_constructor)
+                                && context.converted_func_stack.Count > 0 && context.converted_func_stack.Peek() is common_method_node && (context.converted_func_stack.Peek() as common_method_node).is_constructor)
                                 stl.statements.AddElementFirst(semantic_statement);
                             else
                                 stl.statements.AddElement(semantic_statement);
@@ -18657,7 +18657,7 @@ namespace PascalABCCompiler.TreeConverter
                         throw ex;
                 }
             }
-            convertion_data_and_alghoritms.statement_list_stack.pop();
+            convertion_data_and_alghoritms.statement_list_stack.Pop();
 
             #region MikhailoMMX, обработка omp parallel sections
             //флаг был установлен только если это самый внешний parallel sections и нужно сгенерировать обе ветки
@@ -18717,13 +18717,13 @@ namespace PascalABCCompiler.TreeConverter
         {
             string module_name = "";
             string name = "";
-            if (context.converted_func_stack.size > 1)
+            if (context.converted_func_stack.Count > 1)
                 AddError(context.top_function.loc, "EXTERNAL_METHOD_CANNOT_BE_NESTED");
-            if (context.converted_func_stack.top() is common_method_node && (context.converted_func_stack.top() as common_method_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static)
+            if (context.converted_func_stack.Peek() is common_method_node && (context.converted_func_stack.Peek() as common_method_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                 AddError(context.top_function.loc, "EXTERNAL_METHOD_SHOULD_BE_STATIC");
-            if (context.converted_func_stack.top().is_generic_function)
+            if (context.converted_func_stack.Peek().is_generic_function)
                 AddError(context.top_function.loc, "EXTERNAL_METHOD_CANNOT_BE_GENERIC");
-            if (context.converted_func_stack.top() is common_method_node && (context.converted_func_stack.top() as common_method_node).common_comprehensive_type.is_generic_type_definition)
+            if (context.converted_func_stack.Peek() is common_method_node && (context.converted_func_stack.Peek() as common_method_node).common_comprehensive_type.is_generic_type_definition)
                 AddError(context.top_function.loc, "EXTERNAL_METHOD_CANNOT_BE_DECLARED_IN_GENERIC_TYPE");
 
             if (_external_directive.modulename == null)
@@ -18769,7 +18769,7 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(get_location(_external_directive.modulename), "DLLNAME_CANNOT_BE_EMPTY");
             if (_external_directive.name == null)
             {
-            	name = context.converted_func_stack.top().name;
+            	name = context.converted_func_stack.Peek().name;
             }
             else
             if (_external_directive.name is SyntaxTree.string_const)
@@ -20909,7 +20909,7 @@ namespace PascalABCCompiler.TreeConverter
             fn.body = convert_strong(node.stmt);
             context.leave_code_block();
 
-            slst = convertion_data_and_alghoritms.statement_list_stack.pop();
+            slst = convertion_data_and_alghoritms.statement_list_stack.Pop();
             if (slst.statements.Count > 0 || slst.local_variables.Count > 0)
             {
                 slst.statements.AddElement(fn.body);
@@ -20918,7 +20918,7 @@ namespace PascalABCCompiler.TreeConverter
 
             context.leave_cycle();
 
-            head_stmts = convertion_data_and_alghoritms.statement_list_stack.pop();
+            head_stmts = convertion_data_and_alghoritms.statement_list_stack.Pop();
             head_stmts.statements.AddElement(fn);
             return_value(head_stmts);
 
@@ -21334,7 +21334,7 @@ namespace PascalABCCompiler.TreeConverter
                 procDecl.proc_header.where_defs = whereSection;
             }
 
-            if (!context.func_stack.Empty && context.func_stack.top().polymorphic_state == SemanticTree.polymorphic_state.ps_static
+            if (context.func_stack.Count > 0 && context.func_stack.Peek().polymorphic_state == SemanticTree.polymorphic_state.ps_static
             || context.converted_type != null && context.converted_type.IsStatic)
             {
                 procDecl.proc_header.class_keyword = true;

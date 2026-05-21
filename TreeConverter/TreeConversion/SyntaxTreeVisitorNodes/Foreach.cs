@@ -78,7 +78,7 @@ namespace PascalABCCompiler.TreeConverter
             context.loop_var_stack.Pop();
             context.leave_cycle();
 
-            sl = convertion_data_and_alghoritms.statement_list_stack.pop();
+            sl = convertion_data_and_alghoritms.statement_list_stack.Pop();
 
             if (sl.statements.Count > 0 || sl.local_variables.Count > 0)
             {
@@ -88,7 +88,7 @@ namespace PascalABCCompiler.TreeConverter
 
             foreachNode.what_do = body;
 
-            convertion_data_and_alghoritms.statement_list_stack.pop();
+            convertion_data_and_alghoritms.statement_list_stack.Pop();
             sl2.statements.AddElement(foreachNode);
             
             return_value(sl2);

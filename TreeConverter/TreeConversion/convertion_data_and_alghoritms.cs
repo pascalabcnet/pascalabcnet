@@ -62,7 +62,7 @@ namespace PascalABCCompiler.TreeConverter
 		{
 			symtab.Clear();
             _type_constructor.reset();
-            statement_list_stack.clear();
+            statement_list_stack.Clear();
             //_current_operation_kind = special_operation_kind.none;
 		}
 
@@ -83,7 +83,7 @@ namespace PascalABCCompiler.TreeConverter
         internal void statement_list_stack_push(statements_list sl)
         {
             sl.Scope = new SymbolTable.BlockScope(symbol_table, syntax_tree_visitor.context.CurrentScope);            
-            statement_list_stack.push(sl);
+            statement_list_stack.Push(sl);
         }
         
         internal SymbolTable.Scope create_block_scope()
@@ -94,17 +94,17 @@ namespace PascalABCCompiler.TreeConverter
         internal void statement_list_stack_push(statements_list sl, SymbolTable.Scope Scope)
         {
             sl.Scope = Scope;
-            statement_list_stack.push(sl);
+            statement_list_stack.Push(sl);
         }
 
         internal statements_list statement_list_stack_pop()
         {
-            return statement_list_stack.pop();
+            return statement_list_stack.Pop();
         }
         
         internal statements_list statement_list_stack_first()
         {
-        	return statement_list_stack.first();
+        	return statement_list_stack.Last();
         }
         
         public type_constructor type_constructor
@@ -975,10 +975,10 @@ namespace PascalABCCompiler.TreeConverter
                     if (factparams.Count > 0) loc = factparams[factparams.Count-1].location;
                     //var_definition_node vdn=syntax_tree_visitor.context.add_var_definition_in_entry_scope(get_temp_arr_name(),loc);
                     var_definition_node vdn = null;
-                    if (syntax_tree_visitor.context.converted_func_stack.size > 0)
+                    if (syntax_tree_visitor.context.converted_func_stack.Count > 0)
                     {
-                        common_function_node cfn = syntax_tree_visitor.context.converted_func_stack.first();
-                        if (cfn.is_generic_function || !syntax_tree_visitor.context.has_nested_functions && syntax_tree_visitor.context.converted_func_stack.size == 1)
+                        common_function_node cfn = syntax_tree_visitor.context.converted_func_stack.Last();
+                        if (cfn.is_generic_function || !syntax_tree_visitor.context.has_nested_functions && syntax_tree_visitor.context.converted_func_stack.Count == 1)
                         {
                             vdn = syntax_tree_visitor.context.add_var_definition(get_temp_arr_name(), loc);
 

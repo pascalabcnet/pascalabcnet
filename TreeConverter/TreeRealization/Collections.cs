@@ -21,7 +21,7 @@ namespace PascalABCCompiler.TreeRealization
             return exprl;
         }
     }
-	
+
     [Serializable]
     public class attributes_list : extended_collection<attribute_node>
     {
@@ -210,7 +210,17 @@ namespace PascalABCCompiler.TreeRealization
     }
 
     [Serializable]
-    public class statement_node_stack : stack<statement_node>
+    public class statement_node_stack : Stack<statement_node>
+    {
+    }
+
+    [Serializable]
+    public class statement_list_stack: Stack<statements_list>
+    {
+    }
+
+    [Serializable]
+    public class common_function_node_stack: Stack<common_function_node>
     {
     }
 
