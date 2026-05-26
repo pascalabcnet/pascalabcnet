@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 // Тесты на совпадение pcu файлов модулей при различных сценариях компиляции
-// Например, при полной пересборке всех стандартных модулей и при сборке их по отдельности
+// В частности, при полной пересборке всех стандартных модулей и при сборке их по отдельности
 
 {$reference Compiler.dll}
 {$reference LanguageIntegrator.dll}
@@ -20,7 +20,7 @@ begin
   
   if fileInfo1.Length <> fileInfo2.Length then
   begin
-    error := new Exception($'File sizes differ: first - {fileInfo1.Length} vs second - {fileInfo2.Length}');
+    error := new Exception($'File sizes of {fileInfo1.Name} differ: first - {fileInfo1.Length} vs second - {fileInfo2.Length}');
     exit;
   end;
   
@@ -33,7 +33,7 @@ begin
 //  begin
 //    if fileBytes1[i] <> fileBytes2[i] then
 //    begin
-//      error := new Exception($'Mismatch of files in position {i}: {fileBytes1[i]} vs {fileBytes2[i]}');
+//      error := new Exception($'Mismatch of {fileInfo1.Name} files in position {i}: {fileBytes1[i]} vs {fileBytes2[i]}');
 //      exit;
 //    end;
 //  end;

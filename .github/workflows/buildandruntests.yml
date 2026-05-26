@@ -42,3 +42,23 @@ jobs:
     #  with:
     #    name: All_distros
     #    path: Release
+
+  pcu_diff_tests:
+    
+    name: Prepare, build on Windows Server VM and run pcu diff tests
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies into Virtual Environment...
+      run: _RegisterHelixNUnit.bat
+
+    - name: Build project in Release-mode, compile Pas-units, run pcu diff tests
+      run: _RebuildReleaseAndRunPcuDiffTestsForGithubActions.bat
+      timeout-minutes: 20
+      env:
+        PABCNET_BUILD_MODE: Release
+        PABCNET_RUN_TESTS:  false
+        PABCNET_INC_BUILD:  false
+        PABCNET_VERBOSE:    false
+
