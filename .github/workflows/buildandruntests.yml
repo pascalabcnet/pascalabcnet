@@ -53,7 +53,7 @@ jobs:
     - name: Install dependencies into Virtual Environment...
       run: _RegisterHelixNUnit.bat
 
-    - name: Build project in Release-mode, compile Pas-units, run pcu diff tests
+    - name: Run pcu diff tests
       run: _RebuildReleaseAndRunPcuDiffTestsForGithubActions.bat
       timeout-minutes: 20
       env:
