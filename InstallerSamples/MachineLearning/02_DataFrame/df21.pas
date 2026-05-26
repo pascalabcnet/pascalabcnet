@@ -14,5 +14,5 @@ begin
   
   df.Filter(r -> r.IsValid('score'))
     .SortBy(['age','score'],[True,True])
-    .Println;
+    .Print;
 end.

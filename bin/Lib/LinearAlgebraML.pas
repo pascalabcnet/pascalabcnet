@@ -1,4 +1,16 @@
-﻿/// Линейная алгебра для алгоритмов машинного обучения.
+﻿// =============================================================
+// СТАТИСТИЧЕСКОЕ СОГЛАШЕНИЕ (LinearAlgebraML)
+//
+// Используется дисперсия генеральной совокупности (деление на n),
+// как принято в численных методах и алгоритмах машинного обучения.
+//
+// Исключение: Matrix.PCA использует (n-1) для ковариационной матрицы
+// согласно статистической политике MLABC (пункт 3).
+//
+// См. статистическую политику в модуле MLABC.
+// =============================================================
+
+/// Линейная алгебра для алгоритмов машинного обучения.
 ///
 /// Содержит типы Vector и Matrix и численные методы,
 /// используемые в моделях ML:
@@ -20,17 +32,31 @@ type
     static procedure CheckNonEmpty(const v: Vector); 
     procedure SetData(i: integer; value: real) := fdata[i] := value;
   public
+    /// Массив элементов вектора.
     property Data: array of real read fdata;
+    /// Длина вектора.
     property Length: integer read fdata.Length;
+    /// Доступ к элементу вектора по индексу.
     property Item[i: integer]: real read fdata[i] write SetData; default;
     
+    /// Создаёт вектор заданной длины, заполненный нулями.
     constructor Create(n: integer);
+    /// Создаёт вектор из массива вещественных значений.
     constructor Create(values: array of real);
+    /// Создаёт вектор из массива целых значений.
     constructor Create(values: array of integer);
     
+    /// Возвращает копию вектора.
     function Clone: Vector;
     
+    /// Нормирует текущий вектор по евклидовой норме и возвращает его.
+    function Normalize: Vector;
+    /// Возвращает нормированную копию вектора.
+    function Normalized: Vector;
+    
+    /// Возвращает копию данных в виде массива.
     function ToArray: array of real;
+    /// Преобразует элементы вектора в массив целых чисел.
     function ToIntArray: array of integer;
     
     static function operator +(a, b: Vector): Vector;
@@ -53,28 +79,44 @@ type
     // ---------- Векторные функции ----------
     /// Применить функцию ко всем элементам вектора
     function Apply(f: real -> real): Vector;
+    /// Возвращает вектор из квадратных корней элементов.
     function Sqrt: Vector;
+    /// Возвращает вектор из экспонент элементов.
     function Exp: Vector := Apply(PABCSystem.Exp);
+    /// Возвращает вектор из натуральных логарифмов элементов.
     function Ln: Vector := Apply(PABCSystem.Ln);
+    /// Возвращает вектор из модулей элементов.
     function Abs: Vector := Apply(PABCSystem.Abs);    
     
     // ---------- Основные методы ----------
+    /// Возвращает сумму элементов вектора.
     function Sum: real;
+    /// Среднее. Синоним Mean
     function Average: real;
+    /// Среднее
     function Mean: real;
+    /// Возвращает квадрат евклидовой нормы вектора.
     function Norm2: real;
+    /// Возвращает евклидову норму вектора.
     function Norm: real;
+    /// Возвращает максимальный элемент вектора.
     function Max: real;
+    /// Возвращает минимальный элемент вектора.
     function Min: real;
     /// Скалярное произведение
     function Dot(b: Vector): real;
     
     // ---------- Сервисные методы ----------
+    /// Возвращает строковое представление вектора.
     function ToString: string; override := $'{fdata.Select(x -> x.ToString(''G3''))}';
+    /// Возвращает строковое представление вектора с заданной точностью.
     function ToString(digits: integer): string := $'{fdata.Select(x -> x.ToString(''G''+digits))}';
+    /// Печатает вектор без перевода строки.
     procedure Print := fdata.Print;
+    /// Печатает вектор с переводом строки.
     procedure Println := fdata.Println;
     
+    /// Возвращает подмножество элементов по заданным индексам.
     function SubvectorBy(indices: array of integer): Vector;
   end;
   
@@ -88,56 +130,97 @@ type
     
     procedure SetData(i, j: integer; value: real) := fdata[i, j] := value;
   public
+    /// Число строк матрицы.
     property RowCount: integer read fdata.RowCount;
+    /// Число столбцов матрицы.
     property ColCount: integer read fdata.ColCount;
+    /// Данные матрицы в виде двумерного массива.
     property Data: array[,] of real read fdata;
     
+    /// Доступ к элементу матрицы по индексам строки и столбца.
     property Item[i, j: integer]: real
       read fdata[i, j] write SetData; default;
     
+    /// Создаёт матрицу заданного размера, заполненную нулями.
     constructor Create(r, c: integer);
+    /// Создаёт матрицу из двумерного массива вещественных значений.
     constructor Create(values: array[,] of real);
     
+    /// Возвращает копию данных в виде двумерного массива.
     function ToArray2D: array[,] of real;
+    /// Возвращает строку матрицы в виде массива.
     function RowToArray(r: integer): array of real;
     
+    /// Возвращает копию матрицы.
     function Clone: Matrix;
     
+    /// Возвращает строку матрицы в виде массива.
     function Row(i: integer): array of real := fdata.Row(i);
+    /// Возвращает столбец матрицы в виде массива.
     function Col(j: integer): array of real := fdata.Col(j);
 
+    /// Возвращает суммы по всем столбцам.
     function ColumnSums: Vector;
+    /// Возвращает суммы по всем строкам.
     function RowSums: Vector;
+    /// Возвращает средние значения по всем столбцам.
     function ColumnMeans: Vector;
+    /// Возвращает средние значения по всем строкам.
     function RowMeans: Vector;
+    /// Возвращает дисперсии по всем столбцам.
     function ColumnVariances: Vector;
+    /// Возвращает дисперсии по всем строкам.
     function RowVariances: Vector;
+    /// Возвращает стандартные отклонения по всем столбцам.
     function ColumnStd: Vector;
+    /// Возвращает стандартные отклонения по всем строкам.
     function RowStd: Vector;
+    /// Возвращает минимумы по всем столбцам.
     function ColumnMins: Vector;
+    /// Возвращает максимумы по всем столбцам.
     function ColumnMaxs: Vector;
+    /// Возвращает минимумы по всем строкам.
     function RowMins: Vector;
+    /// Возвращает максимумы по всем строкам.
     function RowMaxs: Vector;
     
+    /// Возвращает сумму элементов строки.
     function RowSum(i: integer): real;
+    /// Возвращает среднее значение элементов строки.
     function RowMean(i: integer): real;
+    /// Возвращает дисперсию элементов строки.
     function RowVariance(i: integer): real;
+    /// Возвращает стандартное отклонение элементов строки.
     function RowStd(i: integer): real;
+    /// Возвращает минимальный элемент строки.
     function RowMin(i: integer): real;
+    /// Возвращает максимальный элемент строки.
     function RowMax(i: integer): real;
+    /// Возвращает индекс минимального элемента строки.
     function RowArgMin(i: integer): integer;
+    /// Возвращает индекс максимального элемента строки.
     function RowArgMax(i: integer): integer;
     
+    /// Возвращает сумму элементов столбца.
     function ColumnSum(j: integer): real;
+    /// Возвращает среднее значение элементов столбца.
     function ColumnMean(j: integer): real;
+    /// Возвращает дисперсию элементов столбца.
     function ColumnVariance(j: integer): real;
+    /// Возвращает стандартное отклонение элементов столбца.
     function ColumnStd(j: integer): real;
+    /// Возвращает минимальный элемент столбца.
     function ColumnMin(j: integer): real;
+    /// Возвращает максимальный элемент столбца.
     function ColumnMax(j: integer): real;
+    /// Возвращает индекс минимального элемента столбца.
     function ColumnArgMin(j: integer): integer;
+    /// Возвращает индекс максимального элемента столбца.
     function ColumnArgMax(j: integer): integer;
     
+    /// Возвращает норму Фробениуса матрицы.
     function FrobeniusNorm: real;
+    /// Прибавляет lambda к диагональным элементам матрицы.
     procedure AddScaledIdentity(lambda: real);
 
     
@@ -189,12 +272,20 @@ type
     function PCA(k: integer): (Matrix, Vector);
     
     // ---------- Сервисные методы ----------
+    /// Возвращает строковое представление матрицы.
     function ToString: string; override := $'{fdata}';
+    /// Печатает матрицу без перевода строки.
     procedure Print := fdata.Print;
+    /// Печатает матрицу с переводом строки.
     procedure Println := fdata.Println;
     
+    /// Возвращает строку матрицы в виде вектора.
     function GetRow(i: integer): Vector;
+    /// Возвращает столбец матрицы в виде вектора.
     function GetCol(j: integer): Vector;
+    
+    /// Возвращает матрицу, составленную из строк с заданными индексами.
+    function TakeRows(indices: array of integer): Matrix;
 
     // ---------- Статические методы ----------
     /// Возвращает единичную матрицу размера n
@@ -284,8 +375,8 @@ const
     'Вектор пуст!!Vector is empty';
   ER_VECTOR_DIVIDE_BY_ZERO =
     'Деление на ноль при делении вектора на скаляр!!Division by zero in Vector / scalar';
-  ER_DIM_MISMATCH =
-    'Несоответствие размерностей: {0} и {1}!!Dimension mismatch: {0} and {1}';
+  ER_VECTOR_TO_INT_NON_INTEGER =
+    'Вектор содержит нецелое значение на позиции {0}: {1}!!Vector contains non-integer value at index {0}: {1}';
   ER_MATRIX_SIZE_NEGATIVE =
     'Размеры матрицы должны быть неотрицательными!!Matrix size must be non-negative';
   ER_MATRIX_SIZE_MISMATCH =
@@ -323,6 +414,10 @@ const
     'Для QR-разложения требуется m >= n!!QR decomposition requires m >= n';
   ER_SINGULAR_MATRIX =
     'Матрица вырождена или плохо обусловлена!!Matrix is singular or ill-conditioned';
+  ER_EMPTY_MATRIX =
+    'Матрица пуста!!Matrix is empty';    
+  ER_EIGEN_NOT_CONVERGED =
+    'EigenSymmetric: не сошлось за {0} итераций (off={1}, tol={2})!!EigenSymmetric did not converge in {0} iterations (off={1}, tol={2})';    
   
 type
   MLNotSPDException = class(MLException);
@@ -362,12 +457,39 @@ begin
   Result := new integer[Length];
   
   for var i := 0 to Length - 1 do
-    Result[i] := integer(Data[i]);
+  begin
+    var x := Data[i];
+    var ix := Round(x);
+    
+    if PABCSystem.Abs(x - ix) > 1e-12 then
+      ArgumentError(ER_VECTOR_TO_INT_NON_INTEGER, i, x);
+    
+    Result[i] := ix;
+  end;
 end;
 
 function Vector.Clone: Vector;
 begin
   Result := new Vector(fdata);
+end;
+
+function Vector.Normalize: Vector;
+begin
+  var sum := 0.0;
+  for var i := 0 to Length - 1 do
+    sum += Self[i];
+
+  if sum > 0 then
+    for var i := 0 to Length - 1 do
+      Self[i] /= sum;
+
+  Result := Self;
+end;
+
+function Vector.Normalized: Vector;
+begin
+  Result := Self.Clone;
+  Result.Normalize;
 end;
 
 static procedure Vector.CheckSameLength(a, b: Vector);
@@ -414,6 +536,7 @@ static function Vector.operator /(v: Vector; alpha: real): Vector;
 begin
   if alpha = 0.0 then
     raise new System.DivideByZeroException(GetTranslation(ER_VECTOR_DIVIDE_BY_ZERO));
+  
   Result := new Vector(v.Length);
   var inv := 1.0 / alpha;
   for var i := 0 to v.Length - 1 do
@@ -465,12 +588,10 @@ begin
   Result := s;
 end;
 
+// Алиас Mean
 function Vector.Average: real;
 begin
-  if Length = 0 then
-    ArgumentError('Vector is empty');
-
-  Result := Sum / Length;
+  Result := Mean;
 end;
 
 function Vector.Mean: real;
@@ -527,6 +648,7 @@ constructor Matrix.Create(r, c: integer);
 begin
   if (r < 0) or (c < 0) then
     ArgumentOutOfRangeError(ER_MATRIX_SIZE_NEGATIVE);
+  
   fdata := new real[r, c];
 end;
 
@@ -566,8 +688,10 @@ end;
 function Matrix.ColumnMeans: Vector;
 begin
   var n := RowCount;
-  if n = 0 then 
-    exit( new Vector(ColCount) );
+
+  if n = 0 then
+    Error(ER_EMPTY_MATRIX);
+
   Result := ColumnSums / n;
 end;
 
@@ -584,20 +708,28 @@ end;
 
 function Matrix.RowMeans: Vector;
 begin
+  var n := RowCount;
   var p := ColCount;
+
+  if n = 0 then
+    Error(ER_EMPTY_MATRIX);
+
   if p = 0 then
-    exit (new Vector(RowCount));
+    Error(ER_EMPTY_MATRIX);
+
   Result := RowSums / p;
 end;
 
 function Matrix.ColumnVariances: Vector;
 begin
   var n := RowCount;
+
   if n = 0 then
-    exit (new Vector(ColCount));
+    Error(ER_EMPTY_MATRIX);
 
   var means := ColumnMeans;
   var p := ColCount;
+
   Result := new Vector(p);
 
   for var j := 0 to p - 1 do
@@ -617,12 +749,17 @@ end;
 
 function Matrix.RowVariances: Vector;
 begin
+  var n := RowCount;
   var p := ColCount;
+
+  if n = 0 then
+    Error(ER_EMPTY_MATRIX);
+
   if p = 0 then
-    exit (new Vector(RowCount));
+    Error(ER_EMPTY_MATRIX);
 
   var means := RowMeans;
-  var n := RowCount;
+
   Result := new Vector(n);
 
   for var i := 0 to n - 1 do
@@ -644,6 +781,10 @@ function Matrix.ColumnMins: Vector;
 begin
   var n := RowCount;
   var p := ColCount;
+
+  if n = 0 then
+    Error(ER_EMPTY_MATRIX);
+  
   Result := new Vector(p);
 
   for var j := 0 to p - 1 do
@@ -660,6 +801,10 @@ function Matrix.ColumnMaxs: Vector;
 begin
   var n := RowCount;
   var p := ColCount;
+
+  if n = 0 then
+    Error(ER_EMPTY_MATRIX);
+  
   Result := new Vector(p);
 
   for var j := 0 to p - 1 do
@@ -676,6 +821,13 @@ function Matrix.RowMins: Vector;
 begin
   var n := RowCount;
   var p := ColCount;
+  
+  if n = 0 then
+    Error(ER_EMPTY_MATRIX);
+  
+  if p = 0 then
+    Error(ER_EMPTY_MATRIX);
+  
   Result := new Vector(n);
 
   for var i := 0 to n - 1 do
@@ -692,6 +844,13 @@ function Matrix.RowMaxs: Vector;
 begin
   var n := RowCount;
   var p := ColCount;
+  
+  if n = 0 then
+    Error(ER_EMPTY_MATRIX);
+
+  if p = 0 then
+    Error(ER_EMPTY_MATRIX);
+  
   Result := new Vector(n);
 
   for var i := 0 to n - 1 do
@@ -706,6 +865,15 @@ end;
 
 function Matrix.RowArgMin(i: integer): integer;
 begin
+  if RowCount = 0 then
+    Error(ER_EMPTY_MATRIX);
+
+  if ColCount = 0 then
+    Error(ER_EMPTY_MATRIX);
+
+  if (i < 0) or (i >= RowCount) then
+    ArgumentOutOfRangeError(ER_ROW_INDEX_OUT_OF_RANGE, i, RowCount);
+
   var minVal := fdata[i,0];
   var arg := 0;
 
@@ -726,6 +894,15 @@ end;
 
 function Matrix.RowArgMax(i: integer): integer;
 begin
+  if RowCount = 0 then
+    Error(ER_EMPTY_MATRIX);
+
+  if ColCount = 0 then
+    Error(ER_EMPTY_MATRIX);
+
+  if (i < 0) or (i >= RowCount) then
+    ArgumentOutOfRangeError(ER_ROW_INDEX_OUT_OF_RANGE, i, RowCount);
+
   var maxVal := fdata[i,0];
   var arg := 0;
 
@@ -746,6 +923,12 @@ end;
 
 function Matrix.RowSum(i: integer): real;
 begin
+  if RowCount = 0 then
+    Error(ER_EMPTY_MATRIX);
+
+  if (i < 0) or (i >= RowCount) then
+    ArgumentOutOfRangeError(ER_ROW_INDEX_OUT_OF_RANGE, i, RowCount);
+
   var sum := 0.0;
 
   for var j := 0 to ColCount - 1 do
@@ -780,10 +963,18 @@ end;
 
 function Matrix.ColumnArgMin(j: integer): integer;
 begin
+  if (j < 0) or (j >= ColCount) then
+    ArgumentOutOfRangeError(ER_COL_INDEX_OUT_OF_RANGE, j, ColCount); 
+    
+  var n := RowCount;
+
+  if n = 0 then
+    Error(ER_EMPTY_MATRIX);
+
   var minVal := fdata[0,j];
   var arg := 0;
 
-  for var i := 1 to RowCount - 1 do
+  for var i := 1 to n - 1 do
     if fdata[i,j] < minVal then
     begin
       minVal := fdata[i,j];
@@ -800,10 +991,18 @@ end;
 
 function Matrix.ColumnArgMax(j: integer): integer;
 begin
+  if (j < 0) or (j >= ColCount) then
+    ArgumentOutOfRangeError(ER_COL_INDEX_OUT_OF_RANGE, j, ColCount); 
+    
+  var n := RowCount;
+
+  if n = 0 then
+    Error(ER_EMPTY_MATRIX);
+
   var maxVal := fdata[0,j];
   var arg := 0;
 
-  for var i := 1 to RowCount - 1 do
+  for var i := 1 to n - 1 do
     if fdata[i,j] > maxVal then
     begin
       maxVal := fdata[i,j];
@@ -855,6 +1054,9 @@ end;
 
 function Matrix.FrobeniusNorm: real;
 begin
+  if RowCount = 0 then
+    Error(ER_EMPTY_MATRIX);
+  
   var s := 0.0;
   for var i := 0 to RowCount - 1 do
     for var j := 0 to ColCount - 1 do
@@ -865,6 +1067,10 @@ end;
 procedure Matrix.AddScaledIdentity(lambda: real);
 begin
   var n := RowCount;
+  
+  if RowCount <> ColCount then
+    ArgumentError(ER_MATRIX_NOT_SQUARE);
+  
   for var i := 0 to n - 1 do
     fdata[i, i] += lambda;
 end;
@@ -931,7 +1137,6 @@ begin
 end;
 
 
-
 static function Matrix.operator *(A: Matrix; x: Vector): Vector;
 begin
   CheckVecSize(A, x);
@@ -945,7 +1150,7 @@ begin
   end;
 end;
 
-static function Matrix.operator *(A, B: Matrix): Matrix;
+{static function Matrix.operator *(A, B: Matrix): Matrix;
 begin
   CheckMulSize(A, B);
   Result := new Matrix(A.RowCount, B.ColCount);
@@ -956,6 +1161,30 @@ begin
       if aik <> 0.0 then
         for var j := 0 to B.ColCount - 1 do
           Result.fdata[i, j] += aik * B.fdata[k, j];
+    end;
+end;}
+
+static function Matrix.operator *(A, B: Matrix): Matrix;
+begin
+  CheckMulSize(A, B);
+
+  var m := A.RowCount;
+  var p := A.ColCount;
+  var n := B.ColCount;
+
+  var BT := B.Transpose;
+
+  Result := new Matrix(m, n);
+
+  for var i := 0 to m - 1 do
+    for var j := 0 to n - 1 do
+    begin
+      var sum := 0.0;
+
+      for var k := 0 to p - 1 do
+        sum += A.fdata[i, k] * BT.fdata[j, k];
+
+      Result.fdata[i, j] := sum;
     end;
 end;
 
@@ -997,15 +1226,78 @@ function Matrix.GetRow(i: integer): Vector;
 begin
   if (i < 0) or (i >= RowCount) then
     ArgumentOutOfRangeError(ER_ROW_INDEX_OUT_OF_RANGE, i, RowCount);
+  
   Result := new Vector(ColCount);
   for var j := 0 to ColCount - 1 do
     Result[j] := fdata[i, j];
+end;
+
+function Matrix.TakeRows(indices: array of integer): Matrix;
+begin
+  if indices = nil then
+    ArgumentNullError(ER_ARG_NULL, 'indices');
+  
+  var n := indices.Length;
+  var p := ColCount;
+  
+  if RowCount = 0 then
+    Error(ER_EMPTY_MATRIX);
+
+  var res := new Matrix(n, p);
+
+  var src := Data;
+  var dst := res.Data;
+
+  // --- fast path: полный срез [0..n-1]
+  var isFull := n = RowCount;
+
+  if isFull then
+  begin
+    for var i := 0 to n - 1 do
+      if indices[i] <> i then
+      begin
+        isFull := False;
+        break;
+      end;
+  end;
+
+  if isFull then
+  begin
+    System.Array.Copy(src, 0, dst, 0, n * p);
+    Result := res;
+    exit;
+  end;
+
+  // --- обычный block-copy
+  var i := 0;
+  var dstOffset := 0;
+
+  while i < n do
+  begin
+    var start := indices[i];
+    var len := 1;
+
+    while (i + len < n) and (indices[i + len] = start + len) do
+      len += 1;
+
+    System.Array.Copy(
+      src, start * p,
+      dst, dstOffset,
+      len * p
+    );
+
+    dstOffset += len * p;
+    i += len;
+  end;
+
+  Result := res;
 end;
 
 function Matrix.GetCol(j: integer): Vector;
 begin
   if (j < 0) or (j >= ColCount) then
     ArgumentOutOfRangeError(ER_COL_INDEX_OUT_OF_RANGE, j, ColCount);
+  
   Result := new Vector(RowCount);
   for var i := 0 to RowCount - 1 do
     Result[i] := fdata[i, j];
@@ -1023,6 +1315,12 @@ end;
 
 static function Matrix.OuterProduct(a, b: Vector): Matrix;
 begin
+  if a = nil then
+    ArgumentNullError(ER_ARG_NULL, 'a');
+  
+  if b = nil then
+    ArgumentNullError(ER_ARG_NULL, 'b');
+
   var m := a.Length;
   var n := b.Length;
   Result := new Matrix(m, n);
@@ -1064,10 +1362,11 @@ begin
   var M := Clone;
   var V := Matrix.Identity(n);
   
+  var off := 0.0;
   for var iter := 0 to maxIter - 1 do
   begin
     // --- Норма вне-диагонали
-    var off := 0.0;
+    off := 0.0;
     for var i := 0 to n - 1 do
       for var j := i + 1 to n - 1 do
         off += M[i, j] * M[i, j];
@@ -1145,6 +1444,12 @@ begin
       V[k, q] := s * vkp + c * vkq;
     end;
   end;
+  
+  var offNorm := Sqrt(off);
+
+  if offNorm >= tol then
+    Error(ER_EIGEN_NOT_CONVERGED, maxIter, offNorm, tol);
+
   
   // --- Eigenvalues
   var values := new Vector(n);
@@ -1237,7 +1542,8 @@ begin
     end;
 
   // --- Eigen
-  var (values, V) := C.EigenSymmetric;
+  var adaptiveIter := Max(100, n * n * 10);
+  var (values, V) := C.EigenSymmetric(1e-12, adaptiveIter);
 
   // --- Выбор k компонент
   var components := new Matrix(n, k);
@@ -1308,7 +1614,7 @@ begin
         maxRow := i;
       end;
     
-    if maxVal = 0.0 then
+    if maxVal < 1e-12 then
       Error(ER_MATRIX_SINGULAR);
     
     if maxRow <> k then
@@ -1523,6 +1829,9 @@ begin
     var vnorm2 := 0.0;
     for var i := k to m - 1 do
       vnorm2 += R[i,k] * R[i,k];
+    
+    if vnorm2 < 1e-12 then
+      continue;
     
     var beta := 2.0 / vnorm2;
 

@@ -67,7 +67,7 @@ namespace TreeConverter.LambdaExpressions
             if (stmtList.subnodes != null)
                 foreach (var stmt in stmtList.subnodes)
                     ProcessNode(stmt);
-            syntaxTreeVisitor.convertion_data_and_alghoritms.statement_list_stack.pop();    
+            syntaxTreeVisitor.convertion_data_and_alghoritms.statement_list_stack.Pop();    
         }
 
         public override void visit(var_def_statement varStmt)

@@ -1,5 +1,20 @@
 ﻿unit DataFrameABCCore;
 
+// =============================================================
+// ИНВАРИАНТ ВАЛИДНОСТИ СТОЛБЦОВ
+//
+// Для всех столбцов:
+//   • IsValid всегда инициализирован
+//   • Length(IsValid) = Length(Data)
+//   • nil не используется как специальное значение
+//
+// Пустой столбец:
+//   • Data имеет длину 0
+//   • IsValid = new boolean[0]
+//
+// Нарушение этого инварианта считается ошибкой.
+// =============================================================
+
 interface
 
 type
@@ -20,51 +35,81 @@ type
     fIndexByName: Dictionary<string, integer>;
     
     class function BuildIndex(names: array of string): Dictionary<string, integer>;
+    function GetColumnNames: array of string;
+    function GetTypes: array of ColumnType;
+    function GetCategoricalFlags: array of boolean;
   public
+    /// Возвращает количество столбцов в схеме
     property ColumnCount: integer read fNames.Length;
-    property ColumnNames: array of string read fNames;
-    property Types: array of ColumnType read fTypes;
-    property CategoricalFlags: array of boolean read fCategoricalFlags;
+    /// Возвращает копию массива имён столбцов
+    property ColumnNames: array of string read GetColumnNames;
+    /// Возвращает копию массива типов столбцов
+    property Types: array of ColumnType read GetTypes;
+    /// Возвращает копию массива categorical-флагов
+    property CategoricalFlags: array of boolean read GetCategoricalFlags;
 
+    /// Возвращает индекс столбца по имени
     function IndexOf(name: string): integer;
+    /// Проверяет наличие столбца с указанным именем
     function HasColumn(name: string): boolean;
 
+    /// Возвращает тип столбца по индексу
     function ColumnTypeAt(i: integer): ColumnType;
+    /// Проверяет categorical-флаг столбца по индексу
     function IsCategoricalAt(i: integer): boolean;
     
+    /// Возвращает тип столбца по имени
     function GetColumnType(name: string): ColumnType;
+    /// Проверяет categorical-флаг столбца по имени
     function IsCategorical(name: string): boolean;
     
+    /// Возвращает имя столбца по индексу
     function NameAt(i: integer): string;
 
+    /// Создаёт схему по именам, типам и categorical-флагам
     constructor Create(names: array of string; types: array of ColumnType;
       isCategorical: array of boolean := nil);
       
+    /// Печатает схему без перевода строки в конце
     procedure Print;
     
+    /// Печатает схему и переводит строку
     procedure Println;
 
     { --- schema operations (immutable) --- }
+    /// Возвращает схему, содержащую только указанные столбцы
     function Select(indices: array of integer): DataFrameSchema;
+    /// Возвращает схему без указанных столбцов
     function Drop(indices: array of integer): DataFrameSchema;
+    /// Возвращает схему с переименованным столбцом
     function Rename(oldName, newName: string): DataFrameSchema;
+    /// Возвращает схему с изменённым categorical-флагом столбца
     function WithCategorical(name: string; value: boolean := True): DataFrameSchema;
 
     { --- join helpers --- }
+    /// Объединяет две схемы по правилам Join
     class function Merge(
       left, right: DataFrameSchema;
       leftKeys, rightKeys: array of integer;
       rightPrefix: string
     ): DataFrameSchema;
 
-    { --- debug --- }
+    { --- DEBUG ONLY ---
+    Проверка внутренних инвариантов схемы.
+    Использует Assert и выполняется только в debug-сборке.
+    Не предназначена для обработки пользовательских ошибок. }
     procedure AssertConsistent;
   end;
   
-  ColumnInfo = auto class
-    Name: string;
-    ColType: ColumnType;
-    //IsCategorical: boolean; - мы убрали это отсюда - только Schema - источник истины!
+  ColumnInfo = sealed class
+  private
+    fName: string;
+    fColType: ColumnType;
+  public
+    property Name: string read fName;
+    property ColType: ColumnType read fColType;
+    constructor Create(name: string; colType: ColumnType);
+    //IsCategorical - только в Schema!
   end;
   
   DataFrameCursor = class;
@@ -80,94 +125,63 @@ type
   Column = abstract class
     Info: ColumnInfo;
   public
+    IsValid: array of boolean;  // Флаги валидности (может быть nil)
     /// Пытается извлечь i-тое данное из столбца как числовое если это возможно
     function TryGetNumericValue(i: integer; var value: real): boolean; virtual; abstract;
     /// Возвращает количество строк в столбце
     function RowCount: integer; virtual; abstract;
-    /// Добавляет невалидное (NA) значение в конец столбца
-    //procedure AppendInvalid; virtual; abstract;
-    /// Добавляет значение из курсора в указанной позиции
-    //procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); virtual; abstract;
   end;
   
   /// Столбец целых чисел
   IntColumn = class(Column)
-    // ⚠️ Data и IsValid считаются immutable после создания
-    Data: array of integer;     // Данные столбца
-    IsValid: array of boolean;  // Флаги валидности (может быть nil)
+    // Data и IsValid считаются immutable после создания
+    Data: array of integer;     
   public
     constructor Create; begin end;
     constructor Create(name: string);
-    constructor Create(name: string; data: array of integer;
-      valid: array of boolean := nil);
+    constructor Create(name: string; values: array of integer; valid: array of boolean := nil);
     function TryGetNumericValue(i: integer; var value: real): boolean; override;
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
-    /// Добавляет невалидное (NA) значение в конец столбца
-    /// ⚠ УСТАРЕВШИЙ МЕТОД.
-    /// Не должен использоваться в новом коде.
-    /// Сохраняется только для обратной совместимости.
-    //procedure AppendInvalid; override;
-    /// Добавляет значение из курсора в указанной позиции
-    /// ⚠ УСТАРЕВШИЙ МЕТОД.
-    /// Использует неэффективное поэлементное добавление (O(n²)).
-    /// Не должен использоваться в новом коде.
-    /// Сохраняется только для обратной совместимости.
-    //procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
   end;
   
   /// Столбец вещественных чисел
   FloatColumn = class(Column)
-    Data: array of real;        // Данные столбца
-    IsValid: array of boolean;  // Флаги валидности
+    Data: array of real;        
   public  
     constructor Create; begin end;
     constructor Create(name: string);
-    constructor Create(name: string; data: array of real;
+    constructor Create(name: string; values: array of real;
       valid: array of boolean := nil);
     function TryGetNumericValue(i: integer; var value: real): boolean; override;
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
-    /// Добавляет невалидное (NA) значение в конец столбца
-    //procedure AppendInvalid; override;
-    /// Добавляет значение из курсора в указанной позиции
-    //procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
   end;
 
   /// Столбец строк
   StrColumn = class(Column)
-    Data: array of string;      // Данные столбца
-    IsValid: array of boolean;  // Флаги валидности
+    Data: array of string;      
   public
     constructor Create; begin end;
     constructor Create(name: string);
-    constructor Create(name: string; data: array of string;
+    constructor Create(name: string; values: array of string;
       valid: array of boolean := nil);
     function TryGetNumericValue(i: integer; var value: real): boolean; override;
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
-    /// Добавляет невалидное (NA) значение в конец столбца
-    //procedure AppendInvalid; override;
-    /// Добавляет значение из курсора в указанной позиции
-    //procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
   end;
 
   /// Столбец булевых значений
   BoolColumn = class(Column)
-    Data: array of boolean;     // Данные столбца
-    IsValid: array of boolean;  // Флаги валидности
+    Data: array of boolean;     
   public  
     constructor Create; begin end;
     constructor Create(name: string);
-    constructor Create(name: string; data: array of boolean;
+    constructor Create(name: string; values: array of boolean;
       valid: array of boolean := nil);
     function TryGetNumericValue(i: integer; var value: real): boolean; override;
     /// Возвращает количество строк в столбце
     function RowCount: integer; override := Data.Length;
-    /// Добавляет невалидное (NA) значение в конец столбца
-    //procedure AppendInvalid; override;
-    /// Добавляет значение из курсора в указанной позиции
-    //procedure AppendFromCursor(cur: DataFrameCursor; colIndex: integer); override;
   end;
   
   // Accessor типы для курсора
@@ -183,15 +197,15 @@ type
     ColTypes: array of ColumnType;
   end;
   
+  // Нет Floats - по ним нельзя Join!!!
   JoinKey = record
     Ints: array of integer;
-    Floats: array of real;
     Strs: array of string;
     Bools: array of boolean;
     function Equals(oth: object): boolean; override;
     function GetHashCode: integer; override;
   end;
-  
+
     /// Курсор для итерации по строкам DataFrame
   DataFrameCursor = class
   private
@@ -256,6 +270,8 @@ type
     /// Максимальное значение
     Max: real;
   end;
+
+function MergedRightColumnName(leftSchema, rightSchema: DataFrameSchema; rightIndex: integer): string;
   
 implementation
 
@@ -270,6 +286,8 @@ const
     'Столбец не является Str!!Column is not Str';
   ER_COLUMN_NOT_BOOL =
     'Столбец не является Bool!!Column is not Bool';
+  ER_VALUE_IS_NA =
+    'Значение в столбце "{0}" равно NA!!Value in column "{0}" is NA';
   ER_DUPLICATE_COLUMN_NAME =
     'Повторяющееся имя столбца "{0}"!!Duplicate column name "{0}"';
   ER_NAMES_NULL =
@@ -298,7 +316,9 @@ const
     'Неизвестный тип столбца!!Unknown column type';
   ER_ROW_INDEX_OUT_OF_RANGE =
     'Индекс строки {0} вне диапазона [0..{1})!!' +
-    'Row index {0} out of range [0..{1})';  
+    'Row index {0} out of range [0..{1})'; 
+  ER_INVALID_ISVALID_LENGTH =
+    'Длина IsValid должна совпадать с длиной Data!!IsValid length must match Data length';  
     
 //-----------------------------
 //      Сервисные функции
@@ -342,6 +362,21 @@ begin
   end;
 end;
 
+function DataFrameSchema.GetColumnNames: array of string;
+begin
+  Result := Copy(fNames);
+end;
+
+function DataFrameSchema.GetTypes: array of ColumnType;
+begin
+  Result := Copy(fTypes);
+end;
+
+function DataFrameSchema.GetCategoricalFlags: array of boolean;
+begin
+  Result := Copy(fCategoricalFlags);
+end;
+
 constructor DataFrameSchema.Create(names: array of string; types: array of ColumnType;
   isCategorical: array of boolean);
 begin
@@ -366,6 +401,12 @@ begin
   fIndexByName := BuildIndex(fNames);
 
   AssertConsistent;
+end;
+
+constructor ColumnInfo.Create(name: string; colType: ColumnType);
+begin
+  fName := name;
+  fColType := colType;
 end;
 
 procedure DataFrameSchema.Print;
@@ -559,6 +600,13 @@ begin
   Result := new DataFrameSchema(names.ToArray, types.ToArray, cats.ToArray);
 end;
 
+function MergedRightColumnName(leftSchema, rightSchema: DataFrameSchema; rightIndex: integer): string;
+begin
+  Result := rightSchema.NameAt(rightIndex);
+  if leftSchema.HasColumn(Result) then
+    Result := 'right_' + Result;
+end;
+
 procedure DataFrameSchema.AssertConsistent;
 begin
   Assert(fNames.Length = fTypes.Length);
@@ -570,16 +618,24 @@ end;
 //           Columns
 //-----------------------------
 
-constructor IntColumn.Create(name: string; data: array of integer;
-  valid: array of boolean);
+constructor IntColumn.Create(name: string; values: array of integer; valid: array of boolean);
 begin
   inherited Create;
   Info := new ColumnInfo(name, ctInt);
 
-  Data := data;
-  IsValid := valid;
-end;
+  var n := Length(values);
+  Self.Data := if n = 0 then [] else values;
 
+  if valid = nil then
+    IsValid := [True] * n
+  else
+  begin
+    if Length(valid) <> n then
+      Error(ER_INVALID_ISVALID_LENGTH);
+
+    IsValid := valid;
+  end;
+end;
 
 constructor IntColumn.Create(name: string);
 begin
@@ -587,104 +643,72 @@ begin
   Info := new ColumnInfo(name, ctInt);
 
   Data := new integer[0];
-  IsValid := nil;
+  IsValid := new boolean[0];
 end;
-
-{procedure IntColumn.AppendInvalid;
-begin
-  Data := Data + [0];
-
-  if IsValid = nil then
-  begin
-    IsValid := new boolean[Length(Data) - 1];
-    for var i := 0 to IsValid.Length - 1 do
-      IsValid[i] := true;
-  end;
-
-  IsValid := IsValid + [false];
-end;}
-
-{procedure IntColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
-begin
-  if cur.IsValid(colIndex) then
-  begin
-    Data := Data + [cur.Int(colIndex)];
-    if IsValid <> nil then 
-      IsValid := IsValid + [true];
-  end
-  else AppendInvalid; 
-end;}
 
 function IntColumn.TryGetNumericValue(i: integer; var value: real): boolean;
 begin
   if not IsValid[i] then
-    exit(false);
+    exit(False);
 
   value := Data[i];
-  exit(true);
+  exit(True);
 end;
 
-constructor FloatColumn.Create(name: string; data: array of real;
-  valid: array of boolean);
+constructor FloatColumn.Create(name: string; values: array of real; valid: array of boolean);
 begin
   inherited Create;
   Info := new ColumnInfo(name, ctFloat);
 
-  Data := data;
-  IsValid := valid;
+  var n := Length(values);
+  Self.Data := if n = 0 then [] else values;
+
+  if valid = nil then
+    IsValid := [True] * n
+  else
+  begin
+    if Length(valid) <> n then
+      Error(ER_INVALID_ISVALID_LENGTH);
+
+    IsValid := valid;
+  end;
 end;
 
 constructor FloatColumn.Create(name: string);
 begin
   inherited Create;
   Info := new ColumnInfo(name, ctFloat);
+
   Data := new real[0];
-  IsValid := nil;
+  IsValid := new boolean[0];
 end;
-
-
-{procedure FloatColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
-begin
-  if cur.IsValid(colIndex) then
-  begin
-    Data := Data + [cur.Float(colIndex)];
-    if IsValid <> nil then 
-      IsValid := IsValid + [true];
-  end
-  else AppendInvalid;
-end;}
-
-{procedure FloatColumn.AppendInvalid;
-begin
-  Data := Data + [0.0];
-
-  if IsValid = nil then
-  begin
-    IsValid := new boolean[Length(Data) - 1];
-    for var i := 0 to IsValid.Length - 1 do
-      IsValid[i] := true;
-  end;
-
-  IsValid := IsValid + [false];
-end;}
 
 function FloatColumn.TryGetNumericValue(i: integer; var value: real): boolean;
 begin
   if not IsValid[i] then
-    exit(false);
+    exit(False);
 
   value := Data[i];
-  exit(true);
+  exit(True);
 end;
 
-constructor StrColumn.Create(name: string; data: array of string;
-  valid: array of boolean);
+constructor StrColumn.Create(name: string; values: array of string; valid: array of boolean);
 begin
   inherited Create;
   Info := new ColumnInfo(name, ctStr);
 
-  Data := data;
-  IsValid := valid;
+  var n := Length(values);
+  Self.Data := if n = 0 then [] else values;
+
+  if valid = nil then
+    IsValid := [True] * n
+  else
+  begin
+    if Length(valid) <> n then
+      Error(ER_INVALID_ISVALID_LENGTH);
+
+    IsValid := valid;
+  end;
 end;
 
 constructor StrColumn.Create(name: string);
@@ -693,60 +717,31 @@ begin
   Info := new ColumnInfo(name, ctStr);
 
   Data := new string[0];
-  IsValid := nil;
+  IsValid := new boolean[0];
 end;
-
-{procedure StrColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
-begin
-  if cur.IsValid(colIndex) then
-  begin
-    Data := Data + [cur.Str(colIndex)];
-    if IsValid <> nil then 
-      IsValid := IsValid + [true];
-  end
-  else AppendInvalid;
-end;}
-
-{procedure StrColumn.AppendInvalid;
-begin
-  Data := Data + [''];
-
-  if IsValid = nil then
-  begin
-    IsValid := new boolean[Length(Data) - 1];
-    for var i := 0 to IsValid.Length - 1 do
-      IsValid[i] := true;
-  end;
-
-  IsValid := IsValid + [false];
-end;}
 
 function StrColumn.TryGetNumericValue(i: integer; var value: real): boolean;
 begin
-  exit(false);
+  exit(False);
 end;
 
-function BoolColumn.TryGetNumericValue(i: integer; var value: real): boolean;
-begin
-  if not IsValid[i] then
-    exit(false);
-
-  if Data[i] then
-    value := 1.0
-  else
-    value := 0.0;
-
-  exit(true);
-end;
-
-constructor BoolColumn.Create(name: string; data: array of boolean;
-  valid: array of boolean);
+constructor BoolColumn.Create(name: string; values: array of boolean; valid: array of boolean);
 begin
   inherited Create;
   Info := new ColumnInfo(name, ctBool);
 
-  Data := data;
-  IsValid := valid;
+  var n := Length(values);
+  Self.Data := if n = 0 then [] else values;
+
+  if valid = nil then
+    IsValid := [True] * n
+  else
+  begin
+    if Length(valid) <> n then
+      Error(ER_INVALID_ISVALID_LENGTH);
+
+    IsValid := valid;
+  end;
 end;
 
 constructor BoolColumn.Create(name: string);
@@ -755,33 +750,23 @@ begin
   Info := new ColumnInfo(name, ctBool);
 
   Data := new boolean[0];
-  IsValid := nil;
+  IsValid := new boolean[0];
 end;
 
-{procedure BoolColumn.AppendFromCursor(cur: DataFrameCursor; colIndex: integer);
+function BoolColumn.TryGetNumericValue(i: integer; var value: real): boolean;
 begin
-  if cur.IsValid(colIndex) then
-  begin
-    Data := Data + [cur.Bool(colIndex)];
-    if IsValid <> nil then 
-      IsValid := IsValid + [true];
-  end
-  else AppendInvalid;
-end;}
+  if not IsValid[i] then
+    exit(False);
 
-{procedure BoolColumn.AppendInvalid;
-begin
-  Data := Data + [false];
+  if Data[i] then
+    value := 1.0
+  else
+    value := 0.0;
 
-  if IsValid = nil then
-  begin
-    IsValid := new boolean[Length(Data) - 1];
-    for var i := 0 to IsValid.Length - 1 do
-      IsValid[i] := true;
-  end;
+  exit(True);
+end;
 
-  IsValid := IsValid + [false];
-end;}
+
 
 //-----------------------------
 //           JoinKey
@@ -798,15 +783,11 @@ begin
   var other := JoinKey(oth);
 
   if Ints.Length <> other.Ints.Length then exit(false);
-  if Floats.Length <> other.Floats.Length then exit(false);
   if Strs.Length <> other.Strs.Length then exit(false);
   if Bools.Length <> other.Bools.Length then exit(false);
 
   for var i := 0 to Ints.Length - 1 do
     if Ints[i] <> other.Ints[i] then exit(false);
-
-  for var i := 0 to Floats.Length - 1 do
-    if Floats[i] <> other.Floats[i] then exit(false);
 
   for var i := 0 to Strs.Length - 1 do
     if Strs[i] <> other.Strs[i] then exit(false);
@@ -822,9 +803,6 @@ begin
   var h := 17;
 
   foreach var v in Ints do
-    h := h * 31 + v.GetHashCode;
-
-  foreach var v in Floats do
     h := h * 31 + v.GetHashCode;
 
   foreach var v in Strs do
@@ -857,24 +835,26 @@ begin
   var n := cols.Length;
   colCnt := cols.Length;
 
-  SetLength(intAcc, n);
-  SetLength(floatAcc, n);
-  SetLength(strAcc, n);
-  SetLength(boolAcc, n);
-  SetLength(validAcc, n);
+  intAcc := new IntAccessor[n];
+  floatAcc := new FloatAccessor[n];
+  strAcc := new StrAccessor[n];
+  boolAcc := new BoolAccessor[n];
+  validAcc := new ValidAccessor[n];
 
   for var i := 0 to n - 1 do
   begin
     var col := cols[i];
 
+    intAcc[i] := NotInt;
+    floatAcc[i] := NotFloat;
+    strAcc[i] := NotStr;
+    boolAcc[i] := NotBool;
+
     case fSchema.ColumnTypeAt(i) of
       ctInt:
       begin
         var c := IntColumn(col);
-        if c.IsValid = nil then
-          validAcc[i] := pos -> true
-        else
-          validAcc[i] := pos -> c.IsValid[pos];
+        validAcc[i] := pos -> c.IsValid[pos];
     
         intAcc[i] := pos -> c.Data[pos];
         floatAcc[i] := pos -> c.Data[pos];
@@ -883,22 +863,15 @@ begin
       ctFloat:
       begin
         var c := FloatColumn(col);
-        if c.IsValid = nil then
-          validAcc[i] := pos -> true
-        else
-          validAcc[i] := pos -> c.IsValid[pos];
+        validAcc[i] := pos -> c.IsValid[pos];
     
         floatAcc[i] := pos -> c.Data[pos];
-        intAcc[i] := NotInt;
       end;
     
       ctStr:
       begin
         var c := StrColumn(col);
-        if c.IsValid = nil then
-          validAcc[i] := pos -> true
-        else
-          validAcc[i] := pos -> c.IsValid[pos];
+        validAcc[i] := pos -> c.IsValid[pos];
     
         strAcc[i] := pos -> c.Data[pos];
       end;
@@ -906,10 +879,7 @@ begin
       ctBool:
       begin
         var c := BoolColumn(col);
-        if c.IsValid = nil then
-          validAcc[i] := pos -> true
-        else
-          validAcc[i] := pos -> c.IsValid[pos];
+        validAcc[i] := pos -> c.IsValid[pos];
     
         boolAcc[i] := pos -> c.Data[pos];
       end;
@@ -935,17 +905,33 @@ begin
   Result := IsValid(fSchema.IndexOf(name));
 end;  
 
-function DataFrameCursor.Int(i: integer): integer :=
-  intAcc[i](pos);
+function DataFrameCursor.Int(i: integer): integer;
+begin
+  if not IsValid(i) then
+    Error(ER_VALUE_IS_NA, fSchema.NameAt(i));
+  Result := intAcc[i](pos);
+end;
 
-function DataFrameCursor.Float(i: integer): real :=
-  floatAcc[i](pos);
+function DataFrameCursor.Float(i: integer): real;
+begin
+  if not IsValid(i) then
+    Error(ER_VALUE_IS_NA, fSchema.NameAt(i));
+  Result := floatAcc[i](pos);
+end;
 
-function DataFrameCursor.Str(i: integer): string :=
-  strAcc[i](pos);
+function DataFrameCursor.Str(i: integer): string;
+begin
+  if not IsValid(i) then
+    Error(ER_VALUE_IS_NA, fSchema.NameAt(i));
+  Result := strAcc[i](pos);
+end;
 
-function DataFrameCursor.Bool(i: integer): boolean :=
-  boolAcc[i](pos);
+function DataFrameCursor.Bool(i: integer): boolean;
+begin
+  if not IsValid(i) then
+    Error(ER_VALUE_IS_NA, fSchema.NameAt(i));
+  Result := boolAcc[i](pos);
+end;
   
 function DataFrameCursor.Int(name: string): integer;
 begin

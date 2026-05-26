@@ -76,9 +76,7 @@ begin
   
     var labels := model.PredictLabels(X);
   
-    var counts := new Dictionary<integer, integer>();
-    foreach var l in labels do
-      counts[l] := counts.Get(l, 0) + 1;
+    var counts := labels.EachCount;
   
     var n := df.RowCount;
 

@@ -1,0 +1,56 @@
+name = RussianCities
+
+task = clustering
+
+features = population,lat,lon,region_name,federal_district,foundation_year,area
+
+description.en = Dataset of Russian cities with geographic, demographic, and historical features. Includes population, coordinates, region, foundation year, and area for urban analysis and modeling.
+description.ru = Датасет городов России с географическими, демографическими и историческими характеристиками. Включает население, координаты, регион, год основания и площадь для анализа и моделирования.
+
+source = Wikipedia (cities, area, foundation year), aggregated and cleaned
+url = https://ru.wikipedia.org/wiki/Список_городов_России
+
+feature.population = float
+feature.lat = float
+feature.lon = float
+feature.region_name = categorical
+feature.federal_district = categorical
+feature.foundation_year = int
+feature.area = float
+feature.density = float
+
+feature.population.ru = население
+feature.lat.ru = широта
+feature.lon.ru = долгота
+feature.region_name.ru = регион
+feature.federal_district.ru = федеральный округ
+feature.foundation_year.ru = год основания (нормализованный)
+feature.area.ru = площадь города (км²)
+feature.density.ru = плотность населения
+
+feature.population.en = population
+feature.lat.en = latitude
+feature.lon.en = longitude
+feature.region_name.en = region
+feature.federal_district.en = federal district
+feature.foundation_year.en = foundation year (normalized)
+feature.area.en = city area (km²)
+feature.density.en = population density
+
+value.federal_district.central.ru = Центральный
+value.federal_district.northwestern.ru = Северо-Западный
+value.federal_district.southern.ru = Южный
+value.federal_district.north_caucasian.ru = Северо-Кавказский
+value.federal_district.volga.ru = Приволжский
+value.federal_district.ural.ru = Уральский
+value.federal_district.siberian.ru = Сибирский
+value.federal_district.far_eastern.ru = Дальневосточный
+
+value.federal_district.central.en = Central
+value.federal_district.northwestern.en = Northwestern
+value.federal_district.southern.en = Southern
+value.federal_district.north_caucasian.en = North Caucasian
+value.federal_district.volga.en = Volga
+value.federal_district.ural.en = Ural
+value.federal_district.siberian.en = Siberian
+value.federal_district.far_eastern.en = Far Eastern

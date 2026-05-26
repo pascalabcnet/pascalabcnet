@@ -5,6 +5,24 @@ interface
 uses LinearAlgebraML, MLCoreABC;
 
 type
+/// Методы для разбиения данных и оценки моделей.
+///
+/// Содержит утилиты для:
+/// • разделения выборки на обучающую и тестовую (TrainTestSplit)
+/// • k-fold кросс-валидации (KFold)
+/// • стратифицированной кросс-валидации (StratifiedKFold)
+/// • оценки моделей через кросс-валидацию (CrossValidate, StratifiedCrossValidate)
+///
+/// Методы возвращают индексы или подвыборки без изменения исходных данных.
+///
+/// • KFold — простое разбиение без учёта распределения классов
+/// • StratifiedKFold — сохраняет пропорции классов в каждом fold (для классификации)
+///
+/// Для стратифицированных методов требуется:
+/// • целочисленные метки классов
+/// • число объектов каждого класса ≥ числа фолдов
+///
+/// Все методы используют генератор случайных чисел (seed) для воспроизводимости
   Validation = static class
   private  
     static function CrossValidateCore(model: ISupervisedModel; 
@@ -42,6 +60,9 @@ type
     /// metric — функция качества, принимающая (y_true, y_pred)
     ///   и возвращающая значение метрики (например, Accuracy или MSE).
     /// Возвращает среднее значение метрики по всем частям.
+    /// 
+    /// Метод принимает только ISupervisedModel, работающие с матричными данными
+    /// DataPipeline сюда передавать нельзя, так как он работает с DataFrame.
     static function CrossValidate(model: ISupervisedModel; X: Matrix; y: Vector;
       k: integer; metric: (Vector,Vector) -> real; seed: integer := -1): real;
     
@@ -50,6 +71,9 @@ type
     ///     с сохранением пропорций классов в каждой части.
     /// Рекомендуется для задач классификации, особенно при несбалансированных классах.
     /// Возвращает среднее значение метрики по k разбиениям.
+    /// 
+    /// Метод принимает только ISupervisedModel, работающие с матричными данными
+    /// DataPipeline сюда передавать нельзя, так как он работает с DataFrame.
     static function StratifiedCrossValidate(model: ISupervisedModel; X: Matrix; y: Vector;
       k: integer; metric: (Vector,Vector) -> real; seed: integer := -1): real;  
   end;
@@ -72,6 +96,9 @@ type
     /// • лучший параметр,
     /// • лучшее среднее значение метрики,
     /// • модель, обученная на всём датасете с лучшим параметром
+    /// 
+    /// Все параметры оцениваются на одном и том же разбиении данных
+    /// (используется фиксированный seed), что обеспечивает корректное и сопоставимое сравнение моделей
     class function Search<T, P>(
       modelFactory: P -> T;
       paramValues: array of P;
@@ -87,14 +114,12 @@ type
 implementation
 
 uses MLExceptions;
+uses MLUtilsABC;
 
 const
   ER_DIM_MISMATCH_TRAIN_TEST =
     'Несоответствие размерностей в TrainTestSplit: X.RowCount={0}, y.Length={1}!!' +
     'Dimension mismatch in TrainTestSplit: X.RowCount={0}, y.Length={1}';
-  ER_TEST_RATIO_INVALID =
-    'Параметр testRatio должен быть в интервале (0,1), получено {0}!!' +
-    'Parameter testRatio must be in (0,1), got {0}';  
   ER_K_INVALID =
     'Некорректное значение k в KFold: k={0}, n={1}!!' +
     'Invalid k in KFold: k={0}, n={1}';  
@@ -108,8 +133,13 @@ const
     'Некорректное значение параметра {0}!!Invalid value for parameter {0}';
   ER_DATASET_TOO_SMALL =
     'Для {0} требуется как минимум 2 объекта!!' +
-    'At least 2 samples are required for {0}';    
-    
+    'At least 2 samples are required for {0}';
+  ER_STRATIFIED_CLASS_TOO_SMALL =
+    'Класс {0} содержит {1} объектов, что меньше числа фолдов ({2}). Уменьшите k или объедините малочисленные классы.!!' +
+    'Class {0} has {1} samples, which is less than the number of folds ({2}). Reduce k or merge very small classes.';
+  ER_STRATIFIED_K_TOO_LARGE =
+    'Stratified CV: число фолдов ({0}) превышает минимальный размер класса ({1})!!Stratified CV: number of folds ({0}) exceeds smallest class size ({1})';    
+
 //-----------------------------
 //         Validation
 //-----------------------------
@@ -258,12 +288,8 @@ begin
     var trainSize := n - size;
     var trainIdx := new integer[trainSize];
 
-    if start > 0 then
-      System.Array.Copy(idx, 0, trainIdx, 0, start);
-
-    var tailCount := n - (start + size);
-    if tailCount > 0 then
-      System.Array.Copy(idx, start + size, trainIdx, start, tailCount);
+    System.Array.Copy(idx, 0, trainIdx, 0, start);
+    System.Array.Copy(idx, start + size, trainIdx, start, n - (start + size));
 
     yield (trainIdx, testIdx);
 
@@ -309,6 +335,20 @@ begin
       lst.Add(i);
       classMap.Add(cls, lst);
     end;
+  end;
+
+  // --- 1.1 ПРОВЕРКА НА МИНИМАЛЬНЫЙ РАЗМЕР КЛАССА
+  foreach var pair in classMap do
+  begin
+    var cls := pair.Key;
+    var cnt := pair.Value.Count;
+
+    // Класс может иметь меньше объектов, чем число фолдов.
+    // В библиотеке принята строгая политика: такие случаи считаются ошибкой,
+    // так как не гарантируется присутствие класса во всех train-fold.
+    // Поэтому выполняется fail-fast проверка (см. ниже).
+     if cnt < k then
+      ArgumentError(ER_STRATIFIED_CLASS_TOO_SMALL, cls, cnt, k);
   end;
 
   // --- 2. Контейнеры фолдов
@@ -423,7 +463,7 @@ begin
 
   if (k < 2) or (k > X.RowCount) then
     ArgumentError(ER_K_INVALID_STRATIFIED, k, X.RowCount);
-
+ 
   var baseSeed :=
     if seed >= 0 then seed
     else System.Environment.TickCount and integer.MaxValue;

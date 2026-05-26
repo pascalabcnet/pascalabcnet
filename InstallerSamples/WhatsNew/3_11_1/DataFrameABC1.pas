@@ -32,10 +32,10 @@ begin
   Kat,21,NA
   ''');
   
-  df.Filter(row -> row.Int('age') > 20).Println;
-  
-  df.GroupBy('age').Mean('score').Println;
-
+  df.Filter(row -> row.Int('age') > 20).Print;
+  Println;
+  df.GroupBy('age').Mean('score').Print;
+  Println;
   var stat := df.Describe('score');
   Println($'score: count={stat.Count}, min={stat.Min}, max={stat.Max}, mean={stat.Mean}, std={stat.Std.Round(3)}');
 end.

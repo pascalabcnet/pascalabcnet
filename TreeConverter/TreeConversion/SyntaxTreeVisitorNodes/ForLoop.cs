@@ -165,7 +165,7 @@ namespace PascalABCCompiler.TreeConverter
             forNode.body = convert_strong(_for_node.statements);
             context.leave_code_block();
 
-            slst = convertion_data_and_alghoritms.statement_list_stack.pop();
+            slst = convertion_data_and_alghoritms.statement_list_stack.Pop();
             if (slst.statements.Count > 0 || slst.local_variables.Count > 0)
             {
                 slst.statements.AddElement(forNode.body);
@@ -174,7 +174,7 @@ namespace PascalABCCompiler.TreeConverter
 
             context.leave_cycle();
             context.loop_var_stack.Pop();
-            head_stmts = convertion_data_and_alghoritms.statement_list_stack.pop();
+            head_stmts = convertion_data_and_alghoritms.statement_list_stack.Pop();
             head_stmts.statements.AddElement(forNode);
 
             #region MikhailoMMX, обработка omp parallel for

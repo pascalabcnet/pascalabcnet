@@ -2,6 +2,40 @@
 /// Объединяет модели, метрики, валидацию и вспомогательные компоненты.
 unit MLABC;
 
+// =============================================================
+// СТАТИСТИЧЕСКАЯ ПОЛИТИКА БИБЛИОТЕКИ ML PascalABC.NET
+//
+// В библиотеке используются следующие соглашения:
+//
+// 1. DataFrame (описательная статистика):
+//    • дисперсия вычисляется с делением на (n - 1)
+//
+// 2. LinearAlgebra и ML:
+//    • дисперсия вычисляется с делением на n
+//
+// 3. PCA:
+//    • ковариационная матрица вычисляется с делением на (n - 1)
+//
+// Это соответствует распространённой практике:
+//   • описательная статистика — выборочная дисперсия
+//   • алгоритмы ML — дисперсия генеральной совокупности
+// =============================================================
+
+// =============================================================
+// PIPELINES
+//
+// DataFrame-based:
+//   DataPipeline
+//   UDataPipeline
+//
+// Matrix/Vector-based:
+//   MatrixPipeline
+//   UMatrixPipeline
+//
+// Оба варианта являются равноправными и используются
+// в зависимости от представления данных.
+// =============================================================
+
 interface 
 
 uses LinearAlgebraML;
@@ -24,6 +58,7 @@ type
   Matrix = LinearAlgebraML.Matrix;
   
   Validation = ValidationML.Validation;
+  GridSearch = ValidationML.GridSearch;
   
   Metrics = MetricsABC.Metrics;
   ClassificationMetrics = MetricsABC.ClassificationMetrics;
@@ -35,6 +70,8 @@ type
   
   DataFrame = DataFrameABC.DataFrame;
   DataFrameCursor = DataFrameABCCore.DataFrameCursor;
+  ColumnType = DataFrameABCCore.ColumnType;
+  Column = DataFrameABCCore.Column;
   
   Statistics = DataFrameABC.Statistics;
   CsvLoader = DataFrameABC.CsvLoader;
@@ -55,11 +92,12 @@ type
   NormType = MLModelsABC.NormType;
   
   Activations = MLModelsABC.Activations;
-  Pipeline = MLModelsABC.Pipeline;
+  MatrixPipeline = MLModelsABC.MatrixPipeline;
   
   LinearRegression = MLModelsABC.LinearRegression;
   LogisticRegression = MLModelsABC.LogisticRegression;
   RidgeRegression = MLModelsABC.RidgeRegression;
+  LassoRegression = MLModelsABC.LassoRegression;
   ElasticNet = MLModelsABC.ElasticNet;
   DecisionTreeClassifier = MLModelsABC.DecisionTreeClassifier;
   DecisionTreeRegressor = MLModelsABC.DecisionTreeRegressor;
@@ -83,18 +121,20 @@ type
   Inspection = InspectionML.Inspection;
   
   IPreprocessor = PreprocessorABC.IPreprocessor;
-  LabelEncoder = PreprocessorABC.LabelEncoder;
+  OrdinalEncoder = PreprocessorABC.OrdinalEncoder;
   OneHotEncoder = PreprocessorABC.OneHotEncoder;
   ImputeStrategy = PreprocessorABC.ImputeStrategy;
   Imputer = PreprocessorABC.Imputer;
   
   Datasets = MLDatasets.Datasets;
   Dataset = MLDatasets.Dataset;
+  LabelEncoder = MLDatasets.LabelEncoder;
   
   IModel = MLCoreABC.IModel;
   ISupervisedModel = MLCoreABC.ISupervisedModel;
   IUnsupervisedModel = MLCoreABC.IUnsupervisedModel;
-  UPipeline = MLModelsABC.UPipeline;
+  
+  UMatrixPipeline = MLModelsABC.UMatrixPipeline;
   UDataPipeline = MLPipelineABC.UDataPipeline;
   TaskKind = MLPipelineABC.TaskKind;
   
@@ -114,7 +154,16 @@ const
   jkRight = JoinKind.jkRight;
   jkFull = JoinKind.jkFull;
 
+  /// Преобразует вектор меток классов в массив целых чисел.
+  /// Значения округляются функцией Round, чтобы устранить
+  ///   возможные небольшие численные ошибки 
   function LabelsToInts(y: Vector): array of integer;
+  
+  /// Кодирует строковые метки классов в целочисленные индексы.
+  /// Каждому уникальному значению присваивается номер 0,1,2,...
+  /// Порядок кодирования соответствует порядку первого появления меток.
+  /// Используется при обучении моделей и визуализации.
+  /// Предполагается, что входные данные уже очищены от пропущенных значений.
   function EncodeLabels(labels: array of string): array of integer;
 
   
@@ -125,6 +174,6 @@ begin
   Result := MLUtilsABC.LabelsToInts(y);
 end;
 
-function EncodeLabels(labels: array of string): array of integer := DataAdapters.EncodeLabels(labels);
+function EncodeLabels(labels: array of string): array of integer := MLUtilsABC.EncodeLabels(labels);
   
 end.

@@ -105,15 +105,24 @@ namespace VisualPascalABC
                 return;
             }
 
-            mes = Form1StringResources.Get("FILE_CHANGED_MESSAGE");
-            if (MessageBox.Show(fileName + "\n\n" + mes, Form1StringResources.Get("CHANGED_FILE"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                WorkbenchServiceFactory.FileService.ReloadFile(fileName);
-            }
-            else
-            {
-                WorkbenchServiceFactory.FileService.SetFileAsChanged(fileName);
-            }
+            //mes = Form1StringResources.Get("FILE_CHANGED_MESSAGE");
+            var tab = VisualPABCSingleton.MainForm.FindTab(fileName);
+            if (tab != null)
+                if (tab.DocumentChanged)
+                { 
+                    if (MessageBox.Show(fileName + "\n\n" + mes, Form1StringResources.Get("CHANGED_FILE"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        WorkbenchServiceFactory.FileService.ReloadFile(fileName);
+                    }
+                    else
+                    {
+                        WorkbenchServiceFactory.FileService.SetFileAsChanged(fileName);
+                    }
+                }
+                else
+                {
+                    WorkbenchServiceFactory.FileService.ReloadFile(fileName);
+                }
         }
 
         void MainForm_Activated(object sender, EventArgs e)

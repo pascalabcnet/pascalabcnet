@@ -1,0 +1,28 @@
+uses MLABC;
+uses TestHelpers in '..\TestHelpers.pas';
+
+begin
+  var X := new Matrix(6, 1);
+  X[0,0] := 0.0;  X[1,0] := 0.1;
+  X[2,0] := 1.0;  X[3,0] := 1.1;
+  X[4,0] := 2.0;  X[5,0] := 2.1;
+
+  var y := new Vector(Arr(10.0, 10.0, 20.0, 20.0, 30.0, 30.0));
+
+  var model := new LogisticRegression;
+  model.Fit(X, y);
+
+  var pred := model.Predict(X);
+  var labels := model.PredictLabels(X);
+  var classes := model.GetClassLabels;
+
+  Check(classes.Length = 3, 'Class count mismatch');
+
+  for var i := 0 to X.RowCount - 1 do
+  begin
+    var pi := Round(pred[i]);
+    Check((pi = 10) or (pi = 20) or (pi = 30), $'Predict[{i}] must return original class label');
+    Check((labels[i] >= 0) and (labels[i] < classes.Length), $'PredictLabels[{i}] out of range');
+    Check(classes[labels[i]] = pi.ToString, $'PredictLabels[{i}] must point to Predict[{i}]');
+  end;
+end.

@@ -4,9 +4,14 @@ interface
 
 const
   ER_DIM_MISMATCH =
-    'Несоответствие размерностей: {0} и {1}!!Dimension mismatch: {0} and {1}';  
+    'Размерности не совпадают: {0} и {1}!!Dimension mismatch: {0} and {1}';  
+  ER_TO_VECTOR_NON_NUMERIC =
+      'ToVector: столбец "{0}" содержит нечисловые или NA значения!!' +
+      'ToVector: column "{0}" contains non-numeric or NA values';
+  ER_LABELS_NOT_INTEGER =
+      'Метки классов должны быть целыми числами!!Class labels must be integers';
   ER_PARAM_VALUES_EMPTY =
-    'Список paramValues пуст!!paramValues is empty';
+      'Список paramValues пуст!!paramValues is empty';
   ER_EMPTY_DATASET =
     'Набор данных пуст!!Dataset is empty';
   ER_LAMBDA_NEGATIVE =
@@ -25,6 +30,38 @@ const
     'В DataFrame отсутствует столбец "{0}"!!DataFrame does not contain column "{0}"';  
   ER_NOT_IMPLEMENTED = 
     'Метод {0} не реализован!!Method {0} is not implemented';
+  ER_X_NULL =
+    'X не может быть nil!!X cannot be nil';
+  ER_Y_NULL =
+    'y не может быть nil!!y cannot be nil';
+  ER_XY_SIZE_MISMATCH =
+    'Размеры X и y не совпадают: X={0}, y={1}!!X and y size mismatch: X={0}, y={1}';
+  ER_FEATURE_COUNT_MISMATCH =
+    'Число признаков не совпадает: {0} и {1}!!Feature count mismatch: {0}, {1}';
+  ER_NAN_IN_X =  
+    'X содержит NaN (пропуски)!!X contains NaN';  
+  ER_NAN_IN_Y =
+    'y содержит NaN (пропуски)!!y contains NaN';  
+  ER_TRAINING_DATA_CONTAINS_NAN =
+    'Обучающие данные содержат NaN. Обработайте пропуски до вызова Fit.!!' +
+    'Training data contains NaN. Please handle missing values before calling Fit.';
+  ER_TRAINING_DATA_CONTAINS_INF =
+    'Обучающие данные содержат Infinity. Проверьте данные на выбросы.!!' +
+    'Training data contains Infinity. Please check for extreme values.';
+  ER_PREDICTION_DATA_CONTAINS_NAN =
+    'Данные для предсказания содержат NaN. Обработайте пропуски до вызова Predict.!!' +
+    'Prediction data contains NaN. Please handle missing values before calling Predict.';
+  ER_PREDICTION_DATA_CONTAINS_INF =
+    'Данные для предсказания содержат Infinity. Проверьте данные на выбросы.!!' +
+    'Prediction data contains Infinity. Please check for extreme values.';  
+  ER_MODEL_NOT_FITTED =
+    'Модель "{0}" не обучена. Сначала вызовите Fit()!!Model "{0}" is not fitted. Call Fit() first';
+  ER_TEST_RATIO_INVALID =
+    'Параметр testRatio должен быть в интервале (0,1), получено {0}!!' +
+    'Parameter testRatio must be in (0,1), got {0}';
+  ER_PREDICT_NOT_SUPPORTED =
+    'Модель не поддерживает операцию Predict!!' +
+    'Model does not support Predict operation';
   
 type
   /// Базовое исключение ML-библиотеки

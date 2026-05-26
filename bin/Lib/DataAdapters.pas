@@ -2,49 +2,18 @@
 
 interface
 
-uses DataFrameABC;
-uses LinearAlgebraML;
-
-/// Кодирует строковые метки классов в целочисленные индексы.
-/// Каждому уникальному значению присваивается номер 0,1,2,...
-/// Порядок кодирования соответствует порядку первого появления меток.
-/// Используется при обучении моделей и визуализации.
-function EncodeLabels(labels: array of string): array of integer;
-
-/// Кодирует строковые метки классов в целочисленные индексы.
-/// Каждому уникальному значению присваивается номер 0,1,2,...
-/// Порядок кодирования соответствует порядку первого появления меток.
-/// В параметр classes возвращается массив уникальных значений в порядке кодирования.
-/// Используется при обучении моделей и визуализации
-function EncodeLabels(labels: array of string; var classes: array of string): array of integer;
-
-/// Преобразует строковые метки классов в целочисленные индексы
-///   с использованием заранее заданного массива classes (mapping).
-/// classes должен быть получен из EncodeLabels.
-/// Если встречается неизвестная метка — выбрасывается исключение.
-/// Используется для применения кодирования к тестовым данным (Transform).
-function TransformLabels(labels: array of string; classes: array of string): array of integer;
-
-/// Преобразует целочисленные индексы классов обратно в строковые метки.
-/// Массив classes задаёт соответствие: classes[i] — имя класса с индексом i.
-/// Используется для получения текстовых предсказаний моделей.
-function DecodeLabels(y: array of integer; classes: array of string): array of string;
-
-/// Возвращает список уникальных меток классов.
-/// Порядок соответствует первому появлению значений во входном массиве.
-/// Используется для определения множества классов в задаче классификации.
-function UniqueLabels(labels: array of string): array of string;
+// Здесь пока только методы расширения поэтому секция interface - пуста  
   
 implementation
 
+uses MLUtilsABC;
+uses DataFrameABC;
 uses MLExceptions;
+uses LinearAlgebraML;
 
 const
   ER_TO_MATRIX_NO_COLUMNS =
     'ToMatrix: не указаны столбцы!!ToMatrix: no columns specified';
-  ER_TO_VECTOR_NON_NUMERIC =
-    'ToVector: столбец "{0}" содержит нечисловые или NA значения!!' +
-    'ToVector: column "{0}" contains non-numeric or NA values';  
   ER_TO_MATRIX_NON_NUMERIC =
     'Столбец "{0}" содержит нечисловые или NA значения!!Column "{0}" contains non-numeric or NA values';
   ER_ENCODELABELS_COLUMN_NOT_STRING =
@@ -53,68 +22,8 @@ const
     'Столбец "{0}" должен быть категориальным для EncodeLabels!!Column "{0}" must be categorical for EncodeLabels';
   ER_ENCODELABELS_UNSUPPORTED_TYPE =
     'Неподдерживаемый тип столбца "{0}" для EncodeLabels!!Unsupported column type "{0}" for EncodeLabels';
-  ER_UNKNOWN_CLASS_IN_TRANSFORM =
-    'Неизвестное значение класса "{0}" при преобразовании меток!!Unknown class value "{0}" in TransformLabels';
-  ER_LABEL_INDEX_OUT_OF_RANGE =
-    'Индекс метки {0} вне диапазона [0, {1})!!Label index {0} is out of range [0, {1})';
-  
-function EncodeLabels(labels: array of string; var classes: array of string): array of integer;
-begin
-  if labels = nil then
-    ArgumentNullError(ER_ARG_NULL, 'labels');
-
-  var classList := new List<string>;
-  var map := new Dictionary<string, integer>;
-
-  // собираем классы в порядке первого появления
-  for var i := 0 to labels.Length - 1 do
-  begin
-    var lbl := labels[i];
-    if not map.ContainsKey(lbl) then
-    begin
-      map[lbl] := classList.Count;
-      classList.Add(lbl);
-    end;
-  end;
-
-  // кодируем
-  var res := new integer[labels.Length];
-  for var i := 0 to labels.Length - 1 do
-    res[i] := map[labels[i]];
-
-  classes := classList.ToArray;
-  Result := res;
-end;
-
-function TransformLabels(labels: array of string; classes: array of string): array of integer;
-begin
-  if labels = nil then
-    ArgumentNullError(ER_ARG_NULL, 'labels');
-
-  var map := new Dictionary<string, integer>;
-  for var i := 0 to classes.Length - 1 do
-    map[classes[i]] := i;
-
-  var res := new integer[labels.Length];
-
-  for var i := 0 to labels.Length - 1 do
-  begin
-    var lbl := labels[i];
-
-    if not map.ContainsKey(lbl) then
-      Error(ER_UNKNOWN_CLASS_IN_TRANSFORM, lbl);
-
-    res[i] := map[lbl];
-  end;
-
-  Result := res;
-end;
-
-function EncodeLabels(labels: array of string): array of integer;
-begin
-  var classes: array of string;
-  Result := EncodeLabels(labels, classes);
-end;
+  ER_TARGET_HAS_NA =
+    'Целевой столбец "{0}" содержит NA!!Target column "{0}" contains NA values';  
     
 function ToMatrix(Self: DataFrame; colNames: array of string): Matrix; extensionmethod;
 begin
@@ -130,15 +39,39 @@ begin
   for var j := 0 to p - 1 do
   begin
     var col := df[colNames[j]];
-
-    for var i := 0 to n - 1 do
-    begin
-      var value: real;
-
-      if not col.TryGetNumericValue(i, value) then
+    case col.Info.ColType of
+      ColumnType.ctInt:
+        begin
+          var c := IntColumn(col);
+          for var i := 0 to n - 1 do
+          begin
+            if not c.IsValid[i] then
+              ArgumentError(ER_TO_MATRIX_NON_NUMERIC, colNames[j]);
+            Result[i,j] := c.Data[i];
+          end;
+        end;
+      ColumnType.ctFloat:
+        begin
+          var c := FloatColumn(col);
+          for var i := 0 to n - 1 do
+          begin
+            if not c.IsValid[i] then
+              ArgumentError(ER_TO_MATRIX_NON_NUMERIC, colNames[j]);
+            Result[i,j] := c.Data[i];
+          end;
+        end;
+      ColumnType.ctBool:
+        begin
+          var c := BoolColumn(col);
+          for var i := 0 to n - 1 do
+          begin
+            if not c.IsValid[i] then
+              ArgumentError(ER_TO_MATRIX_NON_NUMERIC, colNames[j]);
+            Result[i,j] := if c.Data[i] then 1.0 else 0.0;
+          end;
+        end;
+      else
         ArgumentError(ER_TO_MATRIX_NON_NUMERIC, colNames[j]);
-
-      Result[i,j] := value;
     end;
   end;
 end;
@@ -150,45 +83,46 @@ begin
   Result := new Vector(n);
 
   var col := df[colName];
-
-  for var i := 0 to n - 1 do
-  begin
-    var value: real;
-
-    if not col.TryGetNumericValue(i, value) then
+  case col.Info.ColType of
+    ColumnType.ctInt:
+      begin
+        var c := IntColumn(col);
+        for var i := 0 to n - 1 do
+        begin
+          if not c.IsValid[i] then
+            ArgumentError(ER_TO_VECTOR_NON_NUMERIC, colName);
+          Result[i] := c.Data[i];
+        end;
+      end;
+    ColumnType.ctFloat:
+      begin
+        var c := FloatColumn(col);
+        for var i := 0 to n - 1 do
+        begin
+          if not c.IsValid[i] then
+            ArgumentError(ER_TO_VECTOR_NON_NUMERIC, colName);
+          Result[i] := c.Data[i];
+        end;
+      end;
+    ColumnType.ctBool:
+      begin
+        var c := BoolColumn(col);
+        for var i := 0 to n - 1 do
+        begin
+          if not c.IsValid[i] then
+            ArgumentError(ER_TO_VECTOR_NON_NUMERIC, colName);
+          Result[i] := if c.Data[i] then 1.0 else 0.0;
+        end;
+      end;
+    else
       ArgumentError(ER_TO_VECTOR_NON_NUMERIC, colName);
-
-    Result[i] := value;
   end;
 end;
 
-// Helper
-function EncodeLabelsIntHelper(labels: array of integer): array of integer;
-begin
-  var classList := new List<integer>;
-  var map := new Dictionary<integer, integer>;
-
-  for var i := 0 to labels.Length - 1 do
-  begin
-    var lbl := labels[i];
-    if not map.ContainsKey(lbl) then
-    begin
-      map[lbl] := classList.Count;
-      classList.Add(lbl);
-    end;
-  end;
-
-  var y := new integer[labels.Length];
-  for var i := 0 to labels.Length - 1 do
-    y[i] := map[labels[i]];
-
-  Result := y;
-end;
-
-/// Кодирует строковые метки классов в целочисленные индексы.
-/// Каждому уникальному значению присваивается номер 0,1,2,...
+/// Кодирует строковые метки классов в целочисленные индексы (0..K-1).
 /// Порядок кодирования соответствует порядку первого появления меток.
-/// Используется при обучении моделей и визуализации.
+/// Используйте только при ручной подготовке данных (без DataPipeline).
+/// Вызывать только ДО разбиения на train/test, чтобы избежать рассинхронизации меток.
 function EncodeLabels(Self: DataFrame; target: string): array of integer; extensionmethod;
 begin
   if Self = nil then
@@ -202,6 +136,11 @@ begin
 
   if not Self.IsCategorical(target) then
     ArgumentError(ER_ENCODELABELS_NOT_CATEGORICAL, target);
+  
+  var col := Self[target];
+  for var i := 0 to Self.RowCount - 1 do
+    if not col.IsValid[i] then
+      ArgumentError(ER_TARGET_HAS_NA, target);
 
   if Self.GetColumnType(target) = ColumnType.ctStr then
   begin
@@ -213,40 +152,15 @@ begin
   if Self.GetColumnType(target) = ColumnType.ctInt then
   begin
     var labels := Self.GetIntColumn(target).ToArray;
-    Result := EncodeLabelsIntHelper(labels);
+    var classes: array of integer;
+    Result := EncodeLabelsInt(labels,classes);
     exit;
   end;
 
   ArgumentError(ER_ENCODELABELS_UNSUPPORTED_TYPE, target);
 end;
 
-function EncodeLabelsInt(labels: array of integer; var classes: array of integer): array of integer;
-begin
-  if labels = nil then
-    ArgumentNullError(ER_ARG_NULL, 'labels');
 
-  var classList := new List<integer>;
-  var map := new Dictionary<integer, integer>;
-
-  // собираем уникальные значения в порядке первого появления
-  for var i := 0 to labels.Length - 1 do
-  begin
-    var lbl := labels[i];
-    if not map.ContainsKey(lbl) then
-    begin
-      map[lbl] := classList.Count;
-      classList.Add(lbl);
-    end;
-  end;
-
-  // кодируем
-  var res := new integer[labels.Length];
-  for var i := 0 to labels.Length - 1 do
-    res[i] := map[labels[i]];
-
-  classes := classList.ToArray;
-  Result := res;
-end;
 
 /// Кодирует значения категориального столбца DataFrame в целочисленные индексы.
 /// Каждому уникальному значению присваивается номер 0,1,2,...
@@ -268,15 +182,18 @@ begin
 
   if not Self.IsCategorical(target) then
     ArgumentError(ER_ENCODELABELS_NOT_CATEGORICAL, target);
+  
+  var col := Self[target];
+  for var i := 0 to Self.RowCount - 1 do
+    if not col.IsValid[i] then
+      ArgumentError(ER_TARGET_HAS_NA, target);
 
   case Self.GetColumnType(target) of
-
     ColumnType.ctStr:
       begin
         var labels := Self.GetStrColumn(target).ToArray;
         Result := EncodeLabels(labels, classes);
       end;
-
     ColumnType.ctInt:
       begin
         var labels := Self.GetIntColumn(target).ToArray;
@@ -287,7 +204,6 @@ begin
         // если API требует string classes:
         classes := intClasses.Select(x -> x.ToString).ToArray;
       end;
-
     else
       ArgumentError(ER_ENCODELABELS_UNSUPPORTED_TYPE, target);
   end;
@@ -314,50 +230,28 @@ begin
 
   if not Self.IsCategorical(target) then
     ArgumentError(ER_ENCODELABELS_NOT_CATEGORICAL, target);
-
-  // --- строим mapping
-  var map := new Dictionary<string, integer>;
-  for var i := 0 to classes.Length - 1 do
-    map[classes[i]] := i;
+  
+  var col := Self[target];
+  for var i := 0 to Self.RowCount - 1 do
+    if not col.IsValid[i] then
+      ArgumentError(ER_TARGET_HAS_NA, target);
 
   case Self.GetColumnType(target) of
-
     ColumnType.ctStr:
       begin
         var data := Self.GetStrColumn(target).ToArray;
-        var res := new integer[data.Length];
-
-        for var i := 0 to data.Length - 1 do
-        begin
-          var lbl := data[i];
-
-          if not map.ContainsKey(lbl) then
-            Error(ER_UNKNOWN_CLASS_IN_TRANSFORM, lbl);
-
-          res[i] := map[lbl];
-        end;
-
-        Result := res;
+        Result := TransformLabels(data, classes);
       end;
-
     ColumnType.ctInt:
       begin
         var data := Self.GetIntColumn(target).ToArray;
-        var res := new integer[data.Length];
-
+        var strData := new string[data.Length];
+  
         for var i := 0 to data.Length - 1 do
-        begin
-          var lbl := data[i].ToString;
-
-          if not map.ContainsKey(lbl) then
-            Error(ER_UNKNOWN_CLASS_IN_TRANSFORM, lbl);
-
-          res[i] := map[lbl];
-        end;
-
-        Result := res;
+          strData[i] := data[i].ToString;
+  
+        Result := TransformLabels(strData, classes);
       end;
-
     else
       ArgumentError(ER_ENCODELABELS_UNSUPPORTED_TYPE, target);
   end;
@@ -386,26 +280,15 @@ begin
 
   if Self.GetColumnType(target) <> ColumnType.ctInt then
     ArgumentError(ER_ENCODELABELS_UNSUPPORTED_TYPE, target);
-
-  // --- mapping: значение → индекс
-  var map := new Dictionary<integer, integer>;
-  for var i := 0 to classes.Length - 1 do
-    map[classes[i]] := i;
+  
+  var col := Self[target];
+  for var i := 0 to Self.RowCount - 1 do
+    if not col.IsValid[i] then
+      ArgumentError(ER_TARGET_HAS_NA, target);
 
   var data := Self.GetIntColumn(target).ToArray;
-  var res := new integer[data.Length];
 
-  for var i := 0 to data.Length - 1 do
-  begin
-    var v := data[i];
-
-    if not map.ContainsKey(v) then
-      Error(ER_UNKNOWN_CLASS_IN_TRANSFORM, v);
-
-    res[i] := map[v];
-  end;
-
-  Result := res;
+  Result := TransformLabelsInt(data, classes);
 end;
 
 /// Кодирует значения целочисленного категориального столбца DataFrame
@@ -431,31 +314,16 @@ begin
   if Self.GetColumnType(target) <> ColumnType.ctInt then
     ArgumentError(ER_ENCODELABELS_UNSUPPORTED_TYPE, target);
 
+  var col := Self[target];
+  for var i := 0 to Self.RowCount - 1 do
+    if not col.IsValid[i] then
+      ArgumentError(ER_TARGET_HAS_NA, target);
+
   var labels := Self.GetIntColumn(target).ToArray;
 
   Result := EncodeLabelsInt(labels, classes);
 end;
 
-function DecodeLabels(y: array of integer; classes: array of string): array of string;
-begin
-  var res := new string[y.Length];
 
-  for var i := 0 to y.Length - 1 do
-  begin
-    var idx := y[i];
-  
-    if (idx < 0) or (idx >= classes.Length) then
-      Error(ER_LABEL_INDEX_OUT_OF_RANGE, idx, classes.Length);
-  
-    res[i] := classes[idx];
-  end;
-
-  Result := res;
-end;
-
-function UniqueLabels(labels: array of string): array of string;
-begin
-  Result := labels.Distinct.ToArray;
-end;
 
 end.

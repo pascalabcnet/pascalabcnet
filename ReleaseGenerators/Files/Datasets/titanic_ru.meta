@@ -1,0 +1,69 @@
+﻿name = TitanicRu
+
+task = classification
+
+features = Класс,Пол,Возраст,БратьяИСупруги,РодителиИДети,ЦенаБилета,ПортПосадки
+target = Выжил
+
+description.en = Titanic passengers dataset with simplified Russian column names for binary survival classification.
+description.ru = Датасет пассажиров Титаника с упрощёнными русскими названиями полей для задачи бинарной классификации выживания.
+
+source = Kaggle: Titanic - Machine Learning from Disaster
+url = https://www.kaggle.com/competitions/titanic/data
+
+feature.Id = int
+feature.Имя = categorical
+feature.Выжил = categorical
+feature.Класс = categorical
+feature.Пол = categorical
+feature.Возраст = float
+feature.БратьяИСупруги = int
+feature.РодителиИДети = int
+feature.ЦенаБилета = float
+feature.ПортПосадки = categorical
+
+feature.Id.ru = номер пассажира
+feature.Имя.ru = имя пассажира
+feature.Выжил.ru = выжил
+feature.Класс.ru = класс билета
+feature.Пол.ru = пол
+feature.Возраст.ru = возраст
+feature.БратьяИСупруги.ru = количество братьев, сестёр и супругов на борту
+feature.РодителиИДети.ru = количество родителей и детей на борту
+feature.ЦенаБилета.ru = цена билета
+feature.ПортПосадки.ru = порт посадки
+
+feature.Id.en = passenger id
+feature.Имя.en = passenger name
+feature.Выжил.en = survived
+feature.Класс.en = passenger class
+feature.Пол.en = sex
+feature.Возраст.en = age
+feature.БратьяИСупруги.en = siblings and spouses aboard
+feature.РодителиИДети.en = parents and children aboard
+feature.ЦенаБилета.en = ticket fare
+feature.ПортПосадки.en = port of embarkation
+
+value.Выжил.0.ru = не выжил
+value.Выжил.1.ru = выжил
+value.Выжил.0.en = did not survive
+value.Выжил.1.en = survived
+
+value.Класс.1.ru = первый класс
+value.Класс.2.ru = второй класс
+value.Класс.3.ru = третий класс
+value.Класс.1.en = first class
+value.Класс.2.en = second class
+value.Класс.3.en = third class
+
+value.Пол.муж.ru = муж
+value.Пол.жен.ru = жен
+value.Пол.муж.en = male
+value.Пол.жен.en = female
+
+value.ПортПосадки.Саутгемптон.ru = Саутгемптон
+value.ПортПосадки.Шербур.ru = Шербур
+value.ПортПосадки.Квинстаун.ru = Квинстаун
+value.ПортПосадки.Саутгемптон.en = Southampton
+value.ПортПосадки.Шербур.en = Cherbourg
+value.ПортПосадки.Квинстаун.en = Queenstown

@@ -13,13 +13,13 @@ begin
   ]);
   
   // Препроцессинг
-  var imputer := new Imputer('population', 'lat', 'lon');
+  var imputer := new Imputer(['population', 'lat', 'lon']);
   df := imputer.FitTransform(df);
   
-  var le1 := new LabelEncoder('region_name');
+  var le1 := new OrdinalEncoder('region_name');
   df := le1.FitTransform(df);
   
-  var le2 := new LabelEncoder('federal_district');
+  var le2 := new OrdinalEncoder('federal_district');
   df := le2.FitTransform(df);
   
   // Явно задаём признаки

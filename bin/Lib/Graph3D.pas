@@ -3218,7 +3218,7 @@ type
 /// Диаметр трубы тора
     property TubeDiameter: real read GetTD write SetTD;
 /// Возвращает клон тора
-    function Clone := (inherited Clone) as PrismT;
+    function Clone := (inherited Clone) as TorusT;
     
     function CreateModel: Visual3D; override := new TorusVisual3D;
 ///--

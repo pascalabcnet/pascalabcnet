@@ -49,7 +49,6 @@ type
 
   /// Базовый интерфейс модели машинного обучения
   IModel = interface(IMatrixStep)
-    // function Predict(X: Matrix): Vector; // вынес в IPredictiveModel
     function Clone: IModel;
     function Name: string;
     property IsFitted: boolean read;
@@ -108,14 +107,17 @@ type
 
   /// Интерфейс классификатора.
   /// Наследуется от IModel.
-  /// Предназначен для моделей, выполняющих классификацию (предсказание меток классов).
-  IClassifier = interface(ISupervisedModel)
-    /// Возвращает индексы классов (0,1,2,...)
-    function PredictLabels(X: Matrix): array of integer;
-    
-    /// Возвращает метки классов в порядке кодирования
-    function GetClassLabels: array of string;
-    
+    /// Предназначен для моделей, выполняющих классификацию (предсказание меток классов).
+    IClassifier = interface(ISupervisedModel)
+      /// Возвращает внутренние индексы классов (0,1,2,...).
+      /// Индекс i соответствует метке GetClassLabels[i].
+      function PredictLabels(X: Matrix): array of integer;
+      
+      /// Возвращает исходные метки классов в порядке внутреннего кодирования.
+      function GetClassLabels: array of string;
+    end;
+  
+  IClassifierInternal = interface
     procedure SetClassLabels(classes: array of string);
   end;
   
@@ -126,8 +128,12 @@ type
   /// Позволяет получать значения в диапазоне (0, 1)
   /// вместо только итогового решения.
   IProbabilisticClassifier = interface(IClassifier)
-    /// Возвращает матрицу вероятностей размера (nSamples × nClasses).
-    /// Столбцы соответствуют классам в порядке внутреннего кодирования модели
+    /// Возвращает матрицу вероятностей классов для всех объектов из X.
+    /// Размер результата: nSamples × nClasses, где:
+    /// - nSamples — число объектов в X;
+    /// - nClasses — число классов модели.
+    /// Элемент [i, k] содержит вероятность того, что объект i принадлежит классу k.
+    /// Сумма вероятностей в каждой строке равна 1.
     function PredictProba(X: Matrix): Matrix;
   end;
 
@@ -155,6 +161,7 @@ type
     /// как признаков X, так и целевой переменной y.
     /// Запоминает необходимые параметры, которые будут использоваться при Transform.
     function Fit(X: Matrix; y: Vector): ISupervisedTransformer;
+    function FitTransform(X: Matrix; y: Vector): Matrix;
   end;
   
   /// Интерфейс преобразования признаков без учёта целевой переменной.
@@ -164,6 +171,11 @@ type
     /// Обучает преобразование на данных с использованием признаков X
     /// Запоминает необходимые параметры, которые будут использоваться при Transform.
     function Fit(X: Matrix): IUnsupervisedTransformer;
+    function FitTransform(X: Matrix): Matrix;
+  end;
+  
+  IColumnExpander = interface
+    function GetExpandedColumns(sourceColumn: string): array of string;
   end;
   
 implementation  

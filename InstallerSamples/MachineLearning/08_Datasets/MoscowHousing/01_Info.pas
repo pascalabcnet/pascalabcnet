@@ -9,7 +9,7 @@ begin
   
   Println;
   Println('Первые строки:');
-  ds.Head.Println(1);
-  
+  ds.Head.Print;
+  Println;
   df.Schema.Println
 end.

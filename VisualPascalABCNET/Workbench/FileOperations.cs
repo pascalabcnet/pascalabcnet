@@ -316,11 +316,16 @@ namespace VisualPascalABC
 
         public void ReloadFile(string FileName)
         {
-            CodeFileDocumentControl tab = FindTab(FileName);
+            CodeFileDocumentControl tab = FindTab(FileName); 
             if (tab != null)
             {
+                var CaretLine = tab.TextEditor.CaretLine;
+
                 tab.LoadFromFile(FileName);
                 tab.DocumentChanged = false;
+                tab.TextEditor.ActiveTextAreaControl.Update();
+                tab.TextEditor.ActiveTextAreaControl.CenterViewOn(CaretLine + 2, 0);
+                tab.TextEditor.CaretLine = CaretLine;
                 SetTabPageText(tab);
             }
         }

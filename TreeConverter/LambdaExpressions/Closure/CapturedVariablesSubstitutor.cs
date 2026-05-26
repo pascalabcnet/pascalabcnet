@@ -976,7 +976,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             {
                 var funcStackAsList = _visitor.context.func_stack == null
                                           ? null
-                                          : _visitor.context.func_stack.CloneInternalStack().ToList();
+                                          : _visitor.context.func_stack.ToList();
 
                 var funcIsGeneric = false;
                 if (funcStackAsList != null)
@@ -1015,7 +1015,7 @@ namespace TreeConverter.LambdaExpressions.Closure
 
                 var funcStackAsList = _visitor.context.func_stack == null
                                           ? null
-                                          : _visitor.context.func_stack.CloneInternalStack().ToList();
+                                          : _visitor.context.func_stack.ToList();
 
                 if (funcStackAsList != null)
                 {

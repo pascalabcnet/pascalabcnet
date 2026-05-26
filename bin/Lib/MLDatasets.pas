@@ -21,6 +21,7 @@ type
   private
     function ValueLabel(feature, value: string): string;
     function CloneMeta(df: DataFrame): Dataset;
+    function GetCategoricalFeatures: array of string;
   public
     FeatureLabels: Dictionary<string,string>;
     ValueLabels: Dictionary<string,Dictionary<string,string>>;
@@ -51,7 +52,7 @@ type
     function StratifiedTrainTestSplit(testRatio: real := 0.2; seed: integer := -1): (Dataset, Dataset);
   
     /// Возвращает первые n строк таблицы данных.
-    function Head(n: integer := 5): DataFrame;
+    function Head(n: integer := 10): DataFrame;
   
     /// Возвращает краткое описание датасета (метаданные).
     function Describe: DataFrame;
@@ -65,8 +66,32 @@ type
     function RowCount: integer := Data.RowCount;
     
     function GetFeatureColumns: array of string;
+    property CategoricalFeatures: array of string read GetCategoricalFeatures;
     
     function HasTarget: boolean;
+  end;
+
+  /// Кодирует target-колонку классификационного Dataset в числовой Vector.
+  /// Используется только для целевой переменной, не для признаков.
+  LabelEncoder = class
+  private
+    fClasses: array of string;
+    fClassToIndex: Dictionary<string, integer>;
+    
+    function GetClasses: array of string;
+    procedure EnsureFitted;
+    procedure CheckDataset(ds: Dataset);
+    function TargetLabels(ds: Dataset): array of string;
+  public
+    function Fit(ds: Dataset): LabelEncoder;
+    function Transform(ds: Dataset): Vector;
+    function FitTransform(ds: Dataset): Vector;
+    
+    property Classes: array of string read GetClasses;
+    
+    function ClassName(index: integer): string;
+    function ClassIndex(name: string): integer;
+    function Decode(y: Vector): array of string;
   end;
 
   /// Набор генераторов и загрузчиков датасетов для задач машинного обучения.
@@ -88,7 +113,9 @@ type
     /// • clusterStd — базовое стандартное отклонение
     /// • clusterStdVar — разброс std между кластерами (0 → одинаковые)
     /// • centerBox — диапазон генерации центров [-centerBox, centerBox]
-    /// • classBalance — равномерность кластеров (0..1, 1 = равномерно)
+    /// • classBalance — равномерность распределения объектов по кластерам (0..1]
+    ///   • classBalance = 1.0  — строго равномерное распределение (детерминированное, не зависит от seed)
+    ///   • classBalance < 1.0  — случайное распределение; чем меньше значение, тем выше дисбаланс в среднем
     /// • noisePoints — число шумовых точек (outliers)
     /// • shuffle — перемешивание
     /// • seed — генератор (seed < 0 → случайный)
@@ -258,8 +285,15 @@ type
 
     /// Датасет российских городов (задача кластеризации)
     static function RussianCities: Dataset;
+
+    /// Датасет пассажиров Титаника (задача классификации)
+    static function TitanicRu: Dataset;
+
+    /// Датасет цен на автомобили с пробегом (задача регрессии)
+    static function UsedCarsPrice: Dataset;
+
     
-    /// Датасет результатов экзамена студентов (классификация)
+    {/// Датасет результатов экзамена студентов (классификация)
     static function StudentExam: Dataset;
     
     /// Датасет банковских клиентов (классификация одобрения кредита)
@@ -272,7 +306,7 @@ type
     static function MoscowTransport: Dataset;
     
     /// Датасет интернет-покупок пользователей (классификация покупки)
-    static function OnlineShopping: Dataset;
+    static function OnlineShopping: Dataset;}
     
     static function LoadMeta(path: string): Dictionary<string,string>;
     static function ParseFeatures(meta: Dictionary<string,string>): array of string;
@@ -295,10 +329,10 @@ const
   ER_PARAM_BETWEEN_01 =
     'Параметр {0} должен быть в диапазоне (0,1)!!Parameter {0} must be in range (0,1)';
   ER_DATASET_NO_TARGET =
-    'У датасета нет целевой переменной (задача кластеризации).' +
+    'У датасета нет целевой переменной (задача кластеризации).!!' +
     'Dataset has no target variable (clustering task).';
   ER_DATASET_TARGET_NOT_FOUND =
-    'Целевая переменная "{0}" не найдена в таблице.' +
+    'Целевая переменная "{0}" не найдена в таблице.!!' +
     'Target column "{0}" not found in DataFrame';
   ER_DATASET_META_NOT_FOUND =
     'Файл метаданных датасета "{0}" не найден!!Dataset meta file "{0}" not found';
@@ -324,12 +358,24 @@ const
     'Параметр {0} должен быть в диапазоне (0, 1)!!Parameter {0} must be in range (0, 1)';   
   ER_PARAM_LT =
     'Параметр {0} должен быть меньше допустимого значения!!Parameter {0} must be less than allowed value';    
-  ER_TEST_RATIO_INVALID = 
-    'Некорректное значение testRatio (должно быть между 0 и 1)!!Invalid testRatio (must be between 0 and 1)';
   ER_GROUPBY_UNSUPPORTED_KEY_TYPE = 
     'Неподдерживаемый тип ключа для группировки!!Unsupported key type for grouping';
   ER_STRATIFIED_ONLY_FOR_CLASSIFICATION =
     'Стратифицированное разбиение доступно только для задач классификации!!Stratified split is only for classification tasks';
+  ER_CLASS_BALANCE_TOO_SMALL =
+    'Слишком малое значение classBalance: {0}. Минимально допустимое значение — 1e-3!!classBalance is too small: {0}. Minimum allowed value is 1e-3';
+  ER_UNSUPPORTED_TARGET_TYPE =
+    'Неподдерживаемый тип целевого столбца: {0}!!Unsupported target column type: {0}';    
+  ER_ENCODELABELS_UNSUPPORTED_TYPE =
+    'Неподдерживаемый тип столбца для кодирования меток: {0}!!' +
+    'Unsupported column type for label encoding: {0}';  
+  ER_LABEL_ENCODER_NOT_FITTED =
+    'LabelEncoder не обучен. Сначала вызовите Fit или FitTransform.!!' +
+    'LabelEncoder is not fitted. Call Fit or FitTransform first.';
+  ER_LABEL_ENCODER_UNKNOWN_CLASS =
+    'Неизвестная метка класса: {0}!!Unknown class label: {0}';
+  ER_LABEL_ENCODER_INDEX_OUT_OF_RANGE =
+    'Индекс класса вне диапазона: {0}!!Class index out of range: {0}';
   
   C_DATASET      = 'Датасет: {0}!!Dataset: {0}';
   C_DESCRIPTION  = 'Описание:!!Description:';
@@ -342,6 +388,7 @@ const
   C_URL          = 'Ссылка: {0}!!URL: {0}';
   C_CLASSES      = 'Классов: {0}!!Classes: {0}';
   C_FEATURE_LIST = 'Признаки:!!Features:';
+  C_CATEGORICAL  = 'Категориальные признаки: {0}!!Categorical features: {0}';
     
 function Normal(rnd: System.Random): real;
 begin
@@ -404,6 +451,9 @@ end;
 
 function Dataset.TrainTestSplit(testRatio: real; shuffle: boolean; seed: integer): (Dataset, Dataset);
 begin
+  if Data = nil then
+    ArgumentNullError(ER_ARG_NULL, 'Data');
+
   var (trainDf, testDf) := Data.TrainTestSplit(testRatio, shuffle, seed);
 
   var trainDs := CloneMeta(trainDf);
@@ -416,96 +466,15 @@ function Dataset.StratifiedTrainTestSplit(testRatio: real; seed: integer): (Data
 begin
   if Data = nil then
     ArgumentNullError(ER_ARG_NULL, 'Data');
-  
-  if (testRatio <= 0.0) or (testRatio >= 1.0) then
-    ArgumentError(ER_TEST_RATIO_INVALID, testRatio);
-  
+
   if Task <> Classification then
     Error(ER_STRATIFIED_ONLY_FOR_CLASSIFICATION);
 
-  var n := Data.RowCount;
-  if n < 2 then
-    ArgumentError(ER_EMPTY_DATA, 'StratifiedTrainTestSplit');
-
-  var actualSeed := if seed >= 0 then seed else System.Environment.TickCount and integer.MaxValue;
-  var rnd := new System.Random(actualSeed);
-
-  // --- target column
-  var ci := Data.ColumnIndex(Target);
-  var col := Data.GetColumn(ci);
-
-  var groups := new Dictionary<object, List<integer>>;
-
-  // --- группировка по target
-  case col.Info.ColType of
-
-    ctInt:
-    begin
-      var data := IntColumn(col).Data;
-
-      for var i := 0 to n - 1 do
-      begin
-        var key: object := data[i];
-
-        var lst: List<integer>;
-        if not groups.TryGetValue(key, lst) then
-        begin
-          lst := new List<integer>;
-          groups[key] := lst;
-        end;
-
-        lst.Add(i);
-      end;
-    end;
-
-    ctStr:
-    begin
-      var data := StrColumn(col).Data;
-
-      for var i := 0 to n - 1 do
-      begin
-        var key: object := data[i];
-
-        var lst: List<integer>;
-        if not groups.TryGetValue(key, lst) then
-        begin
-          lst := new List<integer>;
-          groups[key] := lst;
-        end;
-
-        lst.Add(i);
-      end;
-    end;
-
-    else
-      Error(ER_GROUPBY_UNSUPPORTED_KEY_TYPE, col.Info.ColType);
-  end;
-
-  var trainIdx := new List<integer>;
-  var testIdx := new List<integer>;
-
-  // --- split внутри каждой группы
-  foreach var kvp in groups do
-  begin
-    var arr := kvp.Value.ToArray;
-    arr.Shuffle(rnd);
-
-    var m := arr.Length;
-    var rawSize := Round(m * testRatio);
-    var testSize := rawSize.Clamp(1, m - 1);
-
-    for var i := 0 to testSize - 1 do
-      testIdx.Add(arr[i]);
-
-    for var i := testSize to m - 1 do
-      trainIdx.Add(arr[i]);
-  end;
-
-  var trainDf := Data.TakeRows(trainIdx.ToArray);
-  var testDf := Data.TakeRows(testIdx.ToArray);
+  var (trainDf, testDf) :=
+    Data.StratifiedTrainTestSplit(Target, testRatio, seed);
 
   var trainDs := CloneMeta(trainDf);
-  var testDs := CloneMeta(testDf);
+  var testDs  := CloneMeta(testDf);
 
   Result := (trainDs, testDs);
 end;
@@ -577,6 +546,9 @@ begin
   if (Target <> nil) and (Target <> '') then
     PrintlnTr(C_TARGET, Target);
 
+  if CategoricalFeatures.Length > 0 then
+    PrintlnTr(C_CATEGORICAL, CategoricalFeatures.JoinToString(', '));
+
   Println;
 
   var maxLen := Features.Max(f -> f.Length);
@@ -593,7 +565,14 @@ begin
   if Task <> TaskType.Classification then
     ArgumentError(ER_CLASSES_ONLY_CLASSIFICATION);
 
-  Result := Data.GetStrColumn(Target).Distinct.ToArray;
+  var idx := Data.ColumnIndex(Target);
+  var t := Data.GetColumnType(idx);
+
+  case t of
+    ctStr: Result := Data.GetStrColumn(Target).Distinct.ToArray;
+    ctInt: Result := Data.GetIntColumn(Target).Distinct.Select(x -> x.ToString).ToArray;
+    else Error(ER_UNSUPPORTED_TARGET_TYPE, t);
+  end;
 end;
 
 function Dataset.ClassCounts: Dictionary<string,integer>;
@@ -601,15 +580,39 @@ begin
   if Task <> TaskType.Classification then
     ArgumentError(ER_VALUECOUNTS_ONLY_CLASSIFICATION);
 
-  var labels := Data.GetStrColumn(Target);
-
   var dict := new Dictionary<string,integer>;
 
-  foreach var v in labels do
-    if dict.ContainsKey(v) then
-      dict[v] += 1
+  case Data.GetColumnType(Target) of
+
+    ColumnType.ctStr:
+      begin
+        var labels := Data.GetStrColumn(Target);
+
+        foreach var v in labels do
+          if dict.ContainsKey(v) then
+            dict[v] += 1
+          else
+            dict[v] := 1;
+      end;
+
+    ColumnType.ctInt:
+      begin
+        var labels := Data.GetIntColumn(Target);
+
+        foreach var v in labels do
+        begin
+          var s := v.ToString;
+
+          if dict.ContainsKey(s) then
+            dict[s] += 1
+          else
+            dict[s] := 1;
+        end;
+      end;
+
     else
-      dict[v] := 1;
+      ArgumentError(ER_ENCODELABELS_UNSUPPORTED_TYPE, Target);
+  end;
 
   Result := dict;
 end;
@@ -641,9 +644,150 @@ begin
     Result := Data.Schema.ColumnNames;
 end;
 
+function Dataset.GetCategoricalFeatures: array of string;
+begin
+  Result := Features
+    .Where(f -> Data.IsCategorical(f))
+    .ToArray;
+end;
+
 function Dataset.HasTarget: boolean;
 begin
   Result := (Target <> nil) and (Target <> '');
+end;
+
+
+//-----------------------------
+//        LabelEncoder
+//-----------------------------
+
+function LabelEncoder.GetClasses: array of string;
+begin
+  EnsureFitted;
+  Result := Copy(fClasses);
+end;
+
+procedure LabelEncoder.EnsureFitted;
+begin
+  if (fClasses = nil) or (fClassToIndex = nil) then
+    Error(ER_LABEL_ENCODER_NOT_FITTED);
+end;
+
+procedure LabelEncoder.CheckDataset(ds: Dataset);
+begin
+  if ds = nil then
+    ArgumentNullError(ER_ARG_NULL, 'ds');
+
+  if ds.Data = nil then
+    ArgumentNullError(ER_ARG_NULL, 'Data');
+
+  if ds.Task <> TaskType.Classification then
+    ArgumentError(ER_CLASSES_ONLY_CLASSIFICATION);
+
+  if not ds.HasTarget then
+    ArgumentError(ER_DATASET_TARGET_MISSING);
+
+  if not ds.Data.HasColumn(ds.Target) then
+    ArgumentError(ER_DATASET_TARGET_NOT_FOUND, ds.Target);
+end;
+
+function LabelEncoder.TargetLabels(ds: Dataset): array of string;
+begin
+  CheckDataset(ds);
+
+  case ds.Data.GetColumnType(ds.Target) of
+    ColumnType.ctStr:
+      Result := ds.Data.GetStrColumn(ds.Target);
+    ColumnType.ctInt:
+      Result := ds.Data.GetIntColumn(ds.Target).Select(x -> x.ToString).ToArray;
+    else
+      ArgumentError(ER_ENCODELABELS_UNSUPPORTED_TYPE, ds.Target);
+  end;
+end;
+
+function LabelEncoder.Fit(ds: Dataset): LabelEncoder;
+begin
+  var labels := TargetLabels(ds);
+  
+  var classes := new List<string>;
+  fClassToIndex := new Dictionary<string, integer>;
+
+  foreach var labelName in labels do
+    if not fClassToIndex.ContainsKey(labelName) then
+    begin
+      fClassToIndex[labelName] := classes.Count;
+      classes.Add(labelName);
+    end;
+
+  fClasses := classes.ToArray;
+  Result := self;
+end;
+
+function LabelEncoder.Transform(ds: Dataset): Vector;
+begin
+  EnsureFitted;
+
+  var labels := TargetLabels(ds);
+  var y := new integer[labels.Length];
+
+  for var i := 0 to labels.Length - 1 do
+  begin
+    var labelName := labels[i];
+
+    if not fClassToIndex.ContainsKey(labelName) then
+      ArgumentError(ER_LABEL_ENCODER_UNKNOWN_CLASS, labelName);
+
+    y[i] := fClassToIndex[labelName];
+  end;
+
+  Result := new Vector(y);
+end;
+
+function LabelEncoder.FitTransform(ds: Dataset): Vector;
+begin
+  Fit(ds);
+  Result := Transform(ds);
+end;
+
+function LabelEncoder.ClassName(index: integer): string;
+begin
+  EnsureFitted;
+
+  if (index < 0) or (index >= fClasses.Length) then
+    ArgumentError(ER_LABEL_ENCODER_INDEX_OUT_OF_RANGE, index);
+
+  Result := fClasses[index];
+end;
+
+function LabelEncoder.ClassIndex(name: string): integer;
+begin
+  EnsureFitted;
+
+  if not fClassToIndex.ContainsKey(name) then
+    ArgumentError(ER_LABEL_ENCODER_UNKNOWN_CLASS, name);
+
+  Result := fClassToIndex[name];
+end;
+
+function LabelEncoder.Decode(y: Vector): array of string;
+begin
+  EnsureFitted;
+
+  if y = nil then
+    ArgumentNullError(ER_ARG_NULL, 'y');
+
+  Result := new string[y.Length];
+
+  for var i := 0 to y.Length - 1 do
+  begin
+    var value := y.Data[i];
+    var index := Round(value);
+
+    if (Abs(value - index) > 1e-12) or (index < 0) or (index >= fClasses.Length) then
+      ArgumentError(ER_LABEL_ENCODER_INDEX_OUT_OF_RANGE, index);
+
+    Result[i] := fClasses[index];
+  end;
 end;
 
 
@@ -678,6 +822,9 @@ begin
   if (classBalance <= 0) or (classBalance > 1) then
     ArgumentOutOfRangeError(ER_PARAM_RANGE_01, 'classBalance');
   
+  if classBalance < 1e-3 then
+    ArgumentOutOfRangeError(ER_CLASS_BALANCE_TOO_SMALL, classBalance);
+  
   if noisePoints < 0 then
     ArgumentOutOfRangeError(ER_PARAM_GE_ZERO, 'noisePoints');
   
@@ -709,7 +856,7 @@ begin
   // --- вероятности кластеров
   var probs := new real[centers];
   
-  if classBalance = 1 then
+  if Abs(classBalance - 1.0) < 1e-12 then
   begin
     for var c := 0 to centers - 1 do
       probs[c] := 1.0 / centers;
@@ -864,7 +1011,7 @@ begin
     ArgumentOutOfRangeError(ER_PARAM_GE_ZERO, 'nInformative');
   
   if nInformative > nFeatures then
-    nInformative := nFeatures;
+    ArgumentOutOfRangeError(ER_PARAM_LE, 'nInformative');
   
   if noise < 0 then
     ArgumentOutOfRangeError(ER_PARAM_GE_ZERO, 'noise');
@@ -1050,7 +1197,26 @@ begin
       X[row,1] := r * Sin(t) + noise * Normal(rnd);
     end;
   end;
-
+  
+  // --- обработка хвоста (если n не делится на classes)
+  for var i := classes * perClass to n - 1 do
+  begin
+    var row := idx[i];
+  
+    var c := i mod classes;  // равномернее, чем rnd
+  
+    var u := rnd.NextDouble;
+  
+    var r := radius * u;
+  
+    var t := turns * 2 * Pi * u + c * 2 * Pi / classes + noise * 0.5 * Normal(rnd);
+  
+    y[row] := c;
+  
+    X[row,0] := r * Cos(t) + noise * Normal(rnd);
+    X[row,1] := r * Sin(t) + noise * Normal(rnd);
+  end;
+  
   Result := (X, y);
 end;
 
@@ -1172,6 +1338,7 @@ begin
     ArgumentNullError(ER_ARG_NULL, 'name');
 
   var baseDir := PascalABCDirectory + 'Files\Datasets\';
+  //var baseDir := 'C:\Program Files (x86)\PascalABC.NET\Files\Datasets\';
 
   var metaPath := baseDir + name + '.meta';
   var csvPath  := baseDir + name + '.csv';
@@ -1188,6 +1355,18 @@ begin
     ArgumentError(ER_DATASET_TASK_MISSING, name);
 
   var df := DataFrame.FromCsv(csvPath);
+  var categoricalCols := new List<string>;
+
+  foreach var k in meta.Keys do
+    if k.StartsWith('feature.') and not k.EndsWith('.ru') and not k.EndsWith('.en') then
+    begin
+      var colName := k.Substring('feature.'.Length);
+      if (meta[k] = 'categorical') and df.HasColumn(colName) then
+        categoricalCols.Add(colName);
+    end;
+
+  if categoricalCols.Count > 0 then
+    df := df.SetCategorical(categoricalCols.ToArray);
 
   var ds := new Dataset;
 
@@ -1269,39 +1448,30 @@ end;
 
 static function Datasets.Iris: Dataset;
 begin
-  var ds := Load('Iris');
-
-  ds.Data := ds.Data.SetCategorical([
-    'species'
-  ]);
-
-  Result := ds;
+  Result := Load('Iris');
 end;
 
 static function Datasets.MoscowHousing: Dataset;
 begin
-  var ds := Load('moscow_housing');
-
-  ds.Data := ds.Data.SetCategorical([
-    'renovation'
-  ]);
-
-  Result := ds;
+  Result := Load('moscow_housing');
 end;
 
 static function Datasets.RussianCities: Dataset;
 begin
-  var ds := Load('russian_cities');
-
-  ds.Data := ds.Data.SetCategorical([
-    'region_name',
-    'federal_district'
-  ]);
-
-  Result := ds;
+  Result := Load('russian_cities');
 end;
 
-static function Datasets.StudentExam: Dataset;
+static function Datasets.TitanicRu: Dataset;
+begin
+  Result := Load('titanic_ru');
+end;
+
+static function Datasets.UsedCarsPrice: Dataset;
+begin
+  Result := Load('used_cars_price');
+end;
+
+{static function Datasets.StudentExam: Dataset;
 begin
   NotImplementedError(ER_NOT_IMPLEMENTED, 'Datasets.StudentExam');
   Result := nil;
@@ -1329,7 +1499,7 @@ static function Datasets.OnlineShopping: Dataset;
 begin
   NotImplementedError(ER_NOT_IMPLEMENTED, 'Datasets.OnlineShopping');
   Result := nil;
-end;
+end;}
 
 static function Datasets.LoadMeta(path: string): Dictionary<string,string>;
 begin

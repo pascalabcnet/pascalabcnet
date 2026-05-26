@@ -8,6 +8,6 @@ begin
 
   Plot.Hist(price, bins := 40);
   Plot.Title := 'Распределение цен на квартиры в Москве';
-  Plot.XLabel('Цена (руб)');
-  Plot.YLabel('Количество');
+  Plot.XLabel := 'Цена (руб)';
+  Plot.YLabel := 'Количество';
 end.

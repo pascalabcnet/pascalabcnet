@@ -81,10 +81,4 @@ begin
   Println($'Linear     MSE: {Metrics.MSE(yTest, yTestLR),0:F4}');
   Println($'Ridge      MSE: {Metrics.MSE(yTest, yTestRidge),0:F4}');
   Println($'ElasticNet MSE: {Metrics.MSE(yTest, yTestEN),0:F4}');
-  
-  {Println;
-  Println('Коэффициенты (первые 10):');
-  lr.Coefficients.ToArray.Take(10).Println;
-  ridge.Coefficients.ToArray.Take(10).Println;
-  en.Coefficients.ToArray.Take(10).Println;}
 end.

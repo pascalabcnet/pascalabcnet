@@ -12,5 +12,5 @@ begin
   Kat,21,NA
   ''');
   
-  df.PrintPreview(3);
+  df.Print;
 end.

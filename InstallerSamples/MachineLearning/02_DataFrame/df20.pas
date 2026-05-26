@@ -17,5 +17,5 @@ begin
   .SortBy('age', descending := True)
   .GroupBy('age')
   .Mean('score')
-  .PrintPreview(3);
+  .Print;
 end.

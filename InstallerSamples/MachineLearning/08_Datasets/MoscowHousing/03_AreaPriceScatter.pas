@@ -9,7 +9,7 @@ begin
 
   Plot.Points(area, price, size := 3);
 
-  Plot.XLabel('Площадь (м²)');
-  Plot.YLabel('Цена (руб)');
+  Plot.XLabel := 'Площадь (м²)';
+  Plot.YLabel := 'Цена (руб)';
   Plot.Title := 'Цена квартиры vs площадь';
 end.

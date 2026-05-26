@@ -124,6 +124,8 @@ copy bin\Lib\InspectionML.pcu Release\PascalABCNETLinux\Lib\InspectionML.pcu
 copy bin\Lib\MLPipelineABC.pcu Release\PascalABCNETLinux\Lib\MLPipelineABC.pcu
 copy bin\Lib\MLPipelineABC.pcu Release\PascalABCNETLinux\Lib\MLDatasets.pcu
 copy bin\Lib\MLPipelineABC.pcu Release\PascalABCNETLinux\Lib\PlotML.pcu
+copy bin\Lib\DataAdapters.pcu Release\PascalABCNETLinux\Lib\DataAdapters.pcu
+copy bin\Lib\MLUtilsABC.pcu Release\PascalABCNETLinux\Lib\MLUtilsABC.pcu
 
 
 copy bin\Lib\ABCDatabases.pas Release\PascalABCNETLinux\LibSource\ABCDatabases.pas
@@ -180,6 +182,8 @@ copy bin\Lib\InspectionML.pas Release\PascalABCNETLinux\LibSource\InspectionML.p
 copy bin\Lib\MLPipelineABC.pas Release\PascalABCNETLinux\LibSource\MLPipelineABC.pas
 copy bin\Lib\MLPipelineABC.pas Release\PascalABCNETLinux\LibSource\MLDatasets.pas
 copy bin\Lib\MLPipelineABC.pas Release\PascalABCNETLinux\LibSource\PlotML.pas
+copy bin\Lib\DataAdapters.pas Release\PascalABCNETLinux\LibSource\DataAdapters.pas
+copy bin\Lib\MLUtilsABC.pas Release\PascalABCNETLinux\LibSource\MLUtilsABC.pas
 
 
 copy bin\Lng\Eng\.LanguageName Release\PascalABCNETLinux\Lng\Eng\.LanguageName

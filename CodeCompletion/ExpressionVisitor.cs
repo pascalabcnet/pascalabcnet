@@ -1160,7 +1160,16 @@ namespace CodeCompletion
             _method_call.dereferencing_value.visit(this);
             search_all = false;
             SymScope[] names = returned_scopes.ToArray();
-            if (names.Length > 0 && names[0] is ElementScope && (names[0] as ElementScope).sc is TypeScope && ((names[0] as ElementScope).sc as TypeScope).IsDelegate)
+
+            // Не нашли кандидатов - возврат
+            if (names.Length == 0)
+            {
+                returned_scope = null;
+                method_call_cache[_method_call] = null;
+                return;
+            }
+
+            if (names[0] is ElementScope && (names[0] as ElementScope).sc is TypeScope && ((names[0] as ElementScope).sc as TypeScope).IsDelegate)
             {
                 returned_scope = names[0];
                 method_call_cache[_method_call] = returned_scope;
@@ -1211,7 +1220,7 @@ namespace CodeCompletion
             }
             ProcScope ps = select_method(names, null, null, obj, _method_call.parameters != null ? _method_call.parameters.expressions.ToArray() : null);
             returned_scope = ps;
-            if (ps == null && names.Length > 0)
+            if (ps == null)
             {
                 returned_scope = null;
 

@@ -8,10 +8,11 @@ begin
 
   var target := 'price';
 
-  var (trainDf, testDf) := df.TrainTestSplit(0.2, 42);
+  var (trainDf, testDf) := df.TrainTestSplit(0.2, seed := 42);
 
   var pipe :=
     DataPipeline.Build( // сборка pipeline: target + features + шаги
+      TaskKind.tkRegression,
       target,           // целевая переменная
       features,         // список признаков
       new OneHotEncoder('renovation'), // DataFrame-уровень: кодирование категории

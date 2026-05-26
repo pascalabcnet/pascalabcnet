@@ -6,7 +6,9 @@ begin
   var df := ds.Data;
 
   df.Schema.Println;
-  df.PrintlnInfo;
-  
-  df.PrintlnPreview(20);
+  df.PrintInfo;
+  Println;
+  ds.Info;
+  Println;
+  df.Print;
 end.

@@ -150,7 +150,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 }
             }
 
-            _visitor.convertion_data_and_alghoritms.statement_list_stack.pop();
+            _visitor.convertion_data_and_alghoritms.statement_list_stack.Pop();
 
             _currentTreeNode = _currentTreeNode.ParentNode;
         }
@@ -697,7 +697,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             ProcessNode(_foreach_stmt.stmt);
 
             _visitor.context.loop_var_stack.Pop();
-            _visitor.convertion_data_and_alghoritms.statement_list_stack.pop();
+            _visitor.convertion_data_and_alghoritms.statement_list_stack.Pop();
             _visitor.context.leave_cycle();
 
             _currentTreeNode = _currentTreeNode.ParentNode;
@@ -782,7 +782,7 @@ namespace TreeConverter.LambdaExpressions.Closure
 
             _visitor.context.leave_cycle();
             _visitor.context.loop_var_stack.Pop();
-            _visitor.convertion_data_and_alghoritms.statement_list_stack.pop();
+            _visitor.convertion_data_and_alghoritms.statement_list_stack.Pop();
 
             _currentTreeNode = _currentTreeNode.ParentNode;
         }
@@ -836,7 +836,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             
             var newTreeNode = new CapturedVariablesTreeNodeLambdaScope(_currentTreeNode, 
                 lambdaDefinition, 
-                _visitor.context.func_stack.top().scope.ScopeNum, lambdaDefinition);
+                _visitor.context.func_stack.Peek().scope.ScopeNum, lambdaDefinition);
 
             _currentTreeNode.LambdasDefinedInScope.Add(newTreeNode);
             _currentLambdaScopeNodeStack.Push(newTreeNode);
@@ -911,9 +911,9 @@ namespace TreeConverter.LambdaExpressions.Closure
                 _classScope = (CapturedVariablesTreeNodeClassScope) _rootNode;
             }
 
-            if (_visitor.context.func_stack.top() != null)
+            if (_visitor.context.func_stack.FirstOrDefault() != null)
             {
-                var newTreeNode = new CapturedVariablesTreeNodeProcedureScope(_currentTreeNode, _visitor.context.func_stack.top(), _visitor.context.func_stack.top().scope.ScopeNum, null);
+                var newTreeNode = new CapturedVariablesTreeNodeProcedureScope(_currentTreeNode, _visitor.context.func_stack.Peek(), _visitor.context.func_stack.Peek().scope.ScopeNum, null);
 
                 if (_rootNode == null)
                 {
@@ -925,7 +925,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 }
                 _currentTreeNode = newTreeNode;
 
-                _scopesCapturedVarsNodesDictionary.Add(_visitor.context.func_stack.top().scope.ScopeNum, _currentTreeNode);
+                _scopesCapturedVarsNodesDictionary.Add(_visitor.context.func_stack.Peek().scope.ScopeNum, _currentTreeNode);
 
                 _procedureScope = (CapturedVariablesTreeNodeProcedureScope) _currentTreeNode;
             }

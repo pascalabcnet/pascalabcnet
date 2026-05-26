@@ -7,7 +7,7 @@ begin
   var features := ['rooms','area','kitchen_area','floor','floors_total','metro_minutes'];
   var target := 'price';
 
-  var (trainDf, testDf) := df.TrainTestSplit(0.2, 42);
+  var (trainDf, testDf) := df.TrainTestSplit(0.2, seed := 42);
 
   var Xtrain := trainDf.ToMatrix(features);
   var ytrain := trainDf.ToVector(target);

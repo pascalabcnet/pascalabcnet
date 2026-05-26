@@ -11,9 +11,10 @@ begin
 
   var pipe :=
     DataPipeline.Build(
+      TaskKind.tkRegression,
       target,
       features,
-      new LabelEncoder('renovation'),
+      new OrdinalEncoder('renovation'),
       model
     );
 

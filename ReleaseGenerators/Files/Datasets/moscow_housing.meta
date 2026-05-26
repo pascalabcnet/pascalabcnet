@@ -1,0 +1,49 @@
+name = MoscowHousing
+
+task = regression
+
+features = rooms,area,kitchen_area,floor,floors_total,metro_minutes,renovation
+target = price
+
+description.en = Apartment prices in Moscow with basic structural and location features.
+description.ru = Цены на квартиры в Москве с основными характеристиками жилья и расположения.
+
+source = Real estate listings (aggregated dataset)
+url = https://example.com/moscow-housing
+
+feature.price = float
+feature.rooms = int
+feature.area = float
+feature.kitchen_area = float
+feature.floor = int
+feature.floors_total = int
+feature.metro_minutes = float
+feature.renovation = categorical
+
+feature.price.ru = цена квартиры
+feature.rooms.ru = число комнат
+feature.area.ru = площадь квартиры
+feature.kitchen_area.ru = площадь кухни
+feature.floor.ru = этаж
+feature.floors_total.ru = этажей в доме
+feature.metro_minutes.ru = минуты до метро
+feature.renovation.ru = тип ремонта
+
+feature.price.en = apartment price
+feature.rooms.en = number of rooms
+feature.area.en = apartment area
+feature.kitchen_area.en = kitchen area
+feature.floor.en = floor
+feature.floors_total.en = total floors in building
+feature.metro_minutes.en = minutes to metro
+feature.renovation.en = renovation type
+
+value.renovation.without.ru = без ремонта
+value.renovation.cosmetic.ru = косметический
+value.renovation.euro.ru = евроремонт
+value.renovation.designer.ru = дизайнерский
+
+value.renovation.without.en = without renovation
+value.renovation.cosmetic.en = cosmetic
+value.renovation.euro.en = european renovation
+value.renovation.designer.en = designer renovation

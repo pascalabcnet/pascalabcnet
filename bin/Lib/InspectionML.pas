@@ -45,12 +45,16 @@ type
   ///   Вектор важностей признаков длины nFeatures.
   ///   Чем больше значение, тем сильнее признак влияет на качество модели
     static function PermutationImportance(model: IPredictiveModel; X: Matrix; y: Vector;
-      scoreFunc: (Vector, Vector) -> real; nRepeats: integer := 5; seed: integer := -1): Vector;
+      scoreFunc: (Vector, Vector) -> real; 
+      nRepeats: integer := 5; 
+      higherIsBetter: boolean := True;
+      seed: integer := -1): Vector;
   end;  
 
 implementation
 
 uses MLExceptions;
+uses MLUtilsABC;
 
 const
   ER_SCORE_FUNC_NULL = 
@@ -61,12 +65,11 @@ const
 
 static function Inspection.PermutationImportance(
   model: IPredictiveModel; 
-  X: Matrix; 
-  y: Vector;
+  X: Matrix; y: Vector;
   scoreFunc: (Vector, Vector) -> real; 
   nRepeats: integer;
-  seed: integer
-): Vector;
+  higherIsBetter: boolean;
+  seed: integer): Vector;
 begin
   if model = nil then
     ArgumentNullError(ER_MODEL_NULL);
@@ -88,14 +91,8 @@ begin
 
   var resultVec := new Vector(p);
 
-// Базовый seed для всех параметров.
-// Все модели оцениваются на одинаковых фолдах,
-// что обеспечивает корректное сравнение.
-// При seed = -1 разбиение случайное, но фиксируется
-// один раз для всего GridSearch.
-  var baseSeed :=
-    if seed >= 0 then seed
-    else System.Environment.TickCount and integer.MaxValue;
+  var userProvidedSeed: boolean;
+  var baseSeed := ResolveRandomSeed(seed, userProvidedSeed);
 
   for var j := 0 to p - 1 do
   begin
@@ -122,7 +119,10 @@ begin
       var permPred := model.Predict(Xperm);
       var permScore := scoreFunc(y, permPred);
 
-      acc += (baselineScore - permScore);
+      if higherIsBetter then
+        acc += (baselineScore - permScore)
+      else
+        acc += (permScore - baselineScore);
     end;
 
     resultVec[j] := acc / nRepeats;

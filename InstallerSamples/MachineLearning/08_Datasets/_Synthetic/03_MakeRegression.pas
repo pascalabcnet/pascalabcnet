@@ -13,8 +13,8 @@ begin
 
   // --- визуализация
   Plot.Title('MakeRegression синтетический датасет');
-  Plot.XLabel('признак');
-  Plot.YLabel('целевая переменная');
+  Plot.XLabel := 'признак';
+  Plot.YLabel := 'целевая переменная';
 
   Plot.Points(X.Col(0), y.ToArray, size := 3);
 end.

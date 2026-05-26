@@ -32,7 +32,7 @@ begin
     marker := MarkerType.Circle
   );
 
-  Plot.XLabel('Долгота');
-  Plot.YLabel('Широта');
+  Plot.XLabel := 'Долгота';
+  Plot.YLabel := 'Широта';
   Plot.Title := 'Кластеры городов России';
 end.

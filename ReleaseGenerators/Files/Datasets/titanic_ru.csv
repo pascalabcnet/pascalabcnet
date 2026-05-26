@@ -1,0 +1,892 @@
+﻿Id,Имя,Выжил,Класс,Пол,Возраст,БратьяИСупруги,РодителиИДети,ЦенаБилета,ПортПосадки
+1,Owen Harris Braund,0,3,муж,22,1,0,7.25,Саутгемптон
+2,John Bradley Cumings,1,1,жен,38,1,0,71.2833,Шербур
+3,Laina Heikkinen,1,3,жен,26,0,0,7.925,Саутгемптон
+4,Jacques Heath Futrelle,1,1,жен,35,1,0,53.1,Саутгемптон
+5,William Henry Allen,0,3,муж,35,0,0,8.05,Саутгемптон
+6,James Moran,0,3,муж,,0,0,8.4583,Квинстаун
+7,Timothy J McCarthy,0,1,муж,54,0,0,51.8625,Саутгемптон
+8,Gosta Leonard Palsson,0,3,муж,2,3,1,21.075,Саутгемптон
+9,Oscar W Johnson,1,3,жен,27,0,2,11.1333,Саутгемптон
+10,Nicholas Adele Nasser,1,2,жен,14,1,0,30.0708,Шербур
+11,Marguerite Rut Sandstrom,1,3,жен,4,1,1,16.7,Саутгемптон
+12,Elizabeth Bonnell,1,1,жен,58,0,0,26.55,Саутгемптон
+13,William Henry Saundercock,0,3,муж,20,0,0,8.05,Саутгемптон
+14,Anders Johan Andersson,0,3,муж,39,1,5,31.275,Саутгемптон
+15,Hulda Amanda Vestrom,0,3,жен,14,0,0,7.8542,Саутгемптон
+16,Mary D Hewlett,1,2,жен,55,0,0,16,Саутгемптон
+17,Eugene Rice,0,3,муж,2,4,1,29.125,Квинстаун
+18,Charles Eugene Williams,1,2,муж,,0,0,13,Саутгемптон
+19,Julius Emelia Vander Planke,0,3,жен,31,1,0,18,Саутгемптон
+20,Fatima Masselmani,1,3,жен,,0,0,7.225,Шербур
+21,Joseph J Fynney,0,2,муж,35,0,0,26,Саутгемптон
+22,Lawrence Beesley,1,2,муж,34,0,0,13,Саутгемптон
+23,Anna Annie McGowan,1,3,жен,15,0,0,8.0292,Квинстаун
+24,William Thompson Sloper,1,1,муж,28,0,0,35.5,Саутгемптон
+25,Torborg Danira Palsson,0,3,жен,8,3,1,21.075,Саутгемптон
+26,Carl Oscar Asplund,1,3,жен,38,1,5,31.3875,Саутгемптон
+27,Farred Chehab Emir,0,3,муж,,0,0,7.225,Шербур
+28,Charles Alexander Fortune,0,1,муж,19,3,2,263,Саутгемптон
+29,Ellen Nellie O'Dwyer,1,3,жен,,0,0,7.8792,Квинстаун
+30,Lalio Todoroff,0,3,муж,,0,0,7.8958,Саутгемптон
+31,Manuel E Uruchurtu,0,1,муж,40,0,0,27.7208,Шербур
+32,William Augustus Spencer,1,1,жен,,1,0,146.5208,Шербур
+33,Mary Agatha Glynn,1,3,жен,,0,0,7.75,Квинстаун
+34,Edward H Wheadon,0,2,муж,66,0,0,10.5,Саутгемптон
+35,Edgar Joseph Meyer,0,1,муж,28,1,0,82.1708,Шербур
+36,Alexander Oskar Holverson,0,1,муж,42,1,0,52,Саутгемптон
+37,Hanna Mamee,1,3,муж,,0,0,7.2292,Шербур
+38,Ernest Charles Cann,0,3,муж,21,0,0,8.05,Саутгемптон
+39,Augusta Maria Vander Planke,0,3,жен,18,2,0,18,Саутгемптон
+40,Jamila Nicola-Yarred,1,3,жен,14,1,0,11.2417,Шербур
+41,Johan Johanna Ahlin,0,3,жен,40,1,0,9.475,Саутгемптон
+42,William John Turpin,0,2,жен,27,1,0,21,Саутгемптон
+43,Theodor Kraeff,0,3,муж,,0,0,7.8958,Шербур
+44,Simonne Marie Laroche,1,2,жен,3,1,2,41.5792,Шербур
+45,Margaret Delia Devaney,1,3,жен,19,0,0,7.8792,Квинстаун
+46,William John Rogers,0,3,муж,,0,0,8.05,Саутгемптон
+47,Denis Lennon,0,3,муж,,1,0,15.5,Квинстаун
+48,Bridget O'Driscoll,1,3,жен,,0,0,7.75,Квинстаун
+49,Youssef Samaan,0,3,муж,,2,0,21.6792,Шербур
+50,Josefine Arnold-Franchi,0,3,жен,18,1,0,17.8,Саутгемптон
+51,Juha Niilo Panula,0,3,муж,7,4,1,39.6875,Саутгемптон
+52,Richard Cater Nosworthy,0,3,муж,21,0,0,7.8,Саутгемптон
+53,Henry Sleeper Harper,1,1,жен,49,1,0,76.7292,Шербур
+54,Lizzie Elizabeth Faunthorpe,1,2,жен,29,1,0,26,Саутгемптон
+55,Engelhart Cornelius Ostby,0,1,муж,65,0,1,61.9792,Шербур
+56,Hugh Woolner,1,1,муж,,0,0,35.5,Саутгемптон
+57,Emily Rugg,1,2,жен,21,0,0,10.5,Саутгемптон
+58,Mansouer Novel,0,3,муж,28.5,0,0,7.2292,Шербур
+59,Constance Mirium West,1,2,жен,5,1,2,27.75,Саутгемптон
+60,William Frederick Goodwin,0,3,муж,11,5,2,46.9,Саутгемптон
+61,Orsen Sirayanian,0,3,муж,22,0,0,7.2292,Шербур
+62,Amelie Icard,1,1,жен,38,0,0,80,
+63,Henry Birkhardt Harris,0,1,муж,45,1,0,83.475,Саутгемптон
+64,Harald Skoog,0,3,муж,4,3,2,27.9,Саутгемптон
+65,Albert A Stewart,0,1,муж,,0,0,27.7208,Шербур
+66,Gerios Moubarek,1,3,муж,,1,1,15.2458,Шербур
+67,Elizabeth Ramell Nye,1,2,жен,29,0,0,10.5,Саутгемптон
+68,Ernest James Crease,0,3,муж,19,0,0,8.1583,Саутгемптон
+69,Erna Alexandra Andersson,1,3,жен,17,4,2,7.925,Саутгемптон
+70,Vincenz Kink,0,3,муж,26,2,0,8.6625,Саутгемптон
+71,Stephen Curnow Jenkin,0,2,муж,32,0,0,10.5,Саутгемптон
+72,Lillian Amy Goodwin,0,3,жен,16,5,2,46.9,Саутгемптон
+73,Ambrose Jr Hood,0,2,муж,21,0,0,73.5,Саутгемптон
+74,Apostolos Chronopoulos,0,3,муж,26,1,0,14.4542,Шербур
+75,Lee Bing,1,3,муж,32,0,0,56.4958,Саутгемптон
+76,Sigurd Hansen Moen,0,3,муж,25,0,0,7.65,Саутгемптон
+77,Ivan Staneff,0,3,муж,,0,0,7.8958,Саутгемптон
+78,Rahamin Haim Moutal,0,3,муж,,0,0,8.05,Саутгемптон
+79,Alden Gates Caldwell,1,2,муж,0.83,0,2,29,Саутгемптон
+80,Elizabeth Dowdell,1,3,жен,30,0,0,12.475,Саутгемптон
+81,Achille Waelens,0,3,муж,22,0,0,9,Саутгемптон
+82,Jan Baptist Sheerlinck,1,3,муж,29,0,0,9.5,Саутгемптон
+83,Brigdet Delia McDermott,1,3,жен,,0,0,7.7875,Квинстаун
+84,Francisco M Carrau,0,1,муж,28,0,0,47.1,Саутгемптон
+85,Bertha Ilett,1,2,жен,17,0,0,10.5,Саутгемптон
+86,Karl Alfred Backstrom,1,3,жен,33,3,0,15.85,Саутгемптон
+87,William Neal Ford,0,3,муж,16,1,3,34.375,Саутгемптон
+88,Selman Francis Slocovski,0,3,муж,,0,0,8.05,Саутгемптон
+89,Mabel Helen Fortune,1,1,жен,23,3,2,263,Саутгемптон
+90,Francesco Celotti,0,3,муж,24,0,0,8.05,Саутгемптон
+91,Emil Christmann,0,3,муж,29,0,0,8.05,Саутгемптон
+92,Paul Edvin Andreasson,0,3,муж,20,0,0,7.8542,Саутгемптон
+93,Herbert Fuller Chaffee,0,1,муж,46,1,0,61.175,Саутгемптон
+94,Bertram Frank Dean,0,3,муж,26,1,2,20.575,Саутгемптон
+95,Daniel Coxon,0,3,муж,59,0,0,7.25,Саутгемптон
+96,Charles Joseph Shorney,0,3,муж,,0,0,8.05,Саутгемптон
+97,George B Goldschmidt,0,1,муж,71,0,0,34.6542,Шербур
+98,William Bertram Greenfield,1,1,муж,23,0,1,63.3583,Шербур
+99,John T Doling,1,2,жен,34,0,1,23,Саутгемптон
+100,Sinai Kantor,0,2,муж,34,1,0,26,Саутгемптон
+101,Matilda Petranec,0,3,жен,28,0,0,7.8958,Саутгемптон
+102,Pastcho Pentcho Petroff,0,3,муж,,0,0,7.8958,Саутгемптон
+103,Richard Frasar White,0,1,муж,21,0,1,77.2875,Саутгемптон
+104,Gustaf Joel Johansson,0,3,муж,33,0,0,8.6542,Саутгемптон
+105,Anders Vilhelm Gustafsson,0,3,муж,37,2,0,7.925,Саутгемптон
+106,Stoytcho Mionoff,0,3,муж,28,0,0,7.8958,Саутгемптон
+107,Anna Kristine Salkjelsvik,1,3,жен,21,0,0,7.65,Саутгемптон
+108,Albert Johan Moss,1,3,муж,,0,0,7.775,Саутгемптон
+109,Tido Rekic,0,3,муж,38,0,0,7.8958,Саутгемптон
+110,Bertha Moran,1,3,жен,,1,0,24.15,Квинстаун
+111,Walter Chamberlain Porter,0,1,муж,47,0,0,52,Саутгемптон
+112,Hileni Zabour,0,3,жен,14.5,1,0,14.4542,Шербур
+113,David John Barton,0,3,муж,22,0,0,8.05,Саутгемптон
+114,Katriina Jussila,0,3,жен,20,1,0,9.825,Саутгемптон
+115,Malake Attalah,0,3,жен,17,0,0,14.4583,Шербур
+116,Edvard Pekoniemi,0,3,муж,21,0,0,7.925,Саутгемптон
+117,Patrick Connors,0,3,муж,70.5,0,0,7.75,Квинстаун
+118,William John Turpin,0,2,муж,29,1,0,21,Саутгемптон
+119,Quigg Edmond Baxter,0,1,муж,24,0,1,247.5208,Шербур
+120,Ellis Anna Andersson,0,3,жен,2,4,2,31.275,Саутгемптон
+121,Stanley George Hickman,0,2,муж,21,2,0,73.5,Саутгемптон
+122,Leonard Charles Moore,0,3,муж,,0,0,8.05,Саутгемптон
+123,Nicholas Nasser,0,2,муж,32.5,1,0,30.0708,Шербур
+124,Susan Webber,1,2,жен,32.5,0,0,13,Саутгемптон
+125,Percival Wayland White,0,1,муж,54,0,1,77.2875,Саутгемптон
+126,Elias Nicola-Yarred,1,3,муж,12,1,0,11.2417,Шербур
+127,Martin McMahon,0,3,муж,,0,0,7.75,Квинстаун
+128,Fridtjof Arne Madsen,1,3,муж,24,0,0,7.1417,Саутгемптон
+129,Anna Peter,1,3,жен,,1,1,22.3583,Шербур
+130,Johan Ekstrom,0,3,муж,45,0,0,6.975,Саутгемптон
+131,Jozef Drazenoic,0,3,муж,33,0,0,7.8958,Шербур
+132,Domingos Fernandeo Coelho,0,3,муж,20,0,0,7.05,Саутгемптон
+133,Alexander A Robins,0,3,жен,47,1,0,14.5,Саутгемптон
+134,Leopold Mathilde Weisz,1,2,жен,29,1,0,26,Саутгемптон
+135,Samuel James Sobey,0,2,муж,25,0,0,13,Саутгемптон
+136,Emile Richard,0,2,муж,23,0,0,15.0458,Шербур
+137,Helen Monypeny Newsom,1,1,жен,19,0,2,26.2833,Саутгемптон
+138,Jacques Heath Futrelle,0,1,муж,37,1,0,53.1,Саутгемптон
+139,Olaf Elon Osen,0,3,муж,16,0,0,9.2167,Саутгемптон
+140,Victor Giglio,0,1,муж,24,0,0,79.2,Шербур
+141,Joseph Sultana Boulos,0,3,жен,,0,2,15.2458,Шербур
+142,Anna Sofia Nysten,1,3,жен,22,0,0,7.75,Саутгемптон
+143,Pekka Pietari Hakkarainen,1,3,жен,24,1,0,15.85,Саутгемптон
+144,Jeremiah Burke,0,3,муж,19,0,0,6.75,Квинстаун
+145,Edgardo Samuel Andrew,0,2,муж,18,0,0,11.5,Саутгемптон
+146,Joseph Charles Nicholls,0,2,муж,19,1,1,36.75,Саутгемптон
+147,August Edvard Andersson,1,3,муж,27,0,0,7.7958,Саутгемптон
+148,Robina Maggie Ford,0,3,жен,9,2,2,34.375,Саутгемптон
+149,Michel Louis Navratil,0,2,муж,36.5,0,2,26,Саутгемптон
+150,Thomas Roussel Byles,0,2,муж,42,0,0,13,Саутгемптон
+151,Robert James Bateman,0,2,муж,51,0,0,12.525,Саутгемптон
+152,Thomas Edith Pears,1,1,жен,22,1,0,66.6,Саутгемптон
+153,Alfonzo Meo,0,3,муж,55.5,0,0,8.05,Саутгемптон
+154,Austin Blyler van Billiard,0,3,муж,40.5,0,2,14.5,Саутгемптон
+155,Ole Martin Olsen,0,3,муж,,0,0,7.3125,Саутгемптон
+156,Charles Duane Williams,0,1,муж,51,0,1,61.3792,Шербур
+157,Katherine Katie Gilnagh,1,3,жен,16,0,0,7.7333,Квинстаун
+158,Harry Corn,0,3,муж,30,0,0,8.05,Саутгемптон
+159,Mile Smiljanic,0,3,муж,,0,0,8.6625,Саутгемптон
+160,Thomas Henry Sage,0,3,муж,,8,2,69.55,Саутгемптон
+161,John Hatfield Cribb,0,3,муж,44,0,1,16.1,Саутгемптон
+162,James Elizabeth Watt,1,2,жен,40,0,0,15.75,Саутгемптон
+163,John Viktor Bengtsson,0,3,муж,26,0,0,7.775,Саутгемптон
+164,Jovo Calic,0,3,муж,17,0,0,8.6625,Саутгемптон
+165,Eino Viljami Panula,0,3,муж,1,4,1,39.6875,Саутгемптон
+166,Frank John Goldsmith,1,3,муж,9,0,2,20.525,Саутгемптон
+167,Edith Martha Chibnall,1,1,жен,,0,1,55,Саутгемптон
+168,William Anna Skoog,0,3,жен,45,1,4,27.9,Саутгемптон
+169,John D Baumann,0,1,муж,,0,0,25.925,Саутгемптон
+170,Lee Ling,0,3,муж,28,0,0,56.4958,Саутгемптон
+171,Wyckoff Van der hoef,0,1,муж,61,0,0,33.5,Саутгемптон
+172,Arthur Rice,0,3,муж,4,4,1,29.125,Квинстаун
+173,Eleanor Ileen Johnson,1,3,жен,1,1,1,11.1333,Саутгемптон
+174,Antti Wilhelm Sivola,0,3,муж,21,0,0,7.925,Саутгемптон
+175,James Clinch Smith,0,1,муж,56,0,0,30.6958,Шербур
+176,Klas Albin Klasen,0,3,муж,18,1,1,7.8542,Саутгемптон
+177,Henry Forbes Lefebre,0,3,муж,,3,1,25.4667,Саутгемптон
+178,Ann Elizabeth Isham,0,1,жен,50,0,0,28.7125,Шербур
+179,Reginald Hale,0,2,муж,30,0,0,13,Саутгемптон
+180,Lionel Leonard,0,3,муж,36,0,0,0,Саутгемптон
+181,Constance Gladys Sage,0,3,жен,,8,2,69.55,Саутгемптон
+182,Rene Pernot,0,2,муж,,0,0,15.05,Шербур
+183,Clarence Gustaf Asplund,0,3,муж,9,4,2,31.3875,Саутгемптон
+184,Richard F Becker,1,2,муж,1,2,1,39,Саутгемптон
+185,Luise Kink-Heilmann,1,3,жен,4,0,2,22.025,Саутгемптон
+186,Hugh Roscoe Rood,0,1,муж,,0,0,50,Саутгемптон
+187,Thomas Johanna O'Brien,1,3,жен,,1,0,15.5,Квинстаун
+188,Charles Hallace Romaine,1,1,муж,45,0,0,26.55,Саутгемптон
+189,John Bourke,0,3,муж,40,1,1,15.5,Квинстаун
+190,Stjepan Turcin,0,3,муж,36,0,0,7.8958,Саутгемптон
+191,Rosa Pinsky,1,2,жен,32,0,0,13,Саутгемптон
+192,William Carbines,0,2,муж,19,0,0,13,Саутгемптон
+193,Carla Andersen-Jensen,1,3,жен,19,1,0,7.8542,Саутгемптон
+194,Michel M Navratil,1,2,муж,3,1,1,26,Саутгемптон
+195,James Joseph Brown,1,1,жен,44,0,0,27.7208,Шербур
+196,Elise Lurette,1,1,жен,58,0,0,146.5208,Шербур
+197,Robert Mernagh,0,3,муж,,0,0,7.75,Квинстаун
+198,Karl Siegwart Olsen,0,3,муж,42,0,1,8.4042,Саутгемптон
+199,Margaret Maggie Madigan,1,3,жен,,0,0,7.75,Квинстаун
+200,Henriette Mrs Yrois,0,2,жен,24,0,0,13,Саутгемптон
+201,Nestor Cyriel Vande Walle,0,3,муж,28,0,0,9.5,Саутгемптон
+202,Frederick Sage,0,3,муж,,8,2,69.55,Саутгемптон
+203,Jakob Alfred Johanson,0,3,муж,34,0,0,6.4958,Саутгемптон
+204,Gerious Youseff,0,3,муж,45.5,0,0,7.225,Шербур
+205,Gurshon Gus Cohen,1,3,муж,18,0,0,8.05,Саутгемптон
+206,Telma Matilda Strom,0,3,жен,2,0,1,10.4625,Саутгемптон
+207,Karl Alfred Backstrom,0,3,муж,32,1,0,15.85,Саутгемптон
+208,Nassef Cassem Albimona,1,3,муж,26,0,0,18.7875,Шербур
+209,Helen Ellen Carr,1,3,жен,16,0,0,7.75,Квинстаун
+210,Henry Blank,1,1,муж,40,0,0,31,Шербур
+211,Ahmed Ali,0,3,муж,24,0,0,7.05,Саутгемптон
+212,Clear Annie Cameron,1,2,жен,35,0,0,21,Саутгемптон
+213,John Henry Perkin,0,3,муж,22,0,0,7.25,Саутгемптон
+214,Hans Kristensen Givard,0,2,муж,30,0,0,13,Саутгемптон
+215,Philip Kiernan,0,3,муж,,1,0,7.75,Квинстаун
+216,Madeleine Newell,1,1,жен,31,1,0,113.275,Шербур
+217,Eliina Honkanen,1,3,жен,27,0,0,7.925,Саутгемптон
+218,Sidney Samuel Jacobsohn,0,2,муж,42,1,0,27,Саутгемптон
+219,Albina Bazzani,1,1,жен,32,0,0,76.2917,Шербур
+220,Walter Harris,0,2,муж,30,0,0,10.5,Саутгемптон
+221,Victor Francis Sunderland,1,3,муж,16,0,0,8.05,Саутгемптон
+222,James H Bracken,0,2,муж,27,0,0,13,Саутгемптон
+223,George Henry Green,0,3,муж,51,0,0,8.05,Саутгемптон
+224,Christo Nenkoff,0,3,муж,,0,0,7.8958,Саутгемптон
+225,Frederick Maxfield Hoyt,1,1,муж,38,1,0,90,Саутгемптон
+226,Karl Ivar Berglund,0,3,муж,22,0,0,9.35,Саутгемптон
+227,William John Mellors,1,2,муж,19,0,0,10.5,Саутгемптон
+228,John Hall Lovell,0,3,муж,20.5,0,0,7.25,Саутгемптон
+229,Arne Jonas Fahlstrom,0,2,муж,18,0,0,13,Саутгемптон
+230,Mathilde Lefebre,0,3,жен,,3,1,25.4667,Саутгемптон
+231,Henry Birkhardt Harris,1,1,жен,35,1,0,83.475,Саутгемптон
+232,Bengt Edvin Larsson,0,3,муж,29,0,0,7.775,Саутгемптон
+233,Ernst Adolf Sjostedt,0,2,муж,59,0,0,13.5,Саутгемптон
+234,Lillian Gertrud Asplund,1,3,жен,5,4,2,31.3875,Саутгемптон
+235,Robert William Leyson,0,2,муж,24,0,0,10.5,Саутгемптон
+236,Alice Phoebe Harknett,0,3,жен,,0,0,7.55,Саутгемптон
+237,Stephen Hold,0,2,муж,44,1,0,26,Саутгемптон
+238,Marjorie Lottie Collyer,1,2,жен,8,0,2,26.25,Саутгемптон
+239,Frederick William Pengelly,0,2,муж,19,0,0,10.5,Саутгемптон
+240,George Henry Hunt,0,2,муж,33,0,0,12.275,Саутгемптон
+241,Thamine Zabour,0,3,жен,,1,0,14.4542,Шербур
+242,Katherine Kate Murphy,1,3,жен,,1,0,15.5,Квинстаун
+243,Reginald Charles Coleridge,0,2,муж,29,0,0,10.5,Саутгемптон
+244,Matti Alexanteri Maenpaa,0,3,муж,22,0,0,7.125,Саутгемптон
+245,Sleiman Attalah,0,3,муж,30,0,0,7.225,Шербур
+246,William Edward Minahan,0,1,муж,44,2,0,90,Квинстаун
+247,Agda Thorilda Lindahl,0,3,жен,25,0,0,7.775,Саутгемптон
+248,William Anna Hamalainen,1,2,жен,24,0,2,14.5,Саутгемптон
+249,Richard Leonard Beckwith,1,1,муж,37,1,1,52.5542,Саутгемптон
+250,Ernest Courtenay Carter,0,2,муж,54,1,0,26,Саутгемптон
+251,James George Reed,0,3,муж,,0,0,7.25,Саутгемптон
+252,Wilhelm Elna Strom,0,3,жен,29,1,1,10.4625,Саутгемптон
+253,William Thomas Stead,0,1,муж,62,0,0,26.55,Саутгемптон
+254,William Arthur Lobb,0,3,муж,30,1,0,16.1,Саутгемптон
+255,Viktor Helena Rosblom,0,3,жен,41,0,2,20.2125,Саутгемптон
+256,Darwis Hanne Touma,1,3,жен,29,0,2,15.2458,Шербур
+257,Gertrude Maybelle Thorne,1,1,жен,,0,0,79.2,Шербур
+258,Gladys Cherry,1,1,жен,30,0,0,86.5,Саутгемптон
+259,Anna Ward,1,1,жен,35,0,0,512.3292,Шербур
+260,Lutie Davis Parrish,1,2,жен,50,0,1,26,Саутгемптон
+261,Thomas Smith,0,3,муж,,0,0,7.75,Квинстаун
+262,Edvin Rojj Asplund,1,3,муж,3,4,2,31.3875,Саутгемптон
+263,Emil Taussig,0,1,муж,52,1,1,79.65,Саутгемптон
+264,William Harrison,0,1,муж,40,0,0,0,Саутгемптон
+265,Delia Henry,0,3,жен,,0,0,7.75,Квинстаун
+266,David Reeves,0,2,муж,36,0,0,10.5,Саутгемптон
+267,Ernesti Arvid Panula,0,3,муж,16,4,1,39.6875,Саутгемптон
+268,Ernst Ulrik Persson,1,3,муж,25,1,0,7.775,Саутгемптон
+269,William Thompson Graham,1,1,жен,58,0,1,153.4625,Саутгемптон
+270,Amelia Bissette,1,1,жен,35,0,0,135.6333,Саутгемптон
+271,Alexander Cairns,0,1,муж,,0,0,31,Саутгемптон
+272,William Henry Tornquist,1,3,муж,25,0,0,0,Саутгемптон
+273,Elizabeth Anne Mellinger,1,2,жен,41,0,1,19.5,Саутгемптон
+274,Charles H Natsch,0,1,муж,37,0,1,29.7,Шербур
+275,Hanora Nora Healy,1,3,жен,,0,0,7.75,Квинстаун
+276,Kornelia Theodosia Andrews,1,1,жен,63,1,0,77.9583,Саутгемптон
+277,Augusta Charlotta Lindblom,0,3,жен,45,0,0,7.75,Саутгемптон
+278,Francis Frank Parkes,0,2,муж,,0,0,0,Саутгемптон
+279,Eric Rice,0,3,муж,7,4,1,29.125,Квинстаун
+280,Stanton Rosa Abbott,1,3,жен,35,1,1,20.25,Саутгемптон
+281,Frank Duane,0,3,муж,65,0,0,7.75,Квинстаун
+282,Nils Johan Olsson,0,3,муж,28,0,0,7.8542,Саутгемптон
+283,Alfons de Pelsmaeker,0,3,муж,16,0,0,9.5,Саутгемптон
+284,Edward Arthur Dorking,1,3,муж,19,0,0,8.05,Саутгемптон
+285,Richard William Smith,0,1,муж,,0,0,26,Саутгемптон
+286,Ivan Stankovic,0,3,муж,33,0,0,8.6625,Шербур
+287,Theodore de Mulder,1,3,муж,30,0,0,9.5,Саутгемптон
+288,Penko Naidenoff,0,3,муж,22,0,0,7.8958,Саутгемптон
+289,Masabumi Hosono,1,2,муж,42,0,0,13,Саутгемптон
+290,Kate Connolly,1,3,жен,22,0,0,7.75,Квинстаун
+291,Ellen Nellie Barber,1,1,жен,26,0,0,78.85,Саутгемптон
+292,Dickinson H Bishop,1,1,жен,19,1,0,91.0792,Шербур
+293,Rene Jacques Levy,0,2,муж,36,0,0,12.875,Шербур
+294,Aloisia Haas,0,3,жен,24,0,0,8.85,Саутгемптон
+295,Ivan Mineff,0,3,муж,24,0,0,7.8958,Саутгемптон
+296,Ervin G Lewy,0,1,муж,,0,0,27.7208,Шербур
+297,Mansour Hanna,0,3,муж,23.5,0,0,7.2292,Шербур
+298,Helen Loraine Allison,0,1,жен,2,1,2,151.55,Саутгемптон
+299,Adolphe Saalfeld,1,1,муж,,0,0,30.5,Саутгемптон
+300,James Helene Baxter,1,1,жен,50,0,1,247.5208,Шербур
+301,Anna Katherine Kelly,1,3,жен,,0,0,7.75,Квинстаун
+302,Bernard McCoy,1,3,муж,,2,0,23.25,Квинстаун
+303,William Cahoone Johnson,0,3,муж,19,0,0,0,Саутгемптон
+304,Nora A Keane,1,2,жен,,0,0,12.35,Квинстаун
+305,Howard Hugh Williams,0,3,муж,,0,0,8.05,Саутгемптон
+306,Hudson Trevor Allison,1,1,муж,0.92,1,2,151.55,Саутгемптон
+307,Margaret Fleming,1,1,жен,,0,0,110.8833,Шербур
+308,Victor de Penasco,1,1,жен,17,1,0,108.9,Шербур
+309,Samuel Abelson,0,2,муж,30,1,0,24,Шербур
+310,Laura Mabel Francatelli,1,1,жен,30,0,0,56.9292,Шербур
+311,Margaret Bechstein Hays,1,1,жен,24,0,0,83.1583,Шербур
+312,Emily Borie Ryerson,1,1,жен,18,2,2,262.375,Шербур
+313,William Anna Lahtinen,0,2,жен,26,1,1,26,Саутгемптон
+314,Ignjac Hendekovic,0,3,муж,28,0,0,7.8958,Саутгемптон
+315,Benjamin Hart,0,2,муж,43,1,1,26.25,Саутгемптон
+316,Helmina Josefina Nilsson,1,3,жен,26,0,0,7.8542,Саутгемптон
+317,Sinai Miriam Kantor,1,2,жен,24,1,0,26,Саутгемптон
+318,Ernest Moraweck,0,2,муж,54,0,0,14,Саутгемптон
+319,Mary Natalie Wick,1,1,жен,31,0,2,164.8667,Саутгемптон
+320,Frederic Oakley Spedden,1,1,жен,40,1,1,134.5,Шербур
+321,Samuel Dennis,0,3,муж,22,0,0,7.25,Саутгемптон
+322,Yoto Danoff,0,3,муж,27,0,0,7.8958,Саутгемптон
+323,Hilda Mary Slayter,1,2,жен,30,0,0,12.35,Квинстаун
+324,Albert Francis Caldwell,1,2,жен,22,1,1,29,Саутгемптон
+325,George John Sage,0,3,муж,,8,2,69.55,Саутгемптон
+326,Marie Grice Young,1,1,жен,36,0,0,135.6333,Шербур
+327,Johan Hansen Nysveen,0,3,муж,61,0,0,6.2375,Саутгемптон
+328,Ada E Ball,1,2,жен,36,0,0,13,Саутгемптон
+329,Frank John Goldsmith,1,3,жен,31,1,1,20.525,Саутгемптон
+330,Jean Gertrude Hippach,1,1,жен,16,0,1,57.9792,Шербур
+331,Agnes McCoy,1,3,жен,,2,0,23.25,Квинстаун
+332,Austen Partner,0,1,муж,45.5,0,0,28.5,Саутгемптон
+333,George Edward Graham,0,1,муж,38,0,1,153.4625,Саутгемптон
+334,Leo Edmondus Vander Planke,0,3,муж,16,2,0,18,Саутгемптон
+335,Henry William Frauenthal,1,1,жен,,1,0,133.65,Саутгемптон
+336,Mitto Denkoff,0,3,муж,,0,0,7.8958,Саутгемптон
+337,Thomas Clinton Pears,0,1,муж,29,1,0,66.6,Саутгемптон
+338,Elizabeth Margaret Burns,1,1,жен,41,0,0,134.5,Шербур
+339,Karl Edwart Dahl,1,3,муж,45,0,0,8.05,Саутгемптон
+340,Stephen Weart Blackwell,0,1,муж,45,0,0,35.5,Саутгемптон
+341,Edmond Roger Navratil,1,2,муж,2,1,1,26,Саутгемптон
+342,Alice Elizabeth Fortune,1,1,жен,24,3,2,263,Саутгемптон
+343,Erik Gustaf Collander,0,2,муж,28,0,0,13,Саутгемптон
+344,Charles Frederick Sedgwick,0,2,муж,25,0,0,13,Саутгемптон
+345,Stanley Hubert Fox,0,2,муж,36,0,0,13,Саутгемптон
+346,Amelia Mildred Brown,1,2,жен,24,0,0,13,Саутгемптон
+347,Marion Elsie Smith,1,2,жен,40,0,0,13,Саутгемптон
+348,Thomas Henry Davison,1,3,жен,,1,0,16.1,Саутгемптон
+349,William Loch Coutts,1,3,муж,3,1,1,15.9,Саутгемптон
+350,Jovan Dimic,0,3,муж,42,0,0,8.6625,Саутгемптон
+351,Nils Martin Odahl,0,3,муж,23,0,0,9.225,Саутгемптон
+352,Fletcher Williams-Lambert,0,1,муж,,0,0,35,Саутгемптон
+353,Tannous Elias,0,3,муж,15,1,1,7.2292,Шербур
+354,Josef Arnold-Franchi,0,3,муж,25,1,0,17.8,Саутгемптон
+355,Wazli Yousif,0,3,муж,,0,0,7.225,Шербур
+356,Leo Peter Vanden Steen,0,3,муж,28,0,0,9.5,Саутгемптон
+357,Elsie Edith Bowerman,1,1,жен,22,0,1,55,Саутгемптон
+358,Annie Clemmer Funk,0,2,жен,38,0,0,13,Саутгемптон
+359,Mary McGovern,1,3,жен,,0,0,7.8792,Квинстаун
+360,Helen Mary Mockler,1,3,жен,,0,0,7.8792,Квинстаун
+361,Wilhelm Skoog,0,3,муж,40,1,4,27.9,Саутгемптон
+362,Sebastiano del Carlo,0,2,муж,29,1,0,27.7208,Шербур
+363,Catherine David Barbara,0,3,жен,45,0,1,14.4542,Шербур
+364,Adola Asim,0,3,муж,35,0,0,7.05,Саутгемптон
+365,Thomas O'Brien,0,3,муж,,1,0,15.5,Квинстаун
+366,Mauritz Nils Adahl,0,3,муж,30,0,0,7.25,Саутгемптон
+367,Frank Manley Warren,1,1,жен,60,1,0,75.25,Шербур
+368,Mantoura Boulos Moussa,1,3,жен,,0,0,7.2292,Шербур
+369,Annie Jermyn,1,3,жен,,0,0,7.75,Квинстаун
+370,Leontine Pauline Aubart,1,1,жен,24,0,0,69.3,Шербур
+371,George Achilles Harder,1,1,муж,25,1,0,55.4417,Шербур
+372,Jakob Alfred Wiklund,0,3,муж,18,1,0,6.4958,Саутгемптон
+373,William Thomas Beavan,0,3,муж,19,0,0,8.05,Саутгемптон
+374,Sante Ringhini,0,1,муж,22,0,0,135.6333,Шербур
+375,Stina Viola Palsson,0,3,жен,3,3,1,21.075,Саутгемптон
+376,Edgar Joseph Meyer,1,1,жен,,1,0,82.1708,Шербур
+377,Aurora Adelia Landergren,1,3,жен,22,0,0,7.25,Саутгемптон
+378,Harry Elkins Widener,0,1,муж,27,0,2,211.5,Шербур
+379,Tannous Betros,0,3,муж,20,0,0,4.0125,Шербур
+380,Karl Gideon Gustafsson,0,3,муж,19,0,0,7.775,Саутгемптон
+381,Rosalie Bidois,1,1,жен,42,0,0,227.525,Шербур
+382,Maria Mary Nakid,1,3,жен,1,0,2,15.7417,Шербур
+383,Juho Tikkanen,0,3,муж,32,0,0,7.925,Саутгемптон
+384,Alexander Oskar Holverson,1,1,жен,35,1,0,52,Саутгемптон
+385,Vasil Plotcharsky,0,3,муж,,0,0,7.8958,Саутгемптон
+386,Charles Henry Davies,0,2,муж,18,0,0,73.5,Саутгемптон
+387,Sidney Leonard Goodwin,0,3,муж,1,5,2,46.9,Саутгемптон
+388,Kate Buss,1,2,жен,36,0,0,13,Саутгемптон
+389,Matthew Sadlier,0,3,муж,,0,0,7.7292,Квинстаун
+390,Bertha Lehmann,1,2,жен,17,0,0,12,Шербур
+391,William Ernest Carter,1,1,муж,36,1,2,120,Саутгемптон
+392,Carl Olof Jansson,1,3,муж,21,0,0,7.7958,Саутгемптон
+393,Johan Birger Gustafsson,0,3,муж,28,2,0,7.925,Саутгемптон
+394,Marjorie Newell,1,1,жен,23,1,0,113.275,Шербур
+395,Hjalmar Agnes Sandstrom,1,3,жен,24,0,2,16.7,Саутгемптон
+396,Erik Johansson,0,3,муж,22,0,0,7.7958,Саутгемптон
+397,Elina Olsson,0,3,жен,31,0,0,7.8542,Саутгемптон
+398,Peter David McKane,0,2,муж,46,0,0,26,Саутгемптон
+399,Alfred Pain,0,2,муж,23,0,0,10.5,Саутгемптон
+400,William H Trout,1,2,жен,28,0,0,12.65,Саутгемптон
+401,Juha Niskanen,1,3,муж,39,0,0,7.925,Саутгемптон
+402,John Adams,0,3,муж,26,0,0,8.05,Саутгемптон
+403,Mari Aina Jussila,0,3,жен,21,1,0,9.825,Саутгемптон
+404,Pekka Pietari Hakkarainen,0,3,муж,28,1,0,15.85,Саутгемптон
+405,Marija Oreskovic,0,3,жен,20,0,0,8.6625,Саутгемптон
+406,Shadrach Gale,0,2,муж,34,1,0,21,Саутгемптон
+407,Charles Peter Widegren,0,3,муж,51,0,0,7.75,Саутгемптон
+408,William Rowe Richards,1,2,муж,3,1,1,18.75,Саутгемптон
+409,Hans Martin Birkeland,0,3,муж,21,0,0,7.775,Саутгемптон
+410,Ida Lefebre,0,3,жен,,3,1,25.4667,Саутгемптон
+411,Todor Sdycoff,0,3,муж,,0,0,7.8958,Саутгемптон
+412,Henry Hart,0,3,муж,,0,0,6.8583,Квинстаун
+413,Daisy E Minahan,1,1,жен,33,1,0,90,Квинстаун
+414,Alfred Fleming Cunningham,0,2,муж,,0,0,0,Саутгемптон
+415,Johan Julian Sundman,1,3,муж,44,0,0,7.925,Саутгемптон
+416,Thomas Annie Meek,0,3,жен,,0,0,8.05,Саутгемптон
+417,James Vivian Drew,1,2,жен,34,1,1,32.5,Саутгемптон
+418,Lyyli Karoliina Silven,1,2,жен,18,0,2,13,Саутгемптон
+419,William John Matthews,0,2,муж,30,0,0,13,Саутгемптон
+420,Catharina Van Impe,0,3,жен,10,0,2,24.15,Саутгемптон
+421,Stanio Gheorgheff,0,3,муж,,0,0,7.8958,Шербур
+422,David Charters,0,3,муж,21,0,0,7.7333,Квинстаун
+423,Leo Zimmerman,0,3,муж,29,0,0,7.875,Саутгемптон
+424,Ernst Gilbert Danbom,0,3,жен,28,1,1,14.4,Саутгемптон
+425,Viktor Richard Rosblom,0,3,муж,18,1,1,20.2125,Саутгемптон
+426,Phillippe Wiseman,0,3,муж,,0,0,7.25,Саутгемптон
+427,Charles V Clarke,1,2,жен,28,1,0,26,Саутгемптон
+428,Kate Florence Phillips,1,2,жен,19,0,0,26,Саутгемптон
+429,James Flynn,0,3,муж,,0,0,7.75,Квинстаун
+430,Berk Berk Pickard,1,3,муж,32,0,0,8.05,Саутгемптон
+431,Mauritz Hakan Bjornstrom,1,1,муж,28,0,0,26.55,Саутгемптон
+432,Florence Thorneycroft,1,3,жен,,1,0,16.1,Саутгемптон
+433,Charles Alexander Louch,1,2,жен,42,1,0,26,Саутгемптон
+434,Nikolai Erland Kallio,0,3,муж,17,0,0,7.125,Саутгемптон
+435,William Baird Silvey,0,1,муж,50,1,0,55.9,Саутгемптон
+436,Lucile Polk Carter,1,1,жен,14,1,2,120,Саутгемптон
+437,Doolina Margaret Ford,0,3,жен,21,2,2,34.375,Саутгемптон
+438,Sidney Emily Richards,1,2,жен,24,2,3,18.75,Саутгемптон
+439,Mark Fortune,0,1,муж,64,1,4,263,Саутгемптон
+440,Johan Henrik Kvillner,0,2,муж,31,0,0,10.5,Саутгемптон
+441,Benjamin Esther Hart,1,2,жен,45,1,1,26.25,Саутгемптон
+442,Leon Hampe,0,3,муж,20,0,0,9.5,Саутгемптон
+443,Johan Emil Petterson,0,3,муж,25,1,0,7.775,Саутгемптон
+444,Encarnacion Reynaldo,1,2,жен,28,0,0,13,Саутгемптон
+445,Bernt Bratthammer,1,3,муж,,0,0,8.1125,Саутгемптон
+446,Washington Dodge,1,1,муж,4,0,2,81.8583,Саутгемптон
+447,Madeleine Violet Mellinger,1,2,жен,13,0,1,19.5,Саутгемптон
+448,Frederic Kimber Seward,1,1,муж,34,0,0,26.55,Саутгемптон
+449,Marie Catherine Baclini,1,3,жен,5,2,1,19.2583,Шербур
+450,Arthur Godfrey Peuchen,1,1,муж,52,0,0,30.5,Саутгемптон
+451,Edwy Arthur West,0,2,муж,36,1,2,27.75,Саутгемптон
+452,Ingvald Olai Hagland,0,3,муж,,1,0,19.9667,Саутгемптон
+453,Benjamin Laventall Foreman,0,1,муж,30,0,0,27.75,Шербур
+454,Samuel L Goldenberg,1,1,муж,49,1,0,89.1042,Шербур
+455,Joseph Peduzzi,0,3,муж,,0,0,8.05,Саутгемптон
+456,Ivan Jalsevac,1,3,муж,29,0,0,7.8958,Шербур
+457,Francis Davis Millet,0,1,муж,65,0,0,26.55,Саутгемптон
+458,Frederick R Kenyon,1,1,жен,,1,0,51.8625,Саутгемптон
+459,Ellen Toomey,1,2,жен,50,0,0,10.5,Саутгемптон
+460,Maurice O'Connor,0,3,муж,,0,0,7.75,Квинстаун
+461,Harry Anderson,1,1,муж,48,0,0,26.55,Саутгемптон
+462,William Morley,0,3,муж,34,0,0,8.05,Саутгемптон
+463,Arthur H Gee,0,1,муж,47,0,0,38.5,Саутгемптон
+464,Jacob Christian Milling,0,2,муж,48,0,0,13,Саутгемптон
+465,Simon Maisner,0,3,муж,,0,0,8.05,Саутгемптон
+466,Manuel Estanslas Goncalves,0,3,муж,38,0,0,7.05,Саутгемптон
+467,William Campbell,0,2,муж,,0,0,0,Саутгемптон
+468,John Montgomery Smart,0,1,муж,56,0,0,26.55,Саутгемптон
+469,James Scanlan,0,3,муж,,0,0,7.725,Квинстаун
+470,Helene Barbara Baclini,1,3,жен,0.75,2,1,19.2583,Шербур
+471,Arthur Keefe,0,3,муж,,0,0,7.25,Саутгемптон
+472,Luka Cacic,0,3,муж,38,0,0,8.6625,Саутгемптон
+473,Edwy Arthur West,1,2,жен,33,1,2,27.75,Саутгемптон
+474,Amin S Jerwan,1,2,жен,23,0,0,13.7917,Шербур
+475,Ida Sofia Strandberg,0,3,жен,22,0,0,9.8375,Саутгемптон
+476,George Quincy Clifford,0,1,муж,,0,0,52,Саутгемптон
+477,Peter Henry Renouf,0,2,муж,34,1,0,21,Саутгемптон
+478,Lewis Richard Braund,0,3,муж,29,1,0,7.0458,Саутгемптон
+479,Nils August Karlsson,0,3,муж,22,0,0,7.5208,Саутгемптон
+480,Hildur E Hirvonen,1,3,жен,2,0,1,12.2875,Саутгемптон
+481,Harold Victor Goodwin,0,3,муж,9,5,2,46.9,Саутгемптон
+482,Anthony Wood Frost,0,2,муж,,0,0,0,Саутгемптон
+483,Richard Henry Rouse,0,3,муж,50,0,0,8.05,Саутгемптон
+484,Hedwig Turkula,1,3,жен,63,0,0,9.5875,Саутгемптон
+485,Dickinson H Bishop,1,1,муж,25,1,0,91.0792,Шербур
+486,Jeannie Lefebre,0,3,жен,,3,1,25.4667,Саутгемптон
+487,Frederick Maxfield Hoyt,1,1,жен,35,1,0,90,Саутгемптон
+488,Edward Austin Kent,0,1,муж,58,0,0,29.7,Шербур
+489,Francis William Somerton,0,3,муж,30,0,0,8.05,Саутгемптон
+490,Eden Leslie Coutts,1,3,муж,9,1,1,15.9,Саутгемптон
+491,Konrad Mathias Hagland,0,3,муж,,1,0,19.9667,Саутгемптон
+492,Einar Windelov,0,3,муж,21,0,0,7.25,Саутгемптон
+493,Harry Markland Molson,0,1,муж,55,0,0,30.5,Саутгемптон
+494,Ramon Artagaveytia,0,1,муж,71,0,0,49.5042,Шербур
+495,Edward Roland Stanley,0,3,муж,21,0,0,8.05,Саутгемптон
+496,Gerious Yousseff,0,3,муж,,0,0,14.4583,Шербур
+497,Elizabeth Mussey Eustis,1,1,жен,54,1,0,78.2667,Шербур
+498,Frederick William Shellard,0,3,муж,,0,0,15.1,Саутгемптон
+499,Hudson J Allison,0,1,жен,25,1,2,151.55,Саутгемптон
+500,Olof Svensson,0,3,муж,24,0,0,7.7958,Саутгемптон
+501,Petar Calic,0,3,муж,17,0,0,8.6625,Саутгемптон
+502,Mary Canavan,0,3,жен,21,0,0,7.75,Квинстаун
+503,Bridget Mary O'Sullivan,0,3,жен,,0,0,7.6292,Квинстаун
+504,Kristina Sofia Laitinen,0,3,жен,37,0,0,9.5875,Саутгемптон
+505,Roberta Maioni,1,1,жен,16,0,0,86.5,Саутгемптон
+506,Victor Penasco,0,1,муж,18,1,0,108.9,Шербур
+507,Frederick Charles Quick,1,2,жен,33,0,2,26,Саутгемптон
+508,George George Bradley,1,1,муж,,0,0,26.55,Саутгемптон
+509,Henry Margido Olsen,0,3,муж,28,0,0,22.525,Саутгемптон
+510,Fang Lang,1,3,муж,26,0,0,56.4958,Саутгемптон
+511,Eugene Patrick Daly,1,3,муж,29,0,0,7.75,Квинстаун
+512,James Webber,0,3,муж,,0,0,8.05,Саутгемптон
+513,James Robert McGough,1,1,муж,36,0,0,26.2875,Саутгемптон
+514,Martin Rothschild,1,1,жен,54,1,0,59.4,Шербур
+515,Satio Coleff,0,3,муж,24,0,0,7.4958,Саутгемптон
+516,William Anderson Walker,0,1,муж,47,0,0,34.0208,Саутгемптон
+517,Amelia Milley Lemore,1,2,жен,34,0,0,10.5,Саутгемптон
+518,Patrick Ryan,0,3,муж,,0,0,24.15,Квинстаун
+519,William A Angle,1,2,жен,36,1,0,26,Саутгемптон
+520,Stefo Pavlovic,0,3,муж,32,0,0,7.8958,Саутгемптон
+521,Anne Perreault,1,1,жен,30,0,0,93.5,Саутгемптон
+522,Janko Vovk,0,3,муж,22,0,0,7.8958,Саутгемптон
+523,Sarkis Lahoud,0,3,муж,,0,0,7.225,Шербур
+524,Louis Albert Hippach,1,1,жен,44,0,1,57.9792,Шербур
+525,Fared Kassem,0,3,муж,,0,0,7.2292,Шербур
+526,James Farrell,0,3,муж,40.5,0,0,7.75,Квинстаун
+527,Lucy Ridsdale,1,2,жен,50,0,0,10.5,Саутгемптон
+528,John Farthing,0,1,муж,,0,0,221.7792,Саутгемптон
+529,Johan Werner Salonen,0,3,муж,39,0,0,7.925,Саутгемптон
+530,Richard George Hocking,0,2,муж,23,2,1,11.5,Саутгемптон
+531,Phyllis May Quick,1,2,жен,2,1,1,26,Саутгемптон
+532,Nakli Toufik,0,3,муж,,0,0,7.2292,Шербур
+533,Joseph Jr Elias,0,3,муж,17,1,1,7.2292,Шербур
+534,Catherine Catherine Peter,1,3,жен,,0,2,22.3583,Шербур
+535,Marija Cacic,0,3,жен,30,0,0,8.6625,Саутгемптон
+536,Eva Miriam Hart,1,2,жен,7,0,2,26.25,Саутгемптон
+537,Archibald Willingham Butt,0,1,муж,45,0,0,26.55,Саутгемптон
+538,Bertha LeRoy,1,1,жен,30,0,0,106.425,Шербур
+539,Samuel Beard Risien,0,3,муж,,0,0,14.5,Саутгемптон
+540,Hedwig Frolicher,1,1,жен,22,0,2,49.5,Шербур
+541,Harriet R Crosby,1,1,жен,36,0,2,71,Саутгемптон
+542,Ingeborg Andersson,0,3,жен,9,4,2,31.275,Саутгемптон
+543,Sigrid Andersson,0,3,жен,11,4,2,31.275,Саутгемптон
+544,Edward Beane,1,2,муж,32,1,0,26,Саутгемптон
+545,Walter Donald Douglas,0,1,муж,50,1,0,106.425,Шербур
+546,Arthur Ernest Nicholson,0,1,муж,64,0,0,26,Саутгемптон
+547,Edward Ethel Beane,1,2,жен,19,1,0,26,Саутгемптон
+548,Julian Padro y Manent,1,2,муж,,0,0,13.8625,Шербур
+549,Frank John Goldsmith,0,3,муж,33,1,1,20.525,Саутгемптон
+550,John Morgan Davies,1,2,муж,8,1,1,36.75,Саутгемптон
+551,John Borland Thayer,1,1,муж,17,0,2,110.8833,Шербур
+552,Percival James Sharp,0,2,муж,27,0,0,26,Саутгемптон
+553,Timothy O'Brien,0,3,муж,,0,0,7.8292,Квинстаун
+554,Fahim Philip Leeni,1,3,муж,22,0,0,7.225,Шербур
+555,Velin Ohman,1,3,жен,22,0,0,7.775,Саутгемптон
+556,George Wright,0,1,муж,62,0,0,26.55,Саутгемптон
+557,Lucille Duff Gordon,1,1,жен,48,1,0,39.6,Шербур
+558,Victor Robbins,0,1,муж,,0,0,227.525,Шербур
+559,Emil Tillie Taussig,1,1,жен,39,1,1,79.65,Саутгемптон
+560,Guillaume Messemaeker,1,3,жен,36,1,0,17.4,Саутгемптон
+561,Thomas Rowan Morrow,0,3,муж,,0,0,7.75,Квинстаун
+562,Husein Sivic,0,3,муж,40,0,0,7.8958,Саутгемптон
+563,Robert Douglas Norman,0,2,муж,28,0,0,13.5,Саутгемптон
+564,John Simmons,0,3,муж,,0,0,8.05,Саутгемптон
+565,Marion Ogden Meanwell,0,3,жен,,0,0,8.05,Саутгемптон
+566,Alfred J Davies,0,3,муж,24,2,0,24.15,Саутгемптон
+567,Ilia Stoytcheff,0,3,муж,19,0,0,7.8958,Саутгемптон
+568,Nils Alma Palsson,0,3,жен,29,0,4,21.075,Саутгемптон
+569,Tannous Doharr,0,3,муж,,0,0,7.2292,Шербур
+570,Carl Jonsson,1,3,муж,32,0,0,7.8542,Саутгемптон
+571,George Harris,1,2,муж,62,0,0,10.5,Саутгемптон
+572,Edward Dale Appleton,1,1,жен,53,2,0,51.4792,Саутгемптон
+573,John Irwin Flynn,1,1,муж,36,0,0,26.3875,Саутгемптон
+574,Mary Kelly,1,3,жен,,0,0,7.75,Квинстаун
+575,Alfred George Rush,0,3,муж,16,0,0,8.05,Саутгемптон
+576,George Patchett,0,3,муж,19,0,0,14.5,Саутгемптон
+577,Ethel Garside,1,2,жен,34,0,0,13,Саутгемптон
+578,William Baird Silvey,1,1,жен,39,1,0,55.9,Саутгемптон
+579,Joseph Maria Caram,0,3,жен,,1,0,14.4583,Шербур
+580,Eiriik Jussila,1,3,муж,32,0,0,7.925,Саутгемптон
+581,Julie Rachel Christy,1,2,жен,25,1,1,30,Саутгемптон
+582,John Borland Thayer,1,1,жен,39,1,1,110.8833,Шербур
+583,William James Downton,0,2,муж,54,0,0,26,Саутгемптон
+584,John Hugo Ross,0,1,муж,36,0,0,40.125,Шербур
+585,Uscher Paulner,0,3,муж,,0,0,8.7125,Шербур
+586,Ruth Taussig,1,1,жен,18,0,2,79.65,Саутгемптон
+587,John Denzil Jarvis,0,2,муж,47,0,0,15,Саутгемптон
+588,Maxmillian Frolicher-Stehli,1,1,муж,60,1,1,79.2,Шербур
+589,Eliezer Gilinski,0,3,муж,22,0,0,8.05,Саутгемптон
+590,Joseph Murdlin,0,3,муж,,0,0,8.05,Саутгемптон
+591,Matti Rintamaki,0,3,муж,35,0,0,7.125,Саутгемптон
+592,Walter Bertram Stephenson,1,1,жен,52,1,0,78.2667,Шербур
+593,William James Elsbury,0,3,муж,47,0,0,7.25,Саутгемптон
+594,Mary Bourke,0,3,жен,,0,2,7.75,Квинстаун
+595,John Henry Chapman,0,2,муж,37,1,0,26,Саутгемптон
+596,Jean Baptiste Van Impe,0,3,муж,36,1,1,24.15,Саутгемптон
+597,Jessie Wills Leitch,1,2,жен,,0,0,33,Саутгемптон
+598,Alfred Johnson,0,3,муж,49,0,0,0,Саутгемптон
+599,Hanna Boulos,0,3,муж,,0,0,7.225,Шербур
+600,Cosmo Edmund Duff Gordon,1,1,муж,49,1,0,56.9292,Шербур
+601,Sidney Samuel Jacobsohn,1,2,жен,24,2,1,27,Саутгемптон
+602,Petco Slabenoff,0,3,муж,,0,0,7.8958,Саутгемптон
+603,Charles H Harrington,0,1,муж,,0,0,42.4,Саутгемптон
+604,Ernst William Torber,0,3,муж,44,0,0,8.05,Саутгемптон
+605,Harry Mr Homer,1,1,муж,35,0,0,26.55,Шербур
+606,Edvard Bengtsson Lindell,0,3,муж,36,1,0,15.55,Саутгемптон
+607,Milan Karaic,0,3,муж,30,0,0,7.8958,Саутгемптон
+608,Robert Williams Daniel,1,1,муж,27,0,0,30.5,Саутгемптон
+609,Joseph Juliette Laroche,1,2,жен,22,1,2,41.5792,Шербур
+610,Elizabeth W Shutes,1,1,жен,40,0,0,153.4625,Саутгемптон
+611,Anders Johan Andersson,0,3,жен,39,1,5,31.275,Саутгемптон
+612,Jose Neto Jardin,0,3,муж,,0,0,7.05,Саутгемптон
+613,Margaret Jane Murphy,1,3,жен,,1,0,15.5,Квинстаун
+614,John Horgan,0,3,муж,,0,0,7.75,Квинстаун
+615,William Alfred Brocklebank,0,3,муж,35,0,0,8.05,Саутгемптон
+616,Alice Herman,1,2,жен,24,1,2,65,Саутгемптон
+617,Ernst Gilbert Danbom,0,3,муж,34,1,1,14.4,Саутгемптон
+618,William Arthur Lobb,0,3,жен,26,1,0,16.1,Саутгемптон
+619,Marion Louise Becker,1,2,жен,4,2,1,39,Саутгемптон
+620,Lawrence Gavey,0,2,муж,26,0,0,10.5,Саутгемптон
+621,Antoni Yasbeck,0,3,муж,27,1,0,14.4542,Шербур
+622,Edwin Nelson Kimball,1,1,муж,42,1,0,52.5542,Саутгемптон
+623,Sahid Nakid,1,3,муж,20,1,1,15.7417,Шербур
+624,Henry Damsgaard Hansen,0,3,муж,21,0,0,7.8542,Саутгемптон
+625,David John Bowen,0,3,муж,21,0,0,16.1,Саутгемптон
+626,Frederick Sutton,0,1,муж,61,0,0,32.3208,Саутгемптон
+627,Charles Leonard Kirkland,0,2,муж,57,0,0,12.35,Квинстаун
+628,Gretchen Fiske Longley,1,1,жен,21,0,0,77.9583,Саутгемптон
+629,Guentcho Bostandyeff,0,3,муж,26,0,0,7.8958,Саутгемптон
+630,Patrick D O'Connell,0,3,муж,,0,0,7.7333,Квинстаун
+631,Algernon Henry Barkworth,1,1,муж,80,0,0,30,Саутгемптон
+632,Johan Svensson Lundahl,0,3,муж,51,0,0,7.0542,Саутгемптон
+633,Max Stahelin-Maeglin,1,1,муж,32,0,0,30.5,Шербур
+634,William Henry Parr,0,1,муж,,0,0,0,Саутгемптон
+635,Mabel Skoog,0,3,жен,9,3,2,27.9,Саутгемптон
+636,Mary Davis,1,2,жен,28,0,0,13,Саутгемптон
+637,Antti Gustaf Leinonen,0,3,муж,32,0,0,7.925,Саутгемптон
+638,Harvey Collyer,0,2,муж,31,1,1,26.25,Саутгемптон
+639,Juha Maria Panula,0,3,жен,41,0,5,39.6875,Саутгемптон
+640,Percival Thorneycroft,0,3,муж,,1,0,16.1,Саутгемптон
+641,Hans Peder Jensen,0,3,муж,20,0,0,7.8542,Саутгемптон
+642,Emma Sagesser,1,1,жен,24,0,0,69.3,Шербур
+643,Margit Elizabeth Skoog,0,3,жен,2,3,2,27.9,Саутгемптон
+644,Choong Foo,1,3,муж,,0,0,56.4958,Саутгемптон
+645,Eugenie Baclini,1,3,жен,0.75,2,1,19.2583,Шербур
+646,Henry Sleeper Harper,1,1,муж,48,1,0,76.7292,Шербур
+647,Liudevit Cor,0,3,муж,19,0,0,7.8958,Саутгемптон
+648,Alfons Simonius-Blumer,1,1,муж,56,0,0,35.5,Шербур
+649,Edward Willey,0,3,муж,,0,0,7.55,Саутгемптон
+650,Amy Zillah Stanley,1,3,жен,23,0,0,7.55,Саутгемптон
+651,Mito Mitkoff,0,3,муж,,0,0,7.8958,Саутгемптон
+652,Elsie Doling,1,2,жен,18,0,1,23,Саутгемптон
+653,Johannes Halvorsen Kalvik,0,3,муж,21,0,0,8.4333,Саутгемптон
+654,Hanora Norah O'Leary,1,3,жен,,0,0,7.8292,Квинстаун
+655,Hanora Nora Hegarty,0,3,жен,18,0,0,6.75,Квинстаун
+656,Leonard Mark Hickman,0,2,муж,24,2,0,73.5,Саутгемптон
+657,Alexander Radeff,0,3,муж,,0,0,7.8958,Саутгемптон
+658,John Catherine Bourke,0,3,жен,32,1,1,15.5,Квинстаун
+659,George Floyd Eitemiller,0,2,муж,23,0,0,13,Саутгемптон
+660,Arthur Webster Newell,0,1,муж,58,0,2,113.275,Шербур
+661,Henry William Frauenthal,1,1,муж,50,2,0,133.65,Саутгемптон
+662,Mohamed Badt,0,3,муж,40,0,0,7.225,Шербур
+663,Edward Pomeroy Colley,0,1,муж,47,0,0,25.5875,Саутгемптон
+664,Peju Coleff,0,3,муж,36,0,0,7.4958,Саутгемптон
+665,Eino William Lindqvist,1,3,муж,20,1,0,7.925,Саутгемптон
+666,Lewis Hickman,0,2,муж,32,2,0,73.5,Саутгемптон
+667,Reginald Fenton Butler,0,2,муж,25,0,0,13,Саутгемптон
+668,Knud Paust Rommetvedt,0,3,муж,,0,0,7.775,Саутгемптон
+669,Jacob Cook,0,3,муж,43,0,0,8.05,Саутгемптон
+670,Elmer Zebley Taylor,1,1,жен,,1,0,52,Саутгемптон
+671,Thomas William Brown,1,2,жен,40,1,1,39,Саутгемптон
+672,Thornton Davidson,0,1,муж,31,1,0,52,Саутгемптон
+673,Henry Michael Mitchell,0,2,муж,70,0,0,10.5,Саутгемптон
+674,Charles Wilhelms,1,2,муж,31,0,0,13,Саутгемптон
+675,Ennis Hastings Watson,0,2,муж,,0,0,0,Саутгемптон
+676,Gustaf Hjalmar Edvardsson,0,3,муж,18,0,0,7.775,Саутгемптон
+677,Frederick Charles Sawyer,0,3,муж,24.5,0,0,8.05,Саутгемптон
+678,Anna Sofia Turja,1,3,жен,18,0,0,9.8417,Саутгемптон
+679,Frederick Augusta Goodwin,0,3,жен,43,1,6,46.9,Саутгемптон
+680,Thomas Drake Cardeza,1,1,муж,36,0,1,512.3292,Шербур
+681,Katie Peters,0,3,жен,,0,0,8.1375,Квинстаун
+682,Hammad Hassab,1,1,муж,27,0,0,76.7292,Шербур
+683,Thor Anderson Olsvigen,0,3,муж,20,0,0,9.225,Саутгемптон
+684,Charles Edward Goodwin,0,3,муж,14,5,2,46.9,Саутгемптон
+685,Thomas William Brown,0,2,муж,60,1,1,39,Саутгемптон
+686,Joseph Philippe Laroche,0,2,муж,25,1,2,41.5792,Шербур
+687,Jaako Arnold Panula,0,3,муж,14,4,1,39.6875,Саутгемптон
+688,Branko Dakic,0,3,муж,19,0,0,10.1708,Саутгемптон
+689,Eberhard Thelander Fischer,0,3,муж,18,0,0,7.7958,Саутгемптон
+690,Georgette Alexandra Madill,1,1,жен,15,0,1,211.3375,Саутгемптон
+691,Albert Adrian Dick,1,1,муж,31,1,0,57,Саутгемптон
+692,Manca Karun,1,3,жен,4,0,1,13.4167,Шербур
+693,Ali Lam,1,3,муж,,0,0,56.4958,Саутгемптон
+694,Khalil Saad,0,3,муж,25,0,0,7.225,Шербур
+695,John Weir,0,1,муж,60,0,0,26.55,Саутгемптон
+696,Charles Henry Chapman,0,2,муж,52,0,0,13.5,Саутгемптон
+697,James Kelly,0,3,муж,44,0,0,8.05,Саутгемптон
+698,Katherine Katie Mullens,1,3,жен,,0,0,7.7333,Квинстаун
+699,John Borland Thayer,0,1,муж,49,1,1,110.8833,Шербур
+700,Adolf Mathias Humblen,0,3,муж,42,0,0,7.65,Саутгемптон
+701,John Jacob Astor,1,1,жен,18,1,0,227.525,Шербур
+702,Spencer Victor Silverthorne,1,1,муж,35,0,0,26.2875,Саутгемптон
+703,Saiide Barbara,0,3,жен,18,0,1,14.4542,Шербур
+704,Martin Gallagher,0,3,муж,25,0,0,7.7417,Квинстаун
+705,Henrik Juul Hansen,0,3,муж,26,1,0,7.8542,Саутгемптон
+706,Henry Samuel Morley,0,2,муж,39,0,0,26,Саутгемптон
+707,Florence Fannie Kelly,1,2,жен,45,0,0,13.5,Саутгемптон
+708,Edward Calderhead,1,1,муж,42,0,0,26.2875,Саутгемптон
+709,Alice Cleaver,1,1,жен,22,0,0,151.55,Саутгемптон
+710,Halim Gonios Moubarek,1,3,муж,,1,1,15.2458,Шербур
+711,Berthe Antonine Mayne,1,1,жен,24,0,0,49.5042,Шербур
+712,Herman Klaber,0,1,муж,,0,0,26.55,Саутгемптон
+713,Elmer Zebley Taylor,1,1,муж,48,1,0,52,Саутгемптон
+714,August Viktor Larsson,0,3,муж,29,0,0,9.4833,Саутгемптон
+715,Samuel Greenberg,0,2,муж,52,0,0,13,Саутгемптон
+716,Peter Andreas Soholt,0,3,муж,19,0,0,7.65,Саутгемптон
+717,Caroline Louise Endres,1,1,жен,38,0,0,227.525,Шербур
+718,Edwina Celia Troutt,1,2,жен,27,0,0,10.5,Саутгемптон
+719,Michael McEvoy,0,3,муж,,0,0,15.5,Квинстаун
+720,Malkolm Joackim Johnson,0,3,муж,33,0,0,7.775,Саутгемптон
+721,Annie Jessie Harper,1,2,жен,6,0,1,33,Саутгемптон
+722,Svend Lauritz Jensen,0,3,муж,17,1,0,7.0542,Саутгемптон
+723,William Henry Gillespie,0,2,муж,34,0,0,13,Саутгемптон
+724,Henry Price Hodges,0,2,муж,50,0,0,13,Саутгемптон
+725,Norman Campbell Chambers,1,1,муж,27,1,0,53.1,Саутгемптон
+726,Luka Oreskovic,0,3,муж,20,0,0,8.6625,Саутгемптон
+727,Peter Henry Renouf,1,2,жен,30,3,0,21,Саутгемптон
+728,Margareth Mannion,1,3,жен,,0,0,7.7375,Квинстаун
+729,Kurt Arnold Bryhl,0,2,муж,25,1,0,26,Саутгемптон
+730,Pieta Sofia Ilmakangas,0,3,жен,25,1,0,7.925,Саутгемптон
+731,Elisabeth Walton Allen,1,1,жен,29,0,0,211.3375,Саутгемптон
+732,Houssein G Hassan,0,3,муж,11,0,0,18.7875,Шербур
+733,Robert J Knight,0,2,муж,,0,0,0,Саутгемптон
+734,William John Berriman,0,2,муж,23,0,0,13,Саутгемптон
+735,Moses Aaron Troupiansky,0,2,муж,23,0,0,13,Саутгемптон
+736,Leslie Williams,0,3,муж,28.5,0,0,16.1,Саутгемптон
+737,Edward Margaret Ford,0,3,жен,48,1,3,34.375,Саутгемптон
+738,Gustave J Lesurer,1,1,муж,35,0,0,512.3292,Шербур
+739,Kanio Ivanoff,0,3,муж,,0,0,7.8958,Саутгемптон
+740,Minko Nankoff,0,3,муж,,0,0,7.8958,Саутгемптон
+741,Walter James Hawksford,1,1,муж,,0,0,30,Саутгемптон
+742,Tyrell William Cavendish,0,1,муж,36,1,0,78.85,Саутгемптон
+743,Susan Parker Ryerson,1,1,жен,21,2,2,262.375,Шербур
+744,Neal McNamee,0,3,муж,24,1,0,16.1,Саутгемптон
+745,Juho Stranden,1,3,муж,31,0,0,7.925,Саутгемптон
+746,Edward Gifford Crosby,0,1,муж,70,1,1,71,Саутгемптон
+747,Rossmore Edward Abbott,0,3,муж,16,1,1,20.25,Саутгемптон
+748,Anna Sinkkonen,1,2,жен,30,0,0,13,Саутгемптон
+749,Daniel Warner Marvin,0,1,муж,19,1,0,53.1,Саутгемптон
+750,Michael Connaghton,0,3,муж,31,0,0,7.75,Квинстаун
+751,Joan Wells,1,2,жен,4,1,1,23,Саутгемптон
+752,Meier Moor,1,3,муж,6,0,1,12.475,Саутгемптон
+753,Johannes Vande Velde,0,3,муж,33,0,0,9.5,Саутгемптон
+754,Lalio Jonkoff,0,3,муж,23,0,0,7.8958,Саутгемптон
+755,Samuel Jane Herman,1,2,жен,48,1,2,65,Саутгемптон
+756,Viljo Hamalainen,1,2,муж,0.67,1,1,14.5,Саутгемптон
+757,August Sigfrid Carlsson,0,3,муж,28,0,0,7.7958,Саутгемптон
+758,Percy Andrew Bailey,0,2,муж,18,0,0,11.5,Саутгемптон
+759,Thomas Leonard Theobald,0,3,муж,34,0,0,8.05,Саутгемптон
+760,of Lucy Rothes,1,1,жен,33,0,0,86.5,Саутгемптон
+761,John Garfirth,0,3,муж,,0,0,14.5,Саутгемптон
+762,Iisakki Antino Nirva,0,3,муж,41,0,0,7.125,Саутгемптон
+763,Hanna Assi Barah,1,3,муж,20,0,0,7.2292,Шербур
+764,William Ernest Carter,1,1,жен,36,1,2,120,Саутгемптон
+765,Hans Linus Eklund,0,3,муж,16,0,0,7.775,Саутгемптон
+766,John C Hogeboom,1,1,жен,51,1,0,77.9583,Саутгемптон
+767,Arthur Jackson Brewe,0,1,муж,,0,0,39.6,Шербур
+768,Mary Mangan,0,3,жен,30.5,0,0,7.75,Квинстаун
+769,Daniel J Moran,0,3,муж,,1,0,24.15,Квинстаун
+770,Daniel Gronnestad,0,3,муж,32,0,0,8.3625,Саутгемптон
+771,Rene Aime Lievens,0,3,муж,24,0,0,9.5,Саутгемптон
+772,Niels Peder Jensen,0,3,муж,48,0,0,7.8542,Саутгемптон
+773,Mary Mack,0,2,жен,57,0,0,10.5,Саутгемптон
+774,Dibo Elias,0,3,муж,,0,0,7.225,Шербур
+775,Elizabeth Eliza Hocking,1,2,жен,54,1,3,23,Саутгемптон
+776,Pehr Fabian Myhrman,0,3,муж,18,0,0,7.75,Саутгемптон
+777,Roger Tobin,0,3,муж,,0,0,7.75,Квинстаун
+778,Virginia Ethel Emanuel,1,3,жен,5,0,0,12.475,Саутгемптон
+779,Thomas J Kilgannon,0,3,муж,,0,0,7.7375,Квинстаун
+780,Edward Scott Robert,1,1,жен,43,0,1,211.3375,Саутгемптон
+781,Banoura Ayoub,1,3,жен,13,0,0,7.2292,Шербур
+782,Albert Adrian Dick,1,1,жен,17,1,0,57,Саутгемптон
+783,Milton Clyde Long,0,1,муж,29,0,0,30,Саутгемптон
+784,Andrew G Johnston,0,3,муж,,1,2,23.45,Саутгемптон
+785,William Ali,0,3,муж,25,0,0,7.05,Саутгемптон
+786,Abraham David Harmer,0,3,муж,25,0,0,7.25,Саутгемптон
+787,Anna Sofia Sjoblom,1,3,жен,18,0,0,7.4958,Саутгемптон
+788,George Hugh Rice,0,3,муж,8,4,1,29.125,Квинстаун
+789,Bertram Vere Dean,1,3,муж,1,1,2,20.575,Саутгемптон
+790,Benjamin Guggenheim,0,1,муж,46,0,0,79.2,Шербур
+791,Andrew Andy Keane,0,3,муж,,0,0,7.75,Квинстаун
+792,Alfred Gaskell,0,2,муж,16,0,0,26,Саутгемптон
+793,Stella Anna Sage,0,3,жен,,8,2,69.55,Саутгемптон
+794,William Fisher Hoyt,0,1,муж,,0,0,30.6958,Шербур
+795,Ristiu Dantcheff,0,3,муж,25,0,0,7.8958,Саутгемптон
+796,Richard Otter,0,2,муж,39,0,0,13,Саутгемптон
+797,Alice Farnham Leader,1,1,жен,49,0,0,25.9292,Саутгемптон
+798,Mara Osman,1,3,жен,31,0,0,8.6833,Саутгемптон
+799,Yousseff Ibrahim Shawah,0,3,муж,30,0,0,7.2292,Шербур
+800,Jean Baptiste Van Impe,0,3,жен,30,1,1,24.15,Саутгемптон
+801,Martin Ponesell,0,2,муж,34,0,0,13,Саутгемптон
+802,Harvey Charlotte Collyer,1,2,жен,31,1,1,26.25,Саутгемптон
+803,William Thornton Carter,1,1,муж,11,1,2,120,Саутгемптон
+804,Assad Alexander Thomas,1,3,муж,0.42,0,1,8.5167,Шербур
+805,Oskar Arvid Hedman,1,3,муж,27,0,0,6.975,Саутгемптон
+806,Karl Johan Johansson,0,3,муж,31,0,0,7.775,Саутгемптон
+807,Thomas Jr Andrews,0,1,муж,39,0,0,0,Саутгемптон
+808,Ellen Natalia Pettersson,0,3,жен,18,0,0,7.775,Саутгемптон
+809,August Meyer,0,2,муж,39,0,0,13,Саутгемптон
+810,Norman Campbell Chambers,1,1,жен,33,1,0,53.1,Саутгемптон
+811,William Alexander,0,3,муж,26,0,0,7.8875,Саутгемптон
+812,James Lester,0,3,муж,39,0,0,24.15,Саутгемптон
+813,Richard James Slemen,0,2,муж,35,0,0,10.5,Саутгемптон
+814,Ebba Iris Andersson,0,3,жен,6,4,2,31.275,Саутгемптон
+815,Ernest Portage Tomlin,0,3,муж,30.5,0,0,8.05,Саутгемптон
+816,Richard Fry,0,1,муж,,0,0,0,Саутгемптон
+817,Wendla Maria Heininen,0,3,жен,23,0,0,7.925,Саутгемптон
+818,Albert Mallet,0,2,муж,31,1,1,37.0042,Шербур
+819,John Fredrik Holm,0,3,муж,43,0,0,6.45,Саутгемптон
+820,Karl Thorsten Skoog,0,3,муж,10,3,2,27.9,Саутгемптон
+821,Charles Melville Hays,1,1,жен,52,1,1,93.5,Саутгемптон
+822,Nikola Lulic,1,3,муж,27,0,0,8.6625,Саутгемптон
+823,John George Reuchlin,0,1,муж,38,0,0,0,Саутгемптон
+824,Beila Moor,1,3,жен,27,0,1,12.475,Саутгемптон
+825,Urho Abraham Panula,0,3,муж,2,4,1,39.6875,Саутгемптон
+826,John Flynn,0,3,муж,,0,0,6.95,Квинстаун
+827,Len Lam,0,3,муж,,0,0,56.4958,Саутгемптон
+828,Andre Mallet,1,2,муж,1,0,2,37.0042,Шербур
+829,Thomas Joseph McCormack,1,3,муж,,0,0,7.75,Квинстаун
+830,George Nelson Stone,1,1,жен,62,0,0,80,
+831,Antoni Selini Yasbeck,1,3,жен,15,1,0,14.4542,Шербур
+832,George Sibley Richards,1,2,муж,0.83,1,1,18.75,Саутгемптон
+833,Amin Saad,0,3,муж,,0,0,7.2292,Шербур
+834,Albert Augustsson,0,3,муж,23,0,0,7.8542,Саутгемптон
+835,Owen George Allum,0,3,муж,18,0,0,8.3,Саутгемптон
+836,Sara Rebecca Compton,1,1,жен,39,1,1,83.1583,Шербур
+837,Jakob Pasic,0,3,муж,21,0,0,8.6625,Саутгемптон
+838,Maurice Sirota,0,3,муж,,0,0,8.05,Саутгемптон
+839,Chang Chip,1,3,муж,32,0,0,56.4958,Саутгемптон
+840,Pierre Marechal,1,1,муж,,0,0,29.7,Шербур
+841,Ilmari Rudolf Alhomaki,0,3,муж,20,0,0,7.925,Саутгемптон
+842,Thomas Charles Mudd,0,2,муж,16,0,0,10.5,Саутгемптон
+843,Augusta Serepeca,1,1,жен,30,0,0,31,Шербур
+844,Peter L Lemberopolous,0,3,муж,34.5,0,0,6.4375,Шербур
+845,Jeso Culumovic,0,3,муж,17,0,0,8.6625,Саутгемптон
+846,Anthony Abbing,0,3,муж,42,0,0,7.55,Саутгемптон
+847,Douglas Bullen Sage,0,3,муж,,8,2,69.55,Саутгемптон
+848,Marin Markoff,0,3,муж,35,0,0,7.8958,Шербур
+849,John Harper,0,2,муж,28,0,1,33,Саутгемптон
+850,Samuel L Goldenberg,1,1,жен,,1,0,89.1042,Шербур
+851,Sigvard Harald Andersson,0,3,муж,4,4,2,31.275,Саутгемптон
+852,Johan Svensson,0,3,муж,74,0,0,7.775,Саутгемптон
+853,Nourelain Boulos,0,3,жен,9,1,1,15.2458,Шербур
+854,Mary Conover Lines,1,1,жен,16,0,1,39.4,Саутгемптон
+855,Ernest Courtenay Carter,0,2,жен,44,1,0,26,Саутгемптон
+856,Sam Leah Aks,1,3,жен,18,0,1,9.35,Саутгемптон
+857,George Dennick Wick,1,1,жен,45,1,1,164.8667,Саутгемптон
+858,Peter Denis Daly,1,1,муж,51,0,0,26.55,Саутгемптон
+859,Solomon Latifa Baclini,1,3,жен,24,0,3,19.2583,Шербур
+860,Raihed Razi,0,3,муж,,0,0,7.2292,Шербур
+861,Claus Peter Hansen,0,3,муж,41,2,0,14.1083,Саутгемптон
+862,Frederick Edward Giles,0,2,муж,21,1,0,11.5,Саутгемптон
+863,Frederick Joel Swift,1,1,жен,48,0,0,25.9292,Саутгемптон
+864,Dorothy Edith Sage,0,3,жен,,8,2,69.55,Саутгемптон
+865,John William Gill,0,2,муж,24,0,0,13,Саутгемптон
+866,Karolina Bystrom,1,2,жен,42,0,0,13,Саутгемптон
+867,Asuncion Duran y More,1,2,жен,27,1,0,13.8583,Шербур
+868,Washington Roebling,0,1,муж,31,0,0,50.4958,Саутгемптон
+869,Philemon van Melkebeke,0,3,муж,,0,0,9.5,Саутгемптон
+870,Harold Theodor Johnson,1,3,муж,4,1,1,11.1333,Саутгемптон
+871,Cerin Balkic,0,3,муж,26,0,0,7.8958,Саутгемптон
+872,Richard Leonard Beckwith,1,1,жен,47,1,1,52.5542,Саутгемптон
+873,Frans Olof Carlsson,0,1,муж,33,0,0,5,Саутгемптон
+874,Victor Vander Cruyssen,0,3,муж,47,0,0,9,Саутгемптон
+875,Samuel Hannah Abelson,1,2,жен,28,1,0,24,Шербур
+876,Adele Kiamie Najib,1,3,жен,15,0,0,7.225,Шербур
+877,Alfred Ossian Gustafsson,0,3,муж,20,0,0,9.8458,Саутгемптон
+878,Nedelio Petroff,0,3,муж,19,0,0,7.8958,Саутгемптон
+879,Kristo Laleff,0,3,муж,,0,0,7.8958,Саутгемптон
+880,Thomas Jr Potter,1,1,жен,56,0,1,83.1583,Шербур
+881,William Imanita Shelley,1,2,жен,25,0,1,26,Саутгемптон
+882,Johann Markun,0,3,муж,33,0,0,7.8958,Саутгемптон
+883,Gerda Ulrika Dahlberg,0,3,жен,22,0,0,10.5167,Саутгемптон
+884,Frederick James Banfield,0,2,муж,28,0,0,10.5,Саутгемптон
+885,Henry Jr Sutehall,0,3,муж,25,0,0,7.05,Саутгемптон
+886,William Margaret Rice,0,3,жен,39,0,5,29.125,Квинстаун
+887,Juozas Montvila,0,2,муж,27,0,0,13,Саутгемптон
+888,Margaret Edith Graham,1,1,жен,19,0,0,30,Саутгемптон
+889,Catherine Helen Johnston,0,3,жен,,1,2,23.45,Саутгемптон
+890,Karl Howell Behr,1,1,муж,26,0,0,30,Шербур
+891,Patrick Dooley,0,3,муж,32,0,0,7.75,Квинстаун

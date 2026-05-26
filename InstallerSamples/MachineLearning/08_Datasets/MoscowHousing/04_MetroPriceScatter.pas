@@ -9,7 +9,7 @@ begin
 
   Plot.Points(metro.Data.ConvertAll(x -> x*1.0), price.Data, size := 3);
 
-  Plot.XLabel('Минуты до метро');
-  Plot.YLabel('Цена (руб)');
+  Plot.XLabel := 'Минуты до метро';
+  Plot.YLabel := 'Цена (руб)';
   Plot.Title := 'Зависимость цены квартиры от расстояния до метро';
 end.
