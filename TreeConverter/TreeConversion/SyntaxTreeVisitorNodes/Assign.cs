@@ -2,7 +2,6 @@
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SystemLibrary;
 using PascalABCCompiler.TreeRealization;
-using SymTable = SymbolTable;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -264,7 +263,15 @@ namespace PascalABCCompiler.TreeConverter
                                           // SSM 1.11.18 попытка правки возвращения процедуры в yield
                                           //if (from.type.semantic_node_type == semantic_node_type.delegated_method)
                                           //cfr.type.semantic_node_type = semantic_node_type.delegated_method;
+                    
+                    // восстанавливаем тип и в generic definition тоже
+                    if (cfr.field.cont_type.is_generic_type_instance)
+                    {
+                        var genericInstance = (generic_instance_type_node)cfr.field.cont_type;
+                        var fieldDefinition = (class_field)genericInstance.get_member_definition(cfr.field);
 
+                        fieldDefinition.type = from.type;
+                    }
 
                     cfr.field.inital_value = context.GetInitalValueForVariable(cfr.field, cfr.field.inital_value);
                 }
@@ -273,7 +280,7 @@ namespace PascalABCCompiler.TreeConverter
                     var lvr = to as local_block_variable_reference;
                     lvr.var.type = from.type;
                     lvr.type = from.type;
-					lvr.var.inital_value = context.GetInitalValueForVariable(lvr.var, lvr.var.inital_value);
+                    lvr.var.inital_value = context.GetInitalValueForVariable(lvr.var, lvr.var.inital_value);
                 }
                 else AddError(to.location, "Не могу вывести тип при наличии yield: " + to.type.full_name);
                 //to.type = from.type; // и без всякого real_type!
@@ -295,6 +302,15 @@ namespace PascalABCCompiler.TreeConverter
 
                     cfr.field.type = convert_strong(IEnumType);
                     cfr.type = cfr.field.type;
+
+                    // восстанавливаем тип и в generic definition тоже
+                    if (cfr.field.cont_type.is_generic_type_instance)
+                    {
+                        var genericInstance = (generic_instance_type_node)cfr.field.cont_type;
+                        var fieldDefinition = (class_field)genericInstance.get_member_definition(cfr.field);
+
+                        fieldDefinition.type = cfr.field.type;
+                    }
                 }
                 else if (to is local_block_variable_reference)
                 {

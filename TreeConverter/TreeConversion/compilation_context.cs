@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 //Класс, хранящий текущий контекст. Где находится компилятор (в какой функции, типе, пространстве имен).
-using System;
-using System.Linq;
-using PascalABCCompiler.TreeRealization;
-using System.Collections.Generic;
-using System.Collections;
 using PascalABCCompiler.CoreUtils;
+using PascalABCCompiler.TreeRealization;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -2314,6 +2314,15 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return _ctn.base_generic_instance.ConvertSymbolInfo(sil);
             }
+
+            if (_ctn != null && _ctn.is_generic_type_definition && top_function != null)
+            {
+                var selfType = (generic_instance_type_node)_ctn
+                    .get_instance( _ctn.generic_params.Cast<type_node>().ToList() );
+
+                return selfType.ConvertSymbolInfo(sil);
+            }
+
             return sil;
         }
 

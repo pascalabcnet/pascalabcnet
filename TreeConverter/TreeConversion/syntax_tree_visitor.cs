@@ -18418,7 +18418,18 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if ((left as static_event_reference).en is compiled_event)
                             AddError(left.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (left as static_event_reference).en.name);
-                        if (context.converted_type != null && context.converted_type != ((left as static_event_reference).en as common_event).cont_type && !context.converted_type.name.Contains("<>local_variables_class"))
+
+                        type_node eventContainingType = ((left as static_event_reference).en as common_event).cont_type;
+
+                        // context.converted_type содержит generic definition, если это generic тип
+                        // поэтому берём original_generic при необходимости
+                        if (eventContainingType.is_generic_type_instance)
+                            eventContainingType = eventContainingType.original_generic;
+
+                        if (context.converted_type != null
+                            && context.converted_type != eventContainingType
+                            && !context.converted_type.name.Contains("<>local_variables_class")
+                        )
                             AddError(left.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (left as static_event_reference).en.name);
                     }
                     else if (right is static_event_reference)

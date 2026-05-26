@@ -1901,6 +1901,12 @@ namespace PascalABCCompiler.TreeRealization
                 orig_event.is_static ? SemanticTree.polymorphic_state.ps_static : SemanticTree.polymorphic_state.ps_common,
                 loc
                 );
+            
+            if (orig_event is common_event commonEvent)
+            {
+                evnt.field = (class_field)ConvertMember(commonEvent.field);
+            }
+
             return evnt;
         }
 
