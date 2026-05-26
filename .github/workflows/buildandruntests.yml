@@ -45,7 +45,7 @@ jobs:
 
   pcu_diff_tests:
     
-    name: Prepare, build on Windows Server VM and run pcu diff tests
+    name: Run pcu diff tests
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
