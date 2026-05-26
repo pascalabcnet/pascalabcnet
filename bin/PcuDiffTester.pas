@@ -10,6 +10,8 @@
 uses System.IO, PascalABCCompiler;
 
 const
+  errorHint = 'If you have any questions, contact @AlexanderZemlyak on GitHub.';
+  
   tempDirName = 'TempForPCUDiffTest';
 
 /// Побайтовое сравнение файлов
@@ -20,7 +22,7 @@ begin
   
   if fileInfo1.Length <> fileInfo2.Length then
   begin
-    error := new Exception($'File sizes of {fileInfo1.Name} differ: first - {fileInfo1.Length} vs second - {fileInfo2.Length}');
+    error := new Exception($'File sizes of {fileInfo1.Name} differ: first - {fileInfo1.Length} vs second - {fileInfo2.Length}. {errorHint}');
     exit;
   end;
   
@@ -33,7 +35,7 @@ begin
 //  begin
 //    if fileBytes1[i] <> fileBytes2[i] then
 //    begin
-//      error := new Exception($'Mismatch of {fileInfo1.Name} files in position {i}: {fileBytes1[i]} vs {fileBytes2[i]}');
+//      error := new Exception($'Mismatch of {fileInfo1.Name} files in position {i}: {fileBytes1[i]} vs {fileBytes2[i]}. {errorHint}');
 //      exit;
 //    end;
 //  end;
