@@ -2315,6 +2315,8 @@ namespace PascalABCCompiler.TreeConverter
                 return _ctn.base_generic_instance.ConvertSymbolInfo(sil);
             }
 
+            // необходимо для создания корректных обращений к членам generic типа изнутри этого типа
+            // подробнее #3430
             if (_ctn != null && _ctn.is_generic_type_definition && top_function != null)
             {
                 var selfType = (generic_instance_type_node)_ctn
