@@ -398,11 +398,11 @@ namespace PascalABCCompiler.NETGenerator
             }
         }
 
-        private ICommonFunctionNode GetGenericFunctionContainer(ITypeNode tn)
+        private IFunctionNode GetGenericFunctionContainer(ITypeNode tn)
         {
-            if (tn.common_generic_function_container != null)
+            if (tn.generic_function_container != null)
             {
-                return tn.common_generic_function_container;
+                return tn.generic_function_container;
             }
             if (tn.type_special_kind == type_special_kind.typed_file)
             {
@@ -426,7 +426,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 foreach (ITypeNode par in igti.generic_parameters)
                 {
-                    ICommonFunctionNode rez = GetGenericFunctionContainer(par);
+                    IFunctionNode rez = GetGenericFunctionContainer(par);
                     if (rez != null)
                     {
                         return rez;
@@ -2535,7 +2535,7 @@ namespace PascalABCCompiler.NETGenerator
                     TypeInfo tinfo = helper.GetTypeReference(itn);
                     if (tinfo == null)
                     {
-                        AddTypeInstanceToFunction(GetGenericFunctionContainer(value), igtn);
+                        AddTypeInstanceToFunction((ICommonFunctionNode)GetGenericFunctionContainer(value), igtn);
                         return;
                     }
                     iparams.Add(tinfo.tp);

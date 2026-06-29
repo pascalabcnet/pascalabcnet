@@ -242,12 +242,12 @@ namespace PascalABCCompiler.SemanticTree
         }
 
         //Описание generic-типа, содержащее данный параметр
-        ICommonTypeNode generic_type_container
+        ITypeNode generic_type_container
         {
             get;
         }
 
-        ICommonFunctionNode common_generic_function_container
+        IFunctionNode generic_function_container
         {
             get;
         }

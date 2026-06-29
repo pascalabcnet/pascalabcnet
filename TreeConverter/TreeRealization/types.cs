@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -143,7 +142,7 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
         
-        public virtual SemanticTree.ICommonTypeNode generic_type_container
+        public virtual SemanticTree.ITypeNode generic_type_container
         {
             get
             {
@@ -165,11 +164,11 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
-        SemanticTree.ICommonFunctionNode SemanticTree.ITypeNode.common_generic_function_container
+        SemanticTree.IFunctionNode SemanticTree.ITypeNode.generic_function_container
         {
             get
             {
-                return generic_function_container as SemanticTree.ICommonFunctionNode;
+                return generic_function_container;
             }
         }
 
@@ -1434,7 +1433,7 @@ namespace PascalABCCompiler.TreeRealization
 
         private SemanticTree.ICommonTypeNode _generic_type_container = null;
 
-        public override SemanticTree.ICommonTypeNode generic_type_container
+        public override SemanticTree.ITypeNode generic_type_container
         {
             get
             {
@@ -1442,7 +1441,7 @@ namespace PascalABCCompiler.TreeRealization
             }
             set
             {
-                _generic_type_container = value;
+                _generic_type_container = (SemanticTree.ICommonTypeNode)value;
             }
         }
 
@@ -1465,7 +1464,7 @@ namespace PascalABCCompiler.TreeRealization
             {
                 if (_generic_type_container != null)
                 {
-                    return generic_type_container.generic_params.IndexOf(this);
+                    return _generic_type_container.generic_params.IndexOf(this);
                 }
                 else
                 {
@@ -3021,6 +3020,22 @@ namespace PascalABCCompiler.TreeRealization
                     return null;
                 }
                 return compiled_function_node.get_compiled_method(_compiled_type.DeclaringMethod as System.Reflection.MethodInfo);
+            }
+        }
+
+        public override SemanticTree.ITypeNode generic_type_container
+        {
+            get
+            {
+                if (!_compiled_type.IsGenericParameter || _compiled_type.DeclaringMethod == null)
+                {
+                    return null;
+                }
+                return get_type_node(_compiled_type.DeclaringType);
+            }
+            set
+            {
+                throw new NotSupportedException();
             }
         }
 
