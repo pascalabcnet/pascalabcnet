@@ -3027,7 +3027,8 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                if (!_compiled_type.IsGenericParameter || _compiled_type.DeclaringMethod == null)
+                // если _compiled_type.DeclaringMethod != null то параметр был объявлен для generic метода, а не generic класса
+                if (!_compiled_type.IsGenericParameter || _compiled_type.DeclaringMethod != null)
                 {
                     return null;
                 }
