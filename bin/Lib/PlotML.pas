@@ -94,8 +94,16 @@ type
   public
     constructor Create(g: GridWPF; r,c: integer);
 
+    function PaletteColor(i: integer): ColorWPF;
+
     procedure LineGraph(x, y: array of real; color: ColorWPF := DefaultColor; 
       thickness: real := 2; legend: string := nil);
+    procedure Line(k, b: real; color: ColorWPF := DefaultColor;
+      thickness: real := 2; legend: string := nil);
+    procedure Line(A, B, C: real; color: ColorWPF := DefaultColor;
+      thickness: real := 2; legend: string := nil);
+    procedure Point(x, y: real; color: ColorWPF := DefaultColor;
+      size: real := 8; marker: MarkerType := MarkerType.Circle; legend: string := nil);
     procedure Points(x, y: array of real; color: ColorWPF := DefaultColor; 
       size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
     procedure Points(x, y: array of real; labels: array of integer;
@@ -173,6 +181,8 @@ type
     
     static procedure DrawLine(chart: ChartWPF; x, y: array of real;
       color: ColorWPF; thickness: real; legend: string);
+    static procedure DrawImplicitLine(chart: ChartWPF; A, B, C: real;
+      color: ColorWPF; thickness: real; legend: string);
       
     static procedure DrawText(chart: ChartWPF; s: string; x, y: real);  
   
@@ -207,8 +217,16 @@ type
   public
     static procedure AddSeries(chart: ChartWPF; series: UIElement);
 
+    static function PaletteColor(i: integer): ColorWPF;
+
     static procedure LineGraph(x, y: array of real;
       color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
+    static procedure Line(k, b: real;
+      color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
+    static procedure Line(A, B, C: real;
+      color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
+    static procedure Point(x, y: real;
+      color: ColorWPF := DefaultColor; size: real := 8; marker: MarkerType := MarkerType.Circle; legend: string := nil);
       
     static procedure Points(x, y: array of real; 
       color: ColorWPF := DefaultColor; size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
@@ -333,6 +351,24 @@ type
     property BinsCount: integer read fBinsCount write fBinsCount;
     property Description: string read fDescription write fDescription;
     property MaxCount: integer read fMaxCount;
+  end;
+
+  ImplicitLinePlot = class(PlotWPF)
+  private
+    fA, fB, fC: real;
+    fStroke: BrushWPF;
+    fStrokeThickness: real;
+    fDescription: string;
+
+    function IsFinite(x: real): boolean;
+    procedure OnPlotTransformChanged(sender: object; e: EventArgs);
+  protected
+    function ComputeBounds: InteractiveDataDisplay.WPF.DataRect; override;
+    procedure OnRender(dc: DrawingContext); override;
+  public
+    constructor Create(A, B, C: real; color: ColorWPF; thickness: real);
+
+    property Description: string read fDescription write fDescription;
   end;
 
   HorizontalBarPlot = class(PlotWPF)
@@ -491,6 +527,19 @@ begin
 
   rootPaletteIndex += 1;
   Result := c;
+end;
+
+function ColorFromPalette(p: PaletteWPF; i: integer): ColorWPF;
+begin
+  if (p = nil) or (p.Colors = nil) or (p.Colors.Length = 0) then
+    exit(Colors.Black);
+
+  var n := p.Colors.Length;
+  var k := i mod n;
+  if k < 0 then
+    k += n;
+
+  Result := p.Colors[k];
 end;
 
 function Clamp01(x: real): real;
@@ -950,6 +999,11 @@ begin
   Result := c;
 end;
 
+function Cell.PaletteColor(i: integer): ColorWPF;
+begin
+  Result := ColorFromPalette(palette, i);
+end;
+
 procedure Cell.SetPalette(p: PaletteWPF);
 begin
   if p = nil then exit;
@@ -1106,6 +1160,29 @@ begin
 
     Plot.DrawLine(chart, x, y, clr, thickness, legend);
   end);
+end;
+
+procedure Cell.Line(k, b: real; color: ColorWPF; thickness: real; legend: string);
+begin
+  Line(k, -1, b, color, thickness, legend);
+end;
+
+procedure Cell.Line(A, B, C: real; color: ColorWPF; thickness: real; legend: string);
+begin
+  Plot.RunUI(() ->
+  begin
+    EnsureChart;
+
+    var clr := if color<>DefaultColor then color else Colors.Red;
+
+    Plot.DrawImplicitLine(chart, A, B, C, clr, thickness, legend);
+  end);
+end;
+
+procedure Cell.Point(x, y: real; color: ColorWPF; size: real; marker: MarkerType; legend: string);
+begin
+  var clr := if color<>DefaultColor then color else Colors.Black;
+  Points(Arr(x), Arr(y), clr, size, marker, legend);
 end;
 
 procedure Cell.Points(x, y: array of real; color: ColorWPF;
@@ -1631,6 +1708,20 @@ begin
   AddSeries(chart, g);
 end;
 
+static procedure Plot.DrawImplicitLine(chart: ChartWPF; A, B, C: real;
+  color: ColorWPF; thickness: real; legend: string);
+begin
+  var g := new ImplicitLinePlot(A, B, C, color, thickness);
+
+  if legend <> nil then
+  begin
+    g.Description := legend;
+    chart.LegendVisibility := Visibility.Visible;
+  end;
+
+  AddSeries(chart, g);
+end;
+
 static procedure Plot.DrawText(chart: ChartWPF; s: string; x, y: real);
 begin
   var tb := new System.Windows.Controls.TextBlock;
@@ -1987,6 +2078,11 @@ begin
   container.Children.Add(series);
 end;
 
+class function Plot.PaletteColor(i: integer): ColorWPF;
+begin
+  Result := ColorFromPalette(currentPalette, i);
+end;
+
 class procedure Plot.LineGraph(x, y: array of real;
   color: ColorWPF; thickness: real; legend: string);
 begin
@@ -1996,6 +2092,27 @@ begin
 
     DrawLine(rootChart, x, y, clr, thickness, legend);
   end);
+end;
+
+class procedure Plot.Line(k, b: real; color: ColorWPF; thickness: real; legend: string);
+begin
+  Line(k, -1, b, color, thickness, legend);
+end;
+
+class procedure Plot.Line(A, B, C: real; color: ColorWPF; thickness: real; legend: string);
+begin
+  RunUI(() ->
+  begin
+    var clr := if color<>DefaultColor then color else Colors.Red;
+
+    DrawImplicitLine(rootChart, A, B, C, clr, thickness, legend);
+  end);
+end;
+
+class procedure Plot.Point(x, y: real; color: ColorWPF; size: real; marker: MarkerType; legend: string);
+begin
+  var clr := if color<>DefaultColor then color else Colors.Black;
+  Points(Arr(x), Arr(y), clr, size, marker, legend);
 end;
 
 static procedure Plot.Points(x, y: array of real; 
@@ -2720,6 +2837,94 @@ begin
   end;
 
   fMaxCount := counts.Max;
+end;
+
+constructor ImplicitLinePlot.Create(A, B, C: real; color: ColorWPF; thickness: real);
+begin
+  fA := A;
+  fB := B;
+  fC := C;
+  fStroke := new SolidColorBrush(color);
+  fStrokeThickness := thickness;
+  IsAutoFitEnabled := false;
+  PlotTransformChanged += OnPlotTransformChanged;
+end;
+
+function ImplicitLinePlot.IsFinite(x: real): boolean;
+begin
+  Result := not real.IsNaN(x) and not real.IsInfinity(x);
+end;
+
+procedure ImplicitLinePlot.OnPlotTransformChanged(sender: object; e: EventArgs);
+begin
+  InvalidateVisual;
+end;
+
+function ImplicitLinePlot.ComputeBounds: InteractiveDataDisplay.WPF.DataRect;
+begin
+  Result := InteractiveDataDisplay.WPF.DataRect.Empty;
+end;
+
+procedure ImplicitLinePlot.OnRender(dc: DrawingContext);
+begin
+  inherited OnRender(dc);
+
+  if (Abs(fA) < 1e-12) and (Abs(fB) < 1e-12) then
+    exit;
+
+  var r := ActualPlotRect;
+  if r.IsEmpty then
+    exit;
+
+  var xmin := r.XMin;
+  var xmax := r.XMax;
+  var ymin := r.YMin;
+  var ymax := r.YMax;
+
+  var pts := new List<Point>;
+
+  if Abs(fB) > 1e-12 then
+  begin
+    var y := (-fA * xmin - fC) / fB;
+    if IsFinite(y) and (y >= ymin - 1e-9) and (y <= ymax + 1e-9) then
+      pts.Add(new Point(xmin, y));
+
+    y := (-fA * xmax - fC) / fB;
+    if IsFinite(y) and (y >= ymin - 1e-9) and (y <= ymax + 1e-9) then
+      pts.Add(new Point(xmax, y));
+  end;
+
+  if Abs(fA) > 1e-12 then
+  begin
+    var x := (-fB * ymin - fC) / fA;
+    if IsFinite(x) and (x >= xmin - 1e-9) and (x <= xmax + 1e-9) then
+      pts.Add(new Point(x, ymin));
+
+    x := (-fB * ymax - fC) / fA;
+    if IsFinite(x) and (x >= xmin - 1e-9) and (x <= xmax + 1e-9) then
+      pts.Add(new Point(x, ymax));
+  end;
+
+  if pts.Count < 2 then
+    exit;
+
+  var p1 := pts[0];
+  var p2 := pts[1];
+
+  for var i := 1 to pts.Count - 1 do
+    if Abs(pts[i].X - p1.X) + Abs(pts[i].Y - p1.Y) > 1e-9 then
+    begin
+      p2 := pts[i];
+      break;
+    end;
+
+  if Abs(p2.X - p1.X) + Abs(p2.Y - p1.Y) <= 1e-9 then
+    exit;
+
+  var s1 := new Point(LeftFromX(p1.X), TopFromY(p1.Y));
+  var s2 := new Point(LeftFromX(p2.X), TopFromY(p2.Y));
+
+  dc.DrawLine(new Pen(fStroke, fStrokeThickness), s1, s2);
 end;
 
 constructor HorizontalBarPlot.Create;

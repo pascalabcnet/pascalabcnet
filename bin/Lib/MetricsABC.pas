@@ -84,7 +84,7 @@ type
     /// Доля правильных предсказаний.
     /// Показывает, какая часть объектов классифицирована верно.
     /// Удобна, когда классы примерно сбалансированы.
-    /// Пример: Accuracy = 0.9 означает 90% правильных ответов.
+    /// Пример: Accuracy = 0.9 означает 90% правильных ответов
     static function Accuracy(yTrue, yPred: array of integer): real;
     
     /// Точность (Precision) для положительного класса (1).
@@ -228,6 +228,7 @@ type
     fClassCount: integer;
     
     fLabels: array of integer;
+    fClassNames: array of string;
     fLabelToIndex: Dictionary<integer, integer>;
 
     procedure EnsureBinary;
@@ -254,6 +255,10 @@ type
     ///
     /// Для бинарной классификации дополнительно доступны значения TP, TN, FP и FN
     constructor Create(yTrue, yPred: array of integer);
+
+    /// Создаёт матрицу ошибок и сохраняет отображаемые имена классов.
+    /// classNames[i] соответствует классу fLabels[i].
+    constructor Create(yTrue, yPred: array of integer; classNames: array of string);
         
     /// Возвращает исходную метку класса по его внутреннему номеру.
     ///
@@ -263,6 +268,10 @@ type
     /// Метод позволяет узнать, какой исходной метке соответствует
     /// данный внутренний номер.
     function GetLabel(c: integer): integer;
+
+    /// Возвращает отображаемое имя класса по его внутреннему номеру.
+    /// Если строковые имена не заданы, возвращает исходную числовую метку как строку.
+    function GetClassDisplayName(i: integer): string;
     
     /// Возвращает внутренний номер класса по его исходной метке.
     ///
@@ -399,6 +408,12 @@ type
     /// Принимает высокие значения только тогда, когда оба показателя высоки.
     /// Применима для многоклассовой классификации.
     function F1ForClass(c: integer): real;
+
+    /// Возвращает текстовое представление матрицы ошибок.
+    function ToString: string; override;
+
+    /// Печатает матрицу ошибок.
+    procedure Println;
 
   end;
   
@@ -616,7 +631,9 @@ const
   ER_INVALID_PROBABILITY =
     'Вероятность вне диапазона [0,1]: {0}!!Probability out of range [0,1]: {0}';
   ER_ARG_OUT_OF_RANGE =
-    'Аргумент {0} имеет недопустимое значение: {1}!!Argument {0} is out of range: {1}';  
+    'Аргумент {0} имеет недопустимое значение: {1}!!Argument {0} is out of range: {1}';
+  ER_CLASS_NAMES_LENGTH_MISMATCH =
+    'Число имён классов ({0}) не совпадает с числом классов ({1})!!Class names count ({0}) does not match class count ({1})';  
   
 //-----------------------------
 //           Metrics
@@ -1718,7 +1735,7 @@ begin
   // --- собираем строки классов
   for var c := 0 to cm.ClassCount - 1 do
   begin
-    var cls := cm.GetLabel(c).ToString;
+    var cls := cm.GetClassDisplayName(c);
 
     var p := cm.PrecisionForClass(c);
     var r := cm.RecallForClass(c);
@@ -1875,6 +1892,19 @@ begin
   end;
 end;
 
+constructor ConfusionMatrix.Create(yTrue, yPred: array of integer; classNames: array of string);
+begin
+  Create(yTrue, yPred);
+
+  if classNames = nil then
+    exit;
+
+  if classNames.Length <> fClassCount then
+    ArgumentError(ER_CLASS_NAMES_LENGTH_MISMATCH, classNames.Length, fClassCount);
+
+  fClassNames := Copy(classNames);
+end;
+
 function ConfusionMatrix.GetMatrix: array[,] of integer;
 begin
   Result := new integer[fClassCount, fClassCount];
@@ -1890,6 +1920,16 @@ begin
     ArgumentOutOfRangeError(ER_ARG_OUT_OF_RANGE, 'c', c);
 
   Result := fLabels[c];
+end;
+
+function ConfusionMatrix.GetClassDisplayName(i: integer): string;
+begin
+  EnsureClassIndex(i);
+
+  if (fClassNames <> nil) and (i < fClassNames.Length) then
+    Result := fClassNames[i]
+  else
+    Result := fLabels[i].ToString;
 end;
 
 function ConfusionMatrix.GetIndex(labl: integer): integer;
@@ -2072,6 +2112,80 @@ begin
     exit(0.0);
 
   Result := 2 * p * r / (p + r);
+end;
+
+function ConfusionMatrix.ToString: string;
+  function Center(s: string; w: integer): string;
+  begin
+    if s.Length >= w then
+      exit(s);
+
+    var left := (w - s.Length) div 2;
+    var right := w - s.Length - left;
+    Result := new string(' ', left) + s + new string(' ', right);
+  end;
+begin
+  var names := new string[fClassCount];
+  var rowHeader := 'Реально ↓';
+  var topHeader := 'Предсказано →';
+  var nameWidth := rowHeader.Length;
+
+  for var i := 0 to fClassCount - 1 do
+  begin
+    names[i] := GetClassDisplayName(i);
+    if names[i].Length > nameWidth then
+      nameWidth := names[i].Length;
+  end;
+
+  var cellWidth := 1;
+  for var i := 0 to fClassCount - 1 do
+    for var j := 0 to fClassCount - 1 do
+      if fMatrix[i, j].ToString.Length > cellWidth then
+        cellWidth := fMatrix[i, j].ToString.Length;
+
+  for var i := 0 to fClassCount - 1 do
+    if names[i].Length > cellWidth then
+      cellWidth := names[i].Length;
+
+  var leftPad := nameWidth + 3;
+  var firstColStart := leftPad;
+
+  var sb := new System.Text.StringBuilder;
+
+  sb.Append(new string(' ', firstColStart));
+  sb.AppendLine(topHeader);
+
+  sb.Append(rowHeader.PadRight(nameWidth));
+  sb.Append('   ');
+  for var j := 0 to fClassCount - 1 do
+  begin
+    if j > 0 then
+      sb.Append('  ');
+    sb.Append(Center(names[j], cellWidth));
+  end;
+  sb.AppendLine;
+
+  for var i := 0 to fClassCount - 1 do
+  begin
+    sb.Append(names[i].PadRight(nameWidth));
+    sb.Append('   ');
+
+    for var j := 0 to fClassCount - 1 do
+    begin
+      if j > 0 then
+        sb.Append('  ');
+      sb.Append(Center(fMatrix[i, j].ToString, cellWidth));
+    end;
+
+    sb.AppendLine;
+  end;
+
+  Result := sb.ToString.TrimEnd;
+end;
+
+procedure ConfusionMatrix.Println;
+begin
+  System.Console.WriteLine(ToString);
 end;
 
 end.

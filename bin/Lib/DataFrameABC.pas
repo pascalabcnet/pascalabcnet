@@ -99,11 +99,14 @@ type
     
     function GetColumn(name: string): Column;
     function GetSchema: DataFrameSchema;
+    procedure CheckRowIndex(rowIndex: integer);
     
     function CloneWithSharedColumns: DataFrame;
   public
     /// Создает пустой DataFrame
     constructor Create;
+    /// Возвращает имена столбцов
+    property ColumnNames: array of string read Schema.ColumnNames;
 
     /// Возвращает копию схемы DataFrame
     property Schema: DataFrameSchema read GetSchema;
@@ -220,14 +223,34 @@ type
     
     /// Возвращает целочисленный массив значений столбца с данным именем.
     function Int(name: string): array of integer;
+    /// Возвращает целочисленное значение ячейки по индексам строки и столбца.
+    function Int(rowIndex, colIndex: integer): integer;
+    /// Возвращает целочисленное значение ячейки по индексу строки и имени столбца.
+    function Int(rowIndex: integer; colName: string): integer;
     /// Возвращает вещественный массив значений столбца с данным именем.
     function Float(name: string): array of real;
+    /// Возвращает вещественное значение ячейки по индексам строки и столбца.
+    function Float(rowIndex, colIndex: integer): real;
+    /// Возвращает вещественное значение ячейки по индексу строки и имени столбца.
+    function Float(rowIndex: integer; colName: string): real;
     /// Возвращает строковый массив значений столбца с данным именем.
     function Str(name: string): array of string;
+    /// Возвращает строковое значение ячейки по индексам строки и столбца.
+    function Str(rowIndex, colIndex: integer): string;
+    /// Возвращает строковое значение ячейки по индексу строки и имени столбца.
+    function Str(rowIndex: integer; colName: string): string;
     /// Возвращает логический массив значений столбца с данным именем.
     function Bool(name: string): array of boolean;
+    /// Возвращает логическое значение ячейки по индексам строки и столбца.
+    function Bool(rowIndex, colIndex: integer): boolean;
+    /// Возвращает логическое значение ячейки по индексу строки и имени столбца.
+    function Bool(rowIndex: integer; colName: string): boolean;
     /// Возвращает массив DateTime-значений столбца с данным именем.
     function DateTime(name: string): array of System.DateTime;
+    /// Возвращает DateTime-значение ячейки по индексам строки и столбца.
+    function DateTime(rowIndex, colIndex: integer): System.DateTime;
+    /// Возвращает DateTime-значение ячейки по индексу строки и имени столбца.
+    function DateTime(rowIndex: integer; colName: string): System.DateTime;
     
     /// Вычисляет сумму значений столбца по индексу
     function Sum(colIndex: integer): real; 
@@ -770,6 +793,8 @@ const
     'Дублирующееся имя агрегированной колонки!!Duplicate aggregated column name';
   ER_ROW_INDEX_OUT_OF_RANGE = 
     'Индекс строки вне диапазона!!Row index is out of range';
+  ER_VALUE_IS_NA =
+    'Значение в столбце "{0}" равно NA!!Value in column "{0}" is NA';
   ER_UNSUPPORTED_COLUMN_TYPE = 
     'Неподдерживаемый тип столбца!!Unsupported column type';
   ER_JOIN_FLOAT_KEY_NOT_SUPPORTED =
@@ -2473,6 +2498,12 @@ begin
   );
 end;
 
+procedure DataFrame.CheckRowIndex(rowIndex: integer);
+begin
+  if (rowIndex < 0) or (rowIndex >= RowCount) then
+    ArgumentOutOfRangeError(ER_ROW_INDEX_OUT_OF_RANGE);
+end;
+
 function DataFrame.GetCursor: DataFrameCursor :=
   new DataFrameCursor(columns.ToArray,fSchema);
   
@@ -2516,9 +2547,41 @@ begin
   Result := GetIntColumn(name);
 end;
 
+function DataFrame.Int(rowIndex, colIndex: integer): integer;
+begin
+  CheckRowIndex(rowIndex);
+  CheckColumnIndex(colIndex);
+
+  var c := IntColumn(columns[colIndex]);
+  if not c.IsValid[rowIndex] then
+    Error(ER_VALUE_IS_NA, fSchema.NameAt(colIndex));
+  Result := c.Data[rowIndex];
+end;
+
+function DataFrame.Int(rowIndex: integer; colName: string): integer;
+begin
+  Result := Int(rowIndex, ColumnIndex(colName));
+end;
+
 function DataFrame.Float(name: string): array of real;
 begin
   Result := GetFloatColumn(name);
+end;
+
+function DataFrame.Float(rowIndex, colIndex: integer): real;
+begin
+  CheckRowIndex(rowIndex);
+  CheckColumnIndex(colIndex);
+
+  var c := FloatColumn(columns[colIndex]);
+  if not c.IsValid[rowIndex] then
+    Error(ER_VALUE_IS_NA, fSchema.NameAt(colIndex));
+  Result := c.Data[rowIndex];
+end;
+
+function DataFrame.Float(rowIndex: integer; colName: string): real;
+begin
+  Result := Float(rowIndex, ColumnIndex(colName));
 end;
 
 function DataFrame.Str(name: string): array of string;
@@ -2526,14 +2589,62 @@ begin
   Result := GetStrColumn(name);
 end;
 
+function DataFrame.Str(rowIndex, colIndex: integer): string;
+begin
+  CheckRowIndex(rowIndex);
+  CheckColumnIndex(colIndex);
+
+  var c := StrColumn(columns[colIndex]);
+  if not c.IsValid[rowIndex] then
+    Error(ER_VALUE_IS_NA, fSchema.NameAt(colIndex));
+  Result := c.Data[rowIndex];
+end;
+
+function DataFrame.Str(rowIndex: integer; colName: string): string;
+begin
+  Result := Str(rowIndex, ColumnIndex(colName));
+end;
+
 function DataFrame.Bool(name: string): array of boolean;
 begin
   Result := GetBoolColumn(name);
 end;
 
+function DataFrame.Bool(rowIndex, colIndex: integer): boolean;
+begin
+  CheckRowIndex(rowIndex);
+  CheckColumnIndex(colIndex);
+
+  var c := BoolColumn(columns[colIndex]);
+  if not c.IsValid[rowIndex] then
+    Error(ER_VALUE_IS_NA, fSchema.NameAt(colIndex));
+  Result := c.Data[rowIndex];
+end;
+
+function DataFrame.Bool(rowIndex: integer; colName: string): boolean;
+begin
+  Result := Bool(rowIndex, ColumnIndex(colName));
+end;
+
 function DataFrame.DateTime(name: string): array of System.DateTime;
 begin
   Result := GetDateTimeColumn(name);
+end;
+
+function DataFrame.DateTime(rowIndex, colIndex: integer): System.DateTime;
+begin
+  CheckRowIndex(rowIndex);
+  CheckColumnIndex(colIndex);
+
+  var c := DateTimeColumn(columns[colIndex]);
+  if not c.IsValid[rowIndex] then
+    Error(ER_VALUE_IS_NA, fSchema.NameAt(colIndex));
+  Result := c.Data[rowIndex];
+end;
+
+function DataFrame.DateTime(rowIndex: integer; colName: string): System.DateTime;
+begin
+  Result := DateTime(rowIndex, ColumnIndex(colName));
 end;
 
 function DataFrame.TrainTestSplit(testRatio: real; shuffle: boolean; seed: integer): (DataFrame, DataFrame);

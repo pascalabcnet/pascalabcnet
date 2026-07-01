@@ -146,6 +146,8 @@ type
     /// Создаёт матрицу из двумерного массива вещественных значений.
     constructor Create(values: array[,] of real);
     
+    constructor Create(values: array of Vector);
+    
     /// Возвращает копию данных в виде двумерного массива.
     function ToArray2D: array[,] of real;
     /// Возвращает строку матрицы в виде массива.
@@ -225,6 +227,7 @@ type
 
     
     static function operator implicit(a: array [,] of real): Matrix := new Matrix(a);
+    static function operator implicit(a: array of Vector): Matrix := new Matrix(a);
     static function operator implicit(a: array of array of real): Matrix := new Matrix(Matr(a));
     static function operator implicit(a: array of array of integer): Matrix := new Matrix(Matr(a.ConvertAll(x -> x.ConvertAll(y -> real(y)))));
     
@@ -369,8 +372,14 @@ const
     'Длина вектора должна быть неотрицательной!!Vector length must be non-negative';
   ER_VALUES_NULL =
     'values не может быть nil!!values cannot be nil';
+  ER_VALUES_EMPTY =
+    'values не может быть пустым!!values cannot be empty';
   ER_VECTOR_LENGTH_MISMATCH =
     'Несоответствие длины векторов: {0} и {1}!!Vector length mismatch: {0} vs {1}';
+  ER_VECTOR_NULL =
+    'Вектор не может быть nil!!vector cannot be nil';
+  ER_MATRIX_ROWS_HAVE_DIFFERENT_LENGTHS =
+    'Строки матрицы имеют разную длину!!matrix rows have different lengths';  
   ER_VECTOR_EMPTY =
     'Вектор пуст!!Vector is empty';
   ER_VECTOR_DIVIDE_BY_ZERO =
@@ -657,6 +666,38 @@ begin
   if values = nil then
     ArgumentNullError(ER_VALUES_NULL);
   fdata := Copy(values);
+end;
+
+constructor Matrix.Create(values: array of Vector);
+begin
+  if values = nil then
+    ArgumentNullError(ER_VALUES_NULL);
+
+  var r := values.Length;
+  if r = 0 then
+    ArgumentError(ER_VALUES_EMPTY);
+
+  if values[0] = nil then
+    ArgumentNullError(ER_VECTOR_NULL);
+
+  var c := values[0].Length;
+  if c = 0 then
+    ArgumentError(ER_VECTOR_EMPTY);
+
+  for var i := 1 to r - 1 do
+  begin
+    if values[i] = nil then
+      ArgumentNullError(ER_VECTOR_NULL);
+
+    if values[i].Length <> c then
+      ArgumentError(ER_MATRIX_ROWS_HAVE_DIFFERENT_LENGTHS);
+  end;
+
+  fdata := new real[r, c];
+
+  for var i := 0 to r - 1 do
+    for var j := 0 to c - 1 do
+      fdata[i, j] := values[i][j];
 end;
 
 function Matrix.ToArray2D: array[,] of real;
@@ -1092,7 +1133,6 @@ begin
   if A.ColCount <> x.Length then
     DimensionError(ER_MATRIX_VECTOR_SIZE_MISMATCH, A.RowCount, A.ColCount, x.Length);
 end;
-
 
 
 static function Matrix.operator +(A, B: Matrix): Matrix;

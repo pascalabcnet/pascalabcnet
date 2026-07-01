@@ -115,6 +115,7 @@ type
   CsvLoader = DataFrameABC.CsvLoader;
   JoinKind = DataFrameABC.JoinKind;
   GroupView = DataFrameABC.GroupView;
+  EncodedTarget = DataAdapters.EncodedTarget;
   
   IProbabilisticClassifier = MLCoreABC.IProbabilisticClassifier;
   IClassifier = MLCoreABC.IClassifier;
@@ -135,6 +136,8 @@ type
   ClassificationMatrixPipeline = MLModelsABC.ClassificationMatrixPipeline;
   RegressionMatrixPipeline = MLModelsABC.RegressionMatrixPipeline;
   ClusteringMatrixPipeline = MLModelsABC.ClusteringMatrixPipeline;
+  LinearDecisionBoundary = MLModelsABC.LinearDecisionBoundary;
+  LinearRegressionLine = MLModelsABC.LinearRegressionLine;
   
   LinearRegression = MLModelsABC.LinearRegression;
   LogisticRegression = MLModelsABC.LogisticRegression;
@@ -143,12 +146,14 @@ type
   ElasticNet = MLModelsABC.ElasticNet;
   DecisionTreeClassifier = MLModelsABC.DecisionTreeClassifier;
   DecisionTreeRegressor = MLModelsABC.DecisionTreeRegressor;
+  DecisionTreeView = MLModelsABC.DecisionTreeView;
   RandomForestRegressor = MLModelsABC.RandomForestRegressor;
   RandomForestClassifier = MLModelsABC.RandomForestClassifier;
   GradientBoostingRegressor = MLModelsABC.GradientBoostingRegressor;
   GradientBoostingClassifier = MLModelsABC.GradientBoostingClassifier;
   KNNClassifier = MLModelsABC.KNNClassifier;
   KNNRegressor = MLModelsABC.KNNRegressor;
+  NeighborInfo = MLModelsABC.NeighborInfo;
   KMeans = MLModelsABC.KMeans;
   DBSCAN = MLModelsABC.DBSCAN;
   

@@ -22,7 +22,7 @@ begin
   var y := df.EncodeLabels(ds.Target);
 
   // Делим данные на обучающую и тестовую выборки
-  var (Xtrain, Xtest, ytrain, ytest) := Validation.TrainTestSplit(X, y, 0.2, 3);
+  var (Xtrain, Xtest, ytrain, ytest) := Validation.TrainTestSplit(X, y, 0.2, seed := 3);
 
   // Создаём модель логистической регрессии
   var model := new LogisticRegression(0.001);

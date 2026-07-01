@@ -2,7 +2,19 @@
 
 interface
 
-// Здесь пока только методы расширения поэтому секция interface - пуста  
+type
+  /// Результат кодирования целевого столбца:
+  /// целочисленные метки и соответствующие имена классов.
+  EncodedTarget = record
+    Labels: array of integer;
+    ClassNames: array of string;
+
+    /// Возвращает код класса для строки с индексом rowIndex.
+    function ClassIndex(rowIndex: integer): integer;
+
+    /// Возвращает имя класса для строки с индексом rowIndex.
+    function ClassName(rowIndex: integer): string;
+  end;
   
 implementation
 
@@ -23,7 +35,29 @@ const
   ER_ENCODELABELS_UNSUPPORTED_TYPE =
     'Неподдерживаемый тип столбца "{0}" для EncodeLabels!!Unsupported column type "{0}" for EncodeLabels';
   ER_TARGET_HAS_NA =
-    'Целевой столбец "{0}" содержит NA!!Target column "{0}" contains NA values';  
+    'Целевой столбец "{0}" содержит NA!!Target column "{0}" contains NA values';
+  ER_ENCODED_TARGET_ROW_INDEX_OUT_OF_RANGE =
+    'Индекс строки {0} вне диапазона [0, {1})!!Row index {0} is out of range [0, {1})';
+  ER_ENCODED_TARGET_CLASS_INDEX_OUT_OF_RANGE =
+    'Индекс класса {0} вне диапазона [0, {1})!!Class index {0} is out of range [0, {1})';
+
+function EncodedTarget.ClassIndex(rowIndex: integer): integer;
+begin
+  if (rowIndex < 0) or (rowIndex >= Labels.Length) then
+    ArgumentOutOfRangeError(ER_ENCODED_TARGET_ROW_INDEX_OUT_OF_RANGE, rowIndex, Labels.Length);
+
+  Result := Labels[rowIndex];
+end;
+
+function EncodedTarget.ClassName(rowIndex: integer): string;
+begin
+  var cls := ClassIndex(rowIndex);
+
+  if (cls < 0) or (cls >= ClassNames.Length) then
+    ArgumentOutOfRangeError(ER_ENCODED_TARGET_CLASS_INDEX_OUT_OF_RANGE, cls, ClassNames.Length);
+
+  Result := ClassNames[cls];
+end;
     
 function ToMatrix(Self: DataFrame; colNames: array of string): Matrix; extensionmethod;
 begin
@@ -213,6 +247,16 @@ begin
     else
       ArgumentError(ER_ENCODELABELS_UNSUPPORTED_TYPE, target);
   end;
+end;
+
+/// Кодирует целевой столбец DataFrame и возвращает
+/// целочисленные метки вместе с массивом имён классов.
+/// Порядок кодирования соответствует порядку первого появления значений.
+function EncodeTarget(Self: DataFrame; target: string): EncodedTarget; extensionmethod;
+begin
+  var classes: array of string;
+  Result.Labels := Self.EncodeLabels(target, classes);
+  Result.ClassNames := classes;
 end;
 
 /// Преобразует строковые метки целевого столбца в целочисленные индексы (0,1,2,...)

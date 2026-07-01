@@ -110,6 +110,10 @@ type
     /// и целевых метках классов y.
     function Fit(X: Matrix; y: array of integer): IClassifier;
 
+    /// Возвращает метку класса для одного объекта X
+    /// в том же виде, в каком метки были поданы модели при обучении.
+    function PredictOne(X: Vector): integer;
+
     /// Возвращает метки классов в том же виде, в каком они были поданы модели при обучении.
     function Predict(X: Matrix): array of integer;
 
@@ -131,6 +135,10 @@ type
   /// Позволяет получать значения в диапазоне (0, 1)
   /// вместо только итогового решения.
   IProbabilisticClassifier = interface(IClassifier)
+    /// Возвращает вектор вероятностей классов для одного объекта X.
+    /// Порядок элементов соответствует GetClassLabels.
+    function PredictProbaOne(X: Vector): Vector;
+
     /// Возвращает матрицу вероятностей классов для всех объектов из X.
     /// Размер результата: nSamples × nClasses, где:
     /// - nSamples — число объектов в X;
@@ -147,6 +155,9 @@ type
     /// Обучает модель регрессии на матрице признаков X
     /// и векторе целевых значений y.
     function Fit(X: Matrix; y: Vector): IRegressor;
+
+    /// Возвращает числовое предсказание для одного объекта X.
+    function PredictOne(X: Vector): real;
 
     function Predict(X: Matrix): Vector;
   end;

@@ -105,6 +105,24 @@ type
     function GetClassLabels: array of string;
   end;
 
+  LinearDecisionBoundary = record
+    A, B, C: real;
+    function Evaluate(x, y: real): real;
+    function Y(x: real): real;
+    function Side(x, y: real): integer;
+    function Distance(x, y: real): real;
+    function ToString: string; override;
+    function Coefficients: (real,real,real) := (A,B,C);
+  end;
+
+  LinearRegressionLine = record
+    K, B: real;
+    function Evaluate(x: real): real;
+    function Y(x: real): real;
+    function ToString: string; override;
+    function Coefficients: (real,real) := (K,B);
+  end;
+
 /// Линейная регрессионная модель (метод наименьших квадратов).
 /// Предсказывает числовое значение по линейной комбинации признаков
 /// Используется в задачах регрессии при отсутствии выраженной
@@ -125,6 +143,9 @@ type
 ///   • обученное состояние модели НЕ копируется методом Clone
     function Fit(X: Matrix; y: Vector): IRegressor;
 
+    /// Возвращает числовое предсказание для одного объекта X.
+    function PredictOne(X: Vector): real;
+
     /// Предсказывает значения для матрицы признаков
     /// Возвращает вектор длины m
     function Predict(X: Matrix): Vector;
@@ -143,6 +164,10 @@ type
 /// После вызова Fit значение становится True.
 /// Используется для проверки корректности вызова Predict.
     property IsFitted: boolean read fFitted;
+
+    /// Возвращает уравнение регрессионной прямой y = k*x + b
+    /// для модели с одним признаком.
+    function RegressionLine: LinearRegressionLine;
     
     function ToString: string; override;
 
@@ -179,6 +204,9 @@ type
 ///   • обученное состояние модели НЕ копируется методом Clone
     function Fit(X: Matrix; y: Vector): IRegressor;
   
+    /// Возвращает числовое предсказание для одного объекта X.
+    function PredictOne(X: Vector): real;
+
     /// Предсказывает непрерывные значения для объектов X.
     /// Результат — вектор длины m.
     function Predict(X: Matrix): Vector;
@@ -248,6 +276,9 @@ type
 ///   • обученное состояние модели НЕ копируется методом Clone
     function Fit(X: Matrix; y: Vector): IRegressor;
   
+    /// Возвращает числовое предсказание для одного объекта X.
+    function PredictOne(X: Vector): real;
+
     /// Предсказывает непрерывные значения для объектов X.
     /// Результат — вектор длины m.
     function Predict(X: Matrix): Vector;
@@ -307,6 +338,9 @@ type
 ///   • обученное состояние модели НЕ копируется методом Clone
       function Fit(X: Matrix; y: Vector): IRegressor;
   
+      /// Возвращает числовое предсказание для одного объекта X.
+      function PredictOne(X: Vector): real;
+
       /// Предсказывает значения целевой переменной для входных данных.
       /// X — матрица признаков размера [nSamples x nFeatures].
       /// Возвращает вектор предсказаний длины nSamples.
@@ -383,7 +417,19 @@ type
 /// Примечание:
 ///   • обученное состояние модели НЕ копируется методом Clone
     function Fit(X: Matrix; y: array of integer): IClassifier;
+
+    /// Возвращает метку класса для одного объекта X
+    /// в том же виде, в каком метки были поданы модели при обучении.
+    function PredictOne(X: Vector): integer;
     
+    /// Возвращает матрицу вероятностей классов для всех объектов из X.
+    /// Размер результата: nSamples × nClasses, где:
+    /// - nSamples — число объектов в X;
+    /// - nClasses — число классов модели.
+    /// Элемент [i, k] содержит вероятность того, что объект i принадлежит классу k.
+    /// Сумма вероятностей в каждой строке равна 1.
+    function PredictProbaOne(X: Vector): Vector;
+
     /// Возвращает матрицу вероятностей классов для всех объектов из X.
     /// Размер результата: nSamples × nClasses, где:
     /// - nSamples — число объектов в X;
@@ -416,6 +462,10 @@ type
     
     function Name: string := Self.GetType.Name;
     
+    /// Возвращает коэффициенты разделяющей прямой A*x + B*y + C = 0
+    /// для бинарной задачи с двумя признаками.
+    function DecisionBoundary: LinearDecisionBoundary;
+    
     procedure SetClassLabels(classes: array of string);
     
     function GetClassLabels: array of string;
@@ -436,6 +486,25 @@ type
     
 /// Создает глубокую копию узла вместе со всеми подузлами
     function Clone: DecisionTreeNode;
+  end;
+
+  /// Представление решающего дерева с именами признаков и классов.
+  /// Используется для печати и последующей визуализации.
+  DecisionTreeView = class
+  private
+    fRoot: DecisionTreeNode;
+    fFeatureNames: array of string;
+    fClassNames: array of string;
+
+  public
+    constructor Create(
+      root: DecisionTreeNode;
+      featureNames: array of string;
+      classNames: array of string
+    );
+
+    /// Возвращает текстовое представление дерева.
+    function ToString: string; override;
   end;
   
 /// Результат поиска лучшего разбиения узла дерева
@@ -584,6 +653,7 @@ type
     property FeatureImportances: Vector read GetFeatureImportances;
 
     function PredictOne(x: Vector; node: DecisionTreeNode): integer;
+    function RootNode: DecisionTreeNode;
     function Clone: DecisionTreeCore;
   end;  
   
@@ -629,6 +699,10 @@ type
 /// Примечание:
 ///   • обученное состояние дерева НЕ копируется методом Clone
     function Fit(X: Matrix; y: array of integer): IClassifier;
+
+/// Возвращает метку класса для одного объекта X
+/// в том же виде, в каком метки были поданы модели при обучении.
+    function PredictOne(X: Vector): integer;
     
 /// Возвращает метки классов для объектов из X
 /// в том же виде, в каком они были поданы модели при обучении.
@@ -651,6 +725,11 @@ type
     procedure SetClassLabels(classes: array of string);
     
     function GetClassLabels: array of string;
+
+    function Tree(
+      featureNames: array of string;
+      classNames: array of string
+    ): DecisionTreeView;
     
 /// Возвращает true, если дерево обучено.
 /// Если false — Predict вызовет ошибку.
@@ -794,6 +873,9 @@ type
 /// Примечание:
 ///   • обученное состояние дерева НЕ копируется методом Clone
     function Fit(X: Matrix; y: Vector): IRegressor; override;
+
+/// Возвращает числовое предсказание для одного объекта X.
+    function PredictOne(X: Vector): real;
 
 /// Выполняет предсказание для всех объектов X.
 /// Возвращает вектор вещественных значений.
@@ -952,6 +1034,9 @@ type
 ///   • обученное состояние ансамбля НЕ копируется методом Clone
     function Fit(X: Matrix; y: Vector): IRegressor; 
 
+/// Возвращает числовое предсказание для одного объекта X.
+    function PredictOne(X: Vector): real;
+
 /// Выполняет предсказание для X.
 /// Итоговое значение — среднее предсказаний всех деревьев ансамбля.
     function Predict(X: Matrix): Vector;
@@ -1005,6 +1090,10 @@ type
 ///   • обученное состояние ансамбля НЕ копируется методом Clone
     function Fit(X: Matrix; y: array of integer): IClassifier;
 
+/// Возвращает метку класса для одного объекта X
+/// в том же виде, в каком метки были поданы модели при обучении.
+    function PredictOne(X: Vector): integer;
+
 /// Возвращает метки классов для объектов из X
 /// в том же виде, в каком они были поданы модели при обучении.
 /// Для каждого объекта агрегируются предсказания всех деревьев.
@@ -1016,6 +1105,14 @@ type
     /// Требует предварительного вызова Fit.
     function PredictLabels(X: Matrix): array of string;
     
+    /// Возвращает матрицу вероятностей классов для всех объектов из X.
+    /// Размер результата: nSamples × nClasses, где:
+    /// - nSamples — число объектов в X;
+    /// - nClasses — число классов модели.
+    /// Элемент [i, k] содержит вероятность того, что объект i принадлежит классу k.
+    /// Сумма вероятностей в каждой строке равна 1.
+    function PredictProbaOne(X: Vector): Vector;
+
     /// Возвращает матрицу вероятностей классов для всех объектов из X.
     /// Размер результата: nSamples × nClasses, где:
     /// - nSamples — число объектов в X;
@@ -1175,6 +1272,9 @@ type
 /// Примечание:
 ///   • обученное состояние модели НЕ копируется методом Clone
     function Fit(X: Matrix; y: Vector): IRegressor; 
+
+/// Возвращает числовое предсказание для одного объекта X.
+    function PredictOne(X: Vector): real;
     
 /// Предсказывает значения целевой переменной.
 /// Используются все обученные деревья.
@@ -1325,6 +1425,10 @@ type
 /// Примечание:
 ///   • обученное состояние модели НЕ копируется методом Clone
     function Fit(X: Matrix; y: array of integer): IClassifier;
+
+/// Возвращает метку класса для одного объекта X
+/// в том же виде, в каком метки были поданы модели при обучении.
+    function PredictOne(X: Vector): integer;
     
 /// Обучает модель градиентного бустинга с использованием валидационной выборки.
 /// Поддерживает early stopping:
@@ -1338,6 +1442,14 @@ type
     
     /// Возвращает исходные строковые метки классов для объектов из X.
     function PredictLabels(X: Matrix): array of string;
+
+/// Возвращает матрицу вероятностей классов для всех объектов из X.
+/// Размер результата: nSamples × nClasses, где:
+/// - nSamples — число объектов в X;
+/// - nClasses — число классов модели.
+/// Элемент [i, k] содержит вероятность того, что объект i принадлежит классу k.
+/// Сумма вероятностей в каждой строке равна 1.
+    function PredictProbaOne(X: Vector): Vector;
 
 /// Возвращает матрицу вероятностей классов для всех объектов из X.
 /// Размер результата: nSamples × nClasses, где:
@@ -1399,6 +1511,11 @@ type
     dist: double;
     idx: integer;
   end;
+
+  NeighborInfo = record
+    Index: integer;
+    Distance: real;
+  end;
  
 /// Режим взвешивания в алгоритме k ближайших соседей.
 /// Uniform — равномерное голосование/усреднение.
@@ -1422,6 +1539,7 @@ type
 
     // ==== common methods ====
     procedure ValidatePredictInput(X: Matrix);
+    procedure FillNeighborDistances(x: Vector);
 
     function SquaredL2(trainRow: integer; XTest: Matrix; testRow: integer): double;
 
@@ -1433,6 +1551,11 @@ type
     /// k — число ближайших соседей (k > 0).
     /// weighting — режим взвешивания соседей
     constructor Create(k: integer; weighting: KNNWeighting := KNNWeighting.Uniform);
+
+    /// Возвращает k ближайших обучающих объектов
+    /// для одного объекта X.
+    /// Индекс относится к обучающей выборке, переданной в Fit.
+    function GetNearestNeighbors(X: Vector): array of NeighborInfo;
     
 /// Обучает модель k ближайших соседей.
 ///   X — матрица m × n (m объектов, n признаков).
@@ -1482,6 +1605,10 @@ type
 /// Примечание:
 ///   • обученное состояние модели (обучающая выборка) НЕ копируется методом Clone
     function Fit(X: Matrix; y: array of integer): IClassifier;
+
+/// Возвращает метку класса для одного объекта X
+/// в том же виде, в каком метки были поданы модели при обучении.
+    function PredictOne(X: Vector): integer;
     
 /// Возвращает метки классов для объектов из X
 /// в том же виде, в каком они были поданы модели при обучении.
@@ -1494,6 +1621,14 @@ type
     /// для одного экземпляра модели.
     function PredictLabels(X: Matrix): array of string;
     
+    /// Возвращает матрицу вероятностей классов для всех объектов из X.
+    /// Размер результата: nSamples × nClasses, где:
+    /// - nSamples — число объектов в X;
+    /// - nClasses — число классов модели.
+    /// Элемент [i, k] содержит вероятность того, что объект i принадлежит классу k.
+    /// Сумма вероятностей в каждой строке равна 1.
+    function PredictProbaOne(X: Vector): Vector;
+
     /// Возвращает матрицу вероятностей классов для всех объектов из X.
     /// Размер результата: nSamples × nClasses, где:
     /// - nSamples — число объектов в X;
@@ -1536,6 +1671,9 @@ type
 /// Примечание:
 ///   • обученное состояние модели (обучающая выборка) НЕ копируется методом Clone
     function Fit(X: Matrix; y: Vector): IRegressor; 
+
+    /// Возвращает числовое предсказание для одного объекта X.
+    function PredictOne(X: Vector): real;
     
     /// Выполняет предсказание числовых значений для объектов X.
     /// Возвращает вектор предсказанных значений
@@ -1840,11 +1978,15 @@ type
   ClassificationMatrixPipeline = class(MatrixPipeline, IProbabilisticClassifier, IClassifierInternal)
   public
     function Fit(X: Matrix; y: array of integer): IClassifier;
+    /// Возвращает метку класса для одного объекта X
+    /// в том же виде, в каком метки были поданы модели при обучении.
+    function PredictOne(X: Vector): integer;
     /// Возвращает метки классов для объектов из X
     /// в том же виде, в каком они были поданы модели при обучении.
     function Predict(X: Matrix): array of integer; reintroduce;
     /// Возвращает строковые метки классов для объектов из X.
     function PredictLabels(X: Matrix): array of string;
+    function PredictProbaOne(X: Vector): Vector;
     function PredictProba(X: Matrix): Matrix; reintroduce;
     procedure SetClassLabels(classes: array of string);
     function GetClassLabels: array of string;
@@ -1853,6 +1995,8 @@ type
   RegressionMatrixPipeline = class(MatrixPipeline, IRegressor)
   public
     function Fit(X: Matrix; y: Vector): IRegressor; reintroduce;
+    /// Возвращает числовое предсказание для одного объекта X.
+    function PredictOne(X: Vector): real;
   end;
   
 /// Общая база для матричных конвейеров без учителя.
@@ -2413,6 +2557,18 @@ const
   ER_LOGISTIC_NEED_AT_LEAST_TWO_CLASSES =
     'Для LogisticRegression нужно минимум 2 класса.!!' +
     'LogisticRegression requires at least 2 classes.';
+  ER_LOGISTIC_BOUNDARY_NEEDS_BINARY =
+    'DecisionBoundary доступен только для бинарной LogisticRegression.!!' +
+    'DecisionBoundary is available only for binary LogisticRegression.';
+  ER_LOGISTIC_BOUNDARY_NEEDS_2D =
+    'DecisionBoundary требует ровно 2 признака.!!' +
+    'DecisionBoundary requires exactly 2 features.';
+  ER_LINEAR_REGRESSION_LINE_NEEDS_1D =
+    'RegressionLine требует ровно 1 признак.!!' +
+    'RegressionLine requires exactly 1 feature.';
+  ER_DECISION_BOUNDARY_DEGENERATE =
+    'Разделяющая прямая вырождена: A и B равны нулю.!!' +
+    'Decision boundary is degenerate: A and B are zero.';
   ER_MIN_SAMPLES_SPLIT_INVALID =
     'minSamplesSplit должно быть >= 2 ({0}).!!' +
     'minSamplesSplit must be >= 2 ({0}).';
@@ -2480,6 +2636,17 @@ const
 //-----------------------------
 //     Проверка на NuN/Inf
 //-----------------------------
+
+function SingleRowMatrix(X: Vector): Matrix;
+begin
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  Result := new Matrix(1, X.Length);
+
+  for var j := 0 to X.Length - 1 do
+    Result[0, j] := X[j];
+end;
 
 procedure ClassifierLabelHelper.SetClassValues(values: array of integer);
 begin
@@ -2685,6 +2852,11 @@ begin
   Result := X * fcoef + fIntercept;
 end;
 
+function LinearRegression.PredictOne(X: Vector): real;
+begin
+  Result := Predict(SingleRowMatrix(X))[0];
+end;
+
 function LinearRegression.ToString: string;
 begin
   Result := 'LinearRegression'
@@ -2809,6 +2981,11 @@ begin
 
   for var i := 0 to Result.Length - 1 do
     Result[i] += fIntercept;
+end;
+
+function RidgeRegression.PredictOne(X: Vector): real;
+begin
+  Result := Predict(SingleRowMatrix(X))[0];
 end;
 
 function RidgeRegression.ToString: string;
@@ -2994,6 +3171,11 @@ begin
     Result[i] += fIntercept;
 end;
 
+function ElasticNet.PredictOne(X: Vector): real;
+begin
+  Result := Predict(SingleRowMatrix(X))[0];
+end;
+
 function ElasticNet.ToString: string;
 begin
   Result :=
@@ -3031,6 +3213,11 @@ end;
 function LassoRegression.Predict(X: Matrix): Vector;
 begin
   Result := fModel.Predict(X);
+end;
+
+function LassoRegression.PredictOne(X: Vector): real;
+begin
+  Result := fModel.PredictOne(X);
 end;
 
 function LassoRegression.Clone: IModel;
@@ -3520,6 +3707,11 @@ begin
   Result := Z;
 end;
 
+function LogisticRegression.PredictProbaOne(X: Vector): Vector;
+begin
+  Result := PredictProba(SingleRowMatrix(X)).GetRow(0);
+end;
+
 function LogisticRegression.Predict(X: Matrix): array of integer;
 begin
   if not fFitted then
@@ -3556,6 +3748,11 @@ begin
 
     Result[i] := fLabels.ClassValueAt(best);
   end;
+end;
+
+function LogisticRegression.PredictOne(X: Vector): integer;
+begin
+  Result := Predict(SingleRowMatrix(X))[0];
 end;
 
 function LogisticRegression.PredictLabels(X: Matrix): array of string;
@@ -3619,6 +3816,138 @@ begin
     NotFittedError(ER_FIT_NOT_CALLED);
 
   Result := fIntercept;
+end;
+
+function LinearDecisionBoundary.Evaluate(x, y: real): real;
+begin
+  Result := A * x + B * y + C;
+end;
+
+function LinearDecisionBoundary.Y(x: real): real;
+begin
+  if Abs(B) < 1e-12 then
+    Result := real.PositiveInfinity
+  else
+    Result := -(A * x + C) / B;
+end;
+
+function LinearDecisionBoundary.Side(x, y: real): integer;
+begin
+  var v := Evaluate(x, y);
+  if Abs(v) < 1e-12 then
+    Result := 0
+  else if v < 0 then
+    Result := -1
+  else
+    Result := 1;
+end;
+
+function LinearDecisionBoundary.Distance(x, y: real): real;
+begin
+  var denom := Sqrt(A * A + B * B);
+  if denom < 1e-12 then
+    Error(ER_DECISION_BOUNDARY_DEGENERATE);
+  Result := Abs(Evaluate(x, y)) / denom;
+end;
+
+function LinearDecisionBoundary.ToString: string;
+  function FormatCoeff(v: real): string;
+  begin
+    if Abs(v - Round(v)) < 1e-12 then
+      Result := Round(v).ToString
+    else
+      Result := v.ToString('0.##');
+  end;
+  function FmtSigned(v: real; suffix: string): string;
+  begin
+    if Abs(v) < 1e-12 then
+      exit('');
+
+    var mag := FormatCoeff(Abs(v));
+    if suffix <> '' then
+      mag += '*' + suffix;
+
+    if v < 0 then
+      Result := ' - ' + mag
+    else
+      Result := ' + ' + mag;
+  end;
+begin
+  Result := '';
+
+  if Abs(A) >= 1e-12 then
+    Result := FormatCoeff(A) + '*x';
+
+  Result += FmtSigned(B, 'y');
+  Result += FmtSigned(C, '');
+
+  if Result = '' then
+    Result := '0';
+
+  if Result.StartsWith(' + ') then
+    Result := Result.Substring(3);
+  if Result.StartsWith(' - ') then
+    Result := '-' + Result.Substring(3);
+
+  Result += ' = 0';
+end;
+
+function LinearRegressionLine.Evaluate(x: real): real;
+begin
+  Result := K * x + B;
+end;
+
+function LinearRegressionLine.Y(x: real): real;
+begin
+  Result := Evaluate(x);
+end;
+
+function LinearRegressionLine.ToString: string;
+  function FormatCoeff(v: real): string;
+  begin
+    if Abs(v - Round(v)) < 1e-12 then
+      Result := Round(v).ToString
+    else
+      Result := v.ToString('0.##');
+  end;
+begin
+  Result := FormatCoeff(K) + '*x';
+
+  if B > 1e-12 then
+    Result += ' + ' + FormatCoeff(B)
+  else if B < -1e-12 then
+    Result += ' - ' + FormatCoeff(Abs(B));
+end;
+
+function LinearRegression.RegressionLine: LinearRegressionLine;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  if (fCoef = nil) or (fCoef.Length <> 1) then
+    ArgumentError(ER_LINEAR_REGRESSION_LINE_NEEDS_1D);
+
+  Result.K := fCoef[0];
+  Result.B := fIntercept;
+end;
+
+function LogisticRegression.DecisionBoundary: LinearDecisionBoundary;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  if fClassCount <> 2 then
+    ArgumentError(ER_LOGISTIC_BOUNDARY_NEEDS_BINARY);
+
+  if fW.RowCount <> 2 then
+    ArgumentError(ER_LOGISTIC_BOUNDARY_NEEDS_2D);
+
+  Result.A := fW[0,0] - fW[0,1];
+  Result.B := fW[1,0] - fW[1,1];
+  Result.C := fIntercept[0] - fIntercept[1];
+
+  if (Abs(Result.A) < 1e-12) and (Abs(Result.B) < 1e-12) then
+    Error(ER_DECISION_BOUNDARY_DEGENERATE);
 end;
 
 function GiniCriterion.Impurity(y: Vector; indices: array of integer): real;
@@ -3756,6 +4085,116 @@ begin
   Result := n;
 end;
 
+constructor DecisionTreeView.Create(
+  root: DecisionTreeNode;
+  featureNames: array of string;
+  classNames: array of string
+);
+begin
+  if root <> nil then
+    fRoot := root.Clone;
+  fFeatureNames := Copy(featureNames);
+  fClassNames := Copy(classNames);
+end;
+
+function DecisionTreeView.ToString: string;
+  function FormatReal(v: real): string;
+  begin
+    if Abs(v - Round(v)) < 1e-12 then
+      Result := Round(v).ToString
+    else
+      Result := v.ToString('0.##');
+  end;
+
+  function FeatureNameOf(idx: integer): string;
+  begin
+    if (idx >= 0) and (idx < fFeatureNames.Length) and (fFeatureNames[idx] <> nil) and (fFeatureNames[idx] <> '') then
+      Result := fFeatureNames[idx]
+    else
+      Result := 'x' + idx;
+  end;
+
+  function ClassNameOf(idx: integer): string;
+  begin
+    if (idx >= 0) and (idx < fClassNames.Length) then
+      Result := fClassNames[idx]
+    else
+      Result := idx.ToString;
+  end;
+
+  function LeafText(node: DecisionTreeNode): string;
+  begin
+    if node = nil then
+      exit('nil');
+
+    if fClassNames <> nil then
+      Result := ClassNameOf(Round(node.LeafValue))
+    else
+      Result := FormatReal(node.LeafValue);
+  end;
+
+  procedure AppendBranch(sb: System.Text.StringBuilder; node: DecisionTreeNode;
+    prefix: string; isLast: boolean; branchMark: string);
+  begin
+    sb.Append(prefix);
+
+    if isLast then
+      sb.Append('└── ')
+    else
+      sb.Append('├── ');
+
+    if node = nil then
+    begin
+      sb.Append(branchMark + ' → nil');
+      sb.AppendLine;
+      exit;
+    end;
+
+    if node.IsLeaf then
+    begin
+      sb.Append(branchMark + ' → ' + LeafText(node));
+      sb.AppendLine;
+      exit;
+    end;
+
+    sb.Append(branchMark + ' ');
+    sb.AppendLine;
+
+    var childPrefix := prefix;
+    if isLast then
+      childPrefix += '    '
+    else
+      childPrefix += '│   ';
+
+    sb.Append(childPrefix);
+    sb.Append(FeatureNameOf(node.FeatureIndex));
+    sb.Append(' ≤ ');
+    sb.Append(FormatReal(node.Threshold));
+    sb.Append('?');
+    sb.AppendLine;
+
+    AppendBranch(sb, node.Left, childPrefix, false, '✓');
+    AppendBranch(sb, node.Right, childPrefix, true, '✗');
+  end;
+begin
+  if fRoot = nil then
+    exit('DecisionTreeView(empty)');
+
+  if fRoot.IsLeaf then
+    exit('→ ' + LeafText(fRoot));
+
+  var sb := new System.Text.StringBuilder;
+  sb.Append(FeatureNameOf(fRoot.FeatureIndex));
+  sb.Append(' ≤ ');
+  sb.Append(FormatReal(fRoot.Threshold));
+  sb.Append('?');
+  sb.AppendLine;
+
+  AppendBranch(sb, fRoot.Left, '', false, '✓');
+  AppendBranch(sb, fRoot.Right, '', true, '✗');
+  Result := sb.ToString.TrimEnd;
+end;
+
 const MAX_ALLOWED_TREE_DEPTH = 1000;
 
 // DecisionTreeCore
@@ -3850,6 +4289,13 @@ begin
     Result := PredictOne(x, node.Left)
   else
     Result := PredictOne(x, node.Right);
+end;
+
+function DecisionTreeCore.RootNode: DecisionTreeNode;
+begin
+  if fRoot = nil then
+    NotFittedError(ER_FIT_NOT_CALLED);
+  Result := fRoot.Clone;
 end;
 
 function DecisionTreeCore.MajorityClass(y: Vector; indices: array of integer): integer;
@@ -4816,6 +5262,11 @@ begin
   Result := fLabels.DecodePredictions(fCore.Predict(X));
 end;
 
+function DecisionTreeClassifier.PredictOne(X: Vector): integer;
+begin
+  Result := Predict(SingleRowMatrix(X))[0];
+end;
+
 function DecisionTreeClassifier.PredictLabels(X: Matrix): array of string;
 begin
   if fLabels = nil then
@@ -4839,6 +5290,21 @@ begin
   if fLabels = nil then
     ArgumentError(ER_CLASSES_NOT_AVAILABLE);
   Result := fLabels.GetClassLabels;
+end;
+
+function DecisionTreeClassifier.Tree(
+  featureNames: array of string;
+  classNames: array of string
+): DecisionTreeView;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  Result := new DecisionTreeView(
+    fCore.RootNode,
+    featureNames,
+    classNames
+  );
 end;
 
 function DecisionTreeClassifier.Clone: IModel;
@@ -5015,6 +5481,11 @@ begin
 
   for var i := 0 to n - 1 do
     Result[i] := PredictOne(X, i);
+end;
+
+function DecisionTreeRegressor.PredictOne(X: Vector): real;
+begin
+  Result := Predict(SingleRowMatrix(X))[0];
 end;
 
 function DecisionTreeRegressor.Clone: IModel;
@@ -5276,6 +5747,11 @@ begin
   end;
 
   Result := resultVec;
+end;
+
+function RandomForestRegressor.PredictOne(X: Vector): real;
+begin
+  Result := Predict(SingleRowMatrix(X))[0];
 end;
 
 function RandomForestRegressor.Clone: IModel;
@@ -5591,6 +6067,11 @@ begin
     for var c := 0 to fClassCount - 1 do
       Result[i, c] := counts[c] / treeCount;
   end;
+end;
+
+function RandomForestClassifier.PredictProbaOne(X: Vector): Vector;
+begin
+  Result := PredictProba(SingleRowMatrix(X)).GetRow(0);
 end;
 
 function RandomForestClassifier.Clone: IModel;
@@ -6237,6 +6718,11 @@ begin
       yPred[i] += fLearningRate * tree.PredictOne(X, i);
 
   Result := yPred;
+end;
+
+function GradientBoostingRegressor.PredictOne(X: Vector): real;
+begin
+  Result := Predict(SingleRowMatrix(X))[0];
 end;
 
 function GradientBoostingRegressor.PredictStage(X: Matrix; m: integer): Vector;
@@ -7062,6 +7548,11 @@ begin
   Result := probs;
 end;
 
+function GradientBoostingClassifier.PredictProbaOne(X: Vector): Vector;
+begin
+  Result := PredictProba(SingleRowMatrix(X)).GetRow(0);
+end;
+
 function GradientBoostingClassifier.PredictStageProba(
   X: Matrix; m: integer): Matrix;
 begin
@@ -7231,6 +7722,11 @@ begin
     Result[i] := fLabels.ClassValueAt(probs.RowArgMax(i));
 end;
 
+function GradientBoostingClassifier.PredictOne(X: Vector): integer;
+begin
+  Result := Predict(SingleRowMatrix(X))[0];
+end;
+
 function GradientBoostingClassifier.PredictLabels(X: Matrix): array of string;
 begin
   var pred := Predict(X);
@@ -7271,6 +7767,25 @@ begin
   fFitted := False;
 end;
 
+function KNNBase.GetNearestNeighbors(X: Vector): array of NeighborInfo;
+begin
+  FillNeighborDistances(X);
+  QuickSelect(fK - 1);
+
+  var resList := new List<NeighborInfo>;
+
+  for var i := 0 to fK - 1 do
+  begin
+    var item: NeighborInfo;
+    item.Index := fNeighbors[i].idx;
+    item.Distance := Sqrt(fNeighbors[i].dist);
+    resList.Add(item);
+  end;
+
+  resList.Sort((a, b) -> a.Distance.CompareTo(b.Distance));
+  Result := resList.ToArray;
+end;
+
 procedure KNNBase.ValidatePredictInput(X: Matrix);
 begin
   if X = nil then
@@ -7281,6 +7796,37 @@ begin
 
   if X.ColCount <> fXTrain.ColCount then
     DimensionError(ER_FEATURE_COUNT_MISMATCH,X.ColCount,fXTrain.ColCount);
+end;
+
+procedure KNNBase.FillNeighborDistances(x: Vector);
+begin
+  if x = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  if x.Length <> fXTrain.ColCount then
+    DimensionError(ER_FEATURE_COUNT_MISMATCH, x.Length, fXTrain.ColCount);
+
+  var n := fXTrain.RowCount;
+  var p := fXTrain.ColCount;
+  var trainRows := fXTrain.Data.Rows;
+
+  for var t := 0 to n - 1 do
+  begin
+    var rowTrain := trainRows[t];
+    var sum := 0.0;
+
+    for var j := 0 to p - 1 do
+    begin
+      var diff := rowTrain[j] - x[j];
+      sum += diff * diff;
+    end;
+
+    fNeighbors[t].dist := sum;
+    fNeighbors[t].idx := t;
+  end;
 end;
 
 function KNNBase.SquaredL2(trainRow: integer; XTest: Matrix; testRow: integer): double;
@@ -7307,16 +7853,14 @@ begin
   var left := 0;
   var right := fNeighbors.Length - 1;
 
-  while true do
+  while left < right do
   begin
-    var pivotIndex := Partition(left, right);
+    var p := Partition(left, right);
 
-    if pivotIndex = k then
-      exit
-    else if pivotIndex > k then
-      right := pivotIndex - 1
+    if k <= p then
+      right := p
     else
-      left := pivotIndex + 1;
+      left := p + 1;
   end;
 end;
 
@@ -7656,6 +8200,16 @@ begin
   end;
 end;
 
+function KNNClassifier.PredictOne(X: Vector): integer;
+begin
+  Result := Predict(SingleRowMatrix(X))[0];
+end;
+
+function RandomForestClassifier.PredictOne(X: Vector): integer;
+begin
+  Result := Predict(SingleRowMatrix(X))[0];
+end;
+
 function KNNClassifier.PredictLabels(X: Matrix): array of string;
 begin
   var pred := Predict(X);
@@ -7808,6 +8362,11 @@ begin
   end;
 end;
 
+function KNNClassifier.PredictProbaOne(X: Vector): Vector;
+begin
+  Result := PredictProba(SingleRowMatrix(X)).GetRow(0);
+end;
+
 procedure KNNClassifier.SetClassLabels(classes: array of string);
 begin
   if fLabels = nil then
@@ -7957,6 +8516,11 @@ begin
       end;
     end;
   end;
+end;
+
+function KNNRegressor.PredictOne(X: Vector): real;
+begin
+  Result := Predict(SingleRowMatrix(X))[0];
 end;
 
 function KNNRegressor.Clone: IModel;
@@ -8722,6 +9286,11 @@ begin
   Result := Self;
 end;
 
+function RegressionMatrixPipeline.PredictOne(X: Vector): real;
+begin
+  Result := Predict(SingleRowMatrix(X))[0];
+end;
+
 function ClassificationMatrixPipeline.Predict(X: Matrix): array of integer;
 begin
   if not fFitted then
@@ -8735,6 +9304,11 @@ begin
 
   var Xt := Transform(X);
   Result := (fModel as IClassifier).Predict(Xt);
+end;
+
+function ClassificationMatrixPipeline.PredictOne(X: Vector): integer;
+begin
+  Result := Predict(SingleRowMatrix(X))[0];
 end;
 
 function ClassificationMatrixPipeline.PredictLabels(X: Matrix): array of string;
@@ -8765,6 +9339,11 @@ begin
 
   var Xt := Transform(X);
   Result := (fModel as IProbabilisticClassifier).PredictProba(Xt);
+end;
+
+function ClassificationMatrixPipeline.PredictProbaOne(X: Vector): Vector;
+begin
+  Result := PredictProba(SingleRowMatrix(X)).GetRow(0);
 end;
 
 procedure ClassificationMatrixPipeline.SetClassLabels(classes: array of string);

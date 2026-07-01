@@ -1,0 +1,45 @@
+﻿name = UsedCarsPrice
+
+task = regression
+
+features = model,year,transmission,mileage_km,fuelType,l_100km,engineSize,Make
+target = price_k_rub
+
+description.en = Used car prices with model, year, mileage, engine, fuel and transmission features. The target variable is price in thousand rubles.
+description.ru = Цены на автомобили с пробегом по модели, году выпуска, пробегу, двигателю, топливу и типу коробки передач. Целевая переменная — цена в тыс. руб.
+modified.en = Modified version with mileage, fuel consumption and price converted to units familiar to Russian users.
+modified.ru = Модифицированная версия датасета с переводом пробега, расхода топлива и цены в привычные для российской аудитории величины.
+
+source = Kaggle: Used Car Price Prediction Dataset
+url = https://www.kaggle.com/datasets/taeefnajib/used-car-price-prediction-dataset
+
+feature.model = categorical
+feature.year = int
+feature.price_k_rub = float
+feature.transmission = categorical
+feature.mileage_km = int
+feature.fuelType = categorical
+feature.l_100km = float
+feature.engineSize = float
+feature.Make = categorical
+
+feature.model.ru = модель
+feature.year.ru = год выпуска
+feature.price_k_rub.ru = цена в тыс. руб.
+feature.transmission.ru = коробка передач
+feature.mileage_km.ru = пробег в километрах
+feature.fuelType.ru = тип топлива
+feature.l_100km.ru = расход в литрах на 100 км
+feature.engineSize.ru = объём двигателя в литрах
+feature.Make.ru = марка
+
+feature.model.en = model
+feature.year.en = year
+feature.price_k_rub.en = price in thousand rubles
+feature.transmission.en = transmission
+feature.mileage_km.en = mileage in kilometres
+feature.fuelType.en = fuel type
+feature.l_100km.en = fuel consumption in litres per 100 km
+feature.engineSize.en = engine size in litres
+feature.Make.en = make
+

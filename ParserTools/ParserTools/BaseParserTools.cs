@@ -496,7 +496,7 @@ namespace PascalABCCompiler.ParserTools
             ss[0] = ss[0].Trim();
             if (ss[0].Length > 0)
                 // мы сюда точно не должны попасть. Это должна быть обычная строка!
-                this.AddErrorFromResource("IMPOSSIBLE_MULTILINE_ERROR", sc);
+                this.AddErrorFromResource("IMPOSSIBLE_MULTILINE_ERROR"+" " + ss[0].Length.ToString(), sc);
 
             if (ss[ss.Length - 1].Trim().Length > 0)
                 // There should be no non-whitespace characters before the closing quotes of the multiline string

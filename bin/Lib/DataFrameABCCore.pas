@@ -42,7 +42,7 @@ type
   public
     /// Возвращает количество столбцов в схеме
     property ColumnCount: integer read fNames.Length;
-    /// Возвращает копию массива имён столбцов
+    /// Возвращает имена столбцов
     property ColumnNames: array of string read GetColumnNames;
     /// Возвращает копию массива типов столбцов
     property Types: array of ColumnType read GetTypes;
