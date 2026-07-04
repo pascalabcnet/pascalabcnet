@@ -11,9 +11,6 @@ description.ru = Датасет пассажиров Титаника с упр�
 source = Kaggle: Titanic - Machine Learning from Disaster
 url = https://www.kaggle.com/competitions/titanic/data
 
-feature.Id = int
-feature.Имя = categorical
-feature.Выжил = categorical
 feature.Класс = categorical
 feature.Пол = categorical
 feature.Возраст = float

@@ -58,6 +58,10 @@ type
     function ToArray: array of real;
     /// Преобразует элементы вектора в массив целых чисел.
     function ToIntArray: array of integer;
+    /// Возвращает первые n элементов вектора.
+    function Head(n: integer): Vector;
+    /// Возвращает срез вектора начиная с startIndex длины count.
+    function Slice(startIndex, count: integer): Vector;
     
     static function operator +(a, b: Vector): Vector;
     static function operator -(a, b: Vector): Vector;
@@ -152,6 +156,10 @@ type
     function ToArray2D: array[,] of real;
     /// Возвращает строку матрицы в виде массива.
     function RowToArray(r: integer): array of real;
+    /// Возвращает первые n строк матрицы.
+    function Head(n: integer): Matrix;
+    /// Возвращает срез строк матрицы начиная с startIndex длины count.
+    function RowSlice(startIndex, count: integer): Matrix;
     
     /// Возвращает копию матрицы.
     function Clone: Matrix;
@@ -419,6 +427,16 @@ const
     'Матрица вырождена!!Matrix is singular';
   ER_VECTOR_SIZE_MISMATCH =
     'Несоответствие длины вектора: {0} и {1}!!Vector size mismatch: {0} and {1}';
+  ER_START_INDEX_NEGATIVE =
+    'Начальный индекс не может быть отрицательным!!Start index must be non-negative';
+  ER_COUNT_NEGATIVE =
+    'Количество элементов не может быть отрицательным!!Count must be non-negative';
+  ER_VECTOR_SLICE_OUT_OF_RANGE =
+    'Срез вектора выходит за границы: start={0}, count={1}, length={2}!!' +
+    'Vector slice out of range: start={0}, count={1}, length={2}';
+  ER_MATRIX_ROW_SLICE_OUT_OF_RANGE =
+    'Срез строк матрицы выходит за границы: start={0}, count={1}, rows={2}!!' +
+    'Matrix row slice out of range: start={0}, count={1}, rows={2}';
   ER_QR_REQUIRES_M_GE_N =
     'Для QR-разложения требуется m >= n!!QR decomposition requires m >= n';
   ER_SINGULAR_MATRIX =
@@ -475,6 +493,30 @@ begin
     
     Result[i] := ix;
   end;
+end;
+
+function Vector.Head(n: integer): Vector;
+begin
+  Result := Slice(0, n);
+end;
+
+function Vector.Slice(startIndex, count: integer): Vector;
+begin
+  if startIndex < 0 then
+    ArgumentError(ER_START_INDEX_NEGATIVE);
+
+  if count < 0 then
+    ArgumentError(ER_COUNT_NEGATIVE);
+
+  if startIndex + count > Length then
+    ArgumentError(ER_VECTOR_SLICE_OUT_OF_RANGE, startIndex, count, Length);
+
+  var res := new Vector(count);
+
+  for var i := 0 to count - 1 do
+    res[i] := Self[startIndex + i];
+
+  Result := res;
 end;
 
 function Vector.Clone: Vector;
@@ -708,6 +750,31 @@ end;
 function Matrix.RowToArray(r: integer): array of real;
 begin
   Result := fdata.Row(r);
+end;
+
+function Matrix.Head(n: integer): Matrix;
+begin
+  Result := RowSlice(0, n);
+end;
+
+function Matrix.RowSlice(startIndex, count: integer): Matrix;
+begin
+  if startIndex < 0 then
+    ArgumentError(ER_START_INDEX_NEGATIVE);
+
+  if count < 0 then
+    ArgumentError(ER_COUNT_NEGATIVE);
+
+  if startIndex + count > RowCount then
+    ArgumentError(ER_MATRIX_ROW_SLICE_OUT_OF_RANGE, startIndex, count, RowCount);
+
+  var res := new Matrix(count, ColCount);
+
+  for var i := 0 to count - 1 do
+    for var j := 0 to ColCount - 1 do
+      res[i, j] := Self[startIndex + i, j];
+
+  Result := res;
 end;
 
 function Matrix.Clone: Matrix;

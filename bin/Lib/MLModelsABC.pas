@@ -401,8 +401,8 @@ type
     /// epochs — число итераций обучения
     constructor Create(
       lambda: real := 0.0;
-      learningRate: real := 0.01;
-      epochs: integer := 1000;
+      learningRate: real := 0.1;
+      epochs: integer := 100;
       tol: real := 1e-6;
       checkConvergence: boolean := true;
       minImprovement: real := 1e-8;
@@ -3420,7 +3420,10 @@ begin
   
         var gwk := gradW[k];
         for var j := 0 to p - 1 do
-          gwk[j] += xi[j] * diff;
+        begin
+          var xij := xi[j];
+          gwk[j] += xij * diff;
+        end;
       end;
     end;
   

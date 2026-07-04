@@ -346,6 +346,14 @@ const
     'Признак "{0}" не найден в датасете!!Feature column "{0}" not found in dataset';
   ER_DATASET_FEATURE_EQUALS_TARGET =
     'Признак "{0}" совпадает с целевой переменной!!Feature "{0}" equals target column';
+  ER_DATASET_META_FEATURE_NOT_IN_FEATURES =
+    'В метаданных указан feature.{0}, но столбец "{0}" не входит в список features!!' +
+    'Meta contains feature.{0}, but column "{0}" is not listed in features';
+  ER_DATASET_FEATURES_WILDCARD_REQUIRES_FEATURES =
+    'Ключ features.* допустим только когда задан список features!!' +
+    'Key features.* is only allowed when features are explicitly listed';
+  ER_DATASET_META_UNKNOWN_COLUMN_TYPE =
+    'Неизвестный тип столбца в метаданных: {0}!!Unknown column type in dataset meta: {0}';
   ER_CLASSES_ONLY_CLASSIFICATION =
     'Classes доступны только для задач классификации!!Classes are only available for classification datasets';
   ER_VALUECOUNTS_ONLY_CLASSIFICATION =
@@ -389,6 +397,133 @@ const
   C_CLASSES      = 'Классов: {0}!!Classes: {0}';
   C_FEATURE_LIST = 'Признаки:!!Features:';
   C_CATEGORICAL  = 'Категориальные признаки: {0}!!Categorical features: {0}';
+
+function TryParseFeatureTypeKey(key: string; var columnName: string): boolean;
+begin
+  Result := False;
+  columnName := nil;
+
+  if (key = nil) or not key.StartsWith('feature.') then
+    exit;
+
+  columnName := key.Substring('feature.'.Length);
+  if (columnName = '') or (columnName.IndexOf('.') >= 0) then
+  begin
+    columnName := nil;
+    exit;
+  end;
+
+  Result := True;
+end;
+
+function TryParseMetaColumnType(s: string; var columnType: ColumnType; var isCategorical: boolean): boolean;
+begin
+  Result := True;
+  isCategorical := False;
+
+  case s.ToLower of
+    'int', 'integer':
+      columnType := ctInt;
+    'float', 'real', 'double':
+      columnType := ctFloat;
+    'str', 'string':
+      columnType := ctStr;
+    'bool', 'boolean':
+      columnType := ctBool;
+    'datetime', 'date', 'time':
+      columnType := ctDateTime;
+    'categorical':
+      begin
+        columnType := ctStr;
+        isCategorical := True;
+      end;
+  else
+    Result := False;
+  end;
+end;
+
+procedure ValidateDatasetMeta(meta: Dictionary<string,string>; target: string; features: array of string);
+begin
+  var featureSet := if features = nil then nil else new HashSet<string>(features);
+
+  foreach var key in meta.Keys do
+  begin
+    var colName: string;
+    if not TryParseFeatureTypeKey(key, colName) then
+      continue;
+
+    // Legacy-хвост: target раньше иногда описывался как feature.<target> = categorical.
+    // Не считаем это ошибкой, но и не рассматриваем target как признак.
+    if (target <> nil) and (colName = target) then
+      continue;
+
+    if featureSet = nil then
+      continue;
+
+    if not (colName in featureSet) then
+      ArgumentError(ER_DATASET_META_FEATURE_NOT_IN_FEATURES, colName);
+  end;
+
+  if meta.ContainsKey('features.*') and (featureSet = nil) then
+    ArgumentError(ER_DATASET_FEATURES_WILDCARD_REQUIRES_FEATURES);
+end;
+
+procedure BuildFeatureTyping(
+  meta: Dictionary<string,string>;
+  target: string;
+  features: array of string;
+  var columnTypes: Dictionary<string, ColumnType>;
+  var categoricalColumns: array of string);
+begin
+  var typeMap := new Dictionary<string, ColumnType>;
+  var categoricalSet := new HashSet<string>;
+
+  if meta.ContainsKey('features.*') then
+  begin
+    var wildcardType: ColumnType;
+    var wildcardCategorical: boolean;
+
+    if not TryParseMetaColumnType(meta['features.*'], wildcardType, wildcardCategorical) then
+      ArgumentError(ER_DATASET_META_UNKNOWN_COLUMN_TYPE, meta['features.*']);
+
+    foreach var feature in features do
+    begin
+      if wildcardCategorical then
+        categoricalSet.Add(feature)
+      else
+        typeMap[feature] := wildcardType;
+    end;
+  end;
+
+  foreach var key in meta.Keys do
+  begin
+    var colName: string;
+    if not TryParseFeatureTypeKey(key, colName) then
+      continue;
+
+    if (target <> nil) and (colName = target) then
+      continue;
+
+    var t: ColumnType;
+    var isCategorical: boolean;
+    if not TryParseMetaColumnType(meta[key], t, isCategorical) then
+      ArgumentError(ER_DATASET_META_UNKNOWN_COLUMN_TYPE, meta[key]);
+
+    if isCategorical then
+    begin
+      typeMap.Remove(colName);
+      categoricalSet.Add(colName);
+    end
+    else
+    begin
+      categoricalSet.Remove(colName);
+      typeMap[colName] := t;
+    end;
+  end;
+
+  columnTypes := if typeMap.Count = 0 then nil else typeMap;
+  categoricalColumns := if categoricalSet.Count = 0 then nil else categoricalSet.ToArray;
+end;
     
 function Normal(rnd: System.Random): real;
 begin
@@ -1353,19 +1488,24 @@ begin
   if not meta.ContainsKey('task') then
     ArgumentError(ER_DATASET_TASK_MISSING, name);
 
-  var df := DataFrame.FromCsv(csvPath);
-  var categoricalCols := new List<string>;
+  var task := ParseTask(meta['task']);
+  var target := if task in [TaskType.Regression, TaskType.Classification] then
+    if meta.ContainsKey('target') then meta['target'] else nil
+  else
+    nil;
+  var features := ParseFeatures(meta);
 
-  foreach var k in meta.Keys do
-    if k.StartsWith('feature.') and not k.EndsWith('.ru') and not k.EndsWith('.en') then
-    begin
-      var colName := k.Substring('feature.'.Length);
-      if (meta[k] = 'categorical') and df.HasColumn(colName) then
-        categoricalCols.Add(colName);
-    end;
+  if task in [TaskType.Regression, TaskType.Classification] then
+    if target = nil then
+      ArgumentError(ER_DATASET_TARGET_MISSING, name);
 
-  if categoricalCols.Count > 0 then
-    df := df.SetCategorical(categoricalCols.ToArray);
+  ValidateDatasetMeta(meta, target, features);
+  
+  var columnTypes: Dictionary<string, ColumnType>;
+  var categoricalColumns: array of string;
+  BuildFeatureTyping(meta, target, features, columnTypes, categoricalColumns);
+
+  var df := DataFrame.FromCsv(csvPath, ',', True, columnTypes, categoricalColumns);
 
   var ds := new Dataset;
 
@@ -1382,19 +1522,11 @@ begin
   else if meta.ContainsKey('description.en') then
     ds.Description := meta['description.en'];
 
-  ds.Task := ParseTask(meta['task']);
+  ds.Task := task;
   
-  if ds.Task in [TaskType.Regression, TaskType.Classification] then
-  begin
-    if not meta.ContainsKey('target') then
-      ArgumentError(ER_DATASET_TARGET_MISSING, name);
-  
-    ds.Target := meta['target'];
-  end
-  else
-    ds.Target := nil;
+  ds.Target := target;
     
-  ds.Features := ParseFeatures(meta);
+  ds.Features := features;
   
   ds.FeatureLabels := [];
   foreach var f in ds.Features do

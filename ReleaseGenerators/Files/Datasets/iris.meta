@@ -1,4 +1,4 @@
-name = Iris
+﻿name = Iris
 
 task = classification
 
@@ -15,7 +15,6 @@ feature.sepal_length = float
 feature.sepal_width = float
 feature.petal_length = float
 feature.petal_width = float
-feature.species = categorical
 
 feature.sepal_length.ru = длина чашелистика
 feature.sepal_width.ru = ширина чашелистика

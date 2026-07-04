@@ -7127,7 +7127,7 @@ end;
 
 procedure ScanFieldsQuoted(
   line: string; delimiter: char;
-  starts, lens: array of integer;
+  var starts, lens: array of integer;
   var actualCount: integer;
   var unclosedQuote: boolean);
 begin
@@ -7176,19 +7176,28 @@ begin
       // разделитель вне кавычек
       if ch = delimiter then
       begin
-        if col < starts.Length then
-        begin
-          if quotedField then
-            lens[col] := (i - 1) - starts[col]   // до закрывающей "
-          else
-            lens[col] := i - starts[col];
-        end;
+        if quotedField then
+          lens[col] := (i - 1) - starts[col]   // до закрывающей "
+        else
+          lens[col] := i - starts[col];
 
         col += 1;
         quotedField := False;
 
-        if col < starts.Length then
-          starts[col] := i + 1;
+        if col >= starts.Length then
+        begin
+          var newLen := starts.Length;
+          if newLen = 0 then
+            newLen := 1;
+
+          while col >= newLen do
+            newLen *= 2;
+
+          SetLength(starts, newLen);
+          SetLength(lens, newLen);
+        end;
+
+        starts[col] := i + 1;
 
         i += 1;
         continue;
@@ -7199,13 +7208,10 @@ begin
   end;
 
   // последний столбец
-  if col < starts.Length then
-  begin
-    if quotedField then
-      lens[col] := i - 1 - starts[col]
-    else
-      lens[col] := i - starts[col];
-  end;
+  if quotedField then
+    lens[col] := i - 1 - starts[col]
+  else
+    lens[col] := i - starts[col];
 
   // недостающие столбцы → пустые
   for var k := col + 1 to starts.Length - 1 do
@@ -8343,10 +8349,8 @@ begin
     if strict then
       Error(ER_CSV_UNCLOSED_QUOTE);
   
-  var maxColumns := 256;
-  
-  var starts := new integer[maxColumns];
-  var lens := new integer[maxColumns];
+  var starts := tmpStarts;
+  var lens := tmpLens;
   
   foreach var line in linesArray index inferRead do
   begin
@@ -8384,8 +8388,6 @@ begin
       begin
         originalColCount := parts.Length;
         headers := ArrGen(originalColCount, i -> 'C' + i.ToString);
-        first := false;
-        continue;
       end;
   
       map := new integer[originalColCount];

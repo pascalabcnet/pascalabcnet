@@ -113,6 +113,7 @@ type
   
   Statistics = DataFrameABC.Statistics;
   CsvLoader = DataFrameABC.CsvLoader;
+  CsvSaver = DataFrameABC.CsvSaver;
   JoinKind = DataFrameABC.JoinKind;
   GroupView = DataFrameABC.GroupView;
   EncodedTarget = DataAdapters.EncodedTarget;
