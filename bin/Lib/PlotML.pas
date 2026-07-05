@@ -23,7 +23,8 @@ uses System,
      System.Text,
      InteractiveDataDisplay.WPF,
      LinearAlgebraML,
-     MetricsABC;
+     MetricsABC,
+     MLExceptions;
      
 type
   ApplicationWPF = System.Windows.Application;
@@ -44,7 +45,7 @@ const DefaultColor = default(ColorWPF);
   
 type
   MarkerType = (Circle, Box, Triangle, Diamond, Cross);
-  MatrixNormalization = (None, Rows, All);
+  MatrixNormalization = MetricsABC.MatrixNormalization;
 
   Palette = class
   public
@@ -117,6 +118,10 @@ type
     procedure Bar(labels: array of string; values: array of real; color: ColorWPF := DefaultColor;
       width: real := 0.75; alpha: real := 0.85; legend: string := nil);
     procedure Heatmap(m: array[,] of real);
+    procedure Image(values: array of real; width, height: integer; invert: boolean := false);
+    procedure ImageGrid(X: Matrix; width, height: integer; startRow: integer := 0;
+      count: integer := 20; cols: integer := 5; spacing: real := 0.1;
+      normalize: boolean := false; invert: boolean := false);
       
 // --- Vector overloads
     procedure LineGraph(x, y: Vector; color: ColorWPF := DefaultColor;
@@ -131,17 +136,18 @@ type
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
     procedure Bar(x, y: Vector; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    procedure Image(values: Vector; width, height: integer; invert: boolean := false);
       
     procedure Surface(x1, x2: array of real; nx, ny: integer; f: Matrix -> array of integer; pal: PlotML.Palette := nil);      
       
     procedure Heatmap(m: Matrix);
     procedure HeatCell(value, minValue, maxValue: real; text: string := nil);
-    procedure ConfusionMatrix(m: array[,] of integer; labels: array of string := nil;
-      normalize: MatrixNormalization := MatrixNormalization.None);
-    procedure ConfusionMatrix(m: Matrix; labels: array of string := nil;
-      normalize: MatrixNormalization := MatrixNormalization.None);
-    procedure ConfusionMatrix(cm: MetricsABC.ConfusionMatrix; labels: array of string := nil;
-      normalize: MatrixNormalization := MatrixNormalization.None);
+    procedure ConfusionMatrix(m: array[,] of integer; classNames: array of string := nil;
+      normalize: MatrixNormalization := MatrixNormalization.None; sortClassNames: boolean := false);
+    procedure ConfusionMatrix(m: Matrix; classNames: array of string := nil;
+      normalize: MatrixNormalization := MatrixNormalization.None; sortClassNames: boolean := false);
+    procedure ConfusionMatrix(cm: MetricsABC.ConfusionMatrix; classNames: array of string := nil;
+      normalize: MatrixNormalization := MatrixNormalization.None; sortClassNames: boolean := false);
     
     procedure Text(s: string; x: real := 0.5; y: real := 0.5);
     
@@ -191,8 +197,11 @@ type
       
     static procedure DrawHeatmap(chart: ChartWPF; m: array[,] of real; names: array of string := nil);  
 
-    static function CreateConfusionMatrixView(m: array[,] of real; labels: array of string;
-      title: string; xlabel: string; ylabel: string; percentValues: boolean := false): UIElement;
+    static function CreateConfusionMatrixView(m: array[,] of real; classNames: array of string;
+      title: string; xlabel: string; ylabel: string; percentValues: boolean := false;
+      sortClassNames: boolean := false): UIElement;
+    static function CreateImageGridView(X: Matrix; width, height, startRow, count, cols: integer;
+      spacing: real; normalize, invert: boolean): UIElement;
     
     static procedure DrawHist(chart: ChartWPF; x: array of real;
       bins: integer; color: ColorWPF; alpha: real; legend: string);
@@ -245,6 +254,11 @@ type
       
     static procedure Bar(labels: array of string; values: array of real; color: ColorWPF := DefaultColor;
       width: real := 0.75; alpha: real := 0.85; legend: string := nil);
+      
+    static procedure Image(values: array of real; width, height: integer; invert: boolean := false);
+    static procedure ImageGrid(X: Matrix; width, height: integer; startRow: integer := 0;
+      count: integer := 20; cols: integer := 5; spacing: real := 0.1;
+      normalize: boolean := false; invert: boolean := false);
 
     static procedure HistMany(arrays: array of array of real; bins: integer := 0;
       colors: array of ColorWPF := nil; alpha: real := 0.7; legend: array of string := nil);
@@ -255,12 +269,12 @@ type
     
     static procedure Heatmap(m: array[,] of real);
     static procedure Heatmap(m: array[,] of real; names: array of string);
-    static procedure ConfusionMatrix(m: array[,] of integer; labels: array of string := nil;
-      normalize: MatrixNormalization := MatrixNormalization.None);
-    static procedure ConfusionMatrix(m: Matrix; labels: array of string := nil;
-      normalize: MatrixNormalization := MatrixNormalization.None);
-    static procedure ConfusionMatrix(cm: MetricsABC.ConfusionMatrix; labels: array of string := nil;
-      normalize: MatrixNormalization := MatrixNormalization.None);
+    static procedure ConfusionMatrix(m: array[,] of integer; classNames: array of string := nil;
+      normalize: MatrixNormalization := MatrixNormalization.None; sortClassNames: boolean := false);
+    static procedure ConfusionMatrix(m: Matrix; classNames: array of string := nil;
+      normalize: MatrixNormalization := MatrixNormalization.None; sortClassNames: boolean := false);
+    static procedure ConfusionMatrix(cm: MetricsABC.ConfusionMatrix; classNames: array of string := nil;
+      normalize: MatrixNormalization := MatrixNormalization.None; sortClassNames: boolean := false);
     
     static procedure Surface(labels: array of integer; nx, ny: integer; xmin, xmax, ymin, ymax: real; pal: PlotML.Palette := nil);
 
@@ -292,6 +306,9 @@ type
     static procedure Bar(x, y: Vector; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil)
       := Bar(x.Data, y.Data, color, width, alpha, legend);
+
+    static procedure Image(values: Vector; width, height: integer; invert: boolean := false)
+      := Image(values.Data, width, height, invert);
       
     static procedure PairPlot(X: Matrix; names: array of string := nil; maxPoints: integer := 2000)
       := PairPlot(X.Data, names, maxPoints);
@@ -424,6 +441,7 @@ var
   rootTitleBlock: TextBlock;
   rootXLabelBlock: TextBlock;
   rootYLabelBlock: TextBlock;
+  gridMode := false;
   
 static function Palettes.&Default: Palette := paletteDict['default'];
 static function Palettes.Pastel: Palette := paletteDict['pastel'];
@@ -661,6 +679,279 @@ begin
               Result[i, j] := m[i, j] / s;
       end;
   end;
+end;
+
+procedure SortConfusionMatrixByClassNames(var m: array[,] of real; var classNames: array of string);
+begin
+  if (m = nil) or (classNames = nil) then
+    exit;
+
+  var n := classNames.Length;
+  var idx := new integer[n];
+  for var i := 0 to n - 1 do
+    idx[i] := i;
+
+  for var i := 0 to n - 2 do
+    for var j := i + 1 to n - 1 do
+      if string.Compare(classNames[idx[i]], classNames[idx[j]], StringComparison.CurrentCulture) > 0 then
+      begin
+        var t := idx[i];
+        idx[i] := idx[j];
+        idx[j] := t;
+      end;
+
+  var sortedClassNames := new string[n];
+  var sortedMatrix := new real[n, n];
+
+  for var i := 0 to n - 1 do
+  begin
+    sortedClassNames[i] := classNames[idx[i]];
+    for var j := 0 to n - 1 do
+      sortedMatrix[i, j] := m[idx[i], idx[j]];
+  end;
+
+  classNames := sortedClassNames;
+  m := sortedMatrix;
+end;
+
+procedure ValidateImageSize(width, height: integer);
+begin
+  if width <= 0 then
+    ArgumentError(ER_IMAGE_WIDTH_GT_ZERO);
+  if height <= 0 then
+    ArgumentError(ER_IMAGE_HEIGHT_GT_ZERO);
+end;
+
+procedure ValidateImageVector(values: array of real; width, height, channels: integer);
+begin
+  if values = nil then
+    ArgumentNullError(ER_ARG_NULL, 'values');
+
+  var expected := width * height * channels;
+  if values.Length <> expected then
+    ArgumentError(ER_IMAGE_VALUES_LENGTH, expected);
+end;
+
+function SingleImageMatrix(values: array of real; width, height: integer): Matrix;
+begin
+  ValidateImageSize(width, height);
+  ValidateImageVector(values, width, height, 1);
+
+  Result := new Matrix(1, values.Length);
+  for var j := 0 to values.Length - 1 do
+    Result[0, j] := values[j];
+end;
+
+procedure ValidateImageGridArgs(X: Matrix; width, height, startRow, count, cols: integer; spacing: real);
+begin
+  ValidateImageSize(width, height);
+
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+  if startRow < 0 then
+    ArgumentError(ER_IMAGEGRID_STARTROW_NON_NEGATIVE);
+  if count <= 0 then
+    ArgumentError(ER_IMAGEGRID_COUNT_GT_ZERO);
+  if cols <= 0 then
+    ArgumentError(ER_IMAGEGRID_COLS_GT_ZERO);
+  if spacing < 0 then
+    ArgumentError(ER_IMAGEGRID_SPACING_NON_NEGATIVE);
+  if startRow + count > X.RowCount then
+    ArgumentError(ER_IMAGEGRID_ROW_RANGE);
+  if X.ColCount <> width * height then
+    ArgumentError(ER_IMAGEGRID_COLCOUNT);
+end;
+
+function RoundToByte(v: real): byte;
+begin
+  if v < 0 then
+    v := 0;
+  if v > 255 then
+    v := 255;
+  Result := byte(Round(v));
+end;
+
+function ValidateFiniteImageValue(v: real; context: string): real;
+begin
+  if real.IsNaN(v) or real.IsInfinity(v) then
+    ArgumentError(ER_IMAGE_VALUES_FINITE, context);
+  Result := v;
+end;
+
+procedure DrawImageCore(pixels: array of byte; stride, x0, y0: integer; values: array of real;
+  width, height, channels: integer; normalize, invert: boolean);
+begin
+  if pixels = nil then
+    exit;
+
+  ValidateImageSize(width, height);
+  ValidateImageVector(values, width, height, channels);
+
+  if channels <> 1 then
+    ArgumentError(ER_IMAGE_GRAYSCALE_ONLY);
+
+  var minValue := 0.0;
+  var maxValue := 0.0;
+
+  if normalize then
+  begin
+    minValue := ValidateFiniteImageValue(values[0], 'Image');
+    maxValue := minValue;
+
+    for var i := 1 to values.Length - 1 do
+    begin
+      var v := ValidateFiniteImageValue(values[i], 'Image');
+      if v < minValue then minValue := v;
+      if v > maxValue then maxValue := v;
+    end;
+  end
+  else
+  begin
+    maxValue := ValidateFiniteImageValue(values[0], 'Image');
+    if values[0] < 0 then
+      ArgumentError(ER_IMAGE_VALUE_GE_ZERO);
+
+    for var i := 1 to values.Length - 1 do
+    begin
+      var v := ValidateFiniteImageValue(values[i], 'Image');
+      if v < 0 then
+        ArgumentError(ER_IMAGE_VALUE_GE_ZERO);
+      if v > maxValue then maxValue := v;
+    end;
+
+    if maxValue > 255 then
+      ArgumentError(ER_IMAGE_VALUE_LE_255);
+  end;
+
+  var scale01 := (not normalize) and (maxValue <= 1.0);
+  var range := maxValue - minValue;
+
+  for var r := 0 to height - 1 do
+    for var c := 0 to width - 1 do
+    begin
+      var idx := (r * width + c) * channels;
+      var v := values[idx];
+      var grayValue := 0.0;
+
+      if normalize then
+      begin
+        if Abs(range) < 1e-12 then
+          grayValue := 0
+        else
+          grayValue := (v - minValue) / range * 255;
+      end
+      else if scale01 then
+        grayValue := v * 255
+      else
+        grayValue := v;
+
+      var gray := RoundToByte(grayValue);
+      if invert then
+        gray := byte(255 - gray);
+
+      pixels[(y0 + r) * stride + x0 + c] := gray;
+    end;
+end;
+
+function CreateImageGridBitmap(X: Matrix; width, height, startRow, count, cols: integer;
+  spacing: real; normalize, invert: boolean): System.Windows.Media.Imaging.BitmapSource;
+begin
+  var visibleCols := if count < cols then count else cols;
+  var rowCount := (count + cols - 1) div cols;
+
+  var gap := Round(width * spacing);
+  if gap < 0 then
+    gap := 0;
+
+  var bitmapWidth := visibleCols * width + (visibleCols - 1) * gap;
+  var bitmapHeight := rowCount * height + (rowCount - 1) * gap;
+  var stride := bitmapWidth;
+  var pixels := new byte[stride * bitmapHeight];
+
+  for var i := 0 to pixels.Length - 1 do
+    pixels[i] := 255;
+
+  for var k := 0 to count - 1 do
+  begin
+    var col := k mod cols;
+    var row := k div cols;
+    var values := X.Row(startRow + k);
+
+    DrawImageCore(pixels, stride,
+      col * (width + gap),
+      row * (height + gap),
+      values, width, height, 1, normalize, invert);
+  end;
+
+  Result := System.Windows.Media.Imaging.BitmapSource.Create(
+    bitmapWidth, bitmapHeight,
+    96, 96,
+    PixelFormats.Gray8,
+    System.Windows.Media.Imaging.BitmapPalettes.Gray256,
+    pixels, stride);
+end;
+
+function ImageGridFittingCount(availableWidth, availableHeight: real;
+  width, height, requestedCount, cols: integer; spacing: real): integer;
+begin
+  Result := requestedCount;
+
+  if (availableWidth <= 0) or (availableHeight <= 0) then
+    exit;
+
+  var visibleCols := if requestedCount < cols then requestedCount else cols;
+  if visibleCols <= 0 then
+    exit;
+
+  var gap := Round(width * spacing);
+  if gap < 0 then
+    gap := 0;
+
+  var naturalWidth := visibleCols * width + (visibleCols - 1) * gap;
+  if naturalWidth <= 0 then
+    exit;
+
+  var scale := availableWidth / naturalWidth;
+  if scale <= 0 then
+    exit;
+
+  var rowHeight := height * scale;
+  var rowGap := gap * scale;
+  var rowStep := rowHeight + rowGap;
+  if rowStep <= 0 then
+    exit;
+
+  var rows := Ceil((availableHeight + rowGap) / rowStep);
+  if rows < 1 then
+    rows := 1;
+
+  var maxRows := (requestedCount + cols - 1) div cols;
+  if rows > maxRows then
+    rows := maxRows;
+
+  Result := rows * cols;
+  if Result > requestedCount then
+    Result := requestedCount;
+end;
+
+procedure UpdateImageGridBitmap(image: System.Windows.Controls.Image; host: FrameworkElement; X: Matrix;
+  width, height, startRow, requestedCount, cols: integer; spacing: real; normalize, invert: boolean);
+begin
+  if (image = nil) or (host = nil) then
+    exit;
+
+  var actualCount := ImageGridFittingCount(
+    host.ActualWidth, host.ActualHeight,
+    width, height, requestedCount, cols, spacing);
+
+  if actualCount < 1 then
+    actualCount := 1;
+
+  if (image.Tag <> nil) and (System.Convert.ToInt32(image.Tag) = actualCount) then
+    exit;
+
+  image.Source := CreateImageGridBitmap(X, width, height, startRow, actualCount, cols, spacing, normalize, invert);
+  image.Tag := actualCount;
 end;
 
 function FindTextBlockByName(obj: DependencyObject; name: string): TextBlock;
@@ -953,7 +1244,9 @@ begin
     win.Title := 'PlotML';
     win.Width := 800;
     win.Height := 600;
-    win.Content := rootChart;
+    var placeholder := new GridWPF;
+    placeholder.Background := Brushes.White;
+    win.Content := placeholder;
 
     win.Closed += (o,e) ->
       Dispatcher.CurrentDispatcher.BeginInvokeShutdown(
@@ -973,6 +1266,18 @@ begin
 
   while uiDispatcher = nil do
     Sleep(10);
+end;
+
+procedure ShowRootChart;
+begin
+  if (win <> nil) and (rootChart <> nil) and (win.Content <> rootChart) then
+  begin
+    win.Content := rootChart;
+    rootTitleBlock := nil;
+    rootXLabelBlock := nil;
+    rootYLabelBlock := nil;
+    gridMode := false;
+  end;
 end;
 
 constructor Palette.Create(params c: array of Color);
@@ -1234,6 +1539,41 @@ begin
   end);
 end;
 
+procedure Cell.Image(values: array of real; width, height: integer; invert: boolean);
+begin
+  ImageGrid(SingleImageMatrix(values, width, height), width, height,
+    0, 1, 1, 0.0, false, invert);
+end;
+
+procedure Cell.Image(values: Vector; width, height: integer; invert: boolean);
+begin
+  if values = nil then
+    ArgumentNullError(ER_ARG_NULL, 'values');
+
+  Image(values.Data, width, height, invert);
+end;
+
+procedure Cell.ImageGrid(X: Matrix; width, height, startRow, count, cols: integer;
+  spacing: real; normalize, invert: boolean);
+begin
+  Plot.RunUI(() ->
+  begin
+    if chart <> nil then
+    begin
+      parentGrid.Children.Remove(chart);
+      chart := nil;
+    end;
+
+    if visual <> nil then
+      parentGrid.Children.Remove(visual);
+
+    visual := Plot.CreateImageGridView(X, width, height, startRow, count, cols, spacing, normalize, invert);
+    GridWPF.SetRow(visual, row);
+    GridWPF.SetColumn(visual, col);
+    parentGrid.Children.Add(visual);
+  end);
+end;
+
 procedure Cell.HeatCell(value, minValue, maxValue: real; text: string);
 begin
   Plot.RunUI(() ->
@@ -1263,7 +1603,7 @@ begin
   end);
 end;
 
-procedure Cell.ConfusionMatrix(m: array[,] of integer; labels: array of string; normalize: MatrixNormalization);
+procedure Cell.ConfusionMatrix(m: array[,] of integer; classNames: array of string; normalize: MatrixNormalization; sortClassNames: boolean);
 begin
   Plot.RunUI(() ->
   begin
@@ -1278,14 +1618,14 @@ begin
 
     visual := Plot.CreateConfusionMatrixView(
       NormalizeConfusionMatrix(IntMatrixToReal(m), normalize),
-      labels, '', '', '', normalize <> MatrixNormalization.None);
+      classNames, '', '', '', normalize <> MatrixNormalization.None, sortClassNames);
     GridWPF.SetRow(visual, row);
     GridWPF.SetColumn(visual, col);
     parentGrid.Children.Add(visual);
   end);
 end;
 
-procedure Cell.ConfusionMatrix(m: Matrix; labels: array of string; normalize: MatrixNormalization);
+procedure Cell.ConfusionMatrix(m: Matrix; classNames: array of string; normalize: MatrixNormalization; sortClassNames: boolean);
 begin
   Plot.RunUI(() ->
   begin
@@ -1300,22 +1640,22 @@ begin
 
     visual := Plot.CreateConfusionMatrixView(
       NormalizeConfusionMatrix(m.Data, normalize),
-      labels, '', '', '', normalize <> MatrixNormalization.None);
+      classNames, '', '', '', normalize <> MatrixNormalization.None, sortClassNames);
     GridWPF.SetRow(visual, row);
     GridWPF.SetColumn(visual, col);
     parentGrid.Children.Add(visual);
   end);
 end;
 
-procedure Cell.ConfusionMatrix(cm: MetricsABC.ConfusionMatrix; labels: array of string; normalize: MatrixNormalization);
+procedure Cell.ConfusionMatrix(cm: MetricsABC.ConfusionMatrix; classNames: array of string; normalize: MatrixNormalization; sortClassNames: boolean);
 begin
   if cm = nil then
     raise new System.ArgumentNullException;
 
-  if labels = nil then
-    labels := cm.Labels.Select(x -> x.ToString).ToArray;
+  if classNames = nil then
+    classNames := cm.Labels.Select(x -> x.ToString).ToArray;
 
-  ConfusionMatrix(cm.Matrix, labels, normalize);
+  ConfusionMatrix(cm.Matrix, classNames, normalize, sortClassNames);
 end;
 
 procedure Cell.Hist(x: array of real; bins: integer; color: ColorWPF; alpha: real; legend: string);
@@ -1545,8 +1885,6 @@ begin
   end);
 end;
 
-var gridMode := false;
-
 static procedure Plot.SetTitle(s: string);
 begin
   RunUI(() ->
@@ -1724,6 +2062,9 @@ end;
 
 static procedure Plot.DrawText(chart: ChartWPF; s: string; x, y: real);
 begin
+  if chart = rootChart then
+    ShowRootChart;
+
   var tb := new System.Windows.Controls.TextBlock;
   tb.Text := s;
   tb.FontSize := 14;
@@ -1837,6 +2178,9 @@ end;
 
 static procedure Plot.DrawHeatmap(chart: ChartWPF; m: array[,] of real; names: array of string);
 begin
+  if chart = rootChart then
+    ShowRootChart;
+
   var rows := m.GetLength(0);
   var cols := m.GetLength(1);
 
@@ -1916,8 +2260,8 @@ begin
     end;
 end;
 
-static function Plot.CreateConfusionMatrixView(m: array[,] of real; labels: array of string;
-  title: string; xlabel: string; ylabel: string; percentValues: boolean): UIElement;
+static function Plot.CreateConfusionMatrixView(m: array[,] of real; classNames: array of string;
+  title: string; xlabel: string; ylabel: string; percentValues: boolean; sortClassNames: boolean): UIElement;
 begin
   if m = nil then
     raise new System.ArgumentNullException;
@@ -1928,15 +2272,18 @@ begin
   if rows <> cols then
     raise new System.ArgumentException('ConfusionMatrix: matrix must be square');
 
-  if labels = nil then
+  if classNames = nil then
   begin
-    labels := new string[rows];
+    classNames := new string[rows];
     for var i := 0 to rows - 1 do
-      labels[i] := i.ToString;
+      classNames[i] := i.ToString;
   end;
 
-  if labels.Length <> rows then
+  if classNames.Length <> rows then
     raise new System.ArgumentException('ConfusionMatrix: labels length must match matrix size');
+
+  if sortClassNames then
+    SortConfusionMatrixByClassNames(m, classNames);
 
   var maxValue := 0.0;
   for var i := 0 to rows - 1 do
@@ -2005,7 +2352,7 @@ begin
   for var j := 0 to cols - 1 do
   begin
     var tb := new TextBlock;
-    tb.Text := labels[j];
+    tb.Text := classNames[j];
     tb.FontSize := 12;
     tb.TextAlignment := TextAlignment.Center;
     tb.HorizontalAlignment := System.Windows.HorizontalAlignment.Center;
@@ -2018,7 +2365,7 @@ begin
   for var i := 0 to rows - 1 do
   begin
     var rowLabel := new TextBlock;
-    rowLabel.Text := labels[i];
+    rowLabel.Text := classNames[i];
     rowLabel.FontSize := 12;
     rowLabel.TextAlignment := TextAlignment.Right;
     rowLabel.HorizontalAlignment := System.Windows.HorizontalAlignment.Right;
@@ -2065,8 +2412,88 @@ begin
   Result := outer;
 end;
 
+static function Plot.CreateImageGridView(X: Matrix; width, height, startRow, count, cols: integer;
+  spacing: real; normalize, invert: boolean): UIElement;
+begin
+  ValidateImageGridArgs(X, width, height, startRow, count, cols, spacing);
+
+  var outer := new GridWPF;
+  outer.Margin := new Thickness(4);
+
+  var titleRow := new RowDefinition;
+  titleRow.Height := GridLength.Auto;
+  outer.RowDefinitions.Add(titleRow);
+  outer.RowDefinitions.Add(new RowDefinition);
+  var xLabelRow := new RowDefinition;
+  xLabelRow.Height := GridLength.Auto;
+  outer.RowDefinitions.Add(xLabelRow);
+
+  var yLabelColumn := new ColumnDefinition;
+  yLabelColumn.Width := GridLength.Auto;
+  outer.ColumnDefinitions.Add(yLabelColumn);
+  outer.ColumnDefinitions.Add(new ColumnDefinition);
+
+  var titleBlock := new TextBlock;
+  titleBlock.Name := 'PlotML_Title';
+  titleBlock.FontSize := 14;
+  titleBlock.FontWeight := FontWeights.SemiBold;
+  titleBlock.TextAlignment := TextAlignment.Center;
+  titleBlock.HorizontalAlignment := System.Windows.HorizontalAlignment.Center;
+  titleBlock.Margin := new Thickness(0, 0, 0, 4);
+  SetOptionalTextBlockText(titleBlock, '');
+  GridWPF.SetRow(titleBlock, 0);
+  GridWPF.SetColumn(titleBlock, 1);
+  outer.Children.Add(titleBlock);
+
+  var yBlock := new TextBlock;
+  yBlock.Name := 'PlotML_YLabel';
+  yBlock.FontSize := 13;
+  yBlock.VerticalAlignment := System.Windows.VerticalAlignment.Center;
+  yBlock.Margin := new Thickness(0, 0, 4, 0);
+  yBlock.LayoutTransform := new RotateTransform(-90);
+  SetOptionalTextBlockText(yBlock, '');
+  GridWPF.SetRow(yBlock, 1);
+  GridWPF.SetColumn(yBlock, 0);
+  outer.Children.Add(yBlock);
+
+  var xBlock := new TextBlock;
+  xBlock.Name := 'PlotML_XLabel';
+  xBlock.FontSize := 13;
+  xBlock.HorizontalAlignment := System.Windows.HorizontalAlignment.Center;
+  xBlock.Margin := new Thickness(0, 4, 0, 0);
+  SetOptionalTextBlockText(xBlock, '');
+  GridWPF.SetRow(xBlock, 2);
+  GridWPF.SetColumn(xBlock, 1);
+  outer.Children.Add(xBlock);
+
+  var host := new Border;
+  host.Background := Brushes.White;
+  host.ClipToBounds := true;
+
+  var image := new System.Windows.Controls.Image;
+  image.Source := CreateImageGridBitmap(X, width, height, startRow, count, cols, spacing, normalize, invert);
+  image.Tag := count;
+  image.Stretch := Stretch.Uniform;
+  image.HorizontalAlignment := System.Windows.HorizontalAlignment.Stretch;
+  image.VerticalAlignment := System.Windows.VerticalAlignment.Center;
+  RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.NearestNeighbor);
+  host.Child := image;
+
+  host.Loaded += (o, e) -> UpdateImageGridBitmap(image, host, X, width, height, startRow, count, cols, spacing, normalize, invert);
+  host.SizeChanged += (o, e) -> UpdateImageGridBitmap(image, host, X, width, height, startRow, count, cols, spacing, normalize, invert);
+
+  GridWPF.SetRow(host, 1);
+  GridWPF.SetColumn(host, 1);
+  outer.Children.Add(host);
+
+  Result := outer;
+end;
+
 class procedure Plot.AddSeries(chart: ChartWPF; series: UIElement);
 begin
+  if chart = rootChart then
+    ShowRootChart;
+
   var container := chart.Content as GridWPF;
 
   if container = nil then
@@ -2198,13 +2625,33 @@ begin
   end);
 end;
 
-static procedure Plot.ConfusionMatrix(m: array[,] of integer; labels: array of string; normalize: MatrixNormalization);
+static procedure Plot.Image(values: array of real; width, height: integer; invert: boolean);
+begin
+  ImageGrid(SingleImageMatrix(values, width, height), width, height,
+    0, 1, 1, 0.0, false, invert);
+end;
+
+static procedure Plot.ImageGrid(X: Matrix; width, height, startRow, count, cols: integer;
+  spacing: real; normalize, invert: boolean);
+begin
+  RunUI(() ->
+  begin
+    var view := CreateImageGridView(X, width, height, startRow, count, cols, spacing, normalize, invert);
+    win.Content := view;
+    rootTitleBlock := FindTextBlockByName(view, 'PlotML_Title');
+    rootXLabelBlock := FindTextBlockByName(view, 'PlotML_XLabel');
+    rootYLabelBlock := FindTextBlockByName(view, 'PlotML_YLabel');
+    gridMode := false;
+  end);
+end;
+
+static procedure Plot.ConfusionMatrix(m: array[,] of integer; classNames: array of string; normalize: MatrixNormalization; sortClassNames: boolean);
 begin
   RunUI(() ->
   begin
     var view := CreateConfusionMatrixView(
       NormalizeConfusionMatrix(IntMatrixToReal(m), normalize),
-      labels, '', '', '', normalize <> MatrixNormalization.None);
+      classNames, '', '', '', normalize <> MatrixNormalization.None, sortClassNames);
     win.Content := view;
     rootTitleBlock := FindTextBlockByName(view, 'PlotML_Title');
     rootXLabelBlock := FindTextBlockByName(view, 'PlotML_XLabel');
@@ -2213,13 +2660,13 @@ begin
   end);
 end;
 
-static procedure Plot.ConfusionMatrix(m: Matrix; labels: array of string; normalize: MatrixNormalization);
+static procedure Plot.ConfusionMatrix(m: Matrix; classNames: array of string; normalize: MatrixNormalization; sortClassNames: boolean);
 begin
   RunUI(() ->
   begin
     var view := CreateConfusionMatrixView(
       NormalizeConfusionMatrix(m.Data, normalize),
-      labels, '', '', '', normalize <> MatrixNormalization.None);
+      classNames, '', '', '', normalize <> MatrixNormalization.None, sortClassNames);
     win.Content := view;
     rootTitleBlock := FindTextBlockByName(view, 'PlotML_Title');
     rootXLabelBlock := FindTextBlockByName(view, 'PlotML_XLabel');
@@ -2228,15 +2675,15 @@ begin
   end);
 end;
 
-static procedure Plot.ConfusionMatrix(cm: MetricsABC.ConfusionMatrix; labels: array of string; normalize: MatrixNormalization);
+static procedure Plot.ConfusionMatrix(cm: MetricsABC.ConfusionMatrix; classNames: array of string; normalize: MatrixNormalization; sortClassNames: boolean);
 begin
   if cm = nil then
     raise new System.ArgumentNullException;
 
-  if labels = nil then
-    labels := cm.Labels.Select(x -> x.ToString).ToArray;
+  if classNames = nil then
+    classNames := cm.Labels.Select(x -> x.ToString).ToArray;
 
-  ConfusionMatrix(cm.Matrix, labels, normalize);
+  ConfusionMatrix(cm.Matrix, classNames, normalize, sortClassNames);
 end;
 
 // --- Vector overloads

@@ -98,6 +98,7 @@ type
   RegressionMetrics = MetricsABC.RegressionMetrics;
   ClusteringMetrics = MetricsABC.ClusteringMetrics;
   ConfusionMatrix = MetricsABC.ConfusionMatrix;
+  MatrixNormalization = MetricsABC.MatrixNormalization;
   
   DataPipeline = MLPipelineABC.DataPipeline;
   ClassificationDataPipeline = MLPipelineABC.ClassificationDataPipeline;

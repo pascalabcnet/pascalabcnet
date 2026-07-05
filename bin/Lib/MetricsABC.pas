@@ -15,6 +15,7 @@ uses LinearAlgebraML;
 
 type
   Averaging = (avMacro, avMicro, avWeighted);
+  MatrixNormalization = (None, Rows, All);
   
   /// Метрики оценки качества моделей машинного обучения
   /// для задач регрессии, классификации и кластеризации
@@ -411,9 +412,12 @@ type
 
     /// Возвращает текстовое представление матрицы ошибок.
     function ToString: string; override;
+    function ToString(normalize: MatrixNormalization := MatrixNormalization.None;
+      sortClassNames: boolean := false): string;
 
     /// Печатает матрицу ошибок.
-    procedure Println;
+    procedure Println(normalize: MatrixNormalization := MatrixNormalization.None;
+      sortClassNames: boolean := false);
 
   end;
   
@@ -2115,6 +2119,11 @@ begin
 end;
 
 function ConfusionMatrix.ToString: string;
+begin
+  Result := ToString(MatrixNormalization.None, false);
+end;
+
+function ConfusionMatrix.ToString(normalize: MatrixNormalization; sortClassNames: boolean): string;
   function Center(s: string; w: integer): string;
   begin
     if s.Length >= w then
@@ -2124,7 +2133,16 @@ function ConfusionMatrix.ToString: string;
     var right := w - s.Length - left;
     Result := new string(' ', left) + s + new string(' ', right);
   end;
+  
+  function FormatValue(v: real): string;
+  begin
+    if normalize = MatrixNormalization.None then
+      Result := Round(v).ToString
+    else
+      Result := $'{v * 100:F1}%';
+  end;
 begin
+  var matrix := new real[fClassCount, fClassCount];
   var names := new string[fClassCount];
   var rowHeader := 'Реально ↓';
   var topHeader := 'Предсказано →';
@@ -2132,16 +2150,75 @@ begin
 
   for var i := 0 to fClassCount - 1 do
   begin
+    for var j := 0 to fClassCount - 1 do
+      matrix[i, j] := fMatrix[i, j];
+
     names[i] := GetClassDisplayName(i);
     if names[i].Length > nameWidth then
       nameWidth := names[i].Length;
+  end;
+  
+  case normalize of
+    MatrixNormalization.Rows:
+      for var i := 0 to fClassCount - 1 do
+      begin
+        var s := 0.0;
+        for var j := 0 to fClassCount - 1 do
+          s += matrix[i, j];
+        if s <> 0 then
+          for var j := 0 to fClassCount - 1 do
+            matrix[i, j] /= s;
+      end;
+    MatrixNormalization.All:
+      begin
+        var s := 0.0;
+        for var i := 0 to fClassCount - 1 do
+          for var j := 0 to fClassCount - 1 do
+            s += matrix[i, j];
+        if s <> 0 then
+          for var i := 0 to fClassCount - 1 do
+            for var j := 0 to fClassCount - 1 do
+              matrix[i, j] /= s;
+      end;
+  end;
+  
+  if sortClassNames then
+  begin
+    var idx := new integer[fClassCount];
+    for var i := 0 to fClassCount - 1 do
+      idx[i] := i;
+
+    for var i := 0 to fClassCount - 2 do
+      for var j := i + 1 to fClassCount - 1 do
+        if string.Compare(names[idx[i]], names[idx[j]], System.StringComparison.CurrentCulture) > 0 then
+        begin
+          var t := idx[i];
+          idx[i] := idx[j];
+          idx[j] := t;
+        end;
+
+    var sortedNames := new string[fClassCount];
+    var sortedMatrix := new real[fClassCount, fClassCount];
+
+    for var i := 0 to fClassCount - 1 do
+    begin
+      sortedNames[i] := names[idx[i]];
+      for var j := 0 to fClassCount - 1 do
+        sortedMatrix[i, j] := matrix[idx[i], idx[j]];
+    end;
+
+    names := sortedNames;
+    matrix := sortedMatrix;
   end;
 
   var cellWidth := 1;
   for var i := 0 to fClassCount - 1 do
     for var j := 0 to fClassCount - 1 do
-      if fMatrix[i, j].ToString.Length > cellWidth then
-        cellWidth := fMatrix[i, j].ToString.Length;
+    begin
+      var text := FormatValue(matrix[i, j]);
+      if text.Length > cellWidth then
+        cellWidth := text.Length;
+    end;
 
   for var i := 0 to fClassCount - 1 do
     if names[i].Length > cellWidth then
@@ -2174,7 +2251,7 @@ begin
     begin
       if j > 0 then
         sb.Append('  ');
-      sb.Append(Center(fMatrix[i, j].ToString, cellWidth));
+      sb.Append(Center(FormatValue(matrix[i, j]), cellWidth));
     end;
 
     sb.AppendLine;
@@ -2183,9 +2260,9 @@ begin
   Result := sb.ToString.TrimEnd;
 end;
 
-procedure ConfusionMatrix.Println;
+procedure ConfusionMatrix.Println(normalize: MatrixNormalization; sortClassNames: boolean);
 begin
-  System.Console.WriteLine(ToString);
+  System.Console.WriteLine(ToString(normalize, sortClassNames));
 end;
 
 end.

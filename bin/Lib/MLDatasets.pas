@@ -292,6 +292,9 @@ type
     /// Датасет цен на автомобили с пробегом (задача регрессии)
     static function UsedCarsPrice: Dataset;
 
+    /// Небольшой поднабор MNIST (задача классификации рукописных цифр)
+    static function MnistSmall: Dataset;
+
     
     {/// Датасет результатов экзамена студентов (классификация)
     static function StudentExam: Dataset;
@@ -1600,6 +1603,11 @@ end;
 static function Datasets.UsedCarsPrice: Dataset;
 begin
   Result := Load('used_cars_price');
+end;
+
+static function Datasets.MnistSmall: Dataset;
+begin
+  Result := Load('mnist_small');
 end;
 
 {static function Datasets.StudentExam: Dataset;

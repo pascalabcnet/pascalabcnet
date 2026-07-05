@@ -62,6 +62,35 @@ const
   ER_PREDICT_NOT_SUPPORTED =
     'Модель не поддерживает операцию Predict!!' +
     'Model does not support Predict operation';
+  ER_IMAGE_WIDTH_GT_ZERO =
+    'Image: ширина должна быть > 0!!Image: width must be > 0';
+  ER_IMAGE_HEIGHT_GT_ZERO =
+    'Image: высота должна быть > 0!!Image: height must be > 0';
+  ER_IMAGE_VALUES_LENGTH =
+    'Image: длина values должна быть {0}!!Image: values length must be {0}';
+  ER_IMAGEGRID_STARTROW_NON_NEGATIVE =
+    'ImageGrid: startRow должен быть >= 0!!ImageGrid: startRow must be >= 0';
+  ER_IMAGEGRID_COUNT_GT_ZERO =
+    'ImageGrid: count должен быть > 0!!ImageGrid: count must be > 0';
+  ER_IMAGEGRID_COLS_GT_ZERO =
+    'ImageGrid: cols должен быть > 0!!ImageGrid: cols must be > 0';
+  ER_IMAGEGRID_SPACING_NON_NEGATIVE =
+    'ImageGrid: spacing должен быть >= 0!!ImageGrid: spacing must be >= 0';
+  ER_IMAGEGRID_ROW_RANGE =
+    'ImageGrid: startRow + count должно быть <= X.RowCount!!' +
+    'ImageGrid: startRow + count must be <= X.RowCount';
+  ER_IMAGEGRID_COLCOUNT =
+    'ImageGrid: число столбцов X должно быть равно width * height!!' +
+    'ImageGrid: X.ColCount must be width * height';
+  ER_IMAGE_VALUES_FINITE =
+    '{0}: значения изображения должны быть конечными!!{0}: image values must be finite';
+  ER_IMAGE_GRAYSCALE_ONLY =
+    'Image: пока поддерживаются только grayscale-изображения!!' +
+    'Image: only grayscale images are supported';
+  ER_IMAGE_VALUE_GE_ZERO =
+    'Image: значение должно быть >= 0!!Image: value must be >= 0';
+  ER_IMAGE_VALUE_LE_255 =
+    'Image: значение должно быть <= 255!!Image: value must be <= 255';
   
 type
   /// Базовое исключение ML-библиотеки

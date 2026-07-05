@@ -1,4 +1,4 @@
-﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (07.02.2025)
+﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (05.07.2026)
 unit School;
 
 interface
@@ -197,8 +197,14 @@ function НОК(a, b: int64): int64;
 /// Возвращает НОД и НОК пары чисел
 function НОДНОК(a, b: int64): (int64, int64);
 
+/// возвращает Sqrt(n), если n - полный квадрат. Иначе возвращает -1.
+function PerfectSquare(n: int64): int64;
+
 /// возвращает True, если число n простое и False в противном случае
 function IsPrime(n: integer): boolean;
+
+/// возвращает True, если число n простое и False в противном случае
+function IsPrime(n: int64): boolean;
 
 /// Простые числа на интервале [2;n] 
 function Primes(n: integer): List<integer>;
@@ -718,6 +724,24 @@ begin
     end
 end;
 
+/// возвращает Sqrt(n), если n - полный квадрат. Иначе возвращает -1.
+function PerfectSquare(n: int64): int64;
+// На базе MathNet.Numerics. Портирована С.С. Михалковичем.
+begin
+  if n < 0 then
+    exit(int64(-1));
+  var lastHexDigit := integer(n and $F);
+  if lastHexDigit > 9 then
+    exit(int64(-1));
+  if (lastHexDigit = 0) or (lastHexDigit = 1) or 
+     (lastHexDigit = 4) or (lastHexDigit = 9) then
+  begin
+    var t := int64(Floor(Sqrt(n) + 0.5));
+    exit(t * t = n ? t : int64(-1));
+  end;
+  exit(int64(-1));
+end;
+
 /// возвращает True, если число n простое и False в противном случае
 function IsPrime(n: integer): boolean;
 begin
@@ -960,6 +984,249 @@ function Factorize(n: integer): List<integer> := PrimeFactors(n);
 
 /// Разложение числа на простые множители
 function Factorize(Self: integer): List<integer>; extensionmethod := PrimeFactors(Self);
+
+{$endregion}
+
+{$region BPSW}
+
+// Портировано с языка С++ и переработано С.С.Михалковичем
+// источник: http://e-maxx.ru/algo/bpsw
+
+function NormalizeMod(a, m: int64): int64;
+begin
+  var r := a mod m;
+  if r < 0 then r += m;
+  Result := r
+end;
+
+// Computes (a + b) mod m without overflow.
+// Precondition: 0 <= a < m, 0 <= b < m, m > 0.
+function AddMod(a, b, m: int64) := a >= m - b ? a - (m - b) : a + b;
+
+// Computes (a - b) mod m without overflow.
+// Precondition: 0 <= a < m, 0 <= b < m, m > 0.
+function SubMod(a, b, m: int64) := a >= b ? a - b : m - (b - a);
+
+// Computes a * b mod m without Int64 multiplication overflow.
+function MulMod(a, b, m: int64): int64;
+begin
+  var x := NormalizeMod(a, m);
+  var y := NormalizeMod(b, m);
+  Result := 0;
+  while y > 0 do
+  begin
+    if y mod 2 = 1 then Result := AddMod(Result, x, m);
+    y := y div 2;
+    if y > 0 then x := AddMod(x, x, m)
+  end
+end;
+
+function PowMod(a, k, m: int64): int64;
+begin
+  var x := NormalizeMod(a, m);
+  Result := 1 mod m;
+  while k > 0 do
+  begin
+    if k mod 2 = 1 then Result := MulMod(Result, x, m);
+    k := k div 2;
+    if k > 0 then x := MulMod(x, x, m)
+  end
+end;
+
+// n = q * 2^p, q is odd
+procedure DecomposePowerOfTwo(n: int64; var p, q: int64);
+begin
+  (p, q) := (0, n);
+  while q mod 2 = 0 do
+  begin
+    p += 1;
+    q := q div 2
+  end
+end;
+
+function BitLength(n: int64): integer;
+begin
+  if n = 0 then exit(1);
+  var len := 0;
+  while n > 0 do
+  begin
+    len += 1;
+    n := n div 2
+  end;
+  Result := len;
+end;
+
+function TestBit(n: int64; k: integer): boolean;
+begin
+  for var i := 1 to k do
+    n := n div 2;
+  Result := n mod 2 = 1;
+end;
+
+function IsPerfectSquare(n: int64): boolean;
+begin
+  if n < 0 then exit(False);
+  var lo: int64 := 0;
+  var hi: int64 := 3037000500; // > sqrt(Int64.MaxValue)
+  while lo <= hi do
+  begin
+    var mid := lo + (hi - lo) div 2;
+    if (mid <> 0) and (mid > n div mid) then hi := mid - 1
+    else
+    begin
+      var sq := mid * mid;
+      if sq = n then exit(True);
+      lo := mid + 1
+    end
+  end;
+  Result := False;
+end;
+
+// Jacobi symbol (a / b), b must be odd and positive.
+function Jacobi(a, b: int64): integer;
+begin
+  if a = 0 then exit(0);
+  if a = 1 then exit(1);
+  if a < 0 then
+  begin
+    if b mod 4 = 1 then Result := Jacobi(-a, b)
+    else Result := -Jacobi(-a, b);
+    exit;
+  end;
+  var e, a1: int64;
+  DecomposePowerOfTwo(a, e, a1);
+  var s: integer;
+  if (e mod 2 = 0) or (b mod 8 = 1) or (b mod 8 = 7) then s := 1
+  else s := -1;
+  if (b mod 4 = 3) and (a1 mod 4 = 3) then s := -s;
+  if a1 = 1 then Result := s
+  else Result := s * Jacobi(b mod a1, a1);
+end;
+
+// Strong Miller-Rabin test for one base.
+function MillerRabin(n, base: int64): boolean;
+begin
+  if n = 2 then exit(True);
+  if (n < 2) or (n mod 2 = 0) then exit(False);
+  var b := base;
+  if b < 2 then b := 2;
+  while True do
+  begin
+    var g := GCD(n, b);
+    if g = 1 then break;
+    if n > g then exit(False);
+    b += 1;
+  end;
+  var p, q: int64;
+  DecomposePowerOfTwo(n - 1, p, q);
+  var rem := PowMod(b, q, n);
+  if (rem = 1) or (rem = n - 1) then exit(True);
+  for var i: int64 := 1 to p - 1 do
+  begin
+    rem := MulMod(rem, rem, n);
+    if rem = n - 1 then exit(True);
+  end;
+  Result := False;
+end;
+
+// Computes (a + b) / 2 mod n without overflow.
+// Used in Lucas sequences, where division by 2 is done after adding n if needed.
+function HalfAddMod(a, b, n: int64): int64;
+begin
+  var res: int64 := 0;
+  res := AddMod(res, a div 2, n);
+  res := AddMod(res, b div 2, n);
+  if (a mod 2 = 1) and (b mod 2 = 1) then res := AddMod(res, 1, n)
+  else if (a mod 2) <> (b mod 2) then
+  begin
+    res := AddMod(res, n div 2, n);
+    res := AddMod(res, 1, n);
+  end;
+  Result := res;
+end;
+
+// Strong Lucas-Selfridge probable prime test.
+function LucasSelfridge(n: int64): boolean;
+begin
+  if n = 2 then exit(True);
+  if (n < 2) or (n mod 2 = 0) then exit(False);
+  if IsPerfectSquare(n) then exit(False);
+  // Selfridge parameters:
+  // D = 5, -7, 9, -11, 13, ...
+  var dd: int64 := 0;
+  var dAbs: int64 := 5;
+  var dSign: int64 := 1;
+  while True do
+  begin
+    dd := dAbs * dSign;
+    var g := GCD(n, dAbs);
+    if (1 < g) and (g < n) then exit(False);
+    if Jacobi(dd, n) = -1 then break;
+    dSign := -dSign;
+    dAbs += 2;
+  end;
+  var pParam: int64 := 1;
+  var qParam: int64 := (pParam * pParam - dd) div 4;
+  // n + 1 = d * 2^s
+  var s, d: int64;
+  DecomposePowerOfTwo(n + 1, s, d);
+  var u: int64 := 1;
+  var v: int64 := pParam;
+  var u2m: int64 := 1;
+  var v2m: int64 := pParam;
+  var qm := NormalizeMod(qParam, n);
+  var qm2 := AddMod(qm, qm, n);
+  var qkd := NormalizeMod(qParam, n);
+  var bits := BitLength(d);
+  for var bit := 1 to bits - 1 do
+  begin
+    u2m := MulMod(u2m, v2m, n);
+    v2m := SubMod(MulMod(v2m, v2m, n), qm2, n);
+    qm := MulMod(qm, qm, n);
+    qm2 := AddMod(qm, qm, n);
+    if TestBit(d, bit) then
+    begin
+      var t1 := MulMod(u2m, v, n);
+      var t2 := MulMod(v2m, u, n);
+      var t3 := MulMod(v2m, v, n);
+      var t4 := MulMod(MulMod(u2m, u, n), dd, n);
+      u := HalfAddMod(t1, t2, n);
+      v := HalfAddMod(t3, t4, n);
+      qkd := MulMod(qkd, qm, n)
+    end
+  end;
+  if (u = 0) or (v = 0) then exit(True);
+  var qkd2 := AddMod(qkd, qkd, n);
+  var r: int64 := 1;
+  while r < s do
+  begin
+    v := SubMod(MulMod(v, v, n), qkd2, n);
+    if v = 0 then exit(True);
+    if r < s - 1 then
+    begin
+      qkd := MulMod(qkd, qkd, n);
+      qkd2 := AddMod(qkd, qkd, n);
+    end;
+    r += 1;
+  end;
+  Result := False;
+end;
+
+// Baillie-Pomerance-Selfridge-Wagstaff primality test.
+function IsPrimeBPSW(n: int64): boolean;
+begin
+  if n <= MaxInt then exit(IsPrime(integer(n)));
+  // Strong Miller-Rabin base 2
+  if not MillerRabin(n, 2) then exit(False);
+  // Strong Lucas-Selfridge
+  Result := LucasSelfridge(n);
+end;
+
+// Short alias
+function IsPrime(n: int64): boolean;
+begin
+  Result := IsPrimeBPSW(n);
+end;
 
 {$endregion}
 
