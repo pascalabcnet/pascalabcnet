@@ -4793,6 +4793,12 @@ begin
         var c := BoolColumn(col);
         res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid);
       end;
+
+      ctDateTime:
+      begin
+        var c := DateTimeColumn(col);
+        res.AddDateTimeColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
     end;
   end;
 
@@ -4853,6 +4859,12 @@ begin
       begin
         var c := BoolColumn(col);
         res.AddBoolColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctDateTime:
+      begin
+        var c := DateTimeColumn(col);
+        res.AddDateTimeColumn(c.Info.Name, c.Data, c.IsValid);
       end;
     end;
   end;
@@ -4915,6 +4927,12 @@ begin
         else
           res.AddStrColumn(c.Info.Name, c.Data, c.IsValid);
       end;
+
+      ctDateTime:
+      begin
+        var c := DateTimeColumn(col);
+        res.AddDateTimeColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
     end;
   end;
 
@@ -4975,6 +4993,12 @@ begin
       begin
         var c := StrColumn(col);
         res.AddStrColumn(c.Info.Name, c.Data, c.IsValid);
+      end;
+
+      ctDateTime:
+      begin
+        var c := DateTimeColumn(col);
+        res.AddDateTimeColumn(c.Info.Name, c.Data, c.IsValid);
       end;
     end;
   end;
