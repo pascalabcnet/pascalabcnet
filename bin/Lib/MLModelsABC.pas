@@ -899,6 +899,11 @@ type
     function ToString: string; override;
     
     function Name: string := Self.GetType.Name;
+
+    function Tree(
+      featureNames: array of string;
+      classNames: array of string := nil
+    ): DecisionTreeView;
   end;
   
 
@@ -4148,19 +4153,23 @@ function DecisionTreeView.ToString: string;
 
     if node = nil then
     begin
-      sb.Append(branchMark + ' → nil');
+      sb.Append(branchMark + ': nil');
       sb.AppendLine;
       exit;
     end;
 
     if node.IsLeaf then
     begin
-      sb.Append(branchMark + ' → ' + LeafText(node));
+      sb.Append(branchMark + ': ' + LeafText(node));
       sb.AppendLine;
       exit;
     end;
 
-    sb.Append(branchMark + ' ');
+    sb.Append(branchMark + ': ');
+    sb.Append(FeatureNameOf(node.FeatureIndex));
+    sb.Append(' ≤ ');
+    sb.Append(FormatReal(node.Threshold));
+    sb.Append('?');
     sb.AppendLine;
 
     var childPrefix := prefix;
@@ -4169,15 +4178,8 @@ function DecisionTreeView.ToString: string;
     else
       childPrefix += '│   ';
 
-    sb.Append(childPrefix);
-    sb.Append(FeatureNameOf(node.FeatureIndex));
-    sb.Append(' ≤ ');
-    sb.Append(FormatReal(node.Threshold));
-    sb.Append('?');
-    sb.AppendLine;
-
-    AppendBranch(sb, node.Left, childPrefix, false, '✓');
-    AppendBranch(sb, node.Right, childPrefix, true, '✗');
+    AppendBranch(sb, node.Left, childPrefix, false, 'да');
+    AppendBranch(sb, node.Right, childPrefix, true, 'нет');
   end;
 begin
   if fRoot = nil then
@@ -4193,8 +4195,8 @@ begin
   sb.Append('?');
   sb.AppendLine;
 
-  AppendBranch(sb, fRoot.Left, '', false, '✓');
-  AppendBranch(sb, fRoot.Right, '', true, '✗');
+  AppendBranch(sb, fRoot.Left, '', false, 'да');
+  AppendBranch(sb, fRoot.Right, '', true, 'нет');
   Result := sb.ToString.TrimEnd;
 end;
 
@@ -5489,6 +5491,21 @@ end;
 function DecisionTreeRegressor.PredictOne(X: Vector): real;
 begin
   Result := Predict(SingleRowMatrix(X))[0];
+end;
+
+function DecisionTreeRegressor.Tree(
+  featureNames: array of string;
+  classNames: array of string
+): DecisionTreeView;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  Result := new DecisionTreeView(
+    fRoot,
+    featureNames,
+    nil
+  );
 end;
 
 function DecisionTreeRegressor.Clone: IModel;
@@ -6927,6 +6944,9 @@ begin
   if XTrain = nil then
     ArgumentNullError(ER_X_NULL);
 
+  if yTrain = nil then
+    ArgumentNullError(ER_Y_NULL);
+
   // --- finite checks ---
   if MLConfig.ValidateFiniteInputs then
     CheckXForFit(XTrain);
@@ -6942,6 +6962,9 @@ begin
   begin
     if XVal = nil then
       ArgumentNullError(ER_X_NULL);
+
+    if yVal = nil then
+      ArgumentNullError(ER_Y_NULL);
 
     if MLConfig.ValidateFiniteInputs then
       CheckXForPredict(XVal);
@@ -7212,6 +7235,10 @@ begin
       fEstimators.RemoveRange(keep, fEstimators.Count - keep);
     if fOOBLossHistory.Count > keep then
       fOOBLossHistory.RemoveRange(keep, fOOBLossHistory.Count - keep);
+    if fTrainLossHistory.Count > keep then
+      fTrainLossHistory.RemoveRange(keep, fTrainLossHistory.Count - keep);
+    if fValLossHistory.Count > keep then
+      fValLossHistory.RemoveRange(keep, fValLossHistory.Count - keep);
   end;
 
   fFitted := true;

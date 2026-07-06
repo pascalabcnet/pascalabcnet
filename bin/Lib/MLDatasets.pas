@@ -292,7 +292,7 @@ type
     /// Датасет цен на автомобили с пробегом (задача регрессии)
     static function UsedCarsPrice: Dataset;
 
-    /// Небольшой поднабор MNIST (задача классификации рукописных цифр)
+    /// Сбалансированный набор MNIST из 5000 изображений для классификации рукописных цифр
     static function MnistSmall: Dataset;
 
     
@@ -357,6 +357,9 @@ const
     'Key features.* is only allowed when features are explicitly listed';
   ER_DATASET_META_UNKNOWN_COLUMN_TYPE =
     'Неизвестный тип столбца в метаданных: {0}!!Unknown column type in dataset meta: {0}';
+  ER_DATASET_TARGETTYPE_REQUIRES_TARGET =
+    'Ключ targetType допустим только когда задан target!!' +
+    'Key targetType is only allowed when target is defined';
   ER_CLASSES_ONLY_CLASSIFICATION =
     'Classes доступны только для задач классификации!!Classes are only available for classification datasets';
   ER_VALUECOUNTS_ONLY_CLASSIFICATION =
@@ -469,6 +472,9 @@ begin
 
   if meta.ContainsKey('features.*') and (featureSet = nil) then
     ArgumentError(ER_DATASET_FEATURES_WILDCARD_REQUIRES_FEATURES);
+
+  if meta.ContainsKey('targetType') and ((target = nil) or (target = '')) then
+    ArgumentError(ER_DATASET_TARGETTYPE_REQUIRES_TARGET);
 end;
 
 procedure BuildFeatureTyping(
@@ -526,6 +532,75 @@ begin
 
   columnTypes := if typeMap.Count = 0 then nil else typeMap;
   categoricalColumns := if categoricalSet.Count = 0 then nil else categoricalSet.ToArray;
+end;
+
+procedure ApplyTargetTyping(
+  meta: Dictionary<string,string>;
+  target: string;
+  var columnTypes: Dictionary<string, ColumnType>;
+  var categoricalColumns: array of string);
+begin
+  if (target = nil) or (target = '') or not meta.ContainsKey('targetType') then
+    exit;
+
+  var t: ColumnType;
+  var isCategorical: boolean;
+  if not TryParseMetaColumnType(meta['targetType'], t, isCategorical) then
+    ArgumentError(ER_DATASET_META_UNKNOWN_COLUMN_TYPE, meta['targetType']);
+
+  var cats := if categoricalColumns = nil then new HashSet<string> else new HashSet<string>(categoricalColumns);
+  var types := if columnTypes = nil then new Dictionary<string, ColumnType> else columnTypes;
+
+  if isCategorical then
+  begin
+    types.Remove(target);
+    cats.Add(target);
+  end
+  else
+  begin
+    cats.Remove(target);
+    types[target] := t;
+  end;
+
+  columnTypes := if types.Count = 0 then nil else types;
+  categoricalColumns := if cats.Count = 0 then nil else cats.ToArray;
+end;
+
+function HasExplicitTypeForColumn(
+  columnName: string;
+  columnTypes: Dictionary<string, ColumnType>;
+  categoricalColumns: array of string
+): boolean;
+begin
+  if (columnTypes <> nil) and columnTypes.ContainsKey(columnName) then
+    exit(True);
+
+  if categoricalColumns <> nil then
+    foreach var name in categoricalColumns do
+      if name = columnName then
+        exit(True);
+
+  Result := False;
+end;
+
+function CanSkipCsvInference(
+  features: array of string;
+  target: string;
+  columnTypes: Dictionary<string, ColumnType>;
+  categoricalColumns: array of string
+): boolean;
+begin
+  if features = nil then
+    exit(False);
+
+  foreach var feature in features do
+    if not HasExplicitTypeForColumn(feature, columnTypes, categoricalColumns) then
+      exit(False);
+
+  if (target <> nil) and (target <> '') and not HasExplicitTypeForColumn(target, columnTypes, categoricalColumns) then
+    exit(False);
+
+  Result := True;
 end;
     
 function Normal(rnd: System.Random): real;
@@ -687,14 +762,21 @@ begin
   if CategoricalFeatures.Length > 0 then
     PrintlnTr(C_CATEGORICAL, CategoricalFeatures.JoinToString(', '));
 
-  Println;
+  var labeledFeatures := Features
+    .Where(f -> FeatureLabels.ContainsKey(f) and (FeatureLabels[f] <> nil) and (FeatureLabels[f] <> '') and (FeatureLabels[f] <> f))
+    .ToArray;
 
-  var maxLen := Features.Max(f -> f.Length);
-  
-  foreach var f in Features do
+  if labeledFeatures.Length > 0 then
   begin
-    var pad := new string(' ', maxLen - f.Length);
-    Println(f, pad, '→', FeatureLabels[f]);
+    Println;
+
+    var maxLen := labeledFeatures.Max(f -> f.Length);
+    
+    foreach var f in labeledFeatures do
+    begin
+      var pad := new string(' ', maxLen - f.Length);
+      Println(f, pad, '→', FeatureLabels[f]);
+    end;
   end;
 end;
 
@@ -1507,8 +1589,20 @@ begin
   var columnTypes: Dictionary<string, ColumnType>;
   var categoricalColumns: array of string;
   BuildFeatureTyping(meta, target, features, columnTypes, categoricalColumns);
+  ApplyTargetTyping(meta, target, columnTypes, categoricalColumns);
 
-  var df := DataFrame.FromCsv(csvPath, ',', True, columnTypes, categoricalColumns);
+  var canSkipInference := CanSkipCsvInference(features, target, columnTypes, categoricalColumns);
+
+  var df := DataFrame.FromCsv(
+    csvPath,
+    ',',
+    True,
+    columnTypes,
+    categoricalColumns,
+    1000,
+    not canSkipInference,
+    not canSkipInference
+  );
 
   var ds := new Dataset;
 

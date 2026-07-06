@@ -476,7 +476,8 @@ type
     /// Выводит DataFrame с настраиваемым числом строк.
     /// Для столбцов DateTime можно задать свой формат через dateTimeFormat.
     procedure Print(maxRows: integer := 10; headRows: integer := -1;
-      decimals: integer := 2; dateTimeFormat: string := nil);
+      decimals: integer := 2; dateTimeFormat: string := nil;
+      headColumns: integer := -1);
     /// Выводит схему датафрейма
     procedure PrintSchema;
     /// Выводит размер, схему и количество валидных значений 
@@ -488,7 +489,10 @@ type
       delimiter: char := ',';
       hasHeader: boolean := true;
       columnTypes: Dictionary<string, ColumnType> := nil;
-      categoricalColumns: array of string := nil
+      categoricalColumns: array of string := nil;
+      sampleSize: integer := 1000;
+      inferTypes: boolean := True;
+      inferCategorical: boolean := True
     ): DataFrame;
     /// Загружает DataFrame из многострочной строки в формате CSV
     static function FromCsvText(
@@ -496,7 +500,10 @@ type
       delimiter: char := ',';
       hasHeader: boolean := true;
       columnTypes: Dictionary<string, ColumnType> := nil;
-      categoricalColumns: array of string := nil
+      categoricalColumns: array of string := nil;
+      sampleSize: integer := 1000;
+      inferTypes: boolean := True;
+      inferCategorical: boolean := True
     ): DataFrame;
     /// Загружает DataFrame из листа ODS-файла
     static function FromODS(
@@ -504,7 +511,10 @@ type
       sheet: string := '';
       hasHeader: boolean := true;
       columnTypes: Dictionary<string, ColumnType> := nil;
-      categoricalColumns: array of string := nil
+      categoricalColumns: array of string := nil;
+      sampleSize: integer := 1000;
+      inferTypes: boolean := True;
+      inferCategorical: boolean := True
     ): DataFrame;
     /// Сохраняет DataFrame в csv-файл
     procedure ToCsv(filename: string);
@@ -812,6 +822,7 @@ function FormatDateTimeForPrint(dt: System.DateTime; fmt: string): string; forwa
 function CollectSelectorValues(df: DataFrame; selector: DataFrameCursor -> DataValue): List<real>; forward;
 function IsIntegralReal(x: real): boolean; forward;
 function BuildRowSignature(df: DataFrame; rowIndex: integer): string; forward;
+function GetCellTextForPrint(df: DataFrame; cursor: DataFrameCursor; rowIndex, colIndex, decimals: integer; dateTimeFormat: string): string; forward;
 function LoadFromRows(
   rows: array of StringArray;
   hasHeader: boolean;
@@ -5149,7 +5160,7 @@ begin
 end;
 
 procedure DataFrame.Print(maxRows: integer; headRows: integer; decimals: integer;
-  dateTimeFormat: string);
+  dateTimeFormat: string; headColumns: integer);
 begin
   var colCount := columns.Count;
   if colCount = 0 then exit;
@@ -5179,76 +5190,75 @@ begin
   if tailRows > rowCount - headRows then
     tailRows := rowCount - headRows;
 
-  var widths := new integer[colCount];
+  var visibleCols := new List<integer>;
+  var showEllipsisColumn := False;
+
+  if (headColumns < 0) and (colCount > 12) then
+    headColumns := 10;
+
+  if (headColumns < 0) or (headColumns >= colCount) or (colCount <= headColumns + 2) then
+    for var j := 0 to colCount - 1 do
+      visibleCols.Add(j)
+  else
+  begin
+    for var j := 0 to headColumns - 1 do
+      visibleCols.Add(j);
+
+    var tailStart := PABCSystem.Max(headColumns, colCount - 2);
+    showEllipsisColumn := tailStart > headColumns;
+
+    for var j := tailStart to colCount - 1 do
+      visibleCols.Add(j);
+  end;
+
+  var visibleCount := visibleCols.Count;
+  var widths := new integer[visibleCount];
+  var ellipsisWidth := 3;
 
   // --- начальная ширина = длина заголовка ---
-  for var j := 0 to colCount - 1 do
+  for var k := 0 to visibleCount - 1 do
   begin
-    widths[j] := columns[j].Info.Name.Length;
-    if widths[j] < 2 then
-      widths[j] := 2;
+    var j := visibleCols[k];
+    widths[k] := columns[j].Info.Name.Length;
+    if widths[k] < 2 then
+      widths[k] := 2;
   end;
 
   var cursor := GetCursor;
 
   // --- scan head ---
   for var i := 0 to headRows - 1 do
-  begin
-    cursor.MoveTo(i);
-
-    for var j := 0 to colCount - 1 do
+    for var k := 0 to visibleCount - 1 do
     begin
-      var s: string;
-
-      if not cursor.IsValid(j) then
-        s := 'NA'
-      else
-        case columns[j].Info.ColType of
-          ctInt:   s := cursor.Int(j).ToString;
-          ctFloat: s := cursor.Float(j).ToString('F' + decimals);
-          ctStr:   s := cursor.Str(j);
-          ctBool:  s := cursor.Bool(j).ToString;
-          ctDateTime: s := FormatDateTimeForPrint(cursor.DateTime(j), dateTimeFormat);
-        end;
-
-      if s.Length > widths[j] then
-        widths[j] := s.Length;
+      var s := GetCellTextForPrint(Self, cursor, i, visibleCols[k], decimals, dateTimeFormat);
+      if s.Length > widths[k] then
+        widths[k] := s.Length;
     end;
-  end;
 
   // --- scan tail ---
   if rowCount > headRows then
     for var i := rowCount - tailRows to rowCount - 1 do
       if i >= headRows then
-      begin
-        cursor.MoveTo(i);
-
-        for var j := 0 to colCount - 1 do
+        for var k := 0 to visibleCount - 1 do
         begin
-          var s: string;
-
-          if not cursor.IsValid(j) then
-            s := 'NA'
-          else
-            case columns[j].Info.ColType of
-              ctInt:   s := cursor.Int(j).ToString;
-              ctFloat: s := cursor.Float(j).ToString('F' + decimals);
-              ctStr:   s := cursor.Str(j);
-              ctBool:  s := cursor.Bool(j).ToString;
-              ctDateTime: s := FormatDateTimeForPrint(cursor.DateTime(j), dateTimeFormat);
-            end;
-
-          if s.Length > widths[j] then
-            widths[j] := s.Length;
+          var s := GetCellTextForPrint(Self, cursor, i, visibleCols[k], decimals, dateTimeFormat);
+          if s.Length > widths[k] then
+            widths[k] := s.Length;
         end;
-      end;
 
   // --- header ---
-  for var j := 0 to colCount - 1 do
+  for var k := 0 to visibleCount - 1 do
   begin
-    PABCSystem.Print(columns[j].Info.Name.PadLeft(widths[j]));
-    if j < colCount - 1 then
+    PABCSystem.Print(columns[visibleCols[k]].Info.Name.PadLeft(widths[k]));
+
+    if (showEllipsisColumn and (k = headColumns - 1)) or (k < visibleCount - 1) then
       Write(' ');
+
+    if showEllipsisColumn and (k = headColumns - 1) then
+    begin
+      PABCSystem.Print('...'.PadLeft(ellipsisWidth));
+      Write(' ');
+    end;
   end;
 
   PABCSystem.Println;
@@ -5256,27 +5266,19 @@ begin
   // --- head rows ---
   for var i := 0 to headRows - 1 do
   begin
-    cursor.MoveTo(i);
-
-    for var j := 0 to colCount - 1 do
+    for var k := 0 to visibleCount - 1 do
     begin
-      var s: string;
+      var s := GetCellTextForPrint(Self, cursor, i, visibleCols[k], decimals, dateTimeFormat);
+      PABCSystem.Print(s.PadLeft(widths[k]));
 
-      if not cursor.IsValid(j) then
-        s := 'NA'
-      else
-        case columns[j].Info.ColType of
-          ctInt:   s := cursor.Int(j).ToString;
-          ctFloat: s := cursor.Float(j).ToString('F' + decimals);
-          ctStr:   s := cursor.Str(j);
-          ctBool:  s := cursor.Bool(j).ToString;
-          ctDateTime: s := FormatDateTimeForPrint(cursor.DateTime(j), dateTimeFormat);
-        end;
-
-      PABCSystem.Print(s.PadLeft(widths[j]));
-
-      if j < colCount - 1 then
+      if (showEllipsisColumn and (k = headColumns - 1)) or (k < visibleCount - 1) then
         Write(' ');
+
+      if showEllipsisColumn and (k = headColumns - 1) then
+      begin
+        PABCSystem.Print('...'.PadLeft(ellipsisWidth));
+        Write(' ');
+      end;
     end;
 
     PABCSystem.Println;
@@ -5285,11 +5287,18 @@ begin
   // --- ellipsis ---
   if headRows + tailRows < rowCount then
   begin
-    for var j := 0 to colCount - 1 do
+    for var k := 0 to visibleCount - 1 do
     begin
-      PABCSystem.Print($'…'.PadLeft(widths[j]));
-      if j < colCount - 1 then
+      PABCSystem.Print($'…'.PadLeft(widths[k]));
+
+      if (showEllipsisColumn and (k = headColumns - 1)) or (k < visibleCount - 1) then
         Write(' ');
+
+      if showEllipsisColumn and (k = headColumns - 1) then
+      begin
+        PABCSystem.Print($'…'.PadLeft(ellipsisWidth));
+        Write(' ');
+      end;
     end;
 
     PABCSystem.Println;
@@ -5299,27 +5308,19 @@ begin
   for var i := rowCount - tailRows to rowCount - 1 do
     if i >= headRows then
     begin
-      cursor.MoveTo(i);
-
-      for var j := 0 to colCount - 1 do
+      for var k := 0 to visibleCount - 1 do
       begin
-        var s: string;
+        var s := GetCellTextForPrint(Self, cursor, i, visibleCols[k], decimals, dateTimeFormat);
+        PABCSystem.Print(s.PadLeft(widths[k]));
 
-        if not cursor.IsValid(j) then
-          s := 'NA'
-        else
-          case columns[j].Info.ColType of
-            ctInt:   s := cursor.Int(j).ToString;
-            ctFloat: s := cursor.Float(j).ToString('F' + decimals);
-            ctStr:   s := cursor.Str(j);
-            ctBool:  s := cursor.Bool(j).ToString;
-            ctDateTime: s := FormatDateTimeForPrint(cursor.DateTime(j), dateTimeFormat);
-          end;
-
-        PABCSystem.Print(s.PadLeft(widths[j]));
-
-        if j < colCount - 1 then
+        if (showEllipsisColumn and (k = headColumns - 1)) or (k < visibleCount - 1) then
           Write(' ');
+
+        if showEllipsisColumn and (k = headColumns - 1) then
+        begin
+          PABCSystem.Print('...'.PadLeft(ellipsisWidth));
+          Write(' ');
+        end;
       end;
 
       PABCSystem.Println;
@@ -5525,7 +5526,10 @@ static function DataFrame.FromCsv(
   delimiter: char;
   hasHeader: boolean;
   columnTypes: Dictionary<string, ColumnType>;
-  categoricalColumns: array of string
+  categoricalColumns: array of string;
+  sampleSize: integer;
+  inferTypes: boolean;
+  inferCategorical: boolean
 ): DataFrame;
 begin
   Result := CsvLoader.Load(
@@ -5537,11 +5541,12 @@ begin
     true,
     false,
     columnTypes,
-    1000,
+    sampleSize,
     nil,
-    true,
+    inferTypes,
     nil,
-    categoricalColumns
+    categoricalColumns,
+    inferCategorical
   );
 end;
 
@@ -5550,7 +5555,10 @@ static function DataFrame.FromCsvText(
   delimiter: char;
   hasHeader: boolean;
   columnTypes: Dictionary<string, ColumnType>;
-  categoricalColumns: array of string
+  categoricalColumns: array of string;
+  sampleSize: integer;
+  inferTypes: boolean;
+  inferCategorical: boolean
 ): DataFrame;
 begin
   Result := CsvLoader.LoadFromLines(
@@ -5561,11 +5569,12 @@ begin
     true,
     false,
     columnTypes,
-    1000,
+    sampleSize,
     nil,
-    true,
+    inferTypes,
     nil,
-    categoricalColumns
+    categoricalColumns,
+    inferCategorical
   );
 end;
 
@@ -5574,7 +5583,10 @@ static function DataFrame.FromODS(
   sheet: string;
   hasHeader: boolean;
   columnTypes: Dictionary<string, ColumnType>;
-  categoricalColumns: array of string
+  categoricalColumns: array of string;
+  sampleSize: integer;
+  inferTypes: boolean;
+  inferCategorical: boolean
 ): DataFrame;
 begin
   Result := LoadFromRows(
@@ -5584,12 +5596,12 @@ begin
     true,
     false,
     columnTypes,
-    1000,
+    sampleSize,
     nil,
-    true,
+    inferTypes,
     nil,
     categoricalColumns,
-    false,
+    inferCategorical,
     100,
     0.2,
     0.8,
@@ -8884,6 +8896,22 @@ begin
     exit(dt.ToString('yyyy-MM-dd', CultureInfo.InvariantCulture));
 
   Result := dt.ToString('yyyy-MM-dd HH:mm:ss', CultureInfo.InvariantCulture);
+end;
+
+function GetCellTextForPrint(df: DataFrame; cursor: DataFrameCursor; rowIndex, colIndex, decimals: integer; dateTimeFormat: string): string;
+begin
+  cursor.MoveTo(rowIndex);
+
+  if not cursor.IsValid(colIndex) then
+    exit('NA');
+
+  case df.columns[colIndex].Info.ColType of
+    ctInt:   Result := cursor.Int(colIndex).ToString;
+    ctFloat: Result := cursor.Float(colIndex).ToString('F' + decimals);
+    ctStr:   Result := cursor.Str(colIndex);
+    ctBool:  Result := cursor.Bool(colIndex).ToString;
+    ctDateTime: Result := FormatDateTimeForPrint(cursor.DateTime(colIndex), dateTimeFormat);
+  end;
 end;
 
 static function CSVLoader.Load(filename: string; 
