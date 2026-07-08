@@ -1,4 +1,4 @@
-uses MLABC;
+﻿uses MLABC;
 
 begin
   var ds := Datasets.MoscowHousing;
@@ -32,5 +32,5 @@ begin
   Println($'R² на тестовой выборке = {r2:F3}');
   Println;
   Println('Текстовое представление дерева:');
-  Println(model.Tree(features, nil).ToString);
+  Println(model.Tree(features));
 end.

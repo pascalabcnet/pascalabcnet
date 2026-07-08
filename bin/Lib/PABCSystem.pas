@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 /// Стандартный модуль
@@ -9710,7 +9710,7 @@ begin
     exit(n);
   
   var x := n;
-  var y := (x + 1) div 2;  
+  var y := x - x div 2;  
   
   while y < x do
   begin
