@@ -1750,6 +1750,10 @@ type
     
     /// Количество кластеров
     function ClustersCount: integer;
+    /// Возвращает все центры кластеров как массив векторов.
+    function Centers: array of Vector;
+    /// Возвращает центр одного кластера.
+    function Center(clusterIndex: integer): Vector;
 
     /// Количество кластеров.
     property NClusters: integer read fNClusters;
@@ -1759,8 +1763,6 @@ type
     property Tol: real read fTol;
     /// Количество запусков алгоритма.
     property NInit: integer read fNInit;
-    /// Матрица центроидов (k × p).
-    property ClusterCenters: Matrix read fCenters;
     /// Значение инерции (сумма квадратов расстояний до центроидов).
     property Inertia: real read fInertia;
     /// Число выполненных итераций.
@@ -8895,6 +8897,27 @@ begin
     ArgumentError(ER_MODEL_NOT_FITTED, 'KMeans');
 
   Result := fCenters.RowCount;
+end;
+
+function KMeans.Centers: array of Vector;
+begin
+  if not fFitted then
+    ArgumentError(ER_MODEL_NOT_FITTED, 'KMeans');
+
+  SetLength(Result, fCenters.RowCount);
+  for var i := 0 to fCenters.RowCount - 1 do
+    Result[i] := fCenters.GetRow(i);
+end;
+
+function KMeans.Center(clusterIndex: integer): Vector;
+begin
+  if not fFitted then
+    ArgumentError(ER_MODEL_NOT_FITTED, 'KMeans');
+
+  if (clusterIndex < 0) or (clusterIndex >= fCenters.RowCount) then
+    ArgumentOutOfRangeError(ER_LABEL_INDEX_OUT_OF_RANGE, clusterIndex, fCenters.RowCount);
+
+  Result := fCenters.GetRow(clusterIndex);
 end;
 
 //-----------------------------

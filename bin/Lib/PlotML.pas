@@ -107,6 +107,8 @@ type
       size: real := 8; marker: MarkerType := MarkerType.Circle; legend: string := nil);
     procedure Points(x, y: array of real; color: ColorWPF := DefaultColor; 
       size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
+    procedure Points(points: array of Vector; color: ColorWPF := DefaultColor;
+      size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
     procedure Points(x, y: array of real; labels: array of integer;
       size: real := 6; marker: MarkerType := MarkerType.Circle);  
     procedure Hist(x: array of real; bins: integer := 0; 
@@ -238,6 +240,9 @@ type
       color: ColorWPF := DefaultColor; size: real := 8; marker: MarkerType := MarkerType.Circle; legend: string := nil);
       
     static procedure Points(x, y: array of real; 
+      color: ColorWPF := DefaultColor; size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
+
+    static procedure Points(points: array of Vector;
       color: ColorWPF := DefaultColor; size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
       
     static procedure Points(x, y: array of real;
@@ -558,6 +563,27 @@ begin
     k += n;
 
   Result := p.Colors[k];
+end;
+
+procedure PointsVectorsToXY(points: array of Vector; var x, y: array of real);
+begin
+  if points = nil then
+    raise new System.ArgumentNullException;
+
+  x := new real[points.Length];
+  y := new real[points.Length];
+
+  for var i := 0 to points.Length - 1 do
+  begin
+    if points[i] = nil then
+      raise new System.ArgumentNullException;
+
+    if points[i].Length <> 2 then
+      raise new System.ArgumentException('Points: each vector must have exactly 2 coordinates');
+
+    x[i] := points[i][0];
+    y[i] := points[i][1];
+  end;
 end;
 
 function Clamp01(x: real): real;
@@ -1239,6 +1265,7 @@ begin
 
     rootChart := new ChartWPF;
     rootChart.Margin := new Thickness(2);
+    rootChart.LegendVisibility := Visibility.Hidden;
 
     win := new WindowWPF;
     win.Title := 'PlotML';
@@ -1501,6 +1528,15 @@ begin
 
     Plot.DrawPoints(chart, x, y, clr, size, marker, legend);
   end);
+end;
+
+procedure Cell.Points(points: array of Vector; color: ColorWPF;
+  size: real; marker: MarkerType; legend: string);
+begin
+  var x: array of real;
+  var y: array of real;
+  PointsVectorsToXY(points, x, y);
+  self.Points(x, y, color, size, marker, legend);
 end;
 
 procedure Cell.Points(x, y: array of real; labels: array of integer;
@@ -1952,6 +1988,7 @@ begin
     var container := rootChart.Content as GridWPF;
     if container <> nil then
       container.Children.Clear;
+    rootChart.LegendVisibility := Visibility.Hidden;
     rootPaletteIndex := 0;
   end);
 end;
@@ -2551,6 +2588,15 @@ begin
 
     DrawPoints(rootChart, x, y, clr, size, marker, legend);
   end);
+end;
+
+static procedure Plot.Points(points: array of Vector;
+  color: ColorWPF; size: real; marker: MarkerType; legend: string);
+begin
+  var x: array of real;
+  var y: array of real;
+  PointsVectorsToXY(points, x, y);
+  Plot.Points(x, y, color, size, marker, legend);
 end;
 
 static procedure Plot.Points(x, y: array of real; labels: array of integer;

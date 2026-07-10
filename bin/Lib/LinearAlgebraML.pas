@@ -294,6 +294,8 @@ type
     function GetRow(i: integer): Vector;
     /// Возвращает столбец матрицы в виде вектора.
     function GetCol(j: integer): Vector;
+    /// Возвращает несколько столбцов матрицы в виде массива векторов.
+    function Cols(params colIndices: array of integer): array of Vector;
     
     /// Возвращает матрицу, составленную из строк с заданными индексами.
     function TakeRows(indices: array of integer): Matrix;
@@ -1408,6 +1410,24 @@ begin
   Result := new Vector(RowCount);
   for var i := 0 to RowCount - 1 do
     Result[i] := fdata[i, j];
+end;
+
+function Matrix.Cols(colIndices: array of integer): array of Vector;
+begin
+  if colIndices = nil then
+    ArgumentNullError(ER_ARG_NULL, 'colIndices');
+  
+  SetLength(Result, colIndices.Length);
+  
+  for var i := 0 to colIndices.Length - 1 do
+  begin
+    var j := colIndices[i];
+    
+    if (j < 0) or (j >= ColCount) then
+      ArgumentOutOfRangeError(ER_COL_INDEX_OUT_OF_RANGE, j, ColCount);
+    
+    Result[i] := GetCol(j);
+  end;
 end;
 
 static function Matrix.Identity(n: integer): Matrix;
