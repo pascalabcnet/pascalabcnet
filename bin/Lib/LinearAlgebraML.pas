@@ -28,6 +28,7 @@ type
   Vector = class
   private
     fdata: array of real;
+    static fDefaultStringFormat: string := 'G3';
     static procedure CheckSameLength(const a, b: Vector);
     static procedure CheckNonEmpty(const v: Vector); 
     procedure SetData(i: integer; value: real) := fdata[i] := value;
@@ -112,9 +113,11 @@ type
     
     // ---------- Сервисные методы ----------
     /// Возвращает строковое представление вектора.
-    function ToString: string; override := $'{fdata.Select(x -> x.ToString(''G3''))}';
+    function ToString: string; override;
     /// Возвращает строковое представление вектора с заданной точностью.
     function ToString(digits: integer): string := $'{fdata.Select(x -> x.ToString(''G''+digits))}';
+    /// Формат строкового представления элементов по умолчанию.
+    static property DefaultStringFormat: string read fDefaultStringFormat write fDefaultStringFormat;
     /// Печатает вектор без перевода строки.
     procedure Print := fdata.Print;
     /// Печатает вектор с переводом строки.
@@ -378,6 +381,7 @@ implementation
 uses MLExceptions;
 
 const
+  DEFAULT_VECTOR_STRING_FORMAT = 'G3';
   ER_VECTOR_LENGTH_NEGATIVE =
     'Длина вектора должна быть неотрицательной!!Vector length must be non-negative';
   ER_VALUES_NULL =
@@ -524,6 +528,15 @@ end;
 function Vector.Clone: Vector;
 begin
   Result := new Vector(fdata);
+end;
+
+function Vector.ToString: string;
+begin
+  var fmt := fDefaultStringFormat;
+  if (fmt = nil) or (fmt = '') then
+    fmt := DEFAULT_VECTOR_STRING_FORMAT;
+  
+  Result := $'{fdata.Select(x -> x.ToString(fmt))}';
 end;
 
 function Vector.Normalize: Vector;
@@ -2010,6 +2023,5 @@ begin
 
   Result := x;
 end;
-
 
 end.

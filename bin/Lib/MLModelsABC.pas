@@ -8671,8 +8671,8 @@ begin
       end;
     end;
   
-    for var j := 0 to p - 1 do
-      centers[c,j] := X[chosen,j];
+  for var j := 0 to p - 1 do
+    centers[c,j] := X[chosen,j];
   end;
 
   var inertia := 0.0;
@@ -8730,12 +8730,14 @@ begin
 
     // --- 3. Пересчёт центроидов
     var maxShift := 0.0;
+    var hadEmptyCluster := False;
 
     for var c := 0 to k - 1 do
     begin
       if counts[c] = 0 then
       begin
         // Пустой кластер — переинициализация случайной точкой
+        hadEmptyCluster := True;
         var r := rnd.Next(n);
         for var j := 0 to p - 1 do
           centers[c,j] := X[r,j];
@@ -8753,6 +8755,9 @@ begin
         centers[c,j] := newVal;
       end;
     end;
+
+    if hadEmptyCluster then
+      maxShift := real.PositiveInfinity;
 
     if maxShift < fTol then
     begin
