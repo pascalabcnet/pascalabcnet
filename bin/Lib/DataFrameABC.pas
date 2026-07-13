@@ -5353,8 +5353,8 @@ end;
 
 procedure DataFrame.PrintInfo;
 begin
-  PABCSystem.Println($'Rows    : {RowCount}');
-  PABCSystem.Println($'Columns : {ColumnCount}');
+  PABCSystem.Println($'Строк     : {RowCount}');
+  PABCSystem.Println($'Столбцов  : {ColumnCount}');
 
   var nameWidth := fSchema.ColumnNames.Max(s -> s.Length);
 
@@ -5382,9 +5382,15 @@ begin
   begin
     var name := fSchema.NameAt(i).PadRight(nameWidth);
     var typ := types[i].PadRight(maxTypeWidth);
-    var cnt := Count(i);
+    var nonMissing := Count(i);
+    var missing := RowCount - nonMissing;
+    var info :=
+      if missing = 0 then
+        $'{nonMissing} без пропусков'
+      else
+        $'{nonMissing} без пропусков, {missing} пропусков';
 
-    PABCSystem.Println($'{name} : {typ} ({cnt} non-NA)');
+    PABCSystem.Println($'{name} : {typ} ({info})');
   end;
 end;
 

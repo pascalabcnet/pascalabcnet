@@ -402,7 +402,7 @@ type
     constructor Create(
       lambda: real := 0.0;
       learningRate: real := 0.1;
-      epochs: integer := 100;
+      epochs: integer := 300;
       tol: real := 1e-6;
       checkConvergence: boolean := true;
       minImprovement: real := 1e-8;

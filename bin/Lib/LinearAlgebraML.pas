@@ -28,7 +28,7 @@ type
   Vector = class
   private
     fdata: array of real;
-    static fDefaultStringFormat: string := 'G3';
+    static fDefaultStringFormat: string := 'smart';
     static procedure CheckSameLength(const a, b: Vector);
     static procedure CheckNonEmpty(const v: Vector); 
     procedure SetData(i: integer; value: real) := fdata[i] := value;
@@ -125,6 +125,11 @@ type
     
     /// Возвращает подмножество элементов по заданным индексам.
     function SubvectorBy(indices: array of integer): Vector;
+    /// Возвращает индексы элементов, удовлетворяющих условию.
+    function Indices(cond: real -> boolean): sequence of integer;
+    /// Возвращает индексы элементов, удовлетворяющих условию,
+    /// с доступом к значению и номеру элемента.
+    function Indices(cond: (real, integer) -> boolean): sequence of integer;
   end;
   
   Matrix = class
@@ -302,6 +307,8 @@ type
     
     /// Возвращает матрицу, составленную из строк с заданными индексами.
     function TakeRows(indices: array of integer): Matrix;
+    /// Возвращает матрицу, составленную из строк с заданными индексами.
+    function TakeRows(indices: sequence of integer): Matrix;
 
     // ---------- Статические методы ----------
     /// Возвращает единичную матрицу размера n
@@ -381,7 +388,7 @@ implementation
 uses MLExceptions;
 
 const
-  DEFAULT_VECTOR_STRING_FORMAT = 'G3';
+  DEFAULT_VECTOR_STRING_FORMAT = 'smart';
   ER_VECTOR_LENGTH_NEGATIVE =
     'Длина вектора должна быть неотрицательной!!Vector length must be non-negative';
   ER_VALUES_NULL =
@@ -454,6 +461,32 @@ const
   
 type
   MLNotSPDException = class(MLException);
+
+function FormatVectorValue(x: real; fmt: string): string;
+begin
+  if (fmt = nil) or (fmt = '') then
+    fmt := DEFAULT_VECTOR_STRING_FORMAT;
+  
+  if fmt = 'smart' then
+  begin
+    var ax := PABCSystem.Abs(x);
+    
+    if ax = 0 then
+      exit('0');
+    
+    if (ax >= 1e-6) and (ax < 1e12) then
+    begin
+      if ax >= 1 then
+        exit(x.ToString('0.##'))
+      else
+        exit(x.ToString('0.######'));
+    end;
+    
+    exit(x.ToString('G6'));
+  end;
+  
+  Result := x.ToString(fmt);
+end;
     
 //-----------------------------
 //           Vector
@@ -533,10 +566,7 @@ end;
 function Vector.ToString: string;
 begin
   var fmt := fDefaultStringFormat;
-  if (fmt = nil) or (fmt = '') then
-    fmt := DEFAULT_VECTOR_STRING_FORMAT;
-  
-  Result := $'{fdata.Select(x -> x.ToString(fmt))}';
+  Result := $'{fdata.Select(x -> FormatVectorValue(x, fmt))}';
 end;
 
 function Vector.Normalize: Vector;
@@ -704,6 +734,16 @@ begin
     resultVec[i] := self[indices[i]];
 
   Result := resultVec;
+end;
+
+function Vector.Indices(cond: real -> boolean): sequence of integer;
+begin
+  Result := fdata.Indices(cond);
+end;
+
+function Vector.Indices(cond: (real, integer) -> boolean): sequence of integer;
+begin
+  Result := fdata.Indices(cond);
 end;
 
 
@@ -1413,6 +1453,14 @@ begin
   end;
 
   Result := res;
+end;
+
+function Matrix.TakeRows(indices: sequence of integer): Matrix;
+begin
+  if indices = nil then
+    ArgumentNullError(ER_ARG_NULL, 'indices');
+  
+  Result := TakeRows(indices.ToArray);
 end;
 
 function Matrix.GetCol(j: integer): Vector;

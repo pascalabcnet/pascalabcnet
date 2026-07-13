@@ -8,8 +8,9 @@ begin
   var df := ds.Data;
   
   Println;
+  df.PrintInfo;
+
+  Println;
   Println('Первые строки:');
   ds.Head.Print;
-  Println;
-  df.Schema.Println
 end.

@@ -1,4 +1,4 @@
-name = RussianCities
+﻿name = RussianCities
 
 task = clustering
 
@@ -17,7 +17,6 @@ feature.region_name = categorical
 feature.federal_district = categorical
 feature.foundation_year = int
 feature.area = float
-feature.density = float
 
 feature.population.ru = население
 feature.lat.ru = широта
@@ -26,7 +25,6 @@ feature.region_name.ru = регион
 feature.federal_district.ru = федеральный округ
 feature.foundation_year.ru = год основания (нормализованный)
 feature.area.ru = площадь города (км²)
-feature.density.ru = плотность населения
 
 feature.population.en = population
 feature.lat.en = latitude
@@ -35,7 +33,6 @@ feature.region_name.en = region
 feature.federal_district.en = federal district
 feature.foundation_year.en = foundation year (normalized)
 feature.area.en = city area (km²)
-feature.density.en = population density
 
 value.federal_district.central.ru = Центральный
 value.federal_district.northwestern.ru = Северо-Западный

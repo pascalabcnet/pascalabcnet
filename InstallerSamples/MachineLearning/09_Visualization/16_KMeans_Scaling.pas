@@ -25,8 +25,6 @@ begin
   var (xs1, ys1) := X.Cols(0, 1);
   var (xs2, ys2) := Xscaled.Cols(0, 1);
 
-  var fig := Plot.Grid(1, 2);
-
   fig[0, 0].Points(xs1, ys1, labels1, size := 4);
   fig[0, 0].Points(model1.Centers, color := Colors.Black, size := 12, marker := MarkerType.Cross);
   fig[0, 0].Title := 'Без масштабирования';

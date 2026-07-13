@@ -10,7 +10,8 @@ begin
   var X := df.ToMatrix(features);
   var y := df.ToVector(target);
 
-  var (Xtrain, Xtest, ytrain, ytest) := Validation.TrainTestSplit(X, y, 0.2, 42);
+  var (Xtrain, Xtest, ytrain, ytest) := 
+    Validation.TrainTestSplit(X, y, 0.2, 42);
 
   var model := new LinearRegression;
 

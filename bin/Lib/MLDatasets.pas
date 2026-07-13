@@ -396,13 +396,23 @@ const
   C_TASK         = 'Задача: {0}!!Task: {0}';
   C_ROWS         = 'Строк: {0}!!Rows: {0}';
   C_FEATURES     = 'Признаков: {0}!!Features: {0}';
-  C_TARGET       = 'Цель: {0}!!Target: {0}';
+  C_TARGET_BLOCK = 'Целевой столбец:!!Target column:';
   C_NAME         = 'Имя: {0}!!Name: {0}';
   C_SOURCE       = 'Источник: {0}!!Source: {0}';
   C_URL          = 'Ссылка: {0}!!URL: {0}';
   C_CLASSES      = 'Классов: {0}!!Classes: {0}';
   C_FEATURE_LIST = 'Признаки:!!Features:';
   C_CATEGORICAL  = 'Категориальные признаки: {0}!!Categorical features: {0}';
+
+function TaskDisplayName(task: TaskType): string;
+begin
+  case task of
+    TaskType.Classification: Result := 'классификация';
+    TaskType.Regression: Result := 'регрессия';
+    TaskType.Clustering: Result := 'кластеризация';
+    else Result := task.ToString;
+  end;
+end;
 
 function TryParseFeatureTypeKey(key: string; var columnName: string): boolean;
 begin
@@ -752,12 +762,9 @@ begin
     Println;
   end;
 
-  PrintlnTr(C_TASK, Task);
+  PrintlnTr(C_TASK, TaskDisplayName(Task));
   PrintlnTr(C_ROWS, Data.RowCount);
   PrintlnTr(C_FEATURES, Features.Length);
-
-  if (Target <> nil) and (Target <> '') then
-    PrintlnTr(C_TARGET, Target);
 
   if CategoricalFeatures.Length > 0 then
     PrintlnTr(C_CATEGORICAL, CategoricalFeatures.JoinToString(', '));
@@ -766,16 +773,37 @@ begin
     .Where(f -> FeatureLabels.ContainsKey(f) and (FeatureLabels[f] <> nil) and (FeatureLabels[f] <> '') and (FeatureLabels[f] <> f))
     .ToArray;
 
+  var labelWidth := 0;
+  if labeledFeatures.Length > 0 then
+    labelWidth := labeledFeatures.Max(f -> f.Length);
+  if (Target <> nil) and (Target <> '') then
+    labelWidth := Max(labelWidth, Target.Length);
+
+  if (Target <> nil) and (Target <> '') then
+  begin
+    Println;
+    Println(Tr(C_TARGET_BLOCK));
+
+    var hasTargetLabel :=
+      FeatureLabels.ContainsKey(Target) and
+      (FeatureLabels[Target] <> nil) and
+      (FeatureLabels[Target] <> '') and
+      (FeatureLabels[Target] <> Target);
+
+    if hasTargetLabel then
+      Println(Target.PadRight(labelWidth), ' → ', FeatureLabels[Target])
+    else
+      Println(Target);
+  end;
+
   if labeledFeatures.Length > 0 then
   begin
     Println;
-
-    var maxLen := labeledFeatures.Max(f -> f.Length);
+    Println(Tr(C_FEATURE_LIST));
     
     foreach var f in labeledFeatures do
     begin
-      var pad := new string(' ', maxLen - f.Length);
-      Println(f, pad, '→', FeatureLabels[f]);
+      Println(f.PadRight(labelWidth), ' → ', FeatureLabels[f]);
     end;
   end;
 end;
@@ -1634,6 +1662,19 @@ begin
       ds.FeatureLabels[f] := meta[key]
     else
       ds.FeatureLabels[f] := f;
+  end;
+
+  if (ds.Target <> nil) and (ds.Target <> '') then
+  begin
+    var targetKey := 'target.' + Datasets.Language;
+    var legacyTargetKey := 'feature.' + ds.Target + '.' + Datasets.Language;
+
+    if meta.ContainsKey(targetKey) then
+      ds.FeatureLabels[ds.Target] := meta[targetKey]
+    else if meta.ContainsKey(legacyTargetKey) then
+      ds.FeatureLabels[ds.Target] := meta[legacyTargetKey]
+    else
+      ds.FeatureLabels[ds.Target] := ds.Target;
   end;
   
   ds.ValueLabels := [];

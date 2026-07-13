@@ -44,6 +44,7 @@ type
 
     function PrepareMatrix(df: DataFrame; var current: DataFrame): Matrix;
     function TransformDataFrame(df: DataFrame): DataFrame;
+    function BuildFeatureMatrix(df: DataFrame): Matrix;
     
     function FitTransformMatrix(var X: Matrix; y: Vector := nil): Matrix;
     
@@ -131,6 +132,8 @@ type
     /// Полученный DataFrame обычно не следует повторно подавать в тот же pipeline,
     /// так как DataFrame-преобразования будут выполнены ещё раз.
     function Transform(df: DataFrame): DataFrame;
+    /// Возвращает матрицу признаков после всех обученных шагов предобработки.
+    function GetTransformedFeatures(df: DataFrame): Matrix;
     
     function ToString: string; override;
     
@@ -166,6 +169,8 @@ type
     /// Делает предсказание числовых значений для объектов из DataFrame.
     /// Доступен после обучения конвейера (Fit).
     function Predict(df: DataFrame): Vector;
+    /// Возвращает целевой числовой столбец как вектор.
+    function GetTarget(df: DataFrame): Vector;
   end;
   
   /// Общая база для табличных конвейеров без учителя.
@@ -211,6 +216,8 @@ type
     /// Полученный DataFrame обычно не следует повторно подавать в тот же pipeline,
     /// так как DataFrame-преобразования будут выполнены ещё раз.
     function Transform(df: DataFrame): DataFrame;
+    /// Возвращает матрицу признаков после всех обученных шагов предобработки.
+    function GetTransformedFeatures(df: DataFrame): Matrix;
   
     function ToString: string; override;
     
@@ -330,6 +337,9 @@ const
   ER_PIPELINE_INVALID_STEP_ORDER =
     'Неверный порядок шагов в Pipeline: модель должна быть последней!!' +
     'Invalid pipeline step order: model must be the last step';
+  ER_PREPROCESSING_MODEL_NOT_ALLOWED =
+    'В BuildPreprocessing нельзя передавать модель: разрешены только шаги предобработки!!' +
+    'BuildPreprocessing does not allow a model: only preprocessing steps are permitted';
   ER_PIPELINE_LAST_NOT_SUPERVISED_MODEL =
     'Последний шаг Pipeline должен быть моделью с учителем!!' +
     'Last Pipeline step must be a supervised model';
@@ -461,6 +471,26 @@ begin
   Result := current;
 end;
 
+function PipelineBase.BuildFeatureMatrix(df: DataFrame): Matrix;
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  var current := TransformDataFrame(df);
+
+  if fFinalFeatures = nil then
+    Error(ER_PIPELINE_FINALFEATURES);
+
+  for var i := 0 to High(fFinalFeatures) do
+    if not current.HasColumn(fFinalFeatures[i]) then
+      ArgumentError(ER_PIPELINE_FEATURE_NOT_FOUND, fFinalFeatures[i]);
+
+  var X := current.ToMatrix(fFinalFeatures);
+  Result := TransformMatrix(X);
+end;
+
 function PipelineBase.FitTransformMatrix(var X: Matrix; y: Vector): Matrix;
 begin
   for var i := 0 to fMatrixSteps.Count - 1 do
@@ -589,7 +619,7 @@ begin
         ArgumentError(ER_PIPELINE_STEP_NULL, i);
 
       if step is IModel then
-        ArgumentError(ER_PIPELINE_INVALID_STEP_ORDER);
+        ArgumentError(ER_PREPROCESSING_MODEL_NOT_ALLOWED);
     end;
 
   var p := new ClassificationDataPipeline;
@@ -627,7 +657,7 @@ begin
         ArgumentError(ER_PIPELINE_STEP_NULL, i);
 
       if step is IModel then
-        ArgumentError(ER_PIPELINE_INVALID_STEP_ORDER);
+        ArgumentError(ER_PREPROCESSING_MODEL_NOT_ALLOWED);
     end;
 
   var p := new RegressionDataPipeline;
@@ -727,8 +757,8 @@ begin
       if step = nil then
         ArgumentError(ER_PIPELINE_STEP_NULL, i);
 
-      if step is IUnsupervisedModel then
-        ArgumentError(ER_PIPELINE_INVALID_STEP_ORDER);
+      if step is IModel then
+        ArgumentError(ER_PREPROCESSING_MODEL_NOT_ALLOWED);
     end;
 
   var p := new ClusteringDataPipeline;
@@ -765,8 +795,6 @@ function SupervisedDataPipelineBase.FitCore(df: DataFrame): SupervisedDataPipeli
 begin
   if df = nil then
     ArgumentNullError(ER_ARG_NULL, 'df');
-  if fModel = nil then
-    ArgumentError(ER_MODEL_NULL);
 
   var current: DataFrame;
   var X := PrepareMatrix(df, current);
@@ -794,27 +822,30 @@ begin
 
   X := FitTransformMatrix(X, y);
 
-  case fTask of
-    tkRegression:
-      begin
-        if not (fModel is IRegressor) then
-          ArgumentError(ER_MODEL_NOT_SUPERVISED, fModel.GetType.Name);
-        fModel := (fModel as IRegressor).Fit(X, y);
-      end;
-    tkClassification:
-      begin
-        if not (fModel is IClassifier) then
-          ArgumentError(ER_MODEL_NOT_CLASSIFIER);
-        fModel := (fModel as IClassifier).Fit(X, labels);
-      end;
-  end;
-
-  if fTask = tkClassification then
+  if fModel <> nil then
   begin
-    if fModel is IClassifierInternal(var cls) then
-      cls.SetClassLabels(classes)
-    else
-      Error(ER_MODEL_NOT_CLASSIFIER);
+    case fTask of
+      tkRegression:
+        begin
+          if not (fModel is IRegressor) then
+            ArgumentError(ER_MODEL_NOT_SUPERVISED, fModel.GetType.Name);
+          fModel := (fModel as IRegressor).Fit(X, y);
+        end;
+      tkClassification:
+        begin
+          if not (fModel is IClassifier) then
+            ArgumentError(ER_MODEL_NOT_CLASSIFIER);
+          fModel := (fModel as IClassifier).Fit(X, labels);
+        end;
+    end;
+
+    if fTask = tkClassification then
+    begin
+      if fModel is IClassifierInternal(var cls) then
+        cls.SetClassLabels(classes)
+      else
+        Error(ER_MODEL_NOT_CLASSIFIER);
+    end;
   end;
 
   fFitted := true;
@@ -823,6 +854,10 @@ end;
 
 function SupervisedDataPipelineBase.Transform(df: DataFrame): DataFrame := TransformDataFrame(df);
 
+function SupervisedDataPipelineBase.GetTransformedFeatures(df: DataFrame): Matrix;
+begin
+  Result := BuildFeatureMatrix(df);
+end;
 
 function SupervisedDataPipelineBase.PredictCore(df: DataFrame): Vector;
 begin
@@ -837,11 +872,7 @@ begin
   if not (fModel is IRegressor) then
     Error(ER_PREDICT_NOT_SUPPORTED);
 
-  var current := Transform(df);
-
-  var X := current.ToMatrix(fFinalFeatures);
-  X := TransformMatrix(X);
-
+  var X := GetTransformedFeatures(df);
   Result := (fModel as IRegressor).Predict(X);
 end;
 
@@ -858,11 +889,7 @@ begin
   if not (fModel is IClassifier) then
     Error(ER_PREDICT_NOT_SUPPORTED);
 
-  var current := Transform(df);
-
-  var X := current.ToMatrix(fFinalFeatures);
-  X := TransformMatrix(X);
-
+  var X := GetTransformedFeatures(df);
   Result := (fModel as IClassifier).Predict(X);
 end;
 
@@ -890,11 +917,7 @@ begin
   if not (fModel is IClassifier) then
     Error(ER_PREDICT_NOT_SUPPORTED);
 
-  var current := Transform(df);
-
-  var X := current.ToMatrix(fFinalFeatures);
-  X := TransformMatrix(X);
-
+  var X := GetTransformedFeatures(df);
   Result := (fModel as IClassifier).PredictLabels(X);
 end;
 
@@ -911,11 +934,7 @@ begin
   if not (fModel is IProbabilisticClassifier) then
     ArgumentError(ER_PROBA_NOT_SUPPORTED);
 
-  var current := Transform(df);
-
-  var X := current.ToMatrix(fFinalFeatures);
-  X := TransformMatrix(X);
-
+  var X := GetTransformedFeatures(df);
   Result := (fModel as IProbabilisticClassifier).PredictProba(X);
 end;
 
@@ -966,6 +985,20 @@ end;
 function RegressionDataPipeline.Predict(df: DataFrame): Vector;
 begin
   Result := inherited PredictCore(df);
+end;
+
+function RegressionDataPipeline.GetTarget(df: DataFrame): Vector;
+begin
+  if not fFitted then
+    NotFittedError(ER_FIT_NOT_CALLED);
+
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+
+  if not df.HasColumn(fTarget) then
+    ArgumentError(ER_COLUMN_NOT_FOUND, fTarget);
+
+  Result := df.ToVector(fTarget);
 end;
 
 procedure SupervisedDataPipelineBase.ValidateSchema(df: DataFrame);
@@ -1128,6 +1161,9 @@ begin
     exit(Self);
   end;
 
+  if step is IModel then
+    ArgumentError(ER_MODEL_NOT_CLUSTERER, step.GetType.Name);
+
   ArgumentError(ER_DATAPIPE_UNKNOWN_STEP_TYPE, step.ToString);
   Result := Self;
 end;
@@ -1156,21 +1192,25 @@ function UnsupervisedDataPipelineBase.FitCore(df: DataFrame): UnsupervisedDataPi
 begin
   if df = nil then
     ArgumentNullError(ER_ARG_NULL, 'df');
-  if fModel = nil then
-    ArgumentError(ER_MODEL_NULL);
 
   var current: DataFrame;
   var X := PrepareMatrix(df, current);
 
   X := FitTransformMatrix(X);
 
-  fModel := fModel.Fit(X);
+  if fModel <> nil then
+    fModel := fModel.Fit(X);
 
   fFitted := true;
   Result := Self;
 end;
 
 function UnsupervisedDataPipelineBase.Transform(df: DataFrame): DataFrame := TransformDataFrame(df);
+
+function UnsupervisedDataPipelineBase.GetTransformedFeatures(df: DataFrame): Matrix;
+begin
+  Result := BuildFeatureMatrix(df);
+end;
 
 function UnsupervisedDataPipelineBase.FitPredictCore(df: DataFrame): array of integer;
 begin
@@ -1236,27 +1276,7 @@ end;
 
 function UnsupervisedDataPipelineBase.TransformToMatrix(df: DataFrame): Matrix;
 begin
-  if df = nil then
-    ArgumentNullError(ER_ARG_NULL, 'df');
-  if not fFitted then
-    NotFittedError(ER_FIT_NOT_CALLED);
-
-  var current := Transform(df);
-
-  ValidateNumericFeatures(current);
-
-  if fFinalFeatures = nil then
-    Error(ER_PIPELINE_FINALFEATURES);
-  
-  for var i := 0 to High(fFinalFeatures) do
-    if not current.HasColumn(fFinalFeatures[i]) then
-      ArgumentError(ER_PIPELINE_FEATURE_NOT_FOUND, fFinalFeatures[i]);
-  
-  var X := current.ToMatrix(fFinalFeatures);
-
-  X := TransformMatrix(X);
-
-  Result := X;
+  Result := GetTransformedFeatures(df);
 end;
 
 function UnsupervisedDataPipelineBase.PredictCore(df: DataFrame): array of integer;

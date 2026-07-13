@@ -8,7 +8,7 @@ begin
   var y := df.EncodeLabels(ds.Target);
 
   var (Xtrain, Xtest, ytrain, ytest) :=
-    Validation.TrainTestSplit(X, y, 0.2, 1);
+    Validation.TrainTestSplit(X, y, 0.2, seed := 2);
 
   var model := new LogisticRegression;
 

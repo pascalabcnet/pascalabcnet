@@ -1560,7 +1560,7 @@ begin
     var xs := ind.ConvertAll(i -> x[i]);
     var ys := ind.ConvertAll(i -> y[i]);
 
-    var clr := pal.Colors[c mod pal.Colors.Length];
+    var clr := if c = -1 then Colors.Black else ColorFromPalette(pal, c);
 
     self.Points(xs, ys, clr, size, marker, nil);
   end;
@@ -2620,10 +2620,12 @@ begin
     var xs := ind.ConvertAll(i -> x[i]);
     var ys := ind.ConvertAll(i -> y[i]);
 
-    var clr :=
-      if color<>DefaultColor
+    var clr: ColorWPF :=
+      if c = -1
+      then Colors.Black
+      else if color<>DefaultColor
       then color
-      else pal.Colors[c mod pal.Colors.Length];
+      else ColorFromPalette(pal, c);
 
     Points(xs, ys, clr, size, marker, nil);
   end;

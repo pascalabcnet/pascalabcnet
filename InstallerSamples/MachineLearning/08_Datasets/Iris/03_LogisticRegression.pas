@@ -7,7 +7,7 @@ begin
   var X := df.ToMatrix(ds.Features);
   var y := df.EncodeLabels(ds.Target); 
   
-  var model := new LogisticRegression;
+  var model := new LogisticRegression();
   
   model.Fit(X, y); 
 
