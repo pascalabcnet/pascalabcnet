@@ -47,9 +47,12 @@ type
   MarkerType = (Circle, Box, Triangle, Diamond, Cross);
   MatrixNormalization = MetricsABC.MatrixNormalization;
 
+  /// Палитра цветов для последовательного выбора серий на графиках.
   Palette = class
   public
+    /// Цвета палитры в порядке использования.
     Colors: array of Color;
+    /// Создаёт палитру из заданного набора цветов.
     constructor Create(params c: array of Color);
   end;
   
@@ -63,14 +66,21 @@ type
     static procedure InitPalettes;
   
   public
+    /// Возвращает стандартную палитру модуля.
     static function &Default: Palette;
+    /// Возвращает мягкую пастельную палитру.
     static function Pastel: Palette;
+    /// Возвращает тёмную контрастную палитру.
     static function Dark: Palette;
+    /// Возвращает яркую палитру для нескольких серий.
     static function Bright: Palette;
+    /// Возвращает приглушённую палитру.
     static function Muted: Palette;
   
+    /// Регистрирует пользовательскую палитру по имени.
     static procedure Register(name: string; p: Palette);
     
+    /// Возвращает палитру по имени.
     static function Get(name: string): Palette;
   end;
   
@@ -93,80 +103,122 @@ type
     procedure SetXLabel(s: string);
     procedure SetYLabel(s: string);
   public
+    /// Создаёт ячейку в сетке составной фигуры.
     constructor Create(g: GridWPF; r,c: integer);
 
+    /// Возвращает i-й цвет текущей палитры.
     function PaletteColor(i: integer): ColorWPF;
 
+    /// Рисует линейный график по массивам x и y.
     procedure LineGraph(x, y: array of real; color: ColorWPF := DefaultColor; 
       thickness: real := 2; legend: string := nil);
+    /// Рисует прямую вида y = k*x + b.
     procedure Line(k, b: real; color: ColorWPF := DefaultColor;
       thickness: real := 2; legend: string := nil);
+    /// Рисует прямую вида A*x + B*y + C = 0.
     procedure Line(A, B, C: real; color: ColorWPF := DefaultColor;
       thickness: real := 2; legend: string := nil);
+    /// Рисует одну точку на плоскости.
     procedure Point(x, y: real; color: ColorWPF := DefaultColor;
       size: real := 8; marker: MarkerType := MarkerType.Circle; legend: string := nil);
+    /// Строит диаграмму рассеяния по массивам x и y.
     procedure Points(x, y: array of real; color: ColorWPF := DefaultColor; 
       size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
+    /// Строит диаграмму рассеяния по массиву двумерных точек.
     procedure Points(points: array of Vector; color: ColorWPF := DefaultColor;
       size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
+    /// Строит диаграмму рассеяния с раскраской по целочисленным меткам.
     procedure Points(x, y: array of real; labels: array of integer;
       size: real := 6; marker: MarkerType := MarkerType.Circle);  
+    /// Строит гистограмму значений.
     procedure Hist(x: array of real; bins: integer := 0; 
       color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil);
+    /// Строит столбчатую диаграмму по значениям y.
     procedure Bar(y: array of real; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит столбчатую диаграмму по массивам x и y.
     procedure Bar(x, y: array of real; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит горизонтальную столбчатую диаграмму с текстовыми подписями.
     procedure Bar(labels: array of string; values: array of real; color: ColorWPF := DefaultColor;
       width: real := 0.75; alpha: real := 0.85; legend: string := nil);
+    /// Строит тепловую карту для числовой матрицы.
     procedure Heatmap(m: array[,] of real);
+    /// Отображает одно изображение, записанное в виде плоского массива.
     procedure Image(values: array of real; width, height: integer; invert: boolean := false);
+    /// Отображает сетку изображений из строк матрицы X.
     procedure ImageGrid(X: Matrix; width, height: integer; startRow: integer := 0;
       count: integer := 20; cols: integer := 5; spacing: real := 0.1;
       normalize: boolean := false; invert: boolean := false);
       
 // --- Vector overloads
+    /// Рисует линейный график по векторам x и y.
     procedure LineGraph(x, y: Vector; color: ColorWPF := DefaultColor;
       thickness: real := 2; legend: string := nil);
+    /// Строит диаграмму рассеяния по векторам x и y.
     procedure Points(x, y: Vector; color: ColorWPF := DefaultColor;
       size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
+    /// Строит диаграмму рассеяния по векторам x и y с раскраской по меткам.
     procedure Points(x, y: Vector; labels: array of integer;
       size: real := 6; marker: MarkerType := MarkerType.Circle);
+    /// Строит гистограмму значений вектора.
     procedure Hist(x: Vector; bins: integer := 0;
       color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil);
+    /// Строит столбчатую диаграмму по значениям вектора y.
     procedure Bar(y: Vector; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит столбчатую диаграмму по векторам x и y.
     procedure Bar(x, y: Vector; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Отображает одно изображение из вектора пикселей.
     procedure Image(values: Vector; width, height: integer; invert: boolean := false);
       
+    /// Строит карту решений классификатора на двумерной плоскости.
     procedure Surface(x1, x2: array of real; nx, ny: integer; f: Matrix -> array of integer; pal: PlotML.Palette := nil);      
       
+    /// Строит тепловую карту для матрицы.
     procedure Heatmap(m: Matrix);
+    /// Отображает одну ячейку тепловой карты с числом или подписью.
     procedure HeatCell(value, minValue, maxValue: real; text: string := nil);
+    /// Отображает матрицу ошибок по целочисленной таблице частот.
     procedure ConfusionMatrix(m: array[,] of integer; classNames: array of string := nil;
       normalize: MatrixNormalization := MatrixNormalization.None; sortClassNames: boolean := false);
+    /// Отображает матрицу ошибок по вещественной матрице.
     procedure ConfusionMatrix(m: Matrix; classNames: array of string := nil;
       normalize: MatrixNormalization := MatrixNormalization.None; sortClassNames: boolean := false);
+    /// Отображает матрицу ошибок по объекту ConfusionMatrix.
     procedure ConfusionMatrix(cm: MetricsABC.ConfusionMatrix; classNames: array of string := nil;
       normalize: MatrixNormalization := MatrixNormalization.None; sortClassNames: boolean := false);
     
+    /// Добавляет текстовую подпись в область графика.
     procedure Text(s: string; x: real := 0.5; y: real := 0.5);
     
+    /// Устанавливает палитру цветов для данной ячейки.
     procedure SetPalette(p: PaletteWPF);
+    /// Скрывает ось X.
     procedure HideXAxis;
+    /// Скрывает ось Y.
     procedure HideYAxis;
+    /// Скрывает сетку графика.
     procedure HideGrid;
+    /// Скрывает оси и сетку.
     procedure HideAxesAndGrid;
     
+    /// Устанавливает границы области отображения по обеим осям.
     procedure Limits(xmin, xmax, ymin, ymax: real);
+    /// Устанавливает границы по оси X.
     procedure XLim(xmin,xmax: real);
+    /// Устанавливает границы по оси Y.
     procedure YLim(ymin,ymax: real);
     
+    /// Очищает содержимое ячейки.
     procedure Clear;
     
+    /// Заголовок ячейки.
     property Title: string write SetTitle;
+    /// Подпись оси X.
     property XLabel: string write SetXLabel;
+    /// Подпись оси Y.
     property YLabel: string write SetYLabel;
   end;
 
@@ -175,7 +227,9 @@ type
     grid: GridWPF;
     cells: array[,] of Cell;
   public
+    /// Создаёт сетку графиков из rows строк и cols столбцов.
     constructor Create(rows,cols: integer);
+    /// Доступ к ячейке фигуры по индексам строки и столбца.
     property Item[r,c: integer]: Cell read cells[r,c]; default;
   end;
 
@@ -226,132 +280,188 @@ type
     static procedure SetXLabel(s: string);
     static procedure SetYLabel(s: string);
   public
+    /// Добавляет готовую визуальную серию на график.
     static procedure AddSeries(chart: ChartWPF; series: UIElement);
 
+    /// Возвращает i-й цвет активной палитры.
     static function PaletteColor(i: integer): ColorWPF;
 
+    /// Рисует линейный график по массивам x и y.
     static procedure LineGraph(x, y: array of real;
       color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
+    /// Рисует прямую вида y = k*x + b.
     static procedure Line(k, b: real;
       color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
+    /// Рисует прямую вида A*x + B*y + C = 0.
     static procedure Line(A, B, C: real;
       color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
+    /// Рисует одну точку на плоскости.
     static procedure Point(x, y: real;
       color: ColorWPF := DefaultColor; size: real := 8; marker: MarkerType := MarkerType.Circle; legend: string := nil);
       
+    /// Строит диаграмму рассеяния по массивам x и y.
     static procedure Points(x, y: array of real; 
       color: ColorWPF := DefaultColor; size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
 
+    /// Строит диаграмму рассеяния по массиву двумерных точек.
     static procedure Points(points: array of Vector;
       color: ColorWPF := DefaultColor; size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
       
+    /// Строит диаграмму рассеяния с раскраской по целочисленным меткам.
     static procedure Points(x, y: array of real;
       labels: array of integer; color: ColorWPF := DefaultColor; size: real := 6; marker: MarkerType := MarkerType.Circle);
       
+    /// Строит гистограмму значений.
     static procedure Hist(x: array of real; bins: integer := 0;
       color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil);
       
+    /// Строит столбчатую диаграмму по значениям y.
     static procedure Bar(y: array of real; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
       
+    /// Строит столбчатую диаграмму по массивам x и y.
     static procedure Bar(x, y: array of real; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
       
+    /// Строит горизонтальную столбчатую диаграмму с текстовыми подписями.
     static procedure Bar(labels: array of string; values: array of real; color: ColorWPF := DefaultColor;
       width: real := 0.75; alpha: real := 0.85; legend: string := nil);
       
+    /// Отображает одно изображение, записанное в виде плоского массива.
     static procedure Image(values: array of real; width, height: integer; invert: boolean := false);
+    /// Отображает сетку изображений из строк матрицы X.
     static procedure ImageGrid(X: Matrix; width, height: integer; startRow: integer := 0;
       count: integer := 20; cols: integer := 5; spacing: real := 0.1;
       normalize: boolean := false; invert: boolean := false);
 
+    /// Строит несколько гистограмм на одном графике.
     static procedure HistMany(arrays: array of array of real; bins: integer := 0;
       colors: array of ColorWPF := nil; alpha: real := 0.7; legend: array of string := nil);
       
+    /// Строит матрицу попарных диаграмм признаков.
     static procedure PairPlot(X: array[,] of real; names: array of string := nil; maxPoints: integer := 2000);
+    /// Строит матрицу попарных диаграмм с раскраской по числовым значениям.
     static procedure PairPlot(X: array[,] of real; values: array of real; names: array of string := nil; bins: integer := 5; maxPoints: integer := 2000);
+    /// Строит матрицу попарных диаграмм с раскраской по меткам классов.
     static procedure PairPlot(X: array[,] of real; labels: array of integer; names: array of string; maxPoints: integer := 2000);
     
+    /// Строит тепловую карту для числовой матрицы.
     static procedure Heatmap(m: array[,] of real);
+    /// Строит тепловую карту с подписями строк и столбцов.
     static procedure Heatmap(m: array[,] of real; names: array of string);
+    /// Отображает матрицу ошибок по целочисленной таблице частот.
     static procedure ConfusionMatrix(m: array[,] of integer; classNames: array of string := nil;
       normalize: MatrixNormalization := MatrixNormalization.None; sortClassNames: boolean := false);
+    /// Отображает матрицу ошибок по вещественной матрице.
     static procedure ConfusionMatrix(m: Matrix; classNames: array of string := nil;
       normalize: MatrixNormalization := MatrixNormalization.None; sortClassNames: boolean := false);
+    /// Отображает матрицу ошибок по объекту ConfusionMatrix.
     static procedure ConfusionMatrix(cm: MetricsABC.ConfusionMatrix; classNames: array of string := nil;
       normalize: MatrixNormalization := MatrixNormalization.None; sortClassNames: boolean := false);
     
+    /// Строит карту решений по уже вычисленным меткам на сетке.
     static procedure Surface(labels: array of integer; nx, ny: integer; xmin, xmax, ymin, ymax: real; pal: PlotML.Palette := nil);
 
+    /// Строит карту решений по функции предсказания двумерного классификатора.
     static procedure Surface(x1, x2: array of real; nx, ny: integer; f: Matrix -> array of integer; pal: PlotML.Palette := nil);
 
 // с матрицами - векторами   
    
+    /// Рисует линейный график по векторам x и y.
     static procedure LineGraph(x, y: Vector;
       color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil) 
       := LineGraph(x.Data, y.Data, color, thickness, legend);
     
+    /// Строит диаграмму рассеяния по векторам x и y.
     static procedure Points(x, y: Vector; color: ColorWPF := DefaultColor; size: real := 6;
       marker: MarkerType := MarkerType.Circle; legend: string := nil)
       := Points(x.Data, y.Data, color, size, marker, legend);
     
+    /// Строит диаграмму рассеяния по векторам x и y с раскраской по меткам.
     static procedure Points(x, y: Vector;
       labels: array of integer; color: ColorWPF := DefaultColor; size: real := 6;
       marker: MarkerType := MarkerType.Circle) 
       := Points(x.Data, y.Data, labels, color, size, marker);
     
+    /// Строит гистограмму значений вектора.
     static procedure Hist(x: Vector; bins: integer := 0;
       color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil)
       := Hist(x.Data, bins, color, alpha, legend);
       
+    /// Строит столбчатую диаграмму по значениям вектора y.
     static procedure Bar(y: Vector; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil)
       := Bar(y.Data, color, width, alpha, legend);
       
+    /// Строит столбчатую диаграмму по векторам x и y.
     static procedure Bar(x, y: Vector; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil)
       := Bar(x.Data, y.Data, color, width, alpha, legend);
 
+    /// Отображает одно изображение из вектора пикселей.
     static procedure Image(values: Vector; width, height: integer; invert: boolean := false)
       := Image(values.Data, width, height, invert);
       
+    /// Строит матрицу попарных диаграмм признаков.
     static procedure PairPlot(X: Matrix; names: array of string := nil; maxPoints: integer := 2000)
       := PairPlot(X.Data, names, maxPoints);
+    /// Строит матрицу попарных диаграмм с раскраской по числовым значениям.
     static procedure PairPlot(X: Matrix; values: array of real; names: array of string := nil; bins: integer := 5; maxPoints: integer := 2000)
       := PairPlot(X.Data, values, names, bins, maxPoints);
+    /// Строит матрицу попарных диаграмм с раскраской по меткам классов.
     static procedure PairPlot(X: Matrix; labels: array of integer; names: array of string; maxPoints: integer := 2000)
       := PairPlot(X.Data, labels, names, maxPoints);
     
+    /// Строит тепловую карту для матрицы.
     static procedure Heatmap(m: Matrix) := Heatmap(m.Data);
+    /// Строит тепловую карту для матрицы с подписями.
     static procedure Heatmap(m: Matrix; names: array of string) := Heatmap(m.Data, names);
     
     
+    /// Создаёт составную фигуру из нескольких ячеек.
     static function Grid(rows,cols: integer): Figure;
 
+    /// Устанавливает палитру по умолчанию для новых серий.
     static procedure SetPalette(p: PaletteWPF);
     
+    /// Обеспечивает наличие осей на графике.
     static procedure EnsureAxes(chart: ChartWPF);
    
+    /// Скрывает ось X.
     static procedure HideXAxis;
+    /// Скрывает ось Y.
     static procedure HideYAxis;
+    /// Скрывает сетку графика.
     static procedure HideGrid;
+    /// Скрывает оси и сетку.
     static procedure HideAxesAndGrid;
+    /// Устанавливает границы области отображения по обеим осям.
     static procedure Limits(xmin,xmax,ymin,ymax: real);
+    /// Устанавливает границы по оси X.
     static procedure XLim(xmin,xmax: real);
+    /// Устанавливает границы по оси Y.
     static procedure YLim(ymin,ymax: real);
+    /// Одним вызовом задаёт заголовок и подписи осей.
     static procedure SetLabels(title: string := ''; xlabel: string := ''; ylabel: string := '');
     
+    /// Очищает текущее окно визуализации.
     static procedure Clear;
     
+    /// Сохраняет текущее окно визуализации в файл.
     static procedure Save(filename: string);
 
+    /// Возвращает текстовое дерево визуальных WPF-элементов для отладки.
     static function DebugVisualTree: string;
     
+    /// Заголовок текущего графика.
     static property Title: string write SetTitle;
+    /// Подпись оси X текущего графика.
     static property XLabel: string write SetXLabel;
+    /// Подпись оси Y текущего графика.
     static property YLabel: string write SetYLabel;
   end;
 
+  /// Внутренний график гистограммы.
   HistogramPlot = class(PlotWPF)
   private
     fBins: List<Polygon>;
@@ -364,17 +474,25 @@ type
     MaxValue: real := real.NaN;
    
   public
+    /// Создаёт пустой график гистограммы.
     constructor Create;
   
+    /// Загружает данные для построения гистограммы.
     procedure SetData(x: array of real);
   
+    /// Цвет столбцов гистограммы.
     property Color: ColorWPF read fColor write fColor;
+    /// Прозрачность столбцов гистограммы.
     property Alpha: real read fAlpha write fAlpha;
+    /// Число интервалов гистограммы.
     property BinsCount: integer read fBinsCount write fBinsCount;
+    /// Текстовое описание серии.
     property Description: string read fDescription write fDescription;
+    /// Максимальная высота столбца.
     property MaxCount: integer read fMaxCount;
   end;
 
+  /// Внутренний график неявно заданной прямой.
   ImplicitLinePlot = class(PlotWPF)
   private
     fA, fB, fC: real;
@@ -388,22 +506,29 @@ type
     function ComputeBounds: InteractiveDataDisplay.WPF.DataRect; override;
     procedure OnRender(dc: DrawingContext); override;
   public
+    /// Создаёт график прямой A*x + B*y + C = 0.
     constructor Create(A, B, C: real; color: ColorWPF; thickness: real);
 
+    /// Текстовое описание серии.
     property Description: string read fDescription write fDescription;
   end;
 
+  /// Внутренний график горизонтальной столбчатой диаграммы.
   HorizontalBarPlot = class(PlotWPF)
   private
     fElements: List<UIElement> := new List<UIElement>;
     fDescription: string;
   public
+    /// Создаёт пустой график столбчатой диаграммы.
     constructor Create;
+    /// Загружает данные для горизонтальной столбчатой диаграммы.
     procedure SetData(labels: array of string; values: array of real;
       color: ColorWPF; width: real; alpha: real);
+    /// Текстовое описание серии.
     property Description: string read fDescription write fDescription;
   end;
 
+  /// Внутренний график тепловой карты.
   HeatmapPlot = class(PlotWPF)
   private
     fCells: List<Polygon> := new List<Polygon>;
@@ -414,18 +539,24 @@ type
     function Clamp01(x: real): real;
     function ColorForValue(v: real): ColorWPF;
   public
+    /// Создаёт пустую тепловую карту.
     constructor Create;
 
+    /// Загружает матрицу значений для тепловой карты.
     procedure SetData(m: array[,] of real);
 
+    /// Минимальное значение в текущей матрице.
     property MinValue: real read fMinValue;
+    /// Максимальное значение в текущей матрице.
     property MaxValue: real read fMaxValue;
   end;
   
+  /// Внутренний график карты решений классификатора.
   SurfacePlot = class(PlotWPF)
   private
     fRects: List<Polygon> := new List<Polygon>;
   public
+    /// Загружает метки классов на прямоугольной сетке.
     procedure SetData(labels: array of integer;
       nx, ny: integer; xmin, xmax, ymin, ymax: real; pal: Palette);
   end;

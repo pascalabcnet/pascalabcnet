@@ -24,7 +24,7 @@ begin
     );
 
   var labels := pipe.FitPredict(df);
-  df.AddIntColumn('cluster', labels, nil);
+  df := df.WithColumnInt('cluster', labels, nil);
 
   Println('Кластеризация российских городов');
   Println;

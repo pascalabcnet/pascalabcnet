@@ -1,7 +1,7 @@
-// В этом примере показан unsupervised pipeline на DataFrame.
+﻿// В этом примере показан unsupervised pipeline на DataFrame.
 //
 // Мы сначала готовим признаки в таблице,
-// а затем передаём их в UDataPipeline:
+// а затем передаём их в DataPipeline:
 // StandardScaler -> KMeans.
 //
 // Такой конвейер удобен, когда нужно явно сохранить
@@ -26,20 +26,25 @@ begin
       new KMeans(3, seed := 42)
     );
 
+  // Модель вычисляет номера кластеров
   var labels := pipe.FitPredict(df);
-  df.AddIntColumn('cluster', labels, nil);
+  
+  // Добавляем к DataFrame столбец с номером кластера
+  df := df.WithColumnInt('cluster', labels);
+  // Группируем города по кластерам
+  var clusters := df.GroupBy('cluster').Groups;
 
-  Println('Кластеризация городов с помощью UDataPipeline');
+  Println('Кластеризация городов с помощью DataPipeline');
   Println;
-  Println('Используемые признаки: log_population, density');
+  Println('Используемые признаки:',features);
   Println('Число найденных кластеров: 3');
 
-  for var cluster := 0 to 2 do
+  foreach var cluster in clusters do
   begin
     Println;
-    Println($'Кластер {cluster + 1}:');
+    Println($'Кластер {cluster.Key.Int + 1}:');
 
-    df.Filter(row -> row.Int('cluster') = cluster)
+    cluster.Data
       .SortBy('population', descending := True)
       .Select(['city', 'population', 'density'])
       .Head(5)

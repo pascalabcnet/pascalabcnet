@@ -1,4 +1,4 @@
-﻿uses MLABC, PlotML;
+uses MLABC, PlotML;
 
 begin
   var ds := Datasets.RussianCities;
@@ -18,7 +18,7 @@ begin
   km.Fit(X);
 
   var labels: array of integer := km.Predict(X);
-  df.AddIntColumn('cluster', labels, nil);
+  df := df.WithColumnInt('cluster', labels, nil);
 
   // --- координаты
   var lon := df.ToVector('lon').ToArray;

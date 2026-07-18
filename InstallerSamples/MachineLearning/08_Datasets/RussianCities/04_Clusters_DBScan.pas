@@ -1,4 +1,4 @@
-﻿// Подбор параметра eps для DBSCAN с использованием фильтрации и составного скоринга.
+// Подбор параметра eps для DBSCAN с использованием фильтрации и составного скоринга.
 //
 // Рассматривались различные значения eps и для каждого вычислялись:
 // • число кластеров (k)
@@ -131,7 +131,7 @@ begin
   // --- финальная модель
   var model := new DBSCAN(bestEps, 5);
   var labels := model.FitPredict(X);
-  df.AddIntColumn('cluster_db', labels, nil);
+  df := df.WithColumnInt('cluster_db', labels, nil);
 
   // --- итог
   var counts := new Dictionary<integer, integer>();

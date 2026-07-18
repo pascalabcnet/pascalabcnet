@@ -129,9 +129,10 @@ type
     /// Не изменяйте его, иначе DataFrame будет повреждён.
     function GetColumn(i: integer): Column;
 
-    /// Добавляет в DataFrame столбец-синоним,
+    /// Служебный низкоуровневый метод внутренней сборки DataFrame.
+    /// Добавляет в текущий DataFrame столбец-синоним,
     /// разделяющий те же массивы данных и валидности с исходным столбцом.
-    /// Изменение данных повлияет на все DataFrame, использующие этот столбец.
+    /// Не предназначен для использования в прикладном коде.
     procedure AddColumnAlias(src: Column);
     
     function ExtendSchema(name: string; colType: ColumnType; isCategorical: boolean): DataFrameSchema;
@@ -184,28 +185,40 @@ type
     /// Возвращает кортеж (trainDataFrame, testDataFrame).
     function StratifiedTrainTestSplit(target: string; testRatio: real := 0.2; seed: integer := -1): (DataFrame, DataFrame);
     
-    /// Добавляет столбец целых чисел.
+    /// Служебный низкоуровневый метод внутренней сборки DataFrame.
+    /// Добавляет в текущий DataFrame столбец целых чисел.
+    /// Не предназначен для использования в прикладном коде.
     /// Переданные массивы сохраняются как есть.
-    /// Не изменяйте их после передачи в DataFrame.
+    /// Не изменяйте их после передачи в DataFrame
     procedure AddIntColumn(name: string; data: array of integer; valid: array of boolean := nil);
-    /// Добавляет столбец вещественных чисел.
+    /// Служебный низкоуровневый метод внутренней сборки DataFrame.
+    /// Добавляет в текущий DataFrame столбец вещественных чисел.
+    /// Не предназначен для использования в прикладном коде.
     /// Переданные массивы сохраняются как есть.
     /// Не изменяйте их после передачи в DataFrame.
     procedure AddFloatColumn(name: string; data: array of real; valid: array of boolean := nil);
-    /// Добавляет строковый столбец.
+    /// Служебный низкоуровневый метод внутренней сборки DataFrame.
+    /// Добавляет в текущий DataFrame строковый столбец.
+    /// Не предназначен для использования в прикладном коде.
     /// Переданные массивы сохраняются как есть.
     /// Не изменяйте их после передачи в DataFrame.
     procedure AddStrColumn(name: string; data: array of string; valid: array of boolean := nil);
-    /// Добавляет строковый столбец.
+    /// Служебный низкоуровневый метод внутренней сборки DataFrame.
+    /// Добавляет в текущий DataFrame строковый столбец.
+    /// Не предназначен для использования в прикладном коде.
     /// Переданные массивы сохраняются как есть.
     /// Не изменяйте их после передачи в DataFrame.
     procedure AddStrColumn(name: string; data: array of char; valid: array of boolean := nil);
 
-    /// Добавляет столбец логических значений.
+    /// Служебный низкоуровневый метод внутренней сборки DataFrame.
+    /// Добавляет в текущий DataFrame столбец логических значений.
+    /// Не предназначен для использования в прикладном коде.
     /// Переданные массивы сохраняются как есть.
     /// Не изменяйте их после передачи в DataFrame.
     procedure AddBoolColumn(name: string; data: array of boolean; valid: array of boolean := nil);
-    /// Добавляет столбец DateTime.
+    /// Служебный низкоуровневый метод внутренней сборки DataFrame.
+    /// Добавляет в текущий DataFrame столбец DateTime.
+    /// Не предназначен для использования в прикладном коде.
     /// Переданные массивы сохраняются как есть.
     /// Не изменяйте их после передачи в DataFrame.
     procedure AddDateTimeColumn(name: string; data: array of System.DateTime; valid: array of boolean := nil);
@@ -406,16 +419,28 @@ type
     /// Переименовывает несколько столбцов
     function Rename(pairs: array of (string, string)): DataFrame; 
     
-    /// Добавляет вычисляемый целочисленный столбец
+    /// Добавляет готовый целочисленный столбец и возвращает новый DataFrame.
+    function WithColumnInt(name: string; data: array of integer; valid: array of boolean := nil): DataFrame; 
+    /// Добавляет вычисляемый целочисленный столбец и возвращает новый DataFrame.
     function WithColumnInt(name: string; f: DataFrameCursor -> integer): DataFrame;
     /// Добавляет вычисляемый целочисленный столбец
     function WithColumn(name: string; f: DataFrameCursor -> integer): DataFrame := WithColumnInt(name, f);
-    /// Добавляет вычисляемый вещественный столбец
+    /// Добавляет готовый вещественный столбец и возвращает новый DataFrame.
+    function WithColumnFloat(name: string; data: array of real; valid: array of boolean := nil): DataFrame; 
+    /// Добавляет вычисляемый вещественный столбец и возвращает новый DataFrame.
     function WithColumnFloat(name: string; f: DataFrameCursor -> real): DataFrame;
-    /// Добавляет вычисляемый строковый столбец
+    /// Добавляет готовый строковый столбец и возвращает новый DataFrame.
+    function WithColumnStr(name: string; data: array of string; valid: array of boolean := nil): DataFrame; 
+    /// Добавляет вычисляемый строковый столбец и возвращает новый DataFrame.
     function WithColumnStr(name: string; f: DataFrameCursor -> string): DataFrame;
-    /// Добавляет вычисляемый логический столбец
+    /// Добавляет готовый логический столбец и возвращает новый DataFrame.
+    function WithColumnBool(name: string; data: array of boolean; valid: array of boolean := nil): DataFrame; 
+    /// Добавляет вычисляемый логический столбец и возвращает новый DataFrame.
     function WithColumnBool(name: string; f: DataFrameCursor -> boolean): DataFrame;
+    /// Добавляет готовый DateTime-столбец и возвращает новый DataFrame.
+    function WithColumnDateTime(name: string; data: array of System.DateTime; valid: array of boolean := nil): DataFrame; 
+    /// Добавляет вычисляемый DateTime-столбец и возвращает новый DataFrame.
+    function WithColumnDateTime(name: string; f: DataFrameCursor -> System.DateTime): DataFrame;
     /// Добавляет новый столбец, вычисляя указанную часть DateTime-столбца.
     /// Для dpDate создаётся столбец DateTime, для остальных частей - целочисленный столбец.
     function WithDatePart(sourceColumn, newColumnName: string; part: DatePartKind): DataFrame;
@@ -543,8 +568,19 @@ type
     function Min(colName: string): real;
     function Max(colName: string): real;
   end;
+
+  /// Одна группа строк DataFrame.
+  /// Содержит ключ группы и подтаблицу с принадлежащими ей строками.
+  DataFrameGroup = record
+    Key: DataValue;
+    Data: DataFrame;
+  end;
+
   /// Интерфейс для группировки данных
   IGroupByContext = interface
+    /// Возвращает последовательность групп.
+    /// Поддерживается только для группировки по одному столбцу.
+    function Groups: sequence of DataFrameGroup;
     /// Возвращает DataFrame с количеством строк в каждой группе
     function Count: DataFrame;
     /// Возвращает DataFrame со средними значениями указанного столбца по группам
@@ -708,6 +744,9 @@ const
     'Несоответствие числа строк при добавлении столбца!!Row count mismatch when adding column';  
   ER_COLUMN_VALID_LENGTH_MISMATCH =
     'Длины data и valid не совпадают при добавлении столбца!!Data and valid length mismatch when adding column';
+  ER_GROUPS_ONLY_SINGLE_KEY =
+    'Groups поддерживается только для группировки по одному столбцу!!' +
+    'Groups is supported only for grouping by a single column';
   ER_COLUMN_INDEX_OUT_OF_RANGE =
     'Индекс столбца {0} вне диапазона [0..{1})!!Column index {0} out of range [0..{1})';
   ER_NO_VALID_VALUES_COLUMN =
@@ -865,10 +904,15 @@ type
     groups1: Dictionary<object, List<integer>>;
     keyColumns: array of integer;
     groupsN: Dictionary<GroupKey, List<integer>>;
+    function BuildGroupData(indices: List<integer>): DataFrame;
+    function MakeKeyValue(ci: integer; key: object): DataValue;
     
   public
     /// Создает контекст группировки для указанных столбцов
     constructor Create(df: DataFrame; keyCols: array of integer);
+    /// Возвращает последовательность групп.
+    /// Поддерживается только для группировки по одному столбцу.
+    function Groups: sequence of DataFrameGroup;
     /// Возвращает DataFrame с количеством строк в каждой группе
     function Count: DataFrame;
     /// Возвращает DataFrame со средними значениями указанного столбца по группам
@@ -4415,6 +4459,25 @@ begin
   end;
 end;
 
+function DataFrame.WithColumnInt(name: string; data: array of integer; valid: array of boolean): DataFrame;
+begin
+  if fSchema.HasColumn(name) then
+    ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
+
+  if data = nil then
+    ArgumentNullError(ER_ARG_NULL, 'data');
+
+  if Length(data) <> RowCount then
+    DimensionError(ER_ADD_COLUMN_ROW_MISMATCH);
+
+  var res := CloneWithSharedColumns;
+  res.AddIntColumn(name, data, valid);
+  res.SetSchema(ExtendSchema(name, ctInt, false));
+
+  Result := res;
+  Result.AssertSchemaConsistent;
+end;
+
 function DataFrame.WithColumnInt(name: string; f: DataFrameCursor -> integer): DataFrame;
 begin
   if fSchema.HasColumn(name) then
@@ -4437,6 +4500,25 @@ begin
 
   res.AddIntColumn(name, data, valid);
   res.SetSchema(ExtendSchema(name, ctInt, false));
+
+  Result := res;
+  Result.AssertSchemaConsistent;
+end;
+
+function DataFrame.WithColumnFloat(name: string; data: array of real; valid: array of boolean): DataFrame;
+begin
+  if fSchema.HasColumn(name) then
+    ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
+
+  if data = nil then
+    ArgumentNullError(ER_ARG_NULL, 'data');
+
+  if Length(data) <> RowCount then
+    DimensionError(ER_ADD_COLUMN_ROW_MISMATCH);
+
+  var res := CloneWithSharedColumns;
+  res.AddFloatColumn(name, data, valid);
+  res.SetSchema(ExtendSchema(name, ctFloat, false));
 
   Result := res;
   Result.AssertSchemaConsistent;
@@ -4469,6 +4551,25 @@ begin
   Result.AssertSchemaConsistent;
 end;
 
+function DataFrame.WithColumnStr(name: string; data: array of string; valid: array of boolean): DataFrame;
+begin
+  if fSchema.HasColumn(name) then
+    ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
+
+  if data = nil then
+    ArgumentNullError(ER_ARG_NULL, 'data');
+
+  if Length(data) <> RowCount then
+    DimensionError(ER_ADD_COLUMN_ROW_MISMATCH);
+
+  var res := CloneWithSharedColumns;
+  res.AddStrColumn(name, data, valid);
+  res.SetSchema(ExtendSchema(name, ctStr, false));
+
+  Result := res;
+  Result.AssertSchemaConsistent;
+end;
+
 function DataFrame.WithColumnStr(name: string; f: DataFrameCursor -> string): DataFrame;
 begin
   if fSchema.HasColumn(name) then
@@ -4496,6 +4597,25 @@ begin
   Result.AssertSchemaConsistent;
 end;
 
+function DataFrame.WithColumnBool(name: string; data: array of boolean; valid: array of boolean): DataFrame;
+begin
+  if fSchema.HasColumn(name) then
+    ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
+
+  if data = nil then
+    ArgumentNullError(ER_ARG_NULL, 'data');
+
+  if Length(data) <> RowCount then
+    DimensionError(ER_ADD_COLUMN_ROW_MISMATCH);
+
+  var res := CloneWithSharedColumns;
+  res.AddBoolColumn(name, data, valid);
+  res.SetSchema(ExtendSchema(name, ctBool, false));
+
+  Result := res;
+  Result.AssertSchemaConsistent;
+end;
+
 function DataFrame.WithColumnBool(name: string; f: DataFrameCursor -> boolean): DataFrame;
 begin
   if fSchema.HasColumn(name) then
@@ -4518,6 +4638,52 @@ begin
 
   res.AddBoolColumn(name, data, valid);
   res.SetSchema(ExtendSchema(name, ctBool, false));
+
+  Result := res;
+  Result.AssertSchemaConsistent;
+end;
+
+function DataFrame.WithColumnDateTime(name: string; data: array of System.DateTime; valid: array of boolean): DataFrame;
+begin
+  if fSchema.HasColumn(name) then
+    ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
+
+  if data = nil then
+    ArgumentNullError(ER_ARG_NULL, 'data');
+
+  if Length(data) <> RowCount then
+    DimensionError(ER_ADD_COLUMN_ROW_MISMATCH);
+
+  var res := CloneWithSharedColumns;
+  res.AddDateTimeColumn(name, data, valid);
+  res.SetSchema(ExtendSchema(name, ctDateTime, false));
+
+  Result := res;
+  Result.AssertSchemaConsistent;
+end;
+
+function DataFrame.WithColumnDateTime(name: string; f: DataFrameCursor -> System.DateTime): DataFrame;
+begin
+  if fSchema.HasColumn(name) then
+    ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
+
+  var res := CloneWithSharedColumns;
+
+  var data := new System.DateTime[RowCount];
+  var valid := new boolean[RowCount];
+
+  var cur := GetCursor;
+  var i := 0;
+
+  while cur.MoveNext do
+  begin
+    data[i] := f(cur);
+    valid[i] := True;
+    i += 1;
+  end;
+
+  res.AddDateTimeColumn(name, data, valid);
+  res.SetSchema(ExtendSchema(name, ctDateTime, false));
 
   Result := res;
   Result.AssertSchemaConsistent;
@@ -6117,6 +6283,51 @@ begin
       lst.Add(cursor.Position);
     end;
   end;
+end;
+
+function GroupByContext.BuildGroupData(indices: List<integer>): DataFrame;
+begin
+  Result := source.TakeRows(indices.ToArray);
+end;
+
+function GroupByContext.MakeKeyValue(ci: integer; key: object): DataValue;
+begin
+  case source.fSchema.ColumnTypeAt(ci) of
+    ctInt: Result := new DataValue(source.fSchema.NameAt(ci), integer(key));
+    ctStr: Result := new DataValue(source.fSchema.NameAt(ci), string(key));
+    ctBool: Result := new DataValue(source.fSchema.NameAt(ci), boolean(key));
+    ctDateTime: Result := new DataValue(source.fSchema.NameAt(ci), System.DateTime(key));
+    else Error(ER_GROUPBY_UNSUPPORTED_KEY_TYPE, source.fSchema.ColumnTypeAt(ci));
+  end;
+end;
+
+function GroupByContext.Groups: sequence of DataFrameGroup;
+begin
+  if not singleKey then
+    Error(ER_GROUPS_ONLY_SINGLE_KEY);
+
+  var res := new List<DataFrameGroup>;
+  var groups := groups1;
+  var ci := keyColumn;
+  var keys: array of object;
+
+  case source.fSchema.ColumnTypeAt(ci) of
+    ctInt: keys := groups.Keys.OrderBy(k -> integer(k)).Select(k -> object(k)).ToArray;
+    ctStr: keys := groups.Keys.OrderBy(k -> string(k)).Select(k -> object(k)).ToArray;
+    ctBool: keys := groups.Keys.OrderBy(k -> boolean(k)).Select(k -> object(k)).ToArray;
+    ctDateTime: keys := groups.Keys.OrderBy(k -> System.DateTime(k)).Select(k -> object(k)).ToArray;
+    else Error(ER_GROUPBY_UNSUPPORTED_KEY_TYPE, source.fSchema.ColumnTypeAt(ci));
+  end;
+
+  foreach var key in keys do
+  begin
+    var g: DataFrameGroup;
+    g.Key := MakeKeyValue(ci, key);
+    g.Data := BuildGroupData(groups[key]);
+    res.Add(g);
+  end;
+
+  Result := res;
 end;
 
 function GroupByContext.Count: DataFrame;

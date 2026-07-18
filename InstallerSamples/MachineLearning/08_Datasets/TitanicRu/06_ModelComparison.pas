@@ -16,6 +16,7 @@ begin
       features,
       new Imputer(['Возраст']),
       new Imputer('Саутгемптон', ['ПортПосадки']),
+      new OneHotEncoder('Класс'),
       new OneHotEncoder('Пол'),
       new OneHotEncoder('ПортПосадки'),
       new StandardScaler

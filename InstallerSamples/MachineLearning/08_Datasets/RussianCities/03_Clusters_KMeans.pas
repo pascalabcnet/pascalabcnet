@@ -1,4 +1,4 @@
-﻿// По log_population, density KMeans выделил три группы городов с разным масштабом и характером.
+// По log_population, density KMeans выделил три группы городов с разным масштабом и характером.
 //
 // Кластер 0 — крупнейшие и наиболее значимые города.
 // Здесь сосредоточены мегаполисы и крупные региональные центры.
@@ -110,7 +110,8 @@ begin
   var labels := pipe.Predict(df);
   var X := df.ToMatrix(features);
 
-  df.AddIntColumn('cluster', labels, nil);
+  df := df.WithColumnInt('cluster', labels, nil);
+  var clusters := df.GroupBy('cluster').Groups;
 
   Println('Финальные метрики для выбранного k:');
   Println($'Inertia:            {model.Inertia:F3}');
@@ -120,17 +121,18 @@ begin
   Println;
 
   Println('Центры кластеров (в стандартизованном пространстве признаков):');
-  model.ClusterCenters.Print;
+  foreach var center in model.Centers do
+    center.Print;
   Println;
 
   // --- анализ кластеров
-  for var c := 0 to bestK - 1 do
+  foreach var cluster in clusters do
   begin
-    var sub := df.Filter(r -> r.Int('cluster') = c);
+    var sub := cluster.Data;
 
     Println;
     Println('=' * 70);
-    Println($'Кластер {c}');
+    Println($'Кластер {cluster.Key.Int + 1}');
     Println('=' * 70);
 
     Println($'Число городов: {sub.RowCount}');
