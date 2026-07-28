@@ -677,6 +677,7 @@ begin
     dpSecond: Result := 'second';
     dpDayOfWeek: Result := 'dayofweek';
     dpDate: Result := 'date';
+    dpTimeOfDay: Result := 'timeofday';
   end;
 end;
 
@@ -816,6 +817,7 @@ begin
             dpMinute: data[row] := srcData[row].Minute;
             dpSecond: data[row] := srcData[row].Second;
             dpDayOfWeek: data[row] := integer(srcData[row].DayOfWeek);
+            dpTimeOfDay: data[row] := integer(srcData[row].TimeOfDay.TotalSeconds);
           end;
           valid[row] := True;
         end;
@@ -1237,6 +1239,9 @@ end;
 
 function Imputer.Fit(df: DataFrame): IPreprocessor;
 begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+
   case strategy of
     isMean:
     begin
@@ -1271,7 +1276,67 @@ begin
 
     isConstant:
     begin
-      // ничего делать не нужно
+      if (constants = nil) or (constants.Length <> cols.Length) then
+        Error(ER_IMPUTER_CONSTANTS_INVALID);
+
+      for var i := 0 to cols.Length - 1 do
+      begin
+        var name := cols[i];
+        var idx := df.Schema.IndexOf(name);
+        if idx < 0 then
+          Error(ER_COLUMN_NOT_FOUND, name);
+
+        var ct := df.Schema.ColumnTypeAt(idx);
+        var v := constants[i];
+
+        if v = nil then
+          Error(ER_IMPUTER_CONSTANT_VALUE_NULL, name);
+
+        case ct of
+          ColumnType.ctInt:
+          begin
+            if not (v is integer) then
+            begin
+              if not (v is real) then
+                Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
+
+              begin
+                var r := real(v);
+                var ir := Round(r);
+                if Abs(r - ir) > 1e-9 then
+                  Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
+              end;
+            end;
+          end;
+
+          ColumnType.ctFloat:
+          begin
+            if not ((v is integer) or (v is real)) then
+              Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
+          end;
+
+          ColumnType.ctStr:
+          begin
+            if not (v is string) then
+              Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
+          end;
+
+          ColumnType.ctBool:
+          begin
+            if not (v is boolean) then
+              Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
+          end;
+
+          ColumnType.ctDateTime:
+          begin
+            if not (v is System.DateTime) then
+              Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
+          end;
+
+          else
+            Error(ER_UNSUPPORTED_COLUMN_TYPE, ct);
+        end;
+      end;
     end;
     
     isMedian:
@@ -1386,12 +1451,13 @@ begin
       else if ct = ColumnType.ctFloat then
       begin
         var r: real;
-        try
-          r := real(v);
-        except
-          on e: Exception do
-            Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
-        end;
+
+        if v is integer then
+          r := integer(v)
+        else if v is real then
+          r := real(v)
+        else
+          Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
         
         var rowCount := df.RowCount;
         var data := new real[rowCount];
@@ -1410,13 +1476,10 @@ begin
       end
       else if ct = ColumnType.ctStr then
       begin
-        var s: string;
-        try
-          s := string(v);
-        except
-          on e: Exception do
-            Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
-        end;
+        if not (v is string) then
+          Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
+
+        var s := string(v);
 
         var rowCount := df.RowCount;
         var data := new string[rowCount];
@@ -1435,13 +1498,10 @@ begin
       end
       else if ct = ColumnType.ctBool then
       begin
-        var b: boolean;
-        try
-          b := boolean(v);
-        except
-          on e: Exception do
-            Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
-        end;
+        if not (v is boolean) then
+          Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
+
+        var b := boolean(v);
 
         var rowCount := df.RowCount;
         var data := new boolean[rowCount];
@@ -1457,6 +1517,28 @@ begin
         end;
 
         Result := new BoolColumn(name, data, valid);
+      end
+      else if ct = ColumnType.ctDateTime then
+      begin
+        if not (v is System.DateTime) then
+          Error(ER_IMPUTER_CONSTANT_TYPE_MISMATCH, name);
+
+        var dt := System.DateTime(v);
+
+        var rowCount := df.RowCount;
+        var data := new System.DateTime[rowCount];
+        var valid := new boolean[rowCount];
+
+        var cur := df.GetCursor;
+        var row := 0;
+        while cur.MoveNext do
+        begin
+          data[row] := if cur.IsValid(capturedIdx) then cur.DateTime(capturedIdx) else dt;
+          valid[row] := True;
+          row += 1;
+        end;
+
+        Result := new DateTimeColumn(name, data, valid);
       end
       else
         Error(ER_UNSUPPORTED_COLUMN_TYPE, ct);

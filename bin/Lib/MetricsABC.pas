@@ -162,7 +162,7 @@ type
     /// Вычисляет силуэт (Silhouette) для каждой точки.
     /// Для каждой строки матрицы X возвращает значение s(i) в диапазоне [-1, 1].
     /// Требует как минимум 2 различных кластера.
-    /// Использует евклидово расстояние (квадратный корень не извлекается).
+    /// Использует обычное евклидово расстояние.
     /// Сложность O(n²) - для умеренных размеров данных.
     static function SilhouetteSamples(X: Matrix; labels: array of integer): Vector;
   
@@ -774,7 +774,18 @@ begin
   var errors := new real[n];
 
   for var i := 0 to n - 1 do
-    errors[i] := Abs(yTrue[i] - yPred[i]);
+  begin
+    var yt := yTrue[i];
+    var yp := yPred[i];
+
+    if double.IsNaN(yt) or double.IsInfinity(yt) then
+      ArgumentError(ER_INVALID_VALUE, 'yTrue', i);
+
+    if double.IsNaN(yp) or double.IsInfinity(yp) then
+      ArgumentError(ER_INVALID_VALUE, 'yPred', i);
+
+    errors[i] := Abs(yt - yp);
+  end;
 
   // сортировка
   &Array.Sort(errors);
@@ -834,7 +845,10 @@ begin
 
   if ssTot = 0.0 then
   begin
-    Result := 0.0;
+    if ssRes = 0.0 then
+      Result := 1.0
+    else
+      Result := 0.0;
     exit;
   end;
 
@@ -945,14 +959,27 @@ begin
   fprList.Add(0.0);
   tprList.Add(0.0);
 
-  for var k := 0 to n - 1 do
+  var k := 0;
+  while k < n do
   begin
-    var i := idx[k];
+    var score := yPred[idx[k]];
+    var posInGroup := 0;
+    var negInGroup := 0;
 
-    if yTrue[i] = 1.0 then
-      tp += 1
-    else
-      fp += 1;
+    while (k < n) and (yPred[idx[k]] = score) do
+    begin
+      var i := idx[k];
+
+      if yTrue[i] = 1.0 then
+        posInGroup += 1
+      else
+        negInGroup += 1;
+
+      k += 1;
+    end;
+
+    tp += posInGroup;
+    fp += negInGroup;
 
     var tpr := tp / totalPos;
     var fpr := fp / totalNeg;
@@ -1332,12 +1359,15 @@ begin
 
     var my := clsId[i];
 
+    if sizes[my] <= 1 then
+    begin
+      Result[i] := 0.0;
+      continue;
+    end;
+
     // a(i): среднее расстояние до своего кластера (без самой точки)
     var aMean := 0.0;
-    if sizes[my] > 1 then
-      aMean := sumToCluster[my] / (sizes[my] - 1)
-    else
-      aMean := 0.0;
+    aMean := sumToCluster[my] / (sizes[my] - 1);
 
     // b(i): минимальное среднее расстояние до другого кластера
     var bMean := double.MaxValue;
@@ -1523,6 +1553,14 @@ begin
   if labels.Length <> n then
     DimensionError(ER_DIM_MISMATCH, labels.Length, n);
 
+  for var i := 0 to n - 1 do
+    for var j := 0 to p - 1 do
+    begin
+      var xij := X[i,j];
+      if double.IsNaN(xij) or double.IsInfinity(xij) then
+        ArgumentError(ER_INVALID_VALUE_AT, 'X', i);
+    end;
+
   // --- label -> 0..k-1
   var map := new Dictionary<integer, integer>();
   var counts := new List<integer>();
@@ -1607,7 +1645,10 @@ begin
         dist := Sqrt(dist);
 
         if dist = 0 then
-          continue;
+        begin
+          Result := real.PositiveInfinity;
+          exit;
+        end;
 
         var Rij := (S[i] + S[j]) / dist;
 
@@ -1717,7 +1758,10 @@ begin
 
   if denom = 0 then
   begin
-    Result := 0.0;
+    if sumNij = maxIndex then
+      Result := 1.0
+    else
+      Result := 0.0;
     exit;
   end;
 

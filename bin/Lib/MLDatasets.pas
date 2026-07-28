@@ -19,6 +19,7 @@ type
   /// и целевых значений для обучения моделей
   Dataset = class
   private
+    fData: DataFrame;
     function ValueLabel(feature, value: string): string;
     function CloneMeta(df: DataFrame): Dataset;
     function GetCategoricalFeatures: array of string;
@@ -27,8 +28,18 @@ type
     ValueLabels: Dictionary<string,Dictionary<string,string>>;
     Description: string;
 
+    constructor Create;
+
+    /// Создаёт Dataset на основе готовой таблицы данных и основных метаданных задачи.
+    static function FromData(
+      df: DataFrame;
+      task: TaskType;
+      features: array of string;
+      target: string := nil
+    ): Dataset;
+
     auto property Name: string;
-    auto property Data: DataFrame;
+    property Data: DataFrame read fData;
     auto property Features: array of string;
     auto property Target: string;
     auto property Task: TaskType;
@@ -322,6 +333,18 @@ uses MLExceptions;
 uses DataAdapters;
 uses DataFrameABCCore;
 
+constructor Dataset.Create;
+begin
+  fData := nil;
+  Features := [];
+  Target := nil;
+  Task := TaskType.Clustering;
+  Name := nil;
+  Description := '';
+  FeatureLabels := new Dictionary<string,string>;
+  ValueLabels := new Dictionary<string,Dictionary<string,string>>;
+end;
+
 const
   ER_PARAM_GT_ZERO =
     'Параметр {0} должен быть > 0!!Parameter {0} must be > 0';
@@ -349,6 +372,8 @@ const
     'Признак "{0}" не найден в датасете!!Feature column "{0}" not found in dataset';
   ER_DATASET_FEATURE_EQUALS_TARGET =
     'Признак "{0}" совпадает с целевой переменной!!Feature "{0}" equals target column';
+  ER_DATASET_FEATURES_EMPTY =
+    'Список признаков не должен быть пустым!!Feature list must not be empty';
   ER_DATASET_META_FEATURE_NOT_IN_FEATURES =
     'В метаданных указан feature.{0}, но столбец "{0}" не входит в список features!!' +
     'Meta contains feature.{0}, but column "{0}" is not listed in features';
@@ -366,6 +391,8 @@ const
     'ValueCounts доступны только для задач классификации!!ValueCounts are only available for classification datasets';    
   ER_DATASET_TARGET_MISSING =
     'Target обязателен для задач с учителем!!Target is required for supervised learning datasets'; 
+  ER_DATASET_TARGET_FOR_CLUSTERING =
+    'Target не должен задаваться для задачи кластеризации!!Target must not be specified for clustering datasets';
   ER_PARAM_LE =
     'Параметр {0} должен быть <= допустимого максимума!!Parameter {0} must be <= the allowed maximum value';
   ER_PARAM_RANGE_01 =
@@ -380,6 +407,9 @@ const
     'Слишком малое значение classBalance: {0}. Минимально допустимое значение — 1e-3!!classBalance is too small: {0}. Minimum allowed value is 1e-3';
   ER_UNSUPPORTED_TARGET_TYPE =
     'Неподдерживаемый тип целевого столбца: {0}!!Unsupported target column type: {0}';    
+  ER_DATASET_TARGET_HAS_MISSING =
+    'Целевой столбец "{0}" содержит пропуски (NA), что здесь не поддерживается!!' +
+    'Target column "{0}" contains missing values (NA), which is not supported here';
   ER_ENCODELABELS_UNSUPPORTED_TYPE =
     'Неподдерживаемый тип столбца для кодирования меток: {0}!!' +
     'Unsupported column type for label encoding: {0}';  
@@ -652,12 +682,59 @@ begin
   Result := Task <> Clustering;
 end;
 
+class function Dataset.FromData(
+  df: DataFrame;
+  task: TaskType;
+  features: array of string;
+  target: string): Dataset;
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+
+  if (features = nil) or (features.Length = 0) then
+    ArgumentError(ER_DATASET_FEATURES_EMPTY);
+
+  if task in [TaskType.Classification, TaskType.Regression] then
+  begin
+    if (target = nil) or (target = '') then
+      ArgumentError(ER_DATASET_TARGET_MISSING);
+
+    if not df.HasColumn(target) then
+      ArgumentError(ER_DATASET_TARGET_NOT_FOUND, target);
+  end
+  else if (target <> nil) and (target <> '') then
+    ArgumentError(ER_DATASET_TARGET_FOR_CLUSTERING);
+
+  Result := new Dataset;
+  Result.fData := df;
+  Result.Task := task;
+  Result.Features := Copy(features);
+  Result.Target := target;
+
+  foreach var f in Result.Features do
+  begin
+    if (f = nil) or (f = '') then
+      ArgumentError(ER_DATASET_FEATURE_NOT_FOUND, f);
+
+    if not df.HasColumn(f) then
+      ArgumentError(ER_DATASET_FEATURE_NOT_FOUND, f);
+
+    if (target <> nil) and (target <> '') and (f = target) then
+      ArgumentError(ER_DATASET_FEATURE_EQUALS_TARGET, f);
+
+    Result.FeatureLabels[f] := f;
+  end;
+
+  if (target <> nil) and (target <> '') then
+    Result.FeatureLabels[target] := target;
+end;
+
 function Dataset.CloneMeta(df: DataFrame): Dataset;
 begin
   Result := new Dataset;
 
   Result.Name := Name;
-  Result.Data := df;
+  Result.fData := df;
 
   Result.Features := Copy(Features);
   Result.Target := Target;
@@ -817,8 +894,43 @@ begin
   var t := Data.GetColumnType(idx);
 
   case t of
-    ctStr: Result := Data.GetStrColumn(Target).Distinct.ToArray;
-    ctInt: Result := Data.GetIntColumn(Target).Distinct.Select(x -> x.ToString).ToArray;
+    ctStr:
+    begin
+      var col := StrColumn(Data.GetColumn(idx));
+      var classes := new List<string>;
+      var seen := new HashSet<string>;
+
+      for var i := 0 to Data.RowCount - 1 do
+      begin
+        if not col.IsValid[i] then
+          ArgumentError(ER_DATASET_TARGET_HAS_MISSING, Target);
+
+        var value := col.Data[i];
+        if seen.Add(value) then
+          classes.Add(value);
+      end;
+
+      Result := classes.ToArray;
+    end;
+
+    ctInt:
+    begin
+      var col := IntColumn(Data.GetColumn(idx));
+      var classes := new List<string>;
+      var seen := new HashSet<integer>;
+
+      for var i := 0 to Data.RowCount - 1 do
+      begin
+        if not col.IsValid[i] then
+          ArgumentError(ER_DATASET_TARGET_HAS_MISSING, Target);
+
+        var value := col.Data[i];
+        if seen.Add(value) then
+          classes.Add(value.ToString);
+      end;
+
+      Result := classes.ToArray;
+    end;
     else Error(ER_UNSUPPORTED_TARGET_TYPE, t);
   end;
 end;
@@ -833,30 +945,41 @@ begin
   case Data.GetColumnType(Target) of
 
     ColumnType.ctStr:
-      begin
-        var labels := Data.GetStrColumn(Target);
+    begin
+      var idx := Data.ColumnIndex(Target);
+      var labels := StrColumn(Data.GetColumn(idx));
 
-        foreach var v in labels do
-          if dict.ContainsKey(v) then
-            dict[v] += 1
-          else
-            dict[v] := 1;
+      for var i := 0 to Data.RowCount - 1 do
+      begin
+        if not labels.IsValid[i] then
+          ArgumentError(ER_DATASET_TARGET_HAS_MISSING, Target);
+
+        var v := labels.Data[i];
+        if dict.ContainsKey(v) then
+          dict[v] += 1
+        else
+          dict[v] := 1;
       end;
+    end;
 
     ColumnType.ctInt:
+    begin
+      var idx := Data.ColumnIndex(Target);
+      var labels := IntColumn(Data.GetColumn(idx));
+
+      for var i := 0 to Data.RowCount - 1 do
       begin
-        var labels := Data.GetIntColumn(Target);
+        if not labels.IsValid[i] then
+          ArgumentError(ER_DATASET_TARGET_HAS_MISSING, Target);
 
-        foreach var v in labels do
-        begin
-          var s := v.ToString;
+        var s := labels.Data[i].ToString;
 
-          if dict.ContainsKey(s) then
-            dict[s] += 1
-          else
-            dict[s] := 1;
-        end;
+        if dict.ContainsKey(s) then
+          dict[s] += 1
+        else
+          dict[s] := 1;
       end;
+    end;
 
     else
       ArgumentError(ER_ENCODELABELS_UNSUPPORTED_TYPE, Target);
@@ -945,9 +1068,33 @@ begin
 
   case ds.Data.GetColumnType(ds.Target) of
     ColumnType.ctStr:
-      Result := ds.Data.GetStrColumn(ds.Target);
+    begin
+      var idx := ds.Data.ColumnIndex(ds.Target);
+      var col := StrColumn(ds.Data.GetColumn(idx));
+      SetLength(Result, ds.Data.RowCount);
+
+      for var i := 0 to ds.Data.RowCount - 1 do
+      begin
+        if not col.IsValid[i] then
+          ArgumentError(ER_DATASET_TARGET_HAS_MISSING, ds.Target);
+        Result[i] := col.Data[i];
+      end;
+    end;
+
     ColumnType.ctInt:
-      Result := ds.Data.GetIntColumn(ds.Target).Select(x -> x.ToString).ToArray;
+    begin
+      var idx := ds.Data.ColumnIndex(ds.Target);
+      var col := IntColumn(ds.Data.GetColumn(idx));
+      SetLength(Result, ds.Data.RowCount);
+
+      for var i := 0 to ds.Data.RowCount - 1 do
+      begin
+        if not col.IsValid[i] then
+          ArgumentError(ER_DATASET_TARGET_HAS_MISSING, ds.Target);
+        Result[i] := col.Data[i].ToString;
+      end;
+    end;
+
     else
       ArgumentError(ER_ENCODELABELS_UNSUPPORTED_TYPE, ds.Target);
   end;
@@ -1142,12 +1289,18 @@ begin
   begin
     var row := idx[i];
     
-    // --- выбор кластера (inline вместо функции)
-    var r := rnd.NextDouble;
-    var c := 0;
-    
-    while (c < centers - 1) and (r > cdf[c]) do
-      c += 1;
+    // --- выбор кластера
+    var c: integer;
+    if Abs(classBalance - 1.0) < 1e-12 then
+      c := i mod centers
+    else
+    begin
+      var r := rnd.NextDouble;
+      c := 0;
+      
+      while (c < centers - 1) and (r > cdf[c]) do
+        c += 1;
+    end;
     
     y[row] := c;
     
@@ -1635,7 +1788,7 @@ begin
   var ds := new Dataset;
 
   ds.Name := name;
-  ds.Data := df;
+  ds.fData := df;
   
   // --- description
   ds.Description := '';

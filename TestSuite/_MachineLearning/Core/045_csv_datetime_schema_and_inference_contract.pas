@@ -1,4 +1,4 @@
-uses MLABC;
+﻿uses MLABC;
 uses TestHelpers in '..\TestHelpers.pas';
 
 begin
@@ -14,27 +14,27 @@ id,created_at,name
 2,16.01.2024 12:30:00,Bob
 ''';
 
-  var schema := new Dictionary<string, ColumnType>;
-  schema['created_at'] := ColumnType.ctDateTime;
+  var columnTypes := new Dictionary<string, ColumnType>;
+  columnTypes['created_at'] := ColumnType.ctDateTime;
 
-  var dfSchema := CsvLoader.LoadFromLines(
-    textIso.ToLines,
-    schema := schema
+  var dfSchema := DataFrame.FromCsvText(
+    textIso,
+    columnTypes := columnTypes
   );
 
   Check(dfSchema.GetColumnType('created_at') = ColumnType.ctDateTime, 'Schema DateTime type expected');
   Check(dfSchema.DateTime('created_at')[0] = new System.DateTime(2024, 1, 15), 'Schema DateTime value mismatch');
 
-  var dfInfer := CsvLoader.LoadFromLines(
-    textIso.ToLines,
+  var dfInfer := DataFrame.FromCsvText(
+    textIso,
     inferTypes := true
   );
 
   Check(dfInfer.GetColumnType('created_at') = ColumnType.ctDateTime, 'Inferred DateTime type expected');
   Check(dfInfer.DateTime('created_at')[1] = new System.DateTime(2024, 1, 16, 12, 30, 0), 'Inferred DateTime value mismatch');
 
-  var dfRu := CsvLoader.LoadFromLines(
-    textRu.ToLines,
+  var dfRu := DataFrame.FromCsvText(
+    textRu,
     inferTypes := true
   );
 
@@ -48,7 +48,7 @@ id,created_at,name
   );
 
   dfInfer.ToCsv(tmp);
-  var dfRoundTrip := CsvLoader.Load(tmp);
+  var dfRoundTrip := DataFrame.FromCsv(tmp);
 
   Check(dfRoundTrip.GetColumnType('created_at') = ColumnType.ctDateTime, 'Round-trip DateTime type expected');
   Check(dfRoundTrip.DateTime('created_at')[1] = dfInfer.DateTime('created_at')[1], 'Round-trip DateTime value mismatch');

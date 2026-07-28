@@ -88,7 +88,9 @@ type
     function WithCategorical(name: string; value: boolean := True): DataFrameSchema;
 
     { --- join helpers --- }
-    /// Объединяет две схемы по правилам Join
+    /// Объединяет две схемы по правилам Join.
+    /// Для объединённых key-столбцов metadata берётся из левой схемы:
+    /// имя, тип и categorical-флаг правого key в результат не переносятся.
     class function Merge(
       left, right: DataFrameSchema;
       leftKeys, rightKeys: array of integer;
@@ -197,11 +199,11 @@ type
     static function operator implicit(v: DataValue): System.DateTime;}
 
     static function operator =(a, b: DataValue): boolean;
-    static function operator <>(a, b: DataValue): boolean := not (a = b);
-    static function operator <(a, b: DataValue): boolean := Compare(a, b) < 0;
-    static function operator <=(a, b: DataValue): boolean := Compare(a, b) <= 0;
-    static function operator >(a, b: DataValue): boolean := Compare(a, b) > 0;
-    static function operator >=(a, b: DataValue): boolean := Compare(a, b) >= 0;
+    static function operator <>(a, b: DataValue): boolean;
+    static function operator <(a, b: DataValue): boolean;
+    static function operator <=(a, b: DataValue): boolean;
+    static function operator >(a, b: DataValue): boolean;
+    static function operator >=(a, b: DataValue): boolean;
 
     static function operator +(a, b: DataValue): DataValue;
     static function operator -(a, b: DataValue): DataValue;
@@ -227,6 +229,7 @@ type
   /// 
   /// Любые операции (Filter, TakeRows, GroupBy и др.) создают новые столбцы,
   /// не модифицируя существующие
+  ///!#
   Column = abstract class
     Info: ColumnInfo;
   public
@@ -413,6 +416,7 @@ type
   CursorPredicate = function(d: DataFrameCursor): boolean;
   
   /// Статистическая информация о числовом столбце
+  ///!#
   DescribeStats = record
     /// Количество валидных значений
     Count: integer;
@@ -424,6 +428,12 @@ type
     Min: real;
     /// Максимальное значение
     Max: real;
+    function ToString: string; override;
+    function ToString(decimals: integer): string;
+    procedure Print;
+    procedure Print(decimals: integer);
+    procedure Println;
+    procedure Println(decimals: integer);
   end;
 
 function MergedRightColumnName(leftSchema, rightSchema: DataFrameSchema; rightIndex: integer): string;
@@ -432,6 +442,65 @@ function ColumnNumericValues(col: Column): List<real>;
 implementation
 
 uses MLExceptions;
+
+const
+  DS_LABEL_MEAN =
+    'Среднее!!Mean';
+  DS_LABEL_MIN =
+    'Мин!!Min';
+  DS_LABEL_MAX =
+    'Макс!!Max';
+
+function UiLabel(s: string): string;
+begin
+  var p := s.IndexOf('!!');
+  if p >= 0 then
+    Result := s.Substring(0, p)
+  else
+    Result := s;
+end;
+
+function DescribeStats.ToString: string;
+begin
+  Result := ToString(2);
+end;
+
+function DescribeStats.ToString(decimals: integer): string;
+begin
+  if decimals < 0 then
+    decimals := 0;
+
+  var fmt := '0.' + new string('#', decimals);
+  if decimals = 0 then
+    fmt := '0';
+
+  Result :=
+    'Count=' + Count.ToString +
+    ', ' + UiLabel(DS_LABEL_MEAN) + '=' + Mean.ToString(fmt) +
+    ', Std=' + Std.ToString(fmt) +
+    ', ' + UiLabel(DS_LABEL_MIN) + '=' + Min.ToString(fmt) +
+    ', ' + UiLabel(DS_LABEL_MAX) + '=' + Max.ToString(fmt);
+end;
+
+procedure DescribeStats.Print;
+begin
+  PABCSystem.Print(ToString);
+end;
+
+procedure DescribeStats.Print(decimals: integer);
+begin
+  PABCSystem.Print(ToString(decimals));
+end;
+
+procedure DescribeStats.Println;
+begin
+  PABCSystem.Println(ToString);
+end;
+
+procedure DescribeStats.Println(decimals: integer);
+begin
+  PABCSystem.Println(ToString(decimals));
+end;
 
 const
   ER_COLUMN_NOT_INT =
@@ -819,13 +888,6 @@ begin
   Result := v.Int;
 end;
 
-static function DataValue.operator implicit(v: DataValue): real;
-begin
-  if System.Object.ReferenceEquals(v, nil) then
-    ArgumentNullError('v');
-  Result := v.Float;
-end;
-
 static function DataValue.operator implicit(v: DataValue): string;
 begin
   if System.Object.ReferenceEquals(v, nil) then
@@ -847,13 +909,89 @@ begin
   Result := v.DateTime;
 end;}
 
+{static function DataValue.operator implicit(v: DataValue): real;
+begin
+  if System.Object.ReferenceEquals(v, nil) then
+    ArgumentNullError('v');
+  Result := v.Float;
+end;}
+
 static function DataValue.operator =(a, b: DataValue): boolean;
 begin
   if System.Object.ReferenceEquals(a, nil) then
     exit(System.Object.ReferenceEquals(b, nil));
   if System.Object.ReferenceEquals(b, nil) then
     exit(false);
+  if not a.fIsValid then
+    exit(false);
+  if not b.fIsValid then
+    exit(false);
   Result := Compare(a, b) = 0;
+end;
+
+static function DataValue.operator <>(a, b: DataValue): boolean;
+begin
+  if System.Object.ReferenceEquals(a, nil) then
+    exit(false);
+  if System.Object.ReferenceEquals(b, nil) then
+    exit(false);
+  if not a.fIsValid then
+    exit(false);
+  if not b.fIsValid then
+    exit(false);
+  Result := Compare(a, b) <> 0;
+end;
+
+static function DataValue.operator <(a, b: DataValue): boolean;
+begin
+  if System.Object.ReferenceEquals(a, nil) then
+    exit(false);
+  if System.Object.ReferenceEquals(b, nil) then
+    exit(false);
+  if not a.fIsValid then
+    exit(false);
+  if not b.fIsValid then
+    exit(false);
+  Result := Compare(a, b) < 0;
+end;
+
+static function DataValue.operator <=(a, b: DataValue): boolean;
+begin
+  if System.Object.ReferenceEquals(a, nil) then
+    exit(false);
+  if System.Object.ReferenceEquals(b, nil) then
+    exit(false);
+  if not a.fIsValid then
+    exit(false);
+  if not b.fIsValid then
+    exit(false);
+  Result := Compare(a, b) <= 0;
+end;
+
+static function DataValue.operator >(a, b: DataValue): boolean;
+begin
+  if System.Object.ReferenceEquals(a, nil) then
+    exit(false);
+  if System.Object.ReferenceEquals(b, nil) then
+    exit(false);
+  if not a.fIsValid then
+    exit(false);
+  if not b.fIsValid then
+    exit(false);
+  Result := Compare(a, b) > 0;
+end;
+
+static function DataValue.operator >=(a, b: DataValue): boolean;
+begin
+  if System.Object.ReferenceEquals(a, nil) then
+    exit(false);
+  if System.Object.ReferenceEquals(b, nil) then
+    exit(false);
+  if not a.fIsValid then
+    exit(false);
+  if not b.fIsValid then
+    exit(false);
+  Result := Compare(a, b) >= 0;
 end;
 
 static function DataValue.operator +(a, b: DataValue): DataValue;
@@ -1130,6 +1268,8 @@ end;
 class function DataFrameSchema.Merge(left, right: DataFrameSchema;
   leftKeys, rightKeys: array of integer; rightPrefix: string): DataFrameSchema;
 begin
+  // Важно: объединённые key-столбцы наследуют metadata слева.
+  // Правые key-столбцы исключаются из итоговой схемы.
   if left = nil then 
     ArgumentNullError(ER_LEFT_SCHEMA_NULL);
   if right = nil then 

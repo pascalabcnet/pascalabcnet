@@ -5,7 +5,13 @@ interface
 uses MLCoreABC;
 uses PreprocessorABC;
 uses DataFrameABC;
+uses DataFrameABCCore;
 uses LinearAlgebraML;
+
+// Замечание по жизненному циклу pipeline:
+// повторный Fit после успешного обучения допустим;
+// если Fit завершился исключением, этот экземпляр pipeline
+// следует считать непригодным для дальнейшего использования.
 
 type 
   TaskKind = (tkRegression, tkClassification);
@@ -106,8 +112,14 @@ type
     fModel: IModel;
     fTask: TaskKind;
     fTarget: string;
+    fTargetSnapshotType: ColumnType;
+    fTargetSnapshotColumn: Column;
 
     procedure ValidateSchema(df: DataFrame); override;
+    /// Сохраняет снимок целевого столбца до DataFrame-преобразований.
+    procedure CaptureTargetSnapshot(df: DataFrame);
+    /// Проверяет, что steps не изменили целевой столбец.
+    procedure EnsureTargetUnchanged(df: DataFrame);
     function WithModelCore(model: IModel): SupervisedDataPipelineBase;
     function FitCore(df: DataFrame): SupervisedDataPipelineBase;
     function PredictCore(df: DataFrame): Vector;
@@ -147,6 +159,10 @@ type
   /// в каком они были поданы модели при обучении.
   /// PredictLabels возвращает исходные строковые метки классов.
   ClassificationDataPipeline = class(SupervisedDataPipelineBase)
+  private
+    /// Строковые метки классов в порядке внутреннего кодирования,
+    /// используемого самим pipeline при EncodeLabels(target).
+    fClassLabels: array of string;
   public
     function WithModel(model: IClassifier): ClassificationDataPipeline;
     function Fit(df: DataFrame): ClassificationDataPipeline;
@@ -177,12 +193,12 @@ type
   ///
   /// Поддерживает два типа шагов:
   ///   • табличные преобразователи;
-  ///   • матричные преобразователи и финальную модель без учителя.
+  ///   • матричные преобразователи и финальную модель кластеризации.
   ///
   /// Порядок шагов строгий:
   ///   • сначала идут табличные преобразователи;
   ///   • затем матричные преобразователи;
-  ///   • модель без учителя добавляется последней и может быть только одна.
+  ///   • модель кластеризации добавляется последней и может быть только одна.
   ///
   /// Конвейер работает только с признаками.
   UnsupervisedDataPipelineBase = class(PipelineBase, IModel)
@@ -204,7 +220,7 @@ type
     /// Принимает:
     ///   • IPreprocessor (табличный шаг)
     ///   • ITransformer (матричный шаг)
-    ///   • IUnsupervisedModel (модель, должна быть последней)
+    ///   • IUnsupervisedModel (модель без учителя, должна быть последней)
     function Add(step: IPipelineStep): UnsupervisedDataPipelineBase;
 
     /// Применяет только обученные DataFrame-шаги pipeline и возвращает новый DataFrame.
@@ -231,7 +247,7 @@ type
   /// Predict возвращает номера кластеров.
   ClusteringDataPipeline = class(UnsupervisedDataPipelineBase)
   public
-    function WithModel(model: IUnsupervisedModel): ClusteringDataPipeline;
+    function WithModel(model: IClusterer): ClusteringDataPipeline;
     function Fit(df: DataFrame): ClusteringDataPipeline;
     /// Обучает конвейер и сразу возвращает метки кластеров.
     function FitPredict(df: DataFrame): array of integer;
@@ -537,6 +553,7 @@ begin
   inherited Create;
   fModel := nil;
   fTarget := '';
+  fTargetSnapshotColumn := nil;
 end;
 
 function SupervisedDataPipelineBase.Add(step: IPipelineStep): SupervisedDataPipelineBase;
@@ -549,10 +566,11 @@ begin
     Error(ER_PIPELINE_MODIFY_AFTER_FIT);
 
   // --- target protection
-  // Любой шаг DataFrame, привязанный к одной или нескольким колонкам,
-  // не должен затрагивать целевую переменную (target).
-  // Проверка выполняется через интерфейсы IColumnBoundStep / IColumnsBoundStep
-  // без привязки к конкретным классам.  
+  // Ранняя защита target для шагов, которые явно сообщают,
+  // к каким колонкам они привязаны.
+  // Это удобный guard для "своих" preprocessors.
+  // От сторонних шагов защита ниже дублируется жёсткой проверкой
+  // после полного DataFrame-preprocessing в FitCore.
   if step is IColumnBoundStep(var cstep) then
     if cstep.ColumnName = fTarget then
       ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
@@ -796,60 +814,195 @@ begin
   if df = nil then
     ArgumentNullError(ER_ARG_NULL, 'df');
 
-  var current: DataFrame;
-  var X := PrepareMatrix(df, current);
+  var oldFinalFeatures := fFinalFeatures;
+  var oldModel := fModel;
+  var oldClassLabels: array of string := nil;
+  if Self is ClassificationDataPipeline(var oldcp) then
+    oldClassLabels := Copy(oldcp.fClassLabels);
 
-  if not current.HasColumn(fTarget) then
-    ArgumentError(ER_PIPELINE_TARGET_REMOVED, fTarget);
+  fFitted := false;
 
-  var classes: array of string;  
-  var y: Vector;
-  var labels: array of integer;
+  try
+    // Сохраняем исходный target до первого DataFrame-преобразования.
+    CaptureTargetSnapshot(df);
 
-  case fTask of
-    tkRegression:
-      y := current.ToVector(fTarget);
+    var current: DataFrame;
+    var X := PrepareMatrix(df, current);
 
-    tkClassification:
-      begin
-        labels := current.EncodeLabels(fTarget, classes);
-        y := new Vector(labels);
-      end;
-  end;
+    // Жёсткая проверка: target не должен измениться ни по типу,
+    // ни по значениям, ни по маске валидности.
+    EnsureTargetUnchanged(current);
 
-  if X.RowCount <> y.Length then
-    DimensionError(ER_XY_SIZE_MISMATCH, X.RowCount, y.Length);
+    if not current.HasColumn(fTarget) then
+      ArgumentError(ER_PIPELINE_TARGET_REMOVED, fTarget);
 
-  X := FitTransformMatrix(X, y);
+    var classes: array of string;  
+    var y: Vector;
+    var labels: array of integer;
 
-  if fModel <> nil then
-  begin
     case fTask of
       tkRegression:
-        begin
-          if not (fModel is IRegressor) then
-            ArgumentError(ER_MODEL_NOT_SUPERVISED, fModel.GetType.Name);
-          fModel := (fModel as IRegressor).Fit(X, y);
-        end;
+        y := current.ToVector(fTarget);
+
       tkClassification:
         begin
-          if not (fModel is IClassifier) then
-            ArgumentError(ER_MODEL_NOT_CLASSIFIER);
-          fModel := (fModel as IClassifier).Fit(X, labels);
+          labels := current.EncodeLabels(fTarget, classes);
+          y := new Vector(labels);
         end;
     end;
 
-    if fTask = tkClassification then
-    begin
-      if fModel is IClassifierInternal(var cls) then
-        cls.SetClassLabels(classes)
-      else
-        Error(ER_MODEL_NOT_CLASSIFIER);
-    end;
-  end;
+    if X.RowCount <> y.Length then
+      DimensionError(ER_XY_SIZE_MISMATCH, X.RowCount, y.Length);
 
-  fFitted := true;
-  Result := Self;
+    X := FitTransformMatrix(X, y);
+
+    var newModel := fModel;
+
+    if newModel <> nil then
+    begin
+      case fTask of
+        tkRegression:
+          begin
+            if not (newModel is IRegressor) then
+              ArgumentError(ER_MODEL_NOT_SUPERVISED, newModel.GetType.Name);
+            newModel := (newModel as IRegressor).Fit(X, y);
+          end;
+        tkClassification:
+          begin
+            if not (newModel is IClassifier) then
+              ArgumentError(ER_MODEL_NOT_CLASSIFIER);
+            newModel := (newModel as IClassifier).Fit(X, labels);
+          end;
+      end;
+
+      if fTask = tkClassification then
+      begin
+        if newModel is IClassifierInternal(var cls) then
+          cls.SetClassLabels(classes)
+        else
+          Error(ER_MODEL_NOT_CLASSIFIER);
+      end;
+    end;
+
+    fModel := newModel;
+    if Self is ClassificationDataPipeline(var cp) then
+      cp.fClassLabels := Copy(classes);
+    fFitted := true;
+    Result := Self;
+  except
+    fFinalFeatures := oldFinalFeatures;
+    fModel := oldModel;
+    if Self is ClassificationDataPipeline(var cp) then
+      cp.fClassLabels := Copy(oldClassLabels);
+    fFitted := false;
+    raise;
+  end;
+end;
+
+procedure SupervisedDataPipelineBase.CaptureTargetSnapshot(df: DataFrame);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+
+  fTargetSnapshotColumn := nil;
+
+  if (fTarget = nil) or (fTarget = '') then
+    exit;
+
+  if not df.HasColumn(fTarget) then
+    exit;
+
+  fTargetSnapshotType := df.GetColumnType(fTarget);
+  fTargetSnapshotColumn := df[fTarget];
+end;
+
+procedure SupervisedDataPipelineBase.EnsureTargetUnchanged(df: DataFrame);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+
+  if fTargetSnapshotColumn = nil then
+    exit;
+
+  if not df.HasColumn(fTarget) then
+    ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
+
+  if df.GetColumnType(fTarget) <> fTargetSnapshotType then
+    ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
+
+  var currentCol := df[fTarget];
+  if currentCol.RowCount <> fTargetSnapshotColumn.RowCount then
+    ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
+
+  case fTargetSnapshotType of
+    ctInt:
+    begin
+      var src := IntColumn(fTargetSnapshotColumn);
+      var cur := IntColumn(currentCol);
+      for var i := 0 to src.RowCount - 1 do
+      begin
+        if src.IsValid[i] <> cur.IsValid[i] then
+          ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
+        if src.IsValid[i] and (src.Data[i] <> cur.Data[i]) then
+          ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
+      end;
+    end;
+
+    ctFloat:
+    begin
+      var src := FloatColumn(fTargetSnapshotColumn);
+      var cur := FloatColumn(currentCol);
+      for var i := 0 to src.RowCount - 1 do
+      begin
+        if src.IsValid[i] <> cur.IsValid[i] then
+          ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
+        if src.IsValid[i] and (src.Data[i] <> cur.Data[i]) then
+          ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
+      end;
+    end;
+
+    ctStr:
+    begin
+      var src := StrColumn(fTargetSnapshotColumn);
+      var cur := StrColumn(currentCol);
+      for var i := 0 to src.RowCount - 1 do
+      begin
+        if src.IsValid[i] <> cur.IsValid[i] then
+          ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
+        if src.IsValid[i] and (src.Data[i] <> cur.Data[i]) then
+          ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
+      end;
+    end;
+
+    ctBool:
+    begin
+      var src := BoolColumn(fTargetSnapshotColumn);
+      var cur := BoolColumn(currentCol);
+      for var i := 0 to src.RowCount - 1 do
+      begin
+        if src.IsValid[i] <> cur.IsValid[i] then
+          ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
+        if src.IsValid[i] and (src.Data[i] <> cur.Data[i]) then
+          ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
+      end;
+    end;
+
+    ctDateTime:
+    begin
+      var src := DateTimeColumn(fTargetSnapshotColumn);
+      var cur := DateTimeColumn(currentCol);
+      for var i := 0 to src.RowCount - 1 do
+      begin
+        if src.IsValid[i] <> cur.IsValid[i] then
+          ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
+        if src.IsValid[i] and (src.Data[i] <> cur.Data[i]) then
+          ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
+      end;
+    end;
+
+    else
+      ArgumentError(ER_PIPELINE_TARGET_TRANSFORM_NOT_ALLOWED, fTarget);
+  end;
 end;
 
 function SupervisedDataPipelineBase.Transform(df: DataFrame): DataFrame := TransformDataFrame(df);
@@ -911,14 +1064,19 @@ begin
   if not fFitted then
     NotFittedError(ER_FIT_NOT_CALLED);
 
-  if fModel = nil then
-    ArgumentError(ER_MODEL_NULL);
+  if (fClassLabels = nil) or (fClassLabels.Length = 0) then
+    ArgumentError(ER_CLASSES_NOT_AVAILABLE);
 
-  if not (fModel is IClassifier) then
-    Error(ER_PREDICT_NOT_SUPPORTED);
+  var encoded := Predict(df);
+  SetLength(Result, encoded.Length);
 
-  var X := GetTransformedFeatures(df);
-  Result := (fModel as IClassifier).PredictLabels(X);
+  for var i := 0 to encoded.Length - 1 do
+  begin
+    var idx := encoded[i];
+    if (idx < 0) or (idx >= fClassLabels.Length) then
+      Error(ER_LABEL_INDEX_OUT_OF_RANGE, idx, fClassLabels.Length);
+    Result[i] := fClassLabels[idx];
+  end;
 end;
 
 function ClassificationDataPipeline.PredictProba(df: DataFrame): Matrix;
@@ -952,8 +1110,10 @@ begin
   if not df.HasColumn(fTarget) then
     ArgumentError(ER_COLUMN_NOT_FOUND, fTarget);
 
-  var classes := GetClassLabels;
-  Result := df.TransformLabels(fTarget, classes);
+  if (fClassLabels = nil) or (fClassLabels.Length = 0) then
+    ArgumentError(ER_CLASSES_NOT_AVAILABLE);
+
+  Result := df.TransformLabels(fTarget, fClassLabels);
 end;
 
 function ClassificationDataPipeline.GetClassLabels: array of string;
@@ -964,11 +1124,10 @@ begin
   if fTask <> tkClassification then
     ArgumentError(ER_NOT_CLASSIFICATION);
 
-  var cls := fModel as IClassifier;
-  if cls = nil then
+  if (fClassLabels = nil) or (fClassLabels.Length = 0) then
     ArgumentError(ER_CLASSES_NOT_AVAILABLE);
 
-  Result := cls.GetClassLabels;
+  Result := Copy(fClassLabels);
 end;
 
 function RegressionDataPipeline.WithModel(model: IRegressor): RegressionDataPipeline;
@@ -1154,6 +1313,9 @@ begin
   // --- Model (обязательно последний шаг)
   if step is IUnsupervisedModel then
   begin
+    if (Self is ClusteringDataPipeline) and not (step is IClusterer) then
+      ArgumentError(ER_MODEL_NOT_CLUSTERER, step.GetType.Name);
+
     if fModel <> nil then
       ArgumentError(ER_PIPELINE_MULTIPLE_MODELS);
 
@@ -1172,6 +1334,9 @@ function UnsupervisedDataPipelineBase.WithModelCore(model: IUnsupervisedModel): 
 begin
   if model = nil then
     ArgumentError(ER_MODEL_NULL);
+
+  if (Self is ClusteringDataPipeline) and not (model is IClusterer) then
+    ArgumentError(ER_MODEL_NOT_CLUSTERER, model.GetType.Name);
 
   var p := Clone as UnsupervisedDataPipelineBase;
 
@@ -1193,16 +1358,30 @@ begin
   if df = nil then
     ArgumentNullError(ER_ARG_NULL, 'df');
 
-  var current: DataFrame;
-  var X := PrepareMatrix(df, current);
+  var oldFinalFeatures := fFinalFeatures;
+  var oldModel := fModel;
 
-  X := FitTransformMatrix(X);
+  fFitted := false;
 
-  if fModel <> nil then
-    fModel := fModel.Fit(X);
+  try
+    var current: DataFrame;
+    var X := PrepareMatrix(df, current);
 
-  fFitted := true;
-  Result := Self;
+    X := FitTransformMatrix(X);
+
+    var newModel := fModel;
+    if newModel <> nil then
+      newModel := newModel.Fit(X);
+
+    fModel := newModel;
+    fFitted := true;
+    Result := Self;
+  except
+    fFinalFeatures := oldFinalFeatures;
+    fModel := oldModel;
+    fFitted := false;
+    raise;
+  end;
 end;
 
 function UnsupervisedDataPipelineBase.Transform(df: DataFrame): DataFrame := TransformDataFrame(df);
@@ -1223,34 +1402,46 @@ begin
   if not (fModel is IClusterer) then
     ArgumentError(ER_MODEL_NOT_CLUSTERER, fModel.GetType.Name);
 
-  var current := df;
+  var oldFinalFeatures := fFinalFeatures;
+  var oldModel := fModel;
 
-  // --- 0) Проверка входной схемы
-  ValidateSchema(current);
+  fFitted := false;
 
-  // --- 1) DataFrame шаги
-  for var i := 0 to fDataSteps.Count - 1 do
-  begin
-    var prevRows := current.RowCount;
-    fDataSteps[i] := fDataSteps[i].Fit(current);
-    current := fDataSteps[i].Transform(current);
-    if current.RowCount <> prevRows then
-      Error(ER_PREPROCESSOR_ROWCOUNT_CHANGED);
+  try
+    var current := df;
+
+    // --- 0) Проверка входной схемы
+    ValidateSchema(current);
+
+    // --- 1) DataFrame шаги
+    for var i := 0 to fDataSteps.Count - 1 do
+    begin
+      var prevRows := current.RowCount;
+      fDataSteps[i] := fDataSteps[i].Fit(current);
+      current := fDataSteps[i].Transform(current);
+      if current.RowCount <> prevRows then
+        Error(ER_PREPROCESSOR_ROWCOUNT_CHANGED);
+    end;
+
+    // --- 2) вычислить финальные признаки
+    fFinalFeatures := ResolveFinalFeatures(current);
+
+    var X := current.ToMatrix(fFinalFeatures);
+
+    // --- 3) Matrix transformers
+    X := FitTransformMatrix(X);
+
+    // --- 4) модель
+    var cl := fModel as IClusterer;
+    Result := cl.FitPredict(X);
+
+    fFitted := true;
+  except
+    fFinalFeatures := oldFinalFeatures;
+    fModel := oldModel;
+    fFitted := false;
+    raise;
   end;
-
-  // --- 2) вычислить финальные признаки
-  fFinalFeatures := ResolveFinalFeatures(current);
-
-  var X := current.ToMatrix(fFinalFeatures);
-
-  // --- 3) Matrix transformers
-  X := FitTransformMatrix(X);
-
-  // --- 4) модель
-  var cl := fModel as IClusterer;
-  Result := cl.FitPredict(X);
-
-  fFitted := true;
 end;
 
 procedure UnsupervisedDataPipelineBase.ValidateNumericFeatures(df: DataFrame);
@@ -1298,7 +1489,7 @@ begin
   Result := (fModel as IPredictiveClusterer).Predict(X);
 end;
 
-function ClusteringDataPipeline.WithModel(model: IUnsupervisedModel): ClusteringDataPipeline;
+function ClusteringDataPipeline.WithModel(model: IClusterer): ClusteringDataPipeline;
 begin
   Result := inherited WithModelCore(model) as ClusteringDataPipeline;
 end;

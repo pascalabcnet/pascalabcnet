@@ -2693,6 +2693,15 @@ namespace PascalABCCompiler.TreeConverter
             // Average(IEnumerable<integer>,integer->Nullable<integer>): real
             // Average(IEnumerable<integer>,integer->integer): real
             // Дело в том, что на этом уровне лямбда x->x имеет тип lambda_anytype->lambda_anytype. Все подходят :)
+
+            // SSM 28/07/26 Через 9 лет проблема вернулась в другом обличье
+            // WithColumnFloat(f: DataFrameCursor -> real)
+            // WithColumnFloat(f: DataFrameCursor -> DataValue)
+            // Подходит только вторая, но это выяснится позже. 
+            // Но логика get_type_distance странная - она отдает предпочтение real перед DataValue уже сейчас
+            // Поскольку вторая функция отбрасывается, остается одна - с real - а она не подходит - и получаем
+            //   ошибку компиляции хотя код правильный
+
             SortedDictionary<int, List<function_node>> distances = new SortedDictionary<int, List<function_node>>();
             foreach (function_node fn in set_of_possible_functions)
             {
@@ -3261,15 +3270,16 @@ namespace PascalABCCompiler.TreeConverter
                 delegate_internal_interface to_dii = (delegate_internal_interface)to_ii;
                 if (to_dii.invoke_method.return_value_type != null)
                 {
+                    // SSM 28.07.26 - везде заменил на 94 - Average(x -> x) и так выбирает нужный но позже
                     to = to_dii.invoke_method.return_value_type;
                     if (to == SystemLibrary.SystemLibrary.integer_type)
                         return 94;
                     else if (to == SystemLibrary.SystemLibrary.int64_type)
-                        return 96;
+                        return 94;
                     else if (to == SystemLibrary.SystemLibrary.double_type)
-                        return 98;
+                        return 94;
                     else
-                        return 1000;
+                        return 94;
                 }
             }
             type_compare tc = type_table.compare_types(from, to);

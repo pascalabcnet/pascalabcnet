@@ -2,11 +2,11 @@
 uses TestHelpers in '..\TestHelpers.pas';
 
 begin
-  var ds := new Dataset;
-  ds.Task := TaskType.Classification;
-  ds.Target := 'Target';
-  ds.Data := new DataFrame;
-  ds.Data.AddStrColumn('Target', Arr('cat', 'dog', 'cat'));
+  var df := new DataFrame;
+  df.AddIntColumn('x', Arr(1, 2, 3));
+  df.AddStrColumn('Target', Arr('cat', 'dog', 'cat'));
+
+  var ds := Dataset.FromData(df, TaskType.Classification, [$'x'], 'Target');
 
   var enc := new LabelEncoder;
   var y := enc.FitTransform(ds);

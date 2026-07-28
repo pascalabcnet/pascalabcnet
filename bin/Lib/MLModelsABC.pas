@@ -389,8 +389,6 @@ type
     fTol: real;
     fCheckConvergence: boolean;
     fMinImprovement: real;
-    
-    fUseFastExp: boolean;
     fLabels: ClassifierLabelHelper;
     
     function GetWeights: Matrix;
@@ -405,8 +403,7 @@ type
       epochs: integer := 300;
       tol: real := 1e-6;
       checkConvergence: boolean := true;
-      minImprovement: real := 1e-8;
-      useFastExp: boolean := False
+      minImprovement: real := 1e-8
     );
   
 /// Обучает модель логистической регрессии.
@@ -1997,6 +1994,7 @@ type
     function PredictProba(X: Matrix): Matrix; reintroduce;
     procedure SetClassLabels(classes: array of string);
     function GetClassLabels: array of string;
+    function Clone: IModel;
   end;
 
   RegressionMatrixPipeline = class(MatrixPipeline, IRegressor)
@@ -2004,6 +2002,7 @@ type
     function Fit(X: Matrix; y: Vector): IRegressor; reintroduce;
     /// Возвращает числовое предсказание для одного объекта X.
     function PredictOne(X: Vector): real;
+    function Clone: IModel;
   end;
   
 /// Общая база для матричных конвейеров без учителя.
@@ -2028,8 +2027,8 @@ type
   
     /// Строит матричный конвейер для задачи кластеризации.
     /// Шаги указываются в порядке выполнения:
-    /// сначала преобразователи, затем модель.
-    /// Последний шаг должен быть моделью.
+    /// сначала преобразователи, затем кластеризатор.
+    /// Последний шаг должен быть алгоритмом кластеризации.
     static function Build(params steps: array of IPipelineStep): ClusteringMatrixPipeline;
   
     /// Устанавливает или заменяет модель.
@@ -2085,6 +2084,11 @@ type
   /// (например, KMeans).
   /// Для алгоритмов вроде DBSCAN используйте FitPredict.
   ClusteringMatrixPipeline = class(UnsupervisedMatrixPipelineBase)
+  public
+    /// Устанавливает или заменяет модель кластеризации.
+    function SetModel(m: IClusterer): ClusteringMatrixPipeline;
+    /// Обучает конвейер и сразу возвращает номера кластеров.
+    function FitPredict(X: Matrix): array of integer;
   end;
   
 {$endregion MatrixPipeline}
@@ -2615,6 +2619,9 @@ const
   ER_MODEL_NOT_UNSUPERVISED =
     'Модель (тип: {0}) не является моделью без учителя!!' +
     'Model (type: {0}) is not an unsupervised model';
+  ER_MODEL_NOT_CLUSTERER =
+    'Модель (тип: {0}) не является алгоритмом кластеризации!!' +
+    'Model (type: {0}) is not a clustering algorithm';
   ER_DBSCAN_PREDICT_ONLY_TRAIN_DATA =
     'DBSCAN: Predict поддерживается только для обучающей выборки!!DBSCAN: Predict is only supported for training data';  
   ER_DBSCAN_PREDICT_NEW_DATA =
@@ -2633,6 +2640,9 @@ const
     'Необходимо как минимум два различных класса!!At least two distinct classes are required';  
   ER_UNKNOWN_CLASS_LABEL =
     'Неизвестная метка класса: {0}!!Unknown class label: {0}';
+  ER_CLASS_LABELS_COUNT_MISMATCH =
+    'Число строковых меток классов ({0}) не совпадает с числом классов ({1})!!' +
+    'Class label count ({0}) does not match class count ({1})';
   ER_MAX_FEATURES_INVALID =
     'maxFeatures должен быть >= 0!!maxFeatures must be >= 0';
   ER_OOB_REQUIRES_SUBSAMPLE =
@@ -2726,6 +2736,9 @@ end;
 
 procedure ClassifierLabelHelper.SetClassLabels(classes: array of string);
 begin
+  if (fClassValues <> nil) and (classes <> nil) and (classes.Length <> fClassValues.Length) then
+    ArgumentError(ER_CLASS_LABELS_COUNT_MISMATCH, classes.Length, fClassValues.Length);
+
   fClassLabels := Copy(classes);
   RebuildValueToLabel;
 end;
@@ -2802,9 +2815,16 @@ end;
 
 function LinearRegression.Fit(X: Matrix; y: Vector): IRegressor;
 begin
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if y = nil then
+    ArgumentNullError(ER_Y_NULL);
+
   if MLConfig.ValidateFiniteInputs then
   begin
     CheckXForFit(X);
+    CheckYForFit(y);
   end;
   
   var m := X.RowCount;
@@ -2931,9 +2951,16 @@ end;
 
 function RidgeRegression.Fit(X: Matrix; y: Vector): IRegressor;
 begin
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if y = nil then
+    ArgumentNullError(ER_Y_NULL);
+
   if MLConfig.ValidateFiniteInputs then
   begin
     CheckXForFit(X);
+    CheckYForFit(y);
   end;
 
   if X.RowCount = 0 then
@@ -3043,8 +3070,14 @@ begin
   if X = nil then
     ArgumentNullError(ER_X_NULL);
 
+  if y = nil then
+    ArgumentNullError(ER_Y_NULL);
+
   if MLConfig.ValidateFiniteInputs then
+  begin
     CheckXForFit(X);
+    CheckYForFit(y);
+  end;
 
   if X.RowCount = 0 then
     ArgumentError(ER_EMPTY_DATASET);
@@ -3251,7 +3284,7 @@ end;
 //-----------------------------
 
 constructor LogisticRegression.Create(lambda: real; learningRate: real; epochs: integer;
-  tol: real; checkConvergence: boolean; minImprovement: real; useFastExp: boolean);
+  tol: real; checkConvergence: boolean; minImprovement: real);
 begin
   fLambda := lambda;
   fLearningRate := learningRate;
@@ -3260,15 +3293,6 @@ begin
   fTol := tol;
   fCheckConvergence := checkConvergence;
   fMinImprovement := minImprovement;
-  fUseFastExp := useFastExp
-end;
-
-function FastExp(x: real): real;
-begin
-  if x < -5 then exit(0.0);
-  if x > 5 then x := 5;
-
-  Result := 1.0 + x + 0.5*x*x + (1.0/6.0)*x*x*x;
 end;
 
 type RealArr = array of real;
@@ -3387,11 +3411,7 @@ begin
       var sumExp := 0.0;
       for var k := 0 to fClassCount - 1 do
       begin
-        var v: real;
-        if fUseFastExp then
-          v := FastExp(zi[k] - maxVal)
-        else  
-          v := Exp(zi[k] - maxVal);
+        var v := Exp(zi[k] - maxVal);
         zi[k] := v;
         sumExp += v;
       end;
@@ -3807,8 +3827,7 @@ begin
     fEpochs,
     fTol,
     fCheckConvergence,
-    fMinImprovement,
-    fUseFastExp
+    fMinImprovement
   );
 end;
 
@@ -4232,7 +4251,19 @@ begin
   if fRoot = nil then
     NotFittedError(ER_FIT_NOT_CALLED);
 
-  Result := fFeatureImportances.Normalized;
+  Result := fFeatureImportances.Clone;
+
+  var sum := 0.0;
+  for var i := 0 to Result.Length - 1 do
+  begin
+    if Result[i] < 0.0 then
+      ArgumentError(ER_INVALID_VALUE_AT, 'FeatureImportances', i);
+    sum += Result[i];
+  end;
+
+  if sum > 0.0 then
+    for var i := 0 to Result.Length - 1 do
+      Result[i] /= sum;
 end;
 
 procedure DecisionTreeCore.Fit(X: Matrix; y: Vector);
@@ -6125,7 +6156,19 @@ begin
 
   resultVec *= 1.0 / fTrees.Length;
 
-  Result := resultVec.Normalized;
+  Result := resultVec;
+
+  var sum := 0.0;
+  for var i := 0 to Result.Length - 1 do
+  begin
+    if Result[i] < 0.0 then
+      ArgumentError(ER_INVALID_VALUE_AT, 'FeatureImportances', i);
+    sum += Result[i];
+  end;
+
+  if sum > 0.0 then
+    for var i := 0 to Result.Length - 1 do
+      Result[i] /= sum;
 end;
 
 function RandomForestClassifier.ToString: string;
@@ -6486,6 +6529,7 @@ begin
   if MLConfig.ValidateFiniteInputs then
   begin
     CheckXForFit(XTrain);
+    CheckYForFit(yTrain);
   end;
 
   // --- shape checks ---
@@ -6506,6 +6550,7 @@ begin
     if MLConfig.ValidateFiniteInputs then
     begin
       CheckXForPredict(XVal);
+      CheckYForFit(yVal);
     end;
 
     if XVal.RowCount <> yVal.Length then
@@ -6647,6 +6692,7 @@ begin
     begin
       var mask := new boolean[nTrain];
       var yPredOOB := new Vector(nTrain);
+      var stageCount := m + 1;
 
       var cnt := 0;
 
@@ -6656,7 +6702,7 @@ begin
         begin
           mask[i] := true;
           yPredOOB[i] :=
-              fInitValue + oobSum[i] / oobCount[i];
+              fInitValue + oobSum[i] * stageCount / oobCount[i];
           cnt += 1;
         end
         else
@@ -7195,18 +7241,26 @@ begin
     else if useOOB then
     begin
       var mask := new boolean[nTrain];
+      var scaledLogits := new Matrix(nTrain, classCount);
+      var stageCount := iter + 1;
       var cnt := 0;
 
       for var i := 0 to nTrain - 1 do
       begin
         mask[i] := oobCount[i] > 0;
         if mask[i] then
+        begin
+          var scale := stageCount / oobCount[i];
+          for var cls := 0 to classCount - 1 do
+            scaledLogits[i, cls] :=
+              fInitLogits[cls] + (logitsOOB[i, cls] - fInitLogits[cls]) * scale;
           cnt += 1;
+        end;
       end;
 
       if cnt >= Max(1, nTrain div 10) then
       begin
-        scoreLoss := ComputeLogLossMasked(yEncoded, logitsOOB, mask);
+        scoreLoss := ComputeLogLossMasked(yEncoded, scaledLogits, mask);
         fOOBLossHistory.Add(scoreLoss);
       end
       else
@@ -8141,24 +8195,49 @@ begin
       fNeighbors[t].idx := t;
     end;
 
-    QuickSelect(fK - 1);
+    fEpoch += 1;
+    var touchCount := 0;
+    var exactCount := 0;
 
-    var exactCls := -1;
-    for var t := 0 to fK - 1 do
+    for var t := 0 to n - 1 do
       if fNeighbors[t].dist < KNN_EPS then
       begin
-        exactCls := fYEnc[fNeighbors[t].idx];
-        break;
+        var cls := fYEnc[fNeighbors[t].idx];
+
+        if fMark[cls] <> fEpoch then
+        begin
+          fMark[cls] := fEpoch;
+          fVotes[cls] := 0.0;
+          fTouched[touchCount] := cls;
+          touchCount += 1;
+        end;
+
+        fVotes[cls] += 1.0;
+        exactCount += 1;
       end;
 
-    if exactCls <> -1 then
+    if exactCount > 0 then
     begin
-      Result[i] := fLabels.ClassValueAt(exactCls);
+      var bestCls := fTouched[0];
+      var bestVotes := fVotes[bestCls];
+
+      for var k2 := 1 to touchCount - 1 do
+      begin
+        var cls := fTouched[k2];
+        var v := fVotes[cls];
+
+        if v > bestVotes then
+        begin
+          bestVotes := v;
+          bestCls := cls;
+        end;
+      end;
+
+      Result[i] := fLabels.ClassValueAt(bestCls);
       continue;
     end;
 
-    fEpoch += 1;
-    var touchCount := 0;
+    QuickSelect(fK - 1);
 
     if fWeighting = Uniform then
     begin
@@ -8194,23 +8273,9 @@ begin
           touchCount += 1;
         end;
 
-        if dist < KNN_EPS then
-        begin
-          exactCls := cls;
-          break;
-        end
-        else
-        begin
-          var w := 1.0 / Sqrt(dist);
-          fVotes[cls] += w;
-        end;
+        var w := 1.0 / Sqrt(dist);
+        fVotes[cls] += w;
       end;
-    end;
-    
-    if exactCls <> -1 then
-    begin
-      Result[i] := fLabels.ClassValueAt(exactCls);
-      continue;
     end;
 
     var bestCls := fTouched[0];
@@ -8289,27 +8354,40 @@ begin
       fNeighbors[t].idx := t;
     end;
 
-    // выбрать k ближайших
-    QuickSelect(fK - 1);
+    fEpoch += 1;
+    var touchCount := 0;
+    var exactCount := 0;
 
-    // exact match: если среди k ближайших есть dist=0, вероятность 1 у его класса
-    var exactCls := -1;
-    for var t := 0 to fK - 1 do
+    for var t := 0 to n - 1 do
       if fNeighbors[t].dist < KNN_EPS then
       begin
-        exactCls := fYEnc[fNeighbors[t].idx];
-        break;
+        var cls := fYEnc[fNeighbors[t].idx];
+
+        if fMark[cls] <> fEpoch then
+        begin
+          fMark[cls] := fEpoch;
+          fVotes[cls] := 0.0;
+          fTouched[touchCount] := cls;
+          touchCount += 1;
+        end;
+
+        fVotes[cls] += 1.0;
+        exactCount += 1;
       end;
 
-    if exactCls <> -1 then
+    if exactCount > 0 then
     begin
-      Result[i, exactCls] := 1.0;
+      for var k2 := 0 to touchCount - 1 do
+      begin
+        var cls := fTouched[k2];
+        Result[i, cls] := fVotes[cls] / exactCount;
+      end;
+
       continue;
     end;
 
-    // voting (stamping)
-    fEpoch += 1;
-    var touchCount := 0;
+    // выбрать k ближайших
+    QuickSelect(fK - 1);
 
     if fWeighting = Uniform then
     begin
@@ -8346,12 +8424,6 @@ begin
         var cls := fYEnc[trainIdx];
         var dist := fNeighbors[t].dist;
     
-        if dist < KNN_EPS then
-        begin
-          exactCls := cls;
-          break;
-        end;
-    
         if fMark[cls] <> fEpoch then
         begin
           fMark[cls] := fEpoch;
@@ -8363,14 +8435,6 @@ begin
         var w := 1.0 / Sqrt(dist);   // согласовано с Predict
         fVotes[cls] += w;
         sumW += w;
-      end;
-    
-      // ОБЯЗАТЕЛЬНО проверить exact снова
-    
-      if exactCls <> -1 then
-      begin
-        Result[i, exactCls] := 1.0;
-        continue;
       end;
     
       // нормализация
@@ -8443,6 +8507,7 @@ begin
   if MLConfig.ValidateFiniteInputs then
   begin
     CheckXForFit(X);
+    CheckYForFit(y);
   end;
 
   fXTrain := X.Clone;
@@ -8604,10 +8669,36 @@ begin
 end;
 
 function KMeans.RunSingle(X: Matrix; rnd: System.Random): (Matrix, real, integer, boolean);
-begin
   var n := X.RowCount;
   var p := X.ColCount;
   var k := fNClusters;
+
+  function ComputeInertia(curCenters: Matrix): real;
+  begin
+    Result := 0.0;
+
+    for var i := 0 to n - 1 do
+    begin
+      var bestDist := double.MaxValue;
+
+      for var c := 0 to k - 1 do
+      begin
+        var dist := 0.0;
+
+        for var j := 0 to p - 1 do
+        begin
+          var d := X[i,j] - curCenters[c,j];
+          dist += d * d;
+        end;
+
+        if dist < bestDist then
+          bestDist := dist;
+      end;
+
+      Result += bestDist;
+    end;
+  end;
+begin
 
   // --- 1. K-Means++ инициализация
 
@@ -8766,6 +8857,7 @@ begin
     end;
   end;
 
+  inertia := ComputeInertia(centers);
   Result := (centers, inertia, iterations, converged);
 end;
 
@@ -9145,8 +9237,8 @@ begin
   if last = nil then
     ArgumentError(ER_PIPELINE_STEP_NULL, High(steps));
 
-  if not (last is IModel) then
-    ArgumentError(ER_PIPELINE_LAST_NOT_MODEL);
+  if not (last is IClusterer) then
+    ArgumentError(ER_MODEL_NOT_CLUSTERER, last.GetType.Name);
 
   Result := new ClusteringMatrixPipeline(last as IModel);
 
@@ -9457,6 +9549,32 @@ begin
   Result := p;
 end;
 
+function ClassificationMatrixPipeline.Clone: IModel;
+begin
+  if fModel = nil then
+    ArgumentError(ER_MODEL_NULL);
+
+  var p := new ClassificationMatrixPipeline(fModel.Clone as IClassifier);
+
+  foreach var t in fTransformers do
+    p.Add(t.Clone);
+
+  Result := p;
+end;
+
+function RegressionMatrixPipeline.Clone: IModel;
+begin
+  if fModel = nil then
+    ArgumentError(ER_MODEL_NULL);
+
+  var p := new RegressionMatrixPipeline(fModel.Clone as IRegressor);
+
+  foreach var t in fTransformers do
+    p.Add(t.Clone);
+
+  Result := p;
+end;
+
 //-----------------------------
 //    UnsupervisedMatrixPipelineBase
 //-----------------------------
@@ -9485,8 +9603,8 @@ begin
   if last = nil then
     ArgumentError(ER_PIPELINE_STEP_NULL, High(steps));
 
-  if not (last is IModel) then
-    ArgumentError(ER_PIPELINE_LAST_NOT_MODEL);
+  if not (last is IClusterer) then
+    ArgumentError(ER_MODEL_NOT_CLUSTERER, last.GetType.Name);
 
   var pipe := new ClusteringMatrixPipeline(last as IModel);
 
@@ -9520,8 +9638,56 @@ begin
   if m = nil then
     ArgumentError(ER_MODEL_NULL);
 
+  if (Self is ClusteringMatrixPipeline) and not (m is IClusterer) then
+    ArgumentError(ER_MODEL_NOT_CLUSTERER, m.GetType.Name);
+
   fModel := m;
   Result := Self;
+end;
+
+function ClusteringMatrixPipeline.SetModel(m: IClusterer): ClusteringMatrixPipeline;
+begin
+  Result := inherited SetModel(m as IModel) as ClusteringMatrixPipeline;
+end;
+
+function ClusteringMatrixPipeline.FitPredict(X: Matrix): array of integer;
+begin
+  if fModel = nil then
+    ArgumentError(ER_MODEL_NULL);
+
+  if X = nil then
+    ArgumentNullError(ER_X_NULL);
+
+  if X.RowCount = 0 then
+    ArgumentError(ER_EMPTY_DATASET);
+
+  var Xt := X;
+
+  for var i := 0 to fTransformers.Count - 1 do
+  begin
+    var t := fTransformers[i];
+
+    if t = nil then
+      ArgumentError(ER_PIPELINE_STEP_NULL);
+
+    if t is IUnsupervisedTransformer(var unsup) then
+      fTransformers[i] := unsup.Fit(Xt)
+    else
+      ArgumentError(ER_PIPELINE_TRANSFORMER_NO_FIT, i, t.GetType.Name);
+
+    Xt := fTransformers[i].Transform(Xt);
+
+    if Xt = nil then
+      ArgumentError(ER_PIPELINE_TRANSFORM_RETURNED_NULL);
+  end;
+
+  if not (fModel is IClusterer) then
+    ArgumentError(ER_MODEL_NOT_CLUSTERER, fModel.GetType.Name);
+
+  var cl := fModel as IClusterer;
+  Result := cl.FitPredict(Xt);
+  fModel := cl as IModel;
+  fFitted := true;
 end;
 
 function UnsupervisedMatrixPipelineBase.Fit(X: Matrix): IUnsupervisedModel;

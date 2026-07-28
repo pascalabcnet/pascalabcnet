@@ -16,7 +16,7 @@ type
 /// Методы возвращают индексы или подвыборки без изменения исходных данных.
 ///
 /// • KFold — простое разбиение без учёта распределения классов
-/// • StratifiedKFold — сохраняет пропорции классов в каждом fold (для классификации)
+/// • StratifiedKFold — сохраняет пропорции классов в каждом fold (только для классификации)
 ///
 /// Для стратифицированных методов требуется:
 /// • целочисленные метки классов
@@ -50,12 +50,12 @@ type
     static function KFold(n, k: integer; seed: integer := -1):
       sequence of (array of integer, array of integer);
     
-/// Разбивает данные на k частей (k-fold) с сохранением пропорций классов
-/// (стратифицированная k-fold кросс-валидация).
+/// Разбивает данные на k частей (k-fold) с сохранением пропорций классов.
 /// В каждой части доля объектов каждого класса
 /// максимально близка к их доле во всей выборке
 /// (разница не превышает одного объекта на класс).
-/// Рекомендуется для задач классификации,
+/// Это стратифицированная k-fold кросс-валидация.
+/// Рекомендуется только для задач классификации,
 /// особенно при несбалансированных классах.
 /// Возвращает последовательность пар (trainIdx, testIdx)
     static function StratifiedKFold(y: Vector; k: integer;
@@ -82,11 +82,6 @@ type
     ///     с сохранением пропорций классов в каждой части.
     /// Рекомендуется для задач классификации, особенно при несбалансированных классах.
     /// Возвращает среднее значение метрики по k разбиениям.
-    /// 
-    /// Перегрузка для регрессионных моделей.
-    /// DataPipeline сюда передавать нельзя, так как он работает с DataFrame.
-    static function StratifiedCrossValidate(model: IRegressor; X: Matrix; y: Vector;
-      k: integer; metric: (Vector,Vector) -> real; seed: integer := -1): real;  
     /// Перегрузка для классификационных моделей.
     static function StratifiedCrossValidate(model: IClassifier; X: Matrix; y: array of integer;
       k: integer; metric: (array of integer, array of integer) -> real; seed: integer := -1): real;
@@ -105,6 +100,7 @@ type
     /// • k — число фолдов в кросс-валидации.
     /// • metric — функция оценки качества (yTrue, yPred) → real.
     /// • maximize — если true, максимизируется метрика; иначе минимизируется.
+    /// • stratified — для регрессии должен оставаться false.
     /// • seed — seed для разбиения на фолды (для воспроизводимости).
     /// Возвращает кортеж:
     /// • лучший параметр,
@@ -123,6 +119,8 @@ type
       stratified: boolean := False;
       seed: integer := -1
     ): (P, real, T); where T: class, IRegressor;
+    /// Перегрузка для классификационных моделей.
+    /// Здесь stratified включает стратифицированную кросс-валидацию по меткам классов.
     class function Search<T, P>(
       modelFactory: P -> T;
       paramValues: array of P;
@@ -163,6 +161,8 @@ const
     'Class {0} has {1} samples, which is less than the number of folds ({2}). Reduce k or merge very small classes.';
   ER_STRATIFIED_K_TOO_LARGE =
     'Stratified CV: число фолдов ({0}) превышает минимальный размер класса ({1})!!Stratified CV: number of folds ({0}) exceeds smallest class size ({1})';
+  ER_STRATIFIED_REGRESSION_NOT_SUPPORTED =
+    'Стратифицированная кросс-валидация не поддерживается для регрессии!!Stratified cross-validation is not supported for regression';
 
 //-----------------------------
 //         Validation
@@ -697,45 +697,6 @@ begin
 end;
 
 static function Validation.StratifiedCrossValidate(
-  model: IRegressor; 
-  X: Matrix; 
-  y: Vector;
-  k: integer; 
-  metric: (Vector,Vector) -> real; 
-  seed: integer): real;
-begin
-  if model = nil then
-    ArgumentNullError(ER_ARG_NULL, 'model');
-
-  if X = nil then
-    ArgumentNullError(ER_ARG_NULL, 'X');
-
-  if y = nil then
-    ArgumentNullError(ER_ARG_NULL, 'y');
-
-  if metric = nil then
-    ArgumentNullError(ER_ARG_NULL, 'metric');
-
-  if X.RowCount <> y.Length then
-    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
-
-  if (k < 2) or (k > X.RowCount) then
-    ArgumentError(ER_K_INVALID_STRATIFIED, k, X.RowCount);
- 
-  var baseSeed :=
-    if seed >= 0 then seed
-    else System.Environment.TickCount and integer.MaxValue;
-
-  Result := CrossValidateCore(
-    model,
-    X,
-    y,
-    StratifiedKFold(y, k, baseSeed),
-    metric
-  );
-end;
-
-static function Validation.StratifiedCrossValidate(
   model: IClassifier;
   X: Matrix;
   y: array of integer;
@@ -826,10 +787,7 @@ begin
       ArgumentError(ER_MODEL_NULL);
 
     var avgScore :=
-      if stratified then
-        Validation.StratifiedCrossValidate(model, X, y, k, metric, baseSeed)
-      else
-        Validation.CrossValidate(model, X, y, k, metric, baseSeed);
+      Validation.CrossValidate(model as IRegressor, X, y, k, metric, baseSeed);
 
     if double.IsNaN(avgScore) or double.IsInfinity(avgScore) then
       ArgumentError(ER_INVALID_VALUE, 'avgScore');
@@ -887,6 +845,9 @@ begin
   if X.RowCount <> y.Length then
     DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
 
+  if stratified then
+    ArgumentError(ER_STRATIFIED_REGRESSION_NOT_SUPPORTED);
+
   var bestParam := paramValues[0];
   var bestScore :=
     if maximize then -1e308 else 1e308;
@@ -903,9 +864,9 @@ begin
 
     var avgScore :=
       if stratified then
-        Validation.StratifiedCrossValidate(model, X, y, k, metric, baseSeed)
+        Validation.StratifiedCrossValidate(model as IClassifier, X, y, k, metric, baseSeed)
       else
-        Validation.CrossValidate(model, X, y, k, metric, baseSeed);
+        Validation.CrossValidate(model as IClassifier, X, y, k, metric, baseSeed);
 
     if double.IsNaN(avgScore) or double.IsInfinity(avgScore) then
       ArgumentError(ER_INVALID_VALUE, 'avgScore');

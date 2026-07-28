@@ -27,11 +27,10 @@ Count
 1
 ''');
 
-  var vc2 := df2.ValueCounts('Count');
+  var vc2 := df2.ValueCounts('Count', 'Frequency');
   Check(vc2.HasColumn('Count'), 'ValueCounts must keep source column name');
-  Check(vc2.HasColumn('Frequency'), 'ValueCounts must rename counter column on conflict');
+  Check(vc2.HasColumn('Frequency'), 'ValueCounts must use explicit counter column name');
   Check(vc2.Int('Count')[0] = 1, 'ValueCounts conflict first key mismatch');
   Check(vc2.Int('Frequency')[0] = 2, 'ValueCounts conflict first frequency mismatch');
   CheckSchemaMatchesColumns(vc2);
 end.
-

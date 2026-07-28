@@ -368,7 +368,7 @@ function SolveAuto(A: Matrix; b: Vector): Vector;
 /// Увеличивайте lambda, если коэффициенты x становятся слишком большими.
 ///
 /// Требуется, чтобы число уравнений было не меньше числа неизвестных (m ≥ n).
-/// Входные A и b изменяются. Возвращаемый вектор x имеет длину n.
+/// Входные A и b не изменяются. Возвращаемый вектор x имеет длину n.
 function SolveRidge(A: Matrix; b: Vector; lambda: real := 0): Vector;
 
 /// Решает задачу наименьших квадратов для системы A * x ≈ b.
@@ -456,6 +456,12 @@ const
     'Матрица вырождена или плохо обусловлена!!Matrix is singular or ill-conditioned';
   ER_EMPTY_MATRIX =
     'Матрица пуста!!Matrix is empty';    
+  ER_MATRIX_HAS_NONFINITE =
+    'Матрица содержит NaN или Infinity в позиции [{0},{1}]!!Matrix contains NaN or Infinity at [{0},{1}]';
+  ER_EIGEN_TOL_INVALID =
+    'Параметр tol должен быть > 0!!tol must be > 0';
+  ER_EIGEN_MAXITER_INVALID =
+    'Параметр maxIter должен быть > 0!!maxIter must be > 0';
   ER_EIGEN_NOT_CONVERGED =
     'EigenSymmetric: не сошлось за {0} итераций (off={1}, tol={2})!!EigenSymmetric did not converge in {0} iterations (off={1}, tol={2})';    
   
@@ -486,6 +492,20 @@ begin
   end;
   
   Result := x.ToString(fmt);
+end;
+
+procedure CheckMatrixFinite(A: Matrix);
+begin
+  if A = nil then
+    ArgumentNullError(ER_ARG_NULL, 'A');
+
+  for var i := 0 to A.RowCount - 1 do
+    for var j := 0 to A.ColCount - 1 do
+    begin
+      var v := A[i, j];
+      if double.IsNaN(v) or double.IsInfinity(v) then
+        ArgumentError(ER_MATRIX_HAS_NONFINITE, i, j);
+    end;
 end;
     
 //-----------------------------
@@ -573,11 +593,14 @@ function Vector.Normalize: Vector;
 begin
   var sum := 0.0;
   for var i := 0 to Length - 1 do
-    sum += Self[i];
+    sum += Self[i] * Self[i];
 
   if sum > 0 then
+  begin
+    var norm := PABCSystem.Sqrt(sum);
     for var i := 0 to Length - 1 do
-      Self[i] /= sum;
+      Self[i] /= norm;
+  end;
 
   Result := Self;
 end;
@@ -1405,6 +1428,10 @@ begin
   if RowCount = 0 then
     Error(ER_EMPTY_MATRIX);
 
+  for var i := 0 to n - 1 do
+    if (indices[i] < 0) or (indices[i] >= RowCount) then
+      ArgumentOutOfRangeError(ER_ROW_INDEX_OUT_OF_RANGE, indices[i], RowCount);
+
   var res := new Matrix(n, p);
 
   var src := Data;
@@ -1541,6 +1568,14 @@ function Matrix.EigenSymmetric(tol: real; maxIter: integer): (Vector, Matrix);
 begin
   if RowCount <> ColCount then
     ArgumentError(ER_MATRIX_NOT_SQUARE);
+
+  CheckMatrixFinite(Self);
+
+  if tol <= 0 then
+    ArgumentOutOfRangeError(ER_EIGEN_TOL_INVALID);
+
+  if maxIter <= 0 then
+    ArgumentOutOfRangeError(ER_EIGEN_MAXITER_INVALID);
   
   if not IsSymmetric(tol) then
     ArgumentError(ER_MATRIX_NOT_SYMMETRIC);
@@ -1690,6 +1725,8 @@ begin
   var m := RowCount;
   var n := ColCount;
 
+  CheckMatrixFinite(Self);
+
   if k < 1 then
     ArgumentError(ER_PCA_K_INVALID);
 
@@ -1779,6 +1816,7 @@ end;
 
 // Helper
 function LUDecompose(A: Matrix): (Matrix, array of integer);
+const LU_PIVOT_EPS = 1e-12;
 begin
   if A.RowCount <> A.ColCount then
     ArgumentError(ER_MATRIX_NOT_SQUARE);
@@ -1802,7 +1840,10 @@ begin
         maxRow := i;
       end;
     
-    if maxVal < 1e-12 then
+    if maxVal = 0.0 then
+      Error(ER_MATRIX_SINGULAR);
+
+    if Abs(LU[maxRow, k]) <= LU_PIVOT_EPS * maxVal then
       Error(ER_MATRIX_SINGULAR);
     
     if maxRow <> k then
@@ -1914,6 +1955,9 @@ begin
   
   if b.Length <> A.RowCount then
     DimensionError(ER_VECTOR_SIZE_MISMATCH, b.Length, A.RowCount);
+
+  if not A.IsSymmetric() then
+    raise new MLNotSPDException(ER_MATRIX_NOT_SPD);
   
   var L := Cholesky(A);
 
