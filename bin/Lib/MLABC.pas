@@ -91,6 +91,8 @@ type
   Matrix = LinearAlgebraML.Matrix;
   
   Validation = ValidationML.Validation;
+  ValidationCurveResult = ValidationML.ValidationCurveResult;
+  LearningCurveResult = ValidationML.LearningCurveResult;
   GridSearch = ValidationML.GridSearch;
   
   Metrics = MetricsABC.Metrics;
@@ -233,10 +235,18 @@ const
   /// Предполагается, что входные данные уже очищены от пропущенных значений.
   function EncodeLabels(labels: array of string): array of integer;
 
+  /// Краткое создание даты без времени.
+  function DT(year, month, day: integer): System.DateTime;
+
+  /// Краткое создание даты и времени.
+  function DT(year, month, day, hour, minute, second: integer): System.DateTime;
+
   
 implementation
 
 function EncodeLabels(labels: array of string): array of integer := MLUtilsABC.EncodeLabels(labels);
+function DT(year, month, day: integer): System.DateTime := DataFrameABC.DT(year, month, day);
+function DT(year, month, day, hour, minute, second: integer): System.DateTime := DataFrameABC.DT(year, month, day, hour, minute, second);
   
 end.
 

@@ -5,6 +5,66 @@ interface
 uses LinearAlgebraML, MLCoreABC;
 
 type
+/// Результат построения валидационной кривой.
+/// Хранит значения параметра, оценки по фолдам
+/// и их агрегированные характеристики
+  ValidationCurveResult = class
+  public
+    /// Проверенные значения гиперпараметра.
+    ParameterValues: Vector;
+    /// Значения метрики на обучающих подвыборках.
+    /// Строки соответствуют параметрам, столбцы — фолдам.
+    TrainScores: Matrix;
+    /// Значения метрики на валидационных подвыборках.
+    /// Строки соответствуют параметрам, столбцы — фолдам.
+    ValidationScores: Matrix;
+    /// Средние значения метрики на обучающих подвыборках.
+    TrainMean: Vector;
+    /// Средние значения метрики на валидационных подвыборках.
+    ValidationMean: Vector;
+    /// Стандартные отклонения метрики на обучающих подвыборках.
+    TrainStd: Vector;
+    /// Стандартные отклонения метрики на валидационных подвыборках.
+    ValidationStd: Vector;
+    
+    /// Возвращает число проверенных значений параметра
+    function Count: integer;
+    /// Возвращает индекс лучшего значения параметра
+    /// по средней валидационной метрике
+    function BestIndex(maximize: boolean := True): integer;
+    /// Возвращает лучшее значение параметра
+    function BestParam(maximize: boolean := True): real;
+    /// Возвращает лучшее среднее значение валидационной метрики
+    function BestScore(maximize: boolean := True): real;
+  end;
+
+/// Результат построения кривой обучения.
+/// Хранит размеры обучающей выборки, оценки по фолдам
+/// и их агрегированные характеристики
+  LearningCurveResult = class
+  public
+    /// Проверенные размеры обучающей выборки
+    /// или их эквиваленты в числовом виде.
+    TrainSizes: Vector;
+    /// Значения метрики на обучающих подвыборках.
+    /// Строки соответствуют размерам, столбцы — фолдам.
+    TrainScores: Matrix;
+    /// Значения метрики на валидационных подвыборках.
+    /// Строки соответствуют размерам, столбцы — фолдам.
+    ValidationScores: Matrix;
+    /// Средние значения метрики на обучающих подвыборках.
+    TrainMean: Vector;
+    /// Средние значения метрики на валидационных подвыборках.
+    ValidationMean: Vector;
+    /// Стандартные отклонения метрики на обучающих подвыборках.
+    TrainStd: Vector;
+    /// Стандартные отклонения метрики на валидационных подвыборках.
+    ValidationStd: Vector;
+    
+    /// Возвращает число проверенных размеров обучающей выборки
+    function Count: integer;
+  end;
+
 /// Методы для разбиения данных и оценки моделей.
 ///
 /// Содержит утилиты для:
@@ -85,6 +145,144 @@ type
     /// Перегрузка для классификационных моделей.
     static function StratifiedCrossValidate(model: IClassifier; X: Matrix; y: array of integer;
       k: integer; metric: (array of integer, array of integer) -> real; seed: integer := -1): real;
+    
+    /// Строит валидационную кривую для регрессионной модели
+    /// по целочисленной сетке параметра.
+    /// paramValues — набор проверяемых значений гиперпараметра.
+    /// modelFactory — функция создания модели по значению параметра.
+    /// X, y — обучающие данные.
+    /// metric — функция качества (yTrue, yPred) -> real.
+    /// cv — готовая последовательность фолдов в виде пар (trainIdx, testIdx).
+    /// Возвращает объект, содержащий оценки по фолдам,
+    /// а также средние значения и стандартные отклонения
+    /// на обучающих и валидационных подвыборках.
+    static function ValidationCurve(
+      paramValues: array of integer;
+      modelFactory: integer -> IRegressor;
+      X: Matrix; y: Vector;
+      metric: (Vector, Vector) -> real;
+      cv: sequence of (array of integer, array of integer)
+    ): ValidationCurveResult;
+    /// Строит валидационную кривую для регрессионной модели
+    /// по вещественной сетке параметра.
+    /// paramValues — набор проверяемых значений гиперпараметра.
+    /// modelFactory — функция создания модели по значению параметра.
+    /// X, y — обучающие данные.
+    /// metric — функция качества (yTrue, yPred) -> real.
+    /// cv — готовая последовательность фолдов в виде пар (trainIdx, testIdx).
+    /// Возвращает объект, содержащий оценки по фолдам,
+    /// а также средние значения и стандартные отклонения
+    /// на обучающих и валидационных подвыборках.
+    static function ValidationCurve(
+      paramValues: array of real;
+      modelFactory: real -> IRegressor;
+      X: Matrix; y: Vector;
+      metric: (Vector, Vector) -> real;
+      cv: sequence of (array of integer, array of integer)
+    ): ValidationCurveResult;
+    /// Строит валидационную кривую для классификационной модели
+    /// по целочисленной сетке параметра.
+    /// paramValues — набор проверяемых значений гиперпараметра.
+    /// modelFactory — функция создания модели по значению параметра.
+    /// X, y — обучающие данные.
+    /// metric — функция качества (yTrue, yPred) -> real.
+    /// cv — готовая последовательность фолдов в виде пар (trainIdx, testIdx).
+    /// Возвращает объект, содержащий оценки по фолдам,
+    /// а также средние значения и стандартные отклонения
+    /// на обучающих и валидационных подвыборках.
+    static function ValidationCurve(
+      paramValues: array of integer;
+      modelFactory: integer -> IClassifier;
+      X: Matrix; y: array of integer;
+      metric: (array of integer, array of integer) -> real;
+      cv: sequence of (array of integer, array of integer)
+    ): ValidationCurveResult;
+    /// Строит валидационную кривую для классификационной модели
+    /// по вещественной сетке параметра.
+    /// paramValues — набор проверяемых значений гиперпараметра.
+    /// modelFactory — функция создания модели по значению параметра.
+    /// X, y — обучающие данные.
+    /// metric — функция качества (yTrue, yPred) -> real.
+    /// cv — готовая последовательность фолдов в виде пар (trainIdx, testIdx).
+    /// Возвращает объект, содержащий оценки по фолдам,
+    /// а также средние значения и стандартные отклонения
+    /// на обучающих и валидационных подвыборках.
+    static function ValidationCurve(
+      paramValues: array of real;
+      modelFactory: real -> IClassifier;
+      X: Matrix; y: array of integer;
+      metric: (array of integer, array of integer) -> real;
+      cv: sequence of (array of integer, array of integer)
+    ): ValidationCurveResult;
+    
+    /// Строит кривую обучения для регрессионной модели
+    /// по целочисленной сетке размеров обучающей выборки.
+    /// trainSizes — набор проверяемых размеров обучающей выборки.
+    /// modelFactory — функция создания модели.
+    /// X, y — обучающие данные.
+    /// metric — функция качества (yTrue, yPred) -> real.
+    /// cv — готовая последовательность фолдов в виде пар (trainIdx, testIdx).
+    /// Возвращает объект, содержащий оценки по фолдам,
+    /// а также средние значения и стандартные отклонения
+    /// на обучающих и валидационных подвыборках.
+    static function LearningCurve(
+      trainSizes: array of integer;
+      modelFactory: () -> IRegressor;
+      X: Matrix; y: Vector;
+      metric: (Vector, Vector) -> real;
+      cv: sequence of (array of integer, array of integer)
+    ): LearningCurveResult;
+    /// Строит кривую обучения для регрессионной модели
+    /// по вещественной сетке долей обучающей выборки.
+    /// trainFractions — набор проверяемых долей обучающей выборки.
+    /// modelFactory — функция создания модели.
+    /// X, y — обучающие данные.
+    /// metric — функция качества (yTrue, yPred) -> real.
+    /// cv — готовая последовательность фолдов в виде пар (trainIdx, testIdx).
+    /// Возвращает объект, содержащий оценки по фолдам,
+    /// а также средние значения и стандартные отклонения
+    /// на обучающих и валидационных подвыборках.
+    static function LearningCurve(
+      trainFractions: array of real;
+      modelFactory: () -> IRegressor;
+      X: Matrix; y: Vector;
+      metric: (Vector, Vector) -> real;
+      cv: sequence of (array of integer, array of integer)
+    ): LearningCurveResult;
+    /// Строит кривую обучения для классификационной модели
+    /// по целочисленной сетке размеров обучающей выборки.
+    /// trainSizes — набор проверяемых размеров обучающей выборки.
+    /// modelFactory — функция создания модели.
+    /// X, y — обучающие данные.
+    /// metric — функция качества (yTrue, yPred) -> real.
+    /// cv — готовая последовательность фолдов в виде пар (trainIdx, testIdx).
+    /// Возвращает объект, содержащий оценки по фолдам,
+    /// а также средние значения и стандартные отклонения
+    /// на обучающих и валидационных подвыборках.
+    static function LearningCurve(
+      trainSizes: array of integer;
+      modelFactory: () -> IClassifier;
+      X: Matrix; y: array of integer;
+      metric: (array of integer, array of integer) -> real;
+      cv: sequence of (array of integer, array of integer)
+    ): LearningCurveResult;
+    /// Строит кривую обучения для классификационной модели
+    /// по вещественной сетке долей обучающей выборки.
+    /// trainFractions — набор проверяемых долей обучающей выборки.
+    /// modelFactory — функция создания модели.
+    /// X, y — обучающие данные.
+    /// metric — функция качества (yTrue, yPred) -> real.
+    /// cv — готовая последовательность фолдов в виде пар (trainIdx, testIdx).
+    /// Возвращает объект, содержащий оценки по фолдам,
+    /// а также средние значения и стандартные отклонения
+    /// на обучающих и валидационных подвыборках.
+    static function LearningCurve(
+      trainFractions: array of real;
+      modelFactory: () -> IClassifier;
+      X: Matrix; y: array of integer;
+      metric: (array of integer, array of integer) -> real;
+      cv: sequence of (array of integer, array of integer)
+    ): LearningCurveResult;
   end;
   
 /// Класс для подбора гиперпараметров методом перебора по сетке (Grid Search).
@@ -139,6 +337,10 @@ uses MLExceptions;
 uses MLUtilsABC;
 
 const
+  ER_VALIDATION_CURVE_EMPTY =
+    'ValidationCurveResult не содержит значений параметра!!ValidationCurveResult has no parameter values';
+  ER_VALIDATION_CURVE_FOLDS_EMPTY =
+    'ValidationCurve: список фолдов пуст!!ValidationCurve: folds list is empty';
   ER_DIM_MISMATCH_TRAIN_TEST =
     'Несоответствие размерностей в TrainTestSplit: X.RowCount={0}, y.Length={1}!!' +
     'Dimension mismatch in TrainTestSplit: X.RowCount={0}, y.Length={1}';
@@ -167,6 +369,189 @@ const
 //-----------------------------
 //         Validation
 //-----------------------------
+
+function TakeVectorByIndices(y: Vector; indices: array of integer): Vector;
+begin
+  Result := new Vector(indices.Length);
+  for var i := 0 to indices.Length - 1 do
+    Result[i] := y[indices[i]];
+end;
+
+function TakeLabelsByIndices(y: array of integer; indices: array of integer): array of integer;
+begin
+  SetLength(Result, indices.Length);
+  for var i := 0 to indices.Length - 1 do
+    Result[i] := y[indices[i]];
+end;
+
+procedure FillRowMeansAndStd(scores: Matrix; means, stds: Vector);
+begin
+  var rows := scores.RowCount;
+  var cols := scores.ColCount;
+  
+  for var i := 0 to rows - 1 do
+  begin
+    var sum := 0.0;
+    for var j := 0 to cols - 1 do
+      sum += scores[i, j];
+    
+    var mean := sum / cols;
+    means[i] := mean;
+    
+    var sq := 0.0;
+    for var j := 0 to cols - 1 do
+    begin
+      var d := scores[i, j] - mean;
+      sq += d * d;
+    end;
+    
+    stds[i] := Sqrt(sq / cols);
+  end;
+end;
+
+function BuildValidationCurveResult(
+  paramValues: Vector;
+  trainScores, validationScores: Matrix
+): ValidationCurveResult;
+begin
+  Result := new ValidationCurveResult;
+  Result.ParameterValues := paramValues;
+  Result.TrainScores := trainScores;
+  Result.ValidationScores := validationScores;
+  Result.TrainMean := new Vector(trainScores.RowCount);
+  Result.ValidationMean := new Vector(validationScores.RowCount);
+  Result.TrainStd := new Vector(trainScores.RowCount);
+  Result.ValidationStd := new Vector(validationScores.RowCount);
+  
+  FillRowMeansAndStd(trainScores, Result.TrainMean, Result.TrainStd);
+  FillRowMeansAndStd(validationScores, Result.ValidationMean, Result.ValidationStd);
+end;
+
+function BuildLearningCurveResult(
+  trainSizes: Vector;
+  trainScores, validationScores: Matrix
+): LearningCurveResult;
+begin
+  Result := new LearningCurveResult;
+  Result.TrainSizes := trainSizes;
+  Result.TrainScores := trainScores;
+  Result.ValidationScores := validationScores;
+  Result.TrainMean := new Vector(trainScores.RowCount);
+  Result.ValidationMean := new Vector(validationScores.RowCount);
+  Result.TrainStd := new Vector(trainScores.RowCount);
+  Result.ValidationStd := new Vector(validationScores.RowCount);
+  
+  FillRowMeansAndStd(trainScores, Result.TrainMean, Result.TrainStd);
+  FillRowMeansAndStd(validationScores, Result.ValidationMean, Result.ValidationStd);
+end;
+
+function MinTrainFoldSize(folds: array of (array of integer, array of integer)): integer;
+begin
+  Result := integer.MaxValue;
+  
+  foreach var (trainIdx, testIdx) in folds do
+    if trainIdx.Length < Result then
+      Result := trainIdx.Length;
+end;
+
+function ShuffledCopy(indices: array of integer; seed: integer): array of integer;
+begin
+  Result := Copy(indices);
+  var rnd := new System.Random(seed);
+  Result.Shuffle(rnd);
+end;
+
+function PrefixIndices(indices: array of integer; count: integer): array of integer;
+begin
+  Result := new integer[count];
+  System.Array.Copy(indices, 0, Result, 0, count);
+end;
+
+function NormalizeTrainSizes(
+  trainSizes: array of integer;
+  minTrainSize: integer
+): array of integer;
+begin
+  SetLength(Result, trainSizes.Length);
+  
+  for var i := 0 to trainSizes.Length - 1 do
+  begin
+    var sz := trainSizes[i];
+    if (sz <= 0) or (sz > minTrainSize) then
+      ArgumentError(ER_INVALID_VALUE, 'trainSizes');
+    Result[i] := sz;
+  end;
+end;
+
+function NormalizeTrainFractions(
+  trainFractions: array of real;
+  minTrainSize: integer
+): array of integer;
+begin
+  SetLength(Result, trainFractions.Length);
+  
+  for var i := 0 to trainFractions.Length - 1 do
+  begin
+    var frac := trainFractions[i];
+    if (frac <= 0.0) or (frac > 1.0) then
+      ArgumentError(ER_INVALID_VALUE, 'trainFractions');
+    
+    var sz := Round(minTrainSize * frac);
+    sz := sz.Clamp(1, minTrainSize);
+    Result[i] := sz;
+  end;
+end;
+
+function ValidationCurveResult.Count: integer;
+begin
+  if ParameterValues = nil then
+    Result := 0
+  else
+    Result := ParameterValues.Length;
+end;
+
+function ValidationCurveResult.BestIndex(maximize: boolean): integer;
+begin
+  if (ValidationMean = nil) or (ValidationMean.Length = 0) then
+    ArgumentError(ER_VALIDATION_CURVE_EMPTY);
+  
+  Result := 0;
+  
+  for var i := 1 to ValidationMean.Length - 1 do
+    if maximize then
+    begin
+      if ValidationMean[i] > ValidationMean[Result] then
+        Result := i;
+    end
+    else
+    begin
+      if ValidationMean[i] < ValidationMean[Result] then
+        Result := i;
+    end;
+end;
+
+function ValidationCurveResult.BestParam(maximize: boolean): real;
+begin
+  var i := BestIndex(maximize);
+  
+  if (ParameterValues = nil) or (i >= ParameterValues.Length) then
+    ArgumentError(ER_VALIDATION_CURVE_EMPTY);
+  
+  Result := ParameterValues[i];
+end;
+
+function ValidationCurveResult.BestScore(maximize: boolean): real;
+begin
+  Result := ValidationMean[BestIndex(maximize)];
+end;
+
+function LearningCurveResult.Count: integer;
+begin
+  if TrainSizes = nil then
+    Result := 0
+  else
+    Result := TrainSizes.Length;
+end;
 
 static function Validation.CrossValidateCore(
   model: IRegressor; 
@@ -733,6 +1118,396 @@ begin
     StratifiedKFold(y, k, baseSeed),
     metric
   );
+end;
+
+static function Validation.ValidationCurve(
+  paramValues: array of integer;
+  modelFactory: integer -> IRegressor;
+  X: Matrix; y: Vector;
+  metric: (Vector, Vector) -> real;
+  cv: sequence of (array of integer, array of integer)
+): ValidationCurveResult;
+begin
+  if modelFactory = nil then
+    ArgumentNullError(ER_ARG_NULL, 'modelFactory');
+  if paramValues = nil then
+    ArgumentNullError(ER_ARG_NULL, 'paramValues');
+  if paramValues.Length = 0 then
+    ArgumentError(ER_PARAM_VALUES_EMPTY);
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+  if y = nil then
+    ArgumentNullError(ER_ARG_NULL, 'y');
+  if metric = nil then
+    ArgumentNullError(ER_ARG_NULL, 'metric');
+  if cv = nil then
+    ArgumentNullError(ER_ARG_NULL, 'cv');
+  if X.RowCount <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+  
+  var folds := cv.ToArray;
+  if folds.Length = 0 then
+    ArgumentError(ER_VALIDATION_CURVE_FOLDS_EMPTY);
+  
+  var trainScores := new Matrix(paramValues.Length, folds.Length);
+  var validationScores := new Matrix(paramValues.Length, folds.Length);
+  
+  for var pi := 0 to paramValues.Length - 1 do
+  begin
+    var model0 := modelFactory(paramValues[pi]);
+    if model0 = nil then
+      ArgumentNullError(ER_ARG_NULL, 'modelFactory(param)');
+    
+    for var fi := 0 to folds.Length - 1 do
+    begin
+      var (trainIdx, testIdx) := folds[fi];
+      var Xtr := X.TakeRows(trainIdx);
+      var Xte := X.TakeRows(testIdx);
+      var ytr := TakeVectorByIndices(y, trainIdx);
+      var yte := TakeVectorByIndices(y, testIdx);
+      
+      var model := model0.Clone() as IRegressor;
+      model := model.Fit(Xtr, ytr) as IRegressor;
+      
+      trainScores[pi, fi] := metric(ytr, model.Predict(Xtr));
+      validationScores[pi, fi] := metric(yte, model.Predict(Xte));
+    end;
+  end;
+  
+  Result := BuildValidationCurveResult(new Vector(paramValues), trainScores, validationScores);
+end;
+
+static function Validation.ValidationCurve(
+  paramValues: array of real;
+  modelFactory: real -> IRegressor;
+  X: Matrix; y: Vector;
+  metric: (Vector, Vector) -> real;
+  cv: sequence of (array of integer, array of integer)
+): ValidationCurveResult;
+begin
+  if modelFactory = nil then
+    ArgumentNullError(ER_ARG_NULL, 'modelFactory');
+  if paramValues = nil then
+    ArgumentNullError(ER_ARG_NULL, 'paramValues');
+  if paramValues.Length = 0 then
+    ArgumentError(ER_PARAM_VALUES_EMPTY);
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+  if y = nil then
+    ArgumentNullError(ER_ARG_NULL, 'y');
+  if metric = nil then
+    ArgumentNullError(ER_ARG_NULL, 'metric');
+  if cv = nil then
+    ArgumentNullError(ER_ARG_NULL, 'cv');
+  if X.RowCount <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+  
+  var folds := cv.ToArray;
+  if folds.Length = 0 then
+    ArgumentError(ER_VALIDATION_CURVE_FOLDS_EMPTY);
+  
+  var trainScores := new Matrix(paramValues.Length, folds.Length);
+  var validationScores := new Matrix(paramValues.Length, folds.Length);
+  
+  for var pi := 0 to paramValues.Length - 1 do
+  begin
+    var model0 := modelFactory(paramValues[pi]);
+    if model0 = nil then
+      ArgumentNullError(ER_ARG_NULL, 'modelFactory(param)');
+    
+    for var fi := 0 to folds.Length - 1 do
+    begin
+      var (trainIdx, testIdx) := folds[fi];
+      var Xtr := X.TakeRows(trainIdx);
+      var Xte := X.TakeRows(testIdx);
+      var ytr := TakeVectorByIndices(y, trainIdx);
+      var yte := TakeVectorByIndices(y, testIdx);
+      
+      var model := model0.Clone() as IRegressor;
+      model := model.Fit(Xtr, ytr) as IRegressor;
+      
+      trainScores[pi, fi] := metric(ytr, model.Predict(Xtr));
+      validationScores[pi, fi] := metric(yte, model.Predict(Xte));
+    end;
+  end;
+  
+  Result := BuildValidationCurveResult(new Vector(paramValues), trainScores, validationScores);
+end;
+
+static function Validation.ValidationCurve(
+  paramValues: array of integer;
+  modelFactory: integer -> IClassifier;
+  X: Matrix; y: array of integer;
+  metric: (array of integer, array of integer) -> real;
+  cv: sequence of (array of integer, array of integer)
+): ValidationCurveResult;
+begin
+  if modelFactory = nil then
+    ArgumentNullError(ER_ARG_NULL, 'modelFactory');
+  if paramValues = nil then
+    ArgumentNullError(ER_ARG_NULL, 'paramValues');
+  if paramValues.Length = 0 then
+    ArgumentError(ER_PARAM_VALUES_EMPTY);
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+  if y = nil then
+    ArgumentNullError(ER_ARG_NULL, 'y');
+  if metric = nil then
+    ArgumentNullError(ER_ARG_NULL, 'metric');
+  if cv = nil then
+    ArgumentNullError(ER_ARG_NULL, 'cv');
+  if X.RowCount <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+  
+  var folds := cv.ToArray;
+  if folds.Length = 0 then
+    ArgumentError(ER_VALIDATION_CURVE_FOLDS_EMPTY);
+  
+  var trainScores := new Matrix(paramValues.Length, folds.Length);
+  var validationScores := new Matrix(paramValues.Length, folds.Length);
+  
+  for var pi := 0 to paramValues.Length - 1 do
+  begin
+    var model0 := modelFactory(paramValues[pi]);
+    if model0 = nil then
+      ArgumentNullError(ER_ARG_NULL, 'modelFactory(param)');
+    
+    for var fi := 0 to folds.Length - 1 do
+    begin
+      var (trainIdx, testIdx) := folds[fi];
+      var Xtr := X.TakeRows(trainIdx);
+      var Xte := X.TakeRows(testIdx);
+      var ytr := TakeLabelsByIndices(y, trainIdx);
+      var yte := TakeLabelsByIndices(y, testIdx);
+      
+      var model := model0.Clone() as IClassifier;
+      model := model.Fit(Xtr, ytr) as IClassifier;
+      
+      trainScores[pi, fi] := metric(ytr, model.Predict(Xtr));
+      validationScores[pi, fi] := metric(yte, model.Predict(Xte));
+    end;
+  end;
+  
+  Result := BuildValidationCurveResult(new Vector(paramValues), trainScores, validationScores);
+end;
+
+static function Validation.ValidationCurve(
+  paramValues: array of real;
+  modelFactory: real -> IClassifier;
+  X: Matrix; y: array of integer;
+  metric: (array of integer, array of integer) -> real;
+  cv: sequence of (array of integer, array of integer)
+): ValidationCurveResult;
+begin
+  if modelFactory = nil then
+    ArgumentNullError(ER_ARG_NULL, 'modelFactory');
+  if paramValues = nil then
+    ArgumentNullError(ER_ARG_NULL, 'paramValues');
+  if paramValues.Length = 0 then
+    ArgumentError(ER_PARAM_VALUES_EMPTY);
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+  if y = nil then
+    ArgumentNullError(ER_ARG_NULL, 'y');
+  if metric = nil then
+    ArgumentNullError(ER_ARG_NULL, 'metric');
+  if cv = nil then
+    ArgumentNullError(ER_ARG_NULL, 'cv');
+  if X.RowCount <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+  
+  var folds := cv.ToArray;
+  if folds.Length = 0 then
+    ArgumentError(ER_VALIDATION_CURVE_FOLDS_EMPTY);
+  
+  var trainScores := new Matrix(paramValues.Length, folds.Length);
+  var validationScores := new Matrix(paramValues.Length, folds.Length);
+  
+  for var pi := 0 to paramValues.Length - 1 do
+  begin
+    var model0 := modelFactory(paramValues[pi]);
+    if model0 = nil then
+      ArgumentNullError(ER_ARG_NULL, 'modelFactory(param)');
+    
+    for var fi := 0 to folds.Length - 1 do
+    begin
+      var (trainIdx, testIdx) := folds[fi];
+      var Xtr := X.TakeRows(trainIdx);
+      var Xte := X.TakeRows(testIdx);
+      var ytr := TakeLabelsByIndices(y, trainIdx);
+      var yte := TakeLabelsByIndices(y, testIdx);
+      
+      var model := model0.Clone() as IClassifier;
+      model := model.Fit(Xtr, ytr) as IClassifier;
+      
+      trainScores[pi, fi] := metric(ytr, model.Predict(Xtr));
+      validationScores[pi, fi] := metric(yte, model.Predict(Xte));
+    end;
+  end;
+  
+  Result := BuildValidationCurveResult(new Vector(paramValues), trainScores, validationScores);
+end;
+
+static function Validation.LearningCurve(
+  trainSizes: array of integer;
+  modelFactory: () -> IRegressor;
+  X: Matrix; y: Vector;
+  metric: (Vector, Vector) -> real;
+  cv: sequence of (array of integer, array of integer)
+): LearningCurveResult;
+begin
+  if modelFactory = nil then
+    ArgumentNullError(ER_ARG_NULL, 'modelFactory');
+  if trainSizes = nil then
+    ArgumentNullError(ER_ARG_NULL, 'trainSizes');
+  if trainSizes.Length = 0 then
+    ArgumentError(ER_PARAM_VALUES_EMPTY);
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+  if y = nil then
+    ArgumentNullError(ER_ARG_NULL, 'y');
+  if metric = nil then
+    ArgumentNullError(ER_ARG_NULL, 'metric');
+  if cv = nil then
+    ArgumentNullError(ER_ARG_NULL, 'cv');
+  if X.RowCount <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+  
+  var folds := cv.ToArray;
+  if folds.Length = 0 then
+    ArgumentError(ER_VALIDATION_CURVE_FOLDS_EMPTY);
+  
+  var minTrainSize := MinTrainFoldSize(folds);
+  var sizes := NormalizeTrainSizes(trainSizes, minTrainSize);
+  var trainScores := new Matrix(sizes.Length, folds.Length);
+  var validationScores := new Matrix(sizes.Length, folds.Length);
+  
+  for var fi := 0 to folds.Length - 1 do
+  begin
+    var (trainIdxFull, testIdx) := folds[fi];
+    var trainIdxShuffled := ShuffledCopy(trainIdxFull, 12345 + fi);
+    var Xte := X.TakeRows(testIdx);
+    var yte := TakeVectorByIndices(y, testIdx);
+    
+    for var si := 0 to sizes.Length - 1 do
+    begin
+      var subIdx := PrefixIndices(trainIdxShuffled, sizes[si]);
+      var Xtr := X.TakeRows(subIdx);
+      var ytr := TakeVectorByIndices(y, subIdx);
+      var model := modelFactory();
+      if model = nil then
+        ArgumentNullError(ER_ARG_NULL, 'modelFactory()');
+      model := model.Fit(Xtr, ytr) as IRegressor;
+      trainScores[si, fi] := metric(ytr, model.Predict(Xtr));
+      validationScores[si, fi] := metric(yte, model.Predict(Xte));
+    end;
+  end;
+  
+  Result := BuildLearningCurveResult(new Vector(sizes), trainScores, validationScores);
+end;
+
+static function Validation.LearningCurve(
+  trainFractions: array of real;
+  modelFactory: () -> IRegressor;
+  X: Matrix; y: Vector;
+  metric: (Vector, Vector) -> real;
+  cv: sequence of (array of integer, array of integer)
+): LearningCurveResult;
+begin
+  if trainFractions = nil then
+    ArgumentNullError(ER_ARG_NULL, 'trainFractions');
+  if trainFractions.Length = 0 then
+    ArgumentError(ER_PARAM_VALUES_EMPTY);
+  if cv = nil then
+    ArgumentNullError(ER_ARG_NULL, 'cv');
+  
+  var folds := cv.ToArray;
+  if folds.Length = 0 then
+    ArgumentError(ER_VALIDATION_CURVE_FOLDS_EMPTY);
+  
+  var sizes := NormalizeTrainFractions(trainFractions, MinTrainFoldSize(folds));
+  Result := LearningCurve(sizes, modelFactory, X, y, metric, folds);
+end;
+
+static function Validation.LearningCurve(
+  trainSizes: array of integer;
+  modelFactory: () -> IClassifier;
+  X: Matrix; y: array of integer;
+  metric: (array of integer, array of integer) -> real;
+  cv: sequence of (array of integer, array of integer)
+): LearningCurveResult;
+begin
+  if modelFactory = nil then
+    ArgumentNullError(ER_ARG_NULL, 'modelFactory');
+  if trainSizes = nil then
+    ArgumentNullError(ER_ARG_NULL, 'trainSizes');
+  if trainSizes.Length = 0 then
+    ArgumentError(ER_PARAM_VALUES_EMPTY);
+  if X = nil then
+    ArgumentNullError(ER_ARG_NULL, 'X');
+  if y = nil then
+    ArgumentNullError(ER_ARG_NULL, 'y');
+  if metric = nil then
+    ArgumentNullError(ER_ARG_NULL, 'metric');
+  if cv = nil then
+    ArgumentNullError(ER_ARG_NULL, 'cv');
+  if X.RowCount <> y.Length then
+    DimensionError(ER_DIM_MISMATCH, X.RowCount, y.Length);
+  
+  var folds := cv.ToArray;
+  if folds.Length = 0 then
+    ArgumentError(ER_VALIDATION_CURVE_FOLDS_EMPTY);
+  
+  var minTrainSize := MinTrainFoldSize(folds);
+  var sizes := NormalizeTrainSizes(trainSizes, minTrainSize);
+  var trainScores := new Matrix(sizes.Length, folds.Length);
+  var validationScores := new Matrix(sizes.Length, folds.Length);
+  
+  for var fi := 0 to folds.Length - 1 do
+  begin
+    var (trainIdxFull, testIdx) := folds[fi];
+    var trainIdxShuffled := ShuffledCopy(trainIdxFull, 12345 + fi);
+    var Xte := X.TakeRows(testIdx);
+    var yte := TakeLabelsByIndices(y, testIdx);
+    
+    for var si := 0 to sizes.Length - 1 do
+    begin
+      var subIdx := PrefixIndices(trainIdxShuffled, sizes[si]);
+      var Xtr := X.TakeRows(subIdx);
+      var ytr := TakeLabelsByIndices(y, subIdx);
+      var model := modelFactory();
+      if model = nil then
+        ArgumentNullError(ER_ARG_NULL, 'modelFactory()');
+      model := model.Fit(Xtr, ytr) as IClassifier;
+      trainScores[si, fi] := metric(ytr, model.Predict(Xtr));
+      validationScores[si, fi] := metric(yte, model.Predict(Xte));
+    end;
+  end;
+  
+  Result := BuildLearningCurveResult(new Vector(sizes), trainScores, validationScores);
+end;
+
+static function Validation.LearningCurve(
+  trainFractions: array of real;
+  modelFactory: () -> IClassifier;
+  X: Matrix; y: array of integer;
+  metric: (array of integer, array of integer) -> real;
+  cv: sequence of (array of integer, array of integer)
+): LearningCurveResult;
+begin
+  if trainFractions = nil then
+    ArgumentNullError(ER_ARG_NULL, 'trainFractions');
+  if trainFractions.Length = 0 then
+    ArgumentError(ER_PARAM_VALUES_EMPTY);
+  if cv = nil then
+    ArgumentNullError(ER_ARG_NULL, 'cv');
+  
+  var folds := cv.ToArray;
+  if folds.Length = 0 then
+    ArgumentError(ER_VALIDATION_CURVE_FOLDS_EMPTY);
+  
+  var sizes := NormalizeTrainFractions(trainFractions, MinTrainFoldSize(folds));
+  Result := LearningCurve(sizes, modelFactory, X, y, metric, folds);
 end;
 
 //-----------------------------

@@ -20,6 +20,12 @@ uses DataFrameABCCore;
 
 const DataFrameVersion = '1.1';
 
+/// Краткое создание даты без времени.
+function DT(year, month, day: integer): System.DateTime;
+
+/// Краткое создание даты и времени.
+function DT(year, month, day, hour, minute, second: integer): System.DateTime;
+
 // Реэкспортируем публичные типы для удобства
 type
   /// Тип соединения (join) таблиц
@@ -885,6 +891,8 @@ const
     'Среднее!!Mean';
   DF_COL_MEDIAN =
     'Медиана!!Median';
+  DF_COL_MISSINGCOUNT =
+    'Пропусков!!MissingCount';
   DF_COL_MIN =
     'Мин!!Min';
   DF_COL_MAX =
@@ -4049,9 +4057,11 @@ begin
     counts[i] := MissingCount(names[i]);
 
   var res := new DataFrame;
-  res.AddStrColumn('Column', names);
-  res.AddIntColumn('MissingCount', counts);
-  res.SetSchema(new DataFrameSchema(['Column', 'MissingCount'], [ctStr, ctInt], [false, false]));
+  var colName1 := UiLabel(DF_COL_COLUMN);
+  var colName2 := UiLabel(DF_COL_MISSINGCOUNT);
+  res.AddStrColumn(colName1, names);
+  res.AddIntColumn(colName2, counts);
+  res.SetSchema(new DataFrameSchema([colName1, colName2], [ctStr, ctInt], [false, false]));
   Result := res;
 end;
 
@@ -5866,6 +5876,16 @@ begin
     ctBool: Result := 'Bool';
     ctDateTime: Result := 'DateTime';
   end;
+end;
+
+function DT(year, month, day: integer): System.DateTime;
+begin
+  Result := System.DateTime.Create(year, month, day);
+end;
+
+function DT(year, month, day, hour, minute, second: integer): System.DateTime;
+begin
+  Result := System.DateTime.Create(year, month, day, hour, minute, second);
 end;
 
 function UiLabel(s: string): string;

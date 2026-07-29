@@ -23,6 +23,7 @@ uses System,
      System.Text,
      InteractiveDataDisplay.WPF,
      LinearAlgebraML,
+     ValidationML,
      MetricsABC,
      MLExceptions;
      
@@ -358,6 +359,27 @@ type
     /// Отображает матрицу ошибок по объекту ConfusionMatrix.
     static procedure ConfusionMatrix(cm: MetricsABC.ConfusionMatrix; classNames: array of string := nil;
       normalize: MatrixNormalization := MatrixNormalization.None; sortClassNames: boolean := false);
+    
+    /// Строит валидационную кривую по результату кросс-валидации.
+    static procedure ValidationCurve(
+      curve: ValidationML.ValidationCurveResult;
+      xLabel: string := nil;
+      yLabel: string := nil;
+      title: string := nil;
+      trainColor: ColorWPF := DefaultColor;
+      validationColor: ColorWPF := DefaultColor;
+      markerSize: real := 8;
+      thickness: real := 2);
+    /// Строит кривую обучения по результату кросс-валидации.
+    static procedure LearningCurve(
+      curve: ValidationML.LearningCurveResult;
+      xLabel: string := nil;
+      yLabel: string := nil;
+      title: string := nil;
+      trainColor: ColorWPF := DefaultColor;
+      validationColor: ColorWPF := DefaultColor;
+      markerSize: real := 8;
+      thickness: real := 2);
     
     /// Строит карту решений по уже вычисленным меткам на сетке.
     static procedure Surface(labels: array of integer; nx, ny: integer; xmin, xmax, ymin, ymax: real; pal: PlotML.Palette := nil);
@@ -2863,6 +2885,102 @@ begin
     classNames := cm.Labels.Select(x -> x.ToString).ToArray;
 
   ConfusionMatrix(cm.Matrix, classNames, normalize, sortClassNames);
+end;
+
+static procedure Plot.ValidationCurve(
+  curve: ValidationML.ValidationCurveResult;
+  xLabel: string;
+  yLabel: string;
+  title: string;
+  trainColor: ColorWPF;
+  validationColor: ColorWPF;
+  markerSize: real;
+  thickness: real);
+begin
+  if curve = nil then
+    raise new System.ArgumentNullException('curve');
+
+  if curve.ParameterValues = nil then
+    raise new System.ArgumentException('ValidationCurve: ParameterValues is nil');
+
+  if curve.TrainMean = nil then
+    raise new System.ArgumentException('ValidationCurve: TrainMean is nil');
+
+  if curve.ValidationMean = nil then
+    raise new System.ArgumentException('ValidationCurve: ValidationMean is nil');
+
+  var n := curve.ParameterValues.Length;
+  if (curve.TrainMean.Length <> n) or (curve.ValidationMean.Length <> n) then
+    raise new System.ArgumentException('ValidationCurve: array sizes mismatch');
+
+  RunUI(() ->
+  begin
+    var trainClr :=
+      if trainColor <> DefaultColor then trainColor else Colors.Blue;
+    var validationClr :=
+      if validationColor <> DefaultColor then validationColor else Colors.Red;
+
+    DrawLine(rootChart, curve.ParameterValues.Data, curve.TrainMean.Data, trainClr, thickness, nil);
+    DrawPoints(rootChart, curve.ParameterValues.Data, curve.TrainMean.Data, trainClr, markerSize, MarkerType.Circle, nil);
+
+    DrawLine(rootChart, curve.ParameterValues.Data, curve.ValidationMean.Data, validationClr, thickness, nil);
+    DrawPoints(rootChart, curve.ParameterValues.Data, curve.ValidationMean.Data, validationClr, markerSize, MarkerType.Circle, nil);
+
+    if title <> nil then
+      SetTitle(title);
+    if xLabel <> nil then
+      SetXLabel(xLabel);
+    if yLabel <> nil then
+      SetYLabel(yLabel);
+  end);
+end;
+
+static procedure Plot.LearningCurve(
+  curve: ValidationML.LearningCurveResult;
+  xLabel: string;
+  yLabel: string;
+  title: string;
+  trainColor: ColorWPF;
+  validationColor: ColorWPF;
+  markerSize: real;
+  thickness: real);
+begin
+  if curve = nil then
+    raise new System.ArgumentNullException('curve');
+
+  if curve.TrainSizes = nil then
+    raise new System.ArgumentException('LearningCurve: TrainSizes is nil');
+
+  if curve.TrainMean = nil then
+    raise new System.ArgumentException('LearningCurve: TrainMean is nil');
+
+  if curve.ValidationMean = nil then
+    raise new System.ArgumentException('LearningCurve: ValidationMean is nil');
+
+  var n := curve.TrainSizes.Length;
+  if (curve.TrainMean.Length <> n) or (curve.ValidationMean.Length <> n) then
+    raise new System.ArgumentException('LearningCurve: array sizes mismatch');
+
+  RunUI(() ->
+  begin
+    var trainClr :=
+      if trainColor <> DefaultColor then trainColor else Colors.Blue;
+    var validationClr :=
+      if validationColor <> DefaultColor then validationColor else Colors.Red;
+
+    DrawLine(rootChart, curve.TrainSizes.Data, curve.TrainMean.Data, trainClr, thickness, nil);
+    DrawPoints(rootChart, curve.TrainSizes.Data, curve.TrainMean.Data, trainClr, markerSize, MarkerType.Circle, nil);
+
+    DrawLine(rootChart, curve.TrainSizes.Data, curve.ValidationMean.Data, validationClr, thickness, nil);
+    DrawPoints(rootChart, curve.TrainSizes.Data, curve.ValidationMean.Data, validationClr, markerSize, MarkerType.Circle, nil);
+
+    if title <> nil then
+      SetTitle(title);
+    if xLabel <> nil then
+      SetXLabel(xLabel);
+    if yLabel <> nil then
+      SetYLabel(yLabel);
+  end);
 end;
 
 // --- Vector overloads
