@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Languages.Facade;
 using PascalABCCompiler;
 
@@ -33,6 +34,9 @@ namespace Languages.Integration
         /// </summary>
         public static void LoadAllLanguages()
         {
+#if PABCNET_MODERN
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+#endif
             string directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
 
             DirectoryInfo directory = new DirectoryInfo(directoryName);

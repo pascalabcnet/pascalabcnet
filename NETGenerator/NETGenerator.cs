@@ -17,6 +17,13 @@ using System.Threading;
 using PascalABCCompiler.NetHelper;
 using PascalABCCompiler.SemanticTree;
 
+#if PABCNET_MODERN
+using System.Collections.Immutable;
+using System.Reflection.Metadata;
+using System.Reflection.Metadata.Ecma335;
+using System.Reflection.PortableExecutable;
+#endif
+
 namespace PascalABCCompiler.NETGenerator
 {
 
@@ -126,7 +133,11 @@ namespace PascalABCCompiler.NETGenerator
     {
         protected AppDomain ad;//домен приложения (в нем будет генерироваться сборка)
         protected AssemblyName an;//имя сборки
+#if PABCNET_LEGACY
         protected AssemblyBuilder ab;//билдер для сборки
+#else
+        protected PersistedAssemblyBuilder ab;//билдер для сборки
+#endif
         protected ModuleBuilder mb;//билдер для модуля
         protected TypeBuilder entry_type;//тип-обертка над осн. программой
         protected TypeBuilder cur_type;//текущий компилируемый тип
@@ -188,6 +199,28 @@ namespace PascalABCCompiler.NETGenerator
         private bool pabc_rtl_converted = false;
         bool has_unmanaged_resources = false;
 
+#if PABCNET_MODERN
+        private const string RuntimeConfigCore = @"{
+  ""runtimeOptions"": {
+    ""tfm"": ""net10.0"",
+    ""framework"": {
+      ""name"": ""Microsoft.NETCore.App"",
+      ""version"": ""10.0.0""
+    }
+  }
+}";
+
+        private const string RuntimeConfigWindowsDesktop = @"{
+  ""runtimeOptions"": {
+    ""tfm"": ""net10.0"",
+    ""framework"": {
+      ""name"": ""Microsoft.WindowsDesktop.App"",
+      ""version"": ""10.0.0""
+    }
+  }
+}";
+#endif
+
         private void CheckLocation(SemanticTree.ILocation Location)
         {
             if (Location != null)
@@ -210,6 +243,22 @@ namespace PascalABCCompiler.NETGenerator
                 }
             }
         }
+
+#if PABCNET_MODERN
+        private DebugDirectoryBuilder GeneratePdb(string pdbFileName, MetadataBuilder pdbBuilder,
+            ImmutableArray<int> rowCounts, MethodDefinitionHandle entryPointHandle)
+        {
+            var portablePdbBlob = new BlobBuilder();
+            var portablePdbBuilder = new PortablePdbBuilder(pdbBuilder, rowCounts, entryPointHandle);
+            BlobContentId pdbContentId = portablePdbBuilder.Serialize(portablePdbBlob);
+            using (var fileStream = new FileStream(pdbFileName, FileMode.Create, FileAccess.Write))
+                portablePdbBlob.WriteContentTo(fileStream);
+
+            var debugDirectoryBuilder = new DebugDirectoryBuilder();
+            debugDirectoryBuilder.AddCodeViewEntry(pdbFileName, pdbContentId, portablePdbBuilder.FormatVersion);
+            return debugDirectoryBuilder;
+        }
+#endif
 
         private bool OnNextLine(ILocation loc)
         {
@@ -737,6 +786,7 @@ namespace PascalABCCompiler.NETGenerator
                     Directory.CreateDirectory(dir);
             }
 
+#if PABCNET_LEGACY
             ab = ad.DefineDynamicAssembly(an, AssemblyBuilderAccess.Save, dir);//определяем сборку
             
             //int nn = ad.GetAssemblies().Length;
@@ -770,6 +820,9 @@ namespace PascalABCCompiler.NETGenerator
                     throw new TreeConverter.SourceFileError("");
                 }
             }
+#else
+            ab = new PersistedAssemblyBuilder(an, typeof(object).Assembly);
+#endif
             save_debug_info = comp_opt.dbg_attrs == DebugAttributes.Debug || comp_opt.dbg_attrs == DebugAttributes.ForDebugging;
             add_special_debug_variables = comp_opt.dbg_attrs == DebugAttributes.ForDebugging;
 
@@ -778,9 +831,17 @@ namespace PascalABCCompiler.NETGenerator
                 ab.SetCustomAttribute(TypeFactory.DebuggableAttributeCtor, new byte[] { 0x01, 0x00, 0x01, 0x01, 0x00, 0x00 });
 
             if (!IsDotnet5() && !IsDotnetNative() && (comp_opt.target == TargetType.Exe || comp_opt.target == TargetType.WinExe))
-                mb = ab.DefineDynamicModule(name + ".exe", an.Name + ".exe", save_debug_info); //определяем модуль (save_debug_info - флаг включать отладочную информацию)
+                mb = ab.DefineDynamicModule(name + ".exe"
+#if PABCNET_LEGACY
+                    , an.Name + ".exe", save_debug_info
+#endif
+                    ); //определяем модуль (save_debug_info - флаг включать отладочную информацию)
             else
-                mb = ab.DefineDynamicModule(name + ".dll", an.Name + ".dll", save_debug_info);
+                mb = ab.DefineDynamicModule(name + ".dll"
+#if PABCNET_LEGACY
+                    , an.Name + ".dll", save_debug_info
+#endif
+                    );
 
             cur_unit = Path.GetFileNameWithoutExtension(SourceFileName);
             string entry_cur_unit = cur_unit;
@@ -1131,6 +1192,7 @@ namespace PascalABCCompiler.NETGenerator
             CloseTypes();//закрываем типы
             // SSM 07.02.20  ?
             entry_type?.CreateType();
+#if PABCNET_LEGACY
             switch (comp_opt.target)
             {
                 case TargetType.Exe: ab.SetEntryPoint(entry_meth, PEFileKinds.ConsoleApplication); break;
@@ -1140,6 +1202,7 @@ namespace PascalABCCompiler.NETGenerator
                     else
                         ab.SetEntryPoint(entry_meth, PEFileKinds.ConsoleApplication); break;
             }
+#endif
 
             /**/
             try
@@ -1227,7 +1290,9 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     FileStream stream = File.OpenRead(resname);
                     ResStreams.Add(stream);
+#if PABCNET_LEGACY
                     mb.DefineManifestResource(Path.GetFileName(resname), stream, ResourceAttributes.Public);
+#endif
                 }
             ab.SetCustomAttribute(TypeFactory.CompilationRelaxationsAttributeCtor,
                                   new byte[] { 0x01, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00 });
@@ -1242,6 +1307,54 @@ namespace PascalABCCompiler.NETGenerator
                 ab.SetCustomAttribute(new CustomAttributeBuilder(TypeFactory.TargetFrameworkAttributeCtor, new object[] { $".NETFramework,Version=v{frameworkVersion}" }));
             }
 
+#if PABCNET_MODERN
+            PEHeaderBuilder headerBuilder;
+            MethodDefinitionHandle entryPointHandle = default(MethodDefinitionHandle);
+            MetadataBuilder pdbBuilder;
+            BlobBuilder ilStream;
+            BlobBuilder fieldData;
+            MetadataBuilder metadata = ab.GenerateMetadata(out ilStream, out fieldData, out pdbBuilder);
+
+            switch (comp_opt.target)
+            {
+                case TargetType.Exe:
+                    headerBuilder = new PEHeaderBuilder(
+                        subsystem: Subsystem.WindowsCui,
+                        imageCharacteristics: Characteristics.ExecutableImage);
+                    entryPointHandle = MetadataTokens.MethodDefinitionHandle(entry_meth.MetadataToken);
+                    break;
+                case TargetType.WinExe:
+                    headerBuilder = new PEHeaderBuilder(
+                        subsystem: Subsystem.WindowsGui,
+                        imageCharacteristics: Characteristics.ExecutableImage);
+                    entryPointHandle = MetadataTokens.MethodDefinitionHandle(entry_meth.MetadataToken);
+                    break;
+                case TargetType.Dll:
+                    headerBuilder = new PEHeaderBuilder(imageCharacteristics: Characteristics.Dll);
+                    break;
+                default:
+                    throw new InvalidOperationException("Unsupported target type");
+            }
+
+            string pdbFileName = Path.Combine(Path.GetDirectoryName(TargetFileName), an.Name + ".pdb");
+            DebugDirectoryBuilder debugDirectoryBuilder =
+                GeneratePdb(pdbFileName, pdbBuilder, metadata.GetRowCounts(), entryPointHandle);
+            var peBuilder = new ManagedPEBuilder(
+                header: headerBuilder,
+                metadataRootBuilder: new MetadataRootBuilder(metadata),
+                ilStream: ilStream,
+                mappedFieldData: fieldData,
+                debugDirectoryBuilder: debugDirectoryBuilder,
+                entryPoint: entryPointHandle);
+            var peBlob = new BlobBuilder();
+            peBuilder.Serialize(peBlob);
+            using (var output = new FileStream(TargetFileName, FileMode.Create, FileAccess.Write))
+                peBlob.WriteContentTo(output);
+
+            File.WriteAllText(
+                Path.Combine(Path.GetDirectoryName(TargetFileName), an.Name + ".runtimeconfig.json"),
+                comp_opt.target == TargetType.WinExe ? RuntimeConfigWindowsDesktop : RuntimeConfigCore);
+#else
             int tries = 0;
             bool not_done = true;
             do
@@ -1292,6 +1405,7 @@ namespace PascalABCCompiler.NETGenerator
                 }
             }
             while (not_done);
+#endif
 
             foreach (FileStream fs in ResStreams)
                 fs.Close();
@@ -2229,7 +2343,9 @@ namespace PascalABCCompiler.NETGenerator
                     if (attrs[i].Arguments.Length > 0 && helper.GetTypeReference(attrs[i].AttributeType).tp.FullName == "System.Runtime.InteropServices.MarshalAsAttribute")
                     try
                     {
+#if PABCNET_LEGACY
                         mb.SetMarshal(UnmanagedMarshal.DefineUnmanagedMarshal((UnmanagedType)attrs[i].Arguments[0].value));
+#endif
                     }
                     catch(ArgumentException ex)
                     {

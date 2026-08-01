@@ -338,7 +338,9 @@ namespace PascalABCCompiler.NetHelper
                 cur_used_assemblies = new HashSet<Assembly>();
             cur_used_assemblies.Clear();
             cur_used_assemblies.Add(typeof(string).Assembly);
+#if PABCNET_LEGACY
             cur_used_assemblies.Add(typeof(Microsoft.CSharp.CSharpCodeProvider).Assembly);
+#endif
             type_search_cache.Clear();
         }
 

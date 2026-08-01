@@ -1,13 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net40</TargetFramework>
+    <TargetFrameworks>net40;net10.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <RootNamespace>PascalABCCompiler</RootNamespace>
     
     <ApplicationIcon>App.ico</ApplicationIcon>
     
-    <OutputPath>..\bin\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyName>pabcnetcclear</AssemblyName>
     
@@ -16,6 +15,10 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="App.ico" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <!-- The clear CLI starts in ConsoleCompiler.cs and does not use the legacy BinaryFormatter command channel. -->
+    <Compile Remove="CommandConsoleCompiler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.ico" />

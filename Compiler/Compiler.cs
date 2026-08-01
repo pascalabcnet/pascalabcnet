@@ -949,6 +949,7 @@ namespace PascalABCCompiler
 
         }*/
 
+#if PABCNET_LEGACY
         public string CompileCS()
         {
             OnChangeCompilerState(this, CompilerState.CompilationStarting, CompilerOptions.SourceFileName);
@@ -1020,6 +1021,7 @@ namespace PascalABCCompiler
             else
                 return res.PathToAssembly;
         }
+#endif
 
         private ProjectInfo project;
 
@@ -1373,11 +1375,13 @@ namespace PascalABCCompiler
         {
             try
             {
+#if PABCNET_LEGACY
                 // компиляция C#
                 if (Path.GetExtension(CompilerOptions.SourceFileName) == ".cs")
                 {
                     return CompileCS();
                 }
+#endif
 
                 // вызов события смены состояния компилятора - начало компиляции
                 // информация о состояниях выводится в сообщениях компилятора

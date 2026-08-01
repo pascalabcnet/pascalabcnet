@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <PabcDualTargetProject Condition="
+      '$(MSBuildProjectName)' == 'Compiler' Or
+      '$(MSBuildProjectName)' == 'CompilerTools' Or
+      '$(MSBuildProjectName)' == 'NETGenerator' Or
+      '$(MSBuildProjectName)' == 'PABCNETC' Or
+      '$(MSBuildProjectName)' == 'TreeConverter' Or
+      '$(MSBuildProjectName)' == 'ParserTools' Or
+      '$(MSBuildProjectName)' == 'Errors' Or
+      '$(MSBuildProjectName)' == 'Optimizer' Or
+      '$(MSBuildProjectName)' == 'SyntaxTree' Or
+      '$(MSBuildProjectName)' == 'SemanticTree' Or
+      '$(MSBuildProjectName)' == 'Localization' Or
+      '$(MSBuildProjectName)' == 'PABCNETCclear' Or
+      '$(MSBuildProjectName)' == 'PascalABCSaushkinParser' Or
+      '$(MSBuildProjectName)' == 'SyntaxTreeConverters' Or
+      '$(MSBuildProjectName)' == 'SyntaxVisitors' Or
+      '$(MSBuildProjectName)' == 'LambdaAnySynToSemConverter' Or
+      '$(MSBuildProjectName)' == 'PascalABCLanguageInfo' Or
+      '$(MSBuildProjectName)' == 'StringConstants' Or
+      '$(MSBuildProjectName)' == 'LanguageIntegrator' Or
+      '$(MSBuildProjectName)' == 'SPythonSyntaxTreeVisitor' Or
+      '$(MSBuildProjectName)' == 'SPythonStandardTreeConverter' Or
+      '$(MSBuildProjectName)' == 'SPythonLanguageInfo' Or
+      '$(MSBuildProjectName)' == 'SPythonParser' Or
+      '$(MSBuildProjectName)' == 'PABCCoreUtils'">true</PabcDualTargetProject>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(PabcDualTargetProject)' == 'true' And '$(TargetFramework)' == 'net40'">
+    <OutputPath>$(MSBuildThisFileDirectory)bin\</OutputPath>
+    <IntermediateOutputPath>$(MSBuildProjectDirectory)\obj\$(Configuration)\net40\</IntermediateOutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <DefineConstants>$(DefineConstants);PABCNET_LEGACY</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(PabcDualTargetProject)' == 'true' And '$(TargetFramework)' == 'net10.0'">
+    <OutputPath>$(MSBuildThisFileDirectory)bin-net10\</OutputPath>
+    <IntermediateOutputPath>$(MSBuildProjectDirectory)\obj\$(Configuration)\net10.0\</IntermediateOutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <DefineConstants>$(DefineConstants);PABCNET_MODERN</DefineConstants>
+  </PropertyGroup>
+</Project>

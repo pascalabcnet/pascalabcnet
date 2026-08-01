@@ -13,6 +13,7 @@
 # dirs for build temp files
 **/obj/*
 **/bin/*
+**/bin-net10/*
 !/bin/*
 /bin/*.pdb
 !/Utils/NSIS/Unicode/Bin/*
