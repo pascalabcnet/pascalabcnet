@@ -2638,6 +2638,22 @@ namespace PascalABCCompiler.NETGenerator
             return type_name;
         }
 
+        private static Type NormalizeGenericArgumentType(Type type)
+        {
+#if PABCNET_MODERN
+            // PersistedAssemblyBuilder resolves generic members against the TypeBuilder
+            // wrapped by EnumBuilder, not against EnumBuilder itself.
+            if (type is EnumBuilder enumBuilder)
+            {
+                FieldInfo typeBuilderField = enumBuilder.GetType()
+                    .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+                    .First(field => typeof(TypeBuilder).IsAssignableFrom(field.FieldType));
+                return (Type)typeBuilderField.GetValue(enumBuilder);
+            }
+#endif
+            return type;
+        }
+
         //Перевод заголовка типа
         private void ConvertTypeHeader(ICommonTypeNode value)
         {
@@ -2656,19 +2672,7 @@ namespace PascalABCCompiler.NETGenerator
                         AddTypeInstanceToFunction((ICommonFunctionNode)GetGenericFunctionContainer(value), igtn);
                         return;
                     }
-                    Type genericParameterType = tinfo.tp;
-#if PABCNET_MODERN
-                    // PersistedAssemblyBuilder cannot resolve members of a generic type
-                    // instantiated with EnumBuilder. Use the TypeBuilder wrapped by it.
-                    if (genericParameterType is EnumBuilder enumBuilder)
-                    {
-                        FieldInfo typeBuilderField = enumBuilder.GetType()
-                            .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
-                            .First(field => typeof(TypeBuilder).IsAssignableFrom(field.FieldType));
-                        genericParameterType = (Type)typeBuilderField.GetValue(enumBuilder);
-                    }
-#endif
-                    iparams.Add(genericParameterType);
+                    iparams.Add(NormalizeGenericArgumentType(tinfo.tp));
                 }
                 //Запрашиваем инстанцию
                 //ICompiledTypeNode icompiled_type = igtn.original_generic as ICompiledTypeNode;
@@ -11775,15 +11779,16 @@ namespace PascalABCCompiler.NETGenerator
                 // например IEnumerable<MyType>, array of MyType
                 if (helper.IsPascalType(elementType))
                 {
+                    Type genericElementType = NormalizeGenericArgumentType(elementType);
                     enumer_mi = TypeBuilder.GetMethod(
-                        TypeFactory.IEnumerableGenericType.MakeGenericType(elementType),
+                        TypeFactory.IEnumerableGenericType.MakeGenericType(genericElementType),
                         TypeFactory.IEnumerableGenericGetEnumeratorMethod
                     );
 
                     // IEnumerator<elementType>
                     return_type = enumer_mi.ReturnType
                         .GetGenericTypeDefinition()
-                        .MakeGenericType(elementType);
+                        .MakeGenericType(genericElementType);
                 }
                 // для полностью скомпилированных типов TypeBuilder не требуется
                 // IEnumerable<integer>, array of string
