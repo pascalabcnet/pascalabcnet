@@ -11134,6 +11134,10 @@ namespace PascalABCCompiler.NETGenerator
             }
             for (int i = 0; i < case_labels.Length; i++)
             {
+                // An empty switch has no targets, so do not emit its index calculation either.
+                if (case_labels[i].labels.Length == 0)
+                    continue;
+
                 if (lb != null)
                 {
                     il.Emit(OpCodes.Ldloc, lb);
