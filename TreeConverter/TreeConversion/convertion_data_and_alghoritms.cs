@@ -2476,6 +2476,20 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
 
+#if PABCNET_MODERN
+            // get_conversions changes the inferred lambda state while checking a candidate.
+            // Reflection does not guarantee overload order, and Task.Run overloads have a
+            // different order in modern .NET. Check inferred generic instances last so that
+            // the candidate selected last leaves the correct expected lambda result type.
+            if (syntax_nodes_parameters != null &&
+                syntax_nodes_parameters.Any(parameter => parameter is SyntaxTree.function_lambda_definition))
+            {
+                set_of_possible_functions = set_of_possible_functions
+                    .OrderBy(function => function.is_generic_function_instance ? 1 : 0)
+                    .ToList();
+            }
+#endif
+
             if (lastFailedWhileTryingToCompileLambdaBodyWithGivenParametersException != null
                 && set_of_possible_functions.Count == 0
                 && indefinits.Count == 0)
