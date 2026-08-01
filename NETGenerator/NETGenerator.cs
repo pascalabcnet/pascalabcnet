@@ -12038,26 +12038,45 @@ namespace PascalABCCompiler.NETGenerator
             Type elementType = helper.GetTypeReference(value.ElementType).tp;
 
             bool is_generic = value.IsGeneric;
+            bool uses_non_generic_open_element_fallback = false;
 
             if (is_generic)
             {
-                // NET10-TESTFIX [foreach over Pascal enum array]: map IEnumerable<T> members
-                // through TypeBuilder when T was declared in Pascal code.
+                // NET10-TESTFIX [foreach over Pascal enum array; clean PABCSystem/PABCExtensions bootstrap]:
+                // map IEnumerable<T> members through TypeBuilder when T was declared in Pascal code.
+                // Source-built standard units can expose element types such as T[] whose generic
+                // parameter belongs to an earlier builder context; remap it to the current method first.
                 // если элемент перечисления объявлен в коде
                 // или типоаргумент элемента перечисления объявлен в коде
                 // например IEnumerable<MyType>, array of MyType
                 if (helper.IsPascalType(elementType))
                 {
-                    Type genericElementType = NormalizeGenericArgumentType(elementType);
-                    enumer_mi = TypeBuilder.GetMethod(
-                        TypeFactory.IEnumerableGenericType.MakeGenericType(genericElementType),
-                        TypeFactory.IEnumerableGenericGetEnumeratorMethod
-                    );
+                    Type genericElementType = NormalizeGenericArgumentType(
+                        RemapGenericParametersForCurrentContext(elementType));
+#if PABCNET_MODERN
+                    // PersistedAssemblyBuilder cannot encode a member reference such as
+                    // IEnumerable<T[]>.GetEnumerator when T[] is an Emit SymbolType.
+                    // The non-generic interface is equivalent for enumeration; Current
+                    // is cast back to the Pascal foreach variable type below.
+                    if (genericElementType.IsArray && ContainsGenericParameter(genericElementType))
+                    {
+                        enumer_mi = TypeFactory.IEnumerableGetEnumeratorMethod;
+                        return_type = enumer_mi.ReturnType;
+                        uses_non_generic_open_element_fallback = true;
+                    }
+                    else
+#endif
+                    {
+                        enumer_mi = TypeBuilder.GetMethod(
+                            TypeFactory.IEnumerableGenericType.MakeGenericType(genericElementType),
+                            TypeFactory.IEnumerableGenericGetEnumeratorMethod
+                        );
 
-                    // IEnumerator<elementType>
-                    return_type = enumer_mi.ReturnType
-                        .GetGenericTypeDefinition()
-                        .MakeGenericType(genericElementType);
+                        // IEnumerator<elementType>
+                        return_type = enumer_mi.ReturnType
+                            .GetGenericTypeDefinition()
+                            .MakeGenericType(genericElementType);
+                    }
                 }
                 // для полностью скомпилированных типов TypeBuilder не требуется
                 // IEnumerable<integer>, array of string
@@ -12102,6 +12121,12 @@ namespace PascalABCCompiler.NETGenerator
                     get_current_meth = return_type.GetMethod("get_Current");
             }
             il.Emit(OpCodes.Callvirt, get_current_meth);
+            Type foreachVariableType = vi.kind == VarKind.vkLocal ? vi.lb.LocalType : vi.fb.FieldType;
+            if (uses_non_generic_open_element_fallback &&
+                get_current_meth.ReturnType == TypeFactory.ObjectType &&
+                !foreachVariableType.IsValueType && !foreachVariableType.IsGenericParameter &&
+                foreachVariableType != TypeFactory.ObjectType)
+                il.Emit(OpCodes.Castclass, foreachVariableType);
             if (vi.kind == VarKind.vkLocal)
             {
                 if (!lb.LocalType.IsValueType && (vi.lb.LocalType.IsValueType || vi.lb.LocalType.IsGenericParameter))
