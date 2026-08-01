@@ -31,6 +31,31 @@ var
   FailedCount := 0;
   SkippedCount := 0;
   FailureMessages := new System.Collections.Generic.List<string>;
+  ProgressColumn := 0;
+
+procedure FinishProgressLine;
+begin
+  if ProgressColumn > 0 then
+    Println;
+  ProgressColumn := 0;
+end;
+
+procedure BeginSection(name: string);
+begin
+  FinishProgressLine;
+  Println('----- ' + name + ' -----');
+end;
+
+procedure PrintSuccessDot;
+begin
+  Write('.');
+  Inc(ProgressColumn);
+  if ProgressColumn = 80 then
+  begin
+    Println;
+    ProgressColumn := 0;
+  end;
+end;
 
 function IsUnix: boolean;
 begin
@@ -98,12 +123,14 @@ begin
   var displayName := string.IsNullOrEmpty(fileName) ? '<runner>' : Path.GetFileName(fileName);
   var text := $'[{phase}] {displayName}: {message}';
   FailureMessages.Add(text);
+  FinishProgressLine;
   Println('FAIL ' + text);
 end;
 
 procedure RecordPassed;
 begin
   Inc(PassedCount);
+  PrintSuccessDot;
 end;
 
 procedure RecordSkipped;
@@ -235,7 +262,7 @@ function CollectGeneratedPcu(sourceFileName, outputDir, phase: string): boolean;
 
 procedure RunCoreTests;
 begin
-  Println('----- core: компиляция обычных тестов -----');
+  BeginSection('core');
   RecreateDirectory(CoreOutputDir);
 
   var executables := new System.Collections.Generic.List<string>;
@@ -254,7 +281,6 @@ begin
       continue;
     end;
 
-    Println('COMPILE ' + Path.GetFileName(fileName));
     if CompileSource(fileName, CoreOutputDir, 'compile', true) then
     begin
       var baseName := Path.GetFileNameWithoutExtension(fileName);
@@ -280,14 +306,12 @@ begin
   end;
 
   CopyRuntimeDependencies(CoreOutputDir);
-  Println('----- core: запуск обычных тестов -----');
-
   for var i := 0 to executables.Count - 1 do
   begin
-    Println('RUN     ' + Path.GetFileName(sourceFiles[i]));
     if RunProgram(executables[i], sourceFiles[i]) then
       RecordPassed;
   end;
+  FinishProgressLine;
 end;
 
 function CollectGeneratedPcu(sourceFileName, outputDir, phase: string): boolean;
@@ -328,7 +352,6 @@ begin
       continue;
     end;
 
-    Println('COMPILE ' + Path.GetFileName(fileName));
     if CompileSource(fileName, outputDir, phase, false, searchDirectory) then
     begin
       if (not collectPcu) or CollectGeneratedPcu(fileName, outputDir, phase) then
@@ -339,20 +362,19 @@ end;
 
 procedure RunUnitTests;
 begin
-  Println('----- units: компиляция модулей -----');
+  BeginSection('units');
   RecreateDirectory(UnitsOutputDir);
   RecreateDirectory(UsesUnitsOutputDir);
 
   CompileDirectory(Path.Combine(TestSuiteDir, 'units'), UnitsOutputDir, 'units', '', true);
-
-  Println('----- units: компиляция программ, использующих модули -----');
   CompileDirectory(Path.Combine(TestSuiteDir, 'usesunits'), UsesUnitsOutputDir,
                    'usesunits', UnitsOutputDir);
+  FinishProgressLine;
 end;
 
 procedure RunErrorTests;
 begin
-  Println('----- errors: проверка ожидаемых ошибок -----');
+  BeginSection('errors');
   RecreateDirectory(ErrorsOutputDir);
 
   var sourceDir := Path.Combine(TestSuiteDir, 'errors');
@@ -370,7 +392,6 @@ begin
       continue;
     end;
 
-    Println('ERROR   ' + Path.GetFileName(fileName));
     try
       var comp := new Compiler();
       var options := new CompilerOptions(fileName, CompilerOptions.OutputType.ConsoleApplicaton);
@@ -413,6 +434,7 @@ begin
         RecordFailure('errors', fileName, e.ToString());
     end;
   end;
+  FinishProgressLine;
 end;
 
 procedure PrintUsage;
@@ -423,6 +445,7 @@ end;
 
 procedure PrintSummary(elapsedMilliseconds: integer);
 begin
+  FinishProgressLine;
   Println;
   Println('========== ИТОГ ==========');
   Println('Пройдено:  ' + PassedCount);
