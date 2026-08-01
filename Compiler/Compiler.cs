@@ -1047,7 +1047,15 @@ namespace PascalABCCompiler
 
         public static bool CheckPathValid(string path)
         {
-            return !Path.GetInvalidPathChars().Any(path.Contains);
+            if (Path.GetInvalidPathChars().Any(path.Contains))
+                return false;
+#if PABCNET_MODERN
+            // NET10-TESTFIX [err0528_invalid_path]: modern Path.GetInvalidPathChars()
+            // no longer reports several characters rejected by assembly-reference paths.
+            if (path.IndexOfAny(new char[] { '*', '?', '"', '<', '>', '|' }) >= 0)
+                return false;
+#endif
+            return true;
         }
 
         public static void TryThrowInvalidPath(string path, SyntaxTree.SourceContext loc)
@@ -2108,6 +2116,10 @@ namespace PascalABCCompiler
         private string GetReferenceFileName(string FileName, SyntaxTree.SourceContext sc, string curr_path, bool overwrite)
         {
             FileName = FileName.Trim();
+            // NET10-TESTFIX [err0528_invalid_path]: validate reference text before
+            // modern File.Exists/GetFullPath turn malformed paths into "not found".
+            if (!CheckPathValid(FileName))
+                throw new InvalidAssemblyPathError(currentCompilationUnit.SyntaxTree.file_name, sc);
             if (standart_assembly_dict.ContainsKey(FileName))
                 return standart_assembly_dict[FileName];
 

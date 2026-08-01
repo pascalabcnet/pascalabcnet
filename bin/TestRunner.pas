@@ -20,16 +20,22 @@ const
 
 var
   TestSuiteDir: string;
+  TestWorkDir: string;
   ResultsRoot: string;
+  OutputRoot: string;
   CoreOutputDir: string;
   UnitsOutputDir: string;
   UsesUnitsOutputDir: string;
   ErrorsOutputDir: string;
+  TargetName: string;
+  IsModernTarget: boolean;
+  ModernExcludedTests := new System.Collections.Generic.List<string>;
   CurrentLanguageInfo: LanguageTestsInfo;
   TestFilter := '';
   PassedCount := 0;
   FailedCount := 0;
   SkippedCount := 0;
+  ModernSkippedCount := 0;
   FailureMessages := new System.Collections.Generic.List<string>;
   ProgressColumn := 0;
   ProgressPending := 0;
@@ -160,6 +166,12 @@ begin
   Inc(SkippedCount);
 end;
 
+procedure RecordModernSkipped;
+begin
+  Inc(SkippedCount);
+  Inc(ModernSkippedCount);
+end;
+
 function CompilerErrorsToString(comp: Compiler): string;
 begin
   Result := '';
@@ -178,9 +190,84 @@ begin
   Directory.CreateDirectory(dir);
 end;
 
+function RelativeWorkPath(fileName: string): string;
+begin
+  var prefix := TestWorkDir + Path.DirectorySeparatorChar;
+  Result := fileName.StartsWith(prefix, System.StringComparison.OrdinalIgnoreCase) ?
+            fileName.Substring(prefix.Length) : Path.GetFileName(fileName);
+end;
+
+function IsModernExcluded(fileName: string): boolean;
+begin
+  Result := false;
+  if not IsModernTarget then
+    exit;
+
+  var relativeName := RelativeWorkPath(fileName).Replace(Path.AltDirectorySeparatorChar,
+                                                         Path.DirectorySeparatorChar);
+  Result := ModernExcludedTests.Contains(relativeName.ToLower());
+end;
+
+procedure LoadModernExclusions;
+begin
+  var exclusionsFile := Path.Combine(TestSuiteDir, 'modern-excluded.txt');
+  if not &File.Exists(exclusionsFile) then
+    exit;
+
+  foreach var line in &File.ReadAllLines(exclusionsFile) do
+  begin
+    var value := line.Trim();
+    if (value = '') or value.StartsWith('#') then
+      continue;
+    ModernExcludedTests.Add(value.Replace(Path.AltDirectorySeparatorChar,
+                                          Path.DirectorySeparatorChar).ToLower());
+  end;
+end;
+
+function ShouldCopyToWork(fileName: string): boolean;
+begin
+  var extension := Path.GetExtension(fileName).ToLower();
+  Result := (extension <> '.pcu') and (extension <> '.exe') and (extension <> '.pdb');
+  if IsModernTarget and (extension = '.dll') then
+    Result := false;
+end;
+
+procedure CopyDirectoryToWork(sourceDir, targetDir: string);
+begin
+  Directory.CreateDirectory(targetDir);
+  foreach var fileName in Directory.GetFiles(sourceDir) do
+    if ShouldCopyToWork(fileName) then
+      &File.Copy(fileName, Path.Combine(targetDir, Path.GetFileName(fileName)), true);
+end;
+
+procedure CopyDirectoryTreeToWork(sourceDir, targetDir: string);
+begin
+  CopyDirectoryToWork(sourceDir, targetDir);
+  foreach var childDir in Directory.GetDirectories(sourceDir) do
+    CopyDirectoryTreeToWork(childDir,
+                            Path.Combine(targetDir, Path.GetFileName(childDir)));
+end;
+
+procedure PrepareTargetDirectories;
+begin
+  RecreateDirectory(ResultsRoot);
+  Directory.CreateDirectory(TestWorkDir);
+  Directory.CreateDirectory(OutputRoot);
+
+  CopyDirectoryToWork(TestSuiteDir, TestWorkDir);
+  CopyDirectoryTreeToWork(Path.Combine(TestSuiteDir, 'namespaces'),
+                          Path.Combine(TestWorkDir, 'namespaces'));
+  CopyDirectoryTreeToWork(Path.Combine(TestSuiteDir, 'units'),
+                          Path.Combine(TestWorkDir, 'units'));
+  CopyDirectoryTreeToWork(Path.Combine(TestSuiteDir, 'usesunits'),
+                          Path.Combine(TestWorkDir, 'usesunits'));
+  CopyDirectoryTreeToWork(Path.Combine(TestSuiteDir, 'errors'),
+                          Path.Combine(TestWorkDir, 'errors'));
+end;
+
 procedure CopyRuntimeDependencies(outputDir: string);
 begin
-  foreach var dllName in Directory.GetFiles(TestSuiteDir, '*.dll') do
+  foreach var dllName in Directory.GetFiles(TestWorkDir, '*.dll') do
     &File.Copy(dllName, Path.Combine(outputDir, Path.GetFileName(dllName)), true);
 end;
 
@@ -250,9 +337,12 @@ begin
       exit;
     end;
 
-    var startInfo := new ProcessStartInfo(exeName);
+    var startInfo := new ProcessStartInfo(IsModernTarget ? 'dotnet' : exeName);
+    if IsModernTarget then
+      startInfo.Arguments := '"' + exeName + '"';
     startInfo.CreateNoWindow := true;
     startInfo.UseShellExecute := false;
+    startInfo.RedirectStandardError := IsModernTarget;
     startInfo.WorkingDirectory := Path.GetDirectoryName(exeName);
 
     var process := new Process();
@@ -271,10 +361,17 @@ begin
       exit;
     end;
 
+    var errorOutput := '';
+    if IsModernTarget then
+      errorOutput := process.StandardError.ReadToEnd().Trim();
+
     if process.ExitCode <> 0 then
     begin
+      var details := 'Код завершения: ' + process.ExitCode.ToString();
+      if errorOutput <> '' then
+        details += NewLine + errorOutput;
       RecordFailure('run', sourceFileName,
-                    'Код завершения: ' + process.ExitCode.ToString());
+                    details);
       exit;
     end;
 
@@ -293,7 +390,7 @@ begin
 
   var executables := new System.Collections.Generic.List<string>;
   var sourceFiles := new System.Collections.Generic.List<string>;
-  var files := GetFilesByExtensions(TestSuiteDir, CurrentLanguageInfo.languageExtensions);
+  var files := GetFilesByExtensions(TestWorkDir, CurrentLanguageInfo.languageExtensions);
   var comp := new Compiler();
 
   BeginSection('core: compile');
@@ -303,6 +400,12 @@ begin
   begin
     if not MatchesFilter(fileName) then
       continue;
+
+    if IsModernExcluded(fileName) then
+    begin
+      RecordModernSkipped;
+      continue;
+    end;
 
     var content := &File.ReadAllText(fileName);
     if ShouldSkip(content) then
@@ -360,13 +463,10 @@ begin
       exit;
     end;
 
-    var targetPcu := Path.Combine(outputDir, Path.GetFileName(sourcePcu));
-    &File.Copy(sourcePcu, targetPcu, true);
-    &File.Delete(sourcePcu);
     Result := true;
   except
     on e: Exception do
-      RecordFailure(phase, sourceFileName, 'Не удалось перенести PCU: ' + e.ToString());
+      RecordFailure(phase, sourceFileName, 'Не удалось проверить PCU: ' + e.ToString());
   end;
 end;
 
@@ -380,6 +480,12 @@ begin
   begin
     if not MatchesFilter(fileName) then
       continue;
+
+    if IsModernExcluded(fileName) then
+    begin
+      RecordModernSkipped;
+      continue;
+    end;
 
     var content := &File.ReadAllText(fileName);
     if ShouldSkip(content) then
@@ -403,13 +509,14 @@ begin
 
   BeginSection('units: compile');
   var unitsStarted := Milliseconds;
-  CompileDirectory(Path.Combine(TestSuiteDir, 'units'), UnitsOutputDir, 'units', '', true);
+  var workUnitsDir := Path.Combine(TestWorkDir, 'units');
+  CompileDirectory(workUnitsDir, UnitsOutputDir, 'units', '', true);
   EndSection(unitsStarted);
 
   BeginSection('usesunits: compile');
   var usesUnitsStarted := Milliseconds;
-  CompileDirectory(Path.Combine(TestSuiteDir, 'usesunits'), UsesUnitsOutputDir,
-                   'usesunits', UnitsOutputDir);
+  CompileDirectory(Path.Combine(TestWorkDir, 'usesunits'), UsesUnitsOutputDir,
+                   'usesunits', workUnitsDir);
   EndSection(usesUnitsStarted);
 end;
 
@@ -417,7 +524,7 @@ procedure RunErrorTests;
 begin
   RecreateDirectory(ErrorsOutputDir);
 
-  var sourceDir := Path.Combine(TestSuiteDir, 'errors');
+  var sourceDir := Path.Combine(TestWorkDir, 'errors');
   var files := GetFilesByExtensions(sourceDir, CurrentLanguageInfo.languageExtensions);
 
   BeginSection('errors');
@@ -427,6 +534,12 @@ begin
   begin
     if not MatchesFilter(fileName) then
       continue;
+
+    if IsModernExcluded(fileName) then
+    begin
+      RecordModernSkipped;
+      continue;
+    end;
 
     var content := &File.ReadAllText(fileName);
     if ShouldSkip(content) then
@@ -500,6 +613,8 @@ begin
   Println('Пройдено:  ' + PassedCount);
   Println('Ошибок:    ' + FailedCount);
   Println('Пропущено: ' + SkippedCount);
+  if ModernSkippedCount > 0 then
+    Println('  из них modern-исключений: ' + ModernSkippedCount);
   Println('Время:     ' + System.TimeSpan.FromMilliseconds(elapsedMilliseconds).ToString());
 
   if FailureMessages.Count > 0 then
@@ -516,13 +631,16 @@ begin
   try
     TestSuiteDir := Path.GetFullPath(System.Environment.CurrentDirectory);
     var runnerDir := Path.GetDirectoryName(GetEXEFileName());
-    var projectDir := (new DirectoryInfo(runnerDir)).Parent.FullName;
+    IsModernTarget := Path.GetFileName(runnerDir).ToLower() = 'bin-net10';
+    TargetName := IsModernTarget ? 'net10' : 'net40';
 
-    ResultsRoot := Path.Combine(projectDir, 'TestResults', 'net40');
-    CoreOutputDir := Path.Combine(ResultsRoot, 'core');
-    UnitsOutputDir := Path.Combine(ResultsRoot, 'units');
-    UsesUnitsOutputDir := Path.Combine(ResultsRoot, 'usesunits');
-    ErrorsOutputDir := Path.Combine(ResultsRoot, 'errors');
+    ResultsRoot := Path.Combine(TestSuiteDir, 'TestResults', TargetName);
+    TestWorkDir := Path.Combine(ResultsRoot, 'work');
+    OutputRoot := Path.Combine(ResultsRoot, 'output');
+    CoreOutputDir := Path.Combine(OutputRoot, 'core');
+    UnitsOutputDir := Path.Combine(OutputRoot, 'units');
+    UsesUnitsOutputDir := Path.Combine(OutputRoot, 'usesunits');
+    ErrorsOutputDir := Path.Combine(OutputRoot, 'errors');
 
     if not &File.Exists(Path.Combine(TestSuiteDir, 'testsettings.config')) then
       raise new Exception('TestRunner необходимо запускать из каталога TestSuite');
@@ -530,6 +648,8 @@ begin
     Languages.Integration.LanguageIntegrator.LoadAllLanguages();
     System.Environment.CurrentDirectory := runnerDir;
     CurrentLanguageInfo := GetCurrentLanguageInfo(TestSuiteDir);
+    LoadModernExclusions;
+    PrepareTargetDirectories;
 
     var mode := ParamCount = 0 ? 'all' : ParamStr(1).ToLower();
     var legacyInvocation := (mode = '1') or (mode = '2') or (mode = '3') or

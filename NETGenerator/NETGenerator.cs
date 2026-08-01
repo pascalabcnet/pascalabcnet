@@ -860,6 +860,15 @@ namespace PascalABCCompiler.NETGenerator
                 entry_meth = helper.GetMethod(p.main_function).mi as MethodBuilder;
                 cur_meth = entry_meth;
                 il = cur_meth.GetILGenerator();
+#if PABCNET_MODERN
+                // NET10-TESTFIX [fileof1, fileof2, typed files]: PABCSystem selects
+                // Windows-1251 as DefaultEncoding during module initialization. Modern
+                // .NET requires the code-pages provider to be registered beforehand.
+                il.Emit(OpCodes.Call, typeof(System.Text.CodePagesEncodingProvider)
+                    .GetProperty("Instance").GetGetMethod());
+                il.Emit(OpCodes.Call, typeof(System.Text.Encoding)
+                    .GetMethod("RegisterProvider", new Type[] { typeof(System.Text.EncodingProvider) }));
+#endif
                 if (options.target != TargetType.Dll && options.dbg_attrs == DebugAttributes.ForDebugging)
                     AddSpecialInitDebugCode();
             }
@@ -2001,6 +2010,35 @@ namespace PascalABCCompiler.NETGenerator
             }
         }
 
+        // NET10-TESTFIX [List<enum>, generic constructors]: map constructors through their generic definition.
+        private ConstructorInfo GetConstructorForGenericType(Type genericType, ConstructorInfo constructor)
+        {
+#if PABCNET_MODERN
+            Type declaringType = constructor.DeclaringType;
+            if (declaringType != null && declaringType.IsGenericType && !declaringType.IsGenericTypeDefinition)
+            {
+                try
+                {
+                    Type genericDefinition = declaringType.GetGenericTypeDefinition();
+                    foreach (ConstructorInfo definitionConstructor in genericDefinition.GetConstructors(
+                        BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+                    {
+                        if (definitionConstructor.MetadataToken == constructor.MetadataToken)
+                        {
+                            constructor = definitionConstructor;
+                            break;
+                        }
+                    }
+                }
+                catch
+                {
+                    // Constructors backed by a TypeBuilder are already generic definitions.
+                }
+            }
+#endif
+            return TypeBuilder.GetConstructor(genericType, constructor);
+        }
+
         //ssyy 04.02.2010. Вернул следующие 2 функции в исходное состояние.
         private void ConvertCompiledGenericInstanceTypeMembers(ICompiledGenericTypeInstance value)
         {
@@ -2011,7 +2049,7 @@ namespace PascalABCCompiler.NETGenerator
                 ICompiledConstructorNode iccn = dn as ICompiledConstructorNode;
                 if (iccn != null)
                 {
-                    ConstructorInfo ci = TypeBuilder.GetConstructor(t, iccn.constructor_info);
+                    ConstructorInfo ci = GetConstructorForGenericType(t, iccn.constructor_info);
                     helper.AddConstructor(value.used_members[dn] as IFunctionNode, ci);
                     continue;
                 }
@@ -2089,7 +2127,7 @@ namespace PascalABCCompiler.NETGenerator
                     if (mi != null)
                     {
                         ConstructorInfo cnstr = mi.cnstr;
-                        ConstructorInfo ci = TypeBuilder.GetConstructor(t, cnstr);
+                        ConstructorInfo ci = GetConstructorForGenericType(t, cnstr);
                         helper.AddConstructor(value.used_members[icmn] as IFunctionNode, ci);
                     }
                     return true;
@@ -2347,6 +2385,18 @@ namespace PascalABCCompiler.NETGenerator
                     {
 #if PABCNET_LEGACY
                         mb.SetMarshal(UnmanagedMarshal.DefineUnmanagedMarshal((UnmanagedType)attrs[i].Arguments[0].value));
+#else
+                        // NET10-TESTFIX [err0345_marshal]: UnmanagedMarshal is absent in
+                        // modern .NET, so preserve its validation of unsupported values.
+                        UnmanagedType unmanagedType = (UnmanagedType)attrs[i].Arguments[0].value;
+                        if (unmanagedType == UnmanagedType.ByValTStr ||
+                            unmanagedType == UnmanagedType.SafeArray ||
+                            unmanagedType == UnmanagedType.ByValArray ||
+                            unmanagedType == UnmanagedType.LPArray ||
+                            unmanagedType == UnmanagedType.CustomMarshaler)
+                        {
+                            throw new ArgumentException("Тип UnmanagedType не является простым типом: " + unmanagedType);
+                        }
 #endif
                     }
                     catch(ArgumentException ex)
@@ -2951,7 +3001,10 @@ namespace PascalABCCompiler.NETGenerator
                 TypeInfo ti = helper.GetTypeReference(igfi.generic_parameters[i]);
                 if (ti == null)
                     return;
-                tpars[i] = ti.tp;
+                // NET10-TESTFIX [for_step1]: generic pseudo-instances (for example
+                // Enumerable.SequenceEqual<Days>) must reference the TypeBuilder hidden
+                // inside a Pascal EnumBuilder, otherwise the persisted signature gets NIL TOKEN.
+                tpars[i] = NormalizeGenericArgumentType(ti.tp);
             }
             MethodInfo rez = mi.MakeGenericMethod(tpars);
             helper.AddMethod(igfi, rez);
@@ -6676,6 +6729,109 @@ namespace PascalABCCompiler.NETGenerator
 
         }
 
+        // NET10-TESTFIX [abstract3, constructor2-4, explicitinterface10/12]:
+        // calls inside a generic type must reference the method on its current generic instance.
+        private MethodInfo GetCurrentTypeMethodForEmit(MethodInfo method)
+        {
+#if PABCNET_MODERN
+            Type declaringType = method?.DeclaringType;
+            if (declaringType != null && declaringType.IsGenericTypeDefinition)
+            {
+                Type currentGenericInstance = declaringType.MakeGenericType(declaringType.GetGenericArguments());
+                return TypeBuilder.GetMethod(currentGenericInstance, method);
+            }
+#endif
+            return method;
+        }
+
+        // NET10-TESTFIX [TestMultiSlices_1]: rebuild delegate types with the current method/type parameters.
+        private Type RemapGenericParametersForCurrentContext(Type type)
+        {
+#if PABCNET_MODERN
+            if (type.IsGenericParameter)
+            {
+                int position = type.GenericParameterPosition;
+                if (type.DeclaringMethod != null && cur_meth != null && cur_meth.GetGenericArguments().Length > 0)
+                    return cur_meth.GetGenericArguments()[position];
+                if (type.DeclaringType != null && cur_type != null && cur_type.IsGenericTypeDefinition)
+                    return cur_type.GetGenericArguments()[position];
+                // PersistedAssemblyBuilder generic parameters do not always expose
+                // DeclaringMethod/DeclaringType before the containing member is created.
+                if (type.DeclaringMethod == null && type.DeclaringType == null)
+                {
+                    if (cur_meth != null && cur_meth.GetGenericArguments().Length > 0 &&
+                        position < cur_meth.GetGenericArguments().Length)
+                        return cur_meth.GetGenericArguments()[position];
+                    if (cur_type != null && cur_type.IsGenericTypeDefinition &&
+                        position < cur_type.GetGenericArguments().Length)
+                        return cur_type.GetGenericArguments()[position];
+                }
+                return type;
+            }
+
+            if (type.IsArray)
+            {
+                Type elementType = RemapGenericParametersForCurrentContext(type.GetElementType());
+                return type.GetArrayRank() == 1 ? elementType.MakeArrayType() : elementType.MakeArrayType(type.GetArrayRank());
+            }
+            if (type.IsByRef)
+                return RemapGenericParametersForCurrentContext(type.GetElementType()).MakeByRefType();
+            if (type.IsPointer)
+                return RemapGenericParametersForCurrentContext(type.GetElementType()).MakePointerType();
+
+            if (type.IsGenericType && !type.IsGenericTypeDefinition)
+            {
+                Type[] arguments = type.GetGenericArguments();
+                for (int i = 0; i < arguments.Length; i++)
+                    arguments[i] = RemapGenericParametersForCurrentContext(arguments[i]);
+                return type.GetGenericTypeDefinition().MakeGenericType(arguments);
+            }
+#endif
+            return type;
+        }
+
+        private Type GetTypeForCurrentContext(ITypeNode typeNode)
+        {
+#if PABCNET_MODERN
+            if (typeNode.is_generic_parameter && typeNode.generic_function_container is ICommonFunctionNode function &&
+                cur_meth != null && cur_meth.GetGenericArguments().Length > 0)
+            {
+                int position = function.generic_params.IndexOf(typeNode as ICommonTypeNode);
+                if (position >= 0)
+                    return cur_meth.GetGenericArguments()[position];
+            }
+
+            if (typeNode is IUnsizedArray unsizedArray)
+                return GetTypeForCurrentContext(unsizedArray.element_type).MakeArrayType();
+
+            if (typeNode is IGenericTypeInstance genericInstance)
+            {
+                Type genericDefinition = helper.GetTypeReference(genericInstance.original_generic).tp;
+                if (genericDefinition.IsGenericType && !genericDefinition.IsGenericTypeDefinition)
+                    genericDefinition = genericDefinition.GetGenericTypeDefinition();
+                Type[] arguments = genericInstance.generic_parameters
+                    .Select(GetTypeForCurrentContext)
+                    .ToArray();
+                return genericDefinition.MakeGenericType(arguments);
+            }
+#endif
+            Type type = helper.GetTypeReference(typeNode).tp;
+            return RemapGenericParametersForCurrentContext(type);
+        }
+
+        // NET10-TESTFIX [delegates8, delegates24, TestMultiSlices_1]:
+        // PersistedAssemblyBuilder's ContainsGenericParameters is unreliable for these constructed types.
+        private static bool ContainsGenericParameter(Type type)
+        {
+            if (type.IsGenericParameter)
+                return true;
+            if (type.HasElementType)
+                return ContainsGenericParameter(type.GetElementType());
+            if (type.IsGenericType)
+                return type.GetGenericArguments().Any(ContainsGenericParameter);
+            return false;
+        }
+
         //перевод тела конструктора
         private void ConvertConstructorBody(SemanticTree.ICommonMethodNode value)
         {
@@ -6711,7 +6867,7 @@ namespace PascalABCCompiler.NETGenerator
                         if (cur_type.IsValueType)
                         {
                             il.Emit(OpCodes.Ldarg_0);
-                            il.Emit(OpCodes.Call, cur_ti.init_meth);
+                            il.Emit(OpCodes.Call, GetCurrentTypeMethodForEmit(cur_ti.init_meth));
                         }
                         //il.Emit(OpCodes.Ldarg_0);
                         //il.Emit(OpCodes.Call, cur_ti.init_meth);
@@ -6776,6 +6932,15 @@ namespace PascalABCCompiler.NETGenerator
             num_scope++;
             MakeAttribute(value);
             MethodBuilder methb = helper.GetMethodBuilder(value);
+#if PABCNET_MODERN
+            // NET10-TESTFIX [use_abstract1, use_abstract3]: an abstract MethodBuilder
+            // must not have a body; modern Reflection.Emit rejects GetILGenerator().
+            if ((methb.Attributes & MethodAttributes.Abstract) != 0)
+            {
+                num_scope--;
+                return;
+            }
+#endif
             //helper.GetMethod(value)
             MethodBuilder tmp = cur_meth;
             MethInfo copy_mi = null;
@@ -7640,7 +7805,10 @@ namespace PascalABCCompiler.NETGenerator
                 Type[] type_arr = new Type[value.template_parametres.Length];
                 for (int int_i = 0; int_i < value.template_parametres.Length; int_i++)
                 {
-                    type_arr[int_i] = helper.GetTypeReference(value.template_parametres[int_i]).tp;
+                    // NET10-TESTFIX [for_step1]: PersistedAssemblyBuilder cannot encode EnumBuilder
+                    // directly as a generic method argument; use its underlying TypeBuilder.
+                    type_arr[int_i] = NormalizeGenericArgumentType(
+                        helper.GetTypeReference(value.template_parametres[int_i]).tp);
                 }
                 mi = mi.MakeGenericMethod(type_arr);
             }
@@ -7780,6 +7948,7 @@ namespace PascalABCCompiler.NETGenerator
             bool is_comp_gen = false;
             IParameterNode[] parameters = value.static_method.parameters;
             EmitArguments(parameters, real_parameters);
+            mi = GetCurrentTypeMethodForEmit(mi);
             il.EmitCall(OpCodes.Call, mi, null);
             if (tmp_dot)
             {
@@ -7872,6 +8041,7 @@ namespace PascalABCCompiler.NETGenerator
             //bool need_fee = false;
             IParameterNode[] parameters = value.method.parameters;
             EmitArguments(parameters, real_parameters);
+            mi = GetCurrentTypeMethodForEmit(mi);
             //вызов метода
             //(ssyy) Функции размерных типов всегда вызываются через call
             if (value.method.comperehensive_type.is_value_type || !value.virtual_call && value.method.polymorphic_state == polymorphic_state.ps_virtual || value.method.polymorphic_state == polymorphic_state.ps_static /*|| !value.virtual_call || (value.method.polymorphic_state != polymorphic_state.ps_virtual && value.method.polymorphic_state != polymorphic_state.ps_virtual_abstract && !value.method.common_comprehensive_type.IsInterface)*/)
@@ -7987,6 +8157,18 @@ namespace PascalABCCompiler.NETGenerator
                 real_parameters[i].visit(this);
                 is_dot_expr = false;
                 CallCloneIfNeed(il, parameters[i], real_parameters[i]);
+#if PABCNET_MODERN
+                // NET10-TESTFIX [diapasons1]: a diapason is represented in IL by its base numeric type. The semantic
+                // conversion may be omitted when passing one diapason to another, so make
+                // the stack type match the actual method signature explicitly.
+                if (tn2.type_special_kind == type_special_kind.diap_type &&
+                    parameters[i].parameter_type != parameter_type.var && !box_awaited)
+                {
+                    ITypeNode emittedType = real_parameters[i].conversion_type ?? ctn3;
+                    emit_numeric_conversion(helper.GetTypeReference(tn2).tp,
+                        helper.GetTypeReference(emittedType).tp);
+                }
+#endif
                 if (box_awaited)
                     il.Emit(OpCodes.Box, helper.GetTypeReference(ctn3).tp);
                 is_addr = false;
@@ -8331,6 +8513,18 @@ namespace PascalABCCompiler.NETGenerator
                 real_parameters[i].visit(this);
                 is_dot_expr = false;
                 CallCloneIfNeed(il, parameters[i], real_parameters[i]);
+#if PABCNET_MODERN
+                // NET10-TESTFIX [diapasons1]: a diapason is represented in IL by its base numeric type. The semantic
+                // conversion may be omitted when passing one diapason to another, so make
+                // the stack type match the actual method signature explicitly.
+                if (tn2.type_special_kind == type_special_kind.diap_type &&
+                    parameters[i].parameter_type != parameter_type.var && !box_awaited)
+                {
+                    ITypeNode emittedType = ctn4 ?? ctn3;
+                    emit_numeric_conversion(helper.GetTypeReference(tn2).tp,
+                        helper.GetTypeReference(emittedType).tp);
+                }
+#endif
                 if (box_awaited)
                 {
                 	if (use_stn4)
@@ -10646,6 +10840,9 @@ namespace PascalABCCompiler.NETGenerator
             IParameterNode[] parameters = value.static_method.parameters;
             MethInfo ci = helper.GetConstructor(value.static_method);
             ConstructorInfo cnstr = ci.cnstr;
+#if PABCNET_MODERN
+            Type constructorType = GetTypeForCurrentContext(value.common_type);
+#endif
 
             SemanticTree.IRuntimeManagedMethodBody irmmb = value.static_method.function_code as SemanticTree.IRuntimeManagedMethodBody;
             if (irmmb != null)
@@ -10672,6 +10869,64 @@ namespace PascalABCCompiler.NETGenerator
                         }
                     }
                     PushObjectCommand(ifc);
+#if PABCNET_MODERN
+                    if (!ContainsGenericParameter(constructorType))
+                    {
+                        if (mi.IsVirtual || mi.IsAbstract)
+                        {
+                            il.Emit(OpCodes.Dup);
+                            il.Emit(OpCodes.Ldvirtftn, mi);
+                        }
+                        else
+                            il.Emit(OpCodes.Ldftn, mi);
+                        il.Emit(OpCodes.Newobj, cnstr);
+                        return;
+                    }
+
+                    // NET10-TESTFIX [TestMultiSlices_1; preserves delegates8/delegates24]:
+                    // PersistedAssemblyBuilder cannot encode the synthetic
+                    // ConstructorOnTypeBuilderInstantiation returned for delegates such as
+                    // Func<T[], bool>. Build the closed delegate through the public runtime API.
+                    // PushObjectCommand has already left the delegate target on the stack.
+                    // Static methods need the CreateDelegate overload without a target.
+                    bool hasDelegateTarget = !(ifc is ICommonNamespaceFunctionCallNode) &&
+                        !(ifc is ICommonStaticMethodCallNode) &&
+                        !(ifc is ICompiledStaticMethodCallNode);
+                    LocalBuilder delegateTarget = null;
+                    if (!hasDelegateTarget)
+                        il.Emit(OpCodes.Pop);
+                    else
+                    {
+                        delegateTarget = il.DeclareLocal(TypeFactory.ObjectType);
+                        il.Emit(OpCodes.Stloc, delegateTarget);
+                    }
+                    il.Emit(OpCodes.Ldtoken, constructorType);
+                    il.Emit(OpCodes.Call, typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle)));
+                    if (delegateTarget != null)
+                        il.Emit(OpCodes.Ldloc, delegateTarget);
+
+                    mi = GetCurrentTypeMethodForEmit(mi);
+                    il.Emit(OpCodes.Ldtoken, mi);
+                    if (mi.DeclaringType != null && mi.DeclaringType.IsGenericType)
+                    {
+                        il.Emit(OpCodes.Ldtoken, mi.DeclaringType);
+                        il.Emit(OpCodes.Call, typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle),
+                            new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) }));
+                    }
+                    else
+                    {
+                        il.Emit(OpCodes.Call, typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle),
+                            new Type[] { typeof(RuntimeMethodHandle) }));
+                    }
+                    il.Emit(OpCodes.Castclass, typeof(MethodInfo));
+                    if (delegateTarget == null)
+                        il.Emit(OpCodes.Call, typeof(Delegate).GetMethod(nameof(Delegate.CreateDelegate),
+                            new Type[] { typeof(Type), typeof(MethodInfo) }));
+                    else
+                        il.Emit(OpCodes.Call, typeof(Delegate).GetMethod(nameof(Delegate.CreateDelegate),
+                            new Type[] { typeof(Type), typeof(object), typeof(MethodInfo) }));
+                    il.Emit(OpCodes.Castclass, constructorType);
+#else
                     if (mi.IsVirtual || mi.IsAbstract)
                     {
                         il.Emit(OpCodes.Dup);
@@ -10680,6 +10935,7 @@ namespace PascalABCCompiler.NETGenerator
                     else
                         il.Emit(OpCodes.Ldftn, mi);
                     il.Emit(OpCodes.Newobj, cnstr);
+#endif
                     return;
                 }
                 return;
@@ -10727,7 +10983,7 @@ namespace PascalABCCompiler.NETGenerator
             if (init_call_awaited && !value.new_obj_awaited() && cnstr.DeclaringType != cur_type)
             {
                 il.Emit(OpCodes.Ldarg_0);
-                il.Emit(OpCodes.Call, cur_ti.init_meth);
+                il.Emit(OpCodes.Call, GetCurrentTypeMethodForEmit(cur_ti.init_meth));
                 //throw new Exception(cnstr.DeclaringType.Name+"-"+cur_meth.DeclaringType.Name);
                 init_call_awaited = false;
             }
@@ -10812,7 +11068,7 @@ namespace PascalABCCompiler.NETGenerator
             if (init_call_awaited && !value.new_obj_awaited())
             {
                 il.Emit(OpCodes.Ldarg_0);
-                il.Emit(OpCodes.Call, cur_ti.init_meth);
+                il.Emit(OpCodes.Call, GetCurrentTypeMethodForEmit(cur_ti.init_meth));
                 init_call_awaited = false;
             }
         }
@@ -11150,7 +11406,8 @@ namespace PascalABCCompiler.NETGenerator
             }
             for (int i = 0; i < case_labels.Length; i++)
             {
-                // An empty switch has no targets, so do not emit its index calculation either.
+                // NET10-TESTFIX [boolean case range]: an empty switch has no targets,
+                // so do not emit its index calculation either.
                 if (case_labels[i].labels.Length == 0)
                     continue;
 
@@ -11603,9 +11860,19 @@ namespace PascalABCCompiler.NETGenerator
                 il.Emit(OpCodes.Call, TypeFactory.EnvironmentIs64BitProcessGetMethod);
                 Label brf = il.DefineLabel();
                 Label bre = il.DefineLabel();
+#if PABCNET_MODERN
+                // NET10-TESTFIX [string2]: PersistedAssemblyBuilder can corrupt these
+                // adjacent short-branch fixups, producing a branch into an instruction.
+                il.Emit(OpCodes.Brfalse, brf);
+#else
                 il.Emit(OpCodes.Brfalse_S, brf);
+#endif
                 il.Emit(OpCodes.Ldc_I4_8);
+#if PABCNET_MODERN
+                il.Emit(OpCodes.Br, bre);
+#else
                 il.Emit(OpCodes.Br_S, bre);
+#endif
                 il.MarkLabel(brf);
                 il.Emit(OpCodes.Ldc_I4_4);
                 il.MarkLabel(bre);
@@ -11774,6 +12041,8 @@ namespace PascalABCCompiler.NETGenerator
 
             if (is_generic)
             {
+                // NET10-TESTFIX [foreach over Pascal enum array]: map IEnumerable<T> members
+                // through TypeBuilder when T was declared in Pascal code.
                 // если элемент перечисления объявлен в коде
                 // или типоаргумент элемента перечисления объявлен в коде
                 // например IEnumerable<MyType>, array of MyType

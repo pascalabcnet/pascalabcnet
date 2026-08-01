@@ -2477,6 +2477,8 @@ namespace PascalABCCompiler.TreeConverter
             }
 
 #if PABCNET_MODERN
+            // NET10-TESTFIX [Task<T>.Run(() -> T)]: keep lambda inference independent
+            // of the reflection order of modern Task.Run overloads.
             // get_conversions changes the inferred lambda state while checking a candidate.
             // Reflection does not guarantee overload order, and Task.Run overloads have a
             // different order in modern .NET. Check inferred generic instances last so that

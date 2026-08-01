@@ -2045,7 +2045,7 @@ namespace PascalABCCompiler.SystemLibrary
                 SemanticTree.basic_function_type.boolsinc, SemanticTree.basic_function_type.boolsdec,
                 new bool_const_node(false, null), new bool_const_node(true, null), _bool_to_int, bool_to_int);
 
-            // Decimal operators refer to other primitive types. Register decimal only
+            // NET10-TESTFIX [decimal tests]: Decimal operators refer to other primitive types. Register decimal only
             // after those types and their conversions have been fully initialized.
             _decimal_type = compiled_type_node.get_type_node(typeof(decimal), symtab);
             make_assign_operator(_decimal_type, SemanticTree.basic_function_type.objassign);
