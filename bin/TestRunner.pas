@@ -32,9 +32,26 @@ var
   SkippedCount := 0;
   FailureMessages := new System.Collections.Generic.List<string>;
   ProgressColumn := 0;
+  ProgressPending := 0;
+
+procedure EmitProgressDot;
+begin
+  Write('.');
+  Inc(ProgressColumn);
+  if ProgressColumn = 80 then
+  begin
+    Println;
+    ProgressColumn := 0;
+  end;
+end;
 
 procedure FinishProgressLine;
 begin
+  if ProgressPending > 0 then
+  begin
+    EmitProgressDot;
+    ProgressPending := 0;
+  end;
   if ProgressColumn > 0 then
     Println;
   ProgressColumn := 0;
@@ -46,14 +63,19 @@ begin
   Println('----- ' + name + ' -----');
 end;
 
+procedure EndSection(startedAt: integer);
+begin
+  FinishProgressLine;
+  Println('Время этапа: ' + System.TimeSpan.FromMilliseconds(Milliseconds - startedAt).ToString());
+end;
+
 procedure PrintSuccessDot;
 begin
-  Write('.');
-  Inc(ProgressColumn);
-  if ProgressColumn = 80 then
+  Inc(ProgressPending);
+  if ProgressPending = 10 then
   begin
-    Println;
-    ProgressColumn := 0;
+    EmitProgressDot;
+    ProgressPending := 0;
   end;
 end;
 
@@ -162,14 +184,14 @@ begin
     &File.Copy(dllName, Path.Combine(outputDir, Path.GetFileName(dllName)), true);
 end;
 
-function CompileSource(fileName, outputDir, phase: string;
+function CompileSource(var comp: Compiler;
+                       fileName, outputDir, phase: string;
                        validateWarning: boolean;
                        searchDirectory: string := ''): boolean;
 begin
   Result := false;
   try
     var content := &File.ReadAllText(fileName);
-    var comp := new Compiler();
     var options := new CompilerOptions(fileName, CompilerOptions.OutputType.ConsoleApplicaton);
     options.Debug := true;
     options.OutputDirectory := outputDir;
@@ -179,6 +201,8 @@ begin
     if searchDirectory <> '' then
       options.SearchDirectories.Add(searchDirectory);
 
+    comp.ErrorsList.Clear();
+    comp.Warnings.Clear();
     comp.Compile(options);
     if comp.ErrorsList.Count > 0 then
     begin
@@ -209,7 +233,10 @@ begin
     Result := true;
   except
     on e: Exception do
+    begin
       RecordFailure(phase, fileName, e.ToString());
+      comp := new Compiler();
+    end;
   end;
 end;
 
@@ -262,12 +289,15 @@ function CollectGeneratedPcu(sourceFileName, outputDir, phase: string): boolean;
 
 procedure RunCoreTests;
 begin
-  BeginSection('core');
   RecreateDirectory(CoreOutputDir);
 
   var executables := new System.Collections.Generic.List<string>;
   var sourceFiles := new System.Collections.Generic.List<string>;
   var files := GetFilesByExtensions(TestSuiteDir, CurrentLanguageInfo.languageExtensions);
+  var comp := new Compiler();
+
+  BeginSection('core: compile');
+  var compileStarted := Milliseconds;
 
   foreach var fileName in files do
   begin
@@ -281,7 +311,7 @@ begin
       continue;
     end;
 
-    if CompileSource(fileName, CoreOutputDir, 'compile', true) then
+    if CompileSource(comp, fileName, CoreOutputDir, 'compile', true) then
     begin
       var baseName := Path.GetFileNameWithoutExtension(fileName);
       var exeName := Path.Combine(CoreOutputDir, baseName + '.exe');
@@ -292,6 +322,7 @@ begin
       begin
         executables.Add(exeName);
         sourceFiles.Add(fileName);
+        PrintSuccessDot;
       end
       else if &File.Exists(sourcePcu) then
       begin
@@ -306,12 +337,16 @@ begin
   end;
 
   CopyRuntimeDependencies(CoreOutputDir);
+  EndSection(compileStarted);
+
+  BeginSection('core: run');
+  var runStarted := Milliseconds;
   for var i := 0 to executables.Count - 1 do
   begin
     if RunProgram(executables[i], sourceFiles[i]) then
       RecordPassed;
   end;
-  FinishProgressLine;
+  EndSection(runStarted);
 end;
 
 function CollectGeneratedPcu(sourceFileName, outputDir, phase: string): boolean;
@@ -340,6 +375,7 @@ procedure CompileDirectory(sourceDir, outputDir, phase: string;
                            collectPcu: boolean := false);
 begin
   var files := GetFilesByExtensions(sourceDir, CurrentLanguageInfo.languageExtensions);
+  var comp := new Compiler();
   foreach var fileName in files do
   begin
     if not MatchesFilter(fileName) then
@@ -352,7 +388,7 @@ begin
       continue;
     end;
 
-    if CompileSource(fileName, outputDir, phase, false, searchDirectory) then
+    if CompileSource(comp, fileName, outputDir, phase, false, searchDirectory) then
     begin
       if (not collectPcu) or CollectGeneratedPcu(fileName, outputDir, phase) then
         RecordPassed;
@@ -362,23 +398,30 @@ end;
 
 procedure RunUnitTests;
 begin
-  BeginSection('units');
   RecreateDirectory(UnitsOutputDir);
   RecreateDirectory(UsesUnitsOutputDir);
 
+  BeginSection('units: compile');
+  var unitsStarted := Milliseconds;
   CompileDirectory(Path.Combine(TestSuiteDir, 'units'), UnitsOutputDir, 'units', '', true);
+  EndSection(unitsStarted);
+
+  BeginSection('usesunits: compile');
+  var usesUnitsStarted := Milliseconds;
   CompileDirectory(Path.Combine(TestSuiteDir, 'usesunits'), UsesUnitsOutputDir,
                    'usesunits', UnitsOutputDir);
-  FinishProgressLine;
+  EndSection(usesUnitsStarted);
 end;
 
 procedure RunErrorTests;
 begin
-  BeginSection('errors');
   RecreateDirectory(ErrorsOutputDir);
 
   var sourceDir := Path.Combine(TestSuiteDir, 'errors');
   var files := GetFilesByExtensions(sourceDir, CurrentLanguageInfo.languageExtensions);
+
+  BeginSection('errors');
+  var errorsStarted := Milliseconds;
 
   foreach var fileName in files do
   begin
@@ -434,7 +477,7 @@ begin
         RecordFailure('errors', fileName, e.ToString());
     end;
   end;
-  FinishProgressLine;
+  EndSection(errorsStarted);
 end;
 
 procedure PrintUsage;
