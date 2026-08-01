@@ -462,12 +462,18 @@ begin
       end;
 
       var expectedError := ExpectedMessage(content);
-      if (expectedError <> '') and
-         (comp.ErrorsList[comp.ErrorsList.Count - 1].Message.Trim() <> expectedError) then
+      var expectedErrorFound := expectedError = '';
+      if not expectedErrorFound then
+        for var i := 0 to comp.ErrorsList.Count - 1 do
+          if comp.ErrorsList[i].Message.Trim() = expectedError then
+            expectedErrorFound := true;
+
+      if not expectedErrorFound then
       begin
         RecordFailure('errors', fileName,
                       'Неверный текст ошибки. Ожидалось: ' + expectedError +
-                      '. Получено: ' + comp.ErrorsList[comp.ErrorsList.Count - 1].Message.Trim());
+                      System.Environment.NewLine + 'Все ошибки:' + System.Environment.NewLine +
+                      CompilerErrorsToString(comp));
         continue;
       end;
 
