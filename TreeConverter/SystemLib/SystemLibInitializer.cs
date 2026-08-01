@@ -502,7 +502,7 @@ namespace PascalABCCompiler.SystemLibrary
 
             //Добавляем типы.
             sc.AddSymbol(StringConstants.byte_type_name, new PascalABCCompiler.TreeConverter.SymbolInfo(SystemLibrary.byte_type));
-            //sc.AddSymbol(StringConstants.decimal_type_name, new PascalABCCompiler.TreeConverter.SymbolInfo(SystemLibrary.decimal_type));
+            sc.AddSymbol(StringConstants.decimal_type_name, new PascalABCCompiler.TreeConverter.SymbolInfo(SystemLibrary.decimal_type));
             sc.AddSymbol(StringConstants.sbyte_type_name, new PascalABCCompiler.TreeConverter.SymbolInfo(SystemLibrary.sbyte_type));
             sc.AddSymbol(StringConstants.short_type_name, new PascalABCCompiler.TreeConverter.SymbolInfo(SystemLibrary.short_type));
             sc.AddSymbol(StringConstants.ushort_type_name, new PascalABCCompiler.TreeConverter.SymbolInfo(SystemLibrary.ushort_type));
