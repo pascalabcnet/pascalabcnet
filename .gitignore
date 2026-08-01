@@ -14,6 +14,7 @@
 **/obj/*
 **/bin/*
 **/bin-net10/*
+/TestResults/
 !/bin/*
 /bin/*.pdb
 !/Utils/NSIS/Unicode/Bin/*

@@ -1,565 +1,505 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 {$reference Compiler.dll}
-{$reference CodeCompletion.dll}
 {$reference Errors.dll}
 {$reference CompilerTools.dll}
 {$reference Localization.dll}
-{$reference System.Windows.Forms.dll}
 {$reference LanguageIntegrator.dll}
 
 uses PascalABCCompiler, System.IO, System.Diagnostics;
 
 type
   LanguageTestsInfo = auto class
- 
     languageName: string;
     languageExtensions: array of string;
     commentSymbol: string;
-end;
+  end;
+
+const
+  TestTimeoutMilliseconds = 60000;
 
 var
   TestSuiteDir: string;
+  ResultsRoot: string;
+  CoreOutputDir: string;
+  UnitsOutputDir: string;
+  UsesUnitsOutputDir: string;
+  ErrorsOutputDir: string;
   CurrentLanguageInfo: LanguageTestsInfo;
-  nogui: boolean;
-
-var
-  PathSeparator: string := Path.DirectorySeparatorChar;
+  TestFilter := '';
+  PassedCount := 0;
+  FailedCount := 0;
+  SkippedCount := 0;
+  FailureMessages := new System.Collections.Generic.List<string>;
 
 function IsUnix: boolean;
 begin
-  Result := (System.Environment.OSVersion.Platform = System.PlatformID.Unix) or (System.Environment.OSVersion.Platform = System.PlatformID.MacOSX);  
+  Result := (System.Environment.OSVersion.Platform = System.PlatformID.Unix) or
+            (System.Environment.OSVersion.Platform = System.PlatformID.MacOSX);
 end;
 
 function GetCurrentLanguageInfo(dir: string): LanguageTestsInfo;
 begin
-  var configDict := &File.ReadLines(dir + PathSeparator + 'testsettings.config')
+  var configDict := &File.ReadLines(Path.Combine(dir, 'testsettings.config'))
                            .Select(line -> line.Split([':', ' '], System.StringSplitOptions.RemoveEmptyEntries))
                            .ToDictionary(arr -> arr[0], arr -> arr[1]);
-    
-  var languageInformation := Languages.Facade.LanguageProvider.Instance.SelectLanguageByName(configDict['languageName']).LanguageInformation;
-    
-  Result := new LanguageTestsInfo(languageInformation.Name, languageInformation.FilesExtensions, languageInformation.CommentSymbol);
+
+  var languageInformation := Languages.Facade.LanguageProvider.Instance
+                                    .SelectLanguageByName(configDict['languageName'])
+                                    .LanguageInformation;
+
+  Result := new LanguageTestsInfo(languageInformation.Name,
+                                  languageInformation.FilesExtensions,
+                                  languageInformation.CommentSymbol);
 end;
 
-function GetFilesByExtensions(path: string; extensions: array of string; searchOption: SearchOption := System.IO.SearchOption.TopDirectoryOnly): array of string;
+function GetFilesByExtensions(path: string; extensions: array of string): array of string;
 begin
-  Result := extensions.SelectMany(ext -> Directory.GetFiles(path, $'*{ext}', searchOption)).ToArray();
-end;
-
-function GetCodeExamplesDir: string;
-begin
-  var dir := Path.GetDirectoryName(GetEXEFileName());
-  Result := (new DirectoryInfo(dir)).Parent.FullName + PathSeparator + 'CodeExamples' + PathSeparator + CurrentLanguageInfo.languageName;
-end;
-
-procedure CompileErrorTests(withide: boolean);
-begin
-  
-  var dir := TestSuiteDir + PathSeparator + 'errors';
-  if not Directory.Exists(dir) then exit;
-  
-  var commentSymbol := CurrentLanguageInfo.commentSymbol;
-  var files := GetFilesByExtensions(dir, CurrentLanguageInfo.languageExtensions);
-  for var i := 0 to files.Length - 1 do
+  if not Directory.Exists(path) then
   begin
-    var comp := new Compiler();
-    var content := &File.ReadAllText(files[i]);
-    if content.StartsWith(commentSymbol + 'winonly') and IsUnix then
-      continue;
-    if content.StartsWith(commentSymbol + 'exclude') then
-      continue;
-    var errorMessage := '';
-    if content.StartsWith(commentSymbol + '!') then
-    begin
-      errorMessage := content.Substring(commentSymbol.Length + 1, content.IndexOf(System.Environment.NewLine) - commentSymbol.Length + 1).Trim;
-    end;
-    var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
-    co.Debug := true;
-    co.OutputDirectory := TestSuiteDir + PathSeparator + 'errors';
-    co.UseDllForSystemUnits := false;
-    co.RunWithEnvironment := withide;
-    comp.ErrorsList.Clear();
-    comp.Warnings.Clear();
-    
-    comp.Compile(co);
-    if comp.ErrorsList.Count = 0 then
-    begin
-      if nogui then
-        raise new Exception('Compilation of error sample ' + files[i] + ' was successfull');
-      System.Windows.Forms.MessageBox.Show('Compilation of error sample ' + files[i] + ' was successfull' + System.Environment.NewLine);
-      Halt();
-    end
-    else if comp.ErrorsList.Count = 1 then
-    begin
-      if comp.ErrorsList[0].GetType() = typeof(PascalABCCompiler.Errors.CompilerInternalError) then
-      begin
-        if nogui then
-          raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
-        System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
-      end;
-      if (errorMessage <> '') and (comp.ErrorsList[comp.ErrorsList.Count - 1].Message.Trim <> errorMessage) then
-      begin
-        if nogui then
-          raise new Exception('Wrong error message in file ' + files[i] + ', should ' + errorMessage + ', is ' + comp.ErrorsList[comp.ErrorsList.Count - 1].Message);
-        System.Windows.Forms.MessageBox.Show('Wrong error message in file ' + files[i] + ', should ' + errorMessage + ', is ' + comp.ErrorsList[comp.ErrorsList.Count - 1].Message);
-      end;
-    end;
-    if i mod 50 = 0 then
-      System.GC.Collect();
+    Result := new string[0];
+    exit;
   end;
-  
+
+  Result := extensions.SelectMany(ext -> Directory.GetFiles(path, $'*{ext}'))
+                      .OrderBy(fileName -> fileName)
+                      .ToArray();
 end;
 
-procedure CompileAllRunTests(withdll: boolean; only32bit: boolean := false);
+function MatchesFilter(fileName: string): boolean;
 begin
-  
-  var comp := new Compiler();
-  
-  var commentSymbol := CurrentLanguageInfo.commentSymbol;
+  Result := (TestFilter = '') or
+            Path.GetFileName(fileName).ToLower().Contains(TestFilter.ToLower());
+end;
+
+function FirstLine(content: string): string;
+begin
+  var lines := content.Split([#13, #10], System.StringSplitOptions.RemoveEmptyEntries);
+  Result := lines.Length = 0 ? '' : lines[0];
+end;
+
+function ShouldSkip(content: string): boolean;
+begin
+  var first := FirstLine(content);
+  Result := first.StartsWith(CurrentLanguageInfo.commentSymbol + 'exclude') or
+            (IsUnix and first.StartsWith(CurrentLanguageInfo.commentSymbol + 'winonly'));
+end;
+
+function ExpectedMessage(content: string): string;
+begin
+  var first := FirstLine(content);
+  var prefix := CurrentLanguageInfo.commentSymbol + '!';
+  Result := first.StartsWith(prefix) ? first.Substring(prefix.Length).Trim() : '';
+end;
+
+procedure RecordFailure(phase, fileName, message: string);
+begin
+  Inc(FailedCount);
+  var displayName := string.IsNullOrEmpty(fileName) ? '<runner>' : Path.GetFileName(fileName);
+  var text := $'[{phase}] {displayName}: {message}';
+  FailureMessages.Add(text);
+  Println('FAIL ' + text);
+end;
+
+procedure RecordPassed;
+begin
+  Inc(PassedCount);
+end;
+
+procedure RecordSkipped;
+begin
+  Inc(SkippedCount);
+end;
+
+function CompilerErrorsToString(comp: Compiler): string;
+begin
+  Result := '';
+  for var i := 0 to comp.ErrorsList.Count - 1 do
+  begin
+    if Result <> '' then
+      Result += System.Environment.NewLine;
+    Result += comp.ErrorsList[i].ToString();
+  end;
+end;
+
+procedure RecreateDirectory(dir: string);
+begin
+  if Directory.Exists(dir) then
+    Directory.Delete(dir, true);
+  Directory.CreateDirectory(dir);
+end;
+
+procedure CopyRuntimeDependencies(outputDir: string);
+begin
+  foreach var dllName in Directory.GetFiles(TestSuiteDir, '*.dll') do
+    &File.Copy(dllName, Path.Combine(outputDir, Path.GetFileName(dllName)), true);
+end;
+
+function CompileSource(fileName, outputDir, phase: string;
+                       validateWarning: boolean;
+                       searchDirectory: string := ''): boolean;
+begin
+  Result := false;
+  try
+    var content := &File.ReadAllText(fileName);
+    var comp := new Compiler();
+    var options := new CompilerOptions(fileName, CompilerOptions.OutputType.ConsoleApplicaton);
+    options.Debug := true;
+    options.OutputDirectory := outputDir;
+    options.UseDllForSystemUnits := false;
+    options.RunWithEnvironment := false;
+    options.IgnoreRtlErrors := false;
+    if searchDirectory <> '' then
+      options.SearchDirectories.Add(searchDirectory);
+
+    comp.Compile(options);
+    if comp.ErrorsList.Count > 0 then
+    begin
+      RecordFailure(phase, fileName, CompilerErrorsToString(comp));
+      exit;
+    end;
+
+    if validateWarning then
+    begin
+      var expectedWarning := ExpectedMessage(content);
+      if expectedWarning <> '' then
+      begin
+        if comp.Warnings.Count = 0 then
+        begin
+          RecordFailure(phase, fileName, 'Ожидалось предупреждение: ' + expectedWarning);
+          exit;
+        end;
+        if comp.Warnings[0].Message.Trim() <> expectedWarning then
+        begin
+          RecordFailure(phase, fileName,
+                        'Неверное предупреждение. Ожидалось: ' + expectedWarning +
+                        '. Получено: ' + comp.Warnings[0].Message.Trim());
+          exit;
+        end;
+      end;
+    end;
+
+    Result := true;
+  except
+    on e: Exception do
+      RecordFailure(phase, fileName, e.ToString());
+  end;
+end;
+
+function RunProgram(exeName, sourceFileName: string): boolean;
+begin
+  Result := false;
+  try
+    if not &File.Exists(exeName) then
+    begin
+      RecordFailure('run', sourceFileName, 'Исполняемый файл не создан: ' + exeName);
+      exit;
+    end;
+
+    var startInfo := new ProcessStartInfo(exeName);
+    startInfo.CreateNoWindow := true;
+    startInfo.UseShellExecute := false;
+    startInfo.WorkingDirectory := Path.GetDirectoryName(exeName);
+
+    var process := new Process();
+    process.StartInfo := startInfo;
+    process.Start();
+
+    if not process.WaitForExit(TestTimeoutMilliseconds) then
+    begin
+      try
+        process.Kill();
+        process.WaitForExit();
+      except
+      end;
+      RecordFailure('run', sourceFileName,
+                    $'Превышен таймаут {TestTimeoutMilliseconds div 1000} секунд');
+      exit;
+    end;
+
+    if process.ExitCode <> 0 then
+    begin
+      RecordFailure('run', sourceFileName,
+                    'Код завершения: ' + process.ExitCode.ToString());
+      exit;
+    end;
+
+    Result := true;
+  except
+    on e: Exception do
+      RecordFailure('run', sourceFileName, e.ToString());
+  end;
+end;
+
+function CollectGeneratedPcu(sourceFileName, outputDir, phase: string): boolean; forward;
+
+procedure RunCoreTests;
+begin
+  Println('----- core: компиляция обычных тестов -----');
+  RecreateDirectory(CoreOutputDir);
+
+  var executables := new System.Collections.Generic.List<string>;
+  var sourceFiles := new System.Collections.Generic.List<string>;
   var files := GetFilesByExtensions(TestSuiteDir, CurrentLanguageInfo.languageExtensions);
 
-  for var i := 0 to files.Length - 1 do
+  foreach var fileName in files do
   begin
-    if IsUnix then
-      Println('Compile file ' + files[i]);
-    var content := &File.ReadAllText(files[i]);
-    if content.StartsWith(commentSymbol + 'winonly') and IsUnix then
+    if not MatchesFilter(fileName) then
       continue;
-    if content.StartsWith(commentSymbol + 'nopabcrtl') and withdll then
-      continue;
-    var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
-    co.Debug := true;
-    co.OutputDirectory := TestSuiteDir + PathSeparator + 'exe';
-    Directory.CreateDirectory(co.OutputDirectory);
-    co.UseDllForSystemUnits := withdll;
-    co.RunWithEnvironment := false;
-    co.IgnoreRtlErrors := false;
-    co.Only32Bit := only32bit;
-    comp.ErrorsList.Clear();
-    comp.Warnings.Clear();
-    
-    comp.Compile(co);
-    if comp.ErrorsList.Count > 0 then
+
+    var content := &File.ReadAllText(fileName);
+    if ShouldSkip(content) then
     begin
-      if nogui then
-        raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
-      System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
-      Halt();
+      RecordSkipped;
+      continue;
     end;
-    if content.StartsWith(commentSymbol + '!') then
+
+    Println('COMPILE ' + Path.GetFileName(fileName));
+    if CompileSource(fileName, CoreOutputDir, 'compile', true) then
     begin
-      var warning := content.Substring(commentSymbol.Length + 1, content.IndexOf(System.Environment.NewLine) - commentSymbol.Length + 1).Trim;
-      if comp.Warnings.Count = 0 then
+      var baseName := Path.GetFileNameWithoutExtension(fileName);
+      var exeName := Path.Combine(CoreOutputDir, baseName + '.exe');
+      var dllName := Path.Combine(CoreOutputDir, baseName + '.dll');
+      var sourcePcu := Path.ChangeExtension(fileName, '.pcu');
+
+      if &File.Exists(exeName) then
       begin
-        if nogui then
-          raise new Exception('Missing warning in ' + files[i]);
-        System.Windows.Forms.MessageBox.Show('Missing warning in ' + files[i]);
-        Halt();
-      end;
-      if comp.Warnings[0].Message <> warning then
+        executables.Add(exeName);
+        sourceFiles.Add(fileName);
+      end
+      else if &File.Exists(sourcePcu) then
       begin
-        if nogui then
-          raise new Exception('Wrong warning for ' + files[i] + ': ' + comp.Warnings[0].Message);
-        System.Windows.Forms.MessageBox.Show('Wrong warning for ' + files[i] + ': ' + comp.Warnings[0].Message);
-        Halt();
-      end;
+        if CollectGeneratedPcu(fileName, CoreOutputDir, 'compile') then
+          RecordPassed;
+      end
+      else if &File.Exists(dllName) then
+        RecordPassed
+      else
+        RecordFailure('compile', fileName, 'Компилятор не создал EXE, DLL или PCU');
     end;
-    if i mod 50 = 0 then
-    begin
-      System.GC.Collect();
-    end;  
   end;
-  //Println;
+
+  CopyRuntimeDependencies(CoreOutputDir);
+  Println('----- core: запуск обычных тестов -----');
+
+  for var i := 0 to executables.Count - 1 do
+  begin
+    Println('RUN     ' + Path.GetFileName(sourceFiles[i]));
+    if RunProgram(executables[i], sourceFiles[i]) then
+      RecordPassed;
+  end;
 end;
 
-procedure CompileAllCompilationTests(dir: string; withdll: boolean);
+function CollectGeneratedPcu(sourceFileName, outputDir, phase: string): boolean;
 begin
-  
-  var comp := new Compiler();
-  
-  var fullDirName := TestSuiteDir + PathSeparator + dir;
-  if not Directory.Exists(fullDirName) then exit;
-  
-  var commentSymbol := CurrentLanguageInfo.commentSymbol;
-  var files := GetFilesByExtensions(fullDirName, CurrentLanguageInfo.languageExtensions);
-  for var i := 0 to files.Length - 1 do
+  Result := false;
+  try
+    var sourcePcu := Path.ChangeExtension(sourceFileName, '.pcu');
+    if not &File.Exists(sourcePcu) then
+    begin
+      RecordFailure(phase, sourceFileName, 'Компилятор не создал PCU');
+      exit;
+    end;
+
+    var targetPcu := Path.Combine(outputDir, Path.GetFileName(sourcePcu));
+    &File.Copy(sourcePcu, targetPcu, true);
+    &File.Delete(sourcePcu);
+    Result := true;
+  except
+    on e: Exception do
+      RecordFailure(phase, sourceFileName, 'Не удалось перенести PCU: ' + e.ToString());
+  end;
+end;
+
+procedure CompileDirectory(sourceDir, outputDir, phase: string;
+                           searchDirectory: string := '';
+                           collectPcu: boolean := false);
+begin
+  var files := GetFilesByExtensions(sourceDir, CurrentLanguageInfo.languageExtensions);
+  foreach var fileName in files do
   begin
-    var content := &File.ReadAllText(files[i]);
-    if content.StartsWith(commentSymbol + 'winonly') and IsUnix then
+    if not MatchesFilter(fileName) then
       continue;
-    var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
-    co.Debug := true;
-    co.OutputDirectory := TestSuiteDir + PathSeparator + dir;
-    co.UseDllForSystemUnits := withdll;
-    co.RunWithEnvironment := false;
-    co.IgnoreRtlErrors := false;
-    comp.ErrorsList.Clear();
-    comp.Warnings.Clear();
-    
-    comp.Compile(co);
-    if comp.ErrorsList.Count > 0 then
-    begin
-      if nogui then
-        raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
-      System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
-      Halt();
-    end;
-    if i mod 50 = 0 then
-      System.GC.Collect();
-  end;
-  
-end;
 
-procedure CompileAllUnits;
-begin
-  var comp := new Compiler();
-  // Не пропускать ошибки сохранения PCU, в тесте создания PCU
-  comp.InternalDebug.SkipPCUErrors := false;
-  
-  var dir := TestSuiteDir + PathSeparator + 'units' + PathSeparator;
-  if not Directory.Exists(dir) then exit;
-  
-  var commentSymbol := CurrentLanguageInfo.commentSymbol;
-  var files := GetFilesByExtensions(TestSuiteDir + PathSeparator + 'units', CurrentLanguageInfo.languageExtensions);
-  for var i := 0 to files.Length - 1 do
-  begin
-    var content := &File.ReadAllText(files[i]);
-    if content.StartsWith(commentSymbol + 'winonly') and IsUnix then
+    var content := &File.ReadAllText(fileName);
+    if ShouldSkip(content) then
+    begin
+      RecordSkipped;
       continue;
-    var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
-    co.Debug := true;
-    co.OutputDirectory := dir;
-    co.UseDllForSystemUnits := false;
-    comp.ErrorsList.Clear();
-    comp.Warnings.Clear();
-    
-    comp.Compile(co);
-    if comp.ErrorsList.Count > 0 then
+    end;
+
+    Println('COMPILE ' + Path.GetFileName(fileName));
+    if CompileSource(fileName, outputDir, phase, false, searchDirectory) then
     begin
-      if nogui then
-        raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
-      System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
-      Halt();
+      if (not collectPcu) or CollectGeneratedPcu(fileName, outputDir, phase) then
+        RecordPassed;
     end;
   end;
-  System.GC.Collect;
 end;
 
-procedure CompileAllUsesUnits;
+procedure RunUnitTests;
 begin
-  var comp := new Compiler();
-  
-  var dir := TestSuiteDir + PathSeparator + 'usesunits';
-  
-  if not Directory.Exists(dir) then exit;
-  
-  var commentSymbol := CurrentLanguageInfo.commentSymbol;
-  var files := GetFilesByExtensions(dir, CurrentLanguageInfo.languageExtensions);
-  for var i := 0 to files.Length - 1 do
+  Println('----- units: компиляция модулей -----');
+  RecreateDirectory(UnitsOutputDir);
+  RecreateDirectory(UsesUnitsOutputDir);
+
+  CompileDirectory(Path.Combine(TestSuiteDir, 'units'), UnitsOutputDir, 'units', '', true);
+
+  Println('----- units: компиляция программ, использующих модули -----');
+  CompileDirectory(Path.Combine(TestSuiteDir, 'usesunits'), UsesUnitsOutputDir,
+                   'usesunits', UnitsOutputDir);
+end;
+
+procedure RunErrorTests;
+begin
+  Println('----- errors: проверка ожидаемых ошибок -----');
+  RecreateDirectory(ErrorsOutputDir);
+
+  var sourceDir := Path.Combine(TestSuiteDir, 'errors');
+  var files := GetFilesByExtensions(sourceDir, CurrentLanguageInfo.languageExtensions);
+
+  foreach var fileName in files do
   begin
-    var content := &File.ReadAllText(files[i]);
-    if content.StartsWith(commentSymbol + 'winonly') and IsUnix then
+    if not MatchesFilter(fileName) then
       continue;
-    var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
-    co.Debug := true;
-    co.OutputDirectory := TestSuiteDir + PathSeparator + 'exe';
-    co.UseDllForSystemUnits := false;
-    comp.ErrorsList.Clear();
-    comp.Warnings.Clear();
-    comp.Compile(co);
-    if comp.ErrorsList.Count > 0 then
+
+    var content := &File.ReadAllText(fileName);
+    if ShouldSkip(content) then
     begin
-      if nogui then
-        raise new Exception('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
-      System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
-      Halt();
+      RecordSkipped;
+      continue;
     end;
-  end;
-  System.GC.Collect;
-end;
 
-procedure CopyPCUFiles;
-begin  
-  var dir := TestSuiteDir + PathSeparator + 'units';
-  if not Directory.Exists(dir) then exit;
-  
-  var files := Directory.GetFiles(dir, '*.pcu');
-  
-  foreach fname: string in files do
-  begin
-    &File.Move(fname, TestSuiteDir + PathSeparator + 'usesunits' + PathSeparator + Path.GetFileName(fname));
-  end;
-end;
+    Println('ERROR   ' + Path.GetFileName(fileName));
+    try
+      var comp := new Compiler();
+      var options := new CompilerOptions(fileName, CompilerOptions.OutputType.ConsoleApplicaton);
+      options.Debug := true;
+      options.OutputDirectory := ErrorsOutputDir;
+      options.UseDllForSystemUnits := false;
+      options.RunWithEnvironment := false;
 
-procedure RunAllTests(redirectIO: boolean);
-begin
-  var dlls := Directory.GetFiles(TestSuiteDir, '*.dll');
-  foreach var dll in dlls do
-  begin
-    System.IO.File.Copy(dll, TestSuiteDir + PathSeparator + 'exe' + PathSeparator + Path.GetFileName(dll), true);
-  end;
-  
-  var dir := TestSuiteDir + PathSeparator + 'exe';
-  if not Directory.Exists(dir) then exit;
-  
-  var files := Directory.GetFiles(dir, '*.exe');
-  for var i := 0 to files.Length - 1 do
-  begin
-    //Println(files[i]);
-    var psi := new System.Diagnostics.ProcessStartInfo(files[i]);
-    psi.CreateNoWindow := true;
-    psi.UseShellExecute := false;
-    
-    psi.WorkingDirectory := TestSuiteDir + PathSeparator + 'exe';
-		  {psi.RedirectStandardInput := true;
-		  psi.RedirectStandardOutput := true;
-		  psi.RedirectStandardError := true;}
-    var p: Process := new Process();
-    p.StartInfo := psi;
-    p.Start();
-    if redirectIO then
-      p.StandardInput.WriteLine('GO');
-		  //p.StandardInput.AutoFlush := true;
-		  //var p := System.Diagnostics.Process.Start(psi);
-    if nogui then
-    begin
-      var success := p.WaitForExit(60000);
-      if not success then
+      comp.Compile(options);
+      if comp.ErrorsList.Count = 0 then
       begin
-        raise new Exception('Running of ' + files[i] + ' failed.');
+        RecordFailure('errors', fileName, 'Компиляция ошибочного примера завершилась успешно');
+        continue;
       end;
+
+      var hasInternalError := false;
+      for var i := 0 to comp.ErrorsList.Count - 1 do
+        if comp.ErrorsList[i].GetType() = typeof(PascalABCCompiler.Errors.CompilerInternalError) then
+          hasInternalError := true;
+
+      if hasInternalError then
+      begin
+        RecordFailure('errors', fileName, CompilerErrorsToString(comp));
+        continue;
+      end;
+
+      var expectedError := ExpectedMessage(content);
+      if (expectedError <> '') and
+         (comp.ErrorsList[comp.ErrorsList.Count - 1].Message.Trim() <> expectedError) then
+      begin
+        RecordFailure('errors', fileName,
+                      'Неверный текст ошибки. Ожидалось: ' + expectedError +
+                      '. Получено: ' + comp.ErrorsList[comp.ErrorsList.Count - 1].Message.Trim());
+        continue;
+      end;
+
+      RecordPassed;
+    except
+      on e: Exception do
+        RecordFailure('errors', fileName, e.ToString());
+    end;
+  end;
+end;
+
+procedure PrintUsage;
+begin
+  Println('TestRunner [all|core|units|errors] [часть имени файла]');
+  Println('Старые номера проходов временно поддерживаются: 1 = core, 3 = units+errors.');
+end;
+
+procedure PrintSummary(elapsedMilliseconds: integer);
+begin
+  Println;
+  Println('========== ИТОГ ==========');
+  Println('Пройдено:  ' + PassedCount);
+  Println('Ошибок:    ' + FailedCount);
+  Println('Пропущено: ' + SkippedCount);
+  Println('Время:     ' + System.TimeSpan.FromMilliseconds(elapsedMilliseconds).ToString());
+
+  if FailureMessages.Count > 0 then
+  begin
+    Println;
+    Println('Список ошибок:');
+    for var i := 0 to FailureMessages.Count - 1 do
+      Println($'{i + 1}. {FailureMessages[i]}');
+  end;
+end;
+
+begin
+  var started := Milliseconds;
+  try
+    TestSuiteDir := Path.GetFullPath(System.Environment.CurrentDirectory);
+    var runnerDir := Path.GetDirectoryName(GetEXEFileName());
+    var projectDir := (new DirectoryInfo(runnerDir)).Parent.FullName;
+
+    ResultsRoot := Path.Combine(projectDir, 'TestResults', 'net40');
+    CoreOutputDir := Path.Combine(ResultsRoot, 'core');
+    UnitsOutputDir := Path.Combine(ResultsRoot, 'units');
+    UsesUnitsOutputDir := Path.Combine(ResultsRoot, 'usesunits');
+    ErrorsOutputDir := Path.Combine(ResultsRoot, 'errors');
+
+    if not &File.Exists(Path.Combine(TestSuiteDir, 'testsettings.config')) then
+      raise new Exception('TestRunner необходимо запускать из каталога TestSuite');
+
+    Languages.Integration.LanguageIntegrator.LoadAllLanguages();
+    System.Environment.CurrentDirectory := runnerDir;
+    CurrentLanguageInfo := GetCurrentLanguageInfo(TestSuiteDir);
+
+    var mode := ParamCount = 0 ? 'all' : ParamStr(1).ToLower();
+    var legacyInvocation := (mode = '1') or (mode = '2') or (mode = '3') or
+                            (mode = '4') or (mode = '5') or (mode = '6');
+
+    if mode = '1' then
+      mode := 'core'
+    else if mode = '3' then
+      mode := 'units-errors'
+    else if legacyInvocation then
+      mode := 'legacy-skip';
+
+    if (ParamCount > 1) and not legacyInvocation then
+      TestFilter := ParamStr(2);
+
+    if (mode <> 'all') and (mode <> 'core') and
+       (mode <> 'units') and (mode <> 'errors') and
+       (mode <> 'units-errors') and (mode <> 'legacy-skip') then
+    begin
+      PrintUsage;
+      RecordFailure('runner', '', 'Неизвестный режим: ' + mode);
+    end
+    else if mode = 'legacy-skip' then
+    begin
+      Println('Этот старый проход исключён из сокращённого консольного TestRunner.');
+      RecordSkipped;
     end
     else
-      p.WaitForExit();
-    //while not p.HasExited do
-    //  Sleep(5);
-    if p.ExitCode <> 0 then
     begin
-      if nogui then
-        raise new Exception('Running of ' + files[i] + ' failed. Exit code is not 0');
-      System.Windows.Forms.MessageBox.Show('Running of ' + files[i] + ' failed. Exit code is not 0');
-      Halt;
-    end;
-  end;
-end;
-
-procedure RunExpressionsExtractTests;
-begin
-  // Пока для других языков не поддерживается
-  if CurrentLanguageInfo.languageName <> 'PascalABC.NET' then exit;
-  CodeCompletion.CodeCompletionTester.Test();
-end;
-
-function GetLineByPos(lines: array of string; pos: integer): integer;
-begin
-  var cum_pos := 0;
-  for var i := 0 to lines.Length - 1 do
-    for var j := 0 to lines[j].Length - 1 do
-    begin
-      if cum_pos = pos then
-      begin
-        Result := i + 1;
-        exit;
-      end;
-      Inc(cum_pos);  
-    end;
-end;
-
-function GetColByPos(lines: array of string; pos: integer): integer;
-begin
-  var cum_pos := 0;
-  for var i := 0 to lines.Length - 1 do
-    for var j := 0 to lines[j].Length - 1 do
-    begin
-      if cum_pos = pos then
-      begin
-        Result := j + 1;
-        exit;
-      end;
-      Inc(cum_pos);  
-    end;
-end;
-
-procedure RunIntellisenseTests;
-begin
-  var dir := TestSuiteDir + PathSeparator + 'intellisense_tests';
-  if not Directory.Exists(dir) then exit;
-  
-  PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO := 'ru';
-  CodeCompletion.CodeCompletionTester.TestIntellisense(dir);
-end;
-
-procedure RunFormatterTests;
-begin
-  var dir := TestSuiteDir + PathSeparator + 'formatter_tests';
-  if not Directory.Exists(dir) then exit;
-  
-  CodeCompletion.FormatterTester.Test();
-  var errors := &File.ReadAllText(dir + PathSeparator + 'output' + PathSeparator + 'log.txt');
-  if not string.IsNullOrEmpty(errors) then
-  begin
-    var dirInfo := new DirectoryInfo(TestSuiteDir);
-    
-    if nogui then
-      raise new Exception('Formatter tests failed.' + NewLine + errors);
-    System.Windows.Forms.MessageBox.Show(errors + System.Environment.NewLine + $'more info at {dirInfo.Parent.Name}/{dirInfo.Name}/formatter_tests/output/log.txt');
-    Halt;
-  end;
-end;
-
-procedure ClearDirByPattern(dir, pattern: string);
-begin
-  if not Directory.Exists(dir) then exit;
-  var files := Directory.GetFiles(dir, pattern);
-  for var i := 0 to files.Length - 1 do
-  begin
-    try
-      if Path.GetFileName(files[i]) <> '.gitignore' then
-        &File.Delete(files[i]);
-    except
-    end;
-  end;
-end;
-
-procedure ClearExeDir;
-begin
-  ClearDirByPattern(TestSuiteDir + PathSeparator + 'exe', '*.*');
-  ClearDirByPattern(TestSuiteDir + PathSeparator + 'CompilationSamples', '*.exe');
-  ClearDirByPattern(TestSuiteDir + PathSeparator + 'CompilationSamples', '*.mdb');
-  ClearDirByPattern(TestSuiteDir + PathSeparator + 'CompilationSamples', '*.pdb');
-  ClearDirByPattern(TestSuiteDir + PathSeparator + 'CompilationSamples', '*.pcu');
-  ClearDirByPattern(TestSuiteDir + PathSeparator + 'pabcrtl_tests', '*.exe');
-  ClearDirByPattern(TestSuiteDir + PathSeparator + 'pabcrtl_tests', '*.pdb');
-  ClearDirByPattern(TestSuiteDir + PathSeparator + 'pabcrtl_tests', '*.mdb');
-  ClearDirByPattern(TestSuiteDir + PathSeparator + 'pabcrtl_tests', '*.pcu');
-end;
-
-procedure DeletePCUFiles;
-begin
-  ClearDirByPattern(TestSuiteDir + PathSeparator + 'usesunits', '*.pcu');
-end;
-
-//procedure DeletePABCSystemPCU;
-//begin
-//  var dir := Path.Combine(Path.GetDirectoryName(GetEXEFileName()), 'Lib');
-//  var pcu := Path.Combine(dir, 'PABCSystem.pcu');
-//end;
-
-/// Копирует всю папку CodeExamples в TestSuite (если такая уже есть, то предварительно удаляет её)
-procedure CopyCodeExamples;
-begin
-  var dir := GetCodeExamplesDir();
-  if not Directory.Exists(dir) then exit;
-  
-  var files := GetFilesByExtensions(dir, CurrentLanguageInfo.languageExtensions, SearchOption.AllDirectories);
-  var destinationDir := TestSuiteDir + PathSeparator + 'CodeExamples' + PathSeparator;
-  
-  if Directory.Exists(destinationDir) then 
-    Directory.Delete(destinationDir, True);
-  
-  Directory.CreateDirectory(destinationDir);
- 
-  foreach f: string in files do
-  begin
-    &File.Copy(f, destinationDir + Path.GetFileName(f), true);
-  end;
-end;
-
-function MsToMinutes(ms: integer) : string;
-begin
-  var span := System.TimeSpan.FromMilliseconds(ms);
-  Result := span.Minutes > 0 ? $'{span.Minutes}m {span.Seconds}s' : $'{span.Seconds}s';
-end;
-
-begin
-  //DeletePABCSystemPCU;
-  try
-    Languages.Integration.LanguageIntegrator.LoadAllLanguages();
-    
-    TestSuiteDir := System.Environment.CurrentDirectory;
-    
-    System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
-    
-    CurrentLanguageInfo := GetCurrentLanguageInfo(TestSuiteDir);
-    
-    if (ParamCount = 0) or (ParamStr(1) = '1') then
-      Println($'----- {CurrentLanguageInfo.languageName} тесты -----');
-    
-    if (ParamCount = 2) and (ParamStr(2) = '1') then
-      nogui := true;
-    if (ParamCount = 0) or (ParamStr(1) = '1') then
-    begin
-      Println('Compiling tests...');
-      DeletePCUFiles;
-      ClearExeDir;
-      CompileAllRunTests(false);
-      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
-    end;
-    
-    if (ParamCount = 0) or (ParamStr(1) = '2') then
-    begin
-      Println('Compiling compilation samples...');
-      CopyCodeExamples;
-      CompileAllCompilationTests('CodeExamples', false);
-      CompileAllCompilationTests('CompilationSamples', false);
-      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
-    end;
-    if (ParamCount = 0) or (ParamStr(1) = '3') then
-    begin
-      Println('Compiling tests with multiple units and error throwing tests...');
-      CompileAllUnits;
-      CopyPCUFiles;
-      CompileAllUsesUnits;
-      CompileErrorTests(false);
-      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
-    end;
-    if (ParamCount = 0) or (ParamStr(1) = '4') then
-    begin
-      Println('Running tests...');
-      RunAllTests(false);
-      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
-      ClearExeDir;
-      DeletePCUFiles;
-    end;
-    if (ParamCount = 0) or (ParamStr(1) = '5') then
-    begin
-      Println('Compiling tests in 32bit mode...');
-      CompileAllRunTests(false, true);
-      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
-      Println('Running tests in 32bit mode...');
-      RunAllTests(false);
-      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
-      ClearExeDir;
-      Println('Compiling tests with PABCRtl.dll...');
-      CompileAllRunTests(true);
-      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
-      Println('Compiling compilation samples with PABCRtl.dll...');
-      CompileAllCompilationTests('pabcrtl_tests', true);
-      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
-    end;
-    if (ParamCount = 0) or (ParamStr(1) = '6') then
-    begin
-      Println('Running tests with PABCRtl.dll...');
-      RunAllTests(false);
-      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
-      Println('Running intellisense expression tests...');
-      RunExpressionsExtractTests;
-      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
-      Println('Running basic intellisense tests...');
-      RunIntellisenseTests;
-      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
-      Println('Running formatter tests...');
-      RunFormatterTests;
-      Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
+      if (mode = 'all') or (mode = 'core') then
+        RunCoreTests;
+      if (mode = 'all') or (mode = 'units') or (mode = 'units-errors') then
+        RunUnitTests;
+      if (mode = 'all') or (mode = 'errors') or (mode = 'units-errors') then
+        RunErrorTests;
     end;
   except
     on e: Exception do
-    begin
-      if nogui then
-        raise new Exception(e.ToString());
-      assert(false, e.ToString());
-    end;
-  
+      RecordFailure('runner', '', e.ToString());
   end;
+
+  PrintSummary(Milliseconds - started);
+  if FailedCount > 0 then
+    Halt(1);
 end.
