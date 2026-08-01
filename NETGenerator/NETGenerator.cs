@@ -2656,7 +2656,19 @@ namespace PascalABCCompiler.NETGenerator
                         AddTypeInstanceToFunction((ICommonFunctionNode)GetGenericFunctionContainer(value), igtn);
                         return;
                     }
-                    iparams.Add(tinfo.tp);
+                    Type genericParameterType = tinfo.tp;
+#if PABCNET_MODERN
+                    // PersistedAssemblyBuilder cannot resolve members of a generic type
+                    // instantiated with EnumBuilder. Use the TypeBuilder wrapped by it.
+                    if (genericParameterType is EnumBuilder enumBuilder)
+                    {
+                        FieldInfo typeBuilderField = enumBuilder.GetType()
+                            .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+                            .First(field => typeof(TypeBuilder).IsAssignableFrom(field.FieldType));
+                        genericParameterType = (Type)typeBuilderField.GetValue(enumBuilder);
+                    }
+#endif
+                    iparams.Add(genericParameterType);
                 }
                 //Запрашиваем инстанцию
                 //ICompiledTypeNode icompiled_type = igtn.original_generic as ICompiledTypeNode;
