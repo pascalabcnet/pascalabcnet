@@ -371,6 +371,10 @@ namespace PascalABCCompiler.NetHelper
                 ass_name_cache.TryGetValue(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), name), out a);
             if (a != null)
 			{
+#if PABCNET_MODERN
+                if (a == typeof(object).Assembly || a.GetName().Name == "System.Runtime")
+                    return a;
+#endif
 				if (System.IO.File.GetLastWriteTime(name) == file_dates[a])
 					return a;
 				namespace_assemblies.Remove(a);
@@ -411,6 +415,14 @@ namespace PascalABCCompiler.NetHelper
 			    }
 			}
 			//if (!System.IO.Path.GetFileName(name).ToLower().Contains("microsoft.directx"))
+#if PABCNET_MODERN
+            string assemblyFileName = Path.GetFileName(name);
+            if (assemblyFileName.Equals("System.Private.CoreLib.dll", StringComparison.OrdinalIgnoreCase))
+                a = typeof(object).Assembly;
+            else if (assemblyFileName.Equals("System.Runtime.dll", StringComparison.OrdinalIgnoreCase))
+                a = Assembly.Load("System.Runtime");
+            else
+#endif
             try
             {
                 var bytes = File.ReadAllBytes(name);

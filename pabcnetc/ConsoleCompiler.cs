@@ -416,6 +416,9 @@ namespace PascalABCCompiler
                 NoConsole = true;
             }
 
+#if PABCNET_MODERN
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+#endif
             PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
 
 #if PABCNET_LEGACY

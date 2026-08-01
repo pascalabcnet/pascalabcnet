@@ -150,6 +150,9 @@ namespace PascalABCCompiler
             // 2022 г. К сожалению, директива с / конкурирует с именами каталогов в Linux. Надо писать новый консольный компилятор
 
             DateTime ldt = DateTime.Now;
+#if PABCNET_MODERN
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+#endif
             PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
 
             // загрузка всех парсеров и других составляющих языков  EVA

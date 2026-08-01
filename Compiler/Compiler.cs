@@ -2593,6 +2593,23 @@ namespace PascalABCCompiler
                 AddReferencesToNetSystemLibraries(compilationUnit, directives);
             }
 
+#if PABCNET_MODERN
+            compiler_directive coreLibraryDirective = null;
+            foreach (compiler_directive directive in directives)
+            {
+                if (!directive.name.Equals(StringConstants.compiler_directive_reference, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                if (directive.directive.Equals("%GAC%\\mscorlib.dll", StringComparison.OrdinalIgnoreCase))
+                {
+                    directive.directive = "%GAC%\\System.Private.CoreLib.dll";
+                    coreLibraryDirective = directive;
+                }
+                else if (directive.directive.Equals("%GAC%\\System.dll", StringComparison.OrdinalIgnoreCase))
+                    directive.directive = "%GAC%\\System.Runtime.dll";
+            }
+#endif
+
             var referenceDirectives = new List<compiler_directive>();
             foreach (compiler_directive directive in directives)
             {
@@ -2602,6 +2619,29 @@ namespace PascalABCCompiler
                     referenceDirectives.Add(directive);
                 }
             }
+
+#if PABCNET_MODERN
+            if (coreLibraryDirective != null)
+            {
+                string runtimeDirectory = Path.GetDirectoryName(typeof(int).Assembly.Location);
+                foreach (string assemblyPath in Directory.GetFiles(runtimeDirectory, "System.*.dll"))
+                {
+                    string assemblyName = Path.GetFileName(assemblyPath);
+                    if (assemblyName.Equals("System.Private.CoreLib.dll", StringComparison.OrdinalIgnoreCase) ||
+                        assemblyName.Equals("System.Runtime.dll", StringComparison.OrdinalIgnoreCase) ||
+                        assemblyName.Equals("System.IO.Compression.Native.dll", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    var directive = new compiler_directive(
+                        "reference",
+                        "%GAC%\\" + assemblyName,
+                        coreLibraryDirective.location,
+                        coreLibraryDirective.source_file);
+                    directives.Add(directive);
+                    referenceDirectives.Add(directive);
+                }
+            }
+#endif
 
             if (CompilerOptions.ProjectCompiled)
             {

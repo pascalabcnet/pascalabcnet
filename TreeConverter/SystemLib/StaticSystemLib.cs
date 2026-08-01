@@ -1190,9 +1190,11 @@ namespace PascalABCCompiler.SystemLibrary
             _icollection1_interface = compiled_type_node.get_type_node(typeof(ICollection<>));
             _ienumerable1_interface = compiled_type_node.get_type_node(typeof(IEnumerable<>));
             _assert_method = compiled_function_node.get_compiled_method(typeof(System.Diagnostics.Debug).GetMethod("Assert",new Type[1]{typeof(bool)}));
+#if PABCNET_LEGACY
             _decimal_type = compiled_type_node.get_type_node(typeof(decimal), symtab);
             //_decimal_type.SetName(StringConstants.decimal_type_name);
             make_assign_operator(_decimal_type, SemanticTree.basic_function_type.objassign);
+#endif
 
             _bool_type = compiled_type_node.get_type_node(typeof(bool), symtab);
             _bool_type.SetName(StringConstants.bool_type_name);

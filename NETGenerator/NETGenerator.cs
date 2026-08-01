@@ -308,6 +308,8 @@ namespace PascalABCCompiler.NETGenerator
 
         protected void MarkSequencePoint(ILGenerator ilg, int bl, int bc, int el, int ec)
         {
+            if (!save_debug_info || doc == null)
+                return;
             //if (make_next_spoint)
             ilg.MarkSequencePoint(doc, bl, bc, el, ec + 1);
             make_next_spoint = true;
@@ -6197,8 +6199,10 @@ namespace PascalABCCompiler.NETGenerator
             {
                 if (gen_left_brackets)
                     MarkSequencePoint(value.LeftLogicalBracketLocation);
+#if PABCNET_LEGACY
                 else
                     il.MarkSequencePoint(doc, 0xFeeFee, 0xFeeFee, 0xFeeFee, 0xFeeFee);
+#endif
                 //il.MarkSequencePoint(doc,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF);
                 il.Emit(OpCodes.Nop);
             }
@@ -6245,8 +6249,10 @@ namespace PascalABCCompiler.NETGenerator
             {
                 if (gen_left_brackets || value.LeftLogicalBracketLocation == null)
                     MarkSequencePoint(value.LeftLogicalBracketLocation);
+#if PABCNET_LEGACY
                 else
                     il.MarkSequencePoint(doc, 0xFeeFee, 0xFeeFee, 0xFeeFee, 0xFeeFee);
+#endif
                 il.Emit(OpCodes.Nop);
             }
             
@@ -6564,8 +6570,8 @@ namespace PascalABCCompiler.NETGenerator
 
             ConvertStatement(value.then_body);
             il.Emit(OpCodes.Br, EndLabel);
-            if (value.else_body == null && next_location != null)
-                il.MarkSequencePoint(doc, next_location.begin_line_num, 1, next_location.begin_line_num, next_location.begin_column_num);
+            if (save_debug_info && doc != null && value.else_body == null && next_location != null)
+                il.MarkSequencePoint(doc, next_location.begin_line_num, 1, next_location.begin_line_num, next_location.end_column_num);
             il.MarkLabel(FalseLabel);
             if (value.else_body != null)
                 ConvertStatement(value.else_body);
@@ -11857,7 +11863,9 @@ namespace PascalABCCompiler.NETGenerator
             ConvertStatement(value.Body);
             LeaveSafeBlock(safe_block);
             //MarkSequencePoint(value.Location);
+#if PABCNET_LEGACY
             il.MarkSequencePoint(doc, 0xFeeFee, 0xFeeFee, 0xFeeFee, 0xFeeFee);
+#endif
             il.MarkLabel(l2);
             if (lb.LocalType.IsValueType)
                 il.Emit(OpCodes.Ldloca, lb);
