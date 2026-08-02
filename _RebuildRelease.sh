@@ -1,6 +1,6 @@
 #!/bin/sh -e
-dotnet build -c Release --no-incremental pabcnetc.sln
-dotnet build -c Release --no-incremental PascalABCNETLinux.sln
+dotnet build -c Release --no-incremental pabcnetc.sln -p:PABCNET_LEGACY_ONLY=true
+dotnet build -c Release --no-incremental PascalABCNETLinux.sln -p:PABCNET_LEGACY_ONLY=true
 mono --aot bin/pabcnetc.exe
 mono --aot bin/NETGenerator.dll
 mono --aot bin/TreeConverter.dll

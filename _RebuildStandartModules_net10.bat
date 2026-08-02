@@ -8,9 +8,11 @@ set "MODERN_BIN=%ROOT%bin-net10"
 set "MODERN_LIB=%MODERN_BIN%\Lib"
 set "REBUILD_DIR=%ROOT%ReleaseGenerators"
 set "REBUILD_NAME=RebuildStandartModulesNet10"
+set "CONFIGURATION=%~1"
+if "%CONFIGURATION%"=="" set "CONFIGURATION=Debug"
 
-echo Building console compiler for net10.0...
-dotnet build "%ROOT%pabcnetc.sln" -c Debug -p:TargetFramework=net10.0 -m:1
+echo Building console compiler for net10.0 ^(%CONFIGURATION%^) ...
+dotnet build "%ROOT%pabcnetc.sln" -c "%CONFIGURATION%" -p:TargetFramework=net10.0 -m:1
 if errorlevel 1 exit /b %ERRORLEVEL%
 
 echo Removing existing net10 PCU files...

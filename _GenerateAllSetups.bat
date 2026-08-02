@@ -12,8 +12,11 @@ Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs Configuration
 Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs ReleaseGenerators\PascalABCNET_version.nsh.tmpl ReleaseGenerators\PascalABCNET_version.nsh
 Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs Configuration\pabcversion.txt.tmpl Release\pabcversion.txt
 
-dotnet build -c Release --no-incremental PascalABCNET.sln
+dotnet build -c Release --no-incremental PascalABCNET.sln -p:PABCNET_LEGACY_ONLY=true
 
+@IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+
+call _BuildLegacyTestRunner.bat
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 cd ReleaseGenerators
