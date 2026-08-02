@@ -1,0 +1,31 @@
+// NET10-TESTFIX infrastructure: bootstrap only the platform-neutral base units.
+uses
+  PABCSystem,
+  PABCExtensions,
+  __RunMode,
+  NumLibABC,
+  IniFile,
+  Utils,
+  Timers,
+  Countries,
+  ABCDatabases,
+  School,
+  SF,
+  DataFrameABC,
+  DataFrameABCCore,
+  LinearAlgebraML,
+  PreprocessorABC,
+  MetricsABC,
+  MLABC,
+  MLCoreABC,
+  MLModelsABC,
+  ValidationML,
+  MLExceptions,
+  InspectionML,
+  MLPipelineABC,
+  MLDatasets,
+  DataAdapters,
+  MLUtilsABC;
+
+begin
+end.

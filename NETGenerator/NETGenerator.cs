@@ -2691,14 +2691,37 @@ namespace PascalABCCompiler.NETGenerator
         private static Type NormalizeGenericArgumentType(Type type)
         {
 #if PABCNET_MODERN
-            // PersistedAssemblyBuilder resolves generic members against the TypeBuilder
-            // wrapped by EnumBuilder, not against EnumBuilder itself.
+            // NET10-TESTFIX [nested Pascal enum generic arguments]: PersistedAssemblyBuilder
+            // resolves generic members against the TypeBuilder wrapped by EnumBuilder, not
+            // against EnumBuilder itself. Normalize recursively for shapes such as
+            // KeyValuePair<string, PascalEnum[]>.
             if (type is EnumBuilder enumBuilder)
             {
                 FieldInfo typeBuilderField = enumBuilder.GetType()
                     .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
                     .First(field => typeof(TypeBuilder).IsAssignableFrom(field.FieldType));
                 return (Type)typeBuilderField.GetValue(enumBuilder);
+            }
+
+            if (type.IsArray)
+            {
+                Type elementType = type.GetElementType();
+                Type normalizedElementType = NormalizeGenericArgumentType(elementType);
+                if (normalizedElementType != elementType)
+                    return type.GetArrayRank() == 1
+                        ? normalizedElementType.MakeArrayType()
+                        : normalizedElementType.MakeArrayType(type.GetArrayRank());
+                return type;
+            }
+
+            if (type.IsGenericType && !type.IsGenericTypeDefinition)
+            {
+                Type[] arguments = type.GetGenericArguments();
+                Type[] normalizedArguments = arguments
+                    .Select(NormalizeGenericArgumentType)
+                    .ToArray();
+                if (!arguments.SequenceEqual(normalizedArguments))
+                    return type.GetGenericTypeDefinition().MakeGenericType(normalizedArguments);
             }
 #endif
             return type;
