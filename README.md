@@ -1,7 +1,8 @@
 # PascalABC.NET
 
-PascalABC.NET is a Pascal programming system for Microsoft .NET. The repository
-currently supports two compiler targets:
+PascalABC.NET is a modern Pascal programming language and an integrated
+development environment for Microsoft .NET. The repository currently supports
+two compiler targets:
 
 - the complete system for .NET Framework 4.0/4.7.1;
 - the console compiler for .NET 10.
@@ -86,6 +87,9 @@ Russian: [Installing PascalABC.NET on Linux](https://pascalabcnet.github.io/mydo
 ---
 
 # PascalABC.NET: сборка проекта
+
+PascalABC.NET — современный язык программирования Паскаль и интегрированная
+среда разработки для платформы Microsoft .NET.
 
 Репозиторий поддерживает две цели:
 
