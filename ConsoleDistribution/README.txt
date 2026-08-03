@@ -6,11 +6,11 @@ The Microsoft .NET 10 Runtime must be installed on the computer.
 
 Compile and run a program from a command prompt:
 
-  pabcnetc.exe Examples\Common\Hello.pas
-  Examples\Common\Hello.exe
+  pabcnetc.exe Samples\!MainFeatures\01_First\Print.pas
+  Samples\!MainFeatures\01_First\Print.exe
 
-The Examples\Common directory contains programs suitable for both the legacy
-and modern compilers. Examples\Net10 contains programs that use modern .NET APIs.
+The Samples directory contains the PascalABC.NET sample programs. Some samples
+require the graphical environment or additional libraries not included here.
 
 The compiler is framework-dependent. Programs produced by it also require the
 .NET 10 Runtime.
@@ -23,8 +23,8 @@ The compiler is framework-dependent. Programs produced by it also require the
 
 Компиляция и запуск:
 
-  pabcnetc.exe Examples\Common\Hello.pas
-  Examples\Common\Hello.exe
+  pabcnetc.exe Samples\!MainFeatures\01_First\Print.pas
+  Samples\!MainFeatures\01_First\Print.exe
 
-В Examples\Common находятся примеры для старого и нового компилятора.
-В Examples\Net10 находятся примеры, использующие современный API .NET.
+В папке Samples находятся примеры PascalABC.NET. Для некоторых примеров
+требуется графическая оболочка или дополнительные библиотеки, отсутствующие в архиве.

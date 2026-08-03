@@ -10,6 +10,7 @@ set "RELEASE_DIR=%ROOT%Release"
 set "STAGE_DIR=%RELEASE_DIR%\%PACKAGE_NAME%"
 set "ZIP_FILE=%RELEASE_DIR%\%PACKAGE_NAME%.zip"
 set "ASSETS_DIR=%ROOT%ConsoleDistribution"
+set "SAMPLES_DIR=%ROOT%InstallerSamples"
 
 call "%ROOT%_RebuildStandartModules_net10.bat" Release
 if errorlevel 1 exit /b %ERRORLEVEL%
@@ -36,7 +37,7 @@ xcopy "%MODERN_BIN%\Lng\Eng" "%STAGE_DIR%\Lng\Eng\" /E /I /Y /Q >nul
 if errorlevel 1 exit /b %ERRORLEVEL%
 xcopy "%MODERN_BIN%\Lng\Rus" "%STAGE_DIR%\Lng\Rus\" /E /I /Y /Q >nul
 if errorlevel 1 exit /b %ERRORLEVEL%
-xcopy "%ASSETS_DIR%\Examples" "%STAGE_DIR%\Examples\" /E /I /Y /Q >nul
+xcopy "%SAMPLES_DIR%" "%STAGE_DIR%\Samples\" /E /I /Y /Q >nul
 if errorlevel 1 exit /b %ERRORLEVEL%
 copy /Y "%ASSETS_DIR%\README.txt" "%STAGE_DIR%\README.txt" >nul
 
