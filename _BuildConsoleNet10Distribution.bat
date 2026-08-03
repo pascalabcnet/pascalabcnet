@@ -1,6 +1,8 @@
 @echo off
 setlocal
 
+rem Build the complete PascalABC.NET console distribution for .NET 10.
+
 set "ROOT=%~dp0"
 set "MODERN_BIN=%ROOT%bin-net10"
 set "PACKAGE_NAME=PascalABCNET-Console-net10"
