@@ -30,7 +30,11 @@ copy /Y "%MODERN_BIN%\pabcnetcclear.dll.config" "%STAGE_DIR%\" >nul
 
 xcopy "%MODERN_BIN%\Lib" "%STAGE_DIR%\Lib\" /E /I /Y /Q >nul
 if errorlevel 1 exit /b %ERRORLEVEL%
-xcopy "%MODERN_BIN%\Lng" "%STAGE_DIR%\Lng\" /E /I /Y /Q >nul
+mkdir "%STAGE_DIR%\Lng"
+if errorlevel 1 exit /b %ERRORLEVEL%
+xcopy "%MODERN_BIN%\Lng\Eng" "%STAGE_DIR%\Lng\Eng\" /E /I /Y /Q >nul
+if errorlevel 1 exit /b %ERRORLEVEL%
+xcopy "%MODERN_BIN%\Lng\Rus" "%STAGE_DIR%\Lng\Rus\" /E /I /Y /Q >nul
 if errorlevel 1 exit /b %ERRORLEVEL%
 xcopy "%ASSETS_DIR%\Examples" "%STAGE_DIR%\Examples\" /E /I /Y /Q >nul
 if errorlevel 1 exit /b %ERRORLEVEL%
