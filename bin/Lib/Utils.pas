@@ -1,17 +1,35 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+{$reference System.Data.dll}
 unit Utils;
 
 interface
 
 uses System;
+uses System.Data;
 
 function RecordToByteArray(obj : object): array of byte;
 procedure ShowMessage(msg: string);
 procedure ShowMessage(msg,capt: string);
 function GetFunctionPointer(fnc : Delegate) : integer;
+
 /// Замеряет время работы процедуры p в миллисекундах. Производит n запусков и усредняет время работы
 function Benchmark(p: procedure; n: integer := 100): real;
+
+/// Вычисляет значение выражения, представленного в виде строки
+function Eval(expr: string): object;
+
+/// Вычисляет целое значение выражения, представленного в виде строки
+function EvalInt(expr: string): integer;
+
+/// Вычисляет вещественное значение выражения, представленного в виде строки
+function EvalReal(expr: string): real;
+
+/// Вычисляет логическое значение выражения, представленного в виде строки
+function EvalBool(expr: string): boolean;
+
+/// Вычисляет строковое значение выражения, представленного в виде строки
+function EvalStr(expr: string): string;
 
 implementation
 
@@ -54,6 +72,32 @@ begin
   sw.Stop;
   Result := sw.ElapsedMilliseconds/n;
 end;
+
+function Eval(expr: string): object;
+begin
+  Result := DataTable.Create.Compute(expr, '');
+end;
+
+function EvalInt(expr: string): integer;
+begin
+  Result := Convert.ToInt32(Eval(expr));
+end;
+
+function EvalReal(expr: string): real;
+begin
+  Result := Convert.ToDouble(Eval(expr));
+end;
+
+function EvalBool(expr: string): boolean;
+begin
+  Result := Convert.ToBoolean(Eval(expr));
+end;
+
+function EvalStr(expr: string): string;
+begin
+  Result := Convert.ToString(Eval(expr));
+end;
+
 
 begin
 end.
