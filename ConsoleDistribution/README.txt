@@ -7,7 +7,7 @@ The Microsoft .NET 10 Runtime must be installed on the computer.
 Compile and run a program from a command prompt:
 
   pabcnetc.exe Samples\!MainFeatures\01_First\Print.pas
-  Samples\!MainFeatures\01_First\Print.exe
+  dotnet Samples\!MainFeatures\01_First\Print.exe
 
 The Samples directory contains the PascalABC.NET sample programs. Some samples
 require the graphical environment or additional libraries not included here.
@@ -24,7 +24,7 @@ The compiler is framework-dependent. Programs produced by it also require the
 Компиляция и запуск:
 
   pabcnetc.exe Samples\!MainFeatures\01_First\Print.pas
-  Samples\!MainFeatures\01_First\Print.exe
+  dotnet Samples\!MainFeatures\01_First\Print.exe
 
 В папке Samples находятся примеры PascalABC.NET. Для некоторых примеров
 требуется графическая оболочка или дополнительные библиотеки, отсутствующие в архиве.
