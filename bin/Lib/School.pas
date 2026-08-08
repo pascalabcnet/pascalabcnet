@@ -1,4 +1,4 @@
-﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (10.07.2026)
+﻿/// Учебный модуль, реализующий базовые алгоритмы информатики (04.08.2026)
 unit School;
 
 interface
@@ -197,6 +197,18 @@ function НОК(a, b: int64): int64;
 /// Возвращает НОД и НОК пары чисел
 function НОДНОК(a, b: int64): (int64, int64);
 
+/// Возвращает НОД массива или перечИсленых через запятую значений типа int64
+function GCD(params a: array of int64): int64;
+
+/// Возвращает НОД массива или перечисленых через запятую значений типа BigInteger
+function GCD(params a: array of BigInteger): BigInteger;
+
+/// Возвращает НОK массива или перечисленых через запятую значений типа int64
+function LCM(params a: array of int64): int64;
+
+/// Возвращает НОД массива или перечмсленых через запятую значений типа BigInteger
+function LCM(params a: array of BigInteger): BigInteger;
+
 /// возвращает Sqrt(n), если неотрицательное n - полный квадрат. Иначе возвращает -1.
 function PerfectSquare(n: int64): int64;
 
@@ -315,18 +327,6 @@ function CosDegrees(x: real): real;
 /// Возвращает Tg угла, заданного в градусах
 function TanDegrees(x: real): real;
 
-/// Возвращает вещественный массив, заполненный случайными значениями
-/// на интервале [a; b) с t знаками в дробной части
-function ArrRandomReal(n: integer; a, b: real; t: integer): array of real;
-
-/// Возвращает вещественную последовательность, заполненную случайными значениями
-/// на интервале [a; b) с t знаками в дробной части
-function SeqRandomReal(n: integer; a, b: real; t: integer): sequence of real;
-
-/// Возвращает вещественную матрицу, заполненную случайными значениями
-/// на интервале [a; b) с t знаками в дробной части
-function MatrRandomReal(m: integer; n: integer; a, b: real; t: integer): array [,] of real;
-
 /// Возвращает таблицу истинности для двух переменных
 function TrueTable(f: function(a, b: boolean): boolean):
     array[,] of boolean;
@@ -385,6 +385,9 @@ type
   end;
   
   School_FactorizationError = class(Exception)
+  end;
+  
+  School_FuctionArgumentsError = class(Exception)
   end;
 
 var
@@ -719,22 +722,60 @@ begin
   Result := (a, Abs(a1 div a * b1))
 end;
 
-/// Возвращает НОД кортежа двух чисел типа int64
-function НОД(Self: (int64, int64)): integer; extensionmethod;
+/// Возвращает НОД массива или перечисленых через запятую значений типа int64
+function GCD(params a: array of int64): int64;
 begin
-  var (a, b) := Self;
-  while b <> 0 do
-    (a, b) := (b, a mod b);
-  Result := Abs(a)
+  var n := a.Length;
+  if n = 0 then raise new School_FuctionArgumentsError('GCD: Аргумент не может быть пустым')
+  else if n = 1 then Result := a[0]
+  else
+  begin
+    Result := GCD(a[0], a[1]);
+    for var i := 1 to n - 1 do
+      Result := GCD(Result, a[i])
+  end
 end;
 
-/// Возвращает НОД кортежа двух чисел типа integer
-function НОД(Self: (integer, integer)): integer; extensionmethod;
+/// Возвращает НОД массива или перечисленых через запятую значений типа BigInteger
+function GCD(params a: array of BigInteger): BigInteger;
 begin
-  var (a, b) := Self;
-  while b <> 0 do
-    (a, b) := (b, a mod b);
-  Result := Abs(a)
+  var n := a.Length;
+  if n = 0 then raise new School_FuctionArgumentsError('GCD: Аргумент не может быть пустым')
+  else if n = 1 then Result := a[0]
+  else
+  begin
+    Result := GCD(a[0], a[1]);
+    for var i := 1 to n - 1 do
+      Result := GCD(Result, a[i])
+  end;
+end;
+
+/// Возвращает НОK массива или перечисленых через запятую значений типа int64
+function LCM(params a: array of int64): int64;
+begin
+  var n := a.Length;
+  if n = 0 then raise new School_FuctionArgumentsError('LCM: Аргумент не может быть пустым')
+  else if n = 1 then Result := a[0]
+  else
+  begin
+    Result := a[0] * a[1] div GCD(a[0], a[1]);
+    for var i := 1 to n - 1 do
+      Result := Result * a[i] div GCD(Result, a[i])
+  end
+end;
+
+/// Возвращает НОД массива или перечмсленых через запятую значений типа BigInteger
+function LCM(params a: array of BigInteger): BigInteger;
+begin
+  var n := a.Length;
+  if n = 0 then raise new School_FuctionArgumentsError('LCM: Аргумент не может быть пустым')
+  else if n = 1 then Result := a[0]
+  else
+  begin
+    Result := a[0] * a[1] div GCD(a[0], a[1]);
+    for var i := 1 to n - 1 do
+      Result := Result * a[i] div GCD(Result, a[i])
+  end
 end;
 
 {$endregion}
@@ -1119,7 +1160,7 @@ begin
     begin
       delim := PollardRhoOneFactor(n);
       if delim = -1 then raise new School_FactorizationError
-          ($'Ошибка факторизации PollardRho(n}')
+          ($'Ошибка факторизации PollardRho({n})')
     end;
     if delim = n then
     begin
@@ -1189,7 +1230,7 @@ begin
     begin
       delim := PollardRhoOneFactor(n);
       if delim = -1 then raise new School_FactorizationError
-          ($'Ошибка факторизации PollardRho(n}')
+          ($'Ошибка факторизации PollardRho({n})')
     end;
     if delim = n then
     begin
@@ -1524,6 +1565,9 @@ function Digits(Self: Biginteger; base: integer := 10): List<integer>;
 /// Функция выполняет действие, обратное функции Digits
 function DigitsToInt64(ext: List<integer>; base: integer): int64;
 begin
+  if not ext.All(d -> d < base) then
+    raise new School_InvalidBase
+        ($'DigitsToInt64: Недопустимое основание {base}');
   Result := 0;
   var p := int64(1);
   for var i := ext.Count -1 downto 0 do
@@ -1541,6 +1585,9 @@ function DigitsToInt64(Self: List<integer>; base: integer := 10): int64;
 /// Функция выполняет действие, обратное функции Digits,
 function DigitsToBigInteger(ext: List<integer>; base: integer): BigInteger;
 begin
+  if not ext.All(d -> d < base) then
+    raise new School_InvalidBase
+        ($'DigitsToBigInteger: Недопустимое основание {base}');
   Result := BigInteger.Zero;
   var p := BigInteger.One;
   for var i := ext.Count -1 downto 0 do
@@ -1683,37 +1730,6 @@ function SinDegrees(x: real): real := Sin(DegToRad(x));
 function CosDegrees(x: real): real := Cos(DegToRad(x));
 
 function TanDegrees(x: real): real := Tan(DegToRad(x));
-
-{$endregion}
-
-{$region Random}
-
-/// Возвращает вещественный массив, заполненный случайными значениями
-/// на интервале [a; b) с t знаками в дробной части
-function ArrRandomReal(n: integer; a, b: real; t: integer): array of real;
-begin
-  Result := new real[n];
-  for var i := 0 to Result.Length - 1 do
-    Result[i] := Round(Random * (b - a) + a, t);
-end;
-
-/// Возвращает вещественную последовательность, заполненную случайными значениями
-/// на интервале [a; b) с t знаками в дробной части
-function SeqRandomReal(n: integer; a, b: real; t: integer): sequence of real;
-begin
-  loop n do
-    yield Round(Random * (b - a) + a, t)
-end;
-
-/// Возвращает вещественную матрицу, заполненную случайными значениями
-/// на интервале [a; b) с t знаками в дробной части
-function MatrRandomReal(m: integer; n: integer; a, b: real; t: integer): array [,] of real;
-begin
-  Result := new real[m, n];
-  for var i := 0 to Result.RowCount - 1 do
-    for var j := 0 to Result.ColCount - 1 do
-      Result[i, j] := Round(Random * (b - a) + a, t);
-end;
 
 {$endregion}
 
@@ -1925,6 +1941,11 @@ end;
 /// Если j больше длины строки target, символ s[i] удаляется.
 function Translate(Self, source, target: string): string;
   extensionmethod := Translate(Self, source, target);
+  
+/// Преобразует строку в массив int64
+function ToInts64(Self: string): array of int64; extensionmethod :=
+        Self.ToWords(' '#9#10#13).ConvertAll(s -> StrToInt64(s));
+// на базе ToReals
 
 {$endregion}
 

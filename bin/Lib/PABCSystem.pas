@@ -5097,7 +5097,8 @@ begin
   var gen_args := t.GetGenericArguments;
   
   //TODO t.IsClass, чтобы ValueTuple пока что не ловило
-  if t.GetInterfaces.Contains(typeof(System.Runtime.CompilerServices.ITuple)) and t.IsClass then
+  //if t.GetInterfaces.Contains(typeof(System.Runtime.CompilerServices.ITuple)) and t.IsClass then
+  if t.IsGenericType and t.IsClass and t.FullName.StartsWith('System.Tuple`') then  
   begin
     res.Write('(');
     var any_gen_arg := false;
