@@ -570,7 +570,7 @@ type
     static function operator>(first, second: NewSet<T>) := first.hs.IsProperSupersetOf(second.hs);
     static function operator>=(first, second: NewSet<T>) := first.hs.IsSupersetOf(second.hs);
 
-    static function operator implicit(ns: NewSet<T>): HashSet<T> := ns.ToHashSet;
+    static function operator implicit(ns: NewSet<T>): HashSet<T>;
     static function operator implicit(ns: HashSet<T>): NewSet<T>;
     begin
       Result.hs.UnionWith(ns);
@@ -3263,8 +3263,6 @@ function DQNToNullable<T>(v: T): Nullable<T>; where T: record;
 
 implementation
 
-function NewSet<T>.ToString: string := $'{ObjectToString(hs)}';
-
 var
   rnd: System.Random; // глобальный генератор случайных чисел
   nfi: NumberFormatInfo;
@@ -5047,7 +5045,7 @@ begin
     exit;
   end;
   
-  if t.GetInterfaces.Append(t).Contains(typeof(System.Collections.IEnumerable)) then
+  {if t.GetInterfaces.Append(t).Contains(typeof(System.Collections.IEnumerable)) then
   begin
     var typed := t.GetInterfaces.Append(t).FirstOrDefault(intr->intr.IsGenericType and (intr.GetGenericTypeDefinition=typeof(IEnumerable<>)));
     if (t=typed) or (typed<>nil) and (
@@ -5061,6 +5059,38 @@ begin
       res.Write('sequence of ');
       TypeToTypeNameHelper(typed.GetGenericArguments.Single, res);
       exit;
+    end;
+  end;}
+  
+  if t.GetInterfaces.Contains(typeof(System.Collections.IEnumerable)) then
+  begin
+    // Проверяем сам тип t на IEnumerable<>
+    if t.IsGenericType and (t.GetGenericTypeDefinition = typeof(IEnumerable<>)) then
+    begin
+      // t сам является IEnumerable<>, проверяем условия для yield
+      if t.Name.StartsWith('clyield#') or t.IsNestedPrivate then
+      begin
+        res.Write('sequence of ');
+        TypeToTypeNameHelper(t.GetGenericArguments[0], res);
+        exit;
+      end;
+    end;
+    
+    // Проверяем интерфейсы t на IEnumerable<>
+    var interfaces := t.GetInterfaces;
+    for var i := 0 to interfaces.Length - 1 do
+    begin
+      var intr := interfaces[i];
+      if intr.IsGenericType and (intr.GetGenericTypeDefinition = typeof(IEnumerable<>)) then
+      begin
+        // Проверяем условия для yield
+        if t.Name.StartsWith('clyield#') or t.IsNestedPrivate then
+        begin
+          res.Write('sequence of ');
+          TypeToTypeNameHelper(intr.GetGenericArguments[0], res);
+          exit;
+        end;
+      end;
     end;
   end;
   
@@ -17056,6 +17086,11 @@ function operator implicit<T>(a: array of T): HashSet<T>; extensionmethod
 
 function operator implicit(a: array of integer): HashSet<integer>; extensionmethod
   := new HashSet<integer>(a);
+  
+function NewSet<T>.ToString: string := $'{ObjectToString(hs)}';
+
+static function NewSet<T>.operator implicit(ns: NewSet<T>): HashSet<T> := ns.ToHashSet;
+
 
 // -----------------------------------------------------------------------------
 //                Внутренние вспомогательные функции 
