@@ -632,11 +632,11 @@ type
 
     static function operator implicit<T>(Self: EmptyCollection): array of T; 
     begin
-      Result := System.Array.Empty&<T>;
+      Result := new T[0];
     end;
     static function operator implicit<T>(Self: EmptyCollection): sequence of T; 
     begin
-      Result := System.Array.Empty&<T>;
+      Result := new T[0];
     end;
     static function operator implicit<T>(Self: EmptyCollection): HashSet<T> := new HashSet<T>;
     static function operator implicit<T>(Self: EmptyCollection): SortedSet<T> := new SortedSet<T>;
