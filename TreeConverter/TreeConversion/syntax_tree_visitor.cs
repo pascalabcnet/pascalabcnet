@@ -16515,6 +16515,78 @@ namespace PascalABCCompiler.TreeConverter
             return convertion_data_and_alghoritms.convert_type(ind_expr, SystemLibrary.SystemLibrary.integer_type);
         }
 
+#if PABCNET_MODERN
+        private bool TryProcessOverloadedCompiledIndexer(expression_node expr,
+            SyntaxTree.expression_list parameters, motivation mot, location loc)
+        {
+            compiled_type_node compiledType = expr.type as compiled_type_node;
+            if (compiledType == null)
+                return false;
+
+            System.Reflection.MemberInfo[] defaultMembers = compiledType.compiled_type.GetDefaultMembers();
+            List<compiled_property_node> properties = new List<compiled_property_node>();
+            List<SymbolInfo> getters = new List<SymbolInfo>();
+
+            foreach (System.Reflection.MemberInfo member in defaultMembers)
+            {
+                System.Reflection.PropertyInfo propertyInfo = member as System.Reflection.PropertyInfo;
+                if (propertyInfo == null)
+                    continue;
+
+                System.Reflection.MethodInfo getter = propertyInfo.GetGetMethod();
+                if (getter == null || !getter.IsPublic)
+                    continue;
+
+                compiled_property_node property =
+                    PascalABCCompiler.NetHelper.NetHelper.GetPropertyNode(propertyInfo);
+                properties.Add(property);
+                getters.Add(new SymbolInfo(property.get_function));
+            }
+
+            if (properties.Count <= 1)
+                return false;
+
+            expressions_list actualParameters = new expressions_list();
+            foreach (SyntaxTree.expression parameter in parameters.expressions)
+                actualParameters.AddElement(convert_strong(parameter));
+
+            function_node selectedGetter = convertion_data_and_alghoritms.select_function(
+                actualParameters, getters, loc, parameters.expressions);
+
+            compiled_property_node selectedProperty = null;
+            for (int i = 0; i < getters.Count; i++)
+                if (getters[i].sym_info == selectedGetter)
+                {
+                    selectedProperty = properties[i];
+                    break;
+                }
+
+            if (selectedProperty == null)
+                return false;
+
+            non_static_property_reference propertyReference =
+                new non_static_property_reference(selectedProperty, expr, loc);
+            for (int i = 0; i < actualParameters.Count; i++)
+                propertyReference.fact_parametres.AddElement(
+                    convertion_data_and_alghoritms.convert_type(
+                        actualParameters[i], selectedProperty.parameters[i].type));
+
+            if (mot == motivation.address_receiving)
+            {
+                return_addressed_value(propertyReference);
+                return true;
+            }
+
+            base_function_call getterCall = create_not_static_method_call(
+                selectedProperty.get_function, expr, loc, false);
+            getterCall.parameters.AddRange(propertyReference.fact_parametres);
+            if (mot == motivation.semantic_node_reciving)
+                return_semantic_value(getterCall);
+            else
+                return_value(getterCall);
+            return true;
+        }
+#endif
         private void indexer_as_expression_index(expression_node expr, SyntaxTree.expression_list parameters,
             motivation mot, location loc)
         {
@@ -16714,6 +16786,13 @@ namespace PascalABCCompiler.TreeConverter
                                 }
                             }
             }*/
+#if PABCNET_MODERN
+            // NET10-TESTFIX [JsonObject string/int Item]: CLR permits several default
+            // properties with different index parameter types. Select the matching getter
+            // as an ordinary overload instead of using the first default member returned.
+            if (TryProcessOverloadedCompiledIndexer(expr, parameters, mot, loc))
+                return;
+#endif
             if (expr.type.default_property_node == null && expr.type is generic_instance_type_node && (expr.type as generic_instance_type_node).original_generic.default_property_node != null)
             {
                 generic_convertions.instance_default_property(expr.type as generic_instance_type_node);
