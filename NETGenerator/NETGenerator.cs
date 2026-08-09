@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
@@ -1424,9 +1424,15 @@ namespace PascalABCCompiler.NETGenerator
 
         public void EmitAssemblyRedirects(AssemblyResolveScope resolveScope, string targetAssemblyPath)
         {
+#if PABCNET_MODERN
+            // CoreCLR does not use .NET Framework assemblyBinding redirects;
+            // runtime selection is described by runtimeconfig.json.
+            return;
+#else
             if (IsDotnet5() || IsDotnetNative()) return;
             var appConfigPath = targetAssemblyPath + ".config";
             AppConfigUtil.UpdateAppConfig(resolveScope.CalculateBindingRedirects(), appConfigPath);
+#endif
         }
 
         private void AddSpecialInitDebugCode()
@@ -7847,6 +7853,16 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 is_dot_expr = tmp_dot;
             }
+            #if PABCNET_MODERN
+            else if (mi.ReturnType.IsByRef && is_addr == false)
+            {
+                // NET10-TESTFIX [FrozenDictionary indexer]: compiled_type_node deliberately
+                // represents a CLR ref/ref readonly return as its element type. In value
+                // context the managed reference returned by the compiled method must therefore
+                // be dereferenced explicitly. Keep it intact for address and dot contexts.
+                il.Emit(OpCodes.Ldobj, helper.GetTypeReference(value.static_method.return_value_type).tp);
+            }
+            #endif
             if (mi.DeclaringType == TypeFactory.ArrayType && mi.Name == "Resize")
             {
                 if (real_parameters.Length == 2)
@@ -7953,6 +7969,10 @@ namespace PascalABCCompiler.NETGenerator
             else
             {
                 is_dot_expr = false;
+                #if PABCNET_MODERN
+                if (mi.ReturnType.IsByRef && is_addr == false)
+                    il.Emit(OpCodes.Ldobj, helper.GetTypeReference(value.compiled_method.return_value_type).tp);
+                #endif
             }
             if (mi.ReturnType == TypeFactory.VoidType)
                 il.Emit(OpCodes.Nop);
