@@ -1591,6 +1591,24 @@ namespace PascalABCCompiler.TreeConverter
                 return method_compare.not_comparable_methods;
             }
 
+#if PABCNET_MODERN
+            // NET10-TESTFIX [Half.Parse(string)]: modern BCL APIs can expose both an
+            // exact-arity overload and another overload whose remaining parameters are
+            // optional. If argument conversions are otherwise equal, prefer the candidate
+            // that consumes fewer default values.
+            int leftDefaultsUsed = left_func.parameters.Count - left.Count;
+            int rightDefaultsUsed = right_func.parameters.Count - right.Count;
+            if (leftDefaultsUsed >= 0 && rightDefaultsUsed >= 0 &&
+                leftDefaultsUsed <= left_func.num_of_default_parameters &&
+                rightDefaultsUsed <= right_func.num_of_default_parameters)
+            {
+                if (leftDefaultsUsed < rightDefaultsUsed)
+                    return method_compare.greater_method;
+                if (leftDefaultsUsed > rightDefaultsUsed)
+                    return method_compare.less_method;
+            }
+#endif
+
             if ((left.snl != null) && (right.snl == null))
             {
                 return method_compare.less_method;
