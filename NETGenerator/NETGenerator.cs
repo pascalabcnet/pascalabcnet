@@ -7970,7 +7970,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 is_dot_expr = false;
                 #if PABCNET_MODERN
-                if (mi.ReturnType.IsByRef && is_addr == false)
+                if (mi.ReturnType.IsByRef && is_addr == false && !(value.type is IRefTypeNode))
                     il.Emit(OpCodes.Ldobj, helper.GetTypeReference(value.compiled_method.return_value_type).tp);
                 #endif
             }

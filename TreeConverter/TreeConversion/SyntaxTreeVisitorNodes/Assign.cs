@@ -328,6 +328,60 @@ namespace PascalABCCompiler.TreeConverter
         /// Обрабатывает случай, когда левая часть присваивания свойство.
         /// </summary>
         /// <returns>True - обработка прошла, иначе False.</returns>
+#if PABCNET_MODERN
+        private bool TryProcessAssignToCompiledRefReturnProperty(assign assignNode,
+            addressed_expression propertyReference, property_node property, expression_node from, location loc)
+        {
+            compiled_property_node compiledProperty = property as compiled_property_node;
+            if (compiledProperty == null || property.set_function != null)
+                return false;
+
+            System.Reflection.MethodInfo getter = compiledProperty.prop_info.GetGetMethod(true);
+            if (getter == null || !getter.ReturnType.IsByRef)
+                return false;
+
+            // A ref readonly return is represented by IsReadOnlyAttribute and, in the
+            // current BCL, also by an InAttribute required modifier. It must not become
+            // an assignable Pascal expression.
+            foreach (object attribute in getter.ReturnParameter.GetCustomAttributes(false))
+                if (attribute.GetType().FullName == "System.Runtime.CompilerServices.IsReadOnlyAttribute")
+                    return false;
+            foreach (System.Type modifier in getter.ReturnParameter.GetRequiredCustomModifiers())
+                if (modifier.FullName == "System.Runtime.InteropServices.InAttribute")
+                    return false;
+
+            base_function_call getterCall;
+            if (propertyReference is non_static_property_reference nonStaticReference)
+            {
+                check_property_params(nonStaticReference, loc);
+                getterCall = create_not_static_method_call(property.get_function,
+                    nonStaticReference.expression, loc, false);
+                getterCall.parameters.AddRange(nonStaticReference.fact_parametres);
+            }
+            else
+            {
+                static_property_reference staticReference = (static_property_reference)propertyReference;
+                check_property_params(staticReference, loc);
+                getterCall = create_static_method_call(property.get_function, loc,
+                    property.comprehensive_type, false);
+                getterCall.parameters.AddRange(staticReference.fact_parametres);
+            }
+
+            // compiled_type_node intentionally erases CLR ByRef to T. Restore it only
+            // for this address context and reuse the normal dereference assignment path.
+            getterCall.ret_type = new ref_type_node(property.property_type);
+            addressed_expression target = new dereference_node(getterCall, loc);
+
+            if (from.type is delegated_methods && !property.property_type.IsDelegate)
+                from = convert_if_typed_expression_to_function_call(from, true);
+            from = convertion_data_and_alghoritms.convert_type(from, property.property_type);
+
+            statement_node assignment = find_operator(assignNode.operator_type, target, from, loc);
+            return_value(assignment);
+            return true;
+        }
+#endif
+
         private bool ProcessAssignToPropertyIfPossible(assign _assign, addressed_expression to, location loc,
             expression_node from)
         {
@@ -347,6 +401,12 @@ namespace PascalABCCompiler.TreeConverter
 
                 if (_assign.operator_type == Operators.Assignment || oper_ass_in_prop)
                 {
+#if PABCNET_MODERN
+                    // NET10-TESTFIX [Span<T>.Item]: a writable CLR ref-return property
+                    // is assigned through the address returned by its getter, not a setter.
+                    if (TryProcessAssignToCompiledRefReturnProperty(_assign, to, pn, from, loc))
+                        return true;
+#endif
                     if (oper_ass_in_prop)
                     {
                         if (pn.get_function == null)
