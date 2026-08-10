@@ -4,6 +4,7 @@
     <PabcDualTargetProject Condition="
       '$(MSBuildProjectName)' == 'Compiler' Or
       '$(MSBuildProjectName)' == 'CompilerTools' Or
+      '$(MSBuildProjectName)' == 'CodeCompletion' Or
       '$(MSBuildProjectName)' == 'NETGenerator' Or
       '$(MSBuildProjectName)' == 'PABCNETC' Or
       '$(MSBuildProjectName)' == 'TreeConverter' Or

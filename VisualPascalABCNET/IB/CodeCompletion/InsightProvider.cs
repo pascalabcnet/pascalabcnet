@@ -62,20 +62,27 @@ namespace VisualPascalABC
                 int line = textArea.Caret.Line;
                 int col = textArea.Caret.Column;
 
-                string expr = FindExpression(off, Text, line, col);
-                List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
-                PascalABCCompiler.SyntaxTree.expression e = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(fileName)?.Parser.GetExpression("test.pas", expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
-                if (e == null || Errors.Count > 0) return;
+                var language = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(fileName);
                 CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
-                string fname = fileName;
-                if (dconv != null)
-                {
-                    //if (pressed_key == '(' || pressed_key == ',')
-                    if (CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.IsOpenBracketForMethodCall(pressed_key) || CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.IsMethodCallParameterSeparator(pressed_key))
-                        methods = dconv.GetNameOfMethod(e, expr, line, col, num_param, ref defaultIndex, cur_param_num, out param_count);
-                    else if (CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.IsOpenBracketForIndex(pressed_key))
-                        methods = dconv.GetIndex(e, line, col);
-                }
+                var result = CodeCompletion.SignatureHelpService.GetSignatureHelp(
+                    language,
+                    dconv,
+                    fileName,
+                    Text,
+                    off,
+                    line,
+                    col,
+                    pressed_key,
+                    num_param,
+                    cur_param_num);
+
+                if (result == null)
+                    return;
+
+                methods = result.Signatures;
+                defaultIndex = result.DefaultIndex;
+                num_param = result.CurrentParameter;
+                param_count = result.ParameterCount;
             }
             catch (Exception e)
             {
@@ -85,63 +92,8 @@ namespace VisualPascalABC
 
         public bool CaretOffsetChanged()
         {
-            bool closeDataProvider = textArea.Caret.Offset <= initialOffset;
-            int brackets = 0;
-            if (!closeDataProvider)
-            {
-                bool insideChar = false;
-                bool insideString = false;
-                for (int offset = initialOffset; offset < Math.Min(textArea.Caret.Offset, document.TextLength); ++offset)
-                {
-                    char ch = document.GetCharAt(offset);
-                    switch (ch)
-                    {
-                        case '\'':
-                            insideChar = !insideChar;
-                            break;
-                        case '[':
-                            if (!(insideChar || insideString))
-                            {
-                                ++brackets;
-                            }
-                            break;
-                        case ']':
-                            if (!(insideChar || insideString))
-                            {
-                                --brackets;
-                            }
-                            if (brackets <= 0)
-                            {
-                                return true;
-                            }
-                            break;
-                        case '(':
-                            if (!(insideChar || insideString))
-                            {
-                                ++brackets;
-                            }
-                            break;
-                        case ')':
-                            if (!(insideChar || insideString))
-                            {
-                                --brackets;
-                            }
-                            if (brackets <= 0)
-                            {
-                                return true;
-                            }
-                            break;
-                        case ';':
-                            if (!(insideChar || insideString))
-                            {
-                                return true;
-                            }
-                            break;
-                    }
-                }
-            }
-
-            return closeDataProvider;
+            return CodeCompletion.SignatureHelpService.ShouldClose(
+                document.TextContent, initialOffset, textArea.Caret.Offset);
         }
 
         public string GetInsightData(int number)

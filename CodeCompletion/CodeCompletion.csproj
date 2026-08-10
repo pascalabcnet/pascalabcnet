@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net40</TargetFramework>
+    <TargetFrameworks Condition="'$(PABCNET_LEGACY_ONLY)' != 'true'">net40;net10.0</TargetFrameworks>
+    <TargetFramework Condition="'$(PABCNET_LEGACY_ONLY)' == 'true'">net40</TargetFramework>
     
-    <OutputPath>..\bin\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

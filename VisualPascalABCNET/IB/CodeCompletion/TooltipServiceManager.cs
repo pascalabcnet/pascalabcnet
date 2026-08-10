@@ -26,59 +26,17 @@ namespace VisualPascalABC
             if (logicPos.X > lineSegment.Length - 1)
                 return null;
 
-            //string expr = FindFullExpression(doc.TextContent, seg.Offset + logicPos.X,e.LogicalPosition.Line,e.LogicalPosition.Column);
-
             var currentLanguage = CodeCompletion.CodeCompletionController.CurrentLanguage;
-
-            string expr = currentLanguage.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(
-                lineSegment.Offset + logicPos.X, doc.TextContent, e.LogicalPosition.Line, e.LogicalPosition.Column, out var keyw, out var exprWithoutBrackets);
-            
-            // пока непонятно, когда такое может быть  EVA
-            if (expr == null)
-                expr = exprWithoutBrackets;
-
-            if (expr == null)
-                return null;
-
-            List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
-            List<PascalABCCompiler.Errors.CompilerWarning> Warnings = new List<PascalABCCompiler.Errors.CompilerWarning>();
-
-            PascalABCCompiler.SyntaxTree.expression expressionTree = currentLanguage.Parser.GetExpression("test" + Path.GetExtension(fileName), 
-                expr, Errors, Warnings);
-
-            // Пока добавили проверку, что анализируем Паскаль  EVA
-            if (Errors.Count > 0 && currentLanguage == Languages.Facade.LanguageProvider.Instance.MainLanguage)
-            {
-                string s = expr.TrimStart();
-                if (s.Length > 0 && s[0] == '^')
-                {
-                    Errors.Clear();
-                    exprWithoutBrackets = exprWithoutBrackets.TrimStart().Substring(1);
-                    expressionTree = currentLanguage.Parser.GetExpression("test" + Path.GetExtension(fileName), s.Substring(1), Errors, Warnings);
-                }
-            }
-
-            List<PascalABCCompiler.Errors.Error> Errors2 = new List<PascalABCCompiler.Errors.Error>();
-            
-            // проверка для выражения без скобок
-            PascalABCCompiler.SyntaxTree.expression expressionTree2 = currentLanguage.Parser.GetExpression("test" + Path.GetExtension(fileName), exprWithoutBrackets, Errors2, Warnings);
-
-            // если не получается, то сразу возврат
-            if (expressionTree2 == null || Errors2.Count > 0)
-                return null;
-
-            bool header = false;
-            if (expressionTree == null || Errors.Count > 0)
-            {
-                header = true;
-                expressionTree = expressionTree2;
-            }
-            
             CodeCompletion.DomConverter domConverter = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
-            
-            if (domConverter == null) return null;
-            
-            return domConverter.GetDescription(expressionTree, fileName, exprWithoutBrackets, e.LogicalPosition.Line, e.LogicalPosition.Column, keyw, header);
+
+            return CodeCompletion.HoverService.GetDescription(
+                currentLanguage,
+                domConverter,
+                fileName,
+                doc.TextContent,
+                lineSegment.Offset + logicPos.X,
+                e.LogicalPosition.Line,
+                e.LogicalPosition.Column);
         }
 
         static int _mouse_hint_x = 0, _mouse_hint_y = 0;
