@@ -40,6 +40,11 @@ namespace CodeCompletion
         public CodeCompletionController controller;
         public bool is_compiled = false;
 
+        public Exception LastConversionError
+        {
+            get { return visitor.LastConversionError; }
+        }
+
         // TODO: Требуется адаптировать к многоязычности  EVA
         public static SymInfo[] standard_units;
         private HashSet<Assembly> cur_used_assemblies;
@@ -123,7 +128,7 @@ namespace CodeCompletion
             if (CodeCompletionController.comp != null)
                 CodeCompletionController.comp.CompilerOptions.SourceFileName = cu.file_name;
             visitor.Convert(cu);
-            is_compiled = true;
+            is_compiled = visitor.ConversionSucceeded && visitor.entry_scope != null;
             cur_used_assemblies = visitor.cur_used_assemblies;
             return;
         }

@@ -84,6 +84,7 @@ namespace CodeCompletion
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
             compilation_unit cu = null;
 
+            SetLanguage(FileName);
             ILanguage currentLanguage = LanguageProvider.SelectLanguageByExtension(FileName);
 
             try

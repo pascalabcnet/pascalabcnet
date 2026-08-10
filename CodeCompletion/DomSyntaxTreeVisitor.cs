@@ -38,10 +38,13 @@ namespace CodeCompletion
         internal bool parse_only_interface = false;
         private template_type_reference converted_template_type = null;
         private List<var_def_statement> pending_is_pattern_vars = new List<var_def_statement>();
-        private static Compiler compiler;
+		private static Compiler compiler;
         public static bool use_semantic_for_intellisense;
         private Dictionary<method_call, SymScope> method_call_cache = new Dictionary<method_call, SymScope>();
         public HashSet<Assembly> cur_used_assemblies;
+
+        public bool ConversionSucceeded { get; private set; }
+        public Exception LastConversionError { get; private set; }
 
         public DomSyntaxTreeVisitor(DomConverter converter)
 		{
@@ -57,13 +60,17 @@ namespace CodeCompletion
 		public void Convert(compilation_unit cu)
         {
             method_call_cache.Clear();
+            ConversionSucceeded = false;
+            LastConversionError = null;
 
             try
             {
 				cu.visit(this);
+                ConversionSucceeded = true;
             }
             catch(Exception e)
             {
+                LastConversionError = e;
 #if DEBUG
                 File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
 #endif

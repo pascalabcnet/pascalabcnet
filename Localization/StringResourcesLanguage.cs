@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 namespace PascalABCCompiler
@@ -135,7 +136,23 @@ namespace PascalABCCompiler
         private static string currentTwoLetterISO = null;
         public static string CurrentTwoLetterISO
         {
-            get{return currentTwoLetterISO;}
+            get
+            {
+                if (!string.IsNullOrWhiteSpace(currentTwoLetterISO))
+                    return currentTwoLetterISO;
+
+                try
+                {
+                    string cultureIso = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+                    if (!string.IsNullOrWhiteSpace(cultureIso))
+                        return cultureIso.ToLowerInvariant();
+                }
+                catch (CultureNotFoundException)
+                {
+                }
+
+                return "en";
+            }
             set
             {
                 currentTwoLetterISO = value;

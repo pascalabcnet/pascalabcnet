@@ -36,6 +36,11 @@ namespace CodeCompletion
     /// </summary>
     public static class SignatureHelpService
     {
+        /// <summary>
+        /// Calculates signature help using the legacy editor contract:
+        /// <paramref name="caretOffset"/> points to the trigger character, while line and
+        /// column are zero-based caret coordinates after that character.
+        /// </summary>
         public static SignatureHelpResult GetSignatureHelp(
             ILanguage language,
             DomConverter domConverter,
@@ -91,6 +96,44 @@ namespace CodeCompletion
 
             return new SignatureHelpResult(
                 signatures, defaultIndex, currentParameter, parameterCount);
+        }
+
+        /// <summary>
+        /// Calculates signature help using a zero-based caret offset after the trigger.
+        /// This is the preferred overload for headless and LSP-style clients.
+        /// </summary>
+        public static SignatureHelpResult GetSignatureHelpAtCaret(
+            ILanguage language,
+            DomConverter domConverter,
+            string fileName,
+            string textBeforeCaret,
+            int caretOffset,
+            int line,
+            int column,
+            char triggerCharacter,
+            int currentParameter,
+            int currentParameterForSelection)
+        {
+            if (textBeforeCaret == null)
+                throw new ArgumentNullException(nameof(textBeforeCaret));
+            if (caretOffset <= 0 || caretOffset > textBeforeCaret.Length)
+                throw new ArgumentOutOfRangeException(nameof(caretOffset));
+            if (textBeforeCaret[caretOffset - 1] != triggerCharacter)
+                throw new ArgumentException(
+                    "The character immediately before the caret must match the trigger character.",
+                    nameof(triggerCharacter));
+
+            return GetSignatureHelp(
+                language,
+                domConverter,
+                fileName,
+                textBeforeCaret,
+                caretOffset - 1,
+                line,
+                column,
+                triggerCharacter,
+                currentParameter,
+                currentParameterForSelection);
         }
 
         public static bool ShouldClose(string text, int initialOffset, int caretOffset)

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Languages.Facade;
@@ -57,6 +58,12 @@ namespace CodeCompletion
     /// </summary>
     public static class CompletionExpressionService
     {
+        /// <summary>
+        /// Analyzes a completion request using legacy editor offsets.
+        /// For a dot request, <paramref name="offset"/> points to the dot itself;
+        /// for other requests it points to the caret.
+        /// Line and column are zero-based caret coordinates after the trigger.
+        /// </summary>
         public static CompletionExpressionInfo Analyze(
             int offset,
             string text,
@@ -103,6 +110,45 @@ namespace CodeCompletion
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Analyzes a completion request using a zero-based caret offset after the trigger.
+        /// This is the preferred overload for headless and LSP-style clients.
+        /// </summary>
+        public static CompletionExpressionInfo AnalyzeAtCaret(
+            int caretOffset,
+            string textBeforeCaret,
+            int line,
+            int column,
+            ILanguageIntellisenseSupport intellisenseSupport,
+            CompletionTriggerContext context,
+            PascalABCCompiler.Parsers.KeywordKind keyword)
+        {
+            if (textBeforeCaret == null)
+                throw new ArgumentNullException(nameof(textBeforeCaret));
+            if (caretOffset < 0 || caretOffset > textBeforeCaret.Length)
+                throw new ArgumentOutOfRangeException(nameof(caretOffset));
+
+            var legacyOffset = caretOffset;
+            if (context.DotPressed)
+            {
+                if (caretOffset == 0 || textBeforeCaret[caretOffset - 1] != '.')
+                    throw new ArgumentException(
+                        "The character immediately before the caret must be '.'.",
+                        nameof(caretOffset));
+
+                legacyOffset--;
+            }
+
+            return Analyze(
+                legacyOffset,
+                textBeforeCaret,
+                line,
+                column,
+                intellisenseSupport,
+                context,
+                keyword);
         }
 
         public static CompletionExpressionParseResult Parse(
