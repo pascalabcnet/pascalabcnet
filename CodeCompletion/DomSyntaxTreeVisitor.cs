@@ -2527,7 +2527,11 @@ namespace CodeCompletion
 
         public override void visit(unit_module _unit_module)
         {
+#if PABCNET_MODERN
+            string path = typeof(object).Assembly.Location;
+#else
             string path = get_assembly_path("mscorlib.dll", _unit_module.file_name);
+#endif
             Assembly _as = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path);
             AssemblyDocCache.Load(_as, path);
             PascalABCCompiler.NetHelper.NetHelper.init_namespaces(_as);
@@ -3180,7 +3184,11 @@ namespace CodeCompletion
         public override void visit(program_module _program_module)
         {
             //Assembly _as = System.Reflection.Assembly.LoadFrom(get_assembly_path("mscorlib.dll",_program_module.file_name));
+#if PABCNET_MODERN
+            string path = typeof(object).Assembly.Location;
+#else
             string path = get_assembly_path("mscorlib.dll", _program_module.file_name);
+#endif
             System.Reflection.Assembly _as = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path);
             List<string> namespaces = new List<string>();
             PascalABCCompiler.NetHelper.NetHelper.init_namespaces(_as);
