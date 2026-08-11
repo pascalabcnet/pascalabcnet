@@ -3831,12 +3831,17 @@ namespace CodeCompletion
 #if PABCNET_MODERN
         private IEnumerable<SymInfo> GetDotNetExtensionMethods()
         {
+            return GetDotNetExtensionMethodScopes().Select(scope => scope.si);
+        }
+
+        private IEnumerable<CompiledMethodScope> GetDotNetExtensionMethodScopes(string name = null)
+        {
             TypeScope actualElementType = elementType;
             while (actualElementType is TypeSynonim synonym)
                 actualElementType = synonym.actType;
 
             if (!(actualElementType is CompiledScope compiledElementType))
-                return Enumerable.Empty<SymInfo>();
+                return Enumerable.Empty<CompiledMethodScope>();
 
             Type arrayType = Rank == 1
                 ? compiledElementType.CompiledType.MakeArrayType()
@@ -3844,11 +3849,12 @@ namespace CodeCompletion
 
             return PascalABCCompiler.NetHelper.NetHelper.GetExtensionMethods(arrayType)
                 .OfType<MethodInfo>()
+                .Where(method => name == null ||
+                    string.Equals(method.Name, name, StringComparison.OrdinalIgnoreCase))
                 .Select(method => new CompiledMethodScope(
                     new SymInfo(null, SymbolKind.Method, null),
                     method,
-                    this).si)
-                .Where(symbol => symbol != null);
+                    this));
         }
 #endif
 
@@ -3865,6 +3871,9 @@ namespace CodeCompletion
             if (!is_dynamic_arr && !IsMultiDynArray)
                 return new List<SymScope>();
             List<SymScope> syms = base.FindOverloadNamesOnlyInType(name);
+#if PABCNET_MODERN
+            syms.AddRange(GetDotNetExtensionMethodScopes(name));
+#endif
             /*if (implemented_interfaces != null)
             {
                 foreach (TypeScope ts in implemented_interfaces)
