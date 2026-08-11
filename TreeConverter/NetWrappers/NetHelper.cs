@@ -1064,12 +1064,19 @@ namespace PascalABCCompiler.NetHelper
             if (type_extensions.TryGetValue(t, out meths) || t.IsGenericType && type_extensions.TryGetValue(t.GetGenericTypeDefinition(), out meths))
             {
                 //return meths.ToArray();
+#if PABCNET_MODERN
+                meths = new List<MethodInfo>(meths);
+#endif
             }
             else
             {
                 meths = new List<MethodInfo>();
             }
             //meths = new List<MethodInfo>();
+#if PABCNET_MODERN
+            if (t.IsArray && generic_array_type_extensions.TryGetValue(t.GetArrayRank(), out var arrayMethods))
+                meths.AddRange(arrayMethods);
+#endif
             Type[] tt = t.GetInterfaces();
             for (int i = 0; i < tt.Length; i++)
             {

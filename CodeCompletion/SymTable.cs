@@ -3815,6 +3815,9 @@ namespace CodeCompletion
             {
                 List<SymInfo> syms = new List<SymInfo>();
                 syms.AddRange(base.GetNamesAsInObject(ev));
+#if PABCNET_MODERN
+                syms.AddRange(GetDotNetExtensionMethods());
+#endif
                 if (!IsMultiDynArray && implemented_interfaces != null)
                 {
                     foreach (TypeScope ts in implemented_interfaces)
@@ -3824,6 +3827,30 @@ namespace CodeCompletion
             }
             return new SymInfo[0];
         }
+
+#if PABCNET_MODERN
+        private IEnumerable<SymInfo> GetDotNetExtensionMethods()
+        {
+            TypeScope actualElementType = elementType;
+            while (actualElementType is TypeSynonim synonym)
+                actualElementType = synonym.actType;
+
+            if (!(actualElementType is CompiledScope compiledElementType))
+                return Enumerable.Empty<SymInfo>();
+
+            Type arrayType = Rank == 1
+                ? compiledElementType.CompiledType.MakeArrayType()
+                : compiledElementType.CompiledType.MakeArrayType(Rank);
+
+            return PascalABCCompiler.NetHelper.NetHelper.GetExtensionMethods(arrayType)
+                .OfType<MethodInfo>()
+                .Select(method => new CompiledMethodScope(
+                    new SymInfo(null, SymbolKind.Method, null),
+                    method,
+                    this).si)
+                .Where(symbol => symbol != null);
+        }
+#endif
 
         public override List<TypeScope> GetAllImplementedInterfaces()
         {
