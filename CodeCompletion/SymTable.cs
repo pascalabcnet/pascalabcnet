@@ -1317,10 +1317,12 @@ namespace CodeCompletion
         public void AddReferencedAssembly(System.Reflection.Assembly assm)
         {
             if (ref_assms == null) ref_assms = new List<Assembly>();
+            else if (ref_assms.Contains(assm)) return;
             ref_assms.Add(assm);
-            List<Type> lst = PascalABCCompiler.NetHelper.NetHelper.entry_types[assm] as List<Type>;
+            List<Type> lst;
+            PascalABCCompiler.NetHelper.NetHelper.entry_types.TryGetValue(assm, out lst);
             Type entry_type = null;
-            if (lst != null)
+            if (lst != null && lst.Count > 0)
                 entry_type = lst[0];
             if (entry_type != null)
             {

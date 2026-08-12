@@ -2633,25 +2633,46 @@ namespace PascalABCCompiler
             }
 
 #if PABCNET_MODERN
-            if (coreLibraryDirective != null)
-            {
-                string runtimeDirectory = Path.GetDirectoryName(typeof(int).Assembly.Location);
-                foreach (string assemblyPath in Directory.GetFiles(runtimeDirectory, "System.*.dll"))
-                {
-                    string assemblyName = Path.GetFileName(assemblyPath);
-                    if (assemblyName.Equals("System.Private.CoreLib.dll", StringComparison.OrdinalIgnoreCase) ||
-                        assemblyName.Equals("System.Runtime.dll", StringComparison.OrdinalIgnoreCase) ||
-                        assemblyName.Equals("System.IO.Compression.Native.dll", StringComparison.OrdinalIgnoreCase))
-                        continue;
+            var existingReferences = new HashSet<string>(
+                referenceDirectives.Select(directive => Path.GetFileName(directive.directive)),
+                StringComparer.OrdinalIgnoreCase);
+            var implicitSystemReferences = new List<KeyValuePair<string, compiler_directive>>();
 
-                    var directive = new compiler_directive(
-                        "reference",
-                        "%GAC%\\" + assemblyName,
-                        coreLibraryDirective.location,
-                        coreLibraryDirective.source_file);
-                    directives.Add(directive);
-                    referenceDirectives.Add(directive);
+            compiler_directive standardReferenceSource =
+                coreLibraryDirective ?? referenceDirectives.FirstOrDefault();
+            foreach (string assemblyPath in NetHelper.NetCoreSystemReferences.AssemblyPaths)
+                implicitSystemReferences.Add(
+                    new KeyValuePair<string, compiler_directive>(assemblyPath, standardReferenceSource));
+
+            var legacyDefaultReferences = new HashSet<string>(
+                StringConstants.netSystemLibraries,
+                StringComparer.OrdinalIgnoreCase);
+            foreach (compiler_directive referenceDirective in referenceDirectives.ToArray())
+            {
+                string assemblyName = Path.GetFileName(referenceDirective.directive);
+                if (!legacyDefaultReferences.Contains(assemblyName)
+                    && NetHelper.NetCoreSystemReferences.IsRuntimeAssembly(assemblyName))
+                {
+                    foreach (string assemblyPath in NetHelper.NetCoreSystemReferences.GetFacadeAssemblyPaths(assemblyName))
+                        implicitSystemReferences.Add(
+                            new KeyValuePair<string, compiler_directive>(assemblyPath, referenceDirective));
                 }
+            }
+
+            foreach (var implicitReference in implicitSystemReferences)
+            {
+                string assemblyName = Path.GetFileName(implicitReference.Key);
+                if (!existingReferences.Add(assemblyName))
+                    continue;
+
+                var sourceDirective = implicitReference.Value;
+                var directive = new compiler_directive(
+                    "reference",
+                    "%GAC%\\" + assemblyName,
+                    sourceDirective != null ? sourceDirective.location : null,
+                    sourceDirective != null ? sourceDirective.source_file : ".");
+                directives.Add(directive);
+                referenceDirectives.Add(directive);
             }
 #endif
 

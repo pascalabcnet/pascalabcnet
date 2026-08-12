@@ -2568,6 +2568,10 @@ namespace CodeCompletion
                 unit_scope = cur_scope as InterfaceUnitScope;
                 //cur_scope.members.RemoveAll(x => x.loc != null && x.loc.doc.file_name == _unit_module.file_name);
             }
+#if PABCNET_MODERN
+            AddNetCoreSystemReferences(unit_scope, namespaces, _as,
+                PascalABCCompiler.NetHelper.NetCoreSystemReferences.AssemblyPaths);
+#endif
             this.cur_unit_file_name = _unit_module.file_name;
             //if (XmlDoc.LookupLocalizedXmlDocForUnitWithSources(_unit_module.file_name) != null)
             if (!add_doc_from_text)
@@ -2603,6 +2607,12 @@ namespace CodeCompletion
                             AssemblyDocCache.Load(assm, path);
                             namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(assm));
                             unit_scope.AddReferencedAssembly(assm);
+#if PABCNET_MODERN
+                            if (!StringConstants.netSystemLibraries.Contains(Path.GetFileName(path), StringComparer.OrdinalIgnoreCase)
+                                && PascalABCCompiler.NetHelper.NetCoreSystemReferences.IsRuntimeAssembly(path))
+                                AddNetCoreSystemReferences(unit_scope, namespaces, _as,
+                                    PascalABCCompiler.NetHelper.NetCoreSystemReferences.GetFacadeAssemblyPaths(Path.GetFileName(path)));
+#endif
                         }
                         catch (Exception)
                         {
@@ -3204,6 +3214,10 @@ namespace CodeCompletion
             //PascalABCCompiler.NetHelper.NetScope ns=new PascalABCCompiler.NetHelper.NetScope(unl,_as,tcst);
             InterfaceUnitScope unit_scope = null;
             cur_scope = unit_scope = new InterfaceUnitScope(new SymInfo(_program_module.program_name != null ? _program_module.program_name.prog_name.name : "", SymbolKind.Namespace, "program"), null);
+#if PABCNET_MODERN
+            AddNetCoreSystemReferences(unit_scope, namespaces, _as,
+                PascalABCCompiler.NetHelper.NetCoreSystemReferences.AssemblyPaths);
+#endif
             CodeCompletionController.comp_modules[_program_module.file_name] = this.converter;
             Stack<Position> regions_stack = new Stack<Position>();
             if (CodeCompletionController.comp != null && CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_program_module.file_name))
@@ -3239,6 +3253,12 @@ namespace CodeCompletion
                                 AssemblyDocCache.Load(assm, path);
                                 namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(assm));
                                 unit_scope.AddReferencedAssembly(assm);
+#if PABCNET_MODERN
+                                if (!StringConstants.netSystemLibraries.Contains(Path.GetFileName(path), StringComparer.OrdinalIgnoreCase)
+                                    && PascalABCCompiler.NetHelper.NetCoreSystemReferences.IsRuntimeAssembly(path))
+                                    AddNetCoreSystemReferences(unit_scope, namespaces, _as,
+                                        PascalABCCompiler.NetHelper.NetCoreSystemReferences.GetFacadeAssemblyPaths(Path.GetFileName(path)));
+#endif
                             }
                         }
                         catch (Exception e)
@@ -3410,6 +3430,27 @@ namespace CodeCompletion
                 _program_module.program_block.program_code.visit(this);
             }
         }
+
+#if PABCNET_MODERN
+        private static void AddNetCoreSystemReferences(
+            InterfaceUnitScope unitScope,
+            List<string> namespaces,
+            Assembly coreLibrary,
+            IEnumerable<string> assemblyPaths)
+        {
+            foreach (string path in assemblyPaths)
+            {
+                Assembly assembly = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path);
+                if (assembly == null || assembly == coreLibrary)
+                    continue;
+
+                PascalABCCompiler.NetHelper.NetHelper.init_namespaces(assembly);
+                AssemblyDocCache.Load(assembly, path);
+                namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(assembly));
+                unitScope.AddReferencedAssembly(assembly);
+            }
+        }
+#endif
 
         private void CompileImportedDependencies(statement_list statementList, SymScope cur_scope, string fileName, Hashtable ns_cache, Languages.Facade.ILanguage currentUnitLanguage)
         {
