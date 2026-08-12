@@ -457,7 +457,8 @@ namespace PascalABCCompiler.NetHelper
                 unit_types = new List<Type>();
             if (assembly == null)
             {
-
+                // Types from a newly loaded assembly can change namespace completion.
+                ns_types.Clear();
                 Type[] tarr = _assembly.GetTypes();
                 //Hashtable ns_ht = new Hashtable(CaseInsensitiveHashCodeProvider.Default,CaseInsensitiveComparer.Default);
                 var ns_ht = new HashSet<string>(StringComparer.CurrentCultureIgnoreCase);
@@ -2237,27 +2238,37 @@ namespace PascalABCCompiler.NetHelper
 		
 		public static Type[] FindTypesInNamespace(string name)
 		{
-			List<Type> lst = new List<Type>();
-			if ( ns_types.TryGetValue(name, out var typs) )
-				return typs;
-			foreach (string s in types.Keys)
-			{
-                types.TryGetValue(name, out var tempTI);
-				if (tempTI is TypeInfo ti)
-				if (string.Compare(ti.type.Namespace,name, true) == 0)
-				{
-					lst.Add(ti.type);
-				}
-			}
-			if (lst.Count == 0) 
-			{
-				AddTypeToNamespace(name,new Type[0]);
-				return null;
-			}
-			typs = lst.ToArray();
-			AddTypeToNamespace(name,typs);
-			return typs;
+			if (!ns_types.TryGetValue(name, out var typs))
+            {
+                var foundTypes = new HashSet<Type>();
+                foreach (object value in types.Values)
+                {
+                    if (value is TypeInfo typeInfo)
+                        AddTypeFromNamespace(foundTypes, typeInfo.type, name);
+                    else if (value is List<TypeInfo> typeInfos)
+                        foreach (TypeInfo item in typeInfos)
+                            AddTypeFromNamespace(foundTypes, item.type, name);
+                }
+
+                typs = new Type[foundTypes.Count];
+                foundTypes.CopyTo(typs);
+                AddTypeToNamespace(name, typs);
+            }
+
+            var visibleTypes = new List<Type>();
+            foreach (Type type in typs)
+                if (cur_used_assemblies == null || cur_used_assemblies.Contains(type.Assembly))
+                    visibleTypes.Add(type);
+
+			return visibleTypes.Count == 0 ? null : visibleTypes.ToArray();
 		}
+
+        private static void AddTypeFromNamespace(HashSet<Type> result, Type type, string namespaceName)
+        {
+            if (type != null && string.Equals(type.Namespace, namespaceName,
+                StringComparison.CurrentCultureIgnoreCase))
+                result.Add(type);
+        }
 		
 		public static string[] FindSubNamespaces(string name)
 		{
