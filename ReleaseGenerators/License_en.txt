@@ -1,17 +1,44 @@
-﻿Next, we describe the terms under which PascalABC.NET (version 3.11) is distributed.
-A copy of the GNU GPL is appended to this file.
+﻿This document defines the terms for distributing PascalABC.NET
+Version 3.12. The full text of the GNU Lesser General Public License
+Version 3 is reproduced at the end of this document.
 
-IMPORTANT PascalABC.NET LICENSE TERMS (or any derivative product)
+ADDITIONAL PERMISSIONS AND REQUIREMENTS
+FOR THE DISTRIBUTION OF PASCALABC.NET
+AND PRODUCTS DERIVED FROM IT
 
-Copyright (C) 2005-2026 by Ivan Bondarev, Stanislav Mikhalkovich
-This program is free software; you may redistribute and/or modify it under the terms of the GNU LGPL version 3 with the clarifications and exceptions described below. 
+Copyright (C) 2005-2026 PascalABC.NET Team
 
-PascalABC.NET can be linked with non-free modules and libraries. This condition is mainly concerned with possibility of adding foreign modules and libraries to PascalABC.NET, aimed at education. In particular, PascalABC.NET includes as a part PROGRAMMING TASKBOOK FOR PASCALABC.NET (in agreement with the author of this product), which is distributed under the terms of proprietary license (see \bin\PT4)
+List of developers and project contributors:
+https://pascalabc.net/developers
 
-In addition, in About window of PascalABC.NET IDE we demand to display names of the authors of PascalABC.NET from the beginning of this document (right after the title “IMPORTANT PascalABC.NET LICENSE TERMS (or any derivative product)”).
-If the PascalABC.NET compiler is integrated into another IDE, the window with names of the authors of PascalABC.NET must be present in an accessible and obvious place.
-              
-Our interpretation applies only to PascalABC.NET - we don't speak for other people's LGPL works.
+PascalABC.NET is free software. You may redistribute and/or modify it
+under the terms of the GNU Lesser General Public License Version 3,
+subject to the additional permissions and requirements set out below.
+
+In addition to the permissions granted by GNU LGPL Version 3,
+PascalABC.NET may include non-free modules and libraries, including
+third-party modules intended for educational purposes.
+
+In particular, the standard PascalABC.NET distribution includes the
+Programming Taskbook electronic problem book, included with the
+permission of its author and distributed under a separate proprietary
+license (see the \bin\PT4 directory).
+
+The About dialog of the PascalABC.NET integrated development environment
+must display the following attribution to the development team:
+
+PascalABC.NET Team
+https://pascalabc.net/developers
+
+If the PascalABC.NET compiler is integrated into another development
+environment, the above information must be displayed in its About dialog
+or in another readily accessible and clearly visible section containing
+information about the software and its developers.
+
+The additional permissions and requirements set out above apply only
+to PascalABC.NET and products derived from it. They do not modify the
+terms governing the distribution of other software products licensed
+under GNU LGPL.
 
 ******************************************************************************
 
