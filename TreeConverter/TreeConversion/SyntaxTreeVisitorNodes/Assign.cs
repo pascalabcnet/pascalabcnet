@@ -329,6 +329,17 @@ namespace PascalABCCompiler.TreeConverter
         /// </summary>
         /// <returns>True - обработка прошла, иначе False.</returns>
 #if PABCNET_MODERN
+        private static bool IsReadOnlyCompiledRefReturn(System.Reflection.MethodInfo method)
+        {
+            foreach (object attribute in method.ReturnParameter.GetCustomAttributes(false))
+                if (attribute.GetType().FullName == "System.Runtime.CompilerServices.IsReadOnlyAttribute")
+                    return true;
+            foreach (System.Type modifier in method.ReturnParameter.GetRequiredCustomModifiers())
+                if (modifier.FullName == "System.Runtime.InteropServices.InAttribute")
+                    return true;
+            return false;
+        }
+
         private bool TryProcessAssignToCompiledRefReturnProperty(assign assignNode,
             addressed_expression propertyReference, property_node property, expression_node from, location loc)
         {
@@ -343,12 +354,8 @@ namespace PascalABCCompiler.TreeConverter
             // A ref readonly return is represented by IsReadOnlyAttribute and, in the
             // current BCL, also by an InAttribute required modifier. It must not become
             // an assignable Pascal expression.
-            foreach (object attribute in getter.ReturnParameter.GetCustomAttributes(false))
-                if (attribute.GetType().FullName == "System.Runtime.CompilerServices.IsReadOnlyAttribute")
-                    return false;
-            foreach (System.Type modifier in getter.ReturnParameter.GetRequiredCustomModifiers())
-                if (modifier.FullName == "System.Runtime.InteropServices.InAttribute")
-                    return false;
+            if (IsReadOnlyCompiledRefReturn(getter))
+                return false;
 
             base_function_call getterCall;
             if (propertyReference is non_static_property_reference nonStaticReference)

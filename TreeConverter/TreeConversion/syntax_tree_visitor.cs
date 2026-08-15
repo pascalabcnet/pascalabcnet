@@ -5569,6 +5569,23 @@ namespace PascalABCCompiler.TreeConverter
                         return_semantic_value(expr_node);
                         return;
                     }
+                case motivation.address_receiving:
+                    {
+#if PABCNET_MODERN
+                        var functionCall = expr_node as base_function_call;
+                        var compiledFunction = functionCall?.simple_function_node as compiled_function_node;
+                        var method = compiledFunction?.method_info;
+                        if (method != null && method.ReturnType.IsByRef &&
+                            !IsReadOnlyCompiledRefReturn(method))
+                        {
+                            functionCall.ret_type = new ref_type_node(expr_node.type);
+                            return_addressed_value(new dereference_node(functionCall, loc));
+                            return;
+                        }
+#endif
+                        AddError(loc, msg);
+                        return;
+                    }
                 default:
                     {
                         AddError(loc, msg);

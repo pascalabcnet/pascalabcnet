@@ -7854,7 +7854,7 @@ namespace PascalABCCompiler.NETGenerator
                 is_dot_expr = tmp_dot;
             }
             #if PABCNET_MODERN
-            else if (mi.ReturnType.IsByRef && is_addr == false)
+            else if (mi.ReturnType.IsByRef && is_addr == false && !(value.type is IRefTypeNode))
             {
                 // NET10-TESTFIX [FrozenDictionary indexer]: compiled_type_node deliberately
                 // represents a CLR ref/ref readonly return as its element type. In value
