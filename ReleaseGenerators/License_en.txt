@@ -1,5 +1,5 @@
 ﻿This document defines the terms for distributing PascalABC.NET
-Version 3.12. The full text of the GNU Lesser General Public License
+Version 4.0. The full text of the GNU Lesser General Public License
 Version 3 is reproduced at the end of this document.
 
 ADDITIONAL PERMISSIONS AND REQUIREMENTS

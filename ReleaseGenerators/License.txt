@@ -1,5 +1,5 @@
 ﻿Данный документ определяет условия распространения продукта PascalABC.NET
-версии 3.12. Полный текст лицензии GNU Lesser General Public License
+версии 4.0. Полный текст лицензии GNU Lesser General Public License
 Version 3 приведён в конце документа.
 
 
