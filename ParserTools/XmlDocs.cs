@@ -25,7 +25,9 @@ namespace CodeCompletionTools
             if (a == typeof(string).Assembly) 
                 dir = a.Location;
             else 
-                dir = typeof(string).Assembly.Location.Substring(0, typeof(string).Assembly.Location.LastIndexOf('\\')) + "\\" + System.IO.Path.GetFileName(a.Location);
+                dir = Path.Combine(
+                    Path.GetDirectoryName(typeof(string).Assembly.Location),
+                    Path.GetFileName(a.Location));
             bool ru = false;
             string xml_loc = XmlDoc.LookupLocalizedXmlDoc(dir, out ru);
             
