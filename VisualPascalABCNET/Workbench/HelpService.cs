@@ -58,7 +58,7 @@ namespace VisualPascalABC
 
         public void OpenMSDN()
         {
-            AddTabWithUrl(MainDockPanel, PascalABCCompiler.StringResources.Get("VP_MF_M_DOTNET_HELP"), "http://msdn.microsoft.com/ru-ru/library/w0x726c2%28v=vs.100%29.aspx");
+            AddTabWithUrl(PascalABCCompiler.StringResources.Get("VP_MF_M_DOTNET_HELP"), "http://msdn.microsoft.com/ru-ru/library/w0x726c2%28v=vs.100%29.aspx");
         }
 
         private string getMSDNUrlByName(string s, Position pos)
@@ -165,7 +165,7 @@ namespace VisualPascalABC
                 {
                     if (pos.full_metadata_title != null)
                     {
-                        //AddTabWithUrl(MainDockPanel, pos.full_metadata_title, getMSDNUrlByName(tw.Word, pos)); //keep this line for future
+                        //AddTabWithUrl(pos.full_metadata_title, getMSDNUrlByName(tw.Word, pos)); //keep this line for future
                         System.Diagnostics.Process.Start(getMSDNUrlByName(tw.Word, pos));
                     }
                 }
@@ -188,7 +188,7 @@ namespace VisualPascalABC
                     //Help.ShowHelp(this, DotNetHelpFileName, HelpNavigator.KeywordIndex);
                     //Help.ShowHelpIndex(this, DotNetHelpFileName);
                     //Help.ShowHelp(this, DotNetHelpFileName,HelpNavigator.KeywordIndex, tw.Word);
-                    AddTabWithUrl(MainDockPanel, tw.Word, getMSDNUrlByName(tw.Word));
+                    AddTabWithUrl(tw.Word, getMSDNUrlByName(tw.Word));
                     Help.ShowHelp(this, DotNetHelpFileName, HelpNavigator.TableOfContents);
 
                     switch (metadata_type)

@@ -19,7 +19,6 @@ namespace VisualPascalABC
         public List<string> LastOpenFiles;
         private VisualStates visualStates = new VisualStates();
         internal Dictionary<string, CodeFileDocumentControl> OpenDocuments = new Dictionary<string, CodeFileDocumentControl>();
-        internal Dictionary<string, WebBrowserControl> OpenBrowserDocuments = new Dictionary<string, WebBrowserControl>();
         private int MaxLastOpenFiles = 10;
         private int MaxCharsInLastOpenFileName = 80;
 
@@ -462,12 +461,6 @@ namespace VisualPascalABC
             if (bakTab != null)
                 if (bakTab != CurrentCodeFileDocument)
                     CurrentCodeFileDocument = bakTab;
-            List<WebBrowserControl> todelete = new List<WebBrowserControl>();
-            foreach (WebBrowserControl browserTab in OpenBrowserDocuments.Values)
-                todelete.Add(browserTab);
-            foreach (WebBrowserControl browserTab in todelete)
-                browserTab.Close();
-            //OpenBrowserDocuments.Clear();
         }
 
         bool QuestionAndSaveFile(CodeFileDocumentControl tp)

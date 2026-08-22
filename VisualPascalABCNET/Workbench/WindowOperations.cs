@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -218,29 +219,9 @@ namespace VisualPascalABC
             return FindTab(FileName) != null;
         }
 
-        public void CloseBrowserTab(string text)
-        {
-            if (OpenBrowserDocuments.ContainsKey(text))
-                OpenBrowserDocuments.Remove(text);
-        }
-
         public void AddTabWithUrl(string title, string url)
         {
-            AddTabWithUrl(MainDockPanel, title, url);
-        }
-
-        public void AddTabWithUrl(DockPanel tabControl, string title, string url)
-        {
-            WebBrowserControl tp = null;//new WebBrowserControl();
-            if (!OpenBrowserDocuments.TryGetValue(title, out tp))
-            {
-                tp = new WebBrowserControl();
-                tp.OpenPage(title, url);
-                AddWindowToDockPanel(tp, tabControl, tp.Dock, DockState.Document, tp.IsFloat, null, 0);
-                OpenBrowserDocuments.Add(title, tp);
-            }
-            else
-                tp.Activate();
+            Process.Start(url);
         }
 
         private CodeFileDocumentControl AddNewProgramToTab(DockPanel tabControl, string FileName)
@@ -391,14 +372,6 @@ namespace VisualPascalABC
         {
             if (HealthLabel.Text != "")
                 HealthLabel.Text = "";
-            if (BrowserTabSelected)
-            {
-                BottomTabsVisible = true;
-                BrowserTabSelected = false;
-                CurrentWebBrowserControl = null;
-                SetFocusToEditor();
-            }
-
             // В Linux версии это в начале работы
             if (CurrentCodeFileDocument != null)
                 CodeCompletion.CodeCompletionController.SetLanguage(CurrentCodeFileDocument.FileName);

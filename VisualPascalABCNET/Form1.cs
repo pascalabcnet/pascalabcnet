@@ -804,10 +804,7 @@ namespace VisualPascalABC
 
         private void miClose_Click(object sender, EventArgs e)
         {
-            if (CurrentWebBrowserControl != null)
-                CurrentWebBrowserControl.Close();
-            else
-                CurrentCodeFileDocument.Close();            
+            CurrentCodeFileDocument.Close();
         }
         
         private void miCloseNonActive_Click(object sender, EventArgs e)
@@ -913,20 +910,7 @@ namespace VisualPascalABC
             ExecFindNext();
         }
 
-        internal WebBrowserControl _currentWebBrowserControl = null;
-
         internal CodeFileDocumentControl _currentCodeFileDocument = null;
-
-        public WebBrowserControl CurrentWebBrowserControl
-        {
-            get { return _currentWebBrowserControl; }
-            set
-            {
-                _currentWebBrowserControl = value;
-                if (value != null)
-                value.Activate();
-            }
-        }
 
         public CodeFileDocumentControl CurrentCodeFileDocument
         {

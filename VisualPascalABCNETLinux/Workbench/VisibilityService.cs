@@ -136,8 +136,6 @@ namespace VisualPascalABC
             }
         }
 
-        internal bool BrowserTabSelected;
-
         internal bool BottomTabsVisible
         {
             get

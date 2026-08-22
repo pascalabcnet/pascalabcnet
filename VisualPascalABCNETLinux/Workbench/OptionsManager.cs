@@ -274,7 +274,7 @@ namespace VisualPascalABC
             Options.Add(OptionsItemNameMainFormHeight, FormHeight);
             Options.Add(OptionsItemNameMainFormWidth, FormWidth);
             Options.Add(OptionsItemNameMainFormMaximized, this.WindowState == FormWindowState.Maximized);
-            Options.Add(OptionsItemNameShowOutputWindow, CurrentWebBrowserControl != null?true:BottomTabsVisible);
+            Options.Add(OptionsItemNameShowOutputWindow, BottomTabsVisible);
             Options.Add(OptionsItemNameErrorsStrategy, (byte)ErrorsManager.Strategy);
             //Options.Add(OptionsItemNameErrorsCursorPosStrategy, (byte)ErrorCursorPosStrategy);
             Options.Add(OptionsItemNameGenerateDebugInfo, WorkbenchServiceFactory.BuildService.CompilerOptions.Debug);
