@@ -66,7 +66,10 @@ namespace PascalABCCompiler.NetHelper
         {
             name = name.Replace("%GAC%\\", "");
             string ttn = System.IO.Path.GetFileNameWithoutExtension(name);
-            string tn = Path.Combine(standartAssemblyPath, name);
+            string tn = GetWindowsDesktopAssemblyPath(name);
+            if (tn != null)
+                return tn;
+            tn = Path.Combine(standartAssemblyPath, name);
             if (File.Exists(tn))
                 return tn;
             if (Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX)
@@ -140,6 +143,19 @@ namespace PascalABCCompiler.NetHelper
             }
             return tn;
 
+        }
+
+        private static string GetWindowsDesktopAssemblyPath(string name)
+        {
+            var runtimeVersionDirectory = new DirectoryInfo(standartAssemblyPath);
+            var runtimeDirectory = runtimeVersionDirectory.Parent;
+            var sharedDirectory = runtimeDirectory?.Parent;
+            if (sharedDirectory == null || runtimeDirectory.Name != "Microsoft.NETCore.App")
+                return null;
+
+            var path = Path.Combine(sharedDirectory.FullName, "Microsoft.WindowsDesktop.App",
+                runtimeVersionDirectory.Name, name);
+            return File.Exists(path) ? path : null;
         }
 
         public List<string> missingAssemblies = new List<string>();

@@ -3890,7 +3890,10 @@ namespace PascalABCCompiler
         {
             name = name.Replace("%GAC%\\", "");
             string ttn = System.IO.Path.GetFileNameWithoutExtension(name);
-            string tn = Path.Combine(standartAssemblyPath, name);
+            string tn = get_windows_desktop_assembly_path(name);
+            if (tn != null)
+                return tn;
+            tn = Path.Combine(standartAssemblyPath, name);
             if (File.Exists(tn))
                 return tn;
             if (Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX)
@@ -3965,6 +3968,20 @@ namespace PascalABCCompiler
             return tn;
 
         }
+
+        private static string get_windows_desktop_assembly_path(string name)
+        {
+            var runtimeVersionDirectory = new DirectoryInfo(standartAssemblyPath);
+            var runtimeDirectory = runtimeVersionDirectory.Parent;
+            var sharedDirectory = runtimeDirectory?.Parent;
+            if (sharedDirectory == null || runtimeDirectory.Name != "Microsoft.NETCore.App")
+                return null;
+
+            var path = Path.Combine(sharedDirectory.FullName, "Microsoft.WindowsDesktop.App",
+                runtimeVersionDirectory.Name, name);
+            return File.Exists(path) ? path : null;
+        }
+
         public static string get_assembly_path(string name, bool search_for_intellisense)
         {
             //если явно задан каталог то ищем только там
