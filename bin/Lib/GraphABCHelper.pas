@@ -306,12 +306,20 @@ end;
 
 procedure DrawPolygon(a: array of Point; gr: Graphics);
 begin
+  {$ifdef PABCNET_MODERN}
+  gr.DrawPolygon(Pen.NETPen,new System.ReadOnlySpan<Point>(a));
+  {$else}
   gr.DrawPolygon(Pen.NETPen,a);
+  {$endif}
 end;
 
 procedure FillPolygon(a: array of Point; gr: Graphics);
 begin
+  {$ifdef PABCNET_MODERN}
+  gr.FillPolygon(Brush.NETBrush,new System.ReadOnlySpan<Point>(a));
+  {$else}
   gr.FillPolygon(Brush.NETBrush,a);
+  {$endif}
 end;
 
 procedure Polygon(a: array of Point; gr: Graphics);
@@ -324,22 +332,38 @@ end;
 
 procedure Polyline(a: array of Point; gr: Graphics);
 begin
+  {$ifdef PABCNET_MODERN}
+  gr.DrawLines(Pen.NETPen,new System.ReadOnlySpan<Point>(a));
+  {$else}
   gr.DrawLines(Pen.NETPen,a);
+  {$endif}
 end;
 
 procedure Curve(a: array of Point; gr: Graphics);
 begin
+  {$ifdef PABCNET_MODERN}
+  gr.DrawCurve(Pen.NETPen,new System.ReadOnlySpan<Point>(a));
+  {$else}
   gr.DrawCurve(Pen.NETPen,a);
+  {$endif}
 end;
 
 procedure DrawClosedCurve(a: array of Point; gr: Graphics);
 begin
+  {$ifdef PABCNET_MODERN}
+  gr.DrawClosedCurve(Pen.NETPen,new System.ReadOnlySpan<Point>(a));
+  {$else}
   gr.DrawClosedCurve(Pen.NETPen,a);
+  {$endif}
 end;
 
 procedure FillClosedCurve(a: array of Point; gr: Graphics);
 begin
+  {$ifdef PABCNET_MODERN}
+  gr.FillClosedCurve(Brush.NETBrush,new System.ReadOnlySpan<Point>(a));
+  {$else}
   gr.FillClosedCurve(Brush.NETBrush,a);
+  {$endif}
 end;
 
 procedure ClosedCurve(a: array of Point; gr: Graphics);

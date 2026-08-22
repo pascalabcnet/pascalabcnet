@@ -2567,6 +2567,9 @@ namespace PascalABCCompiler
         {
             string sourceText = GetSourceFileText(fileName);
             List<string> definesList = new List<string> { "PASCALABC" }; // SSM 11/07/20
+#if PABCNET_MODERN
+            definesList.Add("PABCNET_MODERN");
+#endif
             
             if (!CompilerOptions.Debug && !CompilerOptions.ForDebugging)
                 definesList.Add("RELEASE");
@@ -2644,14 +2647,10 @@ namespace PascalABCCompiler
                 implicitSystemReferences.Add(
                     new KeyValuePair<string, compiler_directive>(assemblyPath, standardReferenceSource));
 
-            var legacyDefaultReferences = new HashSet<string>(
-                StringConstants.netSystemLibraries,
-                StringComparer.OrdinalIgnoreCase);
             foreach (compiler_directive referenceDirective in referenceDirectives.ToArray())
             {
                 string assemblyName = Path.GetFileName(referenceDirective.directive);
-                if (!legacyDefaultReferences.Contains(assemblyName)
-                    && NetHelper.NetCoreSystemReferences.IsRuntimeAssembly(assemblyName))
+                if (NetHelper.NetCoreSystemReferences.IsRuntimeAssembly(assemblyName))
                 {
                     foreach (string assemblyPath in NetHelper.NetCoreSystemReferences.GetFacadeAssemblyPaths(assemblyName))
                         implicitSystemReferences.Add(
@@ -3626,6 +3625,9 @@ namespace PascalABCCompiler
         private SyntaxTree.compilation_unit ConstructSyntaxTree(string unitFileName, CompilationUnit currentUnit, string sourceText)
         {
             List<string> DefinesList = new List<string> { "PASCALABC" };
+#if PABCNET_MODERN
+            DefinesList.Add("PABCNET_MODERN");
+#endif
             if (!CompilerOptions.Debug && !CompilerOptions.ForDebugging)
                 DefinesList.Add("RELEASE");
             else

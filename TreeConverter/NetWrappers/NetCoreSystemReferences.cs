@@ -66,7 +66,7 @@ namespace PascalABCCompiler.NetHelper
         public static bool IsRuntimeAssembly(string assemblyFileName)
         {
             return !string.IsNullOrEmpty(assemblyFileName)
-                && File.Exists(Path.Combine(RuntimeDirectory, Path.GetFileName(assemblyFileName)));
+                && ResolveRuntimeAssemblyPath(RuntimeDirectory, Path.GetFileName(assemblyFileName)) != null;
         }
 
         public static IReadOnlyList<string> GetAssemblyPaths(IEnumerable<string> assemblyFileNames)
@@ -114,12 +114,12 @@ namespace PascalABCCompiler.NetHelper
                 if (!processed.Add(assemblyFileName))
                     continue;
 
-                string assemblyPath = Path.Combine(runtimeDirectory, assemblyFileName);
-                if (!File.Exists(assemblyPath))
+                string assemblyPath = ResolveRuntimeAssemblyPath(runtimeDirectory, assemblyFileName);
+                if (assemblyPath == null)
                     throw new FileNotFoundException(
                         "The .NET runtime assembly '" + assemblyFileName
                         + "' was not found in '" + runtimeDirectory + "'.",
-                        assemblyPath);
+                        Path.Combine(runtimeDirectory, assemblyFileName));
 
                 result.Add(assemblyPath);
 
@@ -159,14 +159,14 @@ namespace PascalABCCompiler.NetHelper
                 if (!processed.Add(assemblyFileName))
                     continue;
 
-                string assemblyPath = Path.Combine(runtimeDirectory, assemblyFileName);
-                if (!File.Exists(assemblyPath))
+                string assemblyPath = ResolveRuntimeAssemblyPath(runtimeDirectory, assemblyFileName);
+                if (assemblyPath == null)
                 {
                     if (assemblyFileName.Equals(rootAssemblyFileName, StringComparison.OrdinalIgnoreCase))
                         throw new FileNotFoundException(
                             "The referenced .NET runtime assembly '" + assemblyFileName
                             + "' was not found in '" + runtimeDirectory + "'.",
-                            assemblyPath);
+                            Path.Combine(runtimeDirectory, assemblyFileName));
 
                     continue;
                 }
@@ -199,6 +199,26 @@ namespace PascalABCCompiler.NetHelper
             }
 
             return new ReadOnlyCollection<string>(result);
+        }
+
+        private static string ResolveRuntimeAssemblyPath(string runtimeDirectory, string assemblyFileName)
+        {
+            string runtimePath = Path.Combine(runtimeDirectory, assemblyFileName);
+            if (File.Exists(runtimePath))
+                return runtimePath;
+
+            var runtimeVersionDirectory = new DirectoryInfo(runtimeDirectory);
+            var runtimeRootDirectory = runtimeVersionDirectory.Parent;
+            var sharedDirectory = runtimeRootDirectory?.Parent;
+            if (sharedDirectory != null && runtimeRootDirectory.Name == "Microsoft.NETCore.App")
+            {
+                string windowsDesktopPath = Path.Combine(sharedDirectory.FullName,
+                    "Microsoft.WindowsDesktop.App", runtimeVersionDirectory.Name, assemblyFileName);
+                if (File.Exists(windowsDesktopPath))
+                    return windowsDesktopPath;
+            }
+
+            return null;
         }
     }
 }
