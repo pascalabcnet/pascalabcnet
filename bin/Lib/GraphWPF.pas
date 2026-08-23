@@ -1691,7 +1691,7 @@ procedure DrawText(rect: GRect; text: object; align: Alignment; angle: real)
   := DrawText(rect.x,rect.y,rect.Width,rect.Height,text,align,angle);
 
 procedure DrawText(rect: GRect; text: object; color: GColor; align: Alignment; angle: real)
-  := DrawText(rect.x,rect.y,rect.Width,rect.Height,text,align,angle);
+  := DrawText(rect.x,rect.y,rect.Width,rect.Height,text,color,align,angle);
 
 procedure DrawText(x, y, w, h: real; text: object; f: FontOptions; align: Alignment; angle: real);
 begin
