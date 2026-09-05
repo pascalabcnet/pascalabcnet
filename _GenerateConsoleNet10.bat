@@ -23,4 +23,5 @@ exit /b 0
 set "GENERATION_EXIT=%ERRORLEVEL%"
 echo.
 echo ERROR: .NET 10 console distribution was not created.
+pause
 exit /b %GENERATION_EXIT%

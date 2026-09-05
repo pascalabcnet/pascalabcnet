@@ -2470,6 +2470,15 @@ function Length(a: System.Array; dim: integer): integer;
 ///- function Copy(a: array of T): array of T;
 /// Создаёт копию массива
 function Copy(a: System.Array): System.Array;
+/// Создаёт поверхностную копию списка
+function Copy<T>(lst: List<T>): List<T>;
+/// Создаёт поверхностную копию HashSet<T>
+function Copy<T>(hs: HashSet<T>): HashSet<T>;
+/// Создаёт поверхностную копию SortedSet<T>
+function Copy<T>(ss: SortedSet<T>): SortedSet<T>;
+/// Создаёт поверхностную копию SortedSet<T>
+function Copy<T,T1>(d: Dictionary<T,T1>): Dictionary<T,T1>;
+
 
 /// Сортирует массив по возрастанию
 procedure Sort<T>(a: array of T);
@@ -10234,6 +10243,34 @@ begin
   if a = nil then
     exit(nil);
   Result := &Array(a.Clone());
+end;
+
+function Copy<T>(lst: List<T>): List<T>;
+begin
+  if lst = nil then
+    exit(nil);
+  Result := new List<T>(lst);
+end;
+
+function Copy<T>(hs: HashSet<T>): HashSet<T>;
+begin
+  if hs = nil then
+    exit(nil);
+  Result := new HashSet<T>(hs, hs.Comparer);
+end;
+
+function Copy<T>(ss: SortedSet<T>): SortedSet<T>;
+begin
+  if ss = nil then
+    exit(nil);
+  Result := new SortedSet<T>(ss, ss.Comparer);
+end;
+
+function Copy<T,T1>(d: Dictionary<T,T1>): Dictionary<T,T1>;
+begin
+  if d = nil then
+    exit(nil);
+  Result := new Dictionary<T,T1>(d, d.Comparer);
 end;
 
 procedure Sort<T>(a: array of T);
