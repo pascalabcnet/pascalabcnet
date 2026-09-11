@@ -6,7 +6,7 @@
     
     <RootNamespace>VisualPascalABC</RootNamespace>
     
-    <ApplicationIcon>_ABC13.ico</ApplicationIcon>
+    <ApplicationIcon>_ABC26.ico</ApplicationIcon>
     
     <EnableDefaultItems>false</EnableDefaultItems>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -553,7 +553,7 @@
     <None Include="Resources\format1.png" />
     <None Include="Resources\format2.png" />
     <None Include="Resources\Image1.bmp" />
-    <Content Include="_ABC13.ico" />
+    <Content Include="_ABC26.ico" />
     <None Include="Resources\AlignObjectsBottomHS.png" />
     <None Include="Resources\AlignObjectsCenteredHorizontalHS.png" />
     <None Include="Resources\AlignObjectsCenteredVerticalHS.png" />

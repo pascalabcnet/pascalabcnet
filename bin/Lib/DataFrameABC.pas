@@ -160,6 +160,13 @@ type
    
     /// Создает курсор для итерации по строкам
     function GetCursor: DataFrameCursor;
+
+    /// Возвращает типизированное содержимое ячейки по индексам строки и столбца.
+    /// Пример: df.Cell(0, 1).Int
+    function Cell(rowIndex, colIndex: integer): DataValue;
+    /// Возвращает типизированное содержимое ячейки по индексу строки и имени столбца.
+    /// Пример: df.Cell(0, 'Возраст').Int
+    function Cell(rowIndex: integer; colName: string): DataValue;
     
     /// Разбивает таблицу на обучающую и тестовую выборки.
     /// 
@@ -2822,6 +2829,21 @@ end;
 
 function DataFrame.GetCursor: DataFrameCursor :=
   new DataFrameCursor(columns.ToArray,fSchema);
+
+function DataFrame.Cell(rowIndex, colIndex: integer): DataValue;
+begin
+  CheckRowIndex(rowIndex);
+  CheckColumnIndex(colIndex);
+
+  var cursor := GetCursor;
+  cursor.MoveTo(rowIndex);
+  Result := cursor.Value(colIndex);
+end;
+
+function DataFrame.Cell(rowIndex: integer; colName: string): DataValue;
+begin
+  Result := Cell(rowIndex, ColumnIndex(colName));
+end;
   
 function DataFrame.GetIntColumn(name: string): array of integer;
 begin
@@ -9657,7 +9679,8 @@ begin
 
         case schema.ColumnTypeAt(i) of
           ctInt:   w.Write(cur.Int(i));
-          ctFloat: w.Write(cur.Float(i).ToString('G17', CultureInfo.InvariantCulture));
+          // G15 hides binary floating-point artifacts while retaining useful precision.
+          ctFloat: w.Write(cur.Float(i).ToString('G15', CultureInfo.InvariantCulture));
           ctStr:   w.Write(EscapeCsv(cur.Str(i), delimiter));
           ctBool:  w.Write(cur.Bool(i));
           ctDateTime: w.Write(cur.DateTime(i).ToString('s', CultureInfo.InvariantCulture));
