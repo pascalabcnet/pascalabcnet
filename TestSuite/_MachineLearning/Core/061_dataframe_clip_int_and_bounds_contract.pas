@@ -11,9 +11,9 @@ age
 
   var clipped := df.Clip('age', 0, 20);
   Check(clipped.RowCount = 3, 'Clip int row count mismatch');
-  Check(clipped.Int('age')[0] = 0, 'Clip int first value mismatch');
-  Check(clipped.Int('age')[1] = 10, 'Clip int second value mismatch');
-  Check(clipped.Int('age')[2] = 20, 'Clip int third value mismatch');
+  Check(clipped.IntValues('age')[0] = 0, 'Clip int first value mismatch');
+  Check(clipped.IntValues('age')[1] = 10, 'Clip int second value mismatch');
+  Check(clipped.IntValues('age')[2] = 20, 'Clip int third value mismatch');
   CheckSchemaMatchesColumns(clipped);
 
   CheckRaises(procedure -> begin

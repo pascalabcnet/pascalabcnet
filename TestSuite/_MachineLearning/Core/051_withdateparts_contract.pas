@@ -19,8 +19,8 @@ begin
   Check(res.GetColumnType('Year') = ColumnType.ctInt, 'Year type mismatch');
   Check(res.GetColumnType('Month') = ColumnType.ctInt, 'Month type mismatch');
   Check(res.GetColumnType('OnlyDate') = ColumnType.ctDateTime, 'OnlyDate type mismatch');
-  Check(res.Int('Year')[0] = 2024, 'Year[0] mismatch');
-  Check(res.Int('Month')[1] = 2, 'Month[1] mismatch');
-  Check(res.DateTime('OnlyDate')[0] = new System.DateTime(2024, 1, 15), 'OnlyDate[0] mismatch');
+  Check(res.IntValues('Year')[0] = 2024, 'Year[0] mismatch');
+  Check(res.IntValues('Month')[1] = 2, 'Month[1] mismatch');
+  Check(res.DateTimeValues('OnlyDate')[0] = new System.DateTime(2024, 1, 15), 'OnlyDate[0] mismatch');
   CheckSchemaMatchesColumns(res);
 end.

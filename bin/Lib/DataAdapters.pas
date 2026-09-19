@@ -59,9 +59,8 @@ begin
   Result := ClassNames[cls];
 end;
     
-function ToMatrix(Self: DataFrame; colNames: array of string): Matrix; extensionmethod;
+function ToMatrixByNames(df: DataFrame; colNames: array of string): Matrix;
 begin
-  var df := Self;
   var n := df.RowCount;
   var p := colNames.Length;
 
@@ -108,6 +107,31 @@ begin
         ArgumentError(ER_TO_MATRIX_NON_NUMERIC, colNames[j]);
     end;
   end;
+end;
+
+/// Преобразует указанные по именам столбцы DataFrame в числовую матрицу.
+/// Каждый выбранный столбец должен иметь числовой тип и не содержать NA.
+function ToMatrix(Self: DataFrame; colNames: array of string): Matrix; extensionmethod;
+begin
+  Result := ToMatrixByNames(Self, colNames);
+end;
+
+/// Преобразует все столбцы DataFrame в числовую матрицу.
+/// Каждый столбец должен иметь числовой тип и не содержать NA.
+function ToMatrix(Self: DataFrame): Matrix; extensionmethod;
+begin
+  Result := ToMatrixByNames(Self, Self.Schema.ColumnNames);
+end;
+
+/// Преобразует указанные по номерам столбцы DataFrame в числовую матрицу.
+/// Каждый выбранный столбец должен иметь числовой тип и не содержать NA.
+function ToMatrix(Self: DataFrame; colIndices: array of integer): Matrix; extensionmethod;
+begin
+  var colNames := new string[colIndices.Length];
+  for var i := 0 to colIndices.Length - 1 do
+    colNames[i] := Self.Schema.NameAt(colIndices[i]);
+
+  Result := ToMatrixByNames(Self, colNames);
 end;
 
 function ToVector(Self: DataFrame; colName: string): Vector; extensionmethod;
@@ -175,14 +199,14 @@ begin
 
   if Self.GetColumnType(target) = ColumnType.ctStr then
   begin
-    var labels := Self.GetStrColumn(target);
+    var labels := Self.StrValues(target);
     Result := EncodeLabels(labels);
     exit;
   end;
 
   if Self.GetColumnType(target) = ColumnType.ctInt then
   begin
-    var labels := Self.GetIntColumn(target).ToArray;
+    var labels := Self.IntValues(target).ToArray;
     var classes: array of integer;
     Result := EncodeLabelsInt(labels,classes);
     exit;
@@ -190,7 +214,7 @@ begin
 
   if Self.GetColumnType(target) = ColumnType.ctBool then
   begin
-    var labels := Self.GetBoolColumn(target).ToArray.Select(x -> x.ToString).ToArray;
+    var labels := Self.BoolValues(target).ToArray.Select(x -> x.ToString).ToArray;
     Result := EncodeLabels(labels);
     exit;
   end;
@@ -226,12 +250,12 @@ begin
   case Self.GetColumnType(target) of
     ColumnType.ctStr:
       begin
-        var labels := Self.GetStrColumn(target).ToArray;
+        var labels := Self.StrValues(target).ToArray;
         Result := EncodeLabels(labels, classes);
       end;
     ColumnType.ctInt:
       begin
-        var labels := Self.GetIntColumn(target).ToArray;
+        var labels := Self.IntValues(target).ToArray;
       
         var intClasses: array of integer;
         Result := EncodeLabelsInt(labels, intClasses);
@@ -241,7 +265,7 @@ begin
       end;
     ColumnType.ctBool:
       begin
-        var labels := Self.GetBoolColumn(target).ToArray.Select(x -> x.ToString).ToArray;
+        var labels := Self.BoolValues(target).ToArray.Select(x -> x.ToString).ToArray;
         Result := EncodeLabels(labels, classes);
       end;
     else
@@ -286,12 +310,12 @@ begin
   case Self.GetColumnType(target) of
     ColumnType.ctStr:
       begin
-        var data := Self.GetStrColumn(target).ToArray;
+        var data := Self.StrValues(target).ToArray;
         Result := TransformLabels(data, classes);
       end;
     ColumnType.ctInt:
       begin
-        var data := Self.GetIntColumn(target).ToArray;
+        var data := Self.IntValues(target).ToArray;
         var strData := new string[data.Length];
   
         for var i := 0 to data.Length - 1 do
@@ -301,7 +325,7 @@ begin
       end;
     ColumnType.ctBool:
       begin
-        var data := Self.GetBoolColumn(target).ToArray;
+        var data := Self.BoolValues(target).ToArray;
         var strData := new string[data.Length];
   
         for var i := 0 to data.Length - 1 do
@@ -343,7 +367,7 @@ begin
     if not col.IsValid[i] then
       ArgumentError(ER_TARGET_HAS_NA, target);
 
-  var data := Self.GetIntColumn(target).ToArray;
+  var data := Self.IntValues(target).ToArray;
 
   Result := TransformLabelsInt(data, classes);
 end;
@@ -376,7 +400,7 @@ begin
     if not col.IsValid[i] then
       ArgumentError(ER_TARGET_HAS_NA, target);
 
-  var labels := Self.GetIntColumn(target).ToArray;
+  var labels := Self.IntValues(target).ToArray;
 
   Result := EncodeLabelsInt(labels, classes);
 end;

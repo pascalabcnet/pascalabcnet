@@ -9,8 +9,8 @@ begin
   var t := df.Tail(2);
 
   Check(t.RowCount = 2, 'Tail(2) row count mismatch');
-  Check(t.GetStrColumn('City')[0] = 'C', 'Tail first row mismatch');
-  Check(t.GetStrColumn('City')[1] = 'D', 'Tail second row mismatch');
-  Check(t.GetIntColumn('Age')[0] = 30, 'Tail first age mismatch');
-  Check(t.GetIntColumn('Age')[1] = 40, 'Tail second age mismatch');
+  Check(t.StrValues('City')[0] = 'C', 'Tail first row mismatch');
+  Check(t.StrValues('City')[1] = 'D', 'Tail second row mismatch');
+  Check(t.IntValues('Age')[0] = 30, 'Tail first age mismatch');
+  Check(t.IntValues('Age')[1] = 40, 'Tail second age mismatch');
 end.

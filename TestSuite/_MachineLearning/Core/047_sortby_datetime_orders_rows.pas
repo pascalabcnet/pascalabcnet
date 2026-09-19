@@ -13,9 +13,9 @@ begin
   var res := df.SortBy('CreatedAt');
 
   Check(res.RowCount = 3, 'SortBy(DateTime) row count mismatch');
-  Check(res.Int('Id')[0] = 2, 'First sorted row mismatch');
-  Check(res.Int('Id')[1] = 1, 'Second sorted row mismatch');
-  Check(res.Int('Id')[2] = 3, 'Third sorted row mismatch');
-  Check(res.DateTime('CreatedAt')[0] = new System.DateTime(2024, 1, 15), 'Sorted DateTime value mismatch');
+  Check(res.IntValues('Id')[0] = 2, 'First sorted row mismatch');
+  Check(res.IntValues('Id')[1] = 1, 'Second sorted row mismatch');
+  Check(res.IntValues('Id')[2] = 3, 'Third sorted row mismatch');
+  Check(res.DateTimeValues('CreatedAt')[0] = new System.DateTime(2024, 1, 15), 'Sorted DateTime value mismatch');
   CheckSchemaMatchesColumns(res);
 end.

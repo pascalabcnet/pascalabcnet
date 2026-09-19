@@ -16,6 +16,7 @@ interface
 uses System,
      System.Windows,
      System.Windows.Controls,
+     System.Windows.Data,
      System.Windows.Media,
      System.Windows.Shapes,
      System.Threading,
@@ -124,24 +125,40 @@ type
       size: real := 8; marker: MarkerType := MarkerType.Circle; legend: string := nil);
     /// Строит диаграмму рассеяния по массивам x и y.
     procedure Points(x, y: array of real; color: ColorWPF := DefaultColor; 
-      size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
+      size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil;
+      tooltips: array of string := nil);
     /// Строит диаграмму рассеяния по массиву двумерных точек.
     procedure Points(points: array of Vector; color: ColorWPF := DefaultColor;
-      size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
+      size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil;
+      tooltips: array of string := nil);
     /// Строит диаграмму рассеяния с раскраской по целочисленным меткам.
     procedure Points(x, y: array of real; labels: array of integer;
       size: real := 6; marker: MarkerType := MarkerType.Circle);  
     /// Строит гистограмму значений.
     procedure Hist(x: array of real; bins: integer := 0; 
-      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil);
+      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
+      edges: System.Array := nil);
+    /// Строит гистограмму целочисленных значений.
+    procedure Hist(x: array of integer; bins: integer := 0;
+      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
+      edges: System.Array := nil);
     /// Строит столбчатую диаграмму по значениям y.
     procedure Bar(y: array of real; color: ColorWPF := DefaultColor;
+      width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит столбчатую диаграмму по целочисленным значениям y.
+    procedure Bar(y: array of integer; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
     /// Строит столбчатую диаграмму по массивам x и y.
     procedure Bar(x, y: array of real; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит столбчатую диаграмму по x и целочисленным значениям y.
+    procedure Bar(x: array of real; y: array of integer; color: ColorWPF := DefaultColor;
+      width: real := 0.8; alpha: real := 0.85; legend: string := nil);
     /// Строит горизонтальную столбчатую диаграмму с текстовыми подписями.
-    procedure Bar(labels: array of string; values: array of real; color: ColorWPF := DefaultColor;
+    procedure HorizontalBar(labels: array of string; values: array of real; color: ColorWPF := DefaultColor;
+      width: real := 0.75; alpha: real := 0.85; legend: string := nil);
+    /// Строит горизонтальную столбчатую диаграмму по целочисленным значениям.
+    procedure HorizontalBar(labels: array of string; values: array of integer; color: ColorWPF := DefaultColor;
       width: real := 0.75; alpha: real := 0.85; legend: string := nil);
     /// Строит тепловую карту для числовой матрицы.
     procedure Heatmap(m: array[,] of real);
@@ -158,19 +175,24 @@ type
       thickness: real := 2; legend: string := nil);
     /// Строит диаграмму рассеяния по векторам x и y.
     procedure Points(x, y: Vector; color: ColorWPF := DefaultColor;
-      size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
+      size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil;
+      tooltips: array of string := nil);
     /// Строит диаграмму рассеяния по векторам x и y с раскраской по меткам.
     procedure Points(x, y: Vector; labels: array of integer;
       size: real := 6; marker: MarkerType := MarkerType.Circle);
     /// Строит гистограмму значений вектора.
     procedure Hist(x: Vector; bins: integer := 0;
-      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil);
+      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
+      edges: System.Array := nil);
     /// Строит столбчатую диаграмму по значениям вектора y.
     procedure Bar(y: Vector; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
     /// Строит столбчатую диаграмму по векторам x и y.
     procedure Bar(x, y: Vector; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит горизонтальную столбчатую диаграмму по вектору значений.
+    procedure HorizontalBar(labels: array of string; values: Vector; color: ColorWPF := DefaultColor;
+      width: real := 0.75; alpha: real := 0.85; legend: string := nil);
     /// Отображает одно изображение из вектора пикселей.
     procedure Image(values: Vector; width, height: integer; invert: boolean := false);
       
@@ -240,7 +262,8 @@ type
 
     static function CreateLineSeries(x,y: array of real; c: Color): LineGraphWPF;
     static function CreatePointSeries(x, y: array of real; 
-      color: ColorWPF; size: real; marker: MarkerType): MarkerGraphWPF;
+      color: ColorWPF; size: real; marker: MarkerType;
+      tooltips: array of string): MarkerGraphWPF;
     
     static procedure DrawLine(chart: ChartWPF; x, y: array of real;
       color: ColorWPF; thickness: real; legend: string);
@@ -250,7 +273,8 @@ type
     static procedure DrawText(chart: ChartWPF; s: string; x, y: real);  
   
     static procedure DrawPoints(chart: ChartWPF; x, y: array of real;
-      color: ColorWPF; size: real; marker: MarkerType; legend: string);
+      color: ColorWPF; size: real; marker: MarkerType; legend: string;
+      tooltips: array of string);
       
     static procedure DrawHeatmap(chart: ChartWPF; m: array[,] of real; names: array of string := nil);  
 
@@ -262,6 +286,8 @@ type
     
     static procedure DrawHist(chart: ChartWPF; x: array of real;
       bins: integer; color: ColorWPF; alpha: real; legend: string);
+    static procedure DrawHist(chart: ChartWPF; x, edges: array of real;
+      color: ColorWPF; alpha: real; legend: string);
       
     static procedure DrawHistMany(chart: ChartWPF; arrays: array of array of real;
       bins: integer; colors: array of ColorWPF; alpha: real; legends: array of string);
@@ -302,11 +328,13 @@ type
       
     /// Строит диаграмму рассеяния по массивам x и y.
     static procedure Points(x, y: array of real; 
-      color: ColorWPF := DefaultColor; size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
+      color: ColorWPF := DefaultColor; size: real := 6; marker: MarkerType := MarkerType.Circle;
+      legend: string := nil; tooltips: array of string := nil);
 
     /// Строит диаграмму рассеяния по массиву двумерных точек.
     static procedure Points(points: array of Vector;
-      color: ColorWPF := DefaultColor; size: real := 6; marker: MarkerType := MarkerType.Circle; legend: string := nil);
+      color: ColorWPF := DefaultColor; size: real := 6; marker: MarkerType := MarkerType.Circle;
+      legend: string := nil; tooltips: array of string := nil);
       
     /// Строит диаграмму рассеяния с раскраской по целочисленным меткам.
     static procedure Points(x, y: array of real;
@@ -314,18 +342,32 @@ type
       
     /// Строит гистограмму значений.
     static procedure Hist(x: array of real; bins: integer := 0;
-      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil);
+      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
+      edges: System.Array := nil);
+    /// Строит гистограмму целочисленных значений.
+    static procedure Hist(x: array of integer; bins: integer := 0;
+      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
+      edges: System.Array := nil);
       
     /// Строит столбчатую диаграмму по значениям y.
     static procedure Bar(y: array of real; color: ColorWPF := DefaultColor;
+      width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит столбчатую диаграмму по целочисленным значениям y.
+    static procedure Bar(y: array of integer; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
       
     /// Строит столбчатую диаграмму по массивам x и y.
     static procedure Bar(x, y: array of real; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит столбчатую диаграмму по x и целочисленным значениям y.
+    static procedure Bar(x: array of real; y: array of integer; color: ColorWPF := DefaultColor;
+      width: real := 0.8; alpha: real := 0.85; legend: string := nil);
       
     /// Строит горизонтальную столбчатую диаграмму с текстовыми подписями.
-    static procedure Bar(labels: array of string; values: array of real; color: ColorWPF := DefaultColor;
+    static procedure HorizontalBar(labels: array of string; values: array of real; color: ColorWPF := DefaultColor;
+      width: real := 0.75; alpha: real := 0.85; legend: string := nil);
+    /// Строит горизонтальную столбчатую диаграмму по целочисленным значениям.
+    static procedure HorizontalBar(labels: array of string; values: array of integer; color: ColorWPF := DefaultColor;
       width: real := 0.75; alpha: real := 0.85; legend: string := nil);
       
     /// Отображает одно изображение, записанное в виде плоского массива.
@@ -396,8 +438,8 @@ type
     
     /// Строит диаграмму рассеяния по векторам x и y.
     static procedure Points(x, y: Vector; color: ColorWPF := DefaultColor; size: real := 6;
-      marker: MarkerType := MarkerType.Circle; legend: string := nil)
-      := Points(x.Data, y.Data, color, size, marker, legend);
+      marker: MarkerType := MarkerType.Circle; legend: string := nil; tooltips: array of string := nil)
+      := Points(x.Data, y.Data, color, size, marker, legend, tooltips);
     
     /// Строит диаграмму рассеяния по векторам x и y с раскраской по меткам.
     static procedure Points(x, y: Vector;
@@ -407,8 +449,9 @@ type
     
     /// Строит гистограмму значений вектора.
     static procedure Hist(x: Vector; bins: integer := 0;
-      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil)
-      := Hist(x.Data, bins, color, alpha, legend);
+      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
+      edges: System.Array := nil)
+      := Hist(x.Data, bins, color, alpha, legend, edges);
       
     /// Строит столбчатую диаграмму по значениям вектора y.
     static procedure Bar(y: Vector; color: ColorWPF := DefaultColor;
@@ -419,6 +462,12 @@ type
     static procedure Bar(x, y: Vector; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil)
       := Bar(x.Data, y.Data, color, width, alpha, legend);
+
+    /// Строит горизонтальную столбчатую диаграмму по вектору значений.
+    static procedure HorizontalBar(labels: array of string; values: Vector;
+      color: ColorWPF := DefaultColor; width: real := 0.75;
+      alpha: real := 0.85; legend: string := nil)
+      := HorizontalBar(labels, values.Data, color, width, alpha, legend);
 
     /// Отображает одно изображение из вектора пикселей.
     static procedure Image(values: Vector; width, height: integer; invert: boolean := false)
@@ -501,6 +550,8 @@ type
   
     /// Загружает данные для построения гистограммы.
     procedure SetData(x: array of real);
+    /// Загружает данные и заданные границы интервалов.
+    procedure SetData(x, edges: array of real);
   
     /// Цвет столбцов гистограммы.
     property Color: ColorWPF read fColor write fColor;
@@ -811,6 +862,45 @@ begin
   for var i := 0 to rows - 1 do
     for var j := 0 to cols - 1 do
       Result[i, j] := m[i, j];
+end;
+
+procedure ValidatePointTooltips(x, y: array of real; tooltips: array of string);
+begin
+  if (x = nil) or (y = nil) then
+    raise new System.ArgumentNullException;
+
+  if x.Length <> y.Length then
+    raise new System.ArgumentException(
+      'Points: x and y sizes mismatch / размеры x и y не совпадают');
+
+  if (tooltips <> nil) and (tooltips.Length <> x.Length) then
+    raise new System.ArgumentException(
+      'Points: tooltips length must match point count / число подсказок должно совпадать с числом точек');
+end;
+
+function IntArrayToReal(a: array of integer): array of real;
+begin
+  if a = nil then
+    exit(nil);
+
+  Result := new real[a.Length];
+  for var i := 0 to a.Length - 1 do
+    Result[i] := a[i];
+end;
+
+function HistogramEdgesToReal(edges: System.Array): array of real;
+begin
+  if edges = nil then
+    raise new System.ArgumentNullException('edges');
+
+  if edges is array of real then
+    exit(edges as array of real);
+
+  if edges is array of integer then
+    exit(IntArrayToReal(edges as array of integer));
+
+  raise new System.ArgumentException(
+    'Hist: edges must be an array of real or integer / границы должны быть массивом вещественных или целых чисел');
 end;
 
 function NormalizeConfusionMatrix(m: array[,] of real; mode: MatrixNormalization): array[,] of real;
@@ -1206,6 +1296,60 @@ begin
   var cnt := VisualTreeHelper.GetChildrenCount(obj);
   for var i := 0 to cnt - 1 do
     HidePlotAxisInVisualTree(VisualTreeHelper.GetChild(obj, i), orientation);
+end;
+
+procedure SetIntegerAxisInVisualTree(obj: DependencyObject;
+  orientation: AxisOrientation; maxTicks: integer);
+begin
+  if obj = nil then
+    exit;
+
+  if obj is InteractiveDataDisplay.WPF.Axis then
+  begin
+    var axis := obj as InteractiveDataDisplay.WPF.Axis;
+    if axis.AxisOrientation = orientation then
+    begin
+      axis.MaxTicks := maxTicks;
+      axis.AreMinorTicksVisible := false;
+    end;
+  end;
+
+  var cnt := VisualTreeHelper.GetChildrenCount(obj);
+  for var i := 0 to cnt - 1 do
+    SetIntegerAxisInVisualTree(
+      VisualTreeHelper.GetChild(obj, i), orientation, maxTicks);
+end;
+
+procedure SetIntegerAxis(chart: ChartWPF; orientation: AxisOrientation;
+  minValue, maxValue: real);
+begin
+  var integerCount :=
+    integer(System.Math.Ceiling(maxValue) - System.Math.Floor(minValue)) + 1;
+  var maxTicks := Min(20, Max(2, integerCount));
+
+  chart.ApplyTemplate;
+  chart.UpdateLayout;
+  SetIntegerAxisInVisualTree(chart, orientation, maxTicks);
+  chart.UpdateLayout;
+end;
+
+procedure SetIntegerValueAxis(chart: ChartWPF; orientation: AxisOrientation;
+  values: array of integer);
+begin
+  if (values = nil) or (values.Length = 0) then
+    exit;
+
+  var minValue := 0;
+  var maxValue := 0;
+  foreach var value in values do
+  begin
+    if value < minValue then
+      minValue := value;
+    if value > maxValue then
+      maxValue := value;
+  end;
+
+  SetIntegerAxis(chart, orientation, minValue, maxValue);
 end;
 
 procedure HidePlotAxesAndGridInVisualTree(obj: DependencyObject);
@@ -1671,25 +1815,26 @@ begin
 end;
 
 procedure Cell.Points(x, y: array of real; color: ColorWPF;
-  size: real; marker: MarkerType; legend: string);
+  size: real; marker: MarkerType; legend: string; tooltips: array of string);
 begin
+  ValidatePointTooltips(x, y, tooltips);
   Plot.RunUI(() ->
   begin
     EnsureChart;
 
     var clr := if color<>DefaultColor then color else NextColor;
 
-    Plot.DrawPoints(chart, x, y, clr, size, marker, legend);
+    Plot.DrawPoints(chart, x, y, clr, size, marker, legend, tooltips);
   end);
 end;
 
 procedure Cell.Points(points: array of Vector; color: ColorWPF;
-  size: real; marker: MarkerType; legend: string);
+  size: real; marker: MarkerType; legend: string; tooltips: array of string);
 begin
   var x: array of real;
   var y: array of real;
   PointsVectorsToXY(points, x, y);
-  self.Points(x, y, color, size, marker, legend);
+  self.Points(x, y, color, size, marker, legend, tooltips);
 end;
 
 procedure Cell.Points(x, y: array of real; labels: array of integer;
@@ -1847,22 +1992,41 @@ begin
   ConfusionMatrix(cm.Matrix, classNames, normalize, sortClassNames);
 end;
 
-procedure Cell.Hist(x: array of real; bins: integer; color: ColorWPF; alpha: real; legend: string);
+procedure Cell.Hist(x: array of real; bins: integer; color: ColorWPF;
+  alpha: real; legend: string; edges: System.Array);
 begin
+  if (bins <> 0) and (edges <> nil) then
+    raise new System.ArgumentException(
+      'Hist: specify either bins or edges, not both / задайте либо bins, либо edges');
+
   Plot.RunUI(() ->
   begin
     EnsureChart;
 
     var clr := if color<>DefaultColor then color else NextColor;
-
-    Plot.DrawHist(chart, x, bins, clr, alpha, legend);
+    if edges = nil then
+      Plot.DrawHist(chart, x, bins, clr, alpha, legend)
+    else
+      Plot.DrawHist(chart, x, HistogramEdgesToReal(edges), clr, alpha, legend);
   end);
+end;
+
+procedure Cell.Hist(x: array of integer; bins: integer;
+  color: ColorWPF; alpha: real; legend: string; edges: System.Array);
+begin
+  Hist(IntArrayToReal(x), bins, color, alpha, legend, edges);
 end;
 
 procedure Cell.Bar(y: array of real; color: ColorWPF; width: real; alpha: real; legend: string);
 begin
   var x: array of real := nil;
   Bar(x, y, color, width, alpha, legend);
+end;
+
+procedure Cell.Bar(y: array of integer; color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  Bar(IntArrayToReal(y), color, width, alpha, legend);
+  Plot.RunUI(() -> SetIntegerValueAxis(chart, AxisOrientation.Left, y));
 end;
 
 procedure Cell.Bar(x, y: array of real; color: ColorWPF; width: real; alpha: real; legend: string);
@@ -1877,7 +2041,14 @@ begin
   end);
 end;
 
-procedure Cell.Bar(labels: array of string; values: array of real; color: ColorWPF; width: real; alpha: real; legend: string);
+procedure Cell.Bar(x: array of real; y: array of integer; color: ColorWPF;
+  width: real; alpha: real; legend: string);
+begin
+  Bar(x, IntArrayToReal(y), color, width, alpha, legend);
+  Plot.RunUI(() -> SetIntegerValueAxis(chart, AxisOrientation.Left, y));
+end;
+
+procedure Cell.HorizontalBar(labels: array of string; values: array of real; color: ColorWPF; width: real; alpha: real; legend: string);
 begin
   Plot.RunUI(() ->
   begin
@@ -1889,14 +2060,22 @@ begin
   end);
 end;
 
+procedure Cell.HorizontalBar(labels: array of string; values: array of integer;
+  color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  HorizontalBar(labels, IntArrayToReal(values), color, width, alpha, legend);
+  Plot.RunUI(() -> SetIntegerValueAxis(chart, AxisOrientation.Bottom, values));
+end;
+
 procedure Cell.LineGraph(x, y: Vector; color: ColorWPF; thickness: real; legend: string);
 begin
   LineGraph(x.Data, y.Data, color, thickness, legend);
 end;
 
-procedure Cell.Points(x, y: Vector; color: ColorWPF; size: real; marker: MarkerType; legend: string);
+procedure Cell.Points(x, y: Vector; color: ColorWPF; size: real; marker: MarkerType;
+  legend: string; tooltips: array of string);
 begin
-  Points(x.Data, y.Data, color, size, marker, legend);
+  Points(x.Data, y.Data, color, size, marker, legend, tooltips);
 end;
 
 procedure Cell.Points(x, y: Vector; labels: array of integer; size: real; marker: MarkerType);
@@ -1910,9 +2089,9 @@ begin
 end;
 
 procedure Cell.Hist(x: Vector; bins: integer;
-  color: ColorWPF; alpha: real; legend: string);
+  color: ColorWPF; alpha: real; legend: string; edges: System.Array);
 begin
-  Hist(x.Data, bins, color, alpha, legend);
+  Hist(x.Data, bins, color, alpha, legend, edges);
 end;
 
 procedure Cell.Bar(y: Vector; color: ColorWPF; width: real; alpha: real; legend: string);
@@ -1923,6 +2102,12 @@ end;
 procedure Cell.Bar(x, y: Vector; color: ColorWPF; width: real; alpha: real; legend: string);
 begin
   Bar(x.Data, y.Data, color, width, alpha, legend);
+end;
+
+procedure Cell.HorizontalBar(labels: array of string; values: Vector;
+  color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  HorizontalBar(labels, values.Data, color, width, alpha, legend);
 end;
 
 procedure Cell.Text(s: string; x: real; y: real);
@@ -2200,7 +2385,8 @@ begin
 end;
 
 static function Plot.CreatePointSeries(x, y: array of real; 
-  color: ColorWPF; size: real; marker: MarkerType): MarkerGraphWPF;
+  color: ColorWPF; size: real; marker: MarkerType;
+  tooltips: array of string): MarkerGraphWPF;
 begin
   var g := new MarkerGraphWPF;
 
@@ -2215,7 +2401,24 @@ begin
   g.MarkerType := CreateMarker(marker);
   g.StrokeThickness := 0;
   
+  if tooltips <> nil then
+  begin
+    var tooltipSeries := new InteractiveDataDisplay.WPF.DataSeries;
+    tooltipSeries.Key := 'Tooltip';
+    tooltipSeries.Data := tooltips;
+    g.Sources.Add(tooltipSeries);
+  end;
+
   g.PlotColor(x,y,color);
+
+  if tooltips <> nil then
+  begin
+    var textFactory := new FrameworkElementFactory(typeof(TextBlock));
+    textFactory.SetBinding(TextBlock.TextProperty, new Binding('Tooltip'));
+    var tooltipTemplate := new DataTemplate;
+    tooltipTemplate.VisualTree := textFactory;
+    g.TooltipTemplate := tooltipTemplate;
+  end;
 
   Result := g;
 end;
@@ -2279,9 +2482,10 @@ begin
 end;
 
 static procedure Plot.DrawPoints(chart: ChartWPF; x, y: array of real;
-  color: ColorWPF; size: real; marker: MarkerType; legend: string);
+  color: ColorWPF; size: real; marker: MarkerType; legend: string;
+  tooltips: array of string);
 begin
-  var g := CreatePointSeries(x, y, color, size, marker);
+  var g := CreatePointSeries(x, y, color, size, marker, tooltips);
 
   if legend <> nil then
   begin  
@@ -2733,23 +2937,26 @@ begin
 end;
 
 static procedure Plot.Points(x, y: array of real; 
-  color: ColorWPF; size: real; marker: MarkerType; legend: string);
+  color: ColorWPF; size: real; marker: MarkerType; legend: string;
+  tooltips: array of string);
 begin
+  ValidatePointTooltips(x, y, tooltips);
   RunUI(() ->
   begin
     var clr := if color<>DefaultColor then color else NextRootColor;
 
-    DrawPoints(rootChart, x, y, clr, size, marker, legend);
+    DrawPoints(rootChart, x, y, clr, size, marker, legend, tooltips);
   end);
 end;
 
 static procedure Plot.Points(points: array of Vector;
-  color: ColorWPF; size: real; marker: MarkerType; legend: string);
+  color: ColorWPF; size: real; marker: MarkerType; legend: string;
+  tooltips: array of string);
 begin
   var x: array of real;
   var y: array of real;
   PointsVectorsToXY(points, x, y);
-  Plot.Points(x, y, color, size, marker, legend);
+  Plot.Points(x, y, color, size, marker, legend, tooltips);
 end;
 
 static procedure Plot.Points(x, y: array of real; labels: array of integer;
@@ -2790,6 +2997,12 @@ begin
   Bar(x, y, color, width, alpha, legend);
 end;
 
+static procedure Plot.Bar(y: array of integer; color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  Bar(IntArrayToReal(y), color, width, alpha, legend);
+  RunUI(() -> SetIntegerValueAxis(rootChart, AxisOrientation.Left, y));
+end;
+
 static procedure Plot.Bar(x, y: array of real; color: ColorWPF; width: real; alpha: real; legend: string);
 begin
   RunUI(() ->
@@ -2800,7 +3013,14 @@ begin
   end);
 end;
 
-static procedure Plot.Bar(labels: array of string; values: array of real; color: ColorWPF; width: real; alpha: real; legend: string);
+static procedure Plot.Bar(x: array of real; y: array of integer;
+  color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  Bar(x, IntArrayToReal(y), color, width, alpha, legend);
+  RunUI(() -> SetIntegerValueAxis(rootChart, AxisOrientation.Left, y));
+end;
+
+static procedure Plot.HorizontalBar(labels: array of string; values: array of real; color: ColorWPF; width: real; alpha: real; legend: string);
 begin
   RunUI(() ->
   begin
@@ -2808,6 +3028,13 @@ begin
 
     DrawHorizontalBar(rootChart, labels, values, clr, width, alpha, legend);
   end);
+end;
+
+static procedure Plot.HorizontalBar(labels: array of string; values: array of integer;
+  color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  HorizontalBar(labels, IntArrayToReal(values), color, width, alpha, legend);
+  RunUI(() -> SetIntegerValueAxis(rootChart, AxisOrientation.Bottom, values));
 end;
 
 static procedure Plot.Heatmap(m: array[,] of real);
@@ -2921,10 +3148,10 @@ begin
       if validationColor <> DefaultColor then validationColor else Colors.Red;
 
     DrawLine(rootChart, curve.ParameterValues.Data, curve.TrainMean.Data, trainClr, thickness, nil);
-    DrawPoints(rootChart, curve.ParameterValues.Data, curve.TrainMean.Data, trainClr, markerSize, MarkerType.Circle, nil);
+    DrawPoints(rootChart, curve.ParameterValues.Data, curve.TrainMean.Data, trainClr, markerSize, MarkerType.Circle, nil, nil);
 
     DrawLine(rootChart, curve.ParameterValues.Data, curve.ValidationMean.Data, validationClr, thickness, nil);
-    DrawPoints(rootChart, curve.ParameterValues.Data, curve.ValidationMean.Data, validationClr, markerSize, MarkerType.Circle, nil);
+    DrawPoints(rootChart, curve.ParameterValues.Data, curve.ValidationMean.Data, validationClr, markerSize, MarkerType.Circle, nil, nil);
 
     if title <> nil then
       SetTitle(title);
@@ -2969,10 +3196,10 @@ begin
       if validationColor <> DefaultColor then validationColor else Colors.Red;
 
     DrawLine(rootChart, curve.TrainSizes.Data, curve.TrainMean.Data, trainClr, thickness, nil);
-    DrawPoints(rootChart, curve.TrainSizes.Data, curve.TrainMean.Data, trainClr, markerSize, MarkerType.Circle, nil);
+    DrawPoints(rootChart, curve.TrainSizes.Data, curve.TrainMean.Data, trainClr, markerSize, MarkerType.Circle, nil, nil);
 
     DrawLine(rootChart, curve.TrainSizes.Data, curve.ValidationMean.Data, validationClr, thickness, nil);
-    DrawPoints(rootChart, curve.TrainSizes.Data, curve.ValidationMean.Data, validationClr, markerSize, MarkerType.Circle, nil);
+    DrawPoints(rootChart, curve.TrainSizes.Data, curve.ValidationMean.Data, validationClr, markerSize, MarkerType.Circle, nil, nil);
 
     if title <> nil then
       SetTitle(title);
@@ -3008,9 +3235,9 @@ end;
 
 
 static procedure Plot.Hist(x: Vector; bins: integer;
-  color: ColorWPF; alpha: real; legend: string);
+  color: ColorWPF; alpha: real; legend: string; edges: System.Array);
 begin
-  Hist(x.Data, bins, color, alpha, legend);
+  Hist(x.Data, bins, color, alpha, legend, edges);
 end;
 
 // --- Matrix overloads
@@ -3388,12 +3615,25 @@ begin
 end;
 
 static procedure Plot.Hist(x: array of real; bins: integer;
-  color: ColorWPF; alpha: real; legend: string);
+  color: ColorWPF; alpha: real; legend: string; edges: System.Array);
 begin
+  if (bins <> 0) and (edges <> nil) then
+    raise new System.ArgumentException(
+      'Hist: specify either bins or edges, not both / задайте либо bins, либо edges');
+
   RunUI(() ->
   begin
-    Plot.DrawHist(rootChart, x, bins, color, alpha, legend);
+    if edges = nil then
+      Plot.DrawHist(rootChart, x, bins, color, alpha, legend)
+    else
+      Plot.DrawHist(rootChart, x, HistogramEdgesToReal(edges), color, alpha, legend);
   end);
+end;
+
+static procedure Plot.Hist(x: array of integer; bins: integer;
+  color: ColorWPF; alpha: real; legend: string; edges: System.Array);
+begin
+  Hist(IntArrayToReal(x), bins, color, alpha, legend, edges);
 end;
 
 static procedure Plot.DrawHist(chart: ChartWPF; x: array of real;
@@ -3425,6 +3665,29 @@ begin
   
   chart.PlotOriginX := xmin;
   chart.PlotWidth := xmax - xmin;
+  chart.PlotOriginY := 0;
+  chart.PlotHeight := hist.MaxCount * 1.1;
+end;
+
+static procedure Plot.DrawHist(chart: ChartWPF; x, edges: array of real;
+  color: ColorWPF; alpha: real; legend: string);
+begin
+  EnsureAxes(chart);
+
+  var hist := new HistogramPlot;
+  hist.Color := if color<>DefaultColor then color else NextRootColor;
+  hist.Alpha := alpha;
+  hist.SetData(x, edges);
+
+  if legend <> nil then
+  begin
+    hist.Description := legend;
+    chart.LegendVisibility := Visibility.Visible;
+  end;
+
+  AddSeries(chart, hist);
+  chart.PlotOriginX := edges[0];
+  chart.PlotWidth := edges[edges.Length - 1] - edges[0];
   chart.PlotOriginY := 0;
   chart.PlotHeight := hist.MaxCount * 1.1;
 end;
@@ -3528,37 +3791,76 @@ end;
 
 procedure HistogramPlot.SetData(x: array of real);
 begin
-  Children.Clear;
-  fBins.Clear;
-
-  if x=nil then exit;
-  if x.Length=0 then exit;
+  if x = nil then
+    exit;
+  if x.Length = 0 then
+    exit;
 
   var xmin := if not real.IsNaN(MinValue) then Floor(MinValue) else Floor(x.Min);
   var xmax := if not real.IsNaN(MaxValue) then Ceil(MaxValue) else Ceil(x.Max);
 
-  if xmax=xmin then exit;
+  if xmax = xmin then
+    exit;
 
   var w := (xmax-xmin)/fBinsCount;
+  var edges := ArrGen(fBinsCount + 1, i -> xmin + i*w);
+  SetData(x, edges);
+end;
 
+procedure HistogramPlot.SetData(x, edges: array of real);
+begin
+  Children.Clear;
+  fBins.Clear;
+  fMaxCount := 0;
+
+  if x = nil then
+    exit;
+  if edges = nil then
+    raise new System.ArgumentNullException('edges');
+  if edges.Length < 2 then
+    raise new System.ArgumentException(
+      'Hist: edges must contain at least two values / границы должны содержать минимум два значения');
+
+  for var i := 0 to edges.Length - 1 do
+    if real.IsNaN(edges[i]) or real.IsInfinity(edges[i]) then
+      raise new System.ArgumentException(
+        'Hist: edges must be finite / границы должны быть конечными числами');
+
+  for var i := 1 to edges.Length - 1 do
+    if edges[i] <= edges[i - 1] then
+      raise new System.ArgumentException(
+        'Hist: edges must be strictly increasing / границы должны строго возрастать');
+
+  fBinsCount := edges.Length - 1;
   var counts := new integer[fBinsCount];
 
   foreach var v in x do
   begin
-    var k := trunc((v-xmin)/w);
-    if k>=fBinsCount then k := fBinsCount-1;
-    if k<0 then k := 0;
-    counts[k] += 1;
+    if real.IsNaN(v) or (v < edges[0]) or (v > edges[edges.Length - 1]) then
+      continue;
+
+    var k := -1;
+    if v = edges[edges.Length - 1] then
+      k := fBinsCount - 1
+    else
+      for var i := 0 to fBinsCount - 1 do
+        if (v >= edges[i]) and (v < edges[i + 1]) then
+        begin
+          k := i;
+          break;
+        end;
+
+    if k >= 0 then
+      counts[k] += 1;
   end;
-  
 
   var brush := new SolidColorBrush(fColor);
   brush.Opacity := fAlpha;
 
-  for var i:=0 to fBinsCount-1 do
+  for var i := 0 to fBinsCount - 1 do
   begin
-    var x0 := xmin + i*w;
-    var x1 := x0 + w;
+    var x0 := edges[i];
+    var x1 := edges[i + 1];
     var h := counts[i];
 
     var poly := new Polygon;

@@ -19,7 +19,7 @@ begin
   Check(g.GetColumn(0).Info.Name = 'CreatedAt', 'Physical DateTime key column name mismatch');
   Check(g.GetColumn(0).Info.ColType = ColumnType.ctDateTime, 'Physical DateTime key column type must stay DateTime');
   Check(g.RowCount = 2, 'GroupBy(DateTime) distinct key count mismatch');
-  Check(g.DateTime('CreatedAt')[0] = new System.DateTime(2024, 1, 15), 'First grouped DateTime key mismatch');
-  Check(g.GetIntColumn('count')[0] = 2, 'First grouped count mismatch');
-  Check(g.GetIntColumn('count')[1] = 2, 'Second grouped count mismatch');
+  Check(g.DateTimeValues('CreatedAt')[0] = new System.DateTime(2024, 1, 15), 'First grouped DateTime key mismatch');
+  Check(g.IntValues('count')[0] = 2, 'First grouped count mismatch');
+  Check(g.IntValues('count')[1] = 2, 'Second grouped count mismatch');
 end.

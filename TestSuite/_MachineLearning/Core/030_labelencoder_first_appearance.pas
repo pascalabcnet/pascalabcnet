@@ -10,7 +10,7 @@ begin
   enc.Fit(df);
 
   var res := enc.Transform(df);
-  var labels := res.GetIntColumn('Region');
+  var labels := res.IntValues('Region');
 
   Check(labels[0] = 0, 'First appearance of South must get code 0');
   Check(labels[1] = 1, 'First appearance of North must get code 1');

@@ -13,7 +13,7 @@ begin
   Check(res.Schema.ColumnTypeAt(0) = ColumnType.ctInt, 'Constant int imputation must preserve int type');
   Check(res.GetColumn(0).Info.ColType = ColumnType.ctInt, 'Physical column type must stay int');
 
-  var age := res.GetIntColumn('Age');
+  var age := res.IntValues('Age');
   Check(age[0] = 20, 'First value mismatch');
   Check(age[1] = 25, 'Imputed value mismatch');
   Check(age[2] = 40, 'Third value mismatch');

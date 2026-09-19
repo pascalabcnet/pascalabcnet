@@ -107,6 +107,11 @@ type
     function GetColumn(name: string): Column;
     function GetSchema: DataFrameSchema;
     procedure CheckRowIndex(rowIndex: integer);
+    function GetIntColumn(name: string): array of integer;
+    function GetFloatColumn(name: string): array of real;
+    function GetStrColumn(name: string): array of string;
+    function GetBoolColumn(name: string): array of boolean;
+    function GetDateTimeColumn(name: string): array of System.DateTime;
     
     function CloneWithSharedColumns: DataFrame;
   public
@@ -238,42 +243,31 @@ type
     procedure AddDateTimeColumn(name: string; data: array of System.DateTime; valid: array of boolean := nil);
     
     /// Возвращает целочисленный массив значений столбца с данным именем.
-    function GetIntColumn(name: string): array of integer;
-    /// Возвращает вещественный массив значений столбца с данным именем.
-    function GetFloatColumn(name: string): array of real;
-    /// Возвращает строковый массив значений столбца с данным именем.
-    function GetStrColumn(name: string): array of string;
-    /// Возвращает логический массив значений столбца с данным именем.
-    function GetBoolColumn(name: string): array of boolean;
-    /// Возвращает массив DateTime-значений столбца с данным именем.
-    function GetDateTimeColumn(name: string): array of System.DateTime;
-    
-    /// Возвращает целочисленный массив значений столбца с данным именем.
-    function Int(name: string): array of integer;
+    function IntValues(name: string): array of integer;
     /// Возвращает целочисленное значение ячейки по индексам строки и столбца.
     function Int(rowIndex, colIndex: integer): integer;
     /// Возвращает целочисленное значение ячейки по индексу строки и имени столбца.
     function Int(rowIndex: integer; colName: string): integer;
     /// Возвращает вещественный массив значений столбца с данным именем.
-    function Float(name: string): array of real;
+    function FloatValues(name: string): array of real;
     /// Возвращает вещественное значение ячейки по индексам строки и столбца.
     function Float(rowIndex, colIndex: integer): real;
     /// Возвращает вещественное значение ячейки по индексу строки и имени столбца.
     function Float(rowIndex: integer; colName: string): real;
     /// Возвращает строковый массив значений столбца с данным именем.
-    function Str(name: string): array of string;
+    function StrValues(name: string): array of string;
     /// Возвращает строковое значение ячейки по индексам строки и столбца.
     function Str(rowIndex, colIndex: integer): string;
     /// Возвращает строковое значение ячейки по индексу строки и имени столбца.
     function Str(rowIndex: integer; colName: string): string;
     /// Возвращает логический массив значений столбца с данным именем.
-    function Bool(name: string): array of boolean;
+    function BoolValues(name: string): array of boolean;
     /// Возвращает логическое значение ячейки по индексам строки и столбца.
     function Bool(rowIndex, colIndex: integer): boolean;
     /// Возвращает логическое значение ячейки по индексу строки и имени столбца.
     function Bool(rowIndex: integer; colName: string): boolean;
     /// Возвращает массив DateTime-значений столбца с данным именем.
-    function DateTime(name: string): array of System.DateTime;
+    function DateTimeValues(name: string): array of System.DateTime;
     /// Возвращает DateTime-значение ячейки по индексам строки и столбца.
     function DateTime(rowIndex, colIndex: integer): System.DateTime;
     /// Возвращает DateTime-значение ячейки по индексу строки и имени столбца.
@@ -363,11 +357,14 @@ type
     /// Возвращает число различных непустых значений столбца
     function NUnique(colName: string): integer;
     /// Возвращает таблицу частот значений столбца.
-    /// Результат сортируется по убыванию Count,
-    /// при равенстве частот сохраняется порядок первого появления
+    /// По умолчанию результат сортируется по убыванию Count.
     function ValueCounts(colName: string): DataFrame;
-    /// Возвращает таблицу частот значений столбца с явным именем столбца счётчиков
-    function ValueCounts(colName: string; countColName: string): DataFrame;
+    /// Возвращает таблицу частот с явным именем столбца счётчиков.
+    /// sort=false сохраняет порядок первого появления значений.
+    /// ascending задаёт направление сортировки по частоте.
+    /// При равенстве частот сохраняется порядок первого появления.
+    function ValueCounts(colName: string; countColName: string;
+      sort: boolean := true; ascending: boolean := false): DataFrame;
     /// Возвращает число пропусков в столбце
     function MissingCount(colName: string): integer;
     /// Возвращает таблицу с числом пропусков по всем столбцам
@@ -2847,40 +2844,30 @@ end;
   
 function DataFrame.GetIntColumn(name: string): array of integer;
 begin
-  var i := ColumnIndex(name);
-  var c := IntColumn(columns[i]);
-  Result := c.Data;
+  Result := GetColumn(name).IntValues;
 end;
 
 function DataFrame.GetFloatColumn(name: string): array of real;
 begin
-  var i := ColumnIndex(name);
-  var c := FloatColumn(columns[i]);
-  Result := c.Data;
+  Result := GetColumn(name).FloatValues;
 end;
 
 function DataFrame.GetStrColumn(name: string): array of string;
 begin
-  var i := ColumnIndex(name);
-  var c := StrColumn(columns[i]);
-  Result := c.Data;
+  Result := GetColumn(name).StrValues;
 end;
 
 function DataFrame.GetBoolColumn(name: string): array of boolean;
 begin
-  var i := ColumnIndex(name);
-  var c := BoolColumn(columns[i]);
-  Result := c.Data;
+  Result := GetColumn(name).BoolValues;
 end;
 
 function DataFrame.GetDateTimeColumn(name: string): array of System.DateTime;
 begin
-  var i := ColumnIndex(name);
-  var c := DateTimeColumn(columns[i]);
-  Result := c.Data;
+  Result := GetColumn(name).DateTimeValues;
 end;
 
-function DataFrame.Int(name: string): array of integer;
+function DataFrame.IntValues(name: string): array of integer;
 begin
   Result := GetIntColumn(name);
 end;
@@ -2901,7 +2888,7 @@ begin
   Result := Int(rowIndex, ColumnIndex(colName));
 end;
 
-function DataFrame.Float(name: string): array of real;
+function DataFrame.FloatValues(name: string): array of real;
 begin
   Result := GetFloatColumn(name);
 end;
@@ -2922,7 +2909,7 @@ begin
   Result := Float(rowIndex, ColumnIndex(colName));
 end;
 
-function DataFrame.Str(name: string): array of string;
+function DataFrame.StrValues(name: string): array of string;
 begin
   Result := GetStrColumn(name);
 end;
@@ -2943,7 +2930,7 @@ begin
   Result := Str(rowIndex, ColumnIndex(colName));
 end;
 
-function DataFrame.Bool(name: string): array of boolean;
+function DataFrame.BoolValues(name: string): array of boolean;
 begin
   Result := GetBoolColumn(name);
 end;
@@ -2964,7 +2951,7 @@ begin
   Result := Bool(rowIndex, ColumnIndex(colName));
 end;
 
-function DataFrame.DateTime(name: string): array of System.DateTime;
+function DataFrame.DateTimeValues(name: string): array of System.DateTime;
 begin
   Result := GetDateTimeColumn(name);
 end;
@@ -3820,7 +3807,8 @@ begin
   Result := df.ValueCounts(Self.Info.Name);
 end;
 
-function DataFrame.ValueCounts(colName: string; countColName: string): DataFrame;
+function DataFrame.ValueCounts(colName: string; countColName: string;
+  sort: boolean; ascending: boolean): DataFrame;
 begin
   var ci := ColumnIndex(colName);
   var col := GetColumn(ci);
@@ -3859,12 +3847,16 @@ begin
       for var i := 0 to values.Count - 1 do
         order.Add(i);
 
-      order.Sort((a, b) ->
-      begin
-        Result := counts[b].CompareTo(counts[a]);
-        if Result = 0 then
-          Result := a.CompareTo(b);
-      end);
+      if sort then
+        order.Sort((a, b) ->
+        begin
+          if ascending then
+            Result := counts[a].CompareTo(counts[b])
+          else
+            Result := counts[b].CompareTo(counts[a]);
+          if Result = 0 then
+            Result := a.CompareTo(b);
+        end);
 
       var sortedValues := new integer[values.Count];
       var sortedCounts := new integer[values.Count];
@@ -3902,12 +3894,16 @@ begin
       for var i := 0 to values.Count - 1 do
         order.Add(i);
 
-      order.Sort((a, b) ->
-      begin
-        Result := counts[b].CompareTo(counts[a]);
-        if Result = 0 then
-          Result := a.CompareTo(b);
-      end);
+      if sort then
+        order.Sort((a, b) ->
+        begin
+          if ascending then
+            Result := counts[a].CompareTo(counts[b])
+          else
+            Result := counts[b].CompareTo(counts[a]);
+          if Result = 0 then
+            Result := a.CompareTo(b);
+        end);
 
       var sortedValues := new real[values.Count];
       var sortedCounts := new integer[values.Count];
@@ -3945,12 +3941,16 @@ begin
       for var i := 0 to values.Count - 1 do
         order.Add(i);
 
-      order.Sort((a, b) ->
-      begin
-        Result := counts[b].CompareTo(counts[a]);
-        if Result = 0 then
-          Result := a.CompareTo(b);
-      end);
+      if sort then
+        order.Sort((a, b) ->
+        begin
+          if ascending then
+            Result := counts[a].CompareTo(counts[b])
+          else
+            Result := counts[b].CompareTo(counts[a]);
+          if Result = 0 then
+            Result := a.CompareTo(b);
+        end);
 
       var sortedValues := new string[values.Count];
       var sortedCounts := new integer[values.Count];
@@ -3988,12 +3988,16 @@ begin
       for var i := 0 to values.Count - 1 do
         order.Add(i);
 
-      order.Sort((a, b) ->
-      begin
-        Result := counts[b].CompareTo(counts[a]);
-        if Result = 0 then
-          Result := a.CompareTo(b);
-      end);
+      if sort then
+        order.Sort((a, b) ->
+        begin
+          if ascending then
+            Result := counts[a].CompareTo(counts[b])
+          else
+            Result := counts[b].CompareTo(counts[a]);
+          if Result = 0 then
+            Result := a.CompareTo(b);
+        end);
 
       var sortedValues := new boolean[values.Count];
       var sortedCounts := new integer[values.Count];
@@ -4031,12 +4035,16 @@ begin
       for var i := 0 to values.Count - 1 do
         order.Add(i);
 
-      order.Sort((a, b) ->
-      begin
-        Result := counts[b].CompareTo(counts[a]);
-        if Result = 0 then
-          Result := a.CompareTo(b);
-      end);
+      if sort then
+        order.Sort((a, b) ->
+        begin
+          if ascending then
+            Result := counts[a].CompareTo(counts[b])
+          else
+            Result := counts[b].CompareTo(counts[a]);
+          if Result = 0 then
+            Result := a.CompareTo(b);
+        end);
 
       var sortedValues := new System.DateTime[values.Count];
       var sortedCounts := new integer[values.Count];

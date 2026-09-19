@@ -12,6 +12,6 @@ id,created_at,name
   df.Print;
   Println;
   Println(df.GetColumnType('created_at'));
-  Println(df.DateTime('created_at')[0].Year);
-  Println(df.DateTime('created_at')[1].Hour);
+  Println(df.DateTimeValues('created_at')[0].Year);
+  Println(df.DateTimeValues('created_at')[1].Hour);
 end.

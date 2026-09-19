@@ -43,10 +43,10 @@ begin
   var labels := model.Predict(X);
   
   // Получаем названия городов
-  var cities := df.Str('city');
+  var cities := df.StrValues('city');
   
   // Получаем численность населения городов
-  var populations := df.Float('population');
+  var populations := df.FloatValues('population');
 
   // Выводим, сколько кластеров нашёл алгоритм
   Println($'Число кластеров: {model.ClustersCount}');

@@ -18,7 +18,7 @@ begin
 
   var features := ['Класс', 'Пол', 'Возраст', 'БратьяИСупруги', 'РодителиИДети', 'ЦенаБилета', 'ПортПосадки'];
   var X := df.ToMatrix(features);
-  var y := df.Int('Выжил');
+  var y := df.IntValues('Выжил');
 
   var model := new RandomForestClassifier(nTrees := 100, maxDepth := 6, minSamplesLeaf := 3, minSamplesSplit := 6, seed := 42);
   model.Fit(X, y);

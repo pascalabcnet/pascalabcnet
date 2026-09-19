@@ -13,7 +13,7 @@ id,created_at,name
 
   Println('Явная схема:');
   df1.Print;
-  Println(df1.DateTime('created_at')[0].Year);
+  Println(df1.DateTimeValues('created_at')[0].Year);
 
   var df2 := DataFrame.FromCsvText(text);
 

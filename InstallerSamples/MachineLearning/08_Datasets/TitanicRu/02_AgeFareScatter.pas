@@ -7,7 +7,7 @@ begin
 
   var age := df.ToVector('Возраст');
   var fare := df.ToVector('ЦенаБилета');
-  var y := df.Int('Выжил');
+  var y := df.IntValues('Выжил');
 
   Plot.Points(age, fare, y, size := 5);
   Plot.XLabel := 'Возраст';

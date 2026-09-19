@@ -16,8 +16,8 @@ id,created_at,name
   Check(res.HasColumn('created_at_month'), 'Month column missing');
   Check(res.HasColumn('created_at_day'), 'Day column missing');
   Check(res.GetColumnType('created_at_year') = ColumnType.ctInt, 'Year column type mismatch');
-  Check(res.Int('created_at_year')[0] = 2024, 'First year mismatch');
-  Check(res.Int('created_at_month')[1] = 2, 'Second month mismatch');
-  Check(res.Int('created_at_day')[1] = 16, 'Second day mismatch');
+  Check(res.IntValues('created_at_year')[0] = 2024, 'First year mismatch');
+  Check(res.IntValues('created_at_month')[1] = 2, 'Second month mismatch');
+  Check(res.IntValues('created_at_day')[1] = 16, 'Second day mismatch');
   CheckSchemaMatchesColumns(res);
 end.

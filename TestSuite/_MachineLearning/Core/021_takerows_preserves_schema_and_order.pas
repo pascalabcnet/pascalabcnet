@@ -10,7 +10,7 @@ begin
   var res := df.TakeRows([2, 0]);
 
   Check(res.RowCount = 2, 'TakeRows row count mismatch');
-  Check(res.GetStrColumn('City')[0] = 'C', 'First row order mismatch');
-  Check(res.GetStrColumn('City')[1] = 'A', 'Second row order mismatch');
+  Check(res.StrValues('City')[0] = 'C', 'First row order mismatch');
+  Check(res.StrValues('City')[1] = 'A', 'Second row order mismatch');
   CheckSchemaMatchesColumns(res, Arr(true, false));
 end.

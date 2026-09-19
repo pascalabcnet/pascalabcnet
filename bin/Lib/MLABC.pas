@@ -108,6 +108,7 @@ type
   ClusteringDataPipeline = MLPipelineABC.ClusteringDataPipeline;
   
   DataFrame = DataFrameABC.DataFrame;
+  ODSReader = DataFrameABC.ODSReader;
   DataFrameCursor = DataFrameABCCore.DataFrameCursor;
   DataValue = DataFrameABCCore.DataValue;
   ColumnType = DataFrameABCCore.ColumnType;

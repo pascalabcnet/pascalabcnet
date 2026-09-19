@@ -42,9 +42,9 @@ begin
   var pred := pipe.Predict(testDf);
   var y := testDf.ToVector(target);
 
-  var models := testDf.Str('model');
-  var makes := testDf.Str('Make');
-  var years := testDf.Int('year');
+  var models := testDf.StrValues('model');
+  var makes := testDf.StrValues('Make');
+  var years := testDf.IntValues('year');
 
   var idx := Arr(0..pred.Length - 1);
   idx := idx.OrderByDescending(i -> Abs(y[i] - pred[i])).ToArray;

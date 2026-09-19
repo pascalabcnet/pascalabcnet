@@ -2,7 +2,7 @@ uses MLABC;
 
 function SurvivalRate(df: DataFrame): real;
 begin
-  Result := df.Int('Выжил').Average;
+  Result := df.IntValues('Выжил').Average;
 end;
 
 begin

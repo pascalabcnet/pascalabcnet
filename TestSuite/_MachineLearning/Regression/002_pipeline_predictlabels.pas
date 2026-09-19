@@ -20,7 +20,7 @@ begin
   var pred := pipe.Predict(testDf);
   var predLabels := pipe.PredictLabels(testDf);
   var y := pipe.GetEncodedLabels(testDf);
-  var trueLabels := testDf.GetStrColumn(ds.Target);
+  var trueLabels := testDf.StrValues(ds.Target);
 
   Check(classes.Length > 0, 'classes must not be empty');
   Check(pred.Length = testDf.RowCount, 'Predict length mismatch');

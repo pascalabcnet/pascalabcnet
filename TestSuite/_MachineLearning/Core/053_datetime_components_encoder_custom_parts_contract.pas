@@ -17,7 +17,7 @@ id,created_at,name
   Check(res.HasColumn('created_at_dayofweek'), 'DayOfWeek component column missing');
   Check(res.GetColumnType('created_at_date') = ColumnType.ctDateTime, 'Date component type mismatch');
   Check(res.GetColumnType('created_at_hour') = ColumnType.ctInt, 'Hour component type mismatch');
-  Check(res.DateTime('created_at_date')[0] = new System.DateTime(2024, 1, 15), 'Date component value mismatch');
-  Check(res.Int('created_at_hour')[1] = 12, 'Hour component value mismatch');
+  Check(res.DateTimeValues('created_at_date')[0] = new System.DateTime(2024, 1, 15), 'Date component value mismatch');
+  Check(res.IntValues('created_at_hour')[1] = 12, 'Hour component value mismatch');
   CheckSchemaMatchesColumns(res);
 end.

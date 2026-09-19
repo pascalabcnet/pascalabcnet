@@ -23,7 +23,7 @@ id,created_at,name
   );
 
   Check(dfSchema.GetColumnType('created_at') = ColumnType.ctDateTime, 'Schema DateTime type expected');
-  Check(dfSchema.DateTime('created_at')[0] = new System.DateTime(2024, 1, 15), 'Schema DateTime value mismatch');
+  Check(dfSchema.DateTimeValues('created_at')[0] = new System.DateTime(2024, 1, 15), 'Schema DateTime value mismatch');
 
   var dfInfer := DataFrame.FromCsvText(
     textIso,
@@ -31,7 +31,7 @@ id,created_at,name
   );
 
   Check(dfInfer.GetColumnType('created_at') = ColumnType.ctDateTime, 'Inferred DateTime type expected');
-  Check(dfInfer.DateTime('created_at')[1] = new System.DateTime(2024, 1, 16, 12, 30, 0), 'Inferred DateTime value mismatch');
+  Check(dfInfer.DateTimeValues('created_at')[1] = new System.DateTime(2024, 1, 16, 12, 30, 0), 'Inferred DateTime value mismatch');
 
   var dfRu := DataFrame.FromCsvText(
     textRu,
@@ -39,8 +39,8 @@ id,created_at,name
   );
 
   Check(dfRu.GetColumnType('created_at') = ColumnType.ctDateTime, 'Russian DateTime inference expected');
-  Check(dfRu.DateTime('created_at')[0] = new System.DateTime(2024, 1, 15), 'Russian DateTime date mismatch');
-  Check(dfRu.DateTime('created_at')[1] = new System.DateTime(2024, 1, 16, 12, 30, 0), 'Russian DateTime value mismatch');
+  Check(dfRu.DateTimeValues('created_at')[0] = new System.DateTime(2024, 1, 15), 'Russian DateTime date mismatch');
+  Check(dfRu.DateTimeValues('created_at')[1] = new System.DateTime(2024, 1, 16, 12, 30, 0), 'Russian DateTime value mismatch');
 
   var tmp := System.IO.Path.Combine(
     System.IO.Path.GetTempPath,
@@ -51,7 +51,7 @@ id,created_at,name
   var dfRoundTrip := DataFrame.FromCsv(tmp);
 
   Check(dfRoundTrip.GetColumnType('created_at') = ColumnType.ctDateTime, 'Round-trip DateTime type expected');
-  Check(dfRoundTrip.DateTime('created_at')[1] = dfInfer.DateTime('created_at')[1], 'Round-trip DateTime value mismatch');
+  Check(dfRoundTrip.DateTimeValues('created_at')[1] = dfInfer.DateTimeValues('created_at')[1], 'Round-trip DateTime value mismatch');
   CheckSchemaMatchesColumns(dfRoundTrip);
 
   if System.IO.File.Exists(tmp) then

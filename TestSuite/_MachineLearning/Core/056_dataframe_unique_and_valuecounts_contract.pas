@@ -22,11 +22,11 @@ Moscow
 
   var vc := df.ValueCounts('city');
   Check(vc.RowCount = 3, 'ValueCounts row count mismatch');
-  Check(vc.Str('city')[0] = 'Moscow', 'ValueCounts first key mismatch');
-  Check(vc.Int('Count')[0] = 3, 'ValueCounts first count mismatch');
-  Check(vc.Str('city')[1] = 'Kazan', 'ValueCounts second key mismatch');
-  Check(vc.Int('Count')[1] = 2, 'ValueCounts second count mismatch');
-  Check(vc.Str('city')[2] = 'Omsk', 'ValueCounts third key mismatch');
-  Check(vc.Int('Count')[2] = 1, 'ValueCounts third count mismatch');
+  Check(vc.StrValues('city')[0] = 'Moscow', 'ValueCounts first key mismatch');
+  Check(vc.IntValues('Count')[0] = 3, 'ValueCounts first count mismatch');
+  Check(vc.StrValues('city')[1] = 'Kazan', 'ValueCounts second key mismatch');
+  Check(vc.IntValues('Count')[1] = 2, 'ValueCounts second count mismatch');
+  Check(vc.StrValues('city')[2] = 'Omsk', 'ValueCounts third key mismatch');
+  Check(vc.IntValues('Count')[2] = 1, 'ValueCounts third count mismatch');
   CheckSchemaMatchesColumns(vc);
 end.

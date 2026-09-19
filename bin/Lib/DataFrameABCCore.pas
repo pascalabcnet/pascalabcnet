@@ -254,6 +254,24 @@ type
     function Unique: array of DataValue; virtual;
     /// Возвращает число различных непустых значений столбца
     function NUnique: integer; virtual;
+  protected
+    function GetIntValues: array of integer; virtual;
+    function GetFloatValues: array of real; virtual;
+    function GetStrValues: array of string; virtual;
+    function GetBoolValues: array of boolean; virtual;
+    function GetDateTimeValues: array of System.DateTime; virtual;
+  public
+    /// Возвращает значения столбца как массив целых чисел.
+    property IntValues: array of integer read GetIntValues;
+    /// Возвращает значения столбца как массив вещественных чисел.
+    property FloatValues: array of real read GetFloatValues;
+    /// Возвращает значения столбца как массив строк.
+    property StrValues: array of string read GetStrValues;
+    /// Возвращает значения столбца как массив логических значений.
+    property BoolValues: array of boolean read GetBoolValues;
+    /// Возвращает значения столбца как массив DateTime.
+    property DateTimeValues: array of System.DateTime read GetDateTimeValues;
+    
     /// Пытается извлечь i-тое данное из столбца как числовое если это возможно
     function TryGetNumericValue(i: integer; var value: real): boolean; virtual; abstract;
     /// Возвращает количество строк в столбце
@@ -264,6 +282,8 @@ type
   IntColumn = class(Column)
     // Data и IsValid считаются immutable после создания
     Data: array of integer;     
+  protected
+    function GetIntValues: array of integer; override := Data;
   public
     constructor Create; begin end;
     constructor Create(name: string);
@@ -276,6 +296,8 @@ type
   /// Столбец вещественных чисел
   FloatColumn = class(Column)
     Data: array of real;        
+  protected
+    function GetFloatValues: array of real; override := Data;
   public  
     constructor Create; begin end;
     constructor Create(name: string);
@@ -289,6 +311,8 @@ type
   /// Столбец строк
   StrColumn = class(Column)
     Data: array of string;      
+  protected
+    function GetStrValues: array of string; override := Data;
   public
     constructor Create; begin end;
     constructor Create(name: string);
@@ -302,6 +326,8 @@ type
   /// Столбец булевых значений
   BoolColumn = class(Column)
     Data: array of boolean;     
+  protected
+    function GetBoolValues: array of boolean; override := Data;
   public  
     constructor Create; begin end;
     constructor Create(name: string);
@@ -315,6 +341,8 @@ type
   /// Столбец значений DateTime
   DateTimeColumn = class(Column)
     Data: array of System.DateTime;
+  protected
+    function GetDateTimeValues: array of System.DateTime; override := Data;
   public
     constructor Create; begin end;
     constructor Create(name: string);
@@ -1465,6 +1493,31 @@ end;
 function Column.NUnique: integer;
 begin
   Result := Unique.Length;
+end;
+
+function Column.GetIntValues: array of integer;
+begin
+  Error(ER_COLUMN_NOT_INT);
+end;
+
+function Column.GetFloatValues: array of real;
+begin
+  Error(ER_COLUMN_NOT_FLOAT);
+end;
+
+function Column.GetStrValues: array of string;
+begin
+  Error(ER_COLUMN_NOT_STR);
+end;
+
+function Column.GetBoolValues: array of boolean;
+begin
+  Error(ER_COLUMN_NOT_BOOL);
+end;
+
+function Column.GetDateTimeValues: array of System.DateTime;
+begin
+  Error(ER_COLUMN_NOT_DATETIME);
 end;
 
 constructor IntColumn.Create(name: string; values: array of integer; valid: array of boolean);

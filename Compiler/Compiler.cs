@@ -2670,7 +2670,7 @@ namespace PascalABCCompiler
                     "%GAC%\\" + assemblyName,
                     sourceDirective != null ? sourceDirective.location : null,
                     sourceDirective != null ? sourceDirective.source_file : ".");
-                directives.Add(directive);
+                // directives.Add(directive);
                 referenceDirectives.Add(directive);
             }
 #endif
