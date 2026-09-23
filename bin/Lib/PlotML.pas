@@ -133,7 +133,8 @@ type
       tooltips: array of string := nil);
     /// Строит диаграмму рассеяния с раскраской по целочисленным меткам.
     procedure Points(x, y: array of real; labels: array of integer;
-      size: real := 6; marker: MarkerType := MarkerType.Circle);  
+      size: real := 6; marker: MarkerType := MarkerType.Circle;
+      classNames: array of string := nil);  
     /// Строит гистограмму значений.
     procedure Hist(x: array of real; bins: integer := 0; 
       color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
@@ -179,7 +180,8 @@ type
       tooltips: array of string := nil);
     /// Строит диаграмму рассеяния по векторам x и y с раскраской по меткам.
     procedure Points(x, y: Vector; labels: array of integer;
-      size: real := 6; marker: MarkerType := MarkerType.Circle);
+      size: real := 6; marker: MarkerType := MarkerType.Circle;
+      classNames: array of string := nil);
     /// Строит гистограмму значений вектора.
     procedure Hist(x: Vector; bins: integer := 0;
       color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
@@ -264,6 +266,7 @@ type
     static function CreatePointSeries(x, y: array of real; 
       color: ColorWPF; size: real; marker: MarkerType;
       tooltips: array of string): MarkerGraphWPF;
+    static function CreateXYTooltipTemplate: DataTemplate;
     
     static procedure DrawLine(chart: ChartWPF; x, y: array of real;
       color: ColorWPF; thickness: real; legend: string);
@@ -275,6 +278,9 @@ type
     static procedure DrawPoints(chart: ChartWPF; x, y: array of real;
       color: ColorWPF; size: real; marker: MarkerType; legend: string;
       tooltips: array of string);
+
+    static procedure RefreshLegend(chart: ChartWPF;
+      master: InteractiveDataDisplay.WPF.PlotBase);
       
     static procedure DrawHeatmap(chart: ChartWPF; m: array[,] of real; names: array of string := nil);  
 
@@ -338,7 +344,8 @@ type
       
     /// Строит диаграмму рассеяния с раскраской по целочисленным меткам.
     static procedure Points(x, y: array of real;
-      labels: array of integer; color: ColorWPF := DefaultColor; size: real := 6; marker: MarkerType := MarkerType.Circle);
+      labels: array of integer; color: ColorWPF := DefaultColor; size: real := 6;
+      marker: MarkerType := MarkerType.Circle; classNames: array of string := nil);
       
     /// Строит гистограмму значений.
     static procedure Hist(x: array of real; bins: integer := 0;
@@ -444,8 +451,8 @@ type
     /// Строит диаграмму рассеяния по векторам x и y с раскраской по меткам.
     static procedure Points(x, y: Vector;
       labels: array of integer; color: ColorWPF := DefaultColor; size: real := 6;
-      marker: MarkerType := MarkerType.Circle) 
-      := Points(x.Data, y.Data, labels, color, size, marker);
+      marker: MarkerType := MarkerType.Circle; classNames: array of string := nil) 
+      := Points(x.Data, y.Data, labels, color, size, marker, classNames);
     
     /// Строит гистограмму значений вектора.
     static procedure Hist(x: Vector; bins: integer := 0;
@@ -876,6 +883,24 @@ begin
   if (tooltips <> nil) and (tooltips.Length <> x.Length) then
     raise new System.ArgumentException(
       'Points: tooltips length must match point count / число подсказок должно совпадать с числом точек');
+end;
+
+procedure ValidateLabeledPoints(x, y: array of real; labels: array of integer;
+  classNames: array of string);
+begin
+  if (x = nil) or (y = nil) or (labels = nil) then
+    raise new System.ArgumentNullException;
+
+  if (x.Length <> y.Length) or (x.Length <> labels.Length) then
+    raise new System.ArgumentException(
+      'Points: x, y and labels sizes mismatch / размеры x, y и labels не совпадают');
+
+  if classNames <> nil then
+    foreach var labelValue in labels do
+      if (labelValue < 0) or (labelValue >= classNames.Length) then
+        raise new System.ArgumentException(
+          $'Points: label {labelValue} is outside classNames range 0..{classNames.Length - 1} / ' +
+          $'метка {labelValue} выходит за диапазон classNames 0..{classNames.Length - 1}');
 end;
 
 function IntArrayToReal(a: array of integer): array of real;
@@ -1838,13 +1863,9 @@ begin
 end;
 
 procedure Cell.Points(x, y: array of real; labels: array of integer;
-  size: real; marker: MarkerType);
+  size: real; marker: MarkerType; classNames: array of string);
 begin
-  if (x = nil) or (y = nil) or (labels = nil) then
-    raise new System.ArgumentNullException;
-
-  if (x.Length <> y.Length) or (x.Length <> labels.Length) then
-    raise new System.ArgumentException('Points: array sizes mismatch');
+  ValidateLabeledPoints(x, y, labels, classNames);
 
   var classes := labels.Distinct.ToArray;
   &Array.Sort(classes);
@@ -1860,7 +1881,8 @@ begin
 
     var clr := if c = -1 then Colors.Black else ColorFromPalette(pal, c);
 
-    self.Points(xs, ys, clr, size, marker, nil);
+    var legend := if classNames = nil then nil else classNames[c];
+    self.Points(xs, ys, clr, size, marker, legend);
   end;
 end;
 
@@ -2078,9 +2100,10 @@ begin
   Points(x.Data, y.Data, color, size, marker, legend, tooltips);
 end;
 
-procedure Cell.Points(x, y: Vector; labels: array of integer; size: real; marker: MarkerType);
+procedure Cell.Points(x, y: Vector; labels: array of integer; size: real;
+  marker: MarkerType; classNames: array of string);
 begin
-  Points(x.Data, y.Data, labels, size, marker);
+  Points(x.Data, y.Data, labels, size, marker, classNames);
 end;
 
 procedure Cell.Heatmap(m: Matrix);
@@ -2423,10 +2446,32 @@ begin
   Result := g;
 end;
 
+static function Plot.CreateXYTooltipTemplate: DataTemplate;
+begin
+  var panelFactory := new FrameworkElementFactory(typeof(StackPanel));
+  panelFactory.SetValue(StackPanel.OrientationProperty, Orientation.Vertical);
+
+  var xFactory := new FrameworkElementFactory(typeof(TextBlock));
+  var xBinding := new Binding('X');
+  xBinding.StringFormat := 'X: {0}';
+  xFactory.SetBinding(TextBlock.TextProperty, xBinding);
+  panelFactory.AppendChild(xFactory);
+
+  var yFactory := new FrameworkElementFactory(typeof(TextBlock));
+  var yBinding := new Binding('Y');
+  yBinding.StringFormat := 'Y: {0}';
+  yFactory.SetBinding(TextBlock.TextProperty, yBinding);
+  panelFactory.AppendChild(yFactory);
+
+  Result := new DataTemplate;
+  Result.VisualTree := panelFactory;
+end;
+
 static procedure Plot.DrawLine(chart: ChartWPF; x, y: array of real;
   color: ColorWPF; thickness: real; legend: string);
 begin
   var g := CreateLineSeries(x, y, color);
+  InteractiveDataDisplay.WPF.Legend.SetIsVisible(g, legend <> nil);
 
   g.StrokeThickness := thickness;
 
@@ -2434,7 +2479,7 @@ begin
   begin  
     g.Description := legend;
     chart.LegendVisibility := Visibility.Visible;
-  end;  
+  end;
 
   AddSeries(chart, g);
 end;
@@ -2443,6 +2488,7 @@ static procedure Plot.DrawImplicitLine(chart: ChartWPF; A, B, C: real;
   color: ColorWPF; thickness: real; legend: string);
 begin
   var g := new ImplicitLinePlot(A, B, C, color, thickness);
+  InteractiveDataDisplay.WPF.Legend.SetIsVisible(g, legend <> nil);
 
   if legend <> nil then
   begin
@@ -2486,14 +2532,29 @@ static procedure Plot.DrawPoints(chart: ChartWPF; x, y: array of real;
   tooltips: array of string);
 begin
   var g := CreatePointSeries(x, y, color, size, marker, tooltips);
+  InteractiveDataDisplay.WPF.Legend.SetIsVisible(g, legend <> nil);
 
   if legend <> nil then
   begin  
     g.Description := legend;
+    if tooltips = nil then
+      g.TooltipTemplate := CreateXYTooltipTemplate;
     chart.LegendVisibility := Visibility.Visible;
   end;
 
   AddSeries(chart, g);
+
+  if legend <> nil then
+    RefreshLegend(chart, g);
+end;
+
+static procedure Plot.RefreshLegend(chart: ChartWPF;
+  master: InteractiveDataDisplay.WPF.PlotBase);
+begin
+  chart.UpdateLayout;
+  var panel := new InteractiveDataDisplay.WPF.LegendItemsPanel;
+  panel.MasterPlot := master;
+  chart.LegendContent := panel;
 end;
 
 static procedure Plot.DrawBar(chart: ChartWPF; x, y: array of real;
@@ -2960,13 +3021,9 @@ begin
 end;
 
 static procedure Plot.Points(x, y: array of real; labels: array of integer;
-  color: ColorWPF; size: real; marker: MarkerType);
+  color: ColorWPF; size: real; marker: MarkerType; classNames: array of string);
 begin
-  if (x = nil) or (y = nil) or (labels = nil) then
-    raise new System.ArgumentNullException;
-
-  if (x.Length <> y.Length) or (x.Length <> labels.Length) then
-    raise new System.ArgumentException('Points: array sizes mismatch');
+  ValidateLabeledPoints(x, y, labels, classNames);
 
   var classes := labels.Distinct.ToArray;
   &Array.Sort(classes);
@@ -2987,7 +3044,8 @@ begin
       then color
       else ColorFromPalette(pal, c);
 
-    Points(xs, ys, clr, size, marker, nil);
+    var legend := if classNames = nil then nil else classNames[c];
+    Points(xs, ys, clr, size, marker, legend);
   end;
 end;
 
