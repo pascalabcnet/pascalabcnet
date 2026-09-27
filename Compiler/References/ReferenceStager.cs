@@ -16,9 +16,16 @@ namespace PascalABCCompiler.References
         public bool OverwriteOutputFile { get; }
     }
 
-    internal sealed class StagedReference
+    /// <summary>
+    /// The stable result of preparing one reference for the current compilation.
+    /// Resolution tells us where the input assembly came from; FileName tells the
+    /// compiler which file to preload and later read. For a copy-local reference
+    /// FileName points to the staged output copy, otherwise it points to the
+    /// resolved input file itself.
+    /// </summary>
+    internal sealed class PreparedReference
     {
-        public StagedReference(ResolvedReference resolvedReference, string fileName)
+        public PreparedReference(ResolvedReference resolvedReference, string fileName)
         {
             ResolvedReference = resolvedReference;
             FileName = fileName;
@@ -30,7 +37,7 @@ namespace PascalABCCompiler.References
 
     internal interface IReferenceStager
     {
-        StagedReference Stage(ResolvedReference reference, ReferenceStagingContext context);
+        PreparedReference Stage(ResolvedReference reference, ReferenceStagingContext context);
     }
 
     /// <summary>
@@ -39,10 +46,10 @@ namespace PascalABCCompiler.References
     /// </summary>
     internal sealed class ClassicReferenceStager : IReferenceStager
     {
-        public StagedReference Stage(ResolvedReference reference, ReferenceStagingContext context)
+        public PreparedReference Stage(ResolvedReference reference, ReferenceStagingContext context)
         {
             if (!reference.CopyLocal)
-                return new StagedReference(reference, reference.FileName);
+                return new PreparedReference(reference, reference.FileName);
 
             try
             {
@@ -57,7 +64,7 @@ namespace PascalABCCompiler.References
                         File.Copy(reference.FileName, outputFileName, false);
                 }
 
-                return new StagedReference(reference, outputFileName);
+                return new PreparedReference(reference, outputFileName);
             }
             catch (ArgumentException)
             {

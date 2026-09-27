@@ -2117,15 +2117,6 @@ namespace PascalABCCompiler
             }
         }
 
-        private string GetReferenceFileName(string FileName, SyntaxTree.SourceContext sc, string curr_path, bool overwrite)
-        {
-            var reference = new ReferenceSpec(FileName, curr_path,
-                currentCompilationUnit.SyntaxTree.file_name, sc);
-            var resolvedReference = referenceResolver.Resolve(reference);
-            var stagingContext = new ReferenceStagingContext(CompilerOptions.OutputDirectory, overwrite);
-            return referenceStager.Stage(resolvedReference, stagingContext).FileName;
-        }
-
         public string GetUnitFileName(SyntaxTree.unit_or_namespace unitNode, string currentPath, ILanguage currentUnitLanguage)
         {
             if (unitNode is SyntaxTree.uses_unit_in unitNodeCasted && unitNodeCasted.name == null)
@@ -2295,31 +2286,36 @@ namespace PascalABCCompiler
             }
         }
 
-        private Assembly PreloadReference(compiler_directive reference)
-        {
-            var sc = GetSourceContext(reference);
-            var fileName = GetReferenceFileName(reference.directive, sc, Path.GetDirectoryName(reference.source_file), true);
-            return assemblyResolveScope.PreloadAssembly(fileName);
-        }
-
-        private CompilationUnit CompileReference(unit_node_list dlls, compiler_directive reference)
+        /// <summary>
+        /// Resolves and stages a directive exactly once for this compilation.
+        /// The returned object keeps the final path stable: assembly preload and
+        /// metadata reading below must use the same physical file.
+        /// </summary>
+        private PreparedReference PrepareReference(compiler_directive reference)
         {
             var sourceContext = GetSourceContext(reference);
-            string unitName;
-            try
-            {
-                unitName = GetReferenceFileName(reference.directive, sourceContext, Path.GetDirectoryName(reference.source_file), false);
-            }
-            catch (AssemblyNotFound)
-            {
-                throw;
-            }
-            // ToDo плохо, пока дебажил - тут постоянно ловились другие исключения, не связанные с неправильным знаками в пути к сборке |
-            // EVA  (проверить)
-            catch (Exception)
-            {
-                throw new InvalidAssemblyPathError(currentCompilationUnit.SyntaxTree.file_name, sourceContext);
-            }
+            var specification = new ReferenceSpec(reference.directive,
+                Path.GetDirectoryName(reference.source_file),
+                currentCompilationUnit.SyntaxTree.file_name, sourceContext);
+            var resolvedReference = referenceResolver.Resolve(specification);
+
+            // Historical {$reference} behaviour copies a directly referenced
+            // local DLL to the output directory before it is loaded. Staging is
+            // separate from lookup now, but still happens at the same point.
+            var stagingContext = new ReferenceStagingContext(
+                CompilerOptions.OutputDirectory, true);
+            return referenceStager.Stage(resolvedReference, stagingContext);
+        }
+
+        private Assembly PreloadReference(PreparedReference reference)
+        {
+            return assemblyResolveScope.PreloadAssembly(reference.FileName);
+        }
+
+        private CompilationUnit CompileReference(unit_node_list dlls, PreparedReference reference)
+        {
+            var sourceContext = reference.ResolvedReference.Specification.SourceContext;
+            string unitName = reference.FileName;
 
             CompilationUnit currentUnit = null;
             if (UnitTable.Count == 0) throw new ProgramModuleExpected(unitName, null);
@@ -2643,26 +2639,37 @@ namespace PascalABCCompiler
             if (assemblyResolveScope == null)
                 assemblyResolveScope = new NetHelper.AssemblyResolveScope(AppDomain.CurrentDomain);
 
-            // It's important to preload all the referenced assemblies before starting the compilation. During the
-            // compilation, we need to access types from every referenced assembly. An attempt to access them could fail
-            // if a transitively dependent assembly is not loaded, yet.
+            // Prepare each directive only once. Preparation performs the old
+            // lookup and copy-local work, and remembers the exact file that all
+            // later phases must use. This is important for SDK/NuGet support:
+            // an already selected asset graph must not be resolved differently
+            // when the compiler starts reading metadata.
+            var preparedReferences = new List<PreparedReference>();
+
+            // It is important to preload all referenced assemblies before
+            // reading types from any of them. During metadata reading, accessing
+            // a type can require another referenced assembly to be loaded.
             //
             // It's not always possible to solve by re-ordering the references, since there are cases of
             // mutually-dependent assemblies (i.e. dependency loops) in the wild.
             foreach (var reference in referenceDirectives)
             {
+                PreparedReference preparedReference;
                 try
                 {
-                    PreloadReference(reference);
+                    preparedReference = PrepareReference(reference);
+                    PreloadReference(preparedReference);
                 }
                 catch (FileLoadException ex)
                 {
                     throw new CommonCompilerError(ex.Message, compilationUnit.SyntaxTree.file_name, reference.location.begin_line_num, reference.location.end_line_num);
                 }
+                preparedReferences.Add(preparedReference);
             }
 
-
-            foreach (var reference in referenceDirectives)
+            // Reuse the prepared paths. The old implementation repeated lookup
+            // and staging here even though preload had already done that work.
+            foreach (var reference in preparedReferences)
                 CompileReference(dlls, reference);
 
             return dlls;
