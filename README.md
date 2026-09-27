@@ -49,8 +49,8 @@ _RebuildStandartModules_net10.bat Release
 Run the console test suites independently:
 
 ```bat
-_RunConsoleTests_net40.bat
-_RunConsoleTests_net10_clean.bat
+_RunCrossTargetTests_net40.bat
+_RunCrossTargetTests_net10_clean.bat
 ```
 
 Create the ready-to-publish .NET 10 console distribution:
@@ -138,8 +138,8 @@ _RebuildStandartModules_net10.bat Release
 Раздельный запуск консольных тестов:
 
 ```bat
-_RunConsoleTests_net40.bat
-_RunConsoleTests_net10_clean.bat
+_RunCrossTargetTests_net40.bat
+_RunCrossTargetTests_net10_clean.bat
 ```
 
 Создание готового дистрибутива консольного компилятора .NET 10:
@@ -177,5 +177,5 @@ mono pabcnetc.exe
 
 Основной набор тестов находится в каталоге `TestSuite`. Полный старый TestRunner
 используется сценариями сборки .NET Framework. Для независимой проверки консольных
-компиляторов используйте `_RunConsoleTests_net40.bat` и
-`_RunConsoleTests_net10_clean.bat`.
+компиляторов используйте `_RunCrossTargetTests_net40.bat` и
+`_RunCrossTargetTests_net10_clean.bat`.

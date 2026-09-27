@@ -45,11 +45,50 @@ namespace VisualPascalABC
 
         public static NamedValue GetNullBasedArray(Value val)
         {
-            IList<FieldInfo> flds = val.Type.GetFields();
-            if (flds.Count != 3) return null;
-            foreach (FieldInfo fi in flds)
-                if (fi.Name == "NullBasedArray") return fi.GetValue(val);
+            try
+            {
+                val = DereferenceIfNeeded(val);
+                if (val == null || !IsPascalArrayWrapper(val.Type))
+                    return null;
+
+                foreach (FieldInfo fi in val.Type.GetFields())
+                    if (fi.Name == "NullBasedArray")
+                    {
+                        NamedValue array = fi.GetValue(val);
+                        return array.IsArray ? array : null;
+                    }
+            }
+            catch
+            {
+            }
             return null;
+        }
+
+        public static Value DereferenceIfNeeded(Value val)
+        {
+            if (val != null && val.Type.IsByRef() && !val.Type.IsPrimitive)
+                return val.Dereference;
+            return val;
+        }
+
+        private static bool IsPascalArrayWrapper(DebugType type)
+        {
+            Type managedType = AssemblyHelper.GetType(type.FullName);
+            if (managedType == null)
+                return false;
+
+            const System.Reflection.BindingFlags flags =
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Static;
+            System.Reflection.FieldInfo array = managedType.GetField("NullBasedArray", flags);
+            System.Reflection.FieldInfo lower = managedType.GetField("LowerIndex", flags);
+            System.Reflection.FieldInfo upper = managedType.GetField("UpperIndex", flags);
+
+            return array != null && !array.IsStatic && array.FieldType.IsArray &&
+                lower != null && lower.IsStatic && lower.IsLiteral &&
+                upper != null && upper.IsStatic && upper.IsLiteral;
         }
 
         public static MethodInfo GetMethod(DebugType t, string name)

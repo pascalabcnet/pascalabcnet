@@ -144,6 +144,7 @@
 using Languages.Facade;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.PCU;
+using PascalABCCompiler.References;
 using PascalABCCompiler.SemanticTreeConverters;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.TreeRealization;
@@ -518,6 +519,8 @@ namespace PascalABCCompiler
 
     public class Compiler : MarshalByRefObject, ICompiler
     {
+        private readonly IReferenceResolver referenceResolver = new ClassicReferenceResolver();
+
         int pABCCodeHealth = 0;
         public int PABCCodeHealth { get { return pABCCodeHealth; } }
 
@@ -2115,58 +2118,10 @@ namespace PascalABCCompiler
 
         private string GetReferenceFileName(string FileName, SyntaxTree.SourceContext sc, string curr_path, bool overwrite)
         {
-            FileName = FileName.Trim();
-            // NET10-TESTFIX [err0528_invalid_path]: validate reference text before
-            // modern File.Exists/GetFullPath turn malformed paths into "not found".
-            if (!CheckPathValid(FileName))
-                throw new InvalidAssemblyPathError(currentCompilationUnit.SyntaxTree.file_name, sc);
-            if (standart_assembly_dict.ContainsKey(FileName))
-                return standart_assembly_dict[FileName];
-
-            // Наверное, этот код MikhailoMMX лишний
-            //MikhailoMMX PABCRtl.dll будем искать сначала в GAC, а потом в папке с программой
-            if (FileName == StringConstants.pabc_rtl_dll_name)
-            {
-
-                string name = get_assembly_path(FileName, true);
-                if ((name != null) && (File.Exists(name)))
-                    return name;
-
-            }
-            //\MikhailoMMX
-            try
-            {
-                var FullFileName = Path.Combine(curr_path, FileName);
-                if (File.Exists(FullFileName))
-                {
-                    var NewFileName = Path.GetFullPath(Path.Combine(CompilerOptions.OutputDirectory, Path.GetFileName(FullFileName)));
-                    if (FullFileName != NewFileName)
-                    {
-                        if (overwrite)
-                            File.Copy(FullFileName, NewFileName, true);
-                        else if (!File.Exists(NewFileName))
-                            File.Copy(FullFileName, NewFileName, false);
-                    }
-
-                    return NewFileName;
-                }
-                else
-                {
-                    string name = get_assembly_path(FileName, false);//? а надо ли tolover?
-                    if (name == null)
-                        throw new AssemblyNotFound(currentCompilationUnit.SyntaxTree.file_name, FileName, sc);
-                    else
-                        if (File.Exists(name))
-                        return name;
-                    else
-                        throw new AssemblyNotFound(currentCompilationUnit.SyntaxTree.file_name, FileName, sc);
-                }
-            }
-            catch (ArgumentException ex)
-            {
-                throw new InvalidAssemblyPathError(currentCompilationUnit.SyntaxTree.file_name, sc);
-            }
-
+            var reference = new ReferenceSpec(FileName, curr_path,
+                currentCompilationUnit.SyntaxTree.file_name, sc);
+            var context = new ReferenceResolutionContext(CompilerOptions.OutputDirectory, overwrite);
+            return referenceResolver.Resolve(reference, context).FileName;
         }
 
         public string GetUnitFileName(SyntaxTree.unit_or_namespace unitNode, string currentPath, ILanguage currentUnitLanguage)

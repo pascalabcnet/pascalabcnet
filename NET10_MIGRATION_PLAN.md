@@ -65,8 +65,8 @@ _RebuildStandartModules_net10.bat Release
 ### Тесты
 
 ```bat
-_RunConsoleTests_net40.bat
-_RunConsoleTests_net10_clean.bat
+_RunCrossTargetTests_net40.bat
+_RunCrossTargetTests_net10_clean.bat
 ```
 
 Вариант `net10_clean` создаёт чистое modern-окружение и исключает влияние оставшихся PCU и результатов предыдущих запусков.

@@ -820,8 +820,10 @@ namespace VisualPascalABC
             {
                 try
                 {
-                	if (IsEnum() || val.Type.ManagedType == typeof(string)) return false;
-                    return val.IsObject || val.IsArray;
+                    Value displayValue = DebugUtils.DereferenceIfNeeded(val);
+                    int enumValue;
+                    if (DebugUtils.IsEnum(displayValue, out enumValue) || displayValue.Type.ManagedType == typeof(string)) return false;
+                    return displayValue.IsObject || displayValue.IsArray;
                 }
                 catch (System.Exception e)
                 {
@@ -835,32 +837,32 @@ namespace VisualPascalABC
             get
             {
                 List<IListItem> list = new List<IListItem>();
-                if (val.IsArray)
+                Value displayValue = DebugUtils.DereferenceIfNeeded(val);
+                if (displayValue.IsArray)
                 {
-                    foreach (NamedValue element in val.GetArrayElements())
+                    foreach (NamedValue element in displayValue.GetArrayElements())
                     {
                         list.Add(new ValueItem(element,null));
                     }
                 }
-                if (val.IsObject || val.Type.IsByRef() && !val.IsPrimitive)
+                if (displayValue.IsObject)
                 {
                     //if (IsArrayWrap())
                     //{
-                    NamedValue nv = GetNullBasedArray();
+                    NamedValue nv = DebugUtils.GetNullBasedArray(displayValue);
                     if (nv != null)
                     {
                         int i = 0;
                         foreach (NamedValue element in nv.GetArrayElements())
                         {
-                            list.Add(new ArrayValueItem(element, null, val, nv, i++));
+                            list.Add(new ArrayValueItem(element, null, displayValue, nv, i++));
 
                         }
                     }
                     //}
                     else
                     {
-                        if (!val.Type.IsByRef())
-                            return new BaseTypeItem(val, val.Type).SubItems;
+                        return new BaseTypeItem(displayValue, displayValue.Type).SubItems;
                     }
                 }
                 return list;
@@ -869,11 +871,7 @@ namespace VisualPascalABC
 
         private NamedValue GetNullBasedArray()
         {
-            IList<FieldInfo> flds = val.Type.GetFields();
-            if (flds.Count != 3) return null;
-            foreach (FieldInfo fi in flds)
-                if (fi.Name == "NullBasedArray") return fi.GetValue(val);
-            return null;
+            return DebugUtils.GetNullBasedArray(val);
         }
 
         private bool IsArrayWrap()
@@ -977,9 +975,9 @@ namespace VisualPascalABC
 
         public ArrayValueItem(NamedValue val, DebugType type, Value arr, Value sz_arr, int ind):base(val,type)
         {
-            this.arr = arr;
+            this.arr = DebugUtils.DereferenceIfNeeded(arr);
             this.ind = ind;
-            System.Reflection.FieldInfo tmp_fi = AssemblyHelper.GetType(arr.Type.FullName).GetField("LowerIndex");
+            System.Reflection.FieldInfo tmp_fi = AssemblyHelper.GetType(this.arr.Type.FullName).GetField("LowerIndex");
             if (!tmp_fi.FieldType.IsEnum)
                 low_bound = tmp_fi.GetRawConstantValue();
             else

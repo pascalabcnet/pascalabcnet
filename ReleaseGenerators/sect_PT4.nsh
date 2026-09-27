@@ -36,6 +36,10 @@ Section $(DESC_PT4) PT4
   ${AddFile} "pt4pabc2.dll"
   File "PT4\xpt4pabc2.dll"
   ${AddFile} "xpt4pabc2.dll"
+
+  File "PT4\PT4nld3p.dat"
+  ${AddFile} "PT4nld3p.dat"
+
   File "PT4\PT4nld4p.dll"
   ${AddFile} "PT4nld4p.dll"
   File "PT4\PT4Demo.exe"

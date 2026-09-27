@@ -8,7 +8,7 @@ set "ROOT=%~dp0"
 call "%ROOT%_RebuildStandartModules_net10.bat" Release
 if errorlevel 1 goto error
 
-call "%ROOT%_RunConsoleTests.bat" net10
+call "%ROOT%_RunCrossTargetTests.bat" net10
 if errorlevel 1 goto error
 
 call "%ROOT%_BuildConsoleNet10Distribution.bat"

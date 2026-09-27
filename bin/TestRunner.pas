@@ -211,6 +211,76 @@ begin
   
 end;
 
+procedure CompileReferenceFixture(sourceFileName, outputDirectory: string);
+begin
+  var comp := new Compiler();
+  var co := new CompilerOptions(sourceFileName, CompilerOptions.OutputType.ConsoleApplicaton);
+  co.Debug := true;
+  co.OutputDirectory := outputDirectory;
+  co.UseDllForSystemUnits := false;
+  co.RunWithEnvironment := false;
+  comp.Compile(co);
+  if comp.ErrorsList.Count > 0 then
+    raise new Exception('Compilation of reference fixture ' + sourceFileName +
+                        ' failed' + System.Environment.NewLine +
+                        comp.ErrorsList[0].ToString());
+end;
+
+procedure CopyRunnerAssemblies(targetDirectory: string);
+begin
+  Directory.CreateDirectory(targetDirectory);
+  var runnerDirectory := Path.GetDirectoryName(GetEXEFileName());
+  foreach var dllName in Directory.GetFiles(runnerDirectory, '*.dll') do
+    &File.Copy(dllName, Path.Combine(targetDirectory, Path.GetFileName(dllName)), true);
+end;
+
+procedure PrepareReferenceFixtures;
+begin
+  var fixtureDirectory := Path.Combine(TestSuiteDir, 'referencefixtures');
+  var unitsDirectory := Path.Combine(TestSuiteDir, 'units');
+  var usesUnitsDirectory := Path.Combine(TestSuiteDir, 'usesunits');
+
+  CompileReferenceFixture(Path.Combine(fixtureDirectory, 'ReferenceTransitiveLeaf.pas'),
+                          fixtureDirectory);
+  CompileReferenceFixture(Path.Combine(fixtureDirectory, 'ReferenceTransitiveRoot.pas'),
+                          fixtureDirectory);
+
+  CopyRunnerAssemblies(Path.Combine(unitsDirectory, 'reference fixtures'));
+  CopyRunnerAssemblies(Path.Combine(usesUnitsDirectory, 'reference fixtures'));
+
+  // The current reference pipeline stages direct assemblies only. Put the
+  // transitive fixture beside the copied Root.dll explicitly.
+  &File.Copy(Path.Combine(fixtureDirectory, 'ReferenceTransitiveLeaf.dll'),
+             Path.Combine(unitsDirectory, 'ReferenceTransitiveLeaf.dll'), true);
+end;
+
+procedure CleanupReferenceFixtures;
+begin
+  var unitsFixtureDirectory := Path.Combine(TestSuiteDir, 'units', 'reference fixtures');
+  var usesUnitsFixtureDirectory := Path.Combine(TestSuiteDir, 'usesunits', 'reference fixtures');
+  if Directory.Exists(unitsFixtureDirectory) then
+    Directory.Delete(unitsFixtureDirectory, true);
+  if Directory.Exists(usesUnitsFixtureDirectory) then
+    Directory.Delete(usesUnitsFixtureDirectory, true);
+
+  foreach var fileName in |'ReferenceTransitiveLeaf.dll', 'ReferenceTransitiveLeaf.pdb',
+                             'ReferenceTransitiveRoot.dll', 'ReferenceTransitiveRoot.pdb'| do
+  begin
+    var path := Path.Combine(TestSuiteDir, 'referencefixtures', fileName);
+    if &File.Exists(path) then
+      &File.Delete(path);
+  end;
+
+  foreach var fileName in |'Compiler.dll', 'Errors.dll',
+                             'ReferenceTransitiveLeaf.dll',
+                             'ReferenceTransitiveRoot.dll'| do
+  begin
+    var path := Path.Combine(TestSuiteDir, 'units', fileName);
+    if &File.Exists(path) then
+      &File.Delete(path);
+  end;
+end;
+
 procedure CompileAllUnits;
 begin
   var comp := new Compiler();
@@ -508,10 +578,12 @@ begin
     if (ParamCount = 0) or (ParamStr(1) = '3') then
     begin
       Println('Compiling tests with multiple units and error throwing tests...');
+      PrepareReferenceFixtures;
       CompileAllUnits;
       CopyPCUFiles;
       CompileAllUsesUnits;
       CompileErrorTests(false);
+      CleanupReferenceFixtures;
       Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
     end;
     if (ParamCount = 0) or (ParamStr(1) = '4') then
