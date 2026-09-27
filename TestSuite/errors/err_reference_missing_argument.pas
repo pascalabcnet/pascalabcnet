@@ -1,0 +1,4 @@
+{$reference}
+
+begin
+end.
