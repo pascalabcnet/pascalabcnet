@@ -519,8 +519,10 @@ namespace PascalABCCompiler
 
     public class Compiler : MarshalByRefObject, ICompiler
     {
-        private readonly IReferenceResolver referenceResolver = new ClassicReferenceResolver();
-        private readonly IReferenceStager referenceStager = new ClassicReferenceStager();
+        // Compiler only asks for a usable reference. The selected provider owns
+        // the lookup and staging policy; currently it preserves the classic
+        // direct-DLL behaviour for both target frameworks.
+        private readonly IReferenceProvider referenceProvider = new ClassicReferenceProvider();
 
         int pABCCodeHealth = 0;
         public int PABCCodeHealth { get { return pABCCodeHealth; } }
@@ -2297,14 +2299,12 @@ namespace PascalABCCompiler
             var specification = new ReferenceSpec(reference.directive,
                 Path.GetDirectoryName(reference.source_file),
                 currentCompilationUnit.SyntaxTree.file_name, sourceContext);
-            var resolvedReference = referenceResolver.Resolve(specification);
-
             // Historical {$reference} behaviour copies a directly referenced
-            // local DLL to the output directory before it is loaded. Staging is
-            // separate from lookup now, but still happens at the same point.
+            // local DLL to the output directory before it is loaded. The classic
+            // provider performs that work after applying the old lookup rules.
             var stagingContext = new ReferenceStagingContext(
                 CompilerOptions.OutputDirectory, true);
-            return referenceStager.Stage(resolvedReference, stagingContext);
+            return referenceProvider.Prepare(specification, stagingContext);
         }
 
         private Assembly PreloadReference(PreparedReference reference)
