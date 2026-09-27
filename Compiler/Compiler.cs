@@ -520,6 +520,7 @@ namespace PascalABCCompiler
     public class Compiler : MarshalByRefObject, ICompiler
     {
         private readonly IReferenceResolver referenceResolver = new ClassicReferenceResolver();
+        private readonly IReferenceStager referenceStager = new ClassicReferenceStager();
 
         int pABCCodeHealth = 0;
         public int PABCCodeHealth { get { return pABCCodeHealth; } }
@@ -2120,8 +2121,9 @@ namespace PascalABCCompiler
         {
             var reference = new ReferenceSpec(FileName, curr_path,
                 currentCompilationUnit.SyntaxTree.file_name, sc);
-            var context = new ReferenceResolutionContext(CompilerOptions.OutputDirectory, overwrite);
-            return referenceResolver.Resolve(reference, context).FileName;
+            var resolvedReference = referenceResolver.Resolve(reference);
+            var stagingContext = new ReferenceStagingContext(CompilerOptions.OutputDirectory, overwrite);
+            return referenceStager.Stage(resolvedReference, stagingContext).FileName;
         }
 
         public string GetUnitFileName(SyntaxTree.unit_or_namespace unitNode, string currentPath, ILanguage currentUnitLanguage)

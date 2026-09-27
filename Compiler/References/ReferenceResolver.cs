@@ -25,43 +25,33 @@ namespace PascalABCCompiler.References
         public SyntaxTree.SourceContext SourceContext { get; }
     }
 
-    internal sealed class ReferenceResolutionContext
-    {
-        public ReferenceResolutionContext(string outputDirectory, bool overwriteOutputFile)
-        {
-            OutputDirectory = outputDirectory;
-            OverwriteOutputFile = overwriteOutputFile;
-        }
-
-        public string OutputDirectory { get; }
-        public bool OverwriteOutputFile { get; }
-    }
-
     internal sealed class ResolvedReference
     {
-        public ResolvedReference(ReferenceSpec specification, string fileName)
+        public ResolvedReference(ReferenceSpec specification, string fileName, bool copyLocal)
         {
             Specification = specification;
             FileName = fileName;
+            CopyLocal = copyLocal;
         }
 
         public ReferenceSpec Specification { get; }
         public string FileName { get; }
+        public bool CopyLocal { get; }
     }
 
     internal interface IReferenceResolver
     {
-        ResolvedReference Resolve(ReferenceSpec reference, ReferenceResolutionContext context);
+        ResolvedReference Resolve(ReferenceSpec reference);
     }
 
     /// <summary>
-    /// Preserves the historical {$reference} lookup and copy-local behaviour.
+    /// Preserves the historical {$reference} lookup behaviour.
     /// Keeping it behind IReferenceResolver lets the SDK/NuGet resolver be added
     /// without putting another set of lookup rules into Compiler.GetReferences.
     /// </summary>
     internal sealed class ClassicReferenceResolver : IReferenceResolver
     {
-        public ResolvedReference Resolve(ReferenceSpec reference, ReferenceResolutionContext context)
+        public ResolvedReference Resolve(ReferenceSpec reference)
         {
             string fileName = reference.Text.Trim();
 
@@ -69,38 +59,25 @@ namespace PascalABCCompiler.References
                 throw new InvalidAssemblyPathError(reference.DiagnosticFileName, reference.SourceContext);
 
             if (Compiler.standart_assembly_dict.ContainsKey(fileName))
-                return Resolved(reference, Compiler.standart_assembly_dict[fileName]);
+                return Resolved(reference, Compiler.standart_assembly_dict[fileName], false);
 
             // Preserve the special historical lookup order for PABCRtl.dll.
             if (fileName == StringConstants.pabc_rtl_dll_name)
             {
                 string standardAssembly = Compiler.get_assembly_path(fileName, true);
                 if (standardAssembly != null && File.Exists(standardAssembly))
-                    return Resolved(reference, standardAssembly);
+                    return Resolved(reference, standardAssembly, false);
             }
 
             try
             {
                 string sourceFileName = Path.Combine(reference.SourceDirectory, fileName);
                 if (File.Exists(sourceFileName))
-                {
-                    string outputFileName = Path.GetFullPath(
-                        Path.Combine(context.OutputDirectory, Path.GetFileName(sourceFileName)));
-
-                    if (sourceFileName != outputFileName)
-                    {
-                        if (context.OverwriteOutputFile)
-                            File.Copy(sourceFileName, outputFileName, true);
-                        else if (!File.Exists(outputFileName))
-                            File.Copy(sourceFileName, outputFileName, false);
-                    }
-
-                    return Resolved(reference, outputFileName);
-                }
+                    return Resolved(reference, sourceFileName, true);
 
                 string assemblyFileName = Compiler.get_assembly_path(fileName, false);
                 if (assemblyFileName != null && File.Exists(assemblyFileName))
-                    return Resolved(reference, assemblyFileName);
+                    return Resolved(reference, assemblyFileName, false);
 
                 throw new AssemblyNotFound(reference.DiagnosticFileName, fileName, reference.SourceContext);
             }
@@ -110,9 +87,10 @@ namespace PascalABCCompiler.References
             }
         }
 
-        private static ResolvedReference Resolved(ReferenceSpec specification, string fileName)
+        private static ResolvedReference Resolved(ReferenceSpec specification, string fileName,
+            bool copyLocal)
         {
-            return new ResolvedReference(specification, fileName);
+            return new ResolvedReference(specification, fileName, copyLocal);
         }
     }
 }
