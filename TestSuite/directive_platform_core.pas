@@ -1,0 +1,4 @@
+{$platform Core}
+
+begin
+end.
