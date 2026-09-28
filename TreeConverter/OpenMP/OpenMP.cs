@@ -708,7 +708,8 @@ namespace PascalABCCompiler.TreeConverter
             //}
             foreach (SyntaxTree.compiler_directive dir in directives)
             {
-                if (dir.Name.text.ToLower() == "omp")
+                if (string.Equals(dir.Name.text, StringConstants.compiler_directive_omp,
+                    StringComparison.OrdinalIgnoreCase))
                 {
                     string DirText = dir.Directive.text.ToLower();
                     DirectiveInfo dirInf = new DirectiveInfo(dir);

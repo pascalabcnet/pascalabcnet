@@ -11594,12 +11594,14 @@ namespace PascalABCCompiler.TreeConverter
 		
         private bool check_for_dll_entry_module(List<compiler_directive> directives)
         {
-        	foreach (compiler_directive cd in directives)
-        	{
-        		if (string.Compare(cd.name,"apptype",true)==0 && string.Compare(cd.directive,"dll",true)==0)
-        			return true;
-        	}
-        	return false;
+            foreach (compiler_directive cd in directives)
+            {
+                if (string.Equals(cd.name, StringConstants.compiler_directive_apptype,
+                        StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(cd.directive, "dll", StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+            return false;
         }
         
         
@@ -20505,51 +20507,60 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.compiler_directive node)
         {
-            if (node.Name.text.ToLower() == StringConstants.compiler_directive_faststrings)
+            if (string.Equals(node.Name.text, StringConstants.compiler_directive_faststrings,
+                StringComparison.OrdinalIgnoreCase))
             {
                 SemanticRulesConstants.FastStrings = true;
                 return;
             }
-            if (node.Name.text.ToLower() == StringConstants.compiler_directive_zerobasedstrings)
+            if (string.Equals(node.Name.text, StringConstants.compiler_directive_zerobasedstrings,
+                StringComparison.OrdinalIgnoreCase))
             {
-                var paramOnOff = node.Directive.text.ToLower();
-                if (paramOnOff == "on" || paramOnOff == "")
+                var paramOnOff = node.Directive.text;
+                if (string.Equals(paramOnOff, "on", StringComparison.OrdinalIgnoreCase) || paramOnOff == "")
                     SemanticRulesConstants.ZeroBasedStrings = true;
-                else if (paramOnOff == "off")
+                else if (string.Equals(paramOnOff, "off", StringComparison.OrdinalIgnoreCase))
                     SemanticRulesConstants.ZeroBasedStrings = false;
                 return;
             }
-            if (node.Name.text.ToLower() == StringConstants.compiler_directive_zerobasedstrings_ON)
+            if (string.Equals(node.Name.text, StringConstants.compiler_directive_zerobasedstrings_ON,
+                StringComparison.OrdinalIgnoreCase))
             {
                 SemanticRulesConstants.ZeroBasedStrings = true;
                 return;
             }
-            if (node.Name.text.ToLower() == StringConstants.compiler_directive_zerobasedstrings_OFF)
+            if (string.Equals(node.Name.text, StringConstants.compiler_directive_zerobasedstrings_OFF,
+                StringComparison.OrdinalIgnoreCase))
             {
                 SemanticRulesConstants.ZeroBasedStrings = false;
                 return;
             }
-            if (node.Name.text.ToLower() == StringConstants.compiler_directive_nullbasedstrings_ON)
+            if (string.Equals(node.Name.text, StringConstants.compiler_directive_nullbasedstrings_ON,
+                StringComparison.OrdinalIgnoreCase))
             {
                 SemanticRulesConstants.ZeroBasedStrings = true;
                 return;
             }
-            if (node.Name.text.ToLower() == StringConstants.compiler_directive_nullbasedstrings_OFF)
+            if (string.Equals(node.Name.text, StringConstants.compiler_directive_nullbasedstrings_OFF,
+                StringComparison.OrdinalIgnoreCase))
             {
                 SemanticRulesConstants.ZeroBasedStrings = false;
                 return;
             }
-            if (node.Name.text.ToLower() == StringConstants.compiler_directive_initstring_as_empty_ON)
+            if (string.Equals(node.Name.text, StringConstants.compiler_directive_initstring_as_empty_ON,
+                StringComparison.OrdinalIgnoreCase))
             {
                 SemanticRulesConstants.InitStringAsEmptyString = true;
                 return;
             }
-            if (node.Name.text.ToLower() == StringConstants.compiler_directive_initstring_as_empty_OFF)
+            if (string.Equals(node.Name.text, StringConstants.compiler_directive_initstring_as_empty_OFF,
+                StringComparison.OrdinalIgnoreCase))
             {
                 SemanticRulesConstants.InitStringAsEmptyString = false;
                 return;
             }
-            if (node.Name.text == StringConstants.compiler_directive_platformtarget && node.Directive.text.ToLower() == "native")
+            if (node.Name.text == StringConstants.compiler_directive_platformtarget
+                && string.Equals(node.Directive.text, "native", StringComparison.OrdinalIgnoreCase))
             {
                 SemanticRulesConstants.GenerateNativeCode = true;
                 return;

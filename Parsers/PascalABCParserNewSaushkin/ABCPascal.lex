@@ -78,13 +78,11 @@ UNICODEARROW \x890
 	if (parserTools.buildTreeForFormatter)
 		break;
 
-  parserTools.ParseDirective(yytext, CurrentLexLocation, out var directiveName, out var directiveParams);
-  var orgDirectiveName = directiveName;
-  
-  if (directiveName == "") // случай пустой директивы
+  if (!parserTools.TryParseDirective(yytext, CurrentLexLocation, out var directiveName, out var directiveParams))
     break;
+  var orgDirectiveName = directiveName;
 
-  directiveName = directiveName.ToUpper();
+  directiveName = directiveName.ToUpperInvariant();
 
 	if (directiveName == "HIDDENIDENTS")
 	{
@@ -116,22 +114,36 @@ UNICODEARROW \x890
 	}
 	else if (directiveName == "ELSE")
 	{
-        if (directiveParams.Count!=0 && directiveParams[0]!=IfDefVar.Peek())
-            parserTools.AddWarningFromResource("DIFF_DEFINE_NAME", CurrentLexLocation, orgDirectiveName, IfDefVar.Peek(), directiveParams[0]);
-        if (IfDefInElseBranch.Count==0 || IfDefInElseBranch.Pop())
+		if (IfDefInElseBranch.Count == 0)
 			parserTools.AddErrorFromResource("UNNECESSARY $else",CurrentLexLocation);
-		IfDefInElseBranch.Push(true);
-		BEGIN(EXCLUDETEXT);
-		IfExclude = 1;
+        else
+        {
+            if (directiveParams.Count != 0 && directiveParams[0] != IfDefVar.Peek())
+                parserTools.AddWarningFromResource("DIFF_DEFINE_NAME", CurrentLexLocation, orgDirectiveName, IfDefVar.Peek(), directiveParams[0]);
+            if (IfDefInElseBranch.Pop())
+            {
+                parserTools.AddErrorFromResource("UNNECESSARY $else",CurrentLexLocation);
+                IfDefInElseBranch.Push(true);
+            }
+            else
+            {
+                IfDefInElseBranch.Push(true);
+		        BEGIN(EXCLUDETEXT);
+		        IfExclude = 1;
+            }
+        }
 	}
 	else if (directiveName == "ENDIF")
 	{
 		if (IfDefInElseBranch.Count == 0)
 			parserTools.AddErrorFromResource("UNNECESSARY $endif",CurrentLexLocation);	   
-		IfDefInElseBranch.Pop();
-        var define_name = IfDefVar.Pop();
-        if (directiveParams.Count!=0 && directiveParams[0]!=define_name)
-            parserTools.AddWarningFromResource("DIFF_DEFINE_NAME", CurrentLexLocation, orgDirectiveName, define_name, directiveParams[0]);
+        else
+        {
+		    IfDefInElseBranch.Pop();
+            var define_name = IfDefVar.Pop();
+            if (directiveParams.Count != 0 && directiveParams[0] != define_name)
+                parserTools.AddWarningFromResource("DIFF_DEFINE_NAME", CurrentLexLocation, orgDirectiveName, define_name, directiveParams[0]);
+        }
 	}
 	else if (directiveName == "DEFINE")
 	{
@@ -152,13 +164,11 @@ UNICODEARROW \x890
 
 <EXCLUDETEXT>{DIRECTIVE} {
 	
-  parserTools.ParseDirective(yytext, CurrentLexLocation, out directiveName, out directiveParams);
-  orgDirectiveName = directiveName;
-
-  if (directiveName == "") // случай пустой директивы
+  if (!parserTools.TryParseDirective(yytext, CurrentLexLocation, out directiveName, out directiveParams))
     break;
+  orgDirectiveName = directiveName;
 	
-  directiveName = directiveName.ToUpper();
+  directiveName = directiveName.ToUpperInvariant();
 
   bool addDirective = false;
 
@@ -176,32 +186,46 @@ UNICODEARROW \x890
 	}
 	else if (directiveName == "ELSE")
 	{
-        if (directiveParams.Count!=0 && directiveParams[0]!=IfDefVar.Peek())
-            parserTools.AddWarningFromResource("DIFF_DEFINE_NAME", CurrentLexLocation, orgDirectiveName, IfDefVar.Peek(), directiveParams[0]);
-        if (IfDefInElseBranch.Count==0 || IfDefInElseBranch.Pop())
+		if (IfDefInElseBranch.Count == 0)
 			parserTools.AddErrorFromResource("UNNECESSARY $else",CurrentLexLocation);
-		IfDefInElseBranch.Push(true);
-		if (IfExclude == 1)
-    {
-        BEGIN(INITIAL);
-        addDirective = true;
-    }
+        else
+        {
+            if (directiveParams.Count != 0 && directiveParams[0] != IfDefVar.Peek())
+                parserTools.AddWarningFromResource("DIFF_DEFINE_NAME", CurrentLexLocation, orgDirectiveName, IfDefVar.Peek(), directiveParams[0]);
+            if (IfDefInElseBranch.Pop())
+            {
+                parserTools.AddErrorFromResource("UNNECESSARY $else",CurrentLexLocation);
+                IfDefInElseBranch.Push(true);
+            }
+            else
+            {
+                IfDefInElseBranch.Push(true);
+		        if (IfExclude == 1)
+                {
+                    BEGIN(INITIAL);
+                    addDirective = true;
+                }
+            }
+        }
 			
 	}
 	else if (directiveName == "ENDIF")
 	{
 		if (IfDefInElseBranch.Count == 0)
 			parserTools.AddErrorFromResource("UNNECESSARY $endif",CurrentLexLocation);	   
-		IfDefInElseBranch.Pop();
-        var define_name = IfDefVar.Pop();
-        if (directiveParams.Count!=0 && directiveParams[0]!=define_name)
-            parserTools.AddWarningFromResource("DIFF_DEFINE_NAME", CurrentLexLocation, orgDirectiveName, define_name, directiveParams[0]);
-        IfExclude--;
-		if (IfExclude == 0)
-    {
-        BEGIN(INITIAL);
-        addDirective = true;
-    }
+        else
+        {
+		    IfDefInElseBranch.Pop();
+            var define_name = IfDefVar.Pop();
+            if (directiveParams.Count != 0 && directiveParams[0] != define_name)
+                parserTools.AddWarningFromResource("DIFF_DEFINE_NAME", CurrentLexLocation, orgDirectiveName, define_name, directiveParams[0]);
+            IfExclude--;
+		    if (IfExclude == 0)
+            {
+                BEGIN(INITIAL);
+                addDirective = true;
+            }
+        }
 			
 	}
 

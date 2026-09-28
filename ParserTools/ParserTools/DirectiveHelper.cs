@@ -8,6 +8,20 @@ using PascalABCCompiler.Errors;
 namespace PascalABCCompiler.ParserTools.Directives
 {
     /// <summary>
+    /// Этап, которому принадлежит директива. Это не обработчик директивы, а
+    /// явная граница ответственности между лексером, компиляцией модуля,
+    /// сборкой итоговой программы и редактором.
+    /// </summary>
+    [Flags]
+    public enum DirectiveProcessingStage
+    {
+        Lexer = 1,
+        Unit = 2,
+        Compilation = 4,
+        Editor = 8
+    }
+
+    /// <summary>
     /// Класс для хранения информации о директиве компилятора (количество параметров, проверки для параметров и др.)
     /// </summary>
     public class DirectiveInfo
@@ -20,14 +34,19 @@ namespace PascalABCCompiler.ParserTools.Directives
         
         public bool quotesAreSpecialSymbols; // true, если нужно ставить кавычки для объединения нескольких слов в одно (как в пути к файлу с пробелами)
 
+        public DirectiveProcessingStage processingStage;
+
         // по умолчанию никаких проверок параметров, но включена проверка их кол-ва
-        public DirectiveInfo(ParamChecksCollection paramChecks = null, bool quotesAreSpecialSymbols = false, bool checkParamsNumNeeded = true, int[] paramsNums = null)
+        public DirectiveInfo(ParamChecksCollection paramChecks = null, bool quotesAreSpecialSymbols = false,
+            bool checkParamsNumNeeded = true, int[] paramsNums = null,
+            DirectiveProcessingStage processingStage = DirectiveProcessingStage.Compilation)
         {
             this.checks = paramChecks;
             this.quotesAreSpecialSymbols = quotesAreSpecialSymbols;
             if (paramsNums != null)
                 this.paramsNums = paramsNums;
             this.checkParamsNumNeeded = checkParamsNumNeeded;
+            this.processingStage = processingStage;
         }
 
         /// <summary>
@@ -142,7 +161,7 @@ namespace PascalABCCompiler.ParserTools.Directives
 
         public override bool CheckParam(string param)
         {
-            return paramVariants.Contains(param.ToLower());
+            return paramVariants.Contains(param, StringComparer.OrdinalIgnoreCase);
         }
     }
 
@@ -163,7 +182,7 @@ namespace PascalABCCompiler.ParserTools.Directives
 
         public override bool CheckParam(string param)
         {
-            return extVariants.Contains(Path.GetExtension(param.ToLower()));
+            return extVariants.Contains(Path.GetExtension(param), StringComparer.OrdinalIgnoreCase);
         }
     }
 
@@ -227,9 +246,10 @@ namespace PascalABCCompiler.ParserTools.Directives
         }
         #endregion
 
-        public static DirectiveInfo NoParamsDirectiveInfo()
+        public static DirectiveInfo NoParamsDirectiveInfo(
+            DirectiveProcessingStage processingStage = DirectiveProcessingStage.Compilation)
         {
-            return new DirectiveInfo(paramsNums: new int[1] { 0 });
+            return new DirectiveInfo(paramsNums: new int[1] { 0 }, processingStage: processingStage);
         }
     }
 }

@@ -32,7 +32,8 @@ namespace PascalABCCompiler.TreeConverter
 
         private static bool IsKnownDirectivee(compiler_directive cd)
         {
-            return cd.Name.text.ToLower() == "omp";
+            return string.Equals(cd.Name.text, StringConstants.compiler_directive_omp,
+                StringComparison.OrdinalIgnoreCase);
         }
     }
 

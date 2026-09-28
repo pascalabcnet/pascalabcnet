@@ -2596,7 +2596,8 @@ namespace CodeCompletion
             if (_unit_module.compiler_directives != null)
                 foreach (PascalABCCompiler.SyntaxTree.compiler_directive dir in _unit_module.compiler_directives)
                 {
-                    if (dir.Name.text.ToLower() == "reference")
+                    if (string.Equals(dir.Name.text, StringConstants.compiler_directive_reference,
+                        StringComparison.OrdinalIgnoreCase))
                     {
                         try
                         {
@@ -2621,13 +2622,15 @@ namespace CodeCompletion
                         //ns=new PascalABCCompiler.NetHelper.NetScope(unl,assm,tcst);
                     }
                     else
-                    if (dir.Name.text.ToLower() == "region")
+                    if (string.Equals(dir.Name.text, StringConstants.compiler_directive_region,
+                        StringComparison.OrdinalIgnoreCase))
                     {
                         if (cur_scope.regions == null)
                             cur_scope.regions = new List<Position>();
                         regions_stack.Push(new Position(dir.source_context.begin_position.line_num, dir.source_context.begin_position.column_num, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, dir.source_context.FileName, dir.Directive.text));
                     }
-                    else if (dir.Name.text.ToLower() == "endregion")
+                    else if (string.Equals(dir.Name.text, StringConstants.compiler_directive_endregion,
+                        StringComparison.OrdinalIgnoreCase))
                     {
                         if (regions_stack.Count > 0)
                         {
@@ -2638,7 +2641,8 @@ namespace CodeCompletion
                             }
                         }
                     }
-                    else if (dir.Name.text.ToLower() == "includenamespace")
+                    else if (string.Equals(dir.Name.text, StringConstants.compiler_directive_include_namespace,
+                        StringComparison.OrdinalIgnoreCase))
                     {
                         string directive = dir.Directive.text.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
                         Compiler.TryThrowInvalidPath(directive, dir.source_context);
@@ -3240,7 +3244,8 @@ namespace CodeCompletion
                     if (dir == null)
                         File.AppendAllText("log.txt", "dir == null" + Environment.NewLine + _program_module.compiler_directives.Count + Environment.NewLine);
 #endif
-                    if (dir.Name.text.ToLower() == "reference")
+                    if (string.Equals(dir.Name.text, StringConstants.compiler_directive_reference,
+                        StringComparison.OrdinalIgnoreCase))
                     {
                         try
                         {
@@ -3267,13 +3272,15 @@ namespace CodeCompletion
                         }
                     }
                     else
-                    if (dir.Name.text.ToLower() == "region")
+                    if (string.Equals(dir.Name.text, StringConstants.compiler_directive_region,
+                        StringComparison.OrdinalIgnoreCase))
                     {
                         if (cur_scope.regions == null)
                             cur_scope.regions = new List<Position>();
                         regions_stack.Push(new Position(dir.source_context.begin_position.line_num, dir.source_context.begin_position.column_num, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, dir.source_context.FileName, dir.Directive.text));
                     }
-                    else if (dir.Name.text.ToLower() == "endregion")
+                    else if (string.Equals(dir.Name.text, StringConstants.compiler_directive_endregion,
+                        StringComparison.OrdinalIgnoreCase))
                     {
                         if (regions_stack.Count > 0)
                         {
@@ -3284,7 +3291,8 @@ namespace CodeCompletion
                             }
                         }
                     }
-                    else if (dir.Name.text.ToLower() == "includenamespace")
+                    else if (string.Equals(dir.Name.text, StringConstants.compiler_directive_include_namespace,
+                        StringComparison.OrdinalIgnoreCase))
                     {
                         string directive = dir.Directive.text.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
                         Compiler.TryThrowInvalidPath(directive, dir.source_context);

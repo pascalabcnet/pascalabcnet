@@ -199,14 +199,23 @@ namespace PascalABCCompiler.ParserTools
         }
 
         /// <summary>
-        /// Разбор директивы + проверка имени и параметров
+        /// Разбирает директиву и проверяет ее имя и параметры.
+        ///
+        /// Важно, что ошибка проверки завершает обработку директивы. Раньше
+        /// лексер продолжал выполнять ошибочную директиву: например, после
+        /// сообщения об отсутствующем параметре {$ifdef} обращался к
+        /// directiveParams[0], а неизвестное имя использовалось как ключ в
+        /// ValidDirectives. В результате пользовательская ошибка могла
+        /// превратиться во внутреннее исключение компилятора.
         /// </summary>
-        public void ParseDirective(string directive, LexLocation location, out string directiveName, out List<string> directiveParams)
+        public bool TryParseDirective(string directive, LexLocation location, out string directiveName, out List<string> directiveParams)
         {
             string directiveText = ExtractDirectiveTextWithoutSpecialSymbols(directive);
             directiveName = GetDirectiveName(directiveText);
+            directiveParams = new List<string>();
 
-            ValidateDirectiveName(location, directiveName);
+            if (!ValidateDirectiveName(location, directiveName))
+                return false;
 
             // подстрока с параметрами
             string paramsString = directiveText.Substring(directiveText.IndexOf(directiveName) + directiveName.Length);
@@ -221,27 +230,32 @@ namespace PascalABCCompiler.ParserTools
                 directiveParams = SplitDirectiveParamsOrdinary(paramsString);
             }
 
-            ValidateDirectiveParams(directiveName, directiveParams, location);
+            return ValidateDirectiveParams(directiveName, directiveParams, location);
         }
 
         /// <summary>
         /// Проверка корректности имени директивы
         /// </summary>
-        private void ValidateDirectiveName(LexLocation location, string directiveName)
+        private bool ValidateDirectiveName(LexLocation location, string directiveName)
         {
             // пустая директива - ошибка
             if (directiveName == "")
             {
                 AddErrorFromResource("EMPTY_DIRECTIVE", location);
-                return;
+                return false;
             }
 
             // проверка имени директивы
             if (!ValidDirectives.ContainsKey(directiveName))
             {
-                AddErrorFromResource("UNKNOWN_DIRECTIVE{0}", location, directiveName);
-                return;
+                // Неизвестная директива может принадлежать другому Pascal-
+                // компилятору. Предупреждаем о ней, но не мешаем компиляции;
+                // выполнять или сохранять такую директиву всё равно нельзя.
+                AddWarningFromResource("UNKNOWN_DIRECTIVE{0}", location, directiveName);
+                return false;
             }
+
+            return true;
         }
 
         /// <summary>
@@ -252,7 +266,7 @@ namespace PascalABCCompiler.ParserTools
         /// <summary>
         /// Проверка парамтеров директивы с помощью проверок из Parser.ValidDirectives
         /// </summary>
-        public void ValidateDirectiveParams(string directiveName, List<string> directiveParams, SourceContext loc)
+        public bool ValidateDirectiveParams(string directiveName, List<string> directiveParams, SourceContext loc)
         {
             var directiveInfo = ValidDirectives[directiveName];
 
@@ -265,22 +279,23 @@ namespace PascalABCCompiler.ParserTools
                     if (!directiveInfo.paramsNums.Contains(0))
                     {
                         AddErrorFromResource("MISSING_DIRECTIVE_PARAM{0}", loc, directiveName);
+                        return false;
                     }
-                    return;
+                    return true;
                 }
 
                 // проверка на добавление параметров директиве без параметров
                 if (directiveInfo.paramsNums.Length == 1 && directiveInfo.paramsNums[0] == 0)
                 {
                     AddErrorFromResource("UNNECESSARY_DIRECTIVE_PARAM{0}", loc, directiveName);
-                    return;
+                    return false;
                 }
 
                 // проверка кол-ва параметров директивы (наиболее общая)
                 if (!directiveInfo.paramsNums.Contains(directiveParams.Count))
                 {
                     AddWrongNumberOfParamsError(directiveName, directiveParams, loc, directiveInfo);
-                    return;
+                    return false;
                 }
             }
 
@@ -288,7 +303,10 @@ namespace PascalABCCompiler.ParserTools
             if (!directiveInfo.ParamsValid(directiveParams, out int indexOfMismatch, out string specificErrorMessage))
             {
                 AddErrorFromResource("INCORRECT_DIRECTIVE_PARAM{0}{1}{2}", loc, directiveName, directiveParams[indexOfMismatch], specificErrorMessage);
+                return false;
             }
+
+            return true;
         }
 
         /// <summary>

@@ -45,35 +45,37 @@ namespace Languages.Pascal.Frontend.Data
         private void InitializeValidDirectives()
         {
             #region VALID DIRECTIVES
-            ValidDirectives = new Dictionary<string, DirectiveInfo>(StringComparer.CurrentCultureIgnoreCase)
+            ValidDirectives = new Dictionary<string, DirectiveInfo>(StringComparer.OrdinalIgnoreCase)
             {
                 [StringConstants.compiler_directive_apptype] = new DirectiveInfo(SingleAnyOfCheck("console", "windows", "dll", "pcu")),
-                [StringConstants.compiler_directive_reference] = new DirectiveInfo(quotesAreSpecialSymbols: true),
-                [StringConstants.compiler_directive_include_namespace] = new DirectiveInfo(quotesAreSpecialSymbols: true),
-                [StringConstants.compiler_directive_savepcu] = new DirectiveInfo(SingleAnyOfCheck("true", "false")),
-                [StringConstants.compiler_directive_zerobasedstrings] = new DirectiveInfo(SingleAnyOfCheck("on", "off"), paramsNums: new int[2] { 0, 1 }),
-                [StringConstants.compiler_directive_zerobasedstrings_ON] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_zerobasedstrings_OFF] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_nullbasedstrings_ON] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_nullbasedstrings_OFF] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_initstring_as_empty_ON] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_initstring_as_empty_OFF] = NoParamsDirectiveInfo(),
+                [StringConstants.compiler_directive_reference] = new DirectiveInfo(quotesAreSpecialSymbols: true, processingStage: DirectiveProcessingStage.Unit),
+                [StringConstants.compiler_directive_include_namespace] = new DirectiveInfo(quotesAreSpecialSymbols: true, processingStage: DirectiveProcessingStage.Unit),
+                [StringConstants.compiler_directive_savepcu] = new DirectiveInfo(SingleAnyOfCheck("true", "false"), processingStage: DirectiveProcessingStage.Unit),
+                [StringConstants.compiler_directive_zerobasedstrings] = new DirectiveInfo(SingleAnyOfCheck("on", "off"), paramsNums: new int[2] { 0, 1 }, processingStage: DirectiveProcessingStage.Unit),
+                [StringConstants.compiler_directive_zerobasedstrings_ON] = NoParamsDirectiveInfo(DirectiveProcessingStage.Unit),
+                [StringConstants.compiler_directive_zerobasedstrings_OFF] = NoParamsDirectiveInfo(DirectiveProcessingStage.Unit),
+                [StringConstants.compiler_directive_nullbasedstrings_ON] = NoParamsDirectiveInfo(DirectiveProcessingStage.Unit),
+                [StringConstants.compiler_directive_nullbasedstrings_OFF] = NoParamsDirectiveInfo(DirectiveProcessingStage.Unit),
+                [StringConstants.compiler_directive_initstring_as_empty_ON] = NoParamsDirectiveInfo(DirectiveProcessingStage.Unit),
+                [StringConstants.compiler_directive_initstring_as_empty_OFF] = NoParamsDirectiveInfo(DirectiveProcessingStage.Unit),
                 [StringConstants.compiler_directive_resource] = new DirectiveInfo(quotesAreSpecialSymbols: true),
-                [StringConstants.compiler_directive_platformtarget] = new DirectiveInfo(SingleAnyOfCheck("x86", "x64", "anycpu", "dotnet5win", "dotnet5linux", "dotnet5macos", "native")),
-                [StringConstants.compiler_directive_faststrings] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_gendoc] = new DirectiveInfo(SingleAnyOfCheck("true", "false")),
-                [StringConstants.compiler_directive_region] = new DirectiveInfo(checkParamsNumNeeded: false),
-                [StringConstants.compiler_directive_endregion] = new DirectiveInfo(checkParamsNumNeeded: false),
-                [StringConstants.compiler_directive_ifdef] = new DirectiveInfo(SingleIsValidIdCheck()),
-                [StringConstants.compiler_directive_endif] = new DirectiveInfo(SingleIsValidIdCheck(), paramsNums: new int[2] { 0, 1 }),
-                [StringConstants.compiler_directive_ifndef] = new DirectiveInfo(SingleIsValidIdCheck()),
-                [StringConstants.compiler_directive_else] = new DirectiveInfo(SingleIsValidIdCheck(), paramsNums: new int[2] { 0, 1 }),
-                [StringConstants.compiler_directive_undef] = new DirectiveInfo(SingleIsValidIdCheck()),
-                [StringConstants.compiler_directive_define] = new DirectiveInfo(SingleIsValidIdCheck()),
-                [StringConstants.compiler_directive_include] = new DirectiveInfo(quotesAreSpecialSymbols: true),
+                [StringConstants.compiler_directive_platformtarget] = new DirectiveInfo(
+                    SingleAnyOfCheck("x86", "x64", "anycpu", "dotnet5win", "dotnet5linux", "dotnet5macos", "native"),
+                    processingStage: DirectiveProcessingStage.Unit | DirectiveProcessingStage.Compilation),
+                [StringConstants.compiler_directive_faststrings] = NoParamsDirectiveInfo(DirectiveProcessingStage.Unit),
+                [StringConstants.compiler_directive_gendoc] = new DirectiveInfo(SingleAnyOfCheck("true", "false"), processingStage: DirectiveProcessingStage.Unit),
+                [StringConstants.compiler_directive_region] = new DirectiveInfo(checkParamsNumNeeded: false, processingStage: DirectiveProcessingStage.Editor),
+                [StringConstants.compiler_directive_endregion] = new DirectiveInfo(checkParamsNumNeeded: false, processingStage: DirectiveProcessingStage.Editor),
+                [StringConstants.compiler_directive_ifdef] = new DirectiveInfo(SingleIsValidIdCheck(), processingStage: DirectiveProcessingStage.Lexer),
+                [StringConstants.compiler_directive_endif] = new DirectiveInfo(SingleIsValidIdCheck(), paramsNums: new int[2] { 0, 1 }, processingStage: DirectiveProcessingStage.Lexer),
+                [StringConstants.compiler_directive_ifndef] = new DirectiveInfo(SingleIsValidIdCheck(), processingStage: DirectiveProcessingStage.Lexer),
+                [StringConstants.compiler_directive_else] = new DirectiveInfo(SingleIsValidIdCheck(), paramsNums: new int[2] { 0, 1 }, processingStage: DirectiveProcessingStage.Lexer),
+                [StringConstants.compiler_directive_undef] = new DirectiveInfo(SingleIsValidIdCheck(), processingStage: DirectiveProcessingStage.Lexer),
+                [StringConstants.compiler_directive_define] = new DirectiveInfo(SingleIsValidIdCheck(), processingStage: DirectiveProcessingStage.Lexer),
+                [StringConstants.compiler_directive_include] = new DirectiveInfo(quotesAreSpecialSymbols: true, processingStage: DirectiveProcessingStage.Lexer),
                 [StringConstants.compiler_directive_targetframework] = new DirectiveInfo(),
-                [StringConstants.compiler_directive_hidden_idents] = NoParamsDirectiveInfo(),
-                [StringConstants.compiler_directive_disable_standard_units] = NoParamsDirectiveInfo(),
+                [StringConstants.compiler_directive_hidden_idents] = NoParamsDirectiveInfo(DirectiveProcessingStage.Lexer),
+                [StringConstants.compiler_directive_disable_standard_units] = NoParamsDirectiveInfo(DirectiveProcessingStage.Unit),
                 [StringConstants.compiler_directive_version_string] = new DirectiveInfo(IsValidVersionCheck()),
                 [StringConstants.compiler_directive_product_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
                 [StringConstants.compiler_directive_company_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
@@ -82,7 +84,7 @@ namespace Languages.Pascal.Frontend.Data
                 [StringConstants.compiler_directive_main_resource_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
                 [StringConstants.compiler_directive_title_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
                 [StringConstants.compiler_directive_description_string] = new DirectiveInfo(quotesAreSpecialSymbols: true),
-                [StringConstants.compiler_directive_omp] = new DirectiveInfo(SingleAnyOfCheck("critical", "parallel"), checkParamsNumNeeded: false)
+                [StringConstants.compiler_directive_omp] = new DirectiveInfo(SingleAnyOfCheck("critical", "parallel"), checkParamsNumNeeded: false, processingStage: DirectiveProcessingStage.Unit)
             };
             #endregion
         }

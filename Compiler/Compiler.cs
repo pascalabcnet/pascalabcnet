@@ -144,6 +144,7 @@
 using Languages.Facade;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.PCU;
+using PascalABCCompiler.ParserTools.Directives;
 using PascalABCCompiler.References;
 using PascalABCCompiler.SemanticTreeConverters;
 using PascalABCCompiler.SyntaxTreeConverters;
@@ -814,14 +815,17 @@ namespace PascalABCCompiler
         #region COMPILER DIRECTIVES
 
         /// <summary>
-        /// Формирует словарь директив компилятора, собирая их из всех переданных модулей
+        /// Формирует словарь директив, относящихся ко всей итоговой компиляции.
+        /// Директивы лексера, отдельного модуля и редактора уже обработаны на
+        /// своих этапах и не должны случайно участвовать в выборе параметров
+        /// выходной сборки.
         /// </summary>
         /// <param name="Units"></param>
         /// <returns></returns>
         /// <exception cref="DuplicateDirective"></exception>
-        private Dictionary<string, List<compiler_directive>> GetCompilerDirectives(List<CompilationUnit> Units)
+        private Dictionary<string, List<compiler_directive>> GetCompilationDirectives(List<CompilationUnit> Units)
         {
-            Dictionary<string, List<compiler_directive>> directives = new Dictionary<string, List<compiler_directive>>(StringComparer.CurrentCultureIgnoreCase);
+            Dictionary<string, List<compiler_directive>> directives = new Dictionary<string, List<compiler_directive>>(StringComparer.OrdinalIgnoreCase);
 
             for (int i = 0; i < Units.Count; i++)
             {
@@ -830,11 +834,20 @@ namespace PascalABCCompiler
                 {
                     foreach (compiler_directive cd in unitNode.compiler_directives)
                     {
+                        var directiveCatalog = Units[i].Language?.LanguageInformation.ValidDirectives;
+                        DirectiveInfo directiveInfo;
+                        if (directiveCatalog != null &&
+                            directiveCatalog.TryGetValue(cd.name, out directiveInfo) &&
+                            (directiveInfo.processingStage & DirectiveProcessingStage.Compilation) == 0)
+                            continue;
+
                         if (!directives.ContainsKey(cd.name))
                             directives.Add(cd.name, new List<compiler_directive>());
                         // TODO: сделать проверку на дубликаты централизованной (в другом месте)  EVA
-                        else if (cd.name.Equals("mainresource", StringComparison.CurrentCultureIgnoreCase))
-                            throw new DuplicateDirective(cd.location.file_name, "mainresource", cd.location);
+                        else if (cd.name.Equals(StringConstants.compiler_directive_main_resource_string,
+                            StringComparison.OrdinalIgnoreCase))
+                            throw new DuplicateDirective(cd.location.file_name,
+                                StringConstants.compiler_directive_main_resource_string, cd.location);
                         directives[cd.name].Insert(0, cd);
                     }
                 }
@@ -985,7 +998,7 @@ namespace PascalABCCompiler
                     if (s == null)
                         break;
 
-                    if (s.ToLower().StartsWith("//#reference "))
+                    if (s.StartsWith("//#reference ", StringComparison.OrdinalIgnoreCase))
                     {
                         s = s.Remove(0, 13);
                         s = s.Trim();
@@ -1126,7 +1139,7 @@ namespace PascalABCCompiler
         {
             if (compilerDirectives.ContainsKey(StringConstants.compiler_directive_apptype))
             {
-                string outputFileType = compilerDirectives[StringConstants.compiler_directive_apptype][0].directive.ToLower();
+                string outputFileType = compilerDirectives[StringConstants.compiler_directive_apptype][0].directive.ToLowerInvariant();
                 switch (outputFileType)
                 {
                     case "console":
@@ -1161,7 +1174,7 @@ namespace PascalABCCompiler
             List<compiler_directive> compilerDirectivesList = new List<compiler_directive>();
             if (compilerDirectives.TryGetValue(StringConstants.compiler_directive_platformtarget, out compilerDirectivesList))
             {
-                string platformName = compilerDirectivesList[0].directive.ToLower();
+                string platformName = compilerDirectivesList[0].directive.ToLowerInvariant();
                 switch (platformName)
                 {
                     case "x86":
@@ -1520,7 +1533,7 @@ namespace PascalABCCompiler
                 SaveDocumentationsForUnits();
             }
 
-            Dictionary<string, List<TreeRealization.compiler_directive>> compilerDirectives = GetCompilerDirectives(UnitsTopologicallySortedList);
+            Dictionary<string, List<TreeRealization.compiler_directive>> compilerDirectives = GetCompilationDirectives(UnitsTopologicallySortedList);
 
             // выяснение типа выходного файла по соотв. директиве компилятора
             SetOutputFileTypeOption(compilerDirectives);
@@ -2340,7 +2353,10 @@ namespace PascalABCCompiler
         {
             var directives = GetDirectivesAsSemanticNodes(unit.SyntaxTree.compiler_directives, unit.SyntaxTree.file_name);
 
-            return directives.Any(directive => directive.name.ToLower() == StringConstants.compiler_directive_include_namespace);
+            return directives.Any(directive => string.Equals(
+                directive.name,
+                StringConstants.compiler_directive_include_namespace,
+                StringComparison.OrdinalIgnoreCase));
         }
 
 
@@ -2479,7 +2495,8 @@ namespace PascalABCCompiler
             List<string> files = new List<string>();
             foreach (compiler_directive cd in directives)
             {
-                if (cd.name.ToLower() == StringConstants.compiler_directive_include_namespace)
+                if (string.Equals(cd.name, StringConstants.compiler_directive_include_namespace,
+                    StringComparison.OrdinalIgnoreCase))
                 {
                     string directive = cd.directive.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
 
@@ -2557,7 +2574,7 @@ namespace PascalABCCompiler
 
             if (CompilerOptions.UseDllForSystemUnits)
             {
-                directives.Add(new compiler_directive("reference", "%GAC%\\PABCRtl.dll", null, "."));
+                directives.Add(new compiler_directive(StringConstants.compiler_directive_reference, "%GAC%\\PABCRtl.dll", null, "."));
                 AddReferencesToNetSystemLibraries(compilationUnit, directives);
             }
 
@@ -2581,7 +2598,8 @@ namespace PascalABCCompiler
             var referenceDirectives = new List<compiler_directive>();
             foreach (compiler_directive directive in directives)
             {
-                if (directive.name.ToLower() == StringConstants.compiler_directive_reference)
+                if (string.Equals(directive.name, StringConstants.compiler_directive_reference,
+                    StringComparison.OrdinalIgnoreCase))
                 {
 
                     referenceDirectives.Add(directive);
@@ -2632,7 +2650,7 @@ namespace PascalABCCompiler
             {
                 foreach (ReferenceInfo ri in project.references)
                 {
-                    referenceDirectives.Add(new compiler_directive("reference", ri.full_assembly_name, null, project.MainFile));
+                    referenceDirectives.Add(new compiler_directive(StringConstants.compiler_directive_reference, ri.full_assembly_name, null, project.MainFile));
                 }
             }
 
@@ -2679,8 +2697,10 @@ namespace PascalABCCompiler
         {
             foreach (compiler_directive cd in directives)
             {
-                if (cd.name.ToLower() == StringConstants.compiler_directive_platformtarget
-                    && !string.IsNullOrEmpty(cd.directive) && cd.directive.IndexOf("dotnet5") != -1)
+                if (string.Equals(cd.name, StringConstants.compiler_directive_platformtarget,
+                        StringComparison.OrdinalIgnoreCase)
+                    && !string.IsNullOrEmpty(cd.directive)
+                    && cd.directive.IndexOf("dotnet5", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     CompilerOptions.UseDllForSystemUnits = false;
                 }
@@ -2695,10 +2715,11 @@ namespace PascalABCCompiler
         private void AddReferencesToNetSystemLibraries(CompilationUnit compilationUnit, List<TreeRealization.compiler_directive> directives)
         {
             IEnumerable<string> librariesToAdd = StringConstants.netSystemLibraries.Select(dll => $"%GAC%\\{dll}")
-                .Except(directives.Where(directive => directive.name.Equals("reference", StringComparison.CurrentCultureIgnoreCase))
+                .Except(directives.Where(directive => directive.name.Equals(
+                    StringConstants.compiler_directive_reference, StringComparison.OrdinalIgnoreCase))
                 .Select(directive => directive.directive), StringComparer.CurrentCultureIgnoreCase);
 
-            directives.AddRange(librariesToAdd.Select(dll => new compiler_directive("reference", dll, null, ".")));
+            directives.AddRange(librariesToAdd.Select(dll => new compiler_directive(StringConstants.compiler_directive_reference, dll, null, ".")));
 
             if (compilationUnit.SyntaxTree is SyntaxTree.program_module program && program.used_units != null)
             {
@@ -2706,10 +2727,11 @@ namespace PascalABCCompiler
                 if (graph3DUnit != null)
                 {
                     IEnumerable<string> graphLibrariesToAdd = StringConstants.graph3DDependencies.Select(dll => $"%GAC%\\{dll}")
-                        .Except(directives.Where(directive => directive.name.Equals("reference", StringComparison.CurrentCultureIgnoreCase))
+                        .Except(directives.Where(directive => directive.name.Equals(
+                            StringConstants.compiler_directive_reference, StringComparison.OrdinalIgnoreCase))
                         .Select(directive => directive.directive), StringComparer.CurrentCultureIgnoreCase);
 
-                    directives.AddRange(graphLibrariesToAdd.Select(dll => new compiler_directive("reference", dll, null, ".")));
+                    directives.AddRange(graphLibrariesToAdd.Select(dll => new compiler_directive(StringConstants.compiler_directive_reference, dll, null, ".")));
                 }
             }
         }
@@ -2722,10 +2744,11 @@ namespace PascalABCCompiler
         private void AddReferencesToNetSystemLibraries(CompilationUnit compilationUnit, List<SyntaxTree.compiler_directive> directives)
         {
             IEnumerable<string> librariesToAdd = StringConstants.netSystemLibraries.Select(dll => $"%GAC%\\{dll}")
-                .Except(directives.Where(directive => directive.Name.text.Equals("reference", StringComparison.CurrentCultureIgnoreCase))
+                .Except(directives.Where(directive => directive.Name.text.Equals(
+                    StringConstants.compiler_directive_reference, StringComparison.OrdinalIgnoreCase))
                 .Select(directive => directive.Directive.text), StringComparer.CurrentCultureIgnoreCase);
 
-            directives.AddRange(librariesToAdd.Select(dll => new SyntaxTree.compiler_directive(new SyntaxTree.token_info("reference"), new SyntaxTree.token_info(dll))));
+            directives.AddRange(librariesToAdd.Select(dll => new SyntaxTree.compiler_directive(new SyntaxTree.token_info(StringConstants.compiler_directive_reference), new SyntaxTree.token_info(dll))));
 
             if (compilationUnit.SyntaxTree is SyntaxTree.program_module program && program.used_units != null)
             {
@@ -2733,10 +2756,11 @@ namespace PascalABCCompiler
                 if (graph3DUnit != null)
                 {
                     IEnumerable<string> graphLibrariesToAdd = StringConstants.graph3DDependencies.Select(dll => $"%GAC%\\{dll}")
-                        .Except(directives.Where(directive => directive.Name.text.Equals("reference", StringComparison.CurrentCultureIgnoreCase))
+                        .Except(directives.Where(directive => directive.Name.text.Equals(
+                            StringConstants.compiler_directive_reference, StringComparison.OrdinalIgnoreCase))
                         .Select(directive => directive.Directive.text), StringComparer.CurrentCultureIgnoreCase);
 
-                    directives.AddRange(graphLibrariesToAdd.Select(dll => new SyntaxTree.compiler_directive(new SyntaxTree.token_info("reference"), new SyntaxTree.token_info(dll))));
+                    directives.AddRange(graphLibrariesToAdd.Select(dll => new SyntaxTree.compiler_directive(new SyntaxTree.token_info(StringConstants.compiler_directive_reference), new SyntaxTree.token_info(dll))));
                 }
             }
         }
@@ -2902,8 +2926,9 @@ namespace PascalABCCompiler
         {
             foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compiler_directives)
             {
-                if (string.Equals(directive.Name.text, "apptype", StringComparison.CurrentCultureIgnoreCase)
-                    && string.Equals(directive.Directive.text, "dll", StringComparison.CurrentCultureIgnoreCase))
+                if (string.Equals(directive.Name.text, StringConstants.compiler_directive_apptype,
+                        StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(directive.Directive.text, "dll", StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -2918,8 +2943,9 @@ namespace PascalABCCompiler
         {
             foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compiler_directives)
             {
-                if (string.Equals(directive.Name.text, StringConstants.compiler_directive_apptype, StringComparison.CurrentCultureIgnoreCase)
-                                    && string.Equals(directive.Directive.text, "dll", StringComparison.CurrentCultureIgnoreCase))
+                if (string.Equals(directive.Name.text, StringConstants.compiler_directive_apptype,
+                        StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(directive.Directive.text, "dll", StringComparison.OrdinalIgnoreCase))
                 {
                     dllDirective = directive;
                     return true;
@@ -3473,7 +3499,8 @@ namespace PascalABCCompiler
             if (UnitTable.Count == 0)
             {
                 var disableStandardUnitsDirective = unitSyntaxTree.compiler_directives.Find(directive =>
-                            directive.Name.text.Equals(StringConstants.compiler_directive_disable_standard_units, StringComparison.CurrentCultureIgnoreCase));
+                            directive.Name.text.Equals(StringConstants.compiler_directive_disable_standard_units,
+                                StringComparison.OrdinalIgnoreCase));
 
                 if (disableStandardUnitsDirective != null)
                     CompilerOptions.DisableStandardUnits = true;
@@ -3577,7 +3604,8 @@ namespace PascalABCCompiler
             if (UnitTable.Count > 0)
             {
                 var foundDirective = unitSyntaxTree.compiler_directives.Find(directive =>
-                            directive.Name.text.Equals(StringConstants.compiler_directive_disable_standard_units, StringComparison.CurrentCultureIgnoreCase));
+                            directive.Name.text.Equals(StringConstants.compiler_directive_disable_standard_units,
+                                StringComparison.OrdinalIgnoreCase));
 
                 if (foundDirective != null)
                 {
@@ -3721,8 +3749,9 @@ namespace PascalABCCompiler
             
             foreach (SyntaxTree.compiler_directive directive in unitSyntaxTree.compiler_directives)
             {
-                if (string.Equals(directive.Name.text, "gendoc", StringComparison.CurrentCultureIgnoreCase)
-                    && string.Equals(directive.Directive.text, "true", StringComparison.CurrentCultureIgnoreCase))
+                if (string.Equals(directive.Name.text, StringConstants.compiler_directive_gendoc,
+                        StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(directive.Directive.text, "true", StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -3753,7 +3782,8 @@ namespace PascalABCCompiler
                     if (((SyntaxTree.unit_module)Unit.SyntaxTree).unit_name.HeaderKeyword == PascalABCCompiler.SyntaxTree.UnitHeaderKeyword.Library)
                         return;
                     foreach (SyntaxTree.compiler_directive cd in Unit.SyntaxTree.compiler_directives)
-                        if (cd.Name.text.ToLower() == StringConstants.compiler_directive_savepcu)
+                        if (string.Equals(cd.Name.text, StringConstants.compiler_directive_savepcu,
+                            StringComparison.OrdinalIgnoreCase))
                             if (!Convert.ToBoolean(cd.Directive.text))
                                 return;
                 }
