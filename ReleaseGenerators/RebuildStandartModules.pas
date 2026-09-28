@@ -13,7 +13,7 @@ uses
    PT4, PT4_32, PT4Exam, PT4MakerNetX, PT4TaskMakerNET, 
    Robot, RobotField,
    RobotTaskMaker, RobotZadan, Sockets, Utils, VCL, Timers, RBDMUtils,
-   Collections, Arrays, Core, FormsABC, MPI, ClientServer, Speech, Sounds, Countries,
+   Collections, Arrays, FormsABC, MPI, ClientServer, Speech, Sounds, Countries,
    ABCDatabases, PT4Databases, BlockFileOfT, Controls,
    OpenCLABC, OpenCL,
    OpenGLABC, OpenGL,

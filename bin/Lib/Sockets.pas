@@ -2,8 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit Sockets;
 
-{$reference 'System.dll'}
-
 interface
 
 function CreateServerSocket(port: integer) : integer;

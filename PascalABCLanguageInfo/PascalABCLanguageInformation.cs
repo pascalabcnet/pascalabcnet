@@ -59,6 +59,9 @@ namespace Languages.Pascal.Frontend.Data
                 [StringConstants.compiler_directive_initstring_as_empty_ON] = NoParamsDirectiveInfo(DirectiveProcessingStage.Unit),
                 [StringConstants.compiler_directive_initstring_as_empty_OFF] = NoParamsDirectiveInfo(DirectiveProcessingStage.Unit),
                 [StringConstants.compiler_directive_resource] = new DirectiveInfo(quotesAreSpecialSymbols: true),
+                [StringConstants.compiler_directive_platform] = new DirectiveInfo(
+                    SingleAnyOfCheck("core", "winforms", "wpf"),
+                    processingStage: DirectiveProcessingStage.Unit | DirectiveProcessingStage.Compilation),
                 [StringConstants.compiler_directive_platformtarget] = new DirectiveInfo(
                     SingleAnyOfCheck("x86", "x64", "anycpu", "dotnet5win", "dotnet5linux", "dotnet5macos", "native"),
                     processingStage: DirectiveProcessingStage.Unit | DirectiveProcessingStage.Compilation),

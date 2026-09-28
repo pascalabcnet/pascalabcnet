@@ -75,7 +75,6 @@ copy bin\Lib\nunit.framework.dll Release\PascalABCNETLinux\Lib\nunit.framework.d
 copy bin\Lib\ABCDatabases.pcu Release\PascalABCNETLinux\Lib\ABCDatabases.pcu
 copy bin\Lib\BBCMicroBit.pcu Release\PascalABCNETLinux\Lib\BBCMicroBit.pcu
 copy bin\Lib\ClientServer.pcu Release\PascalABCNETLinux\Lib\ClientServer.pcu
-copy bin\Lib\Core.pcu Release\PascalABCNETLinux\Lib\Core.pcu
 copy bin\Lib\Countries.pcu Release\PascalABCNETLinux\Lib\Countries.pcu
 copy bin\Lib\CRT.pcu Release\PascalABCNETLinux\Lib\CRT.pcu
 copy bin\Lib\DMCollect.pcu Release\PascalABCNETLinux\Lib\DMCollect.pcu
@@ -131,7 +130,6 @@ copy bin\Lib\MLUtilsABC.pcu Release\PascalABCNETLinux\Lib\MLUtilsABC.pcu
 copy bin\Lib\ABCDatabases.pas Release\PascalABCNETLinux\LibSource\ABCDatabases.pas
 copy bin\Lib\BBCMicrobit.pas Release\PascalABCNETLinux\LibSource\BBCMicrobit.pas
 copy bin\Lib\ClientServer.pas Release\PascalABCNETLinux\LibSource\ClientServer.pas
-copy bin\Lib\Core.pas Release\PascalABCNETLinux\LibSource\Core.pas
 copy bin\Lib\Countries.pas Release\PascalABCNETLinux\LibSource\Countries.pas
 copy bin\Lib\CRT.pas Release\PascalABCNETLinux\LibSource\CRT.pas
 copy bin\Lib\DMCollect.pas Release\PascalABCNETLinux\LibSource\DMCollect.pas

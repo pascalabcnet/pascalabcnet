@@ -338,6 +338,12 @@ namespace PascalABCCompiler.Errors
         {
             source_context = sc;
         }
+
+        public UnsupportedTargetPlatform(string platformName, string fileName, SourceContext sc)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_UNSUPPORTED_TARGET_PLATFORM{0}"), platformName), fileName)
+        {
+            source_context = sc;
+        }
     }
 
     /// <summary>

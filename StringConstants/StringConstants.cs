@@ -327,6 +327,7 @@ namespace PascalABCCompiler
         public const string compiler_directive_initstring_as_empty_ON = "string_initempty+";
         public const string compiler_directive_initstring_as_empty_OFF = "string_initempty-";
         public const string compiler_directive_resource = "resource";
+        public const string compiler_directive_platform = "platform";
         public const string compiler_directive_platformtarget = "platformtarget";
         public const string compiler_directive_faststrings = "faststrings";
         public const string compiler_directive_gendoc = "gendoc";

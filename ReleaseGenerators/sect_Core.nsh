@@ -147,7 +147,6 @@
     File ..\bin\Lib\VCL.pcu
     File ..\bin\Lib\RBDMUtils.pcu
     File ..\bin\Lib\Collections.pcu
-    File ..\bin\Lib\Core.pcu
     File ..\bin\Lib\MPI.pcu
     File ..\bin\Lib\ClientServer.pcu
     File ..\bin\Lib\OpenGL.pcu
@@ -257,7 +256,6 @@
     ${AddFile} "VCL.pcu"
     ${AddFile} "RBDMUtils.pcu"
     ${AddFile} "Collections.pcu"
-    ${AddFile} "Core.pcu"
     ${AddFile} "MPI.pcu"
     ${AddFile} "ClientServer.pcu"
     ${AddFile} "OpenGL.pcu"
@@ -410,7 +408,6 @@
     File ..\bin\Lib\VCL.pas
     File ..\bin\Lib\RBDMUtils.pas
     File ..\bin\Lib\Collections.pas
-    File ..\bin\Lib\Core.pas
     File ..\bin\Lib\MPI.pas
     File ..\bin\Lib\ClientServer.pas
     File ..\bin\Lib\OpenGL.pas
@@ -508,7 +505,6 @@
     ${AddFile} "VCL.pas"
     ${AddFile} "RBDMUtils.pas"
     ${AddFile} "Collections.pas"
-    ${AddFile} "Core.pas"
     ${AddFile} "MPI.pas"
     ${AddFile} "ClientServer.pas"
     ${AddFile} "Speech.pas"

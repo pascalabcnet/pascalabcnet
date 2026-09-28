@@ -2561,6 +2561,71 @@ namespace PascalABCCompiler
             return syntaxTree;
         }
 
+        private static readonly string[] corePlatformLibraries =
+            { "mscorlib.dll", "System.dll", "System.Core.dll", "System.Numerics.dll" };
+
+        private static readonly string[] winFormsPlatformLibraries =
+            { "System.Windows.Forms.dll", "System.Drawing.dll" };
+
+        private static readonly string[] wpfPlatformLibraries =
+            { "PresentationFramework.dll", "PresentationCore.dll", "WindowsBase.dll" };
+
+        private static void AddClassicPlatformReferences(List<compiler_directive> directives,
+            compiler_directive platformDirective, IEnumerable<string> assemblyNames,
+            HashSet<string> existingReferences)
+        {
+            foreach (string assemblyName in assemblyNames)
+            {
+                if (!existingReferences.Add(assemblyName))
+                    continue;
+
+                directives.Add(new compiler_directive(
+                    StringConstants.compiler_directive_reference,
+                    "%GAC%\\" + assemblyName,
+                    platformDirective.location,
+                    platformDirective.source_file));
+            }
+        }
+
+        private void AddPlatformReferences(List<compiler_directive> directives)
+        {
+            var platformDirectives = directives.Where(directive => string.Equals(
+                directive.name, StringConstants.compiler_directive_platform,
+                StringComparison.OrdinalIgnoreCase)).ToArray();
+            if (platformDirectives.Length == 0)
+                return;
+
+#if PABCNET_MODERN
+            foreach (compiler_directive platformDirective in platformDirectives)
+            {
+                if (!string.Equals(platformDirective.directive, "core", StringComparison.OrdinalIgnoreCase))
+                    throw new UnsupportedTargetPlatform(platformDirective.directive,
+                        platformDirective.source_file,
+                        GetSourceContext(platformDirective));
+            }
+#else
+            var existingReferences = new HashSet<string>(
+                directives.Where(directive => string.Equals(
+                        directive.name, StringConstants.compiler_directive_reference,
+                        StringComparison.OrdinalIgnoreCase))
+                    .Select(directive => Path.GetFileName(directive.directive)),
+                StringComparer.OrdinalIgnoreCase);
+
+            foreach (compiler_directive platformDirective in platformDirectives)
+            {
+                AddClassicPlatformReferences(directives, platformDirective,
+                    corePlatformLibraries, existingReferences);
+
+                if (string.Equals(platformDirective.directive, "winforms", StringComparison.OrdinalIgnoreCase))
+                    AddClassicPlatformReferences(directives, platformDirective,
+                        winFormsPlatformLibraries, existingReferences);
+                else if (string.Equals(platformDirective.directive, "wpf", StringComparison.OrdinalIgnoreCase))
+                    AddClassicPlatformReferences(directives, platformDirective,
+                        wpfPlatformLibraries, existingReferences);
+            }
+#endif
+        }
+
         public unit_node_list GetReferences(CompilationUnit compilationUnit)
         {
             unit_node_list dlls = new unit_node_list();
@@ -2569,6 +2634,8 @@ namespace PascalABCCompiler
                 directives = (compilationUnit.SemanticTree as common_unit_node).compiler_directives;
             else
                 directives = GetDirectivesAsSemanticNodes(compilationUnit.SyntaxTree.compiler_directives, compilationUnit.SyntaxTree.file_name);
+            
+            AddPlatformReferences(directives);
             
             DisablePABCRtlIfUsingDotnet5(directives);
 
