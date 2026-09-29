@@ -33,5 +33,4 @@ var
   Sockets := false;
   Timers := false;
   Utils := false;
-  VCL := false;
 end.

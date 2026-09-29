@@ -3,7 +3,7 @@ uses
    ABCSprites, BFSystem, CRT, DMCollect, DMTaskMaker, DMZadan, Drawman, 
    DrawManField, Events, FilesOperations, GOLDParserEngine, GraphABC, 
    GraphABCHelper, IniFile, PointerTools, PointRect, PT4, Robot, RobotField,
-   RobotTaskMaker, RobotZadan, Sockets, Utils, VCL, Timers, PT4Exam, PT4TaskMakerNET, RBDMUtils,
+   RobotTaskMaker, RobotZadan, Sockets, Utils, Timers, PT4Exam, PT4TaskMakerNET, RBDMUtils,
    Collections, Arrays, FormsABC, MPI;
 
 begin

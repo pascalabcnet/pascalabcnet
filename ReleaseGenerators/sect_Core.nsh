@@ -144,7 +144,6 @@
     File ..\bin\Lib\Sockets.pcu
     File ..\bin\Lib\Timers.pcu
     File ..\bin\Lib\Utils.pcu
-    File ..\bin\Lib\VCL.pcu
     File ..\bin\Lib\RBDMUtils.pcu
     File ..\bin\Lib\Collections.pcu
     File ..\bin\Lib\MPI.pcu
@@ -253,7 +252,6 @@
     ${AddFile} "Sockets.pcu"
     ${AddFile} "Timers.pcu"
     ${AddFile} "Utils.pcu"
-    ${AddFile} "VCL.pcu"
     ${AddFile} "RBDMUtils.pcu"
     ${AddFile} "Collections.pcu"
     ${AddFile} "MPI.pcu"
@@ -405,7 +403,6 @@
     File ..\bin\Lib\Sockets.pas
     File ..\bin\Lib\Timers.pas
     File ..\bin\Lib\Utils.pas
-    File ..\bin\Lib\VCL.pas
     File ..\bin\Lib\RBDMUtils.pas
     File ..\bin\Lib\Collections.pas
     File ..\bin\Lib\MPI.pas
@@ -502,7 +499,6 @@
     ${AddFile} "Sockets.pas"
     ${AddFile} "Timers.pas"
     ${AddFile} "Utils.pas"
-    ${AddFile} "VCL.pas"
     ${AddFile} "RBDMUtils.pas"
     ${AddFile} "Collections.pas"
     ${AddFile} "MPI.pas"

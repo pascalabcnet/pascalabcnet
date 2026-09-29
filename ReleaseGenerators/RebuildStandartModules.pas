@@ -12,7 +12,7 @@ uses
    IniFile, PointerTools, PointRect, 
    PT4, PT4_32, PT4Exam, PT4MakerNetX, PT4TaskMakerNET, 
    Robot, RobotField,
-   RobotTaskMaker, RobotZadan, Sockets, Utils, VCL, Timers, RBDMUtils,
+   RobotTaskMaker, RobotZadan, Sockets, Utils, Timers, RBDMUtils,
    Collections, Arrays, FormsABC, MPI, ClientServer, Speech, Sounds, Countries,
    ABCDatabases, PT4Databases, BlockFileOfT, Controls,
    OpenCLABC, OpenCL,

@@ -6,8 +6,7 @@ unit GraphABC;
 //ne udaljat, IB 7.10.08 
 //с дополнениями 2015.01 (mabr) 
 {$apptype windows} 
-{$reference '%GAC%\System.Windows.Forms.dll'}
-{$reference '%GAC%\System.Drawing.dll'}
+{$platform WinForms}
 
 interface
 

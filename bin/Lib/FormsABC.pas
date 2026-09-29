@@ -3,8 +3,7 @@
 unit FormsABC;
 
 {$apptype windows} 
-{$reference 'System.Windows.Forms.dll'}
-{$reference 'System.Drawing.dll'}
+{$platform WinForms}
 
 interface
 
