@@ -39,6 +39,10 @@ set "RUNNER=%ROOT%bin\CrossTargetTestRunner.exe"
 goto run_tests
 
 :run_net10
+echo Building CodeCompletion for net10...
+dotnet build "%ROOT%CodeCompletion\CodeCompletion.csproj" -c Release -f net10.0 -m:1
+if errorlevel 1 exit /b %ERRORLEVEL%
+
 echo Building CrossTargetTestRunner for net10...
 copy /Y "%CROSS_TARGET_RUNNER_SOURCE%" "%ROOT%bin-net10\CrossTargetTestRunner.pas" >nul
 pushd "%ROOT%bin-net10"
