@@ -1,4 +1,4 @@
-﻿{$reference System.Windows.Forms.dll}
+﻿//{$reference System.Windows.Forms.dll}
 
 /// Конструктор учебных заданий для задачника Programming Taskbook.
 /// Версия 1.9 от 26.03.2023 (С) М. Э. Абрамян, 2016-2023.

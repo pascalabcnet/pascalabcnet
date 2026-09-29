@@ -1,6 +1,6 @@
 ﻿unit Sounds;
 
-{$reference 'PresentationCore.dll'}
+{$platform WPF}
 
 procedure PlaySound(fname: string);
 begin

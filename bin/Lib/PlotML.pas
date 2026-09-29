@@ -7,9 +7,7 @@
 unit PlotML;
 
 {$reference %GAC%\InteractiveDataDisplay.WPF.dll}
-{$reference 'PresentationFramework.dll'}
-{$reference 'WindowsBase.dll'}
-{$reference 'PresentationCore.dll'}
+{$platform WPF}
 
 interface
 

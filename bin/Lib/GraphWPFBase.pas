@@ -3,9 +3,7 @@
 ///--
 unit GraphWPFBase;
 
-{$reference 'PresentationFramework.dll'}
-{$reference 'WindowsBase.dll'}
-{$reference 'PresentationCore.dll'}
+{$platform WPF}
 
 {$apptype windows}
 
