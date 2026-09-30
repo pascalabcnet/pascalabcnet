@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <OutputType>WinExe</OutputType>
     <OutputPath>..\bin\</OutputPath>
     
@@ -819,14 +819,6 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="UIAutomationProvider" />
-    <Reference Include="WeifenLuo.WinFormsUI.Docking.ThemeVS2005Linux, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5cded1a1a0a7b481, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\WeifenLuo.WinFormsUI.Docking.ThemeVS2005Linux.dll</HintPath>
-    </Reference>
-    <Reference Include="WeifenLuo.WinFormsUI.DockingLinux, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5cded1a1a0a7b481, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\WeifenLuo.WinFormsUI.DockingLinux.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
@@ -834,5 +826,10 @@
   <ItemGroup>
     <PackageReference Include="System.Resources.Extensions" Version="9.0.0" />
     <PackageReference Include="SharpDisasm" Version="1.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Libraries\WeifenLuoLinux\WinFormsUI\WeifenLuo.WinFormsUI.Docking.Linux.csproj" />
+    <ProjectReference Include="..\Libraries\WeifenLuoLinux\WinFormsUI\ThemeVS2005.csproj" />
   </ItemGroup>
 </Project>

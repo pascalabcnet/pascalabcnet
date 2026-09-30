@@ -7,11 +7,62 @@ namespace WeifenLuo.WinFormsUI.Docking
 {
     public static class PatchController
     {
+        static PatchController()
+        {
+            if (IsUnix)
+            {
+                InitializeUnixDefaults();
+            }
+        }
+
+        private static bool IsUnix
+        {
+            get
+            {
+                var platform = Environment.OSVersion.Platform;
+                return platform == PlatformID.Unix
+                    || platform == PlatformID.MacOSX
+                    || (int)platform == 128; // Older Mono versions used 128 for Unix.
+            }
+        }
+
+        private static bool GetEnvironmentFlag(string name, bool defaultValue)
+        {
+            bool value;
+            return bool.TryParse(Environment.GetEnvironmentVariable(name), out value)
+                ? value
+                : defaultValue;
+        }
+
+        private static void InitializeUnixDefaults()
+        {
+            _highDpi = GetEnvironmentFlag("DPS_EnableHighDpi", true);
+            _memoryLeakFix = GetEnvironmentFlag("DPS_EnableMemoryLeakFix", true);
+            _focusLostFix = GetEnvironmentFlag("DPS_EnableMainWindowFocusLostFix", true);
+            _nestedDisposalFix = GetEnvironmentFlag("DPS_EnableNestedDisposalFix", true);
+            _fontInheritanceFix = GetEnvironmentFlag("DPS_EnableFontInheritanceFix", true);
+            _contentOrderFix = GetEnvironmentFlag("DPS_EnableContentOrderFix", true);
+            _activeXFix = GetEnvironmentFlag("DPS_EnableActiveXFix", false);
+            _displayingPaneFix = GetEnvironmentFlag("DPS_EnableDisplayingPaneFix", true);
+            _activeControlFix = GetEnvironmentFlag("DPS_EnableActiveControlFix", true);
+            _floatSplitterFix = GetEnvironmentFlag("DPS_EnableFloatSplitterFix", true);
+            _activateOnDockFix = GetEnvironmentFlag("DPS_EnableActivateOnDockFix", true);
+            _selectClosestOnClose = GetEnvironmentFlag("DPS_EnableSelectClosestOnClose", true);
+            _perScreenDpi = GetEnvironmentFlag("DPS_EnablePerScreenDpi", false);
+        }
+
         public static bool? EnableAll { private get; set; }
 
         public static void Reset()
         {
-            EnableAll = _highDpi = _memoryLeakFix 
+            EnableAll = null;
+            if (IsUnix)
+            {
+                InitializeUnixDefaults();
+                return;
+            }
+
+            _highDpi = _memoryLeakFix
                 = _nestedDisposalFix = _focusLostFix = _contentOrderFix
                 = _fontInheritanceFix = _activeXFix = _displayingPaneFix
                 = _activeControlFix = _floatSplitterFix = _activateOnDockFix

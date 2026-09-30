@@ -265,6 +265,8 @@ namespace VisualPascalABC
             tsAutoInsertCode.Visible = false;
             MainDockPanel.Theme = new WeifenLuo.WinFormsUI.Docking.VS2005Theme();
             BottomDockPanel.Theme = new WeifenLuo.WinFormsUI.Docking.VS2005Theme();
+            MainDockPanel.ShowDocumentIcon = false;
+            BottomDockPanel.ShowDocumentIcon = false;
             //MainDockPanel.ActiveDocumentChanged += (oo, ee) => MessageBox.Show("MainDockPanel.ActiveDocumentChanged");
             //MainDockPanel.Click += (oo, ee) => MessageBox.Show("MainDockPanel.Click");
 
