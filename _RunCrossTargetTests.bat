@@ -7,27 +7,27 @@ set "TARGET=%~1"
 set "MODE=%~2"
 set "FILTER=%~3"
 
-if "%TARGET%"=="" set "TARGET=net40"
+if "%TARGET%"=="" set "TARGET=net472"
 if "%MODE%"=="" set "MODE=all"
 
 if /I "%TARGET%"=="all" goto run_all
-if /I "%TARGET%"=="net40" goto run_net40
+if /I "%TARGET%"=="net472" goto run_net472
 if /I "%TARGET%"=="net10" goto run_net10
 
 :usage
-echo Usage: %~nx0 [net40^|net10^|all] [all^|core^|units^|errors] [file-name-filter]
+echo Usage: %~nx0 [net472^|net10^|all] [all^|core^|units^|errors] [file-name-filter]
 exit /b 2
 
 :run_all
-call "%~f0" net40 "%MODE%" "%FILTER%"
-set "NET40_EXIT=%ERRORLEVEL%"
+call "%~f0" net472 "%MODE%" "%FILTER%"
+set "NET472_EXIT=%ERRORLEVEL%"
 call "%~f0" net10 "%MODE%" "%FILTER%"
 set "NET10_EXIT=%ERRORLEVEL%"
-if not "%NET40_EXIT%"=="0" exit /b %NET40_EXIT%
+if not "%NET472_EXIT%"=="0" exit /b %NET472_EXIT%
 exit /b %NET10_EXIT%
 
-:run_net40
-echo Building CrossTargetTestRunner for net40...
+:run_net472
+echo Building CrossTargetTestRunner for net472...
 copy /Y "%CROSS_TARGET_RUNNER_SOURCE%" "%ROOT%bin\CrossTargetTestRunner.pas" >nul
 pushd "%ROOT%bin"
 call pabcnetcclear.exe CrossTargetTestRunner.pas

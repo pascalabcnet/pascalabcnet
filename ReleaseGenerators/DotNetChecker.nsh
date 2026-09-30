@@ -4,7 +4,6 @@
 
 	!ifndef DOTNET472_URL
 	!define DOTNET472_URL       "https://go.microsoft.com/fwlink/?LinkId=863265"
-	!define DOTNET471_URL       "https://go.microsoft.com/fwlink/?LinkId=852104"
 	!define DOTNET47_URL        "https://go.microsoft.com/fwlink/?LinkId=825302"
 	!define DOTNET462_URL       "https://go.microsoft.com/fwlink/?LinkId=780600"
 	!define DOTNET461_URL       "https://go.microsoft.com/fwlink/?LinkId=671743"
@@ -24,9 +23,6 @@
 	${If} ${FrameworkVersion} == "472"
 		StrCpy $dotNetUrl${FrameworkVersion} ${DOTNET472_URL}
 		StrCpy $dotNetReadableVersion${FrameworkVersion} "4.7.2"
-	${ElseIf} ${FrameworkVersion} == "471"
-		StrCpy $dotNetUrl${FrameworkVersion} ${DOTNET471_URL}
-		StrCpy $dotNetReadableVersion${FrameworkVersion} "4.7.1"
 	${ElseIf} ${FrameworkVersion} == "47"
 		StrCpy $dotNetUrl${FrameworkVersion} ${DOTNET47_URL}
 		StrCpy $dotNetReadableVersion${FrameworkVersion} "4.7"

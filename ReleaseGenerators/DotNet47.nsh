@@ -1,9 +1,9 @@
-﻿!define DotNet "NDP471-KB4033342-x86-x64-AllOS-ENU.exe"
+﻿!define DotNet "NDP472-KB4054530-x86-x64-AllOS-ENU.exe"
 
 SectionGroup "Microsoft .NET Framework" _DOTNET
-Section "Microsoft .NET Framework 4.7" Framework
+Section "Microsoft .NET Framework 4.7.2" Framework
   SectionIn 1 2
-  !insertmacro CheckNetFramework 471
+  !insertmacro CheckNetFramework 472
 ;  IfFileExists "$WINDIR\Microsoft.NET\Framework\v4.0.30319\System.dll" 0 +2
 ;    ReadRegDWORD $1 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" "Release"
 ;	IntCmp $1 460805 dotnetinstalled installdotnet dotnetinstalled
@@ -15,7 +15,7 @@ Section "Microsoft .NET Framework 4.7" Framework
 ;    Delete "$INSTDIR\${DotNet}"
 ;    Goto exit
 ;  dotnetinstalled:
-;    ;MessageBox MB_OK "Платформа Microsoft .NET версии 4.7.1 уже установлена на этом компьютере."
+;    ;MessageBox MB_OK "Платформа Microsoft .NET версии 4.7.2 уже установлена на этом компьютере."
 ;  exit:    
 SectionEnd 
 Section "Framework Class Library Help" FrameworkHelp

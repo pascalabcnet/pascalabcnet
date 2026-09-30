@@ -1284,7 +1284,7 @@ namespace PascalABCCompiler.NETGenerator
                 ab.SetCustomAttribute(cab);
                 cab = new CustomAttributeBuilder(TypeFactory.AssemblyDelaySignAttributeCtor, new object[] { true });
                 ab.SetCustomAttribute(cab);
-                cab = new CustomAttributeBuilder(TypeFactory.TargetFrameworkAttributeCtor, new object[] { ".NETFramework,Version=v4.0" });
+                cab = new CustomAttributeBuilder(TypeFactory.TargetFrameworkAttributeCtor, new object[] { ".NETFramework,Version=v4.7.2" });
                 ab.SetCustomAttribute(cab);
             }
 

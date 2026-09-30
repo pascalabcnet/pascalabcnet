@@ -673,6 +673,10 @@ begin
       options.OutputDirectory := ErrorsOutputDir;
       options.UseDllForSystemUnits := false;
       options.RunWithEnvironment := false;
+      // Error tests may use helper units from the shared units directory.
+      // This is required, for example, to diagnose conflicting package
+      // requirements declared by a program and one of its units.
+      options.SearchDirectories.Add(Path.Combine(TestWorkDir, 'units'));
 
       comp.Compile(options);
       if comp.ErrorsList.Count = 0 then
@@ -750,7 +754,7 @@ begin
     TestSuiteDir := Path.GetFullPath(System.Environment.CurrentDirectory);
     RunnerDir := Path.GetDirectoryName(GetEXEFileName());
     IsModernTarget := Path.GetFileName(RunnerDir).ToLower() = 'bin-net10';
-    TargetName := IsModernTarget ? 'net10' : 'net40';
+    TargetName := IsModernTarget ? 'net10' : 'net472';
 
     ResultsRoot := Path.Combine(TestSuiteDir, 'TestResults', TargetName);
     TestWorkDir := Path.Combine(ResultsRoot, 'work');

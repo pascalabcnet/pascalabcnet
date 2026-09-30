@@ -351,9 +351,9 @@ UPDATE_CHECK_ERROR=Ошибка при проверке обновлений
 UPDATE_CHECK=Проверка обновлений PascalABC.NET
 PABC_DOWNLOAD_PAGE=http://pascalabc.net/ssyilki-dlya-skachivaniya
 M_CHECKUPDATES=Проверить обновления
-FRAMEWORK_DOWNLOAD_PAGE=https://www.microsoft.com/ru-RU/download/details.aspx?id=56116
+FRAMEWORK_DOWNLOAD_PAGE=https://dotnet.microsoft.com/download/dotnet-framework/net472
 DOTNET_UPDATE_CHECK=Проверка обновлений .NET Framework
-DOTNET_AVAILABLE=Доступна новая версия .NET Framework (.NET Framework 4.7.1). Перейти на страницу скачивания?
+DOTNET_AVAILABLE=Доступна новая версия .NET Framework (.NET Framework 4.7.2). Перейти на страницу скачивания?
 
 //Options
 %PREFIX%=VP_OC_VIEWOPTIONS_

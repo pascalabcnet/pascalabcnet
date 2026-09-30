@@ -349,9 +349,9 @@ UPDATE_CHECK_ERROR=检查更新时出错
 UPDATE_CHECK=检查更新
 PABC_DOWNLOAD_PAGE=http://pascalabc.net/en/download
 M_CHECKUPDATES=检查更新
-FRAMEWORK_DOWNLOAD_PAGE=https://www.microsoft.com/en-US/download/details.aspx?id=56116
+FRAMEWORK_DOWNLOAD_PAGE=https://dotnet.microsoft.com/download/dotnet-framework/net472
 DOTNET_UPDATE_CHECK=检查.NET Framework的更新
-DOTNET_AVAILABLE=.NET Framework 的新的版本是可用的(.NET Framework 4.7.1)。你想访问下载的页面?
+DOTNET_AVAILABLE=.NET Framework 的新版本可用（.NET Framework 4.7.2）。是否访问下载页面？
 //Options
 %PREFIX%=VP_OC_VIEWOPTIONS_
 NAME=常规

@@ -57,8 +57,8 @@
     File "..\bin\pabcnetcclear.exe.config"
 
 
-; main config - only .NET 4.7.1 and above
-    DotNetChecker::IsDotNet471Installed
+; main config - only .NET 4.7.2 and above
+    DotNetChecker::IsDotNet472Installed
     Pop $0
 
     ${If} $0 == "false"

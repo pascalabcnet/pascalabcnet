@@ -29,9 +29,9 @@
       '$(MSBuildProjectName)' == 'PABCCoreUtils'">true</PabcDualTargetProject>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(PabcDualTargetProject)' == 'true' And ('$(TargetFramework)' == 'net40' Or '$(PABCNET_LEGACY_ONLY)' == 'true')">
+  <PropertyGroup Condition="'$(PabcDualTargetProject)' == 'true' And ('$(TargetFramework)' == 'net472' Or '$(PABCNET_LEGACY_ONLY)' == 'true')">
     <OutputPath>$(MSBuildThisFileDirectory)bin\</OutputPath>
-    <IntermediateOutputPath>$(MSBuildProjectDirectory)\obj\$(Configuration)\net40\</IntermediateOutputPath>
+    <IntermediateOutputPath>$(MSBuildProjectDirectory)\obj\$(Configuration)\net472\</IntermediateOutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <DefineConstants>$(DefineConstants);PABCNET_LEGACY</DefineConstants>
   </PropertyGroup>

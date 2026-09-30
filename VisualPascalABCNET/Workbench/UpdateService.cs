@@ -19,7 +19,7 @@ namespace VisualPascalABC
 
         }
 
-        public bool IsDotnet71Installed()
+        public bool IsDotnet472Installed()
         {
             if (Environment.OSVersion.Version.Major < 6)
                 return true;
@@ -27,10 +27,11 @@ namespace VisualPascalABC
             {
                 using (var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full"))
                 {
-                    return key != null && ((key.GetValue("Version") as string).StartsWith("4.7") || (key.GetValue("Version") as string).StartsWith("4.8"));
+                    var release = key?.GetValue("Release");
+                    return release != null && Convert.ToInt32(release) >= 461808;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return true;
             }
@@ -41,7 +42,7 @@ namespace VisualPascalABC
             int status = 1;//1 - up to date, 0 - not up to date, -1 error
             string newVersion = null;
             string curVersion = null;
-            if (!IsDotnet71Installed())
+            if (!IsDotnet472Installed())
             {
                 if (MessageBox.Show(PascalABCCompiler.StringResources.Get("VP_MF_DOTNET_AVAILABLE"),
                         PascalABCCompiler.StringResources.Get("VP_MF_DOTNET_UPDATE_CHECK"),

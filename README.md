@@ -4,7 +4,7 @@ PascalABC.NET is a modern Pascal programming language and an integrated
 development environment for Microsoft .NET. The repository currently supports
 two compiler targets:
 
-- the complete system for .NET Framework 4.0/4.7.1;
+- the complete system for .NET Framework 4.0/4.7.2;
 - the console compiler for .NET 10.
 
 ## Building on Windows
@@ -49,7 +49,7 @@ _RebuildStandartModules_net10.bat Release
 Run the console test suites independently:
 
 ```bat
-_RunCrossTargetTests_net40.bat
+_RunCrossTargetTests_net472.bat
 _RunCrossTargetTests_net10_clean.bat
 ```
 
@@ -93,7 +93,7 @@ PascalABC.NET — современный язык программировани
 
 Репозиторий поддерживает две цели:
 
-- полную систему для .NET Framework 4.0/4.7.1;
+- полную систему для .NET Framework 4.0/4.7.2;
 - консольный компилятор для .NET 10.
 
 ## Сборка в Windows
@@ -138,7 +138,7 @@ _RebuildStandartModules_net10.bat Release
 Раздельный запуск консольных тестов:
 
 ```bat
-_RunCrossTargetTests_net40.bat
+_RunCrossTargetTests_net472.bat
 _RunCrossTargetTests_net10_clean.bat
 ```
 
@@ -177,5 +177,5 @@ mono pabcnetc.exe
 
 Основной набор тестов находится в каталоге `TestSuite`. Полный старый TestRunner
 используется сценариями сборки .NET Framework. Для независимой проверки консольных
-компиляторов используйте `_RunCrossTargetTests_net40.bat` и
+компиляторов используйте `_RunCrossTargetTests_net472.bat` и
 `_RunCrossTargetTests_net10_clean.bat`.
