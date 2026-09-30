@@ -22,6 +22,7 @@ DISABLE_STANDARD_UNITS_DIRECTIVE_DISALLOWED_IN_USED_UNITS=Указание ди�
 USES_IN_WRONG_NAME=Имя модуля в uses-in ({0}) должно совпадать с именем файла ({1})
 UNSUPPORTED_TARGETFRAMEWORK_{0}=TargetFramework '{0}' не поддерживается
 UNSUPPORTED_TARGET_PLATFORM{0}=Платформа '{0}' не поддерживается
+CONFLICTING_PACKAGE_VERSIONS{0}{1}{2}=Для пакета '{0}' указаны разные версии: '{1}' и '{2}'
 UNSUPPORTED_OUTPUT_FILE_TYPE{0}=Тип выходного файла '{0}' не поддерживается
 
 %PREFIX%=

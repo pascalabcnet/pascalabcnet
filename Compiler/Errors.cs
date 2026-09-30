@@ -347,6 +347,20 @@ namespace PascalABCCompiler.Errors
     }
 
     /// <summary>
+    /// Бросается, если разные модули требуют разные точные версии одного NuGet-пакета.
+    /// </summary>
+    public class ConflictingPackageVersions : CompilerThrownError
+    {
+        public ConflictingPackageVersions(string packageId, string firstVersion,
+            string secondVersion, string fileName, SourceContext sc)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_CONFLICTING_PACKAGE_VERSIONS{0}{1}{2}"),
+                packageId, firstVersion, secondVersion), fileName)
+        {
+            source_context = sc;
+        }
+    }
+
+    /// <summary>
     /// Бросается, если пользователь указывает неподдерживаемый тип выходного файла (например, в директиве {$apptype ...})
     /// </summary>
     public class UnsupportedOutputFileType : CompilerThrownError

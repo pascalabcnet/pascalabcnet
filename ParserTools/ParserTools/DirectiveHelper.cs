@@ -244,6 +244,16 @@ namespace PascalABCCompiler.ParserTools.Directives
         {
             return new ParamChecksCollection(new FuncCheck(s => Regex.IsMatch(s, @"^\d+\.\d+\.\d+$"), ParserErrorsStringResources.Get("INVALID_VERSION")));
         }
+
+        public static ParamChecksCollection PackageIdAndExactVersionCheck()
+        {
+            const string packageIdPattern = @"^[A-Za-z0-9._-]+$";
+            const string exactVersionPattern = @"^\d+(?:\.\d+){1,3}(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$";
+
+            return new ParamChecksCollection(
+                new FuncCheck(s => Regex.IsMatch(s, packageIdPattern)),
+                new FuncCheck(s => Regex.IsMatch(s, exactVersionPattern)));
+        }
         #endregion
 
         public static DirectiveInfo NoParamsDirectiveInfo(

@@ -814,6 +814,23 @@ namespace PascalABCCompiler
 
         #region COMPILER DIRECTIVES
 
+        private sealed class PackageRequirement
+        {
+            public readonly string Id;
+            public readonly string Version;
+            public readonly compiler_directive Origin;
+
+            public PackageRequirement(string id, string version, compiler_directive origin)
+            {
+                Id = id;
+                Version = version;
+                Origin = origin;
+            }
+        }
+
+        private Dictionary<string, PackageRequirement> packageRequirements =
+            new Dictionary<string, PackageRequirement>(StringComparer.OrdinalIgnoreCase);
+
         /// <summary>
         /// Формирует словарь директив, относящихся ко всей итоговой компиляции.
         /// Директивы лексера, отдельного модуля и редактора уже обработаны на
@@ -879,6 +896,41 @@ namespace PascalABCCompiler
                     unitFileName));
             }
             return list;
+        }
+
+        private Dictionary<string, PackageRequirement> GetPackageRequirements(
+            Dictionary<string, List<compiler_directive>> compilerDirectives)
+        {
+            var result = new Dictionary<string, PackageRequirement>(StringComparer.OrdinalIgnoreCase);
+            List<compiler_directive> packageDirectives;
+            if (!compilerDirectives.TryGetValue(StringConstants.compiler_directive_package, out packageDirectives))
+                return result;
+
+            // GetCompilationDirectives stores declarations in reverse order so
+            // that traditional single-value directives keep their old priority.
+            // Package requirements are a set, therefore process them in source
+            // order and report a conflict at the later declaration.
+            for (int i = packageDirectives.Count - 1; i >= 0; i--)
+            {
+                compiler_directive directive = packageDirectives[i];
+                string[] parts = directive.directive.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length != 2)
+                    continue; // Количество параметров уже проверено парсером.
+
+                var requirement = new PackageRequirement(parts[0], parts[1], directive);
+                PackageRequirement existing;
+                if (!result.TryGetValue(requirement.Id, out existing))
+                {
+                    result.Add(requirement.Id, requirement);
+                    continue;
+                }
+
+                if (!string.Equals(existing.Version, requirement.Version, StringComparison.OrdinalIgnoreCase))
+                    throw new ConflictingPackageVersions(existing.Id, existing.Version,
+                        requirement.Version, directive.source_file, GetSourceContext(directive));
+            }
+
+            return result;
         }
 
         #endregion
@@ -1534,6 +1586,8 @@ namespace PascalABCCompiler
             }
 
             Dictionary<string, List<TreeRealization.compiler_directive>> compilerDirectives = GetCompilationDirectives(UnitsTopologicallySortedList);
+
+            packageRequirements = GetPackageRequirements(compilerDirectives);
 
             // выяснение типа выходного файла по соотв. директиве компилятора
             SetOutputFileTypeOption(compilerDirectives);

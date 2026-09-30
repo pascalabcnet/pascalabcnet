@@ -22,6 +22,7 @@ DISABLE_STANDARD_UNITS_DIRECTIVE_DISALLOWED_IN_USED_UNITS=Directive 'DisableStan
 USES_IN_WRONG_NAME=Unit name in uses-in ({0}) must be same as file name ({1})
 UNSUPPORTED_TARGETFRAMEWORK_{0}=TargetFramework '{0}' is not supported
 UNSUPPORTED_TARGET_PLATFORM{0}=Platform '{0}' is not supported
+CONFLICTING_PACKAGE_VERSIONS{0}{1}{2}=Conflicting versions are specified for package '{0}': '{1}' and '{2}'
 UNSUPPORTED_OUTPUT_FILE_TYPE{0}=Output file type '{0}' is not supported
 
 %PREFIX%=
