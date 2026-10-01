@@ -19,10 +19,6 @@
   <ItemGroup>
     <None Remove="App.ico" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-    <!-- Modern GUI IPC will replace the legacy BinaryFormatter command channel. -->
-    <Compile Remove="CommandConsoleCompiler.cs" />
-  </ItemGroup>
   <ItemGroup>
     <Content Include="App.ico" />
   </ItemGroup>

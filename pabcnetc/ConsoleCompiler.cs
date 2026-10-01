@@ -421,13 +421,11 @@ namespace PascalABCCompiler
 #endif
             PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
 
-#if PABCNET_LEGACY
             if (args.Count == 1 && args[0] == "commandmode")
             {
                 return (new CommandConsoleCompiler()).Run();
             }
             else
-#endif
             {
                 CultureInfo ci = CultureInfo.InstalledUICulture;
                 if (StringResourcesLanguage.CurrentTwoLetterISO == "ru" && ci.TwoLetterISOLanguageName != "ru")

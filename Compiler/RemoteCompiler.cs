@@ -382,16 +382,6 @@ namespace PascalABCCompiler
             pabcnetcProcess.StandardInput.WriteLine(command);
         }
         
-        /*
-         * Не используется!
-        void sendObject(int id, object o)
-        {
-            sendCommand(id);
-            MemoryStream ms = new MemoryStream();
-            (new BinaryFormatter()).Serialize(ms, o);
-            ms.WriteTo(pabcnetcProcess.StandardInput.BaseStream);            
-        }*/
-
         void sendCompilerOptions()
         {
             byte[] encoded = Encoding.Unicode.GetBytes(compilerOptions.SourceFileName);
@@ -445,8 +435,6 @@ namespace PascalABCCompiler
             errorsList.Clear();
             warnings.Clear();
 
-            //sendObject(ConsoleCompilerConstants.InternalDebug, internalDebug);
-            //sendObject(ConsoleCompilerConstants.CompilerOptions, compilerOptions);
 
             waitCompilerReloading();
 

@@ -71,7 +71,8 @@ namespace PascalABCCompiler
                 int i;
                 do
                 {
-                    i = buffer.IndexOf(separator);
+                    // Protocol separators contain control characters and must not use linguistic comparison.
+                    i = buffer.IndexOf(separator, StringComparison.Ordinal);
                     if (i > 0)
                     {
                         args.Add(buffer.Substring(0, i));

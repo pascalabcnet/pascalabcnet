@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using PascalABCCompiler.CoreUtils;
 
 namespace PascalABCCompiler
@@ -194,22 +193,15 @@ namespace PascalABCCompiler
 //            command = Convert.ToInt32(line.Substring(0, 3));
         }
 
-        Stream standardInput;
-
-        object ReadObject()
-        {
-            standardInput = Console.OpenStandardInput();
-            object o=(new BinaryFormatter()).Deserialize(standardInput);
-            return o;
-        }
-
         bool executeCommand(string line)
         {
+            int command;
+            if (line.Length < 3 || !int.TryParse(line.Substring(0, 3), out command))
+                throw new InvalidDataException("Invalid command bytes: " + BitConverter.ToString(Encoding.UTF8.GetBytes(line)));
             string arg = null;
             if (line.Length > 3)
                 arg = line.Substring(4);
             string[] args = Tools.SplitString(arg, ConsoleCompilerConstants.MessageSeparator);
-            int command = Convert.ToInt32(line.Substring(0, 3));
             byte[] encoded;
             switch (command)
             {
@@ -277,12 +269,6 @@ namespace PascalABCCompiler
                         args[2]);
                     compiler.CompilerOptions.StandardModules[sm.languageToAdd].Add(sm);
                     break;
-                case ConsoleCompilerConstants.InternalDebug:
-                    compiler.InternalDebug = (CompilerInternalDebug)ReadObject();
-                    break;
-                case ConsoleCompilerConstants.CompilerOptions:
-                    compiler.CompilerOptions = (CompilerOptions)ReadObject();
-                    break;
                 case ConsoleCompilerConstants.CompilerLocale:
                     compiler.CompilerOptions.Locale = arg;
                     break;
@@ -309,15 +295,23 @@ namespace PascalABCCompiler
             
             LoadCompiler();
             
-            do
+            try
             {
-                string line = Console.ReadLine();
-                if (line == null)
-                    return 0;
-                if (!executeCommand(line))
-                    return 0;
+                do
+                {
+                    string line = Console.ReadLine();
+                    if (line == null)
+                        return 0;
+                    if (!executeCommand(line))
+                        return 0;
+                }
+                while (true);
             }
-            while (true);
+            catch (Exception error)
+            {
+                Console.Error.WriteLine(error);
+                return 1;
+            }
         }
 
         private void sendWorkingSet()

@@ -155,6 +155,9 @@ namespace PascalABCCompiler
 #endif
             PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
 
+            if (args.Length == 1 && args[0] == "commandmode")
+                return (new CommandConsoleCompiler()).Run();
+
             // загрузка всех парсеров и других составляющих языков  EVA
             Languages.Integration.LanguageIntegrator.LoadAllLanguages();
 

@@ -17,9 +17,9 @@
   <ItemGroup>
     <None Remove="App.ico" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-    <!-- The clear CLI starts in ConsoleCompiler.cs and does not use the legacy BinaryFormatter command channel. -->
-    <Compile Remove="CommandConsoleCompiler.cs" />
+  <ItemGroup>
+    <!-- Both console frontends use the same IDE command protocol. -->
+    <Compile Include="..\pabcnetc\CommandConsoleCompiler.cs" Link="CommandConsoleCompiler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.ico" />
