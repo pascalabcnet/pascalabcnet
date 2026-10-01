@@ -37,6 +37,7 @@
 **/CodeTemplatesPlugin.dll
 **/Compiler.dll
 **/CompilerController.dll
+**/CompileNet10Plugin.dll
 **/CompilerTools.dll
 **/Errors.dll
 **/GPPG.dll

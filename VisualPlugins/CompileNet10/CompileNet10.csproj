@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>CompileNet10Plugin</AssemblyName>
+    <RootNamespace>VisualPascalABCPlugins</RootNamespace>
+    <OutputPath>..\..\bin\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Version>0.5.0</Version>
+    <Description>Experimental .NET 10 compilation plugin for the legacy PascalABC.NET IDE.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Build against the existing IDE contract without rebuilding its dependency tree. -->
+    <Reference Include="PluginsSupport">
+      <HintPath>..\..\bin\PluginsSupport.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Errors">
+      <HintPath>..\..\bin\Errors.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.TextEditor">
+      <HintPath>..\..\bin\ICSharpCode.TextEditor.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Web.Extensions" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="CompileNet10Plugin.ini" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
