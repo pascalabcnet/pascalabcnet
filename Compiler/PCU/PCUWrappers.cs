@@ -351,36 +351,6 @@ namespace PascalABCCompiler.PCU
                     return base_type.find_in_type(name, CurrentScope, null, no_search_in_extension_methods);
                 else if (name == StringConstants.deconstruct_method_name)
                     return SystemLibrary.SystemLibrary.object_type.find_in_type(name, CurrentScope, null, no_search_in_extension_methods);
-
-                // SSM перенес из common_type_node (types.cs 2116) - без этого не работали методы расширения последовательностей для типов в pcu, реализующих IEnumerable<T>
-                if (ImplementingInterfaces != null)
-                {
-                    Dictionary<definition_node, definition_node> cache = new Dictionary<definition_node, definition_node>();
-                    List<SymbolInfo> props = new List<SymbolInfo>();
-                    foreach (type_node ii_tn in ImplementingInterfaces)
-                    {
-                        List<SymbolInfo> isi = ii_tn.find_in_type(name, CurrentScope);
-                        if (isi != null)
-                        {
-                            if (sil == null)
-                                sil = new List<SymbolInfo>();
-                            foreach (SymbolInfo si in isi)
-                            {
-                                if (!cache.ContainsKey(si.sym_info))
-                                {
-                                    if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method
-                                        && sil.FindIndex(ssi => ssi.sym_info == si.sym_info) == -1)  // SSM 12.12.18 - за счёт методов интерфейсов тоже могут добавляться одинаковые - исключаем их
-                                        sil.Add(si);
-                                    cache.Add(si.sym_info, si.sym_info);
-                                }
-                            }
-                        }
-                    }
-                    if (sil != null && sil.Count == 0)
-                        sil = null;
-                }
-
-                return sil;
             }
             if (this.base_generic_instance != null && sil != null)
             {
@@ -388,12 +358,54 @@ namespace PascalABCCompiler.PCU
                 if (orig_generic_or_null == null && name != "op_Implicit")  
                     return bsil;
             }
-            foreach (SymbolInfo si in sil)
+            if (sil != null)
             {
-                if (si.sym_info.semantic_node_type == semantic_node_type.wrap_def)
+                foreach (SymbolInfo si in sil)
                 {
-                    wrapped_definition_node wdn = (wrapped_definition_node)si.sym_info;
-                    si.sym_info = wdn.PCUReader.CreateInterfaceInClassMember(wdn.offset, name);
+                    if (si.sym_info.semantic_node_type == semantic_node_type.wrap_def)
+                    {
+                        wrapped_definition_node wdn = (wrapped_definition_node)si.sym_info;
+                        si.sym_info = wdn.PCUReader.CreateInterfaceInClassMember(wdn.offset, name);
+                    }
+                }
+            }
+
+            // As in common_type_node, interface extension methods must remain
+            // available even when the PCU type has a property with the same name.
+            if (ImplementingInterfaces != null)
+            {
+                Dictionary<definition_node, definition_node> cache = new Dictionary<definition_node, definition_node>();
+                List<SymbolInfo> extensionMethods = new List<SymbolInfo>();
+                foreach (type_node ii_tn in ImplementingInterfaces)
+                {
+                    List<SymbolInfo> isi = ii_tn.find_in_type(name, CurrentScope);
+                    if (isi == null)
+                        continue;
+
+                    foreach (SymbolInfo si in isi)
+                    {
+                        if (!cache.ContainsKey(si.sym_info))
+                        {
+                            if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method
+                                && (sil == null || sil.FindIndex(ssi => ssi.sym_info == si.sym_info) == -1))
+                                extensionMethods.Add(si);
+                            cache.Add(si.sym_info, si.sym_info);
+                        }
+                    }
+                }
+
+                if (extensionMethods.Count > 0)
+                {
+                    if (sil == null)
+                        sil = extensionMethods;
+                    else if (sil.Exists(si => si.sym_info is function_node
+                        && !(si.sym_info as function_node).is_extension_method))
+                        sil.AddRange(extensionMethods);
+                    else
+                    {
+                        extensionMethods.AddRange(sil);
+                        sil = extensionMethods;
+                    }
                 }
             }
             return sil;
