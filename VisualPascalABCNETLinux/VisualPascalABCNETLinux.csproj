@@ -7,7 +7,7 @@
     
     <RootNamespace>VisualPascalABC</RootNamespace>
     <AssemblyName>PascalABCNETLinux</AssemblyName>
-    <ApplicationIcon>_ABC13.ico</ApplicationIcon>
+    <ApplicationIcon>_ABC26.ico</ApplicationIcon>
     <GenerateManifests>false</GenerateManifests>
     
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -676,7 +676,7 @@
     <None Include="Resources\format2.png" />
     <None Include="Resources\Image1.bmp" />
     <None Include="Resources\new_file_png.png" />
-    <Content Include="_ABC13.ico" />
+    <Content Include="_ABC26.ico" />
     <None Include="Resources\AlignObjectsBottomHS.png" />
     <None Include="Resources\AlignObjectsCenteredHorizontalHS.png" />
     <None Include="Resources\AlignObjectsCenteredVerticalHS.png" />
