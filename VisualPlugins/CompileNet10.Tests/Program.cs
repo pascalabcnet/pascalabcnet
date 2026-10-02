@@ -37,6 +37,8 @@ internal static class Program
     {
         try
         {
+            CheckRuntimeSettings();
+            CheckExternalInputRouting();
             using (var document = new EditorDocument { FileName = Path.GetFullPath("a1-2.pas"), Text = "a1-2.pas" })
             {
                 document.TextEditor.Document.TextContent = "begin Write(42); end.";
@@ -92,9 +94,16 @@ internal static class Program
             string root = Path.Combine(Path.GetTempPath(), "pabc-net10-run-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(root);
             Console.WriteLine("Fixtures: " + root);
+            await CheckPortableHost(Path.GetFullPath(args[0]), root);
             using (var compiler = new Net10ControllerClient(args[0], "dotnet"))
             {
                 await CheckSnapshots(compiler, root);
+                string jsonSource = Path.Combine(root, "JsonReference.pas");
+                var jsonResult = await compiler.CompileAsync(jsonSource, root, "__RedirectIOMode",
+                    new List<Net10SourceFile> { new Net10SourceFile { fileName = jsonSource,
+                        text = "uses System.Text.Json; begin Write(JsonSerializer.Serialize(42)); end." } });
+                Check(jsonResult.success, "System.Text.Json is available in local host: " + jsonResult.message);
+                Check(await RunOutput(jsonResult.outputFile, root) == "42", "JSON program runs via bundled host");
                 string source = Path.Combine(root, "Ввод с пробелами.pas");
                 var memory = new List<Net10SourceFile> { new Net10SourceFile { fileName = source,
                     text = "begin Write('Привет: '); var s := ReadString; Write('Ответ=' + s); end." } };
@@ -218,6 +227,108 @@ internal static class Program
             "snapshot does not create or overwrite source files");
         response = await compiler.CompileAsync(main, root, "__RedirectIOMode");
         Check(response.success && await RunOutput(response.outputFile, root) == "disk", "next request without snapshot reads disk");
+    }
+
+    private static void CheckRuntimeSettings()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "pabc-runtime-path-" + Guid.NewGuid().ToString("N"));
+        string previousDirectory = Environment.CurrentDirectory;
+        Directory.CreateDirectory(root);
+        try
+        {
+            foreach (string layout in new[] { "bin", "VS output", "installed IDE" })
+            {
+                string ide = Path.Combine(root, layout);
+                Directory.CreateDirectory(ide);
+                // Simulate VS launching with a working directory unrelated to the EXE.
+                Environment.CurrentDirectory = root;
+                var settings = Net10RuntimeSettings.Load(ide);
+                string expected = Path.Combine(ide, "CompilerHost", "net10");
+                Check(settings.RuntimeDirectory == expected && settings.DotnetPath == "dotnet",
+                    layout + ": no INI uses host beside IDE, independent of working directory");
+                string ini = Path.Combine(ide, "CompileNet10Plugin.ini");
+                File.WriteAllText(ini, "# bundled defaults\nRuntimeDirectory=CompilerHost\\net10\nDotnetPath=dotnet\n");
+                Check(Net10RuntimeSettings.Load(ide).RuntimeDirectory == expected,
+                    layout + ": bundled INI resolves the same host");
+                File.WriteAllText(ini, "RuntimeDirectory=custom host\nDotnetPath=C:\\custom dotnet\\dotnet.exe\n");
+                settings = Net10RuntimeSettings.Load(ide);
+                Check(settings.RuntimeDirectory == Path.Combine(ide, "custom host") &&
+                    settings.DotnetPath == "C:\\custom dotnet\\dotnet.exe", "explicit relative runtime and dotnet overrides");
+                File.WriteAllText(ini, "RuntimeDirectory=" + expected + "\nDotnetPath=\n");
+                settings = Net10RuntimeSettings.Load(ide);
+                Check(settings.RuntimeDirectory == expected && settings.DotnetPath == "dotnet",
+                    "absolute runtime override and empty dotnet default");
+            }
+        }
+        finally
+        {
+            Environment.CurrentDirectory = previousDirectory;
+            Directory.Delete(root, true); // Only fixtures created in this method.
+        }
+    }
+
+    private static void CheckExternalInputRouting()
+    {
+        using (var net10 = new EditorDocument())
+        using (var legacy = new EditorDocument())
+        {
+            string sent = null;
+            int stops = 0, requests = 0, releases = 0;
+            var pending = new Dictionary<ICodeFileDocument, string> { { legacy, "legacy draft" } };
+            var session = new ExternalInputSession(net10, text => sent = text, () => stops++,
+                () => { requests++; pending[net10] = ""; },
+                () => { releases++; pending.Remove(net10); });
+            Check(!session.TrySend(net10, "early"), "standard input sends only after READLNSIGNAL");
+            session.RequestInput();
+            session.RequestInput();
+            Check(requests == 1 && session.IsWaiting, "duplicate input signal preserves pending request");
+            Check(!session.TrySend(legacy, "wrong") && !session.TryStop(legacy) && sent == null && stops == 0,
+                "net472/other tab is never routed to Run10");
+            Check(session.TrySend(net10, "Кириллица") && sent == "Кириллица" && !session.IsWaiting,
+                "standard input routes text to its owning Run10 process");
+            Check(!session.TrySend(net10, "duplicate"), "duplicate Enter cannot send twice");
+            session.RequestInput();
+            Check(requests == 2 && session.IsWaiting, "next Readln reopens standard input");
+            Check(session.TryStop(net10) && stops == 1, "standard Stop routes to owning Run10 process");
+            session.Dispose();
+            session.Dispose();
+            session.RequestInput();
+            Check(releases == 1 && !session.IsWaiting && !session.Owns(net10) &&
+                !session.TrySend(net10, "late") && !session.TryStop(net10),
+                "closing Run10 releases input and ignores late signals");
+            Check(pending.Count == 1 && pending[legacy] == "legacy draft",
+                "releasing Run10 preserves ordinary net472 input requests");
+        }
+    }
+
+    private static async Task CheckPortableHost(string sourceRuntime, string root)
+    {
+        string ide = Path.Combine(root, "portable IDE with spaces");
+        string runtime = Path.Combine(ide, "CompilerHost", "net10");
+        Directory.CreateDirectory(runtime);
+        foreach (string source in Directory.GetFiles(sourceRuntime, "*", SearchOption.AllDirectories))
+        {
+            string destination = Path.Combine(runtime, source.Substring(sourceRuntime.Length + 1));
+            Directory.CreateDirectory(Path.GetDirectoryName(destination));
+            File.Copy(source, destination);
+        }
+        var settings = Net10RuntimeSettings.Load(ide);
+        string previousDirectory = Environment.CurrentDirectory;
+        try
+        {
+            Environment.CurrentDirectory = root; // Not the IDE directory or a checkout.
+            using (var compiler = new Net10ControllerClient(settings.RuntimeDirectory, settings.DotnetPath))
+            {
+                string main = Path.Combine(root, "PortableMain.pas");
+                var response = await compiler.CompileAsync(main, root, "__RedirectIOMode",
+                    new List<Net10SourceFile> { new Net10SourceFile { fileName = main,
+                        text = "begin Write('Переносимый host'); end." } });
+                Check(response.success, "copied distribution host compiles without INI or checkout: " + response.message);
+                Check(await RunOutput(response.outputFile, root) == "Переносимый host",
+                    "copied distribution host runs with a different working directory");
+            }
+        }
+        finally { Environment.CurrentDirectory = previousDirectory; }
     }
 
     private static async Task<string> RunOutput(string assembly, string root)

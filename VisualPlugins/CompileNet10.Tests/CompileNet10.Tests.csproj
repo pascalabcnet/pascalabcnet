@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../CompileNet10/Net10ControllerClient.cs" Link="Net10ControllerClient.cs" />
+    <Compile Include="../CompileNet10/Net10RuntimeSettings.cs" Link="Net10RuntimeSettings.cs" />
     <Compile Include="../CompileNet10/Net10ProgramRunner.cs" Link="Net10ProgramRunner.cs" />
     <Compile Include="../CompileNet10/Net10SourceSnapshot.cs" Link="Net10SourceSnapshot.cs" />
     <Compile Include="../CompileNet10/Net10EditorDocument.cs" Link="Net10EditorDocument.cs" />

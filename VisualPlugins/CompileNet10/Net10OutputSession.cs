@@ -1,19 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Windows.Forms;
 
 namespace VisualPascalABCPlugins
 {
-    // A plugin-owned input row: no interception of legacy Enter/Stop handlers.
+    // Output stays bound to the source tab; input uses the IDE's standard panel.
     internal sealed class Net10OutputSession : IDisposable
     {
         private readonly IWorkbench workbench;
         private readonly RichTextBox output;
         private readonly Control document;
-        private readonly Panel panel;
-        private readonly TextBox input;
-        private readonly Button send;
+        private readonly IExternalInputSession inputSession;
         private readonly Action stop;
         private readonly Func<string, System.Threading.Tasks.Task> submit;
         private bool disposed;
@@ -40,7 +37,7 @@ namespace VisualPascalABCPlugins
             }
         }
 
-        public Net10OutputSession(IWorkbench workbench, RichTextBox output, ICodeFileDocument source, string fileName,
+        public Net10OutputSession(IWorkbench workbench, RichTextBox output, ICodeFileDocument source,
             Func<string, System.Threading.Tasks.Task> submit, Action stop)
         {
             this.workbench = workbench;
@@ -48,28 +45,12 @@ namespace VisualPascalABCPlugins
             document = source as Control;
             this.submit = submit;
             this.stop = stop;
-            if (document == null || document.IsDisposed || output.IsDisposed || output.Parent == null || output.Parent.Parent == null)
+            if (document == null || document.IsDisposed || output.IsDisposed)
                 throw new InvalidOperationException("Вкладка для запуска закрыта.");
-            panel = new Panel { Dock = DockStyle.Bottom, Height = 30, Padding = new Padding(3), Visible = false };
-            var label = new Label { Text = ".NET 10: " + Path.GetFileName(fileName),
-                Dock = DockStyle.Left, Width = 155, TextAlign = System.Drawing.ContentAlignment.MiddleLeft };
-            input = new TextBox { Dock = DockStyle.Fill, Enabled = false, MaxLength = 32767 };
-            send = new Button { Text = "Ввод", Dock = DockStyle.Right, Width = 65, Enabled = false };
-            var stopButton = new Button { Text = "Stop10", Dock = DockStyle.Right, Width = 110 };
-            send.Click += (sender, e) => Submit();
-            stopButton.Click += (sender, e) => stop();
-            input.KeyDown += (sender, e) =>
-            {
-                if (e.KeyCode != Keys.Enter) return;
-                e.SuppressKeyPress = true;
-                Submit();
-            };
-            panel.Controls.Add(input);
-            panel.Controls.Add(send);
-            panel.Controls.Add(stopButton);
-            panel.Controls.Add(label);
-            // Retain the source tab's Control, not the mutable current-tab pointer.
-            output.Parent.Parent.Controls.Add(panel);
+            var inputService = workbench.ServiceContainer.RunService as IExternalRunInputService;
+            if (inputService == null)
+                throw new InvalidOperationException("Для стандартного ввода Run10 пересоберите IDE и PluginsSupport.dll.");
+            inputSession = inputService.RegisterInput(source, Submit, stop);
             float zoom = output.ZoomFactor;
             output.Clear();
             output.ZoomFactor = zoom;
@@ -91,23 +72,12 @@ namespace VisualPascalABCPlugins
 
         public void RequestInput()
         {
-            Post(() =>
-            {
-                panel.Visible = true;
-                input.Enabled = send.Enabled = true;
-                workbench.ServiceContainer.OperationsService.WriteToOutputBox("", true);
-                input.Focus();
-            });
+            Post(() => inputSession.RequestInput());
         }
 
-        private async void Submit()
+        private async void Submit(string text)
         {
-            if (disposed || !input.Enabled) return;
-            string text = input.Text;
-            input.Enabled = send.Enabled = false;
-            input.Clear();
-            panel.Visible = false;
-            output.AppendText(text + Environment.NewLine);
+            if (disposed) return;
             try { await submit(text); }
             catch (Exception error) { Append(Environment.NewLine + error.Message + Environment.NewLine); }
         }
@@ -129,10 +99,11 @@ namespace VisualPascalABCPlugins
 
         public void Dispose()
         {
+            if (disposed) return;
             disposed = true;
             output.Disposed -= OutputDisposed;
             document.Disposed -= OutputDisposed;
-            panel.Dispose();
+            inputSession.Dispose();
         }
     }
 }

@@ -178,6 +178,8 @@ namespace VisualPascalABC
 
         private void button2_Click(object sender, EventArgs e)
         {
+            var external = WorkbenchServiceFactory.RunService as VisualPascalABCPlugins.IExternalRunInputService;
+            if (external != null && external.TryStopExternalInput()) return;
             WorkbenchServiceFactory.RunService.Stop();
         }
 

@@ -4,7 +4,8 @@ param(
     [string]$PascalABCSourcePath = '',
     [ValidateSet('all', 'net-framework', 'net10')]
     [string]$Target = 'all',
-    [string]$Configuration = 'Release'
+    [string]$Configuration = 'Release',
+    [switch]$IncludeRuntime
 )
 
 Set-StrictMode -Version Latest
@@ -81,6 +82,32 @@ function Build-Target {
     Invoke-HostBuild $controllerProject $Framework $destination
     Invoke-HostBuild $workerProject $Framework $destination
 
+    if ($IncludeRuntime) {
+        # Use current repository sources, never old PCUs or a sibling checkout's Lib.
+        # Only versioned assets belong in a distributable (bin may contain local experiments).
+        $runtimeAssets = @(& git -c core.quotepath=false -C $PascalABCSourcePath ls-files -- bin/Lib bin/Lng)
+        if ($LASTEXITCODE -ne 0) { throw 'Cannot list versioned runtime assets in PascalABC.NET.' }
+        foreach ($directoryName in @('Lib', 'Lng')) {
+            $sourceDirectory = Join-Path $PascalABCSourcePath "bin\$directoryName"
+            if (-not (Test-Path -LiteralPath $sourceDirectory -PathType Container)) {
+                throw "Required directory was not found: $sourceDirectory"
+            }
+            $prefix = "bin/$directoryName/"
+            foreach ($asset in $runtimeAssets) {
+                if (-not $asset.StartsWith($prefix, [System.StringComparison]::Ordinal)) { continue }
+                if ([System.IO.Path]::GetExtension($asset) -in @('.pcu', '.dll', '.exe', '.pdb')) { continue }
+                $sourceFile = Join-Path $PascalABCSourcePath $asset
+                Assert-FileExists $sourceFile
+                $relativePath = $asset.Substring($prefix.Length)
+                $targetFile = Join-Path (Join-Path $destination $directoryName) $relativePath
+                New-Item -ItemType Directory -Path (Split-Path -Parent $targetFile) -Force | Out-Null
+                Copy-Item -LiteralPath $sourceFile -Destination $targetFile -Force
+            }
+        }
+        Assert-FileExists (Join-Path $destination 'Lib\PABCSystem.pas')
+        Assert-FileExists (Join-Path $destination 'Lib\__RedirectIOMode.pas')
+    }
+
     Get-ChildItem -LiteralPath $destination -File -Filter '*.pdb' |
         Remove-Item -Force
 
@@ -112,6 +139,9 @@ function Build-Target {
 Assert-FileExists $controllerProject
 Assert-FileExists $workerProject
 Assert-FileExists (Join-Path $PascalABCSourcePath 'PascalABCNET.sln')
+if ($IncludeRuntime -and $Target -ne 'net10') {
+    throw 'Use -Target net10 with -IncludeRuntime; legacy build behavior is unchanged.'
+}
 New-Item -ItemType Directory -Path $OutputRoot -Force | Out-Null
 
 if ($Target -in @('all', 'net-framework')) {

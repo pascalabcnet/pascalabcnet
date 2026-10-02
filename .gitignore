@@ -29,6 +29,8 @@
 # local user files
 *.csproj.user
 /bin/CompilerController.ini
+/bin/CompileNet10Plugin.ini
+/bin/CompilerHost/
 
 
 

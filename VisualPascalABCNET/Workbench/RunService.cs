@@ -11,7 +11,7 @@ using VisualPascalABCPlugins;
 
 namespace VisualPascalABC
 {
-    public partial class WorkbenchRunService : IWorkbenchRunService
+    public partial class WorkbenchRunService : IWorkbenchRunService, IExternalRunInputService
     {
         string RedirectIOModeModuleName = "__RedirectIOMode";
         string RunModeModuleName = "__RunMode";
@@ -27,6 +27,7 @@ namespace VisualPascalABC
         private DebugHelper DebuggerManager;
         private Dictionary<string, ICodeFileDocument> RunTabs = new Dictionary<string, ICodeFileDocument>();
         private Dictionary<ICodeFileDocument, string> ReadRequests = new Dictionary<ICodeFileDocument, string>();
+        private ExternalInputSession externalInput;
         private Dictionary<string, string> RunArgumentsTable = new Dictionary<string, string>();
         bool RunActiveTabPage = false;
 
@@ -308,11 +309,45 @@ namespace VisualPascalABC
 
         public void SendInputTextToProcess()
         {
-            ReadRequests.Remove(DocumentService.CurrentCodeFileDocument);
-            RunnerManager.WritelnStringToProcess(Workbench.CurrentEXEFileName, Workbench.OutputWindow.InputTextBoxText);
+            var document = DocumentService.CurrentCodeFileDocument;
+            if (externalInput != null && externalInput.Owns(document))
+            {
+                if (!externalInput.TrySend(document, Workbench.OutputWindow.InputTextBoxText)) return;
+                ReadRequests.Remove(document);
+            }
+            else
+            {
+                ReadRequests.Remove(DocumentService.CurrentCodeFileDocument);
+                RunnerManager.WritelnStringToProcess(Workbench.CurrentEXEFileName, Workbench.OutputWindow.InputTextBoxText);
+            }
             Workbench.OutputWindow.AppendTextToOutputBox(Environment.NewLine);
             WorkbenchServiceFactory.OperationsService.SendNewLineToInputTextBox();
             Workbench.OutputWindow.InputPanelVisible = false;
+        }
+
+        public IExternalInputSession RegisterInput(ICodeFileDocument document, Action<string> send, Action stop)
+        {
+            if (externalInput != null || RunnerManager.IsRun())
+                throw new InvalidOperationException("Another program already owns the input panel.");
+            externalInput = new ExternalInputSession(document, send, stop,
+                () =>
+                {
+                    ReadRequests[document] = "";
+                    UpdateReadRequest(false);
+                },
+                () =>
+                {
+                    ReadRequests.Remove(document);
+                    externalInput = null;
+                    if (!Workbench.MainForm.IsDisposed && !Workbench.MainForm.Disposing)
+                        UpdateReadRequest(false);
+                });
+            return externalInput;
+        }
+
+        public bool TryStopExternalInput()
+        {
+            return externalInput != null && externalInput.TryStop(DocumentService.CurrentCodeFileDocument);
         }
 
         public bool IsRun()

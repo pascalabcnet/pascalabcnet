@@ -29,6 +29,12 @@
     <Reference Include="System.Web.Extensions" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="CompileNet10Plugin.ini" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="CompileNet10Plugin.ini" CopyToOutputDirectory="Never" />
   </ItemGroup>
+  <!-- A rebuild must not overwrite the user's runtime/dotnet overrides. -->
+  <Target Name="CreateDefaultRuntimeSettings" AfterTargets="Build">
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\CompileNet10Plugin.ini"
+          DestinationFiles="$(TargetDir)CompileNet10Plugin.ini"
+          Condition="!Exists('$(TargetDir)CompileNet10Plugin.ini')" />
+  </Target>
 </Project>

@@ -16,6 +16,7 @@ namespace VisualPascalABCPlugins
         private readonly Net10StatusDisplay status;
         private Net10ControllerClient client;
         private Net10ProgramRunner runner;
+        private Net10OutputSession outputSession;
         private string dotnetPath = "dotnet";
         private bool compiling;
 
@@ -43,11 +44,17 @@ namespace VisualPascalABCPlugins
             workbench.MainForm.FormClosed += (sender, e) =>
             {
                 runner?.Stop();
+                outputSession?.Dispose();
                 client?.Dispose();
                 status.Dispose();
             };
             // Do not compete with a normal IDE run for the shared console/input.
-            workbench.ServiceContainer.RunService.Starting += fileName => runner?.Stop();
+            workbench.ServiceContainer.RunService.Starting += fileName =>
+            {
+                runner?.Stop();
+                // Release ReadRequests before the ordinary runner starts reading input.
+                outputSession?.Dispose();
+            };
         }
 
         public string Name => "Compile .NET 10 (experimental)";
@@ -125,7 +132,7 @@ namespace VisualPascalABCPlugins
                             throw new InvalidOperationException("Уже запущена обычная программа IDE.");
                         using (var program = new Net10ProgramRunner(dotnetPath, Path.GetFullPath(outputFile),
                             Path.GetDirectoryName(fileName), arguments))
-                        using (var console = new Net10OutputSession(workbench, output, document, fileName,
+                        using (var console = new Net10OutputSession(workbench, output, document,
                             text =>
                             {
                                 status.Update("Программа .NET 10 выполняется");
@@ -133,6 +140,7 @@ namespace VisualPascalABCPlugins
                             }, program.Stop))
                         {
                             runner = program;
+                            outputSession = console;
                             SetItemEnabled(stopItem, true);
                             WriteMessage("Запущено .NET 10: " + outputFile);
                             status.Update("Программа .NET 10 выполняется");
@@ -165,6 +173,7 @@ namespace VisualPascalABCPlugins
             {
                 compiling = false;
                 runner = null;
+                outputSession = null;
                 if (!workbench.MainForm.IsDisposed) SetItemEnabled(stopItem, false);
                 SetEnabled(true);
             }
@@ -221,21 +230,9 @@ namespace VisualPascalABCPlugins
 
         private Net10ControllerClient CreateClient()
         {
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string runtimeDirectory = Path.Combine(baseDirectory, "..", "..", "pascalabcnet-tooling",
-                ".codex-build", "compiler-controller", "runtime", "net10");
-            string settings = Path.Combine(baseDirectory, "CompileNet10Plugin.ini");
-            if (File.Exists(settings))
-                foreach (string line in File.ReadAllLines(settings))
-                {
-                    int separator = line.IndexOf('=');
-                    if (separator < 0 || line.TrimStart().StartsWith("#")) continue;
-                    string key = line.Substring(0, separator).Trim();
-                    string value = line.Substring(separator + 1).Trim();
-                    if (key == "RuntimeDirectory") runtimeDirectory = Path.Combine(baseDirectory, value);
-                    if (key == "DotnetPath") dotnetPath = value;
-                }
-            return new Net10ControllerClient(runtimeDirectory, dotnetPath);
+            var settings = Net10RuntimeSettings.Load(AppDomain.CurrentDomain.BaseDirectory);
+            dotnetPath = settings.DotnetPath;
+            return new Net10ControllerClient(settings.RuntimeDirectory, dotnetPath);
         }
 
         private void WriteMessage(string message)
