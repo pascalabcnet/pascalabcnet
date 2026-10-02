@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "dependencies": {
+    ".NETFramework,Version=v4.7.2": {
+      "Microsoft.NETFramework.ReferenceAssemblies.net472": {
+        "type": "Direct",
+        "requested": "[1.0.3, )",
+        "resolved": "1.0.3",
+        "contentHash": "0E7evZXHXaDYYiLRfpyXvCh+yzM2rNTyuZDI+ZO7UUqSc6GfjePiXTdqJGtgIKUwdI81tzQKmaWprnUiPj9hAw=="
+      }
+    },
+    ".NETFramework,Version=v4.7.2/win-x86": {},
+    "net10.0": {
+      "compiler": {
+        "type": "Project",
+        "dependencies": {
+          "CompilerTools": "[1.0.0, )",
+          "Errors": "[1.0.0, )",
+          "LanguageIntegrator": "[1.0.0, )",
+          "Localization": "[1.0.0, )",
+          "NETGenerator": "[1.0.0, )",
+          "PABCCoreUtils": "[1.0.0, )",
+          "ParserTools": "[1.0.0, )",
+          "SemanticTree": "[1.0.0, )",
+          "StringConstants": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )",
+          "SyntaxVisitors": "[1.0.0, )",
+          "TreeConverter": "[1.0.0, )"
+        }
+      },
+      "compilertools": {
+        "type": "Project",
+        "dependencies": {
+          "Errors": "[1.0.0, )",
+          "Localization": "[1.0.0, )",
+          "SemanticTree": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )"
+        }
+      },
+      "errors": {
+        "type": "Project",
+        "dependencies": {
+          "Localization": "[1.0.0, )",
+          "SemanticTree": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )"
+        }
+      },
+      "languageintegrator": {
+        "type": "Project",
+        "dependencies": {
+          "Errors": "[1.0.0, )",
+          "ParserTools": "[1.0.0, )",
+          "StringConstants": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )",
+          "SyntaxVisitors": "[1.0.0, )",
+          "TreeConverter": "[1.0.0, )"
+        }
+      },
+      "localization": {
+        "type": "Project"
+      },
+      "netgenerator": {
+        "type": "Project",
+        "dependencies": {
+          "CompilerTools": "[1.0.0, )",
+          "Errors": "[1.0.0, )",
+          "SemanticTree": "[1.0.0, )",
+          "StringConstants": "[1.0.0, )",
+          "TreeConverter": "[1.0.0, )"
+        }
+      },
+      "pabccoreutils": {
+        "type": "Project"
+      },
+      "parsertools": {
+        "type": "Project",
+        "dependencies": {
+          "Errors": "[1.0.0, )",
+          "Localization": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )"
+        }
+      },
+      "semantictree": {
+        "type": "Project"
+      },
+      "stringconstants": {
+        "type": "Project"
+      },
+      "syntaxtree": {
+        "type": "Project",
+        "dependencies": {
+          "StringConstants": "[1.0.0, )"
+        }
+      },
+      "syntaxvisitors": {
+        "type": "Project",
+        "dependencies": {
+          "Errors": "[1.0.0, )",
+          "Localization": "[1.0.0, )",
+          "PABCCoreUtils": "[1.0.0, )",
+          "ParserTools": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )"
+        }
+      },
+      "treeconverter": {
+        "type": "Project",
+        "dependencies": {
+          "CompilerTools": "[1.0.0, )",
+          "Errors": "[1.0.0, )",
+          "Localization": "[1.0.0, )",
+          "PABCCoreUtils": "[1.0.0, )",
+          "SemanticTree": "[1.0.0, )",
+          "StringConstants": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )"
+        }
+      }
+    },
+    "net10.0/win-x86": {}
+  }
+}

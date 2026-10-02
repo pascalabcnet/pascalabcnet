@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net472;net10.0</TargetFrameworks>
+    <AssemblyName>ZMQServerPas</AssemblyName>
+    <RootNamespace>PascalABCNet.CompilerWorker</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <PascalABCSourceRoot>$(MSBuildThisFileDirectory)..</PascalABCSourceRoot>
+    <LegacyCompilerRoot>$(PascalABCSourceRoot)\bin</LegacyCompilerRoot>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <UseAppHost>false</UseAppHost>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472"
+                      Version="1.0.3"
+                      PrivateAssets="all" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="Compiler">
+      <HintPath>$(LegacyCompilerRoot)\Compiler.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Errors">
+      <HintPath>$(LegacyCompilerRoot)\Errors.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="LanguageIntegrator">
+      <HintPath>$(LegacyCompilerRoot)\LanguageIntegrator.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Localization">
+      <HintPath>$(LegacyCompilerRoot)\Localization.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="PABCCoreUtils">
+      <HintPath>$(LegacyCompilerRoot)\PABCCoreUtils.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SemanticTree">
+      <HintPath>$(LegacyCompilerRoot)\SemanticTree.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <ProjectReference Include="$(PascalABCSourceRoot)\Compiler\Compiler.csproj" />
+    <ProjectReference Include="$(PascalABCSourceRoot)\LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj"
+                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="$(PascalABCSourceRoot)\Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj"
+                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="$(PascalABCSourceRoot)\PascalABCLanguageInfo\PascalABCLanguageInfo.csproj"
+                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="$(PascalABCSourceRoot)\SyntaxTreeConverters\SyntaxTreeConverters.csproj"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+</Project>
