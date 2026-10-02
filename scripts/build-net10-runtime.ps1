@@ -33,7 +33,7 @@ foreach ($asset in $assets) {
     Copy-Item -LiteralPath (Join-Path $repositoryRoot $asset) -Destination $target -Force
 }
 Get-ChildItem -LiteralPath $stage -Recurse -File -Filter '*.pdb' | Remove-Item -Force
-foreach ($entry in @('pabcnetc', 'pabcnetcclear', 'PABCCompilerController', 'ZMQServerPas')) {
+foreach ($entry in @('pabcnetc', 'pabcnetcclear', 'PABCCompilerController', 'PABCCompilerWorker')) {
     foreach ($suffix in @('.dll', '.deps.json', '.runtimeconfig.json')) {
         if (-not (Test-Path -LiteralPath (Join-Path $stage ($entry + $suffix)))) {
             throw "Missing runtime entry: $entry$suffix"

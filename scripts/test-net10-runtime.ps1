@@ -20,7 +20,7 @@ foreach ($file in $exported) {
         throw "Unexpected distribution file: $($file.FullName)"
     }
 }
-foreach ($entry in @('pabcnetc', 'pabcnetcclear', 'PABCCompilerController', 'ZMQServerPas')) {
+foreach ($entry in @('pabcnetc', 'pabcnetcclear', 'PABCCompilerController', 'PABCCompilerWorker')) {
     foreach ($suffix in @('.dll', '.deps.json', '.runtimeconfig.json')) {
         if (-not (Test-Path -LiteralPath (Join-Path $destination ($entry + $suffix)))) {
             throw "Missing exported entry: $entry$suffix"

@@ -2,12 +2,16 @@
 
 `PABCCompilerController` is an editor-neutral process that reads one JSON request per line from standard input and writes exactly one JSON response per line to standard output. Operational logs and worker output are written only to standard error.
 
-The controller starts `ZMQServerPas` as an isolated child process. Its internal
+The controller starts `PABCCompilerWorker` as an isolated child process. Its internal
 transport is also JSON Lines, carried over the worker's redirected standard
 input and output. Worker stdout is reserved exclusively for protocol messages;
 worker diagnostics are continuously drained from stderr and forwarded to the
-controller's stderr. The historical `ZMQServerPas` assembly name is retained
-for deployment compatibility; no ZMQ or network transport is used.
+controller's stderr. No ZMQ or network transport is used.
+
+The worker binary is `PABCCompilerWorker.dll` on .NET 10 and
+`PABCCompilerWorker.exe` on .NET Framework 4.7.2. Deploy Controller and Worker
+together; clients explicitly supplying the worker path must use the new name.
+The Controller command line and external JSONL protocol are unchanged.
 
 ## Commands
 

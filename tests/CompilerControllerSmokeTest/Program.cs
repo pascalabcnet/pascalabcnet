@@ -10,7 +10,7 @@ var controllerPath = Path.Combine(
     isNet10 ? "PABCCompilerController.dll" : "PABCCompilerController.exe");
 var workerPath = Path.Combine(
     runtimeRoot,
-    isNet10 ? "ZMQServerPas.dll" : "ZMQServerPas.exe");
+    isNet10 ? "PABCCompilerWorker.dll" : "PABCCompilerWorker.exe");
 
 Check(File.Exists(controllerPath), $"Controller exists: {controllerPath}");
 Check(File.Exists(workerPath), $"Worker exists: {workerPath}");

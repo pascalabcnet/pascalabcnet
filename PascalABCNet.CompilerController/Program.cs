@@ -457,11 +457,11 @@ internal static class Program
     {
         var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 #if NET10_0
-        var dotNetWorker = Path.Combine(baseDirectory, "ZMQServerPas.dll");
+        var dotNetWorker = Path.Combine(baseDirectory, "PABCCompilerWorker.dll");
         if (File.Exists(dotNetWorker))
             return dotNetWorker;
 #endif
-        return Path.Combine(baseDirectory, "ZMQServerPas.exe");
+        return Path.Combine(baseDirectory, "PABCCompilerWorker.exe");
     }
 
     private static int Main(string[] args)

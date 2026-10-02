@@ -113,16 +113,16 @@ function Build-Target {
 
     if ($Framework -eq 'net472') {
         Assert-FileExists (Join-Path $destination 'PABCCompilerController.exe')
-        Assert-FileExists (Join-Path $destination 'ZMQServerPas.exe')
+        Assert-FileExists (Join-Path $destination 'PABCCompilerWorker.exe')
     }
     else {
         foreach ($fileName in @(
             'PABCCompilerController.dll',
             'PABCCompilerController.deps.json',
             'PABCCompilerController.runtimeconfig.json',
-            'ZMQServerPas.dll',
-            'ZMQServerPas.deps.json',
-            'ZMQServerPas.runtimeconfig.json')) {
+            'PABCCompilerWorker.dll',
+            'PABCCompilerWorker.deps.json',
+            'PABCCompilerWorker.runtimeconfig.json')) {
             Assert-FileExists (Join-Path $destination $fileName)
         }
     }

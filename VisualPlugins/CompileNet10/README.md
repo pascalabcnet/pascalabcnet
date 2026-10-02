@@ -95,7 +95,7 @@ IDE копируются DLL плагина, исходный INI и сосед�
 
 При первой сборке настройки копируются в `bin/CompileNet10Plugin.ini`;
 существующий пользовательский INI не перезаписывается. `RuntimeDirectory` указывает
-на полный готовый runtime с `PABCCompilerController.dll`, `ZMQServerPas.dll`,
+на полный готовый runtime с `PABCCompilerController.dll`, `PABCCompilerWorker.dll`,
 их `.runtimeconfig.json`/`.deps.json`, DLL зависимостей и стандартными модулями.
 По умолчанию: `RuntimeDirectory=..\bin-net10`. Такой же локальный путь
 используется без INI. Он вычисляется относительно `AppDomain.CurrentDomain.BaseDirectory`

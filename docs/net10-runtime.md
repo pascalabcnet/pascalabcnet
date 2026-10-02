@@ -2,7 +2,7 @@
 
 `scripts/build-net10-runtime.ps1 -Configuration Release` собирает
 `Net10Runtime.slnx`: pabcnetc, pabcnetcclear, PABCCompilerController,
-ZMQServerPas и языковые компоненты. Общие проекты собираются одним графом;
+PABCCompilerWorker и языковые компоненты. Общие проекты собираются одним графом;
 готовый комплект находится в `bin-net10`. Старую solution и net472 IDE не меняем.
 
 CompileNet10Plugin запускает Controller напрямую из этого каталога.
