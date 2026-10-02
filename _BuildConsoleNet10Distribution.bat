@@ -19,23 +19,7 @@ if exist "%STAGE_DIR%" rmdir /S /Q "%STAGE_DIR%"
 mkdir "%STAGE_DIR%"
 if errorlevel 1 exit /b %ERRORLEVEL%
 
-copy /Y "%MODERN_BIN%\*.dll" "%STAGE_DIR%\" >nul
-copy /Y "%MODERN_BIN%\pabcnetc.exe" "%STAGE_DIR%\" >nul
-copy /Y "%MODERN_BIN%\pabcnetc.deps.json" "%STAGE_DIR%\" >nul
-copy /Y "%MODERN_BIN%\pabcnetc.runtimeconfig.json" "%STAGE_DIR%\" >nul
-copy /Y "%MODERN_BIN%\pabcnetc.dll.config" "%STAGE_DIR%\" >nul
-copy /Y "%MODERN_BIN%\pabcnetcclear.exe" "%STAGE_DIR%\" >nul
-copy /Y "%MODERN_BIN%\pabcnetcclear.deps.json" "%STAGE_DIR%\" >nul
-copy /Y "%MODERN_BIN%\pabcnetcclear.runtimeconfig.json" "%STAGE_DIR%\" >nul
-copy /Y "%MODERN_BIN%\pabcnetcclear.dll.config" "%STAGE_DIR%\" >nul
-
-xcopy "%MODERN_BIN%\Lib" "%STAGE_DIR%\Lib\" /E /I /Y /Q >nul
-if errorlevel 1 exit /b %ERRORLEVEL%
-mkdir "%STAGE_DIR%\Lng"
-if errorlevel 1 exit /b %ERRORLEVEL%
-xcopy "%MODERN_BIN%\Lng\Eng" "%STAGE_DIR%\Lng\Eng\" /E /I /Y /Q >nul
-if errorlevel 1 exit /b %ERRORLEVEL%
-xcopy "%MODERN_BIN%\Lng\Rus" "%STAGE_DIR%\Lng\Rus\" /E /I /Y /Q >nul
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%ROOT%scripts\export-net10-runtime.ps1" -Destination "%STAGE_DIR%" -IncludeCompiledUnits
 if errorlevel 1 exit /b %ERRORLEVEL%
 xcopy "%SAMPLES_DIR%" "%STAGE_DIR%\Samples\" /E /I /Y /Q >nul
 if errorlevel 1 exit /b %ERRORLEVEL%

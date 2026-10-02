@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="pabcnetc/PABCNETC.csproj" />
+  <Project Path="pabcnetc_clear/PABCNETCclear.csproj" />
+  <Project Path="PascalABCNet.CompilerController/PascalABCNet.CompilerController.csproj" />
+  <Project Path="PascalABCNet.CompilerWorker/PascalABCNet.CompilerWorker.csproj" />
+  <Project Path="Optimizer/Optimizer.csproj" />
+  <Project Path="AdditionalLanguages/SPython/SemanticAnalyzers/SPythonSyntaxTreeVisitor/SPythonSyntaxTreeVisitor.csproj" />
+  <Project Path="AdditionalLanguages/SPython/SyntaxTreeConverters/SPythonStandardTreeConverter/SPythonStandardTreeConverter.csproj" />
+  <Project Path="AdditionalLanguages/SPython/SPythonLanguageInfo/SPythonLanguageInfo.csproj" />
+  <Project Path="AdditionalLanguages/SPython/SPythonParserKrylovMovchan/SPythonParser.csproj" />
+</Solution>

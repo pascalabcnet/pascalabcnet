@@ -12,7 +12,7 @@ set "CONFIGURATION=%~1"
 if "%CONFIGURATION%"=="" set "CONFIGURATION=Debug"
 
 echo Building console compiler for net10.0 ^(%CONFIGURATION%^) ...
-dotnet build "%ROOT%pabcnetc.sln" -c "%CONFIGURATION%" -p:TargetFramework=net10.0 -m:1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%ROOT%scripts\build-net10-runtime.ps1" -Configuration "%CONFIGURATION%"
 if errorlevel 1 exit /b %ERRORLEVEL%
 
 echo Removing existing net10 PCU files...

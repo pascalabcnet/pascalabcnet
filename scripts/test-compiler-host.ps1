@@ -126,19 +126,7 @@ if ($Target -in @('all', 'net-framework')) {
 
 if ($Target -in @('all', 'net10')) {
     $modernRuntime = Join-Path $runtimeRoot 'net10'
-    Copy-RuntimeTree (Join-Path $hostRoot 'net10') `
-        (Join-Path $PascalABCSourcePath 'bin-net10') $modernRuntime
-    $redirectModuleName = '__RedirectIOMode'
-    $redirectModuleSource = Join-Path $PascalABCSourcePath `
-        "bin\Lib\$redirectModuleName.pas"
-    $modernLibrary = Join-Path $modernRuntime 'Lib'
-    Assert-FileExists $redirectModuleSource
-    Copy-Item -LiteralPath $redirectModuleSource -Destination $modernLibrary `
-        -Force
-    $staleRedirectPcu = Join-Path $modernLibrary "$redirectModuleName.pcu"
-    if (Test-Path -LiteralPath $staleRedirectPcu -PathType Leaf) {
-        Remove-Item -LiteralPath $staleRedirectPcu -Force
-    }
+    & (Join-Path $PSScriptRoot 'export-net10-runtime.ps1') -Destination $modernRuntime
     Invoke-SmokeTest $modernRuntime 'net10'
 }
 

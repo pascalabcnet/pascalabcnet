@@ -5,7 +5,7 @@ namespace VisualPascalABCPlugins
 {
     internal sealed class Net10RuntimeSettings
     {
-        public const string DefaultRuntimeDirectory = "CompilerHost\\net10";
+        public const string DefaultRuntimeDirectory = "..\\bin-net10";
         public string RuntimeDirectory { get; private set; }
         public string DotnetPath { get; private set; }
 

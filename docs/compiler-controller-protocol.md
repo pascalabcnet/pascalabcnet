@@ -92,4 +92,4 @@ with `PABC_COMPILER_WORKER_REQUEST_TIMEOUT_MS`. Graceful shutdown is attempted f
 termination. The optional command-line arguments remain worker path, maximum
 compilation count, and maximum working-set size in MB.
 
-Both projects target .NET Framework 4.7.2 and .NET 10. Build them with `scripts/build-compiler-host.ps1`; validate both runtimes with `scripts/test-compiler-host.ps1`.
+Both projects target .NET Framework 4.7.2 and .NET 10. Build them with `scripts/build-compiler-host.ps1`; validate both runtimes with `scripts/test-compiler-host.ps1`. The modern host is part of the unified `bin-net10` kit built by `scripts/build-net10-runtime.ps1` (`Net10Runtime.slnx`); exports reuse those same binaries rather than building another compiler.

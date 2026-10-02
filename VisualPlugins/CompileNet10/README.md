@@ -23,10 +23,12 @@
 В старой бинарной оболочке без нового необязательного интерфейса Run10 сообщает
 о необходимости пересборки; скрытого перехвата обработчиков и новой панели нет.
 
-Результат — `bin/CompileNet10Plugin.dll` и полный `bin/CompilerHost/net10/`.
+Результат — `bin/CompileNet10Plugin.dll` и единый полный `bin-net10/`.
 Controller и Worker собираются только из проектов текущего репозитория;
 их зависимости .NET 10 изолированы от DLL оболочки net472.
-Скрипт вызывает `scripts/build-compiler-host.ps1 -Target net10 -IncludeRuntime`.
+Скрипт вызывает `scripts/build-net10-runtime.ps1`. Оба консольных компилятора,
+Controller и Worker собираются вместе через `Net10Runtime.slnx`, с общими DLL.
+Плагин запускает Controller непосредственно из `bin-net10`, без второй копии.
 `Lib` и `Lng` комплектуются версионируемыми файлами текущего `bin` без
 старых PCU, DLL, EXE и PDB. Модули компилируются из исходников при необходимости.
 Проект не добавляется в `PascalABCNET.sln`; основная сборка и установщик
@@ -79,22 +81,23 @@ Controller и Worker собираются только из проектов т�
 
 Чтобы отключить эксперимент, закройте IDE, уберите `CompileNet10Plugin.dll`
 из каталога приложения и запустите IDE снова. При использовании другой копии
-IDE копируются DLL плагина, исходный INI и весь каталог `CompilerHost/net10`,
+IDE копируются DLL плагина, исходный INI и соседний каталог `bin-net10`,
 без замены её `PluginsSupport.dll` или других DLL оболочки. Можно собрать
-комплект непосредственно туда:
+плагин непосредственно туда (runtime остаётся в `bin-net10` текущего репозитория;
+для другой IDE укажите его абсолютный путь в INI):
 
 ```powershell
 & .\scripts\build-compile-net10-plugin.ps1 -IdeDirectory 'D:\Other IDE' -Configuration Release
 ```
 
-Каталог `CompilerHost/net10` — генерируемый: скрипт пересоздаёт только его.
-Не храните в нём собственные исходники. Скрипты установщика пока не изменяются.
+Старая копия `bin/CompilerHost/net10` больше не используется при новых настройках,
+но автоматически не удаляется. Скрипты установщика пока не изменяются.
 
 При первой сборке настройки копируются в `bin/CompileNet10Plugin.ini`;
 существующий пользовательский INI не перезаписывается. `RuntimeDirectory` указывает
 на полный готовый runtime с `PABCCompilerController.dll`, `ZMQServerPas.dll`,
 их `.runtimeconfig.json`/`.deps.json`, DLL зависимостей и стандартными модулями.
-По умолчанию: `RuntimeDirectory=CompilerHost\net10`. Такой же локальный путь
+По умолчанию: `RuntimeDirectory=..\bin-net10`. Такой же локальный путь
 используется без INI. Он вычисляется относительно `AppDomain.CurrentDomain.BaseDirectory`
 (каталога EXE IDE), а не текущего рабочего каталога: одинаково для `bin`,
 запуска из Visual Studio и перенесённого комплекта/дистрибутива.
@@ -118,8 +121,8 @@ IDE с исходным полным именем, строкой и столб�
 
 ```powershell
 dotnet build VisualPlugins/CompileNet10.Tests/CompileNet10.Tests.csproj
-dotnet run --project CompilerControllerSmokeTest -c Release -- --runtime .\bin\CompilerHost\net10 --target net10
-& .\VisualPlugins\CompileNet10.Tests\bin\Debug\net472\CompileNet10.Tests.exe "$PWD\bin\CompilerHost\net10"
+dotnet run --project CompilerControllerSmokeTest -c Release -- --runtime .\bin-net10 --target net10
+& .\VisualPlugins\CompileNet10.Tests\bin\Debug\net472\CompileNet10.Tests.exe "$PWD\bin-net10"
 ```
 
 Проверяются разбиение служебных сообщений между чтениями потока, реальная

@@ -243,11 +243,11 @@ internal static class Program
                 // Simulate VS launching with a working directory unrelated to the EXE.
                 Environment.CurrentDirectory = root;
                 var settings = Net10RuntimeSettings.Load(ide);
-                string expected = Path.Combine(ide, "CompilerHost", "net10");
+                string expected = Path.GetFullPath(Path.Combine(ide, "..", "bin-net10"));
                 Check(settings.RuntimeDirectory == expected && settings.DotnetPath == "dotnet",
                     layout + ": no INI uses host beside IDE, independent of working directory");
                 string ini = Path.Combine(ide, "CompileNet10Plugin.ini");
-                File.WriteAllText(ini, "# bundled defaults\nRuntimeDirectory=CompilerHost\\net10\nDotnetPath=dotnet\n");
+                File.WriteAllText(ini, "# bundled defaults\nRuntimeDirectory=..\\bin-net10\nDotnetPath=dotnet\n");
                 Check(Net10RuntimeSettings.Load(ide).RuntimeDirectory == expected,
                     layout + ": bundled INI resolves the same host");
                 File.WriteAllText(ini, "RuntimeDirectory=custom host\nDotnetPath=C:\\custom dotnet\\dotnet.exe\n");
@@ -304,7 +304,7 @@ internal static class Program
     private static async Task CheckPortableHost(string sourceRuntime, string root)
     {
         string ide = Path.Combine(root, "portable IDE with spaces");
-        string runtime = Path.Combine(ide, "CompilerHost", "net10");
+        string runtime = Path.GetFullPath(Path.Combine(ide, "..", "bin-net10"));
         Directory.CreateDirectory(runtime);
         foreach (string source in Directory.GetFiles(sourceRuntime, "*", SearchOption.AllDirectories))
         {

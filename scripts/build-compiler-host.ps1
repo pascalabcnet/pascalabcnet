@@ -148,5 +148,13 @@ if ($Target -in @('all', 'net-framework')) {
     Build-Target 'net472' 'net-framework'
 }
 if ($Target -in @('all', 'net10')) {
-    Build-Target 'net10.0' 'net10'
+    if ($PascalABCSourcePath -ne $repositoryRoot) {
+        throw 'The unified net10 runtime must be built from the current repository.'
+    }
+    & (Join-Path $PSScriptRoot 'build-net10-runtime.ps1') -Configuration $Configuration
+    # Compatibility export for callers requesting an isolated host/package.
+    # This does not compile a second set of compiler DLLs.
+    $destination = Join-Path $OutputRoot 'net10'
+    Reset-OutputDirectory $destination
+    & (Join-Path $PSScriptRoot 'export-net10-runtime.ps1') -Destination $destination
 }
