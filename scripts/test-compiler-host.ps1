@@ -18,7 +18,7 @@ $hostRoot = Join-Path $buildRoot 'host'
 $runtimeRoot = Join-Path $buildRoot 'runtime'
 $buildScript = Join-Path $PSScriptRoot 'build-compiler-host.ps1'
 $smokeProject = Join-Path $repositoryRoot `
-    'CompilerControllerSmokeTest\CompilerControllerSmokeTest.csproj'
+    'tests\CompilerControllerSmokeTest\CompilerControllerSmokeTest.csproj'
 
 $compilerDlls = @(
     'Compiler.dll',

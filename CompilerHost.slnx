@@ -1,5 +1,5 @@
 <Solution>
   <Project Path="PascalABCNet.CompilerController/PascalABCNet.CompilerController.csproj" />
   <Project Path="PascalABCNet.CompilerWorker/PascalABCNet.CompilerWorker.csproj" />
-  <Project Path="CompilerControllerSmokeTest/CompilerControllerSmokeTest.csproj" />
+  <Project Path="tests/CompilerControllerSmokeTest/CompilerControllerSmokeTest.csproj" />
 </Solution>

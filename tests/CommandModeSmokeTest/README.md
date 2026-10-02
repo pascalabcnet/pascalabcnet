@@ -8,8 +8,8 @@
 После сборки обоих компиляторов для соответствующей платформы:
 
 ```powershell
-dotnet run --project CommandModeSmokeTest/CommandModeSmokeTest.csproj -- bin/pabcnetc.exe bin/pabcnetcclear.exe
-dotnet run --project CommandModeSmokeTest/CommandModeSmokeTest.csproj -- bin-net10/pabcnetc.dll bin-net10/pabcnetcclear.dll
+dotnet run --project tests/CommandModeSmokeTest/CommandModeSmokeTest.csproj -- bin/pabcnetc.exe bin/pabcnetcclear.exe
+dotnet run --project tests/CommandModeSmokeTest/CommandModeSmokeTest.csproj -- bin-net10/pabcnetc.dll bin-net10/pabcnetcclear.dll
 ```
 
 Сам проверяющий клиент работает на .NET 10, а запускаемые компиляторы — на своих

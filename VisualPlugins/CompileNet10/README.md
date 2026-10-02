@@ -120,9 +120,9 @@ IDE с исходным полным именем, строкой и столб�
 ## Автоматическая проверка транспорта
 
 ```powershell
-dotnet build VisualPlugins/CompileNet10.Tests/CompileNet10.Tests.csproj
-dotnet run --project CompilerControllerSmokeTest -c Release -- --runtime .\bin-net10 --target net10
-& .\VisualPlugins\CompileNet10.Tests\bin\Debug\net472\CompileNet10.Tests.exe "$PWD\bin-net10"
+dotnet build tests/CompileNet10.Tests/CompileNet10.Tests.csproj
+dotnet run --project tests/CompilerControllerSmokeTest -c Release -- --runtime .\bin-net10 --target net10
+& .\tests\CompileNet10.Tests\bin\Debug\net472\CompileNet10.Tests.exe "$PWD\bin-net10"
 ```
 
 Проверяются разбиение служебных сообщений между чтениями потока, реальная

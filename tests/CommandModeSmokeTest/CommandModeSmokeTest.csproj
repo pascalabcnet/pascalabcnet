@@ -6,6 +6,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Compiler\ConsoleCompilerCommands.cs" Link="ConsoleCompilerCommands.cs" />
+    <Compile Include="..\..\Compiler\ConsoleCompilerCommands.cs" Link="ConsoleCompilerCommands.cs" />
   </ItemGroup>
 </Project>
