@@ -28,6 +28,19 @@ namespace VisualPascalABCPlugins
         public string message { get; set; }
     }
 
+    public sealed class Net10CompilerEvent
+    {
+        public int id { get; set; }
+        public string @event { get; set; }
+        public int attempt { get; set; }
+        public string state { get; set; }
+        public string fileName { get; set; }
+        public uint linesCompiled { get; set; }
+        public int errorCount { get; set; }
+        public int warningCount { get; set; }
+        public double elapsedMilliseconds { get; set; }
+    }
+
     public sealed class Net10SourceFile
     {
         public string fileName { get; set; }
@@ -36,6 +49,7 @@ namespace VisualPascalABCPlugins
 
     public sealed class Net10ControllerClient : IDisposable
     {
+        public event Action<string> WorkerRestarted;
         private readonly string runtimeDirectory;
         private readonly string dotnetPath;
         private readonly SemaphoreSlim requests = new SemaphoreSlim(1, 1);
@@ -54,7 +68,8 @@ namespace VisualPascalABCPlugins
         }
 
         public async Task<Net10CompileResponse> CompileAsync(string fileName, string outputDirectory,
-            string runtimeModule = null, List<Net10SourceFile> sourceFiles = null)
+            string runtimeModule = null, List<Net10SourceFile> sourceFiles = null,
+            Func<Net10CompilerEvent, Task> progress = null)
         {
             await requests.WaitAsync().ConfigureAwait(false);
             try
@@ -83,6 +98,9 @@ namespace VisualPascalABCPlugins
                     controller.ErrorDataReceived += (sender, e) =>
                     {
                         if (e.Data == null) return;
+                        const string restartPrefix = "[CompilerRestarted]";
+                        if (e.Data.StartsWith(restartPrefix, StringComparison.Ordinal))
+                            WorkerRestarted?.Invoke(e.Data.Substring(restartPrefix.Length));
                         lock (log)
                         {
                             log.AppendLine(e.Data);
@@ -96,7 +114,7 @@ namespace VisualPascalABCPlugins
                 var ping = await SendAsync("ping", null, null, 20000).ConfigureAwait(false);
                 if (!ping.success || ping.result != "PONG") throw new IOException("Контроллер не ответил PONG.");
                 TrackWorker(ping.workerPid);
-                var response = await SendAsync("compile", fileName, outputDirectory, 120000, runtimeModule, sourceFiles).ConfigureAwait(false);
+                var response = await SendAsync("compile", fileName, outputDirectory, 120000, runtimeModule, sourceFiles, progress).ConfigureAwait(false);
                 TrackWorker(response.workerPid);
                 return response;
             }
@@ -111,7 +129,8 @@ namespace VisualPascalABCPlugins
         }
 
         private async Task<Net10CompileResponse> SendAsync(string command, string fileName, string outputDirectory,
-            int timeoutMs, string runtimeModule = null, List<Net10SourceFile> sourceFiles = null)
+            int timeoutMs, string runtimeModule = null, List<Net10SourceFile> sourceFiles = null,
+            Func<Net10CompilerEvent, Task> progress = null)
         {
             int id = ++nextId;
             var request = new Dictionary<string, object> { { "id", id }, { "command", command } };
@@ -119,20 +138,36 @@ namespace VisualPascalABCPlugins
             if (outputDirectory != null) request.Add("outputDirectory", outputDirectory);
             if (runtimeModule != null) request.Add("runtimeModule", runtimeModule);
             if (sourceFiles != null) request.Add("sourceFiles", sourceFiles);
+            if (progress != null) request.Add("emitEvents", true);
             input.WriteLine(json.Serialize(request));
             input.Flush();
-            Task<string> read = controller.StandardOutput.ReadLineAsync();
             using (var cancellation = new CancellationTokenSource())
             {
-                if (await Task.WhenAny(read, Task.Delay(timeoutMs, cancellation.Token)).ConfigureAwait(false) != read)
-                    throw new TimeoutException("Истекло время ожидания контроллера .NET 10.");
-                cancellation.Cancel();
+                Task timeout = Task.Delay(timeoutMs, cancellation.Token);
+                try
+                {
+                    while (true)
+                    {
+                        Task<string> read = controller.StandardOutput.ReadLineAsync();
+                        if (await Task.WhenAny(read, timeout).ConfigureAwait(false) != read)
+                            throw new TimeoutException("Истекло время ожидания контроллера .NET 10.");
+                        string line = await read.ConfigureAwait(false);
+                        if (line == null) throw new IOException("Контроллер .NET 10 завершил соединение.");
+                        var notification = json.Deserialize<Net10CompilerEvent>(line);
+                        if (notification == null || notification.id != id)
+                            throw new IOException("Некорректный ответ контроллера .NET 10.");
+                        if (notification.@event != null)
+                        {
+                            if (progress == null || notification.@event != "compilerState")
+                                throw new IOException("Неожиданное событие контроллера .NET 10.");
+                            await progress(notification).ConfigureAwait(false);
+                            continue;
+                        }
+                        return json.Deserialize<Net10CompileResponse>(line);
+                    }
+                }
+                finally { cancellation.Cancel(); }
             }
-            string line = await read.ConfigureAwait(false);
-            if (line == null) throw new IOException("Контроллер .NET 10 завершил соединение.");
-            var response = json.Deserialize<Net10CompileResponse>(line);
-            if (response == null || response.id != id) throw new IOException("Некорректный ответ контроллера .NET 10.");
-            return response;
         }
 
         private void TrackWorker(int pid)

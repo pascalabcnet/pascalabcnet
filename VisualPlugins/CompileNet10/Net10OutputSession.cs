@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace VisualPascalABCPlugins
@@ -8,53 +7,27 @@ namespace VisualPascalABCPlugins
     internal sealed class Net10OutputSession : IDisposable
     {
         private readonly IWorkbench workbench;
-        private readonly RichTextBox output;
         private readonly Control document;
         private readonly IExternalInputSession inputSession;
         private readonly Action stop;
+        private readonly Action<string> deliverOutput;
         private readonly Func<string, System.Threading.Tasks.Task> submit;
         private bool disposed;
 
-        public static RichTextBox CaptureOutput(IWorkbench workbench)
-        {
-            workbench.ServiceContainer.OperationsService.WriteToOutputBox("", true);
-            var window = workbench.OutputWindow as Control;
-            if (window == null) throw new InvalidOperationException("Недоступно окно вывода IDE.");
-            var candidates = new List<RichTextBox>();
-            FindOutput(window, candidates);
-            if (candidates.Count != 1)
-                throw new InvalidOperationException("Не удалось определить окно вывода текущей вкладки.");
-            return candidates[0];
-        }
-
-        private static void FindOutput(Control root, List<RichTextBox> result)
-        {
-            foreach (Control control in root.Controls)
-            {
-                var text = control as RichTextBox;
-                if (text != null && text.Visible && text.ReadOnly) result.Add(text);
-                FindOutput(control, result);
-            }
-        }
-
-        public Net10OutputSession(IWorkbench workbench, RichTextBox output, ICodeFileDocument source,
-            Func<string, System.Threading.Tasks.Task> submit, Action stop)
+        public Net10OutputSession(IWorkbench workbench, ICodeFileDocument source,
+            Func<string, System.Threading.Tasks.Task> submit, Action stop, Action<string> deliverOutput)
         {
             this.workbench = workbench;
-            this.output = output;
             document = source as Control;
             this.submit = submit;
             this.stop = stop;
-            if (document == null || document.IsDisposed || output.IsDisposed)
+            this.deliverOutput = deliverOutput ?? throw new ArgumentNullException(nameof(deliverOutput));
+            if (document == null || document.IsDisposed)
                 throw new InvalidOperationException("Вкладка для запуска закрыта.");
             var inputService = workbench.ServiceContainer.RunService as IExternalRunInputService;
             if (inputService == null)
                 throw new InvalidOperationException("Для стандартного ввода Run10 пересоберите IDE и PluginsSupport.dll.");
             inputSession = inputService.RegisterInput(source, Submit, stop);
-            float zoom = output.ZoomFactor;
-            output.Clear();
-            output.ZoomFactor = zoom;
-            output.Disposed += OutputDisposed;
             document.Disposed += OutputDisposed;
         }
 
@@ -62,17 +35,42 @@ namespace VisualPascalABCPlugins
 
         public void Append(string text)
         {
-            Post(() =>
-            {
-                output.AppendText(text);
-                output.SelectionStart = output.TextLength;
-                output.ScrollToCaret();
-            });
+            if (!string.IsNullOrEmpty(text)) Post(() => deliverOutput(text));
         }
 
         public void RequestInput()
         {
             Post(() => inputSession.RequestInput());
+        }
+
+        public void ReportException(RuntimeExceptionInfo error, IExternalRunSession session)
+        {
+            Post(() => session.ReportException(error));
+        }
+
+        // Exit must follow all queued output/exception UI callbacks, even for a very short program.
+        public System.Threading.Tasks.Task FlushAsync()
+        {
+            var completed = new System.Threading.Tasks.TaskCompletionSource<bool>();
+            var form = workbench.MainForm;
+            if (disposed || form.IsDisposed) return System.Threading.Tasks.Task.CompletedTask;
+            FormClosedEventHandler closed = null;
+            closed = (sender, e) => { form.FormClosed -= closed; completed.TrySetResult(true); };
+            form.FormClosed += closed;
+            try
+            {
+                form.BeginInvoke(new Action(() =>
+                {
+                    form.FormClosed -= closed;
+                    completed.TrySetResult(true);
+                }));
+            }
+            catch (InvalidOperationException)
+            {
+                form.FormClosed -= closed;
+                completed.TrySetResult(true);
+            }
+            return completed.Task;
         }
 
         private async void Submit(string text)
@@ -90,7 +88,7 @@ namespace VisualPascalABCPlugins
                 workbench.MainForm.BeginInvoke(new Action(() =>
                 {
                     if (disposed) return;
-                    if (output.IsDisposed) { stop(); return; }
+                    if (document.IsDisposed) { stop(); return; }
                     action();
                 }));
             }
@@ -101,7 +99,6 @@ namespace VisualPascalABCPlugins
         {
             if (disposed) return;
             disposed = true;
-            output.Disposed -= OutputDisposed;
             document.Disposed -= OutputDisposed;
             inputSession.Dispose();
         }

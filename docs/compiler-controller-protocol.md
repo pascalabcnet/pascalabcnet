@@ -1,6 +1,6 @@
 # Compiler controller protocol
 
-`PABCCompilerController` is an editor-neutral process that reads one JSON request per line from standard input and writes exactly one JSON response per line to standard output. Operational logs and worker output are written only to standard error.
+`PABCCompilerController` is an editor-neutral process that reads one JSON request per line from standard input. By default each request receives exactly one final JSON response. A compile request may opt into progress notifications using `emitEvents: true`; these JSONL notifications precede the unchanged final response. Operational logs and non-protocol worker output are written only to standard error.
 
 The controller starts `PABCCompilerWorker` as an isolated child process. Its internal
 transport is also JSON Lines, carried over the worker's redirected standard
@@ -11,7 +11,24 @@ controller's stderr. No ZMQ or network transport is used.
 The worker binary is `PABCCompilerWorker.dll` on .NET 10 and
 `PABCCompilerWorker.exe` on .NET Framework 4.7.2. Deploy Controller and Worker
 together; clients explicitly supplying the worker path must use the new name.
-The Controller command line and external JSONL protocol are unchanged.
+The Controller command line and default request/response behaviour are unchanged.
+
+## Optional compiler events
+
+Add `"emitEvents":true` to a `compile` request to receive real `OnChangeCompilerState`
+notifications forwarded Worker → Controller → client. Neither process synthesizes phases.
+
+```json
+{"id":2,"event":"compilerState","attempt":1,"state":"BeginCompileFile","fileName":"C:\\work\\Program.pas","linesCompiled":0,"errorCount":0,"warningCount":0,"elapsedMilliseconds":12.5}
+```
+
+Read until a response without `event` arrives. Notifications have the request's `id`;
+`attempt` is 1 or 2 (the existing single retry after worker failure). A retry may
+repeat phases; clients reset per-compilation display on `CompilationStarting`.
+`Ready` during reload is not compilation success; success statistics follow the
+compile lifecycle. Counts come from the compiler; time measures CompilationStarting
+through CompilationFinished. Progress does not extend the worker's total 30-second
+deadline. Clients not opting in see no event records. Stdout remains JSONL-only.
 
 ## Commands
 
@@ -48,8 +65,13 @@ program and used units may exist only in the snapshot.
 
 Snapshot path comparison follows the host platform: case-insensitive on
 Windows and case-sensitive on Linux/macOS. A snapshot is scoped to one compile
-request. Snapshot compilations do not save PCUs, and snapshot sources take
-precedence over existing PCUs, so unsaved text cannot leak into a later request.
+request. Snapshot compilations retain the compiler's default PCU-saving behaviour;
+the presence of `sourceFiles` does not disable PCU generation. Snapshot entries
+use `DateTime.MaxValue` as their source timestamp to invalidate older PCUs.
+PCUs saved from editor snapshots remain normal disk cache artifacts. Currently,
+switching a later request back to disk sources does not reliably invalidate a
+PCU written from different snapshot text (covered by the disk-fallback smoke
+regression). This needs a cache-validity fix, not an implicit SavePCU prohibition.
 Omitting `sourceFiles` preserves ordinary disk-based compilation behaviour.
 
 Diagnostics contain the normalized path and source coordinates of the actual

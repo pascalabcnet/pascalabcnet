@@ -179,6 +179,9 @@ namespace VisualPascalABC
 
         public void ClearErrorList()
         {
+            // Diagnostic line markers outlive list items unless explicitly removed.
+            ErrorLineBookmark.Remove();
+            RuntimeErrorBookmark.Remove();
             lvErrorsList.Items.Clear();
             WorkbenchServiceFactory.BuildService.ErrorsList.Clear();
         }

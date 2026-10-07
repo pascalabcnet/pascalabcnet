@@ -7,6 +7,20 @@ using VisualPascalABCPlugins;
 
 internal static class Program
 {
+    private sealed class DocumentService : IWorkbenchDocumentService
+    {
+        public ICodeFileDocument CurrentCodeFileDocument { get; set; }
+        public ICodeFileDocument ActiveCodeFileDocument { get; set; }
+        public ICodeFileDocument LastSelectedTab => CurrentCodeFileDocument;
+        public bool ContainsTab(ICodeFileDocument tab) => false; // Debugger stack was cleared.
+        public bool ContainsTab(string fileName) => GetDocument(fileName) != null;
+        public ICodeFileDocument GetDocument(string fileName) =>
+            CurrentCodeFileDocument?.FileName == fileName ? CurrentCodeFileDocument :
+            ActiveCodeFileDocument?.FileName == fileName ? ActiveCodeFileDocument : null;
+        public ICodeFileDocument GetTabPageForMainFile() => CurrentCodeFileDocument;
+        public void SetTabPageText(ICodeFileDocument tab) { }
+    }
+
     private sealed class EditorDocument : System.Windows.Forms.Control, ICodeFileDocument
     {
         public string FileName { get; set; }
@@ -39,6 +53,7 @@ internal static class Program
         {
             CheckRuntimeSettings();
             CheckExternalInputRouting();
+            CheckExternalRunRouting();
             using (var document = new EditorDocument { FileName = Path.GetFullPath("a1-2.pas"), Text = "a1-2.pas" })
             {
                 document.TextEditor.Document.TextContent = "begin Write(42); end.";
@@ -48,6 +63,23 @@ internal static class Program
                 document.TextEditor.Document.TextContent = "unit U; interface implementation end.";
                 Check(Net10EditorDocument.Read(document).Text.StartsWith("unit U;"),
                     "editor adapter reads current unit changes");
+                var open = Net10EditorDocument.ReadOpen(new[] { document },
+                    new DocumentService { CurrentCodeFileDocument = document });
+                Check(open.Count == 1 && open[0].Changed && open[0].Text.StartsWith("unit U;"),
+                    "unsaved open unit is included even after debugger tab stack was cleared");
+                using (var main = new EditorDocument { FileName = Path.GetFullPath("Main.pas") })
+                {
+                    var service = new DocumentService { CurrentCodeFileDocument = document, ActiveCodeFileDocument = main };
+                    Check(Net10EditorDocument.ResolveRunTarget(document, "U.pcu", service) == main,
+                        "Run10 from unit selects marked main program");
+                    Check(Net10EditorDocument.ResolveRunTarget(document, "U.dll", service) == main,
+                        "Run10 from library selects marked main program");
+                    Check(Net10EditorDocument.ResolveRunTarget(document, "Other.exe", service) == document,
+                        "Run10 from another program still runs that program");
+                    service.ActiveCodeFileDocument = document;
+                    Check(Net10EditorDocument.ResolveRunTarget(document, "U.pcu", service) == document,
+                        "unit without another marked program does not recurse");
+                }
             }
             using (var form = new System.Windows.Forms.Form())
             using (var strip = new System.Windows.Forms.StatusStrip { Name = "statusStrip1" })
@@ -83,6 +115,21 @@ internal static class Program
                     throw new Exception("Protocol split " + split);
             }
             Check(true, "protocol commands at every stream split");
+            const string exceptionWire = "[EXCEPTION]System.Exception[MESSAGE]ошибка[STACK]   at Main() in C:\\Путь с пробелами\\a.pas:line 12[END]";
+            for (int split = 0; split <= exceptionWire.Length; split++)
+            {
+                RuntimeExceptionInfo error = null;
+                int calls = 0;
+                var parser = new Net10RuntimeProtocol(s => { throw new Exception("Structured exception leaked to output"); },
+                    () => { }, e => { error = e; calls++; });
+                parser.Feed(exceptionWire.Substring(0, split));
+                parser.Feed(exceptionWire.Substring(split));
+                parser.Complete();
+                if (calls != 1 || error.Message != "ошибка" || error.Frames[0].Line != 12 ||
+                    error.Frames[0].FileName != "C:\\Путь с пробелами\\a.pas")
+                    throw new Exception("Structured exception split " + split);
+            }
+            Check(true, "structured runtime exception and source location at every stream split");
             var chars = new StringBuilder();
             int charReads = 0;
             var fragmented = new Net10RuntimeProtocol(s => chars.Append(s), () => charReads++);
@@ -97,6 +144,7 @@ internal static class Program
             await CheckPortableHost(Path.GetFullPath(args[0]), root);
             using (var compiler = new Net10ControllerClient(args[0], "dotnet"))
             {
+                await CheckCompilerEvents(compiler, Path.GetFullPath(args[0]), root);
                 await CheckSnapshots(compiler, root);
                 string jsonSource = Path.Combine(root, "JsonReference.pas");
                 var jsonResult = await compiler.CompileAsync(jsonSource, root, "__RedirectIOMode",
@@ -146,6 +194,16 @@ internal static class Program
                 }
                 Check(output.ToString().Contains("System.Exception: Проверка исключения") &&
                     !output.ToString().Contains("[EXCEPTION]"), "formatted runtime exception");
+                RuntimeExceptionInfo structuredError = null;
+                int started = 0, exited = 0;
+                using (var runner = new Net10ProgramRunner("dotnet", compiled.outputFile, root, ""))
+                using (var lifecycle = new ExternalRunSession(() => started++, () => exited++, e => structuredError = e))
+                {
+                    await runner.RunAsync(s => { }, () => { }, lifecycle.Started, lifecycle.ReportException);
+                }
+                Check(started == 1 && exited == 1 && structuredError != null &&
+                    structuredError.Type == "System.Exception" && structuredError.Message == "Проверка исключения",
+                    "real process delivers structured exception between Starting and Exited");
 
                 memory[0].text = "begin var s := ReadString; end.";
                 compiled = await compiler.CompileAsync(source, root, "__RedirectIOMode", memory);
@@ -178,6 +236,34 @@ internal static class Program
 
     private static async Task CheckSnapshots(Net10ControllerClient compiler, string root)
     {
+        string procedureUnit = Path.Combine(root, "A.pas");
+        string procedureMain = Path.Combine(root, "ProcedureMain.pas");
+        const string savedProcedure = "unit A; procedure p1; begin Print(2) end; end.";
+        const string mainProcedure = "uses A; begin p1 end.";
+        File.WriteAllText(procedureUnit, savedProcedure, new UTF8Encoding(false));
+        File.WriteAllText(procedureMain, mainProcedure, new UTF8Encoding(false));
+        var procedureResult = await compiler.CompileAsync(procedureMain, root, "__RedirectIOMode");
+        Check(procedureResult.success && (await RunOutput(procedureResult.outputFile, root)).Trim() == "2",
+            "saved procedure unit produces 2 and creates a PCU");
+        var unitResult = await compiler.CompileAsync(procedureUnit, root, "__RedirectIOMode",
+            new List<Net10SourceFile> { new Net10SourceFile { fileName = procedureUnit, text = savedProcedure } });
+        Check(unitResult.success, "standalone unit compilation: " + unitResult.message);
+        Check(string.Equals(Path.GetExtension(unitResult.outputFile), ".pcu", StringComparison.OrdinalIgnoreCase),
+            "actual Worker unit response uses the PCU fallback tested by Run10 selection");
+        foreach (int value in new[] { 3, 4 })
+        {
+            procedureResult = await compiler.CompileAsync(procedureMain, root, "__RedirectIOMode",
+                new List<Net10SourceFile> {
+                    new Net10SourceFile { fileName = procedureMain, text = mainProcedure },
+                    new Net10SourceFile { fileName = procedureUnit,
+                        text = savedProcedure.Replace("Print(2)", "Print(" + value + ")") }
+                });
+            Check(procedureResult.success && (await RunOutput(procedureResult.outputFile, root)).Trim() == value.ToString(),
+                "unsaved procedure body overrides existing PCU: " + value);
+        }
+        Check(File.ReadAllText(procedureUnit) == savedProcedure,
+            "procedure unit source stays unchanged on disk");
+
         string main = Path.Combine(root, "SnapshotMain.pas");
         string edited = Path.Combine(root, "EditedUnit.pas");
         string virtualUnit = Path.Combine(root, "VirtualUnit.pas");
@@ -204,6 +290,9 @@ internal static class Program
         var response = await compiler.CompileAsync(main, root, "__RedirectIOMode", sources);
         Check(response.success, "compile mixed snapshot and disk units: " + response.message);
         Check(await RunOutput(response.outputFile, root) == "60", "unsaved main and units override disk");
+        Check(File.Exists(Path.ChangeExtension(disk, ".pcu")) &&
+            File.Exists(Path.ChangeExtension(edited, ".pcu")),
+            "snapshot compilation retains normal PCU generation for disk and editor units");
 
         sources.Find(s => s.fileName == edited).text = "unit EditedUnit; interface const Value1 = 40; implementation end.";
         response = await compiler.CompileAsync(main, root, "__RedirectIOMode", sources);
@@ -329,6 +418,82 @@ internal static class Program
             }
         }
         finally { Environment.CurrentDirectory = previousDirectory; }
+    }
+
+    private static async Task CheckCompilerEvents(Net10ControllerClient compiler, string runtime, string root)
+    {
+        string empty = Path.Combine(root, "EmptySnapshot.pas");
+        var warmSources = new List<Net10SourceFile> { new Net10SourceFile { fileName = empty, text = "begin end." } };
+        var warmup = await compiler.CompileAsync(empty, root, "__RedirectIOMode", warmSources);
+        Check(warmup.success, "empty editor program compiles with normal PCU generation");
+        var repeated = new List<Net10CompilerEvent>();
+        warmup = await compiler.CompileAsync(empty, root, "__RedirectIOMode", warmSources,
+            value => { repeated.Add(value); return Task.CompletedTask; });
+        Check(warmup.success && repeated.FindAll(value => value.state == "CompilationStarting").Count == 1 &&
+            repeated.FindAll(value => value.state == "CompilationFinished").Count == 1 &&
+            !repeated.Exists(value => value.state == "ReadDLL" &&
+                string.Equals(Path.GetFileName(value.fileName), "PABCRtl.dll", StringComparison.OrdinalIgnoreCase)),
+            "net10 compilation has one pass without a PABCRtl fallback");
+        Check(warmup.success && repeated.Exists(value => value.state == "ReadPCUFile" &&
+                string.Equals(Path.GetFileName(value.fileName), "PABCSystem.pcu", StringComparison.OrdinalIgnoreCase)) &&
+            !repeated.Exists(value => value.state == "CompileInterface" &&
+                string.Equals(Path.GetFileName(value.fileName), "PABCSystem.pas", StringComparison.OrdinalIgnoreCase)),
+            "repeated empty editor program reuses PABCSystem PCU instead of compiling its source");
+        var events = new List<Net10CompilerEvent>();
+        string source = Path.Combine(runtime, "Lib", "PABCSystem.pas");
+        var result = await compiler.CompileAsync(source, root, null,
+            new List<Net10SourceFile> { new Net10SourceFile { fileName = source, text = File.ReadAllText(source) } },
+            value => { events.Add(value); return Task.CompletedTask; });
+        Check(result.success, "PABCSystem compilation with real streamed events: " + result.message);
+        Check(events.Exists(value => value.state == "CompileInterface") &&
+            events.Exists(value => value.state == "CompileImplementation") &&
+            !events.Exists(value => value.state == "ReadDLL"), "PABCSystem phase events preserved, verbose DLL-reading events suppressed");
+        var messages = new List<string>();
+        var statuses = new List<string>();
+        var display = new Net10CompilerDisplay(key => key);
+        foreach (var value in events) display.Handle(value, messages.Add, statuses.Add);
+        Check(display.HasResult && events[events.Count - 1].linesCompiled > 0 &&
+            events[events.Count - 1].elapsedMilliseconds > 0, "real line count and duration, Ready before final response");
+        Check(messages.Exists(text => text.StartsWith("[.NET 10]STATE_COMPILEINTERFACE")) &&
+            messages.Exists(text => text.StartsWith("CM_OK_")) &&
+            statuses[statuses.Count - 1].Contains("STATETEXT_COMPILATION_SUCCESS"), "legacy resource keys format progress and success status");
+        display.Handle(new Net10CompilerEvent { state = "CompilationStarting" }, messages.Add, statuses.Add);
+        display.Handle(new Net10CompilerEvent { state = "Reloading", attempt = 2 }, messages.Add, statuses.Add);
+        display.Handle(new Net10CompilerEvent { state = "Ready", attempt = 2 }, messages.Add, statuses.Add);
+        Check(!display.HasResult && statuses[statuses.Count - 1] == ".NET 10: STATETEXT_READY",
+            "Ready during retry/reload does not report a successful compilation");
+    }
+
+    private static void CheckExternalRunRouting()
+    {
+        var manager = new VisualPascalABC.RunManager(id => { });
+        int starts = 0, exits = 0, stops = 0, errors = 0;
+        string output = "";
+        string file = Path.GetFullPath("external-net10.exe");
+        manager.Starting += id => { Check(manager.IsRun(id), "run registered before Starting"); starts++; };
+        manager.Exited += id => { Check(!manager.IsRun(id), "run removed before Exited"); exits++; };
+        manager.OutputStringReceived += (id, stream, text) => output += text;
+        manager.ChangeArgsBeforeRun += (ref string args) => args += " teacher-argument";
+        Check(manager.PrepareExternalArguments("[REDIRECTIOMODE]") == "[REDIRECTIOMODE] teacher-argument",
+            "shared ChangeArgsBeforeRun hook");
+        using (var session = new ExternalRunSession(() => manager.ExternalStarted(file, () => stops++),
+            () => manager.ExternalExited(file), error => errors++, text => manager.ExternalOutput(file, text)))
+        {
+            session.Started(); session.Started();
+            Check(starts == 1 && manager.Count == 1 && manager.IsRun(), "single shared Starting and IsRun");
+            manager.Stop(file.ToUpperInvariant());
+            manager.KillAll();
+            Check(stops == 2, "ordinary Stop and KillAll reach external process");
+            session.ReportException(new RuntimeExceptionInfo());
+            session.WriteOutput("Привет");
+            session.Dispose(); session.Dispose();
+            session.ReportException(new RuntimeExceptionInfo());
+            session.WriteOutput("late");
+            Check(exits == 1 && errors == 1 && manager.Count == 0, "single shared Exited and no late exception");
+            Check(output == "Привет", "shared output handler and no output after Exited");
+        }
+        using (new ExternalRunSession(() => starts++, () => exits++, error => errors++)) { }
+        Check(starts == 1 && exits == 1, "failed process start emits no lifecycle events");
     }
 
     private static async Task<string> RunOutput(string assembly, string root)

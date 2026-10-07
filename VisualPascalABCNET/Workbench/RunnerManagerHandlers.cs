@@ -21,7 +21,10 @@ namespace VisualPascalABC
 
         void RunnerManager_Started(string fileName)
         {
-            Workbench.BeginInvoke(new SetTextDelegate(RunnerManager_Started_Sync), fileName);
+            if (System.Threading.Thread.CurrentThread != WorkbenchStorage.MainProgramThread)
+                Workbench.BeginInvoke(new SetTextDelegate(RunnerManager_Started_Sync), fileName);
+            else
+                RunnerManager_Started_Sync(fileName);
         }
 
         void ButtonsEnableDisable_RunStart()
@@ -54,7 +57,8 @@ namespace VisualPascalABC
                         ButtonsEnableDisable_RunStart();
                     }
                     RunTabs[fileName].Run = true;
-                    WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
+                    if (ReferenceEquals(DocumentService.GetDocument(RunTabs[fileName].FileName), RunTabs[fileName]))
+                        WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
                 }
                 else
                 {
@@ -83,7 +87,9 @@ namespace VisualPascalABC
                     throw new Exception(s);
                 }
                 RunTabs[fileName].Run = false;
-                WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
+                // The debugger may already have cleared TabStack, while the document is still open.
+                if (ReferenceEquals(DocumentService.GetDocument(RunTabs[fileName].FileName), RunTabs[fileName]))
+                    WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
                 if (ReadRequests.ContainsKey(RunTabs[fileName]))
                     ReadRequests.Remove(RunTabs[fileName]);
                 UpdateReadRequest(false);

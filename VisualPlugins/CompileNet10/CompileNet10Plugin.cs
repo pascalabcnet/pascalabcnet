@@ -17,6 +17,7 @@ namespace VisualPascalABCPlugins
         private Net10ControllerClient client;
         private Net10ProgramRunner runner;
         private Net10OutputSession outputSession;
+        private string runningOutputFile;
         private string dotnetPath = "dotnet";
         private bool compiling;
 
@@ -51,6 +52,7 @@ namespace VisualPascalABCPlugins
             // Do not compete with a normal IDE run for the shared console/input.
             workbench.ServiceContainer.RunService.Starting += fileName =>
             {
+                if (string.Equals(fileName, runningOutputFile, StringComparison.OrdinalIgnoreCase)) return;
                 runner?.Stop();
                 // Release ReadRequests before the ordinary runner starts reading input.
                 outputSession?.Dispose();
@@ -95,32 +97,62 @@ namespace VisualPascalABCPlugins
         private async void Execute(bool run)
         {
             if (compiling) return;
+            IDisposable preparation = null;
             status.Start("Подготовка компиляции .NET 10…");
             try
             {
                 var document = workbench.ServiceContainer.DocumentService.CurrentCodeFileDocument;
                 if (document == null || document.FromMetadata)
                     throw new InvalidOperationException("Выберите исходный файл.");
+                var externalRun = workbench.ServiceContainer.RunService as IExternalRunService;
+                if (externalRun == null)
+                    throw new InvalidOperationException("Для событий Run10 пересоберите IDE и PluginsSupport.dll.");
+                preparation = externalRun.PrepareExternalCompile(document.FileName);
                 var sources = Net10SourceSnapshot.Capture(Net10EditorDocument.Read(document), OpenEditorSources());
                 string fileName = sources[0].fileName;
                 string outputDirectory = Path.Combine(Path.GetDirectoryName(fileName), "net10-output");
                 var runService = workbench.ServiceContainer.RunService;
                 if (run && runService.IsRun())
                     throw new InvalidOperationException("Сначала остановите обычную программу IDE.");
-                RichTextBox output = run ? Net10OutputSession.CaptureOutput(workbench) : null;
+                if (run) workbench.ServiceContainer.OperationsService.ClearOutputTextBoxForTabPage(document);
                 string arguments = run && runService.HasRunArgument(fileName)
                     ? runService.GetRunArgument(fileName) : "";
+                workbench.CompilerConsoleWindow.ClearConsole();
                 if (client == null) client = CreateClient();
                 compiling = true;
                 SetEnabled(false);
                 workbench.ErrorsListWindow.ClearErrorList();
-                WriteMessage("Компиляция .NET 10: " + fileName);
                 status.Update("Компиляция .NET 10: " + Path.GetFileName(fileName) + "…");
-                var response = await client.CompileAsync(fileName, outputDirectory, "__RedirectIOMode", sources);
+                var display = new Net10CompilerDisplay(key => PascalABCCompiler.StringResources.Get("VP_VEC_" + key));
+                // Await each UI delivery so Ready cannot arrive after Run/exception status.
+                var response = await client.CompileAsync(fileName, outputDirectory, "__RedirectIOMode", sources,
+                    value => DisplayCompilerEventAsync(display, value));
+                if (run && response.success)
+                {
+                    var target = Net10EditorDocument.ResolveRunTarget(document, response.outputFile,
+                        workbench.ServiceContainer.DocumentService);
+                    if (target != document)
+                    {
+                        document = target;
+                        workbench.ServiceContainer.DocumentService.CurrentCodeFileDocument = document;
+                        sources = Net10SourceSnapshot.Capture(Net10EditorDocument.Read(document), OpenEditorSources());
+                        fileName = sources[0].fileName;
+                        outputDirectory = Path.Combine(Path.GetDirectoryName(fileName), "net10-output");
+                        arguments = runService.HasRunArgument(fileName) ? runService.GetRunArgument(fileName) : "";
+                        workbench.ServiceContainer.OperationsService.ClearOutputTextBoxForTabPage(document);
+                        display = new Net10CompilerDisplay(key => PascalABCCompiler.StringResources.Get("VP_VEC_" + key));
+                        status.Update("Компиляция .NET 10: " + Path.GetFileName(fileName) + "…");
+                        response = await client.CompileAsync(fileName, outputDirectory, "__RedirectIOMode", sources,
+                            value => DisplayCompilerEventAsync(display, value));
+                    }
+                }
                 if (response.success)
                 {
-                    WriteMessage("Готово: " + response.outputFile);
-                    status.Update("Компиляция .NET 10 прошла успешно");
+                    if (!display.HasResult)
+                    {
+                        WriteMessage("Готово: " + response.outputFile);
+                        status.Update("Компиляция .NET 10 прошла успешно");
+                    }
                     if (run && !workbench.MainForm.IsDisposed)
                     {
                         string outputFile = response.outputFile;
@@ -131,15 +163,17 @@ namespace VisualPascalABCPlugins
                         if (runService.IsRun())
                             throw new InvalidOperationException("Уже запущена обычная программа IDE.");
                         using (var program = new Net10ProgramRunner(dotnetPath, Path.GetFullPath(outputFile),
-                            Path.GetDirectoryName(fileName), arguments))
-                        using (var console = new Net10OutputSession(workbench, output, document,
+                            Path.GetDirectoryName(fileName), arguments, externalRun.PrepareExternalArguments))
+                        using (var lifecycle = externalRun.RegisterExternalRun(document, outputFile, program.Stop))
+                        using (var console = new Net10OutputSession(workbench, document,
                             text =>
                             {
                                 status.Update("Программа .NET 10 выполняется");
                                 return program.SendInputAsync(text);
-                            }, program.Stop))
+                            }, program.Stop, lifecycle.WriteOutput))
                         {
                             runner = program;
+                            runningOutputFile = Path.GetFullPath(outputFile);
                             outputSession = console;
                             SetItemEnabled(stopItem, true);
                             WriteMessage("Запущено .NET 10: " + outputFile);
@@ -148,7 +182,8 @@ namespace VisualPascalABCPlugins
                             {
                                 status.Update("Программа .NET 10 ожидает ввода");
                                 console.RequestInput();
-                            });
+                            }, lifecycle.Started, error => console.ReportException(error, lifecycle));
+                            await console.FlushAsync();
                             status.Update(program.WasStopped ? "Программа .NET 10 остановлена" :
                                 exitCode == 0 ? "Выполнение .NET 10 завершено" :
                                 "Программа .NET 10 завершилась с ошибкой (код " + exitCode + ")");
@@ -160,7 +195,7 @@ namespace VisualPascalABCPlugins
                 }
                 else
                 {
-                    status.Update("Ошибка компиляции .NET 10");
+                    if (!display.HasResult) status.Update("Ошибка компиляции .NET 10");
                     ShowDiagnostics(response, fileName);
                 }
             }
@@ -173,10 +208,41 @@ namespace VisualPascalABCPlugins
             {
                 compiling = false;
                 runner = null;
+                runningOutputFile = null;
                 outputSession = null;
                 if (!workbench.MainForm.IsDisposed) SetItemEnabled(stopItem, false);
                 SetEnabled(true);
+                preparation?.Dispose();
             }
+        }
+
+        private System.Threading.Tasks.Task DisplayCompilerEventAsync(Net10CompilerDisplay display, Net10CompilerEvent value)
+        {
+            var completed = new System.Threading.Tasks.TaskCompletionSource<bool>();
+            var form = workbench.MainForm;
+            if (form.IsDisposed || form.Disposing) return System.Threading.Tasks.Task.CompletedTask;
+            FormClosedEventHandler closed = null;
+            closed = (sender, e) => { form.FormClosed -= closed; completed.TrySetResult(true); };
+            form.FormClosed += closed;
+            try
+            {
+                form.BeginInvoke(new Action(() =>
+                {
+                    try
+                    {
+                        if (!form.IsDisposed) display.Handle(value, WriteMessage, status.Update);
+                        completed.TrySetResult(true);
+                    }
+                    catch (Exception error) { completed.TrySetException(error); }
+                    finally { form.FormClosed -= closed; }
+                }));
+            }
+            catch (InvalidOperationException)
+            {
+                form.FormClosed -= closed;
+                completed.TrySetResult(true);
+            }
+            return completed.Task;
         }
 
         private void ShowDiagnostics(Net10CompileResponse response, string sourceFileName)
@@ -213,11 +279,7 @@ namespace VisualPascalABCPlugins
             FindDocuments(workbench.MainForm, documents);
             // Floating docking windows are separate Forms, not MainForm children.
             foreach (Form form in Application.OpenForms) FindDocuments(form, documents);
-            var result = new List<Net10EditorSource>();
-            foreach (var document in documents)
-                if (!document.FromMetadata && workbench.ServiceContainer.DocumentService.ContainsTab(document))
-                    result.Add(Net10EditorDocument.Read(document));
-            return result;
+            return Net10EditorDocument.ReadOpen(documents, workbench.ServiceContainer.DocumentService);
         }
 
         private static void FindDocuments(Control root, HashSet<ICodeFileDocument> documents)
@@ -232,7 +294,18 @@ namespace VisualPascalABCPlugins
         {
             var settings = Net10RuntimeSettings.Load(AppDomain.CurrentDomain.BaseDirectory);
             dotnetPath = settings.DotnetPath;
-            return new Net10ControllerClient(settings.RuntimeDirectory, dotnetPath);
+            var result = new Net10ControllerClient(settings.RuntimeDirectory, dotnetPath);
+            result.WorkerRestarted += message =>
+            {
+                var form = workbench.MainForm;
+                if (form.IsDisposed || form.Disposing) return;
+                try
+                {
+                    form.BeginInvoke(new Action(() => WriteMessage("[.NET 10]" + message)));
+                }
+                catch (InvalidOperationException) { }
+            };
+            return result;
         }
 
         private void WriteMessage(string message)

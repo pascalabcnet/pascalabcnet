@@ -211,6 +211,12 @@ namespace PascalABCCompiler
 
         void ChangeCompilerState(CompilerState State, string FileName)
         {
+            if (State == CompilerState.Ready && pendingRestartMessage != null)
+            {
+                string message = pendingRestartMessage;
+                pendingRestartMessage = null;
+                OnChangeCompilerState?.Invoke(this, CompilerState.CompilerProcessRestarted, message);
+            }
             if (State == CompilerState.Ready && compilationStarted)
             {
                 compilationStarted = false;
@@ -474,7 +480,8 @@ namespace PascalABCCompiler
         {
             if (RemoteCompilerWorkingSet / 1024 / 1024 > maxProcessMemoryMB)
             {
-                (new Thread(Reload)).Start();
+                string reason = "превышен порог памяти " + maxProcessMemoryMB + " МБ";
+                (new Thread(() => Reload(reason))).Start();
                 return true;
             }
             return false;
@@ -556,8 +563,17 @@ namespace PascalABCCompiler
         }
 
         bool compilerReloading = true;
+        private string pendingRestartMessage;
         public void Reload()
         {
+            Reload(null);
+        }
+
+        private void Reload(string reason)
+        {
+            if (pabcnetcProcess != null)
+                pendingRestartMessage = "Компилятор .NET 4.7.2 перезагружен" +
+                    (reason == null ? "." : ": " + reason + ".");
             pABCCodeHealth = 0;
             compilerReloading = true;
             stopCompiler();

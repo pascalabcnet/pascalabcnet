@@ -372,6 +372,10 @@ namespace VisualPascalABC
                 case PascalABCCompiler.CompilerState.EndCompileFile: RusName = VECStringResources.Get("STATE_ENDCOMPILEFILE{0}"); break;
                 case PascalABCCompiler.CompilerState.CodeGeneration: RusName = VECStringResources.Get("STATE_CODEGENERATION{0}"); break;
                 case PascalABCCompiler.CompilerState.ReadDLL: RusName = VECStringResources.Get("STATE_READDLL{0}"); break;
+                case PascalABCCompiler.CompilerState.CompilerProcessRestarted:
+                    RusName = "{0}";
+                    FileName = FullFileName;
+                    break;
                 case PascalABCCompiler.CompilerState.SavePCUFile: RusName = VECStringResources.Get("STATE_SAVEPCUFILE{0}"); break;
                 case PascalABCCompiler.CompilerState.ReadPCUFile: RusName = VECStringResources.Get("STATE_READPCUFILE{0}"); break;
                 case PascalABCCompiler.CompilerState.PCUReadingError: RusName = VECStringResources.Get("STATE_PCUREADINGERROR{0}"); break;

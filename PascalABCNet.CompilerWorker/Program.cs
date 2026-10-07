@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -34,6 +35,7 @@ internal static class Program
     {
         public string? command { get; set; }
         public string? payload { get; set; }
+        public bool emitEvents { get; set; }
     }
 
     private sealed class WorkerTransportResponse
@@ -41,6 +43,17 @@ internal static class Program
         public bool success { get; set; }
         public string? response { get; set; }
         public string? error { get; set; }
+        public CompilerEvent? compilerEvent { get; set; }
+    }
+
+    private sealed class CompilerEvent
+    {
+        public string? state { get; set; }
+        public string? fileName { get; set; }
+        public uint linesCompiled { get; set; }
+        public int errorCount { get; set; }
+        public int warningCount { get; set; }
+        public double elapsedMilliseconds { get; set; }
     }
 
     private sealed class SourceFileSnapshot
@@ -135,7 +148,7 @@ internal static class Program
         new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
 #endif
 
-    private static string CompileFile(Compiler compiler, string requestJson)
+    private static string CompileFile(Compiler compiler, string requestJson, Action<CompilerEvent> progress)
     {
         var response = new StringBuilder();
 
@@ -159,15 +172,14 @@ internal static class Program
                 fullFileName,
                 CompilerOptions.OutputType.ConsoleApplicaton)
             {
+#if NETFRAMEWORK
                 UseDllForSystemUnits = true,
+#else
+                UseDllForSystemUnits = false,
+#endif
                 Debug = false,
                 ForDebugging = false
             };
-
-            if (snapshot != null)
-            {
-                options.SavePCU = false;
-            }
 
             if (!string.IsNullOrWhiteSpace(request.outputDirectory))
             {
@@ -201,8 +213,34 @@ internal static class Program
                 };
             }
 
-            requestCompiler.Reload();
-            var outputFileName = requestCompiler.Compile(options);
+            var clock = new Stopwatch();
+            ChangeCompilerStateEventDelegate handler = (sender, state, currentFileName) =>
+            {
+#if !NETFRAMEWORK
+                // Per-DLL UI round trips are expensive even when assemblies are cached.
+                // Keep DLL processing, but suppress these verbose progress messages.
+                if (state == CompilerState.ReadDLL) return;
+#endif
+                if (state == CompilerState.CompilationStarting) clock.Restart();
+                if (state == CompilerState.CompilationFinished) clock.Stop();
+                progress(new CompilerEvent
+                {
+                    state = state.ToString(), fileName = currentFileName,
+                    linesCompiled = sender.LinesCompiled, errorCount = sender.ErrorsList.Count,
+                    warningCount = sender.Warnings.Count, elapsedMilliseconds = clock.Elapsed.TotalMilliseconds
+                });
+            };
+            string? outputFileName;
+            requestCompiler.OnChangeCompilerState += handler;
+            try
+            {
+                requestCompiler.Reload();
+                outputFileName = requestCompiler.Compile(options);
+            }
+            finally
+            {
+                requestCompiler.OnChangeCompilerState -= handler;
+            }
 
             if (outputFileName != null)
             {
@@ -433,7 +471,14 @@ internal static class Program
                         case "compile":
                             transportResponse.success = true;
                             transportResponse.response = CompileFile(
-                                compiler, request.payload ?? "");
+                                compiler, request.payload ?? "", progress =>
+                                {
+                                    transportResponse.compilerEvent = progress;
+                                    if (!request.emitEvents) return;
+                                    protocolOutput.WriteLine(SerializeTransportResponse(new WorkerTransportResponse
+                                        { compilerEvent = progress }));
+                                    protocolOutput.Flush();
+                                });
                             break;
 
                         default:

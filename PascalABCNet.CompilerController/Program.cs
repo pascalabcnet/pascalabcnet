@@ -24,6 +24,7 @@ internal static class Program
         public string? outputDirectory { get; set; }
         public string? runtimeModule { get; set; }
         public SourceFileRequest[]? sourceFiles { get; set; }
+        public bool emitEvents { get; set; }
     }
 
     private sealed class SourceFileRequest
@@ -44,6 +45,7 @@ internal static class Program
     {
         public string? command { get; set; }
         public string? payload { get; set; }
+        public bool emitEvents { get; set; }
     }
 
     private sealed class WorkerTransportResponse
@@ -51,6 +53,17 @@ internal static class Program
         public bool success { get; set; }
         public string? response { get; set; }
         public string? error { get; set; }
+        public CompilerEvent? compilerEvent { get; set; }
+    }
+
+    private sealed class CompilerEvent
+    {
+        public string? state { get; set; }
+        public string? fileName { get; set; }
+        public uint linesCompiled { get; set; }
+        public int errorCount { get; set; }
+        public int warningCount { get; set; }
+        public double elapsedMilliseconds { get; set; }
     }
 
     private sealed class WorkerConnection : IDisposable
@@ -249,12 +262,13 @@ internal static class Program
 
     private static void RestartWorker(
         string workerFileName,
-        ref WorkerConnection? connection)
+        ref WorkerConnection? connection, string reason = "запрошен перезапуск")
     {
         Log("Перезапуск CompilerWorker");
         StopWorker(ref connection);
         Thread.Sleep(100);
         StartWorkerAndConnect(workerFileName, ref connection);
+        Log("[CompilerRestarted]Компилятор .NET перезагружен: " + reason + ".");
     }
 
     private static bool WaitForTask(
@@ -275,7 +289,7 @@ internal static class Program
         WorkerConnection connection,
         WorkerTransportRequest request,
         TimeSpan timeout,
-        out string response)
+        out string response, Action<CompilerEvent>? progress = null)
     {
         try
         {
@@ -290,20 +304,31 @@ internal static class Program
             if (!WaitForTask(flushTask, connection.Process, stopwatch, timeout))
                 throw new TimeoutException("Тайм-аут отправки запроса CompilerWorker");
 
-            var readTask = connection.Output.ReadLineAsync();
-            if (!WaitForTask(readTask, connection.Process, stopwatch, timeout))
-                throw new TimeoutException("Тайм-аут ответа CompilerWorker");
-            var line = readTask.GetAwaiter().GetResult();
-            if (line == null)
-                throw new EndOfStreamException("CompilerWorker закрыл stdout");
+            while (true)
+            {
+                // Progress must not reset or bypass the total request deadline.
+                if (stopwatch.Elapsed >= timeout)
+                    throw new TimeoutException("Тайм-аут ответа CompilerWorker");
+                var readTask = connection.Output.ReadLineAsync();
+                if (!WaitForTask(readTask, connection.Process, stopwatch, timeout))
+                    throw new TimeoutException("Тайм-аут ответа CompilerWorker");
+                var line = readTask.GetAwaiter().GetResult();
+                if (line == null)
+                    throw new EndOfStreamException("CompilerWorker закрыл stdout");
 
-            var transportResponse = DeserializeWorkerResponse(line);
-            if (!transportResponse.success)
-                throw new InvalidDataException(
-                    transportResponse.error ?? "CompilerWorker вернул ошибку");
+                var transportResponse = DeserializeWorkerResponse(line);
+                if (transportResponse.compilerEvent != null && transportResponse.response == null && transportResponse.error == null)
+                {
+                    progress?.Invoke(transportResponse.compilerEvent);
+                    continue;
+                }
+                if (!transportResponse.success)
+                    throw new InvalidDataException(
+                        transportResponse.error ?? "CompilerWorker вернул ошибку");
 
-            response = transportResponse.response ?? "";
-            return true;
+                response = transportResponse.response ?? "";
+                return true;
+            }
         }
         catch (Exception exception)
         {
@@ -318,7 +343,7 @@ internal static class Program
         string command,
         string? payload,
         string workerFileName,
-        ref WorkerConnection? connection)
+        ref WorkerConnection? connection, Action<CompilerEvent, int>? progress = null)
     {
         var requestTimeout = GetWorkerRequestTimeout();
         for (var attempt = 1; attempt <= 2; attempt++)
@@ -328,16 +353,17 @@ internal static class Program
                     new WorkerTransportRequest
                     {
                         command = command,
-                        payload = payload
+                        payload = payload,
+                        emitEvents = progress != null
                     },
                     requestTimeout,
-                    out var response))
+                    out var response, value => progress?.Invoke(value, attempt)))
                 return response;
 
             if (attempt == 1)
             {
                 Log("CompilerWorker не ответил. Выполняется перезапуск");
-                RestartWorker(workerFileName, ref connection);
+                RestartWorker(workerFileName, ref connection, "Worker завершился или не ответил вовремя");
             }
         }
 
@@ -560,7 +586,17 @@ internal static class Program
                                 });
                             var workerResponse = SendRequest(
                                 "compile", workerRequest, workerFileName,
-                                ref connection);
+                                ref connection, request.emitEvents ? (Action<CompilerEvent, int>)((value, attempt) =>
+                                {
+                                    WriteJson(new Dictionary<string, object?>
+                                    {
+                                        ["id"] = requestId, ["event"] = "compilerState", ["attempt"] = attempt,
+                                        ["state"] = value.state, ["fileName"] = value.fileName,
+                                        ["linesCompiled"] = value.linesCompiled, ["errorCount"] = value.errorCount,
+                                        ["warningCount"] = value.warningCount,
+                                        ["elapsedMilliseconds"] = value.elapsedMilliseconds
+                                    });
+                                }) : null);
                             compilationCount++;
                             var workingSetMb = GetWorkingSetMb(connection);
                             var response = CreateResponse(requestId, false);
@@ -580,7 +616,10 @@ internal static class Program
                                                   workingSetMb >= maxWorkingSetMb;
                             if (restartByCount || restartByMemory)
                             {
-                                RestartWorker(workerFileName, ref connection);
+                                string reason = restartByMemory
+                                    ? "превышен порог памяти " + maxWorkingSetMb + " МБ (" + workingSetMb + " МБ)"
+                                    : "достигнут лимит " + maxCompilations + " компиляций";
+                                RestartWorker(workerFileName, ref connection, reason);
                                 compilationCount = 0;
                             }
                             break;

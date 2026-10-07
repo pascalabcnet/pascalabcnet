@@ -186,15 +186,36 @@ try
     await File.WriteAllTextAsync(
         workerControlPath, "hang:30000", new UTF8Encoding(false));
     var hangStopwatch = Stopwatch.StartNew();
-    var pingAfterHang = await SendAsync(process, new { id = 26, command = "ping" });
+    var notifications = new List<JsonElement>();
+    var pingAfterHang = await SendAsync(process, new { id = 26, command = "compile", fileName = sourcePath,
+        outputDirectory = outputRoot, emitEvents = true,
+        sourceFiles = new[] { new { fileName = sourcePath, text = "begin Println('События компилятора') end." } } },
+        value => notifications.Add(value));
     hangStopwatch.Stop();
     CheckSuccess(pingAfterHang, "automatic restart after worker timeout");
     Check(pingAfterHang.GetProperty("workerPid").GetInt32() != hungWorkerPid,
         "worker PID changed after timeout");
     Check(hangStopwatch.Elapsed < TimeSpan.FromSeconds(25),
         "worker timeout remained bounded");
+    Check(notifications.Count > 0 && notifications.All(value => value.GetProperty("id").GetInt32() == 26 &&
+            value.GetProperty("attempt").GetInt32() == 2), "events are correlated to the retried request");
+    var states = notifications.Select(value => value.GetProperty("state").GetString()).ToList();
+    Check(states.IndexOf("CompilationStarting") >= 0 && states.IndexOf("CompilationFinished") >
+        states.IndexOf("CompilationStarting") && states.Last() == "Ready", "compiler lifecycle events arrive in order");
+    var ready = notifications.Last();
+    Check(ready.GetProperty("linesCompiled").GetUInt32() > 0 && ready.GetProperty("errorCount").GetInt32() == 0 &&
+        ready.GetProperty("elapsedMilliseconds").GetDouble() > 0, "events carry real compiler statistics");
+    var errors = new List<JsonElement>();
+    var eventError = await SendAsync(process, new { id = 28, command = "compile", fileName = sourcePath,
+        outputDirectory = outputRoot, emitEvents = true,
+        sourceFiles = new[] { new { fileName = sourcePath, text = "begin this is invalid Pascal end." } } },
+        value => errors.Add(value));
+    Check(!eventError.GetProperty("success").GetBoolean() &&
+        errors.Last().GetProperty("errorCount").GetInt32() > 0, "failed compilation streams events and final diagnostics");
+    var plainPing = await SendAsync(process, new { id = 29, command = "ping" });
+    CheckSuccess(plainPing, "request without emitEvents still receives exactly one final response");
 
-    var finalWorkerPid = pingAfterHang.GetProperty("workerPid").GetInt32();
+    var finalWorkerPid = plainPing.GetProperty("workerPid").GetInt32();
 
     var shutdown = await SendAsync(process, new { id = 27, command = "shutdown" });
     CheckSuccess(shutdown, "shutdown");
@@ -545,19 +566,30 @@ static async Task CaptureAsync(
     }
 }
 
-static async Task<JsonElement> SendAsync(Process process, object request)
+static async Task<JsonElement> SendAsync(Process process, object request, Action<JsonElement>? progress = null)
 {
     var json = JsonSerializer.Serialize(request);
     await process.StandardInput.WriteLineAsync(json);
     await process.StandardInput.FlushAsync();
 
     using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60));
-    var line = await process.StandardOutput.ReadLineAsync(timeout.Token);
-    if (line is null)
-        throw new EndOfStreamException("Controller closed stdout before returning JSON.");
+    while (true)
+    {
+        var line = await process.StandardOutput.ReadLineAsync(timeout.Token);
+        if (line is null)
+            throw new EndOfStreamException("Controller closed stdout before returning JSON.");
 
-    using var document = JsonDocument.Parse(line);
-    return document.RootElement.Clone();
+        using var document = JsonDocument.Parse(line);
+        var value = document.RootElement.Clone();
+        if (value.TryGetProperty("event", out var eventName))
+        {
+            if (progress == null || eventName.GetString() != "compilerState")
+                throw new InvalidDataException("Unexpected compiler event for a non-streaming request.");
+            progress(value);
+            continue;
+        }
+        return value;
+    }
 }
 
 static async Task WaitForTextAsync(

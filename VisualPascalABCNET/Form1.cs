@@ -697,6 +697,9 @@ namespace VisualPascalABC
         {
             get
             {
+                var externalRun = WorkbenchServiceFactory.ExternalRunService;
+                string externalFile = externalRun?.GetExternalOutputFile(CurrentCodeFileDocument);
+                if (externalFile != null) return externalFile;
                 string path = "";
 
                 if (ProjectFactory.Instance.CurrentProject != null)

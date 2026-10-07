@@ -366,6 +366,11 @@ namespace PascalABCCompiler
             }
             set
             {
+#if PABCNET_MODERN
+                // PABCRtl is a .NET Framework runtime, not a net10 system unit provider.
+                // Modern compilation always uses the target platform's Pascal units.
+                value = false;
+#endif
                 useDllForSystemUnits = value;
                 NetHelper.NetHelper.UsePABCRtl = value;
             }
@@ -487,7 +492,8 @@ namespace PascalABCCompiler
         Ready, CompilationStarting, Reloading, ParserConnected,
         BeginCompileFile, BeginParsingFile, EndParsingFile, CompileInterface, CompileImplementation, EndCompileFile,
         ReadDLL, ReadPCUFile, SavePCUFile, CodeGeneration, CompilationFinished, PCUReadingError, PCUWritingError,
-        SemanticTreeConverterConnected, SemanticTreeConversion, SyntaxTreeConversion
+        SemanticTreeConverterConnected, SemanticTreeConversion, SyntaxTreeConversion,
+        CompilerProcessRestarted
     }
 
     [Serializable()]

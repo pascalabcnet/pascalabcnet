@@ -20,6 +20,10 @@
       <HintPath>..\..\bin\Errors.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Localization">
+      <HintPath>..\..\bin\Localization.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="ICSharpCode.TextEditor">
       <HintPath>..\..\bin\ICSharpCode.TextEditor.dll</HintPath>
       <Private>false</Private>

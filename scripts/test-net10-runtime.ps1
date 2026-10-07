@@ -5,6 +5,11 @@ $ErrorActionPreference = 'Stop'
 $repositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 if (-not $SkipBuild) { & (Join-Path $PSScriptRoot 'build-net10-runtime.ps1') }
 $source = Join-Path $repositoryRoot 'bin-net10'
+foreach ($ideAsset in @('Highlighting', 'Ico')) {
+    if (Test-Path -LiteralPath (Join-Path $source $ideAsset)) {
+        throw "IDE assets must not be present in the console runtime: $ideAsset"
+    }
+}
 $destination = Join-Path $repositoryRoot ('.codex-build\runtime-export-tests\' + [Guid]::NewGuid().ToString('N'))
 & (Join-Path $PSScriptRoot 'export-net10-runtime.ps1') -Destination $destination
 $manifest = Get-Content -LiteralPath (Join-Path $source 'net10-runtime.manifest.json') -Raw | ConvertFrom-Json

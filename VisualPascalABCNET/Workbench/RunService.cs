@@ -11,7 +11,7 @@ using VisualPascalABCPlugins;
 
 namespace VisualPascalABC
 {
-    public partial class WorkbenchRunService : IWorkbenchRunService, IExternalRunInputService
+    public partial class WorkbenchRunService : IWorkbenchRunService, IExternalRunInputService, IExternalRunService
     {
         string RedirectIOModeModuleName = "__RedirectIOMode";
         string RunModeModuleName = "__RunMode";
@@ -28,6 +28,75 @@ namespace VisualPascalABC
         private Dictionary<string, ICodeFileDocument> RunTabs = new Dictionary<string, ICodeFileDocument>();
         private Dictionary<ICodeFileDocument, string> ReadRequests = new Dictionary<ICodeFileDocument, string>();
         private ExternalInputSession externalInput;
+        private ICodeFileDocument externalDocument;
+        private string externalOutputFile;
+
+        private sealed class ExternalCompileScope : IDisposable
+        {
+            private Action release;
+            public ExternalCompileScope(Action release) { this.release = release; }
+            public void Dispose() { var action = release; release = null; action?.Invoke(); }
+        }
+
+        public IDisposable PrepareExternalCompile(string sourceFileName)
+        {
+            if (RunnerManager.IsRun())
+                throw new InvalidOperationException("Сначала остановите выполняющуюся программу IDE.");
+            Workbench.WidgetController.SetCompilingAndRunButtonsEnabled(false);
+            Workbench.WidgetController.SetDebugButtonsEnabled(false);
+            Workbench.WidgetController.SetOptionsEnabled(false);
+            var scope = new ExternalCompileScope(() =>
+            {
+                if (!Workbench.MainForm.IsDisposed && !RunnerManager.IsRun())
+                    ButtonsEnableDisable_RunStop();
+            });
+            try
+            {
+                DesignerService.GenerateAllDesignersCode();
+                BuildService.BeforeCompile?.Invoke(sourceFileName);
+                return scope;
+            }
+            catch { scope.Dispose(); throw; }
+        }
+
+        public string PrepareExternalArguments(string arguments) => RunnerManager.PrepareExternalArguments(arguments);
+
+        public string GetExternalOutputFile(ICodeFileDocument document) =>
+            document != null && document == externalDocument ? externalOutputFile : null;
+
+        public IExternalRunSession RegisterExternalRun(ICodeFileDocument document, string outputFile, Action stop)
+        {
+            if (externalDocument != null || RunnerManager.IsRun())
+                throw new InvalidOperationException("Уже запущена программа IDE.");
+            outputFile = Path.GetFullPath(outputFile);
+            return new ExternalRunSession(() =>
+            {
+                externalDocument = document;
+                externalOutputFile = outputFile;
+                RunTabsAdd(outputFile, document);
+                DocumentService.ActiveCodeFileDocument = document;
+                WorkbenchStorage.SetCurrentTabPageIfWriteToOutputWindow = true;
+                RunnerManager.ExternalStarted(outputFile, stop);
+            }, () =>
+            {
+                try
+                {
+                    if (!Workbench.MainForm.IsDisposed) RunnerManager.ExternalExited(outputFile);
+                    else RunnerManager.ForgetExternalRun(outputFile);
+                }
+                finally
+                {
+                    document.Run = false;
+                    RunTabs.Remove(Tools.FileNameToLower(outputFile));
+                    externalDocument = null;
+                    externalOutputFile = null;
+                }
+            }, error => RunnerManager_RunnerManagerUnhanledRuntimeException(outputFile, error.Type, error.Message,
+                error.Stack, error.Frames.Select(frame => new RunManager.StackTraceItem
+                {
+                    FunctionName = frame.FunctionName, SourceFileName = frame.FileName, LineNumber = frame.Line
+                }).ToList()), text => RunnerManager.ExternalOutput(outputFile, text));
+        }
         private Dictionary<string, string> RunArgumentsTable = new Dictionary<string, string>();
         bool RunActiveTabPage = false;
 
@@ -111,6 +180,12 @@ namespace VisualPascalABC
 
         public bool Run(ICodeFileDocument tabPage, bool forDebugging, bool startWithGoto, bool needFirstBreakpoint)
         {
+            // The external process must release the shared input panel before a legacy run starts.
+            if (externalDocument != null)
+            {
+                RunnerManager.Stop(externalOutputFile);
+                return false;
+            }
             lock (o)
             {
                 bool attachdbg = forDebugging || startWithGoto || needFirstBreakpoint; //|| WorkbenchServiceFactory.DebuggerManager.HasBreakpoints();

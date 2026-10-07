@@ -399,7 +399,7 @@ type
     /// epochs — число итераций обучения
     constructor Create(
       lambda: real := 0.0;
-      learningRate: real := 0.1;
+      learningRate: real := 0.01;
       epochs: integer := 300;
       tol: real := 1e-6;
       checkConvergence: boolean := true;
@@ -1597,7 +1597,7 @@ type
     /// Создаёт классификатор kNN.
     /// k — число ближайших соседей (k > 0).
     /// weighting — режим взвешивания голосов соседей
-    constructor Create(k: integer; weighting: KNNWeighting := KNNWeighting.Uniform);
+    constructor Create(k: integer := 3; weighting: KNNWeighting := KNNWeighting.Uniform);
     
 /// Обучает классификатор k ближайших соседей.
 ///   X — матрица m × n (m объектов, n признаков).

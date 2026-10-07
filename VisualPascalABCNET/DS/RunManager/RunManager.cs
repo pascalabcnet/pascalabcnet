@@ -15,6 +15,7 @@ namespace VisualPascalABC
     {
         Hashtable StartedProcesses = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
         Hashtable StartedFiles = new Hashtable();
+        readonly Dictionary<string, Action> externalProcesses = new Dictionary<string, Action>(StringComparer.OrdinalIgnoreCase);
         PascalABCCompiler.EventedStreamReaderList EventedStreamReaderList;
         //EventedEventWaitHandleList ReadSignalList;
         //Encoding InputEncoding = Encoding.GetEncoding(866);
@@ -37,7 +38,7 @@ namespace VisualPascalABC
         
         public int Count
         {
-            get { return StartedProcesses.Count; }
+            get { lock (externalProcesses) return StartedProcesses.Count + externalProcesses.Count; }
         }
 
         public delegate void TextRecivedDelegate(string fileName, StreamType streamType, string text);
@@ -223,15 +224,19 @@ namespace VisualPascalABC
 
         public bool IsRun(string fileName)
         {
-            return StartedProcesses[fileName] != null;
+            lock (externalProcesses)
+                return fileName != null && (externalProcesses.ContainsKey(fileName) || StartedProcesses[fileName] != null);
         }
 
         public bool IsRun()
         {
-            return StartedProcesses.Count != 0;
+            return Count != 0;
         }
         public void KillAll()
         {
+            List<Action> externalStops;
+            lock (externalProcesses) externalStops = new List<Action>(externalProcesses.Values);
+            foreach (Action stop in externalStops) stop();
             Utils.ProcessRunner[] process = new Utils.ProcessRunner[StartedProcesses.Values.Count];
             StartedProcesses.Values.CopyTo(process, 0);
             foreach (Utils.ProcessRunner pr in process)
@@ -390,6 +395,9 @@ namespace VisualPascalABC
         }
         public void Stop(string fileName)
         {
+            Action stop;
+            lock (externalProcesses) externalProcesses.TryGetValue(fileName, out stop);
+            if (stop != null) { stop(); return; }
             EventedStreamReaderList.Remove(fileName);
             if (Path.GetExtension((StartedProcesses[fileName] as Utils.ProcessRunner).process.StartInfo.FileName) == ".bat")
             {
@@ -410,6 +418,32 @@ namespace VisualPascalABC
             if (Exited != null)
                 Exited(fileName);
             
+        }
+
+        public string PrepareExternalArguments(string args)
+        {
+            ChangeArgsBeforeRun?.Invoke(ref args);
+            return args;
+        }
+
+        public void ExternalStarted(string fileName, Action stop)
+        {
+            lock (externalProcesses) externalProcesses.Add(fileName, stop);
+            Starting?.Invoke(fileName);
+        }
+
+        public void ExternalExited(string fileName)
+        {
+            bool removed;
+            lock (externalProcesses) removed = externalProcesses.Remove(fileName);
+            if (removed) Exited?.Invoke(fileName);
+        }
+
+        public void ForgetExternalRun(string fileName) { lock (externalProcesses) externalProcesses.Remove(fileName); }
+
+        public void ExternalOutput(string fileName, string text)
+        {
+            OutputStringReceived?.Invoke(fileName, StreamType.Output, text);
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace VisualPascalABCPlugins
 {
-    // Owns only the experimental program, never the legacy IDE RunManager.
+    // Owns the process; the IDE owns its shared lifecycle through the optional callbacks.
     internal sealed class Net10ProgramRunner : IDisposable
     {
         private readonly Process process;
@@ -16,14 +16,16 @@ namespace VisualPascalABCPlugins
         private StreamWriter input;
         public bool WasStopped { get; private set; }
 
-        public Net10ProgramRunner(string dotnetPath, string outputFile, string workingDirectory, string arguments)
+        public Net10ProgramRunner(string dotnetPath, string outputFile, string workingDirectory, string arguments,
+            Func<string, string> prepareArguments = null)
         {
             if (!File.Exists(outputFile))
                 throw new FileNotFoundException("Не найден результат компиляции .NET 10", outputFile);
+            string commandArguments = "[REDIRECTIOMODE]" + (string.IsNullOrWhiteSpace(arguments) ? "" : " " + arguments);
+            if (prepareArguments != null) commandArguments = prepareArguments(commandArguments);
             process = new Process
             {
-                StartInfo = new ProcessStartInfo(dotnetPath, "\"" + outputFile + "\" [REDIRECTIOMODE]" +
-                    (string.IsNullOrWhiteSpace(arguments) ? "" : " " + arguments))
+                StartInfo = new ProcessStartInfo(dotnetPath, "\"" + outputFile + "\" " + commandArguments)
                 {
                     WorkingDirectory = workingDirectory,
                     UseShellExecute = false,
@@ -37,11 +39,13 @@ namespace VisualPascalABCPlugins
             };
         }
 
-        public async Task<int> RunAsync(Action<string> output, Action readRequested)
+        public async Task<int> RunAsync(Action<string> output, Action readRequested,
+            Action started = null, Action<RuntimeExceptionInfo> exception = null)
         {
             process.Start();
             input = new StreamWriter(process.StandardInput.BaseStream, new UTF8Encoding(false)) { AutoFlush = true };
-            var protocol = new Net10RuntimeProtocol(output, readRequested);
+            started?.Invoke();
+            var protocol = new Net10RuntimeProtocol(output, readRequested, exception);
             Task stdout = PumpAsync(process.StandardOutput, output);
             Task stderr = PumpAsync(process.StandardError, protocol.Feed);
             await SendInputAsync("GO").ConfigureAwait(false);
@@ -103,11 +107,13 @@ namespace VisualPascalABCPlugins
         private string pending = "";
         private readonly Action<string> output;
         private readonly Action readRequested;
+        private readonly Action<RuntimeExceptionInfo> exception;
 
-        public Net10RuntimeProtocol(Action<string> output, Action readRequested)
+        public Net10RuntimeProtocol(Action<string> output, Action readRequested, Action<RuntimeExceptionInfo> exception = null)
         {
             this.output = output;
             this.readRequested = readRequested;
+            this.exception = exception;
         }
 
         public void Feed(string text)
@@ -130,8 +136,16 @@ namespace VisualPascalABCPlugins
                 {
                     int end = pending.IndexOf("[END]", StringComparison.Ordinal);
                     if (end < 0) return;
-                    output(Environment.NewLine + pending.Substring(ExceptionStart.Length, end - ExceptionStart.Length)
-                        .Replace("[MESSAGE]", ": ").Replace("[STACK]", Environment.NewLine) + Environment.NewLine);
+                    string payload = pending.Substring(ExceptionStart.Length, end - ExceptionStart.Length);
+                    RuntimeExceptionInfo error = null;
+                    if (exception != null)
+                    {
+                        try { error = RuntimeExceptionInfo.Parse(payload); }
+                        catch (FormatException) { }
+                    }
+                    if (error != null) exception(error);
+                    else output(Environment.NewLine + payload.Replace("[MESSAGE]", ": ")
+                        .Replace("[STACK]", Environment.NewLine) + Environment.NewLine);
                     pending = pending.Substring(end + 5);
                 }
                 else if (Read.StartsWith(pending, StringComparison.Ordinal) ||

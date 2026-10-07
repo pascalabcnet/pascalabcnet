@@ -35,7 +35,7 @@ namespace PascalABCCompiler.NetHelper
             "System.IO.FileSystem.dll",
             "System.IO.FileSystem.DriveInfo.dll",
             "System.Text.RegularExpressions.dll",
-            "System.Text.Json.dll",
+             "System.Text.Json.dll",
             "System.Threading.dll",
             "System.Threading.Tasks.dll",
             "System.Threading.Tasks.Parallel.dll",

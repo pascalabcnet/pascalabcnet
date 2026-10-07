@@ -17,14 +17,14 @@ if ($LASTEXITCODE -ne 0) { throw 'Unified .NET 10 runtime build failed.' }
 
 # The console projects also copy local bin assets. Replace these generated copies
 # with versioned runtime sources, excluding legacy binaries and compiled units.
-foreach ($directory in @('Lib', 'Lng', 'Ico', 'Highlighting')) {
+foreach ($directory in @('Lib', 'Lng')) {
     $generated = [IO.Path]::GetFullPath((Join-Path $stage $directory))
     if (-not $generated.StartsWith($stage + '\', [StringComparison]::OrdinalIgnoreCase)) {
         throw "Unsafe staging path: $generated"
     }
     if (Test-Path -LiteralPath $generated) { Remove-Item -LiteralPath $generated -Recurse -Force }
 }
-$assets = @(& git -c core.quotepath=false -C $repositoryRoot ls-files -- bin/Lib bin/Lng bin/Ico bin/Highlighting)
+$assets = @(& git -c core.quotepath=false -C $repositoryRoot ls-files -- bin/Lib bin/Lng)
 if ($LASTEXITCODE -ne 0) { throw 'Cannot list versioned runtime assets.' }
 foreach ($asset in $assets) {
     if ([IO.Path]::GetExtension($asset) -in @('.pcu', '.dll', '.exe', '.pdb')) { continue }

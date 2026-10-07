@@ -83,6 +83,8 @@ namespace VisualPascalABC
     {
         static IWorkbenchBuildService _buildService;
         static IWorkbenchRunService _runService;
+        // Querying an output filename must not initialize services during Form construction.
+        public static IExternalRunService ExternalRunService => _runService as IExternalRunService;
         static IWorkbenchUpdateService _updateService;
         static CodeCompletionParserController _codeCompletionParserController;
         static DebugHelper _debuggerManager;
