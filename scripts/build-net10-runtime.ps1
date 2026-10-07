@@ -24,8 +24,17 @@ foreach ($directory in @('Lib', 'Lng')) {
     }
     if (Test-Path -LiteralPath $generated) { Remove-Item -LiteralPath $generated -Recurse -Force }
 }
-$assets = @(& git -c core.quotepath=false -C $repositoryRoot ls-files -- bin/Lib bin/Lng)
-if ($LASTEXITCODE -ne 0) { throw 'Cannot list versioned runtime assets.' }
+$savedConsoleOutputEncoding = [Console]::OutputEncoding
+try {
+    # Windows PowerShell 5.1 otherwise decodes Git's UTF-8 output using the
+    # active OEM code page and corrupts tracked non-ASCII file names.
+    [Console]::OutputEncoding = New-Object Text.UTF8Encoding($false)
+    $assets = @(& git -c core.quotepath=false -C $repositoryRoot ls-files -- bin/Lib bin/Lng)
+    if ($LASTEXITCODE -ne 0) { throw 'Cannot list versioned runtime assets.' }
+}
+finally {
+    [Console]::OutputEncoding = $savedConsoleOutputEncoding
+}
 foreach ($asset in $assets) {
     if ([IO.Path]::GetExtension($asset) -in @('.pcu', '.dll', '.exe', '.pdb')) { continue }
     $target = Join-Path $stage $asset.Substring(4)
