@@ -25,11 +25,25 @@ foreach ($file in $exported) {
         throw "Unexpected distribution file: $($file.FullName)"
     }
 }
-foreach ($entry in @('pabcnetc', 'pabcnetcclear', 'PABCCompilerController', 'PABCCompilerWorker')) {
+foreach ($entry in @('pabcnetc', 'pabcnetcclear', 'PABCCompilerController', 'PABCCompilerWorker', 'PascalABCNet.LanguageServer')) {
     foreach ($suffix in @('.dll', '.deps.json', '.runtimeconfig.json')) {
         if (-not (Test-Path -LiteralPath (Join-Path $destination ($entry + $suffix)))) {
             throw "Missing exported entry: $entry$suffix"
         }
     }
 }
-Write-Host "PASS unified kit: all four entrypoints, identical hashes, manifest-only export, no PDB/legacy PCU/transport dependencies ($($manifest.files.Count) files)."
+# Compiler assemblies must occur exactly once, at the root of the shared kit.
+foreach ($library in @(
+    'Compiler.dll', 'CompilerTools.dll', 'Errors.dll', 'TreeConverter.dll',
+    'NETGenerator.dll', 'CodeCompletion.dll', 'SyntaxTree.dll', 'SemanticTree.dll',
+    'SyntaxVisitors.dll', 'SyntaxTreeConverters.dll', 'ParserTools.dll',
+    'PascalABCParser.dll', 'PascalABCLanguageInfo.dll', 'LanguageIntegrator.dll',
+    'LambdaAnySynToSemConverter.dll', 'Localization.dll', 'StringConstants.dll',
+    'PABCCoreUtils.dll', 'PascalABCNet.LanguageServices.dll'
+)) {
+    $matches = @($manifest.files | Where-Object { [IO.Path]::GetFileName($_.path) -eq $library })
+    if ($matches.Count -ne 1 -or $matches[0].path -ne $library) {
+        throw "Shared library must occur only at the runtime root: $library"
+    }
+}
+Write-Host "PASS unified kit: all five entrypoints, one shared compiler kit, identical hashes, manifest-only export, no PDB/legacy PCU/transport dependencies ($($manifest.files.Count) files)."

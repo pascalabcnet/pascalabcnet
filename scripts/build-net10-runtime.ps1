@@ -42,11 +42,16 @@ foreach ($asset in $assets) {
     Copy-Item -LiteralPath (Join-Path $repositoryRoot $asset) -Destination $target -Force
 }
 Get-ChildItem -LiteralPath $stage -Recurse -File -Filter '*.pdb' | Remove-Item -Force
-foreach ($entry in @('pabcnetc', 'pabcnetcclear', 'PABCCompilerController', 'PABCCompilerWorker')) {
+foreach ($entry in @('pabcnetc', 'pabcnetcclear', 'PABCCompilerController', 'PABCCompilerWorker', 'PascalABCNet.LanguageServer')) {
     foreach ($suffix in @('.dll', '.deps.json', '.runtimeconfig.json')) {
         if (-not (Test-Path -LiteralPath (Join-Path $stage ($entry + $suffix)))) {
             throw "Missing runtime entry: $entry$suffix"
         }
+    }
+}
+foreach ($library in @('CodeCompletion.dll', 'PascalABCNet.LanguageServices.dll')) {
+    if (-not (Test-Path -LiteralPath (Join-Path $stage $library))) {
+        throw "Missing IntelliSense library: $library"
     }
 }
 foreach ($forbidden in @('NetMQ.dll', 'AsyncIO.dll', 'NaCl.dll')) {

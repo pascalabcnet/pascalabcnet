@@ -71,6 +71,33 @@ namespace VisualPascalABC
             }
         }
 
+        // External language services supply descriptions, not legacy semantic models.
+        public static void ShowExternalHint(TextArea textArea, Point mousePosition, TextLocation position, string description)
+        {
+            if (string.IsNullOrWhiteSpace(description)) return;
+            ShowHint(textArea, mousePosition, position, description);
+            // The asynchronous provider owns invalidation (including movement within the token).
+            toolTipVisible = false;
+        }
+
+        private static void ShowHint(TextArea textArea, Point mousePosition, TextLocation position, string description)
+        {
+            if (dvw == null || dvw.IsDisposed)
+            {
+                dvw = new DeclarationWindow(textArea.FindForm());
+                dvw.Font = new Font(Constants.CompletionWindowDeclarationViewWindowFontName, dvw.Font.Size);
+                dvw.HideOnClick = true;
+            }
+            int ypos = (textArea.Document.GetVisibleLine(position.Y) + 1) * textArea.TextView.FontHeight - textArea.VirtualTop.Y;
+            Point p = textArea.PointToScreen(new Point(mousePosition.X + 3, ypos + 5));
+            dvw.Location = choose_location(p, description);
+            dvw.Description = description;
+            _hint_hide_d = dvw.Font.Height / 2;
+            _mouse_hint_x = mousePosition.X;
+            _mouse_hint_y = mousePosition.Y;
+            toolTipVisible = true;
+        }
+
         public static void ToolTipService_TextAreaToolTipRequest(object sender, ToolTipRequestEventArgs e)
         {
             if (!VisualPABCSingleton.MainForm.UserOptions.CodeCompletionHint)
@@ -93,27 +120,8 @@ namespace VisualPascalABC
                 if (e.InDocument)
                 {
 
-                    if (dvw == null)
-                    {
-                        dvw = new DeclarationWindow(VisualPABCSingleton.MainForm);
-                        dvw.Font = new System.Drawing.Font(Constants.CompletionWindowDeclarationViewWindowFontName, dvw.Font.Size);
-
-                        dvw.HideOnClick = true;
-                        //dvw.ShowDeclarationViewWindow();
-                    }
-                    int ypos = (textArea.Document.GetVisibleLine(e.LogicalPosition.Y) + 1) * textArea.TextView.FontHeight - textArea.VirtualTop.Y;
-                    System.Drawing.Point p = new System.Drawing.Point(0, ypos);
-                    p = textArea.PointToScreen(p);
-                    p.X = Control.MousePosition.X + 3;
-                    p.Y += 5;
                     string txt = GetPopupHintText(textArea, e);
-                    dvw.Location = choose_location(p, txt);
-                    dvw.Description = txt;
-
-                    _hint_hide_d = dvw.Font.Height / 2;
-                    _mouse_hint_x = e.MousePosition.X;
-                    _mouse_hint_y = e.MousePosition.Y;
-                    toolTipVisible = true;
+                    ShowHint(textArea, e.MousePosition, e.LogicalPosition, txt);
                 }
             }
             catch (System.Exception ex)
@@ -128,11 +136,13 @@ namespace VisualPascalABC
 
         private static System.Drawing.Point choose_location(System.Drawing.Point p, string desc)
         {
-            Graphics g = Graphics.FromHwnd(dvw.Handle);
-            Size sz = Size.Ceiling(g.MeasureString(desc, dvw.Font, Screen.PrimaryScreen.WorkingArea.Width));
-            if (p.X + sz.Width > Screen.PrimaryScreen.WorkingArea.Width)
+            using (Graphics g = Graphics.FromHwnd(dvw.Handle))
             {
-                p.X -= sz.Width - Screen.PrimaryScreen.WorkingArea.Width + p.X;
+                Size sz = Size.Ceiling(g.MeasureString(desc, dvw.Font, Screen.PrimaryScreen.WorkingArea.Width));
+                if (p.X + sz.Width > Screen.PrimaryScreen.WorkingArea.Width)
+                {
+                    p.X -= sz.Width - Screen.PrimaryScreen.WorkingArea.Width + p.X;
+                }
             }
             return p;
         }

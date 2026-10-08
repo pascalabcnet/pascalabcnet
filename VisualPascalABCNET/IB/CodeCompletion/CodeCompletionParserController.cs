@@ -65,12 +65,21 @@ namespace VisualPascalABC
         {
             if (string.Compare(OldFileName, NewFileName, true) != 0)
             {
-                CodeCompletion.CodeCompletionController.comp_modules[NewFileName] = CodeCompletion.CodeCompletionController.comp_modules[OldFileName];
-                if (CodeCompletion.CodeCompletionController.comp_modules.ContainsKey(OldFileName))
-                    CodeCompletion.CodeCompletionController.comp_modules.Remove(OldFileName);
-                filesToParse[NewFileName] = filesToParse[OldFileName];
-                if (filesToParse.ContainsKey(OldFileName))
-                    filesToParse.Remove(OldFileName);
+                var modules = CodeCompletion.CodeCompletionController.comp_modules;
+                if (modules.ContainsKey(OldFileName))
+                {
+                    modules[NewFileName] = modules[OldFileName];
+                    modules.Remove(OldFileName);
+                }
+                else
+                    modules.Remove(NewFileName); // Do not retain a stale model for the destination.
+
+                // A file opened while legacy analysis is suspended (.NET 10),
+                // or disabled by the user, may never have entered this queue.
+                // Save As must still succeed and leave the new name ready for analysis.
+                if (!filesToParse.TryGetValue(OldFileName, out bool pending)) pending = true;
+                filesToParse[NewFileName] = pending;
+                filesToParse.Remove(OldFileName);
             }
         }
 

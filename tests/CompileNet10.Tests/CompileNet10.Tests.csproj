@@ -14,6 +14,15 @@
     <Compile Include="../../VisualPlugins/CompileNet10/Net10SourceSnapshot.cs" Link="Net10SourceSnapshot.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10EditorDocument.cs" Link="Net10EditorDocument.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10StatusDisplay.cs" Link="Net10StatusDisplay.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10LanguageClient.cs" Link="Net10LanguageClient.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10LanguageDocuments.cs" Link="Net10LanguageDocuments.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10Completion.cs" Link="Net10Completion.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10Hover.cs" Link="Net10Hover.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10SignatureContext.cs" Link="Net10SignatureContext.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10SignatureProvider.cs" Link="Net10SignatureProvider.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10Signature.cs" Link="Net10Signature.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10Navigation.cs" Link="Net10Navigation.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10CompletionProvider.cs" Link="Net10CompletionProvider.cs" />
     <Reference Include="PluginsSupport"><HintPath>$(IdeReferenceDirectory)/PluginsSupport.dll</HintPath></Reference>
     <Reference Include="Errors"><HintPath>$(IdeReferenceDirectory)/Errors.dll</HintPath></Reference>
     <Reference Include="PascalABCNET"><HintPath>$(IdeReferenceDirectory)/PascalABCNET.exe</HintPath></Reference>

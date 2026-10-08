@@ -8159,7 +8159,31 @@ begin
   if (t = nil) or (t = '') then
     exit(False);
 
-  var ru := CultureInfo.GetCultureInfo('ru-RU');
+  var formats := [
+    'yyyy-MM-dd',
+    'dd.MM.yyyy'
+  ];
+
+  Result := System.DateTime.TryParseExact(
+    t,
+    formats,
+    CultureInfo.InvariantCulture,
+    DateTimeStyles.None,
+    value
+  );
+
+end;
+
+// Форматы для столбца, явно объявленного как DateTime.
+// Автоопределение намеренно использует только даты без времени.
+function TryStrToExplicitDateTime(s: string; var value: System.DateTime): boolean;
+begin
+  var t := s;
+  if t <> nil then
+    t := t.Trim;
+
+  if (t = nil) or (t = '') then
+    exit(False);
 
   var formats := [
     'yyyy-MM-dd',
@@ -8180,37 +8204,6 @@ begin
     t,
     formats,
     CultureInfo.InvariantCulture,
-    DateTimeStyles.None,
-    value
-  );
-
-  if Result then
-    exit;
-
-  Result := System.DateTime.TryParseExact(
-    t,
-    formats,
-    ru,
-    DateTimeStyles.None,
-    value
-  );
-
-  if Result then
-    exit;
-
-  Result := System.DateTime.TryParse(
-    t,
-    CultureInfo.InvariantCulture,
-    DateTimeStyles.None,
-    value
-  );
-
-  if Result then
-    exit;
-
-  Result := System.DateTime.TryParse(
-    t,
-    ru,
     DateTimeStyles.None,
     value
   );
@@ -8914,7 +8907,11 @@ begin
       else if canDateTime[nj] then
       begin
         var dtv: System.DateTime;
-        if TryStrToDateTime(s, dtv) then
+        var isExplicitDateTime := (schema <> nil) and
+          schema.ContainsKey(headers[nj]) and
+          (schema[headers[nj]] = ctDateTime);
+        if (if isExplicitDateTime then TryStrToExplicitDateTime(s, dtv)
+            else TryStrToDateTime(s, dtv)) then
         begin
           dtData[nj][row] := dtv;
           valid[nj][row] := true;
@@ -9452,7 +9449,11 @@ begin
         if trimWhitespace then
           s := s.Trim;
 
-        if TryStrToDateTime(s, dtv) then
+        var isExplicitDateTime := (columnTypes <> nil) and
+          columnTypes.ContainsKey(headers[nj]) and
+          (columnTypes[headers[nj]] = ctDateTime);
+        if (if isExplicitDateTime then TryStrToExplicitDateTime(s, dtv)
+            else TryStrToDateTime(s, dtv)) then
         begin
           dtData[nj][row] := dtv;
           valid[nj][row] := true;

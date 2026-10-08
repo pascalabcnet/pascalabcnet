@@ -3,6 +3,8 @@
   <Project Path="pabcnetc_clear/PABCNETCclear.csproj" />
   <Project Path="PascalABCNet.CompilerController/PascalABCNet.CompilerController.csproj" />
   <Project Path="PascalABCNet.CompilerWorker/PascalABCNet.CompilerWorker.csproj" />
+  <Project Path="PascalABCNet.LanguageServer/PascalABCNet.LanguageServer.csproj" />
+  <Project Path="PascalABCNet.LanguageServices/PascalABCNet.LanguageServices.csproj" />
   <Project Path="Optimizer/Optimizer.csproj" />
   <Project Path="AdditionalLanguages/SPython/SemanticAnalyzers/SPythonSyntaxTreeVisitor/SPythonSyntaxTreeVisitor.csproj" />
   <Project Path="AdditionalLanguages/SPython/SyntaxTreeConverters/SPythonStandardTreeConverter/SPythonStandardTreeConverter.csproj" />

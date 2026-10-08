@@ -29,6 +29,11 @@
       <HintPath>$(IdeReferenceDirectory)\ICSharpCode.TextEditor.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <!-- UI only: the running host owns the completion window. Never copy its compiler kit. -->
+    <Reference Include="PascalABCNET">
+      <HintPath>$(IdeReferenceDirectory)\PascalABCNET.exe</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Web.Extensions" />

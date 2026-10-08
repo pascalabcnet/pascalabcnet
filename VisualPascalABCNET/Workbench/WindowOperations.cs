@@ -224,7 +224,7 @@ namespace VisualPascalABC
             Process.Start(url);
         }
 
-        private CodeFileDocumentControl AddNewProgramToTab(DockPanel tabControl, string FileName)
+        private CodeFileDocumentControl AddNewProgramToTab(DockPanel tabControl, string FileName, bool notifyOpened = true)
         {
             CodeFileDocumentControl edit = AddNewTab(tabControl);
 
@@ -248,6 +248,8 @@ namespace VisualPascalABC
             //HostCallbackImplementation.Register(this);
 
             //\ivan
+            // File-opening callers notify after LoadFromFile, not for an empty editor.
+            if (notifyOpened) NotifyDocumentOpened(edit);
             return edit;
         }
 
@@ -460,6 +462,7 @@ namespace VisualPascalABC
             WorkbenchServiceFactory.CodeCompletionParserController.RegisterFileForParsing(tabName + ".pas");
             //edit.file_name = file_name;
             //SetTabPageText(edit);
+            NotifyDocumentOpened(edit);
         }
 
         public ICodeFileDocument GetTabPageForMainFile()

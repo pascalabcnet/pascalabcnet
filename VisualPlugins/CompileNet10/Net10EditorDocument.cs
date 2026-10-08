@@ -6,14 +6,22 @@ namespace VisualPascalABCPlugins
 {
     internal static class Net10EditorDocument
     {
+        public static string GetRunWarningResourceKey(string outputFile)
+        {
+            string extension = Path.GetExtension(outputFile ?? "");
+            if (string.Equals(extension, ".pcu", StringComparison.OrdinalIgnoreCase))
+                return "RUN_PCU_WARNING_TEXT";
+            if (string.Equals(extension, ".dll", StringComparison.OrdinalIgnoreCase))
+                return "RUN_DLL_WARNING_TEXT";
+            return null;
+        }
+
         public static ICodeFileDocument ResolveRunTarget(ICodeFileDocument current, string outputFile,
             IWorkbenchDocumentService service)
         {
-            string extension = Path.GetExtension(outputFile ?? "");
             var active = service.ActiveCodeFileDocument;
             // Match the legacy Run fallback only for a compiled unit/library, not another program.
-            if ((string.Equals(extension, ".pcu", StringComparison.OrdinalIgnoreCase) ||
-                 string.Equals(extension, ".dll", StringComparison.OrdinalIgnoreCase)) &&
+            if (GetRunWarningResourceKey(outputFile) != null &&
                 active != null && active != current && !active.FromMetadata && !active.Run &&
                 ReferenceEquals(service.GetDocument(active.FileName), active))
                 return active;

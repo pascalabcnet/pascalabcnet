@@ -27,11 +27,12 @@ namespace VisualPascalABC
             CodeFileDocumentControl tp = FindTab(FileName);
             if (tp != null)
                 return tp;
-            tp = AddNewProgramToTab(MainDockPanel, FileName);
+            tp = AddNewProgramToTab(MainDockPanel, FileName, false);
             AddLastFile(FileName);
             tp.LoadFromFile(FileName);
             tp.DocumentSavedToDisk = true;
             ShowAddedBreakpoints(tp);
+            NotifyDocumentOpened(tp);
             return tp;
         }
 
@@ -39,6 +40,8 @@ namespace VisualPascalABC
         {
             CodeFileDocumentControl tp = FindTab(FileName);
             bool IsNewFile = FileName == null;
+            bool addedDocument = false;
+            string previousFileName = null;
             if (tp == null)
             {
                 if (!IsNewFile && !File.Exists(FileName))
@@ -56,7 +59,8 @@ namespace VisualPascalABC
                             FileName = InstNameNewProgramm(MainDockPanel);
                         else
                             FileName = PreferedFileName;
-                    tp = AddNewProgramToTab(MainDockPanel, FileName);
+                    tp = AddNewProgramToTab(MainDockPanel, FileName, false);
+                    addedDocument = true;
 
                 }
                 else
@@ -65,6 +69,7 @@ namespace VisualPascalABC
                         CheckErrorListAndClear(CurrentCodeFileDocument.FileName);
                         WorkbenchServiceFactory.CodeCompletionParserController.CloseFile(CurrentCodeFileDocument.FileName);
                         OpenDocuments.Remove(Tools.FileNameToLower(CurrentCodeFileDocument.FileName));
+                        previousFileName = CurrentCodeFileDocument.FileName;
                         CurrentCodeFileDocument.FileName = FileName;
                         SetTabPageText(CurrentCodeFileDocument);
                         if (!WorkbenchServiceFactory.RunService.HasRunArgument(FileName.ToLower()))
@@ -133,6 +138,8 @@ namespace VisualPascalABC
                 }
             }
 
+            if (addedDocument) NotifyDocumentOpened(tp);
+            else if (previousFileName != null) NotifyDocumentRenamed(tp, previousFileName);
             return true;
         }
 
@@ -146,6 +153,8 @@ namespace VisualPascalABC
         {
             CodeFileDocumentControl tp = FindTab(FileName);
             bool IsNewFile = FileName == null;
+            bool addedDocument = false;
+            string previousFileName = null;
             if (tp == null)
             {
                 visualStates.FileOpened = true;//?????
@@ -185,12 +194,14 @@ namespace VisualPascalABC
                 {
                     if (IsNewFile)
                         FileName = InstNameNewProgramm(MainDockPanel);
-                    tp = AddNewProgramToTab(MainDockPanel, FileName);
+                    tp = AddNewProgramToTab(MainDockPanel, FileName, false);
+                    addedDocument = true;
                 }
                 else
                     if (!IsNewFile)
                     {
                         //CheckErrorListAndClear((tabControl1.TabPages[TabIndex].ag as CodeFileDocumentControl).file_name);
+                        previousFileName = CurrentCodeFileDocument.FileName;
                         CurrentCodeFileDocument.FileName = FileName;
                         if (!ProjectFactory.Instance.ProjectLoaded)
                             SetTabPageText(CurrentCodeFileDocument);
@@ -218,6 +229,8 @@ namespace VisualPascalABC
             visualStates.FileOpened = false;
             AddDebugPage(CurrentCodeFileDocument);
             //CahngedSelectedTab();
+            if (addedDocument) NotifyDocumentOpened(tp);
+            else if (previousFileName != null) NotifyDocumentRenamed(tp, previousFileName);
             return CurrentCodeFileDocument;
         }
 
@@ -273,6 +286,7 @@ namespace VisualPascalABC
             OutputTextBoxs.Remove(tp);
             OpenDocuments.Remove(Tools.FileNameToLower(tp.FileName));
             //RunArgumentsTable.Remove(tp);
+            NotifyDocumentClosed(tp);
             tp.Dispose();
             CheckErrorListAndClear(FileName);
             WatcherService.RemoveWatcher(FileName);
@@ -366,6 +380,7 @@ namespace VisualPascalABC
 
         internal void SaveFileAs(CodeFileDocumentControl TbPage, string FileName)
         {
+            string previousFileName = TbPage.FileName;
             try
             {
                 if (TbPage.DesignerAndCodeTabs != null)
@@ -397,6 +412,7 @@ namespace VisualPascalABC
                     WorkbenchServiceFactory.RunService.AddRunArgument(FileName.ToLower(), "");
                 if (TbPage == CurrentCodeFileDocument)
                     UpdateSaveButtonsEnabled();
+                NotifyDocumentRenamed(TbPage, previousFileName);
             }
             catch (Exception)
             {

@@ -43,6 +43,12 @@
     <DefineConstants>$(DefineConstants);PABCNET_MODERN</DefineConstants>
   </PropertyGroup>
 
+  <!-- IntelliSense and compilation use the same net10 compiler binaries. -->
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'PascalABCNet.LanguageServer' Or '$(MSBuildProjectName)' == 'PascalABCNet.LanguageServices'">
+    <OutputPath>$(MSBuildThisFileDirectory)bin-net10\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
   <ItemGroup Condition="('$(MSBuildProjectName)' == 'PABCNETC' Or '$(MSBuildProjectName)' == 'PABCNETCclear') And '$(TargetFramework)' == 'net10.0'">
     <Content Include="$(MSBuildThisFileDirectory)bin\Lng\**\*">
       <Link>Lng\%(RecursiveDir)%(Filename)%(Extension)</Link>

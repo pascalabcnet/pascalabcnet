@@ -15,6 +15,14 @@ using ICSharpCode.TextEditor.Util;
 
 namespace ICSharpCode.TextEditor.Gui.InsightWindow
 {
+    // Ready-to-render parameter ranges from an external language service.
+    // Offsets are UTF-16 indices in the first (signature) line, not CLR types.
+    public interface IExternalInsightDataProvider : IInsightDataProvider
+    {
+        int CurrentParameter { get; } // One-based, as in the historical renderer.
+        bool GetParameterHighlight(int signature, out int start, out int length);
+    }
+
 	public class PABCNETInsightWindow : AbstractCompletionWindow
 	{
 		public PABCNETInsightWindow(Form parentForm, TextEditorControl control) : base(parentForm, control)
@@ -166,6 +174,21 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 				description = DataProvider.GetInsightData(CurrentData);
 			}
 			//pe.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+            if (DataProvider is IExternalInsightDataProvider external)
+            {
+                string[] parts = description.Split(new[] { '\n' }, 2);
+                string label = parts[0].TrimEnd('\r');
+                string documentation = parts.Length > 1 ? parts[1].Trim() : null;
+                external.GetParameterHighlight(CurrentData, out int start, out int length);
+                if (start < 0 || length < 0 || start > label.Length || length > label.Length - start) start = length = 0;
+                drawingSize = TipPainterTools.GetDrawingSizeDrawHelpTip(this, pe.Graphics, Font,
+                    methodCountMessage, label, documentation, start, length, external.CurrentParameter, true);
+                if (drawingSize != Size) SetLocation();
+                else TipPainterTools.DrawHelpTip(this, pe.Graphics, Font, methodCountMessage,
+                    label, documentation, start, length, external.CurrentParameter, true);
+                lastCursorScreenPosition = control.ActiveTextAreaControl.TextArea.Caret.ScreenPosition;
+                return;
+            }
 			int num_param = (DataProvider as VisualPascalABC.DefaultInsightDataProvider).num_param;
             int paramsCount = (DataProvider as VisualPascalABC.DefaultInsightDataProvider).param_count;
             drawingSize = TipPainterTools.GetDrawingSizeHelpTipFromCombinedDescription(this,
@@ -220,6 +243,14 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 				insightDataProviderStack.Push(new InsightDataProviderStackElement(provider));
 			}
 		}
+
+        public void ReplaceCurrentInsightDataProvider(IInsightDataProvider provider, string fileName)
+        {
+            provider.SetupDataProvider(fileName, control.ActiveTextAreaControl.TextArea);
+            if (provider.InsightDataCount == 0) return;
+            if (insightDataProviderStack.Count > 0) insightDataProviderStack.Pop();
+            insightDataProviderStack.Push(new InsightDataProviderStackElement(provider));
+        }
 		
 		public IInsightDataProvider GetInsightProvider()
 		{

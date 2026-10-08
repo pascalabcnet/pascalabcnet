@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VisualPascalABCPlugins;
 
-internal static class Program
+internal static partial class Program
 {
     private sealed class DocumentService : IWorkbenchDocumentService
     {
@@ -27,7 +27,7 @@ internal static class Program
         public string EXEFileName => null;
         public int LinesCount => 1;
         public ICSharpCode.TextEditor.TextEditorControl TextEditor { get; } = new ICSharpCode.TextEditor.TextEditorControl();
-        public bool FromMetadata => false;
+        public bool FromMetadata { get; set; }
         public bool DocumentChanged => true;
         public string ToolTipText { get; set; }
         public bool Run { get; set; }
@@ -131,15 +131,179 @@ internal static class Program
     [STAThread]
     private static int Main(string[] args) => RunTestsAsync(args).GetAwaiter().GetResult();
 
+    private static void CheckParserRename()
+    {
+        var completion = System.Reflection.Assembly.Load("CodeCompletion")
+            .GetType("CodeCompletion.CodeCompletionController", true);
+        var suspended = completion.GetField("LegacyAnalysisSuspended");
+        var modules = (System.Collections.Hashtable)completion.GetField("comp_modules").GetValue(null);
+        bool previousSuspension = (bool)suspended.GetValue(null);
+        var parser = new VisualPascalABC.CodeCompletionParserController();
+        string oldName = Path.GetFullPath("RenameOld-" + Guid.NewGuid().ToString("N") + ".pas");
+        string newName = Path.GetFullPath("RenameNew-" + Guid.NewGuid().ToString("N") + ".pas");
+        try
+        {
+            foreach (bool isSuspended in new[] { true, false })
+            {
+                suspended.SetValue(null, isSuspended);
+                modules.Remove(oldName);
+                modules.Remove(newName);
+                VisualPascalABC.CodeCompletionParserController.filesToParse.Remove(oldName);
+                VisualPascalABC.CodeCompletionParserController.filesToParse.Remove(newName);
+                Console.WriteLine("CASE: Save As without legacy analysis entries; suspended=" + isSuspended);
+                parser.RenameFile(oldName, newName);
+                Check(!VisualPascalABC.CodeCompletionParserController.filesToParse.ContainsKey(oldName) &&
+                    VisualPascalABC.CodeCompletionParserController.filesToParse[newName],
+                    "Save As with no legacy analysis entry schedules new name without throwing: " + isSuspended);
+                Check(!modules.ContainsKey(oldName) && !modules.ContainsKey(newName),
+                    "Save As does not invent a compiled IntelliSense model");
+
+                modules[newName] = new object(); // Stale model from a previously closed destination.
+                VisualPascalABC.CodeCompletionParserController.filesToParse[oldName] = false;
+                parser.RenameFile(oldName, newName);
+                Check(!modules.ContainsKey(newName) &&
+                    !VisualPascalABC.CodeCompletionParserController.filesToParse[newName],
+                    "Save As handles an uncompiled but registered editor and discards stale destination model");
+
+                // Existing net472 entries still move, with their original scheduled state.
+                object converter = new object();
+                modules[oldName] = converter;
+                VisualPascalABC.CodeCompletionParserController.filesToParse[oldName] = false;
+                parser.RenameFile(oldName, newName);
+                Check(!modules.ContainsKey(oldName) && ReferenceEquals(modules[newName], converter) &&
+                    !VisualPascalABC.CodeCompletionParserController.filesToParse.ContainsKey(oldName) &&
+                    !VisualPascalABC.CodeCompletionParserController.filesToParse[newName],
+                    "Save As preserves an existing legacy model and pending flag: " + isSuspended);
+                parser.RenameFile(newName, newName.ToUpperInvariant());
+                Check(ReferenceEquals(modules[newName], converter) &&
+                    VisualPascalABC.CodeCompletionParserController.filesToParse.ContainsKey(newName),
+                    "case-only rename does not remove the same document");
+            }
+        }
+        finally
+        {
+            modules.Remove(oldName);
+            modules.Remove(newName);
+            VisualPascalABC.CodeCompletionParserController.filesToParse.Remove(oldName);
+            VisualPascalABC.CodeCompletionParserController.filesToParse.Remove(newName);
+            suspended.SetValue(null, previousSuspension);
+        }
+    }
+
+    private static void CheckDocumentEvents()
+    {
+        Check(typeof(IWorkbenchDocumentEvents).IsAssignableFrom(typeof(VisualPascalABC.Form1)),
+            "IDE document service exposes optional lifecycle notifications");
+        Check(typeof(IWorkbenchDocumentService).GetEvents().Length == 0,
+            "historical document contract remains unchanged");
+        using (var document = new EditorDocument { FileName = Path.GetFullPath("Events.pas") })
+        using (var second = new EditorDocument { FileName = Path.GetFullPath("Floating.pas") })
+        {
+            var documents = new List<ICodeFileDocument> { document, second, document };
+            int failures = 0;
+            var source = new WorkbenchDocumentEventSource(() => documents, error => failures++);
+            var snapshot = source.GetOpenDocuments();
+            Check(snapshot.Length == 2 && Array.IndexOf(snapshot, second) >= 0,
+                "document snapshot includes inactive/floating editors without duplicate tabs");
+            snapshot[0] = null;
+            Check(source.GetOpenDocuments()[0] == document && documents.Count == 3,
+                "returned snapshot cannot mutate the host's open collection");
+            int opens = 0, closes = 0, renames = 0;
+            int textChanges = 0;
+            ICSharpCode.TextEditor.Document.DocumentEventHandler textChanged = (sender, e) => textChanges++;
+            EventHandler<WorkbenchDocumentEventArgs> bad = (sender, e) => { throw new InvalidOperationException("test plugin"); };
+            EventHandler<WorkbenchDocumentEventArgs> opened = (sender, e) =>
+            {
+                opens++;
+                Check(e.Document == document && e.FileName == document.FileName && e.PreviousFileName == null &&
+                    e.Document.TextEditor.Document.TextContent == "begin Print(42); end.",
+                    "open notification exposes loaded editor text and its assigned name");
+                e.Document.TextEditor.Document.DocumentChanged += textChanged;
+            };
+            source.DocumentOpened += bad;
+            source.DocumentOpened += opened;
+            document.TextEditor.Document.TextContent = "begin Print(42); end.";
+            source.Opened(document);
+            Check(opens == 1 && failures == 1, "failing plugin cannot interrupt open or other subscribers");
+            document.TextEditor.Document.TextContent = "begin Print(43); end.";
+            Check(textChanges > 0, "consumer can subscribe to existing editor changes after open");
+            source.DocumentOpened -= bad;
+            source.DocumentOpened -= opened;
+            source.Opened(document);
+            Check(opens == 1, "document event subscription can be detached");
+
+            WorkbenchDocumentEventArgs rename = null;
+            source.DocumentRenamed += (sender, e) => { renames++; rename = e; };
+            string oldName = document.FileName;
+            source.Renamed(document, oldName);
+            Check(renames == 0, "ordinary save does not emit a rename");
+            document.FileName = Path.GetFullPath("SavedAs.pas");
+            source.Renamed(document, oldName);
+            string renamedName = document.FileName;
+            document.FileName = Path.GetFullPath("SavedAgain.pas");
+            Check(renames == 1 && rename.PreviousFileName == oldName && rename.FileName == renamedName,
+                "Save As notification captures both names for delayed LSP consumers");
+            source.Renamed(document, renamedName);
+            Check(renames == 2, "repeated Save As is observable on the same editor");
+
+            source.DocumentClosed += (sender, e) =>
+            {
+                closes++;
+                Check(Array.IndexOf(source.GetOpenDocuments(), e.Document) < 0 &&
+                    !document.IsDisposed && e.Document.TextEditor.Document.TextContent.Length > 0,
+                    "close notification follows removal, while editor is still available for detaching handlers");
+                e.Document.TextEditor.Document.DocumentChanged -= textChanged;
+            };
+            documents.RemoveAll(value => value == document);
+            source.Closed(document);
+            Check(closes == 1 && source.GetOpenDocuments().Length == 1,
+                "closed editor is removed from subsequent snapshots");
+            int previousChanges = textChanges;
+            document.TextEditor.Document.TextContent = "";
+            Check(textChanges == previousChanges && failures == 1,
+                "closed editor handlers are detached before cleanup changes its text");
+            documents.Add(document);
+            Check(source.GetOpenDocuments().Length == 2,
+                "late subscribers see existing editors through the same collection");
+        }
+    }
+
     private static async Task<int> RunTestsAsync(string[] args)
     {
         try
         {
+            if (args.Length > 0 && args[0] == "--navigation-ui")
+            {
+                CheckLanguageNavigation(args.Length > 1 ? args[1] : Path.GetFullPath("bin-net10"));
+                return 0;
+            }
+            if (args.Length > 0 && args[0] == "--signature-ui")
+            {
+                CheckSignatureTypedTrigger();
+                if (args.Length > 1) CheckSignatureTypedTrigger(args[1]);
+                return 0;
+            }
             CheckRuntimeSettings();
             CheckCommandRouting();
+            CheckDocumentEvents();
+            CheckParserRename();
             CheckAnalysisSuspension();
+            // Keep subsequent WinForms checks on the STA test thread; there is no UI message pump here.
+            CheckLanguageSynchronizationAsync(args.Length > 0 ? args[0] : Path.GetFullPath("bin-net10")).GetAwaiter().GetResult();
+            CheckLanguageCompletion(args.Length > 0 ? args[0] : Path.GetFullPath("bin-net10"));
+            CheckLanguageHover();
+            CheckLanguageSignature(args.Length > 0 ? args[0] : Path.GetFullPath("bin-net10"));
+            CheckLanguageNavigation(args.Length > 0 ? args[0] : Path.GetFullPath("bin-net10"));
             CheckExternalInputRouting();
             CheckExternalRunRouting();
+            Check(Net10EditorDocument.GetRunWarningResourceKey("MissingUnit.PCU") == "RUN_PCU_WARNING_TEXT",
+                "compiled unit warns before checking output file existence");
+            Check(Net10EditorDocument.GetRunWarningResourceKey("Library.DLL") == "RUN_DLL_WARNING_TEXT",
+                "compiled library uses the canonical legacy run warning");
+            Check(Net10EditorDocument.GetRunWarningResourceKey("Program.exe") == null &&
+                Net10EditorDocument.GetRunWarningResourceKey(null) == null &&
+                Net10EditorDocument.GetRunWarningResourceKey("") == null,
+                "application and missing output retain normal run/error handling");
             using (var document = new EditorDocument { FileName = Path.GetFullPath("a1-2.pas"), Text = "a1-2.pas" })
             {
                 document.TextEditor.Document.TextContent = "begin Write(42); end.";
@@ -377,6 +541,8 @@ internal static class Program
         Check(unitResult.success, "standalone unit compilation: " + unitResult.message);
         Check(string.Equals(Path.GetExtension(unitResult.outputFile), ".pcu", StringComparison.OrdinalIgnoreCase),
             "actual Worker unit response uses the PCU fallback tested by Run10 selection");
+        Check(Net10EditorDocument.GetRunWarningResourceKey(unitResult.outputFile) == "RUN_PCU_WARNING_TEXT",
+            "actual Worker unit result is reported as a run warning, not a missing executable");
         foreach (int value in new[] { 3, 4 })
         {
             procedureResult = await compiler.CompileAsync(procedureMain, root, "__RedirectIOMode",

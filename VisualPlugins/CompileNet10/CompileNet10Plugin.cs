@@ -23,6 +23,13 @@ namespace VisualPascalABCPlugins
         private IWorkbenchCommandService commandService;
         private IDisposable commandRegistration;
         private ToolStripMenuItem platformItem;
+        private Net10LanguageDocuments languageDocuments;
+        private Net10Completion languageCompletion;
+        private Net10Hover languageHover;
+        private Net10Signature languageSignature;
+        private Net10Navigation languageNavigation;
+        private ToolStripStatusLabel languageStatus;
+        private readonly Timer languageGate = new Timer { Interval = 500 };
 
         public CompileNet10_VisualPascalABCPlugin(IWorkbench workbench)
         {
@@ -30,6 +37,7 @@ namespace VisualPascalABCPlugins
                 throw new ArgumentNullException(nameof(workbench));
 
             this.workbench = workbench;
+            Application.ApplicationExit += (sender, e) => languageDocuments?.AbortOnApplicationExit();
             status = new Net10StatusDisplay(workbench.MainForm);
             compileItem = new PluginGUIItem(
                 "Compile10",
@@ -47,6 +55,13 @@ namespace VisualPascalABCPlugins
                 null, Color.Transparent, () => runner?.Stop());
             workbench.MainForm.FormClosed += (sender, e) =>
             {
+                languageGate.Dispose();
+                languageCompletion?.Dispose();
+                languageHover?.Dispose();
+                languageSignature?.Dispose();
+                languageNavigation?.Dispose();
+                languageDocuments?.Dispose();
+                languageStatus?.Dispose();
                 commandRegistration?.Dispose();
                 if (commandService != null) commandService.LegacyServicesSuspended = false;
                 runner?.Stop();
@@ -103,6 +118,7 @@ namespace VisualPascalABCPlugins
                 platformItem.Checked = !platformItem.Checked;
                 commandService.LegacyServicesSuspended = platformItem.Checked;
                 status.Start(platformItem.Checked ? ".NET 10" : ".NET 4.7.2");
+                UpdateLanguageActivity();
             };
             commandRegistration = commandService.RegisterCommandHandler(this);
             programMenu.DropDownItems.Add(new ToolStripSeparator());
@@ -114,6 +130,88 @@ namespace VisualPascalABCPlugins
                 if (item.toolStripButton is ToolStripItem button) button.Visible = false;
                 if (item.menuItem is ToolStripItem menu) menu.Visible = false;
             }
+            var documentEvents = workbench.ServiceContainer.DocumentService as IWorkbenchDocumentEvents;
+            if (documentEvents != null)
+            {
+                var strips = workbench.MainForm.Controls.Find("statusStrip1", true);
+                if (strips.Length == 1 && strips[0] is StatusStrip strip)
+                {
+                    languageStatus = new ToolStripStatusLabel { Name = "Net10LanguageServerStatus", Visible = false };
+                    strip.Items.Add(languageStatus);
+                }
+                languageDocuments = new Net10LanguageDocuments(documentEvents, () =>
+                {
+                    var settings = Net10RuntimeSettings.Load(AppDomain.CurrentDomain.BaseDirectory);
+                    return new Net10LanguageClient(settings.RuntimeDirectory, settings.DotnetPath,
+                        PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO);
+                }, ShowLanguageStatus);
+                languageCompletion = new Net10Completion(workbench.MainForm, documentEvents, languageDocuments,
+                    () => platformItem.Checked && workbench.UserOptions.AllowCodeCompletion && workbench.UserOptions.CodeCompletionDot);
+                languageHover = new Net10Hover(workbench.MainForm, documentEvents, languageDocuments,
+                    () => platformItem.Checked && workbench.UserOptions.AllowCodeCompletion && workbench.UserOptions.CodeCompletionHint);
+                languageSignature = new Net10Signature(workbench.MainForm, documentEvents, languageDocuments,
+                    () => platformItem.Checked && workbench.UserOptions.AllowCodeCompletion && workbench.UserOptions.CodeCompletionParams);
+                languageCompletion.Opening += languageSignature.CloseHints;
+                languageNavigation = new Net10Navigation(documentEvents, languageDocuments,
+                    () => platformItem.Checked && workbench.UserOptions.AllowCodeCompletion, Navigate);
+                // Only check the user's enable setting; document text is event-driven, never polled.
+                languageGate.Tick += (sender, e) => UpdateLanguageActivity();
+                languageGate.Start();
+            }
+        }
+
+        private void UpdateLanguageActivity()
+        {
+            bool selected = platformItem?.Checked == true;
+            if (languageStatus != null) languageStatus.Visible = selected;
+            bool enabled = selected && workbench.UserOptions.AllowCodeCompletion;
+            languageDocuments?.SetActive(enabled);
+            languageCompletion?.SetActive(enabled && workbench.UserOptions.CodeCompletionDot);
+            languageHover?.SetActive(enabled && workbench.UserOptions.CodeCompletionHint);
+            languageSignature?.SetActive(enabled && workbench.UserOptions.CodeCompletionParams);
+            languageNavigation?.SetActive(enabled);
+            if (selected && !enabled && languageStatus != null) languageStatus.Text = "LSP: отключён в настройках";
+        }
+
+        private void Navigate(List<Net10NavigationTarget> targets)
+        {
+            languageSignature?.CloseHints();
+            if (targets.Count == 1)
+            {
+                var target = targets[0];
+                if (target.MetadataText != null)
+                    workbench.ServiceContainer.FileService.OpenTabWithText(target.MetadataTitle + " [.NET 10]", target.MetadataText);
+                workbench.VisualEnvironmentCompiler.ExecuteSourceLocationAction(
+                    new PascalABCCompiler.SourceLocation(target.FileName, target.Line, target.Column, target.Line, target.Column), SourceLocationAction.GotoBeg);
+            }
+            else if (workbench.MainForm is VisualPascalABC.Form1 form)
+            {
+                var symbols = new List<VisualPascalABC.SymbolsViewerSymbol>();
+                foreach (var target in targets)
+                    if (target.FileName != null)
+                        symbols.Add(new VisualPascalABC.SymbolsViewerSymbol(
+                            new PascalABCCompiler.SourceLocation(target.FileName, target.Line, target.Column, target.Line, target.Column),
+                            VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberGotoText));
+                bool previous = form.FindSymbolResults.showInThread;
+                try { form.FindSymbolResults.showInThread = false; form.ShowFindResults(symbols); }
+                finally { form.FindSymbolResults.showInThread = previous; }
+            }
+        }
+
+        private void ShowLanguageStatus(string text)
+        {
+            var form = workbench.MainForm;
+            if (form.IsDisposed || form.Disposing) return;
+            try
+            {
+                form.BeginInvoke(new Action(() =>
+                {
+                    if (languageStatus != null && !languageStatus.IsDisposed &&
+                        platformItem?.Checked == true && workbench.UserOptions.AllowCodeCompletion)
+                        languageStatus.Text = text;
+                }));
+            }
+            catch (InvalidOperationException) { }
         }
 
         public bool TryExecute(VisualEnvironmentCompilerAction action, object context)
@@ -215,6 +313,17 @@ namespace VisualPascalABCPlugins
                     if (run && !workbench.MainForm.IsDisposed)
                     {
                         string outputFile = response.outputFile;
+                        // A PCU/DLL is a successful compilation, not a runnable
+                        // application. Preserve the success status and use the
+                        // same localized warning as the legacy Run command.
+                        string warningKey = Net10EditorDocument.GetRunWarningResourceKey(outputFile);
+                        if (warningKey != null)
+                        {
+                            MessageBox.Show(PascalABCCompiler.StringResources.Get("VP_MF_" + warningKey),
+                                PascalABCCompiler.StringResources.Get("!WARNING"),
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
                         if (string.IsNullOrWhiteSpace(outputFile))
                             throw new IOException("Компилятор не сообщил имя выходного файла.");
                         if (!Path.IsPathRooted(outputFile))
