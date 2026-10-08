@@ -22,6 +22,7 @@ namespace VisualPascalABCPlugins
 
     public sealed class Net10Diagnostic
     {
+        public string severity { get; set; }
         public string fileName { get; set; }
         public int line { get; set; }
         public int column { get; set; }
@@ -69,7 +70,7 @@ namespace VisualPascalABCPlugins
 
         public async Task<Net10CompileResponse> CompileAsync(string fileName, string outputDirectory,
             string runtimeModule = null, List<Net10SourceFile> sourceFiles = null,
-            Func<Net10CompilerEvent, Task> progress = null)
+            Func<Net10CompilerEvent, Task> progress = null, bool rebuild = false)
         {
             await requests.WaitAsync().ConfigureAwait(false);
             try
@@ -114,7 +115,7 @@ namespace VisualPascalABCPlugins
                 var ping = await SendAsync("ping", null, null, 20000).ConfigureAwait(false);
                 if (!ping.success || ping.result != "PONG") throw new IOException("Контроллер не ответил PONG.");
                 TrackWorker(ping.workerPid);
-                var response = await SendAsync("compile", fileName, outputDirectory, 120000, runtimeModule, sourceFiles, progress).ConfigureAwait(false);
+                var response = await SendAsync("compile", fileName, outputDirectory, 120000, runtimeModule, sourceFiles, progress, rebuild).ConfigureAwait(false);
                 TrackWorker(response.workerPid);
                 return response;
             }
@@ -130,7 +131,7 @@ namespace VisualPascalABCPlugins
 
         private async Task<Net10CompileResponse> SendAsync(string command, string fileName, string outputDirectory,
             int timeoutMs, string runtimeModule = null, List<Net10SourceFile> sourceFiles = null,
-            Func<Net10CompilerEvent, Task> progress = null)
+            Func<Net10CompilerEvent, Task> progress = null, bool rebuild = false)
         {
             int id = ++nextId;
             var request = new Dictionary<string, object> { { "id", id }, { "command", command } };
@@ -139,6 +140,7 @@ namespace VisualPascalABCPlugins
             if (runtimeModule != null) request.Add("runtimeModule", runtimeModule);
             if (sourceFiles != null) request.Add("sourceFiles", sourceFiles);
             if (progress != null) request.Add("emitEvents", true);
+            if (rebuild) request.Add("rebuild", true);
             input.WriteLine(json.Serialize(request));
             input.Flush();
             using (var cancellation = new CancellationTokenSource())

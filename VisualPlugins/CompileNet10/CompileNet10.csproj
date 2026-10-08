@@ -6,6 +6,7 @@
     <RootNamespace>VisualPascalABCPlugins</RootNamespace>
     <OutputPath>..\..\bin\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <IdeReferenceDirectory Condition="'$(IdeReferenceDirectory)' == ''">$(MSBuildProjectDirectory)\..\..\bin</IdeReferenceDirectory>
     <Version>0.5.0</Version>
     <Description>Experimental .NET 10 compilation plugin for the legacy PascalABC.NET IDE.</Description>
   </PropertyGroup>
@@ -13,19 +14,19 @@
   <ItemGroup>
     <!-- Build against the existing IDE contract without rebuilding its dependency tree. -->
     <Reference Include="PluginsSupport">
-      <HintPath>..\..\bin\PluginsSupport.dll</HintPath>
+      <HintPath>$(IdeReferenceDirectory)\PluginsSupport.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Errors">
-      <HintPath>..\..\bin\Errors.dll</HintPath>
+      <HintPath>$(IdeReferenceDirectory)\Errors.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Localization">
-      <HintPath>..\..\bin\Localization.dll</HintPath>
+      <HintPath>$(IdeReferenceDirectory)\Localization.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="ICSharpCode.TextEditor">
-      <HintPath>..\..\bin\ICSharpCode.TextEditor.dll</HintPath>
+      <HintPath>$(IdeReferenceDirectory)\ICSharpCode.TextEditor.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="System.Drawing" />

@@ -50,6 +50,7 @@ namespace VisualPascalABC.OptionsContent
             switch (action)
             {
                 case OptionsContentAction.Show:
+                    Enabled = !CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended;
                     if (!alreadyShown)
                     {
                         cbAllowCodeCompletion.Checked = MainForm.UserOptions.AllowCodeCompletion;
@@ -64,6 +65,11 @@ namespace VisualPascalABC.OptionsContent
                     }
                     break;
                 case OptionsContentAction.Ok:
+                    if (CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended)
+                    {
+                        alreadyShown = false;
+                        break;
+                    }
                     MainForm.UserOptions.CodeCompletionDot = cbCodeCompletionDot.Checked;
                     MainForm.UserOptions.CodeCompletionHint = cbCodeCompletionHint.Checked;
                     MainForm.UserOptions.CodeCompletionParams = cbCodeCompletionParams.Checked;

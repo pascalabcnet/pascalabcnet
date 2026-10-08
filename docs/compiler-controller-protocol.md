@@ -44,6 +44,11 @@ Compile:
 {"id":2,"command":"compile","fileName":"C:\\work\\Program.pas","outputDirectory":"C:\\work\\out"}
 ```
 
+The optional `"rebuild":true` field on a `compile` request sets
+`CompilerOptions.Rebuild`: units with available sources are recompiled rather
+than read from PCU caches. Omission (or `false`) retains ordinary compilation.
+This uses the existing `compile` command, not a separate protocol action.
+
 Compile with an IDE runtime service module:
 
 ```json
@@ -106,6 +111,12 @@ Shut down the worker and controller:
 ```
 
 Every response repeats `id` and contains `success`. Compile responses also contain `diagnostics`, `outputFile`, `message`, `fileName`, `compilationCount`, `workerPid`, and `workingSetMB` where applicable.
+
+Compile diagnostics include warnings even when `success` is `true`.
+Each diagnostic carries `severity` (`error` or `warning`), `fileName`, `line`,
+`column`, and `message`. Warnings do not turn a successful compilation into a
+failure or populate the response's error `message`. Clients must not discard
+`diagnostics` merely because compilation succeeded.
 
 ## Lifecycle
 

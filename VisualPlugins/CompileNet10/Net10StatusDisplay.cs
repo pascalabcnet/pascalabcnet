@@ -30,9 +30,12 @@ namespace VisualPascalABCPlugins
 
         public void Start(string text)
         {
-            owned = true;
+            BeginOperation();
             Update(text);
         }
+
+        // Claim the next compilation's messages without adding a transient status.
+        public void BeginOperation() { owned = true; }
 
         public void Update(string text)
         {

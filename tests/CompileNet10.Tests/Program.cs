@@ -44,6 +44,90 @@ internal static class Program
         Console.WriteLine("PASS: " + name);
     }
 
+    private sealed class CommandHandler : IIdeCommandHandler
+    {
+        public bool Enabled;
+        public int Calls;
+        public VisualEnvironmentCompilerAction Action;
+        public object Context;
+        public bool TryExecute(VisualEnvironmentCompilerAction action, object context)
+        {
+            Calls++;
+            Action = action;
+            Context = context;
+            return Enabled;
+        }
+    }
+
+    private static void CheckCommandRouting()
+    {
+        var router = new IdeCommandRouter();
+        Check(!router.TryExecute(VisualEnvironmentCompilerAction.Build), "without plugin legacy compile remains available");
+        var handler = new CommandHandler();
+        var registration = router.Register(handler);
+        Check(!router.TryExecute(VisualEnvironmentCompilerAction.Run), "unchecked platform falls through to legacy run");
+        handler.Enabled = true;
+        Check(router.TryExecute(VisualEnvironmentCompilerAction.Build, false) && (bool)handler.Context == false,
+            "shared Compile routes ordinary compilation");
+        Check(router.TryExecute(VisualEnvironmentCompilerAction.Build, true) && (bool)handler.Context,
+            "shared Recompile routes the same action with rebuild flag");
+        var request = new IdeRunCommand { DebugRequested = true, RedirectConsoleIO = true };
+        Check(router.TryExecute(VisualEnvironmentCompilerAction.Run, request) && ReferenceEquals(handler.Context, request),
+            "shared Run preserves run/debug context");
+        Check(router.TryExecute(VisualEnvironmentCompilerAction.Stop), "shared Stop routes to plugin");
+        int calls = handler.Calls;
+        Check(!router.TryExecute(VisualEnvironmentCompilerAction.OpenFile) && handler.Calls == calls,
+            "unrelated IDE actions are not intercepted");
+        registration.Dispose();
+        registration.Dispose();
+        Check(!router.TryExecute(VisualEnvironmentCompilerAction.Run), "unregister restores legacy commands");
+        using (router.Register(handler))
+            Check(router.TryExecute(VisualEnvironmentCompilerAction.Run), "handler can register again after disposal");
+    }
+
+    private static void CheckAnalysisSuspension()
+    {
+        var assembly = System.Reflection.Assembly.Load("CodeCompletion");
+        var completion = assembly.GetType("CodeCompletion.CodeCompletionController", true);
+        var suspended = completion.GetField("LegacyAnalysisSuspended");
+        var semantic = assembly.GetType("CodeCompletion.DomSyntaxTreeVisitor", true).GetField("use_semantic_for_intellisense");
+        object previousSuspension = suspended.GetValue(null), previousSemantic = semantic.GetValue(null);
+        try
+        {
+            suspended.SetValue(null, true);
+            foreach (bool enabled in new[] { false, true })
+            {
+                var options = new VisualPascalABC.UserOptions
+                {
+                    AllowCodeCompletion = enabled, UseSemanticIntellisense = enabled, UseDllForSystemUnits = enabled
+                };
+                semantic.SetValue(null, enabled);
+                Check(!(bool)completion.GetMethod("IntellisenseAvailable").Invoke(null, null) &&
+                    (bool)semantic.GetValue(null) == enabled && options.AllowCodeCompletion == enabled &&
+                    options.UseSemanticIntellisense == enabled && options.UseDllForSystemUnits == enabled,
+                    "net10 session gate blocks IntelliSense without overwriting user preferences: " + enabled);
+            }
+            var parser = new VisualPascalABC.CodeCompletionParserController();
+            var compile = typeof(VisualPascalABC.CodeCompletionParserController).GetMethod("CompileWatchedFile",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            Check(!(bool)compile.Invoke(parser, new object[] { "Suspended.pas", "begin end.", true }),
+                "suspended background parser does not access the legacy compiler");
+            string file = Path.GetFullPath("ResumeIntellisense.pas");
+            parser.RegisterFileForParsing(file);
+            VisualPascalABC.CodeCompletionParserController.filesToParse[file] = false;
+            suspended.SetValue(null, false);
+            parser.InvalidateAllFiles();
+            Check(VisualPascalABC.CodeCompletionParserController.filesToParse[file],
+                "return to legacy mode schedules open standalone documents for analysis");
+            parser.CloseFile(file);
+        }
+        finally
+        {
+            suspended.SetValue(null, previousSuspension);
+            semantic.SetValue(null, previousSemantic);
+        }
+    }
+
     [STAThread]
     private static int Main(string[] args) => RunTestsAsync(args).GetAwaiter().GetResult();
 
@@ -52,6 +136,8 @@ internal static class Program
         try
         {
             CheckRuntimeSettings();
+            CheckCommandRouting();
+            CheckAnalysisSuspension();
             CheckExternalInputRouting();
             CheckExternalRunRouting();
             using (var document = new EditorDocument { FileName = Path.GetFullPath("a1-2.pas"), Text = "a1-2.pas" })
@@ -89,11 +175,13 @@ internal static class Program
                 form.Controls.Add(strip);
                 using (var status = new Net10StatusDisplay(form))
                 {
-                    status.Start("Компиляция .NET 10");
-                    status.Update("Программа .NET 10 ожидает ввода");
-                    Check(label.Text == "Программа .NET 10 ожидает ввода", "net10 status updates shared status line");
+                    status.Start(".NET 10");
+                    status.BeginOperation();
+                    Check(label.Text == ".NET 10", "starting compile adds no transient preparation status");
+                    status.Update("Компиляция .NET 10 прошла успешно");
+                    Check(label.Text == "Компиляция .NET 10 прошла успешно", "net10 compilation result updates shared status line");
                     label.Text = "Обычная компиляция";
-                    status.Update("Выполнение .NET 10 завершено");
+                    status.Update("Поздний результат .NET 10");
                     Check(label.Text == "Обычная компиляция", "late net10 status preserves ordinary IDE messages");
                     status.Start("Новая компиляция .NET 10");
                     Check(label.Text == "Новая компиляция .NET 10", "new net10 action updates status again");
@@ -144,6 +232,8 @@ internal static class Program
             await CheckPortableHost(Path.GetFullPath(args[0]), root);
             using (var compiler = new Net10ControllerClient(args[0], "dotnet"))
             {
+                await CheckWarnings(compiler, root);
+                await CheckWarnings(compiler, root);
                 await CheckCompilerEvents(compiler, Path.GetFullPath(args[0]), root);
                 await CheckSnapshots(compiler, root);
                 string jsonSource = Path.Combine(root, "JsonReference.pas");
@@ -232,6 +322,43 @@ internal static class Program
             Console.Error.WriteLine(error);
             return 1;
         }
+    }
+
+    private static async Task CheckWarnings(Net10ControllerClient compiler, string root)
+    {
+        string source = Path.Combine(root, "UnusedReadInteger.pas");
+        var events = new List<Net10CompilerEvent>();
+        var result = await compiler.CompileAsync(source, root, "__RedirectIOMode",
+            new List<Net10SourceFile> { new Net10SourceFile { fileName = source,
+                text = "begin\n  var a := ReadInteger;\n  Print(2)\nend." } },
+            value => { events.Add(value); return Task.CompletedTask; });
+        var warning = result.diagnostics?.Find(value => value.severity == "warning");
+        Check(result.success && File.Exists(result.outputFile) && string.IsNullOrEmpty(result.message) &&
+            warning != null && warning.fileName == source && warning.line == 2 && warning.column > 0 &&
+            !string.IsNullOrWhiteSpace(warning.message),
+            "successful ReadInteger program preserves warning text, file, line and column through Worker/Controller/client");
+        Check(events.Exists(value => value.warningCount > 0), "compiler events include warning count");
+        var items = Net10Diagnostics.Create(result, source);
+        var located = items[0] as PascalABCCompiler.Errors.CompilerWarning;
+        Check(located != null && located.Message == warning.message && located.SourceLocation.FileName == source &&
+            located.SourceLocation.BeginPosition.Line == warning.line && located.SourceLocation.BeginPosition.Column == warning.column,
+            "IDE receives a real warning with warning icon and source-navigation coordinates");
+        Check(Net10Diagnostics.ChangeViewTab(result, false) && !Net10Diagnostics.ChangeViewTab(result, true),
+            "Compile shows warnings; Run records warnings without switching away from output");
+        var mixed = new Net10CompileResponse { success = false, diagnostics = new List<Net10Diagnostic>
+        {
+            warning, new Net10Diagnostic { severity = "error", fileName = source, line = 3, column = 1, message = "test error" }
+        } };
+        items = Net10Diagnostics.Create(mixed, source);
+        Check(items.Count == 2 && !(items[0] is PascalABCCompiler.Errors.CompilerWarning) &&
+            items[1] is PascalABCCompiler.Errors.CompilerWarning && Net10Diagnostics.ChangeViewTab(mixed, true),
+            "errors remain before warnings and retain automatic navigation on Run");
+        mixed.diagnostics.RemoveAt(1);
+        Check(!(Net10Diagnostics.Create(mixed, source)[0] is PascalABCCompiler.Errors.CompilerWarning),
+            "failed response with warnings only still reports a compilation error");
+        result.diagnostics.Clear();
+        Check(Net10Diagnostics.Create(result, source).Count == 0,
+            "successful compilation without diagnostics does not invent an error");
     }
 
     private static async Task CheckSnapshots(Net10ControllerClient compiler, string root)
@@ -439,6 +566,14 @@ internal static class Program
             !repeated.Exists(value => value.state == "CompileInterface" &&
                 string.Equals(Path.GetFileName(value.fileName), "PABCSystem.pas", StringComparison.OrdinalIgnoreCase)),
             "repeated empty editor program reuses PABCSystem PCU instead of compiling its source");
+        var rebuilt = new List<Net10CompilerEvent>();
+        var rebuildResult = await compiler.CompileAsync(empty, root, "__RedirectIOMode", warmSources,
+            value => { rebuilt.Add(value); return Task.CompletedTask; }, rebuild: true);
+        Check(rebuildResult.success && rebuilt.Exists(value => value.state == "CompileInterface" &&
+                string.Equals(Path.GetFileName(value.fileName), "PABCSystem.pas", StringComparison.OrdinalIgnoreCase)) &&
+            !rebuilt.Exists(value => value.state == "ReadPCUFile" &&
+                string.Equals(Path.GetFileName(value.fileName), "PABCSystem.pcu", StringComparison.OrdinalIgnoreCase)),
+            "Recompile forwards rebuild through Controller and Worker and rebuilds cached system units from source");
         var events = new List<Net10CompilerEvent>();
         string source = Path.Combine(runtime, "Lib", "PABCSystem.pas");
         var result = await compiler.CompileAsync(source, root, null,
@@ -460,8 +595,18 @@ internal static class Program
         display.Handle(new Net10CompilerEvent { state = "CompilationStarting" }, messages.Add, statuses.Add);
         display.Handle(new Net10CompilerEvent { state = "Reloading", attempt = 2 }, messages.Add, statuses.Add);
         display.Handle(new Net10CompilerEvent { state = "Ready", attempt = 2 }, messages.Add, statuses.Add);
-        Check(!display.HasResult && statuses[statuses.Count - 1] == ".NET 10: STATETEXT_READY",
-            "Ready during retry/reload does not report a successful compilation");
+        Check(!display.HasResult && statuses[statuses.Count - 1] == ".NET 10: STATETEXT_RELOADING",
+            "Ready during retry/reload adds no transient status or successful compilation");
+        var quiet = new Net10CompilerDisplay(key => key);
+        var quietStatuses = new List<string>();
+        quiet.Handle(new Net10CompilerEvent { state = "Ready" }, messages.Add, quietStatuses.Add);
+        quiet.Handle(new Net10CompilerEvent { state = "CompilationStarting" }, messages.Add, quietStatuses.Add);
+        Check(quietStatuses.Count == 0, "startup and compilation bookkeeping do not flicker in status line");
+        quiet.Handle(new Net10CompilerEvent { state = "BeginCompileFile", fileName = "Main.pas" }, messages.Add, quietStatuses.Add);
+        quiet.Handle(new Net10CompilerEvent { state = "CodeGeneration", fileName = "Main.exe" }, messages.Add, quietStatuses.Add);
+        quiet.Handle(new Net10CompilerEvent { state = "Ready", linesCompiled = 2 }, messages.Add, quietStatuses.Add);
+        Check(quietStatuses.Count == 3 && quietStatuses[2].Contains("STATETEXT_COMPILATION_SUCCESS"),
+            "status retains canonical compile/code-generation/result sequence");
     }
 
     private static void CheckExternalRunRouting()

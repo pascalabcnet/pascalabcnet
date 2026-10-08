@@ -105,6 +105,11 @@ namespace VisualPascalABC
             catch (Exception) { }
         }
 
+        public void InvalidateAllFiles()
+        {
+            foreach (string fileName in filesToParse.Keys.ToArray()) filesToParse[fileName] = true;
+        }
+
         /// <summary>
         /// Запуск потока с Intellisence
         /// </summary>
@@ -141,6 +146,7 @@ namespace VisualPascalABC
 
         internal void ParseInThread()
         {
+            if (CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended) return;
             try
             {
                 HashSet<string> recomp_files = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -222,12 +228,15 @@ namespace VisualPascalABC
         /// </summary>
         private bool CompileWatchedFile(string fileName, string fileText, bool clearOldScope)
         {
+            if (CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended) return false;
             bool success = false;
 
             CodeCompletion.DomConverter tmp = CodeCompletion.CodeCompletionController.comp_modules[fileName] as CodeCompletion.DomConverter;
             long cur_mem = Environment.WorkingSet;
             CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
             CodeCompletion.DomConverter dc = controller.Compile(fileName, fileText);
+            // A parse already in flight may finish after the platform switch. Do not publish it.
+            if (CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended) return false;
             mem_delta += Environment.WorkingSet - cur_mem;
             
             if (dc.is_compiled)
@@ -303,7 +312,7 @@ namespace VisualPascalABC
 
         public void ParseAllFiles()
         {
-            if (visualEnvironmentCompiler.UserOptions.AllowCodeCompletion)// && visualEnvironmentCompiler.compilerLoaded)
+            if (!CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended && visualEnvironmentCompiler.UserOptions.AllowCodeCompletion)// && visualEnvironmentCompiler.compilerLoaded)
             {
                 if (th.ThreadState != System.Threading.ThreadState.Running)
                 {

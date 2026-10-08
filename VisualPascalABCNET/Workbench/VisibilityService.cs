@@ -105,9 +105,12 @@ namespace VisualPascalABC
         /// </summary>
         public void SetDebugButtonsEnabled(bool Enabled)
         {
+            Enabled = Enabled && !CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended;
             StepIntoButton.Enabled = StepOverButton.Enabled = StartDebugButton.Enabled =
             mDEBUGSTARTToolStripMenuItem.Enabled = mSTEPOVERToolStripMenuItem.Enabled =
             mSTEPINToolStripMenuItem.Enabled = mRUNTOCURToolStripMenuItem.Enabled = Enabled;
+            if (CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended)
+                StepOutButton.Enabled = mSTEPToolStripMenuItem.Enabled = false;
             //toolStrip1.Refresh();
         }
 
@@ -445,6 +448,7 @@ namespace VisualPascalABC
             this.miRun.Enabled = true;
             this.StartButton.Enabled = true;
             ChangeDebugButtons(false);
+            if (CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended) SetDebugButtonsEnabled(false);
             SaveDebugContext();
         }
 
@@ -573,6 +577,7 @@ namespace VisualPascalABC
             this.mSTEPToolStripMenuItem.Enabled = mSTEPToolStripMenuItem_Enabled;
             this.miRun.Enabled = miRun_Enabled;
             this.StartButton.Enabled = miRun_Enabled;
+            if (CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended) SetDebugButtonsEnabled(false);
         }
 
         private void SetDebugButtonsAsByDebug()

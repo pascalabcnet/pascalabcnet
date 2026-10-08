@@ -55,6 +55,7 @@ namespace VisualPascalABC.OptionsContent
             switch (action)
             {
                 case OptionsContentAction.Show:
+                    cbUseDllForSystemUnits.Enabled = !CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended;
                     //comboBox1.SelectedItem = comboBox1.Items[0];
                     if (!alreadyShown)
                     {

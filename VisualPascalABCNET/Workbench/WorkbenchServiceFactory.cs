@@ -10,8 +10,24 @@ using VisualPascalABCPlugins;
 
 namespace VisualPascalABC
 {
-    public class WorkbenchServiceContainer: IWorkbenchServiceContainer
+    public class WorkbenchServiceContainer: IWorkbenchServiceContainer, IWorkbenchCommandService
     {
+        public IDisposable RegisterCommandHandler(IIdeCommandHandler handler) =>
+            WorkbenchServiceFactory.CommandRouter.Register(handler);
+
+        public bool LegacyServicesSuspended
+        {
+            get => CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended;
+            set
+            {
+                CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended = value;
+                var workbench = WorkbenchServiceFactory.Workbench;
+                if (workbench.MainForm.IsDisposed) return;
+                workbench.WidgetController.SetDebugButtonsEnabled(!value &&
+                    CodeCompletion.CodeCompletionController.IntellisenseAvailable() && !workbench.ServiceContainer.RunService.IsRun());
+                if (!value) WorkbenchServiceFactory.CodeCompletionParserController.InvalidateAllFiles();
+            }
+        }
 
         public IWorkbenchDocumentService DocumentService
         {
@@ -81,6 +97,7 @@ namespace VisualPascalABC
 
     public class WorkbenchServiceFactory
     {
+        public static readonly IdeCommandRouter CommandRouter = new IdeCommandRouter();
         static IWorkbenchBuildService _buildService;
         static IWorkbenchRunService _runService;
         // Querying an output filename must not initialize services during Form construction.

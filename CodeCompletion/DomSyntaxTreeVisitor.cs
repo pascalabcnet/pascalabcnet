@@ -78,7 +78,7 @@ namespace CodeCompletion
             	//System.Diagnostics.Debug.WriteLine(e.StackTrace);
             }
             cur_used_assemblies = new HashSet<Assembly>(PascalABCCompiler.NetHelper.NetHelper.cur_used_assemblies);
-            if (use_semantic_for_intellisense && !parse_only_interface)
+            if (!CodeCompletionController.LegacyAnalysisSuspended && use_semantic_for_intellisense && !parse_only_interface)
             try
             {
                 CorrectTreeWithSemantic(cu);

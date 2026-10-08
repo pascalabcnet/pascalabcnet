@@ -254,6 +254,7 @@ namespace VisualPascalABC
 
         public bool Build()
         {
+            if (WorkbenchServiceFactory.CommandRouter.TryExecute(VisualEnvironmentCompilerAction.Build, false)) return true;
             Workbench.OutputWindow.ClearTextBox();
             Workbench.ErrorsListWindow.ClearErrorList();
             DesignerService.GenerateAllDesignersCode();
@@ -276,6 +277,7 @@ namespace VisualPascalABC
 
         public bool Rebuild()
         {
+            if (WorkbenchServiceFactory.CommandRouter.TryExecute(VisualEnvironmentCompilerAction.Build, true)) return true;
             Workbench.OutputWindow.ClearTextBox();
             Workbench.ErrorsListWindow.ClearErrorList();
             DesignerService.GenerateAllDesignersCode();
@@ -288,6 +290,7 @@ namespace VisualPascalABC
 
         public void StartCompile(bool rebuild)
         {
+            if (WorkbenchServiceFactory.CommandRouter.TryExecute(VisualEnvironmentCompilerAction.Build, rebuild)) return;
             VisualPABCSingleton.MainForm.OutputWindow.outputTextBox.Clear();
             Workbench.ErrorsListWindow.ClearErrorList();
             DesignerService.GenerateAllDesignersCode();

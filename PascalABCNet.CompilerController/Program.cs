@@ -25,6 +25,7 @@ internal static class Program
         public string? runtimeModule { get; set; }
         public SourceFileRequest[]? sourceFiles { get; set; }
         public bool emitEvents { get; set; }
+        public bool rebuild { get; set; }
     }
 
     private sealed class SourceFileRequest
@@ -39,6 +40,7 @@ internal static class Program
         public string? outputDirectory { get; set; }
         public string? runtimeModule { get; set; }
         public SourceFileRequest[]? sourceFiles { get; set; }
+        public bool rebuild { get; set; }
     }
 
     private sealed class WorkerTransportRequest
@@ -399,17 +401,19 @@ internal static class Program
         var diagnostics = new List<Dictionary<string, object?>>();
         response["diagnostics"] = diagnostics;
 
-        if (lines.Length > 0 && lines[0] == "OK")
+        var success = lines.Length > 0 && lines[0] == "OK";
+        if (success)
         {
             response["success"] = true;
             response["outputFile"] = lines.Length > 1 ? lines[1].Trim() : "";
             response["message"] = "";
-            return;
         }
-
-        response["success"] = false;
-        response["outputFile"] = "";
-        var firstLine = lines.Length > 0 &&
+        else
+        {
+            response["success"] = false;
+            response["outputFile"] = "";
+        }
+        var firstLine = success ? 2 : lines.Length > 0 &&
                         (lines[0] == "ERROR" || lines[0] == "FATAL") ? 1 : 0;
         var message = new StringBuilder();
         var errorPattern = new Regex(
@@ -422,7 +426,8 @@ internal static class Program
             if (line.Length == 0)
                 continue;
 
-            if (line.StartsWith("DIAGNOSTIC\t", StringComparison.Ordinal))
+            bool warning = line.StartsWith("WARNING\t", StringComparison.Ordinal);
+            if (warning || line.StartsWith("DIAGNOSTIC\t", StringComparison.Ordinal))
             {
                 var parts = line.Split('\t');
                 if (parts.Length == 5 &&
@@ -436,12 +441,15 @@ internal static class Program
                         ["fileName"] = diagnosticFileName,
                         ["line"] = diagnosticLine,
                         ["column"] = diagnosticColumn,
-                        ["severity"] = "error",
+                        ["severity"] = warning ? "warning" : "error",
                         ["message"] = diagnosticMessage
                     });
-                    if (message.Length > 0)
-                        message.AppendLine();
-                    message.Append(diagnosticMessage);
+                    if (!warning)
+                    {
+                        if (message.Length > 0)
+                            message.AppendLine();
+                        message.Append(diagnosticMessage);
+                    }
                     continue;
                 }
             }
@@ -471,7 +479,7 @@ internal static class Program
             diagnostics.Add(diagnostic);
         }
 
-        response["message"] = message.Length == 0
+        response["message"] = success ? "" : message.Length == 0
             ? workerResponse
             : message.ToString();
     }
@@ -582,7 +590,8 @@ internal static class Program
                                     fileName = fileName,
                                     outputDirectory = outputDirectory,
                                     runtimeModule = request.runtimeModule,
-                                    sourceFiles = sourceFiles
+                                    sourceFiles = sourceFiles,
+                                    rebuild = request.rebuild
                                 });
                             var workerResponse = SendRequest(
                                 "compile", workerRequest, workerFileName,

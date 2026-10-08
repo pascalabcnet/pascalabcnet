@@ -7,7 +7,7 @@ using System.Windows.Forms;
 namespace VisualPascalABCPlugins
 {
     // The legacy IDE discovers plugins by this class-name suffix and IWorkbench constructor.
-    public sealed class CompileNet10_VisualPascalABCPlugin : IExtendedVisualPascalABCPlugin
+    public sealed class CompileNet10_VisualPascalABCPlugin : IExtendedVisualPascalABCPlugin, IIdeCommandHandler
     {
         private readonly IWorkbench workbench;
         private readonly PluginGUIItem compileItem;
@@ -20,6 +20,9 @@ namespace VisualPascalABCPlugins
         private string runningOutputFile;
         private string dotnetPath = "dotnet";
         private bool compiling;
+        private IWorkbenchCommandService commandService;
+        private IDisposable commandRegistration;
+        private ToolStripMenuItem platformItem;
 
         public CompileNet10_VisualPascalABCPlugin(IWorkbench workbench)
         {
@@ -44,6 +47,8 @@ namespace VisualPascalABCPlugins
                 null, Color.Transparent, () => runner?.Stop());
             workbench.MainForm.FormClosed += (sender, e) =>
             {
+                commandRegistration?.Dispose();
+                if (commandService != null) commandService.LegacyServicesSuspended = false;
                 runner?.Stop();
                 outputSession?.Dispose();
                 client?.Dispose();
@@ -80,6 +85,61 @@ namespace VisualPascalABCPlugins
             ConfigureButton(runItem);
             ConfigureButton(stopItem);
             SetItemEnabled(stopItem, false);
+            commandService = workbench.ServiceContainer as IWorkbenchCommandService;
+            var programMenu = workbench.MainForm.MainMenuStrip?.Items["mrProgram"] as ToolStripMenuItem;
+            if (commandService == null || programMenu == null) return; // Hosts without the standard menu retain prototype buttons.
+            platformItem = new ToolStripMenuItem(".NET 10")
+            {
+                Name = "CompileNet10Platform",
+                ToolTipText = "Компилировать и запускать на .NET 10. Выбор действует до закрытия среды."
+            };
+            platformItem.Click += (sender, e) =>
+            {
+                if (compiling || runner != null || workbench.ServiceContainer.RunService.IsRun() || workbench.DebuggerManager.IsRunning)
+                {
+                    WriteMessage("Остановите программу перед переключением платформы.");
+                    return;
+                }
+                platformItem.Checked = !platformItem.Checked;
+                commandService.LegacyServicesSuspended = platformItem.Checked;
+                status.Start(platformItem.Checked ? ".NET 10" : ".NET 4.7.2");
+            };
+            commandRegistration = commandService.RegisterCommandHandler(this);
+            programMenu.DropDownItems.Add(new ToolStripSeparator());
+            programMenu.DropDownItems.Add(platformItem);
+            programMenu.DropDownOpening += (sender, e) => platformItem.Enabled =
+                !compiling && runner == null && !workbench.ServiceContainer.RunService.IsRun() && !workbench.DebuggerManager.IsRunning;
+            foreach (var item in new[] { compileItem, runItem, stopItem })
+            {
+                if (item.toolStripButton is ToolStripItem button) button.Visible = false;
+                if (item.menuItem is ToolStripItem menu) menu.Visible = false;
+            }
+        }
+
+        public bool TryExecute(VisualEnvironmentCompilerAction action, object context)
+        {
+            if (action == VisualEnvironmentCompilerAction.Stop && runner != null)
+            {
+                runner.Stop();
+                return true;
+            }
+            if (platformItem?.Checked != true) return false;
+            if (action == VisualEnvironmentCompilerAction.Stop) return false;
+            if (action != VisualEnvironmentCompilerAction.Build && action != VisualEnvironmentCompilerAction.Run) return false;
+            if (compiling || runner != null) return true; // Consumed: never fall back to the legacy compiler while busy.
+            if (context is IdeRunCommand request)
+            {
+                if (request.DebugRequested)
+                {
+                    WriteMessage("Отладчик .NET 10 пока не подключён. Используйте обычный запуск.");
+                    return true;
+                }
+                if (request.Document != null)
+                    workbench.ServiceContainer.DocumentService.CurrentCodeFileDocument = request.Document;
+            }
+            Execute(action == VisualEnvironmentCompilerAction.Run,
+                action == VisualEnvironmentCompilerAction.Build && context is bool rebuild && rebuild);
+            return true;
         }
 
         private static void ConfigureButton(PluginGUIItem item)
@@ -94,11 +154,11 @@ namespace VisualPascalABCPlugins
             }
         }
 
-        private async void Execute(bool run)
+        private async void Execute(bool run, bool rebuild = false)
         {
             if (compiling) return;
             IDisposable preparation = null;
-            status.Start("Подготовка компиляции .NET 10…");
+            status.BeginOperation();
             try
             {
                 var document = workbench.ServiceContainer.DocumentService.CurrentCodeFileDocument;
@@ -122,11 +182,10 @@ namespace VisualPascalABCPlugins
                 compiling = true;
                 SetEnabled(false);
                 workbench.ErrorsListWindow.ClearErrorList();
-                status.Update("Компиляция .NET 10: " + Path.GetFileName(fileName) + "…");
                 var display = new Net10CompilerDisplay(key => PascalABCCompiler.StringResources.Get("VP_VEC_" + key));
                 // Await each UI delivery so Ready cannot arrive after Run/exception status.
                 var response = await client.CompileAsync(fileName, outputDirectory, "__RedirectIOMode", sources,
-                    value => DisplayCompilerEventAsync(display, value));
+                    value => DisplayCompilerEventAsync(display, value), rebuild);
                 if (run && response.success)
                 {
                     var target = Net10EditorDocument.ResolveRunTarget(document, response.outputFile,
@@ -141,13 +200,13 @@ namespace VisualPascalABCPlugins
                         arguments = runService.HasRunArgument(fileName) ? runService.GetRunArgument(fileName) : "";
                         workbench.ServiceContainer.OperationsService.ClearOutputTextBoxForTabPage(document);
                         display = new Net10CompilerDisplay(key => PascalABCCompiler.StringResources.Get("VP_VEC_" + key));
-                        status.Update("Компиляция .NET 10: " + Path.GetFileName(fileName) + "…");
                         response = await client.CompileAsync(fileName, outputDirectory, "__RedirectIOMode", sources,
-                            value => DisplayCompilerEventAsync(display, value));
+                            value => DisplayCompilerEventAsync(display, value), rebuild);
                     }
                 }
                 if (response.success)
                 {
+                    ShowDiagnostics(response, fileName, run);
                     if (!display.HasResult)
                     {
                         WriteMessage("Готово: " + response.outputFile);
@@ -166,37 +225,28 @@ namespace VisualPascalABCPlugins
                             Path.GetDirectoryName(fileName), arguments, externalRun.PrepareExternalArguments))
                         using (var lifecycle = externalRun.RegisterExternalRun(document, outputFile, program.Stop))
                         using (var console = new Net10OutputSession(workbench, document,
-                            text =>
-                            {
-                                status.Update("Программа .NET 10 выполняется");
-                                return program.SendInputAsync(text);
-                            }, program.Stop, lifecycle.WriteOutput))
+                            program.SendInputAsync, program.Stop, lifecycle.WriteOutput))
                         {
                             runner = program;
                             runningOutputFile = Path.GetFullPath(outputFile);
                             outputSession = console;
                             SetItemEnabled(stopItem, true);
-                            WriteMessage("Запущено .NET 10: " + outputFile);
-                            status.Update("Программа .NET 10 выполняется");
-                            int exitCode = await program.RunAsync(console.Append, () =>
-                            {
-                                status.Update("Программа .NET 10 ожидает ввода");
-                                console.RequestInput();
-                            }, lifecycle.Started, error => console.ReportException(error, lifecycle));
+                            int exitCode = await program.RunAsync(console.Append, console.RequestInput,
+                                lifecycle.Started, error => console.ReportException(error, lifecycle));
                             await console.FlushAsync();
-                            status.Update(program.WasStopped ? "Программа .NET 10 остановлена" :
-                                exitCode == 0 ? "Выполнение .NET 10 завершено" :
-                                "Программа .NET 10 завершилась с ошибкой (код " + exitCode + ")");
                             // Both output streams were queued before this UI continuation.
                             if (exitCode != 0 && !program.WasStopped)
+                            {
+                                status.Update("Программа .NET 10 завершилась с ошибкой (код " + exitCode + ")");
                                 WriteMessage("Программа .NET 10 завершилась с кодом " + exitCode + ".");
+                            }
                         }
                     }
                 }
                 else
                 {
                     if (!display.HasResult) status.Update("Ошибка компиляции .NET 10");
-                    ShowDiagnostics(response, fileName);
+                    ShowDiagnostics(response, fileName, run);
                 }
             }
             catch (Exception error)
@@ -245,32 +295,14 @@ namespace VisualPascalABCPlugins
             return completed.Task;
         }
 
-        private void ShowDiagnostics(Net10CompileResponse response, string sourceFileName)
+        private void ShowDiagnostics(Net10CompileResponse response, string sourceFileName, bool run)
         {
-            var errors = new List<PascalABCCompiler.Errors.Error>();
-            if (response.diagnostics != null)
-                foreach (var diagnostic in response.diagnostics)
-                {
-                    string fileName = string.IsNullOrWhiteSpace(diagnostic.fileName)
-                        ? sourceFileName : diagnostic.fileName;
-                    if (!Path.IsPathRooted(fileName))
-                        fileName = Path.Combine(Path.GetDirectoryName(sourceFileName), fileName);
-                    var error = new PascalABCCompiler.Errors.CommonCompilerError(
-                        diagnostic.message ?? "Ошибка компиляции .NET 10",
-                        Path.GetFullPath(fileName),
-                        Math.Max(1, diagnostic.line), Math.Max(1, diagnostic.column));
-                    errors.Add(error);
-                    WriteMessage(error.ToString());
-                }
-            if (errors.Count == 0)
-            {
-                string message = string.IsNullOrWhiteSpace(response.message)
-                    ? "Компилятор .NET 10 не создал выходной файл." : response.message;
-                errors.Add(new PascalABCCompiler.Errors.Error(message));
-                WriteMessage("Ошибка: " + message);
-            }
-            if (!workbench.MainForm.IsDisposed)
-                workbench.ErrorsListWindow.ShowErrorsSync(errors, true);
+            var errors = Net10Diagnostics.Create(response, sourceFileName);
+            foreach (var error in errors)
+                if (!(error is PascalABCCompiler.Errors.CompilerWarning))
+                    WriteMessage(error is PascalABCCompiler.Errors.CommonCompilerError ? error.ToString() : "Ошибка: " + error.Message);
+            if (errors.Count > 0 && !workbench.MainForm.IsDisposed)
+                workbench.ErrorsListWindow.ShowErrorsSync(errors, Net10Diagnostics.ChangeViewTab(response, run));
         }
 
         private List<Net10EditorSource> OpenEditorSources()

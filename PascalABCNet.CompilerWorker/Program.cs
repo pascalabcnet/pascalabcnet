@@ -23,6 +23,7 @@ internal static class Program
         public string? outputDirectory { get; set; }
         public string? runtimeModule { get; set; }
         public SourceFileRequest[]? sourceFiles { get; set; }
+        public bool rebuild { get; set; }
     }
 
     private sealed class SourceFileRequest
@@ -178,6 +179,7 @@ internal static class Program
                 UseDllForSystemUnits = false,
 #endif
                 Debug = false,
+                Rebuild = request.rebuild,
                 ForDebugging = false
             };
 
@@ -260,6 +262,8 @@ internal static class Program
                         AppendDiagnostic(response, error, fullFileName);
                 }
             }
+            foreach (var warning in requestCompiler.Warnings)
+                AppendDiagnostic(response, warning, fullFileName, warning: true);
         }
         catch (Exception exception)
         {
@@ -333,16 +337,19 @@ internal static class Program
     private static void AppendDiagnostic(
         StringBuilder response,
         object error,
-        string defaultFileName)
+        string defaultFileName,
+        bool warning = false)
     {
         var locatedError = error as LocatedError;
         var location = locatedError?.SourceLocation;
         var fileName = location?.FileName ?? locatedError?.FileName ?? defaultFileName;
         var line = location?.BeginPosition.Line ?? 1;
         var column = location?.BeginPosition.Column ?? 1;
-        var message = EnhanceErrorMessage(error);
+        var message = warning && error is CompilerWarning compilerWarning
+            ? compilerWarning.Message
+            : EnhanceErrorMessage(error);
 
-        response.Append("DIAGNOSTIC\t");
+        response.Append(warning ? "WARNING\t" : "DIAGNOSTIC\t");
         response.Append(EncodeBase64(fileName));
         response.Append('\t');
         response.Append(line);

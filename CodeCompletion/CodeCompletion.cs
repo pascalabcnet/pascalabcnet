@@ -75,8 +75,11 @@ namespace CodeCompletion
         /// </summary>
         public static bool IntellisenseAvailable()
         {
-            return CurrentLanguage != null && CurrentLanguage.LanguageIntellisenseSupport != null;
+            return !LegacyAnalysisSuspended && CurrentLanguage != null && CurrentLanguage.LanguageIntellisenseSupport != null;
         }
+
+        // Session policy, independent of persistent user preferences and language selection.
+        public static volatile bool LegacyAnalysisSuspended;
         
         public DomConverter Compile(string FileName, string Text)
         {

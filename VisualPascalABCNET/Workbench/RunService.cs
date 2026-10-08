@@ -152,6 +152,8 @@ namespace VisualPascalABC
 
         public bool Run(bool RedirectConsoleIO)
         {
+            if (WorkbenchServiceFactory.CommandRouter.TryExecute(VisualEnvironmentCompilerAction.Run,
+                new IdeRunCommand { Document = DocumentService.CurrentCodeFileDocument, RedirectConsoleIO = RedirectConsoleIO })) return true;
             Workbench.UserOptions.RedirectConsoleIO = RedirectConsoleIO;
 
             if (Workbench.UserOptions.RedirectConsoleIO)
@@ -180,6 +182,9 @@ namespace VisualPascalABC
 
         public bool Run(ICodeFileDocument tabPage, bool forDebugging, bool startWithGoto, bool needFirstBreakpoint)
         {
+            if (WorkbenchServiceFactory.CommandRouter.TryExecute(VisualEnvironmentCompilerAction.Run,
+                new IdeRunCommand { Document = tabPage, DebugRequested = forDebugging || startWithGoto || needFirstBreakpoint,
+                    RedirectConsoleIO = Workbench.UserOptions.RedirectConsoleIO })) return true;
             // The external process must release the shared input panel before a legacy run starts.
             if (externalDocument != null)
             {
@@ -365,6 +370,7 @@ namespace VisualPascalABC
 
         public bool Stop() // Èíòåðåñíî, çà÷åì ñäåëàëè private
         {
+            if (WorkbenchServiceFactory.CommandRouter.TryExecute(VisualEnvironmentCompilerAction.Stop)) return true;
             if (RunnerManager.IsRun(Workbench.CurrentEXEFileName))
             {
                 RunnerManager.Stop(Workbench.CurrentEXEFileName);
