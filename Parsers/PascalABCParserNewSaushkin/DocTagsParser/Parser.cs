@@ -25,7 +25,8 @@ namespace Languages.Pascal.Frontend.Documentation
             documentation_comment_section dcs = new documentation_comment_section();
             if (text.StartsWith("////"))
                 return dcs;
-            text = Regex.Replace(text, @"\r\n(\s)*///", "\r\n", RegexOptions.Compiled);
+            // Normalize documentation line breaks only; source offsets are unchanged.
+            text = Regex.Replace(text, @"\r?\n([\f\t\v\x85\p{Z}])*///", "\r\n", RegexOptions.Compiled);
             text = Regex.Replace(text, @"(\s)*///", "", RegexOptions.Compiled);
             /*foreach (string section_name in sectionNames)
             {
@@ -47,7 +48,7 @@ namespace Languages.Pascal.Frontend.Documentation
 
         public documentation_comment_list BuildTree(string Text)
         {
-            MatchCollection mc = Regex.Matches(Text, @"(([\f\t\v\x85\p{Z}])*///.*\r\n)*([\f\t\v\x85\p{Z}])*///.*", RegexOptions.Compiled);
+            MatchCollection mc = Regex.Matches(Text, @"(([\f\t\v\x85\p{Z}])*///.*\r?\n)*([\f\t\v\x85\p{Z}])*///.*", RegexOptions.Compiled);
             documentation_comment_list dcl = new documentation_comment_list();
             if (mc.Count > 0)
             {

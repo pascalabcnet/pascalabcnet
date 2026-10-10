@@ -132,7 +132,7 @@ type
     ///   • IPreprocessor (табличный шаг)
     ///   • ITransformer (матричный шаг)
     ///   • IModel (модель, должна быть последней)
-    /// Запрещено добавлять шаги после вызова Fit.
+    /// Запрещено добавлять шаги после вызова Fit
     function Add(step: IPipelineStep): SupervisedDataPipelineBase;
 
     /// Применяет только обученные DataFrame-шаги pipeline и возвращает новый DataFrame.

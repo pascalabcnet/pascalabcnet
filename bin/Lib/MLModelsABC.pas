@@ -1022,7 +1022,7 @@ type
       maxDepth: integer := -1;
       minSamplesSplit: integer := 2; 
       minSamplesLeaf: integer := 1;
-      maxFeaturesMode: TMaxFeaturesMode := TMaxFeaturesMode.HalfFeatures;
+      maxFeaturesMode: TMaxFeaturesMode := TMaxFeaturesMode.AllFeatures;
       computeOOB: boolean := False;
       seed: integer := -1);
 
@@ -2101,7 +2101,7 @@ type
 ///
 /// Примечание:
 ///   • стандартное отклонение вычисляется с делением на n
-///     (population variance, как в sklearn)
+///     (population variance, как в sklearn).
   StandardScaler = class(IUnsupervisedTransformer)
   private
     fMean: Vector;
@@ -2149,7 +2149,7 @@ type
   
 /// Масштабирует признаки в заданный диапазон
 ///   (по умолчанию [0, 1]) на основе минимального и максимального значения каждого столбца.
-/// Используется для приведения признаков к единому масштабу без центрирования
+/// Используется для приведения признаков к единому масштабу без центрирования.
   MinMaxScaler = class(IUnsupervisedTransformer)
   private
     fMin: Vector;
@@ -2160,7 +2160,7 @@ type
     fRangeMax: real;
   public
     /// Создаёт MinMaxScaler с диапазоном [rangeMin, rangeMax].
-    /// По умолчанию масштабирование выполняется к [0, 1]
+    /// По умолчанию масштабирование выполняется к [0, 1].
     constructor Create(rangeMin: real := 0.0; rangeMax: real := 1.0);
     
 /// Вычисляет минимальные и максимальные значения по каждому признаку.
@@ -2168,7 +2168,7 @@ type
 /// Сохраняет параметры масштабирования для последующего применения в Transform.
 ///
 /// Примечание:
-///   • вычисленные параметры НЕ копируются методом Clone
+///   • вычисленные параметры НЕ копируются методом Clone.
     function Fit(X: Matrix): IUnsupervisedTransformer;
     
     /// Последовательно выполняет Fit и Transform на одних и тех же данных.
@@ -4771,10 +4771,45 @@ begin
   var maxLeftCount := n - minLeaf;
 
   var features := GetFeatureSubset(X.ColCount);
+  var featureLimit := features.Length;
+  var fj := 0;
   
-  for var fj := 0 to features.Length - 1 do
+  while fj < X.ColCount do
   begin
+    // Проверяем выбранное подмножество целиком. Если в нём нет
+    // допустимого разбиения, пробуем остальные признаки до первого
+    // допустимого разбиения, не превращая узел в лист преждевременно.
+    if (fj >= featureLimit) and (bestFeature <> -1) then
+      break;
+
+    if fj = features.Length then
+    begin
+      var selected := new boolean[X.ColCount];
+      foreach var feature in features do
+        selected[feature] := true;
+
+      SetLength(features, X.ColCount);
+      var nextFeature := featureLimit;
+      for var feature := 0 to X.ColCount - 1 do
+        if not selected[feature] then
+        begin
+          features[nextFeature] := feature;
+          nextFeature += 1;
+        end;
+
+      // Дополнительные признаки тоже проверяем в случайном порядке.
+      // RNG используется только при необходимости продолжить поиск.
+      for var k := featureLimit to features.Length - 2 do
+      begin
+        var r := k + fRng.Next(features.Length - k);
+        var tmp := features[k];
+        features[k] := features[r];
+        features[r] := tmp;
+      end;
+    end;
+
     var j := features[fj];
+    fj += 1;
     var order := nodeOrders[j];
     var orderLen := order.Length;
     

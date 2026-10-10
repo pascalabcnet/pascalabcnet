@@ -841,6 +841,9 @@ namespace Languages.Pascal.Frontend.Data
         private bool CheckForComment(string Text, int off, out int comment_position, out bool one_line_comment)
         {
             int i = off;
+            // Callers often pass the character immediately before LF in CRLF text.
+            if (i >= 0 && Text[i] == '\r')
+                i--;
             one_line_comment = false;
             comment_position = -1;
             Stack<char> kav = new Stack<char>();
@@ -880,6 +883,29 @@ namespace Languages.Pascal.Frontend.Data
                 i--;
             }
             return is_comm;
+        }
+
+        private void TestForExpressionKeyword(string text, int offset, ref int bound, bool punctuation, out KeywordKind keyword)
+        {
+            int previous = offset;
+            while (previous >= 0 && (char.IsLetterOrDigit(text[previous]) || text[previous] == '_'))
+                previous--;
+            while (previous >= 0 && char.IsWhiteSpace(text[previous]))
+                previous--;
+            int commentPosition;
+            bool oneLine;
+            if (previous >= 0 && CheckForComment(text, previous, out commentPosition, out oneLine) && oneLine)
+            {
+                // A period at the end of a preceding doc comment is not a member-access
+                // prefix for "constructor"/"function"/"new" on the current code line.
+                int lineStart = text.LastIndexOf('\n', offset) + 1;
+                int localBound = bound - lineStart;
+                TestForKeyword(text.Substring(lineStart, offset - lineStart + 1),
+                    offset - lineStart, ref localBound, punctuation, out keyword);
+                bound = localBound + lineStart;
+                return;
+            }
+            TestForKeyword(text, offset, ref bound, punctuation, out keyword);
         }
 
         public override string FindExpression(int off, string Text, int line, int col, out KeywordKind keyw)
@@ -933,6 +959,15 @@ namespace Languages.Pascal.Frontend.Data
                             }
                         while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i]) || Text[i] == '}'))
                         {
+                            int commentPosition;
+                            bool oneLine;
+                            if (Text[i] == '\n' &&
+                                CheckForComment(Text, i - 1, out commentPosition, out oneLine) && oneLine)
+                            {
+                                // Do not jump over the newline onto punctuation inside a comment.
+                                // Let the normal newline/comment branch below skip that line.
+                                break;
+                            }
                             if (Text[i] != '}')
                                 i--;
                             else
@@ -946,7 +981,7 @@ namespace Languages.Pascal.Frontend.Data
                         if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '!'))
                         {
                             bound = i + 1;
-                            TestForKeyword(Text, i, ref bound, punkt_sym, out keyw);
+                            TestForExpressionKeyword(Text, i, ref bound, punkt_sym, out keyw);
                             for (int j = tmp; j > bound; j--)
                             {
                                 sb.Insert(0, Text[j]);
@@ -1116,7 +1151,7 @@ namespace Languages.Pascal.Frontend.Data
                                             if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '!' || Text[i] == '?' && IsPunctuation(Text, i + 1)))
                                             {
                                                 bound = i + 1;
-                                                TestForKeyword(Text, i, ref bound, punkt_sym, out keyw);
+                                                TestForExpressionKeyword(Text, i, ref bound, punkt_sym, out keyw);
                                                 if (keyw != KeywordKind.None && tokens.Count == 0)
                                                 {
                                                     end = true;
