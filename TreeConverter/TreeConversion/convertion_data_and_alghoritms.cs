@@ -66,6 +66,23 @@ namespace PascalABCCompiler.TreeConverter
             //_current_operation_kind = special_operation_kind.none;
 		}
 
+        private static void CollectGenericParameters(type_node type, List<type_node> parameters)
+        {
+            if (type == null)
+                return;
+
+            if (type.is_generic_parameter)
+            {
+                if (!parameters.Any(parameter => string.Equals(parameter.name, type.name, StringComparison.OrdinalIgnoreCase)))
+                    parameters.Add(type);
+                return;
+            }
+
+            if (type.instance_params != null)
+                foreach (var instanceParameter in type.instance_params)
+                    CollectGenericParameters(instanceParameter, parameters);
+        }
+
         /*
         public special_operation_kind current_operation_kind
         {
@@ -1249,10 +1266,24 @@ namespace PascalABCCompiler.TreeConverter
                                     rettype,
                                     sl
                                     );
+                                // TESTFIX [generic tuple conversion]: the lifted helper uses the
+                                // enclosing function's generic parameters and therefore must be
+                                // emitted as a generic method itself.
+                                var genericParameters = new List<type_node>();
+                                CollectGenericParameters(factparams[i].type, genericParameters);
+                                CollectGenericParameters(formal_param_type, genericParameters);
+                                if (genericParameters.Count > 0)
+                                {
+                                    fun.proc_header.template_args = new ident_list();
+                                    foreach (var genericParameter in genericParameters)
+                                        fun.proc_header.template_args.Add(new ident(genericParameter.name));
+                                }
                                 // Теперь ее надо обойти
                                 syntax_tree_visitor.ProcessNode(fun);
                                 // Теперь до нее доберемся
                                 var fn = syntax_tree_visitor.context.last_created_function.sym_info as function_node;
+                                if (genericParameters.Count > 0)
+                                    fn = fn.get_instance(genericParameters, true, factparams[i].location);
                                 syntax_tree_visitor.contextChanger.RestoreCurrentContext();
                                 possible_type_convertions ptci = new possible_type_convertions();
                                 ptci.first = new type_conversion(fn);
