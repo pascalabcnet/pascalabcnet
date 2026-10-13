@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\TreeConverter\TreeConverter.csproj" />
+    <ProjectReference Include="..\ReflectionCacheUnloadFixture\ReflectionCacheUnloadFixture.csproj"
+                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\ReflectionCacheUnloadFixtureV2\ReflectionCacheUnloadFixtureV2.csproj"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+</Project>
