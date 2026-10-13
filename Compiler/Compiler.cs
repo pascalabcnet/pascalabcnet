@@ -1475,6 +1475,11 @@ namespace PascalABCCompiler
                 // очистка всех переменных и списков, используемых в процессе
                 Reset();
 
+#if PABCNET_MODERN
+                NetHelper.NetHelper.PrepareCollectibleReferencesForCompilation(
+                    CompilerOptions.Rebuild);
+#endif
+
                 // если проект скомпилирован, то заполнение информации о проекте в опциях компилятора
                 if (CompilerOptions.ProjectCompiled)
                 {
@@ -2803,7 +2808,6 @@ namespace PascalABCCompiler
                 try
                 {
                     preparedReference = PrepareReference(reference);
-                    PreloadReference(preparedReference);
                 }
                 catch (FileLoadException ex)
                 {
@@ -2811,6 +2815,30 @@ namespace PascalABCCompiler
                 }
                 preparedReferences.Add(preparedReference);
             }
+
+#if PABCNET_MODERN
+            var collectibleReferencePaths = new List<string>();
+            var originalCollectibleReferencePaths = new List<string>();
+            foreach (PreparedReference reference in preparedReferences)
+            {
+                collectibleReferencePaths.Add(reference.ResolvedReference.FileName);
+                collectibleReferencePaths.Add(reference.FileName);
+                originalCollectibleReferencePaths.Add(reference.ResolvedReference.FileName);
+            }
+            try
+            {
+                NetHelper.NetHelper.PrepareCollectibleReferenceSetForCompilation(
+                    collectibleReferencePaths, originalCollectibleReferencePaths);
+            }
+            catch (FileLoadException ex)
+            {
+                throw new CommonCompilerError(ex.Message,
+                    compilationUnit.SyntaxTree.file_name, 0, 0);
+            }
+#endif
+
+            foreach (PreparedReference reference in preparedReferences)
+                PreloadReference(reference);
 
             // Reuse the prepared paths. The old implementation repeated lookup
             // and staging here even though preload had already done that work.

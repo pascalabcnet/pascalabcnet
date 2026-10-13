@@ -2931,8 +2931,10 @@ namespace PascalABCCompiler.TreeRealization
 		protected compiled_type_node _base_type;
 
         //Если это не чистить, будет ошибка. Т.к. при следуйщей компиляции области видимости могут изменится.
-        internal static System.Collections.Generic.Dictionary<System.Type, compiled_type_node> compiled_types =
-            new System.Collections.Generic.Dictionary<Type, compiled_type_node>();
+        internal static System.Collections.Generic.Dictionary<System.Type, compiled_type_node> compiled_types
+        {
+            get { return CompilerReflectionCaches.Current.CompiledTypes; }
+        }
 
         private NetHelper.NetTypeScope _net_type_scope;
 

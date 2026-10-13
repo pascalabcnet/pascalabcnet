@@ -271,8 +271,8 @@ xcopy InstallerSamples\Graphics\ABCObjects\   Release\Samples\Graphics\ABCObject
 
 cd Release
 
-..\Utils\pkzipc\pkzipc.exe -add -dir=current PascalABCNETLinux.zip PascalABCNETLinux\*.*
-..\Utils\pkzipc\pkzipc.exe -add -dir=current PascalABCNETLinux.zip Samples\*.*
+powershell.exe -NoProfile -Command "Compress-Archive -LiteralPath 'PascalABCNETLinux','Samples' -DestinationPath 'PascalABCNETLinux.zip' -CompressionLevel Optimal -Force"
+if errorlevel 1 exit /b %ERRORLEVEL%
 
 cd ..
 pause

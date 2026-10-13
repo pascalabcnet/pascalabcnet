@@ -1695,8 +1695,10 @@ namespace PascalABCCompiler.TreeRealization
         private compiled_type_node connected_to_type;
         private List<compiled_type_node> _generic_params;
         private System.Reflection.PropertyInfo getter_of_property;
-        private static System.Collections.Generic.Dictionary<System.Reflection.MethodInfo, compiled_function_node> compiled_methods =
-            new System.Collections.Generic.Dictionary<System.Reflection.MethodInfo, compiled_function_node>();
+        private static System.Collections.Generic.Dictionary<System.Reflection.MethodInfo, compiled_function_node> compiled_methods
+        {
+            get { return PascalABCCompiler.TreeConverter.CompilerReflectionCaches.Current.CompiledMethods; }
+        }
 
         /// <summary>
         /// Конструктор узла.
@@ -2185,8 +2187,10 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public class compiled_constructor_node : function_node, SemanticTree.ICompiledConstructorNode
 	{
-        private static System.Collections.Generic.Dictionary<System.Reflection.ConstructorInfo, compiled_constructor_node> compiled_constructors =
-            new System.Collections.Generic.Dictionary<System.Reflection.ConstructorInfo, compiled_constructor_node>();
+        private static System.Collections.Generic.Dictionary<System.Reflection.ConstructorInfo, compiled_constructor_node> compiled_constructors
+        {
+            get { return PascalABCCompiler.TreeConverter.CompilerReflectionCaches.Current.CompiledConstructors; }
+        }
 
         private int _num_of_default_parameters;
         private System.Reflection.ConstructorInfo _con_info;

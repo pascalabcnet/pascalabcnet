@@ -2275,6 +2275,19 @@ namespace PascalABCCompiler.SystemLibrary
             }
         }
 
+#if PABCNET_MODERN
+        // Preserve permanent system operators and remove only entries whose nodes are
+        // recreated for each external reference type.
+        internal static void ResetDynamicReferenceTypeOperators()
+        {
+            var replacement = new Dictionary<SemanticTree.basic_function_type, basic_function_node>(ht);
+            replacement.Remove(SemanticTree.basic_function_type.objassign);
+            replacement.Remove(SemanticTree.basic_function_type.objeq);
+            replacement.Remove(SemanticTree.basic_function_type.objnoteq);
+            ht = replacement;
+        }
+#endif
+
         public static basic_function_node find_operator(SemanticTree.basic_function_type bft)
         {
             return ht[bft];

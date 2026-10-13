@@ -284,33 +284,35 @@ namespace PascalABCCompiler.NetHelper
     }
 	
 	public static class NetHelper {
-        private static Dictionary<string, Type> namespaces;
-        private static Dictionary<string, object> types;
-        private static Dictionary<string, FoundInfo> type_search_cache;
-		private static Dictionary<string, object> compiled_pascal_types;
+        private static CompilerReflectionCacheState cache { get { return CompilerReflectionCaches.Current; } }
+        private static Dictionary<string, Type> namespaces { get { return cache.Namespaces; } }
+        private static Dictionary<string, object> types { get { return cache.Types; } }
+        private static Dictionary<string, FoundInfo> type_search_cache { get { return cache.TypeSearch; } }
+		private static Dictionary<string, object> compiled_pascal_types { get { return cache.CompiledPascalTypes; } }
 		/*private static Hashtable methods;
 		private static Hashtable properties;
 		private static Hashtable fields;*/
         //ssyy-
 		//private static Hashtable interfaces;
         //\ssyy-
-		private static Dictionary<Type, Dictionary<string, List<MemberInfo>>> members;
+		private static Dictionary<Type, Dictionary<string, List<MemberInfo>>> members { get { return cache.Members; } }
 		//private static Hashtable meth_nodes;
-		private static Dictionary<PropertyInfo, compiled_property_node> prop_nodes;
-		private static Dictionary<MemberInfo, definition_node> field_nodes;
-        private static Dictionary<ConstructorInfo, compiled_constructor_node> constr_nodes;
-		private static HashSet<Type> stand_types;
-        private static Dictionary<Assembly, Dictionary<int, Type>> type_handles;
-        private static Dictionary<Type, Dictionary<int, MethodInfo>> method_handles;
-        private static Dictionary<Type, Dictionary<int, ConstructorInfo>> constr_handles;
-        private static Dictionary<Type, Dictionary<int, FieldInfo>> field_handles;
-        private static HashSet<Assembly> assemblies;
-        private static Dictionary<int, Type> special_types;
-        private static Dictionary<string, Type[]> ns_types;
+		private static Dictionary<PropertyInfo, compiled_property_node> prop_nodes { get { return cache.PropertyNodes; } }
+		private static Dictionary<MemberInfo, definition_node> field_nodes { get { return cache.FieldNodes; } }
+        private static Dictionary<ConstructorInfo, compiled_constructor_node> constr_nodes { get { return cache.ConstructorNodes; } }
+		private static HashSet<Type> stand_types { get { return cache.StandardTypes; } }
+        private static Dictionary<Assembly, Dictionary<int, Type>> type_handles { get { return cache.TypeHandles; } }
+        private static Dictionary<Type, Dictionary<int, MethodInfo>> method_handles { get { return cache.MethodHandles; } }
+        private static Dictionary<Type, Dictionary<int, ConstructorInfo>> constr_handles { get { return cache.ConstructorHandles; } }
+        private static Dictionary<Type, Dictionary<int, FieldInfo>> field_handles { get { return cache.FieldHandles; } }
+        private static HashSet<Assembly> assemblies { get { return cache.Assemblies; } }
+        private static Dictionary<int, Type> special_types { get { return cache.SpecialTypes; } }
+        private static Dictionary<string, Type[]> ns_types { get { return cache.NamespaceTypes; } }
 		private static Type memberInfo;
-        private static Dictionary<Assembly, HashSet<string>> namespace_assemblies;
-        public static HashSet<Assembly> cur_used_assemblies;
-        private static HashSet<Type> cached_type_extensions;
+        private static Dictionary<Assembly, HashSet<string>> namespace_assemblies { get { return cache.AssemblyNamespaces; } }
+        // Kept as a field for binary compatibility with existing CodeCompletion builds.
+        public static HashSet<Assembly> cur_used_assemblies = cache.CurrentUsedAssemblies;
+        private static HashSet<Type> cached_type_extensions { get { return cache.CachedTypeExtensions; } }
 		public static Type DelegateType;
         public static Type EnumType;
         public static Type ArrayType;
@@ -320,17 +322,17 @@ namespace PascalABCCompiler.NetHelper
         public static MethodInfo AddToDictionaryMethod;
         public static bool UsePABCRtl;
         public static Assembly SystemCoreAssembly;
-        private static Dictionary<Type,MethodInfo[]> extension_methods = new Dictionary<Type,MethodInfo[]>();
-        private static Dictionary<Type,List<MethodInfo>> type_extensions = new Dictionary<Type, List<MethodInfo>>();
-        private static Dictionary<Type, Type> arrays_with_extension_methods = new Dictionary<Type, Type>();
-        private static Dictionary<Type, Type> generics_with_extension_methods = new Dictionary<Type, Type>();
-        private static Dictionary<int, List<MethodInfo>> generic_array_type_extensions = new Dictionary<int, List<MethodInfo>>();
-        private static List<MethodInfo> generic_parameter_type_extensions = new List<MethodInfo>();
+        private static Dictionary<Type,MethodInfo[]> extension_methods { get { return cache.ExtensionMethods; } }
+        private static Dictionary<Type,List<MethodInfo>> type_extensions { get { return cache.TypeExtensions; } }
+        private static Dictionary<Type, Type> arrays_with_extension_methods { get { return cache.ArraysWithExtensionMethods; } }
+        private static Dictionary<Type, Type> generics_with_extension_methods { get { return cache.GenericsWithExtensionMethods; } }
+        private static Dictionary<int, List<MethodInfo>> generic_array_type_extensions { get { return cache.GenericArrayTypeExtensions; } }
+        private static List<MethodInfo> generic_parameter_type_extensions { get { return cache.GenericParameterTypeExtensions; } }
         public static Type PABCSystemType = null;
         public static Type PT4Type = null;
         public static Type StringType = typeof(string);
         public static Dictionary<string, List<int>> generics_names = new Dictionary<string, List<int>>();
-        private static Dictionary<string, MemberInfo> member_cache = new Dictionary<string, MemberInfo>();
+        private static Dictionary<string, MemberInfo> member_cache { get { return cache.MemberCache; } }
 
         public static void reset()
         {
@@ -344,9 +346,66 @@ namespace PascalABCCompiler.NetHelper
             type_search_cache.Clear();
         }
 
-        private static Dictionary<string, Assembly> ass_name_cache;
-        private static Dictionary<Assembly, DateTime> file_dates;
-        private static Dictionary<Assembly, string> assm_full_paths;
+#if PABCNET_MODERN
+        internal static void ResetDynamicReferenceCaches()
+        {
+            SystemLibrary.SystemLibrary.ResetDynamicReferenceTypeOperators();
+            CompilerReflectionCacheState replacement = CompilerReflectionCaches.Replace();
+            cur_used_assemblies = replacement.CurrentUsedAssemblies;
+            entry_types = replacement.EntryTypes;
+        }
+
+        private static void RemoveAssemblyReferences(Assembly assembly)
+        {
+            cache.RemoveAssembly(assembly);
+        }
+
+        // Runs after Compiler.Reset(), when the previous semantic tree is no longer active.
+        internal static void PrepareCollectibleReferencesForCompilation(bool forceReload)
+        {
+            CollectibleReferenceManager.BeginCompilation();
+            if (!forceReload && !CollectibleReferenceManager.CurrentGenerationHasChanged())
+                return;
+
+            ResetCollectibleReferenceGeneration();
+        }
+
+        internal static void PrepareCollectibleReferenceSetForCompilation(
+            IEnumerable<string> assemblyPaths, IEnumerable<string> originalReferencePaths)
+        {
+            try
+            {
+                CollectibleReferenceManager.ValidateNoConflictingAssemblies(originalReferencePaths);
+            }
+            catch (FileLoadException)
+            {
+                CollectibleReferenceManager.MarkValidationFailure();
+                throw;
+            }
+            var paths = new List<string>(assemblyPaths);
+            bool hasLoadedAssemblies =
+                CollectibleReferenceManager.GetCurrentAssemblies().Length != 0;
+            if (CollectibleReferenceManager.RegisterReferencePaths(paths) && hasLoadedAssemblies)
+            {
+                ResetCollectibleReferenceGeneration();
+                CollectibleReferenceManager.RegisterReferencePaths(paths);
+            }
+            CollectibleReferenceManager.WriteStatistics();
+        }
+
+        private static void ResetCollectibleReferenceGeneration()
+        {
+            Assembly[] loadedAssemblies = CollectibleReferenceManager.GetCurrentAssemblies();
+            SystemLibrary.SystemLibrary.ResetDynamicReferenceTypeOperators();
+            foreach (Assembly assembly in loadedAssemblies)
+                RemoveAssemblyReferences(assembly);
+            CollectibleReferenceManager.StartNextGeneration();
+        }
+#endif
+
+        private static Dictionary<string, Assembly> ass_name_cache { get { return cache.AssembliesByName; } }
+        private static Dictionary<Assembly, DateTime> file_dates { get { return cache.AssemblyFileDates; } }
+        private static Dictionary<Assembly, string> assm_full_paths { get { return cache.AssemblyFullPaths; } }
 
 
 		public static bool IsAssemblyChanged(string name)
@@ -421,6 +480,8 @@ namespace PascalABCCompiler.NetHelper
                 a = typeof(object).Assembly;
             else if (assemblyFileName.Equals("System.Runtime.dll", StringComparison.OrdinalIgnoreCase))
                 a = Assembly.Load("System.Runtime");
+            else if (!NetCoreSystemReferences.IsRuntimeAssembly(name))
+                a = CollectibleReferenceManager.Load(name);
             else
 #endif
             try
@@ -444,7 +505,8 @@ namespace PascalABCCompiler.NetHelper
 		}
 		
 		
-        public static Dictionary<Assembly, List<Type>> entry_types = new Dictionary<Assembly, List<Type>>();
+        // Kept as a field for binary compatibility with existing CodeCompletion builds.
+        public static Dictionary<Assembly, List<Type>> entry_types = cache.EntryTypes;
         private static string curr_inited_assm_path = null;
 
         public static List<Type> init_namespaces(System.Reflection.Assembly _assembly)
@@ -884,48 +946,13 @@ namespace PascalABCCompiler.NetHelper
             //interfaces = new Hashtable();
             //\ssyy-
             //types = new Hashtable(1024, CaseInsensitiveHashCodeProvider.Default, CaseInsensitiveComparer.Default);
-            types = new Dictionary<string, object>(8096, StringComparer.CurrentCultureIgnoreCase);
-            compiled_pascal_types = new Dictionary<string, object>(1024, StringComparer.CurrentCultureIgnoreCase);
-            namespaces = new Dictionary<string, Type>(1024, StringComparer.CurrentCultureIgnoreCase);
-            ass_name_cache = new Dictionary<string, Assembly>(1024, StringComparer.CurrentCultureIgnoreCase);
-            assm_full_paths = new Dictionary<Assembly, string>();
             //ass_name_cache = new Hashtable(CaseInsensitiveHashCodeProvider.Default, CaseInsensitiveComparer.Default);
-            file_dates = new Dictionary<Assembly, DateTime>();
             //methods = new Hashtable();
             //properties = new Hashtable();
-            members = new Dictionary<Type, Dictionary<string, List<MemberInfo>>>(128);
             //fields = new Hashtable();
-            assemblies = new HashSet<Assembly>();
             //meth_nodes = new Hashtable();
-            prop_nodes = new Dictionary<PropertyInfo,compiled_property_node>();
-            field_nodes = new Dictionary<MemberInfo, definition_node>();
-            constr_nodes = new Dictionary<ConstructorInfo, compiled_constructor_node>();
-            stand_types = new HashSet<Type>();
-            type_handles = new Dictionary<Assembly, Dictionary<int, Type>>();
-            method_handles = new Dictionary<Type, Dictionary<int, MethodInfo>>();
-            constr_handles = new Dictionary<Type, Dictionary<int, ConstructorInfo>>();
-            field_handles = new Dictionary<Type, Dictionary<int, FieldInfo>>();
-            special_types = new Dictionary<int, Type>();
-            type_search_cache = new Dictionary<string,FoundInfo>(300);
-            cached_type_extensions = new HashSet<Type>();
-            namespace_assemblies = new Dictionary<Assembly, HashSet<string>>();
-            cur_used_assemblies = new HashSet<Assembly>();
             //ns_types = new Hashtable(CaseInsensitiveHashCodeProvider.Default, CaseInsensitiveComparer.Default);
-            ns_types = new Dictionary<string, Type[]>(StringComparer.CurrentCultureIgnoreCase);
             memberInfo = typeof(MemberInfo);
-
-            stand_types.Add(typeof(int));
-            stand_types.Add(typeof(byte));
-            stand_types.Add(typeof(bool));
-            stand_types.Add(typeof(sbyte));
-            stand_types.Add(typeof(short));
-            stand_types.Add(typeof(ushort));
-            stand_types.Add(typeof(uint));
-            stand_types.Add(typeof(long));
-            stand_types.Add(typeof(ulong));
-            stand_types.Add(typeof(char));
-            stand_types.Add(typeof(float));
-            stand_types.Add(typeof(double));
             //stand_types[typeof(decimal)]=stand_types;
             //stand_types[NetHelper.void_ptr_type] = stand_types;
             DelegateType = typeof(Delegate);

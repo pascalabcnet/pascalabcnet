@@ -6,3 +6,8 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("PascalABCNET.TreeConverter")]
 [assembly: AssemblyDescription("SyntaxTree to SemanticTree Converter")]
 [assembly: AssemblyConfiguration("")]
+
+#if PABCNET_MODERN
+[assembly: InternalsVisibleTo("ReflectionCacheUnloadTest")]
+[assembly: InternalsVisibleTo("Compiler")]
+#endif

@@ -3,6 +3,23 @@ param([ValidateSet('Debug', 'Release')][string]$Configuration = 'Release')
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+function Get-Sha256Hex([string]$Path) {
+    $stream = [IO.File]::OpenRead($Path)
+    try {
+        $sha256 = [Security.Cryptography.SHA256]::Create()
+        try {
+            return ([BitConverter]::ToString($sha256.ComputeHash($stream))).Replace('-', '')
+        }
+        finally {
+            $sha256.Dispose()
+        }
+    }
+    finally {
+        $stream.Dispose()
+    }
+}
+
 $repositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $destination = Join-Path $repositoryRoot 'bin-net10'
 # Build in a fresh directory: never distribute leftovers from a developer's bin.
@@ -60,7 +77,7 @@ foreach ($forbidden in @('NetMQ.dll', 'AsyncIO.dll', 'NaCl.dll')) {
     }
 }
 $files = @(Get-ChildItem -LiteralPath $stage -Recurse -File | ForEach-Object {
-    [ordered]@{ path = $_.FullName.Substring($stage.Length + 1); sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash }
+    [ordered]@{ path = $_.FullName.Substring($stage.Length + 1); sha256 = Get-Sha256Hex $_.FullName }
 })
 New-Item -ItemType Directory -Path $destination -Force | Out-Null
 foreach ($file in $files) {

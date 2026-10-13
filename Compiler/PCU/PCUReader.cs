@@ -694,7 +694,8 @@ namespace PascalABCCompiler.PCU
                 string tmp = s.Substring(0, s.IndexOf(','));
                 //if (tmp != "mscorlib")
                 //{
-                string name_with_path = Compiler.GetReferenceFileName(tmp + ".dll", Path.GetDirectoryName(this.FileName));
+                string name_with_path = ResolveAssemblyFileName(tmp,
+                    Path.GetDirectoryName(this.FileName));
                 //Assembly a = Assembly.LoadFrom(name_with_path);
                 /*if (pcu_file.compiler_directives != null)
                 foreach (compiler_directive cd in pcu_file.compiler_directives)
@@ -715,6 +716,29 @@ namespace PascalABCCompiler.PCU
                     assemblies[s] = a;
             }
 		}
+
+        private string ResolveAssemblyFileName(string assemblySimpleName,
+            string fallbackDirectory = null)
+        {
+#if PABCNET_MODERN
+            foreach (compiler_directive directive in pcu_file.compiler_directives)
+            {
+                if (!string.Equals(directive.name, StringConstants.compiler_directive_reference,
+                    StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(directive.directive))
+                    continue;
+
+                if (!string.Equals(Path.GetFileNameWithoutExtension(directive.directive),
+                    assemblySimpleName, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                string resolved = Compiler.GetReferenceFileName(directive.directive,
+                    Path.GetDirectoryName(this.FileName));
+                if (resolved != null)
+                    return resolved;
+            }
+#endif
+            return Compiler.GetReferenceFileName(assemblySimpleName + ".dll", fallbackDirectory);
+        }
 
         public void AddWaitedMethodCode(common_method_node cmn, int offset)
         {
@@ -1100,7 +1124,7 @@ namespace PascalABCCompiler.PCU
                 string tmp = s.Substring(0, s.IndexOf(','));
                 //if (tmp != "mscorlib")
                 //{
-                string name_with_path = Compiler.GetReferenceFileName(tmp + ".dll");
+                string name_with_path = ResolveAssemblyFileName(tmp);
                     //a = Assembly.LoadFrom(name_with_path);
                     a = NetHelper.NetHelper.LoadAssembly(name_with_path);
                     NetHelper.NetHelper.init_namespaces(a);
@@ -1139,7 +1163,7 @@ namespace PascalABCCompiler.PCU
                 string str_tmp = s.Substring(0, s.IndexOf(','));
                 //if (str_tmp != "mscorlib")
                 //{
-                string name_with_path = Compiler.GetReferenceFileName(str_tmp + ".dll");
+                string name_with_path = ResolveAssemblyFileName(str_tmp);
                     //a = Assembly.LoadFrom(name_with_path);
                     a = NetHelper.NetHelper.LoadAssembly(name_with_path);
                 //}
