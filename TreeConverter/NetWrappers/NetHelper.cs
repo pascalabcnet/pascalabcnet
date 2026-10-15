@@ -364,7 +364,8 @@ namespace PascalABCCompiler.NetHelper
         internal static void PrepareCollectibleReferencesForCompilation(bool forceReload)
         {
             CollectibleReferenceManager.BeginCompilation();
-            if (!forceReload && !CollectibleReferenceManager.CurrentGenerationHasChanged())
+            // Missing package files may be restored later in this compilation.
+            if (!forceReload && !CollectibleReferenceManager.CurrentGenerationHasChanged(false))
                 return;
 
             ResetCollectibleReferenceGeneration();
@@ -385,6 +386,13 @@ namespace PascalABCCompiler.NetHelper
             var paths = new List<string>(assemblyPaths);
             bool hasLoadedAssemblies =
                 CollectibleReferenceManager.GetCurrentAssemblies().Length != 0;
+            // Package files may have been absent at the start of Compile() and
+            // restored since then. Compare the restored bytes before reusing refs.
+            if (hasLoadedAssemblies && CollectibleReferenceManager.CurrentGenerationHasChanged())
+            {
+                ResetCollectibleReferenceGeneration();
+                hasLoadedAssemblies = false;
+            }
             if (CollectibleReferenceManager.RegisterReferencePaths(paths) && hasLoadedAssemblies)
             {
                 ResetCollectibleReferenceGeneration();

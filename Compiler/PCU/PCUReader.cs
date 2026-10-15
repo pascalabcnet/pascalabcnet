@@ -736,6 +736,12 @@ namespace PascalABCCompiler.PCU
                 if (resolved != null)
                     return resolved;
             }
+
+            // Package references are implicit for each unit and therefore are
+            // not stored as {$reference} directives in its PCU header.
+            string packagePath = comp.GetRestoredPackageAssemblyPath(assemblySimpleName);
+            if (packagePath != null)
+                return packagePath;
 #endif
             return Compiler.GetReferenceFileName(assemblySimpleName + ".dll", fallbackDirectory);
         }

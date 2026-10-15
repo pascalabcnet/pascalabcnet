@@ -13,6 +13,21 @@ namespace VisualPascalABCPlugins
 
         public void Handle(Net10CompilerEvent value, Action<string> message, Action<string> status)
         {
+            if (value.state == "NuGetRestoreStarting")
+            {
+                status(".NET 10: " + string.Format(resource("STATETEXT_NUGETRESTORING{0}"), value.fileName));
+                return;
+            }
+            if (value.state == "NuGetPackagesInstalled")
+            {
+                message("[.NET 10] " + string.Format(resource("STATE_NUGETPACKAGESINSTALLED{0}"), value.fileName));
+                return;
+            }
+            if (value.state == "NuGetPackageInstalled")
+            {
+                message("[.NET 10] " + string.Format(resource("STATE_NUGETPACKAGEINSTALLED{0}"), value.fileName));
+                return;
+            }
             string key = null;
             switch (value.state)
             {

@@ -157,6 +157,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+#if PABCNET_MODERN
+using PascalABCNet.PackageServices;
+using NuGetPackageRequirement = PascalABCNet.PackageServices.PackageRequirement;
+#endif
 
 namespace PascalABCCompiler
 {
@@ -493,7 +497,10 @@ namespace PascalABCCompiler
         BeginCompileFile, BeginParsingFile, EndParsingFile, CompileInterface, CompileImplementation, EndCompileFile,
         ReadDLL, ReadPCUFile, SavePCUFile, CodeGeneration, CompilationFinished, PCUReadingError, PCUWritingError,
         SemanticTreeConverterConnected, SemanticTreeConversion, SyntaxTreeConversion,
-        CompilerProcessRestarted
+        CompilerProcessRestarted,
+#if PABCNET_MODERN
+        NuGetRestoreStarting, NuGetPackagesInstalled, NuGetPackageInstalled
+#endif
     }
 
     [Serializable()]
@@ -837,6 +844,116 @@ namespace PascalABCCompiler
         private Dictionary<string, PackageRequirement> packageRequirements =
             new Dictionary<string, PackageRequirement>(StringComparer.OrdinalIgnoreCase);
 
+#if PABCNET_MODERN
+        private ResolvedPackageGraph restoredPackageGraph;
+        private PreparedReference[] packagePreparedReferences = Array.Empty<PreparedReference>();
+        private Dictionary<string, string> packageAssemblyPaths =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        internal string GetRestoredPackageAssemblyPath(string assemblySimpleName)
+        {
+            return packageAssemblyPaths.TryGetValue(assemblySimpleName + ".dll", out string path)
+                ? path : null;
+        }
+
+        private void RestoreMainProgramPackages(CompilationUnit mainUnit)
+        {
+            if (CompilerOptions.ForIntellisense || !(mainUnit.SyntaxTree is SyntaxTree.program_module))
+                return;
+
+            var directives = GetDirectivesAsSemanticNodes(
+                mainUnit.SyntaxTree.compiler_directives, mainUnit.UnitFileName)
+                .Where(d => string.Equals(d.name, StringConstants.compiler_directive_package,
+                    StringComparison.OrdinalIgnoreCase))
+                .Reverse().ToList();
+            if (directives.Count == 0)
+                return;
+
+            var compilationDirectives = new Dictionary<string, List<compiler_directive>>(
+                StringComparer.OrdinalIgnoreCase)
+            {
+                { StringConstants.compiler_directive_package, directives }
+            };
+            packageRequirements = GetPackageRequirements(compilationDirectives);
+            if (packageRequirements.Count == 0)
+                return;
+
+            var request = new PackageRestoreRequest
+            {
+                Packages = packageRequirements.Values.Select(p =>
+                    new NuGetPackageRequirement(p.Id, p.Version)).ToArray(),
+                ProgramFilePath = mainUnit.UnitFileName
+            };
+            try
+            {
+                OnChangeCompilerState(this, CompilerState.NuGetRestoreStarting,
+                    string.Join(", ", packageRequirements.Values
+                        .OrderBy(p => p.Id, StringComparer.OrdinalIgnoreCase)
+                        .Select(p => p.Id + " " + p.Version)));
+                restoredPackageGraph = new PackageRestoreService().RestoreAsync(request)
+                    .GetAwaiter().GetResult();
+                if (restoredPackageGraph.InstalledPackageCount > 0)
+                {
+                    OnChangeCompilerState(this, CompilerState.NuGetPackagesInstalled,
+                        restoredPackageGraph.InstalledPackageCount.ToString());
+                    if (restoredPackageGraph.InstalledPackages.Count ==
+                        restoredPackageGraph.InstalledPackageCount)
+                        foreach (var package in restoredPackageGraph.InstalledPackages)
+                            OnChangeCompilerState(this, CompilerState.NuGetPackageInstalled,
+                                package.Id + " " + package.Version);
+                }
+                packagePreparedReferences = PreparePackageSemanticReferences(mainUnit);
+            }
+            catch (PackageRestoreException error)
+            {
+                throw new PackageRestoreFailed(error.Message, mainUnit.UnitFileName,
+                    GetSourceContext(packageRequirements.Values.First().Origin));
+            }
+            catch (ArgumentException error)
+            {
+                throw new PackageRestoreFailed(error.Message, mainUnit.UnitFileName,
+                    GetSourceContext(packageRequirements.Values.First().Origin));
+            }
+        }
+
+        private PreparedReference[] PreparePackageSemanticReferences(CompilationUnit mainUnit)
+        {
+            var result = new List<PreparedReference>();
+            var pathsByAssemblyName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var origin = GetSourceContext(packageRequirements.Values.First().Origin);
+            foreach (var package in restoredPackageGraph.Packages)
+            {
+                // The existing semantic reader loads assemblies for reflection. A NuGet
+                // ref/ assembly cannot be loaded for execution, so use its matching
+                // runtime implementation until metadata-only reading is supported.
+                if (package.CompileAssemblies.Count != 0 && package.RuntimeAssemblies.Count == 0)
+                    throw new PackageRestoreFailed(
+                        $"NuGet package '{package.Id}' has only reference assemblies; the compiler needs a runtime assembly for semantic analysis.",
+                        mainUnit.UnitFileName, origin);
+
+                foreach (string path in package.RuntimeAssemblies)
+                {
+                    string assemblyName = Path.GetFileName(path);
+                    if (pathsByAssemblyName.TryGetValue(assemblyName, out string previousPath))
+                    {
+                        if (!string.Equals(previousPath, path,
+                                OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+                            throw new PackageRestoreFailed(
+                                $"NuGet packages contain two different assemblies named '{assemblyName}'.",
+                                mainUnit.UnitFileName, origin);
+                        continue;
+                    }
+                    pathsByAssemblyName.Add(assemblyName, path);
+                    var specification = new ReferenceSpec(path, Path.GetDirectoryName(path),
+                        mainUnit.UnitFileName, origin);
+                    result.Add(new PreparedReference(new ResolvedReference(specification, path, false), path));
+                }
+            }
+            packageAssemblyPaths = pathsByAssemblyName;
+            return result.ToArray();
+        }
+#endif
+
         /// <summary>
         /// Формирует словарь директив, относящихся ко всей итоговой компиляции.
         /// Директивы лексера, отдельного модуля и редактора уже обработаны на
@@ -984,6 +1101,12 @@ namespace PascalABCCompiler
             UnitsToCompileDelayedList.Clear();
             DLLCache.Clear();
             project = null;
+            packageRequirements.Clear();
+#if PABCNET_MODERN
+            restoredPackageGraph = null;
+            packagePreparedReferences = Array.Empty<PreparedReference>();
+            packageAssemblyPaths.Clear();
+#endif
 
             // обнуляем здесь, чтобы значение не сохранялось между запусками  EVA
             CompilerOptions.DisableStandardUnits = false;
@@ -1524,6 +1647,19 @@ namespace PascalABCCompiler
                             netCompilerOptions.RtlPABCSystemType = NetHelper.NetHelper.FindRtlType("PABCSystem.PABCSystem");
 
                         GenerateILCode(semanticTree, netCompilerOptions, resourceFiles);
+#if PABCNET_MODERN
+                        if (!CompilerOptions.ForIntellisense &&
+                            (CompilerOptions.OutputFileType == CompilerOptions.OutputType.ConsoleApplicaton ||
+                             CompilerOptions.OutputFileType == CompilerOptions.OutputType.WindowsApplication))
+                        {
+                            if (restoredPackageGraph != null)
+                                PackageRuntimeManifestWriter.WriteForExecutable(
+                                    restoredPackageGraph, CompilerOptions.OutputFileName);
+                            else
+                                PackageRuntimeManifestWriter.RemoveGeneratedManifest(
+                                    CompilerOptions.OutputFileName);
+                        }
+#endif
                     }
                 }
                 #endregion
@@ -2822,6 +2958,13 @@ namespace PascalABCCompiler
             }
 
 #if PABCNET_MODERN
+            // Apply the program's package graph to every Pascal unit before that
+            // unit's interface or implementation is analysed. The prepared paths
+            // stay in the NuGet cache; package runtime staging is a separate step.
+            preparedReferences.AddRange(packagePreparedReferences);
+#endif
+
+#if PABCNET_MODERN
             var collectibleReferencePaths = new List<string>();
             var originalCollectibleReferencePaths = new List<string>();
             foreach (PreparedReference reference in preparedReferences)
@@ -3608,6 +3751,11 @@ namespace PascalABCCompiler
 
             // получение итогового синтаксического дерева после сахарных преобразований
             ConstructSyntaxTreeAndRunSugarConversions(unitFileName, currentUnit, out docs);
+
+#if PABCNET_MODERN
+            if (firstCompilationUnit == currentUnit)
+                RestoreMainProgramPackages(currentUnit);
+#endif
 
             InitializeCompilerOptionsRelatedToStandardUnits(currentUnit.SyntaxTree);
 

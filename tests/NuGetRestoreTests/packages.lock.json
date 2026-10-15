@@ -105,8 +105,8 @@
       },
       "System.Security.Cryptography.Pkcs": {
         "type": "Transitive",
-        "resolved": "8.0.1",
-        "contentHash": "CoCRHFym33aUSf/NtWSVSZa99dkd0Hm7OCZUxORBjRB16LNhIEOf8THPqzIYlvKM0nNDAPTRBa1FxEECrgaxxA=="
+        "resolved": "8.0.2",
+        "contentHash": "VWACYq0JGxi9sw3TonSSV4B2MfhYk5nhgOtp9wbrt5NFOtUetFqHkMZylcCwPX+117cBJH5EnIzIy6X4OKn/kA=="
       },
       "System.Security.Cryptography.ProtectedData": {
         "type": "Transitive",
@@ -118,7 +118,8 @@
         "dependencies": {
           "NuGet.Commands": "[7.9.0, )",
           "NuGet.ProjectModel": "[7.9.0, )",
-          "NuGet.Protocol": "[7.9.0, )"
+          "NuGet.Protocol": "[7.9.0, )",
+          "System.Security.Cryptography.Pkcs": "[8.0.2, )"
         }
       }
     }

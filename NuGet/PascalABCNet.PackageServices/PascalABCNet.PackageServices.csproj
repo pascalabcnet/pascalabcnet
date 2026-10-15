@@ -14,5 +14,7 @@
     <PackageReference Include="NuGet.Commands" Version="$(NuGetClientVersion)" />
     <PackageReference Include="NuGet.ProjectModel" Version="$(NuGetClientVersion)" />
     <PackageReference Include="NuGet.Protocol" Version="$(NuGetClientVersion)" />
+    <!-- NuGet.Packaging 7.9.0 requests vulnerable Pkcs 8.0.1. Pin the patched 8.0.2. -->
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.2" />
   </ItemGroup>
 </Project>

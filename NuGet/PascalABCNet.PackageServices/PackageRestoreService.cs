@@ -130,10 +130,14 @@ public sealed class PackageRestoreService
                     GetAssemblies(directory, library.CompileTimeAssemblies),
                     GetAssemblies(directory, library.RuntimeAssemblies));
             }).ToArray();
+        var installedIds = logger.InstalledPackageIds.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var installedPackages = packages.Where(package => installedIds.Contains(package.Id))
+            .Select(package => new PackageRequirement(package.Id, package.Version)).ToArray();
         return new ResolvedPackageGraph("net10.0", assetsPath, Array.AsReadOnly(packages),
             summary.NoOpRestore, summary.InstallCount, Array.AsReadOnly(diagnostics))
         {
-            Configuration = environment.Configuration
+            Configuration = environment.Configuration,
+            InstalledPackages = Array.AsReadOnly(installedPackages)
         };
     }
 
@@ -160,9 +164,20 @@ public sealed class PackageRestoreService
     private sealed class DiagnosticLogger : LoggerBase
     {
         internal ConcurrentQueue<PackageDiagnostic> Messages { get; } = new();
+        internal ConcurrentQueue<string> InstalledPackageIds { get; } = new();
 
         public override void Log(ILogMessage message)
         {
+            // NuGet reports a completed install at Information level. Keep only
+            // the package ID; source URLs and cache paths must not enter IDE logs.
+            if (message.Level == LogLevel.Information &&
+                message.Message.StartsWith("Installed ", StringComparison.Ordinal))
+            {
+                string identity = message.Message.Substring("Installed ".Length);
+                int space = identity.IndexOf(' ');
+                if (space > 0)
+                    InstalledPackageIds.Enqueue(identity.Substring(0, space));
+            }
             if (message.Level is LogLevel.Warning or LogLevel.Error)
                 Messages.Enqueue(new PackageDiagnostic(message.Level.ToString(),
                     message.Code.ToString(), message.Message));

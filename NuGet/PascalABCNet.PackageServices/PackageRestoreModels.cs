@@ -50,6 +50,8 @@ public sealed record ResolvedPackageGraph(
     IReadOnlyList<PackageDiagnostic> Diagnostics)
 {
     public required PackageRestoreConfiguration Configuration { get; init; }
+    /// <summary>Packages actually installed into the global cache by this restore.</summary>
+    public IReadOnlyList<PackageRequirement> InstalledPackages { get; init; } = Array.Empty<PackageRequirement>();
 }
 
 public sealed class PackageRestoreException : Exception

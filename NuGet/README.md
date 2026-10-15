@@ -31,7 +31,16 @@ dotnet build NuGet\PascalABCNet.NuGet.slnx -c Release
 Помимо `PascalABCNet.PackageServices.dll` туда копируются зависимости NuGet.
 Файл `packages.lock.json` фиксирует их версии и должен храниться в Git.
 
-Проект пока не включён в общую сборку и дистрибутив PascalABC.NET.
+Проект включён в modern-сборку `Net10Runtime.slnx` как зависимость компилятора;
+при сборке консольной поставки его DLL и зависимости попадают в общий каталог
+`bin-net10`.
+
+Modern-компилятор подключает библиотеку через `{$package}`. Для программы
+под .NET 10 он записывает `.deps.json` и `runtimeconfig.json`, позволяя
+обычному `dotnet` загружать управляемые DLL из общего кеша NuGet без
+копирования рядом с программой. Проверка интеграции: см.
+`tests/NuGetRestoreTests/README.md` и режим `--compiler`.
+
 ## Использование библиотеки
 
 ```csharp

@@ -360,6 +360,16 @@ namespace PascalABCCompiler.Errors
         }
     }
 
+    /// <summary>NuGet restore failed for a package directive.</summary>
+    public class PackageRestoreFailed : CompilerThrownError
+    {
+        public PackageRestoreFailed(string message, string fileName, SourceContext sc)
+            : base(message, fileName)
+        {
+            source_context = sc;
+        }
+    }
+
     /// <summary>
     /// Бросается, если пользователь указывает неподдерживаемый тип выходного файла (например, в директиве {$apptype ...})
     /// </summary>

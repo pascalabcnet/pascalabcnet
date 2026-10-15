@@ -29,6 +29,12 @@
       '$(MSBuildProjectName)' == 'PABCCoreUtils'">true</PabcDualTargetProject>
   </PropertyGroup>
 
+  <!-- Directory.Build.props is read before NETCoreSdkVersion is set. The selected
+       SDK path is already known here; an explicit override still takes precedence. -->
+  <PropertyGroup Condition="'$(PabcDualTargetProject)' == 'true' And '$(PABCNET_LEGACY_ONLY)' == '' And $([System.Text.RegularExpressions.Regex]::IsMatch('$(MSBuildSDKsPath)', '[\\/]sdk[\\/][0-9]\.'))">
+    <PABCNET_LEGACY_ONLY>true</PABCNET_LEGACY_ONLY>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(PabcDualTargetProject)' == 'true' And ('$(TargetFramework)' == 'net472' Or '$(PABCNET_LEGACY_ONLY)' == 'true')">
     <OutputPath>$(MSBuildThisFileDirectory)bin\</OutputPath>
     <IntermediateOutputPath>$(MSBuildProjectDirectory)\obj\$(Configuration)\net472\</IntermediateOutputPath>

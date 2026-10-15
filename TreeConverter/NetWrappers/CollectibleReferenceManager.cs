@@ -88,9 +88,9 @@ namespace PascalABCCompiler.NetHelper
             return new List<Assembly>(currentContext.Assemblies).ToArray();
         }
 
-        internal static bool CurrentGenerationHasChanged()
+        internal static bool CurrentGenerationHasChanged(bool includeMissingFiles = true)
         {
-            return currentContext != null && currentContext.HasChanged();
+            return currentContext != null && currentContext.HasChanged(includeMissingFiles);
         }
 
         internal static void MarkValidationFailure()
@@ -351,11 +351,19 @@ namespace PascalABCCompiler.NetHelper
                     return LoadFromStream(stream);
             }
 
-            internal bool HasChanged()
+            internal bool HasChanged(bool includeMissingFiles)
             {
                 foreach (KeyValuePair<string, FileFingerprint> pair in loadedFileFingerprints)
-                    if (!File.Exists(pair.Key) || pair.Value.HasChanged(pair.Key))
+                {
+                    if (!File.Exists(pair.Key))
+                    {
+                        if (includeMissingFiles)
+                            return true;
+                        continue;
+                    }
+                    if (pair.Value.HasChanged(pair.Key))
                         return true;
+                }
                 return false;
             }
 
@@ -393,30 +401,48 @@ namespace PascalABCCompiler.NetHelper
             private void RememberFile(string path)
             {
                 string fullPath = Path.GetFullPath(path);
-                loadedFileFingerprints[fullPath] = GetFileFingerprint(fullPath);
+                if (!loadedFileFingerprints.ContainsKey(fullPath))
+                    loadedFileFingerprints[fullPath] = GetFileFingerprint(fullPath);
             }
 
             private static FileFingerprint GetFileFingerprint(string path)
             {
                 var file = new FileInfo(path);
-                return new FileFingerprint(file.Length, file.LastWriteTimeUtc);
+                using (FileStream stream = File.OpenRead(path))
+                    return new FileFingerprint(file.Length, file.LastWriteTimeUtc,
+                        SHA256.HashData(stream));
             }
 
-            private readonly struct FileFingerprint
+            private sealed class FileFingerprint
             {
                 private readonly long length;
-                private readonly DateTime lastWriteTimeUtc;
+                private DateTime lastWriteTimeUtc;
+                private readonly byte[] contentHash;
 
-                internal FileFingerprint(long length, DateTime lastWriteTimeUtc)
+                internal FileFingerprint(long length, DateTime lastWriteTimeUtc,
+                    byte[] contentHash)
                 {
                     this.length = length;
                     this.lastWriteTimeUtc = lastWriteTimeUtc;
+                    this.contentHash = contentHash;
                 }
 
                 internal bool HasChanged(string path)
                 {
                     var file = new FileInfo(path);
-                    return file.Length != length || file.LastWriteTimeUtc != lastWriteTimeUtc;
+                    if (file.Length != length)
+                        return true;
+                    if (file.LastWriteTimeUtc == lastWriteTimeUtc)
+                        return false;
+
+                    // TEST-NET10-PACKAGE-ALC: reinstalling an identical package
+                    // changes timestamps, but must not create another generation.
+                    using (FileStream stream = File.OpenRead(path))
+                        if (!CryptographicOperations.FixedTimeEquals(
+                            contentHash, SHA256.HashData(stream)))
+                            return true;
+                    lastWriteTimeUtc = file.LastWriteTimeUtc;
+                    return false;
                 }
             }
         }

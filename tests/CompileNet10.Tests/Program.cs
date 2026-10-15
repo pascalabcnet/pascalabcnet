@@ -816,6 +816,20 @@ internal static partial class Program
         quiet.Handle(new Net10CompilerEvent { state = "Ready", linesCompiled = 2 }, messages.Add, quietStatuses.Add);
         Check(quietStatuses.Count == 3 && quietStatuses[2].Contains("STATETEXT_COMPILATION_SUCCESS"),
             "status retains canonical compile/code-generation/result sequence");
+        var packageMessages = new List<string>();
+        var packageStatuses = new List<string>();
+        var packageDisplay = new Net10CompilerDisplay(key => key);
+        packageDisplay.Handle(new Net10CompilerEvent { state = "NuGetRestoreStarting",
+            fileName = "NodaTime 3.2.2" }, packageMessages.Add, packageStatuses.Add);
+        Check(packageMessages.Count == 0 && packageStatuses[0].Contains("STATETEXT_NUGETRESTORING"),
+            "NuGet restore progress is visible in status without adding a cached-restore message");
+        packageDisplay.Handle(new Net10CompilerEvent { state = "NuGetPackagesInstalled",
+            fileName = "2" }, packageMessages.Add, packageStatuses.Add);
+        packageDisplay.Handle(new Net10CompilerEvent { state = "NuGetPackageInstalled",
+            fileName = "NodaTime 3.2.2" }, packageMessages.Add, packageStatuses.Add);
+        Check(packageMessages.Count == 2 && packageMessages[0].Contains("STATE_NUGETPACKAGESINSTALLED") &&
+              packageMessages[1].Contains("STATE_NUGETPACKAGEINSTALLED"),
+            "newly downloaded NuGet packages are listed in compiler messages");
     }
 
     private static void CheckExternalRunRouting()
