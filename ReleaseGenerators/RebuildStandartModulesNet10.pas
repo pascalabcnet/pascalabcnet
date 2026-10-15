@@ -1,8 +1,9 @@
-// NET10-TESTFIX infrastructure: bootstrap only the platform-neutral base units.
+// Standard units precompiled for the .NET 10 distribution.
 uses
   PABCSystem,
   PABCExtensions,
   __RunMode,
+  __RedirectIOMode,
   NumLibABC,
   IniFile,
   Utils,
@@ -11,6 +12,7 @@ uses
   ABCDatabases,
   School,
   SF,
+  PT4,
   DataFrameABC,
   DataFrameABCCore,
   LinearAlgebraML,

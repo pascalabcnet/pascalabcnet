@@ -113,6 +113,7 @@ try
 
     await CheckSourceSnapshotsAsync(
         process, sourceRoot, outputRoot, isNet10, firstRequestId: 7);
+    await CheckSnapshotPcuFreshnessAsync(process, sourceRoot, outputRoot, isNet10);
 
     await File.WriteAllTextAsync(
         sourcePath,
@@ -212,6 +213,23 @@ try
         value => errors.Add(value));
     Check(!eventError.GetProperty("success").GetBoolean() &&
         errors.Last().GetProperty("errorCount").GetInt32() > 0, "failed compilation streams events and final diagnostics");
+    if (isNet10)
+    {
+        var unitSource = Path.Combine(sourceRoot, "Standalone.pas");
+        var unitOutput = Path.Combine(sourceRoot, "net10-output");
+        var unitResult = await CompileAsync(process, 900, unitSource, unitOutput,
+            sourceFiles: new[] { new SourceFileInput(unitSource,
+                "unit Standalone; interface procedure p1; implementation procedure p1; begin end; end.") });
+        CheckSuccess(unitResult, "standalone unit compilation without a binary output directory");
+        Check(File.Exists(Path.ChangeExtension(unitSource, ".pcu")), "standalone unit PCU remains beside source");
+        Check(!Directory.Exists(unitOutput), "PCU-only compilation does not create net10-output");
+        var programSource = Path.Combine(sourceRoot, "AfterUnit.pas");
+        var programResult = await CompileAsync(process, 901, programSource, unitOutput,
+            sourceFiles: new[] { new SourceFileInput(programSource, "uses Standalone; begin p1 end.") });
+        CheckSuccess(programResult, "program compilation after standalone unit");
+        Check(Directory.Exists(unitOutput) && File.Exists(programResult.GetProperty("outputFile").GetString()),
+            "program compilation creates binary output directory on demand");
+    }
     var plainPing = await SendAsync(process, new { id = 29, command = "ping" });
     CheckSuccess(plainPing, "request without emitEvents still receives exactly one final response");
 
@@ -282,6 +300,73 @@ static async Task<JsonElement> CompileAsync(
     return await SendAsync(process, request);
 }
 
+static async Task CheckSnapshotPcuFreshnessAsync(Process process, string sourceRoot, string outputRoot, bool isNet10)
+{
+    var folder = Path.Combine(sourceRoot, "pcu-freshness");
+    Directory.CreateDirectory(folder);
+    var a = Path.Combine(folder, "FreshA.pas");
+    var b = Path.Combine(folder, "FreshB.pas");
+    var c = Path.Combine(folder, "FreshC.pas");
+    var unrelated = Path.Combine(folder, "FreshUnrelated.pas");
+    var main = Path.Combine(folder, "FreshMain.pas");
+    static string UnitA(int value) => $"unit FreshA; interface function ValueA: integer; implementation function ValueA := {value}; end.";
+    await File.WriteAllTextAsync(a, UnitA(1), new UTF8Encoding(false));
+    await File.WriteAllTextAsync(b, "unit FreshB; interface uses FreshA; function ValueB: integer; implementation function ValueB := ValueA; end.", new UTF8Encoding(false));
+    await File.WriteAllTextAsync(c, "unit FreshC; interface uses FreshB; function ValueC: integer; implementation function ValueC := ValueB; end.", new UTF8Encoding(false));
+    const string unrelatedText = "unit FreshUnrelated; interface function UnrelatedValue: integer; implementation function UnrelatedValue := 9; end.";
+    await File.WriteAllTextAsync(unrelated, unrelatedText, new UTF8Encoding(false));
+    await File.WriteAllTextAsync(main, "uses FreshC, FreshUnrelated; begin Println(ValueC + UnrelatedValue) end.", new UTF8Encoding(false));
+
+    var baseline = await CompileAsync(process, 500, main, outputRoot);
+    CheckSuccess(baseline, "transitive PCU baseline");
+    Check(await RunAndCaptureAsync(baseline.GetProperty("outputFile").GetString()!, folder, isNet10) == "10",
+        "transitive baseline uses disk source");
+    var snapshot = await CompileAsync(process, 501, main, outputRoot, sourceFiles: new[]
+    {
+        new SourceFileInput(a, UnitA(31)), new SourceFileInput(unrelated, unrelatedText)
+    });
+    CheckSuccess(snapshot, "transitive changed-module snapshot");
+    Check(await RunAndCaptureAsync(snapshot.GetProperty("outputFile").GetString()!, folder, isNet10) == "40",
+        "transitive snapshot executes editor implementation");
+    foreach (var source in new[] { a, b, c })
+    {
+        var pcu = Path.ChangeExtension(source, ".pcu");
+        Check(File.Exists(pcu), "changed module and dependants still save PCUs: " + Path.GetFileName(pcu));
+        Check(File.GetLastWriteTimeUtc(pcu) < File.GetLastWriteTimeUtc(source),
+            "snapshot-dependent PCU is stale relative to disk: " + Path.GetFileName(pcu));
+    }
+    Check(File.GetLastWriteTimeUtc(Path.ChangeExtension(unrelated, ".pcu")) >= File.GetLastWriteTimeUtc(unrelated),
+        "unchanged snapshot module retains a fresh PCU");
+    Check(await File.ReadAllTextAsync(a) == UnitA(1), "compilation never saves editor text over disk source");
+
+    CheckSuccess(await SendAsync(process, new { id = 502, command = "restart" }), "restart after snapshot");
+    var diskFallback = await CompileAsync(process, 503, main, outputRoot);
+    CheckSuccess(diskFallback, "transitive disk fallback after worker restart");
+    Check(await RunAndCaptureAsync(diskFallback.GetProperty("outputFile").GetString()!, folder, isNet10) == "10",
+        "discarded editor changes cannot leak through transitive PCUs after restart");
+
+    await File.WriteAllTextAsync(a, UnitA(31), new UTF8Encoding(false));
+    var saved = await CompileAsync(process, 504, main, outputRoot, sourceFiles: new[] { new SourceFileInput(a, UnitA(31)) });
+    CheckSuccess(saved, "saved snapshot matches disk source");
+    Check(File.GetLastWriteTimeUtc(Path.ChangeExtension(a, ".pcu")) >= File.GetLastWriteTimeUtc(a),
+        "saved editor text produces a normally fresh PCU");
+    var savedFallback = await CompileAsync(process, 505, main, outputRoot);
+    CheckSuccess(savedFallback, "disk request after saving editor changes");
+    Check(await RunAndCaptureAsync(savedFallback.GetProperty("outputFile").GetString()!, folder, isNet10) == "40",
+        "saved implementation remains available without an editor snapshot");
+
+    var failed = await CompileAsync(process, 506, main, outputRoot, sourceFiles: new[]
+    {
+        new SourceFileInput(a, UnitA(77)),
+        new SourceFileInput(main, "uses FreshC; begin MissingSnapshotName end.")
+    });
+    Check(!failed.GetProperty("success").GetBoolean(), "compilation with an invalid snapshot main fails");
+    var afterFailure = await CompileAsync(process, 507, main, outputRoot);
+    CheckSuccess(afterFailure, "disk compilation after a failed snapshot request");
+    Check(await RunAndCaptureAsync(afterFailure.GetProperty("outputFile").GetString()!, folder, isNet10) == "40",
+        "partially compiled snapshot modules cannot poison the disk cache after an error");
+}
+
 static async Task CheckSourceSnapshotsAsync(
     Process process,
     string sourceRoot,
@@ -350,7 +435,7 @@ static async Task CheckSourceSnapshotsAsync(
     await File.WriteAllTextAsync(
         mainPath,
         "uses DiskSnapshotUnit; " +
-        "begin var result := DiskValue end.",
+        "begin Println(DiskValue) end.",
         new UTF8Encoding(false));
 
     var diskPcuCompile = await CompileAsync(
@@ -367,7 +452,7 @@ static async Task CheckSourceSnapshotsAsync(
                 new SourceFileInput(
                     mainPath,
                     "uses DiskSnapshotUnit; " +
-                    $"begin var result := {snapshotFunction} end."),
+                    $"begin Println({snapshotFunction}) end."),
                 new SourceFileInput(
                     diskUnitPath,
                     "unit DiskSnapshotUnit; interface " +
@@ -375,13 +460,16 @@ static async Task CheckSourceSnapshotsAsync(
                     $"function {snapshotFunction} := {testCase.Value}; end.")
             });
         CheckSuccess(compile, $"module snapshot value {testCase.Value}");
-        Check(true, "new module snapshot overrides disk and stale PCU");
+        Check(await RunAndCaptureAsync(compile.GetProperty("outputFile").GetString()!, sourceRoot, isNet10) ==
+              testCase.Value.ToString(), "new module snapshot overrides disk and stale PCU at runtime");
+        Check(File.Exists(Path.ChangeExtension(diskUnitPath, ".pcu")), "snapshot module still saves its PCU");
     }
 
     var diskFallback = await CompileAsync(
         process, firstRequestId + 6, mainPath, outputRoot);
     CheckSuccess(diskFallback, "request after snapshot without sourceFiles");
-    Check(true, "snapshot does not leak into the next request");
+    Check(await RunAndCaptureAsync(diskFallback.GetProperty("outputFile").GetString()!, sourceRoot, isNet10) == "1",
+        "snapshot does not leak into the next request at runtime");
 
     var invalidUnitPath = Path.Combine(sourceRoot, "InvalidSnapshotUnit.pas");
     await File.WriteAllTextAsync(

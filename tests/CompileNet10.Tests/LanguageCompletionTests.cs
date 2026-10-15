@@ -110,9 +110,13 @@ internal static partial class Program
                 var handleKey = area.GetType().GetMethod("HandleKeyPress", BindingFlags.NonPublic | BindingFlags.Instance);
                 Check((bool)handleKey.Invoke(area, new object[] { 'x' }), "legacy editor handler retains its handled key result");
                 ui.SetActive(true);
-                Check(!(bool)handleKey.Invoke(area, new object[] { 'x' }), "modern completion handler attaches only for selected platform");
+                var subscriptions = (System.Collections.IDictionary)typeof(Net10Completion)
+                    .GetField("subscriptions", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(ui);
+                Check(subscriptions.Count == 2 && (bool)handleKey.Invoke(area, new object[] { 'x' }),
+                    "modern completion attaches without losing the legacy handler's consumed key");
                 ui.SetActive(false);
-                Check((bool)handleKey.Invoke(area, new object[] { 'x' }), "switching back detaches modern handler and restores legacy result");
+                Check(subscriptions.Count == 0 && (bool)handleKey.Invoke(area, new object[] { 'x' }),
+                    "switching back detaches modern handler and preserves legacy result");
                 ui.SetActive(true); open.Remove(main); events.Closed(main);
                 Check((bool)handleKey.Invoke(area, new object[] { 'x' }), "closed tab detaches modern key handler before disposing the editor");
                 open.Add(main); events.Opened(main);

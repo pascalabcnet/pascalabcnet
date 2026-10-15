@@ -35,7 +35,7 @@ Function un.DeleteFiles
  
  GetLineCount:
   ClearErrors
-   FileRead $UninstLog $R0
+   !insertmacro PabcReadLoggedPath $UninstLog $R0
    IntOp $R1 $R1 + 1
    IfErrors 0 GetLineCount
  
@@ -43,7 +43,7 @@ Function un.DeleteFiles
   FileSeek $UninstLog 0 SET
   StrCpy $R2 0
   FindLine:
-   FileRead $UninstLog $R0
+   !insertmacro PabcReadLoggedPath $UninstLog $R0
    IntOp $R2 $R2 + 1
    StrCmp $R1 $R2 0 FindLine
  

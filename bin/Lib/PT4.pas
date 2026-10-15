@@ -2713,62 +2713,62 @@ end;
 
 function  ReadSeqInteger(): sequence of integer;
 begin
-  result := Range(1, GetInteger()).Select(e -> GetInteger()).ToArray();
+  result := PABCSystem.Range(1, GetInteger()).Select(e -> GetInteger()).ToArray();
 end;  
 
 function  ReadSeqReal(): sequence of real;
 begin
-  result := Range(1, GetInteger()).Select(e -> GetReal()).ToArray();
+  result := PABCSystem.Range(1, GetInteger()).Select(e -> GetReal()).ToArray();
 end;  
 
 function ReadSeqString(): sequence of string;
 begin
-  result := Range(1, GetInteger()).Select(e -> GetString()).ToArray();
+  result := PABCSystem.Range(1, GetInteger()).Select(e -> GetString()).ToArray();
 end;           
 
 function  ReadSeqInteger(n: integer): sequence of integer;
 begin
-  result := Range(1, n).Select(e -> GetInteger()).ToArray();
+  result := PABCSystem.Range(1, n).Select(e -> GetInteger()).ToArray();
 end;  
 
 function  ReadSeqReal(n: integer): sequence of real;
 begin
-  result := Range(1, n).Select(e -> GetReal()).ToArray();
+  result := PABCSystem.Range(1, n).Select(e -> GetReal()).ToArray();
 end;  
 
 function ReadSeqString(n: integer): sequence of string;
 begin
-  result := Range(1, n).Select(e -> GetString()).ToArray();
+  result := PABCSystem.Range(1, n).Select(e -> GetString()).ToArray();
 end;           
 
 function  ReadArrInteger(): array of integer;
 begin
-  result := Range(1, GetInteger()).Select(e -> GetInteger()).ToArray();
+  result := PABCSystem.Range(1, GetInteger()).Select(e -> GetInteger()).ToArray();
 end;  
 
 function  ReadArrReal(): array of real;
 begin
-  result := Range(1, GetInteger()).Select(e -> GetReal()).ToArray();
+  result := PABCSystem.Range(1, GetInteger()).Select(e -> GetReal()).ToArray();
 end;  
 
 function ReadArrString(): array of string;
 begin
-  result := Range(1, GetInteger()).Select(e -> GetString()).ToArray();
+  result := PABCSystem.Range(1, GetInteger()).Select(e -> GetString()).ToArray();
 end;           
 
 function  ReadArrInteger(n: integer): array of integer;
 begin
-  result := Range(1, n).Select(e -> GetInteger()).ToArray();
+  result := PABCSystem.Range(1, n).Select(e -> GetInteger()).ToArray();
 end;  
 
 function  ReadArrReal(n: integer): array of real;
 begin
-  result := Range(1, n).Select(e -> GetReal()).ToArray();
+  result := PABCSystem.Range(1, n).Select(e -> GetReal()).ToArray();
 end;  
 
 function ReadArrString(n: integer): array of string;
 begin
-  result := Range(1, n).Select(e -> GetString()).ToArray();
+  result := PABCSystem.Range(1, n).Select(e -> GetString()).ToArray();
 end;   
 
 function ReadMatrInteger(m,n: integer): array [,] of integer;
@@ -3020,9 +3020,9 @@ begin
   result := ReadArrArrString(m, n);
 end;
 
-function  ReadListInteger(n: integer): List<integer> := Range(1, n).Select(e -> GetInteger()).ToList();
-function  ReadListReal(n: integer): List<real> := Range(1, n).Select(e -> GetReal()).ToList();
-function  ReadListString(n: integer): List<string> := Range(1, n).Select(e -> GetString()).ToList();
+function  ReadListInteger(n: integer): List<integer> := PABCSystem.Range(1, n).Select(e -> GetInteger()).ToList();
+function  ReadListReal(n: integer): List<real> := PABCSystem.Range(1, n).Select(e -> GetReal()).ToList();
+function  ReadListString(n: integer): List<string> := PABCSystem.Range(1, n).Select(e -> GetString()).ToList();
 function  ReadListInteger: List<integer> := ReadListInteger(ReadInteger);
 function  ReadListReal: List<real> := ReadListReal(ReadInteger);
 function  ReadListString: List<string> := ReadListString(ReadInteger);

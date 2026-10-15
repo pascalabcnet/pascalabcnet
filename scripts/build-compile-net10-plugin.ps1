@@ -2,7 +2,8 @@
 param(
     [string]$IdeDirectory = '',
     [ValidateSet('Debug', 'Release')]
-    [string]$Configuration = 'Release'
+    [string]$Configuration = 'Release',
+    [switch]$SkipRuntimeBuild
 )
 
 Set-StrictMode -Version Latest
@@ -15,7 +16,12 @@ $IdeDirectory = [System.IO.Path]::GetFullPath($IdeDirectory)
 if ($IdeDirectory -eq $repositoryRoot -or $IdeDirectory -eq [System.IO.Path]::GetPathRoot($IdeDirectory)) {
     throw "Refusing to deploy into a repository or drive root: $IdeDirectory"
 }
-& (Join-Path $PSScriptRoot 'build-net10-runtime.ps1') -Configuration $Configuration
+if ($SkipRuntimeBuild) {
+    & (Join-Path $PSScriptRoot 'assert-net10-runtime.ps1') -Configuration $Configuration
+}
+else {
+    & (Join-Path $PSScriptRoot 'build-net10-runtime.ps1') -Configuration $Configuration
+}
 
 $pluginProject = Join-Path $repositoryRoot 'VisualPlugins\CompileNet10\CompileNet10.csproj'
 & dotnet build $pluginProject --configuration $Configuration `

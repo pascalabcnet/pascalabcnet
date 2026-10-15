@@ -4,7 +4,11 @@
 
 !define REGDIR "Software\PascalABC.NET"
 !define INSTALLDIRREGKEY "InstallDir"
+!ifdef PABC_UNICODE_UNINSTALL_LOG
+!define UninstLog "uninstall-net10.log"
+!else
 !define UninstLog "uninstall.log"
+!endif
 
 InstType $(DESC_Common)
 InstType $(DESC_Minimal)
@@ -12,20 +16,7 @@ InstType $(DESC_Minimal)
 Var UninstLog
 Var PABCWorkNETPath
 
-!macro AddFile FileName
-  FileWrite $UninstLog "$OUTDIR\${FileName}$\r$\n"
-!macroend
-!define AddFile "!insertmacro AddFile"
-
-!macro AddDirectory Path
- FileWrite $UninstLog "${Path}$\r$\n"
-!macroend
-!define AddDirectory "!insertmacro AddDirectory"
-
-!macro AddInstallerFile FileName
-  FileWrite $UninstLog "$INSTDIR\${FileName}$\r$\n"
-!macroend
-!define AddInstallerFile "!insertmacro AddInstallerFile"
+!include InstallerFileLog.nsh
 
 ;--------------------------------
 ;Definitions
@@ -44,7 +35,11 @@ Var PABCWorkNETPath
 ;General
 
   ;Name and file
+!ifdef PABC_WITH_NET10
+  Name "PascalABC.NET v${VERSION} Net10Pack" "PascalABC.NET Net10Pack"
+!else
   Name "PascalABC.NET v${VERSION}" "PascalABC.NET"
+!endif
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\PascalABC.NET"

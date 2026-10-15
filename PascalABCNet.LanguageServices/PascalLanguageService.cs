@@ -13,7 +13,9 @@ public sealed class PascalLanguageService : IPascalLanguageService
 
     private readonly string _documentationLanguageIso;
     private readonly ILanguage _language;
+    private readonly string _standardLibraryDirectory;
     private readonly CodeCompletionController _controller = new();
+    private readonly Dictionary<string, DomConverter> _libraryImplementationModels = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, DocumentState> _states = new(StringComparer.Ordinal);
     private readonly Dictionary<string, CancellationTokenSource> _pendingAnalyses = new(StringComparer.Ordinal);
     private readonly object _pendingAnalysesSync = new();
@@ -32,6 +34,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
         _documentationLanguageIso = documentationLanguageIso;
 
         var fullStandardLibraryDirectory = Path.GetFullPath(standardLibraryDirectory);
+        _standardLibraryDirectory = fullStandardLibraryDirectory;
         if (!File.Exists(Path.Combine(fullStandardLibraryDirectory, "PABCSystem.pas")))
         {
             throw new DirectoryNotFoundException(
@@ -377,6 +380,33 @@ public sealed class PascalLanguageService : IPascalLanguageService
                 var positions = implementation
                     ? state.DomConverter.GetRealization(expression, position.Line, position.Character, keyword)
                     : state.DomConverter.GetDefinition(expression, position.Line, position.Character, keyword, false);
+                if (implementation && positions.Count == 0)
+                {
+                    // Standard modules are normally analyzed interface-only for completion.
+                    // Load their implementation only for an explicit navigation request.
+                    var definitions = state.DomConverter.GetDefinition(expression,
+                        position.Line, position.Character, keyword, false);
+                    foreach (var definition in definitions)
+                    {
+                        if (definition.file_name is null || definition.line <= 0 || definition.column <= 0 ||
+                            !Path.GetFullPath(definition.file_name).StartsWith(
+                                _standardLibraryDirectory + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) ||
+                            !File.Exists(definition.file_name)) continue;
+                        var libraryDom = CodeCompletionController.comp_modules[definition.file_name] as DomConverter;
+                        if (libraryDom is null ||
+                            !_libraryImplementationModels.TryGetValue(definition.file_name, out var implementationModel) ||
+                            !ReferenceEquals(libraryDom, implementationModel))
+                        {
+                            libraryDom = _controller.CompileAllIfNeed(definition.file_name, false);
+                            if (libraryDom.is_compiled)
+                                _libraryImplementationModels[definition.file_name] = libraryDom;
+                        }
+                        if (libraryDom is null || !libraryDom.is_compiled) continue;
+                        positions.AddRange(libraryDom.GetRealization(expression,
+                            definition.line - 1, definition.column - 1,
+                            PascalABCCompiler.Parsers.KeywordKind.Function));
+                    }
+                }
                 var targets = positions.Where(item => item.line > 0 && item.column > 0 &&
                     (item.file_name is not null || item.from_metadata && !string.IsNullOrEmpty(item.metadata)))
                     .Select(item => new NavigationTarget(item.file_name, item.line - 1, item.column - 1,
@@ -621,7 +651,9 @@ public sealed class PascalLanguageService : IPascalLanguageService
         {
             foreach (var candidate in new[]
                      {
+                         Path.Combine(directory.FullName, "LibSource"),
                          Path.Combine(directory.FullName, "Lib"),
+                         Path.Combine(directory.FullName, "pascalabcnet", "bin", "LibSource"),
                          Path.Combine(directory.FullName, "pascalabcnet", "bin", "Lib")
                      })
             {

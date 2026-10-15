@@ -28,7 +28,6 @@ namespace VisualPascalABCPlugins
         private Net10Hover languageHover;
         private Net10Signature languageSignature;
         private Net10Navigation languageNavigation;
-        private ToolStripStatusLabel languageStatus;
         private readonly Timer languageGate = new Timer { Interval = 500 };
 
         public CompileNet10_VisualPascalABCPlugin(IWorkbench workbench)
@@ -61,7 +60,6 @@ namespace VisualPascalABCPlugins
                 languageSignature?.Dispose();
                 languageNavigation?.Dispose();
                 languageDocuments?.Dispose();
-                languageStatus?.Dispose();
                 commandRegistration?.Dispose();
                 if (commandService != null) commandService.LegacyServicesSuspended = false;
                 runner?.Stop();
@@ -117,7 +115,7 @@ namespace VisualPascalABCPlugins
                 }
                 platformItem.Checked = !platformItem.Checked;
                 commandService.LegacyServicesSuspended = platformItem.Checked;
-                status.Start(platformItem.Checked ? ".NET 10" : ".NET 4.7.2");
+                status.StartReady(platformItem.Checked, PascalABCCompiler.StringResources.Get("VP_VEC_STATETEXT_READY"));
                 UpdateLanguageActivity();
             };
             commandRegistration = commandService.RegisterCommandHandler(this);
@@ -133,12 +131,6 @@ namespace VisualPascalABCPlugins
             var documentEvents = workbench.ServiceContainer.DocumentService as IWorkbenchDocumentEvents;
             if (documentEvents != null)
             {
-                var strips = workbench.MainForm.Controls.Find("statusStrip1", true);
-                if (strips.Length == 1 && strips[0] is StatusStrip strip)
-                {
-                    languageStatus = new ToolStripStatusLabel { Name = "Net10LanguageServerStatus", Visible = false };
-                    strip.Items.Add(languageStatus);
-                }
                 languageDocuments = new Net10LanguageDocuments(documentEvents, () =>
                 {
                     var settings = Net10RuntimeSettings.Load(AppDomain.CurrentDomain.BaseDirectory);
@@ -163,14 +155,12 @@ namespace VisualPascalABCPlugins
         private void UpdateLanguageActivity()
         {
             bool selected = platformItem?.Checked == true;
-            if (languageStatus != null) languageStatus.Visible = selected;
             bool enabled = selected && workbench.UserOptions.AllowCodeCompletion;
             languageDocuments?.SetActive(enabled);
             languageCompletion?.SetActive(enabled && workbench.UserOptions.CodeCompletionDot);
             languageHover?.SetActive(enabled && workbench.UserOptions.CodeCompletionHint);
             languageSignature?.SetActive(enabled && workbench.UserOptions.CodeCompletionParams);
             languageNavigation?.SetActive(enabled);
-            if (selected && !enabled && languageStatus != null) languageStatus.Text = "LSP: отключён в настройках";
         }
 
         private void Navigate(List<Net10NavigationTarget> targets)
@@ -206,9 +196,8 @@ namespace VisualPascalABCPlugins
             {
                 form.BeginInvoke(new Action(() =>
                 {
-                    if (languageStatus != null && !languageStatus.IsDisposed &&
-                        platformItem?.Checked == true && workbench.UserOptions.AllowCodeCompletion)
-                        languageStatus.Text = text;
+                    if (platformItem?.Checked == true && workbench.UserOptions.AllowCodeCompletion)
+                        status.ShowLanguageStatus(text);
                 }));
             }
             catch (InvalidOperationException) { }
@@ -256,6 +245,9 @@ namespace VisualPascalABCPlugins
         {
             if (compiling) return;
             IDisposable preparation = null;
+            string cleanupSource = null, cleanupOutput = null;
+            string cleanupOutputRoot = null;
+            bool deleteExe = false, deletePdb = false;
             status.BeginOperation();
             try
             {
@@ -268,7 +260,9 @@ namespace VisualPascalABCPlugins
                 preparation = externalRun.PrepareExternalCompile(document.FileName);
                 var sources = Net10SourceSnapshot.Capture(Net10EditorDocument.Read(document), OpenEditorSources());
                 string fileName = sources[0].fileName;
-                string outputDirectory = Path.Combine(Path.GetDirectoryName(fileName), "net10-output");
+                string outputRoot = workbench.UserOptions.UseOutputDirectory
+                    ? Path.GetFullPath(workbench.UserOptions.OutputDirectory) : null;
+                string outputDirectory = Net10OutputCleanup.GetDirectory(fileName, outputRoot);
                 var runService = workbench.ServiceContainer.RunService;
                 if (run && runService.IsRun())
                     throw new InvalidOperationException("Сначала остановите обычную программу IDE.");
@@ -294,7 +288,7 @@ namespace VisualPascalABCPlugins
                         workbench.ServiceContainer.DocumentService.CurrentCodeFileDocument = document;
                         sources = Net10SourceSnapshot.Capture(Net10EditorDocument.Read(document), OpenEditorSources());
                         fileName = sources[0].fileName;
-                        outputDirectory = Path.Combine(Path.GetDirectoryName(fileName), "net10-output");
+                        outputDirectory = Net10OutputCleanup.GetDirectory(fileName, outputRoot);
                         arguments = runService.HasRunArgument(fileName) ? runService.GetRunArgument(fileName) : "";
                         workbench.ServiceContainer.OperationsService.ClearOutputTextBoxForTabPage(document);
                         display = new Net10CompilerDisplay(key => PascalABCCompiler.StringResources.Get("VP_VEC_" + key));
@@ -342,6 +336,12 @@ namespace VisualPascalABCPlugins
                             SetItemEnabled(stopItem, true);
                             int exitCode = await program.RunAsync(console.Append, console.RequestInput,
                                 lifecycle.Started, error => console.ReportException(error, lifecycle));
+                            // Only a completed run (including Stop/runtime errors), never Compile or a failed launch.
+                            cleanupSource = fileName;
+                            cleanupOutput = Path.GetFullPath(outputFile);
+                            cleanupOutputRoot = outputRoot;
+                            deleteExe = workbench.UserOptions.DeleteEXEAfterExecute;
+                            deletePdb = workbench.UserOptions.DeletePDBAfterExecute;
                             await console.FlushAsync();
                             // Both output streams were queued before this UI continuation.
                             if (exitCode != 0 && !program.WasStopped)
@@ -365,6 +365,10 @@ namespace VisualPascalABCPlugins
             }
             finally
             {
+                // Process/session handles are disposed by now. Keep commands disabled until cleanup finishes.
+                if (cleanupOutput != null && deleteExe && deletePdb)
+                    await System.Threading.Tasks.Task.Run(() =>
+                        Net10OutputCleanup.TryDelete(cleanupSource, cleanupOutput, deleteExe, deletePdb, cleanupOutputRoot));
                 compiling = false;
                 runner = null;
                 runningOutputFile = null;

@@ -581,7 +581,9 @@ internal static class Program
                             if (!string.IsNullOrWhiteSpace(outputDirectory))
                             {
                                 outputDirectory = Path.GetFullPath(outputDirectory);
+#if NETFRAMEWORK
                                 Directory.CreateDirectory(outputDirectory);
+#endif
                             }
 
                             var workerRequest = SerializeJson(

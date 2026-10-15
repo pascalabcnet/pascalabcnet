@@ -1,0 +1,10 @@
+<Solution>
+  <Project Path="PascalABCNet.PackageServices/PascalABCNet.PackageServices.csproj" />
+  <Folder Name="/Tests/">
+    <Project Path="../tests/NuGetRestoreTests/NuGetRestoreTests.csproj" />
+  </Folder>
+  <Folder Name="/Tests/Fixtures/">
+    <Project Path="../tests/NuGetRestoreTests/Fixtures/TestDependency/TestDependency.csproj" />
+    <Project Path="../tests/NuGetRestoreTests/Fixtures/TestRoot/TestRoot.csproj" />
+  </Folder>
+</Solution>

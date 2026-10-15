@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Fixtures/**/*.cs" />
+    <ProjectReference Include="../../NuGet/PascalABCNet.PackageServices/PascalABCNet.PackageServices.csproj" />
+    <ProjectReference Include="Fixtures/TestRoot/TestRoot.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <Target Name="CopyFixtures" AfterTargets="Build">
+    <ItemGroup>
+      <Fixture Include="Fixtures/TestRoot/bin/$(Configuration)/net10.0/TestRoot.dll" />
+      <Fixture Include="Fixtures/TestDependency/bin/$(Configuration)/net10.0/TestDependency.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(Fixture)" DestinationFolder="$(OutputPath)fixtures/lib" />
+    <Copy SourceFiles="Fixtures/TestRoot/obj/$(Configuration)/net10.0/ref/TestRoot.dll"
+          DestinationFolder="$(OutputPath)fixtures/ref" />
+  </Target>
+</Project>

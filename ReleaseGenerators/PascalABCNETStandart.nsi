@@ -1,5 +1,8 @@
 ﻿SetCompressor /SOLID lzma
-OutFile "..\Release\PascalABCNETSetup.exe"
+!ifndef PABC_INSTALLER_OUTFILE
+!define PABC_INSTALLER_OUTFILE "..\Release\PascalABCNETSetup.exe"
+!endif
+OutFile "${PABC_INSTALLER_OUTFILE}"
 !include PascalABCNET_head.nsh
 !include DotNetChecker.nsh
 !include DotNet47.nsh

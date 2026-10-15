@@ -58,6 +58,10 @@ namespace PascalABCCompiler.References
 
                 if (reference.FileName != outputFileName)
                 {
+#if PABCNET_MODERN
+                    // Copy-local assemblies are real outputs; unlike PCU-only compilation.
+                    Directory.CreateDirectory(context.OutputDirectory);
+#endif
                     if (context.OverwriteOutputFile)
                         File.Copy(reference.FileName, outputFileName, true);
                     else if (!File.Exists(outputFileName))

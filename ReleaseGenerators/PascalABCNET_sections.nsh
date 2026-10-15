@@ -10,6 +10,9 @@ SectionGroup $(DESC_Envr) Envr
   !include sect_VisualPABCNET.nsh
   SectionGroup $(DESC_Plugins) Plugins 
     !include sect_PluginInternalErrorReport.nsh
+    !ifdef PABC_WITH_NET10
+      !include sect_Net10.nsh
+    !endif
 	;!include sect_HelpBuilder.nsh
 ;    !include sect_PluginSTV.nsh  
   SectionGroupEnd

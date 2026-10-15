@@ -73,10 +73,14 @@ Windows and case-sensitive on Linux/macOS. A snapshot is scoped to one compile
 request. Snapshot compilations retain the compiler's default PCU-saving behaviour;
 the presence of `sourceFiles` does not disable PCU generation. Snapshot entries
 use `DateTime.MaxValue` as their source timestamp to invalidate older PCUs.
-PCUs saved from editor snapshots remain normal disk cache artifacts. Currently,
-switching a later request back to disk sources does not reliably invalidate a
-PCU written from different snapshot text (covered by the disk-fallback smoke
-regression). This needs a cache-validity fix, not an implicit SavePCU prohibition.
+PCUs saved from editor snapshots remain compiled disk artifacts. If a snapshot
+differs from an existing disk source, PCUs written for that module and its
+transitive dependants are dated two seconds earlier than their own disk sources.
+The ordinary source-newer-than-PCU check therefore recompiles them when editor
+text is discarded, including after worker restart. Matching/saved snapshot text
+and unrelated modules retain normal PCU timestamps. Source files are never
+overwritten and `SavePCU` stays enabled. This also applies to PCUs written during
+a request that ultimately fails to compile its main program.
 Omitting `sourceFiles` preserves ordinary disk-based compilation behaviour.
 
 Diagnostics contain the normalized path and source coordinates of the actual

@@ -26,7 +26,11 @@ internal static partial class Program
         public string FileName { get; set; }
         public string EXEFileName => null;
         public int LinesCount => 1;
-        public ICSharpCode.TextEditor.TextEditorControl TextEditor { get; } = new ICSharpCode.TextEditor.TextEditorControl();
+        public ICSharpCode.TextEditor.TextEditorControl TextEditor { get; }
+        public EditorDocument(ICSharpCode.TextEditor.TextEditorControl editor = null)
+        {
+            TextEditor = editor ?? new ICSharpCode.TextEditor.TextEditorControl();
+        }
         public bool FromMetadata { get; set; }
         public bool DocumentChanged => true;
         public string ToolTipText { get; set; }
@@ -272,6 +276,19 @@ internal static partial class Program
     {
         try
         {
+            CheckOutputCleanup();
+            if (args.Length > 0 && args[0] == "--output-cleanup")
+            {
+                if (args.Length > 1) await CheckOutputCleanupRuns(Path.GetFullPath(args[1]));
+                return 0;
+            }
+            if (args.Length > 0 && args[0] == "--editor-keys")
+            {
+                CheckEditorReleaseConfiguration();
+                CheckEditorKeyDispatch();
+                CheckEditorLoadingAndCaret();
+                return 0;
+            }
             if (args.Length > 0 && args[0] == "--navigation-ui")
             {
                 CheckLanguageNavigation(args.Length > 1 ? args[1] : Path.GetFullPath("bin-net10"));
@@ -288,6 +305,8 @@ internal static partial class Program
             CheckDocumentEvents();
             CheckParserRename();
             CheckAnalysisSuspension();
+            CheckEditorKeyDispatch();
+            CheckEditorLoadingAndCaret();
             // Keep subsequent WinForms checks on the STA test thread; there is no UI message pump here.
             CheckLanguageSynchronizationAsync(args.Length > 0 ? args[0] : Path.GetFullPath("bin-net10")).GetAwaiter().GetResult();
             CheckLanguageCompletion(args.Length > 0 ? args[0] : Path.GetFullPath("bin-net10"));
@@ -339,9 +358,15 @@ internal static partial class Program
                 form.Controls.Add(strip);
                 using (var status = new Net10StatusDisplay(form))
                 {
-                    status.Start(".NET 10");
+                    status.StartReady(true, "Готов");
+                    Check(label.Text == ".NET 10: Готов", "switching to net10 shows localized ready status with platform prefix");
+                    status.StartReady(false, "Готов");
+                    Check(label.Text == "Готов", "switching back shows canonical ready status without platform name");
+                    status.StartReady(true, "Ready");
+                    Check(label.Text == ".NET 10: Ready", "platform ready status preserves the IDE language");
+                    status.StartReady(true, "Готов");
                     status.BeginOperation();
-                    Check(label.Text == ".NET 10", "starting compile adds no transient preparation status");
+                    Check(label.Text == ".NET 10: Готов", "starting compile adds no transient preparation status");
                     status.Update("Компиляция .NET 10 прошла успешно");
                     Check(label.Text == "Компиляция .NET 10 прошла успешно", "net10 compilation result updates shared status line");
                     label.Text = "Обычная компиляция";
@@ -349,6 +374,24 @@ internal static partial class Program
                     Check(label.Text == "Обычная компиляция", "late net10 status preserves ordinary IDE messages");
                     status.Start("Новая компиляция .NET 10");
                     Check(label.Text == "Новая компиляция .NET 10", "new net10 action updates status again");
+                    foreach (string progress in new[] { "LSP: подключение…", "LSP: 1 файлов", "LSP: отключён в настройках" })
+                    {
+                        status.ShowLanguageStatus(progress);
+                        Check(label.Text == "Новая компиляция .NET 10" && strip.Items.Count == 1,
+                            "LSP bookkeeping is invisible and creates no trailing field: " + progress);
+                    }
+                    string error = "LSP: ошибка — Канал был закрыт. " + new string('я', 200);
+                    status.ShowLanguageStatus(error);
+                    Check(label.Text == error && strip.Items.Count == 1,
+                        "long LSP error appears only on the left");
+                    status.ShowLanguageStatus("LSP: связь потеряна — LanguageServer завершился");
+                    Check(label.Text == "LSP: связь потеряна — LanguageServer завершился" && strip.Items.Count == 1,
+                        "idle LSP connection failure appears only on the left");
+                    label.Text = "Компиляция прошла успешно";
+                    status.ShowLanguageStatus("LSP: 2 файлов");
+                    Check(label.Text == "Компиляция прошла успешно", "LSP recovery is silent");
+                    status.Update("Поздний результат .NET 10");
+                    Check(label.Text == "Компиляция прошла успешно", "LSP display preserves shared status ownership");
                 }
             }
             // The editor test needs STA, but subsequent pipe tests have no UI loop.

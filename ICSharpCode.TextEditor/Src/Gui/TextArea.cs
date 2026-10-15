@@ -584,8 +584,13 @@ namespace ICSharpCode.TextEditor
 		/// </returns>
 		protected internal virtual bool HandleKeyPress(char ch)
 		{
-			if (KeyEventHandler != null) {
-				return KeyEventHandler(ch);
+			KeyEventHandler handlers = KeyEventHandler;
+			if (handlers != null) {
+				// A multicast delegate returns only its last subscriber's result.
+				// Once consumed (e.g. begin/end auto-insertion), do not insert the key again.
+				foreach (KeyEventHandler handler in handlers.GetInvocationList()) {
+					if (handler(ch)) return true;
+				}
 			}
 			return false;
 		}

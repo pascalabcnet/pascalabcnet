@@ -92,6 +92,28 @@ try
         "initialize advertises incremental document synchronization");
     Console.WriteLine("PASS initialize over stdio");
 
+    const string changingUnitUri = "file:///C:/a.pas";
+    const string fileBody = "\nbegin\n  var f := OpenWrite('xxx.txt');\n  f.Close;\nend.\n";
+    await WriteDidOpenAsync(input, changingUnitUri, "unit A;" + fileBody, 1, timeout.Token);
+    await WriteRequestAsync(input, 950, "textDocument/completion", changingUnitUri, (3, 4), timeout.Token);
+    using var unitCompletion = await ReadResponseAsync(output, 950, timeout.Token);
+    foreach (var change in new[] { (Version: 2, Text: "//unit A;" + fileBody),
+                                 (Version: 3, Text: "unit A;" + fileBody),
+                                 (Version: 4, Text: "//unit A;" + fileBody) })
+    {
+        await WriteMessageAsync(input, new { jsonrpc = "2.0", method = "textDocument/didChange",
+            @params = new { textDocument = new { uri = changingUnitUri, version = change.Version },
+                contentChanges = new[] { new { text = change.Text } } } }, timeout.Token);
+        await WriteMessageAsync(input, new { jsonrpc = "2.0", method = "textDocument/didSave",
+            @params = new { textDocument = new { uri = changingUnitUri } } }, timeout.Token);
+        await WriteRequestAsync(input, 950 + change.Version, "textDocument/completion", changingUnitUri, (3, 4), timeout.Token);
+        using var changedCompletion = await ReadResponseAsync(output, 950 + change.Version, timeout.Token);
+        Check(!process.HasExited, "LanguageServer survives unit/program header edits and save notifications");
+    }
+    await WriteMessageAsync(input, new { jsonrpc = "2.0", method = "textDocument/didClose",
+        @params = new { textDocument = new { uri = changingUnitUri } } }, timeout.Token);
+    Console.WriteLine("PASS unit/program edits with OpenWrite over stdio");
+
     await WriteMessageAsync(input, new
     {
         jsonrpc = "2.0",
@@ -130,6 +152,31 @@ try
 
     var printStart = source.IndexOf("Print(result)", StringComparison.Ordinal);
     Check(printStart >= 0, "Global completion marker exists");
+
+    await WriteRequestAsync(input, 900, "textDocument/definition", documentUri,
+        GetPosition(source, printStart + 1), timeout.Token);
+    using var printDefinition = await ReadResponseAsync(output, 900, timeout.Token);
+    var serverRoot = Path.GetDirectoryName(Path.GetFullPath(serverAssembly))!;
+    var librarySourceRoot = Directory.Exists(Path.Combine(serverRoot, "LibSource"))
+        ? Path.Combine(serverRoot, "LibSource") : Path.Combine(serverRoot, "Lib");
+    var expectedSystemSource = Path.Combine(librarySourceRoot, "PABCSystem.pas");
+    Check(printDefinition.RootElement.GetProperty("result").EnumerateArray().Any(location =>
+            string.Equals(new Uri(location.GetProperty("uri").GetString()!).LocalPath,
+                expectedSystemSource, StringComparison.OrdinalIgnoreCase)),
+        "Print definition navigates to the server kit's standard-library source");
+    Console.WriteLine("PASS standard-library source navigation over stdio");
+    await WriteRequestAsync(input, 901, "textDocument/implementation", documentUri,
+        GetPosition(source, printStart + 1), timeout.Token);
+    using var printImplementation = await ReadResponseAsync(output, 901, timeout.Token);
+    var implementationSectionLine = Array.FindIndex(File.ReadAllLines(expectedSystemSource),
+        line => line.Trim().Equals("implementation", StringComparison.OrdinalIgnoreCase));
+    Check(implementationSectionLine >= 0 &&
+        printImplementation.RootElement.GetProperty("result").EnumerateArray().Any(location =>
+            string.Equals(new Uri(location.GetProperty("uri").GetString()!).LocalPath,
+                expectedSystemSource, StringComparison.OrdinalIgnoreCase) &&
+            location.GetProperty("range").GetProperty("start").GetProperty("line").GetInt32() > implementationSectionLine),
+        "Ctrl-click navigation targets the implementation section in the server kit's library source");
+    Console.WriteLine("PASS standard-library implementation navigation over stdio");
 
     await WriteRequestAsync(
         input,
@@ -878,6 +925,8 @@ finally
         process.Kill(entireProcessTree: true);
         await process.WaitForExitAsync();
     }
+    var capturedErrors = await stderrTask;
+    if (!string.IsNullOrWhiteSpace(capturedErrors)) Console.Error.WriteLine(capturedErrors);
 }
 
 static async Task WriteDidOpenAsync(

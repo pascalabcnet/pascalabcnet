@@ -6,11 +6,13 @@
     <IdeReferenceDirectory Condition="'$(IdeReferenceDirectory)' == ''">$(MSBuildProjectDirectory)\..\..\bin</IdeReferenceDirectory>
   </PropertyGroup>
   <ItemGroup>
+    <None Update="Fixtures\EditorProgram.pas;Fixtures\EditorUnit.pas" CopyToOutputDirectory="PreserveNewest" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10ControllerClient.cs" Link="Net10ControllerClient.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10Diagnostics.cs" Link="Net10Diagnostics.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10CompilerDisplay.cs" Link="Net10CompilerDisplay.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10RuntimeSettings.cs" Link="Net10RuntimeSettings.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10ProgramRunner.cs" Link="Net10ProgramRunner.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10OutputCleanup.cs" Link="Net10OutputCleanup.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10SourceSnapshot.cs" Link="Net10SourceSnapshot.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10EditorDocument.cs" Link="Net10EditorDocument.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10StatusDisplay.cs" Link="Net10StatusDisplay.cs" />

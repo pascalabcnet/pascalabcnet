@@ -34,6 +34,7 @@ namespace VisualPascalABC
 
         public static void Highlight(TextArea textArea)
         {
+            textArea.BeginUpdate();
             try
             {
 
@@ -83,7 +84,6 @@ namespace VisualPascalABC
                         textArea.Document.MarkerStrategy.AddMarker(marker);
                         marks.Add(marker);
                         textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, textArea.Document.GetLineNumberForOffset(beg_off)));
-                        textArea.EndUpdate();
                         Beg = textArea.Document.OffsetToPosition(end_pos.start_pos);
                         End = textArea.Document.OffsetToPosition(end_pos.start_pos + end_pos.len);
                         marker = new TextMarker(end_pos.start_pos, end_pos.len, TextMarkerType.SolidBlock, System.Drawing.Color.FromArgb(219, 224, 204));
@@ -91,8 +91,6 @@ namespace VisualPascalABC
                         textArea.Document.MarkerStrategy.AddMarker(marker);
                         marks.Add(marker);
                         textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, textArea.Document.GetLineNumberForOffset(end_pos.start_pos)));
-                        textArea.EndUpdate();
-                        textArea.Document.CommitUpdate();
                     }
                 }
                 else if (string.Compare(word, "end", true) == 0 || string.Compare(word, "until", true) == 0)
@@ -111,7 +109,6 @@ namespace VisualPascalABC
                         textArea.Document.MarkerStrategy.AddMarker(marker);
                         marks.Add(marker);
                         textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, textArea.Document.GetLineNumberForOffset(beg_off)));
-                        textArea.EndUpdate();
                         Beg = textArea.Document.OffsetToPosition(beg_pos.start_pos);
                         End = textArea.Document.OffsetToPosition(beg_pos.start_pos + beg_pos.len);
                         marker = new TextMarker(beg_pos.start_pos, beg_pos.len, TextMarkerType.SolidBlock, System.Drawing.Color.FromArgb(219, 224, 204));
@@ -119,8 +116,6 @@ namespace VisualPascalABC
                         textArea.Document.MarkerStrategy.AddMarker(marker);
                         marks.Add(marker);
                         textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, textArea.Document.GetLineNumberForOffset(beg_pos.start_pos)));
-                        textArea.EndUpdate();
-                        textArea.Document.CommitUpdate();
                     }
                 }
             }
@@ -129,6 +124,10 @@ namespace VisualPascalABC
 #if DEBUG
                 File.AppendAllText("log.txt", DateTime.Now + Environment.NewLine + e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
 #endif
+            }
+            finally
+            {
+                textArea.EndUpdate();
             }
         }
 
@@ -270,7 +269,6 @@ namespace VisualPascalABC
                     {
                         textArea.Document.MarkerStrategy.RemoveMarker(marker);
                         textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, textArea.Document.GetLineNumberForOffset(marker.Offset)));
-                        textArea.EndUpdate();
                     }
                     catch
                     {
@@ -279,7 +277,6 @@ namespace VisualPascalABC
                 }
                 marks.Clear();
             }
-            textArea.Document.CommitUpdate();
         }
 
         class TmpPos

@@ -34,8 +34,22 @@ namespace VisualPascalABCPlugins
             Update(text);
         }
 
+        public void StartReady(bool modern, string readyText)
+        {
+            Start(modern ? ".NET 10: " + readyText : readyText);
+        }
+
         // Claim the next compilation's messages without adding a transient status.
         public void BeginOperation() { owned = true; }
+
+        // Only errors are visible, in the shared left-hand status field.
+        public void ShowLanguageStatus(string text)
+        {
+            if (disposed || form.IsDisposed) return;
+            bool failed = text.StartsWith("LSP: ошибка — ", StringComparison.Ordinal) ||
+                text.StartsWith("LSP: связь потеряна — ", StringComparison.Ordinal);
+            if (failed) Start(text);
+        }
 
         public void Update(string text)
         {

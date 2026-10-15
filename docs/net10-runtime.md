@@ -28,7 +28,13 @@ Lib/Lng берутся только из версионируемых исход
 сборку и экспортирует её в OutputRoot/net10. net-framework остаётся прежним.
 `_RebuildStandartModules_net10.bat` использует ту же сборку и пересоздаёт PCU.
 `_BuildConsoleNet10Distribution.bat` упаковывает этот комплект по манифесту.
-Windows-инсталлятор, Tooling и VS Code extension на этом этапе не меняются.
+Для общего выпуска доступны режимы без повторной сборки: `--skip-build`
+у пересборки модулей/консольной упаковки и `-SkipRuntimeBuild` у сборки
+плагина IDE. Порядок подготовки, тестов и упаковки описан в
+[release-pipeline.md](release-pipeline.md).
+Двуцелевой Windows-инсталлятор упаковывает готовый комплект в `$INSTDIR\Net10`
+через `scripts/build-net10-ide-installer.ps1`, без Microsoft runtime и SDK.
+Tooling и VS Code extension в этот установщик не входят.
 
 LanguageServer работает отдельным процессом, но находится в этом же каталоге:
 `dotnet bin-net10/PascalABCNet.LanguageServer.dll --stdio --documentation-language ru`.

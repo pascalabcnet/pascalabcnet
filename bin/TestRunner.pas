@@ -53,6 +53,8 @@ begin
   Result := (new DirectoryInfo(dir)).Parent.FullName + PathSeparator + 'CodeExamples' + PathSeparator + CurrentLanguageInfo.languageName;
 end;
 
+{$include '..\tests\LegacyTestRunnerTests\ExpectedDiagnosticHeader.inc'}
+
 procedure CompileErrorTests(withide: boolean);
 begin
   
@@ -72,7 +74,7 @@ begin
     var errorMessage := '';
     if content.StartsWith(commentSymbol + '!') then
     begin
-      errorMessage := content.Substring(commentSymbol.Length + 1, content.IndexOf(System.Environment.NewLine) - commentSymbol.Length + 1).Trim;
+      errorMessage := ExpectedDiagnosticMessage(content, commentSymbol);
     end;
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
@@ -149,7 +151,7 @@ begin
     end;
     if content.StartsWith(commentSymbol + '!') then
     begin
-      var warning := content.Substring(commentSymbol.Length + 1, content.IndexOf(System.Environment.NewLine) - commentSymbol.Length + 1).Trim;
+      var warning := ExpectedDiagnosticMessage(content, commentSymbol);
       if comp.Warnings.Count = 0 then
       begin
         if nogui then
@@ -236,6 +238,8 @@ end;
 
 procedure PrepareReferenceFixtures;
 begin
+  // These Pascal-only fixtures belong to TestSuite, not to SPython suites.
+  if CurrentLanguageInfo.languageName <> 'PascalABC.NET' then exit;
   var fixtureDirectory := Path.Combine(TestSuiteDir, 'referencefixtures');
   var unitsDirectory := Path.Combine(TestSuiteDir, 'units');
   var usesUnitsDirectory := Path.Combine(TestSuiteDir, 'usesunits');
@@ -256,6 +260,7 @@ end;
 
 procedure CleanupReferenceFixtures;
 begin
+  if CurrentLanguageInfo.languageName <> 'PascalABC.NET' then exit;
   var unitsFixtureDirectory := Path.Combine(TestSuiteDir, 'units', 'reference fixtures');
   var usesUnitsFixtureDirectory := Path.Combine(TestSuiteDir, 'usesunits', 'reference fixtures');
   if Directory.Exists(unitsFixtureDirectory) then

@@ -82,6 +82,20 @@ internal static class Program
         public bool Contains(string fileName) =>
             files.ContainsKey(NormalizePath(fileName));
 
+        public IEnumerable<string> GetChangedDiskFiles()
+        {
+            foreach (var file in files)
+            {
+                // Virtual modules still produce standalone PCU artifacts. Only
+                // an existing disk source has a conflicting cache version.
+                if (File.Exists(file.Key) && !string.Equals(file.Value,
+                        PascalABCCompiler.CoreUtils.SourceFilesProviders.DefaultSourceFilesProvider(
+                            file.Key, PascalABCCompiler.CoreUtils.SourceFileOperation.GetText) as string,
+                        StringComparison.Ordinal))
+                    yield return file.Key;
+            }
+        }
+
         public object? Provide(string fileName, PascalABCCompiler.CoreUtils.SourceFileOperation operation)
         {
             var normalized = NormalizePath(fileName);
@@ -111,6 +125,74 @@ internal static class Program
 
         private static string NormalizePath(string fileName) =>
             Path.GetFullPath(fileName);
+    }
+
+    private sealed class SnapshotPcuFreshness
+    {
+        private static StringComparer PathComparer => Path.DirectorySeparatorChar == '\\'
+            ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+        private readonly HashSet<string> changedUnits;
+        private readonly Dictionary<string, string> sourceFiles = new(PathComparer);
+        private readonly Dictionary<string, HashSet<string>> dependencies = new(PathComparer);
+        private readonly HashSet<string> writtenPcus = new(PathComparer);
+
+        public SnapshotPcuFreshness(SourceFileSnapshot snapshot)
+        {
+            changedUnits = new HashSet<string>(PathComparer);
+            foreach (var file in snapshot.GetChangedDiskFiles())
+                changedUnits.Add(UnitKey(file));
+        }
+
+        private static string UnitKey(string fileName) =>
+            Path.ChangeExtension(Path.GetFullPath(fileName), null);
+
+        public void Observe(ICompiler compiler, CompilerState state, string? fileName)
+        {
+            if (changedUnits.Count == 0 || string.IsNullOrWhiteSpace(fileName)) return;
+            if (state == CompilerState.SavePCUFile)
+            {
+                writtenPcus.Add(Path.GetFullPath(fileName!));
+                return;
+            }
+            if (state != CompilerState.EndCompileFile) return;
+            var key = UnitKey(fileName!);
+            var unit = compiler.UnitTable[key];
+            if (unit == null) return;
+            sourceFiles[key] = Path.GetFullPath(fileName!);
+            var usedUnits = new HashSet<string>(PathComparer);
+            unit.ForEachDirectCompilationUnit((used, _) =>
+            {
+                if (!string.IsNullOrWhiteSpace(used.UnitFileName)) usedUnits.Add(UnitKey(used.UnitFileName));
+                return true;
+            });
+            dependencies[key] = usedUnits;
+        }
+
+        public void MarkDiskCachesStale()
+        {
+            // Also invalidate PCUs whose own source is unchanged but whose
+            // declarations/implementation were built against a changed module.
+            var affected = new HashSet<string>(changedUnits, PathComparer);
+            bool added;
+            do
+            {
+                added = false;
+                foreach (var pair in dependencies)
+                    if (!affected.Contains(pair.Key) && pair.Value.Overlaps(affected))
+                        added |= affected.Add(pair.Key);
+            } while (added);
+
+            foreach (var pcu in writtenPcus)
+            {
+                var key = UnitKey(pcu);
+                if (!affected.Contains(key) || !sourceFiles.TryGetValue(key, out var source) ||
+                    !File.Exists(source) || !File.Exists(pcu)) continue;
+                // SavePCU remains enabled. Preserve the compiled artifact, but
+                // make the normal source-newer-than-PCU check reject it when
+                // the editor snapshot is no longer supplied (also after restart).
+                File.SetLastWriteTimeUtc(pcu, File.GetLastWriteTimeUtc(source).AddSeconds(-2));
+            }
+        }
     }
 
     private static CompileRequest DeserializeCompileRequest(string json)
@@ -186,7 +268,9 @@ internal static class Program
             if (!string.IsNullOrWhiteSpace(request.outputDirectory))
             {
                 var outputDirectory = Path.GetFullPath(request.outputDirectory);
+#if NETFRAMEWORK
                 Directory.CreateDirectory(outputDirectory);
+#endif
                 options.OutputDirectory = outputDirectory;
             }
 
@@ -203,6 +287,7 @@ internal static class Program
             }
 
             var requestCompiler = compiler;
+            var snapshotPcus = snapshot != null ? new SnapshotPcuFreshness(snapshot) : null;
             if (snapshot != null)
             {
                 requestCompiler = new Compiler();
@@ -218,6 +303,7 @@ internal static class Program
             var clock = new Stopwatch();
             ChangeCompilerStateEventDelegate handler = (sender, state, currentFileName) =>
             {
+                snapshotPcus?.Observe(sender, state, currentFileName);
 #if !NETFRAMEWORK
                 // Per-DLL UI round trips are expensive even when assemblies are cached.
                 // Keep DLL processing, but suppress these verbose progress messages.
@@ -242,6 +328,7 @@ internal static class Program
             finally
             {
                 requestCompiler.OnChangeCompilerState -= handler;
+                snapshotPcus?.MarkDiskCachesStale();
             }
 
             if (outputFileName != null)

@@ -1794,6 +1794,11 @@ namespace PascalABCCompiler
             try
             {
                 n = 2;
+#if PABCNET_MODERN
+                // A standalone unit only saves a PCU beside its source. Create
+                // the requested binary directory only when actually emitting EXE/DLL.
+                Directory.CreateDirectory(Path.GetDirectoryName(CompilerOptions.OutputFileName));
+#endif
                 var fs = File.Create(CompilerOptions.OutputFileName);
                 n = 3;
                 fs.Close();

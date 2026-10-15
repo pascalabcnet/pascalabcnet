@@ -136,7 +136,9 @@ SectionEnd
   LangString DESC_Samples_Desc ${LANG_ENGLISH} "Samples"
   LangString DESC_RusLoc_Desc ${LANG_RUSSIAN} "Поддержка русcкого языка"
   LangString DESC_RusLoc_Desc ${LANG_ENGLISH} " "
-  LangString DESC_RusLoc_Desc ${LANG_UKR} "Поддержка украинского языка"
+  !ifdef LANG_UKR
+    LangString DESC_RusLoc_Desc ${LANG_UKR} "Поддержка украинского языка"
+  !endif
   LangString DESC_EngLoc_Desc ${LANG_RUSSIAN} "Поддержка английского языка"
   LangString DESC_EngLoc_Desc ${LANG_ENGLISH} " "
   LangString DESC_Framework_Desc ${LANG_RUSSIAN} "Платформа необходима для работы компилятора и программ, работающих на этой платформе"
@@ -174,7 +176,9 @@ SectionEnd
 
   ;Assign descriptions to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${Compiler} $(DESC_Compiler)
+    !ifdef Compiler
+      !insertmacro MUI_DESCRIPTION_TEXT ${Compiler} $(DESC_Compiler)
+    !endif
     !insertmacro MUI_DESCRIPTION_TEXT ${Envr} $(DESC_Envr)
     !insertmacro MUI_DESCRIPTION_TEXT ${Plugins} $(DESC_IDEPlugins)
     !insertmacro MUI_DESCRIPTION_TEXT ${Localization} $(DESC_Localization_Desc)
@@ -183,15 +187,24 @@ SectionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${VisualPABCNET} $(DESC_Envr_Desc)
     !insertmacro MUI_DESCRIPTION_TEXT ${PABCNETC} $(DESC_ConsoleCompiler_Desc)
     !insertmacro MUI_DESCRIPTION_TEXT ${InternalErrorReport} $(DESC_INTERNAL_ERROR_REPORT_Desc)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SyantaxTreeVisualisator} "Визуализатор синтаксического дерева программы"
+    !ifdef PABC_WITH_NET10
+      !insertmacro MUI_DESCRIPTION_TEXT ${Net10} $(DESC_Net10_Desc)
+    !endif
+    !ifdef SyantaxTreeVisualisator
+      !insertmacro MUI_DESCRIPTION_TEXT ${SyantaxTreeVisualisator} "Визуализатор синтаксического дерева программы"
+    !endif
     !insertmacro MUI_DESCRIPTION_TEXT ${PT4} $(DESC_PT4_Desc)
     !insertmacro MUI_DESCRIPTION_TEXT ${Samples} $(DESC_Samples_Desc)
     !insertmacro MUI_DESCRIPTION_TEXT ${RusLoc} $(DESC_RusLoc_Desc)
     !insertmacro MUI_DESCRIPTION_TEXT ${EngLoc} $(DESC_EngLoc_Desc)
     !insertmacro MUI_DESCRIPTION_TEXT ${Framework} $(DESC_Framework_Desc)
-    !insertmacro MUI_DESCRIPTION_TEXT ${Uninstaller} $(DESC_Uninstaller_Desc)
+    !ifdef Uninstaller
+      !insertmacro MUI_DESCRIPTION_TEXT ${Uninstaller} $(DESC_Uninstaller_Desc)
+    !endif
     !insertmacro MUI_DESCRIPTION_TEXT ${FrameworkHelp} $(DESC_FrameworkHelp_Desc)
-    !insertmacro MUI_DESCRIPTION_TEXT ${LangPack} $(DESC_LangPack_Desc)
+    !ifdef LangPack
+      !insertmacro MUI_DESCRIPTION_TEXT ${LangPack} $(DESC_LangPack_Desc)
+    !endif
     !insertmacro MUI_DESCRIPTION_TEXT ${PascalABCParserRegistation} $(DESC_PascalABCParserRegistation_Desc)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
