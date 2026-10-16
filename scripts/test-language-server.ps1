@@ -17,7 +17,7 @@ try {
     $env:PABC_TOOLING_SERVER_ASSEMBLY = Join-Path $runtime 'PascalABCNet.LanguageServer.dll'
     foreach ($project in @('HeadlessSmokeTest', 'LanguageServerSmokeTest')) {
         & dotnet build (Join-Path $repositoryRoot "tests\$project\$project.csproj") `
-            --configuration Release -p:TargetFramework=net10.0 `
+            --configuration Release -p:TargetFramework=net10.0 -p:PABCNET_LEGACY_ONLY=false `
             -p:BuildProjectReferences=false "-p:OutputPath=$runtime\" `
             -p:AppendTargetFrameworkToOutputPath=false -p:SatelliteResourceLanguages=ru `
             --disable-build-servers -m:1 --nologo

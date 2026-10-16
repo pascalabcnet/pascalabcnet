@@ -27,7 +27,7 @@ $stageParent = Join-Path $repositoryRoot '.codex-build\net10-runtime'
 $stage = Join-Path $stageParent ([Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $stage -Force | Out-Null
 & dotnet build (Join-Path $repositoryRoot 'Net10Runtime.slnx') `
-    --configuration $Configuration -p:TargetFramework=net10.0 `
+    --configuration $Configuration -p:TargetFramework=net10.0 -p:PABCNET_LEGACY_ONLY=false `
     "-p:OutputPath=$stage\" -p:AppendTargetFrameworkToOutputPath=false `
     -p:SatelliteResourceLanguages=ru --disable-build-servers -m:1 --nologo
 if ($LASTEXITCODE -ne 0) { throw 'Unified .NET 10 runtime build failed.' }

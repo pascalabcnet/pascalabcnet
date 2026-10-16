@@ -119,6 +119,13 @@ namespace VisualPascalABC
             foreach (string fileName in filesToParse.Keys.ToArray()) filesToParse[fileName] = true;
         }
 
+        public void ResumeForOpenDocuments(IEnumerable<string> fileNames)
+        {
+            foreach (string fileName in fileNames)
+                if (!string.IsNullOrEmpty(fileName)) RegisterFileForParsing(fileName);
+            InvalidateAllFiles();
+        }
+
         /// <summary>
         /// Запуск потока с Intellisence
         /// </summary>

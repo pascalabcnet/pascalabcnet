@@ -117,13 +117,18 @@ internal static partial class Program
             Check(!(bool)compile.Invoke(parser, new object[] { "Suspended.pas", "begin end.", true }),
                 "suspended background parser does not access the legacy compiler");
             string file = Path.GetFullPath("ResumeIntellisense.pas");
+            string openedWhileModern = Path.GetFullPath("OpenedWhileNet10.pas");
             parser.RegisterFileForParsing(file);
             VisualPascalABC.CodeCompletionParserController.filesToParse[file] = false;
+            VisualPascalABC.CodeCompletionParserController.filesToParse.Remove(openedWhileModern);
             suspended.SetValue(null, false);
-            parser.InvalidateAllFiles();
+            parser.ResumeForOpenDocuments(new[] { file, openedWhileModern });
             Check(VisualPascalABC.CodeCompletionParserController.filesToParse[file],
                 "return to legacy mode schedules open standalone documents for analysis");
+            Check(VisualPascalABC.CodeCompletionParserController.filesToParse[openedWhileModern],
+                "return to legacy mode registers a document opened while .NET 10 was selected");
             parser.CloseFile(file);
+            parser.CloseFile(openedWhileModern);
         }
         finally
         {
@@ -287,6 +292,11 @@ internal static partial class Program
                 CheckEditorReleaseConfiguration();
                 CheckEditorKeyDispatch();
                 CheckEditorLoadingAndCaret();
+                return 0;
+            }
+            if (args.Length > 0 && args[0] == "--legacy-resume")
+            {
+                CheckAnalysisSuspension();
                 return 0;
             }
             if (args.Length > 0 && args[0] == "--navigation-ui")

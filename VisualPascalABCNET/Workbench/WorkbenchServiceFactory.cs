@@ -25,7 +25,14 @@ namespace VisualPascalABC
                 if (workbench.MainForm.IsDisposed) return;
                 workbench.WidgetController.SetDebugButtonsEnabled(!value &&
                     CodeCompletion.CodeCompletionController.IntellisenseAvailable() && !workbench.ServiceContainer.RunService.IsRun());
-                if (!value) WorkbenchServiceFactory.CodeCompletionParserController.InvalidateAllFiles();
+                if (!value)
+                {
+                    var openFiles = VisualPABCSingleton.MainForm.OpenDocuments.Values
+                        .Where(document => document != null && !string.IsNullOrEmpty(document.FileName) &&
+                            Languages.Facade.LanguageProvider.Instance.HasLanguageForExtension(document.FileName))
+                        .Select(document => document.FileName);
+                    WorkbenchServiceFactory.CodeCompletionParserController.ResumeForOpenDocuments(openFiles);
+                }
             }
         }
 
