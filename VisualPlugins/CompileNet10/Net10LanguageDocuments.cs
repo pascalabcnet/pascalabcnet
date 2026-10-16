@@ -166,6 +166,9 @@ namespace VisualPascalABCPlugins
         internal Task<object> NavigationAsync(ICodeFileDocument document, int line, int character, CancellationToken cancellation)
             => RequestPositionAsync(document, line, character, "textDocument/implementation", cancellation);
 
+        internal Task<object> SymbolsAsync(ICodeFileDocument document, CancellationToken cancellation)
+            => RequestPositionAsync(document, 0, 0, "textDocument/documentSymbol", cancellation);
+
         private Task<object> RequestPositionAsync(ICodeFileDocument document, int line, int character, string method, CancellationToken cancellation)
         {
             // Metadata is a generated view, not a source module. Analyze it on demand
@@ -192,10 +195,9 @@ namespace VisualPascalABCPlugins
                         await ApplyAsync(batch).ConfigureAwait(false);
                         linked.Token.ThrowIfCancellationRequested();
                         if (!active || disposed || client == null) return null;
-                        var parameters = new Dictionary<string, object>
-                        {
-                            ["textDocument"] = new { uri }, ["position"] = new { line, character }
-                        };
+                        var parameters = new Dictionary<string, object> { ["textDocument"] = new { uri } };
+                        if (method != "textDocument/documentSymbol")
+                            parameters["position"] = new { line, character };
                         if (method == "textDocument/completion")
                             parameters["context"] = new { triggerKind = 2, triggerCharacter = "." };
                         var response = await client.RequestAsync(method, parameters, linked.Token).ConfigureAwait(false);

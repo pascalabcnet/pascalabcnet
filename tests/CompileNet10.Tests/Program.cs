@@ -294,6 +294,16 @@ internal static partial class Program
                 CheckLanguageNavigation(args.Length > 1 ? args[1] : Path.GetFullPath("bin-net10"));
                 return 0;
             }
+            if (args.Length > 0 && args[0] == "--navigation-hover")
+            {
+                CheckNavigationClick(null);
+                return 0;
+            }
+            if (args.Length > 0 && args[0] == "--symbols-ui")
+            {
+                CheckLanguageDocumentSymbols();
+                return 0;
+            }
             if (args.Length > 0 && args[0] == "--signature-ui")
             {
                 CheckSignatureTypedTrigger();
@@ -313,6 +323,7 @@ internal static partial class Program
             CheckLanguageHover();
             CheckLanguageSignature(args.Length > 0 ? args[0] : Path.GetFullPath("bin-net10"));
             CheckLanguageNavigation(args.Length > 0 ? args[0] : Path.GetFullPath("bin-net10"));
+            CheckLanguageDocumentSymbols();
             CheckExternalInputRouting();
             CheckExternalRunRouting();
             Check(Net10EditorDocument.GetRunWarningResourceKey("MissingUnit.PCU") == "RUN_PCU_WARNING_TEXT",

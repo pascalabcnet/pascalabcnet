@@ -425,6 +425,58 @@ public sealed class PascalLanguageService : IPascalLanguageService
         }, cancellationToken);
     }
 
+    public Task<IReadOnlyList<DocumentSymbolInfo>> GetDocumentSymbolsAsync(
+        string documentId, CancellationToken cancellationToken = default)
+    {
+        return ExecuteSerializedAsync<IReadOnlyList<DocumentSymbolInfo>>(() =>
+        {
+            var state = GetCompiledState(documentId);
+            if (state?.DomConverter.visitor.entry_scope is not IInterfaceUnitScope unit)
+                return Array.Empty<DocumentSymbolInfo>();
+
+            var symbols = new List<DocumentSymbolInfo>();
+            AddDocumentSymbols(unit.Members, state.Document.FileName, symbols);
+            if (unit.ImplementationUnitScope is { } implementation)
+                AddDocumentSymbols(implementation.Members, state.Document.FileName, symbols);
+            return symbols;
+        }, cancellationToken);
+    }
+
+    private static void AddDocumentSymbols(IBaseScope[] scopes, string fileName, List<DocumentSymbolInfo> result)
+    {
+        if (scopes is null) return;
+        foreach (var scope in scopes)
+        {
+            if (scope?.SymbolInfo is not { not_include: false } info ||
+                string.IsNullOrEmpty(info.name) || info.name.Contains('$') || info.name.StartsWith('<'))
+                continue;
+
+            var kind = info.kind;
+            if (kind is not (SymbolKind.Class or SymbolKind.Struct or SymbolKind.Interface or
+                SymbolKind.Enum or SymbolKind.Delegate or SymbolKind.Type or SymbolKind.Method or
+                SymbolKind.Property or SymbolKind.Field or SymbolKind.Event or SymbolKind.Variable or
+                SymbolKind.Constant)) continue;
+
+            var position = scope.GetPosition();
+            if (string.IsNullOrEmpty(position.file_name) ||
+                !string.Equals(Path.GetFullPath(position.file_name), Path.GetFullPath(fileName),
+                    StringComparison.OrdinalIgnoreCase) || position.line < 1) continue;
+
+            var children = new List<DocumentSymbolInfo>();
+            if (kind is SymbolKind.Class or SymbolKind.Struct or SymbolKind.Interface or
+                SymbolKind.Enum or SymbolKind.Delegate or SymbolKind.Type)
+                AddDocumentSymbols(scope.Members, fileName, children);
+
+            int startLine = position.line - 1, startCharacter = Math.Max(0, position.column - 1);
+            int endLine = Math.Max(startLine, position.end_line - 1);
+            int endCharacter = endLine == startLine
+                ? Math.Max(startCharacter, position.end_column - 1)
+                : Math.Max(0, position.end_column - 1);
+            result.Add(new DocumentSymbolInfo(info.name, scope.GetDescriptionWithoutDoc() ?? info.name,
+                kind.ToString(), startLine, startCharacter, endLine, endCharacter, children));
+        }
+    }
+
     public Task<SignatureHelpInfo?> GetSignatureHelpAsync(
         string documentId,
         int caretOffset,

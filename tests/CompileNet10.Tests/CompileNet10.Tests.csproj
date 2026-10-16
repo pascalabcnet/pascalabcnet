@@ -24,6 +24,7 @@
     <Compile Include="../../VisualPlugins/CompileNet10/Net10SignatureProvider.cs" Link="Net10SignatureProvider.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10Signature.cs" Link="Net10Signature.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10Navigation.cs" Link="Net10Navigation.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10DocumentSymbols.cs" Link="Net10DocumentSymbols.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10CompletionProvider.cs" Link="Net10CompletionProvider.cs" />
     <Reference Include="PluginsSupport"><HintPath>$(IdeReferenceDirectory)/PluginsSupport.dll</HintPath></Reference>
     <Reference Include="Errors"><HintPath>$(IdeReferenceDirectory)/Errors.dll</HintPath></Reference>

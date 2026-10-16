@@ -46,6 +46,7 @@ internal sealed class PascalLanguageServerTarget
                         TriggerCharacters = new[] { "." }
                     },
                     HoverProvider = true,
+                    DocumentSymbolProvider = true,
                     DefinitionProvider = true,
                     ImplementationProvider = true,
                     SignatureHelpProvider = new SignatureHelpOptions
@@ -191,6 +192,45 @@ internal sealed class PascalLanguageServerTarget
                     }
                 };
         }, cancellationToken);
+
+    [JsonRpcMethod("textDocument/documentSymbol", UseSingleObjectParameterDeserialization = true)]
+    public Task<DocumentSymbol[]> DocumentSymbolsAsync(
+        DocumentSymbolParams request, CancellationToken cancellationToken) =>
+        _dispatcher.RunAsync(async () =>
+        {
+            var symbols = await _languageService.GetDocumentSymbolsAsync(
+                DocumentConversions.GetDocumentId(request.TextDocument.Uri), cancellationToken).ConfigureAwait(false);
+            return symbols.Select(ToDocumentSymbol).ToArray();
+        }, cancellationToken);
+
+    private static DocumentSymbol ToDocumentSymbol(DocumentSymbolInfo item)
+    {
+        var start = new Microsoft.VisualStudio.LanguageServer.Protocol.Position(item.StartLine, item.StartCharacter);
+        var end = new Microsoft.VisualStudio.LanguageServer.Protocol.Position(item.EndLine, item.EndCharacter);
+        return new DocumentSymbol
+        {
+            Name = item.Name,
+            Detail = item.Detail,
+            Kind = item.Kind switch
+            {
+                "Class" => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Class,
+                "Struct" => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Struct,
+                "Interface" => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Interface,
+                "Enum" => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Enum,
+                "Delegate" => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Function,
+                "Type" => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Class,
+                "Method" => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Method,
+                "Property" => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Property,
+                "Field" => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Field,
+                "Event" => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Event,
+                "Constant" => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Constant,
+                _ => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Variable
+            },
+            Range = new Microsoft.VisualStudio.LanguageServer.Protocol.Range { Start = start, End = end },
+            SelectionRange = new Microsoft.VisualStudio.LanguageServer.Protocol.Range { Start = start, End = start },
+            Children = item.Children.Select(ToDocumentSymbol).ToArray()
+        };
+    }
 
     [JsonRpcMethod("textDocument/definition", UseSingleObjectParameterDeserialization = true)]
     public Task<Location[]> DefinitionAsync(TextDocumentPositionParams request, CancellationToken cancellationToken) =>

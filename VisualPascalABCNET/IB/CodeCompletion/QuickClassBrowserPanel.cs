@@ -21,6 +21,103 @@ namespace VisualPascalABC
 		IBaseScope currentCompilationUnit;
 		CodeFileDocumentTextEditorControl textAreaControl;
 		bool autoselect = true;
+		volatile bool modernMode;
+		IReadOnlyList<ModernBrowserSymbol> modernSymbols = Array.Empty<ModernBrowserSymbol>();
+
+		// Detached data from the .NET 10 language server; never holds a compiler scope.
+		public sealed class ModernBrowserSymbol
+		{
+			public string Name, Detail, Kind;
+			public int StartLine, StartCharacter, EndLine, EndCharacter;
+			public IReadOnlyList<ModernBrowserSymbol> Children = Array.Empty<ModernBrowserSymbol>();
+		}
+
+		public void SetModernMode(bool enabled)
+		{
+			if (modernMode == enabled) return;
+			modernMode = enabled;
+			modernSymbols = Array.Empty<ModernBrowserSymbol>();
+			if (enabled) RefreshModern();
+			else { classComboBox.Items.Clear(); membersComboBox.Items.Clear(); currentCompilationUnit = null; clicked = true; }
+		}
+
+		public void SetModernSymbols(IReadOnlyList<ModernBrowserSymbol> symbols)
+		{
+			if (!modernMode || IsDisposed) return;
+			modernSymbols = symbols ?? Array.Empty<ModernBrowserSymbol>();
+			RefreshModern();
+		}
+
+		private static bool IsModernType(ModernBrowserSymbol symbol) =>
+			symbol.Kind == "Class" || symbol.Kind == "Struct" || symbol.Kind == "Interface" ||
+			symbol.Kind == "Enum" || symbol.Kind == "Type" || symbol.Kind == "Delegate";
+
+		private static int ModernIcon(ModernBrowserSymbol symbol)
+		{
+			SymbolKind kind;
+			if (!Enum.TryParse(symbol.Kind, out kind)) kind = SymbolKind.Null;
+			return CodeCompletionProvider.ImagesProvider.GetPictureNum(new SymInfo(symbol.Name, kind, symbol.Detail));
+		}
+
+		private void RefreshModern()
+		{
+			if (!modernMode || IsDisposed) return;
+			autoselect = false;
+			try
+			{
+				classComboBox.BeginUpdate();
+				classComboBox.Items.Clear();
+				classComboBox.Items.Add(new ComboBoxItem(null,
+					PascalABCCompiler.StringResources.Get("CODE_COMPLETION_GLOBAL"),
+					CodeCompletionProvider.ImagesProvider.IconNumberUnitNamespace, true, true));
+				foreach (var symbol in modernSymbols)
+					if (IsModernType(symbol)) classComboBox.Items.Add(new ComboBoxItem(symbol, symbol.Name, ModernIcon(symbol)));
+				classComboBox.SelectedIndex = 0;
+				FillModernMembers();
+				UpdateModernCaret();
+			}
+			finally { classComboBox.EndUpdate(); autoselect = true; }
+		}
+
+		private void FillModernMembers()
+		{
+			var selected = classComboBox.SelectedItem as ComboBoxItem;
+			var symbols = selected?.ModernSymbol?.Children ?? modernSymbols;
+			membersComboBox.BeginUpdate();
+			try
+			{
+				membersComboBox.Items.Clear();
+				foreach (var symbol in symbols)
+					if (!IsModernType(symbol))
+						membersComboBox.Items.Add(new ComboBoxItem(symbol,
+							string.IsNullOrEmpty(symbol.Detail) ? symbol.Name : symbol.Detail, ModernIcon(symbol)));
+			}
+			finally { membersComboBox.EndUpdate(); }
+		}
+
+		private void UpdateModernCaret()
+		{
+			if (!modernMode || IsDisposed) return;
+			int line = textAreaControl.ActiveTextAreaControl.Caret.Line;
+			int column = textAreaControl.ActiveTextAreaControl.Caret.Column;
+			autoselect = false;
+			try
+			{
+				int selectedClass = 0;
+				for (int i = 1; i < classComboBox.Items.Count; i++)
+					if (((ComboBoxItem)classComboBox.Items[i]).IsInside(line, column)) selectedClass = i;
+				if (classComboBox.SelectedIndex != selectedClass)
+				{
+					classComboBox.SelectedIndex = selectedClass;
+					FillModernMembers();
+				}
+				int selectedMember = -1;
+				for (int i = 0; i < membersComboBox.Items.Count; i++)
+					if (((ComboBoxItem)membersComboBox.Items[i]).IsInside(line, column)) selectedMember = i;
+				membersComboBox.SelectedIndex = selectedMember;
+			}
+			finally { autoselect = true; }
+		}
 		
 		class ComboBoxItem : System.IComparable
 		{
@@ -30,6 +127,7 @@ namespace VisualPascalABC
 			bool   isInCurrentPart;
 			Position pos;
 			bool is_global;
+			public ModernBrowserSymbol ModernSymbol { get; }
 			
 			public int IconIndex {
 				get {
@@ -84,8 +182,21 @@ namespace VisualPascalABC
 				this.is_global = is_global;
 			}
 
+			public ComboBoxItem(ModernBrowserSymbol symbol, string text, int iconIndex)
+			{
+				ModernSymbol = symbol;
+				this.text = text;
+				this.iconIndex = iconIndex;
+				isInCurrentPart = true;
+				pos = new Position(symbol.StartLine + 1, symbol.StartCharacter + 1,
+					symbol.EndLine + 1, symbol.EndCharacter + 1, null);
+			}
+
 			public bool IsInside(int lineNumber, int columnNumber)
 			{
+				if (ModernSymbol != null)
+					return (lineNumber > ModernSymbol.StartLine || lineNumber == ModernSymbol.StartLine && columnNumber >= ModernSymbol.StartCharacter) &&
+						(lineNumber < ModernSymbol.EndLine || lineNumber == ModernSymbol.EndLine && columnNumber <= ModernSymbol.EndCharacter);
 				if (item == null || is_global) return true;
 				if (pos.line < lineNumber+1 && pos.end_line > lineNumber+1) return true;
 				if (pos.line > lineNumber+1 || pos.end_line < lineNumber+1) return false;
@@ -203,7 +314,7 @@ namespace VisualPascalABC
 				this.membersComboBox.Dispose();
 				this.classComboBox.Dispose();
 				this.currentCompilationUnit = null;
-				th.Abort();
+				if (th != null) th.Abort();
 			}
 			base.Dispose(disposing);
 		}
@@ -215,6 +326,7 @@ namespace VisualPascalABC
 			bool tmp = true;
             while (true)
             {
+                if (modernMode) { Thread.Sleep(300); continue; }
                 first_comp = false;
                 if (this.Visible)
                     try
@@ -262,6 +374,7 @@ namespace VisualPascalABC
 		
 		void CaretPositionChanged(object sender, EventArgs e)
 		{
+			if (modernMode) { UpdateModernCaret(); return; }
 			// ignore simple movements
 			
 			if (e != EventArgs.Empty) {
@@ -792,6 +905,8 @@ namespace VisualPascalABC
             try
             {
                 ComboBox comboBox = (ComboBox)sender;
+                if (modernMode && comboBox == classComboBox && autoselect)
+                    FillModernMembers();
                 if (autoselect)
                 {
                     ComboBoxItem item = null;
@@ -799,7 +914,7 @@ namespace VisualPascalABC
                         item = (ComboBoxItem)comboBox.Items[(int)comboBox.Invoke(new Invoke_del_with_ret(GetSelectedClassInternal))];
                     else
                         item = (ComboBoxItem)comboBox.Items[(int)comboBox.Invoke(new Invoke_del_with_ret(GetSelectedMemberInternal))];
-                    if (item.IsInCurrentPart)
+                    if (item.IsInCurrentPart && (!modernMode || item.ModernSymbol != null))
                     {
                         //textAreaControl.ActiveTextAreaControl.Caret.Position = new ICSharpCode.TextEditor.TextLocation(item.Column, item.Line);
                         //textAreaControl.ActiveTextAreaControl.TextArea.Focus();
@@ -814,8 +929,8 @@ namespace VisualPascalABC
                     }
                     if (comboBox == classComboBox)
                     {
-                        FillMembersComboBox();
-                        UpdateMembersComboBox();
+                        if (modernMode) UpdateModernCaret();
+                        else { FillMembersComboBox(); UpdateMembersComboBox(); }
                     }
                 }
             }

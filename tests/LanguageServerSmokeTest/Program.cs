@@ -90,6 +90,9 @@ try
     Check(initialize.RootElement.GetProperty("result").GetProperty("capabilities")
         .GetProperty("textDocumentSync").GetProperty("change").GetInt32() == 2,
         "initialize advertises incremental document synchronization");
+    Check(initialize.RootElement.GetProperty("result").GetProperty("capabilities")
+        .GetProperty("documentSymbolProvider").GetBoolean(),
+        "initialize advertises document symbols");
     Console.WriteLine("PASS initialize over stdio");
 
     const string changingUnitUri = "file:///C:/a.pas";
@@ -136,6 +139,36 @@ try
             }
         }
     }, timeout.Token);
+
+    await WriteMessageAsync(input, new { jsonrpc = "2.0", id = 999, method = "textDocument/documentSymbol",
+        @params = new { textDocument = new { uri = documentUri } } }, timeout.Token);
+    using var documentSymbols = await ReadResponseAsync(output, 999, timeout.Token);
+    Check(documentSymbols.RootElement.GetProperty("result").EnumerateArray().Any(symbol =>
+        symbol.GetProperty("name").GetString() == "text"), "document symbols include unsaved global variable");
+    Console.WriteLine("PASS document symbols over stdio");
+
+    const string symbolUri = "file:///C:/SymbolsSmoke.pas";
+    const string symbolSource = "type\n  Person = class\n    public\n    auto property Name: string;\n  end;\nbegin\nend.";
+    await WriteDidOpenAsync(input, symbolUri, symbolSource, 1, timeout.Token);
+    await WriteMessageAsync(input, new { jsonrpc = "2.0", id = 998, method = "textDocument/documentSymbol",
+        @params = new { textDocument = new { uri = symbolUri } } }, timeout.Token);
+    using var nestedSymbols = await ReadResponseAsync(output, 998, timeout.Token);
+    Check(nestedSymbols.RootElement.GetProperty("result").EnumerateArray().Any(symbol =>
+        symbol.GetProperty("name").GetString() == "Person" &&
+        symbol.GetProperty("children").EnumerateArray().Any(child => child.GetProperty("name").GetString() == "Name") &&
+        symbol.GetProperty("range").GetProperty("end").GetProperty("line").GetInt32() >
+            symbol.GetProperty("range").GetProperty("start").GetProperty("line").GetInt32()),
+        "document symbols retain type members");
+    await WriteMessageAsync(input, new { jsonrpc = "2.0", method = "textDocument/didChange",
+        @params = new { textDocument = new { uri = symbolUri, version = 2 },
+            contentChanges = new[] { new { text = symbolSource.Replace("Person", "Student") } } } }, timeout.Token);
+    await WriteMessageAsync(input, new { jsonrpc = "2.0", id = 997, method = "textDocument/documentSymbol",
+        @params = new { textDocument = new { uri = symbolUri } } }, timeout.Token);
+    using var editedSymbols = await ReadResponseAsync(output, 997, timeout.Token);
+    Check(editedSymbols.RootElement.GetProperty("result").EnumerateArray().Any(symbol =>
+        symbol.GetProperty("name").GetString() == "Student"), "document symbols follow unsaved edits");
+    await WriteMessageAsync(input, new { jsonrpc = "2.0", method = "textDocument/didClose",
+        @params = new { textDocument = new { uri = symbolUri } } }, timeout.Token);
 
     const string memberAccess = "text.Substring";
     var memberStart = source.IndexOf(memberAccess, StringComparison.Ordinal);

@@ -89,8 +89,20 @@ internal static partial class Program
                     var legacy = new TextMarker(0, 1, TextMarkerType.Underlined, Color.Red);
                     area.Document.MarkerStrategy.AddMarker(legacy);
                     typeof(TextArea).GetMethod("OnMouseMove", flags).Invoke(area, new object[] { move });
-                    Check(area.Document.MarkerStrategy.GetMarkers(area.Caret.Offset).Any(marker => marker.Color == Color.Blue),
+                    var firstUnderline = area.Document.MarkerStrategy.GetMarkers(area.Caret.Offset)
+                        .FirstOrDefault(marker => marker.Color == Color.Blue);
+                    Check(firstUnderline != null,
                         "Ctrl-hover underlines the source identifier with the navigation-owned marker");
+                    if (runtime == null)
+                    {
+                        for (int repeat = 0; repeat < 20; repeat++)
+                            typeof(TextArea).GetMethod("OnMouseMove", flags).Invoke(area, new object[] { move });
+                        typeof(TextArea).GetMethod("OnKeyDown", flags).Invoke(area,
+                            new object[] { new KeyEventArgs(Keys.ControlKey) });
+                        Check(ReferenceEquals(firstUnderline, area.Document.MarkerStrategy.GetMarkers(area.Caret.Offset)
+                            .FirstOrDefault(marker => marker.Color == Color.Blue)),
+                            "held Ctrl and repeated hover events keep one stable underline instead of recreating it");
+                    }
                     click(MouseButtons.Left); PumpNavigation(() => jumps == 1);
                     Check(targets.Count == 1 && targets[0].FileName == unit.FileName && targets[0].Line == 6,
                         "real Ctrl-left-click finds the editor's unsaved module implementation, not its older disk version" + (runtime == null ? " via definition fallback" : " through LanguageServer"));

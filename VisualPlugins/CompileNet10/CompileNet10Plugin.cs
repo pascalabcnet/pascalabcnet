@@ -28,6 +28,7 @@ namespace VisualPascalABCPlugins
         private Net10Hover languageHover;
         private Net10Signature languageSignature;
         private Net10Navigation languageNavigation;
+        private Net10DocumentSymbols languageSymbols;
         private readonly Timer languageGate = new Timer { Interval = 500 };
 
         public CompileNet10_VisualPascalABCPlugin(IWorkbench workbench)
@@ -59,6 +60,7 @@ namespace VisualPascalABCPlugins
                 languageHover?.Dispose();
                 languageSignature?.Dispose();
                 languageNavigation?.Dispose();
+                languageSymbols?.Dispose();
                 languageDocuments?.Dispose();
                 commandRegistration?.Dispose();
                 if (commandService != null) commandService.LegacyServicesSuspended = false;
@@ -146,6 +148,8 @@ namespace VisualPascalABCPlugins
                 languageCompletion.Opening += languageSignature.CloseHints;
                 languageNavigation = new Net10Navigation(documentEvents, languageDocuments,
                     () => platformItem.Checked && workbench.UserOptions.AllowCodeCompletion, Navigate);
+                languageSymbols = new Net10DocumentSymbols(documentEvents,
+                    workbench.ServiceContainer.DocumentService, languageDocuments);
                 // Only check the user's enable setting; document text is event-driven, never polled.
                 languageGate.Tick += (sender, e) => UpdateLanguageActivity();
                 languageGate.Start();
@@ -161,6 +165,7 @@ namespace VisualPascalABCPlugins
             languageHover?.SetActive(enabled && workbench.UserOptions.CodeCompletionHint);
             languageSignature?.SetActive(enabled && workbench.UserOptions.CodeCompletionParams);
             languageNavigation?.SetActive(enabled);
+            languageSymbols?.SetActive(selected, enabled && workbench.UserOptions.ShowQuickClassBrowserPanel);
         }
 
         private void Navigate(List<Net10NavigationTarget> targets)

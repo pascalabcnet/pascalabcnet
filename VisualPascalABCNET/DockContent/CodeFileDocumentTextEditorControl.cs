@@ -13,6 +13,7 @@ namespace VisualPascalABC
     {
         internal Form1 MainForm;
         internal QuickClassBrowserPanel quickClassBrowserPanel;
+        public QuickClassBrowserPanel NavigationPanel { get { return quickClassBrowserPanel; } }
         internal Panel TextAreaPanel
         {
             get { return textAreaPanel; }

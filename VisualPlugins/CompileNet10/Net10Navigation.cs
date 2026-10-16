@@ -100,7 +100,7 @@ namespace VisualPascalABCPlugins
             {
                 Click = (sender, e) => Click(document, e), Move = (sender, e) => Mark(document, e),
                 Cancel = (sender, e) => Cancel(), Leave = (sender, e) => ClearMark(),
-                Key = (sender, e) => { if (e.KeyCode == Keys.Escape) Cancel(); else ClearMark(); },
+                Key = (sender, e) => { if (e.KeyCode == Keys.Escape) Cancel(); else if (e.KeyCode != Keys.ControlKey) ClearMark(); },
                 KeyUp = (sender, e) => ClearMark(),
                 Caret = (sender, e) => { if (pending?.Document == document && area.Caret.Offset != caretOffset) Cancel(); },
                 Changed = (sender, e) => Cancel()
@@ -174,15 +174,20 @@ namespace VisualPascalABCPlugins
         }
         private void Mark(ICodeFileDocument document, MouseEventArgs e)
         {
-            ClearMark();
-            if (!active || !enabled() || modifiers() != Keys.Control) return;
+            if (!active || !enabled() || modifiers() != Keys.Control) { ClearMark(); return; }
             var context = AtMouse(document, e);
             var area = document.TextEditor.ActiveTextAreaControl.TextArea;
-            if (context == null || area.SelectionManager.HasSomethingSelected) return;
+            if (context == null || area.SelectionManager.HasSomethingSelected) { ClearMark(); return; }
             int offset = document.TextEditor.Document.PositionToOffset(context.Position), start = offset, end = offset;
             string text = context.Text;
             while (start > 0 && Identifier(text[start - 1])) start--;
             while (end < text.Length && Identifier(text[end])) end++;
+            if (start == end) { ClearMark(); return; }
+            // MouseMove can fire repeatedly over the same word (including after repaint).
+            // Replacing the marker and invalidating on every event caused a visible flicker.
+            if (ReferenceEquals(markedDocument, document) && marker != null &&
+                marker.Offset == start && marker.Length == end - start) return;
+            ClearMark();
             // Own only this marker. Never remove breakpoints, diagnostics or another plugin's underline.
             marker = new TextMarker(start, end - start, TextMarkerType.Underlined, Color.Blue);
             markedDocument = document; area.Document.MarkerStrategy.AddMarker(marker);

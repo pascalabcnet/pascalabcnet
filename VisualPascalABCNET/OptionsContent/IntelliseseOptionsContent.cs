@@ -22,6 +22,7 @@ namespace VisualPascalABC.OptionsContent
         }
 
         private bool alreadyShown;
+        private bool modernMode;
 
         #region IOptionsContent Members
 
@@ -50,7 +51,8 @@ namespace VisualPascalABC.OptionsContent
             switch (action)
             {
                 case OptionsContentAction.Show:
-                    Enabled = !CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended;
+                    modernMode = CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended;
+                    Enabled = true;
                     if (!alreadyShown)
                     {
                         cbAllowCodeCompletion.Checked = MainForm.UserOptions.AllowCodeCompletion;
@@ -63,21 +65,28 @@ namespace VisualPascalABC.OptionsContent
                         cbUseSemanticIntellisense.Checked = MainForm.UserOptions.UseSemanticIntellisense;
                         alreadyShown = true;
                     }
+                    // The .NET 10 language server always uses compiler-backed analysis.
+                    // Do not overwrite the saved legacy choice when displaying this state.
+                    if (modernMode)
+                        cbUseSemanticIntellisense.Checked = true;
+                    cbCodeCompletionKeyPressed.Enabled = !modernMode && cbAllowCodeCompletion.Checked;
+                    cbIntellisencePanel.Enabled = cbAllowCodeCompletion.Checked;
+                    cbUseSemanticIntellisense.Enabled = !modernMode && cbAllowCodeCompletion.Checked;
+                    nuNamespaceVisibleRange.Enabled = !modernMode && cbAllowCodeCompletion.Checked;
+                    label5.Enabled = !modernMode;
                     break;
                 case OptionsContentAction.Ok:
-                    if (CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended)
-                    {
-                        alreadyShown = false;
-                        break;
-                    }
                     MainForm.UserOptions.CodeCompletionDot = cbCodeCompletionDot.Checked;
                     MainForm.UserOptions.CodeCompletionHint = cbCodeCompletionHint.Checked;
                     MainForm.UserOptions.CodeCompletionParams = cbCodeCompletionParams.Checked;
                     MainForm.UserOptions.AllowCodeCompletion = cbAllowCodeCompletion.Checked;
-                    MainForm.UserOptions.EnableSmartIntellisense = cbCodeCompletionKeyPressed.Checked;
-                    MainForm.UserOptions.CodeCompletionNamespaceVisibleRange = Convert.ToInt32(nuNamespaceVisibleRange.Value);
                     MainForm.UserOptions.ShowQuickClassBrowserPanel = cbIntellisencePanel.Checked;
-                    MainForm.UserOptions.UseSemanticIntellisense = cbUseSemanticIntellisense.Checked;
+                    if (!modernMode)
+                    {
+                        MainForm.UserOptions.EnableSmartIntellisense = cbCodeCompletionKeyPressed.Checked;
+                        MainForm.UserOptions.CodeCompletionNamespaceVisibleRange = Convert.ToInt32(nuNamespaceVisibleRange.Value);
+                        MainForm.UserOptions.UseSemanticIntellisense = cbUseSemanticIntellisense.Checked;
+                    }
                     MainForm.UpdateUserOptions();
                     alreadyShown = false;
                     WorkbenchServiceFactory.OptionsService.SaveOptions();
@@ -92,13 +101,20 @@ namespace VisualPascalABC.OptionsContent
 
         private void cbAllowCodeCompletion_CheckedChanged(object sender, EventArgs e)
         {
-            cbIntellisencePanel.Checked = cbUseSemanticIntellisense.Checked = cbCodeCompletionKeyPressed.Checked = cbCodeCompletionDot.Checked = cbCodeCompletionHint.Checked = cbCodeCompletionParams.Checked = cbAllowCodeCompletion.Checked;
-            cbIntellisencePanel.Enabled = cbUseSemanticIntellisense.Enabled = cbCodeCompletionKeyPressed.Enabled = nuNamespaceVisibleRange.Enabled = cbCodeCompletionDot.Enabled = cbCodeCompletionHint.Enabled = cbCodeCompletionParams.Enabled = cbAllowCodeCompletion.Checked;
+            cbCodeCompletionDot.Checked = cbCodeCompletionHint.Checked = cbCodeCompletionParams.Checked = cbAllowCodeCompletion.Checked;
+            cbCodeCompletionDot.Enabled = cbCodeCompletionHint.Enabled = cbCodeCompletionParams.Enabled = cbAllowCodeCompletion.Checked;
+            if (!modernMode)
+            {
+                cbIntellisencePanel.Checked = cbUseSemanticIntellisense.Checked = cbCodeCompletionKeyPressed.Checked = cbAllowCodeCompletion.Checked;
+                cbIntellisencePanel.Enabled = cbUseSemanticIntellisense.Enabled = cbCodeCompletionKeyPressed.Enabled = nuNamespaceVisibleRange.Enabled = cbAllowCodeCompletion.Checked;
+            }
+            else cbIntellisencePanel.Enabled = cbAllowCodeCompletion.Checked;
         }
 
         private void cbUseSemanticIntellisense_CheckedChanged(object sender, EventArgs e)
         {
-            CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = cbUseSemanticIntellisense.Checked;
+            if (!modernMode)
+                CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = cbUseSemanticIntellisense.Checked;
         }
     }
 }

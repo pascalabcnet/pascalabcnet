@@ -127,7 +127,12 @@ namespace VisualPascalABCPlugins
                 },
                 MouseCancel = (sender, e) => Invalidate(),
                 Cancel = Cancel,
-                Key = (sender, e) => Invalidate(),
+                Key = (sender, e) =>
+                {
+                    // Ctrl belongs to source navigation. Do not repeatedly reopen or
+                    // invalidate a hover tooltip while the key is held down.
+                    if (e.KeyCode != Keys.ControlKey || context != null || shown) Invalidate();
+                },
                 Changed = (sender, e) => Invalidate() // Another unsaved unit can also change the description.
             };
             subscriptions.Add(document, handlers);
@@ -158,7 +163,8 @@ namespace VisualPascalABCPlugins
         private void Requested(ICodeFileDocument document, ToolTipRequestEventArgs e)
         {
             // Folded text, error markers and debugger hints retain priority.
-            if (!active || !enabled() || !e.InDocument || e.ToolTipShown) { Invalidate(); return; }
+            if (!active || !enabled() || !e.InDocument || e.ToolTipShown ||
+                Control.ModifierKeys == Keys.Control) { Invalidate(); return; }
             if (context?.Document == document && context.Contains(e.LogicalPosition)) return;
             Invalidate();
             context = Net10HoverContext.Capture(document, e.LogicalPosition);

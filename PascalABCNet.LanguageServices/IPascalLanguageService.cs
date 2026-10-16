@@ -40,6 +40,9 @@ public interface IPascalLanguageService
     Task<IReadOnlyList<NavigationTarget>> GetNavigationAsync(string documentId, int offset,
         bool implementation, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<DocumentSymbolInfo>> GetDocumentSymbolsAsync(
+        string documentId, CancellationToken cancellationToken = default);
+
     Task<SignatureHelpInfo?> GetSignatureHelpAsync(
         string documentId,
         int caretOffset,
