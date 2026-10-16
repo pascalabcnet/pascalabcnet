@@ -29,9 +29,10 @@
       '$(MSBuildProjectName)' == 'PABCCoreUtils'">true</PabcDualTargetProject>
   </PropertyGroup>
 
-  <!-- Directory.Build.props is read before NETCoreSdkVersion is set. The selected
-       SDK path is already known here; an explicit override still takes precedence. -->
-  <PropertyGroup Condition="'$(PabcDualTargetProject)' == 'true' And '$(PABCNET_LEGACY_ONLY)' == '' And $([System.Text.RegularExpressions.Regex]::IsMatch('$(MSBuildSDKsPath)', '[\\/]sdk[\\/][0-9]\.'))">
+  <!-- The main solution defaults to .NET Framework even when the .NET 10 SDK is
+       installed. Modern builds select net10.0 explicitly; an explicit legacy
+       override still takes precedence. -->
+  <PropertyGroup Condition="'$(PabcDualTargetProject)' == 'true' And '$(PABCNET_LEGACY_ONLY)' == '' And '$(TargetFramework)' != 'net10.0'">
     <PABCNET_LEGACY_ONLY>true</PABCNET_LEGACY_ONLY>
   </PropertyGroup>
 
