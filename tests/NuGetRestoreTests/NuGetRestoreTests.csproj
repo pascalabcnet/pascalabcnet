@@ -9,7 +9,9 @@
   <ItemGroup>
     <Compile Remove="Fixtures/**/*.cs" />
     <ProjectReference Include="../../NuGet/PascalABCNet.PackageServices/PascalABCNet.PackageServices.csproj" />
+    <ProjectReference Include="../../PascalABCNet.LanguageServices/PascalABCNet.LanguageServices.csproj" />
     <ProjectReference Include="Fixtures/TestRoot/TestRoot.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="Fixtures/TestRootV2/TestRootV2.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
   <Target Name="CopyFixtures" AfterTargets="Build">
     <ItemGroup>
@@ -19,5 +21,9 @@
     <Copy SourceFiles="@(Fixture)" DestinationFolder="$(OutputPath)fixtures/lib" />
     <Copy SourceFiles="Fixtures/TestRoot/obj/$(Configuration)/net10.0/ref/TestRoot.dll"
           DestinationFolder="$(OutputPath)fixtures/ref" />
+    <Copy SourceFiles="Fixtures/TestRootV2/bin/$(Configuration)/net10.0/TestRoot.dll"
+          DestinationFolder="$(OutputPath)fixtures/v2/lib" />
+    <Copy SourceFiles="Fixtures/TestRootV2/obj/$(Configuration)/net10.0/ref/TestRoot.dll"
+          DestinationFolder="$(OutputPath)fixtures/v2/ref" />
   </Target>
 </Project>

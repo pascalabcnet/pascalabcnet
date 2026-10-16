@@ -277,7 +277,9 @@ namespace VisualPascalABCPlugins
                 var display = new Net10CompilerDisplay(key => PascalABCCompiler.StringResources.Get("VP_VEC_" + key));
                 // Await each UI delivery so Ready cannot arrive after Run/exception status.
                 var response = await client.CompileAsync(fileName, outputDirectory, "__RedirectIOMode", sources,
-                    value => DisplayCompilerEventAsync(display, value), rebuild);
+                    value => DisplayCompilerEventAsync(display, value), rebuild,
+                    libraryOutputDirectory: outputRoot ?? Path.GetDirectoryName(fileName),
+                    debug: workbench.ServiceContainer.BuildService.CompilerOptions.Debug);
                 if (run && response.success)
                 {
                     var target = Net10EditorDocument.ResolveRunTarget(document, response.outputFile,
@@ -293,7 +295,9 @@ namespace VisualPascalABCPlugins
                         workbench.ServiceContainer.OperationsService.ClearOutputTextBoxForTabPage(document);
                         display = new Net10CompilerDisplay(key => PascalABCCompiler.StringResources.Get("VP_VEC_" + key));
                         response = await client.CompileAsync(fileName, outputDirectory, "__RedirectIOMode", sources,
-                            value => DisplayCompilerEventAsync(display, value), rebuild);
+                            value => DisplayCompilerEventAsync(display, value), rebuild,
+                            libraryOutputDirectory: outputRoot ?? Path.GetDirectoryName(fileName),
+                            debug: workbench.ServiceContainer.BuildService.CompilerOptions.Debug);
                     }
                 }
                 if (response.success)

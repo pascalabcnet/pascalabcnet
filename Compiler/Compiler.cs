@@ -460,6 +460,11 @@ namespace PascalABCCompiler
                 useOutputDirectory = outputDirectory != null;
             }
         }
+#if PABCNET_MODERN
+        // The IDE keeps executable outputs disposable. Libraries go either
+        // beside their source or into the user's explicitly selected directory.
+        public string LibraryOutputDirectory { get; set; }
+#endif
         //для поиска pcu в третью очередь исп. путь к pas файлу
 
         public Dictionary<string, string> StandardDirectories;
@@ -2515,9 +2520,13 @@ namespace PascalABCCompiler
         private PreparedReference PrepareReference(compiler_directive reference)
         {
             var sourceContext = GetSourceContext(reference);
+            string libraryOutputDirectory = null;
+#if PABCNET_MODERN
+            libraryOutputDirectory = CompilerOptions.LibraryOutputDirectory;
+#endif
             var specification = new ReferenceSpec(reference.directive,
                 Path.GetDirectoryName(reference.source_file),
-                currentCompilationUnit.SyntaxTree.file_name, sourceContext);
+                currentCompilationUnit.SyntaxTree.file_name, sourceContext, libraryOutputDirectory);
             // Historical {$reference} behaviour copies a directly referenced
             // local DLL to the output directory before it is loaded. The classic
             // provider performs that work after applying the old lookup rules.
@@ -3754,7 +3763,12 @@ namespace PascalABCCompiler
 
 #if PABCNET_MODERN
             if (firstCompilationUnit == currentUnit)
+            {
+                if (CompilerOptions.LibraryOutputDirectory != null && !CompilerOptions.ProjectCompiled &&
+                    IsDll(currentUnit.SyntaxTree))
+                    CompilerOptions.OutputDirectory = CompilerOptions.LibraryOutputDirectory;
                 RestoreMainProgramPackages(currentUnit);
+            }
 #endif
 
             InitializeCompilerOptionsRelatedToStandardUnits(currentUnit.SyntaxTree);

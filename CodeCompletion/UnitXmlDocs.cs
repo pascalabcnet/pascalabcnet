@@ -29,6 +29,14 @@ namespace CodeCompletion
 			//namespace_elem_cache.Clear();
 			//doc_namespace_list.Clear();
 		}
+
+#if PABCNET_MODERN
+        public static void ReleaseReferenceGeneration()
+        {
+            Reset();
+            ht.Clear();
+        }
+#endif
 		
 		public static void Load(SymScope unit, string fileName)
 		{

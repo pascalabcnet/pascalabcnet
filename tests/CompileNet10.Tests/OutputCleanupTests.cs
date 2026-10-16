@@ -46,6 +46,61 @@ internal static partial class Program
                         "real process output is removed and source preserved: " + scenario);
                     Check(outputRoot == null || Directory.Exists(outputRoot), "selected parent output directory is preserved");
                 }
+
+            // An IDE-built library must survive deletion of the executable's
+            // disposable output directory and remain usable by {$reference}.
+            using (var compiler = new Net10ControllerClient(runtime, "dotnet"))
+            foreach (bool configured in new[] { false, true })
+            {
+                string sourceDirectory = Path.Combine(root, configured ? "selected-case" : "default-case");
+                Directory.CreateDirectory(sourceDirectory);
+                string libraryDirectory = configured ? Path.Combine(root, "selected-libraries") : sourceDirectory;
+                string outputRoot = configured ? libraryDirectory : null;
+                string librarySource = Path.Combine(sourceDirectory, "MyLib.pas");
+                string mainSource = Path.Combine(sourceDirectory, "main.pas");
+                string libraryText = "library MyLib;\nprocedure ppp;\nbegin\n  Println(123);\nend;\nend.";
+                File.WriteAllText(librarySource, libraryText);
+                string outputDirectory = Net10OutputCleanup.GetDirectory(mainSource, outputRoot);
+                var library = await compiler.CompileAsync(librarySource, outputDirectory,
+                    libraryOutputDirectory: libraryDirectory);
+                Check(library.success && Path.GetFullPath(library.outputFile) ==
+                    Path.Combine(libraryDirectory, "MyLib.dll") && File.Exists(library.outputFile),
+                    "Run10 library output stays outside disposable net10-output: " + library.message);
+                Check(!File.Exists(Path.Combine(libraryDirectory, "MyLib.runtimeconfig.json")) &&
+                    !File.Exists(Path.Combine(libraryDirectory, "MyLib.pdb")),
+                    "release library creates neither runtime configuration nor debug symbols");
+
+                string debugSource = Path.Combine(sourceDirectory, "DebugLib.pas");
+                File.WriteAllText(debugSource, libraryText.Replace("MyLib", "DebugLib"));
+                var debugLibrary = await compiler.CompileAsync(debugSource, outputDirectory,
+                    libraryOutputDirectory: libraryDirectory, debug: true);
+                Check(debugLibrary.success && File.Exists(Path.Combine(libraryDirectory, "DebugLib.dll")) &&
+                    File.Exists(Path.Combine(libraryDirectory, "DebugLib.pdb")) &&
+                    !File.Exists(Path.Combine(libraryDirectory, "DebugLib.runtimeconfig.json")),
+                    "debug library creates PDB but no runtime configuration: " + debugLibrary.message);
+
+                string mainText = "{$reference MyLib.dll} begin ppp; end.";
+                File.WriteAllText(mainSource, mainText);
+                for (int attempt = 0; attempt < 2; attempt++)
+                {
+                    var main = await compiler.CompileAsync(mainSource, outputDirectory, "__RedirectIOMode",
+                        libraryOutputDirectory: libraryDirectory);
+                    Check(main.success && File.Exists(Path.Combine(outputDirectory, "MyLib.dll")),
+                        "main resolves and copies the persistent library: " + main.message);
+                    Check(File.Exists(Path.Combine(outputDirectory, "main.runtimeconfig.json")),
+                        "executable retains the required runtime configuration");
+                    var output = new System.Text.StringBuilder();
+                    using (var runner = new Net10ProgramRunner("dotnet", main.outputFile, sourceDirectory, ""))
+                    {
+                        int exitCode = await runner.RunAsync(text => output.Append(text), () => { });
+                        Check(exitCode == 0 && output.ToString().Contains("123"),
+                            "Run10 launches after copying the reference: exit=" + exitCode + ", output=" + output);
+                    }
+                    Check(Net10OutputCleanup.TryDelete(mainSource, main.outputFile, true, true, outputRoot) &&
+                        File.Exists(library.outputFile) && !Directory.Exists(outputDirectory),
+                        "Run10 cleanup removes only the disposable output and preserves the source library");
+                }
+            }
         }
         finally { DeleteOutputCleanupFixture(root); }
     }

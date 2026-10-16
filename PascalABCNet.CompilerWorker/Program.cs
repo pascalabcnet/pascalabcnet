@@ -21,9 +21,11 @@ internal static class Program
     {
         public string? fileName { get; set; }
         public string? outputDirectory { get; set; }
+        public string? libraryOutputDirectory { get; set; }
         public string? runtimeModule { get; set; }
         public SourceFileRequest[]? sourceFiles { get; set; }
         public bool rebuild { get; set; }
+        public bool debug { get; set; }
     }
 
     private sealed class SourceFileRequest
@@ -260,7 +262,7 @@ internal static class Program
 #else
                 UseDllForSystemUnits = false,
 #endif
-                Debug = false,
+                Debug = request.debug,
                 Rebuild = request.rebuild,
                 ForDebugging = false
             };
@@ -273,6 +275,10 @@ internal static class Program
 #endif
                 options.OutputDirectory = outputDirectory;
             }
+#if !NETFRAMEWORK
+            if (!string.IsNullOrWhiteSpace(request.libraryOutputDirectory))
+                options.LibraryOutputDirectory = Path.GetFullPath(request.libraryOutputDirectory);
+#endif
 
             var runtimeModule = request.runtimeModule;
             if (!string.IsNullOrWhiteSpace(runtimeModule))

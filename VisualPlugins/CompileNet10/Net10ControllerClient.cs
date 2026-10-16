@@ -70,7 +70,8 @@ namespace VisualPascalABCPlugins
 
         public async Task<Net10CompileResponse> CompileAsync(string fileName, string outputDirectory,
             string runtimeModule = null, List<Net10SourceFile> sourceFiles = null,
-            Func<Net10CompilerEvent, Task> progress = null, bool rebuild = false)
+            Func<Net10CompilerEvent, Task> progress = null, bool rebuild = false,
+            string libraryOutputDirectory = null, bool debug = false)
         {
             await requests.WaitAsync().ConfigureAwait(false);
             try
@@ -115,7 +116,8 @@ namespace VisualPascalABCPlugins
                 var ping = await SendAsync("ping", null, null, 20000).ConfigureAwait(false);
                 if (!ping.success || ping.result != "PONG") throw new IOException("Контроллер не ответил PONG.");
                 TrackWorker(ping.workerPid);
-                var response = await SendAsync("compile", fileName, outputDirectory, 120000, runtimeModule, sourceFiles, progress, rebuild).ConfigureAwait(false);
+                var response = await SendAsync("compile", fileName, outputDirectory, 120000, runtimeModule, sourceFiles,
+                    progress, rebuild, libraryOutputDirectory, debug).ConfigureAwait(false);
                 TrackWorker(response.workerPid);
                 return response;
             }
@@ -131,16 +133,19 @@ namespace VisualPascalABCPlugins
 
         private async Task<Net10CompileResponse> SendAsync(string command, string fileName, string outputDirectory,
             int timeoutMs, string runtimeModule = null, List<Net10SourceFile> sourceFiles = null,
-            Func<Net10CompilerEvent, Task> progress = null, bool rebuild = false)
+            Func<Net10CompilerEvent, Task> progress = null, bool rebuild = false,
+            string libraryOutputDirectory = null, bool debug = false)
         {
             int id = ++nextId;
             var request = new Dictionary<string, object> { { "id", id }, { "command", command } };
             if (fileName != null) request.Add("fileName", fileName);
             if (outputDirectory != null) request.Add("outputDirectory", outputDirectory);
+            if (libraryOutputDirectory != null) request.Add("libraryOutputDirectory", libraryOutputDirectory);
             if (runtimeModule != null) request.Add("runtimeModule", runtimeModule);
             if (sourceFiles != null) request.Add("sourceFiles", sourceFiles);
             if (progress != null) request.Add("emitEvents", true);
             if (rebuild) request.Add("rebuild", true);
+            if (debug) request.Add("debug", true);
             input.WriteLine(json.Serialize(request));
             input.Flush();
             using (var cancellation = new CancellationTokenSource())

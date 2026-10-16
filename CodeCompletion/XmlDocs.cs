@@ -78,6 +78,16 @@ namespace CodeCompletion
 			//doc_namespace_list.Clear();
 		}
 
+#if PABCNET_MODERN
+        public static void ReleaseReferenceGeneration()
+        {
+            Reset();
+            namespace_elem_cache.Clear();
+            doc_namespace_list.Clear();
+            ht.Clear();
+        }
+#endif
+
         private static void internalCompleteDocumentation()
         {
             try

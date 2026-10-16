@@ -113,6 +113,120 @@
         "resolved": "8.0.0",
         "contentHash": "+TUFINV2q2ifyXauQXRwy4CiBhqvDEDZeVJU7qfxya4aRYOKzVBpN+4acx25VcPB9ywUN6C0n8drWl110PhZEg=="
       },
+      "codecompletion": {
+        "type": "Project",
+        "dependencies": {
+          "Compiler": "[1.0.0, )",
+          "Errors": "[1.0.0, )",
+          "LanguageIntegrator": "[1.0.0, )",
+          "ParserTools": "[1.0.0, )",
+          "PascalABCNet.PackageServices": "[1.0.0, )",
+          "SemanticTree": "[1.0.0, )",
+          "StringConstants": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )",
+          "TreeConverter": "[1.0.0, )"
+        }
+      },
+      "compiler": {
+        "type": "Project",
+        "dependencies": {
+          "CompilerTools": "[1.0.0, )",
+          "Errors": "[1.0.0, )",
+          "LanguageIntegrator": "[1.0.0, )",
+          "Localization": "[1.0.0, )",
+          "NETGenerator": "[1.0.0, )",
+          "PABCCoreUtils": "[1.0.0, )",
+          "ParserTools": "[1.0.0, )",
+          "PascalABCNet.PackageServices": "[1.0.0, )",
+          "SemanticTree": "[1.0.0, )",
+          "StringConstants": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )",
+          "SyntaxVisitors": "[1.0.0, )",
+          "TreeConverter": "[1.0.0, )"
+        }
+      },
+      "compilertools": {
+        "type": "Project",
+        "dependencies": {
+          "Errors": "[1.0.0, )",
+          "Localization": "[1.0.0, )",
+          "SemanticTree": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )"
+        }
+      },
+      "errors": {
+        "type": "Project",
+        "dependencies": {
+          "Localization": "[1.0.0, )",
+          "SemanticTree": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )"
+        }
+      },
+      "lambdaanysyntosemconverter": {
+        "type": "Project",
+        "dependencies": {
+          "SemanticTree": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )",
+          "SyntaxVisitors": "[1.0.0, )",
+          "TreeConverter": "[1.0.0, )"
+        }
+      },
+      "languageintegrator": {
+        "type": "Project",
+        "dependencies": {
+          "Errors": "[1.0.0, )",
+          "ParserTools": "[1.0.0, )",
+          "StringConstants": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )",
+          "SyntaxVisitors": "[1.0.0, )",
+          "TreeConverter": "[1.0.0, )"
+        }
+      },
+      "localization": {
+        "type": "Project"
+      },
+      "netgenerator": {
+        "type": "Project",
+        "dependencies": {
+          "CompilerTools": "[1.0.0, )",
+          "Errors": "[1.0.0, )",
+          "SemanticTree": "[1.0.0, )",
+          "StringConstants": "[1.0.0, )",
+          "TreeConverter": "[1.0.0, )"
+        }
+      },
+      "pabccoreutils": {
+        "type": "Project"
+      },
+      "parsertools": {
+        "type": "Project",
+        "dependencies": {
+          "Errors": "[1.0.0, )",
+          "Localization": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )"
+        }
+      },
+      "pascalabclanguageinfo": {
+        "type": "Project",
+        "dependencies": {
+          "LambdaAnySynToSemConverter": "[1.0.0, )",
+          "LanguageIntegrator": "[1.0.0, )",
+          "ParserTools": "[1.0.0, )",
+          "PascalABCParser": "[1.0.0, )",
+          "StringConstants": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )",
+          "SyntaxTreeConverters": "[1.0.0, )",
+          "SyntaxVisitors": "[1.0.0, )",
+          "TreeConverter": "[1.0.0, )"
+        }
+      },
+      "pascalabcnet.languageservices": {
+        "type": "Project",
+        "dependencies": {
+          "CodeCompletion": "[1.0.0, )",
+          "PascalABCLanguageInfo": "[1.0.0, )"
+        }
+      },
       "pascalabcnet.packageservices": {
         "type": "Project",
         "dependencies": {
@@ -120,6 +234,63 @@
           "NuGet.ProjectModel": "[7.9.0, )",
           "NuGet.Protocol": "[7.9.0, )",
           "System.Security.Cryptography.Pkcs": "[8.0.2, )"
+        }
+      },
+      "PascalABCParser": {
+        "type": "Project",
+        "dependencies": {
+          "Errors": "[1.0.0, )",
+          "LanguageIntegrator": "[1.0.0, )",
+          "Localization": "[1.0.0, )",
+          "PABCCoreUtils": "[1.0.0, )",
+          "ParserTools": "[1.0.0, )",
+          "StringConstants": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )",
+          "SyntaxVisitors": "[1.0.0, )"
+        }
+      },
+      "semantictree": {
+        "type": "Project"
+      },
+      "stringconstants": {
+        "type": "Project"
+      },
+      "syntaxtree": {
+        "type": "Project",
+        "dependencies": {
+          "StringConstants": "[1.0.0, )"
+        }
+      },
+      "syntaxtreeconverters": {
+        "type": "Project",
+        "dependencies": {
+          "Errors": "[1.0.0, )",
+          "Localization": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )",
+          "SyntaxVisitors": "[1.0.0, )",
+          "TreeConverter": "[1.0.0, )"
+        }
+      },
+      "syntaxvisitors": {
+        "type": "Project",
+        "dependencies": {
+          "Errors": "[1.0.0, )",
+          "Localization": "[1.0.0, )",
+          "PABCCoreUtils": "[1.0.0, )",
+          "ParserTools": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )"
+        }
+      },
+      "treeconverter": {
+        "type": "Project",
+        "dependencies": {
+          "CompilerTools": "[1.0.0, )",
+          "Errors": "[1.0.0, )",
+          "Localization": "[1.0.0, )",
+          "PABCCoreUtils": "[1.0.0, )",
+          "SemanticTree": "[1.0.0, )",
+          "StringConstants": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )"
         }
       }
     }

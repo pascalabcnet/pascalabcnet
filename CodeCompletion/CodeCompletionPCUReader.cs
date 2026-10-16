@@ -35,6 +35,13 @@ namespace CodeCompletion
 		private Hashtable ext_members = new Hashtable();
 		
 		private static Hashtable unit_cache = new Hashtable(CaseInsensitiveHashCodeProvider.Default, CaseInsensitiveComparer.Default);
+
+#if PABCNET_MODERN
+        public static void ReleaseReferenceGeneration()
+        {
+            unit_cache.Clear();
+        }
+#endif
 		
 		public IntellisensePCUReader()
 		{

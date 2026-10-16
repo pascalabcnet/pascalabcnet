@@ -148,6 +148,11 @@ namespace PascalABCCompiler.NetHelper
             }
         }
 
+        internal static string GetSimpleName(string assemblyPath)
+        {
+            return GetCachedIdentity(Path.GetFullPath(assemblyPath)).SimpleName;
+        }
+
         internal static void ValidateNoConflictingAssemblies(IEnumerable<string> assemblyPaths)
         {
             var rootPaths = new List<string>();

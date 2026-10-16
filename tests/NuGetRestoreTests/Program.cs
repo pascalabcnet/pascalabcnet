@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
 using NuGet.Configuration;
@@ -11,6 +12,7 @@ using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
 using PascalABCNet.PackageServices;
+using PascalABCNet.LanguageServices;
 
 internal static class Program
 {
@@ -25,6 +27,10 @@ internal static class Program
         try
         {
             await CheckRestore(work);
+            if (!args.Contains("--runtime-only-child"))
+                await CheckLanguageServerProtocol(work);
+            await CheckDirectReferenceReload(work);
+            await CheckIntelliSense(work);
             if (args.Contains("--compiler"))
                 await CheckCompilerEarlyRestore(work);
             if (args.Contains("--controller"))
@@ -150,6 +156,410 @@ internal static class Program
         catch (OperationCanceledException) { }
         Check(!Directory.EnumerateFiles(work, "*.csproj", SearchOption.AllDirectories).Any(),
             "Restore generated a C# project.");
+    }
+
+    private static async Task CheckDirectReferenceReload(string work)
+    {
+        string directory = Path.Combine(work, "direct-reference");
+        Directory.CreateDirectory(directory);
+        string assemblyPath = Path.Combine(directory, "TestRoot.dll");
+        File.Copy(Path.Combine(AppContext.BaseDirectory, "fixtures", "lib", "TestRoot.dll"),
+            assemblyPath);
+        File.Copy(Path.Combine(AppContext.BaseDirectory, "fixtures", "lib", "TestDependency.dll"),
+            Path.Combine(directory, "TestDependency.dll"));
+
+        string fileName = Path.Combine(directory, "DirectReference.pas");
+        string source = "{$reference 'TestRoot.dll'}\n" +
+            "begin\n  Println(NuGetRestoreFixture.Root.Value);\nend.\n";
+        File.WriteAllText(fileName, source);
+        string documentId = new Uri(fileName).AbsoluteUri;
+        int dotOffset = source.IndexOf("Root.Value", StringComparison.Ordinal) + "Root.".Length;
+        string repository = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
+        var languageService = new PascalLanguageService("en",
+            Path.Combine(repository, "bin-net10", "Lib"));
+
+        var analysis = await languageService.OpenOrUpdateDocumentAsync(
+            documentId, fileName, source, version: 1);
+        Check(analysis.IsCompiled, "Direct-reference IntelliSense analysis failed: " +
+            analysis.LastConversionError);
+        var original = await languageService.GetCompletionAfterDotAsync(documentId, dotOffset);
+        Check(original.Any(item => item.Label == "Value") &&
+              !original.Any(item => item.Label == "OnlyInV2"),
+            "Direct reference did not expose the original DLL.");
+
+        File.Copy(Path.Combine(AppContext.BaseDirectory, "fixtures", "v2", "lib", "TestRoot.dll"),
+            assemblyPath, overwrite: true);
+        File.SetLastWriteTimeUtc(assemblyPath, DateTime.UtcNow.AddSeconds(3));
+        var replaced = await languageService.GetCompletionAfterDotAsync(documentId, dotOffset);
+        Check(replaced.Any(item => item.Label == "OnlyInV2"),
+            "IntelliSense retained the old direct-reference DLL after replacement without a Pascal edit.");
+
+        var updatedAnalysis = await languageService.OpenOrUpdateDocumentAsync(
+            documentId, fileName, source + "\n", version: 2);
+        Check(updatedAnalysis.IsCompiled, "Direct-reference IntelliSense reanalysis failed: " +
+            updatedAnalysis.LastConversionError);
+        var afterEdit = await languageService.GetCompletionAfterDotAsync(documentId, dotOffset);
+        Check(afterEdit.Any(item => item.Label == "OnlyInV2"),
+            "IntelliSense retained the old direct-reference DLL after a Pascal edit.");
+
+        File.Copy(Path.Combine(AppContext.BaseDirectory, "fixtures", "lib", "TestRoot.dll"),
+            assemblyPath, overwrite: true);
+        File.SetLastWriteTimeUtc(assemblyPath, DateTime.UtcNow.AddSeconds(6));
+        var reverted = await languageService.GetCompletionAfterDotAsync(documentId, dotOffset);
+        Check(reverted.Any(item => item.Label == "Value") &&
+              !reverted.Any(item => item.Label == "OnlyInV2"),
+            "IntelliSense did not return to the original direct-reference DLL.");
+        Console.WriteLine("PASS: direct-reference IntelliSense reloads an overwritten DLL without a Pascal edit.");
+    }
+
+    private static async Task CheckIntelliSense(string work)
+    {
+        string directory = Path.Combine(work, "intellisense");
+        Directory.CreateDirectory(directory);
+        WriteConfiguration(Path.Combine(directory, "NuGet.Config"),
+            Path.Combine(work, "feed"), Path.Combine(work, "intellisense-packages"));
+
+        string fileName = Path.Combine(directory, "PackageCompletion.pas");
+        string source = $"{{$package {RootId} 1.0.0}}\n" +
+            "begin\n  Println(NuGetRestoreFixture.Root.Value);\n" +
+            "  Println(NuGetRestoreFixture.Dependency.Value);\n" +
+            "  Println(NuGetRestoreFixture.Root.Combine(1, 2));\nend.\n";
+        File.WriteAllText(fileName, source);
+        var request = new PackageRestoreRequest
+        {
+            ProgramFilePath = fileName,
+            Packages = new[] { new PackageRequirement(RootId, "1.0.0") }
+        };
+        HiddenRestoreDirectories.Add(new PackageRestoreService()
+            .GetConfiguration(request).RestoreDirectory);
+
+        string repository = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory,
+            "../../../../../"));
+        var languageService = new PascalLanguageService("en",
+            Path.Combine(repository, "bin-net10", "Lib"));
+        string documentId = new Uri(fileName).AbsoluteUri;
+        var analysis = await languageService.OpenOrUpdateDocumentAsync(
+            documentId, fileName, source, version: 1);
+        Check(analysis.IsCompiled,
+            "IntelliSense could not analyze a package program: " + analysis.LastConversionError);
+
+        int rootDot = source.IndexOf("Root.Value", StringComparison.Ordinal) + "Root.".Length;
+        var rootItems = await languageService.GetCompletionAfterDotAsync(documentId, rootDot);
+        Check(rootItems.Any(item => item.Label == "Value"),
+            "IntelliSense did not expose the root package type's Value property.");
+
+        int dependencyDot = source.IndexOf("Dependency.Value", StringComparison.Ordinal) +
+            "Dependency.".Length;
+        var dependencyItems = await languageService.GetCompletionAfterDotAsync(
+            documentId, dependencyDot);
+        Check(dependencyItems.Any(item => item.Label == "Value"),
+            "IntelliSense did not expose the transitive package type's Value property.");
+
+        int hoverOffset = source.IndexOf("Root.Value", StringComparison.Ordinal) +
+            "Root.".Length + 1;
+        var hover = await languageService.GetHoverAsync(documentId, hoverOffset);
+        Check(hover?.Contents.Contains("Value", StringComparison.Ordinal) == true,
+            "IntelliSense hover did not describe the NuGet package member.");
+
+        int signatureOffset = source.IndexOf("Root.Combine(", StringComparison.Ordinal) +
+            "Root.Combine(".Length;
+        var signature = await languageService.GetSignatureHelpAsync(
+            documentId, signatureOffset, '(');
+        Check(signature?.Signatures.Any(item => item.Label.Contains("Combine",
+            StringComparison.Ordinal)) == true,
+            "IntelliSense did not provide NuGet package method signature help.");
+
+        string withoutPackage = source.Replace($"{{$package {RootId} 1.0.0}}\n", "");
+        var withoutPackageAnalysis = await languageService.OpenOrUpdateDocumentAsync(
+            documentId, fileName, withoutPackage, version: 2);
+        Check(withoutPackageAnalysis.IsCompiled,
+            "IntelliSense could not reanalyze the program after removing its package.");
+        int withoutPackageDot = withoutPackage.IndexOf("Root.Value", StringComparison.Ordinal) +
+            "Root.".Length;
+        var withoutPackageItems = await languageService.GetCompletionAfterDotAsync(
+            documentId, withoutPackageDot);
+        Check(!withoutPackageItems.Any(item => item.Label == "Value"),
+            "A removed package remained visible in IntelliSense.");
+
+        string missingVersion = source.Replace("1.0.0}", "9.9.9}");
+        var missingAnalysis = await languageService.OpenOrUpdateDocumentAsync(
+            documentId, fileName, missingVersion, version: 3);
+        Check(!missingAnalysis.IsCompiled &&
+            missingAnalysis.LastConversionError?.Contains("NuGet", StringComparison.OrdinalIgnoreCase) == true,
+            "A missing package did not produce a diagnostic from IntelliSense.");
+
+        var recoveredAnalysis = await languageService.OpenOrUpdateDocumentAsync(
+            documentId, fileName, source, version: 4);
+        Check(recoveredAnalysis.IsCompiled,
+            "IntelliSense did not recover after a failed package restore: " +
+            recoveredAnalysis.LastConversionError);
+        string versionTwo = source.Replace("1.0.0}", "1.1.0}");
+        var versionTwoAnalysis = await languageService.OpenOrUpdateDocumentAsync(
+            documentId, fileName, versionTwo, version: 5);
+        Check(versionTwoAnalysis.IsCompiled,
+            "IntelliSense could not analyze the updated package: " + versionTwoAnalysis.LastConversionError);
+        var versionTwoItems = await languageService.GetCompletionAfterDotAsync(documentId, rootDot);
+        Check(versionTwoItems.Any(item => item.Label == "OnlyInV2"),
+            "IntelliSense reused the old DLL after changing the package to version 1.1.0.");
+        var versionOneAnalysis = await languageService.OpenOrUpdateDocumentAsync(
+            documentId, fileName, source, version: 6);
+        Check(versionOneAnalysis.IsCompiled,
+            "IntelliSense could not switch back to the original package: " + versionOneAnalysis.LastConversionError);
+        var versionOneItems = await languageService.GetCompletionAfterDotAsync(documentId, rootDot);
+        Check(!versionOneItems.Any(item => item.Label == "OnlyInV2"),
+            "IntelliSense retained a member from package version 1.1.0 after switching back.");
+
+        // Two open programs with different versions share the long-lived service.
+        // Their DOMs must be released and rebuilt lazily when the active DLL changes.
+        string secondFile = Path.Combine(directory, "SecondProgram.pas");
+        string secondUri = new Uri(secondFile).AbsoluteUri;
+        File.WriteAllText(secondFile, versionTwo);
+        HiddenRestoreDirectories.Add(new PackageRestoreService()
+            .GetConfiguration(request with { ProgramFilePath = secondFile }).RestoreDirectory);
+        var secondAnalysis = await languageService.OpenOrUpdateDocumentAsync(
+            secondUri, secondFile, versionTwo, version: 1);
+        Check(secondAnalysis.IsCompiled, "A second open program could not use package version 1.1.0.");
+        var firstAgain = await languageService.GetCompletionAfterDotAsync(documentId, rootDot);
+        Check(firstAgain.Any(item => item.Label == "Value") &&
+              !firstAgain.Any(item => item.Label == "OnlyInV2"),
+            "The first open program did not lazily recover its package version 1.0.0.");
+        var secondAgain = await languageService.GetCompletionAfterDotAsync(secondUri, rootDot);
+        Check(secondAgain.Any(item => item.Label == "OnlyInV2"),
+            "The second open program did not lazily recover its package version 1.1.0.");
+
+        var anotherService = new PascalLanguageService("en",
+            Path.Combine(repository, "bin-net10", "Lib"));
+        string thirdFile = Path.Combine(directory, "ThirdProgram.pas");
+        string thirdUri = new Uri(thirdFile).AbsoluteUri;
+        File.WriteAllText(thirdFile, source);
+        HiddenRestoreDirectories.Add(new PackageRestoreService()
+            .GetConfiguration(request with { ProgramFilePath = thirdFile }).RestoreDirectory);
+        var thirdAnalysis = await anotherService.OpenOrUpdateDocumentAsync(
+            thirdUri, thirdFile, source, version: 1);
+        Check(thirdAnalysis.IsCompiled, "A second language-service instance could not use package version 1.0.0.");
+        var firstServiceAgain = await languageService.GetCompletionAfterDotAsync(secondUri, rootDot);
+        Check(firstServiceAgain.Any(item => item.Label == "OnlyInV2"),
+            "The first language-service instance retained the other instance's package DLL.");
+        var otherServiceAgain = await anotherService.GetCompletionAfterDotAsync(thirdUri, rootDot);
+        Check(otherServiceAgain.Any(item => item.Label == "Value") &&
+              !otherServiceAgain.Any(item => item.Label == "OnlyInV2"),
+            "The second language-service instance could not reload its package DLL.");
+        Console.WriteLine("PASS: NuGet IntelliSense, transitive assets and DLL version switching across open documents and services.");
+    }
+
+    private static async Task CheckLanguageServerProtocol(string work)
+    {
+        string directory = Path.Combine(work, "lsp");
+        Directory.CreateDirectory(directory);
+        WriteConfiguration(Path.Combine(directory, "NuGet.Config"),
+            Path.Combine(work, "feed"), Path.Combine(work, "lsp-packages"));
+        string fileName = Path.Combine(directory, "PackageLsp.pas");
+        string source = $"{{$package {RootId} 1.0.0}}\n" +
+            "begin\n  Println(NuGetRestoreFixture.Root.Value);\n" +
+            "  Println(NuGetRestoreFixture.Root.Combine(1, 2));\nend.\n";
+        File.WriteAllText(fileName, source);
+        HiddenRestoreDirectories.Add(new PackageRestoreService()
+            .GetConfiguration(new PackageRestoreRequest
+            {
+                ProgramFilePath = fileName,
+                Packages = new[] { new PackageRequirement(RootId, "1.0.0") }
+            }).RestoreDirectory);
+
+        string repository = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
+        string serverAssembly = Path.Combine(repository, "bin-net10", "PascalABCNet.LanguageServer.dll");
+        Check(File.Exists(serverAssembly), "Build the net10 runtime distribution before the LSP package test.");
+        string runtimeDirectory = Path.TrimEndingDirectorySeparator(RuntimeEnvironment.GetRuntimeDirectory());
+        string dotnetRoot = Directory.GetParent(runtimeDirectory)!.Parent!.Parent!.FullName;
+        string host = Path.Combine(dotnetRoot, OperatingSystem.IsWindows() ? "dotnet.exe" : "dotnet");
+        using var server = new Process
+        {
+            StartInfo = new ProcessStartInfo(host)
+            {
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                WorkingDirectory = Path.GetDirectoryName(serverAssembly)!
+            }
+        };
+        server.StartInfo.ArgumentList.Add(serverAssembly);
+        server.StartInfo.ArgumentList.Add("--stdio");
+        Check(server.Start(), "The language server did not start.");
+        Task<string> stderr = server.StandardError.ReadToEndAsync();
+        try
+        {
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+            Stream input = server.StandardInput.BaseStream;
+            Stream output = server.StandardOutput.BaseStream;
+            string uri = new Uri(fileName).AbsoluteUri;
+            await WriteLspAsync(input, new
+            {
+                jsonrpc = "2.0", id = 1, method = "initialize",
+                @params = new { processId = Environment.ProcessId,
+                    rootUri = new Uri(directory + Path.DirectorySeparatorChar).AbsoluteUri,
+                    capabilities = new { } }
+            }, timeout.Token);
+            using (await ReadLspResponseAsync(output, 1, timeout.Token)) { }
+            await WriteLspAsync(input, new { jsonrpc = "2.0", method = "initialized", @params = new { } }, timeout.Token);
+
+            string directFile = Path.Combine(directory, "DirectReferenceLsp.pas");
+            string directAssembly = Path.Combine(directory, "TestRoot.dll");
+            File.Copy(Path.Combine(AppContext.BaseDirectory, "fixtures", "lib", "TestRoot.dll"),
+                directAssembly);
+            File.Copy(Path.Combine(AppContext.BaseDirectory, "fixtures", "lib", "TestDependency.dll"),
+                Path.Combine(directory, "TestDependency.dll"));
+            string directSource = "{$reference 'TestRoot.dll'}\n" +
+                "begin\n  Println(NuGetRestoreFixture.Root.Value);\nend.\n";
+            File.WriteAllText(directFile, directSource);
+            string directUri = new Uri(directFile).AbsoluteUri;
+            int directDot = directSource.IndexOf("Root.Value", StringComparison.Ordinal) +
+                "Root.".Length;
+            await WriteLspAsync(input, new
+            {
+                jsonrpc = "2.0", method = "textDocument/didOpen",
+                @params = new { textDocument = new
+                    { uri = directUri, languageId = "pascal", version = 1, text = directSource } }
+            }, timeout.Token);
+            using (var originalDirect = await RequestLspPositionAsync(input, output, 10,
+                       "textDocument/completion", directUri, directSource, directDot, timeout.Token))
+                Check(!originalDirect.RootElement.GetProperty("result").GetProperty("items")
+                    .EnumerateArray().Any(item => item.GetProperty("label").GetString() == "OnlyInV2"),
+                    "LSP started with the wrong direct-reference DLL version.");
+
+            File.Copy(Path.Combine(AppContext.BaseDirectory, "fixtures", "v2", "lib", "TestRoot.dll"),
+                directAssembly, overwrite: true);
+            File.SetLastWriteTimeUtc(directAssembly, DateTime.UtcNow.AddSeconds(3));
+            using (var updatedDirect = await RequestLspPositionAsync(input, output, 11,
+                       "textDocument/completion", directUri, directSource, directDot, timeout.Token))
+                Check(updatedDirect.RootElement.GetProperty("result").GetProperty("items")
+                    .EnumerateArray().Any(item => item.GetProperty("label").GetString() == "OnlyInV2"),
+                    "LSP retained the old direct-reference DLL without a Pascal edit.");
+            await WriteLspAsync(input, new
+            {
+                jsonrpc = "2.0", method = "textDocument/didClose",
+                @params = new { textDocument = new { uri = directUri } }
+            }, timeout.Token);
+
+            await WriteLspAsync(input, new
+            {
+                jsonrpc = "2.0", method = "textDocument/didOpen",
+                @params = new { textDocument = new { uri, languageId = "pascal", version = 1, text = source } }
+            }, timeout.Token);
+
+            int dotOffset = source.IndexOf("Root.Value", StringComparison.Ordinal) + "Root.".Length;
+            using var completion = await RequestLspPositionAsync(input, output, 2,
+                "textDocument/completion", uri, source, dotOffset, timeout.Token);
+            Check(completion.RootElement.GetProperty("result").GetProperty("items")
+                .EnumerateArray().Any(item => item.GetProperty("label").GetString() == "Value"),
+                "LSP completion did not expose the NuGet package member.");
+
+            using var hover = await RequestLspPositionAsync(input, output, 3,
+                "textDocument/hover", uri, source, dotOffset + 1, timeout.Token);
+            Check(hover.RootElement.GetProperty("result").GetProperty("contents")
+                .GetProperty("value").GetString()?.Contains("Value", StringComparison.Ordinal) == true,
+                "LSP hover did not describe the NuGet package member.");
+
+            int signatureOffset = source.IndexOf("Root.Combine(", StringComparison.Ordinal) + "Root.Combine(".Length;
+            using var signature = await RequestLspPositionAsync(input, output, 4,
+                "textDocument/signatureHelp", uri, source, signatureOffset, timeout.Token);
+            Check(signature.RootElement.GetProperty("result").GetProperty("signatures")
+                .EnumerateArray().Any(item => item.GetProperty("label").GetString()?
+                    .Contains("Combine", StringComparison.Ordinal) == true),
+                "LSP signature help did not expose the NuGet package method.");
+
+            string versionTwo = source.Replace("1.0.0}", "1.1.0}");
+            await WriteLspAsync(input, new
+            {
+                jsonrpc = "2.0", method = "textDocument/didChange",
+                @params = new { textDocument = new { uri, version = 2 },
+                    contentChanges = new[] { new { text = versionTwo } } }
+            }, timeout.Token);
+            using var updatedCompletion = await RequestLspPositionAsync(input, output, 5,
+                "textDocument/completion", uri, versionTwo, dotOffset, timeout.Token);
+            Check(updatedCompletion.RootElement.GetProperty("result").GetProperty("items")
+                .EnumerateArray().Any(item => item.GetProperty("label").GetString() == "OnlyInV2"),
+                "LSP retained the old DLL after switching the package to version 1.1.0.");
+
+            await WriteLspAsync(input, new
+            {
+                jsonrpc = "2.0", method = "textDocument/didChange",
+                @params = new { textDocument = new { uri, version = 3 },
+                    contentChanges = new[] { new { text = source } } }
+            }, timeout.Token);
+            using var revertedCompletion = await RequestLspPositionAsync(input, output, 6,
+                "textDocument/completion", uri, source, dotOffset, timeout.Token);
+            var revertedItems = revertedCompletion.RootElement.GetProperty("result").GetProperty("items")
+                .EnumerateArray().Select(item => item.GetProperty("label").GetString()).ToArray();
+            Check(revertedItems.Contains("Value") && !revertedItems.Contains("OnlyInV2"),
+                "LSP did not restore the original package DLL after switching back to 1.0.0.");
+            Console.WriteLine("PASS: NuGet completion, hover, signature help and DLL version switching over LSP stdio.");
+        }
+        finally
+        {
+            if (!server.HasExited) server.Kill(entireProcessTree: true);
+            await stderr;
+        }
+    }
+
+    private static async Task<JsonDocument> RequestLspPositionAsync(Stream input, Stream output,
+        int id, string method, string uri, string source, int offset, CancellationToken cancellationToken)
+    {
+        string before = source[..offset];
+        int line = before.Count(ch => ch == '\n');
+        int lastBreak = before.LastIndexOf('\n');
+        int character = offset - lastBreak - 1;
+        await WriteLspAsync(input, new
+        {
+            jsonrpc = "2.0", id, method,
+            @params = new { textDocument = new { uri }, position = new { line, character } }
+        }, cancellationToken);
+        return await ReadLspResponseAsync(output, id, cancellationToken);
+    }
+
+    private static async Task WriteLspAsync(Stream stream, object message, CancellationToken cancellationToken)
+    {
+        byte[] body = JsonSerializer.SerializeToUtf8Bytes(message);
+        byte[] header = Encoding.ASCII.GetBytes($"Content-Length: {body.Length}\r\n\r\n");
+        await stream.WriteAsync(header, cancellationToken);
+        await stream.WriteAsync(body, cancellationToken);
+        await stream.FlushAsync(cancellationToken);
+    }
+
+    private static async Task<JsonDocument> ReadLspResponseAsync(Stream stream, int id,
+        CancellationToken cancellationToken)
+    {
+        while (true)
+        {
+            var header = new List<byte>();
+            while (header.Count < 4 || header[^4] != '\r' || header[^3] != '\n' ||
+                   header[^2] != '\r' || header[^1] != '\n')
+            {
+                byte[] one = new byte[1];
+                if (await stream.ReadAsync(one, cancellationToken) == 0)
+                    throw new EndOfStreamException("LSP server closed stdout before responding.");
+                header.Add(one[0]);
+            }
+            string lengthHeader = Encoding.ASCII.GetString(header.ToArray()).Split("\r\n")
+                .Single(line => line.StartsWith("Content-Length:", StringComparison.OrdinalIgnoreCase));
+            int length = int.Parse(lengthHeader["Content-Length:".Length..].Trim());
+            byte[] body = new byte[length];
+            await stream.ReadExactlyAsync(body, cancellationToken);
+            var message = JsonDocument.Parse(body);
+            if (!message.RootElement.TryGetProperty("id", out var responseId) ||
+                responseId.ValueKind != JsonValueKind.Number || responseId.GetInt32() != id)
+            {
+                message.Dispose();
+                continue; // publishDiagnostics and other notifications may arrive first.
+            }
+            if (message.RootElement.TryGetProperty("error", out var error))
+            {
+                string description = error.ToString();
+                message.Dispose();
+                throw new InvalidOperationException("LSP request failed: " + description);
+            }
+            return message;
+        }
     }
 
     private static async Task CheckCompilerEarlyRestore(string work)
@@ -736,14 +1146,15 @@ internal static class Program
             Description = "Isolated PascalABC.NET NuGet restore fixture."
         };
         builder.Authors.Add("PascalABC.NET tests");
-        string fixture = Path.Combine(AppContext.BaseDirectory, "fixtures", "lib", assembly + ".dll");
+        string variant = id == RootId && version == "1.1.0" ? "v2" : "";
+        string fixture = Path.Combine(AppContext.BaseDirectory, "fixtures", variant, "lib", assembly + ".dll");
         builder.Files.Add(new PhysicalPackageFile { SourcePath = fixture, TargetPath = "lib/net10.0/" + assembly + ".dll" });
         // Deliberately include a second TFM; restore must select only the net10 assets.
         builder.Files.Add(new PhysicalPackageFile { SourcePath = fixture, TargetPath = "lib/net8.0/" + assembly + ".dll" });
         if (referenceAssembly)
             builder.Files.Add(new PhysicalPackageFile
             {
-                SourcePath = Path.Combine(AppContext.BaseDirectory, "fixtures", "ref", assembly + ".dll"),
+                SourcePath = Path.Combine(AppContext.BaseDirectory, "fixtures", variant, "ref", assembly + ".dll"),
                 TargetPath = "ref/net10.0/" + assembly + ".dll"
             });
         if (dependency)

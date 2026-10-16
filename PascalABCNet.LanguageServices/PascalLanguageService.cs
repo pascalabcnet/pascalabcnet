@@ -10,6 +10,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
     private const string LibrarySourceDirectoryKey = "%LIBSOURCEDIRECTORY%";
     private static readonly TimeSpan AnalysisDebounce = TimeSpan.FromMilliseconds(200);
     private static readonly SemaphoreSlim SemanticGate = new(1, 1);
+    private static readonly List<WeakReference<PascalLanguageService>> Instances = new();
 
     private readonly string _documentationLanguageIso;
     private readonly ILanguage _language;
@@ -46,6 +47,12 @@ public sealed class PascalLanguageService : IPascalLanguageService
         {
             _language = PascalLanguageRegistration.RegisterPascalLanguage();
             CodeCompletionBootstrap.Initialize(_documentationLanguageIso);
+            _controller.BeforeIntelliSenseReferenceReload += InvalidateCachedAnalysis;
+            lock (Instances)
+            {
+                Instances.RemoveAll(reference => !reference.TryGetTarget(out _));
+                Instances.Add(new WeakReference<PascalLanguageService>(this));
+            }
             CodeCompletionController.StandartDirectories[LibrarySourceDirectoryKey] =
                 fullStandardLibraryDirectory;
         }
@@ -475,7 +482,12 @@ public sealed class PascalLanguageService : IPascalLanguageService
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
 
+        _controller.RefreshReferenceAssemblies();
         EnsureDirtyDocumentsFresh();
+
+        if (!_states.ContainsKey(documentId) && Documents.TryGet(documentId, out var document) &&
+            document is not null)
+            CompileAndStore(document);
 
         return _states.TryGetValue(documentId, out var state) && state.DomConverter.is_compiled
             ? state
@@ -542,6 +554,29 @@ public sealed class PascalLanguageService : IPascalLanguageService
         }
 
         return domConverter;
+    }
+
+    private static void InvalidateCachedAnalysis()
+    {
+        // A DOM retains reflection Types from the old load context. Other open
+        // documents stay in Documents and are reanalysed on their next request.
+        lock (Instances)
+        {
+            for (int index = Instances.Count - 1; index >= 0; index--)
+                if (Instances[index].TryGetTarget(out var service))
+                {
+                    service._states.Clear();
+                    service._libraryImplementationModels.Clear();
+                }
+                else
+                    Instances.RemoveAt(index);
+        }
+        CodeCompletionController.comp_modules.Clear();
+        CodeCompletionController.pabcNamespaces.Clear();
+        CodeCompletion.AssemblyDocCache.ReleaseReferenceGeneration();
+        CodeCompletion.UnitDocCache.ReleaseReferenceGeneration();
+        CodeCompletion.IntellisensePCUReader.ReleaseReferenceGeneration();
+        CodeCompletionTools.AssemblyDocCache.ReleaseCollectibleAssemblies();
     }
 
     private void RecompileOpenDependents(DocumentSnapshot changedDocument)

@@ -17,6 +17,10 @@
       <HintPath>$(IdeReferenceDirectory)\PluginsSupport.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Compiler">
+      <HintPath>$(IdeReferenceDirectory)\Compiler.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Errors">
       <HintPath>$(IdeReferenceDirectory)\Errors.dll</HintPath>
       <Private>false</Private>

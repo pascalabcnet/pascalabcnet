@@ -15,6 +15,15 @@ namespace CodeCompletionTools
 	{
         private static Dictionary<Assembly, XmlDoc> ht = new Dictionary<Assembly, XmlDoc>();
 
+#if PABCNET_MODERN
+        public static void ReleaseCollectibleAssemblies()
+        {
+            foreach (Assembly assembly in new List<Assembly>(ht.Keys))
+                if (System.Runtime.Loader.AssemblyLoadContext.GetLoadContext(assembly)?.IsCollectible == true)
+                    ht.Remove(assembly);
+        }
+#endif
+
         public static string Load(Assembly a, string path)
         {
             if (ht.ContainsKey(a)) return null;

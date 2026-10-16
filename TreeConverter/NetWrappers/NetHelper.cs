@@ -401,6 +401,53 @@ namespace PascalABCCompiler.NetHelper
             CollectibleReferenceManager.WriteStatistics();
         }
 
+        // IntelliSense loads package assemblies without running a compiler pass.
+        // Register all package directories first so cross-package dependencies
+        // can be resolved even when their assemblies live in different folders.
+        public static void RegisterIntelliSenseReferencePaths(IEnumerable<string> assemblyPaths)
+        {
+            RegisterIntelliSenseReferencePaths(assemblyPaths, null);
+        }
+
+        public static void RegisterIntelliSenseReferencePaths(
+            IEnumerable<string> assemblyPaths, Action beforeReload)
+        {
+            var paths = new List<string>(assemblyPaths);
+            Assembly[] loadedAssemblies = CollectibleReferenceManager.GetCurrentAssemblies();
+            bool changed = CollectibleReferenceManager.CurrentGenerationHasChanged();
+            if (!changed)
+            {
+                var loadedPaths = new Dictionary<string, string>(
+                    StringComparer.OrdinalIgnoreCase);
+                foreach (Assembly assembly in loadedAssemblies)
+                {
+                    string loadedPath;
+                    if (assm_full_paths.TryGetValue(assembly, out loadedPath))
+                        loadedPaths[assembly.GetName().Name] = Path.GetFullPath(loadedPath);
+                }
+                foreach (string path in paths)
+                {
+                    string fullPath = Path.GetFullPath(path);
+                    string simpleName = Path.GetFileNameWithoutExtension(fullPath);
+                    if (loadedPaths.Count != 0 && !loadedPaths.ContainsKey(simpleName))
+                        simpleName = CollectibleReferenceManager.GetSimpleName(fullPath);
+                    string loadedPath;
+                    if (loadedPaths.TryGetValue(simpleName, out loadedPath) &&
+                        !string.Equals(loadedPath, fullPath, StringComparison.OrdinalIgnoreCase))
+                        changed = true;
+                    if (changed)
+                        break;
+                }
+            }
+            if (changed)
+            {
+                beforeReload?.Invoke();
+                ResetCollectibleReferenceGeneration();
+            }
+            foreach (string path in paths)
+                CollectibleReferenceManager.AddSearchDirectory(path);
+        }
+
         private static void ResetCollectibleReferenceGeneration()
         {
             Assembly[] loadedAssemblies = CollectibleReferenceManager.GetCurrentAssemblies();

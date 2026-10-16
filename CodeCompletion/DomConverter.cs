@@ -39,10 +39,17 @@ namespace CodeCompletion
         //TreeConverterSymbolTable tcst;
         public CodeCompletionController controller;
         public bool is_compiled = false;
+        private Exception preparationError;
 
         public Exception LastConversionError
         {
-            get { return visitor.LastConversionError; }
+            get { return preparationError ?? visitor.LastConversionError; }
+        }
+
+        internal void SetPreparationError(Exception error)
+        {
+            preparationError = error;
+            is_compiled = false;
         }
 
         // TODO: Требуется адаптировать к многоязычности  EVA

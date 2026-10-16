@@ -1,6 +1,6 @@
 # NuGetRestoreTests
 
-Интеграционный тест самостоятельного NuGet-моста; не зависит от Pascal-компилятора.
+Интеграционный тест NuGet-моста и его использования modern IntelliSense.
 
 Из корня репозитория:
 
@@ -8,7 +8,7 @@
 dotnet run --project tests\NuGetRestoreTests\NuGetRestoreTests.csproj -c Release
 ```
 
-Fixtures/TestRoot и Fixtures/TestDependency собираются автоматически.
+Fixtures/TestRoot, Fixtures/TestRootV2 и Fixtures/TestDependency собираются автоматически.
 Сам тест через NuGet.Packaging создаёт локальный feed с пакетами и восстанавливает
 их через API PascalABCNet.PackageServices. Для root используется настоящая
 reference assembly, созданная C#-компилятором, и отдельная runtime implementation.
@@ -39,6 +39,24 @@ dotnet run --project tests\NuGetRestoreTests\NuGetRestoreTests.csproj -c Release
 Microsoft.Extensions.Configuration.Json 10.0.0: проверяются зависимость второго
 уровня через Configuration.FileExtensions к FileProviders.Physical, наличие всех
 выбранных DLL и повторный no-op restore. Скачанные пакеты остаются в общем кеше.
+
+Обычный режим также проверяет IntelliSense на локальном тестовом пакете:
+completion, hover и подсказку параметров для корневой DLL, completion для
+транзитивной DLL, удаление `{$package}`, ошибочную версию и восстановление
+анализа после исправления. Те же три запроса и смена версии DLL через
+`didChange` проверяются через настоящий LSP-сервер по stdin/stdout.
+Там же проверяется замена обычной DLL по `{$reference}` и повторный запрос
+completion без изменения исходного `.pas`.
+Для этого не требуется сеть, но нужен собранный
+`bin-net10/PascalABCNet.LanguageServer.dll`.
+
+Обычный прогон также проверяет переключение версии DLL 1.0.0 → 1.1.0 →
+1.0.0 в одном долгоживущем IntelliSense-процессе. Затем два одновременно
+открытых документа с разными версиями по очереди запрашивают completion:
+их DOM пересоздаётся при смене поколения сборок. Отдельно проверяются два
+экземпляра LanguageServices в одном процессе. Вариант 1.1.0 собран из
+другого исходника с членом `OnlyInV2`, поэтому тест обнаруживает повторное
+использование старой сборки.
 
 Необязательная проверка раннего восстановления пакетов самим modern-компилятором
 из главного `.pas` (без сети, на локальном тестовом feed):
@@ -73,5 +91,5 @@ dotnet run --project tests\NuGetRestoreTests\NuGetRestoreTests.csproj -c Release
 `__RedirectIOMode` и общим `net10-output`. Затем удаляет директиву из
 снимка, проверяет очистку `.deps.json` и повторный запуск. Сеть не нужна.
 
-Ожидаемый результат обычного режима: три строки PASS и код завершения 0.
+Ожидаемый результат обычного режима: строки PASS и код завершения 0.
 Версии зависимостей тестового приложения зафиксированы в packages.lock.json.

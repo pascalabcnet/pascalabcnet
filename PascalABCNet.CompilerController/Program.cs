@@ -22,10 +22,12 @@ internal static class Program
         public string? command { get; set; }
         public string? fileName { get; set; }
         public string? outputDirectory { get; set; }
+        public string? libraryOutputDirectory { get; set; }
         public string? runtimeModule { get; set; }
         public SourceFileRequest[]? sourceFiles { get; set; }
         public bool emitEvents { get; set; }
         public bool rebuild { get; set; }
+        public bool debug { get; set; }
     }
 
     private sealed class SourceFileRequest
@@ -38,9 +40,11 @@ internal static class Program
     {
         public string? fileName { get; set; }
         public string? outputDirectory { get; set; }
+        public string? libraryOutputDirectory { get; set; }
         public string? runtimeModule { get; set; }
         public SourceFileRequest[]? sourceFiles { get; set; }
         public bool rebuild { get; set; }
+        public bool debug { get; set; }
     }
 
     private sealed class WorkerTransportRequest
@@ -591,9 +595,11 @@ internal static class Program
                                 {
                                     fileName = fileName,
                                     outputDirectory = outputDirectory,
+                                    libraryOutputDirectory = request.libraryOutputDirectory,
                                     runtimeModule = request.runtimeModule,
                                     sourceFiles = sourceFiles,
-                                    rebuild = request.rebuild
+                                    rebuild = request.rebuild,
+                                    debug = request.debug
                                 });
                             var workerResponse = SendRequest(
                                 "compile", workerRequest, workerFileName,

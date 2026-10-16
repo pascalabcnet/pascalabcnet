@@ -16,6 +16,17 @@ namespace CodeCompletion
     public class CodeCompletionController
     {
         private static readonly LanguageProvider LanguageProvider = LanguageProvider.Instance;
+#if PABCNET_MODERN
+        private NuGetIntelliSenseReferences packageReferences;
+        // A headless consumer can release DOMs that hold the old collectible context.
+        public event Action BeforeIntelliSenseReferenceReload;
+
+        public void RefreshReferenceAssemblies()
+        {
+            PascalABCCompiler.NetHelper.NetHelper.RegisterIntelliSenseReferencePaths(
+                Array.Empty<string>(), () => BeforeIntelliSenseReferenceReload?.Invoke());
+        }
+#endif
 
         public Dictionary<syntax_tree_node, string> docs = new Dictionary<syntax_tree_node, string>();
 		// static bool parsers_loaded=false;
@@ -83,6 +94,9 @@ namespace CodeCompletion
         
         public DomConverter Compile(string FileName, string Text)
         {
+#if PABCNET_MODERN
+            RefreshReferenceAssemblies();
+#endif
             List<Error> ErrorsList = new List<Error>();
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
             compilation_unit cu = null;
@@ -115,6 +129,10 @@ namespace CodeCompletion
             DomConverter dconv = new DomConverter(this);
             if (cu != null)
             {
+#if PABCNET_MODERN
+                if (!PreparePackageReferences(cu, dconv))
+                    return dconv;
+#endif
                 PascalABCCompiler.NetHelper.NetHelper.reset();
                 
                 dconv.ConvertToDom(cu);
@@ -148,6 +166,10 @@ namespace CodeCompletion
                 }
                 if (cu != null)
                 {
+#if PABCNET_MODERN
+                    if (!PreparePackageReferences(cu, dconv))
+                        return dconv;
+#endif
                     PascalABCCompiler.NetHelper.NetHelper.reset();
                     dconv.ConvertToDom(cu);
                 }
@@ -157,6 +179,39 @@ namespace CodeCompletion
             return dconv;
             //ConvertToDom(cu);
         }
+
+#if PABCNET_MODERN
+        private bool PreparePackageReferences(compilation_unit cu, DomConverter converter)
+        {
+            try
+            {
+                if (packageReferences == null)
+                {
+                    if (!(cu is program_module) || cu.compiler_directives == null ||
+                        !cu.compiler_directives.Any(d => d != null && string.Equals(
+                            d.Name?.text, "package", StringComparison.OrdinalIgnoreCase)))
+                        return true;
+                    packageReferences = new NuGetIntelliSenseReferences();
+                }
+                var paths = packageReferences.Resolve(cu,
+                    () => BeforeIntelliSenseReferenceReload?.Invoke());
+                if (paths.Count == 0)
+                    return true;
+
+                if (cu.compiler_directives == null)
+                    cu.compiler_directives = new List<compiler_directive>();
+                foreach (string path in paths)
+                    cu.compiler_directives.Add(new compiler_directive(
+                        new token_info("reference"), new token_info(path)));
+                return true;
+            }
+            catch (Exception error)
+            {
+                converter.SetPreparationError(error);
+                return false;
+            }
+        }
+#endif
 
         private void BuildDocs(string Text, compilation_unit cu, IDocParser docParser)
         {

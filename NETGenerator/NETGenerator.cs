@@ -1341,15 +1341,19 @@ namespace PascalABCCompiler.NETGenerator
                     entryPointHandle = MetadataTokens.MethodDefinitionHandle(entry_meth.MetadataToken);
                     break;
                 case TargetType.Dll:
-                    headerBuilder = new PEHeaderBuilder(imageCharacteristics: Characteristics.Dll);
+                    headerBuilder = new PEHeaderBuilder(
+                        imageCharacteristics: Characteristics.ExecutableImage | Characteristics.Dll);
                     break;
                 default:
                     throw new InvalidOperationException("Unsupported target type");
             }
 
-            string pdbFileName = Path.Combine(Path.GetDirectoryName(TargetFileName), an.Name + ".pdb");
-            DebugDirectoryBuilder debugDirectoryBuilder =
-                GeneratePdb(pdbFileName, pdbBuilder, metadata.GetRowCounts(), entryPointHandle);
+            DebugDirectoryBuilder debugDirectoryBuilder = null;
+            if (save_debug_info)
+            {
+                string pdbFileName = Path.Combine(Path.GetDirectoryName(TargetFileName), an.Name + ".pdb");
+                debugDirectoryBuilder = GeneratePdb(pdbFileName, pdbBuilder, metadata.GetRowCounts(), entryPointHandle);
+            }
             var peBuilder = new ManagedPEBuilder(
                 header: headerBuilder,
                 metadataRootBuilder: new MetadataRootBuilder(metadata),
@@ -1362,9 +1366,10 @@ namespace PascalABCCompiler.NETGenerator
             using (var output = new FileStream(TargetFileName, FileMode.Create, FileAccess.Write))
                 peBlob.WriteContentTo(output);
 
-            File.WriteAllText(
-                Path.Combine(Path.GetDirectoryName(TargetFileName), an.Name + ".runtimeconfig.json"),
-                comp_opt.target == TargetType.WinExe ? RuntimeConfigWindowsDesktop : RuntimeConfigCore);
+            if (comp_opt.target != TargetType.Dll)
+                File.WriteAllText(
+                    Path.Combine(Path.GetDirectoryName(TargetFileName), an.Name + ".runtimeconfig.json"),
+                    comp_opt.target == TargetType.WinExe ? RuntimeConfigWindowsDesktop : RuntimeConfigCore);
 #else
             int tries = 0;
             bool not_done = true;

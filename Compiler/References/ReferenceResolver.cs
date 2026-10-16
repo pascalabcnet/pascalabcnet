@@ -11,18 +11,20 @@ namespace PascalABCCompiler.References
     internal sealed class ReferenceSpec
     {
         public ReferenceSpec(string text, string sourceDirectory, string diagnosticFileName,
-            SyntaxTree.SourceContext sourceContext)
+            SyntaxTree.SourceContext sourceContext, string libraryOutputDirectory = null)
         {
             Text = text;
             SourceDirectory = sourceDirectory;
             DiagnosticFileName = diagnosticFileName;
             SourceContext = sourceContext;
+            LibraryOutputDirectory = libraryOutputDirectory;
         }
 
         public string Text { get; }
         public string SourceDirectory { get; }
         public string DiagnosticFileName { get; }
         public SyntaxTree.SourceContext SourceContext { get; }
+        public string LibraryOutputDirectory { get; }
     }
 
     internal sealed class ResolvedReference
@@ -74,6 +76,15 @@ namespace PascalABCCompiler.References
                 string sourceFileName = Path.Combine(reference.SourceDirectory, fileName);
                 if (File.Exists(sourceFileName))
                     return Resolved(reference, sourceFileName, true);
+
+                // An IDE library may be placed in an explicitly selected stable
+                // output directory, while the executable uses net10-output.
+                if (reference.LibraryOutputDirectory != null)
+                {
+                    string libraryFileName = Path.Combine(reference.LibraryOutputDirectory, fileName);
+                    if (File.Exists(libraryFileName))
+                        return Resolved(reference, libraryFileName, true);
+                }
 
                 string assemblyFileName = Compiler.get_assembly_path(fileName, false);
                 if (assemblyFileName != null && File.Exists(assemblyFileName))

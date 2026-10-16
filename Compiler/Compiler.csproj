@@ -33,4 +33,15 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <ProjectReference Include="..\NuGet\PascalABCNet.PackageServices\PascalABCNet.PackageServices.csproj" />
   </ItemGroup>
+
+  <!-- Visual Studio does not build project references that are outside the solution.
+       Keep the net10-only PackageServices project out of the legacy solution, but
+       refresh it before resolving Compiler's reference during an IDE build. -->
+  <Target Name="BuildModernPackageServicesInVisualStudio"
+          BeforeTargets="ResolveProjectReferences"
+          Condition="'$(TargetFramework)' == 'net10.0' and '$(BuildingInsideVisualStudio)' == 'true' and '$(DesignTimeBuild)' != 'true'">
+    <MSBuild Projects="..\NuGet\PascalABCNet.PackageServices\PascalABCNet.PackageServices.csproj"
+             Targets="Restore;Build"
+             Properties="Configuration=$(Configuration);TargetFramework=net10.0" />
+  </Target>
 </Project>
