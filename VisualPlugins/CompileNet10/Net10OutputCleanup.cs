@@ -7,6 +7,54 @@ namespace VisualPascalABCPlugins
 {
     internal static class Net10OutputCleanup
     {
+        private const string PublishPrefix = "PascalABC.NET-publish-";
+
+        public static string CreatePublishDirectory()
+        {
+            string directory = Path.Combine(Path.GetTempPath(), PublishPrefix + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            return directory;
+        }
+
+        public static bool TryDeletePublishDirectory(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path)) return false;
+            try
+            {
+                string directory = Path.GetFullPath(path);
+                string name = Path.GetFileName(directory);
+                string suffix = name.StartsWith(PublishPrefix, StringComparison.Ordinal)
+                    ? name.Substring(PublishPrefix.Length) : "";
+                Guid identity;
+                if (!Guid.TryParseExact(suffix, "N", out identity) ||
+                    !string.Equals(Path.GetDirectoryName(directory),
+                        Path.GetFullPath(Path.GetTempPath()).TrimEnd(Path.DirectorySeparatorChar),
+                        StringComparison.OrdinalIgnoreCase) || !Directory.Exists(directory))
+                    return false;
+
+                var pending = new Stack<string>();
+                pending.Push(directory);
+                while (pending.Count != 0)
+                {
+                    string current = pending.Pop();
+                    if ((File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0) return false;
+                    foreach (string entry in Directory.EnumerateFileSystemEntries(current))
+                    {
+                        var attributes = File.GetAttributes(entry);
+                        if ((attributes & FileAttributes.ReparsePoint) != 0) return false;
+                        if ((attributes & FileAttributes.Directory) != 0) pending.Push(entry);
+                    }
+                }
+                Directory.Delete(directory, recursive: true);
+                return true;
+            }
+            catch (IOException) { return false; }
+            catch (UnauthorizedAccessException) { return false; }
+            catch (SecurityException) { return false; }
+            catch (ArgumentException) { return false; }
+            catch (NotSupportedException) { return false; }
+        }
+
         // null means "next to the source"; a configured root is captured before compilation.
         public static string GetDirectory(string sourceFile, string configuredOutputDirectory = null)
         {

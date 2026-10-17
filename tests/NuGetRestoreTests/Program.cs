@@ -688,6 +688,37 @@ internal static class Program
             "Programs with different package versions interfered in one output directory: " +
             secondVersionLaunch.Error + originalVersionLaunch.Error);
 
+        File.WriteAllText(Path.ChangeExtension(secondVersionExe, ".pdb"), "debug symbols fixture");
+        string publishedV1 = PackagePublisher.Publish(
+            Path.Combine(outputDirectory, "package-type-unit.exe"), mainWithUnit,
+            Path.GetDirectoryName(compiler)!);
+        string publishedV2 = PackagePublisher.Publish(secondVersionExe, secondVersion,
+            Path.GetDirectoryName(compiler)!);
+        Check(File.Exists(Path.Combine(publishedV1, "TestRoot.dll")) &&
+              File.Exists(Path.Combine(publishedV1, "TestDependency.dll")) &&
+              !File.Exists(Path.Combine(publishedV1, "package-type-unit.deps.json")) &&
+              File.Exists(Path.Combine(publishedV2, "TestRoot.dll")) &&
+              !File.Exists(Path.Combine(publishedV2, "package-version-11.pdb")) &&
+              !File.Exists(Path.Combine(publishedV2, ".pascalabcnet-publish.json")),
+            "Published folders do not contain the selected runtime dependency closure.");
+        string userFile = Path.Combine(publishedV2, "user-notes.txt");
+        File.WriteAllText(userFile, "keep me");
+        PackagePublisher.Publish(secondVersionExe, secondVersion, Path.GetDirectoryName(compiler)!);
+        Check(!File.Exists(userFile) && File.Exists(Path.Combine(publishedV2, "package-version-11.exe")),
+            "Re-publishing did not replace the previous published folder.");
+        string hiddenCache = packageCache + ".hidden";
+        Directory.Move(packageCache, hiddenCache);
+        try
+        {
+            var publishedFirst = await RunDotnet(Path.Combine(publishedV1, "package-type-unit.exe"), directory);
+            var publishedSecond = await RunDotnet(Path.Combine(publishedV2, "package-version-11.exe"), directory);
+            Check(publishedFirst.ExitCode == 0 && publishedFirst.Output.Trim() == "85" &&
+                  publishedSecond.ExitCode == 0 && publishedSecond.Output.Trim() == "44",
+                "Published programs still need the NuGet cache: " +
+                publishedFirst.Error + publishedSecond.Error);
+        }
+        finally { Directory.Move(hiddenCache, packageCache); }
+
         File.WriteAllText(mainWithPackageType, "begin Println(7); end.\n");
         var withoutPackage = await RunCompiler(compiler, mainWithPackageType, packageCache, outputDirectory);
         Check(withoutPackage.ExitCode == 0 && !File.Exists(depsFile),
@@ -697,6 +728,32 @@ internal static class Program
         Check(withoutPackageLaunch.ExitCode == 0 && withoutPackageLaunch.Output.Trim() == "7",
             "A program recompiled without packages failed to run: " +
             withoutPackageLaunch.Output + withoutPackageLaunch.Error);
+        string plainPublish = PackagePublisher.Publish(executable, mainWithPackageType,
+            Path.GetDirectoryName(compiler)!);
+        Check(!File.Exists(Path.Combine(plainPublish, "package-type-main.deps.json")) &&
+              !File.Exists(Path.Combine(plainPublish, "TestRoot.dll")),
+            "Publishing a plain program retained old NuGet assets.");
+        var plainPublishedRun = await RunDotnet(Path.Combine(plainPublish, "package-type-main.exe"), directory);
+        Check(plainPublishedRun.ExitCode == 0 && plainPublishedRun.Output.Trim() == "7",
+            "A plain published program failed to run: " + plainPublishedRun.Error);
+
+        string directAssembly = Path.Combine(repository, "tests", "NuGetRestoreTests",
+            "Fixtures", "TestDependency", "bin", "Release", "net10.0", "TestDependency.dll");
+        File.Copy(directAssembly, Path.Combine(directory, "TestDependency.dll"));
+        string directSource = Path.Combine(directory, "direct-reference.pas");
+        File.WriteAllText(directSource,
+            "{$reference TestDependency.dll}\nbegin Println(NuGetRestoreFixture.Dependency.Value); end.\n");
+        var directBuild = await RunCompiler(compiler, directSource, packageCache, outputDirectory);
+        Check(directBuild.ExitCode == 0,
+            "A direct DLL reference did not compile: " + directBuild.Output + directBuild.Error);
+        string directPublish = PackagePublisher.Publish(
+            Path.Combine(outputDirectory, "direct-reference.exe"), directSource,
+            Path.GetDirectoryName(compiler)!);
+        Check(File.Exists(Path.Combine(directPublish, "TestDependency.dll")),
+            "A direct DLL reference was omitted from the published folder.");
+        var directPublishedRun = await RunDotnet(Path.Combine(directPublish, "direct-reference.exe"), directory);
+        Check(directPublishedRun.ExitCode == 0 && directPublishedRun.Output.Trim() == "42",
+            "A published direct DLL reference failed to run: " + directPublishedRun.Error);
 
         string conflict = Path.Combine(directory, "conflicting-packages.pas");
         File.WriteAllText(conflict, $"{{$package {RootId} 1.0.0}}\n{{$package {RootId.ToLowerInvariant()} 1.1.0}}\nbegin end.\n");
@@ -856,6 +913,34 @@ internal static class Program
                     "Run10-style launch failed for package " + version + ": " +
                     run.Output + run.Error);
             }
+
+            var published = await SendControllerAsync(process, new
+            {
+                id = 11,
+                command = "compile",
+                fileName = source,
+                outputDirectory,
+                publish = true,
+                sourceFiles = new[] { new { fileName = source,
+                    text = $"{{$package {RootId} 1.1.0}}\nbegin Println(NuGetRestoreFixture.Root.Value); end.\n" } }
+            });
+            Check(published.GetProperty("success").GetBoolean(),
+                "Controller/Worker did not publish the editor snapshot: " + published);
+            string publishedDirectory = published.GetProperty("outputFile").GetString()!;
+            Check(File.Exists(Path.Combine(publishedDirectory, Path.GetFileNameWithoutExtension(source) + ".exe")),
+                "Controller/Worker did not report a published folder.");
+            string hiddenCache = packageCache + ".hidden";
+            Directory.Move(packageCache, hiddenCache);
+            try
+            {
+                var publishedRun = await RunDotnet(
+                    Path.Combine(publishedDirectory, Path.GetFileNameWithoutExtension(source) + ".exe"),
+                    sourceDirectory);
+                Check(publishedRun.ExitCode == 0 && publishedRun.Output.Trim() == "44",
+                    "Controller/Worker publication still depends on the NuGet cache: " +
+                    publishedRun.Output + publishedRun.Error);
+            }
+            finally { Directory.Move(hiddenCache, packageCache); }
 
             // TEST-NET10-PACKAGE-ALC: deleting the installed package twice while
             // one Worker stays alive must not retain the first unloaded context.

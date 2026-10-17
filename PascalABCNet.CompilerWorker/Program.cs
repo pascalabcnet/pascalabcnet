@@ -7,6 +7,9 @@ using System.Threading;
 using Languages.Integration;
 using PascalABCCompiler;
 using PascalABCCompiler.Errors;
+#if !NETFRAMEWORK
+using PascalABCNet.PackageServices;
+#endif
 #if NETFRAMEWORK
 using System.Web.Script.Serialization;
 #else
@@ -26,6 +29,7 @@ internal static class Program
         public SourceFileRequest[]? sourceFiles { get; set; }
         public bool rebuild { get; set; }
         public bool debug { get; set; }
+        public bool publish { get; set; }
     }
 
     private sealed class SourceFileRequest
@@ -339,6 +343,17 @@ internal static class Program
 
             if (outputFileName != null)
             {
+#if NETFRAMEWORK
+                if (request.publish)
+                    throw new NotSupportedException("Publishing is supported only by the .NET 10 worker.");
+#else
+                if (request.publish)
+                {
+                    if (!string.Equals(Path.GetExtension(outputFileName), ".exe", StringComparison.OrdinalIgnoreCase))
+                        throw new InvalidOperationException("Only a compiled .NET 10 program can be published.");
+                    outputFileName = PackagePublisher.Publish(outputFileName, fullFileName, AppContext.BaseDirectory);
+                }
+#endif
                 response.AppendLine("OK");
                 response.AppendLine(outputFileName);
             }
@@ -438,9 +453,10 @@ internal static class Program
         var fileName = location?.FileName ?? locatedError?.FileName ?? defaultFileName;
         var line = location?.BeginPosition.Line ?? 1;
         var column = location?.BeginPosition.Column ?? 1;
-        var message = warning && error is CompilerWarning compilerWarning
-            ? compilerWarning.Message
-            : EnhanceErrorMessage(error);
+        // The IDE displays Message verbatim and receives source coordinates in
+        // separate protocol fields, just as it does for legacy compiler errors.
+        var message = error is PascalABCCompiler.Errors.Error compilerError
+            ? compilerError.Message : error.ToString() ?? "";
 
         response.Append(warning ? "WARNING\t" : "DIAGNOSTIC\t");
         response.Append(EncodeBase64(fileName));
@@ -454,43 +470,6 @@ internal static class Program
 
     private static string EncodeBase64(string value) =>
         Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
-
-    private static string EnhanceErrorMessage(object error)
-    {
-        var message = error.ToString() ?? "";
-        var openParenthesis = message.IndexOf('(');
-        var closeParenthesis = message.IndexOf(')');
-        var position = "";
-
-        if (openParenthesis >= 0 && closeParenthesis >= openParenthesis)
-        {
-            position = message.Substring(
-                openParenthesis,
-                closeParenthesis - openParenthesis + 1);
-        }
-
-        var messageStart = closeParenthesis;
-        if (messageStart >= 0 && messageStart < message.Length)
-            messageStart = message.IndexOf(':', messageStart);
-        if (messageStart >= 0 && messageStart < message.Length - 1)
-            messageStart = message.IndexOf(':', messageStart + 1);
-
-        var result = messageStart >= 0 && messageStart < message.Length - 1
-            ? message.Substring(messageStart + 1).Trim()
-            : message.Trim();
-
-        if (position.Length > 0)
-            result = position + ": " + result;
-
-        if (error is SemanticError semanticError && semanticError.Location != null)
-        {
-            position = "(" + semanticError.Location.begin_line_num + "," +
-                       semanticError.Location.begin_column_num + ")";
-            result = position + ": " + result;
-        }
-
-        return result;
-    }
 
     private static void ApplyTestControl()
     {

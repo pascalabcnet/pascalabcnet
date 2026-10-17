@@ -49,6 +49,9 @@ STATETEXT_READY=Ready
 STATETEXT_FINDREFERNCES=Search...
 STATETEXT_FINDREFERNCES_RESULT{0}={0} matches found
 STATETEXT_NOTFOUND=0 matches found
+PUBLISH_NET10=Publish
+PUBLISH_SUCCESS{0}=Published: {0}
+PUBLISH_READY=.NET 10 publication completed
 
 SUPPORTED_LANGUAGES=Supported languages:
 LANGUAGE_LOADED{0}{1}=Loaded {0} language

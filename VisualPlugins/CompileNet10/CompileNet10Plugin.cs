@@ -23,6 +23,7 @@ namespace VisualPascalABCPlugins
         private IWorkbenchCommandService commandService;
         private IDisposable commandRegistration;
         private ToolStripMenuItem platformItem;
+        private ToolStripMenuItem publishItem;
         private Net10LanguageDocuments languageDocuments;
         private Net10Completion languageCompletion;
         private Net10Hover languageHover;
@@ -123,8 +124,17 @@ namespace VisualPascalABCPlugins
             commandRegistration = commandService.RegisterCommandHandler(this);
             programMenu.DropDownItems.Add(new ToolStripSeparator());
             programMenu.DropDownItems.Add(platformItem);
-            programMenu.DropDownOpening += (sender, e) => platformItem.Enabled =
-                !compiling && runner == null && !workbench.ServiceContainer.RunService.IsRun() && !workbench.DebuggerManager.IsRunning;
+            publishItem = new ToolStripMenuItem(PascalABCCompiler.StringResources.Get("VP_VEC_PUBLISH_NET10"))
+                { Name = "CompileNet10Publish" };
+            publishItem.Click += (sender, e) => Execute(false, publish: true);
+            programMenu.DropDownItems.Add(publishItem);
+            programMenu.DropDownOpening += (sender, e) =>
+            {
+                bool available = !compiling && runner == null &&
+                    !workbench.ServiceContainer.RunService.IsRun() && !workbench.DebuggerManager.IsRunning;
+                platformItem.Enabled = available;
+                publishItem.Enabled = available && platformItem.Checked;
+            };
             foreach (var item in new[] { compileItem, runItem, stopItem })
             {
                 if (item.toolStripButton is ToolStripItem button) button.Visible = false;
@@ -230,7 +240,8 @@ namespace VisualPascalABCPlugins
                     workbench.ServiceContainer.DocumentService.CurrentCodeFileDocument = request.Document;
             }
             Execute(action == VisualEnvironmentCompilerAction.Run,
-                action == VisualEnvironmentCompilerAction.Build && context is bool rebuild && rebuild);
+                action == VisualEnvironmentCompilerAction.Build && context is bool rebuild && rebuild,
+                redirectConsoleIO: !(context is IdeRunCommand runCommand) || runCommand.RedirectConsoleIO);
             return true;
         }
 
@@ -246,13 +257,16 @@ namespace VisualPascalABCPlugins
             }
         }
 
-        private async void Execute(bool run, bool rebuild = false)
+        private async void Execute(bool run, bool rebuild = false, bool publish = false,
+            bool redirectConsoleIO = true)
         {
             if (compiling) return;
             IDisposable preparation = null;
             string cleanupSource = null, cleanupOutput = null;
             string cleanupOutputRoot = null;
+            string publishOutputDirectory = null;
             bool deleteExe = false, deletePdb = false;
+            bool standalone = run && !redirectConsoleIO;
             status.BeginOperation();
             try
             {
@@ -267,24 +281,31 @@ namespace VisualPascalABCPlugins
                 string fileName = sources[0].fileName;
                 string outputRoot = workbench.UserOptions.UseOutputDirectory
                     ? Path.GetFullPath(workbench.UserOptions.OutputDirectory) : null;
-                string outputDirectory = Net10OutputCleanup.GetDirectory(fileName, outputRoot);
+                string outputDirectory = publish
+                    ? publishOutputDirectory = Net10OutputCleanup.CreatePublishDirectory()
+                    : Net10OutputCleanup.GetDirectory(fileName, outputRoot);
                 var runService = workbench.ServiceContainer.RunService;
+                if (publish && runService.IsRun())
+                    throw new InvalidOperationException("Сначала остановите обычную программу IDE.");
                 if (run && runService.IsRun())
                     throw new InvalidOperationException("Сначала остановите обычную программу IDE.");
-                if (run) workbench.ServiceContainer.OperationsService.ClearOutputTextBoxForTabPage(document);
+                if (run && !standalone)
+                    workbench.ServiceContainer.OperationsService.ClearOutputTextBoxForTabPage(document);
                 string arguments = run && runService.HasRunArgument(fileName)
                     ? runService.GetRunArgument(fileName) : "";
-                workbench.CompilerConsoleWindow.ClearConsole();
+                if (!standalone) workbench.CompilerConsoleWindow.ClearConsole();
                 if (client == null) client = CreateClient();
                 compiling = true;
                 SetEnabled(false);
                 workbench.ErrorsListWindow.ClearErrorList();
                 var display = new Net10CompilerDisplay(key => PascalABCCompiler.StringResources.Get("VP_VEC_" + key));
                 // Await each UI delivery so Ready cannot arrive after Run/exception status.
-                var response = await client.CompileAsync(fileName, outputDirectory, "__RedirectIOMode", sources,
+                var response = await client.CompileAsync(fileName, outputDirectory,
+                    publish ? null : standalone ? "__RunMode" : "__RedirectIOMode", sources,
                     value => DisplayCompilerEventAsync(display, value), rebuild,
                     libraryOutputDirectory: outputRoot ?? Path.GetDirectoryName(fileName),
-                    debug: workbench.ServiceContainer.BuildService.CompilerOptions.Debug);
+                    debug: !publish && workbench.ServiceContainer.BuildService.CompilerOptions.Debug,
+                    publish: publish);
                 if (run && response.success)
                 {
                     var target = Net10EditorDocument.ResolveRunTarget(document, response.outputFile,
@@ -297,9 +318,11 @@ namespace VisualPascalABCPlugins
                         fileName = sources[0].fileName;
                         outputDirectory = Net10OutputCleanup.GetDirectory(fileName, outputRoot);
                         arguments = runService.HasRunArgument(fileName) ? runService.GetRunArgument(fileName) : "";
-                        workbench.ServiceContainer.OperationsService.ClearOutputTextBoxForTabPage(document);
+                        if (!standalone)
+                            workbench.ServiceContainer.OperationsService.ClearOutputTextBoxForTabPage(document);
                         display = new Net10CompilerDisplay(key => PascalABCCompiler.StringResources.Get("VP_VEC_" + key));
-                        response = await client.CompileAsync(fileName, outputDirectory, "__RedirectIOMode", sources,
+                        response = await client.CompileAsync(fileName, outputDirectory,
+                            standalone ? "__RunMode" : "__RedirectIOMode", sources,
                             value => DisplayCompilerEventAsync(display, value), rebuild,
                             libraryOutputDirectory: outputRoot ?? Path.GetDirectoryName(fileName),
                             debug: workbench.ServiceContainer.BuildService.CompilerOptions.Debug);
@@ -308,7 +331,13 @@ namespace VisualPascalABCPlugins
                 if (response.success)
                 {
                     ShowDiagnostics(response, fileName, run);
-                    if (!display.HasResult)
+                    if (publish)
+                    {
+                        WriteMessage(string.Format(PascalABCCompiler.StringResources.Get("VP_VEC_PUBLISH_SUCCESS{0}"),
+                            response.outputFile));
+                        status.Update(PascalABCCompiler.StringResources.Get("VP_VEC_PUBLISH_READY"));
+                    }
+                    else if (!display.HasResult)
                     {
                         WriteMessage("Готово: " + response.outputFile);
                         status.Update("Компиляция .NET 10 прошла успешно");
@@ -334,25 +363,35 @@ namespace VisualPascalABCPlugins
                         if (runService.IsRun())
                             throw new InvalidOperationException("Уже запущена обычная программа IDE.");
                         using (var program = new Net10ProgramRunner(dotnetPath, Path.GetFullPath(outputFile),
-                            Path.GetDirectoryName(fileName), arguments, externalRun.PrepareExternalArguments))
+                            Path.GetDirectoryName(fileName), arguments, externalRun.PrepareExternalArguments,
+                            redirectConsoleIO, standalone && workbench.UserOptions.PauseInRunModeIfConsole,
+                            PascalABCCompiler.StringResourcesLanguage.CurrentLCID))
                         using (var lifecycle = externalRun.RegisterExternalRun(document, outputFile, program.Stop))
-                        using (var console = new Net10OutputSession(workbench, document,
-                            program.SendInputAsync, program.Stop, lifecycle.WriteOutput))
                         {
                             runner = program;
                             runningOutputFile = Path.GetFullPath(outputFile);
-                            outputSession = console;
                             SetItemEnabled(stopItem, true);
-                            int exitCode = await program.RunAsync(console.Append, console.RequestInput,
-                                lifecycle.Started, error => console.ReportException(error, lifecycle));
+                            int exitCode;
+                            if (standalone)
+                                exitCode = await program.RunAsync(null, null, lifecycle.Started);
+                            else
+                            {
+                                using (var console = new Net10OutputSession(workbench, document,
+                                    program.SendInputAsync, program.Stop, lifecycle.WriteOutput))
+                                {
+                                    outputSession = console;
+                                    exitCode = await program.RunAsync(console.Append, console.RequestInput,
+                                        lifecycle.Started, error => console.ReportException(error, lifecycle));
+                                    await console.FlushAsync();
+                                }
+                                outputSession = null;
+                            }
                             // Only a completed run (including Stop/runtime errors), never Compile or a failed launch.
                             cleanupSource = fileName;
                             cleanupOutput = Path.GetFullPath(outputFile);
                             cleanupOutputRoot = outputRoot;
                             deleteExe = workbench.UserOptions.DeleteEXEAfterExecute;
                             deletePdb = workbench.UserOptions.DeletePDBAfterExecute;
-                            await console.FlushAsync();
-                            // Both output streams were queued before this UI continuation.
                             if (exitCode != 0 && !program.WasStopped)
                             {
                                 status.Update("Программа .NET 10 завершилась с ошибкой (код " + exitCode + ")");
@@ -370,7 +409,7 @@ namespace VisualPascalABCPlugins
             catch (Exception error)
             {
                 status.Update("Ошибка .NET 10: " + error.Message);
-                WriteMessage((run ? "Run .NET 10: " : "Compile .NET 10: ") + error.Message);
+                WriteMessage((publish ? "Publish .NET 10: " : run ? "Run .NET 10: " : "Compile .NET 10: ") + error.Message);
             }
             finally
             {
@@ -378,6 +417,9 @@ namespace VisualPascalABCPlugins
                 if (cleanupOutput != null && deleteExe && deletePdb)
                     await System.Threading.Tasks.Task.Run(() =>
                         Net10OutputCleanup.TryDelete(cleanupSource, cleanupOutput, deleteExe, deletePdb, cleanupOutputRoot));
+                if (publishOutputDirectory != null)
+                    await System.Threading.Tasks.Task.Run(() =>
+                        Net10OutputCleanup.TryDeletePublishDirectory(publishOutputDirectory));
                 compiling = false;
                 runner = null;
                 runningOutputFile = null;
@@ -473,6 +515,7 @@ namespace VisualPascalABCPlugins
             if (workbench.MainForm.IsDisposed) return;
             SetItemEnabled(compileItem, enabled);
             SetItemEnabled(runItem, enabled);
+            if (publishItem != null) publishItem.Enabled = enabled && platformItem?.Checked == true;
         }
 
         private static void SetItemEnabled(PluginGUIItem item, bool enabled)

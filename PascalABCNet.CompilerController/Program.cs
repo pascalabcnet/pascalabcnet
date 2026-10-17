@@ -28,6 +28,7 @@ internal static class Program
         public bool emitEvents { get; set; }
         public bool rebuild { get; set; }
         public bool debug { get; set; }
+        public bool publish { get; set; }
     }
 
     private sealed class SourceFileRequest
@@ -45,6 +46,7 @@ internal static class Program
         public SourceFileRequest[]? sourceFiles { get; set; }
         public bool rebuild { get; set; }
         public bool debug { get; set; }
+        public bool publish { get; set; }
     }
 
     private sealed class WorkerTransportRequest
@@ -599,7 +601,8 @@ internal static class Program
                                     runtimeModule = request.runtimeModule,
                                     sourceFiles = sourceFiles,
                                     rebuild = request.rebuild,
-                                    debug = request.debug
+                                    debug = request.debug,
+                                    publish = request.publish
                                 });
                             var workerResponse = SendRequest(
                                 "compile", workerRequest, workerFileName,

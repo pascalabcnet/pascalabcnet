@@ -71,7 +71,7 @@ namespace VisualPascalABCPlugins
         public async Task<Net10CompileResponse> CompileAsync(string fileName, string outputDirectory,
             string runtimeModule = null, List<Net10SourceFile> sourceFiles = null,
             Func<Net10CompilerEvent, Task> progress = null, bool rebuild = false,
-            string libraryOutputDirectory = null, bool debug = false)
+            string libraryOutputDirectory = null, bool debug = false, bool publish = false)
         {
             await requests.WaitAsync().ConfigureAwait(false);
             try
@@ -117,7 +117,7 @@ namespace VisualPascalABCPlugins
                 if (!ping.success || ping.result != "PONG") throw new IOException("Контроллер не ответил PONG.");
                 TrackWorker(ping.workerPid);
                 var response = await SendAsync("compile", fileName, outputDirectory, 120000, runtimeModule, sourceFiles,
-                    progress, rebuild, libraryOutputDirectory, debug).ConfigureAwait(false);
+                    progress, rebuild, libraryOutputDirectory, debug, publish).ConfigureAwait(false);
                 TrackWorker(response.workerPid);
                 return response;
             }
@@ -134,7 +134,7 @@ namespace VisualPascalABCPlugins
         private async Task<Net10CompileResponse> SendAsync(string command, string fileName, string outputDirectory,
             int timeoutMs, string runtimeModule = null, List<Net10SourceFile> sourceFiles = null,
             Func<Net10CompilerEvent, Task> progress = null, bool rebuild = false,
-            string libraryOutputDirectory = null, bool debug = false)
+            string libraryOutputDirectory = null, bool debug = false, bool publish = false)
         {
             int id = ++nextId;
             var request = new Dictionary<string, object> { { "id", id }, { "command", command } };
@@ -146,6 +146,7 @@ namespace VisualPascalABCPlugins
             if (progress != null) request.Add("emitEvents", true);
             if (rebuild) request.Add("rebuild", true);
             if (debug) request.Add("debug", true);
+            if (publish) request.Add("publish", true);
             input.WriteLine(json.Serialize(request));
             input.Flush();
             using (var cancellation = new CancellationTokenSource())

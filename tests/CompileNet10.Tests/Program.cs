@@ -496,6 +496,27 @@ internal static partial class Program
                 Check(requests == 1, "Readln emits one request");
                 Check(output.ToString() == "Привет: Ответ=мир", "UTF-8 output without final newline");
 
+                string standaloneSource = Path.Combine(root, "Standalone.pas");
+                string standaloneResult = Path.Combine(root, "standalone-arguments.txt");
+                var standalone = await compiler.CompileAsync(standaloneSource, root, "__RunMode",
+                    new List<Net10SourceFile> { new Net10SourceFile { fileName = standaloneSource,
+                        text = "begin System.IO.File.WriteAllText('standalone-arguments.txt', " +
+                            "CommandLineArgs[0] + '|' + CommandLineArgs[1]); end." } });
+                Check(standalone.success, "compile standalone Run mode: " + standalone.message);
+                using (var runner = new Net10ProgramRunner("dotnet", standalone.outputFile, root,
+                    "one two", redirectConsoleIO: false))
+                {
+                    var running = runner.RunAsync(null, null);
+                    if (await Task.WhenAny(running, Task.Delay(30000)) != running)
+                    {
+                        runner.Stop();
+                        throw new TimeoutException("Standalone Run mode timed out");
+                    }
+                    Check(await running == 0, "standalone process exits successfully");
+                }
+                Check(File.ReadAllText(standaloneResult) == "one|two",
+                    "standalone Run mode strips service argument and passes user arguments");
+
                 memory[0].text = "begin raise new System.Exception('Проверка исключения'); end.";
                 compiled = await compiler.CompileAsync(source, root, "__RedirectIOMode", memory);
                 Check(compiled.success, "compile exception fixture");
@@ -587,6 +608,20 @@ internal static partial class Program
         result.diagnostics.Clear();
         Check(Net10Diagnostics.Create(result, source).Count == 0,
             "successful compilation without diagnostics does not invent an error");
+
+        var failed = await compiler.CompileAsync(source, root, "__RedirectIOMode",
+            new List<Net10SourceFile> { new Net10SourceFile { fileName = source,
+                text = "begin\n  MissingName\nend." } });
+        var diagnostic = failed.diagnostics?.Find(value => value.severity == "error");
+        Check(!failed.success && diagnostic != null && diagnostic.line == 2 && diagnostic.column > 0 &&
+            !string.IsNullOrWhiteSpace(diagnostic.message) &&
+            !diagnostic.message.StartsWith("(" + diagnostic.line + "," + diagnostic.column + "):", StringComparison.Ordinal),
+            "Worker sends error text without duplicating source coordinates");
+        var errorItem = Net10Diagnostics.Create(failed, source)[0] as PascalABCCompiler.Errors.LocatedError;
+        Check(errorItem != null && errorItem.Message == diagnostic.message &&
+            errorItem.SourceLocation.BeginPosition.Line == diagnostic.line &&
+            errorItem.SourceLocation.BeginPosition.Column == diagnostic.column,
+            "IDE error list keeps source coordinates for navigation but not in description");
     }
 
     private static async Task CheckSnapshots(Net10ControllerClient compiler, string root)

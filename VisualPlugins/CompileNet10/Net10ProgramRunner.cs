@@ -12,37 +12,60 @@ namespace VisualPascalABCPlugins
     internal sealed class Net10ProgramRunner : IDisposable
     {
         private readonly Process process;
+        private readonly bool redirectConsoleIO;
+        private readonly bool pauseHost;
         private readonly SemaphoreSlim writes = new SemaphoreSlim(1, 1);
         private StreamWriter input;
         public bool WasStopped { get; private set; }
 
         public Net10ProgramRunner(string dotnetPath, string outputFile, string workingDirectory, string arguments,
-            Func<string, string> prepareArguments = null)
+            Func<string, string> prepareArguments = null, bool redirectConsoleIO = true,
+            bool pause = false, string locale = "ru-RU")
         {
             if (!File.Exists(outputFile))
                 throw new FileNotFoundException("Не найден результат компиляции .NET 10", outputFile);
-            string commandArguments = "[REDIRECTIOMODE]" + (string.IsNullOrWhiteSpace(arguments) ? "" : " " + arguments);
+            this.redirectConsoleIO = redirectConsoleIO;
+            pauseHost = !redirectConsoleIO && pause;
+            string commandArguments = (redirectConsoleIO ? "[REDIRECTIOMODE]" : "[RUNMODE]") +
+                (string.IsNullOrWhiteSpace(arguments) ? "" : " " + arguments);
             if (prepareArguments != null) commandArguments = prepareArguments(commandArguments);
-            process = new Process
+            string executable = dotnetPath;
+            string processArguments = "\"" + outputFile + "\" " + commandArguments;
+            if (pauseHost)
             {
-                StartInfo = new ProcessStartInfo(dotnetPath, "\"" + outputFile + "\" " + commandArguments)
-                {
-                    WorkingDirectory = workingDirectory,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    StandardOutputEncoding = new UTF8Encoding(false),
-                    StandardErrorEncoding = new UTF8Encoding(false)
-                }
+                executable = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ProgrammRunner.exe");
+                if (!File.Exists(executable))
+                    throw new FileNotFoundException("Не найден консольный запускатель", executable);
+                processArguments = "--net10 \"" + dotnetPath + "\" \"" + outputFile +
+                    "\" \"" + locale + "\" " + commandArguments;
+            }
+            var startInfo = new ProcessStartInfo(executable, processArguments)
+            {
+                WorkingDirectory = workingDirectory,
+                UseShellExecute = false,
+                CreateNoWindow = redirectConsoleIO,
+                RedirectStandardInput = redirectConsoleIO,
+                RedirectStandardOutput = redirectConsoleIO,
+                RedirectStandardError = redirectConsoleIO
             };
+            if (redirectConsoleIO)
+            {
+                startInfo.StandardOutputEncoding = new UTF8Encoding(false);
+                startInfo.StandardErrorEncoding = new UTF8Encoding(false);
+            }
+            process = new Process { StartInfo = startInfo };
         }
 
         public async Task<int> RunAsync(Action<string> output, Action readRequested,
             Action started = null, Action<RuntimeExceptionInfo> exception = null)
         {
             process.Start();
+            if (!redirectConsoleIO)
+            {
+                started?.Invoke();
+                await Task.Run(() => process.WaitForExit()).ConfigureAwait(false);
+                return process.ExitCode;
+            }
             input = new StreamWriter(process.StandardInput.BaseStream, new UTF8Encoding(false)) { AutoFlush = true };
             started?.Invoke();
             var protocol = new Net10RuntimeProtocol(output, readRequested, exception);
@@ -83,6 +106,17 @@ namespace VisualPascalABCPlugins
                 if (!process.HasExited)
                 {
                     WasStopped = true;
+                    if (pauseHost && Environment.OSVersion.Platform == PlatformID.Win32NT)
+                    {
+                        using (var killer = Process.Start(new ProcessStartInfo("taskkill.exe",
+                            "/T /F /PID " + process.Id)
+                        {
+                            UseShellExecute = false, CreateNoWindow = true
+                        }))
+                        {
+                            if (killer.WaitForExit(1000) && killer.ExitCode == 0) return;
+                        }
+                    }
                     process.Kill();
                 }
             }

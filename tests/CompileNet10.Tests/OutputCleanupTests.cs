@@ -163,6 +163,18 @@ internal static partial class Program
             Check(Net10OutputCleanup.TryDelete(source, selectedExe, true, true, selectedRoot) &&
                 !Directory.Exists(selectedDirectory) && File.ReadAllText(sentinel) == "keep" && File.Exists(source),
                 "only net10-output is removed, never the selected parent folder or its other files");
+
+            string publishDirectory = Net10OutputCleanup.CreatePublishDirectory();
+            try
+            {
+                File.WriteAllText(Path.Combine(publishDirectory, "main.exe"), "temporary build");
+                Check(!Net10OutputCleanup.TryDeletePublishDirectory(root) && File.Exists(source),
+                    "publish cleanup rejects unrelated directories");
+                Check(Net10OutputCleanup.TryDeletePublishDirectory(publishDirectory) &&
+                    !Directory.Exists(publishDirectory) && File.Exists(source),
+                    "publish removes only its isolated temporary build directory");
+            }
+            finally { Net10OutputCleanup.TryDeletePublishDirectory(publishDirectory); }
         }
         finally { DeleteOutputCleanupFixture(root); }
     }

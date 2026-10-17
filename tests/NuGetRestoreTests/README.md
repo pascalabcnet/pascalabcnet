@@ -77,7 +77,12 @@ dotnet run --project tests\NuGetRestoreTests\NuGetRestoreTests.csproj -c Release
 не может загрузить NuGet `ref/`-сборку. Для запуска компилятор создаёт
 `<программа>.deps.json` и добавляет путь общего кеша NuGet в
 `<программа>.runtimeconfig.json`; пакетные DLL рядом с EXE не копируются.
-Native/resource assets и автономная публикация пока не поддерживаются.
+Native/resource assets пока не поддерживаются.
+Режим `--compiler` дополнительно публикует обе версии тестового пакета в
+`publish/<имя программы>/`, повторяет публикацию и запускает оба EXE при
+временно недоступном NuGet-кеше. Пока публикуются managed DLL; native/resource
+assets не поддерживаются. Также проверяются программа без пакетов, явная
+`{$reference}` и отказ заменять папку, в которую пользователь добавил файл.
 
 Отдельная проверка цепочки Run10 через долгоживущий Controller/Worker
 (после сборки `Net10Runtime.slnx` в `bin-net10`):
@@ -90,6 +95,8 @@ dotnet run --project tests\NuGetRestoreTests\NuGetRestoreTests.csproj -c Release
 компилирует две версии пакета одним Worker и запускает обе программы с
 `__RedirectIOMode` и общим `net10-output`. Затем удаляет директиву из
 снимка, проверяет очистку `.deps.json` и повторный запуск. Сеть не нужна.
+Дополнительно проверяется команда `publish=true`: Worker собирает снимок без
+`__RedirectIOMode`, создаёт папку публикации и программа запускается без кеша.
 
 Ожидаемый результат обычного режима: строки PASS и код завершения 0.
 Версии зависимостей тестового приложения зафиксированы в packages.lock.json.
