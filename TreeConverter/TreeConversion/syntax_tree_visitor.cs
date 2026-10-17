@@ -10529,6 +10529,9 @@ namespace PascalABCCompiler.TreeConverter
             {
                 case motivation.address_receiving:
                     {
+                        // TEST-REGRESSION: an extension method must not hide a property on assignment.
+                        if (sil.FirstOrDefault().sym_info is function_node function && function.is_extension_method)
+                            has_property(ref sil);
                         return_addressed_value(address_expression_reciving(id_right, sil?.FirstOrDefault(), en));
                         return;
                     }
