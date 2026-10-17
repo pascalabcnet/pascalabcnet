@@ -14,8 +14,6 @@ unit __RedirectIOMode;
 //       передача их в поток ErrorStream  
 //------------------------------------------------------------------------------
 
-{$reference 'System.Windows.Forms.dll'}
-
 interface
 
 uses PABCSystem, System;
@@ -118,7 +116,33 @@ var __initialized := false;
 
 procedure AddThreadExceptionHandler;
 begin
-  System.Windows.Forms.Application.ThreadException += Application_ThreadException;
+  // TEST-REGRESSION: console I/O redirection must not add a WindowsDesktop dependency.
+  // Subscribe on the main thread only when the program actually references WinForms.
+  var winForms: System.Reflection.Assembly := nil;
+  foreach var assembly in AppDomain.CurrentDomain.GetAssemblies do
+    if assembly.GetName.Name = 'System.Windows.Forms' then
+    begin
+      winForms := assembly;
+      break;
+    end;
+  if winForms = nil then
+    foreach var reference in System.Reflection.Assembly.GetExecutingAssembly.GetReferencedAssemblies do
+      if reference.Name = 'System.Windows.Forms' then
+      begin
+        winForms := System.Reflection.Assembly.Load(reference);
+        break;
+      end;
+  if winForms = nil then
+    exit;
+  var applicationType := winForms.GetType('System.Windows.Forms.Application', false);
+  if applicationType = nil then
+    exit;
+  var threadException := applicationType.GetEvent('ThreadException');
+  if threadException <> nil then
+  begin
+    var handler: System.Threading.ThreadExceptionEventHandler := Application_ThreadException;
+    threadException.AddEventHandler(nil, handler);
+  end;
 end;
 procedure __InitModule;
 begin
