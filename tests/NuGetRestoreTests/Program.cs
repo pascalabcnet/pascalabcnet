@@ -683,7 +683,7 @@ internal static class Program
                 "The second program's runtime manifest selected the wrong package version.");
         var secondVersionLaunch = await RunDotnet(secondVersionExe, directory);
         var originalVersionLaunch = await RunDotnet(Path.Combine(outputDirectory, "package-type-unit.exe"), directory);
-        Check(secondVersionLaunch.ExitCode == 0 && secondVersionLaunch.Output.Trim() == "43" &&
+        Check(secondVersionLaunch.ExitCode == 0 && secondVersionLaunch.Output.Trim() == "44" &&
             originalVersionLaunch.ExitCode == 0 && originalVersionLaunch.Output.Trim() == "85",
             "Programs with different package versions interfered in one output directory: " +
             secondVersionLaunch.Error + originalVersionLaunch.Error);
@@ -852,7 +852,7 @@ internal static class Program
                             .TryGetProperty(RootId + "/" + version, out _),
                         "Worker used a stale package graph after changing the editor snapshot.");
                 var run = await RunDotnetRedirected(executable, sourceDirectory);
-                Check(run.ExitCode == 0 && run.Output.Trim() == "43",
+                Check(run.ExitCode == 0 && run.Output.Trim() == (version == "1.0.0" ? "43" : "44"),
                     "Run10-style launch failed for package " + version + ": " +
                     run.Output + run.Error);
             }
