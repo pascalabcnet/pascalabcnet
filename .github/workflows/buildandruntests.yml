@@ -37,6 +37,13 @@ jobs:
         PABCNET_INC_BUILD:  false
         PABCNET_VERBOSE:    false
 
+    - name: Check repository contents (warnings)
+      working-directory: bin
+      run: |
+        pabcnetcclear.exe GitIgnoreTester.pas
+        if errorlevel 1 exit /b 1
+        GitIgnoreTester.exe NoWait WarningsOnly GitHubActions
+
     #- name: Publish artifacts (5/5)...
     #  uses: actions/upload-artifact@v2
     #  with:

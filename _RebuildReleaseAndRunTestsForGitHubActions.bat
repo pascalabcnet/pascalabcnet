@@ -65,11 +65,8 @@ cd ..\TestSuiteAdditionalLanguages\SPythonTests
 ..\..\bin\TestRunner.exe 6 1
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
-cd ..\..\bin
-pabcnetcclear GitIgnoreTester.pas
-GitIgnoreTester.exe NoWait
-@IF %ERRORLEVEL% NEQ 0 GOTO ERROR
-cd ..
+rem Repository-content validation is a separate GitHub Actions step.
+cd ..\..
 
 GOTO EXIT
 

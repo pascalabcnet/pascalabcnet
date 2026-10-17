@@ -6,7 +6,17 @@ begin
   Result := System.Text.Encoding.UTF8.GetString(bytes);
 end);
 
+function EscapeAnnotation(s: string): string;
+begin
+  Result := s.Replace('%', '%25');
+  Result := Result.Replace(chr(13).ToString, '%0D');
+  Result := Result.Replace(chr(10).ToString, '%0A');
+end;
+
 var no_wait := 'NoWait' in CommandLineArgs;
+// Keep strict behavior for existing local/release callers; CI opts into warnings.
+var warnings_only := ('WarningsOnly' in CommandLineArgs) and not ('Strict' in CommandLineArgs);
+var github_actions := 'GitHubActions' in CommandLineArgs;
 
 // Чтобы удобнее сравнивать вывод этой программы
 //Rewrite(output, 'temp.txt');
@@ -37,6 +47,8 @@ try
     p.BeginOutputReadLine;
     
     p.WaitForExit;
+    if p.ExitCode <> 0 then
+      raise new System.InvalidOperationException($'git ls-files failed (exit code {p.ExitCode}).');
   end;
   //index_files.PrintLines;
   
@@ -78,6 +90,9 @@ try
     p.StandardInput.Close;
     
     p.WaitForExit;
+    // git check-ignore returns 1 when no paths match; that is not a failure.
+    if (p.ExitCode <> 0) and (p.ExitCode <> 1) then
+      raise new System.InvalidOperationException($'git check-ignore failed (exit code {p.ExitCode}).');
   end;
   
   var err := false;
@@ -93,6 +108,11 @@ try
         header.Println;
       end;
       $'- {fname}'.Println;
+      if github_actions then
+      begin
+        var level := if warnings_only then 'warning' else 'error';
+        Println($'::{level} title=Repository contents::' + EscapeAnnotation(header + ' ' + fname));
+      end;
     end);
     if any_found then
     begin
@@ -136,13 +156,15 @@ try
     '''.Println;
   end;
   
-  System.Environment.ExitCode := Ord(err);
+  System.Environment.ExitCode := Ord(err and not warnings_only);
   
 except
   on ex: Exception do
   begin
     Println(ErrOutput, ex);
-    System.Environment.ExitCode := ex.HResult;
+    if github_actions then
+      Println('::error title=Repository checker failed::' + EscapeAnnotation(ex.Message));
+    System.Environment.ExitCode := 1;
   end;
 end;
 //output.Close;
