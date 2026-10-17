@@ -27,6 +27,11 @@ internal static class Program
         try
         {
             await CheckRestore(work);
+            if (args.Contains("--package-directives"))
+            {
+                await CheckPackageDirectiveFixtures(work);
+                return 0;
+            }
             if (!args.Contains("--runtime-only-child"))
                 await CheckLanguageServerProtocol(work);
             await CheckDirectReferenceReload(work);
@@ -775,7 +780,83 @@ internal static class Program
             (missingRun.Output + missingRun.Error).Contains(missingId, StringComparison.OrdinalIgnoreCase),
             "A missing package did not produce a package-specific error: " + missingRun.Output + missingRun.Error);
 
+        await CheckPackageDirectiveFixtures(work);
         Console.WriteLine("PASS: compiler early restore, package types in main and Pascal unit, conflict and missing package.");
+    }
+
+    private static async Task CheckPackageDirectiveFixtures(string work)
+    {
+        // TEST-NET10-PACKAGE-DIRECTIVES: reuse the legacy fixtures, but give their
+        // synthetic package IDs real versions from our isolated local feed.
+        string repository = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
+        string compiler = Path.Combine(repository, "bin-net10", "pabcnetcclear.exe");
+        Check(File.Exists(compiler), "Build the modern compiler before --package-directives.");
+        string directory = Path.Combine(work, "package-directives");
+        Directory.CreateDirectory(directory);
+        string feed = Path.Combine(work, "feed");
+        string packageCache = Path.Combine(directory, "packages");
+        WriteConfiguration(Path.Combine(directory, "NuGet.Config"), feed, packageCache);
+        var service = new PackageRestoreService();
+
+        string AdaptFixture(string relativePath) => File.ReadAllText(
+                Path.Combine(repository, "TestSuite", relativePath.Replace('/', Path.DirectorySeparatorChar)))
+            .Replace("Example.Package", RootId, StringComparison.Ordinal)
+            .Replace("example.package", RootId.ToLowerInvariant(), StringComparison.Ordinal)
+            .Replace("1.2.3", "1.0.0", StringComparison.Ordinal)
+            .Replace("2.0.0", "1.1.0", StringComparison.Ordinal)
+            .Replace(@"..\units\u_directive_package.pas", "u_directive_package.pas", StringComparison.Ordinal);
+
+        foreach (string fixture in new[] {
+            "directive_package_same_version.pas",
+            "usesunits/use_directive_package.pas",
+            "errors/err_directive_package_unit_conflict.pas"
+        })
+        {
+            bool conflict = fixture.StartsWith("errors/", StringComparison.Ordinal);
+            string caseDirectory = Path.Combine(directory, Path.GetFileNameWithoutExtension(fixture));
+            Directory.CreateDirectory(caseDirectory);
+            string source = Path.Combine(caseDirectory, Path.GetFileName(fixture));
+            File.WriteAllText(source, AdaptFixture(fixture));
+            File.WriteAllText(Path.Combine(caseDirectory, "u_directive_package.pas"),
+                AdaptFixture("units/u_directive_package.pas"));
+            string version = conflict ? "1.1.0" : "1.0.0";
+            var request = new PackageRestoreRequest {
+                ProgramFilePath = source,
+                Packages = new[] { new PackageRequirement(RootId, version) }
+            };
+            string restoreDirectory = service.GetConfiguration(request).RestoreDirectory;
+            HiddenRestoreDirectories.Add(restoreDirectory);
+            var result = await RunCompiler(compiler, source, packageCache);
+            string diagnostics = result.Output + result.Error;
+            if (conflict)
+            {
+                Check(result.ExitCode != 0 && diagnostics.Contains(RootId) &&
+                      diagnostics.Contains("1.0.0") && diagnostics.Contains("1.1.0") &&
+                      !diagnostics.Contains("NU1102") && !diagnostics.Contains("NU1101"),
+                    "The unit fixture did not report a package-version conflict: " + diagnostics);
+            }
+            else
+            {
+                Check(result.ExitCode == 0, "Package directive fixture failed: " + diagnostics);
+                var repeated = await RunCompiler(compiler, source, packageCache);
+                Check(repeated.ExitCode == 0,
+                    "Repeated package directive compilation failed: " + repeated.Output + repeated.Error);
+            }
+
+            using var assets = JsonDocument.Parse(File.ReadAllText(Path.Combine(restoreDirectory, "project.assets.json")));
+            var libraries = assets.RootElement.GetProperty("libraries");
+            Check(libraries.EnumerateObject().Count() == 2 &&
+                  libraries.TryGetProperty(RootId + "/" + version, out _) &&
+                  libraries.TryGetProperty(DependencyId + "/1.0.0", out _),
+                "Directive fixture did not use the expected root and transitive package versions.");
+            var sources = assets.RootElement.GetProperty("project").GetProperty("restore")
+                .GetProperty("sources").EnumerateObject().ToArray();
+            Check(sources.Length == 1 &&
+                  string.Equals(Path.GetFullPath(sources[0].Name), Path.GetFullPath(feed),
+                      StringComparison.OrdinalIgnoreCase),
+                "Directive fixture is not isolated from external NuGet sources.");
+            Console.WriteLine("PASS: local-feed package directive fixture " + fixture);
+        }
     }
 
     private static async Task<(int ExitCode, string Output, string Error)> RunCompiler(

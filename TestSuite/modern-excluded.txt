@@ -51,3 +51,10 @@ errors\err0542.pas
 
 # NET10-TESTFIX [err0500]: legacy GUI units are required to reach its semantic error.
 errors\err0500.pas
+
+# NET10-TESTFIX: Example.Package is a legacy directive-parsing fixture, not a real
+# NuGet dependency. Modern equivalents run on the isolated local feed in
+# tests/NuGetRestoreTests (--package-directives, also included in --compiler).
+directive_package_same_version.pas
+usesunits\use_directive_package.pas
+errors\err_directive_package_unit_conflict.pas

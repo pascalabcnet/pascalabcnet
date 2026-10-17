@@ -78,6 +78,24 @@ dotnet run --project tests\NuGetRestoreTests\NuGetRestoreTests.csproj -c Release
 `<программа>.deps.json` и добавляет путь общего кеша NuGet в
 `<программа>.runtimeconfig.json`; пакетные DLL рядом с EXE не копируются.
 Native/resource assets пока не поддерживаются.
+Modern-эквиваленты legacy-тестов `directive_package_same_version.pas`,
+`usesunits/use_directive_package.pas` и
+`errors/err_directive_package_unit_conflict.pas` также включены в `--compiler`.
+Тест читает исходные примеры из `TestSuite`, заменяет фиктивный `Example.Package`
+на локальный `PascalABC.TestRoot` с версиями 1.0.0/1.1.0 и компилирует отдельные
+копии. Проверяются регистронезависимое объединение одинаковых директив,
+совпадение версии в программе и модуле, повторная компиляция и конфликт версий.
+В `project.assets.json` проверяются выбранные версии и единственный источник —
+локальный feed. Исходные примеры остаются в legacy-прогоне без изменений;
+только эти три исключены из общего modern-прогона, чтобы он не обращался к
+nuget.org за несуществующим тестовым пакетом.
+
+Для отдельного запуска только локального restore и этих compiler-проверок:
+
+```bat
+dotnet run --project tests\NuGetRestoreTests\NuGetRestoreTests.csproj -c Release -- --package-directives
+```
+
 Режим `--compiler` дополнительно публикует обе версии тестового пакета в
 `publish/<имя программы>/`, повторяет публикацию и запускает оба EXE при
 временно недоступном NuGet-кеше. Пока публикуются managed DLL; native/resource
