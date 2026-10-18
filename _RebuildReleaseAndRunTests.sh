@@ -16,6 +16,12 @@ mono --aot bin/LanguageIntegrator.dll
 mono --aot bin/StringConstants.dll
 mono --aot bin/PascalABCLanguageInfo.dll
 
+# Build the runner from source before either test suite uses it.
+(
+    cd bin
+    mono pabcnetcclear.exe TestRunner.pas
+)
+
 cd ReleaseGenerators
 mono ../bin/pabcnetc.exe RebuildStandartModulesMono.pas  /rebuild
 

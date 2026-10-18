@@ -14,7 +14,9 @@ if ($LASTEXITCODE -ne 0) { throw 'Header unit tests failed to compile.' }
 & (Join-Path $stage 'DiagnosticHeaderTests.exe')
 if ($LASTEXITCODE -ne 0) { throw 'Header unit tests failed.' }
 if (-not $SkipRunnerBuild) {
-    Copy-Item -LiteralPath $runner -Destination (Join-Path $stage 'TestRunner-before.exe')
+    if (Test-Path -LiteralPath $runner) {
+        Copy-Item -LiteralPath $runner -Destination (Join-Path $stage 'TestRunner-before.exe')
+    }
     Push-Location (Join-Path $repositoryRoot 'bin')
     try {
         & $compiler 'TestRunner.pas'

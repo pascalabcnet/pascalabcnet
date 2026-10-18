@@ -9,7 +9,9 @@ $runner = Join-Path $repositoryRoot 'bin\TestRunner.exe'
 $stage = Join-Path $repositoryRoot ('.codex-build\legacy-runner-spython-tests\' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $stage -Force | Out-Null
 if (-not $SkipRunnerBuild) {
-    Copy-Item -LiteralPath $runner -Destination (Join-Path $stage 'TestRunner-before.exe')
+    if (Test-Path -LiteralPath $runner) {
+        Copy-Item -LiteralPath $runner -Destination (Join-Path $stage 'TestRunner-before.exe')
+    }
     Push-Location (Join-Path $repositoryRoot 'bin')
     try {
         & $compiler 'TestRunner.pas'
