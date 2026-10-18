@@ -24,7 +24,14 @@ internal sealed record RestoreEnvironment(
             settings = NuGet.Configuration.Settings.LoadDefaultSettings(configurationDirectory,
                 configFileName: null, machineWideSettings: new XPlatMachineWideSetting());
         }
-        var configuredSources = new PackageSourceProvider(settings).LoadPackageSources().ToArray();
+        var sourceProvider = new PackageSourceProvider(settings);
+        var configuredSources = sourceProvider.LoadPackageSources().ToArray();
+        // A student needs only the runtime, not an SDK-created NuGet.Config.
+        // Do not undo an explicit packageSources section (including <clear/>)
+        // or a deliberate disabling of nuget.org. This fallback does not write settings.
+        if (configuredSources.Length == 0 && settings.GetSection("packageSources") is null &&
+            sourceProvider.IsPackageSourceEnabled("nuget.org"))
+            configuredSources = new[] { new PackageSource("https://api.nuget.org/v3/index.json", "nuget.org") };
         var sources = request.Sources is null
             ? configuredSources.Where(source => source.IsEnabled).ToArray()
             : request.Sources.Select(source =>

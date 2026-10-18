@@ -26,6 +26,26 @@ internal static partial class Program
         Directory.CreateDirectory(work);
         try
         {
+            if (args.Contains("--source-defaults-clean-child"))
+            {
+                Check(!Directory.GetFiles(args[1], "NuGet.Config", SearchOption.AllDirectories).Any(),
+                    "The clean profile already contains a NuGet.Config.");
+                var configuration = new PackageRestoreService().GetConfiguration(new PackageRestoreRequest {
+                    Packages = Array.Empty<PackageRequirement>(), ProgramFilePath = Path.Combine(args[1], "student.pas") });
+                Check(configuration.Sources.Count == 1 && configuration.Sources[0].Name == "nuget.org" &&
+                    configuration.Sources[0].Source == "https://api.nuget.org/v3/index.json",
+                    "A clean profile did not select nuget.org: " + string.Join(", ", configuration.Sources));
+                Check(configuration.ConfigurationFiles.All(file => Path.GetFullPath(file).StartsWith(
+                    Path.GetFullPath(args[1]) + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)),
+                    "Clean-profile test read the real user's config: " + string.Join(", ", configuration.ConfigurationFiles));
+                Console.WriteLine("PASS: clean profile without a pre-existing NuGet.Config selects nuget.org.");
+                return 0;
+            }
+            if (args.Contains("--source-defaults"))
+            {
+                await CheckSourceDefaults(work);
+                return 0;
+            }
             await CheckRestore(work);
             if (args.Contains("--module-intellisense"))
             {
@@ -55,6 +75,7 @@ internal static partial class Program
             if (args.Contains("--controller"))
                 await CheckControllerRun(work);
             await CheckConfiguration(work);
+            await CheckSourceDefaults(work);
             if (args.Contains("--shared-cache"))
             {
                 await CheckSharedCache(work);
@@ -1157,6 +1178,71 @@ internal static partial class Program
         try { await process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(45)); }
         catch { if (!process.HasExited) process.Kill(entireProcessTree: true); throw; }
         return (process.ExitCode, await output, await error);
+    }
+
+    private static async Task CheckSourceDefaults(string work)
+    {
+        string directory = Path.Combine(work, "source-defaults");
+        Directory.CreateDirectory(directory);
+        string config = Path.Combine(directory, "NuGet.Config");
+        var request = new PackageRestoreRequest {
+            Packages = Array.Empty<PackageRequirement>(), ProgramFilePath = Path.Combine(directory, "a.pas"),
+            NuGetConfigFile = config, RestoreDirectory = Path.Combine(directory, "restore")
+        };
+        var service = new PackageRestoreService();
+        foreach (string xml in new[] { "<configuration/>",
+            "<configuration><config><add key='globalPackagesFolder' value='packages'/></config></configuration>" })
+        {
+            File.WriteAllText(config, xml);
+            var selected = service.GetConfiguration(request);
+            Check(selected.Sources.Count == 1 && selected.Sources[0].Name == "nuget.org" &&
+                selected.Sources[0].Source == "https://api.nuget.org/v3/index.json", "Missing sources must default to nuget.org.");
+            Check(File.ReadAllText(config) == xml, "Selecting default sources rewrote NuGet.Config.");
+        }
+        foreach (string xml in new[] {
+            "<configuration><packageSources><clear/></packageSources></configuration>",
+            "<configuration><packageSources/></configuration>",
+            "<configuration><disabledPackageSources><add key='nuget.org' value='true'/></disabledPackageSources></configuration>",
+            "<configuration><packageSources><add key='school' value='https://school.invalid/v3/index.json'/></packageSources>" +
+                "<disabledPackageSources><add key='school' value='true'/></disabledPackageSources></configuration>" })
+        {
+            File.WriteAllText(config, xml);
+            try { service.GetConfiguration(request); throw new Exception("An explicit source restriction re-enabled nuget.org: " + xml); }
+            catch (ArgumentException) { }
+        }
+        File.WriteAllText(config, "<configuration/>");
+        var explicitSource = service.GetConfiguration(request with { Sources = new[] { directory } });
+        Check(explicitSource.Sources.Count == 1 && explicitSource.Sources[0].Source == directory,
+            "The default source overrode explicitly selected sources.");
+        try { service.GetConfiguration(request with { Sources = Array.Empty<string>() }); throw new Exception("An explicit empty source list was ignored."); }
+        catch (ArgumentException) { }
+        string clean = Path.Combine(work, "clean-profile");
+        Directory.CreateDirectory(clean);
+        var start = new ProcessStartInfo(Environment.ProcessPath!) {
+            UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true, CreateNoWindow = true,
+            WorkingDirectory = clean
+        };
+        if (string.Equals(Path.GetFileNameWithoutExtension(Environment.ProcessPath), "dotnet", StringComparison.OrdinalIgnoreCase))
+            start.ArgumentList.Add(typeof(Program).Assembly.Location);
+        start.ArgumentList.Add("--source-defaults-clean-child");
+        start.ArgumentList.Add(clean);
+        foreach (string name in new[] { "APPDATA", "LOCALAPPDATA", "USERPROFILE", "HOME", "DOTNET_CLI_HOME",
+            "NUGET_COMMON_APPLICATION_DATA", "ProgramData", "ProgramFiles(x86)", "ProgramFiles" })
+        {
+            string path = Path.Combine(clean, name.Replace("(", "").Replace(")", ""));
+            Directory.CreateDirectory(path);
+            start.Environment[name] = path;
+        }
+        start.Environment["NUGET_PACKAGES"] = Path.Combine(clean, "packages");
+        start.Environment["PATH"] = "";
+        using var process = Process.Start(start)!;
+        var output = process.StandardOutput.ReadToEndAsync();
+        var errors = process.StandardError.ReadToEndAsync();
+        try { await process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(30)); }
+        catch { if (!process.HasExited) process.Kill(entireProcessTree: true); throw; }
+        Check(process.ExitCode == 0, "Clean-profile source selection failed: " + await output + await errors);
+        Console.Write(await output);
+        Console.WriteLine("PASS: default nuget.org, explicit sources, empty/disabled sources, no config rewrites; no network.");
     }
 
     private static async Task CheckConfiguration(string work)

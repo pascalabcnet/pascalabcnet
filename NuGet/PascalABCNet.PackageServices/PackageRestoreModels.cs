@@ -6,7 +6,7 @@ public sealed record PackageRequirement(string Id, string Version);
 public sealed record PackageRestoreRequest
 {
     public required IReadOnlyList<PackageRequirement> Packages { get; init; }
-    /// <summary>Null uses enabled sources from NuGet.Config; an explicit list overrides them.</summary>
+    /// <summary>Null uses configured enabled sources, or nuget.org when sources are not configured; an explicit list overrides them.</summary>
     public IReadOnlyList<string>? Sources { get; init; }
     /// <summary>Null uses NuGet's global cache, respecting NUGET_PACKAGES and NuGet.Config.</summary>
     public string? PackagesDirectory { get; init; }
