@@ -854,6 +854,9 @@ namespace PascalABCCompiler
         private PreparedReference[] packagePreparedReferences = Array.Empty<PreparedReference>();
         private Dictionary<string, string> packageAssemblyPaths =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, compiler_directive> packageGraphOrigins =
+            new Dictionary<string, compiler_directive>(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> packageResolutionWarnings = new HashSet<string>();
 
         internal string GetRestoredPackageAssemblyPath(string assemblySimpleName)
         {
@@ -861,13 +864,12 @@ namespace PascalABCCompiler
                 ? path : null;
         }
 
-        private void RestoreMainProgramPackages(CompilationUnit mainUnit)
+        internal void RestoreModulePackages(string unitFileName, IEnumerable<compiler_directive> unitDirectives)
         {
-            if (CompilerOptions.ForIntellisense || !(mainUnit.SyntaxTree is SyntaxTree.program_module))
+            if (CompilerOptions.ForIntellisense)
                 return;
 
-            var directives = GetDirectivesAsSemanticNodes(
-                mainUnit.SyntaxTree.compiler_directives, mainUnit.UnitFileName)
+            var directives = unitDirectives
                 .Where(d => string.Equals(d.name, StringConstants.compiler_directive_package,
                     StringComparison.OrdinalIgnoreCase))
                 .Reverse().ToList();
@@ -879,62 +881,151 @@ namespace PascalABCCompiler
             {
                 { StringConstants.compiler_directive_package, directives }
             };
-            packageRequirements = GetPackageRequirements(compilationDirectives);
-            if (packageRequirements.Count == 0)
+            var additions = GetPackageRequirements(compilationDirectives);
+            var requirements = new Dictionary<string, PackageRequirement>(packageRequirements,
+                StringComparer.OrdinalIgnoreCase);
+            PackageRequirement firstAddition = null;
+            foreach (var addition in additions.Values)
+            {
+                if (requirements.TryGetValue(addition.Id, out var previous))
+                {
+                    if (!string.Equals(previous.Version, addition.Version, StringComparison.OrdinalIgnoreCase))
+                        throw new PackageRestoreFailed(
+                            string.Format(StringResources.Get("COMPILATIONERROR_PACKAGE_VERSION_ALREADY_REQUESTED{0}{1}{2}{3}{4}"),
+                                addition.Id, addition.Version, unitFileName, previous.Version, previous.Origin.source_file),
+                            unitFileName, GetSourceContext(addition.Origin));
+                    continue;
+                }
+                requirements.Add(addition.Id, addition);
+                if (firstAddition == null)
+                    firstAddition = addition;
+            }
+            // Repeated declarations, including a second visit through a PCU, do
+            // not restore or replace the graph that semantics is already using.
+            if (firstAddition == null)
                 return;
 
             var request = new PackageRestoreRequest
             {
-                Packages = packageRequirements.Values.Select(p =>
+                Packages = requirements.Values.Select(p =>
                     new NuGetPackageRequirement(p.Id, p.Version)).ToArray(),
-                ProgramFilePath = mainUnit.UnitFileName
+                ProgramFilePath = firstCompilationUnit?.UnitFileName ?? CompilerOptions.SourceFileName
             };
             try
             {
                 OnChangeCompilerState(this, CompilerState.NuGetRestoreStarting,
-                    string.Join(", ", packageRequirements.Values
+                    string.Join(", ", requirements.Values
                         .OrderBy(p => p.Id, StringComparer.OrdinalIgnoreCase)
                         .Select(p => p.Id + " " + p.Version)));
-                restoredPackageGraph = new PackageRestoreService().RestoreAsync(request)
+                var graph = new PackageRestoreService().RestoreAsync(request)
                     .GetAwaiter().GetResult();
-                if (restoredPackageGraph.InstalledPackageCount > 0)
+                // TEST-NET10-MODULE-PACKAGES: restore is speculative until every
+                // previously selected package and DLL has survived validation.
+                if (restoredPackageGraph != null)
+                    foreach (var selected in restoredPackageGraph.Packages)
+                    {
+                        var next = graph.Packages.FirstOrDefault(p =>
+                            string.Equals(p.Id, selected.Id, StringComparison.OrdinalIgnoreCase));
+                        if (next == null || next.Version != selected.Version)
+                            throw new PackageRestoreFailed(
+                                next == null
+                                    ? string.Format(StringResources.Get("COMPILATIONERROR_PACKAGE_DEPENDENCY_REMOVAL{0}{1}{2}{3}"),
+                                        selected.Id, selected.Version, packageGraphOrigins[selected.Id].source_file, unitFileName)
+                                    : string.Format(StringResources.Get("COMPILATIONERROR_PACKAGE_DEPENDENCY_REPLACEMENT{0}{1}{2}{3}{4}"),
+                                        selected.Id, selected.Version, packageGraphOrigins[selected.Id].source_file, unitFileName, next.Version),
+                                unitFileName, GetSourceContext(firstAddition.Origin));
+                    }
+                foreach (var package in graph.Packages)
+                    foreach (var dependency in package.Dependencies)
+                    {
+                        var selected = graph.Packages.FirstOrDefault(p =>
+                            string.Equals(p.Id, dependency.Id, StringComparison.OrdinalIgnoreCase));
+                        if (selected != null && !NuGet.Versioning.VersionRange.Parse(dependency.VersionRange)
+                                .Satisfies(NuGet.Versioning.NuGetVersion.Parse(selected.Version)))
+                            throw new PackageRestoreFailed(
+                                string.Format(StringResources.Get("COMPILATIONERROR_PACKAGE_DEPENDENCY_RANGE_UNSATISFIED{0}{1}{2}{3}"),
+                                    package.Id, dependency.Id, dependency.VersionRange, selected.Version), unitFileName,
+                                GetSourceContext(firstAddition.Origin));
+                    }
+                var references = PreparePackageSemanticReferences(graph, unitFileName,
+                    firstAddition.Origin, out var assemblyPaths);
+                NetHelper.NetHelper.ValidateCollectibleReferencesForCompilation(
+                    packagePreparedReferences.Concat(references).Select(r => r.ResolvedReference.FileName));
+
+                packageRequirements = requirements;
+                restoredPackageGraph = graph;
+                packagePreparedReferences = references;
+                packageAssemblyPaths = assemblyPaths;
+                foreach (var package in graph.Packages)
+                    if (!packageGraphOrigins.ContainsKey(package.Id))
+                        packageGraphOrigins.Add(package.Id, firstAddition.Origin);
+                foreach (var diagnostic in graph.Diagnostics.Where(d => d.Severity == "Warning"))
+                    warnings.Add(new CommonWarning("NuGet " + diagnostic.Code + ": " + diagnostic.Message,
+                        unitFileName, firstAddition.Origin.location?.begin_line_num ?? 0,
+                        firstAddition.Origin.location?.begin_column_num ?? 0));
+                // Different compatible constraints in the same new batch may
+                // select one version. Make this resolution visible to the user.
+                foreach (var group in graph.Packages.SelectMany(p => p.Dependencies.Select(d =>
+                    new { Package = p.Id, Dependency = d })).GroupBy(p => p.Dependency.Id, StringComparer.OrdinalIgnoreCase))
+                {
+                    if (group.Select(p => p.Dependency.VersionRange).Distinct().Count() < 2)
+                        continue;
+                    var selected = graph.Packages.FirstOrDefault(p =>
+                        string.Equals(p.Id, group.Key, StringComparison.OrdinalIgnoreCase));
+                    if (selected == null)
+                        continue;
+                    string message = string.Format(StringResources.Get("COMPILATIONERROR_PACKAGE_DEPENDENCY_RESOLVED{0}{1}{2}"),
+                        selected.Id, selected.Version, string.Join(", ", group.Select(p => p.Package + " " + p.Dependency.VersionRange)));
+                    if (packageResolutionWarnings.Add(message))
+                        warnings.Add(new CommonWarning(message, unitFileName,
+                            firstAddition.Origin.location?.begin_line_num ?? 0,
+                            firstAddition.Origin.location?.begin_column_num ?? 0));
+                }
+                if (graph.InstalledPackageCount > 0)
                 {
                     OnChangeCompilerState(this, CompilerState.NuGetPackagesInstalled,
-                        restoredPackageGraph.InstalledPackageCount.ToString());
-                    if (restoredPackageGraph.InstalledPackages.Count ==
-                        restoredPackageGraph.InstalledPackageCount)
-                        foreach (var package in restoredPackageGraph.InstalledPackages)
+                        graph.InstalledPackageCount.ToString());
+                    if (graph.InstalledPackages.Count == graph.InstalledPackageCount)
+                        foreach (var package in graph.InstalledPackages)
                             OnChangeCompilerState(this, CompilerState.NuGetPackageInstalled,
                                 package.Id + " " + package.Version);
                 }
-                packagePreparedReferences = PreparePackageSemanticReferences(mainUnit);
             }
             catch (PackageRestoreException error)
             {
-                throw new PackageRestoreFailed(error.Message, mainUnit.UnitFileName,
-                    GetSourceContext(packageRequirements.Values.First().Origin));
+                throw new PackageRestoreFailed(string.Format(StringResources.Get("COMPILATIONERROR_PACKAGE_RESTORE_FAILED{0}"),
+                    string.Join(Environment.NewLine, error.Diagnostics.Where(d => d.Severity == "Error")
+                        .Select(d => d.Code + ": " + d.Message))), unitFileName,
+                    GetSourceContext(firstAddition.Origin));
             }
             catch (ArgumentException error)
             {
-                throw new PackageRestoreFailed(error.Message, mainUnit.UnitFileName,
-                    GetSourceContext(packageRequirements.Values.First().Origin));
+                throw new PackageRestoreFailed(string.Format(StringResources.Get("COMPILATIONERROR_PACKAGE_RESTORE_FAILED{0}"),
+                    error.Message), unitFileName,
+                    GetSourceContext(firstAddition.Origin));
+            }
+            catch (FileLoadException error)
+            {
+                throw new PackageRestoreFailed(error.Message, unitFileName,
+                    GetSourceContext(firstAddition.Origin));
             }
         }
 
-        private PreparedReference[] PreparePackageSemanticReferences(CompilationUnit mainUnit)
+        private PreparedReference[] PreparePackageSemanticReferences(ResolvedPackageGraph graph,
+            string unitFileName, compiler_directive directive, out Dictionary<string, string> pathsByAssemblyName)
         {
             var result = new List<PreparedReference>();
-            var pathsByAssemblyName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            var origin = GetSourceContext(packageRequirements.Values.First().Origin);
-            foreach (var package in restoredPackageGraph.Packages)
+            pathsByAssemblyName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var origin = GetSourceContext(directive);
+            foreach (var package in graph.Packages)
             {
                 // The existing semantic reader loads assemblies for reflection. A NuGet
                 // ref/ assembly cannot be loaded for execution, so use its matching
                 // runtime implementation until metadata-only reading is supported.
                 if (package.CompileAssemblies.Count != 0 && package.RuntimeAssemblies.Count == 0)
                     throw new PackageRestoreFailed(
-                        $"NuGet package '{package.Id}' has only reference assemblies; the compiler needs a runtime assembly for semantic analysis.",
-                        mainUnit.UnitFileName, origin);
+                        string.Format(StringResources.Get("COMPILATIONERROR_PACKAGE_REQUIRES_RUNTIME_ASSEMBLY{0}"), package.Id),
+                        unitFileName, origin);
 
                 foreach (string path in package.RuntimeAssemblies)
                 {
@@ -944,18 +1035,30 @@ namespace PascalABCCompiler
                         if (!string.Equals(previousPath, path,
                                 OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
                             throw new PackageRestoreFailed(
-                                $"NuGet packages contain two different assemblies named '{assemblyName}'.",
-                                mainUnit.UnitFileName, origin);
+                                string.Format(StringResources.Get("COMPILATIONERROR_PACKAGE_DUPLICATE_ASSEMBLY{0}"), assemblyName),
+                                unitFileName, origin);
                         continue;
                     }
                     pathsByAssemblyName.Add(assemblyName, path);
                     var specification = new ReferenceSpec(path, Path.GetDirectoryName(path),
-                        mainUnit.UnitFileName, origin);
+                        unitFileName, origin);
                     result.Add(new PreparedReference(new ResolvedReference(specification, path, false), path));
                 }
             }
-            packageAssemblyPaths = pathsByAssemblyName;
             return result.ToArray();
+        }
+
+        internal void PreparePcuReferences(IEnumerable<string> paths, string unitFileName)
+        {
+            var availablePaths = paths.Where(p => p != null).ToArray();
+            try
+            {
+                NetHelper.NetHelper.PrepareCollectibleReferenceSetForCompilation(availablePaths, availablePaths);
+            }
+            catch (FileLoadException error)
+            {
+                throw new PackageRestoreFailed(error.Message, unitFileName, null);
+            }
         }
 #endif
 
@@ -1111,6 +1214,8 @@ namespace PascalABCCompiler
             restoredPackageGraph = null;
             packagePreparedReferences = Array.Empty<PreparedReference>();
             packageAssemblyPaths.Clear();
+            packageGraphOrigins.Clear();
+            packageResolutionWarnings.Clear();
 #endif
 
             // обнуляем здесь, чтобы значение не сохранялось между запусками  EVA
@@ -2289,7 +2394,11 @@ namespace PascalABCCompiler
                     return foundFileName;
                 }
 
+#if PABCNET_MODERN
+                return (bool)SourceFilesProvider(fileName, SourceFileOperation.Exists) ? fileName : null;
+#else
                 return File.Exists(fileName) ? fileName : null;
+#endif
             }
 
             for (int dirIndex = 0; dirIndex < dirs.Length; ++dirIndex)
@@ -2310,7 +2419,12 @@ namespace PascalABCCompiler
                             return Path.GetFullPath(foundFileName);
                         }
                     }
-                    else if (File.Exists(fullFileName))
+                    else if (
+#if PABCNET_MODERN
+                        (bool)SourceFilesProvider(fullFileName, SourceFileOperation.Exists))
+#else
+                        File.Exists(fullFileName))
+#endif
                     {
                         foundDirIndex = dirIndex;
                         // Path.GetFullPath чтобы нормализовать
@@ -2961,7 +3075,8 @@ namespace PascalABCCompiler
                 }
                 catch (FileLoadException ex)
                 {
-                    throw new CommonCompilerError(ex.Message, compilationUnit.SyntaxTree.file_name, reference.location.begin_line_num, reference.location.end_line_num);
+                    throw new CommonCompilerError(ex.Message, compilationUnit.UnitFileName,
+                        reference.location?.begin_line_num ?? 0, reference.location?.begin_column_num ?? 0);
                 }
                 preparedReferences.Add(preparedReference);
             }
@@ -2990,7 +3105,7 @@ namespace PascalABCCompiler
             catch (FileLoadException ex)
             {
                 throw new CommonCompilerError(ex.Message,
-                    compilationUnit.SyntaxTree.file_name, 0, 0);
+                    compilationUnit.UnitFileName, 0, 0);
             }
 #endif
 
@@ -3767,8 +3882,9 @@ namespace PascalABCCompiler
                 if (CompilerOptions.LibraryOutputDirectory != null && !CompilerOptions.ProjectCompiled &&
                     IsDll(currentUnit.SyntaxTree))
                     CompilerOptions.OutputDirectory = CompilerOptions.LibraryOutputDirectory;
-                RestoreMainProgramPackages(currentUnit);
             }
+            RestoreModulePackages(unitFileName, GetDirectivesAsSemanticNodes(
+                currentUnit.SyntaxTree.compiler_directives, unitFileName));
 #endif
 
             InitializeCompilerOptionsRelatedToStandardUnits(currentUnit.SyntaxTree);

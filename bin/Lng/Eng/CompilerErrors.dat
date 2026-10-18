@@ -25,5 +25,19 @@ UNSUPPORTED_TARGET_PLATFORM{0}=Platform '{0}' is not supported
 CONFLICTING_PACKAGE_VERSIONS{0}{1}{2}=Conflicting versions are specified for package '{0}': '{1}' and '{2}'
 UNSUPPORTED_OUTPUT_FILE_TYPE{0}=Output file type '{0}' is not supported
 
+PACKAGE_VERSION_ALREADY_REQUESTED{0}{1}{2}{3}{4}=Package '{0}' requires {1} in '{2}', but {3} was already requested in '{4}'.
+PACKAGE_DEPENDENCY_REPLACEMENT{0}{1}{2}{3}{4}=Package '{0}' {1} was already selected by '{2}'. Packages from '{3}' would replace it with {4}. Already connected dependencies cannot be replaced.
+PACKAGE_DEPENDENCY_REMOVAL{0}{1}{2}{3}=Package '{0}' {1} was already selected by '{2}'. Packages from '{3}' would remove it. Already connected dependencies cannot be removed.
+PACKAGE_DEPENDENCY_RANGE_UNSATISFIED{0}{1}{2}{3}=Package '{0}' requires '{1}' {2}, but version {3} was selected.
+PACKAGE_DEPENDENCY_RESOLVED{0}{1}{2}=NuGet: dependency '{0}' resolved to {1}; constraints: {2}.
+PACKAGE_REQUIRES_RUNTIME_ASSEMBLY{0}=NuGet package '{0}' has only reference assemblies; the compiler needs a runtime assembly for semantic analysis.
+PACKAGE_DUPLICATE_ASSEMBLY{0}=NuGet packages contain two different assemblies named '{0}'.
+PACKAGE_RESTORE_FAILED{0}=NuGet package restore failed: {0}
+REFERENCE_ASSEMBLY_CONFLICT{0}{1}=Assemblies '{0}' and '{1}' have the same internal simple name but different contents or identities. PascalABC.NET cannot reference both assemblies in one compilation.
+ASSEMBLY_METADATA_READ_FAILED{0}=Cannot read assembly metadata from '{0}'.
+REFERENCE_CONTEXT_NOT_UNLOADED=The previous reference AssemblyLoadContext is still referenced by the compiler.
+REFERENCE_CONTEXT_CANNOT_RESOLVE{0}{1}=Reference context could not resolve '{0}'. Search directories: {1}.
+UNSUPPORTED_DIAGNOSTIC_LANGUAGE{0}=Diagnostic language '{0}' is not supported.
+
 %PREFIX%=
 COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}=Internal compiler error in module {0} :'{1}'

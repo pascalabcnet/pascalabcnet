@@ -41,7 +41,7 @@ var startInfo = new ProcessStartInfo
 if (isNet10)
     startInfo.ArgumentList.Add(controllerPath);
 startInfo.ArgumentList.Add(workerPath);
-startInfo.ArgumentList.Add("2");
+startInfo.ArgumentList.Add(args.Contains("--localization-only") ? "0" : "2");
 startInfo.ArgumentList.Add("0");
 startInfo.Environment["PABC_COMPILER_WORKER_REQUEST_TIMEOUT_MS"] = "10000";
 startInfo.Environment["PABC_COMPILER_WORKER_TEST_CONTROL_FILE"] = workerControlPath;
@@ -69,6 +69,17 @@ try
     CheckSuccess(ping, "ping");
     Check(ping.GetProperty("result").GetString() == "PONG", "Worker answered PONG");
     var firstWorkerPid = ping.GetProperty("workerPid").GetInt32();
+    if (args.Contains("--localization-only"))
+    {
+        await CheckDiagnosticLanguagesAsync(process, runtimeRoot, sourceRoot, outputRoot, isNet10);
+        var sameWorker = await SendAsync(process, new { id = 190, command = "ping" });
+        Check(sameWorker.GetProperty("workerPid").GetInt32() == firstWorkerPid,
+            "Diagnostic language switches do not restart the Worker");
+        CheckSuccess(await SendAsync(process, new { id = 191, command = "shutdown" }), "shutdown");
+        Check(process.WaitForExit(10_000) && process.ExitCode == 0, "Controller exits after localized diagnostics");
+        Console.WriteLine("PASS: English/Russian/English diagnostics in one Worker; omitted language restores the default.");
+        return;
+    }
 
     await File.WriteAllTextAsync(
         sourcePath,
@@ -114,6 +125,7 @@ try
     await CheckSourceSnapshotsAsync(
         process, sourceRoot, outputRoot, isNet10, firstRequestId: 7);
     await CheckSnapshotPcuFreshnessAsync(process, sourceRoot, outputRoot, isNet10);
+    await CheckDiagnosticLanguagesAsync(process, runtimeRoot, sourceRoot, outputRoot, isNet10);
 
     await File.WriteAllTextAsync(
         sourcePath,
@@ -284,7 +296,7 @@ static async Task<JsonElement> CompileAsync(
     string sourcePath,
     string outputRoot,
     string? runtimeModule = null,
-    IReadOnlyList<SourceFileInput>? sourceFiles = null)
+    IReadOnlyList<SourceFileInput>? sourceFiles = null, string? language = null)
 {
     var request = new Dictionary<string, object?>
     {
@@ -297,7 +309,61 @@ static async Task<JsonElement> CompileAsync(
         request["runtimeModule"] = runtimeModule;
     if (sourceFiles is not null)
         request["sourceFiles"] = sourceFiles;
+    if (language is not null)
+        request["language"] = language;
     return await SendAsync(process, request);
+}
+
+static async Task CheckDiagnosticLanguagesAsync(Process process, string runtimeRoot,
+    string sourceRoot, string outputRoot, bool modern)
+{
+    string source = Path.Combine(sourceRoot, "Localized.pas");
+    const string packageId = "PascalABC.Localized.Test";
+    string conflicting = "{$package " + packageId + " 1.0.0}\n{$package " + packageId + " 2.0.0}\nbegin end.";
+    string ReadResource(string iso, string file, string key)
+    {
+        string line = File.ReadLines(Path.Combine(runtimeRoot, "Lng", iso == "ru" ? "Rus" : "Eng", file))
+            .Single(l => l.StartsWith(key + "=", StringComparison.Ordinal));
+        return line.Substring(key.Length + 1);
+    }
+    async Task<string> Error(string text, string? language)
+    {
+        await File.WriteAllTextAsync(source, text, new UTF8Encoding(false));
+        var result = await CompileAsync(process, 180, source, outputRoot, language: language);
+        Check(!result.GetProperty("success").GetBoolean(), "Localized invalid source is rejected");
+        return result.GetProperty("diagnostics")[0].GetProperty("message").GetString()!;
+    }
+    string defaultMessage = await Error(conflicting, null);
+    foreach (string key in new[] {
+        "PACKAGE_VERSION_ALREADY_REQUESTED{0}{1}{2}{3}{4}",
+        "PACKAGE_DEPENDENCY_REPLACEMENT{0}{1}{2}{3}{4}", "PACKAGE_DEPENDENCY_REMOVAL{0}{1}{2}{3}",
+        "PACKAGE_DEPENDENCY_RANGE_UNSATISFIED{0}{1}{2}{3}", "PACKAGE_DEPENDENCY_RESOLVED{0}{1}{2}",
+        "PACKAGE_REQUIRES_RUNTIME_ASSEMBLY{0}", "PACKAGE_DUPLICATE_ASSEMBLY{0}", "PACKAGE_RESTORE_FAILED{0}",
+        "REFERENCE_ASSEMBLY_CONFLICT{0}{1}", "ASSEMBLY_METADATA_READ_FAILED{0}",
+        "REFERENCE_CONTEXT_NOT_UNLOADED", "REFERENCE_CONTEXT_CANNOT_RESOLVE{0}{1}",
+        "UNSUPPORTED_DIAGNOSTIC_LANGUAGE{0}"
+    })
+    {
+        string en = ReadResource("en", "CompilerErrors.dat", key);
+        string ru = ReadResource("ru", "CompilerErrors.dat", key);
+        Check(en != ru && en.Length > 0 && ru.Length > 0, "Both resource translations exist: " + key);
+        foreach (string text in new[] { en, ru })
+            _ = string.Format(text, "arg0", "arg1", "arg2", "arg3", "arg4");
+    }
+    foreach (string language in new[] { "en-US", "ru-RU", "en" })
+    {
+        string iso = language.Substring(0, 2);
+        string expected = string.Format(ReadResource(iso, "CompilerErrors.dat",
+            "CONFLICTING_PACKAGE_VERSIONS{0}{1}{2}"), packageId, "1.0.0", "2.0.0");
+        Check(await Error(conflicting, language) == expected, "CompilerErrors.dat is selected for " + language);
+        if (modern)
+        {
+            string misplaced = "unit Localized;\n{$package " + packageId + " 1.0.0}\ninterface implementation end.";
+            Check(await Error(misplaced, language) == ReadResource(iso, "PascalABCParser.dat",
+                "PACKAGE_DIRECTIVE_MUST_PRECEDE_CODE"), "PascalABCParser.dat is selected for " + language);
+        }
+    }
+    Check(await Error(conflicting, null) == defaultMessage, "Omitted language does not inherit the previous request's language");
 }
 
 static async Task CheckSnapshotPcuFreshnessAsync(Process process, string sourceRoot, string outputRoot, bool isNet10)
@@ -734,6 +800,8 @@ static (string RuntimeRoot, string Target) ParseArguments(string[] arguments)
     {
         switch (arguments[index])
         {
+            case "--localization-only":
+                break;
             case "--runtime" when index + 1 < arguments.Length:
                 runtimeRoot = arguments[++index];
                 break;

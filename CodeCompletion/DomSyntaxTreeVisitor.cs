@@ -2676,7 +2676,7 @@ namespace CodeCompletion
                     DomConverter dc = CodeCompletionController.comp_modules[file] as DomConverter;
                     if (dc == null)
                     {
-                        dc = new CodeCompletionController().CompileAllIfNeed(file, true);
+                        dc = this.converter.controller.CreateDependencyController().CompileAllIfNeed(file, true);
                     }
                     if (dc.visitor != null)
                     {
@@ -2915,7 +2915,7 @@ namespace CodeCompletion
                 DomConverter dc = CodeCompletionController.comp_modules[unitPath] as DomConverter;
                 if (dc == null)
                 {
-                    CodeCompletionController ccc = new CodeCompletionController();
+                    CodeCompletionController ccc = this.converter.controller.CreateDependencyController();
                     dc = ccc.CompileAllIfNeed(unitPath, true);
                     //dc.CompileAllIfNeed(unit_name);
                     if (dc.visitor != null && dc.visitor.entry_scope != null)
@@ -2995,7 +2995,7 @@ namespace CodeCompletion
                             
                             if (unit_name != null)
                             {
-                                IntellisensePCUReader pcu_rdr = new IntellisensePCUReader();
+                                IntellisensePCUReader pcu_rdr = this.converter.controller.CreatePcuReader();
                                 SymScope ss = pcu_rdr.GetUnit(unit_name);
                                 UnitDocCache.Load(ss, unit_name);
                                 cur_scope.AddUsedUnit(ss);
@@ -3047,7 +3047,7 @@ namespace CodeCompletion
         private void CompileUnit(string unit_name, SymScope cur_scope)
         {
             var dc = (DomConverter)CodeCompletionController.comp_modules[unit_name] 
-                ?? new CodeCompletionController().CompileAllIfNeed(unit_name, true);
+                ?? this.converter.controller.CreateDependencyController().CompileAllIfNeed(unit_name, true);
 
             if (dc.visitor != null)
             {
@@ -3096,7 +3096,7 @@ namespace CodeCompletion
                 if (unit_name != null)
                 {
                     DomConverter dc = (DomConverter)CodeCompletionController.comp_modules[unit_name]
-                        ?? new CodeCompletionController().CompileAllIfNeed(unit_name, true);
+                        ?? this.converter.controller.CreateDependencyController().CompileAllIfNeed(unit_name, true);
        
                     if (dc.visitor != null)
                     {
@@ -3110,7 +3110,7 @@ namespace CodeCompletion
 
                     if (unit_name != null)
                     {
-                        IntellisensePCUReader pcu_rdr = new IntellisensePCUReader();
+                        IntellisensePCUReader pcu_rdr = this.converter.controller.CreatePcuReader();
                         SymScope ss = pcu_rdr.GetUnit(unit_name);
                         UnitDocCache.Load(ss, unit_name);
                         AddImportedNamesToCurScope(importStatement, asStatementsList, cur_scope, importedName, ss, comparer);
@@ -3325,7 +3325,7 @@ namespace CodeCompletion
                 DomConverter dc = CodeCompletionController.comp_modules[file] as DomConverter;
                 if (dc == null)
                 {
-                    dc = new CodeCompletionController().CompileAllIfNeed(file, true);
+                    dc = this.converter.controller.CreateDependencyController().CompileAllIfNeed(file, true);
                 }
                 if (dc.visitor != null)
                 {

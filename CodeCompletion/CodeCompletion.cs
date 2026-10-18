@@ -18,6 +18,23 @@ namespace CodeCompletion
         private static readonly LanguageProvider LanguageProvider = LanguageProvider.Instance;
 #if PABCNET_MODERN
         private NuGetIntelliSenseReferences packageReferences;
+        private IReadOnlyList<string> preparedReferencePaths;
+        private HashSet<string> preparedSourceFiles;
+        private bool isDependencyController;
+
+        internal CodeCompletionController CreateDependencyController()
+        {
+            return new CodeCompletionController {
+                preparedReferencePaths = preparedReferencePaths,
+                preparedSourceFiles = preparedSourceFiles,
+                isDependencyController = true
+            };
+        }
+
+        internal IntellisensePCUReader CreatePcuReader()
+        {
+            return new IntellisensePCUReader { PreparedReferencePaths = preparedReferencePaths };
+        }
         // A headless consumer can release DOMs that hold the old collectible context.
         public event Action BeforeIntelliSenseReferenceReload;
 
@@ -26,6 +43,9 @@ namespace CodeCompletion
             PascalABCCompiler.NetHelper.NetHelper.RegisterIntelliSenseReferencePaths(
                 Array.Empty<string>(), () => BeforeIntelliSenseReferenceReload?.Invoke());
         }
+#else
+        internal CodeCompletionController CreateDependencyController() { return new CodeCompletionController(); }
+        internal IntellisensePCUReader CreatePcuReader() { return new IntellisensePCUReader(); }
 #endif
 
         public Dictionary<syntax_tree_node, string> docs = new Dictionary<syntax_tree_node, string>();
@@ -127,6 +147,11 @@ namespace CodeCompletion
             TypeTable.Clear();
 
             DomConverter dconv = new DomConverter(this);
+#if PABCNET_MODERN
+            dconv.AnalysisSourceText = Text;
+            preparedReferencePaths = null;
+            preparedSourceFiles = null;
+#endif
             if (cu != null)
             {
 #if PABCNET_MODERN
@@ -185,16 +210,30 @@ namespace CodeCompletion
         {
             try
             {
-                if (packageReferences == null)
+                if (preparedReferencePaths == null)
                 {
-                    if (!(cu is program_module) || cu.compiler_directives == null ||
-                        !cu.compiler_directives.Any(d => d != null && string.Equals(
-                            d.Name?.text, "package", StringComparison.OrdinalIgnoreCase)))
-                        return true;
-                    packageReferences = new NuGetIntelliSenseReferences();
+                    if (packageReferences == null) packageReferences = new NuGetIntelliSenseReferences();
+                    preparedReferencePaths = packageReferences.Resolve(cu,
+                        () => BeforeIntelliSenseReferenceReload?.Invoke());
+                    preparedSourceFiles = new HashSet<string>(packageReferences.SourceFiles, StringComparer.OrdinalIgnoreCase);
+                    // Reuse an unchanged module only in the same package graph.
+                    // In particular, preserve the last successful model while a
+                    // dependency has a temporary syntax error during editing.
+                    foreach (string source in preparedSourceFiles)
+                    {
+                        if (comp_modules[source] is DomConverter cached &&
+                            cached.AnalysisReferencePaths.SequenceEqual(preparedReferencePaths, StringComparer.OrdinalIgnoreCase) &&
+                            cached.AnalysisSourceText == comp.GetSourceFileText(source)) continue;
+                        comp_modules.Remove(source);
+                    }
+                    if (preparedSourceFiles.Any(p => p.EndsWith(".pcu", StringComparison.OrdinalIgnoreCase)))
+                        IntellisensePCUReader.ReleaseReferenceGeneration();
                 }
-                var paths = packageReferences.Resolve(cu,
-                    () => BeforeIntelliSenseReferenceReload?.Invoke());
+                converter.ReferencedSourceFiles = preparedSourceFiles.ToArray();
+                converter.AnalysisReferencePaths = preparedReferencePaths;
+                // Implicit standard modules must not retain a user's package graph.
+                if (!preparedSourceFiles.Contains(Path.GetFullPath(cu.file_name))) return true;
+                var paths = preparedReferencePaths;
                 if (paths.Count == 0)
                     return true;
 
@@ -207,7 +246,10 @@ namespace CodeCompletion
             }
             catch (Exception error)
             {
-                converter.SetPreparationError(error);
+                if (packageReferences != null)
+                    converter.ReferencedSourceFiles = packageReferences.SourceFiles.ToArray();
+                converter.SetPreparationError(error is SyntaxError ? error : error as PascalABCCompiler.Errors.PackageRestoreFailed ??
+                    new PascalABCCompiler.Errors.PackageRestoreFailed(error.Message, cu.file_name, null));
                 return false;
             }
         }
@@ -235,12 +277,18 @@ namespace CodeCompletion
 
         public DomConverter CompileAllIfNeed(string FileName, bool parse_only_interface=false)
         {
+#if PABCNET_MODERN
+            if (!isDependencyController) { preparedReferencePaths = null; preparedSourceFiles = null; }
+#endif
             string Text = comp.GetSourceFileText(FileName);
             List<Error> ErrorsList = new List<Error>();
             List<CompilerWarning> Warnings = new List<CompilerWarning>();
             compilation_unit cu = null;
 
             DomConverter dconv = new DomConverter(this);
+#if PABCNET_MODERN
+            dconv.AnalysisSourceText = Text;
+#endif
 
             ILanguage currentLanguage = LanguageProvider.SelectLanguageByExtensionSafe(FileName);
             
@@ -265,6 +313,9 @@ namespace CodeCompletion
 
             if (cu != null)
             {
+#if PABCNET_MODERN
+                if (!PreparePackageReferences(cu, dconv)) return dconv;
+#endif
                 dconv.ConvertToDom(cu);
             }
             // Попытка поменять текст программы ниже сработает только для PascalABC.NET
@@ -295,6 +346,9 @@ namespace CodeCompletion
 
                 if (cu != null)
                 {
+#if PABCNET_MODERN
+                    if (!PreparePackageReferences(cu, dconv)) return dconv;
+#endif
                     dconv.ConvertToDom(cu);
                 }
             }

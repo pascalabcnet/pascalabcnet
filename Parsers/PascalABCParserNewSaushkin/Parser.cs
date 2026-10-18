@@ -72,7 +72,8 @@ namespace Languages.Pascal.Frontend.Wrapping
     public class PascalABCNewLanguageParser : BaseParser
     {
 
-        private syntax_tree_node Parse(string Text, string fileName, bool buildTreeForFormatter = false, List<string> definesList = null)
+        private syntax_tree_node Parse(string Text, string fileName, bool buildTreeForFormatter = false, List<string> definesList = null,
+            bool checkPackagePosition = false)
         {
 #if DEBUG
 #if _ERR
@@ -89,7 +90,12 @@ namespace Languages.Pascal.Frontend.Wrapping
 
             Scanner scanner = new Scanner(Text, parserTools, LanguageInformation.KeywordsStorage, definesList);
 
-            GPPGParser parser = new GPPGParser(scanner, parserTools);
+            QUT.Gppg.AbstractScanner<PascalABCCompiler.ParserTools.Union, QUT.Gppg.LexLocation> parsingScanner = scanner;
+#if PABCNET_MODERN
+            if (checkPackagePosition)
+                parsingScanner = new PackageDirectivePositionScanner(scanner, parserTools);
+#endif
+            GPPGParser parser = new GPPGParser(parsingScanner, parserTools);
 
             if (!parser.Parse())
                 if (Errors.Count == 0)
@@ -104,7 +110,7 @@ namespace Languages.Pascal.Frontend.Wrapping
 
         protected override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, bool compilingNotMainProgram, List<string> DefinesList = null)
         {
-            syntax_tree_node root = Parse(Text, FileName, false, DefinesList);
+            syntax_tree_node root = Parse(Text, FileName, false, DefinesList, checkPackagePosition: true);
 
             if (Errors.Count > 0)
                 return null;

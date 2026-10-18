@@ -404,7 +404,12 @@ namespace Languages.Pascal.Frontend.Core
             PascalParserTools parserTools = new PascalParserTools(new List<Error>(), new List<CompilerWarning>(), 
                 this.parserTools.ValidDirectives, false, true, this.parserTools.currentFileName); // контекст сканера и парсера
             
-            Scanner scanner = new Scanner("<<expression>>" + Text, parserTools, ((Scanner)this.scanner).keywords);
+            var sourceScanner = this.scanner;
+#if PABCNET_MODERN
+            if (sourceScanner is PackageDirectivePositionScanner packageScanner)
+                sourceScanner = packageScanner.InnerScanner;
+#endif
+            Scanner scanner = new Scanner("<<expression>>" + Text, parserTools, ((Scanner)sourceScanner).keywords);
             
             GPPGParser parser = new GPPGParser(scanner, parserTools);
             parser.lambdaHelper = lambdaHelper;

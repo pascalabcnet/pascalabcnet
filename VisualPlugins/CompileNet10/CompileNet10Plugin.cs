@@ -305,7 +305,8 @@ namespace VisualPascalABCPlugins
                     value => DisplayCompilerEventAsync(display, value), rebuild,
                     libraryOutputDirectory: outputRoot ?? Path.GetDirectoryName(fileName),
                     debug: !publish && workbench.ServiceContainer.BuildService.CompilerOptions.Debug,
-                    publish: publish);
+                    publish: publish,
+                    language: PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO);
                 if (run && response.success)
                 {
                     var target = Net10EditorDocument.ResolveRunTarget(document, response.outputFile,
@@ -325,7 +326,8 @@ namespace VisualPascalABCPlugins
                             standalone ? "__RunMode" : "__RedirectIOMode", sources,
                             value => DisplayCompilerEventAsync(display, value), rebuild,
                             libraryOutputDirectory: outputRoot ?? Path.GetDirectoryName(fileName),
-                            debug: workbench.ServiceContainer.BuildService.CompilerOptions.Debug);
+                            debug: workbench.ServiceContainer.BuildService.CompilerOptions.Debug,
+                            language: PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO);
                     }
                 }
                 if (response.success)

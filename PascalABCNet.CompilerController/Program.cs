@@ -24,6 +24,7 @@ internal static class Program
         public string? outputDirectory { get; set; }
         public string? libraryOutputDirectory { get; set; }
         public string? runtimeModule { get; set; }
+        public string? language { get; set; }
         public SourceFileRequest[]? sourceFiles { get; set; }
         public bool emitEvents { get; set; }
         public bool rebuild { get; set; }
@@ -43,6 +44,7 @@ internal static class Program
         public string? outputDirectory { get; set; }
         public string? libraryOutputDirectory { get; set; }
         public string? runtimeModule { get; set; }
+        public string? language { get; set; }
         public SourceFileRequest[]? sourceFiles { get; set; }
         public bool rebuild { get; set; }
         public bool debug { get; set; }
@@ -599,6 +601,7 @@ internal static class Program
                                     outputDirectory = outputDirectory,
                                     libraryOutputDirectory = request.libraryOutputDirectory,
                                     runtimeModule = request.runtimeModule,
+                                    language = request.language,
                                     sourceFiles = sourceFiles,
                                     rebuild = request.rebuild,
                                     debug = request.debug,

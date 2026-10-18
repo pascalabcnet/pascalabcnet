@@ -37,6 +37,31 @@ namespace CodeCompletion
 		private static Hashtable unit_cache = new Hashtable(CaseInsensitiveHashCodeProvider.Default, CaseInsensitiveComparer.Default);
 
 #if PABCNET_MODERN
+        internal IReadOnlyList<string> PreparedReferencePaths;
+        private readonly List<PascalABCCompiler.SyntaxTree.compiler_directive> referenceDirectives =
+            new List<PascalABCCompiler.SyntaxTree.compiler_directive>();
+
+        internal static List<PascalABCCompiler.SyntaxTree.compiler_directive> ReadReferenceDirectives(string path, out string[] modules)
+        {
+            var reader = new IntellisensePCUReader { FileName = path, unit_name = Path.GetFileNameWithoutExtension(path) };
+            using (reader.fs = File.OpenRead(path))
+            using (reader.br = new BinaryReader(reader.fs))
+            {
+                reader.ReadPCUHeader();
+                modules = reader.pcu_file.incl_modules;
+                return reader.referenceDirectives;
+            }
+        }
+
+        private string ResolvePreparedAssembly(string name)
+        {
+            if (PreparedReferencePaths != null)
+                foreach (string path in PreparedReferencePaths)
+                    if (string.Equals(AssemblyName.GetAssemblyName(path).Name, name, StringComparison.OrdinalIgnoreCase))
+                        return path;
+            return Compiler.GetReferenceFileName(name + ".dll", Path.GetDirectoryName(FileName));
+        }
+
         public static void ReleaseReferenceGeneration()
         {
             unit_cache.Clear();
@@ -167,8 +192,13 @@ namespace CodeCompletion
             //pcu_file.compiler_directives = new List<compiler_directive>();
             for (int i = 0; i < num_directives; i++)
             {
-                br.ReadString(); 
-                br.ReadString(); 
+#if PABCNET_MODERN
+                referenceDirectives.Add(new PascalABCCompiler.SyntaxTree.compiler_directive(
+                    new token_info(br.ReadString()), new token_info(br.ReadString())));
+#else
+                br.ReadString();
+                br.ReadString();
+#endif
                 ReadDebugInfo();
             }
 
@@ -574,8 +604,14 @@ namespace CodeCompletion
 			//Console.WriteLine(name);
 			ProcScope cnfn = new ProcScope(name,cur_scope);
 			cnfn.declaringUnit = root_scope;
+#if PABCNET_MODERN
+            // The offset is relative to the PCU data section, as in PCUReader.
+            int connectedTypeEnd = br.ReadInt32();
+            br.BaseStream.Seek(start_pos + connectedTypeEnd, SeekOrigin.Begin);
+#else
             if (CanReadObject())
             	br.ReadInt32();
+#endif
             br.ReadBoolean();//ïðîïóñêàåì ôëàã - èíòåðôåéñíîñòè
 			br.ReadInt32();//name index
 			bool is_generic = br.ReadBoolean();
@@ -772,7 +808,12 @@ namespace CodeCompletion
 			if (a == null)
 			{
                 string tmp = s.Substring(0, s.IndexOf(','));
-                string name_with_path = Compiler.GetReferenceFileName(tmp+".dll");
+                string name_with_path =
+#if PABCNET_MODERN
+                    ResolvePreparedAssembly(tmp);
+#else
+                    Compiler.GetReferenceFileName(tmp+".dll");
+#endif
                     //a = Assembly.LoadFrom(name_with_path);
                 a = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(name_with_path);
                 PascalABCCompiler.NetHelper.NetHelper.init_namespaces(a);
@@ -802,7 +843,12 @@ namespace CodeCompletion
 			{
 				string s = pcu_file.ref_assemblies[i];
 				string tmp = s.Substring(0, s.IndexOf(','));
-				tmp = Compiler.GetReferenceFileName(tmp+".dll");
+                tmp =
+#if PABCNET_MODERN
+                    ResolvePreparedAssembly(tmp);
+#else
+                    Compiler.GetReferenceFileName(tmp+".dll");
+#endif
 				System.Reflection.Assembly assm = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(tmp);
             	PascalABCCompiler.NetHelper.NetHelper.init_namespaces(assm);
             	AssemblyDocCache.Load(assm,tmp);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Globalization;
 using System.Text;
 using System.Threading;
 using Languages.Integration;
@@ -20,12 +21,14 @@ namespace PascalABCNet.CompilerWorker;
 
 internal static class Program
 {
+    private static string? defaultLanguageIso;
     private sealed class CompileRequest
     {
         public string? fileName { get; set; }
         public string? outputDirectory { get; set; }
         public string? libraryOutputDirectory { get; set; }
         public string? runtimeModule { get; set; }
+        public string? language { get; set; }
         public SourceFileRequest[]? sourceFiles { get; set; }
         public bool rebuild { get; set; }
         public bool debug { get; set; }
@@ -244,6 +247,7 @@ internal static class Program
         try
         {
             var request = DeserializeCompileRequest(requestJson);
+            ApplyDiagnosticLanguage(request.language);
             var fileName = request.fileName ?? "";
             var fullFileName = Path.GetFullPath(fileName);
             var snapshot = request.sourceFiles != null
@@ -253,7 +257,7 @@ internal static class Program
                 (snapshot == null || !snapshot.Contains(fullFileName)))
             {
                 response.AppendLine("ERROR");
-                response.AppendLine("Файл не найден: " + fullFileName);
+                response.AppendLine(string.Format(StringResources.Get("COMPILATIONERROR_SOURCE_FILE_{0}_NOT_FOUND"), fullFileName));
                 return response.ToString();
             }
 
@@ -500,6 +504,26 @@ internal static class Program
         }
     }
 
+    private static void ApplyDiagnosticLanguage(string? requestedLanguage)
+    {
+        string iso = string.IsNullOrWhiteSpace(requestedLanguage)
+            ? defaultLanguageIso! : CultureInfo.GetCultureInfo(requestedLanguage).TwoLetterISOLanguageName;
+        int index = StringResourcesLanguage.TwoLetterISOLanguages.FindIndex(
+            value => string.Equals(value, iso, StringComparison.OrdinalIgnoreCase));
+        // Older headless deployments may rely entirely on embedded resources.
+        // An omitted language must continue to work without an external Lng folder.
+        if (index < 0 && string.IsNullOrWhiteSpace(requestedLanguage) &&
+            StringResourcesLanguage.AccessibleLanguages.Count == 0)
+            return;
+        if (index < 0)
+            throw new ArgumentException(string.Format(StringResources.Get(
+                "COMPILATIONERROR_UNSUPPORTED_DIAGNOSTIC_LANGUAGE{0}"), requestedLanguage));
+        // Setting ISO alone does not load .dat files. Select the resource language
+        // for every request, including switches in a long-lived Worker.
+        StringResourcesLanguage.CurrentLanguageName = StringResourcesLanguage.AccessibleLanguages[index];
+        Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(iso);
+    }
+
     private static int Main(string[] args)
     {
         Console.InputEncoding = new UTF8Encoding(false);
@@ -514,6 +538,7 @@ internal static class Program
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
             StringResourcesLanguage.LoadDefaultConfig();
+            defaultLanguageIso = StringResourcesLanguage.CurrentTwoLetterISO;
             LanguageIntegrator.LoadAllLanguages();
 
             var compiler = new Compiler();

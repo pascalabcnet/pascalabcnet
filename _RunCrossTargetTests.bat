@@ -50,7 +50,7 @@ goto run_tests
 :run_net10
 if /I "%SKIP_BUILD%"=="--skip-build" goto prepared_net10
 echo Building CodeCompletion for net10...
-dotnet build "%ROOT%CodeCompletion\CodeCompletion.csproj" -c Release -f net10.0 -m:1
+dotnet build "%ROOT%CodeCompletion\CodeCompletion.csproj" -c Release -p:TargetFramework=net10.0 -p:PABCNET_LEGACY_ONLY=false -m:1
 if errorlevel 1 exit /b %ERRORLEVEL%
 goto build_net10_runner
 

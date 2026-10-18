@@ -14,7 +14,7 @@ using NuGet.Versioning;
 using PascalABCNet.PackageServices;
 using PascalABCNet.LanguageServices;
 
-internal static class Program
+internal static partial class Program
 {
     private const string RootId = "PascalABC.TestRoot";
     private const string DependencyId = "PascalABC.TestDependency";
@@ -27,6 +27,16 @@ internal static class Program
         try
         {
             await CheckRestore(work);
+            if (args.Contains("--module-intellisense"))
+            {
+                await CheckModuleIntelliSense(work);
+                return 0;
+            }
+            if (args.Contains("--module-packages"))
+            {
+                await CheckModulePackages(work);
+                return 0;
+            }
             if (args.Contains("--package-directives"))
             {
                 await CheckPackageDirectiveFixtures(work);
@@ -36,8 +46,12 @@ internal static class Program
                 await CheckLanguageServerProtocol(work);
             await CheckDirectReferenceReload(work);
             await CheckIntelliSense(work);
+            await CheckModuleIntelliSense(work, !args.Contains("--runtime-only-child"));
             if (args.Contains("--compiler"))
+            {
                 await CheckCompilerEarlyRestore(work);
+                await CheckModulePackagesInSeparateProcess();
+            }
             if (args.Contains("--controller"))
                 await CheckControllerRun(work);
             await CheckConfiguration(work);
@@ -371,7 +385,8 @@ internal static class Program
             }).RestoreDirectory);
 
         string repository = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
-        string serverAssembly = Path.Combine(repository, "bin-net10", "PascalABCNet.LanguageServer.dll");
+        string serverAssembly = Path.Combine(Environment.GetEnvironmentVariable("PABC_NUGET_TEST_COMPILER_DIR")
+            ?? Path.Combine(repository, "bin-net10"), "PascalABCNet.LanguageServer.dll");
         Check(File.Exists(serverAssembly), "Build the net10 runtime distribution before the LSP package test.");
         string runtimeDirectory = Path.TrimEndingDirectorySeparator(RuntimeEnvironment.GetRuntimeDirectory());
         string dotnetRoot = Directory.GetParent(runtimeDirectory)!.Parent!.Parent!.FullName;
@@ -570,7 +585,8 @@ internal static class Program
     private static async Task CheckCompilerEarlyRestore(string work)
     {
         string repository = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
-        string compiler = Path.Combine(repository, "bin-net10", "pabcnetcclear.exe");
+        string compiler = Path.Combine(Environment.GetEnvironmentVariable("PABC_NUGET_TEST_COMPILER_DIR")
+            ?? Path.Combine(repository, "bin-net10"), "pabcnetcclear.exe");
         Check(File.Exists(compiler), "Build pabcnetc_clear/PABCNETCclear.csproj for net10.0 Release before --compiler.");
 
         string directory = Path.Combine(work, "compiler");
@@ -789,7 +805,8 @@ internal static class Program
         // TEST-NET10-PACKAGE-DIRECTIVES: reuse the legacy fixtures, but give their
         // synthetic package IDs real versions from our isolated local feed.
         string repository = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
-        string compiler = Path.Combine(repository, "bin-net10", "pabcnetcclear.exe");
+        string compiler = Path.Combine(Environment.GetEnvironmentVariable("PABC_NUGET_TEST_COMPILER_DIR")
+            ?? Path.Combine(repository, "bin-net10"), "pabcnetcclear.exe");
         Check(File.Exists(compiler), "Build the modern compiler before --package-directives.");
         string directory = Path.Combine(work, "package-directives");
         Directory.CreateDirectory(directory);
@@ -798,13 +815,21 @@ internal static class Program
         WriteConfiguration(Path.Combine(directory, "NuGet.Config"), feed, packageCache);
         var service = new PackageRestoreService();
 
-        string AdaptFixture(string relativePath) => File.ReadAllText(
+        string AdaptFixture(string relativePath)
+        {
+            string text = File.ReadAllText(
                 Path.Combine(repository, "TestSuite", relativePath.Replace('/', Path.DirectorySeparatorChar)))
             .Replace("Example.Package", RootId, StringComparison.Ordinal)
             .Replace("example.package", RootId.ToLowerInvariant(), StringComparison.Ordinal)
             .Replace("1.2.3", "1.0.0", StringComparison.Ordinal)
             .Replace("2.0.0", "1.1.0", StringComparison.Ordinal)
             .Replace(@"..\units\u_directive_package.pas", "u_directive_package.pas", StringComparison.Ordinal);
+            // Legacy fixtures permit directives after uses/unit headers. Modern
+            // copies obey the new header-only rule; original files stay untouched.
+            string[] lines = text.Split('\n');
+            bool IsPackage(string line) => line.TrimStart().StartsWith("{$package ", StringComparison.OrdinalIgnoreCase);
+            return string.Join("\n", lines.Where(IsPackage).Concat(lines.Where(line => !IsPackage(line))));
+        }
 
         foreach (string fixture in new[] {
             "directive_package_same_version.pas",

@@ -216,6 +216,9 @@ namespace PascalABCCompiler.PCU
             ms = new MemoryStream(File.ReadAllBytes(FileName));
             br = new BinaryReader(ms);
             ReadPCUHeader();
+#if PABCNET_MODERN
+            ReadAllAssemblies();
+#endif
         }
 
         public string GetFullUnitName(string UnitName, ILanguage currentUnitLanguage)
@@ -278,6 +281,11 @@ namespace PascalABCCompiler.PCU
                     need = true;
                     return null; // return comp.RecompileUnit(file_name);
                 }
+#if PABCNET_MODERN
+                // Dependencies have now restored their own package requirements.
+                // A parent PCU may expose their types without declaring a package itself.
+                ReadAllAssemblies();
+#endif
                 ChangeState(this, PCUReaderWriterState.BeginReadTree, unit);
 
                 var unitLanguage = LanguageProvider.Instance.SelectLanguageByName(pcu_file.languageName);
@@ -641,7 +649,14 @@ namespace PascalABCCompiler.PCU
             {
                 pcu_file.compiler_directives.Add(new compiler_directive(br.ReadString(),br.ReadString(),ReadDebugInfo(), this.FileName));
             }
+#if PABCNET_MODERN
+            comp.RestoreModulePackages(FileName, pcu_file.compiler_directives);
+            // Check resolvable explicit references before recursive PCU reads.
+            // Package paths supplied by dependencies will be checked again below.
+            PrepareModernReferences();
+#else
             ReadAllAssemblies();
+#endif
 			int num_imp_entity = br.ReadInt32();
 			ext_pos = (int)br.BaseStream.Position;
 			pcu_file.imp_entitles = new ImportedEntity[num_imp_entity];
@@ -686,8 +701,23 @@ namespace PascalABCCompiler.PCU
 			start_pos = (int)br.BaseStream.Position;
 		}
 
+#if PABCNET_MODERN
+        private void PrepareModernReferences()
+        {
+            var paths = new List<string>();
+            foreach (string reference in pcu_file.ref_assemblies)
+            {
+                string name = reference.Substring(0, reference.IndexOf(','));
+                paths.Add(ResolveAssemblyFileName(name, Path.GetDirectoryName(FileName)));
+            }
+            comp.PreparePcuReferences(paths, FileName);
+        }
+#endif
 		private void ReadAllAssemblies()
 		{
+#if PABCNET_MODERN
+            PrepareModernReferences();
+#endif
             for (int i = 0; i < pcu_file.ref_assemblies.Length; i++)
             {
                 string s = pcu_file.ref_assemblies[i];

@@ -57,4 +57,5 @@ errors\err0500.pas
 # tests/NuGetRestoreTests (--package-directives, also included in --compiler).
 directive_package_same_version.pas
 usesunits\use_directive_package.pas
+units\u_directive_package.pas
 errors\err_directive_package_unit_conflict.pas

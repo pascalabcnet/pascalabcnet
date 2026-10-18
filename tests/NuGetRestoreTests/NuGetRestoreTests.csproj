@@ -12,6 +12,7 @@
     <ProjectReference Include="../../PascalABCNet.LanguageServices/PascalABCNet.LanguageServices.csproj" />
     <ProjectReference Include="Fixtures/TestRoot/TestRoot.csproj" ReferenceOutputAssembly="false" />
     <ProjectReference Include="Fixtures/TestRootV2/TestRootV2.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="Fixtures/TestDependencyV2/TestDependencyV2.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
   <Target Name="CopyFixtures" AfterTargets="Build">
     <ItemGroup>
@@ -25,5 +26,7 @@
           DestinationFolder="$(OutputPath)fixtures/v2/lib" />
     <Copy SourceFiles="Fixtures/TestRootV2/obj/$(Configuration)/net10.0/ref/TestRoot.dll"
           DestinationFolder="$(OutputPath)fixtures/v2/ref" />
+    <Copy SourceFiles="Fixtures/TestDependencyV2/bin/$(Configuration)/net10.0/TestDependency.dll"
+          DestinationFolder="$(OutputPath)fixtures/v2/lib" />
   </Target>
 </Project>

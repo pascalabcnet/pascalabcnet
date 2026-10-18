@@ -40,6 +40,12 @@ namespace CodeCompletion
         public CodeCompletionController controller;
         public bool is_compiled = false;
         private Exception preparationError;
+#if PABCNET_MODERN
+        /// <summary>Source/PCU files consulted while preparing this document's references.</summary>
+        public IReadOnlyCollection<string> ReferencedSourceFiles { get; internal set; } = Array.Empty<string>();
+        internal string AnalysisSourceText;
+        internal IReadOnlyList<string> AnalysisReferencePaths = Array.Empty<string>();
+#endif
 
         public Exception LastConversionError
         {

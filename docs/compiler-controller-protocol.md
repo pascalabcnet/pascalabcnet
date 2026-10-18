@@ -49,6 +49,26 @@ The optional `"rebuild":true` field on a `compile` request sets
 than read from PCU caches. Omission (or `false`) retains ordinary compilation.
 This uses the existing `compile` command, not a separate protocol action.
 
+The optional `"language":"en"` or `"language":"ru"` field selects diagnostic
+resources for this request; culture names such as `en-US` and `ru-RU` are also
+accepted. Controller forwards it to Worker unchanged. Worker loads the matching
+`.dat` resources for each compilation, so an existing Worker can switch languages.
+Omission restores the Worker's startup default, rather than inheriting a previous
+client's explicit choice. The IDE supplies its currently selected UI language.
+This does not change the compiled program's run locale.
+
+New compiler/reference diagnostics must have matching entries in
+`bin/Lng/Eng/CompilerErrors.dat` and `bin/Lng/Rus/CompilerErrors.dat`.
+Pascal parser diagnostics belong to the corresponding `PascalABCParser.dat` files.
+Use `StringResources`, not hard-coded message text. NuGet diagnostic codes and
+details from external libraries are preserved.
+
+Focused check (after building the runtime and the smoke-test project):
+
+```bat
+dotnet tests/CompilerControllerSmokeTest/bin/Debug/net10.0/CompilerControllerSmokeTest.dll --runtime bin-net10 --target net10 --localization-only
+```
+
 Compile with an IDE runtime service module:
 
 ```json

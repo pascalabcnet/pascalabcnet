@@ -78,8 +78,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
             var document = Documents.Set(documentId, fileName, text, version);
             var domConverter = CompileAndStore(document);
 
-            if (domConverter.is_compiled)
-                RecompileOpenDependents(document);
+            RecompileOpenDependents(document);
 
             return new DocumentAnalysis(
                 documentId,
@@ -143,8 +142,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
             else
             {
                 var domConverter = CompileAndStore(document);
-                if (domConverter.is_compiled)
-                    RecompileOpenDependents(document);
+                RecompileOpenDependents(document);
             }
 
             return true;
@@ -522,7 +520,24 @@ public sealed class PascalLanguageService : IPascalLanguageService
         try
         {
             CodeCompletionBootstrap.Initialize(_documentationLanguageIso);
-            return action();
+            var compiler = CodeCompletionController.comp;
+            var previousProvider = compiler.SourceFilesProvider;
+            compiler.SourceFilesProvider = (file, operation) =>
+            {
+                var snapshot = Documents.GetOpenDocuments().FirstOrDefault(document =>
+                    string.Equals(NormalizeFileName(document.FileName), NormalizeFileName(file), StringComparison.OrdinalIgnoreCase));
+                if (snapshot is not null)
+                    switch (operation)
+                    {
+                        case PascalABCCompiler.CoreUtils.SourceFileOperation.GetText: return snapshot.Text;
+                        case PascalABCCompiler.CoreUtils.SourceFileOperation.Exists: return true;
+                        case PascalABCCompiler.CoreUtils.SourceFileOperation.GetLastWriteTime: return DateTime.MaxValue;
+                        case PascalABCCompiler.CoreUtils.SourceFileOperation.FileEncoding: return System.Text.Encoding.UTF8;
+                    }
+                return previousProvider(file, operation);
+            };
+            try { return action(); }
+            finally { compiler.SourceFilesProvider = previousProvider; }
         }
         finally
         {
@@ -536,6 +551,10 @@ public sealed class PascalLanguageService : IPascalLanguageService
 
         _controller.RefreshReferenceAssemblies();
         EnsureDirtyDocumentsFresh();
+
+        if (_states.TryGetValue(documentId, out var cached) &&
+            cached.SourceStamps.Any(pair => ReadSourceStamp(pair.Key) != pair.Value))
+            CompileAndStore(cached.Document);
 
         if (!_states.ContainsKey(documentId) && Documents.TryGet(documentId, out var document) &&
             document is not null)
@@ -583,7 +602,8 @@ public sealed class PascalLanguageService : IPascalLanguageService
                 LastConversionError: null);
         }
         else if (_states.TryGetValue(document.DocumentId, out var lastSuccessfulState) &&
-                 lastSuccessfulState.DomConverter.is_compiled)
+                 lastSuccessfulState.DomConverter.is_compiled &&
+                 domConverter.LastConversionError is not PascalABCCompiler.Errors.PackageRestoreFailed)
         {
             _states[document.DocumentId] = lastSuccessfulState with
             {
@@ -658,8 +678,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
                 rebuiltDocuments.Add(dependent.Document.DocumentId);
                 var domConverter = CompileAndStore(dependent.Document);
 
-                if (domConverter.is_compiled)
-                    changedFiles.Add(NormalizeFileName(dependent.Document.FileName));
+                changedFiles.Add(NormalizeFileName(dependent.Document.FileName));
             }
         }
     }
@@ -712,8 +731,9 @@ public sealed class PascalLanguageService : IPascalLanguageService
 
     private static IReadOnlySet<string> GetDirectDependencies(DomConverter domConverter)
     {
+        var sources = domConverter.ReferencedSourceFiles.Select(NormalizeFileName);
         if (!domConverter.is_compiled)
-            return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            return sources.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         return new[]
             {
@@ -725,7 +745,19 @@ public sealed class PascalLanguageService : IPascalLanguageService
             .Select(scope => scope.file_name)
             .Where(fileName => !string.IsNullOrWhiteSpace(fileName))
             .Select(fileName => NormalizeFileName(fileName!))
+            .Concat(sources)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static (DateTime Time, long Length) ReadSourceStamp(string fileName)
+    {
+        try
+        {
+            var file = new FileInfo(fileName);
+            return file.Exists ? (file.LastWriteTimeUtc, file.Length) : (DateTime.MinValue, 0);
+        }
+        catch (IOException) { return (DateTime.MinValue, -1); }
+        catch (UnauthorizedAccessException) { return (DateTime.MinValue, -1); }
     }
 
     private static string NormalizeFileName(string fileName) => Path.GetFullPath(fileName);
@@ -770,8 +802,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
 
             CancelPendingAnalysis(state.Document.DocumentId);
             var domConverter = CompileAndStore(state.Document);
-            if (domConverter.is_compiled)
-                RecompileOpenDependents(state.Document);
+            RecompileOpenDependents(state.Document);
         }
     }
 
@@ -808,8 +839,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
                 }
 
                 var domConverter = CompileAndStore(latestDocument);
-                if (domConverter.is_compiled)
-                    RecompileOpenDependents(latestDocument);
+                RecompileOpenDependents(latestDocument);
                 return true;
             }, cancellation.Token).ConfigureAwait(false);
         }
@@ -875,5 +905,10 @@ public sealed class PascalLanguageService : IPascalLanguageService
         long Generation,
         bool IsStale,
         bool IsDirty,
-        string? LastConversionError);
+        string? LastConversionError)
+    {
+        public IReadOnlyDictionary<string, (DateTime Time, long Length)> SourceStamps { get; } =
+            Dependencies.Where(path => !string.Equals(path, NormalizeFileName(Document.FileName), StringComparison.OrdinalIgnoreCase))
+                .ToDictionary(path => path, ReadSourceStamp, StringComparer.OrdinalIgnoreCase);
+    }
 }

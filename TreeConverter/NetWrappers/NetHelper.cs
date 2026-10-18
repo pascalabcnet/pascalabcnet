@@ -371,8 +371,7 @@ namespace PascalABCCompiler.NetHelper
             ResetCollectibleReferenceGeneration();
         }
 
-        internal static void PrepareCollectibleReferenceSetForCompilation(
-            IEnumerable<string> assemblyPaths, IEnumerable<string> originalReferencePaths)
+        internal static void ValidateCollectibleReferencesForCompilation(IEnumerable<string> originalReferencePaths)
         {
             try
             {
@@ -383,6 +382,12 @@ namespace PascalABCCompiler.NetHelper
                 CollectibleReferenceManager.MarkValidationFailure();
                 throw;
             }
+        }
+
+        internal static void PrepareCollectibleReferenceSetForCompilation(
+            IEnumerable<string> assemblyPaths, IEnumerable<string> originalReferencePaths)
+        {
+            ValidateCollectibleReferencesForCompilation(originalReferencePaths);
             var paths = new List<string>(assemblyPaths);
             bool hasLoadedAssemblies =
                 CollectibleReferenceManager.GetCurrentAssemblies().Length != 0;
@@ -402,6 +407,13 @@ namespace PascalABCCompiler.NetHelper
         }
 
         // IntelliSense loads package assemblies without running a compiler pass.
+        public static void ValidateIntelliSenseReferencePaths(IEnumerable<string> assemblyPaths)
+        {
+            // Documents have separate graphs; never mix them with a previous
+            // compiler pass or another open document's validated roots.
+            CollectibleReferenceManager.ValidateNoConflictingAssemblies(assemblyPaths, false);
+        }
+
         // Register all package directories first so cross-package dependencies
         // can be resolved even when their assemblies live in different folders.
         public static void RegisterIntelliSenseReferencePaths(IEnumerable<string> assemblyPaths)

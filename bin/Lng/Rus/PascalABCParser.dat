@@ -1,5 +1,6 @@
 ﻿//PascalABCParser.dll
 %PREFIX%=PASCALABCPARSER_
+PACKAGE_DIRECTIVE_MUST_PRECEDE_CODE=Директива {$package} должна находиться до любого кода языка, включая заголовки unit/program, uses и объявления.
 
 FOUND{0}=Встречено {0}, а 
 FOUNDEOF=Встречен конец файла, а 

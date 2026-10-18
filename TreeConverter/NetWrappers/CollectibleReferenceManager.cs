@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
@@ -23,6 +24,8 @@ namespace PascalABCCompiler.NetHelper
         private static HashSet<string> previousCompilationPaths =
             new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private static HashSet<string> currentCompilationPaths =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private static HashSet<string> currentValidationPaths =
             new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string, CachedAssemblyIdentity> identityCache =
             new Dictionary<string, CachedAssemblyIdentity>(StringComparer.OrdinalIgnoreCase);
@@ -103,6 +106,7 @@ namespace PascalABCCompiler.NetHelper
         {
             previousCompilationPaths = currentCompilationPaths;
             currentCompilationPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            currentValidationPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             generationResetThisCompilation = false;
         }
 
@@ -153,13 +157,15 @@ namespace PascalABCCompiler.NetHelper
             return GetCachedIdentity(Path.GetFullPath(assemblyPath)).SimpleName;
         }
 
-        internal static void ValidateNoConflictingAssemblies(IEnumerable<string> assemblyPaths)
+        internal static void ValidateNoConflictingAssemblies(IEnumerable<string> assemblyPaths, bool accumulate = true)
         {
             var rootPaths = new List<string>();
             var rootPathSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var rootDirectories = new List<string>();
             var rootDirectorySet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (string path in assemblyPaths)
+            // A later Pascal unit may add either packages or explicit references.
+            // Validate against the whole current compilation, not only its own roots.
+            foreach (string path in (accumulate ? currentValidationPaths : Enumerable.Empty<string>()).Concat(assemblyPaths))
             {
                 string fullPath = Path.GetFullPath(path);
                 if (!File.Exists(fullPath) || !rootPathSet.Add(fullPath))
@@ -191,10 +197,12 @@ namespace PascalABCCompiler.NetHelper
                 if (!string.Equals(previousIdentity.FullName, identity.FullName,
                     StringComparison.Ordinal) || !FilesHaveSameContents(previousPath, fullPath))
                     throw new FileLoadException(
-                        "Assemblies '" + previousPath + "' and '" + fullPath +
-                        "' have the same internal simple name but different contents or identities. " +
-                        "PascalABC.NET cannot reference both assemblies in one compilation.");
+                        string.Format(StringResources.Get("COMPILATIONERROR_REFERENCE_ASSEMBLY_CONFLICT{0}{1}"),
+                            previousPath, fullPath));
             }
+            if (accumulate)
+                foreach (string rootPath in rootPaths)
+                    currentValidationPaths.Add(rootPath);
         }
 
         private static void DiscoverReferenceClosure(string assemblyPath,
@@ -247,7 +255,7 @@ namespace PascalABCCompiler.NetHelper
             }
             catch (BadImageFormatException ex)
             {
-                throw new FileLoadException("Cannot read assembly metadata from '" + path + "'.",
+                throw new FileLoadException(string.Format(StringResources.Get("COMPILATIONERROR_ASSEMBLY_METADATA_READ_FAILED{0}"), path),
                     path, ex);
             }
         }
@@ -273,7 +281,7 @@ namespace PascalABCCompiler.NetHelper
             }
             catch (BadImageFormatException ex)
             {
-                throw new FileLoadException("Cannot read assembly metadata from '" + path + "'.",
+                throw new FileLoadException(string.Format(StringResources.Get("COMPILATIONERROR_ASSEMBLY_METADATA_READ_FAILED{0}"), path),
                     path, ex);
             }
         }
@@ -305,7 +313,7 @@ namespace PascalABCCompiler.NetHelper
 
             if (pendingUnload.IsAlive)
                 throw new InvalidOperationException(
-                    "The previous reference AssemblyLoadContext is still referenced by the compiler.");
+                    StringResources.Get("COMPILATIONERROR_REFERENCE_CONTEXT_NOT_UNLOADED"));
 
             pendingUnload = null;
         }
@@ -390,8 +398,9 @@ namespace PascalABCCompiler.NetHelper
                         return LoadFromStream(stream);
                 }
                 if (assemblyName.Name.StartsWith("ReflectionCacheUnload", StringComparison.Ordinal))
-                    throw new FileNotFoundException("Reference context could not resolve " + assemblyName.Name +
-                        ". Search directories: " + string.Join("; ", searchDirectories));
+                    throw new FileNotFoundException(string.Format(StringResources.Get(
+                        "COMPILATIONERROR_REFERENCE_CONTEXT_CANNOT_RESOLVE{0}{1}"),
+                        assemblyName.Name, string.Join("; ", searchDirectories)));
                 return null;
             }
 
