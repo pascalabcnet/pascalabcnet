@@ -135,8 +135,8 @@ public sealed class PackageRestoreService
                 return new ResolvedPackage(name, version.ToNormalizedString(), directory,
                     Array.AsReadOnly(library.Dependencies.Select(d =>
                         new ResolvedPackageDependency(d.Id, d.VersionRange.ToNormalizedString())).ToArray()),
-                    GetAssemblies(directory, library.CompileTimeAssemblies),
-                    GetAssemblies(directory, library.RuntimeAssemblies))
+                    FrameworkAssemblyPolicy.ExcludeProvidedAssemblies(GetAssemblies(directory, library.CompileTimeAssemblies)),
+                    FrameworkAssemblyPolicy.ExcludeProvidedAssemblies(GetAssemblies(directory, library.RuntimeAssemblies)))
                 {
                     NativeLibraries = GetAssets(directory, library.NativeLibraries)
                 };

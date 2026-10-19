@@ -47,6 +47,8 @@ internal static partial class Program
                 return 0;
             }
             await CheckRestore(work);
+            await CheckFrameworkAssemblies(work);
+            if (args.Contains("--framework-assemblies")) return 0;
             await CheckNativeAssets(work);
             if (args.Contains("--native-assets")) return 0;
             if (args.Contains("--sqlite-native"))
@@ -57,6 +59,11 @@ internal static partial class Program
             if (args.Contains("--mathnet-mkl"))
             {
                 await CheckMathNetMkl(work);
+                return 0;
+            }
+            if (args.Contains("--mlnet-regression"))
+            {
+                await CheckMLNetRegression(work);
                 return 0;
             }
             if (args.Contains("--module-intellisense"))

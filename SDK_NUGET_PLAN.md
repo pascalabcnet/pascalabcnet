@@ -111,6 +111,13 @@ NuGet DLL и замыкание явных `{$reference}`. Созданный Nu
 Проверенные пакеты — Microsoft.Data.Sqlite 10.0.13 и MathNet.Numerics.MKL.Win-x64
 3.0.0 с Math.NET Numerics/MKL provider 5.0.0. Тесты описаны в
 `tests/NuGetRestoreTests/README.md` (`--native-assets`, `--sqlite-native`, `--mathnet-mkl`).
+Проверен первый сценарий Microsoft.ML 5.0.0 под Windows x64: SDCA-регрессия,
+прогноз, сохранение/загрузка модели в новом процессе, IntelliSense и публикация
+без кеша/SDK (`--mlnet-regression`, `NuGet/Samples/MLNetRegression.pas`).
+Пакетные копии базовых сборок согласуются с Microsoft.NETCore.App по identity
+и версиям; старые копии не попадают в семантику, manifest и публикацию.
+Локальные проверки этого правила входят в обычный прогон (`--framework-assemblies`).
+Дополнительные алгоритмы и нативные пакеты ML.NET требуют самостоятельных тестов.
 Resource assemblies, нативные зависимости других платформ и self-contained
 публикация остаются следующими этапами.
 
