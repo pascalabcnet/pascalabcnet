@@ -54,6 +54,11 @@ internal static partial class Program
                 await CheckSqliteNative(work);
                 return 0;
             }
+            if (args.Contains("--mathnet-mkl"))
+            {
+                await CheckMathNetMkl(work);
+                return 0;
+            }
             if (args.Contains("--module-intellisense"))
             {
                 await CheckModuleIntelliSense(work);

@@ -108,8 +108,9 @@ NuGet DLL и замыкание явных `{$reference}`. Созданный Nu
 версии DLL не конфликтуют. Повторная публикация целиком заменяет прежнюю
 папку программы. Поддержаны native-файлы Windows x64: выбор RID через NuGet,
 описание в `.deps.json` для запуска из кеша и копирование при публикации.
-Проверенный пакет — Microsoft.Data.Sqlite 10.0.13; тесты описаны в
-`tests/NuGetRestoreTests/README.md` (`--native-assets`, `--sqlite-native`).
+Проверенные пакеты — Microsoft.Data.Sqlite 10.0.13 и MathNet.Numerics.MKL.Win-x64
+3.0.0 с Math.NET Numerics/MKL provider 5.0.0. Тесты описаны в
+`tests/NuGetRestoreTests/README.md` (`--native-assets`, `--sqlite-native`, `--mathnet-mkl`).
 Resource assemblies, нативные зависимости других платформ и self-contained
 публикация остаются следующими этапами.
 

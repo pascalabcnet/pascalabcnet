@@ -219,3 +219,28 @@ Pascal-программу и выполняет `select 40 + 2` через на�
 публикация и выполнение при недоступном кеше. Кеш пользователя не переименовывается
 и не изменяется; тестовый кеш удаляется. Сеть не включена в обычный прогон.
 Можно задать `PABC_NUGET_TEST_COMPILER_DIR` для отдельно собранного modern-комплекта.
+
+### Math.NET Numerics + Intel MKL
+
+```bat
+dotnet run --project tests\NuGetRestoreTests\NuGetRestoreTests.csproj -c Release -p:PABCNET_LEGACY_ONLY=false -- --mathnet-mkl
+```
+
+Windows x64, сеть к nuget.org; отдельный временный кеш без изменения кеша
+пользователя. Восстанавливается MathNet.Numerics.MKL.Win-x64 3.0.0 с
+MathNet.Numerics и MathNet.Numerics.Providers.MKL 5.0.0. Пакет нативной части
+имеет размер около 53 МБ. В обычный локальный прогон сетевой тест не входит.
+
+Компилируется сохранённый пример `NuGet/Samples/MathNetMkl.pas`. Он вызывает
+`Control.UseNativeMKL` (ошибка, а не fallback при отсутствии MKL), проверяет
+конкретный тип провайдера и умножает две матрицы. Ожидаемый результат:
+`19 22 43 50`. Дополнительно проверяются:
+
+- no-op restore и отсутствие копирования DLL рядом с исходным EXE;
+- запуск с изолированным .NET runtime без SDK и с пустым PATH;
+- обязательность обеих DLL: `libMathNetNumericsMKL.dll` и `libiomp5md.dll`;
+- отказ при удалении каждой из них, восстановление после возврата;
+- completion, hover и параметры без загрузки MKL/OpenMP в процесс IntelliSense;
+- публикация и исполнение при недоступном кеше, без SDK и PATH.
+
+Замер скорости не является критерием корректности этого теста.
