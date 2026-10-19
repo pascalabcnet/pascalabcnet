@@ -26,6 +26,11 @@ internal static partial class Program
         Directory.CreateDirectory(work);
         try
         {
+            if (args.Contains("--restore-race-child"))
+            {
+                await RestoreRaceChild(args[1], args[2]);
+                return 0;
+            }
             if (args.Contains("--source-defaults-clean-child"))
             {
                 Check(!Directory.GetFiles(args[1], "NuGet.Config", SearchOption.AllDirectories).Any(),
@@ -47,6 +52,8 @@ internal static partial class Program
                 return 0;
             }
             await CheckRestore(work);
+            await CheckRestoreConcurrency(work);
+            if (args.Contains("--restore-concurrency")) return 0;
             await CheckFrameworkAssemblies(work);
             if (args.Contains("--framework-assemblies")) return 0;
             await CheckNativeAssets(work);
@@ -64,6 +71,11 @@ internal static partial class Program
             if (args.Contains("--mlnet-regression"))
             {
                 await CheckMLNetRegression(work);
+                return 0;
+            }
+            if (args.Contains("--lightgbm-native"))
+            {
+                await CheckLightGbmNative(work);
                 return 0;
             }
             if (args.Contains("--module-intellisense"))

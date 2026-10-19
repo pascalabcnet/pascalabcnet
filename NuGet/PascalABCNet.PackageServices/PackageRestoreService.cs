@@ -32,6 +32,20 @@ public sealed class PackageRestoreService
         if (!string.Equals(request.TargetFramework, "net10.0", StringComparison.OrdinalIgnoreCase))
             throw new ArgumentException("This restore prototype supports net10.0 only.", nameof(request));
 
+        var environment = RestoreEnvironment.Resolve(request);
+        // The compiler and IntelliSense can restore the same program concurrently.
+        // Protect writes AND consumption of the result, not just RestoreRunner:
+        // another client may replace/delete project.assets.json before we read it.
+        // Use NuGet's cross-process lock under its temp directory; no global gate
+        // and no lock file beside user source. Waiting supports cancellation.
+        return await ConcurrencyUtilities.ExecuteWithFileLockedAsync(
+            Path.Combine(environment.Configuration.RestoreDirectory, "PascalABCNET.restore"),
+            token => RestoreCoreAsync(request, environment, token), cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task<ResolvedPackageGraph> RestoreCoreAsync(PackageRestoreRequest request,
+        RestoreEnvironment environment, CancellationToken cancellationToken)
+    {
         var framework = NuGetFramework.ParseFolder(request.TargetFramework);
         string? rid = request.RuntimeIdentifier ??
             (OperatingSystem.IsWindows() && RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "win-x64" : null);
@@ -50,7 +64,6 @@ public sealed class PackageRestoreService
                 throw new ArgumentException("Conflicting requested versions of " + package.Id, nameof(request));
             requirements[package.Id] = version;
         }
-        var environment = RestoreEnvironment.Resolve(request);
         string packagesDirectory = environment.Configuration.PackagesDirectory;
         string restoreDirectory = environment.Configuration.RestoreDirectory;
         Directory.CreateDirectory(restoreDirectory);
