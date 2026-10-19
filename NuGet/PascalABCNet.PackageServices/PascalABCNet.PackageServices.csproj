@@ -11,6 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Ship the SDK's portable RID data inside our library; restore needs no SDK. -->
+    <EmbeddedResource Include="$(MSBuildSDKsPath)/../PortableRuntimeIdentifierGraph.json"
+                      LogicalName="PascalABCNet.PackageServices.PortableRuntimeIdentifierGraph.json" />
     <PackageReference Include="NuGet.Commands" Version="$(NuGetClientVersion)" />
     <PackageReference Include="NuGet.ProjectModel" Version="$(NuGetClientVersion)" />
     <PackageReference Include="NuGet.Protocol" Version="$(NuGetClientVersion)" />

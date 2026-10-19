@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using System.Runtime.InteropServices;
 using NuGet.Commands;
 using NuGet.Common;
 using NuGet.Configuration;
@@ -7,6 +8,7 @@ using NuGet.Frameworks;
 using NuGet.LibraryModel;
 using NuGet.ProjectModel;
 using NuGet.Protocol.Core.Types;
+using NuGet.RuntimeModel;
 using NuGet.Versioning;
 
 namespace PascalABCNet.PackageServices;
@@ -31,6 +33,10 @@ public sealed class PackageRestoreService
             throw new ArgumentException("This restore prototype supports net10.0 only.", nameof(request));
 
         var framework = NuGetFramework.ParseFolder(request.TargetFramework);
+        string? rid = request.RuntimeIdentifier ??
+            (OperatingSystem.IsWindows() && RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "win-x64" : null);
+        if (rid is not null && rid != "win-x64")
+            throw new ArgumentException("Native NuGet assets currently support win-x64 only.", nameof(request));
         var requirements = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
         foreach (var package in request.Packages)
         {
@@ -63,11 +69,13 @@ public sealed class PackageRestoreService
         {
             FrameworkName = framework,
             TargetAlias = "net10.0",
+            RuntimeIdentifierGraphPath = rid is null ? null : PrepareRuntimeGraphFile(restoreDirectory),
             Dependencies = dependencies
         } })
         {
             Name = "PascalPackageRestore",
             FilePath = projectIdentity,
+            RuntimeGraph = rid is null ? RuntimeGraph.Empty : new RuntimeGraph(new[] { new RuntimeDescription(rid) }),
             RestoreMetadata = new ProjectRestoreMetadata
             {
                 ProjectStyle = ProjectStyle.PackageReference,
@@ -113,7 +121,7 @@ public sealed class PackageRestoreService
         var lockFile = new LockFileFormat().Read(assetsPath, logger)
             ?? throw new InvalidDataException("NuGet did not produce a valid assets file.");
         var target = lockFile.Targets.Single(t => t.TargetFramework.Equals(framework) &&
-            string.IsNullOrEmpty(t.RuntimeIdentifier));
+            (rid is null ? string.IsNullOrEmpty(t.RuntimeIdentifier) : t.RuntimeIdentifier == rid));
         var packages = target.Libraries.Where(l => l.Type == "package")
             .OrderBy(l => l.Name, StringComparer.OrdinalIgnoreCase).Select(library =>
             {
@@ -128,27 +136,55 @@ public sealed class PackageRestoreService
                     Array.AsReadOnly(library.Dependencies.Select(d =>
                         new ResolvedPackageDependency(d.Id, d.VersionRange.ToNormalizedString())).ToArray()),
                     GetAssemblies(directory, library.CompileTimeAssemblies),
-                    GetAssemblies(directory, library.RuntimeAssemblies));
+                    GetAssemblies(directory, library.RuntimeAssemblies))
+                {
+                    NativeLibraries = GetAssets(directory, library.NativeLibraries)
+                };
             }).ToArray();
         var installedIds = logger.InstalledPackageIds.ToHashSet(StringComparer.OrdinalIgnoreCase);
         var installedPackages = packages.Where(package => installedIds.Contains(package.Id))
             .Select(package => new PackageRequirement(package.Id, package.Version)).ToArray();
+        var portable = lockFile.Targets.Single(t => t.TargetFramework.Equals(framework) && string.IsNullOrEmpty(t.RuntimeIdentifier));
+        bool platformSpecific = target.Libraries.Count != portable.Libraries.Count || target.Libraries.Any(library =>
+        {
+            var generic = portable.Libraries.FirstOrDefault(p => p.Name == library.Name && p.Version == library.Version);
+            return generic is null || library.NativeLibraries.Count != 0 ||
+                !library.RuntimeAssemblies.Select(a => a.Path).SequenceEqual(generic.RuntimeAssemblies.Select(a => a.Path));
+        });
         return new ResolvedPackageGraph("net10.0", assetsPath, Array.AsReadOnly(packages),
             summary.NoOpRestore, summary.InstallCount, Array.AsReadOnly(diagnostics))
         {
             Configuration = environment.Configuration,
+            // Ordinary managed programs remain portable, as before this feature.
+            RuntimeIdentifier = request.RuntimeIdentifier ?? (platformSpecific ? rid : null),
             InstalledPackages = Array.AsReadOnly(installedPackages)
         };
     }
 
     private static IReadOnlyList<string> GetAssemblies(string directory, IEnumerable<LockFileItem> items)
+        => GetAssets(directory, items.Where(item => item.Path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)));
+
+    private static IReadOnlyList<string> GetAssets(string directory, IEnumerable<LockFileItem> items)
     {
-        var files = items.Where(item => item.Path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+        var files = items.Where(item => Path.GetFileName(item.Path) != "_._")
             .Select(item => GetPackagePath(directory, item.Path)).ToArray();
         foreach (string file in files)
             if (!File.Exists(file))
                 throw new FileNotFoundException("A selected NuGet assembly is missing.", file);
         return Array.AsReadOnly(files);
+    }
+
+    private static string PrepareRuntimeGraphFile(string restoreDirectory)
+    {
+        using var stream = typeof(PackageRestoreService).Assembly.GetManifestResourceStream(
+            "PascalABCNet.PackageServices.PortableRuntimeIdentifierGraph.json")!;
+        using var reader = new StreamReader(stream);
+        string json = reader.ReadToEnd();
+        string path = Path.Combine(restoreDirectory, "PortableRuntimeIdentifierGraph.json");
+        // NuGet's API expects a file. Extract bundled data, never consult an
+        // installed SDK, and preserve timestamps for no-op restores.
+        if (!File.Exists(path) || File.ReadAllText(path) != json) File.WriteAllText(path, json);
+        return path;
     }
 
     private static string GetPackagePath(string directory, string relativePath)

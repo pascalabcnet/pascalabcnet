@@ -47,6 +47,13 @@ internal static partial class Program
                 return 0;
             }
             await CheckRestore(work);
+            await CheckNativeAssets(work);
+            if (args.Contains("--native-assets")) return 0;
+            if (args.Contains("--sqlite-native"))
+            {
+                await CheckSqliteNative(work);
+                return 0;
+            }
             if (args.Contains("--module-intellisense"))
             {
                 await CheckModuleIntelliSense(work);
@@ -1471,6 +1478,17 @@ internal static partial class Program
 
     private static async Task CheckRuntimeOnly(string work)
     {
+        string host = CreateRuntimeOnlyHost(work);
+        var sdks = await RunIsolated(host, new[] { "--list-sdks" });
+        Check(sdks.ExitCode == 0 && string.IsNullOrWhiteSpace(sdks.Output),
+            "Isolated dotnet unexpectedly found an SDK: " + sdks.Output);
+        var test = await RunIsolated(host, new[] { typeof(Program).Assembly.Location, "--runtime-only-child" });
+        Check(test.ExitCode == 0, "Runtime-only test failed: " + test.Output + test.Error);
+        Console.WriteLine("PASS: the complete restore test ran with an isolated .NET runtime, no SDK and an empty PATH.");
+    }
+
+    private static string CreateRuntimeOnlyHost(string work)
+    {
         // Build a genuine runtime-only dotnet layout. No sdk/ directory is copied.
         string runtime = Path.TrimEndingDirectorySeparator(RuntimeEnvironment.GetRuntimeDirectory());
         string version = Path.GetFileName(runtime);
@@ -1486,12 +1504,7 @@ internal static partial class Program
             Path.Combine(isolated, "host", "fxr", version));
         CopyDirectory(runtime, Path.Combine(isolated, "shared", "Microsoft.NETCore.App", version));
 
-        var sdks = await RunIsolated(host, new[] { "--list-sdks" });
-        Check(sdks.ExitCode == 0 && string.IsNullOrWhiteSpace(sdks.Output),
-            "Isolated dotnet unexpectedly found an SDK: " + sdks.Output);
-        var test = await RunIsolated(host, new[] { typeof(Program).Assembly.Location, "--runtime-only-child" });
-        Check(test.ExitCode == 0, "Runtime-only test failed: " + test.Output + test.Error);
-        Console.WriteLine("PASS: the complete restore test ran with an isolated .NET runtime, no SDK and an empty PATH.");
+        return host;
     }
 
     private static async Task<(int ExitCode, string Output, string Error)> RunIsolated(string host, string[] arguments)

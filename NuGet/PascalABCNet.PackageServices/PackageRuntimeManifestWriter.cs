@@ -29,6 +29,7 @@ public static class PackageRuntimeManifestWriter
             StringComparer.OrdinalIgnoreCase);
         var targets = new JsonObject();
         var libraries = new JsonObject();
+        string runtimeTarget = graph.RuntimeIdentifier is null ? Target : Target + "/" + graph.RuntimeIdentifier;
         foreach (var package in graph.Packages.OrderBy(package => package.Id, StringComparer.OrdinalIgnoreCase))
         {
             string key = package.Id + "/" + package.Version;
@@ -43,6 +44,19 @@ public static class PackageRuntimeManifestWriter
             }
 
             var targetLibrary = new JsonObject { ["runtime"] = runtime };
+            if (package.NativeLibraries.Count != 0)
+            {
+                var native = new JsonObject();
+                foreach (string asset in package.NativeLibraries)
+                {
+                    string relative = Path.GetRelativePath(package.Directory, asset);
+                    if (Path.IsPathRooted(relative) || relative == ".." ||
+                        relative.StartsWith(".." + Path.DirectorySeparatorChar, StringComparison.Ordinal))
+                        throw new InvalidDataException("NuGet native asset escapes its package: " + asset);
+                    native[relative.Replace('\\', '/')] = new JsonObject();
+                }
+                targetLibrary["native"] = native;
+            }
             if (package.Dependencies.Count != 0)
             {
                 var dependencies = new JsonObject();
@@ -73,9 +87,9 @@ public static class PackageRuntimeManifestWriter
 
         var root = new JsonObject
         {
-            ["runtimeTarget"] = new JsonObject { ["name"] = Target, ["signature"] = "" },
+            ["runtimeTarget"] = new JsonObject { ["name"] = runtimeTarget, ["signature"] = "" },
             ["compilationOptions"] = new JsonObject(),
-            ["targets"] = new JsonObject { [Target] = targets },
+            ["targets"] = new JsonObject { [runtimeTarget] = targets },
             ["libraries"] = libraries,
             [Marker] = new JsonObject { ["generatedNuGetManifest"] = true }
         };

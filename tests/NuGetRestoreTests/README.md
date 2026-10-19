@@ -102,7 +102,8 @@ dotnet run --project tests\NuGetRestoreTests\NuGetRestoreTests.csproj -c Release
 не может загрузить NuGet `ref/`-сборку. Для запуска компилятор создаёт
 `<программа>.deps.json` и добавляет путь общего кеша NuGet в
 `<программа>.runtimeconfig.json`; пакетные DLL рядом с EXE не копируются.
-Native/resource assets пока не поддерживаются.
+Нативные файлы Windows x64 поддерживаются отдельными проверками ниже;
+resource assemblies пока не поддерживаются.
 Modern-эквиваленты legacy-тестов `directive_package_same_version.pas`,
 `usesunits/use_directive_package.pas` и
 `errors/err_directive_package_unit_conflict.pas` также включены в `--compiler`.
@@ -167,8 +168,8 @@ dotnet run --project tests\NuGetRestoreTests\NuGetRestoreTests.csproj -c Release
 
 Режим `--compiler` дополнительно публикует обе версии тестового пакета в
 `publish/<имя программы>/`, повторяет публикацию и запускает оба EXE при
-временно недоступном NuGet-кеше. Пока публикуются managed DLL; native/resource
-assets не поддерживаются. Также проверяются программа без пакетов, явная
+временно недоступном NuGet-кеше. Публикуются managed DLL и выбранные native-файлы
+Windows x64; resource assemblies пока не поддерживаются. Также проверяются программа без пакетов, явная
 `{$reference}` и отказ заменять папку, в которую пользователь добавил файл.
 
 Отдельная проверка цепочки Run10 через долгоживущий Controller/Worker
@@ -187,3 +188,34 @@ dotnet run --project tests\NuGetRestoreTests\NuGetRestoreTests.csproj -c Release
 
 Ожидаемый результат обычного режима: строки PASS и код завершения 0.
 Версии зависимостей тестового приложения зафиксированы в packages.lock.json.
+
+## Нативные зависимости Windows x64
+
+Обычный прогон также создаёт локальные тестовые пакеты с вариантами `win-x64`,
+`win-x86`, `linux-x64` и fallback `win`. Без сети проверяются выбор нужного RID,
+замена управляемой реализации на платформенную, отделение native-файлов от
+семантических ссылок, повторный no-op restore и переносимость чисто управляемых
+пакетов. Официальный portable RID graph встроен в DLL и работает без SDK.
+Проверяются native-секция `.deps.json`, публикация, отсутствие файлов, запрет
+выхода за каталог пакета и сохранение предыдущей публикации/manifest при ошибке.
+
+Отдельный быстрый запуск:
+
+```bat
+dotnet run --project tests\NuGetRestoreTests\NuGetRestoreTests.csproj -c Release -p:PABCNET_LEGACY_ONLY=false -- --native-assets
+```
+
+Реальный интеграционный тест требует Windows x64 и сеть к nuget.org:
+
+```bat
+dotnet run --project tests\NuGetRestoreTests\NuGetRestoreTests.csproj -c Release -p:PABCNET_LEGACY_ONLY=false -- --sqlite-native
+```
+
+Он скачивает Microsoft.Data.Sqlite 10.0.13 в отдельный временный кеш, компилирует
+Pascal-программу и выполняет `select 40 + 2` через настоящую нативную SQLite.
+Проверяются no-op restore, отсутствие копирования пакетных DLL к EXE, ошибка
+при удалённой `e_sqlite3.dll` и восстановление после её возврата, запуск без SDK
+и с пустым PATH, completion/hover без загрузки SQLite в процесс IntelliSense,
+публикация и выполнение при недоступном кеше. Кеш пользователя не переименовывается
+и не изменяется; тестовый кеш удаляется. Сеть не включена в обычный прогон.
+Можно задать `PABC_NUGET_TEST_COMPILER_DIR` для отдельно собранного modern-комплекта.

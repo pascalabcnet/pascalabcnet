@@ -45,7 +45,7 @@ public static class PackagePublisher
                 CopyNuGetAssemblies(depsPath, probing, staging, copied);
 
             // The generated NuGet deps file points to package directories. A published
-            // application instead probes its own directory for these managed assemblies.
+            // application instead probes its own directory for managed and native files.
             // Do not copy that deps file or the original cache probing paths.
             var pending = new Queue<string>(copied.Values.Where(IsManagedAssembly));
             var scanned = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -91,26 +91,30 @@ public static class PackagePublisher
         foreach (var package in target.Value.EnumerateObject())
         {
             string packagePath = libraries.GetProperty(package.Name).GetProperty("path").GetString()!;
-            foreach (var asset in package.Value.GetProperty("runtime").EnumerateObject())
+            foreach (string kind in new[] { "runtime", "native" })
             {
-                if (!asset.Name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
-                    continue;
-                string? source = null;
-                if (probing != null)
-                    foreach (var cache in probing)
-                    {
-                        string cachePath = Path.GetFullPath((string)cache!);
-                        string rootPath = Path.GetFullPath(Path.Combine(cachePath, packagePath));
-                        if (!Inside(cachePath, rootPath))
-                            throw new InvalidDataException("NuGet package escapes its cache: " + packagePath);
-                        string candidate = Path.GetFullPath(Path.Combine(rootPath, asset.Name));
-                        if (!Inside(rootPath, candidate))
-                            throw new InvalidDataException("NuGet asset escapes its package: " + asset.Name);
-                        if (File.Exists(candidate)) { source = candidate; break; }
-                    }
-                if (source == null)
-                    throw new FileNotFoundException("NuGet runtime asset is missing: " + package.Name + "/" + asset.Name);
-                Copy(source, staging, copied);
+                if (!package.Value.TryGetProperty(kind, out var assets)) continue;
+                foreach (var asset in assets.EnumerateObject())
+                {
+                    if (kind == "runtime" && !asset.Name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    string? source = null;
+                    if (probing != null)
+                        foreach (var cache in probing)
+                        {
+                            string cachePath = Path.GetFullPath((string)cache!);
+                            string rootPath = Path.GetFullPath(Path.Combine(cachePath, packagePath));
+                            if (!Inside(cachePath, rootPath))
+                                throw new InvalidDataException("NuGet package escapes its cache: " + packagePath);
+                            string candidate = Path.GetFullPath(Path.Combine(rootPath, asset.Name));
+                            if (!Inside(rootPath, candidate))
+                                throw new InvalidDataException("NuGet asset escapes its package: " + asset.Name);
+                            if (File.Exists(candidate)) { source = candidate; break; }
+                        }
+                    if (source == null)
+                        throw new FileNotFoundException("NuGet runtime asset is missing: " + package.Name + "/" + asset.Name);
+                    Copy(source, staging, copied);
+                }
             }
         }
     }

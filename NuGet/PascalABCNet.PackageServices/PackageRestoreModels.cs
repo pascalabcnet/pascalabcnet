@@ -18,6 +18,9 @@ public sealed record PackageRestoreRequest
     /// <summary>Optional explicit config file, loaded without the normal configuration hierarchy.</summary>
     public string? NuGetConfigFile { get; init; }
     public string TargetFramework { get; init; } = "net10.0";
+    /// <summary>Null selects win-x64 in a Windows x64 process, otherwise portable assets.
+    /// An explicit RID is currently supported only for win-x64.</summary>
+    public string? RuntimeIdentifier { get; init; }
     public bool ForceRestore { get; init; }
 }
 
@@ -39,7 +42,11 @@ public sealed record ResolvedPackage(
     string Directory,
     IReadOnlyList<ResolvedPackageDependency> Dependencies,
     IReadOnlyList<string> CompileAssemblies,
-    IReadOnlyList<string> RuntimeAssemblies);
+    IReadOnlyList<string> RuntimeAssemblies)
+{
+    /// <summary>Native files selected for this graph's RID; never semantic references.</summary>
+    public IReadOnlyList<string> NativeLibraries { get; init; } = Array.Empty<string>();
+}
 
 public sealed record ResolvedPackageGraph(
     string TargetFramework,
@@ -50,6 +57,7 @@ public sealed record ResolvedPackageGraph(
     IReadOnlyList<PackageDiagnostic> Diagnostics)
 {
     public required PackageRestoreConfiguration Configuration { get; init; }
+    public string? RuntimeIdentifier { get; init; }
     /// <summary>Packages actually installed into the global cache by this restore.</summary>
     public IReadOnlyList<PackageRequirement> InstalledPackages { get; init; } = Array.Empty<PackageRequirement>();
 }
