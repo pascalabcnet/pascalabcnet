@@ -21,6 +21,8 @@ namespace CodeCompletion
         private IReadOnlyList<string> preparedReferencePaths;
         private HashSet<string> preparedSourceFiles;
         private bool isDependencyController;
+        public bool RestorePackagesAutomatically { get; set; } = true;
+        public bool PackageRestoreRequired { get; private set; }
 
         internal CodeCompletionController CreateDependencyController()
         {
@@ -214,7 +216,8 @@ namespace CodeCompletion
                 {
                     if (packageReferences == null) packageReferences = new NuGetIntelliSenseReferences();
                     preparedReferencePaths = packageReferences.Resolve(cu,
-                        () => BeforeIntelliSenseReferenceReload?.Invoke());
+                        () => BeforeIntelliSenseReferenceReload?.Invoke(), RestorePackagesAutomatically);
+                    PackageRestoreRequired = packageReferences.RestoreRequired;
                     preparedSourceFiles = new HashSet<string>(packageReferences.SourceFiles, StringComparer.OrdinalIgnoreCase);
                     // Reuse an unchanged module only in the same package graph.
                     // In particular, preserve the last successful model while a

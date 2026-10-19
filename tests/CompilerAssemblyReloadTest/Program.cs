@@ -261,6 +261,42 @@ internal static class Program
                 throw new Exception("A framework assembly was loaded into the collectible " +
                     "user-reference context: " + string.Join("|", frameworkStatistics));
 
+            // User enums populate conversions on the permanent integer node;
+            // Flags also overwrite the shared integer bitwise operator slots.
+            // Force several real generation changes in this same compiler.
+            sourcePath = Path.Combine(workDirectory, "enum_reference_reload.pas");
+            SendText(process, ConsoleCompilerConstants.CompilerOptionsFileName, sourcePath);
+            sourceText = "{$reference '" + fixturePath + "'}" + Environment.NewLine +
+                "uses ReflectionCacheUnloadFixture;" + Environment.NewLine +
+                "begin" + Environment.NewLine +
+                "  var e := CacheEnum.One; assert(e > CacheEnum.Zero);" + Environment.NewLine +
+                "  assert(CacheEnum.Zero < e); assert(e = CacheEnum.One);" + Environment.NewLine +
+                "  assert(e <> CacheEnum.Zero); assert(e >= CacheEnum.Zero);" + Environment.NewLine +
+                "  assert(CacheEnum.Zero <= e);" + Environment.NewLine +
+                "  var f := CacheFlags.One or CacheFlags.Two;" + Environment.NewLine +
+                "  assert((f and CacheFlags.One) = CacheFlags.One);" + Environment.NewLine +
+                "  var bits := 7; bits := bits and 3;" + Environment.NewLine +
+                "  var c := new ConversionValue(17); var number: integer := c;" + Environment.NewLine +
+                "  var back: ConversionValue := 23; var text := string(c);" + Environment.NewLine +
+                "  var parsed := ConversionValue('41');" + Environment.NewLine +
+                "  var otherNumber: integer := new SecondConversionValue(5);" + Environment.NewLine +
+                "  assert(number = 17); assert(back.Value = 23); assert(text = '17');" + Environment.NewLine +
+                "  assert(parsed.Value = 41); assert(otherNumber = 105);" + Environment.NewLine +
+                "  Println(integer(e)); Println(integer(f)); Println(bits);" + Environment.NewLine +
+                "  Println(number); Println(back.Value); Println(text); Println(parsed.Value); Println(otherNumber);" + Environment.NewLine +
+                "end.";
+            expectedRuntimeOutput = "1\n3\n3\n17\n23\n17\n41\n105";
+            await Compile();
+            string enumStatistics = File.ReadAllText(statisticsPath);
+            await Compile();
+            if (File.ReadAllText(statisticsPath) != enumStatistics)
+                throw new Exception("Unchanged enum references caused metadata rereads or a context reload.");
+            Send(process, ConsoleCompilerConstants.CompilerOptionsRebuild, true);
+            for (int iteration = 0; iteration < 4; iteration++)
+                await Compile();
+            Send(process, ConsoleCompilerConstants.CompilerOptionsRebuild, false);
+            Console.WriteLine("PASS: enum/Flags, implicit/explicit conversions and integer operators survived four generation reloads.");
+
             sourcePath = reloadSourcePath;
             SendText(process, ConsoleCompilerConstants.CompilerOptionsFileName, sourcePath);
             sourceText = reloadSourceText;

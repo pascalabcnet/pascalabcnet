@@ -14,7 +14,7 @@ using NuGet.Versioning;
 namespace PascalABCNet.PackageServices;
 
 /// <summary>Restores packages using NuGet libraries; never invokes SDK tools.</summary>
-public sealed class PackageRestoreService
+public sealed partial class PackageRestoreService
 {
     /// <summary>Reports effective paths and sources without restoring or downloading packages.</summary>
     public PackageRestoreConfiguration GetConfiguration(PackageRestoreRequest request)
@@ -33,14 +33,29 @@ public sealed class PackageRestoreService
             throw new ArgumentException("This restore prototype supports net10.0 only.", nameof(request));
 
         var environment = RestoreEnvironment.Resolve(request);
+        if (request.LocalPackagesOnly)
+        {
+            if (!Directory.Exists(environment.Configuration.PackagesDirectory))
+                throw new PackageRestoreRequiredException();
+            environment = environment with { Sources = new[] { new PackageSource(environment.Configuration.PackagesDirectory) } };
+        }
         // The compiler and IntelliSense can restore the same program concurrently.
         // Protect writes AND consumption of the result, not just RestoreRunner:
         // another client may replace/delete project.assets.json before we read it.
         // Use NuGet's cross-process lock under its temp directory; no global gate
         // and no lock file beside user source. Waiting supports cancellation.
-        return await ConcurrencyUtilities.ExecuteWithFileLockedAsync(
+        using var operation = new RestoreOperation(request, cancellationToken);
+        try { return await operation.RunAsync(token => ConcurrencyUtilities.ExecuteWithFileLockedAsync(
             Path.Combine(environment.Configuration.RestoreDirectory, "PascalABCNET.restore"),
-            token => RestoreCoreAsync(request, environment, token), cancellationToken).ConfigureAwait(false);
+            lockedToken => RestoreCoreAsync(request, environment, lockedToken), token)).ConfigureAwait(false); }
+        catch (PackageRestoreException) when (request.LocalPackagesOnly)
+        {
+            throw new PackageRestoreRequiredException();
+        }
+        catch (FileNotFoundException) when (request.LocalPackagesOnly)
+        {
+            throw new PackageRestoreRequiredException();
+        }
     }
 
     private static async Task<ResolvedPackageGraph> RestoreCoreAsync(PackageRestoreRequest request,
@@ -225,7 +240,12 @@ public sealed class PackageRestoreService
                 string identity = message.Message.Substring("Installed ".Length);
                 int space = identity.IndexOf(' ');
                 if (space > 0)
+                {
                     InstalledPackageIds.Enqueue(identity.Substring(0, space));
+                    int versionEnd = identity.IndexOf(' ', space + 1);
+                    CurrentRestore.Value?.Installed(versionEnd > space
+                        ? identity.Substring(0, versionEnd) : identity.Substring(0, space));
+                }
             }
             if (message.Level is LogLevel.Warning or LogLevel.Error)
                 Messages.Enqueue(new PackageDiagnostic(message.Level.ToString(),

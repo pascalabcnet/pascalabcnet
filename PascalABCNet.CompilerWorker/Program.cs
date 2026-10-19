@@ -64,6 +64,9 @@ internal static class Program
         public int errorCount { get; set; }
         public int warningCount { get; set; }
         public double elapsedMilliseconds { get; set; }
+        public string? nuGetOperationId { get; set; }
+        public string? nuGetStage { get; set; }
+        public int nuGetInstalledCount { get; set; }
     }
 
     private sealed class SourceFileSnapshot
@@ -334,6 +337,14 @@ internal static class Program
             };
             string? outputFileName;
             requestCompiler.OnChangeCompilerState += handler;
+#if !NETFRAMEWORK
+            Action<PackageRestoreProgress> packageProgress = value => progress(new CompilerEvent {
+                state = "NuGetRestoreProgress", fileName = value.PackageId,
+                nuGetOperationId = value.OperationId, nuGetStage = value.Stage,
+                nuGetInstalledCount = value.InstalledCount, elapsedMilliseconds = value.ElapsedMilliseconds
+            });
+            PackageRestoreService.RestoreProgress += packageProgress;
+#endif
             try
             {
                 requestCompiler.Reload();
@@ -342,6 +353,9 @@ internal static class Program
             finally
             {
                 requestCompiler.OnChangeCompilerState -= handler;
+#if !NETFRAMEWORK
+                PackageRestoreService.RestoreProgress -= packageProgress;
+#endif
                 snapshotPcus?.MarkDiskCachesStale();
             }
 
@@ -578,7 +592,8 @@ internal static class Program
                                 compiler, request.payload ?? "", progress =>
                                 {
                                     transportResponse.compilerEvent = progress;
-                                    if (!request.emitEvents) return;
+                                    // Even quiet clients need NuGet heartbeats for the Controller watchdog.
+                                    if (!request.emitEvents && progress.state != "NuGetRestoreProgress") return;
                                     protocolOutput.WriteLine(SerializeTransportResponse(new WorkerTransportResponse
                                         { compilerEvent = progress }));
                                     protocolOutput.Flush();

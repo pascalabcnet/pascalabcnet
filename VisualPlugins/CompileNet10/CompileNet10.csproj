@@ -46,6 +46,7 @@
     <None Update="CompileNet10Plugin.ini" CopyToOutputDirectory="Never" />
   </ItemGroup>
   <!-- A rebuild must not overwrite the user's runtime/dotnet overrides. -->
+  <ItemGroup><Compile Include="../../NuGet/Shared/RestoreActivity.cs" Link="RestoreActivity.cs" /></ItemGroup>
   <Target Name="CreateDefaultRuntimeSettings" AfterTargets="Build">
     <Copy SourceFiles="$(MSBuildProjectDirectory)\CompileNet10Plugin.ini"
           DestinationFiles="$(TargetDir)CompileNet10Plugin.ini"

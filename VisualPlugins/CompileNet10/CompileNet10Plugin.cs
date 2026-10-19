@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Threading;
+using Timer = System.Windows.Forms.Timer;
 using System.Windows.Forms;
 
 namespace VisualPascalABCPlugins
@@ -20,6 +22,8 @@ namespace VisualPascalABCPlugins
         private string runningOutputFile;
         private string dotnetPath = "dotnet";
         private bool compiling;
+        private bool restoringLanguagePackages;
+        private CancellationTokenSource preparationCancellation;
         private IWorkbenchCommandService commandService;
         private IDisposable commandRegistration;
         private ToolStripMenuItem platformItem;
@@ -39,7 +43,11 @@ namespace VisualPascalABCPlugins
 
             this.workbench = workbench;
             Application.ApplicationExit += (sender, e) => languageDocuments?.AbortOnApplicationExit();
-            status = new Net10StatusDisplay(workbench.MainForm);
+            status = new Net10StatusDisplay(workbench.MainForm,
+                key => PascalABCCompiler.StringResources.Get("VP_VEC_" + key));
+            status.SetPackageRestoreRequired(() => platformItem?.Checked == true &&
+                workbench.UserOptions.AllowCodeCompletion && languageDocuments?.NeedsPackageRestore(
+                    workbench.ServiceContainer.DocumentService.CurrentCodeFileDocument) == true, RestoreLanguagePackages);
             compileItem = new PluginGUIItem(
                 "Compile10",
                 "Скомпилировать текущий текст под .NET 10",
@@ -130,7 +138,7 @@ namespace VisualPascalABCPlugins
             programMenu.DropDownItems.Add(publishItem);
             programMenu.DropDownOpening += (sender, e) =>
             {
-                bool available = !compiling && runner == null &&
+                bool available = !compiling && !restoringLanguagePackages && runner == null &&
                     !workbench.ServiceContainer.RunService.IsRun() && !workbench.DebuggerManager.IsRunning;
                 platformItem.Enabled = available;
                 publishItem.Enabled = available && platformItem.Checked;
@@ -147,8 +155,19 @@ namespace VisualPascalABCPlugins
                 {
                     var settings = Net10RuntimeSettings.Load(AppDomain.CurrentDomain.BaseDirectory);
                     return new Net10LanguageClient(settings.RuntimeDirectory, settings.DotnetPath,
-                        PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO);
+                        PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO, manualNuGetRestore: true);
                 }, ShowLanguageStatus);
+                languageDocuments.RestoreProgressChanged += value =>
+                {
+                    var form = workbench.MainForm;
+                    if (form.IsDisposed || form.Disposing) return;
+                    try { form.BeginInvoke(new Action(() =>
+                    {
+                        if (platformItem.Checked && workbench.UserOptions.AllowCodeCompletion)
+                            status.ShowRestoreProgress("language", value, CancelLanguageRestore);
+                    })); }
+                    catch (InvalidOperationException) { }
+                };
                 languageCompletion = new Net10Completion(workbench.MainForm, documentEvents, languageDocuments,
                     () => platformItem.Checked && workbench.UserOptions.AllowCodeCompletion && workbench.UserOptions.CodeCompletionDot);
                 languageHover = new Net10Hover(workbench.MainForm, documentEvents, languageDocuments,
@@ -170,7 +189,10 @@ namespace VisualPascalABCPlugins
         {
             bool selected = platformItem?.Checked == true;
             bool enabled = selected && workbench.UserOptions.AllowCodeCompletion;
+            status.SetLanguageRestoreVisible(enabled && runner == null &&
+                !workbench.ServiceContainer.RunService.IsRun() && !workbench.DebuggerManager.IsRunning);
             languageDocuments?.SetActive(enabled);
+            if (!enabled) status.ClearRestores("language");
             languageCompletion?.SetActive(enabled && workbench.UserOptions.CodeCompletionDot);
             languageHover?.SetActive(enabled && workbench.UserOptions.CodeCompletionHint);
             languageSignature?.SetActive(enabled && workbench.UserOptions.CodeCompletionParams);
@@ -212,10 +234,59 @@ namespace VisualPascalABCPlugins
                 form.BeginInvoke(new Action(() =>
                 {
                     if (platformItem?.Checked == true && workbench.UserOptions.AllowCodeCompletion)
+                    {
+                        if (text.StartsWith("LSP: ошибка", StringComparison.Ordinal) ||
+                            text.StartsWith("LSP: связь потеряна", StringComparison.Ordinal))
+                            status.ClearRestores("language");
                         status.ShowLanguageStatus(text);
+                    }
                 }));
             }
             catch (InvalidOperationException) { }
+        }
+
+        private async void CancelLanguageRestore()
+        {
+            try { if (languageDocuments != null) await languageDocuments.CancelPackageRestoreAsync(); }
+            catch (Exception error) { ShowLanguageStatus("LSP: ошибка — " + error.Message); }
+        }
+
+        private async void RestoreLanguagePackages()
+        {
+            if (restoringLanguagePackages || compiling || runner != null || languageDocuments == null) return;
+            var document = workbench.ServiceContainer.DocumentService.CurrentCodeFileDocument;
+            if (document == null || !languageDocuments.NeedsPackageRestore(document)) return;
+            restoringLanguagePackages = true;
+            status.SetManualRestoreActive(true);
+            SetEnabled(false);
+            try
+            {
+                var result = await languageDocuments.RestorePackagesAsync(document) as System.Collections.Generic.IDictionary<string, object>;
+                bool success = result != null && (result.TryGetValue("success", out var value) || result.TryGetValue("Success", out value)) &&
+                    value is bool restored && restored;
+                status.ClearRestores("language");
+                string detail = result != null && (result.TryGetValue("message", out var message) || result.TryGetValue("Message", out message))
+                    ? message as string : null;
+                status.Start(success ? PascalABCCompiler.StringResources.Get("VP_VEC_NUGET_RESTORED") :
+                    string.Format(PascalABCCompiler.StringResources.Get("VP_VEC_NUGET_RESTORE_FAILED{0}"), detail ?? ""));
+            }
+            catch (OperationCanceledException)
+            {
+                status.ClearRestores("language");
+                status.Start(PascalABCCompiler.StringResources.Get("VP_VEC_NUGET_RESTORE_CANCELLED"));
+            }
+            catch (Exception error)
+            {
+                status.ClearRestores("language");
+                status.Start(string.Format(PascalABCCompiler.StringResources.Get("VP_VEC_NUGET_RESTORE_FAILED{0}"), error.Message));
+            }
+            finally
+            {
+                restoringLanguagePackages = false;
+                status.SetManualRestoreActive(false);
+                SetEnabled(true);
+                UpdateLanguageActivity();
+            }
         }
 
         public bool TryExecute(VisualEnvironmentCompilerAction action, object context)
@@ -260,7 +331,7 @@ namespace VisualPascalABCPlugins
         private async void Execute(bool run, bool rebuild = false, bool publish = false,
             bool redirectConsoleIO = true)
         {
-            if (compiling) return;
+            if (compiling || restoringLanguagePackages) return;
             IDisposable preparation = null;
             string cleanupSource = null, cleanupOutput = null;
             string cleanupOutputRoot = null;
@@ -296,6 +367,8 @@ namespace VisualPascalABCPlugins
                 if (!standalone) workbench.CompilerConsoleWindow.ClearConsole();
                 if (client == null) client = CreateClient();
                 compiling = true;
+                preparationCancellation = new CancellationTokenSource();
+                status.SetCompilationActive(true);
                 SetEnabled(false);
                 workbench.ErrorsListWindow.ClearErrorList();
                 var display = new Net10CompilerDisplay(key => PascalABCCompiler.StringResources.Get("VP_VEC_" + key));
@@ -306,7 +379,8 @@ namespace VisualPascalABCPlugins
                     libraryOutputDirectory: outputRoot ?? Path.GetDirectoryName(fileName),
                     debug: !publish && workbench.ServiceContainer.BuildService.CompilerOptions.Debug,
                     publish: publish,
-                    language: PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO);
+                    language: PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO,
+                    cancellation: preparationCancellation.Token);
                 if (run && response.success)
                 {
                     var target = Net10EditorDocument.ResolveRunTarget(document, response.outputFile,
@@ -327,11 +401,14 @@ namespace VisualPascalABCPlugins
                             value => DisplayCompilerEventAsync(display, value), rebuild,
                             libraryOutputDirectory: outputRoot ?? Path.GetDirectoryName(fileName),
                             debug: workbench.ServiceContainer.BuildService.CompilerOptions.Debug,
-                            language: PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO);
+                            language: PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO,
+                            cancellation: preparationCancellation.Token);
                     }
                 }
                 if (response.success)
                 {
+                    if (languageDocuments?.NeedsPackageRestore(document) == true)
+                        await languageDocuments.RefreshPackagesAsync(document);
                     ShowDiagnostics(response, fileName, run);
                     if (publish)
                     {
@@ -408,6 +485,11 @@ namespace VisualPascalABCPlugins
                     ShowDiagnostics(response, fileName, run);
                 }
             }
+            catch (OperationCanceledException) when (preparationCancellation?.IsCancellationRequested == true)
+            {
+                status.ClearRestores("compiler");
+                status.Update(PascalABCCompiler.StringResources.Get("VP_VEC_NUGET_CANCELLED"));
+            }
             catch (Exception error)
             {
                 status.Update("Ошибка .NET 10: " + error.Message);
@@ -415,6 +497,10 @@ namespace VisualPascalABCPlugins
             }
             finally
             {
+                status.ClearRestores("compiler");
+                status.SetCompilationActive(false);
+                preparationCancellation?.Dispose();
+                preparationCancellation = null;
                 // Process/session handles are disposed by now. Keep commands disabled until cleanup finishes.
                 if (cleanupOutput != null && deleteExe && deletePdb)
                     await System.Threading.Tasks.Task.Run(() =>
@@ -446,7 +532,16 @@ namespace VisualPascalABCPlugins
                 {
                     try
                     {
-                        if (!form.IsDisposed) display.Handle(value, WriteMessage, status.Update);
+                        if (!form.IsDisposed)
+                        {
+                            if (value.state == "NuGetRestoreProgress")
+                                status.ShowRestoreProgress("compiler", new Net10RestoreProgress {
+                                    operationId = value.nuGetOperationId, stage = value.nuGetStage,
+                                    packageId = value.fileName, installedCount = value.nuGetInstalledCount,
+                                    elapsedMilliseconds = (long)value.elapsedMilliseconds
+                                }, () => preparationCancellation?.Cancel());
+                            display.Handle(value, WriteMessage, status.Update);
+                        }
                         completed.TrySetResult(true);
                     }
                     catch (Exception error) { completed.TrySetException(error); }

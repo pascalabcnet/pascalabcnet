@@ -40,6 +40,16 @@ STATE_NUGETPACKAGEINSTALLED{0}=Downloaded NuGet package: {0}
 
 STATETEXT_BEGINCOMPILEFILE{0}=Compiling {0}...
 STATETEXT_NUGETRESTORING{0}=Checking NuGet packages: {0}...
+NUGET_RESOLVING{0}=NuGet: resolving dependencies… · {0} s
+NUGET_INSTALLED{0}{1}{2}=NuGet: {2} s · installed: {0} · {1}
+NUGET_CANCEL=Cancel
+NUGET_RESTORE_PACKAGES=Restore packages
+NUGET_RESTORE_PACKAGES_HINT=Download this program's dependencies for IntelliSense
+NUGET_RESTORED=Packages restored
+NUGET_RESTORE_CANCELLED=Package restore cancelled
+NUGET_RESTORE_FAILED{0}=Package restore failed: {0}
+NUGET_CANCELLING=NuGet: cancelling…
+NUGET_CANCELLED=NuGet preparation cancelled. Program was not started.
 STATETEXT_CODEGENERATION{0}=Code generation {0}...
 STATETEXT_{0}_ERROS={0} errors
 STATETEXT_COMPILATION_SUCCESS_{0}LINES=Compilation is completed successfully ({0} lines)

@@ -13,6 +13,12 @@ internal static partial class Program
 {
     private sealed class FakeLanguageClient : INet10LanguageClient
     {
+        public event Action<Net10PackageRestoreRequired> PackageRestoreRequiredChanged;
+        internal void RequirePackages(string uri, bool required) =>
+            PackageRestoreRequiredChanged?.Invoke(new Net10PackageRestoreRequired { uri = uri, required = required });
+        public event Action<Net10RestoreProgress> RestoreProgressChanged { add { } remove { } }
+        public bool IsRestoringPackages => false;
+        public Task CancelPackageRestoreAsync() => Task.CompletedTask;
         public readonly ConcurrentQueue<Tuple<string, Dictionary<string, object>>> Messages =
             new ConcurrentQueue<Tuple<string, Dictionary<string, object>>>();
         public int Starts, Stops;
@@ -41,6 +47,100 @@ internal static partial class Program
         public void Dispose() { Disposed = true; IsConnected = false; }
     }
 
+    private static void CheckManualPackageRequests()
+    {
+        using (var document = new EditorDocument { FileName = Path.Combine(Path.GetTempPath(), "Manual packages.pas") })
+        {
+            document.TextEditor.Document.TextContent = "begin end.";
+            var open = new List<ICodeFileDocument> { document };
+            var events = new WorkbenchDocumentEventSource(() => open);
+            var fake = new FakeLanguageClient();
+            var sync = new Net10LanguageDocuments(events, () => fake, _ => { });
+            try
+            {
+                sync.SetActive(true);
+                sync.WhenIdleAsync().GetAwaiter().GetResult();
+                string uri = new Uri(document.FileName).AbsoluteUri;
+                fake.RequirePackages(uri, true);
+                Check(sync.NeedsPackageRestore(document), "server notification enables the action for the matching editor");
+                CheckRestoreButtonTransitions(sync, fake, document);
+                fake.RequirePackages(uri, true);
+                sync.RestorePackagesAsync(document).GetAwaiter().GetResult();
+                var request = fake.Messages.Last();
+                Check(request.Item1 == "pascalabc/restoreNuGetPackages" && (string)request.Item2["uri"] == uri &&
+                    !request.Item2.ContainsKey("textDocument") && !request.Item2.ContainsKey("position"),
+                    "IDE button sends the custom restore request with the server's exact parameter shape");
+                sync.RefreshPackagesAsync(document).GetAwaiter().GetResult();
+                request = fake.Messages.Last();
+                Check(request.Item1 == "pascalabc/refreshNuGetPackages" && (string)request.Item2["uri"] == uri,
+                    "post-compilation refresh uses the same editor's URI without permitting downloads");
+                fake.RequirePackages(uri, false);
+                Check(!sync.NeedsPackageRestore(document), "successful preparation removes the action for this editor");
+                fake.RequirePackages(uri, true);
+                open.Clear(); events.Closed(document); sync.WhenIdleAsync().GetAwaiter().GetResult();
+                Check(!sync.NeedsPackageRestore(document), "closing a document clears its pending action");
+            }
+            finally { sync.ShutdownAsync().GetAwaiter().GetResult(); }
+        }
+    }
+
+    private static void CheckRestoreButtonTransitions(Net10LanguageDocuments sync, FakeLanguageClient client, EditorDocument document)
+    {
+        using (var form = new System.Windows.Forms.Form { Width = 850 })
+        using (var strip = new System.Windows.Forms.StatusStrip { Name = "statusStrip1" })
+        {
+            var label = new System.Windows.Forms.ToolStripStatusLabel {
+                Name = "toolStripStatusLabel5", Text = "Ready", Spring = true };
+            strip.Items.Add(label); form.Controls.Add(strip);
+            using (var status = new Net10StatusDisplay(form, ProgressResource))
+            {
+                ICodeFileDocument selected = document;
+                string uri = new Uri(document.FileName).AbsoluteUri;
+                status.SetPackageRestoreRequired(() => sync.NeedsPackageRestore(selected), null);
+                var button = (System.Windows.Forms.ToolStripButton)strip.Items["Net10NuGetRestore"];
+                Check(button.Available, "restore action starts visible for an editor with missing packages");
+                int appearances = 0;
+                button.AvailableChanged += (sender, e) => { if (button.Available) appearances++; };
+
+                status.SetCompilationActive(true);
+                // Real server notification reaches the adapter while compilation
+                // still owns the UI; the 500ms language timer has not run again.
+                client.RequirePackages(uri, false);
+                status.ClearRestores("compiler");
+                status.SetCompilationActive(false);
+                Check(!button.Available && appearances == 0,
+                    "ending compilation cannot briefly resurrect the pre-compilation restore action");
+                for (int i = 0; i < 3; i++) status.SetLanguageRestoreVisible(true);
+                Check(!button.Available && appearances == 0 && label.Text == "Ready",
+                    "subsequent language timer ticks keep the action hidden without changing status text");
+
+                client.RequirePackages(uri, true);
+                status.SetLanguageRestoreVisible(true);
+                Check(button.Available && appearances == 1,
+                    "genuinely missing packages still offer restoration again");
+                status.SetCompilationActive(true);
+                status.SetCompilationActive(false);
+                Check(button.Available && appearances == 2,
+                    "failed compilation with packages still missing correctly restores the action");
+
+                status.SetManualRestoreActive(true);
+                client.RequirePackages(uri, false);
+                int before = appearances;
+                status.ClearRestores("language");
+                status.SetManualRestoreActive(false);
+                Check(!button.Available && appearances == before,
+                    "manual restore completion also never flashes its obsolete action");
+
+                client.RequirePackages(uri, true);
+                selected = null;
+                status.SetLanguageRestoreVisible(true);
+                Check(!button.Available && appearances == before,
+                    "a late notification for a different editor cannot show its restore action");
+                client.RequirePackages(uri, false);
+            }
+        }
+    }
+
     private sealed class FragmentedStream : MemoryStream
     {
         public FragmentedStream(byte[] data) : base(data) { }
@@ -50,6 +150,10 @@ internal static partial class Program
 
     private sealed class StartingLanguageClient : INet10LanguageClient
     {
+        public event Action<Net10PackageRestoreRequired> PackageRestoreRequiredChanged { add { } remove { } }
+        public event Action<Net10RestoreProgress> RestoreProgressChanged { add { } remove { } }
+        public bool IsRestoringPackages => false;
+        public Task CancelPackageRestoreAsync() => Task.CompletedTask;
         public readonly TaskCompletionSource<bool> Starting = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TaskCompletionSource<bool> release = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         public bool IsConnected { get; private set; } = true;

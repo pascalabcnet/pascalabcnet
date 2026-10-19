@@ -92,7 +92,17 @@ namespace PascalABCCompiler.SystemLibrary
         //\ssyy
 
 		private static SymbolTable.TreeConverterSymbolTable _symtab;
+#if PABCNET_MODERN
+        // Initialization writes the permanent base; all later registration is
+        // local to the current reference generation and cannot overwrite it.
+        private static readonly Dictionary<SemanticTree.basic_function_type, basic_function_node> permanentOperators =
+            new Dictionary<SemanticTree.basic_function_type, basic_function_node>();
+        private static readonly Dictionary<SemanticTree.basic_function_type, basic_function_node> generationOperators =
+            new Dictionary<SemanticTree.basic_function_type, basic_function_node>();
+        private static bool initializingOperators = true;
+#else
         private static System.Collections.Generic.Dictionary<SemanticTree.basic_function_type, basic_function_node> ht = new System.Collections.Generic.Dictionary<SemanticTree.basic_function_type, basic_function_node>();
+#endif
 
         private static HashSet<compiled_type_node> writable_in_typed_files_types = new HashSet<compiled_type_node>();
 
@@ -2276,26 +2286,32 @@ namespace PascalABCCompiler.SystemLibrary
         }
 
 #if PABCNET_MODERN
-        // Preserve permanent system operators and remove only entries whose nodes are
-        // recreated for each external reference type.
+        // Discard the whole generation, independent of operator names, types or
+        // the implementation that registered them. The permanent base is intact.
         internal static void ResetDynamicReferenceTypeOperators()
         {
-            var replacement = new Dictionary<SemanticTree.basic_function_type, basic_function_node>(ht);
-            replacement.Remove(SemanticTree.basic_function_type.objassign);
-            replacement.Remove(SemanticTree.basic_function_type.objeq);
-            replacement.Remove(SemanticTree.basic_function_type.objnoteq);
-            ht = replacement;
+            generationOperators.Clear();
         }
+
 #endif
 
         public static basic_function_node find_operator(SemanticTree.basic_function_type bft)
         {
+#if PABCNET_MODERN
+            basic_function_node function;
+            return generationOperators.TryGetValue(bft, out function) ? function : permanentOperators[bft];
+#else
             return ht[bft];
+#endif
         }
 
         private static void add_stand_type(SemanticTree.basic_function_type bft, basic_function_node bfn)
         {
+#if PABCNET_MODERN
+            (initializingOperators ? permanentOperators : generationOperators)[bft] = bfn;
+#else
             ht[bft] = bfn;
+#endif
         }
 
         private static void initialize()
@@ -2315,6 +2331,9 @@ namespace PascalABCCompiler.SystemLibrary
             //TODO: Запихнуть этот вызов куда-нибудь в другое место. В принципе должен быть класс, характеризующий язык, в котором делаются все такие вызовы.
             InitSystemLib(System.StringComparer.OrdinalIgnoreCase);
             initialize();
+#if PABCNET_MODERN
+            initializingOperators = false;
+#endif
         }
 
 		public static compiled_type_node attribute_type

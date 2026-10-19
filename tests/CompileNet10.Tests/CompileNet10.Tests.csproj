@@ -6,6 +6,7 @@
     <IdeReferenceDirectory Condition="'$(IdeReferenceDirectory)' == ''">$(MSBuildProjectDirectory)\..\..\bin</IdeReferenceDirectory>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../NuGet/Shared/RestoreActivity.cs" Link="RestoreActivity.cs" />
     <None Update="Fixtures\EditorProgram.pas;Fixtures\EditorUnit.pas" CopyToOutputDirectory="PreserveNewest" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10ControllerClient.cs" Link="Net10ControllerClient.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10Diagnostics.cs" Link="Net10Diagnostics.cs" />
@@ -17,6 +18,7 @@
     <Compile Include="../../VisualPlugins/CompileNet10/Net10EditorDocument.cs" Link="Net10EditorDocument.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10StatusDisplay.cs" Link="Net10StatusDisplay.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10LanguageClient.cs" Link="Net10LanguageClient.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10RestoreProgress.cs" Link="Net10RestoreProgress.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10LanguageDocuments.cs" Link="Net10LanguageDocuments.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10Completion.cs" Link="Net10Completion.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10Hover.cs" Link="Net10Hover.cs" />
@@ -33,5 +35,6 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.IO.Compression" />
   </ItemGroup>
 </Project>

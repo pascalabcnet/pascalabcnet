@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using PascalABCCompiler.NetHelper;
 using PascalABCCompiler.TreeRealization;
@@ -99,22 +100,42 @@ namespace PascalABCCompiler.TreeConverter
         }
 
 #if PABCNET_MODERN
+        internal CompilerConversionCacheState ConversionCaches { get; private set; } =
+            new CompilerConversionCacheState();
+
+        internal void ResetConversionCaches()
+        {
+            ConversionCaches = new CompilerConversionCacheState();
+        }
+
         internal void RemoveAssembly(Assembly assembly)
         {
+            // Also keep standalone per-assembly invalidation safe. During a
+            // generation reload the whole conversion state is already replaced.
+            if (ConversionCaches.HasEntries)
+                ResetConversionCaches();
+
             RemoveWhere(Namespaces, pair => TypeReferencesAssembly(pair.Value, assembly));
             RemoveWhere(Types, pair => ObjectReferencesAssembly(pair.Value, assembly));
             RemoveWhere(TypeSearch, pair => FoundInfoReferencesAssembly(pair.Value, assembly));
             RemoveWhere(CompiledPascalTypes, pair => ObjectReferencesAssembly(pair.Value, assembly));
 
-            RemoveWhere(Members, pair => TypeReferencesAssembly(pair.Key, assembly));
+            // A framework key can contain extension methods from a collectible
+            // assembly (e.g. Newtonsoft.Json's AsJEnumerable on IEnumerable<T>).
+            // Drop the whole member table so it is rebuilt without stale extensions.
+            RemoveWhere(Members, pair => TypeReferencesAssembly(pair.Key, assembly) ||
+                pair.Value.Values.Any(list => list.Exists(member => MemberReferencesAssembly(member, assembly))));
             RemoveWhere(PropertyNodes, pair => MemberReferencesAssembly(pair.Key, assembly));
             RemoveWhere(FieldNodes, pair => MemberReferencesAssembly(pair.Key, assembly));
             RemoveWhere(ConstructorNodes, pair => MemberReferencesAssembly(pair.Key, assembly));
 
             TypeHandles.Remove(assembly);
-            RemoveWhere(MethodHandles, pair => TypeReferencesAssembly(pair.Key, assembly));
-            RemoveWhere(ConstructorHandles, pair => TypeReferencesAssembly(pair.Key, assembly));
-            RemoveWhere(FieldHandles, pair => TypeReferencesAssembly(pair.Key, assembly));
+            RemoveWhere(MethodHandles, pair => TypeReferencesAssembly(pair.Key, assembly) ||
+                pair.Value.Values.Any(member => MemberReferencesAssembly(member, assembly)));
+            RemoveWhere(ConstructorHandles, pair => TypeReferencesAssembly(pair.Key, assembly) ||
+                pair.Value.Values.Any(member => MemberReferencesAssembly(member, assembly)));
+            RemoveWhere(FieldHandles, pair => TypeReferencesAssembly(pair.Key, assembly) ||
+                pair.Value.Values.Any(member => MemberReferencesAssembly(member, assembly)));
             Assemblies.Remove(assembly);
             RemoveWhere(SpecialTypes, pair => TypeReferencesAssembly(pair.Value, assembly));
             NamespaceTypes.Clear();
@@ -140,7 +161,8 @@ namespace PascalABCCompiler.TreeConverter
             RemoveWhere(AssembliesByName, pair => pair.Value == assembly);
             AssemblyFileDates.Remove(assembly);
             AssemblyFullPaths.Remove(assembly);
-            EntryTypes.Remove(assembly);
+            RemoveWhere(EntryTypes, pair => pair.Key == assembly ||
+                pair.Value.Exists(type => TypeReferencesAssembly(type, assembly)));
 
             RemoveWhere(CompiledTypes, pair => TypeReferencesAssembly(pair.Key, assembly));
             RemoveWhere(CompiledMethods, pair => MemberReferencesAssembly(pair.Key, assembly));
@@ -178,7 +200,11 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (member == null)
                 return false;
-            if (member.Module.Assembly == assembly || TypeReferencesAssembly(member.DeclaringType, assembly))
+            if (member.Module.Assembly == assembly || TypeReferencesAssembly(member.DeclaringType, assembly) ||
+                TypeReferencesAssembly(member.ReflectedType, assembly))
+                return true;
+
+            if (member is Type type && TypeReferencesAssembly(type, assembly))
                 return true;
 
             MethodInfo method = member as MethodInfo;

@@ -2940,10 +2940,31 @@ namespace PascalABCCompiler.TreeRealization
 
         private PascalABCCompiler.SemanticTree.type_special_kind _type_special_kind = PascalABCCompiler.SemanticTree.type_special_kind.not_set_kind;
 
+#if PABCNET_MODERN
+        // Resolve the current state on every access. Never retain a reference
+        // to a previous reference set in this (possibly permanent) type node.
+        private Dictionary<type_node, function_node> _implicit_convertions_to
+        {
+            get { return CompilerReflectionCaches.Current.ConversionCaches.ForType(this).ImplicitTo; }
+        }
+        private Dictionary<type_node, function_node> _implicit_convertions_from
+        {
+            get { return CompilerReflectionCaches.Current.ConversionCaches.ForType(this).ImplicitFrom; }
+        }
+        private Dictionary<type_node, function_node> _explicit_convertions_to
+        {
+            get { return CompilerReflectionCaches.Current.ConversionCaches.ForType(this).ExplicitTo; }
+        }
+        private Dictionary<type_node, function_node> _explicit_convertions_from
+        {
+            get { return CompilerReflectionCaches.Current.ConversionCaches.ForType(this).ExplicitFrom; }
+        }
+#else
         private Dictionary<type_node, function_node> _implicit_convertions_to = new Dictionary<type_node, function_node>();
         private Dictionary<type_node, function_node> _implicit_convertions_from = new Dictionary<type_node, function_node>();
         private Dictionary<type_node, function_node> _explicit_convertions_from = new Dictionary<type_node, function_node>();
         private Dictionary<type_node, function_node> _explicit_convertions_to = new Dictionary<type_node, function_node>();
+#endif
         private bool enum_operations_inited;
 
         public override bool IsSealed

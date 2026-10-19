@@ -63,6 +63,45 @@ public sealed class PascalLanguageService : IPascalLanguageService
     }
 
     public DocumentStorage Documents { get; } = new();
+    public bool ManualPackageRestore { get; set; }
+    private bool explicitPackageRestore;
+    private readonly HashSet<string> packageRestoreRequired = new(StringComparer.Ordinal);
+    public event Action<string, bool>? PackageRestoreRequiredChanged;
+
+    public Task<PackagePreparationResult> RestoreDocumentPackagesAsync(string documentId, CancellationToken token) =>
+        PrepareDocumentPackagesAsync(documentId, true, token);
+
+    public Task<PackagePreparationResult> PrepareDocumentPackagesAsync(string documentId, bool download, CancellationToken token) =>
+        ExecuteSerializedAsync(() =>
+        {
+            if (!Documents.TryGet(documentId, out var document) || document is null)
+                return new PackagePreparationResult(false, null);
+            explicitPackageRestore = download;
+            try
+            {
+                var converter = CompileAndStore(document);
+                // The click grants downloads to this graph, not to other open
+                // programs that may be reanalysed as dependents afterwards.
+                explicitPackageRestore = false;
+                _controller.RestorePackagesAutomatically = !ManualPackageRestore;
+                RecompileOpenDependents(document);
+                var error = converter.LastConversionError;
+                return new PackagePreparationResult(!packageRestoreRequired.Contains(documentId) &&
+                    error is not PascalABCCompiler.Errors.PackageRestoreFailed,
+                    error is PascalABCCompiler.Errors.PackageRestoreFailed ? error.ToString() : null);
+            }
+            finally
+            {
+                explicitPackageRestore = false;
+                _controller.RestorePackagesAutomatically = !ManualPackageRestore;
+            }
+        }, token);
+
+    private void SetPackageRestoreRequired(string id, bool required)
+    {
+        bool changed = required ? packageRestoreRequired.Add(id) : packageRestoreRequired.Remove(id);
+        if (changed) PackageRestoreRequiredChanged?.Invoke(id, required);
+    }
 
     public Task<DocumentAnalysis> OpenOrUpdateDocumentAsync(
         string documentId,
@@ -99,6 +138,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
             CancelPendingAnalysis(documentId);
             Documents.TryGet(documentId, out var document);
             _states.Remove(documentId);
+            SetPackageRestoreRequired(documentId, false);
             var removed = Documents.Remove(documentId);
 
             if (document is not null)
@@ -520,6 +560,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
         try
         {
             CodeCompletionBootstrap.Initialize(_documentationLanguageIso);
+            _controller.RestorePackagesAutomatically = !ManualPackageRestore || explicitPackageRestore;
             var compiler = CodeCompletionController.comp;
             var previousProvider = compiler.SourceFilesProvider;
             compiler.SourceFilesProvider = (file, operation) =>
@@ -585,7 +626,9 @@ public sealed class PascalLanguageService : IPascalLanguageService
                 if (chars[i] == '&' && (char.IsLetterOrDigit(chars[i - 1]) || chars[i - 1] == '>' || chars[i - 1] == ']')) chars[i] = ' ';
             analysisText = new string(chars);
         }
+        _controller.RestorePackagesAutomatically = !ManualPackageRestore || explicitPackageRestore;
         var domConverter = _controller.Compile(document.FileName, analysisText);
+        SetPackageRestoreRequired(document.DocumentId, _controller.PackageRestoreRequired);
 
         if (domConverter.is_compiled)
         {

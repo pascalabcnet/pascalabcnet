@@ -74,6 +74,9 @@ internal static class Program
         public int errorCount { get; set; }
         public int warningCount { get; set; }
         public double elapsedMilliseconds { get; set; }
+        public string? nuGetOperationId { get; set; }
+        public string? nuGetStage { get; set; }
+        public int nuGetInstalledCount { get; set; }
     }
 
     private sealed class WorkerConnection : IDisposable
@@ -285,11 +288,11 @@ internal static class Program
         Task task,
         Process worker,
         Stopwatch stopwatch,
-        TimeSpan timeout)
+        TimeSpan timeout, PascalABCNet.Protocol.RestoreActivity.Deadline? deadline = null)
     {
         while (!task.Wait(50))
         {
-            if (worker.HasExited || stopwatch.Elapsed >= timeout)
+            if (worker.HasExited || (deadline != null ? deadline.Expired : stopwatch.Elapsed >= timeout))
                 return false;
         }
         return true;
@@ -307,6 +310,8 @@ internal static class Program
                 throw new EndOfStreamException("CompilerWorker уже завершён");
 
             var stopwatch = Stopwatch.StartNew();
+            var restore = new PascalABCNet.Protocol.RestoreActivity();
+            var deadline = restore.BeginRequest((int)timeout.TotalMilliseconds);
             var writeTask = connection.Input.WriteLineAsync(SerializeJson(request));
             if (!WaitForTask(writeTask, connection.Process, stopwatch, timeout))
                 throw new TimeoutException("Тайм-аут записи запроса CompilerWorker");
@@ -316,11 +321,11 @@ internal static class Program
 
             while (true)
             {
-                // Progress must not reset or bypass the total request deadline.
-                if (stopwatch.Elapsed >= timeout)
+                // Ordinary events cannot extend the deadline. Only live NuGet work pauses it.
+                if (deadline.Expired)
                     throw new TimeoutException("Тайм-аут ответа CompilerWorker");
                 var readTask = connection.Output.ReadLineAsync();
-                if (!WaitForTask(readTask, connection.Process, stopwatch, timeout))
+                if (!WaitForTask(readTask, connection.Process, stopwatch, timeout, deadline))
                     throw new TimeoutException("Тайм-аут ответа CompilerWorker");
                 var line = readTask.GetAwaiter().GetResult();
                 if (line == null)
@@ -329,6 +334,7 @@ internal static class Program
                 var transportResponse = DeserializeWorkerResponse(line);
                 if (transportResponse.compilerEvent != null && transportResponse.response == null && transportResponse.error == null)
                 {
+                    restore.Observe(transportResponse.compilerEvent.nuGetOperationId, transportResponse.compilerEvent.nuGetStage);
                     progress?.Invoke(transportResponse.compilerEvent);
                     continue;
                 }
@@ -617,7 +623,10 @@ internal static class Program
                                         ["state"] = value.state, ["fileName"] = value.fileName,
                                         ["linesCompiled"] = value.linesCompiled, ["errorCount"] = value.errorCount,
                                         ["warningCount"] = value.warningCount,
-                                        ["elapsedMilliseconds"] = value.elapsedMilliseconds
+                                        ["elapsedMilliseconds"] = value.elapsedMilliseconds,
+                                        ["nuGetOperationId"] = value.nuGetOperationId,
+                                        ["nuGetStage"] = value.nuGetStage,
+                                        ["nuGetInstalledCount"] = value.nuGetInstalledCount
                                     });
                                 }) : null);
                             compilationCount++;

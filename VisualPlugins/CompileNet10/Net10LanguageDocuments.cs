@@ -41,6 +41,17 @@ namespace VisualPascalABCPlugins
         private volatile bool disposed;
         private bool cleanupStarted;
         private INet10LanguageClient client;
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<string, bool> packageRequests =
+            new System.Collections.Concurrent.ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        internal bool NeedsPackageRestore(ICodeFileDocument document) => document != null && !document.FromMetadata &&
+            packageRequests.ContainsKey(new Uri(Path.GetFullPath(document.FileName)).AbsoluteUri);
+        internal Task<object> RestorePackagesAsync(ICodeFileDocument document) =>
+            RequestPositionAsync(document, 0, 0, "pascalabc/restoreNuGetPackages", CancellationToken.None);
+        internal Task<object> RefreshPackagesAsync(ICodeFileDocument document) =>
+            RequestPositionAsync(document, 0, 0, "pascalabc/refreshNuGetPackages", CancellationToken.None);
+        internal event Action<Net10RestoreProgress> RestoreProgressChanged;
+        internal bool IsRestoringPackages => client?.IsRestoringPackages == true;
+        internal Task CancelPackageRestoreAsync() => client?.CancelPackageRestoreAsync() ?? Task.CompletedTask;
 
         public Net10LanguageDocuments(IWorkbenchDocumentEvents events, Func<INet10LanguageClient> createClient, Action<string> report)
         {
@@ -195,8 +206,10 @@ namespace VisualPascalABCPlugins
                         await ApplyAsync(batch).ConfigureAwait(false);
                         linked.Token.ThrowIfCancellationRequested();
                         if (!active || disposed || client == null) return null;
-                        var parameters = new Dictionary<string, object> { ["textDocument"] = new { uri } };
-                        if (method != "textDocument/documentSymbol")
+                        var parameters = method.StartsWith("pascalabc/", StringComparison.Ordinal)
+                            ? new Dictionary<string, object> { ["uri"] = uri }
+                            : new Dictionary<string, object> { ["textDocument"] = new { uri } };
+                        if (method != "textDocument/documentSymbol" && !method.StartsWith("pascalabc/", StringComparison.Ordinal))
                             parameters["position"] = new { line, character };
                         if (method == "textDocument/completion")
                             parameters["context"] = new { triggerKind = 2, triggerCharacter = "." };
@@ -244,6 +257,17 @@ namespace VisualPascalABCPlugins
                 client = createClient();
                 if (disposed) { client.Dispose(); return; }
                 var connection = client;
+                packageRequests.Clear();
+                connection.PackageRestoreRequiredChanged += value =>
+                {
+                    if (disposed || !ReferenceEquals(client, connection) || string.IsNullOrEmpty(value.uri)) return;
+                    if (value.required) packageRequests[value.uri] = true;
+                    else packageRequests.TryRemove(value.uri, out _);
+                };
+                connection.RestoreProgressChanged += value =>
+                {
+                    if (active && !disposed && ReferenceEquals(client, connection)) RestoreProgressChanged?.Invoke(value);
+                };
                 connection.ConnectionLost += error =>
                 {
                     if (active && !disposed && ReferenceEquals(client, connection))
@@ -258,6 +282,7 @@ namespace VisualPascalABCPlugins
                 if (disposed) break;
                 await client.NotifyAsync("textDocument/didClose", new { textDocument = new { uri } }).ConfigureAwait(false);
                 sent.Remove(uri);
+                packageRequests.TryRemove(uri, out _);
             }
             foreach (var snapshot in snapshots)
             {

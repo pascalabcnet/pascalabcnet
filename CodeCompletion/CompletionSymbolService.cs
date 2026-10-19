@@ -113,8 +113,8 @@ namespace CodeCompletion
             {
                 if (insidePatternWithDots)
                 {
-                    symbols = domConverter.GetName(
-                            expression, expressionText, line, column, keyword, ref dotScope)
+                    symbols = (domConverter.GetName(
+                            expression, expressionText, line, column, keyword, ref dotScope) ?? Array.Empty<SymInfo>())
                         .Where(symbol => symbol.name.StartsWith(
                             pattern,
                             languageCaseSensitive

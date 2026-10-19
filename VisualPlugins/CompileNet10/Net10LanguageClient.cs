@@ -15,6 +15,10 @@ namespace VisualPascalABCPlugins
     {
         bool IsConnected { get; }
         event Action<Exception> ConnectionLost;
+        event Action<Net10RestoreProgress> RestoreProgressChanged;
+        event Action<Net10PackageRestoreRequired> PackageRestoreRequiredChanged;
+        bool IsRestoringPackages { get; }
+        Task CancelPackageRestoreAsync();
         Task StartAsync();
         Task NotifyAsync(string method, object parameters);
         Task<object> RequestAsync(string method, object parameters, CancellationToken cancellation = default(CancellationToken));
@@ -26,6 +30,7 @@ namespace VisualPascalABCPlugins
     {
         private const int MaximumMessageBytes = 16 * 1024 * 1024;
         private readonly string runtimeDirectory, dotnetPath, language;
+        private readonly bool manualNuGetRestore;
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private readonly SemaphoreSlim writes = new SemaphoreSlim(1, 1);
         private readonly ConcurrentDictionary<int, TaskCompletionSource<object>> pending =
@@ -38,10 +43,15 @@ namespace VisualPascalABCPlugins
         private volatile bool broken;
         public bool IsConnected => !disposed && !broken;
         public event Action<Exception> ConnectionLost;
+        public event Action<Net10RestoreProgress> RestoreProgressChanged;
+        public event Action<Net10PackageRestoreRequired> PackageRestoreRequiredChanged;
+        private readonly PascalABCNet.Protocol.RestoreActivity restore = new PascalABCNet.Protocol.RestoreActivity();
+        public bool IsRestoringPackages => restore.IsActive;
         public int ProcessId => process?.Id ?? 0;
 
-        public Net10LanguageClient(string runtimeDirectory, string dotnetPath, string language)
+        public Net10LanguageClient(string runtimeDirectory, string dotnetPath, string language, bool manualNuGetRestore = false)
         {
+            this.manualNuGetRestore = manualNuGetRestore;
             this.runtimeDirectory = Path.GetFullPath(runtimeDirectory);
             this.dotnetPath = dotnetPath;
             this.language = language == "ru" ? "ru" : "en";
@@ -76,7 +86,7 @@ namespace VisualPascalABCPlugins
             {
                 processId = Process.GetCurrentProcess().Id,
                 rootUri = new Uri(runtimeDirectory + Path.DirectorySeparatorChar).AbsoluteUri,
-                capabilities = new { }
+                capabilities = new { }, initializationOptions = new { manualNuGetRestore }
             }).ConfigureAwait(false);
             await NotifyAsync("initialized", new { }).ConfigureAwait(false);
         }
@@ -92,8 +102,14 @@ namespace VisualPascalABCPlugins
                 using (cancellation.Register(() => completion.TrySetCanceled()))
                 {
                     await SendAsync(new { jsonrpc = "2.0", id, method, @params = parameters }).ConfigureAwait(false);
-                    if (await Task.WhenAny(completion.Task, Task.Delay(10000, lifetime.Token)).ConfigureAwait(false) != completion.Task)
-                        throw new TimeoutException("LanguageServer не ответил за 10 секунд");
+                    var deadline = restore.BeginRequest(10000);
+                    while (!completion.Task.IsCompleted)
+                    {
+                        await Task.WhenAny(completion.Task, Task.Delay(250, lifetime.Token)).ConfigureAwait(false);
+                        lifetime.Token.ThrowIfCancellationRequested();
+                        if (!completion.Task.IsCompleted && deadline.Expired)
+                            throw new TimeoutException("LanguageServer не ответил за 10 секунд");
+                    }
                     return await completion.Task.ConfigureAwait(false);
                 }
             }
@@ -102,6 +118,14 @@ namespace VisualPascalABCPlugins
 
         public Task NotifyAsync(string method, object parameters) =>
             SendAsync(new { jsonrpc = "2.0", method, @params = parameters });
+
+        public async Task CancelPackageRestoreAsync()
+        {
+            if (!IsRestoringPackages) return;
+            // Do not wait for a queued completion/hover before sending cancellation.
+            foreach (var completion in pending.Values) completion.TrySetCanceled();
+            await NotifyAsync("pascalabc/cancelNuGetRestore", null).ConfigureAwait(false);
+        }
 
         private async Task SendAsync(object message)
         {
@@ -176,10 +200,30 @@ namespace VisualPascalABCPlugins
                     // Serializer instances are not shared with the writer thread.
                     var response = new JavaScriptSerializer { MaxJsonLength = MaximumMessageBytes }
                         .Deserialize<Dictionary<string, object>>(message);
+                    if (response.TryGetValue("method", out var requiredMethod) &&
+                        (string)requiredMethod == "pascalabc/nugetRestoreRequired" && response.TryGetValue("params", out var requiredPayload))
+                    {
+                        var serializer = new JavaScriptSerializer();
+                        var requiredState = serializer.Deserialize<Net10PackageRestoreRequired>(serializer.Serialize(requiredPayload));
+                        try { PackageRestoreRequiredChanged?.Invoke(requiredState); }
+                        catch (Exception error) { Trace.TraceWarning("NuGet state subscriber: {0}", error.Message); }
+                        continue;
+                    }
+                    if (response.TryGetValue("method", out var method) &&
+                        (string)method == "pascalabc/nugetRestoreProgress" && response.TryGetValue("params", out var payload))
+                    {
+                        var serializer = new JavaScriptSerializer();
+                        var progress = serializer.Deserialize<Net10RestoreProgress>(serializer.Serialize(payload));
+                        restore.Observe(progress.operationId, progress.stage);
+                        try { RestoreProgressChanged?.Invoke(progress); }
+                        catch (Exception error) { Trace.TraceWarning("NuGet progress subscriber: {0}", error.Message); }
+                        continue;
+                    }
                     if (!response.TryGetValue("id", out object value) || value == null) continue;
                     int id = Convert.ToInt32(value, CultureInfo.InvariantCulture);
                     if (!pending.TryRemove(id, out var completion)) continue;
-                    if (response.ContainsKey("error")) completion.TrySetException(new IOException("Ошибка запроса LanguageServer"));
+                    if (response.ContainsKey("error")) completion.TrySetException(new IOException("Ошибка запроса LanguageServer",
+                        new IOException(new JavaScriptSerializer().Serialize(response["error"]))));
                     else { response.TryGetValue("result", out var result); completion.TrySetResult(result); }
                 }
                 failure = new ObjectDisposedException(nameof(Net10LanguageClient));

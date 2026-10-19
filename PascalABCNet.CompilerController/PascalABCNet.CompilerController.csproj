@@ -20,4 +20,5 @@
                       PrivateAssets="all" />
     <Reference Include="System.Web.Extensions" />
   </ItemGroup>
+  <ItemGroup><Compile Include="../NuGet/Shared/RestoreActivity.cs" Link="RestoreActivity.cs" /></ItemGroup>
 </Project>

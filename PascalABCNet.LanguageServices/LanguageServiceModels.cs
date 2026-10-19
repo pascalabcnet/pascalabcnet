@@ -1,5 +1,7 @@
 namespace PascalABCNet.LanguageServices;
 
+public sealed record PackagePreparationResult(bool Success, string? Message);
+
 public sealed record DocumentAnalysis(
     string DocumentId,
     int? Version,

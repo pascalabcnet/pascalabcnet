@@ -40,6 +40,9 @@ namespace VisualPascalABCPlugins
         public int errorCount { get; set; }
         public int warningCount { get; set; }
         public double elapsedMilliseconds { get; set; }
+        public string nuGetOperationId { get; set; }
+        public string nuGetStage { get; set; }
+        public int nuGetInstalledCount { get; set; }
     }
 
     public sealed class Net10SourceFile
@@ -71,9 +74,10 @@ namespace VisualPascalABCPlugins
         public async Task<Net10CompileResponse> CompileAsync(string fileName, string outputDirectory,
             string runtimeModule = null, List<Net10SourceFile> sourceFiles = null,
             Func<Net10CompilerEvent, Task> progress = null, bool rebuild = false,
-            string libraryOutputDirectory = null, bool debug = false, bool publish = false, string language = null)
+            string libraryOutputDirectory = null, bool debug = false, bool publish = false, string language = null,
+            CancellationToken cancellation = default(CancellationToken))
         {
-            await requests.WaitAsync().ConfigureAwait(false);
+            await requests.WaitAsync(cancellation).ConfigureAwait(false);
             try
             {
                 if (disposed) throw new ObjectDisposedException(nameof(Net10ControllerClient));
@@ -116,14 +120,22 @@ namespace VisualPascalABCPlugins
                 var ping = await SendAsync("ping", null, null, 20000).ConfigureAwait(false);
                 if (!ping.success || ping.result != "PONG") throw new IOException("Контроллер не ответил PONG.");
                 TrackWorker(ping.workerPid);
-                var response = await SendAsync("compile", fileName, outputDirectory, 120000, runtimeModule, sourceFiles,
-                    progress, rebuild, libraryOutputDirectory, debug, publish, language).ConfigureAwait(false);
+                cancellation.ThrowIfCancellationRequested();
+                Net10CompileResponse response;
+                var ownedWorker = worker;
+                var ownedController = controller;
+                // Stop the supervisor first so it cannot restart the cancelled Worker.
+                using (cancellation.Register(() => { KillOwned(ownedController); KillOwned(ownedWorker); }))
+                    response = await SendAsync("compile", fileName, outputDirectory, 120000, runtimeModule, sourceFiles,
+                        progress, rebuild, libraryOutputDirectory, debug, publish, language).ConfigureAwait(false);
+                cancellation.ThrowIfCancellationRequested();
                 TrackWorker(response.workerPid);
                 return response;
             }
             catch (Exception error)
             {
                 Stop();
+                cancellation.ThrowIfCancellationRequested();
                 string details;
                 lock (log) details = log.ToString();
                 throw new IOException(error.Message + (details.Length == 0 ? "" : "\n" + details), error);
@@ -143,7 +155,7 @@ namespace VisualPascalABCPlugins
             if (libraryOutputDirectory != null) request.Add("libraryOutputDirectory", libraryOutputDirectory);
             if (runtimeModule != null) request.Add("runtimeModule", runtimeModule);
             if (sourceFiles != null) request.Add("sourceFiles", sourceFiles);
-            if (progress != null) request.Add("emitEvents", true);
+            if (command == "compile") request.Add("emitEvents", true);
             if (rebuild) request.Add("rebuild", true);
             if (debug) request.Add("debug", true);
             if (publish) request.Add("publish", true);
@@ -152,14 +164,19 @@ namespace VisualPascalABCPlugins
             input.Flush();
             using (var cancellation = new CancellationTokenSource())
             {
-                Task timeout = Task.Delay(timeoutMs, cancellation.Token);
+                var restore = new PascalABCNet.Protocol.RestoreActivity();
+                var deadline = restore.BeginRequest(timeoutMs);
                 try
                 {
                     while (true)
                     {
                         Task<string> read = controller.StandardOutput.ReadLineAsync();
-                        if (await Task.WhenAny(read, timeout).ConfigureAwait(false) != read)
-                            throw new TimeoutException("Истекло время ожидания контроллера .NET 10.");
+                        while (!read.IsCompleted)
+                        {
+                            await Task.WhenAny(read, Task.Delay(100, cancellation.Token)).ConfigureAwait(false);
+                            if (!read.IsCompleted && deadline.Expired)
+                                throw new TimeoutException("Истекло время ожидания контроллера .NET 10.");
+                        }
                         string line = await read.ConfigureAwait(false);
                         if (line == null) throw new IOException("Контроллер .NET 10 завершил соединение.");
                         var notification = json.Deserialize<Net10CompilerEvent>(line);
@@ -167,9 +184,10 @@ namespace VisualPascalABCPlugins
                             throw new IOException("Некорректный ответ контроллера .NET 10.");
                         if (notification.@event != null)
                         {
-                            if (progress == null || notification.@event != "compilerState")
+                            restore.Observe(notification.nuGetOperationId, notification.nuGetStage);
+                            if (notification.@event != "compilerState")
                                 throw new IOException("Неожиданное событие контроллера .NET 10.");
-                            await progress(notification).ConfigureAwait(false);
+                            if (progress != null) await progress(notification).ConfigureAwait(false);
                             continue;
                         }
                         return json.Deserialize<Net10CompileResponse>(line);
@@ -217,6 +235,13 @@ namespace VisualPascalABCPlugins
             }
             worker?.Dispose();
             worker = null;
+        }
+
+        private static void KillOwned(Process process)
+        {
+            try { if (process != null && !process.HasExited) process.Kill(); }
+            catch (InvalidOperationException) { }
+            catch (System.ComponentModel.Win32Exception) { }
         }
 
         public void Dispose()

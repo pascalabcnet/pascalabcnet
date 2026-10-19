@@ -463,6 +463,7 @@ namespace PascalABCCompiler.NetHelper
         private static void ResetCollectibleReferenceGeneration()
         {
             Assembly[] loadedAssemblies = CollectibleReferenceManager.GetCurrentAssemblies();
+            cache.ResetConversionCaches();
             SystemLibrary.SystemLibrary.ResetDynamicReferenceTypeOperators();
             foreach (Assembly assembly in loadedAssemblies)
                 RemoveAssemblyReferences(assembly);

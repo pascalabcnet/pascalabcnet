@@ -22,6 +22,13 @@ public sealed record PackageRestoreRequest
     /// An explicit RID is currently supported only for win-x64.</summary>
     public string? RuntimeIdentifier { get; init; }
     public bool ForceRestore { get; init; }
+    /// <summary>Resolve from the local package cache only; never contact configured feeds.</summary>
+    public bool LocalPackagesOnly { get; init; }
+}
+
+public sealed class PackageRestoreRequiredException : Exception
+{
+    public PackageRestoreRequiredException() : base("Packages must be restored explicitly.") { }
 }
 
 public sealed record PackageDiagnostic(string Severity, string Code, string Message);

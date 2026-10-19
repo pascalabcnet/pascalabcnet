@@ -26,6 +26,16 @@ internal static partial class Program
         Directory.CreateDirectory(work);
         try
         {
+            if (args.Contains("--hold-restore-lock"))
+            {
+                await NuGet.Common.ConcurrencyUtilities.ExecuteWithFileLockedAsync(
+                    Path.Combine(args[1], "PascalABCNET.restore"), async _ => {
+                        Console.WriteLine("LOCKED");
+                        await Console.In.ReadLineAsync();
+                        return 0;
+                    }, CancellationToken.None);
+                return 0;
+            }
             if (args.Contains("--restore-race-child"))
             {
                 await RestoreRaceChild(args[1], args[2]);
@@ -52,6 +62,13 @@ internal static partial class Program
                 return 0;
             }
             await CheckRestore(work);
+            if (args.Contains("--manual-intellisense"))
+            {
+                await CheckManualIntelliSense(work);
+                return 0;
+            }
+            await CheckRestoreProgress(work);
+            if (args.Contains("--restore-progress")) return 0;
             await CheckRestoreConcurrency(work);
             if (args.Contains("--restore-concurrency")) return 0;
             await CheckFrameworkAssemblies(work);
@@ -78,6 +95,11 @@ internal static partial class Program
                 await CheckLightGbmNative(work);
                 return 0;
             }
+            if (args.Contains("--timeseries-mkl"))
+            {
+                await CheckTimeSeriesMkl(work);
+                return 0;
+            }
             if (args.Contains("--module-intellisense"))
             {
                 await CheckModuleIntelliSense(work);
@@ -97,6 +119,7 @@ internal static partial class Program
                 await CheckLanguageServerProtocol(work);
             await CheckDirectReferenceReload(work);
             await CheckIntelliSense(work);
+            await CheckManualIntelliSense(work);
             await CheckModuleIntelliSense(work, !args.Contains("--runtime-only-child"));
             if (args.Contains("--compiler"))
             {

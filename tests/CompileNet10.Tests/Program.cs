@@ -281,6 +281,27 @@ internal static partial class Program
     {
         try
         {
+            if (args.Length > 1 && args[0] == "--nuget-cache-removal-ml")
+            {
+                System.Threading.SynchronizationContext.SetSynchronizationContext(null);
+                await CheckMlCacheRemoval(args[1]);
+                return 0;
+            }
+            CheckRestoreDeadlines();
+            CheckRestoreStatus();
+            CheckManualPackageRequests();
+            if (args.Length > 2 && args[0] == "--manual-nuget")
+            {
+                System.Threading.SynchronizationContext.SetSynchronizationContext(null);
+                await CheckManualNuGetClient(args[1], args[2]);
+                return 0;
+            }
+            if (args.Length > 0 && args[0] == "--nuget-progress")
+            {
+                System.Threading.SynchronizationContext.SetSynchronizationContext(null);
+                if (args.Length > 2) await CheckLiveRestoreProgress(args[1], args[2]);
+                return 0;
+            }
             CheckOutputCleanup();
             if (args.Length > 0 && args[0] == "--output-cleanup")
             {
@@ -876,9 +897,12 @@ internal static partial class Program
         var packageStatuses = new List<string>();
         var packageDisplay = new Net10CompilerDisplay(key => key);
         packageDisplay.Handle(new Net10CompilerEvent { state = "NuGetRestoreStarting",
-            fileName = "NodaTime 3.2.2" }, packageMessages.Add, packageStatuses.Add);
-        Check(packageMessages.Count == 0 && packageStatuses[0].Contains("STATETEXT_NUGETRESTORING"),
-            "NuGet restore progress is visible in status without adding a cached-restore message");
+            fileName = "NodaTime 3.2.2, Microsoft.ML 5.0.0" }, packageMessages.Add, packageStatuses.Add);
+        packageDisplay.Handle(new Net10CompilerEvent { state = "NuGetRestoreProgress",
+            fileName = "NodaTime", nuGetStage = "heartbeat", elapsedMilliseconds = 7000 },
+            packageMessages.Add, packageStatuses.Add);
+        Check(packageMessages.Count == 0 && packageStatuses.Count == 0,
+            "NuGet bookkeeping never writes a package list or bypasses delayed status progress");
         packageDisplay.Handle(new Net10CompilerEvent { state = "NuGetPackagesInstalled",
             fileName = "2" }, packageMessages.Add, packageStatuses.Add);
         packageDisplay.Handle(new Net10CompilerEvent { state = "NuGetPackageInstalled",

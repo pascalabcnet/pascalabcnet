@@ -139,7 +139,38 @@ dotnet run --project tests\CompilerAssemblyReloadTest\CompilerAssemblyReloadTest
 _RunCrossTargetTests.bat net10 all
 ```
 
+## Исправление удержания контекста в IntelliSense при повторном restore
+
+Сценарий: открыть программу с ML.NET, при работающем LanguageServer убрать
+её отдельный кеш `packages`, изменить текст и повторить восстановление.
+При повторных сменах поколения проверка обнаруживала невыгруженный старый контекст.
+
+Причина установлена через `dotnet-dump` и `gcroot`, а не предположением:
+`CompilerReflectionCacheState.Members` → таблица членов системного
+`Dictionary<,>` → `Newtonsoft.Json.Linq.Extensions.AsJEnumerable` → старый
+`LoaderAllocator`. Системный ключ не принадлежит выгружаемой сборке,
+но в его таблице лежат extension-методы этой сборки.
+
+Теперь при точечной очистке проверяются также значения `Members` и кешей
+методов/конструкторов/полей по handle, а также типы в `EntryTypes`.
+Проверка члена учитывает `ReflectedType`: унаследованный метод может быть
+объявлен в `System.Object`, но отражён через пользовательский тип.
+Таблица членов с пакетными ссылками удаляется и строится заново при обращении;
+обычные системные записи, не содержащие таких ссылок, сохраняются.
+
+`VerifyPreviousGenerationWasUnloaded` не изменён и не отключён.
+Добавлен прямой тест точечной очистки с реальным `WeakReference`, который
+падает на старом коде и проходит после исправления. Автономный LSP-тест
+несколько раз убирает локальный кеш с extension-методом для `System.Object`;
+отдельный тест повторяет сценарий с Microsoft.ML.TimeSeries/Mkl.Redist 5.0.0,
+чередуя немедленный запрос подсказки и фоновый анализ после debounce.
+
+Команды и детали: `tests/CompileNet10.Tests/NuGetProgress.md`.
+
 ## Основные файлы реализации
+
+Результаты последующей проверки остальных кешей и исправление двух цепочек
+удержания пользовательского enum: [аудит значений кешей](net10-cache-value-audit.md).
 
 - `TreeConverter/NetWrappers/CollectibleReferenceManager.cs` — жизненный цикл
   выгружаемого контекста, поиск зависимостей, fingerprints и проверка identity.

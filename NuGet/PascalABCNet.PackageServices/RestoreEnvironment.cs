@@ -42,7 +42,7 @@ internal sealed record RestoreEnvironment(
                 return configuredSources.FirstOrDefault(configured => configured.IsEnabled &&
                     string.Equals(configured.Source, normalized, StringComparison.Ordinal)) ?? new PackageSource(normalized);
             }).DistinctBy(source => source.Source, StringComparer.Ordinal).ToArray();
-        if (sources.Length == 0)
+        if (sources.Length == 0 && !request.LocalPackagesOnly)
             throw new ArgumentException("No enabled NuGet package sources. Configure NuGet.Config or provide Sources.", nameof(request));
 
         string packagesDirectory = Path.GetFullPath(request.PackagesDirectory ?? SettingsUtility.GetGlobalPackagesFolder(settings));

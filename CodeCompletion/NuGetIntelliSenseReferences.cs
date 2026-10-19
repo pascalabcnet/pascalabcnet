@@ -20,9 +20,11 @@ namespace CodeCompletion
         private readonly Dictionary<string, CacheEntry> cache = new Dictionary<string, CacheEntry>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, ParsedUnit> parsed = new Dictionary<string, ParsedUnit>(StringComparer.OrdinalIgnoreCase);
         internal readonly HashSet<string> SourceFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        internal bool RestoreRequired { get; private set; }
 
-        internal IReadOnlyList<string> Resolve(compilation_unit root, Action beforeReferenceReload)
+        internal IReadOnlyList<string> Resolve(compilation_unit root, Action beforeReferenceReload, bool restoreAutomatically)
         {
+            RestoreRequired = false;
             SourceFiles.Clear();
             var batches = new List<compilation_unit>();
             var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -70,10 +72,16 @@ namespace CodeCompletion
                     added = true;
                 }
                 if (!added) continue;
-                var next = restoreService.RestoreAsync(new PackageRestoreRequest {
+                ResolvedPackageGraph next;
+                try { next = restoreService.RestoreAsync(new PackageRestoreRequest {
                     Packages = requirements.Values.OrderBy(p => p.Id, StringComparer.OrdinalIgnoreCase).ToArray(),
-                    ProgramFilePath = fileName
-                }).GetAwaiter().GetResult();
+                    ProgramFilePath = fileName, LocalPackagesOnly = !restoreAutomatically
+                }).GetAwaiter().GetResult(); }
+                catch (PackageRestoreRequiredException)
+                {
+                    RestoreRequired = true;
+                    continue;
+                }
                 if (graph != null)
                     foreach (var selected in graph.Packages)
                     {
@@ -109,7 +117,7 @@ namespace CodeCompletion
                 }
             string[] result = paths.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
             Register(result, beforeReferenceReload);
-            cache[fileName] = new CacheEntry(signature, result);
+            if (!RestoreRequired) cache[fileName] = new CacheEntry(signature, result);
             return result;
 
             void Collect(compilation_unit unit)

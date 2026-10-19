@@ -13,9 +13,10 @@ namespace VisualPascalABCPlugins
 
         public void Handle(Net10CompilerEvent value, Action<string> message, Action<string> status)
         {
-            if (value.state == "NuGetRestoreStarting")
+            if (value.state == "NuGetRestoreProgress" || value.state == "NuGetRestoreStarting")
             {
-                status(".NET 10: " + string.Format(resource("STATETEXT_NUGETRESTORING{0}"), value.fileName));
+                // The status strip owns delayed progress and cancellation. Starting
+                // is bookkeeping, not proof of a download: cached checks stay silent.
                 return;
             }
             if (value.state == "NuGetPackagesInstalled")

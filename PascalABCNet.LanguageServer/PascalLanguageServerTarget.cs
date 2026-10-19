@@ -9,6 +9,24 @@ internal sealed class PascalLanguageServerTarget
 {
     private static readonly HashSet<char> SignatureTriggers = new() { '(', '[', ',' };
 
+    [JsonRpcMethod("pascalabc/restoreNuGetPackages", UseSingleObjectParameterDeserialization = true)]
+    public Task<PackagePreparationResult> RestoreNuGetPackagesAsync(TextDocumentIdentifier request, CancellationToken token) =>
+        _dispatcher.RunAsync(() => ((PascalLanguageService)_languageService).RestoreDocumentPackagesAsync(
+            DocumentConversions.GetDocumentId(request.Uri), token), token);
+
+    [JsonRpcMethod("pascalabc/refreshNuGetPackages", UseSingleObjectParameterDeserialization = true)]
+    public Task<PackagePreparationResult> RefreshNuGetPackagesAsync(TextDocumentIdentifier request, CancellationToken token) =>
+        _dispatcher.RunAsync(() => ((PascalLanguageService)_languageService).PrepareDocumentPackagesAsync(
+            DocumentConversions.GetDocumentId(request.Uri), false, token), token);
+
+    // Must bypass the serial analysis queue: the active analysis may be downloading.
+    [JsonRpcMethod("pascalabc/cancelNuGetRestore")]
+    public Task CancelNuGetRestoreAsync()
+    {
+        PascalABCNet.PackageServices.PackageRestoreService.CancelPendingRestores();
+        return Task.CompletedTask;
+    }
+
     private readonly IPascalLanguageService _languageService;
     private readonly SerialRequestDispatcher _dispatcher;
     private readonly TaskCompletionSource<bool> _exitSignal;
@@ -30,7 +48,10 @@ internal sealed class PascalLanguageServerTarget
         InitializeParams request,
         CancellationToken cancellationToken) =>
         _dispatcher.RunAsync(
-            () => Task.FromResult(new InitializeResult
+            () => {
+                if (_languageService is PascalLanguageService service && request.InitializationOptions is Newtonsoft.Json.Linq.JObject options)
+                    service.ManualPackageRestore = options.Value<bool?>("manualNuGetRestore") == true;
+                return Task.FromResult(new InitializeResult
             {
                 Capabilities = new ServerCapabilities
                 {
@@ -54,7 +75,7 @@ internal sealed class PascalLanguageServerTarget
                         TriggerCharacters = new[] { "(", "[", "," }
                     }
                 }
-            }),
+            }); },
             cancellationToken);
 
     [JsonRpcMethod("initialized", UseSingleObjectParameterDeserialization = true)]
