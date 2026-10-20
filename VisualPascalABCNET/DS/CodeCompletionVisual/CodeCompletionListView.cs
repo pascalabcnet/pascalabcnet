@@ -222,12 +222,18 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
             : this(completionData, is_by_dot, null) { }
 
         public PABCNETCodeCompletionListView(ICompletionData[] completionData, bool is_by_dot, VisualPascalABC.CodeCompletionImagesProvider externalImages)
+			: this(completionData, is_by_dot, externalImages, false) { }
+
+        public PABCNETCodeCompletionListView(ICompletionData[] completionData, bool is_by_dot, VisualPascalABC.CodeCompletionImagesProvider externalImages, bool preserveOrder)
 		{
             this.externalImages = externalImages;
-			if (VisualPascalABC.VisualPABCSingleton.MainForm.UserOptions.ShowCompletionInfoByGroup && is_by_dot)
-				completionData = SortByGroup(completionData);
-			else
-				Array.Sort(completionData);
+			if (!preserveOrder)
+			{
+				if (VisualPascalABC.VisualPABCSingleton.MainForm.UserOptions.ShowCompletionInfoByGroup && is_by_dot)
+					completionData = SortByGroup(completionData);
+				else
+					Array.Sort(completionData);
+			}
 			this.completionData = completionData;
 			for (int i=0; i<completionData.Length; i++)
 				cache.Add(completionData[i],i);

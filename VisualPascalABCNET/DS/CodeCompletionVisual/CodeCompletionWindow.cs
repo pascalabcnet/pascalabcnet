@@ -68,10 +68,11 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
         // External analyzers supply data only; selection, filtering and insertion stay in the IDE window.
         // The trigger character has already been inserted (asynchronous providers).
         public static PABCNETCodeCompletionWindow ShowExternalCompletionWindow(Form parent, TextEditorControl control,
-            ICompletionDataProvider provider, ICompletionData[] items, VisualPascalABC.CodeCompletionImagesProvider images)
+            ICompletionDataProvider provider, ICompletionData[] items, VisualPascalABC.CodeCompletionImagesProvider images,
+            bool preserveOrder = false)
         {
             if (items == null || items.Length == 0) return null;
-            var window = new PABCNETCodeCompletionWindow(provider, items, parent, control, false, true, images);
+            var window = new PABCNETCodeCompletionWindow(provider, items, parent, control, false, true, images, preserveOrder);
             window.ShowCompletionWindow();
             return window;
         }
@@ -93,7 +94,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			return codeCompletionWindow;
         }
         
-		PABCNETCodeCompletionWindow(ICompletionDataProvider completionDataProvider, ICompletionData[] completionData, Form parentForm, TextEditorControl control,bool visibleKeyPressed, bool is_by_dot, VisualPascalABC.CodeCompletionImagesProvider images = null) : base(parentForm, control)
+		PABCNETCodeCompletionWindow(ICompletionDataProvider completionDataProvider, ICompletionData[] completionData, Form parentForm, TextEditorControl control,bool visibleKeyPressed, bool is_by_dot, VisualPascalABC.CodeCompletionImagesProvider images = null, bool preserveOrder = false) : base(parentForm, control)
 		{
 			this.dataProvider = completionDataProvider;
 			this.completionData = completionData;
@@ -111,7 +112,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
                     legacyProvider.preSelection = null;
 			}
 			
-			codeCompletionListView = new PABCNETCodeCompletionListView(completionData, is_by_dot, images);
+			codeCompletionListView = new PABCNETCodeCompletionListView(completionData, is_by_dot, images, preserveOrder);
 			codeCompletionListView.ImageList = completionDataProvider.ImageList;
 			codeCompletionListView.Dock = DockStyle.Fill;
 			codeCompletionListView.SelectedItemChanged += new EventHandler(CodeCompletionListViewSelectedItemChanged);
@@ -130,8 +131,27 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				codeCompletionListView.FirstItemChanged += new EventHandler(CodeCompletionListViewFirstItemChanged);
 				Controls.Add(vScrollBar);
 			}
+            int minWidth = VisualPascalABC.Constants.CompletionWindowWidth;
+            // NuGet package IDs need more room; ordinary completion remains capped at a
+            // quarter of the working area so unusually long symbols do not fill the screen.
+            int maxWidth = Math.Max(minWidth, workingScreen.Width / (preserveOrder ? 2 : 4));
+            int textWidth = 0;
+            using (Graphics graphics = codeCompletionListView.CreateGraphics())
+            {
+                foreach (ICompletionData item in completionData)
+                {
+                    textWidth = Math.Max(textWidth,
+                        (int)Math.Ceiling(graphics.MeasureString(item.Text, codeCompletionListView.Font).Width));
+                    if (textWidth >= maxWidth) break;
+                }
+            }
+            int iconWidth = codeCompletionListView.ItemHeight * codeCompletionListView.ImageList.ImageSize.Width /
+                codeCompletionListView.ImageList.ImageSize.Height;
+            int scrollWidth = completionData.Length > MaxListLength ? vScrollBar.Width : 0;
+            int desiredWidth = textWidth + iconWidth + scrollWidth + Math.Max(12, codeCompletionListView.Font.Height / 2);
+            int completionWidth = Math.Min(maxWidth, Math.Max(minWidth, desiredWidth));
             this.drawingSize = new Size(//codeCompletionListView.ItemHeight * 10,
-                                        VisualPascalABC.Constants.CompletionWindowWidth,
+                                        completionWidth,
                                         codeCompletionListView.ItemHeight * Math.Min(MaxListLength, completionData.Length) + 2);
 			SetLocation();
 			

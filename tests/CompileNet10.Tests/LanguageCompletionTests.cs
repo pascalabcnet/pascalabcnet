@@ -110,11 +110,17 @@ internal static partial class Program
                 var handleKey = area.GetType().GetMethod("HandleKeyPress", BindingFlags.NonPublic | BindingFlags.Instance);
                 Check((bool)handleKey.Invoke(area, new object[] { 'x' }), "legacy editor handler retains its handled key result");
                 ui.SetActive(true);
+                Check(VisualPascalABC.CodeCompletionAllNamesAction.PackageCompletion != null &&
+                    VisualPascalABC.CodeCompletionAllNamesAction.PackageDirectiveAtCaret != null,
+                    "modern editor installs package-completion routing");
                 var subscriptions = (System.Collections.IDictionary)typeof(Net10Completion)
                     .GetField("subscriptions", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(ui);
                 Check(subscriptions.Count == 2 && (bool)handleKey.Invoke(area, new object[] { 'x' }),
                     "modern completion attaches without losing the legacy handler's consumed key");
                 ui.SetActive(false);
+                Check(VisualPascalABC.CodeCompletionAllNamesAction.PackageCompletion == null &&
+                    VisualPascalABC.CodeCompletionAllNamesAction.PackageDirectiveAtCaret == null,
+                    "return to net472 removes package-completion routing");
                 Check(subscriptions.Count == 0 && (bool)handleKey.Invoke(area, new object[] { 'x' }),
                     "switching back detaches modern handler and preserves legacy result");
                 ui.SetActive(true); open.Remove(main); events.Closed(main);
@@ -181,10 +187,12 @@ internal static partial class Program
                 document.TextEditor.Document.TextContent = "s.Su";
                 document.TextEditor.ActiveTextAreaControl.Caret.Position = document.TextEditor.Document.OffsetToPosition(4);
                 var ctor = typeof(PABCNETCodeCompletionWindow).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance)
-                    .Single(item => item.GetParameters().Length == 7);
+                    .Single(item => item.GetParameters().Length == 8);
                 using (var window = (PABCNETCodeCompletionWindow)ctor.Invoke(new object[]
-                    { provider, provider.Items, parent, document.TextEditor, false, true, images }))
+                    { provider, provider.Items, parent, document.TextEditor, false, true, images, false }))
                 {
+                    Check(window.Width == Constants.CompletionWindowWidth,
+                        "short ordinary completion keeps the minimum popup width");
                     var list = (PABCNETCodeCompletionListView)typeof(PABCNETCodeCompletionWindow)
                         .GetField("codeCompletionListView", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(window);
                     Check(list.SelectedCompletionData.Text == "Substring", "standard completion window selects and filters LSP prefix with grouping enabled");
@@ -193,6 +201,15 @@ internal static partial class Program
                     Check(document.TextEditor.Document.TextContent == "s.Substring",
                         "standard window replaces typed prefix once without invoking legacy smart-semantic caches");
                 }
+                var longResponse = new Dictionary<string, object> { ["items"] = new object[] {
+                    new Dictionary<string, object> { ["label"] = "Symbol" + new string('X', 300), ["kind"] = 2 }
+                } };
+                var longProvider = new Net10CompletionProvider(longResponse, images, "");
+                using (var window = (PABCNETCodeCompletionWindow)ctor.Invoke(new object[]
+                    { longProvider, longProvider.Items, parent, document.TextEditor, false, true, images, false }))
+                    Check(window.Width > Constants.CompletionWindowWidth &&
+                        window.Width <= Math.Max(Constants.CompletionWindowWidth, Screen.GetWorkingArea(window).Width / 4),
+                        "long ordinary completion grows only up to a quarter of the working area");
             }
         }
         finally { singleton.SetValue(null, previous); }

@@ -62,6 +62,15 @@ namespace VisualPascalABC
         /// </summary>
         bool TextAreaKeyEventHandler(char key)
         {
+            if (CodeCompletionAllNamesAction.PackageDirectiveAtCaret?.Invoke(editor.ActiveTextAreaControl.TextArea) == true)
+            {
+                var automaticWindow = codeCompletionWindow;
+                automaticWindow?.Close();
+                var oldWindow = CodeCompletionShiftSpaceActions.comp_windows[editor.ActiveTextAreaControl.TextArea] as PABCNETCodeCompletionWindow;
+                if (oldWindow != automaticWindow)
+                    oldWindow?.Close();
+                return false;
+            }
             if (!WorkbenchServiceFactory.Workbench.UserOptions.AllowCodeCompletion || !VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
                 return false;
             if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return false;

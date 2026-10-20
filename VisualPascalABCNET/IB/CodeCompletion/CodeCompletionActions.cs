@@ -724,12 +724,17 @@ namespace VisualPascalABC
 
     public class CodeCompletionAllNamesAction : ICSharpCode.TextEditor.Actions.AbstractEditAction
     {
+        // The .NET 10 plugin supplies this only while its editor mode is active.
+        public static Func<TextArea, bool> PackageDirectiveAtCaret;
+        public static Func<TextArea, bool> PackageCompletion;
         PABCNETCodeCompletionWindow codeCompletionWindow;
         public static TextArea textArea;
         public static Hashtable comp_windows = new Hashtable();
 
         public override void Execute(TextArea _textArea)
         {
+            if (PackageCompletion?.Invoke(_textArea) == true)
+                return;
             //try
             {
                 if (!WorkbenchServiceFactory.Workbench.UserOptions.CodeCompletionDot)

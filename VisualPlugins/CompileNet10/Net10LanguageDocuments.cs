@@ -168,6 +168,19 @@ namespace VisualPascalABCPlugins
         internal Task<object> CompleteAsync(ICodeFileDocument document, int line, int character, CancellationToken cancellation)
             => RequestPositionAsync(document, line, character, "textDocument/completion", cancellation);
 
+        // Discovery never enters the serialized document-analysis queue: a slow feed
+        // must not delay edits, diagnostics or the ordinary member completion.
+        internal Task<object> DiscoverPackagesAsync(ICodeFileDocument document, string prefix,
+            string packageId, CancellationToken cancellation)
+        {
+            if (!active || disposed || !editors.ContainsKey(document) || client == null)
+                return Task.FromResult<object>(null);
+            string uri = new Uri(Path.GetFullPath(document.FileName)).AbsoluteUri;
+            string method = packageId == null ? "pascalabc/searchNuGetPackages" :
+                "pascalabc/nugetPackageVersions";
+            return client.RequestAsync(method, new { uri, prefix, packageId }, cancellation);
+        }
+
         internal Task<object> HoverAsync(ICodeFileDocument document, int line, int character, CancellationToken cancellation)
             => RequestPositionAsync(document, line, character, "textDocument/hover", cancellation);
 

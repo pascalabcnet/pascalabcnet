@@ -23,6 +23,12 @@ else {
     & (Join-Path $PSScriptRoot 'build-net10-runtime.ps1') -Configuration $Configuration
 }
 
+$ideProject = Join-Path $repositoryRoot 'VisualPascalABCNET\VisualPascalABCNET.csproj'
+& dotnet build $ideProject --configuration $Configuration --disable-build-servers --nologo
+if ($LASTEXITCODE -ne 0) {
+    throw "PascalABC.NET IDE build failed with exit code $LASTEXITCODE."
+}
+
 $pluginProject = Join-Path $repositoryRoot 'VisualPlugins\CompileNet10\CompileNet10.csproj'
 & dotnet build $pluginProject --configuration $Configuration `
     --output $IdeDirectory --disable-build-servers --nologo

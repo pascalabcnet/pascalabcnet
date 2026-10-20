@@ -281,6 +281,16 @@ internal static partial class Program
     {
         try
         {
+            if (args.Length > 0 && args[0] == "--package-completion")
+            {
+                CheckPackageDirectiveCompletion();
+                return 0;
+            }
+            if (args.Length > 0 && args[0] == "--completion-ui")
+            {
+                CheckLanguageCompletion(null);
+                return 0;
+            }
             if (args.Length > 1 && args[0] == "--nuget-cache-removal-ml")
             {
                 System.Threading.SynchronizationContext.SetSynchronizationContext(null);

@@ -62,6 +62,8 @@ internal static partial class Program
                 return 0;
             }
             await CheckRestore(work);
+            await CheckPackageDiscovery(work);
+            if (args.Contains("--package-discovery")) return 0;
             if (args.Contains("--manual-intellisense"))
             {
                 await CheckManualIntelliSense(work);

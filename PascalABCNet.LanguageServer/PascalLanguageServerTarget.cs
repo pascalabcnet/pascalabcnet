@@ -1,5 +1,6 @@
 using Microsoft.VisualStudio.LanguageServer.Protocol;
 using PascalABCNet.LanguageServices;
+using PascalABCNet.PackageServices;
 using StreamJsonRpc;
 using LspCompletionItem = Microsoft.VisualStudio.LanguageServer.Protocol.CompletionItem;
 
@@ -7,6 +8,29 @@ namespace PascalABCNet.LanguageServer;
 
 internal sealed class PascalLanguageServerTarget
 {
+    internal sealed class NuGetDiscoveryRequest
+    {
+        public Uri Uri { get; set; } = null!;
+        public string Prefix { get; set; } = string.Empty;
+        public string? PackageId { get; set; }
+    }
+
+    // Discovery does not access semantic state. Keep network I/O off the analysis queue.
+    [JsonRpcMethod("pascalabc/searchNuGetPackages", UseSingleObjectParameterDeserialization = true)]
+    public Task<IReadOnlyList<PackageSuggestion>> SearchNuGetPackagesAsync(
+        NuGetDiscoveryRequest request, CancellationToken token) =>
+        new PackageDiscoveryService().SearchAsync(DiscoveryFile(request), request.Prefix, token);
+
+    [JsonRpcMethod("pascalabc/nugetPackageVersions", UseSingleObjectParameterDeserialization = true)]
+    public Task<IReadOnlyList<string>> NuGetPackageVersionsAsync(
+        NuGetDiscoveryRequest request, CancellationToken token) =>
+        new PackageDiscoveryService().GetVersionsAsync(DiscoveryFile(request),
+            request.PackageId ?? string.Empty, request.Prefix, token);
+
+    private static string DiscoveryFile(NuGetDiscoveryRequest request) =>
+        request.Uri is { IsFile: true } ? request.Uri.LocalPath :
+            throw new ArgumentException("NuGet discovery requires a file URI.");
+
     private static readonly HashSet<char> SignatureTriggers = new() { '(', '[', ',' };
 
     [JsonRpcMethod("pascalabc/restoreNuGetPackages", UseSingleObjectParameterDeserialization = true)]

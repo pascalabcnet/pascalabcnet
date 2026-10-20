@@ -95,6 +95,15 @@ try
         "initialize advertises document symbols");
     Console.WriteLine("PASS initialize over stdio");
 
+    await WriteMessageAsync(input, new
+    {
+        jsonrpc = "2.0", id = 951, method = "pascalabc/searchNuGetPackages",
+        @params = new { uri = documentUri, prefix = "No" }
+    }, timeout.Token);
+    using var localPackages = await ReadResponseAsync(output, 951, timeout.Token);
+    Check(localPackages.RootElement.GetProperty("result").ValueKind == JsonValueKind.Array,
+        "short NuGet prefix is served by the local cache through LSP");
+
     const string changingUnitUri = "file:///C:/a.pas";
     const string fileBody = "\nbegin\n  var f := OpenWrite('xxx.txt');\n  f.Close;\nend.\n";
     await WriteDidOpenAsync(input, changingUnitUri, "unit A;" + fileBody, 1, timeout.Token);

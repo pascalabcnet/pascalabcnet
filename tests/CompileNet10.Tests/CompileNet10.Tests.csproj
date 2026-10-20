@@ -28,6 +28,8 @@
     <Compile Include="../../VisualPlugins/CompileNet10/Net10Navigation.cs" Link="Net10Navigation.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10DocumentSymbols.cs" Link="Net10DocumentSymbols.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10CompletionProvider.cs" Link="Net10CompletionProvider.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10PackageDirectiveContext.cs" Link="Net10PackageDirectiveContext.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10PackageCompletionProvider.cs" Link="Net10PackageCompletionProvider.cs" />
     <Reference Include="PluginsSupport"><HintPath>$(IdeReferenceDirectory)/PluginsSupport.dll</HintPath></Reference>
     <Reference Include="Errors"><HintPath>$(IdeReferenceDirectory)/Errors.dll</HintPath></Reference>
     <Reference Include="PascalABCNET"><HintPath>$(IdeReferenceDirectory)/PascalABCNET.exe</HintPath></Reference>
