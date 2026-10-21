@@ -124,16 +124,12 @@ namespace VisualPascalABCPlugins
                     WriteMessage("Остановите программу перед переключением платформы.");
                     return;
                 }
-                platformItem.Checked = !platformItem.Checked;
-                commandService.LegacyServicesSuspended = platformItem.Checked;
-                status.StartReady(platformItem.Checked, PascalABCCompiler.StringResources.Get("VP_VEC_STATETEXT_READY"));
-                UpdateLanguageActivity();
+                SelectPlatform(!platformItem.Checked);
             };
             commandRegistration = commandService.RegisterCommandHandler(this);
             programMenu.DropDownItems.Add(new ToolStripSeparator());
             programMenu.DropDownItems.Add(platformItem);
-            publishItem = new ToolStripMenuItem(PascalABCCompiler.StringResources.Get("VP_VEC_PUBLISH_NET10"))
-                { Name = "CompileNet10Publish" };
+            publishItem = Net10MenuItems.CreatePublishItem();
             publishItem.Click += (sender, e) => Execute(false, publish: true);
             programMenu.DropDownItems.Add(publishItem);
             programMenu.DropDownOpening += (sender, e) =>
@@ -183,6 +179,27 @@ namespace VisualPascalABCPlugins
                 languageGate.Tick += (sender, e) => UpdateLanguageActivity();
                 languageGate.Start();
             }
+            // Only the modern distribution ships this plugin. The ordinary IDE is unchanged.
+            // Apply once, after all modern services are connected; manual changes remain session-only.
+            try
+            {
+                var settings = Net10RuntimeSettings.Load(AppDomain.CurrentDomain.BaseDirectory);
+                if (File.Exists(Path.Combine(settings.RuntimeDirectory, "PABCCompilerController.dll")) &&
+                    File.Exists(Path.Combine(settings.RuntimeDirectory, "PABCCompilerWorker.dll")) &&
+                    File.Exists(Path.Combine(settings.RuntimeDirectory, "PascalABCNet.LanguageServer.dll")) &&
+                    Net10RuntimeAvailability.IsAvailable(settings.DotnetPath))
+                    SelectPlatform(true);
+            }
+            catch (IOException) { } // A locked INI must not prevent startup in the ordinary mode.
+            catch (UnauthorizedAccessException) { }
+        }
+
+        private void SelectPlatform(bool modern)
+        {
+            platformItem.Checked = modern;
+            commandService.LegacyServicesSuspended = modern;
+            status.StartReady(modern, PascalABCCompiler.StringResources.Get("VP_VEC_STATETEXT_READY"));
+            UpdateLanguageActivity();
         }
 
         private void UpdateLanguageActivity()

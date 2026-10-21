@@ -138,7 +138,12 @@ internal static partial class Program
     }
 
     [STAThread]
-    private static int Main(string[] args) => RunTestsAsync(args).GetAwaiter().GetResult();
+    private static int Main(string[] args)
+    {
+        int probeExitCode;
+        if (TryFakeRuntimeProbe(args, out probeExitCode)) return probeExitCode;
+        return RunTestsAsync(args).GetAwaiter().GetResult();
+    }
 
     private static void CheckParserRename()
     {
@@ -281,6 +286,16 @@ internal static partial class Program
     {
         try
         {
+            if (args.Length > 0 && args[0] == "--runtime-default")
+            {
+                CheckRuntimeAvailability();
+                return 0;
+            }
+            if (args.Length > 0 && args[0] == "--publish-localization")
+            {
+                CheckPublishLocalization();
+                return 0;
+            }
             if (args.Length > 0 && args[0] == "--package-completion")
             {
                 CheckPackageDirectiveCompletion();
@@ -300,6 +315,7 @@ internal static partial class Program
             CheckRestoreDeadlines();
             CheckRestoreStatus();
             CheckManualPackageRequests();
+            CheckPublishLocalization();
             if (args.Length > 2 && args[0] == "--manual-nuget")
             {
                 System.Threading.SynchronizationContext.SetSynchronizationContext(null);
@@ -351,6 +367,7 @@ internal static partial class Program
                 if (args.Length > 1) CheckSignatureTypedTrigger(args[1]);
                 return 0;
             }
+            CheckRuntimeAvailability();
             CheckRuntimeSettings();
             CheckCommandRouting();
             CheckDocumentEvents();

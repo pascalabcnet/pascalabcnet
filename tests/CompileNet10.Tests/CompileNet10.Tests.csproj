@@ -11,7 +11,9 @@
     <Compile Include="../../VisualPlugins/CompileNet10/Net10ControllerClient.cs" Link="Net10ControllerClient.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10Diagnostics.cs" Link="Net10Diagnostics.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10CompilerDisplay.cs" Link="Net10CompilerDisplay.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10MenuItems.cs" Link="Net10MenuItems.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10RuntimeSettings.cs" Link="Net10RuntimeSettings.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10RuntimeAvailability.cs" Link="Net10RuntimeAvailability.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10ProgramRunner.cs" Link="Net10ProgramRunner.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10OutputCleanup.cs" Link="Net10OutputCleanup.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10SourceSnapshot.cs" Link="Net10SourceSnapshot.cs" />
@@ -32,6 +34,7 @@
     <Compile Include="../../VisualPlugins/CompileNet10/Net10PackageCompletionProvider.cs" Link="Net10PackageCompletionProvider.cs" />
     <Reference Include="PluginsSupport"><HintPath>$(IdeReferenceDirectory)/PluginsSupport.dll</HintPath></Reference>
     <Reference Include="Errors"><HintPath>$(IdeReferenceDirectory)/Errors.dll</HintPath></Reference>
+    <Reference Include="Localization"><HintPath>$(IdeReferenceDirectory)/Localization.dll</HintPath></Reference>
     <Reference Include="PascalABCNET"><HintPath>$(IdeReferenceDirectory)/PascalABCNET.exe</HintPath></Reference>
     <Reference Include="ICSharpCode.TextEditor"><HintPath>$(IdeReferenceDirectory)/ICSharpCode.TextEditor.dll</HintPath></Reference>
     <Reference Include="System.Windows.Forms" />
