@@ -2571,6 +2571,7 @@ namespace CodeCompletion
 #if PABCNET_MODERN
             AddNetCoreSystemReferences(unit_scope, namespaces, _as,
                 PascalABCCompiler.NetHelper.NetCoreSystemReferences.AssemblyPaths);
+            AddNetCorePlatformReferences(unit_scope, namespaces, _as, _unit_module.compiler_directives);
 #endif
             this.cur_unit_file_name = _unit_module.file_name;
             //if (XmlDoc.LookupLocalizedXmlDocForUnitWithSources(_unit_module.file_name) != null)
@@ -3221,6 +3222,7 @@ namespace CodeCompletion
 #if PABCNET_MODERN
             AddNetCoreSystemReferences(unit_scope, namespaces, _as,
                 PascalABCCompiler.NetHelper.NetCoreSystemReferences.AssemblyPaths);
+            AddNetCorePlatformReferences(unit_scope, namespaces, _as, _program_module.compiler_directives);
 #endif
             CodeCompletionController.comp_modules[_program_module.file_name] = this.converter;
             Stack<Position> regions_stack = new Stack<Position>();
@@ -3440,6 +3442,18 @@ namespace CodeCompletion
         }
 
 #if PABCNET_MODERN
+        private static void AddNetCorePlatformReferences(InterfaceUnitScope unitScope,
+            List<string> namespaces, Assembly coreLibrary,
+            IEnumerable<PascalABCCompiler.SyntaxTree.compiler_directive> directives)
+        {
+            if (directives == null) return;
+            foreach (var directive in directives)
+                if (string.Equals(directive.Name.text, StringConstants.compiler_directive_platform,
+                    StringComparison.OrdinalIgnoreCase))
+                    AddNetCoreSystemReferences(unitScope, namespaces, coreLibrary,
+                        PascalABCCompiler.NetHelper.NetCoreSystemReferences.GetPlatformAssemblyPaths(directive.Directive.text));
+        }
+
         private static void AddNetCoreSystemReferences(
             InterfaceUnitScope unitScope,
             List<string> namespaces,

@@ -993,9 +993,7 @@ namespace PascalABCCompiler
             }
             catch (PackageRestoreException error)
             {
-                throw new PackageRestoreFailed(string.Format(StringResources.Get("COMPILATIONERROR_PACKAGE_RESTORE_FAILED{0}"),
-                    string.Join(Environment.NewLine, error.Diagnostics.Where(d => d.Severity == "Error")
-                        .Select(d => d.Code + ": " + d.Message))), unitFileName,
+                throw new PackageRestoreFailed(FormatPackageRestoreFailure(error), unitFileName,
                     GetSourceContext(firstAddition.Origin));
             }
             catch (ArgumentException error)
@@ -1009,6 +1007,24 @@ namespace PascalABCCompiler
                 throw new PackageRestoreFailed(error.Message, unitFileName,
                     GetSourceContext(firstAddition.Origin));
             }
+        }
+
+        private static string FormatPackageRestoreFailure(PackageRestoreException error)
+        {
+            var diagnostics = error.Diagnostics.Where(d =>
+                string.Equals(d.Severity, "Error", StringComparison.OrdinalIgnoreCase)).ToArray();
+            string details = string.Join(Environment.NewLine,
+                diagnostics.Select(d => d.Code + ": " + d.Message));
+            // A feed failure can also produce a misleading "package not found" diagnostic.
+            // Prefer the source failure, then an unavailable version, then a missing ID.
+            string key = diagnostics.Any(d => d.Code == "NU1301")
+                ? "COMPILATIONERROR_PACKAGE_SOURCE_UNAVAILABLE{0}"
+                : diagnostics.Any(d => d.Code == "NU1102")
+                    ? "COMPILATIONERROR_PACKAGE_VERSION_UNAVAILABLE{0}"
+                    : diagnostics.Any(d => d.Code == "NU1101")
+                        ? "COMPILATIONERROR_PACKAGE_NOT_FOUND{0}"
+                        : "COMPILATIONERROR_PACKAGE_RESTORE_FAILED{0}";
+            return string.Format(StringResources.Get(key), details);
         }
 
         private PreparedReference[] PreparePackageSemanticReferences(ResolvedPackageGraph graph,
@@ -1853,6 +1869,14 @@ namespace PascalABCCompiler
             // MoveSystemUnitForwardInUnitsTopologicallySortedList();
 
             netCompilerOptions = new NETGenerator.CompilerOptions();
+#if PABCNET_MODERN
+            // Include directives inherited from units/PCUs, not just the main file.
+            netCompilerOptions.UseWindowsDesktop = compilerDirectives.TryGetValue(
+                StringConstants.compiler_directive_platform, out var platforms)
+                && platforms.Any(d => string.Equals(d.directive, "winforms", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(d.directive, "wpf", StringComparison.OrdinalIgnoreCase));
+            netCompilerOptions.UseWindowsDesktop |= assemblyResolveScope?.HasWindowsDesktopReferences == true;
+#endif
 
             // выяснение TargetFramework и целевой платформы
             SetOutputPlatformOption(netCompilerOptions, compilerDirectives);
@@ -2925,12 +2949,29 @@ namespace PascalABCCompiler
                 return;
 
 #if PABCNET_MODERN
+            var existingPlatformReferences = new HashSet<string>(
+                directives.Where(d => string.Equals(d.name, StringConstants.compiler_directive_reference,
+                    StringComparison.OrdinalIgnoreCase)).Select(d => d.directive),
+                StringComparer.OrdinalIgnoreCase);
             foreach (compiler_directive platformDirective in platformDirectives)
             {
-                if (!string.Equals(platformDirective.directive, "core", StringComparison.OrdinalIgnoreCase))
+                string platform = platformDirective.directive.ToLowerInvariant();
+                if (platform != "core" && platform != "winforms" && platform != "wpf")
                     throw new UnsupportedTargetPlatform(platformDirective.directive,
                         platformDirective.source_file,
                         GetSourceContext(platformDirective));
+                try
+                {
+                    foreach (string path in NetHelper.NetCoreSystemReferences.GetPlatformAssemblyPaths(platform))
+                        if (existingPlatformReferences.Add("%GAC%\\" + Path.GetFileName(path)))
+                            directives.Add(new compiler_directive(StringConstants.compiler_directive_reference,
+                                "%GAC%\\" + Path.GetFileName(path), platformDirective.location, platformDirective.source_file));
+                }
+                catch (Exception ex) when (ex is FileNotFoundException || ex is PlatformNotSupportedException)
+                {
+                    throw new WindowsDesktopRequired(platform, platformDirective.source_file,
+                        GetSourceContext(platformDirective));
+                }
             }
 #else
             var existingReferences = new HashSet<string>(
@@ -4405,6 +4446,10 @@ namespace PascalABCCompiler
 
         private static string get_windows_desktop_assembly_path(string name)
         {
+#if PABCNET_MODERN
+            string path = NetHelper.NetCoreSystemReferences.ResolveAssemblyPath(name);
+            return path != null && NetHelper.NetCoreSystemReferences.IsWindowsDesktopPath(path) ? path : null;
+#else
             var runtimeVersionDirectory = new DirectoryInfo(standartAssemblyPath);
             var runtimeDirectory = runtimeVersionDirectory.Parent;
             var sharedDirectory = runtimeDirectory?.Parent;
@@ -4414,6 +4459,7 @@ namespace PascalABCCompiler
             var path = Path.Combine(sharedDirectory.FullName, "Microsoft.WindowsDesktop.App",
                 runtimeVersionDirectory.Name, name);
             return File.Exists(path) ? path : null;
+#endif
         }
 
         public static string get_assembly_path(string name, bool search_for_intellisense)

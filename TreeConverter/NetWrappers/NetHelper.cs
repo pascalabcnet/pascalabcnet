@@ -551,7 +551,11 @@ namespace PascalABCCompiler.NetHelper
             else if (!NetCoreSystemReferences.IsRuntimeAssembly(name))
                 a = CollectibleReferenceManager.Load(name);
             else
-#endif
+                // Framework types must have one identity. Loading runtime DLLs
+                // from bytes duplicates e.g. Drawing.Point versus the Point in
+                // WinForms/Graphics signatures. User DLLs remain collectible.
+                a = NetCoreSystemReferences.LoadRuntimeAssembly(name);
+#else
             try
             {
                 var bytes = File.ReadAllBytes(name);
@@ -561,6 +565,7 @@ namespace PascalABCCompiler.NetHelper
             {
                 a = System.Reflection.Assembly.LoadFrom(name);
             }
+#endif
             ass_name_cache[name] = a;
             assm_full_paths[a] = name;
             file_dates[a] = System.IO.File.GetLastWriteTime(name);

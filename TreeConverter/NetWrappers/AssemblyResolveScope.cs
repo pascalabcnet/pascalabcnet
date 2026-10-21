@@ -15,6 +15,9 @@ namespace PascalABCCompiler.NetHelper
         private readonly AppDomain _appDomain;
         private readonly Dictionary<string, Assembly> _assembliesByName = new Dictionary<string, Assembly>();
         private readonly Dictionary<string, Assembly> _assembliesByPath = new Dictionary<string, Assembly>();
+#if PABCNET_MODERN
+        public bool HasWindowsDesktopReferences => _assembliesByPath.Keys.Any(NetCoreSystemReferences.IsWindowsDesktopPath);
+#endif
 
         public ICollection<AssemblyName> CalculateBindingRedirects()
         {
@@ -147,6 +150,10 @@ namespace PascalABCCompiler.NetHelper
 
         private static string GetWindowsDesktopAssemblyPath(string name)
         {
+#if PABCNET_MODERN
+            string path = NetCoreSystemReferences.ResolveAssemblyPath(name);
+            return path != null && NetCoreSystemReferences.IsWindowsDesktopPath(path) ? path : null;
+#else
             var runtimeVersionDirectory = new DirectoryInfo(standartAssemblyPath);
             var runtimeDirectory = runtimeVersionDirectory.Parent;
             var sharedDirectory = runtimeDirectory?.Parent;
@@ -156,6 +163,7 @@ namespace PascalABCCompiler.NetHelper
             var path = Path.Combine(sharedDirectory.FullName, "Microsoft.WindowsDesktop.App",
                 runtimeVersionDirectory.Name, name);
             return File.Exists(path) ? path : null;
+#endif
         }
 
         public List<string> missingAssemblies = new List<string>();

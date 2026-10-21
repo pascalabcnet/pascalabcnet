@@ -33,6 +33,9 @@ PACKAGE_DEPENDENCY_RESOLVED{0}{1}{2}=NuGet: для зависимости '{0}' 
 PACKAGE_REQUIRES_RUNTIME_ASSEMBLY{0}=Пакет NuGet '{0}' содержит только reference-сборки; для семантического анализа компилятору требуется исполняемая сборка.
 PACKAGE_DUPLICATE_ASSEMBLY{0}=Пакеты NuGet содержат две различные сборки с именем '{0}'.
 PACKAGE_RESTORE_FAILED{0}=Не удалось восстановить пакеты NuGet: {0}
+PACKAGE_NOT_FOUND{0}=Пакет NuGet не найден в настроенных источниках. Проверьте имя пакета и NuGet.Config. Подробности: {0}
+PACKAGE_VERSION_UNAVAILABLE{0}=Запрошенная версия пакета NuGet недоступна. Проверьте номер версии или выберите доступную версию. Подробности: {0}
+PACKAGE_SOURCE_UNAVAILABLE{0}=Источник пакетов NuGet недоступен. Проверьте подключение к сети и настройки NuGet.Config. Подробности: {0}
 REFERENCE_ASSEMBLY_CONFLICT{0}{1}=Сборки '{0}' и '{1}' имеют одинаковое внутреннее имя, но различаются содержимым или идентичностью. PascalABC.NET не может подключить обе сборки в одной компиляции.
 ASSEMBLY_METADATA_READ_FAILED{0}=Не удалось прочитать метаданные сборки '{0}'.
 REFERENCE_CONTEXT_NOT_UNLOADED=Компилятор всё ещё хранит ссылки на предыдущий AssemblyLoadContext сборок.
@@ -41,3 +44,4 @@ UNSUPPORTED_DIAGNOSTIC_LANGUAGE{0}=Язык диагностических со�
 
 %PREFIX%=
 COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}=Внутренняя ошибка компилятора в модуле {0} :'{1}'
+COMPILATIONERROR_WINDOWS_DESKTOP_REQUIRED{0}=Для платформы '{0}' необходимы Windows и .NET 10 Windows Desktop Runtime.

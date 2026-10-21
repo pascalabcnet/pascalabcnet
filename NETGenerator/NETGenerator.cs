@@ -48,6 +48,9 @@ namespace PascalABCCompiler.NETGenerator
         public enum PlatformTarget { x64, x86, AnyCPU, dotnet5win, dotnet5linux, dotnet5macos, dotnetwinnative, dotnetlinuxnative, dotnetmacosnative };
 
         public TargetType target = TargetType.Exe;
+#if PABCNET_MODERN
+        public bool UseWindowsDesktop;
+#endif
         public DebugAttributes dbg_attrs = DebugAttributes.Release;
         public bool optimize = false;
         public bool ForRunningWithEnvironment = false;
@@ -1291,7 +1294,11 @@ namespace PascalABCCompiler.NETGenerator
             ab.SetCustomAttribute(new CustomAttributeBuilder(TypeFactory.SecurityRulesAttributeCtor, new object[] { SecurityRuleSet.Level2 },
                 new PropertyInfo[] { TypeFactory.SecurityRulesAttributeSkipVerificationInFullTrustProperty },
                 new object[] { true }));
-            if (entry_meth != null && comp_opt.target == TargetType.WinExe)
+            if (entry_meth != null && (comp_opt.target == TargetType.WinExe
+#if PABCNET_MODERN
+                || comp_opt.UseWindowsDesktop
+#endif
+                ))
             {
                 entry_meth.SetCustomAttribute(TypeFactory.STAThreadAttributeCtor, new byte[] { 0x01, 0x00, 0x00, 0x00 });
             }
@@ -1369,7 +1376,7 @@ namespace PascalABCCompiler.NETGenerator
             if (comp_opt.target != TargetType.Dll)
                 File.WriteAllText(
                     Path.Combine(Path.GetDirectoryName(TargetFileName), an.Name + ".runtimeconfig.json"),
-                    comp_opt.target == TargetType.WinExe ? RuntimeConfigWindowsDesktop : RuntimeConfigCore);
+                    comp_opt.UseWindowsDesktop ? RuntimeConfigWindowsDesktop : RuntimeConfigCore);
 #else
             int tries = 0;
             bool not_done = true;

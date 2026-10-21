@@ -14,8 +14,12 @@ internal static partial class Program
             "Package discovery must rank ID-prefix matches before popularity and remove duplicates.");
 
         string feed = Path.Combine(work, "feed");
-        WriteConfiguration(Path.Combine(work, "NuGet.Config"), feed);
-        string program = Path.Combine(work, "Discovery.pas");
+        // Keep this source configuration out of the shared parent directory:
+        // later tests create a clean profile below work and inherit its configs.
+        string directory = Path.Combine(work, "package-discovery");
+        Directory.CreateDirectory(directory);
+        WriteConfiguration(Path.Combine(directory, "NuGet.Config"), feed);
+        string program = Path.Combine(directory, "Discovery.pas");
         var discovery = new PackageDiscoveryService();
         var results = await discovery.SearchAsync(program, "PascalABC.TestR");
         Check(results.Count == 1 && results[0].Id == RootId && results[0].Version == "1.1.0",
@@ -31,6 +35,8 @@ internal static partial class Program
             throw new Exception("Cancelled package discovery still queried a source.");
         }
         catch (OperationCanceledException) { }
+        Check(!File.Exists(Path.Combine(work, "NuGet.Config")),
+            "Package discovery leaked NuGet.Config into the shared test directory.");
         Console.WriteLine("PASS: package discovery honors configured sources, versions, ranking and cancellation.");
     }
 }

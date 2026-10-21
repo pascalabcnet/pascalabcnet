@@ -33,6 +33,9 @@ PACKAGE_DEPENDENCY_RESOLVED{0}{1}{2}=NuGet: dependency '{0}' resolved to {1}; co
 PACKAGE_REQUIRES_RUNTIME_ASSEMBLY{0}=NuGet package '{0}' has only reference assemblies; the compiler needs a runtime assembly for semantic analysis.
 PACKAGE_DUPLICATE_ASSEMBLY{0}=NuGet packages contain two different assemblies named '{0}'.
 PACKAGE_RESTORE_FAILED{0}=NuGet package restore failed: {0}
+PACKAGE_NOT_FOUND{0}=NuGet package was not found in the configured sources. Check the package ID and NuGet.Config. Details: {0}
+PACKAGE_VERSION_UNAVAILABLE{0}=The requested NuGet package version is unavailable. Check the version or select an available one. Details: {0}
+PACKAGE_SOURCE_UNAVAILABLE{0}=A NuGet package source is unavailable. Check your network connection and NuGet.Config. Details: {0}
 REFERENCE_ASSEMBLY_CONFLICT{0}{1}=Assemblies '{0}' and '{1}' have the same internal simple name but different contents or identities. PascalABC.NET cannot reference both assemblies in one compilation.
 ASSEMBLY_METADATA_READ_FAILED{0}=Cannot read assembly metadata from '{0}'.
 REFERENCE_CONTEXT_NOT_UNLOADED=The previous reference AssemblyLoadContext is still referenced by the compiler.
@@ -41,3 +44,4 @@ UNSUPPORTED_DIAGNOSTIC_LANGUAGE{0}=Diagnostic language '{0}' is not supported.
 
 %PREFIX%=
 COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}=Internal compiler error in module {0} :'{1}'
+COMPILATIONERROR_WINDOWS_DESKTOP_REQUIRED{0}=Platform '{0}' requires Windows and the .NET 10 Windows Desktop Runtime.

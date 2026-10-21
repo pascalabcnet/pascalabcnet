@@ -329,8 +329,18 @@ namespace PascalABCCompiler.Errors
     }
 
     /// <summary>
-    /// Бросается, если пользователь указывает неподдерживаемую целевую платформу
+    /// Для запрошенной графической платформы не найден Windows Desktop Runtime.
     /// </summary>
+    public class WindowsDesktopRequired : CompilerThrownError
+    {
+        public WindowsDesktopRequired(string platform, string fileName, SourceContext sc)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_WINDOWS_DESKTOP_REQUIRED{0}"), platform), fileName)
+        {
+            source_context = sc;
+        }
+    }
+
+    /// <summary>Пользователь указал неподдерживаемую целевую платформу.</summary>
     public class UnsupportedTargetPlatform : CompilerThrownError
     {
         public UnsupportedTargetPlatform(string platformName, SourceContext sc)

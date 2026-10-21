@@ -10,6 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
+using System.Reflection;
+using System.Runtime.Loader;
 
 namespace PascalABCCompiler.NetHelper
 {
@@ -20,6 +22,59 @@ namespace PascalABCCompiler.NetHelper
     /// </summary>
     public static class NetCoreSystemReferences
     {
+        // Permanent platform context, separate from both collectible user DLLs
+        // and host-only NuGet dependencies (e.g. ProtectedData 8 in NuGet itself).
+        private sealed class DesktopLoadContext : AssemblyLoadContext
+        {
+            internal DesktopLoadContext() : base("PABC.WindowsDesktop", isCollectible: false) { }
+            protected override Assembly Load(AssemblyName name)
+            {
+                string path = ResolveRuntimeAssemblyPath(RuntimeDirectory, name.Name + ".dll");
+                return path != null && IsWindowsDesktopPath(path) ? LoadFromAssemblyPath(path) : null;
+            }
+        }
+
+        private static readonly Lazy<DesktopLoadContext> desktopContext =
+            new Lazy<DesktopLoadContext>(() => new DesktopLoadContext());
+        private static readonly Lazy<string> desktopRuntimeDirectory =
+            new Lazy<string>(() => FindWindowsDesktopDirectory(RuntimeDirectory));
+
+        public static bool IsWindowsDesktopPath(string path)
+        {
+            return !string.IsNullOrEmpty(desktopRuntimeDirectory.Value)
+                && string.Equals(Path.GetDirectoryName(Path.GetFullPath(path)), desktopRuntimeDirectory.Value,
+                    StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static string ResolveAssemblyPath(string fileName)
+        {
+            return ResolveRuntimeAssemblyPath(RuntimeDirectory, Path.GetFileName(fileName));
+        }
+
+        private static string FindWindowsDesktopDirectory(string runtimeDirectory)
+        {
+            var coreVersionDirectory = new DirectoryInfo(runtimeDirectory);
+            if (coreVersionDirectory.Parent?.Name != "Microsoft.NETCore.App"
+                || !Version.TryParse(coreVersionDirectory.Name, out var coreVersion))
+                return null;
+            string desktopRoot = Path.Combine(coreVersionDirectory.Parent.Parent.FullName, "Microsoft.WindowsDesktop.App");
+            if (!Directory.Exists(desktopRoot)) return null;
+            // Match the runtime family, not an exact servicing patch. The host
+            // also selects the latest installed patch of the requested framework.
+            return Directory.EnumerateDirectories(desktopRoot)
+                .Select(path => new { Path = path, Version = Version.TryParse(Path.GetFileName(path), out var v) ? v : null })
+                .Where(item => item.Version != null && item.Version.Major == coreVersion.Major && item.Version.Minor == coreVersion.Minor)
+                .OrderByDescending(item => item.Version).Select(item => item.Path).FirstOrDefault();
+        }
+
+        public static Assembly LoadRuntimeAssembly(string path)
+        {
+            path = Path.GetFullPath(path);
+            return IsWindowsDesktopPath(path)
+                ? desktopContext.Value.LoadFromAssemblyPath(path)
+                : AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
+        }
+
         private static readonly string[] rootAssemblyNames =
         {
             "System.Private.CoreLib.dll",
@@ -70,6 +125,25 @@ namespace PascalABCCompiler.NetHelper
                 && ResolveRuntimeAssemblyPath(RuntimeDirectory, Path.GetFileName(assemblyFileName)) != null;
         }
 
+        // Desktop references are opt-in; console/NuGet programs stay Core-only.
+        public static IReadOnlyList<string> GetPlatformAssemblyPaths(string platform)
+        {
+            if (string.Equals(platform, "core", StringComparison.OrdinalIgnoreCase))
+                return Array.Empty<string>();
+            if (!OperatingSystem.IsWindows())
+                throw new PlatformNotSupportedException("WindowsDesktop");
+            string[] roots;
+            if (string.Equals(platform, "winforms", StringComparison.OrdinalIgnoreCase))
+                roots = new[] { "System.Windows.Forms.dll", "System.Drawing.Common.dll" };
+            else if (string.Equals(platform, "wpf", StringComparison.OrdinalIgnoreCase))
+                roots = new[] { "PresentationFramework.dll", "PresentationCore.dll", "WindowsBase.dll", "System.Xaml.dll" };
+            else
+                throw new ArgumentException("Unknown platform", nameof(platform));
+            string directory = RuntimeDirectory;
+            return cache.GetOrAdd(directory + "|desktop|" + platform.ToLowerInvariant(),
+                _ => new Lazy<IReadOnlyList<string>>(() => BuildDependencyClosure(directory, roots, true), true)).Value;
+        }
+
         public static IReadOnlyList<string> GetAssemblyPaths(IEnumerable<string> assemblyFileNames)
         {
             string runtimeDirectory = RuntimeDirectory;
@@ -99,7 +173,8 @@ namespace PascalABCCompiler.NetHelper
                     () => BuildFacadeClosure(runtimeDirectory, assemblyFileName), true)).Value;
         }
 
-        private static IReadOnlyList<string> BuildDependencyClosure(string runtimeDirectory, IEnumerable<string> roots)
+        private static IReadOnlyList<string> BuildDependencyClosure(string runtimeDirectory, IEnumerable<string> roots,
+            bool allowMissingOptionalDependencies = false)
         {
             if (string.IsNullOrEmpty(runtimeDirectory) || !Directory.Exists(runtimeDirectory))
                 throw new DirectoryNotFoundException(
@@ -108,6 +183,7 @@ namespace PascalABCCompiler.NetHelper
             var result = new List<string>();
             var processed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var pending = new Queue<string>(roots);
+            var required = new HashSet<string>(roots, StringComparer.OrdinalIgnoreCase);
 
             while (pending.Count > 0)
             {
@@ -116,6 +192,11 @@ namespace PascalABCCompiler.NetHelper
                     continue;
 
                 string assemblyPath = ResolveRuntimeAssemblyPath(runtimeDirectory, assemblyFileName);
+                // WPF retains optional references (e.g. System.Data.SqlClient)
+                // which are not shipped with WindowsDesktop. Do not require
+                // unrelated data providers just to use a Window or a Button.
+                if (assemblyPath == null && allowMissingOptionalDependencies && !required.Contains(assemblyFileName))
+                    continue;
                 if (assemblyPath == null)
                     throw new FileNotFoundException(
                         "The .NET runtime assembly '" + assemblyFileName
@@ -204,22 +285,15 @@ namespace PascalABCCompiler.NetHelper
 
         private static string ResolveRuntimeAssemblyPath(string runtimeDirectory, string assemblyFileName)
         {
-            string runtimePath = Path.Combine(runtimeDirectory, assemblyFileName);
-            if (File.Exists(runtimePath))
-                return runtimePath;
-
-            var runtimeVersionDirectory = new DirectoryInfo(runtimeDirectory);
-            var runtimeRootDirectory = runtimeVersionDirectory.Parent;
-            var sharedDirectory = runtimeRootDirectory?.Parent;
-            if (sharedDirectory != null && runtimeRootDirectory.Name == "Microsoft.NETCore.App")
+            if (!string.IsNullOrEmpty(desktopRuntimeDirectory.Value))
             {
-                string windowsDesktopPath = Path.Combine(sharedDirectory.FullName,
-                    "Microsoft.WindowsDesktop.App", runtimeVersionDirectory.Name, assemblyFileName);
+                string windowsDesktopPath = Path.Combine(desktopRuntimeDirectory.Value, assemblyFileName);
                 if (File.Exists(windowsDesktopPath))
                     return windowsDesktopPath;
             }
 
-            return null;
+            string runtimePath = Path.Combine(runtimeDirectory, assemblyFileName);
+            return File.Exists(runtimePath) ? runtimePath : null;
         }
     }
 }
