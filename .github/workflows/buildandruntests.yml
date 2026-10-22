@@ -37,6 +37,14 @@ jobs:
         PABCNET_INC_BUILD:  false
         PABCNET_VERBOSE:    false
 
+    - name: Check PCU-only console mode and ordinary compilation
+      run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File tests\PCUOnlyTests\Test-PCUOnly.ps1 -Target net472
+      timeout-minutes: 5
+
+    - name: Check PABCRtl interface operators without compiler warm-up
+      run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File tests\LegacyTestRunnerTests\Test-PABCRtlOperators.ps1
+      timeout-minutes: 3
+
     - name: Check repository contents (warnings)
       working-directory: bin
       run: |

@@ -3,7 +3,7 @@ dotnet build --no-incremental PascalABCNET.sln -p:PABCNET_LEGACY_ONLY=true
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 cd ReleaseGenerators
-..\bin\pabcnetc RebuildStandartModules.pas /rebuild
+..\bin\pabcnetc RebuildStandartModules.pas /rebuild /pcuonly
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 cd PABCRtl
@@ -18,7 +18,7 @@ cd ..
 ExecHide.exe gacutil.exe /u PABCRtl
 ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 
-..\bin\pabcnetc RebuildStandartModules.pas /rebuild
+..\bin\pabcnetc RebuildStandartModules.pas /rebuild /pcuonly
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 

@@ -1,5 +1,6 @@
 ﻿//PABCNETC
 %PREFIX%=PABCNETC_
+PCU_ONLY_HELP=/pcuonly - Сохранить PCU модулей без оптимизации и генерации EXE/DLL; порядок остальных аргументов не меняется.
 
 ERROR_INVALID_DIRECTORY=Ошибка: неправильная директория
 ERROR_DIRECTORY_NOT_FOUND=Ошибка: директория не найдена

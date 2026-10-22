@@ -6,11 +6,11 @@ call _BuildLegacyTestRunner.bat
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 cd ReleaseGenerators
-..\bin\pabcnetc RebuildStandartModules.pas /rebuild
+..\bin\pabcnetc RebuildStandartModules.pas /rebuild /pcuonly
 
 rem Удаляем pcu для SPython модулей, чтобы не применять /rebuild
 del "..\bin\Lib\SPython\*.pcu" /q
-..\bin\pabcnetc RebuildStandartModulesSPython.pas
+..\bin\pabcnetc RebuildStandartModulesSPython.pas /pcuonly
 
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
@@ -27,11 +27,11 @@ cd ..
 ExecHide.exe gacutil.exe /u PABCRtl
 ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 
-..\bin\pabcnetc RebuildStandartModules.pas /rebuild
+..\bin\pabcnetc RebuildStandartModules.pas /rebuild /pcuonly
 
 rem Удаляем pcu для SPython модулей, чтобы не применять /rebuild
 del "..\bin\Lib\SPython\*.pcu" /q
-..\bin\pabcnetc RebuildStandartModulesSPython.pas
+..\bin\pabcnetc RebuildStandartModulesSPython.pas /pcuonly
 
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 

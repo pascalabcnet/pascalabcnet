@@ -38,6 +38,7 @@ namespace PascalABCCompiler
         public static bool DetailOut = false;
         public static bool Rebuild=false;
         public static bool NoConsole = false;
+        private static bool PcuOnly = false;
         public static CompilerOptions.OutputType outputType;
         public static bool Debug = true;
         public static bool UseDll = false;
@@ -150,6 +151,7 @@ namespace PascalABCCompiler
             {
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(StringResourcesGet("HELP"));
+                Console.WriteLine(StringResourcesGet("PCU_ONLY_HELP"));
                 for (int i = 0; i < StringResourcesLanguage.AccessibleLanguages.Count;i++)
                     Console.WriteLine(string.Format("\t{0}-{1}", i, StringResourcesLanguage.AccessibleLanguages[i]));
                 //int jjj = 5;
@@ -286,6 +288,7 @@ namespace PascalABCCompiler
             co.Rebuild = Rebuild;
             co.Debug = Debug;
             co.UseDllForSystemUnits = UseDll;
+            co.GenerateCode = !PcuOnly;
             AllFilesCount++;
             if (Compiler.Compile(co) != null)
                 SuccessFilesCount++;
@@ -319,7 +322,7 @@ namespace PascalABCCompiler
                     }
                 }
                 GlobalErrorsList.AddRange(Compiler.ErrorsList);
-                if (PauseIfError)
+                if (PauseIfError && !PcuOnly)
                     Console.ReadKey();
             }
             else
@@ -411,6 +414,9 @@ namespace PascalABCCompiler
         public static int Main(string[] initialArgs)
         {
             var args = initialArgs.ToList();
+            // Remove the opt-in switch before interpreting historical positional
+            // arguments (source, /rebuild or output name, output type).
+            PcuOnly = args.RemoveAll(arg => string.Equals(arg, "/pcuonly", StringComparison.OrdinalIgnoreCase)) > 0;
             if (args.Remove("/noconsole"))
             {
                 NoConsole = true;

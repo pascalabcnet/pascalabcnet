@@ -1,7 +1,10 @@
 ﻿/// Модуль LightPT автоматической легковесной проверки заданий
 unit LightPT;
 {$reference System.Net.Http.dll}
-{$reference System.Security.dll}
+{$ifdef PABCNET_MODERN}
+{$reference System.Net.Requests.dll}
+{$reference System.Security.Cryptography.dll}
+{$endif}
 
 interface
 
@@ -619,7 +622,7 @@ implementation
 
 uses __RedirectIOMode;
 
-uses System.Management;
+//uses System.Management;
 uses System.Security.Cryptography;
 uses System.IO;
 

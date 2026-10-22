@@ -17,4 +17,4 @@ mono --aot bin/StringConstants.dll
 mono --aot bin/PascalABCLanguageInfo.dll
 
 cd ReleaseGenerators
-mono ../bin/pabcnetc.exe RebuildStandartModulesMono.pas  /rebuild
+mono ../bin/pabcnetc.exe RebuildStandartModulesMono.pas  /rebuild /pcuonly

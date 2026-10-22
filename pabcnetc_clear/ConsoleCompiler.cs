@@ -131,6 +131,7 @@ namespace PascalABCCompiler
             Console.WriteLine("  /SearchDir:<path>");
             Console.WriteLine("  /Locale:<locale>");
             Console.WriteLine("  /Version:");
+            Console.WriteLine(StringResourcesGet("PCU_ONLY_HELP"));
             Console.WriteLine();
             Console.WriteLine("/Help show this message");
             Console.WriteLine("/Output:<[path\\]name> compile into an executable called \"name\" and save it in \"path\" directory");
@@ -142,6 +143,10 @@ namespace PascalABCCompiler
 
         public static int Main(string[] args)
 		{
+            // A standalone switch may appear anywhere without displacing the
+            // existing /name:value directives, source or output directory.
+            bool pcuOnly = args.Any(arg => string.Equals(arg, "/pcuonly", StringComparison.OrdinalIgnoreCase));
+            args = args.Where(arg => !string.Equals(arg, "/pcuonly", StringComparison.OrdinalIgnoreCase)).ToArray();
             // SSM 18.03.19 Делаю параметры командной строки. Формат: pabcnetc.exe /Dir1=value1 /Dir2=value2 ... fname dir
             // dir - это пережиток старого - так можно было задавать каталог раньше. Пока - увы - пусть останется
             // Пока сделаю только директивы /Help /H /? и /Debug=0(1)
@@ -236,6 +241,7 @@ namespace PascalABCCompiler
             co.Rebuild = false;
             co.Debug = false;
             co.UseDllForSystemUnits = false;
+            co.GenerateCode = !pcuOnly;
 
             for (var i = 0; i < n1; i++)
             {

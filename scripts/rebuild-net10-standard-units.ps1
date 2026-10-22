@@ -19,7 +19,7 @@ $name = 'RebuildStandartModulesNet10'
 Push-Location $generator
 try {
     # pabcnetcclear has no /rebuild; the PCU deletion above forces compilation.
-    & dotnet (Join-Path $runtime 'pabcnetcclear.dll') "$name.pas"
+    & dotnet (Join-Path $runtime 'pabcnetcclear.dll') "$name.pas" '/pcuonly'
     if ($LASTEXITCODE -ne 0) { throw "Modern standard-unit rebuild failed: $LASTEXITCODE" }
 }
 finally { Pop-Location }

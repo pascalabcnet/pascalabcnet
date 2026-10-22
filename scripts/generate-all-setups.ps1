@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [ValidateSet('All', 'Prepare', 'Test', 'Package')][string]$Stage = 'All',
     [ValidateSet('All', 'NetFramework')][string]$Target = 'All',
@@ -12,15 +12,43 @@ $repositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $generators = Join-Path $repositoryRoot 'ReleaseGenerators'
 $legacy = Join-Path $repositoryRoot 'bin'
 $includeNet10 = $Target -eq 'All'
+$releaseBuildTimer = if ($Plan) { $null } else { [Diagnostics.Stopwatch]::StartNew() }
+$releaseSucceeded = $false
 
 function Invoke-Checked([string]$File, [string[]]$Arguments = @()) {
     & $File @Arguments
     if ($LASTEXITCODE -ne 0) { throw "$File failed with exit code $LASTEXITCODE." }
 }
 
+function Format-ReleaseDuration([TimeSpan]$Elapsed) {
+    return ('{0} мин {1} с' -f [long][Math]::Floor($Elapsed.TotalMinutes), $Elapsed.Seconds)
+}
+
+function Write-ReleaseBanner([string]$Message, [ConsoleColor]$Color) {
+    Write-Host ''
+    Write-Host ('=' * 78) -ForegroundColor $Color
+    Write-Host $Message -ForegroundColor $Color
+    Write-Host ('=' * 78) -ForegroundColor $Color
+}
+
 function Invoke-ReleaseStep([string]$Name, [scriptblock]$Action) {
+    if (-not $Plan) {
+        Write-ReleaseBanner "С НАЧАЛА ЗАПУСКА СКРИПТА: $(Format-ReleaseDuration $releaseBuildTimer.Elapsed)" Yellow
+    }
     Write-Host "RELEASE STEP: $Name"
-    if (-not $Plan) { & $Action }
+    if ($Plan) { return }
+    $stepTimer = [Diagnostics.Stopwatch]::StartNew()
+    $stepSucceeded = $false
+    try {
+        & $Action
+        $stepSucceeded = $true
+    }
+    finally {
+        $stepTimer.Stop()
+        $stepStatus = if ($stepSucceeded) { 'DONE' } else { 'FAILED' }
+        $stepColor = if ($stepSucceeded) { 'Green' } else { 'Red' }
+        Write-ReleaseBanner "RELEASE STEP ${stepStatus}: $Name | время этапа: $(Format-ReleaseDuration $stepTimer.Elapsed)" $stepColor
+    }
 }
 
 function Assert-PreparedRelease {
@@ -82,9 +110,9 @@ try {
         Invoke-ReleaseStep 'Bootstrap legacy modules before PABCRtl' {
             Push-Location $generators
             try {
-                Invoke-Checked (Join-Path $legacy 'pabcnetc.exe') @('RebuildStandartModules.pas', '/rebuild')
+                Invoke-Checked (Join-Path $legacy 'pabcnetc.exe') @('RebuildStandartModules.pas', '/rebuild', '/pcuonly')
                 Get-ChildItem -LiteralPath (Join-Path $legacy 'Lib\SPython') -File -Filter '*.pcu' | Remove-Item -Force
-                Invoke-Checked (Join-Path $legacy 'pabcnetc.exe') @('RebuildStandartModulesSPython.pas')
+                Invoke-Checked (Join-Path $legacy 'pabcnetc.exe') @('RebuildStandartModulesSPython.pas', '/pcuonly')
             }
             finally { Pop-Location }
         }
@@ -105,9 +133,9 @@ try {
         Invoke-ReleaseStep 'Prepare final legacy modules after PABCRtl' {
             Push-Location $generators
             try {
-                Invoke-Checked (Join-Path $legacy 'pabcnetc.exe') @('RebuildStandartModules.pas', '/rebuild')
+                Invoke-Checked (Join-Path $legacy 'pabcnetc.exe') @('RebuildStandartModules.pas', '/rebuild', '/pcuonly')
                 Get-ChildItem -LiteralPath (Join-Path $legacy 'Lib\SPython') -File -Filter '*.pcu' | Remove-Item -Force
-                Invoke-Checked (Join-Path $legacy 'pabcnetc.exe') @('RebuildStandartModulesSPython.pas')
+                Invoke-Checked (Join-Path $legacy 'pabcnetc.exe') @('RebuildStandartModulesSPython.pas', '/pcuonly')
             }
             finally { Pop-Location }
         }
@@ -145,9 +173,15 @@ try {
                 finally { Pop-Location }
             }
         }
-        $crossTarget = if ($includeNet10) { 'all' } else { 'net472' }
-        Invoke-ReleaseStep "Cross-target tests using prepared compiler binaries: $crossTarget" {
-            Invoke-Checked (Join-Path $repositoryRoot '_RunCrossTargetTests.bat') @($crossTarget, 'all', '--skip-build')
+        # The six legacy passes already cover the full net472 suite. Preserve
+        # only the extra reference/path/output/IntelliSense checks here.
+        Invoke-ReleaseStep 'Additional net472 reference checks using prepared compiler binaries' {
+            Invoke-Checked (Join-Path $repositoryRoot '_RunCrossTargetTests.bat') @('net472', 'units', 'reference', '--skip-build')
+        }
+        if ($includeNet10) {
+            Invoke-ReleaseStep 'Cross-target tests using prepared compiler binaries: net10' {
+                Invoke-Checked (Join-Path $repositoryRoot '_RunCrossTargetTests.bat') @('net10', 'all', '--skip-build')
+            }
         }
     }
     if ($Stage -in @('All', 'Package')) {
@@ -164,6 +198,15 @@ try {
             }
         }
     }
+    $releaseSucceeded = $true
 }
-finally { Pop-Location }
+finally {
+    Pop-Location
+    if (-not $Plan) {
+        $releaseBuildTimer.Stop()
+        $releaseStatus = if ($releaseSucceeded) { 'DONE' } else { 'FAILED' }
+        $releaseColor = if ($releaseSucceeded) { 'Green' } else { 'Red' }
+        Write-ReleaseBanner "RELEASE TOTAL ${releaseStatus}: $Stage ($Target) | общее время: $(Format-ReleaseDuration $releaseBuildTimer.Elapsed)" $releaseColor
+    }
+}
 Write-Host "Release stage completed: $Stage ($Target)"

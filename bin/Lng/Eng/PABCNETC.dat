@@ -1,5 +1,6 @@
 ﻿//PABCNETC
 %PREFIX%=PABCNETC_
+PCU_ONLY_HELP=/pcuonly - Save unit PCUs without optimizing or generating an EXE/DLL; other argument positions remain unchanged.
 
 ERROR_INVALID_DIRECTORY=Error: Invalid directory
 ERROR_DIRECTORY_NOT_FOUND=Error: Directory not found
