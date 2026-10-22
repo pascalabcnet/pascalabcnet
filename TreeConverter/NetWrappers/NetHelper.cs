@@ -587,6 +587,7 @@ namespace PascalABCCompiler.NetHelper
             Assembly assembly = assemblies.Contains(_assembly) ? _assembly : null;
             List<string> nss = new List<string>();
             cur_used_assemblies.Add(_assembly);
+            bool extensionsAdded = false;
             Type entry_type = null;
             if ( !entry_types.TryGetValue(_assembly, out var unit_types) )
                 unit_types = new List<Type>();
@@ -666,6 +667,7 @@ namespace PascalABCCompiler.NetHelper
                                 if (mi.GetCustomAttributes(ExtensionAttributeType, false).Length > 0)
                                 {
                                     ext_meths.Add(mi);
+                                    extensionsAdded = true;
                                     ParameterInfo[] prms = mi.GetParameters();
                                     if (prms.Length > 0)
                                     {
@@ -700,79 +702,22 @@ namespace PascalABCCompiler.NetHelper
                                         }
                                         if (mths2 != null)
                                             mths2.Add(mi);
-                                        
-                                        Dictionary<string, List<MemberInfo>> mht;
-                                        if (members.TryGetValue(tmp, out mht))
+
+                                        // Arrays whose element type is a Pascal generic
+                                        // parameter have System.Array as their reflected
+                                        // base; there is no concrete CLR T[] to search yet.
+                                        if (tmp.IsArray)
                                         {
-                                            List<MemberInfo> mis2 = null;
-                                            string name = StringConstants.GetNETOperName(mi.Name);
-                                            if (name == null)
-                                                name = mi.Name;
-                                            if (!mht.TryGetValue(name, out mis2))
+                                            List<MethodInfo> arrayBaseMethods;
+                                            if (!type_extensions.TryGetValue(ArrayType, out arrayBaseMethods))
                                             {
-                                                mis2 = new List<MemberInfo>();
-                                                mht.Add(name, mis2);
+                                                arrayBaseMethods = new List<MethodInfo>();
+                                                type_extensions.Add(ArrayType, arrayBaseMethods);
                                             }
-                                            if (!mis2.Contains(mi))
-                                                mis2.Add(mi);
+                                            arrayBaseMethods.Add(mi);
                                         }
                                         if (tmp.IsGenericParameter && !generic_parameter_type_extensions.Contains(mi))
-                                        {
                                             generic_parameter_type_extensions.Add(mi);
-                                            foreach (Type tt in members.Keys)
-                                            {
-                                                if (members.TryGetValue(tt, out mht))
-                                                {
-                                                    List<MemberInfo> mis2 = null;
-                                                    string name = StringConstants.GetNETOperName(mi.Name);
-                                                    if (name == null)
-                                                        name = mi.Name;
-                                                    if (!mht.TryGetValue(name, out mis2))
-                                                    {
-                                                        mis2 = new List<MemberInfo>();
-                                                        mht.Add(name, mis2);
-                                                    }
-                                                    if (!mis2.Contains(mi))
-                                                        mis2.Add(mi);
-                                                }
-                                            }
-                                        }
-                                        
-                                        foreach (Type arr_t in arrays_with_extension_methods.Keys)
-                                        {
-                                            if (members.TryGetValue(arr_t, out mht))
-                                            {
-                                                List<MemberInfo> mis2 = null;
-                                                string name = StringConstants.GetNETOperName(mi.Name);
-                                                if (name == null)
-                                                    name = mi.Name;
-                                                if (!mht.TryGetValue(name, out mis2))
-                                                {
-                                                    mis2 = new List<MemberInfo>();
-                                                    mht.Add(name, mis2);
-                                                }
-                                                if (!mis2.Contains(mi))
-                                                    mis2.Add(mi);
-                                            }
-                                        }
-
-                                        foreach (Type gen_t in generics_with_extension_methods.Keys)
-                                        {
-                                            if (members.TryGetValue(gen_t, out mht))
-                                            {
-                                                List<MemberInfo> mis2 = null;
-                                                string name = StringConstants.GetNETOperName(mi.Name);
-                                                if (name == null)
-                                                    name = mi.Name;
-                                                if (!mht.TryGetValue(name, out mis2))
-                                                {
-                                                    mis2 = new List<MemberInfo>();
-                                                    mht.Add(name, mis2);
-                                                }
-                                                if (!mis2.Contains(mi))
-                                                    mis2.Add(mi);
-                                            }
-                                        }
                                     }
                                 }
                             extension_methods.Add(t, ext_meths.ToArray());
@@ -894,6 +839,13 @@ namespace PascalABCCompiler.NetHelper
                 }
                 namespace_assemblies[_assembly] = ns_ht;
                 assemblies.Add(_assembly);
+                if (extensionsAdded)
+                {
+                    // A new DLL can extend types whose metadata was cached earlier.
+                    // Append its candidates in place; unchanged DLLs do not enter here.
+                    foreach (var receiver in members)
+                        AddKnownExtensionMembers(receiver.Key, receiver.Value);
+                }
             }
             return unit_types;
         }
@@ -1165,9 +1117,7 @@ namespace PascalABCCompiler.NetHelper
             if (type_extensions.TryGetValue(t, out meths) || t.IsGenericType && type_extensions.TryGetValue(t.GetGenericTypeDefinition(), out meths))
             {
                 //return meths.ToArray();
-#if PABCNET_MODERN
                 meths = new List<MethodInfo>(meths);
-#endif
             }
             else
             {
@@ -1185,7 +1135,7 @@ namespace PascalABCCompiler.NetHelper
             }
             if (t.BaseType != null)
                 meths.AddRange((MethodInfo[])GetExtensionMethods(t.BaseType));
-            return meths.ToArray();
+            return meths.FindAll(method => IsExtensionAssemblyAvailable(method.DeclaringType.Assembly)).ToArray();
 
         }
 
@@ -1194,7 +1144,7 @@ namespace PascalABCCompiler.NetHelper
             List<MethodInfo> meths = null;
             if (type_extensions.TryGetValue(t, out meths) || t.IsGenericType && type_extensions.TryGetValue(t.GetGenericTypeDefinition(), out meths))
             {
-                return meths.ToArray();
+                return meths.FindAll(method => IsExtensionAssemblyAvailable(method.DeclaringType.Assembly)).ToArray();
             }
             return new List<MethodInfo>().ToArray();
         }
@@ -1358,134 +1308,124 @@ namespace PascalABCCompiler.NetHelper
             return false;
         }
 
-		public static List<MemberInfo> GetMembers(Type t, string name)
-		{
-            Dictionary<string, List<MemberInfo>> mht = null;
-            if (members.TryGetValue(t, out mht))
+        public static List<MemberInfo> GetMembers(Type t, string name)
+        {
+            if (!members.TryGetValue(t, out var table))
             {
-                List<MemberInfo> mis2 = null;
-
-                if (!mht.TryGetValue(name, out mis2))
-                {
-                    return EmptyMemberInfoList;
-                }
-                return mis2;
-            }
-            else
-			{
-                BindingFlags bf = BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic;
-				MemberInfo[] mis;
+                BindingFlags flags = BindingFlags.FlattenHierarchy | BindingFlags.Public |
+                    BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic;
+                var reflectedMembers = new List<MemberInfo>();
                 if (t.IsInterface)
                 {
-                    List<Type> all_interfaces = new List<Type>();
-                    FormBaseInterfacesList(t, all_interfaces);
-                    List<MemberInfo> mem_info = new List<MemberInfo>();
-                    foreach (Type interf in all_interfaces)
-                    {
-                        mem_info.AddRange(interf.GetMembers(bf));
-                    }
-                    mem_info.AddRange(typeof(object).GetMembers(bf));
-                    mis = mem_info.ToArray();
+                    var interfaces = new List<Type>();
+                    FormBaseInterfacesList(t, interfaces);
+                    foreach (Type intf in interfaces)
+                        reflectedMembers.AddRange(intf.GetMembers(flags));
+                    reflectedMembers.AddRange(typeof(object).GetMembers(flags));
                 }
                 else
+                    reflectedMembers.AddRange(t.GetMembers(flags));
+
+                table = new Dictionary<string, List<MemberInfo>>(StringComparer.CurrentCultureIgnoreCase);
+                foreach (MemberInfo member in reflectedMembers)
                 {
-                    mis = t.GetMembers(bf);
+                    if (!table.TryGetValue(member.Name, out var list))
+                    {
+                        list = new List<MemberInfo>();
+                        table.Add(member.Name, list);
+                    }
+                    list.Add(member);
                 }
-                //(ssyy) DarkStar, что за предупреждение по следующей строке?
-				var ht = new Dictionary<string,List<MemberInfo>>(StringComparer.CurrentCultureIgnoreCase);
-                //(ssyy) DarkStar, может быть эффективнее слить следующие 2 цикла в один?
-                foreach (MemberInfo mi2 in mis)
-                {
-                    //Console.WriteLine(mi2.Name.ToLower());
-                    string s = mi2.Name;//.ToLower();
-                    if (!ht.ContainsKey(s))
-                        ht[s] = new List<MemberInfo>();
-                }
-				foreach (MemberInfo mi in mis)
-				{
-                    ht[mi.Name].Add(mi);
-				}
                 if (ExtensionAttributeType != null)
                 {
-                    List<MethodInfo> meths = null;
-                    Type tmp_t = t;
-                    if (tmp_t.IsArray)
-                        arrays_with_extension_methods[tmp_t] = tmp_t;
-                    if (tmp_t.IsGenericTypeDefinition)
-                        generics_with_extension_methods[tmp_t] = tmp_t;
+                    if (t.IsArray)
+                        arrays_with_extension_methods[t] = t;
+                    if (t.IsGenericTypeDefinition)
+                        generics_with_extension_methods[t] = t;
                     cached_type_extensions.Add(t);
-                    while (tmp_t != null)
-                    {
-                        List<MethodInfo> meths1 = null;
-                        List<MethodInfo> meths2 = null;
-                        List<MethodInfo> meths3 = generic_parameter_type_extensions;
-                        if (tmp_t.IsGenericType && !tmp_t.IsGenericTypeDefinition)
-                            type_extensions.TryGetValue(tmp_t.GetGenericTypeDefinition(), out meths1);
-                        if (tmp_t.IsArray)
-                            generic_array_type_extensions.TryGetValue(tmp_t.GetArrayRank(), out meths2);
-                        if (type_extensions.TryGetValue(tmp_t, out meths) || meths1 != null || meths2 != null || meths3 != null)
-                        {
-                            List<MethodInfo> all_meths = new List<MethodInfo>();
-                            if (meths != null)
-                                all_meths.AddRange(meths);
-                            if (meths1 != null)
-                                all_meths.AddRange(meths1);
-                            if (meths2 != null)
-                                all_meths.AddRange(meths2);
-                            if (meths3 != null)
-                                all_meths.AddRange(meths3);
-                            foreach (MethodInfo mi in all_meths)
-                            {
-                                if (cur_used_assemblies.Contains(mi.DeclaringType.Assembly))
-                                {
-                                    List<MemberInfo> al = null;
-                                    string s = StringConstants.GetNETOperName(mi.Name);
-                                    if (s == null)
-                                        s = mi.Name;
-                                    if (!ht.TryGetValue(s, out al))
-                                    {
-                                        al = new List<MemberInfo>();
-                                        ht[s] = al;
-                                    }
-                                    al.Insert(0, mi);
-                                }
-                            }
-                        }
-                        tmp_t = tmp_t.BaseType;
-                    }
-                    
-                    Type[] intfs = t.GetInterfaces();
-                    foreach (Type intf_t in intfs)
-                    {
-                        Type tmp = intf_t;
-                        if (tmp.IsGenericType)
-                            tmp = tmp.GetGenericTypeDefinition();
-                        if (type_extensions.TryGetValue(tmp, out meths))
-                        {
-                            foreach (MethodInfo mi in meths)
-                            {
-                                if (cur_used_assemblies.Contains(mi.DeclaringType.Assembly))
-                                {
-                                    List<MemberInfo> al = null;
-                                    if (!ht.TryGetValue(mi.Name, out al))
-                                    {
-                                        al = new List<MemberInfo>();
-                                        ht[mi.Name] = al;
-                                    }
-                                    al.Insert(0,mi);
-                                }
-                            }
-                        }
-                    }
+                    AddKnownExtensionMembers(t, table);
                 }
-				members[t] = ht;
-                List<MemberInfo> lst = null;
-				if (!ht.TryGetValue(name, out lst)) 
-                    return EmptyMemberInfoList;	
-				return lst;
-			}
-			
-		}
+                members[t] = table;
+            }
+            return table.TryGetValue(name, out var candidates)
+                ? FilterCurrentMembers(candidates) : EmptyMemberInfoList;
+        }
+
+        // This table is metadata, not the result for a particular compilation.
+        // Keep all known extensions; reference changes only affect lookup filtering.
+        private static void AddKnownExtensionMembers(Type receiver, Dictionary<string, List<MemberInfo>> table)
+        {
+            for (Type current = receiver; current != null; current = current.BaseType)
+            {
+                if (type_extensions.TryGetValue(current, out var methods))
+                    AddExtensionMembers(table, methods);
+                if (current.IsGenericType && !current.IsGenericTypeDefinition &&
+                    type_extensions.TryGetValue(current.GetGenericTypeDefinition(), out methods))
+                    AddExtensionMembers(table, methods);
+                if (current.IsArray &&
+                    generic_array_type_extensions.TryGetValue(current.GetArrayRank(), out methods))
+                    AddExtensionMembers(table, methods);
+            }
+            AddExtensionMembers(table, generic_parameter_type_extensions);
+            foreach (Type intf in receiver.GetInterfaces())
+            {
+                Type key = intf.IsGenericType ? intf.GetGenericTypeDefinition() : intf;
+                if (type_extensions.TryGetValue(key, out var methods))
+                    AddExtensionMembers(table, methods);
+            }
+        }
+
+        private static void AddExtensionMembers(Dictionary<string, List<MemberInfo>> table, IEnumerable<MethodInfo> methods)
+        {
+            foreach (MethodInfo method in methods)
+            {
+                string name = StringConstants.GetNETOperName(method.Name) ?? method.Name;
+                if (!table.TryGetValue(name, out var candidates))
+                {
+                    candidates = new List<MemberInfo>();
+                    table.Add(name, candidates);
+                }
+                if (!candidates.Contains(method))
+                    candidates.Insert(0, method);
+            }
+        }
+
+        private static bool IsExtensionAssemblyAvailable(Assembly assembly)
+        {
+            return cur_used_assemblies.Contains(assembly) &&
+                (UsePABCRtl || PABCSystemType == null || assembly != PABCSystemType.Assembly);
+        }
+
+        private static bool IsMemberAvailable(MemberInfo member)
+        {
+            Assembly assembly = member.DeclaringType?.Assembly;
+            if (assembly == null)
+                return true;
+            if (!UsePABCRtl && PABCSystemType != null && assembly == PABCSystemType.Assembly)
+                return false;
+            // Ordinary inherited members may come from a transitive dependency.
+            // Only extension methods require their declaring assembly to be a reference.
+            return cur_used_assemblies.Contains(assembly) ||
+                !(member is MethodInfo method) || !IsExtensionMethod(method);
+        }
+
+        private static List<MemberInfo> FilterCurrentMembers(List<MemberInfo> candidates)
+        {
+            List<MemberInfo> visible = null;
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                if (IsMemberAvailable(candidates[i]))
+                {
+                    if (visible != null)
+                        visible.Add(candidates[i]);
+                }
+                else if (visible == null)
+                    visible = candidates.GetRange(0, i);
+            }
+            // No allocation when every candidate is available. Never mutate the cache.
+            return visible ?? candidates;
+        }
+
 
         private static List<MemberInfo> EmptyMemberInfoList = new List<MemberInfo>();
 
@@ -1620,9 +1560,9 @@ namespace PascalABCCompiler.NetHelper
         	if (name == null) return null;
 			if (name == StringConstants.assign_name) return null;
             string s = StringConstants.GetNETOperName(name);
+            bool standardOperator = s != null && IsStandType(t);
 			if (s != null) 
 			{
-				if (IsStandType(t)) return null;
 				name = s;
 			}
 			List<SymbolInfo> sil=null;
@@ -1643,6 +1583,8 @@ namespace PascalABCCompiler.NetHelper
 
             foreach (MemberInfo mi in mis)
             {
+                if (standardOperator && (!(mi is MethodInfo method) || !IsExtensionMethod(method)))
+                    continue;
                 if (mi.DeclaringType != null && PABCSystemType != null && mi.DeclaringType.Assembly == PABCSystemType.Assembly && !UsePABCRtl)
                     continue;
             	field_access_level fal = get_access_level(mi);
@@ -1698,10 +1640,12 @@ namespace PascalABCCompiler.NetHelper
             if (name == null) return null;
             if (name == StringConstants.assign_name && !t.IsValueType) return null;
             string s = StringConstants.GetNETOperName(name);
+            // Native primitive operators are supplied by semantic scopes, but
+            // extension operators (e.g. integer * procedure) can come from RTL.
+            bool standardOperator = s != null && IsStandType(t);
             string tmp_name = name;
             if (s != null)
             {
-                if (IsStandType(t)) return null;
                 if (t != NetHelper.PABCSystemType)
                     name = s;
             }
@@ -1741,6 +1685,8 @@ namespace PascalABCCompiler.NetHelper
             }
             foreach (MemberInfo mi in mis)
             {
+                if (standardOperator && (!(mi is MethodInfo method) || !IsExtensionMethod(method)))
+                    continue;
                 if (mi.DeclaringType != null && PABCSystemType != null && mi.DeclaringType.Assembly == PABCSystemType.Assembly && !UsePABCRtl)
                     continue;
                 if (is_visible(mi))

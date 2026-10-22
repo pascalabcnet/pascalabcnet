@@ -146,15 +146,19 @@ namespace PascalABCCompiler.TreeConverter
             RemoveWhere(ExtensionMethods, pair =>
                 TypeReferencesAssembly(pair.Key, assembly) ||
                 Array.Exists(pair.Value, method => MemberReferencesAssembly(method, assembly)));
-            RemoveWhere(TypeExtensions, pair =>
-                TypeReferencesAssembly(pair.Key, assembly) ||
-                pair.Value.Exists(method => MemberReferencesAssembly(method, assembly)));
+            RemoveWhere(TypeExtensions, pair => TypeReferencesAssembly(pair.Key, assembly));
+            // Several DLLs can extend the same framework type. Unloading one
+            // removes only its methods, not the other DLLs' shared index entries.
+            foreach (var methods in TypeExtensions.Values)
+                methods.RemoveAll(method => MemberReferencesAssembly(method, assembly));
+            RemoveWhere(TypeExtensions, pair => pair.Value.Count == 0);
             RemoveWhere(ArraysWithExtensionMethods, pair =>
                 TypeReferencesAssembly(pair.Key, assembly) || TypeReferencesAssembly(pair.Value, assembly));
             RemoveWhere(GenericsWithExtensionMethods, pair =>
                 TypeReferencesAssembly(pair.Key, assembly) || TypeReferencesAssembly(pair.Value, assembly));
-            RemoveWhere(GenericArrayTypeExtensions, pair =>
-                pair.Value.Exists(method => MemberReferencesAssembly(method, assembly)));
+            foreach (var methods in GenericArrayTypeExtensions.Values)
+                methods.RemoveAll(method => MemberReferencesAssembly(method, assembly));
+            RemoveWhere(GenericArrayTypeExtensions, pair => pair.Value.Count == 0);
             GenericParameterTypeExtensions.RemoveAll(method => MemberReferencesAssembly(method, assembly));
             RemoveWhere(MemberCache, pair => MemberReferencesAssembly(pair.Value, assembly));
 

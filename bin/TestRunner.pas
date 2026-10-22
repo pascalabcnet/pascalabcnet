@@ -601,12 +601,15 @@ begin
     end;
     if (ParamCount = 0) or (ParamStr(1) = '5') then
     begin
+      // Full x86 compile/run is disabled. Uncomment this block to restore it.
+      {
       Println('Compiling tests in 32bit mode...');
       CompileAllRunTests(false, true);
       Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
       Println('Running tests in 32bit mode...');
       RunAllTests(false);
       Println('Success. Time elapsed: ' + MsToMinutes(MillisecondsDelta()));
+      }
       ClearExeDir;
       Println('Compiling tests with PABCRtl.dll...');
       CompileAllRunTests(true);

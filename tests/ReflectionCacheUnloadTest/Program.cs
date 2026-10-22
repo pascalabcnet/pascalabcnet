@@ -33,6 +33,7 @@ internal static class Program
         if (Array.IndexOf(args, "--operator-generations") >= 0)
             return OperatorGenerationTests.Run(versionOnePath);
 
+
         if (OperatorGenerationTests.Run(versionOnePath) != 0)
             return 1;
 
@@ -62,6 +63,10 @@ internal static class Program
             WeakReference selectiveContext = FillFrameworkKeyCachesAndUnload(versionOnePath);
             if (!WaitForUnload(selectiveContext, "framework-key extension and reflected member caches", args))
                 return 1;
+
+            // This test replaces the metadata identity map. Run it after the
+            // enum/conversion audit, which intentionally keeps permanent owners.
+            ExtensionMemberCacheTests.Run(versionOnePath);
 
             Console.WriteLine("Both versions were loaded from the same path and unloaded successfully.");
             return 0;
