@@ -45,6 +45,10 @@ jobs:
       run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File tests\LegacyTestRunnerTests\Test-PABCRtlOperators.ps1
       timeout-minutes: 3
 
+    - name: Check type lookup after loading a new DLL
+      run: dotnet run --project tests\TypeLookupCacheTests\TypeLookupCacheTests.csproj --framework net472 --configuration Release -p:PABCNET_LEGACY_ONLY=true
+      timeout-minutes: 3
+
     - name: Check repository contents (warnings)
       working-directory: bin
       run: |

@@ -582,6 +582,20 @@ namespace PascalABCCompiler.NetHelper
         public static Dictionary<Assembly, List<Type>> entry_types = cache.EntryTypes;
         private static string curr_inited_assm_path = null;
 
+        private static void ClearTypeSearchMisses(string addedName = null)
+        {
+            List<string> missing = null;
+            foreach (var entry in type_search_cache)
+                if (!entry.Value.exists && (addedName == null || types.Comparer.Equals(entry.Key, addedName)))
+                {
+                    if (missing == null) missing = new List<string>();
+                    missing.Add(entry.Key);
+                }
+            if (missing != null)
+                foreach (string name in missing)
+                    type_search_cache.Remove(name);
+        }
+
         public static List<Type> init_namespaces(System.Reflection.Assembly _assembly)
         {
             Assembly assembly = assemblies.Contains(_assembly) ? _assembly : null;
@@ -593,6 +607,9 @@ namespace PascalABCCompiler.NetHelper
                 unit_types = new List<Type>();
             if (assembly == null)
             {
+                // Only a newly indexed DLL invalidates global misses. Keep all
+                // successful lookups and member tables, including their identities.
+                ClearTypeSearchMisses();
                 // Types from a newly loaded assembly can change namespace completion.
                 ns_types.Clear();
                 Type[] tarr = _assembly.GetTypes();
@@ -839,6 +856,9 @@ namespace PascalABCCompiler.NetHelper
                 }
                 namespace_assemblies[_assembly] = ns_ht;
                 assemblies.Add(_assembly);
+                // Metadata callbacks may have searched before the whole DLL
+                // was indexed. Such misses are not valid for the completed index.
+                ClearTypeSearchMisses();
                 if (extensionsAdded)
                 {
                     // A new DLL can extend types whose metadata was cached earlier.
@@ -2033,11 +2053,9 @@ namespace PascalABCCompiler.NetHelper
                 type_search_cache[name] = fi;
                 return t.type;
             }
-            else
-            {
-                fi = new FoundInfo(false);
-                type_search_cache[name] = fi;
-            }
+            else if (temp == null)
+                type_search_cache[name] = new FoundInfo(false);
+            // An indexed list of names is not absence; do not poison scoped lookup.
             
 			return null;
 		}
@@ -2240,6 +2258,7 @@ namespace PascalABCCompiler.NetHelper
 		public static void AddType(string name, Type t)
 		{
 			types[name] = new TypeInfo(t, t.FullName);
+            ClearTypeSearchMisses(name);
             AddGenericInfo(t);
 		}
 		
@@ -2259,6 +2278,7 @@ namespace PascalABCCompiler.NetHelper
             if (t != null)
             {
                 types[name] = new TypeInfo(t, t.FullName);
+                ClearTypeSearchMisses(name);
                 AddGenericInfo(t);
             }
 			return t;
