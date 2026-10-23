@@ -4,6 +4,22 @@
 `scripts/generate-all-setups.ps1` и возвращает ненулевой код при ошибке.
 Запуск не зависит от текущего каталога.
 
+При подготовке `bin-net10` удаляются старые переводы сторонних библиотек
+IntelliSense (известные файлы `*.resources.dll` в языковых папках, кроме `ru`)
+и Framework-конфиги `pabcnetc.dll.config`/`pabcnetcclear.dll.config`.
+Папки удаляются только после опустошения; посторонние файлы сохраняются.
+`ru`, `runtimes` и `Lng` очистка не затрагивает. Консольные проекты
+по-прежнему используют `app.config` при сборке для .NET Framework,
+но не для .NET 10. Проверки включены в `Test-ReleasePipeline.ps1`;
+отдельный запуск — `tests/ReleasePipelineTests/Test-RuntimeResourceCleanup.ps1`.
+
+В modern-комплект предварительно собираются также FormsABC, GraphWPF,
+GraphWPFBase, WPFObjects, TurtleABC, Мозаика, Robot/RobotField/RobotTaskMaker/RobotZadan,
+RBDMUtils и PT4Databases/PT4Exam/PT4MakerNetX/PT4TaskMakerNET.
+Их PCU обязательны при упаковке, исходники для навигации помещаются в `LibSource`.
+Проверка чтения этих PCU без исходников в `Lib`:
+`tests/ReleasePipelineTests/Test-ModernStandardModules.ps1 -RuntimeDirectory <папка Net10 из установщика>`.
+
 Отдельный вход для обычного выпуска — `_GenerateNetFrameworkSetup.bat`.
 Он вызывает тот же сценарий с `-Target NetFramework`: сохраняет подготовку
 версии, legacy IDE, оба прохода модулей и подпись/GAC PABCRtl, Pascal/SPython

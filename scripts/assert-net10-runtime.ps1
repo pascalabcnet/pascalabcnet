@@ -19,7 +19,7 @@ function Get-RuntimeHash([string]$Path) {
 $repositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 if (-not $RuntimeDirectory) { $RuntimeDirectory = Join-Path $repositoryRoot 'bin-net10' }
 $RuntimeDirectory = [IO.Path]::GetFullPath($RuntimeDirectory)
-$manifest = Get-Content -LiteralPath (Join-Path $RuntimeDirectory 'net10-runtime.manifest.json') -Raw | ConvertFrom-Json
+$manifest = Get-Content -LiteralPath (Join-Path $RuntimeDirectory 'net10-runtime.manifest.json') -Raw -Encoding UTF8 | ConvertFrom-Json
 if ($Configuration -and $manifest.configuration -ne $Configuration) {
     throw "Expected $Configuration runtime, found $($manifest.configuration). Prepare it first."
 }
@@ -44,7 +44,7 @@ foreach ($library in @('Compiler.dll', 'TreeConverter.dll', 'NETGenerator.dll', 
 }
 if ($RequireCompiledUnits) {
     # The bootstrap source, not a second hard-coded list, defines the required base PCUs.
-    $bootstrap = Get-Content -LiteralPath (Join-Path $repositoryRoot 'ReleaseGenerators\RebuildStandartModulesNet10.pas') -Raw
+    $bootstrap = Get-Content -LiteralPath (Join-Path $repositoryRoot 'ReleaseGenerators\RebuildStandartModulesNet10.pas') -Raw -Encoding UTF8
     $uses = [regex]::Match($bootstrap, '(?is)\buses\s+([^;]+);')
     if (-not $uses.Success) { throw 'Cannot read the modern standard-unit bootstrap.' }
     foreach ($module in $uses.Groups[1].Value.Split(',')) {

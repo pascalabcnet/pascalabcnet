@@ -31,6 +31,7 @@ New-Item -ItemType Directory -Path $stage -Force | Out-Null
     "-p:OutputPath=$stage\" -p:AppendTargetFrameworkToOutputPath=false `
     -p:SatelliteResourceLanguages=ru --disable-build-servers -m:1 --nologo
 if ($LASTEXITCODE -ne 0) { throw 'Unified .NET 10 runtime build failed.' }
+& (Join-Path $PSScriptRoot 'clean-net10-runtime-resources.ps1') -RuntimeDirectory $stage
 
 # The console projects also copy local bin assets. Replace these generated copies
 # with versioned runtime sources, excluding legacy binaries and compiled units.
@@ -80,6 +81,7 @@ $files = @(Get-ChildItem -LiteralPath $stage -Recurse -File | ForEach-Object {
     [ordered]@{ path = $_.FullName.Substring($stage.Length + 1); sha256 = Get-Sha256Hex $_.FullName }
 })
 New-Item -ItemType Directory -Path $destination -Force | Out-Null
+& (Join-Path $PSScriptRoot 'clean-net10-runtime-resources.ps1') -RuntimeDirectory $destination
 foreach ($file in $files) {
     $target = Join-Path $destination $file.path
     if ($file.path.StartsWith('Lib\') -and [IO.Path]::GetExtension($target) -eq '.pas') {

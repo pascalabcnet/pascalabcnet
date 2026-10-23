@@ -12,7 +12,7 @@ foreach ($ideAsset in @('Highlighting', 'Ico')) {
 }
 $destination = Join-Path $repositoryRoot ('.codex-build\runtime-export-tests\' + [Guid]::NewGuid().ToString('N'))
 & (Join-Path $PSScriptRoot 'export-net10-runtime.ps1') -Destination $destination
-$manifest = Get-Content -LiteralPath (Join-Path $source 'net10-runtime.manifest.json') -Raw | ConvertFrom-Json
+$manifest = Get-Content -LiteralPath (Join-Path $source 'net10-runtime.manifest.json') -Raw -Encoding UTF8 | ConvertFrom-Json
 foreach ($file in $manifest.files) {
     if ((Get-FileHash -LiteralPath (Join-Path $destination $file.path) -Algorithm SHA256).Hash -ne $file.sha256) {
         throw "Exported file differs: $($file.path)"
@@ -21,6 +21,9 @@ foreach ($file in $manifest.files) {
 $exported = @(Get-ChildItem -LiteralPath $destination -Recurse -File)
 if ($exported.Count -ne $manifest.files.Count + 1) { throw 'Export contains unlisted files.' }
 foreach ($file in $exported) {
+    if ($file.Name -in @('pabcnetc.dll.config', 'pabcnetcclear.dll.config')) {
+        throw "Framework config must not enter modern runtime: $($file.FullName)"
+    }
     if ($file.Extension -in @('.pdb', '.pcu') -or $file.Name -in @('NetMQ.dll', 'AsyncIO.dll', 'NaCl.dll')) {
         throw "Unexpected distribution file: $($file.FullName)"
     }

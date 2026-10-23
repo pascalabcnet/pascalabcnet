@@ -16,6 +16,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="App.ico" />
+    <None Remove="app.config" Condition="'$(TargetFramework)' == 'net10.0'" />
   </ItemGroup>
   <ItemGroup>
     <!-- Both console frontends use the same IDE command protocol. -->

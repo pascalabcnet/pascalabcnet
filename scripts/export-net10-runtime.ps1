@@ -16,7 +16,7 @@ if ($Destination -eq $source -or $Destination -eq (Join-Path $repositoryRoot 'bi
     $Destination -eq [IO.Path]::GetPathRoot($Destination)) { throw 'Unsafe export destination.' }
 $manifestPath = Join-Path $source 'net10-runtime.manifest.json'
 & (Join-Path $PSScriptRoot 'assert-net10-runtime.ps1') -RequireCompiledUnits:$IncludeCompiledUnits
-$manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+$manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $exportedFiles = @()
 foreach ($file in $manifest.files) {
     $inputFile = [IO.Path]::GetFullPath((Join-Path $source $file.path))

@@ -5,6 +5,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $repositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $scripts = Join-Path $repositoryRoot 'scripts'
+& (Join-Path $PSScriptRoot 'Test-RuntimeResourceCleanup.ps1')
 function Check([bool]$Condition, [string]$Message) {
     if (-not $Condition) { throw $Message }
     Write-Host "PASS $Message"
@@ -28,7 +29,10 @@ function Write-Fixture([string]$Path, [string]$Content) {
 $modernBootstrap = [IO.File]::ReadAllText((Join-Path $repositoryRoot 'ReleaseGenerators\RebuildStandartModulesNet10.pas'))
 $modernUses = [regex]::Match($modernBootstrap, '(?is)\buses\s+([^;]+);')
 $taskModules = @('LightPT', 'Tasks', 'Tasks1Arr', 'Tasks1Begin', 'Tasks1BoolIfCase',
-    'Tasks1Loops', 'TasksArr', 'TasksMatr', 'TasksStr')
+    'Tasks1Loops', 'TasksArr', 'TasksMatr', 'TasksStr',
+    'FormsABC', 'GraphWPF', 'GraphWPFBase', 'RBDMUtils', 'Robot', 'RobotField',
+    'RobotTaskMaker', 'RobotZadan', 'TurtleABC', 'WPFObjects', 'Мозаика',
+    'PT4Databases', 'PT4Exam', 'PT4MakerNetX', 'PT4TaskMakerNET')
 foreach ($module in $taskModules) {
     Check ($modernUses.Success -and @($modernUses.Groups[1].Value.Split(',') | ForEach-Object { $_.Trim() }) -contains $module) "production modern bootstrap includes $module"
 }

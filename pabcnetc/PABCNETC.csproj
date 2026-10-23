@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <None Remove="App.ico" />
+    <None Remove="app.config" Condition="'$(TargetFramework)' == 'net10.0'" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.ico" />
