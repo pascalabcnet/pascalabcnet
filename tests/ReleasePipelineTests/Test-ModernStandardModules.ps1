@@ -12,7 +12,7 @@ if (@(Get-ChildItem -LiteralPath $lib -Filter '*.pas' -Recurse).Count) {
     throw 'Use an installer payload with PCUs in Lib and navigation sources in LibSource.'
 }
 $modules = @('FormsABC', 'GraphWPF', 'GraphWPFBase', 'RBDMUtils', 'Robot', 'RobotField',
-    'RobotTaskMaker', 'RobotZadan', 'TurtleABC', 'WPFObjects', 'Мозаика',
+    'RobotTaskMaker', 'RobotZadan', 'TurtleABC', 'WPFObjects', 'Controls', 'Мозаика',
     'PT4Databases', 'PT4Exam', 'PT4MakerNetX', 'PT4TaskMakerNET')
 $work = Join-Path $repositoryRoot ('.codex-build\modern-standard-module-tests\' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $work -Force | Out-Null

@@ -31,7 +31,7 @@ $modernUses = [regex]::Match($modernBootstrap, '(?is)\buses\s+([^;]+);')
 $taskModules = @('LightPT', 'Tasks', 'Tasks1Arr', 'Tasks1Begin', 'Tasks1BoolIfCase',
     'Tasks1Loops', 'TasksArr', 'TasksMatr', 'TasksStr',
     'FormsABC', 'GraphWPF', 'GraphWPFBase', 'RBDMUtils', 'Robot', 'RobotField',
-    'RobotTaskMaker', 'RobotZadan', 'TurtleABC', 'WPFObjects', 'Мозаика',
+    'RobotTaskMaker', 'RobotZadan', 'TurtleABC', 'WPFObjects', 'Controls', 'Мозаика',
     'PT4Databases', 'PT4Exam', 'PT4MakerNetX', 'PT4TaskMakerNET')
 foreach ($module in $taskModules) {
     Check ($modernUses.Success -and @($modernUses.Groups[1].Value.Split(',') | ForEach-Object { $_.Trim() }) -contains $module) "production modern bootstrap includes $module"

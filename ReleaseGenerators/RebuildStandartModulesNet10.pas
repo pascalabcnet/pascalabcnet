@@ -32,6 +32,7 @@ uses
   RobotZadan,
   TurtleABC,
   WPFObjects,
+  Controls,
   Мозаика,
   PT4Databases,
   PT4Exam,

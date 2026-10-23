@@ -14,7 +14,7 @@ IntelliSense (известные файлы `*.resources.dll` в языковы�
 отдельный запуск — `tests/ReleasePipelineTests/Test-RuntimeResourceCleanup.ps1`.
 
 В modern-комплект предварительно собираются также FormsABC, GraphWPF,
-GraphWPFBase, WPFObjects, TurtleABC, Мозаика, Robot/RobotField/RobotTaskMaker/RobotZadan,
+GraphWPFBase, WPFObjects, Controls, TurtleABC, Мозаика, Robot/RobotField/RobotTaskMaker/RobotZadan,
 RBDMUtils и PT4Databases/PT4Exam/PT4MakerNetX/PT4TaskMakerNET.
 Их PCU обязательны при упаковке, исходники для навигации помещаются в `LibSource`.
 Проверка чтения этих PCU без исходников в `Lib`:
