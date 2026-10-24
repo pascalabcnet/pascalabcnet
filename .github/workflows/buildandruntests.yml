@@ -49,6 +49,10 @@ jobs:
       run: dotnet run --project tests\TypeLookupCacheTests\TypeLookupCacheTests.csproj --framework net472 --configuration Release -p:PABCNET_LEGACY_ONLY=true
       timeout-minutes: 3
 
+    - name: Check tuple rewriting inside key-value expressions
+      run: dotnet run --project tests\ToTupleTests\ToTupleTests.csproj --framework net472 --configuration Release -p:PABCNET_LEGACY_ONLY=true
+      timeout-minutes: 3
+
     - name: Check repository contents (warnings)
       working-directory: bin
       run: |

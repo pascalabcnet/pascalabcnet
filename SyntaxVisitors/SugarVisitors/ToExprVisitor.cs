@@ -25,6 +25,9 @@ namespace SyntaxVisitors.SugarVisitors
 
         public override void visit(to_expr to_ex)
         {
+            // Rewrite children while to_ex is still their parent in the visitor stack.
+            ProcessNode(to_ex.key);
+            ProcessNode(to_ex.value);
             var pairMethod =
                 new method_call(
                     new dot_node(
@@ -41,8 +44,6 @@ namespace SyntaxVisitors.SugarVisitors
                     to_ex.source_context);
 
             Replace(to_ex, pairMethod);
-            ProcessNode(to_ex.key);
-            ProcessNode(to_ex.value);
         }
     }
 }

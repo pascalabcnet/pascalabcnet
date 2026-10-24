@@ -1506,7 +1506,7 @@ namespace NodeGenerator
                     sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
                                  text_consts.case_keyword_name + text_consts.space + i + text_consts.colon);
                     sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
-                                 text_consts.tab + subnodesSyntaxNodes[i].field_name + text_consts.space +
+                                 text_consts.tab + "this." + subnodesSyntaxNodes[i].field_name + text_consts.space +
                                  text_consts.assign + text_consts.space + text_consts.open_par + subnodesSyntaxNodes[i].field_type_name + text_consts.close_par +
                                  text_consts.value_keyword + text_consts.semicolon);
                     sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +

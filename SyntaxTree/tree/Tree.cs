@@ -35228,7 +35228,7 @@ namespace PascalABCCompiler.SyntaxTree
 						name = (type_definition)value;
 						break;
 					case 1:
-						value = (expression)value;
+						this.value = (expression)value;
 						break;
 				}
 			}
@@ -56107,7 +56107,7 @@ namespace PascalABCCompiler.SyntaxTree
 						key = (expression)value;
 						break;
 					case 1:
-						value = (expression)value;
+						this.value = (expression)value;
 						break;
 				}
 			}
