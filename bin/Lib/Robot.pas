@@ -128,41 +128,56 @@ end;
 procedure Right;
 begin
   RobField.Right;
+  {$ifndef PABCNET_MODERN}
   if RobField.StepState then
     Stop
-  else RobField.Pause;
+  else
+  {$endif}
+    RobField.Pause;
 end;
 
 procedure Left;
 begin
   RobField.Left;
+  {$ifndef PABCNET_MODERN}
   if RobField.StepState then
     Stop
-  else RobField.Pause;
+  else
+  {$endif}
+    RobField.Pause;
 end;
 
 procedure Up;
 begin
   RobField.Up;
+  {$ifndef PABCNET_MODERN}
   if RobField.StepState then
     Stop
-  else RobField.Pause;
+  else
+  {$endif}
+    RobField.Pause;
 end;
 
 procedure Down;
 begin
   RobField.Down;
+  {$ifndef PABCNET_MODERN}
   if RobField.StepState then
     Stop
-  else RobField.Pause;
+  else
+  {$endif}
+    RobField.Pause;
 end;
 
 procedure Paint;
 begin
   RobField.Paint;
+  {$ifndef PABCNET_MODERN}
   if RobField.StepState then
     Stop
-  else RobField.Pause;
+  else
+  {$endif}
+    RobField.Pause;
 end;
 
 function FreeFromRight: boolean;

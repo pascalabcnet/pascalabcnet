@@ -32,9 +32,22 @@ $taskModules = @('LightPT', 'Tasks', 'Tasks1Arr', 'Tasks1Begin', 'Tasks1BoolIfCa
     'Tasks1Loops', 'TasksArr', 'TasksMatr', 'TasksStr',
     'FormsABC', 'GraphWPF', 'GraphWPFBase', 'RBDMUtils', 'Robot', 'RobotField',
     'RobotTaskMaker', 'RobotZadan', 'TurtleABC', 'WPFObjects', 'Controls', 'Мозаика',
-    'PT4Databases', 'PT4Exam', 'PT4MakerNetX', 'PT4TaskMakerNET')
+    'PT4Databases', 'PT4Exam', 'PT4MakerNetX', 'PT4TaskMakerNET',
+    'DMCollect', 'DMTaskMaker', 'DMZadan', 'Drawman', 'DrawManField')
 foreach ($module in $taskModules) {
     Check ($modernUses.Success -and @($modernUses.Groups[1].Value.Split(',') | ForEach-Object { $_.Trim() }) -contains $module) "production modern bootstrap includes $module"
+}
+
+$executorModules = @('RBDMUtils', 'Robot', 'RobotField', 'RobotTaskMaker', 'RobotZadan',
+    'DMCollect', 'DMTaskMaker', 'DMZadan', 'Drawman', 'DrawManField')
+$linuxPackaging = [IO.File]::ReadAllText((Join-Path $repositoryRoot '_GenerateLinuxVersion.bat'))
+$monoBootstrap = [IO.File]::ReadAllText((Join-Path $repositoryRoot 'ReleaseGenerators\RebuildStandartModulesMono.pas'))
+$legacyPackaging = [IO.File]::ReadAllText((Join-Path $repositoryRoot 'ReleaseGenerators\sect_Core.nsh'))
+foreach ($module in $executorModules) {
+    $escaped = [regex]::Escape($module)
+    Check ($monoBootstrap -match "(?i)\b$escaped\b") "Mono bootstrap includes $module"
+    Check ($linuxPackaging -match "(?im)^copy bin\\Lib\\$escaped\.pcu Release\\PascalABCNETLinux\\Lib\\$escaped\.pcu\s*$") "Linux package includes $module PCU"
+    Check ($legacyPackaging -match "(?im)^\s*File \.\.\\bin\\Lib\\$escaped\.pcu\s*$") "Framework installer includes $module PCU"
 }
 
 # Run the real packaging and validation scripts in a tiny disposable checkout.

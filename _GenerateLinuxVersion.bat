@@ -102,6 +102,7 @@ copy bin\Lib\Robot.pcu Release\PascalABCNETLinux\Lib\Robot.pcu
 copy bin\Lib\RobotField.pcu Release\PascalABCNETLinux\Lib\RobotField.pcu
 copy bin\Lib\RobotTaskMaker.pcu Release\PascalABCNETLinux\Lib\RobotTaskMaker.pcu
 copy bin\Lib\RobotZadan.pcu Release\PascalABCNETLinux\Lib\RobotZadan.pcu
+copy bin\Lib\RBDMUtils.pcu Release\PascalABCNETLinux\Lib\RBDMUtils.pcu
 copy bin\Lib\Sounds.pcu Release\PascalABCNETLinux\Lib\Sounds.pcu
 copy bin\Lib\School.pcu Release\PascalABCNETLinux\Lib\School.pcu
 copy bin\Lib\SF.pcu Release\PascalABCNETLinux\Lib\SF.pcu
@@ -153,6 +154,7 @@ copy bin\Lib\Robot.pas Release\PascalABCNETLinux\LibSource\Robot.pas
 copy bin\Lib\RobotField.pas Release\PascalABCNETLinux\LibSource\RobotField.pas
 copy bin\Lib\RobotTaskMaker.pas Release\PascalABCNETLinux\LibSource\RobotTaskMaker.pas
 copy bin\Lib\RobotZadan.pas Release\PascalABCNETLinux\LibSource\RobotZadan.pas
+copy bin\Lib\RBDMUtils.pas Release\PascalABCNETLinux\LibSource\RBDMUtils.pas
 copy bin\Lib\School.pas Release\PascalABCNETLinux\LibSource\School.pas
 copy bin\Lib\SF.pas Release\PascalABCNETLinux\LibSource\SF.pas
 copy bin\Lib\Sounds.pas Release\PascalABCNETLinux\LibSource\Sounds.pas

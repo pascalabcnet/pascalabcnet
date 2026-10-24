@@ -15,7 +15,10 @@ IntelliSense (известные файлы `*.resources.dll` в языковы�
 
 В modern-комплект предварительно собираются также FormsABC, GraphWPF,
 GraphWPFBase, WPFObjects, Controls, TurtleABC, Мозаика, Robot/RobotField/RobotTaskMaker/RobotZadan,
-RBDMUtils и PT4Databases/PT4Exam/PT4MakerNetX/PT4TaskMakerNET.
+RBDMUtils, Drawman/DrawManField/DMCollect/DMTaskMaker/DMZadan
+и PT4Databases/PT4Exam/PT4MakerNetX/PT4TaskMakerNET.
+Полный комплект Робота и Чертёжника, включая RBDMUtils, включается также
+в Linux-дистрибутив; состав обеих групп проверяет Test-ReleasePipeline.ps1.
 Их PCU обязательны при упаковке, исходники для навигации помещаются в `LibSource`.
 Проверка чтения этих PCU без исходников в `Lib`:
 `tests/ReleasePipelineTests/Test-ModernStandardModules.ps1 -RuntimeDirectory <папка Net10 из установщика>`.

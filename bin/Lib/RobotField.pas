@@ -181,6 +181,97 @@ var
   t: System.Threading.Thread;
   
   ScreenScale: real := 1;
+
+{$ifdef PABCNET_MODERN}
+// BEGIN MODERN ROBOT EXECUTION GATE (also compiled by RobotPauseTests).
+type
+  TRobotExecutionGate = class
+  private
+    sync: object := new object;
+    running: boolean := True;
+    failed: boolean;
+    steps: integer;
+  public
+    procedure Pause;
+    begin
+      lock sync do
+      begin
+        running := False;
+        steps := 0;
+      end;
+    end;
+
+    procedure Run;
+    begin
+      lock sync do
+        if not failed then
+        begin
+          running := True;
+          steps := 0;
+          System.Threading.Monitor.PulseAll(sync);
+        end;
+    end;
+
+    procedure Step;
+    begin
+      lock sync do
+        if not failed and not running then
+        begin
+          Inc(steps);
+          System.Threading.Monitor.PulseAll(sync);
+        end;
+    end;
+
+    procedure Fail;
+    begin
+      lock sync do
+      begin
+        failed := True;
+        running := False;
+        steps := 0;
+      end;
+    end;
+
+    function IsPaused: boolean;
+    begin
+      lock sync do
+        Result := not running;
+    end;
+
+    procedure Wait(consumeStep: boolean);
+    begin
+      lock sync do
+      begin
+        while failed or (not running and (steps = 0)) do
+          System.Threading.Monitor.Wait(sync);
+        if consumeStep and not running then
+          Dec(steps);
+      end;
+    end;
+  end;
+// END MODERN ROBOT EXECUTION GATE.
+
+var robotExecution := new TRobotExecutionGate;
+
+procedure WaitForRobot(consumeStep: boolean);
+begin
+  // UI callbacks must never wait for the program thread.
+  if System.Threading.Thread.CurrentThread = t then
+    robotExecution.Wait(consumeStep);
+end;
+
+procedure SetRobotPausedControls;
+begin
+  buttonStart.Text := 'Пуск (Enter)';
+  buttonStep.Enabled := True;
+end;
+
+procedure SetRobotRunningControls;
+begin
+  buttonStart.Text := 'Стоп (Enter)';
+  buttonStep.Enabled := False;
+end;
+{$endif}
   
 //------------ Вспомогательные -------------
 procedure SetLabelStepText(s: string);
@@ -512,6 +603,9 @@ end;
 
 procedure TRobotField.CheckTaskCall;
 begin
+  {$ifdef PABCNET_MODERN}
+  WaitForRobot(False);
+  {$endif}
   if not TaskIsCalled then
     RobotError('Процедура Task вызова задания должна быть первой','Выполнение программы прервано');
 end;
@@ -520,7 +614,12 @@ procedure TRobotField.Right;
 begin
   CheckTaskCall;
   if not WallFromRight then 
-    MoveRobot(RobotX+1,RobotY)
+  begin
+    {$ifdef PABCNET_MODERN}
+    WaitForRobot(True);
+    {$endif}
+    MoveRobot(RobotX+1,RobotY);
+  end
   else RobotError('Робот: врезался в правую стену');
 end;
 
@@ -528,7 +627,12 @@ procedure TRobotField.Left;
 begin
   CheckTaskCall;
   if not WallFromLeft then 
-    MoveRobot(RobotX-1,RobotY)
+  begin
+    {$ifdef PABCNET_MODERN}
+    WaitForRobot(True);
+    {$endif}
+    MoveRobot(RobotX-1,RobotY);
+  end
   else RobotError('Робот: врезался в левую стену');
 end;
 
@@ -536,7 +640,12 @@ procedure TRobotField.Up;
 begin
   CheckTaskCall;
   if not WallFromUp then 
-    MoveRobot(RobotX,RobotY-1)
+  begin
+    {$ifdef PABCNET_MODERN}
+    WaitForRobot(True);
+    {$endif}
+    MoveRobot(RobotX,RobotY-1);
+  end
   else RobotError('Робот: врезался в верхнюю стену');
 end;
 
@@ -544,13 +653,21 @@ procedure TRobotField.Down;
 begin
   CheckTaskCall;
   if not WallFromDown then 
-    MoveRobot(RobotX,RobotY+1)
+  begin
+    {$ifdef PABCNET_MODERN}
+    WaitForRobot(True);
+    {$endif}
+    MoveRobot(RobotX,RobotY+1);
+  end
   else RobotError('Робот: врезался в нижнюю стену');
 end;
 
 procedure TRobotField.Paint;
 begin
   CheckTaskCall;
+  {$ifdef PABCNET_MODERN}
+  WaitForRobot(True);
+  {$endif}
   Inc(movenum);
   SetSafeLabelStepText('Шаг: ' + IntToStr(movenum));
 //  labelStep.Text := 'Шаг: ' + IntToStr(movenum);
@@ -560,6 +677,9 @@ end;
 
 procedure TRobotField.Pause;
 begin
+  {$ifdef PABCNET_MODERN}
+  WaitForRobot(False);
+  {$endif}
   Sleep(Interval);
 end;
 
@@ -618,16 +738,27 @@ end;
 
 procedure TRobotField.Stop;
 begin
+  {$ifdef PABCNET_MODERN}
+  robotExecution.Pause;
+  MainForm.Invoke(SetRobotPausedControls);
+  WaitForRobot(False);
+  {$else}
   buttonStart.Text := 'Пуск (Enter)';
   buttonStep.Enabled := True;
   t.Suspend;
+  {$endif}
 end;
  
 procedure TRobotField.Start;
 begin
+  {$ifdef PABCNET_MODERN}
+  MainForm.Invoke(SetRobotRunningControls);
+  robotExecution.Run;
+  {$else}
   buttonStart.Text := 'Стоп (Enter)';
   buttonStep.Enabled := False;
   t.Resume;
+  {$endif}
 end;
 
 procedure TRobotField.Clear;
@@ -727,7 +858,11 @@ procedure buttonStartClick(o: Object; e: EventArgs);
 begin
   if t=nil then 
     exit;
+  {$ifdef PABCNET_MODERN}
+  if robotExecution.IsPaused then
+  {$else}
   if t.ThreadState = System.Threading.ThreadState.Suspended then
+  {$endif}
   begin
     robField.StepFlag := False;
     labelExState.Text := 'Робот: Выполняю задание';
@@ -747,7 +882,11 @@ begin
   if t=nil then 
     exit;
   robField.StepFlag := True;
+  {$ifdef PABCNET_MODERN}
+  robotExecution.Step;
+  {$else}
   t.Resume;
+  {$endif}
   (GraphABCControl as Control).Focus;
   labelExState.Text := 'Робот: Команда выполнена';
 end;
@@ -1046,12 +1185,19 @@ begin
   labelExState.BackColor := LabelErrorColor;
   labelExState.Text := s;
   tableLayoutPanelBottom.BackColor := LabelErrorColor;
+  {$ifdef PABCNET_MODERN}
+  robotExecution.Fail;
+  {$else}
   t.Suspend;
+  {$endif}
 end;
 
 procedure RobotError(s: string);
 begin
   buttonStart.Invoke(NonSafeRobotError,s);
+  {$ifdef PABCNET_MODERN}
+  WaitForRobot(False);
+  {$endif}
 end;
 
 procedure RobotError(s,s1: string);

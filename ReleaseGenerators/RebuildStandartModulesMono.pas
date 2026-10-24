@@ -2,7 +2,7 @@
    PABCSystem, PABCExtensions, __RedirectIOMode, __RunMode,
    GraphABC,GraphABCHelper, ABCObjects, 
    DMCollect, DMTaskMaker, DMZadan, Drawman, DrawManField,
-   Robot, RobotField, RobotTaskMaker, RobotZadan,
+   Robot, RobotField, RobotTaskMaker, RobotZadan, RBDMUtils,
    Events, FilesOperations, 
    //NumLibABC,
    IniFile, PointerTools, PointRect, 

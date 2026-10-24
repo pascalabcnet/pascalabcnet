@@ -157,6 +157,97 @@ var
   
   ScreenScale: real := 1;
 
+{$ifdef PABCNET_MODERN}
+// BEGIN MODERN DRAWMAN EXECUTION GATE (also compiled by DrawmanPauseTests).
+type
+  TDrawmanExecutionGate = class
+  private
+    sync: object := new object;
+    running: boolean := True;
+    failed: boolean;
+    steps: integer;
+  public
+    procedure Pause;
+    begin
+      lock sync do
+      begin
+        running := False;
+        steps := 0;
+      end;
+    end;
+
+    procedure Run;
+    begin
+      lock sync do
+        if not failed then
+        begin
+          running := True;
+          steps := 0;
+          System.Threading.Monitor.PulseAll(sync);
+        end;
+    end;
+
+    procedure Step;
+    begin
+      lock sync do
+        if not failed and not running then
+        begin
+          Inc(steps);
+          System.Threading.Monitor.PulseAll(sync);
+        end;
+    end;
+
+    procedure Fail;
+    begin
+      lock sync do
+      begin
+        failed := True;
+        running := False;
+        steps := 0;
+      end;
+    end;
+
+    function IsPaused: boolean;
+    begin
+      lock sync do
+        Result := not running;
+    end;
+
+    procedure Wait(consumeStep: boolean);
+    begin
+      lock sync do
+      begin
+        while failed or (not running and (steps = 0)) do
+          System.Threading.Monitor.Wait(sync);
+        if consumeStep and not running then
+          Dec(steps);
+      end;
+    end;
+  end;
+// END MODERN DRAWMAN EXECUTION GATE.
+
+var drawmanExecution := new TDrawmanExecutionGate;
+
+procedure WaitForDrawman(consumeStep: boolean);
+begin
+  // UI callbacks must never wait for the program thread.
+  if System.Threading.Thread.CurrentThread = t then
+    drawmanExecution.Wait(consumeStep);
+end;
+
+procedure SetDrawmanPausedControls;
+begin
+  buttonStart.Text := 'Пуск (Enter)';
+  buttonStep.Enabled := True;
+end;
+
+procedure SetDrawmanRunningControls;
+begin
+  buttonStart.Text := 'Стоп (Enter)';
+  buttonStep.Enabled := False;
+end;
+{$endif}
+
 //------------ Вспомогательные -------------
 procedure SetLabelStepText(s: string);
 begin
@@ -407,6 +498,9 @@ end;
 procedure TDMField.PenUp;
 begin
   CheckTaskCall;
+  {$ifdef PABCNET_MODERN}
+  WaitForDrawman(True);
+  {$endif}
   ClearDM;
   PenIsUp := True;
   DrawDM;
@@ -417,6 +511,9 @@ end;
 procedure TDMField.PenDown;
 begin
   CheckTaskCall;
+  {$ifdef PABCNET_MODERN}
+  WaitForDrawman(True);
+  {$endif}
   ClearDM;
   PenIsUp := False;
   DrawDM;
@@ -427,6 +524,9 @@ end;
 procedure TDMField.ToPoint(x,y: integer);
 begin
   CheckTaskCall;
+  {$ifdef PABCNET_MODERN}
+  WaitForDrawman(True);
+  {$endif}
   ClearDM;
   if (x<orx) or (x>DimX+orx) or (y<ory) or (y>DimY+ory) then
     DrawmanError('Чертежник: вышел за границы поля рисования','Задание прервано');
@@ -475,20 +575,34 @@ end;
 
 procedure TDMField.Stop;
 begin
+  {$ifdef PABCNET_MODERN}
+  drawmanExecution.Pause;
+  MainForm.Invoke(SetDrawmanPausedControls);
+  WaitForDrawman(False);
+  {$else}
   buttonStart.Text := 'Пуск (Enter)';
   buttonStep.Enabled := True;
   t.Suspend;
+  {$endif}
 end;
  
 procedure TDMField.Start;
 begin
+  {$ifdef PABCNET_MODERN}
+  MainForm.Invoke(SetDrawmanRunningControls);
+  drawmanExecution.Run;
+  {$else}
   buttonStart.Text := 'Стоп (Enter)';
   buttonStep.Enabled := False;
   t.Resume;
+  {$endif}
 end;
 
 procedure TDMField.Pause;
 begin
+  {$ifdef PABCNET_MODERN}
+  WaitForDrawman(False);
+  {$endif}
   Sleep(Interval);
 end;
 
@@ -521,6 +635,9 @@ end;
 
 procedure TDMField.CheckTaskCall;
 begin
+  {$ifdef PABCNET_MODERN}
+  WaitForDrawman(False);
+  {$endif}
   if not TaskIsCalled then
     DrawManError('Процедура Task вызова задания должна быть первой','Выполнение программы прервано');
 end;
@@ -592,7 +709,11 @@ procedure buttonStartClick(o: Object; e: EventArgs);
 begin
   if t=nil then 
     exit;
+  {$ifdef PABCNET_MODERN}
+  if drawmanExecution.IsPaused then
+  {$else}
   if t.ThreadState = System.Threading.ThreadState.Suspended then
+  {$endif}
   begin
     DMField.StepFlag := False;
     labelExState.Text := 'Чертежник: Выполняю задание';
@@ -612,7 +733,11 @@ begin
   if t=nil then 
     exit;
   DMField.StepFlag := True;
+  {$ifdef PABCNET_MODERN}
+  drawmanExecution.Step;
+  {$else}
   t.Resume;
+  {$endif}
   (GraphABCControl as Control).Focus;
   labelExState.Text := 'Чертежник: Команда выполнена';
 end;
@@ -910,12 +1035,19 @@ begin
   labelExState.BackColor := LabelErrorColor;
   labelExState.Text := s;
   tableLayoutPanelBottom.BackColor := LabelErrorColor;
+  {$ifdef PABCNET_MODERN}
+  drawmanExecution.Fail;
+  {$else}
   t.Suspend;
+  {$endif}
 end;
 
 procedure DrawmanError(s: string);
 begin
   buttonStart.Invoke(NonSafeDrawmanError,s);
+  {$ifdef PABCNET_MODERN}
+  WaitForDrawman(False);
+  {$endif}
 end;
 
 procedure DrawmanError(s,s1: string);

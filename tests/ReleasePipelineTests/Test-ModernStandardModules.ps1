@@ -13,7 +13,8 @@ if (@(Get-ChildItem -LiteralPath $lib -Filter '*.pas' -Recurse).Count) {
 }
 $modules = @('FormsABC', 'GraphWPF', 'GraphWPFBase', 'RBDMUtils', 'Robot', 'RobotField',
     'RobotTaskMaker', 'RobotZadan', 'TurtleABC', 'WPFObjects', 'Controls', 'Мозаика',
-    'PT4Databases', 'PT4Exam', 'PT4MakerNetX', 'PT4TaskMakerNET')
+    'PT4Databases', 'PT4Exam', 'PT4MakerNetX', 'PT4TaskMakerNET',
+    'DMCollect', 'DMTaskMaker', 'DMZadan', 'Drawman', 'DrawManField')
 $work = Join-Path $repositoryRoot ('.codex-build\modern-standard-module-tests\' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $work -Force | Out-Null
 foreach ($module in $modules) {

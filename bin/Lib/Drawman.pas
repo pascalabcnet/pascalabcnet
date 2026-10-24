@@ -80,33 +80,45 @@ end;
 procedure PenUp;
 begin
   DMField.PenUp;
+  {$ifndef PABCNET_MODERN}
   if DMField.StepState then
     Stop
-  else DMField.Pause;
+  else
+  {$endif}
+    DMField.Pause;
 end;
 
 procedure PenDown;
 begin
   DMField.PenDown;
+  {$ifndef PABCNET_MODERN}
   if DMField.StepState then
     Stop
-  else DMField.Pause;
+  else
+  {$endif}
+    DMField.Pause;
 end;
 
 procedure ToPoint(x,y: integer);
 begin
   DMField.ToPoint(x,y);
+  {$ifndef PABCNET_MODERN}
   if DMField.StepState then
     Stop
-  else DMField.Pause;
+  else
+  {$endif}
+    DMField.Pause;
 end;
 
 procedure OnVector(a,b: integer);
 begin
   DMField.OnVector(a,b);
+  {$ifndef PABCNET_MODERN}
   if DMField.StepState then
     Stop
-  else DMField.Pause;
+  else
+  {$endif}
+    DMField.Pause;
 end;
 
 procedure StandardField;
