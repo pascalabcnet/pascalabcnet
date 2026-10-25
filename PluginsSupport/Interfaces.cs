@@ -463,6 +463,7 @@ namespace VisualPascalABCPlugins
         IWorkbenchOperationsService OperationsService { get; }
         IWorkbenchUpdateService UpdateService { get;  }
         ICodeCompletionService CodeCompletionService { get; }
+        IInlineCompletionService InlineCompletionService { get; }
     }
 
     public interface ICodeCompletionService

@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using VisualPascalABCPlugins;
+using PascalABCCompiler.Contracts;
 
 namespace VisualPascalABC
 {
@@ -99,6 +98,11 @@ namespace VisualPascalABC
         public ICodeCompletionService CodeCompletionService
         {
             get { return WorkbenchServiceFactory.CodeCompletionService; }
+        }
+
+        public IInlineCompletionService InlineCompletionService
+        {
+            get { return WorkbenchServiceFactory.InlineCompletionService; }
         }
     }
 
@@ -250,6 +254,19 @@ namespace VisualPascalABC
                 return _codeCompletionParserController;
             }
         }
+
+        private static IInlineCompletionService inlineCompletionService;
+
+        public static IInlineCompletionService InlineCompletionService
+        {
+            get
+            {
+                if (inlineCompletionService == null)
+                    inlineCompletionService = new CodeCompletion.FullLineCompletionManager();
+                return inlineCompletionService;
+            }
+        }
+
     }
 
     public static class WorkbenchStorage
