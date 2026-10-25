@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.SystemLibrary;
 using PascalABCCompiler.TreeConverter;

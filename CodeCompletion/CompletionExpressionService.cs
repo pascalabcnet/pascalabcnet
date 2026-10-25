@@ -4,8 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Languages.Facade;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 using PascalABCCompiler.SyntaxTree;
 
 namespace CodeCompletion
@@ -35,7 +34,7 @@ namespace CodeCompletion
         public string Pattern { get; internal set; }
         public bool InsidePatternWithDots { get; internal set; }
         public bool CtrlOrShiftSpaceAfterDot { get; internal set; }
-        public PascalABCCompiler.Parsers.KeywordKind Keyword { get; internal set; }
+        public KeywordKind Keyword { get; internal set; }
     }
 
     /// <summary>
@@ -71,7 +70,7 @@ namespace CodeCompletion
             int column,
             ILanguageIntellisenseSupport intellisenseSupport,
             CompletionTriggerContext context,
-            PascalABCCompiler.Parsers.KeywordKind keyword)
+            KeywordKind keyword)
         {
             var result = new CompletionExpressionInfo
             {
@@ -123,7 +122,7 @@ namespace CodeCompletion
             int column,
             ILanguageIntellisenseSupport intellisenseSupport,
             CompletionTriggerContext context,
-            PascalABCCompiler.Parsers.KeywordKind keyword)
+            KeywordKind keyword)
         {
             if (textBeforeCaret == null)
                 throw new ArgumentNullException(nameof(textBeforeCaret));

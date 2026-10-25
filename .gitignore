@@ -38,6 +38,7 @@
 **/CodeCompletion.dll
 **/CodeTemplatesPlugin.dll
 **/Compiler.dll
+**/Contracts.dll
 **/CompilerController.dll
 **/CompileNet10Plugin.dll
 **/CompilerTools.dll

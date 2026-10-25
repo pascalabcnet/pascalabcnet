@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using PascalABCCompiler;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeRealization;
 using System;
@@ -12,28 +12,6 @@ using System.Reflection;
 
 namespace CodeCompletion
 {
-    public enum KeywordKind
-    {
-        kw_none,
-        kw_new,
-        kw_proc,
-        kw_constr,
-        kw_destr,
-        kw_uses,
-        kw_inherited,
-        kw_raise,
-        kw_type,
-        kw_var,
-        kw_unit,
-        kw_punkt,
-        kw_colon,
-        kw_const,
-        kw_program,
-        kw_of,
-        kw_typedecl
-    }
-
-
 
     public class ExtensionMethodsCache
     {
@@ -260,28 +238,28 @@ namespace CodeCompletion
             }
         }
 
-        public virtual PascalABCCompiler.Parsers.SymbolKind ElemKind
+        public virtual SymbolKind ElemKind
         {
             get
             {
                 switch (si.kind)
                 {
-                    case SymbolKind.Block: return PascalABCCompiler.Parsers.SymbolKind.Block;
-                    case SymbolKind.Class: return PascalABCCompiler.Parsers.SymbolKind.Class;
-                    case SymbolKind.Constant: return PascalABCCompiler.Parsers.SymbolKind.Constant;
-                    case SymbolKind.Delegate: return PascalABCCompiler.Parsers.SymbolKind.Delegate;
-                    case SymbolKind.Enum: return PascalABCCompiler.Parsers.SymbolKind.Enum;
-                    case SymbolKind.Event: return PascalABCCompiler.Parsers.SymbolKind.Event;
-                    case SymbolKind.Field: return PascalABCCompiler.Parsers.SymbolKind.Field;
-                    case SymbolKind.Interface: return PascalABCCompiler.Parsers.SymbolKind.Interface;
-                    case SymbolKind.Method: return PascalABCCompiler.Parsers.SymbolKind.Method;
-                    case SymbolKind.Parameter: return PascalABCCompiler.Parsers.SymbolKind.Parameter;
-                    case SymbolKind.Property: return PascalABCCompiler.Parsers.SymbolKind.Property;
-                    case SymbolKind.Struct: return PascalABCCompiler.Parsers.SymbolKind.Struct;
-                    case SymbolKind.Type: return PascalABCCompiler.Parsers.SymbolKind.Type;
-                    case SymbolKind.Variable: return PascalABCCompiler.Parsers.SymbolKind.Variable;
+                    case SymbolKind.Block: return SymbolKind.Block;
+                    case SymbolKind.Class: return SymbolKind.Class;
+                    case SymbolKind.Constant: return SymbolKind.Constant;
+                    case SymbolKind.Delegate: return SymbolKind.Delegate;
+                    case SymbolKind.Enum: return SymbolKind.Enum;
+                    case SymbolKind.Event: return SymbolKind.Event;
+                    case SymbolKind.Field: return SymbolKind.Field;
+                    case SymbolKind.Interface: return SymbolKind.Interface;
+                    case SymbolKind.Method: return SymbolKind.Method;
+                    case SymbolKind.Parameter: return SymbolKind.Parameter;
+                    case SymbolKind.Property: return SymbolKind.Property;
+                    case SymbolKind.Struct: return SymbolKind.Struct;
+                    case SymbolKind.Type: return SymbolKind.Type;
+                    case SymbolKind.Variable: return SymbolKind.Variable;
                 }
-                return PascalABCCompiler.Parsers.SymbolKind.Block;
+                return SymbolKind.Block;
             }
         }
 
@@ -2114,9 +2092,9 @@ namespace CodeCompletion
             }
         }
 
-        public override PascalABCCompiler.Parsers.SymbolKind ElemKind
+        public override SymbolKind ElemKind
         {
-            get { return PascalABCCompiler.Parsers.SymbolKind.Delegate; }
+            get { return SymbolKind.Delegate; }
         }
 
         public override ScopeKind Kind
@@ -2228,7 +2206,7 @@ namespace CodeCompletion
             return lst.ToArray();
         }
 
-        public override SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
+        public override SymInfo[] GetNames(ExpressionVisitor ev, KeywordKind keyword, bool called_in_base)
         {
             return parent.GetNames(ev, keyword, called_in_base);
         }
@@ -2955,7 +2933,7 @@ namespace CodeCompletion
             return null;
         }
 
-        public override SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
+        public override SymInfo[] GetNames(ExpressionVisitor ev, KeywordKind keyword, bool called_in_base)
         {
             return base.GetNames(ev, keyword, true);
         }
@@ -3015,7 +2993,7 @@ namespace CodeCompletion
             return null;
         }
 
-        public override SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
+        public override SymInfo[] GetNames(ExpressionVisitor ev, KeywordKind keyword, bool called_in_base)
         {
             return null;
         }
@@ -3141,7 +3119,7 @@ namespace CodeCompletion
             return null;
         }
 
-        public override SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
+        public override SymInfo[] GetNames(ExpressionVisitor ev, KeywordKind keyword, bool called_in_base)
         {
             if (this.baseScope != null)
                 return this.baseScope.GetNames(ev, keyword, called_in_base);
@@ -3339,7 +3317,7 @@ namespace CodeCompletion
             return actType.GetNames();
         }
 
-        public override SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
+        public override SymInfo[] GetNames(ExpressionVisitor ev, KeywordKind keyword, bool called_in_base)
         {
             return actType.GetNames(ev, keyword, called_in_base);
         }
@@ -3524,7 +3502,7 @@ namespace CodeCompletion
             return actType.GetNames();
         }
 
-        public override SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
+        public override SymInfo[] GetNames(ExpressionVisitor ev, KeywordKind keyword, bool called_in_base)
         {
             return actType.GetNames(ev, keyword, called_in_base);
         }
@@ -3785,7 +3763,7 @@ namespace CodeCompletion
             return this;
         }
 
-        public override SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
+        public override SymInfo[] GetNames(ExpressionVisitor ev, KeywordKind keyword, bool called_in_base)
         {
             if (is_dynamic_arr || IsMultiDynArray)
             {
@@ -4064,7 +4042,7 @@ namespace CodeCompletion
             return new SymInfo[0];
         }
 
-        public override SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
+        public override SymInfo[] GetNames(ExpressionVisitor ev, KeywordKind keyword, bool called_in_base)
         {
             return new SymInfo[0];
         }
@@ -4190,7 +4168,7 @@ namespace CodeCompletion
             return new SymInfo[0];
         }
 
-        public override SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
+        public override SymInfo[] GetNames(ExpressionVisitor ev, KeywordKind keyword, bool called_in_base)
         {
             return new SymInfo[0];
         }
@@ -4278,7 +4256,7 @@ namespace CodeCompletion
             return new SymInfo[0];
         }
 
-        public override SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
+        public override SymInfo[] GetNames(ExpressionVisitor ev, KeywordKind keyword, bool called_in_base)
         {
             return new SymInfo[0];
         }
@@ -4427,10 +4405,10 @@ namespace CodeCompletion
             si = new SymInfo("type", kind, "type");
             switch (kind)
             {
-                case SymbolKind.Struct: si.description = CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Struct); break;
-                case SymbolKind.Class: si.description = CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Class); break;
-                case SymbolKind.Interface: si.description = CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Interface); break;
-                case SymbolKind.Enum: si.description = CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Enum); break;
+                case SymbolKind.Struct: si.description = CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.GetKeyword(SymbolKind.Struct); break;
+                case SymbolKind.Class: si.description = CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.GetKeyword(SymbolKind.Class); break;
+                case SymbolKind.Interface: si.description = CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.GetKeyword(SymbolKind.Interface); break;
+                case SymbolKind.Enum: si.description = CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.GetKeyword(SymbolKind.Enum); break;
             }
 
         }
@@ -5243,14 +5221,14 @@ namespace CodeCompletion
 
         //poluchit imena s klassa s kluchevym slovom
         //vyzyvaetsja, kogda procedure TClass. tut vse ekzemplarnye i staticheskie
-        public virtual SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
+        public virtual SymInfo[] GetNames(ExpressionVisitor ev, KeywordKind keyword, bool called_in_base)
         {
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in GetMergedMembers())
             {
                 if (!IsHiddenName(ss.si.name))
                 {
-                    if (keyword != PascalABCCompiler.Parsers.KeywordKind.Function && keyword != PascalABCCompiler.Parsers.KeywordKind.Constructor && keyword != PascalABCCompiler.Parsers.KeywordKind.Destructor/*!(ev.entry_scope is InterfaceUnitScope) && !(ev.entry_scope is ImplementationUnitScope)*/)
+                    if (keyword != KeywordKind.Function && keyword != KeywordKind.Constructor && keyword != KeywordKind.Destructor/*!(ev.entry_scope is InterfaceUnitScope) && !(ev.entry_scope is ImplementationUnitScope)*/)
                     {
                         if (ss.si.acc_mod == access_modifer.private_modifer)
                         {
@@ -5276,7 +5254,7 @@ namespace CodeCompletion
                     {
                         if (ss is ProcScope && !(ss as ProcScope).already_defined)
                         {
-                            if (keyword == PascalABCCompiler.Parsers.KeywordKind.Function || keyword == PascalABCCompiler.Parsers.KeywordKind.Destructor)
+                            if (keyword == KeywordKind.Function || keyword == KeywordKind.Destructor)
                                 lst.Add(ss.WithRefreshedDescription().si);
                             else if ((ss as ProcScope).IsConstructor())
                                 lst.Add(ss.WithRefreshedDescription().si);
@@ -5290,7 +5268,7 @@ namespace CodeCompletion
             if (this.documentation != null && this.documentation.Contains("!#") && baseScope is CompiledScope)
                 return lst.ToArray();
 
-            if (baseScope != null && keyword != PascalABCCompiler.Parsers.KeywordKind.Constructor && keyword != PascalABCCompiler.Parsers.KeywordKind.Destructor)
+            if (baseScope != null && keyword != KeywordKind.Constructor && keyword != KeywordKind.Destructor)
                 lst.AddRange(baseScope.GetNames(ev, keyword, true));
             /*if (topScope != null)
                 lst.AddRange(topScope.GetNames());*/
@@ -5619,14 +5597,14 @@ namespace CodeCompletion
             return new_si;
         }
 
-        public SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword)
+        public SymInfo[] GetNames(ExpressionVisitor ev, KeywordKind keyword)
         {
             List<SymInfo> syms = new List<SymInfo>();
             Type[] types = PascalABCCompiler.NetHelper.NetHelper.FindTypesInNamespace(name);
             string[] ns = PascalABCCompiler.NetHelper.NetHelper.FindSubNamespaces(name);
 
             Hashtable ht = new Hashtable();
-            if (keyword != PascalABCCompiler.Parsers.KeywordKind.Uses)
+            if (keyword != KeywordKind.Uses)
                 if (types != null)
                     foreach (Type t in types)
                     {
@@ -6084,16 +6062,16 @@ namespace CodeCompletion
             }
         }
 
-        public override PascalABCCompiler.Parsers.SymbolKind ElemKind
+        public override SymbolKind ElemKind
         {
             get
             {
-                if (TypeUtility.IsStandType(ctn)) return PascalABCCompiler.Parsers.SymbolKind.Type;
-                if (ctn.IsClass) return PascalABCCompiler.Parsers.SymbolKind.Class;
-                if (ctn.IsEnum) return PascalABCCompiler.Parsers.SymbolKind.Enum;
-                if (ctn.IsValueType) return PascalABCCompiler.Parsers.SymbolKind.Struct;
-                if (ctn.IsInterface) return PascalABCCompiler.Parsers.SymbolKind.Interface;
-                return PascalABCCompiler.Parsers.SymbolKind.Type;
+                if (TypeUtility.IsStandType(ctn)) return SymbolKind.Type;
+                if (ctn.IsClass) return SymbolKind.Class;
+                if (ctn.IsEnum) return SymbolKind.Enum;
+                if (ctn.IsValueType) return SymbolKind.Struct;
+                if (ctn.IsInterface) return SymbolKind.Interface;
+                return SymbolKind.Type;
             }
         }
 
@@ -6568,7 +6546,7 @@ namespace CodeCompletion
             return CodeCompletionController.CurrentLanguage?.LanguageIntellisenseSupport.GetDescription(this);
         }
 
-        public override SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
+        public override SymInfo[] GetNames(ExpressionVisitor ev, KeywordKind keyword, bool called_in_base)
         {
             List<SymInfo> syms = new List<SymInfo>();
             if (!CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.IncludeDotNetEntities)
@@ -8318,7 +8296,7 @@ namespace CodeCompletion
         //				if (!with_scopes[i].is_type)
         //				lst.AddRange(with_scopes[i].ss.GetNamesAsInObject(ev));
         //				else
-        //				lst.AddRange((with_scopes[i].ss as TypeScope).GetNames(ev,PascalABCCompiler.Parsers.KeywordKind.None));
+        //				lst.AddRange((with_scopes[i].ss as TypeScope).GetNames(ev,KeywordKind.None));
         //			}
         //			lst.AddRange(topScope.GetNames(ev));
         //			return lst.ToArray();
@@ -8333,7 +8311,7 @@ namespace CodeCompletion
                 if (!with_scopes[i].is_type)
                     lst.AddRange(with_scopes[i].ss.GetNamesAsInObject(ev));
                 else
-                    lst.AddRange((with_scopes[i].ss as TypeScope).GetNames(ev, PascalABCCompiler.Parsers.KeywordKind.None, false));
+                    lst.AddRange((with_scopes[i].ss as TypeScope).GetNames(ev, KeywordKind.None, false));
             }
             lst.AddRange(topScope.GetNamesInAllTopScopes(all_names, ev, is_static));
             return lst.ToArray();

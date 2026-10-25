@@ -141,7 +141,7 @@ private SPythonKeywords keywords;
   private LexLocation prevLexLocation 
   = new LexLocation(-1, -1, -1, -1, "");
 
-  public Scanner(string text, SPythonParserTools parserTools, PascalABCCompiler.Parsers.BaseKeywords keywords, List<string> defines = null) 
+  public Scanner(string text, SPythonParserTools parserTools, PascalABCCompiler.Contracts.BaseKeywords keywords, List<string> defines = null) 
   {
     this.parserTools = parserTools;
     this.keywords = (SPythonKeywords)keywords;

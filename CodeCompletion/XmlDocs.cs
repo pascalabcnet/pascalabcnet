@@ -9,13 +9,13 @@ using System.Xml;
 using System.Reflection;
 using System.Text;
 using System.Globalization;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 
 namespace CodeCompletion
 {
 	public class AbstractDispatcher
 	{
-        public virtual void Update(PascalABCCompiler.Parsers.SymInfo si)
+        public virtual void Update(SymInfo si)
 		{
 			
 		}

@@ -12,6 +12,7 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\LambdaAnySynToSemConverter\LambdaAnySynToSemConverter.csproj" />
     <ProjectReference Include="..\LanguageIntegrator\LanguageIntegrator.csproj" />
     <ProjectReference Include="..\Parsers\PascalABCParserNewSaushkin\PascalABCSaushkinParser.csproj" />

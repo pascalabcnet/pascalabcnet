@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks Condition="'$(PABCNET_LEGACY_ONLY)' != 'true'">net472;net10.0</TargetFrameworks>
+    <TargetFramework Condition="'$(PABCNET_LEGACY_ONLY)' == 'true'">net472</TargetFramework>
+
+    <RootNamespace>PascalABCCompiler.Contracts</RootNamespace>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Errors\Errors.csproj" />
+    <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj" />
+  </ItemGroup>
+</Project>

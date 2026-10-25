@@ -11,7 +11,7 @@
 	private bool HiddenIdents = false;
 	private bool ExprMode = false;
 
-  public Scanner(string text, PascalParserTools parserTools, PascalABCCompiler.Parsers.BaseKeywords keywords, List<string> defines = null) 
+  public Scanner(string text, PascalParserTools parserTools, PascalABCCompiler.Contracts.BaseKeywords keywords, List<string> defines = null) 
   {
     this.parserTools = parserTools;
     this.keywords = (PascalABCKeywords)keywords;

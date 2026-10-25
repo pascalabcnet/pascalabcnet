@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 using PascalABCCompiler.Errors;
 using System.IO;
 using Languages.Facade;
@@ -373,11 +373,11 @@ namespace CodeCompletion
         {
         }
 
-        public PascalABCCompiler.Parsers.KeywordKind GetKeywordKind(string name)
+        public KeywordKind GetKeywordKind(string name)
         {
             if (CodeCompletionController.IntellisenseAvailable())
             	return CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.GetKeywordKind(name);
-            return PascalABCCompiler.Parsers.KeywordKind.None;
+            return KeywordKind.None;
         }
 
         public bool IsKeyword(string name)

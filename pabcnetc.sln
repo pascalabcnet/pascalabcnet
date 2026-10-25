@@ -69,6 +69,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPythonParser", "Additional
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PABCCoreUtils", "CoreUtils\PABCCoreUtils.csproj", "{EB7AFD92-6376-05DF-B47D-0BF77A4EAC43}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{8D819584-4EC2-52ED-CD78-AA7BA4C26214}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -341,6 +343,18 @@ Global
 		{EB7AFD92-6376-05DF-B47D-0BF77A4EAC43}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{EB7AFD92-6376-05DF-B47D-0BF77A4EAC43}.Release|x86.ActiveCfg = Release|Any CPU
 		{EB7AFD92-6376-05DF-B47D-0BF77A4EAC43}.Release|x86.Build.0 = Release|Any CPU
+		{8D819584-4EC2-52ED-CD78-AA7BA4C26214}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D819584-4EC2-52ED-CD78-AA7BA4C26214}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D819584-4EC2-52ED-CD78-AA7BA4C26214}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8D819584-4EC2-52ED-CD78-AA7BA4C26214}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8D819584-4EC2-52ED-CD78-AA7BA4C26214}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8D819584-4EC2-52ED-CD78-AA7BA4C26214}.Debug|x86.Build.0 = Debug|Any CPU
+		{8D819584-4EC2-52ED-CD78-AA7BA4C26214}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D819584-4EC2-52ED-CD78-AA7BA4C26214}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D819584-4EC2-52ED-CD78-AA7BA4C26214}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8D819584-4EC2-52ED-CD78-AA7BA4C26214}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{8D819584-4EC2-52ED-CD78-AA7BA4C26214}.Release|x86.ActiveCfg = Release|Any CPU
+		{8D819584-4EC2-52ED-CD78-AA7BA4C26214}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -375,6 +389,7 @@ Global
 		{15D55C2B-37A6-850E-D0CF-74C43CBB9E3F} = {DFCE8D21-EF89-4922-B662-65CF93E0F61B}
 		{CEEEDB1E-B0E1-283E-13C3-BFE73FE8A446} = {DFCE8D21-EF89-4922-B662-65CF93E0F61B}
 		{EB7AFD92-6376-05DF-B47D-0BF77A4EAC43} = {F8CE2712-826B-450B-A72F-D32D80C99858}
+		{8D819584-4EC2-52ED-CD78-AA7BA4C26214} = {F8CE2712-826B-450B-A72F-D32D80C99858}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {761C7A47-891E-47CF-B674-0C2B53D2E48C}

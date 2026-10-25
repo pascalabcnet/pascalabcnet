@@ -3,7 +3,7 @@
 
 using System;
 using System.Linq;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 using PascalABCCompiler.SyntaxTree;
 
 namespace CodeCompletion
@@ -73,7 +73,7 @@ namespace CodeCompletion
             bool insidePatternWithDots,
             string pattern,
             expression expression,
-            PascalABCCompiler.Parsers.KeywordKind keyword,
+            KeywordKind keyword,
             bool smartIntellisense,
             int namespaceVisibleRange)
         {

@@ -12,6 +12,7 @@ del Release\PascalABCNETLinux.zip
 copy bin\CodeCompletion.dll Release\PascalABCNETLinux\CodeCompletion.dll
 copy bin\Compiler.dll Release\PascalABCNETLinux\Compiler.dll
 copy bin\CompilerTools.dll Release\PascalABCNETLinux\CompilerTools.dll
+copy bin\Contracts.dll Release\PascalABCNETLinux\Contracts.dll
 copy bin\Debugger.Core.dll Release\PascalABCNETLinux\Debugger.Core.dll
 copy bin\Errors.dll Release\PascalABCNETLinux\Errors.dll
 copy bin\ICSharpCode.Core.dll Release\PascalABCNETLinux\ICSharpCode.Core.dll

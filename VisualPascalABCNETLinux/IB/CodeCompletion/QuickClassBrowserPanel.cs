@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using CodeCompletion;
 using System.Threading;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 
 namespace VisualPascalABC
 {
@@ -747,7 +747,7 @@ namespace VisualPascalABC
             this.membersComboBox.Location = new System.Drawing.Point(198, 0);
             this.membersComboBox.Margin = new System.Windows.Forms.Padding(3, 3, 3, 1);
             this.membersComboBox.Name = "membersComboBox";
-            this.membersComboBox.Size = new System.Drawing.Size(212, 22);
+            this.membersComboBox.Size = new System.Drawing.Size(212, 29);
             this.membersComboBox.TabIndex = 1;
             this.membersComboBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ComboBoxDrawItem);
             this.membersComboBox.DropDown += new System.EventHandler(this.ComboBoxDropDown);
@@ -764,7 +764,7 @@ namespace VisualPascalABC
             this.classComboBox.Location = new System.Drawing.Point(1, 0);
             this.classComboBox.Margin = new System.Windows.Forms.Padding(3, 3, 3, 1);
             this.classComboBox.Name = "classComboBox";
-            this.classComboBox.Size = new System.Drawing.Size(189, 22);
+            this.classComboBox.Size = new System.Drawing.Size(189, 29);
             this.classComboBox.TabIndex = 0;
             this.classComboBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ComboBoxDrawItem);
             this.classComboBox.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.MeasureComboBoxItem);
@@ -776,7 +776,7 @@ namespace VisualPascalABC
             this.Controls.Add(this.membersComboBox);
             this.Controls.Add(this.classComboBox);
             this.Name = "QuickClassBrowserPanel";
-            this.Size = new System.Drawing.Size(410, 23);
+            this.Size = new System.Drawing.Size(410, 30);
             this.Resize += new System.EventHandler(this.QuickClassBrowserPanelResize);
             this.ResumeLayout(false);
 
