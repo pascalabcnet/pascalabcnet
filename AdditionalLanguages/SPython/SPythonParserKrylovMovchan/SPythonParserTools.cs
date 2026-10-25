@@ -4,10 +4,9 @@ using System.Linq;
 
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.ParserTools;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 using System.Text;
 using PascalABCCompiler.Errors;
-using PascalABCCompiler.ParserTools.Directives;
 using QUT.Gppg;
 using System.Text.RegularExpressions;
 using Languages.Facade;
@@ -112,7 +111,7 @@ namespace SPythonParser
         }
 
         public SPythonParserTools(List<Error> errors, List<CompilerWarning> warnings,
-            Dictionary<string, DirectiveInfo> validDirectives, bool buildTreeForFormatter = false, bool buildTreeForFormatterStrings = false,
+            Dictionary<string, IDirectiveInfo> validDirectives, bool buildTreeForFormatter = false, bool buildTreeForFormatterStrings = false,
             string currentFileName = null, List<compiler_directive> compilerDirectives = null) 
             : base(errors, warnings, validDirectives, buildTreeForFormatter, buildTreeForFormatterStrings, currentFileName, compilerDirectives)
         {

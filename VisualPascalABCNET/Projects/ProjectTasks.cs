@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using ICSharpCode.FormsDesigner;
 using PascalABCCompiler;
-using PascalABCCompiler.Parsers;
 
 namespace VisualPascalABC
 {

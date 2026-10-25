@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using Languages.Facade;
 using PascalABCCompiler;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.TreeRealization;
@@ -3508,24 +3508,24 @@ namespace CodeCompletion
         private void add_standart_types(SymScope cur_scope, ILanguageIntellisenseSupport languageIntellisenseSupport)
         {
 
-            var standardTypesData = new List<Tuple<PascalABCCompiler.Parsers.KeywordKind, CompiledScope>>()
+            var standardTypesData = new List<Tuple<KeywordKind, CompiledScope>>()
             {
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.ObjectType, TypeTable.obj_type),
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.IntType, TypeTable.int_type),
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.DoubleType, TypeTable.real_type),
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.StringType, TypeTable.string_type),
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.CharType, TypeTable.char_type),
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.BoolType, TypeTable.bool_type),
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.ByteType, TypeTable.byte_type),
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.ShortType, TypeTable.int16_type),
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.SByteType, TypeTable.sbyte_type),
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.UShortType, TypeTable.uint16_type),
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.UIntType, TypeTable.uint32_type),
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.Int64Type, TypeTable.int64_type),
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.UIntType, TypeTable.uint32_type),
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.UInt64Type, TypeTable.uint64_type),
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.FloatType, TypeTable.float_type),
-                Tuple.Create(PascalABCCompiler.Parsers.KeywordKind.PointerType, TypeTable.ptr_type)
+                Tuple.Create(KeywordKind.ObjectType, TypeTable.obj_type),
+                Tuple.Create(KeywordKind.IntType, TypeTable.int_type),
+                Tuple.Create(KeywordKind.DoubleType, TypeTable.real_type),
+                Tuple.Create(KeywordKind.StringType, TypeTable.string_type),
+                Tuple.Create(KeywordKind.CharType, TypeTable.char_type),
+                Tuple.Create(KeywordKind.BoolType, TypeTable.bool_type),
+                Tuple.Create(KeywordKind.ByteType, TypeTable.byte_type),
+                Tuple.Create(KeywordKind.ShortType, TypeTable.int16_type),
+                Tuple.Create(KeywordKind.SByteType, TypeTable.sbyte_type),
+                Tuple.Create(KeywordKind.UShortType, TypeTable.uint16_type),
+                Tuple.Create(KeywordKind.UIntType, TypeTable.uint32_type),
+                Tuple.Create(KeywordKind.Int64Type, TypeTable.int64_type),
+                Tuple.Create(KeywordKind.UIntType, TypeTable.uint32_type),
+                Tuple.Create(KeywordKind.UInt64Type, TypeTable.uint64_type),
+                Tuple.Create(KeywordKind.FloatType, TypeTable.float_type),
+                Tuple.Create(KeywordKind.PointerType, TypeTable.ptr_type)
             };
 
             foreach (var data in standardTypesData)

@@ -5,7 +5,7 @@ using PascalABCCompiler.SyntaxTree;
 using System.Linq;
 using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
-using PascalABCCompiler.ParserTools.Directives;
+using PascalABCCompiler.Contracts;
 
 namespace Languages.Pascal.Frontend.Core
 {
@@ -66,7 +66,7 @@ namespace Languages.Pascal.Frontend.Core
         }
 
         public PascalParserTools(List<Error> errors, List<CompilerWarning> warnings,
-            Dictionary<string, DirectiveInfo> validDirectives, bool buildTreeForFormatter = false, bool buildTreeForFormatterStrings = false,
+            Dictionary<string, IDirectiveInfo> validDirectives, bool buildTreeForFormatter = false, bool buildTreeForFormatterStrings = false,
             string currentFileName = null, List<compiler_directive> compilerDirectives = null) 
             : base(errors, warnings, validDirectives, buildTreeForFormatter, buildTreeForFormatterStrings, currentFileName, compilerDirectives)
         {

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using PascalABCCompiler.CoreUtils;
+using PascalABCCompiler.Contracts;
 
 namespace VisualPascalABC
 {
@@ -38,9 +39,9 @@ namespace VisualPascalABC
             ccp = new CodeCompletionProvider();
         }
 
-        public PascalABCCompiler.Parsers.ICodeCompletionDomConverter GetConverter(string fileName)
+        public ICodeCompletionDomConverter GetConverter(string fileName)
         {
-            return CodeCompletion.CodeCompletionController.comp_modules[fileName] as PascalABCCompiler.Parsers.ICodeCompletionDomConverter;
+            return CodeCompletion.CodeCompletionController.comp_modules[fileName] as ICodeCompletionDomConverter;
         }
 
         public static string CurrentTwoLetterISO

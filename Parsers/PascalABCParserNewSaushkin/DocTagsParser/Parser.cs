@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using PascalABCCompiler;
 
 
 namespace Languages.Pascal.Frontend.Documentation

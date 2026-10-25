@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.Contracts;
 
 namespace PascalABCCompiler.Parsers
 {

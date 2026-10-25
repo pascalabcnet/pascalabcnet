@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
@@ -9,7 +8,7 @@ using PascalABCCompiler.SyntaxTree;
 using System.Reflection;
 using PascalABCCompiler;
 using PascalABCCompiler.TreeRealization;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 
 namespace CodeCompletion
 {
@@ -151,7 +150,7 @@ namespace CodeCompletion
             return visitor.entry_scope.IsAssembliesChanged();
         }
 
-        public definition_node[] GetNamesAfterDot(expression expr, string str, int line, int col, PascalABCCompiler.Parsers.KeywordKind keyword, ref definition_node root)
+        public definition_node[] GetNamesAfterDot(expression expr, string str, int line, int col, KeywordKind keyword, ref definition_node root)
         {
             unit.SemanticTree.find_by_location(line, col);
             return null;
@@ -160,7 +159,7 @@ namespace CodeCompletion
         /// <summary>
         /// Получение имен после точки
         /// </summary>
-        public SymInfo[] GetName(expression expr, string str, int line, int col, PascalABCCompiler.Parsers.KeywordKind keyword, ref SymScope root)
+        public SymInfo[] GetName(expression expr, string str, int line, int col, KeywordKind keyword, ref SymScope root)
         {
             if (visitor.cur_scope == null) return null;
             if (col + 1 > str.Length)
@@ -219,7 +218,7 @@ namespace CodeCompletion
                     else
                     {
                         if (ev.entry_scope.InUsesRange(line + 1, col + 1))
-                            keyword = PascalABCCompiler.Parsers.KeywordKind.Uses;
+                            keyword = KeywordKind.Uses;
                         RestoreCurrentUsedAssemblies();
                         return (si as NamespaceScope).GetNames(ev, keyword);
                     }
@@ -423,13 +422,13 @@ namespace CodeCompletion
         /// <summary>
         /// Получение описания символа
         /// </summary>
-        public IBaseScope GetSymDefinition(expression expr, int line, int col, PascalABCCompiler.Parsers.KeywordKind keyword)
+        public IBaseScope GetSymDefinition(expression expr, int line, int col, KeywordKind keyword)
         {
             if (visitor.cur_scope == null) return null;
             SymScope ss = visitor.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
             if (ss == null) return null;
             bool on_proc = false;
-            if (keyword == PascalABCCompiler.Parsers.KeywordKind.Function || keyword == PascalABCCompiler.Parsers.KeywordKind.Constructor || keyword == PascalABCCompiler.Parsers.KeywordKind.Destructor)
+            if (keyword == KeywordKind.Function || keyword == KeywordKind.Constructor || keyword == KeywordKind.Destructor)
             {
                 if (ss is ProcRealization)
                 {
@@ -629,7 +628,7 @@ namespace CodeCompletion
                             }
 
                         }
-                        string s = CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.GetSimpleDescriptionWithoutNamespace((si as ElementScope).sc as PascalABCCompiler.Parsers.ITypeScope);
+                        string s = CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.GetSimpleDescriptionWithoutNamespace((si as ElementScope).sc as ITypeScope);
                         if (s != out_si.name)
                             out_si.addit_name = s;
                     }
@@ -702,7 +701,7 @@ namespace CodeCompletion
         /// <summary>
         /// Получить определение expr
         /// </summary>
-        public List<Position> GetDefinition(expression expr, int line, int col, PascalABCCompiler.Parsers.KeywordKind keyword, bool only_check)
+        public List<Position> GetDefinition(expression expr, int line, int col, KeywordKind keyword, bool only_check)
         {
             List<Position> poses = new List<Position>();
             Position pos = new Position(); pos.line = -1; pos.column = -1;
@@ -713,7 +712,7 @@ namespace CodeCompletion
                 if (ss == null) return poses;
                 bool on_proc = false;
                 SetCurrentUsedAssemblies();
-                if (keyword == PascalABCCompiler.Parsers.KeywordKind.Function || keyword == PascalABCCompiler.Parsers.KeywordKind.Constructor || keyword == PascalABCCompiler.Parsers.KeywordKind.Destructor)
+                if (keyword == KeywordKind.Function || keyword == KeywordKind.Constructor || keyword == KeywordKind.Destructor)
                 {
                     if (ss is ProcRealization)
                     {
@@ -926,7 +925,7 @@ namespace CodeCompletion
         /// <summary>
         /// Получить реализацию expr
         /// </summary>
-        public List<Position> GetRealization(expression expr, int line, int col, PascalABCCompiler.Parsers.KeywordKind keyword)
+        public List<Position> GetRealization(expression expr, int line, int col, KeywordKind keyword)
         {
             List<Position> poses = new List<Position>();
             Position pos = new Position(); pos.line = -1; pos.column = -1;
@@ -938,7 +937,7 @@ namespace CodeCompletion
                 //if (!(expr is ident && string.Compare((expr as ident).name,ss.si.name) == 0))
                 bool on_proc = false;
                 SetCurrentUsedAssemblies();
-                if (keyword == PascalABCCompiler.Parsers.KeywordKind.Function || keyword == PascalABCCompiler.Parsers.KeywordKind.Constructor || keyword == PascalABCCompiler.Parsers.KeywordKind.Destructor)
+                if (keyword == KeywordKind.Function || keyword == KeywordKind.Constructor || keyword == KeywordKind.Destructor)
                 {
                     if (ss is ProcRealization)
                     {
@@ -991,7 +990,7 @@ namespace CodeCompletion
         /// <summary>
         /// Получить описание элемента при наведении мышью
         /// </summary>
-        public string GetDescription(expression expr, string FileName, string expr_without_brackets, int line, int col, PascalABCCompiler.Parsers.KeywordKind keyword, bool header)
+        public string GetDescription(expression expr, string FileName, string expr_without_brackets, int line, int col, KeywordKind keyword, bool header)
         {
             if (visitor.cur_scope == null) return null;
             SymScope ss = visitor.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
@@ -1006,7 +1005,7 @@ namespace CodeCompletion
             }
             bool on_proc = false;
             SetCurrentUsedAssemblies();
-            if (keyword == PascalABCCompiler.Parsers.KeywordKind.Function || keyword == PascalABCCompiler.Parsers.KeywordKind.Constructor || keyword == PascalABCCompiler.Parsers.KeywordKind.Destructor)
+            if (keyword == KeywordKind.Function || keyword == KeywordKind.Constructor || keyword == KeywordKind.Destructor)
             {
                 if (ss is ProcRealization)
                 {
@@ -1031,7 +1030,7 @@ namespace CodeCompletion
                 ExpressionVisitor ev = new ExpressionVisitor(expr, ss, visitor);
                 ev.mouse_hover = true;
                 ss = ev.GetScopeOfExpression();
-                if (ss == null && keyword == PascalABCCompiler.Parsers.KeywordKind.SquareBracket && 
+                if (ss == null && keyword == KeywordKind.SquareBracket && 
                     expr is ident && !(expr as ident).name.EndsWith("Attribute"))
                 {
                     (expr as ident).name = (expr as ident).name + "Attribute";

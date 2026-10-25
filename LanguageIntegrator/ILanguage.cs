@@ -3,8 +3,9 @@
 
 using System.Collections.Generic;
 using PascalABCCompiler.Parsers;
-using PascalABCCompiler.SyntaxTreeConverters;
+using PascalABCCompiler.Contracts;
 using PascalABCCompiler.TreeConverter;
+using PascalABCCompiler.SyntaxTreeConverters;
 
 namespace Languages.Facade
 {

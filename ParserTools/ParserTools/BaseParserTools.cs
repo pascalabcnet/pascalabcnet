@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using QUT.Gppg;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 using PascalABCCompiler.ParserTools.Directives;
 using System.Text;
 
@@ -40,10 +40,10 @@ namespace PascalABCCompiler.ParserTools
 
         public abstract Dictionary<string, string> TokenNum { get; protected set; } // строки, соответствующие терминалам, для вывода ошибок - SSM
 
-        public Dictionary<string, DirectiveInfo> ValidDirectives { get; private set; }
+        public Dictionary<string, IDirectiveInfo> ValidDirectives { get; private set; }
 
         protected BaseParserTools(List<Error> errors, List<CompilerWarning> warnings,
-            Dictionary<string, DirectiveInfo> validDirectives, bool buildTreeForFormatter, bool buildTreeForFormatterStrings,
+            Dictionary<string, IDirectiveInfo> validDirectives, bool buildTreeForFormatter, bool buildTreeForFormatterStrings,
             string currentFileName, List<compiler_directive> compilerDirectives)
         {
             this.errors = errors;
@@ -221,7 +221,7 @@ namespace PascalABCCompiler.ParserTools
             string paramsString = directiveText.Substring(directiveText.IndexOf(directiveName) + directiveName.Length);
 
             // если кавычки используются как специальные символы (для объединения нескольких слов в одно)
-            if (ValidDirectives[directiveName].quotesAreSpecialSymbols)
+            if (ValidDirectives[directiveName].QuotesAreSpecialSymbols)
             {
                 directiveParams = SplitDirectiveParamsWithQuotesAsSpecialSymbols(paramsString);
             }
@@ -270,13 +270,13 @@ namespace PascalABCCompiler.ParserTools
         {
             var directiveInfo = ValidDirectives[directiveName];
 
-            if (directiveInfo.checkParamsNumNeeded)
+            if (directiveInfo.CheckParamsNumNeeded)
             {
                 // случай директивы, переданной без параметров
                 if (directiveParams.Count == 0)
                 {
                     // если не поддерживается 0 параметров (та же проверка, что и ниже, но сообщение об ошибке здесь более подходящее для данного случая)
-                    if (!directiveInfo.paramsNums.Contains(0))
+                    if (!directiveInfo.ParamsNums.Contains(0))
                     {
                         AddErrorFromResource("MISSING_DIRECTIVE_PARAM{0}", loc, directiveName);
                         return false;
@@ -285,14 +285,14 @@ namespace PascalABCCompiler.ParserTools
                 }
 
                 // проверка на добавление параметров директиве без параметров
-                if (directiveInfo.paramsNums.Length == 1 && directiveInfo.paramsNums[0] == 0)
+                if (directiveInfo.ParamsNums.Length == 1 && directiveInfo.ParamsNums[0] == 0)
                 {
                     AddErrorFromResource("UNNECESSARY_DIRECTIVE_PARAM{0}", loc, directiveName);
                     return false;
                 }
 
                 // проверка кол-ва параметров директивы (наиболее общая)
-                if (!directiveInfo.paramsNums.Contains(directiveParams.Count))
+                if (!directiveInfo.ParamsNums.Contains(directiveParams.Count))
                 {
                     AddWrongNumberOfParamsError(directiveName, directiveParams, loc, directiveInfo);
                     return false;
@@ -312,12 +312,12 @@ namespace PascalABCCompiler.ParserTools
         /// <summary>
         /// Формирование ошибки неправильного кол-ва параметров директивы в зависимости от возможных количеств из DirectiveInfo
         /// </summary>
-        private void AddWrongNumberOfParamsError(string directiveName, List<string> directiveParams, SourceContext loc, DirectiveInfo directiveInfo)
+        private void AddWrongNumberOfParamsError(string directiveName, List<string> directiveParams, SourceContext loc, IDirectiveInfo directiveInfo)
         {
             string paramsNumString = "";
-            int maxParamsNum = directiveInfo.paramsNums.Max();
+            int maxParamsNum = directiveInfo.ParamsNums.Max();
 
-            if (directiveInfo.paramsNums.Length > 1)
+            if (directiveInfo.ParamsNums.Length > 1)
             {
                 if (directiveParams.Count > maxParamsNum)
                 {
@@ -327,8 +327,8 @@ namespace PascalABCCompiler.ParserTools
             }
             else
             {
-                string paramString = directiveInfo.paramsNums[0] > 1 ? GetFromStringResources("PARAM_MULTIPLE2") : GetFromStringResources("PARAM_SINGLE1");
-                paramsNumString = GetFromStringResources("EXACTLY") + " " + directiveInfo.paramsNums[0] + " " + paramString;
+                string paramString = directiveInfo.ParamsNums[0] > 1 ? GetFromStringResources("PARAM_MULTIPLE2") : GetFromStringResources("PARAM_SINGLE1");
+                paramsNumString = GetFromStringResources("EXACTLY") + " " + directiveInfo.ParamsNums[0] + " " + paramString;
             }
 
             AddErrorFromResource("DIRECTIVE_WRONG_NUMBER_OF_PARAMS{0}{1}", loc, directiveName, paramsNumString);

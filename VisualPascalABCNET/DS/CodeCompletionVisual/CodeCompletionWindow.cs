@@ -42,7 +42,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		Rectangle workingScreen;
         Point lastCursorScreenPosition;
 
-        public static PABCNETCodeCompletionWindow ShowCompletionWindow(Form parent, TextEditorControl control, string fileName, ICompletionDataProvider completionDataProvider, char firstChar, bool visibleKeyPressed, bool is_by_dot,PascalABCCompiler.Parsers.KeywordKind keyw)
+        public static PABCNETCodeCompletionWindow ShowCompletionWindow(Form parent, TextEditorControl control, string fileName, ICompletionDataProvider completionDataProvider, char firstChar, bool visibleKeyPressed, bool is_by_dot,PascalABCCompiler.Contracts.KeywordKind keyw)
 		{
         	ICompletionData[] completionData = (completionDataProvider as VisualPascalABC.CodeCompletionProvider).GenerateCompletionDataWithKeyword(fileName, control.ActiveTextAreaControl.TextArea, firstChar, keyw);
 			if (completionData == null || completionData.Length == 0) {
@@ -82,7 +82,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
         	this.codeCompletionListView.CalcWidth();
         }
         
-        public static PABCNETCodeCompletionWindow ShowCompletionWindowWithFirstChar(Form parent, TextEditorControl control, string fileName, ICompletionDataProvider completionDataProvider, char firstChar, PascalABCCompiler.Parsers.KeywordKind keyw)
+        public static PABCNETCodeCompletionWindow ShowCompletionWindowWithFirstChar(Form parent, TextEditorControl control, string fileName, ICompletionDataProvider completionDataProvider, char firstChar, PascalABCCompiler.Contracts.KeywordKind keyw)
         {
         	ICompletionData[] completionData = (completionDataProvider as VisualPascalABC.CodeCompletionProvider).GenerateCompletionDataByFirstChar(fileName, control.ActiveTextAreaControl.TextArea, firstChar, keyw);
         	if (completionData == null || completionData.Length == 0) {

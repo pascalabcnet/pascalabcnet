@@ -25,7 +25,7 @@ namespace CodeCompletion
             if (language == null || domConverter == null)
                 return null;
 
-            PascalABCCompiler.Parsers.KeywordKind keyword;
+            PascalABCCompiler.Contracts.KeywordKind keyword;
             string expressionWithoutBrackets;
             var expressionText = language.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(
                 offset, text, line, column, out keyword, out expressionWithoutBrackets);
