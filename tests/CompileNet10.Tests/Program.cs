@@ -286,6 +286,12 @@ internal static partial class Program
     {
         try
         {
+            if (args.Length == 2 && args[0] == "--runtime-location")
+            {
+                System.Threading.SynchronizationContext.SetSynchronizationContext(null);
+                await CheckRuntimeLocation(Path.GetFullPath(args[1]));
+                return 0;
+            }
             if (args.Length > 0 && args[0] == "--runtime-default")
             {
                 CheckRuntimeAvailability();

@@ -248,7 +248,7 @@ namespace PascalABCCompiler.NETGenerator
         }
 
 #if PABCNET_MODERN
-        private DebugDirectoryBuilder GeneratePdb(string pdbFileName, MetadataBuilder pdbBuilder,
+        private BlobContentId GeneratePdb(string pdbFileName, MetadataBuilder pdbBuilder,
             ImmutableArray<int> rowCounts, MethodDefinitionHandle entryPointHandle)
         {
             var portablePdbBlob = new BlobBuilder();
@@ -257,9 +257,7 @@ namespace PascalABCCompiler.NETGenerator
             using (var fileStream = new FileStream(pdbFileName, FileMode.Create, FileAccess.Write))
                 portablePdbBlob.WriteContentTo(fileStream);
 
-            var debugDirectoryBuilder = new DebugDirectoryBuilder();
-            debugDirectoryBuilder.AddCodeViewEntry(pdbFileName, pdbContentId, portablePdbBuilder.FormatVersion);
-            return debugDirectoryBuilder;
+            return pdbContentId;
         }
 #endif
 
@@ -313,8 +311,23 @@ namespace PascalABCCompiler.NETGenerator
         {
             if (!save_debug_info || doc == null)
                 return;
+#if PABCNET_MODERN
+            // The legacy sentinel is not a hidden sequence point in Portable PDB.
+            if (bl == 0xFFFFFF)
+            {
+                bl = el = 0xFEEFEE;
+                bc = 0;
+                ec = -1; // exclusive end column below becomes zero
+            }
+#endif
             //if (make_next_spoint)
             ilg.MarkSequencePoint(doc, bl, bc, el, ec + 1);
+#if PABCNET_MODERN
+            // Portable PDB reserves a zero offset delta for a document-change record.
+            // PersistedAssemblyBuilder retains repeated marks at the same IL offset;
+            // reserve a real (no-op) instruction for each mark, including empty blocks.
+            ilg.Emit(OpCodes.Nop);
+#endif
             make_next_spoint = true;
         }
 
@@ -1356,10 +1369,12 @@ namespace PascalABCCompiler.NETGenerator
             }
 
             DebugDirectoryBuilder debugDirectoryBuilder = null;
+            string pdbFileName = Path.Combine(Path.GetDirectoryName(TargetFileName), an.Name + ".pdb");
             if (save_debug_info)
             {
-                string pdbFileName = Path.Combine(Path.GetDirectoryName(TargetFileName), an.Name + ".pdb");
-                debugDirectoryBuilder = GeneratePdb(pdbFileName, pdbBuilder, metadata.GetRowCounts(), entryPointHandle);
+                debugDirectoryBuilder = new DebugDirectoryBuilder();
+                debugDirectoryBuilder.AddCodeViewEntry(pdbFileName, default,
+                    new PortablePdbBuilder(pdbBuilder, metadata.GetRowCounts(), entryPointHandle).FormatVersion);
             }
             var peBuilder = new ManagedPEBuilder(
                 header: headerBuilder,
@@ -1370,8 +1385,15 @@ namespace PascalABCCompiler.NETGenerator
                 entryPoint: entryPointHandle);
             var peBlob = new BlobBuilder();
             peBuilder.Serialize(peBlob);
-            using (var output = new FileStream(TargetFileName, FileMode.Create, FileAccess.Write))
-                peBlob.WriteContentTo(output);
+            byte[] peImage = peBlob.ToArray();
+            if (save_debug_info)
+            {
+                using var reader = new PEReader(new MemoryStream(peImage, false));
+                pdbBuilder = PortablePdbAlignment.Align(reader.GetMetadataReader(), pdbBuilder, metadata.GetRowCounts(), entryPointHandle);
+                var pdbId = GeneratePdb(pdbFileName, pdbBuilder, metadata.GetRowCounts(), entryPointHandle);
+                PortablePdbAlignment.BindCodeView(peImage, reader, pdbId);
+            }
+            File.WriteAllBytes(TargetFileName, peImage);
 
             if (comp_opt.target != TargetType.Dll)
                 File.WriteAllText(
@@ -6681,7 +6703,12 @@ namespace PascalABCCompiler.NETGenerator
             ConvertStatement(value.then_body);
             il.Emit(OpCodes.Br, EndLabel);
             if (save_debug_info && doc != null && value.else_body == null && next_location != null)
+            {
                 il.MarkSequencePoint(doc, next_location.begin_line_num, 1, next_location.begin_line_num, next_location.end_column_num);
+#if PABCNET_MODERN
+                il.Emit(OpCodes.Nop);
+#endif
+            }
             il.MarkLabel(FalseLabel);
             if (value.else_body != null)
                 ConvertStatement(value.else_body);

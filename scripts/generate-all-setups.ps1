@@ -179,6 +179,11 @@ try {
             Invoke-Checked (Join-Path $repositoryRoot '_RunCrossTargetTests.bat') @('net472', 'units', 'reference', '--skip-build')
         }
         if ($includeNet10) {
+            Invoke-ReleaseStep 'Portable PDB and runtime error location: net10' {
+                Invoke-Checked 'dotnet' @('run', '--project', 'tests\PortablePdbTests\PortablePdbTests.csproj',
+                    '-c', 'Release', '--', (Join-Path $repositoryRoot 'bin-net10'))
+                Invoke-Checked (Join-Path $repositoryRoot 'tests\CompileNet10.Tests\bin\Release\net472\CompileNet10.Tests.exe') @('--runtime-location', (Join-Path $repositoryRoot 'bin-net10'))
+            }
             Invoke-ReleaseStep 'Cross-target tests using prepared compiler binaries: net10' {
                 Invoke-Checked (Join-Path $repositoryRoot '_RunCrossTargetTests.bat') @('net10', 'all', '--skip-build')
             }
