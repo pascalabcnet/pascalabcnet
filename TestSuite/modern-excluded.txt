@@ -19,7 +19,6 @@ usesunits\use_assemblies1.pas
 errors\err0378.pas
 
 # API .NET Framework, удалённые или изменённые в modern .NET
-attributes4.pas
 implement1.pas
 with2.pas
 
