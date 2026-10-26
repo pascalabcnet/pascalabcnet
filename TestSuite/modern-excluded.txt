@@ -4,17 +4,40 @@
 # Внешние тестовые DLL без modern-сборок
 abstract6.pas
 eto.pas
+foreach_resolver1.pas
 generics67.pas
+overloads11.pas
+records14.pas
+units\u_lib1.pas
+# NET10-TESTFIX [use_lib1]: depends on legacy ClassLibrary1.dll.
+usesunits\use_lib1.pas
+usesunits\uses_in3_derectives.pas
 errors\err0527_eto.pas
 
-# Legacy GAC и NUnit Framework
+# Legacy GUI/GAC и NUnit Framework
+abstract5.pas
 assemblies1.pas
 attributes2.pas
+extensionmethods33.pas
+Form1.pas
+lambda_capture_compiled_props.pas
+property4.pas
+rect1.pas
+symbol_table_test.pas
 units\u_assemblies1.pas
+units\u_lambda_any.pas
+units\u_rect1.pas
 usesunits\use_assemblies1.pas
+usesunits\use_lambda_any.pas
+usesunits\use_rect1.pas
+errors\err0166.pas
+errors\err0167.pas
+errors\err0228.pas
 errors\err0378.pas
+errors\err0441.pas
 
 # API .NET Framework, удалённые или изменённые в modern .NET
+attributes4.pas
 implement1.pas
 with2.pas
 
@@ -25,6 +48,9 @@ sort1.pas
 # performed by PersistedAssemblyBuilder.
 errors\err0303.pas
 errors\err0542.pas
+
+# NET10-TESTFIX [err0500]: legacy GUI units are required to reach its semantic error.
+errors\err0500.pas
 
 # NET10-TESTFIX: Example.Package is a legacy directive-parsing fixture, not a real
 # NuGet dependency. Modern equivalents run on the isolated local feed in
