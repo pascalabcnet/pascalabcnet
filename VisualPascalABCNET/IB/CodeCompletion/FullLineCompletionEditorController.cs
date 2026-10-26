@@ -12,42 +12,41 @@ namespace VisualPascalABC
         private readonly CodeFileDocumentTextEditorControl editor;
         private TextArea textArea;
         private GhostTextOverlay ghostText;
-        private readonly IInlineCompletionService manager;
+        private readonly IInlineCompletionService completionService;
         private CancellationTokenSource completionCancellation;
+        private int initialized;
 
         public FullLineCompletionEditorController(
-            CodeFileDocumentTextEditorControl editor, 
-            IInlineCompletionService completionManager
+            CodeFileDocumentTextEditorControl editor,
+            IInlineCompletionService completionService
             )
         {
             this.editor = editor;
-            manager = completionManager;
+            this.completionService = completionService;
 
-            if (manager.Ready)
+            // в любом случае подписываемся, чтобы не было race condition
+            completionService.OnReady += OnCompletionManagerReady;
+
+            if (completionService.Ready)
                 OnCompletionManagerReady();
-            else
-                manager.OnReady += OnCompletionManagerReady;
         }
 
         private void OnCompletionManagerReady()
         {
+            if (Interlocked.Exchange(ref initialized, 1) != 0)
+                return;
+
             editor.Leave += OnEditorLeave;
             textArea = editor.ActiveTextAreaControl.TextArea;
             ghostText = new GhostTextOverlay(textArea);
             textArea.Caret.PositionChanged += OnCaretPositionChanged;
             textArea.DoProcessDialogKey += OnProcessDialogKey;
-            textArea.Document.TextContentChanged += OnTextChanged;
         }
 
         private void OnEditorLeave(object sender, EventArgs e)
         {
             CancelPendingCompletion();
             ghostText.Clear();
-        }
-
-        private void OnTextChanged(object sender, EventArgs e)
-        {
-            RequestCompletion();
         }
 
         private void OnCaretPositionChanged(object sender, EventArgs e)
@@ -95,7 +94,7 @@ namespace VisualPascalABC
 
             try
             {
-                string suggestion = await manager.TriggerCompletionAsync(context, cancellationToken);
+                string suggestion = await completionService.TriggerCompletionAsync(context, cancellationToken);
 
                 if (string.IsNullOrEmpty(suggestion) ||
                     textArea.IsDisposed)
@@ -108,14 +107,13 @@ namespace VisualPascalABC
 
         public void Dispose()
         {
-            manager.OnReady -= OnCompletionManagerReady;
+            completionService.OnReady -= OnCompletionManagerReady;
             editor.Leave -= OnEditorLeave;
             
             if (textArea != null)
             {
                 textArea.Caret.PositionChanged -= OnCaretPositionChanged;
                 textArea.DoProcessDialogKey -= OnProcessDialogKey;
-                textArea.Document.TextContentChanged -= OnTextChanged;
             }
 
             CancelPendingCompletion();
