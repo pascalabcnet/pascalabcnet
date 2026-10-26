@@ -210,8 +210,8 @@
     <Compile Include="IB\CodeCompletion\CodeTemplateManager.cs" />
     <Compile Include="IB\CodeCompletion\DefinitionByMouseClickManager.cs" />
     <Compile Include="IB\CodeCompletion\FoldingStrategy.cs" />
-    <Compile Include="IB\CodeCompletion\FullLineCompletionEditorController.cs" />
-    <Compile Include="IB\CodeCompletion\GhostTextOverlay.cs" />
+    <Compile Include="IB\CodeCompletion\FullLineCompletion\FullLineCompletionEditorController.cs" />
+    <Compile Include="IB\CodeCompletion\FullLineCompletion\GhostTextOverlay.cs" />
     <Compile Include="IB\CodeCompletion\InsightProvider.cs" />
     <Compile Include="IB\CodeCompletion\QuickClassBrowserPanel.cs">
       <SubType>UserControl</SubType>
