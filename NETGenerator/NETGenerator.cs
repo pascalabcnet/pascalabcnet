@@ -1319,9 +1319,9 @@ namespace PascalABCCompiler.NETGenerator
             if (ResourceFiles != null)
                 foreach (string resname in ResourceFiles)
                 {
+#if PABCNET_LEGACY
                     FileStream stream = File.OpenRead(resname);
                     ResStreams.Add(stream);
-#if PABCNET_LEGACY
                     mb.DefineManifestResource(Path.GetFileName(resname), stream, ResourceAttributes.Public);
 #endif
                 }
@@ -1345,6 +1345,23 @@ namespace PascalABCCompiler.NETGenerator
             BlobBuilder ilStream;
             BlobBuilder fieldData;
             MetadataBuilder metadata = ab.GenerateMetadata(out ilStream, out fieldData, out pdbBuilder);
+            BlobBuilder managedResources = null;
+            if (ResourceFiles != null && ResourceFiles.Length > 0)
+            {
+                managedResources = new BlobBuilder();
+                foreach (string resname in ResourceFiles)
+                {
+                    byte[] data = File.ReadAllBytes(resname);
+                    managedResources.Align(4);
+                    uint offset = checked((uint)managedResources.Count);
+                    // Embedded CLI resources are a length-prefixed byte sequence.
+                    // Manifest offsets are relative to the managed resource blob.
+                    managedResources.WriteInt32(data.Length);
+                    managedResources.WriteBytes(data);
+                    metadata.AddManifestResource(ManifestResourceAttributes.Public,
+                        metadata.GetOrAddString(Path.GetFileName(resname)), default, offset);
+                }
+            }
 
             switch (comp_opt.target)
             {
@@ -1381,6 +1398,7 @@ namespace PascalABCCompiler.NETGenerator
                 metadataRootBuilder: new MetadataRootBuilder(metadata),
                 ilStream: ilStream,
                 mappedFieldData: fieldData,
+                managedResources: managedResources,
                 debugDirectoryBuilder: debugDirectoryBuilder,
                 entryPoint: entryPointHandle);
             var peBlob = new BlobBuilder();

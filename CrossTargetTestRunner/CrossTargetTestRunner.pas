@@ -267,6 +267,8 @@ begin
                           Path.Combine(TestWorkDir, 'errors'));
   CopyDirectoryTreeToWork(Path.Combine(TestSuiteDir, 'referencefixtures'),
                           Path.Combine(TestWorkDir, 'referencefixtures'));
+  CopyDirectoryTreeToWork(Path.Combine(TestSuiteDir, 'libs'),
+                          Path.Combine(TestWorkDir, 'libs'));
 
   // Reference characterization tests use the runner's own assemblies as a
   // target-neutral fixture. Keep them beside the source unit so that the
@@ -484,6 +486,31 @@ begin
   end;
 end;
 
+// Build from sources with this runner's compiler, never reuse a checked-in
+// Framework DLL for a modern test. Outputs stay in the per-target work tree.
+function BuildTestLibrary(sourceRelativePath, outputRelativePath, testName: string): boolean;
+begin
+  Result := true;
+  if not MatchesFilter(testName) then
+    exit;
+
+  var outputDir := Path.Combine(TestWorkDir, outputRelativePath);
+  var sourceFile := Path.Combine(TestWorkDir, sourceRelativePath);
+  var comp := new Compiler();
+  Result := CompileSource(comp, sourceFile, outputDir, 'test libraries', false);
+  if not Result then
+    exit;
+
+  var dllName := Path.Combine(outputDir, Path.GetFileNameWithoutExtension(sourceFile) + '.dll');
+  if not &File.Exists(dllName) then
+  begin
+    RecordFailure('test libraries', sourceFile, 'Компилятор не создал DLL');
+    Result := false;
+    exit;
+  end;
+  RecordPassed;
+end;
+
 function CollectGeneratedPcu(sourceFileName, outputDir, phase: string): boolean; forward;
 
 procedure RunCoreTests;
@@ -497,6 +524,11 @@ begin
 
   BeginSection('core: compile');
   var compileStarted := Milliseconds;
+
+  if not BuildTestLibrary(Path.Combine('libs', 'l2.pas'), '', 'overloads11.pas') then
+    exit;
+  if not BuildTestLibrary('foreach_resolver_lib.pas', '', 'foreach_resolver1.pas') then
+    exit;
 
   foreach var fileName in files do
   begin
@@ -633,8 +665,21 @@ begin
 
   BeginSection('usesunits: compile');
   var usesUnitsStarted := Milliseconds;
+  var relativeLibraryDir := Path.Combine('usesunits', 'UsesInUnits3');
+  if not BuildTestLibrary(Path.Combine(relativeLibraryDir, 'uui3_lib.pas'),
+                          relativeLibraryDir, 'uses_in3_derectives.pas') then
+    exit;
   CompileDirectory(Path.Combine(TestWorkDir, 'usesunits'), UsesUnitsOutputDir,
                    'usesunits', workUnitsDir);
+  // Modern resource regression: compilation alone does not check that the
+  // included unit can read its embedded 1.txt during initialization.
+  if IsModernTarget and MatchesFilter('uses_in3_derectives.pas') then
+  begin
+    var exeName := Path.Combine(UsesUnitsOutputDir, 'uses_in3_derectives.exe');
+    if &File.Exists(exeName) then
+      if RunProgram(exeName, Path.Combine(TestWorkDir, 'usesunits', 'uses_in3_derectives.pas')) then
+        RecordPassed;
+  end;
   EndSection(usesUnitsStarted);
 end;
 

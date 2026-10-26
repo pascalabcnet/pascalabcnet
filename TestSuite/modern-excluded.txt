@@ -4,14 +4,11 @@
 # Внешние тестовые DLL без modern-сборок
 abstract6.pas
 eto.pas
-foreach_resolver1.pas
 generics67.pas
-overloads11.pas
 records14.pas
 units\u_lib1.pas
 # NET10-TESTFIX [use_lib1]: depends on legacy ClassLibrary1.dll.
 usesunits\use_lib1.pas
-usesunits\uses_in3_derectives.pas
 errors\err0527_eto.pas
 
 # Legacy GAC и NUnit Framework
