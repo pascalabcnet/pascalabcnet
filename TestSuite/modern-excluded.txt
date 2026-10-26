@@ -5,10 +5,6 @@
 abstract6.pas
 eto.pas
 generics67.pas
-records14.pas
-units\u_lib1.pas
-# NET10-TESTFIX [use_lib1]: depends on legacy ClassLibrary1.dll.
-usesunits\use_lib1.pas
 errors\err0527_eto.pas
 
 # Legacy GAC и NUnit Framework
