@@ -37,7 +37,7 @@ foreach ($entry in @('pabcnetc', 'pabcnetcclear', 'PABCCompilerController', 'PAB
 }
 # Compiler assemblies must occur exactly once, at the root of the shared kit.
 foreach ($library in @(
-    'Compiler.dll', 'CompilerTools.dll', 'Errors.dll', 'TreeConverter.dll',
+    'Compiler.dll', 'CompilerTools.dll', 'Contracts.dll', 'Errors.dll', 'TreeConverter.dll',
     'NETGenerator.dll', 'CodeCompletion.dll', 'SyntaxTree.dll', 'SemanticTree.dll',
     'SyntaxVisitors.dll', 'SyntaxTreeConverters.dll', 'ParserTools.dll',
     'PascalABCParser.dll', 'PascalABCLanguageInfo.dll', 'LanguageIntegrator.dll',

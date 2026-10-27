@@ -1,4 +1,4 @@
-﻿using PascalABCCompiler.Parsers;
+﻿using PascalABCCompiler.Contracts;
 using SPythonParserYacc;
 
 namespace SPythonParser

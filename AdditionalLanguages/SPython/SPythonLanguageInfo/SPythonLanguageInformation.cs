@@ -1,5 +1,4 @@
-﻿using PascalABCCompiler.Parsers;
-using PascalABCCompiler.ParserTools.Directives;
+﻿using PascalABCCompiler.Contracts;
 using System.Collections.Generic;
 
 namespace Languages.SPython.Frontend.Data
@@ -20,7 +19,7 @@ namespace Languages.SPython.Frontend.Data
 
         public BaseKeywords KeywordsStorage { get; } = new SPythonParser.SPythonKeywords();
 
-        public Dictionary<string, DirectiveInfo> ValidDirectives { get; protected set; }
+        public Dictionary<string, IDirectiveInfo> ValidDirectives { get; protected set; }
 
         public string CommentSymbol => "#";
 

@@ -23,6 +23,7 @@ $smokeProject = Join-Path $repositoryRoot `
 $compilerDlls = @(
     'Compiler.dll',
     'CompilerTools.dll',
+    'Contracts.dll',
     'Errors.dll',
     'LambdaAnySynToSemConverter.dll',
     'LanguageIntegrator.dll',

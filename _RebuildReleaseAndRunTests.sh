@@ -5,6 +5,7 @@ mono --aot bin/pabcnetc.exe
 mono --aot bin/NETGenerator.dll
 mono --aot bin/TreeConverter.dll
 mono --aot bin/Compiler.dll
+mono --aot bin/Contracts.dll
 mono --aot bin/SyntaxTree.dll
 mono --aot bin/SemanticTree.dll
 mono --aot bin/PascalABCParser.dll

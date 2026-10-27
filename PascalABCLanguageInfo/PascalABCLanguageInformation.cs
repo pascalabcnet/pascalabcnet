@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 using PascalABCCompiler;
 using PascalABCCompiler.ParserTools.Directives;
 using static PascalABCCompiler.ParserTools.Directives.DirectiveHelper;
@@ -32,7 +32,7 @@ namespace Languages.Pascal.Frontend.Data
 
         public BaseKeywords KeywordsStorage { get; } = new Core.PascalABCKeywords();
 
-        public Dictionary<string, DirectiveInfo> ValidDirectives { get; protected set; }
+        public Dictionary<string, IDirectiveInfo> ValidDirectives { get; protected set; }
 
         public PascalABCLanguageInformation()
         {
@@ -45,7 +45,7 @@ namespace Languages.Pascal.Frontend.Data
         private void InitializeValidDirectives()
         {
             #region VALID DIRECTIVES
-            ValidDirectives = new Dictionary<string, DirectiveInfo>(StringComparer.OrdinalIgnoreCase)
+            ValidDirectives = new Dictionary<string, IDirectiveInfo>(StringComparer.OrdinalIgnoreCase)
             {
                 [StringConstants.compiler_directive_apptype] = new DirectiveInfo(SingleAnyOfCheck("console", "windows", "dll", "pcu")),
                 [StringConstants.compiler_directive_reference] = new DirectiveInfo(quotesAreSpecialSymbols: true, processingStage: DirectiveProcessingStage.Unit),

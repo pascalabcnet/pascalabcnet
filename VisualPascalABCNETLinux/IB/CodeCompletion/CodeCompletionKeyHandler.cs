@@ -13,6 +13,7 @@ using ICSharpCode.TextEditor.Gui;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.TextEditor.Gui.InsightWindow;
+using PascalABCCompiler.Contracts;
 
 namespace VisualPascalABC
 {
@@ -111,7 +112,7 @@ namespace VisualPascalABC
                         key,							// Key pressed - will be passed to the provider
                         true,
                         true,
-                        PascalABCCompiler.Parsers.KeywordKind.None
+                        KeywordKind.None
                     );
                     editor.Focus();
                     CodeCompletionNamesOnlyInModuleAction.is_begin = true;
@@ -146,8 +147,8 @@ namespace VisualPascalABC
             {
                 if (VisualPABCSingleton.MainForm.UserOptions.CodeCompletionDot)
                 {
-                    PascalABCCompiler.Parsers.KeywordKind keyw = KeywordChecker.TestForKeyword(editor.Document.TextContent, editor.ActiveTextAreaControl.TextArea.Caret.Offset - 1);
-                    if (keyw == PascalABCCompiler.Parsers.KeywordKind.New || keyw == PascalABCCompiler.Parsers.KeywordKind.Uses)
+                    KeywordKind keyw = KeywordChecker.TestForKeyword(editor.Document.TextContent, editor.ActiveTextAreaControl.TextArea.Caret.Offset - 1);
+                    if (keyw == KeywordKind.New || keyw == KeywordKind.Uses)
                     {
                         completionDataProvider = new CodeCompletionProvider();
                         codeCompletionWindow = PABCNETCodeCompletionWindow.ShowCompletionWindow(
@@ -190,7 +191,7 @@ namespace VisualPascalABC
             {
                 if (VisualPABCSingleton.MainForm.UserOptions.CodeCompletionDot)
                 {
-                    PascalABCCompiler.Parsers.KeywordKind keyw = KeywordChecker.TestForKeyword(editor.Document.TextContent, editor.ActiveTextAreaControl.TextArea.Caret.Offset - 1);
+                    KeywordKind keyw = KeywordChecker.TestForKeyword(editor.Document.TextContent, editor.ActiveTextAreaControl.TextArea.Caret.Offset - 1);
                     if (CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.IsDefinitionIdentifierAfterKeyword(keyw))
                         return false;
 

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 using PascalABCCompiler.Errors;
 using System.IO;
 using PascalABCCompiler;
@@ -139,7 +139,7 @@ namespace CodeCompletion
                     var col = GetColByPos(lines, pos);
                     shouldPositions.Add(new Position(line + 1, col + 1, 0, 0, null));
                     string expr_without_brackets = null;
-                    PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
+                    KeywordKind keyw = KeywordKind.None;
                     string full_expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
                     List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
                     var errors = new List<PascalABCCompiler.Errors.Error>();
@@ -159,7 +159,7 @@ namespace CodeCompletion
                     var col = GetColByPos(lines, pos);
                     shouldPositions.Add(new Position(line + 1, col, 0, 0, null));
                     string expr_without_brackets = null;
-                    PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
+                    KeywordKind keyw = KeywordKind.None;
                     string full_expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
                     List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
                     var errors = new List<PascalABCCompiler.Errors.Error>();
@@ -238,7 +238,7 @@ namespace CodeCompletion
         public static string GetDescription(int pos, string content, int line, int col, string FileName, DomConverter dc, IParser parser)
         {
             string expr_without_brackets = null;
-            PascalABCCompiler.Parsers.KeywordKind keyw;
+            KeywordKind keyw;
             var expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
             if (expr == null)
               expr = expr_without_brackets;
@@ -252,7 +252,7 @@ namespace CodeCompletion
         public static string GetIndexDescription(int pos, string content, int line, int col, string FileName, DomConverter dc, IParser parser)
         {
             string expr_without_brackets = null;
-            PascalABCCompiler.Parsers.KeywordKind keyw;
+            KeywordKind keyw;
             var expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
             if (expr == null)
                 expr = expr_without_brackets;
@@ -269,7 +269,7 @@ namespace CodeCompletion
                                                 int num_param, int cur_param_num, IParser parser)
         {
             string expr_without_brackets = null;
-            PascalABCCompiler.Parsers.KeywordKind keyw;
+            KeywordKind keyw;
             var expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
             if (expr == null)
                 expr = expr_without_brackets;
@@ -308,8 +308,8 @@ namespace CodeCompletion
     		int off=0;
     		int line=0;
     		int col=0;
-    		PascalABCCompiler.Parsers.KeywordKind keyw;
-    		PascalABCCompiler.Parsers.IParser parser = CodeCompletionController.ParsersController.SelectParser(".vb");
+    		KeywordKind keyw;
+    		IParser parser = CodeCompletionController.ParsersController.SelectParser(".vb");
     		
     		string test_str = "System.Console";
     		off = test_str.Length;
@@ -343,7 +343,7 @@ namespace CodeCompletion
     		int off=0;
     		int line=0;
     		int col=0;
-    		PascalABCCompiler.Parsers.KeywordKind keyw;
+    		KeywordKind keyw;
             //LanguageIntegration.LanguageIntegrator.ReloadAllParsers();
             var languageIntellisenseSupport = LanguageProvider.Instance.MainLanguage.LanguageIntellisenseSupport;
     		

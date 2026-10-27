@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 
-namespace PascalABCCompiler.Parsers
+namespace PascalABCCompiler.Contracts
 {
     public abstract class BaseKeywords
     {

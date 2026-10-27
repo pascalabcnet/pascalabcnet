@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using PascalABCCompiler.Contracts;
 
 namespace PascalABCCompiler.Parsers
 {
@@ -1669,8 +1670,8 @@ namespace PascalABCCompiler.Parsers
 
         public virtual bool IsDefinitionIdentifierAfterKeyword(KeywordKind keyw)
         {
-            if (keyw == PascalABCCompiler.Parsers.KeywordKind.Function || keyw == PascalABCCompiler.Parsers.KeywordKind.Constructor || keyw == PascalABCCompiler.Parsers.KeywordKind.Destructor || keyw == PascalABCCompiler.Parsers.KeywordKind.Type || keyw == PascalABCCompiler.Parsers.KeywordKind.Var
-                   || keyw == PascalABCCompiler.Parsers.KeywordKind.Unit || keyw == PascalABCCompiler.Parsers.KeywordKind.Const || keyw == PascalABCCompiler.Parsers.KeywordKind.Program || keyw == PascalABCCompiler.Parsers.KeywordKind.Punkt)
+            if (keyw == KeywordKind.Function || keyw == KeywordKind.Constructor || keyw == KeywordKind.Destructor || keyw == KeywordKind.Type || keyw == KeywordKind.Var
+                   || keyw == KeywordKind.Unit || keyw == KeywordKind.Const || keyw == KeywordKind.Program || keyw == KeywordKind.Punkt)
                 return true;
             return false;
         }

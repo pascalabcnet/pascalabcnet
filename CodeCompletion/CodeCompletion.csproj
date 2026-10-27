@@ -11,6 +11,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\Compiler\Compiler.csproj" />
+    <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\Errors\Errors.csproj" />
     <ProjectReference Include="..\LanguageIntegrator\LanguageIntegrator.csproj" />
     <ProjectReference Include="..\ParserTools\ParserTools.csproj" />
