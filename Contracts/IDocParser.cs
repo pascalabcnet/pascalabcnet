@@ -1,6 +1,6 @@
 ﻿using PascalABCCompiler.SyntaxTree;
 
-namespace PascalABCCompiler.Parsers
+namespace PascalABCCompiler.Contracts
 {
     /// <summary>
     /// Интерфейс парсера документирующих комментариев (///)

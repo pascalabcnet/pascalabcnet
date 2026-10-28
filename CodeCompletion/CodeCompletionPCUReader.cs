@@ -13,7 +13,7 @@ using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
 //using SymbolTable;
 using PascalABCCompiler.PCU;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 
 namespace CodeCompletion
 {

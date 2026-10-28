@@ -4,6 +4,7 @@
 
 using PascalABCCompiler.ParserTools.Directives;
 using System.Collections.Generic;
+using PascalABCCompiler.Contracts;
 
 namespace PascalABCCompiler.Parsers
 {
@@ -25,7 +26,7 @@ namespace PascalABCCompiler.Parsers
 
         public virtual bool SyntaxTreeIsConvertedAfterUsedModulesCompilation => false;
 
-        public virtual Dictionary<string, DirectiveInfo> ValidDirectives => null;
+        public virtual Dictionary<string, IDirectiveInfo> ValidDirectives => null;
 
         // Важно переопределять для реализации тестов
         public virtual string CommentSymbol => "//";

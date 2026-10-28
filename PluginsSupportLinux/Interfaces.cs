@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
-using System.Text;
+using PascalABCCompiler.Contracts;
 
 namespace VisualPascalABCPlugins
 {
@@ -453,7 +453,7 @@ namespace VisualPascalABCPlugins
 
     public interface ICodeCompletionService
     {
-        PascalABCCompiler.Parsers.ICodeCompletionDomConverter GetConverter(string FileName);
+        ICodeCompletionDomConverter GetConverter(string FileName);
         void SetAsChanged(string FileName);
         void RegisterFileForParsing(string FileName);
     }

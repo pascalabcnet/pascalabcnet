@@ -9,7 +9,7 @@ using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using PascalABCCompiler;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 using PascalABCCompiler.CoreUtils;
 
 namespace VisualPascalABC
@@ -536,9 +536,9 @@ namespace VisualPascalABC
             }
         }
 
-        private static string FindFullExpression(string Text, TextArea _textArea, out PascalABCCompiler.Parsers.KeywordKind keyw, out string full_expr)
+        private static string FindFullExpression(string Text, TextArea _textArea, out KeywordKind keyw, out string full_expr)
         {
-            keyw = PascalABCCompiler.Parsers.KeywordKind.None;
+            keyw = KeywordKind.None;
             string expr_without_brackets = null;
             full_expr = null;
             if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
@@ -611,7 +611,7 @@ namespace VisualPascalABC
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
             //PascalABCCompiler.SyntaxTree.syntax_tree_node sn =
             //    MainForm.VisualEnvironmentCompiler.Compiler.ParsersController.Compile(
-            //    file_name, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
+            //    file_name, TextEditor.Text, null, Errors, ParseMode.Normal);
             string text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName, SourceFileOperation.GetText) as string;
 
             PascalABCCompiler.SyntaxTree.compilation_unit cu =
@@ -702,7 +702,7 @@ namespace VisualPascalABC
                     key,							// Key pressed - will be passed to the provider
                     false,
                     false,
-                    PascalABCCompiler.Parsers.KeywordKind.None
+                    KeywordKind.None
                 );
                 key = '_';
                 CodeCompletionNamesOnlyInModuleAction.comp_windows[textArea] = codeCompletionWindow;

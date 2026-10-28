@@ -672,12 +672,12 @@
     <ProjectReference Include="../Errors/Errors.csproj" />
     <ProjectReference Include="../Localization/Localization.csproj" />
     <ProjectReference Include="../LanguageIntegrator/LanguageIntegrator.csproj" />
-    <ProjectReference Include="../ParserTools/ParserTools.csproj" />
     <ProjectReference Include="../PluginsSupport/PluginsSupport.csproj" />
     <ProjectReference Include="../StringConstants/StringConstants.csproj" />
     <ProjectReference Include="../SyntaxTree/SyntaxTree.csproj" />
     <ProjectReference Include="../TreeConverter/TreeConverter.csproj" />
     <ProjectReference Include="../SyntaxVisitors/SyntaxVisitors.csproj" />
+    <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\CoreUtils\PABCCoreUtils.csproj" />
     <ProjectReference Include="FormsDesignerBinding/Dependecies/src/Main/Base/Project/ICSharpCode.SharpDevelop.csproj" />
     <ProjectReference Include="FormsDesignerBinding/Dependecies/src/Main/Core/Project/ICSharpCode.Core.csproj" />

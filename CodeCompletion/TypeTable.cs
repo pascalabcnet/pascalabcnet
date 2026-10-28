@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using PascalABCCompiler;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts;
 
 namespace CodeCompletion
 {
