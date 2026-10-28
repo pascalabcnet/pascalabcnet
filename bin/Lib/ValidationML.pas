@@ -80,7 +80,8 @@ type
 ///
 /// Для стратифицированных методов требуется:
 /// • целочисленные метки классов
-/// • число объектов каждого класса ≥ числа фолдов
+/// • хотя бы один класс содержит не меньше объектов, чем число фолдов
+/// Редкие классы допускаются: в некоторых частях они будут отсутствовать.
 ///
 /// Все методы используют генератор случайных чисел (seed) для воспроизводимости
   Validation = static class
@@ -117,6 +118,8 @@ type
 /// Это стратифицированная k-fold кросс-валидация.
 /// Рекомендуется только для задач классификации,
 /// особенно при несбалансированных классах.
+/// Если класс содержит меньше k объектов, выдаёт предупреждение.
+/// Если каждый класс содержит меньше k объектов, выдаёт исключение.
 /// Возвращает последовательность пар (trainIdx, testIdx)
     static function StratifiedKFold(y: Vector; k: integer;
       seed: integer := -1): sequence of (array of integer, array of integer);
@@ -358,11 +361,11 @@ const
   ER_DATASET_TOO_SMALL =
     'Для {0} требуется как минимум 2 объекта!!' +
     'At least 2 samples are required for {0}';
-  ER_STRATIFIED_CLASS_TOO_SMALL =
-    'Класс {0} содержит {1} объектов, что меньше числа фолдов ({2}). Уменьшите k или объедините малочисленные классы.!!' +
-    'Class {0} has {1} samples, which is less than the number of folds ({2}). Reduce k or merge very small classes.';
+  WR_STRATIFIED_CLASS_TOO_SMALL =
+    'Предупреждение: минимальный размер класса ({0}) меньше числа фолдов ({1}). В некоторых частях отдельные классы будут отсутствовать.!!' +
+    'Warning: the least populated class has {0} samples, less than the number of folds ({1}). Some folds will omit classes.';
   ER_STRATIFIED_K_TOO_LARGE =
-    'Stratified CV: число фолдов ({0}) превышает минимальный размер класса ({1})!!Stratified CV: number of folds ({0}) exceeds smallest class size ({1})';
+    'StratifiedKFold: число фолдов ({0}) превышает размер каждого класса!!StratifiedKFold: number of folds ({0}) exceeds the size of every class';
   ER_STRATIFIED_REGRESSION_NOT_SUPPORTED =
     'Стратифицированная кросс-валидация не поддерживается для регрессии!!Stratified cross-validation is not supported for regression';
 
@@ -853,19 +856,19 @@ begin
     end;
   end;
 
-  // --- 1.1 ПРОВЕРКА НА МИНИМАЛЬНЫЙ РАЗМЕР КЛАССА
+  var minClassSize := n;
+  var maxClassSize := 0;
   foreach var pair in classMap do
   begin
-    var cls := pair.Key;
     var cnt := pair.Value.Count;
-
-    // Класс может иметь меньше объектов, чем число фолдов.
-    // В библиотеке принята строгая политика: такие случаи считаются ошибкой,
-    // так как не гарантируется присутствие класса во всех train-fold.
-    // Поэтому выполняется fail-fast проверка (см. ниже).
-     if cnt < k then
-      ArgumentError(ER_STRATIFIED_CLASS_TOO_SMALL, cls, cnt, k);
+    minClassSize := Min(minClassSize, cnt);
+    maxClassSize := Max(maxClassSize, cnt);
   end;
+
+  if maxClassSize < k then
+    ArgumentError(ER_STRATIFIED_K_TOO_LARGE, k);
+  if minClassSize < k then
+    System.Console.Error.WriteLine(Format(GetTranslation(WR_STRATIFIED_CLASS_TOO_SMALL), minClassSize, k));
 
   // --- 2. Контейнеры фолдов
   var folds := new List<integer>[k];
@@ -873,6 +876,7 @@ begin
     folds[f] := new List<integer>;
 
   // --- 3. Для каждого класса: shuffle + равномерное распределение
+  var nextFold := 0;
   foreach var pair in classMap do
   begin
     var indices := pair.Value;
@@ -885,11 +889,13 @@ begin
 
     for var fold := 0 to k - 1 do
     begin
-      var size := baseSize + Ord(fold < extra);
+      // Остатки разных классов продолжают общий круг распределения.
+      var size := baseSize + Ord((fold - nextFold + k) mod k < extra);
       for var t := 0 to size - 1 do
         folds[fold].Add(indices[start + t]);
       start += size;
     end;
+    nextFold := (nextFold + extra) mod k;
   end;
 
   // --- 4. Формирование train/test
@@ -950,18 +956,24 @@ begin
     end;
   end;
 
+  var minClassSize := n;
+  var maxClassSize := 0;
   foreach var pair in classMap do
   begin
-    var cls := pair.Key;
-    var cnt := pair.Value.Count;
-     if cnt < k then
-      ArgumentError(ER_STRATIFIED_CLASS_TOO_SMALL, cls, cnt, k);
+    minClassSize := Min(minClassSize, pair.Value.Count);
+    maxClassSize := Max(maxClassSize, pair.Value.Count);
   end;
+
+  if maxClassSize < k then
+    ArgumentError(ER_STRATIFIED_K_TOO_LARGE, k);
+  if minClassSize < k then
+    System.Console.Error.WriteLine(Format(GetTranslation(WR_STRATIFIED_CLASS_TOO_SMALL), minClassSize, k));
 
   var folds := new List<integer>[k];
   for var f := 0 to k - 1 do
     folds[f] := new List<integer>;
 
+  var nextFold := 0;
   foreach var pair in classMap do
   begin
     var indices := pair.Value;
@@ -974,11 +986,12 @@ begin
 
     for var fold := 0 to k - 1 do
     begin
-      var size := baseSize + Ord(fold < extra);
+      var size := baseSize + Ord((fold - nextFold + k) mod k < extra);
       for var t := 0 to size - 1 do
         folds[fold].Add(indices[start + t]);
       start += size;
     end;
+    nextFold := (nextFold + extra) mod k;
   end;
 
   for var fold := 0 to k - 1 do
