@@ -43,9 +43,21 @@ const
 var 
   ReadlnSignalSended := false;
   LastReadSymbol := #0;
+{$ifdef PABCNET_MODERN}
+  // Service messages must survive a user's Console.SetError (including TextWriter.Null).
+  ProcessErrorStream: System.IO.TextWriter;
+{$endif}
   
 procedure WriteToProcessErrorStream(text: string);
 begin
+{$ifdef PABCNET_MODERN}
+  if ProcessErrorStream <> nil then
+  begin
+    ProcessErrorStream.Write(text);
+    ProcessErrorStream.Flush;
+    exit;
+  end;
+{$endif}
   Console.Error.Write(text);
   Console.Error.Flush;
   //System.Diagnostics.Debug.Write(text);
@@ -173,6 +185,9 @@ begin
         //Console.InputEncoding := System.Text.Encoding.UTF8;
         Console.OutputEncoding := new System.Text.UTF8Encoding(false);
         Console.InputEncoding := new System.Text.UTF8Encoding(false);
+{$ifdef PABCNET_MODERN}
+        ProcessErrorStream := new System.IO.StreamWriter(Console.OpenStandardError, new System.Text.UTF8Encoding(false));
+{$endif}
     end;
   except
   end;

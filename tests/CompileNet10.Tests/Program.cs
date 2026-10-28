@@ -286,6 +286,11 @@ internal static partial class Program
     {
         try
         {
+            if (args.Length == 2 && args[0] == "--runtime-errors")
+            {
+                await CheckRedirectedRuntimeErrors(Path.GetFullPath(args[1]));
+                return 0;
+            }
             if (args.Length == 2 && args[0] == "--runtime-location")
             {
                 System.Threading.SynchronizationContext.SetSynchronizationContext(null);
@@ -511,6 +516,7 @@ internal static partial class Program
             string root = Path.Combine(Path.GetTempPath(), "pabc-net10-run-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(root);
             Console.WriteLine("Fixtures: " + root);
+            await CheckRedirectedRuntimeErrors(Path.GetFullPath(args[0]));
             await CheckPortableHost(Path.GetFullPath(args[0]), root);
             using (var compiler = new Net10ControllerClient(args[0], "dotnet"))
             {
@@ -624,6 +630,44 @@ internal static partial class Program
         {
             Console.Error.WriteLine(error);
             return 1;
+        }
+    }
+
+    private static async Task CheckRedirectedRuntimeErrors(string runtime)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "pabc-runtime-errors-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        using (var compiler = new Net10ControllerClient(runtime, "dotnet"))
+        foreach (string replacement in new[] { "new System.IO.StringWriter", "System.IO.TextWriter.Null" })
+        {
+            string source = Path.Combine(root, "RedirectedError.pas");
+            string text = "begin\n" +
+                "  var originalError := System.Console.Error;\n" +
+                "  System.Console.SetError(" + replacement + ");\n" +
+                "  try\n" +
+                "    raise new System.ArgumentException('Ошибка при заменённом stderr');\n" +
+                "  finally\n" +
+                "    System.Console.SetError(originalError);\n" +
+                "  end;\nend.";
+            var compiled = await compiler.CompileAsync(source, root, "__RedirectIOMode",
+                new List<Net10SourceFile> { new Net10SourceFile { fileName = source, text = text } }, debug: true);
+            Check(compiled.success, "compile redirected stderr exception: " + compiled.message);
+            RuntimeExceptionInfo error = null;
+            int notifications = 0;
+            using (var runner = new Net10ProgramRunner("dotnet", compiled.outputFile, root, ""))
+            {
+                var running = runner.RunAsync(s => { }, () => { }, exception: value => { error = value; notifications++; });
+                if (await Task.WhenAny(running, Task.Delay(30000)) != running)
+                {
+                    runner.Stop();
+                    throw new TimeoutException("Redirected exception process timed out");
+                }
+                Check(await running != 0, "unhandled exception exits unsuccessfully");
+            }
+            Check(notifications == 1 && error != null && error.Type == "System.ArgumentException" &&
+                error.Message == "Ошибка при заменённом stderr", "runtime exception survives Console.SetError(" + replacement + ")");
+            Check(error.Frames.Exists(frame => string.Equals(frame.FileName, source, StringComparison.OrdinalIgnoreCase) && frame.Line == 5),
+                "runtime exception carries the throw location for IDE highlighting");
         }
     }
 

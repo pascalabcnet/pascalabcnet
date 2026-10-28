@@ -468,6 +468,7 @@ namespace VisualPascalABCPlugins
                             runningOutputFile = Path.GetFullPath(outputFile);
                             SetItemEnabled(stopItem, true);
                             int exitCode;
+                            bool runtimeExceptionReported = false;
                             if (standalone)
                                 exitCode = await program.RunAsync(null, null, lifecycle.Started);
                             else
@@ -477,7 +478,11 @@ namespace VisualPascalABCPlugins
                                 {
                                     outputSession = console;
                                     exitCode = await program.RunAsync(console.Append, console.RequestInput,
-                                        lifecycle.Started, error => console.ReportException(error, lifecycle));
+                                        lifecycle.Started, error =>
+                                        {
+                                            runtimeExceptionReported = true;
+                                            console.ReportException(error, lifecycle);
+                                        });
                                     await console.FlushAsync();
                                 }
                                 outputSession = null;
@@ -490,8 +495,10 @@ namespace VisualPascalABCPlugins
                             deletePdb = workbench.UserOptions.DeletePDBAfterExecute;
                             if (exitCode != 0 && !program.WasStopped)
                             {
-                                status.Update("Программа .NET 10 завершилась с ошибкой (код " + exitCode + ")");
-                                WriteMessage("Программа .NET 10 завершилась с кодом " + exitCode + ".");
+                                status.Update("Ошибка выполнения .NET 10");
+                                if (!runtimeExceptionReported)
+                                    WriteMessage("Программа .NET 10 завершилась с кодом " + exitCode +
+                                        ". Сообщение об исключении не получено.");
                             }
                         }
                     }
