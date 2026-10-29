@@ -81,6 +81,11 @@ namespace Languages.Pascal.Frontend.Data
                 [StringConstants.compiler_directive_define] = new DirectiveInfo(SingleIsValidIdCheck(), processingStage: DirectiveProcessingStage.Lexer),
                 [StringConstants.compiler_directive_include] = new DirectiveInfo(quotesAreSpecialSymbols: true, processingStage: DirectiveProcessingStage.Lexer),
                 [StringConstants.compiler_directive_targetframework] = new DirectiveInfo(),
+#if PABCNET_MODERN
+                [StringConstants.compiler_directive_target] = new DirectiveInfo(
+                    SingleAnyOfCheck("windows"),
+                    processingStage: DirectiveProcessingStage.Unit | DirectiveProcessingStage.Compilation),
+#endif
                 [StringConstants.compiler_directive_hidden_idents] = NoParamsDirectiveInfo(DirectiveProcessingStage.Lexer),
                 [StringConstants.compiler_directive_disable_standard_units] = NoParamsDirectiveInfo(DirectiveProcessingStage.Unit),
                 [StringConstants.compiler_directive_version_string] = new DirectiveInfo(IsValidVersionCheck()),

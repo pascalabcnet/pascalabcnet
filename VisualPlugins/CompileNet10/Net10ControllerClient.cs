@@ -36,6 +36,7 @@ namespace VisualPascalABCPlugins
         public int attempt { get; set; }
         public string state { get; set; }
         public string fileName { get; set; }
+        public string message { get; set; }
         public uint linesCompiled { get; set; }
         public int errorCount { get; set; }
         public int warningCount { get; set; }
@@ -185,7 +186,7 @@ namespace VisualPascalABCPlugins
                         if (notification.@event != null)
                         {
                             restore.Observe(notification.nuGetOperationId, notification.nuGetStage);
-                            if (notification.@event != "compilerState")
+                            if (notification.@event != "compilerState" && notification.@event != "compilerMessage")
                                 throw new IOException("Неожиданное событие контроллера .NET 10.");
                             if (progress != null) await progress(notification).ConfigureAwait(false);
                             continue;

@@ -29,8 +29,9 @@ public sealed partial class PackageRestoreService
         ArgumentNullException.ThrowIfNull(request);
         cancellationToken.ThrowIfCancellationRequested();
         ArgumentNullException.ThrowIfNull(request.Packages);
-        if (!string.Equals(request.TargetFramework, "net10.0", StringComparison.OrdinalIgnoreCase))
-            throw new ArgumentException("This restore prototype supports net10.0 only.", nameof(request));
+        if (!string.Equals(request.TargetFramework, "net10.0", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(request.TargetFramework, "net10.0-windows10.0.19041.0", StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("Only net10.0 and net10.0-windows10.0.19041.0 are supported.", nameof(request));
 
         var environment = RestoreEnvironment.Resolve(request);
         if (request.LocalPackagesOnly)
@@ -96,7 +97,7 @@ public sealed partial class PackageRestoreService
         var spec = new PackageSpec(new[] { new TargetFrameworkInformation
         {
             FrameworkName = framework,
-            TargetAlias = "net10.0",
+            TargetAlias = request.TargetFramework,
             RuntimeIdentifierGraphPath = rid is null ? null : PrepareRuntimeGraphFile(restoreDirectory),
             Dependencies = dependencies
         } })
@@ -116,8 +117,8 @@ public sealed partial class PackageRestoreService
                 ConfigFilePaths = environment.Configuration.ConfigurationFiles.ToList(),
                 FallbackFolders = SettingsUtility.GetFallbackPackageFolders(environment.Settings).ToList(),
                 TargetFrameworks = new[] { new ProjectRestoreMetadataFrameworkInfo(framework)
-                    { TargetAlias = "net10.0" } },
-                OriginalTargetFrameworks = new[] { "net10.0" },
+                    { TargetAlias = request.TargetFramework } },
+                OriginalTargetFrameworks = new[] { request.TargetFramework },
                 RestoreAuditProperties = new RestoreAuditProperties { EnableAudit = "false" },
                 RestoreDoNotWriteDependencyGraphSpec = true
             }
@@ -179,7 +180,7 @@ public sealed partial class PackageRestoreService
             return generic is null || library.NativeLibraries.Count != 0 ||
                 !library.RuntimeAssemblies.Select(a => a.Path).SequenceEqual(generic.RuntimeAssemblies.Select(a => a.Path));
         });
-        return new ResolvedPackageGraph("net10.0", assetsPath, Array.AsReadOnly(packages),
+        return new ResolvedPackageGraph(request.TargetFramework, assetsPath, Array.AsReadOnly(packages),
             summary.NoOpRestore, summary.InstallCount, Array.AsReadOnly(diagnostics))
         {
             Configuration = environment.Configuration,

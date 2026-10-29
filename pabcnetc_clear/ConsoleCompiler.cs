@@ -167,6 +167,9 @@ namespace PascalABCCompiler
             Languages.Integration.LanguageIntegrator.LoadAllLanguages();
 
             Compiler = new PascalABCCompiler.Compiler(null, null);
+#if PABCNET_MODERN
+            Compiler.OnCompilerMessage += message => Console.WriteLine(message);
+#endif
             Compiler.InternalDebug.SkipPCUErrors = false;
             CultureInfo ci = CultureInfo.InstalledUICulture;
             if (StringResourcesLanguage.CurrentTwoLetterISO == "ru" && ci.TwoLetterISOLanguageName != "ru")

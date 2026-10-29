@@ -723,6 +723,9 @@ namespace PascalABCCompiler
         }
 
         public event ChangeCompilerStateEventDelegate OnChangeCompilerState;
+#if PABCNET_MODERN
+        public event Action<string> OnCompilerMessage;
+#endif
         private void ChangeCompilerStateEvent(ICompiler sender, CompilerState State, string FileName)
         {
             this.state = State;
@@ -851,12 +854,13 @@ namespace PascalABCCompiler
 
 #if PABCNET_MODERN
         private ResolvedPackageGraph restoredPackageGraph;
+        private string packageTargetFramework = "net10.0";
         private PreparedReference[] packagePreparedReferences = Array.Empty<PreparedReference>();
         private Dictionary<string, string> packageAssemblyPaths =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, compiler_directive> packageGraphOrigins =
             new Dictionary<string, compiler_directive>(StringComparer.OrdinalIgnoreCase);
-        private readonly HashSet<string> packageResolutionWarnings = new HashSet<string>();
+        private readonly HashSet<string> packageResolutionMessages = new HashSet<string>();
 
         internal string GetRestoredPackageAssemblyPath(string assemblySimpleName)
         {
@@ -868,6 +872,14 @@ namespace PascalABCCompiler
         {
             if (CompilerOptions.ForIntellisense)
                 return;
+
+            // The target belongs to the main program and must be known before
+            // its first package is restored (well before code generation).
+            if (firstCompilationUnit == currentCompilationUnit)
+                packageTargetFramework = firstCompilationUnit.SyntaxTree.compiler_directives.Any(d =>
+                    string.Equals(d.Name.text, StringConstants.compiler_directive_target, StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(d.Directive?.text, "windows", StringComparison.OrdinalIgnoreCase))
+                    ? "net10.0-windows10.0.19041.0" : "net10.0";
 
             var directives = unitDirectives
                 .Where(d => string.Equals(d.name, StringConstants.compiler_directive_package,
@@ -909,7 +921,8 @@ namespace PascalABCCompiler
             {
                 Packages = requirements.Values.Select(p =>
                     new NuGetPackageRequirement(p.Id, p.Version)).ToArray(),
-                ProgramFilePath = firstCompilationUnit?.UnitFileName ?? CompilerOptions.SourceFileName
+                ProgramFilePath = firstCompilationUnit?.UnitFileName ?? CompilerOptions.SourceFileName,
+                TargetFramework = packageTargetFramework
             };
             try
             {
@@ -976,10 +989,8 @@ namespace PascalABCCompiler
                         continue;
                     string message = string.Format(StringResources.Get("COMPILATIONERROR_PACKAGE_DEPENDENCY_RESOLVED{0}{1}{2}"),
                         selected.Id, selected.Version, string.Join(", ", group.Select(p => p.Package + " " + p.Dependency.VersionRange)));
-                    if (packageResolutionWarnings.Add(message))
-                        warnings.Add(new CommonWarning(message, unitFileName,
-                            firstAddition.Origin.location?.begin_line_num ?? 0,
-                            firstAddition.Origin.location?.begin_column_num ?? 0));
+                    if (packageResolutionMessages.Add(message))
+                        OnCompilerMessage?.Invoke(message);
                 }
                 if (graph.InstalledPackageCount > 0)
                 {
@@ -1228,10 +1239,11 @@ namespace PascalABCCompiler
             packageRequirements.Clear();
 #if PABCNET_MODERN
             restoredPackageGraph = null;
+            packageTargetFramework = "net10.0";
             packagePreparedReferences = Array.Empty<PreparedReference>();
             packageAssemblyPaths.Clear();
             packageGraphOrigins.Clear();
-            packageResolutionWarnings.Clear();
+            packageResolutionMessages.Clear();
 #endif
 
             // обнуляем здесь, чтобы значение не сохранялось между запусками  EVA
@@ -1876,6 +1888,7 @@ namespace PascalABCCompiler
                 && platforms.Any(d => string.Equals(d.directive, "winforms", StringComparison.OrdinalIgnoreCase)
                     || string.Equals(d.directive, "wpf", StringComparison.OrdinalIgnoreCase));
             netCompilerOptions.UseWindowsDesktop |= assemblyResolveScope?.HasWindowsDesktopReferences == true;
+            netCompilerOptions.TargetWindows = packageTargetFramework != "net10.0";
 #endif
 
             // выяснение TargetFramework и целевой платформы

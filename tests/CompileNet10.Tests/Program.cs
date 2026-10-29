@@ -302,6 +302,11 @@ internal static partial class Program
                 CheckRuntimeAvailability();
                 return 0;
             }
+            if (args.Length > 0 && args[0] == "--nuget-messages")
+            {
+                CheckNuGetMessageDisplay();
+                return 0;
+            }
             if (args.Length > 0 && args[0] == "--publish-localization")
             {
                 CheckPublishLocalization();
@@ -970,6 +975,11 @@ internal static partial class Program
         quiet.Handle(new Net10CompilerEvent { state = "Ready", linesCompiled = 2 }, messages.Add, quietStatuses.Add);
         Check(quietStatuses.Count == 3 && quietStatuses[2].Contains("STATETEXT_COMPILATION_SUCCESS"),
             "status retains canonical compile/code-generation/result sequence");
+        CheckNuGetMessageDisplay();
+    }
+
+    private static void CheckNuGetMessageDisplay()
+    {
         var packageMessages = new List<string>();
         var packageStatuses = new List<string>();
         var packageDisplay = new Net10CompilerDisplay(key => key);
@@ -984,9 +994,12 @@ internal static partial class Program
             fileName = "2" }, packageMessages.Add, packageStatuses.Add);
         packageDisplay.Handle(new Net10CompilerEvent { state = "NuGetPackageInstalled",
             fileName = "NodaTime 3.2.2" }, packageMessages.Add, packageStatuses.Add);
-        Check(packageMessages.Count == 2 && packageMessages[0].Contains("STATE_NUGETPACKAGESINSTALLED") &&
-              packageMessages[1].Contains("STATE_NUGETPACKAGEINSTALLED"),
-            "newly downloaded NuGet packages are listed in compiler messages");
+        packageDisplay.Handle(new Net10CompilerEvent { @event = "compilerMessage",
+            message = "NuGet: OpenTK.Core 4.8.2" }, packageMessages.Add, packageStatuses.Add);
+        Check(packageMessages.Count == 3 && packageMessages[0].Contains("STATE_NUGETPACKAGESINSTALLED") &&
+              packageMessages[1].Contains("STATE_NUGETPACKAGEINSTALLED") &&
+              packageMessages[2] == "[.NET 10] NuGet: OpenTK.Core 4.8.2" && packageStatuses.Count == 0,
+            "NuGet resolution details belong in compiler messages, not warnings or status");
     }
 
     private static void CheckExternalRunRouting()

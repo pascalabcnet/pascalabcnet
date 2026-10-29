@@ -50,6 +50,7 @@ namespace PascalABCCompiler.NETGenerator
         public TargetType target = TargetType.Exe;
 #if PABCNET_MODERN
         public bool UseWindowsDesktop;
+        public bool TargetWindows;
 #endif
         public DebugAttributes dbg_attrs = DebugAttributes.Release;
         public bool optimize = false;
@@ -1416,7 +1417,9 @@ namespace PascalABCCompiler.NETGenerator
             if (comp_opt.target != TargetType.Dll)
                 File.WriteAllText(
                     Path.Combine(Path.GetDirectoryName(TargetFileName), an.Name + ".runtimeconfig.json"),
-                    comp_opt.UseWindowsDesktop ? RuntimeConfigWindowsDesktop : RuntimeConfigCore);
+                    (comp_opt.UseWindowsDesktop ? RuntimeConfigWindowsDesktop : RuntimeConfigCore)
+                        .Replace("\"tfm\": \"net10.0\"", "\"tfm\": \"" +
+                            (comp_opt.TargetWindows ? "net10.0-windows10.0.19041.0" : "net10.0") + "\""));
 #else
             int tries = 0;
             bool not_done = true;
