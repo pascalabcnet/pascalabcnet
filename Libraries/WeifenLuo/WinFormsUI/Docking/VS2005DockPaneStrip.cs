@@ -149,7 +149,6 @@ namespace WeifenLuo.WinFormsUI.Docking
                 if (m_buttonClose == null)
                 {
                     m_buttonClose = new InertButton(ImageButtonClose, ImageButtonClose);
-                    m_toolTip.SetToolTip(m_buttonClose, ToolTipClose);
                     m_buttonClose.Click += new EventHandler(Close_Click);
                     Controls.Add(m_buttonClose);
                 }
@@ -197,7 +196,6 @@ namespace WeifenLuo.WinFormsUI.Docking
                 if (m_buttonWindowList == null)
                 {
                     m_buttonWindowList = new InertButton(ImageButtonWindowList, ImageButtonWindowListOverflow);
-                    m_toolTip.SetToolTip(m_buttonWindowList, ToolTipSelect);
                     m_buttonWindowList.Click += new EventHandler(WindowList_Click);
                     Controls.Add(m_buttonWindowList);
                 }
@@ -282,28 +280,6 @@ namespace WeifenLuo.WinFormsUI.Docking
 		private static int ToolWindowTabSeperatorGapBottom
 		{
 			get	{	return _ToolWindowTabSeperatorGapBottom;	}
-		}
-
-		private static string _toolTipClose;
-		private static string ToolTipClose
-		{
-			get
-			{	
-				if (_toolTipClose == null)
-					_toolTipClose = Strings.DockPaneStrip_ToolTipClose;
-				return _toolTipClose;
-			}
-		}
-
-		private static string _toolTipSelect;
-		private static string ToolTipSelect
-		{
-			get
-			{	
-				if (_toolTipSelect == null)
-					_toolTipSelect = Strings.DockPaneStrip_ToolTipWindowList;
-				return _toolTipSelect;
-			}
 		}
 
 		private TextFormatFlags ToolWindowTextFormat

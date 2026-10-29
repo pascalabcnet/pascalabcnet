@@ -99,7 +99,6 @@ namespace WeifenLuo.WinFormsUI.Docking
                 if (m_buttonClose == null)
                 {
                     m_buttonClose = new InertButton(this, ImageButtonClose, ImageButtonClose);
-                    m_toolTip.SetToolTip(m_buttonClose, ToolTipClose);
                     m_buttonClose.Click += new EventHandler(Close_Click);
                     Controls.Add(m_buttonClose);
                 }
@@ -151,7 +150,6 @@ namespace WeifenLuo.WinFormsUI.Docking
                 if (m_buttonAutoHide == null)
                 {
                     m_buttonAutoHide = new InertButton(this, ImageButtonDock, ImageButtonAutoHide);
-                    m_toolTip.SetToolTip(m_buttonAutoHide, ToolTipAutoHide);
                     m_buttonAutoHide.Click += new EventHandler(AutoHide_Click);
                     Controls.Add(m_buttonAutoHide);
                 }
@@ -186,7 +184,6 @@ namespace WeifenLuo.WinFormsUI.Docking
                 if (m_buttonOptions == null)
                 {
                     m_buttonOptions = new InertButton(this, ImageButtonOptions, ImageButtonOptions);
-                    m_toolTip.SetToolTip(m_buttonOptions, ToolTipOptions);
                     m_buttonOptions.Click += new EventHandler(Options_Click);
                     Controls.Add(m_buttonOptions);
                 }
@@ -200,14 +197,12 @@ namespace WeifenLuo.WinFormsUI.Docking
             get { return m_components; }
         }
 
-		private ToolTip m_toolTip;
 
 		public VS2005DockPaneCaption(DockPane pane) : base(pane)
 		{
 			SuspendLayout();
 
             m_components = new Container();
-            m_toolTip = new ToolTip(Components);
 
 			ResumeLayout();
 		}
@@ -267,40 +262,6 @@ namespace WeifenLuo.WinFormsUI.Docking
 		private static int ButtonGapBetween
 		{
 			get	{	return _ButtonGapBetween;	}
-		}
-
-		private static string _toolTipClose;
-		private static string ToolTipClose
-		{
-			get
-			{	
-				if (_toolTipClose == null)
-					_toolTipClose = Strings.DockPaneCaption_ToolTipClose;
-				return _toolTipClose;
-			}
-		}
-
-        private static string _toolTipOptions;
-        private static string ToolTipOptions
-        {
-            get
-            {
-                if (_toolTipOptions == null)
-                    _toolTipOptions = Strings.DockPaneCaption_ToolTipOptions;
-
-                return _toolTipOptions;
-            }
-        }
-
-		private static string _toolTipAutoHide;
-		private static string ToolTipAutoHide
-		{
-			get
-			{	
-				if (_toolTipAutoHide == null)
-					_toolTipAutoHide = Strings.DockPaneCaption_ToolTipAutoHide;
-				return _toolTipAutoHide;
-			}
 		}
 
         private static Blend _activeBackColorGradientBlend;
