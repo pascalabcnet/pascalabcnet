@@ -91,6 +91,8 @@
     </Compile>
     <Compile Include="DS\NavigationManager.cs" />
     <Compile Include="DS\CodeCompletionVisual\CodeCompletionListView.cs" />
+    <Compile Include="DS\CodeCompletionVisual\CompletionDocumentation.cs" />
+    <Compile Include="DS\CodeCompletionVisual\PassivePopupWindow.cs" />
     <Compile Include="DS\CodeCompletionVisual\CodeCompletionWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -165,6 +167,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="IB\CodeCompletion\TooltipServiceManager.cs" />
+    <Compile Include="IB\CodeCompletion\HoverTrace.cs" />
     <Compile Include="IB\Debugger\Actions.cs" />
     <Compile Include="IB\Debugger\AddWatchForm.cs">
       <SubType>Form</SubType>
@@ -656,6 +659,11 @@
     <Compile Include="RunProcessOptions.cs" />
     <Compile Include="UserOptions.cs" />
     <Compile Include="DS\RunManager\RunManager.cs" />
+    <Compile Include="DS\RunManager\MonoX11WarningFilter.cs" />
+    <Compile Include="DS\ToolbarToolTips.cs" />
+    <Compile Include="DS\RunToolStripButton.cs" />
+    <Compile Include="DS\UiDiagnostics.cs" />
+    <Compile Include="DS\ConfirmationDialog.cs" />
     <Compile Include="DS\Utils\OutputReader.cs" />
     <Compile Include="DS\Utils\ProcessRunner.cs" />
     <Compile Include="DS\VisualEnvironmentCompiler.cs" />

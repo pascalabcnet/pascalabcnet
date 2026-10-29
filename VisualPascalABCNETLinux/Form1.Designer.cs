@@ -168,8 +168,8 @@ namespace VisualPascalABC
             this.tsNavigBack = new System.Windows.Forms.ToolStripButton();
             this.tsNavigForw = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.StartButton = new System.Windows.Forms.ToolStripButton();
-            this.StartNoDebugButton = new System.Windows.Forms.ToolStripButton();
+            this.StartButton = new VisualPascalABC.RunToolStripButton();
+            this.StartNoDebugButton = new VisualPascalABC.RunToolStripButton();
             this.stopButton = new System.Windows.Forms.ToolStripButton();
             this.CompileButton = new System.Windows.Forms.ToolStripButton();
             this.ReCompileButton = new System.Windows.Forms.ToolStripButton();
@@ -2405,7 +2405,7 @@ namespace VisualPascalABC
             this.splitter1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.splitter1.Location = new System.Drawing.Point(0, 279);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(876, 5);
+            this.splitter1.Size = new System.Drawing.Size(876, 3);
             this.splitter1.TabIndex = 11;
             this.splitter1.TabStop = false;
             // 

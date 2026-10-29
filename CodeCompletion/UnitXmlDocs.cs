@@ -17,6 +17,7 @@ namespace CodeCompletion
 	{
 		private static Hashtable ht = new Hashtable();
 		private static List<SymScope> elem_cache = new List<SymScope>();
+        private static readonly object pendingSync = new object();
 		private static System.Threading.Thread th = null;
 		public static AbstractDispatcher dispatcher=null;
 		
@@ -25,7 +26,7 @@ namespace CodeCompletion
 			if (th != null)
 			while (th.ThreadState == ThreadState.Running);
 			
-			elem_cache.Clear();
+            lock (pendingSync) elem_cache.Clear();
 			//namespace_elem_cache.Clear();
 			//doc_namespace_list.Clear();
 		}
@@ -106,6 +107,40 @@ namespace CodeCompletion
 			th = new System.Threading.Thread(new System.Threading.ThreadStart(internalCompleteDocumentation));
 			th.Start();
 		}
+
+        /// <summary>
+        /// Detach pending descriptions on the calling thread. The returned work
+        /// does not use the mutable pending list or publish directly to the UI.
+        /// Use instead of the legacy CompleteDocumentation/Reset pair for this host.
+        /// </summary>
+        public static Action TakeDocumentationWork(Action<SymInfo, string> publish, Func<bool> isCancelled)
+        {
+            SymScope[] pending;
+            lock (pendingSync)
+            {
+                pending = elem_cache.ToArray();
+                elem_cache.Clear();
+            }
+            return () => {
+                foreach (SymScope scope in pending)
+                {
+                    if (isCancelled()) return;
+                    if (scope.si.has_doc) continue;
+                    try
+                    {
+                        string text;
+                        if (scope is TypeScope) text = GetDocumentation((TypeScope)scope);
+                        else if (scope is ElementScope) text = GetDocumentation((ElementScope)scope);
+                        else if (scope is ProcScope) text = GetDocumentation((ProcScope)scope);
+                        else if (scope is InterfaceUnitScope) text = GetDocumentation((InterfaceUnitScope)scope);
+                        else continue;
+                        if (isCancelled()) return;
+                        publish(scope.si, text);
+                    }
+                    catch (Exception) { /* A missing description must not stop the remaining items. */ }
+                }
+            };
+        }
 		
 		private static string GetNormalHint(string s)
 		{
@@ -351,27 +386,27 @@ namespace CodeCompletion
 		
 		public static void AddDescribeToComplete(TypeScope value)
 		{
-			elem_cache.Add(value);
+            lock (pendingSync) elem_cache.Add(value);
 		}
 		
 		public static void AddDescribeToComplete(ElementScope value)
 		{
-			elem_cache.Add(value);
+            lock (pendingSync) elem_cache.Add(value);
 		}
 		
 		public static void AddDescribeToComplete(ProcScope value)
 		{
-			elem_cache.Add(value);
+            lock (pendingSync) elem_cache.Add(value);
 		}
 		
 		public static void AddDescribeToComplete(InterfaceUnitScope value)
 		{
-			elem_cache.Add(value);
+            lock (pendingSync) elem_cache.Add(value);
 		}
 
         public static void RemoveItem(SymScope item)
         {
-            elem_cache.Remove(item);
+            lock (pendingSync) elem_cache.Remove(item);
         }
 	}
 }

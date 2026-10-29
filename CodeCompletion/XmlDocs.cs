@@ -63,6 +63,7 @@ namespace CodeCompletion
 		private static Dictionary<MemberInfo,SymInfo> doc_wait_list = new Dictionary<MemberInfo,SymInfo>();
 		private static Dictionary<string,SymInfo> doc_namespace_list = new Dictionary<string,SymInfo>();
 		private static List<MemberInfo> elem_cache = new List<MemberInfo>();
+        private static readonly object pendingSync = new object();
 		private static List<Type> namespace_elem_cache = new List<Type>();
 		private static System.Threading.Thread th = null;
 		public static AbstractDispatcher dispatcher=null;
@@ -72,8 +73,11 @@ namespace CodeCompletion
 			if (th != null)
 			while (th.ThreadState == ThreadState.Running);
 			
-			doc_wait_list.Clear();
-			elem_cache.Clear();
+            lock (pendingSync)
+            {
+                doc_wait_list.Clear();
+                elem_cache.Clear();
+            }
 			//namespace_elem_cache.Clear();
 			//doc_namespace_list.Clear();
 		}
@@ -154,52 +158,99 @@ namespace CodeCompletion
 			th = new System.Threading.Thread(new System.Threading.ThreadStart(internalCompleteDocumentation));
 			th.Start();
 		}
+
+        /// <summary>
+        /// Detach pending descriptions on the calling thread. The returned work
+        /// uses a snapshot and leaves publication/cancellation to its host.
+        /// Use instead of the legacy CompleteDocumentation/Reset pair for this host.
+        /// </summary>
+        public static Action TakeDocumentationWork(Action<SymInfo, string> publish, Func<bool> isCancelled)
+        {
+            var pending = new List<KeyValuePair<MemberInfo, SymInfo>>();
+            lock (pendingSync)
+            {
+                foreach (MemberInfo member in elem_cache)
+                {
+                    SymInfo symbol;
+                    if (doc_wait_list.TryGetValue(member, out symbol))
+                        pending.Add(new KeyValuePair<MemberInfo, SymInfo>(member, symbol));
+                }
+                elem_cache.Clear();
+                doc_wait_list.Clear();
+            }
+            return () => {
+                foreach (var item in pending)
+                {
+                    if (isCancelled()) return;
+                    if (item.Value.has_doc) continue;
+                    try
+                    {
+                        string text;
+                        MemberInfo member = item.Key;
+                        if (member is Type) text = GetDocumentation((Type)member);
+                        else if (member is MethodInfo) text = GetDocumentation((MethodInfo)member);
+                        else if (member is PropertyInfo) text = GetDocumentation((PropertyInfo)member);
+                        else if (member is EventInfo) text = GetDocumentation((EventInfo)member);
+                        else if (member is ConstructorInfo) text = GetDocumentation((ConstructorInfo)member);
+                        else if (member is FieldInfo) text = GetDocumentation((FieldInfo)member);
+                        else continue;
+                        if (isCancelled()) return;
+                        publish(item.Value, text);
+                    }
+                    catch (Exception) { /* A missing description must not stop the remaining items. */ }
+                }
+            };
+        }
 		
 		public static void AddDescribeToComplete(SymInfo si, Type t)
 		{
-			elem_cache.Add(t);
-			doc_wait_list[t] = si;
+            AddPendingDescription(si, t);
 		}
 		
 		public static void AddDescribeToComplete(SymInfo si, Type t, string ns)
 		{
 			string s=ns;
-			if (!doc_namespace_list.ContainsKey(t.Namespace))
-			{
-				namespace_elem_cache.Add(t);
-				doc_namespace_list[ns] = si;
-			}
+            lock (pendingSync)
+                if (!doc_namespace_list.ContainsKey(t.Namespace))
+                {
+                    namespace_elem_cache.Add(t);
+                    doc_namespace_list[ns] = si;
+                }
 		}
 		
 		public static void AddDescribeToComplete(SymInfo si, MethodInfo mi)
 		{
-			elem_cache.Add(mi);
-			doc_wait_list[mi] = si;
+            AddPendingDescription(si, mi);
 		}
 		
 		public static void AddDescribeToComplete(SymInfo si, FieldInfo fi)
 		{
-			elem_cache.Add(fi);
-			doc_wait_list[fi] = si;
+            AddPendingDescription(si, fi);
 		}
 		
 		public static void AddDescribeToComplete(SymInfo si, EventInfo ei)
 		{
-			elem_cache.Add(ei);	
-			doc_wait_list[ei] = si;
+            AddPendingDescription(si, ei);
 		}
 		
 		public static void AddDescribeToComplete(SymInfo si, PropertyInfo pi)
 		{
-			elem_cache.Add(pi);
-			doc_wait_list[pi] = si;
+            AddPendingDescription(si, pi);
 		}
 		
 		public static void AddDescribeToComplete(SymInfo si, ConstructorInfo ci)
 		{
-			elem_cache.Add(ci);
-			doc_wait_list[ci] = si;
+            AddPendingDescription(si, ci);
 		}
+
+        private static void AddPendingDescription(SymInfo symbol, MemberInfo member)
+        {
+            lock (pendingSync)
+            {
+                elem_cache.Add(member);
+                doc_wait_list[member] = symbol;
+            }
+        }
 		
 		public static string GetDocumentation(ConstructorInfo mi)
 		{

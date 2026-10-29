@@ -68,7 +68,7 @@ namespace VisualPascalABC
             // 
             // panel6
             // 
-            this.panel6.BackColor = System.Drawing.Color.Red;
+            this.panel6.BackColor = System.Drawing.Color.White;
             this.panel6.Controls.Add(this.outputTextBox);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(0, 0);

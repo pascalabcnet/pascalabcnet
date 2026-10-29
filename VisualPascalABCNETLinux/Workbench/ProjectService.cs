@@ -224,7 +224,7 @@ namespace VisualPascalABC
 
         int QuestionAndSaveProject()
         {
-            DialogResult result = MessageBox.Show(string.Format(Form1StringResources.Get("SAVE_CHANGES_IN_PROJECT{0}"), ProjectFactory.Instance.CurrentProject.Name), PascalABCCompiler.StringResources.Get("!CONFIRM"), MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            DialogResult result = ConfirmationDialog.Show(string.Format(Form1StringResources.Get("SAVE_CHANGES_IN_PROJECT{0}"), ProjectFactory.Instance.CurrentProject.Name), PascalABCCompiler.StringResources.Get("!CONFIRM"), MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
             {
                 ProjectFactory.Instance.SaveProject();

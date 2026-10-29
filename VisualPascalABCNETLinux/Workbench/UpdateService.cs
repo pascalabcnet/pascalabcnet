@@ -42,7 +42,7 @@ namespace VisualPascalABC
                     MessageBox.Show(PascalABCCompiler.StringResources.Get("VP_MF_VERSION_IS_UP_TO_DATE"), PascalABCCompiler.StringResources.Get("VP_MF_UPDATE_CHECK"), MessageBoxButtons.OK);
                     break;
                 case 0:
-                    if (MessageBox.Show(PascalABCCompiler.StringResources.Get("VP_MF_UPDATE_AVAILABLE") + Environment.NewLine + 
+                    if (ConfirmationDialog.Show(PascalABCCompiler.StringResources.Get("VP_MF_UPDATE_AVAILABLE") + Environment.NewLine +
                         string.Format(PascalABCCompiler.StringResources.Get("VP_MF_UPDATE_AVAILABLE_CURRENT_VESION{0}"), curVersion) + Environment.NewLine +
                         string.Format(PascalABCCompiler.StringResources.Get("VP_MF_UPDATE_AVAILABLE_NEW_VESION{0}"), newVersion), 
                         PascalABCCompiler.StringResources.Get("VP_MF_UPDATE_CHECK"), 

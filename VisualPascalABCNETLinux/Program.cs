@@ -41,6 +41,11 @@ namespace VisualPascalABC
         [STAThread]
         static void Main(string[] args)
         {
+            if (args.Length == 1 && args[0] == "--ui-diagnostics")
+            {
+                UiDiagnostics.Print();
+                return;
+            }
             try
             {
                 Process cur_proc = Process.GetCurrentProcess();

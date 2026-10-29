@@ -371,8 +371,6 @@ namespace ICSharpCode.TextEditor.Util
                 CountTipText countMessageTip = new CountTipText(graphics, font, countMessage);
 
                 TipSpacer countSpacer = new TipSpacer(graphics, new SizeF(IsVisibleText(countMessage) ? 4 : 0, 0));
-				if (basicDescription.Length < 30)
-					basicDescription = basicDescription.PadRight(30);
                 TipText descriptionTip = new TipText(graphics, font, basicDescription);
                 descriptionTip.insight_wnd = control is ICSharpCode.TextEditor.Gui.InsightWindow.PABCNETInsightWindow;
                 descriptionTip.beg_bold = beg_bold;

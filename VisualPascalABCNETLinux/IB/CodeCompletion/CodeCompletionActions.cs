@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Windows.Forms;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -306,7 +307,7 @@ namespace VisualPascalABC
             if (codeCompletionWindow != null)
             {
                 // ShowCompletionWindow can return null when the provider returns an empty list
-                codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
+                codeCompletionWindow.Closed += new ToolStripDropDownClosedEventHandler(CloseCodeCompletionWindow);
             }
         }
 
@@ -314,11 +315,8 @@ namespace VisualPascalABC
         {
             if (codeCompletionWindow != null)
             {
-                codeCompletionWindow.Closed -= new EventHandler(CloseCodeCompletionWindow);
-                CodeCompletionProvider.disp.Reset();
+                codeCompletionWindow.Closed -= new ToolStripDropDownClosedEventHandler(CloseCodeCompletionWindow);
                 codeCompletionWindow.Dispose();
-                CodeCompletion.AssemblyDocCache.Reset();
-                CodeCompletion.UnitDocCache.Reset();
                 codeCompletionWindow = null;
             }
             CodeCompletionAllNamesAction.comp_windows[_textArea] = null;
@@ -710,7 +708,7 @@ namespace VisualPascalABC
                 if (codeCompletionWindow != null)
                 {
                     // ShowCompletionWindow can return null when the provider returns an empty list
-                    codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
+                    codeCompletionWindow.Closed += new ToolStripDropDownClosedEventHandler(CloseCodeCompletionWindow);
                 }
             }
             //catch (Exception e)
@@ -723,10 +721,7 @@ namespace VisualPascalABC
         {
             if (codeCompletionWindow != null)
             {
-                codeCompletionWindow.Closed -= new EventHandler(CloseCodeCompletionWindow);
-                CodeCompletionProvider.disp.Reset();
-                CodeCompletion.AssemblyDocCache.Reset();
-                CodeCompletion.UnitDocCache.Reset();
+                codeCompletionWindow.Closed -= new ToolStripDropDownClosedEventHandler(CloseCodeCompletionWindow);
                 codeCompletionWindow.Dispose();
                 codeCompletionWindow = null;
             }

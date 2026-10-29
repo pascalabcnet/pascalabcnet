@@ -477,7 +477,7 @@ namespace VisualPascalABC
         bool QuestionAndSaveFile(CodeFileDocumentControl tp)
         {
             CurrentCodeFileDocument = tp;
-            DialogResult result = MessageBox.Show(string.Format(Form1StringResources.Get("SAVE_CHANGES_IN_FILE{0}"), Path.GetFileName(tp.FileName)), PascalABCCompiler.StringResources.Get("!CONFIRM"), MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            DialogResult result = ConfirmationDialog.Show(string.Format(Form1StringResources.Get("SAVE_CHANGES_IN_FILE{0}"), Path.GetFileName(tp.FileName)), PascalABCCompiler.StringResources.Get("!CONFIRM"), MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
                 SaveSelFile(CurrentCodeFileDocument);
             else

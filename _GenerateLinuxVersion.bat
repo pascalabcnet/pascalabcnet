@@ -1,3 +1,10 @@
+@echo off
+where tar.exe >nul 2>&1
+@if errorlevel 1 (
+    echo ERROR: tar.exe is required to package the Linux distribution. Install tar and add it to PATH.
+    exit /b 1
+)
+
 rmdir Release\Samples\ /s /q
 rmdir Release\PascalABCNETLinux\ /s /q
 mkdir Release\PascalABCNETLinux\
@@ -6,7 +13,6 @@ mkdir Release\PascalABCNETLinux\LibSource\
 mkdir Release\PascalABCNETLinux\Lng\Rus
 mkdir Release\PascalABCNETLinux\Lng\Eng
 mkdir Release\PascalABCNETLinux\Highlighting\
-del Release\PascalABCNETLinux.zip
 
 
 copy bin\CodeCompletion.dll Release\PascalABCNETLinux\CodeCompletion.dll
@@ -271,10 +277,21 @@ xcopy InstallerSamples\WhatsNew\            Release\Samples\WhatsNew\           
 xcopy InstallerSamples\Graphics\GraphABC\   Release\Samples\Graphics\GraphABC\   /s /e
 xcopy InstallerSamples\Graphics\ABCObjects\   Release\Samples\Graphics\ABCObjects\   /s /e
 
-cd Release
+pushd Release
+if errorlevel 1 exit /b 1
 
-powershell.exe -NoProfile -Command "Compress-Archive -LiteralPath 'PascalABCNETLinux','Samples' -DestinationPath 'PascalABCNETLinux.zip' -CompressionLevel Optimal -Force"
-if errorlevel 1 exit /b %ERRORLEVEL%
+tar.exe --format zip --options zip:hdrcharset=UTF-8 -cf PascalABCNETLinux.zip.tmp -- PascalABCNETLinux Samples
+if errorlevel 1 (
+    echo ERROR: Failed to create the Linux archive.
+    popd
+    exit /b 1
+)
+move /y PascalABCNETLinux.zip.tmp PascalABCNETLinux.zip
+if errorlevel 1 (
+    echo ERROR: Failed to replace PascalABCNETLinux.zip.
+    popd
+    exit /b 1
+)
 
-cd ..
+popd
 pause

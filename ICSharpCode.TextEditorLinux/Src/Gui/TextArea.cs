@@ -360,7 +360,7 @@ namespace ICSharpCode.TextEditor
 		/// Shows the mouse cursor if it has been hidden.
 		/// </summary>
 		/// <param name="forceShow"><c>true</c> to always show the cursor or <c>false</c> to show it only if it has been moved since it was hidden.</param>
-		internal void ShowHiddenCursor(bool forceShow)
+		public void ShowHiddenCursor(bool forceShow)
 		{
 			if (hiddenMouseCursor) {
 				if (mouseCursorHidePosition != Cursor.Position || forceShow) {
@@ -373,22 +373,43 @@ namespace ICSharpCode.TextEditor
 		
 		// static because the mouse can only be in one text area and we don't want to have
 		// tooltips of text areas from inactive tabs floating around.
-		static DeclarationViewWindow toolTip;
-		static string oldToolTip;
+		static ToolTip toolTip;
+		static TextArea toolTipOwner;
+		static string toolTipText;
+		public Font ToolTipFont { get; set; } = Control.DefaultFont;
+
+		static ToolTip CreatePassiveToolTip()
+		{
+			var tip = new ToolTip { OwnerDraw = true, UseAnimation = false, UseFading = false };
+			tip.Popup += (sender, e) => {
+				var owner = toolTipOwner;
+				if (owner == null || owner.IsDisposed) { e.Cancel = true; return; }
+				using (Graphics graphics = owner.CreateGraphics()) {
+					Size size = TextRenderer.MeasureText(graphics, toolTipText, owner.ToolTipFont,
+						new Size(Math.Max(1, Screen.GetWorkingArea(owner).Width - 8), int.MaxValue),
+						TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+					e.ToolTipSize = size + new Size(6, 6);
+				}
+			};
+			tip.Draw += (sender, e) => {
+				e.DrawBackground();
+				Rectangle bounds = e.Bounds; bounds.Inflate(-3, -3);
+				TextRenderer.DrawText(e.Graphics, e.ToolTipText, toolTipOwner?.ToolTipFont ?? Control.DefaultFont,
+					bounds, SystemColors.InfoText, TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+				e.DrawBorder();
+			};
+			return tip;
+		}
 		
 		void SetToolTip(string text, int lineNumber)
 		{
-			if (toolTip == null || toolTip.IsDisposed)
-			{
-				toolTip = new DeclarationViewWindow(this.FindForm());
-				toolTip.TextEditorControl = motherTextEditorControl;
-			}
-				
-			if (oldToolTip == text)
-				return;
 			if (text == null || text.Trim().Length == 0) {
-				toolTip.Hide();
+				if (toolTipOwner == this) { toolTip.Hide(this); toolTipOwner = null; }
 			} else {
+				if (toolTip == null) toolTip = CreatePassiveToolTip();
+				if (toolTipOwner != null && !toolTipOwner.IsDisposed) toolTip.Hide(toolTipOwner);
+				toolTipOwner = this;
+				toolTipText = text;
 				Point p = Control.MousePosition;
 				Point cp = PointToClient(p);
 				if (lineNumber >= 0) {
@@ -397,12 +418,8 @@ namespace ICSharpCode.TextEditor
 				}
 				p.Offset(3, 3);
 				
-				toolTip.Location = p;
-				toolTip.Description = text;
-				toolTip.HideOnClick = true;
-				toolTip.Show();
+				toolTip.Show(text, this, PointToClient(p));
 			}
-			oldToolTip = text;
 		}
 		
 		public event ToolTipRequestEventHandler ToolTipRequest;
@@ -968,6 +985,10 @@ namespace ICSharpCode.TextEditor
 		
 		protected override void Dispose(bool disposing)
 		{
+			if (disposing && toolTipOwner == this) {
+				if (IsHandleCreated) toolTip.Hide(this);
+				toolTip.Dispose(); toolTip = null; toolTipOwner = null;
+			}
 			base.Dispose(disposing);
 			if (disposing) {
 				if (!disposed) {

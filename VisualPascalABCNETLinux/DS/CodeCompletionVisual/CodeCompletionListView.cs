@@ -218,6 +218,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		public PABCNETCodeCompletionListView(ICompletionData[] completionData, bool is_by_dot)
 		{
+			TabStop = false;
+			SetStyle(ControlStyles.Selectable, false);
 			if (VisualPascalABC.VisualPABCSingleton.MainForm.UserOptions.ShowCompletionInfoByGroup && is_by_dot)
 				completionData = SortByGroup(completionData);
 			else
@@ -456,6 +458,15 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			g.DrawRectangle(SystemPens.Control, new Rectangle(0, 0, Width - 1, Height - 1));
 		}
 		
+		protected override void WndProc(ref Message message)
+		{
+			if (message.Msg == 0x0021) {
+				message.Result = new IntPtr(3);
+				return;
+			}
+			base.WndProc(ref message);
+		}
+
 		protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
 		{
 			float yPos       = 1;

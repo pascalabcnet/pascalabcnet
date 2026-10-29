@@ -75,6 +75,19 @@ namespace VisualPascalABC
             dict2.Clear();
     	}
 
+        internal Action<PascalABCCompiler.Parsers.SymInfo> TakeUpdate()
+        {
+            var symbols = new Dictionary<PascalABCCompiler.Parsers.SymInfo, ICompletionData>(dict);
+            var descriptions = new Dictionary<string, ICompletionData>(dict2);
+            Reset();
+            return si => {
+                ICompletionData item;
+                if (symbols.TryGetValue(si, out item) || (si.description != null &&
+                    descriptions.TryGetValue(si.description.Split('\n')[0], out item)))
+                    item.Description = si.description;
+            };
+        }
+
         public void Add(PascalABCCompiler.Parsers.SymInfo si, ICompletionData data)
     	{
     		if (!dict.ContainsKey(si))

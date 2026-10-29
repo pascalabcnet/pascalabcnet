@@ -20,6 +20,8 @@ namespace VisualPascalABC
         public static CodeCompletionImagesProvider ImagesProvider;
         public static DefaultDispatcher disp;
         public bool ByFirstChar;
+        private readonly DefaultDispatcher documentationDispatcher = new DefaultDispatcher();
+        private CompletionDocumentation documentation;
 
         static CodeCompletionProvider()
         {
@@ -414,7 +416,7 @@ namespace VisualPascalABC
                     //stop = true;
                 }
 
-                disp.Add(symInfo, completionData);
+                documentationDispatcher.Add(symInfo, completionData);
 
                 resultList.Add(completionData);
 
@@ -568,7 +570,7 @@ namespace VisualPascalABC
 
                 UserDefaultCompletionData completionData = new UserDefaultCompletionData(nameToShow, symInfo.description, ImagesProvider.GetPictureNum(symInfo), false);
 
-                disp.Add(symInfo, completionData);
+                documentationDispatcher.Add(symInfo, completionData);
 
                 resultList.Add(completionData);
 
@@ -740,14 +742,14 @@ namespace VisualPascalABC
 
         public ICompletionData[] GenerateCompletionDataWithKeyword(string fileName, TextArea textArea, char charTyped, PascalABCCompiler.Parsers.KeywordKind keyw)
         {
+            CancelDocumentation();
             controller = new CodeCompletion.CodeCompletionController();
             int off = textArea.Caret.Offset;
             string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
             //controller.Compile(file_name, text /*+ ")))));end."*/);
             FileName = fileName; Text = text;
             ICompletionData[] data = GetCompletionData(off, text, textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw);
-            CodeCompletion.AssemblyDocCache.CompleteDocumentation();
-            CodeCompletion.UnitDocCache.CompleteDocumentation();
+            StartDocumentation(textArea, data != null && data.Length != 0);
             controller = null;
             //GC.Collect();
             return data;
@@ -794,17 +796,47 @@ namespace VisualPascalABC
 
         public ICompletionData[] GenerateCompletionDataByFirstChar(string fileName, TextArea textArea, char charTyped, PascalABCCompiler.Parsers.KeywordKind keyw)
         {
+            CancelDocumentation();
             controller = new CodeCompletion.CodeCompletionController();
             int off = textArea.Caret.Offset;
             string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
             //controller.Compile(file_name, text /*+ ")))));end."*/);
             FileName = fileName; Text = text;
             ICompletionData[] data = GetCompletionDataByFirst(textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw);
-            CodeCompletion.AssemblyDocCache.CompleteDocumentation();
-            CodeCompletion.UnitDocCache.CompleteDocumentation();
+            StartDocumentation(textArea, data != null && data.Length != 0);
             controller = null;
             //GC.Collect();
             return data;
+        }
+
+        internal void CancelDocumentation()
+        {
+            documentation?.Cancel();
+            documentation = null;
+            documentationDispatcher.Reset();
+        }
+
+        private void StartDocumentation(Control editor, bool hasItems)
+        {
+            var session = new CompletionDocumentation(editor);
+            var results = new List<KeyValuePair<SymInfo, string>>();
+            Action<SymInfo, string> collect = (symbol, text) => results.Add(new KeyValuePair<SymInfo, string>(symbol, text));
+            Action assemblyWork = CodeCompletion.AssemblyDocCache.TakeDocumentationWork(collect, () => session.IsCancelled);
+            Action unitWork = CodeCompletion.UnitDocCache.TakeDocumentationWork(collect, () => session.IsCancelled);
+            Action<SymInfo> update = documentationDispatcher.TakeUpdate();
+            if (!hasItems) { session.Cancel(); return; }
+            documentation = session;
+            session.Start(() => { assemblyWork(); unitWork(); }, () => {
+                foreach (var result in results)
+                {
+                    if (!result.Key.has_doc)
+                    {
+                        result.Key.description += "\n" + result.Value;
+                        result.Key.has_doc = true;
+                    }
+                    update(result.Key);
+                }
+            });
         }
 
         private string GetDisplayedName(SymInfo symInfo)

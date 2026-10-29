@@ -19,6 +19,8 @@ namespace VisualPascalABC
         //EventedEventWaitHandleList ReadSignalList;
         //Encoding InputEncoding = Encoding.GetEncoding(866);
         Encoding InputEncoding = Encoding.UTF8;
+        readonly Dictionary<string, MonoX11WarningFilter> monoWarnings =
+            new Dictionary<string, MonoX11WarningFilter>(StringComparer.OrdinalIgnoreCase);
 		
         string OutputStreamId = "OUT";
         string ErrorStreamId = "ERR";
@@ -54,6 +56,12 @@ namespace VisualPascalABC
             StreamType streamType = StreamType.Output;
             if (streamId == ErrorStreamId)
                 streamType = StreamType.Error;
+            if (streamType == StreamType.Error)
+            {
+                lock (monoWarnings)
+                    if (monoWarnings.TryGetValue(id, out var filter)) Data = filter.Feed(Data);
+                if (Data.Length == 0) return;
+            }
             if (streamType == StreamType.Error && IsSpecialMessage(id, Data))
                 return;
             if (OutputStringReceived != null)
@@ -281,6 +289,7 @@ namespace VisualPascalABC
             PRunner.WorkingDirectory = WorkingDirectory;
             StartedProcesses.Add(fileName, PRunner);
             StartedFiles.Add(PRunner, fileName);
+            lock (monoWarnings) monoWarnings[fileName] = new MonoX11WarningFilter();
             string ReadSignalName=null;
             
             try
@@ -383,6 +392,16 @@ namespace VisualPascalABC
         
         void RemoveFromTables(string FileName)
         {
+            string tail = null;
+            lock (monoWarnings)
+            {
+                if (monoWarnings.TryGetValue(FileName, out var filter))
+                {
+                    tail = filter.Complete();
+                    monoWarnings.Remove(FileName);
+                }
+            }
+            if (!string.IsNullOrEmpty(tail)) OutputStringReceived?.Invoke(FileName, StreamType.Error, tail);
             if (StartedProcesses[FileName] != null)//TODO: это ошибочная ситуация
             {
                 EventedStreamReaderList.Remove(FileName);

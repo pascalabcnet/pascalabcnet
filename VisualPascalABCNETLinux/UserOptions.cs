@@ -20,7 +20,7 @@ namespace VisualPascalABC
         public bool PauseInRunModeIfConsole = true;
         public string DefaultSourceFileNameFormat = "Program{0}.pas";
         public int TabIndent = 2;
-        public int EditorFontSize = 12;
+        public int EditorFontSize = 11;
         public bool AllowCodeCompletion = true;
         public bool CodeCompletionHint = true;
         public bool CodeCompletionDot = true;
@@ -35,7 +35,7 @@ namespace VisualPascalABC
         public bool AllowCodeFormatting = false;
         public bool SkipStackTraceItemIfSourceFileInSystemDirectory = true;
         public bool AlwaysAttachDebuggerAtStart = false;
-        public string CurrentFontFamily = "Consolas";
+        public string CurrentFontFamily = "Liberation Mono";
         public bool HighlightOperatorBrackets=true;
         public bool UseDllForSystemUnits = true;
         public bool PABCDllChecked = false;
@@ -45,9 +45,18 @@ namespace VisualPascalABC
         {
             try // SSM 25/04/22
             {
-                var installedFontCollection = new System.Drawing.Text.InstalledFontCollection();
-                if (!Array.Exists(installedFontCollection.Families, f => f.Name == CurrentFontFamily))
-                    CurrentFontFamily = "Courier New";
+                CurrentFontFamily = System.Drawing.FontFamily.GenericMonospace.Name;
+                using (var installedFontCollection = new System.Drawing.Text.InstalledFontCollection())
+                {
+                    var families = installedFontCollection.Families;
+                    foreach (string candidate in new[] { "Liberation Mono", "DejaVu Sans Mono", "Noto Sans Mono" })
+                    {
+                        if (!Array.Exists(families, f => string.Equals(f.Name, candidate, StringComparison.OrdinalIgnoreCase)))
+                            continue;
+                        CurrentFontFamily = candidate;
+                        break;
+                    }
+                }
             }
             catch { }
         }

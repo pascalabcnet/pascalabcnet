@@ -497,8 +497,8 @@ namespace VisualPascalABC
                         tp.Text += string.Format(" [{0}]", PascalABCCompiler.StringResources.Get("VP_MF_MR_DEBUG"));
             }
             if (tp == ActiveCodeFileDocument && !tp.FromMetadata)
-                // U+00B7 is supported by the basic Mono fonts, unlike U+25CF.
-                tp.Text = '\u00B7' + tp.Text;
+                // The Linux tab renderer draws this prefix as a circle with a gap.
+                tp.Text = "\u00B7 " + tp.Text;
         }
 
         void AddTextToOutputWindow(string ExeFileName, string Text)

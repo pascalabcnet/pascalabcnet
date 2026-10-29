@@ -7,6 +7,14 @@ namespace WeifenLuo.WinFormsUI.Docking
 {
     public abstract class InertButtonBase : Control
     {
+        private static readonly bool showHoverBorder = ShouldDrawHoverBorder(
+            Type.GetType("Mono.Runtime") != null, Environment.OSVersion.Platform);
+
+        internal static bool ShouldDrawHoverBorder(bool isMono, PlatformID platform)
+        {
+            return !(isMono && platform == PlatformID.Unix);
+        }
+
         protected InertButtonBase()
         {
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
@@ -18,6 +26,20 @@ namespace WeifenLuo.WinFormsUI.Docking
         public abstract Bitmap PressImage { get; }
 
         public abstract Bitmap Image { get; }
+
+        protected virtual Color ImageBackgroundColor { get { return Color.Transparent; } }
+
+        protected override void OnPaintBackground(PaintEventArgs e)
+        {
+            Color color = ImageBackgroundColor;
+            if (color.A == 255)
+            {
+                using (var brush = new SolidBrush(color))
+                    e.Graphics.FillRectangle(brush, ClientRectangle);
+            }
+            else
+                base.OnPaintBackground(e);
+        }
 
         private bool m_isMouseOver = false;
         protected bool IsMouseOver
@@ -113,7 +135,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                 return;
             }
 
-            if (IsMouseOver && Enabled)
+            if (IsMouseOver && Enabled && showHoverBorder)
             {
                 using (Pen pen = new Pen(ForeColor))
                 {
@@ -129,7 +151,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                 colorMap[0].NewColor = ForeColor;
                 colorMap[1] = new ColorMap();
                 colorMap[1].OldColor = Image.GetPixel(0, 0);
-                colorMap[1].NewColor = Color.Transparent;
+                colorMap[1].NewColor = ImageBackgroundColor;
 
                 imageAttributes.SetRemapTable(colorMap);
 
