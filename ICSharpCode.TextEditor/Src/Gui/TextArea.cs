@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -174,8 +174,21 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
+#if MONO_EDITOR
+        // У каждого редактора - свой таймер
+        // Альтернатива - сделать создание таймера по OnHover и удаление его в конце своего срока
+        private Timer HoverTimer = null;
+
+#endif
 		public TextArea(TextEditorControl motherTextEditorControl, TextAreaControl motherTextAreaControl)
 		{
+#if MONO_EDITOR
+            HoverTimer = new Timer();
+            HoverTimer.Interval = 400;
+            HoverTimer.Tick += new EventHandler(HoverTimerEventProcessor);
+            HoverTimer.Start();
+
+#endif
 			this.motherTextAreaControl      = motherTextAreaControl;
 			this.motherTextEditorControl    = motherTextEditorControl;
 			
@@ -212,6 +225,9 @@ namespace ICSharpCode.TextEditor
 			caret.PositionChanged += new EventHandler(SearchMatchingBracket);
 			Document.TextContentChanged += new EventHandler(TextContentChanged);
 			Document.FoldingManager.FoldingsChanged += new EventHandler(DocumentFoldingsChanged);
+#if MONO_EDITOR
+
+#endif
 		}
 		
 		public void UpdateMatchingBracket()
@@ -309,6 +325,16 @@ namespace ICSharpCode.TextEditor
 			return false;
 		}
 		
+#if MONO_EDITOR
+        // SSM 11.07.22
+        protected MouseButtons MyMouseButtons = MouseButtons.None;
+        protected override void OnMouseUp(System.Windows.Forms.MouseEventArgs e)
+        {
+            MyMouseButtons = MouseButtons.None;
+            base.OnMouseUp(e);
+        }
+
+#endif
 		protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
 		{
 			// this corrects weird problems when text is selected,
@@ -316,6 +342,10 @@ namespace ICSharpCode.TextEditor
 			// clicked again - it correctly synchronises the
 			// click position
 			mousepos = new Point(e.X, e.Y);
+#if MONO_EDITOR
+            // SSM 11.07.22
+            MyMouseButtons = e.Button;
+#endif
 //			if (e.Button == MouseButtons.Right)
 //			{
 //				foreach (AbstractMargin margin in leftMargins) {
@@ -340,7 +370,11 @@ namespace ICSharpCode.TextEditor
 		/// Shows the mouse cursor if it has been hidden.
 		/// </summary>
 		/// <param name="forceShow"><c>true</c> to always show the cursor or <c>false</c> to show it only if it has been moved since it was hidden.</param>
+#if MONO_EDITOR
+		public void ShowHiddenCursor(bool forceShow)
+#else
 		internal void ShowHiddenCursor(bool forceShow)
+#endif
 		{
 			if (hiddenMouseCursor) {
 				if (mouseCursorHidePosition != Cursor.Position || forceShow) {
@@ -353,18 +387,59 @@ namespace ICSharpCode.TextEditor
 		
 		// static because the mouse can only be in one text area and we don't want to have
 		// tooltips of text areas from inactive tabs floating around.
+#if MONO_EDITOR
+		static ToolTip toolTip;
+		static TextArea toolTipOwner;
+		static string toolTipText;
+		public Font ToolTipFont { get; set; } = Control.DefaultFont;
+
+		static ToolTip CreatePassiveToolTip()
+		{
+			var tip = new ToolTip { OwnerDraw = true, UseAnimation = false, UseFading = false };
+			tip.Popup += (sender, e) => {
+				var owner = toolTipOwner;
+				if (owner == null || owner.IsDisposed) { e.Cancel = true; return; }
+				using (Graphics graphics = owner.CreateGraphics()) {
+					Size size = TextRenderer.MeasureText(graphics, toolTipText, owner.ToolTipFont,
+						new Size(Math.Max(1, Screen.GetWorkingArea(owner).Width - 8), int.MaxValue),
+						TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+					e.ToolTipSize = size + new Size(6, 6);
+				}
+			};
+			tip.Draw += (sender, e) => {
+				e.DrawBackground();
+				Rectangle bounds = e.Bounds; bounds.Inflate(-3, -3);
+				TextRenderer.DrawText(e.Graphics, e.ToolTipText, toolTipOwner?.ToolTipFont ?? Control.DefaultFont,
+					bounds, SystemColors.InfoText, TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+				e.DrawBorder();
+			};
+			return tip;
+		}
+#else
 		static DeclarationViewWindow toolTip;
 		static string oldToolTip;
+#endif
 		
 		void SetToolTip(string text, int lineNumber)
 		{
+#if MONO_EDITOR
+			if (text == null || text.Trim().Length == 0) {
+				if (toolTipOwner == this) { toolTip.Hide(this); toolTipOwner = null; }
+#else
 			if (toolTip == null || toolTip.IsDisposed)
 				toolTip = new DeclarationViewWindow(this.FindForm());
 			if (oldToolTip == text)
 				return;
 			if (text == null) {
 				toolTip.Hide();
+#endif
 			} else {
+#if MONO_EDITOR
+				if (toolTip == null) toolTip = CreatePassiveToolTip();
+				if (toolTipOwner != null && !toolTipOwner.IsDisposed) toolTip.Hide(toolTipOwner);
+				toolTipOwner = this;
+				toolTipText = text;
+#endif
 				Point p = Control.MousePosition;
 				Point cp = PointToClient(p);
 				if (lineNumber >= 0) {
@@ -372,12 +447,20 @@ namespace ICSharpCode.TextEditor
 					p.Y = (p.Y - cp.Y) + (lineNumber * this.TextView.FontHeight) - this.virtualTop.Y;
 				}
 				p.Offset(3, 3);
+#if MONO_EDITOR
+
+				toolTip.Show(text, this, PointToClient(p));
+#else
 				toolTip.Location = p;
 				toolTip.Description = text;
 				toolTip.HideOnClick = true;
 				toolTip.Show();
+#endif
 			}
+#if MONO_EDITOR
+#else
 			oldToolTip = text;
+#endif
 		}
 		
 		public event ToolTipRequestEventHandler ToolTipRequest;
@@ -400,7 +483,10 @@ namespace ICSharpCode.TextEditor
 		void CloseToolTip()
 		{
 			if (toolTipActive) {
+#if MONO_EDITOR
+#else
 				//Console.WriteLine("Closing tooltip");
+#endif
 				toolTipActive = false;
 				SetToolTip(null, -1);
 			}
@@ -409,8 +495,21 @@ namespace ICSharpCode.TextEditor
 		
 		protected override void OnMouseHover(EventArgs e)
 		{
+#if MONO_EDITOR
+            //System.IO.File.AppendAllText("d:\\logP.txt", "OnMouseHover" + $" {Control.MousePosition.ToString()} {DateTime.Now}\n");
+            //MessageBox.Show("OnMHOne");
+            //MessageBox.Show(MouseButtons.ToString());
+            // Под Mono MouseButtons возвращает цену на дрова
+
+            // SSM 11/07/22 - в Mono OnMouseHower вызывается единожды
+
+#endif
 			base.OnMouseHover(e);
+#if MONO_EDITOR
+            if (MyMouseButtons == MouseButtons.None) {
+#else
 			if (MouseButtons == MouseButtons.None) {
+#endif
 				RequestToolTip(PointToClient(Control.MousePosition));
 			} else {
 				CloseToolTip();
@@ -419,7 +518,11 @@ namespace ICSharpCode.TextEditor
 		
 		protected void RequestToolTip(Point mousePos)
 		{
+#if MONO_EDITOR
+			//MessageBox.Show("RequestToolTip");
+#else
            
+#endif
 			if (toolTipRectangle.Contains(mousePos)) {
 				if (!toolTipActive)
 					ResetMouseEventArgs();
@@ -451,14 +554,90 @@ namespace ICSharpCode.TextEditor
 			OnMouseMove(e);
 		}
 
+#if MONO_EDITOR
+		private int mx = -1;
+		private int my = -1;
+        private int prevmx = -2;
+        private int prevmy = -2;
+        //private DateTime dt0 = DateTime.Now;
+        //int deltaTime = 0;
+
+        private void HoverTimerEventProcessor(Object myObject, EventArgs myEventArgs)
+        {
+            if (mx == prevmx && my == prevmy)
+            {
+                OnMouseHover(EventArgs.Empty);
+            }
+            prevmx = mx;
+            prevmy = my;
+        }
+
+#endif
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
+#if MONO_EDITOR
+            mx = e.X;
+            my = e.Y;
+            // Эмуляция MouseHower. Создадим таймер и будем его проверять каждые 400 мс.
+            // Если координаты мыши за это время не меняются, то генерим событие OnMouseHower
+            //
+
+            /*if (e.X == mx && e.Y == my)
+            {
+				if (deltaTime < 2000)
+                {
+					deltaTime = (DateTime.Now - dt0).Milliseconds;
+					//System.IO.File.AppendAllText("d:\\logP.txt", "OnMouseMove" + $" {deltaTime} {DateTime.Now}\n");
+				}
+				else
+                {
+					//System.IO.File.AppendAllText("d:\\logP.txt", "OnMouseMove22222" + $" {deltaTime} {DateTime.Now}\n");
+					deltaTime = 0;
+					// MouseHower аналог
+					OnMouseHover(EventArgs.Empty);
+				}
+            }
+			else
+            {
+				deltaTime = 0;
+				// Снова ждать 400 мс
+			}
+
+            mx = e.X;
+            my = e.Y;*/
+
+
+            if (!toolTipRectangle.Contains(e.Location))
+			{
+                // Так было в оригинальном коде
+#else
 			if (!toolTipRectangle.Contains(e.Location)) {
+#endif
 				toolTipRectangle = Rectangle.Empty;
+#if MONO_EDITOR
+#else
                 //Console.WriteLine("request");
+#endif
 				if (toolTipActive)
 					RequestToolTip(e.Location);
+#if MONO_EDITOR
+                /*if (deltaTime < 400)
+				{
+					deltaTime = (DateTime.Now - dt0).Milliseconds;
+				}
+				else
+                {
+					deltaTime = 0;
+					dt0 = DateTime.Now;
+                    //if (toolTipActive) // Что то с этим условием не так
+                    //toolTipActive = true;
+                    //MessageBox.Show("RequestToolTip");
+                    //-------------------- ssm 11/07/22 - пока закомментил эту ерунду
+                    // пока вернулся к старой проблеме - OnMouseHover срабатывает лишь 1 раз
+                    //RequestToolTip(e.Location);
+				}*/
+#endif
 			}
 			foreach (AbstractMargin margin in leftMargins) {
 				if (margin.DrawingPosition.Contains(e.X, e.Y) && margin.IsVisible) {
@@ -584,6 +763,10 @@ namespace ICSharpCode.TextEditor
 		/// </returns>
 		protected internal virtual bool HandleKeyPress(char ch)
 		{
+#if MONO_EDITOR
+			if (KeyEventHandler != null) {
+				return KeyEventHandler(ch);
+#else
 			KeyEventHandler handlers = KeyEventHandler;
 			if (handlers != null) {
 				// A multicast delegate returns only its last subscriber's result.
@@ -591,6 +774,7 @@ namespace ICSharpCode.TextEditor
 				foreach (KeyEventHandler handler in handlers.GetInvocationList()) {
 					if (handler(ch)) return true;
 				}
+#endif
 			}
 			return false;
 		}
@@ -878,6 +1062,12 @@ namespace ICSharpCode.TextEditor
 		
 		protected override void Dispose(bool disposing)
 		{
+#if MONO_EDITOR
+			if (disposing && toolTipOwner == this) {
+				if (IsHandleCreated) toolTip.Hide(this);
+				toolTip.Dispose(); toolTip = null; toolTipOwner = null;
+			}
+#endif
 			base.Dispose(disposing);
 			if (disposing) {
 				if (!disposed) {
@@ -900,6 +1090,10 @@ namespace ICSharpCode.TextEditor
 					textView.Dispose();
 				}
 			}
+#if MONO_EDITOR
+            HoverTimer.Stop();
+            HoverTimer.Dispose();
+#endif
 		}
 		
 		#region UPDATE Commands

@@ -11,8 +11,22 @@
     <RootNamespace>ICSharpCode.TextEditor</RootNamespace>
     
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DefineConstants>$(DefineConstants);MONO_EDITOR</DefineConstants>
   </PropertyGroup>
   
+  <!-- Source is shared; TextArea's platform implementation is selected at
+       compile time to retain the verified Mono and Windows method bodies. -->
+  <ItemGroup>
+    <Compile Remove="Src\**\*.cs" />
+    <Compile Include="..\ICSharpCode.TextEditor\Src\**\*.cs">
+      <Link>Src\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Compile>
+    <EmbeddedResource Include="..\ICSharpCode.TextEditor\Src\Gui\CompletionWindow\CodeCompletionListView.resx">
+      <Link>Src\Gui\CompletionWindow\CodeCompletionListView.resx</Link>
+      <LogicalName>ICSharpCode.TextEditor.Src.Gui.CompletionWindow.CodeCompletionListView.resources</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
   <!-- секция требует дополнительного внимания -->
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>

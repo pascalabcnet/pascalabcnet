@@ -392,9 +392,9 @@ namespace VisualPascalABC
             				VisualPABCSingleton.MainForm.StartTimer();
                             /*if (!ThreadPool.QueueUserWorkItem(new WaitCallback(CompileTestProgram)))
                                 CompileTestProgram(null);*/
-                            // SSM 20/06/22 Linux - запретил плагины
-                            //if (!ThreadPool.QueueUserWorkItem(new WaitCallback(LoadPlugins)))
-                            //    LoadPlugins(null);
+                            // Plugin constructors and GetGUI can create WinForms controls.
+                            // Run them on the IDE thread after startup, not in the ThreadPool.
+                            BeginInvoke(new Action(() => LoadPlugins(null)));
                             
                             SetCompilingAndRunButtonsEnabled(true);
                             if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())

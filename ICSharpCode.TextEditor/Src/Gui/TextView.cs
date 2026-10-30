@@ -20,6 +20,8 @@ namespace ICSharpCode.TextEditor
 	/// </summary>
 	public class TextView : AbstractMargin, IDisposable
 	{
+		static readonly bool preserveDisabledBackground = Type.GetType("Mono.Runtime") != null &&
+			Environment.OSVersion.Platform == PlatformID.Unix;
 		int          fontHeight;
 		//Hashtable    charWitdh           = new Hashtable();
 		//StringFormat measureStringFormat = (StringFormat)StringFormat.GenericTypographic.Clone();
@@ -187,7 +189,7 @@ namespace ICSharpCode.TextEditor
 			orange_red = false;
 			Debug.Assert(lineNumber >= 0);
 			Brush bgColorBrush    = GetBgColorBrush(lineNumber);
-			Brush backgroundBrush = textArea.Enabled ? bgColorBrush : SystemBrushes.InactiveBorder;
+			Brush backgroundBrush = textArea.Enabled || preserveDisabledBackground ? bgColorBrush : SystemBrushes.InactiveBorder;
 			
 			if (lineNumber >= textArea.Document.TotalNumberOfLines) {
 				g.FillRectangle(backgroundBrush, lineRectangle);
@@ -321,7 +323,7 @@ namespace ICSharpCode.TextEditor
 			// TODO: get font and color from the highlighting file
 			HighlightColor      selectionColor  = textArea.Document.HighlightingStrategy.GetColorFor("Selection");
 			Brush               bgColorBrush    = drawSelected ? BrushRegistry.GetBrush(selectionColor.BackgroundColor) : GetBgColorBrush(lineNumber);
-			Brush               backgroundBrush = textArea.Enabled ? bgColorBrush : SystemBrushes.InactiveBorder;
+			Brush               backgroundBrush = textArea.Enabled || preserveDisabledBackground ? bgColorBrush : SystemBrushes.InactiveBorder;
 			
 			Font font = textArea.TextEditorProperties.FontContainer.RegularFont;
 			
@@ -433,7 +435,7 @@ namespace ICSharpCode.TextEditor
 		int PaintLinePart(Graphics g, int lineNumber, int startColumn, int endColumn, Rectangle lineRectangle, int physicalXPos)
 		{
 			bool  drawLineMarker  = DrawLineMarkerAtLine(lineNumber);
-			Brush backgroundBrush = textArea.Enabled ? GetBgColorBrush(lineNumber) : SystemBrushes.InactiveBorder;
+			Brush backgroundBrush = textArea.Enabled || preserveDisabledBackground ? GetBgColorBrush(lineNumber) : SystemBrushes.InactiveBorder;
 			
 			HighlightColor selectionColor = textArea.Document.HighlightingStrategy.GetColorFor("Selection");
 			ColumnRange    selectionRange = textArea.SelectionManager.GetSelectionAtLine(lineNumber);
@@ -778,8 +780,10 @@ namespace ICSharpCode.TextEditor
 		public int GetVisualColumn(int logicalLine, int logicalColumn)
 		{
 			int column = 0;
-			using (Graphics g = textArea.CreateGraphics()) {
-				CountColumns(ref column, 0, logicalColumn, logicalLine, g);
+			if (!EditorPlatform.IsMonoUnix || TextArea.Document.TextContent.Length > 0) {
+				using (Graphics g = textArea.CreateGraphics()) {
+					CountColumns(ref column, 0, logicalColumn, logicalLine, g);
+				}
 			}
 			return column;
 		}

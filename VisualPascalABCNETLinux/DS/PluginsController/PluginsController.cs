@@ -52,7 +52,6 @@ namespace VisualPascalABCPlugins
 
         bool AddMenuSeparator = false;
         bool AddToolBarSeparator = false;
-        delegate void AddInGuiDelegate(IVisualPascalABCPlugin Plugin);
         private void AddInGUI(IVisualPascalABCPlugin Plugin)
         {
             if (ToolStripMenuItem == null) return;
@@ -172,14 +171,21 @@ namespace VisualPascalABCPlugins
 
                         foreach (Type type in types)
                         {
-                            if (type.Name.IndexOf("VisualPascalABCPlugin") >= 0 && type.IsClass)
+                            if (type.Name.IndexOf("VisualPascalABCPlugin") >= 0 && type.IsClass &&
+                                !type.IsAbstract && !type.ContainsGenericParameters &&
+                                typeof(IVisualPascalABCPlugin).IsAssignableFrom(type))
                             {
-                                Object obj = Activator.CreateInstance(type, workbench);
-                                if (obj is VisualPascalABCPlugins.IVisualPascalABCPlugin)
+                                try
                                 {
-                                    Plugin = obj as VisualPascalABCPlugins.IVisualPascalABCPlugin;
+                                    Plugin = (IVisualPascalABCPlugin)Activator.CreateInstance(type, workbench);
+                                    // Startup invokes the loader on the UI thread. Keep GUI
+                                    // registration here so failures are reported with the DLL.
+                                    AddInGUI(Plugin);
                                     Plugins.Add(Plugin);
-                                    VisualEnvironmentCompiler.BeginInvoke(new AddInGuiDelegate(AddInGUI), Plugin);
+                                }
+                                catch (Exception e)
+                                {
+                                    ErrorList.Add(new PluginLoadingError(fi.FullName, e));
                                 }
                             }
                         }

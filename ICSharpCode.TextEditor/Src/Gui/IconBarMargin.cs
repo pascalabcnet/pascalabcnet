@@ -18,11 +18,24 @@ namespace ICSharpCode.TextEditor
     public static class ScreenScale
     {
         public static double scale = -1;
+        public static void FirstCalcScale(Form form)
+        {
+            using (Graphics graphics = form.CreateGraphics())
+                scale = (double)graphics.DpiX / 96;
+        }
+
         public static double Calc()
         {
+            // Resolve the Windows type even for a cached scale, matching the
+            // dependency resolution of the former typeof-based implementation.
+            Type systemParameters = EditorPlatform.IsMonoUnix ? null : Type.GetType("System.Windows.SystemParameters, PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", true);
+            if (systemParameters != null)
+                System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(systemParameters.TypeHandle);
             if (scale > 0)
                 return scale;
-            var dpiXProperty = typeof(System.Windows.SystemParameters).GetProperty("DpiX", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            if (EditorPlatform.IsMonoUnix) return 1.5;
+            // Keep the Windows WPF DPI algorithm, but do not require WPF on Mono.
+            var dpiXProperty = systemParameters.GetProperty("DpiX", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
             var dpiX = (int)dpiXProperty.GetValue(null, null);
             scale = (double)dpiX / 96;
             return scale;
@@ -40,6 +53,8 @@ namespace ICSharpCode.TextEditor
 		
 		public override Size Size {
 			get {
+				if (EditorPlatform.IsMonoUnix)
+					return new Size(18 + Convert.ToInt32(Math.Max(0, (ScreenScale.Calc() - 1) * 16)), -1);
 				return iconBarSize;
 			}
 		}

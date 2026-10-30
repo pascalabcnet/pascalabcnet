@@ -80,6 +80,25 @@ namespace ICSharpCode.TextEditor.Document
 			set {
 				// 1440 twips is one inch
 				int pixelSize = (int)(value.SizeInPoints * 20 / TwipsPerPixelY);
+				if (EditorPlatform.IsMonoUnix) {
+					defaultFont = value;
+					FontFamily validFontFamily = value.FontFamily;
+					foreach (FontFamily family in FontFamily.Families) {
+						if (family.Name == value.FontFamily.Name) {
+							validFontFamily = family;
+							break;
+						}
+					}
+					if (regularfont != null) regularfont.Dispose();
+					regularfont = new Font(validFontFamily, pixelSize * TwipsPerPixelY / 20f, FontStyle.Regular);
+					if (boldfont != null) boldfont.Dispose();
+					boldfont = new Font(regularfont, FontStyle.Bold);
+					if (italicfont != null) italicfont.Dispose();
+					italicfont = new Font(regularfont, FontStyle.Italic);
+					if (bolditalicfont != null) bolditalicfont.Dispose();
+					bolditalicfont = new Font(regularfont, FontStyle.Bold | FontStyle.Italic);
+					return;
+				}
 				
 				defaultFont    = value;
 				regularfont    = new Font(value.FontFamily, pixelSize * TwipsPerPixelY / 20f, FontStyle.Regular);

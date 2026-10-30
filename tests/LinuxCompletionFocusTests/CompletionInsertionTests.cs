@@ -33,6 +33,13 @@ internal static class CompletionInsertionTests
         {
             Assembly ide = Assembly.LoadFrom(idePath);
             Assembly editorAssembly = Assembly.LoadFrom(Path.Combine(directory, "ICSharpCode.TextEditorLinux.dll"));
+            if (Environment.GetEnvironmentVariable("PABC_TEST_MONO_EDITOR_BRANCH") == "1")
+            {
+                // Test process only: exercise the common editor's Mono paths on
+                // Windows before the real ALT check. No production override exists.
+                editorAssembly.GetType("ICSharpCode.TextEditor.EditorPlatform", true)
+                    .GetField("IsMonoUnix", BindingFlags.NonPublic | BindingFlags.Static).SetValue(null, true);
+            }
             Type mainType = ide.GetType("VisualPascalABC.Form1", true);
             // Only the options field is read by the popup. Do not run Form1's
             // constructor: it starts IDE services and loads real user settings.
