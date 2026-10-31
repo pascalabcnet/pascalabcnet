@@ -318,6 +318,7 @@
     <Compile Include="Workbench\VisibilityService.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Workbench\ColoredOutput.cs" />
     <Compile Include="Workbench\WindowOperations.cs">
       <SubType>Form</SubType>
     </Compile>

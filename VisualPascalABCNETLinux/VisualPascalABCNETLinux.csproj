@@ -499,6 +499,9 @@
     <Compile Include="Workbench\VisibilityService.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="..\VisualPascalABCNET\Workbench\ColoredOutput.cs">
+      <Link>Workbench\ColoredOutput.cs</Link>
+    </Compile>
     <Compile Include="Workbench\WindowOperations.cs">
       <SubType>Form</SubType>
     </Compile>

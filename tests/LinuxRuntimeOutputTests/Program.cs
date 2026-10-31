@@ -10,6 +10,17 @@ internal static class Program
     {
         try
         {
+            if (args.Length == 2 && args[0] == "--color-snapshot")
+            {
+                OutputColorTests.Snapshot(System.Reflection.Assembly.LoadFrom(System.IO.Path.GetFullPath(args[1])));
+                return 0;
+            }
+            if (args.Length > 1 && args[0] == "--colors")
+            {
+                for (int index = 1; index < args.Length; index++)
+                    OutputColorTests.Run(System.Reflection.Assembly.LoadFrom(System.IO.Path.GetFullPath(args[index])));
+                return 0;
+            }
             string[] inputs = {
                 Warning + "\n", Warning + "\r\n", Warning + "\r",
                 "Ошибка программы\n" + Warning + "\n[READLNSIGNAL][EXCEPTION]System.Exception[END]",
