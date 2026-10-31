@@ -5,6 +5,7 @@ using VisualPascalABC;
 internal static class Program
 {
     private const string Warning = "Could not set X locale modifiers";
+    [STAThread]
     private static int Main(string[] args)
     {
         try
@@ -52,6 +53,7 @@ internal static class Program
                     (string)complete.Invoke(instance, null);
                 if (actual != "Ошибка программы\n[READLNSIGNAL]") throw new Exception("Packaged IDE filter failed.");
                 Console.WriteLine("PASS actual Linux IDE contains the working filter: " + args[0]);
+                OutputColorTests.Run(assembly);
             }
             return 0;
         }

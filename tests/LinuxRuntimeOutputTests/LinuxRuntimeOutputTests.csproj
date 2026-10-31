@@ -4,6 +4,8 @@
     <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
     <Compile Include="../../VisualPascalABCNETLinux/DS/RunManager/MonoX11WarningFilter.cs" Link="MonoX11WarningFilter.cs" />
   </ItemGroup>
 </Project>

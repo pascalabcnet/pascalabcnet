@@ -1,4 +1,6 @@
 @echo off
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\build-teacher-control-linux.ps1"
+if errorlevel 1 exit /b 1
 where tar.exe >nul 2>&1
 @if errorlevel 1 (
     echo ERROR: tar.exe is required to package the Linux distribution. Install tar and add it to PATH.
@@ -74,7 +76,7 @@ copy bin\WeifenLuo.WinFormsUI.Docking.ThemeVS2005Linux.dll Release\PascalABCNETL
 copy bin\WeifenLuo.WinFormsUI.DockingLinux.dll Release\PascalABCNETLinux\WeifenLuo.WinFormsUI.DockingLinux.dll
 copy bin\PABCCoreUtils.dll Release\PascalABCNETLinux\PABCCoreUtils.dll
 copy bin\LambdaAnySynToSemConverter.dll Release\PascalABCNETLinux\LambdaAnySynToSemConverter.dll
-copy bin\TeacherControlPlugin.dll Release\PascalABCNETLinux\TeacherControlPlugin.dll
+copy bin\PluginsLinux\TeacherControlPlugin.dll Release\PascalABCNETLinux\TeacherControlPlugin.dll
 copy bin\Highlighting\PascalABCNET.xshd Release\PascalABCNETLinux\Highlighting\PascalABCNET.xshd
 
 copy bin\Lib\nunit.framework.dll Release\PascalABCNETLinux\Lib\nunit.framework.dll
@@ -113,7 +115,7 @@ copy bin\Lib\Sounds.pcu Release\PascalABCNETLinux\Lib\Sounds.pcu
 copy bin\Lib\School.pcu Release\PascalABCNETLinux\Lib\School.pcu
 copy bin\Lib\SF.pcu Release\PascalABCNETLinux\Lib\SF.pcu
 copy bin\Lib\Speech.pcu Release\PascalABCNETLinux\Lib\Speech.pcu
-copy bin\Lib\Tasks.pcu Release\PascalABCNETLinux\Lib\Tasks.pcu
+copy bin\Lib\Tasks*.pcu Release\PascalABCNETLinux\Lib\
 copy bin\Lib\Timers.pcu Release\PascalABCNETLinux\Lib\Timers.pcu
 copy bin\Lib\TurtleABC.pcu Release\PascalABCNETLinux\Lib\TurtleABC.pcu
 copy bin\Lib\DataFrameABC.pcu Release\PascalABCNETLinux\Lib\DataFrameABC.pcu

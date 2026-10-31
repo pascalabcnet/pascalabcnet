@@ -100,10 +100,12 @@ namespace VisualPascalABC
             }
             if (tp != null)
             {
-                if (MainDockPanel.ActiveDocument != tp)
-                {
-                    CurrentCodeFileDocument = tp;
-                }
+                // Mono does not use the docking library's Windows focus tracker.
+                // Select the actual pane tab rather than trust ActiveDocument.
+                if (tp.Pane != null)
+                    tp.Pane.ActiveContent = tp;
+                CurrentCodeFileDocument = tp;
+                tp.TextEditor.SetFocus();
             }
             if (FileName != null)
             {

@@ -12,6 +12,9 @@
     
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(PluginPlatform)' == 'Linux'">
+    <DefineConstants>$(DefineConstants);PABC_LINUX_PLUGIN</DefineConstants>
+  </PropertyGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\..\CompilerTools\CompilerTools.csproj"/>
@@ -19,7 +22,8 @@
     <ProjectReference Include="..\..\Errors\Errors.csproj" />
     <ProjectReference Include="..\..\Localization\Localization.csproj" />
     <ProjectReference Include="..\..\ParserTools\ParserTools.csproj" />
-    <ProjectReference Include="..\..\PluginsSupport\PluginsSupport.csproj" />
+    <ProjectReference Include="..\..\PluginsSupport\PluginsSupport.csproj" Condition="'$(PluginPlatform)' != 'Linux'" />
+    <ProjectReference Include="..\..\PluginsSupportLinux\PluginsSupportLinux.csproj" Condition="'$(PluginPlatform)' == 'Linux'" />
     <ProjectReference Include="..\..\SyntaxTree\SyntaxTree.csproj" />
   </ItemGroup>
   

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>LinuxPluginFixtures</AssemblyName>
+    <IdeReferenceDirectory Condition="'$(IdeReferenceDirectory)' == ''">$(MSBuildProjectDirectory)/../../../bin</IdeReferenceDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../PluginFixtures.cs" Link="PluginFixtures.cs" />
+    <Reference Include="PluginsSupportLinux"><HintPath>$(IdeReferenceDirectory)/PluginsSupportLinux.dll</HintPath></Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+</Project>

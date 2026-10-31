@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net472</TargetFramework>
+    <IdeReferenceDirectory Condition="'$(IdeReferenceDirectory)' == ''">$(MSBuildProjectDirectory)/../../bin</IdeReferenceDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="PluginFixtures.cs" />
+    <Compile Remove="Fixture/**/*.cs" />
+    <ProjectReference Include="Fixture/Fixture.csproj" />
+    <Compile Include="../../VisualPascalABCNETLinux/DS/PluginsController/PluginsController.cs" Link="PluginsController.cs" />
+    <Reference Include="PluginsSupportLinux"><HintPath>$(IdeReferenceDirectory)/PluginsSupportLinux.dll</HintPath></Reference>
+    <Reference Include="Localization"><HintPath>$(IdeReferenceDirectory)/Localization.dll</HintPath></Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+</Project>

@@ -23,6 +23,7 @@ namespace VisualPascalABC
     
     public class VisualEnvironmentCompiler: IVisualEnvironmentCompiler
     {
+        public ConvertTextDelegate ConvertUnitTextProperty { get; set; }
         PascalABCCompiler.CompilerType defaultCompilerType = PascalABCCompiler.CompilerType.Remote;
 
         public static Encoding DefaultFileEncoding = new System.Text.UTF8Encoding(false);
@@ -252,11 +253,14 @@ namespace VisualPascalABC
             {
                 case SourceFileOperation.GetText:
                     if (tp != null)
-                        return ed.Document.TextContent;
+                    {
+                        string editorText = ed.Document.TextContent;
+                        return ConvertUnitTextProperty == null ? editorText : ConvertUnitTextProperty(FileName, editorText);
+                    }
                     if (!File.Exists(FileName))
                         return null;
                     string Text = FileReader.ReadFileContent(FileName, null);
-                    return Text;
+                    return ConvertUnitTextProperty == null ? Text : ConvertUnitTextProperty(FileName, Text);
                 case SourceFileOperation.Exists:
                     if (tp != null)
                         return true;

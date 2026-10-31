@@ -278,6 +278,7 @@ namespace VisualPascalABC
         //bool MessageQueueBeginReceive = false;
         //Dictionary<string, string> ReadSignalNames = new Dictionary<string, string>();
 
+        public event ChangeArgsBeforeRunDelegate ChangeArgsBeforeRun;
         public Dictionary<string, string> TempBatFiles = new Dictionary<string, string>();
 
 
@@ -294,6 +295,8 @@ namespace VisualPascalABC
             
             try
             {
+                if (ChangeArgsBeforeRun != null)
+                    ChangeArgsBeforeRun(ref args);
                 PRunner.Start(fileName, args, redirectIO, redirectErrors, RunWithPause, attachDebugger, fictive_attach);
                 if (Starting != null)
                     Starting(fileName);

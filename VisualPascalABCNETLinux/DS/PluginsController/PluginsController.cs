@@ -120,6 +120,9 @@ namespace VisualPascalABCPlugins
             //ToolStrip.Refresh();
             if (ToolStripMenuItem.Visible == false) 
                 ToolStripMenuItem.Visible = true;
+            var extended = Plugin as IExtendedVisualPascalABCPlugin;
+            if (extended != null)
+                extended.AfterAddInGUI();
         }
         void button_Click(object sender, EventArgs e)
         {

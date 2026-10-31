@@ -144,9 +144,18 @@ namespace VisualPascalABCPlugins
                 var answer = User.Login("", login, pass);
                 if (answer.Result == "Success")
                 {
+#if PABC_LINUX_PLUGIN
+                    Workbench.BeginInvoke(new Action(() => loginForm.ChangeControlsAfterLogin(login)));
+#else
                     loginForm.ChangeControlsAfterLogin(login);
+#endif
                     var Rating = User.GetRating("", login, pass);
+#if PABC_LINUX_PLUGIN
+                    var ratingText = Rating.Result;
+                    Workbench.BeginInvoke(new Action(() => loginForm.SetRating(ratingText)));
+#else
                     loginForm.SetRating(Rating.Result);
+#endif
                 }
             }
             catch (Exception e)

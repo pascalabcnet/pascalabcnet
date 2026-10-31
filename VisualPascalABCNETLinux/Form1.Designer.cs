@@ -1797,7 +1797,6 @@ namespace VisualPascalABC
             // openFileDialog1
             // 
             this.openFileDialog1.Multiselect = true;
-            this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
             // 
             // saveFileDialog1
             // 

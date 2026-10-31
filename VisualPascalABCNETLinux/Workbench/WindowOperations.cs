@@ -539,10 +539,38 @@ namespace VisualPascalABC
 
         delegate void AppendTextInternalAsyncDelegate(TextBoxBase textBox, string Text);
 
+        private static System.Drawing.Color OutputColor(char code)
+        {
+            switch ((int)code)
+            {
+                case 65535: return System.Drawing.Color.Green;
+                case 65534: return System.Drawing.Color.Red;
+                case 65533: return System.Drawing.Color.OrangeRed;
+                case 65532: return System.Drawing.Color.Magenta;
+                case 65531: return System.Drawing.Color.Gray;
+                default: return System.Drawing.Color.Black;
+            }
+        }
+
         private void AppendTextInternalAsync(TextBoxBase textBox, string Text)
         {
-            //MessageBox.Show(string.Join(" ", Text.Select(c => ((int)c).ToString())));
-            textBox.AppendText(Text);
+            var richTextBox = textBox as RichTextBox;
+            int start = 0;
+            for (int index = 0; index < Text.Length; index++)
+            {
+                if (Text[index] < (char)65530)
+                    continue;
+                if (index > start)
+                    textBox.AppendText(Text.Substring(start, index - start));
+                if (richTextBox != null)
+                {
+                    richTextBox.Select(richTextBox.TextLength, 0);
+                    richTextBox.SelectionColor = OutputColor(Text[index]);
+                }
+                start = index + 1;
+            }
+            if (start < Text.Length)
+                textBox.AppendText(Text.Substring(start));
         }
 
         delegate void InternalWriteToOutputBoxDel(string exc);

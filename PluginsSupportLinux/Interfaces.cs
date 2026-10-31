@@ -60,6 +60,14 @@ namespace VisualPascalABCPlugins
     }
 
 
+    public interface IExtendedVisualPascalABCPlugin : IVisualPascalABCPlugin
+    {
+        void AfterAddInGUI();
+    }
+
+    public delegate void ChangeArgsBeforeRunDelegate(ref string args);
+    public delegate string ConvertTextDelegate(string FileName, string text);
+
     public enum VisualEnvironmentState
     {
         CaretPosChangedMouse,
@@ -104,6 +112,7 @@ namespace VisualPascalABCPlugins
     public delegate IAsyncResult InvokeDegegate(Delegate method, params object[] args);
     public interface IVisualEnvironmentCompiler
     {
+        ConvertTextDelegate ConvertUnitTextProperty { get; set; }
         PascalABCCompiler.ICompiler Compiler
         {
             get;
@@ -302,6 +311,7 @@ namespace VisualPascalABCPlugins
 
     public interface IWorkbenchRunService
     {
+        event ChangeArgsBeforeRunDelegate ChangeArgsBeforeRun;
         event RunnerManagerActionDelegate Starting; // можно вызывать из плагина
         event RunnerManagerActionDelegate Exited;   // можно вызывать из плагина
         bool IsRun();
