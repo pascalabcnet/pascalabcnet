@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
@@ -22,10 +22,12 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Compile Include="ABCHealth.cs">
+    <Compile Include="..\VisualPascalABCNET\ABCHealth.cs">
+      <Link>ABCHealth.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ABCHealth.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\ABCHealth.Designer.cs">
+      <Link>ABCHealth.Designer.cs</Link>
       <DependentUpon>ABCHealth.cs</DependentUpon>
     </Compile>
     <Compile Include="AboutBox.cs">
@@ -55,7 +57,9 @@
     </Compile>
     <Compile Include="CodeFileDocumentTextEditorControl.cs">
     </Compile>
-    <Compile Include="CompileOptionsSet.cs" />
+    <Compile Include="..\VisualPascalABCNET\CompileOptionsSet.cs">
+      <Link>CompileOptionsSet.cs</Link>
+    </Compile>
     <Compile Include="DockContent\CompilerConsoleWindowForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -89,7 +93,9 @@
     <Compile Include="DS\CodeCompletionVisual\DeclarationWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DS\NavigationManager.cs" />
+    <Compile Include="..\VisualPascalABCNET\DS\NavigationManager.cs">
+      <Link>DS\NavigationManager.cs</Link>
+    </Compile>
     <Compile Include="DS\CodeCompletionVisual\CodeCompletionListView.cs" />
     <Compile Include="DS\CodeCompletionVisual\CompletionDocumentation.cs" />
     <Compile Include="DS\CodeCompletionVisual\PassivePopupWindow.cs" />
@@ -105,13 +111,25 @@
     <Compile Include="DS\CodeCompletionVisual\TipSpacer.cs" />
     <Compile Include="DS\CodeCompletionVisual\TipSplitter.cs" />
     <Compile Include="DS\CodeCompletionVisual\TipText.cs" />
-    <Compile Include="DS\SymbolsViwer.cs" />
-    <Compile Include="DS\RunManager\EventedEventWaitHandleList.cs" />
-    <Compile Include="DS\ObjectLocalisator.cs" />
-    <Compile Include="DS\Classes.cs" />
+    <Compile Include="..\VisualPascalABCNET\DS\SymbolsViwer.cs">
+      <Link>DS\SymbolsViwer.cs</Link>
+    </Compile>
+    <Compile Include="..\VisualPascalABCNET\DS\RunManager\EventedEventWaitHandleList.cs">
+      <Link>DS\RunManager\EventedEventWaitHandleList.cs</Link>
+    </Compile>
+    <Compile Include="..\VisualPascalABCNET\DS\ObjectLocalisator.cs">
+      <Link>DS\ObjectLocalisator.cs</Link>
+    </Compile>
+    <Compile Include="..\VisualPascalABCNET\DS\Classes.cs">
+      <Link>DS\Classes.cs</Link>
+    </Compile>
     <Compile Include="DS\Constants.cs" />
-    <Compile Include="DS\FoldingStrategy.cs" />
-    <Compile Include="DS\RuntimeException.cs" />
+    <Compile Include="..\VisualPascalABCNET\DS\FoldingStrategy.cs">
+      <Link>DS\FoldingStrategy.cs</Link>
+    </Compile>
+    <Compile Include="..\VisualPascalABCNET\DS\RuntimeException.cs">
+      <Link>DS\RuntimeException.cs</Link>
+    </Compile>
     <Compile Include="DS\Tools.cs" />
     <Compile Include="..\Configuration\GlobalAssemblyInfo.cs">
       <Link>Config\GlobalAssemblyInfo.cs</Link>
@@ -129,7 +147,8 @@
       <DependentUpon>FindSymbolsResultWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="FileMonitoring.cs" />
-    <Compile Include="FontCombo.cs">
+    <Compile Include="..\VisualPascalABCNET\FontCombo.cs">
+      <Link>FontCombo.cs</Link>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Form1.cs">
@@ -138,18 +157,24 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="CompilerForm.cs">
+    <Compile Include="..\VisualPascalABCNET\CompilerForm.cs">
+      <Link>CompilerForm.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CompilerForm.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\CompilerForm.Designer.cs">
+      <Link>CompilerForm.Designer.cs</Link>
       <DependentUpon>CompilerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="DS\PluginsController\PluginsController.cs" />
-    <Compile Include="FSWatcherService.cs" />
-    <Compile Include="GotoLine.cs">
+    <Compile Include="..\VisualPascalABCNET\FSWatcherService.cs">
+      <Link>FSWatcherService.cs</Link>
+    </Compile>
+    <Compile Include="..\VisualPascalABCNET\GotoLine.cs">
+      <Link>GotoLine.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GotoLine.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\GotoLine.Designer.cs">
+      <Link>GotoLine.Designer.cs</Link>
       <DependentUpon>GotoLine.cs</DependentUpon>
     </Compile>
     <Compile Include="IB\CodeCompletion\CodeCompletionActions.cs" />
@@ -196,17 +221,28 @@
     <Compile Include="DockContent\OutputWindowForm.Designer.cs">
       <DependentUpon>OutputWindowForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="IB\Refactoring\RenameForm.cs">
+    <Compile Include="..\VisualPascalABCNET\IB\Refactoring\RenameForm.cs">
+      <Link>IB\Refactoring\RenameForm.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="IB\Refactoring\RenameForm.Designer.cs" />
-    <Compile Include="IB\Samples\CodeSampleManager.cs" />
+    <Compile Include="..\VisualPascalABCNET\IB\Refactoring\RenameForm.Designer.cs">
+      <Link>IB\Refactoring\RenameForm.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\VisualPascalABCNET\IB\Samples\CodeSampleManager.cs">
+      <Link>IB\Samples\CodeSampleManager.cs</Link>
+    </Compile>
     <Compile Include="IB\TreeGridView\TreeGridCell.cs" />
-    <Compile Include="IB\TreeGridView\TreeGridEvents.cs" />
+    <Compile Include="..\VisualPascalABCNET\IB\TreeGridView\TreeGridEvents.cs">
+      <Link>IB\TreeGridView\TreeGridEvents.cs</Link>
+    </Compile>
     <Compile Include="IB\TreeGridView\TreeGridNode.cs" />
-    <Compile Include="IB\TreeGridView\TreeGridNodeCollection.cs" />
+    <Compile Include="..\VisualPascalABCNET\IB\TreeGridView\TreeGridNodeCollection.cs">
+      <Link>IB\TreeGridView\TreeGridNodeCollection.cs</Link>
+    </Compile>
     <Compile Include="IB\TreeGridView\TreeGridView.cs" />
-    <Compile Include="IB\VBComp\VBNETCompiler.cs" />
+    <Compile Include="..\VisualPascalABCNET\IB\VBComp\VBNETCompiler.cs">
+      <Link>IB\VBComp\VBNETCompiler.cs</Link>
+    </Compile>
     <Compile Include="MonoDebugging\Backend\DissassemblyBuffer.cs" />
     <Compile Include="MonoDebugging\Backend\EvaluationResult.cs" />
     <Compile Include="MonoDebugging\Backend\IBacktrace.cs" />
@@ -391,37 +427,51 @@
     <Compile Include="OptionsContent\CompilerOptionsContent.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OptionsContent\CompilerOptionsContent.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\OptionsContent\CompilerOptionsContent.Designer.cs">
+      <Link>OptionsContent\CompilerOptionsContent.Designer.cs</Link>
       <DependentUpon>CompilerOptionsContent.cs</DependentUpon>
     </Compile>
-    <Compile Include="OptionsContent\EditorOptionsContent.cs">
+    <Compile Include="..\VisualPascalABCNET\OptionsContent\EditorOptionsContent.cs">
+      <Link>OptionsContent\EditorOptionsContent.cs</Link>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OptionsContent\EditorOptionsContent.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\OptionsContent\EditorOptionsContent.Designer.cs">
+      <Link>OptionsContent\EditorOptionsContent.Designer.cs</Link>
       <DependentUpon>EditorOptionsContent.cs</DependentUpon>
     </Compile>
     <Compile Include="OptionsContent\IntelliseseOptionsContent.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OptionsContent\IntelliseseOptionsContent.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\OptionsContent\IntelliseseOptionsContent.Designer.cs">
+      <Link>OptionsContent\IntelliseseOptionsContent.Designer.cs</Link>
       <DependentUpon>IntelliseseOptionsContent.cs</DependentUpon>
     </Compile>
-    <Compile Include="OptionsContent\IOptionsContent.cs" />
-    <Compile Include="OptionsContent\OptionsContentEngine.cs" />
-    <Compile Include="OptionsContent\OptionsForm.cs">
+    <Compile Include="..\VisualPascalABCNET\OptionsContent\IOptionsContent.cs">
+      <Link>OptionsContent\IOptionsContent.cs</Link>
+    </Compile>
+    <Compile Include="..\VisualPascalABCNET\OptionsContent\OptionsContentEngine.cs">
+      <Link>OptionsContent\OptionsContentEngine.cs</Link>
+    </Compile>
+    <Compile Include="..\VisualPascalABCNET\OptionsContent\OptionsForm.cs">
+      <Link>OptionsContent\OptionsForm.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OptionsContent\OptionsForm.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\OptionsContent\OptionsForm.Designer.cs">
+      <Link>OptionsContent\OptionsForm.Designer.cs</Link>
       <DependentUpon>OptionsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="OptionsContent\ViewOptionsContent.cs">
+    <Compile Include="..\VisualPascalABCNET\OptionsContent\ViewOptionsContent.cs">
+      <Link>OptionsContent\ViewOptionsContent.cs</Link>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OptionsContent\ViewOptionsContent.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\OptionsContent\ViewOptionsContent.Designer.cs">
+      <Link>OptionsContent\ViewOptionsContent.Designer.cs</Link>
       <DependentUpon>ViewOptionsContent.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
-    <Compile Include="Config\AssemblyInfo.cs" />
+    <Compile Include="..\VisualPascalABCNET\Config\AssemblyInfo.cs">
+      <Link>Config\AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Projects\NuGetTasks.cs" />
     <Compile Include="Workbench\BuildService.cs" />
     <Compile Include="Workbench\DialogsService.cs">
@@ -436,7 +486,8 @@
     <Compile Include="Workbench\HelpService.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Workbench\OptionsManager.cs">
+    <Compile Include="..\VisualPascalABCNET\Workbench\OptionsManager.cs">
+      <Link>Workbench\OptionsManager.cs</Link>
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Workbench\ProjectService.cs">
@@ -453,6 +504,7 @@
     </Compile>
     <Compile Include="Workbench\WorkbenchServiceFactory.cs" />
     <EmbeddedResource Include="ABCHealth.resx">
+      <ManifestResourceName>VisualPascalABC.ABCHealth</ManifestResourceName>
       <DependentUpon>ABCHealth.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="AboutBox.resx">
@@ -460,6 +512,7 @@
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CompilerForm.resx">
+      <ManifestResourceName>VisualPascalABC.CompilerForm</ManifestResourceName>
       <SubType>Designer</SubType>
       <DependentUpon>CompilerForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -490,14 +543,17 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="IB\Refactoring\RenameForm.resx">
+      <ManifestResourceName>VisualPascalABC.RenameForm</ManifestResourceName>
       <DependentUpon>RenameForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Projects\NewFileForm.resx">
+      <ManifestResourceName>VisualPascalABC.NewFileForm</ManifestResourceName>
       <DependentUpon>NewFileForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Projects\NewProject.resx">
+      <ManifestResourceName>VisualPascalABC.NewProjectForm</ManifestResourceName>
       <DependentUpon>NewProject.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -506,6 +562,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Projects\ProjectProperties.resx">
+      <ManifestResourceName>VisualPascalABC.ProjectProperties</ManifestResourceName>
       <DependentUpon>ProjectProperties.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -519,50 +576,70 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ReplaceConfirmDialog.resx">
+      <ManifestResourceName>VisualPascalABC.ReplaceConfirmDialog</ManifestResourceName>
       <SubType>Designer</SubType>
       <DependentUpon>ReplaceConfirmDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ReplaceForm.resx">
+      <ManifestResourceName>VisualPascalABC.FindReplaceForm</ManifestResourceName>
       <SubType>Designer</SubType>
       <DependentUpon>ReplaceForm.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Include="Projects\FusionNative.cs" />
-    <Compile Include="Projects\GacInterop.cs" />
-    <Compile Include="Projects\NewFileForm.cs">
+    <Compile Include="..\VisualPascalABCNET\Projects\FusionNative.cs">
+      <Link>Projects\FusionNative.cs</Link>
+    </Compile>
+    <Compile Include="..\VisualPascalABCNET\Projects\GacInterop.cs">
+      <Link>Projects\GacInterop.cs</Link>
+    </Compile>
+    <Compile Include="..\VisualPascalABCNET\Projects\NewFileForm.cs">
+      <Link>Projects\NewFileForm.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Projects\NewFileForm.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\Projects\NewFileForm.Designer.cs">
+      <Link>Projects\NewFileForm.Designer.cs</Link>
       <DependentUpon>NewFileForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Projects\NewProject.cs">
+    <Compile Include="..\VisualPascalABCNET\Projects\NewProject.cs">
+      <Link>Projects\NewProject.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Projects\NewProject.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\Projects\NewProject.Designer.cs">
+      <Link>Projects\NewProject.Designer.cs</Link>
       <DependentUpon>NewProject.cs</DependentUpon>
     </Compile>
     <Compile Include="Projects\ProjectExplorer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Projects\ProjectExplorer.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\Projects\ProjectExplorer.Designer.cs">
+      <Link>Projects\ProjectExplorer.Designer.cs</Link>
       <DependentUpon>ProjectExplorer.cs</DependentUpon>
     </Compile>
     <Compile Include="Projects\ProjectHelper.cs" />
-    <Compile Include="Projects\ProjectInfo.cs" />
-    <Compile Include="Projects\ProjectProperties.cs">
+    <Compile Include="..\VisualPascalABCNET\Projects\ProjectInfo.cs">
+      <Link>Projects\ProjectInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\VisualPascalABCNET\Projects\ProjectProperties.cs">
+      <Link>Projects\ProjectProperties.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Projects\ProjectProperties.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\Projects\ProjectProperties.Designer.cs">
+      <Link>Projects\ProjectProperties.Designer.cs</Link>
       <DependentUpon>ProjectProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="Projects\ProjectTasks.cs" />
     <Compile Include="Projects\ReferenceForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Projects\ReferenceForm.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\Projects\ReferenceForm.Designer.cs">
+      <Link>Projects\ReferenceForm.Designer.cs</Link>
       <DependentUpon>ReferenceForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Projects\TypeLibrary.cs" />
-    <Compile Include="Projects\UserOptionsManager.cs" />
+    <Compile Include="..\VisualPascalABCNET\Projects\TypeLibrary.cs">
+      <Link>Projects\TypeLibrary.cs</Link>
+    </Compile>
+    <Compile Include="..\VisualPascalABCNET\Projects\UserOptionsManager.cs">
+      <Link>Projects\UserOptionsManager.cs</Link>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
@@ -638,25 +715,33 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="ReplaceConfirmDialog.cs">
+    <Compile Include="..\VisualPascalABCNET\ReplaceConfirmDialog.cs">
+      <Link>ReplaceConfirmDialog.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ReplaceConfirmDialog.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\ReplaceConfirmDialog.Designer.cs">
+      <Link>ReplaceConfirmDialog.Designer.cs</Link>
       <DependentUpon>ReplaceConfirmDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="ReplaceForm.cs">
+    <Compile Include="..\VisualPascalABCNET\ReplaceForm.cs">
+      <Link>ReplaceForm.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ReplaceForm.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\ReplaceForm.Designer.cs">
+      <Link>ReplaceForm.Designer.cs</Link>
       <DependentUpon>ReplaceForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="RunArguments.cs">
+    <Compile Include="..\VisualPascalABCNET\RunArguments.cs">
+      <Link>RunArguments.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="RunArguments.Designer.cs">
+    <Compile Include="..\VisualPascalABCNET\RunArguments.Designer.cs">
+      <Link>RunArguments.Designer.cs</Link>
       <DependentUpon>RunArguments.cs</DependentUpon>
     </Compile>
-    <Compile Include="RunProcessOptions.cs" />
+    <Compile Include="..\VisualPascalABCNET\RunProcessOptions.cs">
+      <Link>RunProcessOptions.cs</Link>
+    </Compile>
     <Compile Include="UserOptions.cs" />
     <Compile Include="DS\RunManager\RunManager.cs" />
     <Compile Include="DS\RunManager\MonoX11WarningFilter.cs" />
@@ -664,10 +749,14 @@
     <Compile Include="DS\RunToolStripButton.cs" />
     <Compile Include="DS\UiDiagnostics.cs" />
     <Compile Include="DS\ConfirmationDialog.cs" />
-    <Compile Include="DS\Utils\OutputReader.cs" />
+    <Compile Include="..\VisualPascalABCNET\DS\Utils\OutputReader.cs">
+      <Link>DS\Utils\OutputReader.cs</Link>
+    </Compile>
     <Compile Include="DS\Utils\ProcessRunner.cs" />
     <Compile Include="DS\VisualEnvironmentCompiler.cs" />
-    <Compile Include="VisualStates.cs" />
+    <Compile Include="..\VisualPascalABCNET\VisualStates.cs">
+      <Link>VisualStates.cs</Link>
+    </Compile>
     <None Include="Resources\new_file1.bmp" />
     <None Include="Resources\open.bmp" />
     <None Include="Resources\save.bmp" />
@@ -706,6 +795,7 @@
     <Content Include="Resources\SendToBackHS.png" />
     <None Include="Resources\Delete3.bmp" />
     <EmbeddedResource Include="OptionsContent\EditorOptionsContent.resx">
+      <ManifestResourceName>VisualPascalABC.OptionsContent.EditorOptionsContent</ManifestResourceName>
       <SubType>Designer</SubType>
       <DependentUpon>EditorOptionsContent.cs</DependentUpon>
     </EmbeddedResource>
@@ -747,6 +837,7 @@
       <DependentUpon>FindSymbolsResultWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GotoLine.resx">
+      <ManifestResourceName>VisualPascalABC.GotoLineForm</ManifestResourceName>
       <SubType>Designer</SubType>
       <DependentUpon>GotoLine.cs</DependentUpon>
     </EmbeddedResource>
@@ -763,10 +854,12 @@
       <DependentUpon>IntelliseseOptionsContent.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OptionsContent\OptionsForm.resx">
+      <ManifestResourceName>VisualPascalABC.OptionsContent.OptionsForm</ManifestResourceName>
       <SubType>Designer</SubType>
       <DependentUpon>OptionsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OptionsContent\ViewOptionsContent.resx">
+      <ManifestResourceName>VisualPascalABC.OptionsContent.ViewOptionsContent</ManifestResourceName>
       <SubType>Designer</SubType>
       <DependentUpon>ViewOptionsContent.cs</DependentUpon>
     </EmbeddedResource>
@@ -787,6 +880,7 @@
     <EmbeddedResource Include="Resources\Icons.16x16.Field.png" />
     <EmbeddedResource Include="Resources\Icons.16x16.Property.png" />
     <EmbeddedResource Include="RunArguments.resx">
+      <ManifestResourceName>VisualPascalABC.RunArguments</ManifestResourceName>
       <DependentUpon>RunArguments.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
