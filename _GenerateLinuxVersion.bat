@@ -27,7 +27,7 @@ copy bin\ICSharpCode.Core.WinForms.dll Release\PascalABCNETLinux\ICSharpCode.Cor
 copy bin\ICSharpCode.NRefactory.dll Release\PascalABCNETLinux\ICSharpCode.NRefactory.dll
 copy bin\ICSharpCode.SharpDevelop.dll Release\PascalABCNETLinux\ICSharpCode.SharpDevelop.dll
 copy bin\ICSharpCode.SharpDevelop.Dom.dll Release\PascalABCNETLinux\ICSharpCode.SharpDevelop.Dom.dll
-copy bin\ICSharpCode.TextEditorLinux.dll Release\PascalABCNETLinux\ICSharpCode.TextEditorLinux.dll
+copy bin\ICSharpCode.TextEditor.dll Release\PascalABCNETLinux\ICSharpCode.TextEditor.dll
 copy bin\Localization.dll Release\PascalABCNETLinux\Localization.dll
 copy bin\mono_pabcIDE.bat Release\PascalABCNETLinux\mono_pabcIDE.bat
 copy bin\mono_pabcnetc.bat Release\PascalABCNETLinux\mono_pabcnetc.bat

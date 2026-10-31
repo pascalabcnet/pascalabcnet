@@ -32,7 +32,7 @@ internal static class CompletionInsertionTests
         try
         {
             Assembly ide = Assembly.LoadFrom(idePath);
-            Assembly editorAssembly = Assembly.LoadFrom(Path.Combine(directory, "ICSharpCode.TextEditorLinux.dll"));
+            Assembly editorAssembly = Assembly.LoadFrom(Path.Combine(directory, "ICSharpCode.TextEditor.dll"));
             if (Environment.GetEnvironmentVariable("PABC_TEST_MONO_EDITOR_BRANCH") == "1")
             {
                 // Test process only: exercise the common editor's Mono paths on
@@ -40,6 +40,10 @@ internal static class CompletionInsertionTests
                 editorAssembly.GetType("ICSharpCode.TextEditor.EditorPlatform", true)
                     .GetField("IsMonoUnix", BindingFlags.NonPublic | BindingFlags.Static).SetValue(null, true);
             }
+            TextAreaKeyDispatchTests.Run(editorAssembly, check);
+            TextAreaMouseStateTests.Run(editorAssembly, check);
+            TextAreaHoverTimerTests.Run(editorAssembly, check);
+            TextAreaToolTipFontTests.Run(editorAssembly, check);
             Type mainType = ide.GetType("VisualPascalABC.Form1", true);
             // Only the options field is read by the popup. Do not run Form1's
             // constructor: it starts IDE services and loads real user settings.

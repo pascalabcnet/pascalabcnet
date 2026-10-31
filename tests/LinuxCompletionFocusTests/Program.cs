@@ -27,6 +27,15 @@ internal static class Program
             Application.Idle -= run;
             try
             {
+                if (args.Length > 1 && args[1] == "mouse")
+                {
+                    TextAreaMouseStateTests.Run(System.Reflection.Assembly.LoadFrom(args[0]), Check);
+                    TextAreaHoverTimerTests.Run(System.Reflection.Assembly.LoadFrom(args[0]), Check);
+                    TextAreaToolTipFontTests.Run(System.Reflection.Assembly.LoadFrom(args[0]), Check);
+                    Console.WriteLine("All mouse state checks passed.");
+                    result = 0;
+                    return;
+                }
                 bool listOnly = args.Length > 1 && args[1] == "list";
                 if (!listOnly) DocumentationTests.Run(Check, Pump);
                 if (args.Length >= 1) CompletionInsertionTests.Run(args[0], Check, Pump, listOnly);

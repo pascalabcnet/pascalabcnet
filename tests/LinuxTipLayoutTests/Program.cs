@@ -28,7 +28,7 @@ internal static class Program
             object defaults = Activator.CreateInstance(ide.GetType("VisualPascalABC.UserOptions", true));
             Check((int)defaults.GetType().GetField("EditorFontSize").GetValue(defaults) == 11,
                 "shipped IDE defaults to editor font size 11");
-            Assembly editorAssembly = Assembly.LoadFrom(Path.Combine(Path.GetDirectoryName(path), "ICSharpCode.TextEditorLinux.dll"));
+            Assembly editorAssembly = Assembly.LoadFrom(Path.Combine(Path.GetDirectoryName(path), "ICSharpCode.TextEditor.dll"));
             object editorDefaults = Activator.CreateInstance(editorAssembly.GetType("ICSharpCode.TextEditor.Document.DefaultTextEditorProperties", true));
             var defaultFont = (Font)editorDefaults.GetType().GetProperty("Font").GetValue(editorDefaults, null);
             Check(Math.Abs(defaultFont.SizeInPoints - 11f) < 0.01f, "shipped editor library defaults to 11 points");

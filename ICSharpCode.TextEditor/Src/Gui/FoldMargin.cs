@@ -56,7 +56,7 @@ namespace ICSharpCode.TextEditor
 				if (rect.IntersectsWith(markerRectangle)) {
 					// draw dotted separator line
 					if (textArea.Document.TextEditorProperties.ShowLineNumbers) {
-						g.FillRectangle(BrushRegistry.GetBrush(textArea.Enabled ? lineNumberPainterColor.BackgroundColor : SystemColors.InactiveBorder),
+						g.FillRectangle(BrushRegistry.GetBrush(textArea.Enabled || EditorPlatform.IsMonoUnix ? lineNumberPainterColor.BackgroundColor : SystemColors.InactiveBorder),
 						                new Rectangle(markerRectangle.X + 1, markerRectangle.Y, markerRectangle.Width - 1, markerRectangle.Height));
 						
 						g.DrawLine(BrushRegistry.GetDotPen(lineNumberPainterColor.Color, lineNumberPainterColor.BackgroundColor),
@@ -65,7 +65,7 @@ namespace ICSharpCode.TextEditor
 						           base.drawingPosition.X,
 						           markerRectangle.Bottom);
 					} else {
-						g.FillRectangle(BrushRegistry.GetBrush(textArea.Enabled ? lineNumberPainterColor.BackgroundColor : SystemColors.InactiveBorder), markerRectangle);
+						g.FillRectangle(BrushRegistry.GetBrush(textArea.Enabled || EditorPlatform.IsMonoUnix ? lineNumberPainterColor.BackgroundColor : SystemColors.InactiveBorder), markerRectangle);
 					}
 					
 					int currentLine = textArea.Document.GetFirstLogicalLine(textArea.TextView.FirstPhysicalLine + y);

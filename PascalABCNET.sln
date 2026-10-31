@@ -89,7 +89,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxVisitors", "SyntaxVis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeTemplatesPlugin", "VisualPlugins\CodeTemplatesPlugin\CodeTemplatesPlugin.csproj", "{3AA92A45-7142-4C59-B12F-56DAE32A40E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.TextEditorLinux", "ICSharpCode.TextEditorLinux\ICSharpCode.TextEditorLinux.csproj", "{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.TextEditor", "ICSharpCode.TextEditor\ICSharpCode.TextEditor.csproj", "{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualPascalABCNETLinux", "VisualPascalABCNETLinux\VisualPascalABCNETLinux.csproj", "{3BF3CEB4-0E08-485A-8E6D-924841818B01}"
 EndProject

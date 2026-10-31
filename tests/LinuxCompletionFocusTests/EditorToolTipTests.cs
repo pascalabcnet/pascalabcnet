@@ -29,6 +29,8 @@ internal static class EditorToolTipTests
             area.LostFocus += (sender, args) => lost++;
             show.Invoke(area, new object[] { "begin\n  Print('&текст');\nend;", -1 });
             var tip = (ToolTip)field.GetValue(null);
+            check(type.GetField("windowsToolTip", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null) == null,
+                "Mono creates no Windows declaration tooltip window");
             tip.Draw += (sender, args) => drawn++;
             show.Invoke(area, new object[] { null, -1 });
             show.Invoke(area, new object[] { "begin\n  Print('&текст');\nend;", -1 }); pump();
@@ -42,6 +44,10 @@ internal static class EditorToolTipTests
                 "built-in marker tooltip preserves its text and leaves keyboard input in the editor");
             check(Equals(type.GetProperty("ToolTipFont").GetValue(area, null), font),
                 "built-in editor tooltips use the shared completion-list font");
+            show.Invoke(area, new object[] { "  \t", -1 });
+            check(type.GetField("toolTipOwner", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null) == null,
+                "whitespace hides the Mono tooltip through the Mono implementation");
+            show.Invoke(area, new object[] { "Marker explanation & literal text", -1 });
             editor.Dispose();
             check(field.GetValue(null) == null, "disposing the owning editor releases its built-in tooltip");
         }

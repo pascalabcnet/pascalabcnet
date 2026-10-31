@@ -70,7 +70,7 @@ namespace ICSharpCode.TextEditor
 			}
 			HighlightColor lineNumberPainterColor = textArea.Document.HighlightingStrategy.GetColorFor("LineNumbers");
 			int fontHeight = textArea.TextView.FontHeight;
-			Brush fillBrush = textArea.Enabled ? BrushRegistry.GetBrush(lineNumberPainterColor.BackgroundColor) : SystemBrushes.InactiveBorder;
+			Brush fillBrush = textArea.Enabled || EditorPlatform.IsMonoUnix ? BrushRegistry.GetBrush(lineNumberPainterColor.BackgroundColor) : SystemBrushes.InactiveBorder;
 			Brush drawBrush = BrushRegistry.GetBrush(lineNumberPainterColor.Color);
 			for (int y = 0; y < (DrawingPosition.Height + textArea.TextView.VisibleLineDrawingRemainder) / fontHeight + 1; ++y) {
 				int ypos = drawingPosition.Y + fontHeight * y  - textArea.TextView.VisibleLineDrawingRemainder;
