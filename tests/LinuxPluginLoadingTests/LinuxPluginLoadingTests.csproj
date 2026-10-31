@@ -9,7 +9,7 @@
     <Compile Remove="Fixture/**/*.cs" />
     <ProjectReference Include="Fixture/Fixture.csproj" />
     <Compile Include="../../VisualPascalABCNETLinux/DS/PluginsController/PluginsController.cs" Link="PluginsController.cs" />
-    <Reference Include="PluginsSupportLinux"><HintPath>$(IdeReferenceDirectory)/PluginsSupportLinux.dll</HintPath></Reference>
+    <Reference Include="PluginsSupport"><HintPath>$(IdeReferenceDirectory)/PluginsSupport.dll</HintPath></Reference>
     <Reference Include="Localization"><HintPath>$(IdeReferenceDirectory)/Localization.dll</HintPath></Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Drawing" />

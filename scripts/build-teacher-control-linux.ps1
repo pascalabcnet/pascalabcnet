@@ -15,8 +15,8 @@ if ($OutputDirectory.TrimEnd('\') -eq (Join-Path $repositoryRoot 'bin')) {
 $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
 $msbuild = & $vswhere -latest -requires Microsoft.Component.MSBuild -find 'MSBuild\**\Bin\MSBuild.exe' | Select-Object -First 1
 if (!$msbuild) { throw 'Visual Studio MSBuild is required.' }
-if (!(Test-Path -LiteralPath (Join-Path $IdeDirectory 'PluginsSupportLinux.dll'))) {
-    throw 'Build the Linux shell and PluginsSupportLinux.dll first.'
+if (!(Test-Path -LiteralPath (Join-Path $IdeDirectory 'PluginsSupport.dll'))) {
+    throw 'Build the common PluginsSupport.dll first.'
 }
 $stage = Join-Path $repositoryRoot ('.codex-build\teacher-control-linux-' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $stage -Force | Out-Null

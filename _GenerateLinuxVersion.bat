@@ -63,7 +63,7 @@ copy bin\PascalABCNETLinux.exe.config Release\PascalABCNETLinux\PascalABCNETLinu
 copy bin\PascalABCParser.dll Release\PascalABCNETLinux\PascalABCParser.dll
 copy bin\PascalABCLanguageInfo.dll Release\PascalABCNETLinux\PascalABCLanguageInfo.dll
 copy bin\Pause.exe Release\PascalABCNETLinux\Pause.exe
-copy bin\PluginsSupportLinux.dll Release\PascalABCNETLinux\PluginsSupportLinux.dll
+copy bin\PluginsSupport.dll Release\PascalABCNETLinux\PluginsSupport.dll
 copy bin\ProgrammRunner.exe Release\PascalABCNETLinux\ProgrammRunner.exe
 rem copy bin\rc.exe Release\PascalABCNETLinux\rc.exe
 copy bin\SemanticTree.dll Release\PascalABCNETLinux\SemanticTree.dll

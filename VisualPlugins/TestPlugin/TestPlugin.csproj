@@ -19,8 +19,7 @@
     <ProjectReference Include="..\..\Errors\Errors.csproj" />
     <ProjectReference Include="..\..\Localization\Localization.csproj" />
     <ProjectReference Include="..\..\ParserTools\ParserTools.csproj" />
-    <ProjectReference Include="..\..\PluginsSupport\PluginsSupport.csproj" Condition="'$(PluginPlatform)' != 'Linux'" />
-    <ProjectReference Include="..\..\PluginsSupportLinux\PluginsSupportLinux.csproj" Condition="'$(PluginPlatform)' == 'Linux'" />
+    <ProjectReference Include="..\..\PluginsSupport\PluginsSupport.csproj" />
   </ItemGroup>
   
   <ItemGroup>
