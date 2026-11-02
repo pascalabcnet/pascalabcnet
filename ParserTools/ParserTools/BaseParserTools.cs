@@ -7,8 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using QUT.Gppg;
-using PascalABCCompiler.Contracts;
-using PascalABCCompiler.ParserTools.Directives;
+using PascalABCCompiler.Contracts.Parsers;
 using System.Text;
 
 namespace PascalABCCompiler.ParserTools

@@ -8,7 +8,7 @@ using System.Threading;
 using System.Xml;
 using System.Reflection;
 using System.Text;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.CodeCompletion;
 
 namespace CodeCompletion
 {

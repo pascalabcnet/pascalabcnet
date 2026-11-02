@@ -1,14 +1,13 @@
 ﻿using System;
+using PascalABCCompiler.Contracts.Parsers;
 
-namespace PascalABCCompiler.Contracts
+namespace PascalABCCompiler.Contracts.CodeCompletion
 {
     /// <summary>
 	/// Интерфейс, предоставляющий информацию интеллисенсу
 	/// </summary>
 	public interface ILanguageIntellisenseSupport
     {
-        ILanguageInformation LanguageInformation { get; set; }
-
         /// <summary>
         /// Получить полное описание элемента (в желтой подсказке)
         /// </summary>

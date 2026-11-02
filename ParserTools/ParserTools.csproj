@@ -16,9 +16,11 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\CodeCompletionContracts\CodeCompletionContracts.csproj" />
     <ProjectReference Include="..\Errors\Errors.csproj" />
+    <ProjectReference Include="..\LanguageContracts\LanguageContracts.csproj" />
     <ProjectReference Include="..\Localization\Localization.csproj" />
+    <ProjectReference Include="..\ParserContracts\ParserContracts.csproj" />
     <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj" />
   </ItemGroup>
 </Project>

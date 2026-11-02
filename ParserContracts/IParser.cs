@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Errors;
 
-namespace PascalABCCompiler.Contracts
+namespace PascalABCCompiler.Contracts.Parsers
 {
     public enum ParseMode { Normal, Expression, Statement, Special, ForFormatter, TypeAsExpression };
     public interface IParser
     {
-        ILanguageInformation LanguageInformation { get; set; }
-
         compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, bool compilingNotMainProgram, List<string> DefinesList = null);
 
         compilation_unit GetCompilationUnitForFormatter(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings);

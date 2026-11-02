@@ -1,4 +1,4 @@
-﻿namespace PascalABCCompiler.Contracts
+﻿namespace PascalABCCompiler.Contracts.CodeCompletion
 {
     public interface ICodeCompletionDomConverter
     {

@@ -9,7 +9,7 @@ using System.Xml;
 using System.Reflection;
 using System.Text;
 using System.Globalization;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.CodeCompletion;
 
 namespace CodeCompletion
 {

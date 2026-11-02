@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PascalABCCompiler.Contracts
+namespace PascalABCCompiler.Contracts.Parsers
 {
     public interface IDirectiveInfo
     {

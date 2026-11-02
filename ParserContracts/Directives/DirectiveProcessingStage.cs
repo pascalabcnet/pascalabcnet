@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PascalABCCompiler.Contracts
+namespace PascalABCCompiler.Contracts.Parsers
 {
     /// <summary>
     /// Этап, которому принадлежит директива. Это не обработчик директивы, а

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using PascalABCCompiler.Errors;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Parsers;
 
 namespace PascalABCCompiler.ParserTools.Directives
 {

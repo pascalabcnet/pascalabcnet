@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using CodeCompletion;
 using System.Threading;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.CodeCompletion;
 
 namespace VisualPascalABC
 {

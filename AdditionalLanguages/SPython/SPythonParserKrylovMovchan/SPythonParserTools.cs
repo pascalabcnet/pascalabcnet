@@ -4,7 +4,7 @@ using System.Linq;
 
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.ParserTools;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Parsers;
 using System.Text;
 using PascalABCCompiler.Errors;
 using QUT.Gppg;

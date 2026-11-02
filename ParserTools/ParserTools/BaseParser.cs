@@ -3,7 +3,8 @@
 using System.Collections.Generic;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Parsers;
+using PascalABCCompiler.Contracts.Languages;
 
 namespace PascalABCCompiler.Parsers
 {
@@ -15,7 +16,12 @@ namespace PascalABCCompiler.Parsers
 
         protected List<compiler_directive> CompilerDirectives = new List<compiler_directive>();
 
-        public ILanguageInformation LanguageInformation { get; set; }
+        protected ILanguageInformation languageInformation;
+
+        public BaseParser(ILanguageInformation languageInformation)
+        {
+            this.languageInformation = languageInformation;
+        }
 
         /// <summary>
         /// Возвращеает синтаксическое дерево модуля
@@ -112,7 +118,7 @@ namespace PascalABCCompiler.Parsers
 
             if (root != null && root is compilation_unit compilationUnit)
             {
-                compilationUnit.Language = LanguageInformation.Name;
+                compilationUnit.Language = languageInformation.Name;
                 compilationUnit.file_name = FileName;
                 compilationUnit.compiler_directives = CompilerDirectives;
 

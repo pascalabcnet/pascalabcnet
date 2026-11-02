@@ -144,8 +144,7 @@
 using Languages.Facade;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.PCU;
-using PascalABCCompiler.Contracts;
-using PascalABCCompiler.ParserTools.Directives;
+using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler.References;
 using PascalABCCompiler.SemanticTreeConverters;
 using PascalABCCompiler.SyntaxTreeConverters;
@@ -4023,7 +4022,7 @@ namespace PascalABCCompiler
             CheckErrorsAndThrowTheFirstOne();
         }
 
-        private SyntaxTree.compilation_unit ConvertSyntaxTree(SyntaxTree.compilation_unit syntaxTree, List<ISyntaxTreeConverter> converters)
+        private SyntaxTree.compilation_unit ConvertSyntaxTree(SyntaxTree.compilation_unit syntaxTree, IEnumerable<ISyntaxTreeConverter> converters)
         {
             foreach (ISyntaxTreeConverter converter in converters)
             {

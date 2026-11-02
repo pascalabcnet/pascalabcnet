@@ -3,7 +3,8 @@
 using System;
 using System.Collections.Generic;
 
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Languages;
+using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler;
 using PascalABCCompiler.ParserTools.Directives;
 using static PascalABCCompiler.ParserTools.Directives.DirectiveHelper;

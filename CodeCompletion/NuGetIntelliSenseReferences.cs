@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Languages.Facade;
 using PascalABCCompiler;
+using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.Parsers;
 using PascalABCCompiler.SyntaxTree;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using PascalABCCompiler.Contracts.Parsers;
 
-namespace PascalABCCompiler.Contracts
+namespace PascalABCCompiler.Contracts.Languages
 {
     /// <summary>
     /// Информация о языке

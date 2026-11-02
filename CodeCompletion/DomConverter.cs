@@ -8,7 +8,8 @@ using PascalABCCompiler.SyntaxTree;
 using System.Reflection;
 using PascalABCCompiler;
 using PascalABCCompiler.TreeRealization;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.CodeCompletion;
+using PascalABCCompiler.Contracts.Parsers;
 
 namespace CodeCompletion
 {

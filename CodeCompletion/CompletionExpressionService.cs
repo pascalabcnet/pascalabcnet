@@ -4,7 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Parsers;
+using PascalABCCompiler.Contracts.CodeCompletion;
 using PascalABCCompiler.SyntaxTree;
 
 namespace CodeCompletion

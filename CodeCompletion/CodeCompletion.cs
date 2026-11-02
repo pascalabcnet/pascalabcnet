@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler.Errors;
 using System.IO;
 using Languages.Facade;

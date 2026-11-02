@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Parsers;
 
 namespace Languages.Pascal.Frontend.Core
 {

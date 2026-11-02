@@ -3,7 +3,8 @@
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using Languages.Facade;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Parsers;
+using PascalABCCompiler.Contracts.CodeCompletion;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,16 +1,20 @@
 ﻿using PascalABCCompiler;
 using PascalABCCompiler.Parsers;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.CodeCompletion;
+using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using PascalABCCompiler.Contracts.Languages;
 
 namespace Languages.Pascal.Frontend.Data
 {
     internal class PascalABCIntellisenseSupport : BaseLanguageIntellisenseSupport
     {
+
+        public PascalABCIntellisenseSupport(ILanguageInformation languageInformation) : base(languageInformation) { } 
 
         protected IParser Parser
         {

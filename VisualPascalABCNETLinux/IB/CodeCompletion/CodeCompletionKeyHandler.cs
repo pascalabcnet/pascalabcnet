@@ -13,7 +13,7 @@ using ICSharpCode.TextEditor.Gui;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.TextEditor.Gui.InsightWindow;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Parsers;
 
 namespace VisualPascalABC
 {

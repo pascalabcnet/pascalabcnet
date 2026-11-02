@@ -5,7 +5,7 @@ using PascalABCCompiler.SyntaxTree;
 using System.Linq;
 using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Parsers;
 
 namespace Languages.Pascal.Frontend.Core
 {

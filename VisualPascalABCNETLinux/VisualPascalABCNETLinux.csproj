@@ -897,7 +897,6 @@
     <ProjectReference Include="../ICSharpCode.TextEditor/ICSharpCode.TextEditor.csproj" />
     <ProjectReference Include="../Localization/Localization.csproj" />
     <ProjectReference Include="../LanguageIntegrator/LanguageIntegrator.csproj" />
-    <ProjectReference Include="../Contracts/Contracts.csproj" />
     <ProjectReference Include="../PluginsSupport/PluginsSupport.csproj" />
     <ProjectReference Include="../StringConstants/StringConstants.csproj" />
     <ProjectReference Include="../SyntaxTree/SyntaxTree.csproj" />
