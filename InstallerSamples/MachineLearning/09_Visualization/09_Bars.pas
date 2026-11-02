@@ -1,25 +1,27 @@
-﻿uses PlotML;
+uses MLABC, PlotML;
 
 begin
+  var df := DataFrame.FromCsvText('''
+    Год,A,B,C,D
+    2022,120,80,45,30
+    2023,95,110,65,50
+    2024,70,55,100,75
+    2025,40,30,25,90
+  ''');
+
   var fig := Plot.Grid(2, 2);
 
-  var labels := ['sedan', 'suv', 'hatchback', 'wagon'];
+  fig[0, 0].Bar(df, 'Год', 'A');
+  fig[0, 0].Title := 'Модель A';
 
-  fig[0, 0].Bar(labels, [120.0, 95.0, 70.0, 40.0]);
-  fig[0, 0].Title := 'Cars A';
-  fig[0, 0].XLabel := 'count';
+  fig[0, 1].Bar(df, 'Год', 'B');
+  fig[0, 1].Title := 'Модель B';
 
-  fig[0, 1].Bar(labels, [80.0, 110.0, 55.0, 30.0]);
-  fig[0, 1].Title := 'Cars B';
-  fig[0, 1].XLabel := 'count';
+  fig[1, 0].Bar(df, 'Год', 'C');
+  fig[1, 0].Title := 'Модель C';
 
-  fig[1, 0].Bar(labels, [45.0, 65.0, 100.0, 25.0]);
-  fig[1, 0].Title := 'Cars C';
-  fig[1, 0].XLabel := 'count';
+  fig[1, 1].Bar(df, 'Год', 'D');
+  fig[1, 1].Title := 'Модель D';
 
-  fig[1, 1].Bar(labels, [30.0, 50.0, 75.0, 90.0]);
-  fig[1, 1].Title := 'Cars D';
-  fig[1, 1].XLabel := 'count';
-
-  Plot.Title := 'Bar plots 2x2';
+  Plot.Title := 'Продажи по годам';
 end.

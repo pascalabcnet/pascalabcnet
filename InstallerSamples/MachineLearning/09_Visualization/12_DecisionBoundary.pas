@@ -38,12 +38,10 @@ begin
   Println(classnames[0]:10,'-',prob[0]:0:2);
   Println(classnames[1]:10,'-',prob[1]:0:2);
   
-  Plot.XLabel := df.ColumnNames[0];
-  Plot.YLabel := df.ColumnNames[1];
   Plot.Title := 'Бульдоги и спаниели';
 
-  Plot.Points(X.Col(0),X.Col(1),y);
-  Plot.Points([example[0]],[example[1]],Colors.Black,size := 8);
+  df.Points('Вес', 'ВысотаВХолке', 'Порода');
+  Plot.Point(example[0],example[1],Colors.Black,size := 8);
 
   var (A,B,C) := model.DecisionBoundary.Coefficients;
   Plot.Line(A,B,C);  

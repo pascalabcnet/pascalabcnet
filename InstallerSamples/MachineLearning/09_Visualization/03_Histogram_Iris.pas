@@ -7,15 +7,11 @@ uses MLABC, PlotML;
 
 begin
   var ds := Datasets.Iris;
-  var df := ds.Data;
-
-  // Берем длину лепестка.
-  var petalLength := df.ToVector('petal_length');
 
   Println('Гистограмма признака petal_length');
   Println;
   Println('Гистограмма помогает увидеть распределение значений признака.');
 
-  Plot.Hist(petalLength, bins := 12);
-  Plot.SetLabels('Iris: histogram', 'petal_length', 'count');
+  ds.Hist('petal_length', bins := 12);
+  Plot.Title := 'Iris: histogram';
 end.
