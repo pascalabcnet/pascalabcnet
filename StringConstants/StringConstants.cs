@@ -342,6 +342,7 @@ namespace PascalABCCompiler
         public const string compiler_directive_define = "define";
         public const string compiler_directive_include = "include";
         public const string compiler_directive_targetframework = "targetframework";
+        public const string compiler_directive_target = "target";
         public const string compiler_directive_hidden_idents = "hiddenidents";
         public const string compiler_directive_disable_standard_units = "disablestandardunits";
         public const string compiler_directive_omp = "omp";

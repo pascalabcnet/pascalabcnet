@@ -56,6 +56,20 @@ namespace WeifenLuo.WinFormsUI.Docking
         {
             private Bitmap m_image0, m_image1;
 
+            protected override Color ImageBackgroundColor
+            {
+                get
+                {
+                    if (Type.GetType("Mono.Runtime") != null && Environment.OSVersion.Platform == PlatformID.Unix)
+                    {
+                        var strip = Parent as VS2005DockPaneStrip;
+                        return strip == null ? SystemColors.Control :
+                            strip.DockPane.DockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.StartColor;
+                    }
+                    return base.ImageBackgroundColor;
+                }
+            }
+
             public InertButton(Bitmap image0, Bitmap image1)
                 : base()
             {
@@ -236,7 +250,8 @@ namespace WeifenLuo.WinFormsUI.Docking
                 if (m_buttonClose == null)
                 {
                     m_buttonClose = new InertButton(ImageButtonClose, ImageButtonClose);
-                    m_toolTip.SetToolTip(m_buttonClose, ToolTipClose);
+                    if (Type.GetType("Mono.Runtime") == null || Environment.OSVersion.Platform != PlatformID.Unix)
+                        m_toolTip.SetToolTip(m_buttonClose, ToolTipClose);
                     m_buttonClose.Click += new EventHandler(Close_Click);
                     Controls.Add(m_buttonClose);
                 }
@@ -274,7 +289,8 @@ namespace WeifenLuo.WinFormsUI.Docking
                 if (m_buttonWindowList == null)
                 {
                     m_buttonWindowList = new InertButton(ImageButtonWindowList, ImageButtonWindowListOverflow);
-                    m_toolTip.SetToolTip(m_buttonWindowList, ToolTipSelect);
+                    if (Type.GetType("Mono.Runtime") == null || Environment.OSVersion.Platform != PlatformID.Unix)
+                        m_toolTip.SetToolTip(m_buttonWindowList, ToolTipSelect);
                     m_buttonWindowList.Click += new EventHandler(WindowList_Click);
                     Controls.Add(m_buttonWindowList);
                 }
@@ -496,15 +512,16 @@ namespace WeifenLuo.WinFormsUI.Docking
         {
             get
             {
-                TextFormatFlags textFormat = TextFormatFlags.EndEllipsis |
-                    TextFormatFlags.SingleLine |
-                    TextFormatFlags.VerticalCenter |
-                    TextFormatFlags.HorizontalCenter;
-                if (RightToLeft == RightToLeft.Yes)
-                    return textFormat | TextFormatFlags.RightToLeft;
-                else
-                    return textFormat;
+                return DocumentCaptionFormat(false, RightToLeft == RightToLeft.Yes);
             }
+        }
+
+        private static TextFormatFlags DocumentCaptionFormat(bool marked, bool rtl)
+        {
+            TextFormatFlags flags = TextFormatFlags.EndEllipsis | TextFormatFlags.SingleLine | TextFormatFlags.VerticalCenter;
+            flags |= marked ? TextFormatFlags.NoPadding : TextFormatFlags.HorizontalCenter;
+            if (rtl) flags |= TextFormatFlags.RightToLeft | (marked ? TextFormatFlags.Right : 0);
+            return flags;
         }
 
         private static int DocumentTabMaxWidth
@@ -982,7 +999,11 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             int height = GetTabRectangle_Document(index).Height;
 
-            Size sizeText = TextRenderer.MeasureText(content.DockHandler.TabText, BoldFont, new Size(DocumentTabMaxWidth, height), DocumentTextFormat);
+            string text = content.DockHandler.TabText;
+            bool marked = text.StartsWith("\u00B7 ", StringComparison.Ordinal);
+            Size sizeText = TextRenderer.MeasureText(marked ? text.Substring(2) : text, BoldFont,
+                new Size(DocumentTabMaxWidth, height), DocumentCaptionFormat(marked, RightToLeft == RightToLeft.Yes));
+            if (marked) sizeText.Width += DocumentMarkerWidth(BoldFont);
 
             if (DockPane.DockPanel.ShowDocumentIcon)
                 return sizeText.Width + DocumentIconWidth + DocumentIconGapLeft + DocumentIconGapRight + DocumentTextGapRight;
@@ -1360,6 +1381,33 @@ namespace WeifenLuo.WinFormsUI.Docking
                 g.DrawIcon(tab.Content.DockHandler.Icon, rectIcon);
         }
 
+        private static int DocumentMarkerWidth(Font font)
+        {
+            return Math.Max(5, font.Height / 3) + Math.Max(2, font.Height / 10);
+        }
+
+        private void DrawDocumentText(Graphics g, string text, Font font, Rectangle bounds, Color color)
+        {
+            bool marked = text.StartsWith("\u00B7 ", StringComparison.Ordinal);
+            if (marked)
+            {
+                int diameter = Math.Max(5, font.Height / 3);
+                int width = DocumentMarkerWidth(font);
+                bool rtl = RightToLeft == RightToLeft.Yes;
+                int x = rtl ? bounds.Right - diameter : bounds.Left;
+                if (bounds.Width >= width)
+                {
+                    using (var brush = new SolidBrush(color))
+                        g.FillEllipse(brush, x, bounds.Top + (bounds.Height - diameter) / 2, diameter, diameter);
+                }
+                if (!rtl) bounds.X += width;
+                bounds.Width = Math.Max(0, bounds.Width - width);
+                text = text.Substring(2);
+            }
+            if (bounds.Width > 0)
+                TextRenderer.DrawText(g, text, font, bounds, color, DocumentCaptionFormat(marked, RightToLeft == RightToLeft.Yes));
+        }
+
         private void DrawTab_Document(Graphics g, TabVS2005 tab)
         {
             var rect = tab.Rectangle.Value;
@@ -1411,9 +1459,9 @@ namespace WeifenLuo.WinFormsUI.Docking
 
                 Color textColor = DockPane.DockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.ActiveTabGradient.TextColor;
                 if (DockPane.IsActiveDocumentPane)
-                    TextRenderer.DrawText(g, tab.Content.DockHandler.TabText, BoldFont, rectText, textColor, DocumentTextFormat);
+                    DrawDocumentText(g, tab.Content.DockHandler.TabText, BoldFont, rectText, textColor);
                 else
-                    TextRenderer.DrawText(g, tab.Content.DockHandler.TabText, TextFont, rectText, textColor, DocumentTextFormat);
+                    DrawDocumentText(g, tab.Content.DockHandler.TabText, TextFont, rectText, textColor);
             }
             else
             {
@@ -1428,7 +1476,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                 g.DrawPath(PenDocumentTabInactiveBorder, path);
 
                 Color textColor = DockPane.DockPanel.Theme.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.TextColor;
-                TextRenderer.DrawText(g, tab.Content.DockHandler.TabText, TextFont, rectText, textColor, DocumentTextFormat);
+                DrawDocumentText(g, tab.Content.DockHandler.TabText, TextFont, rectText, textColor);
             }
 
             if (rectTab.Contains(rectIcon) && DockPane.DockPanel.ShowDocumentIcon)

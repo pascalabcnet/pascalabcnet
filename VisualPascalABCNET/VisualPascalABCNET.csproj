@@ -318,6 +318,7 @@
     <Compile Include="Workbench\VisibilityService.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Workbench\ColoredOutput.cs" />
     <Compile Include="Workbench\WindowOperations.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -705,9 +706,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>FormsDesignerBinding\Libs\ICSharpCode.SharpDevelop.Widgets.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.TextEditor">
-      <HintPath>..\Libraries\ICSharpCode.TextEditor.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\ICSharpCode.TextEditor\ICSharpCode.TextEditor.csproj" />
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="PresentationCore" />

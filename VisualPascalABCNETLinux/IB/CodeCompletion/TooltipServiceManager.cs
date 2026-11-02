@@ -13,7 +13,7 @@ namespace VisualPascalABC
 {
     public class TooltipServiceManager
     {
-        static DeclarationViewWindow dvw;
+        static DeclarationWindow dvw;
 
         private static string GetPopupHintText(TextArea textArea, ToolTipRequestEventArgs e)
         {
@@ -76,7 +76,11 @@ namespace VisualPascalABC
 
             CodeCompletion.DomConverter domConverter = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
 
-            if (domConverter == null) return null;
+            if (domConverter == null)
+            {
+                HoverTrace.Write("no-analysis file=" + fileName);
+                return null;
+            }
 
             return domConverter.GetDescription(expressionTree, fileName, exprWithoutBrackets, e.LogicalPosition.Line, e.LogicalPosition.Column, keyw, header);
         }
@@ -84,11 +88,13 @@ namespace VisualPascalABC
         static int _mouse_hint_x = 0, _mouse_hint_y = 0;
         static int _hint_hide_d = 0;
         static bool toolTipVisible = false;
+        private static TextArea hintTextArea;
 
         public static void ToolTipService_TextAreaMouseMove(object sender, MouseEventArgs e)
         {
+            HoverTrace.MouseMove((TextArea)sender, e);
             //System.IO.File.AppendAllText("d:\\logP.txt", "TextAreaMouseMove" + $" {toolTipVisible} {DateTime.Now}\n");
-            if (toolTipVisible)
+            if (toolTipVisible && ReferenceEquals(sender, hintTextArea))
             {
                 if (Math.Sqrt((_mouse_hint_x - e.X) * (_mouse_hint_x - e.X) + (_mouse_hint_y - e.Y) * (_mouse_hint_y - e.Y)) > _hint_hide_d)
                     hideToolTip();
@@ -111,30 +117,53 @@ namespace VisualPascalABC
 
         public static void hideToolTip()
         {
+            HoverTrace.Write("hide-tooltip");
             if (dvw != null)
             {
                 dvw.Description = null;
                 toolTipVisible = false;
             }
+            hintTextArea = null;
         }
 
         public static void ToolTipService_TextAreaToolTipRequest(object sender, ToolTipRequestEventArgs e)
         {
+            TextArea textArea = sender as TextArea;
+            if (textArea == null) return;
+            if (HoverTrace.Enabled)
+                HoverTrace.Write("request file=" + ((TextArea)sender).MotherTextEditorControl.FileName +
+                    " position=" + e.LogicalPosition + " inDocument=" + e.InDocument +
+                    " hintEnabled=" + VisualPABCSingleton.MainForm.UserOptions.CodeCompletionHint +
+                    " intellisense=" + CodeCompletion.CodeCompletionController.IntellisenseAvailable() +
+                    " menuActive=" + VisualPABCSingleton.MainForm.MenuActive + " otherTooltip=" + e.ToolTipShown);
+            // Every Linux editor has its own hover timer, including hidden tabs.
+            // Such a timer must not show or close another editor's description.
+            if (!textArea.Visible || !e.InDocument)
+            {
+                HoverTrace.Write("ignore-hidden-or-outside-editor");
+                if (ReferenceEquals(textArea, hintTextArea)) hideToolTip();
+                return;
+            }
             if (!VisualPABCSingleton.MainForm.UserOptions.CodeCompletionHint)
                 return;
             if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable())
                 return;
             try
             {
-                TextArea textArea = sender as TextArea;
-                if (dvw != null && dvw.Description != null)
+                if (VisualPABCSingleton.MainForm.MenuActive)
                 {
+                    HoverTrace.Write("menu-active");
                     hideToolTip();
                     return;
                 }
-                if (e.ToolTipShown && dvw != null)
+                if (e.ToolTipShown)
                 {
-                    hideToolTip();
+                    if (ReferenceEquals(textArea, hintTextArea)) hideToolTip();
+                    return;
+                }
+                if (dvw != null && dvw.Visible && dvw.Description != null && ReferenceEquals(textArea, hintTextArea))
+                {
+                    HoverTrace.Write("keep-existing-tooltip");
                     return;
                 }
                 if (e.InDocument)
@@ -143,32 +172,40 @@ namespace VisualPascalABC
                     if (dvw == null)
                     {
                         dvw = new DeclarationWindow(VisualPABCSingleton.MainForm);
-                        dvw.Font = new System.Drawing.Font(Constants.CompletionWindowDeclarationViewWindowFontName, dvw.Font.Size);
-                        dvw.HideOnClick = true;
+                        HoverTrace.Observe(dvw);
+                        dvw.Font = Constants.CompletionFont;
 						
                         //dvw.ShowDeclarationViewWindow();
                     }
-					dvw.TextEditorControl = textArea.MotherTextEditorControl;
                     int ypos = (textArea.Document.GetVisibleLine(e.LogicalPosition.Y) + 1) * textArea.TextView.FontHeight - textArea.VirtualTop.Y;
                     System.Drawing.Point p = new System.Drawing.Point(0, ypos);
                     p = textArea.PointToScreen(p);
                     p.X = Control.MousePosition.X + 3;
                     p.Y += 5;
                     string txt = GetPopupHintText(textArea, e);
-                    dvw.Location = choose_location(p, txt);
+                    HoverTrace.Write("description-length=" + (txt == null ? -1 : txt.Length));
+                    if (string.IsNullOrEmpty(txt))
+                    {
+                        if (ReferenceEquals(textArea, hintTextArea)) hideToolTip();
+                        return;
+                    }
+                    dvw.Location = p;
                     if (!VisualPABCSingleton.MainForm.MenuActive)
                     {
                         //dvw.ShowInTaskbar = false;
+                        hintTextArea = textArea;
                         dvw.Description = txt;
+                        HoverTrace.Write("show-result visible=" + dvw.Visible + " size=" + dvw.ClientSize + " bounds=" + dvw.Bounds);
                     }                            
                     _hint_hide_d = dvw.Font.Height / 2;
                     _mouse_hint_x = e.MousePosition.X;
                     _mouse_hint_y = e.MousePosition.Y;
-                    toolTipVisible = true;
+                    toolTipVisible = dvw.Visible;
                 }
             }
             catch (System.Exception ex)
             {
+                HoverTrace.Write("ERROR " + ex);
                 //VisualPABCSingleton.MainForm.WriteToOutputBox(ex.Message);// ICSharpCode.Core.MessageService.ShowError(ex);
             }
             finally
@@ -177,15 +214,5 @@ namespace VisualPascalABC
             }
         }
 
-        private static System.Drawing.Point choose_location(System.Drawing.Point p, string desc)
-        {
-            Graphics g = Graphics.FromHwnd(dvw.Handle);
-            Size sz = Size.Ceiling(g.MeasureString(desc, dvw.Font, Screen.PrimaryScreen.WorkingArea.Width));
-            if (p.X + sz.Width > Screen.PrimaryScreen.WorkingArea.Width)
-            {
-                p.X -= sz.Width - Screen.PrimaryScreen.WorkingArea.Width + p.X;
-            }
-            return p;
-        }
     }
 }

@@ -16,8 +16,9 @@ public static class PackageRuntimeManifestWriter
     {
         ArgumentNullException.ThrowIfNull(graph);
         ArgumentException.ThrowIfNullOrWhiteSpace(executablePath);
-        if (!string.Equals(graph.TargetFramework, "net10.0", StringComparison.OrdinalIgnoreCase))
-            throw new ArgumentException("Only net10.0 runtime manifests are supported.", nameof(graph));
+        if (!string.Equals(graph.TargetFramework, "net10.0", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(graph.TargetFramework, "net10.0-windows10.0.19041.0", StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("Only .NET 10 runtime manifests are supported.", nameof(graph));
 
         string executable = Path.GetFullPath(executablePath);
         string runtimeConfigPath = Path.ChangeExtension(executable, ".runtimeconfig.json");

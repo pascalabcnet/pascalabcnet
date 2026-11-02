@@ -30,7 +30,9 @@ namespace ICSharpCode.TextEditor.Document
 		public DefaultTextEditorProperties()
 		{
 			if (DefaultFont == null) {
-				DefaultFont = new Font("Courier New", 10);
+                DefaultFont = EditorPlatform.IsMonoUnix
+                    ? new Font(FontFamily.GenericMonospace, 11)
+                    : new Font("Courier New", 10);
 			}
 			this.fontContainer = new FontContainer(DefaultFont);
 		}

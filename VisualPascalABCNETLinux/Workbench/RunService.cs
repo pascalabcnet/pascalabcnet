@@ -31,6 +31,12 @@ namespace VisualPascalABC
         bool RunActiveTabPage = false;
 
         // SSM 16/05/22 - добавил чтобы иметь возможность добавлять обработчики во внешнем плагине
+        public event ChangeArgsBeforeRunDelegate ChangeArgsBeforeRun
+        {
+            add { RunnerManager.ChangeArgsBeforeRun += value; }
+            remove { RunnerManager.ChangeArgsBeforeRun -= value; }
+        }
+
         public event RunnerManagerActionDelegate Starting
         {
             add
@@ -143,6 +149,9 @@ namespace VisualPascalABC
                     Workbench.UserOptions.RedirectConsoleIO = true;
                 }
                 string OutputFileName = null;
+                if (BuildService.BeforeCompile != null)
+                    BuildService.BeforeCompile(tabPage.FileName);
+
                 if (!forDebugging)
                 {
                     if (!ProjectFactory.Instance.ProjectLoaded)

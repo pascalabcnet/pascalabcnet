@@ -13,8 +13,8 @@ namespace ICSharpCode.TextEditor.Util
 {
 	static class TipPainter
 	{
-		const float HorizontalBorder = 2;
-		const float VerticalBorder   = 1;
+		const float HorizontalBorder = 6;
+		const float VerticalBorder   = 4;
 		static RectangleF workingArea = RectangleF.Empty;
 		
 		//static StringFormat centerTipFormat = CreateTipStringFormat();
@@ -30,12 +30,12 @@ namespace ICSharpCode.TextEditor.Util
 			SizeF tipSizeF = SizeF.Empty;
 			
 			if (workingArea == RectangleF.Empty) {
-				Form ownerForm = control.FindForm();
-				if (ownerForm.Owner != null) {
+				Form ownerForm = control.FindForm() ?? (control as ICSharpCode.TextEditor.Gui.InsightWindow.PABCNETInsightWindow)?.OwnerForm;
+				if (ownerForm != null && ownerForm.Owner != null) {
 					ownerForm = ownerForm.Owner;
 				}
 				
-				workingArea = Screen.GetWorkingArea(ownerForm);
+				workingArea = Screen.GetWorkingArea((Control)ownerForm ?? control);
 			}
 			
 			PointF screenLocation = control.PointToScreen(Point.Empty);
@@ -58,16 +58,8 @@ namespace ICSharpCode.TextEditor.Util
 				                      VerticalBorder   * 2);
 				tipSize = Size.Ceiling(tipSizeF);
 			}
-			if (control is ICSharpCode.TextEditor.Gui.InsightWindow.PABCNETInsightWindow)
-			{
-				Rectangle rect = Rectangle.Ceiling(workingArea);
-				Point pt = (control as ICSharpCode.TextEditor.Gui.InsightWindow.PABCNETInsightWindow).GetCusorCoord();
-				if (pt.X + tipSize.Width > rect.Width)
-				{
-					control.Location = new Point(rect.Width-tipSize.Width,pt.Y);
-				}
-			}
-			else
+			// The parameter popup positions itself after measuring, before showing.
+			if (!(control is ICSharpCode.TextEditor.Gui.InsightWindow.PABCNETInsightWindow))
 			{
 				Rectangle rect = Rectangle.Ceiling(workingArea);
 				Point pt = control.Location;
@@ -96,12 +88,12 @@ namespace ICSharpCode.TextEditor.Util
 			PointF screenLocation = control.PointToScreen(Point.Empty);
 			
 			if (workingArea == RectangleF.Empty) {
-				Form ownerForm = control.FindForm();
-				if (ownerForm.Owner != null) {
+				Form ownerForm = control.FindForm() ?? (control as ICSharpCode.TextEditor.Gui.InsightWindow.PABCNETInsightWindow)?.OwnerForm;
+				if (ownerForm != null && ownerForm.Owner != null) {
 					ownerForm = ownerForm.Owner;
 				}
 				
-				workingArea = Screen.GetWorkingArea(ownerForm);
+				workingArea = Screen.GetWorkingArea((Control)ownerForm ?? control);
 			}
 				
 			SizeF maxLayoutSize = new SizeF(workingArea.Right /*- screenLocation.X*/ - HorizontalBorder * 2,
@@ -119,16 +111,7 @@ namespace ICSharpCode.TextEditor.Util
 				tipSize = Size.Ceiling(tipSizeF);
 			}
 			
-			if (control is ICSharpCode.TextEditor.Gui.InsightWindow.PABCNETInsightWindow)
-			{
-				Rectangle rect = Rectangle.Ceiling(workingArea);
-				Point pt = (control as ICSharpCode.TextEditor.Gui.InsightWindow.PABCNETInsightWindow).GetCusorCoord();
-				if (pt.X + tipSize.Width > rect.Width)
-				{
-					control.Location = new Point(rect.Width-tipSize.Width,pt.Y);
-				}
-			}
-			else
+			if (!(control is ICSharpCode.TextEditor.Gui.InsightWindow.PABCNETInsightWindow))
 			{
 				Rectangle rect = Rectangle.Ceiling(workingArea);
 				Point pt = control.Location;

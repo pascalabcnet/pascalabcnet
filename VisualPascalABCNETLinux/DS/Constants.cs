@@ -34,6 +34,14 @@ namespace VisualPascalABC
         public static string CompletionWindowDeclarationViewWindowFontName = "Tahoma";
         public static string CompletionWindowCodeCompletionListViewFontName = "Tahoma";
         public static string CompletionInsightWindowFontName = "Tahoma";
+        internal static readonly System.Drawing.Font CompletionFont = CreateCompletionFont();
+        private static System.Drawing.Font CreateCompletionFont()
+        {
+            // Keep all IntelliSense popups slightly smaller than the default UI font.
+            using (var strip = new System.Windows.Forms.ToolStrip())
+                return new System.Drawing.Font(CompletionWindowCodeCompletionListViewFontName,
+                    System.Math.Max(1f, strip.Font.SizeInPoints - 0.75f), strip.Font.Style, System.Drawing.GraphicsUnit.Point);
+        }
         public static bool FileNamesCaseSensetive = false;
 
         static Constants()

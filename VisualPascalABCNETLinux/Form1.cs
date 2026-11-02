@@ -250,6 +250,9 @@ namespace VisualPascalABC
             //    PascalABCCompiler.StringResourcesLanguage.CurrentLanguageName = PascalABCCompiler.StringResourcesLanguage.AccessibleLanguages[0];
            
             InitializeComponent();
+            BPanel.VisibleChanged += (s, args) => splitter1.Visible = BPanel.Visible;
+            new ToolbarToolTips(components, toolStrip1, this);
+            HoverTrace.Observe(this, "main-form");
             ScreenScale.FirstCalcScale(this); // !!
             ICSharpCode.TextEditor.ScreenScale.FirstCalcScale(this);
 
@@ -468,9 +471,26 @@ namespace VisualPascalABC
             // _DocumentIconGapBottom сделать 5 вместо 2
             // _DocumentTabMaxWidth 600 сделать и в Win версии!!!
 
-            MainDockPanel.Theme.Skin.DockPaneStripSkin.TextFont = menuStrip1.Font;
-            BottomDockPanel.Theme.Skin.DockPaneStripSkin.TextFont = menuStrip1.Font;
+            var tabFont = new Font(menuStrip1.Font.FontFamily,
+                9.5f, FontStyle.Regular, GraphicsUnit.Point);
+            MainDockPanel.Theme.Skin.DockPaneStripSkin.TextFont = tabFont;
+            BottomDockPanel.Theme.Skin.DockPaneStripSkin.TextFont = tabFont;
+            Disposed += (s, args) => tabFont.Dispose();
             statusStrip1.Font = menuStrip1.Font;
+            menuStrip1.Padding = new Padding(2, menuStrip1.Padding.Top,
+                menuStrip1.Padding.Right, menuStrip1.Padding.Bottom);
+            statusStrip1.Padding = new Padding(6, 0,
+                statusStrip1.SizingGrip ? SystemInformation.VerticalScrollBarWidth + 2 : 6, 0);
+            slCol.AutoSize = true;
+            Action updateColumnWidth = () => slCol.Padding = new Padding(0, 0, Math.Max(0,
+                TextRenderer.MeasureText("999", slCol.Font).Width -
+                TextRenderer.MeasureText(slCol.Text, slCol.Font).Width), 0);
+            updateColumnWidth();
+            statusStrip1.FontChanged += (s, args) => updateColumnWidth();
+            slCol.TextChanged += (s, args) => updateColumnWidth();
+            HealthLabel.Visible = !string.IsNullOrWhiteSpace(HealthLabel.Text);
+            HealthLabel.TextChanged += (s, args) =>
+                HealthLabel.Visible = !string.IsNullOrWhiteSpace(HealthLabel.Text);
             //var name = BottomDockPanel.Theme.Skin.DockPaneStripSkin.TextFont.Name;
             //var sz = (float)9.0;
             //MainDockPanel.Theme.Skin.DockPaneStripSkin.TextFont = new Font(name, sz);
@@ -1143,6 +1163,7 @@ namespace VisualPascalABC
             tsOutputWindow.Checked = value;
             miOutputWindow.Checked = value;
             BPanel.Visible = value;
+            splitter1.Visible = value;
         }
         public void HideBottomPanel()
         {
@@ -1156,8 +1177,7 @@ namespace VisualPascalABC
         {
             if (e.KeyData == Keys.Escape /*&& BottomTabsVisibleChekerEnabled*/)
             {
-                tsOutputWindow.Checked = false;
-                BPanel.Visible = false;
+                SetVisibilityBottomPanel(false);
                 //BottomTabsVisible = false;
                 e.Handled = true;
             }
@@ -1972,6 +1992,8 @@ namespace VisualPascalABC
                     b.Left = (int)Math.Round((double)(ABCHealthForm.Width - b.Width) / 2);
                     b.Click += (o, ee) => { ABCHealthForm.Close(); };
                     ABCHealthForm.Controls.Add(b);
+                    if (Type.GetType("Mono.Runtime") != null && Environment.OSVersion.Platform == PlatformID.Unix)
+                        ABCHealthForm.ActiveControl = b;
                     y += b.Height + h;
                     var hh = ABCHealthForm.Height - ABCHealthForm.ClientSize.Height;
                     ABCHealthForm.Height = (int)Math.Round(y+hh);
@@ -2012,7 +2034,7 @@ namespace VisualPascalABC
         private void Form1_Resize(object sender, EventArgs e)
         {
             MainDockPanel.Size = new Size(MPanel.Width, MPanel.Height);
-            BottomDockPanel.Size = new Size(BPanel.Width, BPanel.Height - 3);
+            BottomDockPanel.Size = BPanel.ClientSize;
         }
 
         private void MPanel_Resize(object sender, EventArgs e)
@@ -2022,7 +2044,7 @@ namespace VisualPascalABC
 
         private void BPanel_Resize(object sender, EventArgs e)
         {
-            BottomDockPanel.Size = new Size(BPanel.Width-3, BPanel.Height - 3);
+            BottomDockPanel.Size = BPanel.ClientSize;
         }
 
         public bool MenuActive { get; set; } = false;

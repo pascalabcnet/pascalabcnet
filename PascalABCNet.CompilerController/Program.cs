@@ -70,6 +70,7 @@ internal static class Program
     {
         public string? state { get; set; }
         public string? fileName { get; set; }
+        public string? message { get; set; }
         public uint linesCompiled { get; set; }
         public int errorCount { get; set; }
         public int warningCount { get; set; }
@@ -619,8 +620,10 @@ internal static class Program
                                 {
                                     WriteJson(new Dictionary<string, object?>
                                     {
-                                        ["id"] = requestId, ["event"] = "compilerState", ["attempt"] = attempt,
+                                        ["id"] = requestId, ["event"] = value.message != null ? "compilerMessage" : "compilerState",
+                                        ["attempt"] = attempt,
                                         ["state"] = value.state, ["fileName"] = value.fileName,
+                                        ["message"] = value.message,
                                         ["linesCompiled"] = value.linesCompiled, ["errorCount"] = value.errorCount,
                                         ["warningCount"] = value.warningCount,
                                         ["elapsedMilliseconds"] = value.elapsedMilliseconds,

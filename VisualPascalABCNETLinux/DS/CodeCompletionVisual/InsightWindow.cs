@@ -15,36 +15,143 @@ using ICSharpCode.TextEditor.Util;
 
 namespace ICSharpCode.TextEditor.Gui.InsightWindow
 {
-	public class PABCNETInsightWindow : AbstractCompletionWindow
+	public class PABCNETInsightWindow : PassivePopupWindow
 	{
-		public PABCNETInsightWindow(Form parentForm, TextEditorControl control) : base(parentForm, control)
+		private readonly Form parentForm;
+		private readonly TextEditorControl control;
+		private bool attached, closing;
+		private bool positioned;
+		private Point anchor;
+		private Rectangle previousArrow, nextArrow;
+		internal Form OwnerForm { get { return parentForm; } }
+
+		public PABCNETInsightWindow(Form parentForm, TextEditorControl control)
 		{
+			this.parentForm = parentForm;
+			this.control = control;
 			SetStyle(ControlStyles.UserPaint, true);
+            VisualPascalABC.HoverTrace.Observe(this, "parameter-hint");
 			//SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 		}
 		
 		public void ShowInsightWindow()
 		{
-			if (!Visible) {
-				if (insightDataProviderStack.Count > 0) {
-					ShowCompletionWindow();
-				}
-			} else {
-				Refresh();
+			if (closing || IsDisposed) return;
+			if (insightDataProviderStack.Count == 0) { Close(); return; }
+			if (parentForm.IsDisposed || !parentForm.Visible || control.IsDisposed) return;
+			AttachEditorEvents();
+			SetLocation();
+			using (Graphics graphics = parentForm.CreateGraphics()) {
+				GetTipText(out var count, out var description, out var parameter, out var parameters);
+				TipPainterTools.GetDrawingSizeHelpTipFromCombinedDescription(this,
+					graphics, Font, count, description, parameter, parameters, true);
 			}
+			SetLocation();
+			ShowPassiveWindow();
+			Refresh();
+		}
+
+		private void AttachEditorEvents()
+		{
+			if (attached) return;
+			attached = true;
+			var area = control.ActiveTextAreaControl;
+			area.TextArea.DoProcessDialogKey += ProcessTextAreaKey;
+			area.TextArea.LostFocus += EditorLostFocus;
+			area.Caret.PositionChanged += CaretOffsetChanged;
+			area.VScrollBar.ValueChanged += ParentLocationChanged;
+			area.HScrollBar.ValueChanged += ParentLocationChanged;
+			control.Resize += ParentLocationChanged;
+			control.Disposed += EditorDisposed;
+			parentForm.LocationChanged += ParentLocationChanged;
+			parentForm.Resize += ParentLocationChanged;
+			parentForm.Deactivate += ParentDeactivated;
+			parentForm.FormClosed += ParentClosed;
+			parentForm.Disposed += EditorDisposed;
+		}
+
+		private void DetachEditorEvents()
+		{
+			if (!attached) return;
+			attached = false;
+			var area = control.ActiveTextAreaControl;
+			area.TextArea.DoProcessDialogKey -= ProcessTextAreaKey;
+			area.TextArea.LostFocus -= EditorLostFocus;
+			area.Caret.PositionChanged -= CaretOffsetChanged;
+			area.VScrollBar.ValueChanged -= ParentLocationChanged;
+			area.HScrollBar.ValueChanged -= ParentLocationChanged;
+			control.Resize -= ParentLocationChanged;
+			control.Disposed -= EditorDisposed;
+			parentForm.LocationChanged -= ParentLocationChanged;
+			parentForm.Resize -= ParentLocationChanged;
+			parentForm.Deactivate -= ParentDeactivated;
+			parentForm.FormClosed -= ParentClosed;
+			parentForm.Disposed -= EditorDisposed;
+		}
+
+		private void ParentLocationChanged(object sender, EventArgs e)
+		{
+			if (parentForm.WindowState == FormWindowState.Minimized) base.SetVisibleCore(false);
+			else if (Visible) { positioned = false; SetLocation(); }
+		}
+		private void ParentDeactivated(object sender, EventArgs e) { base.SetVisibleCore(false); }
+		private void ParentClosed(object sender, FormClosedEventArgs e) { Close(); }
+		private void EditorDisposed(object sender, EventArgs e) { Close(); }
+		private void EditorLostFocus(object sender, EventArgs e) { Close(); }
+
+		private void SetLocation()
+		{
+			Point point = GetCusorCoord();
+			// Keep the hint anchored while arguments are typed on the same line.
+			if (positioned && point.Y == anchor.Y) point.X = anchor.X;
+			else { anchor = point; positioned = true; }
+			Rectangle area = Screen.GetWorkingArea(parentForm);
+			if (point.Y + Height > area.Bottom)
+				point.Y -= Height + control.ActiveTextAreaControl.TextArea.TextView.FontHeight;
+			Location = new Point(Math.Max(area.Left, Math.Min(point.X, area.Right - Width)),
+				Math.Max(area.Top, Math.Min(point.Y, area.Bottom - Height)));
+		}
+
+		public new void Close()
+		{
+			if (closing || IsDisposed) return;
+			closing = true;
+			DetachEditorEvents();
+			int notifications = ClosedNotifications;
+			base.SetVisibleCore(false);
+			try {
+				if (ClosedNotifications == notifications)
+					OnClosed(new ToolStripDropDownClosedEventArgs(ToolStripDropDownCloseReason.CloseCalled));
+			}
+			finally { Dispose(); }
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing) {
+				closing = true;
+				DetachEditorEvents();
+				insightDataProviderStack.Clear();
+			}
+			base.Dispose(disposing);
 		}
 		
 		#region Event handling routines
-		protected override bool ProcessTextAreaKey(Keys keyData)
+		protected bool ProcessTextAreaKey(Keys keyData)
 		{
 			if (!Visible) {
 				return false;
 			}
+			// Both passive popups may be open inside an argument expression.
+			// Let the editor's existing completion-list handler consume keys first.
+			var list = VisualPascalABC.CodeCompletionNamesOnlyInModuleAction.comp_windows[
+				control.ActiveTextAreaControl.TextArea] as PABCNETCodeCompletionWindow;
+			if (list != null && !list.IsDisposed && list.Visible) return false;
 			switch (keyData) {
 				case Keys.Down:
 					if (DataProvider != null && DataProvider.InsightDataCount > 0) {
 						CurrentData = (CurrentData + 1) % DataProvider.InsightDataCount;
-						Refresh();
+						ShowInsightWindow();
 					}
 					if (DataProvider != null && DataProvider.InsightDataCount > 1)
 					return true;
@@ -52,16 +159,17 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 				case Keys.Up:
 					if (DataProvider != null && DataProvider.InsightDataCount > 0) {
 						CurrentData = (CurrentData + DataProvider.InsightDataCount - 1) % DataProvider.InsightDataCount;
-						Refresh();
+						ShowInsightWindow();
 					}
 					if (DataProvider != null && DataProvider.InsightDataCount > 1)
 					return true;
 					else return false;
 				case Keys.Escape:
                     fixerrorTextAreaInvalidate();
-                    break;
+					Close();
+					return true;
 			}
-			return base.ProcessTextAreaKey(keyData);
+			return false;
 		}
 		
 		private Point lastCursorScreenPosition;
@@ -83,7 +191,7 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 			return p;
 		}
 		
-		protected override void CaretOffsetChanged(object sender, EventArgs e)
+		protected void CaretOffsetChanged(object sender, EventArgs e)
 		{
 			// move the window under the caret (don't change the x position)
 			TextLocation caretPos  = control.ActiveTextAreaControl.Caret.Position;
@@ -106,6 +214,7 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 			while (DataProvider != null && DataProvider.CaretOffsetChanged()) {
 				CloseCurrentDataProvider();
 			}
+			if (!closing && control.ActiveTextAreaControl.TextArea.Focused) ShowInsightWindow();
 		}
 		
 		void fixerrorTextAreaInvalidate()
@@ -118,17 +227,21 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 		
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
-			base.OnMouseDown(e);
-			control.ActiveTextAreaControl.TextArea.Focus();
-			if (TipPainterTools.DrawingRectangle1.Contains(e.X, e.Y)) {
+			// Do not enter ToolStrip's menu-selection or focus logic on click.
+			if (DataProvider == null || DataProvider.InsightDataCount == 0) return;
+			if (previousArrow.Contains(e.X, e.Y)) {
 				CurrentData = (CurrentData + DataProvider.InsightDataCount - 1) % DataProvider.InsightDataCount;
-				Refresh();
+				ShowInsightWindow();
 			}
-			if (TipPainterTools.DrawingRectangle2.Contains(e.X, e.Y)) {
+			if (nextArrow.Contains(e.X, e.Y)) {
 				CurrentData = (CurrentData + 1) % DataProvider.InsightDataCount;
-				Refresh();
+				ShowInsightWindow();
 			}
 		}
+
+		protected override void OnMouseUp(MouseEventArgs e) { Capture = false; }
+		protected override void OnMouseMove(MouseEventArgs e) { control.ActiveTextAreaControl.TextArea.ShowHiddenCursor(false); }
+		protected override void OnMouseWheel(MouseEventArgs e) { HandleMouseWheel(e); }
 		
 		#endregion
 		
@@ -149,14 +262,14 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 						CurrentData = (CurrentData + 1) % DataProvider.InsightDataCount;
 					}
 				}
-				Refresh();
+				ShowInsightWindow();
 			}
 		}
 		
 		#region Insight Window Drawing routines
-		protected override void OnPaint(PaintEventArgs pe)
+		private void GetTipText(out string methodCountMessage, out string description, out int parameter, out int parameters)
 		{
-			string methodCountMessage = null, description;
+			methodCountMessage = null;
 			if (DataProvider == null || DataProvider.InsightDataCount < 1) {
 				description = "Unknown Method";
 			} else {
@@ -165,19 +278,20 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 				}
 				description = DataProvider.GetInsightData(CurrentData);
 			}
-			//pe.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-			int num_param = (DataProvider as VisualPascalABC.DefaultInsightDataProvider).num_param;
-			int paramsCount = (DataProvider as VisualPascalABC.DefaultInsightDataProvider).param_count;
-            drawingSize = TipPainterTools.GetDrawingSizeHelpTipFromCombinedDescription(this,
-			                                                                           pe.Graphics,
-			                                                                           Font,
-			                                                                           methodCountMessage,
-			                                                                           description,num_param, paramsCount, true);
-			if (drawingSize != Size) {
-				SetLocation();
-			} else {
-				TipPainterTools.DrawHelpTipFromCombinedDescription(this, pe.Graphics, Font, methodCountMessage, description, num_param, paramsCount, true);
-			}
+			var provider = DataProvider as VisualPascalABC.DefaultInsightDataProvider;
+			parameter = provider != null ? provider.num_param : 1;
+			parameters = provider != null ? provider.param_count : 0;
+		}
+
+		protected override void OnPaint(PaintEventArgs pe)
+		{
+			if (closing || DataProvider == null) return;
+			GetTipText(out var count, out var description, out var parameter, out var parameters);
+			TipPainterTools.DrawHelpTipFromCombinedDescription(this, pe.Graphics, Font,
+				count, description, parameter, parameters, true);
+			// Other descriptions use the painter too; retain this popup's hit areas.
+			previousArrow = TipPainterTools.DrawingRectangle1;
+			nextArrow = TipPainterTools.DrawingRectangle2;
 			lastCursorScreenPosition = control.ActiveTextAreaControl.TextArea.Caret.ScreenPosition;
 		}
 		
@@ -251,7 +365,7 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 			
 			public InsightDataProviderStackElement(IInsightDataProvider dataProvider)
 			{
-				this.currentData  = Math.Max(dataProvider.DefaultIndex, 0);
+				this.currentData = Math.Min(Math.Max(dataProvider.DefaultIndex, 0), dataProvider.InsightDataCount - 1);
 				this.dataProvider = dataProvider;
 			}
 		}

@@ -178,10 +178,13 @@ namespace ICSharpCode.TextEditor
 				} else if (textArea.Document.CustomLineManager.IsReadOnly(textArea.Caret.Line, false) == true)
 					return;
 			}
+			if (EditorPlatform.IsMonoUnix && !Clipboard.ContainsText())
+				return;
 			// Clipboard.GetDataObject may throw an exception...
 			for (int i = 0;; i++) {
 				try {
 					IDataObject data = Clipboard.GetDataObject();
+					if (EditorPlatform.IsMonoUnix && data == null) return;
 					bool fullLine = data.GetDataPresent(LineSelectedType);
 					if (data.GetDataPresent(DataFormats.UnicodeText)) {
 						string text = (string)data.GetData(DataFormats.UnicodeText);

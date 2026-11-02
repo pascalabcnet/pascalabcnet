@@ -30,6 +30,10 @@ namespace CodeCompletion
             var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             Collect(root);
             string fileName = Path.GetFullPath(root.file_name);
+            string targetFramework = (root.compiler_directives ?? new List<compiler_directive>()).Any(d =>
+                string.Equals(d.Name?.text, "target", StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(d.Directive?.text, "windows", StringComparison.OrdinalIgnoreCase))
+                ? "net10.0-windows10.0.19041.0" : "net10.0";
             var explicitPaths = new List<string>();
             foreach (var unit in batches)
                 foreach (var directive in unit.compiler_directives ?? new List<compiler_directive>())
@@ -40,7 +44,7 @@ namespace CodeCompletion
                         if (path == null) throw new AssemblyNotFound(unit.file_name, name, directive.source_context);
                         explicitPaths.Add(Path.GetFullPath(path));
                     }
-            string signature = string.Join("\n", batches.SelectMany(unit =>
+            string signature = targetFramework + "\n" + string.Join("\n", batches.SelectMany(unit =>
                 (unit.compiler_directives ?? new List<compiler_directive>())
                 .Where(d => string.Equals(d.Name?.text, "package", StringComparison.OrdinalIgnoreCase))
                 .Select(d => unit.file_name + "|" + d.Directive?.text))) + "\n" + string.Join("\n", explicitPaths);
@@ -75,7 +79,8 @@ namespace CodeCompletion
                 ResolvedPackageGraph next;
                 try { next = restoreService.RestoreAsync(new PackageRestoreRequest {
                     Packages = requirements.Values.OrderBy(p => p.Id, StringComparer.OrdinalIgnoreCase).ToArray(),
-                    ProgramFilePath = fileName, LocalPackagesOnly = !restoreAutomatically
+                    ProgramFilePath = fileName, TargetFramework = targetFramework,
+                    LocalPackagesOnly = !restoreAutomatically
                 }).GetAwaiter().GetResult(); }
                 catch (PackageRestoreRequiredException)
                 {

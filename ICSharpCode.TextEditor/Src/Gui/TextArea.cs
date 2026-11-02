@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -174,8 +174,17 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
+        // Created only for Mono/Unix; Windows uses the native hover event.
+        private Timer HoverTimer = null;
+
 		public TextArea(TextEditorControl motherTextEditorControl, TextAreaControl motherTextAreaControl)
 		{
+            if (EditorPlatform.IsMonoUnix) {
+                HoverTimer = new Timer();
+                HoverTimer.Interval = 400;
+                HoverTimer.Tick += new EventHandler(HoverTimerEventProcessor);
+                HoverTimer.Start();
+            }
 			this.motherTextAreaControl      = motherTextAreaControl;
 			this.motherTextEditorControl    = motherTextEditorControl;
 			
@@ -309,6 +318,14 @@ namespace ICSharpCode.TextEditor
 			return false;
 		}
 		
+        // Mono's global MouseButtons value is unreliable; track local events.
+        protected MouseButtons MyMouseButtons = MouseButtons.None;
+        protected override void OnMouseUp(System.Windows.Forms.MouseEventArgs e)
+        {
+            if (EditorPlatform.IsMonoUnix) MyMouseButtons = MouseButtons.None;
+            base.OnMouseUp(e);
+        }
+
 		protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
 		{
 			// this corrects weird problems when text is selected,
@@ -316,6 +333,7 @@ namespace ICSharpCode.TextEditor
 			// clicked again - it correctly synchronises the
 			// click position
 			mousepos = new Point(e.X, e.Y);
+            if (EditorPlatform.IsMonoUnix) MyMouseButtons = e.Button;
 //			if (e.Button == MouseButtons.Right)
 //			{
 //				foreach (AbstractMargin margin in leftMargins) {
@@ -340,7 +358,7 @@ namespace ICSharpCode.TextEditor
 		/// Shows the mouse cursor if it has been hidden.
 		/// </summary>
 		/// <param name="forceShow"><c>true</c> to always show the cursor or <c>false</c> to show it only if it has been moved since it was hidden.</param>
-		internal void ShowHiddenCursor(bool forceShow)
+		public void ShowHiddenCursor(bool forceShow)
 		{
 			if (hiddenMouseCursor) {
 				if (mouseCursorHidePosition != Cursor.Position || forceShow) {
@@ -353,17 +371,79 @@ namespace ICSharpCode.TextEditor
 		
 		// static because the mouse can only be in one text area and we don't want to have
 		// tooltips of text areas from inactive tabs floating around.
-		static DeclarationViewWindow toolTip;
+		static ToolTip toolTip;
+		static TextArea toolTipOwner;
+		static string toolTipText;
+		// Preserve Mono's initialization order. Windows resolves the default
+		// only when this new property is read, not during editor construction.
+		Font toolTipFont = EditorPlatform.IsMonoUnix ? Control.DefaultFont : null;
+		public Font ToolTipFont {
+			get { return EditorPlatform.IsMonoUnix ? toolTipFont : toolTipFont ?? Control.DefaultFont; }
+			set { toolTipFont = value; }
+		}
+
+		static ToolTip CreatePassiveToolTip()
+		{
+			var tip = new ToolTip { OwnerDraw = true, UseAnimation = false, UseFading = false };
+			tip.Popup += (sender, e) => {
+				var owner = toolTipOwner;
+				if (owner == null || owner.IsDisposed) { e.Cancel = true; return; }
+				using (Graphics graphics = owner.CreateGraphics()) {
+					Size size = TextRenderer.MeasureText(graphics, toolTipText, owner.ToolTipFont,
+						new Size(Math.Max(1, Screen.GetWorkingArea(owner).Width - 8), int.MaxValue),
+						TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+					e.ToolTipSize = size + new Size(6, 6);
+				}
+			};
+			tip.Draw += (sender, e) => {
+				e.DrawBackground();
+				Rectangle bounds = e.Bounds; bounds.Inflate(-3, -3);
+				TextRenderer.DrawText(e.Graphics, e.ToolTipText, toolTipOwner?.ToolTipFont ?? Control.DefaultFont,
+					bounds, SystemColors.InfoText, TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+				e.DrawBorder();
+			};
+			return tip;
+		}
+		static DeclarationViewWindow windowsToolTip;
 		static string oldToolTip;
 		
 		void SetToolTip(string text, int lineNumber)
 		{
-			if (toolTip == null || toolTip.IsDisposed)
-				toolTip = new DeclarationViewWindow(this.FindForm());
+			if (EditorPlatform.IsMonoUnix)
+				SetMonoToolTip(text, lineNumber);
+			else
+				SetWindowsToolTip(text, lineNumber);
+		}
+
+		void SetMonoToolTip(string text, int lineNumber)
+		{
+			if (text == null || text.Trim().Length == 0) {
+				if (toolTipOwner == this) { toolTip.Hide(this); toolTipOwner = null; }
+			} else {
+				if (toolTip == null) toolTip = CreatePassiveToolTip();
+				if (toolTipOwner != null && !toolTipOwner.IsDisposed) toolTip.Hide(toolTipOwner);
+				toolTipOwner = this;
+				toolTipText = text;
+				Point p = Control.MousePosition;
+				Point cp = PointToClient(p);
+				if (lineNumber >= 0) {
+					lineNumber = this.Document.GetVisibleLine(lineNumber);
+					p.Y = (p.Y - cp.Y) + (lineNumber * this.TextView.FontHeight) - this.virtualTop.Y;
+				}
+				p.Offset(3, 3);
+
+				toolTip.Show(text, this, PointToClient(p));
+			}
+		}
+
+		void SetWindowsToolTip(string text, int lineNumber)
+		{
+			if (windowsToolTip == null || windowsToolTip.IsDisposed)
+				windowsToolTip = new DeclarationViewWindow(this.FindForm());
 			if (oldToolTip == text)
 				return;
 			if (text == null) {
-				toolTip.Hide();
+				windowsToolTip.Hide();
 			} else {
 				Point p = Control.MousePosition;
 				Point cp = PointToClient(p);
@@ -372,10 +452,10 @@ namespace ICSharpCode.TextEditor
 					p.Y = (p.Y - cp.Y) + (lineNumber * this.TextView.FontHeight) - this.virtualTop.Y;
 				}
 				p.Offset(3, 3);
-				toolTip.Location = p;
-				toolTip.Description = text;
-				toolTip.HideOnClick = true;
-				toolTip.Show();
+				windowsToolTip.Location = p;
+				windowsToolTip.Description = text;
+				windowsToolTip.HideOnClick = true;
+				windowsToolTip.Show();
 			}
 			oldToolTip = text;
 		}
@@ -400,7 +480,6 @@ namespace ICSharpCode.TextEditor
 		void CloseToolTip()
 		{
 			if (toolTipActive) {
-				//Console.WriteLine("Closing tooltip");
 				toolTipActive = false;
 				SetToolTip(null, -1);
 			}
@@ -410,7 +489,7 @@ namespace ICSharpCode.TextEditor
 		protected override void OnMouseHover(EventArgs e)
 		{
 			base.OnMouseHover(e);
-			if (MouseButtons == MouseButtons.None) {
+			if ((EditorPlatform.IsMonoUnix ? MyMouseButtons : MouseButtons) == MouseButtons.None) {
 				RequestToolTip(PointToClient(Control.MousePosition));
 			} else {
 				CloseToolTip();
@@ -419,7 +498,6 @@ namespace ICSharpCode.TextEditor
 		
 		protected void RequestToolTip(Point mousePos)
 		{
-           
 			if (toolTipRectangle.Contains(mousePos)) {
 				if (!toolTipActive)
 					ResetMouseEventArgs();
@@ -451,12 +529,32 @@ namespace ICSharpCode.TextEditor
 			OnMouseMove(e);
 		}
 
+		private int mx = -1;
+		private int my = -1;
+        private int prevmx = -2;
+        private int prevmy = -2;
+        //private DateTime dt0 = DateTime.Now;
+        //int deltaTime = 0;
+
+        private void HoverTimerEventProcessor(Object myObject, EventArgs myEventArgs)
+        {
+            if (mx == prevmx && my == prevmy)
+            {
+                OnMouseHover(EventArgs.Empty);
+            }
+            prevmx = mx;
+            prevmy = my;
+        }
+
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
+            if (EditorPlatform.IsMonoUnix) {
+                mx = e.X;
+                my = e.Y;
+            }
 			if (!toolTipRectangle.Contains(e.Location)) {
 				toolTipRectangle = Rectangle.Empty;
-                //Console.WriteLine("request");
 				if (toolTipActive)
 					RequestToolTip(e.Location);
 			}
@@ -584,6 +682,10 @@ namespace ICSharpCode.TextEditor
 		/// </returns>
 		protected internal virtual bool HandleKeyPress(char ch)
 		{
+			// Keep the legacy Mono multicast result; Windows stops at the
+			// first subscriber that consumes the character.
+			if (EditorPlatform.IsMonoUnix)
+				return KeyEventHandler != null && KeyEventHandler(ch);
 			KeyEventHandler handlers = KeyEventHandler;
 			if (handlers != null) {
 				// A multicast delegate returns only its last subscriber's result.
@@ -878,6 +980,10 @@ namespace ICSharpCode.TextEditor
 		
 		protected override void Dispose(bool disposing)
 		{
+			if (EditorPlatform.IsMonoUnix && disposing && toolTipOwner == this) {
+				if (IsHandleCreated) toolTip.Hide(this);
+				toolTip.Dispose(); toolTip = null; toolTipOwner = null;
+			}
 			base.Dispose(disposing);
 			if (disposing) {
 				if (!disposed) {
@@ -900,6 +1006,10 @@ namespace ICSharpCode.TextEditor
 					textView.Dispose();
 				}
 			}
+            if (HoverTimer != null) {
+                HoverTimer.Stop();
+                HoverTimer.Dispose();
+            }
 		}
 		
 		#region UPDATE Commands

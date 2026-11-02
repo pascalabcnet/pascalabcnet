@@ -100,10 +100,12 @@ namespace VisualPascalABC
             }
             if (tp != null)
             {
-                if (MainDockPanel.ActiveDocument != tp)
-                {
-                    CurrentCodeFileDocument = tp;
-                }
+                // Mono does not use the docking library's Windows focus tracker.
+                // Select the actual pane tab rather than trust ActiveDocument.
+                if (tp.Pane != null)
+                    tp.Pane.ActiveContent = tp;
+                CurrentCodeFileDocument = tp;
+                tp.TextEditor.SetFocus();
             }
             if (FileName != null)
             {
@@ -477,7 +479,7 @@ namespace VisualPascalABC
         bool QuestionAndSaveFile(CodeFileDocumentControl tp)
         {
             CurrentCodeFileDocument = tp;
-            DialogResult result = MessageBox.Show(string.Format(Form1StringResources.Get("SAVE_CHANGES_IN_FILE{0}"), Path.GetFileName(tp.FileName)), PascalABCCompiler.StringResources.Get("!CONFIRM"), MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            DialogResult result = ConfirmationDialog.Show(string.Format(Form1StringResources.Get("SAVE_CHANGES_IN_FILE{0}"), Path.GetFileName(tp.FileName)), PascalABCCompiler.StringResources.Get("!CONFIRM"), MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
                 SaveSelFile(CurrentCodeFileDocument);
             else
