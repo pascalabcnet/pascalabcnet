@@ -24,6 +24,8 @@ uses System,
      LinearAlgebraML,
      ValidationML,
      MetricsABC,
+     DataFrameABC,
+     MLDatasets,
      MLExceptions;
      
 type
@@ -112,6 +114,18 @@ type
     /// Рисует линейный график по массивам x и y.
     procedure LineGraph(x, y: array of real; color: ColorWPF := DefaultColor; 
       thickness: real := 2; legend: string := nil);
+    /// Рисует в ячейке линейный график по двум числовым столбцам.
+    /// Строки с NA исключаются целиком. Подписи осей не устанавливаются.
+    procedure LineGraph(xColumn, yColumn: Column; color: ColorWPF := DefaultColor;
+      thickness: real := 2; legend: string := nil);
+    /// Рисует в ячейке линейный график по столбцам DataFrame.
+    /// Строки с NA исключаются целиком. Подписи осей не устанавливаются.
+    procedure LineGraph(df: DataFrame; xColumn, yColumn: string;
+      color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
+    /// Рисует в ячейке линейный график по двум столбцам Dataset.
+    /// Строки с NA исключаются целиком. Подписи осей не устанавливаются.
+    procedure LineGraph(ds: Dataset; xColumn, yColumn: string;
+      color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
     /// Рисует прямую вида y = k*x + b.
     procedure Line(k, b: real; color: ColorWPF := DefaultColor;
       thickness: real := 2; legend: string := nil);
@@ -133,6 +147,39 @@ type
     procedure Points(x, y: array of real; labels: array of integer;
       size: real := 6; marker: MarkerType := MarkerType.Circle;
       classNames: array of string := nil);  
+    /// Строит в ячейке диаграмму рассеяния по двум числовым столбцам.
+    /// Строки с NA исключаются целиком. Подписи осей не устанавливаются.
+    procedure Points(xColumn, yColumn: Column;
+      color: ColorWPF := DefaultColor; size: real := 6;
+      marker: MarkerType := MarkerType.Circle; legend: string := nil;
+      tooltips: array of string := nil);
+    /// Строит в ячейке диаграмму рассеяния с раскраской по столбцу классов.
+    /// Столбец классов должен быть строковым или целочисленным.
+    procedure Points(xColumn, yColumn, classColumn: Column;
+      size: real := 6; marker: MarkerType := MarkerType.Circle);
+    /// Строит в ячейке диаграмму рассеяния по двум числовым столбцам DataFrame.
+    /// Поддерживаются целочисленные и вещественные столбцы. Строки с NA
+    /// в xColumn или yColumn исключаются целиком. Массив tooltips, если задан,
+    /// должен соответствовать исходным строкам DataFrame и фильтруется вместе с ними.
+    procedure Points(df: DataFrame; xColumn, yColumn: string;
+      color: ColorWPF := DefaultColor; size: real := 6;
+      marker: MarkerType := MarkerType.Circle; legend: string := nil;
+      tooltips: array of string := nil);
+    /// Строит в ячейке диаграмму рассеяния с раскраской по столбцу классов.
+    /// classColumn должен быть строковым или целочисленным. Классы кодируются
+    /// в порядке первого появления. Строки с NA в любом из трёх столбцов исключаются.
+    procedure Points(df: DataFrame; xColumn, yColumn, classColumn: string;
+      size: real := 6; marker: MarkerType := MarkerType.Circle);
+    /// Строит в ячейке диаграмму рассеяния по столбцам Dataset.
+    /// Координатные столбцы задаются явно; classColumn можно передать именованно.
+    procedure Points(ds: Dataset; xColumn, yColumn: string;
+      color: ColorWPF := DefaultColor; size: real := 6;
+      marker: MarkerType := MarkerType.Circle; legend: string := nil;
+      tooltips: array of string := nil; classColumn: string := nil);
+    /// Строит в ячейке диаграмму рассеяния Dataset с раскраской по столбцу классов.
+    /// Для раскраски по целевой переменной передайте ds.Target.
+    procedure Points(ds: Dataset; xColumn, yColumn, classColumn: string;
+      size: real := 6; marker: MarkerType := MarkerType.Circle);
     /// Строит гистограмму значений.
     procedure Hist(x: array of real; bins: integer := 0; 
       color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
@@ -141,6 +188,31 @@ type
     procedure Hist(x: array of integer; bins: integer := 0;
       color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
       edges: System.Array := nil);
+    /// Строит в ячейке гистограмму числового столбца.
+    /// Значения с NA исключаются. Подписи осей не устанавливаются.
+    procedure Hist(column: Column; bins: integer := 0;
+      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
+      edges: System.Array := nil);
+    /// Строит в ячейке гистограмму числового столбца DataFrame.
+    /// Значения с NA исключаются. Подписи осей не устанавливаются.
+    procedure Hist(df: DataFrame; columnName: string; bins: integer := 0;
+      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
+      edges: System.Array := nil);
+    /// Строит в ячейке гистограмму столбца Dataset.
+    /// Поведение совпадает с перегрузкой для DataFrame.
+    procedure Hist(ds: Dataset; columnName: string; bins: integer := 0;
+      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
+      edges: System.Array := nil);
+    /// Строит в ячейке несколько гистограмм по числовым столбцам DataFrame.
+    /// Значения с NA исключаются независимо в каждом столбце.
+    procedure HistMany(df: DataFrame; columns: array of string; bins: integer := 0;
+      colors: array of ColorWPF := nil; alpha: real := 0.7;
+      legend: array of string := nil);
+    /// Строит в ячейке несколько гистограмм по указанным столбцам Dataset.
+    /// Если columns не задан, используются числовые не категориальные ds.Features.
+    procedure HistMany(ds: Dataset; columns: array of string := nil; bins: integer := 0;
+      colors: array of ColorWPF := nil; alpha: real := 0.7;
+      legend: array of string := nil);
     /// Строит столбчатую диаграмму по значениям y.
     procedure Bar(y: array of real; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
@@ -153,18 +225,69 @@ type
     /// Строит столбчатую диаграмму по x и целочисленным значениям y.
     procedure Bar(x: array of real; y: array of integer; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит в ячейке столбчатую диаграмму числового столбца.
+    /// Значения с NA исключаются. Подписи осей не устанавливаются.
+    procedure Bar(yColumn: Column; color: ColorWPF := DefaultColor;
+      width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит в ячейке столбчатую диаграмму по двум числовым столбцам.
+    /// Строки с NA исключаются целиком. Подписи осей не устанавливаются.
+    procedure Bar(xColumn, yColumn: Column; color: ColorWPF := DefaultColor;
+      width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит в ячейке столбчатую диаграмму столбца DataFrame.
+    procedure Bar(df: DataFrame; yColumn: string; color: ColorWPF := DefaultColor;
+      width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит в ячейке столбчатую диаграмму по двум столбцам DataFrame.
+    procedure Bar(df: DataFrame; xColumn, yColumn: string;
+      color: ColorWPF := DefaultColor; width: real := 0.8;
+      alpha: real := 0.85; legend: string := nil);
+    /// Строит в ячейке столбчатую диаграмму столбца Dataset.
+    procedure Bar(ds: Dataset; yColumn: string; color: ColorWPF := DefaultColor;
+      width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит в ячейке столбчатую диаграмму по двум столбцам Dataset.
+    procedure Bar(ds: Dataset; xColumn, yColumn: string;
+      color: ColorWPF := DefaultColor; width: real := 0.8;
+      alpha: real := 0.85; legend: string := nil);
     /// Строит горизонтальную столбчатую диаграмму с текстовыми подписями.
     procedure HorizontalBar(labels: array of string; values: array of real; color: ColorWPF := DefaultColor;
       width: real := 0.75; alpha: real := 0.85; legend: string := nil);
     /// Строит горизонтальную столбчатую диаграмму по целочисленным значениям.
     procedure HorizontalBar(labels: array of string; values: array of integer; color: ColorWPF := DefaultColor;
       width: real := 0.75; alpha: real := 0.85; legend: string := nil);
+    /// Строит в ячейке горизонтальную столбчатую диаграмму по двум столбцам.
+    /// Строки с NA исключаются целиком. Подписи осей не устанавливаются.
+    procedure HorizontalBar(labelColumn, valueColumn: Column;
+      color: ColorWPF := DefaultColor; width: real := 0.75;
+      alpha: real := 0.85; legend: string := nil);
+    /// Строит в ячейке горизонтальную столбчатую диаграмму по DataFrame.
+    /// Строки с NA исключаются целиком. Подписи осей не устанавливаются.
+    procedure HorizontalBar(df: DataFrame; labelColumn, valueColumn: string;
+      color: ColorWPF := DefaultColor; width: real := 0.75;
+      alpha: real := 0.85; legend: string := nil);
+    /// Строит в ячейке горизонтальную столбчатую диаграмму по Dataset.
+    procedure HorizontalBar(ds: Dataset; labelColumn, valueColumn: string;
+      color: ColorWPF := DefaultColor; width: real := 0.75;
+      alpha: real := 0.85; legend: string := nil);
     /// Строит тепловую карту для числовой матрицы.
     procedure Heatmap(m: array[,] of real);
+    /// Строит в ячейке тепловую карту по числовым столбцам DataFrame.
+    /// Имена столбцов отображаются сверху, строки с NA исключаются целиком.
+    procedure Heatmap(df: DataFrame; columns: array of string);
+    /// Строит в ячейке тепловую карту по столбцам Dataset.
+    /// Если columns не задан, используются числовые не категориальные ds.Features.
+    procedure Heatmap(ds: Dataset; columns: array of string := nil);
     /// Отображает одно изображение, записанное в виде плоского массива.
     procedure Image(values: array of real; width, height: integer; invert: boolean := false);
+    /// Отображает строку Dataset как grayscale-изображение.
+    /// Пиксели берутся из ds.Features в исходном порядке.
+    procedure Image(ds: Dataset; width, height: integer; row: integer := 0;
+      invert: boolean := false);
     /// Отображает сетку изображений из строк матрицы X.
     procedure ImageGrid(X: Matrix; width, height: integer; startRow: integer := 0;
+      count: integer := 20; cols: integer := 5; spacing: real := 0.1;
+      normalize: boolean := false; invert: boolean := false);
+    /// Отображает строки Dataset как сетку grayscale-изображений.
+    /// Пиксели берутся из ds.Features в исходном порядке.
+    procedure ImageGrid(ds: Dataset; width, height: integer; startRow: integer := 0;
       count: integer := 20; cols: integer := 5; spacing: real := 0.1;
       normalize: boolean := false; invert: boolean := false);
       
@@ -280,7 +403,9 @@ type
     static procedure RefreshLegend(chart: ChartWPF;
       master: InteractiveDataDisplay.WPF.PlotBase);
       
-    static procedure DrawHeatmap(chart: ChartWPF; m: array[,] of real; names: array of string := nil);  
+    static procedure DrawHeatmap(chart: ChartWPF; m: array[,] of real; names: array of string := nil);
+    static procedure DrawHeatmap(chart: ChartWPF; m: array[,] of real;
+      rowNames, columnNames: array of string);
 
     static function CreateConfusionMatrixView(m: array[,] of real; classNames: array of string;
       title: string; xlabel: string; ylabel: string; percentValues: boolean := false;
@@ -320,6 +445,18 @@ type
     /// Рисует линейный график по массивам x и y.
     static procedure LineGraph(x, y: array of real;
       color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
+    /// Рисует линейный график по двум числовым столбцам.
+    /// Строки с NA исключаются, имена столбцов становятся подписями осей.
+    static procedure LineGraph(xColumn, yColumn: Column;
+      color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
+    /// Рисует линейный график по столбцам DataFrame.
+    /// Строки с NA исключаются, имена столбцов становятся подписями осей.
+    static procedure LineGraph(df: DataFrame; xColumn, yColumn: string;
+      color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
+    /// Рисует линейный график по двум столбцам Dataset.
+    /// Имена столбцов используются как подписи осей, строки с NA исключаются.
+    static procedure LineGraph(ds: Dataset; xColumn, yColumn: string;
+      color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
     /// Рисует прямую вида y = k*x + b.
     static procedure Line(k, b: real;
       color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
@@ -344,6 +481,47 @@ type
     static procedure Points(x, y: array of real;
       labels: array of integer; color: ColorWPF := DefaultColor; size: real := 6;
       marker: MarkerType := MarkerType.Circle; classNames: array of string := nil);
+
+    /// Строит диаграмму рассеяния по двум числовым столбцам.
+    /// Строки с NA исключаются целиком. Имена столбцов становятся подписями осей.
+    static procedure Points(xColumn, yColumn: Column;
+      color: ColorWPF := DefaultColor; size: real := 6;
+      marker: MarkerType := MarkerType.Circle; legend: string := nil;
+      tooltips: array of string := nil);
+    /// Строит диаграмму рассеяния с раскраской по столбцу классов.
+    /// Столбец классов должен быть строковым или целочисленным. Имена числовых
+    /// столбцов автоматически используются как подписи осей.
+    static procedure Points(xColumn, yColumn, classColumn: Column;
+      color: ColorWPF := DefaultColor; size: real := 6;
+      marker: MarkerType := MarkerType.Circle);
+
+    /// Строит диаграмму рассеяния по двум числовым столбцам DataFrame.
+    /// Поддерживаются целочисленные и вещественные столбцы. Строки с NA
+    /// в xColumn или yColumn исключаются целиком. Массив tooltips, если задан,
+    /// должен соответствовать исходным строкам DataFrame и фильтруется вместе с ними.
+    /// Имена столбцов автоматически используются как подписи осей X и Y.
+    static procedure Points(df: DataFrame; xColumn, yColumn: string;
+      color: ColorWPF := DefaultColor; size: real := 6;
+      marker: MarkerType := MarkerType.Circle; legend: string := nil;
+      tooltips: array of string := nil);
+    /// Строит диаграмму рассеяния по DataFrame с раскраской по столбцу классов.
+    /// classColumn должен быть строковым или целочисленным. Классы кодируются
+    /// в порядке первого появления. Строки с NA в любом из трёх столбцов исключаются.
+    /// Имена xColumn и yColumn автоматически используются как подписи осей.
+    static procedure Points(df: DataFrame; xColumn, yColumn, classColumn: string;
+      color: ColorWPF := DefaultColor; size: real := 6;
+      marker: MarkerType := MarkerType.Circle);
+    /// Строит диаграмму рассеяния по столбцам Dataset.
+    /// Координатные столбцы задаются явно; classColumn можно передать именованно.
+    static procedure Points(ds: Dataset; xColumn, yColumn: string;
+      color: ColorWPF := DefaultColor; size: real := 6;
+      marker: MarkerType := MarkerType.Circle; legend: string := nil;
+      tooltips: array of string := nil; classColumn: string := nil);
+    /// Строит диаграмму рассеяния Dataset с раскраской по столбцу классов.
+    /// Для раскраски по целевой переменной передайте ds.Target.
+    static procedure Points(ds: Dataset; xColumn, yColumn, classColumn: string;
+      color: ColorWPF := DefaultColor; size: real := 6;
+      marker: MarkerType := MarkerType.Circle);
       
     /// Строит гистограмму значений.
     static procedure Hist(x: array of real; bins: integer := 0;
@@ -351,6 +529,21 @@ type
       edges: System.Array := nil);
     /// Строит гистограмму целочисленных значений.
     static procedure Hist(x: array of integer; bins: integer := 0;
+      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
+      edges: System.Array := nil);
+    /// Строит гистограмму числового столбца, исключая значения с NA.
+    /// Имя столбца используется как подпись X, ось Y получает подпись «Частота».
+    static procedure Hist(column: Column; bins: integer := 0;
+      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
+      edges: System.Array := nil);
+    /// Строит гистограмму числового столбца DataFrame, исключая значения с NA.
+    /// Имя столбца используется как подпись X, ось Y получает подпись «Частота».
+    static procedure Hist(df: DataFrame; columnName: string; bins: integer := 0;
+      color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
+      edges: System.Array := nil);
+    /// Строит гистограмму столбца Dataset.
+    /// Поведение совпадает с перегрузкой для DataFrame.
+    static procedure Hist(ds: Dataset; columnName: string; bins: integer := 0;
       color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
       edges: System.Array := nil);
       
@@ -367,6 +560,30 @@ type
     /// Строит столбчатую диаграмму по x и целочисленным значениям y.
     static procedure Bar(x: array of real; y: array of integer; color: ColorWPF := DefaultColor;
       width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит столбчатую диаграмму числового столбца, исключая значения с NA.
+    /// Имя столбца используется как подпись оси Y.
+    static procedure Bar(yColumn: Column; color: ColorWPF := DefaultColor;
+      width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит столбчатую диаграмму по двум числовым столбцам.
+    /// Имена столбцов используются как подписи осей, строки с NA исключаются.
+    static procedure Bar(xColumn, yColumn: Column; color: ColorWPF := DefaultColor;
+      width: real := 0.8; alpha: real := 0.85; legend: string := nil);
+    /// Строит столбчатую диаграмму числового столбца DataFrame.
+    static procedure Bar(df: DataFrame; yColumn: string;
+      color: ColorWPF := DefaultColor; width: real := 0.8;
+      alpha: real := 0.85; legend: string := nil);
+    /// Строит столбчатую диаграмму по двум числовым столбцам DataFrame.
+    static procedure Bar(df: DataFrame; xColumn, yColumn: string;
+      color: ColorWPF := DefaultColor; width: real := 0.8;
+      alpha: real := 0.85; legend: string := nil);
+    /// Строит столбчатую диаграмму столбца Dataset.
+    static procedure Bar(ds: Dataset; yColumn: string;
+      color: ColorWPF := DefaultColor; width: real := 0.8;
+      alpha: real := 0.85; legend: string := nil);
+    /// Строит столбчатую диаграмму по двум столбцам Dataset.
+    static procedure Bar(ds: Dataset; xColumn, yColumn: string;
+      color: ColorWPF := DefaultColor; width: real := 0.8;
+      alpha: real := 0.85; legend: string := nil);
       
     /// Строит горизонтальную столбчатую диаграмму с текстовыми подписями.
     static procedure HorizontalBar(labels: array of string; values: array of real; color: ColorWPF := DefaultColor;
@@ -374,17 +591,50 @@ type
     /// Строит горизонтальную столбчатую диаграмму по целочисленным значениям.
     static procedure HorizontalBar(labels: array of string; values: array of integer; color: ColorWPF := DefaultColor;
       width: real := 0.75; alpha: real := 0.85; legend: string := nil);
+    /// Строит горизонтальную столбчатую диаграмму по двум столбцам.
+    /// Имена столбцов используются как подписи осей, строки с NA исключаются.
+    static procedure HorizontalBar(labelColumn, valueColumn: Column;
+      color: ColorWPF := DefaultColor; width: real := 0.75;
+      alpha: real := 0.85; legend: string := nil);
+    /// Строит горизонтальную столбчатую диаграмму по столбцам DataFrame.
+    /// Имена столбцов используются как подписи осей, строки с NA исключаются.
+    static procedure HorizontalBar(df: DataFrame; labelColumn, valueColumn: string;
+      color: ColorWPF := DefaultColor; width: real := 0.75;
+      alpha: real := 0.85; legend: string := nil);
+    /// Строит горизонтальную столбчатую диаграмму по столбцам Dataset.
+    static procedure HorizontalBar(ds: Dataset; labelColumn, valueColumn: string;
+      color: ColorWPF := DefaultColor; width: real := 0.75;
+      alpha: real := 0.85; legend: string := nil);
       
     /// Отображает одно изображение, записанное в виде плоского массива.
     static procedure Image(values: array of real; width, height: integer; invert: boolean := false);
+    /// Отображает строку Dataset как grayscale-изображение.
+    /// Пиксели берутся из ds.Features в исходном порядке.
+    static procedure Image(ds: Dataset; width, height: integer; row: integer := 0;
+      invert: boolean := false);
     /// Отображает сетку изображений из строк матрицы X.
     static procedure ImageGrid(X: Matrix; width, height: integer; startRow: integer := 0;
+      count: integer := 20; cols: integer := 5; spacing: real := 0.1;
+      normalize: boolean := false; invert: boolean := false);
+    /// Отображает строки Dataset как сетку grayscale-изображений.
+    /// Пиксели берутся из ds.Features в исходном порядке.
+    static procedure ImageGrid(ds: Dataset; width, height: integer; startRow: integer := 0;
       count: integer := 20; cols: integer := 5; spacing: real := 0.1;
       normalize: boolean := false; invert: boolean := false);
 
     /// Строит несколько гистограмм на одном графике.
     static procedure HistMany(arrays: array of array of real; bins: integer := 0;
       colors: array of ColorWPF := nil; alpha: real := 0.7; legend: array of string := nil);
+    /// Строит несколько гистограмм по числовым столбцам DataFrame.
+    /// Имена столбцов используются в легенде, если legend не задан.
+    static procedure HistMany(df: DataFrame; columns: array of string;
+      bins: integer := 0; colors: array of ColorWPF := nil;
+      alpha: real := 0.7; legend: array of string := nil);
+    /// Строит несколько гистограмм по указанным столбцам Dataset.
+    /// Если columns не задан, используются числовые не категориальные ds.Features.
+    static procedure HistMany(ds: Dataset; columns: array of string := nil;
+      bins: integer := 0; colors: array of ColorWPF := nil;
+      alpha: real := 0.7; legend: array of string := nil);
       
     /// Строит матрицу попарных диаграмм признаков.
     static procedure PairPlot(X: array[,] of real; names: array of string := nil; maxPoints: integer := 2000);
@@ -392,11 +642,32 @@ type
     static procedure PairPlot(X: array[,] of real; values: array of real; names: array of string := nil; bins: integer := 5; maxPoints: integer := 2000);
     /// Строит матрицу попарных диаграмм с раскраской по меткам классов.
     static procedure PairPlot(X: array[,] of real; labels: array of integer; names: array of string; maxPoints: integer := 2000);
+    /// Строит матрицу попарных диаграмм по числовым столбцам DataFrame.
+    /// Имена столбцов используются как подписи признаков, строки с NA исключаются.
+    static procedure PairPlot(df: DataFrame; columns: array of string;
+      maxPoints: integer := 2000);
+    /// Строит матрицу попарных диаграмм по числовым столбцам DataFrame
+    /// с раскраской по другому столбцу. Категориальный столбец задаёт классы,
+    /// обычный числовой столбец задаёт непрерывную цветовую шкалу.
+    static procedure PairPlot(df: DataFrame; columns: array of string;
+      colorColumn: string; bins: integer := 5; maxPoints: integer := 2000);
+    /// Строит матрицу попарных диаграмм для Dataset.
+    /// Если columns не задан, используются числовые не категориальные ds.Features.
+    /// По умолчанию supervised target задаёт окраску согласно ds.Task.
+    static procedure PairPlot(ds: Dataset; columns: array of string := nil;
+      colorColumn: string := nil; colorByTarget: boolean := true;
+      maxPoints: integer := 2000);
     
     /// Строит тепловую карту для числовой матрицы.
     static procedure Heatmap(m: array[,] of real);
     /// Строит тепловую карту с подписями строк и столбцов.
     static procedure Heatmap(m: array[,] of real; names: array of string);
+    /// Строит тепловую карту по числовым столбцам DataFrame.
+    /// Имена столбцов отображаются сверху, строки с NA исключаются целиком.
+    static procedure Heatmap(df: DataFrame; columns: array of string);
+    /// Строит тепловую карту по столбцам Dataset.
+    /// Если columns не задан, используются числовые не категориальные ds.Features.
+    static procedure Heatmap(ds: Dataset; columns: array of string := nil);
     /// Отображает матрицу ошибок по целочисленной таблице частот.
     static procedure ConfusionMatrix(m: array[,] of integer; classNames: array of string := nil;
       normalize: MatrixNormalization := MatrixNormalization.None; sortClassNames: boolean := false);
@@ -640,6 +911,9 @@ type
   end;
 
 implementation
+
+const
+  HIST_FREQUENCY_LABEL = 'Частота!!Frequency';
 
 var
   uiThread: Thread;
@@ -901,6 +1175,347 @@ begin
           $'метка {labelValue} выходит за диапазон classNames 0..{classNames.Length - 1}');
 end;
 
+procedure ValidateDataFrameColumn(df: DataFrame; columnName: string);
+begin
+  if not df.HasColumn(columnName) then
+    ArgumentError(ER_COLUMN_NOT_FOUND, columnName);
+end;
+
+function DatasetData(ds: Dataset): DataFrame;
+begin
+  if ds = nil then
+    ArgumentNullError(ER_ARG_NULL, 'ds');
+  if ds.Data = nil then
+    ArgumentNullError(ER_ARG_NULL, 'ds.Data');
+  Result := ds.Data;
+end;
+
+function DatasetNumericFeatures(ds: Dataset): array of string;
+begin
+  var df := DatasetData(ds);
+  var features := new List<string>;
+  if ds.Features <> nil then
+    foreach var name in ds.Features do
+    begin
+      ValidateDataFrameColumn(df, name);
+      var column := df[name];
+      if (column.Info.ColType in [ColumnType.ctInt, ColumnType.ctFloat]) and
+         not df.IsCategorical(name) then
+        features.Add(name);
+    end;
+
+  if features.Count = 0 then
+    ArgumentError(ER_PLOT_DATASET_NO_NUMERIC_FEATURES);
+  Result := features.ToArray;
+end;
+
+procedure ValidateNumericPointsColumn(column: Column; argumentName: string);
+begin
+  if column = nil then
+    ArgumentNullError(ER_ARG_NULL, argumentName);
+
+  if not (column.Info.ColType in [ColumnType.ctInt, ColumnType.ctFloat]) then
+    ArgumentError(ER_PLOT_POINTS_NUMERIC_COLUMN, column.Info.Name);
+end;
+
+procedure ColumnsPointsToXY(xColumn, yColumn: Column;
+  tooltips: array of string; var x, y: array of real;
+  var filteredTooltips: array of string);
+begin
+  ValidateNumericPointsColumn(xColumn, 'xColumn');
+  ValidateNumericPointsColumn(yColumn, 'yColumn');
+
+  if xColumn.RowCount <> yColumn.RowCount then
+    ArgumentError(ER_PLOT_POINTS_COLUMN_LENGTH_MISMATCH);
+
+  if (tooltips <> nil) and (tooltips.Length <> xColumn.RowCount) then
+    ArgumentError(ER_PLOT_POINTS_TOOLTIPS_ROWCOUNT);
+
+  var xValues := new List<real>;
+  var yValues := new List<real>;
+  var tooltipValues := if tooltips = nil then nil else new List<string>;
+
+  for var i := 0 to xColumn.RowCount - 1 do
+  begin
+    var xv, yv: real;
+    if not xColumn.TryGetNumericValue(i, xv) then
+      continue;
+    if not yColumn.TryGetNumericValue(i, yv) then
+      continue;
+
+    xValues.Add(xv);
+    yValues.Add(yv);
+    if tooltipValues <> nil then
+      tooltipValues.Add(tooltips[i]);
+  end;
+
+  if xValues.Count = 0 then
+    ArgumentError(ER_PLOT_POINTS_NO_VALID_ROWS);
+
+  x := xValues.ToArray;
+  y := yValues.ToArray;
+  filteredTooltips := if tooltipValues = nil then nil else tooltipValues.ToArray;
+end;
+
+procedure ColumnsPointsToLabeledXY(xColumn, yColumn, classColumn: Column;
+  var x, y: array of real;
+  var labels: array of integer; var classNames: array of string);
+begin
+  ValidateNumericPointsColumn(xColumn, 'xColumn');
+  ValidateNumericPointsColumn(yColumn, 'yColumn');
+  if classColumn = nil then
+    ArgumentNullError(ER_ARG_NULL, 'classColumn');
+
+  if (xColumn.RowCount <> yColumn.RowCount) or
+     (xColumn.RowCount <> classColumn.RowCount) then
+    ArgumentError(ER_PLOT_POINTS_COLUMN_LENGTH_MISMATCH);
+
+  var classType := classColumn.Info.ColType;
+  if not (classType in [ColumnType.ctInt, ColumnType.ctStr]) then
+    ArgumentError(ER_PLOT_POINTS_CLASS_COLUMN, classColumn.Info.Name);
+
+  var xValues := new List<real>;
+  var yValues := new List<real>;
+  var labelValues := new List<integer>;
+  var names := new List<string>;
+  var nameToLabel := new Dictionary<string, integer>;
+
+  for var i := 0 to xColumn.RowCount - 1 do
+  begin
+    var xv, yv: real;
+    if not xColumn.TryGetNumericValue(i, xv) then
+      continue;
+    if not yColumn.TryGetNumericValue(i, yv) then
+      continue;
+    if not classColumn.IsValid[i] then
+      continue;
+
+    var className: string;
+    case classType of
+      ColumnType.ctInt:
+        className := IntColumn(classColumn).Data[i].ToString;
+      ColumnType.ctStr:
+        className := StrColumn(classColumn).Data[i];
+    end;
+    if className = nil then
+      className := '';
+
+    var labelValue: integer;
+    if not nameToLabel.TryGetValue(className, labelValue) then
+    begin
+      labelValue := names.Count;
+      nameToLabel.Add(className, labelValue);
+      names.Add(className);
+    end;
+
+    xValues.Add(xv);
+    yValues.Add(yv);
+    labelValues.Add(labelValue);
+  end;
+
+  if xValues.Count = 0 then
+    ArgumentError(ER_PLOT_POINTS_NO_VALID_ROWS);
+
+  x := xValues.ToArray;
+  y := yValues.ToArray;
+  labels := labelValues.ToArray;
+  classNames := names.ToArray;
+end;
+
+function HistColumnToReal(column: Column): array of real;
+begin
+  if column = nil then
+    ArgumentNullError(ER_ARG_NULL, 'column');
+
+  if not (column.Info.ColType in [ColumnType.ctInt, ColumnType.ctFloat]) then
+    ArgumentError(ER_PLOT_HIST_NUMERIC_COLUMN, column.Info.Name);
+
+  var values := new List<real>;
+  for var i := 0 to column.RowCount - 1 do
+  begin
+    var value: real;
+    if column.TryGetNumericValue(i, value) then
+      values.Add(value);
+  end;
+
+  if values.Count = 0 then
+    ArgumentError(ER_PLOT_HIST_NO_VALID_ROWS);
+
+  Result := values.ToArray;
+end;
+
+procedure ColumnsLineGraphToXY(xColumn, yColumn: Column;
+  var x, y: array of real);
+begin
+  if xColumn = nil then
+    ArgumentNullError(ER_ARG_NULL, 'xColumn');
+  if yColumn = nil then
+    ArgumentNullError(ER_ARG_NULL, 'yColumn');
+
+  if not (xColumn.Info.ColType in [ColumnType.ctInt, ColumnType.ctFloat]) then
+    ArgumentError(ER_PLOT_LINEGRAPH_NUMERIC_COLUMN, xColumn.Info.Name);
+  if not (yColumn.Info.ColType in [ColumnType.ctInt, ColumnType.ctFloat]) then
+    ArgumentError(ER_PLOT_LINEGRAPH_NUMERIC_COLUMN, yColumn.Info.Name);
+
+  if xColumn.RowCount <> yColumn.RowCount then
+    ArgumentError(ER_PLOT_LINEGRAPH_COLUMN_LENGTH_MISMATCH);
+
+  var xValues := new List<real>;
+  var yValues := new List<real>;
+  for var i := 0 to xColumn.RowCount - 1 do
+  begin
+    var xv, yv: real;
+    if not xColumn.TryGetNumericValue(i, xv) then
+      continue;
+    if not yColumn.TryGetNumericValue(i, yv) then
+      continue;
+    xValues.Add(xv);
+    yValues.Add(yv);
+  end;
+
+  if xValues.Count = 0 then
+    ArgumentError(ER_PLOT_LINEGRAPH_NO_VALID_ROWS);
+
+  x := xValues.ToArray;
+  y := yValues.ToArray;
+end;
+
+procedure ColumnsHorizontalBarToData(labelColumn, valueColumn: Column;
+  var labels: array of string; var values: array of real;
+  var integerValues: array of integer);
+begin
+  if labelColumn = nil then
+    ArgumentNullError(ER_ARG_NULL, 'labelColumn');
+  if valueColumn = nil then
+    ArgumentNullError(ER_ARG_NULL, 'valueColumn');
+
+  if not (labelColumn.Info.ColType in [ColumnType.ctStr, ColumnType.ctInt]) then
+    ArgumentError(ER_PLOT_HORIZONTALBAR_LABEL_COLUMN, labelColumn.Info.Name);
+  if not (valueColumn.Info.ColType in [ColumnType.ctInt, ColumnType.ctFloat]) then
+    ArgumentError(ER_PLOT_HORIZONTALBAR_NUMERIC_COLUMN, valueColumn.Info.Name);
+  if labelColumn.RowCount <> valueColumn.RowCount then
+    ArgumentError(ER_PLOT_HORIZONTALBAR_COLUMN_LENGTH_MISMATCH);
+
+  var labelValues := new List<string>;
+  var realValues := new List<real>;
+  var intValues := new List<integer>;
+  var valuesAreInteger := valueColumn.Info.ColType = ColumnType.ctInt;
+
+  for var i := 0 to labelColumn.RowCount - 1 do
+  begin
+    if not labelColumn.IsValid[i] or not valueColumn.IsValid[i] then
+      continue;
+
+    var labelText :=
+      if labelColumn.Info.ColType = ColumnType.ctStr then
+        StrColumn(labelColumn).Data[i]
+      else
+        IntColumn(labelColumn).Data[i].ToString;
+    if labelText = nil then
+      labelText := '';
+
+    labelValues.Add(labelText);
+    if valuesAreInteger then
+      intValues.Add(IntColumn(valueColumn).Data[i])
+    else
+      realValues.Add(FloatColumn(valueColumn).Data[i]);
+  end;
+
+  if labelValues.Count = 0 then
+    ArgumentError(ER_PLOT_HORIZONTALBAR_NO_VALID_ROWS);
+
+  labels := labelValues.ToArray;
+  if valuesAreInteger then
+  begin
+    integerValues := intValues.ToArray;
+    values := nil;
+  end
+  else
+  begin
+    values := realValues.ToArray;
+    integerValues := nil;
+  end;
+end;
+
+procedure ValidateBarNumericColumn(column: Column; argumentName: string);
+begin
+  if column = nil then
+    ArgumentNullError(ER_ARG_NULL, argumentName);
+  if not (column.Info.ColType in [ColumnType.ctInt, ColumnType.ctFloat]) then
+    ArgumentError(ER_PLOT_BAR_NUMERIC_COLUMN, column.Info.Name);
+end;
+
+procedure BarColumnToValues(yColumn: Column; var values: array of real;
+  var integerValues: array of integer);
+begin
+  ValidateBarNumericColumn(yColumn, 'yColumn');
+
+  var realValues := new List<real>;
+  var intValues := new List<integer>;
+  var valuesAreInteger := yColumn.Info.ColType = ColumnType.ctInt;
+  for var i := 0 to yColumn.RowCount - 1 do
+    if yColumn.IsValid[i] then
+      if valuesAreInteger then
+        intValues.Add(IntColumn(yColumn).Data[i])
+      else
+        realValues.Add(FloatColumn(yColumn).Data[i]);
+
+  var count := if valuesAreInteger then intValues.Count else realValues.Count;
+  if count = 0 then
+    ArgumentError(ER_PLOT_BAR_NO_VALID_ROWS);
+
+  if valuesAreInteger then
+  begin
+    integerValues := intValues.ToArray;
+    values := nil;
+  end
+  else
+  begin
+    values := realValues.ToArray;
+    integerValues := nil;
+  end;
+end;
+
+procedure ColumnsBarToXY(xColumn, yColumn: Column; var x: array of real;
+  var y: array of real; var integerY: array of integer);
+begin
+  ValidateBarNumericColumn(xColumn, 'xColumn');
+  ValidateBarNumericColumn(yColumn, 'yColumn');
+  if xColumn.RowCount <> yColumn.RowCount then
+    ArgumentError(ER_PLOT_BAR_COLUMN_LENGTH_MISMATCH);
+
+  var xValues := new List<real>;
+  var realY := new List<real>;
+  var intY := new List<integer>;
+  var yIsInteger := yColumn.Info.ColType = ColumnType.ctInt;
+  for var i := 0 to xColumn.RowCount - 1 do
+  begin
+    var xv: real;
+    if not xColumn.TryGetNumericValue(i, xv) or not yColumn.IsValid[i] then
+      continue;
+    xValues.Add(xv);
+    if yIsInteger then
+      intY.Add(IntColumn(yColumn).Data[i])
+    else
+      realY.Add(FloatColumn(yColumn).Data[i]);
+  end;
+
+  if xValues.Count = 0 then
+    ArgumentError(ER_PLOT_BAR_NO_VALID_ROWS);
+
+  x := xValues.ToArray;
+  if yIsInteger then
+  begin
+    integerY := intY.ToArray;
+    y := nil;
+  end
+  else
+  begin
+    y := realY.ToArray;
+    integerY := nil;
+  end;
+end;
+
 function IntArrayToReal(a: array of integer): array of real;
 begin
   if a = nil then
@@ -909,6 +1524,82 @@ begin
   Result := new real[a.Length];
   for var i := 0 to a.Length - 1 do
     Result[i] := a[i];
+end;
+
+procedure DataFrameHistManyData(df: DataFrame; columns: array of string;
+  var arrays: array of array of real);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  if (columns = nil) or (columns.Length = 0) then
+    ArgumentError(ER_PLOT_HISTMANY_COLUMNS_EMPTY);
+
+  SetLength(arrays, columns.Length);
+  var totalCount := 0;
+  for var j := 0 to columns.Length - 1 do
+  begin
+    ValidateDataFrameColumn(df, columns[j]);
+    var column := df[columns[j]];
+    if not (column.Info.ColType in [ColumnType.ctInt, ColumnType.ctFloat]) then
+      ArgumentError(ER_PLOT_HISTMANY_NUMERIC_COLUMN, columns[j]);
+
+    var values := new List<real>;
+    for var i := 0 to df.RowCount - 1 do
+    begin
+      var value: real;
+      if column.TryGetNumericValue(i, value) then
+        values.Add(value);
+    end;
+    arrays[j] := values.ToArray;
+    totalCount += values.Count;
+  end;
+
+  if totalCount = 0 then
+    ArgumentError(ER_PLOT_HISTMANY_NO_VALID_VALUES);
+end;
+
+procedure DataFrameHeatmapData(df: DataFrame; columns: array of string;
+  var values: array[,] of real);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  if (columns = nil) or (columns.Length = 0) then
+    ArgumentError(ER_PLOT_HEATMAP_COLUMNS_EMPTY);
+
+  var selected := new Column[columns.Length];
+  for var j := 0 to columns.Length - 1 do
+  begin
+    ValidateDataFrameColumn(df, columns[j]);
+    selected[j] := df[columns[j]];
+    if not (selected[j].Info.ColType in
+      [ColumnType.ctInt, ColumnType.ctFloat]) then
+      ArgumentError(ER_PLOT_HEATMAP_NUMERIC_COLUMN, columns[j]);
+  end;
+
+  var rows := new List<integer>;
+  for var i := 0 to df.RowCount - 1 do
+  begin
+    var valid := true;
+    for var j := 0 to selected.Length - 1 do
+    begin
+      var value: real;
+      if not selected[j].TryGetNumericValue(i, value) then
+      begin
+        valid := false;
+        break;
+      end;
+    end;
+    if valid then
+      rows.Add(i);
+  end;
+
+  if rows.Count = 0 then
+    ArgumentError(ER_PLOT_HEATMAP_NO_VALID_ROWS);
+
+  values := new real[rows.Count, columns.Length];
+  for var i := 0 to rows.Count - 1 do
+    for var j := 0 to selected.Length - 1 do
+      selected[j].TryGetNumericValue(rows[i], values[i, j]);
 end;
 
 function HistogramEdgesToReal(edges: System.Array): array of real;
@@ -1052,6 +1743,49 @@ begin
     ArgumentError(ER_IMAGEGRID_ROW_RANGE);
   if X.ColCount <> width * height then
     ArgumentError(ER_IMAGEGRID_COLCOUNT);
+end;
+
+function DatasetImageMatrix(ds: Dataset; width, height, startRow,
+  count: integer): Matrix;
+begin
+  ValidateImageSize(width, height);
+  var df := DatasetData(ds);
+  if startRow < 0 then
+    ArgumentError(ER_IMAGEGRID_STARTROW_NON_NEGATIVE);
+  if count <= 0 then
+    ArgumentError(ER_IMAGEGRID_COUNT_GT_ZERO);
+  if startRow + count > df.RowCount then
+    ArgumentError(ER_IMAGEGRID_ROW_RANGE);
+
+  var expected := width * height;
+  var actual := if ds.Features = nil then 0 else ds.Features.Length;
+  if actual <> expected then
+    ArgumentError(ER_IMAGE_DATASET_FEATURE_COUNT, expected, actual);
+
+  var features := new Column[expected];
+  for var j := 0 to expected - 1 do
+  begin
+    var name := ds.Features[j];
+    ValidateDataFrameColumn(df, name);
+    features[j] := df[name];
+    if not (features[j].Info.ColType in
+      [ColumnType.ctInt, ColumnType.ctFloat]) then
+      ArgumentError(ER_IMAGE_DATASET_NUMERIC_FEATURE, name);
+  end;
+
+  Result := new Matrix(count, expected);
+  for var i := 0 to count - 1 do
+  begin
+    var sourceRow := startRow + i;
+    for var j := 0 to expected - 1 do
+    begin
+      var value: real;
+      if not features[j].TryGetNumericValue(sourceRow, value) then
+        ArgumentError(ER_IMAGE_DATASET_MISSING_VALUE,
+          sourceRow, ds.Features[j]);
+      Result[i, j] := value;
+    end;
+  end;
 end;
 
 function RoundToByte(v: real): byte;
@@ -1814,6 +2548,31 @@ begin
   end);
 end;
 
+procedure Cell.LineGraph(xColumn, yColumn: Column; color: ColorWPF;
+  thickness: real; legend: string);
+begin
+  var x, y: array of real;
+  ColumnsLineGraphToXY(xColumn, yColumn, x, y);
+  self.LineGraph(x, y, color, thickness, legend);
+end;
+
+procedure Cell.LineGraph(df: DataFrame; xColumn, yColumn: string;
+  color: ColorWPF; thickness: real; legend: string);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  ValidateDataFrameColumn(df, xColumn);
+  ValidateDataFrameColumn(df, yColumn);
+  self.LineGraph(df[xColumn], df[yColumn], color, thickness, legend);
+end;
+
+procedure Cell.LineGraph(ds: Dataset; xColumn, yColumn: string;
+  color: ColorWPF; thickness: real; legend: string);
+begin
+  self.LineGraph(DatasetData(ds), xColumn, yColumn,
+    color, thickness, legend);
+end;
+
 procedure Cell.Line(k, b: real; color: ColorWPF; thickness: real; legend: string);
 begin
   Line(k, -1, b, color, thickness, legend);
@@ -1884,6 +2643,67 @@ begin
   end;
 end;
 
+procedure Cell.Points(xColumn, yColumn: Column;
+  color: ColorWPF; size: real; marker: MarkerType; legend: string;
+  tooltips: array of string);
+begin
+  var x, y: array of real;
+  var filteredTooltips: array of string;
+  ColumnsPointsToXY(xColumn, yColumn, tooltips, x, y, filteredTooltips);
+  self.Points(x, y, color, size, marker, legend, filteredTooltips);
+end;
+
+procedure Cell.Points(xColumn, yColumn, classColumn: Column;
+  size: real; marker: MarkerType);
+begin
+  var x, y: array of real;
+  var labels: array of integer;
+  var classNames: array of string;
+  ColumnsPointsToLabeledXY(xColumn, yColumn, classColumn,
+    x, y, labels, classNames);
+  self.Points(x, y, labels, size, marker, classNames);
+end;
+
+procedure Cell.Points(df: DataFrame; xColumn, yColumn: string;
+  color: ColorWPF; size: real; marker: MarkerType; legend: string;
+  tooltips: array of string);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  ValidateDataFrameColumn(df, xColumn);
+  ValidateDataFrameColumn(df, yColumn);
+  self.Points(df[xColumn], df[yColumn], color, size, marker, legend, tooltips);
+end;
+
+procedure Cell.Points(df: DataFrame;
+  xColumn, yColumn, classColumn: string; size: real; marker: MarkerType);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  ValidateDataFrameColumn(df, xColumn);
+  ValidateDataFrameColumn(df, yColumn);
+  ValidateDataFrameColumn(df, classColumn);
+  self.Points(df[xColumn], df[yColumn], df[classColumn], size, marker);
+end;
+
+procedure Cell.Points(ds: Dataset; xColumn, yColumn: string;
+  color: ColorWPF; size: real; marker: MarkerType; legend: string;
+  tooltips: array of string; classColumn: string);
+begin
+  if classColumn = nil then
+    self.Points(DatasetData(ds), xColumn, yColumn,
+      color, size, marker, legend, tooltips)
+  else
+    self.Points(DatasetData(ds), xColumn, yColumn,
+      classColumn, size, marker);
+end;
+
+procedure Cell.Points(ds: Dataset;
+  xColumn, yColumn, classColumn: string; size: real; marker: MarkerType);
+begin
+  self.Points(DatasetData(ds), xColumn, yColumn, classColumn, size, marker);
+end;
+
 procedure Cell.Heatmap(m: array[,] of real);
 begin
   Plot.RunUI(() ->
@@ -1891,6 +2711,24 @@ begin
     EnsureChart;
     Plot.DrawHeatmap(chart, m);
   end);
+end;
+
+procedure Cell.Heatmap(df: DataFrame; columns: array of string);
+begin
+  var values: array[,] of real;
+  DataFrameHeatmapData(df, columns, values);
+  Plot.RunUI(() ->
+  begin
+    EnsureChart;
+    Plot.DrawHeatmap(chart, values, nil, columns);
+  end);
+end;
+
+procedure Cell.Heatmap(ds: Dataset; columns: array of string);
+begin
+  if columns = nil then
+    columns := DatasetNumericFeatures(ds);
+  Heatmap(DatasetData(ds), columns);
 end;
 
 procedure Cell.Image(values: array of real; width, height: integer; invert: boolean);
@@ -1905,6 +2743,16 @@ begin
     ArgumentNullError(ER_ARG_NULL, 'values');
 
   Image(values.Data, width, height, invert);
+end;
+
+procedure Cell.Image(ds: Dataset; width, height, row: integer;
+  invert: boolean);
+begin
+  var df := DatasetData(ds);
+  if (row < 0) or (row >= df.RowCount) then
+    ArgumentError(ER_IMAGE_DATASET_ROW_RANGE, df.RowCount - 1);
+  var X := DatasetImageMatrix(ds, width, height, row, 1);
+  ImageGrid(X, width, height, 0, 1, 1, 0.0, false, invert);
 end;
 
 procedure Cell.ImageGrid(X: Matrix; width, height, startRow, count, cols: integer;
@@ -1926,6 +2774,13 @@ begin
     GridWPF.SetColumn(visual, col);
     parentGrid.Children.Add(visual);
   end);
+end;
+
+procedure Cell.ImageGrid(ds: Dataset; width, height, startRow, count,
+  cols: integer; spacing: real; normalize, invert: boolean);
+begin
+  var X := DatasetImageMatrix(ds, width, height, startRow, count);
+  ImageGrid(X, width, height, 0, count, cols, spacing, normalize, invert);
 end;
 
 procedure Cell.HeatCell(value, minValue, maxValue: real; text: string);
@@ -2016,8 +2871,7 @@ procedure Cell.Hist(x: array of real; bins: integer; color: ColorWPF;
   alpha: real; legend: string; edges: System.Array);
 begin
   if (bins <> 0) and (edges <> nil) then
-    raise new System.ArgumentException(
-      'Hist: specify either bins or edges, not both / задайте либо bins, либо edges');
+    ArgumentError(ER_PLOT_HIST_BINS_OR_EDGES);
 
   Plot.RunUI(() ->
   begin
@@ -2035,6 +2889,58 @@ procedure Cell.Hist(x: array of integer; bins: integer;
   color: ColorWPF; alpha: real; legend: string; edges: System.Array);
 begin
   Hist(IntArrayToReal(x), bins, color, alpha, legend, edges);
+end;
+
+procedure Cell.Hist(column: Column; bins: integer; color: ColorWPF;
+  alpha: real; legend: string; edges: System.Array);
+begin
+  Hist(HistColumnToReal(column), bins, color, alpha, legend, edges);
+end;
+
+procedure Cell.Hist(df: DataFrame; columnName: string; bins: integer;
+  color: ColorWPF; alpha: real; legend: string; edges: System.Array);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  ValidateDataFrameColumn(df, columnName);
+  Hist(df[columnName], bins, color, alpha, legend, edges);
+end;
+
+procedure Cell.Hist(ds: Dataset; columnName: string; bins: integer;
+  color: ColorWPF; alpha: real; legend: string; edges: System.Array);
+begin
+  Hist(DatasetData(ds), columnName, bins, color, alpha, legend, edges);
+end;
+
+procedure Cell.HistMany(df: DataFrame; columns: array of string;
+  bins: integer; colors: array of ColorWPF; alpha: real;
+  legend: array of string);
+begin
+  var arrays: array of array of real;
+  DataFrameHistManyData(df, columns, arrays);
+  var legends := if legend = nil then columns else legend;
+
+  Plot.RunUI(() ->
+  begin
+    EnsureChart;
+    var actualColors := colors;
+    if actualColors = nil then
+    begin
+      actualColors := new ColorWPF[arrays.Length];
+      for var i := 0 to actualColors.Length - 1 do
+        actualColors[i] := NextColor;
+    end;
+    Plot.DrawHistMany(chart, arrays, bins, actualColors, alpha, legends);
+  end);
+end;
+
+procedure Cell.HistMany(ds: Dataset; columns: array of string;
+  bins: integer; colors: array of ColorWPF; alpha: real;
+  legend: array of string);
+begin
+  if columns = nil then
+    columns := DatasetNumericFeatures(ds);
+  HistMany(DatasetData(ds), columns, bins, colors, alpha, legend);
 end;
 
 procedure Cell.Bar(y: array of real; color: ColorWPF; width: real; alpha: real; legend: string);
@@ -2068,6 +2974,62 @@ begin
   Plot.RunUI(() -> SetIntegerValueAxis(chart, AxisOrientation.Left, y));
 end;
 
+procedure Cell.Bar(yColumn: Column; color: ColorWPF;
+  width: real; alpha: real; legend: string);
+begin
+  var values: array of real;
+  var integerValues: array of integer;
+  BarColumnToValues(yColumn, values, integerValues);
+  if integerValues <> nil then
+    self.Bar(integerValues, color, width, alpha, legend)
+  else
+    self.Bar(values, color, width, alpha, legend);
+end;
+
+procedure Cell.Bar(xColumn, yColumn: Column; color: ColorWPF;
+  width: real; alpha: real; legend: string);
+begin
+  var x, y: array of real;
+  var integerY: array of integer;
+  ColumnsBarToXY(xColumn, yColumn, x, y, integerY);
+  if integerY <> nil then
+    self.Bar(x, integerY, color, width, alpha, legend)
+  else
+    self.Bar(x, y, color, width, alpha, legend);
+end;
+
+procedure Cell.Bar(df: DataFrame; yColumn: string; color: ColorWPF;
+  width: real; alpha: real; legend: string);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  ValidateDataFrameColumn(df, yColumn);
+  self.Bar(df[yColumn], color, width, alpha, legend);
+end;
+
+procedure Cell.Bar(df: DataFrame; xColumn, yColumn: string;
+  color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  ValidateDataFrameColumn(df, xColumn);
+  ValidateDataFrameColumn(df, yColumn);
+  self.Bar(df[xColumn], df[yColumn], color, width, alpha, legend);
+end;
+
+procedure Cell.Bar(ds: Dataset; yColumn: string; color: ColorWPF;
+  width: real; alpha: real; legend: string);
+begin
+  self.Bar(DatasetData(ds), yColumn, color, width, alpha, legend);
+end;
+
+procedure Cell.Bar(ds: Dataset; xColumn, yColumn: string;
+  color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  self.Bar(DatasetData(ds), xColumn, yColumn,
+    color, width, alpha, legend);
+end;
+
 procedure Cell.HorizontalBar(labels: array of string; values: array of real; color: ColorWPF; width: real; alpha: real; legend: string);
 begin
   Plot.RunUI(() ->
@@ -2085,6 +3047,38 @@ procedure Cell.HorizontalBar(labels: array of string; values: array of integer;
 begin
   HorizontalBar(labels, IntArrayToReal(values), color, width, alpha, legend);
   Plot.RunUI(() -> SetIntegerValueAxis(chart, AxisOrientation.Bottom, values));
+end;
+
+procedure Cell.HorizontalBar(labelColumn, valueColumn: Column;
+  color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  var labels: array of string;
+  var values: array of real;
+  var integerValues: array of integer;
+  ColumnsHorizontalBarToData(labelColumn, valueColumn,
+    labels, values, integerValues);
+  if integerValues <> nil then
+    self.HorizontalBar(labels, integerValues, color, width, alpha, legend)
+  else
+    self.HorizontalBar(labels, values, color, width, alpha, legend);
+end;
+
+procedure Cell.HorizontalBar(df: DataFrame; labelColumn, valueColumn: string;
+  color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  ValidateDataFrameColumn(df, labelColumn);
+  ValidateDataFrameColumn(df, valueColumn);
+  self.HorizontalBar(df[labelColumn], df[valueColumn],
+    color, width, alpha, legend);
+end;
+
+procedure Cell.HorizontalBar(ds: Dataset; labelColumn, valueColumn: string;
+  color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  self.HorizontalBar(DatasetData(ds), labelColumn, valueColumn,
+    color, width, alpha, legend);
 end;
 
 procedure Cell.LineGraph(x, y: Vector; color: ColorWPF; thickness: real; legend: string);
@@ -2631,6 +3625,12 @@ end;
 
 static procedure Plot.DrawHeatmap(chart: ChartWPF; m: array[,] of real; names: array of string);
 begin
+  DrawHeatmap(chart, m, names, names);
+end;
+
+static procedure Plot.DrawHeatmap(chart: ChartWPF; m: array[,] of real;
+  rowNames, columnNames: array of string);
+begin
   if chart = rootChart then
     ShowRootChart;
 
@@ -2640,8 +3640,8 @@ begin
   var container := new GridWPF;
   chart.Content := container;
 
-  var topOffset := if names <> nil then 1 else 0;
-  var leftOffset := if names <> nil then 1 else 0;
+  var topOffset := if columnNames <> nil then 1 else 0;
+  var leftOffset := if rowNames <> nil then 1 else 0;
 
   for var i := 0 to rows + topOffset - 1 do
     container.RowDefinitions.Add(new RowDefinition);
@@ -2649,12 +3649,12 @@ begin
   for var j := 0 to cols + leftOffset - 1 do
     container.ColumnDefinitions.Add(new ColumnDefinition);
 
-  if names <> nil then
+  if columnNames <> nil then
   begin
     for var j := 0 to cols - 1 do
     begin
       var tb := new System.Windows.Controls.TextBlock;
-      tb.Text := names[j];
+      tb.Text := columnNames[j];
       tb.FontSize := 13;
       tb.FontWeight := System.Windows.FontWeights.Normal;
       tb.TextAlignment := TextAlignment.Center;
@@ -2663,14 +3663,17 @@ begin
       tb.HorizontalAlignment := HorizontalAlignment.Center;
       tb.VerticalAlignment := VerticalAlignment.Center;
       GridWPF.SetRow(tb, 0);
-      GridWPF.SetColumn(tb, j + 1);
+      GridWPF.SetColumn(tb, j + leftOffset);
       container.Children.Add(tb);
     end;
+  end;
 
+  if rowNames <> nil then
+  begin
     for var i := 0 to rows - 1 do
     begin
       var tb := new System.Windows.Controls.TextBlock;
-      tb.Text := names[i];
+      tb.Text := rowNames[i];
       tb.FontSize := 13;
       tb.FontWeight := System.Windows.FontWeights.Normal;
       tb.TextAlignment := TextAlignment.Center;
@@ -2678,7 +3681,7 @@ begin
       tb.Margin := new Thickness(6);
       tb.HorizontalAlignment := HorizontalAlignment.Center;
       tb.VerticalAlignment := VerticalAlignment.Center;
-      GridWPF.SetRow(tb, i + 1);
+      GridWPF.SetRow(tb, i + topOffset);
       GridWPF.SetColumn(tb, 0);
       container.Children.Add(tb);
     end;
@@ -2974,6 +3977,53 @@ begin
   end);
 end;
 
+class procedure Plot.LineGraph(xColumn, yColumn: Column;
+  color: ColorWPF; thickness: real; legend: string);
+begin
+  var x, y: array of real;
+  ColumnsLineGraphToXY(xColumn, yColumn, x, y);
+  Plot.LineGraph(x, y, color, thickness, legend);
+  Plot.XLabel := xColumn.Info.Name;
+  Plot.YLabel := yColumn.Info.Name;
+end;
+
+class procedure Plot.LineGraph(df: DataFrame; xColumn, yColumn: string;
+  color: ColorWPF; thickness: real; legend: string);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  ValidateDataFrameColumn(df, xColumn);
+  ValidateDataFrameColumn(df, yColumn);
+  Plot.LineGraph(df[xColumn], df[yColumn], color, thickness, legend);
+end;
+
+class procedure Plot.LineGraph(ds: Dataset; xColumn, yColumn: string;
+  color: ColorWPF; thickness: real; legend: string);
+begin
+  Plot.LineGraph(DatasetData(ds), xColumn, yColumn,
+    color, thickness, legend);
+end;
+
+/// Рисует линейный график по двум числовым столбцам DataFrame.
+/// Это краткая форма Plot.LineGraph(Self, xColumn, yColumn, ...).
+/// Строки с NA исключаются, имена столбцов становятся подписями осей.
+procedure LineGraph(Self: DataFrame; xColumn, yColumn: string;
+  color: ColorWPF := DefaultColor; thickness: real := 2;
+  legend: string := nil); extensionmethod;
+begin
+  Plot.LineGraph(Self, xColumn, yColumn, color, thickness, legend);
+end;
+
+/// Рисует линейный график по двум столбцам Dataset.
+/// Это краткая форма Plot.LineGraph(Self, xColumn, yColumn, ...).
+/// Обработка пропусков и подписи осей совпадают с перегрузкой для DataFrame.
+procedure LineGraph(Self: Dataset; xColumn, yColumn: string;
+  color: ColorWPF := DefaultColor; thickness: real := 2;
+  legend: string := nil); extensionmethod;
+begin
+  Plot.LineGraph(Self, xColumn, yColumn, color, thickness, legend);
+end;
+
 class procedure Plot.Line(k, b: real; color: ColorWPF; thickness: real; legend: string);
 begin
   Line(k, -1, b, color, thickness, legend);
@@ -3047,6 +4097,119 @@ begin
   end;
 end;
 
+static procedure Plot.Points(xColumn, yColumn: Column;
+  color: ColorWPF; size: real; marker: MarkerType; legend: string;
+  tooltips: array of string);
+begin
+  var x, y: array of real;
+  var filteredTooltips: array of string;
+  ColumnsPointsToXY(xColumn, yColumn, tooltips, x, y, filteredTooltips);
+  Plot.Points(x, y, color, size, marker, legend, filteredTooltips);
+  Plot.XLabel := xColumn.Info.Name;
+  Plot.YLabel := yColumn.Info.Name;
+end;
+
+static procedure Plot.Points(xColumn, yColumn, classColumn: Column;
+  color: ColorWPF; size: real; marker: MarkerType);
+begin
+  var x, y: array of real;
+  var labels: array of integer;
+  var classNames: array of string;
+  ColumnsPointsToLabeledXY(xColumn, yColumn, classColumn,
+    x, y, labels, classNames);
+  Plot.Points(x, y, labels, color, size, marker, classNames);
+  Plot.XLabel := xColumn.Info.Name;
+  Plot.YLabel := yColumn.Info.Name;
+end;
+
+static procedure Plot.Points(df: DataFrame; xColumn, yColumn: string;
+  color: ColorWPF; size: real; marker: MarkerType; legend: string;
+  tooltips: array of string);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  ValidateDataFrameColumn(df, xColumn);
+  ValidateDataFrameColumn(df, yColumn);
+  Plot.Points(df[xColumn], df[yColumn], color, size, marker, legend, tooltips);
+end;
+
+static procedure Plot.Points(df: DataFrame;
+  xColumn, yColumn, classColumn: string; color: ColorWPF;
+  size: real; marker: MarkerType);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  ValidateDataFrameColumn(df, xColumn);
+  ValidateDataFrameColumn(df, yColumn);
+  ValidateDataFrameColumn(df, classColumn);
+  Plot.Points(df[xColumn], df[yColumn], df[classColumn], color, size, marker);
+end;
+
+static procedure Plot.Points(ds: Dataset; xColumn, yColumn: string;
+  color: ColorWPF; size: real; marker: MarkerType; legend: string;
+  tooltips: array of string; classColumn: string);
+begin
+  if classColumn = nil then
+    Plot.Points(DatasetData(ds), xColumn, yColumn,
+      color, size, marker, legend, tooltips)
+  else
+    Plot.Points(DatasetData(ds), xColumn, yColumn,
+      classColumn, color, size, marker);
+end;
+
+static procedure Plot.Points(ds: Dataset;
+  xColumn, yColumn, classColumn: string; color: ColorWPF;
+  size: real; marker: MarkerType);
+begin
+  Plot.Points(DatasetData(ds), xColumn, yColumn, classColumn,
+    color, size, marker);
+end;
+
+/// Строит диаграмму рассеяния по двум числовым столбцам DataFrame.
+/// Это краткая форма вызова Plot.Points(Self, xColumn, yColumn, ...).
+/// Строки с NA исключаются целиком; tooltips соответствуют исходным строкам
+/// DataFrame и фильтруются тем же построчным отбором.
+/// Имена столбцов автоматически используются как подписи осей X и Y.
+procedure Points(Self: DataFrame; xColumn, yColumn: string;
+  color: ColorWPF := DefaultColor; size: real := 6;
+  marker: MarkerType := MarkerType.Circle; legend: string := nil;
+  tooltips: array of string := nil); extensionmethod;
+begin
+  Plot.Points(Self, xColumn, yColumn, color, size, marker, legend, tooltips);
+end;
+
+/// Строит диаграмму рассеяния с раскраской по строковому или целочисленному
+/// столбцу классов. Это краткая форма Plot.Points(Self, ..., classColumn).
+/// Классы кодируются в порядке первого появления, строки с NA исключаются.
+/// Имена xColumn и yColumn автоматически используются как подписи осей.
+procedure Points(Self: DataFrame;
+  xColumn, yColumn, classColumn: string; color: ColorWPF := DefaultColor;
+  size: real := 6; marker: MarkerType := MarkerType.Circle); extensionmethod;
+begin
+  Plot.Points(Self, xColumn, yColumn, classColumn, color, size, marker);
+end;
+
+/// Строит диаграмму рассеяния по двум столбцам Dataset.
+/// Это краткая форма Plot.Points(Self, xColumn, yColumn, ...).
+/// Обработка пропусков и подписи осей совпадают с перегрузкой для DataFrame.
+procedure Points(Self: Dataset; xColumn, yColumn: string;
+  color: ColorWPF := DefaultColor; size: real := 6;
+  marker: MarkerType := MarkerType.Circle; legend: string := nil;
+  tooltips: array of string := nil; classColumn: string := nil); extensionmethod;
+begin
+  Plot.Points(Self, xColumn, yColumn, color, size, marker,
+    legend, tooltips, classColumn);
+end;
+
+/// Строит диаграмму рассеяния Dataset с раскраской по столбцу классов.
+/// Для раскраски по целевой переменной передайте Self.Target.
+procedure Points(Self: Dataset;
+  xColumn, yColumn, classColumn: string; color: ColorWPF := DefaultColor;
+  size: real := 6; marker: MarkerType := MarkerType.Circle); extensionmethod;
+begin
+  Plot.Points(Self, xColumn, yColumn, classColumn, color, size, marker);
+end;
+
 static procedure Plot.Bar(y: array of real; color: ColorWPF; width: real; alpha: real; legend: string);
 begin
   var x: array of real := nil;
@@ -3076,6 +4239,101 @@ begin
   RunUI(() -> SetIntegerValueAxis(rootChart, AxisOrientation.Left, y));
 end;
 
+static procedure Plot.Bar(yColumn: Column; color: ColorWPF;
+  width: real; alpha: real; legend: string);
+begin
+  var values: array of real;
+  var integerValues: array of integer;
+  BarColumnToValues(yColumn, values, integerValues);
+  if integerValues <> nil then
+    Plot.Bar(integerValues, color, width, alpha, legend)
+  else
+    Plot.Bar(values, color, width, alpha, legend);
+  Plot.YLabel := yColumn.Info.Name;
+end;
+
+static procedure Plot.Bar(xColumn, yColumn: Column; color: ColorWPF;
+  width: real; alpha: real; legend: string);
+begin
+  var x, y: array of real;
+  var integerY: array of integer;
+  ColumnsBarToXY(xColumn, yColumn, x, y, integerY);
+  if integerY <> nil then
+    Plot.Bar(x, integerY, color, width, alpha, legend)
+  else
+    Plot.Bar(x, y, color, width, alpha, legend);
+  Plot.XLabel := xColumn.Info.Name;
+  Plot.YLabel := yColumn.Info.Name;
+end;
+
+static procedure Plot.Bar(df: DataFrame; yColumn: string;
+  color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  ValidateDataFrameColumn(df, yColumn);
+  Plot.Bar(df[yColumn], color, width, alpha, legend);
+end;
+
+static procedure Plot.Bar(df: DataFrame; xColumn, yColumn: string;
+  color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  ValidateDataFrameColumn(df, xColumn);
+  ValidateDataFrameColumn(df, yColumn);
+  Plot.Bar(df[xColumn], df[yColumn], color, width, alpha, legend);
+end;
+
+static procedure Plot.Bar(ds: Dataset; yColumn: string;
+  color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  Plot.Bar(DatasetData(ds), yColumn, color, width, alpha, legend);
+end;
+
+static procedure Plot.Bar(ds: Dataset; xColumn, yColumn: string;
+  color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  Plot.Bar(DatasetData(ds), xColumn, yColumn,
+    color, width, alpha, legend);
+end;
+
+/// Строит столбчатую диаграмму числового столбца DataFrame.
+/// Это краткая форма Plot.Bar(Self, yColumn, ...). Значения с NA исключаются,
+/// имя столбца становится подписью оси Y.
+procedure Bar(Self: DataFrame; yColumn: string;
+  color: ColorWPF := DefaultColor; width: real := 0.8;
+  alpha: real := 0.85; legend: string := nil); extensionmethod;
+begin
+  Plot.Bar(Self, yColumn, color, width, alpha, legend);
+end;
+
+/// Строит столбчатую диаграмму по двум числовым столбцам DataFrame.
+/// Это краткая форма Plot.Bar(Self, xColumn, yColumn, ...). Строки с NA
+/// исключаются целиком, имена столбцов становятся подписями осей.
+procedure Bar(Self: DataFrame; xColumn, yColumn: string;
+  color: ColorWPF := DefaultColor; width: real := 0.8;
+  alpha: real := 0.85; legend: string := nil); extensionmethod;
+begin
+  Plot.Bar(Self, xColumn, yColumn, color, width, alpha, legend);
+end;
+
+/// Строит столбчатую диаграмму числового столбца Dataset.
+procedure Bar(Self: Dataset; yColumn: string;
+  color: ColorWPF := DefaultColor; width: real := 0.8;
+  alpha: real := 0.85; legend: string := nil); extensionmethod;
+begin
+  Plot.Bar(Self, yColumn, color, width, alpha, legend);
+end;
+
+/// Строит столбчатую диаграмму по двум столбцам Dataset.
+procedure Bar(Self: Dataset; xColumn, yColumn: string;
+  color: ColorWPF := DefaultColor; width: real := 0.8;
+  alpha: real := 0.85; legend: string := nil); extensionmethod;
+begin
+  Plot.Bar(Self, xColumn, yColumn, color, width, alpha, legend);
+end;
+
 static procedure Plot.HorizontalBar(labels: array of string; values: array of real; color: ColorWPF; width: real; alpha: real; legend: string);
 begin
   RunUI(() ->
@@ -3091,6 +4349,62 @@ static procedure Plot.HorizontalBar(labels: array of string; values: array of in
 begin
   HorizontalBar(labels, IntArrayToReal(values), color, width, alpha, legend);
   RunUI(() -> SetIntegerValueAxis(rootChart, AxisOrientation.Bottom, values));
+end;
+
+static procedure Plot.HorizontalBar(labelColumn, valueColumn: Column;
+  color: ColorWPF; width: real; alpha: real; legend: string);
+begin
+  var labels: array of string;
+  var values: array of real;
+  var integerValues: array of integer;
+  ColumnsHorizontalBarToData(labelColumn, valueColumn,
+    labels, values, integerValues);
+  if integerValues <> nil then
+    Plot.HorizontalBar(labels, integerValues, color, width, alpha, legend)
+  else
+    Plot.HorizontalBar(labels, values, color, width, alpha, legend);
+  Plot.XLabel := valueColumn.Info.Name;
+  Plot.YLabel := labelColumn.Info.Name;
+end;
+
+static procedure Plot.HorizontalBar(df: DataFrame;
+  labelColumn, valueColumn: string; color: ColorWPF;
+  width: real; alpha: real; legend: string);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  ValidateDataFrameColumn(df, labelColumn);
+  ValidateDataFrameColumn(df, valueColumn);
+  Plot.HorizontalBar(df[labelColumn], df[valueColumn],
+    color, width, alpha, legend);
+end;
+
+static procedure Plot.HorizontalBar(ds: Dataset;
+  labelColumn, valueColumn: string; color: ColorWPF;
+  width: real; alpha: real; legend: string);
+begin
+  Plot.HorizontalBar(DatasetData(ds), labelColumn, valueColumn,
+    color, width, alpha, legend);
+end;
+
+/// Строит горизонтальную столбчатую диаграмму по столбцам DataFrame.
+/// Это краткая форма Plot.HorizontalBar(Self, labelColumn, valueColumn, ...).
+/// Строки с NA исключаются, имена столбцов становятся подписями осей.
+procedure HorizontalBar(Self: DataFrame; labelColumn, valueColumn: string;
+  color: ColorWPF := DefaultColor; width: real := 0.75;
+  alpha: real := 0.85; legend: string := nil); extensionmethod;
+begin
+  Plot.HorizontalBar(Self, labelColumn, valueColumn,
+    color, width, alpha, legend);
+end;
+
+/// Строит горизонтальную столбчатую диаграмму по столбцам Dataset.
+procedure HorizontalBar(Self: Dataset; labelColumn, valueColumn: string;
+  color: ColorWPF := DefaultColor; width: real := 0.75;
+  alpha: real := 0.85; legend: string := nil); extensionmethod;
+begin
+  Plot.HorizontalBar(Self, labelColumn, valueColumn,
+    color, width, alpha, legend);
 end;
 
 static procedure Plot.Heatmap(m: array[,] of real);
@@ -3109,10 +4423,51 @@ begin
   end);
 end;
 
+static procedure Plot.Heatmap(df: DataFrame; columns: array of string);
+begin
+  var values: array[,] of real;
+  DataFrameHeatmapData(df, columns, values);
+  RunUI(() -> DrawHeatmap(rootChart, values, nil, columns));
+end;
+
+static procedure Plot.Heatmap(ds: Dataset; columns: array of string);
+begin
+  if columns = nil then
+    columns := DatasetNumericFeatures(ds);
+  Plot.Heatmap(DatasetData(ds), columns);
+end;
+
+/// Строит тепловую карту по числовым столбцам DataFrame.
+/// Это краткая форма Plot.Heatmap(Self, columns). Имена столбцов отображаются
+/// сверху, строки с NA хотя бы в одном выбранном столбце исключаются целиком.
+procedure Heatmap(Self: DataFrame; columns: array of string); extensionmethod;
+begin
+  Plot.Heatmap(Self, columns);
+end;
+
+/// Строит тепловую карту по столбцам Dataset.
+/// Если columns не задан, используются числовые не категориальные признаки.
+/// Строки с NA хотя бы в одном выбранном столбце исключаются целиком.
+procedure Heatmap(Self: Dataset;
+  columns: array of string := nil); extensionmethod;
+begin
+  Plot.Heatmap(Self, columns);
+end;
+
 static procedure Plot.Image(values: array of real; width, height: integer; invert: boolean);
 begin
   ImageGrid(SingleImageMatrix(values, width, height), width, height,
     0, 1, 1, 0.0, false, invert);
+end;
+
+static procedure Plot.Image(ds: Dataset; width, height, row: integer;
+  invert: boolean);
+begin
+  var df := DatasetData(ds);
+  if (row < 0) or (row >= df.RowCount) then
+    ArgumentError(ER_IMAGE_DATASET_ROW_RANGE, df.RowCount - 1);
+  var X := DatasetImageMatrix(ds, width, height, row, 1);
+  Plot.ImageGrid(X, width, height, 0, 1, 1, 0.0, false, invert);
 end;
 
 static procedure Plot.ImageGrid(X: Matrix; width, height, startRow, count, cols: integer;
@@ -3127,6 +4482,33 @@ begin
     rootYLabelBlock := FindTextBlockByName(view, 'PlotML_YLabel');
     gridMode := false;
   end);
+end;
+
+static procedure Plot.ImageGrid(ds: Dataset; width, height, startRow,
+  count, cols: integer; spacing: real; normalize, invert: boolean);
+begin
+  var X := DatasetImageMatrix(ds, width, height, startRow, count);
+  Plot.ImageGrid(X, width, height, 0, count, cols,
+    spacing, normalize, invert);
+end;
+
+/// Отображает строку Dataset как grayscale-изображение.
+/// Пиксели берутся из Self.Features в исходном порядке.
+procedure Image(Self: Dataset; width, height: integer; row: integer := 0;
+  invert: boolean := false); extensionmethod;
+begin
+  Plot.Image(Self, width, height, row, invert);
+end;
+
+/// Отображает строки Dataset как сетку grayscale-изображений.
+/// Пиксели берутся из Self.Features в исходном порядке.
+procedure ImageGrid(Self: Dataset; width, height: integer;
+  startRow: integer := 0; count: integer := 20; cols: integer := 5;
+  spacing: real := 0.1; normalize: boolean := false;
+  invert: boolean := false); extensionmethod;
+begin
+  Plot.ImageGrid(Self, width, height, startRow, count, cols,
+    spacing, normalize, invert);
 end;
 
 static procedure Plot.ConfusionMatrix(m: array[,] of integer; classNames: array of string; normalize: MatrixNormalization; sortClassNames: boolean);
@@ -3347,6 +4729,129 @@ begin
   Result := counts;
 end;
 
+function PairPlotCategoryText(column: Column; row: integer): string;
+begin
+  case column.Info.ColType of
+    ColumnType.ctInt:
+      Result := IntColumn(column).Data[row].ToString;
+    ColumnType.ctFloat:
+      Result := FloatColumn(column).Data[row].ToString;
+    ColumnType.ctStr:
+      Result := StrColumn(column).Data[row];
+    ColumnType.ctBool:
+      Result := BoolColumn(column).Data[row].ToString;
+  end;
+
+  if Result = nil then
+    Result := '';
+end;
+
+procedure DataFramePairPlotData(df: DataFrame; columns: array of string;
+  colorColumn: string; useColor: boolean; var X: array[,] of real;
+  var values: array of real; var labels: array of integer;
+  var categoricalColor: boolean; forceCategorical: boolean := false;
+  forceContinuous: boolean := false);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  if (columns = nil) or (columns.Length = 0) then
+    ArgumentError(ER_PLOT_PAIRPLOT_COLUMNS_EMPTY);
+
+  var featureColumns := new Column[columns.Length];
+  for var j := 0 to columns.Length - 1 do
+  begin
+    ValidateDataFrameColumn(df, columns[j]);
+    featureColumns[j] := df[columns[j]];
+    if not (featureColumns[j].Info.ColType in
+      [ColumnType.ctInt, ColumnType.ctFloat]) then
+      ArgumentError(ER_PLOT_PAIRPLOT_NUMERIC_COLUMN, columns[j]);
+  end;
+
+  var color: Column := nil;
+  categoricalColor := false;
+  if useColor then
+  begin
+    ValidateDataFrameColumn(df, colorColumn);
+    color := df[colorColumn];
+    if not (color.Info.ColType in
+      [ColumnType.ctInt, ColumnType.ctFloat, ColumnType.ctStr, ColumnType.ctBool]) then
+      ArgumentError(ER_PLOT_PAIRPLOT_COLOR_COLUMN, colorColumn);
+
+    if forceContinuous and not (color.Info.ColType in
+      [ColumnType.ctInt, ColumnType.ctFloat]) then
+      ArgumentError(ER_PLOT_PAIRPLOT_COLOR_COLUMN, colorColumn);
+
+    if forceCategorical then
+      categoricalColor := true
+    else if forceContinuous then
+      categoricalColor := false
+    else
+      categoricalColor :=
+        (color.Info.ColType in [ColumnType.ctStr, ColumnType.ctBool]) or
+        df.IsCategorical(colorColumn);
+  end;
+
+  var rows := new List<integer>;
+  for var i := 0 to df.RowCount - 1 do
+  begin
+    var valid := true;
+    for var j := 0 to featureColumns.Length - 1 do
+    begin
+      var v: real;
+      if not featureColumns[j].TryGetNumericValue(i, v) then
+      begin
+        valid := false;
+        break;
+      end;
+    end;
+
+    if valid and useColor and not color.IsValid[i] then
+      valid := false;
+    if valid then
+      rows.Add(i);
+  end;
+
+  if rows.Count = 0 then
+    ArgumentError(ER_PLOT_PAIRPLOT_NO_VALID_ROWS);
+
+  X := new real[rows.Count, columns.Length];
+  for var i := 0 to rows.Count - 1 do
+    for var j := 0 to featureColumns.Length - 1 do
+    begin
+      var v: real;
+      featureColumns[j].TryGetNumericValue(rows[i], v);
+      X[i, j] := v;
+    end;
+
+  values := nil;
+  labels := nil;
+  if not useColor then
+    exit;
+
+  if categoricalColor then
+  begin
+    labels := new integer[rows.Count];
+    var categoryToLabel := new Dictionary<string, integer>;
+    for var i := 0 to rows.Count - 1 do
+    begin
+      var category := PairPlotCategoryText(color, rows[i]);
+      var labelValue: integer;
+      if not categoryToLabel.TryGetValue(category, labelValue) then
+      begin
+        labelValue := categoryToLabel.Count;
+        categoryToLabel.Add(category, labelValue);
+      end;
+      labels[i] := labelValue;
+    end;
+  end
+  else
+  begin
+    values := new real[rows.Count];
+    for var i := 0 to rows.Count - 1 do
+      color.TryGetNumericValue(rows[i], values[i]);
+  end;
+end;
+
 function PairPlotNames(names: array of string; n: integer): array of string;
 begin
   if names = nil then
@@ -3478,6 +4983,108 @@ begin
   PairPlot(X, noLabels, PairPlotNames(names, X.GetLength(1)), 0);
 end;
 
+class procedure Plot.PairPlot(df: DataFrame; columns: array of string;
+  maxPoints: integer);
+begin
+  var X: array[,] of real;
+  var values: array of real;
+  var labels: array of integer;
+  var categoricalColor: boolean;
+  DataFramePairPlotData(df, columns, nil, false,
+    X, values, labels, categoricalColor);
+  Plot.PairPlot(X, columns, maxPoints);
+end;
+
+class procedure Plot.PairPlot(df: DataFrame; columns: array of string;
+  colorColumn: string; bins, maxPoints: integer);
+begin
+  var X: array[,] of real;
+  var values: array of real;
+  var labels: array of integer;
+  var categoricalColor: boolean;
+  DataFramePairPlotData(df, columns, colorColumn, true,
+    X, values, labels, categoricalColor);
+
+  if categoricalColor then
+    Plot.PairPlot(X, labels, columns, maxPoints)
+  else
+    Plot.PairPlot(X, values, columns, bins, maxPoints);
+end;
+
+class procedure Plot.PairPlot(ds: Dataset; columns: array of string;
+  colorColumn: string; colorByTarget: boolean; maxPoints: integer);
+begin
+  var df := DatasetData(ds);
+  if columns = nil then
+    columns := DatasetNumericFeatures(ds);
+  if columns.Length < 2 then
+    ArgumentError(ER_PLOT_PAIRPLOT_TWO_FEATURES);
+
+  var effectiveColor := colorColumn;
+  var colorIsTarget := false;
+  if (effectiveColor = nil) and colorByTarget and ds.HasTarget then
+  begin
+    effectiveColor := ds.Target;
+    colorIsTarget := true;
+  end
+  else if (effectiveColor <> nil) and ds.HasTarget and
+          (effectiveColor = ds.Target) then
+    colorIsTarget := true;
+
+  if effectiveColor = nil then
+  begin
+    Plot.PairPlot(df, columns, maxPoints);
+    exit;
+  end;
+
+  var forceCategorical := colorIsTarget and
+    (ds.Task in [TaskType.Classification, TaskType.Clustering]);
+  var forceContinuous := colorIsTarget and
+    (ds.Task = TaskType.Regression);
+
+  var X: array[,] of real;
+  var values: array of real;
+  var labels: array of integer;
+  var categoricalColor: boolean;
+  DataFramePairPlotData(df, columns, effectiveColor, true,
+    X, values, labels, categoricalColor,
+    forceCategorical, forceContinuous);
+
+  if categoricalColor then
+    Plot.PairPlot(X, labels, columns, maxPoints)
+  else
+    Plot.PairPlot(X, values, columns, 5, maxPoints);
+end;
+
+/// Строит матрицу попарных диаграмм для Dataset.
+/// Без columns используются числовые не категориальные признаки. По умолчанию
+/// target задаёт дискретную окраску для классификации и непрерывную для регрессии.
+procedure PairPlot(Self: Dataset; columns: array of string := nil;
+  colorColumn: string := nil; colorByTarget: boolean := true;
+  maxPoints: integer := 2000); extensionmethod;
+begin
+  Plot.PairPlot(Self, columns, colorColumn, colorByTarget, maxPoints);
+end;
+
+/// Строит матрицу попарных диаграмм по числовым столбцам DataFrame.
+/// Это краткая форма Plot.PairPlot(Self, columns, ...). Имена столбцов
+/// используются как подписи признаков, строки с NA исключаются целиком.
+procedure PairPlot(Self: DataFrame; columns: array of string;
+  maxPoints: integer := 2000); extensionmethod;
+begin
+  Plot.PairPlot(Self, columns, maxPoints);
+end;
+
+/// Строит матрицу попарных диаграмм с раскраской по colorColumn.
+/// Строковый, логический или помеченный категориальным столбец задаёт классы;
+/// обычный числовой столбец задаёт непрерывную цветовую шкалу.
+procedure PairPlot(Self: DataFrame; columns: array of string;
+  colorColumn: string; bins: integer := 5;
+  maxPoints: integer := 2000); extensionmethod;
+begin
+  Plot.PairPlot(Self, columns, colorColumn, bins, maxPoints);
+end;
+
 class procedure Plot.PairPlot(X: array[,] of real; values: array of real; names: array of string; bins: integer; maxPoints: integer);
 begin
   if values = nil then
@@ -3521,21 +5128,10 @@ begin
     if i = j then
     begin
       var xs := X.Col(i);
-      var ys := xs;
-      
-      for var b := 0 to bins - 1 do
-      begin
-        var ind := valueBins.Indices(v -> v = b).ToArray;
-        if ind.Length = 0 then
-          continue;
-        
-        var xb := ind.ConvertAll(k -> xs[k]);
-        var yb := ind.ConvertAll(k -> ys[k]);
-        ax.Points(xb, yb, PairPlotValueColor(b, bins), size := 3);
-      end;
+      ax.Hist(xs, bins := histBins);
       
       ax.XLim(xmin[j], xmax[j]);
-      ax.YLim(xmin[i], xmax[i]);
+      ax.YLim(0, ymax[j]);
     end
     else
     begin
@@ -3674,8 +5270,7 @@ static procedure Plot.Hist(x: array of real; bins: integer;
   color: ColorWPF; alpha: real; legend: string; edges: System.Array);
 begin
   if (bins <> 0) and (edges <> nil) then
-    raise new System.ArgumentException(
-      'Hist: specify either bins or edges, not both / задайте либо bins, либо edges');
+    ArgumentError(ER_PLOT_HIST_BINS_OR_EDGES);
 
   RunUI(() ->
   begin
@@ -3690,6 +5285,49 @@ static procedure Plot.Hist(x: array of integer; bins: integer;
   color: ColorWPF; alpha: real; legend: string; edges: System.Array);
 begin
   Hist(IntArrayToReal(x), bins, color, alpha, legend, edges);
+end;
+
+static procedure Plot.Hist(column: Column; bins: integer;
+  color: ColorWPF; alpha: real; legend: string; edges: System.Array);
+begin
+  Plot.Hist(HistColumnToReal(column), bins, color, alpha, legend, edges);
+  Plot.XLabel := column.Info.Name;
+  Plot.YLabel := GetTranslation(HIST_FREQUENCY_LABEL);
+end;
+
+static procedure Plot.Hist(df: DataFrame; columnName: string; bins: integer;
+  color: ColorWPF; alpha: real; legend: string; edges: System.Array);
+begin
+  if df = nil then
+    ArgumentNullError(ER_ARG_NULL, 'df');
+  ValidateDataFrameColumn(df, columnName);
+  Plot.Hist(df[columnName], bins, color, alpha, legend, edges);
+end;
+
+static procedure Plot.Hist(ds: Dataset; columnName: string; bins: integer;
+  color: ColorWPF; alpha: real; legend: string; edges: System.Array);
+begin
+  Plot.Hist(DatasetData(ds), columnName, bins, color, alpha, legend, edges);
+end;
+
+/// Строит гистограмму числового столбца DataFrame, исключая значения с NA.
+/// Это краткая форма Plot.Hist(Self, columnName, ...). Имя столбца становится
+/// подписью оси X, ось Y получает локализованную подпись «Частота».
+procedure Hist(Self: DataFrame; columnName: string; bins: integer := 0;
+  color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
+  edges: System.Array := nil); extensionmethod;
+begin
+  Plot.Hist(Self, columnName, bins, color, alpha, legend, edges);
+end;
+
+/// Строит гистограмму столбца Dataset.
+/// Это краткая форма Plot.Hist(Self, columnName, ...); обработка пропусков
+/// и подписи осей совпадают с перегрузкой для DataFrame.
+procedure Hist(Self: Dataset; columnName: string; bins: integer := 0;
+  color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
+  edges: System.Array := nil); extensionmethod;
+begin
+  Plot.Hist(Self, columnName, bins, color, alpha, legend, edges);
 end;
 
 static procedure Plot.DrawHist(chart: ChartWPF; x: array of real;
@@ -3755,6 +5393,44 @@ begin
   begin
     Plot.DrawHistMany(rootChart, arrays, bins, colors, alpha, legend);
   end);
+end;
+
+static procedure Plot.HistMany(df: DataFrame; columns: array of string;
+  bins: integer; colors: array of ColorWPF; alpha: real;
+  legend: array of string);
+begin
+  var arrays: array of array of real;
+  DataFrameHistManyData(df, columns, arrays);
+  var legends := if legend = nil then columns else legend;
+  Plot.HistMany(arrays, bins, colors, alpha, legends);
+end;
+
+static procedure Plot.HistMany(ds: Dataset; columns: array of string;
+  bins: integer; colors: array of ColorWPF; alpha: real;
+  legend: array of string);
+begin
+  if columns = nil then
+    columns := DatasetNumericFeatures(ds);
+  Plot.HistMany(DatasetData(ds), columns, bins, colors, alpha, legend);
+end;
+
+/// Строит несколько гистограмм по числовым столбцам DataFrame.
+/// Это краткая форма Plot.HistMany(Self, columns, ...). Значения с NA
+/// исключаются отдельно в каждом столбце; имена столбцов образуют легенду.
+procedure HistMany(Self: DataFrame; columns: array of string;
+  bins: integer := 0; colors: array of ColorWPF := nil;
+  alpha: real := 0.7; legend: array of string := nil); extensionmethod;
+begin
+  Plot.HistMany(Self, columns, bins, colors, alpha, legend);
+end;
+
+/// Строит несколько гистограмм по указанным столбцам Dataset.
+/// Это краткая форма Plot.HistMany(Self, columns, ...).
+procedure HistMany(Self: Dataset; columns: array of string := nil;
+  bins: integer := 0; colors: array of ColorWPF := nil;
+  alpha: real := 0.7; legend: array of string := nil); extensionmethod;
+begin
+  Plot.HistMany(Self, columns, bins, colors, alpha, legend);
 end;
 
 static procedure Plot.DrawHistMany(chart: ChartWPF; arrays: array of array of real;

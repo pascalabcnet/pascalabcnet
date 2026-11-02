@@ -91,6 +91,108 @@ const
     'Image: значение должно быть >= 0!!Image: value must be >= 0';
   ER_IMAGE_VALUE_LE_255 =
     'Image: значение должно быть <= 255!!Image: value must be <= 255';
+  ER_IMAGE_DATASET_FEATURE_COUNT =
+    'Image: число ds.Features должно быть равно {0}, получено {1}!!' +
+    'Image: ds.Features count must be {0}, got {1}';
+  ER_IMAGE_DATASET_NUMERIC_FEATURE =
+    'Image: признак "{0}" должен быть числовым!!' +
+    'Image: feature "{0}" must be numeric';
+  ER_IMAGE_DATASET_MISSING_VALUE =
+    'Image: пропуск в строке {0}, признак "{1}"!!' +
+    'Image: missing value at row {0}, feature "{1}"';
+  ER_IMAGE_DATASET_ROW_RANGE =
+    'Image: row должен быть в диапазоне 0..{0}!!' +
+    'Image: row must be in range 0..{0}';
+  ER_PLOT_POINTS_NUMERIC_COLUMN =
+    'Points: столбец "{0}" должен быть числовым!!' +
+    'Points: column "{0}" must be numeric';
+  ER_PLOT_POINTS_CLASS_COLUMN =
+    'Points: столбец классов "{0}" должен быть строковым или целочисленным!!' +
+    'Points: class column "{0}" must be string or integer';
+  ER_PLOT_POINTS_NO_VALID_ROWS =
+    'Points: после исключения строк с пропусками не осталось точек!!' +
+    'Points: no points remain after rows with missing values are excluded';
+  ER_PLOT_POINTS_COLUMN_LENGTH_MISMATCH =
+    'Points: длины столбцов должны совпадать!!' +
+    'Points: column lengths must match';
+  ER_PLOT_POINTS_TOOLTIPS_ROWCOUNT =
+    'Points: число подсказок должно совпадать с числом исходных строк!!' +
+    'Points: tooltip count must match source row count';
+  ER_PLOT_HIST_NUMERIC_COLUMN =
+    'Hist: столбец "{0}" должен быть числовым!!' +
+    'Hist: column "{0}" must be numeric';
+  ER_PLOT_HIST_NO_VALID_ROWS =
+    'Hist: после исключения пропусков не осталось значений!!' +
+    'Hist: no values remain after missing values are excluded';
+  ER_PLOT_HIST_BINS_OR_EDGES =
+    'Hist: задайте либо bins, либо edges, но не оба параметра одновременно!!' +
+    'Hist: specify either bins or edges, not both';
+  ER_PLOT_LINEGRAPH_NUMERIC_COLUMN =
+    'LineGraph: столбец "{0}" должен быть числовым!!' +
+    'LineGraph: column "{0}" must be numeric';
+  ER_PLOT_LINEGRAPH_COLUMN_LENGTH_MISMATCH =
+    'LineGraph: длины столбцов должны совпадать!!' +
+    'LineGraph: column lengths must match';
+  ER_PLOT_LINEGRAPH_NO_VALID_ROWS =
+    'LineGraph: после исключения строк с пропусками не осталось точек!!' +
+    'LineGraph: no points remain after rows with missing values are excluded';
+  ER_PLOT_HORIZONTALBAR_LABEL_COLUMN =
+    'HorizontalBar: столбец подписей "{0}" должен быть строковым или целочисленным!!' +
+    'HorizontalBar: label column "{0}" must be string or integer';
+  ER_PLOT_HORIZONTALBAR_NUMERIC_COLUMN =
+    'HorizontalBar: столбец значений "{0}" должен быть числовым!!' +
+    'HorizontalBar: value column "{0}" must be numeric';
+  ER_PLOT_HORIZONTALBAR_COLUMN_LENGTH_MISMATCH =
+    'HorizontalBar: длины столбцов должны совпадать!!' +
+    'HorizontalBar: column lengths must match';
+  ER_PLOT_HORIZONTALBAR_NO_VALID_ROWS =
+    'HorizontalBar: после исключения строк с пропусками не осталось значений!!' +
+    'HorizontalBar: no values remain after rows with missing values are excluded';
+  ER_PLOT_BAR_NUMERIC_COLUMN =
+    'Bar: столбец "{0}" должен быть числовым!!' +
+    'Bar: column "{0}" must be numeric';
+  ER_PLOT_BAR_COLUMN_LENGTH_MISMATCH =
+    'Bar: длины столбцов должны совпадать!!' +
+    'Bar: column lengths must match';
+  ER_PLOT_BAR_NO_VALID_ROWS =
+    'Bar: после исключения строк с пропусками не осталось значений!!' +
+    'Bar: no values remain after rows with missing values are excluded';
+  ER_PLOT_PAIRPLOT_COLUMNS_EMPTY =
+    'PairPlot: список столбцов признаков не должен быть пустым!!' +
+    'PairPlot: feature column list must not be empty';
+  ER_PLOT_PAIRPLOT_NUMERIC_COLUMN =
+    'PairPlot: столбец признака "{0}" должен быть числовым!!' +
+    'PairPlot: feature column "{0}" must be numeric';
+  ER_PLOT_PAIRPLOT_COLOR_COLUMN =
+    'PairPlot: столбец окраски "{0}" должен быть числовым, строковым или логическим!!' +
+    'PairPlot: color column "{0}" must be numeric, string, or boolean';
+  ER_PLOT_PAIRPLOT_NO_VALID_ROWS =
+    'PairPlot: после исключения строк с пропусками не осталось данных!!' +
+    'PairPlot: no data remains after rows with missing values are excluded';
+  ER_PLOT_HISTMANY_COLUMNS_EMPTY =
+    'HistMany: список столбцов не должен быть пустым!!' +
+    'HistMany: column list must not be empty';
+  ER_PLOT_HISTMANY_NUMERIC_COLUMN =
+    'HistMany: столбец "{0}" должен быть числовым!!' +
+    'HistMany: column "{0}" must be numeric';
+  ER_PLOT_HISTMANY_NO_VALID_VALUES =
+    'HistMany: после исключения пропусков не осталось значений!!' +
+    'HistMany: no values remain after missing values are excluded';
+  ER_PLOT_HEATMAP_COLUMNS_EMPTY =
+    'Heatmap: список столбцов не должен быть пустым!!' +
+    'Heatmap: column list must not be empty';
+  ER_PLOT_HEATMAP_NUMERIC_COLUMN =
+    'Heatmap: столбец "{0}" должен быть числовым!!' +
+    'Heatmap: column "{0}" must be numeric';
+  ER_PLOT_HEATMAP_NO_VALID_ROWS =
+    'Heatmap: после исключения строк с пропусками не осталось данных!!' +
+    'Heatmap: no data remains after rows with missing values are excluded';
+  ER_PLOT_DATASET_NO_NUMERIC_FEATURES =
+    'Plot: в ds.Features нет числовых не категориальных признаков!!' +
+    'Plot: ds.Features contains no numeric non-categorical features';
+  ER_PLOT_PAIRPLOT_TWO_FEATURES =
+    'PairPlot: требуется не менее двух числовых признаков!!' +
+    'PairPlot: at least two numeric features are required';
   
 type
   /// Базовое исключение ML-библиотеки
