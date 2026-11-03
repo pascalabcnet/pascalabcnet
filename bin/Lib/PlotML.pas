@@ -146,7 +146,7 @@ type
     /// Строит диаграмму рассеяния с раскраской по целочисленным меткам.
     procedure Points(x, y: array of real; labels: array of integer;
       size: real := 6; marker: MarkerType := MarkerType.Circle;
-      classNames: array of string := nil);  
+      classNames: array of string := nil; tooltips: array of string := nil);
     /// Строит в ячейке диаграмму рассеяния по двум числовым столбцам.
     /// Строки с NA исключаются целиком. Подписи осей не устанавливаются.
     procedure Points(xColumn, yColumn: Column;
@@ -156,30 +156,36 @@ type
     /// Строит в ячейке диаграмму рассеяния с раскраской по столбцу классов.
     /// Столбец классов должен быть строковым или целочисленным.
     procedure Points(xColumn, yColumn, classColumn: Column;
-      size: real := 6; marker: MarkerType := MarkerType.Circle);
+      size: real := 6; marker: MarkerType := MarkerType.Circle;
+      tooltips: array of string := nil);
     /// Строит в ячейке диаграмму рассеяния по двум числовым столбцам DataFrame.
     /// Поддерживаются целочисленные и вещественные столбцы. Строки с NA
-    /// в xColumn или yColumn исключаются целиком. Массив tooltips, если задан,
-    /// должен соответствовать исходным строкам DataFrame и фильтруется вместе с ними.
+    /// в xColumn или yColumn исключаются целиком. tooltipColumn задаёт столбец,
+    /// значения которого отображаются во всплывающих подсказках.
     procedure Points(df: DataFrame; xColumn, yColumn: string;
       color: ColorWPF := DefaultColor; size: real := 6;
       marker: MarkerType := MarkerType.Circle; legend: string := nil;
-      tooltips: array of string := nil);
+      tooltipColumn: string := nil);
     /// Строит в ячейке диаграмму рассеяния с раскраской по столбцу классов.
     /// classColumn должен быть строковым или целочисленным. Классы кодируются
     /// в порядке первого появления. Строки с NA в любом из трёх столбцов исключаются.
+    /// tooltipColumn задаёт столбец всплывающих подсказок.
     procedure Points(df: DataFrame; xColumn, yColumn, classColumn: string;
-      size: real := 6; marker: MarkerType := MarkerType.Circle);
+      size: real := 6; marker: MarkerType := MarkerType.Circle;
+      tooltipColumn: string := nil);
     /// Строит в ячейке диаграмму рассеяния по столбцам Dataset.
-    /// Координатные столбцы задаются явно; classColumn можно передать именованно.
+    /// Координатные столбцы задаются явно; tooltipColumn и classColumn можно
+    /// передать именованно.
     procedure Points(ds: Dataset; xColumn, yColumn: string;
       color: ColorWPF := DefaultColor; size: real := 6;
       marker: MarkerType := MarkerType.Circle; legend: string := nil;
-      tooltips: array of string := nil; classColumn: string := nil);
+      tooltipColumn: string := nil; classColumn: string := nil);
     /// Строит в ячейке диаграмму рассеяния Dataset с раскраской по столбцу классов.
-    /// Для раскраски по целевой переменной передайте ds.Target.
+    /// Для раскраски по целевой переменной передайте ds.Target. tooltipColumn
+    /// задаёт столбец всплывающих подсказок.
     procedure Points(ds: Dataset; xColumn, yColumn, classColumn: string;
-      size: real := 6; marker: MarkerType := MarkerType.Circle);
+      size: real := 6; marker: MarkerType := MarkerType.Circle;
+      tooltipColumn: string := nil);
     /// Строит гистограмму значений.
     procedure Hist(x: array of real; bins: integer := 0; 
       color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
@@ -446,15 +452,18 @@ type
     static procedure LineGraph(x, y: array of real;
       color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
     /// Рисует линейный график по двум числовым столбцам.
-    /// Строки с NA исключаются, имена столбцов становятся подписями осей.
+    /// Строки с NA исключаются. Имя X-столбца становится подписью оси X;
+    /// имя Y-столбца используется для оси Y, только если legend не задан.
     static procedure LineGraph(xColumn, yColumn: Column;
       color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
     /// Рисует линейный график по столбцам DataFrame.
-    /// Строки с NA исключаются, имена столбцов становятся подписями осей.
+    /// Строки с NA исключаются. Имя X-столбца становится подписью оси X;
+    /// имя Y-столбца используется для оси Y, только если legend не задан.
     static procedure LineGraph(df: DataFrame; xColumn, yColumn: string;
       color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
     /// Рисует линейный график по двум столбцам Dataset.
-    /// Имена столбцов используются как подписи осей, строки с NA исключаются.
+    /// Строки с NA исключаются. Имя X-столбца становится подписью оси X;
+    /// имя Y-столбца используется для оси Y, только если legend не задан.
     static procedure LineGraph(ds: Dataset; xColumn, yColumn: string;
       color: ColorWPF := DefaultColor; thickness: real := 2; legend: string := nil);
     /// Рисует прямую вида y = k*x + b.
@@ -480,7 +489,8 @@ type
     /// Строит диаграмму рассеяния с раскраской по целочисленным меткам.
     static procedure Points(x, y: array of real;
       labels: array of integer; color: ColorWPF := DefaultColor; size: real := 6;
-      marker: MarkerType := MarkerType.Circle; classNames: array of string := nil);
+      marker: MarkerType := MarkerType.Circle; classNames: array of string := nil;
+      tooltips: array of string := nil);
 
     /// Строит диаграмму рассеяния по двум числовым столбцам.
     /// Строки с NA исключаются целиком. Имена столбцов становятся подписями осей.
@@ -493,35 +503,38 @@ type
     /// столбцов автоматически используются как подписи осей.
     static procedure Points(xColumn, yColumn, classColumn: Column;
       color: ColorWPF := DefaultColor; size: real := 6;
-      marker: MarkerType := MarkerType.Circle);
+      marker: MarkerType := MarkerType.Circle; tooltips: array of string := nil);
 
     /// Строит диаграмму рассеяния по двум числовым столбцам DataFrame.
     /// Поддерживаются целочисленные и вещественные столбцы. Строки с NA
-    /// в xColumn или yColumn исключаются целиком. Массив tooltips, если задан,
-    /// должен соответствовать исходным строкам DataFrame и фильтруется вместе с ними.
+    /// в xColumn или yColumn исключаются целиком. tooltipColumn задаёт столбец,
+    /// значения которого отображаются во всплывающих подсказках.
     /// Имена столбцов автоматически используются как подписи осей X и Y.
     static procedure Points(df: DataFrame; xColumn, yColumn: string;
       color: ColorWPF := DefaultColor; size: real := 6;
       marker: MarkerType := MarkerType.Circle; legend: string := nil;
-      tooltips: array of string := nil);
+      tooltipColumn: string := nil);
     /// Строит диаграмму рассеяния по DataFrame с раскраской по столбцу классов.
     /// classColumn должен быть строковым или целочисленным. Классы кодируются
     /// в порядке первого появления. Строки с NA в любом из трёх столбцов исключаются.
-    /// Имена xColumn и yColumn автоматически используются как подписи осей.
+    /// Имена xColumn и yColumn автоматически используются как подписи осей;
+    /// tooltipColumn задаёт столбец всплывающих подсказок.
     static procedure Points(df: DataFrame; xColumn, yColumn, classColumn: string;
       color: ColorWPF := DefaultColor; size: real := 6;
-      marker: MarkerType := MarkerType.Circle);
+      marker: MarkerType := MarkerType.Circle; tooltipColumn: string := nil);
     /// Строит диаграмму рассеяния по столбцам Dataset.
-    /// Координатные столбцы задаются явно; classColumn можно передать именованно.
+    /// Координатные столбцы задаются явно; tooltipColumn и classColumn можно
+    /// передать именованно.
     static procedure Points(ds: Dataset; xColumn, yColumn: string;
       color: ColorWPF := DefaultColor; size: real := 6;
       marker: MarkerType := MarkerType.Circle; legend: string := nil;
-      tooltips: array of string := nil; classColumn: string := nil);
+      tooltipColumn: string := nil; classColumn: string := nil);
     /// Строит диаграмму рассеяния Dataset с раскраской по столбцу классов.
-    /// Для раскраски по целевой переменной передайте ds.Target.
+    /// Для раскраски по целевой переменной передайте ds.Target. tooltipColumn
+    /// задаёт столбец всплывающих подсказок.
     static procedure Points(ds: Dataset; xColumn, yColumn, classColumn: string;
       color: ColorWPF := DefaultColor; size: real := 6;
-      marker: MarkerType := MarkerType.Circle);
+      marker: MarkerType := MarkerType.Circle; tooltipColumn: string := nil);
       
     /// Строит гистограмму значений.
     static procedure Hist(x: array of real; bins: integer := 0;
@@ -532,12 +545,12 @@ type
       color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
       edges: System.Array := nil);
     /// Строит гистограмму числового столбца, исключая значения с NA.
-    /// Имя столбца используется как подпись X, ось Y получает подпись «Частота».
+    /// Имя столбца используется как подпись X, ось Y получает подпись «Количество».
     static procedure Hist(column: Column; bins: integer := 0;
       color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
       edges: System.Array := nil);
     /// Строит гистограмму числового столбца DataFrame, исключая значения с NA.
-    /// Имя столбца используется как подпись X, ось Y получает подпись «Частота».
+    /// Имя столбца используется как подпись X, ось Y получает подпись «Количество».
     static procedure Hist(df: DataFrame; columnName: string; bins: integer := 0;
       color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
       edges: System.Array := nil);
@@ -913,7 +926,7 @@ type
 implementation
 
 const
-  HIST_FREQUENCY_LABEL = 'Частота!!Frequency';
+  HIST_FREQUENCY_LABEL = 'Количество!!Count';
 
 var
   uiThread: Thread;
@@ -1218,6 +1231,40 @@ begin
     ArgumentError(ER_PLOT_POINTS_NUMERIC_COLUMN, column.Info.Name);
 end;
 
+function PointsTooltipValues(df: DataFrame; tooltipColumn: string): array of string;
+begin
+  if tooltipColumn = nil then
+    exit(nil);
+
+  ValidateDataFrameColumn(df, tooltipColumn);
+  var column := df[tooltipColumn];
+  Result := new string[column.RowCount];
+  for var i := 0 to column.RowCount - 1 do
+  begin
+    if (column.IsValid <> nil) and not column.IsValid[i] then
+    begin
+      Result[i] := 'NA';
+      continue;
+    end;
+
+    case column.Info.ColType of
+      ColumnType.ctInt:
+        Result[i] := IntColumn(column).Data[i].ToString;
+      ColumnType.ctFloat:
+        Result[i] := FloatColumn(column).Data[i].ToString;
+      ColumnType.ctStr:
+        Result[i] := StrColumn(column).Data[i];
+      ColumnType.ctBool:
+        Result[i] := BoolColumn(column).Data[i].ToString;
+      ColumnType.ctDateTime:
+        Result[i] := DateTimeColumn(column).Data[i].ToString('yyyy-MM-dd HH:mm:ss');
+    end;
+
+    if Result[i] = nil then
+      Result[i] := '';
+  end;
+end;
+
 procedure ColumnsPointsToXY(xColumn, yColumn: Column;
   tooltips: array of string; var x, y: array of real;
   var filteredTooltips: array of string);
@@ -1258,8 +1305,8 @@ begin
 end;
 
 procedure ColumnsPointsToLabeledXY(xColumn, yColumn, classColumn: Column;
-  var x, y: array of real;
-  var labels: array of integer; var classNames: array of string);
+  tooltips: array of string; var x, y: array of real;
+  var labels: array of integer; var classNames, filteredTooltips: array of string);
 begin
   ValidateNumericPointsColumn(xColumn, 'xColumn');
   ValidateNumericPointsColumn(yColumn, 'yColumn');
@@ -1270,6 +1317,9 @@ begin
      (xColumn.RowCount <> classColumn.RowCount) then
     ArgumentError(ER_PLOT_POINTS_COLUMN_LENGTH_MISMATCH);
 
+  if (tooltips <> nil) and (tooltips.Length <> xColumn.RowCount) then
+    ArgumentError(ER_PLOT_POINTS_TOOLTIPS_ROWCOUNT);
+
   var classType := classColumn.Info.ColType;
   if not (classType in [ColumnType.ctInt, ColumnType.ctStr]) then
     ArgumentError(ER_PLOT_POINTS_CLASS_COLUMN, classColumn.Info.Name);
@@ -1277,6 +1327,7 @@ begin
   var xValues := new List<real>;
   var yValues := new List<real>;
   var labelValues := new List<integer>;
+  var tooltipValues := if tooltips = nil then nil else new List<string>;
   var names := new List<string>;
   var nameToLabel := new Dictionary<string, integer>;
 
@@ -1311,6 +1362,8 @@ begin
     xValues.Add(xv);
     yValues.Add(yv);
     labelValues.Add(labelValue);
+    if tooltipValues <> nil then
+      tooltipValues.Add(tooltips[i]);
   end;
 
   if xValues.Count = 0 then
@@ -1320,6 +1373,7 @@ begin
   y := yValues.ToArray;
   labels := labelValues.ToArray;
   classNames := names.ToArray;
+  filteredTooltips := if tooltipValues = nil then nil else tooltipValues.ToArray;
 end;
 
 function HistColumnToReal(column: Column): array of real;
@@ -2620,9 +2674,10 @@ begin
 end;
 
 procedure Cell.Points(x, y: array of real; labels: array of integer;
-  size: real; marker: MarkerType; classNames: array of string);
+  size: real; marker: MarkerType; classNames, tooltips: array of string);
 begin
   ValidateLabeledPoints(x, y, labels, classNames);
+  ValidatePointTooltips(x, y, tooltips);
 
   var classes := labels.Distinct.ToArray;
   &Array.Sort(classes);
@@ -2635,11 +2690,13 @@ begin
 
     var xs := ind.ConvertAll(i -> x[i]);
     var ys := ind.ConvertAll(i -> y[i]);
+    var classTooltips := if tooltips = nil then nil
+      else ind.ConvertAll(i -> tooltips[i]);
 
     var clr := if c = -1 then Colors.Black else ColorFromPalette(pal, c);
 
     var legend := if classNames = nil then nil else classNames[c];
-    self.Points(xs, ys, clr, size, marker, legend);
+    self.Points(xs, ys, clr, size, marker, legend, classTooltips);
   end;
 end;
 
@@ -2654,54 +2711,59 @@ begin
 end;
 
 procedure Cell.Points(xColumn, yColumn, classColumn: Column;
-  size: real; marker: MarkerType);
+  size: real; marker: MarkerType; tooltips: array of string);
 begin
   var x, y: array of real;
   var labels: array of integer;
-  var classNames: array of string;
-  ColumnsPointsToLabeledXY(xColumn, yColumn, classColumn,
-    x, y, labels, classNames);
-  self.Points(x, y, labels, size, marker, classNames);
+  var classNames, filteredTooltips: array of string;
+  ColumnsPointsToLabeledXY(xColumn, yColumn, classColumn, tooltips,
+    x, y, labels, classNames, filteredTooltips);
+  self.Points(x, y, labels, size, marker, classNames, filteredTooltips);
 end;
 
 procedure Cell.Points(df: DataFrame; xColumn, yColumn: string;
   color: ColorWPF; size: real; marker: MarkerType; legend: string;
-  tooltips: array of string);
+  tooltipColumn: string);
 begin
   if df = nil then
     ArgumentNullError(ER_ARG_NULL, 'df');
   ValidateDataFrameColumn(df, xColumn);
   ValidateDataFrameColumn(df, yColumn);
+  var tooltips := PointsTooltipValues(df, tooltipColumn);
   self.Points(df[xColumn], df[yColumn], color, size, marker, legend, tooltips);
 end;
 
 procedure Cell.Points(df: DataFrame;
-  xColumn, yColumn, classColumn: string; size: real; marker: MarkerType);
+  xColumn, yColumn, classColumn: string; size: real; marker: MarkerType;
+  tooltipColumn: string);
 begin
   if df = nil then
     ArgumentNullError(ER_ARG_NULL, 'df');
   ValidateDataFrameColumn(df, xColumn);
   ValidateDataFrameColumn(df, yColumn);
   ValidateDataFrameColumn(df, classColumn);
-  self.Points(df[xColumn], df[yColumn], df[classColumn], size, marker);
+  var tooltips := PointsTooltipValues(df, tooltipColumn);
+  self.Points(df[xColumn], df[yColumn], df[classColumn], size, marker, tooltips);
 end;
 
 procedure Cell.Points(ds: Dataset; xColumn, yColumn: string;
   color: ColorWPF; size: real; marker: MarkerType; legend: string;
-  tooltips: array of string; classColumn: string);
+  tooltipColumn, classColumn: string);
 begin
   if classColumn = nil then
     self.Points(DatasetData(ds), xColumn, yColumn,
-      color, size, marker, legend, tooltips)
+      color, size, marker, legend, tooltipColumn)
   else
     self.Points(DatasetData(ds), xColumn, yColumn,
-      classColumn, size, marker);
+      classColumn, size, marker, tooltipColumn);
 end;
 
 procedure Cell.Points(ds: Dataset;
-  xColumn, yColumn, classColumn: string; size: real; marker: MarkerType);
+  xColumn, yColumn, classColumn: string; size: real; marker: MarkerType;
+  tooltipColumn: string);
 begin
-  self.Points(DatasetData(ds), xColumn, yColumn, classColumn, size, marker);
+  self.Points(DatasetData(ds), xColumn, yColumn, classColumn,
+    size, marker, tooltipColumn);
 end;
 
 procedure Cell.Heatmap(m: array[,] of real);
@@ -3474,6 +3536,9 @@ begin
   end;
 
   AddSeries(chart, g);
+
+  if legend <> nil then
+    RefreshLegend(chart, g);
 end;
 
 static procedure Plot.DrawImplicitLine(chart: ChartWPF; A, B, C: real;
@@ -3984,7 +4049,8 @@ begin
   ColumnsLineGraphToXY(xColumn, yColumn, x, y);
   Plot.LineGraph(x, y, color, thickness, legend);
   Plot.XLabel := xColumn.Info.Name;
-  Plot.YLabel := yColumn.Info.Name;
+  if legend = nil then
+    Plot.YLabel := yColumn.Info.Name;
 end;
 
 class procedure Plot.LineGraph(df: DataFrame; xColumn, yColumn: string;
@@ -4006,7 +4072,8 @@ end;
 
 /// Рисует линейный график по двум числовым столбцам DataFrame.
 /// Это краткая форма Plot.LineGraph(Self, xColumn, yColumn, ...).
-/// Строки с NA исключаются, имена столбцов становятся подписями осей.
+/// Строки с NA исключаются. При заданной легенде имя Y-столбца не занимает
+/// подпись оси Y.
 procedure LineGraph(Self: DataFrame; xColumn, yColumn: string;
   color: ColorWPF := DefaultColor; thickness: real := 2;
   legend: string := nil); extensionmethod;
@@ -4069,9 +4136,11 @@ begin
 end;
 
 static procedure Plot.Points(x, y: array of real; labels: array of integer;
-  color: ColorWPF; size: real; marker: MarkerType; classNames: array of string);
+  color: ColorWPF; size: real; marker: MarkerType;
+  classNames, tooltips: array of string);
 begin
   ValidateLabeledPoints(x, y, labels, classNames);
+  ValidatePointTooltips(x, y, tooltips);
 
   var classes := labels.Distinct.ToArray;
   &Array.Sort(classes);
@@ -4084,6 +4153,8 @@ begin
 
     var xs := ind.ConvertAll(i -> x[i]);
     var ys := ind.ConvertAll(i -> y[i]);
+    var classTooltips := if tooltips = nil then nil
+      else ind.ConvertAll(i -> tooltips[i]);
 
     var clr: ColorWPF :=
       if c = -1
@@ -4093,7 +4164,7 @@ begin
       else ColorFromPalette(pal, c);
 
     var legend := if classNames = nil then nil else classNames[c];
-    Points(xs, ys, clr, size, marker, legend);
+    Points(xs, ys, clr, size, marker, legend, classTooltips);
   end;
 end;
 
@@ -4110,104 +4181,114 @@ begin
 end;
 
 static procedure Plot.Points(xColumn, yColumn, classColumn: Column;
-  color: ColorWPF; size: real; marker: MarkerType);
+  color: ColorWPF; size: real; marker: MarkerType; tooltips: array of string);
 begin
   var x, y: array of real;
   var labels: array of integer;
-  var classNames: array of string;
-  ColumnsPointsToLabeledXY(xColumn, yColumn, classColumn,
-    x, y, labels, classNames);
-  Plot.Points(x, y, labels, color, size, marker, classNames);
+  var classNames, filteredTooltips: array of string;
+  ColumnsPointsToLabeledXY(xColumn, yColumn, classColumn, tooltips,
+    x, y, labels, classNames, filteredTooltips);
+  Plot.Points(x, y, labels, color, size, marker, classNames, filteredTooltips);
   Plot.XLabel := xColumn.Info.Name;
   Plot.YLabel := yColumn.Info.Name;
 end;
 
 static procedure Plot.Points(df: DataFrame; xColumn, yColumn: string;
   color: ColorWPF; size: real; marker: MarkerType; legend: string;
-  tooltips: array of string);
+  tooltipColumn: string);
 begin
   if df = nil then
     ArgumentNullError(ER_ARG_NULL, 'df');
   ValidateDataFrameColumn(df, xColumn);
   ValidateDataFrameColumn(df, yColumn);
+  var tooltips := PointsTooltipValues(df, tooltipColumn);
   Plot.Points(df[xColumn], df[yColumn], color, size, marker, legend, tooltips);
 end;
 
 static procedure Plot.Points(df: DataFrame;
   xColumn, yColumn, classColumn: string; color: ColorWPF;
-  size: real; marker: MarkerType);
+  size: real; marker: MarkerType; tooltipColumn: string);
 begin
   if df = nil then
     ArgumentNullError(ER_ARG_NULL, 'df');
   ValidateDataFrameColumn(df, xColumn);
   ValidateDataFrameColumn(df, yColumn);
   ValidateDataFrameColumn(df, classColumn);
-  Plot.Points(df[xColumn], df[yColumn], df[classColumn], color, size, marker);
+  var tooltips := PointsTooltipValues(df, tooltipColumn);
+  Plot.Points(df[xColumn], df[yColumn], df[classColumn],
+    color, size, marker, tooltips);
 end;
 
 static procedure Plot.Points(ds: Dataset; xColumn, yColumn: string;
   color: ColorWPF; size: real; marker: MarkerType; legend: string;
-  tooltips: array of string; classColumn: string);
+  tooltipColumn, classColumn: string);
 begin
   if classColumn = nil then
     Plot.Points(DatasetData(ds), xColumn, yColumn,
-      color, size, marker, legend, tooltips)
+      color, size, marker, legend, tooltipColumn)
   else
     Plot.Points(DatasetData(ds), xColumn, yColumn,
-      classColumn, color, size, marker);
+      classColumn, color, size, marker, tooltipColumn);
 end;
 
 static procedure Plot.Points(ds: Dataset;
   xColumn, yColumn, classColumn: string; color: ColorWPF;
-  size: real; marker: MarkerType);
+  size: real; marker: MarkerType; tooltipColumn: string);
 begin
   Plot.Points(DatasetData(ds), xColumn, yColumn, classColumn,
-    color, size, marker);
+    color, size, marker, tooltipColumn);
 end;
 
 /// Строит диаграмму рассеяния по двум числовым столбцам DataFrame.
 /// Это краткая форма вызова Plot.Points(Self, xColumn, yColumn, ...).
-/// Строки с NA исключаются целиком; tooltips соответствуют исходным строкам
-/// DataFrame и фильтруются тем же построчным отбором.
+/// Строки с NA исключаются целиком; tooltipColumn задаёт столбец,
+/// значения которого отображаются во всплывающих подсказках.
 /// Имена столбцов автоматически используются как подписи осей X и Y.
 procedure Points(Self: DataFrame; xColumn, yColumn: string;
   color: ColorWPF := DefaultColor; size: real := 6;
   marker: MarkerType := MarkerType.Circle; legend: string := nil;
-  tooltips: array of string := nil); extensionmethod;
+  tooltipColumn: string := nil); extensionmethod;
 begin
-  Plot.Points(Self, xColumn, yColumn, color, size, marker, legend, tooltips);
+  Plot.Points(Self, xColumn, yColumn, color, size, marker, legend, tooltipColumn);
 end;
 
 /// Строит диаграмму рассеяния с раскраской по строковому или целочисленному
 /// столбцу классов. Это краткая форма Plot.Points(Self, ..., classColumn).
 /// Классы кодируются в порядке первого появления, строки с NA исключаются.
-/// Имена xColumn и yColumn автоматически используются как подписи осей.
+/// Имена xColumn и yColumn автоматически используются как подписи осей;
+/// tooltipColumn задаёт столбец всплывающих подсказок.
 procedure Points(Self: DataFrame;
   xColumn, yColumn, classColumn: string; color: ColorWPF := DefaultColor;
-  size: real := 6; marker: MarkerType := MarkerType.Circle); extensionmethod;
+  size: real := 6; marker: MarkerType := MarkerType.Circle;
+  tooltipColumn: string := nil); extensionmethod;
 begin
-  Plot.Points(Self, xColumn, yColumn, classColumn, color, size, marker);
+  Plot.Points(Self, xColumn, yColumn, classColumn,
+    color, size, marker, tooltipColumn);
 end;
 
 /// Строит диаграмму рассеяния по двум столбцам Dataset.
 /// Это краткая форма Plot.Points(Self, xColumn, yColumn, ...).
 /// Обработка пропусков и подписи осей совпадают с перегрузкой для DataFrame.
+/// tooltipColumn и classColumn можно передать именованно.
 procedure Points(Self: Dataset; xColumn, yColumn: string;
   color: ColorWPF := DefaultColor; size: real := 6;
   marker: MarkerType := MarkerType.Circle; legend: string := nil;
-  tooltips: array of string := nil; classColumn: string := nil); extensionmethod;
+  tooltipColumn: string := nil; classColumn: string := nil); extensionmethod;
 begin
   Plot.Points(Self, xColumn, yColumn, color, size, marker,
-    legend, tooltips, classColumn);
+    legend, tooltipColumn, classColumn);
 end;
 
 /// Строит диаграмму рассеяния Dataset с раскраской по столбцу классов.
-/// Для раскраски по целевой переменной передайте Self.Target.
+/// Для раскраски по целевой переменной передайте Self.Target. tooltipColumn
+/// задаёт столбец всплывающих подсказок.
 procedure Points(Self: Dataset;
   xColumn, yColumn, classColumn: string; color: ColorWPF := DefaultColor;
-  size: real := 6; marker: MarkerType := MarkerType.Circle); extensionmethod;
+  size: real := 6; marker: MarkerType := MarkerType.Circle;
+  tooltipColumn: string := nil); extensionmethod;
 begin
-  Plot.Points(Self, xColumn, yColumn, classColumn, color, size, marker);
+  Plot.Points(Self, xColumn, yColumn, classColumn,
+    color, size, marker, tooltipColumn);
 end;
 
 static procedure Plot.Bar(y: array of real; color: ColorWPF; width: real; alpha: real; legend: string);
@@ -5312,7 +5393,7 @@ end;
 
 /// Строит гистограмму числового столбца DataFrame, исключая значения с NA.
 /// Это краткая форма Plot.Hist(Self, columnName, ...). Имя столбца становится
-/// подписью оси X, ось Y получает локализованную подпись «Частота».
+/// подписью оси X, ось Y получает локализованную подпись «Количество».
 procedure Hist(Self: DataFrame; columnName: string; bins: integer := 0;
   color: ColorWPF := DefaultColor; alpha: real := 0.7; legend: string := nil;
   edges: System.Array := nil); extensionmethod;
