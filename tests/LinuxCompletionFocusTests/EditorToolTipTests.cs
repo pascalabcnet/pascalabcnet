@@ -21,7 +21,7 @@ internal static class EditorToolTipTests
             Control area = areaOf(editor), inactive = areaOf(other);
             Type type = area.GetType();
             var font = (Font)ide.GetType("VisualPascalABC.Constants", true)
-                .GetField("CompletionFont", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+                .GetMethod("GetCompletionFont", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, new object[] { editor.Font });
             type.GetProperty("ToolTipFont").SetValue(area, font, null);
             MethodInfo show = type.GetMethod("SetToolTip", BindingFlags.Instance | BindingFlags.NonPublic);
             FieldInfo field = type.GetField("toolTip", BindingFlags.Static | BindingFlags.NonPublic);

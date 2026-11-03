@@ -18,6 +18,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		private readonly Form parentForm;
 		protected readonly TextEditorControl control;
 		protected Size drawingSize;
+        private int preferredWidth;
 		private bool attached, closing;
 		private readonly Panel content = new Panel { TabStop = false };
 		private CompletionContentHost contentHost;
@@ -97,8 +98,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
         
         public void CalcFormWidth()
         {
-        	this.codeCompletionListView.CalcWidth();
-			drawingSize.Width = content.Width;
+            preferredWidth = codeCompletionListView.MeasureContentWidth() + 2 +
+                (vScrollBar.Parent == content ? vScrollBar.Width : 0);
         }
         
         public static PABCNETCodeCompletionWindow ShowCompletionWindowWithFirstChar(Form parent, TextEditorControl control, string fileName, ICompletionDataProvider completionDataProvider, char firstChar, PascalABCCompiler.Parsers.KeywordKind keyw)
@@ -137,7 +138,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			codeCompletionListView.Dock = DockStyle.Fill;
 			codeCompletionListView.SelectedItemChanged += new EventHandler(CodeCompletionListViewSelectedItemChanged);
 			codeCompletionListView.DoubleClick += new EventHandler(CodeCompletionListViewDoubleClick);
-            codeCompletionListView.Font = VisualPascalABC.Constants.CompletionFont;
+            Font = codeCompletionListView.Font = VisualPascalABC.Constants.GetCompletionFont(control.Font);
 			content.Controls.Add(codeCompletionListView);
 			
 			int MaxListLength = VisualPascalABC.Constants.CompletionWindowMaxListLength;
@@ -158,12 +159,13 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
             this.drawingSize = new Size(//codeCompletionListView.ItemHeight * 10,
                                         VisualPascalABC.Constants.CompletionWindowWidth,
                                         codeCompletionListView.ItemHeight * Math.Min(MaxListLength, completionData.Length) + 2);
+            CalcFormWidth();
 			SetLocation();
 			
 			if (declarationViewWindow == null) {
 				declarationViewWindow = new DeclarationWindow(parentForm);
 				declarationViewWindow.in_completion_list = true;
-                declarationViewWindow.Font = VisualPascalABC.Constants.CompletionFont;
+                declarationViewWindow.Font = codeCompletionListView.Font;
 			}            
 			SetDeclarationViewLocation();
             //DS закоментил, это желтый квадрат при старте
@@ -248,6 +250,9 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				- textArea.VirtualTop.Y + textArea.TextView.FontHeight + ruler);
 			point = control.ActiveTextAreaControl.PointToScreen(point);
 			workingScreen = Screen.GetWorkingArea(parentForm);
+            int minimumWidth = VisualPascalABC.Constants.CompletionWindowWidth;
+            drawingSize.Width = Math.Max(1, Math.Min(workingScreen.Width,
+                Math.Max(minimumWidth, Math.Min(preferredWidth, parentForm.ClientSize.Width / 3))));
 			if (point.Y + drawingSize.Height > workingScreen.Bottom)
 				point.Y -= drawingSize.Height + textArea.TextView.FontHeight;
 			point.X = Math.Max(workingScreen.Left, Math.Min(point.X, workingScreen.Right - drawingSize.Width));

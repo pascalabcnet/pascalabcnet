@@ -51,7 +51,7 @@ internal static class InsightWindowTests
             using (var popup = (ToolStripDropDown)Activator.CreateInstance(popupType, owner, editor))
             {
                 Call(popup, "AddInsightDataProvider", outer, "sample.pas");
-                var sharedFont = (Font)ide.GetType("VisualPascalABC.Constants", true).GetField("CompletionFont", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+                var sharedFont = (Font)ide.GetType("VisualPascalABC.Constants", true).GetMethod("GetCompletionFont", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, new object[] { editor.Font });
                 check(Equals(popup.Font, sharedFont), "parameter popup uses the same font and units as completion and hover descriptions");
                 int forms = Application.OpenForms.Count;
                 Call(popup, "ShowInsightWindow"); pump();

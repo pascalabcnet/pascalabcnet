@@ -14,6 +14,7 @@ namespace ICSharpCode.TextEditor.Util
 	static class TipPainter
 	{
 		const float HorizontalBorder = 6;
+        const float RightPadding = 4;
 		const float VerticalBorder   = 4;
 		static RectangleF workingArea = RectangleF.Empty;
 		
@@ -39,10 +40,10 @@ namespace ICSharpCode.TextEditor.Util
 			}
 			
 			PointF screenLocation = control.PointToScreen(Point.Empty);
-			SizeF maxLayoutSize = new SizeF(workingArea.Right /*- screenLocation.X*/ - HorizontalBorder * 2,
+			SizeF maxLayoutSize = new SizeF(workingArea.Right /*- screenLocation.X*/ - HorizontalBorder * 2 - RightPadding,
 			                                workingArea.Bottom /*- screenLocation.Y*/ - VerticalBorder * 2);
 			
-			float global_max_x = workingArea.Right - HorizontalBorder * 2;
+			float global_max_x = workingArea.Right - HorizontalBorder * 2 - RightPadding;
 			
 			if (maxLayoutSize.Width > 0 && maxLayoutSize.Height > 0) {
 				/*graphics.TextRenderingHint =
@@ -54,7 +55,7 @@ namespace ICSharpCode.TextEditor.Util
 				tipSizeF = tipData.GetRequiredSize();
 				tipData.SetAllocatedSize(tipSizeF);
 				
-				tipSizeF += new SizeF(HorizontalBorder * 2,
+				tipSizeF += new SizeF(HorizontalBorder * 2 + RightPadding,
 				                      VerticalBorder   * 2);
 				tipSize = Size.Ceiling(tipSizeF);
 			}
@@ -96,7 +97,7 @@ namespace ICSharpCode.TextEditor.Util
 				workingArea = Screen.GetWorkingArea((Control)ownerForm ?? control);
 			}
 				
-			SizeF maxLayoutSize = new SizeF(workingArea.Right /*- screenLocation.X*/ - HorizontalBorder * 2,
+			SizeF maxLayoutSize = new SizeF(workingArea.Right /*- screenLocation.X*/ - HorizontalBorder * 2 - RightPadding,
 			                                workingArea.Bottom /*- screenLocation.Y*/ - VerticalBorder * 2);
 			if (maxLayoutSize.Width > 0 && maxLayoutSize.Height > 0) {
 				/*graphics.TextRenderingHint =
@@ -106,7 +107,7 @@ namespace ICSharpCode.TextEditor.Util
 				tipSizeF = tipData.GetRequiredSize();
 				tipData.SetAllocatedSize(tipSizeF);
 				
-				tipSizeF += new SizeF(HorizontalBorder * 2,
+				tipSizeF += new SizeF(HorizontalBorder * 2 + RightPadding,
 				                      VerticalBorder   * 2);
 				tipSize = Size.Ceiling(tipSizeF);
 			}
@@ -129,17 +130,17 @@ namespace ICSharpCode.TextEditor.Util
 			}
 			
 			if (tipSize != Size.Empty) {
-				Rectangle borderRectangle = new Rectangle
-				(Point.Empty, tipSize - new Size(1, 1));
-				
 				RectangleF displayRectangle = new RectangleF
 				(HorizontalBorder, VerticalBorder,
-				 tipSizeF.Width - HorizontalBorder * 2,
+				 tipSizeF.Width - HorizontalBorder * 2 - RightPadding,
 				 tipSizeF.Height - VerticalBorder * 2);
 				
 				// DrawRectangle draws from Left to Left + Width. A bug? :-/
-				graphics.DrawRectangle(SystemPens.WindowFrame,
-				                       borderRectangle);
+                // Native hover tooltips can be larger than the measured layout.
+                // Their border is drawn by DeclarationWindow using the native bounds.
+                if (control is ICSharpCode.TextEditor.Gui.InsightWindow.PABCNETInsightWindow)
+                    graphics.DrawRectangle(Pens.Black, 0, 0,
+                        control.ClientSize.Width - 1, control.ClientSize.Height - 1);
 				tipData.Draw(new PointF(HorizontalBorder, VerticalBorder));
 			}
 			return tipSize;

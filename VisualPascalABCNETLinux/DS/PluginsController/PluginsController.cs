@@ -45,9 +45,24 @@ namespace VisualPascalABCPlugins
         public PluginsController(IVisualEnvironmentCompiler VisualEnvironmentCompiler,System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem, System.Windows.Forms.ToolStrip ToolStrip, IWorkbench workbench)
         {
             this.ToolStripMenuItem = ToolStripMenuItem;
+            if (ToolStripMenuItem != null)
+                ToolStripMenuItem.DropDownOpening += (sender, e) => ApplyMenuFont(ToolStripMenuItem,
+                    ToolStripMenuItem.Owner?.Font ?? ToolStripMenuItem.Font);
             this.ToolStrip = ToolStrip;
             this.VisualEnvironmentCompiler = VisualEnvironmentCompiler;
             this.workbench = workbench;
+        }
+
+        private static void ApplyMenuFont(System.Windows.Forms.ToolStripDropDownItem menu, System.Drawing.Font font)
+        {
+            menu.Font = font;
+            menu.DropDown.Font = font;
+            foreach (System.Windows.Forms.ToolStripItem item in menu.DropDownItems)
+            {
+                item.Font = font;
+                if (item is System.Windows.Forms.ToolStripDropDownItem child && child.HasDropDownItems)
+                    ApplyMenuFont(child, font);
+            }
         }
 
         bool AddMenuSeparator = false;

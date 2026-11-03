@@ -106,6 +106,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
             e.Graphics.Clear(SystemColors.Info);
             TipPainterTools.DrawHelpTipFromCombinedDescription(
                 layout, e.Graphics, Font, null, description, -1, -1, false);
+            e.Graphics.DrawRectangle(Pens.Black, e.Bounds.X, e.Bounds.Y,
+                e.Bounds.Width - 1, e.Bounds.Height - 1);
         }
 
         private void OwnerUnavailable(object sender, EventArgs e) { Hide(); }

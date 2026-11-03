@@ -194,6 +194,7 @@ namespace VisualPascalABC
                     {
                         //dvw.ShowInTaskbar = false;
                         hintTextArea = textArea;
+                        dvw.Font = Constants.GetCompletionFont(textArea.MotherTextEditorControl.Font);
                         dvw.Description = txt;
                         HoverTrace.Write("show-result visible=" + dvw.Visible + " size=" + dvw.ClientSize + " bounds=" + dvw.Bounds);
                     }                            

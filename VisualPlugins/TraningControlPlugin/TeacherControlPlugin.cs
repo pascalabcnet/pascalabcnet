@@ -228,7 +228,13 @@ namespace VisualPascalABCPlugins
 
         public void InitItems(List<IPluginGUIItem> MenuItems, List<IPluginGUIItem> ToolBarItems)
         {
-            Item = new PluginGUIItem(StringsPrefix + "NAME", StringsPrefix + "DESCRIPTION", loginForm.PluginImage.Image, loginForm.PluginImage.BackColor, Execute);
+#if PABC_LINUX_PLUGIN
+            // Linux images already contain alpha transparency; do not apply a second color key in Mono.
+            var transparentColor = System.Drawing.Color.Empty;
+#else
+            var transparentColor = loginForm.PluginImage.BackColor;
+#endif
+            Item = new PluginGUIItem(StringsPrefix + "NAME", StringsPrefix + "DESCRIPTION", loginForm.PluginImage.Image, transparentColor, Execute);
             MenuItems.Add(Item);
             ToolBarItems.Add(Item);
         }

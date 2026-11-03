@@ -29,6 +29,7 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 		{
 			this.parentForm = parentForm;
 			this.control = control;
+			Font = VisualPascalABC.Constants.GetCompletionFont(control.Font);
 			SetStyle(ControlStyles.UserPaint, true);
             VisualPascalABC.HoverTrace.Observe(this, "parameter-hint");
 			//SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
@@ -39,6 +40,7 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 			if (closing || IsDisposed) return;
 			if (insightDataProviderStack.Count == 0) { Close(); return; }
 			if (parentForm.IsDisposed || !parentForm.Visible || control.IsDisposed) return;
+			Font = VisualPascalABC.Constants.GetCompletionFont(control.Font);
 			AttachEditorEvents();
 			SetLocation();
 			using (Graphics graphics = parentForm.CreateGraphics()) {

@@ -300,16 +300,17 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		public void CalcWidth()
 		{
-			int len = Width;
-			Graphics g = Graphics.FromHwnd(this.Handle);
-			for (int i=0; i<this.completionData.Length; i++)
-			{
-				SizeF sz = g.MeasureString(completionData[i].Text,this.Font);
-				if (len < sz.ToSize().Width+16)
-					len = sz.ToSize().Width+16;
-			}
-			//Width = len;
-			this.Parent.Width = len+6;
+            this.Parent.Width = MeasureContentWidth();
+        }
+
+        internal int MeasureContentWidth()
+        {
+            int textWidth = 0;
+            using (Graphics graphics = CreateGraphics())
+                foreach (var item in completionData)
+                    textWidth = Math.Max(textWidth, (int)Math.Ceiling(graphics.MeasureString(item.Text, Font).Width));
+            int imageWidth = ItemHeight * imageList.ImageSize.Width / imageList.ImageSize.Height;
+            return textWidth + imageWidth + 6;
 		}
 		
 		public void ClearSelection()
