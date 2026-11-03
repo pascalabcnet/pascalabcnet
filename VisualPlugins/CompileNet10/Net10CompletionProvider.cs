@@ -46,7 +46,11 @@ namespace VisualPascalABCPlugins
                 string documentation = Text(item, "documentation");
                 if (!string.IsNullOrEmpty(documentation)) description += (description.Length > 0 ? "\n" : "") + documentation;
                 int kind = item.TryGetValue("kind", out var kindValue) ? Convert.ToInt32(kindValue) : 1;
-                result.Add(new Item(label, insertion, description, Icon(images, kind)));
+                bool extension = item.TryGetValue("data", out var data) && data is Dictionary<string, object> metadata &&
+                    metadata.TryGetValue("isExtensionMethod", out var flag) && flag is bool isExtension && isExtension;
+                int image = extension && (kind == 2 || kind == 3 || kind == 4)
+                    ? images.IconNumberExtensionMethod : Icon(images, kind);
+                result.Add(new Item(label, insertion, description, image));
             }
             Items = result.ToArray();
         }

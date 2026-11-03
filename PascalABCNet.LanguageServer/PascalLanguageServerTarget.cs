@@ -199,6 +199,7 @@ internal sealed class PascalLanguageServerTarget
                     Detail = item.Detail,
                     Documentation = item.Documentation,
                     Kind = MapCompletionKind(item.Kind),
+                    Data = new { isExtensionMethod = item.IsExtensionMethod },
                     InsertText = item.Label.EndsWith("<>", StringComparison.Ordinal)
                         ? item.Label[..^2]
                         : item.Label

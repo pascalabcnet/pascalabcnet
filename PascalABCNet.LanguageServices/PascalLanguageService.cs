@@ -377,7 +377,11 @@ public sealed class PascalLanguageService : IPascalLanguageService
     {
         var (detail, documentation) = SymbolDescriptionParser.Split(symbol.description ?? string.Empty);
         var label = symbol.aliasName ?? symbol.addit_name ?? symbol.name;
-        return new CompletionItem(label, detail, documentation, symbol.kind.ToString());
+        // Match the historical IDE's symbol classification at this boundary.
+        // LSP/UI consumers receive a flag and do not parse localized descriptions.
+        bool extension = symbol.kind == SymbolKind.Method && symbol.description is not null &&
+            symbol.description.Contains("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION"), StringComparison.Ordinal);
+        return new CompletionItem(label, detail, documentation, symbol.kind.ToString(), extension);
     }
 
     public Task<HoverInfo?> GetHoverAsync(

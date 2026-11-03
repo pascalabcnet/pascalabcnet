@@ -19,7 +19,8 @@ internal static partial class Program
             new Dictionary<string, object> { ["label"] = "Substring", ["insertText"] = "Substring", ["kind"] = 2,
                 ["detail"] = "function Substring(startIndex: integer): string",
                 ["documentation"] = new Dictionary<string, object> { ["kind"] = "plaintext", ["value"] = "Описание кириллицей" } },
-            new Dictionary<string, object> { ["label"] = "Generic<>", ["insertText"] = "Generic", ["kind"] = 2 },
+            new Dictionary<string, object> { ["label"] = "Generic<>", ["insertText"] = "Generic", ["kind"] = 2,
+                ["data"] = new Dictionary<string, object> { ["isExtensionMethod"] = true } },
             new Dictionary<string, object> { ["label"] = "Length", ["kind"] = 10 },
             new Dictionary<string, object> { ["label"] = "Snippet", ["insertTextFormat"] = 2 },
             new Dictionary<string, object> { ["label"] = "ComplexEdit", ["textEdit"] = new { } }
@@ -32,6 +33,10 @@ internal static partial class Program
         try
         {
             var provider = new Net10CompletionProvider(CompletionResponse(), images, "Su");
+            Check(provider.Items[0].ImageIndex == images.IconNumberMethod &&
+                provider.Items[1].ImageIndex == images.IconNumberExtensionMethod &&
+                images.IconNumberMethod != images.IconNumberExtensionMethod,
+                "explicit LSP extension flag selects the historical extension icon; ordinary methods keep their icon");
             Check(provider.Items.Length == 3 && provider.PreSelection == "Su" &&
                 provider.Items[0].Description.Contains("Описание кириллицей") &&
                 provider.Items[2].ImageIndex == images.IconNumberProperty,
