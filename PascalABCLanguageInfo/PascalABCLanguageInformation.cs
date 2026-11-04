@@ -29,11 +29,11 @@ namespace Languages.Pascal.Frontend.Data
 
         public string CommentSymbol => "//";
 
-		public Dictionary<string, string> SpecialModulesAliases => null;
+		public IReadOnlyDictionary<string, string> SpecialModulesAliases => null;
 
         public IKeywords KeywordsStorage { get; } = new Core.PascalABCKeywords();
 
-        public Dictionary<string, IDirectiveInfo> ValidDirectives { get; protected set; }
+        public IReadOnlyDictionary<string, IDirectiveInfo> ValidDirectives { get; protected set; }
 
         public PascalABCLanguageInformation()
         {

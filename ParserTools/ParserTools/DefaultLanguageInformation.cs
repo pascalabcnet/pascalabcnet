@@ -29,11 +29,11 @@ namespace PascalABCCompiler.Parsers
 
         public virtual bool SyntaxTreeIsConvertedAfterUsedModulesCompilation => false;
 
-        public virtual Dictionary<string, IDirectiveInfo> ValidDirectives => null;
+        public virtual IReadOnlyDictionary<string, IDirectiveInfo> ValidDirectives => null;
 
         // Важно переопределять для реализации тестов
         public virtual string CommentSymbol => "//";
 
-        public virtual Dictionary<string, string> SpecialModulesAliases => null;
+        public virtual IReadOnlyDictionary<string, string> SpecialModulesAliases => null;
     }
 }

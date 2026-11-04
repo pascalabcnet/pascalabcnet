@@ -13,6 +13,6 @@ namespace PascalABCCompiler.Contracts.Parsers
 
         int[] ParamsNums { get; }
 
-        bool ParamsValid(List<string> directiveParams, out int indexOfMismatch, out string errorMessage);
+        bool ParamsValid(IEnumerable<string> directiveParams, out int indexOfMismatch, out string errorMessage);
     }
 }

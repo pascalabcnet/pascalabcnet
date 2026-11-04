@@ -39,7 +39,7 @@ namespace PascalABCCompiler.ParserTools.Directives
         /// <summary>
         /// Функция для проверки всех параметров директивы
         /// </summary>
-        public bool ParamsValid(List<string> directiveParams, out int indexOfMismatch, out string errorMessage)
+        public bool ParamsValid(IEnumerable<string> directiveParams, out int indexOfMismatch, out string errorMessage)
         {
             // если проверки не нужны
             if (checks == null)
@@ -185,7 +185,7 @@ namespace PascalABCCompiler.ParserTools.Directives
             this.checks = checks;
         }
 
-        public bool CheckParams(List<string> directiveParams, out int indexOfMismatch, out string errorMessage)
+        public bool CheckParams(IEnumerable<string> directiveParams, out int indexOfMismatch, out string errorMessage)
         {
             int directivesChecked = 0;
             for (var i = 0; i < checks.Length; i++)

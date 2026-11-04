@@ -111,7 +111,7 @@ namespace SPythonParser
         }
 
         public SPythonParserTools(List<Error> errors, List<CompilerWarning> warnings,
-            Dictionary<string, IDirectiveInfo> validDirectives, bool buildTreeForFormatter = false, bool buildTreeForFormatterStrings = false,
+            IReadOnlyDictionary<string, IDirectiveInfo> validDirectives, bool buildTreeForFormatter = false, bool buildTreeForFormatterStrings = false,
             string currentFileName = null, List<compiler_directive> compilerDirectives = null) 
             : base(errors, warnings, validDirectives, buildTreeForFormatter, buildTreeForFormatterStrings, currentFileName, compilerDirectives)
         {

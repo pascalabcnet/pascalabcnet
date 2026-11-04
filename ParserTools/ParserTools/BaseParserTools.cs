@@ -39,10 +39,10 @@ namespace PascalABCCompiler.ParserTools
 
         public abstract Dictionary<string, string> TokenNum { get; protected set; } // строки, соответствующие терминалам, для вывода ошибок - SSM
 
-        public Dictionary<string, IDirectiveInfo> ValidDirectives { get; private set; }
+        public IReadOnlyDictionary<string, IDirectiveInfo> ValidDirectives { get; private set; }
 
         protected BaseParserTools(List<Error> errors, List<CompilerWarning> warnings,
-            Dictionary<string, IDirectiveInfo> validDirectives, bool buildTreeForFormatter, bool buildTreeForFormatterStrings,
+            IReadOnlyDictionary<string, IDirectiveInfo> validDirectives, bool buildTreeForFormatter, bool buildTreeForFormatterStrings,
             string currentFileName, List<compiler_directive> compilerDirectives)
         {
             this.errors = errors;

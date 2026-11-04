@@ -54,7 +54,7 @@ namespace PascalABCCompiler.Contracts.Languages
         /// <summary>
         /// Данные о всех поддерживаемых директивах компилятора
         /// </summary>
-        Dictionary<string, IDirectiveInfo> ValidDirectives { get; }
+        IReadOnlyDictionary<string, IDirectiveInfo> ValidDirectives { get; }
 
         /// <summary>
         /// Обозначение однострочного комментария (используется в TestRunner)
@@ -65,6 +65,6 @@ namespace PascalABCCompiler.Contracts.Languages
         /// Имена стандартных модулей, которые не совпадают с именами их файлов.
         /// Можно задавать null.
         /// </summary>
-        Dictionary<string, string> SpecialModulesAliases { get; }
+        IReadOnlyDictionary<string, string> SpecialModulesAliases { get; }
     }
 }
