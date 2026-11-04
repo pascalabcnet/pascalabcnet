@@ -32,6 +32,10 @@ namespace VisualPascalABCPlugins
         private ToolStripMenuItem platformItem;
         private ToolStripMenuItem publishItem;
 #if !PABC_LINUX_PLUGIN
+        private Net10PlatformMenu platformSelection;
+        private bool modernRuntimeAvailable;
+#endif
+#if !PABC_LINUX_PLUGIN
         private Net10LanguageDocuments languageDocuments;
         private IExternalIntelliSenseSession languageUI;
         private Net10Completion languageCompletion;
@@ -94,6 +98,9 @@ namespace VisualPascalABCPlugins
                 outputSession?.Dispose();
                 client?.Dispose();
                 status.Dispose();
+#if !PABC_LINUX_PLUGIN
+                platformSelection?.Dispose();
+#endif
             };
             // Do not compete with a normal IDE run for the shared console/input.
             workbench.ServiceContainer.RunService.Starting += fileName =>
@@ -134,6 +141,7 @@ namespace VisualPascalABCPlugins
                 Name = "CompileNet10Platform",
                 ToolTipText = "Компилировать и запускать на .NET 10. Выбор действует до закрытия среды."
             };
+#if PABC_LINUX_PLUGIN
             platformItem.Click += (sender, e) =>
             {
                 if (compiling || runner != null || workbench.ServiceContainer.RunService.IsRun() || workbench.DebuggerManager.IsRunning)
@@ -143,9 +151,16 @@ namespace VisualPascalABCPlugins
                 }
                 SelectPlatform(!platformItem.Checked);
             };
+#else
+            platformSelection = new Net10PlatformMenu(platformItem, RequestPlatform);
+#endif
             commandRegistration = commandService.RegisterCommandHandler(this);
             programMenu.DropDownItems.Add(new ToolStripSeparator());
+#if PABC_LINUX_PLUGIN
             programMenu.DropDownItems.Add(platformItem);
+#else
+            programMenu.DropDownItems.Add(platformSelection.Root);
+#endif
             publishItem = Net10MenuItems.CreatePublishItem();
             publishItem.Click += (sender, e) => Execute(false, publish: true);
             programMenu.DropDownItems.Add(publishItem);
@@ -159,7 +174,7 @@ namespace VisualPascalABCPlugins
 #if PABC_LINUX_PLUGIN
                 platformItem.Enabled = available && linuxRuntimeAvailable;
 #else
-                platformItem.Enabled = available;
+                platformSelection.SetAvailable(available, modernRuntimeAvailable);
 #endif
                 publishItem.Enabled = available && platformItem.Checked;
             };
@@ -228,15 +243,39 @@ namespace VisualPascalABCPlugins
                     File.Exists(Path.Combine(settings.RuntimeDirectory, "PascalABCNet.LanguageServer.dll")) &&
 #endif
                     Net10RuntimeAvailability.IsAvailable(settings.DotnetPath))
+                {
+#if !PABC_LINUX_PLUGIN
+                    modernRuntimeAvailable = true;
+#endif
                     SelectPlatform(true);
+                }
             }
             catch (IOException) { } // A locked INI must not prevent startup in the ordinary mode.
             catch (UnauthorizedAccessException) { }
+#if !PABC_LINUX_PLUGIN
+            platformSelection.SetAvailable(true, modernRuntimeAvailable);
+            if (!modernRuntimeAvailable) SelectPlatform(false);
+#endif
         }
 
+#if !PABC_LINUX_PLUGIN
+        private void RequestPlatform(bool modern)
+        {
+            if (compiling || restoringLanguagePackages || runner != null ||
+                workbench.ServiceContainer.RunService.IsRun() || workbench.DebuggerManager.IsRunning)
+            {
+                WriteMessage("Остановите программу перед переключением платформы.");
+                return;
+            }
+            if (!modern || modernRuntimeAvailable) SelectPlatform(modern);
+        }
+#endif
         private void SelectPlatform(bool modern)
         {
             platformItem.Checked = modern;
+#if !PABC_LINUX_PLUGIN
+            platformSelection?.SetSelected(modern);
+#endif
             commandService.LegacyServicesSuspended = modern;
             status.StartReady(modern, PascalABCCompiler.StringResources.Get("VP_VEC_STATETEXT_READY"));
             UpdateLanguageActivity();

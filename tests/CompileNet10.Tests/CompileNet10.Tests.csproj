@@ -18,6 +18,7 @@
     <Compile Include="../../VisualPlugins/CompileNet10/Net10OutputCleanup.cs" Link="Net10OutputCleanup.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10SourceSnapshot.cs" Link="Net10SourceSnapshot.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10EditorDocument.cs" Link="Net10EditorDocument.cs" />
+    <Compile Include="../../VisualPlugins/CompileNet10/Net10PlatformMenu.cs" Link="Net10PlatformMenu.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10StatusDisplay.cs" Link="Net10StatusDisplay.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10LanguageClient.cs" Link="Net10LanguageClient.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10RestoreProgress.cs" Link="Net10RestoreProgress.cs" />
