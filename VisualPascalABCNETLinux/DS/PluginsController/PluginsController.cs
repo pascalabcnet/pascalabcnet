@@ -69,6 +69,24 @@ namespace VisualPascalABCPlugins
         bool AddToolBarSeparator = false;
         private void AddInGUI(IVisualPascalABCPlugin Plugin)
         {
+            // A plugin may resize and then hide its prototype buttons in AfterAddInGUI.
+            // Keep the autosized toolbar and docked document area at their final geometry.
+            var form = workbench?.MainForm;
+            var panel = ToolStrip?.Parent;
+            form?.SuspendLayout();
+            panel?.SuspendLayout();
+            ToolStrip?.SuspendLayout();
+            try { AddInGUICore(Plugin); }
+            finally
+            {
+                ToolStrip?.ResumeLayout(true);
+                panel?.ResumeLayout(true);
+                form?.ResumeLayout(true);
+            }
+        }
+
+        private void AddInGUICore(IVisualPascalABCPlugin Plugin)
+        {
             if (ToolStripMenuItem == null) return;
             List<IPluginGUIItem> MenuItems=new List<IPluginGUIItem>(),ToolBarItems=new List<IPluginGUIItem>();
             Plugin.GetGUI(MenuItems, ToolBarItems);

@@ -658,6 +658,7 @@ namespace VisualPascalABC
 
         public override void Execute(TextArea _textArea)
         {
+            // Templates are editor commands, independent of semantic IntelliSense.
             //try
             {
                 textArea = _textArea;
@@ -678,6 +679,7 @@ namespace VisualPascalABC
                             return;
                         }
                     }
+                if (CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended) return;
                 if (!WorkbenchServiceFactory.Workbench.UserOptions.CodeCompletionDot)
                     return;
                 if (CodeCompletion.CodeCompletionController.CurrentLanguage == null) return;

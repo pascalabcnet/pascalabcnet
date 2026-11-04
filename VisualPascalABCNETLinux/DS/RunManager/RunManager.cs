@@ -11,7 +11,7 @@ using VisualPascalABCPlugins;
 
 namespace VisualPascalABC
 {
-    public class RunManager 
+    public partial class RunManager
     {
         Hashtable StartedProcesses = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
         Hashtable StartedFiles = new Hashtable();
@@ -39,7 +39,7 @@ namespace VisualPascalABC
         
         public int Count
         {
-            get { return StartedProcesses.Count; }
+            get { lock (externalProcesses) return StartedProcesses.Count + externalProcesses.Count; }
         }
 
         public delegate void TextRecivedDelegate(string fileName, StreamType streamType, string text);
@@ -234,15 +234,18 @@ namespace VisualPascalABC
 
         public bool IsRun(string fileName)
         {
-            return StartedProcesses[fileName] != null;
+            lock (externalProcesses) return fileName != null && (externalProcesses.ContainsKey(fileName) || StartedProcesses[fileName] != null);
         }
 
         public bool IsRun()
         {
-            return StartedProcesses.Count != 0;
+            return Count != 0;
         }
         public void KillAll()
         {
+            List<Action> stops;
+            lock (externalProcesses) stops = new List<Action>(externalProcesses.Values);
+            foreach (var stop in stops) stop();
             Utils.ProcessRunner[] process = new Utils.ProcessRunner[StartedProcesses.Values.Count];
             StartedProcesses.Values.CopyTo(process, 0);
             foreach (Utils.ProcessRunner pr in process)
@@ -414,6 +417,9 @@ namespace VisualPascalABC
         }
         public void Stop(string fileName)
         {
+            Action stop;
+            lock (externalProcesses) externalProcesses.TryGetValue(fileName, out stop);
+            if (stop != null) { stop(); return; }
             EventedStreamReaderList.Remove(fileName);
             if (Path.GetExtension((StartedProcesses[fileName] as Utils.ProcessRunner).process.StartInfo.FileName) == ".bat")
             {

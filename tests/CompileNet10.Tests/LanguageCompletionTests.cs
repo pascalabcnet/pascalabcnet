@@ -32,7 +32,7 @@ internal static partial class Program
         var images = new CodeCompletionImagesProvider();
         try
         {
-            var provider = new Net10CompletionProvider(CompletionResponse(), images, "Su");
+            var provider = new Net10CompletionProvider(CompletionResponse(), TestIntelliSenseUI(null), "Su");
             Check(provider.Items[0].ImageIndex == images.IconNumberMethod &&
                 provider.Items[1].ImageIndex == images.IconNumberExtensionMethod &&
                 images.IconNumberMethod != images.IconNumberExtensionMethod,
@@ -75,7 +75,7 @@ internal static partial class Program
             var events = new WorkbenchDocumentEventSource(() => open);
             var fake = new FakeLanguageClient();
             var sync = new Net10LanguageDocuments(events, () => fake, text => { });
-            var ui = new Net10Completion(parent, events, sync, () => true);
+            var ui = new Net10Completion(parent, events, sync, () => true, TestIntelliSenseUI(parent));
             try
             {
                 sync.SetActive(true); sync.WhenIdleAsync().GetAwaiter().GetResult();
@@ -209,7 +209,7 @@ internal static partial class Program
                 var longResponse = new Dictionary<string, object> { ["items"] = new object[] {
                     new Dictionary<string, object> { ["label"] = "Symbol" + new string('X', 300), ["kind"] = 2 }
                 } };
-                var longProvider = new Net10CompletionProvider(longResponse, images, "");
+                var longProvider = new Net10CompletionProvider(longResponse, TestIntelliSenseUI(null), "");
                 using (var window = (PABCNETCodeCompletionWindow)ctor.Invoke(new object[]
                     { longProvider, longProvider.Items, parent, document.TextEditor, false, true, images, false }))
                     Check(window.Width > Constants.CompletionWindowWidth &&

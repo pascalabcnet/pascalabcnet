@@ -14,6 +14,7 @@ namespace VisualPascalABC
     public class TooltipServiceManager
     {
         static DeclarationWindow dvw;
+        private static object externalOwner;
 
         private static string GetPopupHintText(TextArea textArea, ToolTipRequestEventArgs e)
         {
@@ -117,6 +118,7 @@ namespace VisualPascalABC
 
         public static void hideToolTip()
         {
+            externalOwner = null;
             HoverTrace.Write("hide-tooltip");
             if (dvw != null)
             {
@@ -124,6 +126,30 @@ namespace VisualPascalABC
                 toolTipVisible = false;
             }
             hintTextArea = null;
+        }
+
+        internal static void ShowOwnedExternalHint(object owner, TextArea area, Point mouse, TextLocation position, string description)
+        {
+            if (string.IsNullOrWhiteSpace(description) || area.IsDisposed || !area.Visible) return;
+            if (dvw == null || dvw.IsDisposed)
+            {
+                dvw = new DeclarationWindow(area.FindForm());
+                HoverTrace.Observe(dvw);
+                dvw.Font = Constants.CompletionFont;
+            }
+            int ypos = (area.Document.GetVisibleLine(position.Y) + 1) * area.TextView.FontHeight - area.VirtualTop.Y;
+            dvw.Location = area.PointToScreen(new Point(mouse.X + 3, ypos + 5));
+            hintTextArea = area;
+            dvw.Font = Constants.GetCompletionFont(area.MotherTextEditorControl.Font);
+            dvw.Description = description;
+            externalOwner = owner;
+            // Asynchronous provider owns movement/token invalidation.
+            toolTipVisible = false;
+        }
+
+        internal static void HideOwnedExternalHint(object owner)
+        {
+            if (ReferenceEquals(externalOwner, owner)) hideToolTip();
         }
 
         public static void ToolTipService_TextAreaToolTipRequest(object sender, ToolTipRequestEventArgs e)
@@ -193,6 +219,7 @@ namespace VisualPascalABC
                     if (!VisualPABCSingleton.MainForm.MenuActive)
                     {
                         //dvw.ShowInTaskbar = false;
+                        externalOwner = null;
                         hintTextArea = textArea;
                         dvw.Font = Constants.GetCompletionFont(textArea.MotherTextEditorControl.Font);
                         dvw.Description = txt;

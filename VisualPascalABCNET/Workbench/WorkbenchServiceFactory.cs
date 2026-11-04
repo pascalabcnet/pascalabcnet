@@ -10,8 +10,11 @@ using VisualPascalABCPlugins;
 
 namespace VisualPascalABC
 {
-    public class WorkbenchServiceContainer: IWorkbenchServiceContainer, IWorkbenchCommandService
+    public class WorkbenchServiceContainer: IWorkbenchServiceContainer, IWorkbenchCommandService, IWorkbenchIntelliSenseUI
     {
+        public IExternalIntelliSenseSession CreateIntelliSenseSession() =>
+            new ExternalIntelliSenseSession(WorkbenchServiceFactory.Workbench.MainForm);
+
         public IDisposable RegisterCommandHandler(IIdeCommandHandler handler) =>
             WorkbenchServiceFactory.CommandRouter.Register(handler);
 

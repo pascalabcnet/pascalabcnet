@@ -47,7 +47,7 @@ internal static partial class Program
                 area.Caret.PositionChanged += (sender, e) => VisualPascalABC.CodeCompletionHighlighter.Highlight(area);
                 var events = new WorkbenchDocumentEventSource(() => new List<ICodeFileDocument> { document });
                 using (var sync = new Net10LanguageDocuments(events, () => new FakeLanguageClient(), text => { }))
-                using (var completion = new Net10Completion(parent, events, sync, () => true))
+                using (var completion = new Net10Completion(parent, events, sync, () => true, TestIntelliSenseUI(parent)))
                 {
                     completion.SetActive(modern);
                     foreach (string name in new[] { "EditorProgram.pas", "EditorUnit.pas", "EditorProgram.pas" })

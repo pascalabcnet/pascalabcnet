@@ -14,6 +14,7 @@ namespace VisualPascalABC
     public class TooltipServiceManager
     {
         static DeclarationViewWindow dvw;
+        private static object externalOwner;
 
         private static string GetPopupHintText(TextArea textArea, ToolTipRequestEventArgs e)
         {
@@ -64,6 +65,7 @@ namespace VisualPascalABC
 
         public static void hideToolTip()
         {
+            externalOwner = null;
             if (dvw != null)
             {
                 dvw.Description = null;
@@ -80,8 +82,21 @@ namespace VisualPascalABC
             toolTipVisible = false;
         }
 
+        internal static void ShowOwnedExternalHint(object owner, TextArea area, Point mouse, TextLocation position, string description)
+        {
+            if (string.IsNullOrWhiteSpace(description)) return;
+            ShowExternalHint(area, mouse, position, description);
+            externalOwner = owner;
+        }
+
+        internal static void HideOwnedExternalHint(object owner)
+        {
+            if (ReferenceEquals(externalOwner, owner)) hideToolTip();
+        }
+
         private static void ShowHint(TextArea textArea, Point mousePosition, TextLocation position, string description)
         {
+            externalOwner = null;
             if (dvw == null || dvw.IsDisposed)
             {
                 dvw = new DeclarationWindow(textArea.FindForm());

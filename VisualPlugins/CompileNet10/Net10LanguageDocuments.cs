@@ -27,9 +27,16 @@ namespace VisualPascalABCPlugins
         private readonly IWorkbenchDocumentEvents events;
         private readonly Func<INet10LanguageClient> createClient;
         private readonly Action<string> report;
+        private readonly Func<DateTime> utcNow;
+        private readonly Queue<DateTime> connectionFailures = new Queue<DateTime>();
+        private DateTime retryAfter;
         private readonly System.Windows.Forms.Timer debounce = new System.Windows.Forms.Timer { Interval = 200 };
         private readonly Dictionary<ICodeFileDocument, IDocument> editors = new Dictionary<ICodeFileDocument, IDocument>();
+#if PABC_LINUX_PLUGIN
+        private readonly Dictionary<string, Snapshot> sent = new Dictionary<string, Snapshot>(StringComparer.Ordinal);
+#else
         private readonly Dictionary<string, Snapshot> sent = new Dictionary<string, Snapshot>(StringComparer.OrdinalIgnoreCase);
+#endif
         private readonly object queueLock = new object();
         private Batch desired;
         private long nextSequence, appliedSequence;
@@ -42,7 +49,11 @@ namespace VisualPascalABCPlugins
         private bool cleanupStarted;
         private INet10LanguageClient client;
         private readonly System.Collections.Concurrent.ConcurrentDictionary<string, bool> packageRequests =
+#if PABC_LINUX_PLUGIN
+            new System.Collections.Concurrent.ConcurrentDictionary<string, bool>(StringComparer.Ordinal);
+#else
             new System.Collections.Concurrent.ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+#endif
         internal bool NeedsPackageRestore(ICodeFileDocument document) => document != null && !document.FromMetadata &&
             packageRequests.ContainsKey(new Uri(Path.GetFullPath(document.FileName)).AbsoluteUri);
         internal Task<object> RestorePackagesAsync(ICodeFileDocument document) =>
@@ -53,11 +64,13 @@ namespace VisualPascalABCPlugins
         internal bool IsRestoringPackages => client?.IsRestoringPackages == true;
         internal Task CancelPackageRestoreAsync() => client?.CancelPackageRestoreAsync() ?? Task.CompletedTask;
 
-        public Net10LanguageDocuments(IWorkbenchDocumentEvents events, Func<INet10LanguageClient> createClient, Action<string> report)
+        public Net10LanguageDocuments(IWorkbenchDocumentEvents events, Func<INet10LanguageClient> createClient, Action<string> report,
+            Func<DateTime> utcNow = null)
         {
             this.events = events;
             this.createClient = createClient;
             this.report = report;
+            this.utcNow = utcNow ?? (() => DateTime.UtcNow);
             events.DocumentOpened += Opened;
             events.DocumentClosed += Closed;
             events.DocumentRenamed += Renamed;
@@ -191,7 +204,7 @@ namespace VisualPascalABCPlugins
             => RequestPositionAsync(document, line, character, "textDocument/implementation", cancellation);
 
         internal Task<object> SymbolsAsync(ICodeFileDocument document, CancellationToken cancellation)
-            => RequestPositionAsync(document, 0, 0, "textDocument/documentSymbol", cancellation);
+            => RequestPositionAsync(document, 0, 0, "pascalabc/documentOutline", cancellation);
 
         private Task<object> RequestPositionAsync(ICodeFileDocument document, int line, int character, string method, CancellationToken cancellation)
         {
@@ -212,11 +225,13 @@ namespace VisualPascalABCPlugins
                 using (var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellation, lifetime.Token))
                 {
                     await operations.WaitAsync(linked.Token).ConfigureAwait(false);
+                    bool synchronized = false;
                     try
                     {
                         linked.Token.ThrowIfCancellationRequested();
                         if (!active || disposed) return null;
                         await ApplyAsync(batch).ConfigureAwait(false);
+                        synchronized = true;
                         linked.Token.ThrowIfCancellationRequested();
                         if (!active || disposed || client == null) return null;
                         var parameters = method.StartsWith("pascalabc/", StringComparison.Ordinal)
@@ -236,10 +251,18 @@ namespace VisualPascalABCPlugins
                                     Uri.TryCreate(address, UriKind.Absolute, out var target) && target.Scheme == "pascalabc-metadata")
                                     location["metadata"] = await client.RequestAsync("pascalabc/metadata", new { uri = address }, linked.Token).ConfigureAwait(false);
                         }
+                        connectionFailures.Clear();
                         return response;
                     }
                     catch (OperationCanceledException) { throw; }
-                    catch (Exception error) { ConnectionFailed(error); return null; }
+                    catch (Exception error)
+                    {
+                        // A failed analysis request is not a lost connection. Keep the
+                        // live process and snapshots; the next user trigger may succeed.
+                        if (synchronized && client?.IsConnected == true) Report("LSP: ошибка запроса — " + error.Message);
+                        else ConnectionFailed(error);
+                        return null;
+                    }
                     finally { operations.Release(); }
                 }
             });
@@ -250,7 +273,16 @@ namespace VisualPascalABCPlugins
             client?.Dispose();
             client = null;
             sent.Clear();
-            if (!disposed) Report("LSP: ошибка — " + error.Message);
+            packageRequests.Clear();
+            DateTime now = utcNow();
+            while (connectionFailures.Count > 0 && now - connectionFailures.Peek() > TimeSpan.FromSeconds(30))
+                connectionFailures.Dequeue();
+            connectionFailures.Enqueue(now);
+            // Retry on an editor action, with a short cooldown after repeated
+            // crashes. No timer/restart loop, no permanent disable flag.
+            if (connectionFailures.Count >= 3) retryAfter = now.AddSeconds(10);
+            if (!disposed) Report("LSP: ошибка — " + error.Message +
+                (retryAfter > now ? "; повтор через 10 с при следующем запросе" : ""));
             // Retry only on the next editor/platform action, not an endless restart loop.
         }
 
@@ -260,12 +292,11 @@ namespace VisualPascalABCPlugins
             var snapshots = batch.Items;
             if (client != null && !client.IsConnected)
             {
-                client.Dispose();
-                client = null;
-                sent.Clear();
+                ConnectionFailed(new IOException("соединение закрыто"));
             }
             if (client == null && snapshots.Length > 0)
             {
+                if (utcNow() < retryAfter) return;
                 Report("LSP: подключение…");
                 client = createClient();
                 if (disposed) { client.Dispose(); return; }
@@ -289,7 +320,11 @@ namespace VisualPascalABCPlugins
                 await client.StartAsync().ConfigureAwait(false);
             }
             if (disposed || client == null) return;
+#if PABC_LINUX_PLUGIN
+            var names = new HashSet<string>(snapshots.Select(item => item.Uri), StringComparer.Ordinal);
+#else
             var names = new HashSet<string>(snapshots.Select(item => item.Uri), StringComparer.OrdinalIgnoreCase);
+#endif
             foreach (string uri in sent.Keys.Where(uri => !names.Contains(uri)).ToArray())
             {
                 if (disposed) break;

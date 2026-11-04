@@ -682,10 +682,6 @@ namespace ICSharpCode.TextEditor
 		/// </returns>
 		protected internal virtual bool HandleKeyPress(char ch)
 		{
-			// Keep the legacy Mono multicast result; Windows stops at the
-			// first subscriber that consumes the character.
-			if (EditorPlatform.IsMonoUnix)
-				return KeyEventHandler != null && KeyEventHandler(ch);
 			KeyEventHandler handlers = KeyEventHandler;
 			if (handlers != null) {
 				// A multicast delegate returns only its last subscriber's result.

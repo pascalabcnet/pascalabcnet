@@ -32,7 +32,7 @@ internal static partial class Program
                 ["Description"] = "Date and time library", ["Source"] = "nuget.org"
             }
         };
-        var provider = new Net10PackageCompletionProvider(suggestions, images, name);
+        var provider = new Net10PackageCompletionProvider(suggestions, TestIntelliSenseUI(null), name);
         Check(provider.Items.Length == 1 && provider.Items[0].Text.Contains("NodaTime") &&
             provider.Items[0].Description.Contains("Date and time library"),
             "package list keeps its short row and separate description");
@@ -47,7 +47,7 @@ internal static partial class Program
             Check(list.SelectedCompletionData.Text == "Z.Popular",
                 "package list keeps relevance and download order instead of alphabetic sorting");
         }
-        var versions = new Net10PackageCompletionProvider(new object[] { "3.2.4", "3.1.0" }, images, version);
+        var versions = new Net10PackageCompletionProvider(new object[] { "3.2.4", "3.1.0" }, TestIntelliSenseUI(null), version);
         Check(versions.Items.Length == 2 && versions.Items[0].Text == "3.2.4",
             "version completion keeps server ordering");
 
@@ -56,7 +56,7 @@ internal static partial class Program
                 ["Id"] = "Microsoft.Extensions.DependencyInjection.Abstractions",
                 ["Version"] = "10.0.0", ["Description"] = "Dependency injection", ["Source"] = "nuget.org"
             }
-        }, images, name);
+        }, TestIntelliSenseUI(null), name);
         using (var parent = new Form())
         using (var editor = new EditorDocument())
         {

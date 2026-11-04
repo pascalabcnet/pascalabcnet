@@ -322,6 +322,7 @@
     <Compile Include="Workbench\WindowOperations.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Workbench\ExternalIntelliSense.cs" />
     <Compile Include="Workbench\WorkbenchServiceFactory.cs" />
     <EmbeddedResource Include="ABCHealth.resx">
       <DependentUpon>ABCHealth.cs</DependentUpon>

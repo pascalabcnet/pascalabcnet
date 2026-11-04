@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IdeReferenceDirectory Condition="'$(IdeReferenceDirectory)' == ''">$(MSBuildProjectDirectory)\..\..\bin</IdeReferenceDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PascalABCNETLinux"><HintPath>$(IdeReferenceDirectory)/PascalABCNETLinux.exe</HintPath><Private>false</Private></Reference>
+    <Reference Include="PluginsSupport"><HintPath>$(IdeReferenceDirectory)/PluginsSupport.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="ICSharpCode.TextEditor"><HintPath>$(IdeReferenceDirectory)/ICSharpCode.TextEditor.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+</Project>

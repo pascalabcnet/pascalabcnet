@@ -9,7 +9,7 @@ using System.Windows.Forms;
 namespace VisualPascalABCPlugins
 {
     // The legacy IDE discovers plugins by this class-name suffix and IWorkbench constructor.
-    public sealed class CompileNet10_VisualPascalABCPlugin : IExtendedVisualPascalABCPlugin, IIdeCommandHandler
+    public sealed partial class CompileNet10_VisualPascalABCPlugin : IExtendedVisualPascalABCPlugin, IIdeCommandHandler
     {
         private readonly IWorkbench workbench;
         private readonly PluginGUIItem compileItem;
@@ -23,12 +23,17 @@ namespace VisualPascalABCPlugins
         private string dotnetPath = "dotnet";
         private bool compiling;
         private bool restoringLanguagePackages;
+#if PABC_LINUX_PLUGIN
+        private bool linuxRuntimeAvailable;
+#endif
         private CancellationTokenSource preparationCancellation;
         private IWorkbenchCommandService commandService;
         private IDisposable commandRegistration;
         private ToolStripMenuItem platformItem;
         private ToolStripMenuItem publishItem;
+#if !PABC_LINUX_PLUGIN
         private Net10LanguageDocuments languageDocuments;
+        private IExternalIntelliSenseSession languageUI;
         private Net10Completion languageCompletion;
         private Net10Hover languageHover;
         private Net10Signature languageSignature;
@@ -36,18 +41,23 @@ namespace VisualPascalABCPlugins
         private Net10DocumentSymbols languageSymbols;
         private readonly Timer languageGate = new Timer { Interval = 500 };
 
+#endif
         public CompileNet10_VisualPascalABCPlugin(IWorkbench workbench)
         {
             if (workbench == null)
                 throw new ArgumentNullException(nameof(workbench));
 
             this.workbench = workbench;
+#if !PABC_LINUX_PLUGIN
             Application.ApplicationExit += (sender, e) => languageDocuments?.AbortOnApplicationExit();
+#endif
             status = new Net10StatusDisplay(workbench.MainForm,
                 key => PascalABCCompiler.StringResources.Get("VP_VEC_" + key));
+#if !PABC_LINUX_PLUGIN
             status.SetPackageRestoreRequired(() => platformItem?.Checked == true &&
                 workbench.UserOptions.AllowCodeCompletion && languageDocuments?.NeedsPackageRestore(
                     workbench.ServiceContainer.DocumentService.CurrentCodeFileDocument) == true, RestoreLanguagePackages);
+#endif
             compileItem = new PluginGUIItem(
                 "Compile10",
                 "Скомпилировать текущий текст под .NET 10",
@@ -64,13 +74,20 @@ namespace VisualPascalABCPlugins
                 null, Color.Transparent, () => runner?.Stop());
             workbench.MainForm.FormClosed += (sender, e) =>
             {
+#if PABC_LINUX_PLUGIN
+                linuxLanguage?.Dispose();
+                linuxNavigationMenu?.Dispose();
+#endif
+#if !PABC_LINUX_PLUGIN
                 languageGate.Dispose();
                 languageCompletion?.Dispose();
                 languageHover?.Dispose();
                 languageSignature?.Dispose();
+                languageUI?.Dispose();
                 languageNavigation?.Dispose();
                 languageSymbols?.Dispose();
                 languageDocuments?.Dispose();
+#endif
                 commandRegistration?.Dispose();
                 if (commandService != null) commandService.LegacyServicesSuspended = false;
                 runner?.Stop();
@@ -132,11 +149,18 @@ namespace VisualPascalABCPlugins
             publishItem = Net10MenuItems.CreatePublishItem();
             publishItem.Click += (sender, e) => Execute(false, publish: true);
             programMenu.DropDownItems.Add(publishItem);
+#if PABC_LINUX_PLUGIN
+            publishItem.Visible = false;
+#endif
             programMenu.DropDownOpening += (sender, e) =>
             {
                 bool available = !compiling && !restoringLanguagePackages && runner == null &&
                     !workbench.ServiceContainer.RunService.IsRun() && !workbench.DebuggerManager.IsRunning;
+#if PABC_LINUX_PLUGIN
+                platformItem.Enabled = available && linuxRuntimeAvailable;
+#else
                 platformItem.Enabled = available;
+#endif
                 publishItem.Enabled = available && platformItem.Checked;
             };
             foreach (var item in new[] { compileItem, runItem, stopItem })
@@ -144,9 +168,11 @@ namespace VisualPascalABCPlugins
                 if (item.toolStripButton is ToolStripItem button) button.Visible = false;
                 if (item.menuItem is ToolStripItem menu) menu.Visible = false;
             }
+#if !PABC_LINUX_PLUGIN
             var documentEvents = workbench.ServiceContainer.DocumentService as IWorkbenchDocumentEvents;
-            if (documentEvents != null)
+            if (documentEvents != null && workbench.ServiceContainer is IWorkbenchIntelliSenseUI hints)
             {
+                languageUI = hints.CreateIntelliSenseSession();
                 languageDocuments = new Net10LanguageDocuments(documentEvents, () =>
                 {
                     var settings = Net10RuntimeSettings.Load(AppDomain.CurrentDomain.BaseDirectory);
@@ -165,11 +191,11 @@ namespace VisualPascalABCPlugins
                     catch (InvalidOperationException) { }
                 };
                 languageCompletion = new Net10Completion(workbench.MainForm, documentEvents, languageDocuments,
-                    () => platformItem.Checked && workbench.UserOptions.AllowCodeCompletion && workbench.UserOptions.CodeCompletionDot);
+                    () => platformItem.Checked && workbench.UserOptions.AllowCodeCompletion && workbench.UserOptions.CodeCompletionDot, languageUI);
                 languageHover = new Net10Hover(workbench.MainForm, documentEvents, languageDocuments,
-                    () => platformItem.Checked && workbench.UserOptions.AllowCodeCompletion && workbench.UserOptions.CodeCompletionHint);
+                    () => platformItem.Checked && workbench.UserOptions.AllowCodeCompletion && workbench.UserOptions.CodeCompletionHint, languageUI);
                 languageSignature = new Net10Signature(workbench.MainForm, documentEvents, languageDocuments,
-                    () => platformItem.Checked && workbench.UserOptions.AllowCodeCompletion && workbench.UserOptions.CodeCompletionParams);
+                    () => platformItem.Checked && workbench.UserOptions.AllowCodeCompletion && workbench.UserOptions.CodeCompletionParams, languageUI);
                 languageCompletion.Opening += languageSignature.CloseHints;
                 languageNavigation = new Net10Navigation(documentEvents, languageDocuments,
                     () => platformItem.Checked && workbench.UserOptions.AllowCodeCompletion, Navigate);
@@ -179,14 +205,28 @@ namespace VisualPascalABCPlugins
                 languageGate.Tick += (sender, e) => UpdateLanguageActivity();
                 languageGate.Start();
             }
+#endif
+#if PABC_LINUX_PLUGIN
+            InitializeLinuxLanguageServices();
+#endif
             // Only the modern distribution ships this plugin. The ordinary IDE is unchanged.
             // Apply once, after all modern services are connected; manual changes remain session-only.
             try
             {
                 var settings = Net10RuntimeSettings.Load(AppDomain.CurrentDomain.BaseDirectory);
+#if PABC_LINUX_PLUGIN
+                linuxRuntimeAvailable = File.Exists(Path.Combine(settings.RuntimeDirectory, "PABCCompilerController.dll")) &&
+                    File.Exists(Path.Combine(settings.RuntimeDirectory, "PABCCompilerWorker.dll")) &&
+                    Net10RuntimeAvailability.IsAvailable(settings.DotnetPath);
+                platformItem.Enabled = linuxRuntimeAvailable;
+                platformItem.ToolTipText = linuxRuntimeAvailable ? platformItem.ToolTipText :
+                    "Нужны runtime .NET 10 и комплект компилятора net10.";
+#endif
                 if (File.Exists(Path.Combine(settings.RuntimeDirectory, "PABCCompilerController.dll")) &&
                     File.Exists(Path.Combine(settings.RuntimeDirectory, "PABCCompilerWorker.dll")) &&
+#if !PABC_LINUX_PLUGIN
                     File.Exists(Path.Combine(settings.RuntimeDirectory, "PascalABCNet.LanguageServer.dll")) &&
+#endif
                     Net10RuntimeAvailability.IsAvailable(settings.DotnetPath))
                     SelectPlatform(true);
             }
@@ -204,6 +244,7 @@ namespace VisualPascalABCPlugins
 
         private void UpdateLanguageActivity()
         {
+#if !PABC_LINUX_PLUGIN
             bool selected = platformItem?.Checked == true;
             bool enabled = selected && workbench.UserOptions.AllowCodeCompletion;
             status.SetLanguageRestoreVisible(enabled && runner == null &&
@@ -215,8 +256,14 @@ namespace VisualPascalABCPlugins
             languageSignature?.SetActive(enabled && workbench.UserOptions.CodeCompletionParams);
             languageNavigation?.SetActive(enabled);
             languageSymbols?.SetActive(selected, enabled && workbench.UserOptions.ShowQuickClassBrowserPanel);
+#else
+            linuxLanguage?.UpdateActivity();
+            if (platformItem?.Checked != true || !workbench.UserOptions.AllowCodeCompletion)
+            { linuxNavigationMenu?.Dispose(); linuxNavigationMenu = null; }
+#endif
         }
 
+#if !PABC_LINUX_PLUGIN
         private void Navigate(List<Net10NavigationTarget> targets)
         {
             languageSignature?.CloseHints();
@@ -306,6 +353,7 @@ namespace VisualPascalABCPlugins
             }
         }
 
+#endif
         public bool TryExecute(VisualEnvironmentCompilerAction action, object context)
         {
             if (action == VisualEnvironmentCompilerAction.Stop && runner != null)
@@ -349,6 +397,13 @@ namespace VisualPascalABCPlugins
             bool redirectConsoleIO = true)
         {
             if (compiling || restoringLanguagePackages) return;
+#if PABC_LINUX_PLUGIN
+            if (run && !redirectConsoleIO)
+            {
+                WriteMessage("Для запуска .NET 10 в Linux включите вывод в окно IDE. Внешний терминал пока не подключён.");
+                return;
+            }
+#endif
             IDisposable preparation = null;
             string cleanupSource = null, cleanupOutput = null;
             string cleanupOutputRoot = null;
@@ -424,8 +479,10 @@ namespace VisualPascalABCPlugins
                 }
                 if (response.success)
                 {
+#if !PABC_LINUX_PLUGIN
                     if (languageDocuments?.NeedsPackageRestore(document) == true)
                         await languageDocuments.RefreshPackagesAsync(document);
+#endif
                     ShowDiagnostics(response, fileName, run);
                     if (publish)
                     {

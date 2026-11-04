@@ -44,6 +44,17 @@ namespace VisualPascalABC
             return h;
         }
 
+        internal static void CloseLegacyHints()
+        {
+            foreach (CodeCompletionKeyHandler handler in ht.Values)
+            {
+                handler.CloseCodeCompletionWindow(null, EventArgs.Empty);
+                handler.CloseInsightWindow(null, null);
+            }
+            foreach (object value in ((Hashtable)CodeCompletionAllNamesAction.comp_windows.Clone()).Values)
+                if (value is PABCNETCodeCompletionWindow window) window.Close();
+        }
+
         public static void Detach(TextEditorControl editor)
         {
             if (ht.ContainsKey(editor))

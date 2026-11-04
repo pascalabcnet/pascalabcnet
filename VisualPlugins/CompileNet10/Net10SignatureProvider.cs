@@ -7,7 +7,7 @@ using ICSharpCode.TextEditor.Gui.InsightWindow;
 
 namespace VisualPascalABCPlugins
 {
-    internal sealed class Net10SignatureProvider : IExternalInsightDataProvider
+    internal sealed class Net10SignatureProvider : IExternalParameterInfo
     {
         private sealed class Signature
         {

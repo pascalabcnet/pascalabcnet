@@ -21,7 +21,8 @@ namespace VisualPascalABC
 
         void RunnerManager_Started(string fileName)
         {
-            Workbench.BeginInvoke(new SetTextDelegate(RunnerManager_Started_Sync), fileName);
+            if (externalOutputFile == fileName) RunnerManager_Started_Sync(fileName);
+            else Workbench.BeginInvoke(new SetTextDelegate(RunnerManager_Started_Sync), fileName);
         }
 
         void ButtonsEnableDisable_RunStart()
@@ -36,7 +37,7 @@ namespace VisualPascalABC
         {
             Workbench.WidgetController.SetStopEnabled(false);
             Workbench.WidgetController.SetCompilingAndRunButtonsEnabled(true);
-            if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
+            if (!WorkbenchServiceFactory.ModernCompilationSelected && CodeCompletion.CodeCompletionController.IntellisenseAvailable())
                 Workbench.WidgetController.SetDebugButtonsEnabled(true);
             Workbench.WidgetController.SetOptionsEnabled(true);
         }

@@ -159,7 +159,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
 
         return ExecuteSerializedAsync(() =>
         {
-            if (Documents.TryGet(documentId, out var currentDocument) &&
+            if (Documents.TryGet(documentId, out var currentDocument) && currentDocument is not null &&
                 currentDocument?.Version is int currentVersion &&
                 version is int incomingVersion &&
                 incomingVersion <= currentVersion)
@@ -205,6 +205,23 @@ public sealed class PascalLanguageService : IPascalLanguageService
         return ExecuteSerializedAsync<IReadOnlyList<CompletionItem>>(() =>
         {
             var state = GetCompiledState(documentId);
+            // A just-typed member dot can make the current source unparsable.
+            // Retry only that request with the dot blanked in the analysis view,
+            // preserving offsets and the original document used to resolve the
+            // expression. Never replace the cached last successful model.
+            if ((state is null || state.IsStale) &&
+                Documents.TryGet(documentId, out var currentDocument) &&
+                caretOffset > 0 && caretOffset <= currentDocument.Text.Length &&
+                currentDocument.Text[caretOffset - 1] == '.' &&
+                !_controller.PackageRestoreRequired)
+            {
+                var analysis = currentDocument.Text.ToCharArray();
+                analysis[caretOffset - 1] = ' ';
+                var recovered = _controller.Compile(currentDocument.FileName, new string(analysis));
+                if (recovered.is_compiled)
+                    state = new DocumentState(currentDocument, recovered,
+                        GetDirectDependencies(recovered), 0, true, false, null);
+            }
             if (state is null)
                 return Array.Empty<CompletionItem>();
 
@@ -468,7 +485,11 @@ public sealed class PascalLanguageService : IPascalLanguageService
     }
 
     public Task<IReadOnlyList<DocumentSymbolInfo>> GetDocumentSymbolsAsync(
-        string documentId, CancellationToken cancellationToken = default)
+        string documentId, CancellationToken cancellationToken = default) =>
+        GetDocumentOutlineAsync(documentId, false, cancellationToken);
+
+    public Task<IReadOnlyList<DocumentSymbolInfo>> GetDocumentOutlineAsync(
+        string documentId, bool includeSections, CancellationToken cancellationToken = default)
     {
         return ExecuteSerializedAsync<IReadOnlyList<DocumentSymbolInfo>>(() =>
         {
@@ -476,6 +497,19 @@ public sealed class PascalLanguageService : IPascalLanguageService
             if (state?.DomConverter.visitor.entry_scope is not IInterfaceUnitScope unit)
                 return Array.Empty<DocumentSymbolInfo>();
 
+            if (includeSections && unit.ImplementationUnitScope is { } part)
+            {
+                DocumentSymbolInfo Section(IBaseScope scope, string name)
+                {
+                    var children = new List<DocumentSymbolInfo>();
+                    AddDocumentSymbols(scope.Members, state.Document.FileName, children);
+                    var position = scope.GetPosition();
+                    int line = Math.Max(0, position.line - 1), column = Math.Max(0, position.column - 1);
+                    return new DocumentSymbolInfo(name, name, "Section", line, column,
+                        Math.Max(line, position.end_line - 1), Math.Max(0, position.end_column - 1), children);
+                }
+                return new[] { Section(unit, "interface"), Section(part, "implementation") };
+            }
             var symbols = new List<DocumentSymbolInfo>();
             AddDocumentSymbols(unit.Members, state.Document.FileName, symbols);
             if (unit.ImplementationUnitScope is { } implementation)

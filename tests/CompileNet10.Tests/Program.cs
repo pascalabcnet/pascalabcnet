@@ -142,7 +142,8 @@ internal static partial class Program
     {
         int probeExitCode;
         if (TryFakeRuntimeProbe(args, out probeExitCode)) return probeExitCode;
-        return RunTestsAsync(args).GetAwaiter().GetResult();
+        try { return RunTestsAsync(args).GetAwaiter().GetResult(); }
+        finally { foreach (var form in testHintParents) form.Dispose(); }
     }
 
     private static void CheckParserRename()
@@ -286,6 +287,18 @@ internal static partial class Program
     {
         try
         {
+            if (args.Length > 0 && args[0] == "--intellisense-contract")
+            {
+                CheckExternalIntelliSenseOwnership();
+                CheckExternalCompletionKeys();
+                CheckLanguageCompletion(null);
+                CheckPackageDirectiveCompletion();
+                CheckLanguageHover();
+                CheckLanguageSignature(args.Length > 1 ? args[1] : null);
+                CheckLanguageRecovery();
+                CheckLanguageSynchronizationAsync(args.Length > 1 ? args[1] : null).GetAwaiter().GetResult();
+                return 0;
+            }
             if (args.Length == 2 && args[0] == "--runtime-errors")
             {
                 await CheckRedirectedRuntimeErrors(Path.GetFullPath(args[1]));
@@ -326,6 +339,11 @@ internal static partial class Program
             {
                 System.Threading.SynchronizationContext.SetSynchronizationContext(null);
                 await CheckMlCacheRemoval(args[1]);
+                return 0;
+            }
+            if (args.Length > 0 && args[0] == "--symbols-ui")
+            {
+                CheckLanguageDocumentSymbols();
                 return 0;
             }
             CheckRestoreDeadlines();
@@ -370,11 +388,6 @@ internal static partial class Program
             if (args.Length > 0 && args[0] == "--navigation-hover")
             {
                 CheckNavigationClick(null);
-                return 0;
-            }
-            if (args.Length > 0 && args[0] == "--symbols-ui")
-            {
-                CheckLanguageDocumentSymbols();
                 return 0;
             }
             if (args.Length > 0 && args[0] == "--signature-ui")

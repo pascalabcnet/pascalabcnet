@@ -5,7 +5,6 @@ using System.Linq;
 using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using VisualPascalABC;
 
 namespace VisualPascalABCPlugins
 {
@@ -25,9 +24,9 @@ namespace VisualPascalABCPlugins
         public string PreSelection { get; }
         public int DefaultIndex => 0;
 
-        public Net10CompletionProvider(object response, CodeCompletionImagesProvider images, string prefix)
+        public Net10CompletionProvider(object response, IExternalIntelliSenseSession ui, string prefix)
         {
-            ImageList = images.ImageList;
+            ImageList = ui.CompletionImages;
             PreSelection = string.IsNullOrEmpty(prefix) ? null : prefix;
             var list = response as IEnumerable;
             if (response is Dictionary<string, object> completion && completion.TryGetValue("items", out var items))
@@ -49,7 +48,7 @@ namespace VisualPascalABCPlugins
                 bool extension = item.TryGetValue("data", out var data) && data is Dictionary<string, object> metadata &&
                     metadata.TryGetValue("isExtensionMethod", out var flag) && flag is bool isExtension && isExtension;
                 int image = extension && (kind == 2 || kind == 3 || kind == 4)
-                    ? images.IconNumberExtensionMethod : Icon(images, kind);
+                    ? ui.GetImageIndex(CompletionItemKind.ExtensionMethod) : Icon(ui, kind);
                 result.Add(new Item(label, insertion, description, image));
             }
             Items = result.ToArray();
@@ -62,23 +61,23 @@ namespace VisualPascalABCPlugins
             return value as string;
         }
 
-        private static int Icon(CodeCompletionImagesProvider images, int kind)
+        private static int Icon(IExternalIntelliSenseSession ui, int kind)
         {
             switch (kind)
             {
-                case 2: case 3: case 4: return images.IconNumberMethod;
-                case 5: return images.IconNumberField;
-                case 6: return images.IconNumberLocal;
-                case 7: return images.IconNumberClass;
-                case 8: return images.IconNumberInterface;
-                case 9: return images.IconNumberNamespace;
-                case 10: return images.IconNumberProperty;
-                case 13: return images.IconNumberEnum;
-                case 14: return images.IconNumberKeyword;
-                case 20: case 21: return images.IconNumberConstant;
-                case 22: return images.IconNumberStruct;
-                case 23: return images.IconNumberEvent;
-                default: return images.IconNumberClass;
+                case 2: case 3: case 4: return ui.GetImageIndex(CompletionItemKind.Method);
+                case 5: return ui.GetImageIndex(CompletionItemKind.Field);
+                case 6: return ui.GetImageIndex(CompletionItemKind.Local);
+                case 7: return ui.GetImageIndex(CompletionItemKind.Class);
+                case 8: return ui.GetImageIndex(CompletionItemKind.Interface);
+                case 9: return ui.GetImageIndex(CompletionItemKind.Namespace);
+                case 10: return ui.GetImageIndex(CompletionItemKind.Property);
+                case 13: return ui.GetImageIndex(CompletionItemKind.Enum);
+                case 14: return ui.GetImageIndex(CompletionItemKind.Keyword);
+                case 20: case 21: return ui.GetImageIndex(CompletionItemKind.Constant);
+                case 22: return ui.GetImageIndex(CompletionItemKind.Struct);
+                case 23: return ui.GetImageIndex(CompletionItemKind.Event);
+                default: return ui.GetImageIndex(CompletionItemKind.Class);
             }
         }
 

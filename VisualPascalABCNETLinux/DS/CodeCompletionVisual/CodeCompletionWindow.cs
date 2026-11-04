@@ -96,6 +96,17 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			return codeCompletionWindow;
         }
         
+        // External data uses the same passive popup and editor key path.
+        public static PABCNETCodeCompletionWindow ShowExternalCompletionWindow(Form parent, TextEditorControl control,
+            ICompletionDataProvider provider, ICompletionData[] items, VisualPascalABC.CodeCompletionImagesProvider images,
+            bool preserveOrder = false)
+        {
+            if (items == null || items.Length == 0) return null;
+            var window = new PABCNETCodeCompletionWindow(provider, items, parent, control, false, true, images, preserveOrder);
+            window.ShowCompletionWindow();
+            return window;
+        }
+
         public void CalcFormWidth()
         {
             preferredWidth = codeCompletionListView.MeasureContentWidth() + 2 +
@@ -115,6 +126,10 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
         }
         
 		PABCNETCodeCompletionWindow(ICompletionDataProvider completionDataProvider, ICompletionData[] completionData, Form parentForm, TextEditorControl control,bool visibleKeyPressed, bool is_by_dot)
+            : this(completionDataProvider, completionData, parentForm, control, visibleKeyPressed, is_by_dot, null, false) { }
+
+        PABCNETCodeCompletionWindow(ICompletionDataProvider completionDataProvider, ICompletionData[] completionData, Form parentForm, TextEditorControl control,
+            bool visibleKeyPressed, bool is_by_dot, VisualPascalABC.CodeCompletionImagesProvider images, bool preserveOrder)
 		{
 			this.parentForm = parentForm;
 			this.control = control;
@@ -130,10 +145,10 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				startOffset -= completionDataProvider.PreSelection.Length; //+ 1;
 				if (visibleKeyPressed) endOffset--;
 				//endOffset--;
-				(completionDataProvider as VisualPascalABC.CodeCompletionProvider).preSelection = null;
+				if (completionDataProvider is VisualPascalABC.CodeCompletionProvider legacyProvider) legacyProvider.preSelection = null;
 			}
 			
-			codeCompletionListView = new PABCNETCodeCompletionListView(completionData, is_by_dot);
+			codeCompletionListView = new PABCNETCodeCompletionListView(completionData, is_by_dot, images, preserveOrder);
 			codeCompletionListView.ImageList = completionDataProvider.ImageList;
 			codeCompletionListView.Dock = DockStyle.Fill;
 			codeCompletionListView.SelectedItemChanged += new EventHandler(CodeCompletionListViewSelectedItemChanged);
@@ -172,12 +187,15 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			//declarationViewWindow.ShowDeclarationViewWindow();
 			CodeCompletionListViewSelectedItemChanged(this, EventArgs.Empty);
 			
-			if ((completionDataProvider as VisualPascalABC.CodeCompletionProvider).DefaultCompletionElement != null) {
+			if (completionDataProvider is VisualPascalABC.CodeCompletionProvider legacy && legacy.DefaultCompletionElement != null) {
 				if ((completionDataProvider as VisualPascalABC.CodeCompletionProvider).ByFirstChar)
 				codeCompletionListView.FirstInsert = true;
 				codeCompletionListView.SelectIndexByCompletionData((completionDataProvider as VisualPascalABC.CodeCompletionProvider).DefaultCompletionElement);
 			}
 			
+            if (!(completionDataProvider is VisualPascalABC.CodeCompletionProvider))
+                codeCompletionListView.SelectIndex(Math.Max(0, completionDataProvider.DefaultIndex));
+
 			if (completionDataProvider.PreSelection != null) {
 				CaretOffsetChanged(this, EventArgs.Empty);
 			}
@@ -359,7 +377,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		{
 			if (!Visible) return;
 			ICompletionData data = codeCompletionListView.SelectedCompletionData;
-			if (data != null && !(data as UserDefaultCompletionData).IsOnOverrideWindow && data.Description != null && data.Description.Length > 0) {
+			if (data != null && !(data is UserDefaultCompletionData legacyItem && legacyItem.IsOnOverrideWindow) && data.Description != null && data.Description.Length > 0) {
 				SetDeclarationViewLocation();
 				declarationViewWindow.Description = data.Description;
 			} else {
@@ -499,7 +517,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
             {
                 document.DocumentAboutToBeChanged -= DocumentAboutToBeChanged;
                 ICompletionData data = codeCompletionListView.SelectedCompletionData;
-                if (VisualPascalABC.VisualPABCSingleton.MainForm.UserOptions.EnableSmartIntellisense)
+                if (dataProvider is VisualPascalABC.CodeCompletionProvider && VisualPascalABC.VisualPABCSingleton.MainForm.UserOptions.EnableSmartIntellisense)
                 {
                     VisualPascalABC.CompletionDataDispatcher.AddLastUsedItem(data);
                     VisualPascalABC.CompletionDataDispatcher.BindMember(data);

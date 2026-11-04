@@ -8,7 +8,9 @@ using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
+#if !PABC_LINUX_PLUGIN
 using VisualPascalABC;
+#endif
 
 namespace VisualPascalABCPlugins
 {
@@ -62,11 +64,12 @@ namespace VisualPascalABCPlugins
         private readonly IWorkbenchDocumentEvents events;
         private readonly Net10LanguageDocuments documents;
         private readonly Func<bool> enabled;
+#if !PABC_LINUX_PLUGIN
         private readonly Func<TextArea, bool> packageDirectiveAtCaret;
         private readonly Func<TextArea, bool> packageCompletion;
+#endif
         private readonly Dictionary<ICodeFileDocument, Subscription> subscriptions = new Dictionary<ICodeFileDocument, Subscription>();
-        private CodeCompletionImagesProvider images;
-        private PABCNETCodeCompletionWindow window;
+        private readonly IExternalIntelliSenseSession ui;
         private Net10CompletionContext pending;
         private CancellationTokenSource cancellation;
         private ICodeFileDocument scheduled;
@@ -74,11 +77,14 @@ namespace VisualPascalABCPlugins
         private bool active, disposed;
         internal event Action Opening;
 
-        public Net10Completion(Form parent, IWorkbenchDocumentEvents events, Net10LanguageDocuments documents, Func<bool> enabled)
+        public Net10Completion(Form parent, IWorkbenchDocumentEvents events, Net10LanguageDocuments documents, Func<bool> enabled, IExternalIntelliSenseSession ui)
         {
+            this.ui = ui ?? throw new ArgumentNullException(nameof(ui));
             this.parent = parent; this.events = events; this.documents = documents; this.enabled = enabled;
+#if !PABC_LINUX_PLUGIN
             packageDirectiveAtCaret = IsPackageDirectiveAtCaret;
             packageCompletion = RequestPackageCompletion;
+#endif
             events.DocumentOpened += Opened;
             events.DocumentClosed += Closed;
             events.DocumentRenamed += Renamed;
@@ -90,16 +96,20 @@ namespace VisualPascalABCPlugins
             active = value;
             if (active)
             {
+#if !PABC_LINUX_PLUGIN
                 CodeCompletionAllNamesAction.PackageDirectiveAtCaret = packageDirectiveAtCaret;
                 CodeCompletionAllNamesAction.PackageCompletion = packageCompletion;
+#endif
                 foreach (var document in events.GetOpenDocuments()) Attach(document);
             }
             else
             {
+#if !PABC_LINUX_PLUGIN
                 if (ReferenceEquals(CodeCompletionAllNamesAction.PackageDirectiveAtCaret, packageDirectiveAtCaret))
                     CodeCompletionAllNamesAction.PackageDirectiveAtCaret = null;
                 if (ReferenceEquals(CodeCompletionAllNamesAction.PackageCompletion, packageCompletion))
                     CodeCompletionAllNamesAction.PackageCompletion = null;
+#endif
                 Invalidate(); CloseWindow();
                 foreach (var document in new List<ICodeFileDocument>(subscriptions.Keys)) Detach(document);
             }
@@ -115,7 +125,9 @@ namespace VisualPascalABCPlugins
                 Key = ch => Key(document, ch),
                 Dialog = key =>
                 {
+#if !PABC_LINUX_PLUGIN
                     if (key == (Keys.Control | Keys.Space) && RequestPackageCompletion(document)) return true;
+#endif
                     if (key == Keys.Escape || scheduled != null) Invalidate();
                     return false;
                 },
@@ -155,7 +167,7 @@ namespace VisualPascalABCPlugins
         {
             if (scheduled != null) Invalidate(); // Another keystroke overtook the posted trigger callback.
             if (!active || !enabled()) { Invalidate(); CloseWindow(); return false; }
-            if (window != null && window.ProcessKeyEvent(ch)) return true;
+            if (ui.ProcessCompletionKey(ch)) return true;
             if (ch != '.') return false;
             if (Net10PackageDirectiveContext.Parse(document.TextEditor.Document.TextContent,
                 document.TextEditor.ActiveTextAreaControl.Caret.Offset) != null) return false;
@@ -190,6 +202,7 @@ namespace VisualPascalABCPlugins
             return null;
         }
 
+#if !PABC_LINUX_PLUGIN
         private bool IsPackageDirectiveAtCaret(TextArea area)
         {
             if (!active || !enabled()) return false;
@@ -230,18 +243,11 @@ namespace VisualPascalABCPlugins
                     !string.Equals(context.Text, context.Document.TextEditor.Document.TextContent,
                         StringComparison.Ordinal) ||
                     context.Document.TextEditor.ActiveTextAreaControl.Caret.Offset != context.Offset) return;
-                images = images ?? new CodeCompletionImagesProvider();
-                var provider = new Net10PackageCompletionProvider(response, images, directive);
+                var provider = new Net10PackageCompletionProvider(response, ui, directive);
                 pending = null;
                 if (provider.Items.Length == 0) return;
                 Opening?.Invoke();
-                window = PABCNETCodeCompletionWindow.ShowExternalCompletionWindow(parent,
-                    context.Document.TextEditor, provider, provider.Items, images, true);
-                if (window != null)
-                {
-                    var shown = window;
-                    shown.Closed += (sender, e) => { if (ReferenceEquals(window, shown)) window = null; };
-                }
+                ui.ShowCompletion(context.Document, provider, true);
             }
             catch (OperationCanceledException) { }
             catch (Exception error) { Trace.TraceWarning("NuGet completion: {0}", error); }
@@ -251,6 +257,7 @@ namespace VisualPascalABCPlugins
             }
         }
 
+#endif
         private async Task RequestAsync(Net10CompletionContext context, long ticket, CancellationToken token)
         {
             try
@@ -259,16 +266,10 @@ namespace VisualPascalABCPlugins
                 object response = await documents.CompleteAsync(context.Document, position.Y, position.X, token);
                 // Captured WinForms context: no editor/control access on the transport thread.
                 if (token.IsCancellationRequested || ticket != generation || !CanShow(context.Document) || !context.IsCurrent(out var prefix)) return;
-                images = images ?? new CodeCompletionImagesProvider();
-                var provider = new Net10CompletionProvider(response, images, prefix);
+                var provider = new Net10CompletionProvider(response, ui, prefix);
                 pending = null;
                 Opening?.Invoke(); // Avoid two dialog-key consumers for completion and parameter help.
-                window = PABCNETCodeCompletionWindow.ShowExternalCompletionWindow(parent, context.Document.TextEditor, provider, provider.Items, images);
-                if (window != null)
-                {
-                    var shown = window;
-                    shown.Closed += (sender, e) => { if (ReferenceEquals(window, shown)) window = null; };
-                }
+                ui.ShowCompletion(context.Document, provider);
             }
             catch (OperationCanceledException) { }
             catch (Exception error) { Trace.TraceWarning("LSP completion: {0}", error); }
@@ -284,13 +285,13 @@ namespace VisualPascalABCPlugins
             pending = null; scheduled = null;
             cancellation?.Cancel(); cancellation?.Dispose(); cancellation = null;
         }
-        private void CloseWindow() { var old = window; window = null; old?.Close(); }
+        private void CloseWindow() => ui.Hide(IntelliSenseHint.Completion);
         public void Dispose()
         {
             if (disposed) return;
             SetActive(false); disposed = true;
             events.DocumentOpened -= Opened; events.DocumentClosed -= Closed; events.DocumentRenamed -= Renamed;
-            images?.ImageList.Dispose();
+
         }
     }
 }
