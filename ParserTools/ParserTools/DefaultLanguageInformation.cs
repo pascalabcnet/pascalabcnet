@@ -3,12 +3,14 @@
 
 
 using System.Collections.Generic;
-using PascalABCCompiler.Contracts;
 using PascalABCCompiler.Contracts.Languages;
 using PascalABCCompiler.Contracts.Parsers;
 
 namespace PascalABCCompiler.Parsers
 {
+    /// <summary>
+    /// Можно наследовать, если хочется больше дефолтных настроек
+    /// </summary>
     public abstract class DefaultLanguageInformation : ILanguageInformation
     {
         public abstract string Name { get; }
