@@ -26,7 +26,7 @@ namespace VisualPascalABC
                 Text = caption, Font = SystemFonts.MessageBoxFont, FormBorderStyle = FormBorderStyle.FixedDialog,
                 StartPosition = FormStartPosition.CenterParent, ShowInTaskbar = false,
                 MinimizeBox = false, MaximizeBox = false, ControlBox = canCancel,
-                AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, Padding = new Padding(12)
+                AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, Padding = new Padding(12, 12, 18, 12)
             };
             var layout = new TableLayoutPanel { AutoSize = true, ColumnCount = 2, RowCount = 2, Dock = DockStyle.Fill };
             var message = new Label {

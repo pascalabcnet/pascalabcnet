@@ -56,6 +56,23 @@ namespace VisualPascalABCPlugins
         delegate void AddInGuiDelegate(IVisualPascalABCPlugin Plugin);
         private void AddInGUI(IVisualPascalABCPlugin Plugin)
         {
+            // Apply plugin buttons and AfterAddInGUI changes in one layout pass.
+            var form = workbench?.MainForm;
+            var panel = ToolStrip?.Parent;
+            form?.SuspendLayout();
+            panel?.SuspendLayout();
+            ToolStrip?.SuspendLayout();
+            try { AddInGUICore(Plugin); }
+            finally
+            {
+                ToolStrip?.ResumeLayout(true);
+                panel?.ResumeLayout(true);
+                form?.ResumeLayout(true);
+            }
+        }
+
+        private void AddInGUICore(IVisualPascalABCPlugin Plugin)
+        {
             if (ToolStripMenuItem == null) return;
             List<IPluginGUIItem> MenuItems=new List<IPluginGUIItem>(),ToolBarItems=new List<IPluginGUIItem>();
             Plugin.GetGUI(MenuItems, ToolBarItems);

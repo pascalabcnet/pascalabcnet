@@ -16,7 +16,7 @@ internal static partial class Program
     {
         using (var metadata = new EditorDocument { FileName = "String [.NET 10].pas", FromMetadata = true })
         using (var parent = new Form())
-        using (var ui = new Net10Hover(parent, events, sync, () => true))
+        using (var ui = new Net10Hover(parent, events, sync, () => true, TestIntelliSenseUI(parent)))
         {
             metadata.TextEditor.Document.TextContent = target.MetadataText;
             open.Add(metadata); events.Opened(metadata); sync.WhenIdleAsync().GetAwaiter().GetResult();
@@ -88,7 +88,7 @@ internal static partial class Program
             var fake = new FakeLanguageClient();
             var sync = new Net10LanguageDocuments(events, () => fake, text => { });
             bool option = true;
-            var ui = new Net10Hover(parent, events, sync, () => option);
+            var ui = new Net10Hover(parent, events, sync, () => option, TestIntelliSenseUI(parent));
             var area = main.TextEditor.ActiveTextAreaControl.TextArea;
             var raise = typeof(TextArea).GetMethod("OnToolTipRequest", BindingFlags.NonPublic | BindingFlags.Instance);
             Action<ToolTipRequestEventArgs> request = args => raise.Invoke(area, new object[] { args });

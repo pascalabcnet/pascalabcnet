@@ -7,10 +7,34 @@ namespace VisualPascalABCPlugins.DBAccess
 {
     public partial class LoginForm
     {
+        private static void MakePluginImageTransparent(PictureBox picture)
+        {
+            if (picture.Image == null) return;
+            // Do not use MakeTransparent: Mono implements it through libgdiplus color keys.
+            // Store actual transparent pixels before ToolStrip scales or clones the bitmap.
+            var image = new Bitmap(picture.Image.Width, picture.Image.Height,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (var source = new Bitmap(picture.Image))
+            {
+                int key = picture.BackColor.ToArgb() & 0x00ffffff;
+                for (int y = 0; y < source.Height; y++)
+                    for (int x = 0; x < source.Width; x++)
+                    {
+                        Color pixel = source.GetPixel(x, y);
+                        image.SetPixel(x, y, pixel.A == 0 || (pixel.ToArgb() & 0x00ffffff) == key
+                            ? Color.FromArgb(0, 0, 0, 0) : pixel);
+                    }
+            }
+            picture.Image = image;
+            picture.Disposed += (sender, args) => image.Dispose();
+        }
+
         // Mono's LinkLabel can clip centered link text. Keep the same action,
         // but let a normal Label paint the complete rating in the Linux build.
         private void InitializeLinuxRating()
         {
+            MakePluginImageTransparent(PluginImage);
+            MakePluginImageTransparent(PluginImageAuthorized);
             var rating = new Label
             {
                 Name = "linuxRating",

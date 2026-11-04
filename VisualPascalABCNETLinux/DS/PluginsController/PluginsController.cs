@@ -45,14 +45,47 @@ namespace VisualPascalABCPlugins
         public PluginsController(IVisualEnvironmentCompiler VisualEnvironmentCompiler,System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem, System.Windows.Forms.ToolStrip ToolStrip, IWorkbench workbench)
         {
             this.ToolStripMenuItem = ToolStripMenuItem;
+            if (ToolStripMenuItem != null)
+                ToolStripMenuItem.DropDownOpening += (sender, e) => ApplyMenuFont(ToolStripMenuItem,
+                    ToolStripMenuItem.Owner?.Font ?? ToolStripMenuItem.Font);
             this.ToolStrip = ToolStrip;
             this.VisualEnvironmentCompiler = VisualEnvironmentCompiler;
             this.workbench = workbench;
         }
 
+        private static void ApplyMenuFont(System.Windows.Forms.ToolStripDropDownItem menu, System.Drawing.Font font)
+        {
+            menu.Font = font;
+            menu.DropDown.Font = font;
+            foreach (System.Windows.Forms.ToolStripItem item in menu.DropDownItems)
+            {
+                item.Font = font;
+                if (item is System.Windows.Forms.ToolStripDropDownItem child && child.HasDropDownItems)
+                    ApplyMenuFont(child, font);
+            }
+        }
+
         bool AddMenuSeparator = false;
         bool AddToolBarSeparator = false;
         private void AddInGUI(IVisualPascalABCPlugin Plugin)
+        {
+            // A plugin may resize and then hide its prototype buttons in AfterAddInGUI.
+            // Keep the autosized toolbar and docked document area at their final geometry.
+            var form = workbench?.MainForm;
+            var panel = ToolStrip?.Parent;
+            form?.SuspendLayout();
+            panel?.SuspendLayout();
+            ToolStrip?.SuspendLayout();
+            try { AddInGUICore(Plugin); }
+            finally
+            {
+                ToolStrip?.ResumeLayout(true);
+                panel?.ResumeLayout(true);
+                form?.ResumeLayout(true);
+            }
+        }
+
+        private void AddInGUICore(IVisualPascalABCPlugin Plugin)
         {
             if (ToolStripMenuItem == null) return;
             List<IPluginGUIItem> MenuItems=new List<IPluginGUIItem>(),ToolBarItems=new List<IPluginGUIItem>();

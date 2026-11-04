@@ -1,4 +1,8 @@
 @echo off
+if not "%~1"=="" if /I not "%~1"=="--net10" (
+    echo Usage: _GenerateLinuxVersion.bat [--net10]
+    exit /b 2
+)
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\build-teacher-control-linux.ps1"
 if errorlevel 1 exit /b 1
 where tar.exe >nul 2>&1
@@ -281,6 +285,11 @@ xcopy InstallerSamples\WhatsNew\            Release\Samples\WhatsNew\           
 
 xcopy InstallerSamples\Graphics\GraphABC\   Release\Samples\Graphics\GraphABC\   /s /e
 xcopy InstallerSamples\Graphics\ABCObjects\   Release\Samples\Graphics\ABCObjects\   /s /e
+
+if /I "%~1"=="--net10" (
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\prepare-linux-net10.ps1"
+    if errorlevel 1 exit /b 1
+)
 
 pushd Release
 if errorlevel 1 exit /b 1

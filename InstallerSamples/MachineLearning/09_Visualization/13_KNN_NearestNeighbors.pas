@@ -38,11 +38,9 @@ begin
   foreach var n in neigh do
     Println(target.ClassName(n.Index):10, n.Distance:0:2);
   
-  Plot.XLabel := df.ColumnNames[0];
-  Plot.YLabel := df.ColumnNames[1];
   Plot.Title := 'Бульдоги и спаниели';
 
-  Plot.Points(X.Col(0), X.Col(1), y);
+  df.Points('Вес', 'ВысотаВХолке', 'Порода');
 
   var (x0,y0) := (example[0], example[1]);
   

@@ -29,6 +29,9 @@ namespace VisualPascalABC
 
         public void Populate(bool b, Font curFont)
         {
+#if PABCNET_LINUX
+            PopulateLinux(b, curFont);
+#else
             if (populated)
             {
                 SelectedItem = curFont.FontFamily.Name;
@@ -49,7 +52,67 @@ namespace VisualPascalABC
                 SelectedIndex = ind;
             //ttimg = new System.Drawing.Bitmap(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("VisualPascalABC.Resources.Icons.16x16.Method.png"));
             populated = true;
+#endif
         }
+
+#if PABCNET_LINUX
+        // Mono may enumerate several faces under the same family name.
+        internal static string[] LinuxFontNames(IEnumerable<string> families, string currentFamily)
+        {
+            var names = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+            names.Add("Monospace");
+            foreach (string name in families)
+                if (!string.IsNullOrWhiteSpace(name)) names.Add(name);
+            if (!string.IsNullOrWhiteSpace(currentFamily)) names.Add(currentFamily);
+            var result = new string[names.Count];
+            names.CopyTo(result);
+            return result;
+        }
+
+        internal static string ResolveLinuxFamilyName(string name)
+        {
+            // Persist a real family name: other font-loading paths and Mono
+            // versions need not recognize the generic alias as an installed font.
+            return string.Equals(name, "Monospace", StringComparison.OrdinalIgnoreCase)
+                ? FontFamily.GenericMonospace.Name : name;
+        }
+
+        private void PopulateLinux(bool showSample, Font current)
+        {
+            both = showSample;
+            string currentName = current.FontFamily.Name;
+            bool keepMonospace = string.Equals(SelectedItem as string, "Monospace", StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(currentName, ResolveLinuxFamilyName("Monospace"), StringComparison.OrdinalIgnoreCase);
+            if (!populated)
+            {
+                var names = new List<string>();
+                foreach (FontFamily family in FontFamily.Families)
+                    using (family)
+                        if (family.IsStyleAvailable(FontStyle.Regular)) names.Add(family.Name);
+                BeginUpdate();
+                try
+                {
+                    Items.Clear();
+                    Items.AddRange(LinuxFontNames(names, currentName));
+                    populated = true;
+                }
+                finally { EndUpdate(); }
+            }
+            string selection = keepMonospace ? "Monospace" : currentName;
+            int index = -1;
+            for (int i = 0; i < Items.Count; i++)
+                if (string.Equals((string)Items[i], selection, StringComparison.OrdinalIgnoreCase)) { index = i; break; }
+            // The current font can change while the settings page is closed.
+            if (index < 0)
+            {
+                var names = new List<string>();
+                foreach (string name in Items) names.Add(name);
+                Items.Clear(); Items.AddRange(LinuxFontNames(names, selection));
+                index = Items.IndexOf(selection);
+            }
+            SelectedIndex = index;
+        }
+#endif
 
         protected override void OnMeasureItem(System.Windows.Forms.MeasureItemEventArgs e)
         {

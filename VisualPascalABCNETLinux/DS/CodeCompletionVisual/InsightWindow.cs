@@ -29,6 +29,7 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 		{
 			this.parentForm = parentForm;
 			this.control = control;
+			Font = VisualPascalABC.Constants.GetCompletionFont(control.Font);
 			SetStyle(ControlStyles.UserPaint, true);
             VisualPascalABC.HoverTrace.Observe(this, "parameter-hint");
 			//SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
@@ -39,11 +40,13 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 			if (closing || IsDisposed) return;
 			if (insightDataProviderStack.Count == 0) { Close(); return; }
 			if (parentForm.IsDisposed || !parentForm.Visible || control.IsDisposed) return;
+			Font = VisualPascalABC.Constants.GetCompletionFont(control.Font);
 			AttachEditorEvents();
 			SetLocation();
 			using (Graphics graphics = parentForm.CreateGraphics()) {
 				GetTipText(out var count, out var description, out var parameter, out var parameters);
-				TipPainterTools.GetDrawingSizeHelpTipFromCombinedDescription(this,
+                if (!RenderExternal(graphics, count, description, true))
+				    TipPainterTools.GetDrawingSizeHelpTipFromCombinedDescription(this,
 					graphics, Font, count, description, parameter, parameters, true);
 			}
 			SetLocation();
@@ -287,7 +290,8 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 		{
 			if (closing || DataProvider == null) return;
 			GetTipText(out var count, out var description, out var parameter, out var parameters);
-			TipPainterTools.DrawHelpTipFromCombinedDescription(this, pe.Graphics, Font,
+            if (!RenderExternal(pe.Graphics, count, description, false))
+			    TipPainterTools.DrawHelpTipFromCombinedDescription(this, pe.Graphics, Font,
 				count, description, parameter, parameters, true);
 			// Other descriptions use the painter too; retain this popup's hit areas.
 			previousArrow = TipPainterTools.DrawingRectangle1;
@@ -295,6 +299,22 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 			lastCursorScreenPosition = control.ActiveTextAreaControl.TextArea.Caret.ScreenPosition;
 		}
 		
+        private bool RenderExternal(Graphics graphics, string count, string description, bool measure)
+        {
+            var provider = DataProvider as VisualPascalABCPlugins.IExternalParameterInfo;
+            if (provider == null) return false;
+            string[] parts = (description ?? "").Split(new[] { '\n' }, 2);
+            string label = parts[0].TrimEnd('\r');
+            string documentation = parts.Length > 1 ? parts[1].Trim() : null;
+            provider.GetParameterHighlight(CurrentData, out int start, out int length);
+            if (start < 0 || length < 0 || start > label.Length || length > label.Length - start) start = length = 0;
+            if (measure) TipPainterTools.GetDrawingSizeDrawHelpTip(this, graphics, Font,
+                count, label, documentation, start, length, provider.CurrentParameter, true);
+            else TipPainterTools.DrawHelpTip(this, graphics, Font,
+                count, label, documentation, start, length, provider.CurrentParameter, true);
+            return true;
+        }
+
 		protected override void OnPaintBackground(PaintEventArgs pe)
 		{
 			pe.Graphics.FillRectangle(SystemBrushes.Info, pe.ClipRectangle);
@@ -335,6 +355,14 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 			}
 		}
 		
+        public void ReplaceCurrentInsightDataProvider(IInsightDataProvider provider, string fileName)
+        {
+            provider.SetupDataProvider(fileName, control.ActiveTextAreaControl.TextArea);
+            if (provider.InsightDataCount == 0) return;
+            if (insightDataProviderStack.Count > 0) insightDataProviderStack.Pop();
+            insightDataProviderStack.Push(new InsightDataProviderStackElement(provider));
+        }
+
 		public IInsightDataProvider GetInsightProvider()
 		{
 			return insightDataProviderStack.Peek().dataProvider;

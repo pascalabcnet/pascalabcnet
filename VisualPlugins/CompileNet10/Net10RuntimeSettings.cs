@@ -5,7 +5,11 @@ namespace VisualPascalABCPlugins
 {
     internal sealed class Net10RuntimeSettings
     {
+#if PABC_LINUX_PLUGIN
+        public const string DefaultRuntimeDirectory = "net10";
+#else
         public const string DefaultRuntimeDirectory = "..\\bin-net10";
+#endif
         public string RuntimeDirectory { get; private set; }
         public string DotnetPath { get; private set; }
 

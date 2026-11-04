@@ -104,8 +104,14 @@ namespace VisualPascalABC.OptionsContent
                     MainForm.ErrorCursorPosStrategy = SourceLocationAction.GotoBeg;//(SourceLocationAction)(cbErrorPos.SelectedItem as ObjectLocalisator).Value;
                     if (fcbFont.SelectedItem != null)
                     {
+#if PABCNET_LINUX
+                        string familyName = FontComboBox.ResolveLinuxFamilyName((string)fcbFont.SelectedItem);
+                        MainForm.CurrentSyntaxEditor.TextEditor.Font = new Font(new FontFamily(familyName), MainForm.CurrentSyntaxEditor.TextEditor.Font.Size);
+                        MainForm.UserOptions.CurrentFontFamily = familyName;
+#else
                     	MainForm.CurrentSyntaxEditor.TextEditor.Font = new Font(new FontFamily((string)fcbFont.SelectedItem),MainForm.CurrentSyntaxEditor.TextEditor.Font.Size);
                     	MainForm.UserOptions.CurrentFontFamily = fcbFont.SelectedItem as string;
+#endif
                     }
                     MainForm.UserOptions.EditorFontSize = Convert.ToInt32(cbEditorFontSize.Text);
                     MainForm.UserOptions.SkipStackTraceItemIfSourceFileInSystemDirectory = !cbSkipStakTraceItemIfSourceFileInSystemDirectory.Checked;

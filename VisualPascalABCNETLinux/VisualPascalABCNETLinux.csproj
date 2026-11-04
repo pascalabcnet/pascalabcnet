@@ -2,6 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <DefineConstants>$(DefineConstants);PABCNET_LINUX</DefineConstants>
     <OutputType>WinExe</OutputType>
     <OutputPath>..\bin\</OutputPath>
     
@@ -480,6 +481,9 @@
     <Compile Include="Workbench\EditorServices.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="..\VisualPascalABCNET\Workbench\DocumentEvents.cs">
+      <Link>Workbench\DocumentEvents.cs</Link>
+    </Compile>
     <Compile Include="Workbench\FileOperations.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -494,6 +498,8 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Workbench\RunnerManagerHandlers.cs" />
+    <Compile Include="Workbench\ExternalRunService.cs" />
+    <Compile Include="DS\RunManager\ExternalRunManager.cs" />
     <Compile Include="Workbench\RunService.cs" />
     <Compile Include="Workbench\UpdateService.cs" />
     <Compile Include="Workbench\VisibilityService.cs">
@@ -505,6 +511,7 @@
     <Compile Include="Workbench\WindowOperations.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Workbench\ExternalIntelliSense.cs" />
     <Compile Include="Workbench\WorkbenchServiceFactory.cs" />
     <EmbeddedResource Include="ABCHealth.resx">
       <ManifestResourceName>VisualPascalABC.ABCHealth</ManifestResourceName>

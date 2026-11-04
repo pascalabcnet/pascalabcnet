@@ -199,6 +199,7 @@ internal sealed class PascalLanguageServerTarget
                     Detail = item.Detail,
                     Documentation = item.Documentation,
                     Kind = MapCompletionKind(item.Kind),
+                    Data = new { isExtensionMethod = item.IsExtensionMethod },
                     InsertText = item.Label.EndsWith("<>", StringComparison.Ordinal)
                         ? item.Label[..^2]
                         : item.Label
@@ -248,6 +249,15 @@ internal sealed class PascalLanguageServerTarget
             return symbols.Select(ToDocumentSymbol).ToArray();
         }, cancellationToken);
 
+    [JsonRpcMethod("pascalabc/documentOutline", UseSingleObjectParameterDeserialization = true)]
+    public Task<DocumentSymbol[]> DocumentOutlineAsync(TextDocumentIdentifier request, CancellationToken token) =>
+        _dispatcher.RunAsync(async () =>
+        {
+            var symbols = await ((PascalLanguageService)_languageService).GetDocumentOutlineAsync(
+                DocumentConversions.GetDocumentId(request.Uri), true, token).ConfigureAwait(false);
+            return symbols.Select(ToDocumentSymbol).ToArray();
+        }, token);
+
     private static DocumentSymbol ToDocumentSymbol(DocumentSymbolInfo item)
     {
         var start = new Microsoft.VisualStudio.LanguageServer.Protocol.Position(item.StartLine, item.StartCharacter);
@@ -258,6 +268,7 @@ internal sealed class PascalLanguageServerTarget
             Detail = item.Detail,
             Kind = item.Kind switch
             {
+                "Section" => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Namespace,
                 "Class" => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Class,
                 "Struct" => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Struct,
                 "Interface" => Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Interface,

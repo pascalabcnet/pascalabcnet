@@ -11,6 +11,12 @@
     <Description>Experimental .NET 10 compilation plugin for the legacy PascalABC.NET IDE.</Description>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(PluginPlatform)' == 'Linux'">
+    <DefineConstants>$(DefineConstants);PABC_LINUX_PLUGIN</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(PluginPlatform)' == 'Linux'">
+
+  </ItemGroup>
   <ItemGroup>
     <!-- Build against the existing IDE contract without rebuilding its dependency tree. -->
     <Reference Include="PluginsSupport">
@@ -34,7 +40,7 @@
       <Private>false</Private>
     </Reference>
     <!-- UI only: the running host owns the completion window. Never copy its compiler kit. -->
-    <Reference Include="PascalABCNET">
+    <Reference Include="PascalABCNET" Condition="'$(PluginPlatform)' != 'Linux'">
       <HintPath>$(IdeReferenceDirectory)\PascalABCNET.exe</HintPath>
       <Private>false</Private>
     </Reference>
@@ -50,6 +56,9 @@
   <Target Name="CreateDefaultRuntimeSettings" AfterTargets="Build">
     <Copy SourceFiles="$(MSBuildProjectDirectory)\CompileNet10Plugin.ini"
           DestinationFiles="$(TargetDir)CompileNet10Plugin.ini"
-          Condition="!Exists('$(TargetDir)CompileNet10Plugin.ini')" />
+          Condition="'$(PluginPlatform)' != 'Linux' and !Exists('$(TargetDir)CompileNet10Plugin.ini')" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\CompileNet10Plugin.Linux.ini"
+          DestinationFiles="$(TargetDir)CompileNet10Plugin.ini"
+          Condition="'$(PluginPlatform)' == 'Linux' and !Exists('$(TargetDir)CompileNet10Plugin.ini')" />
   </Target>
 </Project>

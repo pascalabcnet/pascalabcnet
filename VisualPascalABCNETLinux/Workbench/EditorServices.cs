@@ -232,7 +232,8 @@ namespace VisualPascalABC
 
         private void AddEditorHandlers(CodeFileDocumentControl tp)
         {
-            tp.TextEditor.ActiveTextAreaControl.TextArea.ToolTipFont = Constants.CompletionFont;
+            UpdateEditorToolTipFont(tp.TextEditor, EventArgs.Empty);
+            tp.TextEditor.FontChanged += UpdateEditorToolTipFont;
             tp.TextEditor.AddToolTipRequestHandler(TooltipServiceManager.ToolTipService_TextAreaToolTipRequest);
             if (HoverTrace.Enabled)
             {
@@ -249,8 +250,15 @@ namespace VisualPascalABC
             //tp.TextEditor.AddMouseDownHandler(DefinitionByMouseClickManager.DefinitionByMouseClickManager_TextAreaMouseDown);
         }
 
+        private static void UpdateEditorToolTipFont(object sender, EventArgs e)
+        {
+            var editor = (ICSharpCode.TextEditor.TextEditorControl)sender;
+            editor.ActiveTextAreaControl.TextArea.ToolTipFont = Constants.GetCompletionFont(editor.Font);
+        }
+
         private void RemoveEditorHandlers(CodeFileDocumentControl tp)
         {
+            tp.TextEditor.FontChanged -= UpdateEditorToolTipFont;
             tp.TextEditor.RemoveToolTipRequestHandler(TooltipServiceManager.ToolTipService_TextAreaToolTipRequest);
             if (HoverTrace.Enabled)
                 tp.TextEditor.ActiveTextAreaControl.TextArea.MouseHover -= HoverTrace.MouseHover;

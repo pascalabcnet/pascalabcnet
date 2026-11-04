@@ -7,7 +7,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ICSharpCode.TextEditor.Document;
+#if PABC_LINUX_PLUGIN
+using BrowserSymbol = VisualPascalABCPlugins.DocumentBrowserSymbol;
+using SymbolsPanel = VisualPascalABCPlugins.IExternalDocumentSymbolsView;
+#else
 using VisualPascalABC;
+using BrowserSymbol = VisualPascalABC.QuickClassBrowserPanel.ModernBrowserSymbol;
+#endif
 
 namespace VisualPascalABCPlugins
 {
@@ -19,14 +25,24 @@ namespace VisualPascalABCPlugins
         private readonly Net10LanguageDocuments documents;
         private readonly System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer { Interval = 450 };
         private readonly Dictionary<ICodeFileDocument, IDocument> attached = new Dictionary<ICodeFileDocument, IDocument>();
+#if PABC_LINUX_PLUGIN
+        private readonly Func<ICodeFileDocument, SymbolsPanel> getPanel;
+#endif
         private ICodeFileDocument current;
         private CancellationTokenSource request;
         private long generation;
         private bool modern, enabled, dirty, disposed;
 
         internal Net10DocumentSymbols(IWorkbenchDocumentEvents events, IWorkbenchDocumentService documentService,
-            Net10LanguageDocuments documents)
+            Net10LanguageDocuments documents
+#if PABC_LINUX_PLUGIN
+            , Func<ICodeFileDocument, SymbolsPanel> getPanel
+#endif
+            )
         {
+#if PABC_LINUX_PLUGIN
+            this.getPanel = getPanel;
+#endif
             this.events = events;
             this.documentService = documentService;
             this.documents = documents;
@@ -60,8 +76,12 @@ namespace VisualPascalABCPlugins
             }
         }
 
+#if PABC_LINUX_PLUGIN
+        private SymbolsPanel Panel(ICodeFileDocument document) => getPanel(document);
+#else
         private static QuickClassBrowserPanel Panel(ICodeFileDocument document) =>
             (document?.TextEditor as CodeFileDocumentTextEditorControl)?.NavigationPanel;
+#endif
 
         private static bool IsPascal(ICodeFileDocument document) => document != null && !document.FromMetadata &&
             string.Equals(Path.GetExtension(document.FileName), ".pas", StringComparison.OrdinalIgnoreCase);
@@ -132,8 +152,14 @@ namespace VisualPascalABCPlugins
                 var response = await documents.SymbolsAsync(document, token).ConfigureAwait(false);
                 var symbols = Parse(response);
                 var panel = Panel(document);
+#if PABC_LINUX_PLUGIN
+                var view = panel?.View;
+                if (view == null || view.IsDisposed || !view.IsHandleCreated) return;
+                view.BeginInvoke(new Action(() =>
+#else
                 if (panel == null || panel.IsDisposed || !panel.IsHandleCreated) return;
                 panel.BeginInvoke(new Action(() =>
+#endif
                 {
                     if (!disposed && enabled && modern && ticket == generation && !token.IsCancellationRequested &&
                         ReferenceEquals(current, document) && document.TextEditor.Document.TextContent == text)
@@ -144,9 +170,9 @@ namespace VisualPascalABCPlugins
             catch (Exception error) { Trace.TraceWarning("LSP document symbols: {0}", error); }
         }
 
-        internal static List<QuickClassBrowserPanel.ModernBrowserSymbol> Parse(object response)
+        internal static List<BrowserSymbol> Parse(object response)
         {
-            var result = new List<QuickClassBrowserPanel.ModernBrowserSymbol>();
+            var result = new List<BrowserSymbol>();
             if (!(response is IEnumerable items)) return result;
             foreach (var item in items)
                 if (item is IDictionary<string, object> data && TryParse(data, out var symbol)) result.Add(symbol);
@@ -154,7 +180,7 @@ namespace VisualPascalABCPlugins
         }
 
         private static bool TryParse(IDictionary<string, object> data,
-            out QuickClassBrowserPanel.ModernBrowserSymbol symbol)
+            out BrowserSymbol symbol)
         {
             symbol = null;
             if (!data.TryGetValue("name", out var name) || !(name is string text) ||
@@ -165,6 +191,7 @@ namespace VisualPascalABCPlugins
             string mappedKind;
             switch (kind)
             {
+                case 3: mappedKind = "Section"; break;
                 case 5: mappedKind = "Class"; break;
                 case 6: case 12: mappedKind = "Method"; break;
                 case 7: mappedKind = "Property"; break;
@@ -176,7 +203,7 @@ namespace VisualPascalABCPlugins
                 case 24: mappedKind = "Event"; break;
                 default: mappedKind = "Variable"; break;
             }
-            symbol = new QuickClassBrowserPanel.ModernBrowserSymbol
+            symbol = new BrowserSymbol
             {
                 Name = text,
                 Detail = data.TryGetValue("detail", out var detail) ? detail as string : null,
@@ -184,7 +211,7 @@ namespace VisualPascalABCPlugins
                 StartLine = startLine, StartCharacter = startCharacter,
                 EndLine = endLine, EndCharacter = endCharacter,
                 Children = data.TryGetValue("children", out var children) ? Parse(children) :
-                    new List<QuickClassBrowserPanel.ModernBrowserSymbol>()
+                    new List<BrowserSymbol>()
             };
             return true;
         }

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using VisualPascalABC;
 
 namespace VisualPascalABCPlugins
 {
@@ -27,10 +26,10 @@ namespace VisualPascalABCPlugins
         public string PreSelection { get; }
         public int DefaultIndex => 0;
 
-        internal Net10PackageCompletionProvider(object response, CodeCompletionImagesProvider images,
+        internal Net10PackageCompletionProvider(object response, IExternalIntelliSenseSession ui,
             Net10PackageDirectiveContext context)
         {
-            ImageList = images.ImageList;
+            ImageList = ui.CompletionImages;
             PreSelection = context.Prefix.Length == 0 ? null : context.Prefix;
             var values = response as IEnumerable;
             var result = new List<ICompletionData>();
@@ -41,7 +40,7 @@ namespace VisualPascalABCPlugins
                     string version = value as string;
                     if (string.IsNullOrWhiteSpace(version)) continue;
                     result.Add(new Item(version, version + (context.HasClosingBrace ? "" : "}"),
-                        null, images.IconNumberConstant));
+                        null, ui.GetImageIndex(CompletionItemKind.Constant)));
                 }
                 else if (value is Dictionary<string, object> package)
                 {
@@ -55,7 +54,7 @@ namespace VisualPascalABCPlugins
                         description += (description.Length > 0 ? "\n" : "") + source;
                     result.Add(new Item(id + "    " + version,
                         id + " " + version + (context.HasClosingBrace ? "" : "}"),
-                        description, images.IconNumberClass));
+                        description, ui.GetImageIndex(CompletionItemKind.Class)));
                 }
             }
             Items = result.ToArray();

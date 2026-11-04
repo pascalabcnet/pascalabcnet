@@ -43,7 +43,7 @@ internal static class CompletionListInteractionTests
                 var list = (Control)popupType.GetField("codeCompletionListView", Hidden).GetValue(popup);
                 var bar = (VScrollBar)popupType.GetField("vScrollBar", Hidden).GetValue(popup);
                 dynamic description = popupType.GetField("declarationViewWindow", Hidden).GetValue(popup);
-                var sharedFont = (Font)ide.GetType("VisualPascalABC.Constants", true).GetField("CompletionFont", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+                var sharedFont = (Font)ide.GetType("VisualPascalABC.Constants", true).GetMethod("GetCompletionFont", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, new object[] { editor.Font });
                 check(Equals(list.Font, sharedFont) && Equals(description.Font, sharedFont) && Equals(popup.Font, sharedFont),
                     "completion list, passive popup and hover-description renderer use the same font and units");
                 popupType.GetMethod("ShowCompletionWindow", Hidden, null, Type.EmptyTypes, null).Invoke(popup, null);

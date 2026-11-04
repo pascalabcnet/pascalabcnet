@@ -38,6 +38,8 @@ type
   ColumnInfo = DataFrameABCCore.ColumnInfo;
   /// Типизированное значение ячейки DataFrame
   DataValue = DataFrameABCCore.DataValue;
+  /// Базовый тип столбца DataFrame
+  Column = DataFrameABCCore.Column;
   /// Массив строковых значений
   StringArray = DataFrameABCCore.StringArray;
   /// Курсор для итерации по строкам DataFrame

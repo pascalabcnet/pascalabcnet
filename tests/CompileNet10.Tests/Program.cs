@@ -142,7 +142,8 @@ internal static partial class Program
     {
         int probeExitCode;
         if (TryFakeRuntimeProbe(args, out probeExitCode)) return probeExitCode;
-        return RunTestsAsync(args).GetAwaiter().GetResult();
+        try { return RunTestsAsync(args).GetAwaiter().GetResult(); }
+        finally { foreach (var form in testHintParents) form.Dispose(); }
     }
 
     private static void CheckParserRename()
@@ -286,6 +287,18 @@ internal static partial class Program
     {
         try
         {
+            if (args.Length > 0 && args[0] == "--intellisense-contract")
+            {
+                CheckExternalIntelliSenseOwnership();
+                CheckExternalCompletionKeys();
+                CheckLanguageCompletion(null);
+                CheckPackageDirectiveCompletion();
+                CheckLanguageHover();
+                CheckLanguageSignature(args.Length > 1 ? args[1] : null);
+                CheckLanguageRecovery();
+                CheckLanguageSynchronizationAsync(args.Length > 1 ? args[1] : null).GetAwaiter().GetResult();
+                return 0;
+            }
             if (args.Length == 2 && args[0] == "--runtime-errors")
             {
                 await CheckRedirectedRuntimeErrors(Path.GetFullPath(args[1]));
@@ -328,6 +341,13 @@ internal static partial class Program
                 await CheckMlCacheRemoval(args[1]);
                 return 0;
             }
+            if (args.Length > 0 && args[0] == "--symbols-ui")
+            {
+                CheckLanguageDocumentSymbols();
+                return 0;
+            }
+            if (args.Length > 0 && args[0] == "--platform-ui")
+            { CheckPlatformUI(); return 0; }
             CheckRestoreDeadlines();
             CheckRestoreStatus();
             CheckManualPackageRequests();
@@ -370,11 +390,6 @@ internal static partial class Program
             if (args.Length > 0 && args[0] == "--navigation-hover")
             {
                 CheckNavigationClick(null);
-                return 0;
-            }
-            if (args.Length > 0 && args[0] == "--symbols-ui")
-            {
-                CheckLanguageDocumentSymbols();
                 return 0;
             }
             if (args.Length > 0 && args[0] == "--signature-ui")
@@ -444,14 +459,14 @@ internal static partial class Program
                 using (var status = new Net10StatusDisplay(form))
                 {
                     status.StartReady(true, "Готов");
-                    Check(label.Text == ".NET 10: Готов", "switching to net10 shows localized ready status with platform prefix");
+                    Check(label.Text == "Готов", "switching to net10 preserves localized ready text without a platform prefix");
                     status.StartReady(false, "Готов");
                     Check(label.Text == "Готов", "switching back shows canonical ready status without platform name");
                     status.StartReady(true, "Ready");
-                    Check(label.Text == ".NET 10: Ready", "platform ready status preserves the IDE language");
+                    Check(label.Text == "Ready", "platform ready status preserves the IDE language");
                     status.StartReady(true, "Готов");
                     status.BeginOperation();
-                    Check(label.Text == ".NET 10: Готов", "starting compile adds no transient preparation status");
+                    Check(label.Text == "Готов", "starting compile adds no transient preparation status");
                     status.Update("Компиляция .NET 10 прошла успешно");
                     Check(label.Text == "Компиляция .NET 10 прошла успешно", "net10 compilation result updates shared status line");
                     label.Text = "Обычная компиляция";

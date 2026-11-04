@@ -250,6 +250,15 @@ namespace VisualPascalABC
             //    PascalABCCompiler.StringResourcesLanguage.CurrentLanguageName = PascalABCCompiler.StringResourcesLanguage.AccessibleLanguages[0];
            
             InitializeComponent();
+            toolStrip1.Padding = new Padding(toolStrip1.Padding.Left, toolStrip1.Padding.Top + 2,
+                toolStrip1.Padding.Right, toolStrip1.Padding.Bottom + 2);
+            Action<ToolStripItem> spaceToolbarButton = item => {
+                if (!(item is ToolStripButton) && !(item is ToolStripDropDownItem)) return;
+                var margin = item.Margin;
+                item.Margin = new Padding(margin.Left + 2, margin.Top, margin.Right + 2, margin.Bottom);
+            };
+            foreach (ToolStripItem item in toolStrip1.Items) spaceToolbarButton(item);
+            toolStrip1.ItemAdded += (sender, e) => spaceToolbarButton(e.Item);
             BPanel.VisibleChanged += (s, args) => splitter1.Visible = BPanel.Visible;
             new ToolbarToolTips(components, toolStrip1, this);
             HoverTrace.Observe(this, "main-form");
@@ -812,6 +821,9 @@ namespace VisualPascalABC
         {
             get
             {
+                string externalFile = WorkbenchServiceFactory.ExternalRunService?
+                    .GetExternalOutputFile(CurrentCodeFileDocument);
+                if (externalFile != null) return externalFile;
                 string path = "";
 
                 if (ProjectFactory.Instance.CurrentProject != null)

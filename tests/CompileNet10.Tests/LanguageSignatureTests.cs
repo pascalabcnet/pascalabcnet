@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.InsightWindow;
 using VisualPascalABCPlugins;
+using VisualPascalABC;
 
 internal static partial class Program
 {
@@ -30,7 +31,7 @@ internal static partial class Program
     private static void CheckLanguageSignature(string runtime)
     {
         CheckSignatureTypedTrigger();
-        CheckSignatureTypedTrigger(runtime);
+        if (runtime != null) CheckSignatureTypedTrigger(runtime);
         using (var main = new EditorDocument { FileName = Path.GetFullPath("SignatureMain.pas") })
         using (var unit = new EditorDocument { FileName = Path.GetFullPath("SignatureUnit.pas") })
         using (var parent = new Form())
@@ -87,7 +88,7 @@ internal static partial class Program
             var fake = new FakeLanguageClient();
             var sync = new Net10LanguageDocuments(events, () => fake, text => { });
             bool option = true;
-            var ui = new Net10Signature(parent, events, sync, () => option);
+            var ui = new Net10Signature(parent, events, sync, () => option, TestIntelliSenseUI(parent));
             try
             {
                 sync.SetActive(true); sync.WhenIdleAsync().GetAwaiter().GetResult();
@@ -132,7 +133,7 @@ internal static partial class Program
             var fake = new FakeLanguageClient { Completion = (value, token) => System.Threading.Tasks.Task.FromResult(SignatureResponse()) };
             var sync = new Net10LanguageDocuments(events, () => runtime == null ? (INet10LanguageClient)fake :
                 new Net10LanguageClient(runtime, "dotnet", "ru"), value => { });
-            using (var ui = new Net10Signature(parent, events, sync, () => true))
+            using (var ui = new Net10Signature(parent, events, sync, () => true, TestIntelliSenseUI(parent)))
             {
                 try
                 {
@@ -141,20 +142,21 @@ internal static partial class Program
                     parent.Show(); area.Focus();
                     Check(area.Focused, "signature fixture uses the focused standard editor");
                     area.SimulateKeyPress('(');
-                    var field = typeof(Net10Signature).GetField("window", BindingFlags.Instance | BindingFlags.NonPublic);
+                    var session = (ExternalIntelliSenseSession)typeof(Net10Signature).GetField("ui", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(ui);
+                    var field = typeof(ExternalIntelliSenseSession).GetField("parameters", BindingFlags.Instance | BindingFlags.NonPublic);
                     var timeout = Stopwatch.StartNew();
-                    while (field.GetValue(ui) == null && timeout.ElapsedMilliseconds < 10000)
+                    while (field.GetValue(session) == null && timeout.ElapsedMilliseconds < 10000)
                     {
                         Application.DoEvents(); Thread.Sleep(1);
                     }
-                    var window = (PABCNETInsightWindow)field.GetValue(ui);
+                    var window = (PABCNETInsightWindow)field.GetValue(session);
                     Check(window != null && window.Visible && window.InsightProviderStackLength == 1,
                         "typing '(' opens the standard signature window through the complete UI pipeline" + (runtime == null ? "" : " with real LanguageServer"));
                     Check(document.TextEditor.Document.GetText(area.Caret.Offset - 1, 1) == "(" &&
                         (runtime != null || Array.Exists(fake.Messages.ToArray(), message => message.Item1 == "textDocument/signatureHelp")),
                         "signature trigger leaves the editor's inserted bracket intact");
                     Application.DoEvents();
-                    Check(ReferenceEquals(field.GetValue(ui), window) && window.Visible && area.Focused,
+                    Check(ReferenceEquals(field.GetValue(session), window) && window.Visible && area.Focused,
                         "signature survives the native window's temporary focus transfer to the editor container");
                     fake.Completion = (value, token) => System.Threading.Tasks.Task.FromResult(SignatureResponse(1));
                     area.SimulateKeyPress('1'); area.SimulateKeyPress(',');
@@ -167,12 +169,12 @@ internal static partial class Program
                         ((IExternalInsightDataProvider)window.GetInsightProvider()).CurrentParameter == 2,
                         "typing comma refreshes the displayed signature and selects parameter two");
                     area.SimulateKeyPress('2'); area.SimulateKeyPress(')'); Application.DoEvents();
-                    Check(field.GetValue(ui) == null && window.IsDisposed, "typing ')' closes the displayed signature");
+                    Check(field.GetValue(session) == null && window.IsDisposed, "typing ')' closes the displayed signature");
                     area.SimulateKeyPress('(');
                     parent.Controls.Add(new TextBox { Dock = DockStyle.Bottom });
                     parent.Controls[parent.Controls.Count - 1].Focus();
                     Application.DoEvents();
-                    Check(field.GetValue(ui) == null && typeof(Net10Signature).GetField("pending", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(ui) == null,
+                    Check(field.GetValue(session) == null && typeof(Net10Signature).GetField("pending", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(ui) == null,
                         "genuine focus loss cancels a pending signature instead of reopening it");
                 }
                 finally { ui.CloseHints(); parent.Hide(); sync.ShutdownAsync().GetAwaiter().GetResult(); }
@@ -187,10 +189,11 @@ internal static partial class Program
         area.Caret.Position = document.TextEditor.Document.OffsetToPosition(document.TextEditor.Document.TextLength);
         var outer = Net10SignatureContext.Capture(document, "begin Outer(".Length);
         var inner = Net10SignatureContext.Capture(document, area.Caret.Offset);
-        using (var window = new PABCNETInsightWindow(parent, document.TextEditor))
+        using (var session = TestIntelliSenseUI(parent))
         {
-            window.AddInsightDataProvider(new Net10SignatureProvider(SignatureResponse(), outer), document.FileName);
-            window.AddInsightDataProvider(new Net10SignatureProvider(SignatureResponse(), inner), document.FileName);
+            session.ShowParameters(document, outer.OpenOffset, new Net10SignatureProvider(SignatureResponse(), outer));
+            session.ShowParameters(document, inner.OpenOffset, new Net10SignatureProvider(SignatureResponse(), inner));
+            var window = (PABCNETInsightWindow)typeof(ExternalIntelliSenseSession).GetField("parameters", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(session);
             // Exercise the real standard renderer without showing any windows or using legacy DOM caches.
             using (var bitmap = new Bitmap(800, 600))
             using (var graphics = Graphics.FromImage(bitmap))
@@ -205,11 +208,13 @@ internal static partial class Program
             document.TextEditor.Document.Insert(area.Caret.Offset, ")");
             area.Caret.Position = document.TextEditor.Document.OffsetToPosition(document.TextEditor.Document.TextLength);
             caret.Invoke(window, new object[] { area.Caret, EventArgs.Empty });
-            Check(window.InsightProviderStackLength == 1 && ((Net10SignatureProvider)window.GetInsightProvider()).Context.OpenOffset == outer.OpenOffset,
+            Check(window.InsightProviderStackLength == 1 && ((Net10SignatureProvider)session.ParameterProvider).Context.OpenOffset == outer.OpenOffset,
                 "closing nested call restores the outer signature in the native window stack");
             document.TextEditor.Document.Insert(area.Caret.Offset, ",");
             area.Caret.Position = document.TextEditor.Document.OffsetToPosition(document.TextEditor.Document.TextLength);
-            window.ReplaceCurrentInsightDataProvider(new Net10SignatureProvider(SignatureResponse(1), Net10SignatureContext.Capture(document, area.Caret.Offset)), document.FileName);
+            typeof(PABCNETInsightWindow).GetProperty("CurrentData", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(window, 0);
+            session.ShowParameters(document, outer.OpenOffset, new Net10SignatureProvider(SignatureResponse(1), Net10SignatureContext.Capture(document, area.Caret.Offset)));
+            Check(window.GetCurrentData() == 0, "refresh keeps the overload manually selected in the native parameter window");
             Check(window.InsightProviderStackLength == 1 && ((IExternalInsightDataProvider)window.GetInsightProvider()).CurrentParameter == 2,
                 "comma updates the current signature without accumulating another provider on the stack");
             document.TextEditor.Document.Insert(area.Caret.Offset, "2)");
