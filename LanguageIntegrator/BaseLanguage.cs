@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts.Languages;
+using PascalABCCompiler.Contracts.Parsers;
+using PascalABCCompiler.Contracts.CodeCompletion;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.SystemLibrary;
 using PascalABCCompiler.TreeConverter;
@@ -15,20 +17,16 @@ namespace Languages.Facade
     public abstract class BaseLanguage : ILanguage
     {
         /// <summary>
-        /// Все параметры должны быть не null (и не пустым массивом),
+        /// Все компоненты должны быть не null (и не пустым массивом),
         /// кроме IDocParser и ILanguageIntellisenseSupport в случае, если они не требуются
         /// </summary>
-        public BaseLanguage(ILanguageInformation languageInformation, ILanguageIntellisenseSupport languageIntellisenseSupport,
-            IParser parser, IDocParser docParser, List<ISyntaxTreeConverter> syntaxTreeConverters)
+        public BaseLanguage(LanguageComponents languageComponents)
         {
-            this.LanguageInformation = languageInformation;
-            this.LanguageIntellisenseSupport = languageIntellisenseSupport;
-            if (this.LanguageIntellisenseSupport != null)
-                this.LanguageIntellisenseSupport.LanguageInformation = languageInformation;
-            this.Parser = parser;
-            this.Parser.LanguageInformation = languageInformation;
-            this.DocParser = docParser;
-            this.SyntaxTreeConverters = syntaxTreeConverters;
+            this.LanguageInformation = languageComponents.LanguageInformation;
+            this.LanguageIntellisenseSupport = languageComponents.LanguageIntellisenseSupport;
+            this.Parser = languageComponents.Parser;
+            this.DocParser = languageComponents.DocParser;
+            this.SyntaxTreeConverters = languageComponents.SyntaxTreeConverters;
         }
 
         public string Name => LanguageInformation.Name;
@@ -51,7 +49,7 @@ namespace Languages.Facade
 
         public IDocParser DocParser { get; protected set; }
 
-        public List<ISyntaxTreeConverter> SyntaxTreeConverters { get; protected set; }
+        public IEnumerable<ISyntaxTreeConverter> SyntaxTreeConverters { get; protected set; }
 
         public syntax_tree_visitor SyntaxTreeToSemanticTreeConverter { get; protected set; }
 

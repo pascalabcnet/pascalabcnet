@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 //using ICSharpCode.FormsDesigner;
 using PascalABCCompiler;
-using PascalABCCompiler.Parsers;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;

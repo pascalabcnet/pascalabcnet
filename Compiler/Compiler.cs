@@ -144,7 +144,7 @@
 using Languages.Facade;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.PCU;
-using PascalABCCompiler.ParserTools.Directives;
+using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler.References;
 using PascalABCCompiler.SemanticTreeConverters;
 using PascalABCCompiler.SyntaxTreeConverters;
@@ -1110,10 +1110,10 @@ namespace PascalABCCompiler
                     foreach (compiler_directive cd in unitNode.compiler_directives)
                     {
                         var directiveCatalog = Units[i].Language?.LanguageInformation.ValidDirectives;
-                        DirectiveInfo directiveInfo;
+                        IDirectiveInfo directiveInfo;
                         if (directiveCatalog != null &&
                             directiveCatalog.TryGetValue(cd.name, out directiveInfo) &&
-                            (directiveInfo.processingStage & DirectiveProcessingStage.Compilation) == 0)
+                            (directiveInfo.ProcessingStage & DirectiveProcessingStage.Compilation) == 0)
                             continue;
 
                         if (!directives.ContainsKey(cd.name))
@@ -3385,7 +3385,7 @@ namespace PascalABCCompiler
         private SyntaxTree.compilation_unit InternalParseText(ILanguage language, string fileName, string text, List<Error> errorList, List<CompilerWarning> warnings, List<string> definesList = null, bool calculateHealth = true)
         {
             OnChangeCompilerState(this, CompilerState.BeginParsingFile, fileName);
-            SyntaxTree.compilation_unit unitSyntaxTree = language.Parser.GetCompilationUnit(fileName, text, ErrorsList, warnings, Parsers.ParseMode.Normal, CurrentUnitIsNotMainProgram(), definesList);
+            SyntaxTree.compilation_unit unitSyntaxTree = language.Parser.GetCompilationUnit(fileName, text, ErrorsList, warnings, ParseMode.Normal, CurrentUnitIsNotMainProgram(), definesList);
             OnChangeCompilerState(this, CompilerState.EndParsingFile, fileName);
 
             // Вычисляем сколько строк скомпилировали
@@ -4022,7 +4022,7 @@ namespace PascalABCCompiler
             CheckErrorsAndThrowTheFirstOne();
         }
 
-        private SyntaxTree.compilation_unit ConvertSyntaxTree(SyntaxTree.compilation_unit syntaxTree, List<ISyntaxTreeConverter> converters)
+        private SyntaxTree.compilation_unit ConvertSyntaxTree(SyntaxTree.compilation_unit syntaxTree, IEnumerable<ISyntaxTreeConverter> converters)
         {
             foreach (ISyntaxTreeConverter converter in converters)
             {

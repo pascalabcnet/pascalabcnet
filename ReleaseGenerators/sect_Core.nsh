@@ -4,6 +4,9 @@
     File ExecHide.exe
     File "..\bin\Compiler.dll"
     File "..\bin\CompilerTools.dll"
+    File "..\bin\CodeCompletionContracts.dll"
+    File "..\bin\ParserContracts.dll"
+    File "..\bin\LanguageContracts.dll"
     File "..\bin\Errors.dll"
     File "..\bin\Localization.dll"
     File "..\bin\NETGenerator.dll"
@@ -72,6 +75,9 @@
     ;dobavljaem fajly v uninst.log
     ${AddFile} "Compiler.dll"
     ${AddFile} "CompilerTools.dll"
+    ${AddFile} "CodeCompletionContracts.dll"
+    ${AddFile} "ParserContracts.dll"
+    ${AddFile} "LanguageContracts.dll"
     ${AddFile} "Errors.dll"
     ${AddFile} "Localization.dll"
     ${AddFile} "NETGenerator.dll"
