@@ -69,7 +69,8 @@ namespace Debugger
 			get {
 				if (this.HasExpired) throw new CannotGetValueException("Value has expired");
 				
-				if (cache == null || (cache.PauseSession != process.PauseSession && !cache.RawCorValue.Is<ICorDebugHandleValue>()) || is_cnst) {
+				// A handle survives evaluation, but its cached dereferenced value does not.
+				if (cache == null || cache.PauseSession != process.PauseSession || is_cnst) {
 					DateTime startTime = Util.HighPrecisionTimer.Now;
 					is_cnst = false;
 					ValueCache newCache = new ValueCache();
