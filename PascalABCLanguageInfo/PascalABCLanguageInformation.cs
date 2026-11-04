@@ -31,7 +31,7 @@ namespace Languages.Pascal.Frontend.Data
 
 		public Dictionary<string, string> SpecialModulesAliases => null;
 
-        public BaseKeywords KeywordsStorage { get; } = new Core.PascalABCKeywords();
+        public IKeywords KeywordsStorage { get; } = new Core.PascalABCKeywords();
 
         public Dictionary<string, IDirectiveInfo> ValidDirectives { get; protected set; }
 

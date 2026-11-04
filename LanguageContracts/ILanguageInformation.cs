@@ -46,7 +46,7 @@ namespace PascalABCCompiler.Contracts.Languages
         /// <summary>
         /// Класс с информацией о ключевых словах языка
         /// </summary>
-        BaseKeywords KeywordsStorage
+        IKeywords KeywordsStorage
         {
             get;
         }

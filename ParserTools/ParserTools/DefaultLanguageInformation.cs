@@ -25,7 +25,7 @@ namespace PascalABCCompiler.Parsers
 
         public abstract string[] SystemUnitNames { get; }
 
-        public abstract BaseKeywords KeywordsStorage { get; }
+        public abstract IKeywords KeywordsStorage { get; }
 
         public virtual bool SyntaxTreeIsConvertedAfterUsedModulesCompilation => false;
 

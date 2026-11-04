@@ -329,7 +329,7 @@ namespace VisualPascalABC
 
                 ILanguage currentLanguage = CodeCompletion.CodeCompletionController.CurrentLanguage;
 
-                List<string> keywords;
+                IList<string> keywords;
 
                 bool isTypeAfterKeyword = false;
 

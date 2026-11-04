@@ -18,7 +18,7 @@ namespace Languages.SPython.Frontend.Data
 
         public bool SyntaxTreeIsConvertedAfterUsedModulesCompilation => true;
 
-        public BaseKeywords KeywordsStorage { get; } = new SPythonParser.SPythonKeywords();
+        public IKeywords KeywordsStorage { get; } = new SPythonParser.SPythonKeywords();
 
         public Dictionary<string, IDirectiveInfo> ValidDirectives { get; protected set; }
 

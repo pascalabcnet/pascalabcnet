@@ -4,40 +4,21 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using PascalABCCompiler.Contracts.Parsers;
 
-namespace PascalABCCompiler.Contracts.Parsers
+namespace PascalABCCompiler.Parsers
 {
-    public abstract class BaseKeywords
+    public abstract class BaseKeywords : IKeywords
     {
-        /// <summary>
-        /// Соотвествие ключевых слов токенам (ключевые слова для парсера)
-        /// </summary>
-        public Dictionary<string, int> KeywordsToTokens { get; set; }
+        public IDictionary<string, KeywordKind> KeywordKinds { get; }
 
-        /// <summary>
-        /// Типы ключевых слов
-        /// </summary>
-        public Dictionary<string, KeywordKind> KeywordKinds { get; set; }
+        public ISet<string> KeywordsForIntellisenseSet { get; }
 
-        /// <summary>
-        /// Ключевые слова в контексте Intellisense (множество)
-        /// </summary>
-        public HashSet<string> KeywordsForIntellisenseSet { get; }
+        public IList<string> KeywordsForIntellisenseList { get; } = new List<string>();
 
-        /// <summary>
-        /// Ключевые слова в контексте Intellisense (список)
-        /// </summary>
-        public List<string> KeywordsForIntellisenseList { get; set; } = new List<string>();
+        public IList<string> TypeKeywords { get; } = new List<string>();
 
-        /// <summary>
-        /// Ключевые слова, соответствующие типам (array, set), либо классу, функции
-        /// </summary>
-        public List<string> TypeKeywords { get; set; } = new List<string>();
-
-        /// <summary>
-        /// Ключевые слова, которые должны восприниматься как функции при парсинге выражений
-        /// </summary>
-        public HashSet<string> KeywordsTreatedAsFunctions { get; set; }
+        public ISet<string> KeywordsTreatedAsFunctions { get; }
 
         /// <summary>
         /// Словарь соответствий ключевых слов их эквивалентам (задается пользователем в специальном файле)
@@ -47,7 +28,12 @@ namespace PascalABCCompiler.Contracts.Parsers
         /// <summary>
         /// Название файла с информацией об эквивалентах ключевых слов
         /// </summary>
-        protected abstract string FileName { get; }
+        protected abstract string KeywordsMapFileName { get; }
+
+        /// <summary>
+        /// Соотвествие ключевых слов токенам (ключевые слова для парсера)
+        /// </summary>
+        private readonly Dictionary<string, int> keywordsToTokens;
 
         /// <summary>
         /// Функция загрузки эквивалентов ключевых слов из файла
@@ -56,7 +42,7 @@ namespace PascalABCCompiler.Contracts.Parsers
         {
             try
             {
-                var pathToKeymapFile = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName), FileName);
+                var pathToKeymapFile = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName), KeywordsMapFileName);
                 
                 if (System.IO.File.Exists(pathToKeymapFile))
                     keymap = System.IO.File.ReadLines(pathToKeymapFile, Encoding.Unicode).Select(s => s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)).ToDictionary(w => w[0], w => w[1]);
@@ -70,7 +56,7 @@ namespace PascalABCCompiler.Contracts.Parsers
         /// <summary>
         /// Возвращает эквивалент ключевого слова, либо его самого, если эквивалента нет
         /// </summary>
-        public string ConvertKeyword(string keyword)
+        private string ConvertKeyword(string keyword)
         {
             if (keymap.Count() == 0 || !keymap.ContainsKey(keyword))
                 return keyword;
@@ -84,7 +70,7 @@ namespace PascalABCCompiler.Contracts.Parsers
 
             StringComparer stringComparer = caseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
 
-            KeywordsToTokens = new Dictionary<string, int>(stringComparer);
+            keywordsToTokens = new Dictionary<string, int>(stringComparer);
 
             KeywordsForIntellisenseSet = new HashSet<string>(stringComparer);
 
@@ -98,12 +84,9 @@ namespace PascalABCCompiler.Contracts.Parsers
         /// </summary>
         protected abstract int GetIdToken();
 
-        /// <summary>
-        /// Возвращает токен соответствующий ключевому слову, либо токен идентификатора, если такого ключевого слова нет
-        /// </summary>
         public int KeywordOrIDToken(string keyword)
         {
-            if (KeywordsToTokens.TryGetValue(keyword, out int token))
+            if (keywordsToTokens.TryGetValue(keyword, out int token))
                 return token;
             else
                 return GetIdToken();
@@ -128,7 +111,7 @@ namespace PascalABCCompiler.Contracts.Parsers
 
             // token null может передаваться, если это ключевое слово исключительно для Intellisense (например, break)
             if (token != null)
-                KeywordsToTokens[name] = (int)(object)token;
+                keywordsToTokens[name] = (int)(object)token;
 
             if (isTypeKeyword)
                 TypeKeywords.Add(name);

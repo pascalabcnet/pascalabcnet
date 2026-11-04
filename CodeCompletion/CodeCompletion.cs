@@ -389,14 +389,14 @@ namespace CodeCompletion
             return false;
         }
 
-        public List<string> GetKeywords()
+        public IList<string> GetKeywords()
         {
             if (CodeCompletionController.IntellisenseAvailable())
                 return CodeCompletionController.CurrentLanguage.LanguageInformation.KeywordsStorage.KeywordsForIntellisenseList;
             return new List<string>();
         }
 
-        public List<string> GetTypeKeywords()
+        public IList<string> GetTypeKeywords()
         {
             if (CodeCompletionController.IntellisenseAvailable())
                 return CodeCompletionController.CurrentLanguage.LanguageInformation.KeywordsStorage.TypeKeywords;
