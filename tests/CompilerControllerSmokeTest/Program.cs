@@ -560,6 +560,19 @@ static async Task CheckSourceSnapshotsAsync(
     Check(diagnostic.GetProperty("line").GetInt32() >= 6 &&
           diagnostic.GetProperty("column").GetInt32() >= 1,
         "diagnostic contains virtual-module coordinates");
+
+    // The generated constructor and property have the same name. The error
+    // must point into the unsaved source, not to a synthetic filename.
+    const string collisionLine = "  var item := new class(Create := 1);";
+    var invalidAnonymousClass = await CompileAsync(
+        process, firstRequestId + 8, mainPath, outputRoot,
+        sourceFiles: new[] { new SourceFileInput(mainPath, "begin\n" + collisionLine + "\nend.") });
+    Check(!invalidAnonymousClass.GetProperty("success").GetBoolean(), "anonymous class member collision is rejected");
+    var anonymousDiagnostic = invalidAnonymousClass.GetProperty("diagnostics")[0];
+    Check(Path.GetFullPath(anonymousDiagnostic.GetProperty("fileName").GetString()!) == Path.GetFullPath(mainPath) &&
+          anonymousDiagnostic.GetProperty("line").GetInt32() == 2 &&
+          anonymousDiagnostic.GetProperty("column").GetInt32() == collisionLine.IndexOf("Create", StringComparison.Ordinal) + 1,
+        "anonymous class diagnostic points to the real source and member");
 }
 
 static async Task<string> RunAndCaptureAsync(

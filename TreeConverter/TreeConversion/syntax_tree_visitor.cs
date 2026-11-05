@@ -21850,27 +21850,66 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             var semantic_types = semantic_exprs.Select(x => x.type).ToList();
-            var types = semantic_types.Select(x => SyntaxTreeBuilder.BuildSemanticType(x)).ToList();
-
+            // A global type cannot refer directly to type parameters of its enclosing method.
+            // Lift open field types to parameters of the generated type instead.
+            bool generic = semantic_types.Any(AnonymousFieldUsesGenericParameter);
+            common_type_node typ;
             contextChanger.SaveContextAndUpToGlobalLevel();
-
-            var tt = context._cmn.types.Where(t => t.name.StartsWith("AnonymousType#")); // найти все анонимные типы, полученные в текущей компиляции
-
-            var typ = tt.FirstOrDefault(t => SameTypeAutoClasses(strnames, semantic_types, t)); // найти структурно совпадающий уже существующий анонимный тип
-
-            // Генерация глобальных описаний - перенесена с синтаксического уровня
-            if (typ != null)
-                unn.set_name(typ.name); // если нашли, то просто меняем имя на имя этого класса
-            else
+            try
             {
-                var td = SyntaxTreeBuilder.BuildAutoClass(unn.name(), names, types, unn.is_class);
-                visit(td);
+                var candidates = context._cmn.types.Where(t =>
+                    t.name.StartsWith("AnonymousType#") && t.is_value_type != unn.is_class &&
+                    t.is_generic_type_definition == generic);
+                typ = generic
+                    ? candidates.FirstOrDefault(t => strnames.SequenceEqual(
+                        t.properties.Select(p => p.name), StringComparer.OrdinalIgnoreCase))
+                    : candidates.FirstOrDefault(t => SameTypeAutoClasses(strnames, semantic_types, t));
+                if (typ == null)
+                {
+                    string name = unn.name();
+                    string suffix = generic ? StringConstants.generic_params_infix + names.Count : "";
+                    // Overload resolution can visit the same syntax with different field types.
+                    for (int i = 1; context.find_only_in_namespace(name) != null ||
+                         (generic && context.find_only_in_namespace(name + suffix) != null); i++)
+                        name = unn.name() + "#" + i;
+                    var parameters = generic
+                        ? names.Select((n, i) => new ident("#Field" + i, n.source_context)).ToList()
+                        : null;
+                    var types = generic
+                        ? parameters.Select(p => (type_definition)new named_type_reference(p.name, p.source_context)).ToList()
+                        : semantic_types.Select(x => SyntaxTreeBuilder.BuildSemanticType(x)).ToList();
+                    var td = SyntaxTreeBuilder.BuildAutoClass(name, names, types, unn.is_class);
+                    td.source_context = unn.source_context;
+                    td.type_name = generic
+                        ? new template_type_name(name, new ident_list(parameters), unn.source_context)
+                        : new ident(name, unn.source_context);
+                    visit(td);
+                    typ = (common_type_node)context.find_only_in_namespace(name + suffix)[0].sym_info;
+                }
+            }
+            finally
+            {
+                contextChanger.RestoreCurrentContext();
             }
 
-            contextChanger.RestoreCurrentContext();
+            var originalType = unn.new_ex.type;
+            try
+            {
+                unn.new_ex.type = new semantic_type_node(generic ? typ.get_instance(semantic_types) : typ,
+                    unn.source_context);
+                visit(unn.new_ex);
+            }
+            finally
+            {
+                unn.new_ex.type = originalType;
+            }
+        }
 
-            // Сахарный узел. Переадресация дальнейшей генерации узлу new_ex
-            visit(unn.new_ex);
+        private static bool AnonymousFieldUsesGenericParameter(type_node type)
+        {
+            return type.is_generic_parameter ||
+                (type.is_generic_type_instance && type.instance_params.Any(AnonymousFieldUsesGenericParameter)) ||
+                (type.element_type != null && AnonymousFieldUsesGenericParameter(type.element_type));
         }
 
         public override void visit(SyntaxTree.short_func_definition def) // SSM 20.07.13

@@ -64,10 +64,7 @@ namespace PascalABCCompiler.TreeConverter
 
     public class CompilationError : Errors.SemanticError
     {
-        public CompilationError()
-            : base("???", "Undefined file_name")
-        {
-        }
+        public override string FileName => Location?.file_name ?? base.FileName;
 
         //TODO: Сделать static.
         public string loc_to_string(ILocation loc)
