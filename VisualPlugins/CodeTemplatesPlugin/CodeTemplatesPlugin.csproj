@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\WeifenLuo\WinFormsUI\WinFormsUI.csproj" />
     <ProjectReference Include="..\..\PluginsSupport\PluginsSupport.csproj" />
+    <ProjectReference Include="..\..\ICSharpCode.TextEditor\ICSharpCode.TextEditor.csproj" />
     <ProjectReference Include="..\..\VisualPascalABCNET\VisualPascalABCNET.csproj" />
   </ItemGroup>
   
@@ -41,10 +42,6 @@
     <Reference Include="ICSharpCode.SharpDevelop.Widgets, Version=4.2.1.8805, Culture=neutral, PublicKeyToken=f829da5c02be14ee, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\VisualPascalABCNET\FormsDesignerBinding\Libs\ICSharpCode.SharpDevelop.Widgets.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.TextEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=4d61825e8dd49f1a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\ICSharpCode.TextEditor.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

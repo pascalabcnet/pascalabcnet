@@ -99,6 +99,7 @@
 /bin/ICSharpCode.SharpDevelop.Dom.dll
 /bin/ICSharpCode.SharpDevelop.Widgets.dll
 /bin/ICSharpCode.TextEditor.dll
+/Libraries/ICSharpCode.TextEditor.dll
 /bin/ICSharpCode.TextEditorLinux.dll
 /bin/WeifenLuo.WinFormsUI.Docking.dll
 /bin/WeifenLuo.WinFormsUI.DockingLinux.dll
