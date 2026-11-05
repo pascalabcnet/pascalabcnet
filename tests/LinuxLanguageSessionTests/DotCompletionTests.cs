@@ -72,6 +72,21 @@ partial class Program
                     area.SimulateKeyPress('.');Application.DoEvents();area.Caret.Position=new ICSharpCode.TextEditor.TextLocation(0,0);pending.SetResult(CompletionResponse());
                     Wait(session.Documents.WhenIdleAsync());Application.DoEvents();
                     Check(popup()==null,"late completion is rejected after caret movement");
+                    client.PackageDiscovery = method => Task.FromResult<object>(method == "pascalabc/searchNuGetPackages"
+                        ? new object[] { new Dictionary<string, object> { ["Id"] = "Newtonsoft.Json", ["Version"] = "13.0.3" } }
+                        : new object[] { "13.0.3", "13.0.2" });
+                    source("{$package Newt");
+                    Check(area.ExecuteDialogKey(Keys.Control | Keys.Space), "Linux Ctrl+Space requests package names");
+                    PumpUntil(() => popup() != null);
+                    area.ExecuteDialogKey(Keys.Enter);
+                    Check(doc.Text == "{$package Newtonsoft.Json 13.0.3}" && popup() == null,
+                        "package completion replaces the prefix with the selected package and version");
+                    source("{$package Newtonsoft.Json 13.0");
+                    Check(area.ExecuteDialogKey(Keys.Control | Keys.Space), "Linux Ctrl+Space requests package versions");
+                    PumpUntil(() => popup() != null);
+                    area.ExecuteDialogKey(Keys.Enter);
+                    Check(doc.Text == "{$package Newtonsoft.Json 13.0.3}" && popup() == null && area.Focused && lost == 0,
+                        "version completion preserves server order and keeps editor focus");
                     source("s");client.Completion=()=>Task.FromResult(CompletionResponse());area.SimulateKeyPress('.');PumpUntil(()=>popup()!=null);
                     active=false;session.UpdateActivity();Check(popup()==null,"switching away closes the external popup");
                     Check(fake.UserOptions.AllowCodeCompletion && fake.UserOptions.CodeCompletionDot && fake.UserOptions.CodeCompletionHint && fake.UserOptions.CodeCompletionParams,"platform changes preserve saved IntelliSense preferences");

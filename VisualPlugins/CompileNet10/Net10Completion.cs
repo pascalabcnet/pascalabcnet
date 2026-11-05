@@ -125,9 +125,7 @@ namespace VisualPascalABCPlugins
                 Key = ch => Key(document, ch),
                 Dialog = key =>
                 {
-#if !PABC_LINUX_PLUGIN
                     if (key == (Keys.Control | Keys.Space) && RequestPackageCompletion(document)) return true;
-#endif
                     if (key == Keys.Escape || scheduled != null) Invalidate();
                     return false;
                 },
@@ -217,6 +215,7 @@ namespace VisualPascalABCPlugins
             return document != null && RequestPackageCompletion(document);
         }
 
+#endif
         private bool RequestPackageCompletion(ICodeFileDocument document)
         {
             if (!CanShow(document)) return false;
@@ -235,48 +234,67 @@ namespace VisualPascalABCPlugins
         private async Task RequestPackageAsync(Net10CompletionContext context,
             Net10PackageDirectiveContext directive, long ticket, CancellationToken token)
         {
+            var area = context.Document.TextEditor.ActiveTextAreaControl.TextArea;
+            object response = null;
             try
             {
-                object response = await documents.DiscoverPackagesAsync(context.Document,
-                    directive.Prefix, directive.PackageId, token);
-                if (token.IsCancellationRequested || ticket != generation || !CanShow(context.Document) ||
-                    !string.Equals(context.Text, context.Document.TextEditor.Document.TextContent,
-                        StringComparison.Ordinal) ||
-                    context.Document.TextEditor.ActiveTextAreaControl.Caret.Offset != context.Offset) return;
+                response = await documents.DiscoverPackagesAsync(context.Document,
+                    directive.Prefix, directive.PackageId, token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception error) { Trace.TraceWarning("NuGet completion: {0}", error); }
+            PostCompletion(area, ticket, () =>
+            {
+                if (response == null || token.IsCancellationRequested || !CanShow(context.Document) ||
+                    !string.Equals(context.Text, area.Document.TextContent, StringComparison.Ordinal) ||
+                    area.Caret.Offset != context.Offset) return;
                 var provider = new Net10PackageCompletionProvider(response, ui, directive);
                 pending = null;
                 if (provider.Items.Length == 0) return;
                 Opening?.Invoke();
                 ui.ShowCompletion(context.Document, provider, true);
-            }
-            catch (OperationCanceledException) { }
-            catch (Exception error) { Trace.TraceWarning("NuGet completion: {0}", error); }
-            finally
-            {
-                if (ticket == generation) { pending = null; cancellation?.Dispose(); cancellation = null; }
-            }
+            });
         }
 
-#endif
         private async Task RequestAsync(Net10CompletionContext context, long ticket, CancellationToken token)
         {
+            var area = context.Document.TextEditor.ActiveTextAreaControl.TextArea;
+            object response = null;
             try
             {
-                var position = context.Document.TextEditor.Document.OffsetToPosition(context.Offset);
-                object response = await documents.CompleteAsync(context.Document, position.Y, position.X, token);
-                // Captured WinForms context: no editor/control access on the transport thread.
-                if (token.IsCancellationRequested || ticket != generation || !CanShow(context.Document) || !context.IsCurrent(out var prefix)) return;
+                var position = area.Document.OffsetToPosition(context.Offset);
+                response = await documents.CompleteAsync(context.Document, position.Y, position.X, token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception error) { Trace.TraceWarning("LSP completion: {0}", error); }
+            PostCompletion(area, ticket, () =>
+            {
+                if (response == null || token.IsCancellationRequested || !CanShow(context.Document) || !context.IsCurrent(out var prefix)) return;
                 var provider = new Net10CompletionProvider(response, ui, prefix);
                 pending = null;
                 Opening?.Invoke(); // Avoid two dialog-key consumers for completion and parameter help.
                 ui.ShowCompletion(context.Document, provider);
-            }
-            catch (OperationCanceledException) { }
-            catch (Exception error) { Trace.TraceWarning("LSP completion: {0}", error); }
-            finally
+            });
+        }
+
+        private void PostCompletion(TextArea area, long ticket, Action show)
+        {
+            // Passive popups can leave the caller without a WinForms synchronization context.
+            try
             {
-                if (ticket == generation) { pending = null; cancellation?.Dispose(); cancellation = null; }
+                if (area.IsDisposed || !area.IsHandleCreated) return;
+                area.BeginInvoke(new Action(() =>
+                {
+                    if (ticket != generation) return;
+                    try { show(); }
+                    catch (Exception error) { Trace.TraceWarning("Completion popup: {0}", error); }
+                    finally
+                    {
+                        if (ticket == generation) { pending = null; cancellation?.Dispose(); cancellation = null; }
+                    }
+                }));
             }
+            catch (InvalidOperationException) { } // The editor closed before dispatch.
         }
 
         private void Invalidate()

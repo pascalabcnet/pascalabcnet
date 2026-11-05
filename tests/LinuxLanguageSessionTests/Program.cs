@@ -37,7 +37,13 @@ partial class Program
         public Task StartAsync(){Starts++;return Task.CompletedTask;}
         public Task NotifyAsync(string method,object args){Sent.Add(new Message{Method=method,Args=new JavaScriptSerializer().Deserialize<Dictionary<string,object>>(new JavaScriptSerializer().Serialize(args))});return Task.CompletedTask;}
         internal Func<Task<object>> Completion, Signature, Hover, Navigation;
-        public Task<object> RequestAsync(string method,object args,CancellationToken cancellation=default(CancellationToken))=>(method=="textDocument/signatureHelp" ? Signature : method=="textDocument/hover" ? Hover : method=="textDocument/implementation" || method=="textDocument/definition" ? Navigation : Completion)?.Invoke() ?? Task.FromResult<object>(null);
+        internal Func<string, Task<object>> PackageDiscovery;
+        public Task<object> RequestAsync(string method,object args,CancellationToken cancellation=default(CancellationToken))
+        {
+            if (method == "pascalabc/searchNuGetPackages" || method == "pascalabc/nugetPackageVersions")
+                return PackageDiscovery?.Invoke(method) ?? Task.FromResult<object>(null);
+            return (method=="textDocument/signatureHelp" ? Signature : method=="textDocument/hover" ? Hover : method=="textDocument/implementation" || method=="textDocument/definition" ? Navigation : Completion)?.Invoke() ?? Task.FromResult<object>(null);
+        }
         public Task StopAsync(){IsConnected=false;return Task.CompletedTask;}
         public Task CancelPackageRestoreAsync()=>Task.CompletedTask;
         public void Dispose(){IsConnected=false;}
