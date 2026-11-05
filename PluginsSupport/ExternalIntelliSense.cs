@@ -32,6 +32,13 @@ namespace VisualPascalABCPlugins
         public System.Collections.Generic.IReadOnlyList<DocumentBrowserSymbol> Children = Array.Empty<DocumentBrowserSymbol>();
     }
 
+    // Optional command routing; hosts without this capability keep their existing navigation.
+    public interface IExternalNavigationSession
+    {
+        bool NavigationEnabled { get; set; }
+        event Action<ICodeFileDocument, bool> NavigationRequested;
+    }
+
     public enum IntelliSenseHint { Completion, Hover, Parameters }
     public enum CompletionItemKind
     {

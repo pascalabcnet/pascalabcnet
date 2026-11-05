@@ -203,6 +203,9 @@ namespace VisualPascalABCPlugins
         internal Task<object> NavigationAsync(ICodeFileDocument document, int line, int character, CancellationToken cancellation)
             => RequestPositionAsync(document, line, character, "textDocument/implementation", cancellation);
 
+        internal Task<object> DefinitionAsync(ICodeFileDocument document, int line, int character, CancellationToken cancellation)
+            => RequestPositionAsync(document, line, character, "textDocument/definition", cancellation);
+
         internal Task<object> SymbolsAsync(ICodeFileDocument document, CancellationToken cancellation)
             => RequestPositionAsync(document, 0, 0, "pascalabc/documentOutline", cancellation);
 

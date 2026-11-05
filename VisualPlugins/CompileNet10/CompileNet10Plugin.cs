@@ -214,6 +214,8 @@ namespace VisualPascalABCPlugins
                 languageCompletion.Opening += languageSignature.CloseHints;
                 languageNavigation = new Net10Navigation(documentEvents, languageDocuments,
                     () => platformItem.Checked && workbench.UserOptions.AllowCodeCompletion, Navigate);
+                if (languageUI is IExternalNavigationSession navigationUI)
+                    navigationUI.NavigationRequested += languageNavigation.NavigateAtCaret;
                 languageSymbols = new Net10DocumentSymbols(documentEvents,
                     workbench.ServiceContainer.DocumentService, languageDocuments);
                 // Only check the user's enable setting; document text is event-driven, never polled.
@@ -294,6 +296,7 @@ namespace VisualPascalABCPlugins
             languageHover?.SetActive(enabled && workbench.UserOptions.CodeCompletionHint);
             languageSignature?.SetActive(enabled && workbench.UserOptions.CodeCompletionParams);
             languageNavigation?.SetActive(enabled);
+            if (languageUI is IExternalNavigationSession navigationUI) navigationUI.NavigationEnabled = enabled;
             languageSymbols?.SetActive(selected, enabled && workbench.UserOptions.ShowQuickClassBrowserPanel);
 #else
             linuxLanguage?.UpdateActivity();

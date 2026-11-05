@@ -346,6 +346,8 @@ internal static partial class Program
                 CheckLanguageDocumentSymbols();
                 return 0;
             }
+            if (args.Length > 0 && args[0] == "--navigation-commands")
+            { CheckNavigationCommands(); return 0; }
             if (args.Length > 0 && args[0] == "--platform-ui")
             { CheckPlatformUI(); return 0; }
             CheckRestoreDeadlines();

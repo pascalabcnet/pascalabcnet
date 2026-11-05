@@ -179,6 +179,7 @@ namespace VisualPascalABC
 
         public static void GotoRealization(TextArea textArea)
         {
+            if (ExternalIntelliSenseSession.TryNavigate(textArea, true)) return;
             if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return;
             position = GetRealizationPosition(textArea);
             if (position == null || position.Count == 0) return;
@@ -504,6 +505,7 @@ namespace VisualPascalABC
 
         public static void GotoDefinition(TextArea _textArea)
         {
+            if (ExternalIntelliSenseSession.TryNavigate(_textArea, false)) return;
             if (!CodeCompletion.CodeCompletionController.IntellisenseAvailable()) return;
             position = GetDefinitionPosition(_textArea, false);
             if (position == null) return;

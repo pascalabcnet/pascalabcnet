@@ -6,7 +6,7 @@ namespace VisualPascalABCPlugins
     internal sealed class Net10PlatformMenu : IDisposable
     {
         internal ToolStripMenuItem Root { get; } = new ToolStripMenuItem("Платформа") { Name = "CompilePlatformMenu" };
-        internal ToolStripMenuItem Legacy { get; } = new ToolStripMenuItem(".NET Framework 4.7.2") { Name = "CompileFrameworkPlatform", Checked = true };
+        internal ToolStripMenuItem Legacy { get; } = new ToolStripMenuItem(".NET Framework") { Name = "CompileFrameworkPlatform", Checked = true };
         private readonly ToolStripMenuItem modern;
         internal Net10PlatformMenu(ToolStripMenuItem modern, Action<bool> select)
         {
