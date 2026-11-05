@@ -9,7 +9,7 @@ namespace Languages.SPython.Frontend.Converters
 
         public ImportToUsesVisitor() { }
 
-        private Dictionary<string, string> specialModulesAliases = Facade.LanguageProvider.Instance.SelectLanguageByName("SPython").LanguageInformation.SpecialModulesAliases;
+        private IReadOnlyDictionary<string, string> specialModulesAliases = Facade.LanguageProvider.Instance.SelectLanguageByName("SPython").LanguageInformation.SpecialModulesAliases;
 
         private string GetNameToImport(string nameToImport)
         {

@@ -6,13 +6,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using PascalABCCompiler.Contracts.CodeCompletion;
+using PascalABCCompiler.Contracts.Parsers;
+using PascalABCCompiler.Contracts.Languages;
 
 namespace PascalABCCompiler.Parsers
 {
     public abstract class BaseLanguageIntellisenseSupport : ILanguageIntellisenseSupport
     {
-        public ILanguageInformation LanguageInformation { get; set; }
-
         public abstract string BodyStartBracket { get; }
 
         public abstract string BodyEndBracket { get; }
@@ -42,6 +43,13 @@ namespace PascalABCCompiler.Parsers
         public abstract bool UsesFunctionsOverlappingSourceContext { get; }
 
         protected abstract string IntTypeName { get; }
+
+        protected ILanguageInformation languageInformation;
+
+        public BaseLanguageIntellisenseSupport(ILanguageInformation languageInformation)
+        {
+            this.languageInformation = languageInformation;
+        }
 
         public virtual bool IsParams(string paramDescription)
         {
@@ -943,7 +951,7 @@ namespace PascalABCCompiler.Parsers
 
         public KeywordKind GetKeywordKind(string name)
         {
-            if (LanguageInformation.KeywordsStorage.KeywordKinds.TryGetValue(name, out var kind))
+            if (languageInformation.KeywordsStorage.KeywordKinds.TryGetValue(name, out var kind))
                 return kind;
             else
                 return KeywordKind.None;
@@ -1458,9 +1466,9 @@ namespace PascalABCCompiler.Parsers
                 return sc.Name + (((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>") && sc.Name != "class") ? "<>" : "") + ".";
             }
 
-            if (sc is IInterfaceUnitScope && LanguageInformation.SpecialModulesAliases != null)
+            if (sc is IInterfaceUnitScope && languageInformation.SpecialModulesAliases != null)
             {
-                var p = LanguageInformation.SpecialModulesAliases.FirstOrDefault(kv => kv.Value == sc.Name);
+                var p = languageInformation.SpecialModulesAliases.FirstOrDefault(kv => kv.Value == sc.Name);
 
                 if (!p.Equals(default(KeyValuePair<string, string>)))
                     return p.Key + ".";
@@ -1479,9 +1487,9 @@ namespace PascalABCCompiler.Parsers
                 return sc.Name + (((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>")) ? "<>" : "");
             }
 
-            if (sc is IInterfaceUnitScope && LanguageInformation.SpecialModulesAliases != null)
+            if (sc is IInterfaceUnitScope && languageInformation.SpecialModulesAliases != null)
             {
-                var p = LanguageInformation.SpecialModulesAliases.FirstOrDefault(kv => kv.Value == sc.Name);
+                var p = languageInformation.SpecialModulesAliases.FirstOrDefault(kv => kv.Value == sc.Name);
 
                 if (!p.Equals(default(KeyValuePair<string, string>)))
                     return p.Key + ".";
@@ -1669,15 +1677,15 @@ namespace PascalABCCompiler.Parsers
 
         public virtual bool IsDefinitionIdentifierAfterKeyword(KeywordKind keyw)
         {
-            if (keyw == PascalABCCompiler.Parsers.KeywordKind.Function || keyw == PascalABCCompiler.Parsers.KeywordKind.Constructor || keyw == PascalABCCompiler.Parsers.KeywordKind.Destructor || keyw == PascalABCCompiler.Parsers.KeywordKind.Type || keyw == PascalABCCompiler.Parsers.KeywordKind.Var
-                   || keyw == PascalABCCompiler.Parsers.KeywordKind.Unit || keyw == PascalABCCompiler.Parsers.KeywordKind.Const || keyw == PascalABCCompiler.Parsers.KeywordKind.Program || keyw == PascalABCCompiler.Parsers.KeywordKind.Punkt)
+            if (keyw == KeywordKind.Function || keyw == KeywordKind.Constructor || keyw == KeywordKind.Destructor || keyw == KeywordKind.Type || keyw == KeywordKind.Var
+                   || keyw == KeywordKind.Unit || keyw == KeywordKind.Const || keyw == KeywordKind.Program || keyw == KeywordKind.Punkt)
                 return true;
             return false;
         }
 
         public bool IsKeyword(string value)
         {
-            return LanguageInformation.KeywordsStorage.KeywordsForIntellisenseSet.Contains(value);
+            return languageInformation.KeywordsStorage.KeywordsForIntellisenseSet.Contains(value);
         }
 
         public virtual bool IsMethodCallParameterSeparator(char key)
@@ -1761,7 +1769,7 @@ namespace PascalABCCompiler.Parsers
             {
                 keyword = KeywordKind.Raise;
             }
-            else if (LanguageInformation.KeywordsStorage.KeywordsTreatedAsFunctions.Contains(s))
+            else if (languageInformation.KeywordsStorage.KeywordsTreatedAsFunctions.Contains(s))
             {
                 keyword = KeywordKind.None;
             }

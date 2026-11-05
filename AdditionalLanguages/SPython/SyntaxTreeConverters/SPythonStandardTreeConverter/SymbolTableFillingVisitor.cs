@@ -1,5 +1,5 @@
 ﻿using PascalABCCompiler;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts.Languages;
 using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;

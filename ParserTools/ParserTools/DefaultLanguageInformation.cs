@@ -2,11 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 
-using PascalABCCompiler.ParserTools.Directives;
 using System.Collections.Generic;
+using PascalABCCompiler.Contracts.Languages;
+using PascalABCCompiler.Contracts.Parsers;
 
 namespace PascalABCCompiler.Parsers
 {
+    /// <summary>
+    /// Можно наследовать, если хочется больше дефолтных настроек
+    /// </summary>
     public abstract class DefaultLanguageInformation : ILanguageInformation
     {
         public abstract string Name { get; }
@@ -21,15 +25,15 @@ namespace PascalABCCompiler.Parsers
 
         public abstract string[] SystemUnitNames { get; }
 
-        public abstract BaseKeywords KeywordsStorage { get; }
+        public abstract IKeywords KeywordsStorage { get; }
 
         public virtual bool SyntaxTreeIsConvertedAfterUsedModulesCompilation => false;
 
-        public virtual Dictionary<string, DirectiveInfo> ValidDirectives => null;
+        public virtual IReadOnlyDictionary<string, IDirectiveInfo> ValidDirectives => null;
 
         // Важно переопределять для реализации тестов
         public virtual string CommentSymbol => "//";
 
-        public virtual Dictionary<string, string> SpecialModulesAliases => null;
+        public virtual IReadOnlyDictionary<string, string> SpecialModulesAliases => null;
     }
 }

@@ -4,37 +4,24 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using PascalABCCompiler.Errors;
+using PascalABCCompiler.Contracts.Parsers;
 
 namespace PascalABCCompiler.ParserTools.Directives
 {
     /// <summary>
-    /// Этап, которому принадлежит директива. Это не обработчик директивы, а
-    /// явная граница ответственности между лексером, компиляцией модуля,
-    /// сборкой итоговой программы и редактором.
-    /// </summary>
-    [Flags]
-    public enum DirectiveProcessingStage
-    {
-        Lexer = 1,
-        Unit = 2,
-        Compilation = 4,
-        Editor = 8
-    }
-
-    /// <summary>
     /// Класс для хранения информации о директиве компилятора (количество параметров, проверки для параметров и др.)
     /// </summary>
-    public class DirectiveInfo
+    public class DirectiveInfo : IDirectiveInfo
     {
         private readonly ParamChecksCollection checks;
 
-        public int[] paramsNums = new int[1] { 1 }; // по умолчанию один параметр
+        public int[] ParamsNums { get; } = new int[1] { 1 }; // по умолчанию один параметр
         
-        public bool checkParamsNumNeeded; // false, если параметров неограниченное кол-во
+        public bool CheckParamsNumNeeded { get; } // false, если параметров неограниченное кол-во
         
-        public bool quotesAreSpecialSymbols; // true, если нужно ставить кавычки для объединения нескольких слов в одно (как в пути к файлу с пробелами)
+        public bool QuotesAreSpecialSymbols { get; } // true, если нужно ставить кавычки для объединения нескольких слов в одно (как в пути к файлу с пробелами)
 
-        public DirectiveProcessingStage processingStage;
+        public DirectiveProcessingStage ProcessingStage { get; }
 
         // по умолчанию никаких проверок параметров, но включена проверка их кол-ва
         public DirectiveInfo(ParamChecksCollection paramChecks = null, bool quotesAreSpecialSymbols = false,
@@ -42,17 +29,17 @@ namespace PascalABCCompiler.ParserTools.Directives
             DirectiveProcessingStage processingStage = DirectiveProcessingStage.Compilation)
         {
             this.checks = paramChecks;
-            this.quotesAreSpecialSymbols = quotesAreSpecialSymbols;
+            this.QuotesAreSpecialSymbols = quotesAreSpecialSymbols;
             if (paramsNums != null)
-                this.paramsNums = paramsNums;
-            this.checkParamsNumNeeded = checkParamsNumNeeded;
-            this.processingStage = processingStage;
+                this.ParamsNums = paramsNums;
+            this.CheckParamsNumNeeded = checkParamsNumNeeded;
+            this.ProcessingStage = processingStage;
         }
 
         /// <summary>
         /// Функция для проверки всех параметров директивы
         /// </summary>
-        public bool ParamsValid(List<string> directiveParams, out int indexOfMismatch, out string errorMessage)
+        public bool ParamsValid(IEnumerable<string> directiveParams, out int indexOfMismatch, out string errorMessage)
         {
             // если проверки не нужны
             if (checks == null)
@@ -198,7 +185,7 @@ namespace PascalABCCompiler.ParserTools.Directives
             this.checks = checks;
         }
 
-        public bool CheckParams(List<string> directiveParams, out int indexOfMismatch, out string errorMessage)
+        public bool CheckParams(IEnumerable<string> directiveParams, out int indexOfMismatch, out string errorMessage)
         {
             int directivesChecked = 0;
             for (var i = 0; i < checks.Length; i++)

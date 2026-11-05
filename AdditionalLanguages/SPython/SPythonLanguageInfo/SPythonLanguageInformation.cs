@@ -1,5 +1,5 @@
-﻿using PascalABCCompiler.Parsers;
-using PascalABCCompiler.ParserTools.Directives;
+﻿using PascalABCCompiler.Contracts.Parsers;
+using PascalABCCompiler.Contracts.Languages;
 using System.Collections.Generic;
 
 namespace Languages.SPython.Frontend.Data
@@ -18,20 +18,20 @@ namespace Languages.SPython.Frontend.Data
 
         public bool SyntaxTreeIsConvertedAfterUsedModulesCompilation => true;
 
-        public BaseKeywords KeywordsStorage { get; } = new SPythonParser.SPythonKeywords();
+        public IKeywords KeywordsStorage { get; } = new SPythonParser.SPythonKeywords();
 
-        public Dictionary<string, DirectiveInfo> ValidDirectives { get; protected set; }
+        public IReadOnlyDictionary<string, IDirectiveInfo> ValidDirectives { get; protected set; }
 
         public string CommentSymbol => "#";
 
         public bool CaseSensitive => true;
 
-        private readonly Dictionary<string, string> specialModulesAliases = new Dictionary<string, string>
+        private readonly IReadOnlyDictionary<string, string> specialModulesAliases = new Dictionary<string, string>
         {
             { "time", "time1" },
             { "random", "random1" },
         };
 
-        public Dictionary<string, string> SpecialModulesAliases => specialModulesAliases;
+        public IReadOnlyDictionary<string, string> SpecialModulesAliases => specialModulesAliases;
     }
 }

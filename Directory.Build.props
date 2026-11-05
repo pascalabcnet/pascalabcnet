@@ -5,6 +5,9 @@
       '$(MSBuildProjectName)' == 'Compiler' Or
       '$(MSBuildProjectName)' == 'CompilerTools' Or
       '$(MSBuildProjectName)' == 'CodeCompletion' Or
+      '$(MSBuildProjectName)' == 'CodeCompletionContracts' Or
+      '$(MSBuildProjectName)' == 'ParserContracts' Or
+      '$(MSBuildProjectName)' == 'LanguageContracts' Or
       '$(MSBuildProjectName)' == 'NETGenerator' Or
       '$(MSBuildProjectName)' == 'PABCNETC' Or
       '$(MSBuildProjectName)' == 'TreeConverter' Or

@@ -1,15 +1,20 @@
 ﻿using PascalABCCompiler;
 using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts.CodeCompletion;
+using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using PascalABCCompiler.Contracts.Languages;
 
 namespace Languages.Pascal.Frontend.Data
 {
     internal class PascalABCIntellisenseSupport : BaseLanguageIntellisenseSupport
     {
+
+        public PascalABCIntellisenseSupport(ILanguageInformation languageInformation) : base(languageInformation) { } 
 
         protected IParser Parser
         {
@@ -1464,23 +1469,23 @@ namespace Languages.Pascal.Frontend.Data
                 j++;
             }
             j = i;
-            if ((kav_stack.Count != 0 || in_keyw) && !in_format_str) return PascalABCCompiler.Parsers.KeywordKind.Punkt;
-            if (j >= 0 && Text[j] == '.') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
+            if ((kav_stack.Count != 0 || in_keyw) && !in_format_str) return KeywordKind.Punkt;
+            if (j >= 0 && Text[j] == '.') return KeywordKind.Punkt;
             while (j >= 0)
             {
-                //if (Text[j] == '{') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
+                //if (Text[j] == '{') return KeywordKind.Punkt;
                 if (!in_keyw && (Text[j] == '\'' || Text[j] == '\n'))
                     break;
                 if (Text[j] == '}')
                     in_keyw = true;
                 else
                 if (Text[j] == '/' && !in_keyw)
-                    if (j > 0 && Text[j - 1] == '/') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
+                    if (j > 0 && Text[j - 1] == '/') return KeywordKind.Punkt;
                 j--;
             }
             //if (j>= 0 && Text[j] == '\'') return CodeCompletion.KeywordKind.kw_punkt;
             while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i]))) i--;
-            if (i >= 0 && Text[i] == ':') return PascalABCCompiler.Parsers.KeywordKind.Colon;
+            if (i >= 0 && Text[i] == ':') return KeywordKind.Colon;
 
             if (i >= 0 && Text[i] == ',')
             {
@@ -1491,11 +1496,11 @@ namespace Languages.Pascal.Frontend.Data
                         sb.Insert(0, Text[i]);
                     else
                     {
-                        PascalABCCompiler.Parsers.KeywordKind keyw = GetKeywordKind(sb.ToString());
-                        if (keyw == PascalABCCompiler.Parsers.KeywordKind.Uses)
-                            return PascalABCCompiler.Parsers.KeywordKind.Uses;
-                        else if (keyw == PascalABCCompiler.Parsers.KeywordKind.Var)
-                            return PascalABCCompiler.Parsers.KeywordKind.Var;
+                        KeywordKind keyw = GetKeywordKind(sb.ToString());
+                        if (keyw == KeywordKind.Uses)
+                            return KeywordKind.Uses;
+                        else if (keyw == KeywordKind.Var)
+                            return KeywordKind.Var;
                         else sb.Remove(0, sb.Length);
                     }
                     i--;

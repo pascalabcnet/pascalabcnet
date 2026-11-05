@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using PascalABCCompiler.Contracts.Languages;
 using PascalABCCompiler.SyntaxTree;
 
 namespace PascalABCCompiler.Parsers
@@ -10,6 +11,8 @@ namespace PascalABCCompiler.Parsers
     /// </summary>
     public abstract class SimpleParser : BaseParser
     {
+        public SimpleParser(ILanguageInformation languageInformation) : base(languageInformation) { } 
+
         protected override syntax_tree_node BuildTreeInExprMode(string FileName, string Text)
         {
             throw new System.NotImplementedException();

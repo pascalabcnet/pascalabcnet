@@ -3,11 +3,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
-using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.TextEditor.Document;
+using PascalABCCompiler.Contracts.Parsers;
+using PascalABCCompiler.Contracts.CodeCompletion;
 
 namespace VisualPascalABC
 {
@@ -52,11 +50,11 @@ namespace VisualPascalABC
     
     public class KeywordChecker
     {
-    	public static PascalABCCompiler.Parsers.KeywordKind TestForKeyword(string Text, int i)
+    	public static KeywordKind TestForKeyword(string Text, int i)
         {
             if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
         	    return CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.TestForKeyword(Text, i);
-        	return PascalABCCompiler.Parsers.KeywordKind.None;
+        	return KeywordKind.None;
         } 
         
     }
@@ -67,7 +65,7 @@ namespace VisualPascalABC
     /// </summary>
     public class DefaultDispatcher : CodeCompletion.AbstractDispatcher
     {
-        private Dictionary<PascalABCCompiler.Parsers.SymInfo, ICompletionData> dict = new Dictionary<PascalABCCompiler.Parsers.SymInfo, ICompletionData>();
+        private Dictionary<SymInfo, ICompletionData> dict = new Dictionary<SymInfo, ICompletionData>();
         private Dictionary<string, ICompletionData> dict2 = new Dictionary<string, ICompletionData>();
     	public void Reset()
     	{
@@ -75,9 +73,9 @@ namespace VisualPascalABC
             dict2.Clear();
     	}
 
-        internal Action<PascalABCCompiler.Parsers.SymInfo> TakeUpdate()
+        internal Action<SymInfo> TakeUpdate()
         {
-            var symbols = new Dictionary<PascalABCCompiler.Parsers.SymInfo, ICompletionData>(dict);
+            var symbols = new Dictionary<SymInfo, ICompletionData>(dict);
             var descriptions = new Dictionary<string, ICompletionData>(dict2);
             Reset();
             return si => {
@@ -88,7 +86,7 @@ namespace VisualPascalABC
             };
         }
 
-        public void Add(PascalABCCompiler.Parsers.SymInfo si, ICompletionData data)
+        public void Add(SymInfo si, ICompletionData data)
     	{
     		if (!dict.ContainsKey(si))
     		    dict[si] = data;
@@ -96,7 +94,7 @@ namespace VisualPascalABC
                 dict2[si.description] = data;
     	}
 
-        public override void Update(PascalABCCompiler.Parsers.SymInfo si)
+        public override void Update(SymInfo si)
 		{
     		ICompletionData val=null;
     		if (dict.TryGetValue(si,out val))

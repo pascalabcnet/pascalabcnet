@@ -1,7 +1,6 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using System.Collections.Generic;
 using Languages.Facade;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.SystemLibrary;
@@ -12,15 +11,28 @@ namespace Languages.Pascal
     public class PascalABCLanguage : BaseLanguage
     {
 
-        public PascalABCLanguage() : base(
+        public PascalABCLanguage() : base(BuildLanguageComponents()) { }
 
-            languageInformation: new Frontend.Data.PascalABCLanguageInformation(),
-            languageIntellisenseSupport: new Frontend.Data.PascalABCIntellisenseSupport(),
-            parser: new Frontend.Wrapping.PascalABCNewLanguageParser(),
-            docParser: new Frontend.Documentation.PascalDocTagsLanguageParser(),
+        private static LanguageComponents BuildLanguageComponents()
+        {
+            var languageInformation = new Frontend.Data.PascalABCLanguageInformation();
 
-            syntaxTreeConverters: new List<ISyntaxTreeConverter>() { new Frontend.Converters.StandardSyntaxTreeConverter(), new SyntaxSemanticVisitors.LambdaAnyConverter() }
-            ) { }
+            var intellisenseSupport = new Frontend.Data.PascalABCIntellisenseSupport(languageInformation);
+
+            var syntaxConverters = new ISyntaxTreeConverter[] { new Frontend.Converters.StandardSyntaxTreeConverter(), new SyntaxSemanticVisitors.LambdaAnyConverter() };
+
+            var parser = new Frontend.Wrapping.PascalABCNewLanguageParser(languageInformation);
+
+            var docParser = new Frontend.Documentation.PascalDocTagsLanguageParser();
+
+            return new LanguageBuilder()
+                .WithInfo(languageInformation)
+                .WithIntellisenseSupport(intellisenseSupport)
+                .WithParser(parser)
+                .WithDocParser(docParser)
+                .WithSyntaxConverters(syntaxConverters)
+                .Build();
+        }
 
 
         public override void SetSemanticConstants()

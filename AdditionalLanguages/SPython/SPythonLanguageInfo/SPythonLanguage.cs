@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Languages.Facade;
+﻿using Languages.Facade;
 using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.SystemLibrary;
 using PascalABCCompiler.TreeConverter;
@@ -8,17 +7,24 @@ namespace Languages.SPython
 {
     public class SPythonLanguage : BaseLanguage
     {
-        public SPythonLanguage() : base(
-            
-            languageInformation: new Frontend.Data.SPythonLanguageInformation(),
-            languageIntellisenseSupport: new Frontend.Data.SPythonIntellisenseSupport(),
-            parser: new SPythonParser.SPythonLanguageParser(),
-            docParser: null,
+        public SPythonLanguage() : base(BuildLanguageComponents()) { }
 
-            syntaxTreeConverters: new List<ISyntaxTreeConverter>() { new Frontend.Converters.StandardSyntaxTreeConverter(), new SyntaxSemanticVisitors.LambdaAnyConverter() }
-            )
+        private static LanguageComponents BuildLanguageComponents()
         {
-            ((SPythonParser.SPythonLanguageParser)Parser).SyntaxTreeConvertersForIntellisense = SyntaxTreeConverters;
+            var languageInformation = new Frontend.Data.SPythonLanguageInformation();
+
+            var intellisenseSupport = new Frontend.Data.SPythonIntellisenseSupport(languageInformation);
+
+            var syntaxConverters = new ISyntaxTreeConverter[] { new Frontend.Converters.StandardSyntaxTreeConverter(), new SyntaxSemanticVisitors.LambdaAnyConverter() };
+
+            var parser = new SPythonParser.SPythonLanguageParser(languageInformation, syntaxConverters);
+
+            return new LanguageBuilder()
+                .WithInfo(languageInformation)
+                .WithIntellisenseSupport(intellisenseSupport)
+                .WithParser(parser)
+                .WithSyntaxConverters(syntaxConverters)
+                .Build();
         }
 
         /// <summary>

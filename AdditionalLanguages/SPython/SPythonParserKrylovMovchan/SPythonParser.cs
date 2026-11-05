@@ -4,6 +4,7 @@ using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
 using SPythonParserYacc;
 using PascalABCCompiler.SyntaxTreeConverters;
+using PascalABCCompiler.Contracts.Languages;
 
 
 
@@ -12,7 +13,15 @@ namespace SPythonParser
 
     public class SPythonLanguageParser : BaseParser
     {
-        public List<ISyntaxTreeConverter> SyntaxTreeConvertersForIntellisense { get; set; }
+        private readonly IEnumerable<ISyntaxTreeConverter> syntaxTreeConvertersForIntellisense;
+
+        public SPythonLanguageParser(
+            ILanguageInformation languageInformation, 
+            IEnumerable<ISyntaxTreeConverter> syntaxTreeConvertersForIntellisense
+            ) : base(languageInformation) 
+        {
+            this.syntaxTreeConvertersForIntellisense = syntaxTreeConvertersForIntellisense;
+        }
 
         protected override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, bool compilingNotMainProgram, List<string> DefinesList = null)
         {
@@ -34,14 +43,14 @@ namespace SPythonParser
             Console.SetError(sw);
 #endif
 #endif
-            SPythonParserTools parserTools = new SPythonParserTools(Errors, Warnings, LanguageInformation.ValidDirectives, buildTreeForFormatter, false,
+            SPythonParserTools parserTools = new SPythonParserTools(Errors, Warnings, languageInformation.ValidDirectives, buildTreeForFormatter, false,
                 Path.GetFullPath(fileName), CompilerDirectives); // контекст сканера и парсера
 
 
             IndentArranger ia = new IndentArranger();
             ia.ProcessSourceText(ref Text);
 
-            var scanner = new Scanner(Text, parserTools, LanguageInformation.KeywordsStorage, definesList);
+            var scanner = new Scanner(Text, parserTools, languageInformation.KeywordsStorage, definesList);
 
             SPythonGPPGParser parser = new SPythonGPPGParser(scanner, parserTools, compilingNotMainProgram);
 
@@ -65,7 +74,7 @@ namespace SPythonParser
             if (expr == null)
                 return null;
 
-            foreach (ISyntaxTreeConverter converter in SyntaxTreeConvertersForIntellisense)
+            foreach (ISyntaxTreeConverter converter in syntaxTreeConvertersForIntellisense)
             {
                 expr = (expression)converter.Convert(expr, true);
             }
@@ -85,7 +94,7 @@ namespace SPythonParser
             if (expr == null)
                 return null;
 
-            foreach (ISyntaxTreeConverter converter in SyntaxTreeConvertersForIntellisense)
+            foreach (ISyntaxTreeConverter converter in syntaxTreeConvertersForIntellisense)
             {
                 expr = (expression)converter.Convert(expr, true);
             }
@@ -112,7 +121,7 @@ namespace SPythonParser
             if (st == null)
                 return null;
 
-            foreach (ISyntaxTreeConverter converter in SyntaxTreeConvertersForIntellisense)
+            foreach (ISyntaxTreeConverter converter in syntaxTreeConvertersForIntellisense)
             {
                 st = (statement)converter.Convert(st, true);
             }

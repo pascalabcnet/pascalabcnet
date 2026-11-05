@@ -39,9 +39,9 @@ namespace VisualPascalABC
             ccp = new CodeCompletionProvider();
         }
 
-        public PascalABCCompiler.Parsers.ICodeCompletionDomConverter GetConverter(string fileName)
+        public PascalABCCompiler.Contracts.CodeCompletion.ICodeCompletionDomConverter GetConverter(string fileName)
         {
-            return CodeCompletion.CodeCompletionController.comp_modules[fileName] as PascalABCCompiler.Parsers.ICodeCompletionDomConverter;
+            return CodeCompletion.CodeCompletionController.comp_modules[fileName] as PascalABCCompiler.Contracts.CodeCompletion.ICodeCompletionDomConverter;
         }
 
         public static string CurrentTwoLetterISO
