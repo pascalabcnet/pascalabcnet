@@ -10,7 +10,7 @@ namespace VisualPascalABC
 {
     // Adapt the existing Linux widgets; their key handling, positioning, fonts
     // and nested-parameter stack stay in the same implementations as before.
-    public sealed class ExternalIntelliSenseSession : IExternalIntelliSenseSession
+    public sealed class ExternalIntelliSenseSession : IExternalIntelliSenseSession, IExternalNavigationSession
     {
         private readonly Form parent;
         private CodeCompletionImagesProvider images;
@@ -19,6 +19,32 @@ namespace VisualPascalABC
         private ICodeFileDocument parameterDocument;
         private bool disposed;
         public event Action<IntelliSenseHint> Closed;
+        private static ExternalIntelliSenseSession navigationSession;
+        public event Action<ICodeFileDocument, bool> NavigationRequested;
+        public bool NavigationEnabled
+        {
+            get => ReferenceEquals(navigationSession, this) && !disposed;
+            set
+            {
+                if (value && !disposed) navigationSession = this;
+                else if (ReferenceEquals(navigationSession, this)) navigationSession = null;
+            }
+        }
+        internal static bool CanNavigate(TextArea area)
+        {
+            var session = navigationSession;
+            var document = (session?.parent as Form1)?.CurrentCodeFileDocument;
+            return session != null && !session.disposed && session.NavigationRequested != null &&
+                document != null && !document.FromMetadata &&
+                ReferenceEquals(document.TextEditor.ActiveTextAreaControl.TextArea, area);
+        }
+        internal static bool TryNavigate(TextArea area, bool implementation)
+        {
+            if (!CanNavigate(area)) return false;
+            var session = navigationSession;
+            session.NavigationRequested(((Form1)session.parent).CurrentCodeFileDocument, implementation);
+            return true;
+        }
 
         public ExternalIntelliSenseSession(Form parent)
         {
@@ -134,6 +160,8 @@ namespace VisualPascalABC
         public void Dispose()
         {
             if (disposed) return;
+            NavigationEnabled = false;
+            NavigationRequested = null;
             disposed = true;
             Hide(IntelliSenseHint.Completion); Hide(IntelliSenseHint.Parameters); Hide(IntelliSenseHint.Hover);
             Closed = null;

@@ -245,10 +245,11 @@ namespace VisualPascalABCPlugins
                         if (method == "textDocument/completion")
                             parameters["context"] = new { triggerKind = 2, triggerCharacter = "." };
                         var response = await client.RequestAsync(method, parameters, linked.Token).ConfigureAwait(false);
-                        if (method == "textDocument/implementation")
+                        if (method == "textDocument/implementation" &&
+                            (response == null || response is System.Collections.ICollection empty && empty.Count == 0))
+                            response = await client.RequestAsync("textDocument/definition", parameters, linked.Token).ConfigureAwait(false);
+                        if (method == "textDocument/definition" || method == "textDocument/implementation")
                         {
-                            if (response == null || response is System.Collections.ICollection empty && empty.Count == 0)
-                                response = await client.RequestAsync("textDocument/definition", parameters, linked.Token).ConfigureAwait(false);
                             foreach (var location in Net10NavigationTarget.ReadLocations(response))
                                 if (location.TryGetValue("uri", out var name) && name is string address &&
                                     Uri.TryCreate(address, UriKind.Absolute, out var target) && target.Scheme == "pascalabc-metadata")

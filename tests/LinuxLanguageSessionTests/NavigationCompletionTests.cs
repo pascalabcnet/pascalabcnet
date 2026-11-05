@@ -37,6 +37,9 @@ partial class Program
                     request=sync.NavigationAsync(main,0,main.Text.IndexOf("Substring",StringComparison.Ordinal),CancellationToken.None);Wait(request);
                     targets=Net10NavigationTarget.Read(request.Result);
                     Check(targets.Count>0 && targets[0].MetadataText!=null && targets[0].MetadataText.Contains("Substring"),"real navigation fetches .NET metadata without writing files");
+                    var definition=sync.DefinitionAsync(main,0,main.Text.IndexOf("Substring",StringComparison.Ordinal),CancellationToken.None);Wait(definition);
+                    targets=Net10NavigationTarget.Read(definition.Result);
+                    Check(targets.Count>0 && targets[0].MetadataText!=null && targets[0].MetadataText.Contains("Substring"),"definition command fetches .NET metadata");
                     Check(!File.Exists(main.FileName) && !File.Exists(unit.FileName),"navigation preserves unsaved source files");
                     return;
                 }

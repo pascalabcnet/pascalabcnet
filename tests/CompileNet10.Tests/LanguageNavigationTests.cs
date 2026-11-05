@@ -136,6 +136,12 @@ internal static partial class Program
                         var metadata = Net10NavigationTarget.Read(response);
                         Check(metadata.Count == 1 && metadata[0].FileName == null && metadata[0].MetadataText.Contains("Substring"),
                             "CLR member definition returns on-demand metadata for the standard IDE metadata tab");
+                        area.Caret.Position = position;
+                        ui.NavigateAtCaret(main, implementation: false);
+                        PumpNavigation(() => jumps == 2);
+                        Check(targets.Count == 1 && targets[0].FileName == null &&
+                            targets[0].MetadataText.Contains("Substring"),
+                            "Windows definition command delivers CLR metadata to the IDE navigation callback");
                         CheckMetadataHover(sync, metadata[0], open, events);
                         main.TextEditor.Document.TextContent = "begin var local := 1; Print(local); end.";
                         offset = main.TextEditor.Document.TextContent.LastIndexOf("local", StringComparison.Ordinal) + 2;
@@ -148,9 +154,10 @@ internal static partial class Program
                     // Replacing the document above legitimately clears all old markers.
                     if (!area.Document.MarkerStrategy.GetMarkers(0).Contains(legacy))
                         area.Document.MarkerStrategy.AddMarker(legacy);
+                    int jumpsBeforeDisable = jumps;
                     ui.SetActive(false);
                     click(MouseButtons.Left); Application.DoEvents();
-                    Check(jumps == 1 && area.Document.MarkerStrategy.GetMarkers(0).Contains(legacy),
+                    Check(jumps == jumpsBeforeDisable && area.Document.MarkerStrategy.GetMarkers(0).Contains(legacy),
                         "legacy mode detaches Ctrl-click and preserves markers owned by the IDE");
                     Check(!File.Exists(main.FileName) && File.ReadAllText(unit.FileName) == savedUnit, "navigation never saves or overwrites editor sources");
                 }

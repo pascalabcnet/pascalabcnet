@@ -63,6 +63,8 @@ namespace VisualPascalABCPlugins
                     ui?.Hide(IntelliSenseHint.Hover);
                     navigate(targets);
                 });
+                if (ui is IExternalNavigationSession navigationUI)
+                    navigationUI.NavigationRequested += navigation.NavigateAtCaret;
             }
             if (documentService != null && symbolsUI != null)
                 symbols = new Net10DocumentSymbols(events, documentService, documents, symbolsUI.GetDocumentSymbolsView);
@@ -81,6 +83,8 @@ namespace VisualPascalABCPlugins
             signature?.SetActive(active && signatureEnabled());
             hover?.SetActive(active && hoverEnabled());
             navigation?.SetActive(active);
+            if (navigation != null && ui is IExternalNavigationSession navigationUI)
+                navigationUI.NavigationEnabled = active;
             symbols?.SetActive(modernMode(), active && symbolsEnabled());
             if (label != null) label.Visible = active;
         }
