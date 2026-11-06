@@ -1,7 +1,8 @@
 using CodeCompletion;
 using Languages.Facade;
 using Languages.Pascal;
-using PascalABCCompiler.Parsers;
+using PascalABCCompiler.Contracts.CodeCompletion;
+using PascalABCCompiler.Contracts.Parsers;
 
 namespace PascalABCNet.LanguageServices;
 
@@ -261,7 +262,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
                 position.Character,
                 _language.LanguageIntellisenseSupport,
                 context,
-                PascalABCCompiler.Parsers.KeywordKind.None);
+                KeywordKind.None);
             var symbols = GetCompletionSymbols(
                 state,
                 position,
@@ -341,12 +342,12 @@ public sealed class PascalLanguageService : IPascalLanguageService
         var prefixStart = caretOffset - pattern.Length;
         var keyword = prefixStart > 0
             ? _language.LanguageIntellisenseSupport.TestForKeyword(textBeforeCaret, prefixStart - 1)
-            : PascalABCCompiler.Parsers.KeywordKind.None;
+            : KeywordKind.None;
 
         if (_language.LanguageIntellisenseSupport.IsDefinitionIdentifierAfterKeyword(keyword))
             return null;
 
-        var typeExpected = keyword == PascalABCCompiler.Parsers.KeywordKind.New ||
+        var typeExpected = keyword == KeywordKind.New ||
                            _language.LanguageIntellisenseSupport.IsTypeAfterKeyword(keyword);
         var namespaceExpected = _language.LanguageIntellisenseSupport.IsNamespaceAfterKeyword(keyword);
         if (!namespaceExpected)
@@ -470,7 +471,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
                         if (libraryDom is null || !libraryDom.is_compiled) continue;
                         positions.AddRange(libraryDom.GetRealization(expression,
                             definition.line - 1, definition.column - 1,
-                            PascalABCCompiler.Parsers.KeywordKind.Function));
+                            KeywordKind.Function));
                     }
                 }
                 var targets = positions.Where(item => item.line > 0 && item.column > 0 &&

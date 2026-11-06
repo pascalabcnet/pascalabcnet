@@ -73,7 +73,7 @@ var expressionInfo = CompletionExpressionService.AnalyzeAtCaret(
     completionPosition.Column,
     language.LanguageIntellisenseSupport,
     completionContext,
-    PascalABCCompiler.Parsers.KeywordKind.None);
+    PascalABCCompiler.Contracts.Parsers.KeywordKind.None);
 var parseResult = CompletionExpressionService.Parse(
     language.Parser,
     fileName,

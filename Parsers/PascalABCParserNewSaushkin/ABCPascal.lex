@@ -559,6 +559,13 @@ UNICODEARROW \x890
   return (int)Tokens.tkMultilineStringLiteral; 
 }
 
+\${MULTILINESTRINGNUM} {
+  yylval = new Union();
+  currentLexLocation = CurrentLexLocation;
+  yylval.stn = parserTools.create_multiline_format_string_const(yytext,currentLexLocation);
+  return (int)Tokens.tkFormatStringLiteral;
+}
+
 {FORMATSTRINGNUM} { 
   yylval = new Union();
   currentLexLocation = CurrentLexLocation;

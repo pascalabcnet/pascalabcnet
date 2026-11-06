@@ -356,6 +356,22 @@ static async Task CheckDiagnosticLanguagesAsync(Process process, string runtimeR
         string expected = string.Format(ReadResource(iso, "CompilerErrors.dat",
             "CONFLICTING_PACKAGE_VERSIONS{0}{1}{2}"), packageId, "1.0.0", "2.0.0");
         Check(await Error(conflicting, language) == expected, "CompilerErrors.dat is selected for " + language);
+        const string splitExpressionLine = "    {{text}} {age +";
+        string multiline = "begin\n  var age := 18;\n  var text := $'''\n" +
+            splitExpressionLine + "\n    1}\n    ''';\nend.";
+        // Exercise both source newline conventions, even on Windows.
+        if (iso == "ru")
+            multiline = multiline.Replace("\n", "\r\n");
+        await File.WriteAllTextAsync(source, multiline, new UTF8Encoding(false));
+        var splitExpression = await CompileAsync(process, 181, source, outputRoot, language: language);
+        Check(!splitExpression.GetProperty("success").GetBoolean(), "line break inside interpolation is rejected");
+        var splitDiagnostic = splitExpression.GetProperty("diagnostics")[0];
+        Check(splitDiagnostic.GetProperty("message").GetString() == ReadResource(iso, "PascalABCParser.dat",
+              "INTERPOLATION_EXPRESSION_MUST_BE_ON_ONE_LINE"), "multiline interpolation diagnostic is localized for " + language);
+        Check(Path.GetFullPath(splitDiagnostic.GetProperty("fileName").GetString()!) == Path.GetFullPath(source) &&
+              splitDiagnostic.GetProperty("line").GetInt32() == 4 &&
+              splitDiagnostic.GetProperty("column").GetInt32() == splitExpressionLine.IndexOf("{age", StringComparison.Ordinal) + 1,
+            "multiline interpolation error points to the opening brace after escaped braces");
         if (modern)
         {
             string misplaced = "unit Localized;\n{$package " + packageId + " 1.0.0}\ninterface implementation end.";
@@ -363,6 +379,16 @@ static async Task CheckDiagnosticLanguagesAsync(Process process, string runtimeR
                 "PACKAGE_DIRECTIVE_MUST_PRECEDE_CODE"), "PascalABCParser.dat is selected for " + language);
         }
     }
+    const string missingNameLine = "    {{text}} {notDeclared}";
+    await File.WriteAllTextAsync(source, "begin\n  var text := $'''\n    first line\n" +
+        missingNameLine + "\n    ''';\nend.", new UTF8Encoding(false));
+    var missingName = await CompileAsync(process, 182, source, outputRoot);
+    Check(!missingName.GetProperty("success").GetBoolean(), "undeclared interpolation expression is rejected");
+    var nameDiagnostic = missingName.GetProperty("diagnostics")[0];
+    Check(Path.GetFullPath(nameDiagnostic.GetProperty("fileName").GetString()!) == Path.GetFullPath(source) &&
+          nameDiagnostic.GetProperty("line").GetInt32() == 4 &&
+          nameDiagnostic.GetProperty("column").GetInt32() == missingNameLine.IndexOf("notDeclared", StringComparison.Ordinal) + 1,
+        "semantic error points to the expression on the second text line");
     Check(await Error(conflicting, null) == defaultMessage, "Omitted language does not inherit the previous request's language");
 }
 
