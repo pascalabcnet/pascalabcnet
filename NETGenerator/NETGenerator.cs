@@ -5623,10 +5623,19 @@ namespace PascalABCCompiler.NETGenerator
             }
         }
 
+        private bool UsesSharedTypedFileImplementation(ICommonTypeNode type, TypeInfo implementation)
+        {
+            // A Pascal file of T can resolve to the TypeInfo of the standard
+            // TypedFile class. It does not own that class's initialization code.
+            return type.type_special_kind == type_special_kind.typed_file &&
+                implementation != null &&
+                ReferenceEquals(implementation, helper.GetTypeReference(type.base_type));
+        }
+
         internal void GenerateRetForInitMeth(SemanticTree.ICommonTypeNode ctn)
         {
             TypeInfo ti = helper.GetTypeReference(ctn);
-            if (ti == null)
+            if (ti == null || UsesSharedTypedFileImplementation(ctn, ti))
             {
                 return;
             }
@@ -6924,6 +6933,10 @@ namespace PascalABCCompiler.NETGenerator
         //перевод тела конструктора
         private void ConvertConstructorBody(SemanticTree.ICommonMethodNode value)
         {
+            if (value.polymorphic_state == polymorphic_state.ps_static &&
+                UsesSharedTypedFileImplementation(value.common_comprehensive_type, cur_ti))
+                return;
+
             num_scope++;
             //получаем билдер конструктора
             ConstructorBuilder cnstr = helper.GetConstructorBuilder(value);
@@ -7487,6 +7500,9 @@ namespace PascalABCCompiler.NETGenerator
         private void ConvertConstructorHeader(SemanticTree.ICommonMethodNode value)
         {
             if (helper.GetConstructor(value) != null) return;
+            if (value.polymorphic_state == polymorphic_state.ps_static &&
+                UsesSharedTypedFileImplementation(value.common_comprehensive_type, cur_ti))
+                return;
 
             //определяем конструктор
             ConstructorBuilder cnstr;
