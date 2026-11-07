@@ -143,6 +143,7 @@ namespace PascalABCCompiler.NETGenerator
         protected PersistedAssemblyBuilder ab;//билдер для сборки
 #endif
         protected ModuleBuilder mb;//билдер для модуля
+        private GenericInitializationEmitter genericInitializationEmitter;
         protected TypeBuilder entry_type;//тип-обертка над осн. программой
         protected TypeBuilder cur_type;//текущий компилируемый тип
         protected MethodBuilder entry_meth;//входная точка в приложение
@@ -849,6 +850,7 @@ namespace PascalABCCompiler.NETGenerator
             if (save_debug_info) //если модуль отладочный, то устанавливаем атрибут, запрещающий inline методов
                 ab.SetCustomAttribute(TypeFactory.DebuggableAttributeCtor, new byte[] { 0x01, 0x00, 0x01, 0x01, 0x00, 0x00 });
 
+            genericInitializationEmitter = null;
             if (!IsDotnet5() && !IsDotnetNative() && (comp_opt.target == TargetType.Exe || comp_opt.target == TargetType.WinExe))
                 mb = ab.DefineDynamicModule(name + ".exe"
 #if PABCNET_LEGACY
@@ -3783,23 +3785,39 @@ namespace PascalABCCompiler.NETGenerator
             this.il = ilc;
         }
 
+        private GenericInitializationEmitter GenericInitialization =>
+            genericInitializationEmitter ?? (genericInitializationEmitter = new GenericInitializationEmitter(mb, types.Add));
+
+        private void GetRuntimeInitialization(ICommonTypeNode type, Type argument,
+            out FieldInfo kind, out MethodInfo initializeMethod)
+        {
+            var initialize = SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction?.sym_info;
+            if (initialize == null)
+            {
+                kind = GenericInitialization.GetOrCreateKindField(argument);
+                initializeMethod = GenericInitialization.GetOrCreateInitializeMethod();
+                return;
+            }
+
+            kind = helper.GetField(type.runtime_initialization_marker).fi;
+            if (initialize is ICompiledMethodNode compiled)
+                initializeMethod = compiled.method_info;
+            else
+                initializeMethod = helper.GetMethod(initialize as IFunctionNode).mi;
+        }
+
         //(ssyy) Инициализации переменных типа параметр дженерика
         private void CreateRuntimeInitCodeWithCheck(ILGenerator il, LocalBuilder lb, ICommonTypeNode type)
         {
             if (type.runtime_initialization_marker == null) return;
             Type tinfo = helper.GetTypeReference(type).tp;
-            FieldInfo finfo = helper.GetField(type.runtime_initialization_marker).fi;
+            GetRuntimeInitialization(type, tinfo, out FieldInfo finfo, out MethodInfo rif);
             Label lab = il.DefineLabel();
             il.Emit(OpCodes.Ldsfld, finfo);
             il.Emit(OpCodes.Brfalse, lab);
             il.Emit(OpCodes.Ldsfld, finfo);
             il.Emit(OpCodes.Ldloc, lb);
             il.Emit(OpCodes.Box, tinfo);
-            MethodInfo rif = null;
-            if (SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info is ICompiledMethodNode)
-                rif = (SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info as ICompiledMethodNode).method_info;
-            else
-                rif = helper.GetMethod(SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info as IFunctionNode).mi;
             il.EmitCall(OpCodes.Call, rif, null);
             il.Emit(OpCodes.Unbox_Any, tinfo);
             il.Emit(OpCodes.Stloc, lb);
@@ -3811,7 +3829,7 @@ namespace PascalABCCompiler.NETGenerator
         {
             if (type.runtime_initialization_marker == null) return;
             Type tinfo = helper.GetTypeReference(type).tp;
-            FieldInfo finfo = helper.GetField(type.runtime_initialization_marker).fi;
+            GetRuntimeInitialization(type, tinfo, out FieldInfo finfo, out MethodInfo rif);
             Label lab = il.DefineLabel();
             il.Emit(OpCodes.Ldsfld, finfo);
             il.Emit(OpCodes.Brfalse, lab);
@@ -3830,11 +3848,6 @@ namespace PascalABCCompiler.NETGenerator
                 il.Emit(OpCodes.Ldfld, fb);
             }
             il.Emit(OpCodes.Box, tinfo);
-            MethodInfo rif = null;
-            if (SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info is ICompiledMethodNode)
-                rif = (SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info as ICompiledMethodNode).method_info;
-            else
-                rif = helper.GetMethod(SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info as IFunctionNode).mi;
             il.EmitCall(OpCodes.Call, rif, null);
             il.Emit(OpCodes.Unbox_Any, tinfo);
             if (fb.IsStatic)
@@ -4398,14 +4411,10 @@ namespace PascalABCCompiler.NETGenerator
             this.il = il;
             if (generic_param)
             {
-                finfo = helper.GetField(ictn.runtime_initialization_marker).fi;
+                GetRuntimeInitialization(ictn, ti.tp, out finfo, out rif);
                 lab = il.DefineLabel();
                 il.Emit(OpCodes.Ldsfld, finfo);
                 il.Emit(OpCodes.Brfalse, lab);
-                if (SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info is ICompiledMethodNode)
-                    rif = (SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info as ICompiledMethodNode).method_info;
-                else
-                    rif = helper.GetMethod(SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info as IFunctionNode).mi;
             }
             if (ti.tp.IsValueType && ti.init_meth != null || ti.is_arr || ti.is_set || ti.is_typed_file || ti.is_text_file || ti.tp == TypeFactory.StringType ||
                 (generic_param))

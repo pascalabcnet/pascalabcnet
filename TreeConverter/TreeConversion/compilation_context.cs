@@ -2449,6 +2449,9 @@ namespace PascalABCCompiler.TreeConverter
         private void AddTypeCheckToStaticConstructor(common_type_node generic_def)
         {
             statements_list stl = new statements_list(null);
+            var determineType = SemanticRulesConstants.RuntimeInitVariablesOfGenericParameters
+                ? SystemLibrary.SystemLibInitializer.RuntimeDetermineTypeFunction?.sym_info
+                : null;
             GenericParameterAbilities gpa;
             foreach (common_type_node param in generic_def.generic_params)
             {
@@ -2467,18 +2470,18 @@ namespace PascalABCCompiler.TreeConverter
                         stl.statements.AddElement(CreateTypeCheckCall(SystemLibrary.SystemLibInitializer.CheckCanUseTypeForTypedFilesProcedure.sym_info, param));
                     }
                 }
-                if (SemanticRulesConstants.RuntimeInitVariablesOfGenericParameters)
+                // Without PABCSystem the IL generator computes the kind on first
+                // use, including when the generic class was read from a PCU.
+                if (determineType != null)
                 {
                     basic_function_call bfc = new basic_function_call(
                         SystemLibrary.SystemLibrary.byte_assign as basic_function_node, null);
                     bfc.parameters.AddElement(new static_class_field_reference(param.runtime_initialization_marker, null));
-                    base_function_call dcall = null;
-                    if (SystemLibrary.SystemLibInitializer.RuntimeDetermineTypeFunction.sym_info is common_namespace_function_node)
-                        dcall = new common_namespace_function_call(
-                            SystemLibrary.SystemLibInitializer.RuntimeDetermineTypeFunction.sym_info as common_namespace_function_node, null);
+                    base_function_call dcall;
+                    if (determineType is common_namespace_function_node sourceFunction)
+                        dcall = new common_namespace_function_call(sourceFunction, null);
                     else
-                        dcall = new compiled_static_method_call(
-                            SystemLibrary.SystemLibInitializer.RuntimeDetermineTypeFunction.sym_info as compiled_function_node, null);
+                        dcall = new compiled_static_method_call(determineType as compiled_function_node, null);
                     dcall.parameters.AddElement(new typeof_operator(param, null));
                     bfc.parameters.AddElement(dcall);
                     stl.statements.AddElement(bfc);
