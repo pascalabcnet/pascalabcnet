@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -75,7 +76,7 @@ namespace VisualPascalABCPlugins
             await Task.Run(() => process.WaitForExit()).ConfigureAwait(false);
             // Drain both pipes before reporting completion, including the final exception.
             await Task.WhenAll(stdout, stderr).ConfigureAwait(false);
-            protocol.Complete();
+            protocol.Complete(process.ExitCode != 0 && !WasStopped);
             return process.ExitCode;
         }
 
@@ -138,7 +139,11 @@ namespace VisualPascalABCPlugins
         private const string Read = "[READLNSIGNAL]";
         private const string CodePage = "[CODEPAGE";
         private const string ExceptionStart = "[EXCEPTION]";
+        private const string FatalStart = "Process terminated.";
+        private const string AssertionHeading = "Assertion failed.";
+        private const int MaxFatalDiagnosticLength = 64 * 1024;
         private string pending = "";
+        private bool reportedException;
         private readonly Action<string> output;
         private readonly Action readRequested;
         private readonly Action<RuntimeExceptionInfo> exception;
@@ -177,17 +182,41 @@ namespace VisualPascalABCPlugins
                         try { error = RuntimeExceptionInfo.Parse(payload); }
                         catch (FormatException) { }
                     }
-                    if (error != null) exception(error);
+                    if (error != null)
+                    {
+                        reportedException = true;
+                        exception(error);
+                    }
                     else output(Environment.NewLine + payload.Replace("[MESSAGE]", ": ")
                         .Replace("[STACK]", Environment.NewLine) + Environment.NewLine);
                     pending = pending.Substring(end + 5);
                 }
+                else if (CanReportFatalAssertion && pending.StartsWith(FatalStart, StringComparison.Ordinal) &&
+                    pending.Length <= MaxFatalDiagnosticLength)
+                {
+                    int end = pending.IndexOf('\n');
+                    if (end < 0) return;
+                    int length = Math.Min(AssertionHeading.Length + 2, pending.Length - end - 1);
+                    string assertion = pending.Substring(end + 1, length);
+                    if (AssertionHeading.StartsWith(assertion, StringComparison.Ordinal) ||
+                        assertion.StartsWith(AssertionHeading + "\n", StringComparison.Ordinal) ||
+                        assertion.StartsWith(AssertionHeading + "\r", StringComparison.Ordinal))
+                        return;
+                    output(pending.Substring(0, end + 1));
+                    pending = pending.Substring(end + 1);
+                }
                 else if (Read.StartsWith(pending, StringComparison.Ordinal) ||
                     CodePage.StartsWith(pending, StringComparison.Ordinal) ||
-                    ExceptionStart.StartsWith(pending, StringComparison.Ordinal)) return;
+                    ExceptionStart.StartsWith(pending, StringComparison.Ordinal) ||
+                    (CanReportFatalAssertion && FatalStart.StartsWith(pending, StringComparison.Ordinal))) return;
                 else
                 {
                     int next = pending.IndexOf('[', 1);
+                    if (CanReportFatalAssertion)
+                    {
+                        int fatal = pending.IndexOf('P', 1);
+                        if (fatal >= 0 && (next < 0 || fatal < next)) next = fatal;
+                    }
                     int count = next < 0 ? pending.Length : next;
                     output(pending.Substring(0, count));
                     pending = pending.Substring(count);
@@ -195,10 +224,43 @@ namespace VisualPascalABCPlugins
             }
         }
 
-        public void Complete()
+        private bool CanReportFatalAssertion => exception != null && !reportedException;
+
+        public void Complete(bool failed = false)
         {
-            if (pending.Length > 0) output(pending);
+            var error = failed && CanReportFatalAssertion ? ParseFatalAssertion(pending) : null;
+            if (error != null) exception(error);
+            else if (pending.Length > 0) output(pending);
             pending = "";
+        }
+
+        private static RuntimeExceptionInfo ParseFatalAssertion(string text)
+        {
+            if (!text.StartsWith(FatalStart, StringComparison.Ordinal)) return null;
+            var lines = text.Split('\n');
+            if (lines.Length < 4 || lines[0].TrimEnd('\r') != FatalStart ||
+                lines[1].TrimEnd('\r') != AssertionHeading)
+                return null;
+
+            int firstFrame = Array.FindIndex(lines, 2, line => line.TrimStart().StartsWith("at ", StringComparison.Ordinal));
+            if (firstFrame < 0) firstFrame = lines.Length;
+            var message = string.Join("\n", lines, 2, firstFrame - 2).Trim();
+            var stack = firstFrame < lines.Length
+                ? string.Join("\n", lines, firstFrame, lines.Length - firstFrame).TrimEnd()
+                : "";
+            var error = RuntimeExceptionInfo.Parse("Assertion failed[MESSAGE][STACK]" + stack);
+            error.Message = message;
+            if (error.Frames.Exists(frame => frame.Line > 0 &&
+                frame.FileName?.EndsWith(".pas", StringComparison.OrdinalIgnoreCase) == true))
+                return error;
+
+            // An inlined assertion may only carry the source location in its Pascal message.
+            var location = Regex.Match(message, @"\A(?:File|Файл) (.+\.pas), (?:line|строка) (\d+)(?=:|\r?$)",
+                RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            if (!location.Success || !int.TryParse(location.Groups[2].Value, out int lineNumber) || lineNumber <= 0)
+                return null;
+            error.Frames.Insert(0, new RuntimeStackFrame { FileName = location.Groups[1].Value, Line = lineNumber });
+            return error;
         }
     }
 }

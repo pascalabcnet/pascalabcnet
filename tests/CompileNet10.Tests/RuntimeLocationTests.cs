@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.TextEditor;
@@ -12,10 +13,33 @@ internal static partial class Program
 {
     private static async Task CheckRuntimeLocation(string runtime)
     {
+        const string stack = "Process terminated.\r\nAssertion failed.\r\nFraction assertion\r\n" +
+            "   at NumLibABC.Fraction.op_Division() in C:\\PascalABC.NET\\Lib\\NumLibABC.pas:line 856\r\n" +
+            "   at Program1.Program.$Main() in C:\\PABCWork.NET\\Program1.pas:line 8\r\n";
+        foreach (bool failed in new[] { true, false })
+        {
+            RuntimeExceptionInfo error = null;
+            var output = new StringBuilder();
+            var protocol = new Net10RuntimeProtocol(s => output.Append(s), () => { }, value => error = value);
+            foreach (char c in stack) protocol.Feed(c.ToString());
+            protocol.Complete(failed);
+            if (failed)
+                Check(error != null && error.Frames.Any(frame =>
+                    frame.FileName == @"C:\PABCWork.NET\Program1.pas" && frame.Line == 8) && output.Length == 0,
+                    "fragmented fatal assertion preserves the caller location and reports only once");
+            else
+                Check(error == null && output.ToString() == stack, "stderr from a successful run remains plain text");
+        }
+
+        await CheckRuntimeLocation(runtime, "begin\n  foreach var s in ReadLines('missing-23.txt') do\n  begin\n  end;\nend.");
+        await CheckRuntimeLocation(runtime, "begin\n  Assert(false, 'assertion location');\nend.");
+    }
+
+    private static async Task CheckRuntimeLocation(string runtime, string source)
+    {
         string folder = Path.Combine(Path.GetTempPath(), "Ошибка выполнения PDB " + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(folder);
         string file = Path.Combine(folder, "ReadLines.pas");
-        const string source = "begin\n  foreach var s in ReadLines('missing-23.txt') do\n  begin\n  end;\nend.";
         File.WriteAllText(file, source);
         RuntimeExceptionInfo error = null;
         using (var compiler = new Net10ControllerClient(runtime, "dotnet"))
@@ -24,13 +48,16 @@ internal static partial class Program
             Check(result.success, "runtime location fixture compiles");
             using (var runner = new Net10ProgramRunner("dotnet", result.outputFile, folder, ""))
             {
-                var running = runner.RunAsync(_ => { }, () => { }, exception: value => error = value);
+                var output = new StringBuilder();
+                var running = runner.RunAsync(s => { lock (output) output.Append(s); }, () => { }, exception: value => error = value);
                 if (await Task.WhenAny(running, Task.Delay(30000)) != running)
                 {
                     runner.Stop();
                     throw new TimeoutException("Runtime location fixture timed out");
                 }
-                Check(await running != 0 && error != null, "real runtime exception reaches the plugin");
+                int exitCode = await running;
+                Check(exitCode != 0 && error != null, "real runtime exception reaches the plugin (exit " +
+                    exitCode + ")" + (error == null ? Environment.NewLine + output : ""));
             }
         }
         var frame = error.Frames.FirstOrDefault(value => value.FileName == file);

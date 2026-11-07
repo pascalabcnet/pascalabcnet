@@ -122,6 +122,12 @@
         "resolved": "8.0.0",
         "contentHash": "+TUFINV2q2ifyXauQXRwy4CiBhqvDEDZeVJU7qfxya4aRYOKzVBpN+4acx25VcPB9ywUN6C0n8drWl110PhZEg=="
       },
+      "codecompletioncontracts": {
+        "type": "Project",
+        "dependencies": {
+          "ParserContracts": "[1.0.0, )"
+        }
+      },
       "compiler": {
         "type": "Project",
         "dependencies": {
@@ -157,6 +163,12 @@
           "SyntaxTree": "[1.0.0, )"
         }
       },
+      "languagecontracts": {
+        "type": "Project",
+        "dependencies": {
+          "ParserContracts": "[1.0.0, )"
+        }
+      },
       "languageintegrator": {
         "type": "Project",
         "dependencies": {
@@ -184,11 +196,21 @@
       "pabccoreutils": {
         "type": "Project"
       },
-      "parsertools": {
+      "parsercontracts": {
         "type": "Project",
         "dependencies": {
           "Errors": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )"
+        }
+      },
+      "parsertools": {
+        "type": "Project",
+        "dependencies": {
+          "CodeCompletionContracts": "[1.0.0, )",
+          "Errors": "[1.0.0, )",
+          "LanguageContracts": "[1.0.0, )",
           "Localization": "[1.0.0, )",
+          "ParserContracts": "[1.0.0, )",
           "SyntaxTree": "[1.0.0, )"
         }
       },

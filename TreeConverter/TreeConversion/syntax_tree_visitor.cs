@@ -95,6 +95,7 @@ namespace PascalABCCompiler.TreeConverter
 		internal bool debug=true;
 		public bool debugging=false;
         public bool for_intellisense = false;
+        private bool disableStandardUnits;
         private List<var_definition_node> compiledVariables = new List<var_definition_node>();
         internal List<Errors.Error> ErrorsList;
         internal List<Errors.CompilerWarning> WarningsList;
@@ -162,6 +163,7 @@ namespace PascalABCCompiler.TreeConverter
             this.debug = initializationData.debug;
             this.debugging = initializationData.debugging;
             this.for_intellisense = initializationData.forIntellisense;
+            disableStandardUnits = initializationData.DisableStandardUnits;
             
             // Возможно, это тоже вызывает ошибки, если присваивается не паскалевский визитор, пока непонятно EVA
             SystemLibrary.SystemLibrary.syn_visitor = this;
@@ -16227,6 +16229,13 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (SemanticRulesConstants.AllowPointersForGenericParameters)
                     {
+                        if (disableStandardUnits)
+                        {
+                            AddError(get_location(_ref_type), "GENERIC_POINTER_NOT_ALLOWED_WITHOUT_STANDARD_UNITS{0}",
+                                "{$DisableStandardUnits}");
+                            return_value(tn.ref_type ?? (type_node)SystemLibrary.SystemLibrary.pointer_type);
+                            return;
+                        }
                         get_type_abilities(tn).useful_for_pointers = true;
                     }
                     else
@@ -16263,7 +16272,12 @@ namespace PascalABCCompiler.TreeConverter
             __findBadTypeNodeForPointersPreparedTypes.Clear();
             if (ttn != null)
             {
-                AddErrorCheckPointersTypeForDotNetFramework(tn, ttn, loc);
+                if (ttn.is_generic_parameter && SemanticRulesConstants.AllowPointersForGenericParameters &&
+                    disableStandardUnits)
+                    AddError(loc, "GENERIC_POINTER_NOT_ALLOWED_WITHOUT_STANDARD_UNITS{0}",
+                        "{$DisableStandardUnits}");
+                else
+                    AddErrorCheckPointersTypeForDotNetFramework(tn, ttn, loc);
                 return false;
             }
             return true;
@@ -16288,7 +16302,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (tn.is_generic_parameter)
             {
-                if (SemanticRulesConstants.AllowPointersForGenericParameters)
+                if (SemanticRulesConstants.AllowPointersForGenericParameters && !disableStandardUnits)
                 {
                     get_type_abilities(tn).useful_for_pointers = true;
                     return null;

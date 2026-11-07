@@ -3722,7 +3722,7 @@ namespace PascalABCCompiler
                         CompilerOptions.ForDebugging,
                         CompilerOptions.ForIntellisense,
                         currentUnit.GeneratedNamesManager
-                        );
+                        ) { DisableStandardUnits = CompilerOptions.DisableStandardUnits };
 
                     SyntaxTreeToSemanticTreeConverter.CompileImplementation(currentUnit.Language, data, CompiledVariables);
                     CheckErrorsAndThrowTheFirstOne();
@@ -3816,8 +3816,8 @@ namespace PascalABCCompiler
                         CompilerOptions.ForDebugging,
                         CompilerOptions.ForIntellisense,
                         currentUnit.GeneratedNamesManager
-                        );
-                    
+                        ) { DisableStandardUnits = CompilerOptions.DisableStandardUnits };
+
                     currentUnit.SemanticTree = SyntaxTreeToSemanticTreeConverter.CompileInterface(currentUnit.Language, data, CompiledVariables);
                     
                     CheckErrorsAndThrowTheFirstOne();

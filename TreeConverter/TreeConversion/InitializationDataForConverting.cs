@@ -32,6 +32,8 @@ namespace PascalABCCompiler.TreeConverter.TreeConversion
         
         public readonly bool forIntellisense;
 
+        public bool DisableStandardUnits { get; set; }
+
         public readonly GeneratedNamesManager generatedNamesManager;
 
         public InitializationDataForCompilingInterface(
