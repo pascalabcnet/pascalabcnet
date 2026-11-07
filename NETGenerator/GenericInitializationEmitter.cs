@@ -24,7 +24,8 @@ namespace PascalABCCompiler.NETGenerator
         private TypeBuilder helperType;
         private MethodBuilder determineTypeMethod;
         private MethodBuilder initializeMethod;
-        private MethodBuilder initializeArrayMethod;
+        private MethodBuilder tryInitializeArrayMethod;
+        private MethodBuilder initializeRectangularArrayMethod;
         private TypeBuilder kindCacheType;
         private FieldBuilder kindCacheField;
 
@@ -147,36 +148,39 @@ namespace PascalABCCompiler.NETGenerator
             return initializeMethod;
         }
 
-        // void InitializeArray(Array array)
-        internal MethodBuilder GetOrCreateInitializeArrayMethod()
+        // bool TryInitializeArray(Array array, int startIndex)
+        // Returns false only when a nonempty range needs the caller's old path.
+        internal MethodBuilder GetOrCreateTryInitializeArrayMethod()
         {
-            if (initializeArrayMethod != null)
-                return initializeArrayMethod;
+            if (tryInitializeArrayMethod != null)
+                return tryInitializeArrayMethod;
 
-            initializeArrayMethod = GetOrCreateHelperType().DefineMethod("InitializeArray",
+            tryInitializeArrayMethod = GetOrCreateHelperType().DefineMethod("TryInitializeArray",
                 MethodAttributes.Assembly | MethodAttributes.Static | MethodAttributes.HideBySig,
-                typeof(void), new[] { typeof(Array) });
-            var il = initializeArrayMethod.GetILGenerator();
+                typeof(bool), new[] { typeof(Array), typeof(int) });
+            var il = tryInitializeArrayMethod.GetILGenerator();
             var strings = il.DeclareLocal(typeof(string[]));
             var index = il.DeclareLocal(typeof(int));
             var length = il.DeclareLocal(typeof(int));
-            var test = il.DefineLabel();
             var loop = il.DefineLabel();
             var checkRecord = il.DefineLabel();
-            var done = il.DefineLabel();
+            var handled = il.DefineLabel();
+            var unsupported = il.DefineLabel();
+
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Callvirt, typeof(Array).GetProperty(nameof(Array.Length)).GetGetMethod());
+            il.Emit(OpCodes.Stloc, length);
+            il.Emit(OpCodes.Ldarg_1);
+            il.Emit(OpCodes.Stloc, index);
+            il.Emit(OpCodes.Ldloc, index);
+            il.Emit(OpCodes.Ldloc, length);
+            il.Emit(OpCodes.Bge, handled);
 
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Isinst, typeof(string[]));
             il.Emit(OpCodes.Stloc, strings);
             il.Emit(OpCodes.Ldloc, strings);
             il.Emit(OpCodes.Brfalse, checkRecord);
-            il.Emit(OpCodes.Ldloc, strings);
-            il.Emit(OpCodes.Ldlen);
-            il.Emit(OpCodes.Conv_I4);
-            il.Emit(OpCodes.Stloc, length);
-            il.Emit(OpCodes.Ldc_I4_0);
-            il.Emit(OpCodes.Stloc, index);
-            il.Emit(OpCodes.Br, test);
 
             il.MarkLabel(loop);
             il.Emit(OpCodes.Ldloc, strings);
@@ -188,48 +192,41 @@ namespace PascalABCCompiler.NETGenerator
             il.Emit(OpCodes.Add);
             il.Emit(OpCodes.Stloc, index);
 
-            il.MarkLabel(test);
             il.Emit(OpCodes.Ldloc, index);
             il.Emit(OpCodes.Ldloc, length);
             il.Emit(OpCodes.Blt, loop);
-            il.Emit(OpCodes.Br, done);
+            il.Emit(OpCodes.Br, handled);
 
             il.MarkLabel(checkRecord);
-            EmitInitializeRecordArray(il, index, length, done);
+            EmitInitializeRecordArray(il, index, length, unsupported);
 
-            il.MarkLabel(done);
+            il.MarkLabel(handled);
+            il.Emit(OpCodes.Ldc_I4_1);
             il.Emit(OpCodes.Ret);
-            return initializeArrayMethod;
+            il.MarkLabel(unsupported);
+            il.Emit(OpCodes.Ldc_I4_0);
+            il.Emit(OpCodes.Ret);
+            return tryInitializeArrayMethod;
         }
 
-        private static void EmitInitializeRecordArray(ILGenerator il, LocalBuilder index, LocalBuilder length, Label done)
+        private static void EmitInitializeRecordArray(ILGenerator il, LocalBuilder index, LocalBuilder length, Label unsupported)
         {
             var elementType = il.DeclareLocal(typeof(Type));
             var initializer = il.DeclareLocal(typeof(MethodInfo));
             var boxed = il.DeclareLocal(typeof(object));
             var loop = il.DefineLabel();
 
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Callvirt, typeof(Array).GetProperty(nameof(Array.Length)).GetGetMethod());
-            il.Emit(OpCodes.Stloc, length);
-            il.Emit(OpCodes.Ldloc, length);
-            il.Emit(OpCodes.Brfalse, done);
-
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Callvirt, typeof(object).GetMethod(nameof(object.GetType)));
-            il.Emit(OpCodes.Callvirt, typeof(Type).GetMethod(nameof(Type.GetElementType)));
+            EmitLoadArrayElementType(il);
             il.Emit(OpCodes.Stloc, elementType);
             il.Emit(OpCodes.Ldloc, elementType);
             il.Emit(OpCodes.Callvirt, typeof(Type).GetProperty(nameof(Type.IsValueType)).GetGetMethod());
-            il.Emit(OpCodes.Brfalse, done);
+            il.Emit(OpCodes.Brfalse, unsupported);
             il.Emit(OpCodes.Ldloc, elementType);
             EmitFindRecordInitializer(il);
             il.Emit(OpCodes.Stloc, initializer);
             il.Emit(OpCodes.Ldloc, initializer);
-            il.Emit(OpCodes.Brfalse, done);
+            il.Emit(OpCodes.Brfalse, unsupported);
 
-            il.Emit(OpCodes.Ldc_I4_0);
-            il.Emit(OpCodes.Stloc, index);
             il.MarkLabel(loop);
 
             // GetValue boxes the record. Invoke mutates that box, so store it
@@ -238,12 +235,7 @@ namespace PascalABCCompiler.NETGenerator
             il.Emit(OpCodes.Ldloc, index);
             il.Emit(OpCodes.Callvirt, typeof(Array).GetMethod(nameof(Array.GetValue), new[] { typeof(int) }));
             il.Emit(OpCodes.Stloc, boxed);
-            il.Emit(OpCodes.Ldloc, initializer);
-            il.Emit(OpCodes.Ldloc, boxed);
-            il.Emit(OpCodes.Ldnull);
-            il.Emit(OpCodes.Callvirt, typeof(MethodBase).GetMethod(nameof(MethodBase.Invoke),
-                new[] { typeof(object), typeof(object[]) }));
-            il.Emit(OpCodes.Pop);
+            EmitInvokeRecordInitializer(il, initializer, boxed);
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldloc, boxed);
             il.Emit(OpCodes.Ldloc, index);
@@ -256,6 +248,151 @@ namespace PascalABCCompiler.NETGenerator
             il.Emit(OpCodes.Ldloc, index);
             il.Emit(OpCodes.Ldloc, length);
             il.Emit(OpCodes.Blt, loop);
+        }
+
+        // void InitializeRectangularArray(Array array)
+        internal MethodBuilder GetOrCreateInitializeRectangularArrayMethod()
+        {
+            if (initializeRectangularArrayMethod != null)
+                return initializeRectangularArrayMethod;
+
+            initializeRectangularArrayMethod = GetOrCreateHelperType().DefineMethod("InitializeRectangularArray",
+                MethodAttributes.Assembly | MethodAttributes.Static | MethodAttributes.HideBySig,
+                typeof(void), new[] { typeof(Array) });
+            var il = initializeRectangularArrayMethod.GetILGenerator();
+            var elementType = il.DeclareLocal(typeof(Type));
+            var initializer = il.DeclareLocal(typeof(MethodInfo));
+            var indices = il.DeclareLocal(typeof(int[]));
+            var rank = il.DeclareLocal(typeof(int));
+            var value = il.DeclareLocal(typeof(object));
+            var checkRecord = il.DefineLabel();
+            var start = il.DefineLabel();
+            var loop = il.DefineLabel();
+            var useEmptyString = il.DefineLabel();
+            var store = il.DefineLabel();
+            var done = il.DefineLabel();
+
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Callvirt, typeof(Array).GetProperty(nameof(Array.LongLength)).GetGetMethod());
+            il.Emit(OpCodes.Brfalse, done);
+
+            EmitLoadArrayElementType(il);
+            il.Emit(OpCodes.Stloc, elementType);
+            il.Emit(OpCodes.Ldloc, elementType);
+            il.Emit(OpCodes.Ldtoken, typeof(string));
+            il.Emit(OpCodes.Call, typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle)));
+            il.Emit(OpCodes.Call, typeof(Type).GetMethod("op_Equality", new[] { typeof(Type), typeof(Type) }));
+            il.Emit(OpCodes.Brfalse, checkRecord);
+            il.Emit(OpCodes.Ldnull);
+            il.Emit(OpCodes.Stloc, initializer);
+            il.Emit(OpCodes.Br, start);
+
+            il.MarkLabel(checkRecord);
+            il.Emit(OpCodes.Ldloc, elementType);
+            il.Emit(OpCodes.Callvirt, typeof(Type).GetProperty(nameof(Type.IsValueType)).GetGetMethod());
+            il.Emit(OpCodes.Brfalse, done);
+            il.Emit(OpCodes.Ldloc, elementType);
+            EmitFindRecordInitializer(il);
+            il.Emit(OpCodes.Stloc, initializer);
+            il.Emit(OpCodes.Ldloc, initializer);
+            il.Emit(OpCodes.Brfalse, done);
+
+            il.MarkLabel(start);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Callvirt, typeof(Array).GetProperty(nameof(Array.Rank)).GetGetMethod());
+            il.Emit(OpCodes.Stloc, rank);
+            il.Emit(OpCodes.Ldloc, rank);
+            il.Emit(OpCodes.Newarr, typeof(int));
+            il.Emit(OpCodes.Stloc, indices);
+
+            il.MarkLabel(loop);
+            il.Emit(OpCodes.Ldloc, initializer);
+            il.Emit(OpCodes.Brfalse, useEmptyString);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldloc, indices);
+            il.Emit(OpCodes.Callvirt, typeof(Array).GetMethod(nameof(Array.GetValue), new[] { typeof(int[]) }));
+            il.Emit(OpCodes.Stloc, value);
+            EmitInvokeRecordInitializer(il, initializer, value);
+            il.Emit(OpCodes.Br, store);
+
+            il.MarkLabel(useEmptyString);
+            il.Emit(OpCodes.Ldstr, string.Empty);
+            il.Emit(OpCodes.Stloc, value);
+            il.MarkLabel(store);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldloc, value);
+            il.Emit(OpCodes.Ldloc, indices);
+            il.Emit(OpCodes.Callvirt, typeof(Array).GetMethod(nameof(Array.SetValue), new[] { typeof(object), typeof(int[]) }));
+            EmitAdvanceRectangularIndices(il, indices, rank, loop, done);
+
+            il.MarkLabel(done);
+            il.Emit(OpCodes.Ret);
+            return initializeRectangularArrayMethod;
+        }
+
+        // Reuse one index vector for all elements. The last dimension changes
+        // first; on overflow it rolls over to zero and carries to the left.
+        // Arrays created by new T[...] always have zero lower bounds.
+        private static void EmitAdvanceRectangularIndices(ILGenerator il, LocalBuilder indices, LocalBuilder rank,
+            Label nextElement, Label done)
+        {
+            var dimension = il.DeclareLocal(typeof(int));
+            var nextIndex = il.DeclareLocal(typeof(int));
+            var carry = il.DefineLabel();
+            var advance = il.DefineLabel();
+
+            il.Emit(OpCodes.Ldloc, rank);
+            il.Emit(OpCodes.Stloc, dimension);
+            il.MarkLabel(carry);
+            il.Emit(OpCodes.Ldloc, dimension);
+            il.Emit(OpCodes.Ldc_I4_1);
+            il.Emit(OpCodes.Sub);
+            il.Emit(OpCodes.Stloc, dimension);
+            il.Emit(OpCodes.Ldloc, dimension);
+            il.Emit(OpCodes.Ldc_I4_0);
+            il.Emit(OpCodes.Blt, done);
+
+            il.Emit(OpCodes.Ldloc, indices);
+            il.Emit(OpCodes.Ldloc, dimension);
+            il.Emit(OpCodes.Ldelem_I4);
+            il.Emit(OpCodes.Ldc_I4_1);
+            il.Emit(OpCodes.Add);
+            il.Emit(OpCodes.Stloc, nextIndex);
+            il.Emit(OpCodes.Ldloc, nextIndex);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldloc, dimension);
+            il.Emit(OpCodes.Callvirt, typeof(Array).GetMethod(nameof(Array.GetLength), new[] { typeof(int) }));
+            il.Emit(OpCodes.Blt, advance);
+
+            il.Emit(OpCodes.Ldloc, indices);
+            il.Emit(OpCodes.Ldloc, dimension);
+            il.Emit(OpCodes.Ldc_I4_0);
+            il.Emit(OpCodes.Stelem_I4);
+            il.Emit(OpCodes.Br, carry);
+
+            il.MarkLabel(advance);
+            il.Emit(OpCodes.Ldloc, indices);
+            il.Emit(OpCodes.Ldloc, dimension);
+            il.Emit(OpCodes.Ldloc, nextIndex);
+            il.Emit(OpCodes.Stelem_I4);
+            il.Emit(OpCodes.Br, nextElement);
+        }
+
+        private static void EmitLoadArrayElementType(ILGenerator il)
+        {
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Callvirt, typeof(object).GetMethod(nameof(object.GetType)));
+            il.Emit(OpCodes.Callvirt, typeof(Type).GetMethod(nameof(Type.GetElementType)));
+        }
+
+        private static void EmitInvokeRecordInitializer(ILGenerator il, LocalBuilder initializer, LocalBuilder boxed)
+        {
+            il.Emit(OpCodes.Ldloc, initializer);
+            il.Emit(OpCodes.Ldloc, boxed);
+            il.Emit(OpCodes.Ldnull);
+            il.Emit(OpCodes.Callvirt, typeof(MethodBase).GetMethod(nameof(MethodBase.Invoke),
+                new[] { typeof(object), typeof(object[]) }));
+            il.Emit(OpCodes.Pop);
         }
 
         // Takes a Type from the IL stack and leaves its public parameterless

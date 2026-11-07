@@ -4399,7 +4399,8 @@ namespace PascalABCCompiler.NETGenerator
             this.il = tmp_il;
         }
 
-        private void CreateInitCodeForUnsizedArray(ILGenerator il, ITypeNode itn, IExpressionNode arr, LocalBuilder len, LocalBuilder start_index=null)
+        private void CreateInitCodeForUnsizedArray(ILGenerator il, ITypeNode itn, IExpressionNode arr, LocalBuilder len,
+            LocalBuilder start_index = null, LocalBuilder resizedArray = null)
         {
             ILGenerator tmp_il = this.il;
             TypeInfo ti = helper.GetTypeReference(itn);
@@ -4409,6 +4410,13 @@ namespace PascalABCCompiler.NETGenerator
             MethodInfo rif = null;
             Label lab = default(Label);
             this.il = il;
+            void LoadArray()
+            {
+                if (resizedArray != null)
+                    il.Emit(OpCodes.Ldloc, resizedArray);
+                else
+                    arr.visit(this);
+            }
             if (generic_param)
             {
                 GetRuntimeInitialization(ictn, ti.tp, out finfo, out rif);
@@ -4437,11 +4445,11 @@ namespace PascalABCCompiler.NETGenerator
                 il.Emit(OpCodes.Bge, flabel);
                 if (generic_param)
                 {
-                    arr.visit(this);
+                    LoadArray();
                     il.Emit(OpCodes.Ldloc, clb);
                     il.Emit(OpCodes.Ldsfld, finfo);
                 }
-                arr.visit(this);
+                LoadArray();
                 il.Emit(OpCodes.Ldloc, clb);
                 if (!ti.is_arr && !ti.is_set && !ti.is_typed_file && !ti.is_text_file)
                 {
@@ -4465,14 +4473,14 @@ namespace PascalABCCompiler.NETGenerator
                         il.Emit(OpCodes.Ldelem_Ref);
                         il.Emit(OpCodes.Ldnull);
                         il.Emit(OpCodes.Beq, lb2);
-                        arr.visit(this);
+                        LoadArray();
                         il.Emit(OpCodes.Ldloc, clb);
                         il.Emit(OpCodes.Ldelem_Ref);
                         il.Emit(OpCodes.Ldstr, "");
                         il.Emit(OpCodes.Ceq);
                         il.Emit(OpCodes.Brfalse, lb1);
                         il.MarkLabel(lb2);
-                        arr.visit(this);
+                        LoadArray();
                         il.Emit(OpCodes.Ldloc, clb);
                         il.Emit(OpCodes.Ldstr, "");
                         il.Emit(OpCodes.Stelem_Ref);
@@ -4486,7 +4494,7 @@ namespace PascalABCCompiler.NETGenerator
                     il.Emit(OpCodes.Ldnull);
                     il.Emit(OpCodes.Ceq);
                     il.Emit(OpCodes.Brfalse, label1);
-                    arr.visit(this);
+                    LoadArray();
                     il.Emit(OpCodes.Ldloc, clb);
                     if (ti.is_set)
                     {
@@ -7797,6 +7805,68 @@ namespace PascalABCCompiler.NETGenerator
             }
         }
 
+        private void EmitGenericArrayResize(MethodInfo resizeMethod, IExpressionNode array, IExpressionNode size,
+            ITypeNode element, bool tmpDot)
+        {
+            var elementType = helper.GetTypeReference(element).tp;
+            var arrayType = elementType.MakeArrayType();
+            var address = il.DeclareLocal(arrayType.MakeByRefType());
+            var newLength = il.DeclareLocal(typeof(int));
+            var oldLength = il.DeclareLocal(typeof(int));
+            var hasArray = il.DefineLabel();
+            var saveLength = il.DefineLabel();
+
+            // Keep the managed reference so the var argument (including any
+            // index expressions) and the requested size are evaluated once.
+            is_addr = true;
+            array.visit(this);
+            il.Emit(OpCodes.Stloc, address);
+            is_addr = false;
+            size.visit(this);
+            il.Emit(OpCodes.Stloc, newLength);
+
+            il.Emit(OpCodes.Ldloc, address);
+            il.Emit(OpCodes.Ldind_Ref);
+            il.Emit(OpCodes.Dup);
+            il.Emit(OpCodes.Brtrue, hasArray);
+            il.Emit(OpCodes.Pop);
+            il.Emit(OpCodes.Ldc_I4_0);
+            il.Emit(OpCodes.Br, saveLength);
+            il.MarkLabel(hasArray);
+            il.Emit(OpCodes.Ldlen);
+            il.Emit(OpCodes.Conv_I4);
+            il.MarkLabel(saveLength);
+            il.Emit(OpCodes.Stloc, oldLength);
+
+            il.Emit(OpCodes.Ldloc, address);
+            il.Emit(OpCodes.Ldloc, newLength);
+            il.EmitCall(OpCodes.Call, resizeMethod.MakeGenericMethod(elementType), null);
+
+            var resizedArray = il.DeclareLocal(arrayType);
+            il.Emit(OpCodes.Ldloc, address);
+            il.Emit(OpCodes.Ldind_Ref);
+            il.Emit(OpCodes.Stloc, resizedArray);
+            il.Emit(OpCodes.Ldloc, resizedArray);
+            il.Emit(OpCodes.Ldloc, oldLength);
+            il.Emit(OpCodes.Call, GenericInitialization.GetOrCreateTryInitializeArrayMethod());
+
+            // TypedSet, Text and BinaryFile retain the existing PABCSystem path.
+            if (element is ICommonTypeNode generic && generic.runtime_initialization_marker != null &&
+                SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction?.sym_info != null)
+            {
+                var done = il.DefineLabel();
+                il.Emit(OpCodes.Brtrue, done);
+                CreateInitCodeForUnsizedArray(il, element, array, newLength, oldLength, resizedArray);
+                il.MarkLabel(done);
+            }
+            else
+                il.Emit(OpCodes.Pop);
+
+            is_dot_expr = tmpDot;
+            EmitFreePinnedVariables();
+            il.Emit(OpCodes.Nop);
+        }
+
         //вызов откомпилированного статического метода
         public override void visit(SemanticTree.ICompiledStaticMethodCallNode value)
         {
@@ -7809,6 +7879,13 @@ namespace PascalABCCompiler.NETGenerator
             MethodInfo mi = value.static_method.method_info;
             IExpressionNode[] real_parameters = value.real_parameters;
             IParameterNode[] parameters = value.static_method.parameters;
+            if (mi.DeclaringType == TypeFactory.ArrayType && mi.Name == "Resize" && real_parameters.Length == 2 &&
+                real_parameters[0].type.element_type?.is_generic_parameter == true)
+            {
+                EmitGenericArrayResize(mi, real_parameters[0], real_parameters[1],
+                    real_parameters[0].type.element_type, tmp_dot);
+                return;
+            }
             if (mi.DeclaringType == TypeFactory.ArrayType && mi.Name == "Resize" && helper.GetTypeReference(value.template_parametres[0]).tp.IsPointer)
             {
                 is_addr = true;
@@ -8372,13 +8449,22 @@ namespace PascalABCCompiler.NETGenerator
                             if (ti.tp.IsGenericParameter && real_parameters.Length == 3)
                             {
                                 il.Emit(OpCodes.Dup);
-                                il.Emit(OpCodes.Call, GenericInitialization.GetOrCreateInitializeArrayMethod());
+                                il.Emit(OpCodes.Ldc_I4_0);
+                                il.Emit(OpCodes.Call, GenericInitialization.GetOrCreateTryInitializeArrayMethod());
+                                il.Emit(OpCodes.Pop);
                             }
                         }
                         else
                         {
                             if (real_parameters.Length <= 2 + rank)
+                            {
                                 CreateNDimUnsizedArray(il, ti, ((ITypeOfOperator)real_parameters[0]).oftype, rank, real_parameters);
+                                if (ti.tp.IsGenericParameter)
+                                {
+                                    il.Emit(OpCodes.Dup);
+                                    il.Emit(OpCodes.Call, GenericInitialization.GetOrCreateInitializeRectangularArrayMethod());
+                                }
+                            }
                         }
                     }
                     if (real_parameters.Length > 2 + rank)

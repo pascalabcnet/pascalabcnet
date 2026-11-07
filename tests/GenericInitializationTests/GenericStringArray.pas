@@ -19,7 +19,6 @@ end;
 
 function Allocate<T>(n: integer): array of T := new T[n];
 function AllocateExplicit<T>(value: T): array of T := new T[2](value, default(T));
-function AllocateMatrix<T>: array[,] of T := new T[1,1];
 
 procedure Check(condition: boolean; message: string);
 begin
@@ -61,8 +60,4 @@ begin
   Check((explicitRecords[0].Value = 'provided') and (explicitRecords[0].Nested.Value = 'nested') and
     (explicitRecords[0].Number = 17), 'explicit record is preserved');
   Check(System.Object.ReferenceEquals(explicitRecords[1].Value, nil), 'explicit default record is preserved');
-  var matrix := AllocateMatrix&<string>;
-  Check(System.Object.ReferenceEquals(matrix[0,0], nil), 'rectangular array is unchanged');
-  var recordMatrix := AllocateMatrix&<SampleRecord>;
-  Check(System.Object.ReferenceEquals(recordMatrix[0,0].Value, nil), 'rectangular record array is unchanged');
 end.

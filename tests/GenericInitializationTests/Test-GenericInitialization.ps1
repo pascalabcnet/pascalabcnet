@@ -18,7 +18,8 @@ function Invoke-CompileAndRun([string]$source, [string]$output) {
     if ($LASTEXITCODE -ne 0) { throw "$target execution failed: $output" }
 }
 
-function Assert-InitializationIL([string]$file, [bool]$standalone, [bool]$needsHelpers, [bool]$needsArrayHelper = $false) {
+function Assert-InitializationIL([string]$file, [bool]$standalone, [bool]$needsHelpers,
+    [bool]$needsArrayHelper = $false, [bool]$needsRectangularHelper = $false) {
     $module = [Mono.Cecil.AssemblyDefinition]::ReadAssembly($file).MainModule
     $helpers = @($module.Types | Where-Object Name -eq '$GenericInitialization$')
     $caches = @($module.Types | Where-Object Name -like '$GenericInitializationKind$*')
@@ -29,7 +30,8 @@ function Assert-InitializationIL([string]$file, [bool]$standalone, [bool]$needsH
         })
     $expectedMethods = @()
     if ($standalone -and $needsHelpers) { $expectedMethods += 'DetermineType', 'Initialize' }
-    if ($needsArrayHelper) { $expectedMethods += 'InitializeArray' }
+    if ($needsArrayHelper) { $expectedMethods += 'TryInitializeArray' }
+    if ($needsRectangularHelper) { $expectedMethods += 'InitializeRectangularArray' }
     if ($helpers.Count -ne [int]($expectedMethods.Count -gt 0) -or
         $caches.Count -ne [int]($standalone -and $needsHelpers)) {
         throw "Unexpected number of generic initialization helper types in $file"
@@ -66,16 +68,19 @@ foreach ($target in @('net472', 'net10')) {
     $standaloneSource = Join-Path $dir 'GenericInitializationStandalone.pas'
     $arraysSource = Join-Path $dir 'GenericStringArray.pas'
     $standaloneArraysSource = Join-Path $dir 'GenericStringArrayStandalone.pas'
+    $rectangularSource = Join-Path $dir 'GenericRectangularArray.pas'
+    $standaloneRectangularSource = Join-Path $dir 'GenericRectangularArrayStandalone.pas'
     $emptySource = Join-Path $dir 'EmptyGeneric.pas'
     $client = Join-Path $dir 'GenericInitializationClient.pas'
     $unit = Join-Path $dir 'GenericInitializationUnit.pas'
-    foreach ($file in @($source, $arraysSource, $client, $unit)) {
+    foreach ($file in @($source, $arraysSource, $rectangularSource, $client, $unit)) {
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot (Split-Path -Leaf $file)) -Destination $file
     }
     $directive = '{$DisableStandardUnits}'
     $nl = [Environment]::NewLine
     [IO.File]::WriteAllText($standaloneSource, $directive + $nl + [IO.File]::ReadAllText($source))
     [IO.File]::WriteAllText($standaloneArraysSource, $directive + $nl + [IO.File]::ReadAllText($arraysSource))
+    [IO.File]::WriteAllText($standaloneRectangularSource, $directive + $nl + [IO.File]::ReadAllText($rectangularSource))
     [IO.File]::WriteAllText($emptySource, $directive + $nl + 'type C<T> = class end;' + $nl + 'begin end.')
     Push-Location $dir
     try {
@@ -91,6 +96,12 @@ foreach ($target in @('net472', 'net10')) {
         $standaloneArraysExe = Join-Path $dir 'StringArraysStandalone.exe'
         Invoke-CompileAndRun $standaloneArraysSource $standaloneArraysExe
         Assert-InitializationIL $standaloneArraysExe $true $false $true
+        $rectangularExe = Join-Path $dir 'RectangularArrays.exe'
+        Invoke-CompileAndRun $rectangularSource $rectangularExe
+        Assert-InitializationIL $rectangularExe $false $false $false $true
+        $standaloneRectangularExe = Join-Path $dir 'RectangularArraysStandalone.exe'
+        Invoke-CompileAndRun $standaloneRectangularSource $standaloneRectangularExe
+        Assert-InitializationIL $standaloneRectangularExe $true $false $false $true
         $emptyExe = Join-Path $dir 'EmptyGeneric.exe'
         Invoke-CompileAndRun $emptySource $emptyExe
         Assert-InitializationIL $emptyExe $true $false
@@ -103,6 +114,31 @@ foreach ($target in @('net472', 'net10')) {
         $afterPcu = Join-Path $dir 'AfterPcu.exe'
         Invoke-CompileAndRun $client $afterPcu
         Assert-InitializationIL $afterPcu $true $true
+
+        foreach ($standalone in @($false, $true)) {
+            $resizeDir = Join-Path $dir "Resize-$standalone"
+            New-Item -ItemType Directory -Path $resizeDir | Out-Null
+            $resizeUnit = Join-Path $resizeDir 'GenericArrayResizeUnit.pas'
+            Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'GenericArrayResizeUnit.pas') -Destination $resizeUnit
+            $resizeSource = Join-Path $resizeDir 'GenericArrayResize.pas'
+            $resizeText = [IO.File]::ReadAllText((Join-Path $PSScriptRoot 'GenericArrayResize.pas'))
+            if ($standalone) { $resizeText = $directive + $nl + $resizeText }
+            [IO.File]::WriteAllText($resizeSource, $resizeText)
+            Push-Location $resizeDir
+            try {
+                $resizeExe = Join-Path $resizeDir 'ResizeFromSource.exe'
+                Invoke-CompileAndRun $resizeSource $resizeExe
+                Assert-InitializationIL $resizeExe $standalone $false $true
+                if (-not (Test-Path -LiteralPath (Join-Path $resizeDir 'GenericArrayResizeUnit.pcu'))) {
+                    throw 'No fresh Resize test PCU was produced'
+                }
+                Move-Item -LiteralPath $resizeUnit -Destination ($resizeUnit + '.saved')
+                $resizePcuExe = Join-Path $resizeDir 'ResizeFromPcu.exe'
+                Invoke-CompileAndRun $resizeSource $resizePcuExe
+                Assert-InitializationIL $resizePcuExe $standalone $false $true
+            }
+            finally { Pop-Location }
+        }
     }
     finally { Pop-Location }
     Write-Host "PASS $target - generic initialization with and without PABCSystem, helper IL, PCU round trip"
