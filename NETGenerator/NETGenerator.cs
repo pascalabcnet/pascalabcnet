@@ -8369,6 +8369,11 @@ namespace PascalABCCompiler.NETGenerator
                         else if (rank == 1)
                         {
                             CreateUnsizedArray(il, ti, real_parameters[2]);
+                            if (ti.tp.IsGenericParameter && real_parameters.Length == 3)
+                            {
+                                il.Emit(OpCodes.Dup);
+                                il.Emit(OpCodes.Call, GenericInitialization.GetOrCreateInitializeArrayMethod());
+                            }
                         }
                         else
                         {
