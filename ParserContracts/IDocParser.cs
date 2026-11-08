@@ -1,10 +1,6 @@
 ﻿using PascalABCCompiler.SyntaxTree;
 
-<<<<<<<< HEAD:Contracts/IDocParser.cs
-namespace PascalABCCompiler.Contracts
-========
 namespace PascalABCCompiler.Contracts.Parsers
->>>>>>>> master:ParserContracts/IDocParser.cs
 {
     /// <summary>
     /// Интерфейс парсера документирующих комментариев (///)

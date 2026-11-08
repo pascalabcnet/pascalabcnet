@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PascalABCCompiler.Contracts
+namespace PascalABCCompiler.Contracts.CodeCompletion
 {
     public interface IInlineCompletionService
     {

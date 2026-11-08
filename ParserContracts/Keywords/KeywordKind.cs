@@ -1,11 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-<<<<<<<< HEAD:Contracts/Keywords/KeywordKind.cs
-namespace PascalABCCompiler.Contracts
-========
 namespace PascalABCCompiler.Contracts.Parsers
->>>>>>>> master:ParserContracts/Keywords/KeywordKind.cs
 {
     public enum KeywordKind
     {

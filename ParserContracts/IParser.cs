@@ -4,11 +4,7 @@ using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Errors;
 
-<<<<<<<< HEAD:Contracts/IParser.cs
-namespace PascalABCCompiler.Contracts
-========
 namespace PascalABCCompiler.Contracts.Parsers
->>>>>>>> master:ParserContracts/IParser.cs
 {
     public enum ParseMode { Normal, Expression, Statement, Special, ForFormatter, TypeAsExpression };
     public interface IParser

@@ -6,7 +6,7 @@ using System.Text;
 using System.Linq;
 using PascalABCCompiler.Contracts.Parsers;
 
-namespace PascalABCCompiler.Contracts
+namespace PascalABCCompiler.Parsers
 {
     public abstract class BaseKeywords : IKeywords
     {
