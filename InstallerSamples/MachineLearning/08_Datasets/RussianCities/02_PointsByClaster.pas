@@ -21,16 +21,7 @@ begin
   df := df.WithColumnInt('cluster', labels, nil);
 
   // --- координаты
-  var lon := df.ToVector('lon').ToArray;
-  var lat := df.ToVector('lat').ToArray;
-
-  Plot.Points(
-    lon,
-    lat,
-    labels,
-    size := 5,
-    marker := MarkerType.Circle
-  );
+  df.Points('lon', 'lat', 'cluster', size := 5);
 
   Plot.XLabel := 'Долгота';
   Plot.YLabel := 'Широта';

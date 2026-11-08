@@ -31,6 +31,12 @@ namespace VisualPascalABC
         bool RunActiveTabPage = false;
 
         // SSM 16/05/22 - добавил чтобы иметь возможность добавлять обработчики во внешнем плагине
+        public event ChangeArgsBeforeRunDelegate ChangeArgsBeforeRun
+        {
+            add { RunnerManager.ChangeArgsBeforeRun += value; }
+            remove { RunnerManager.ChangeArgsBeforeRun -= value; }
+        }
+
         public event RunnerManagerActionDelegate Starting
         {
             add
@@ -71,6 +77,8 @@ namespace VisualPascalABC
 
         public bool Run(bool RedirectConsoleIO)
         {
+            if (WorkbenchServiceFactory.CommandRouter.TryExecute(VisualEnvironmentCompilerAction.Run,
+                new IdeRunCommand { Document = DocumentService.CurrentCodeFileDocument, RedirectConsoleIO = RedirectConsoleIO })) return true;
             Workbench.UserOptions.RedirectConsoleIO = RedirectConsoleIO;
 
             if (Workbench.UserOptions.RedirectConsoleIO)
@@ -99,6 +107,10 @@ namespace VisualPascalABC
 
         public bool Run(ICodeFileDocument tabPage, bool forDebugging, bool startWithGoto, bool needFirstBreakpoint)
         {
+            if (WorkbenchServiceFactory.CommandRouter.TryExecute(VisualEnvironmentCompilerAction.Run,
+                new IdeRunCommand { Document = tabPage, DebugRequested = forDebugging || startWithGoto || needFirstBreakpoint,
+                    RedirectConsoleIO = Workbench.UserOptions.RedirectConsoleIO })) return true;
+            if (externalDocument != null) { RunnerManager.Stop(externalOutputFile); return false; }
             lock (o)
             {
                 bool attachdbg = forDebugging || startWithGoto || needFirstBreakpoint; //|| WorkbenchServiceFactory.DebuggerManager.HasBreakpoints();
@@ -143,6 +155,9 @@ namespace VisualPascalABC
                     Workbench.UserOptions.RedirectConsoleIO = true;
                 }
                 string OutputFileName = null;
+                if (BuildService.BeforeCompile != null)
+                    BuildService.BeforeCompile(tabPage.FileName);
+
                 if (!forDebugging)
                 {
                     if (!ProjectFactory.Instance.ProjectLoaded)
@@ -272,6 +287,7 @@ namespace VisualPascalABC
 
         public bool Stop() // Èíòåðåñíî, çà÷åì ñäåëàëè private
         {
+            if (WorkbenchServiceFactory.CommandRouter.TryExecute(VisualEnvironmentCompilerAction.Stop)) return true;
             if (RunnerManager.IsRun(Workbench.CurrentEXEFileName))
             {
                 RunnerManager.Stop(Workbench.CurrentEXEFileName);
@@ -291,8 +307,17 @@ namespace VisualPascalABC
 
         public void SendInputTextToProcess()
         {
-            ReadRequests.Remove(DocumentService.CurrentCodeFileDocument);
-            RunnerManager.WritelnStringToProcess(Workbench.CurrentEXEFileName, Workbench.OutputWindow.InputTextBoxText);
+            var document = DocumentService.CurrentCodeFileDocument;
+            if (externalInput != null && externalInput.Owns(document))
+            {
+                if (!externalInput.TrySend(document, Workbench.OutputWindow.InputTextBoxText)) return;
+                ReadRequests.Remove(document);
+            }
+            else
+            {
+                ReadRequests.Remove(DocumentService.CurrentCodeFileDocument);
+                RunnerManager.WritelnStringToProcess(Workbench.CurrentEXEFileName, Workbench.OutputWindow.InputTextBoxText);
+            }
             Workbench.OutputWindow.AppendTextToOutputBox(Environment.NewLine);
             WorkbenchServiceFactory.OperationsService.SendNewLineToInputTextBox();
             Workbench.OutputWindow.InputPanelVisible = false;

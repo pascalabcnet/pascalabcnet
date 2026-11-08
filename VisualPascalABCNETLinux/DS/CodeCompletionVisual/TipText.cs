@@ -144,6 +144,7 @@ namespace ICSharpCode.TextEditor.Util
 				else if (param_name)
 				{
 					drawRectangle.X += 10;
+					drawRectangle.Width = Math.Max(0, drawRectangle.Width - 10);
 					Graphics.DrawString(tipText,fnt,
 				                    BrushRegistry.GetBrush(System.Drawing.Color.Brown),
 				                    drawRectangle,
@@ -151,10 +152,9 @@ namespace ICSharpCode.TextEditor.Util
 				}
 				else if (need_tab)
 				{
-					if (param_desc)
-						drawRectangle.X += 20;
-					else
-						drawRectangle.X += 10;
+					int indent = param_desc ? 20 : 10;
+					drawRectangle.X += indent;
+					drawRectangle.Width = Math.Max(0, drawRectangle.Width - indent);
 					Graphics.DrawString(tipText,tipFont,
 				                    BrushRegistry.GetBrush(Color),
 				                    drawRectangle,
@@ -249,6 +249,11 @@ namespace ICSharpCode.TextEditor.Util
 		
 		private void SetRequiredSizeInternal(SizeF drawRectangle)
 		{
+			if (len_bold <= 0)
+			{
+				SetRequiredSize(drawRectangle);
+				return;
+			}
 			Font fnt = new Font(tipFont, FontStyle.Bold);
 			SizeF sz1 = Graphics.MeasureString(tipText.Substring(0,beg_bold),tipFont, new SizeF(drawRectangle.Width,drawRectangle.Height),GetInternalStringFormat());
 			SizeF sz2 = Graphics.MeasureString(tipText.Substring(beg_bold,len_bold),fnt, new SizeF(drawRectangle.Width,drawRectangle.Height),GetInternalStringFormat());
@@ -286,15 +291,24 @@ namespace ICSharpCode.TextEditor.Util
 				SizeF tipSize; 
 				if (this.len_bold > 0 /*|| need_tab*/) 
 				tipSize = Graphics.MeasureString
-					(tipText, new Font(tipFont, FontStyle.Bold), MaximumSize,
+					(tipText, tipFont, MaximumSize,
 					 GetInternalStringFormat());
 				else
 				if (need_tab)
 				{
 					tipSize = Graphics.MeasureString
-						((param_desc?"    ":"   ")+tipText, tipFont, MaximumSize,
+						(tipText, tipFont, new SizeF(Math.Max(1, MaximumSize.Width - (param_desc ? 20 : 10)), MaximumSize.Height),
 					 GetInternalStringFormat());
+					tipSize.Width += param_desc ? 20 : 10;
                     
+				}
+				else
+				if (param_name)
+				{
+					using (var boldFont = new Font(tipFont, FontStyle.Bold))
+						tipSize = Graphics.MeasureString(tipText, boldFont,
+							new SizeF(Math.Max(1, MaximumSize.Width - 10), MaximumSize.Height), GetInternalStringFormatForHeader());
+					tipSize.Width += 10;
 				}
 				else
 				tipSize = Graphics.MeasureString

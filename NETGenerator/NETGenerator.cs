@@ -50,6 +50,7 @@ namespace PascalABCCompiler.NETGenerator
         public TargetType target = TargetType.Exe;
 #if PABCNET_MODERN
         public bool UseWindowsDesktop;
+        public bool TargetWindows;
 #endif
         public DebugAttributes dbg_attrs = DebugAttributes.Release;
         public bool optimize = false;
@@ -142,6 +143,7 @@ namespace PascalABCCompiler.NETGenerator
         protected PersistedAssemblyBuilder ab;//билдер для сборки
 #endif
         protected ModuleBuilder mb;//билдер для модуля
+        private GenericInitializationEmitter genericInitializationEmitter;
         protected TypeBuilder entry_type;//тип-обертка над осн. программой
         protected TypeBuilder cur_type;//текущий компилируемый тип
         protected MethodBuilder entry_meth;//входная точка в приложение
@@ -848,6 +850,7 @@ namespace PascalABCCompiler.NETGenerator
             if (save_debug_info) //если модуль отладочный, то устанавливаем атрибут, запрещающий inline методов
                 ab.SetCustomAttribute(TypeFactory.DebuggableAttributeCtor, new byte[] { 0x01, 0x00, 0x01, 0x01, 0x00, 0x00 });
 
+            genericInitializationEmitter = null;
             if (!IsDotnet5() && !IsDotnetNative() && (comp_opt.target == TargetType.Exe || comp_opt.target == TargetType.WinExe))
                 mb = ab.DefineDynamicModule(name + ".exe"
 #if PABCNET_LEGACY
@@ -1319,9 +1322,9 @@ namespace PascalABCCompiler.NETGenerator
             if (ResourceFiles != null)
                 foreach (string resname in ResourceFiles)
                 {
+#if PABCNET_LEGACY
                     FileStream stream = File.OpenRead(resname);
                     ResStreams.Add(stream);
-#if PABCNET_LEGACY
                     mb.DefineManifestResource(Path.GetFileName(resname), stream, ResourceAttributes.Public);
 #endif
                 }
@@ -1345,6 +1348,23 @@ namespace PascalABCCompiler.NETGenerator
             BlobBuilder ilStream;
             BlobBuilder fieldData;
             MetadataBuilder metadata = ab.GenerateMetadata(out ilStream, out fieldData, out pdbBuilder);
+            BlobBuilder managedResources = null;
+            if (ResourceFiles != null && ResourceFiles.Length > 0)
+            {
+                managedResources = new BlobBuilder();
+                foreach (string resname in ResourceFiles)
+                {
+                    byte[] data = File.ReadAllBytes(resname);
+                    managedResources.Align(4);
+                    uint offset = checked((uint)managedResources.Count);
+                    // Embedded CLI resources are a length-prefixed byte sequence.
+                    // Manifest offsets are relative to the managed resource blob.
+                    managedResources.WriteInt32(data.Length);
+                    managedResources.WriteBytes(data);
+                    metadata.AddManifestResource(ManifestResourceAttributes.Public,
+                        metadata.GetOrAddString(Path.GetFileName(resname)), default, offset);
+                }
+            }
 
             switch (comp_opt.target)
             {
@@ -1381,6 +1401,7 @@ namespace PascalABCCompiler.NETGenerator
                 metadataRootBuilder: new MetadataRootBuilder(metadata),
                 ilStream: ilStream,
                 mappedFieldData: fieldData,
+                managedResources: managedResources,
                 debugDirectoryBuilder: debugDirectoryBuilder,
                 entryPoint: entryPointHandle);
             var peBlob = new BlobBuilder();
@@ -1398,7 +1419,9 @@ namespace PascalABCCompiler.NETGenerator
             if (comp_opt.target != TargetType.Dll)
                 File.WriteAllText(
                     Path.Combine(Path.GetDirectoryName(TargetFileName), an.Name + ".runtimeconfig.json"),
-                    comp_opt.UseWindowsDesktop ? RuntimeConfigWindowsDesktop : RuntimeConfigCore);
+                    (comp_opt.UseWindowsDesktop ? RuntimeConfigWindowsDesktop : RuntimeConfigCore)
+                        .Replace("\"tfm\": \"net10.0\"", "\"tfm\": \"" +
+                            (comp_opt.TargetWindows ? "net10.0-windows10.0.19041.0" : "net10.0") + "\""));
 #else
             int tries = 0;
             bool not_done = true;
@@ -3762,23 +3785,39 @@ namespace PascalABCCompiler.NETGenerator
             this.il = ilc;
         }
 
+        private GenericInitializationEmitter GenericInitialization =>
+            genericInitializationEmitter ?? (genericInitializationEmitter = new GenericInitializationEmitter(mb, types.Add));
+
+        private void GetRuntimeInitialization(ICommonTypeNode type, Type argument,
+            out FieldInfo kind, out MethodInfo initializeMethod)
+        {
+            var initialize = SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction?.sym_info;
+            if (initialize == null)
+            {
+                kind = GenericInitialization.GetOrCreateKindField(argument);
+                initializeMethod = GenericInitialization.GetOrCreateInitializeMethod();
+                return;
+            }
+
+            kind = helper.GetField(type.runtime_initialization_marker).fi;
+            if (initialize is ICompiledMethodNode compiled)
+                initializeMethod = compiled.method_info;
+            else
+                initializeMethod = helper.GetMethod(initialize as IFunctionNode).mi;
+        }
+
         //(ssyy) Инициализации переменных типа параметр дженерика
         private void CreateRuntimeInitCodeWithCheck(ILGenerator il, LocalBuilder lb, ICommonTypeNode type)
         {
             if (type.runtime_initialization_marker == null) return;
             Type tinfo = helper.GetTypeReference(type).tp;
-            FieldInfo finfo = helper.GetField(type.runtime_initialization_marker).fi;
+            GetRuntimeInitialization(type, tinfo, out FieldInfo finfo, out MethodInfo rif);
             Label lab = il.DefineLabel();
             il.Emit(OpCodes.Ldsfld, finfo);
             il.Emit(OpCodes.Brfalse, lab);
             il.Emit(OpCodes.Ldsfld, finfo);
             il.Emit(OpCodes.Ldloc, lb);
             il.Emit(OpCodes.Box, tinfo);
-            MethodInfo rif = null;
-            if (SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info is ICompiledMethodNode)
-                rif = (SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info as ICompiledMethodNode).method_info;
-            else
-                rif = helper.GetMethod(SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info as IFunctionNode).mi;
             il.EmitCall(OpCodes.Call, rif, null);
             il.Emit(OpCodes.Unbox_Any, tinfo);
             il.Emit(OpCodes.Stloc, lb);
@@ -3790,7 +3829,7 @@ namespace PascalABCCompiler.NETGenerator
         {
             if (type.runtime_initialization_marker == null) return;
             Type tinfo = helper.GetTypeReference(type).tp;
-            FieldInfo finfo = helper.GetField(type.runtime_initialization_marker).fi;
+            GetRuntimeInitialization(type, tinfo, out FieldInfo finfo, out MethodInfo rif);
             Label lab = il.DefineLabel();
             il.Emit(OpCodes.Ldsfld, finfo);
             il.Emit(OpCodes.Brfalse, lab);
@@ -3809,11 +3848,6 @@ namespace PascalABCCompiler.NETGenerator
                 il.Emit(OpCodes.Ldfld, fb);
             }
             il.Emit(OpCodes.Box, tinfo);
-            MethodInfo rif = null;
-            if (SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info is ICompiledMethodNode)
-                rif = (SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info as ICompiledMethodNode).method_info;
-            else
-                rif = helper.GetMethod(SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info as IFunctionNode).mi;
             il.EmitCall(OpCodes.Call, rif, null);
             il.Emit(OpCodes.Unbox_Any, tinfo);
             if (fb.IsStatic)
@@ -4365,7 +4399,8 @@ namespace PascalABCCompiler.NETGenerator
             this.il = tmp_il;
         }
 
-        private void CreateInitCodeForUnsizedArray(ILGenerator il, ITypeNode itn, IExpressionNode arr, LocalBuilder len, LocalBuilder start_index=null)
+        private void CreateInitCodeForUnsizedArray(ILGenerator il, ITypeNode itn, IExpressionNode arr, LocalBuilder len,
+            LocalBuilder start_index = null, LocalBuilder resizedArray = null)
         {
             ILGenerator tmp_il = this.il;
             TypeInfo ti = helper.GetTypeReference(itn);
@@ -4375,16 +4410,19 @@ namespace PascalABCCompiler.NETGenerator
             MethodInfo rif = null;
             Label lab = default(Label);
             this.il = il;
+            void LoadArray()
+            {
+                if (resizedArray != null)
+                    il.Emit(OpCodes.Ldloc, resizedArray);
+                else
+                    arr.visit(this);
+            }
             if (generic_param)
             {
-                finfo = helper.GetField(ictn.runtime_initialization_marker).fi;
+                GetRuntimeInitialization(ictn, ti.tp, out finfo, out rif);
                 lab = il.DefineLabel();
                 il.Emit(OpCodes.Ldsfld, finfo);
                 il.Emit(OpCodes.Brfalse, lab);
-                if (SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info is ICompiledMethodNode)
-                    rif = (SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info as ICompiledMethodNode).method_info;
-                else
-                    rif = helper.GetMethod(SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction.sym_info as IFunctionNode).mi;
             }
             if (ti.tp.IsValueType && ti.init_meth != null || ti.is_arr || ti.is_set || ti.is_typed_file || ti.is_text_file || ti.tp == TypeFactory.StringType ||
                 (generic_param))
@@ -4407,11 +4445,11 @@ namespace PascalABCCompiler.NETGenerator
                 il.Emit(OpCodes.Bge, flabel);
                 if (generic_param)
                 {
-                    arr.visit(this);
+                    LoadArray();
                     il.Emit(OpCodes.Ldloc, clb);
                     il.Emit(OpCodes.Ldsfld, finfo);
                 }
-                arr.visit(this);
+                LoadArray();
                 il.Emit(OpCodes.Ldloc, clb);
                 if (!ti.is_arr && !ti.is_set && !ti.is_typed_file && !ti.is_text_file)
                 {
@@ -4435,14 +4473,14 @@ namespace PascalABCCompiler.NETGenerator
                         il.Emit(OpCodes.Ldelem_Ref);
                         il.Emit(OpCodes.Ldnull);
                         il.Emit(OpCodes.Beq, lb2);
-                        arr.visit(this);
+                        LoadArray();
                         il.Emit(OpCodes.Ldloc, clb);
                         il.Emit(OpCodes.Ldelem_Ref);
                         il.Emit(OpCodes.Ldstr, "");
                         il.Emit(OpCodes.Ceq);
                         il.Emit(OpCodes.Brfalse, lb1);
                         il.MarkLabel(lb2);
-                        arr.visit(this);
+                        LoadArray();
                         il.Emit(OpCodes.Ldloc, clb);
                         il.Emit(OpCodes.Ldstr, "");
                         il.Emit(OpCodes.Stelem_Ref);
@@ -4456,7 +4494,7 @@ namespace PascalABCCompiler.NETGenerator
                     il.Emit(OpCodes.Ldnull);
                     il.Emit(OpCodes.Ceq);
                     il.Emit(OpCodes.Brfalse, label1);
-                    arr.visit(this);
+                    LoadArray();
                     il.Emit(OpCodes.Ldloc, clb);
                     if (ti.is_set)
                     {
@@ -5602,10 +5640,19 @@ namespace PascalABCCompiler.NETGenerator
             }
         }
 
+        private bool UsesSharedTypedFileImplementation(ICommonTypeNode type, TypeInfo implementation)
+        {
+            // A Pascal file of T can resolve to the TypeInfo of the standard
+            // TypedFile class. It does not own that class's initialization code.
+            return type.type_special_kind == type_special_kind.typed_file &&
+                implementation != null &&
+                ReferenceEquals(implementation, helper.GetTypeReference(type.base_type));
+        }
+
         internal void GenerateRetForInitMeth(SemanticTree.ICommonTypeNode ctn)
         {
             TypeInfo ti = helper.GetTypeReference(ctn);
-            if (ti == null)
+            if (ti == null || UsesSharedTypedFileImplementation(ctn, ti))
             {
                 return;
             }
@@ -6903,6 +6950,10 @@ namespace PascalABCCompiler.NETGenerator
         //перевод тела конструктора
         private void ConvertConstructorBody(SemanticTree.ICommonMethodNode value)
         {
+            if (value.polymorphic_state == polymorphic_state.ps_static &&
+                UsesSharedTypedFileImplementation(value.common_comprehensive_type, cur_ti))
+                return;
+
             num_scope++;
             //получаем билдер конструктора
             ConstructorBuilder cnstr = helper.GetConstructorBuilder(value);
@@ -7466,6 +7517,9 @@ namespace PascalABCCompiler.NETGenerator
         private void ConvertConstructorHeader(SemanticTree.ICommonMethodNode value)
         {
             if (helper.GetConstructor(value) != null) return;
+            if (value.polymorphic_state == polymorphic_state.ps_static &&
+                UsesSharedTypedFileImplementation(value.common_comprehensive_type, cur_ti))
+                return;
 
             //определяем конструктор
             ConstructorBuilder cnstr;
@@ -7751,6 +7805,68 @@ namespace PascalABCCompiler.NETGenerator
             }
         }
 
+        private void EmitGenericArrayResize(MethodInfo resizeMethod, IExpressionNode array, IExpressionNode size,
+            ITypeNode element, bool tmpDot)
+        {
+            var elementType = helper.GetTypeReference(element).tp;
+            var arrayType = elementType.MakeArrayType();
+            var address = il.DeclareLocal(arrayType.MakeByRefType());
+            var newLength = il.DeclareLocal(typeof(int));
+            var oldLength = il.DeclareLocal(typeof(int));
+            var hasArray = il.DefineLabel();
+            var saveLength = il.DefineLabel();
+
+            // Keep the managed reference so the var argument (including any
+            // index expressions) and the requested size are evaluated once.
+            is_addr = true;
+            array.visit(this);
+            il.Emit(OpCodes.Stloc, address);
+            is_addr = false;
+            size.visit(this);
+            il.Emit(OpCodes.Stloc, newLength);
+
+            il.Emit(OpCodes.Ldloc, address);
+            il.Emit(OpCodes.Ldind_Ref);
+            il.Emit(OpCodes.Dup);
+            il.Emit(OpCodes.Brtrue, hasArray);
+            il.Emit(OpCodes.Pop);
+            il.Emit(OpCodes.Ldc_I4_0);
+            il.Emit(OpCodes.Br, saveLength);
+            il.MarkLabel(hasArray);
+            il.Emit(OpCodes.Ldlen);
+            il.Emit(OpCodes.Conv_I4);
+            il.MarkLabel(saveLength);
+            il.Emit(OpCodes.Stloc, oldLength);
+
+            il.Emit(OpCodes.Ldloc, address);
+            il.Emit(OpCodes.Ldloc, newLength);
+            il.EmitCall(OpCodes.Call, resizeMethod.MakeGenericMethod(elementType), null);
+
+            var resizedArray = il.DeclareLocal(arrayType);
+            il.Emit(OpCodes.Ldloc, address);
+            il.Emit(OpCodes.Ldind_Ref);
+            il.Emit(OpCodes.Stloc, resizedArray);
+            il.Emit(OpCodes.Ldloc, resizedArray);
+            il.Emit(OpCodes.Ldloc, oldLength);
+            il.Emit(OpCodes.Call, GenericInitialization.GetOrCreateTryInitializeArrayMethod());
+
+            // TypedSet, Text and BinaryFile retain the existing PABCSystem path.
+            if (element is ICommonTypeNode generic && generic.runtime_initialization_marker != null &&
+                SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction?.sym_info != null)
+            {
+                var done = il.DefineLabel();
+                il.Emit(OpCodes.Brtrue, done);
+                CreateInitCodeForUnsizedArray(il, element, array, newLength, oldLength, resizedArray);
+                il.MarkLabel(done);
+            }
+            else
+                il.Emit(OpCodes.Pop);
+
+            is_dot_expr = tmpDot;
+            EmitFreePinnedVariables();
+            il.Emit(OpCodes.Nop);
+        }
+
         //вызов откомпилированного статического метода
         public override void visit(SemanticTree.ICompiledStaticMethodCallNode value)
         {
@@ -7763,6 +7879,13 @@ namespace PascalABCCompiler.NETGenerator
             MethodInfo mi = value.static_method.method_info;
             IExpressionNode[] real_parameters = value.real_parameters;
             IParameterNode[] parameters = value.static_method.parameters;
+            if (mi.DeclaringType == TypeFactory.ArrayType && mi.Name == "Resize" && real_parameters.Length == 2 &&
+                real_parameters[0].type.element_type?.is_generic_parameter == true)
+            {
+                EmitGenericArrayResize(mi, real_parameters[0], real_parameters[1],
+                    real_parameters[0].type.element_type, tmp_dot);
+                return;
+            }
             if (mi.DeclaringType == TypeFactory.ArrayType && mi.Name == "Resize" && helper.GetTypeReference(value.template_parametres[0]).tp.IsPointer)
             {
                 is_addr = true;
@@ -8323,11 +8446,25 @@ namespace PascalABCCompiler.NETGenerator
                         else if (rank == 1)
                         {
                             CreateUnsizedArray(il, ti, real_parameters[2]);
+                            if (ti.tp.IsGenericParameter && real_parameters.Length == 3)
+                            {
+                                il.Emit(OpCodes.Dup);
+                                il.Emit(OpCodes.Ldc_I4_0);
+                                il.Emit(OpCodes.Call, GenericInitialization.GetOrCreateTryInitializeArrayMethod());
+                                il.Emit(OpCodes.Pop);
+                            }
                         }
                         else
                         {
                             if (real_parameters.Length <= 2 + rank)
+                            {
                                 CreateNDimUnsizedArray(il, ti, ((ITypeOfOperator)real_parameters[0]).oftype, rank, real_parameters);
+                                if (ti.tp.IsGenericParameter)
+                                {
+                                    il.Emit(OpCodes.Dup);
+                                    il.Emit(OpCodes.Call, GenericInitialization.GetOrCreateInitializeRectangularArrayMethod());
+                                }
+                            }
                         }
                     }
                     if (real_parameters.Length > 2 + rank)

@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.InsightWindow;
-using VisualPascalABC;
 
 namespace VisualPascalABCPlugins
 {
@@ -26,15 +25,17 @@ namespace VisualPascalABCPlugins
         private readonly Net10LanguageDocuments documents;
         private readonly Func<bool> enabled;
         private readonly Dictionary<ICodeFileDocument, Subscription> subscriptions = new Dictionary<ICodeFileDocument, Subscription>();
-        private PABCNETInsightWindow window;
+        private readonly IExternalIntelliSenseSession ui;
         private ICodeFileDocument windowDocument;
         private Net10SignatureContext pending;
         private CancellationTokenSource cancellation;
         private long generation;
         private bool active, disposed;
 
-        internal Net10Signature(Form parent, IWorkbenchDocumentEvents events, Net10LanguageDocuments documents, Func<bool> enabled)
+        internal Net10Signature(Form parent, IWorkbenchDocumentEvents events, Net10LanguageDocuments documents, Func<bool> enabled, IExternalIntelliSenseSession ui)
         {
+            this.ui = ui ?? throw new ArgumentNullException(nameof(ui));
+            ui.Closed += HintClosed;
             this.parent = parent; this.events = events; this.documents = documents; this.enabled = enabled;
             events.DocumentOpened += Opened; events.DocumentClosed += Closed; events.DocumentRenamed += Renamed;
         }
@@ -88,7 +89,7 @@ namespace VisualPascalABCPlugins
             // TextArea to its container and back. Check the settled focus, not that transient event.
             area.BeginInvoke(new Action(() =>
             {
-                if (ticket == generation && !area.Focused && window?.ContainsFocus != true) CloseHints();
+                if (ticket == generation && !area.Focused && !ui.ParameterHelpContainsFocus) CloseHints();
             }));
         }
 
@@ -97,7 +98,7 @@ namespace VisualPascalABCPlugins
             if (!active || !enabled()) { CloseHints(); return; }
             if ((pending != null && pending.Document != document) || (windowDocument != null && windowDocument != document))
             { CloseHints(); return; }
-            if (windowDocument == document && window?.GetInsightProvider() is Net10SignatureProvider current && !current.Context.RequestPrefixUnchanged)
+            if (windowDocument == document && ui.ParameterProvider is Net10SignatureProvider current && !current.Context.RequestPrefixUnchanged)
                 CloseHints(); // A same-position edit before the trigger may emit no caret event.
             if (pending != null && !pending.TryText(document.TextEditor.Document.TextContent)) Invalidate();
             if (string.IsNullOrEmpty(e.Text) || !Net10SignatureContext.IsTrigger(e.Text[e.Text.Length - 1])) return;
@@ -126,23 +127,8 @@ namespace VisualPascalABCPlugins
                 var provider = new Net10SignatureProvider(response, context);
                 if (provider.InsightDataCount == 0) return;
                 pending = null;
-                if (window == null)
-                {
-                    windowDocument = context.Document;
-                    window = new PABCNETInsightWindow(parent, context.Document.TextEditor);
-                    window.Font = new Font(Constants.CompletionInsightWindowFontName, window.Font.Size);
-                    var shown = window;
-                    shown.Closed += (sender, e) => { if (ReferenceEquals(window, shown)) { window = null; windowDocument = null; Invalidate(); } };
-                }
-                var previous = window.InsightProviderStackLength > 0 ? window.GetInsightProvider() as Net10SignatureProvider : null;
-                if (previous?.Context.OpenOffset == context.OpenOffset)
-                {
-                    if (window.GetCurrentData() != previous.DefaultIndex)
-                        provider.DefaultIndex = Math.Min(window.GetCurrentData(), provider.InsightDataCount - 1);
-                    window.ReplaceCurrentInsightDataProvider(provider, context.FileName);
-                }
-                else window.AddInsightDataProvider(provider, context.FileName); // Native stack restores the outer call after ')'.
-                window.ShowInsightWindow();
+                windowDocument = context.Document;
+                ui.ShowParameters(context.Document, context.OpenOffset, provider);
             }
             catch (OperationCanceledException) { }
             catch (Exception error) { Trace.TraceWarning("LSP signature: {0}", error); }
@@ -155,12 +141,17 @@ namespace VisualPascalABCPlugins
         }
         internal void CloseHints()
         {
-            Invalidate(); var old = window; window = null; windowDocument = null; old?.Close();
+            Invalidate(); windowDocument = null; ui.Hide(IntelliSenseHint.Parameters);
+        }
+        private void HintClosed(IntelliSenseHint hint)
+        {
+            if (hint == IntelliSenseHint.Parameters) { windowDocument = null; Invalidate(); }
         }
         public void Dispose()
         {
             if (disposed) return;
             SetActive(false); disposed = true;
+            ui.Closed -= HintClosed;
             events.DocumentOpened -= Opened; events.DocumentClosed -= Closed; events.DocumentRenamed -= Renamed;
         }
     }

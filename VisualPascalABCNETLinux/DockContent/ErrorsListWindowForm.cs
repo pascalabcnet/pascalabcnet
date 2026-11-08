@@ -44,6 +44,60 @@ namespace VisualPascalABC
             }
             if (sc >= 1.99)
                 this.lvErrorsList.SmallImageList = this.ilvlErrorList32;
+            if (Type.GetType("Mono.Runtime") != null && Environment.OSVersion.Platform == PlatformID.Unix)
+                AddErrorIconPadding();
+        }
+
+        private void AddErrorIconPadding()
+        {
+            ImageList original = lvErrorsList.SmallImageList;
+            const int padding = 3;
+            var padded = new ImageList(components) {
+                ColorDepth = ColorDepth.Depth32Bit,
+                ImageSize = new Size(original.ImageSize.Width + padding * 2,
+                    original.ImageSize.Height + padding * 2)
+            };
+            for (int i = 0; i < original.Images.Count; i++)
+            {
+                using (var bitmap = new Bitmap(padded.ImageSize.Width, padded.ImageSize.Height))
+                {
+                    using (Graphics graphics = Graphics.FromImage(bitmap))
+                    {
+                        graphics.Clear(Color.Transparent);
+                        graphics.DrawImageUnscaled(original.Images[i], padding, padding);
+                    }
+                    padded.Images.Add(original.Images.Keys[i], bitmap);
+                    // ImageList otherwise retains the bitmap until its lazy handle creation.
+                    _ = padded.Handle;
+                }
+            }
+            lvErrorsList.SmallImageList = padded;
+            columnHeader6.Width = Math.Max(columnHeader6.Width, padded.ImageSize.Width + 4);
+            // Mono's native ImageList painting clips the glyph. Keep its row
+            // metrics, but paint the first cell ourselves inside its real bounds.
+            lvErrorsList.OwnerDraw = true;
+            lvErrorsList.DrawColumnHeader += (sender, e) => e.DrawDefault = true;
+            lvErrorsList.DrawSubItem += DrawErrorCell;
+        }
+
+        private void DrawErrorCell(object sender, DrawListViewSubItemEventArgs e)
+        {
+            if (e.ColumnIndex != ErrorListPict)
+            {
+                e.DrawDefault = true;
+                return;
+            }
+            e.DrawBackground();
+            int index = e.Item.ImageIndex;
+            ImageList images = lvErrorsList.SmallImageList;
+            if (index < 0 || index >= images.Images.Count) return;
+            Image image = images.Images[index];
+            int width = Math.Min(image.Width, Math.Max(0, e.Bounds.Width - 2));
+            int height = Math.Min(image.Height, Math.Max(0, e.Bounds.Height - 2));
+            if (width == 0 || height == 0) return;
+            e.Graphics.DrawImage(image, new Rectangle(
+                e.Bounds.Left + (e.Bounds.Width - width) / 2,
+                e.Bounds.Top + (e.Bounds.Height - height) / 2, width, height));
         }
 
         private void ErrorsListWindowForm_VisibleChanged(object sender, EventArgs e)

@@ -1,4 +1,5 @@
-﻿using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Parsers;
+using PascalABCCompiler.Parsers;
 using SPythonParserYacc;
 
 namespace SPythonParser
@@ -7,7 +8,7 @@ namespace SPythonParser
     public class SPythonKeywords : BaseKeywords
     {
 
-        protected override string FileName => "keywordsmap.pys";
+        protected override string KeywordsMapFileName => "keywordsmap.pys";
 
         public SPythonKeywords() : base(true)
         {

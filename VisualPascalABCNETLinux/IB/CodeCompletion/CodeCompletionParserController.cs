@@ -39,9 +39,9 @@ namespace VisualPascalABC
             ccp = new CodeCompletionProvider();
         }
 
-        public PascalABCCompiler.Contracts.ICodeCompletionDomConverter GetConverter(string fileName)
+        public PascalABCCompiler.Contracts.CodeCompletion.ICodeCompletionDomConverter GetConverter(string fileName)
         {
-            return CodeCompletion.CodeCompletionController.comp_modules[fileName] as PascalABCCompiler.Contracts.ICodeCompletionDomConverter;
+            return CodeCompletion.CodeCompletionController.comp_modules[fileName] as PascalABCCompiler.Contracts.CodeCompletion.ICodeCompletionDomConverter;
         }
 
         public static string CurrentTwoLetterISO
@@ -73,6 +73,13 @@ namespace VisualPascalABC
                 if (filesToParse.ContainsKey(OldFileName))
                     filesToParse.Remove(OldFileName);
             }
+        }
+
+        public void ResumeForOpenDocuments(IEnumerable<string> fileNames)
+        {
+            foreach (string name in fileNames)
+                if (!string.IsNullOrEmpty(name)) RegisterFileForParsing(name);
+            foreach (string name in filesToParse.Keys.ToArray()) filesToParse[name] = true;
         }
 
         public void RegisterFileForParsing(string FileName)
@@ -146,6 +153,7 @@ namespace VisualPascalABC
 
         internal void ParseInThread()
         {
+            if (CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended) return;
             try
             {
                 HashSet<string> recomp_files = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -226,12 +234,14 @@ namespace VisualPascalABC
         /// </summary>
         private bool CompileWatchedFile(string fileName, string fileText, bool clearOldScope)
         {
+            if (CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended) return false;
             bool success = false;
 
             CodeCompletion.DomConverter tmp = CodeCompletion.CodeCompletionController.comp_modules[fileName] as CodeCompletion.DomConverter;
             long cur_mem = Environment.WorkingSet;
             CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
             CodeCompletion.DomConverter dc = controller.Compile(fileName, fileText);
+            if (CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended) return false;
             mem_delta += Environment.WorkingSet - cur_mem;
 
             if (dc.is_compiled)
@@ -307,7 +317,7 @@ namespace VisualPascalABC
 
         public void ParseAllFiles()
         {
-            if (visualEnvironmentCompiler.UserOptions.AllowCodeCompletion)// && visualEnvironmentCompiler.compilerLoaded)
+            if (!CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended && visualEnvironmentCompiler.UserOptions.AllowCodeCompletion)// && visualEnvironmentCompiler.compilerLoaded)
             {
                 if (th.ThreadState != System.Threading.ThreadState.Running)
                 {

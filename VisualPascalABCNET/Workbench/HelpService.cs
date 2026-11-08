@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using VisualPascalABCPlugins;
 using System.Threading;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.CodeCompletion;
 using System.Text;
 
 namespace VisualPascalABC

@@ -141,13 +141,27 @@ namespace VisualPascalABCPlugins
             cancellation = new CancellationTokenSource();
             _ = RequestAsync(pending, generation, cancellation.Token);
         }
-        private async Task RequestAsync(Net10HoverContext context, long ticket, CancellationToken token)
+        internal void NavigateAtCaret(ICodeFileDocument document, bool implementation)
+        {
+            Cancel();
+            if (!active || !enabled() || document?.TextEditor == null || document.FromMetadata) return;
+            var area = document.TextEditor.ActiveTextAreaControl.TextArea;
+            pending = Net10HoverContext.Capture(document, area.Caret.Position);
+            if (pending == null && area.Caret.Column > 0)
+                pending = Net10HoverContext.Capture(document, new TextLocation(area.Caret.Column - 1, area.Caret.Line));
+            if (pending == null) return;
+            caretOffset = area.Caret.Offset;
+            cancellation = new CancellationTokenSource();
+            _ = RequestAsync(pending, generation, cancellation.Token, implementation, false);
+        }
+        private async Task RequestAsync(Net10HoverContext context, long ticket, CancellationToken token, bool implementation = true, bool requireFocus = true)
         {
             var area = context.Document.TextEditor.ActiveTextAreaControl.TextArea;
             var targets = new List<Net10NavigationTarget>();
             try
             {
-                var response = await documents.NavigationAsync(context.Document, context.Position.Y, context.Position.X, token).ConfigureAwait(false);
+                var response = await (implementation ? documents.NavigationAsync(context.Document, context.Position.Y, context.Position.X, token) :
+                    documents.DefinitionAsync(context.Document, context.Position.Y, context.Position.X, token)).ConfigureAwait(false);
                 targets = Net10NavigationTarget.Read(response);
             }
             catch (OperationCanceledException) { }
@@ -164,7 +178,7 @@ namespace VisualPascalABCPlugins
                         try
                         {
                             if (!token.IsCancellationRequested && active && enabled() && context.IsCurrent &&
-                                area.Focused && area.Caret.Offset == caretOffset && targets.Count > 0) navigate(targets);
+                                ( !requireFocus || area.Focused) && area.Caret.Offset == caretOffset && targets.Count > 0) navigate(targets);
                         }
                         finally { if (ticket == generation) Cancel(); }
                     }));

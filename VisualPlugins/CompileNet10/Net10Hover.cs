@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using VisualPascalABC;
 
 namespace VisualPascalABCPlugins
 {
@@ -85,6 +84,7 @@ namespace VisualPascalABCPlugins
         }
 
         private readonly Form parent;
+        private readonly IExternalIntelliSenseSession ui;
         private readonly IWorkbenchDocumentEvents events;
         private readonly Net10LanguageDocuments documents;
         private readonly Func<bool> enabled;
@@ -94,8 +94,9 @@ namespace VisualPascalABCPlugins
         private long generation;
         private bool active, disposed, shown;
 
-        public Net10Hover(Form parent, IWorkbenchDocumentEvents events, Net10LanguageDocuments documents, Func<bool> enabled)
+        public Net10Hover(Form parent, IWorkbenchDocumentEvents events, Net10LanguageDocuments documents, Func<bool> enabled, IExternalIntelliSenseSession ui)
         {
+            this.ui = ui ?? throw new ArgumentNullException(nameof(ui));
             this.parent = parent; this.events = events; this.documents = documents; this.enabled = enabled;
             events.DocumentOpened += Opened; events.DocumentClosed += Closed; events.DocumentRenamed += Renamed;
             parent.Deactivate += Cancel;
@@ -193,7 +194,7 @@ namespace VisualPascalABCPlugins
                 if (!area.Visible || !ContainsMouse(value, mouse)) return;
                 string description = Net10HoverContext.Description(response);
                 if (string.IsNullOrWhiteSpace(description)) return;
-                TooltipServiceManager.ShowExternalHint(area, mouse, value.Position, description);
+                ui.ShowHover(value.Document, value.Position, mouse, description);
                 shown = true;
             }
             catch (OperationCanceledException) { }
@@ -206,7 +207,7 @@ namespace VisualPascalABCPlugins
             generation++; context = null;
             cancellation?.Cancel(); cancellation?.Dispose(); cancellation = null;
             // Do not hide another service's hint after returning to the legacy platform.
-            if (shown) { shown = false; TooltipServiceManager.hideToolTip(); }
+            if (shown) { shown = false; ui.Hide(IntelliSenseHint.Hover); }
         }
 
         public void Dispose()

@@ -15,11 +15,10 @@ namespace VisualPascalABC
     public partial class ErrorsListWindowForm : BottomDockContentForm, VisualPascalABCPlugins.IErrorListWindow
     {
         private int ErrorListPict = 0;
-        private int ErrorListNumCol = 1;
-        private int ErrorListLineCol = 2;
-        private int ErrorListDescrCol = 3;
-        private int ErrorListFileCol = 4;
-        private int ErrorListPathCol = 5;
+        private int ErrorListLineCol = 1;
+        private int ErrorListDescrCol = 2;
+        private int ErrorListFileCol = 3;
+        private int ErrorListPathCol = 4;
 
         public ErrorsListWindowForm(Form1 MainForm)
             : base(MainForm)
@@ -31,7 +30,6 @@ namespace VisualPascalABC
             if (sc != 1.0)
             {
                 columnHeader6.Width = Convert.ToInt32(columnHeader6.Width * sc);
-                columnHeader7.Width = Convert.ToInt32(columnHeader7.Width * sc);
                 columnHeader8.Width = Convert.ToInt32(columnHeader8.Width * sc);
                 columnHeader9.Width = Convert.ToInt32(columnHeader9.Width * sc);
                 columnHeader10.Width = Convert.ToInt32(columnHeader10.Width * 0.9 * sc);
@@ -56,7 +54,6 @@ namespace VisualPascalABC
         {
             lvErrorsList.Columns[ErrorListDescrCol].Width = lvErrorsList.ClientSize.Width -
     (lvErrorsList.Columns[ErrorListPict].Width +
-    lvErrorsList.Columns[ErrorListNumCol].Width +
     lvErrorsList.Columns[ErrorListLineCol].Width +
     lvErrorsList.Columns[ErrorListFileCol].Width +
     lvErrorsList.Columns[ErrorListPathCol].Width + 1);
@@ -97,12 +94,10 @@ namespace VisualPascalABC
                         lvErrorsList.Items[i].ImageIndex = 2;
                     else
                         lvErrorsList.Items[i].ImageIndex = 1;
-                lvErrorsList.Items[i].SubItems.Add("");//num
                 lvErrorsList.Items[i].SubItems.Add("");//linenum
                 lvErrorsList.Items[i].SubItems.Add("");//descr
                 lvErrorsList.Items[i].SubItems.Add("");//file
                 lvErrorsList.Items[i].SubItems.Add("");//patch
-                lvErrorsList.Items[i].SubItems[ErrorListNumCol].Text = (i + 1).ToString();
                 if (Err is PascalABCCompiler.Errors.LocatedError)
                 {
                     er = Err as PascalABCCompiler.Errors.LocatedError;

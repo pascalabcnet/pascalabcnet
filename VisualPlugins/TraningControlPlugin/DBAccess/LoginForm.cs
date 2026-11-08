@@ -22,6 +22,9 @@ namespace VisualPascalABCPlugins.DBAccess
         {
             this.Plugin = Plugin;
             InitializeComponent();
+#if PABC_LINUX_PLUGIN
+            InitializeLinuxRating();
+#endif
         }
 
         public bool TryCreateAuthFile(string filename, string login, string pass)

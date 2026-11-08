@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Parsers;
 using Languages.Pascal.Frontend.Core;
+using PascalABCCompiler.Contracts.Languages;
 
 namespace Languages.Pascal.Frontend.Wrapping
 {
@@ -71,6 +72,8 @@ namespace Languages.Pascal.Frontend.Wrapping
     /// </summary>
     public class PascalABCNewLanguageParser : BaseParser
     {
+        public PascalABCNewLanguageParser(ILanguageInformation languageInformation) : base(languageInformation) { }
+
 
         private syntax_tree_node Parse(string Text, string fileName, bool buildTreeForFormatter = false, List<string> definesList = null,
             bool checkPackagePosition = false)
@@ -84,11 +87,11 @@ namespace Languages.Pascal.Frontend.Wrapping
 #endif
 #endif
 
-            PascalParserTools parserTools = new PascalParserTools(Errors, Warnings, LanguageInformation.ValidDirectives, 
+            PascalParserTools parserTools = new PascalParserTools(Errors, Warnings, languageInformation.ValidDirectives, 
                 buildTreeForFormatter, false,
                 Path.GetFullPath(fileName), CompilerDirectives); // контекст сканера и парсера
 
-            Scanner scanner = new Scanner(Text, parserTools, LanguageInformation.KeywordsStorage, definesList);
+            Scanner scanner = new Scanner(Text, parserTools, languageInformation.KeywordsStorage, definesList);
 
             QUT.Gppg.AbstractScanner<PascalABCCompiler.ParserTools.Union, QUT.Gppg.LexLocation> parsingScanner = scanner;
 #if PABCNET_MODERN

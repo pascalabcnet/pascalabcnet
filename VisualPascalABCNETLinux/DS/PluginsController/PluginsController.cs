@@ -45,15 +45,47 @@ namespace VisualPascalABCPlugins
         public PluginsController(IVisualEnvironmentCompiler VisualEnvironmentCompiler,System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem, System.Windows.Forms.ToolStrip ToolStrip, IWorkbench workbench)
         {
             this.ToolStripMenuItem = ToolStripMenuItem;
+            if (ToolStripMenuItem != null)
+                ToolStripMenuItem.DropDownOpening += (sender, e) => ApplyMenuFont(ToolStripMenuItem,
+                    ToolStripMenuItem.Owner?.Font ?? ToolStripMenuItem.Font);
             this.ToolStrip = ToolStrip;
             this.VisualEnvironmentCompiler = VisualEnvironmentCompiler;
             this.workbench = workbench;
         }
 
+        private static void ApplyMenuFont(System.Windows.Forms.ToolStripDropDownItem menu, System.Drawing.Font font)
+        {
+            menu.Font = font;
+            menu.DropDown.Font = font;
+            foreach (System.Windows.Forms.ToolStripItem item in menu.DropDownItems)
+            {
+                item.Font = font;
+                if (item is System.Windows.Forms.ToolStripDropDownItem child && child.HasDropDownItems)
+                    ApplyMenuFont(child, font);
+            }
+        }
+
         bool AddMenuSeparator = false;
         bool AddToolBarSeparator = false;
-        delegate void AddInGuiDelegate(IVisualPascalABCPlugin Plugin);
         private void AddInGUI(IVisualPascalABCPlugin Plugin)
+        {
+            // A plugin may resize and then hide its prototype buttons in AfterAddInGUI.
+            // Keep the autosized toolbar and docked document area at their final geometry.
+            var form = workbench?.MainForm;
+            var panel = ToolStrip?.Parent;
+            form?.SuspendLayout();
+            panel?.SuspendLayout();
+            ToolStrip?.SuspendLayout();
+            try { AddInGUICore(Plugin); }
+            finally
+            {
+                ToolStrip?.ResumeLayout(true);
+                panel?.ResumeLayout(true);
+                form?.ResumeLayout(true);
+            }
+        }
+
+        private void AddInGUICore(IVisualPascalABCPlugin Plugin)
         {
             if (ToolStripMenuItem == null) return;
             List<IPluginGUIItem> MenuItems=new List<IPluginGUIItem>(),ToolBarItems=new List<IPluginGUIItem>();
@@ -121,6 +153,9 @@ namespace VisualPascalABCPlugins
             //ToolStrip.Refresh();
             if (ToolStripMenuItem.Visible == false) 
                 ToolStripMenuItem.Visible = true;
+            var extended = Plugin as IExtendedVisualPascalABCPlugin;
+            if (extended != null)
+                extended.AfterAddInGUI();
         }
         void button_Click(object sender, EventArgs e)
         {
@@ -172,14 +207,21 @@ namespace VisualPascalABCPlugins
 
                         foreach (Type type in types)
                         {
-                            if (type.Name.IndexOf("VisualPascalABCPlugin") >= 0 && type.IsClass)
+                            if (type.Name.IndexOf("VisualPascalABCPlugin") >= 0 && type.IsClass &&
+                                !type.IsAbstract && !type.ContainsGenericParameters &&
+                                typeof(IVisualPascalABCPlugin).IsAssignableFrom(type))
                             {
-                                Object obj = Activator.CreateInstance(type, workbench);
-                                if (obj is VisualPascalABCPlugins.IVisualPascalABCPlugin)
+                                try
                                 {
-                                    Plugin = obj as VisualPascalABCPlugins.IVisualPascalABCPlugin;
+                                    Plugin = (IVisualPascalABCPlugin)Activator.CreateInstance(type, workbench);
+                                    // Startup invokes the loader on the UI thread. Keep GUI
+                                    // registration here so failures are reported with the DLL.
+                                    AddInGUI(Plugin);
                                     Plugins.Add(Plugin);
-                                    VisualEnvironmentCompiler.BeginInvoke(new AddInGuiDelegate(AddInGUI), Plugin);
+                                }
+                                catch (Exception e)
+                                {
+                                    ErrorList.Add(new PluginLoadingError(fi.FullName, e));
                                 }
                             }
                         }

@@ -12,6 +12,9 @@
     
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(PluginPlatform)' == 'Linux'">
+    <DefineConstants>$(DefineConstants);PABC_LINUX_PLUGIN</DefineConstants>
+  </PropertyGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\..\CompilerTools\CompilerTools.csproj"/>

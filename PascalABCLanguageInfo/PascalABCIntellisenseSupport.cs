@@ -1,16 +1,20 @@
 ﻿using PascalABCCompiler;
 using PascalABCCompiler.Parsers;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.CodeCompletion;
+using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using PascalABCCompiler.Contracts.Languages;
 
 namespace Languages.Pascal.Frontend.Data
 {
     internal class PascalABCIntellisenseSupport : BaseLanguageIntellisenseSupport
     {
+
+        public PascalABCIntellisenseSupport(ILanguageInformation languageInformation) : base(languageInformation) { } 
 
         protected IParser Parser
         {
@@ -909,8 +913,111 @@ namespace Languages.Pascal.Frontend.Data
             TestForKeyword(text, offset, ref bound, punctuation, out keyword);
         }
 
+        // Return true inside a multiline literal, with an expression range only
+        // inside an unescaped interpolation on the current line.
+        private static bool GetMultilineStringContext(string text, int offset, out int start, out int end)
+        {
+            start = end = -1;
+            if (offset < 3 || text.IndexOf("'''", 0, offset, StringComparison.Ordinal) < 0)
+                return false;
+
+            for (int i = 0; i < offset;)
+            {
+                char ch = text[i++];
+                string commentEnd = null;
+                if (ch == '{')
+                    commentEnd = "}";
+                else if (ch == '(' && i < text.Length && text[i] == '*')
+                {
+                    i++;
+                    commentEnd = "*)";
+                }
+                else if (ch == '/' && i < text.Length && text[i] == '/')
+                    commentEnd = "\n";
+
+                if (commentEnd != null)
+                {
+                    int closeComment = text.IndexOf(commentEnd, i, StringComparison.Ordinal);
+                    if (closeComment < 0)
+                        return false;
+                    i = closeComment + commentEnd.Length;
+                    continue;
+                }
+
+                if (ch != '\'')
+                    continue;
+
+                int quote = i - 1;
+                if (i + 1 < text.Length && text[i] == '\'' && text[i + 1] == '\'')
+                {
+                    int body = i + 2;
+                    while (body < text.Length && text[body] == ' ')
+                        body++;
+                    if (body < text.Length && text[body] == '\r')
+                        body++;
+                    if (body < text.Length && text[body] == '\n')
+                    {
+                        body++;
+                        int close = text.IndexOf("'''", body, StringComparison.Ordinal);
+                        if (close < 0)
+                            close = text.Length;
+                        if (offset >= close + 3)
+                        {
+                            i = close + 3;
+                            continue;
+                        }
+
+                        if (offset < body || offset > close || quote == 0 || text[quote - 1] != '$')
+                            return true;
+
+                        int lineStart = text.LastIndexOf('\n', offset - 1) + 1;
+                        for (int j = lineStart; j < offset; j++)
+                        {
+                            if (text[j] != '{')
+                                continue;
+                            if (j + 1 < close && text[j + 1] == '{')
+                            {
+                                j++;
+                                continue;
+                            }
+                            int expressionEnd = j + 1;
+                            while (expressionEnd < close && text[expressionEnd] != '}' &&
+                                   text[expressionEnd] != '\r' && text[expressionEnd] != '\n')
+                                expressionEnd++;
+                            if (offset <= expressionEnd)
+                            {
+                                start = j + 1;
+                                end = expressionEnd;
+                                return true;
+                            }
+                            j = expressionEnd;
+                        }
+                        return true;
+                    }
+                }
+
+                // Skip an ordinary string, including doubled apostrophes.
+                while (i < offset && text[i] != '\r' && text[i] != '\n')
+                {
+                    if (text[i++] != '\'')
+                        continue;
+                    if (i >= offset || text[i] != '\'')
+                        break;
+                    i++;
+                }
+            }
+            return false;
+        }
+
         public override string FindExpression(int off, string Text, int line, int col, out KeywordKind keyw)
         {
+            if (GetMultilineStringContext(Text, off, out int start, out int expressionEnd))
+            {
+                if (start >= 0)
+                    return FindExpression(off - start, Text.Substring(start, expressionEnd - start), line, col, out keyw);
+                keyw = KeywordKind.Punkt;
+                return "";
+            }
             int i = off - 1;
             int bound = 0;
             bool punkt_sym = false;
@@ -1247,18 +1354,27 @@ namespace Languages.Pascal.Frontend.Data
 
         public override string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets)
         {
+            if (GetMultilineStringContext(Text, off, out int start, out int end))
+            {
+                if (start >= 0 && start < end)
+                    return FindExpressionFromAnyPosition(off - start, Text.Substring(start, end - start),
+                        line, col, out keyw, out expr_without_brackets);
+                keyw = KeywordKind.Punkt;
+                expr_without_brackets = null;
+                return null;
+            }
             int i = off - 1;
 
             // это например вызов метода без параметров
             expr_without_brackets = null;
             keyw = KeywordKind.None;
-            if (i < 0)
+            if (off < 0)
                 return "";
             bool is_char = false;
 
             // идем в обе стороны от off
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            if (Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i + 1) || Text[i] == '!'))
+            if (i >= 0 && Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i + 1) || Text[i] == '!'))
             {
                 //sb.Remove(0,sb.Length);
                 while (i >= 0 && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i + 1) || Text[i] == '!'))
@@ -1430,6 +1546,10 @@ namespace Languages.Pascal.Frontend.Data
 
         public override KeywordKind TestForKeyword(string Text, int i)
         {
+            if (GetMultilineStringContext(Text, i + 1, out int start, out int end))
+                return start < 0 ? KeywordKind.Punkt :
+                    TestForKeyword(Text.Substring(start, end - start), i - start);
+
             StringBuilder sb = new StringBuilder();
             int orig_i = i;
             int j = i;
@@ -1531,6 +1651,10 @@ namespace Languages.Pascal.Frontend.Data
 
         public override string FindExpressionForMethod(int off, string Text, int line, int col, char pressed_key, ref int num_param)
         {
+            if (GetMultilineStringContext(Text, off, out int start, out int expressionEnd))
+                return start < 0 ? "" : FindExpressionForMethod(off - start, Text.Substring(start, expressionEnd - start),
+                    line, col, pressed_key, ref num_param);
+
             int i = off - 1;
             string pattern = null;
             int bound = 0;

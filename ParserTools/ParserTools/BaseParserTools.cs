@@ -7,8 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using QUT.Gppg;
-using PascalABCCompiler.Contracts;
-using PascalABCCompiler.ParserTools.Directives;
+using PascalABCCompiler.Contracts.Parsers;
 using System.Text;
 
 namespace PascalABCCompiler.ParserTools
@@ -40,10 +39,10 @@ namespace PascalABCCompiler.ParserTools
 
         public abstract Dictionary<string, string> TokenNum { get; protected set; } // строки, соответствующие терминалам, для вывода ошибок - SSM
 
-        public Dictionary<string, IDirectiveInfo> ValidDirectives { get; private set; }
+        public IReadOnlyDictionary<string, IDirectiveInfo> ValidDirectives { get; private set; }
 
         protected BaseParserTools(List<Error> errors, List<CompilerWarning> warnings,
-            Dictionary<string, IDirectiveInfo> validDirectives, bool buildTreeForFormatter, bool buildTreeForFormatterStrings,
+            IReadOnlyDictionary<string, IDirectiveInfo> validDirectives, bool buildTreeForFormatter, bool buildTreeForFormatterStrings,
             string currentFileName, List<compiler_directive> compilerDirectives)
         {
             this.errors = errors;
@@ -492,23 +491,29 @@ namespace PascalABCCompiler.ParserTools
 
         public literal create_multiline_string_const(string text, SourceContext sc)
         {
-            if (buildTreeForFormatter)
-            {
-                literal lt1 = new string_const(text);
-                lt1.source_context = sc;
-                return lt1;
-            }
+            return new string_const(buildTreeForFormatter ? text : NormalizeMultilineString(text, sc, out _), sc);
+        }
 
+        public literal create_multiline_format_string_const(string text, SourceContext sc)
+        {
+            // The parser needs the original text to map expression positions.
+            // The formatter already emits the $ prefix from the source context.
+            return new string_const(text.Substring(1), sc) { IsMultiline = true, IsInterpolated = true };
+        }
+
+        public string NormalizeMultilineString(string text, SourceContext sc, out int numspaces)
+        {
+            numspaces = 0;
             var NewLine = System.Environment.NewLine;
             // Многострочная строка должна содержать как минимум два перехода на новую строку
             // разобьём её по символам перехода на новую строку
             //var ss = text.Split('\n');
             text = text.Substring(3, text.Length - 6);
-            var ss = Regex.Split(text, System.Environment.NewLine);
+            var ss = Regex.Split(text, @"\r?\n");
             // Если одна строка, то ошибка - MULTILINE_STRING_SHOULD_BE_PLACED_ON_SEVERAL_LINES
             if (ss.Length == 1)
                 //this.AddErrorFromResource("MULTILINE_STRING_SHOULD_BE_PLACED_ON_SEVERAL_LINES", sc);
-                return create_string_const(text, sc);
+                return text;
 
             // Проверим первую строку
             ss[0] = ss[0].Trim();
@@ -522,7 +527,7 @@ namespace PascalABCCompiler.ParserTools
                 this.AddErrorFromResource("NON_WHITESPACE_CHARACTERS_BEFORE_CLOSING_QUOTES_OF_MULTILINE_STRING", sc);
 
             // Количество лидирующих пробелов в последней строке
-            var numspaces = ss[ss.Length - 1].TakeWhile(Char.IsWhiteSpace).Count();
+            numspaces = ss[ss.Length - 1].TakeWhile(Char.IsWhiteSpace).Count();
             // Во всех строках от первой до предпоследней (если они есть) количество лидирующих пробелов должно быть не меньше чем в последней
             // мультистрочная строка содержит несовместимые отступы
             // MULTILINE_STRING_CONTAINS_INCONSISTENT_INDENTS
@@ -530,7 +535,7 @@ namespace PascalABCCompiler.ParserTools
                 if (ss[i].TakeWhile(Char.IsWhiteSpace).Count() < numspaces)
                 {
                     this.AddErrorFromResource("MULTILINE_STRING_CONTAINS_INCONSISTENT_INDENTS", sc);
-                    break;
+                    return text;
                 }
             // Теперь удалить ровно такое количество пробелов в каждой строке с 1 по предпоследнюю
             for (var i = 1; i < ss.Length - 1; i++)
@@ -539,10 +544,7 @@ namespace PascalABCCompiler.ParserTools
             var ll = ss.ToList();
             ll.RemoveAt(0);
             ll.RemoveAt(ll.Count - 1);
-            text = string.Join(NewLine, ll.ToArray());
-            literal lt = new string_const(text);
-            lt.source_context = sc;
-            return lt;
+            return string.Join(NewLine, ll.ToArray());
         }
 
         public literal create_format_string_const(string text, SourceContext sc)

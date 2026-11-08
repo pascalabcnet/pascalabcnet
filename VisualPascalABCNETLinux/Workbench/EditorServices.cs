@@ -232,7 +232,15 @@ namespace VisualPascalABC
 
         private void AddEditorHandlers(CodeFileDocumentControl tp)
         {
+            UpdateEditorToolTipFont(tp.TextEditor, EventArgs.Empty);
+            tp.TextEditor.FontChanged += UpdateEditorToolTipFont;
             tp.TextEditor.AddToolTipRequestHandler(TooltipServiceManager.ToolTipService_TextAreaToolTipRequest);
+            if (HoverTrace.Enabled)
+            {
+                tp.TextEditor.ActiveTextAreaControl.TextArea.MouseHover += HoverTrace.MouseHover;
+                HoverTrace.Observe(tp.TextEditor.ActiveTextAreaControl.TextArea, "editor");
+                HoverTrace.Write("handlers-attached file=" + tp.TextEditor.FileName);
+            }
             tp.TextEditor.AddMouseMoveHandler(TooltipServiceManager.ToolTipService_TextAreaMouseMove);
             tp.TextEditor.AddKeyDownHandler(TooltipServiceManager.ToolTipService_TextAreaKeyDown);
             tp.TextEditor.AddMouseWheelHandler(TooltipServiceManager.ToolTipService_TextAreaMouseEvent_HideToolTip);
@@ -242,9 +250,18 @@ namespace VisualPascalABC
             //tp.TextEditor.AddMouseDownHandler(DefinitionByMouseClickManager.DefinitionByMouseClickManager_TextAreaMouseDown);
         }
 
+        private static void UpdateEditorToolTipFont(object sender, EventArgs e)
+        {
+            var editor = (ICSharpCode.TextEditor.TextEditorControl)sender;
+            editor.ActiveTextAreaControl.TextArea.ToolTipFont = Constants.GetCompletionFont(editor.Font);
+        }
+
         private void RemoveEditorHandlers(CodeFileDocumentControl tp)
         {
+            tp.TextEditor.FontChanged -= UpdateEditorToolTipFont;
             tp.TextEditor.RemoveToolTipRequestHandler(TooltipServiceManager.ToolTipService_TextAreaToolTipRequest);
+            if (HoverTrace.Enabled)
+                tp.TextEditor.ActiveTextAreaControl.TextArea.MouseHover -= HoverTrace.MouseHover;
             tp.TextEditor.RemoveMouseMoveHandler(TooltipServiceManager.ToolTipService_TextAreaMouseMove);
             tp.TextEditor.RemoveKeyDownHandler(TooltipServiceManager.ToolTipService_TextAreaKeyDown);
             tp.TextEditor.RemoveMouseWheelHandler(TooltipServiceManager.ToolTipService_TextAreaMouseEvent_HideToolTip);

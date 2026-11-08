@@ -13,6 +13,11 @@ namespace VisualPascalABCPlugins
 
         public void Handle(Net10CompilerEvent value, Action<string> message, Action<string> status)
         {
+            if (value.@event == "compilerMessage")
+            {
+                message("[.NET 10] " + value.message);
+                return;
+            }
             if (value.state == "NuGetRestoreProgress" || value.state == "NuGetRestoreStarting")
             {
                 // The status strip owns delayed progress and cancellation. Starting

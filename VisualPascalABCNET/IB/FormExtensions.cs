@@ -464,6 +464,12 @@ namespace VisualPascalABC
 
         void tsIntellisense_DropDownOpened(object sender, EventArgs e)
         {
+            if (CurrentCodeFileDocument != null && ExternalIntelliSenseSession.CanNavigate(CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea))
+            {
+                DisableIntellisenseDropDownOptions();
+                tsGotoDefinition.Enabled = tsGotoRealization.Enabled = true;
+                return;
+            }
             if (UserOptions.AllowCodeCompletion && CodeCompletion.CodeCompletionController.IntellisenseAvailable())
             {
                 //GotoAction ga = new GotoAction();
@@ -482,6 +488,12 @@ namespace VisualPascalABC
 
         private void OpeningContextMenu(object sender, CancelEventArgs args)
         {
+            if (CurrentCodeFileDocument != null && ExternalIntelliSenseSession.CanNavigate(CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea))
+            {
+                DisableIntellisenseContextMenuOptions();
+                cmGotoDefinition.Enabled = cmGotoRealization.Enabled = true;
+                return;
+            }
             if (CodeCompletion.CodeCompletionController.IntellisenseAvailable())
             {
                 // GotoAction ga = new GotoAction();

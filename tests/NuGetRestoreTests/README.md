@@ -2,6 +2,28 @@
 
 Интеграционный тест NuGet-моста и его использования modern IntelliSense.
 
+Проверка отдельных сообщений компилятора через настоящий Worker и Controller
+с локальным feed (без внешней сети):
+
+```bat
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\build-net10-runtime.ps1 -Configuration Release
+dotnet run --project tests\NuGetRestoreTests\NuGetRestoreTests.csproj -c Release -p:PABCNET_LEGACY_ONLY=false -- --message-protocol
+```
+
+Тест проверяет, что совместимые, но разные ограничения транзитивной зависимости
+передаются как `compilerMessage` с полем `message`, без перегрузки `fileName`
+и без увеличения счётчика предупреждений; консольный компилятор также выводит
+это обычное сообщение. Тест запускает отдельный Worker только для изоляции;
+поведение IDE не меняется.
+
+Отдельный тест Windows-цели и трёх директив `{$target windows}`,
+`{$platform winforms}`, `{$package ...}` использует только локальный feed:
+
+```bat
+dotnet build pabcnetc_clear\PABCNETCclear.csproj -f net10.0 -c Release -p:PABCNET_LEGACY_ONLY=false
+dotnet run --project tests\NuGetRestoreTests\NuGetRestoreTests.csproj -c Release -p:PABCNET_LEGACY_ONLY=false -- --target-windows
+```
+
 Прогресс и отмена входят в обычный набор; отдельно:
 
 ```bat

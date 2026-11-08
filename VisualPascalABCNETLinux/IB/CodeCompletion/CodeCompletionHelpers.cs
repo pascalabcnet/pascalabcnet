@@ -3,12 +3,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
-using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.TextEditor.Document;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Parsers;
+using PascalABCCompiler.Contracts.CodeCompletion;
 
 namespace VisualPascalABC
 {
@@ -75,6 +72,19 @@ namespace VisualPascalABC
     		dict.Clear();
             dict2.Clear();
     	}
+
+        internal Action<SymInfo> TakeUpdate()
+        {
+            var symbols = new Dictionary<SymInfo, ICompletionData>(dict);
+            var descriptions = new Dictionary<string, ICompletionData>(dict2);
+            Reset();
+            return si => {
+                ICompletionData item;
+                if (symbols.TryGetValue(si, out item) || (si.description != null &&
+                    descriptions.TryGetValue(si.description.Split('\n')[0], out item)))
+                    item.Description = si.description;
+            };
+        }
 
         public void Add(SymInfo si, ICompletionData data)
     	{

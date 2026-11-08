@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../ICSharpCode.TextEditor/ICSharpCode.TextEditor.csproj" Condition="'$(EditorAssemblyPath)' == ''" />
+    <Reference Include="EditorUnderTest" Condition="'$(EditorAssemblyPath)' != ''"><HintPath>$(EditorAssemblyPath)</HintPath></Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+</Project>

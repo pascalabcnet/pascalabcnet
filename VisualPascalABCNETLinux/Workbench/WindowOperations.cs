@@ -231,7 +231,7 @@ namespace VisualPascalABC
             Process.Start(url);
         }
 
-        private CodeFileDocumentControl AddNewProgramToTab(DockPanel tabControl, string FileName)
+        private CodeFileDocumentControl AddNewProgramToTab(DockPanel tabControl, string FileName, bool notifyOpened = true)
         {
             CodeFileDocumentControl edit = AddNewTab(tabControl);
 
@@ -255,6 +255,7 @@ namespace VisualPascalABC
             //HostCallbackImplementation.Register(this);
 
             //\ivan
+            if (notifyOpened) NotifyDocumentOpened(edit);
             return edit;
         }
 
@@ -432,7 +433,7 @@ namespace VisualPascalABC
                 if (!debug)
                 {
                     SetCompilingAndRunButtonsEnabled(!run && VisualEnvironmentCompiler.compilerLoaded);
-                    SetDebugButtonsEnabled(intellisenseAvailable && !run && VisualEnvironmentCompiler.compilerLoaded);
+                    SetDebugButtonsEnabled(!WorkbenchServiceFactory.ModernCompilationSelected && intellisenseAvailable && !run && VisualEnvironmentCompiler.compilerLoaded);
                 }
                 else
                 {
@@ -472,6 +473,7 @@ namespace VisualPascalABC
             WorkbenchServiceFactory.CodeCompletionParserController.RegisterFileForParsing(tabName + ".pas");
             //edit.file_name = file_name;
             //SetTabPageText(edit);
+            NotifyDocumentOpened(edit);
         }
 
         public ICodeFileDocument GetTabPageForMainFile()
@@ -497,8 +499,8 @@ namespace VisualPascalABC
                         tp.Text += string.Format(" [{0}]", PascalABCCompiler.StringResources.Get("VP_MF_MR_DEBUG"));
             }
             if (tp == ActiveCodeFileDocument && !tp.FromMetadata)
-                // U+00B7 is supported by the basic Mono fonts, unlike U+25CF.
-                tp.Text = '\u00B7' + tp.Text;
+                // The Linux tab renderer draws this prefix as a circle with a gap.
+                tp.Text = "\u00B7 " + tp.Text;
         }
 
         void AddTextToOutputWindow(string ExeFileName, string Text)
@@ -541,8 +543,7 @@ namespace VisualPascalABC
 
         private void AppendTextInternalAsync(TextBoxBase textBox, string Text)
         {
-            //MessageBox.Show(string.Join(" ", Text.Select(c => ((int)c).ToString())));
-            textBox.AppendText(Text);
+            ColoredOutput.Append(textBox, Text);
         }
 
         delegate void InternalWriteToOutputBoxDel(string exc);

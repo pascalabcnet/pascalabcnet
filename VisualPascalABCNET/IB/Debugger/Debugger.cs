@@ -1238,7 +1238,7 @@ namespace VisualPascalABC
             if (is_dot)
             {
                 sb.Insert(0, '.');
-                var keyw = PascalABCCompiler.Contracts.KeywordKind.None;
+                var keyw = PascalABCCompiler.Contracts.Parsers.KeywordKind.None;
                 string s = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.
                     FindExpression(i, text, 0, 0, out keyw);
                 if (s != null)

@@ -150,6 +150,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			}
 		}
 		
+		private readonly VisualPascalABC.CodeCompletionImagesProvider externalImages;
 		private ICompletionData[] SortByGroup(ICompletionData[] compData)
 		{
 			UserDefaultCompletionData ddd = null;
@@ -164,32 +165,32 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			List<ICompletionData> res = new List<ICompletionData>();
 			foreach (ICompletionData data in compData)
 			{
-				if (data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberLocal) vars.Add(data);
-				else if (data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberConstant) consts.Add(data);
-                else if (data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberMethod ||
-                         data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberInternalMethod ||
-                         data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberPrivateMethod ||
-                         data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberProtectedMethod)
+				if (data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberLocal) vars.Add(data);
+				else if (data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberConstant) consts.Add(data);
+                else if (data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberMethod ||
+                         data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberInternalMethod ||
+                         data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberPrivateMethod ||
+                         data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberProtectedMethod)
                 {
                     if (!data.Description.Contains("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION") + ")"))
                         meths.Add(data);
                     else
                         extension_meths.Add(data);
                 }
-                else if (data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberProperty ||
-                         data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberInternalProperty ||
-                         data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberPrivateProperty ||
-                         data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberProtectedProperty)
+                else if (data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberProperty ||
+                         data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberInternalProperty ||
+                         data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberPrivateProperty ||
+                         data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberProtectedProperty)
                     props.Add(data);
-                else if (data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberField ||
-                         data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberInternalField ||
-                         data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberPrivateField ||
-                         data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberProtectedField)
+                else if (data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberField ||
+                         data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberInternalField ||
+                         data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberPrivateField ||
+                         data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberProtectedField)
                     fields.Add(data);
-                else if (data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberEvent ||
-                         data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberInternalEvent ||
-                         data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberPrivateEvent ||
-                         data.ImageIndex == VisualPascalABC.CodeCompletionProvider.ImagesProvider.IconNumberProtectedEvent)
+                else if (data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberEvent ||
+                         data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberInternalEvent ||
+                         data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberPrivateEvent ||
+                         data.ImageIndex == (externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider).IconNumberProtectedEvent)
                     events.Add(data);
 
                 else
@@ -217,8 +218,16 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		}
 		
 		public PABCNETCodeCompletionListView(ICompletionData[] completionData, bool is_by_dot)
+            : this(completionData, is_by_dot, null, false) { }
+
+        public PABCNETCodeCompletionListView(ICompletionData[] completionData, bool is_by_dot,
+            VisualPascalABC.CodeCompletionImagesProvider images, bool preserveOrder)
 		{
-			if (VisualPascalABC.VisualPABCSingleton.MainForm.UserOptions.ShowCompletionInfoByGroup && is_by_dot)
+            externalImages = images;
+			TabStop = false;
+			SetStyle(ControlStyles.Selectable, false);
+			if (preserveOrder) { }
+            else if (VisualPascalABC.VisualPABCSingleton.MainForm.UserOptions.ShowCompletionInfoByGroup && is_by_dot)
 				completionData = SortByGroup(completionData);
 			else
 				Array.Sort(completionData);
@@ -298,16 +307,17 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		public void CalcWidth()
 		{
-			int len = Width;
-			Graphics g = Graphics.FromHwnd(this.Handle);
-			for (int i=0; i<this.completionData.Length; i++)
-			{
-				SizeF sz = g.MeasureString(completionData[i].Text,this.Font);
-				if (len < sz.ToSize().Width+16)
-					len = sz.ToSize().Width+16;
-			}
-			//Width = len;
-			this.Parent.Width = len+6;
+            this.Parent.Width = MeasureContentWidth();
+        }
+
+        internal int MeasureContentWidth()
+        {
+            int textWidth = 0;
+            using (Graphics graphics = CreateGraphics())
+                foreach (var item in completionData)
+                    textWidth = Math.Max(textWidth, (int)Math.Ceiling(graphics.MeasureString(item.Text, Font).Width));
+            int imageWidth = ItemHeight * imageList.ImageSize.Width / imageList.ImageSize.Height;
+            return textWidth + imageWidth + 6;
 		}
 		
 		public void ClearSelection()
@@ -456,6 +466,15 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			g.DrawRectangle(SystemPens.Control, new Rectangle(0, 0, Width - 1, Height - 1));
 		}
 		
+		protected override void WndProc(ref Message message)
+		{
+			if (message.Msg == 0x0021) {
+				message.Result = new IntPtr(3);
+				return;
+			}
+			base.WndProc(ref message);
+		}
+
 		protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
 		{
 			float yPos       = 1;

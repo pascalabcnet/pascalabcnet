@@ -4,6 +4,7 @@ using System.Linq;
 using CodeCompletion;
 using Languages.Pascal;
 using PascalABCCompiler;
+using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler.Errors;
 using PascalABCCompiler.Parsers;
 
@@ -103,7 +104,7 @@ internal static class Program
                 int offset = source.IndexOf(marker, StringComparison.Ordinal) + 2;
                 int line = source.Substring(0, offset).Count(ch => ch == '\n');
                 int column = offset - source.LastIndexOf('\n', offset - 1) - 1;
-                PascalABCCompiler.Parsers.KeywordKind keyword;
+                KeywordKind keyword;
                 string shortExpression;
                 string expression = language.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(
                     offset, source, line, column, out keyword, out shortExpression);
@@ -117,7 +118,7 @@ internal static class Program
                 Check(hover != null && hover.Contains(expected),
                     ending + ", period=" + period + ": type/constructor documentation: " + marker);
                 if (marker.StartsWith("Create(rangeMin"))
-                    Check(keyword == PascalABCCompiler.Parsers.KeywordKind.Constructor &&
+                    Check(keyword == KeywordKind.Constructor &&
                           hover.Contains("rangeMin") && hover.Contains("rangeMax"),
                         "constructor header hover selects the declared constructor, not a synthetic default");
                 if (marker.StartsWith("Create(count"))
@@ -130,7 +131,7 @@ internal static class Program
         {
             string text = prefix + ending + "  Member";
             string shortExpression;
-            PascalABCCompiler.Parsers.KeywordKind keyword;
+            KeywordKind keyword;
             string expression = language.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(
                 text.Length - 2, text, 1, 4, out keyword, out shortExpression);
             Check(expression != null && expression.Replace("\r", "").Replace("\n", "").Replace(" ", "") == "value.Member",

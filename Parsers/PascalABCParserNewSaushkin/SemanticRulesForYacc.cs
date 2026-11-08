@@ -401,8 +401,13 @@ namespace Languages.Pascal.Frontend.Core
         /// </summary>
         public expression ParseExpression(string Text)
         {
+            return ParseExpression(Text, null);
+        }
+
+        private expression ParseExpression(string Text, string fileName)
+        {
             PascalParserTools parserTools = new PascalParserTools(new List<Error>(), new List<CompilerWarning>(), 
-                this.parserTools.ValidDirectives, false, true, this.parserTools.currentFileName); // контекст сканера и парсера
+                this.parserTools.ValidDirectives, false, true, fileName ?? this.parserTools.currentFileName); // контекст сканера и парсера
             
             var sourceScanner = this.scanner;
 #if PABCNET_MODERN
@@ -427,22 +432,65 @@ namespace Languages.Pascal.Frontend.Core
         {
             try
             {
+                int indent = 0;
+                if (str.IsMultiline)
+                {
+                    int errorCount = parserTools.errors.Count;
+                    str.Value = parserTools.NormalizeMultilineString(str.Value, str.source_context, out indent);
+                    if (parserTools.errors.Count != errorCount)
+                        return str;
+                }
                 method_call mc = new method_call();
                 mc.dereferencing_value = new dot_node(new ident("string", str.source_context), new ident("Format", str.source_context), str.source_context);
                 mc.parameters = new expression_list();
                 if (!str.Value.Contains("{"))
                     return str;
-                string val = str.Value.Replace("{{","![&").Replace("}}}","}&]!").Replace("}}", "&]!");
+                // Each escape replacement adds one character. Keep its offset
+                // so positions in the transformed string can be mapped back.
+                var escapeOffsets = new List<int>();
+                string val = Regex.Replace(str.Value, @"\{\{|\}\}\}|\}\}", m =>
+                {
+                    if (str.IsMultiline)
+                        escapeOffsets.Add(m.Index + escapeOffsets.Count);
+                    return m.Value == "{{" ? "![&" : m.Value == "}}}" ? "}&]!" : "&]!";
+                });
                 
                 string[] arr = Regex.Split(val, @"\{[^\}]+\}");
                 Match match = Regex.Match(val, @"\{[^\}]+\}");
                 List<string> vars = new List<string>();
                 //Dictionary<string, int> var_offsets = new Dictionary<string, int>();
                 List<int> var_offsets = new List<int>();
+                var braceLocations = new List<SourceContext>();
+                int escaped = 0;
+                int sourceOffset = 0;
+                int lineStart = 0;
+                int line = str.source_context.begin_position.line_num + 1;
                 Dictionary<int, string> var_formats = new Dictionary<int, string>();
                 int ind = 0;
                 while (match.Success)
                 {
+                    if (str.IsMultiline)
+                    {
+                        while (escaped < escapeOffsets.Count && escapeOffsets[escaped] < match.Index)
+                            escaped++;
+                        int offset = match.Index - escaped;
+                        while (sourceOffset < offset)
+                        {
+                            if (str.Value[sourceOffset++] == '\n')
+                            {
+                                line++;
+                                lineStart = sourceOffset;
+                            }
+                        }
+                        int column = indent + offset - lineStart + 1;
+                        var brace = new SourceContext(line, column, line, column, str.source_context.FileName);
+                        if (match.Value.IndexOf('\n') >= 0 || match.Value.IndexOf('\r') >= 0)
+                        {
+                            parserTools.AddErrorFromResource("INTERPOLATION_EXPRESSION_MUST_BE_ON_ONE_LINE", brace);
+                            return str;
+                        }
+                        braceLocations.Add(brace);
+                    }
                     string s = match.Value.Replace("{", "").Replace("}", "");
                     int colon_pos = s.LastIndexOf(':');
                     int comma_pos = s.LastIndexOf(',');
@@ -515,17 +563,32 @@ namespace Languages.Pascal.Frontend.Core
                     string s = vars[i];
 
                     // Применяем здесь еще одну версию парсера вследствие ручной реализации разбора интерполированной строки
-                    var expr = ParseExpression(new string('\n', str.source_context.begin_position.line_num - 1) + new string(' ', str.source_context.begin_position.column_num + var_offsets[i] + 2) + s); //, str.source_context.begin_position.line_num, str.source_context.begin_position.column_num + var_offsets[i] + 2);
+                    var brace = str.IsMultiline ? braceLocations[i] : null;
+                    int expressionLine = brace?.begin_position.line_num ?? str.source_context.begin_position.line_num;
+                    int columnPadding = brace?.begin_position.column_num ??
+                        str.source_context.begin_position.column_num + var_offsets[i] + 2;
+                    int errorCount = parserTools.errors.Count;
+                    var expr = ParseExpression(new string('\n', expressionLine - 1) +
+                        new string(' ', columnPadding) + s, brace?.FileName);
                     
                     if (expr == null)
                     {
+                        if (str.IsMultiline)
+                        {
+                            if (parserTools.errors.Count == errorCount)
+                                parserTools.AddErrorFromResource("BAD_FORMAT_STRING", brace);
+                            return str;
+                        }
                         var err = parserTools.errors[0] as LocatedError;
                         err.SourceContext.begin_position.line_num = str.source_context.begin_position.line_num;
                         err.SourceContext.begin_position.column_num = str.source_context.begin_position.column_num + var_offsets[i] + vars[i].Length + 3;
                         return str;
                     }
-                    expr.source_context.begin_position.line_num = str.source_context.begin_position.line_num;
-                    expr.source_context.end_position.line_num = str.source_context.end_position.line_num;
+                    if (!str.IsMultiline)
+                    {
+                        expr.source_context.begin_position.line_num = str.source_context.begin_position.line_num;
+                        expr.source_context.end_position.line_num = str.source_context.end_position.line_num;
+                    }
 
                     method_call applyO2S = new method_call();
                     applyO2S.dereferencing_value = new ident("__ApplyO2S", expr.source_context);

@@ -1,3 +1,16 @@
+@echo off
+if not "%~1"=="" if /I not "%~1"=="--net10" (
+    echo Usage: _GenerateLinuxVersion.bat [--net10]
+    exit /b 2
+)
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\build-teacher-control-linux.ps1"
+if errorlevel 1 exit /b 1
+where tar.exe >nul 2>&1
+@if errorlevel 1 (
+    echo ERROR: tar.exe is required to package the Linux distribution. Install tar and add it to PATH.
+    exit /b 1
+)
+
 rmdir Release\Samples\ /s /q
 rmdir Release\PascalABCNETLinux\ /s /q
 mkdir Release\PascalABCNETLinux\
@@ -6,13 +19,14 @@ mkdir Release\PascalABCNETLinux\LibSource\
 mkdir Release\PascalABCNETLinux\Lng\Rus
 mkdir Release\PascalABCNETLinux\Lng\Eng
 mkdir Release\PascalABCNETLinux\Highlighting\
-del Release\PascalABCNETLinux.zip
 
 
 copy bin\CodeCompletion.dll Release\PascalABCNETLinux\CodeCompletion.dll
 copy bin\Compiler.dll Release\PascalABCNETLinux\Compiler.dll
 copy bin\CompilerTools.dll Release\PascalABCNETLinux\CompilerTools.dll
-copy bin\Contracts.dll Release\PascalABCNETLinux\Contracts.dll
+copy bin\CodeCompletionContracts.dll Release\PascalABCNETLinux\CodeCompletionContracts.dll
+copy bin\ParserContracts.dll Release\PascalABCNETLinux\ParserContracts.dll
+copy bin\LanguageContracts.dll Release\PascalABCNETLinux\LanguageContracts.dll
 copy bin\Debugger.Core.dll Release\PascalABCNETLinux\Debugger.Core.dll
 copy bin\Errors.dll Release\PascalABCNETLinux\Errors.dll
 copy bin\ICSharpCode.Core.dll Release\PascalABCNETLinux\ICSharpCode.Core.dll
@@ -20,7 +34,7 @@ copy bin\ICSharpCode.Core.WinForms.dll Release\PascalABCNETLinux\ICSharpCode.Cor
 copy bin\ICSharpCode.NRefactory.dll Release\PascalABCNETLinux\ICSharpCode.NRefactory.dll
 copy bin\ICSharpCode.SharpDevelop.dll Release\PascalABCNETLinux\ICSharpCode.SharpDevelop.dll
 copy bin\ICSharpCode.SharpDevelop.Dom.dll Release\PascalABCNETLinux\ICSharpCode.SharpDevelop.Dom.dll
-copy bin\ICSharpCode.TextEditorLinux.dll Release\PascalABCNETLinux\ICSharpCode.TextEditorLinux.dll
+copy bin\ICSharpCode.TextEditor.dll Release\PascalABCNETLinux\ICSharpCode.TextEditor.dll
 copy bin\Localization.dll Release\PascalABCNETLinux\Localization.dll
 copy bin\mono_pabcIDE.bat Release\PascalABCNETLinux\mono_pabcIDE.bat
 copy bin\mono_pabcnetc.bat Release\PascalABCNETLinux\mono_pabcnetc.bat
@@ -56,7 +70,7 @@ copy bin\PascalABCNETLinux.exe.config Release\PascalABCNETLinux\PascalABCNETLinu
 copy bin\PascalABCParser.dll Release\PascalABCNETLinux\PascalABCParser.dll
 copy bin\PascalABCLanguageInfo.dll Release\PascalABCNETLinux\PascalABCLanguageInfo.dll
 copy bin\Pause.exe Release\PascalABCNETLinux\Pause.exe
-copy bin\PluginsSupportLinux.dll Release\PascalABCNETLinux\PluginsSupportLinux.dll
+copy bin\PluginsSupport.dll Release\PascalABCNETLinux\PluginsSupport.dll
 copy bin\ProgrammRunner.exe Release\PascalABCNETLinux\ProgrammRunner.exe
 rem copy bin\rc.exe Release\PascalABCNETLinux\rc.exe
 copy bin\SemanticTree.dll Release\PascalABCNETLinux\SemanticTree.dll
@@ -69,7 +83,7 @@ copy bin\WeifenLuo.WinFormsUI.Docking.ThemeVS2005Linux.dll Release\PascalABCNETL
 copy bin\WeifenLuo.WinFormsUI.DockingLinux.dll Release\PascalABCNETLinux\WeifenLuo.WinFormsUI.DockingLinux.dll
 copy bin\PABCCoreUtils.dll Release\PascalABCNETLinux\PABCCoreUtils.dll
 copy bin\LambdaAnySynToSemConverter.dll Release\PascalABCNETLinux\LambdaAnySynToSemConverter.dll
-copy bin\TeacherControlPlugin.dll Release\PascalABCNETLinux\TeacherControlPlugin.dll
+copy bin\PluginsLinux\TeacherControlPlugin.dll Release\PascalABCNETLinux\TeacherControlPlugin.dll
 copy bin\Highlighting\PascalABCNET.xshd Release\PascalABCNETLinux\Highlighting\PascalABCNET.xshd
 
 copy bin\Lib\nunit.framework.dll Release\PascalABCNETLinux\Lib\nunit.framework.dll
@@ -108,7 +122,7 @@ copy bin\Lib\Sounds.pcu Release\PascalABCNETLinux\Lib\Sounds.pcu
 copy bin\Lib\School.pcu Release\PascalABCNETLinux\Lib\School.pcu
 copy bin\Lib\SF.pcu Release\PascalABCNETLinux\Lib\SF.pcu
 copy bin\Lib\Speech.pcu Release\PascalABCNETLinux\Lib\Speech.pcu
-copy bin\Lib\Tasks.pcu Release\PascalABCNETLinux\Lib\Tasks.pcu
+copy bin\Lib\Tasks*.pcu Release\PascalABCNETLinux\Lib\
 copy bin\Lib\Timers.pcu Release\PascalABCNETLinux\Lib\Timers.pcu
 copy bin\Lib\TurtleABC.pcu Release\PascalABCNETLinux\Lib\TurtleABC.pcu
 copy bin\Lib\DataFrameABC.pcu Release\PascalABCNETLinux\Lib\DataFrameABC.pcu
@@ -272,10 +286,26 @@ xcopy InstallerSamples\WhatsNew\            Release\Samples\WhatsNew\           
 xcopy InstallerSamples\Graphics\GraphABC\   Release\Samples\Graphics\GraphABC\   /s /e
 xcopy InstallerSamples\Graphics\ABCObjects\   Release\Samples\Graphics\ABCObjects\   /s /e
 
-cd Release
+if /I "%~1"=="--net10" (
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\prepare-linux-net10.ps1"
+    if errorlevel 1 exit /b 1
+)
 
-powershell.exe -NoProfile -Command "Compress-Archive -LiteralPath 'PascalABCNETLinux','Samples' -DestinationPath 'PascalABCNETLinux.zip' -CompressionLevel Optimal -Force"
-if errorlevel 1 exit /b %ERRORLEVEL%
+pushd Release
+if errorlevel 1 exit /b 1
 
-cd ..
+tar.exe --format zip --options zip:hdrcharset=UTF-8 -cf PascalABCNETLinux.zip.tmp -- PascalABCNETLinux Samples
+if errorlevel 1 (
+    echo ERROR: Failed to create the Linux archive.
+    popd
+    exit /b 1
+)
+move /y PascalABCNETLinux.zip.tmp PascalABCNETLinux.zip
+if errorlevel 1 (
+    echo ERROR: Failed to replace PascalABCNETLinux.zip.
+    popd
+    exit /b 1
+)
+
+popd
 pause

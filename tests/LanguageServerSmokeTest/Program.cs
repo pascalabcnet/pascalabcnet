@@ -192,6 +192,38 @@ try
         "completion contains Substring");
     Console.WriteLine("PASS completion over stdio");
 
+    const string interpolationUri = "file:///C:/InterpolationHoverSmoke.pas";
+    const string interpolationSource = """
+    begin
+      var name := 'Иван';
+      var age := 18;
+      var singleLine := $'Меня зовут {name}.';
+      var multiLine := $'''
+        Меня зовут {name}.
+        Через год мне будет {age + 1}.
+        ''';
+      Println(multiLine);
+    end.
+    """;
+    await WriteDidOpenAsync(input, interpolationUri, interpolationSource, 1, timeout.Token);
+    foreach (var item in new[] { (Id: 910, Line: 3, Symbol: "name"),
+                                 (Id: 911, Line: 5, Symbol: "name"),
+                                 (Id: 912, Line: 6, Symbol: "age") })
+    {
+        var line = interpolationSource.Split('\n')[item.Line];
+        var column = line.IndexOf("{" + item.Symbol, StringComparison.Ordinal) + 1;
+        Check(column > 0, "interpolation hover marker exists");
+        await WriteRequestAsync(input, item.Id, "textDocument/hover", interpolationUri,
+            (item.Line, column), timeout.Token);
+        using var interpolationHover = await ReadResponseAsync(output, item.Id, timeout.Token);
+        var result = interpolationHover.RootElement.GetProperty("result");
+        Check(result.ValueKind == JsonValueKind.Object &&
+            result.GetProperty("contents").GetProperty("value").GetString()?
+                .Contains("var " + item.Symbol + ":", StringComparison.OrdinalIgnoreCase) == true,
+            "hover resolves " + item.Symbol + " on interpolation line " + item.Line + ": " + result);
+    }
+    Console.WriteLine("PASS single-line and multiline interpolation hover over stdio");
+
     var printStart = source.IndexOf("Print(result)", StringComparison.Ordinal);
     Check(printStart >= 0, "Global completion marker exists");
 

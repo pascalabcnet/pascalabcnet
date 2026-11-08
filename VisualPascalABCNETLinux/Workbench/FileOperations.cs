@@ -30,13 +30,14 @@ namespace VisualPascalABC
                 return tp;
 
             MainDockPanel.Size = new Size(1920, 1080);
-            tp = AddNewProgramToTab(MainDockPanel, FileName);
+            tp = AddNewProgramToTab(MainDockPanel, FileName, false);
             MPanel_Resize(null, EventArgs.Empty);
 
             AddLastFile(FileName);
             tp.LoadFromFile(FileName);
             tp.DocumentSavedToDisk = true;
             ShowAddedBreakpoints(tp);
+            NotifyDocumentOpened(tp);
             return tp;
         }
 
@@ -44,6 +45,8 @@ namespace VisualPascalABC
         {
             CodeFileDocumentControl tp = FindTab(FileName);
             bool IsNewFile = FileName == null;
+            bool addedDocument = false;
+            string previousFileName = null;
             if (tp == null)
             {
                 if (!IsNewFile && !File.Exists(FileName))
@@ -62,7 +65,8 @@ namespace VisualPascalABC
                         else
                             FileName = PreferedFileName;
                     MainDockPanel.Size = new Size(1920, 1080);
-                    tp = AddNewProgramToTab(MainDockPanel, FileName);
+                    tp = AddNewProgramToTab(MainDockPanel, FileName, false);
+                    addedDocument = true;
                     MPanel_Resize(null, EventArgs.Empty);
 
                 }
@@ -72,6 +76,7 @@ namespace VisualPascalABC
                         CheckErrorListAndClear(CurrentCodeFileDocument.FileName);
                         WorkbenchServiceFactory.CodeCompletionParserController.CloseFile(CurrentCodeFileDocument.FileName);
                         OpenDocuments.Remove(Tools.FileNameToLower(CurrentCodeFileDocument.FileName));
+                        previousFileName = CurrentCodeFileDocument.FileName;
                         CurrentCodeFileDocument.FileName = FileName;
                         SetTabPageText(CurrentCodeFileDocument);
                         if (!WorkbenchServiceFactory.RunService.HasRunArgument(FileName.ToLower()))
@@ -100,10 +105,12 @@ namespace VisualPascalABC
             }
             if (tp != null)
             {
-                if (MainDockPanel.ActiveDocument != tp)
-                {
-                    CurrentCodeFileDocument = tp;
-                }
+                // Mono does not use the docking library's Windows focus tracker.
+                // Select the actual pane tab rather than trust ActiveDocument.
+                if (tp.Pane != null)
+                    tp.Pane.ActiveContent = tp;
+                CurrentCodeFileDocument = tp;
+                tp.TextEditor.SetFocus();
             }
             if (FileName != null)
             {
@@ -140,6 +147,8 @@ namespace VisualPascalABC
                 }
             }
 
+            if (addedDocument) NotifyDocumentOpened(tp);
+            else if (previousFileName != null) NotifyDocumentRenamed(tp, previousFileName);
             return true;
         }
 
@@ -160,6 +169,8 @@ namespace VisualPascalABC
         {
             CodeFileDocumentControl tp = FindTab(FileName);
             bool IsNewFile = FileName == null;
+            bool addedDocument = false;
+            string previousFileName = null;
             if (tp == null)
             {
                 visualStates.FileOpened = true;//?????
@@ -200,13 +211,15 @@ namespace VisualPascalABC
                     if (IsNewFile)
                         FileName = InstNameNewProgramm(MainDockPanel);
                     MainDockPanel.Size = new Size(1920, 1080);
-                    tp = AddNewProgramToTab(MainDockPanel, FileName);
+                    tp = AddNewProgramToTab(MainDockPanel, FileName, false);
+                    addedDocument = true;
                     MPanel_Resize(null, EventArgs.Empty);
                 }
                 else
                     if (!IsNewFile)
                     {
                         //CheckErrorListAndClear((tabControl1.TabPages[TabIndex].ag as CodeFileDocumentControl).file_name);
+                        previousFileName = CurrentCodeFileDocument.FileName;
                         CurrentCodeFileDocument.FileName = FileName;
                         if (!ProjectFactory.Instance.ProjectLoaded)
                             SetTabPageText(CurrentCodeFileDocument);
@@ -234,6 +247,13 @@ namespace VisualPascalABC
             visualStates.FileOpened = false;
             AddDebugPage(CurrentCodeFileDocument);
             //CahngedSelectedTab();
+            if (tp != null && previousFileName != null)
+            {
+                OpenDocuments.Remove(Tools.FileNameToLower(previousFileName));
+                OpenDocuments[Tools.FileNameToLower(tp.FileName)] = tp;
+            }
+            if (addedDocument) NotifyDocumentOpened(tp);
+            else if (previousFileName != null) NotifyDocumentRenamed(tp, previousFileName);
             return CurrentCodeFileDocument;
         }
 
@@ -288,6 +308,7 @@ namespace VisualPascalABC
                 ActiveCodeFileDocument = null;
             OutputTextBoxs.Remove(tp);
             OpenDocuments.Remove(Tools.FileNameToLower(tp.FileName));
+            NotifyDocumentClosed(tp);
             //RunArgumentsTable.Remove(tp);
             tp.Dispose();
             CheckErrorListAndClear(FileName);
@@ -377,6 +398,7 @@ namespace VisualPascalABC
 
         internal void SaveFileAs(CodeFileDocumentControl TbPage, string FileName)
         {
+            string previousFileName = TbPage.FileName;
             try
             {
                 /*if (TbPage.DesignerAndCodeTabs != null)
@@ -408,6 +430,7 @@ namespace VisualPascalABC
                     WorkbenchServiceFactory.RunService.AddRunArgument(FileName.ToLower(), "");
                 if (TbPage == CurrentCodeFileDocument)
                     UpdateSaveButtonsEnabled();
+                NotifyDocumentRenamed(TbPage, previousFileName);
             }
             catch (Exception)
             {
@@ -477,7 +500,7 @@ namespace VisualPascalABC
         bool QuestionAndSaveFile(CodeFileDocumentControl tp)
         {
             CurrentCodeFileDocument = tp;
-            DialogResult result = MessageBox.Show(string.Format(Form1StringResources.Get("SAVE_CHANGES_IN_FILE{0}"), Path.GetFileName(tp.FileName)), PascalABCCompiler.StringResources.Get("!CONFIRM"), MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            DialogResult result = ConfirmationDialog.Show(string.Format(Form1StringResources.Get("SAVE_CHANGES_IN_FILE{0}"), Path.GetFileName(tp.FileName)), PascalABCCompiler.StringResources.Get("!CONFIRM"), MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
                 SaveSelFile(CurrentCodeFileDocument);
             else

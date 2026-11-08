@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.CodeCompletion;
 
 namespace VisualPascalABCPlugins
 {
@@ -33,10 +33,10 @@ namespace VisualPascalABCPlugins
             get;
         }
 
-        /// SSM 07.08.22 кнопка пункта меню. В плагине преобразовать к ToolStripMenuItem
+        /// SSM 07.08.22 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ. пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ ToolStripMenuItem
         object menuItem { get; set; }
 
-        /// SSM 07.08.22 кнопка панели инструментов. В плагине преобразовать к ToolStripButton
+        /// SSM 07.08.22 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ. пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ ToolStripButton
         object toolStripButton { get; set; } 
 
         void Execute();
@@ -76,11 +76,11 @@ namespace VisualPascalABCPlugins
         ProcessExited
     }
     public delegate void ChangeVisualEnvironmentStateDelegate(VisualEnvironmentState State, object obj);
-    // SSM 16/05/22 - перенес сюда из RunManager
+    // SSM 16/05/22 - пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ RunManager
     public delegate void RunnerManagerActionDelegate(string fileName);
-    // SSM 02.07.22 - перед стартом компиляции для плагинов
+    // SSM 02.07.22 - пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     public delegate void BuildServiceActionDelegate(string fileName);
-    // SSM 02.07.22 - перед запуском изменить параметры командной строки
+    // SSM 02.07.22 - пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     public delegate void ChangeArgsBeforeRunDelegate(ref string args);
 
     public enum SourceLocationAction
@@ -112,7 +112,7 @@ namespace VisualPascalABCPlugins
 
     public delegate IAsyncResult InvokeDegegate(Delegate method, params object[] args);
 
-    public delegate string ConvertTextDelegate(string FileName, string text); // Это пока только для шифрованного Tasks. 
+    public delegate string ConvertTextDelegate(string FileName, string text); // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Tasks. 
 
     public interface IVisualEnvironmentCompiler
     {
@@ -314,8 +314,8 @@ namespace VisualPascalABCPlugins
 
     public interface IWorkbenchRunService
     {
-        event RunnerManagerActionDelegate Starting; // можно вызывать из плагина
-        event RunnerManagerActionDelegate Exited;   // можно вызывать из плагина
+        event RunnerManagerActionDelegate Starting; // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        event RunnerManagerActionDelegate Exited;   // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         event ChangeArgsBeforeRunDelegate ChangeArgsBeforeRun;
         bool IsRun();
         bool IsRun(string FileName);

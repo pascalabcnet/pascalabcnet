@@ -1,4 +1,6 @@
-﻿using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.CodeCompletion;
+using PascalABCCompiler.Contracts.Languages;
+using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler.Parsers;
 using System;
 using System.Collections.Generic;
@@ -9,6 +11,8 @@ namespace Languages.SPython.Frontend.Data
 {
     internal class SPythonIntellisenseSupport : BaseLanguageIntellisenseSupport
     {
+        public SPythonIntellisenseSupport(ILanguageInformation languageInformation) : base(languageInformation) { }
+
         public override bool ApplySyntaxTreeConvertersForIntellisense => true;
 
         public override string BodyStartBracket => null;
@@ -1208,7 +1212,7 @@ namespace Languages.SPython.Frontend.Data
 
         private string GetDescriptionForModule(IInterfaceUnitScope scope)
         {
-            var p = LanguageInformation.SpecialModulesAliases.FirstOrDefault(kv => kv.Value == scope.Name);
+            var p = languageInformation.SpecialModulesAliases.FirstOrDefault(kv => kv.Value == scope.Name);
 
             if (!p.Equals(default(KeyValuePair<string, string>)))
                 return "unit " + p.Key;

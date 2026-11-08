@@ -59,6 +59,7 @@ RECORD_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR=Тип записи не може�
 TYPE_{0}_DERIVED_FROM_ITSELF=Тип {0} наследуется циклически от самого себя
 AMBIGUITY_BETWEEN_NAMES_{0}_AND_{1}=Двусмысленность между именами {0} и {1}
 POINTERS_OF_GENERIC_PARAMETERS_NOT_ALLOWED=Указатели на параметр обобщённого типа недопустимы
+GENERIC_POINTER_NOT_ALLOWED_WITHOUT_STANDARD_UNITS{0}=Указатель на тип, зависящий от параметра обобщения, не поддерживается при {0}
 OPERATOR_AS_CAN_NOT_BE_USED_WITH_GENERIC_PARAMETER_{0}_WITHOUT_CLASS_CONSTRAINT=Операция as не может быть применена к обобщённому параметру {0}, не имеющему спецификатора "class"
 FORWARD_DECLARATION_{0}_AS_IMPLEMENTING_INTERFACE=Предописание {0} не может быть использовано как реализуемый интерфейс
 FORWARD_TEMPLATE_{0}_DECLARATION_MISMATCH_DECLARATION=Предописание обобщённого типа {0} не соответствует его описанию

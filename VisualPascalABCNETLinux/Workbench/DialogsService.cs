@@ -28,14 +28,13 @@ namespace VisualPascalABC
         {
             openFileDialog1.FileName = "";
             openFileDialog1.InitialDirectory = InitialDirectory;
-            openFileDialog1.ShowDialog();
+            // Activate documents only after Mono has released the modal dialog.
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                foreach (string FileName in openFileDialog1.FileNames)
+                    WorkbenchServiceFactory.FileService.OpenFile(FileName, null);
+            }
             SetFocusToEditor();
-        }
-
-        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
-        {
-            foreach (string FileName in openFileDialog1.FileNames)
-                WorkbenchServiceFactory.FileService.OpenFile(FileName, null);
         }
 
         private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)

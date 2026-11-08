@@ -59,6 +59,7 @@ RECORD_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR=Constraint cannot be record
 TYPE_{0}_DERIVED_FROM_ITSELF=Circular base class dependency
 AMBIGUITY_BETWEEN_NAMES_{0}_AND_{1}=Двусмысленность между именами {0} и {1}
 POINTERS_OF_GENERIC_PARAMETERS_NOT_ALLOWED=Cannot declare a pointer to generic parameter
+GENERIC_POINTER_NOT_ALLOWED_WITHOUT_STANDARD_UNITS{0}=A pointer to a type that depends on a generic parameter is not supported with {0}
 OPERATOR_AS_CAN_NOT_BE_USED_WITH_GENERIC_PARAMETER_{0}_WITHOUT_CLASS_CONSTRAINT=Operator as cannot be applied to generic parameter '{0}', 'class' constraint awaited
 FORWARD_DECLARATION_{0}_AS_IMPLEMENTING_INTERFACE=Forward declaration '{0}' cannot be used as implementing interface
 FORWARD_TEMPLATE_{0}_DECLARATION_MISMATCH_DECLARATION=Forward template declaration '{0}' doesn't match declaration

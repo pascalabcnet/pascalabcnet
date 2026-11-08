@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace PascalABCCompiler.Contracts.Parsers
+{
+    public interface IDirectiveInfo
+    {
+        DirectiveProcessingStage ProcessingStage { get; }
+
+        bool QuotesAreSpecialSymbols { get; }
+
+        bool CheckParamsNumNeeded { get; }
+
+        int[] ParamsNums { get; }
+
+        bool ParamsValid(IEnumerable<string> directiveParams, out int indexOfMismatch, out string errorMessage);
+    }
+}

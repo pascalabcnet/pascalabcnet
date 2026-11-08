@@ -39,6 +39,7 @@ type
     function GetColumnNames: array of string;
     function GetTypes: array of ColumnType;
     function GetCategoricalFlags: array of boolean;
+    function MissingColumnHint(name: string): string;
   public
     /// Возвращает количество столбцов в схеме
     property ColumnCount: integer read fNames.Length;
@@ -49,7 +50,8 @@ type
     /// Возвращает копию массива categorical-флагов
     property CategoricalFlags: array of boolean read GetCategoricalFlags;
 
-    /// Возвращает индекс столбца по имени
+    /// Возвращает индекс столбца по точному имени, учитывая регистр и пробелы.
+    /// Если столбец отсутствует, сообщает об ошибке и предлагает подходящие имена.
     function IndexOf(name: string): integer;
     /// Проверяет наличие столбца с указанным именем
     function HasColumn(name: string): boolean;
@@ -555,6 +557,14 @@ const
     'Длина isCategorical не совпадает с names!!isCategorical length mismatch';
   ER_COLUMN_NOT_EXISTS =
     'Столбец "{0}" не существует!!Column "{0}" does not exist';
+  ER_COLUMN_NOT_FOUND_WITH_HINT =
+    'Столбец "{0}" не найден.{1}!!Column "{0}" was not found.{1}';
+  COLUMN_NAME_SUGGESTION =
+    ' Возможно, вы имели в виду: {0}?!! Did you mean: {0}?';
+  COLUMN_NAMES_AVAILABLE =
+    ' Доступные столбцы: {0}.!! Available columns: {0}.';
+  COLUMN_NAMES_MORE =
+    ' (ещё {0}). Полный список: df.Schema.ColumnNames.!! (and {0} more). Full list: df.Schema.ColumnNames.';
   ER_COLUMN_ALREADY_EXISTS =
     'Столбец "{0}" уже существует!!Column "{0}" already exists';
   ER_INDEX_OUT_OF_RANGE =
@@ -1181,10 +1191,82 @@ begin
 end;
 
 
+// Две строки таблицы расстояний достаточны для обычного Левенштейна.
+function ColumnNameDistance(a, b: string): integer;
+begin
+  var previous := new integer[b.Length + 1];
+  var current := new integer[b.Length + 1];
+  for var j := 0 to b.Length do
+    previous[j] := j;
+  for var i := 1 to a.Length do
+  begin
+    current[0] := i;
+    for var j := 1 to b.Length do
+      current[j] := Min(Min(previous[j] + 1, current[j - 1] + 1),
+        previous[j - 1] + Ord(a[i] <> b[j]));
+    var temp := previous;
+    previous := current;
+    current := temp;
+  end;
+  Result := previous[b.Length];
+end;
+
+function DataFrameSchema.MissingColumnHint(name: string): string;
+begin
+  var query := name.Trim.ToUpperInvariant;
+  var suggestions := new List<string>;
+  // Такие совпадения важнее опечаток; исходные имена сохраняются в подсказке.
+  foreach var candidate in fNames do
+    if (candidate.Trim.ToUpperInvariant = query) and (suggestions.Count < 3) then
+      suggestions.Add('"' + candidate + '"');
+
+  if (suggestions.Count = 0) and (query.Length > 0) then
+  begin
+    var limit := if query.Length <= 4 then 1 else 2;
+    var distances := new List<integer>;
+    foreach var candidate in fNames do
+    begin
+      var normalized := candidate.Trim.ToUpperInvariant;
+      if Abs(normalized.Length - query.Length) > limit then
+        continue;
+      var distance := ColumnNameDistance(query, normalized);
+      if distance > limit then
+        continue;
+      var pos := 0;
+      while (pos < distances.Count) and (distances[pos] <= distance) do
+        pos += 1;
+      if pos < 3 then
+      begin
+        distances.Insert(pos, distance);
+        suggestions.Insert(pos, '"' + candidate + '"');
+        if suggestions.Count > 3 then
+        begin
+          suggestions.RemoveAt(3);
+          distances.RemoveAt(3);
+        end;
+      end;
+    end;
+  end;
+
+  if suggestions.Count > 0 then
+    exit(Format(GetTranslation(COLUMN_NAME_SUGGESTION),
+      string.Join(', ', suggestions.ToArray)));
+
+  if fNames.Length = 0 then
+    exit('');
+
+  var visible := new List<string>;
+  for var i := 0 to Min(10, fNames.Length) - 1 do
+    visible.Add(fNames[i]);
+  Result := Format(GetTranslation(COLUMN_NAMES_AVAILABLE), string.Join(', ', visible.ToArray));
+  if fNames.Length > 10 then
+    Result += Format(GetTranslation(COLUMN_NAMES_MORE), fNames.Length - 10);
+end;
+
 function DataFrameSchema.IndexOf(name: string): integer;
 begin
   if not fIndexByName.ContainsKey(name) then
-    ArgumentError(ER_COLUMN_NOT_EXISTS, name);
+    ArgumentError(ER_COLUMN_NOT_FOUND_WITH_HINT, name, MissingColumnHint(name));
   Result := fIndexByName[name];
 end;
 

@@ -13,15 +13,45 @@ using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 {
-	public class PABCNETCodeCompletionWindow : AbstractCompletionWindow
+	public class PABCNETCodeCompletionWindow : PassivePopupWindow
 	{
+		private readonly Form parentForm;
+		protected readonly TextEditorControl control;
+		protected Size drawingSize;
+        private int preferredWidth;
+		private bool attached, closing;
+		private readonly Panel content = new Panel { TabStop = false };
+		private CompletionContentHost contentHost;
+		private bool arrangingContent;
+
+		private sealed class CompletionContentHost : ToolStripControlHost
+		{
+			internal CompletionContentHost(Control child) : base(child) { }
+			internal void Fill(Rectangle bounds)
+			{
+				SetBounds(bounds);
+				Control.Bounds = bounds;
+			}
+		}
+
+		protected override void OnLayout(LayoutEventArgs e)
+		{
+			if (arrangingContent) return;
+			arrangingContent = true;
+			try {
+				base.OnLayout(e);
+				// Mono's host alignment may center a full-size control inside a
+				// shorter item, clipping its top. Both rectangles must fill the popup.
+				contentHost?.Fill(ClientRectangle);
+			}
+			finally { arrangingContent = false; }
+		}
 		ICompletionData[] completionData;
        	PABCNETCodeCompletionListView codeCompletionListView;
-		VScrollBar    vScrollBar = new VScrollBar();
+		VScrollBar    vScrollBar = new PassiveCompletionScrollBar();
 		ICompletionDataProvider dataProvider;
 		IDocument document;
 		private bool _is_overrided_meths = false;
-		Control editorControl;
 		
 		public bool is_overrided_meths
 		{
@@ -43,7 +73,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		Rectangle workingScreen;
         Point lastCursorScreenPosition;
 
-        public static PABCNETCodeCompletionWindow ShowCompletionWindow(Form parent, TextEditorControl control, string fileName, ICompletionDataProvider completionDataProvider, char firstChar, bool visibleKeyPressed, bool is_by_dot,PascalABCCompiler.Contracts.KeywordKind keyw)
+        public static PABCNETCodeCompletionWindow ShowCompletionWindow(Form parent, TextEditorControl control, string fileName, ICompletionDataProvider completionDataProvider, char firstChar, bool visibleKeyPressed, bool is_by_dot,PascalABCCompiler.Contracts.Parsers.KeywordKind keyw)
 		{
         	ICompletionData[] completionData = (completionDataProvider as VisualPascalABC.CodeCompletionProvider).GenerateCompletionDataWithKeyword(fileName, control.ActiveTextAreaControl.TextArea, firstChar, keyw);
 			if (completionData == null || completionData.Length == 0) {
@@ -66,12 +96,24 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			return codeCompletionWindow;
         }
         
+        // External data uses the same passive popup and editor key path.
+        public static PABCNETCodeCompletionWindow ShowExternalCompletionWindow(Form parent, TextEditorControl control,
+            ICompletionDataProvider provider, ICompletionData[] items, VisualPascalABC.CodeCompletionImagesProvider images,
+            bool preserveOrder = false)
+        {
+            if (items == null || items.Length == 0) return null;
+            var window = new PABCNETCodeCompletionWindow(provider, items, parent, control, false, true, images, preserveOrder);
+            window.ShowCompletionWindow();
+            return window;
+        }
+
         public void CalcFormWidth()
         {
-        	this.codeCompletionListView.CalcWidth();
+            preferredWidth = codeCompletionListView.MeasureContentWidth() + 2 +
+                (vScrollBar.Parent == content ? vScrollBar.Width : 0);
         }
         
-        public static PABCNETCodeCompletionWindow ShowCompletionWindowWithFirstChar(Form parent, TextEditorControl control, string fileName, ICompletionDataProvider completionDataProvider, char firstChar, PascalABCCompiler.Contracts.KeywordKind keyw)
+        public static PABCNETCodeCompletionWindow ShowCompletionWindowWithFirstChar(Form parent, TextEditorControl control, string fileName, ICompletionDataProvider completionDataProvider, char firstChar, PascalABCCompiler.Contracts.Parsers.KeywordKind keyw)
         {
         	ICompletionData[] completionData = (completionDataProvider as VisualPascalABC.CodeCompletionProvider).GenerateCompletionDataByFirstChar(fileName, control.ActiveTextAreaControl.TextArea, firstChar, keyw);
         	if (completionData == null || completionData.Length == 0) {
@@ -83,13 +125,18 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			return codeCompletionWindow;
         }
         
-		PABCNETCodeCompletionWindow(ICompletionDataProvider completionDataProvider, ICompletionData[] completionData, Form parentForm, TextEditorControl control,bool visibleKeyPressed, bool is_by_dot) : base(parentForm, control)
+		PABCNETCodeCompletionWindow(ICompletionDataProvider completionDataProvider, ICompletionData[] completionData, Form parentForm, TextEditorControl control,bool visibleKeyPressed, bool is_by_dot)
+            : this(completionDataProvider, completionData, parentForm, control, visibleKeyPressed, is_by_dot, null, false) { }
+
+        PABCNETCodeCompletionWindow(ICompletionDataProvider completionDataProvider, ICompletionData[] completionData, Form parentForm, TextEditorControl control,
+            bool visibleKeyPressed, bool is_by_dot, VisualPascalABC.CodeCompletionImagesProvider images, bool preserveOrder)
 		{
-			editorControl = control;
+			this.parentForm = parentForm;
+			this.control = control;
 			this.dataProvider = completionDataProvider;
 			this.completionData = completionData;
 			this.document = control.Document;
-			workingScreen = Screen.GetWorkingArea(Location);
+			workingScreen = Screen.GetWorkingArea(parentForm);
             lastCursorScreenPosition = control.ActiveTextAreaControl.Caret.ScreenPosition;
             startOffset = control.ActiveTextAreaControl.Caret.Offset + (visibleKeyPressed ? 1 : 0);
 			endOffset   = startOffset;
@@ -98,17 +145,16 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				startOffset -= completionDataProvider.PreSelection.Length; //+ 1;
 				if (visibleKeyPressed) endOffset--;
 				//endOffset--;
-				(completionDataProvider as VisualPascalABC.CodeCompletionProvider).preSelection = null;
+				if (completionDataProvider is VisualPascalABC.CodeCompletionProvider legacyProvider) legacyProvider.preSelection = null;
 			}
 			
-			codeCompletionListView = new PABCNETCodeCompletionListView(completionData, is_by_dot);
+			codeCompletionListView = new PABCNETCodeCompletionListView(completionData, is_by_dot, images, preserveOrder);
 			codeCompletionListView.ImageList = completionDataProvider.ImageList;
 			codeCompletionListView.Dock = DockStyle.Fill;
 			codeCompletionListView.SelectedItemChanged += new EventHandler(CodeCompletionListViewSelectedItemChanged);
 			codeCompletionListView.DoubleClick += new EventHandler(CodeCompletionListViewDoubleClick);
-			codeCompletionListView.Click  += new EventHandler(CodeCompletionListViewClick);
-            codeCompletionListView.Font = new Font(VisualPascalABC.Constants.CompletionWindowCodeCompletionListViewFontName,codeCompletionListView.Font.Size);
-			Controls.Add(codeCompletionListView);
+            Font = codeCompletionListView.Font = VisualPascalABC.Constants.GetCompletionFont(control.Font);
+			content.Controls.Add(codeCompletionListView);
 			
 			int MaxListLength = VisualPascalABC.Constants.CompletionWindowMaxListLength;
 			if (completionData.Length > MaxListLength) {
@@ -118,37 +164,54 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				vScrollBar.SmallChange = 1;
 				vScrollBar.LargeChange = MaxListLength;
 				codeCompletionListView.FirstItemChanged += new EventHandler(CodeCompletionListViewFirstItemChanged);
-				Controls.Add(vScrollBar);
+				content.Controls.Add(vScrollBar);
 			}
+			contentHost = new CompletionContentHost(content) {
+				AutoSize = false, Margin = Padding.Empty, Padding = Padding.Empty,
+				Overflow = ToolStripItemOverflow.Never
+			};
+			Items.Add(contentHost);
             this.drawingSize = new Size(//codeCompletionListView.ItemHeight * 10,
                                         VisualPascalABC.Constants.CompletionWindowWidth,
                                         codeCompletionListView.ItemHeight * Math.Min(MaxListLength, completionData.Length) + 2);
+            CalcFormWidth();
 			SetLocation();
 			
 			if (declarationViewWindow == null) {
 				declarationViewWindow = new DeclarationWindow(parentForm);
 				declarationViewWindow.in_completion_list = true;
-                declarationViewWindow.Font = new Font(VisualPascalABC.Constants.CompletionWindowDeclarationViewWindowFontName, declarationViewWindow.Font.Size);
+                declarationViewWindow.Font = codeCompletionListView.Font;
 			}            
 			SetDeclarationViewLocation();
             //DS закоментил, это желтый квадрат при старте
 			//declarationViewWindow.ShowDeclarationViewWindow();
-			declarationViewWindow.MouseMove += ControlMouseMove;
-			control.Focus();
 			CodeCompletionListViewSelectedItemChanged(this, EventArgs.Empty);
 			
-			if ((completionDataProvider as VisualPascalABC.CodeCompletionProvider).DefaultCompletionElement != null) {
+			if (completionDataProvider is VisualPascalABC.CodeCompletionProvider legacy && legacy.DefaultCompletionElement != null) {
 				if ((completionDataProvider as VisualPascalABC.CodeCompletionProvider).ByFirstChar)
 				codeCompletionListView.FirstInsert = true;
 				codeCompletionListView.SelectIndexByCompletionData((completionDataProvider as VisualPascalABC.CodeCompletionProvider).DefaultCompletionElement);
 			}
 			
+            if (!(completionDataProvider is VisualPascalABC.CodeCompletionProvider))
+                codeCompletionListView.SelectIndex(Math.Max(0, completionDataProvider.DefaultIndex));
+
 			if (completionDataProvider.PreSelection != null) {
 				CaretOffsetChanged(this, EventArgs.Empty);
 			}
 			
 			vScrollBar.ValueChanged += VScrollBarValueChanged;
+			vScrollBar.MouseMove += ControlMouseMove;
+			codeCompletionListView.MouseMove += ControlMouseMove;
+			codeCompletionListView.MouseWheel += (sender, e) => {
+				HandleMouseWheel(e);
+				if (e is HandledMouseEventArgs wheel) wheel.Handled = true;
+			};
 			document.DocumentAboutToBeChanged += DocumentAboutToBeChanged;
+            VisualPascalABC.HoverTrace.Observe(this, "completion-list");
+            VisualPascalABC.HoverTrace.Observe(codeCompletionListView, "completion-list-content");
+            VisualPascalABC.HoverTrace.Observe(vScrollBar, "completion-scrollbar");
+            VisualPascalABC.HoverTrace.Observe(declarationViewWindow, "completion-description");
 		}
 		
 		bool inScrollUpdate;
@@ -167,7 +230,6 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			inScrollUpdate = true;
 			codeCompletionListView.FirstItem = vScrollBar.Value;
 			codeCompletionListView.Refresh();
-			control.ActiveTextAreaControl.TextArea.Focus();
 			inScrollUpdate = false;
 		}
 		
@@ -196,9 +258,25 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			}
 		}
 		
-		protected override void SetLocation()
+		protected virtual void SetLocation()
 		{
-			base.SetLocation();
+			var textArea = control.ActiveTextAreaControl.TextArea;
+			var caret = textArea.Caret.Position;
+			int ruler = control.TextEditorProperties.ShowHorizontalRuler ? textArea.TextView.FontHeight : 0;
+			Point point = new Point(textArea.TextView.DrawingPosition.X + textArea.TextView.GetDrawingXPos(caret.Y, caret.X),
+				textArea.TextView.DrawingPosition.Y + control.Document.GetVisibleLine(caret.Y) * textArea.TextView.FontHeight
+				- textArea.VirtualTop.Y + textArea.TextView.FontHeight + ruler);
+			point = control.ActiveTextAreaControl.PointToScreen(point);
+			workingScreen = Screen.GetWorkingArea(parentForm);
+            int minimumWidth = VisualPascalABC.Constants.CompletionWindowWidth;
+            drawingSize.Width = Math.Max(1, Math.Min(workingScreen.Width,
+                Math.Max(minimumWidth, Math.Min(preferredWidth, parentForm.ClientSize.Width / 3))));
+			if (point.Y + drawingSize.Height > workingScreen.Bottom)
+				point.Y -= drawingSize.Height + textArea.TextView.FontHeight;
+			point.X = Math.Max(workingScreen.Left, Math.Min(point.X, workingScreen.Right - drawingSize.Width));
+			point.Y = Math.Max(workingScreen.Top, Math.Min(point.Y, workingScreen.Bottom - drawingSize.Height));
+			Bounds = new Rectangle(point, drawingSize);
+			PerformLayout();
 			if (declarationViewWindow != null) {
 				SetDeclarationViewLocation();
 			}
@@ -219,10 +297,87 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			vScrollBar.Value = Math.Max(vScrollBar.Minimum, Math.Min(vScrollBar.Maximum - vScrollBar.LargeChange + 1, newValue));
 		}
 
+		private void ShowCompletionWindow()
+		{
+			if (closing || IsDisposed || parentForm.IsDisposed || !parentForm.Visible) return;
+			AttachEditorEvents();
+			SetLocation();
+			ShowPassiveWindow();
+			PerformLayout();
+			CodeCompletionListViewSelectedItemChanged(this, EventArgs.Empty);
+		}
+
+		private void AttachEditorEvents()
+		{
+			if (attached) return;
+			attached = true;
+			var area = control.ActiveTextAreaControl;
+			area.TextArea.DoProcessDialogKey += ProcessTextAreaKey;
+			area.TextArea.LostFocus += EditorLostFocus;
+			area.Caret.PositionChanged += CaretOffsetChanged;
+			area.VScrollBar.ValueChanged += ParentLocationChanged;
+			area.HScrollBar.ValueChanged += ParentLocationChanged;
+			control.Resize += ParentLocationChanged;
+			control.Disposed += OwnerDisposed;
+			parentForm.LocationChanged += ParentLocationChanged;
+			parentForm.Resize += ParentLocationChanged;
+			parentForm.Deactivate += OwnerDisposed;
+			parentForm.FormClosed += ParentClosed;
+			parentForm.Disposed += OwnerDisposed;
+		}
+
+		private void DetachEditorEvents()
+		{
+			if (!attached) return;
+			attached = false;
+			var area = control.ActiveTextAreaControl;
+			area.TextArea.DoProcessDialogKey -= ProcessTextAreaKey;
+			area.TextArea.LostFocus -= EditorLostFocus;
+			area.Caret.PositionChanged -= CaretOffsetChanged;
+			area.VScrollBar.ValueChanged -= ParentLocationChanged;
+			area.HScrollBar.ValueChanged -= ParentLocationChanged;
+			control.Resize -= ParentLocationChanged;
+			control.Disposed -= OwnerDisposed;
+			parentForm.LocationChanged -= ParentLocationChanged;
+			parentForm.Resize -= ParentLocationChanged;
+			parentForm.Deactivate -= OwnerDisposed;
+			parentForm.FormClosed -= ParentClosed;
+			parentForm.Disposed -= OwnerDisposed;
+		}
+
+		private void ParentLocationChanged(object sender, EventArgs e)
+		{
+			if (parentForm.WindowState == FormWindowState.Minimized) Close();
+			else if (Visible) SetLocation();
+		}
+		private void OwnerDisposed(object sender, EventArgs e) { Close(); }
+		private void EditorLostFocus(object sender, EventArgs e) { Close(); }
+		private void ParentClosed(object sender, FormClosedEventArgs e) { Close(); }
+		private void ControlMouseMove(object sender, MouseEventArgs e) { control.ActiveTextAreaControl.TextArea.ShowHiddenCursor(false); }
+		protected override void OnMouseMove(MouseEventArgs e) { ControlMouseMove(this, e); }
+		protected override void OnMouseWheel(MouseEventArgs e) { HandleMouseWheel(e); }
+
+		public new void Close()
+		{
+			if (closing || IsDisposed) return;
+			closing = true;
+			DetachEditorEvents();
+			int notifications = ClosedNotifications;
+			base.SetVisibleCore(false);
+			declarationViewWindow?.Hide();
+			try {
+				// Framework raises Closed from SetVisibleCore; Mono needs it here.
+				if (ClosedNotifications == notifications)
+					OnClosed(new ToolStripDropDownClosedEventArgs(ToolStripDropDownCloseReason.CloseCalled));
+			}
+			finally { Dispose(); }
+		}
+
 		void CodeCompletionListViewSelectedItemChanged(object sender, EventArgs e)
 		{
+			if (!Visible) return;
 			ICompletionData data = codeCompletionListView.SelectedCompletionData;
-			if (data != null && !(data as UserDefaultCompletionData).IsOnOverrideWindow && data.Description != null && data.Description.Length > 0) {
+			if (data != null && !(data is UserDefaultCompletionData legacyItem && legacyItem.IsOnOverrideWindow) && data.Description != null && data.Description.Length > 0) {
 				SetDeclarationViewLocation();
 				declarationViewWindow.Description = data.Description;
 			} else {
@@ -231,18 +386,19 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			}
 		}
 		
-		public override bool ProcessKeyEvent(char ch)
+		public bool ProcessKeyEvent(char ch)
 		{
+			if (closing || IsDisposed || !Visible) return false;
 			switch (dataProvider.ProcessKey(ch)) {
 				case CompletionDataProviderKeyResult.BeforeStartKey:
 					// increment start+end, then process as normal char
 					++startOffset;
 					++endOffset;
-					return base.ProcessKeyEvent(ch);
+					return false;
 				case CompletionDataProviderKeyResult.NormalKey:
 					// just process normally
                     
-					return base.ProcessKeyEvent(ch);
+					return false;
 				case CompletionDataProviderKeyResult.InsertionKey:
 					return InsertSelectedItem(ch);
 				default:
@@ -273,7 +429,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
         }
 
 
-		protected override void CaretOffsetChanged(object sender, EventArgs e)
+		protected void CaretOffsetChanged(object sender, EventArgs e)
 		{
 			int offset = control.ActiveTextAreaControl.Caret.Offset;
 			if (offset == startOffset) {
@@ -282,14 +438,13 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			if (offset < startOffset || offset > endOffset) {
 				Close();
                 fiexerrorTextAreaInvalidate();
-				editorControl.Focus();
 			} else {
 				codeCompletionListView.SelectItemWithStart(control.Document.GetText(startOffset, offset - startOffset));
 			}
             lastCursorScreenPosition = control.ActiveTextAreaControl.TextArea.Caret.ScreenPosition;
 		}
 		
-		protected override bool ProcessTextAreaKey(Keys keyData)
+		protected bool ProcessTextAreaKey(Keys keyData)
 		{
 			if (!Visible) { 
 				return false;
@@ -310,41 +465,33 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 					return true;
 				case Keys.Down:
 					codeCompletionListView.SelectNextItem();
-					editorControl.Focus();
 					return true;
 				case Keys.Up:
 					codeCompletionListView.SelectPrevItem();
-					editorControl.Focus();
 					return true;
 				case Keys.Tab:
 				case Keys.Return:
 					InsertSelectedItem('\0');
-					editorControl.Focus();
 					return true;
                 case Keys.Escape:
                     fiexerrorTextAreaInvalidate();
-					break;
+					Close();
+					return true;
 			}
-			var v = base.ProcessTextAreaKey(keyData);
-			if (keyData == Keys.Escape)
-			  editorControl.Focus();
-			return v;
+			return false;
 		}
 		
 		void CodeCompletionListViewDoubleClick(object sender, EventArgs e)
 		{
 			InsertSelectedItem('\0');
-			editorControl.Focus();
-		}
-		
-		void CodeCompletionListViewClick(object sender, EventArgs e)
-		{
-			control.ActiveTextAreaControl.TextArea.Focus();
 		}
 		
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing) {
+				closing = true;
+				DetachEditorEvents();
+                (dataProvider as VisualPascalABC.CodeCompletionProvider)?.CancelDocumentation();
 				document.DocumentAboutToBeChanged -= DocumentAboutToBeChanged;
 				if (codeCompletionListView != null) {
 					codeCompletionListView.Dispose();
@@ -366,30 +513,36 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		bool InsertSelectedItem(char ch)
 		{
-			document.DocumentAboutToBeChanged -= DocumentAboutToBeChanged;
-			ICompletionData data = codeCompletionListView.SelectedCompletionData;
-			if (VisualPascalABC.VisualPABCSingleton.MainForm.UserOptions.EnableSmartIntellisense)
-			{
-				VisualPascalABC.CompletionDataDispatcher.AddLastUsedItem(data);
-				VisualPascalABC.CompletionDataDispatcher.BindMember(data);
-			}
-			
-			bool result = false;
-			if (data != null) {
-				control.BeginUpdate();
-				
-				try {
-					if (endOffset - startOffset > 0) {
-						control.Document.Remove(startOffset, endOffset - startOffset);
-					}
-					Debug.Assert(startOffset <= document.TextLength);
-					result = dataProvider.InsertAction(data, control.ActiveTextAreaControl.TextArea, startOffset, ch);
-				} finally {
-					control.EndUpdate();
-				}
-			}
-			Close();
-			return result;
+            try
+            {
+                document.DocumentAboutToBeChanged -= DocumentAboutToBeChanged;
+                ICompletionData data = codeCompletionListView.SelectedCompletionData;
+                if (dataProvider is VisualPascalABC.CodeCompletionProvider && VisualPascalABC.VisualPABCSingleton.MainForm.UserOptions.EnableSmartIntellisense)
+                {
+                    VisualPascalABC.CompletionDataDispatcher.AddLastUsedItem(data);
+                    VisualPascalABC.CompletionDataDispatcher.BindMember(data);
+                }
+
+                bool result = false;
+                if (data != null) {
+                    control.BeginUpdate();
+                    try {
+                        if (endOffset - startOffset > 0) {
+                            control.Document.Remove(startOffset, endOffset - startOffset);
+                        }
+                        Debug.Assert(startOffset <= document.TextLength);
+                        result = dataProvider.InsertAction(data, control.ActiveTextAreaControl.TextArea, startOffset, ch);
+                    } finally {
+                        control.EndUpdate();
+                    }
+                }
+                return result;
+            }
+            finally
+            {
+                // Close both popup windows even if insertion fails partway through.
+                Close();
+            }
 		}
 	}
 }

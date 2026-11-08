@@ -12,7 +12,8 @@ public sealed record CompletionItem(
     string Label,
     string? Detail,
     string? Documentation,
-    string Kind);
+    string Kind,
+    bool IsExtensionMethod = false);
 
 public sealed record HoverInfo(string Contents);
 

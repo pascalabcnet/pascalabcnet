@@ -32,7 +32,6 @@ namespace VisualPascalABC
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ErrorsListWindowForm));
             this.lvErrorsList = new System.Windows.Forms.ListView();
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -49,7 +48,6 @@ namespace VisualPascalABC
             this.lvErrorsList.AutoArrange = false;
             this.lvErrorsList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader6,
-            this.columnHeader7,
             this.columnHeader8,
             this.columnHeader9,
             this.columnHeader10,
@@ -79,11 +77,6 @@ namespace VisualPascalABC
             // 
             this.columnHeader6.Text = "";
             this.columnHeader6.Width = 23;
-            // 
-            // columnHeader7
-            // 
-            this.columnHeader7.Text = "ER_NUM";
-            this.columnHeader7.Width = 25;
             // 
             // columnHeader8
             // 
@@ -157,7 +150,6 @@ namespace VisualPascalABC
         #endregion
 
         private System.Windows.Forms.ColumnHeader columnHeader6;
-        public System.Windows.Forms.ColumnHeader columnHeader7;
         private System.Windows.Forms.ColumnHeader columnHeader8;
         private System.Windows.Forms.ColumnHeader columnHeader9;
         private System.Windows.Forms.ColumnHeader columnHeader10;

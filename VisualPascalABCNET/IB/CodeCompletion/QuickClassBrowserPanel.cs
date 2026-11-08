@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using CodeCompletion;
 using System.Threading;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.CodeCompletion;
 
 namespace VisualPascalABC
 {
@@ -54,6 +54,7 @@ namespace VisualPascalABC
 
 		private static int ModernIcon(ModernBrowserSymbol symbol)
 		{
+            if (symbol.Kind == "Section") return CodeCompletionProvider.ImagesProvider.IconNumberUnitNamespace;
 			SymbolKind kind;
 			if (!Enum.TryParse(symbol.Kind, out kind)) kind = SymbolKind.Null;
 			return CodeCompletionProvider.ImagesProvider.GetPictureNum(new SymInfo(symbol.Name, kind, symbol.Detail));
@@ -67,11 +68,21 @@ namespace VisualPascalABC
 			{
 				classComboBox.BeginUpdate();
 				classComboBox.Items.Clear();
-				classComboBox.Items.Add(new ComboBoxItem(null,
-					PascalABCCompiler.StringResources.Get("CODE_COMPLETION_GLOBAL"),
-					CodeCompletionProvider.ImagesProvider.IconNumberUnitNamespace, true, true));
-				foreach (var symbol in modernSymbols)
-					if (IsModernType(symbol)) classComboBox.Items.Add(new ComboBoxItem(symbol, symbol.Name, ModernIcon(symbol)));
+                foreach (var symbol in modernSymbols)
+                    if (symbol.Kind == "Section")
+                        classComboBox.Items.Add(new ComboBoxItem(symbol,
+                            PascalABCCompiler.StringResources.Get(symbol.Name == "interface" ? "CODE_COMPLETION_INTERFACE" : "CODE_COMPLETION_IMPLEMENTATION"), ModernIcon(symbol)));
+                if (classComboBox.Items.Count == 0)
+                    classComboBox.Items.Add(new ComboBoxItem(null,
+                        PascalABCCompiler.StringResources.Get("CODE_COMPLETION_GLOBAL"),
+                        CodeCompletionProvider.ImagesProvider.IconNumberUnitNamespace, true, true));
+                foreach (var symbol in modernSymbols)
+                {
+                    if (IsModernType(symbol)) classComboBox.Items.Add(new ComboBoxItem(symbol, symbol.Name, ModernIcon(symbol)));
+                    if (symbol.Kind == "Section")
+                        foreach (var child in symbol.Children)
+                            if (IsModernType(child)) classComboBox.Items.Add(new ComboBoxItem(child, child.Name, ModernIcon(child)));
+                }
 				classComboBox.SelectedIndex = 0;
 				FillModernMembers();
 				UpdateModernCaret();

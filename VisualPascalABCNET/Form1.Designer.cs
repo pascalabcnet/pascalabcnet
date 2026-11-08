@@ -1776,7 +1776,7 @@ namespace VisualPascalABC
             // 
             // slCol
             // 
-            this.slCol.AutoSize = false;
+            this.slCol.AutoSize = true;
             this.slCol.AutoToolTip = true;
             this.slCol.Name = "slCol";
             this.slCol.Size = new System.Drawing.Size(46, 19);

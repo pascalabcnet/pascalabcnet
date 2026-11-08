@@ -114,7 +114,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			Owner = parentForm;
 			Enabled = true;
 			this.Show();
-			control.Focus();
+			if (!EditorPlatform.IsMonoUnix) control.Focus();
             
 			if (parentForm != null) {
 				parentForm.LocationChanged += new EventHandler(this.ParentFormLocationChanged);
@@ -130,6 +130,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			foreach (Control c in Controls) {
 				c.MouseMove += ControlMouseMove;
 			}
+			if (EditorPlatform.IsMonoUnix) control.Focus();
 		}
 		
 		void ParentFormLocationChanged(object sender, EventArgs e)
@@ -161,7 +162,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		protected void TextEditorLostFocus(object sender, EventArgs e)
 		{
-            if (!control.ActiveTextAreaControl.TextArea.Focused && !this.ContainsFocus && Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX)
+            if (!EditorPlatform.IsMonoUnix && !control.ActiveTextAreaControl.TextArea.Focused && !this.ContainsFocus && Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX)
             {
                 Close();
 			}

@@ -60,6 +60,7 @@ internal static class Program
     {
         public string? state { get; set; }
         public string? fileName { get; set; }
+        public string? message { get; set; }
         public uint linesCompiled { get; set; }
         public int errorCount { get; set; }
         public int warningCount { get; set; }
@@ -338,6 +339,10 @@ internal static class Program
             string? outputFileName;
             requestCompiler.OnChangeCompilerState += handler;
 #if !NETFRAMEWORK
+            Action<string> compilerMessage = text => progress(new CompilerEvent { message = text });
+            requestCompiler.OnCompilerMessage += compilerMessage;
+#endif
+#if !NETFRAMEWORK
             Action<PackageRestoreProgress> packageProgress = value => progress(new CompilerEvent {
                 state = "NuGetRestoreProgress", fileName = value.PackageId,
                 nuGetOperationId = value.OperationId, nuGetStage = value.Stage,
@@ -354,6 +359,7 @@ internal static class Program
             {
                 requestCompiler.OnChangeCompilerState -= handler;
 #if !NETFRAMEWORK
+                requestCompiler.OnCompilerMessage -= compilerMessage;
                 PackageRestoreService.RestoreProgress -= packageProgress;
 #endif
                 snapshotPcus?.MarkDiskCachesStale();

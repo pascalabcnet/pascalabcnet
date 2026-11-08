@@ -372,6 +372,9 @@ namespace PascalABCCompiler
             //StringResourcesLanguage.CurrentLanguageName = "–усский";
             DateTime ldt = DateTime.Now;
             Compiler = new PascalABCCompiler.Compiler(null,ChangeCompilerState);
+#if PABCNET_MODERN
+            Compiler.OnCompilerMessage += message => Console.WriteLine(message);
+#endif
             //GC.Collect();
             WriteColorText(Compiler.Banner + "\nCopyright (c) 2005-2026 by Ivan Bondarev, Stanislav Mikhalkovich\n", ConsoleColor.Green);
             Console.WriteLine("OK {0}ms", (DateTime.Now - ldt).TotalMilliseconds);

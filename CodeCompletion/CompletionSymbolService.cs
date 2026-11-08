@@ -3,7 +3,8 @@
 
 using System;
 using System.Linq;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.CodeCompletion;
+using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler.SyntaxTree;
 
 namespace CodeCompletion

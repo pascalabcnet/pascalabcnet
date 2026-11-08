@@ -32,6 +32,7 @@ namespace VisualPascalABC
             editactions[Keys.Control | Keys.Y] = new ICSharpCode.TextEditor.Actions.DeleteLine();
             editactions[Keys.Escape] = new HideBottomTabs();
             quickClassBrowserPanel = new QuickClassBrowserPanel(this);
+            quickClassBrowserPanel.Enabled = !CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended;
             quickClassBrowserPanel.VisibleChanged += new EventHandler(quickClassBrowserPanel_VisibleChanged);
             if (VisualPABCSingleton.MainForm != null)
             {

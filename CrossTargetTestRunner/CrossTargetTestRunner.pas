@@ -38,6 +38,8 @@ var
   FailedCount := 0;
   SkippedCount := 0;
   ModernSkippedCount := 0;
+  ClassLibraryBuildAttempted := false;
+  ClassLibraryReady := false;
   FailureMessages := new System.Collections.Generic.List<string>;
   ProgressColumn := 0;
   ProgressPending := 0;
@@ -267,6 +269,8 @@ begin
                           Path.Combine(TestWorkDir, 'errors'));
   CopyDirectoryTreeToWork(Path.Combine(TestSuiteDir, 'referencefixtures'),
                           Path.Combine(TestWorkDir, 'referencefixtures'));
+  CopyDirectoryTreeToWork(Path.Combine(TestSuiteDir, 'libs'),
+                          Path.Combine(TestWorkDir, 'libs'));
 
   // Reference characterization tests use the runner's own assemblies as a
   // target-neutral fixture. Keep them beside the source unit so that the
@@ -484,6 +488,85 @@ begin
   end;
 end;
 
+// Build from sources with this runner's compiler, never reuse a checked-in
+// Framework DLL for a modern test. Outputs stay in the per-target work tree.
+function BuildTestLibrary(sourceRelativePath, outputRelativePath, testName: string): boolean;
+begin
+  Result := true;
+  if not MatchesFilter(testName) then
+    exit;
+
+  var outputDir := Path.Combine(TestWorkDir, outputRelativePath);
+  var sourceFile := Path.Combine(TestWorkDir, sourceRelativePath);
+  var comp := new Compiler();
+  Result := CompileSource(comp, sourceFile, outputDir, 'test libraries', false);
+  if not Result then
+    exit;
+
+  var dllName := Path.Combine(outputDir, Path.GetFileNameWithoutExtension(sourceFile) + '.dll');
+  if not &File.Exists(dllName) then
+  begin
+    RecordFailure('test libraries', sourceFile, 'Компилятор не создал DLL');
+    Result := false;
+    exit;
+  end;
+  RecordPassed;
+end;
+
+function BuildClassLibrary: boolean;
+begin
+  Result := ClassLibraryReady;
+  if ClassLibraryBuildAttempted then
+    exit;
+  ClassLibraryBuildAttempted := true;
+  var projectFile := Path.Combine(TestWorkDir, 'libs', 'ClassLibrary1', 'ClassLibrary1.csproj');
+  var framework := IsModernTarget ? 'net10.0' : 'net472';
+  try
+    var startInfo := new ProcessStartInfo('dotnet');
+    startInfo.Arguments := 'build "' + projectFile + '" -c Release --framework ' + framework +
+                           ' --output "' + TestWorkDir + '" --nologo';
+    startInfo.WorkingDirectory := TestWorkDir;
+    startInfo.UseShellExecute := false;
+    startInfo.CreateNoWindow := true;
+    startInfo.RedirectStandardOutput := true;
+    startInfo.RedirectStandardError := true;
+    var process := Process.Start(startInfo);
+    try
+      var output := process.StandardOutput.ReadToEndAsync();
+      var errors := process.StandardError.ReadToEndAsync();
+      if not process.WaitForExit(TestTimeoutMilliseconds) then
+      begin
+        process.Kill();
+        process.WaitForExit();
+        RecordFailure('test libraries', projectFile, 'Превышен таймаут сборки ClassLibrary1');
+        exit;
+      end;
+      if process.ExitCode <> 0 then
+      begin
+        RecordFailure('test libraries', projectFile, output.Result + NewLine + errors.Result);
+        exit;
+      end;
+    finally
+      process.Dispose;
+    end;
+    var dllName := Path.Combine(TestWorkDir, 'ClassLibrary1.dll');
+    if not &File.Exists(dllName) then
+    begin
+      RecordFailure('test libraries', projectFile, 'Компилятор C# не создал ClassLibrary1.dll');
+      exit;
+    end;
+    // Replace only the copied legacy DLLs, never the originals in TestSuite.
+    foreach var directoryName in Arr('units', 'usesunits') do
+      &File.Copy(dllName, Path.Combine(TestWorkDir, directoryName, 'ClassLibrary1.dll'), true);
+    ClassLibraryReady := true;
+    Result := true;
+    RecordPassed;
+  except
+    on e: Exception do
+      RecordFailure('test libraries', projectFile, e.ToString());
+  end;
+end;
+
 function CollectGeneratedPcu(sourceFileName, outputDir, phase: string): boolean; forward;
 
 procedure RunCoreTests;
@@ -497,6 +580,14 @@ begin
 
   BeginSection('core: compile');
   var compileStarted := Milliseconds;
+
+  if MatchesFilter('records14.pas') then
+    if not BuildClassLibrary then
+      exit;
+  if not BuildTestLibrary(Path.Combine('libs', 'l2.pas'), '', 'overloads11.pas') then
+    exit;
+  if not BuildTestLibrary('foreach_resolver_lib.pas', '', 'foreach_resolver1.pas') then
+    exit;
 
   foreach var fileName in files do
   begin
@@ -612,6 +703,9 @@ begin
   BeginSection('units: compile');
   var unitsStarted := Milliseconds;
   var workUnitsDir := Path.Combine(TestWorkDir, 'units');
+  if MatchesFilter('u_lib1.pas') or MatchesFilter('use_lib1.pas') then
+    if not BuildClassLibrary then
+      exit;
   if BuildTransitiveReferenceFixtures then
   begin
     RunReferenceIntellisenseTest;
@@ -633,8 +727,28 @@ begin
 
   BeginSection('usesunits: compile');
   var usesUnitsStarted := Milliseconds;
+  var relativeLibraryDir := Path.Combine('usesunits', 'UsesInUnits3');
+  if not BuildTestLibrary(Path.Combine(relativeLibraryDir, 'uui3_lib.pas'),
+                          relativeLibraryDir, 'uses_in3_derectives.pas') then
+    exit;
   CompileDirectory(Path.Combine(TestWorkDir, 'usesunits'), UsesUnitsOutputDir,
                    'usesunits', workUnitsDir);
+  if MatchesFilter('use_lib1.pas') then
+  begin
+    var exeName := Path.Combine(UsesUnitsOutputDir, 'use_lib1.exe');
+    if &File.Exists(exeName) then
+      if RunProgram(exeName, Path.Combine(TestWorkDir, 'usesunits', 'use_lib1.pas')) then
+        RecordPassed;
+  end;
+  // Modern resource regression: compilation alone does not check that the
+  // included unit can read its embedded 1.txt during initialization.
+  if IsModernTarget and MatchesFilter('uses_in3_derectives.pas') then
+  begin
+    var exeName := Path.Combine(UsesUnitsOutputDir, 'uses_in3_derectives.exe');
+    if &File.Exists(exeName) then
+      if RunProgram(exeName, Path.Combine(TestWorkDir, 'usesunits', 'uses_in3_derectives.pas')) then
+        RecordPassed;
+  end;
   EndSection(usesUnitsStarted);
 end;
 

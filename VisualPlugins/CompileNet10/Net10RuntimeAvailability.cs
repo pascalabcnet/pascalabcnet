@@ -57,7 +57,11 @@ namespace VisualPascalABCPlugins
                 core |= parts[0] == "Microsoft.NETCore.App";
                 desktop |= parts[0] == "Microsoft.WindowsDesktop.App";
             }
+#if PABC_LINUX_PLUGIN
+            return core;
+#else
             return core && desktop;
+#endif
         }
     }
 }

@@ -319,6 +319,16 @@ static async Task CheckDiagnosticLanguagesAsync(Process process, string runtimeR
 {
     string source = Path.Combine(sourceRoot, "Localized.pas");
     const string packageId = "PascalABC.Localized.Test";
+    const string pointerLine = "    p: ^T;";
+    const string genericPointer = "type\n  PointerBox<T> = class\n" + pointerLine +
+        "\n  end;\nbegin\n  var box := new PointerBox<integer>;\nend.";
+    const string pointerToGenericRecord = "type\n  Payload<T> = record item: T; end;\n" +
+        "  PointerBox<T> = class\n    p: ^Payload<T>;\n  end;\nbegin end.";
+    const string disableStandardUnits = "{$DisableStandardUnits}\n";
+    string pointerUnit = Path.Combine(sourceRoot, "LocalizedPointerUnit.pas");
+    await File.WriteAllTextAsync(pointerUnit, "unit LocalizedPointerUnit;\ninterface\n" +
+        "type PointerBox<T> = class\n" + pointerLine +
+        "\nend;\nimplementation\nend.", new UTF8Encoding(false));
     string conflicting = "{$package " + packageId + " 1.0.0}\n{$package " + packageId + " 2.0.0}\nbegin end.";
     string ReadResource(string iso, string file, string key)
     {
@@ -356,6 +366,45 @@ static async Task CheckDiagnosticLanguagesAsync(Process process, string runtimeR
         string expected = string.Format(ReadResource(iso, "CompilerErrors.dat",
             "CONFLICTING_PACKAGE_VERSIONS{0}{1}{2}"), packageId, "1.0.0", "2.0.0");
         Check(await Error(conflicting, language) == expected, "CompilerErrors.dat is selected for " + language);
+
+        string expectedPointer = string.Format(ReadResource(iso, "SemanticErrors_ssyy.dat",
+            "GENERIC_POINTER_NOT_ALLOWED_WITHOUT_STANDARD_UNITS{0}"), "{$DisableStandardUnits}");
+        foreach (var pointerCase in new[]
+        {
+            (Text: disableStandardUnits + genericPointer, File: source, Line: 4),
+            (Text: disableStandardUnits + "uses LocalizedPointerUnit;\nbegin end.", File: pointerUnit, Line: 4),
+            (Text: disableStandardUnits + pointerToGenericRecord, File: source, Line: 5)
+        })
+        {
+            await File.WriteAllTextAsync(source, pointerCase.Text, new UTF8Encoding(false));
+            var result = await CompileAsync(process, 183, source, outputRoot, language: language);
+            var diagnostics = result.GetProperty("diagnostics");
+            if (result.GetProperty("success").GetBoolean() || diagnostics.GetArrayLength() != 1)
+                throw new InvalidOperationException("Expected one generic pointer diagnostic: " + result);
+            var diagnostic = diagnostics[0];
+            Check(diagnostic.GetProperty("message").GetString() == expectedPointer,
+                "Generic pointer diagnostic is localized for " + language);
+            Check(Path.GetFullPath(diagnostic.GetProperty("fileName").GetString()!) == Path.GetFullPath(pointerCase.File) &&
+                  diagnostic.GetProperty("line").GetInt32() == pointerCase.Line &&
+                  diagnostic.GetProperty("column").GetInt32() == pointerLine.IndexOf('^') + 1,
+                "Generic pointer diagnostic points to ^");
+        }
+        const string splitExpressionLine = "    {{text}} {age +";
+        string multiline = "begin\n  var age := 18;\n  var text := $'''\n" +
+            splitExpressionLine + "\n    1}\n    ''';\nend.";
+        // Exercise both source newline conventions, even on Windows.
+        if (iso == "ru")
+            multiline = multiline.Replace("\n", "\r\n");
+        await File.WriteAllTextAsync(source, multiline, new UTF8Encoding(false));
+        var splitExpression = await CompileAsync(process, 181, source, outputRoot, language: language);
+        Check(!splitExpression.GetProperty("success").GetBoolean(), "line break inside interpolation is rejected");
+        var splitDiagnostic = splitExpression.GetProperty("diagnostics")[0];
+        Check(splitDiagnostic.GetProperty("message").GetString() == ReadResource(iso, "PascalABCParser.dat",
+              "INTERPOLATION_EXPRESSION_MUST_BE_ON_ONE_LINE"), "multiline interpolation diagnostic is localized for " + language);
+        Check(Path.GetFullPath(splitDiagnostic.GetProperty("fileName").GetString()!) == Path.GetFullPath(source) &&
+              splitDiagnostic.GetProperty("line").GetInt32() == 4 &&
+              splitDiagnostic.GetProperty("column").GetInt32() == splitExpressionLine.IndexOf("{age", StringComparison.Ordinal) + 1,
+            "multiline interpolation error points to the opening brace after escaped braces");
         if (modern)
         {
             string misplaced = "unit Localized;\n{$package " + packageId + " 1.0.0}\ninterface implementation end.";
@@ -363,7 +412,22 @@ static async Task CheckDiagnosticLanguagesAsync(Process process, string runtimeR
                 "PACKAGE_DIRECTIVE_MUST_PRECEDE_CODE"), "PascalABCParser.dat is selected for " + language);
         }
     }
+    const string missingNameLine = "    {{text}} {notDeclared}";
+    await File.WriteAllTextAsync(source, "begin\n  var text := $'''\n    first line\n" +
+        missingNameLine + "\n    ''';\nend.", new UTF8Encoding(false));
+    var missingName = await CompileAsync(process, 182, source, outputRoot);
+    Check(!missingName.GetProperty("success").GetBoolean(), "undeclared interpolation expression is rejected");
+    var nameDiagnostic = missingName.GetProperty("diagnostics")[0];
+    Check(Path.GetFullPath(nameDiagnostic.GetProperty("fileName").GetString()!) == Path.GetFullPath(source) &&
+          nameDiagnostic.GetProperty("line").GetInt32() == 4 &&
+          nameDiagnostic.GetProperty("column").GetInt32() == missingNameLine.IndexOf("notDeclared", StringComparison.Ordinal) + 1,
+        "semantic error points to the expression on the second text line");
     Check(await Error(conflicting, null) == defaultMessage, "Omitted language does not inherit the previous request's language");
+
+    await File.WriteAllTextAsync(source, genericPointer, new UTF8Encoding(false));
+    CheckSuccess(await CompileAsync(process, 184, source, outputRoot), "Generic pointer still compiles with PABCSystem");
+    await File.WriteAllTextAsync(source, disableStandardUnits + "var p: ^integer;\nbegin end.", new UTF8Encoding(false));
+    CheckSuccess(await CompileAsync(process, 185, source, outputRoot), "Concrete pointer still compiles without PABCSystem");
 }
 
 static async Task CheckSnapshotPcuFreshnessAsync(Process process, string sourceRoot, string outputRoot, bool isNet10)
@@ -560,6 +624,19 @@ static async Task CheckSourceSnapshotsAsync(
     Check(diagnostic.GetProperty("line").GetInt32() >= 6 &&
           diagnostic.GetProperty("column").GetInt32() >= 1,
         "diagnostic contains virtual-module coordinates");
+
+    // The generated constructor and property have the same name. The error
+    // must point into the unsaved source, not to a synthetic filename.
+    const string collisionLine = "  var item := new class(Create := 1);";
+    var invalidAnonymousClass = await CompileAsync(
+        process, firstRequestId + 8, mainPath, outputRoot,
+        sourceFiles: new[] { new SourceFileInput(mainPath, "begin\n" + collisionLine + "\nend.") });
+    Check(!invalidAnonymousClass.GetProperty("success").GetBoolean(), "anonymous class member collision is rejected");
+    var anonymousDiagnostic = invalidAnonymousClass.GetProperty("diagnostics")[0];
+    Check(Path.GetFullPath(anonymousDiagnostic.GetProperty("fileName").GetString()!) == Path.GetFullPath(mainPath) &&
+          anonymousDiagnostic.GetProperty("line").GetInt32() == 2 &&
+          anonymousDiagnostic.GetProperty("column").GetInt32() == collisionLine.IndexOf("Create", StringComparison.Ordinal) + 1,
+        "anonymous class diagnostic points to the real source and member");
 }
 
 static async Task<string> RunAndCaptureAsync(

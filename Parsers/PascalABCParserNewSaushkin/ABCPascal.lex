@@ -11,7 +11,7 @@
 	private bool HiddenIdents = false;
 	private bool ExprMode = false;
 
-  public Scanner(string text, PascalParserTools parserTools, PascalABCCompiler.Contracts.BaseKeywords keywords, List<string> defines = null) 
+  public Scanner(string text, PascalParserTools parserTools, PascalABCCompiler.Contracts.Parsers.IKeywords keywords, List<string> defines = null) 
   {
     this.parserTools = parserTools;
     this.keywords = (PascalABCKeywords)keywords;
@@ -557,6 +557,13 @@ UNICODEARROW \x890
   currentLexLocation = CurrentLexLocation;
   yylval.stn = parserTools.create_multiline_string_const(yytext,currentLexLocation); 
   return (int)Tokens.tkMultilineStringLiteral; 
+}
+
+\${MULTILINESTRINGNUM} {
+  yylval = new Union();
+  currentLexLocation = CurrentLexLocation;
+  yylval.stn = parserTools.create_multiline_format_string_const(yytext,currentLexLocation);
+  return (int)Tokens.tkFormatStringLiteral;
 }
 
 {FORMATSTRINGNUM} { 

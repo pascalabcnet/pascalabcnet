@@ -142,7 +142,8 @@ internal static partial class Program
     {
         int probeExitCode;
         if (TryFakeRuntimeProbe(args, out probeExitCode)) return probeExitCode;
-        return RunTestsAsync(args).GetAwaiter().GetResult();
+        try { return RunTestsAsync(args).GetAwaiter().GetResult(); }
+        finally { foreach (var form in testHintParents) form.Dispose(); }
     }
 
     private static void CheckParserRename()
@@ -286,6 +287,23 @@ internal static partial class Program
     {
         try
         {
+            if (args.Length > 0 && args[0] == "--intellisense-contract")
+            {
+                CheckExternalIntelliSenseOwnership();
+                CheckExternalCompletionKeys();
+                CheckLanguageCompletion(null);
+                CheckPackageDirectiveCompletion();
+                CheckLanguageHover();
+                CheckLanguageSignature(args.Length > 1 ? args[1] : null);
+                CheckLanguageRecovery();
+                CheckLanguageSynchronizationAsync(args.Length > 1 ? args[1] : null).GetAwaiter().GetResult();
+                return 0;
+            }
+            if (args.Length == 2 && args[0] == "--runtime-errors")
+            {
+                await CheckRedirectedRuntimeErrors(Path.GetFullPath(args[1]));
+                return 0;
+            }
             if (args.Length == 2 && args[0] == "--runtime-location")
             {
                 System.Threading.SynchronizationContext.SetSynchronizationContext(null);
@@ -295,6 +313,11 @@ internal static partial class Program
             if (args.Length > 0 && args[0] == "--runtime-default")
             {
                 CheckRuntimeAvailability();
+                return 0;
+            }
+            if (args.Length > 0 && args[0] == "--nuget-messages")
+            {
+                CheckNuGetMessageDisplay();
                 return 0;
             }
             if (args.Length > 0 && args[0] == "--publish-localization")
@@ -318,6 +341,15 @@ internal static partial class Program
                 await CheckMlCacheRemoval(args[1]);
                 return 0;
             }
+            if (args.Length > 0 && args[0] == "--symbols-ui")
+            {
+                CheckLanguageDocumentSymbols();
+                return 0;
+            }
+            if (args.Length > 0 && args[0] == "--navigation-commands")
+            { CheckNavigationCommands(); return 0; }
+            if (args.Length > 0 && args[0] == "--platform-ui")
+            { CheckPlatformUI(); return 0; }
             CheckRestoreDeadlines();
             CheckRestoreStatus();
             CheckManualPackageRequests();
@@ -360,11 +392,6 @@ internal static partial class Program
             if (args.Length > 0 && args[0] == "--navigation-hover")
             {
                 CheckNavigationClick(null);
-                return 0;
-            }
-            if (args.Length > 0 && args[0] == "--symbols-ui")
-            {
-                CheckLanguageDocumentSymbols();
                 return 0;
             }
             if (args.Length > 0 && args[0] == "--signature-ui")
@@ -434,14 +461,14 @@ internal static partial class Program
                 using (var status = new Net10StatusDisplay(form))
                 {
                     status.StartReady(true, "Готов");
-                    Check(label.Text == ".NET 10: Готов", "switching to net10 shows localized ready status with platform prefix");
+                    Check(label.Text == "Готов", "switching to net10 preserves localized ready text without a platform prefix");
                     status.StartReady(false, "Готов");
                     Check(label.Text == "Готов", "switching back shows canonical ready status without platform name");
                     status.StartReady(true, "Ready");
-                    Check(label.Text == ".NET 10: Ready", "platform ready status preserves the IDE language");
+                    Check(label.Text == "Ready", "platform ready status preserves the IDE language");
                     status.StartReady(true, "Готов");
                     status.BeginOperation();
-                    Check(label.Text == ".NET 10: Готов", "starting compile adds no transient preparation status");
+                    Check(label.Text == "Готов", "starting compile adds no transient preparation status");
                     status.Update("Компиляция .NET 10 прошла успешно");
                     Check(label.Text == "Компиляция .NET 10 прошла успешно", "net10 compilation result updates shared status line");
                     label.Text = "Обычная компиляция";
@@ -511,6 +538,7 @@ internal static partial class Program
             string root = Path.Combine(Path.GetTempPath(), "pabc-net10-run-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(root);
             Console.WriteLine("Fixtures: " + root);
+            await CheckRedirectedRuntimeErrors(Path.GetFullPath(args[0]));
             await CheckPortableHost(Path.GetFullPath(args[0]), root);
             using (var compiler = new Net10ControllerClient(args[0], "dotnet"))
             {
@@ -624,6 +652,44 @@ internal static partial class Program
         {
             Console.Error.WriteLine(error);
             return 1;
+        }
+    }
+
+    private static async Task CheckRedirectedRuntimeErrors(string runtime)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "pabc-runtime-errors-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        using (var compiler = new Net10ControllerClient(runtime, "dotnet"))
+        foreach (string replacement in new[] { "new System.IO.StringWriter", "System.IO.TextWriter.Null" })
+        {
+            string source = Path.Combine(root, "RedirectedError.pas");
+            string text = "begin\n" +
+                "  var originalError := System.Console.Error;\n" +
+                "  System.Console.SetError(" + replacement + ");\n" +
+                "  try\n" +
+                "    raise new System.ArgumentException('Ошибка при заменённом stderr');\n" +
+                "  finally\n" +
+                "    System.Console.SetError(originalError);\n" +
+                "  end;\nend.";
+            var compiled = await compiler.CompileAsync(source, root, "__RedirectIOMode",
+                new List<Net10SourceFile> { new Net10SourceFile { fileName = source, text = text } }, debug: true);
+            Check(compiled.success, "compile redirected stderr exception: " + compiled.message);
+            RuntimeExceptionInfo error = null;
+            int notifications = 0;
+            using (var runner = new Net10ProgramRunner("dotnet", compiled.outputFile, root, ""))
+            {
+                var running = runner.RunAsync(s => { }, () => { }, exception: value => { error = value; notifications++; });
+                if (await Task.WhenAny(running, Task.Delay(30000)) != running)
+                {
+                    runner.Stop();
+                    throw new TimeoutException("Redirected exception process timed out");
+                }
+                Check(await running != 0, "unhandled exception exits unsuccessfully");
+            }
+            Check(notifications == 1 && error != null && error.Type == "System.ArgumentException" &&
+                error.Message == "Ошибка при заменённом stderr", "runtime exception survives Console.SetError(" + replacement + ")");
+            Check(error.Frames.Exists(frame => string.Equals(frame.FileName, source, StringComparison.OrdinalIgnoreCase) && frame.Line == 5),
+                "runtime exception carries the throw location for IDE highlighting");
         }
     }
 
@@ -926,6 +992,11 @@ internal static partial class Program
         quiet.Handle(new Net10CompilerEvent { state = "Ready", linesCompiled = 2 }, messages.Add, quietStatuses.Add);
         Check(quietStatuses.Count == 3 && quietStatuses[2].Contains("STATETEXT_COMPILATION_SUCCESS"),
             "status retains canonical compile/code-generation/result sequence");
+        CheckNuGetMessageDisplay();
+    }
+
+    private static void CheckNuGetMessageDisplay()
+    {
         var packageMessages = new List<string>();
         var packageStatuses = new List<string>();
         var packageDisplay = new Net10CompilerDisplay(key => key);
@@ -940,9 +1011,12 @@ internal static partial class Program
             fileName = "2" }, packageMessages.Add, packageStatuses.Add);
         packageDisplay.Handle(new Net10CompilerEvent { state = "NuGetPackageInstalled",
             fileName = "NodaTime 3.2.2" }, packageMessages.Add, packageStatuses.Add);
-        Check(packageMessages.Count == 2 && packageMessages[0].Contains("STATE_NUGETPACKAGESINSTALLED") &&
-              packageMessages[1].Contains("STATE_NUGETPACKAGEINSTALLED"),
-            "newly downloaded NuGet packages are listed in compiler messages");
+        packageDisplay.Handle(new Net10CompilerEvent { @event = "compilerMessage",
+            message = "NuGet: OpenTK.Core 4.8.2" }, packageMessages.Add, packageStatuses.Add);
+        Check(packageMessages.Count == 3 && packageMessages[0].Contains("STATE_NUGETPACKAGESINSTALLED") &&
+              packageMessages[1].Contains("STATE_NUGETPACKAGEINSTALLED") &&
+              packageMessages[2] == "[.NET 10] NuGet: OpenTK.Core 4.8.2" && packageStatuses.Count == 0,
+            "NuGet resolution details belong in compiler messages, not warnings or status");
     }
 
     private static void CheckExternalRunRouting()

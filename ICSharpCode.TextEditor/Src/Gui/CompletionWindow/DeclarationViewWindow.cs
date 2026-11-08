@@ -25,6 +25,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 	
 	public class DeclarationViewWindow : Form, IDeclarationViewWindow
 	{
+		public TextEditorControl TextEditorControl { get; set; }
 		string description = String.Empty;
 		
 		public string Description {
@@ -69,6 +70,19 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			}
 		}
 		
+		protected override void OnGotFocus(EventArgs e)
+		{
+			base.OnGotFocus(e);
+			// Preserve the legacy Mono behavior without affecting Windows.
+			if (EditorPlatform.IsMonoUnix && TextEditorControl != null)
+				TextEditorControl.Focus();
+		}
+
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
+		}
+
 		protected override void OnClick(EventArgs e)
 		{
 			base.OnClick(e);

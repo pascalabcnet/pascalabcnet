@@ -38,7 +38,9 @@
 **/CodeCompletion.dll
 **/CodeTemplatesPlugin.dll
 **/Compiler.dll
-**/Contracts.dll
+**/CodeCompletionContracts.dll
+**/ParserContracts.dll
+**/LanguageContracts.dll
 **/CompilerController.dll
 **/CompileNet10Plugin.dll
 **/CompilerTools.dll
@@ -100,6 +102,7 @@
 /bin/ICSharpCode.SharpDevelop.Dom.dll
 /bin/ICSharpCode.SharpDevelop.Widgets.dll
 /bin/ICSharpCode.TextEditor.dll
+/Libraries/ICSharpCode.TextEditor.dll
 /bin/ICSharpCode.TextEditorLinux.dll
 /bin/WeifenLuo.WinFormsUI.Docking.dll
 /bin/WeifenLuo.WinFormsUI.DockingLinux.dll

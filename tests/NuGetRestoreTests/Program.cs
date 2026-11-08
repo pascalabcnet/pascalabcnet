@@ -61,7 +61,17 @@ internal static partial class Program
                 await CheckSourceDefaults(work);
                 return 0;
             }
+            if (args.Contains("--target-windows"))
+            {
+                await CheckWindowsTarget(work);
+                return 0;
+            }
             await CheckRestore(work);
+            if (args.Contains("--message-protocol"))
+            {
+                await CheckCompilerMessageProtocol(work);
+                return 0;
+            }
             if (args.Contains("--restore-diagnostics"))
             {
                 await CheckRestoreDiagnostics(work);
@@ -160,6 +170,144 @@ internal static partial class Program
             foreach (string directory in HiddenRestoreDirectories)
                 if (Directory.Exists(directory)) Directory.Delete(directory, recursive: true);
         }
+    }
+
+    private static async Task CheckCompilerMessageProtocol(string work)
+    {
+        // A fresh Worker isolates this protocol check from the reload stress test.
+        const string alternateId = "PascalABC.TestAlternate";
+        string feed = Path.Combine(work, "feed");
+        var alternate = new PackageBuilder {
+            Id = alternateId, Version = NuGetVersion.Parse("1.0.0"),
+            Description = "Compatible dependency range fixture."
+        };
+        alternate.Authors.Add("PascalABC.NET tests");
+        string sourceDirectory = Path.Combine(work, "message-protocol");
+        Directory.CreateDirectory(sourceDirectory);
+        string placeholder = Path.Combine(sourceDirectory, "empty.txt");
+        File.WriteAllText(placeholder, "");
+        alternate.Files.Add(new PhysicalPackageFile {
+            SourcePath = placeholder, TargetPath = "lib/net10.0/_._"
+        });
+        alternate.DependencyGroups.Add(new PackageDependencyGroup(NuGetFramework.ParseFolder("net10.0"),
+            new[] { new PackageDependency(DependencyId, VersionRange.Parse("[1.0.0,)")) }));
+        using (var stream = File.Create(Path.Combine(feed, alternateId + ".1.0.0.nupkg")))
+            alternate.Save(stream);
+
+        string repository = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
+        string runtime = Environment.GetEnvironmentVariable("PABC_NUGET_TEST_RUNTIME")
+            ?? Path.Combine(repository, "bin-net10");
+        string controller = Path.Combine(runtime, "PABCCompilerController.dll");
+        string worker = Path.Combine(runtime, "PABCCompilerWorker.dll");
+        Check(File.Exists(controller) && File.Exists(worker), "Build Controller and Worker before --message-protocol.");
+        string source = Path.Combine(sourceDirectory, "messages.pas");
+        string packageCache = Path.Combine(sourceDirectory, "packages");
+        string sourceText = $"{{$package {RootId} 1.0.0}}\n{{$package {alternateId} 1.0.0}}\nbegin end.\n";
+        File.WriteAllText(source, sourceText);
+        WriteConfiguration(Path.Combine(sourceDirectory, "NuGet.Config"), feed, packageCache);
+        HiddenRestoreDirectories.Add(new PackageRestoreService().GetConfiguration(new PackageRestoreRequest {
+            ProgramFilePath = source, Packages = new[] { new PackageRequirement(RootId, "1.0.0"),
+                new PackageRequirement(alternateId, "1.0.0") }
+        }).RestoreDirectory);
+        var start = new ProcessStartInfo("dotnet") {
+            WorkingDirectory = runtime, UseShellExecute = false,
+            RedirectStandardInput = true, RedirectStandardOutput = true,
+            RedirectStandardError = true, CreateNoWindow = true
+        };
+        start.ArgumentList.Add(controller);
+        start.ArgumentList.Add(worker);
+        start.ArgumentList.Add("0");
+        start.ArgumentList.Add("0");
+        start.Environment["NUGET_PACKAGES"] = packageCache;
+        using var process = Process.Start(start) ?? throw new Exception("Controller did not start.");
+        try
+        {
+            var events = new List<JsonElement>();
+            var result = await SendControllerAsync(process, new {
+                id = 1, command = "compile", fileName = source,
+                outputDirectory = Path.Combine(sourceDirectory, "net10-output"), emitEvents = true,
+                sourceFiles = new[] { new { fileName = source, text = sourceText } }
+            }, events.Add);
+            Check(result.GetProperty("success").GetBoolean(),
+                "Compatible NuGet ranges failed compilation: " + result);
+            var messages = events.Where(value => value.GetProperty("event").GetString() == "compilerMessage")
+                .ToArray();
+            Check(messages.Length == 1 &&
+                messages[0].GetProperty("message").GetString()!.Contains(DependencyId) &&
+                messages[0].GetProperty("fileName").ValueKind == JsonValueKind.Null &&
+                events.Last().GetProperty("warningCount").GetInt32() == 0,
+                "Compatible range resolution uses a dedicated message field and does not add a warning.");
+            var shutdown = await SendControllerAsync(process, new { id = 2, command = "shutdown" });
+            Check(shutdown.GetProperty("success").GetBoolean(), "Controller did not shut down.");
+        }
+        finally
+        {
+            if (!process.HasExited) process.Kill(entireProcessTree: true);
+            await process.WaitForExitAsync();
+        }
+        var console = await RunCompiler(Path.Combine(runtime, "pabcnetcclear.exe"),
+            source, packageCache, Path.Combine(sourceDirectory, "console-output"));
+        Check(console.ExitCode == 0 && console.Output.Contains(DependencyId),
+            "Console compiler omitted the informational dependency message: " +
+            console.Output + console.Error);
+    }
+
+    private static async Task CheckWindowsTarget(string work)
+    {
+        string feed = Path.Combine(work, "windows-feed");
+        Directory.CreateDirectory(feed);
+        const string packageId = "PascalABC.WindowsTargetFixture";
+        var builder = new PackageBuilder {
+            Id = packageId, Version = NuGetVersion.Parse("1.0.0"),
+            Description = "Windows target selection fixture."
+        };
+        builder.Authors.Add("PascalABC.NET tests");
+        string fixture = Path.Combine(AppContext.BaseDirectory, "fixtures", "lib", "TestRoot.dll");
+        builder.Files.Add(new PhysicalPackageFile {
+            SourcePath = fixture, TargetPath = "lib/net10.0-windows7.0/TestRoot.dll"
+        });
+        using (var stream = File.Create(Path.Combine(feed, packageId + ".1.0.0.nupkg")))
+            builder.Save(stream);
+        var service = new PackageRestoreService();
+        var request = new PackageRestoreRequest {
+            Packages = new[] { new PackageRequirement(packageId, "1.0.0") },
+            Sources = new[] { feed }, PackagesDirectory = Path.Combine(work, "windows-packages"),
+            RestoreDirectory = Path.Combine(work, "windows-restore"),
+            TargetFramework = "net10.0-windows10.0.19041.0"
+        };
+        var graph = await service.RestoreAsync(request);
+        Check(graph.TargetFramework == "net10.0-windows10.0.19041.0" &&
+            graph.Packages.Single().RuntimeAssemblies.Single().Replace('\\', '/').Contains("/net10.0-windows7.0/"),
+            "Windows-specific NuGet asset was not selected.");
+        var repeat = await service.RestoreAsync(request);
+        Check(repeat.UsedCachedRestore, "Unchanged Windows target did not use the restore cache.");
+        try {
+            await service.RestoreAsync(request with { TargetFramework = "net10.0" });
+            throw new Exception("A Windows-only package was accepted for portable net10.0.");
+        }
+        catch (PackageRestoreException) { }
+        string repository = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
+        string compiler = Path.Combine(Environment.GetEnvironmentVariable("PABC_NUGET_TEST_COMPILER_DIR")
+            ?? Path.Combine(repository, "bin-net10"), "pabcnetcclear.exe");
+        Check(File.Exists(compiler), "Build the modern console compiler before --target-windows.");
+        string source = Path.Combine(work, "windows-target.pas");
+        string packageCache = Path.Combine(work, "compiler-packages");
+        WriteConfiguration(Path.Combine(work, "NuGet.Config"), feed, packageCache);
+        File.WriteAllText(source, "{$target windows}\n{$platform winforms}\n{$package " +
+            packageId + " 1.0.0}\nbegin end.\n");
+        string outputDirectory = Path.Combine(work, "net10-output");
+        var compiled = await RunCompiler(compiler, source, packageCache, outputDirectory);
+        Check(compiled.ExitCode == 0, "Compiler rejected {$target windows}: " + compiled.Output + compiled.Error);
+        string runtimeConfig = Path.Combine(outputDirectory, "windows-target.runtimeconfig.json");
+        using (var json = JsonDocument.Parse(File.ReadAllText(runtimeConfig)))
+        {
+            var runtimeOptions = json.RootElement.GetProperty("runtimeOptions");
+            Check(runtimeOptions.GetProperty("tfm").GetString() == "net10.0-windows10.0.19041.0",
+                "Compiled Windows target did not retain its TFM.");
+            Check(runtimeOptions.GetProperty("framework").GetProperty("name").GetString() == "Microsoft.WindowsDesktop.App",
+                "{$platform winforms} did not select the Windows Desktop runtime.");
+        }
+        Console.WriteLine("PASS: Windows-only NuGet assets require net10.0-windows and reuse cache.");
     }
 
     private static async Task CheckRestore(string work)

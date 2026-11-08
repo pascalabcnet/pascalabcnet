@@ -23,6 +23,10 @@ namespace VisualPascalABCPlugins
         private bool languageVisible = true;
         private string savedToolTip;
         private ToolStripButton restorePackages;
+#if !PABC_LINUX_PLUGIN
+        private ToolStripStatusLabel platform, platformDivider;
+        private Padding messageMargin, stripPadding;
+#endif
         private Func<bool> packagesRequired;
         private bool manualRestoreActive;
         private Action restoreAction;
@@ -75,6 +79,41 @@ namespace VisualPascalABCPlugins
                 label = strip.Items["toolStripStatusLabel5"] as ToolStripStatusLabel;
             }
             if (label != null) label.TextChanged += TextChanged;
+#if !PABC_LINUX_PLUGIN
+            if (strip != null)
+            {
+                stripPadding = strip.Padding;
+                strip.Padding = new Padding(stripPadding.Left, stripPadding.Top, stripPadding.Right, stripPadding.Bottom);
+            }
+            if (label != null)
+            {
+                messageMargin = label.Margin;
+                label.Margin = new Padding(messageMargin.Left + 6, messageMargin.Top, messageMargin.Right, messageMargin.Bottom);
+            }
+            if (strip != null && strip.Items["toolStripStatusLabel1"] is ToolStripStatusLabel coordinates)
+            {
+                platform = new ToolStripStatusLabel(".NET Framework") {
+                    Name = "Net10PlatformStatus", AutoSize = false,
+                    TextAlign = System.Drawing.ContentAlignment.MiddleRight,
+                    Margin = new Padding(6, coordinates.Margin.Top, 11, coordinates.Margin.Bottom), Overflow = ToolStripItemOverflow.Never,
+                    ToolTipText = ".NET Framework 4.7.2" };
+                platformDivider = new ToolStripStatusLabel {
+                    Name = "Net10PlatformDivider", AutoSize = false, Width = 2,
+                    Margin = new Padding(0, coordinates.Margin.Top, 6, coordinates.Margin.Bottom),
+                    BorderSides = ToolStripStatusLabelBorderSides.Right, Overflow = ToolStripItemOverflow.Never };
+                strip.Items.Insert(strip.Items.IndexOf(coordinates), platform);
+                strip.Items.Insert(strip.Items.IndexOf(coordinates), platformDivider);
+                SetPlatformWidth();
+                strip.FontChanged += PlatformFontChanged;
+            }
+            if (strip != null)
+                foreach (ToolStripItem item in strip.Items)
+                {
+                    var margin = item.Margin;
+                    int shift = Math.Min(3, margin.Top);
+                    item.Margin = new Padding(margin.Left, margin.Top - shift, margin.Right, margin.Bottom + shift);
+                }
+#endif
         }
 
         private void TextChanged(object sender, EventArgs e)
@@ -92,9 +131,26 @@ namespace VisualPascalABCPlugins
 
         public void StartReady(bool modern, string readyText)
         {
+#if PABC_LINUX_PLUGIN
             Start(modern ? ".NET 10: " + readyText : readyText);
+#else
+            if (platform != null)
+            {
+                platform.Text = modern ? ".NET 10" : ".NET Framework";
+                platform.ToolTipText = modern ? ".NET 10" : ".NET Framework 4.7.2";
+            }
+            Start(readyText);
+#endif
         }
 
+#if !PABC_LINUX_PLUGIN
+        private void PlatformFontChanged(object sender, EventArgs e) => SetPlatformWidth();
+        private void SetPlatformWidth()
+        {
+            platform.Width = Math.Max(TextRenderer.MeasureText(".NET Framework", platform.Font).Width,
+                TextRenderer.MeasureText(".NET 10", platform.Font).Width) + 2;
+        }
+#endif
         // Claim the next compilation's messages without adding a transient status.
         public void BeginOperation() { owned = true; }
 
@@ -229,6 +285,9 @@ namespace VisualPascalABCPlugins
                 return;
             }
             if (!owned) return;
+#if !PABC_LINUX_PLUGIN
+            if (text != null && text.StartsWith(".NET 10: ", StringComparison.Ordinal)) text = text.Substring(9);
+#endif
             if (shownRestore != null) { savedStatus = lastText = text; return; }
             writing = true;
             try { lastText = text; label.Text = text; }
@@ -242,6 +301,16 @@ namespace VisualPascalABCPlugins
             if (cancel != null) { strip.Items.Remove(cancel); cancel.Dispose(); }
             if (restorePackages != null) { strip.Items.Remove(restorePackages); restorePackages.Dispose(); }
             if (label != null) label.TextChanged -= TextChanged;
+#if !PABC_LINUX_PLUGIN
+            if (strip != null && !strip.IsDisposed) strip.Padding = stripPadding;
+            if (label != null && !label.IsDisposed) label.Margin = messageMargin;
+            if (platform != null)
+            {
+                strip.FontChanged -= PlatformFontChanged;
+                strip.Items.Remove(platform); platform.Dispose(); platform = null;
+                strip.Items.Remove(platformDivider); platformDivider.Dispose(); platformDivider = null;
+            }
+#endif
         }
     }
 }

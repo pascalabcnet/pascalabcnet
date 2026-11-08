@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler.Errors;
 using System.IO;
 using Languages.Facade;
@@ -389,14 +389,14 @@ namespace CodeCompletion
             return false;
         }
 
-        public List<string> GetKeywords()
+        public IList<string> GetKeywords()
         {
             if (CodeCompletionController.IntellisenseAvailable())
                 return CodeCompletionController.CurrentLanguage.LanguageInformation.KeywordsStorage.KeywordsForIntellisenseList;
             return new List<string>();
         }
 
-        public List<string> GetTypeKeywords()
+        public IList<string> GetTypeKeywords()
         {
             if (CodeCompletionController.IntellisenseAvailable())
                 return CodeCompletionController.CurrentLanguage.LanguageInformation.KeywordsStorage.TypeKeywords;

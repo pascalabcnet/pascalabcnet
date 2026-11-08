@@ -29,7 +29,7 @@ internal static partial class Program
             };
             var events = new WorkbenchDocumentEventSource(() => new List<ICodeFileDocument> { document });
             using (var sync = new Net10LanguageDocuments(events, () => new FakeLanguageClient(), text => { }))
-            using (var completion = new Net10Completion(parent, events, sync, () => true))
+            using (var completion = new Net10Completion(parent, events, sync, () => true, TestIntelliSenseUI(parent)))
             {
                 completion.SetActive(modern);
                 new ICSharpCode.TextEditor.Actions.Return().Execute(area);

@@ -2089,13 +2089,12 @@ namespace PascalABCCompiler.PCU
 
         private List<SemanticTree.ICommonTypeNode> ReadGenericParams(common_namespace_node cur_nn)
         {
-            if (SemanticRulesConstants.RuntimeInitVariablesOfGenericParameters)
+            var runtimeInitialize = SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction;
+            if (SemanticRulesConstants.RuntimeInitVariablesOfGenericParameters && runtimeInitialize != null)
             {
-                if (!SystemLibrary.SystemLibInitializer.NeedsToRestore.Contains(
-                    SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction))
+                if (!SystemLibrary.SystemLibInitializer.NeedsToRestore.Contains(runtimeInitialize))
                 {
-                    SystemLibrary.SystemLibInitializer.NeedsToRestore.Add(
-                        SystemLibrary.SystemLibInitializer.RuntimeInitializeFunction);
+                    SystemLibrary.SystemLibInitializer.NeedsToRestore.Add(runtimeInitialize);
                 }
             }
             //common_namespace_node cur_nn = (is_interface) ? cun.namespaces[0] : cun.namespaces[1];

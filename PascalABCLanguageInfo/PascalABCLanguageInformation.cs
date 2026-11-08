@@ -3,7 +3,8 @@
 using System;
 using System.Collections.Generic;
 
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Languages;
+using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler;
 using PascalABCCompiler.ParserTools.Directives;
 using static PascalABCCompiler.ParserTools.Directives.DirectiveHelper;
@@ -28,11 +29,11 @@ namespace Languages.Pascal.Frontend.Data
 
         public string CommentSymbol => "//";
 
-		public Dictionary<string, string> SpecialModulesAliases => null;
+		public IReadOnlyDictionary<string, string> SpecialModulesAliases => null;
 
-        public BaseKeywords KeywordsStorage { get; } = new Core.PascalABCKeywords();
+        public IKeywords KeywordsStorage { get; } = new Core.PascalABCKeywords();
 
-        public Dictionary<string, IDirectiveInfo> ValidDirectives { get; protected set; }
+        public IReadOnlyDictionary<string, IDirectiveInfo> ValidDirectives { get; protected set; }
 
         public PascalABCLanguageInformation()
         {
@@ -81,6 +82,11 @@ namespace Languages.Pascal.Frontend.Data
                 [StringConstants.compiler_directive_define] = new DirectiveInfo(SingleIsValidIdCheck(), processingStage: DirectiveProcessingStage.Lexer),
                 [StringConstants.compiler_directive_include] = new DirectiveInfo(quotesAreSpecialSymbols: true, processingStage: DirectiveProcessingStage.Lexer),
                 [StringConstants.compiler_directive_targetframework] = new DirectiveInfo(),
+#if PABCNET_MODERN
+                [StringConstants.compiler_directive_target] = new DirectiveInfo(
+                    SingleAnyOfCheck("windows"),
+                    processingStage: DirectiveProcessingStage.Unit | DirectiveProcessingStage.Compilation),
+#endif
                 [StringConstants.compiler_directive_hidden_idents] = NoParamsDirectiveInfo(DirectiveProcessingStage.Lexer),
                 [StringConstants.compiler_directive_disable_standard_units] = NoParamsDirectiveInfo(DirectiveProcessingStage.Unit),
                 [StringConstants.compiler_directive_version_string] = new DirectiveInfo(IsValidVersionCheck()),

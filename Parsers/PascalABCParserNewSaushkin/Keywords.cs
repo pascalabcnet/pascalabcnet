@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Parsers;
+using PascalABCCompiler.Parsers;
 
 namespace Languages.Pascal.Frontend.Core
 {
@@ -8,7 +9,7 @@ namespace Languages.Pascal.Frontend.Core
     public class PascalABCKeywords : BaseKeywords
     {
 
-        protected override string FileName => "keywordsmap.pabc";
+        protected override string KeywordsMapFileName => "keywordsmap.pabc";
 
         public PascalABCKeywords() : base(false)
         {

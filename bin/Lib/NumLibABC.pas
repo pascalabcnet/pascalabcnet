@@ -1,6 +1,10 @@
 ﻿unit NumLibABC;
 
-const &NumLibABCVersion = 'NumLibABC 1.0.2 от 20.03.2024';
+const &NumLibABCVersion = 'NumLibABC 1.0.3 от 05.11.2026';
+
+type
+  NumLibABC_FractionError = class(Exception)
+end;
 
 type
   Point=auto class
@@ -703,20 +707,20 @@ end;
 {$region Fraction}
 type
   /// Класс обыкновенных дробей произвольной точности
-  Fraction=class
+  Fraction = class
   
   private
   
-  class function ToReal(m:BigInteger):(real,integer);
+  static function ToReal(m: BigInteger): (real, integer);
   begin
-    var s:=m.ToString;
-    var r:real;
-    if Real.TryParse(s,r) then Result:=(r,0)
-    else Result:=(s.Left(16).ToReal,s.Length-16)
+    var s := m.ToString;
+    var r: real;
+    if Real.TryParse(s, r) then Result:=(r, 0)
+    else Result:=(s.Left(16).ToReal, s.Length-16)
   end;
   
-  /// НОД пары чисел
-  class function GCD(a, b: BigInteger): BigInteger;
+  /// НОД пары чисел ???
+  static function GCD1(a, b: BigInteger): BigInteger;
   begin
     if a < 0 then
       a := -a;
@@ -724,268 +728,209 @@ type
       (a, b) := (b, a mod b);
     Result := a
   end;
+  
+  /// Сокращение дроби
+  static procedure Reduce(var num, denom: BigInteger);
+  begin
+    var n := GCD(num, denom);
+    if n <> 1 then (num, denom) := (num div n, denom div n)
+  end;
 
   public
-  numerator:BigInteger;
-  denominator:BigInteger;
-  
-  constructor (num:BigInteger:=0; denom:BigInteger:=1);
+  numerator: BigInteger;    // числитель дроби
+  denominator: BigInteger;  // знаменатель дроби
+    
+  constructor (num: BigInteger := 0; denom: BigInteger := 1);
   begin
-    Assert(denom>0,'Fraction: знаменатель дроби должен быть положительным');
-    var n:=GCD(num,denom);
-    numerator:=num div n;
-    denominator:=denom div n
+    if denom = 0 then
+      raise new NumLibABC_FractionError('Fraction: Знаменатель не может быть равен нулю');
+    Reduce(num, denom);
+    if denom < 0 then (numerator, denominator) := (-num, -denom)
+    else (numerator, denominator) := (num, denom)
   end;
   
-  class function operator +(a,b:fraction):fraction;
+  class function operator +(a, b: fraction): fraction;
   begin
-    var n:=GCD(a.denominator,b.denominator);
-    Result:=new fraction(a.numerator*(b.denominator div n)+
-        b.numerator*(a.denominator div n),a.denominator div n*b.denominator);
+    var n := GCD(a.denominator, b.denominator);
+    if n <> 1 then
+    begin  
+      var t := a.denominator div n;
+      Result := new fraction(a.numerator * (b.denominator div n) + b.numerator * t,
+                              t * b.denominator)
+    end
+    else
+      Result := new fraction(a.numerator * b.denominator + b.numerator * a.denominator,
+          a.denominator * b.denominator)
   end;
     
-  class procedure operator +=(var r:fraction; a:fraction);
+  class procedure operator +=(var r: fraction; a: fraction);
   begin
-    r:=r+a;
+    r := r + a;
   end;
         
-  class function operator +(a:BigInteger; b:fraction):fraction;
+  class function operator +(a: BigInteger; b: fraction): fraction :=
+      new fraction(a * b.denominator + b.numerator, b.denominator);
+  
+  class function operator +(a: fraction; b: BigInteger): fraction :=
+      new fraction(b * a.denominator + a.numerator, a.denominator);
+    
+  class procedure operator +=(var r: fraction; a: BigInteger);
   begin
-    Result:=new fraction(a*b.denominator+b.numerator,b.denominator);
-    var n:=GCD(Result.numerator,Result.denominator);
-    if n<>1 then begin
-      Result.numerator:=Result.numerator div n;
-      Result.denominator:=Result.denominator div n
-      end
+    r := r + a;
   end;
     
-  class function operator +(a:fraction; b:BigInteger):fraction;
+  class function operator -(a, b: fraction): fraction;
   begin
-    Result:=new fraction(b*a.denominator+a.numerator,a.denominator);
-    var n:=GCD(Result.numerator,Result.denominator);
-    if n<>1 then begin
-      Result.numerator:=Result.numerator div n;
-      Result.denominator:=Result.denominator div n
-      end
+    var n := GCD(a.denominator, b.denominator);
+    if n <> 1 then
+    begin  
+      var t := a.denominator div n;
+      Result := new fraction(a.numerator * (b.denominator div n) - b.numerator * t,
+                              t * b.denominator)
+    end
+    else
+      Result := new fraction(a.numerator * b.denominator - b.numerator * a.denominator,
+          a.denominator * b.denominator)
   end;
     
-  class procedure operator +=(var r:fraction; a:BigInteger);
+  class procedure operator -=(var r: fraction; a: fraction);
   begin
-    r:=r+a;
-  end;
-    
-  class function operator -(a,b:fraction):fraction;
-    begin
-    var n:=GCD(a.denominator,b.denominator);
-    Result:=new fraction(a.numerator*(b.denominator div n)-
-        b.numerator*(a.denominator div n),a.denominator div n*b.denominator);
-    end;
-    
-  class procedure operator -=(var R:fraction; a:fraction);
-  begin
-    r:=r-a;
+    r := r - a;
   end;
         
-  class function operator -(a:BigInteger; b:fraction):fraction;
-  begin
-    Result:=new fraction(a*b.denominator-b.numerator,b.denominator);
-    var n:=GCD(Result.numerator,Result.denominator);
-    if n<>1 then begin
-      Result.numerator:=Result.numerator div n;
-      Result.denominator:=Result.denominator div n
-      end
-  end;
+  class function operator -(a: BigInteger; b: fraction): fraction :=
+      new fraction(a * b.denominator - b.numerator, b.denominator);
     
-  class function operator -(a:fraction; b:BigInteger):fraction;
-  begin
-    Result:=new fraction(a.numerator-b*a.denominator,a.denominator);
-    var n:=GCD(Result.numerator,Result.denominator);
-    if n<>1 then begin
-      Result.numerator:=Result.numerator div n;
-      Result.denominator:=Result.denominator div n
-      end
-  end;
+  class function operator -(a: fraction; b: BigInteger): fraction :=
+      new fraction(a.numerator - b * a.denominator, a.denominator);
   
-  class procedure operator -=(var r:fraction; a:BigInteger);
+  class procedure operator -=(var r: fraction; a:BigInteger);
   begin
-    r:=r-a;
+    r := r - a;
   end;
     
-  class function operator *(a,b:fraction):fraction;
-  begin
-    Result:=new fraction(a.numerator*b.numerator,a.denominator*b.denominator);
-    var n:=GCD(Result.numerator,Result.denominator);
-    if n<>1 then begin
-      Result.numerator:=Result.numerator div n;
-      Result.denominator:=Result.denominator div n
-      end
-  end;
+  class function operator *(a, b: fraction): fraction :=
+      new fraction(a.numerator * b.numerator, a.denominator * b.denominator);
     
-  class procedure operator *=(var r:fraction; a:fraction);
+  class procedure operator *=(var r: fraction; a: fraction);
   begin
-    r:=r*a;
+    r := r * a;
   end;
         
-  class function operator *(a:BigInteger; b:fraction):fraction;
+  class function operator *(a: BigInteger; b: fraction): fraction :=
+      new fraction(a * b.numerator, b.denominator);
+    
+  class function operator *(a: fraction; b: BigInteger): fraction :=
+      new fraction(a.numerator * b, a.denominator);
+    
+  class procedure operator *=(var r: fraction; a: BigInteger);
   begin
-    Result:=new fraction(a*b.numerator,b.denominator);
-    var n:=GCD(Result.numerator,Result.denominator);
-    if n<>1 then begin
-      Result.numerator:=Result.numerator div n;
-      Result.denominator:=Result.denominator div n
-      end
+    r := r * a;
   end;
     
-  class function operator *(a:fraction; b:BigInteger):fraction;
-  begin
-    Result:=new fraction(a.numerator*b,a.denominator);
-    var n:=GCD(Result.numerator,Result.denominator);
-    if n<>1 then begin
-      Result.numerator:=Result.numerator div n;
-      Result.denominator:=Result.denominator div n
-      end
-  end;
+  class function operator /(a,b: fraction): fraction :=
+      new fraction(a.numerator * b.denominator, a.denominator * b.numerator);
     
-  class procedure operator *=(var r:fraction; a:BigInteger);
+  class procedure operator /=(var r: fraction; a: fraction);
   begin
-    r:=r*a;
-  end;
-    
-  class function operator /(a,b:fraction):fraction;
-  begin
-    Result:=new fraction(a.numerator*b.denominator,a.denominator*b.numerator);
-    var n:=GCD(Result.numerator,Result.denominator);
-    if n<>1 then begin
-      Result.numerator:=Result.numerator div n;
-      Result.denominator:=Result.denominator div n
-      end
-  end;
-    
-  class procedure operator /=(var r:fraction; a:fraction);
-  begin
-    r:=r/a;
+    r := r / a;
   end;
         
-  class function operator /(a:BigInteger; b:fraction):fraction;
+  class function operator /(a: BigInteger; b: fraction): fraction :=
+      new fraction(a * b.denominator, b.numerator);
+    
+  class function operator /(a: fraction; b: BigInteger): fraction :=
+      new fraction(a.numerator,a.denominator*b);
+    
+  class procedure operator /=(var r: fraction; a: BigInteger);
   begin
-    Result:=new fraction(a*b.denominator,b.numerator);
-    var n:=GCD(Result.numerator,Result.denominator);
-    if n<>1 then begin
-      Result.numerator:=Result.numerator div n;
-      Result.denominator:=Result.denominator div n
-      end
+    r := r / a;
   end;
     
-  class function operator /(a:fraction; b:BigInteger):fraction;
-  begin
-    Result:=new fraction(a.numerator,a.denominator*b);
-    var n:=GCD(Result.numerator,Result.denominator);
-    if n<>1 then begin
-      Result.numerator:=Result.numerator div n;
-      Result.denominator:=Result.denominator div n
-      end
-  end;
+  class function operator -(a: fraction) := new fraction(-a.numerator, a.denominator);
     
-  class procedure operator /=(var r:fraction; a:BigInteger);
-  begin
-    r:=r/a;
-  end;
-    
-  class function operator -(a:fraction):=
-      new fraction(-a.numerator,a.denominator);
-    
-  class function operator =(a:fraction; b:fraction):=(a-b).numerator=0;
+  class function operator =(a: fraction; b: fraction) := (a - b).numerator = 0;
   
-  class function operator =(a:BigInteger; b:fraction):=(a-b).numerator=0;
+  class function operator =(a: BigInteger; b: fraction) := (a - b).numerator = 0;
   
-  class function operator =(a:fraction; b:BigInteger):=(a-b).numerator=0;
+  class function operator =(a: fraction; b: BigInteger) := (a - b).numerator = 0;
   
-  class function operator >(a:fraction; b:fraction):=(a-b).numerator>0;
+  class function operator >(a: fraction; b: fraction) := (a - b).numerator > 0;
   
-  class function operator >(a:BigInteger; b:fraction):=(a-b).numerator>0;
+  class function operator >(a: BigInteger; b: fraction) := (a - b).numerator > 0;
   
-  class function operator >(a:fraction; b:BigInteger):=(a-b).numerator>0;
+  class function operator >(a: fraction; b: BigInteger) := (a - b).numerator > 0;
   
-  class function operator >=(a:fraction; b:fraction):=(a-b).numerator>=0;
+  class function operator >=(a: fraction; b: fraction) := (a - b).numerator >= 0;
   
-  class function operator >=(a:BigInteger; b:fraction):=(a-b).numerator>=0;
+  class function operator >=(a: BigInteger; b: fraction) := (a - b).numerator >= 0;
   
-  class function operator >=(a:fraction; b:BigInteger):=(a-b).numerator>=0;
+  class function operator >=(a:fraction; b:BigInteger) := (a - b).numerator >= 0;
   
-  class function operator <(a:fraction; b:fraction):=(a-b).numerator<0;
+  class function operator <(a: fraction; b: fraction) := (a - b).numerator < 0;
   
-  class function operator <(a:BigInteger; b:fraction):=(a-b).numerator<0;
+  class function operator <(a: BigInteger; b: fraction) := (a - b).numerator < 0;
   
-  class function operator <(a:fraction; b:BigInteger):=(a-b).numerator<0;
+  class function operator <(a: fraction; b: BigInteger) := (a - b).numerator < 0;
   
-  class function operator <=(a:fraction; b:fraction):=(a-b).numerator<=0;
+  class function operator <=(a: fraction; b: fraction) := (a - b).numerator <= 0;
   
-  class function operator <=(a:BigInteger; b:fraction):=(a-b).numerator<=0;
+  class function operator <=(a: BigInteger; b: fraction) := (a - b).numerator <= 0;
   
-  class function operator <=(a:fraction; b:BigInteger):=(a-b).numerator<=0;
+  class function operator <=(a: fraction; b: BigInteger) := (a - b).numerator <= 0;
   
-  class function operator <>(a:fraction; b:fraction):=(a-b).numerator<>0;
+  class function operator <>(a: fraction; b: fraction) := (a - b).numerator <> 0;
   
-  class function operator <>(a:BigInteger; b:fraction):=(a-b).numerator<>0;
+  class function operator <>(a: BigInteger; b: fraction) := (a - b).numerator <> 0;
   
-  class function operator <>(a:fraction; b:BigInteger):=(a-b).numerator<>0;
+  class function operator <>(a: fraction; b: BigInteger) := (a - b).numerator <> 0;
   
   /// Обратная величина дроби
-  function Inv:fraction;
+  function Inv: fraction;
   begin
     Result:=new fraction;
-    Result.numerator:=denominator;
-    Result.denominator:=numerator
+    if numerator < 0 then (Result.numerator, Result.denominator) := (-denominator, -numerator)
+    else (Result.numerator, Result.denominator) := (denominator, numerator)
   end;
   
   /// Абсолютная величина дроби
-  function Abs:fraction;
+  function Abs: fraction := new Fraction(PABCSystem.Abs(numerator), denominator);
+    
+  function ToReal: real;
   begin
-    Result:=new fraction;
-    Result.numerator:=PABCSystem.Abs(numerator);
-    Result.denominator:=denominator
+    var a := Fraction.ToReal(numerator);
+    var b := Fraction.ToReal(denominator);
+    Result:=a[0] / b[0] * Power(10, a[1] - b[1])
   end;
   
-  function ToReal:real;
-  begin
-    var a:=Fraction.ToReal(numerator);
-    var b:=Fraction.ToReal(denominator);
-    Result:=a[0]/b[0]*Power(10,a[1]-b[1])
-  end;
-  
-  function Print(s:string:=' '):fraction;
+  function Print(s: string:=' '): fraction;
   begin
     Result:=Self;
-    if denominator=1 then Write(numerator,s)
-    else Write(numerator,'/',denominator,s)
+    if denominator = 1 then Write(numerator, s)
+    else Write(numerator, '/' , denominator,s)
   end;
   
-  function ToString:string; override;
+  function ToString: string; override;
   begin
-    Result:=numerator.ToString;
-    if denominator<>1 then Result+='/'+denominator.ToString
+    Result:= numerator.ToString;
+    if denominator <> 1 then Result += '/' + denominator.ToString
   end;
   
-end;
+end; // class fraction
 
   /// Обертка для конструктора класса
-  function Frc(a:BigInteger):fraction;
-  begin
-    Result:=new fraction(a,1);
-  end;
+  function Frc(a: BigInteger): fraction := new fraction(a, 1);
+    
+  /// Обертка для конструктора класса
+  function Frc(a, b: BigInteger): fraction := new fraction(a, b);
   
   /// Обертка для конструктора класса
-  function Frc(a,b:BigInteger):fraction;
+  function Frc(a, b, c: BigInteger): fraction;
   begin
-    Result:=new fraction(a,b);
+    Result := new fraction(b, c);
+    Result := a + Result
   end;
-  
-  /// Обертка для конструктора класса
-  function Frc(a,b,c:BigInteger):fraction;
-  begin
-    Result:=new fraction(b,c);
-    Result:=a+Result
-  end;
+
 {$endregion}
 
 {$region Vector}

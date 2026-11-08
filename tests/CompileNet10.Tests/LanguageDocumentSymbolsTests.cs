@@ -44,6 +44,16 @@ internal static partial class Program
             classes.SelectedIndex = 1;
             Check(members.Items.Count == 1 && members.Items[0].ToString() == "Name: string",
                 "modern panel lists selected class members");
+            var sections = Net10DocumentSymbols.Parse(new object[] {
+                new Dictionary<string, object>{["name"]="interface",["kind"]=3,["range"]=range(0,4),["children"]=new object[]{type}},
+                new Dictionary<string, object>{["name"]="implementation",["kind"]=3,["range"]=range(5,8),["children"]=new object[]{member}}
+            });
+            panel.SetModernSymbols(sections);
+            Check(classes.Items.Count == 3 && classes.Items[0].GetType().GetProperty("ModernSymbol").GetValue(classes.Items[0]) != null,
+                "modern unit panel lists two sections before its class and omits global names");
+            classes.SelectedIndex = 1;
+            Check(members.Items.Count == 1 && members.Items[0].ToString() == "Name: string",
+                "modern unit panel displays implementation members separately");
             panel.SetModernMode(false);
             Check(classes.Items.Count == 0 && members.Items.Count == 0,
                 "switching back restores legacy panel state");

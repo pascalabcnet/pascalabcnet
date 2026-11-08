@@ -10,8 +10,44 @@ using VisualPascalABCPlugins;
 
 namespace VisualPascalABC
 {
-    public class WorkbenchServiceContainer: IWorkbenchServiceContainer
+    public class WorkbenchServiceContainer: IWorkbenchServiceContainer, IWorkbenchIntelliSenseUI, IWorkbenchCommandService, IWorkbenchDocumentSymbolsUI
     {
+
+        public IDisposable RegisterCommandHandler(IIdeCommandHandler handler) =>
+            WorkbenchServiceFactory.CommandRouter.Register(handler);
+
+        // Platform state is session-only; user IntelliSense settings remain unchanged.
+        public bool LegacyServicesSuspended
+        {
+            get => WorkbenchServiceFactory.ModernCompilationSelected;
+            set
+            {
+                WorkbenchServiceFactory.ModernCompilationSelected = value;
+                CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended = value;
+                if (value)
+                {
+                    CodeCompletionKeyHandler.CloseLegacyHints();
+                    TooltipServiceManager.hideToolTip();
+                }
+                var form = WorkbenchServiceFactory.Workbench?.MainForm as Form1;
+                if (form == null || form.IsDisposed || form.Disposing) return;
+                WorkbenchServiceFactory.Workbench.WidgetController.SetDebugButtonsEnabled(!value &&
+                    CodeCompletion.CodeCompletionController.IntellisenseAvailable() && !WorkbenchServiceFactory.RunService.IsRun());
+                foreach (var document in form.OpenDocuments.Values)
+                    if (document.TextEditor is CodeFileDocumentTextEditorControl editor && editor.quickClassBrowserPanel != null)
+                        editor.quickClassBrowserPanel.Enabled = !value;
+                if (!value)
+                    WorkbenchServiceFactory.CodeCompletionParserController.ResumeForOpenDocuments(
+                        form.OpenDocuments.Values.Where(document => !document.FromMetadata && !string.IsNullOrEmpty(document.FileName))
+                            .Select(document => document.FileName));
+            }
+        }
+
+        public IExternalDocumentSymbolsView GetDocumentSymbolsView(ICodeFileDocument document) =>
+            (document?.TextEditor as CodeFileDocumentTextEditorControl)?.quickClassBrowserPanel;
+
+        public IExternalIntelliSenseSession CreateIntelliSenseSession() =>
+            new ExternalIntelliSenseSession(WorkbenchServiceFactory.Workbench.MainForm);
 
         public IWorkbenchDocumentService DocumentService
         {
@@ -81,8 +117,11 @@ namespace VisualPascalABC
 
     public class WorkbenchServiceFactory
     {
+        public static readonly IdeCommandRouter CommandRouter = new IdeCommandRouter();
+        internal static bool ModernCompilationSelected;
         static IWorkbenchBuildService _buildService;
         static IWorkbenchRunService _runService;
+        public static IExternalRunService ExternalRunService => _runService as IExternalRunService;
         static IWorkbenchUpdateService _updateService;
         static CodeCompletionParserController _codeCompletionParserController;
         static DebugHelper _debuggerManager;

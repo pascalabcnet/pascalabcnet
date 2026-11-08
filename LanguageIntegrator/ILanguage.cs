@@ -2,8 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System.Collections.Generic;
-using PascalABCCompiler.Parsers;
-using PascalABCCompiler.Contracts;
+using PascalABCCompiler.Contracts.Languages;
+using PascalABCCompiler.Contracts.CodeCompletion;
+using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.SyntaxTreeConverters;
 
@@ -46,7 +47,7 @@ namespace Languages.Facade
         /// <summary>
         /// Постпреобразования синтаксического дерева (синтаксический сахар и др.)
         /// </summary>
-        List<ISyntaxTreeConverter> SyntaxTreeConverters { get; }
+        IEnumerable<ISyntaxTreeConverter> SyntaxTreeConverters { get; }
 
         /// <summary>
         /// Преобразователь из синтаксического дерева в семантическое

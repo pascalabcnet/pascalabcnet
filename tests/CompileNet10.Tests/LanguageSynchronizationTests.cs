@@ -289,7 +289,7 @@ internal static partial class Program
             sync.ShutdownAsync().GetAwaiter().GetResult();
         }
 
-        await CheckRealLanguageClientAsync(runtime, unique).ConfigureAwait(false);
+        if (runtime != null) await CheckRealLanguageClientAsync(runtime, unique).ConfigureAwait(false);
     }
 
     private static async Task CheckRealLanguageClientAsync(string runtime, string unique)
@@ -310,6 +310,23 @@ internal static partial class Program
             var result = ObjectValue(await client.RequestAsync("textDocument/completion", request).ConfigureAwait(false));
             Check(ArrayValue(result["items"]).Any(item => (string)ObjectValue(item)["label"] == "Substring"),
                 "legacy net472 LSP transport synchronizes Cyrillic unsaved text with real net10 server");
+            string matrixUri = new Uri(Path.Combine(unique, "MatrixExtensions.pas")).AbsoluteUri;
+            const string matrixSource = "begin var a := MatrRandomInteger(6, 9, 1, 100); a.Println end.";
+            await client.NotifyAsync("textDocument/didOpen", new
+            {
+                textDocument = new { uri = matrixUri, languageId = "pascal", version = 1, text = matrixSource }
+            }).ConfigureAwait(false);
+            var matrixResult = ObjectValue(await client.RequestAsync("textDocument/completion", new
+            {
+                textDocument = new { uri = matrixUri }, position = new { line = 0, character = matrixSource.IndexOf("a.Println", StringComparison.Ordinal) + 2 }
+            }).ConfigureAwait(false));
+            var matrixItems = ArrayValue(matrixResult["items"]).Select(ObjectValue).ToArray();
+            var ownMethod = matrixItems.First(item => (string)item["label"] == "ToString");
+            var extensionMethod = matrixItems.First(item => ((string)item["label"]).StartsWith("Col", StringComparison.Ordinal));
+            Check(!(bool)ObjectValue(ownMethod["data"])["isExtensionMethod"] &&
+                (bool)ObjectValue(extensionMethod["data"])["isExtensionMethod"],
+                "real LSP distinguishes matrix ToString from Col extension using explicit metadata");
+            await client.NotifyAsync("textDocument/didClose", new { textDocument = new { uri = matrixUri } }).ConfigureAwait(false);
             var hover = ObjectValue(await client.RequestAsync("textDocument/hover", new
             {
                 textDocument = new { uri }, position = new { line = 0, character = source.IndexOf("Substring", StringComparison.Ordinal) + 1 }
