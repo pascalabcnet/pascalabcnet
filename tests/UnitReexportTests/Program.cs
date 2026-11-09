@@ -14,6 +14,7 @@ internal static class Program
     {
         var language = PascalLanguageRegistration.RegisterPascalLanguage();
         CodeCompletionBootstrap.Initialize("en");
+        ReexportFormattingTests.Run(language);
         Check(args.Length == 2, "pass directories with the source and PCU-only fixtures");
         CheckClient(language, Path.GetFullPath(args[0]), false);
         CheckClient(language, Path.GetFullPath(args[1]), true);

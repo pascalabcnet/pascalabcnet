@@ -26,6 +26,7 @@ namespace VisualPascalABC
                 CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended = value;
                 var workbench = WorkbenchServiceFactory.Workbench;
                 if (workbench.MainForm.IsDisposed) return;
+                VisualPABCSingleton.MainForm.RefreshFormatButtons();
                 workbench.WidgetController.SetDebugButtonsEnabled(!value &&
                     CodeCompletion.CodeCompletionController.IntellisenseAvailable() && !workbench.ServiceContainer.RunService.IsRun());
                 if (!value)

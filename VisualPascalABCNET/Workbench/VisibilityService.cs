@@ -520,8 +520,9 @@ namespace VisualPascalABC
         /// <summary>
         ///  Активировать/Деактивировать все кнопки, относящиеся к форматированию кода
         /// </summary>
-        private void SetFormatButtonsEnabled(bool enabled)
+        internal void RefreshFormatButtons()
         {
+            bool enabled = CodeFormattingAction.IsAvailable(CurrentCodeFileDocument?.FileName);
             tsFormat.Enabled = mFORMATToolStripMenuItem.Enabled = cmFormat.Enabled = enabled;
         }
 
