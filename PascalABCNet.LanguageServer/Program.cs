@@ -8,7 +8,7 @@ internal static class Program
 {
     public static async Task<int> Main(string[] args)
     {
-        if (!TryReadOptions(args, out var documentationLanguageIso))
+        if (!TryReadOptions(args, out var documentationLanguageIso, out var pluginDirectories))
             return 2;
 
         var formatter = new JsonMessageFormatter();
@@ -18,12 +18,14 @@ internal static class Program
             formatter);
         using var rpc = new JsonRpc(messageHandler);
 
+        var pluginHost = PluginHost.Load(pluginDirectories, Console.Error);
         var exitSignal = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         var service = new PascalLanguageService(documentationLanguageIso);
         var target = new PascalLanguageServerTarget(
             service,
             new SerialRequestDispatcher(),
-            exitSignal);
+            exitSignal,
+            pluginHost);
 
         rpc.AddLocalRpcTarget(target);
         rpc.CancelLocallyInvokedMethodsWhenConnectionIsClosed = true;
@@ -53,9 +55,16 @@ internal static class Program
         return 0;
     }
 
-    private static bool TryReadOptions(string[] args, out string documentationLanguageIso)
+    private static bool TryReadOptions(
+        string[] args,
+        out string documentationLanguageIso,
+        out List<string> pluginDirectories)
     {
         documentationLanguageIso = "en";
+        pluginDirectories = new List<string>
+        {
+            Path.Combine(AppContext.BaseDirectory, "plugins")
+        };
 
         for (var index = 0; index < args.Length; index++)
         {
@@ -69,9 +78,15 @@ internal static class Program
                 continue;
             }
 
+            if (argument == "--plugins-dir" && index + 1 < args.Length)
+            {
+                pluginDirectories.Add(args[++index]);
+                continue;
+            }
+
             Console.Error.WriteLine($"Unsupported argument: {argument}");
             Console.Error.WriteLine(
-                "Usage: PascalABCNet.LanguageServer [--stdio] [--documentation-language <iso>]");
+                "Usage: PascalABCNet.LanguageServer [--stdio] [--documentation-language <iso>] [--plugins-dir <path>]");
             return false;
         }
 
