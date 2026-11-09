@@ -132,6 +132,7 @@
 				<Key word = "program" />
 				<Key word = "interface" />
 				<Key word = "implementation" />
+				<Key word = "export" />
 			</KeyWords> 
 
 			<KeyWords name = "BeginEnd" bold = "true" italic = "false" color = "Black">

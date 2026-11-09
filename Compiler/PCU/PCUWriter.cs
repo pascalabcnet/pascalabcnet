@@ -506,6 +506,13 @@ namespace PascalABCCompiler.PCU
             //ssyy
             fbw.Write(pcu_file.interface_synonyms_offset);
             fbw.Write(pcu_file.implementation_synonyms_offset);
+            fbw.Write(cun.FunctionReexports.Count);
+            foreach (var reexport in cun.FunctionReexports)
+            {
+                fbw.Write(used_units[reexport.SourceUnit]);
+                fbw.Write(reexport.SourceName);
+                fbw.Write(reexport.PublicName);
+            }
             //\ssyy
 
             fbw.Write(InitializationMethodOffset);

@@ -3457,6 +3457,18 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="unit_reexport" BaseName="declaration">
+      <Fields>
+        <SyntaxField Name="source_unit" SyntaxType="ident" />
+        <SyntaxField Name="source_name" SyntaxType="ident" />
+        <SyntaxField Name="export_name" SyntaxType="ident" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -4955,6 +4967,10 @@
       <HelpData Key="unit_or_namespace." Value="" />
       <HelpData Key="unit_or_namespace.name" Value="" />
       <HelpData Key="unit_or_namespace.unit_or_namespace(string name)" Value="" />
+      <HelpData Key="unit_reexport" Value="" />
+      <HelpData Key="unit_reexport.export_name" Value="" />
+      <HelpData Key="unit_reexport.source_name" Value="" />
+      <HelpData Key="unit_reexport.source_unit" Value="" />
       <HelpData Key="unknown_expression_type" Value="" />
       <HelpData Key="unknown_expression_type.MapHelper" Value="" />
       <HelpData Key="unknown_expression_type.Vds" Value="" />

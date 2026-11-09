@@ -35,6 +35,7 @@ namespace PascalABCCompiler.PCU
         private MemoryStream ms;
         public string FileName;
 		private PCUFile pcu_file = new PCUFile();
+        private (int UnitId, string SourceName, string PublicName)[] functionReexports;
 		private CompilationUnit unit;
         private common_unit_node cun;
 		private string cur_doc_name;
@@ -323,6 +324,7 @@ namespace PascalABCCompiler.PCU
 				//ssyy
                 AddTypeSynonyms(pcu_file.interface_synonyms_offset, cun.scope);
                 AddTypeSynonyms(pcu_file.implementation_synonyms_offset, cun.implementation_scope);
+                RestoreFunctionReexports();
                 //\ssyy
                 for (int i = 0; i < pcu_file.names.Length; i++)
                 {
@@ -679,6 +681,9 @@ namespace PascalABCCompiler.PCU
 
             pcu_file.interface_synonyms_offset = br.ReadInt32();
             pcu_file.implementation_synonyms_offset = br.ReadInt32();
+            functionReexports = new (int UnitId, string SourceName, string PublicName)[br.ReadInt32()];
+            for (int i = 0; i < functionReexports.Length; i++)
+                functionReexports[i] = (br.ReadInt32(), br.ReadString(), br.ReadString());
 
             InitializationMethodOffset = br.ReadInt32();
             FinalizationMethodOffset = br.ReadInt32();
@@ -2539,6 +2544,19 @@ namespace PascalABCCompiler.PCU
                 scope.AddSymbol(wts.name, si);
             }
             br.BaseStream.Seek(pos, SeekOrigin.Begin);
+        }
+
+        private void RestoreFunctionReexports()
+        {
+            foreach (var entry in functionReexports)
+            {
+                if (entry.UnitId < 0 || entry.UnitId >= pcu_file.incl_modules.Length)
+                    InvalidUnitDetected();
+                var sourceUnit = GetPCUReaderForUnitId(entry.UnitId).cun;
+                if (sourceUnit?.scope == null ||
+                    !new UnitFunctionReexport(sourceUnit, entry.SourceName, entry.PublicName).TryPublish(cun))
+                    InvalidUnitDetected();
+            }
         }
 
         public SymbolTable.Scope[] MakeTopScopeArray(using_namespace_list unl, int uses_count)

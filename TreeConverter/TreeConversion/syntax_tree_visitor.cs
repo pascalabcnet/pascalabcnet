@@ -3252,6 +3252,39 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             weak_node_test_and_visit(_interface_node.interface_definitions);
+            if (_interface_node.interface_definitions == null)
+                return;
+
+            foreach (var reexport in _interface_node.interface_definitions.defs.OfType<SyntaxTree.unit_reexport>())
+            {
+                string unitName = reexport.source_unit.name;
+                string sourceName = reexport.source_name.name;
+                var publicIdent = reexport.export_name ?? reexport.source_name;
+
+                // Only a Pascal unit explicitly named in this interface uses can be re-exported.
+                var explicitlyUsed = _interface_node.uses_modules?.units.Any(u =>
+                    u.name.idents.Count == 1 &&
+                    string.Equals(u.name.idents[0].name, unitName, StringComparison.OrdinalIgnoreCase)) == true;
+                var sourceUnit = explicitlyUsed ? ReferencedUnits.OfType<common_unit_node>().FirstOrDefault(u =>
+                    string.Equals(u.unit_name, unitName, StringComparison.OrdinalIgnoreCase)) : null;
+                if (sourceUnit == null || sourceUnit == _compiled_unit)
+                {
+                    AddError(get_location(reexport.source_unit), "REEXPORT_UNIT_MUST_BE_IN_INTERFACE_USES{0}", unitName);
+                    continue;
+                }
+                if (_compiled_unit.scope.Symbols.Find(publicIdent.name, false)?.Any() == true)
+                {
+                    AddError(get_location(publicIdent), "REEXPORT_NAME_ALREADY_DECLARED{0}", publicIdent.name);
+                    continue;
+                }
+                if (!new UnitFunctionReexport(sourceUnit, sourceName, publicIdent.name).TryPublish(_compiled_unit))
+                    AddError(get_location(reexport.source_name), "REEXPORT_REQUIRES_PUBLIC_ROUTINE{0}{1}", unitName, sourceName);
+            }
+        }
+
+        public override void visit(SyntaxTree.unit_reexport node)
+        {
+            // Published after ordinary interface declarations, so conflicts are reported at the export.
         }
 
 

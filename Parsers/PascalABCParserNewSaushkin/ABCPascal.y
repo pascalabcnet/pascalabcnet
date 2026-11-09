@@ -55,6 +55,9 @@
 %token <ex> tkInteger tkBigInteger tkFloat tkHex
 %token <id> tkUnknown
 %token <ti> tkStep 
+%token <ti> tkExport
+
+%type <stn> unit_reexport_clauses unit_reexport_list unit_reexport_item
 
 %type <ti> unit_key_word class_or_static 
 %type <stn> assignment 
@@ -462,10 +465,36 @@ unit_name
     ;
 
 interface_part
-    : tkInterface uses_clause interface_decl_sect_list 
+    : tkInterface uses_clause unit_reexport_clauses interface_decl_sect_list
         { 
-			$$ = new interface_node($3 as declarations, $2 as uses_list, null, LexLocation.MergeAll(@1,@2,@3)); 
+            var defs = (declarations)$4;
+            defs.defs.InsertRange(0, ((declarations)$3).defs);
+            $$ = new interface_node(defs, $2 as uses_list, null, LexLocation.MergeAll(@1,@2,@3,@4));
         }
+    ;
+
+unit_reexport_clauses
+    : { $$ = new declarations(); }
+    | unit_reexport_clauses tkExport unit_reexport_list tkSemiColon
+        {
+            var defs = (declarations)$1;
+            defs.defs.AddRange(((declarations)$3).defs);
+            $$ = defs;
+        }
+    ;
+
+unit_reexport_list
+    : unit_reexport_item
+        { $$ = new declarations().Add((declaration)$1, @$); }
+    | unit_reexport_list tkComma unit_reexport_item
+        { $$ = ((declarations)$1).Add((declaration)$3, @$); }
+    ;
+
+unit_reexport_item
+    : identifier tkPoint identifier
+        { $$ = new unit_reexport($1, $3, null, @$); }
+    | identifier tkPoint identifier tkAs identifier
+        { $$ = new unit_reexport($1, $3, $5, @$); }
     ;
 
 implementation_part
@@ -4664,6 +4693,8 @@ meth_modificators
 identifier
     : tkIdentifier 
 		{ $$ = $1; }
+    | tkExport
+        { $$ = new ident($1.text, @$); }
     | property_specifier_directives
 		{ $$ = $1; }
     | non_reserved

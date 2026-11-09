@@ -1624,6 +1624,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_return_statement">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(return_statement _return_statement);
+		///<summary>
+		///Method to visit unit_reexport.
+		///</summary>
+		///<param name="_unit_reexport">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(unit_reexport _unit_reexport);
 	}
 
 

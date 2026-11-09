@@ -45,6 +45,7 @@ namespace Languages.Pascal.Frontend.Core
             CreateNewKeyword("event", Tokens.tkEvent);
             CreateNewKeyword("except", Tokens.tkExcept);
             CreateNewKeyword("exports", Tokens.tkExports);
+            CreateNewKeyword("export", Tokens.tkExport);
             CreateNewKeyword("file", Tokens.tkFile, isTypeKeyword : true);
             CreateNewKeyword("finalization", Tokens.tkFinalization);
             CreateNewKeyword("finally", Tokens.tkFinally);

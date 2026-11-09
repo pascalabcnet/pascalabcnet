@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PascalABCCompiler.TreeRealization
 {
@@ -97,6 +98,7 @@ namespace PascalABCCompiler.TreeRealization
 		private SymbolTable.UnitImplementationScope _implementation_scope;
 
         public System.Collections.Generic.List<compiler_directive> compiler_directives;
+        public List<UnitFunctionReexport> FunctionReexports { get; } = new List<UnitFunctionReexport>();
 
 		private common_namespace_function_node _main_function;
         private common_namespace_function_node _finalization_method;
@@ -241,5 +243,35 @@ namespace PascalABCCompiler.TreeRealization
 			return _scope.FindOnlyInScope(name);
 		}
 	}
+
+    public sealed class UnitFunctionReexport
+    {
+        public UnitFunctionReexport(common_unit_node sourceUnit, string sourceName, string publicName)
+        {
+            SourceUnit = sourceUnit;
+            SourceName = sourceName;
+            PublicName = publicName;
+        }
+
+        public common_unit_node SourceUnit { get; }
+        public string SourceName { get; }
+        public string PublicName { get; }
+
+        public bool TryPublish(common_unit_node destination)
+        {
+            if (destination.scope.Symbols.Find(PublicName, false)?.Any() == true)
+                return false;
+
+            var symbols = SourceUnit.find_only_in_namespace(SourceName);
+            if (symbols == null || symbols.Count == 0 ||
+                symbols.Any(s => !(s.sym_info is common_namespace_function_node function) || function.is_extension_method))
+                return false;
+
+            foreach (var symbol in symbols)
+                destination.scope.AddSymbol(PublicName, symbol.copy());
+            destination.FunctionReexports.Add(this);
+            return true;
+        }
+    }
 
 }
