@@ -809,6 +809,9 @@ const
     'Schema inconsistent: GetColumnIndex("{0}")={1}, expected {2}';
   ER_COLUMN_NOT_NUMERIC =
     'Столбец не является числовым!!Column is not numeric';
+  ER_COMPUTED_COLUMN_TYPE_MISMATCH =
+    'Столбец "{0}": ожидался тип {1}, получен {2}.!!' +
+    'Column "{0}": expected type {1}, got {2}.';
   ER_GROUPBY_UNSUPPORTED_KEY_TYPE =
     'Неподдерживаемый тип ключа GroupBy: {0}!!Unsupported GroupBy key type: {0}';
   ER_JOIN_DATETIME_NOT_SUPPORTED =
@@ -929,6 +932,7 @@ const
     'макс!!max';
 
 function FormatDateTimeForPrint(dt: System.DateTime; fmt: string): string; forward;
+function ColumnTypeToString(ct: ColumnType): string; forward;
 function CollectSelectorValues(df: DataFrame; selector: DataFrameCursor -> DataValue): List<real>; forward;
 function IsIntegralReal(x: real): boolean; forward;
 function BuildRowSignature(df: DataFrame; rowIndex: integer): string; forward;
@@ -4835,7 +4839,7 @@ begin
   Result.AssertSchemaConsistent;
 end;
 
-function CollectDataValueColumn<T>(df: DataFrame; name: string;
+function CollectDataValueColumn<T>(df: DataFrame; name: string; expectedType: ColumnType;
   f: DataFrameCursor -> DataValue; readValue: DataValue -> T): (array of T, array of boolean);
 begin
   if df.HasColumn(name) then
@@ -4857,7 +4861,13 @@ begin
 
     valid[i] := v.IsValid;
     if valid[i] then
+    begin
+      var actualType := v.ColType;
+      if (actualType <> expectedType) and not ((expectedType = ctFloat) and (actualType = ctInt)) then
+        Error(ER_COMPUTED_COLUMN_TYPE_MISMATCH, name,
+          ColumnTypeToString(expectedType), ColumnTypeToString(actualType));
       data[i] := readValue(v);
+    end;
     i += 1;
   end;
 
@@ -4866,7 +4876,7 @@ end;
 
 function DataFrame.WithColumnInt(name: string; f: DataFrameCursor -> DataValue): DataFrame;
 begin
-  var (data, valid) := CollectDataValueColumn&<integer>(Self, name, f, v -> v.Int);
+  var (data, valid) := CollectDataValueColumn&<integer>(Self, name, ctInt, f, v -> v.Int);
   Result := WithColumnInt(name, data, valid);
 end;
 
@@ -4918,13 +4928,7 @@ end;
 
 function DataFrame.WithColumnFloat(name: string; f: DataFrameCursor -> DataValue): DataFrame;
 begin
-  var (data, valid) := CollectDataValueColumn&<real>(Self, name, f,
-    v ->
-    begin
-      if not (v.ColType in [ctInt, ctFloat]) then
-        Error(ER_COLUMN_NOT_NUMERIC);
-      Result := v.Float;
-    end);
+  var (data, valid) := CollectDataValueColumn&<real>(Self, name, ctFloat, f, v -> v.Float);
   Result := WithColumnFloat(name, data, valid);
 end;
 
@@ -4976,7 +4980,7 @@ end;
 
 function DataFrame.WithColumnStr(name: string; f: DataFrameCursor -> DataValue): DataFrame;
 begin
-  var (data, valid) := CollectDataValueColumn&<string>(Self, name, f, v -> v.Str);
+  var (data, valid) := CollectDataValueColumn&<string>(Self, name, ctStr, f, v -> v.Str);
   Result := WithColumnStr(name, data, valid);
 end;
 
@@ -5028,7 +5032,7 @@ end;
 
 function DataFrame.WithColumnBool(name: string; f: DataFrameCursor -> DataValue): DataFrame;
 begin
-  var (data, valid) := CollectDataValueColumn&<boolean>(Self, name, f, v -> v.Bool);
+  var (data, valid) := CollectDataValueColumn&<boolean>(Self, name, ctBool, f, v -> v.Bool);
   Result := WithColumnBool(name, data, valid);
 end;
 
@@ -5080,7 +5084,7 @@ end;
 
 function DataFrame.WithColumnDateTime(name: string; f: DataFrameCursor -> DataValue): DataFrame;
 begin
-  var (data, valid) := CollectDataValueColumn&<System.DateTime>(Self, name, f, v -> v.DateTime);
+  var (data, valid) := CollectDataValueColumn&<System.DateTime>(Self, name, ctDateTime, f, v -> v.DateTime);
   Result := WithColumnDateTime(name, data, valid);
 end;
 
