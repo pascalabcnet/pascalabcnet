@@ -19,12 +19,12 @@ public sealed class TestInlineCompletionPlugin : ILanguageServerPlugin
 
 internal sealed class TestInlineCompletionProvider : IInlineCompletionProvider
 {
-    public const string ExpectedSuggestion = "Writeln(stub);";
+    public const string ExpectedSuggestion = "Println(stub);";
 
     public bool IsEnabled => true;
 
     public Task<string> GetCompletionAsync(CodeCompletionContext context, CancellationToken cancellationToken) =>
-        Task.FromResult(context.Prefix.EndsWith("Wri", StringComparison.Ordinal)
+        Task.FromResult(context.Prefix.EndsWith("Pri", StringComparison.Ordinal)
             ? ExpectedSuggestion
             : "unexpected caret context");
 }
