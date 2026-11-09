@@ -208,13 +208,23 @@ type
     static function operator >=(a, b: DataValue): boolean;
 
     static function operator +(a, b: DataValue): DataValue;
+    static function operator +(a: DataValue; b: integer): DataValue;
+    static function operator +(a: integer; b: DataValue): DataValue;
+    static function operator +(a: DataValue; b: real): real;
+    static function operator +(a: real; b: DataValue): real;
+    static function operator +(a: DataValue; b: string): string;
+    static function operator +(a: string; b: DataValue): string;
     static function operator -(a, b: DataValue): DataValue;
+    static function operator -(a: DataValue; b: integer): DataValue;
+    static function operator -(a: integer; b: DataValue): DataValue;
+    static function operator -(a: DataValue; b: real): real;
+    static function operator -(a: real; b: DataValue): real;
     static function operator *(a, b: DataValue): DataValue;
-    static function operator *(a: DataValue; b: integer): real;
+    static function operator *(a: DataValue; b: integer): DataValue;
     static function operator *(a: DataValue; b: real): real;
-    static function operator *(a: integer; b: DataValue): real;
+    static function operator *(a: integer; b: DataValue): DataValue;
     static function operator *(a: real; b: DataValue): real;
-    static function operator /(a, b: DataValue): DataValue;
+    static function operator /(a, b: DataValue): real;
     static function operator /(a: DataValue; b: integer): real;
     static function operator /(a: DataValue; b: real): real;
     static function operator /(a: integer; b: DataValue): real;
@@ -1053,10 +1063,72 @@ begin
   Result := MakeNumeric(a.Name, a.Float + b.Float, t = ctInt);
 end;
 
+static function DataValue.operator +(a: DataValue; b: integer): DataValue;
+begin
+  Result := a + (new DataValue('', b));
+end;
+
+static function DataValue.operator +(a: integer; b: DataValue): DataValue;
+begin
+  Result := (new DataValue('', a)) + b;
+end;
+
+static function DataValue.operator +(a: DataValue; b: real): real;
+begin
+  if System.Object.ReferenceEquals(a, nil) then
+    ArgumentNullError('a');
+  Result := a.Float + b;
+end;
+
+static function DataValue.operator +(a: real; b: DataValue): real;
+begin
+  if System.Object.ReferenceEquals(b, nil) then
+    ArgumentNullError('b');
+  Result := a + b.Float;
+end;
+
+static function DataValue.operator +(a: DataValue; b: string): string;
+begin
+  if System.Object.ReferenceEquals(a, nil) then
+    ArgumentNullError('a');
+  Result := a.Str + b;
+end;
+
+static function DataValue.operator +(a: string; b: DataValue): string;
+begin
+  if System.Object.ReferenceEquals(b, nil) then
+    ArgumentNullError('b');
+  Result := a + b.Str;
+end;
+
 static function DataValue.operator -(a, b: DataValue): DataValue;
 begin
   var t := ArithmeticType(a, b);
   Result := MakeNumeric(a.Name, a.Float - b.Float, t = ctInt);
+end;
+
+static function DataValue.operator -(a: DataValue; b: integer): DataValue;
+begin
+  Result := a - (new DataValue('', b));
+end;
+
+static function DataValue.operator -(a: integer; b: DataValue): DataValue;
+begin
+  Result := (new DataValue('', a)) - b;
+end;
+
+static function DataValue.operator -(a: DataValue; b: real): real;
+begin
+  if System.Object.ReferenceEquals(a, nil) then
+    ArgumentNullError('a');
+  Result := a.Float - b;
+end;
+
+static function DataValue.operator -(a: real; b: DataValue): real;
+begin
+  if System.Object.ReferenceEquals(b, nil) then
+    ArgumentNullError('b');
+  Result := a - b.Float;
 end;
 
 static function DataValue.operator *(a, b: DataValue): DataValue;
@@ -1065,13 +1137,9 @@ begin
   Result := MakeNumeric(a.Name, a.Float * b.Float, t = ctInt);
 end;
 
-static function DataValue.operator *(a: DataValue; b: integer): real;
+static function DataValue.operator *(a: DataValue; b: integer): DataValue;
 begin
-  if System.Object.ReferenceEquals(a, nil) then
-    ArgumentNullError('a');
-  if not a.fIsValid then
-    Error(ER_VALUE_IS_NA, a.fName);
-  Result := a.Float * b;
+  Result := a * (new DataValue('', b));
 end;
 
 static function DataValue.operator *(a: DataValue; b: real): real;
@@ -1083,13 +1151,9 @@ begin
   Result := a.Float * b;
 end;
 
-static function DataValue.operator *(a: integer; b: DataValue): real;
+static function DataValue.operator *(a: integer; b: DataValue): DataValue;
 begin
-  if System.Object.ReferenceEquals(b, nil) then
-    ArgumentNullError('b');
-  if not b.fIsValid then
-    Error(ER_VALUE_IS_NA, b.fName);
-  Result := a * b.Float;
+  Result := b * a;
 end;
 
 static function DataValue.operator *(a: real; b: DataValue): real;
@@ -1101,12 +1165,12 @@ begin
   Result := a * b.Float;
 end;
 
-static function DataValue.operator /(a, b: DataValue): DataValue;
+static function DataValue.operator /(a, b: DataValue): real;
 begin
   ArithmeticType(a, b);
   if b.Float = 0 then
     Error(ER_DATAVALUE_DIVISION_BY_ZERO);
-  Result := new DataValue(a.Name, a.Float / b.Float);
+  Result := a.Float / b.Float;
 end;
 
 static function DataValue.operator /(a: DataValue; b: integer): real;

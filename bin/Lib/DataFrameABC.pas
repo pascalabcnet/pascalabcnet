@@ -407,6 +407,9 @@ type
     
     /// Фильтрует строки по предикату
     function Filter(pred: CursorPredicate): DataFrame;
+    /// Оставляет строки, для которых выражение возвращает логическое True.
+    /// Строки со значениями False и NA пропускаются.
+    function Filter(pred: DataFrameCursor -> DataValue): DataFrame;
     /// Выбирает столбцы по индексам
     function Select(colIndices: array of integer): DataFrame; 
     /// Выбирает столбцы по именам
@@ -436,6 +439,9 @@ type
     function WithColumnInt(name: string; data: array of integer; valid: array of boolean := nil): DataFrame; 
     /// Добавляет вычисляемый целочисленный столбец и возвращает новый DataFrame.
     function WithColumnInt(name: string; f: DataFrameCursor -> integer): DataFrame;
+    /// Добавляет вычисляемый столбец по выражению DataValue с целым результатом.
+    /// Если выражение возвращает NA, в новом столбце создаётся пропуск.
+    function WithColumnInt(name: string; f: DataFrameCursor -> DataValue): DataFrame;
     /// Добавляет вычисляемый целочисленный столбец
     function WithColumn(name: string; f: DataFrameCursor -> integer): DataFrame := WithColumnInt(name, f);
     /// Добавляет готовый вещественный столбец и возвращает новый DataFrame.
@@ -449,14 +455,20 @@ type
     function WithColumnStr(name: string; data: array of string; valid: array of boolean := nil): DataFrame; 
     /// Добавляет вычисляемый строковый столбец и возвращает новый DataFrame.
     function WithColumnStr(name: string; f: DataFrameCursor -> string): DataFrame;
+    /// Добавляет строковый столбец по выражению DataValue, сохраняя пропуски.
+    function WithColumnStr(name: string; f: DataFrameCursor -> DataValue): DataFrame;
     /// Добавляет готовый логический столбец и возвращает новый DataFrame.
     function WithColumnBool(name: string; data: array of boolean; valid: array of boolean := nil): DataFrame; 
     /// Добавляет вычисляемый логический столбец и возвращает новый DataFrame.
     function WithColumnBool(name: string; f: DataFrameCursor -> boolean): DataFrame;
+    /// Добавляет логический столбец по выражению DataValue, сохраняя пропуски.
+    function WithColumnBool(name: string; f: DataFrameCursor -> DataValue): DataFrame;
     /// Добавляет готовый DateTime-столбец и возвращает новый DataFrame.
     function WithColumnDateTime(name: string; data: array of System.DateTime; valid: array of boolean := nil): DataFrame; 
     /// Добавляет вычисляемый DateTime-столбец и возвращает новый DataFrame.
     function WithColumnDateTime(name: string; f: DataFrameCursor -> System.DateTime): DataFrame;
+    /// Добавляет столбец даты и времени по выражению DataValue, сохраняя пропуски.
+    function WithColumnDateTime(name: string; f: DataFrameCursor -> DataValue): DataFrame;
     /// Добавляет новый столбец, вычисляя указанную часть DateTime-столбца.
     /// Для dpDate создаётся столбец DateTime, для остальных частей - целочисленный столбец.
     function WithDatePart(sourceColumn, newColumnName: string; part: DatePartKind): DataFrame;
@@ -4405,6 +4417,19 @@ begin
   Result := Schema.IsCategorical(name);
 end;
 
+function DataFrame.Filter(pred: DataFrameCursor -> DataValue): DataFrame;
+begin
+  if pred = nil then
+    ArgumentNullError(ER_ARG_NULL, 'pred');
+
+  var matches: CursorPredicate := row ->
+  begin
+    var v := pred(row);
+    Result := (not System.Object.ReferenceEquals(v, nil)) and v.IsValid and v.Bool;
+  end;
+  Result := Filter(matches);
+end;
+
 function DataFrame.Filter(pred: CursorPredicate): DataFrame;
 begin
   var cursor := GetCursor;
@@ -4810,6 +4835,41 @@ begin
   Result.AssertSchemaConsistent;
 end;
 
+function CollectDataValueColumn<T>(df: DataFrame; name: string;
+  f: DataFrameCursor -> DataValue; readValue: DataValue -> T): (array of T, array of boolean);
+begin
+  if df.HasColumn(name) then
+    ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
+
+  if f = nil then
+    ArgumentNullError(ER_ARG_NULL, 'f');
+
+  var data := new T[df.RowCount];
+  var valid := new boolean[df.RowCount];
+  var cur := df.GetCursor;
+  var i := 0;
+
+  while cur.MoveNext do
+  begin
+    var v := f(cur);
+    if System.Object.ReferenceEquals(v, nil) then
+      ArgumentNullError(ER_ARG_NULL, 'f(row)');
+
+    valid[i] := v.IsValid;
+    if valid[i] then
+      data[i] := readValue(v);
+    i += 1;
+  end;
+
+  Result := (data, valid);
+end;
+
+function DataFrame.WithColumnInt(name: string; f: DataFrameCursor -> DataValue): DataFrame;
+begin
+  var (data, valid) := CollectDataValueColumn&<integer>(Self, name, f, v -> v.Int);
+  Result := WithColumnInt(name, data, valid);
+end;
+
 function DataFrame.WithColumnFloat(name: string; data: array of real; valid: array of boolean): DataFrame;
 begin
   if fSchema.HasColumn(name) then
@@ -4858,45 +4918,14 @@ end;
 
 function DataFrame.WithColumnFloat(name: string; f: DataFrameCursor -> DataValue): DataFrame;
 begin
-  if fSchema.HasColumn(name) then
-    ArgumentError(ER_COLUMN_ALREADY_EXISTS, name);
-
-  if f = nil then
-    ArgumentNullError(ER_ARG_NULL, 'f');
-
-  var res := CloneWithSharedColumns;
-
-  var data := new real[RowCount];
-  var valid := new boolean[RowCount];
-
-  var cur := GetCursor;
-  var i := 0;
-
-  while cur.MoveNext do
-  begin
-    var v := f(cur);
-
-    if System.Object.ReferenceEquals(v, nil) then
-      ArgumentNullError(ER_ARG_NULL, 'f(row)');
-
-    valid[i] := v.IsValid;
-
-    if v.IsValid then
+  var (data, valid) := CollectDataValueColumn&<real>(Self, name, f,
+    v ->
     begin
       if not (v.ColType in [ctInt, ctFloat]) then
         Error(ER_COLUMN_NOT_NUMERIC);
-
-      data[i] := v.Float;
-    end;
-
-    i += 1;
-  end;
-
-  res.AddFloatColumn(name, data, valid);
-  res.SetSchema(ExtendSchema(name, ctFloat, false));
-
-  Result := res;
-  Result.AssertSchemaConsistent;
+      Result := v.Float;
+    end);
+  Result := WithColumnFloat(name, data, valid);
 end;
 
 function DataFrame.WithColumnStr(name: string; data: array of string; valid: array of boolean): DataFrame;
@@ -4945,6 +4974,12 @@ begin
   Result.AssertSchemaConsistent;
 end;
 
+function DataFrame.WithColumnStr(name: string; f: DataFrameCursor -> DataValue): DataFrame;
+begin
+  var (data, valid) := CollectDataValueColumn&<string>(Self, name, f, v -> v.Str);
+  Result := WithColumnStr(name, data, valid);
+end;
+
 function DataFrame.WithColumnBool(name: string; data: array of boolean; valid: array of boolean): DataFrame;
 begin
   if fSchema.HasColumn(name) then
@@ -4991,6 +5026,12 @@ begin
   Result.AssertSchemaConsistent;
 end;
 
+function DataFrame.WithColumnBool(name: string; f: DataFrameCursor -> DataValue): DataFrame;
+begin
+  var (data, valid) := CollectDataValueColumn&<boolean>(Self, name, f, v -> v.Bool);
+  Result := WithColumnBool(name, data, valid);
+end;
+
 function DataFrame.WithColumnDateTime(name: string; data: array of System.DateTime; valid: array of boolean): DataFrame;
 begin
   if fSchema.HasColumn(name) then
@@ -5035,6 +5076,12 @@ begin
 
   Result := res;
   Result.AssertSchemaConsistent;
+end;
+
+function DataFrame.WithColumnDateTime(name: string; f: DataFrameCursor -> DataValue): DataFrame;
+begin
+  var (data, valid) := CollectDataValueColumn&<System.DateTime>(Self, name, f, v -> v.DateTime);
+  Result := WithColumnDateTime(name, data, valid);
 end;
 
 function DataFrame.WithDatePart(sourceColumn, newColumnName: string; part: DatePartKind): DataFrame;
