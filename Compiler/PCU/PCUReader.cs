@@ -681,9 +681,7 @@ namespace PascalABCCompiler.PCU
 
             pcu_file.interface_synonyms_offset = br.ReadInt32();
             pcu_file.implementation_synonyms_offset = br.ReadInt32();
-            functionReexports = new (int UnitId, string SourceName, string PublicName)[br.ReadInt32()];
-            for (int i = 0; i < functionReexports.Length; i++)
-                functionReexports[i] = (br.ReadInt32(), br.ReadString(), br.ReadString());
+            functionReexports = PCUFile.ReadFunctionReexports(br);
 
             InitializationMethodOffset = br.ReadInt32();
             FinalizationMethodOffset = br.ReadInt32();

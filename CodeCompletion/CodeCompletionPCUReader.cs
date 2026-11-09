@@ -14,6 +14,7 @@ using PascalABCCompiler.TreeRealization;
 //using SymbolTable;
 using PascalABCCompiler.PCU;
 using PascalABCCompiler.Contracts.CodeCompletion;
+using Languages.Facade;
 
 namespace CodeCompletion
 {
@@ -26,6 +27,7 @@ namespace CodeCompletion
 		private BinaryReader br;
 		private bool readDebugInfo;
 		private PCUFile pcu_file = new PCUFile();
+        private (int UnitId, string SourceName, string PublicName)[] functionReexports;
 		private SymScope root_scope;
 		private SymScope cur_scope;
 		private int ext_pos;
@@ -92,6 +94,7 @@ namespace CodeCompletion
             	cur_scope = root_scope;
             	AddReferencedAssemblies();
             	ReadInterfacePart();
+                ReadFunctionReexports();
             	fs.Close();
 			}
 			catch (Exception e)
@@ -209,6 +212,7 @@ namespace CodeCompletion
 
             pcu_file.interface_synonyms_offset = br.ReadInt32();
             pcu_file.implementation_synonyms_offset = br.ReadInt32();
+            functionReexports = PCUFile.ReadFunctionReexports(br);
 
             br.ReadInt32();
             br.ReadInt32();
@@ -239,6 +243,28 @@ namespace CodeCompletion
 			}
 		}
 		
+        private void ReadFunctionReexports()
+        {
+            if (functionReexports.Length == 0)
+                return;
+            var language = LanguageProvider.Instance.SelectLanguageByName(pcu_file.languageName);
+            var destination = (InterfaceUnitScope)root_scope;
+            foreach (var entry in functionReexports)
+            {
+                if (entry.UnitId < 0 || entry.UnitId >= pcu_file.incl_modules.Length)
+                    continue;
+                string path = DomSyntaxTreeVisitor.FindPCUFileName(pcu_file.incl_modules[entry.UnitId], dir, language);
+                if (path == null)
+                    continue;
+                var reader = new IntellisensePCUReader();
+#if PABCNET_MODERN
+                reader.PreparedReferencePaths = PreparedReferencePaths;
+#endif
+                if (reader.GetUnit(path) is InterfaceUnitScope source)
+                    destination.AddFunctionReexport(source, entry.SourceName, entry.PublicName);
+            }
+        }
+
 		private void ReadDebugInfo()
 		{
             if (pcu_file.IncludeDebugInfo)
@@ -604,21 +630,15 @@ namespace CodeCompletion
 			//Console.WriteLine(name);
 			ProcScope cnfn = new ProcScope(name,cur_scope);
 			cnfn.declaringUnit = root_scope;
-#if PABCNET_MODERN
             // The offset is relative to the PCU data section, as in PCUReader.
             int connectedTypeEnd = br.ReadInt32();
+            cnfn.is_extension = CanReadObject();
             br.BaseStream.Seek(start_pos + connectedTypeEnd, SeekOrigin.Begin);
-#else
-            if (CanReadObject())
-            	br.ReadInt32();
-#endif
             br.ReadBoolean();//ïðîïóñêàåì ôëàã - èíòåðôåéñíîñòè
 			br.ReadInt32();//name index
 			bool is_generic = br.ReadBoolean();
             if (is_generic)
-            {
-            	throw new NotSupportedException();
-            }
+                return null;
 			if (br.ReadByte() == 1)
 			{
 				cnfn.return_type = GetTypeReference();

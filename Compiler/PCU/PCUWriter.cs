@@ -166,6 +166,14 @@ namespace PascalABCCompiler.PCU
 
         public Int64 CRC;
 
+        public static (int UnitId, string SourceName, string PublicName)[] ReadFunctionReexports(BinaryReader reader)
+        {
+            var entries = new (int UnitId, string SourceName, string PublicName)[reader.ReadInt32()];
+            for (int i = 0; i < entries.Length; i++)
+                entries[i] = (reader.ReadInt32(), reader.ReadString(), reader.ReadString());
+            return entries;
+        }
+
         public bool UseRtlDll;
         public bool IncludeDebugInfo;
 

@@ -5157,11 +5157,12 @@ namespace CodeCompletion
 
         public override void visit(interface_node _interface_node)
         {
-            
-
             if (_interface_node.interface_definitions != null)
+            {
                 foreach (declaration decl in _interface_node.interface_definitions.defs)
                 {
+                    if (decl is unit_reexport)
+                        continue;
                     try
                     {
                         decl.visit(this);
@@ -5174,6 +5175,18 @@ namespace CodeCompletion
                     }
                 }
 
+                if (cur_scope is InterfaceUnitScope destination && _interface_node.uses_modules != null)
+                    foreach (var entry in _interface_node.interface_definitions.defs.OfType<unit_reexport>())
+                    {
+                        string moduleName = entry.source_unit.name;
+                        if (!_interface_node.uses_modules.units.Any(u => u.name.idents.Count == 1 &&
+                            string.Equals(u.name.idents[0].name, moduleName, StringComparison.OrdinalIgnoreCase)))
+                            continue;
+                        if (destination.FindNameOnlyInType(moduleName) is InterfaceUnitScope source)
+                            destination.AddFunctionReexport(source, entry.source_name.name,
+                                (entry.export_name ?? entry.source_name).name);
+                    }
+            }
         }
 
         public override void visit(implementation_node _implementation_node)

@@ -1361,6 +1361,29 @@ namespace CodeCompletion
             }
         }
 
+        internal void AddFunctionReexport(InterfaceUnitScope source, string sourceName, string publicName)
+        {
+            if (source == this || FindNameOnlyInType(publicName) != null)
+                return;
+
+            var group = source.FindOverloadNamesOnlyInType(sourceName);
+            if (group.Any(s => !(s is ProcScope procedure) || procedure.is_extension))
+                return;
+
+            // The original overload chain and the original symbol names belong to the source unit.
+            ProcScope previous = null;
+            foreach (ProcScope procedure in group)
+            {
+                var alias = (ProcScope)procedure.CopyWithNewSymInfo();
+                alias.nextProc = null;
+                AddName(publicName, alias);
+                alias.Complete();
+                if (previous != null)
+                    previous.nextProc = alias;
+                previous = alias;
+            }
+        }
+
         public override SymInfo[] GetNamesAsInObject(ExpressionVisitor ev)
         {
             SymInfo[] names = base.GetNamesAsInObject(ev);

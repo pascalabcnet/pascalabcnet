@@ -1,6 +1,7 @@
 param(
     [string]$FrameworkRuntime = (Join-Path $PSScriptRoot '../../bin'),
-    [string]$ModernRuntime = (Join-Path $PSScriptRoot '../../bin-net10')
+    [string]$ModernRuntime = (Join-Path $PSScriptRoot '../../bin-net10'),
+    [switch]$CheckIntelliSense
 )
 
 $ErrorActionPreference = 'Stop'
@@ -66,6 +67,7 @@ foreach ($target in @('net472', 'net10')) {
     Push-Location $dir
     try {
         Invoke-Client 'FromSource.exe'
+        $sourceDir = $dir
         $pcuDir = Join-Path $dir 'pcu-only'
         New-Item -ItemType Directory -Path $pcuDir | Out-Null
         foreach ($unit in @('ReexportOrigin', 'ReexportFacade')) {
@@ -76,6 +78,15 @@ foreach ($target in @('net472', 'net10')) {
         $dir = $pcuDir
         Set-Location -LiteralPath $dir
         Invoke-Client 'FromPcu.exe'
+        if ($CheckIntelliSense) {
+            if ($target -eq 'net10') {
+                & dotnet (Join-Path $ModernRuntime 'UnitReexportIntelliSense.dll') $sourceDir $pcuDir
+            }
+            else {
+                & (Join-Path $FrameworkRuntime 'UnitReexportIntelliSense.exe') $sourceDir $pcuDir
+            }
+            if ($LASTEXITCODE -ne 0) { throw "IntelliSense checks failed for $target" }
+        }
 
         [IO.File]::WriteAllText((Join-Path $dir 'HiddenClient.pas'),
             'uses ReexportFacade; begin assert(Hidden = 42); end.')
