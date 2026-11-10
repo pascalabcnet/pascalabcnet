@@ -80,6 +80,22 @@ foreach ($target in @('net472', 'net10')) {
                 $entries[0].Substring($key.Length + 1)
             }
         }
+        $messages = Get-DiagnosticTexts 'PascalABCParser.dat' 'REEXPORT_REQUIRES_MODULE_NAME{0}'
+        foreach ($case in @(
+            @{ Clause = 'export F1;'; Column = 8; Name = 'F1' },
+            @{ Clause = 'export F1 as Alias;'; Column = 8; Name = 'F1' },
+            @{ Clause = 'export F2, ReexportOrigin.F1;'; Column = 8; Name = 'F2' },
+            @{ Clause = 'export ReexportOrigin.F1, F2 as Alias;'; Column = 27; Name = 'F2' }
+        )) {
+            $invalidSource = 'UnqualifiedExport.pas'
+            [IO.File]::WriteAllLines((Join-Path $dir $invalidSource), @(
+                'unit UnqualifiedExport;', 'interface', 'uses ReexportOrigin;', $case.Clause,
+                'implementation', 'end.'
+            ))
+            $expected = @($messages | ForEach-Object { "[4,$($case.Column)] ${invalidSource}: " + ($_ -f $case.Name) })
+            Invoke-Compile $invalidSource 'UnqualifiedExport.exe' $expected
+        }
+
         Invoke-Client 'FromSource.exe'
         $sourceDir = $dir
         $pcuDir = Join-Path $dir 'pcu-only'

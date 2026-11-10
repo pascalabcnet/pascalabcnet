@@ -485,9 +485,9 @@ unit_reexport_clauses
 
 unit_reexport_list
     : unit_reexport_item
-        { $$ = new declarations().Add((declaration)$1, @$); }
+        { $$ = $1 == null ? new declarations() : new declarations().Add((declaration)$1, @$); }
     | unit_reexport_list tkComma unit_reexport_item
-        { $$ = ((declarations)$1).Add((declaration)$3, @$); }
+        { $$ = $3 == null ? $1 : ((declarations)$1).Add((declaration)$3, @$); }
     ;
 
 unit_reexport_item
@@ -495,6 +495,10 @@ unit_reexport_item
         { $$ = new unit_reexport($1, $3, null, @$); }
     | identifier tkPoint identifier tkAs identifier
         { $$ = new unit_reexport($1, $3, $5, @$); }
+    | identifier
+        { parserTools.AddErrorFromResource("REEXPORT_REQUIRES_MODULE_NAME{0}", @1, $1.name); $$ = null; }
+    | identifier tkAs identifier
+        { parserTools.AddErrorFromResource("REEXPORT_REQUIRES_MODULE_NAME{0}", @1, $1.name); $$ = null; }
     ;
 
 implementation_part
