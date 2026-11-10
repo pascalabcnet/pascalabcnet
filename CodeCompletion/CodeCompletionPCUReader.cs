@@ -27,7 +27,7 @@ namespace CodeCompletion
 		private BinaryReader br;
 		private bool readDebugInfo;
 		private PCUFile pcu_file = new PCUFile();
-        private (int UnitId, string SourceName, string PublicName)[] functionReexports;
+        private (int UnitId, string SourceName, string PublicName)[] reexports;
 		private SymScope root_scope;
 		private SymScope cur_scope;
 		private int ext_pos;
@@ -94,7 +94,8 @@ namespace CodeCompletion
             	cur_scope = root_scope;
             	AddReferencedAssemblies();
             	ReadInterfacePart();
-                ReadFunctionReexports();
+                ReadInterfaceTypeSynonyms();
+                ReadReexports();
             	fs.Close();
 			}
 			catch (Exception e)
@@ -212,7 +213,7 @@ namespace CodeCompletion
 
             pcu_file.interface_synonyms_offset = br.ReadInt32();
             pcu_file.implementation_synonyms_offset = br.ReadInt32();
-            functionReexports = PCUFile.ReadFunctionReexports(br);
+            reexports = PCUFile.ReadReexports(br);
 
             br.ReadInt32();
             br.ReadInt32();
@@ -243,13 +244,35 @@ namespace CodeCompletion
 			}
 		}
 		
-        private void ReadFunctionReexports()
+        private void ReadInterfaceTypeSynonyms()
         {
-            if (functionReexports.Length == 0)
+            br.BaseStream.Position = start_pos + pcu_file.interface_synonyms_offset;
+            int count = br.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                string name = br.ReadString();
+                long lengthPosition = br.BaseStream.Position;
+                long next = lengthPosition + br.ReadInt32();
+                try
+                {
+                    var type = GetTypeReference();
+                    if (type != null)
+                        root_scope.AddName(name, new TypeSynonim(new SymInfo(name, type.si.kind, name), type, type.generic_params)
+                        {
+                            declaringUnit = root_scope, topScope = root_scope
+                        });
+                }
+                finally { br.BaseStream.Position = next; }
+            }
+        }
+
+        private void ReadReexports()
+        {
+            if (reexports.Length == 0)
                 return;
             var language = LanguageProvider.Instance.SelectLanguageByName(pcu_file.languageName);
             var destination = (InterfaceUnitScope)root_scope;
-            foreach (var entry in functionReexports)
+            foreach (var entry in reexports)
             {
                 if (entry.UnitId < 0 || entry.UnitId >= pcu_file.incl_modules.Length)
                     continue;
@@ -261,7 +284,7 @@ namespace CodeCompletion
                 reader.PreparedReferencePaths = PreparedReferencePaths;
 #endif
                 if (reader.GetUnit(path) is InterfaceUnitScope source)
-                    destination.AddFunctionReexport(source, entry.SourceName, entry.PublicName);
+                    destination.AddReexport(source, entry.SourceName, entry.PublicName);
             }
         }
 
@@ -349,6 +372,7 @@ namespace CodeCompletion
 			bool in_scope = false;
             if (name != null) in_scope = true;
             bool is_interface = br.ReadBoolean();                        
+            br.ReadInt32(); // entity index
             if (is_interface)//ïðîïóñêàåì ôëàã - èíòåðôåéñíîñòè
             {
                 name = GetString(br.ReadInt32());
@@ -361,19 +385,34 @@ namespace CodeCompletion
             //ssyy
             //×èòàåì, ÿâëÿåòñÿ ëè òèï èíòåðôåéñîì
             bool type_is_interface = (br.ReadByte() == 1);
+            br.ReadBoolean(); // class flag
 
             //×èòàåì, ÿâëÿåòñÿ ëè òèï äåëåãàòîì
             bool type_is_delegate = (br.ReadByte() == 1);
             //\ssyy
 			
             bool type_is_generic_definition = (br.ReadByte() == 1);
-            
+            var genericNames = new List<string>();
             if (type_is_generic_definition)
             {
-            	throw new Exception();
+                int count = br.ReadInt32();
+                for (int i = 0; i < count; i++)
+                    genericNames.Add(br.ReadString());
+            }
+            var tsk = (PascalABCCompiler.SemanticTree.type_special_kind)br.ReadByte();
+            SymbolKind kind = type_is_interface ? SymbolKind.Interface : type_is_delegate ? SymbolKind.Delegate :
+                tsk == PascalABCCompiler.SemanticTree.type_special_kind.record ? SymbolKind.Struct : SymbolKind.Class;
+            if (type_is_generic_definition)
+            {
+                // A base type or constraint can refer back to the generic parameters of this type.
+                ctn = new TypeScope(kind, cur_scope, null);
+                ctn.si.name = name;
+                foreach (string parameter in genericNames)
+                    ctn.AddGenericParameter(parameter, null);
+                AddMember(ctn, offset);
             }
             TypeScope base_type = GetTypeReference();
-            bool is_value_type = br.ReadBoolean();
+            br.ReadBoolean(); // value type flag
 
             //ssyy
             //×èòàåì ïîääåðæèâàåìûå èíòåðôåéñû
@@ -387,22 +426,35 @@ namespace CodeCompletion
 			object low_val=null;
 			object upper_val=null;
             PascalABCCompiler.SemanticTree.type_access_level tal = (PascalABCCompiler.SemanticTree.type_access_level)br.ReadByte();
-            PascalABCCompiler.SemanticTree.type_special_kind tsk = (PascalABCCompiler.SemanticTree.type_special_kind)br.ReadByte();
             bool is_sealed = br.ReadBoolean();
             bool is_abstract = br.ReadBoolean();
+            bool is_static = br.ReadBoolean();
+            br.ReadBoolean(); // partial flag
             if (tsk == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
             {
             	low_val = CreateExpression();
             	upper_val = CreateExpression();
             }
+
+            foreach (string parameter in genericNames)
+            {
+                br.ReadByte(); // generic parameter kind
+                GetTypeReference(); // base constraint
+                int count = br.ReadInt32();
+                for (int i = 0; i < count; i++)
+                    GetTypeReference(); // interface constraint
+                br.ReadBoolean(); // requires a default constructor
+            }
 	
             TypeScope element_type = null;
             if (CanReadObject())
                 element_type = GetTypeReference();
-            switch (tsk)
+            if (ctn != null)
+                ctn.baseScope = base_type;
+            else switch (tsk)
             {
-            	case PascalABCCompiler.SemanticTree.type_special_kind.none_kind : ctn = new TypeScope(SymbolKind.Class,cur_scope,base_type); break;
-            	case PascalABCCompiler.SemanticTree.type_special_kind.record : ctn = new TypeScope(SymbolKind.Struct,cur_scope,base_type); break;
+                case PascalABCCompiler.SemanticTree.type_special_kind.none_kind:
+                case PascalABCCompiler.SemanticTree.type_special_kind.record: ctn = new TypeScope(kind, cur_scope, base_type); break;
             	case PascalABCCompiler.SemanticTree.type_special_kind.array_wrapper : ctn = new ArrayScope(); break;
             	case PascalABCCompiler.SemanticTree.type_special_kind.enum_kind : ctn = new EnumScope(SymbolKind.Enum,cur_scope,base_type); break;
             	case PascalABCCompiler.SemanticTree.type_special_kind.set_type : ctn = new SetScope(element_type); break;
@@ -412,10 +464,12 @@ namespace CodeCompletion
             	case PascalABCCompiler.SemanticTree.type_special_kind.binary_file : ctn = new FileScope(null,null);break;
            		
             }
+            if (ctn == null) return null;
             ctn.declaringUnit = root_scope;
             ctn.si.name = name;
             ctn.is_abstract = is_abstract;
             ctn.is_final = is_sealed;
+            ctn.is_static = is_static;
             AddMember(ctn, offset);
             ctn.elementType = element_type;
 			
@@ -471,9 +525,8 @@ namespace CodeCompletion
             field = new ElementScope(new SymInfo(name, SymbolKind.Field,name),type,cur_scope);
             field.declaringUnit = root_scope;
             AddMember(field, offset);
-            object initv = null;
             if (CanReadObject())
-                initv = CreateExpression();
+                br.ReadInt32(); // initializer expression offset
             br.ReadInt32();
             PascalABCCompiler.SemanticTree.field_access_level fal = (PascalABCCompiler.SemanticTree.field_access_level)br.ReadByte();
             PascalABCCompiler.SemanticTree.polymorphic_state ps = (PascalABCCompiler.SemanticTree.polymorphic_state)br.ReadByte();
@@ -494,7 +547,6 @@ namespace CodeCompletion
             }
            
             //field = new class_field(name,type,cont,ps,fal,loc);
-            field.cnst_val = initv;
             //members[offset] = field;
             AddMember(field, offset);            
             return field;
@@ -554,7 +606,8 @@ namespace CodeCompletion
             bool is_generic = br.ReadBoolean();
             if (is_generic)
             {
-            	throw new NotSupportedException();
+                members.Remove(offset);
+                return null;
             }
             //ssyy
            
@@ -605,11 +658,10 @@ namespace CodeCompletion
             {
                 string name = br.ReadString();
                 int offset = br.ReadInt32();
+                br.ReadBytes(5); // access, symbol kind, node kind, restore flag, static flag
                 SymScope tmp = cur_scope;
                 cur_scope = scope;
                 SymScope ss = CreateInterfaceInClassMember(name,offset);
-                br.ReadByte();
-                br.ReadByte();
                 if (ht.ContainsKey(name) && ss is ProcScope)
                 {
                 	(ht[name] as ProcScope).nextProc = ss as ProcScope;
@@ -660,13 +712,13 @@ namespace CodeCompletion
             ElementScope ncd = members[offset] as ElementScope;
             if (ncd != null) return ncd;
             br.ReadBoolean();
-            br.ReadInt32();
-            //type_node tn = GetTypeReference();
-            br.ReadInt32();//namespace
-            //object en = CreateExpression();
-            br.ReadInt32();//init_value
+            br.ReadInt32(); // name index
+            br.ReadInt32(); // namespace
+            TypeScope type = GetTypeReference();
+            br.ReadInt32(); // value expression offset
+            br.ReadInt32(); // reserved
             ReadDebugInfo();
-            ncd = new ElementScope(new SymInfo(name, SymbolKind.Constant,name),null,cur_scope);
+            ncd = new ElementScope(new SymInfo(name, SymbolKind.Constant,name),type,cur_scope);
             ncd.declaringUnit = root_scope;
             //???
             AddMember(ncd, offset);
@@ -764,6 +816,7 @@ namespace CodeCompletion
                 case 2://ýòî ìàññèâ
                 	//simple_array type = new simple_array(GetTypeReference(),br.ReadInt32());
                 	TypeScope type = new ArrayScope(GetTypeReference(),new TypeScope[0]);
+                    br.ReadInt32(); // length
                 	return type;
                 case 3://ýòî óêàçàòåëü
                 	TypeScope pointed_type = GetTypeReference();
@@ -771,6 +824,7 @@ namespace CodeCompletion
                 case 4://ýòî äèíàìè÷åñêèé ìàññèâ
 					ReadDebugInfo();
                	 	TypeScope elem_type = GetTypeReference();
+                    br.ReadInt32(); // rank
                	 	return new ArrayScope(elem_type,null);
                 case 6:
                 	//return GetTemplateInstance();
@@ -778,8 +832,13 @@ namespace CodeCompletion
                 case 7:
                     return GetGenericInstance();
                 case 8:
-                    //return GetShortStringType();
-                    return null;
+                    br.ReadInt32(); // maximum length
+                    return TypeTable.string_type;
+                case 9:
+                    TypeScope owner = GetTypeReference();
+                    int index = br.ReadInt32();
+                    return owner?.generic_params != null && index >= 0 && index < owner.generic_params.Count
+                        ? owner.FindNameOnlyInType(owner.generic_params[index]) as TypeScope : null;
             }
 			return null;
 		}
@@ -788,12 +847,18 @@ namespace CodeCompletion
         {
             TypeScope ts = GetTypeReference();
             int params_count = br.ReadInt32();
-            ts.ClearInstances();
+            if (ts != null)
+            {
+                ts = (TypeScope)ts.CopyWithNewSymInfo();
+                ts.instances = new List<TypeScope>();
+            }
             for (int i = 0; i < params_count; i++)
             {
-               ts.AddGenericInstanciation(GetTypeReference());
+                TypeScope parameter = GetTypeReference();
+                ts?.AddGenericInstanciation(parameter);
             }
-            ts.si.description = ts.ToString();
+            if (ts != null)
+                ts.si.description = ts.ToString();
             return ts;
         }
 		

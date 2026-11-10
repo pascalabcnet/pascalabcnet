@@ -20,10 +20,10 @@ function Assert-DirectCalls([string]$output) {
                 $_.Operand.DeclaringType.Name -in @('ReexportOrigin', 'ReexportFacade') -and
                 $_.Operand.Name -in @('F1', 'F2', 'FFF2')
             } | ForEach-Object { $_.Operand })
-        if ($calls.Count -ne 6 -or @($calls | Where-Object {
+        if ($calls.Count -ne 7 -or @($calls | Where-Object {
             $_.DeclaringType.Name -ne 'ReexportOrigin' -or $_.Name -eq 'FFF2'
         }).Count -ne 0) {
-            throw "Expected six calls directly to the original functions in $output"
+            throw "Expected seven calls directly to the original functions in $output"
         }
     }
     finally { $stream.Dispose() }
@@ -32,11 +32,11 @@ function Assert-DirectCalls([string]$output) {
 foreach ($target in @('net472', 'net10')) {
     $dir = Join-Path $root $target
     New-Item -ItemType Directory -Path $dir -Force | Out-Null
-    foreach ($file in @('ReexportOrigin.pas', 'ReexportFacade.pas', 'ReexportClient.pas')) {
+    foreach ($file in @('ReexportOrigin.pas', 'ReexportFacade.pas', 'ReexportBridge.pas', 'ReexportClient.pas')) {
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot $file) -Destination $dir
     }
 
-    function Invoke-Compile([string]$source, [string]$output, [string]$expectedError = '') {
+    function Invoke-Compile([string]$source, [string]$output, [string[]]$expectedErrors = @()) {
         $source = Join-Path $dir $source
         $output = Join-Path $dir $output
         if ($target -eq 'net10') {
@@ -46,9 +46,10 @@ foreach ($target in @('net472', 'net10')) {
             $log = & (Join-Path $FrameworkRuntime 'pabcnetcclear.exe') "/Output:$output" $source
         }
         $rc = $LASTEXITCODE
-        if ($expectedError -ne '') {
-            if ($rc -eq 0 -or ($log -join "`n") -notmatch [regex]::Escape($expectedError)) {
-                throw "Expected error for $expectedError in $source ($target): `n$log"
+        if ($expectedErrors.Count -ne 0) {
+            $found = @($expectedErrors | Where-Object { ($log -join "`n").Contains($_) })
+            if ($rc -ne 1 -or $found.Count -eq 0) {
+                throw "Expected one of [$($expectedErrors -join ' | ')] in $source ($target): `n$log"
             }
         }
         elseif ($rc -ne 0) {
@@ -56,21 +57,34 @@ foreach ($target in @('net472', 'net10')) {
         }
     }
 
-    function Invoke-Client([string]$output) {
-        Invoke-Compile 'ReexportClient.pas' $output
+    function Invoke-TestProgram([string]$source, [string]$output) {
+        Invoke-Compile $source $output
         if ($target -eq 'net10') { & dotnet (Join-Path $dir $output) }
         else { & (Join-Path $dir $output) }
         if ($LASTEXITCODE -ne 0) { throw "Runtime assertions failed: $output" }
+    }
+
+    function Invoke-Client([string]$output) {
+        Invoke-TestProgram 'ReexportClient.pas' $output
         Assert-DirectCalls (Join-Path $dir $output)
     }
 
     Push-Location $dir
     try {
+        $runtime = if ($target -eq 'net10') { $ModernRuntime } else { $FrameworkRuntime }
+        function Get-DiagnosticTexts([string]$file, [string]$key) {
+            foreach ($language in @('Eng', 'Rus')) {
+                $resource = Join-Path $runtime "Lng/$language/$file"
+                $entries = @([IO.File]::ReadAllLines($resource) | Where-Object { $_.StartsWith($key + '=') })
+                if ($entries.Count -ne 1) { throw "Missing or duplicate $key in $resource" }
+                $entries[0].Substring($key.Length + 1)
+            }
+        }
         Invoke-Client 'FromSource.exe'
         $sourceDir = $dir
         $pcuDir = Join-Path $dir 'pcu-only'
         New-Item -ItemType Directory -Path $pcuDir | Out-Null
-        foreach ($unit in @('ReexportOrigin', 'ReexportFacade')) {
+        foreach ($unit in @('ReexportOrigin', 'ReexportFacade', 'ReexportBridge')) {
             if (!(Test-Path -LiteralPath "$unit.pcu")) { throw "Missing fresh $unit.pcu" }
             Copy-Item -LiteralPath "$unit.pcu" -Destination $pcuDir
         }
@@ -119,9 +133,56 @@ end.
         [IO.File]::WriteAllText((Join-Path $dir 'NotInInterfaceClient.pas'),
             'uses NotInInterface; begin end.')
         Invoke-Compile 'NotInInterfaceClient.pas' 'NotInInterfaceClient.exe' 'ReexportOrigin'
+
+        foreach ($name in 'TOriginPoint', 'OriginCount', 'OriginCounter') {
+            $usage = switch ($name) {
+                'TOriginPoint' { "var p: $name;" }
+                'OriginCount' { "var c := $name;" }
+                'OriginCounter' { "$name := 0;" }
+            }
+            [IO.File]::WriteAllText((Join-Path $dir 'OriginalSymbolClient.pas'),
+                "uses ReexportFacade; begin $usage end.")
+            Invoke-Compile 'OriginalSymbolClient.pas' 'OriginalSymbolClient.exe' $name
+        }
+
+        [IO.File]::WriteAllLines((Join-Path $dir 'PrivateExport.pas'), @(
+            'unit PrivateExport;', 'interface', 'uses ReexportOrigin;',
+            'export ReexportOrigin.PrivateCounter;', 'implementation', 'end.'
+        ))
+        [IO.File]::WriteAllText((Join-Path $dir 'PrivateExportClient.pas'), 'uses PrivateExport; begin end.')
+        $unsupported = Get-DiagnosticTexts 'SemanticErrors_ssyy.dat' 'REEXPORT_REQUIRES_PUBLIC_SYMBOL{0}{1}'
+        Invoke-Compile 'PrivateExportClient.pas' 'PrivateExportClient.exe' @($unsupported | ForEach-Object {
+            $_ -f 'ReexportOrigin', 'PrivateCounter'
+        })
+
+        [IO.File]::WriteAllLines((Join-Path $dir 'TypeCollision.pas'), @(
+            'unit TypeCollision;', 'interface', 'uses ReexportOrigin;',
+            'export ReexportOrigin.TOriginBox as LocalBox;', 'type LocalBox<T> = class end;',
+            'implementation', 'end.'
+        ))
+        [IO.File]::WriteAllText((Join-Path $dir 'TypeCollisionClient.pas'), 'uses TypeCollision; begin end.')
+        $collision = Get-DiagnosticTexts 'SemanticErrors_ssyy.dat' 'REEXPORT_NAME_ALREADY_DECLARED{0}'
+        Invoke-Compile 'TypeCollisionClient.pas' 'TypeCollisionClient.exe' @($collision | ForEach-Object { $_ -f 'LocalBox' })
+
+        $genericSourceDir = Join-Path $sourceDir 'qualified-generics'
+        New-Item -ItemType Directory -Path $genericSourceDir | Out-Null
+        $dir = $genericSourceDir
+        Set-Location -LiteralPath $dir
+        foreach ($file in @('ReexportOrigin.pas', 'ReexportFacade.pas', 'QualifiedGenericCalls.pas')) {
+            Copy-Item -LiteralPath (Join-Path $PSScriptRoot $file) -Destination $dir
+        }
+        Invoke-TestProgram 'QualifiedGenericCalls.pas' 'QualifiedGenericsFromSource.exe'
+
+        $dir = Join-Path $genericSourceDir 'pcu-only'
+        New-Item -ItemType Directory -Path $dir | Out-Null
+        foreach ($file in @('ReexportOrigin.pcu', 'ReexportFacade.pcu', 'QualifiedGenericCalls.pas')) {
+            Copy-Item -LiteralPath (Join-Path $genericSourceDir $file) -Destination $dir
+        }
+        Set-Location -LiteralPath $dir
+        Invoke-TestProgram 'QualifiedGenericCalls.pas' 'QualifiedGenericsFromPcu.exe'
     }
     finally {
         Pop-Location
     }
-    Write-Host "PASS $target - re-exports from source and PCU, aliases, overloads, visibility, collision"
+    Write-Host "PASS $target - re-exports and qualified generic calls from source and PCU, visibility and diagnostics"
 }

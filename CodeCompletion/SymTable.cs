@@ -1361,12 +1361,34 @@ namespace CodeCompletion
             }
         }
 
-        internal void AddFunctionReexport(InterfaceUnitScope source, string sourceName, string publicName)
+        internal void AddReexport(InterfaceUnitScope source, string sourceName, string publicName)
         {
             if (source == this || FindNameOnlyInType(publicName) != null)
                 return;
 
             var group = source.FindOverloadNamesOnlyInType(sourceName);
+            if (group.Count != 0 && group.All(s => s is TypeScope))
+            {
+                foreach (TypeScope type in group)
+                {
+                    var info = new SymInfo(type.si) { name = publicName };
+                    var alias = new TypeSynonim(info, type, type.generic_params)
+                    {
+                        loc = type.loc, head_loc = type.head_loc, body_loc = type.body_loc,
+                        declaringUnit = type.declaringUnit, topScope = type.topScope
+                    };
+                    AddName(publicName, alias);
+                }
+                return;
+            }
+            if (group.Count == 1 && group[0] is ElementScope element &&
+                (element.ElemKind == SymbolKind.Constant || element.ElemKind == SymbolKind.Variable))
+            {
+                var alias = (ElementScope)element.CopyWithNewSymInfo();
+                AddName(publicName, alias);
+                alias.MakeDescription();
+                return;
+            }
             if (group.Any(s => !(s is ProcScope procedure) || procedure.is_extension))
                 return;
 

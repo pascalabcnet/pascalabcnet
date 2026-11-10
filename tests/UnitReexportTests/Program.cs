@@ -44,6 +44,27 @@ internal static class Program
         var names = completion.Symbols.Select(s => s.name).ToArray();
         Check(names.Contains("FFF2") && names.Contains("F1") && !names.Contains("F2") && !names.Contains("Hidden"),
             "qualified completion shows only the exported routines: " + string.Join(", ", names));
+        foreach (string name in new[] { "PublicPoint", "PublicAlias", "PublicBox", "PublicCount", "UnchangedConstant", "Counter" })
+            Check(names.Contains(name), "qualified completion offers " + name + ": " + string.Join(", ", names));
+        foreach (string name in new[] { "TOriginPoint", "TOriginAlias", "TOriginBox", "OriginCount", "OriginCounter", "PrivateCounter" })
+            Check(!names.Contains(name), "qualified completion must not offer " + name);
+
+        foreach (string name in new[] { "PublicPoint", "PublicCount", "Counter" })
+        {
+            int offset = After(source, "ReexportFacade." + name) - 2;
+            var (hoverLine, hoverColumn) = Position(source, offset);
+            string hover = HoverService.GetDescription(language, converter, fileName, source, offset, hoverLine, hoverColumn);
+            Check(hover != null && hover.Contains(name), "hover uses the alias " + name + ": " + hover);
+        }
+
+        foreach (string access in new[] { "point.X", "box.Value" })
+        {
+            string member = access.Substring(access.IndexOf('.') + 1);
+            int offset = After(source, access) - 1;
+            var (hoverLine, hoverColumn) = Position(source, offset);
+            string hover = HoverService.GetDescription(language, converter, fileName, source, offset, hoverLine, hoverColumn);
+            Check(hover != null && hover.Contains(member), "hover finds a member of the exported type " + access + ": " + hover);
+        }
 
         int call = After(source, "  FFF2(");
         var (line, column) = Position(source, call);

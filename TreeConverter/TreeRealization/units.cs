@@ -98,7 +98,7 @@ namespace PascalABCCompiler.TreeRealization
 		private SymbolTable.UnitImplementationScope _implementation_scope;
 
         public System.Collections.Generic.List<compiler_directive> compiler_directives;
-        public List<UnitFunctionReexport> FunctionReexports { get; } = new List<UnitFunctionReexport>();
+        public List<UnitReexport> Reexports { get; } = new List<UnitReexport>();
 
 		private common_namespace_function_node _main_function;
         private common_namespace_function_node _finalization_method;
@@ -244,9 +244,9 @@ namespace PascalABCCompiler.TreeRealization
 		}
 	}
 
-    public sealed class UnitFunctionReexport
+    public sealed class UnitReexport
     {
-        public UnitFunctionReexport(common_unit_node sourceUnit, string sourceName, string publicName)
+        public UnitReexport(common_unit_node sourceUnit, string sourceName, string publicName)
         {
             SourceUnit = sourceUnit;
             SourceName = sourceName;
@@ -257,19 +257,46 @@ namespace PascalABCCompiler.TreeRealization
         public string SourceName { get; }
         public string PublicName { get; }
 
+        internal bool ConflictsWith(common_unit_node destination) =>
+            destination.scope.Symbols.Find(PublicName, false)?.Any() == true ||
+            destination.scope.Symbols.FindGenericNames(PublicName).Any();
+
+        private static bool IsType(definition_node symbol) =>
+            symbol is type_node || symbol is template_class || symbol is generic_indicator;
+
         public bool TryPublish(common_unit_node destination)
         {
-            if (destination.scope.Symbols.Find(PublicName, false)?.Any() == true)
+            if (ConflictsWith(destination))
                 return false;
 
             var symbols = SourceUnit.find_only_in_namespace(SourceName);
-            if (symbols == null || symbols.Count == 0 ||
-                symbols.Any(s => !(s.sym_info is common_namespace_function_node function) || function.is_extension_method))
+            var bindings = new List<(string Name, TreeConverter.SymbolInfo Symbol)>();
+            if (symbols != null && symbols.Count != 0)
+            {
+                if (!symbols.All(s => s.sym_info is common_namespace_function_node function && !function.is_extension_method) &&
+                    !(symbols.Count == 1 && (IsType(symbols[0].sym_info) ||
+                        symbols[0].sym_info is namespace_constant_definition || symbols[0].sym_info is namespace_variable)))
+                    return false;
+                bindings.AddRange(symbols.Select(symbol => (PublicName, symbol)));
+            }
+
+            // Generic types have an arity suffix in the symbol table (for example, Box`1).
+            // Keep that suffix on the public name, without changing the original type node.
+            if (bindings.Count == 0 || IsType(bindings[0].Symbol.sym_info))
+                foreach (string name in SourceUnit.scope.Symbols.FindGenericNames(SourceName).ToArray())
+                {
+                    var variants = SourceUnit.find_only_in_namespace(name);
+                    if (variants?.Count != 1 || !IsType(variants[0].sym_info))
+                        return false;
+                    bindings.Add((PublicName + name.Substring(SourceName.Length), variants[0]));
+                }
+
+            if (bindings.Count == 0)
                 return false;
 
-            foreach (var symbol in symbols)
-                destination.scope.AddSymbol(PublicName, symbol.copy());
-            destination.FunctionReexports.Add(this);
+            foreach (var binding in bindings)
+                destination.scope.AddSymbol(binding.Name, binding.Symbol.copy());
+            destination.Reexports.Add(this);
             return true;
         }
     }

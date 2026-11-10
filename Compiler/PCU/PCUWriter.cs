@@ -166,7 +166,7 @@ namespace PascalABCCompiler.PCU
 
         public Int64 CRC;
 
-        public static (int UnitId, string SourceName, string PublicName)[] ReadFunctionReexports(BinaryReader reader)
+        public static (int UnitId, string SourceName, string PublicName)[] ReadReexports(BinaryReader reader)
         {
             var entries = new (int UnitId, string SourceName, string PublicName)[reader.ReadInt32()];
             for (int i = 0; i < entries.Length; i++)
@@ -514,8 +514,8 @@ namespace PascalABCCompiler.PCU
             //ssyy
             fbw.Write(pcu_file.interface_synonyms_offset);
             fbw.Write(pcu_file.implementation_synonyms_offset);
-            fbw.Write(cun.FunctionReexports.Count);
-            foreach (var reexport in cun.FunctionReexports)
+            fbw.Write(cun.Reexports.Count);
+            foreach (var reexport in cun.Reexports)
             {
                 fbw.Write(used_units[reexport.SourceUnit]);
                 fbw.Write(reexport.SourceName);

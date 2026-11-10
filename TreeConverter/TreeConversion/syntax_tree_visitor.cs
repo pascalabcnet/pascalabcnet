@@ -3272,13 +3272,14 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(get_location(reexport.source_unit), "REEXPORT_UNIT_MUST_BE_IN_INTERFACE_USES{0}", unitName);
                     continue;
                 }
-                if (_compiled_unit.scope.Symbols.Find(publicIdent.name, false)?.Any() == true)
+                var binding = new UnitReexport(sourceUnit, sourceName, publicIdent.name);
+                if (binding.ConflictsWith(_compiled_unit))
                 {
                     AddError(get_location(publicIdent), "REEXPORT_NAME_ALREADY_DECLARED{0}", publicIdent.name);
                     continue;
                 }
-                if (!new UnitFunctionReexport(sourceUnit, sourceName, publicIdent.name).TryPublish(_compiled_unit))
-                    AddError(get_location(reexport.source_name), "REEXPORT_REQUIRES_PUBLIC_ROUTINE{0}{1}", unitName, sourceName);
+                if (!binding.TryPublish(_compiled_unit))
+                    AddError(get_location(reexport.source_name), "REEXPORT_REQUIRES_PUBLIC_SYMBOL{0}{1}", unitName, sourceName);
             }
         }
 
@@ -6352,42 +6353,24 @@ namespace PascalABCCompiler.TreeConverter
                             case general_node_type.namespace_node:
                                 {
                                     namespace_node nsn = (namespace_node)sn;
-                                    if (templ_args_count != 0)
+                                    if (id_right is SyntaxTree.operator_name_ident oni_right)
                                     {
-                                        //Ищем generics
-                                        sil = context.find(id_right.name + StringConstants.generic_params_infix + templ_args_count.ToString());
-                                        if (sil != null)
-                                        {
-                                            sil = new List<SymbolInfo> { new SymbolInfo(get_generic_instance(sil?.FirstOrDefault(), iwt.template_params.params_list)) };
-                                            iwt = null;
-                                        }
+                                        sil = nsn.find(name_reflector.get_name(oni_right.operator_type));
                                     }
-                                    if (sil == null)
+                                    else
                                     {
-                                        SyntaxTree.operator_name_ident oni_right = id_right as SyntaxTree.operator_name_ident;
-                                        if (oni_right != null)
+                                        if (templ_args_count != 0)
                                         {
-                                            sil = nsn.find(name_reflector.get_name(oni_right.operator_type));
-                                        }
-                                        else
-                                        {
-                                            sil = nsn.findOnlyInNamespace(id_right.name);
-                                            if (templ_args_count != 0)
+                                            sil = nsn.findOnlyInNamespace(id_right.name + StringConstants.generic_params_infix + templ_args_count.ToString());
+                                            if (sil != null)
                                             {
-                                                sil = nsn.find(id_right.name + StringConstants.generic_params_infix + templ_args_count.ToString());
-                                                if (sil != null)
-                                                {
-                                                    sil = new List<SymbolInfo> { new SymbolInfo(get_generic_instance(sil?.FirstOrDefault(), iwt.template_params.params_list)) };
-                                                    iwt = null;
-                                                }
-                                                /*SymbolInfo conv = ConvertTypeToInstance(sil?.FirstOrDefault(), iwt.template_params.params_list, get_location(id_right));
-                                                if (conv != null)
-                                                {
-                                                    sil = new List<SymbolInfo> { conv };
-                                                    iwt = null;
-                                                }*/
+                                                sil = new List<SymbolInfo> { new SymbolInfo(get_generic_instance(sil.FirstOrDefault(), iwt.template_params.params_list)) };
+                                                iwt = null;
                                             }
                                         }
+                                        // Generic functions use the ordinary name. The overload resolver applies their explicit type arguments.
+                                        if (sil == null)
+                                            sil = nsn.findOnlyInNamespace(id_right.name);
                                     }
                                     id = id_right;
                                     break;

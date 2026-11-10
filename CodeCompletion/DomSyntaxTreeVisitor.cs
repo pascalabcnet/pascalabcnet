@@ -5183,7 +5183,7 @@ namespace CodeCompletion
                             string.Equals(u.name.idents[0].name, moduleName, StringComparison.OrdinalIgnoreCase)))
                             continue;
                         if (destination.FindNameOnlyInType(moduleName) is InterfaceUnitScope source)
-                            destination.AddFunctionReexport(source, entry.source_name.name,
+                            destination.AddReexport(source, entry.source_name.name,
                                 (entry.export_name ?? entry.source_name).name);
                     }
             }
