@@ -3,11 +3,11 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyName>InlineCompletionTestPlugin</AssemblyName>
+    <AssemblyName>InlineCompletionTestLspPlugin</AssemblyName>
     <RootNamespace>InlineCompletionTestPlugin</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\plugins\PascalABCNet.LanguageServer.PluginApi\PascalABCNet.LanguageServer.PluginApi.csproj" />
+    <ProjectReference Include="..\..\LSP_PluginsAPI\PascalABCNet.LanguageServer.PluginApi\PascalABCNet.LanguageServer.PluginApi.csproj" />
   </ItemGroup>
 </Project>

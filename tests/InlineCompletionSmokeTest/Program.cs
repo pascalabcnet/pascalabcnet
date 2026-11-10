@@ -17,12 +17,12 @@ var serverAssembly = Environment.GetEnvironmentVariable("PABC_TOOLING_SERVER_ASS
     Path.Combine(AppContext.BaseDirectory, "PascalABCNet.LanguageServer.dll");
 Check(File.Exists(serverAssembly), $"Language server assembly exists: {serverAssembly}");
 
-var testPluginAssembly = Path.Combine(AppContext.BaseDirectory, "InlineCompletionTestPlugin.dll");
+var testPluginAssembly = Path.Combine(AppContext.BaseDirectory, "InlineCompletionTestLspPlugin.dll");
 Check(File.Exists(testPluginAssembly), $"Test plugin assembly built: {testPluginAssembly}");
 
 var pluginsDir = Path.Combine(Path.GetTempPath(), "pabc-lsp-plugins-" + Guid.NewGuid().ToString("N"));
 Directory.CreateDirectory(pluginsDir);
-foreach (var name in new[] { "InlineCompletionTestPlugin.dll", "PascalABCNet.LanguageServer.PluginApi.dll" })
+foreach (var name in new[] { "InlineCompletionTestLspPlugin.dll", "PascalABCNet.LanguageServer.PluginApi.dll" })
 {
     File.Copy(Path.Combine(AppContext.BaseDirectory, name), Path.Combine(pluginsDir, name));
 }

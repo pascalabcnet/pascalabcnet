@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PascalABCNet.LanguageServices\PascalABCNet.LanguageServices.csproj" />
-    <ProjectReference Include="..\plugins\PascalABCNet.LanguageServer.PluginApi\PascalABCNet.LanguageServer.PluginApi.csproj" />
+    <ProjectReference Include="..\LSP_PluginsAPI\PascalABCNet.LanguageServer.PluginApi\PascalABCNet.LanguageServer.PluginApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>

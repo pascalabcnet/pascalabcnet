@@ -16,7 +16,7 @@ Two assemblies define the plugin surface:
   line/column with `Prefix`/`Suffix` slices);
 - `PascalABCNet.LanguageServer.PluginApi` (this directory) — LSP server plugin
   mechanics: `ILanguageServerPlugin` entry point (the server finds
-  implementations in assemblies whose file name ends with `Plugin.dll` and
+  implementations in assemblies whose file name ends with `LspPlugin.dll` and
   calls `Initialize` once, before the LSP handshake) and
   `ILanguageServerPluginContext.RegisterInlineCompletionProvider`.
 
@@ -35,7 +35,7 @@ Plugin directories are scanned at startup:
 1. `<server directory>/plugins` (next to `PascalABCNet.LanguageServer.dll`);
 2. every `--plugins-dir <path>` command line argument (repeatable).
 
-A plugin is installed by dropping its assemblies (`*Plugin.dll` and its private
+A plugin is installed by dropping its assemblies (`*LspPlugin.dll` and its private
 dependencies) into one of these directories. In VS Code that means
 `<extension>/bin/net10/plugins/`; the same directory convention works for the
 .NET 10 IDE host. Note: the VSIX build scripts verify the runtime kit against

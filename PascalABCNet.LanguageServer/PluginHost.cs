@@ -7,7 +7,7 @@ namespace PascalABCNet.LanguageServer;
 
 /// <summary>
 /// Discovers, loads and hosts language server plugins. Plugin assemblies are
-/// named *Plugin.dll and live in the server's plugin directory (next to the
+/// named *LspPlugin.dll and live in the server's plugin directory (next to the
 /// server assembly) or in directories passed with --plugins-dir.
 /// </summary>
 internal sealed class PluginHost : ILanguageServerPluginContext
@@ -29,7 +29,7 @@ internal sealed class PluginHost : ILanguageServerPluginContext
             if (!Directory.Exists(directory))
                 continue;
 
-            foreach (var pluginPath in Directory.EnumerateFiles(directory, "*LSP_Plugin.dll"))
+            foreach (var pluginPath in Directory.EnumerateFiles(directory, "*LspPlugin.dll"))
             {
                 try
                 {
