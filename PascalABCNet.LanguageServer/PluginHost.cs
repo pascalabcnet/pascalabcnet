@@ -29,7 +29,7 @@ internal sealed class PluginHost : ILanguageServerPluginContext
             if (!Directory.Exists(directory))
                 continue;
 
-            foreach (var pluginPath in Directory.EnumerateFiles(directory, "*Plugin.dll"))
+            foreach (var pluginPath in Directory.EnumerateFiles(directory, "*LSP_Plugin.dll"))
             {
                 try
                 {

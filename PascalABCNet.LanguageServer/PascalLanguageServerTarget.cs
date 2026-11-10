@@ -349,7 +349,7 @@ internal sealed class PascalLanguageServerTarget
         InlineCompletionCoreAsync(request, cancellationToken);
 
     [JsonRpcMethod("pascalabc/inlineCompletion", UseSingleObjectParameterDeserialization = true)]
-    public Task<InlineCompletionResultDto> FullLineCompletionAsync(
+    public Task<InlineCompletionResultDto> CustomInlineCompletionAsync(
         InlineCompletionParamsDto request,
         CancellationToken cancellationToken) =>
         InlineCompletionCoreAsync(request, cancellationToken);
