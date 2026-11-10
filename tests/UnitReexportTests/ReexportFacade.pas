@@ -10,7 +10,7 @@ export ReexportOrigin.TOriginPoint as PublicPoint, ReexportOrigin.TOriginAlias a
 export ReexportOrigin.OriginCount as PublicCount, ReexportOrigin.UnchangedConstant,
        ReexportOrigin.OriginCounter as Counter;
 export ReexportOrigin.BumpPoint, ReexportOrigin.BoxValue, ReexportOrigin.ReadOriginCounter;
-export ReexportOrigin.Identity as Same;
+export ReexportOrigin.Identity as Same, ReexportOrigin.Pick as SelectItem;
 
 implementation
 

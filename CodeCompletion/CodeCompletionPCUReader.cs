@@ -679,18 +679,19 @@ namespace CodeCompletion
 		
 		private ProcScope CreateInterfaceNamespaceFunction(string name, int offset)
 		{
-			//Console.WriteLine(name);
+			if (members[offset] is ProcScope cached)
+				return cached;
 			ProcScope cnfn = new ProcScope(name,cur_scope);
 			cnfn.declaringUnit = root_scope;
+            // Type references in the signature and constraints can point back to this function.
+            AddMember(cnfn, offset);
             // The offset is relative to the PCU data section, as in PCUReader.
             int connectedTypeEnd = br.ReadInt32();
             cnfn.is_extension = CanReadObject();
             br.BaseStream.Seek(start_pos + connectedTypeEnd, SeekOrigin.Begin);
             br.ReadBoolean();//ïðîïóñêàåì ôëàã - èíòåðôåéñíîñòè
 			br.ReadInt32();//name index
-			bool is_generic = br.ReadBoolean();
-            if (is_generic)
-                return null;
+            ReadFunctionTypeParameters(cnfn);
 			if (br.ReadByte() == 1)
 			{
 				cnfn.return_type = GetTypeReference();
@@ -703,9 +704,48 @@ namespace CodeCompletion
 			br.ReadInt32(); //attributes
 			cnfn.is_forward = br.ReadBoolean();
 			cnfn.Complete();
-			AddMember(cnfn, offset);
 			return cnfn;
 		}
+
+        private void ReadFunctionTypeParameters(ProcScope function)
+        {
+            if (!br.ReadBoolean())
+                return;
+
+            int count = br.ReadInt32();
+            var parameters = new TemplateParameterScope[count];
+            for (int i = 0; i < count; i++)
+            {
+                string name = br.ReadString();
+                function.AddTemplateParameter(name);
+                parameters[i] = new TemplateParameterScope(name, TypeTable.obj_type, function);
+                function.AddName(name, parameters[i]);
+            }
+
+            // All parameters must exist before resolving constraints such as IComparable<T>.
+            foreach (var parameter in parameters)
+            {
+                br.ReadByte(); // class/value constraint kind
+                parameter.baseScope = GetTypeReference() ?? TypeTable.obj_type;
+                int interfaceCount = br.ReadInt32();
+                for (int i = 0; i < interfaceCount; i++)
+                    if (GetTypeReference() is TypeScope constraint)
+                        parameter.AddImplementedInterface(constraint);
+                br.ReadBoolean(); // default constructor constraint
+            }
+        }
+
+        private TypeScope ReadFunctionTypeParameterReference()
+        {
+            // WriteFunctionReferenceWithDelay stores the local/import flag and the owner offset.
+            bool isLocal = CanReadObject();
+            int ownerOffset = br.ReadInt32();
+            int index = br.ReadInt32();
+            if (isLocal && members[ownerOffset] is ProcScope owner && owner.template_parameters != null &&
+                index >= 0 && index < owner.template_parameters.Count)
+                return owner.FindNameOnlyInType(owner.template_parameters[index]) as TemplateParameterScope;
+            return null;
+        }
 		
 		private ElementScope CreateInterfaceConstantDefinition(string name, int offset)
         {
@@ -759,6 +799,7 @@ namespace CodeCompletion
 			TypeScope tn = GetTypeReference();
 			concrete_parameter_type cpt = (concrete_parameter_type)br.ReadByte();
             ElementScope p = new ElementScope(new SymInfo(s, SymbolKind.Parameter,s),tn,null,null);
+            br.ReadBoolean(); // captured by a nested routine
             bool is_params = br.ReadBoolean();
             if (is_params) p.param_kind = parametr_kind.params_parametr;
             else
@@ -768,7 +809,6 @@ namespace CodeCompletion
                 case concrete_parameter_type.cpt_var: p.param_kind = parametr_kind.var_parametr; break;
                 case concrete_parameter_type.cpt_none: p.param_kind = parametr_kind.none; break;
             }
-            br.ReadBoolean();
             if (CanReadObject())
 			{
 				br.ReadInt32();//CreateExpression();
@@ -839,6 +879,8 @@ namespace CodeCompletion
                     int index = br.ReadInt32();
                     return owner?.generic_params != null && index >= 0 && index < owner.generic_params.Count
                         ? owner.FindNameOnlyInType(owner.generic_params[index]) as TypeScope : null;
+                case (byte)TypeKind.GenericParameterOfFunction:
+                    return ReadFunctionTypeParameterReference();
             }
 			return null;
 		}

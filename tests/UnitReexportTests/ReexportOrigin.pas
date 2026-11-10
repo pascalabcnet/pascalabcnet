@@ -28,6 +28,8 @@ function BoxValue(b: TOriginBox<integer>): integer;
 function ReadOriginCounter: integer;
 function Identity<T>(value: T): T;
 function Identity(value: integer): integer;
+function Pick<TItem,TTag>(const tag: TTag; params items: array of TItem): TItem;
+  where TTag: record, System.IComparable<TTag>;
 
 implementation
 
@@ -43,5 +45,10 @@ function BoxValue(b: TOriginBox<integer>): integer := b.Value;
 function ReadOriginCounter: integer := OriginCounter;
 function Identity<T>(value: T): T := value;
 function Identity(value: integer): integer := value + 1;
+function Pick<TItem,TTag>(const tag: TTag; params items: array of TItem): TItem;
+  where TTag: record, System.IComparable<TTag>;
+begin
+  Result := items[0];
+end;
 
 end.

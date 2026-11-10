@@ -108,16 +108,6 @@ foreach ($target in @('net472', 'net10')) {
         $dir = $pcuDir
         Set-Location -LiteralPath $dir
         Invoke-Client 'FromPcu.exe'
-        if ($CheckIntelliSense) {
-            if ($target -eq 'net10') {
-                & dotnet (Join-Path $ModernRuntime 'UnitReexportIntelliSense.dll') $sourceDir $pcuDir
-            }
-            else {
-                & (Join-Path $FrameworkRuntime 'UnitReexportIntelliSense.exe') $sourceDir $pcuDir
-            }
-            if ($LASTEXITCODE -ne 0) { throw "IntelliSense checks failed for $target" }
-        }
-
         [IO.File]::WriteAllText((Join-Path $dir 'HiddenClient.pas'),
             'uses ReexportFacade; begin assert(Hidden = 42); end.')
         Invoke-Compile 'HiddenClient.pas' 'HiddenClient.exe' 'Hidden'
@@ -196,6 +186,15 @@ end.
         }
         Set-Location -LiteralPath $dir
         Invoke-TestProgram 'QualifiedGenericCalls.pas' 'QualifiedGenericsFromPcu.exe'
+        if ($CheckIntelliSense) {
+            if ($target -eq 'net10') {
+                & dotnet (Join-Path $ModernRuntime 'UnitReexportIntelliSense.dll') $sourceDir $pcuDir $genericSourceDir $dir
+            }
+            else {
+                & (Join-Path $FrameworkRuntime 'UnitReexportIntelliSense.exe') $sourceDir $pcuDir $genericSourceDir $dir
+            }
+            if ($LASTEXITCODE -ne 0) { throw "IntelliSense checks failed for $target" }
+        }
     }
     finally {
         Pop-Location
