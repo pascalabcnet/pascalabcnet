@@ -1,5 +1,8 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+{$ifdef PABCNET_MODERN}
+{$reference 'System.Net.Sockets.dll'}
+{$endif}
 unit ClientServer;
 
 uses System.Net, System.Net.Sockets, System.IO;

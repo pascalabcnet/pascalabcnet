@@ -31,6 +31,13 @@ namespace PascalABCCompiler.NetHelper
         internal static int ReferenceClosureBuildCount { get; private set; }
         private static readonly Dictionary<string, CachedAssemblyIdentity> identityCache =
             new Dictionary<string, CachedAssemblyIdentity>(StringComparer.OrdinalIgnoreCase);
+        // The installed platform is fixed for this process, just like its
+        // already loaded platform assemblies. These caches contain no
+        // Assembly or Type objects from a collectible context.
+        private static readonly Dictionary<string, PlatformReferenceNode> platformReferenceGraph =
+            new Dictionary<string, PlatformReferenceNode>(StringComparer.Ordinal);
+        private static readonly HashSet<string> knownPlatformFiles = new HashSet<string>(StringComparer.Ordinal);
+        internal static int PlatformReferenceGraphNodeCount => platformReferenceGraph.Count;
         private static bool generationResetThisCompilation;
         private static int metadataReadCount;
         private static int contextCreationCount;
@@ -174,7 +181,7 @@ namespace PascalABCCompiler.NetHelper
             foreach (string path in (accumulate ? currentValidationPaths : Enumerable.Empty<string>()).Concat(assemblyPaths))
             {
                 string fullPath = Path.GetFullPath(path);
-                if (!File.Exists(fullPath) || !rootPathSet.Add(fullPath))
+                if (!ReferenceFileExists(fullPath) || !rootPathSet.Add(fullPath))
                     continue;
                 rootPaths.Add(fullPath);
                 string directory = Path.GetDirectoryName(fullPath);
@@ -229,6 +236,8 @@ namespace PascalABCCompiler.NetHelper
             private readonly List<string> roots;
             internal readonly List<KeyValuePair<string, CachedAssemblyIdentity>> Files =
                 new List<KeyValuePair<string, CachedAssemblyIdentity>>();
+            private readonly List<KeyValuePair<string, CachedAssemblyIdentity>> mutableFiles =
+                new List<KeyValuePair<string, CachedAssemblyIdentity>>();
             private readonly Dictionary<string, HashSet<string>> missingNames;
 
             internal ReferenceClosure(List<string> roots, bool cacheable)
@@ -243,9 +252,19 @@ namespace PascalABCCompiler.NetHelper
                 if (missingNames == null)
                     return;
                 string directory = Path.GetDirectoryName(path);
+                if (NetCoreSystemReferences.IsPlatformAssemblyDirectory(directory))
+                    return;
                 if (!missingNames.TryGetValue(directory, out var names))
                     missingNames[directory] = names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 names.Add(Path.GetFileName(path));
+            }
+
+            internal void AddFile(string path, CachedAssemblyIdentity identity, bool platform)
+            {
+                var file = new KeyValuePair<string, CachedAssemblyIdentity>(path, identity);
+                Files.Add(file);
+                if (!platform && missingNames != null)
+                    mutableFiles.Add(file);
             }
 
             internal bool Matches(List<string> rootPaths)
@@ -255,7 +274,7 @@ namespace PascalABCCompiler.NetHelper
 
                 try
                 {
-                    foreach (var pair in Files)
+                    foreach (var pair in mutableFiles)
                     {
                         var file = new FileInfo(pair.Key);
                         if (!file.Exists || file.Length != pair.Value.Length ||
@@ -283,23 +302,37 @@ namespace PascalABCCompiler.NetHelper
             List<string> searchDirectories, ReferenceClosure closure, HashSet<string> visitedPaths)
         {
             string fullPath = Path.GetFullPath(assemblyPath);
-            if (!visitedPaths.Add(fullPath) || !File.Exists(fullPath))
+            if (!visitedPaths.Add(fullPath) || !ReferenceFileExists(fullPath))
                 return;
 
-            CachedAssemblyIdentity identity = GetCachedIdentity(fullPath);
-            closure.Files.Add(new KeyValuePair<string, CachedAssemblyIdentity>(fullPath, identity));
             string localDirectory = Path.GetDirectoryName(fullPath);
-            foreach (string referenceName in identity.ReferencedAssemblyNames)
+            bool isPlatform = knownPlatformFiles.Contains(fullPath);
+            PlatformReferenceNode platform = isPlatform ? GetPlatformReferenceNode(fullPath, localDirectory) : null;
+            CachedAssemblyIdentity identity = platform?.Identity ?? GetCachedIdentity(fullPath);
+            closure.AddFile(fullPath, identity, isPlatform);
+            for (int i = 0; i < identity.ReferencedAssemblyNames.Length; i++)
             {
-                string dependencyPath = Path.Combine(localDirectory, referenceName + ".dll");
-                if (!File.Exists(dependencyPath))
+                string dependencyFileName = platform == null
+                    ? identity.ReferencedAssemblyNames[i] + ".dll"
+                    : platform.Dependencies[i].Key;
+                string dependencyPath = platform == null
+                    ? Path.Combine(localDirectory, dependencyFileName)
+                    : platform.Dependencies[i].Value;
+                if (platform == null && !ReferenceFileExists(dependencyPath))
                 {
                     closure.RememberMissing(dependencyPath);
                     dependencyPath = null;
+                }
+                // Search outside the platform assembly's own directory using
+                // this compilation's directories and their original order.
+                if (dependencyPath == null)
+                {
                     foreach (string directory in searchDirectories)
                     {
-                        string candidate = Path.Combine(directory, referenceName + ".dll");
-                        if (File.Exists(candidate))
+                        if (platform != null && string.Equals(directory, localDirectory, StringComparison.Ordinal))
+                            continue; // The platform node already recorded this local miss.
+                        string candidate = Path.Combine(directory, dependencyFileName);
+                        if (ReferenceFileExists(candidate))
                         {
                             dependencyPath = candidate;
                             break;
@@ -312,8 +345,53 @@ namespace PascalABCCompiler.NetHelper
             }
         }
 
+        private static bool ReferenceFileExists(string path)
+        {
+            if (knownPlatformFiles.Contains(path))
+                return true;
+            if (!File.Exists(path))
+                return false;
+            if (NetCoreSystemReferences.IsPlatformAssemblyDirectory(Path.GetDirectoryName(path)))
+                knownPlatformFiles.Add(path);
+            return true;
+        }
+
+        private static PlatformReferenceNode GetPlatformReferenceNode(string path, string directory)
+        {
+            if (platformReferenceGraph.TryGetValue(path, out var node))
+                return node;
+
+            CachedAssemblyIdentity identity = GetCachedIdentity(path);
+            var dependencies = new KeyValuePair<string, string>[identity.ReferencedAssemblyNames.Length];
+            for (int i = 0; i < dependencies.Length; i++)
+            {
+                string name = identity.ReferencedAssemblyNames[i] + ".dll";
+                string candidate = Path.Combine(directory, name);
+                dependencies[i] = new KeyValuePair<string, string>(name,
+                    ReferenceFileExists(candidate) ? candidate : null);
+            }
+            node = new PlatformReferenceNode(identity, dependencies);
+            platformReferenceGraph.Add(path, node);
+            return node;
+        }
+
+        private sealed class PlatformReferenceNode
+        {
+            internal readonly CachedAssemblyIdentity Identity;
+            internal readonly KeyValuePair<string, string>[] Dependencies;
+
+            internal PlatformReferenceNode(CachedAssemblyIdentity identity,
+                KeyValuePair<string, string>[] dependencies)
+            {
+                Identity = identity;
+                Dependencies = dependencies;
+            }
+        }
+
         private static CachedAssemblyIdentity GetCachedIdentity(string path)
         {
+            if (platformReferenceGraph.TryGetValue(path, out var platform))
+                return platform.Identity;
             var file = new FileInfo(path);
             CachedAssemblyIdentity cached;
             if (identityCache.TryGetValue(path, out cached) &&

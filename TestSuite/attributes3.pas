@@ -1,4 +1,8 @@
-﻿uses
+﻿{$ifdef PABCNET_MODERN}
+{$reference 'System.ComponentModel.TypeConverter.dll'}
+{$endif}
+
+uses
   System.ComponentModel;
 
 type

@@ -63,12 +63,53 @@ internal static class ReferenceClosureTests
                 "a cache hit still compares the bytes of same-name assemblies");
             ExpectBuilds(1, "same-size, same-stamp conflict was detected using the cached graph");
             Console.WriteLine("PASS reference closure reuse, invalidation and conflict detection");
+            CheckPlatformGraph(directory);
         }
         finally
         {
             CollectibleReferenceManager.BeginCompilation();
             Directory.Delete(directory, recursive: true);
         }
+    }
+
+    private static void CheckPlatformGraph(string directory)
+    {
+        string platform = Path.Combine(NetCoreSystemReferences.RuntimeDirectory, "System.Linq.dll");
+        string user = Path.Combine(directory, Path.GetFileName(platform));
+        File.Copy(platform, user);
+
+        CollectibleReferenceManager.BeginCompilation();
+        int before = CollectibleReferenceManager.PlatformReferenceGraphNodeCount;
+        Validate(platform);
+        int cached = CollectibleReferenceManager.PlatformReferenceGraphNodeCount;
+        if (cached <= before + 1)
+            throw new InvalidOperationException("The platform graph did not record transitive dependencies.");
+
+        CollectibleReferenceManager.StartNextGeneration();
+        CollectibleReferenceManager.BeginCompilation();
+        Validate(platform, user);
+        if (CollectibleReferenceManager.PlatformReferenceGraphNodeCount != cached)
+            throw new InvalidOperationException("The platform graph was rebuilt or a user DLL was cached as platform.");
+
+        DateTime stamp = File.GetLastWriteTimeUtc(user);
+        using (var file = File.Open(user, FileMode.Open, FileAccess.ReadWrite))
+        {
+            file.Seek(-1, SeekOrigin.End);
+            int value = file.ReadByte();
+            file.Seek(-1, SeekOrigin.End);
+            file.WriteByte((byte)(value ^ 1));
+        }
+        File.SetLastWriteTimeUtc(user, stamp);
+        ExpectConflict(() => Validate(user), "a same-stamp user copy still conflicts with a cached platform DLL");
+        ExpectBuilds(1, "the platform/user conflict is detected without rebuilding the closure");
+
+        // The permanent graph must not make a platform DLL an active root
+        // of a new validation that does not include it.
+        CollectibleReferenceManager.BeginCompilation();
+        Validate(user);
+        if (CollectibleReferenceManager.PlatformReferenceGraphNodeCount != cached)
+            throw new InvalidOperationException("The permanent graph changed while validating only a user copy.");
+        Console.WriteLine("PASS platform graph survives compilations without hiding conflicts or adding inactive roots");
     }
 
     private static void Validate(params string[] paths) =>
