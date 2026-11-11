@@ -44,6 +44,24 @@ internal static class ReferenceClosureTests
             CollectibleReferenceManager.BeginCompilation();
             Validate(root);
             ExpectBuilds(1, "another compilation starts with an empty closure cache");
+
+            // Give both otherwise identical PE files a spare byte beyond their
+            // metadata, so we can change contents without changing the identity.
+            using (var file = File.Open(root, FileMode.Append))
+                file.WriteByte(0);
+            File.Copy(root, alternate, overwrite: true);
+            CollectibleReferenceManager.BeginCompilation();
+            Validate(root, alternate);
+            DateTime stamp = File.GetLastWriteTimeUtc(alternate);
+            using (var file = File.Open(alternate, FileMode.Open, FileAccess.Write))
+            {
+                file.Seek(-1, SeekOrigin.End);
+                file.WriteByte(1);
+            }
+            File.SetLastWriteTimeUtc(alternate, stamp);
+            ExpectConflict(() => Validate(root),
+                "a cache hit still compares the bytes of same-name assemblies");
+            ExpectBuilds(1, "same-size, same-stamp conflict was detected using the cached graph");
             Console.WriteLine("PASS reference closure reuse, invalidation and conflict detection");
         }
         finally

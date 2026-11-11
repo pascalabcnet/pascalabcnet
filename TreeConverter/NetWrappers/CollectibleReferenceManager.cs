@@ -183,7 +183,8 @@ namespace PascalABCCompiler.NetHelper
             }
 
             ReferenceClosure closure = accumulate ? validatedClosure : null;
-            if (closure == null || !closure.Matches(rootPaths))
+            bool reuseClosure = closure != null && closure.Matches(rootPaths);
+            if (!reuseClosure)
             {
                 closure = new ReferenceClosure(rootPaths, accumulate);
                 var visitedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -193,20 +194,22 @@ namespace PascalABCCompiler.NetHelper
                     ReferenceClosureBuildCount++;
             }
 
-            var bySimpleName = new Dictionary<string, string>(
+            var bySimpleName = new Dictionary<string, KeyValuePair<string, CachedAssemblyIdentity>>(
                 StringComparer.OrdinalIgnoreCase);
             foreach (var file in closure.Files)
             {
                 string fullPath = file.Key;
-                CachedAssemblyIdentity identity = GetCachedIdentity(fullPath);
-                string previousPath;
-                if (!bySimpleName.TryGetValue(identity.SimpleName, out previousPath))
+                // Matches has just checked the stamp of each cached file.
+                CachedAssemblyIdentity identity = reuseClosure ? file.Value : GetCachedIdentity(fullPath);
+                if (!bySimpleName.TryGetValue(identity.SimpleName, out var previous))
                 {
-                    bySimpleName.Add(identity.SimpleName, fullPath);
+                    bySimpleName.Add(identity.SimpleName,
+                        new KeyValuePair<string, CachedAssemblyIdentity>(fullPath, identity));
                     continue;
                 }
 
-                CachedAssemblyIdentity previousIdentity = GetCachedIdentity(previousPath);
+                string previousPath = previous.Key;
+                CachedAssemblyIdentity previousIdentity = reuseClosure ? previous.Value : GetCachedIdentity(previousPath);
                 if (!string.Equals(previousIdentity.FullName, identity.FullName,
                     StringComparison.Ordinal) || !FilesHaveSameContents(previousPath, fullPath))
                     throw new FileLoadException(
