@@ -496,10 +496,16 @@ namespace Languages.Pascal.Frontend.Data
 
         public override string GetSynonimDescription(ITypeSynonimScope scope)
         {
-            if (scope.ActType is ICompiledTypeScope && !(scope.ActType as ICompiledTypeScope).Aliased)
-                return "type " + scope.Name + GetGenericString(scope.TemplateArguments) + " = " + GetSimpleDescriptionForCompiledType(scope.ActType as ICompiledTypeScope, true);
-            else
-                return "type " + scope.Name + GetGenericString(scope.TemplateArguments) + " = " + GetSimpleDescription(scope.ActType);
+            // An unchanged re-export can wrap an alias in another alias of the same name.
+            ITypeScope target = scope.ActType;
+            while (target is ITypeSynonimScope alias &&
+                   string.Equals(scope.Name, alias.Name, StringComparison.OrdinalIgnoreCase))
+                target = alias.ActType;
+
+            return "type " + scope.Name + GetGenericString(scope.TemplateArguments) + " = " +
+                (target is ICompiledTypeScope compiled && !compiled.Aliased
+                    ? GetSimpleDescriptionForCompiledType(compiled, true)
+                    : GetSimpleDescription(target));
         }
 
         public override string GetSynonimDescription(IProcScope scope)

@@ -42,6 +42,8 @@ namespace CodeCompletion
 		private static Compiler compiler;
         public static bool use_semantic_for_intellisense;
         private Dictionary<method_call, SymScope> method_call_cache = new Dictionary<method_call, SymScope>();
+        private readonly Dictionary<int, List<(int Column, string Name)>> nonTypeReferences =
+            new Dictionary<int, List<(int Column, string Name)>>();
         public HashSet<Assembly> cur_used_assemblies;
 
         public bool ConversionSucceeded { get; private set; }
@@ -61,6 +63,7 @@ namespace CodeCompletion
 		public void Convert(compilation_unit cu)
         {
             method_call_cache.Clear();
+            nonTypeReferences.Clear();
             ConversionSucceeded = false;
             LastConversionError = null;
 
@@ -811,8 +814,37 @@ namespace CodeCompletion
                 tmp_scope = returned_scope;
             }
 
+            if (returned_scope != null && !(returned_scope is TypeScope) &&
+                _named_type_reference.names.Count > 0)
+            {
+                var name = _named_type_reference.names[_named_type_reference.names.Count - 1];
+                var position = name.source_context?.begin_position;
+                if (position != null && !string.IsNullOrEmpty(name.name))
+                {
+                    if (!nonTypeReferences.TryGetValue(position.line_num, out var references))
+                        nonTypeReferences[position.line_num] = references = new List<(int Column, string Name)>();
+                    references.Add((position.column_num, name.name));
+                }
+            }
             if (returned_scope == null || !(returned_scope is TypeScope))
                 returned_scope = new UnknownScope(new SymInfo(_named_type_reference.names[_named_type_reference.names.Count - 1].name, SymbolKind.Type, _named_type_reference.names[_named_type_reference.names.Count - 1].name));
+        }
+
+        internal bool IsNonTypeReference(string text, int offset, int line, int column)
+        {
+            if (!nonTypeReferences.TryGetValue(line + 1, out var references))
+                return false;
+            foreach (var reference in references)
+            {
+                int indexInName = column + 1 - reference.Column;
+                int start = offset - indexInName;
+                if (indexInName >= 0 && indexInName < reference.Name.Length &&
+                    start >= 0 && start <= text.Length - reference.Name.Length &&
+                    string.Compare(text, start, reference.Name, 0, reference.Name.Length,
+                        StringComparison.OrdinalIgnoreCase) == 0)
+                    return true;
+            }
+            return false;
         }
 
         public override void visit(variable_definitions _variable_definitions)

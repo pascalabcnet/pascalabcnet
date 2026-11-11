@@ -18,6 +18,7 @@ internal static class Program
         Check(args.Length == 4, "pass source and PCU-only directories for both client programs");
         CheckClient(language, Path.GetFullPath(args[0]), false);
         CheckClient(language, Path.GetFullPath(args[1]), true);
+        CheckUnresolvedTypeHover(language, Path.GetFullPath(args[0]));
         CheckGenericClient(language, Path.GetFullPath(args[2]), false);
         CheckGenericClient(language, Path.GetFullPath(args[3]), true);
     }
@@ -66,6 +67,14 @@ internal static class Program
             var (hoverLine, hoverColumn) = Position(source, offset);
             string hover = HoverService.GetDescription(language, converter, fileName, source, offset, hoverLine, hoverColumn);
             Check(hover != null && hover.Contains(member), "hover finds a member of the exported type " + access + ": " + hover);
+        }
+
+        foreach (string marker in new[] { "number: int", "qualifiedNumber: ReexportFacade.int" })
+        {
+            int offset = After(source, marker) - 2;
+            var (hoverLine, hoverColumn) = Position(source, offset);
+            string hover = HoverService.GetDescription(language, converter, fileName, source, offset, hoverLine, hoverColumn);
+            Check(hover == "type int = integer", "hover shows the target of the exported type synonym: " + hover);
         }
 
         int call = After(source, "  FFF2(");
@@ -151,6 +160,24 @@ internal static class Program
     private static bool IsSelectItem(string description) => description.Contains("SelectItem<TItem, TTag>") &&
         description.Contains("const tag: TTag") && description.Contains("params items: array of TItem") &&
         description.Contains("): TItem");
+
+    private static void CheckUnresolvedTypeHover(ILanguage language, string directory)
+    {
+        const string source = "begin\n  var i: int;\n  Println(Int(1.5));\nend.";
+        string fileName = Path.Combine(directory, "UnresolvedTypeHover.pas");
+        var converter = new CodeCompletionController().Compile(fileName, source);
+        Check(converter.is_compiled, "build IntelliSense model with an unresolved type");
+
+        string Hover(string marker, int back)
+        {
+            int offset = After(source, marker) - back;
+            var (line, column) = Position(source, offset);
+            return HoverService.GetDescription(language, converter, fileName, source, offset, line, column);
+        }
+
+        Check(Hover("i: int", 2) == null, "a routine must not be suggested as an unresolved type");
+        Check(Hover("Println(Int", 2)?.Contains("function Int(") == true, "Int still has hover in an expression");
+    }
 
     private static int After(string source, string marker)
     {
