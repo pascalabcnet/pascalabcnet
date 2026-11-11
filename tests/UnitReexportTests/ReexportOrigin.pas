@@ -12,6 +12,7 @@ type
     X: integer;
   end;
   TOriginAlias = TOriginPoint;
+  int = integer;
   TOriginBox<T> = class
   public
     Value: T;

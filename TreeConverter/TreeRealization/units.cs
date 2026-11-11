@@ -273,11 +273,16 @@ namespace PascalABCCompiler.TreeRealization
             var bindings = new List<(string Name, TreeConverter.SymbolInfo Symbol)>();
             if (symbols != null && symbols.Count != 0)
             {
-                if (!symbols.All(s => s.sym_info is common_namespace_function_node function && !function.is_extension_method) &&
-                    !(symbols.Count == 1 && (IsType(symbols[0].sym_info) ||
-                        symbols[0].sym_info is namespace_constant_definition || symbols[0].sym_info is namespace_variable)))
+                var first = symbols[0];
+                // A PCU can restore the same .NET type under both its runtime name entry and its type synonym.
+                if (IsType(first.sym_info) && symbols.All(s => ReferenceEquals(s.sym_info, first.sym_info)))
+                    bindings.Add((PublicName, first));
+                else if (symbols.All(s => s.sym_info is common_namespace_function_node function && !function.is_extension_method))
+                    bindings.AddRange(symbols.Select(symbol => (PublicName, symbol)));
+                else if (symbols.Count == 1 && (first.sym_info is namespace_constant_definition || first.sym_info is namespace_variable))
+                    bindings.Add((PublicName, first));
+                else
                     return false;
-                bindings.AddRange(symbols.Select(symbol => (PublicName, symbol)));
             }
 
             // Generic types have an arity suffix in the symbol table (for example, Box`1).

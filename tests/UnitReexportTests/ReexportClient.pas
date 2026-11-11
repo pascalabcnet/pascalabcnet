@@ -23,6 +23,11 @@ begin
   BumpPoint(point); // requires the original type, not a structurally similar record
   assert(point.X = 11);
 
+  var number: int := 73;
+  var qualifiedNumber: ReexportFacade.int := number;
+  var renamedNumber: PublicInt := qualifiedNumber;
+  assert(renamedNumber = 73);
+
   var box := new PublicBox<integer>;
   box.Value := 23;
   assert(BoxValue(box) = 23);
