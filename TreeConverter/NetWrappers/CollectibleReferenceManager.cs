@@ -27,6 +27,8 @@ namespace PascalABCCompiler.NetHelper
             new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private static HashSet<string> currentValidationPaths =
             new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private static ReferenceClosure validatedClosure;
+        internal static int ReferenceClosureBuildCount { get; private set; }
         private static readonly Dictionary<string, CachedAssemblyIdentity> identityCache =
             new Dictionary<string, CachedAssemblyIdentity>(StringComparer.OrdinalIgnoreCase);
         private static bool generationResetThisCompilation;
@@ -73,6 +75,7 @@ namespace PascalABCCompiler.NetHelper
         {
             VerifyPreviousGenerationWasUnloaded();
             identityCache.Clear();
+            validatedClosure = null;
 
             ReferenceAssemblyLoadContext oldContext = currentContext;
             currentContext = null;
@@ -98,6 +101,7 @@ namespace PascalABCCompiler.NetHelper
 
         internal static void MarkValidationFailure()
         {
+            validatedClosure = null;
             currentCompilationPaths = new HashSet<string>(previousCompilationPaths,
                 StringComparer.OrdinalIgnoreCase);
         }
@@ -107,6 +111,8 @@ namespace PascalABCCompiler.NetHelper
             previousCompilationPaths = currentCompilationPaths;
             currentCompilationPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             currentValidationPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            validatedClosure = null;
+            ReferenceClosureBuildCount = 0;
             generationResetThisCompilation = false;
         }
 
@@ -176,15 +182,22 @@ namespace PascalABCCompiler.NetHelper
                     rootDirectories.Add(directory);
             }
 
-            var paths = new List<string>();
-            var visitedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (string rootPath in rootPaths)
-                DiscoverReferenceClosure(rootPath, rootDirectories, paths, visitedPaths);
+            ReferenceClosure closure = accumulate ? validatedClosure : null;
+            if (closure == null || !closure.Matches(rootPaths))
+            {
+                closure = new ReferenceClosure(rootPaths, accumulate);
+                var visitedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (string rootPath in rootPaths)
+                    DiscoverReferenceClosure(rootPath, rootDirectories, closure, visitedPaths);
+                if (accumulate)
+                    ReferenceClosureBuildCount++;
+            }
 
             var bySimpleName = new Dictionary<string, string>(
                 StringComparer.OrdinalIgnoreCase);
-            foreach (string fullPath in paths)
+            foreach (var file in closure.Files)
             {
+                string fullPath = file.Key;
                 CachedAssemblyIdentity identity = GetCachedIdentity(fullPath);
                 string previousPath;
                 if (!bySimpleName.TryGetValue(identity.SimpleName, out previousPath))
@@ -201,25 +214,84 @@ namespace PascalABCCompiler.NetHelper
                             previousPath, fullPath));
             }
             if (accumulate)
+            {
                 foreach (string rootPath in rootPaths)
                     currentValidationPaths.Add(rootPath);
+                validatedClosure = closure;
+            }
+        }
+
+        private sealed class ReferenceClosure
+        {
+            private readonly List<string> roots;
+            internal readonly List<KeyValuePair<string, CachedAssemblyIdentity>> Files =
+                new List<KeyValuePair<string, CachedAssemblyIdentity>>();
+            private readonly Dictionary<string, HashSet<string>> missingNames;
+
+            internal ReferenceClosure(List<string> roots, bool cacheable)
+            {
+                this.roots = roots;
+                if (cacheable)
+                    missingNames = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
+            }
+
+            internal void RememberMissing(string path)
+            {
+                if (missingNames == null)
+                    return;
+                string directory = Path.GetDirectoryName(path);
+                if (!missingNames.TryGetValue(directory, out var names))
+                    missingNames[directory] = names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                names.Add(Path.GetFileName(path));
+            }
+
+            internal bool Matches(List<string> rootPaths)
+            {
+                if (!roots.SequenceEqual(rootPaths, StringComparer.OrdinalIgnoreCase))
+                    return false;
+
+                try
+                {
+                    foreach (var pair in Files)
+                    {
+                        var file = new FileInfo(pair.Key);
+                        if (!file.Exists || file.Length != pair.Value.Length ||
+                            file.LastWriteTimeUtc != pair.Value.LastWriteTimeUtc)
+                            return false;
+                    }
+
+                    // A missing dependency can appear later (for example after a
+                    // package restore) and take precedence over an existing one.
+                    // Enumerate each affected directory once instead of probing
+                    // every missing candidate on every validation.
+                    foreach (var pair in missingNames)
+                        foreach (string path in Directory.EnumerateFiles(pair.Key, "*.dll"))
+                            if (pair.Value.Contains(Path.GetFileName(path)))
+                                return false;
+                }
+                catch (IOException) { return false; }
+                catch (UnauthorizedAccessException) { return false; }
+
+                return true;
+            }
         }
 
         private static void DiscoverReferenceClosure(string assemblyPath,
-            List<string> searchDirectories, List<string> paths, HashSet<string> visitedPaths)
+            List<string> searchDirectories, ReferenceClosure closure, HashSet<string> visitedPaths)
         {
             string fullPath = Path.GetFullPath(assemblyPath);
             if (!visitedPaths.Add(fullPath) || !File.Exists(fullPath))
                 return;
 
-            paths.Add(fullPath);
             CachedAssemblyIdentity identity = GetCachedIdentity(fullPath);
+            closure.Files.Add(new KeyValuePair<string, CachedAssemblyIdentity>(fullPath, identity));
             string localDirectory = Path.GetDirectoryName(fullPath);
             foreach (string referenceName in identity.ReferencedAssemblyNames)
             {
                 string dependencyPath = Path.Combine(localDirectory, referenceName + ".dll");
                 if (!File.Exists(dependencyPath))
                 {
+                    closure.RememberMissing(dependencyPath);
                     dependencyPath = null;
                     foreach (string directory in searchDirectories)
                     {
@@ -229,10 +301,11 @@ namespace PascalABCCompiler.NetHelper
                             dependencyPath = candidate;
                             break;
                         }
+                        closure.RememberMissing(candidate);
                     }
                 }
                 if (dependencyPath != null)
-                    DiscoverReferenceClosure(dependencyPath, searchDirectories, paths, visitedPaths);
+                    DiscoverReferenceClosure(dependencyPath, searchDirectories, closure, visitedPaths);
             }
         }
 
