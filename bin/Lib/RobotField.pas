@@ -846,13 +846,24 @@ end;
 
 procedure buttonExitClick(o: Object; e: EventArgs);
 begin
+  {$ifdef PABCNET_MODERN}
+  MainForm.Close;
+  {$else}
   SaveIni;
   halt;
+  {$endif}
 end;   
 
 procedure ABCWindowResize(o: Object; e: EventArgs) := CorrectWHLT;
 
-procedure MainWindowClose := SaveIni;  
+procedure MainWindowClose;
+begin
+  SaveIni;
+  {$ifdef PABCNET_MODERN}
+  // Exit before GraphABC's default window-close handler kills the process.
+  Halt(0);
+  {$endif}
+end;
 
 procedure buttonStartClick(o: Object; e: EventArgs);
 begin
