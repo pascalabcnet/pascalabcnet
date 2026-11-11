@@ -47,7 +47,7 @@ foreach ($target in @('bin', 'bin-net10')) {
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'drawman_ui_checks.pas') -Destination $case
         & dotnet (Join-Path $runtime 'pabcnetcclear.dll') (Join-Path $case 'drawman_ui_checks.pas')
         if ($LASTEXITCODE -ne 0) { throw 'Drawman UI test compilation failed.' }
-        foreach ($mode in @('', 'close')) {
+        foreach ($mode in @('', 'close', 'exit-button')) {
             $info = New-Object Diagnostics.ProcessStartInfo
             $info.FileName = 'dotnet'
             $info.Arguments = '"' + (Join-Path $case 'drawman_ui_checks.exe') + '" ' + $mode
@@ -64,9 +64,8 @@ foreach ($target in @('bin', 'bin-net10')) {
                 throw 'Drawman UI test timed out.'
             }
             Write-Host $stdout.Result
-            if ($mode -eq 'close') {
-                # GraphABC.OnClosing uses the existing PABCSystem.Halt -> Process.Kill.
-                if ($process.ExitCode -notin @(-1, 1) -or $stdout.Result.Trim() -ne 'PASS Drawman UI: close while paused' -or $stderr.Result) {
+            if ($mode -in @('close', 'exit-button')) {
+                if ($process.ExitCode -ne 0 -or $stdout.Result.Trim() -ne "PASS Drawman UI: $mode while paused" -or $stderr.Result) {
                     throw "Unexpected close result: $($process.ExitCode), $($stdout.Result), $($stderr.Result)"
                 }
             }
