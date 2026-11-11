@@ -341,6 +341,11 @@ internal static partial class Program
                 await CheckRedirectedRuntimeErrors(Path.GetFullPath(args[1]));
                 return 0;
             }
+            if (args.Length == 2 && args[0] == "--standalone-launch")
+            {
+                await CheckStandaloneLaunch(Path.GetFullPath(args[1]));
+                return 0;
+            }
             if (args.Length == 2 && args[0] == "--runtime-location")
             {
                 System.Threading.SynchronizationContext.SetSynchronizationContext(null);
@@ -579,6 +584,7 @@ internal static partial class Program
             Directory.CreateDirectory(root);
             Console.WriteLine("Fixtures: " + root);
             await CheckRedirectedRuntimeErrors(Path.GetFullPath(args[0]));
+            await CheckStandaloneLaunch(Path.GetFullPath(args[0]));
             await CheckPortableHost(Path.GetFullPath(args[0]), root);
             using (var compiler = new Net10ControllerClient(args[0], "dotnet"))
             {

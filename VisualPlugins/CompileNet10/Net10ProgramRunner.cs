@@ -26,7 +26,9 @@ namespace VisualPascalABCPlugins
             if (!File.Exists(outputFile))
                 throw new FileNotFoundException("Не найден результат компиляции .NET 10", outputFile);
             this.redirectConsoleIO = redirectConsoleIO;
-            pauseHost = !redirectConsoleIO && pause;
+            bool windowed = !redirectConsoleIO && Environment.OSVersion.Platform == PlatformID.Win32NT &&
+                IsWindowsGuiExecutable(outputFile);
+            pauseHost = !redirectConsoleIO && !windowed && pause;
             string commandArguments = (redirectConsoleIO ? "[REDIRECTIOMODE]" : "[RUNMODE]") +
                 (string.IsNullOrWhiteSpace(arguments) ? "" : " " + arguments);
             if (prepareArguments != null) commandArguments = prepareArguments(commandArguments);
@@ -44,7 +46,8 @@ namespace VisualPascalABCPlugins
             {
                 WorkingDirectory = workingDirectory,
                 UseShellExecute = false,
-                CreateNoWindow = redirectConsoleIO,
+                // dotnet.exe is a console host even when the managed EXE is WinExe.
+                CreateNoWindow = redirectConsoleIO || windowed,
                 RedirectStandardInput = redirectConsoleIO,
                 RedirectStandardOutput = redirectConsoleIO,
                 RedirectStandardError = redirectConsoleIO
@@ -55,6 +58,43 @@ namespace VisualPascalABCPlugins
                 startInfo.StandardErrorEncoding = new UTF8Encoding(false);
             }
             process = new Process { StartInfo = startInfo };
+        }
+
+        private static bool IsWindowsGuiExecutable(string fileName)
+        {
+            // Read the PE subsystem without loading the compiled assembly into the IDE.
+            const int peOffsetField = 0x3c;
+            const int optionalHeaderOffset = 24; // PE signature + COFF header
+            const int subsystemOffset = 68; // same for PE32 and PE32+
+            const ushort windowsGuiSubsystem = 2;
+            try
+            {
+                using (var stream = File.OpenRead(fileName))
+                using (var reader = new BinaryReader(stream))
+                {
+                    if (stream.Length < peOffsetField + sizeof(int) || reader.ReadUInt16() != 0x5a4d)
+                        return false;
+                    stream.Position = peOffsetField;
+                    int peOffset = reader.ReadInt32();
+                    if (peOffset < peOffsetField + sizeof(int) ||
+                        stream.Length - peOffset < optionalHeaderOffset + subsystemOffset + sizeof(ushort))
+                        return false;
+                    stream.Position = peOffset;
+                    if (reader.ReadUInt32() != 0x00004550)
+                        return false;
+                    stream.Position = (long)peOffset + 20; // COFF SizeOfOptionalHeader
+                    if (reader.ReadUInt16() < subsystemOffset + sizeof(ushort))
+                        return false;
+                    stream.Position = (long)peOffset + optionalHeaderOffset;
+                    ushort magic = reader.ReadUInt16();
+                    if (magic != 0x10b && magic != 0x20b)
+                        return false;
+                    stream.Position = (long)peOffset + optionalHeaderOffset + subsystemOffset;
+                    return reader.ReadUInt16() == windowsGuiSubsystem;
+                }
+            }
+            catch (IOException) { return false; }
+            catch (UnauthorizedAccessException) { return false; }
         }
 
         public async Task<int> RunAsync(Action<string> output, Action readRequested,
