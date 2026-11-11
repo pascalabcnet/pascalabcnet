@@ -853,6 +853,19 @@ namespace PascalABCCompiler
             new Dictionary<string, PackageRequirement>(StringComparer.OrdinalIgnoreCase);
 
 #if PABCNET_MODERN
+        private readonly Dictionary<string, string> implicitSystemReferencePaths =
+            new Dictionary<string, string>(StringComparer.Ordinal);
+
+        // Mark only references generated here, never a {$reference} from
+        // source or a directive read from a PCU.
+        private sealed class ImplicitSystemReference : compiler_directive
+        {
+            internal ImplicitSystemReference(string text, location loc, string sourceFile)
+                : base(StringConstants.compiler_directive_reference, text, loc, sourceFile)
+            {
+            }
+        }
+
         private ResolvedPackageGraph restoredPackageGraph;
         private string packageTargetFramework = "net10.0";
         private PreparedReference[] packagePreparedReferences = Array.Empty<PreparedReference>();
@@ -1240,6 +1253,7 @@ namespace PascalABCCompiler
 #if PABCNET_MODERN
             restoredPackageGraph = null;
             packageTargetFramework = "net10.0";
+            implicitSystemReferencePaths.Clear();
             packagePreparedReferences = Array.Empty<PreparedReference>();
             packageAssemblyPaths.Clear();
             packageGraphOrigins.Clear();
@@ -2672,12 +2686,16 @@ namespace PascalABCCompiler
         {
             var sourceContext = GetSourceContext(reference);
             string libraryOutputDirectory = null;
+            Func<string, string> standardAssemblyLookup = null;
 #if PABCNET_MODERN
             libraryOutputDirectory = CompilerOptions.LibraryOutputDirectory;
+            if (reference is ImplicitSystemReference)
+                standardAssemblyLookup = GetImplicitSystemReferencePath;
 #endif
             var specification = new ReferenceSpec(reference.directive,
                 Path.GetDirectoryName(reference.source_file),
-                currentCompilationUnit.SyntaxTree.file_name, sourceContext, libraryOutputDirectory);
+                currentCompilationUnit.SyntaxTree.file_name, sourceContext, libraryOutputDirectory,
+                standardAssemblyLookup);
             // Historical {$reference} behaviour copies a directly referenced
             // local DLL to the output directory before it is loaded. The classic
             // provider performs that work after applying the old lookup rules.
@@ -2685,6 +2703,21 @@ namespace PascalABCCompiler
                 CompilerOptions.OutputDirectory, true);
             return referenceProvider.Prepare(specification, stagingContext);
         }
+
+#if PABCNET_MODERN
+        private string GetImplicitSystemReferencePath(string name)
+        {
+            if (implicitSystemReferencePaths.TryGetValue(name, out string path) && File.Exists(path))
+                return path;
+
+            path = get_standart_assembly_path(name);
+            if (path != null)
+                implicitSystemReferencePaths[name] = path;
+            else
+                implicitSystemReferencePaths.Remove(name);
+            return path;
+        }
+#endif
 
         private Assembly PreloadReference(PreparedReference reference)
         {
@@ -2977,7 +3010,7 @@ namespace PascalABCCompiler
                 {
                     foreach (string path in NetHelper.NetCoreSystemReferences.GetPlatformAssemblyPaths(platform))
                         if (existingPlatformReferences.Add("%GAC%\\" + Path.GetFileName(path)))
-                            directives.Add(new compiler_directive(StringConstants.compiler_directive_reference,
+                            directives.Add(new ImplicitSystemReference(
                                 "%GAC%\\" + Path.GetFileName(path), platformDirective.location, platformDirective.source_file));
                 }
                 catch (Exception ex) when (ex is FileNotFoundException || ex is PlatformNotSupportedException)
@@ -3086,8 +3119,7 @@ namespace PascalABCCompiler
                     continue;
 
                 var sourceDirective = implicitReference.Value;
-                var directive = new compiler_directive(
-                    "reference",
+                var directive = new ImplicitSystemReference(
                     "%GAC%\\" + assemblyName,
                     sourceDirective != null ? sourceDirective.location : null,
                     sourceDirective != null ? sourceDirective.source_file : ".");
@@ -4477,6 +4509,12 @@ namespace PascalABCCompiler
 
         public static string get_assembly_path(string name, bool search_for_intellisense)
         {
+            return GetAssemblyPath(name, search_for_intellisense, null);
+        }
+
+        internal static string GetAssemblyPath(string name, bool search_for_intellisense,
+            Func<string, string> standardAssemblyLookup)
+        {
             //если явно задан каталог то ищем только там
             if (Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX && !name.StartsWith("%GAC%\\"))
             {
@@ -4509,7 +4547,9 @@ namespace PascalABCCompiler
                 }
             }
 
-            return get_standart_assembly_path(name);
+            return standardAssemblyLookup == null
+                ? get_standart_assembly_path(name)
+                : standardAssemblyLookup(name);
         }
 
         public CompilationUnit ReadDLL(string FileName, SyntaxTree.SourceContext sc = null)

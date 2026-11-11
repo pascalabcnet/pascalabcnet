@@ -112,8 +112,13 @@ try
         Check(symbols.Any(s => s.Label == (name == "forms" ? "Text" : "Content")), name + " IntelliSense properties");
     }
     var compiler = new PascalABCCompiler.Compiler();
+    var implicitPathsField = typeof(PascalABCCompiler.Compiler).GetField("implicitSystemReferencePaths",
+        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+    var implicitPaths = (Dictionary<string, string>)implicitPathsField.GetValue(compiler)!;
     foreach (string name in new[] { "forms", "wpf", "core", "forms", "core" })
     {
+        const string previousCompilation = "%GAC%\\UnusedPreviousCompilation.dll";
+        implicitPaths.Add(previousCompilation, work);
         compiler.Reload();
         string source = Path.Combine(work, "test_" + name + ".pas");
         var options = new PascalABCCompiler.CompilerOptions(source, PascalABCCompiler.CompilerOptions.OutputType.ConsoleApplicaton)
@@ -123,6 +128,12 @@ try
         string config = File.ReadAllText(Path.ChangeExtension(source, ".runtimeconfig.json"));
         Check(config.Contains(name == "core" ? "Microsoft.NETCore.App" : "Microsoft.WindowsDesktop.App"),
             "one compiler selects correct framework: " + name);
+        Check(!implicitPaths.ContainsKey(previousCompilation), "implicit path cache is reset between compilations");
+        Check(implicitPaths.TryGetValue("%GAC%\\System.Console.dll", out string? consolePath) &&
+            consolePath == NetCoreSystemReferences.ResolveAssemblyPath("System.Console.dll"),
+            "implicit path cache records the canonical runtime path");
+        if (name == "core")
+            Check(!implicitPaths.Values.Any(IsDesktop), "Core compilation does not reuse Desktop paths");
     }
     Console.WriteLine("All WindowsDesktop checks passed.");
     return 0;
