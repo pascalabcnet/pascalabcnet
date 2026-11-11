@@ -22,7 +22,7 @@ namespace VisualPascalABCPlugins
         internal readonly ICompletionData[] Items;
         public ImageList ImageList { get; }
         public string PreSelection { get; }
-        public int DefaultIndex => 0;
+        public int DefaultIndex { get; }
 
         public Net10CompletionProvider(object response, IExternalIntelliSenseSession ui, string prefix)
         {
@@ -32,6 +32,7 @@ namespace VisualPascalABCPlugins
             if (response is Dictionary<string, object> completion && completion.TryGetValue("items", out var items))
                 list = items as IEnumerable;
             var result = new List<ICompletionData>();
+            ICompletionData selectedItem = null;
             foreach (var value in list ?? new object[0])
             {
                 if (!(value is Dictionary<string, object> item)) continue;
@@ -49,9 +50,18 @@ namespace VisualPascalABCPlugins
                     metadata.TryGetValue("isExtensionMethod", out var flag) && flag is bool isExtension && isExtension;
                 int image = extension && (kind == 2 || kind == 3 || kind == 4)
                     ? ui.GetImageIndex(CompletionItemKind.ExtensionMethod) : Icon(ui, kind);
-                result.Add(new Item(label, insertion, description, image));
+                var entry = new Item(label, insertion, description, image);
+                result.Add(entry);
+                if (selectedItem == null && item.TryGetValue("preselect", out var preselect) && preselect is true)
+                    selectedItem = entry;
             }
             Items = result.ToArray();
+            if (selectedItem != null)
+            {
+                Array.Sort(Items);
+                DefaultIndex = Array.IndexOf(Items, selectedItem);
+            }
+            else DefaultIndex = -1;
         }
 
         private static string Text(Dictionary<string, object> item, string key)

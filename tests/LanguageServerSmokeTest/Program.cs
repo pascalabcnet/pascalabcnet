@@ -301,6 +301,38 @@ try
     Check(GetCompletionLabels(typeCompletion).Contains("List<>"),
         "type completion contains List after new Lis");
 
+    const string newSource = "type Ученик = auto class\n  Имя: string;\nend;\nbegin\n  var a: array of Ученик := new \nend.";
+    const string newDocument = "untitled:NewExpression.pas";
+    await WriteDidOpenAsync(input, newDocument, newSource, 1, timeout.Token);
+    await WriteRequestAsync(input, 330, "textDocument/completion", newDocument,
+        GetPosition(newSource, newSource.IndexOf("new ", StringComparison.Ordinal) + 4), timeout.Token, " ");
+    using var newCompletion = await ReadResponseAsync(output, 330, timeout.Token);
+    var newLabels = GetCompletionLabels(newCompletion);
+    Check(newLabels.Contains("Ученик") && !newLabels.Contains("Print"),
+        "completion after new in a freshly opened incomplete file includes user types and excludes procedures");
+    var preselected = newCompletion.RootElement.GetProperty("result").GetProperty("items").EnumerateArray()
+        .Where(item => item.TryGetProperty("preselect", out var flag) && flag.ValueKind == JsonValueKind.True)
+        .Select(item => item.GetProperty("label").GetString()).ToArray();
+    Check(preselected.SequenceEqual(new[] { "Ученик" }), "new preselects the declared array element type");
+
+    var inferredSource = newSource.Replace("var a: array of Ученик", "var p", StringComparison.Ordinal);
+    const string inferredDocument = "untitled:NewInferredType.pas";
+    await WriteDidOpenAsync(input, inferredDocument, inferredSource, 1, timeout.Token);
+    await WriteRequestAsync(input, 332, "textDocument/completion", inferredDocument,
+        GetPosition(inferredSource, inferredSource.IndexOf("new ", StringComparison.Ordinal) + 4), timeout.Token, " ");
+    using var inferredCompletion = await ReadResponseAsync(output, 332, timeout.Token);
+    var inferredItems = inferredCompletion.RootElement.GetProperty("result").GetProperty("items").EnumerateArray();
+    Check(GetCompletionLabels(inferredCompletion).Contains("Ученик") &&
+        inferredItems.All(item => !item.GetProperty("label").GetString()!.StartsWith("procedure(", StringComparison.OrdinalIgnoreCase) &&
+            (!item.TryGetProperty("preselect", out var flag) || flag.ValueKind != JsonValueKind.True)),
+        "new in an inferred declaration offers types without preselecting an unrelated procedure or the recovery type");
+
+    const string commentSource = "begin\n  // new \nend.";
+    await WriteDidChangeAsync(input, newDocument, commentSource, 2, timeout.Token);
+    await WriteRequestAsync(input, 331, "textDocument/completion", newDocument, (1, 9), timeout.Token, " ");
+    using var commentCompletion = await ReadResponseAsync(output, 331, timeout.Token);
+    Check(GetCompletionLabels(commentCompletion).Count == 0, "space after new in a comment does not trigger completion");
+
     await WriteRequestAsync(
         input,
         34,
@@ -1096,7 +1128,8 @@ static async Task WriteRequestAsync(
     string method,
     string documentUri,
     (int Line, int Character) position,
-    CancellationToken cancellationToken)
+    CancellationToken cancellationToken,
+    string? triggerCharacter = null)
 {
     await WriteMessageAsync(stream, new
     {
@@ -1106,7 +1139,8 @@ static async Task WriteRequestAsync(
         @params = new
         {
             textDocument = new { uri = documentUri },
-            position = new { line = position.Line, character = position.Character }
+            position = new { line = position.Line, character = position.Character },
+            context = triggerCharacter is null ? null : new { triggerKind = 2, triggerCharacter }
         }
     }, cancellationToken);
 }

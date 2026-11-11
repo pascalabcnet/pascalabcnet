@@ -188,7 +188,8 @@ internal sealed class PascalLanguageServerTarget
             var items = await _languageService.GetCompletionAsync(
                 DocumentConversions.GetDocumentId(request.TextDocument.Uri),
                 caretOffset,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken,
+                triggeredBySpace: request.Context?.TriggerCharacter == " ").ConfigureAwait(false);
 
             return new CompletionList
             {
@@ -199,6 +200,7 @@ internal sealed class PascalLanguageServerTarget
                     Detail = item.Detail,
                     Documentation = item.Documentation,
                     Kind = MapCompletionKind(item.Kind),
+                    Preselect = item.Preselect,
                     Data = new { isExtensionMethod = item.IsExtensionMethod },
                     InsertText = item.Label.EndsWith("<>", StringComparison.Ordinal)
                         ? item.Label[..^2]

@@ -178,8 +178,8 @@ namespace VisualPascalABCPlugins
         }
 
         // Called on the IDE thread: capture ALL unsaved tabs before moving to the transport queue.
-        internal Task<object> CompleteAsync(ICodeFileDocument document, int line, int character, CancellationToken cancellation)
-            => RequestPositionAsync(document, line, character, "textDocument/completion", cancellation);
+        internal Task<object> CompleteAsync(ICodeFileDocument document, int line, int character, CancellationToken cancellation, char trigger = '.')
+            => RequestPositionAsync(document, line, character, "textDocument/completion", cancellation, trigger);
 
         // Discovery never enters the serialized document-analysis queue: a slow feed
         // must not delay edits, diagnostics or the ordinary member completion.
@@ -209,7 +209,7 @@ namespace VisualPascalABCPlugins
         internal Task<object> SymbolsAsync(ICodeFileDocument document, CancellationToken cancellation)
             => RequestPositionAsync(document, 0, 0, "pascalabc/documentOutline", cancellation);
 
-        private Task<object> RequestPositionAsync(ICodeFileDocument document, int line, int character, string method, CancellationToken cancellation)
+        private Task<object> RequestPositionAsync(ICodeFileDocument document, int line, int character, string method, CancellationToken cancellation, char completionTrigger = '.')
         {
             // Metadata is a generated view, not a source module. Analyze it on demand
             // for hover only, using a non-file URI so it cannot shadow String.pas on disk.
@@ -243,7 +243,7 @@ namespace VisualPascalABCPlugins
                         if (method != "textDocument/documentSymbol" && !method.StartsWith("pascalabc/", StringComparison.Ordinal))
                             parameters["position"] = new { line, character };
                         if (method == "textDocument/completion")
-                            parameters["context"] = new { triggerKind = 2, triggerCharacter = "." };
+                            parameters["context"] = new { triggerKind = 2, triggerCharacter = completionTrigger.ToString() };
                         var response = await client.RequestAsync(method, parameters, linked.Token).ConfigureAwait(false);
                         if (method == "textDocument/implementation" &&
                             (response == null || response is System.Collections.ICollection empty && empty.Count == 0))
