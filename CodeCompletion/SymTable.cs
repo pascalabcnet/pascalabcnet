@@ -3873,8 +3873,8 @@ namespace CodeCompletion
                 ? compiledElementType.CompiledType.MakeArrayType()
                 : compiledElementType.CompiledType.MakeArrayType(Rank);
 
-            return PascalABCCompiler.NetHelper.NetHelper.GetExtensionMethods(arrayType)
-                .OfType<MethodInfo>()
+            return ExtensionMethodApplicability.Filter(TypeTable.get_compiled_type(arrayType),
+                    PascalABCCompiler.NetHelper.NetHelper.GetExtensionMethods(arrayType))
                 .Where(method => name == null ||
                     string.Equals(method.Name, name, StringComparison.OrdinalIgnoreCase))
                 .Select(method => new CompiledMethodScope(
@@ -6812,7 +6812,7 @@ namespace CodeCompletion
             List<MemberInfo> members = new List<MemberInfo>();
             members.AddRange(mis);
             IEnumerable<MemberInfo> en = PascalABCCompiler.NetHelper.NetHelper.GetExtensionMethods(ctn);
-            members.AddRange(en);
+            members.AddRange(ExtensionMethodApplicability.Filter(this, en));
             mis = members.ToArray();
             if (ctn.IsInterface)
             {

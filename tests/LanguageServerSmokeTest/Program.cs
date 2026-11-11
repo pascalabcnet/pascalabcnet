@@ -495,6 +495,30 @@ try
         $"Array completion contains AsSpan; actual: {string.Join(", ", arrayLabels)}");
     Console.WriteLine("PASS array AsSpan completion over stdio");
 
+    foreach (var (id, declaration, hasXmlMethods) in new[]
+    {
+        (333, "type Ученик = class end;\nbegin\n  var items: array of Ученик;", false),
+        (334, "begin\n  var items: array of XElement;", true),
+        (335, "procedure Test<T>(items: sequence of T);\nbegin", false),
+        (336, "procedure Test<T>(items: sequence of T); where T: XContainer;\nbegin", true)
+    })
+    {
+        var xmlSource = "uses System.Xml.Linq;\n" + declaration + "\n  var v := items.\nend" +
+            (id >= 335 ? ";\nbegin end." : ".");
+        var xmlUri = $"untitled:XmlExtensions{id}.pas";
+        await WriteDidOpenAsync(input, xmlUri, xmlSource, 1, timeout.Token);
+        await WriteRequestAsync(input, id, "textDocument/completion", xmlUri,
+            GetPosition(xmlSource, xmlSource.IndexOf("items.", StringComparison.Ordinal) + "items.".Length), timeout.Token);
+        using var xmlCompletion = await ReadResponseAsync(output, id, timeout.Token);
+        var xmlLabels = GetCompletionLabels(xmlCompletion);
+        Check(xmlLabels.Any(label => label.StartsWith("Count", StringComparison.Ordinal)),
+            $"ordinary sequence extensions remain available in XML completion fixture {id}");
+        Check(xmlLabels.Any(label => label.StartsWith("DescendantNodes<", StringComparison.Ordinal)) == hasXmlMethods,
+            $"DescendantNodes respects the element type's XContainer constraint in fixture {id}");
+        Check(xmlLabels.Contains("DescendantNodesAndSelf") == (id == 334),
+            $"XElement-only extensions require an XElement receiver in fixture {id}");
+    }
+
     const string arraySignatureSource = """
     begin
       var a := Arr(1,2,3,4,5,6);
