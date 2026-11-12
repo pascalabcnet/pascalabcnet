@@ -7,6 +7,10 @@ namespace PascalABCCompiler.PCU
 {
     public static class PCUFileFormatVersion
     {
+#if PABCNET_MODERN
+        public static System.Int16 Version = 125;
+#else
         public static System.Int16 Version = 124;
+#endif
     }
 }

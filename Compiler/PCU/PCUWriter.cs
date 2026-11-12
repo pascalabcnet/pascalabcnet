@@ -193,6 +193,10 @@ namespace PascalABCCompiler.PCU
         //ssyy
         public NameRef[] implementation_names;
         public int interface_uses_count; //Количество модулей из incl_modules, относящихся к секции interface
+#if PABCNET_MODERN
+        internal int SourceInterfaceUsesCount;
+        internal string[] InterfacePackageAssemblies;
+#endif
         //public List<type_synonym> interface_type_synonyms;
         //public List<type_synonym> implementation_type_synonyms;
         public int interface_synonyms_offset;
@@ -484,6 +488,12 @@ namespace PascalABCCompiler.PCU
 			}
             //ssyy
             fbw.Write(pcu_file.interface_uses_count);
+#if PABCNET_MODERN
+            fbw.Write(pcu_file.SourceInterfaceUsesCount);
+            fbw.Write(unit.InterfacePackageAssemblies.Length);
+            foreach (string assembly in unit.InterfacePackageAssemblies)
+                fbw.Write(assembly);
+#endif
             //\ssyy
 
 			fbw.Write(pcu_file.ref_assemblies.Length);
@@ -1166,6 +1176,12 @@ namespace PascalABCCompiler.PCU
         //заполнение списка подключаемых модулей
 		private void GetUsedUnits()
 		{
+#if PABCNET_MODERN
+            // The writer may add dependencies from serialized routine bodies to
+            // the interface list. They were not available to source interface lookup.
+            pcu_file.SourceInterfaceUsesCount = unit.InterfaceUsedUnits.OfType<common_unit_node>()
+                .Where(used => used != unit.SemanticTree).Distinct().Count();
+#endif
             AddIndirectInteraceUsedUnits();
             AddIndirectImplementationUsedUnits();
 

@@ -381,6 +381,13 @@ namespace PascalABCCompiler.PCU
 
             for (int i = 0; i < pcu_file.incl_modules.Length; i++)
             {
+#if PABCNET_MODERN
+                // Later entries may restore packages from implementation uses
+                // and indirect PCU links. They cannot satisfy the source interface.
+                if (i == pcu_file.SourceInterfaceUsesCount &&
+                    !comp.HasInterfacePackageAssemblies(pcu_file.InterfacePackageAssemblies))
+                    return true;
+#endif
                 //if (pcu_file.incl_modules[i].Contains("$"))
                 //	continue;
                 var used_unit_fname = comp.GetUnitFileName(Path.GetFileNameWithoutExtension(pcu_file.incl_modules[i]), pcu_file.incl_modules[i], dir, new SyntaxTree.SourceContext(0,0,0,0, FileName), currentUnitLanguage);
@@ -402,6 +409,11 @@ namespace PascalABCCompiler.PCU
                 }
                 if (need == false) need = pr.need;
             }
+#if PABCNET_MODERN
+            if (pcu_file.SourceInterfaceUsesCount == pcu_file.incl_modules.Length &&
+                !comp.HasInterfacePackageAssemblies(pcu_file.InterfacePackageAssemblies))
+                return true;
+#endif
             return need;
         }
 
@@ -636,6 +648,14 @@ namespace PascalABCCompiler.PCU
 			}
             //ssyy
             pcu_file.interface_uses_count = br.ReadInt32();
+#if PABCNET_MODERN
+            pcu_file.SourceInterfaceUsesCount = br.ReadInt32();
+            if (pcu_file.SourceInterfaceUsesCount < 0 || pcu_file.SourceInterfaceUsesCount > num_incl)
+                throw new InvalidPCUFile(unit_name);
+            pcu_file.InterfacePackageAssemblies = new string[br.ReadInt32()];
+            for (int i = 0; i < pcu_file.InterfacePackageAssemblies.Length; i++)
+                pcu_file.InterfacePackageAssemblies[i] = br.ReadString();
+#endif
             //\ssyy
 			int num_ref_ass = br.ReadInt32();
 			pcu_file.ref_assemblies = new string[num_ref_ass];

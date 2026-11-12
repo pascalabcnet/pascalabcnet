@@ -115,6 +115,36 @@ internal static partial class Program
 
         string pcuCase = await CompileCase("package-only-in-unit", main,
             new() { ["P.pas"] = Unit(Package()) }, "43", pcu: true);
+
+        const string provider = "unit Provider; interface implementation end.\n";
+        const string implementation =
+            "implementation uses Provider; function Value: integer; begin Result := Root.Value; end; end.\n";
+        const string interfacePackageUnit =
+            "unit P; interface uses NuGetRestoreFixture; function Value: integer;\n" + implementation;
+        string visibility = await CompileCase("pcu-interface-package-context", Package() + main,
+            new() { ["P.pas"] = interfacePackageUnit, ["Provider.pas"] = Package() + provider }, "43", pcu: true);
+        // Reuse the same PCUs under a Main that no longer supplies the package.
+        // Provider is still reachable, but only from P's implementation.
+        foreach (string name in new[] { "P.pas", "Provider.pas" })
+        {
+            string path = Path.Combine(visibility, name);
+            File.Move(path + ".hidden", path);
+        }
+        string visibilityMain = Path.Combine(visibility, "Main.pas");
+        File.WriteAllText(visibilityMain, main);
+        string visibilityOutput = Directory.CreateDirectory(Path.Combine(visibility, "without-main-package")).FullName;
+        var warmVisibility = await RunCompiler(compiler, visibilityMain, cache, visibilityOutput);
+        Check(warmVisibility.ExitCode != 0 && !File.Exists(Path.Combine(visibilityOutput, "Main.exe")) &&
+            (warmVisibility.Output + warmVisibility.Error).Contains("NuGetRestoreFixture", StringComparison.OrdinalIgnoreCase),
+            "PCU hid a missing interface package: " + warmVisibility.Output + warmVisibility.Error);
+        await CompileCase("source-interface-package-context", main,
+            new() { ["P.pas"] = interfacePackageUnit, ["Provider.pas"] = Package() + provider },
+            null, false, "NuGetRestoreFixture");
+        await CompileCase("package-used-only-in-implementation", main,
+            new() { ["P.pas"] = "unit P; interface function Value: integer; implementation uses NuGetRestoreFixture, Provider; " +
+                "function Value: integer; begin Result := Root.Value; end; end.\n",
+                ["Provider.pas"] = Package() + provider }, "43", pcu: true);
+
         await CompileCase("nested-units-and-pcu", main,
             new() {
                 ["P.pas"] = Unit("", "uses Q;\n", "QValue"),

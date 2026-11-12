@@ -168,6 +168,9 @@ namespace PascalABCCompiler
 
     public class CompilationUnit
     {
+#if PABCNET_MODERN
+        internal string[] InterfacePackageAssemblies = Array.Empty<string>();
+#endif
         internal bool CaseSensitive = false;
         /// <summary>
         /// поле для проверки на циклическую зависимость интерфейсов модулей
@@ -876,12 +879,27 @@ namespace PascalABCCompiler
         private readonly Dictionary<string, compiler_directive> packageGraphOrigins =
             new Dictionary<string, compiler_directive>(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> packageResolutionMessages = new HashSet<string>();
+        private string[] packageCompileAssets = Array.Empty<string>();
+        private HashSet<string> packageCompileAssetSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         internal string GetRestoredPackageAssemblyPath(string assemblySimpleName)
         {
             return packageAssemblyPaths.TryGetValue(assemblySimpleName + ".dll", out string path)
                 ? path : null;
         }
+
+        private void RememberPackageCompileAssets(ResolvedPackageGraph graph)
+        {
+            packageCompileAssets = graph.Packages
+                .SelectMany(package => package.CompileAssemblies.Select(path =>
+                    package.Id + "/" + package.Version + "/" +
+                    Path.GetRelativePath(package.Directory, path).Replace('\\', '/')))
+                .ToArray();
+            packageCompileAssetSet = new HashSet<string>(packageCompileAssets, StringComparer.OrdinalIgnoreCase);
+        }
+
+        internal bool HasInterfacePackageAssemblies(string[] required) =>
+            required.Length == 0 || packageCompileAssetSet.IsSupersetOf(required);
 
         internal void RestoreModulePackages(string unitFileName, IEnumerable<compiler_directive> unitDirectives)
         {
@@ -984,6 +1002,7 @@ namespace PascalABCCompiler
                 restoredPackageGraph = graph;
                 packagePreparedReferences = references;
                 packageAssemblyPaths = assemblyPaths;
+                RememberPackageCompileAssets(graph);
                 foreach (var package in graph.Packages)
                     if (!packageGraphOrigins.ContainsKey(package.Id))
                         packageGraphOrigins.Add(package.Id, firstAddition.Origin);
@@ -1259,6 +1278,8 @@ namespace PascalABCCompiler
             preparedImplicitSystemReferences.Clear();
             packagePreparedReferences = Array.Empty<PreparedReference>();
             packageAssemblyPaths.Clear();
+            packageCompileAssets = Array.Empty<string>();
+            packageCompileAssetSet.Clear();
             packageGraphOrigins.Clear();
             packageResolutionMessages.Clear();
 #endif
@@ -3895,6 +3916,10 @@ namespace PascalABCCompiler
                 if (currentUnit.State != UnitState.InterfaceCompiled)
                 {
                     OnChangeCompilerState(this, CompilerState.CompileInterface, UnitFileName);
+#if PABCNET_MODERN
+                    if (currentUnit.SyntaxTree is SyntaxTree.unit_module)
+                        currentUnit.InterfacePackageAssemblies = packageCompileAssets;
+#endif
                     TreeConverter.SemanticRulesConstants.SymbolTableCaseSensitive = currentUnit.CaseSensitive;
 
                     var data = new TreeConverter.TreeConversion.InitializationDataForCompilingInterface(

@@ -184,6 +184,12 @@ namespace CodeCompletion
 			}
             //ssyy
             pcu_file.interface_uses_count = br.ReadInt32();
+#if PABCNET_MODERN
+            br.ReadInt32(); // SourceInterfaceUsesCount
+            int interfacePackageAssemblyCount = br.ReadInt32();
+            for (int i = 0; i < interfacePackageAssemblyCount; i++)
+                br.ReadString();
+#endif
             //\ssyy
 			int num_ref_ass = br.ReadInt32();
 			pcu_file.ref_assemblies = new string[num_ref_ass];
