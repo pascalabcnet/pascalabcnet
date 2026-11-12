@@ -547,6 +547,10 @@ namespace PascalABCCompiler.NetHelper
                     if (!File.Exists(dependencyPath))
                         continue;
 
+                    // Keep platform types identical to those used by direct references.
+                    if (NetCoreSystemReferences.IsPlatformAssemblyDirectory(directory))
+                        return NetCoreSystemReferences.LoadRuntimeAssembly(dependencyPath);
+
                     RememberFile(dependencyPath);
                     using (FileStream stream = File.OpenRead(dependencyPath))
                         return LoadFromStream(stream);

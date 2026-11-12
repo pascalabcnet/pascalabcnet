@@ -64,11 +64,32 @@ internal static class ReferenceClosureTests
             ExpectBuilds(1, "same-size, same-stamp conflict was detected using the cached graph");
             Console.WriteLine("PASS reference closure reuse, invalidation and conflict detection");
             CheckPlatformGraph(directory);
+            CheckPlatformConstructor(fixtureV1);
         }
         finally
         {
             CollectibleReferenceManager.BeginCompilation();
             Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    private static void CheckPlatformConstructor(string fixture)
+    {
+        string systemAssembly = Path.Combine(NetCoreSystemReferences.RuntimeDirectory, "System.Linq.dll");
+        CollectibleReferenceManager.BeginCompilation();
+        try
+        {
+            // A registered platform reference adds its whole directory to dependency lookup.
+            CollectibleReferenceManager.RegisterReferencePaths(new[] { systemAssembly, fixture });
+            var assembly = CollectibleReferenceManager.Load(fixture);
+            var type = assembly.GetType("ReflectionCacheUnloadFixture.PlatformConstructorFixture", throwOnError: true);
+            if (type.GetConstructor(new[] { typeof(IServiceProvider) }) == null)
+                throw new InvalidOperationException("The constructor parameter uses a second copy of the platform type.");
+            Console.WriteLine("PASS external constructor uses the platform IServiceProvider type");
+        }
+        finally
+        {
+            CollectibleReferenceManager.StartNextGeneration();
         }
     }
 

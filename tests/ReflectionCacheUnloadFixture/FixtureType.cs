@@ -1,5 +1,10 @@
 namespace ReflectionCacheUnloadFixture
 {
+    public sealed class PlatformConstructorFixture
+    {
+        public PlatformConstructorFixture(System.IServiceProvider services) { }
+    }
+
     public sealed class FixtureType
     {
         public ReflectionCacheUnloadDependency.DependencyType Dependency { get; } = new();
