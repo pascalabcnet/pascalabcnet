@@ -21,10 +21,11 @@ namespace PascalABCCompiler.NetHelper
             "PABCNET_TEST_COLLECTIBLE_STATS_FILE";
         private static ReferenceAssemblyLoadContext currentContext;
         private static WeakReference pendingUnload;
-        private static HashSet<string> previousCompilationPaths =
+        // These reference paths live as long as the reference load context. A
+        // failed or package-free compilation does not remove them from it.
+        private static readonly HashSet<string> generationReferencePaths =
             new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        private static HashSet<string> currentCompilationPaths =
-            new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private static string[] inheritedReferencePaths = Array.Empty<string>();
         private static HashSet<string> currentValidationPaths =
             new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private static ReferenceClosure validatedClosure;
@@ -86,6 +87,8 @@ namespace PascalABCCompiler.NetHelper
 
             ReferenceAssemblyLoadContext oldContext = currentContext;
             currentContext = null;
+            generationReferencePaths.Clear();
+            inheritedReferencePaths = Array.Empty<string>();
             generationResetThisCompilation = true;
             if (oldContext == null)
                 return;
@@ -109,14 +112,11 @@ namespace PascalABCCompiler.NetHelper
         internal static void MarkValidationFailure()
         {
             validatedClosure = null;
-            currentCompilationPaths = new HashSet<string>(previousCompilationPaths,
-                StringComparer.OrdinalIgnoreCase);
         }
 
         internal static void BeginCompilation()
         {
-            previousCompilationPaths = currentCompilationPaths;
-            currentCompilationPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            inheritedReferencePaths = generationReferencePaths.ToArray();
             currentValidationPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             validatedClosure = null;
             ReferenceClosureBuildCount = 0;
@@ -129,11 +129,10 @@ namespace PascalABCCompiler.NetHelper
             foreach (string path in assemblyPaths)
             {
                 string fullPath = Path.GetFullPath(path);
-                currentCompilationPaths.Add(fullPath);
-                if (!generationResetThisCompilation && !previousCompilationPaths.Contains(fullPath))
+                if (!generationResetThisCompilation && !generationReferencePaths.Contains(fullPath))
                 {
                     string fileName = Path.GetFileName(fullPath);
-                    foreach (string previousPath in previousCompilationPaths)
+                    foreach (string previousPath in inheritedReferencePaths)
                     {
                         if (string.Equals(Path.GetFileName(previousPath), fileName,
                             StringComparison.OrdinalIgnoreCase) ||
@@ -144,6 +143,7 @@ namespace PascalABCCompiler.NetHelper
                         }
                     }
                 }
+                generationReferencePaths.Add(fullPath);
                 AddSearchDirectory(fullPath);
             }
             return pathChanged;

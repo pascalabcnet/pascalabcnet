@@ -306,16 +306,30 @@ internal static class Program
 
             var requestCompiler = compiler;
             var snapshotPcus = snapshot != null ? new SnapshotPcuFreshness(snapshot) : null;
+#if !NETFRAMEWORK
+            var previousSourceFilesProvider = requestCompiler.SourceFilesProvider;
+            ChangeCompilerStateEventDelegate? snapshotHandler = null;
+#endif
             if (snapshot != null)
             {
+#if NETFRAMEWORK
                 requestCompiler = new Compiler();
                 requestCompiler.SourceFilesProvider = snapshot.Provide;
                 requestCompiler.OnChangeCompilerState += (_, state, currentFileName) =>
+#else
+                // Reload resets this compiler's state. Creating a second one
+                // leaves old semantic trees reachable through shared caches.
+                requestCompiler.SourceFilesProvider = snapshot.Provide;
+                snapshotHandler = (_, state, currentFileName) =>
+#endif
                 {
                     if (state == CompilerState.BeginCompileFile)
                         RegisterSnapshotPaths(
                             requestCompiler, snapshot, currentFileName);
                 };
+#if !NETFRAMEWORK
+                requestCompiler.OnChangeCompilerState += snapshotHandler;
+#endif
             }
 
             var clock = new Stopwatch();
@@ -352,6 +366,11 @@ internal static class Program
 #endif
             try
             {
+#if !NETFRAMEWORK
+                // Reload replaces the visitors. Release the previous semantic
+                // tree first so it cannot keep a retired reference context alive.
+                requestCompiler.SyntaxTreeToSemanticTreeConverter.Reset();
+#endif
                 requestCompiler.Reload();
                 outputFileName = requestCompiler.Compile(options);
             }
@@ -361,6 +380,9 @@ internal static class Program
 #if !NETFRAMEWORK
                 requestCompiler.OnCompilerMessage -= compilerMessage;
                 PackageRestoreService.RestoreProgress -= packageProgress;
+                if (snapshotHandler != null)
+                    requestCompiler.OnChangeCompilerState -= snapshotHandler;
+                requestCompiler.SourceFilesProvider = previousSourceFilesProvider;
 #endif
                 snapshotPcus?.MarkDiskCachesStale();
             }

@@ -252,6 +252,8 @@ internal static partial class Program
             pcuReferenceConflict.Output + pcuReferenceConflict.Error);
         Console.WriteLine("PASS: module packages: conflicts with PCU-only requirements do not overwrite the last executable");
 
+        await CheckPackageVersionReturnInWorker(compilerDirectory, directory, cache);
+
         string persistent = Path.Combine(directory, "persistent");
         Directory.CreateDirectory(persistent);
         string persistentMain = Path.Combine(persistent, "Main.pas");
@@ -268,7 +270,8 @@ internal static partial class Program
             instance.OnChangeCompilerState += (_, state, _) => {
                 if (state == PascalABCCompiler.CompilerState.NuGetRestoreStarting) restores++;
             };
-            async Task CompilePersistent(string header, string version, bool success, string expected)
+            async Task CompilePersistent(string header, string version, bool success, string expected,
+                string? restoreError = null)
             {
                 File.WriteAllText(persistentMain, header + main);
                 File.WriteAllText(persistentUnit, Unit(Package(RootId, version)));
@@ -290,6 +293,8 @@ internal static partial class Program
                     Check(run.ExitCode == 0 && run.Output.Trim() == expected,
                         "Persistent compiler runtime: " + run.Output + run.Error);
                 }
+                else if (restoreError != null)
+                    Check(errors.Contains(restoreError), "Expected restore failure: " + errors);
                 else Check(errors.Contains("1.0.0") && errors.Contains("1.1.0"), "Expected version conflict: " + errors);
             }
             HiddenRestoreDirectories.Add(service.GetConfiguration(new PackageRestoreRequest {
@@ -297,7 +302,12 @@ internal static partial class Program
             await CompilePersistent(Package(), "1.0.0", true, "43");
             await CompilePersistent(Package(), "1.1.0", false, "");
             await CompilePersistent("", "1.1.0", true, "44");
+            // A restore failure before reference registration must not forget
+            // the DLLs still loaded from the successful compilation.
+            await CompilePersistent("", "9.9.9", false, "", restoreError: "NU1102");
             await CompilePersistent("", "1.0.0", true, "43");
+            await CompilePersistent("", "1.0.0", true, "43");
+            Console.WriteLine("PASS: one compiler returns to an earlier package version after a failed restore");
             File.WriteAllText(persistentUnit, Unit(Package(compatible) + Package(newer)));
             Check(instance.Compile() != null && instance.ErrorsList.Count == 0,
                 "Compatible batch failed: " + string.Join("; ", instance.ErrorsList));
@@ -316,5 +326,77 @@ internal static partial class Program
         finally { Environment.SetEnvironmentVariable("NUGET_PACKAGES", previousCache); }
 
         Console.WriteLine("PASS: module packages, transitive graph, explicit references, PCU-only builds and execution; local feed only.");
+    }
+
+    private static async Task CheckPackageVersionReturnInWorker(string runtime, string directory, string cache)
+    {
+        string workerPath = Path.Combine(runtime, "PABCCompilerWorker.dll");
+        Check(File.Exists(workerPath), "The .NET 10 compiler worker is missing.");
+        string source = Path.Combine(directory, "WorkerVersionReturn.pas");
+        HiddenRestoreDirectories.Add(new PackageRestoreService().GetConfiguration(new PackageRestoreRequest
+        {
+            ProgramFilePath = source, Packages = Array.Empty<PackageRequirement>()
+        }).RestoreDirectory);
+        string output = Directory.CreateDirectory(Path.Combine(directory, "worker-version-return")).FullName;
+        var start = new System.Diagnostics.ProcessStartInfo("dotnet")
+        {
+            WorkingDirectory = runtime, UseShellExecute = false, CreateNoWindow = true,
+            RedirectStandardInput = true, RedirectStandardOutput = true, RedirectStandardError = true
+        };
+        start.ArgumentList.Add(workerPath);
+        start.Environment["NUGET_PACKAGES"] = cache;
+        using var worker = System.Diagnostics.Process.Start(start)!;
+        var stderr = worker.StandardError.ReadToEndAsync();
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        try
+        {
+            foreach (string version in new[] { "1.0.0", "1.1.0", "9.9.9", "1.0.0", "1.1.0", "1.1.0" })
+            {
+                string text = "{$package " + RootId + " " + version + "}\nbegin Println(NuGetRestoreFixture.Root.Value); end.";
+                string payload = System.Text.Json.JsonSerializer.Serialize(new {
+                    fileName = source, outputDirectory = output, language = "en",
+                    sourceFiles = new[] { new { fileName = source, text } }
+                });
+                await worker.StandardInput.WriteLineAsync(
+                    System.Text.Json.JsonSerializer.Serialize(new { command = "compile", payload }));
+                await worker.StandardInput.FlushAsync(timeout.Token);
+                while (true)
+                {
+                    string? line = await worker.StandardOutput.ReadLineAsync(timeout.Token);
+                    Check(line != null, "Compiler worker exited during version switch.");
+                    using var response = System.Text.Json.JsonDocument.Parse(line!);
+                    if (response.RootElement.GetProperty("response").GetString() is not string result)
+                    {
+                        Check(response.RootElement.GetProperty("error").ValueKind == System.Text.Json.JsonValueKind.Null, line!);
+                        continue;
+                    }
+                    if (version == "9.9.9")
+                    {
+                        // Worker diagnostics encode message text independently of the protocol delimiters.
+                        bool missingVersion = result.Split('\n').Where(l => l.StartsWith("DIAGNOSTIC\t", StringComparison.Ordinal))
+                            .Select(l => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(l.TrimEnd('\r').Split('\t')[4])))
+                            .Any(message => message.Contains("NU1102", StringComparison.Ordinal));
+                        Check(result.StartsWith("ERROR", StringComparison.Ordinal) && missingVersion, result);
+                    }
+                    else
+                    {
+                        Check(result.StartsWith("OK", StringComparison.Ordinal), "Worker version " + version + ": " + result);
+                        var run = await RunDotnet(Path.Combine(output, "WorkerVersionReturn.exe"), output);
+                        Check(run.ExitCode == 0 && run.Output.Trim() == (version == "1.0.0" ? "43" : "44"),
+                            "Worker compiled against the wrong package version: " + run.Output + run.Error);
+                    }
+                    break;
+                }
+            }
+            worker.StandardInput.Close();
+            await worker.WaitForExitAsync(timeout.Token);
+            Check(worker.ExitCode == 0, await stderr);
+            Console.WriteLine("PASS: one worker recovers from a failed package restore and switches versions without restarting");
+        }
+        finally
+        {
+            if (!worker.HasExited)
+                worker.Kill(entireProcessTree: true);
+        }
     }
 }
