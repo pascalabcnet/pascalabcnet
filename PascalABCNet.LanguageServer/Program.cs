@@ -61,10 +61,7 @@ internal static class Program
         out List<string> pluginDirectories)
     {
         documentationLanguageIso = "en";
-        pluginDirectories = new List<string>
-        {
-            Path.Combine(AppContext.BaseDirectory, "plugins")
-        };
+        pluginDirectories = new List<string>();
 
         for (var index = 0; index < args.Length; index++)
         {

@@ -32,15 +32,11 @@ Protocol surface used by the feature:
 
 Plugin directories are scanned at startup:
 
-1. `<server directory>/plugins` (next to `PascalABCNet.LanguageServer.dll`);
-2. every `--plugins-dir <path>` command line argument (repeatable).
+Every `--plugins-dir <path>` command line argument (repeatable).
+If there are no --plugins-dir arguments, no plugins will be loaded.
 
 A plugin is installed by dropping its assemblies (`*LspPlugin.dll` and its private
-dependencies) into one of these directories. In VS Code that means
-`<extension>/bin/net10/plugins/`; the same directory convention works for the
-.NET 10 IDE host. Note: the VSIX build scripts verify the runtime kit against
-its SHA-256 manifest, so install plugins after building/packaging (or keep them
-outside the kit and pass `--plugins-dir`).
+dependencies) into one of these directories.
 
 Plugin private dependencies are resolved next to the plugin assembly; the
 contract assembly always binds to the server's own copy so interface identity
