@@ -360,6 +360,7 @@ internal static partial class Program
             if (args.Length > 0 && args[0] == "--nuget-messages")
             {
                 CheckNuGetMessageDisplay();
+                CheckUnpositionedRestoreDiagnostic();
                 return 0;
             }
             if (args.Length > 0 && args[0] == "--publish-localization")
@@ -737,6 +738,19 @@ internal static partial class Program
             Check(error.Frames.Exists(frame => string.Equals(frame.FileName, source, StringComparison.OrdinalIgnoreCase) && frame.Line == 5),
                 "runtime exception carries the throw location for IDE highlighting");
         }
+    }
+
+    private static void CheckUnpositionedRestoreDiagnostic()
+    {
+        string source = Path.Combine(Path.GetTempPath(), "NuGetDiagnostic.pas");
+        var response = new Net10CompileResponse { success = false, diagnostics = new List<Net10Diagnostic>
+        {
+            new Net10Diagnostic { severity = "error", fileName = source, line = 0,
+                column = 0, message = "unpositioned NuGet error" }
+        } };
+        var error = Net10Diagnostics.Create(response, source)[0];
+        Check(!(error is PascalABCCompiler.Errors.LocatedError) && error.Message == "unpositioned NuGet error",
+            "IDE does not convert an unpositioned restore error into a first-line error");
     }
 
     private static async Task CheckWarnings(Net10ControllerClient compiler, string root)

@@ -31,7 +31,10 @@ public sealed class PackageRestoreRequiredException : Exception
     public PackageRestoreRequiredException() : base("Packages must be restored explicitly.") { }
 }
 
-public sealed record PackageDiagnostic(string Severity, string Code, string Message);
+public sealed record PackageDiagnostic(string Severity, string Code, string Message)
+{
+    public string? PackageId { get; init; }
+}
 
 public sealed record PackageSourceInfo(string Name, string Source);
 

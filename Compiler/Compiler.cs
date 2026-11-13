@@ -1038,20 +1038,38 @@ namespace PascalABCCompiler
             }
             catch (PackageRestoreException error)
             {
-                throw new PackageRestoreFailed(FormatPackageRestoreFailure(error), unitFileName,
-                    GetSourceContext(firstAddition.Origin));
+                var origin = FindPackageRestoreErrorOrigin(error, requirements);
+                throw new PackageRestoreFailed(FormatPackageRestoreFailure(error),
+                    origin?.source_file ?? unitFileName, origin == null ? null : GetSourceContext(origin));
             }
             catch (ArgumentException error)
             {
                 throw new PackageRestoreFailed(string.Format(StringResources.Get("COMPILATIONERROR_PACKAGE_RESTORE_FAILED{0}"),
-                    error.Message), unitFileName,
-                    GetSourceContext(firstAddition.Origin));
+                    error.Message), unitFileName, null);
             }
             catch (FileLoadException error)
             {
-                throw new PackageRestoreFailed(error.Message, unitFileName,
-                    GetSourceContext(firstAddition.Origin));
+                throw new PackageRestoreFailed(error.Message, unitFileName, null);
             }
+        }
+
+        private static compiler_directive FindPackageRestoreErrorOrigin(PackageRestoreException error,
+            Dictionary<string, PackageRequirement> requirements)
+        {
+            compiler_directive origin = null;
+            foreach (var diagnostic in error.Diagnostics)
+            {
+                if (!string.Equals(diagnostic.Severity, "Error", StringComparison.OrdinalIgnoreCase))
+                    continue;
+                // A feed failure is not an error in a package declaration, even
+                // when NuGet also reports a package missing from that feed.
+                if (diagnostic.Code == "NU1301" || string.IsNullOrEmpty(diagnostic.PackageId) ||
+                    !requirements.TryGetValue(diagnostic.PackageId, out var requirement) ||
+                    (origin != null && origin != requirement.Origin))
+                    return null;
+                origin = requirement.Origin;
+            }
+            return origin;
         }
 
         private static string FormatPackageRestoreFailure(PackageRestoreException error)

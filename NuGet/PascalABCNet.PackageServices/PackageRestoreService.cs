@@ -250,7 +250,10 @@ public sealed partial class PackageRestoreService
             }
             if (message.Level is LogLevel.Warning or LogLevel.Error)
                 Messages.Enqueue(new PackageDiagnostic(message.Level.ToString(),
-                    message.Code.ToString(), message.Message));
+                    message.Code.ToString(), message.Message)
+                {
+                    PackageId = (message as IRestoreLogMessage)?.LibraryId
+                });
         }
 
         public override Task LogAsync(ILogMessage message)

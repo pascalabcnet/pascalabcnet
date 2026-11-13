@@ -9,6 +9,7 @@ internal static partial class Program
         string directory = Path.Combine(work, "restore-diagnostics");
         string feed = Path.Combine(directory, "feed");
         Directory.CreateDirectory(feed);
+        CreatePackage(feed, DependencyId, "1.0.0", "TestDependency", false, false);
         CreatePackage(feed, RootId, "1.0.0", "TestRoot", true, true);
         var service = new PackageRestoreService();
         var request = new PackageRestoreRequest
@@ -32,7 +33,7 @@ internal static partial class Program
         });
         var missingVersion = await Failure(request with
         {
-            Packages = new[] { new PackageRequirement(RootId, "9.9.9") }
+            Packages = new[] { new PackageRequirement(DependencyId, "1.0.0"), new PackageRequirement(RootId, "9.9.9") }
         });
         var unavailableSource = await Failure(request with
         {
@@ -50,6 +51,10 @@ internal static partial class Program
         Check(missingPackage.Diagnostics.Any(d => d.Code == "NU1101"), "Missing package did not yield NU1101.");
         Check(missingVersion.Diagnostics.Any(d => d.Code == "NU1102"), "Missing version did not yield NU1102.");
         Check(unavailableSource.Diagnostics.Any(d => d.Code == "NU1301"), "Unavailable source did not yield NU1301.");
+        Check(missingPackage.Diagnostics.Any(d => d.Code == "NU1101" && d.PackageId == "PascalABC.Missing.DiagnosticsTest"),
+            "Missing package diagnostic lost its package ID.");
+        Check(missingVersion.Diagnostics.Any(d => d.Code == "NU1102" && d.PackageId == RootId),
+            "Missing version diagnostic lost its package ID.");
 
         var format = typeof(Compiler).GetMethod("FormatPackageRestoreFailure",
             BindingFlags.NonPublic | BindingFlags.Static)!;
@@ -82,5 +87,28 @@ internal static partial class Program
                 "Unrecognized NuGet diagnostics lost the generic fallback.");
         }
         Console.WriteLine("PASS: missing package, unavailable version and source diagnostics in Russian and English.");
+
+        string compilerDirectory = Environment.GetEnvironmentVariable("PABC_NUGET_TEST_COMPILER_DIR")
+            ?? Path.Combine(repository, "bin-net10");
+        string compiler = Path.Combine(compilerDirectory, "pabcnetcclear.exe");
+        string source = Path.Combine(directory, "Main.pas");
+        HiddenRestoreDirectories.Add(service.GetConfiguration(request with
+        {
+            ProgramFilePath = source, RestoreDirectory = null
+        }).RestoreDirectory);
+        string output = Directory.CreateDirectory(Path.Combine(directory, "output")).FullName;
+        string configuration = Path.Combine(directory, "NuGet.Config");
+        WriteConfiguration(configuration, feed, request.PackagesDirectory);
+        File.WriteAllText(source, "{$package " + DependencyId + " 1.0.0}\n{$package " + RootId + " 9.9.9}\nbegin end.\n");
+        var positioned = await RunCompiler(compiler, source, request.PackagesDirectory!, output);
+        Check(positioned.ExitCode != 0 && positioned.Output.Contains("[2,") && positioned.Output.Contains("NU1102") &&
+            !positioned.Output.Contains("[1,"), "Missing version must point to the second directive: " + positioned.Output + positioned.Error);
+
+        WriteConfiguration(configuration, Path.Combine(directory, "unavailable-feed"), request.PackagesDirectory);
+        var unpositioned = await RunCompiler(compiler, source, request.PackagesDirectory!, output);
+        Check(unpositioned.ExitCode != 0 && unpositioned.Output.Contains("NU1301") &&
+            !unpositioned.Output.Contains("[1,") && !unpositioned.Output.Contains("[2,"),
+            "An unavailable feed must not point to a package directive: " + unpositioned.Output + unpositioned.Error);
+        Console.WriteLine("PASS: restore errors point to the failing directive, or have no location for an unavailable feed.");
     }
 }

@@ -22,6 +22,8 @@ namespace VisualPascalABCPlugins
                     int line = Math.Max(1, diagnostic.line), column = Math.Max(1, diagnostic.column);
                     if (string.Equals(diagnostic.severity, "warning", StringComparison.OrdinalIgnoreCase))
                         warnings.Add(new CommonWarning(diagnostic.message ?? "Предупреждение .NET 10", fileName, line, column));
+                    else if (diagnostic.line <= 0)
+                        errors.Add(new Error(diagnostic.message ?? "Ошибка компиляции .NET 10"));
                     else
                         errors.Add(new CommonCompilerError(diagnostic.message ?? "Ошибка компиляции .NET 10", fileName, line, column));
                 }

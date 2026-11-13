@@ -475,8 +475,9 @@ internal static class Program
         var locatedError = error as LocatedError;
         var location = locatedError?.SourceLocation;
         var fileName = location?.FileName ?? locatedError?.FileName ?? defaultFileName;
-        var line = location?.BeginPosition.Line ?? 1;
-        var column = location?.BeginPosition.Column ?? 1;
+        int fallbackPosition = error is PackageRestoreFailed ? 0 : 1;
+        var line = location?.BeginPosition.Line ?? fallbackPosition;
+        var column = location?.BeginPosition.Column ?? fallbackPosition;
         // The IDE displays Message verbatim and receives source coordinates in
         // separate protocol fields, just as it does for legacy compiler errors.
         var message = error is PascalABCCompiler.Errors.Error compilerError
