@@ -988,10 +988,16 @@ namespace PascalABCCompiler
                             string.Equals(p.Id, dependency.Id, StringComparison.OrdinalIgnoreCase));
                         if (selected != null && !NuGet.Versioning.VersionRange.Parse(dependency.VersionRange)
                                 .Satisfies(NuGet.Versioning.NuGetVersion.Parse(selected.Version)))
+                        {
+                            // Prefer the directive that pins the incompatible version.
+                            requirements.TryGetValue(dependency.Id, out var declaredDependency);
+                            requirements.TryGetValue(package.Id, out var declaringPackage);
+                            var origin = declaredDependency?.Origin ?? declaringPackage?.Origin;
                             throw new PackageRestoreFailed(
                                 string.Format(StringResources.Get("COMPILATIONERROR_PACKAGE_DEPENDENCY_RANGE_UNSATISFIED{0}{1}{2}{3}"),
-                                    package.Id, dependency.Id, dependency.VersionRange, selected.Version), unitFileName,
-                                GetSourceContext(firstAddition.Origin));
+                                    package.Id, dependency.Id, dependency.VersionRange, selected.Version),
+                                origin?.source_file ?? unitFileName, origin == null ? null : GetSourceContext(origin));
+                        }
                     }
                 var references = PreparePackageSemanticReferences(graph, unitFileName,
                     firstAddition.Origin, out var assemblyPaths);
