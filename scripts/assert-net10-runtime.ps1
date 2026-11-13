@@ -39,7 +39,7 @@ foreach ($entry in @('pabcnetc', 'pabcnetcclear', 'PABCCompilerController', 'PAB
         if (-not $listed.ContainsKey($entry + $suffix)) { throw "Missing runtime entry: $entry$suffix" }
     }
 }
-foreach ($library in @('Compiler.dll', 'TreeConverter.dll', 'NETGenerator.dll', 'CodeCompletion.dll', 'PascalABCNet.LanguageServices.dll')) {
+foreach ($library in @('Compiler.dll', 'TreeConverter.dll', 'NETGenerator.dll', 'CodeCompletion.dll', 'PascalABCNet.LanguageServices.dll', 'PascalABCNet.LanguageServer.PluginApi.dll')) {
     if (-not $listed.ContainsKey($library)) { throw "Missing runtime library: $library" }
 }
 if ($RequireCompiledUnits) {
