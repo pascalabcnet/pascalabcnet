@@ -261,8 +261,10 @@ namespace VisualPascalABC
 		public QuickClassBrowserPanel(CodeFileDocumentTextEditorControl textAreaControl)
 		{
 			InitializeComponent();
-            this.membersComboBox.DropDownHeight = Convert.ToInt32(this.membersComboBox.DropDownHeight * ScreenScale.Calc());
-            this.classComboBox.DropDownHeight = Convert.ToInt32(this.classComboBox.DropDownHeight * ScreenScale.Calc());
+            // Mono sizes short drop-down lists using ItemHeight for every row.
+            int rowHeight = Math.Max(font.Height, CodeCompletionProvider.ImagesProvider.ImageList.ImageSize.Height);
+            this.membersComboBox.ItemHeight = rowHeight;
+            this.classComboBox.ItemHeight = rowHeight;
 
             this.membersComboBox.MaxDropDownItems = 20;
 			
@@ -858,8 +860,7 @@ namespace VisualPascalABC
             // membersComboBox
             // 
             this.membersComboBox.Dock = System.Windows.Forms.DockStyle.Right;
-            this.membersComboBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-            this.membersComboBox.DropDownHeight = 250;
+            this.membersComboBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.membersComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.membersComboBox.Font = new System.Drawing.Font("Arial", 9F);
             this.membersComboBox.IntegralHeight = false;
@@ -870,13 +871,11 @@ namespace VisualPascalABC
             this.membersComboBox.TabIndex = 1;
             this.membersComboBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ComboBoxDrawItem);
             this.membersComboBox.DropDown += new System.EventHandler(this.ComboBoxDropDown);
-            this.membersComboBox.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.MeasureComboBoxItem);
             this.membersComboBox.SelectedIndexChanged += new System.EventHandler(this.ComboBoxSelectedIndexChanged);
             // 
             // classComboBox
             // 
-            this.classComboBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-            this.classComboBox.DropDownHeight = 150;
+            this.classComboBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.classComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.classComboBox.Font = new System.Drawing.Font("Arial", 9F);
             this.classComboBox.IntegralHeight = false;
@@ -886,7 +885,6 @@ namespace VisualPascalABC
             this.classComboBox.Size = new System.Drawing.Size(189, 29);
             this.classComboBox.TabIndex = 0;
             this.classComboBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ComboBoxDrawItem);
-            this.classComboBox.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.MeasureComboBoxItem);
             this.classComboBox.SelectedIndexChanged += new System.EventHandler(this.ComboBoxSelectedIndexChanged);
             // 
             // QuickClassBrowserPanel
@@ -1001,16 +999,5 @@ namespace VisualPascalABC
             membersComboBox.Size = comboBoxSize;
 		}
 		
-		void MeasureComboBoxItem(object sender, System.Windows.Forms.MeasureItemEventArgs e)
-		{
-			ComboBox comboBox = (ComboBox)sender;
-			if (e.Index >= 0) {
-				ComboBoxItem item = (ComboBoxItem)comboBox.Items[e.Index];
-				SizeF size = e.Graphics.MeasureString(item.ToString(), font);
-				e.ItemWidth  = (int)size.Width;
-				
-				e.ItemHeight = (int)Math.Max(size.Height, CodeCompletionProvider.ImagesProvider.ImageList.ImageSize.Height);
-			}
-		}
 	}
 }
