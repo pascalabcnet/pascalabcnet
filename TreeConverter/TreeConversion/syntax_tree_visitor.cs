@@ -3252,6 +3252,40 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             weak_node_test_and_visit(_interface_node.interface_definitions);
+            if (_interface_node.interface_definitions == null)
+                return;
+
+            foreach (var reexport in _interface_node.interface_definitions.defs.OfType<SyntaxTree.unit_reexport>())
+            {
+                string unitName = reexport.source_unit.name;
+                string sourceName = reexport.source_name.name;
+                var publicIdent = reexport.export_name ?? reexport.source_name;
+
+                // Only a Pascal unit explicitly named in this interface uses can be re-exported.
+                var explicitlyUsed = _interface_node.uses_modules?.units.Any(u =>
+                    u.name.idents.Count == 1 &&
+                    string.Equals(u.name.idents[0].name, unitName, StringComparison.OrdinalIgnoreCase)) == true;
+                var sourceUnit = explicitlyUsed ? ReferencedUnits.OfType<common_unit_node>().FirstOrDefault(u =>
+                    string.Equals(u.unit_name, unitName, StringComparison.OrdinalIgnoreCase)) : null;
+                if (sourceUnit == null || sourceUnit == _compiled_unit)
+                {
+                    AddError(get_location(reexport.source_unit), "REEXPORT_UNIT_MUST_BE_IN_INTERFACE_USES{0}", unitName);
+                    continue;
+                }
+                var binding = new UnitReexport(sourceUnit, sourceName, publicIdent.name);
+                if (binding.ConflictsWith(_compiled_unit))
+                {
+                    AddError(get_location(publicIdent), "REEXPORT_NAME_ALREADY_DECLARED{0}", publicIdent.name);
+                    continue;
+                }
+                if (!binding.TryPublish(_compiled_unit))
+                    AddError(get_location(reexport.source_name), "REEXPORT_REQUIRES_PUBLIC_SYMBOL{0}{1}", unitName, sourceName);
+            }
+        }
+
+        public override void visit(SyntaxTree.unit_reexport node)
+        {
+            // Published after ordinary interface declarations, so conflicts are reported at the export.
         }
 
 
@@ -6319,42 +6353,24 @@ namespace PascalABCCompiler.TreeConverter
                             case general_node_type.namespace_node:
                                 {
                                     namespace_node nsn = (namespace_node)sn;
-                                    if (templ_args_count != 0)
+                                    if (id_right is SyntaxTree.operator_name_ident oni_right)
                                     {
-                                        //Ищем generics
-                                        sil = context.find(id_right.name + StringConstants.generic_params_infix + templ_args_count.ToString());
-                                        if (sil != null)
-                                        {
-                                            sil = new List<SymbolInfo> { new SymbolInfo(get_generic_instance(sil?.FirstOrDefault(), iwt.template_params.params_list)) };
-                                            iwt = null;
-                                        }
+                                        sil = nsn.find(name_reflector.get_name(oni_right.operator_type));
                                     }
-                                    if (sil == null)
+                                    else
                                     {
-                                        SyntaxTree.operator_name_ident oni_right = id_right as SyntaxTree.operator_name_ident;
-                                        if (oni_right != null)
+                                        if (templ_args_count != 0)
                                         {
-                                            sil = nsn.find(name_reflector.get_name(oni_right.operator_type));
-                                        }
-                                        else
-                                        {
-                                            sil = nsn.findOnlyInNamespace(id_right.name);
-                                            if (templ_args_count != 0)
+                                            sil = nsn.findOnlyInNamespace(id_right.name + StringConstants.generic_params_infix + templ_args_count.ToString());
+                                            if (sil != null)
                                             {
-                                                sil = nsn.find(id_right.name + StringConstants.generic_params_infix + templ_args_count.ToString());
-                                                if (sil != null)
-                                                {
-                                                    sil = new List<SymbolInfo> { new SymbolInfo(get_generic_instance(sil?.FirstOrDefault(), iwt.template_params.params_list)) };
-                                                    iwt = null;
-                                                }
-                                                /*SymbolInfo conv = ConvertTypeToInstance(sil?.FirstOrDefault(), iwt.template_params.params_list, get_location(id_right));
-                                                if (conv != null)
-                                                {
-                                                    sil = new List<SymbolInfo> { conv };
-                                                    iwt = null;
-                                                }*/
+                                                sil = new List<SymbolInfo> { new SymbolInfo(get_generic_instance(sil.FirstOrDefault(), iwt.template_params.params_list)) };
+                                                iwt = null;
                                             }
                                         }
+                                        // Generic functions use the ordinary name. The overload resolver applies their explicit type arguments.
+                                        if (sil == null)
+                                            sil = nsn.findOnlyInNamespace(id_right.name);
                                     }
                                     id = id_right;
                                     break;

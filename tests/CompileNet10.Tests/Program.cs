@@ -137,6 +137,43 @@ internal static partial class Program
         }
     }
 
+    private static void CheckFormattingAvailability()
+    {
+        var registration = System.Reflection.Assembly.Load("PascalABCLanguageInfo")
+            .GetType("Languages.Pascal.PascalLanguageRegistration", true);
+        registration.GetMethod("RegisterPascalLanguage").Invoke(null, null);
+        var completion = System.Reflection.Assembly.Load("CodeCompletion")
+            .GetType("CodeCompletion.CodeCompletionController", true);
+        var suspended = completion.GetField("LegacyAnalysisSuspended");
+        var currentLanguage = completion.GetField("currentLanguage",
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+        object previousSuspension = suspended.GetValue(null), previousLanguage = currentLanguage.GetValue(null);
+        try
+        {
+            completion.GetMethod("SetLanguage").Invoke(null, new object[] { "Program.pas" });
+            foreach (bool modern in new[] { false, true, false })
+            {
+                suspended.SetValue(null, modern);
+                Check((bool)completion.GetMethod("IntellisenseAvailable").Invoke(null, null) == !modern,
+                    "switch really toggles legacy IntelliSense: " + modern);
+                Check(VisualPascalABC.CodeFormattingAction.IsAvailable("Program.pas"),
+                    "formatting remains available on the same Pascal tab: " + modern);
+                Check(!VisualPascalABC.CodeFormattingAction.IsAvailable("notes.txt") &&
+                    !VisualPascalABC.CodeFormattingAction.IsAvailable(null),
+                    "formatting stays unavailable without a Pascal document: " + modern);
+            }
+
+            completion.GetMethod("SetLanguage").Invoke(null, new object[] { "notes.txt" });
+            Check(VisualPascalABC.CodeFormattingAction.IsAvailable("Another.PAS"),
+                "formatting picks the document's parser, not the cached IntelliSense language");
+        }
+        finally
+        {
+            suspended.SetValue(null, previousSuspension);
+            currentLanguage.SetValue(null, previousLanguage);
+        }
+    }
+
     [STAThread]
     private static int Main(string[] args)
     {
@@ -304,6 +341,11 @@ internal static partial class Program
                 await CheckRedirectedRuntimeErrors(Path.GetFullPath(args[1]));
                 return 0;
             }
+            if (args.Length == 2 && args[0] == "--standalone-launch")
+            {
+                await CheckStandaloneLaunch(Path.GetFullPath(args[1]));
+                return 0;
+            }
             if (args.Length == 2 && args[0] == "--runtime-location")
             {
                 System.Threading.SynchronizationContext.SetSynchronizationContext(null);
@@ -350,6 +392,8 @@ internal static partial class Program
             { CheckNavigationCommands(); return 0; }
             if (args.Length > 0 && args[0] == "--platform-ui")
             { CheckPlatformUI(); return 0; }
+            if (args.Length > 0 && args[0] == "--formatting-policy")
+            { CheckFormattingAvailability(); return 0; }
             CheckRestoreDeadlines();
             CheckRestoreStatus();
             CheckManualPackageRequests();
@@ -406,6 +450,7 @@ internal static partial class Program
             CheckDocumentEvents();
             CheckParserRename();
             CheckAnalysisSuspension();
+            CheckFormattingAvailability();
             CheckEditorKeyDispatch();
             CheckEditorLoadingAndCaret();
             // Keep subsequent WinForms checks on the STA test thread; there is no UI message pump here.
@@ -539,6 +584,7 @@ internal static partial class Program
             Directory.CreateDirectory(root);
             Console.WriteLine("Fixtures: " + root);
             await CheckRedirectedRuntimeErrors(Path.GetFullPath(args[0]));
+            await CheckStandaloneLaunch(Path.GetFullPath(args[0]));
             await CheckPortableHost(Path.GetFullPath(args[0]), root);
             using (var compiler = new Net10ControllerClient(args[0], "dotnet"))
             {

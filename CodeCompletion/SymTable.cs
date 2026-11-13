@@ -1361,6 +1361,51 @@ namespace CodeCompletion
             }
         }
 
+        internal void AddReexport(InterfaceUnitScope source, string sourceName, string publicName)
+        {
+            if (source == this || FindNameOnlyInType(publicName) != null)
+                return;
+
+            var group = source.FindOverloadNamesOnlyInType(sourceName);
+            if (group.Count != 0 && group.All(s => s is TypeScope))
+            {
+                foreach (TypeScope type in group)
+                {
+                    var info = new SymInfo(type.si) { name = publicName };
+                    var alias = new TypeSynonim(info, type, type.generic_params)
+                    {
+                        loc = type.loc, head_loc = type.head_loc, body_loc = type.body_loc,
+                        declaringUnit = type.declaringUnit, topScope = type.topScope
+                    };
+                    AddName(publicName, alias);
+                }
+                return;
+            }
+            if (group.Count == 1 && group[0] is ElementScope element &&
+                (element.ElemKind == SymbolKind.Constant || element.ElemKind == SymbolKind.Variable))
+            {
+                var alias = (ElementScope)element.CopyWithNewSymInfo();
+                AddName(publicName, alias);
+                alias.MakeDescription();
+                return;
+            }
+            if (group.Any(s => !(s is ProcScope procedure) || procedure.is_extension))
+                return;
+
+            // The original overload chain and the original symbol names belong to the source unit.
+            ProcScope previous = null;
+            foreach (ProcScope procedure in group)
+            {
+                var alias = (ProcScope)procedure.CopyWithNewSymInfo();
+                alias.nextProc = null;
+                AddName(publicName, alias);
+                alias.Complete();
+                if (previous != null)
+                    previous.nextProc = alias;
+                previous = alias;
+            }
+        }
+
         public override SymInfo[] GetNamesAsInObject(ExpressionVisitor ev)
         {
             SymInfo[] names = base.GetNamesAsInObject(ev);
@@ -3828,8 +3873,8 @@ namespace CodeCompletion
                 ? compiledElementType.CompiledType.MakeArrayType()
                 : compiledElementType.CompiledType.MakeArrayType(Rank);
 
-            return PascalABCCompiler.NetHelper.NetHelper.GetExtensionMethods(arrayType)
-                .OfType<MethodInfo>()
+            return ExtensionMethodApplicability.Filter(TypeTable.get_compiled_type(arrayType),
+                    PascalABCCompiler.NetHelper.NetHelper.GetExtensionMethods(arrayType))
                 .Where(method => name == null ||
                     string.Equals(method.Name, name, StringComparison.OrdinalIgnoreCase))
                 .Select(method => new CompiledMethodScope(
@@ -6767,7 +6812,7 @@ namespace CodeCompletion
             List<MemberInfo> members = new List<MemberInfo>();
             members.AddRange(mis);
             IEnumerable<MemberInfo> en = PascalABCCompiler.NetHelper.NetHelper.GetExtensionMethods(ctn);
-            members.AddRange(en);
+            members.AddRange(ExtensionMethodApplicability.Filter(this, en));
             mis = members.ToArray();
             if (ctn.IsInterface)
             {

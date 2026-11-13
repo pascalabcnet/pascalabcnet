@@ -725,10 +725,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						left_logical_bracket = (token_info)value;
+						this.left_logical_bracket = (token_info)value;
 						break;
 					case 1:
-						right_logical_bracket = (token_info)value;
+						this.right_logical_bracket = (token_info)value;
 						break;
 				}
 				Int32 index_counter=ind - 2;
@@ -1099,10 +1099,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						to = (addressed_value)value;
+						this.to = (addressed_value)value;
 						break;
 					case 1:
-						from = (expression)value;
+						this.from = (expression)value;
 						break;
 				}
 			}
@@ -1308,10 +1308,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						left = (expression)value;
+						this.left = (expression)value;
 						break;
 					case 1:
-						right = (expression)value;
+						this.right = (expression)value;
 						break;
 				}
 			}
@@ -1487,7 +1487,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						subnode = (expression)value;
+						this.subnode = (expression)value;
 						break;
 				}
 			}
@@ -2177,10 +2177,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						subprogram_code = (statement_list)value;
+						this.subprogram_code = (statement_list)value;
 						break;
 					case 1:
-						subprogram_defs = (declarations)value;
+						this.subprogram_defs = (declarations)value;
 						break;
 				}
 			}
@@ -2437,7 +2437,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 				}
 			}
@@ -2575,7 +2575,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						dereferencing_value = (addressed_value)value;
+						this.dereferencing_value = (addressed_value)value;
 						break;
 				}
 			}
@@ -2937,7 +2937,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 				}
 				Int32 index_counter=ind - 1;
@@ -3856,13 +3856,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						vars = (ident_list)value;
+						this.vars = (ident_list)value;
 						break;
 					case 1:
-						vars_type = (type_definition)value;
+						this.vars_type = (type_definition)value;
 						break;
 					case 2:
-						inital_value = (expression)value;
+						this.inital_value = (expression)value;
 						break;
 				}
 			}
@@ -4011,7 +4011,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attributes = (attribute_list)value;
+						this.attributes = (attribute_list)value;
 						break;
 				}
 			}
@@ -4806,7 +4806,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						prog_name = (ident)value;
+						this.prog_name = (ident)value;
 						break;
 				}
 			}
@@ -5423,7 +5423,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						dereferencing_value = (addressed_value)value;
+						this.dereferencing_value = (addressed_value)value;
 						break;
 				}
 			}
@@ -5611,10 +5611,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						dereferencing_value = (addressed_value)value;
+						this.dereferencing_value = (addressed_value)value;
 						break;
 					case 1:
-						indexes = (expression_list)value;
+						this.indexes = (expression_list)value;
 						break;
 				}
 			}
@@ -5959,22 +5959,22 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						loop_variable = (ident)value;
+						this.loop_variable = (ident)value;
 						break;
 					case 1:
-						initial_value = (expression)value;
+						this.initial_value = (expression)value;
 						break;
 					case 2:
-						finish_value = (expression)value;
+						this.finish_value = (expression)value;
 						break;
 					case 3:
-						statements = (statement)value;
+						this.statements = (statement)value;
 						break;
 					case 4:
-						increment_value = (expression)value;
+						this.increment_value = (expression)value;
 						break;
 					case 5:
-						type_name = (type_definition)value;
+						this.type_name = (type_definition)value;
 						break;
 				}
 			}
@@ -6161,10 +6161,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						statements = (statement)value;
+						this.statements = (statement)value;
 						break;
 					case 1:
-						expr = (expression)value;
+						this.expr = (expression)value;
 						break;
 				}
 			}
@@ -6370,10 +6370,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						expr = (expression)value;
+						this.expr = (expression)value;
 						break;
 					case 1:
-						statements = (statement)value;
+						this.statements = (statement)value;
 						break;
 				}
 			}
@@ -6590,13 +6590,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						condition = (expression)value;
+						this.condition = (expression)value;
 						break;
 					case 1:
-						then_body = (statement)value;
+						this.then_body = (statement)value;
 						break;
 					case 2:
-						else_body = (statement)value;
+						this.else_body = (statement)value;
 						break;
 				}
 			}
@@ -6784,10 +6784,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						pointed_to = (type_definition)value;
+						this.pointed_to = (type_definition)value;
 						break;
 				}
 			}
@@ -7007,13 +7007,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						left = (expression)value;
+						this.left = (expression)value;
 						break;
 					case 2:
-						right = (expression)value;
+						this.right = (expression)value;
 						break;
 				}
 			}
@@ -7375,7 +7375,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 				}
 				Int32 index_counter=ind - 1;
@@ -7604,13 +7604,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						indexers = (indexers_types)value;
+						this.indexers = (indexers_types)value;
 						break;
 					case 2:
-						elements_type = (type_definition)value;
+						this.elements_type = (type_definition)value;
 						break;
 				}
 			}
@@ -7767,7 +7767,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						labels = (ident_list)value;
+						this.labels = (ident_list)value;
 						break;
 				}
 			}
@@ -8162,13 +8162,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						idents = (ident_list)value;
+						this.idents = (ident_list)value;
 						break;
 					case 1:
-						vars_type = (type_definition)value;
+						this.vars_type = (type_definition)value;
 						break;
 					case 2:
-						inital_value = (expression)value;
+						this.inital_value = (expression)value;
 						break;
 				}
 			}
@@ -9172,22 +9172,22 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						parameters = (formal_parameters)value;
+						this.parameters = (formal_parameters)value;
 						break;
 					case 2:
-						proc_attributes = (procedure_attributes_list)value;
+						this.proc_attributes = (procedure_attributes_list)value;
 						break;
 					case 3:
-						name = (method_name)value;
+						this.name = (method_name)value;
 						break;
 					case 4:
-						template_args = (ident_list)value;
+						this.template_args = (ident_list)value;
 						break;
 					case 5:
-						where_defs = (where_definition_list)value;
+						this.where_defs = (where_definition_list)value;
 						break;
 				}
 			}
@@ -9441,25 +9441,25 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						parameters = (formal_parameters)value;
+						this.parameters = (formal_parameters)value;
 						break;
 					case 2:
-						proc_attributes = (procedure_attributes_list)value;
+						this.proc_attributes = (procedure_attributes_list)value;
 						break;
 					case 3:
-						name = (method_name)value;
+						this.name = (method_name)value;
 						break;
 					case 4:
-						template_args = (ident_list)value;
+						this.template_args = (ident_list)value;
 						break;
 					case 5:
-						where_defs = (where_definition_list)value;
+						this.where_defs = (where_definition_list)value;
 						break;
 					case 6:
-						return_type = (type_definition)value;
+						this.return_type = (type_definition)value;
 						break;
 				}
 			}
@@ -9665,10 +9665,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						proc_header = (procedure_header)value;
+						this.proc_header = (procedure_header)value;
 						break;
 					case 1:
-						proc_body = (proc_block)value;
+						this.proc_body = (proc_block)value;
 						break;
 				}
 			}
@@ -9855,10 +9855,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						type_name = (ident)value;
+						this.type_name = (ident)value;
 						break;
 					case 1:
-						type_def = (type_definition)value;
+						this.type_def = (type_definition)value;
 						break;
 				}
 			}
@@ -10339,10 +10339,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						const_name = (ident)value;
+						this.const_name = (ident)value;
 						break;
 					case 1:
-						const_value = (expression)value;
+						this.const_value = (expression)value;
 						break;
 				}
 			}
@@ -10542,13 +10542,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						const_name = (ident)value;
+						this.const_name = (ident)value;
 						break;
 					case 1:
-						const_value = (expression)value;
+						this.const_value = (expression)value;
 						break;
 					case 2:
-						const_type = (type_definition)value;
+						this.const_type = (type_definition)value;
 						break;
 				}
 			}
@@ -10735,10 +10735,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						const_name = (ident)value;
+						this.const_name = (ident)value;
 						break;
 					case 1:
-						const_value = (expression)value;
+						this.const_value = (expression)value;
 						break;
 				}
 			}
@@ -11237,7 +11237,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						idunit_name = (ident)value;
+						this.idunit_name = (ident)value;
 						break;
 				}
 			}
@@ -11386,7 +11386,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						name = (ident_list)value;
+						this.name = (ident_list)value;
 						break;
 				}
 			}
@@ -11566,10 +11566,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						name = (ident_list)value;
+						this.name = (ident_list)value;
 						break;
 					case 1:
-						in_file = (string_const)value;
+						this.in_file = (string_const)value;
 						break;
 				}
 			}
@@ -12131,16 +12131,16 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						used_units = (uses_list)value;
+						this.used_units = (uses_list)value;
 						break;
 					case 1:
-						program_definitions = (declarations)value;
+						this.program_definitions = (declarations)value;
 						break;
 					case 2:
-						program_code = (statement_list)value;
+						this.program_code = (statement_list)value;
 						break;
 					case 3:
-						using_list = (using_list)value;
+						this.using_list = (using_list)value;
 						break;
 				}
 			}
@@ -12869,22 +12869,22 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						unit_name = (unit_name)value;
+						this.unit_name = (unit_name)value;
 						break;
 					case 1:
-						interface_part = (interface_node)value;
+						this.interface_part = (interface_node)value;
 						break;
 					case 2:
-						implementation_part = (implementation_node)value;
+						this.implementation_part = (implementation_node)value;
 						break;
 					case 3:
-						initialization_part = (statement_list)value;
+						this.initialization_part = (statement_list)value;
 						break;
 					case 4:
-						finalization_part = (statement_list)value;
+						this.finalization_part = (statement_list)value;
 						break;
 					case 5:
-						attributes = (attribute_list)value;
+						this.attributes = (attribute_list)value;
 						break;
 				}
 				Int32 index_counter=ind - 6;
@@ -13197,16 +13197,16 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						program_name = (program_name)value;
+						this.program_name = (program_name)value;
 						break;
 					case 1:
-						used_units = (uses_list)value;
+						this.used_units = (uses_list)value;
 						break;
 					case 2:
-						program_block = (block)value;
+						this.program_block = (block)value;
 						break;
 					case 3:
-						using_namespaces = (using_list)value;
+						this.using_namespaces = (using_list)value;
 						break;
 				}
 				Int32 index_counter=ind - 4;
@@ -13492,7 +13492,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						address_of = (addressed_value)value;
+						this.address_of = (addressed_value)value;
 						break;
 				}
 			}
@@ -13679,10 +13679,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						conditions = (expression_list)value;
+						this.conditions = (expression_list)value;
 						break;
 					case 1:
-						exec_if_true = (statement)value;
+						this.exec_if_true = (statement)value;
 						break;
 				}
 			}
@@ -13899,13 +13899,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						param = (expression)value;
+						this.param = (expression)value;
 						break;
 					case 1:
-						conditions = (case_variants)value;
+						this.conditions = (case_variants)value;
 						break;
 					case 2:
-						else_statement = (statement)value;
+						this.else_statement = (statement)value;
 						break;
 				}
 			}
@@ -14318,13 +14318,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						class_name = (ident)value;
+						this.class_name = (ident)value;
 						break;
 					case 1:
-						meth_name = (ident)value;
+						this.meth_name = (ident)value;
 						break;
 					case 2:
-						explicit_interface_name = (ident)value;
+						this.explicit_interface_name = (ident)value;
 						break;
 				}
 				Int32 index_counter=ind - 3;
@@ -14520,10 +14520,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						left = (addressed_value)value;
+						this.left = (addressed_value)value;
 						break;
 					case 1:
-						right = (addressed_value)value;
+						this.right = (addressed_value)value;
 						break;
 				}
 			}
@@ -14780,7 +14780,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						label = (ident)value;
+						this.label = (ident)value;
 						break;
 				}
 			}
@@ -14967,10 +14967,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						label_name = (ident)value;
+						this.label_name = (ident)value;
 						break;
 					case 1:
-						to_statement = (statement)value;
+						this.to_statement = (statement)value;
 						break;
 				}
 			}
@@ -15157,10 +15157,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						what_do = (statement)value;
+						this.what_do = (statement)value;
 						break;
 					case 1:
-						do_with = (expression_list)value;
+						this.do_with = (expression_list)value;
 						break;
 				}
 			}
@@ -15348,10 +15348,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						dereferencing_value = (addressed_value)value;
+						this.dereferencing_value = (addressed_value)value;
 						break;
 					case 1:
-						parameters = (expression_list)value;
+						this.parameters = (expression_list)value;
 						break;
 				}
 			}
@@ -15508,7 +15508,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						values = (expression_list)value;
+						this.values = (expression_list)value;
 						break;
 				}
 			}
@@ -15665,7 +15665,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						elements = (expression_list)value;
+						this.elements = (expression_list)value;
 						break;
 				}
 			}
@@ -15874,13 +15874,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						accessor_name = (ident)value;
+						this.accessor_name = (ident)value;
 						break;
 					case 1:
-						pr = (procedure_definition)value;
+						this.pr = (procedure_definition)value;
 						break;
 					case 2:
-						statment_for_formatting = (statement)value;
+						this.statment_for_formatting = (statement)value;
 						break;
 				}
 			}
@@ -16089,13 +16089,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						accessor_name = (ident)value;
+						this.accessor_name = (ident)value;
 						break;
 					case 1:
-						pr = (procedure_definition)value;
+						this.pr = (procedure_definition)value;
 						break;
 					case 2:
-						expression_for_formatting = (expression)value;
+						this.expression_for_formatting = (expression)value;
 						break;
 				}
 			}
@@ -16274,10 +16274,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						read_accessor = (read_accessor_name)value;
+						this.read_accessor = (read_accessor_name)value;
 						break;
 					case 1:
-						write_accessor = (write_accessor_name)value;
+						this.write_accessor = (write_accessor_name)value;
 						break;
 				}
 			}
@@ -16671,25 +16671,25 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						property_name = (property_ident)value;
+						this.property_name = (property_ident)value;
 						break;
 					case 1:
-						property_type = (type_definition)value;
+						this.property_type = (type_definition)value;
 						break;
 					case 2:
-						index_expression = (expression)value;
+						this.index_expression = (expression)value;
 						break;
 					case 3:
-						accessors = (property_accessors)value;
+						this.accessors = (property_accessors)value;
 						break;
 					case 4:
-						array_default = (property_array_default)value;
+						this.array_default = (property_array_default)value;
 						break;
 					case 5:
-						parameter_list = (property_parameter_list)value;
+						this.parameter_list = (property_parameter_list)value;
 						break;
 					case 6:
-						initial_value = (expression)value;
+						this.initial_value = (expression)value;
 						break;
 				}
 			}
@@ -16990,31 +16990,31 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						property_name = (property_ident)value;
+						this.property_name = (property_ident)value;
 						break;
 					case 1:
-						property_type = (type_definition)value;
+						this.property_type = (type_definition)value;
 						break;
 					case 2:
-						index_expression = (expression)value;
+						this.index_expression = (expression)value;
 						break;
 					case 3:
-						accessors = (property_accessors)value;
+						this.accessors = (property_accessors)value;
 						break;
 					case 4:
-						array_default = (property_array_default)value;
+						this.array_default = (property_array_default)value;
 						break;
 					case 5:
-						parameter_list = (property_parameter_list)value;
+						this.parameter_list = (property_parameter_list)value;
 						break;
 					case 6:
-						initial_value = (expression)value;
+						this.initial_value = (expression)value;
 						break;
 					case 7:
-						property_parametres = (formal_parameters)value;
+						this.property_parametres = (formal_parameters)value;
 						break;
 					case 8:
-						is_default = (default_indexer_property_node)value;
+						this.is_default = (default_indexer_property_node)value;
 						break;
 				}
 			}
@@ -17367,7 +17367,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						access_mod = (access_modifer_node)value;
+						this.access_mod = (access_modifer_node)value;
 						break;
 				}
 				Int32 index_counter=ind - 1;
@@ -18175,19 +18175,19 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						class_parents = (named_type_reference_list)value;
+						this.class_parents = (named_type_reference_list)value;
 						break;
 					case 2:
-						body = (class_body_list)value;
+						this.body = (class_body_list)value;
 						break;
 					case 3:
-						template_args = (ident_list)value;
+						this.template_args = (ident_list)value;
 						break;
 					case 4:
-						where_section = (where_definition_list)value;
+						this.where_section = (where_definition_list)value;
 						break;
 				}
 			}
@@ -18488,10 +18488,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						unit_name = (ident)value;
+						this.unit_name = (ident)value;
 						break;
 				}
 			}
@@ -18679,10 +18679,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						of_type = (type_definition)value;
+						this.of_type = (type_definition)value;
 						break;
 				}
 			}
@@ -18869,10 +18869,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						name = (ident)value;
+						this.name = (ident)value;
 						break;
 					case 1:
-						val = (expression)value;
+						this.val = (expression)value;
 						break;
 				}
 			}
@@ -19423,13 +19423,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						parts = (record_type_parts)value;
+						this.parts = (record_type_parts)value;
 						break;
 					case 2:
-						base_type = (type_definition)value;
+						this.base_type = (type_definition)value;
 						break;
 				}
 			}
@@ -19617,10 +19617,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						enumerators = (enumerator_list)value;
+						this.enumerators = (enumerator_list)value;
 						break;
 				}
 			}
@@ -19914,7 +19914,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						excep = (expression)value;
+						this.excep = (expression)value;
 						break;
 				}
 			}
@@ -20602,13 +20602,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						num_of_symbols = (expression)value;
+						this.num_of_symbols = (expression)value;
 						break;
 					case 2:
-						name = (ident)value;
+						this.name = (ident)value;
 						break;
 				}
 			}
@@ -20787,10 +20787,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						vars = (ident_list)value;
+						this.vars = (ident_list)value;
 						break;
 					case 1:
-						vars_type = (type_definition)value;
+						this.vars_type = (type_definition)value;
 						break;
 				}
 			}
@@ -21292,10 +21292,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						case_exprs = (expression_list)value;
+						this.case_exprs = (expression_list)value;
 						break;
 					case 1:
-						parts = (record_type_parts)value;
+						this.parts = (record_type_parts)value;
 						break;
 				}
 			}
@@ -21827,13 +21827,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						var_name = (ident)value;
+						this.var_name = (ident)value;
 						break;
 					case 1:
-						var_type = (type_definition)value;
+						this.var_type = (type_definition)value;
 						break;
 					case 2:
-						vars = (variant_types)value;
+						this.vars = (variant_types)value;
 						break;
 				}
 			}
@@ -22009,7 +22009,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						func_name = (addressed_value)value;
+						this.func_name = (addressed_value)value;
 						break;
 				}
 			}
@@ -22209,13 +22209,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						type_name = (ident)value;
+						this.type_name = (ident)value;
 						break;
 					case 1:
-						type_def = (type_definition)value;
+						this.type_def = (type_definition)value;
 						break;
 					case 2:
-						class_name = (ident)value;
+						this.class_name = (ident)value;
 						break;
 				}
 			}
@@ -22503,10 +22503,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						elem_type = (type_definition)value;
+						this.elem_type = (type_definition)value;
 						break;
 				}
 			}
@@ -22710,22 +22710,22 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						parameters = (formal_parameters)value;
+						this.parameters = (formal_parameters)value;
 						break;
 					case 2:
-						proc_attributes = (procedure_attributes_list)value;
+						this.proc_attributes = (procedure_attributes_list)value;
 						break;
 					case 3:
-						name = (method_name)value;
+						this.name = (method_name)value;
 						break;
 					case 4:
-						template_args = (ident_list)value;
+						this.template_args = (ident_list)value;
 						break;
 					case 5:
-						where_defs = (where_definition_list)value;
+						this.where_defs = (where_definition_list)value;
 						break;
 				}
 			}
@@ -22929,22 +22929,22 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						parameters = (formal_parameters)value;
+						this.parameters = (formal_parameters)value;
 						break;
 					case 2:
-						proc_attributes = (procedure_attributes_list)value;
+						this.proc_attributes = (procedure_attributes_list)value;
 						break;
 					case 3:
-						name = (method_name)value;
+						this.name = (method_name)value;
 						break;
 					case 4:
-						template_args = (ident_list)value;
+						this.template_args = (ident_list)value;
 						break;
 					case 5:
-						where_defs = (where_definition_list)value;
+						this.where_defs = (where_definition_list)value;
 						break;
 				}
 			}
@@ -23131,10 +23131,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						method_name = (ident)value;
+						this.method_name = (ident)value;
 						break;
 					case 1:
-						exprs = (expression_list)value;
+						this.exprs = (expression_list)value;
 						break;
 				}
 			}
@@ -23340,10 +23340,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						expr = (addressed_value)value;
+						this.expr = (addressed_value)value;
 						break;
 					case 1:
-						type_def = (type_definition)value;
+						this.type_def = (type_definition)value;
 						break;
 				}
 			}
@@ -23552,13 +23552,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						interface_definitions = (declarations)value;
+						this.interface_definitions = (declarations)value;
 						break;
 					case 1:
-						uses_modules = (uses_list)value;
+						this.uses_modules = (uses_list)value;
 						break;
 					case 2:
-						using_namespaces = (using_list)value;
+						this.using_namespaces = (using_list)value;
 						break;
 				}
 			}
@@ -23767,13 +23767,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						uses_modules = (uses_list)value;
+						this.uses_modules = (uses_list)value;
 						break;
 					case 1:
-						implementation_definitions = (declarations)value;
+						this.implementation_definitions = (declarations)value;
 						break;
 					case 2:
-						using_namespaces = (using_list)value;
+						this.using_namespaces = (using_list)value;
 						break;
 				}
 			}
@@ -23960,10 +23960,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						left = (expression)value;
+						this.left = (expression)value;
 						break;
 					case 1:
-						right = (expression)value;
+						this.right = (expression)value;
 						break;
 				}
 			}
@@ -24142,10 +24142,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						defs = (declarations)value;
+						this.defs = (declarations)value;
 						break;
 					case 1:
-						program_code = (statement_list)value;
+						this.program_code = (statement_list)value;
 						break;
 				}
 			}
@@ -24425,10 +24425,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						type_name = (named_type_reference)value;
+						this.type_name = (named_type_reference)value;
 						break;
 				}
 			}
@@ -24566,7 +24566,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 				}
 			}
@@ -25176,10 +25176,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						left = (expression)value;
+						this.left = (expression)value;
 						break;
 					case 1:
-						right = (expression)value;
+						this.right = (expression)value;
 						break;
 				}
 			}
@@ -25681,10 +25681,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						fixed_part = (var_def_list_for_record)value;
+						this.fixed_part = (var_def_list_for_record)value;
 						break;
 					case 1:
-						variant_part = (variant_record_type)value;
+						this.variant_part = (variant_record_type)value;
 						break;
 				}
 			}
@@ -25985,13 +25985,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						parameter_list = (property_parameter_list)value;
+						this.parameter_list = (property_parameter_list)value;
 						break;
 					case 1:
-						property_type = (type_definition)value;
+						this.property_type = (type_definition)value;
 						break;
 					case 2:
-						index_expression = (expression)value;
+						this.index_expression = (expression)value;
 						break;
 				}
 			}
@@ -26170,10 +26170,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						names = (ident_list)value;
+						this.names = (ident_list)value;
 						break;
 					case 1:
-						type = (type_definition)value;
+						this.type = (type_definition)value;
 						break;
 				}
 			}
@@ -26833,13 +26833,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						expr = (expression)value;
+						this.expr = (expression)value;
 						break;
 					case 1:
-						format1 = (expression)value;
+						this.format1 = (expression)value;
 						break;
 					case 2:
-						format2 = (expression)value;
+						this.format2 = (expression)value;
 						break;
 				}
 			}
@@ -27018,10 +27018,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						initialization_sect = (statement_list)value;
+						this.initialization_sect = (statement_list)value;
 						break;
 					case 1:
-						finalization_sect = (statement_list)value;
+						this.finalization_sect = (statement_list)value;
 						break;
 				}
 			}
@@ -27337,10 +27337,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						expr = (expression)value;
+						this.expr = (expression)value;
 						break;
 					case 1:
-						address = (expression)value;
+						this.address = (expression)value;
 						break;
 				}
 			}
@@ -27679,10 +27679,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						file_of_type = (type_definition)value;
+						this.file_of_type = (type_definition)value;
 						break;
 				}
 			}
@@ -28050,13 +28050,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						variable = (ident)value;
+						this.variable = (ident)value;
 						break;
 					case 1:
-						type_name = (named_type_reference)value;
+						this.type_name = (named_type_reference)value;
 						break;
 					case 2:
-						statements = (statement)value;
+						this.statements = (statement)value;
 						break;
 				}
 			}
@@ -28235,10 +28235,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						variable = (ident)value;
+						this.variable = (ident)value;
 						break;
 					case 1:
-						type_name = (named_type_reference)value;
+						this.type_name = (named_type_reference)value;
 						break;
 				}
 			}
@@ -28770,13 +28770,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						stmt_list = (statement_list)value;
+						this.stmt_list = (statement_list)value;
 						break;
 					case 1:
-						handlers = (exception_handler_list)value;
+						this.handlers = (exception_handler_list)value;
 						break;
 					case 2:
-						else_stmt_list = (statement_list)value;
+						this.else_stmt_list = (statement_list)value;
 						break;
 				}
 			}
@@ -29017,7 +29017,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						stmt_list = (statement_list)value;
+						this.stmt_list = (statement_list)value;
 						break;
 				}
 			}
@@ -29166,7 +29166,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						except_block = (exception_block)value;
+						this.except_block = (exception_block)value;
 						break;
 				}
 			}
@@ -29353,10 +29353,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						stmt_list = (statement_list)value;
+						this.stmt_list = (statement_list)value;
 						break;
 					case 1:
-						handler = (try_handler)value;
+						this.handler = (try_handler)value;
 						break;
 				}
 			}
@@ -29635,10 +29635,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						modulename = (expression)value;
+						this.modulename = (expression)value;
 						break;
 					case 1:
-						name = (expression)value;
+						this.name = (expression)value;
 						break;
 				}
 			}
@@ -30137,7 +30137,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						expr = (expression)value;
+						this.expr = (expression)value;
 						break;
 				}
 			}
@@ -30324,10 +30324,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						count = (expression)value;
+						this.count = (expression)value;
 						break;
 					case 1:
-						stmt = (statement)value;
+						this.stmt = (statement)value;
 						break;
 				}
 			}
@@ -30604,19 +30604,19 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						identifier = (ident)value;
+						this.identifier = (ident)value;
 						break;
 					case 1:
-						type_name = (type_definition)value;
+						this.type_name = (type_definition)value;
 						break;
 					case 2:
-						in_what = (expression)value;
+						this.in_what = (expression)value;
 						break;
 					case 3:
-						stmt = (statement)value;
+						this.stmt = (statement)value;
 						break;
 					case 4:
-						index = (ident)value;
+						this.index = (ident)value;
 						break;
 				}
 			}
@@ -31401,7 +31401,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						dereferencing_value = (addressed_value)value;
+						this.dereferencing_value = (addressed_value)value;
 						break;
 				}
 				Int32 index_counter=ind - 1;
@@ -31664,13 +31664,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						name = (named_type_reference)value;
+						this.name = (named_type_reference)value;
 						break;
 					case 2:
-						params_list = (template_param_list)value;
+						this.params_list = (template_param_list)value;
 						break;
 				}
 				Int32 index_counter=ind - 3;
@@ -32189,13 +32189,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						type = (type_definition)value;
+						this.type = (type_definition)value;
 						break;
 					case 1:
-						params_list = (expression_list)value;
+						this.params_list = (expression_list)value;
 						break;
 					case 2:
-						array_init_expr = (array_const)value;
+						this.array_init_expr = (array_const)value;
 						break;
 				}
 			}
@@ -32697,10 +32697,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						names = (ident_list)value;
+						this.names = (ident_list)value;
 						break;
 					case 1:
-						types = (where_type_specificator_list)value;
+						this.types = (where_type_specificator_list)value;
 						break;
 				}
 			}
@@ -33210,10 +33210,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						type_def = (type_definition)value;
+						this.type_def = (type_definition)value;
 						break;
 					case 1:
-						expr = (expression)value;
+						this.expr = (expression)value;
 						break;
 				}
 			}
@@ -33370,7 +33370,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						type_name = (named_type_reference)value;
+						this.type_name = (named_type_reference)value;
 						break;
 				}
 			}
@@ -33549,10 +33549,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						Name = (token_info)value;
+						this.Name = (token_info)value;
 						break;
 					case 1:
-						Directive = (token_info)value;
+						this.Directive = (token_info)value;
 						break;
 				}
 			}
@@ -33868,7 +33868,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						var_def = (var_def_statement)value;
+						this.var_def = (var_def_statement)value;
 						break;
 				}
 			}
@@ -34085,13 +34085,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						condition = (expression)value;
+						this.condition = (expression)value;
 						break;
 					case 1:
-						ret_if_true = (expression)value;
+						this.ret_if_true = (expression)value;
 						break;
 					case 2:
-						ret_if_false = (expression)value;
+						this.ret_if_false = (expression)value;
 						break;
 				}
 			}
@@ -34248,7 +34248,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						expr = (expression)value;
+						this.expr = (expression)value;
 						break;
 				}
 			}
@@ -34446,7 +34446,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 				}
 			}
@@ -34686,10 +34686,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						defs = (declarations)value;
+						this.defs = (declarations)value;
 						break;
 					case 1:
-						used_units = (uses_list)value;
+						this.used_units = (uses_list)value;
 						break;
 				}
 				Int32 index_counter=ind - 2;
@@ -34855,7 +34855,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						defs = (declarations)value;
+						this.defs = (declarations)value;
 						break;
 				}
 			}
@@ -35043,10 +35043,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						max_value = (expression)value;
+						this.max_value = (expression)value;
 						break;
 				}
 			}
@@ -35225,7 +35225,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						name = (type_definition)value;
+						this.name = (type_definition)value;
 						break;
 					case 1:
 						this.value = (expression)value;
@@ -35798,16 +35798,16 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						expr1 = (statement)value;
+						this.expr1 = (statement)value;
 						break;
 					case 1:
-						expr2 = (expression)value;
+						this.expr2 = (expression)value;
 						break;
 					case 2:
-						expr3 = (expression)value;
+						this.expr3 = (expression)value;
 						break;
 					case 3:
-						stmt = (statement)value;
+						this.stmt = (statement)value;
 						break;
 				}
 			}
@@ -36013,10 +36013,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						condition = (expression)value;
+						this.condition = (expression)value;
 						break;
 					case 1:
-						stmt = (statement)value;
+						this.stmt = (statement)value;
 						break;
 				}
 			}
@@ -36516,7 +36516,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 				}
 			}
@@ -36703,10 +36703,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						lock_object = (expression)value;
+						this.lock_object = (expression)value;
 						break;
 					case 1:
-						stmt = (statement)value;
+						this.stmt = (statement)value;
 						break;
 				}
 			}
@@ -37072,10 +37072,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						Name = (token_info)value;
+						this.Name = (token_info)value;
 						break;
 					case 1:
-						Directive = (token_info)value;
+						this.Directive = (token_info)value;
 						break;
 				}
 				Int32 index_counter=ind - 2;
@@ -37308,16 +37308,16 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						Name = (token_info)value;
+						this.Name = (token_info)value;
 						break;
 					case 1:
-						Directive = (token_info)value;
+						this.Directive = (token_info)value;
 						break;
 					case 2:
-						if_part = (compiler_directive)value;
+						this.if_part = (compiler_directive)value;
 						break;
 					case 3:
-						elseif_part = (compiler_directive)value;
+						this.elseif_part = (compiler_directive)value;
 						break;
 				}
 			}
@@ -38840,7 +38840,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 				}
 			}
@@ -39027,10 +39027,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						name = (addressed_value)value;
+						this.name = (addressed_value)value;
 						break;
 					case 1:
-						template_params = (template_param_list)value;
+						this.template_params = (template_param_list)value;
 						break;
 				}
 			}
@@ -39209,7 +39209,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						template_args = (ident_list)value;
+						this.template_args = (ident_list)value;
 						break;
 				}
 			}
@@ -39366,7 +39366,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						type_name = (named_type_reference)value;
+						this.type_name = (named_type_reference)value;
 						break;
 				}
 			}
@@ -39523,7 +39523,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						expr = (expression)value;
+						this.expr = (expression)value;
 						break;
 				}
 			}
@@ -39732,13 +39732,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						qualifier = (ident)value;
+						this.qualifier = (ident)value;
 						break;
 					case 1:
-						type = (named_type_reference)value;
+						this.type = (named_type_reference)value;
 						break;
 					case 2:
-						arguments = (expression_list)value;
+						this.arguments = (expression_list)value;
 						break;
 				}
 			}
@@ -40971,22 +40971,22 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						ident_list = (ident_list)value;
+						this.ident_list = (ident_list)value;
 						break;
 					case 1:
-						return_type = (type_definition)value;
+						this.return_type = (type_definition)value;
 						break;
 					case 2:
-						formal_parameters = (formal_parameters)value;
+						this.formal_parameters = (formal_parameters)value;
 						break;
 					case 3:
-						proc_body = (statement)value;
+						this.proc_body = (statement)value;
 						break;
 					case 4:
-						parameters = (expression_list)value;
+						this.parameters = (expression_list)value;
 						break;
 					case 5:
-						substituting_node = (syntax_tree_node)value;
+						this.substituting_node = (syntax_tree_node)value;
 						break;
 				}
 				Int32 index_counter=ind - 6;
@@ -41182,10 +41182,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						f_lambda_def = (function_lambda_definition)value;
+						this.f_lambda_def = (function_lambda_definition)value;
 						break;
 					case 1:
-						parameters = (expression_list)value;
+						this.parameters = (expression_list)value;
 						break;
 				}
 			}
@@ -41731,7 +41731,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 				}
 			}
@@ -41919,10 +41919,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						ex = (expression)value;
+						this.ex = (expression)value;
 						break;
 				}
 			}
@@ -42109,10 +42109,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						name = (ident)value;
+						this.name = (ident)value;
 						break;
 					case 1:
-						expr = (expression)value;
+						this.expr = (expression)value;
 						break;
 				}
 			}
@@ -42645,10 +42645,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						ne_list = (name_assign_expr_list)value;
+						this.ne_list = (name_assign_expr_list)value;
 						break;
 					case 1:
-						new_ex = (new_expr)value;
+						this.new_ex = (new_expr)value;
 						break;
 				}
 			}
@@ -42825,7 +42825,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 				}
 			}
@@ -43028,13 +43028,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						proc_header = (procedure_header)value;
+						this.proc_header = (procedure_header)value;
 						break;
 					case 1:
-						proc_body = (proc_block)value;
+						this.proc_body = (proc_block)value;
 						break;
 					case 2:
-						procdef = (procedure_definition)value;
+						this.procdef = (procedure_definition)value;
 						break;
 				}
 			}
@@ -43172,7 +43172,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 				}
 			}
@@ -43359,10 +43359,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						left = (expression)value;
+						this.left = (expression)value;
 						break;
 					case 1:
-						right = (expression)value;
+						this.right = (expression)value;
 						break;
 				}
 			}
@@ -43541,7 +43541,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						substitution = (dot_node)value;
+						this.substitution = (dot_node)value;
 						break;
 				}
 			}
@@ -43729,10 +43729,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						elements_type = (type_definition)value;
+						this.elements_type = (type_definition)value;
 						break;
 				}
 			}
@@ -43984,16 +43984,16 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						aloneparam = (type_definition)value;
+						this.aloneparam = (type_definition)value;
 						break;
 					case 2:
-						el = (enumerator_list)value;
+						this.el = (enumerator_list)value;
 						break;
 					case 3:
-						res = (type_definition)value;
+						this.res = (type_definition)value;
 						break;
 				}
 			}
@@ -44150,7 +44150,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						ex = (expression)value;
+						this.ex = (expression)value;
 						break;
 				}
 			}
@@ -44341,10 +44341,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						template_args = (ident_list)value;
+						this.template_args = (ident_list)value;
 						break;
 					case 1:
-						opname = (operator_name_ident)value;
+						this.opname = (operator_name_ident)value;
 						break;
 				}
 			}
@@ -44660,10 +44660,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						tn = (type_definition)value;
+						this.tn = (type_definition)value;
 						break;
 					case 1:
-						exprs = (statement_list)value;
+						this.exprs = (statement_list)value;
 						break;
 				}
 			}
@@ -44850,10 +44850,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						vars = (addressed_value_list)value;
+						this.vars = (addressed_value_list)value;
 						break;
 					case 1:
-						expr = (expression)value;
+						this.expr = (expression)value;
 						break;
 				}
 			}
@@ -45333,7 +45333,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						el = (expression_list)value;
+						this.el = (expression_list)value;
 						break;
 				}
 			}
@@ -45907,10 +45907,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						left = (addressed_value)value;
+						this.left = (addressed_value)value;
 						break;
 					case 1:
-						right = (addressed_value)value;
+						this.right = (addressed_value)value;
 						break;
 				}
 			}
@@ -46194,19 +46194,19 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						dereferencing_value = (addressed_value)value;
+						this.dereferencing_value = (addressed_value)value;
 						break;
 					case 1:
-						v = (addressed_value)value;
+						this.v = (addressed_value)value;
 						break;
 					case 2:
-						from = (expression)value;
+						this.from = (expression)value;
 						break;
 					case 3:
-						to = (expression)value;
+						this.to = (expression)value;
 						break;
 					case 4:
-						step = (expression)value;
+						this.step = (expression)value;
 						break;
 				}
 			}
@@ -46344,7 +46344,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 				}
 			}
@@ -46523,7 +46523,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						UnknownID = (ident)value;
+						this.UnknownID = (ident)value;
 						break;
 				}
 			}
@@ -46661,7 +46661,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 				}
 			}
@@ -46799,7 +46799,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						attr_list = (type_definition_attr_list)value;
+						this.attr_list = (type_definition_attr_list)value;
 						break;
 				}
 			}
@@ -46956,7 +46956,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						ex = (expression)value;
+						this.ex = (expression)value;
 						break;
 				}
 			}
@@ -47144,10 +47144,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						idents = (ident_list)value;
+						this.idents = (ident_list)value;
 						break;
 					case 1:
-						expr = (expression)value;
+						this.expr = (expression)value;
 						break;
 				}
 			}
@@ -47333,19 +47333,19 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						dereferencing_value = (addressed_value)value;
+						this.dereferencing_value = (addressed_value)value;
 						break;
 					case 1:
-						v = (addressed_value)value;
+						this.v = (addressed_value)value;
 						break;
 					case 2:
-						from = (expression)value;
+						this.from = (expression)value;
 						break;
 					case 3:
-						to = (expression)value;
+						this.to = (expression)value;
 						break;
 					case 4:
-						step = (expression)value;
+						this.step = (expression)value;
 						break;
 				}
 			}
@@ -47871,7 +47871,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						new_expr = (expression)value;
+						this.new_expr = (expression)value;
 						break;
 				}
 			}
@@ -48047,7 +48047,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						new_addr_value = (addressed_value)value;
+						this.new_addr_value = (addressed_value)value;
 						break;
 				}
 			}
@@ -48234,10 +48234,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						left = (expression)value;
+						this.left = (expression)value;
 						break;
 					case 1:
-						right = (expression)value;
+						this.right = (expression)value;
 						break;
 				}
 			}
@@ -48794,10 +48794,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						identifier = (ident)value;
+						this.identifier = (ident)value;
 						break;
 					case 1:
-						type = (type_definition)value;
+						this.type = (type_definition)value;
 						break;
 				}
 				Int32 index_counter=ind - 2;
@@ -48993,10 +48993,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						left = (expression)value;
+						this.left = (expression)value;
 						break;
 					case 1:
-						right = (pattern_node)value;
+						this.right = (pattern_node)value;
 						break;
 				}
 			}
@@ -49213,13 +49213,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						expr = (expression)value;
+						this.expr = (expression)value;
 						break;
 					case 1:
-						case_list = (pattern_cases)value;
+						this.case_list = (pattern_cases)value;
 						break;
 					case 2:
-						defaultAction = (statement)value;
+						this.defaultAction = (statement)value;
 						break;
 				}
 			}
@@ -49436,13 +49436,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						pattern = (pattern_node)value;
+						this.pattern = (pattern_node)value;
 						break;
 					case 1:
-						case_action = (statement)value;
+						this.case_action = (statement)value;
 						break;
 					case 2:
-						condition = (expression)value;
+						this.condition = (expression)value;
 						break;
 				}
 			}
@@ -50007,10 +50007,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						type = (type_definition)value;
+						this.type = (type_definition)value;
 						break;
 					case 1:
-						const_params_check = (expression)value;
+						this.const_params_check = (expression)value;
 						break;
 				}
 				Int32 index_counter=ind - 2;
@@ -50298,10 +50298,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						variables = (deconstruction_variables_definition)value;
+						this.variables = (deconstruction_variables_definition)value;
 						break;
 					case 1:
-						deconstruction_target = (expression)value;
+						this.deconstruction_target = (expression)value;
 						break;
 				}
 			}
@@ -50499,10 +50499,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						identifier = (ident)value;
+						this.identifier = (ident)value;
 						break;
 					case 1:
-						type = (type_definition)value;
+						this.type = (type_definition)value;
 						break;
 				}
 			}
@@ -50632,7 +50632,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						pattern = (pattern_node)value;
+						this.pattern = (pattern_node)value;
 						break;
 				}
 			}
@@ -51131,13 +51131,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						vars = (ident_list)value;
+						this.vars = (ident_list)value;
 						break;
 					case 1:
-						vars_type = (type_definition)value;
+						this.vars_type = (type_definition)value;
 						break;
 					case 2:
-						inital_value = (expression)value;
+						this.inital_value = (expression)value;
 						break;
 				}
 			}
@@ -51550,13 +51550,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						vars = (ident_list)value;
+						this.vars = (ident_list)value;
 						break;
 					case 1:
-						vars_type = (type_definition)value;
+						this.vars_type = (type_definition)value;
 						break;
 					case 2:
-						inital_value = (expression)value;
+						this.inital_value = (expression)value;
 						break;
 				}
 				Int32 index_counter=ind - 3;
@@ -51767,7 +51767,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						pattern_expressions = (expression_list)value;
+						this.pattern_expressions = (expression_list)value;
 						break;
 				}
 				Int32 index_counter=ind - 1;
@@ -52017,7 +52017,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						const_param = (expression)value;
+						this.const_param = (expression)value;
 						break;
 				}
 			}
@@ -52624,10 +52624,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						identifier = (ident)value;
+						this.identifier = (ident)value;
 						break;
 					case 1:
-						type = (type_definition)value;
+						this.type = (type_definition)value;
 						break;
 				}
 			}
@@ -52757,7 +52757,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						pattern = (pattern_node)value;
+						this.pattern = (pattern_node)value;
 						break;
 				}
 			}
@@ -52906,7 +52906,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						pattern = (pattern_node)value;
+						this.pattern = (pattern_node)value;
 						break;
 				}
 			}
@@ -53237,10 +53237,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						identifier = (ident)value;
+						this.identifier = (ident)value;
 						break;
 					case 1:
-						type = (type_definition)value;
+						this.type = (type_definition)value;
 						break;
 				}
 			}
@@ -53370,7 +53370,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						pattern = (pattern_node)value;
+						this.pattern = (pattern_node)value;
 						break;
 				}
 			}
@@ -53557,10 +53557,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						left = (expression)value;
+						this.left = (expression)value;
 						break;
 					case 1:
-						right = (expression)value;
+						this.right = (expression)value;
 						break;
 				}
 			}
@@ -53777,13 +53777,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						condition = (expression)value;
+						this.condition = (expression)value;
 						break;
 					case 1:
-						if_true = (expression)value;
+						this.if_true = (expression)value;
 						break;
 					case 2:
-						if_false = (expression)value;
+						this.if_false = (expression)value;
 						break;
 				}
 			}
@@ -53959,7 +53959,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						simple_expr = (expression)value;
+						this.simple_expr = (expression)value;
 						break;
 				}
 			}
@@ -54135,7 +54135,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						index_expr = (expression)value;
+						this.index_expr = (expression)value;
 						break;
 				}
 			}
@@ -54311,7 +54311,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						elements = (expression_list)value;
+						this.elements = (expression_list)value;
 						break;
 				}
 			}
@@ -54498,10 +54498,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						id = (ident)value;
+						this.id = (ident)value;
 						break;
 					case 1:
-						index = (expression)value;
+						this.index = (expression)value;
 						break;
 				}
 			}
@@ -54885,16 +54885,16 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						il = (ident_list)value;
+						this.il = (ident_list)value;
 						break;
 					case 1:
-						in_what = (expression)value;
+						this.in_what = (expression)value;
 						break;
 					case 2:
-						stmt = (statement)value;
+						this.stmt = (statement)value;
 						break;
 					case 3:
-						index = (ident)value;
+						this.index = (ident)value;
 						break;
 				}
 			}
@@ -55434,10 +55434,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						stat = (statement_list)value;
+						this.stat = (statement_list)value;
 						break;
 					case 1:
-						expr = (expression)value;
+						this.expr = (expression)value;
 						break;
 				}
 			}
@@ -55724,10 +55724,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						var = (ident)value;
+						this.var = (ident)value;
 						break;
 					case 1:
-						initial_value = (addressed_value)value;
+						this.initial_value = (addressed_value)value;
 						break;
 				}
 			}
@@ -55914,10 +55914,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						id = (ident)value;
+						this.id = (ident)value;
 						break;
 					case 1:
-						ex = (expression)value;
+						this.ex = (expression)value;
 						break;
 				}
 			}
@@ -56104,7 +56104,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						key = (expression)value;
+						this.key = (expression)value;
 						break;
 					case 1:
 						this.value = (expression)value;
@@ -56264,7 +56264,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						idents = (ident_list)value;
+						this.idents = (ident_list)value;
 						break;
 				}
 			}
@@ -56511,16 +56511,16 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						_expr = (expression)value;
+						this._expr = (expression)value;
 						break;
 					case 1:
-						_ident = (ident)value;
+						this._ident = (ident)value;
 						break;
 					case 2:
-						_range = (expression)value;
+						this._range = (expression)value;
 						break;
 					case 3:
-						_condition = (expression)value;
+						this._condition = (expression)value;
 						break;
 				}
 			}
@@ -56677,7 +56677,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						modules_names = (as_statement_list)value;
+						this.modules_names = (as_statement_list)value;
 						break;
 				}
 			}
@@ -56864,10 +56864,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						real_name = (ident)value;
+						this.real_name = (ident)value;
 						break;
 					case 1:
-						alias = (ident)value;
+						this.alias = (ident)value;
 						break;
 				}
 			}
@@ -57404,10 +57404,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						module_name = (ident)value;
+						this.module_name = (ident)value;
 						break;
 					case 1:
-						imported_names = (as_statement_list)value;
+						this.imported_names = (as_statement_list)value;
 						break;
 				}
 			}
@@ -57564,7 +57564,230 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						expr = (expression)value;
+						this.expr = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class unit_reexport : declaration
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public unit_reexport()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public unit_reexport(ident _source_unit,ident _source_name,ident _export_name)
+		{
+			this._source_unit=_source_unit;
+			this._source_name=_source_name;
+			this._export_name=_export_name;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public unit_reexport(ident _source_unit,ident _source_name,ident _export_name,SourceContext sc)
+		{
+			this._source_unit=_source_unit;
+			this._source_name=_source_name;
+			this._export_name=_export_name;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected ident _source_unit;
+		protected ident _source_name;
+		protected ident _export_name;
+
+		///<summary>
+		///
+		///</summary>
+		public ident source_unit
+		{
+			get
+			{
+				return _source_unit;
+			}
+			set
+			{
+				_source_unit=value;
+				if (_source_unit != null)
+					_source_unit.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public ident source_name
+		{
+			get
+			{
+				return _source_name;
+			}
+			set
+			{
+				_source_name=value;
+				if (_source_name != null)
+					_source_name.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public ident export_name
+		{
+			get
+			{
+				return _export_name;
+			}
+			set
+			{
+				_export_name=value;
+				if (_export_name != null)
+					_export_name.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			unit_reexport copy = new unit_reexport();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (source_unit != null)
+			{
+				copy.source_unit = (ident)source_unit.Clone();
+				copy.source_unit.Parent = copy;
+			}
+			if (source_name != null)
+			{
+				copy.source_name = (ident)source_name.Clone();
+				copy.source_name.Parent = copy;
+			}
+			if (export_name != null)
+			{
+				copy.export_name = (ident)export_name.Clone();
+				copy.export_name.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new unit_reexport TypedClone()
+		{
+			return Clone() as unit_reexport;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (source_unit != null)
+				source_unit.Parent = this;
+			if (source_name != null)
+				source_name.Parent = this;
+			if (export_name != null)
+				export_name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			source_unit?.FillParentsInAllChilds();
+			source_name?.FillParentsInAllChilds();
+			export_name?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return source_unit;
+					case 1:
+						return source_name;
+					case 2:
+						return export_name;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						this.source_unit = (ident)value;
+						break;
+					case 1:
+						this.source_name = (ident)value;
+						break;
+					case 2:
+						this.export_name = (ident)value;
 						break;
 				}
 			}

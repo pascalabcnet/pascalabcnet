@@ -112,18 +112,62 @@ try
         Check(symbols.Any(s => s.Label == (name == "forms" ? "Text" : "Content")), name + " IntelliSense properties");
     }
     var compiler = new PascalABCCompiler.Compiler();
+    var implicitPathsField = typeof(PascalABCCompiler.Compiler).GetField("implicitSystemReferencePaths",
+        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+    var implicitPaths = (Dictionary<string, string>)implicitPathsField.GetValue(compiler)!;
+    var preparedField = typeof(PascalABCCompiler.Compiler).GetField("preparedImplicitSystemReferences",
+        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+    var prepared = (System.Collections.IDictionary)preparedField.GetValue(compiler)!;
+    object? previousConsole = null;
     foreach (string name in new[] { "forms", "wpf", "core", "forms", "core" })
     {
+        const string previousCompilation = "%GAC%\\UnusedPreviousCompilation.dll";
+        implicitPaths.Add(previousCompilation, work);
         compiler.Reload();
         string source = Path.Combine(work, "test_" + name + ".pas");
         var options = new PascalABCCompiler.CompilerOptions(source, PascalABCCompiler.CompilerOptions.OutputType.ConsoleApplicaton)
             { UseDllForSystemUnits = false, Debug = false };
+        object? consoleAtFirstRead = null;
+        PascalABCCompiler.ChangeCompilerStateEventDelegate observe = (_, state, path) =>
+        {
+            if (state == PascalABCCompiler.CompilerState.ReadDLL &&
+                string.Equals(Path.GetFileName(path), "System.Console.dll", StringComparison.OrdinalIgnoreCase))
+                consoleAtFirstRead = prepared["%GAC%\\System.Console.dll"];
+        };
+        compiler.OnChangeCompilerState += observe;
         Check(compiler.Compile(options) != null, "one compiler: " + name,
             string.Join("\n", compiler.ErrorsList.Select(e => e.ToString())));
+        compiler.OnChangeCompilerState -= observe;
         string config = File.ReadAllText(Path.ChangeExtension(source, ".runtimeconfig.json"));
         Check(config.Contains(name == "core" ? "Microsoft.NETCore.App" : "Microsoft.WindowsDesktop.App"),
             "one compiler selects correct framework: " + name);
+        Check(!implicitPaths.ContainsKey(previousCompilation), "implicit path cache is reset between compilations");
+        Check(implicitPaths.TryGetValue("%GAC%\\System.Console.dll", out string? consolePath) &&
+            consolePath == NetCoreSystemReferences.ResolveAssemblyPath("System.Console.dll"),
+            "implicit path cache records the canonical runtime path");
+        object? currentConsole = prepared["%GAC%\\System.Console.dll"];
+        Check(currentConsole != null && !ReferenceEquals(previousConsole, currentConsole),
+            "implicit system references are prepared and not shared between compilations");
+        Check(ReferenceEquals(consoleAtFirstRead, currentConsole),
+            "later modules reuse the initial prepared system reference");
+        previousConsole = currentConsole;
+        if (name == "core")
+            Check(!implicitPaths.Values.Any(IsDesktop), "Core compilation does not reuse Desktop paths");
     }
+    // A local override of an implicit reference must still be staged and reach
+    // the existing conflict checker.
+    string shadowDirectory = Directory.CreateDirectory(Path.Combine(work, "shadow")).FullName;
+    string shadowGac = Directory.CreateDirectory(Path.Combine(shadowDirectory, "%GAC%")).FullName;
+    var fakeConsole = new System.Reflection.Emit.PersistedAssemblyBuilder(
+        new System.Reflection.AssemblyName("System.Console") { Version = new Version(1, 0, 0, 0) }, typeof(object).Assembly);
+    fakeConsole.DefineDynamicModule("Fixture").DefineType("FakeConsole").CreateType();
+    fakeConsole.Save(Path.Combine(shadowGac, "System.Console.dll"));
+    string shadowSource = Path.Combine(shadowDirectory, "shadow.pas");
+    File.WriteAllText(shadowSource, "{$reference 'System.Runtime.dll'}\nbegin end.");
+    var shadow = await Run(Path.Combine(runtime, "pabcnetcclear.exe"), new[] { shadowSource }, runtime);
+    Check(shadow.ExitCode != 0 && shadow.Text.Contains("System.Console.dll") &&
+        File.Exists(Path.Combine(shadowDirectory, "System.Console.dll")),
+        "a local override of an implicit reference is staged and not hidden by cached preparation", shadow.Text);
     Console.WriteLine("All WindowsDesktop checks passed.");
     return 0;
 }

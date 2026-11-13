@@ -33,6 +33,7 @@ internal static class Program
         if (Array.IndexOf(args, "--operator-generations") >= 0)
             return OperatorGenerationTests.Run(versionOnePath);
 
+        ReferenceClosureTests.Run(versionOnePath, versionTwoPath);
 
         if (OperatorGenerationTests.Run(versionOnePath) != 0)
             return 1;

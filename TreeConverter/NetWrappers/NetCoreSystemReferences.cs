@@ -38,6 +38,16 @@ namespace PascalABCCompiler.NetHelper
             new Lazy<DesktopLoadContext>(() => new DesktopLoadContext());
         private static readonly Lazy<string> desktopRuntimeDirectory =
             new Lazy<string>(() => FindWindowsDesktopDirectory(RuntimeDirectory));
+        private static readonly string runtimeDirectory = Path.GetDirectoryName(typeof(object).Assembly.Location);
+
+        // Only the exact installation directories selected by this process
+        // are stable. Do not classify an assembly by its file or simple name.
+        internal static bool IsPlatformAssemblyDirectory(string directory)
+        {
+            return directory != null &&
+                (string.Equals(directory, RuntimeDirectory, StringComparison.Ordinal) ||
+                 string.Equals(directory, desktopRuntimeDirectory.Value, StringComparison.Ordinal));
+        }
 
         public static bool IsWindowsDesktopPath(string path)
         {
@@ -84,13 +94,13 @@ namespace PascalABCCompiler.NetHelper
             "System.Diagnostics.Process.dll",
             "System.Collections.dll",
             "System.Collections.NonGeneric.dll",
-            "System.ComponentModel.TypeConverter.dll",
+            // "System.ComponentModel.TypeConverter.dll",
             "System.Linq.dll",
             "System.IO.dll",
             "System.IO.FileSystem.dll",
             "System.IO.FileSystem.DriveInfo.dll",
             "System.Text.RegularExpressions.dll",
-             "System.Text.Json.dll",
+            "System.Text.Json.dll",
             "System.Threading.dll",
             "System.Threading.Tasks.dll",
             "System.Threading.Tasks.Parallel.dll",
@@ -111,7 +121,7 @@ namespace PascalABCCompiler.NetHelper
 
         public static string RuntimeDirectory
         {
-            get { return Path.GetDirectoryName(typeof(object).Assembly.Location); }
+            get { return runtimeDirectory; }
         }
 
         public static IReadOnlyList<string> AssemblyPaths

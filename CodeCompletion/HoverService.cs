@@ -25,6 +25,11 @@ namespace CodeCompletion
             if (language == null || domConverter == null)
                 return null;
 
+            // Do not describe a routine or value as an expression when the parser
+            // found its name in a type reference that did not resolve to a type.
+            if (domConverter.visitor.IsNonTypeReference(text, offset, line, column))
+                return null;
+
             PascalABCCompiler.Contracts.Parsers.KeywordKind keyword;
             string expressionWithoutBrackets;
             var expressionText = language.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(

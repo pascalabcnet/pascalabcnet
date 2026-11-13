@@ -42,6 +42,8 @@ namespace CodeCompletion
 		private static Compiler compiler;
         public static bool use_semantic_for_intellisense;
         private Dictionary<method_call, SymScope> method_call_cache = new Dictionary<method_call, SymScope>();
+        private readonly Dictionary<int, List<(int Column, string Name)>> nonTypeReferences =
+            new Dictionary<int, List<(int Column, string Name)>>();
         public HashSet<Assembly> cur_used_assemblies;
 
         public bool ConversionSucceeded { get; private set; }
@@ -61,6 +63,7 @@ namespace CodeCompletion
 		public void Convert(compilation_unit cu)
         {
             method_call_cache.Clear();
+            nonTypeReferences.Clear();
             ConversionSucceeded = false;
             LastConversionError = null;
 
@@ -811,8 +814,37 @@ namespace CodeCompletion
                 tmp_scope = returned_scope;
             }
 
+            if (returned_scope != null && !(returned_scope is TypeScope) &&
+                _named_type_reference.names.Count > 0)
+            {
+                var name = _named_type_reference.names[_named_type_reference.names.Count - 1];
+                var position = name.source_context?.begin_position;
+                if (position != null && !string.IsNullOrEmpty(name.name))
+                {
+                    if (!nonTypeReferences.TryGetValue(position.line_num, out var references))
+                        nonTypeReferences[position.line_num] = references = new List<(int Column, string Name)>();
+                    references.Add((position.column_num, name.name));
+                }
+            }
             if (returned_scope == null || !(returned_scope is TypeScope))
                 returned_scope = new UnknownScope(new SymInfo(_named_type_reference.names[_named_type_reference.names.Count - 1].name, SymbolKind.Type, _named_type_reference.names[_named_type_reference.names.Count - 1].name));
+        }
+
+        internal bool IsNonTypeReference(string text, int offset, int line, int column)
+        {
+            if (!nonTypeReferences.TryGetValue(line + 1, out var references))
+                return false;
+            foreach (var reference in references)
+            {
+                int indexInName = column + 1 - reference.Column;
+                int start = offset - indexInName;
+                if (indexInName >= 0 && indexInName < reference.Name.Length &&
+                    start >= 0 && start <= text.Length - reference.Name.Length &&
+                    string.Compare(text, start, reference.Name, 0, reference.Name.Length,
+                        StringComparison.OrdinalIgnoreCase) == 0)
+                    return true;
+            }
+            return false;
         }
 
         public override void visit(variable_definitions _variable_definitions)
@@ -5157,11 +5189,12 @@ namespace CodeCompletion
 
         public override void visit(interface_node _interface_node)
         {
-            
-
             if (_interface_node.interface_definitions != null)
+            {
                 foreach (declaration decl in _interface_node.interface_definitions.defs)
                 {
+                    if (decl is unit_reexport)
+                        continue;
                     try
                     {
                         decl.visit(this);
@@ -5174,6 +5207,18 @@ namespace CodeCompletion
                     }
                 }
 
+                if (cur_scope is InterfaceUnitScope destination && _interface_node.uses_modules != null)
+                    foreach (var entry in _interface_node.interface_definitions.defs.OfType<unit_reexport>())
+                    {
+                        string moduleName = entry.source_unit.name;
+                        if (!_interface_node.uses_modules.units.Any(u => u.name.idents.Count == 1 &&
+                            string.Equals(u.name.idents[0].name, moduleName, StringComparison.OrdinalIgnoreCase)))
+                            continue;
+                        if (destination.FindNameOnlyInType(moduleName) is InterfaceUnitScope source)
+                            destination.AddReexport(source, entry.source_name.name,
+                                (entry.export_name ?? entry.source_name).name);
+                    }
+            }
         }
 
         public override void visit(implementation_node _implementation_node)

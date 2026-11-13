@@ -1,6 +1,6 @@
 uses Drawman, DrawManField, GraphABC, System.Windows.Forms, System.Threading;
 
-var startButton, stepButton: Button;
+var startButton, stepButton, exitButton: Button;
 var stepLabel: &Label;
 var completed := new ManualResetEvent(False);
 
@@ -12,6 +12,7 @@ begin
     begin
       if child.Text.StartsWith('Пуск (') then startButton := Button(child);
       if child.Text.StartsWith('Шаг (') then stepButton := Button(child);
+      if child.Text.StartsWith('Выход (') then exitButton := Button(child);
     end;
     if (child is &Label) and child.Text.StartsWith('Шаг: ') then
       stepLabel := &Label(child);
@@ -58,10 +59,15 @@ begin
     var initial := Count;
     Thread.Sleep(150);
     Require(Count = initial, 'program moved before Start');
-    if System.Environment.GetCommandLineArgs.Last = 'close' then
+    var mode := System.Environment.GetCommandLineArgs.Last;
+    if (mode = 'close') or (mode = 'exit-button') then
     begin
-      System.Console.WriteLine('PASS Drawman UI: close while paused');
-      UI(procedure -> GraphABC.MainForm.Close);
+      Require(exitButton <> nil, 'Exit button was not found');
+      System.Console.WriteLine('PASS Drawman UI: ' + mode + ' while paused');
+      if mode = 'close' then
+        UI(procedure -> GraphABC.MainForm.Close)
+      else
+        UI(procedure -> exitButton.PerformClick);
       raise new System.Exception('closing the window did not terminate the program');
     end;
     for var i := 1 to 4 do

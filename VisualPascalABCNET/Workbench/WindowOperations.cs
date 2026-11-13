@@ -380,7 +380,7 @@ namespace VisualPascalABC
 
             bool intellisenseAvailable = CodeCompletion.CodeCompletionController.IntellisenseAvailable();
 
-            SetFormatButtonsEnabled(intellisenseAvailable);
+            RefreshFormatButtons();
 
             if (!intellisenseAvailable)
                 SetDebugButtonsEnabled(false); // активация кнопок произойдет ниже, если возможно

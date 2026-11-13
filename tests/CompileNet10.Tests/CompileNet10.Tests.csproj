@@ -8,6 +8,8 @@
   <ItemGroup>
     <Compile Include="../../NuGet/Shared/RestoreActivity.cs" Link="RestoreActivity.cs" />
     <None Update="Fixtures\EditorProgram.pas;Fixtures\EditorUnit.pas" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(IdeReferenceDirectory)/ProgrammRunner.exe" Link="ProgrammRunner.exe" CopyToOutputDirectory="PreserveNewest"
+          Condition="'$(OS)' == 'Windows_NT' and Exists('$(IdeReferenceDirectory)/ProgrammRunner.exe')" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10ControllerClient.cs" Link="Net10ControllerClient.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10Diagnostics.cs" Link="Net10Diagnostics.cs" />
     <Compile Include="../../VisualPlugins/CompileNet10/Net10CompilerDisplay.cs" Link="Net10CompilerDisplay.cs" />

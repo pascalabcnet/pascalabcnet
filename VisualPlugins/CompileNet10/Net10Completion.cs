@@ -166,15 +166,15 @@ namespace VisualPascalABCPlugins
             if (scheduled != null) Invalidate(); // Another keystroke overtook the posted trigger callback.
             if (!active || !enabled()) { Invalidate(); CloseWindow(); return false; }
             if (ui.ProcessCompletionKey(ch)) return true;
-            if (ch != '.') return false;
-            if (Net10PackageDirectiveContext.Parse(document.TextEditor.Document.TextContent,
-                document.TextEditor.ActiveTextAreaControl.Caret.Offset) != null) return false;
-            Invalidate(); CloseWindow();
+            if (ch != '.' && ch != ' ') return false;
             var area = document.TextEditor.ActiveTextAreaControl.TextArea;
-            string before = document.TextEditor.Document.TextContent;
+            if (ch == ' ' && !FollowsNew(area.Document, area.Caret.Offset)) return false;
+            string before = area.Document.TextContent;
+            if (Net10PackageDirectiveContext.Parse(before, area.Caret.Offset) != null) return false;
+            Invalidate(); CloseWindow();
             long ticket = generation;
             scheduled = document;
-            // The normal editor path inserts the dot once. Request its final text/UTF-16 caret afterwards.
+            // Let the editor insert the trigger once, then query its actual text and caret.
             area.BeginInvoke(new Action(() =>
             {
                 if (ticket != generation) return;
@@ -182,12 +182,23 @@ namespace VisualPascalABCPlugins
                 int offset = area.Caret.Offset;
                 // Use the editor's actual result, including selection replacement/overwrite/virtual space.
                 if (!CanShow(document) || offset < 1 || document.TextEditor.Document.TextContent == before ||
-                    document.TextEditor.Document.GetCharAt(offset - 1) != '.') return;
+                    document.TextEditor.Document.GetCharAt(offset - 1) != ch) return;
                 pending = new Net10CompletionContext(document);
                 cancellation = new CancellationTokenSource();
-                _ = RequestAsync(pending, ticket, cancellation.Token);
+                _ = RequestAsync(pending, ticket, cancellation.Token, ch);
             }));
             return false;
+        }
+
+        internal static bool FollowsNew(IDocument document, int offset)
+        {
+            int start = offset - 3;
+            if (start < 0 || offset > document.TextLength ||
+                !string.Equals(document.GetText(start, 3), "new", StringComparison.OrdinalIgnoreCase))
+                return false;
+            if (start == 0) return true;
+            char previous = document.GetCharAt(start - 1);
+            return !char.IsLetterOrDigit(previous) && previous != '_' && previous != '&' && previous != '.';
         }
 
         private bool CanShow(ICodeFileDocument document) => !disposed && active && enabled() &&
@@ -256,14 +267,14 @@ namespace VisualPascalABCPlugins
             });
         }
 
-        private async Task RequestAsync(Net10CompletionContext context, long ticket, CancellationToken token)
+        private async Task RequestAsync(Net10CompletionContext context, long ticket, CancellationToken token, char trigger)
         {
             var area = context.Document.TextEditor.ActiveTextAreaControl.TextArea;
             object response = null;
             try
             {
                 var position = area.Document.OffsetToPosition(context.Offset);
-                response = await documents.CompleteAsync(context.Document, position.Y, position.X, token).ConfigureAwait(false);
+                response = await documents.CompleteAsync(context.Document, position.Y, position.X, token, trigger).ConfigureAwait(false);
             }
             catch (OperationCanceledException) { }
             catch (Exception error) { Trace.TraceWarning("LSP completion: {0}", error); }
@@ -272,8 +283,9 @@ namespace VisualPascalABCPlugins
                 if (response == null || token.IsCancellationRequested || !CanShow(context.Document) || !context.IsCurrent(out var prefix)) return;
                 var provider = new Net10CompletionProvider(response, ui, prefix);
                 pending = null;
+                if (provider.Items.Length == 0) return;
                 Opening?.Invoke(); // Avoid two dialog-key consumers for completion and parameter help.
-                ui.ShowCompletion(context.Document, provider);
+                ui.ShowCompletion(context.Document, provider, preserveOrder: provider.DefaultIndex >= 0);
             });
         }
 

@@ -560,6 +560,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new from_import_statement();
 				case 269:
 					return new return_statement();
+				case 270:
+					return new unit_reexport();
 			}
 			return null;
 		}
@@ -4700,6 +4702,20 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_statement(_return_statement);
 			_return_statement.expr = _read_node() as expression;
+		}
+
+
+		public void visit(unit_reexport _unit_reexport)
+		{
+			read_unit_reexport(_unit_reexport);
+		}
+
+		public void read_unit_reexport(unit_reexport _unit_reexport)
+		{
+			read_declaration(_unit_reexport);
+			_unit_reexport.source_unit = _read_node() as ident;
+			_unit_reexport.source_name = _read_node() as ident;
+			_unit_reexport.export_name = _read_node() as ident;
 		}
 
 	}

@@ -686,42 +686,56 @@ namespace VisualPascalABC
 
     public class CodeFormattingAction : ICSharpCode.TextEditor.Actions.AbstractEditAction
     {
+        private static IParser GetFormattingParser(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+                return null;
+
+            // Formatting is a syntax-only Pascal service, not a legacy IntelliSense request.
+            var language = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(fileName);
+            return language?.Name == StringConstants.pascalLanguageName ? language.Parser : null;
+        }
+
+        public static bool IsAvailable(string fileName) => GetFormattingParser(fileName) != null;
+
         public override void Execute(TextArea textArea)
         {
-            if (WorkbenchServiceFactory.DebuggerManager.IsRunning || !CodeCompletion.CodeCompletionController.IntellisenseAvailable())
+            if (WorkbenchServiceFactory.DebuggerManager.IsRunning)
                 return;
-            WorkbenchServiceFactory.Workbench.ErrorsListWindow.ClearErrorList();
-            VisualPABCSingleton.MainForm.CurrentCodeFileDocument.DeselectAll();
-            CodeFormatters.CodeFormatter cf = new CodeFormatters.CodeFormatter(VisualPABCSingleton.MainForm.UserOptions.TabIndent);
-            List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
-            //PascalABCCompiler.SyntaxTree.syntax_tree_node sn =
-            //    MainForm.VisualEnvironmentCompiler.Compiler.ParsersController.Compile(
-            //    file_name, TextEditor.Text, null, Errors, ParseMode.Normal);
-            string text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName, SourceFileOperation.GetText) as string;
 
-            PascalABCCompiler.SyntaxTree.compilation_unit cu =
-                CodeCompletion.CodeCompletionController.CurrentLanguage.Parser.GetCompilationUnitForFormatter(
-                VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName,
-               text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
-                Errors,
+            var mainForm = VisualPABCSingleton.MainForm;
+            var document = mainForm.CurrentCodeFileDocument;
+            string fileName = document?.FileName;
+            var parser = GetFormattingParser(fileName);
+            if (parser == null)
+                return;
+
+            var workbench = WorkbenchServiceFactory.Workbench;
+            var compiler = workbench.VisualEnvironmentCompiler;
+            string text = compiler.SourceFilesProvider(fileName, SourceFileOperation.GetText) as string;
+            if (text == null)
+                return;
+
+            workbench.ErrorsListWindow.ClearErrorList();
+            document.DeselectAll();
+            var errors = new List<PascalABCCompiler.Errors.Error>();
+            var unit = parser.GetCompilationUnitForFormatter(fileName, text, errors,
                 new List<PascalABCCompiler.Errors.CompilerWarning>());
+            if (errors.Count != 0)
+            {
+                compiler.ExecuteAction(VisualPascalABCPlugins.VisualEnvironmentCompilerAction.AddMessageToErrorListWindow,
+                    new List<PascalABCCompiler.Errors.Error> { errors[0] });
+                return;
+            }
+            if (unit == null)
+                return;
 
-            if (Errors.Count == 0)
-            {
-                string formattedText = cf.FormatTree(text, cu, textArea.Caret.Line + 1, textArea.Caret.Column + 1);
-                bool success = true;
-                if (success)
-                {
-                    //WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.ExecuteAction(VisualPascalABCPlugins.VisualEnvironmentCompilerAction.SetCurrentSourceFileTextFormatting, "");
-                    WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.ExecuteAction(VisualPascalABCPlugins.VisualEnvironmentCompilerAction.SetCurrentSourceFileTextFormatting, formattedText);
-                    WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.ExecuteSourceLocationAction(
-                                new PascalABCCompiler.SourceLocation(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName, cf.Line, cf.Column, cf.Line, cf.Column), VisualPascalABCPlugins.SourceLocationAction.GotoBeg);
-                }
-            }
-            else
-            {
-                WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.ExecuteAction(VisualPascalABCPlugins.VisualEnvironmentCompilerAction.AddMessageToErrorListWindow, new List<PascalABCCompiler.Errors.Error>(new PascalABCCompiler.Errors.Error[] { Errors[0] }));
-            }
+            var formatter = new CodeFormatters.CodeFormatter(mainForm.UserOptions.TabIndent);
+            string formattedText = formatter.FormatTree(text, unit, textArea.Caret.Line + 1, textArea.Caret.Column + 1);
+            compiler.ExecuteAction(VisualPascalABCPlugins.VisualEnvironmentCompilerAction.SetCurrentSourceFileTextFormatting, formattedText);
+            compiler.ExecuteSourceLocationAction(
+                new PascalABCCompiler.SourceLocation(fileName, formatter.Line, formatter.Column, formatter.Line, formatter.Column),
+                VisualPascalABCPlugins.SourceLocationAction.GotoBeg);
         }
     }
 

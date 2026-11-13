@@ -27,8 +27,17 @@ namespace PascalABCCompiler.NetHelper
             new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private static HashSet<string> currentValidationPaths =
             new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private static ReferenceClosure validatedClosure;
+        internal static int ReferenceClosureBuildCount { get; private set; }
         private static readonly Dictionary<string, CachedAssemblyIdentity> identityCache =
             new Dictionary<string, CachedAssemblyIdentity>(StringComparer.OrdinalIgnoreCase);
+        // The installed platform is fixed for this process, just like its
+        // already loaded platform assemblies. These caches contain no
+        // Assembly or Type objects from a collectible context.
+        private static readonly Dictionary<string, PlatformReferenceNode> platformReferenceGraph =
+            new Dictionary<string, PlatformReferenceNode>(StringComparer.Ordinal);
+        private static readonly HashSet<string> knownPlatformFiles = new HashSet<string>(StringComparer.Ordinal);
+        internal static int PlatformReferenceGraphNodeCount => platformReferenceGraph.Count;
         private static bool generationResetThisCompilation;
         private static int metadataReadCount;
         private static int contextCreationCount;
@@ -73,6 +82,7 @@ namespace PascalABCCompiler.NetHelper
         {
             VerifyPreviousGenerationWasUnloaded();
             identityCache.Clear();
+            validatedClosure = null;
 
             ReferenceAssemblyLoadContext oldContext = currentContext;
             currentContext = null;
@@ -98,6 +108,7 @@ namespace PascalABCCompiler.NetHelper
 
         internal static void MarkValidationFailure()
         {
+            validatedClosure = null;
             currentCompilationPaths = new HashSet<string>(previousCompilationPaths,
                 StringComparer.OrdinalIgnoreCase);
         }
@@ -107,6 +118,8 @@ namespace PascalABCCompiler.NetHelper
             previousCompilationPaths = currentCompilationPaths;
             currentCompilationPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             currentValidationPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            validatedClosure = null;
+            ReferenceClosureBuildCount = 0;
             generationResetThisCompilation = false;
         }
 
@@ -168,7 +181,7 @@ namespace PascalABCCompiler.NetHelper
             foreach (string path in (accumulate ? currentValidationPaths : Enumerable.Empty<string>()).Concat(assemblyPaths))
             {
                 string fullPath = Path.GetFullPath(path);
-                if (!File.Exists(fullPath) || !rootPathSet.Add(fullPath))
+                if (!ReferenceFileExists(fullPath) || !rootPathSet.Add(fullPath))
                     continue;
                 rootPaths.Add(fullPath);
                 string directory = Path.GetDirectoryName(fullPath);
@@ -176,24 +189,34 @@ namespace PascalABCCompiler.NetHelper
                     rootDirectories.Add(directory);
             }
 
-            var paths = new List<string>();
-            var visitedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (string rootPath in rootPaths)
-                DiscoverReferenceClosure(rootPath, rootDirectories, paths, visitedPaths);
-
-            var bySimpleName = new Dictionary<string, string>(
-                StringComparer.OrdinalIgnoreCase);
-            foreach (string fullPath in paths)
+            ReferenceClosure closure = accumulate ? validatedClosure : null;
+            bool reuseClosure = closure != null && closure.Matches(rootPaths);
+            if (!reuseClosure)
             {
-                CachedAssemblyIdentity identity = GetCachedIdentity(fullPath);
-                string previousPath;
-                if (!bySimpleName.TryGetValue(identity.SimpleName, out previousPath))
+                closure = new ReferenceClosure(rootPaths, accumulate);
+                var visitedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (string rootPath in rootPaths)
+                    DiscoverReferenceClosure(rootPath, rootDirectories, closure, visitedPaths);
+                if (accumulate)
+                    ReferenceClosureBuildCount++;
+            }
+
+            var bySimpleName = new Dictionary<string, KeyValuePair<string, CachedAssemblyIdentity>>(
+                StringComparer.OrdinalIgnoreCase);
+            foreach (var file in closure.Files)
+            {
+                string fullPath = file.Key;
+                // Matches has just checked the stamp of each cached file.
+                CachedAssemblyIdentity identity = reuseClosure ? file.Value : GetCachedIdentity(fullPath);
+                if (!bySimpleName.TryGetValue(identity.SimpleName, out var previous))
                 {
-                    bySimpleName.Add(identity.SimpleName, fullPath);
+                    bySimpleName.Add(identity.SimpleName,
+                        new KeyValuePair<string, CachedAssemblyIdentity>(fullPath, identity));
                     continue;
                 }
 
-                CachedAssemblyIdentity previousIdentity = GetCachedIdentity(previousPath);
+                string previousPath = previous.Key;
+                CachedAssemblyIdentity previousIdentity = reuseClosure ? previous.Value : GetCachedIdentity(previousPath);
                 if (!string.Equals(previousIdentity.FullName, identity.FullName,
                     StringComparison.Ordinal) || !FilesHaveSameContents(previousPath, fullPath))
                     throw new FileLoadException(
@@ -201,43 +224,174 @@ namespace PascalABCCompiler.NetHelper
                             previousPath, fullPath));
             }
             if (accumulate)
+            {
                 foreach (string rootPath in rootPaths)
                     currentValidationPaths.Add(rootPath);
+                validatedClosure = closure;
+            }
+        }
+
+        private sealed class ReferenceClosure
+        {
+            private readonly List<string> roots;
+            internal readonly List<KeyValuePair<string, CachedAssemblyIdentity>> Files =
+                new List<KeyValuePair<string, CachedAssemblyIdentity>>();
+            private readonly List<KeyValuePair<string, CachedAssemblyIdentity>> mutableFiles =
+                new List<KeyValuePair<string, CachedAssemblyIdentity>>();
+            private readonly Dictionary<string, HashSet<string>> missingNames;
+
+            internal ReferenceClosure(List<string> roots, bool cacheable)
+            {
+                this.roots = roots;
+                if (cacheable)
+                    missingNames = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
+            }
+
+            internal void RememberMissing(string path)
+            {
+                if (missingNames == null)
+                    return;
+                string directory = Path.GetDirectoryName(path);
+                if (NetCoreSystemReferences.IsPlatformAssemblyDirectory(directory))
+                    return;
+                if (!missingNames.TryGetValue(directory, out var names))
+                    missingNames[directory] = names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                names.Add(Path.GetFileName(path));
+            }
+
+            internal void AddFile(string path, CachedAssemblyIdentity identity, bool platform)
+            {
+                var file = new KeyValuePair<string, CachedAssemblyIdentity>(path, identity);
+                Files.Add(file);
+                if (!platform && missingNames != null)
+                    mutableFiles.Add(file);
+            }
+
+            internal bool Matches(List<string> rootPaths)
+            {
+                if (!roots.SequenceEqual(rootPaths, StringComparer.OrdinalIgnoreCase))
+                    return false;
+
+                try
+                {
+                    foreach (var pair in mutableFiles)
+                    {
+                        var file = new FileInfo(pair.Key);
+                        if (!file.Exists || file.Length != pair.Value.Length ||
+                            file.LastWriteTimeUtc != pair.Value.LastWriteTimeUtc)
+                            return false;
+                    }
+
+                    // A missing dependency can appear later (for example after a
+                    // package restore) and take precedence over an existing one.
+                    // Enumerate each affected directory once instead of probing
+                    // every missing candidate on every validation.
+                    foreach (var pair in missingNames)
+                        foreach (string path in Directory.EnumerateFiles(pair.Key, "*.dll"))
+                            if (pair.Value.Contains(Path.GetFileName(path)))
+                                return false;
+                }
+                catch (IOException) { return false; }
+                catch (UnauthorizedAccessException) { return false; }
+
+                return true;
+            }
         }
 
         private static void DiscoverReferenceClosure(string assemblyPath,
-            List<string> searchDirectories, List<string> paths, HashSet<string> visitedPaths)
+            List<string> searchDirectories, ReferenceClosure closure, HashSet<string> visitedPaths)
         {
             string fullPath = Path.GetFullPath(assemblyPath);
-            if (!visitedPaths.Add(fullPath) || !File.Exists(fullPath))
+            if (!visitedPaths.Add(fullPath) || !ReferenceFileExists(fullPath))
                 return;
 
-            paths.Add(fullPath);
-            CachedAssemblyIdentity identity = GetCachedIdentity(fullPath);
             string localDirectory = Path.GetDirectoryName(fullPath);
-            foreach (string referenceName in identity.ReferencedAssemblyNames)
+            bool isPlatform = knownPlatformFiles.Contains(fullPath);
+            PlatformReferenceNode platform = isPlatform ? GetPlatformReferenceNode(fullPath, localDirectory) : null;
+            CachedAssemblyIdentity identity = platform?.Identity ?? GetCachedIdentity(fullPath);
+            closure.AddFile(fullPath, identity, isPlatform);
+            for (int i = 0; i < identity.ReferencedAssemblyNames.Length; i++)
             {
-                string dependencyPath = Path.Combine(localDirectory, referenceName + ".dll");
-                if (!File.Exists(dependencyPath))
+                string dependencyFileName = platform == null
+                    ? identity.ReferencedAssemblyNames[i] + ".dll"
+                    : platform.Dependencies[i].Key;
+                string dependencyPath = platform == null
+                    ? Path.Combine(localDirectory, dependencyFileName)
+                    : platform.Dependencies[i].Value;
+                if (platform == null && !ReferenceFileExists(dependencyPath))
                 {
+                    closure.RememberMissing(dependencyPath);
                     dependencyPath = null;
+                }
+                // Search outside the platform assembly's own directory using
+                // this compilation's directories and their original order.
+                if (dependencyPath == null)
+                {
                     foreach (string directory in searchDirectories)
                     {
-                        string candidate = Path.Combine(directory, referenceName + ".dll");
-                        if (File.Exists(candidate))
+                        if (platform != null && string.Equals(directory, localDirectory, StringComparison.Ordinal))
+                            continue; // The platform node already recorded this local miss.
+                        string candidate = Path.Combine(directory, dependencyFileName);
+                        if (ReferenceFileExists(candidate))
                         {
                             dependencyPath = candidate;
                             break;
                         }
+                        closure.RememberMissing(candidate);
                     }
                 }
                 if (dependencyPath != null)
-                    DiscoverReferenceClosure(dependencyPath, searchDirectories, paths, visitedPaths);
+                    DiscoverReferenceClosure(dependencyPath, searchDirectories, closure, visitedPaths);
+            }
+        }
+
+        private static bool ReferenceFileExists(string path)
+        {
+            if (knownPlatformFiles.Contains(path))
+                return true;
+            if (!File.Exists(path))
+                return false;
+            if (NetCoreSystemReferences.IsPlatformAssemblyDirectory(Path.GetDirectoryName(path)))
+                knownPlatformFiles.Add(path);
+            return true;
+        }
+
+        private static PlatformReferenceNode GetPlatformReferenceNode(string path, string directory)
+        {
+            if (platformReferenceGraph.TryGetValue(path, out var node))
+                return node;
+
+            CachedAssemblyIdentity identity = GetCachedIdentity(path);
+            var dependencies = new KeyValuePair<string, string>[identity.ReferencedAssemblyNames.Length];
+            for (int i = 0; i < dependencies.Length; i++)
+            {
+                string name = identity.ReferencedAssemblyNames[i] + ".dll";
+                string candidate = Path.Combine(directory, name);
+                dependencies[i] = new KeyValuePair<string, string>(name,
+                    ReferenceFileExists(candidate) ? candidate : null);
+            }
+            node = new PlatformReferenceNode(identity, dependencies);
+            platformReferenceGraph.Add(path, node);
+            return node;
+        }
+
+        private sealed class PlatformReferenceNode
+        {
+            internal readonly CachedAssemblyIdentity Identity;
+            internal readonly KeyValuePair<string, string>[] Dependencies;
+
+            internal PlatformReferenceNode(CachedAssemblyIdentity identity,
+                KeyValuePair<string, string>[] dependencies)
+            {
+                Identity = identity;
+                Dependencies = dependencies;
             }
         }
 
         private static CachedAssemblyIdentity GetCachedIdentity(string path)
         {
+            if (platformReferenceGraph.TryGetValue(path, out var platform))
+                return platform.Identity;
             var file = new FileInfo(path);
             CachedAssemblyIdentity cached;
             if (identityCache.TryGetValue(path, out cached) &&

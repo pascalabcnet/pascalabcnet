@@ -201,24 +201,29 @@ public sealed class PascalLanguageService : IPascalLanguageService
     public Task<IReadOnlyList<CompletionItem>> GetCompletionAsync(
         string documentId,
         int caretOffset,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        bool triggeredBySpace = false)
     {
         return ExecuteSerializedAsync<IReadOnlyList<CompletionItem>>(() =>
         {
+            Documents.TryGet(documentId, out var currentDocument);
+            var currentText = currentDocument?.Text;
+            bool afterNew = currentText != null && caretOffset >= 4 && caretOffset <= currentText.Length &&
+                currentText[caretOffset - 1] == ' ' &&
+                _language.LanguageIntellisenseSupport.TestForKeyword(currentText, caretOffset - 2) == KeywordKind.New;
+            if (triggeredBySpace && !afterNew)
+                return Array.Empty<CompletionItem>();
+
             var state = GetCompiledState(documentId);
-            // A just-typed member dot can make the current source unparsable.
-            // Retry only that request with the dot blanked in the analysis view,
-            // preserving offsets and the original document used to resolve the
-            // expression. Never replace the cached last successful model.
+            // Recover a just-typed incomplete expression for this request only.
             if ((state is null || state.IsStale) &&
-                Documents.TryGet(documentId, out var currentDocument) &&
-                caretOffset > 0 && caretOffset <= currentDocument.Text.Length &&
-                currentDocument.Text[caretOffset - 1] == '.' &&
+                currentDocument != null && caretOffset > 0 && caretOffset <= currentDocument.Text.Length &&
+                (afterNew || currentDocument.Text[caretOffset - 1] == '.') &&
                 !_controller.PackageRestoreRequired)
             {
-                var analysis = currentDocument.Text.ToCharArray();
-                analysis[caretOffset - 1] = ' ';
-                var recovered = _controller.Compile(currentDocument.FileName, new string(analysis));
+                var analysis = afterNew ? currentDocument.Text.Insert(caretOffset, "object") :
+                    currentDocument.Text.Remove(caretOffset - 1, 1).Insert(caretOffset - 1, " ");
+                var recovered = _controller.Compile(currentDocument.FileName, analysis);
                 if (recovered.is_compiled)
                     state = new DocumentState(currentDocument, recovered,
                         GetDirectDependencies(recovered), 0, true, false, null);
@@ -233,6 +238,18 @@ public sealed class PascalLanguageService : IPascalLanguageService
             var position = TextCoordinates.GetPosition(text, caretOffset);
             var textBeforeCaret = text[..caretOffset];
             var items = new List<CompletionItem>();
+            if (afterNew)
+            {
+                var contextAfterNew = new CompletionTriggerContext { SpaceAfterNew = true };
+                var expressionText = CompletionExpressionService.Analyze(
+                    textBeforeCaret.TrimEnd(' ').Length, textBeforeCaret, position.Line, position.Character,
+                    _language.LanguageIntellisenseSupport, contextAfterNew, KeywordKind.New).ExpressionText;
+                var expression = expressionText is null ? null : CompletionExpressionService.Parse(
+                    _language.Parser, state.Document.FileName, expressionText, contextAfterNew).Expression;
+                var types = state.DomConverter.GetTypes(expression, position.Line, position.Character, out var selectedType);
+                return CreateCompletionItems(items, types, selectedType);
+            }
+
             if (caretOffset == 0)
             {
                 items.AddRange(CodeCompletionNameHelper.Helper.GetKeywords().Select(keywordText =>
@@ -287,18 +304,23 @@ public sealed class PascalLanguageService : IPascalLanguageService
 
     private IReadOnlyList<CompletionItem> CreateCompletionItems(
         List<CompletionItem> items,
-        SymInfo[]? symbols)
+        SymInfo[]? symbols,
+        SymInfo? selectedSymbol = null)
     {
         if (symbols is not null)
         {
             _language.LanguageIntellisenseSupport.RenameOrExcludeSpecialNames(symbols);
             items.AddRange(symbols
                 .Where(symbol => symbol is not null && !symbol.not_include)
-                .Select(CreateCompletionItem));
+                .Select(symbol => CreateCompletionItem(symbol) with { Preselect = ReferenceEquals(symbol, selectedSymbol) }));
         }
 
+        if (selectedSymbol is null)
+            return items.DistinctBy(item => (item.Label.ToUpperInvariant(), item.Kind)).ToArray();
+
         return items
-            .DistinctBy(item => (item.Label.ToUpperInvariant(), item.Kind))
+            .GroupBy(item => (item.Label.ToUpperInvariant(), item.Kind))
+            .Select(group => group.FirstOrDefault(item => item.Preselect) ?? group.First())
             .ToArray();
     }
 

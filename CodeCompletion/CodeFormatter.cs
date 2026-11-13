@@ -16,6 +16,7 @@ using System.Text;
 using System.Globalization;
 using PascalABCCompiler.SyntaxTree;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace CodeFormatters
 {
@@ -531,6 +532,19 @@ namespace CodeFormatters
             if (prev_pos < pos)
             {
                 string comm = Text.Substring(prev_pos, pos - prev_pos);
+                if ((sn is unit_reexport || prev_sn is unit_reexport) && !has_comment(comm))
+                {
+                    // The grammar stores each entry separately. Keep the original
+                    // commas/semicolons rather than reconstructing the clauses.
+                    comm = Regex.Replace(comm, @"[ \t]+(?=[,;])", "");
+                    if (sn is unit_reexport)
+                    {
+                        if (comm.Trim(' ', '\t') == ",")
+                            comm = ", ";
+                        else
+                            comm = Regex.Replace(comm, @"\bexport[ \t]*\z", "export ", RegexOptions.IgnoreCase);
+                    }
+                }
                 if (options.AggressiveMode == 1)
                 {
                     string trimed_comm = comm.Trim();
@@ -615,7 +629,17 @@ namespace CodeFormatters
                         comm = comm.Replace(" ", "");
                     
                 }
+                // "export" is in the gap before the first entry; the generic
+                // blank-line rule would otherwise put a newline after the keyword.
+                if (sn is unit_reexport)
+                    insert_newline_after_prev = false;
+                bool exportContinuation = sn is unit_reexport && prev_sn is unit_reexport &&
+                    comm.TrimStart().StartsWith(",", StringComparison.Ordinal) && comm.Contains("\n");
+                if (exportContinuation)
+                    IncOffset();
                 WriteCommentWithIndent(comm, true);
+                if (exportContinuation)
+                    DecOffset();
                 read_from_beg_pos = false;
                 keyword_offset = 0;
             }
@@ -1118,6 +1142,29 @@ namespace CodeFormatters
                 if ((decl is procedure_definition || decl is short_func_definition) && in_procedure)
                     DecOffset();
             }
+        }
+
+        public override void visit(unit_reexport reexport)
+        {
+            WriteNode(reexport.source_unit);
+            WriteReexportGap(reexport.source_unit, reexport.source_name, ".", ".");
+            WriteNode(reexport.source_name);
+            if (reexport.export_name != null)
+            {
+                WriteReexportGap(reexport.source_name, reexport.export_name, "as", " as ");
+                WriteNode(reexport.export_name);
+            }
+        }
+
+        private void WriteReexportGap(ident left, ident right, string token, string formatted)
+        {
+            var end = left.source_context.end_position;
+            var begin = right.source_context.begin_position;
+            int start = GetPosition(end.line_num, end.column_num) + 1;
+            int length = GetPosition(begin.line_num, begin.column_num) - start;
+            string gap = Text.Substring(start, length);
+            // Comments, directives and their original line breaks stay intact.
+            sb.Append(string.Equals(gap.Trim(), token, StringComparison.OrdinalIgnoreCase) ? formatted : gap);
         }
 
         public override void visit(program_name _program_name)

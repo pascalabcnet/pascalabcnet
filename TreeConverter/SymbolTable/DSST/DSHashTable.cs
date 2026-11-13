@@ -80,5 +80,11 @@ namespace SymbolTable
         /// Получить информацию обо всех сохраненных символах
         /// </summary>
         public IEnumerable<HashTableNode> GetAllSymbolInfos() => namesToInfos.Values;
+
+        public IEnumerable<string> FindGenericNames(string name)
+        {
+            string prefix = name + PascalABCCompiler.StringConstants.generic_params_infix;
+            return namesToInfos.Keys.Where(key => key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+        }
     }
 }

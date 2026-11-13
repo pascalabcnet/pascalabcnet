@@ -496,10 +496,16 @@ namespace Languages.Pascal.Frontend.Data
 
         public override string GetSynonimDescription(ITypeSynonimScope scope)
         {
-            if (scope.ActType is ICompiledTypeScope && !(scope.ActType as ICompiledTypeScope).Aliased)
-                return "type " + scope.Name + GetGenericString(scope.TemplateArguments) + " = " + GetSimpleDescriptionForCompiledType(scope.ActType as ICompiledTypeScope, true);
-            else
-                return "type " + scope.Name + GetGenericString(scope.TemplateArguments) + " = " + GetSimpleDescription(scope.ActType);
+            // An unchanged re-export can wrap an alias in another alias of the same name.
+            ITypeScope target = scope.ActType;
+            while (target is ITypeSynonimScope alias &&
+                   string.Equals(scope.Name, alias.Name, StringComparison.OrdinalIgnoreCase))
+                target = alias.ActType;
+
+            return "type " + scope.Name + GetGenericString(scope.TemplateArguments) + " = " +
+                (target is ICompiledTypeScope compiled && !compiled.Aliased
+                    ? GetSimpleDescriptionForCompiledType(compiled, true)
+                    : GetSimpleDescription(target));
         }
 
         public override string GetSynonimDescription(IProcScope scope)
@@ -1635,7 +1641,6 @@ namespace Languages.Pascal.Frontend.Data
 
         public override string SkipNew(int off, string Text, ref KeywordKind keyw)
         {
-            int tmp = off;
             string expr = null;
             while (off >= 0 && char.IsLetterOrDigit(Text[off])) off--;
             while (off >= 0 && (Text[off] == ' ' || char.IsControl(Text[off]))) off--;
@@ -1643,6 +1648,14 @@ namespace Languages.Pascal.Frontend.Data
             {
                 off -= 2;
                 while (off >= 0 && (Text[off] == ' ' || char.IsControl(Text[off]))) off--;
+                int beforeIdentifier = off;
+                while (beforeIdentifier >= 0 && (char.IsLetterOrDigit(Text[beforeIdentifier]) ||
+                    Text[beforeIdentifier] == '_' || Text[beforeIdentifier] == '&'))
+                    beforeIdentifier--;
+                while (beforeIdentifier >= 0 && char.IsWhiteSpace(Text[beforeIdentifier])) beforeIdentifier--;
+                // In "var p := new" the new variable does not supply an expected type.
+                if (beforeIdentifier >= 0 && TestForKeyword(Text, beforeIdentifier) == KeywordKind.Var)
+                    return null;
                 if (off >= 0 && (Text[off] == '_' || char.IsLetterOrDigit(Text[off]) || Text[off] == '!' || Text[off] == ']' || Text[off] == '>'))
                     expr = FindExpression(off + 1, Text, 0, 0, out keyw);
             }

@@ -13,7 +13,10 @@ public sealed record CompletionItem(
     string? Detail,
     string? Documentation,
     string Kind,
-    bool IsExtensionMethod = false);
+    bool IsExtensionMethod = false)
+{
+    public bool Preselect { get; init; }
+}
 
 public sealed record HoverInfo(string Contents);
 

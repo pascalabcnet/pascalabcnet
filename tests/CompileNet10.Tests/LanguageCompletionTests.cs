@@ -215,6 +215,27 @@ internal static partial class Program
                     Check(window.Width > Constants.CompletionWindowWidth &&
                         window.Width <= Math.Max(Constants.CompletionWindowWidth, Screen.GetWorkingArea(window).Width / 4),
                         "long ordinary completion grows only up to a quarter of the working area");
+
+                var types = new Dictionary<string, object> { ["items"] = new object[] {
+                    new Dictionary<string, object> { ["label"] = "Ученик", ["kind"] = 7, ["preselect"] = true },
+                    new Dictionary<string, object> { ["label"] = "Array", ["kind"] = 7 }
+                } };
+                var typeProvider = new Net10CompletionProvider(types, TestIntelliSenseUI(null), "");
+                const string source = "var a: array of Ученик := new ";
+                document.TextEditor.Document.TextContent = source;
+                document.TextEditor.ActiveTextAreaControl.Caret.Position = document.TextEditor.Document.OffsetToPosition(source.Length);
+                using (var window = (PABCNETCodeCompletionWindow)ctor.Invoke(new object[]
+                    { typeProvider, typeProvider.Items, parent, document.TextEditor, false, true, images, typeProvider.DefaultIndex >= 0 }))
+                {
+                    var list = (PABCNETCodeCompletionListView)typeof(PABCNETCodeCompletionWindow)
+                        .GetField("codeCompletionListView", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(window);
+                    Check(typeProvider.Items[0].Text == "Array" && list.SelectedCompletionData.Text == "Ученик",
+                        "new completion selects the preferred type in the sorted popup");
+                    var insert = typeof(PABCNETCodeCompletionWindow).GetMethod("InsertSelectedItem", BindingFlags.NonPublic | BindingFlags.Instance);
+                    insert.Invoke(window, new object[] { '\0' });
+                    Check(document.TextEditor.Document.TextContent == source + "Ученик",
+                        "preferred type insertion preserves the space after new");
+                }
             }
         }
         finally { singleton.SetValue(null, previous); }

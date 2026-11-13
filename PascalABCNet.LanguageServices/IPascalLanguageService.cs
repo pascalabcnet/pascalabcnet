@@ -30,7 +30,8 @@ public interface IPascalLanguageService
     Task<IReadOnlyList<CompletionItem>> GetCompletionAsync(
         string documentId,
         int caretOffset,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default,
+        bool triggeredBySpace = false);
 
     Task<HoverInfo?> GetHoverAsync(
         string documentId,

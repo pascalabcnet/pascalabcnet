@@ -594,8 +594,11 @@ namespace CodeCompletion
             {
                 ExpressionVisitor ev = new ExpressionVisitor(expr, si, visitor);
                 si = ev.GetScopeOfExpression();
-                if (si is TypeScope)
+                // A procedure name can resolve to a procedural type. It cannot follow new.
+                if (si is TypeScope type && !type.IsDelegate)
                     si = new ElementScope(si);
+                else if (si is ElementScope element && element.sc is TypeScope elementType && elementType.IsDelegate)
+                    si = null;
             }
             List<SymInfo> result_names = new List<SymInfo>();
             if (elems == null) return null;

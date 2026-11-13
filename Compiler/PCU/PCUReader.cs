@@ -35,6 +35,7 @@ namespace PascalABCCompiler.PCU
         private MemoryStream ms;
         public string FileName;
 		private PCUFile pcu_file = new PCUFile();
+        private (int UnitId, string SourceName, string PublicName)[] reexports;
 		private CompilationUnit unit;
         private common_unit_node cun;
 		private string cur_doc_name;
@@ -323,6 +324,7 @@ namespace PascalABCCompiler.PCU
 				//ssyy
                 AddTypeSynonyms(pcu_file.interface_synonyms_offset, cun.scope);
                 AddTypeSynonyms(pcu_file.implementation_synonyms_offset, cun.implementation_scope);
+                RestoreReexports();
                 //\ssyy
                 for (int i = 0; i < pcu_file.names.Length; i++)
                 {
@@ -679,6 +681,7 @@ namespace PascalABCCompiler.PCU
 
             pcu_file.interface_synonyms_offset = br.ReadInt32();
             pcu_file.implementation_synonyms_offset = br.ReadInt32();
+            reexports = PCUFile.ReadReexports(br);
 
             InitializationMethodOffset = br.ReadInt32();
             FinalizationMethodOffset = br.ReadInt32();
@@ -2539,6 +2542,19 @@ namespace PascalABCCompiler.PCU
                 scope.AddSymbol(wts.name, si);
             }
             br.BaseStream.Seek(pos, SeekOrigin.Begin);
+        }
+
+        private void RestoreReexports()
+        {
+            foreach (var entry in reexports)
+            {
+                if (entry.UnitId < 0 || entry.UnitId >= pcu_file.incl_modules.Length)
+                    InvalidUnitDetected();
+                var sourceUnit = GetPCUReaderForUnitId(entry.UnitId).cun;
+                if (sourceUnit?.scope == null ||
+                    !new UnitReexport(sourceUnit, entry.SourceName, entry.PublicName).TryPublish(cun))
+                    InvalidUnitDetected();
+            }
         }
 
         public SymbolTable.Scope[] MakeTopScopeArray(using_namespace_list unl, int uses_count)
