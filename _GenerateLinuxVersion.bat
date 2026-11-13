@@ -291,18 +291,21 @@ if /I "%~1"=="--net10" (
     if errorlevel 1 exit /b 1
 )
 
+set "LinuxArchive=PascalABCNETLinux.zip"
+if /I "%~1"=="--net10" set "LinuxArchive=PascalABCNETLinuxNet10.zip"
+
 pushd Release
 if errorlevel 1 exit /b 1
 
-tar.exe --format zip --options zip:hdrcharset=UTF-8 -cf PascalABCNETLinux.zip.tmp -- PascalABCNETLinux Samples
+tar.exe --format zip --options zip:hdrcharset=UTF-8 -cf "%LinuxArchive%.tmp" -- PascalABCNETLinux Samples
 if errorlevel 1 (
     echo ERROR: Failed to create the Linux archive.
     popd
     exit /b 1
 )
-move /y PascalABCNETLinux.zip.tmp PascalABCNETLinux.zip
+move /y "%LinuxArchive%.tmp" "%LinuxArchive%"
 if errorlevel 1 (
-    echo ERROR: Failed to replace PascalABCNETLinux.zip.
+    echo ERROR: Failed to replace %LinuxArchive%.
     popd
     exit /b 1
 )
