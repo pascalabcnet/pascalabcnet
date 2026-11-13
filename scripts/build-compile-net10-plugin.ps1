@@ -36,11 +36,9 @@ if ($LASTEXITCODE -ne 0) {
     throw "CompileNet10Plugin build failed with exit code $LASTEXITCODE."
 }
 Write-Host "Plugin built: $(Join-Path $IdeDirectory 'CompileNet10Plugin.dll')"
-$runnerProject = Join-Path $repositoryRoot 'Utils\ProgrammRunner\ProgrammRunnerCS\ProgrammRunner.csproj'
-& dotnet build $runnerProject --configuration $Configuration `
-    --output $IdeDirectory --disable-build-servers --nologo
-if ($LASTEXITCODE -ne 0) {
-    throw "ProgrammRunner build failed with exit code $LASTEXITCODE."
+$runner = Join-Path $repositoryRoot 'bin\ProgrammRunner.exe'
+$runnerDestination = Join-Path $IdeDirectory 'ProgrammRunner.exe'
+if ($runnerDestination -ne $runner) {
+    Copy-Item -LiteralPath $runner -Destination $runnerDestination -Force
 }
-Write-Host "Console runner built: $(Join-Path $IdeDirectory 'ProgrammRunner.exe')"
 Write-Host "Existing CompileNet10Plugin.ini is preserved. Use RuntimeDirectory=..\bin-net10 for the repository IDE, or point it to $(Join-Path $repositoryRoot 'bin-net10') for another IDE."
