@@ -66,12 +66,19 @@ namespace VisualPascalABC
         {
             if (string.Compare(OldFileName, NewFileName, true) != 0)
             {
-                CodeCompletion.CodeCompletionController.comp_modules[NewFileName] = CodeCompletion.CodeCompletionController.comp_modules[OldFileName];
-                if (CodeCompletion.CodeCompletionController.comp_modules.ContainsKey(OldFileName))
-                    CodeCompletion.CodeCompletionController.comp_modules.Remove(OldFileName);
-                filesToParse[NewFileName] = filesToParse[OldFileName];
-                if (filesToParse.ContainsKey(OldFileName))
-                    filesToParse.Remove(OldFileName);
+                var modules = CodeCompletion.CodeCompletionController.comp_modules;
+                if (modules.ContainsKey(OldFileName))
+                {
+                    modules[NewFileName] = modules[OldFileName];
+                    modules.Remove(OldFileName);
+                }
+                else
+                    modules.Remove(NewFileName);
+
+                // Files opened while legacy analysis is suspended may not be queued.
+                if (!filesToParse.TryGetValue(OldFileName, out bool pending)) pending = true;
+                filesToParse[NewFileName] = pending;
+                filesToParse.Remove(OldFileName);
             }
         }
 
