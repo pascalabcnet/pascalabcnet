@@ -350,8 +350,9 @@ namespace VisualPascalABC
         	    Remove();
 			    IDocument document = ctrl.Document;
 			    string fileName = ctrl.FileName;
-                startLine = makerStartLine;
-                endLine = makerStartLine;
+                // EOF can be reported one line past the editor document.
+                startLine = Math.Max(1, Math.Min(document.TotalNumberOfLines, makerStartLine));
+                endLine = startLine;
 			    startColumn=1;
                 LineSegment line = document.GetLineSegment(startLine - 1);
                 endColumn = line.Length+1;
