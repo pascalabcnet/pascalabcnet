@@ -1,8 +1,6 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using ICSharpCode.TextEditor.Document;
@@ -19,6 +17,7 @@ namespace VisualPascalABC
             get { return textAreaPanel; }
         }
         private Panel intellisensePanel;
+        private FullLineCompletionEditorController fullLineCompletionController;
         public CodeFileDocumentTextEditorControl()
         {
             editactions[Keys.Space | Keys.Control] = new CodeCompletionAllNamesAction();
@@ -50,6 +49,8 @@ namespace VisualPascalABC
             this.ActiveTextAreaControl.TextArea.DragEnter += textEditorDragEnter;
             this.ActiveTextAreaControl.TextArea.DragDrop += textEditorDragDrop;
             this.ActiveTextAreaControl.Document.LineDeleted += Document_LineDeleted;
+            fullLineCompletionController = new FullLineCompletionEditorController(this,
+                ((VisualPascalABCPlugins.IWorkbench)VisualPABCSingleton.MainForm).ServiceContainer.InlineCompletionService);
         }
 
         private void Document_LineDeleted(object sender, LineEventArgs e)
@@ -246,6 +247,17 @@ namespace VisualPascalABC
         public void RemoveMouseDownHandler(MouseEventHandler handler)
         {
             this.ActiveTextAreaControl.TextArea.MouseDown -= handler;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && fullLineCompletionController != null)
+            {
+                fullLineCompletionController.Dispose();
+                fullLineCompletionController = null;
+            }
+
+            base.Dispose(disposing);
         }
     }
 }
