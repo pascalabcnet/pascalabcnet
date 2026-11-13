@@ -67,6 +67,11 @@ internal static partial class Program
                 return 0;
             }
             await CheckRestore(work);
+            if (args.Contains("--native-assets"))
+            {
+                await CheckNativeAssets(work);
+                return 0;
+            }
             if (args.Contains("--message-protocol"))
             {
                 await CheckCompilerMessageProtocol(work);
@@ -91,7 +96,6 @@ internal static partial class Program
             await CheckFrameworkAssemblies(work);
             if (args.Contains("--framework-assemblies")) return 0;
             await CheckNativeAssets(work);
-            if (args.Contains("--native-assets")) return 0;
             if (args.Contains("--sqlite-native"))
             {
                 await CheckSqliteNative(work);

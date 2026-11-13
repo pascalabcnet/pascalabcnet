@@ -18,8 +18,8 @@ public sealed record PackageRestoreRequest
     /// <summary>Optional explicit config file, loaded without the normal configuration hierarchy.</summary>
     public string? NuGetConfigFile { get; init; }
     public string TargetFramework { get; init; } = "net10.0";
-    /// <summary>Null selects win-x64 in a Windows x64 process, otherwise portable assets.
-    /// An explicit RID is currently supported only for win-x64.</summary>
+    /// <summary>Null selects the current RID on Windows x64 or Linux x64 (glibc), otherwise portable assets.
+    /// Supported explicit RIDs are win-x64 and linux-x64.</summary>
     public string? RuntimeIdentifier { get; init; }
     public bool ForceRestore { get; init; }
     /// <summary>Resolve from the local package cache only; never contact configured feeds.</summary>

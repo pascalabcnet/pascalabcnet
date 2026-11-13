@@ -63,10 +63,13 @@ public sealed partial class PackageRestoreService
         RestoreEnvironment environment, CancellationToken cancellationToken)
     {
         var framework = NuGetFramework.ParseFolder(request.TargetFramework);
-        string? rid = request.RuntimeIdentifier ??
-            (OperatingSystem.IsWindows() && RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "win-x64" : null);
-        if (rid is not null && rid != "win-x64")
-            throw new ArgumentException("Native NuGet assets currently support win-x64 only.", nameof(request));
+        string? rid = request.RuntimeIdentifier;
+        if (rid is null && OperatingSystem.IsWindows() && RuntimeInformation.ProcessArchitecture == Architecture.X64)
+            rid = "win-x64";
+        if (rid is null && OperatingSystem.IsLinux() && RuntimeInformation.RuntimeIdentifier == "linux-x64")
+            rid = "linux-x64";
+        if (rid is not null and not ("win-x64" or "linux-x64"))
+            throw new ArgumentException("Native NuGet assets currently support win-x64 and linux-x64.", nameof(request));
         var requirements = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
         foreach (var package in request.Packages)
         {

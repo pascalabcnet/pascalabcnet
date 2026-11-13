@@ -116,6 +116,7 @@
       "codecompletion": {
         "type": "Project",
         "dependencies": {
+          "CodeCompletionContracts": "[1.0.0, )",
           "Compiler": "[1.0.0, )",
           "Errors": "[1.0.0, )",
           "LanguageIntegrator": "[1.0.0, )",
@@ -125,6 +126,12 @@
           "StringConstants": "[1.0.0, )",
           "SyntaxTree": "[1.0.0, )",
           "TreeConverter": "[1.0.0, )"
+        }
+      },
+      "codecompletioncontracts": {
+        "type": "Project",
+        "dependencies": {
+          "ParserContracts": "[1.0.0, )"
         }
       },
       "compiler": {
@@ -171,6 +178,12 @@
           "TreeConverter": "[1.0.0, )"
         }
       },
+      "languagecontracts": {
+        "type": "Project",
+        "dependencies": {
+          "ParserContracts": "[1.0.0, )"
+        }
+      },
       "languageintegrator": {
         "type": "Project",
         "dependencies": {
@@ -198,11 +211,21 @@
       "pabccoreutils": {
         "type": "Project"
       },
-      "parsertools": {
+      "parsercontracts": {
         "type": "Project",
         "dependencies": {
           "Errors": "[1.0.0, )",
+          "SyntaxTree": "[1.0.0, )"
+        }
+      },
+      "parsertools": {
+        "type": "Project",
+        "dependencies": {
+          "CodeCompletionContracts": "[1.0.0, )",
+          "Errors": "[1.0.0, )",
+          "LanguageContracts": "[1.0.0, )",
           "Localization": "[1.0.0, )",
+          "ParserContracts": "[1.0.0, )",
           "SyntaxTree": "[1.0.0, )"
         }
       },
@@ -210,6 +233,7 @@
         "type": "Project",
         "dependencies": {
           "LambdaAnySynToSemConverter": "[1.0.0, )",
+          "LanguageContracts": "[1.0.0, )",
           "LanguageIntegrator": "[1.0.0, )",
           "ParserTools": "[1.0.0, )",
           "PascalABCParser": "[1.0.0, )",
@@ -240,6 +264,7 @@
         "type": "Project",
         "dependencies": {
           "Errors": "[1.0.0, )",
+          "LanguageContracts": "[1.0.0, )",
           "LanguageIntegrator": "[1.0.0, )",
           "Localization": "[1.0.0, )",
           "PABCCoreUtils": "[1.0.0, )",

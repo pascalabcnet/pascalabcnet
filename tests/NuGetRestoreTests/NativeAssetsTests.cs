@@ -54,6 +54,20 @@ internal static partial class Program
             .Replace('\\', '/').EndsWith("/runtimes/win/native/fallback-fixture.dll"), "Official RID fallback was not used.");
         Check(graph.Packages.All(p => !p.RuntimeAssemblies.Intersect(p.NativeLibraries).Any()),
             "A native DLL became a semantic assembly reference.");
+        var linuxGraph = await service.RestoreAsync(request with {
+            RuntimeIdentifier = "linux-x64", RestoreDirectory = Path.Combine(work, "native-restore-linux")
+        });
+        var linuxNative = linuxGraph.Packages.SelectMany(package => package.NativeLibraries).ToArray();
+        Check(linuxGraph.RuntimeIdentifier == "linux-x64" &&
+            linuxNative.Single().Replace('\\', '/').EndsWith("/runtimes/linux-x64/native/libnative-fixture.so"),
+            "Linux restore did not select exactly the Linux x64 native file.");
+        if (System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier == "linux-x64")
+        {
+            var automatic = await service.RestoreAsync(request with {
+                RuntimeIdentifier = null, RestoreDirectory = Path.Combine(work, "native-restore-linux-auto")
+            });
+            Check(automatic.RuntimeIdentifier == "linux-x64", "Linux x64 native selection was not automatic.");
+        }
         var again = await service.RestoreAsync(request);
         Check(again.UsedCachedRestore && again.InstalledPackageCount == 0, "An unchanged RID restore was not cached.");
         try { await service.RestoreAsync(request with { RuntimeIdentifier = "win-arm64" }); throw new Exception("Unsupported RID was silently accepted."); }
@@ -64,8 +78,17 @@ internal static partial class Program
         File.Copy(original, executable);
         File.WriteAllText(Path.ChangeExtension(executable, ".runtimeconfig.json"),
             "{\"runtimeOptions\":{\"tfm\":\"net10.0\",\"framework\":{\"name\":\"Microsoft.NETCore.App\",\"version\":\"10.0.0\"}}}");
-        PackageRuntimeManifestWriter.WriteForExecutable(graph, executable);
+        PackageRuntimeManifestWriter.WriteForExecutable(linuxGraph, executable);
         string depsPath = Path.ChangeExtension(executable, ".deps.json");
+        using (var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(depsPath)))
+        {
+            string target = document.RootElement.GetProperty("runtimeTarget").GetProperty("name").GetString()!;
+            Check(target.EndsWith("/linux-x64", StringComparison.Ordinal) &&
+                document.RootElement.GetProperty("targets").GetProperty(target).GetProperty(id + "/1.0.0")
+                    .GetProperty("native").EnumerateObject().Single().Name == "runtimes/linux-x64/native/libnative-fixture.so",
+                "The executable's manifest lost the selected Linux native file.");
+        }
+        PackageRuntimeManifestWriter.WriteForExecutable(graph, executable);
         string originalManifest = Hash(depsPath);
         var escaping = graph with { Packages = graph.Packages.Select(package => package.Id == id
             ? package with { NativeLibraries = new[] { original } } : package).ToArray() };
@@ -97,7 +120,7 @@ internal static partial class Program
             Check(Hash(publishedNative) == Hash(original), "Failed publishing damaged the previous publication.");
         }
         finally { File.Move(nativePath + ".hidden", nativePath); }
-        Console.WriteLine("PASS: native assets: win-x64 selection, managed override, RID fallback, separate native files and cached restore; local feed only.");
+        Console.WriteLine("PASS: native assets: win-x64 and linux-x64 selection, managed override, RID fallback, separate native files and cached restore; local feed only.");
         Console.WriteLine("PASS: native manifest, publication and preservation of previous output on missing native files.");
     }
 }
