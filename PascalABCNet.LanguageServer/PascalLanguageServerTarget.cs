@@ -1,7 +1,9 @@
 using Microsoft.VisualStudio.LanguageServer.Protocol;
+using PascalABCCompiler.Contracts.CodeCompletion;
 using PascalABCNet.LanguageServices;
 using PascalABCNet.PackageServices;
 using StreamJsonRpc;
+using Position = Microsoft.VisualStudio.LanguageServer.Protocol.Position;
 using LspCompletionItem = Microsoft.VisualStudio.LanguageServer.Protocol.CompletionItem;
 
 namespace PascalABCNet.LanguageServer;
@@ -54,17 +56,20 @@ internal sealed class PascalLanguageServerTarget
     private readonly IPascalLanguageService _languageService;
     private readonly SerialRequestDispatcher _dispatcher;
     private readonly TaskCompletionSource<bool> _exitSignal;
+    private readonly PluginHost _plugins;
     private readonly Dictionary<Uri, MetadataDocument> _metadata = new();
     internal sealed record MetadataDocument(string Title, string Text);
 
     public PascalLanguageServerTarget(
         IPascalLanguageService languageService,
         SerialRequestDispatcher dispatcher,
-        TaskCompletionSource<bool> exitSignal)
+        TaskCompletionSource<bool> exitSignal,
+        PluginHost plugins)
     {
         _languageService = languageService;
         _dispatcher = dispatcher;
         _exitSignal = exitSignal;
+        _plugins = plugins;
     }
 
     [JsonRpcMethod("initialize", UseSingleObjectParameterDeserialization = true)]
@@ -97,7 +102,10 @@ internal sealed class PascalLanguageServerTarget
                     SignatureHelpProvider = new SignatureHelpOptions
                     {
                         TriggerCharacters = new[] { "(", "[", "," }
-                    }
+                    },
+                    Experimental = _plugins.HasInlineCompletionProvider
+                        ? new Dictionary<string, object> { ["inlineCompletionProvider"] = true }
+                        : null
                 }
             }); },
             cancellationToken);
@@ -332,6 +340,90 @@ internal sealed class PascalLanguageServerTarget
     [JsonRpcMethod("pascalabc/metadata", UseSingleObjectParameterDeserialization = true)]
     public Task<MetadataDocument?> MetadataAsync(TextDocumentIdentifier request, CancellationToken cancellationToken) =>
         _dispatcher.RunAsync(() => Task.FromResult(_metadata.TryGetValue(request.Uri, out var document) ? document : null), cancellationToken);
+
+    // Inline completion: the standard LSP 3.18 request plus a pascalabc/ mirror
+    // for clients without the standard one. The suggestion text is produced by a
+    // registered plugin source; without a plugin both requests return no items.
+    [JsonRpcMethod("textDocument/inlineCompletion", UseSingleObjectParameterDeserialization = true)]
+    public Task<InlineCompletionResultDto> InlineCompletionAsync(
+        InlineCompletionParamsDto request,
+        CancellationToken cancellationToken) =>
+        InlineCompletionCoreAsync(request, cancellationToken);
+
+    [JsonRpcMethod("pascalabc/inlineCompletion", UseSingleObjectParameterDeserialization = true)]
+    public Task<InlineCompletionResultDto> CustomInlineCompletionAsync(
+        InlineCompletionParamsDto request,
+        CancellationToken cancellationToken) =>
+        InlineCompletionCoreAsync(request, cancellationToken);
+
+    private async Task<InlineCompletionResultDto> InlineCompletionCoreAsync(
+        InlineCompletionParamsDto request,
+        CancellationToken cancellationToken)
+    {
+        var empty = new InlineCompletionResultDto();
+        if (!_plugins.HasInlineCompletionProvider ||
+            request.TextDocument?.Uri is not { } uri ||
+            request.Position is not { } position)
+        {
+            return empty;
+        }
+
+        var provider = _plugins.InlineCompletionProviders[0];
+        if (!provider.IsEnabled)
+            return empty;
+
+        // Snapshot the document on the serialized queue, then run the slow
+        // provider (LLM HTTP) outside of it so analysis is never blocked.
+        var snapshot = await _dispatcher.RunAsync(() =>
+        {
+            if (!DocumentConversions.TryGetOffset(
+                    _languageService,
+                    uri,
+                    new Position(position.Line, position.Character),
+                    out var caretOffset) ||
+                !_languageService.Documents.TryGet(
+                    DocumentConversions.GetDocumentId(uri),
+                    out var document) ||
+                document is null)
+            {
+                return Task.FromResult<CodeCompletionContext?>(null);
+            }
+
+            return Task.FromResult<CodeCompletionContext?>(
+                new CodeCompletionContext(
+                    DocumentConversions.GetFileName(uri),
+                    document.Text,
+                    caretOffset,
+                    position.Line,
+                    position.Character));
+        }, cancellationToken);
+
+        if (snapshot is null)
+            return empty;
+
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeout.CancelAfter(TimeSpan.FromSeconds(10));
+        try
+        {
+            var text = await provider.GetCompletionAsync(snapshot, timeout.Token).ConfigureAwait(false);
+
+            return string.IsNullOrEmpty(text)
+                ? empty
+                : new InlineCompletionResultDto
+                {
+                    Items = new[] { new InlineCompletionItemDto { InsertText = text } }
+                };
+        }
+        catch (OperationCanceledException)
+        {
+            return empty;
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"Inline completion provider failed: {exception.Message}");
+            return empty;
+        }
+    }
 
     [JsonRpcMethod("textDocument/signatureHelp", UseSingleObjectParameterDeserialization = true)]
     public Task<SignatureHelp?> SignatureHelpAsync(
