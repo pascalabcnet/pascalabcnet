@@ -4,6 +4,12 @@ using System.Text.RegularExpressions;
 
 namespace VisualPascalABCPlugins
 {
+    public interface IExternalCompilationEvents
+    {
+        event Action<string, string, bool> ExternalCompilationCompleted;
+        void NotifyExternalCompilationCompleted(string sourceFile, string outputFile, bool usesPT4);
+    }
+
     // Optional contract: the IDE owns lifecycle/events; the plugin owns the process.
     public interface IExternalRunService
     {

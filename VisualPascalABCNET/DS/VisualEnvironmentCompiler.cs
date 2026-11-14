@@ -22,7 +22,7 @@ namespace VisualPascalABC
 
     }
     
-    public class VisualEnvironmentCompiler: IVisualEnvironmentCompiler
+    public class VisualEnvironmentCompiler: IVisualEnvironmentCompiler, IExternalCompilationEvents
     {
         PascalABCCompiler.CompilerType defaultCompilerType = PascalABCCompiler.CompilerType.Remote;
 
@@ -548,6 +548,13 @@ namespace VisualPascalABC
         public void ExecuteSourceLocationAction(PascalABCCompiler.SourceLocation SourceLocation,SourceLocationAction Action)
         {
             ExecuteSLAction(SourceLocation,Action);
+        }
+
+        public event Action<string, string, bool> ExternalCompilationCompleted;
+
+        public void NotifyExternalCompilationCompleted(string sourceFile, string outputFile, bool usesPT4)
+        {
+            ExternalCompilationCompleted?.Invoke(sourceFile, outputFile, usesPT4);
         }
 
         public object ExecuteAction(VisualEnvironmentCompilerAction Action, object obj)

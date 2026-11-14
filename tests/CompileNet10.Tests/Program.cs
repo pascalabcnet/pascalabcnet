@@ -393,6 +393,8 @@ internal static partial class Program
             { CheckNavigationCommands(); return 0; }
             if (args.Length > 0 && args[0] == "--platform-ui")
             { CheckPlatformUI(); return 0; }
+            if (args.Length > 0 && args[0] == "--pt4-registration")
+            { CheckPT4Registration(); return 0; }
             if (args.Length > 0 && args[0] == "--formatting-policy")
             { CheckFormattingAvailability(); return 0; }
             CheckRestoreDeadlines();
@@ -1053,6 +1055,26 @@ internal static partial class Program
         Check(quietStatuses.Count == 3 && quietStatuses[2].Contains("STATETEXT_COMPILATION_SUCCESS"),
             "status retains canonical compile/code-generation/result sequence");
         CheckNuGetMessageDisplay();
+    }
+
+    private static void CheckPT4Registration()
+    {
+        var display = new Net10CompilerDisplay(key => key);
+        void Observe(string state, string file = null) =>
+            display.Handle(new Net10CompilerEvent { state = state, fileName = file }, _ => { }, _ => { });
+        Observe("CompilationStarting");
+        Observe("ReadPCUFile", "PT4TaskMakerNET.pcu");
+        Check(!display.UsesPT4, "A different PT4-related unit does not register the program");
+        Observe("ReadPCUFile", "PT4.PCU");
+        Observe("CompilationFinished");
+        Check(display.UsesPT4, "PT4 read from PCU is detected at successful completion");
+        Observe("Reloading");
+        Check(!display.UsesPT4, "A retry discards PT4 detection from the previous attempt");
+        Observe("CompilationStarting");
+        Observe("BeginCompileFile", "PT4.pas");
+        Check(display.UsesPT4, "PT4 compiled from source is detected");
+        Observe("CompilationStarting");
+        Check(!display.UsesPT4, "A new build does not inherit PT4 detection");
     }
 
     private static void CheckNuGetMessageDisplay()

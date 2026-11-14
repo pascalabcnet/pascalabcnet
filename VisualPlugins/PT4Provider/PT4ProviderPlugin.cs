@@ -196,6 +196,8 @@ namespace VisualPascalABCPlugins
             VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
             VisualEnvironmentCompiler.ChangeVisualEnvironmentState += new ChangeVisualEnvironmentStateDelegate(VisualEnvironmentCompiler_ChangeVisualEnvironmentState);
             VisualEnvironmentCompiler.Compiler.OnChangeCompilerState += Compiler_OnChangeCompilerState;
+            if (VisualEnvironmentCompiler is IExternalCompilationEvents compilationEvents)
+                compilationEvents.ExternalCompilationCompleted += RegisterExternalCompilation;
             PABCWorkDirectory = VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.GetDirectory, "%WORKINGDIRECTORY%") as string;
             /*if (PABCWorkDirectory == null)
                 PABCWorkDirectory = "";
@@ -273,6 +275,14 @@ namespace VisualPascalABCPlugins
         private Dictionary<string, string> CompiledProgrammsWithPT4Unit = new Dictionary<string, string>();
         private string FirstCompiledFileName = null;
         private bool PT4UnitUsed = false;
+
+        private void RegisterExternalCompilation(string sourceFile, string outputFile, bool usesPT4)
+        {
+            if (usesPT4)
+                CompiledProgrammsWithPT4Unit[outputFile] = sourceFile;
+            else
+                CompiledProgrammsWithPT4Unit.Remove(outputFile);
+        }
 
         void Compiler_OnChangeCompilerState(PascalABCCompiler.ICompiler sender, PascalABCCompiler.CompilerState State, string FileName)
         {

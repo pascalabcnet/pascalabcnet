@@ -9,10 +9,17 @@ namespace VisualPascalABCPlugins
         private readonly Func<string, string> resource;
         private bool compiling;
         public bool HasResult { get; private set; }
+        public bool UsesPT4 { get; private set; }
         public Net10CompilerDisplay(Func<string, string> resource) { this.resource = resource; }
 
         public void Handle(Net10CompilerEvent value, Action<string> message, Action<string> status)
         {
+            if (value.state == "CompilationStarting" || value.state == "Reloading")
+                UsesPT4 = false;
+            else if (value.state == "ReadPCUFile" || value.state == "BeginCompileFile")
+                UsesPT4 |= string.Equals(Path.GetFileNameWithoutExtension(value.fileName), "PT4",
+                    StringComparison.OrdinalIgnoreCase);
+
             if (value.@event == "compilerMessage")
             {
                 message("[.NET 10] " + value.message);

@@ -521,6 +521,13 @@ namespace VisualPascalABCPlugins
                 }
                 if (response.success)
                 {
+                    if (!publish && string.Equals(Path.GetExtension(response.outputFile), ".exe", StringComparison.OrdinalIgnoreCase) &&
+                        workbench.VisualEnvironmentCompiler is IExternalCompilationEvents compilationEvents)
+                    {
+                        string outputFile = Path.IsPathRooted(response.outputFile) ? response.outputFile :
+                            Path.Combine(outputDirectory, response.outputFile);
+                        compilationEvents.NotifyExternalCompilationCompleted(fileName, Path.GetFullPath(outputFile), display.UsesPT4);
+                    }
 #if !PABC_LINUX_PLUGIN
                     if (languageDocuments?.NeedsPackageRestore(document) == true)
                         await languageDocuments.RefreshPackagesAsync(document);
