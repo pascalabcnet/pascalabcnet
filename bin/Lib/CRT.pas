@@ -312,7 +312,7 @@ begin
   begin
     Console.WriteLine('Программу с подключенным модулем CRT нельзя запускать по F9.');
     Console.WriteLine('Запустите программу, используя Shift-F9');
-    Halt;
+    Halt(0);
   end;
 end;
 
