@@ -654,7 +654,9 @@ namespace Languages.Pascal.Frontend.Core
                     if (fe.format1 == null)
                         fe.format1 = new int32_const(int.MaxValue, el.source_context);
                 }
-        		return new slice_expr(av, fe.expr, fe.format1, fe.format2, el.source_context);
+                // The formatter copies punctuation between child nodes using the span of the whole slice.
+                return new slice_expr(av, fe.expr, fe.format1, fe.format2,
+                    parserTools.buildTreeForFormatter ? (SourceContext)loc : el.source_context);
             }
             // многомерные срезы
             else if (el.expressions.Any(e => e is format_expr))
