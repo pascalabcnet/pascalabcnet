@@ -2494,7 +2494,7 @@ public
     Closed += (sender,e) -> begin 
       if OnClose<>nil then
         OnClose;
-      Halt; 
+      Halt(0);
     end;
     MouseDown += SystemOnMouseDown;
     MouseUp += SystemOnMouseUp;

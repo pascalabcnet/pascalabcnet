@@ -2455,7 +2455,7 @@ begin
     GraphABC.OnClose;
   NotLockDrawing := False;
   //Sleep(0);
-  Halt;
+  Halt(0);
 end;
 
 procedure ABCControl.OnMouseDown(sender: Object; e: MouseEventArgs);
@@ -3646,7 +3646,7 @@ end;
 procedure CloseWindow;
 begin
   //  MainForm.Close;
-  Halt;
+  Halt(0);
 end;
 
 var
