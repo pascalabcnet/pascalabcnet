@@ -14,6 +14,10 @@ type
 
     /// Возвращает имя класса для строки с индексом rowIndex.
     function ClassName(rowIndex: integer): string;
+
+    /// Возвращает имена классов для переданных кодов в том же порядке.
+    /// Коды должны быть индексами в ClassNames. Недопустимый код вызывает исключение.
+    function Decode(codes: array of integer): array of string;
   end;
   
 implementation
@@ -59,6 +63,22 @@ begin
   Result := ClassNames[cls];
 end;
     
+function EncodedTarget.Decode(codes: array of integer): array of string;
+begin
+  if codes = nil then
+    exit(new string[0]);
+
+  var classCount := if ClassNames = nil then 0 else ClassNames.Length;
+  Result := new string[codes.Length];
+  for var i := 0 to codes.Length - 1 do
+  begin
+    var code := codes[i];
+    if (code < 0) or (code >= classCount) then
+      ArgumentOutOfRangeError(ER_ENCODED_TARGET_CLASS_INDEX_OUT_OF_RANGE, code, classCount);
+    Result[i] := ClassNames[code];
+  end;
+end;
+
 function ToMatrixByNames(df: DataFrame; colNames: array of string): Matrix;
 begin
   var n := df.RowCount;
